@@ -20,6 +20,64 @@ class ListItem;
 class PlayerEgo;
 class TouchButton;
 
+// Host-side mirror for Hud::init Image2D fields whose gameplay role has not
+// yet been named. Each member keeps the original 32-bit Hud byte offset.
+struct HudInitImageSlots {
+    int image_0x004;
+    int image_0x008;
+    int image_0x2c8;
+    int image_0x2cc;
+    int image_0x2d0;
+    int image_0x2e8;
+    int image_0x2ec;
+    int image_0x2f0;
+    int image_0x2fc;
+    int image_0x300;
+    int image_0x304;
+    int image_0x308;
+    int image_0x314;
+    int image_0x318;
+    int image_0x31c;
+    int image_0x320;
+    int image_0x324;
+    int image_0x334;
+    int image_0x338;
+    int image_0x33c;
+    int image_0x340;
+    int image_0x344;
+    int image_0x34c;
+    int image_0x350;
+    int image_0x360;
+    int image_0x364;
+    int image_0x368;
+    int image_0x36c;
+    int image_0x370;
+    int image_0x374;
+    int image_0x378;
+    int image_0x37c;
+    int image_0x380;
+    int image_0x384;
+    int image_0x388;
+    int image_0x38c;
+    int image_0x390;
+    int image_0x394;
+    int image_0x398;
+    int image_0x39c;
+    int image_0x3a0;
+    int image_0x3a4;
+    int image_0x3a8;
+    int image_0x3ac;
+    int image_0x3b0;
+    int image_0x4f4;
+    int image_0x4f8;
+    int image_0x4fc;
+    int image_0x500;
+    int image_0x504;
+    int image_0x508;
+    int image_0x50c;
+    int image_0x510;
+};
+
 
 
 
@@ -67,7 +125,7 @@ public:
     unsigned char hasAutofireUI;
     String field_0x228;
     unsigned char cargoFullFlag;
-    void *menuLevel;
+    Level *menuLevel;
     unsigned char shieldHitFlash;
     Item *currentSecondaryWeapon;
     Array<Item *> *equipmentArray;
@@ -131,30 +189,48 @@ public:
     unsigned short field_0x3e2;
     unsigned short field_0x3e4;
     unsigned short field_0x3e6;
+    unsigned short field_0x3ea;
     unsigned short field_0x3ec;
     unsigned short field_0x3ee;
+    unsigned short field_0x3f0;
     unsigned short field_0x3f2;
     unsigned short field_0x3f4;
+    unsigned short field_0x3f6;
     unsigned short field_0x3f8;
     unsigned short field_0x3fa;
+    unsigned short field_0x3fc;
     unsigned short field_0x3fe;
     unsigned short field_0x400;
+    unsigned short field_0x402;
     unsigned short field_0x404;
     unsigned short field_0x406;
+    unsigned short field_0x408;
     unsigned short field_0x40a;
     unsigned short field_0x40c;
+    unsigned short field_0x40e;
     unsigned short field_0x410;
     unsigned short field_0x412;
+    unsigned short field_0x414;
     unsigned short field_0x416;
     unsigned short field_0x418;
     unsigned short field_0x41a;
     unsigned short field_0x41c;
+    unsigned short field_0x41e;
+    unsigned short field_0x420;
+    unsigned short field_0x422;
+    unsigned short field_0x424;
+    unsigned short field_0x426;
     unsigned short lockBracketX;
     unsigned short lockBracketY;
     unsigned short reticleX;
     unsigned short reticleY;
     unsigned short field_0x42c;
+    unsigned short field_0x42e;
+    unsigned short field_0x430;
+    unsigned short field_0x434;
+    unsigned short field_0x436;
     unsigned short field_0x438;
+    unsigned short field_0x43a;
     unsigned short field_0x43c;
     unsigned short field_0x43e;
     unsigned short field_0x440;
@@ -164,10 +240,12 @@ public:
     unsigned short field_0x448;
     unsigned short field_0x44a;
     unsigned short field_0x44c;
+    int field_0x450;
     unsigned short field_0x454;
     unsigned short field_0x456;
     unsigned short field_0x458;
     unsigned short field_0x45a;
+    unsigned short field_0x45c;
     unsigned short field_0x45e;
     unsigned short field_0x460;
     int field_0x468;
@@ -193,6 +271,11 @@ public:
     Array<unsigned int> *uintArray;
     void *digitSprite;
     int multiplierIconImage;
+    HudInitImageSlots initImageSlots;
+    unsigned short iPadFireCoord_0x0c;
+    unsigned short iPadFireCoord_0x0e;
+    int iPadSteerAnchor;
+    int iPadFireAnchor;
 
     Hud();
 
