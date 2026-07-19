@@ -39,6 +39,11 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
   iPad placement, button-coordinate export, and headers `0x4f3`--`0x4f5`.
   The two non-HD iPad offsets are ARM float constants `160.0f` and `80.0f`;
   the HD path uses `112.5f`.
+- The corresponding `Hud::drawMenu` frame path (`0x166278`) now draws its top,
+  middle, bottom, header, and buttons at the recovered `menuOriginX`,
+  `menuOriginY`, and `menuOriginYBase` coordinates. Mode 0 also draws the
+  recovered cargo gauge: `"X <amount>"`, bar/image flags, and layout offsets
+  `0x230`, `0x234`, `0x288`, and `0x28c`.
 - `Hud+0x238` is the active quick-menu mode, not a `Level *`. The local
   `quickMenuType` replaces the previous incorrect `menuLevel` interpretation.
   `Hud+0x27c` receives the amount of cargo item `122`, which drives the
@@ -62,6 +67,8 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
   `Hud::init` body. Its producing `initHudMenu` paths are now recovered; cargo
   text templates, challenge-score state fields, and the majority of
   `Hud::draw` remain separate recovery work.
+- This menu-frame pass does not recover `Hud::hudAction`, so the recovered
+  action masks have no complete source-backed execution path yet.
 - `HudInitImageSlots` and the raw coordinate members are a host-side source
   mirror, not a claim that the 64-bit C++ class has the original ARM ABI or is
   byte-identical.

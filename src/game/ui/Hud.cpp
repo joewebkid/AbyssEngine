@@ -1298,70 +1298,56 @@ Hud *Hud::checkIfQuickMenuIsEmpty() {
     return this;
 }
 
-
-static const char g_Hud_dmPrefix[1] = {0};
-
 void Hud::drawMenu(int unused) {
     (void) unused;
     PaintCanvas *canvas = hud_canvas();
     if (canvas == nullptr || Globals::layout == nullptr) return;
-    int *layout = static_cast<int *>(Globals::layout);
-    ((Layout *) (layout))->drawMask();
+    static_cast<Layout *>(Globals::layout)->drawMask();
 
-    PaintCanvas::gCanvas->DrawImage2D((unsigned) this->quickMenuTopImage, this->field_0x3c4 + this->menuOriginX, 0);
+    const int frameX = this->field_0x3c4 + this->menuOriginX;
+    const int menuY = this->menuOriginYBase + this->menuOriginY;
+    canvas->DrawImage2D(static_cast<unsigned>(this->quickMenuTopImage), frameX, menuY);
 
-    int hx = this->menuOriginX + this->field_0x3d4 + this->field_0x3dc / 2;
-    char hy = (char) ((char) this->menuOriginYBase + (char) this->menuOriginY + (char) (this->menuRowHeight / 2)
-                      - (char) layout[0x8b]);
-    PaintCanvas::gCanvas->DrawImage2D((unsigned) this->quickMenuHeaderImage, hx, hy, (unsigned char) 0x11);
+    const int headerX = this->menuOriginX + this->field_0x3d4 + this->field_0x3dc / 2;
+    const int headerY = menuY + this->menuRowHeight / 2 - hud_layout_i32(0x22c);
+    canvas->DrawImage2D(static_cast<unsigned>(this->quickMenuHeaderImage), headerX, headerY, 0x11, 0x44);
 
-    int y = this->menuOriginY + this->menuOriginYBase + this->menuRowHeight;
-
-    if (this->menuButtons != 0 && this->menuButtons->size() != 0) {
-        unsigned int count = (unsigned int) this->menuButtons->size();
-        for (unsigned int i = 0; i < count - 1; i++) {
-            PaintCanvas::gCanvas->DrawImage2D((unsigned) this->quickMenuMiddleImage, this->field_0x3c4 + this->menuOriginX, 0);
-            y += this->field_0x3d0;
-            count = (unsigned int) this->menuButtons->size();
+    int rowY = menuY + this->menuRowHeight;
+    if (this->menuButtons != nullptr) {
+        for (unsigned int i = 0; i + 1 < this->menuButtons->size(); ++i) {
+            canvas->DrawImage2D(static_cast<unsigned>(this->quickMenuMiddleImage), frameX, rowY);
+            rowY += this->field_0x3d0;
         }
     }
+    canvas->DrawImage2D(static_cast<unsigned>(this->quickMenuBottomImage), frameX, rowY);
 
-    PaintCanvas::gCanvas->DrawImage2D((unsigned) this->quickMenuBottomImage, this->field_0x3c4 + this->menuOriginX, 0);
-
-    if (this->menuButtons != 0 && this->menuButtons->size() != 0) {
-        unsigned int n = (unsigned int) this->menuButtons->size();
-        for (unsigned int i = 0; i < n; i++) {
-            (*this->menuButtons)[i]->draw();
-            n = (unsigned int) this->menuButtons->size();
+    if (this->menuButtons != nullptr) {
+        for (unsigned int i = 0; i < this->menuButtons->size(); ++i) {
+            TouchButton *button = (*this->menuButtons)[i];
+            if (button != nullptr)
+                button->draw();
         }
     }
 
     if (this->quickMenuType != 0) return;
 
-    Ship *ship = Status::gStatus->getShip();
+    Status *status = Status::gStatus;
+    Ship *ship = status != nullptr ? status->getShip() : nullptr;
+    if (ship == nullptr) return;
     if (!ship->hasCloak() && ship->hasJumpDrive() == 0) return;
 
-    char prefix[12], num[12], label[12];
-    ((String *) (prefix))->ctor_char(g_Hud_dmPrefix, false);
-    ((String *) (num))->Set((long long) (this->fuelGaugeValue));
-    *(String *) label = *(String *) prefix + *(String *) num;
-    { String *_s = ((String *) (num)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-    { String *_s = ((String *) (prefix)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
+    String cargoLabel("X ");
+    cargoLabel += this->fuelGaugeValue;
 
-    int gx = this->menuOriginX + this->field_0x3d4 + this->field_0x3dc / 2;
-    unsigned char gy = (unsigned char) ((char) y + (char) (layout[0xc] / 2)
-                                        + (char) layout[0xa2]);
-    PaintCanvas::gCanvas->DrawImage2D((unsigned) this->fuelGaugeBarImage, gx, gy, (unsigned char) 0x11);
-    PaintCanvas::gCanvas->DrawImage2D((unsigned) this->fuelGaugeIconImage, gx - layout[0x8c],
-                         (char) layout[0xc] + (char) gy + (char) layout[0xa3], (unsigned char) 0x11);
+    const int gaugeX = headerX;
+    const int gaugeY = rowY + hud_layout_i32(0x30) / 2 + hud_layout_i32(0x288);
+    canvas->DrawImage2D(static_cast<unsigned>(this->fuelGaugeBarImage), gaugeX, gaugeY, 0x11, 0x14);
+    canvas->DrawImage2D(static_cast<unsigned>(this->fuelGaugeIconImage), gaugeX - hud_layout_i32(0x230),
+                        hud_layout_i32(0x30) + gaugeY + hud_layout_i32(0x28c), 0x11, 0x12);
 
-    int barW = layout[0x8c];
-    unsigned int font = hud_font();
-    int ih = PaintCanvas::gCanvas->GetImage2DHeight((unsigned) (0));
-    int th = PaintCanvas::gCanvas->GetTextHeight(0);
-    char ty = (char) (((gy + (char) (ih / 2)) - (char) (th / 2)) + (char) layout[0x8d]);
-    canvas->DrawString(font, *(String *) (label), barW + gx, ty, false);
-    { String *_s = ((String *) (label)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
+    const int textY = gaugeY + canvas->GetImage2DHeight(static_cast<unsigned>(this->fuelGaugeBarImage)) / 2 -
+                      canvas->GetTextHeight(hud_font()) / 2 + hud_layout_i32(0x234);
+    canvas->DrawString(hud_font(), cargoLabel, gaugeX + hud_layout_i32(0x230), textY, false);
 }
 
 void Hud::clearQueue() {
