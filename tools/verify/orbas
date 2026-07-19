@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# ARM assembler launcher (GNU binutils, in OrbStack or a local NDK r18b fallback).
+# Used by tools/verify/delink.py to assemble extracted original-function bytes
+# into relocatable ARM ELF .o files. Override the machine with GOF2_ORB_MACHINE.
+set -euo pipefail
+MACHINE="${GOF2_ORB_MACHINE:-ubuntu}"
+HERE="$(cd "$(dirname "$0")" && pwd)"
+REPO="$(cd "$HERE/../.." && pwd)"
+
+if command -v orb >/dev/null 2>&1 && [ -z "${GOF2_VERIFY_LOCAL_NDK:-}" ]; then
+  # stdin from /dev/null: delink.py always passes an input .s file (never assembles from stdin),
+  # and it stops `orb` from flipping the shared controlling TTY to raw mode (the parallel delink
+  # jobs race to restore it and leave the terminal raw, which staircases the report output).
+  exec orb -m "$MACHINE" arm-linux-gnueabihf-as "$@" </dev/null
+fi
+
+NDK="${GOF2_NDK_ROOT:-${NDK:-$REPO/.cache/ndk/android-ndk-r18b}}"
+for host in windows-x86_64 linux-x86_64 darwin-x86_64; do
+  for exe in arm-linux-androideabi-as.exe arm-linux-androideabi-as; do
+    AS="$NDK/toolchains/arm-linux-androideabi-4.9/prebuilt/$host/bin/$exe"
+    [ -x "$AS" ] && exec "$AS" "$@" </dev/null
+  done
+done
+
+echo "ARM assembler not found. Set GOF2_NDK_ROOT/NDK or install .cache/ndk/android-ndk-r18b." >&2
+exit 1

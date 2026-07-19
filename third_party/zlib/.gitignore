@@ -1,0 +1,3 @@
+# Vendored zlib source is fetched+built by build.sh (see /goal: lightweight repo)
+zlib-1.2.3/
+*.tar.gz

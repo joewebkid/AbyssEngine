@@ -1,0 +1,3 @@
+# Vendored OpenSSL source is fetched+built by build.sh (see /goal: lightweight repo)
+openssl-1.0.2u/
+*.tar.gz

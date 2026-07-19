@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Matching C++ compiler launcher: normally runs the NDK r18b clang++ inside the
+# OrbStack `ubuntu` machine. On Windows/MSYS, where OrbStack is unavailable, it
+# falls back to a local NDK r18b extracted under .cache/ndk.
+#
+# Used as CMAKE_CXX_COMPILER by cmake/orbstack-ndk-arm.toolchain.cmake and by
+# tools/verify/build_objs.sh. Override the machine with GOF2_ORB_MACHINE.
+set -euo pipefail
+MACHINE="${GOF2_ORB_MACHINE:-ubuntu}"
+HERE="$(cd "$(dirname "$0")" && pwd)"
+REPO="$(cd "$HERE/../.." && pwd)"
+
+if command -v orb >/dev/null 2>&1 && [ -z "${GOF2_VERIFY_LOCAL_NDK:-}" ]; then
+  NDK="${NDK:-/opt/android-ndk-r18b}"
+  CLANGXX="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++"
+  # stdin from /dev/null: clang reads none, and it stops `orb` from treating the shared
+  # controlling TTY as interactive (it flips it to raw mode and races to restore it across the
+  # parallel build jobs, which leaves the terminal raw and staircases the report output).
+  exec orb -m "$MACHINE" "$CLANGXX" "$@" </dev/null
+fi
+
+NDK="${GOF2_NDK_ROOT:-${NDK:-$REPO/.cache/ndk/android-ndk-r18b}}"
+for host in windows-x86_64 linux-x86_64 darwin-x86_64; do
+  for exe in clang++.exe clang++; do
+    CLANGXX="$NDK/toolchains/llvm/prebuilt/$host/bin/$exe"
+    if [ -x "$CLANGXX" ]; then
+      exec "$CLANGXX" "$@" </dev/null
+    fi
+  done
+done
+
+echo "NDK r18b clang++ not found. Set GOF2_NDK_ROOT/NDK or install .cache/ndk/android-ndk-r18b." >&2
+exit 1

@@ -1,0 +1,7 @@
+# Track FMOD Ex headers (inc/*.h, inc/*.hpp) but never the proprietary binaries.
+*.so
+*.so.*
+*.a
+*.dll
+*.dylib
+*.lib

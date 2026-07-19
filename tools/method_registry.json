@@ -1,0 +1,776 @@
+{
+"DialogueWindow_ctor_ou": {
+"class": "DialogueWindow",
+"method": "ctor_ou",
+"ret": "void",
+"params_after_self": [],
+"self_name": "dw",
+"file": "DialogueWindow.cpp"
+},
+"DialogueWindow_ctor_mission_ou": {
+"class": "DialogueWindow",
+"method": "ctor_mission_ou",
+"ret": "void",
+"params_after_self": [
+"void *mission",
+"int level",
+"int kind"
+],
+"self_name": "dw",
+"file": "DialogueWindow.cpp"
+},
+"DialogueWindow_ctor_msg_ou": {
+"class": "DialogueWindow",
+"method": "ctor_msg_ou",
+"ret": "void",
+"params_after_self": [
+"int titleStr",
+"int bodyStr",
+"int *parts"
+],
+"self_name": "dw",
+"file": "DialogueWindow.cpp"
+},
+"DialogueWindow_dtor_ote": {
+"class": "DialogueWindow",
+"method": "dtor_ote",
+"ret": "void",
+"params_after_self": [],
+"self_name": "dw",
+"file": "DialogueWindow.cpp"
+},
+"Radar_ctor": {
+"class": "Radar",
+"method": "ctor",
+"ret": "void",
+"params_after_self": [
+"Level *level"
+],
+"self_name": "r",
+"file": "Radar.cpp"
+},
+"Radar_dtor": {
+"class": "Radar",
+"method": "dtor",
+"ret": "void *",
+"params_after_self": [],
+"self_name": "r",
+"file": "Radar.cpp"
+},
+"Objective_dtor": {
+"class": "Objective",
+"method": "dtor",
+"ret": "void *",
+"params_after_self": [],
+"self_name": "o",
+"file": "Objective.cpp"
+},
+"Explosion_ctor": {
+"class": "Explosion",
+"method": "ctor",
+"ret": "void",
+"params_after_self": [
+"int type"
+],
+"self_name": "self",
+"file": "Explosion.cpp"
+},
+"Explosion_dtor": {
+"class": "Explosion",
+"method": "dtor",
+"ret": "void *",
+"params_after_self": [],
+"self_name": "self",
+"file": "Explosion.cpp"
+},
+"ModStation_enterStation_oi": {
+"class": "ModStation",
+"method": "enterStation_oi",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_enterStation_ote": {
+"class": "ModStation",
+"method": "enterStation_ote",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_resetLight_oi": {
+"class": "ModStation",
+"method": "resetLight_oi",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_resetLight_ote": {
+"class": "ModStation",
+"method": "resetLight_ote",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_okp_showLocked": {
+"class": "ModStation",
+"method": "okp_showLocked",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_okp_toggleHelp": {
+"class": "ModStation",
+"method": "okp_toggleHelp",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ch_showWantedHint": {
+"class": "ModStation",
+"method": "ch_showWantedHint",
+"ret": "void",
+"params_after_self": [
+"int wantedFieldOff"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ch_showTextHint": {
+"class": "ModStation",
+"method": "ch_showTextHint",
+"ret": "void",
+"params_after_self": [
+"int textIdSlot"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ch_showWingmanDialogue": {
+"class": "ModStation",
+"method": "ch_showWingmanDialogue",
+"ret": "void",
+"params_after_self": [
+"int kind"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ote_cacheButtonPositions": {
+"class": "ModStation",
+"method": "ote_cacheButtonPositions",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ote_showDockingFeeChoice": {
+"class": "ModStation",
+"method": "ote_showDockingFeeChoice",
+"ret": "void",
+"params_after_self": [
+"int credits"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ote_showRewardChoice": {
+"class": "ModStation",
+"method": "ote_showRewardChoice",
+"ret": "void",
+"params_after_self": [
+"int credits"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ote_startRadioCutscene": {
+"class": "ModStation",
+"method": "ote_startRadioCutscene",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ote_kickIdleCamera": {
+"class": "ModStation",
+"method": "ote_kickIdleCamera",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ou_updateIdleCamera": {
+"class": "ModStation",
+"method": "ou_updateIdleCamera",
+"ret": "void",
+"params_after_self": [
+"int elapsed"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ou_updateRadioReveal": {
+"class": "ModStation",
+"method": "ou_updateRadioReveal",
+"ret": "void",
+"params_after_self": [
+"int elapsed"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ou_animateHangarShip": {
+"class": "ModStation",
+"method": "ou_animateHangarShip",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ou_updateHangarLight": {
+"class": "ModStation",
+"method": "ou_updateHangarLight",
+"ret": "void",
+"params_after_self": [
+"int elapsed"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_r2d_drawStationHud": {
+"class": "ModStation",
+"method": "r2d_drawStationHud",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_oi_setupHangarCamera": {
+"class": "ModStation",
+"method": "oi_setupHangarCamera",
+"ret": "void",
+"params_after_self": [
+"int race"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_oi_showDockingFeeChoice": {
+"class": "ModStation",
+"method": "oi_showDockingFeeChoice",
+"ret": "int",
+"params_after_self": [
+"int standing",
+"int credits"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_oi_showPirateDialogue": {
+"class": "ModStation",
+"method": "oi_showPirateDialogue",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_oi_showWantedActivated": {
+"class": "ModStation",
+"method": "oi_showWantedActivated",
+"ret": "void",
+"params_after_self": [
+"int count"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_oi_showRewardMission": {
+"class": "ModStation",
+"method": "oi_showRewardMission",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_oi_buildNewsTicker": {
+"class": "ModStation",
+"method": "oi_buildNewsTicker",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_oi_buildDlcMenu": {
+"class": "ModStation",
+"method": "oi_buildDlcMenu",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_msc_buildCameraTween": {
+"class": "ModStation",
+"method": "msc_buildCameraTween",
+"ret": "AbyssEngine::EaseInOutMatrix *",
+"params_after_self": [
+"int race"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_msc_buildCameraTweenImpl": {
+"class": "ModStation",
+"method": "msc_buildCameraTweenImpl",
+"ret": "AbyssEngine::EaseInOutMatrix *",
+"params_after_self": [
+"int race"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_oi_setupHangarCameraImpl": {
+"class": "ModStation",
+"method": "oi_setupHangarCameraImpl",
+"ret": "void",
+"params_after_self": [
+"int race"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_oi_dockingFeeImpl": {
+"class": "ModStation",
+"method": "oi_dockingFeeImpl",
+"ret": "int",
+"params_after_self": [
+"int standing",
+"int credits"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_oi_pirateDialogueImpl": {
+"class": "ModStation",
+"method": "oi_pirateDialogueImpl",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_oi_wantedActivatedImpl": {
+"class": "ModStation",
+"method": "oi_wantedActivatedImpl",
+"ret": "void",
+"params_after_self": [
+"int count"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_oi_rewardMissionImpl": {
+"class": "ModStation",
+"method": "oi_rewardMissionImpl",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_oi_newsTickerImpl": {
+"class": "ModStation",
+"method": "oi_newsTickerImpl",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_oi_dlcMenuImpl": {
+"class": "ModStation",
+"method": "oi_dlcMenuImpl",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ou_idleCameraImpl": {
+"class": "ModStation",
+"method": "ou_idleCameraImpl",
+"ret": "void",
+"params_after_self": [
+"int elapsed"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ou_radioRevealImpl": {
+"class": "ModStation",
+"method": "ou_radioRevealImpl",
+"ret": "void",
+"params_after_self": [
+"int elapsed"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ou_hangarShipImpl": {
+"class": "ModStation",
+"method": "ou_hangarShipImpl",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ou_hangarLightImpl": {
+"class": "ModStation",
+"method": "ou_hangarLightImpl",
+"ret": "void",
+"params_after_self": [
+"int elapsed"
+],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_r2d_drawHudImpl": {
+"class": "ModStation",
+"method": "r2d_drawHudImpl",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ote_cacheButtonsImpl": {
+"class": "ModStation",
+"method": "ote_cacheButtonsImpl",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ote_buildRadioCutscene": {
+"class": "ModStation",
+"method": "ote_buildRadioCutscene",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"ModStation_ote_idleCamWobble": {
+"class": "ModStation",
+"method": "ote_idleCamWobble",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "ModStation.cpp"
+},
+"PlayerEgo_resetGunDelay_f": {
+"class": "PlayerEgo",
+"method": "resetGunDelay_f",
+"ret": "float",
+"params_after_self": [],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_addGun_ext": {
+"class": "PlayerEgo",
+"method": "addGun_ext",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_addGun2_ext": {
+"class": "PlayerEgo",
+"method": "addGun2_ext",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_explode_ext": {
+"class": "PlayerEgo",
+"method": "explode_ext",
+"ret": "void",
+"params_after_self": [
+"int /*zero*/"
+],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_turnHorizontal_neg": {
+"class": "PlayerEgo",
+"method": "turnHorizontal_neg",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_turnHorizontal_pos": {
+"class": "PlayerEgo",
+"method": "turnHorizontal_pos",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_turnVertical_pos": {
+"class": "PlayerEgo",
+"method": "turnVertical_pos",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_dockToStream_ext": {
+"class": "PlayerEgo",
+"method": "dockToStream_ext",
+"ret": "void",
+"params_after_self": [
+"int /*zero*/"
+],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_setRocketControl_ext": {
+"class": "PlayerEgo",
+"method": "setRocketControl_ext",
+"ret": "void",
+"params_after_self": [
+"int /*zero*/"
+],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_stopMining_impl": {
+"class": "PlayerEgo",
+"method": "stopMining_impl",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_boost": {
+"class": "PlayerEgo",
+"method": "boost",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_stopBoost": {
+"class": "PlayerEgo",
+"method": "stopBoost",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_setExhaustVisible": {
+"class": "PlayerEgo",
+"method": "setExhaustVisible",
+"ret": "void",
+"params_after_self": [
+"bool visible"
+],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_handleShip": {
+"class": "PlayerEgo",
+"method": "handleShip",
+"ret": "void",
+"params_after_self": [
+"int dt"
+],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_updateManeuver": {
+"class": "PlayerEgo",
+"method": "updateManeuver",
+"ret": "int",
+"params_after_self": [],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_update": {
+"class": "PlayerEgo",
+"method": "update",
+"ret": "void",
+"params_after_self": [
+"int dt",
+"Radar *radar",
+"Hud *hud",
+"Radio *radio",
+"LevelScript *script",
+"int arg5",
+"bool arg6",
+"int arg7"
+],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_right": {
+"class": "PlayerEgo",
+"method": "right",
+"ret": "float",
+"params_after_self": [
+"int frameTime",
+"float delta"
+],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_left": {
+"class": "PlayerEgo",
+"method": "left",
+"ret": "float",
+"params_after_self": [
+"int frameTime",
+"float delta"
+],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_down": {
+"class": "PlayerEgo",
+"method": "down",
+"ret": "float",
+"params_after_self": [
+"int frameTime",
+"float delta"
+],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_up": {
+"class": "PlayerEgo",
+"method": "up",
+"ret": "float",
+"params_after_self": [
+"int frameTime",
+"float delta"
+],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_strafe": {
+"class": "PlayerEgo",
+"method": "strafe",
+"ret": "void",
+"params_after_self": [
+"int dir",
+"bool positive"
+],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"PlayerEgo_drawThrottle": {
+"class": "PlayerEgo",
+"method": "drawThrottle",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "PlayerEgo.cpp"
+},
+"TargetFollowCamera_update": {
+"class": "TargetFollowCamera",
+"method": "update",
+"ret": "void",
+"params_after_self": [
+"int dt"
+],
+"self_name": "self",
+"file": "TargetFollowCamera.cpp"
+},
+"TargetFollowCamera_setBoostPercentage": {
+"class": "TargetFollowCamera",
+"method": "setBoostPercentage",
+"ret": "void",
+"params_after_self": [
+"float pct",
+"int frequency"
+],
+"self_name": "self",
+"file": "TargetFollowCamera.cpp"
+},
+"TargetFollowCamera_setRumblePercentage": {
+"class": "TargetFollowCamera",
+"method": "setRumblePercentage",
+"ret": "void",
+"params_after_self": [
+"float pct",
+"int frequency"
+],
+"self_name": "self",
+"file": "TargetFollowCamera.cpp"
+},
+"TargetFollowCamera_calculateCoefficents": {
+"class": "TargetFollowCamera",
+"method": "calculateCoefficents",
+"ret": "void",
+"params_after_self": [
+"float t"
+],
+"self_name": "self",
+"file": "TargetFollowCamera.cpp"
+},
+"TargetFollowCamera_rotateAroundTarget": {
+"class": "TargetFollowCamera",
+"method": "rotateAroundTarget",
+"ret": "void",
+"params_after_self": [
+"float x",
+"float y",
+"float z"
+],
+"self_name": "self",
+"file": "TargetFollowCamera.cpp"
+},
+"TargetFollowCamera_zoomTarget": {
+"class": "TargetFollowCamera",
+"method": "zoomTarget",
+"ret": "void",
+"params_after_self": [
+"float zoom"
+],
+"self_name": "self",
+"file": "TargetFollowCamera.cpp"
+},
+"TargetFollowCamera_hit": {
+"class": "TargetFollowCamera",
+"method": "hit",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "TargetFollowCamera.cpp"
+},
+"TargetFollowCamera_hitSmall": {
+"class": "TargetFollowCamera",
+"method": "hitSmall",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "TargetFollowCamera.cpp"
+},
+"FileInterfaceAndroid_completeDtor": {
+"class": "FileInterfaceAndroid",
+"method": "completeDtor",
+"ret": "void *",
+"params_after_self": [],
+"self_name": "self",
+"file": "FileInterfaceAndroid.cpp"
+},
+"FileInterfaceAndroid_deletingDtor": {
+"class": "FileInterfaceAndroid",
+"method": "deletingDtor",
+"ret": "void",
+"params_after_self": [],
+"self_name": "self",
+"file": "FileInterfaceAndroid.cpp"
+}
+}
