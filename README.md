@@ -70,6 +70,19 @@ development and does not distribute the reference binary.
 | `_work/symbols/` | Public symbol and address maps. |
 | `docs/` | Status, evidence, validation, relink, and format notes. |
 
+## Supplementary Source Archives
+
+The following separately packaged research sources are available on Google
+Drive. They contain recovered source, decompiler output, symbols, and analysis
+metadata only; original game binaries and asset dumps are not included.
+
+- [GOF2 recovered SDK and gameplay sources](https://drive.google.com/file/d/19qaY3gI8KJo8puPdbdxN4V4XPQZFPBzY/view?usp=drivesdk)
+- [GOF2 IDA decompilation dumps and excerpts](https://drive.google.com/file/d/1hFRpZI6mPOCAI5l6di8DG9wF8AIZchyU/view?usp=drivesdk)
+- [GOF2 Ghidra decompilation dumps](https://drive.google.com/file/d/1uufno17h1NFYXnTKOPxNigpPIdZBlR7A/view?usp=drivesdk)
+- [GOF2 J2ME decompiled Java sources](https://drive.google.com/file/d/1qEeIncQSas8585afKe1ICyZ0FCGjbBkA/view?usp=drivesdk)
+- [GOF1 analysis sources and decoded tables](https://drive.google.com/file/d/1Pp790FyWJLmA17yJPcNe4Xys4C0f0sSr/view?usp=drivesdk)
+- [Galaxy on Fire Alliances analysis sources](https://drive.google.com/file/d/11tcxQrg--2YaA-JvxfXUnHgj5GhButIl/view?usp=drivesdk)
+
 ## Documentation
 
 - [Project status](docs/PROJECT_STATUS.md)
