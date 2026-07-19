@@ -1,21 +1,40 @@
-# Galaxy on Fire 2 — decomp
+# Abyss Engine / Galaxy on Fire 2 HD Decompilation
 
-A work-in-progress decomp of the *Abyss Engine* + *Galaxy on Fire 2* game
-(Fishlabs, ~2012), recovered by decompiling the Android `libgof2hdaa.so`.
+Work-in-progress C++ reconstruction of the Android ARMv7 build of *Galaxy on
+Fire 2 HD* and its proprietary Abyss Engine runtime.
+
+This is independent reverse-engineering research. It is not an official
+Fishlabs product, not a playable game, and does not redistribute game binaries,
+assets, APKs, IPAs, OBB files, or JARs.
+
+## Current State
+
+The tree contains 204 C++ translation units and 234 headers. The native static
+library builds on Windows/MSYS2 UCRT64 and is used as a compile regression gate.
+ARM validation is a separate function-by-function comparison workflow.
+
+The checked-in `report.json` snapshot records 4,507 compared symbols out of
+4,522 original functions, with 1,697 linked-exact and 948 raw-byte-exact
+functions. These are code-generation comparison figures, not a claim that each
+function has a complete or semantically verified body.
+
+Read [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) for the recovery map,
+evidence terminology, confirmed packages, and open work.
+
+## Included And Excluded
+
+Included: recovered C++ under `src/`, build and verification tools, public
+documentation, symbol maps, and small third-party compatibility inputs.
+
+Excluded: original `libgof2hdaa.so`, all game assets, APK/IPA/OBB/JAR files,
+extraction dumps, local NDK installations, and build output.
+
+For local ARM validation, place a lawfully obtained original binary at
+`_work/bins/android_2.0.16_libgof2hdaa.so`. That directory is ignored by Git.
 
 ## Build
-Open the folder in **CLion** (it reads `CMakePresets.json` and configures automatically), or from a shell:
-```
-cmake --preset debug
-cmake --build cmake-build-debug --target gof2_host   # runnable placeholder today
-cmake --build cmake-build-debug --target gof2        # the engine/game library (cleanup ongoing)
-```
-`compile_commands.json` is exported for clangd/CLion code intelligence. Requires a C++14 (gnu++14)
-clang; no external deps yet (SDL2/GLES2 arrive with the platform layer).
 
-### Windows native build (MSYS2 UCRT64)
-
-On Windows this tree is known to build with MSYS2 UCRT64 GCC 16.1.0, Ninja 1.13.2 and CMake 4.3.x:
+### Windows Native Regression Build
 
 ```powershell
 $env:PATH = 'C:\msys64\ucrt64\bin;C:\msys64\usr\bin;' + $env:PATH
@@ -23,34 +42,46 @@ C:\msys64\ucrt64\bin\cmake.exe -S . -B cmake-build-ucrt -G Ninja -DCMAKE_BUILD_T
 C:\msys64\ucrt64\bin\cmake.exe --build cmake-build-ucrt --target gof2 -- -k 0
 ```
 
-Expected output:
+Expected output: `cmake-build-ucrt/libgof2.a`.
 
-- `cmake-build-ucrt/libgof2.a`
+### ARM Function Validation
 
-The native build is a compile/regression gate. ARM byte-match validation remains the separate `match` preset below.
-The current 2026-06-30 recovery package, including `MovingStars`, `MeshMerger`,
-`SimpleMeshMerger`, `LodMeshMerger`, confirmed `Radar` layout offsets and Radar behavior first pass,
-the 2026-07-01 `AEGeometry`/`ParticleSystem` helper-route pass and small upstream
-byte-match/engine fixes through `7995687`, the `BuildResourceList` resource-table rewrite, `Mesh::pivotZ`, weapon runtime
-layout (`Gun`, `AbstractGun`, `SpriteGun`, `BeamGun`, `ObjectGun`), FMOD helper routing including
-`EventSystem::init/update`, `AERandom::nextInt` helper routing, small PaintCanvas/SpaceLounge helper routes, the follow-up
-`SpriteGun`/`AbstractGun` ctor/export audit, and the AEM/AEI native loader notes, is tracked in
-`docs/DECOMP_NOTES.md`, `docs/AEM_AEI_NATIVE_LOADER_SPEC.md`, and the workspace recovery note
-`../docs/findings/gof2hd_decomp_recovery_status_20260630_ru.md`.
+ARM comparison needs an NDK r18b-compatible toolchain and a local copy of the
+original binary. On a supported Linux/OrbStack setup:
 
-### ASM validation (matching build)
-To check whether our code still assembles to the **same instructions** as the original `.so`,
-function by function, build with the matching NDK r18b toolchain (via OrbStack) and diff against the
-binary:
-```
-bash tools/verify/setup.sh                              # one-time OrbStack provisioning
+```bash
+bash tools/verify/setup.sh
 cmake --preset match
-cmake --build cmake-build-match --target verify         # prints a per-function match-% table
+cmake --build cmake-build-match --target verify
 ```
-This is independent of the native build above. See **[docs/VALIDATION.md](docs/VALIDATION.md)**.
 
-## Ground truth
-The original binary is loaded in Ghidra as `android_2.0.16_libgof2hdaa.so` (ARM32). It remains the
-authoritative reference for function signatures, struct field types, and behavior during the port.
-It is not redistributed by this repository: place a lawfully obtained copy in `_work/bins/` for local
-ARM validation.
+On Windows, set `GOF2_VERIFY_LOCAL_NDK=1` and follow
+[docs/VALIDATION.md](docs/VALIDATION.md). This is optional for normal native
+development and does not distribute the reference binary.
+
+## Repository Map
+
+| Path | Purpose |
+| --- | --- |
+| `src/engine/` | Recovered Abyss Engine systems. |
+| `src/game/` | Recovered UI, ships, missions, weapons, and world logic. |
+| `src/platform/android/` | Android/JNI boundary helpers. |
+| `tools/` | Recovery, reconciliation, and matching tools. |
+| `_work/symbols/` | Public symbol and address maps. |
+| `docs/` | Status, evidence, validation, relink, and format notes. |
+
+## Documentation
+
+- [Project status](docs/PROJECT_STATUS.md)
+- [Contributing](CONTRIBUTING.md)
+- [Agent guide](AGENTS.md)
+- [Validation](docs/VALIDATION.md)
+- [Identicality roadmap](docs/IDENTICALITY.md)
+- [AEM/AEI loader notes](docs/AEM_AEI_NATIVE_LOADER_SPEC.md)
+- [Notice](NOTICE.md)
+
+## Contributing
+
+Contributions are welcome when they preserve the evidence trail. Read
+[CONTRIBUTING.md](CONTRIBUTING.md), keep each patch focused, and do not add
+original game binaries or asset dumps.

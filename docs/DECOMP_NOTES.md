@@ -1,5 +1,9 @@
 # Galaxy on Fire 2 — Decompilation Project Notes
 
+> Current project status is maintained in [PROJECT_STATUS.md](PROJECT_STATUS.md).
+> This file preserves dated investigations and milestone snapshots. Its figures
+> are historical unless they explicitly name a newer measurement date.
+
 Goal: a **matching decompilation** of the full *Abyss Engine* + *Galaxy on Fire 2* game
 (C++), recompilable back to byte-identical binaries.
 

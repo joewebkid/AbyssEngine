@@ -1,5 +1,9 @@
 # ASM Validation: original `.so` ↔ our build
 
+> Read [PROJECT_STATUS.md](PROJECT_STATUS.md) before interpreting a saved
+> metric. `report.json` is a dated snapshot; a fresh local verifier run is the
+> authoritative result for the revision and environment being inspected.
+
 Continuously check whether our recovered C++ still assembles to the **same
 instructions** as the original Android binary, function by function, and tune
 compiler flags toward byte-exactness — without disturbing normal macOS

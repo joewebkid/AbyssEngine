@@ -1,5 +1,9 @@
 # Binary identicality: gap analysis & roadmap
 
+> This is a long-term byte-identical relink workbook. Current per-function
+> snapshot metrics live in [PROJECT_STATUS.md](PROJECT_STATUS.md); the figures
+> below include historical measurements and are not semantic-recovery percent.
+
 Goal: produce a `libgof2hdaa.so` byte-identical to `_work/bins/android_2.0.16_libgof2hdaa.so`
 (same sha256). This document measures the gap and tracks progress. Measured against the original
 (2,187,328 bytes) with our stripped link output.
