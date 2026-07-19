@@ -33,6 +33,16 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
   persisted `GameSettings::{steerAnchorX,fireAnchorX}` values. The fallback
   anchor table (830/583/415 and 730/513/365) is independently corroborated
   by the recovered `MenuTouchWindow` settings body.
+- `Hud::initHudMenu` (`0x1615c8`) now owns the source-backed quick-menu
+  construction for modes 0--3: equipment, wingman/cloak/jump actions,
+  secondary weapons, utility actions, orbit/docking actions, phone compaction,
+  iPad placement, button-coordinate export, and headers `0x4f3`--`0x4f5`.
+  The two non-HD iPad offsets are ARM float constants `160.0f` and `80.0f`;
+  the HD path uses `112.5f`.
+- `Hud+0x238` is the active quick-menu mode, not a `Level *`. The local
+  `quickMenuType` replaces the previous incorrect `menuLevel` interpretation.
+  `Hud+0x27c` receives the amount of cargo item `122`, which drives the
+  mode-0 fuel/cargo gauge label.
 - `drawEventString`, `updateSecondaryWeaponString`, `drawEventQueue`, and the
   station/system/security text flow in `drawOrbitInformation` now use native
   call routing and game-text IDs.
@@ -49,9 +59,9 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
   remain unproven. Their resource IDs and original field slots are confirmed;
   a semantic role is not inferred from the ID alone.
 - `quickMenuHeaderImage` has no observed `Image2DCreate` assignment in this
-  `Hud::init` body. Its producing path, `initHudMenu`, cargo text templates,
-  challenge-score state fields, and the majority of `Hud::draw` remain
-  separate recovery work.
+  `Hud::init` body. Its producing `initHudMenu` paths are now recovered; cargo
+  text templates, challenge-score state fields, and the majority of
+  `Hud::draw` remain separate recovery work.
 - `HudInitImageSlots` and the raw coordinate members are a host-side source
   mirror, not a claim that the 64-bit C++ class has the original ARM ABI or is
   byte-identical.

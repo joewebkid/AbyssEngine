@@ -6,8 +6,11 @@
 #include "game/core/Globals.h"
 #include "game/core/GameSettings.h"
 #include "game/ship/PlayerEgo.h"
+#include "game/ship/PlayerFixedObject.h"
+#include "game/world/Route.h"
 #include "game/world/SolarSystem.h"
 #include "game/world/Station.h"
+#include "game/world/Waypoint.h"
 #include "game/ui/TouchButton.h"
 #include "game/ui/ListItem.h"
 #include "game/mission/Status.h"
@@ -20,8 +23,6 @@
 #include <cstdint>
 
 void Status_replaceHash(void *out, void *tmpl, void *a, void *b, void *c);
-
-void Hud_buildQuickMenu(Hud *self, int menuType);
 
 static unsigned int g_Hud_heImportantMask = 0;
 
@@ -1129,7 +1130,7 @@ int Hud::init() {
     this->keyArray = nullptr;
     this->elementBits = nullptr;
     this->uintArray = nullptr;
-    this->menuLevel = nullptr;
+    this->quickMenuType = 0;
     this->digitSprite = nullptr;
     this->quickMenuHeaderImage = -1;
     this->multiplierIconImage = -1;
@@ -1335,7 +1336,7 @@ void Hud::drawMenu(int unused) {
         }
     }
 
-    if (this->menuLevel != 0) return;
+    if (this->quickMenuType != 0) return;
 
     Ship *ship = Status::gStatus->getShip();
     if (!ship->hasCloak() && ship->hasJumpDrive() == 0) return;
@@ -1606,71 +1607,241 @@ void Hud::hudEventMedal(int medalId, int percent) {
 }
 
 
-static void **g_Hud_imLayout = nullptr;
+static TouchButton *hud_add_menu_button(Hud *self, const String &text, int y, unsigned int action) {
+    if (self->menuButtons == nullptr) return nullptr;
 
-static void **g_Hud_imLetterbox = nullptr;
+    auto *button = new TouchButton(text, 0, self->field_0x3d4, y, self->field_0x3dc, 0x11, 4);
+    button->field_0x0 = static_cast<int>(action);
+    button->field_0x4 = 0;
+    ArrayAdd<TouchButton *>(button, *self->menuButtons);
+    return button;
+}
 
-static void **g_Hud_imCargoA = nullptr;
+static void hud_cache_menu_button_positions(Hud *self) {
+    if (self->menuButtons == nullptr) return;
 
-static void **g_Hud_imCargoB = nullptr;
+    const unsigned int count = self->menuButtons->size();
+    for (unsigned int i = 0; i < count && i < 10; ++i) {
+        TouchButton *button = (*self->menuButtons)[i];
+        if (button == nullptr) continue;
+        const Vector position = button->getPosition();
+        Globals::sub_menu_buttons_x[i] = static_cast<int>(position.x);
+        Globals::sub_menu_buttons_y[i] = static_cast<int>(position.y);
+    }
+}
 
-static void **g_Hud_imFlagA = nullptr;
+static void hud_compact_orbit_menu_for_phone(Hud *self) {
+    if (Globals::iPad != 0 || self->menuButtons == nullptr || self->menuButtons->size() < 5) return;
 
-static void **g_Hud_imFlagB = nullptr;
+    const int rowGap = hud_layout_i32(0x30);
+    for (unsigned int i = 0; i < self->menuButtons->size(); ++i) {
+        TouchButton *button = (*self->menuButtons)[i];
+        if (button == nullptr) continue;
+        const Vector position = button->getPosition();
+        button->setPosition(static_cast<int>(position.x), static_cast<int>(position.y) - rowGap);
+    }
+}
 
 void Hud::initHudMenu(int menuType, Level *lvl) {
-    if (this->menuButtons != 0) {
-        ArrayReleaseClasses(*this->menuButtons); ArrayRemoveAll(*(this->menuButtons));
+    if (this->menuButtons != nullptr) {
+        ArrayReleaseClasses(*this->menuButtons);
         delete this->menuButtons;
-        this->menuButtons = 0;
+        this->menuButtons = nullptr;
     }
-    this->menuLevel = lvl;
+
+    this->quickMenuType = menuType;
     this->menuButtons = new Array<TouchButton *>();
+    this->menuOriginX = 0;
+
+    PaintCanvas *canvas = hud_canvas();
+    GameText *gameText = hud_game_text();
+    Status *status = Status::gStatus;
+    if (canvas == nullptr || gameText == nullptr || status == nullptr || Globals::layout == nullptr) {
+        this->quickMenuOpen = 1;
+        return;
+    }
+
+    Ship *ship = status->getShip();
+    if (ship == nullptr) {
+        this->quickMenuOpen = 1;
+        return;
+    }
 
     delete this->equipmentArray;
-    this->equipmentArray = Status::gStatus->getShip()->getEquipment(1);
+    this->equipmentArray = ship->getEquipment(1);
     updateSecondaryWeaponString();
 
-    this->menuOriginX = 0;
-    int *layout = (int *) *g_Hud_imLayout;
-    int rowH = *(int *) (layout[0] + 0x1dc);
+    const int rowGap = hud_layout_i32(0x30);
+    const int buttonHeight = hud_layout_i32(0x1dc);
+    const int rowStep = rowGap + buttonHeight;
+    int y = this->menuBaseY;
 
-    char letterbox = *(char *) *g_Hud_imLetterbox;
-
-    int yOrigin;
-    if (letterbox == 0) {
-        yOrigin = this->menuBaseY;
-    } else {
-        CargoBay *cargoA = (CargoBay *) *g_Hud_imCargoA;
-        float v;
-        if (menuType == 3)
-            v = (float) cargoA->cargoCurrent;
-        else {
-            v = (float) cargoA->cargoMax;
-            float adj = 0.0f;
-            if (*(char *) *g_Hud_imFlagA == 0)
-                adj = (*(char *) *g_Hud_imFlagB == 0) ? 1.0f : 0.0f;
-            v = v - adj;
-        }
-        float yf = 0.0f;
-        if (v >= 0.0f) {
-            if (menuType == 3)
-                yf = (float) ((CargoBay *) *g_Hud_imCargoA)->cargoCurrent;
-            else {
-                float v2 = (float) ((CargoBay *) *g_Hud_imCargoB)->cargoMax;
-                float adj = (*(char *) *g_Hud_imFlagA == 0)
-                                ? ((*(char *) *g_Hud_imFlagB == 0) ? 1.0f : 0.0f)
-                                : 0.0f;
-                yf = v2 - adj;
-            }
-        }
-        this->menuOriginY = (int) yf;
-        yOrigin = ((this->menuRowHeight + (int) yf) - rowH / 2) + 1;
-        this->menuBaseY = yOrigin;
+    if (Globals::iPad != 0) {
+        const int anchor = menuType == 3
+                ? (this->iPadSteerAnchor != 0 ? this->iPadSteerAnchor : hud_default_steer_anchor())
+                : (this->iPadFireAnchor != 0 ? this->iPadFireAnchor : hud_default_fire_anchor());
+        const float fireMenuOffset = Globals::iPadHD != 0 ? 112.5f : (Globals::iPadLarge != 0 ? 160.0f : 80.0f);
+        const int clampedMenuY = anchor - (menuType == 3 ? 0 : static_cast<int>(fireMenuOffset));
+        this->menuOriginY = clampedMenuY < 0 ? 0 : clampedMenuY;
+        y = this->menuRowHeight + this->menuOriginY - rowGap / 2 + 1;
+        this->menuBaseY = y;
     }
-    (void) yOrigin;
 
-    Hud_buildQuickMenu(this, menuType);
+    switch (menuType) {
+        case 0: {
+            if (this->equipmentArray != nullptr) {
+                for (unsigned int i = 0; i < this->equipmentArray->size(); ++i) {
+                    if ((*this->equipmentArray)[i] != nullptr) {
+                        hud_add_menu_button(this, *gameText->getText(266), y, 0x200);
+                        y += rowStep;
+                        break;
+                    }
+                }
+            }
+            if (status->getWingmen() != 0 && status->inSupernovaSystem() == 0 &&
+                status->getCurrentCampaignMission() != 158) {
+                hud_add_menu_button(this, *gameText->getText(306), y, 0x400);
+                y += rowStep;
+            }
+            if (ship->hasCloak()) {
+                Item *cloak = ship->getFirstEquipmentOfSort(21);
+                if (cloak != nullptr) {
+                    TouchButton *button = hud_add_menu_button(this, *gameText->getText(cloak->getIndex() + 1274), y, 0x800);
+                    if (button != nullptr) {
+                        button->setPressProgressHighlight(false);
+                        PlayerEgo *player = lvl != nullptr ? lvl->getPlayer() : nullptr;
+                        if (player != nullptr && (player->isCloaked() || player->isChargingCloak() || player->isRechargingCloak())) {
+                            if (player->isRechargingCloak())
+                                button->setPressProgress(player->getCloakRechargeRate());
+                            button->setHalfTransparent(true);
+                        }
+                    }
+                    y += rowStep;
+                }
+            }
+            if (ship->hasJumpDrive() != 0) {
+                TouchButton *button = hud_add_menu_button(this, *gameText->getText(1359), y, 0x1000);
+                PlayerEgo *player = lvl != nullptr ? lvl->getPlayer() : nullptr;
+                if (button != nullptr && player != nullptr && (player->isChargingDrive() || player->emergencySystemActive()))
+                    button->setHalfTransparent(true);
+            }
+
+            Item *cargo = ship->getCargo(122);
+            this->fuelGaugeValue = cargo != nullptr ? cargo->getAmount() : 0;
+            hud_create_image(canvas, 0x4f5, this->quickMenuHeaderImage);
+            break;
+        }
+        case 1: {
+            if (this->equipmentArray != nullptr) {
+                for (unsigned int i = 0; i < this->equipmentArray->size(); ++i) {
+                    Item *item = (*this->equipmentArray)[i];
+                    if (item == nullptr) continue;
+
+                    String label = *gameText->getText(item->getIndex() + 1274);
+                    label += String(" (");
+                    label += item->getAmount();
+                    label += String(")");
+                    const unsigned int action = i == 0 ? 0x2000 : i == 1 ? 0x4000 : i == 2 ? 0x8000 : 0x10000;
+                    hud_add_menu_button(this, label, y, action);
+                    y += rowStep;
+                }
+            }
+            hud_create_image(canvas, 0x4f4, this->quickMenuHeaderImage);
+            break;
+        }
+        case 2: {
+            const int textIds[4] = {307, 308, 309, (status->field_f8 & 0xff) != 0 ? 311 : 310};
+            const unsigned int actions[4] = {0x20000, 0x40000, 0x80000, 0x100000};
+            for (unsigned int i = 0; i < 4; ++i) {
+                hud_add_menu_button(this, *gameText->getText(textIds[i]), y, actions[i]);
+                y += rowStep;
+            }
+            hud_create_image(canvas, 0x4f3, this->quickMenuHeaderImage);
+            break;
+        }
+        case 3: {
+            if (Globals::iPad != 0)
+                this->menuOriginX = hud_layout_i32(0x28) - this->field_0x3c4;
+
+            if (!status->inAlienOrbit()) {
+                hud_add_menu_button(this, *gameText->getText(549), y, 0x1000000);
+                y += rowStep;
+
+                if (!status->inEmptyOrbit()) {
+                    Station *station = status->getStation();
+                    if (station != nullptr) {
+                        String stationLabel = station->getName();
+                        // Android rodata at 0x1ca472 is an empty string for station 101.
+                        if (station->getIndex() != 101) {
+                            stationLabel += String(" ");
+                            stationLabel += *gameText->getText(136);
+                        }
+                        hud_add_menu_button(this, stationLabel, y, 0x800000);
+                        y += rowStep;
+                    }
+                }
+
+                SolarSystem *system = status->getSystem();
+                if (system != nullptr && system->currentOrbitHasWarpGate()) {
+                    hud_add_menu_button(this, *gameText->getText(547), y, 0x400000);
+                    y += rowStep;
+                }
+
+                PlayerEgo *player = lvl != nullptr ? lvl->getPlayer() : nullptr;
+                Route *route = player != nullptr
+                        ? reinterpret_cast<Route *>(static_cast<intptr_t>(player->getRoute()))
+                        : nullptr;
+                Waypoint *lastWaypoint = route != nullptr ? route->getLastWaypoint() : nullptr;
+                if (lastWaypoint != nullptr && (lastWaypoint->state & 0xff) == 0) {
+                    hud_add_menu_button(this, *gameText->getText(573), y, 0x2000000);
+                    y += rowStep;
+                }
+
+                Station *programmedStation = static_cast<Station *>(Level::programmedStation);
+                if (programmedStation != nullptr) {
+                    String programmedLabel = *gameText->getText(546);
+                    programmedLabel += String(": ");
+                    programmedLabel += programmedStation->getName();
+                    hud_add_menu_button(this, programmedLabel, y, 0x200000);
+                    y += rowStep;
+                }
+            }
+
+            if (lvl != nullptr) {
+                const int dockingTargetCount = lvl->getNumDockingTargets();
+                for (int i = 0; i < dockingTargetCount; ++i) {
+                    auto *target = reinterpret_cast<PlayerFixedObject *>(static_cast<intptr_t>(lvl->getDockingTarget(i)));
+                    if (target == nullptr) continue;
+                    String targetName = target->getName();
+                    if (targetName.size() == 0) continue;
+                    hud_add_menu_button(this, targetName, y, 0x04000000u << i);
+                    y += rowStep;
+                }
+            }
+
+            hud_compact_orbit_menu_for_phone(this);
+            hud_create_image(canvas, 0x4f4, this->quickMenuHeaderImage);
+            break;
+        }
+        default:
+            break;
+    }
+
+    const unsigned int buttonCount = this->menuButtons->size();
+    if (Globals::iPad != 0 && buttonCount != 0) {
+        this->menuOriginYBase = static_cast<int>(4 - buttonCount) * rowStep;
+        if (menuType == 3)
+            this->menuOriginYBase -= rowGap;
+        for (unsigned int i = 0; i < buttonCount; ++i) {
+            TouchButton *button = (*this->menuButtons)[i];
+            if (button != nullptr)
+                button->translate(this->menuOriginX, this->menuOriginYBase);
+        }
+    } else {
+        this->menuOriginYBase = buttonCount < 5 ? 0 : -rowGap;
+    }
+
+    hud_cache_menu_button_positions(this);
     this->quickMenuOpen = 1;
 }
 

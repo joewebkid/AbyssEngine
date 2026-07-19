@@ -125,7 +125,8 @@ public:
     unsigned char hasAutofireUI;
     String field_0x228;
     unsigned char cargoFullFlag;
-    Level *menuLevel;
+    // Android Hud+0x238: active quick-menu mode written by initHudMenu().
+    int quickMenuType;
     unsigned char shieldHitFlash;
     Item *currentSecondaryWeapon;
     Array<Item *> *equipmentArray;
