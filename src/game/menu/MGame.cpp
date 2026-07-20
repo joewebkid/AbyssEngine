@@ -1755,6 +1755,34 @@ static void mgame_handle_menu_touch_end(MGame *self, int x, int y, void *touchId
     }
 }
 
+static void mgame_handle_nonterminal_dialogue_touch_end(MGame *self, int x, int y) {
+    DialogueWindow *dialogueWindow = self->dialogueWindow;
+    if (dialogueWindow == nullptr || dialogueWindow->OnTouchEnd(x, y) == 0)
+        return;
+
+    Status *status = Status::gStatus;
+    Mission *mission = status != nullptr ? status->getMission() : nullptr;
+    Mission *campaignMission = status != nullptr
+        ? reinterpret_cast<Mission *>(static_cast<intptr_t>(status->getCampaignMission()))
+        : nullptr;
+    if (mission == nullptr || mission->hasFailed() || mission->hasWon() ||
+        (campaignMission != nullptr && campaignMission->hasWon())) {
+        // Terminal dialogue completion has campaign/freelance side effects in
+        // Android and remains intentionally isolated for its own recovery pass.
+        return;
+    }
+
+    self->pauseOpen = 0;
+    self->resumeSounds();
+    self->cutsceneActive = 0;
+    if (self->levelScript != nullptr)
+        self->levelScript->resetStartSequenceOver();
+    self->touch0Id = 0;
+    self->touch1Id = 0;
+    self->hud->resetAnalogStick();
+    self->hud->releaseAllKeys();
+}
+
 static void mgame_dispatch_orbit_menu(MGame *self, unsigned int actions) {
     PlayerEgo *player = self->player;
     Level *level = self->level;
@@ -1979,8 +2007,10 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
                 mgame_handle_star_map_touch_end(this, p1, p2);
                 return;
             }
-            if (this->cutsceneActive != 0)
+            if (this->cutsceneActive != 0) {
+                mgame_handle_nonterminal_dialogue_touch_end(this, p1, p2);
                 return;
+            }
             if (this->menuTouchOpen != 0) {
                 mgame_handle_menu_touch_end(this, p1, p2, touchId);
                 return;

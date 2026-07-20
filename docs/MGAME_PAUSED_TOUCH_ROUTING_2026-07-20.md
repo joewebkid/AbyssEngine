@@ -32,6 +32,7 @@ control flow, or the recovered 3D placement.
 | Map exit | A stream exit clears `usingJumpDrive` and calls `startJumpScene`; a non-stream exit invokes `LevelScript::setAutoPilotToProgrammedStation` unless `Level::doInstantJump` is set. |
 | `MGame+0xce` ordinary ChoiceWindow | With `MGame+0xcf`, `MGame+0xca`, and `MGame+0x1e4` clear, a result `0` clears the pause and ChoiceWindow flags and resumes sounds. The adjacent flags select separate mission/jump-specific handlers. |
 | `MGame+0xc9` MenuTouchWindow | The Android application-data gate blocks free-camera touch release while modal/transition bytes are set. Otherwise it sends the touch end to `MenuTouchWindow`, handles its non-zero close result, and synchronizes cinematic/free-camera mode. |
+| Non-terminal `cutsceneActive` | After `DialogueWindow::OnTouchEnd` completes, a mission that is neither failed nor won (and has no won campaign mission) clears pause/cutscene state, restores sound, resets the LevelScript sequence state, resets the analog stick, and releases HUD keys. |
 
 `dockChoiceOpen` intentionally still falls through to `Hud::touchEnd`, exactly
 as the Android body jumps to `LABEL_69` for that state.
@@ -40,8 +41,9 @@ as the Android body jumps to `LABEL_69` for that state.
 
 - `choiceWindowOpen` includes several mission/jump/campaign-specific actions
   when its adjacent selector flags are set.
-- `cutsceneActive` first needs its direct mission failure/success dispatcher
-  separated from the generic dialogue completion route.
+- Terminal `cutsceneActive` failure/success still needs its direct mission
+  dispatcher: Android mixes generic freelance cleanup/rewards with many
+  campaign-specific station transitions.
 - The non-zero MenuTouchWindow close tail still needs its sound-category
   restoration and particle-effect enable predicates recovered before this
   route can make a full source-shape claim.
