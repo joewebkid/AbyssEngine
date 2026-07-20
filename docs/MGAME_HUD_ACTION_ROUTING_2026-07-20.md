@@ -42,10 +42,12 @@ the physical orbit button (`0x40`) is pressed.
 ## Boundaries And Risks
 
 - The source branch before `LABEL_69` handles paused game-over, StarMap,
-  dialogue, ChoiceWindow, MenuTouchWindow, and cutscene state. It remains
-  outside this package; the local handler returns for those modal pause states,
-  while deliberately continuing to `Hud::touchEnd` when its own `hudMenuOpen`
-  or `orbitMenuOpen` flag is set.
+  dialogue, ChoiceWindow, MenuTouchWindow, and cutscene state. The
+  `autopilotMenuOpen` and StarMap portions now have a separate source-backed
+  pass in `MGAME_PAUSED_TOUCH_ROUTING_2026-07-20.md`; generic ChoiceWindow,
+  dialogue/cutscene, game-over, and MenuTouchWindow routing remain separate.
+  The handler deliberately continues to `Hud::touchEnd` when its own
+  `hudMenuOpen`, `orbitMenuOpen`, or the Android dock-choice state is active.
 - Boost, firing, hacking, rocket-control, and auto-turret touch masks share
   this native handler but are not part of this quick-menu package. They remain
   deliberately untouched until their direct input side effects are recovered.

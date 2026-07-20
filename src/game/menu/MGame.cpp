@@ -1539,6 +1539,91 @@ static void mgame_open_hud_menu(MGame *self, int menuType) {
     self->hud->initHudMenu(menuType, self->level);
 }
 
+static void mgame_handle_autopilot_menu_touch_end(MGame *self, int x, int y) {
+    ChoiceWindow *choiceWindow = self->choiceWindow;
+    if (choiceWindow == nullptr)
+        return;
+
+    const int selection = choiceWindow->OnTouchEnd(x, y);
+    if (selection == 1) {
+        self->autopilotMenuOpen = 0;
+        if (self->starMap == nullptr)
+            self->starMap = new StarMap(false, nullptr, false, -1);
+
+        Engine *engine = static_cast<Engine *>(self->applicationManager->GetEngine());
+        engine->SetPostEffect(0x1400002u, 0);
+        self->starMap->initLights();
+        self->starMap->setJumpMapMode(true, false);
+        self->pauseOpen = 1;
+        self->starMapOpen = 1;
+        self->pauseSounds();
+        return;
+    }
+
+    if (selection == 0) {
+        self->autopilotMenuOpen = 0;
+        if (self->player->isInTurretMode())
+            self->player->setTurretMode(false);
+        self->usingJumpDrive = 0;
+        self->startJumpScene();
+        self->player->resetGunDelay();
+    }
+}
+
+static void mgame_restore_stream_position(MGame *self) {
+    self->player->dockToStream(false);
+    self->player->setAutoPilot(nullptr);
+
+    Array<KIPlayer *> *landmarks = self->level->getLandmarks();
+    if (landmarks == nullptr || landmarks->size() <= 1)
+        return;
+
+    KIPlayer *jumpGate = (*landmarks)[1];
+    if (jumpGate == nullptr || jumpGate->geometry == nullptr || self->player->geometry == nullptr)
+        return;
+
+    const Vector direction = jumpGate->geometry->getDirection();
+    const Vector up = {0.0f, 1.0f, 0.0f};
+    self->player->geometry->setDirection(direction, up);
+
+    Vector position = jumpGate->geometry->getPosition();
+    position.z += 8000.0f;
+    self->player->setPosition(position);
+}
+
+static void mgame_handle_star_map_touch_end(MGame *self, int x, int y) {
+    Layout *layout = static_cast<Layout *>(Globals::layout);
+    if (layout != nullptr && layout->layoutVisibleFlag != 0) {
+        if (layout->OnTouchEnd(x, y) != 0)
+            layout->layoutVisibleFlag = 0;
+        return;
+    }
+
+    StarMap *starMap = self->starMap;
+    if (starMap == nullptr || starMap->OnTouchEnd(x, y) == 0)
+        return;
+
+    StarSystem *starSystem = self->level->getStarSystem();
+    if (starSystem != nullptr)
+        starSystem->initLight();
+    self->pauseOpen = 0;
+    self->starMapOpen = 0;
+    self->resumeSounds();
+
+    if (starMap->exitRequested == 0) {
+        if (self->touchesStream != 0)
+            mgame_restore_stream_position(self);
+        else if (Level::doInstantJump == 0)
+            self->levelScript->setAutoPilotToProgrammedStation();
+    } else if (self->touchesStream != 0) {
+        self->usingJumpDrive = 0;
+        self->startJumpScene();
+    }
+
+    delete self->starMap;
+    self->starMap = nullptr;
+}
+
 static void mgame_dispatch_orbit_menu(MGame *self, unsigned int actions) {
     PlayerEgo *player = self->player;
     Level *level = self->level;
@@ -1747,11 +1832,25 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
     TFC_setFastForwardMode(this->camera, 0);
     this->player->resumeFlag = 1;
 
-    // The paused modal routing is a separate recovery package. HUD quick menus
-    // also set pauseOpen, but the Android body still sends those touches on to
-    // LABEL_69 and Hud::touchEnd.
-    if (this->pauseOpen != 0 && this->hudMenuOpen == 0 && this->orbitMenuOpen == 0)
-        return;
+    // The Android pre-Hud branch handles these paused states before LABEL_69.
+    // Dock-choice windows intentionally fall through to the HUD action path.
+    if (this->pauseOpen != 0 && this->hudMenuOpen == 0 && this->orbitMenuOpen == 0) {
+        if (this->choiceWindowOpen != 0)
+            return;
+        if (this->autopilotMenuOpen != 0) {
+            mgame_handle_autopilot_menu_touch_end(this, p1, p2);
+            return;
+        }
+        if (this->dockChoiceOpen == 0) {
+            if (this->starMapOpen != 0) {
+                mgame_handle_star_map_touch_end(this, p1, p2);
+                return;
+            }
+            if (this->cutsceneActive != 0)
+                return;
+            return;
+        }
+    }
 
     const unsigned int actions = this->hud->touchEnd(p1, p2, touchId);
     this->hudTouchFlags = static_cast<int>(actions);
