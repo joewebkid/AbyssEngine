@@ -35,7 +35,9 @@ Never turn a native build success into a byte-match claim.
 4. Existing local evidence and upstream history: leads, not automatic proof.
 
 The original binary belongs only in ignored `_work/bins/`; do not add it or
-other original game data to Git.
+other original game data to Git. The optional DeepOpen J2ME comparison source
+lives outside this repository in the shared `../references/DeepOpen/` workspace
+directory and is not precedent for adding assets or dumps here.
 
 ## Editing Rules
 
@@ -61,7 +63,7 @@ results for a source-shape or byte-matching change.
 ## Git Safety
 
 - Do not commit `_work/bins/`, build output, `.cache/`, APK/IPA/OBB/JAR files,
-  extracted assets, or credentials.
+  extracted assets, external J2ME reference trees, or credentials.
 - Stage only files related to the recovery package.
 - Keep commits small and describe recovered behavior without inflated progress
   claims.

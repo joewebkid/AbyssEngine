@@ -45,4 +45,5 @@ See [docs/VALIDATION.md](docs/VALIDATION.md) for commands and report fields.
 ## Prohibited Content
 
 Do not add original game binaries, assets, APKs, IPAs, OBBs, JARs, decrypted
-content, credentials, or large generated extraction output.
+content, credentials, external J2ME source/resource trees, or large generated
+extraction output.

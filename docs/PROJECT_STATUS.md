@@ -52,13 +52,13 @@ percentage for the whole game.
 
 ## External Cross-Version Evidence
 
-DeepOpen J2ME v1.0.4 is pinned as an external, non-vendored logic reference at
-commit `d300f93`. Its J2ME menu, Radar, and resource-manager bodies are useful
-to corroborate intent and stable semantic ordering, but they cannot establish
-Android ARMv7 fields, masks, timing, or byte shape. The initial MGame/HUD,
-Radar, and resource-chain comparison is recorded in
-`DEEPOPEN_J2ME_CROSSWALK_2026-07-20.md`. Its source and resources are not
-imported into this repository.
+DeepOpen J2ME v1.0.4 is pinned at commit `d300f93` as an external shared
+workspace reference at `../references/DeepOpen/`; it is not part of this
+Android HD decompilation repository. Its J2ME menu, Radar, and resource-manager
+bodies are useful to corroborate intent and stable semantic ordering, but they
+cannot establish Android ARMv7 fields, masks, timing, or byte shape. The
+initial MGame/HUD, Radar, and resource-chain comparison is recorded in
+`DEEPOPEN_J2ME_CROSSWALK_2026-07-20.md`.
 
 ## Notable Packages
 

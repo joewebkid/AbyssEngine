@@ -88,9 +88,11 @@ metadata only; original game binaries and asset dumps are not included.
 - [BaalNetbek/DeepOpen](https://github.com/BaalNetbek/DeepOpen), pinned for
   evidence review at
   [`d300f93`](https://github.com/BaalNetbek/DeepOpen/tree/d300f93fdb43fc0dd017d53a0d70b3a854345c50):
-  Java/J2ME logic reference only. It is deliberately not vendored here because
-  the upstream tree includes game resources and has no declared repository
-  license. See [the crosswalk](docs/DEEPOPEN_J2ME_CROSSWALK_2026-07-20.md).
+  Java/J2ME logic reference. Its `src/`, `res/`, and `MANIFEST.MF` are kept
+  outside this repository in the shared `../references/DeepOpen/` workspace
+  directory, never as a CMake input or vendored dependency. Upstream declares
+  no repository license; see its local provenance README, [Notice](NOTICE.md), and
+  [the crosswalk](docs/DEEPOPEN_J2ME_CROSSWALK_2026-07-20.md).
 
 ## Documentation
 
@@ -107,4 +109,4 @@ metadata only; original game binaries and asset dumps are not included.
 
 Contributions are welcome when they preserve the evidence trail. Read
 [CONTRIBUTING.md](CONTRIBUTING.md), keep each patch focused, and do not add
-original game binaries or asset dumps.
+original game binaries, asset dumps, or external J2ME reference trees.

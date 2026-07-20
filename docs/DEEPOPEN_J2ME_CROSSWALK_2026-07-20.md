@@ -9,10 +9,11 @@ decompiled and deobfuscated Java/J2ME reconstruction of Galaxy on Fire 2
 v1.0.4. This audit used commit
 [`d300f93`](https://github.com/BaalNetbek/DeepOpen/tree/d300f93fdb43fc0dd017d53a0d70b3a854345c50).
 
-It is an external, cross-version reference only. It is not vendored,
-submoduled, or treated as a build dependency here. The upstream tree contains
-J2ME `res/` files and declares no repository license, so copying its source or
-resources into this public Android HD reconstruction would not be appropriate.
+It is an external, cross-version reference only, not a build dependency here.
+At maintainer direction, its `code/GoF2_jsr/src/`, `code/GoF2_jsr/res/`, and
+`MANIFEST.MF` are retained outside this Git repository at the shared workspace
+path `../references/DeepOpen/`. The upstream tree declares no repository
+license, so it must not be treated as freely redistributable code or assets.
 
 DeepOpen can clarify broad intent, class ownership, and stable menu semantics.
 It cannot prove Android ARMv7 layouts, offsets, bit masks, timing constants,
@@ -38,8 +39,9 @@ IDA/Ghidra evidence remain authoritative for those claims.
    supports it.
 3. Do not rename Android fields, hard-code Java constants, or claim an ARM
    match based only on DeepOpen.
-4. Keep DeepOpen external. Do not commit its Java sources, `res/` contents,
-   JARs, or generated build products to this repository.
+4. Keep DeepOpen outside this repository at `../references/DeepOpen/`. Do not
+   add it, JARs, build products, unrelated revisions, or other game dumps to
+   this Android HD decompilation tree.
 
 ## Focused Follow-Ups
 
