@@ -1755,7 +1755,45 @@ static void mgame_handle_menu_touch_end(MGame *self, int x, int y, void *touchId
     }
 }
 
-static void mgame_handle_nonterminal_dialogue_touch_end(MGame *self, int x, int y) {
+static void mgame_reset_dialogue_input(MGame *self) {
+    self->touch0Id = 0;
+    self->touch1Id = 0;
+    self->hud->resetAnalogStick();
+    self->hud->releaseAllKeys();
+}
+
+static void mgame_clear_failed_freelance_mission(MGame *self, Mission *mission) {
+    Status *status = Status::gStatus;
+    if (mission->getType() == 12) {
+        status->changeCredits(-mission->getReward());
+    } else if (mission->getType() == 3 || mission->getType() == 5 || mission->getType() == 11) {
+        Ship *ship = status->getShip();
+        Array<Item *> *cargo = ship != nullptr ? ship->getCargo() : nullptr;
+        if (cargo != nullptr) {
+            for (unsigned int i = 0; i < cargo->size(); ++i) {
+                Item *item = (*cargo)[i];
+                if (item != nullptr && item->isUnsaleable() &&
+                    (item->getIndex() == 116 || item->getIndex() == 117)) {
+                    ship->removeCargo(item);
+                    break;
+                }
+            }
+        }
+    }
+
+    Mission *emptyMission = reinterpret_cast<Mission *>(Mission::empty);
+    status->setFreelanceMission(emptyMission);
+    self->level->removeObjectives();
+    status->setMission(emptyMission);
+    self->player->setRoute(nullptr);
+    if (self->player->goingToWaypoint())
+        self->player->setAutoPilot(nullptr);
+    self->player->removeRoute();
+    self->level->setPlayerRoute(nullptr);
+    mgame_reset_dialogue_input(self);
+}
+
+static void mgame_handle_dialogue_touch_end(MGame *self, int x, int y) {
     DialogueWindow *dialogueWindow = self->dialogueWindow;
     if (dialogueWindow == nullptr || dialogueWindow->OnTouchEnd(x, y) == 0)
         return;
@@ -1765,22 +1803,34 @@ static void mgame_handle_nonterminal_dialogue_touch_end(MGame *self, int x, int 
     Mission *campaignMission = status != nullptr
         ? reinterpret_cast<Mission *>(static_cast<intptr_t>(status->getCampaignMission()))
         : nullptr;
-    if (mission == nullptr || mission->hasFailed() || mission->hasWon() ||
-        (campaignMission != nullptr && campaignMission->hasWon())) {
-        // Terminal dialogue completion has campaign/freelance side effects in
-        // Android and remains intentionally isolated for its own recovery pass.
+    if (mission == nullptr)
         return;
-    }
 
     self->pauseOpen = 0;
     self->resumeSounds();
     self->cutsceneActive = 0;
+
+    if (mission->hasFailed()) {
+        if (mission->isCampaignMission() || status->getCurrentCampaignMission() == 42) {
+            if (Globals::gGlobals != nullptr)
+                Globals::gGlobals->playMusicAndFadeOutCurrent(2);
+            self->active = 0;
+            self->applicationManager->SetCurrentApplicationModule(1);
+        } else {
+            mgame_clear_failed_freelance_mission(self, mission);
+        }
+        return;
+    }
+
+    if (mission->hasWon() || (campaignMission != nullptr && campaignMission->hasWon())) {
+        // Android follows this with reward handling and a large set of
+        // campaign-specific station transitions. Keep that dispatcher separate.
+        return;
+    }
+
     if (self->levelScript != nullptr)
         self->levelScript->resetStartSequenceOver();
-    self->touch0Id = 0;
-    self->touch1Id = 0;
-    self->hud->resetAnalogStick();
-    self->hud->releaseAllKeys();
+    mgame_reset_dialogue_input(self);
 }
 
 static void mgame_dispatch_orbit_menu(MGame *self, unsigned int actions) {
@@ -2008,7 +2058,7 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
                 return;
             }
             if (this->cutsceneActive != 0) {
-                mgame_handle_nonterminal_dialogue_touch_end(this, p1, p2);
+                mgame_handle_dialogue_touch_end(this, p1, p2);
                 return;
             }
             if (this->menuTouchOpen != 0) {
