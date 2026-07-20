@@ -13,6 +13,12 @@ It is the source-backed owner of the masks constructed by
 `Hud::initHudMenu(0..3)`. `Hud::hudAction` is not an alternate dispatcher: its
 Android body at `0x16650c` only returns zero.
 
+DeepOpen J2ME v1.0.4 independently preserves the same five conceptual
+orbit-menu entries in `GOF2/AutoPilotList.java` (programmed station, jump gate,
+station, asteroid waypoint, route waypoint). It corroborates the menu's
+semantic order, but not the Android masks, offsets, or touch control flow; see
+`DEEPOPEN_J2ME_CROSSWALK_2026-07-20.md`.
+
 ## Confirmed And Applied
 
 | Mask | Android action routed by `MGame::OnTouchEnd` |

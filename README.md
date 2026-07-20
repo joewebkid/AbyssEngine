@@ -83,6 +83,15 @@ metadata only; original game binaries and asset dumps are not included.
 - [GOF1 analysis sources and decoded tables](https://drive.google.com/file/d/1Pp790FyWJLmA17yJPcNe4Xys4C0f0sSr/view?usp=drivesdk)
 - [Galaxy on Fire Alliances analysis sources](https://drive.google.com/file/d/11tcxQrg--2YaA-JvxfXUnHgj5GhButIl/view?usp=drivesdk)
 
+### External Cross-Version Reference
+
+- [BaalNetbek/DeepOpen](https://github.com/BaalNetbek/DeepOpen), pinned for
+  evidence review at
+  [`d300f93`](https://github.com/BaalNetbek/DeepOpen/tree/d300f93fdb43fc0dd017d53a0d70b3a854345c50):
+  Java/J2ME logic reference only. It is deliberately not vendored here because
+  the upstream tree includes game resources and has no declared repository
+  license. See [the crosswalk](docs/DEEPOPEN_J2ME_CROSSWALK_2026-07-20.md).
+
 ## Documentation
 
 - [Project status](docs/PROJECT_STATUS.md)
@@ -91,6 +100,7 @@ metadata only; original game binaries and asset dumps are not included.
 - [Validation](docs/VALIDATION.md)
 - [Identicality roadmap](docs/IDENTICALITY.md)
 - [AEM/AEI loader notes](docs/AEM_AEI_NATIVE_LOADER_SPEC.md)
+- [DeepOpen J2ME crosswalk](docs/DEEPOPEN_J2ME_CROSSWALK_2026-07-20.md)
 - [Notice](NOTICE.md)
 
 ## Contributing
