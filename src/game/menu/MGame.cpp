@@ -1624,6 +1624,59 @@ static void mgame_handle_star_map_touch_end(MGame *self, int x, int y) {
     self->starMap = nullptr;
 }
 
+static void mgame_handle_basic_choice_window_touch_end(MGame *self, int x, int y) {
+    if (self->choiceWindow == nullptr)
+        return;
+
+    // This is the ordinary MGame+0xce path. The neighboring flags select
+    // campaign/jump-specific ChoiceWindow handlers and must not be collapsed
+    // into the basic dismissal case.
+    if (self->field_0xcf == 0 && self->_bca == 0 && self->field_0x1e4 == 0 &&
+        self->choiceWindow->OnTouchEnd(x, y) == 0) {
+        self->pauseOpen = 0;
+        self->choiceWindowOpen = 0;
+        self->resumeSounds();
+    }
+}
+
+static void mgame_handle_menu_touch_end(MGame *self, int x, int y, void *touchId) {
+    MenuTouchWindow *menuWindow = self->menuWindow;
+    if (menuWindow == nullptr)
+        return;
+
+    if (self->freeCamMode != 0) {
+        MGameAppData *applicationData =
+            reinterpret_cast<MGameAppData *>(static_cast<intptr_t>(ApplicationManager_GetApplicationData()));
+        if (applicationData == nullptr || applicationData->modalActive != 0 ||
+            applicationData->transitionActive != 0)
+            return;
+        if (menuWindow->isShowingMessage() == 0 && !menuWindow->isMakingScreenshot())
+            self->freeCamTouchEnd(x, y, touchId);
+    }
+
+    if (menuWindow->OnTouchEnd(x, y, touchId) != 0) {
+        self->pauseSnapshot = 0;
+        self->pauseOpen = 0;
+        self->resumeSounds();
+        self->menuTouchOpen = 0;
+        self->touch0Id = 0;
+        self->touch1Id = 0;
+        self->activeTouchId = nullptr;
+
+        StarSystem *starSystem = self->level->getStarSystem();
+        if (starSystem != nullptr)
+            starSystem->initLight();
+    }
+
+    if (self->freeCamMode == 0 && menuWindow->inCinematicMode()) {
+        self->setCinematicMode(true);
+        self->hudTouchFlags = 0;
+    } else if (self->freeCamMode != 0 && !menuWindow->inCinematicMode()) {
+        self->setCinematicMode(false);
+        self->hudTouchFlags = 0;
+    }
+}
+
 static void mgame_dispatch_orbit_menu(MGame *self, unsigned int actions) {
     PlayerEgo *player = self->player;
     Level *level = self->level;
@@ -1835,8 +1888,10 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
     // The Android pre-Hud branch handles these paused states before LABEL_69.
     // Dock-choice windows intentionally fall through to the HUD action path.
     if (this->pauseOpen != 0 && this->hudMenuOpen == 0 && this->orbitMenuOpen == 0) {
-        if (this->choiceWindowOpen != 0)
+        if (this->choiceWindowOpen != 0) {
+            mgame_handle_basic_choice_window_touch_end(this, p1, p2);
             return;
+        }
         if (this->autopilotMenuOpen != 0) {
             mgame_handle_autopilot_menu_touch_end(this, p1, p2);
             return;
@@ -1848,6 +1903,10 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
             }
             if (this->cutsceneActive != 0)
                 return;
+            if (this->menuTouchOpen != 0) {
+                mgame_handle_menu_touch_end(this, p1, p2, touchId);
+                return;
+            }
             return;
         }
     }
