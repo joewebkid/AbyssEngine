@@ -1499,6 +1499,7 @@ namespace {
 enum MGameHudAction : unsigned int {
     kHudActionPause = 0x00000001,
     kHudActionQuickMenu = 0x00000004,
+    kHudActionFire = 0x00000008,
     kHudActionOpenWeaponMenu = 0x00000200,
     kHudActionOpenWingmanMenu = 0x00000400,
     kHudActionCloak = 0x00000800,
@@ -1517,6 +1518,7 @@ enum MGameHudAction : unsigned int {
     kHudActionAsteroidWaypoint = 0x01000000,
     kHudActionRouteWaypoint = 0x02000000,
     kHudActionDockingTarget0 = 0x04000000,
+    kHudActionAutoTurret = 0x20000000,
     kHudActionOrbit = 0x00000040,
 };
 
@@ -1583,6 +1585,35 @@ static void mgame_open_pause_menu(MGame *self) {
     if (sound != nullptr)
         sound->play(0x7b, nullptr, nullptr, 0.0f);
     self->hud->releaseAllKeys();
+}
+
+static void mgame_dispatch_combat_touch_actions(MGame *self, unsigned int actions) {
+    if (self->levelScript == nullptr || self->levelScript->startSequence() != 0 ||
+        self->player->isDead() || self->jumpActive != 0 || self->jumpDriveActive != 0)
+        return;
+
+    Player *playerBody = static_cast<Player *>(self->player->player);
+    if ((actions & kHudActionFire) != 0 && playerBody != nullptr &&
+        playerBody->gunAvailable(1) && !self->player->isMining() &&
+        !self->player->isInTurretMode() && !self->player->isDockedToDockingPoint() &&
+        !self->player->isLandingOrTakingOff()) {
+        self->player->shoot(self->deltaTime, 1);
+        self->hud->checkIfQuickMenuIsEmpty();
+    }
+
+    if (self->player->isHacking()) {
+        if ((actions & kHudActionOpenWeaponMenu) != 0)
+            self->player->hackingRotateLCW();
+        if ((actions & kHudActionOpenWingmanMenu) != 0)
+            self->player->hackingRotateRCW();
+    }
+
+    if (!self->player->isInRocketControl() && self->player->hasAutoTurret() &&
+        (actions & kHudActionAutoTurret) != 0) {
+        self->player->setAutoTurret(self->player->autoTurretIsEnabled() == 0);
+        self->hud->hudEvent(self->player->autoTurretIsEnabled() ? 0x20 : 0x21,
+                             self->player, 0);
+    }
 }
 
 static void mgame_handle_autopilot_menu_touch_end(MGame *self, int x, int y) {
@@ -1968,6 +1999,8 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
         mgame_open_pause_menu(this);
         return;
     }
+
+    mgame_dispatch_combat_touch_actions(this, actions);
 
     if ((actions & kHudActionOrbit) == 0 && this->orbitMenuOpen != 0) {
         mgame_dispatch_orbit_menu(this, actions);
