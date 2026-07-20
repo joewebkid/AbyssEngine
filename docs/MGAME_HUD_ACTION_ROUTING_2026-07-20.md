@@ -23,6 +23,7 @@ semantic order, but not the Android masks, offsets, or touch control flow; see
 
 | Mask | Android action routed by `MGame::OnTouchEnd` |
 | --- | --- |
+| `0x1` | Open the MGame `MenuTouchWindow` pause flow: refresh the skip button, snapshot/pause sounds and engine events, set cutscene mode, and release HUD keys. |
 | `0x200`, `0x400` | Rebuild quick menu as weapon or wingman menu. |
 | `0x800` | Close menu and invoke `MGame::useCloak()`. |
 | `0x1000` | Invoke `MGame::UseKhadorDrive()`. |
@@ -38,6 +39,11 @@ The Android body opens it with HUD menu type 3, then closes and resets the
 menu/sound state after an orbit/docking choice. The same source branch also
 cancels existing autopilot or active asteroid/docking/stream procedures when
 the physical orbit button (`0x40`) is pressed.
+
+The one-byte state at `MGame+0x1a4` remains offset-labelled. In this pause
+route Android stores whether FMOD category 2 was disabled before opening the
+menu; its exact close-side sound restoration remains in the paused-routing
+work rather than being given a speculative semantic field name.
 
 ## Boundaries And Risks
 

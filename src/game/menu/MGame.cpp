@@ -1497,6 +1497,7 @@ void MGame::freeCamTouchMove(int x, int y, void *touchId) {
 namespace {
 
 enum MGameHudAction : unsigned int {
+    kHudActionPause = 0x00000001,
     kHudActionQuickMenu = 0x00000004,
     kHudActionOpenWeaponMenu = 0x00000200,
     kHudActionOpenWingmanMenu = 0x00000400,
@@ -1537,6 +1538,51 @@ static void mgame_open_hud_menu(MGame *self, int menuType) {
     self->hudMenuOpen = 1;
     self->pauseSounds();
     self->hud->initHudMenu(menuType, self->level);
+}
+
+static uint8_t &mgame_pause_music_disabled_flag(MGame *self) {
+    return reinterpret_cast<uint8_t *>(&self->field_0x1a4)[0];
+}
+
+static void mgame_open_pause_menu(MGame *self) {
+    self->pauseSounds();
+    if (self->pauseOpen != 0) {
+        self->hud->releaseAllKeys();
+        return;
+    }
+
+    if (self->menuWindow == nullptr)
+        self->menuWindow = new MenuTouchWindow(1);
+
+    const bool canSkip = self->levelScript != nullptr &&
+                         self->levelScript->canSkipCutsceneNow() != 0;
+    self->menuWindow->setSkipButtonVisible(canSkip);
+    self->pauseOpen = 1;
+    self->pauseSounds();
+
+    FModSound *sound = Globals::sound;
+    self->pauseSnapshot = self->pauseOpen;
+    mgame_pause_music_disabled_flag(self) =
+        sound != nullptr ? static_cast<uint8_t>(sound->IsCategoryEnabled(2) ^ 1) : 0;
+    if (sound != nullptr)
+        sound->pauseAllPlaying();
+    self->player->PauseEngineSound();
+
+    Array<KIPlayer *> *enemies = self->level->getEnemies();
+    if (enemies != nullptr) {
+        for (unsigned int i = 0; i < enemies->size(); ++i) {
+            KIPlayer *enemy = (*enemies)[i];
+            if (enemy != nullptr)
+                enemy->PauseEngineSound();
+        }
+    }
+
+    const bool cutsceneMode = self->jumpActive != 0 || self->player->isDead();
+    self->menuWindow->setCutsceneMode(cutsceneMode);
+    self->menuTouchOpen = 1;
+    if (sound != nullptr)
+        sound->play(0x7b, nullptr, nullptr, 0.0f);
+    self->hud->releaseAllKeys();
 }
 
 static void mgame_handle_autopilot_menu_touch_end(MGame *self, int x, int y) {
@@ -1916,6 +1962,11 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
     if (actions != 0) {
         this->touch0Id = 0;
         this->touch1Id = 0;
+    }
+
+    if ((actions & kHudActionPause) != 0) {
+        mgame_open_pause_menu(this);
+        return;
     }
 
     if ((actions & kHudActionOrbit) == 0 && this->orbitMenuOpen != 0) {
