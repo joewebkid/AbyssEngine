@@ -25,6 +25,7 @@ semantic order, but not the Android masks, offsets, or touch control flow; see
 | --- | --- |
 | `0x1` | Open the MGame `MenuTouchWindow` pause flow: refresh the skip button, snapshot/pause sounds and engine events, set cutscene mode, and release HUD keys. |
 | `0x8` | Fire primary weapon slot 1 with the current `deltaTime` when the player is alive, out of a sequence/jump/mining/turret/docking/landing state, and the gun is available. |
+| `0x80` | Cycle camera unless mining is active, then complete the resulting maneuver/free-camera release path. |
 | `0x200`, `0x400` | Rebuild quick menu as weapon or wingman menu. |
 | `0x200`, `0x400` while hacking | Rotate the hacking game left/right; the mask is intentionally overloaded by the original handler. |
 | `0x800` | Close menu and invoke `MGame::useCloak()`. |
@@ -36,6 +37,11 @@ semantic order, but not the Android masks, offsets, or touch control flow; see
 | `0x1000000`, `0x2000000` | Autopilot to asteroid or player-route waypoint, with HUD events 14 and 13. |
 | `0x04000000 << i` (`i = 0..5`) | Set `Radar+0x04`, begin docking target `i`, clear the following three Radar target slots, and release HUD keys. |
 | `0x20000000` | Toggle auto turret unless rocket control owns input; emit HUD event `0x20` (enabled) or `0x21` (disabled). |
+
+When no HUD menu is open, Android completes the same touch with
+`maneuverTouchEnd` in camera mode `0` (and clears the 16-bit thrust-active
+slot) or `freeCamTouchEnd` in camera mode `3`. The local route now follows
+that shared tail.
 
 The existing local `MGame+0xc8` low-byte slot is now named `orbitMenuOpen`.
 The Android body opens it with HUD menu type 3, then closes and resets the

@@ -1500,6 +1500,7 @@ enum MGameHudAction : unsigned int {
     kHudActionPause = 0x00000001,
     kHudActionQuickMenu = 0x00000004,
     kHudActionFire = 0x00000008,
+    kHudActionCamera = 0x00000080,
     kHudActionOpenWeaponMenu = 0x00000200,
     kHudActionOpenWingmanMenu = 0x00000400,
     kHudActionCloak = 0x00000800,
@@ -2015,6 +2016,19 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
             mgame_open_hud_menu(this, 0);
         else
             mgame_close_hud_menu(this, true);
+        return;
+    }
+
+    if ((actions & kHudActionCamera) != 0 && !this->player->isMining())
+        this->switchCamera(this->cameraMode + 1);
+
+    if (this->hudMenuOpen == 0) {
+        if (this->cameraMode == 0) {
+            this->maneuverTouchEnd(p1, p2, touchId);
+            this->thrustActive = 0;
+        } else if (this->cameraMode == 3) {
+            this->freeCamTouchEnd(p1, p2, touchId);
+        }
         return;
     }
 
