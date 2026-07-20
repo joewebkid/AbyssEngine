@@ -54,9 +54,6 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
 - `drawEventString`, `updateSecondaryWeaponString`, `drawEventQueue`, and the
   station/system/security text flow in `drawOrbitInformation` now use native
   call routing and game-text IDs.
-- `menuLevel` is typed as `Level *`; the quick-menu branch uses `menuType`,
-  matching the native function parameter rather than comparing a pointer value
-  against an integer.
 - Local ARM `.rodata` confirms `word_203758` faction-logo resources as
   `0x4a6`, `0x4a3`, `0x4a5`, and `0x4a4`, and confirms `byte_203780` security
   RGB rows as `(255,42,0)`, `(255,108,0)`, `(237,237,0)`, and `(237,0,0)`.
@@ -70,8 +67,9 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
   `Hud::init` body. Its producing `initHudMenu` paths are now recovered; cargo
   text templates, challenge-score state fields, and the majority of
   `Hud::draw` remain separate recovery work.
-- The source-backed owner of quick-menu action-mask execution has not yet been
-  identified. It is not `Hud::hudAction` in the Android HD binary.
+- Quick-menu action-mask execution is now attributed to the unpaused branch of
+  `MGame::OnTouchEnd` (`0x17a144`). The exact paused modal/StarMap/cutscene
+  prefixes of that large handler remain a separate recovery package.
 - `HudInitImageSlots` and the raw coordinate members are a host-side source
   mirror, not a claim that the 64-bit C++ class has the original ARM ABI or is
   byte-identical.

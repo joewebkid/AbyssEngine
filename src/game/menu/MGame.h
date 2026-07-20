@@ -84,7 +84,15 @@ public:
             uint8_t starMapOpen;
         };
     };
-    union { uint16_t field_0xc8; struct { uint8_t _bc8; uint8_t menuTouchOpen; }; };
+    union {
+        uint16_t field_0xc8;
+        struct {
+            // Android MGame::OnTouchEnd (0x17a144) sets this while its
+            // type-3 orbit/docking quick menu is active.
+            uint8_t orbitMenuOpen;
+            uint8_t menuTouchOpen;
+        };
+    };
     union { int field_0xca; struct { uint8_t _bca; uint8_t touchesStream; uint8_t touchesStation; uint8_t jumpGateSoundStarted; }; };
     uint8_t choiceWindowOpen;
     uint8_t field_0xcf;

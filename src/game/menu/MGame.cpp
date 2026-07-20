@@ -1494,6 +1494,244 @@ void MGame::freeCamTouchMove(int x, int y, void *touchId) {
     TFC_zoomTarget(this->camera, zoom);
 }
 
+namespace {
+
+enum MGameHudAction : unsigned int {
+    kHudActionQuickMenu = 0x00000004,
+    kHudActionOpenWeaponMenu = 0x00000200,
+    kHudActionOpenWingmanMenu = 0x00000400,
+    kHudActionCloak = 0x00000800,
+    kHudActionJumpDrive = 0x00001000,
+    kHudActionSecondary0 = 0x00002000,
+    kHudActionSecondary1 = 0x00004000,
+    kHudActionSecondary2 = 0x00008000,
+    kHudActionSecondary3 = 0x00010000,
+    kHudActionWingmenAttack = 0x00020000,
+    kHudActionWingmenDefend = 0x00040000,
+    kHudActionWingmenFollow = 0x00080000,
+    kHudActionWingmenToggle = 0x00100000,
+    kHudActionProgrammedStation = 0x00200000,
+    kHudActionJumpGate = 0x00400000,
+    kHudActionStation = 0x00800000,
+    kHudActionAsteroidWaypoint = 0x01000000,
+    kHudActionRouteWaypoint = 0x02000000,
+    kHudActionDockingTarget0 = 0x04000000,
+    kHudActionOrbit = 0x00000040,
+};
+
+static void mgame_close_hud_menu(MGame *self, bool closeOrbitMenu) {
+    self->hudMenuOpen = 0;
+    self->hud->closeHudMenu();
+    self->pauseOpen = 0;
+    self->resumeSounds();
+
+    if (closeOrbitMenu && self->orbitMenuOpen != 0) {
+        self->orbitMenuOpen = 0;
+        if (self->player != nullptr)
+            self->player->resetGunDelay();
+    }
+}
+
+static void mgame_open_hud_menu(MGame *self, int menuType) {
+    self->pauseOpen = 1;
+    self->hudMenuOpen = 1;
+    self->pauseSounds();
+    self->hud->initHudMenu(menuType, self->level);
+}
+
+static void mgame_dispatch_orbit_menu(MGame *self, unsigned int actions) {
+    PlayerEgo *player = self->player;
+    Level *level = self->level;
+    Hud *hud = self->hud;
+
+    if ((actions & kHudActionProgrammedStation) != 0)
+        self->levelScript->setAutoPilotToProgrammedStation();
+
+    Array<KIPlayer *> *landmarks = level->getLandmarks();
+    if ((actions & kHudActionJumpGate) != 0 && landmarks != nullptr && landmarks->size() > 1) {
+        player->setAutoPilot((*landmarks)[1]);
+        hud->hudEvent(12, player, 0);
+    }
+    if ((actions & kHudActionStation) != 0 && landmarks != nullptr && landmarks->size() > 0) {
+        player->setAutoPilot((*landmarks)[0]);
+        hud->hudEvent(10, player, 0);
+    }
+    if ((actions & kHudActionAsteroidWaypoint) != 0) {
+        player->setAutoPilot(level->getAsteroidWaypoint());
+        hud->hudEvent(14, player, 0);
+    }
+    if ((actions & kHudActionRouteWaypoint) != 0) {
+        Route *route = level->getPlayerRoute();
+        if (route != nullptr) {
+            player->setAutoPilot(route->getWaypoint());
+            hud->hudEvent(13, player, 0);
+        }
+    }
+
+    // The action-mask layout reserves bits 26..31 for docking targets.
+    const int dockingTargetCount = level->getNumDockingTargets();
+    for (int i = 0; i < dockingTargetCount && i < 6; ++i) {
+        const unsigned int action = kHudActionDockingTarget0 << i;
+        KIPlayer *target = reinterpret_cast<KIPlayer *>(
+                static_cast<intptr_t>(level->getDockingTarget(i)));
+        if ((actions & action) == 0 || target == nullptr)
+            continue;
+
+        // Android MGame::OnTouchEnd writes this target to Radar+0x04 before
+        // starting docking, then clears the three adjacent transient slots.
+        self->radar->dockTargetPtr = target;
+        hud->hudEvent(34, player, 0);
+        player->dockToDockingPoint(target, self->radar);
+        self->radar->dockNavPtr = nullptr;
+        self->radar->lockedAsteroid = nullptr;
+        self->radar->candidateAsteroid = nullptr;
+        hud->releaseAllKeys();
+    }
+
+    mgame_close_hud_menu(self, true);
+}
+
+static bool mgame_try_open_orbit_menu(MGame *self) {
+    PlayerEgo *player = self->player;
+    Status *status = Status::gStatus;
+
+    if (player == nullptr || status == nullptr)
+        return false;
+
+    if (status->inAlienOrbit() && player->isDockingToAsteroid())
+        player->dockToAsteroid(nullptr, self->radar);
+
+    const int missionId = status->getCurrentCampaignMission();
+    if ((status->inAlienOrbit() &&
+         (missionId != 154 || self->level->getNumDockingTargets() < 1)) ||
+        missionId < 2 || missionId == 48 || player->isDockedToDockingPoint() ||
+        player->isLandingOrTakingOff()) {
+        return false;
+    }
+
+    if (self->orbitMenuOpen != 0) {
+        mgame_close_hud_menu(self, true);
+        return true;
+    }
+
+    if (player->isMining())
+        return false;
+
+    if (player->isAutoPilot()) {
+        player->setAutoPilot(nullptr);
+        self->hud->hudEvent(6, player, 0);
+        return true;
+    }
+
+    if (player->isDockingToAsteroid()) {
+        player->dockToAsteroid(self->radar->getLockedAsteroid(), self->radar);
+        self->hud->hudEvent(6, player, 0);
+        return true;
+    }
+
+    if (player->isDockingToDockingPoint()) {
+        self->radar->dockTargetPtr = nullptr;
+        player->dockToDockingPoint(nullptr, self->radar);
+        self->hud->hudEvent(6, player, 0);
+        return true;
+    }
+
+    if (player->isDockingToStream()) {
+        // The ARM body routes this through Radar+0x24 before the common
+        // docking HUD event. The local Radar slot is source-labelled
+        // `lockedStation` but its exact stream-target semantics still need
+        // a dedicated Radar/PlayerEgo audit.
+        player->dockToAsteroid(self->radar->lockedStation, self->radar);
+        self->hud->hudEvent(6, player, 0);
+        return true;
+    }
+
+    Mission *mission = status->getMission();
+    if (!status->inAlienOrbit() || missionId == 154) {
+        if (mission == nullptr || mission->getType() != 183) {
+            mgame_open_hud_menu(self, 3);
+            self->orbitMenuOpen = 1;
+            return true;
+        }
+    }
+    return false;
+}
+
+static void mgame_dispatch_hud_menu(MGame *self, unsigned int actions) {
+    if (self->hudMenuOpen == 0)
+        return;
+
+    if ((actions & kHudActionOpenWeaponMenu) != 0) {
+        self->hud->initHudMenu(1, self->level);
+        return;
+    }
+    if ((actions & kHudActionOpenWingmanMenu) != 0) {
+        self->hud->initHudMenu(2, self->level);
+        return;
+    }
+    if ((actions & kHudActionCloak) != 0) {
+        mgame_close_hud_menu(self, false);
+        self->useCloak();
+        return;
+    }
+
+    int secondaryIndex = -1;
+    if ((actions & kHudActionSecondary0) != 0) secondaryIndex = 0;
+    else if ((actions & kHudActionSecondary1) != 0) secondaryIndex = 1;
+    else if ((actions & kHudActionSecondary2) != 0) secondaryIndex = 2;
+    else if ((actions & kHudActionSecondary3) != 0) secondaryIndex = 3;
+    if (secondaryIndex >= 0) {
+        Ship *ship = Status::gStatus->getShip();
+        Array<Item *> *equipment = ship != nullptr ? ship->getEquipment(1) : nullptr;
+        if (equipment != nullptr && static_cast<unsigned int>(secondaryIndex) < equipment->size()) {
+            Item *item = (*equipment)[secondaryIndex];
+            if (item != nullptr) {
+                self->player->setCurrentSecondaryWeaponIndex(item->getIndex());
+                self->hud->setCurrentSecondaryWeapon(item);
+            }
+        }
+        mgame_close_hud_menu(self, false);
+        return;
+    }
+
+    int wingmanCommand = -1;
+    if ((actions & kHudActionWingmenAttack) != 0) wingmanCommand = 1;
+    else if ((actions & kHudActionWingmenDefend) != 0) wingmanCommand = 3;
+    else if ((actions & kHudActionWingmenFollow) != 0) wingmanCommand = 2;
+    else if ((actions & kHudActionWingmenToggle) != 0) {
+        wingmanCommand = 0;
+        Status::gStatus->field_f8 ^= 1;
+    }
+    if (wingmanCommand >= 0) {
+        Array<KIPlayer *> *enemies = self->level->getEnemies();
+        if (enemies != nullptr) {
+            KIPlayer *target = wingmanCommand == 3 ? self->radar->getLockedEnemy() : nullptr;
+            for (unsigned int i = 0; i < enemies->size(); ++i) {
+                KIPlayer *wingman = (*enemies)[i];
+                if (wingman != nullptr && wingman->isWingMan() && !wingman->isDead())
+                    wingman->setWingmanCommand(wingmanCommand, target);
+            }
+        }
+        mgame_close_hud_menu(self, false);
+        return;
+    }
+
+    if ((actions & kHudActionJumpDrive) != 0) {
+        self->UseKhadorDrive();
+        return;
+    }
+
+    // This is the ARM LABEL_218 fall-through: releasing off a menu entry
+    // closes the menu and restores sounds, without inventing a new action.
+    if (actions == 0) {
+        self->touch0Id = 0;
+        self->touch1Id = 0;
+        mgame_close_hud_menu(self, true);
+    }
+}
+
+} // namespace
+
 void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
     if (this->activeTouchId == touchId) {
         this->activeTouchId = 0;
@@ -1502,23 +1740,43 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
         this->field_0xc3 = 0;
     }
 
-    int wasAutoPilot = this->player->isAutoPilot();
+    if (this->player == nullptr || this->hud == nullptr)
+        return;
+
     this->flFastForwardWeight = 1.0f;
     TFC_setFastForwardMode(this->camera, 0);
     this->player->resumeFlag = 1;
 
-    unsigned hr = 0;
-    if (this->pauseOpen == 0) {
-        hr = this->hud->touchEnd(p1, p2, touchId);
-        this->hudTouchFlags = hr;
-        if (hr != 0) {
-            this->touch0Id = 0;
-            this->touch1Id = 0;
-        }
+    // The paused modal routing is a separate recovery package. HUD quick menus
+    // also set pauseOpen, but the Android body still sends those touches on to
+    // LABEL_69 and Hud::touchEnd.
+    if (this->pauseOpen != 0 && this->hudMenuOpen == 0 && this->orbitMenuOpen == 0)
+        return;
+
+    const unsigned int actions = this->hud->touchEnd(p1, p2, touchId);
+    this->hudTouchFlags = static_cast<int>(actions);
+    if (actions != 0) {
+        this->touch0Id = 0;
+        this->touch1Id = 0;
     }
 
-    (void) wasAutoPilot;
-    (void) hr;
+    if ((actions & kHudActionOrbit) == 0 && this->orbitMenuOpen != 0) {
+        mgame_dispatch_orbit_menu(this, actions);
+        return;
+    }
+
+    if ((actions & kHudActionOrbit) != 0 && mgame_try_open_orbit_menu(this))
+        return;
+
+    if ((actions & kHudActionQuickMenu) != 0 && !this->player->isMining()) {
+        if (this->hudMenuOpen == 0)
+            mgame_open_hud_menu(this, 0);
+        else
+            mgame_close_hud_menu(this, true);
+        return;
+    }
+
+    mgame_dispatch_hud_menu(this, actions);
 }
 
 
@@ -2439,7 +2697,7 @@ MGame::MGame() {
     this->campaignMission = 0;
     this->starMap = 0;
     this->choiceWindow = 0;
-    this->_bc8 = 0;
+    this->orbitMenuOpen = 0;
     this->dockChoiceOpen = z;
     this->autopilotMenuOpen = 0;
     this->field_0xc6 = 0;
