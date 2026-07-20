@@ -103,6 +103,7 @@ metadata only; original game binaries and asset dumps are not included.
 - [Identicality roadmap](docs/IDENTICALITY.md)
 - [AEM/AEI loader notes](docs/AEM_AEI_NATIVE_LOADER_SPEC.md)
 - [DeepOpen J2ME crosswalk](docs/DEEPOPEN_J2ME_CROSSWALK_2026-07-20.md)
+- [Recovery evidence guide (RU)](docs/RECOVERY_EVIDENCE_GUIDE_RU.md)
 - [Notice](NOTICE.md)
 
 ## Contributing
