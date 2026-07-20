@@ -94,8 +94,13 @@ public:
         };
     };
     union { int field_0xca; struct { uint8_t _bca; uint8_t touchesStream; uint8_t touchesStation; uint8_t jumpGateSoundStarted; }; };
-    uint8_t choiceWindowOpen;
-    uint8_t field_0xcf;
+    union {
+        uint16_t choiceWindowFlags;
+        struct {
+            uint8_t choiceWindowOpen;
+            uint8_t field_0xcf;
+        };
+    };
     int choiceItemCount;
     uint8_t field_0xd4;
     uint8_t turretMode;

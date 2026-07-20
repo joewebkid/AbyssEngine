@@ -31,6 +31,7 @@ control flow, or the recovered 3D placement.
 | Stream close, non-exit | `dockToStream(false)`, clear autopilot, copy landmark `1` geometry direction to the player geometry with up `(0, 1, 0)`, and position the player at landmark `1` plus `(0, 0, 8000)`. Landmark `1` is independently corroborated by `Level::collideStream` and `LevelScript`'s warp-gate routing. |
 | Map exit | A stream exit clears `usingJumpDrive` and calls `startJumpScene`; a non-stream exit invokes `LevelScript::setAutoPilotToProgrammedStation` unless `Level::doInstantJump` is set. |
 | `MGame+0xce` ordinary ChoiceWindow | With `MGame+0xcf`, `MGame+0xca`, and `MGame+0x1e4` clear, a result `0` clears the pause and ChoiceWindow flags and resumes sounds. The adjacent flags select separate mission/jump-specific handlers. |
+| `MGame+0xcf` ChoiceWindow selector | Selection `1` sets group-8 `KIPlayer+0x25`, `Status+0x111`, radio `(11, 8)`, and clears the pause/ChoiceWindow word. Selection `0` either produces the GameText `203` `#C` credit message and remains paused, or deducts `MGame+0xd0`, sends `(10, 8)`, sets `Status+0x110`, and closes. This selector remains offset-labelled. |
 | `MGame+0xc9` MenuTouchWindow | The Android application-data gate blocks free-camera touch release while modal/transition bytes are set. Otherwise it sends the touch end to `MenuTouchWindow`, handles its non-zero close result, and synchronizes cinematic/free-camera mode. |
 | Failed `cutsceneActive` | A campaign failure (or campaign ID `42`) returns to module `1` after the native music handoff. A freelance failure applies the direct type-12 credit penalty or removes unsaleable cargo `116`/`117` for types `3`, `5`, and `11`, clears mission/objective/route state, and resets HUD input. |
 | Non-terminal `cutsceneActive` | After `DialogueWindow::OnTouchEnd` completes, a mission that is neither failed nor won (and has no won campaign mission) clears pause/cutscene state, restores sound, resets the LevelScript sequence state, resets the analog stick, and releases HUD keys. |
@@ -40,8 +41,8 @@ as the Android body jumps to `LABEL_69` for that state.
 
 ## Remaining Paused Branches
 
-- `choiceWindowOpen` includes several mission/jump/campaign-specific actions
-  when its adjacent selector flags are set.
+- `MGame+0xca` still contains the cargo-conversion ChoiceWindow body; the
+  terminal `MGame+0x1e4` route and `MGame+0xc6` remain separate actions.
 - Successful terminal `cutsceneActive` still needs its direct dispatcher:
   Android mixes generic freelance/campaign rewards with many campaign-specific
   station transitions.

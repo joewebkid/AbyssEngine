@@ -2039,6 +2039,64 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
     // Dock-choice windows intentionally fall through to the HUD action path.
     if (this->pauseOpen != 0 && this->hudMenuOpen == 0 && this->orbitMenuOpen == 0) {
         if (this->choiceWindowOpen != 0) {
+            // Android MGame::OnTouchEnd @ 0x17a144 keeps this raw +0xcf
+            // selector in the parent body. Its semantic role is not named yet.
+            if (this->field_0xcf != 0) {
+                const int selection = this->choiceWindow->OnTouchEnd(p1, p2);
+                Status *status = Status::gStatus;
+
+                if (selection == 1) {
+                    Array<KIPlayer *> *enemies = this->level->getEnemies();
+                    if (enemies != nullptr) {
+                        for (unsigned int i = 0; i < enemies->size(); ++i) {
+                            KIPlayer *enemy = (*enemies)[i];
+                            if (enemy->shipGroup == 8)
+                                enemy->field_0x25 = 1;
+                        }
+                    }
+                    status->field_0x111 = 1;
+                    this->level->createRadioMessage(11, 8);
+                    this->pauseOpen = 0;
+                    this->choiceWindowFlags = 0;
+                    this->resumeSounds();
+                } else if (selection == 0) {
+                    if (status->getCredits() < this->choiceItemCount) {
+                        String templateText(*GameText::gGameText->getText(203), false);
+                        String formattedCost = Layout::formatCredits(this->choiceItemCount);
+                        String token("#C", false);
+                        String message = status->replaceHash(templateText, token, formattedCost);
+                        this->choiceWindow->set(message, false);
+
+                        this->field_0xcf = 0;
+                        this->level->createRadioMessage(11, 8);
+                        Array<KIPlayer *> *enemies = this->level->getEnemies();
+                        if (enemies != nullptr) {
+                            for (unsigned int i = 0; i < enemies->size(); ++i) {
+                                KIPlayer *enemy = (*enemies)[i];
+                                if (enemy->shipGroup == 8)
+                                    enemy->field_0x25 = 1;
+                            }
+                        }
+                        status->field_0x111 = 1;
+                    } else {
+                        Array<KIPlayer *> *enemies = this->level->getEnemies();
+                        if (enemies != nullptr) {
+                            for (unsigned int i = 0; i < enemies->size(); ++i) {
+                                KIPlayer *enemy = (*enemies)[i];
+                                if (enemy->shipGroup == 8)
+                                    enemy->field_0x25 = 0;
+                            }
+                        }
+                        status->changeCredits(-this->choiceItemCount);
+                        this->level->createRadioMessage(10, 8);
+                        status->field_110 = 1;
+                        this->pauseOpen = 0;
+                        this->choiceWindowFlags = 0;
+                        this->resumeSounds();
+                    }
+                }
+                return;
+            }
             mgame_handle_basic_choice_window_touch_end(this, p1, p2);
             return;
         }

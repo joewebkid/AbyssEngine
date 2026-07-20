@@ -48,6 +48,7 @@ checked-in project-wide `report.json` snapshot.
 | --- | ---: | --- | --- | ---: | ---: |
 | Before this pass | 3.4% | no | no | 2863 | 1109 |
 | After source-backed prologue correction | 2.4% | no | no | 2863 | 1096 |
+| After direct `MGame+0xcf` selector body | 3.6% | no | no | 2863 | 1276 |
 
 The prologue correction follows the Android body directly: equality of
 `MGame+0xc0` and the touch id clears only `MGame+0xc0`; it does not reset the
@@ -61,6 +62,15 @@ than 1700 missing normalized instructions, so a small early edit shifts the
 whole-sequence alignment. Neither linked equality nor raw byte equality
 regressed; both were already false. The correction remains source-backed but
 is not called a match improvement.
+
+The `MGame+0xcf` selector is now in the parent `OnTouchEnd` body rather than
+behind a helper call. Android selection `1` marks all `KIPlayer` entries with
+`shipGroup == 8`, sets `Status+0x111`, sends radio event `(11, 8)`, and clears
+the pause/ChoiceWindow word at `MGame+0xce`. Selection `0` either rewrites the
+ChoiceWindow text from GameText `203` with the `#C` token and returns while
+still paused, or deducts `MGame+0xd0` credits, sends `(10, 8)`, and sets
+`Status+0x110`. The selector has deliberately remained offset-labelled: this
+pass confirms its native effects, not a gameplay name.
 
 ## Pause/StarMap Findings
 
@@ -81,8 +91,8 @@ machine-code size and score, so it was deliberately not retained.
 
 ## Next Match Work
 
-1. Recover the complete paused dispatcher in native block order, including the
-   selector-specific ChoiceWindow paths before attempting more local tuning.
+1. Recover the `MGame+0xca` cargo-conversion selector in native block order,
+   then the terminal `MGame+0x1e4` ChoiceWindow path.
 2. Bring the terminal dialogue/cutscene and game-over branches into the same
    body pass, retaining the original String locals and lifetime boundaries.
 3. Only then de-shim the remaining `OnTouchEnd` helper boundaries and compare
