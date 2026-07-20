@@ -347,6 +347,7 @@ void Hud::drawBigNumber(int x, int y, int value, bool flag) {
 }
 
 int Hud::hudAction(int action, Level *lvl, Radar *radar) {
+    // Android ARM 0x16650c: movs r0, #0; bx lr.
     (void) action;
     (void) lvl;
     (void) radar;

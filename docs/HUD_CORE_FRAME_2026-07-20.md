@@ -48,6 +48,9 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
   `quickMenuType` replaces the previous incorrect `menuLevel` interpretation.
   `Hud+0x27c` receives the amount of cargo item `122`, which drives the
   mode-0 fuel/cargo gauge label.
+- `Hud::hudAction` (`0x16650c`) is confirmed as an intentional Android no-op:
+  the complete ARM body is `movs r0, #0; bx lr`. It is not the dispatcher for
+  the quick-menu action masks.
 - `drawEventString`, `updateSecondaryWeaponString`, `drawEventQueue`, and the
   station/system/security text flow in `drawOrbitInformation` now use native
   call routing and game-text IDs.
@@ -67,8 +70,8 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
   `Hud::init` body. Its producing `initHudMenu` paths are now recovered; cargo
   text templates, challenge-score state fields, and the majority of
   `Hud::draw` remain separate recovery work.
-- This menu-frame pass does not recover `Hud::hudAction`, so the recovered
-  action masks have no complete source-backed execution path yet.
+- The source-backed owner of quick-menu action-mask execution has not yet been
+  identified. It is not `Hud::hudAction` in the Android HD binary.
 - `HudInitImageSlots` and the raw coordinate members are a host-side source
   mirror, not a claim that the 64-bit C++ class has the original ARM ABI or is
   byte-identical.
