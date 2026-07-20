@@ -55,15 +55,22 @@ compile_one() {
   # own operator new/delete in src/runtime/ndk_libcxxabi_new_delete.cpp). They build with the
   # toolchain library's own flags — the libc++abi src/ dir on the include path and the C++17
   # aligned-allocation feature — so the objects byte-match what the binary linked from libc++abi.
-  local extra=""
+  local -a args=()
+  local flag
+  while IFS= read -r flag || [ -n "$flag" ]; do
+    [ -n "$flag" ] && args+=("$flag")
+  done <<< "$GOF2_MATCH_CXXFLAGS"
   case "$src" in
-    src/runtime/*) extra="-faligned-allocation -isystem ${NDK:-/opt/android-ndk-r18b}/sources/cxx-stl/llvm-libc++abi/src" ;;
+    src/runtime/*)
+      args+=("-faligned-allocation" "-isystem"
+             "${NDK:-/opt/android-ndk-r18b}/sources/cxx-stl/llvm-libc++abi/src")
+      ;;
   esac
   # Retry transient failures (wrapper/toolchain hiccups under parallel load drop TUs and cause
   # false "absent" symbols). A real compile error prints `error:` -> fail fast, don't waste retries.
   local attempt
   for attempt in 1 2 3; do
-    if "$HERE/orbcc" $GOF2_MATCH_CXXFLAGS $extra -MMD -MF "$dep" -c "$src" -o "$obj" >"$log" 2>&1; then
+    if "$HERE/orbcc" "${args[@]}" -MMD -MF "$dep" -c "$src" -o "$obj" >"$log" 2>&1; then
       rm -f "$log"
       return 0
     fi

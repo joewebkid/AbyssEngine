@@ -119,15 +119,25 @@ def original_text_functions():
     return {n for a, ns in addr2names.items() if ta <= a < te for n in ns}
 
 
-def find_symbol_objects(build_dir, sym):
-    """Locate the (base_o, target_o) that define a given symbol, for --show."""
+def find_symbol_objects(build_dir, sym, unit=None):
+    """Locate the (base_o, target_o) that define a given symbol, for --show.
+
+    A targeted unit avoids disassembling every base object first. This matters on
+    the Windows/MSYS fallback, where each ARM objdump process is comparatively
+    expensive.
+    """
     target_root = os.path.join(build_dir, "target")
-    for unit, base_o in find_base_objects(build_dir):
+    if unit:
+        base_o = os.path.join(build_dir, "base", unit + ".o")
+        candidates = [(unit, base_o)] if os.path.isfile(base_o) else []
+    else:
+        candidates = find_base_objects(build_dir)
+    for candidate_unit, base_o in candidates:
         bf = asmdiff.disassemble(base_o)
         if sym in bf:
-            target_o = os.path.join(target_root, unit + ".o")
+            target_o = os.path.join(target_root, candidate_unit + ".o")
             delink(base_o, target_o)
-            return unit, base_o, target_o, bf
+            return candidate_unit, base_o, target_o, bf
     return None
 
 
@@ -209,6 +219,8 @@ def main():
     ap.add_argument("--show", nargs="?", const="", default=None, metavar="SYMBOL",
                     help="print side-by-side disassembly diff for one symbol "
                          "(falls back to the FN environment variable)")
+    ap.add_argument("--unit", default=None, metavar="UNIT",
+                    help="limit --show to base/UNIT.o (for example game/menu/MGame)")
     ap.add_argument("--report", default=None, help="write JSON report to this path")
     ap.add_argument("--fail-on-wrong-type", action="store_true",
                     help="exit non-zero if any function is implemented under a different "
@@ -223,7 +235,7 @@ def main():
         if not sym:
             print("set the symbol: --show <mangled> or FN=<mangled>")
             return 1
-        found = find_symbol_objects(args.build_dir, sym)
+        found = find_symbol_objects(args.build_dir, sym, args.unit)
         if not found:
             print(f"symbol not found in any base object: {sym}")
             return 1

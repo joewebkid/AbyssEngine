@@ -86,7 +86,7 @@ KIND-SPECIFIC:
 - wrong_type: we implement it under a different signature. Retype our params/qualifiers (and, for C1/C2/D0/D1/D2 'same demangled, different mangled' cases, recover the polymorphic vtable / emit the missing ctor/dtor variant) so it mangles to the original.
 
 BUILD-GATE (MANDATORY) — compile EVERY .cpp you edited, in BASH (the login shell is zsh which will NOT word-split the flags; you MUST use 'bash -c'. Write the .o UNDER THE REPO, never /tmp — /tmp is inside the OrbStack VM):
-  cd ${REPO} && bash -c '. tools/verify/match_flags.sh; tools/verify/orbcc $GOF2_MATCH_CXXFLAGS -c src/<file>.cpp -o ./_chk_<n>.o; echo EXIT $?'
+  cd ${REPO} && bash -c '. ./tools/verify/match_flags.sh; flags=(); while IFS= read -r flag || [ -n "$flag" ]; do [ -n "$flag" ] && flags+=("$flag"); done <<< "$GOF2_MATCH_CXXFLAGS"; tools/verify/orbcc "${flags[@]}" -c src/<file>.cpp -o ./_chk_<n>.o; echo EXIT $?'
 Every compile MUST print EXIT 0. Then confirm each symbol exists under its correct mangled name from
 NORMAL C++ (not an asm override): tools/verify/orbnm ./_chk_<n>.o | grep <mangled-or-substring>.
 Remove the _chk_*.o when done. (Do NOT chase asm/byte equality — compiling cleanly + the right

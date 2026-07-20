@@ -87,8 +87,11 @@ def main():
             print("[relink] link failed:\n" + "\n".join(r.stderr.splitlines()[:20]))
             return 1
         print(f"[relink] {len(rel32)} object(s) need -fPIC; rebuilding: {[os.path.basename(x) for x in rel32]}")
-        flags = subprocess.run([". tools/verify/match_flags.sh; echo $GOF2_MATCH_CXXFLAGS"],
-                               shell=True, cwd=ROOT, capture_output=True, text=True).stdout.split()
+        bash = os.environ.get("GOF2_BASH", r"C:\\msys64\\usr\\bin\\bash.exe" if os.name == "nt" else "bash")
+        flags = subprocess.run(
+            [bash, "-lc", ". ./tools/verify/match_flags.sh; printf '%s\\n' \"$GOF2_MATCH_CXXFLAGS\""],
+            cwd=ROOT, capture_output=True, text=True,
+        ).stdout.splitlines()
         tmp = tempfile.mkdtemp(prefix="relink_pic_")
         fixed = {}
         for o in rel32:

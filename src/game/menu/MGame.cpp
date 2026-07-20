@@ -2029,13 +2029,7 @@ static void mgame_dispatch_hud_menu(MGame *self, unsigned int actions) {
 void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
     if (this->activeTouchId == touchId) {
         this->activeTouchId = 0;
-        this->field_0xc1 = 0;
-        this->field_0xc2 = 0;
-        this->field_0xc3 = 0;
     }
-
-    if (this->player == nullptr || this->hud == nullptr)
-        return;
 
     this->flFastForwardWeight = 1.0f;
     TFC_setFastForwardMode(this->camera, 0);

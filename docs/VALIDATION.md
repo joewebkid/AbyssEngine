@@ -32,6 +32,9 @@ FN=_Z8ArrayAddIP14AEPakFileEntryEvT_R5ArrayIS2_E cmake --build cmake-build-match
 # or directly:
 python3 tools/verify/verify.py --build-dir cmake-build-match/verify --no-build --only '^_ZN5Radar'
 python3 tools/verify/verify.py --build-dir cmake-build-match/verify --no-build --show _ZN5Radar10hasScannerEv
+# On Windows/MSYS, add the known translation unit to avoid scanning every object:
+python3 tools/verify/verify.py --build-dir cmake-build-match/verify --no-build \
+  --unit game/menu/MGame --show _ZN5MGame10OnTouchEndEiiPv
 ```
 
 Normal development is unchanged: `cmake --preset debug` still uses local Apple

@@ -9,9 +9,13 @@
 # Paths below are resolved in the active backend: OrbStack ubuntu when `orb` is
 # available, or the local NDK fallback when GOF2_VERIFY_LOCAL_NDK=1 is set.
 
-HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+HERE="${BASH_SOURCE[0]%/*}"
+HERE="$(cd "$HERE" && pwd)"
 REPO="$(cd "$HERE/../.." && pwd)"
 
+if [ -z "${NDK:-}" ]; then
+  NDK="${GOF2_NDK_ROOT:-}"
+fi
 if [ -z "${NDK:-}" ]; then
   if [ -d "$REPO/.cache/ndk/android-ndk-r18b" ]; then
     NDK="$REPO/.cache/ndk/android-ndk-r18b"
@@ -24,19 +28,39 @@ fi
 # is needed so libc++ <cmath> finds bionic's C99 math (16 fails to compile).
 : "${GOF2_MATCH_API:=21}"
 
-GOF2_MATCH_CXXFLAGS="\
--target armv7-none-linux-androideabi${GOF2_MATCH_API} \
--march=armv7-a -mthumb -mfpu=neon -mfloat-abi=softfp \
--fpic -frtti -fstack-protector ${GOF2_MATCH_OPT} \
--stdlib=libc++ \
--isystem ${NDK}/sources/cxx-stl/llvm-libc++/include \
--isystem ${NDK}/sources/cxx-stl/llvm-libc++abi/include \
--isystem ${NDK}/sources/android/support/include \
---sysroot=${NDK}/sysroot \
--isystem ${NDK}/sysroot/usr/include \
--isystem ${NDK}/sysroot/usr/include/arm-linux-androideabi \
--D__ANDROID_API__=${GOF2_MATCH_API} \
--Wno-int-to-pointer-cast -Wno-int-to-void-pointer-cast \
--Isrc -Ithird_party/fmod/inc -Ithird_party/gl -Ithird_party/jni -Ithird_party/libzip -Ithird_party/crypto"
+# One argument per line. build_objs.sh turns this back into a Bash array before
+# invoking clang, so a local NDK/repository path with spaces stays one argument.
+GOF2_MATCH_CXXFLAGS="$(printf '%s\n' \
+  -target \
+  "armv7-none-linux-androideabi${GOF2_MATCH_API}" \
+  -march=armv7-a \
+  -mthumb \
+  -mfpu=neon \
+  -mfloat-abi=softfp \
+  -fpic \
+  -frtti \
+  -fstack-protector \
+  "${GOF2_MATCH_OPT}" \
+  -stdlib=libc++ \
+  -isystem \
+  "${NDK}/sources/cxx-stl/llvm-libc++/include" \
+  -isystem \
+  "${NDK}/sources/cxx-stl/llvm-libc++abi/include" \
+  -isystem \
+  "${NDK}/sources/android/support/include" \
+  "--sysroot=${NDK}/sysroot" \
+  -isystem \
+  "${NDK}/sysroot/usr/include" \
+  -isystem \
+  "${NDK}/sysroot/usr/include/arm-linux-androideabi" \
+  "-D__ANDROID_API__=${GOF2_MATCH_API}" \
+  -Wno-int-to-pointer-cast \
+  -Wno-int-to-void-pointer-cast \
+  -Isrc \
+  -Ithird_party/fmod/inc \
+  -Ithird_party/gl \
+  -Ithird_party/jni \
+  -Ithird_party/libzip \
+  -Ithird_party/crypto)"
 
 export GOF2_MATCH_CXXFLAGS
