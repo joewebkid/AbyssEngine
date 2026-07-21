@@ -101,6 +101,7 @@ metadata only; original game binaries and asset dumps are not included.
 - [Agent guide](AGENTS.md)
 - [Validation](docs/VALIDATION.md)
 - [Identicality roadmap](docs/IDENTICALITY.md)
+- [Level particle-system recovery](docs/LEVEL_PARTICLE_SYSTEMS_2026-07-21.md)
 - [AEM/AEI loader notes](docs/AEM_AEI_NATIVE_LOADER_SPEC.md)
 - [DeepOpen J2ME crosswalk](docs/DEEPOPEN_J2ME_CROSSWALK_2026-07-20.md)
 - [Recovery evidence guide (RU)](docs/RECOVERY_EVIDENCE_GUIDE_RU.md)

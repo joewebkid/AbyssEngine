@@ -10,9 +10,11 @@ class Level;
 
 class SentryGun : public ObjectGun {
 public:
-    int cooldown;
+    // Android body stores `gun->itemIndex * 3 - 633`: a base index into the
+    // Level-owned array of nine reusable sentry KIPlayer objects.
+    int spawnPoolStartIndex;
 
-    SentryGun(Gun *gun, int mesh, int unused, int p4, Level *level);
+    SentryGun(Gun *gun, int meshId, int objectGunArgument, int familyTag, Level *level);
 
     ~SentryGun();
 

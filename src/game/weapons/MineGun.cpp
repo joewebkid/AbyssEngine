@@ -1,6 +1,7 @@
 #include "game/weapons/MineGun.h"
 #include "game/weapons/ObjectGun.h"
 #include "game/weapons/Gun.h"
+#include "game/core/Globals.h"
 #include "game/ship/TargetFollowCamera.h"
 #include "game/ship/PlayerEgo.h"
 #include "game/mission/Explosion.h"
@@ -8,9 +9,6 @@
 #include "engine/render/AEGeometry.h"
 #include "engine/math/AEMath.h"
 #include "engine/math/Transform.h"
-
-
-static void *g_PaintCanvas = nullptr;
 
 MineGun::MineGun(Gun *gun, int mesh, int param, int unused, Level *level)
     : ObjectGun(param, gun, mesh, 0, level) {
@@ -30,11 +28,11 @@ MineGun::MineGun(Gun *gun, int mesh, int param, int unused, Level *level)
         this->readyFlags[i] = 1;
     }
 
-    void **canvas = (void **) g_PaintCanvas;
-    this->geometry = new AEGeometry((uint16_t)(mesh + 1), (PaintCanvas *) *canvas, false);
-    ((PaintCanvas *) *canvas)->TransformAddChild(this->transform, this->geometry->transform);
+    PaintCanvas *canvas = static_cast<PaintCanvas *>(Globals::Canvas);
+    this->geometry = new AEGeometry((uint16_t)(mesh + 1), canvas, false);
+    canvas->TransformAddChild(this->transform, this->geometry->transform);
 
-    void *transform = ((PaintCanvas *) *canvas)->TransformGetTransform(this->geometry->transform);
+    void *transform = canvas->TransformGetTransform(this->geometry->transform);
     ((AbyssEngine::Transform *) transform)->SetAnimationState((AbyssEngine::AnimationMode) 2, 0);
 }
 
@@ -75,10 +73,9 @@ void MineGun::setPlayer(PlayerEgo *player) {
 void MineGun::update(int delta) {
     ObjectGun::update(delta);
 
-    void **canvas = (void **) g_PaintCanvas;
     if (this->gun->active != 0) {
-        void *transform =
-                ((PaintCanvas *) *canvas)->TransformGetTransform(this->geometry->transform);
+        PaintCanvas *canvas = static_cast<PaintCanvas *>(Globals::Canvas);
+        void *transform = canvas->TransformGetTransform(this->geometry->transform);
         ((AbyssEngine::Transform *) transform)->Update((long long) delta, 0);
     }
 

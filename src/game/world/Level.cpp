@@ -28,6 +28,7 @@ float Level::b;
 #include "game/weapons/ObjectGun.h"
 #include "game/core/RadioMessage.h"
 #include "engine/render/ParticleSystemManager.h"
+#include "engine/render/ParticleSettingsRef.h"
 #include "game/world/StarSystem.h"
 #include "engine/core/AbyssEngine.h"
 #include "engine/core/AERandom.h"
@@ -62,25 +63,95 @@ float Level::b;
 
 namespace {
 
-struct EngineColorEntry {
-    uint32_t color;
-    uint8_t pad[0x9c];
+// Android ARMv7 ParticleSettingsRef::cur slot layout. The host-side
+// ParticleSettings declaration cannot be used for this table directly because
+// its String member follows host pointer sizing; the native slots are 0xa0
+// bytes and Level::initParticleSystems writes them by fixed ARM offsets.
+struct EngineParticleSetArm {
+    uint8_t name[0x0c];
+    uint32_t flags;
+    uint32_t count;
+    float lifeBase;
+    uint32_t lifeRandom;
+    float startSize;
+    float endSize;
+    float velocityFromSlot;
+    int32_t lifetime;
+    float flLifetime;
+    uint32_t oneShot;
+    uint32_t color0;
+    uint32_t color1;
+    uint32_t fadeFrames;
+    float colorFlag;
+    int32_t posBase;
+    int32_t posSpread;
+    int32_t ySpread;
+    int32_t velSpread;
+    uint32_t field_0x54;
+    float velBaseX;
+    float velBaseY;
+    float velBaseZ;
+    float drag;
+    float velRight;
+    float velUp;
+    float velDir;
+    uint32_t field_0x74;
+    float posRight;
+    float posUp;
+    float posDir;
+    float posDirRandom;
+    float uvU0;
+    float uvV0;
+    float uvU1;
+    float uvV1;
+    int32_t speedThreshold;
+    int32_t frames;
 };
 
-struct EngineColorTable {
-    uint8_t field_0x0[0x1254];
-    union {
-        uint32_t engineColorEntry0;
-        EngineColorEntry entries[1];
-    };
+static_assert(sizeof(EngineParticleSetArm) == 0xa0,
+              "Android ParticleSettings slot stride must remain 0xa0");
+static_assert(offsetof(EngineParticleSetArm, count) == 0x10,
+              "Android ParticleSettings::count offset must remain 0x10");
+static_assert(offsetof(EngineParticleSetArm, color0) == 0x34,
+              "Android ParticleSettings::color0 offset must remain 0x34");
+static_assert(offsetof(EngineParticleSetArm, posBase) == 0x44,
+              "Android ParticleSettings::posBase offset must remain 0x44");
+static_assert(offsetof(EngineParticleSetArm, velDir) == 0x70,
+              "Android ParticleSettings::velDir offset must remain 0x70");
+static_assert(offsetof(EngineParticleSetArm, uvU0) == 0x88,
+              "Android ParticleSettings::uvU0 offset must remain 0x88");
+
+constexpr unsigned int kFirstEngineParticleSet = 0x1d;
+
+// Android rodata: 0x1fc3d0 (one 1-based atlas variant per ship index).
+constexpr uint8_t kEngineParticleVariantByShip[64] = {
+    3, 0, 8, 3, 2, 0, 3, 0, 9, 1, 0, 8, 2, 0, 0, 0,
+    2, 0, 2, 3, 3, 2, 0, 8, 8, 8, 0, 0, 0, 8, 3, 2,
+    8, 0, 0, 2, 0, 0, 0, 1, 0, 1, 1, 2, 1, 3, 3, 3,
+    3, 1, 1, 0, 8, 1, 1, 0, 3, 2, 0, 0, 8, 1, 3, 1,
 };
 
-static_assert(sizeof(EngineColorEntry) == 0xa0,
-              "EngineColorEntry stride must be 0xa0");
-static_assert(offsetof(struct EngineColorTable, engineColorEntry0) == 0x1254,
-              "engineColorEntry0 must live at table offset 0x1254");
-static_assert(offsetof(struct EngineColorTable, entries) == 0x1254,
-              "entries must live at table offset 0x1254");
+// Android rodata: 0x1fdba0, 0x1fdbd0, 0x1fdc00, 0x1fdc30.
+constexpr float kEngineParticleUvU0[9] = {
+    0.376953125f, 0.12890625f, 0.005859375f, 0.251953125f, 0.251953125f,
+    0.251953125f, 0.251953125f, 0.501953125f, 0.626953125f,
+};
+constexpr float kEngineParticleUvV0[9] = {
+    0.001953125f, 0.005859375f, 0.005859375f, 0.001953125f, 0.001953125f,
+    0.001953125f, 0.001953125f, 0.001953125f, 0.001953125f,
+};
+constexpr float kEngineParticleUvU1[9] = {
+    0.498046875f, 0.24609375f, 0.119140625f, 0.373046875f, 0.373046875f,
+    0.373046875f, 0.373046875f, 0.623046875f, 0.748046875f,
+};
+constexpr float kEngineParticleUvV1[9] = {
+    0.123046875f, 0.12109375f, 0.119140625f, 0.123046875f, 0.123046875f,
+    0.123046875f, 0.123046875f, 0.123046875f, 0.123046875f,
+};
+
+EngineParticleSetArm *levelCurrentParticleSets() {
+    return reinterpret_cast<EngineParticleSetArm *>(ParticleSettingsRef::cur);
+}
 
 // Android Level::createScene(mode 23) rodata. These tables assemble the
 // station hangar, not the separate ListItemWindow ship-preview renderer.
@@ -158,8 +229,6 @@ Matrix *CameraGetLocal(void *canvas, uint32_t index);
 
 
 static unsigned char *g_initStreamOut = nullptr;
-
-static int *g_engineColorBase = nullptr;
 
 static int *g_cg_beamTable = nullptr;
 
@@ -863,10 +932,11 @@ void Level::alarmAllFriends(int race, bool message) {
 void Level::setPlayerEngineColor(short color) {
     int c = color;
     if (player != nullptr && field_a4 != nullptr) {
-        EngineColorTable *table = (EngineColorTable *) g_engineColorBase;
+        EngineParticleSetArm *particleSets = levelCurrentParticleSets();
         int count = (int) field_a4->size();
         for (int i = 0; i < count; i = i + 1) {
-            table->entries[i].color = c << 0x10 | c << 0x18 | c << 8 | 0xff;
+            particleSets[kFirstEngineParticleSet + i].color0 =
+                c << 0x10 | c << 0x18 | c << 8 | 0xff;
         }
     }
 }
@@ -3822,6 +3892,64 @@ void Level::initParticleSystems() {
         if (this->field_a4 != nullptr) {
             this->field_a8 = new Array<int>();
             ArraySetLength(this->field_a4->size(), *(this->field_a8));
+
+            // Android Level::initParticleSystems @ 0xbd6f8 creates one
+            // player-transform-attached sprite system per engine nozzle, then
+            // specializes ParticleSettingsRef::cur[29 + nozzle] in place.
+            EngineParticleSetArm *particleSets = levelCurrentParticleSets();
+            Player *playerData = static_cast<Player *>(this->player->player);
+            Ship *ship = Status::gStatus->getShip();
+            unsigned int atlasVariant =
+                static_cast<unsigned int>(kEngineParticleVariantByShip[ship->getIndex()]) - 1u;
+
+            for (unsigned int i = 0; i < this->field_a4->size(); i = i + 1) {
+                AEGeometry *nozzle = (*this->field_a4)[i];
+                EngineParticleSetArm &settings = particleSets[kFirstEngineParticleSet + i];
+
+                int handle = this->field_80->addSystem(
+                    &playerData->transformMatrix,
+                    static_cast<ParticleSettings::ParticleSet>(kFirstEngineParticleSet + i), false);
+                (*this->field_a8)[i] = handle;
+
+                Vector position = nozzle->getPosition();
+                settings.posRight = position.x;
+                position = nozzle->getPosition();
+                settings.posUp = position.y;
+
+                Vector scaling = nozzle->getScaling();
+                float scaledSize = scaling.x * 1.5f;
+                settings.lifetime = scaledSize < 1.0f
+                    ? static_cast<int>(scaledSize * 80.0f)
+                    : 80;
+
+                scaling = nozzle->getScaling();
+                settings.lifeBase = scaling.x * 250.0f;
+                settings.count = 20;
+                settings.flLifetime = 8.0f;
+                settings.posBase = -1000;
+
+                position = nozzle->getPosition();
+                settings.posDir = position.z;
+                scaling = nozzle->getScaling();
+                scaledSize = scaling.x * 1.5f;
+                settings.velDir = scaledSize < 1.0f
+                    ? scaledSize * -4000.0f
+                    : -4000.0f;
+                settings.color0 = 0xDDDDDDFF;
+                settings.color1 = 0;
+                settings.colorFlag = 0.8f;
+
+                settings.uvU0 = 0.251953125f;
+                settings.uvV0 = 0.001953125f;
+                settings.uvU1 = 0.373046875f;
+                settings.uvV1 = 0.123046875f;
+                if (atlasVariant <= 8u) {
+                    settings.uvU0 = kEngineParticleUvU0[atlasVariant];
+                    settings.uvV0 = kEngineParticleUvV0[atlasVariant];
+                    settings.uvU1 = kEngineParticleUvU1[atlasVariant];
+                    settings.uvV1 = kEngineParticleUvV1[atlasVariant];
+                }
+            }
         }
 
         PaintCanvas *canvas = PaintCanvas::gCanvas;

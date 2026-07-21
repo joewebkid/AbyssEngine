@@ -28,8 +28,10 @@ static inline float tfcDampingFactor(const double coeffs[5], int dt) {
     const double t2 = t * t;
     const double t3 = t2 * t;
     const double t4 = t3 * t;
-    return static_cast<float>((coeffs[4] + coeffs[1] * t2 + coeffs[0] * t +
-                               coeffs[2] * t3 + coeffs[3] * t4) /
+    // ARM 0x15b128 / 0x15b1e8 evaluates c0*t^4 + c1*t^3 + c2*t^2
+    // + c3*t + c4, then divides by dt before Vector::operator*=.
+    return static_cast<float>((coeffs[0] * t4 + coeffs[1] * t3 +
+                               coeffs[2] * t2 + coeffs[3] * t + coeffs[4]) /
                               static_cast<float>(dt));
 }
 
@@ -72,8 +74,10 @@ TargetFollowCamera::TargetFollowCamera(unsigned id, AEGeometry *target,
     this->zoom = zoom;
     this->fixed = 0;
 
+    // Android HD 0x15a4c8 seeds A with the literal 0.005, not camera zoom.
     aproximateCooefficientsForAproximationOfDampingFunktion(
-        zoom, dampCoeffA[0], dampCoeffA[1], dampCoeffA[2], dampCoeffA[3], dampCoeffA[4]);
+        this->handlingDampingA,
+        dampCoeffA[0], dampCoeffA[1], dampCoeffA[2], dampCoeffA[3], dampCoeffA[4]);
     aproximateCooefficientsForAproximationOfDampingFunktion(
         this->handlingDampingB,
         dampCoeffB[0], dampCoeffB[1], dampCoeffB[2], dampCoeffB[3], dampCoeffB[4]);
@@ -202,13 +206,15 @@ void TargetFollowCamera::setShipHandling(float handling) {
     this->shipHandling = handling;
     this->handlingDampingA = 0.003f + (1.0f - s) * 0.015f;
     this->handlingDampingB = 0.001f + s * 0.011f;
-    update(1);
+    // Android HD 0x15b574 rebuilds both approximation coefficient sets.
+    calculateCoefficents(1.0f);
 }
 
 void TargetFollowCamera::resetShipHandling() {
     this->handlingDampingA = bitsToFloat(0x3ba3d70a);
     this->handlingDampingB = bitsToFloat(0x3bc49ba6);
-    update(1);
+    // Android HD 0x15b5d4 rebuilds both approximation coefficient sets.
+    calculateCoefficents(1.0f);
 }
 
 // IDA 0x15b4a4: _ZN18TargetFollowCamera20calculateCoefficentsEf
