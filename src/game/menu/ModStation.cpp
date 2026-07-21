@@ -31,9 +31,49 @@
 #include "game/ui/TouchButton.h"
 #include "game/ui/MenuTouchWindow.h"
 #include "game/world/Wanted.h"
+#include "engine/math/AEMath.h"
 
 using AbyssEngine::AEMath::VectorSignedToFloat;
 using AbyssEngine::AEMath::Matrix;
+
+namespace {
+
+// Android libgof2hdaa.so rodata: 0x1fdf40 (iPad) and 0x1fdfb8 (phone).
+constexpr int kStationCameraCoordinatesIPad[9][3] = {
+    {725, 899, -2271}, {1630, 1199, -1933}, {-2934, 1027, -1890},
+    {1759, 909, -2232}, {0, 0, 0}, {0, 0, 0},
+    {0, 0, 0}, {1200, 800, -2978}, {1759, 909, -2232},
+};
+
+constexpr int kStationCameraCoordinatesPhone[9][3] = {
+    {1076, 900, -2273}, {1787, 1086, -1632}, {-2247, 1010, -1845},
+    {1800, 800, -1778}, {0, 0, 0}, {0, 0, 0},
+    {0, 0, 0}, {1200, 800, -2678}, {2200, 800, -1678},
+};
+
+// Android libgof2hdaa.so rodata: 0x1fe030, 0x1fe058, and 0x1fe080.
+constexpr float kStationCameraPitch[9] = {
+    -0.27f, -0.30f, -0.18f, -0.20f, 0.0f, 0.0f, 0.0f, -0.20f, -0.20f,
+};
+
+constexpr float kStationCameraYawIPad[9] = {
+    -3.36f, -3.75f, -2.05f, 2.57f, 0.0f, 0.0f, 0.0f, 3.00f, 2.35f,
+};
+
+constexpr float kStationCameraYawPhone[9] = {
+    -3.36f, -3.75f, -2.05f, 2.57f, 0.0f, 0.0f, 0.0f, 3.00f, 2.50f,
+};
+
+const int *modStationCameraCoordinates() {
+    return Globals::iPad ? &kStationCameraCoordinatesIPad[0][0]
+                         : &kStationCameraCoordinatesPhone[0][0];
+}
+
+const float *modStationCameraYaw() {
+    return Globals::iPad ? kStationCameraYawIPad : kStationCameraYawPhone;
+}
+
+} // namespace
 
 struct HangarWindow {
     void OnTouchBegin(int touch, int coord);
@@ -108,10 +148,6 @@ int FModSound_tryToStopMusicForBGMusic();
 
 
 
-
-void AEMath_MatrixSetTranslation(void *m, int x, int y, int z);
-
-void AEMath_MatrixSetRotation(void *m, void *loc, int rx, int ry, int a4, int a5);
 
 int Station_getIndex(Station * st);
 
@@ -431,9 +467,6 @@ int Status_getSystem_msc();
 
 int SolarSystem_getRace_msc();
 
-const int *ModStation_msc_camCoordTable();
-const int *ModStation_msc_camRotTable();
-
 ModStation::ModStation() {
     this->dt = 0;
     this->cameraTweenFlags.bytes[3] = 0;
@@ -469,25 +502,28 @@ ModStation::ModStation() {
 
     AbyssEngine::EaseInOutMatrix *cam;
     {
-        const int *coord = ModStation_msc_camCoordTable();
-        const int *rot = ModStation_msc_camRotTable();
+        const int *coord = modStationCameraCoordinates();
+        const float *yawTable = modStationCameraYaw();
 
         int ix = race * 3, iy = race * 3 + 1, iz = race * 3 + 2;
         float kx = VectorSignedToFloat(coord[ix], 0);
         float ky = VectorSignedToFloat(coord[iy], 0);
         float kz = VectorSignedToFloat(coord[iz], 0);
-        float yaw = VectorSignedToFloat(rot[race], 0);
+        float pitch = kStationCameraPitch[race];
+        float yaw = yawTable[race];
 
-        this->camCoordX = kx;
-        this->camCoordY = ky;
-        this->camCoordZ = kz;
+        this->camKeyX = kx;
+        this->camKeyY = ky;
+        this->camKeyZ = kz;
 
         Matrix nearKey, farKey;
-        MatrixSetTranslation(nearKey, kx, ky, kz);
-        MatrixSetRotation(nearKey, 0.0f, yaw, 0.0f);
+        AbyssEngine::AEMath::MatrixSetTranslation(nearKey, kx, ky, kz);
+        AbyssEngine::AEMath::MatrixSetRotation(
+            nearKey, pitch, yaw, 0.0f, AbyssEngine::AEMath::ROTATION_ORDER_YXZ);
 
-        MatrixSetTranslation(farKey, kx, ky, kz);
-        MatrixSetRotation(farKey, 0.0f, yaw, 0.0f);
+        AbyssEngine::AEMath::MatrixSetTranslation(farKey, kx, ky, kz);
+        AbyssEngine::AEMath::MatrixSetRotation(
+            farKey, pitch, yaw, 0.0f, AbyssEngine::AEMath::ROTATION_ORDER_YXZ);
 
         cam = new AbyssEngine::EaseInOutMatrix(nearKey, farKey, 3000);
     }
@@ -1108,15 +1144,7 @@ epilogue:;
 }
 
 
-static void **g_ModStation_ric_chk = 0;
-
-static int *g_ModStation_ric_rotX = 0;
-
-static int *g_ModStation_ric_rotY = 0;
-
 void ModStation::resetIdleCamForHangar() {
-    char matrix[60];
-
     if (this->cutScene != 0)
         ((CutScene *) (this->cutScene))->resetCamera();
 
@@ -1141,12 +1169,6 @@ void ModStation::resetIdleCamForHangar() {
         this->easeZ = new AbyssEngine::EaseInOut(this->camKeyZ,
                                                                         this->camKeyZ);
 
-    PaintCanvas::gCanvas->CameraGetCurrent();
-    void *loc = PaintCanvas::gCanvas->CameraGetLocal((unsigned int) (long) PaintCanvas::gCanvas);
-
-    AEMath_MatrixSetTranslation(matrix, this->camKeyX, this->camKeyY,
-                                this->camKeyZ);
-
     int race;
     Station *st = Status::gStatus->getStation();
     if (Station_getIndex(st) == 0x65) {
@@ -1160,10 +1182,13 @@ void ModStation::resetIdleCamForHangar() {
         }
     }
 
-    PaintCanvas::gCanvas->CameraGetCurrent();
-    void *loc2 = PaintCanvas::gCanvas->CameraGetLocal((unsigned int) (long) PaintCanvas::gCanvas);
-    AEMath_MatrixSetRotation(matrix, loc2, g_ModStation_ric_rotX[race], g_ModStation_ric_rotY[race], 0, 2);
-    (void) loc;
+    const unsigned int camera = PaintCanvas::gCanvas->CameraGetCurrent();
+    Matrix *local = static_cast<Matrix *>(PaintCanvas::gCanvas->CameraGetLocal(camera));
+    AbyssEngine::AEMath::MatrixSetTranslation(*local, this->camKeyX, this->camKeyY, this->camKeyZ);
+    // The Android reset path always reads the phone yaw table at 0x1fe080.
+    AbyssEngine::AEMath::MatrixSetRotation(
+        *local, kStationCameraPitch[race], kStationCameraYawPhone[race], 0.0f,
+        AbyssEngine::AEMath::ROTATION_ORDER_YXZ);
 }
 
 
@@ -2745,8 +2770,6 @@ void Generator_dtor_oi(Generator * g);
 void Generator_computerTradeGoods_oi(Generator * g, Station * s);
 int Generator_getShipBuyList_oi(Station * s);
 
-const int *ModStation_msc_camCoordTable();
-const int *ModStation_msc_camRotTable();
 unsigned ModStation_oi_cameraHandle();
 void ModStation_oi_setCameraLocal(unsigned h, const Matrix &m);
 int GameText_getText_oiImpl(int id);
@@ -2837,18 +2860,20 @@ void ModStation::OnInitialize() {
             }
         }
         {
-            const int *coord = ModStation_msc_camCoordTable();
-            const int *rot = ModStation_msc_camRotTable();
+            const int *coord = modStationCameraCoordinates();
+            const float *yawTable = modStationCameraYaw();
             float kx = VectorSignedToFloat(coord[race * 3 + 0], 0);
             float ky = VectorSignedToFloat(coord[race * 3 + 1], 0);
             float kz = VectorSignedToFloat(coord[race * 3 + 2], 0);
-            float yaw = VectorSignedToFloat(rot[race], 0);
-            this->camCoordX = kx;
-            this->camCoordY = ky;
-            this->camCoordZ = kz;
+            float pitch = kStationCameraPitch[race];
+            float yaw = yawTable[race];
+            this->camKeyX = kx;
+            this->camKeyY = ky;
+            this->camKeyZ = kz;
             Matrix key;
-            MatrixSetTranslation(key, kx, ky, kz);
-            MatrixSetRotation(key, 0.0f, yaw, 0.0f);
+            AbyssEngine::AEMath::MatrixSetTranslation(key, kx, ky, kz);
+            AbyssEngine::AEMath::MatrixSetRotation(
+                key, pitch, yaw, 0.0f, AbyssEngine::AEMath::ROTATION_ORDER_YXZ);
             ModStation_oi_setCameraLocal(ModStation_oi_cameraHandle(), key);
         }
         this->resetLight();
@@ -3329,4 +3354,3 @@ int Status_holder_frag();
 int GameText_root_frag();
 
 int Status_getCredits_frag();
-

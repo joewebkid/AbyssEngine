@@ -124,9 +124,9 @@ public:
     int field_0x124;          // 0x124
     void *activeTouch;        // 0x128
     FlagWord field_0x12c;     // 0x12c
-    int camKeyX;              // 0x130
-    int camKeyY;              // 0x134
-    int camKeyZ;              // 0x138
+    float camKeyX;            // 0x130, Android ModStation camera key X
+    float camKeyY;            // 0x134, Android ModStation camera key Y
+    float camKeyZ;            // 0x138, Android ModStation camera key Z
     void *easeX;              // 0x13c  AbyssEngine::EaseInOut*
     void *easeY;              // 0x140
     void *easeZ;              // 0x144

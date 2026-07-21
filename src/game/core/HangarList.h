@@ -21,7 +21,10 @@ class HangarList {
 public:
     Array<Array<ListItem *> *> *tabs;
     uint32_t currentTab;
-    ListItem *currentItem;
+    // Android HD stores the selected row as an int at HangarList+0x08, not as
+    // a ListItem pointer. Keeping the native representation prevents tab and
+    // selection state from aliasing pointer bits on 64-bit host builds.
+    int currentItemIndex;
 
     HangarList();
 

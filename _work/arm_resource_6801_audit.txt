@@ -1,0 +1,86 @@
+binary=_work\bins\android_2.0.16_libgof2hdaa.so
+BuildResourceList=0x000e8f54..0x00112c88
+resource_id=6801 (0x1a91)
+projectile_025_string=0x001d64bd
+decoded_thumb_instructions=64307
+
+=== direct match 1: 0x000fe8f8 ===
+    0x000fe8cc: 2b1d       adds    r3, r5, #4
+    0x000fe8ce: 2e80       strh    r6, [r5]
+    0x000fe8d0: 16c3       stm     r3!, {r1, r2, r4}
+    0x000fe8d2: 0560       str     r5, [r0]
+    0x000fe8d4: 1020       movs    r0, #0x10
+    0x000fe8d6: 60f726e9   blx     #0x5eb24
+    0x000fe8da: 0446       mov     r4, r0
+    0x000fe8dc: 0820       movs    r0, #8
+    0x000fe8de: 60f722e9   blx     #0x5eb24
+    0x000fe8e2: 0449       ldr     r1, [pc, #0x10]
+    0x000fe8e4: 0546       mov     r5, r0
+    0x000fe8e6: 7944       add     r1, pc
+    0x000fe8e8: 45f68962   movw    r2, #0x5e89
+    0x000fe8ec: 0023       movs    r3, #0
+    0x000fe8ee: 67f7c8ea   blx     #0x65e80 ; ResourceMesh::ResourceMesh(char const*, uint16_t, bool) thunk
+    0x000fe8f2: 01e0       b       #0xfe8f8
+    0x000fe8f4: d37b       ldrb    r3, [r2, #0xf]
+    0x000fe8f6: 0d00       movs    r5, r1
+>>> 0x000fe8f8: 41f69122   movw    r2, #0x1a91
+    0x000fe8fc: 08eb0600   add.w   r0, r8, r6
+    0x000fe900: 2280       strh    r2, [r4]
+    0x000fe902: 0421       movs    r1, #4
+    0x000fe904: 4ff0ff32   mov.w   r2, #-1
+    0x000fe908: 231d       adds    r3, r4, #4
+    0x000fe90a: 26c3       stm     r3!, {r1, r2, r5}
+    0x000fe90c: 0460       str     r4, [r0]
+    0x000fe90e: 1020       movs    r0, #0x10
+    0x000fe910: 60f708e9   blx     #0x5eb24
+    0x000fe914: 0546       mov     r5, r0
+    0x000fe916: 0820       movs    r0, #8
+    0x000fe918: 60f704e9   blx     #0x5eb24
+    0x000fe91c: 0449       ldr     r1, [pc, #0x10]
+    0x000fe91e: 0446       mov     r4, r0
+    0x000fe920: 7944       add     r1, pc
+    0x000fe922: 45f68962   movw    r2, #0x5e89
+    0x000fe926: 0023       movs    r3, #0
+    0x000fe928: 67f7aaea   blx     #0x65e80 ; ResourceMesh::ResourceMesh(char const*, uint16_t, bool) thunk
+
+ResourceMesh constructor/thunk calls in BuildResourceList: 1097
+=== ResourceMesh call linked to 6801 (1): 0x000fe8ee ===
+    0x000fe8c0: 41f69026   movw    r6, #0x1a90
+    0x000fe8c4: 4044       add     r0, r8
+    0x000fe8c6: 0421       movs    r1, #4
+    0x000fe8c8: 4ff0ff32   mov.w   r2, #-1
+    0x000fe8cc: 2b1d       adds    r3, r5, #4
+    0x000fe8ce: 2e80       strh    r6, [r5]
+    0x000fe8d0: 16c3       stm     r3!, {r1, r2, r4}
+    0x000fe8d2: 0560       str     r5, [r0]
+    0x000fe8d4: 1020       movs    r0, #0x10
+    0x000fe8d6: 60f726e9   blx     #0x5eb24
+    0x000fe8da: 0446       mov     r4, r0
+    0x000fe8dc: 0820       movs    r0, #8
+    0x000fe8de: 60f722e9   blx     #0x5eb24
+    0x000fe8e2: 0449       ldr     r1, [pc, #0x10]
+    0x000fe8e4: 0546       mov     r5, r0
+    0x000fe8e6: 7944       add     r1, pc
+    0x000fe8e8: 45f68962   movw    r2, #0x5e89
+    0x000fe8ec: 0023       movs    r3, #0
+>>> 0x000fe8ee: 67f7c8ea   blx     #0x65e80 ; ResourceMesh::ResourceMesh(char const*, uint16_t, bool) thunk
+    0x000fe8f2: 01e0       b       #0xfe8f8
+    0x000fe8f4: d37b       ldrb    r3, [r2, #0xf]
+    0x000fe8f6: 0d00       movs    r5, r1
+    0x000fe8f8: 41f69122   movw    r2, #0x1a91
+    0x000fe8fc: 08eb0600   add.w   r0, r8, r6
+    0x000fe900: 2280       strh    r2, [r4]
+    0x000fe902: 0421       movs    r1, #4
+    0x000fe904: 4ff0ff32   mov.w   r2, #-1
+    0x000fe908: 231d       adds    r3, r4, #4
+    0x000fe90a: 26c3       stm     r3!, {r1, r2, r5}
+    0x000fe90c: 0460       str     r4, [r0]
+    0x000fe90e: 1020       movs    r0, #0x10
+    0x000fe910: 60f708e9   blx     #0x5eb24
+    0x000fe914: 0546       mov     r5, r0
+    0x000fe916: 0820       movs    r0, #8
+    0x000fe918: 60f704e9   blx     #0x5eb24
+    0x000fe91c: 0449       ldr     r1, [pc, #0x10]
+    0x000fe91e: 0446       mov     r4, r0
+
+Direct immediate mentions of material 24201 (0x5e89): 0x000fe380, 0x000fe3bc, 0x000fe3f8, 0x000fe434, 0x000fe46e, 0x000fe4ac, 0x000fe4e8, 0x000fe524, 0x000fe560, 0x000fe5d8, 0x000fe614, 0x000fe64e, 0x000fe68c, 0x000fe6c8, 0x000fe704, 0x000fe740, 0x000fe77c, 0x000fe7b8, 0x000fe7f4, 0x000fe82e, 0x000fe86c, 0x000fe8aa, 0x000fe8e8, 0x000fe922, 0x000fe960, 0x000fe99c, 0x000fe9d8, 0x000fea12, 0x000fea50, 0x000fea8c, 0x000feac8, 0x000feb04, 0x000feb40, 0x000feb7c, 0x001009fc, 0x00100a36, 0x00100a74, 0x00100ab0, 0x00100aec, 0x00100b28, 0x00100b64, 0x00100ba0, 0x00100bdc, 0x00100c16, 0x00100c54, 0x00100c90, 0x00100ccc, 0x00100d08, 0x00100d44, 0x00100d80

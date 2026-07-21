@@ -413,7 +413,7 @@ public:
 
     int getStanding();
 
-    int getBluePrints();
+    Array<BluePrint *> *getBluePrints();
 
     void unlockBluePrint(int index);
 

@@ -39,13 +39,14 @@ public:
     uint32_t param4;
     uint32_t param5;
 
-    int scrollThumbImage;
-    int arrowUpImage;
-    int arrowDownImage;
-    int arrowEqualImage;
+    unsigned int scrollThumbImage;
+    unsigned int arrowUpImage;
+    unsigned int arrowDownImage;
+    unsigned int arrowEqualImage;
     uint8_t shows3DShipFlag;
 
     int arrowSeparator;
+    int field_0x5c;
     int x;
     int y;
     int width;
@@ -54,10 +55,13 @@ public:
     AbyssEngine::String str74;
     AbyssEngine::String str80;
 
-    int previewSentinel;
-    AbyssEngine::AEMath::Matrix previewTransform;
-    AbyssEngine::AEMath::Matrix previewTransform2;
-    float baseAngle;
+    unsigned int previewTransformId;
+    unsigned int previewSecondaryTransformId;
+    unsigned int previewCameraId;
+    AbyssEngine::AEMath::Matrix previewCameraLocal;
+    AbyssEngine::AEMath::Matrix previewScratch;
+    unsigned int previewLightingTexture;
+    float previewScaleBias;
     float previewAngle;
     int dragAccum;
     int dragLastX;

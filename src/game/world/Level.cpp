@@ -82,6 +82,76 @@ static_assert(offsetof(struct EngineColorTable, engineColorEntry0) == 0x1254,
 static_assert(offsetof(struct EngineColorTable, entries) == 0x1254,
               "entries must live at table offset 0x1254");
 
+// Android Level::createScene(mode 23) rodata. These tables assemble the
+// station hangar, not the separate ListItemWindow ship-preview renderer.
+constexpr int kHangarShipVerticalOffsets[64] = {
+    160, 150, 220, 310, 160, 180, 140, 170, 170, 110, 250, 205, 240, 250, 250, 250,
+    170, 170, 190, 460, 170, 210, 140, 170, 160, 190, 170, 240, 220, 280, 200, 200,
+    140, 160, 180, 150, 310, 390, 480, 200, 300, 300, 170, 200, 170, 370, 370, 300,
+    440, 340, 170, 470, 170, 170, 170, 170, 200, 170, 250, 150, 170, 250, 270, 170,
+};
+
+constexpr int kHangarBaseMeshIds[9][4] = {
+    {14376, 14302, 14301, -1},
+    {14377, 14304, -1, -1},
+    {14378, 14308, 14307, -1},
+    {14379, 14310, 14264, -1},
+    {-1, -1, -1, -1},
+    {-1, -1, -1, -1},
+    {-1, -1, -1, -1},
+    {14362, 14358, 14360, 14359},
+    {14354, 14355, 14357, 14356},
+};
+
+constexpr int kHangarVariantChildCounts[4] = {11, 0, 10, 12};
+constexpr int kHangarVariantChildStarts[4] = {14380, -1, 14403, 14391};
+constexpr int kHangarSeatCounts[9] = {2, 9, 2, 3, 0, 0, 0, 3, 0};
+
+struct HangarSeat {
+    int x;
+    int y;
+    int z;
+};
+
+constexpr HangarSeat kHangarDefaultSeats[2] = {
+    {4096, 0, 0},
+    {4096, 0, 4096},
+};
+
+constexpr HangarSeat kHangarTerranSeats[2] = {
+    {0, 0, 2891},
+    {0, 0, 5781},
+};
+
+constexpr HangarSeat kHangarVosskSeats[9] = {
+    {-3715, 0, 661}, {-6983, 36, 2548}, {-9408, 36, 5438},
+    {-9408, 36, 16301}, {-6983, 36, 19191}, {-3715, 36, 21078},
+    {-9408, 5359, 16301}, {-6983, 5359, 19191}, {-3715, 5359, 21078},
+};
+
+constexpr HangarSeat kHangarMidorianSeats[3] = {
+    {-4096, 0, 0}, {0, 0, 4096}, {-4096, 0, 4096},
+};
+
+constexpr HangarSeat kHangarDeepScienceSeats[3] = {
+    {-1961, 0, 8512}, {-1961, 0, 5562}, {-1961, 0, 2610},
+};
+
+const HangarSeat *levelGetHangarSeats(int race) {
+    switch (race) {
+    case 0:
+        return kHangarTerranSeats;
+    case 1:
+        return kHangarVosskSeats;
+    case 3:
+        return kHangarMidorianSeats;
+    case 7:
+        return kHangarDeepScienceSeats;
+    default:
+        return kHangarDefaultSeats;
+    }
+}
+
 } // anonymous namespace
 
 Matrix *CameraGetLocal(void *canvas, uint32_t index);
@@ -4032,101 +4102,102 @@ void Level::createScene() {
     }
 
     if (mode == 0x17) {
-        int *host = (int *) Status::gStatus;
-        Station *st = (Station *) Status::gStatus->getStation();
-        unsigned race;
-        if (((Station *) st)->getIndex() == 0x65) race = 8;
-        else {
-            st = (Station *) Status::gStatus->getStation();
-            if (((Station *) st)->getIndex() == 100) race = 7;
-            else {
-                Status::gStatus->getSystem();
-                race = ((SolarSystem *) Status::gStatus->getSystem())->getRace();
-            }
+        Station *station = Status::gStatus->getStation();
+        int race = 0;
+        if (station->getIndex() == 101) {
+            race = 8;
+        } else if (station->getIndex() == 100) {
+            race = 7;
+        } else {
+            race = static_cast<SolarSystem *>(Status::gStatus->getSystem())->getRace();
         }
 
         this->enemies = new Array<KIPlayer *>();
-        ArraySetLength(1, *(this->enemies));
+        ArraySetLength(1, *this->enemies);
 
-        (int) (intptr_t) Status::gStatus->getShip();
-        int shipIdx = ((Ship *) (int) (intptr_t) Status::gStatus->getShip())->getIndex();
-        Ship *ship = (Ship *) (int) (intptr_t) Status::gStatus->getShip();
-        int shipRace = ship->getRace();
-        int actor = (int) (intptr_t) createShip(shipRace, 0, shipIdx, 0,
-                                                this->missionPtr != 0x17, 0);
-        (*this->enemies)[0] = (KIPlayer *) (intptr_t) actor;
+        Ship *activeShip = Status::gStatus->getShip();
+        int activeShipIndex = activeShip->getIndex();
+        KIPlayer *activeActor = static_cast<KIPlayer *>(
+                createShip(activeShip->getRace(), 0, activeShipIndex, nullptr, false, false));
+        (*this->enemies)[0] = activeActor;
+        activeActor->setPosition(0.0f, static_cast<float>(kHangarShipVerticalOffsets[activeShipIndex]), 0.0f);
+        static_cast<PlayerFighter *>(activeActor)->removeTrail();
+        static_cast<PlayerFighter *>(activeActor)->setExhaustVisible(false);
+        activeActor->setToSleep();
+        activeActor->player->setAlwaysFriend(1);
 
-        ((PlayerFighter *) (intptr_t) actor)->removeTrail();
-        ((PlayerFighter *) (intptr_t) actor)->setExhaustVisible(false);
-        ((KIPlayer *) (intptr_t) actor)->setToSleep();
-        ((KIPlayer *) (intptr_t) actor)->player->setAlwaysFriend(1);
-
-        void *canvas = (void *) PaintCanvas::gCanvas;
-        for (unsigned u = 0; u < 4; u = u + 1) {
-            AEGeometry *g = (AEGeometry *) ::operator new(0xc0);
-            new((void *) g) AEGeometry((uint16_t)(unsigned)(0x3800 + u), (PaintCanvas *) canvas, 0);
-            Vector rot = {0, 0, 0};
-            ((AEGeometry *) g)->setRotation(*(const AbyssEngine::AEMath::Vector *) (&rot));
-            PlayerStatic *p = (PlayerStatic *) ::operator new(0x130);
-            new(p) PlayerStatic(-1, g, 0.0f, 0.0f, 0.0f);
-            if ((int) race < 4 && race != 1) {
-                AEGeometry *child = (AEGeometry *) ::operator new(0xc0);
-                new((void *) child) AEGeometry((uint16_t)(unsigned)u, (PaintCanvas *) canvas, 0);
-                ((AEGeometry *) g)->addChild(((AEGeometry *) child)->transform);
-                [&] {
-                    AEGeometry *g_ = (AEGeometry *) (child);
-                    if (g_) {
-                        g_->~AEGeometry();
-                        ::operator delete(g_);
-                    }
-                }();
+        for (int layer = 0; layer < 4; ++layer) {
+            int meshId = kHangarBaseMeshIds[race][layer];
+            if (meshId < 0) {
+                continue;
             }
-            ArrayAdd((KIPlayer *) p, *(this->enemies));
+
+            AEGeometry *geometry = new AEGeometry(static_cast<uint16_t>(meshId), PaintCanvas::gCanvas, false);
+            geometry->setRotation(0.0f, 0.0f, 0.0f);
+            PlayerStatic *staticObject = new PlayerStatic(-1, geometry, 0.0f, 0.0f, 0.0f);
+
+            if (race <= 3 && race != 1) {
+                for (int childIndex = 0; childIndex < kHangarVariantChildCounts[race]; ++childIndex) {
+                    AEGeometry *child = new AEGeometry(
+                            static_cast<uint16_t>(kHangarVariantChildStarts[race] + childIndex),
+                            PaintCanvas::gCanvas, false);
+                    geometry->addChild(child->transform);
+                    delete child;
+                }
+            }
+            ArrayAdd(static_cast<KIPlayer *>(staticObject), *this->enemies);
         }
 
-        Station *st2 = (Station *) Status::gStatus->getStation();
-        bool fromStationShips = (((Station *) st2)->getIndex() == 0x6c) &&
-                                (Status::gStatus->field_114 == 3);
+        const int seatCount = kHangarSeatCounts[race];
+        const bool useStationShips = station->getIndex() == 108 && Status::gStatus->field_114 == 3;
         AbyssEngine::AERandom *rng = AERandom::gRandom;
-        int spawnCount = rng->nextInt();
-        if (fromStationShips) {
-            unsigned *ships = (unsigned *) ((Station *) Status::gStatus->getStation())->getShips();
-            spawnCount = (ships == 0) ? 0 : (int) *ships;
+        int spawnCount = rng->nextInt(seatCount + 1);
+        Array<Ship *> *stationShips = station->getShips();
+        if (useStationShips) {
+            spawnCount = stationShips == nullptr ? 0 : static_cast<int>(stationShips->size());
+            if (spawnCount > seatCount) {
+                spawnCount = seatCount;
+            }
         }
-        char seats[64];
-        for (int j = 0; j < 64; j = j + 1) seats[j] = 0;
 
-        for (int s = 0; s < spawnCount; s = s + 1) {
-            int r = rng->nextInt();
-            unsigned spawnRace = race;
-            if (r < 0x1e) {
-                spawnRace = rng->nextInt();
-                if (rng->nextInt() < 0x1e) spawnRace = 8;
+        bool *occupiedSeats = new bool[seatCount]{};
+        const HangarSeat *seatPositions = levelGetHangarSeats(race);
+        for (int spawned = 0; spawned < spawnCount; ++spawned) {
+            int shipRace = race;
+            if (rng->nextInt(100) <= 29) {
+                shipRace = rng->nextInt(4);
+                if (rng->nextInt(100) < 30) {
+                    shipRace = 8;
+                }
             }
-            int fighter = (int) Globals::gGlobals->getRandomEnemyFighter(spawnRace);
-            Station *st3 = (Station *) Status::gStatus->getStation();
-            if (((Station *) st3)->getIndex() == 100) {
-                int pick = rng->nextInt();
-                fighter = (pick == 1) ? 0x26 : (pick == 0) ? 0x25 : 0x28;
-            }
-            if (fromStationShips) {
-                Array<Ship *> *ships = ((Station *) Status::gStatus->getStation())->getShips();
-                fighter = (*ships)[s]->getIndex();
-            }
-            KIPlayer *k = (KIPlayer *) createShip(0, 0, fighter, 0, 0, 0);
-            int seat = rng->nextInt();
-            int guard = -100;
-            while (guard != 0 && seats[seat & 0x3f] != 0) {
-                seat = rng->nextInt();
-                guard = guard + 1;
-            }
-            seats[seat & 0x3f] = 1;
 
-            k->player->setAlwaysFriend(1);
-            k->setToSleep();
-            ((PlayerFighter *) k)->setExhaustVisible(false);
-            ArrayAdd(k, *(this->enemies));
+            int shipIndex = static_cast<int>(Globals::gGlobals->getRandomEnemyFighter(shipRace));
+            if (station->getIndex() == 100) {
+                int pick = rng->nextInt(3);
+                shipIndex = pick == 1 ? 38 : (pick == 0 ? 37 : 40);
+            }
+            if (useStationShips) {
+                shipIndex = (*stationShips)[spawned]->getIndex();
+            }
+
+            KIPlayer *actor = static_cast<KIPlayer *>(createShip(0, 0, shipIndex, nullptr, false, false));
+            int seat = rng->nextInt(seatCount);
+            for (int attempts = -100; attempts != 0 && occupiedSeats[seat]; ++attempts) {
+                seat = rng->nextInt(seatCount);
+            }
+            occupiedSeats[seat] = true;
+
+            const HangarSeat &position = seatPositions[seat];
+            actor->setPosition(static_cast<float>(position.x),
+                               static_cast<float>(position.y + kHangarShipVerticalOffsets[shipIndex]),
+                               static_cast<float>(position.z));
+            actor->player->setAlwaysFriend(1);
+            actor->setToSleep();
+            actor->geometry->setRotation(0.0f, static_cast<float>(rng->nextInt(300)) / 100.0f, 0.0f);
+            static_cast<PlayerFighter *>(actor)->setExhaustVisible(false);
+            ArrayAdd(actor, *this->enemies);
         }
+        delete[] occupiedSeats;
     }
 }
 

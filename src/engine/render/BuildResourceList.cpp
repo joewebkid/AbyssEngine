@@ -841,7 +841,9 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         10040, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/suns/sun_009.aei", 0.0f));
     ADD_RES(resources[309], 
         10041, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/suns/sun_010.aei", 0.0f));
-    ADD_RES(resources[310], 6801, 4, newImage(0x0u, 0x0u));
+    ADD_RES(resources[310],
+        6801, 4,
+        new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/fx/projectile_025_anim_add.aem", 24201, false));
     ADD_RES(resources[311], 33011, 2, new AbyssEngine::ResourceTexture(
                                  "data/assets/main/3d/textures/low/etc/stations/stations_terran_normal_specular.aei",
                                  0.0f));

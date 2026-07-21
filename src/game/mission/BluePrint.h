@@ -51,6 +51,9 @@ public:
 
     int getIngredientsValue();
 
+    // Called directly by the recovered HangarList ingredient tab builder.
+    Array<int> *getIngredientList();
+
     int getRemainingAmount(int item);
 
     AbyssEngine::String getStationName();
@@ -68,8 +71,6 @@ public:
     void unlock();
 
 private:
-    Array<int> *getIngredientList();
-
     Array<int> *getQuantityList();
 };
 #endif

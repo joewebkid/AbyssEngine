@@ -378,7 +378,7 @@ int Status::missionFailed(bool docked, int64_t time) {
     return 0;
 }
 
-int Status::getBluePrints() { return (int) (intptr_t) bluePrints; }
+Array<BluePrint *> *Status::getBluePrints() { return bluePrints; }
 
 int Status::getAgents() { return (int) (intptr_t) agents; }
 
