@@ -9,6 +9,7 @@
 #include "engine/render/IParticleSystem.h"
 #include "engine/render/ParticleSystemSprite.h"
 #include "engine/render/PaintCanvas.h"
+#include "engine/render/ParticleSettingsRef.h"
 
 void _psm_ArrayReleaseSprites(void *arr);
 
@@ -50,8 +51,6 @@ void *_pss_ctor(void *self, void *canvas, const void *matrix, const void *sets,
 
 int _ips_getParticleCount(void *sys);
 
-
-static char *g_activeParticleSet = nullptr;
 
 ParticleSystemManager::ParticleSystemManager(
     PaintCanvas *canvas, ParticleSettings::CameraSet cameraSet, unsigned short spriteTex,
@@ -393,9 +392,12 @@ void ParticleSystemManager::initSprites() {
     short offset = 0;
     canvas->SpriteSystemSetAllSize((unsigned int) (short) this->spriteSystemId, 0);
 
-    float u = *(float *) (g_activeParticleSet + 0x90);
-    float w = *(float *) (g_activeParticleSet + 0x94);
-    canvas->SpriteSystemSetAllUv(this->spriteSystemId, u, 0.0f, w, 0.0f);
+    // Android HD initSprites @ 0x1936c8 reads the default live definition
+    // at ParticleSettingsRef::cur + 0x88..0x94.
+    const ParticleSettings::SetDefinition &defaultSet = ParticleSettingsRef::cur.sets[0];
+    canvas->SpriteSystemSetAllUv(this->spriteSystemId,
+                                 defaultSet.uvU0, defaultSet.uvV0,
+                                 defaultSet.uvU1, defaultSet.uvV1);
 
     IParticleSystem **sprites = (IParticleSystem **) this->spriteSystems.data_;
     for (unsigned i = 0; i < this->spriteSystems.count; ++i) {

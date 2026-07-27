@@ -66,9 +66,10 @@ Systematic clusters (one cause fixes many):
    drift (orig [r4,#9] vs ours [r4,#10]). Fixing the shared base/layout flips the whole cluster.
    NOTE: this is layout drift that field_0xNN scanning can't see (semantic-named fields) -- a class of
    drift beyond [[drift-campaign]]. A generalized ASM-offset-diff drift detector would surface all of it.
-2. **ParticleSettings_str[401401]={0}** -- 392KB zero array (the .rodata bloat), a mis-sized decomp
-   artifact; the real particle-name string table is a few KB. Needs the original's data recovered
-   (the `buf` results are dead in our decomp, so it's correctness-neutral but blocks .rodata identicality).
+2. **ParticleSettings name table** -- the former `ParticleSettings_str[401401]={0}` zero-array artifact
+   has been removed. The recovered ABI retains the real 12-byte ARM name slot but deliberately leaves
+   its payload opaque until the original name strings are extracted. This is runtime-neutral today but
+   still blocks `.rodata` identicality; see `PARTICLE_SETTINGS_REF_ABI_RUNTIME_2026-07-21.md`.
 
 ## PaintCanvas layout reconstruction (in progress — concrete data)
 

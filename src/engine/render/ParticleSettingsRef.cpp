@@ -1,17 +1,13 @@
 #include "engine/render/ParticleSettingsRef.h"
-#include "engine/render/ParticleSettings.h"
-
-static ParticleSettings *g_PSR_settingsA = nullptr;
-static ParticleSettings *g_PSR_settingsB = nullptr;
-static int g_PSR_counter = 0;
 
 void ParticleSettingsRef::initialize() {
-    g_PSR_settingsA->init();
-    g_PSR_settingsB->init();
-    g_PSR_counter = 0x2a;
+    // Android HD 0xe3964 initialises both static objects, then writes 42.
+    // `init` remains the baseline while `cur` is the live table.
+    cur.init();
+    init.init();
+    assertInit = 0x2a;
 }
 
-// Static data members present in the original binary (defined for symbol parity).
 int ParticleSettingsRef::assertInit;
-unsigned char ParticleSettingsRef::cur[7680];
-unsigned char ParticleSettingsRef::init[7680];
+ParticleSettings ParticleSettingsRef::cur;
+ParticleSettings ParticleSettingsRef::init;

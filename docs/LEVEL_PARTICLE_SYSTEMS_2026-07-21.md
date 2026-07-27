@@ -44,14 +44,11 @@ route.
 
 ## Local Representation
 
-`Level.cpp` now uses `EngineParticleSetArm`, a small fixed-offset view over
-`ParticleSettingsRef::cur`. This is intentional: host UCRT64 pointer widths do
-not preserve the Android `String` layout, while the original settings storage
-and all writes in this function are explicitly ARM `0xa0`-byte slots.
-
-The view has compile-time checks for the stride and the offsets used by this
-body (`count`, `color0`, `posBase`, `velDir`, and `uvU0`). It is a layout view,
-not a claim that the whole host-side `ParticleSettings` class is ABI-correct.
+`Level.cpp` now uses the shared `ParticleSettings::SetDefinition` view from
+`ParticleSettingsRef`. The later ABI/runtime audit moved the fixed `0xa0` ARM
+slot contract out of this one Level method, typed both `cur` and `init` as real
+`48 x 0xa0` objects, and added compile-time checks for the offsets consumed by
+the particle runtime. See `PARTICLE_SETTINGS_REF_ABI_RUNTIME_2026-07-21.md`.
 
 ## Validation
 
@@ -66,9 +63,9 @@ the restored particle loop emitted no new warning.
 
 ## Remaining Work
 
-- `ParticleSettingsRef` and the broader host-side particle runtime still need
-  their own layout/runtime audit; this pass does not claim a runnable particle
-  renderer.
+- Particle-name payloads are still not recovered; the ARM `String` slot remains
+  an opaque 12-byte field in the host ABI view.
+- The broader host-side particle renderer still needs its own runtime pass.
 - No ARM matching build was run for `Level::initParticleSystems`; the code is
   source-backed, not byte-matched.
 - The later sky, pirate-base, supernova, and generic manager setup branches of

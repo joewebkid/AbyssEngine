@@ -5647,6 +5647,33 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     canvas->AddResource(makeRes(0, 0, nullptr));
     canvas->AddResource(makeRes(9510, 3, newImage(0x6acfu, 0x5u)));
 
+    // Paid-credit/social dialog Image2D records recovered from the Android ARM
+    // BuildResourceList body. Texture 0x6acc is the platform-selected
+    // gof2_credits atlas registered above; the upper payload word is its AEI
+    // region index.
+    canvas->AddResource(makeRes(0x232a, 3, newImage(0x6accu, 0x2u)));
+    canvas->AddResource(makeRes(0x232b, 3, newImage(0x6accu, 0x3u)));
+    canvas->AddResource(makeRes(0x232c, 3, newImage(0x6accu, 0x4u)));
+    canvas->AddResource(makeRes(0x232d, 3, newImage(0x6accu, 0x5u)));
+    canvas->AddResource(makeRes(0x232e, 3, newImage(0x6accu, 0x6u)));
+    canvas->AddResource(makeRes(0x232f, 3, newImage(0x6accu, 0x7u)));
+    canvas->AddResource(makeRes(0x2330, 3, newImage(0x6accu, 0x8u)));
+    canvas->AddResource(makeRes(0x2331, 3, newImage(0x6accu, 0x9u)));
+    canvas->AddResource(makeRes(0x2332, 3, newImage(0x6accu, 0xau)));
+    canvas->AddResource(makeRes(0x2333, 3, newImage(0x6accu, 0xbu)));
+    canvas->AddResource(makeRes(0x2334, 3, newImage(0x6accu, 0xcu)));
+    canvas->AddResource(makeRes(0x2335, 3, newImage(0x6accu, 0xdu)));
+    canvas->AddResource(makeRes(0x2336, 3, newImage(0x6accu, 0xeu)));
+    canvas->AddResource(makeRes(0x2337, 3, newImage(0x6accu, 0xfu)));
+    canvas->AddResource(makeRes(0x2338, 3, newImage(0x6accu, 0x10u)));
+    canvas->AddResource(makeRes(0x2339, 3, newImage(0x6accu, 0x11u)));
+    canvas->AddResource(makeRes(0x233a, 3, newImage(0x6accu, 0x12u)));
+    canvas->AddResource(makeRes(0x233b, 3, newImage(0x6accu, 0x13u)));
+    canvas->AddResource(makeRes(0x233c, 3, newImage(0x6accu, 0x14u)));
+    canvas->AddResource(makeRes(0x233d, 3, newImage(0x6accu, 0x15u)));
+    canvas->AddResource(makeRes(0x233e, 3, newImage(0x6accu, 0x16u)));
+    canvas->AddResource(makeRes(0x233f, 3, newImage(0x6accu, 0x17u)));
+
     loadPortraits(engine);
     loadLowTexturesAndMaterials(engine);
 }

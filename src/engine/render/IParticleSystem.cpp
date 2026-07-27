@@ -1,4 +1,5 @@
 #include "engine/render/IParticleSystem.h"
+#include "engine/render/ParticleSettingsRef.h"
 
 namespace AbyssEngine {
     namespace AERandom {
@@ -35,7 +36,9 @@ void *AERandom_seed_ctor(void *self, long long seed);
 void AERandom_ctor(void *self);
 
 
-static char *ParticleSet_definitions = nullptr;
+static char *particleSetDefinition(ParticleSettings::ParticleSet set) {
+    return reinterpret_cast<char *>(&ParticleSettingsRef::cur.sets[static_cast<int>(set)]);
+}
 
 void IParticleSystem::enableUpdate(bool enabled) {
     this->updateEnabled = enabled;
@@ -152,7 +155,7 @@ void IParticleSystem::emit(int delta) {
     MatrixGetUp(up, this->matrix);
     MatrixGetDir(dir, this->matrix);
 
-    char *def = ParticleSet_definitions + (set + set * 4) * 32;
+    char *def = particleSetDefinition(static_cast<ParticleSettings::ParticleSet>(set));
     float speed2 = AbyssEngine::AEMath::VectorDot(this->emitterVelocity, this->emitterVelocity);
     if (speed2 < (float) *(int *) (def + 0x98)) {
         return;
@@ -362,7 +365,7 @@ void IParticleSystem::emit(int delta) {
 void IParticleSystem::interpolateColor(int index, float &alpha, float &red, float &green, float &blue) {
     int age = this->particleAges[index];
     int setIndex = this->particleSetIds[index];
-    char *def = ParticleSet_definitions + (setIndex + setIndex * 4) * 32;
+    char *def = particleSetDefinition(static_cast<ParticleSettings::ParticleSet>(setIndex));
 
     float t = (float) age / (float) *(int *) (def + 0x28);
     if (t > 1.0f) {
@@ -452,7 +455,7 @@ IParticleSystem::IParticleSystem(PaintCanvas *canvas, Matrix const *matrix,
     while (count != 0) {
         int set = *src;
         if (set != -1) {
-            char *def = ParticleSet_definitions + (set + set * 4) * 32;
+            char *def = particleSetDefinition(static_cast<ParticleSettings::ParticleSet>(set));
             uint32_t particles = *(uint32_t *) (def + 0x10);
             if ((int) maxParticles <= (int) particles) {
                 maxParticles = particles;
@@ -498,7 +501,7 @@ void IParticleSystem::emitManual(Vector position, int particleSet, Vector const 
         int current = this->currentParticle;
         int set = (*this->particleSets)[particleSet];
         this->particleSetIds[current] = (int8_t) set;
-        char *def = ParticleSet_definitions + (set + set * 4) * 32;
+        char *def = particleSetDefinition(static_cast<ParticleSettings::ParticleSet>(set));
         this->particleAges[current] = 0;
 
         uint32_t uv[4];

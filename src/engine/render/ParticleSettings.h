@@ -1,8 +1,7 @@
 #ifndef GOF2_PARTICLESETTINGS_H
 #define GOF2_PARTICLESETTINGS_H
-#include "engine/core/Array.h"
-#include "../core/AEString.h"
-#include <type_traits>
+#include <cstddef>
+#include <cstdint>
 
 class ParticleSettings {
 public:
@@ -18,48 +17,62 @@ public:
 
     enum CameraSet { CameraSet_dummy = 0, CameraSet_1 = 1 };
 
-    struct {
-        String name;
+    // Android ARMv7 storage contract used by ParticleSettingsRef. The original
+    // String occupies 0x0c bytes; host String cannot appear here because its
+    // pointer is wider. The opaque name bytes are not consumed at runtime.
+    struct SetDefinition {
+        uint8_t name[0x0c];
         uint32_t flags;
         int32_t count;
-        uint32_t lifeBase;
+        float lifeBase;
         int32_t lifeRandom;
-        uint32_t startSize;
-        uint32_t endSize;
-        uint32_t velocityFromSlot;
+        float startSize;
+        float endSize;
+        float velocityFromSlot;
         int32_t lifetime;
-        uint32_t flLifetime;
+        float flLifetime;
         uint32_t oneShot;
         uint32_t color0;
         uint32_t color1;
         int32_t fadeFrames;
-        uint32_t colorFlag;
+        float colorFlag;
         int32_t posBase;
         int32_t posSpread;
         int32_t ySpread;
         int32_t velSpread;
         uint32_t field_0x54;
-        uint32_t velBaseX;
-        uint32_t velBaseY;
-        uint32_t velBaseZ;
-        uint32_t drag;
-        uint32_t velRight;
-        uint32_t velUp;
-        uint32_t velDir;
+        float velBaseX;
+        float velBaseY;
+        float velBaseZ;
+        float drag;
+        float velRight;
+        float velUp;
+        float velDir;
         uint32_t field_0x74;
-        uint32_t posRight;
-        uint32_t posUp;
-        uint32_t posDir;
-        uint32_t posDirRandom;
-        uint32_t uvU0;
-        uint32_t uvV0;
-        uint32_t uvU1;
-        uint32_t uvV1;
+        float posRight;
+        float posUp;
+        float posDir;
+        float posDirRandom;
+        float uvU0;
+        float uvV0;
+        float uvU1;
+        float uvV1;
         int32_t speedThreshold;
         int32_t frames;
     } sets[48];
 
-    using SetDefinition = std::remove_reference<decltype(sets[0])>::type;
+    static_assert(sizeof(SetDefinition) == 0xa0,
+                  "ParticleSettings ARM slot stride must remain 0xa0");
+    static_assert(offsetof(SetDefinition, flags) == 0x0c,
+                  "ParticleSettings::flags ARM offset must remain 0x0c");
+    static_assert(offsetof(SetDefinition, count) == 0x10,
+                  "ParticleSettings::count ARM offset must remain 0x10");
+    static_assert(offsetof(SetDefinition, color0) == 0x34,
+                  "ParticleSettings::color0 ARM offset must remain 0x34");
+    static_assert(offsetof(SetDefinition, velDir) == 0x70,
+                  "ParticleSettings::velDir ARM offset must remain 0x70");
+    static_assert(offsetof(SetDefinition, uvU0) == 0x88,
+                  "ParticleSettings::uvU0 ARM offset must remain 0x88");
 
     ParticleSettings();
 
@@ -67,12 +80,15 @@ public:
 
     int init();
 
-    void multiplyAll(float scale);
+    static void multiplyAll(float scale);
 
-    void Interpolate(ParticleSet a, ParticleSet b, float t, ParticleSet out);
+    static void Interpolate(ParticleSet a, ParticleSet b, float t, ParticleSet out);
 
     // Static data members present in the original binary (defined for symbol parity).
     static int particleMultiply;
     static int pCounter;
 };
+
+static_assert(sizeof(ParticleSettings) == 0x1e00,
+              "ParticleSettings ARM storage must remain 48 x 0xa0 bytes");
 #endif

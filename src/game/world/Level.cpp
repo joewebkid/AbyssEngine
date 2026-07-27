@@ -63,64 +63,6 @@ float Level::b;
 
 namespace {
 
-// Android ARMv7 ParticleSettingsRef::cur slot layout. The host-side
-// ParticleSettings declaration cannot be used for this table directly because
-// its String member follows host pointer sizing; the native slots are 0xa0
-// bytes and Level::initParticleSystems writes them by fixed ARM offsets.
-struct EngineParticleSetArm {
-    uint8_t name[0x0c];
-    uint32_t flags;
-    uint32_t count;
-    float lifeBase;
-    uint32_t lifeRandom;
-    float startSize;
-    float endSize;
-    float velocityFromSlot;
-    int32_t lifetime;
-    float flLifetime;
-    uint32_t oneShot;
-    uint32_t color0;
-    uint32_t color1;
-    uint32_t fadeFrames;
-    float colorFlag;
-    int32_t posBase;
-    int32_t posSpread;
-    int32_t ySpread;
-    int32_t velSpread;
-    uint32_t field_0x54;
-    float velBaseX;
-    float velBaseY;
-    float velBaseZ;
-    float drag;
-    float velRight;
-    float velUp;
-    float velDir;
-    uint32_t field_0x74;
-    float posRight;
-    float posUp;
-    float posDir;
-    float posDirRandom;
-    float uvU0;
-    float uvV0;
-    float uvU1;
-    float uvV1;
-    int32_t speedThreshold;
-    int32_t frames;
-};
-
-static_assert(sizeof(EngineParticleSetArm) == 0xa0,
-              "Android ParticleSettings slot stride must remain 0xa0");
-static_assert(offsetof(EngineParticleSetArm, count) == 0x10,
-              "Android ParticleSettings::count offset must remain 0x10");
-static_assert(offsetof(EngineParticleSetArm, color0) == 0x34,
-              "Android ParticleSettings::color0 offset must remain 0x34");
-static_assert(offsetof(EngineParticleSetArm, posBase) == 0x44,
-              "Android ParticleSettings::posBase offset must remain 0x44");
-static_assert(offsetof(EngineParticleSetArm, velDir) == 0x70,
-              "Android ParticleSettings::velDir offset must remain 0x70");
-static_assert(offsetof(EngineParticleSetArm, uvU0) == 0x88,
-              "Android ParticleSettings::uvU0 offset must remain 0x88");
-
 constexpr unsigned int kFirstEngineParticleSet = 0x1d;
 
 // Android rodata: 0x1fc3d0 (one 1-based atlas variant per ship index).
@@ -149,8 +91,8 @@ constexpr float kEngineParticleUvV1[9] = {
     0.123046875f, 0.123046875f, 0.123046875f, 0.123046875f,
 };
 
-EngineParticleSetArm *levelCurrentParticleSets() {
-    return reinterpret_cast<EngineParticleSetArm *>(ParticleSettingsRef::cur);
+ParticleSettings::SetDefinition *levelCurrentParticleSets() {
+    return ParticleSettingsRef::cur.sets;
 }
 
 // Android Level::createScene(mode 23) rodata. These tables assemble the
@@ -932,7 +874,7 @@ void Level::alarmAllFriends(int race, bool message) {
 void Level::setPlayerEngineColor(short color) {
     int c = color;
     if (player != nullptr && field_a4 != nullptr) {
-        EngineParticleSetArm *particleSets = levelCurrentParticleSets();
+        ParticleSettings::SetDefinition *particleSets = levelCurrentParticleSets();
         int count = (int) field_a4->size();
         for (int i = 0; i < count; i = i + 1) {
             particleSets[kFirstEngineParticleSet + i].color0 =
@@ -3896,7 +3838,7 @@ void Level::initParticleSystems() {
             // Android Level::initParticleSystems @ 0xbd6f8 creates one
             // player-transform-attached sprite system per engine nozzle, then
             // specializes ParticleSettingsRef::cur[29 + nozzle] in place.
-            EngineParticleSetArm *particleSets = levelCurrentParticleSets();
+            ParticleSettings::SetDefinition *particleSets = levelCurrentParticleSets();
             Player *playerData = static_cast<Player *>(this->player->player);
             Ship *ship = Status::gStatus->getShip();
             unsigned int atlasVariant =
@@ -3904,7 +3846,7 @@ void Level::initParticleSystems() {
 
             for (unsigned int i = 0; i < this->field_a4->size(); i = i + 1) {
                 AEGeometry *nozzle = (*this->field_a4)[i];
-                EngineParticleSetArm &settings = particleSets[kFirstEngineParticleSet + i];
+                ParticleSettings::SetDefinition &settings = particleSets[kFirstEngineParticleSet + i];
 
                 int handle = this->field_80->addSystem(
                     &playerData->transformMatrix,

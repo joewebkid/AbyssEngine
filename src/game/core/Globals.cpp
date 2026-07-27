@@ -1,4 +1,5 @@
 #include "game/core/Globals.h"
+#include "engine/render/ParticleSettingsRef.h"
 #include <arm_neon.h>
 #include <cstdint>
 
@@ -445,8 +446,6 @@ void Generator_ctor(void *g);
 void FModSound_ctor(void *s);
 
 int FModSound_tryToStopMusicForBGMusic();
-
-void ParticleSettingsRef_initialize();
 
 int Station_getIndex(int station);
 
@@ -1966,7 +1965,7 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     Layout *layout = new Layout();
     Globals::layout = layout;
     layout->reload();
-    ParticleSettingsRef_initialize();
+    ParticleSettingsRef::initialize();
 
     Array<int> *arr = new Array<int>();
     this->soundResources = arr;

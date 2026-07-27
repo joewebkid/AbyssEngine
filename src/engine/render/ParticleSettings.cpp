@@ -1,25 +1,24 @@
 #include "engine/render/ParticleSettings.h"
-
+#include "engine/render/ParticleSettingsRef.h"
+#include <cstring>
 
 ParticleSettings::ParticleSettings() {
+    // Names are opaque Android String storage in this host-side ABI view. The
+    // runtime consumes the scalar slots only.
+    std::memset(this->sets, 0, sizeof(this->sets));
 }
 
 ParticleSettings::~ParticleSettings() {
 }
 
-void ParticleSettings_initSub(void *dst, void *parent);
-
-static const char ParticleSettings_str[401401] = {0};
-
-static inline float &asFloat(uint32_t &slot) {
-    return reinterpret_cast<float &>(slot);
+static void ParticleSettings_initSub(void *dst, void *parent) {
+    std::memcpy(dst, parent, sizeof(ParticleSettings::SetDefinition));
 }
 
-int ParticleSettings::init() {
-    String buf;
+static inline float &asFloat(float &slot) { return slot; }
 
+int ParticleSettings::init() {
     for (uint32_t i = 0; i < 0x30; i = i + 1) {
-        buf.ctor_char(ParticleSettings_str, false);
         this->sets[i].lifeRandom = 0;
         asFloat(this->sets[i].startSize) = 0.0f;
         asFloat(this->sets[i].endSize) = 0.0f;
@@ -42,7 +41,6 @@ int ParticleSettings::init() {
         this->sets[i].frames = 0;
     }
 
-    buf.ctor_char(ParticleSettings_str + 401400, false);
     this->sets[0].oneShot = 1;
     this->sets[0].color0 = 0xffffffff;
     this->sets[0].color1 = 0x000000ff;
@@ -77,7 +75,6 @@ int ParticleSettings::init() {
     ParticleSettings_initSub(&this->sets[37], &this->sets[0]);
     ParticleSettings_initSub(&this->sets[38], &this->sets[0]);
 
-    buf.ctor_char(ParticleSettings_str + 401182, false);
     asFloat(this->sets[4].flLifetime) = 200.0f;
     this->sets[4].lifetime = 2000;
     this->sets[4].color0 = 0xffffffff;
@@ -105,7 +102,6 @@ int ParticleSettings::init() {
     asFloat(this->sets[4].posDir) = 2000.0f;
     this->sets[4].speedThreshold = 1;
 
-    buf.ctor_char(ParticleSettings_str + 401012, false);
     this->sets[5].oneShot = 0;
     this->sets[5].color0 = 0xffffffff;
     this->sets[5].color1 = 0;
@@ -134,12 +130,10 @@ int ParticleSettings::init() {
     asFloat(this->sets[5].uvV1) = 0.189453f;
     this->sets[5].speedThreshold = 1;
 
-    buf.ctor_char(ParticleSettings_str + 400875, false);
     asFloat(this->sets[6].lifeBase) = 50.0f;
     this->sets[6].lifetime = 500;
     asFloat(this->sets[6].endSize) = asFloat(this->sets[5].endSize) * 5.0f;
 
-    buf.ctor_char(ParticleSettings_str + 400742, false);
     SetDefinition *muzzleFlash = &this->sets[2];
     this->sets[2].posBase = 0;
     this->sets[2].posSpread = 0;
@@ -161,7 +155,7 @@ int ParticleSettings::init() {
     asFloat(this->sets[2].posDir) = -230.0f;
     asFloat(this->sets[2].uvU0) = 0.12109375f;
     asFloat(this->sets[2].uvV0) = 0.998046875f;
-    this->sets[2].uvU1 = 0x3b000000;
+    this->sets[2].uvU1 = 0.001953125f;
     asFloat(this->sets[2].uvV1) = 0.998046875f;
     this->sets[2].speedThreshold = 1;
     this->sets[3] = *muzzleFlash;
@@ -170,7 +164,6 @@ int ParticleSettings::init() {
     asFloat(this->sets[3].posRight) = 160.0f;
     asFloat(this->sets[3].posUp) = 90.0f;
 
-    buf.ctor_char(ParticleSettings_str, false);
     this->sets[13].oneShot = 0;
     this->sets[13].color0 = 0xffffffff;
     this->sets[13].color1 = 0x000000ff;
@@ -188,11 +181,10 @@ int ParticleSettings::init() {
     asFloat(this->sets[13].posUp) = 30.0f;
     asFloat(this->sets[13].uvU0) = 0.0f;
     asFloat(this->sets[13].uvV0) = 0.0f;
-    this->sets[13].uvU1 = 0x3f800000;
-    this->sets[13].uvV1 = 0x3f800000;
+    this->sets[13].uvU1 = 1.0f;
+    this->sets[13].uvV1 = 1.0f;
     this->sets[13].speedThreshold = 1;
 
-    buf.ctor_char(ParticleSettings_str + 400482, false);
     this->sets[8].posBase = 0;
     this->sets[8].posSpread = 40000;
     this->sets[8].ySpread = 40000;
@@ -203,7 +195,7 @@ int ParticleSettings::init() {
     asFloat(this->sets[8].uvV1) = 1.0f;
     this->sets[8].flags = 0x01000041;
     this->sets[8].count = 0x1e;
-    this->sets[8].lifeBase = 0x47000000;
+    this->sets[8].lifeBase = 32768.0f;
     this->sets[8].lifetime = 0x7fffffff;
     this->sets[8].color0 = 0xffffffff;
     this->sets[8].color1 = 0xffffffff;
@@ -214,7 +206,6 @@ int ParticleSettings::init() {
     this->sets[8].posUp = 0;
     this->sets[8].posDir = 0;
 
-    buf.ctor_char(ParticleSettings_str, false);
     this->sets[7].posBase = 0;
     this->sets[7].posSpread = 0;
     this->sets[7].ySpread = 0;
@@ -236,10 +227,9 @@ int ParticleSettings::init() {
     asFloat(this->sets[7].posUp) = 5000.0f;
     asFloat(this->sets[7].posDir) = 1000.0f;
 
-    buf.ctor_char(ParticleSettings_str + 400195, false);
     SetDefinition *spark = &this->sets[9];
     this->sets[9].lifetime = 700;
-    this->sets[9].flLifetime = 0x41000000;
+    this->sets[9].flLifetime = 8.0f;
     this->sets[9].flags = 0x02000021;
     SetDefinition *dustCloud = &this->sets[16];
     this->sets[9].count = 0x10;
@@ -257,17 +247,16 @@ int ParticleSettings::init() {
     this->sets[9].ySpread = 300;
     this->sets[9].velSpread = 0;
     this->sets[9].field_0x54 = 0;
-    this->sets[9].drag = 0x3f800000;
+    this->sets[9].drag = 1.0f;
     asFloat(this->sets[9].posDirRandom) = 500.0f;
     asFloat(this->sets[9].uvU0) = 0.0f;
     asFloat(this->sets[9].uvV0) = 0.0f;
     asFloat(this->sets[9].uvU1) = 0.25f;
     this->sets[9].oneShot = 1;
-    this->sets[9].uvV1 = 0x3e800000;
+    this->sets[9].uvV1 = 0.25f;
     this->sets[9].frames = 0x10;
     *dustCloud = *spark;
 
-    buf.ctor_char(ParticleSettings_str + 399927, false);
     asFloat(this->sets[16].posDir) = -300.0f;
     asFloat(this->sets[16].posDirRandom) = 800.0f;
     asFloat(this->sets[16].uvU0) = 0.876953125f;
@@ -276,7 +265,7 @@ int ParticleSettings::init() {
     this->sets[16].color1 = 0xff;
     this->sets[16].fadeFrames = 300;
     this->sets[16].lifetime = 300;
-    this->sets[16].flLifetime = 0x41000000;
+    this->sets[16].flLifetime = 8.0f;
     this->sets[16].count = 0xd;
     asFloat(this->sets[16].lifeBase) = 200.0f;
     this->sets[16].lifeRandom = 0x578;
@@ -287,7 +276,6 @@ int ParticleSettings::init() {
     this->sets[17] = *dustCloud;
     this->sets[17].lifetime = 400;
 
-    buf.ctor_char(ParticleSettings_str, false);
     asFloat(this->sets[17].uvU0) = 0.876953125f;
     asFloat(this->sets[17].uvV0) = 0.251953125f;
     asFloat(this->sets[17].uvU1) = 0.9970703125f;
@@ -295,13 +283,11 @@ int ParticleSettings::init() {
     this->sets[18] = *dustCloud;
     this->sets[18].lifetime = 200;
 
-    buf.ctor_char(ParticleSettings_str, false);
     asFloat(this->sets[18].uvU0) = 0.751953125f;
     asFloat(this->sets[18].uvV0) = 0.501953125f;
     asFloat(this->sets[18].uvU1) = 0.9970703125f;
     asFloat(this->sets[18].uvV1) = 0.7470703125f;
 
-    buf.ctor_char(ParticleSettings_str, false);
     this->sets[12].lifetime = 0x4e2;
     asFloat(this->sets[12].flLifetime) = 60.0f;
     this->sets[12].flags = 0x02000021;
@@ -326,10 +312,9 @@ int ParticleSettings::init() {
     asFloat(this->sets[12].uvV0) = 0.0f;
     asFloat(this->sets[12].uvU1) = 0.25f;
     this->sets[12].oneShot = 0;
-    this->sets[12].uvV1 = 0x3e800000;
+    this->sets[12].uvV1 = 0.25f;
     this->sets[12].frames = 0x10;
 
-    buf.ctor_char(ParticleSettings_str + 399539, false);
     this->sets[13].lifetime = 1000;
     asFloat(this->sets[13].flLifetime) = 300.0f;
     this->sets[13].flags = (uint32_t)(33554465 - 0x10);
@@ -354,10 +339,9 @@ int ParticleSettings::init() {
     this->sets[13].field_0x54 = 0;
     this->sets[13].drag = 0;
     this->sets[13].oneShot = 0;
-    this->sets[13].uvV1 = 0x3e800000;
+    this->sets[13].uvV1 = 0.25f;
     this->sets[13].frames = 0x10;
 
-    buf.ctor_char(ParticleSettings_str + 399421, false);
     this->sets[10].posSpread = 0;
     this->sets[10].ySpread = 0;
     this->sets[10].velSpread = 0;
@@ -379,11 +363,10 @@ int ParticleSettings::init() {
     this->sets[10].drag = 0;
     asFloat(this->sets[10].uvU0) = 0.0f;
     asFloat(this->sets[10].uvV0) = 0.0f;
-    this->sets[10].uvU1 = 0x3e800000;
-    this->sets[10].uvV1 = 0x3e800000;
+    this->sets[10].uvU1 = 0.25f;
+    this->sets[10].uvV1 = 0.25f;
     this->sets[10].frames = 0x10;
 
-    buf.ctor_char(ParticleSettings_str + 399242, false);
     this->sets[11].posSpread = 0;
     this->sets[11].ySpread = 0;
     this->sets[11].velSpread = 0;
@@ -404,11 +387,10 @@ int ParticleSettings::init() {
     this->sets[11].drag = 0;
     asFloat(this->sets[11].uvU0) = 0.0f;
     asFloat(this->sets[11].uvV0) = 0.0f;
-    this->sets[11].uvU1 = 0x3e800000;
-    this->sets[11].uvV1 = 0x3e800000;
+    this->sets[11].uvU1 = 0.25f;
+    this->sets[11].uvV1 = 0.25f;
     this->sets[11].frames = 0x10;
 
-    buf.ctor_char(ParticleSettings_str + 399109, false);
     SetDefinition *ember = &this->sets[15];
     this->sets[15].lifetime = 0x5dc;
     asFloat(this->sets[15].flLifetime) = 20.0f;
@@ -427,7 +409,7 @@ int ParticleSettings::init() {
     this->sets[15].posSpread = 200;
     this->sets[15].ySpread = 200;
     this->sets[15].velSpread = 0;
-    this->sets[15].drag = 0xc0000000;
+    this->sets[15].drag = -2.0f;
     this->sets[15].oneShot = 1;
     asFloat(this->sets[15].uvU0) = 0.0f;
     asFloat(this->sets[15].uvV0) = 0.0f;
@@ -435,7 +417,6 @@ int ParticleSettings::init() {
     asFloat(this->sets[15].uvV1) = 0.25f;
     this->sets[15].frames = 0x10;
 
-    buf.ctor_char(ParticleSettings_str + 398969, false);
     this->sets[42].lifetime = 600;
     this->sets[42].flags = 0x02000021;
     asFloat(this->sets[42].flLifetime) = 20.0f;
@@ -462,7 +443,6 @@ int ParticleSettings::init() {
     asFloat(this->sets[42].uvV1) = 0.25f;
 
     this->sets[19] = *ember;
-    buf.ctor_char(ParticleSettings_str + 398596, false);
     this->sets[19].posSpread = 0;
     this->sets[19].ySpread = 0;
     this->sets[19].velSpread = 0;
@@ -483,11 +463,9 @@ int ParticleSettings::init() {
     this->sets[19].drag = 0;
 
     this->sets[14] = *ember;
-    buf.ctor_char(ParticleSettings_str + 398477, false);
     asFloat(this->sets[14].posDir) = 100.0f;
 
     this->sets[40] = *ember;
-    buf.ctor_char(ParticleSettings_str + 398438, false);
     this->sets[40].field_0x54 = 5000;
     SetDefinition *streak2 = &this->sets[20];
     asFloat(this->sets[40].posDir) = 500.0f;
@@ -495,20 +473,17 @@ int ParticleSettings::init() {
     this->sets[40].lifeRandom = 300;
 
     *streak2 = this->sets[11];
-    buf.ctor_char(ParticleSettings_str + 398366, false);
     this->sets[20].lifetime = 1000;
     asFloat(this->sets[20].lifeBase) = 10000.0f;
     this->sets[20].lifeRandom = 1000;
 
     this->sets[21] = *streak2;
-    buf.ctor_char(ParticleSettings_str + 398324, false);
     SetDefinition *jet = &this->sets[22];
     this->sets[21].lifetime = 1000;
     asFloat(this->sets[21].lifeBase) = 1600.0f;
     this->sets[21].lifeRandom = 200;
 
     *jet = *spark;
-    buf.ctor_char(ParticleSettings_str + 398286, false);
     this->sets[22].lifetime = 1000;
     asFloat(this->sets[22].flLifetime) = 9.0f;
     asFloat(this->sets[22].posDirRandom) = 500.0f;
@@ -519,13 +494,11 @@ int ParticleSettings::init() {
     this->sets[22].lifeRandom = 2000;
 
     this->sets[41] = *jet;
-    buf.ctor_char(ParticleSettings_str + 398148, false);
     asFloat(this->sets[41].posDir) = -4000.0f;
     this->sets[41].posSpread = 1000;
     asFloat(this->sets[41].posDirRandom) = 8000.0f;
 
     this->sets[23] = *spark;
-    buf.ctor_char(ParticleSettings_str + 398106, false);
     this->sets[23].lifetime = 1000;
     asFloat(this->sets[23].flLifetime) = 9.0f;
     asFloat(this->sets[23].lifeBase) = 4000.0f;
@@ -535,7 +508,6 @@ int ParticleSettings::init() {
     this->sets[23].ySpread = 0x5dc;
 
     this->sets[24] = *spark;
-    buf.ctor_char(ParticleSettings_str + 398045, false);
     SetDefinition *ringEmitter = &this->sets[25];
     this->sets[24].lifetime = 1000;
     asFloat(this->sets[24].flLifetime) = 5.0f;
@@ -597,13 +569,13 @@ int ParticleSettings::init() {
     asFloat(this->sets[39].uvU0) = 0.751953125f;
     asFloat(this->sets[39].uvV0) = 0.498046875f;
     asFloat(this->sets[39].uvU1) = 0.998046875f;
-    this->sets[39].uvV1 = 0x3b000000;
+    this->sets[39].uvV1 = 0.001953125f;
 
     ParticleSettings_initSub((void *) plume, (void *) dustCloud);
     this->sets[43].posDir = 0;
     this->sets[43].posUp = 0;
     this->sets[43].posRight = 0;
-    this->sets[43].flLifetime = 0x3f000000;
+    this->sets[43].flLifetime = 0.5f;
     this->sets[43].count = 10;
     asFloat(this->sets[43].lifeBase) = 8000.0f;
     this->sets[43].posBase = 1000;
@@ -639,7 +611,6 @@ int ParticleSettings::init() {
     asFloat(this->sets[46].uvV1) = 0.999f;
 
     ParticleSettings_initSub(&this->sets[47], &this->sets[12]);
-    buf.ctor_char(ParticleSettings_str + 397416, false);
     this->sets[47].frames = 0x10;
     asFloat(this->sets[47].uvU0) = 0.0f;
     asFloat(this->sets[47].uvV0) = 0.0f;
@@ -651,42 +622,41 @@ int ParticleSettings::init() {
 void ParticleSettings::multiplyAll(float scale) {
     float recip = 1.0f / ((scale + 1.0f) * 0.5f);
     for (int i = 0; i < 48; ++i) {
-        SetDefinition &p = this->sets[i];
-        float lifeScale, lifeBase;
-        if (p.flags & 0x20) {
-            lifeBase = asFloat(p.flLifetime);
-            lifeScale = scale;
-        } else if ((int) (p.flags << 0x1b) < 0) {
-            lifeBase = asFloat(p.flLifetime);
-            lifeScale = 1.0f / scale;
+        SetDefinition &current = ParticleSettingsRef::cur.sets[i];
+        const SetDefinition &baseline = ParticleSettingsRef::init.sets[i];
+        float lifetimeScale;
+        if (current.flags & 0x20) {
+            lifetimeScale = scale;
+        } else if (current.flags & 0x10) {
+            lifetimeScale = 1.0f / scale;
         } else {
             continue;
         }
-        unsigned c34 = p.color0;
-        unsigned c38 = p.color1;
-        float comp10 = (float) p.count;
+        unsigned c34 = baseline.color0;
+        unsigned c38 = baseline.color1;
+        float comp10 = static_cast<float>(baseline.count);
         float r34 = recip * (float) (int) (c34 & 0xff);
         float r38 = recip * (float) (int) (c38 & 0xff);
-        asFloat(p.flLifetime) = lifeBase * lifeScale;
+        current.flLifetime = baseline.flLifetime * lifetimeScale;
         unsigned u34 = (0.0f < r34) ? (unsigned) r34 : 0;
         unsigned u38 = (0.0f < r38) ? (unsigned) r38 : 0;
         if (u34 > 0xfe) u34 = 0xff;
         if (u38 > 0xfe) u38 = 0xff;
-        p.color0 = u34 | (c34 & 0xffffff00);
-        p.color1 = u38 | (c38 & 0xffffff00);
-        p.count = (int) (comp10 * scale);
+        current.color0 = u34 | (c34 & 0xffffff00);
+        current.color1 = u38 | (c38 & 0xffffff00);
+        current.count = static_cast<int>(comp10 * scale);
     }
 }
 
 void ParticleSettings::Interpolate(ParticleSet a, ParticleSet b, float t, ParticleSet out) {
-    SetDefinition &pa = this->sets[a];
-    SetDefinition &pb = this->sets[b];
-    SetDefinition &po = this->sets[out];
+    const SetDefinition &pa = ParticleSettingsRef::init.sets[a];
+    const SetDefinition &pb = ParticleSettingsRef::init.sets[b];
+    SetDefinition &po = ParticleSettingsRef::cur.sets[out];
     float omt = 1.0f - t;
     po.count = (int) (omt * (float) pa.count + (float) pb.count * t);
-    asFloat(po.lifeBase) = omt * asFloat(pa.lifeBase) + asFloat(pb.lifeBase) * t;
-    asFloat(po.endSize) = omt * asFloat(pa.endSize) + asFloat(pb.endSize) * t;
-    asFloat(po.velDir) = omt * asFloat(pa.velDir) + asFloat(pb.velDir) * t;
+    po.lifeBase = omt * pa.lifeBase + pb.lifeBase * t;
+    po.endSize = omt * pa.endSize + pb.endSize * t;
+    po.velDir = omt * pa.velDir + pb.velDir * t;
 }
 
 // Static data members present in the original binary (defined for symbol parity).

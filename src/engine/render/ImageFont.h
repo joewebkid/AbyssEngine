@@ -4,6 +4,8 @@
 
 namespace AbyssEngine {
     class Mesh;
+    class Engine;
+    class PaintCanvas;
 
     // Engine-internal resource struct. Layout recovered from the original
     // ARM disassembly (offsets verified against the 32-bit match build).
@@ -16,6 +18,21 @@ namespace AbyssEngine {
         int16_t spacing;      // 0x10
         int16_t yOffset;      // 0x12
     };
+
+    // Android ARM: PaintCanvas selects the atlas; this family owns glyph
+    // advance, clipping, direction and shader-path vertex colour.
+    int ImageFontGetWidth(ImageFont *font, const unsigned short *text, unsigned int len);
+    int ImageFontGetHeight(ImageFont *font);
+    void ImageFontSetSpacing(ImageFont *font, short spacing);
+    int ImageFontGetSpacing(ImageFont *font);
+    void ImageFontSetYOffset(ImageFont *font, short yOffset);
+    int ImageFontGetYOffset(ImageFont *font);
+    void ImageFontDrawString(ImageFont *font, const unsigned short *text, int x, int y,
+                             PaintCanvas *canvas, Engine *engine, bool rtl);
+    int ImageFontDrawString(ImageFont *font, const unsigned short *text, unsigned int len,
+                            int x, int y, PaintCanvas *canvas, Engine *engine, bool rtl);
+    int ImageCreateFontFromFile(Engine *engine, const char *path, unsigned short index,
+                                ImageFont **out);
 }
 
 #if __SIZEOF_POINTER__ == 4

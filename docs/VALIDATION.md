@@ -40,6 +40,23 @@ python3 tools/verify/verify.py --build-dir cmake-build-match/verify --no-build \
 Normal development is unchanged: `cmake --preset debug` still uses local Apple
 clang and never touches OrbStack/local NDK verify tooling.
 
+## ParticleSettingsRef Native Smoke
+
+The focused ABI/runtime smoke target does not link the whole recovered host
+library: unrelated render shim symbols still prevent that library from forming
+a standalone executable. It compiles only the two audited table translation
+units and exercises their actual initialization/scaling/interpolation path.
+
+```powershell
+C:\msys64\ucrt64\bin\cmake.exe -S . -B cmake-build-ucrt -G Ninja `
+  -DGOF2_BUILD_PARTICLE_SETTINGS_SMOKE=ON
+C:\msys64\ucrt64\bin\cmake.exe --build cmake-build-ucrt `
+  --target gof2_particle_settings_smoke
+.\cmake-build-ucrt\gof2_particle_settings_smoke.exe
+```
+
+Expected output: `ParticleSettingsRef ABI/runtime smoke: OK`.
+
 Windows note: the wrapper names are still `orbcc`, `orbnm`, `orbas`, and
 `orbobjdump`, but they now also support a local NDK r18b fallback. Set
 `GOF2_VERIFY_LOCAL_NDK=1` and keep the NDK at `.cache/ndk/android-ndk-r18b`, or

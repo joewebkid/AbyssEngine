@@ -57,6 +57,17 @@ target_compile_options(gof2 PRIVATE
     $<$<CXX_COMPILER_ID:GNU>:-fpermissive>
     -Wno-int-to-pointer-cast -Wno-int-to-void-pointer-cast)
 
+option(GOF2_BUILD_PARTICLE_SETTINGS_SMOKE
+       "Build the native ParticleSettingsRef ABI/runtime smoke test" OFF)
+if(GOF2_BUILD_PARTICLE_SETTINGS_SMOKE)
+    add_executable(gof2_particle_settings_smoke
+        tools/particle_settings_ref_smoke.cpp
+        src/engine/render/ParticleSettings.cpp
+        src/engine/render/ParticleSettingsRef.cpp)
+    target_include_directories(gof2_particle_settings_smoke PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/src")
+endif()
+
 # JNI
 target_include_directories(gof2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/third_party/jni")
 

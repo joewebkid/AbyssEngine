@@ -1,14 +1,17 @@
 #ifndef GOF2_PARTICLESETTINGSREF_H
 #define GOF2_PARTICLESETTINGSREF_H
 
+#include "engine/render/ParticleSettings.h"
+
 class ParticleSettingsRef {
 public:
     static void initialize();
 
-    // Static data members present in the original binary (defined for symbol parity).
+    // Android owns two real 0x1e00-byte ParticleSettings objects here. Every
+    // particle consumer addresses their fixed 0xa0-byte ARM slots directly.
     static int assertInit;
-    static unsigned char cur[7680];
-    static unsigned char init[7680];
+    static ParticleSettings cur;
+    static ParticleSettings init;
 };
 
 #endif

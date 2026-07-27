@@ -722,14 +722,6 @@ void paintcanvas_ext_gl_loadmatrix(void *);
 
 void paintcanvas_ext_gl_done();
 
-void *paintcanvas_ext_fc_findres(void *self, unsigned short id);
-
-void paintcanvas_ext_fc_texcreate(void *self, unsigned short id, bool b);
-
-int paintcanvas_ext_fc_fontfromfile(void *eng, char *path, unsigned short region, void **out);
-
-int paintcanvas_ext_fc_fontheight(void *font);
-
 void paintcanvas_ext_set_reslist(AbyssEngine::Resource * const *, unsigned int, void *);
 
 void paintcanvas_ext_child_link(void *, void *, void *);
@@ -817,8 +809,6 @@ float paintcanvas_ext_cipvf_sinf(float v);
 float paintcanvas_ext_cipvf_cosf(float v);
 
 int paintcanvas_ext_cipvf_inner(const float *pt, void *m, void *cam);
-
-void paintcanvas_ext_set_texture(void *);
 
 void paintcanvas_ext_dtor_releaseall(void *self);
 
@@ -1015,8 +1005,6 @@ void paintcanvas_ext_gl_texenvi(unsigned int, unsigned int, unsigned int);
 void paintcanvas_ext_gl_scalef(float, float, float);
 
 void paintcanvas_ext_gl_multmatrix(void *);
-
-void paintcanvas_ext_string_prep(AbyssEngine::PaintCanvas *, void *, int);
 
 void paintcanvas_ext_dsc_settexture(void *self, unsigned int tex);
 
@@ -2777,32 +2765,33 @@ void PaintCanvas::BeginBG() {
 
 void PaintCanvas::FontCreate(unsigned short resId, unsigned int &out,
                              bool /*unused*/) {
-    PCResourceView *res = (PCResourceView *) paintcanvas_ext_fc_findres(this, resId);
+    PCResourceView *res = (PCResourceView *) this->FindResource(resId);
     if (res == 0) {
         return;
     }
     unsigned short *info = (unsigned short *) res->payload;
-    PCResourceView *texres = (PCResourceView *) paintcanvas_ext_fc_findres(this, *info);
+    PCResourceView *texres = (PCResourceView *) this->FindResource(*info);
     if (texres == 0) {
         return;
     }
     if (texres->handle == -1) {
-        paintcanvas_ext_fc_texcreate(this, *info, true);
+        unsigned int textureIndex = 0;
+        this->TextureCreate(*info, textureIndex, false);
     }
     if (res->handle != -1) {
         out = (unsigned int) res->handle;
         return;
     }
-    void *font = 0;
-    char *texpath = *(char **) texres->payload;
-    int ok = paintcanvas_ext_fc_fontfromfile(this->engine, texpath, info[1], &font);
+    ImageFont *font = 0;
+    PCTexInfoView *texInfo = (PCTexInfoView *) texres->payload;
+    int ok = ImageCreateFontFromFile(this->engine, texInfo->path, info[1], &font);
     if (ok != 1) {
         return;
     }
     if (texres->handle != -1) {
-        *(int *) font = texres->handle;
+        font->field_0x8 = (void *) (uintptr_t) (unsigned int) texres->handle;
     }
-    PCArrayAdd<AbyssEngine::ImageFont *>((AbyssEngine::ImageFont *) font, &this->fonts);
+    PCArrayAdd<AbyssEngine::ImageFont *>(font, &this->fonts);
     int idx = this->fonts.count - 1;
     res->handle = idx;
     out = idx;
@@ -2812,11 +2801,11 @@ void PaintCanvas::FontCreate(unsigned short resId, unsigned int &out,
     if (cur == -1) {
         eng->field_0x78 = idx;
     } else {
-        PCFontView *curFont = (PCFontView *) (this->fonts.data_)[cur];
-        if (curFont->key <= ((PCFontView *) font)->key) {
-            int curH = paintcanvas_ext_fc_fontheight(curFont);
-            int newH = paintcanvas_ext_fc_fontheight(font);
-            if (newH < curH) {
+        ImageFont *curFont = (ImageFont *) (this->fonts.data_)[cur];
+        if (curFont->codes[0] <= 0x457f) {
+            int curH = ImageFontGetHeight(curFont);
+            int newH = ImageFontGetHeight(font);
+            if (newH > curH) {
                 eng->field_0x78 = out;
             }
         }
@@ -3277,8 +3266,8 @@ int PaintCanvas::CameraIsPointinViewFrustum(const AbyssEngine::AEMath::Vector &p
     return paintcanvas_ext_cipvf_inner(point, m, cam);
 }
 
-void PaintCanvas::SetTexture(unsigned int, unsigned int) {
-    return paintcanvas_ext_set_texture(this->engine);
+void PaintCanvas::SetTexture(unsigned int texture, unsigned int slot) {
+    this->engine->SetTextures(texture, slot);
 }
 
 PaintCanvas::~PaintCanvas() {
@@ -4390,17 +4379,12 @@ void PaintCanvas::Begin2d() {
     this->field_0xc = 0;
 }
 
-void paintcanvas_ext_drawstring_raw(void *, const unsigned short *, int, int,
-                                               AbyssEngine::PaintCanvas *, void *, bool);
-
 void PaintCanvas::DrawString(unsigned int index, const unsigned short *str,
                              int x, int y, bool b) {
     if (index < this->fonts.count) {
-        PCFontView *font = (PCFontView *) (this->fonts.data_)[index];
-        paintcanvas_ext_string_prep(this, font->atlas, -1);
-        void *font2 = (this->fonts.data_)[index];
-        paintcanvas_ext_drawstring_raw(font2, str, x, y, this,
-                                       this->engine, b);
+        ImageFont *font = (ImageFont *) (this->fonts.data_)[index];
+        this->SetTexture((unsigned int) (uintptr_t) font->field_0x8, 0xffffffff);
+        ImageFontDrawString(font, str, x, y, this, this->engine, b);
     }
 }
 
@@ -5312,18 +5296,12 @@ void PaintCanvas::DrawSpriteSystem(unsigned int index, AbyssEngine::AEMath::Matr
                                ((void **) this->spriteSystems.data_)[index]);
 }
 
-void paintcanvas_ext_drawstring_str(void *, unsigned int, unsigned int, int, int,
-                                               AbyssEngine::PaintCanvas *, void *, bool);
-
 void PaintCanvas::DrawString(unsigned int index, const AbyssEngine::String &str,
                              int x, int y, bool b) {
     if (index < this->fonts.count) {
-        PCFontView *font = (PCFontView *) (this->fonts.data_)[index];
-        paintcanvas_ext_string_prep(this, font->atlas, -1);
-        void *font2 = (this->fonts.data_)[index];
-        void *data = paintcanvas_ext_str_text(&str);
-        paintcanvas_ext_drawstring_str(font2, (unsigned int) (uintptr_t) data, str.size(), x, y,
-                                       this, this->engine, b);
+        ImageFont *font = (ImageFont *) (this->fonts.data_)[index];
+        this->SetTexture((unsigned int) (uintptr_t) font->field_0x8, 0xffffffff);
+        ImageFontDrawString(font, str.GetAEWChar(), str.size(), x, y, this, this->engine, b);
     }
 }
 
