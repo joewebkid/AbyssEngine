@@ -395,6 +395,26 @@ Layout::Layout() {
 
     memset(&this->field_0x4, 0, 0x2d8 - 0x04);
 
+    // Android Layout::Layout @ 0x000d1028. ListItemWindow::draw uses these
+    // two fields to place the ImageFactory item/ship Sprite in its title box.
+    // Keep the platform branches explicit: they are direct constructor writes,
+    // not values inferred from the current 1280x720 shell.
+    if (Globals::iPadHD) {
+        this->listItemIconTopInsetY = 1;
+        this->listItemIconSpriteHeight = 63;
+    } else {
+        this->listItemIconTopInsetY = (Globals::n9 || Globals::retinaDisplay) ? 2 : 1;
+        if (Globals::n9) {
+            this->listItemIconSpriteHeight = 45;
+        } else if (Globals::iPadLarge) {
+            this->listItemIconSpriteHeight = 90;
+        } else if (Globals::retinaDisplay) {
+            this->listItemIconSpriteHeight = 60;
+        } else {
+            this->listItemIconSpriteHeight = Globals::iPad ? 45 : 30;
+        }
+    }
+
     if (!hd) {
         this->field_0x238 = 0x46;
         this->field_0x27c = 0x1c;

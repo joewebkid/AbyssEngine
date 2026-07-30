@@ -140,7 +140,12 @@ public:
     };
 
     uint8_t _pad_0x118[12];
-    int field_0x124;
+    union {
+        int field_0x124;
+        // Android ListItemWindow::draw: extra top inset before the item/ship
+        // Sprite. Ordinary 1280x720 retina uses 2.
+        int listItemIconTopInsetY;
+    };
     int field_0x128;
     uint8_t _pad_0x12c[4];
     int field_0x130;
@@ -216,7 +221,12 @@ public:
     int field_0x2bc;
     int field_0x2c0;
     int field_0x2c4;
-    int field_0x2c8;
+    union {
+        int field_0x2c8;
+        // Android ListItemWindow::draw centres this source Image2D/Sprite
+        // height in the ListItem title box. Ordinary 1280x720 retina uses 60.
+        int listItemIconSpriteHeight;
+    };
     int field_0x2cc;
     uint8_t _pad_0x2d0[4];
     int field_0x2d4;

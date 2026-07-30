@@ -60,7 +60,9 @@ public:
     unsigned int previewCameraId;
     AbyssEngine::AEMath::Matrix previewCameraLocal;
     AbyssEngine::AEMath::Matrix previewScratch;
-    unsigned int previewLightingTexture;
+    // Android +0x110. ListItemWindow::set creates the race-selected texture
+    // handle here; its render/update/draw bodies do not read it afterwards.
+    unsigned int previewRaceTextureHandle;
     float previewScaleBias;
     float previewAngle;
     int dragAccum;

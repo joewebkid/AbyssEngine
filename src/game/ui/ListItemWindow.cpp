@@ -299,7 +299,7 @@ unsigned int liw_font() {
     return static_cast<unsigned int>(reinterpret_cast<uintptr_t>(Globals::font));
 }
 
-unsigned short liw_preview_light_texture(int race) {
+unsigned short liw_preview_race_texture_resource(int race) {
     switch (race) {
     case 0: return 0x276f;
     case 1: return 0x2771;
@@ -326,7 +326,10 @@ void liw_build_ship_preview(ListItemWindow *self, ListItem *item) {
         canvas->TransformAddMesh(self->previewSecondaryTransformId, secondaryMesh, false);
     }
 
-    canvas->TextureCreate(liw_preview_light_texture(race), self->previewLightingTexture, false);
+    // Android stores this TextureCreate handle at ListItemWindow+0x110. No
+    // ListItemWindow method subsequently consumes it as a material, cubemap,
+    // or explicit renderer texture binding.
+    canvas->TextureCreate(liw_preview_race_texture_resource(race), self->previewRaceTextureHandle, false);
     canvas->CameraCreate(self->previewCameraId);
     canvas->CameraSetPerspective(self->previewCameraId, 0.9203f, 200.0f, 30000.0f);
     canvas->CameraSetCurrent(self->previewCameraId);
@@ -603,8 +606,8 @@ void ListItemWindow::draw() {
     const bool isShip = li->isShip();
     canvas->SetColor(0xffffffffu);
     const int iconX = this->x + layout->buttonInsetX + layout->field_0x2c;
-    const int iconY = this->y + layout->field_0x124 + layout->field_0xc + layout->field_0x20 +
-        layout->field_0x5c / 2 - layout->field_0x2c8 / 2;
+    const int iconY = this->y + layout->listItemIconTopInsetY + layout->field_0xc + layout->field_0x20 +
+        layout->field_0x5c / 2 - layout->listItemIconSpriteHeight / 2;
     ImageFactory *imageFactory = static_cast<ImageFactory *>(Globals::imageFactory);
 
     if (li->isItem() || li->isBluePrint() || li->isPendingProduct()) {
