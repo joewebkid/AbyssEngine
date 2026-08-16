@@ -26,8 +26,6 @@ class TouchButton;
 // this helper does not physically preserve those offsets. HudArm32Layout is
 // the fixed-width ABI evidence model.
 struct HudInitImageSlots {
-    int image_0x004;
-    int image_0x008;
     union {
         int image_0x2c8;
         int gammaBarFillImage;
@@ -177,28 +175,16 @@ public:
     unsigned char visible;
     unsigned char field_0x2;
     unsigned char field_0x3;
+    int iPadFireImage;
+    int iPadFirePressedImage;
+    unsigned short iPadFireCoord_0x0c;
+    unsigned short iPadFireCoord_0x0e;
+    int iPadSteerAnchor;
+    int iPadFireAnchor;
     Array<TouchButton *> *menuButtons;
 
-    String field_0x1c;
-    String field_0x28;
-    String field_0x34;
-    String field_0x40;
-    String field_0x4c;
-    String field_0x58;
-    String field_0x64;
-    String field_0x70;
-    String field_0x7c;
-    String field_0x88;
-    String field_0x94;
-    String field_0xa0;
-    String field_0xac;
-    String field_0xb8;
-    String field_0xc4;
-    String field_0xd0;
-    String field_0xdc;
-    String field_0xe8;
-    String field_0xf4;
-    String field_0x100;
+    // Android constructor/destructor walk this exact 20-element String array.
+    String strings_01c_100[20];
     int eventLineX;
     int eventLineY;
     int factionLogoImage;
@@ -411,10 +397,6 @@ public:
     void *digitSprite;
     int multiplierIconImage;
     HudInitImageSlots initImageSlots;
-    unsigned short iPadFireCoord_0x0c;
-    unsigned short iPadFireCoord_0x0e;
-    int iPadSteerAnchor;
-    int iPadFireAnchor;
 
     Hud();
 
@@ -514,6 +496,24 @@ public:
     static int RADAR_HEIGHT;
     static int wingmanCommand;
 };
+
+#if UINTPTR_MAX == 0xffffffffu
+static_assert(sizeof(String) == 0x0c, "Android String must be 12 bytes");
+static_assert(__builtin_offsetof(Hud, iPadFireImage) == 0x004, "Hud::iPadFireImage @ +0x004");
+static_assert(__builtin_offsetof(Hud, iPadFirePressedImage) == 0x008,
+              "Hud::iPadFirePressedImage @ +0x008");
+static_assert(__builtin_offsetof(Hud, iPadFireCoord_0x0c) == 0x00c,
+              "Hud::iPadFireCoord_0x0c @ +0x00c");
+static_assert(__builtin_offsetof(Hud, iPadSteerAnchor) == 0x010,
+              "Hud::iPadSteerAnchor @ +0x010");
+static_assert(__builtin_offsetof(Hud, iPadFireAnchor) == 0x014,
+              "Hud::iPadFireAnchor @ +0x014");
+static_assert(__builtin_offsetof(Hud, menuButtons) == 0x018, "Hud::menuButtons @ +0x018");
+static_assert(__builtin_offsetof(Hud, strings_01c_100) == 0x01c,
+              "Hud::strings_01c_100 @ +0x01c");
+static_assert(__builtin_offsetof(Hud, strings_01c_100) + 19 * sizeof(String) == 0x100,
+              "Hud final constructor String @ +0x100");
+#endif
 
 static_assert(__builtin_offsetof(HudEventDisplay, eventBannerDisplayScale) == 0x1e0,
               "HudEventDisplay::eventBannerDisplayScale must live at +0x1e0");

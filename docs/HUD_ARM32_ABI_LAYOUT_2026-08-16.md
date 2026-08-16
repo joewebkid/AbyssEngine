@@ -77,26 +77,27 @@ cluster through `+0x350`, event/secondary/header images at
 `+0x354/+0x358/+0x35c`, hit indicators at `+0x360..+0x36c`, and the
 fuel/progress/transfer group at `+0x370..+0x38c`.
 
-## Current Class Drift
+## Runtime Migration Progress
 
-The existing `Hud` class remains a compact host representation. An NDK r18b
-record-layout dump measured the following differences before this package:
+The first live-runtime migration is complete. `menuButtons`, both iPad image
+handles, the packed iPad coordinates, both anchors and the 20-String array now
+occupy their Android offsets on ARM. The later regions remain compact:
 
 | Field | Current ARM class | Android object |
 | --- | ---: | ---: |
-| `menuButtons` | `+0x004` | `+0x018` |
-| first String | `+0x008` | `+0x01c` |
-| main event String | `+0x110` | `+0x1e0` |
-| `eventQueue` | `+0x160` | `+0x264` |
-| secondary label String | `+0x200` | `+0x3b4` |
-| charge fade timer | `+0x2a8` | `+0x464` |
-| event margins | `+0x2f8/+0x2fc` | `+0x4e8/+0x4f0` |
-| camera label String | `+0x308` | `+0x51c` |
+| `menuButtons` | `+0x018` | `+0x018` |
+| first/final array String | `+0x01c/+0x100` | `+0x01c/+0x100` |
+| main event String | `+0x124` | `+0x1e0` |
+| `eventQueue` | `+0x174` | `+0x264` |
+| secondary label String | `+0x214` | `+0x3b4` |
+| charge fade timer | `+0x2bc` | `+0x464` |
+| event margins | `+0x30c/+0x310` | `+0x4e8/+0x4f0` |
+| camera label String | `+0x31c` | `+0x51c` |
 | object size | `0x41c` | `0x53c` |
 
-This explains why source-backed `Hud` functions still have weak whole-body ARM
-similarity: almost every member access encodes the wrong immediate offset even
-when the recovered branch behavior is correct.
+This first correction raises the constructor from `5.6%` to `92.7%` and the
+destructor from `36.7%` to `73.3%`. Later source-backed functions still encode
+compact member offsets until the remaining regions are migrated.
 
 ## Boundary And Migration Order
 
@@ -105,9 +106,9 @@ claim that the current class is ABI-correct. `HudInitImageSlots` is also now
 documented accurately as compact host storage whose names preserve source-slot
 identity, not physical offsets.
 
-The safe runtime migration is deliberately split into four later steps:
+The safe runtime migration is deliberately split into four steps:
 
-1. Move the prefix, `menuButtons` and constructor-owned String regions.
+1. **Complete:** move the prefix, `menuButtons` and 20-String constructor array.
 2. Move event queue and progress state through `+0x294`.
 3. Replace compact image storage with the native `+0x298..+0x3b3` slots and
    preserve the 16-bit coordinate holes.
@@ -124,7 +125,7 @@ out-of-bounds runtime bug and is explicitly rejected.
   assertion.
 - ARM corpus: `201` translation units compile; the same `3` unrelated units
   fail on the known `SolarSystem *` versus integer system-index mismatch.
-- Metrics are intentionally unchanged because the runtime class was not
-  rewritten: constructor `5.6%` (`202/82` local/original instructions),
-  destructor `36.7%` (`149/80`), `Hud::init` `9.2%` (`1122/1077`) and
-  `Hud::hudEvent` `9.7%` (`885/1088`). None are linked- or raw-byte-equal.
+- After the first runtime-prefix migration, constructor similarity is `92.7%`
+  (`82/82` original/local instructions), destructor `73.3%` (`80/81`),
+  `Hud::init` `9.8%` (`1077/1120`) and `Hud::hudEvent` `9.7%` (`1088/885`).
+  None are linked- or raw-byte-equal. See `HUD_RUNTIME_PREFIX_2026-08-16.md`.

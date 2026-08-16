@@ -185,9 +185,9 @@ static void hud_load_init_images(Hud *self) {
         hud_create_image(canvas, image.resourceId, *image.slot);
 
     if (Globals::iPad != 0) {
-        hud_create_image(canvas, 0x4c6, self->initImageSlots.image_0x004);
-        hud_create_image(canvas, 0x6aa, self->initImageSlots.image_0x008);
-        self->reticleImage = self->initImageSlots.image_0x004;
+        hud_create_image(canvas, 0x4c6, self->iPadFireImage);
+        hud_create_image(canvas, 0x6aa, self->iPadFirePressedImage);
+        self->reticleImage = self->iPadFireImage;
     } else {
         hud_create_image(canvas, 0x4c6, self->reticleImage);
     }
@@ -231,9 +231,9 @@ static void hud_apply_ipad_control_coords(Hud *self, PaintCanvas *canvas) {
                             self->field_0x404, self->field_0x406);
 
     globals->setCoordsFire(fireAnchor,
-                           canvas->GetImage2DWidth(static_cast<unsigned>(self->initImageSlots.image_0x004)),
-                           static_cast<unsigned>(self->initImageSlots.image_0x004),
-                           static_cast<unsigned>(self->initImageSlots.image_0x008),
+                           canvas->GetImage2DWidth(static_cast<unsigned>(self->iPadFireImage)),
+                           static_cast<unsigned>(self->iPadFireImage),
+                           static_cast<unsigned>(self->iPadFirePressedImage),
                            reinterpret_cast<unsigned int &>(self->reticleImage), self->iPadFireCoord_0x0c,
                            self->iPadFireCoord_0x0e, self->field_0x3e4, self->field_0x3e6,
                            self->field_0x416, self->field_0x418, self->field_0x3f2, self->field_0x3f4,
@@ -1901,7 +1901,7 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
             line = *gameText->getText(309);
             break;
         case 19:
-            line = this->field_0x100;
+            line = this->strings_01c_100[19];
             break;
         case 20:
             line = *gameText->getText(541);
