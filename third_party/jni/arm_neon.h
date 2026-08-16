@@ -9,6 +9,7 @@
 #include <cstring>
 
 typedef struct { float v[4]; } float32x4_t;
+typedef struct { uint8_t v[16]; } uint8x16_t;
 typedef struct { int32_t v[4]; } int32x4_t;
 typedef struct { uint32_t v[4]; } uint32x4_t;
 typedef struct { uint64_t v[2]; } uint64x2_t;
@@ -23,6 +24,10 @@ static inline void vst1q_f32(float *p, float32x4_t a) {
     std::memcpy(p, a.v, sizeof(a.v));
 }
 
+static inline void vst1q_u8(uint8_t *p, uint8x16_t a) {
+    std::memcpy(p, a.v, sizeof(a.v));
+}
+
 static inline void vst1q_u32(uint32_t *p, uint32x4_t a) {
     std::memcpy(p, a.v, sizeof(a.v));
 }
@@ -33,6 +38,10 @@ static inline void vst1q_u64(uint64_t *p, uint64x2_t a) {
 
 static inline float32x4_t vdupq_n_f32(float x) {
     return {{x, x, x, x}};
+}
+
+static inline uint8x16_t vdupq_n_u8(uint8_t x) {
+    return {{x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x}};
 }
 
 static inline uint32x4_t vdupq_n_u32(uint32_t x) {

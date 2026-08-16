@@ -463,29 +463,12 @@ Array<int> *Globals::getSoundResourceList() {
     return soundResources;
 }
 
-#pragma pack(push, 1)
-struct Q16 { int32x4_t v; };
-
-struct HintsBuffer {
-    union {
-        Q16 quad[4]; // 16-byte SIMD-aligned views at 0x00/0x10/0x20/0x30
-        struct {
-            uint8_t _pad2b[0x2b];
-            Q16     quadAt2b; // unaligned 16-byte store overlapping quad[2]/quad[3]
-        };
-    };
-};
-#pragma pack(pop)
-
-static void *const gHints = nullptr;
-
 void Globals::resetHints() {
-    HintsBuffer *hints = (HintsBuffer *) gHints;
-    const int32x4_t z = vdupq_n_s32(0);
-    hints->quad[0].v = z;    // 0x00
-    hints->quadAt2b.v = z;   // 0x2b
-    hints->quad[2].v = z;    // 0x20
-    hints->quad[1].v = z;    // 0x10
+    const uint8x16_t zero = vdupq_n_u8(0);
+    vst1q_u8(Globals::hints, zero);        // 0x00
+    vst1q_u8(Globals::hints + 0x2b, zero); // 0x2b, intentionally unaligned
+    vst1q_u8(Globals::hints + 0x20, zero); // 0x20
+    vst1q_u8(Globals::hints + 0x10, zero); // 0x10
 }
 
 void Globals::startNewSoundResourceList() {

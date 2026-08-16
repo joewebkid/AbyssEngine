@@ -17,6 +17,7 @@
 #include "game/ship/Ship.h"
 #include "game/weapons/Radar.h"
 #include "game/world/Level.h"
+#include "game/world/LevelScript.h"
 #include "game/ship/Player.h"
 #include "engine/render/PaintCanvas.h"
 #include "game/ui/Layout.h"
@@ -55,6 +56,10 @@ static inline unsigned int hud_font() {
 static inline GameText *hud_game_text() {
     return static_cast<GameText *>(Globals::gameText);
 }
+
+// `_ZN7Globals5hintsE` is at 0x21824c in Android 2.0.16; the mining tutorial
+// completion byte used by Hud::draw and MGame lives at 0x21825d.
+static constexpr int kMiningTutorialHintIndex = 0x11;
 
 static inline int hud_layout_i32(unsigned int offset) {
     return *reinterpret_cast<int *>(static_cast<char *>(Globals::layout) + offset);
@@ -950,6 +955,118 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         }
     }
 
+    const unsigned int progressBaseColor = canvas->GetColor();
+    const int progressCenterX = Globals::w >> 1;
+    int progressStackOffset = 0;
+    GameText *progressText = hud_game_text();
+
+    if (this->dockTransferProgressActive != 0 && ego->isDockedToDockingPoint() &&
+        ego->getHitpoints() >= 1 && progressText != nullptr) {
+        const unsigned int fillImage = static_cast<unsigned int>(this->initImageSlots.dockTransferFillImage);
+        const int fillWidth = canvas->GetImage2DWidth(fillImage);
+        const int fillHeight = canvas->GetImage2DHeight(fillImage);
+        const int textHeight = canvas->GetTextHeight(hud_font());
+        const int transferred = ego->getDockTransferedAmount();
+        const int total = ego->getDockTotalAmount();
+
+        String label = *progressText->getText(this->dockTransferReverse != 0 ? 3205 : 3204);
+        label += ' ';
+
+        float transferRate = total != 0 ? static_cast<float>(transferred) / static_cast<float>(total) : 0.0f;
+        if (this->dockTransferReverse != 0)
+            transferRate = 1.0f - transferRate;
+
+        float fade = static_cast<float>(this->dockTransferFadeTimer + elapsed) / 1000.0f;
+        if (fade > 1.0f) fade = 1.0f;
+        this->dockTransferFadeTimer += elapsed;
+        canvas->SetColor(static_cast<unsigned int>(static_cast<int>(fade * 255.0f) - 256));
+
+        const int panelY = 2 * static_cast<int>(this->field_0x3e2);
+        canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.progressPanelImage),
+                            progressCenterX, panelY, 0x11, 0x14);
+        canvas->DrawRegion2D(fillImage, 0, 0,
+                             static_cast<int>(transferRate * static_cast<float>(fillWidth)), fillHeight,
+                             0.0f, 0, 0, progressCenterX - fillWidth / 2,
+                             hud_layout_i32(0x218) + panelY);
+
+        const int labelY = static_cast<int>(static_cast<float>(panelY) +
+                                            static_cast<float>(fillHeight) * 2.5f);
+        const int labelWidth = canvas->GetTextWidth(hud_font(), label);
+        canvas->DrawString(hud_font(), label, progressCenterX - labelWidth / 2, labelY, false);
+
+        Mission *mission = Status::gStatus != nullptr ? Status::gStatus->getMission() : nullptr;
+        if (this->dockTransferShowMissionMarkers != 0 && mission != nullptr && mission->getType() != 168) {
+            canvas->DrawImage2D(
+                static_cast<unsigned int>(this->initImageSlots.dockTransferMissionMarkerImage),
+                progressCenterX + labelWidth / 2, labelY + textHeight / 2, 0x11, 0x41);
+        }
+        if (mission != nullptr && mission->getType() == 174) {
+            canvas->DrawImage2D(
+                static_cast<unsigned int>(this->initImageSlots.dockTransferProductionMarkerImage),
+                progressCenterX + labelWidth / 2, labelY + textHeight / 2, 0x11, 0x41);
+        }
+
+        progressStackOffset = static_cast<int>(static_cast<float>(textHeight) +
+                                               static_cast<float>(fillHeight) * 2.5f);
+    }
+
+    if ((this->jumpDriveProgressActive != 0 || this->cloakProgressActive != 0) && progressText != nullptr) {
+        const bool jumpDrive = this->jumpDriveProgressActive != 0;
+        float rate = jumpDrive ? ego->getDriveChargeRate() : ego->getCloakRate();
+        float progress = 1.0f;
+        if (rate * 1.05f < 1.0f)
+            progress = (jumpDrive ? ego->getDriveChargeRate() : ego->getCloakRate()) * 1.05f;
+
+        String label = *progressText->getText(jumpDrive ? 318 : 317);
+        const unsigned int fillImage = static_cast<unsigned int>(this->initImageSlots.chargeProgressFillImage);
+        const int halfWidth = static_cast<int>(static_cast<float>(canvas->GetImage2DWidth(fillImage)) * 0.5f);
+        const int fillHeight = canvas->GetImage2DHeight(fillImage);
+        const float fade = static_cast<float>(this->chargeProgressFadeTimer + elapsed) / 1000.0f;
+        this->chargeProgressFadeTimer += elapsed;
+        const int color = fade >= 1.0f ? -1 : static_cast<int>(fade * 255.0f) - 256;
+        canvas->SetColor(static_cast<unsigned int>(color));
+
+        const int panelY = progressStackOffset + 2 * static_cast<int>(this->field_0x3e2);
+        canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.progressPanelImage),
+                            progressCenterX, panelY, 0x11, 0x14);
+        canvas->DrawRegion2D(fillImage,
+                             static_cast<int>(static_cast<float>(halfWidth) - progress * halfWidth), 0,
+                             static_cast<int>(progress * halfWidth + progress * halfWidth), fillHeight,
+                             0.0f, 0, 0,
+                             static_cast<int>(static_cast<float>(progressCenterX) - progress * halfWidth),
+                             panelY + hud_layout_i32(0x218));
+        const int labelWidth = canvas->GetTextWidth(hud_font(), label);
+        canvas->DrawString(hud_font(), label, progressCenterX - labelWidth / 2,
+                           static_cast<int>(static_cast<float>(panelY) +
+                                            static_cast<float>(fillHeight) * 2.5f),
+                           false);
+    }
+
+    Status *progressStatus = Status::gStatus;
+    LevelScript *levelScript = ego->levelScript;
+    if (Globals::hints[kMiningTutorialHintIndex] == 0 && !isMining && progressStatus != nullptr &&
+        progressStatus->getCurrentCampaignMission() == 2 && levelScript != nullptr &&
+        !ego->isDockingToAsteroid() && !ego->isDockedToAsteroid()) {
+        const unsigned long long scriptTime =
+            static_cast<unsigned int>(levelScript->field_0x8) |
+            (static_cast<unsigned long long>(static_cast<unsigned int>(levelScript->field_0xc)) << 32);
+        if (scriptTime >= 12001 && progressText != nullptr) {
+            this->miningHintPulseTimer += elapsed;
+            if (this->miningHintPulseTimer > 2000)
+                this->miningHintPulseTimer = 0;
+            int alpha = static_cast<int>((static_cast<float>(this->miningHintPulseTimer) / 1000.0f) * 255.0f);
+            if (alpha > 255)
+                alpha = -1 - alpha;
+            canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                             static_cast<unsigned char>(0xff), static_cast<unsigned char>(alpha));
+            String label = *progressText->getText(618);
+            const int labelWidth = canvas->GetTextWidth(hud_font(), label);
+            canvas->DrawString(hud_font(), label, progressCenterX - labelWidth / 2,
+                               hud_layout_i32(0x2c) + static_cast<int>(this->field_0x3e2), false);
+        }
+    }
+    canvas->SetColor(progressBaseColor);
+
     drawOrbitInformation();
 
     drawEventQueue();
@@ -1519,10 +1636,12 @@ int Hud::init() {
     this->shieldHitFlash = 0;
     this->hitFlashTimer = 0;
     this->field_0x470 = 0;
+    this->chargeProgressFadeTimer = 0;
     this->timeExtenderTimer = 0;
     this->timeExtenderDuration = 0;
     this->cargoAggregateCount = 0;
     this->field_0x468 = 0;
+    this->miningHintPulseTimer = 0;
 
     this->keyArray = new Array<void *>();
     ArraySetLength(0x19, *(this->keyArray));
@@ -1718,31 +1837,50 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
             if (this->hasBoostButton == 0) return;
             break;
 
+        case 25:
+            this->chargeProgressFadeTimer = 0;
+            this->jumpDriveProgressActive = 1;
+            return;
+        case 26:
+            this->jumpDriveProgressActive = 0;
+            return;
+        case 28:
+            this->chargeProgressFadeTimer = 0;
+            this->cloakProgressActive = 1;
+            return;
+        case 29:
+            this->cloakProgressActive = 0;
+            return;
+
         case 0x23:
-            this->field_0x468 = 0;
-            this->field_0x27a = 1;
-            this->weaponSelectState = 1;
+            this->dockTransferFadeTimer = 0;
+            this->dockTransferShowMissionMarkers = 1;
+            this->dockTransferProgressActive = 1;
+            this->dockTransferReverse = 0;
             return;
         case 0x25:
-            this->field_0x468 = 0;
-            this->field_0x27a = 1;
-            this->weaponSelectState = 0x101;
+            this->dockTransferFadeTimer = 0;
+            this->dockTransferShowMissionMarkers = 1;
+            this->dockTransferProgressActive = 1;
+            this->dockTransferReverse = 1;
             return;
         case 0x27:
-            this->field_0x468 = 0;
-            this->field_0x27a = 0;
-            this->weaponSelectState = 1;
+            this->dockTransferFadeTimer = 0;
+            this->dockTransferShowMissionMarkers = 0;
+            this->dockTransferProgressActive = 1;
+            this->dockTransferReverse = 0;
             return;
         case 0x29:
-            this->field_0x468 = 0;
-            this->field_0x27a = 0;
-            this->weaponSelectState = 0x101;
+            this->dockTransferFadeTimer = 0;
+            this->dockTransferShowMissionMarkers = 0;
+            this->dockTransferProgressActive = 1;
+            this->dockTransferReverse = 1;
             return;
         case 0x24:
         case 0x26:
         case 0x28:
         case 0x2a:
-            *(unsigned char *) &this->weaponSelectState = 0;
+            this->dockTransferProgressActive = 0;
             break;
 
         default:

@@ -68,19 +68,21 @@ claim. The local `Hud` class still uses a compact host mirror, so semantic image
 aliases and four host-side pulse timers do not yet occupy the original ARM
 object offsets.
 
-The dense post-fire progress family remains queued: docking transfer,
-jump-drive charge, cloak/boost-related progress, extender notification, and
-their alpha/string lifetime details. The exact gameplay name of raw
-`Radar+0x14` also remains subject to the wider Radar ABI audit even though this
-consumer and offset are confirmed.
+The post-fire progress family was completed in the follow-up
+`HUD_POST_FIRE_PROGRESS_2026-08-16.md`. That audit corrected the preliminary
+classification: the shared progress branch is jump-drive/cloak, not boost, and
+the trailing pulse is the mining tutorial rather than an extender
+notification. The exact gameplay name of raw `Radar+0x14` remains subject to
+the wider Radar ABI audit even though this consumer and offset are confirmed.
 
 ## Validation
 
 - UCRT64 native build: `libgof2.a` links successfully.
 - `git diff --check`: clean.
-- ARM `verify-fn` for `_ZN3Hud4drawExxP9PlayerEgobjj`: `1.8%`,
-  `linked_equal=False`, `bytes_equal=False`, original `3223` instructions,
-  local `785` instructions.
+- ARM `verify-fn` for `_ZN3Hud4drawExxP9PlayerEgobjj` at completion of this
+  package: `1.8%`, `linked_equal=False`, `bytes_equal=False`, original `3223`
+  instructions, local `785` instructions. After the separate post-fire package
+  the current baseline is `8.1%` with `1926` local instructions.
 - ARM `verify-fn` for `_ZN5MGame10OnRender2DEv`: `15.4%`,
   `linked_equal=False`, `bytes_equal=False`, original `433` instructions,
   local `241` instructions.

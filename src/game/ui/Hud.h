@@ -131,12 +131,27 @@ struct HudInitImageSlots {
     };
     int image_0x370;
     int image_0x374;
-    int image_0x378;
-    int image_0x37c;
-    int image_0x380;
-    int image_0x384;
+    union {
+        int image_0x378;
+        int progressPanelImage;
+    };
+    union {
+        int image_0x37c;
+        int chargeProgressFillImage;
+    };
+    union {
+        int image_0x380;
+        int dockTransferMissionMarkerImage;
+    };
+    union {
+        int image_0x384;
+        int dockTransferProductionMarkerImage;
+    };
     int image_0x388;
-    int image_0x38c;
+    union {
+        int image_0x38c;
+        int dockTransferFillImage;
+    };
     int image_0x390;
     int image_0x394;
     int image_0x398;
@@ -209,9 +224,24 @@ public:
     int eventQueuePaused;
     unsigned char jumpMapSelectedFlag;
     unsigned char field_0x275;
-    unsigned short field_0x276;
-    unsigned short weaponSelectState;
-    unsigned char field_0x27a;
+    union {
+        unsigned short field_0x276;
+        struct {
+            unsigned char cloakProgressActive;
+            unsigned char jumpDriveProgressActive;
+        };
+    };
+    union {
+        unsigned short weaponSelectState;
+        struct {
+            unsigned char dockTransferProgressActive;
+            unsigned char dockTransferReverse;
+        };
+    };
+    union {
+        unsigned char field_0x27a;
+        unsigned char dockTransferShowMissionMarkers;
+    };
     unsigned char field_0x27b;
     int fuelGaugeValue;
     unsigned char field_0x280;
@@ -336,7 +366,11 @@ public:
     unsigned short field_0x45c;
     unsigned short field_0x45e;
     unsigned short field_0x460;
-    int field_0x468;
+    int chargeProgressFadeTimer;
+    union {
+        int field_0x468;
+        int dockTransferFadeTimer;
+    };
     int hitFlashTimer;
     int field_0x470;
     unsigned char boostReadyLatched;
@@ -368,6 +402,8 @@ public:
     int hitDirectionBottomTimer;
     unsigned char hackingGameActive;
     int cargoAggregateCount;
+    // Host mirror for native Hud+0x4c4 until the remaining tail ABI is rebuilt.
+    int miningHintPulseTimer;
     Array<unsigned int> *uintArray;
     void *digitSprite;
     int multiplierIconImage;
