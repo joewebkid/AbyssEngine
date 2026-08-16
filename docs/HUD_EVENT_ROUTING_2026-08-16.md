@@ -91,10 +91,12 @@ normalizing the pair.
 
 The event table and queue behavior are source-backed. This is not an ARM
 byte-match claim. The local host class has a compact layout, so its named
-members do not occupy the original Android offsets (`Hud+0x1d8..0x1ec` and
-`Hud+0x4e8..0x4f0`). Compiler-generated `String` temporary lifetimes and the
-original stack-protector frame also differ. No artificial stack scratch or
-canary was added to imitate those differences.
+members do not yet occupy the original Android offsets. The fixed-width map in
+`HUD_ARM32_ABI_LAYOUT_2026-08-16.md` now locks `Hud+0x1d8..0x1ec`,
+`Hud+0x4e8..0x4f0` and the complete `0x53c` allocation without pretending the
+runtime migration is finished. Compiler-generated `String` temporary
+lifetimes and the original stack-protector frame also differ. No artificial
+stack scratch or canary was added to imitate those differences.
 
 ## Validation
 

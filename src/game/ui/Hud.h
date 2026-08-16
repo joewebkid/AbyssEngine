@@ -9,6 +9,7 @@
 
 
 #include "game/ui/HudEventDisplay.h"
+#include "game/ui/HudArm32Layout.h"
 
 #include "game/ui/CargoBay.h"
 class Radar;
@@ -20,8 +21,10 @@ class ListItem;
 class PlayerEgo;
 class TouchButton;
 
-// Host-side mirror for Hud::init Image2D fields whose gameplay role has not
-// yet been named. Each member keeps the original 32-bit Hud byte offset.
+// Compact host-side storage for Hud::init Image2D fields whose gameplay role
+// has not yet been named. Member names record original Android source slots;
+// this helper does not physically preserve those offsets. HudArm32Layout is
+// the fixed-width ABI evidence model.
 struct HudInitImageSlots {
     int image_0x004;
     int image_0x008;
@@ -161,8 +164,8 @@ struct HudInitImageSlots {
     int image_0x3a8;
     int image_0x3ac;
     int image_0x3b0;
-    int cameraIdleImages[4];       // Android Hud+0x4f4..+0x500
-    int cameraPressedImages[4];    // Android Hud+0x504..+0x510
+    int cameraIdleImages[4];       // Source slots: Android Hud+0x4f4..+0x500
+    int cameraPressedImages[4];    // Source slots: Android Hud+0x504..+0x510
 };
 
 
