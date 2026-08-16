@@ -415,6 +415,17 @@ Layout::Layout() {
         }
     }
 
+    // Android Layout::Layout @ 0x000d1028, ordinary non-iPad/non-n9 branch.
+    // HangarWindow::initialize copies these fields into its list-entry width,
+    // selected-row action offset, and icon placement state. Keep this branch
+    // separate from the generic UI metrics above: these are direct ARM
+    // constructor writes, not values inferred from the Godot reference layout.
+    if (!Globals::iPadHD && !Globals::n9 && !Globals::iPad) {
+        this->hangarListEntryFixedWidth = Globals::retinaDisplay ? 340 : 170;
+        this->hangarSelectedRowActionOffsetY = Globals::retinaDisplay ? -2 : 0;
+        this->hangarRowIconOffsetY = Globals::retinaDisplay ? 2 : 1;
+    }
+
     if (!hd) {
         this->field_0x238 = 0x46;
         this->field_0x27c = 0x1c;

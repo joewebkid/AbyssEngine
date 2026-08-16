@@ -76,6 +76,9 @@ public:
     union {
         int field_0x30;
         int field_0x30_rowHeight;
+        // TouchButton::init uses this as the logical hit/layout height for
+        // normal three-slice buttons on the Android non-iPad branch.
+        int touchButtonLayoutHeight;
     };
 
     int field_0x34;
@@ -179,11 +182,29 @@ public:
     int field_0x234;
     union {
         int field_0x238;
-        Blk16 field_0x238_blk16;
+        HangarRowLayoutMetrics hangarRowMetrics;
     };
-    int field_0x248;
-    int field_0x24c;
-    int field_0x250;
+    union {
+        int field_0x248;
+        // Copied to HangarWindow+0x110, then supplied as the requested width
+        // of its special Sell / Move-to-Cargo list-entry TouchButtons. The
+        // ordinary Android retina branch stores 340 (170 at low resolution).
+        int hangarListEntryFixedWidth;
+    };
+
+    union {
+        int field_0x24c;
+        // Added to the selected list-row Y before HangarWindow renders its
+        // right-side TouchButton actions. Ordinary Android HD retina: -2.
+        int hangarSelectedRowActionOffsetY;
+    };
+
+    union {
+        int field_0x250;
+        // Copied by HangarWindow::initialize for the list-row item icon Y.
+        // Ordinary Android HD retina: 2.
+        int hangarRowIconOffsetY;
+    };
     int field_0x254;
     int field_0x258;
     int field_0x25c;

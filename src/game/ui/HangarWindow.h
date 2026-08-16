@@ -99,9 +99,12 @@ public:
     int hintOffsetX;
     uint8_t autoEquipPending;
     unsigned int autoEquipIndex;
-    Blk16 field_0x100;
-    int buttonHeight;
-    int field_0x114;
+    HangarRowLayoutMetrics rowLayoutMetrics;
+    // Layout+0x248; requested width for the dedicated Sell / Move-to-Cargo
+    // list entries, not a generic button height.
+    int listEntryActionWidth;
+    // Copied from Layout+0x24c; native render adds it to selected-row actions.
+    int rowActionOffsetY;
     int iconOffsetY;
     uint8_t replaceEquipPending;
     uint8_t upgradeMode;

@@ -7,7 +7,14 @@
 #include "game/ui/ChoiceWindow.h"
 #include "game/ui/ListItemWindow.h"
 
-struct Blk16 {
-    int a, b, c, d;
+// Android Layout+0x238 is copied verbatim into HangarWindow+0x100. The
+// renderer and touch picker consume its fourth word as the gap between rows.
+struct HangarRowLayoutMetrics {
+    int field_0x00;
+    int field_0x04;
+    int field_0x08;
+    int rowGap;
 };
+
+static_assert(sizeof(HangarRowLayoutMetrics) == 0x10, "Hangar row metrics ABI drift");
 #endif

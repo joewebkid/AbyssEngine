@@ -392,7 +392,7 @@ int TouchButton::init(String const &text, unsigned int kind, int achId, int achS
             this->rightWidth = rightW;
 
             if (kind != 0xb)
-                this->layoutHeight = (*g_TB_layoutMetrics)->field_0x30;
+                this->layoutHeight = (*g_TB_layoutMetrics)->touchButtonLayoutHeight;
             else
                 this->layoutHeight = this->height;
 
@@ -763,4 +763,3 @@ TouchButton::TouchButton(unsigned int kind, int a, int b, int c, unsigned char f
     String tmp(g_TB_emptyStr, false);
     this->init(tmp, kind, a, b, c, 0x44, -1, -1, flag, 0);
 }
-

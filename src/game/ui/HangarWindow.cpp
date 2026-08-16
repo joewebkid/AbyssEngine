@@ -29,6 +29,31 @@ void Status_replaceHash(...);
 static inline int IDIV(int a, int b) { return a / b; }
 static inline unsigned int UDIV(unsigned int a, unsigned int b) { return a / b; }
 
+// Array<TouchButton*> at HangarWindow+0x20. The allocation order and all
+// action destinations are confirmed by the Android-HD initialize/render/input
+// bodies. Keep the numeric layout stable: ARM code owns 24 button slots.
+enum HangarButtonSlot : unsigned int {
+    kHangarButtonInspect = 0,
+    kHangarButtonSelectShip = 1,
+    kHangarButtonSelectItemFirst = 2,
+    kHangarButtonSelectItemSecond = 3,
+    kHangarButtonSelectItemThird = 4,
+    kHangarButtonSellListEntry = 5,
+    kHangarButtonMoveToCargoEntry = 6,
+    kHangarButtonSelectBlueprint = 7,
+    kHangarButtonCurrentAmount = 8,
+    kHangarButtonStationAmount = 9,
+    kHangarButtonSellShip = 10,
+    kHangarButtonCredits = 11,
+    kHangarButtonPaidCreditsFirst = 12,
+    kHangarButtonPaidCreditsLast = 16,
+    kHangarButtonCreditsMore = 17,
+    kHangarButtonFreeCreditsFirst = 18,
+    kHangarButtonFreeCreditsLast = 22,
+    kHangarButtonBlueprintAutoComplete = 23,
+    kHangarButtonCount = 24,
+};
+
 void *AppManager_GetApplicationData();
 
 void *AppManager_GetApplicationModule(unsigned int id);
@@ -126,7 +151,7 @@ void HangarWindow::refreshCurrentContentHeight() {
         int n = (int) items->size();
         Layout *layout = static_cast<Layout *>(Globals::layout);
         int rowH = layout->field_0x70;
-        this->currentContentHeight = this->field_0x100.d * (n - 1) + n * rowH;
+        this->currentContentHeight = this->rowLayoutMetrics.rowGap * (n - 1) + n * rowH;
     }
 }
 
@@ -304,7 +329,7 @@ void HangarWindow::render() {
                 int contentBase = colW + baseY + rowGap;
 
                 Array<TouchButton *> *btnArr = this->buttons;
-                for (int i = 0; i != 0x18; i++) {
+                for (unsigned int i = 0; i != kHangarButtonCount; i++) {
                     if (this->dragging == 0) {
                         TouchButton *btn = buttonAt(i);
                         if (btn != nullptr)
@@ -315,7 +340,7 @@ void HangarWindow::render() {
                 int boxW = rowGap - 2;
 
                 for (unsigned int i = 0; i < items->size(); i++) {
-                    int y = (layout->field_0x70 + this->field_0x100.d) * (int) i +
+                    int y = (layout->field_0x70 + this->rowLayoutMetrics.rowGap) * (int) i +
                             this->scrollOffset + layout->field_0x20 + layout->field_0xc;
                     if (y < 0 || y > Globals::h)
                         continue;
@@ -375,10 +400,10 @@ void HangarWindow::render() {
                         } else if (li->isSlot()) {
                             label = textFor(174);
                             if (tab == 4 && i + 1 == items->size()) {
-                                TouchButton *createButton = buttonAt(23);
+                                TouchButton *createButton = buttonAt(kHangarButtonBlueprintAutoComplete);
                                 if (createButton != nullptr) {
                                     createButton->setPosition(this->hintOffsetX + layout->field_0x28 + topY / 2,
-                                                              this->field_0x114 + y, 0x14);
+                                                              this->rowActionOffsetY + y, 0x14);
                                     createButton->setVisible(true);
                                     createButton->draw();
                                 }
@@ -402,7 +427,7 @@ void HangarWindow::render() {
                                 progress += percent;
                                 canvas->DrawString(font, progress,
                                                    progressX + this->progressBarWidth + layout->field_0x2c,
-                                                   y + layout->field_0x70 / 2 + this->field_0x114, false);
+                                                   y + layout->field_0x70 / 2 + this->rowActionOffsetY, false);
                                 canvas->SetColor(0xffffffffu);
                             }
                             if (imageFactory != nullptr) {
@@ -423,14 +448,14 @@ void HangarWindow::render() {
                                 imageFactory->drawItem(productIndex, itemTypeAt(productIndex), iconX, iconY);
                             }
                         } else if (li->isMoveToCargoButton()) {
-                            TouchButton *moveButton = buttonAt(6);
+                            TouchButton *moveButton = buttonAt(kHangarButtonMoveToCargoEntry);
                             if (moveButton != nullptr) {
                                 moveButton->setPosition(this->hintOffsetX + layout->field_0x28, y, 0x11);
                                 moveButton->setVisible(true);
                                 moveButton->draw();
                             }
                         } else if (li->isSellButton()) {
-                            TouchButton *sellButton = buttonAt(5);
+                            TouchButton *sellButton = buttonAt(kHangarButtonSellListEntry);
                             if (sellButton != nullptr) {
                                 sellButton->setPosition(this->hintOffsetX + layout->field_0x28, y, 0x11);
                                 sellButton->setVisible(true);
@@ -470,7 +495,7 @@ void HangarWindow::render() {
                         if (button == nullptr) {
                             return 0;
                         }
-                        button->setPosition(rightEdge - xOffset, this->field_0x114 + y, 0x12);
+                        button->setPosition(rightEdge - xOffset, this->rowActionOffsetY + y, 0x12);
                         button->setVisible(true);
                         button->draw();
                         return button->getWidth() + layout->field_0x2c;
@@ -486,16 +511,16 @@ void HangarWindow::render() {
                                                       : (this->bluePrint == nullptr
                                                              ? 0
                                                              : this->bluePrint->getCurrentAmount(li->item->getIndex()));
-                        TouchButton *cargoButton = buttonAt(8);
+                        TouchButton *cargoButton = buttonAt(kHangarButtonCurrentAmount);
                         if (currentAmount >= 1 && cargoButton != nullptr) {
                             cargoButton->setPosition(this->hintOffsetX + layout->field_0x28,
-                                                     this->field_0x114 + y, 0x11);
+                                                     this->rowActionOffsetY + y, 0x11);
                             cargoButton->setVisible(true);
                             cargoButton->draw();
                         }
-                        TouchButton *stationButton = buttonAt(9);
+                        TouchButton *stationButton = buttonAt(kHangarButtonStationAmount);
                         if (stationAmount >= 1 && stationButton != nullptr) {
-                            stationButton->setPosition(rightEdge, this->field_0x114 + y, 0x12);
+                            stationButton->setPosition(rightEdge, this->rowActionOffsetY + y, 0x12);
                             stationButton->setVisible(true);
                             stationButton->draw();
                             occupiedRightWidth = stationButton->getWidth() + layout->field_0x2c;
@@ -505,10 +530,10 @@ void HangarWindow::render() {
                     if (li->isShip() && li->ship != nullptr) {
                         const bool isCurrentShip = li->ship == status->getShip();
                         if (tab != 0 && !(tab == 3 && isCurrentShip)) {
-                            occupiedRightWidth = drawRightAction(1, 0);
+                            occupiedRightWidth = drawRightAction(kHangarButtonSelectShip, 0);
                         }
                     } else if (tab == 2 && li->isBluePrint()) {
-                        occupiedRightWidth = drawRightAction(7, 0);
+                        occupiedRightWidth = drawRightAction(kHangarButtonSelectBlueprint, 0);
                     } else if (tab == 0 && li->isItem() && li->item != nullptr) {
                         Ship *ship = status->getShip();
                         Item *installed = ship == nullptr ? nullptr :
@@ -517,13 +542,15 @@ void HangarWindow::render() {
                             !li->item->canBeInstalledMultipleTimes() &&
                             ship->getFreeSlots(li->item->getType()) == 0;
                         if (!blockedBySlots) {
-                            const unsigned int actionIndex = li->inTabIndex < 0 ? 2 : 3;
+                            const unsigned int actionIndex = li->inTabIndex < 0
+                                                                 ? kHangarButtonSelectItemFirst
+                                                                 : kHangarButtonSelectItemSecond;
                             occupiedRightWidth = drawRightAction(actionIndex, layout->field_0x2c * 2);
                         }
                     }
 
                     if (li->isItem() || li->isShip() || li->isBluePrint() || li->isPendingProduct()) {
-                        drawRightAction(0, occupiedRightWidth);
+                        drawRightAction(kHangarButtonInspect, occupiedRightWidth);
                     }
                 }
 
@@ -558,7 +585,7 @@ void HangarWindow::render() {
     }
 
     layout->drawFooter();
-    TouchButton *creditsButton = buttonAt(11);
+    TouchButton *creditsButton = buttonAt(kHangarButtonCredits);
     if (creditsButton != nullptr) {
         creditsButton->setVisible(true);
         creditsButton->setAlwaysPressed(g_hangarCreditOfferShown == 0);
@@ -576,22 +603,24 @@ void HangarWindow::render() {
 
     if (this->buyCreditsActive == 0) {
         if (this->freeCreditsActive != 0) {
-            for (unsigned int i = 0; i < 5; i++) {
-                TouchButton *button = buttonAt(18 + i);
+            for (unsigned int i = kHangarButtonFreeCreditsFirst;
+                 i <= kHangarButtonFreeCreditsLast; i++) {
+                const unsigned int offerIndex = i - kHangarButtonFreeCreditsFirst;
+                TouchButton *button = buttonAt(i);
                 if (button == nullptr) {
                     continue;
                 }
-                const bool visible = i != 0 && g_hangarSocialCreditClaimed[i] == 0;
+                const bool visible = offerIndex != 0 && g_hangarSocialCreditClaimed[offerIndex] == 0;
                 button->setVisible(visible);
                 if (!visible) {
                     continue;
                 }
                 const int y = this->dialog->y + layout->field_0x8 + layout->field_0x2c * 2 +
-                              static_cast<int>(i - 1) * (layout->field_0x30 + layout->field_0x34);
+                              static_cast<int>(offerIndex - 1) * (layout->field_0x30 + layout->field_0x34);
                 button->setPosition(this->dialog->x + layout->field_0x28, y);
                 button->draw();
 
-                const int textId = i == 0 ? 3400 : 112 + static_cast<int>(i);
+                const int textId = offerIndex == 0 ? 3400 : 112 + static_cast<int>(offerIndex);
                 String activity = textFor(textId);
                 canvas->SetColor(0xffffffffu);
                 canvas->DrawString(font, activity,
@@ -613,43 +642,47 @@ void HangarWindow::render() {
         const unsigned int *productIcons = static_cast<const unsigned int *>(this->tabIcons);
 
         if (this->listModeFlag != 0) {
-            for (unsigned int i = 0; i < 5; ++i) {
-                TouchButton *button = buttonAt(12 + i);
+            for (unsigned int i = kHangarButtonPaidCreditsFirst;
+                 i <= kHangarButtonPaidCreditsLast; ++i) {
+                const unsigned int productIndex = i - kHangarButtonPaidCreditsFirst;
+                TouchButton *button = buttonAt(i);
                 if (button == nullptr) {
                     continue;
                 }
-                const int row = static_cast<int>(i / 3);
-                const int column = static_cast<int>(i % 3);
+                const int row = static_cast<int>(productIndex / 3);
+                const int column = static_cast<int>(productIndex % 3);
                 const int x = Globals::w / 2 - this->buttonWidth - this->gridSpacingX +
                               column * (this->buttonWidth + this->gridSpacingX);
                 const int y = static_cast<int>(-3 * layout->field_0x20 + Globals::h / 2 -
                                                this->gridButtonHeight / 2 - this->gridSpacingY * 0.5f) +
                               row * (this->gridButtonHeight + this->gridSpacingY);
-                String label(descriptions[i] == nullptr ? "" : descriptions[i]);
-                String split(prices[i] == nullptr ? "" : prices[i]);
+                String label(descriptions[productIndex] == nullptr ? "" : descriptions[productIndex]);
+                String split(prices[productIndex] == nullptr ? "" : prices[productIndex]);
                 button->setVisible(true);
                 button->setPosition(x, y, 0x44);
                 button->replaceTextKeepSize(label);
                 button->setSplitText(split);
                 button->draw();
                 if (productIcons != nullptr) {
-                    canvas->DrawImage2D(productIcons[i], x, y - layout->field_0x2c, 0x11, 0x44);
+                    canvas->DrawImage2D(productIcons[productIndex], x, y - layout->field_0x2c, 0x11, 0x44);
                 }
             }
         } else {
             const int startY = this->dialog->y + layout->field_0x8 + 5 * layout->field_0x2c;
             const int stepY = layout->field_0x30 + layout->field_0x34;
-            for (unsigned int i = 0; i < 5; ++i) {
-                TouchButton *button = buttonAt(12 + i);
+            for (unsigned int i = kHangarButtonPaidCreditsFirst;
+                 i <= kHangarButtonPaidCreditsLast; ++i) {
+                const unsigned int productIndex = i - kHangarButtonPaidCreditsFirst;
+                TouchButton *button = buttonAt(i);
                 if (button == nullptr) {
                     continue;
                 }
-                String label(descriptions[i] == nullptr ? "" : descriptions[i]);
-                String split(prices[i] == nullptr ? "" : prices[i]);
+                String label(descriptions[productIndex] == nullptr ? "" : descriptions[productIndex]);
+                String split(prices[productIndex] == nullptr ? "" : prices[productIndex]);
                 button->setVisible(true);
                 button->setText(label);
                 button->setSplitText(split);
-                button->setPosition(Globals::w / 2, startY + static_cast<int>(i) * stepY, 0x14);
+                button->setPosition(Globals::w / 2, startY + static_cast<int>(productIndex) * stepY, 0x14);
                 button->draw();
             }
             this->dialog->setHeight(stepY * 6 + canvas->GetTextHeight(font) * 2);
@@ -716,9 +749,9 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
 
             if (layout->field_0xc < coord) {
                 int row = IDIV(
-                    (((coord - layout->field_0xc) - layout->field_0x20) - self->field_0x100.d) -
+                    (((coord - layout->field_0xc) - layout->field_0x20) - self->rowLayoutMetrics.rowGap) -
                     self->scrollOffset,
-                    layout->field_0x70 + self->field_0x100.d);
+                    layout->field_0x70 + self->rowLayoutMetrics.rowGap);
                 if (row < self->hangarList->getCurrentLength()) {
                     self->hangarList->setCurrentItemIndex(row);
                     if (self->currentItemIsHighlighted() != 0 &&
@@ -1232,9 +1265,9 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
 
             int row = -1;
             if (layout->field_0xc < coord) {
-                row = IDIV(coord - layout->field_0xc - layout->field_0x20 - this->field_0x100.d -
+                row = IDIV(coord - layout->field_0xc - layout->field_0x20 - this->rowLayoutMetrics.rowGap -
                                this->scrollOffset,
-                           layout->field_0x70 + this->field_0x100.d);
+                           layout->field_0x70 + this->rowLayoutMetrics.rowGap);
                 if (row >= 0 && row < this->hangarList->getCurrentLength()) {
                     this->hangarList->setCurrentItemIndex(row);
                     if (this->currentItemIsHighlighted() != 0 && this->sellConfirmPending != 0) {
@@ -1248,7 +1281,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                 return;
             }
 
-            TouchButton *autoComplete = buttonAt(23);
+            TouchButton *autoComplete = buttonAt(kHangarButtonBlueprintAutoComplete);
             if (autoComplete != nullptr && this->bluePrint != nullptr && this->dialog != nullptr &&
                 autoComplete->OnTouchEnd(touch, coord) != 0) {
                 String message = *gameText->getText(195);
@@ -1270,7 +1303,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                         this->hangarList->setCurrentItemIndex(row);
                     }
                     switch (i) {
-                    case 0:
+                    case kHangarButtonInspect:
                         if (this->listItemWindow != nullptr) {
                             this->listItemWindow->set(this->hangarList->getCurrentItem(), 0, 0, 0, 0, 1);
                             this->viewMode = 1;
@@ -1279,22 +1312,22 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                             }
                         }
                         return;
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 6:
-                    case 7:
+                    case kHangarButtonSelectShip:
+                    case kHangarButtonSelectItemFirst:
+                    case kHangarButtonSelectItemSecond:
+                    case kHangarButtonSelectItemThird:
+                    case kHangarButtonSellListEntry:
+                    case kHangarButtonMoveToCargoEntry:
+                    case kHangarButtonSelectBlueprint:
                         this->selectItem(this->selectedItem);
                         return;
-                    case 8:
+                    case kHangarButtonCurrentAmount:
                         this->transaction(false);
                         if (Globals::sound != nullptr) {
                             Globals::sound->play(0x64, nullptr, nullptr, 0.0f);
                         }
                         return;
-                    case 9: {
+                    case kHangarButtonStationAmount: {
                         this->transaction(true);
                         if (Globals::sound != nullptr) {
                             Globals::sound->play(0x65, nullptr, nullptr, 0.0f);
@@ -1307,14 +1340,14 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                         }
                         return;
                     }
-                    case 10:
+                    case kHangarButtonSellShip:
                         if (this->dialog != nullptr) {
                             this->dialog->set(*gameText->getText(334), true);
                             this->sellShipPending = 1;
                             this->dialogActive = 1;
                         }
                         return;
-                    case 11: {
+                    case kHangarButtonCredits: {
                         g_hangarCreditOfferShown = 1;
                         RecordHandler *recordHandler = static_cast<RecordHandler *>(Globals::recordHandler);
                         if (recordHandler != nullptr) {
@@ -1339,7 +1372,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                 }
             }
 
-            TouchButton *credits = buttonAt(11);
+            TouchButton *credits = buttonAt(kHangarButtonCredits);
             if (credits != nullptr && credits->OnTouchEnd(touch, coord) != 0) {
                 g_hangarCreditOfferShown = 1;
                 RecordHandler *recordHandler = static_cast<RecordHandler *>(Globals::recordHandler);
@@ -1445,7 +1478,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
         if (result == 0) {
             this->buyCreditsActive = 0;
             this->dialogActive = 0;
-            setCreditButtonsVisible(12, 18, false);
+            setCreditButtonsVisible(kHangarButtonPaidCreditsFirst, kHangarButtonFreeCreditsFirst, false);
             uint8_t *appData = ApplicationManager::gAppManager != nullptr
                                    ? static_cast<uint8_t *>(ApplicationManager::gAppManager->GetApplicationData())
                                    : nullptr;
@@ -1469,14 +1502,15 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
             default: break;
             }
         };
-        for (unsigned int i = 0; i < 5; ++i) {
-            TouchButton *button = buttonAt(12 + i);
+        for (unsigned int i = kHangarButtonPaidCreditsFirst;
+             i <= kHangarButtonPaidCreditsLast; ++i) {
+            TouchButton *button = buttonAt(i);
             if (button != nullptr && button->OnTouchEnd(touch, coord) != 0) {
-                buyCredits(i);
+                buyCredits(i - kHangarButtonPaidCreditsFirst);
                 return;
             }
         }
-        TouchButton *more = buttonAt(17);
+        TouchButton *more = buttonAt(kHangarButtonCreditsMore);
         if (more != nullptr && more->OnTouchEnd(touch, coord) != 0) {
             const bool allSocialOffersClaimed = std::all_of(
                 g_hangarSocialCreditClaimed, g_hangarSocialCreditClaimed + 4,
@@ -1485,7 +1519,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                                    ? static_cast<uint8_t *>(ApplicationManager::gAppManager->GetApplicationData())
                                    : nullptr;
             if (!allSocialOffersClaimed || (appData != nullptr && appData[21] == 0)) {
-                setCreditButtonsVisible(12, 17, false);
+                setCreditButtonsVisible(kHangarButtonPaidCreditsFirst, kHangarButtonCreditsMore, false);
                 this->showFreeCreditsWindow();
             }
         }
@@ -1495,7 +1529,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
     if (this->freeCreditsActive != 0) {
         const int result = this->dialog->OnTouchEnd(touch, coord);
         if (result == 0) {
-            setCreditButtonsVisible(18, 23, false);
+            setCreditButtonsVisible(kHangarButtonFreeCreditsFirst, kHangarButtonBlueprintAutoComplete, false);
             this->freeCreditsActive = 0;
             this->showCreditsBuyWindow();
             return;
@@ -1504,13 +1538,15 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
         uint8_t *appData = ApplicationManager::gAppManager != nullptr
                                ? static_cast<uint8_t *>(ApplicationManager::gAppManager->GetApplicationData())
                                : nullptr;
-        for (unsigned int i = 0; i < 5; ++i) {
-            TouchButton *button = buttonAt(18 + i);
+        for (unsigned int i = kHangarButtonFreeCreditsFirst;
+             i <= kHangarButtonFreeCreditsLast; ++i) {
+            const unsigned int offerIndex = i - kHangarButtonFreeCreditsFirst;
+            TouchButton *button = buttonAt(i);
             if (button == nullptr || button->OnTouchEnd(touch, coord) == 0) {
                 continue;
             }
             RecordHandler *recordHandler = static_cast<RecordHandler *>(Globals::recordHandler);
-            switch (i) {
+            switch (offerIndex) {
             case 0:
                 if (recordHandler != nullptr) {
                     recordHandler->recordStoreWrite(0);
@@ -1893,8 +1929,12 @@ void HangarWindow::OnTouchBegin(int touch, int coord) {
     bool handled = layout->OnTouchBegin(touch, coord) != 0;
 
     if (this->dialogActive != 0) {
-        const unsigned int first = this->buyCreditsActive != 0 ? 12 : 18;
-        const unsigned int last = this->buyCreditsActive != 0 ? 17 : 23;
+        const unsigned int first = this->buyCreditsActive != 0
+                                       ? kHangarButtonPaidCreditsFirst
+                                       : kHangarButtonFreeCreditsFirst;
+        const unsigned int last = this->buyCreditsActive != 0
+                                      ? kHangarButtonCreditsMore
+                                      : kHangarButtonBlueprintAutoComplete;
         if (this->buyCreditsActive != 0 || this->freeCreditsActive != 0) {
             for (unsigned int i = first; i < last; ++i) {
                 TouchButton *button = buttonAt(i);
@@ -1903,7 +1943,7 @@ void HangarWindow::OnTouchBegin(int touch, int coord) {
                 }
             }
             if (this->buyCreditsActive != 0) {
-                TouchButton *moreButton = buttonAt(17);
+                TouchButton *moreButton = buttonAt(kHangarButtonCreditsMore);
                 if (moreButton != nullptr) {
                     moreButton->OnTouchBegin(touch, coord);
                 }
@@ -1929,9 +1969,9 @@ void HangarWindow::OnTouchBegin(int touch, int coord) {
 
     bool outsideList = true;
     if (layout->field_0xc < coord && coord < Globals::h - layout->field_0x10) {
-        const int row = IDIV(coord - layout->field_0xc - layout->field_0x20 - this->field_0x100.d -
+        const int row = IDIV(coord - layout->field_0xc - layout->field_0x20 - this->rowLayoutMetrics.rowGap -
                                  this->scrollOffset,
-                             layout->field_0x70 + this->field_0x100.d);
+                             layout->field_0x70 + this->rowLayoutMetrics.rowGap);
         if (row >= 0 && row < this->hangarList->getCurrentLength()) {
             this->hangarList->setCurrentItemIndex(row);
             this->highlightItem(this->hangarList->getCurrentItem());
@@ -2845,64 +2885,64 @@ void HangarWindow::initialize() {
     PaintCanvas::gCanvas->Image2DCreate((unsigned short) (0x544), self->pendingIconImage);
 
     self->buttons = new Array<TouchButton *>();
-    ArraySetLength(0x18, *(self->buttons));
+    ArraySetLength(kHangarButtonCount, *(self->buttons));
 
     unsigned int img;
     img = 0xffffffff;
     PaintCanvas::gCanvas->Image2DCreate((unsigned short) (0x470), img);
     void *e0 = ::operator new(200);
     TouchButton_ctor_img((void *) e0, (void *) (uintptr_t) img, 7, 0, 0, layout->field_0x60, 0x11, 4);
-    (*self->buttons)[(0) >> 2] = (TouchButton *) (e0);
+    (*self->buttons)[kHangarButtonInspect] = (TouchButton *) (e0);
 
     bool deepScienceCampaign = status->getCurrentCampaignMission() == 0x4d && status->getStation()->getIndex() == 100;
 
     void *e1 = ::operator new(200);
     TouchButton_ctor_text(e1, GameText::gGameText->getText((self->upgradeMode != 0 || deepScienceCampaign) ? 332 : 301),
                           7, 0, 0, 0x11);
-    (*self->buttons)[(4) >> 2] = (TouchButton *) (e1);
+    (*self->buttons)[kHangarButtonSelectShip] = (TouchButton *) (e1);
     void *e2 = ::operator new(200);
     TouchButton_ctor_text(e2, GameText::gGameText->getText(302), 7, 0, 0, 0x11);
-    (*self->buttons)[(8) >> 2] = (TouchButton *) (e2);
+    (*self->buttons)[kHangarButtonSelectItemFirst] = (TouchButton *) (e2);
 
     img = 0xffffffff;
     PaintCanvas::gCanvas->Image2DCreate((unsigned short) (0x533), img);
     void *e3 = ::operator new(200);
     TouchButton_ctor_img((void *) e3, (void *) (uintptr_t) img, 7, 0, 0, layout->field_0x64, 0x11, 4);
-    (*self->buttons)[(0xc) >> 2] = (TouchButton *) (e3);
+    (*self->buttons)[kHangarButtonSelectItemSecond] = (TouchButton *) (e3);
 
     img = 0xffffffff;
     PaintCanvas::gCanvas->Image2DCreate((unsigned short) (0x532), img);
     void *e4 = ::operator new(200);
     TouchButton_ctor_img((void *) e4, (void *) (uintptr_t) img, 7, 0, 0, layout->field_0x64, 0x11, 4);
-    (*self->buttons)[(0x10) >> 2] = (TouchButton *) (e4);
+    (*self->buttons)[kHangarButtonSelectItemThird] = (TouchButton *) (e4);
 
     void *e5 = ::operator new(200);
-    TouchButton_ctor_text2(e5, GameText::gGameText->getText(279), 7, 0, 0, self->buttonHeight, 0x11);
-    (*self->buttons)[(0x14) >> 2] = (TouchButton *) (e5);
+    TouchButton_ctor_text2(e5, GameText::gGameText->getText(279), 7, 0, 0, self->listEntryActionWidth, 0x11);
+    (*self->buttons)[kHangarButtonSellListEntry] = (TouchButton *) (e5);
     void *e6 = ::operator new(200);
-    TouchButton_ctor_text2(e6, GameText::gGameText->getText(282), 7, 0, 0, self->buttonHeight, 0x11);
-    (*self->buttons)[(0x18) >> 2] = (TouchButton *) (e6);
+    TouchButton_ctor_text2(e6, GameText::gGameText->getText(282), 7, 0, 0, self->listEntryActionWidth, 0x11);
+    (*self->buttons)[kHangarButtonMoveToCargoEntry] = (TouchButton *) (e6);
     void *e7 = ::operator new(200);
     TouchButton_ctor_text(e7, GameText::gGameText->getText(283), 7, 0, 0, 0x11);
-    (*self->buttons)[(0x1c) >> 2] = (TouchButton *) (e7);
+    (*self->buttons)[kHangarButtonSelectBlueprint] = (TouchButton *) (e7);
 
     {
         String lbl;
         void *e8 = ::operator new(200);
         TouchButton_ctor_img((void *) e8, &lbl, 8, 0, 0, layout->field_0x50, 0x11, 4);
-        (*self->buttons)[(0x20) >> 2] = (TouchButton *) (e8);
+        (*self->buttons)[kHangarButtonCurrentAmount] = (TouchButton *) (e8);
     }
     {
         String lbl;
         void *e9 = ::operator new(200);
         TouchButton_ctor_img((void *) e9, &lbl, 9, 0, 0, layout->field_0x50, 0x11, 4);
-        (*self->buttons)[(0x24) >> 2] = (TouchButton *) (e9);
+        (*self->buttons)[kHangarButtonStationAmount] = (TouchButton *) (e9);
     }
     {
         void *e10 = ::operator new(200);
         TouchButton_ctor_img((void *) e10, GameText::gGameText->getText(330), 7, 0, 0,
                              layout->field_0x50, 0x11, 4);
-        (*self->buttons)[(0x28) >> 2] = (TouchButton *) (e10);
+        (*self->buttons)[kHangarButtonSellShip] = (TouchButton *) (e10);
     }
     {
         String credits;
@@ -2910,24 +2950,25 @@ void HangarWindow::initialize() {
         credits = Layout::formatCredits(status->getCredits());
         TouchButton_ctor_img((void *) e11, &credits, 0xb, Globals::w, Globals::h,
                              layout->getFooterTransitionWidth(), 0x22, 4);
-        (*self->buttons)[(0x2c) >> 2] = (TouchButton *) (e11);
+        (*self->buttons)[kHangarButtonCredits] = (TouchButton *) (e11);
     }
 
     uint8_t listMode = self->listModeFlag;
     int row = 0;
-    for (int slot = 0xc; (unsigned int) (slot - 0xc) < 5; slot++) {
+    for (unsigned int slot = kHangarButtonPaidCreditsFirst;
+         slot <= kHangarButtonPaidCreditsLast; slot++) {
         String lbl;
         void *btn = ::operator new(200);
         int visIdx;
         if (listMode == 0) {
             TouchButton_ctor_img(btn, &lbl, 0, 0, 0, layout->field_0x264, 0x11, 1);
-            visIdx = row + 0xc;
+            visIdx = row + kHangarButtonPaidCreditsFirst;
         } else {
             TouchButton_ctor_text(btn, &lbl, 10, 0, 0, 1);
             visIdx = slot;
         }
-        (*self->buttons)[(slot * 4) >> 2] = (TouchButton *) (btn);
-        (*self->buttons)[(visIdx * 4) >> 2]->setVisible(false);
+        (*self->buttons)[slot] = (TouchButton *) (btn);
+        (*self->buttons)[visIdx]->setVisible(false);
         row++;
     }
     {
@@ -2937,8 +2978,8 @@ void HangarWindow::initialize() {
             TouchButton_ctor_img(btn, &lbl, 0, 0, 0, layout->field_0x264, 0x11, 1);
         else
             TouchButton_ctor_text(btn, &lbl, 10, 0, 0, 1);
-        (*self->buttons)[(0x44) >> 2] = (TouchButton *) (btn);
-        (*self->buttons)[(0x44) >> 2]->setVisible(false);
+        (*self->buttons)[kHangarButtonCreditsMore] = (TouchButton *) (btn);
+        (*self->buttons)[kHangarButtonCreditsMore]->setVisible(false);
     }
 
     PaintCanvas::gCanvas->Image2DCreate((unsigned short) (0x233e), self->scrollHintImageA);
@@ -2947,28 +2988,29 @@ void HangarWindow::initialize() {
         String lbl;
         void *btn = ::operator new(200);
         TouchButton_ctor_text(btn, &lbl, 7, 0, 0, 0x11);
-        (*self->buttons)[(0x5c) >> 2] = (TouchButton *) (btn);
+        (*self->buttons)[kHangarButtonBlueprintAutoComplete] = (TouchButton *) (btn);
     }
 
     unsigned int imgA, imgB;
-    for (int i = 0x12; (unsigned int) (i - 0x12) < 5; i++) {
+    for (unsigned int i = kHangarButtonFreeCreditsFirst;
+         i <= kHangarButtonFreeCreditsLast; i++) {
         imgB = 0xffffffff;
-        if (i == 0x12) {
+        if (i == kHangarButtonFreeCreditsFirst) {
             PaintCanvas::gCanvas->Image2DCreate((unsigned short) (0x233c), imgA);
             PaintCanvas::gCanvas->Image2DCreate((unsigned short) (0x233d), imgB);
         } else {
-            short s = (short) (i - 0x12);
+            short s = (short) (i - kHangarButtonFreeCreditsFirst);
             PaintCanvas::gCanvas->Image2DCreate((unsigned short) (s * 2 + 0x2330), imgA);
             PaintCanvas::gCanvas->Image2DCreate((unsigned short) (s * 2 + 0x2331), imgB);
         }
         void *btn = ::operator new(200);
         TouchButton_ctor_img2(btn, (void *) (uintptr_t) imgA, (void *) (uintptr_t) imgB, 0x13, 0, 0, 1);
-        (*self->buttons)[(i * 4) >> 2] = (TouchButton *) (btn);
-        (*self->buttons)[(i * 4) >> 2]->setVisible(false);
+        (*self->buttons)[i] = (TouchButton *) (btn);
+        (*self->buttons)[i]->setVisible(false);
     }
 
-    self->buttonWidth = (*self->buttons)[12]->getWidth();
-    int h = (*self->buttons)[12]->getHeight();
+    self->buttonWidth = (*self->buttons)[kHangarButtonPaidCreditsFirst]->getWidth();
+    int h = (*self->buttons)[kHangarButtonPaidCreditsFirst]->getHeight();
     self->gridButtonHeight = h;
     self->gridSpacingX = (int) ((float) (-self->buttonWidth) * 0.1f);
     self->gridSpacingY = (int) ((float) (-h) * 0.1f);
@@ -3183,10 +3225,10 @@ HangarWindow::HangarWindow() {
     HangarWindow::lastTab = 1;
     Layout *layout = static_cast<Layout *>(Globals::layout);
     if (layout != nullptr) {
-        this->field_0x100 = layout->field_0x238_blk16;
-        this->buttonHeight = layout->field_0x248;
-        this->field_0x114 = layout->field_0x24c;
-        this->iconOffsetY = layout->field_0x250;
+        this->rowLayoutMetrics = layout->hangarRowMetrics;
+        this->listEntryActionWidth = layout->hangarListEntryFixedWidth;
+        this->rowActionOffsetY = layout->hangarSelectedRowActionOffsetY;
+        this->iconOffsetY = layout->hangarRowIconOffsetY;
     }
 }
 
