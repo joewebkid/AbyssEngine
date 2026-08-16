@@ -77,13 +77,34 @@ struct HudInitImageSlots {
         int image_0x31c;
         int steeringBaseImage;
     };
-    int image_0x320;
-    int image_0x324;
-    int image_0x334;
-    int image_0x338;
-    int image_0x33c;
-    int image_0x340;
-    int image_0x344;
+    union {
+        int image_0x320;
+        int missionTimerPanelImage;
+    };
+    union {
+        int image_0x324;
+        int cargoPanelImage;
+    };
+    union {
+        int image_0x334;
+        int passengerPanelImage;
+    };
+    union {
+        int image_0x338;
+        int productionCargoPanelImage;
+    };
+    union {
+        int image_0x33c;
+        int productionRemainingPanelImage;
+    };
+    union {
+        int image_0x340;
+        int volatileCargoOverlayImage;
+    };
+    union {
+        int image_0x344;
+        int missionStatusPanelImage;
+    };
     union {
         int image_0x34c;
         int quickMenuPressedImage;
@@ -92,10 +113,22 @@ struct HudInitImageSlots {
         int image_0x350;
         int quickMenuIdleImage;
     };
-    int image_0x360;
-    int image_0x364;
-    int image_0x368;
-    int image_0x36c;
+    union {
+        int image_0x360;
+        int hitVerticalArmorImage;
+    };
+    union {
+        int image_0x364;
+        int hitHorizontalArmorImage;
+    };
+    union {
+        int image_0x368;
+        int hitVerticalShieldImage;
+    };
+    union {
+        int image_0x36c;
+        int hitHorizontalShieldImage;
+    };
     int image_0x370;
     int image_0x374;
     int image_0x378;
@@ -329,6 +362,10 @@ public:
     int previousCameraMode;
     int cameraModeLabelTimer;
     String cameraModeLabel;
+    int hitDirectionLeftTimer;
+    int hitDirectionRightTimer;
+    int hitDirectionTopTimer;
+    int hitDirectionBottomTimer;
     unsigned char hackingGameActive;
     int cargoAggregateCount;
     Array<unsigned int> *uintArray;

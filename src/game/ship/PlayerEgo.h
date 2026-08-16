@@ -63,7 +63,10 @@ public:
                     void *field_0x14;
                     Radio *radioRef;
                     int field_0x1c;
-                    int field_0x20;
+                    union {
+                        int field_0x20;
+                        unsigned int hudHitDirectionFlags;
+                    };
                     uint8_t freeze;
                     uint8_t inWormhole;
                     void *turretGeometry;

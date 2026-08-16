@@ -3337,10 +3337,17 @@ void MGame::OnRender2D() {
                                       (int) (intptr_t)(self->level));
                 if (self->cutsceneActive == 0) {
                     {
-                        long long now = (long long) self->applicationManager->GetSystemTimeMillis();
+                        const unsigned long long timerBase =
+                            static_cast<unsigned int>(self->levelScript->field_0x8) |
+                            (static_cast<unsigned long long>(
+                                 static_cast<unsigned int>(self->levelScript->field_0xc))
+                             << 32);
+                        const long long missionTime =
+                            static_cast<long long>(self->levelScript->m_nTimeLimit) -
+                            static_cast<long long>(timerBase);
                         const unsigned int nextCameraMode =
                             (unsigned int) self->nextCamId(self->cameraMode);
-                        self->hud->draw((long long) self->deltaTime, now, self->player,
+                        self->hud->draw((long long) self->deltaTime, missionTime, self->player,
                                         self->pauseOpen != 0,
                                         (unsigned int) self->cameraMode,
                                         nextCameraMode);

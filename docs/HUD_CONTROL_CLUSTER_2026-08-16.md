@@ -61,9 +61,11 @@ idle and pressed arrays. Their resource rows are
 
 This is a source-backed behavioral recovery, not a whole-function ARM
 byte-match claim. Cargo/passenger and mission-progress rows, the target-context
-overlay consumer, hit-direction overlays, and a persistent settings bridge for
-the Android touch-steering global remain queued. The C++ class remains a host
-mirror and is not claimed to reproduce the original 32-bit object ABI.
+overlay consumer, and hit-direction overlays were completed by the follow-up
+recorded in `HUD_MISSION_TARGET_OVERLAYS_2026-08-16.md`. A persistent settings
+bridge for the Android touch-steering global remains queued. The C++ class
+remains a host mirror and is not claimed to reproduce the original 32-bit
+object ABI.
 
 ## Validation
 

@@ -63,10 +63,11 @@ returns the IEEE-754 payload in `r0`. Consumers must reinterpret those bits as
 
 This is a source-backed status-bar slice of the large `Hud::draw` body. It does
 not claim a full `Hud::draw` recovery or whole-function ARM byte matching.
-Cargo/passenger state, mission progress, and remaining target-context branches
-stay queued as separate packages. The flight-control cluster was recovered in
-the follow-up recorded in `HUD_CONTROL_CLUSTER_2026-08-16.md`. The wider
-`Level::update` body remains a separate source-shape and byte-match task.
+Cargo/passenger state, mission progress, target-context, and hit-direction
+branches were recovered in the later
+`HUD_MISSION_TARGET_OVERLAYS_2026-08-16.md` package. The flight-control cluster
+is recorded in `HUD_CONTROL_CLUSTER_2026-08-16.md`. The wider `Hud::draw` and
+`Level::update` bodies remain separate source-shape and byte-match tasks.
 
 ## Validation
 

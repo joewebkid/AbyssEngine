@@ -15,6 +15,7 @@
 #include "game/ui/ListItem.h"
 #include "game/mission/Status.h"
 #include "game/ship/Ship.h"
+#include "game/weapons/Radar.h"
 #include "game/world/Level.h"
 #include "game/ship/Player.h"
 #include "engine/render/PaintCanvas.h"
@@ -61,6 +62,26 @@ static inline int hud_layout_i32(unsigned int offset) {
 
 static inline float hud_layout_f32(unsigned int offset) {
     return *reinterpret_cast<float *>(static_cast<char *>(Globals::layout) + offset);
+}
+
+static String hud_cargo_label(Ship *ship) {
+    String label(ship->getCurrentLoad());
+    label += String(" / ");
+    label += ship->getMaxLoad();
+    label += String("t");
+    return label;
+}
+
+static void hud_draw_volatile_cargo(Hud *self, PaintCanvas *canvas, PlayerEgo *ego) {
+    if (ego->hasVolatileGoods() == 0) return;
+
+    const unsigned int image = static_cast<unsigned int>(self->initImageSlots.volatileCargoOverlayImage);
+    const int width = canvas->GetImage2DWidth(image);
+    const int height = canvas->GetImage2DHeight(image);
+    float force = ego->getVolatileForce();
+    if (force > 1.0f) force = 1.0f;
+    canvas->DrawRegion2D(image, 0, 0, static_cast<int>(force * static_cast<float>(width)), height,
+                         0.0f, 0, 0, self->field_0x438 - hud_layout_i32(0x1ec), self->field_0x43a);
 }
 
 static void hud_create_image(PaintCanvas *canvas, unsigned short resourceId, int &slot) {
@@ -475,7 +496,6 @@ uint8_t Hud::jumpMapSelected() {
 
 void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                unsigned int currentCameraMode, unsigned int nextCameraMode) {
-    (void) t1;
     this->letterbox = static_cast<unsigned char>(letterbox);
 
     PaintCanvas *canvas = hud_canvas();
@@ -592,7 +612,170 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         return;
     }
 
+    // PlayerEgo+0x20 is a direction bitfield written by the collision/damage
+    // path. Android Hud::draw turns each asserted side into a 300 ms pulse.
+    {
+        const int horizontalImage = ego->getShieldDamageRate() >= 1
+                                        ? this->initImageSlots.hitHorizontalShieldImage
+                                        : this->initImageSlots.hitHorizontalArmorImage;
+        const int verticalImage = ego->getShieldDamageRate() >= 1
+                                      ? this->initImageSlots.hitVerticalShieldImage
+                                      : this->initImageSlots.hitVerticalArmorImage;
+        const unsigned int flags = ego->hudHitDirectionFlags;
+        if ((flags & 0x01u) != 0) this->hitDirectionLeftTimer = 300;
+        if ((flags & 0x02u) != 0) this->hitDirectionRightTimer = 300;
+        if ((flags & 0x18u) != 0) this->hitDirectionTopTimer = 300;
+        if ((flags & 0x24u) != 0) this->hitDirectionBottomTimer = 300;
+
+        Radar *radar = static_cast<Radar *>(ego->field_0x14);
+        if (radar != nullptr) {
+            const int centerX = Globals::w >> 1;
+            const int centerY = Globals::h >> 1;
+            if (this->hitDirectionLeftTimer >= 1) {
+                canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                                 static_cast<unsigned char>(0xff),
+                                 static_cast<unsigned char>(255 * this->hitDirectionLeftTimer / 300));
+                canvas->DrawImage2D(static_cast<unsigned int>(horizontalImage),
+                                    centerX - radar->imageWidth, centerY,
+                                    canvas->GetImage2DWidth(static_cast<unsigned int>(horizontalImage)),
+                                    canvas->GetImage2DHeight(static_cast<unsigned int>(horizontalImage)),
+                                    0x11, 0x41, 1);
+                this->hitDirectionLeftTimer -= elapsed;
+            }
+            if (this->hitDirectionRightTimer >= 1) {
+                canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                                 static_cast<unsigned char>(0xff),
+                                 static_cast<unsigned char>(255 * this->hitDirectionRightTimer / 300));
+                canvas->DrawImage2D(static_cast<unsigned int>(horizontalImage),
+                                    centerX - radar->imageWidth, centerY, 0x12, 0x42);
+                this->hitDirectionRightTimer -= elapsed;
+            }
+            if (this->hitDirectionTopTimer >= 1) {
+                canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                                 static_cast<unsigned char>(0xff),
+                                 static_cast<unsigned char>(255 * this->hitDirectionTopTimer / 300));
+                canvas->DrawImage2D(static_cast<unsigned int>(verticalImage), centerX,
+                                    centerY - radar->imageHeight, 0x11, 0x14);
+                this->hitDirectionTopTimer -= elapsed;
+            }
+            if (this->hitDirectionBottomTimer >= 1) {
+                canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                                 static_cast<unsigned char>(0xff),
+                                 static_cast<unsigned char>(255 * this->hitDirectionBottomTimer / 300));
+                canvas->DrawImage2D(static_cast<unsigned int>(verticalImage), centerX,
+                                    centerY - radar->imageHeight,
+                                    canvas->GetImage2DWidth(static_cast<unsigned int>(verticalImage)),
+                                    canvas->GetImage2DHeight(static_cast<unsigned int>(verticalImage)),
+                                    0x21, 0x24, 2);
+                this->hitDirectionBottomTimer -= elapsed;
+            }
+        }
+    }
+
     drawSteering();
+
+    // Cargo, passenger and timed-mission panel at Android Hud+0x438/+0x43a.
+    // The mission timer is the second draw argument supplied by MGame, not wall
+    // clock time.
+    Status *status = Status::gStatus;
+    Ship *ship = status != nullptr ? status->getShip() : nullptr;
+    if (status != nullptr && ship != nullptr && Globals::layout != nullptr) {
+        Mission *mission = status->getMission();
+        const int panelX = this->field_0x438;
+        const int panelY = this->field_0x43a;
+        const int missionType = mission != nullptr ? mission->getType() : -1;
+
+        if (missionType == 12) {
+            Level *level = ego->level;
+            if (level != nullptr) {
+                String label(level->killCountB);
+                label += String(" : ");
+                label += level->killCountA;
+                canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.cargoPanelImage),
+                                    panelX - hud_layout_i32(0x1ec), panelY);
+                hud_draw_volatile_cargo(this, canvas, ego);
+                canvas->DrawString(hud_font(), label, panelX + hud_layout_i32(0x1fc), panelY + 5, false);
+            }
+        } else if (t1 < 1 || status->getCurrentCampaignMission() == 42) {
+            if (missionType == 184) {
+                Station *station = status->getStation();
+                bool usePassengerPanel = true;
+                if (status->inAlienOrbit() == 0 && station != nullptr) {
+                    const int campaign = status->getCurrentCampaignMission();
+                    if ((campaign == 102 && station->getIndex() == 113) ||
+                        (campaign == 139 && station->getIndex() == 131))
+                        usePassengerPanel = false;
+                }
+
+                String passengerLabel(status->missionPassengerCount);
+                passengerLabel += String(" / ");
+                passengerLabel += ship->getMaxPassengers();
+                const int firstImage = usePassengerPanel ? this->initImageSlots.passengerPanelImage
+                                                         : this->initImageSlots.cargoPanelImage;
+                const int firstX = panelX - hud_layout_i32(usePassengerPanel ? 0x1f0 : 0x1ec);
+                canvas->DrawImage2D(static_cast<unsigned int>(firstImage), firstX, panelY);
+                hud_draw_volatile_cargo(this, canvas, ego);
+
+                if (usePassengerPanel) {
+                    canvas->DrawString(hud_font(), passengerLabel, panelX + hud_layout_i32(0x200),
+                                       panelY + 5, false);
+                } else {
+                    const int shift = ship->getCurrentLoad() >= 101 ? -2 * hud_layout_i32(0x2c) : 0;
+                    const String cargoLabel = hud_cargo_label(ship);
+                    canvas->DrawString(hud_font(), cargoLabel,
+                                       panelX + shift - hud_layout_i32(0x208), panelY + 5, false);
+                }
+
+                String statusLabel(mission->getStatusValue());
+                const int passengerHeight = canvas->GetImage2DHeight(
+                    static_cast<unsigned int>(this->initImageSlots.passengerPanelImage));
+                canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.missionStatusPanelImage),
+                                    panelX - hud_layout_i32(0x1f0),
+                                    panelY + passengerHeight + hud_layout_i32(0x1f4));
+                canvas->DrawString(hud_font(), statusLabel, panelX + hud_layout_i32(0x200),
+                                   panelY + passengerHeight + hud_layout_i32(0x1f4) +
+                                       2 * hud_layout_i32(0x1f8),
+                                   false);
+            } else if (missionType == 174) {
+                Item *productionCargo = ship->getCargo(mission->getProductionGoodIndex());
+                const int amount = productionCargo != nullptr ? productionCargo->getAmount() : 0;
+                String cargoLabel(amount);
+                cargoLabel += String(" / ");
+                cargoLabel += amount + ship->getFreeSpace();
+                canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.productionCargoPanelImage),
+                                    panelX - hud_layout_i32(0x1f0), panelY);
+                hud_draw_volatile_cargo(this, canvas, ego);
+                canvas->DrawString(hud_font(), cargoLabel, panelX + hud_layout_i32(0x200), panelY + 4, false);
+
+                String remainingLabel(mission->getProductionGoodAmount() - mission->getStatusValue());
+                const int passengerHeight = canvas->GetImage2DHeight(
+                    static_cast<unsigned int>(this->initImageSlots.passengerPanelImage));
+                canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.productionRemainingPanelImage),
+                                    panelX - hud_layout_i32(0x1f0),
+                                    panelY + passengerHeight + hud_layout_i32(0x1f4));
+                canvas->DrawString(hud_font(), remainingLabel, panelX + hud_layout_i32(0x200),
+                                   panelY + passengerHeight + hud_layout_i32(0x1f4) +
+                                       hud_layout_i32(0x1f8),
+                                   false);
+            } else {
+                const String cargoLabel = hud_cargo_label(ship);
+                const int shift = ship->getCurrentLoad() >= 101 ? -2 * hud_layout_i32(0x2c) : 0;
+                canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.cargoPanelImage),
+                                    panelX - hud_layout_i32(0x1ec), panelY);
+                hud_draw_volatile_cargo(this, canvas, ego);
+                canvas->DrawString(hud_font(), cargoLabel,
+                                   panelX + shift - hud_layout_i32(0x208), panelY + 5, false);
+            }
+        } else {
+            String timerLabel;
+            Globals *globals = Globals::gGlobals != nullptr ? Globals::gGlobals
+                                                            : static_cast<Globals *>(Globals::globals);
+            if (globals != nullptr) globals->longToTimeString(t1, timerLabel);
+            canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.missionTimerPanelImage),
+                                panelX, panelY);
+            canvas->DrawString(hud_font(), timerLabel, panelX + hud_layout_i32(0x204), panelY + 5, false);
+        }
+    }
 
     // Android draws the phone reticle against the lower-right corner. iPad uses
     // the two coordinates written by Globals::setCoordsFire.
@@ -602,7 +785,6 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     else
         canvas->DrawImage2D(static_cast<unsigned>(this->reticleImage), Globals::w, Globals::h, 0x11, 0x22);
 
-    Status *status = Status::gStatus;
     if (status != nullptr) {
         bool showDockAction = status->inAlienOrbit() == 0;
         if (!showDockAction && status->getCurrentCampaignMission() == 0x9a) {
@@ -743,6 +925,30 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                             this->field_0x3e6, 0x11, 0x44);
     else
         canvas->DrawImage2D(static_cast<unsigned>(mainActionImage), this->field_0x3e4, this->field_0x3e6);
+
+    if (!ego->isDockingToAsteroid() && !isMining && ego->isDockingToStream() == 0 &&
+        !ego->isInDockingProcedure() && !ego->isDockingToDockingPoint() && ego->isInTurretMode() == 0) {
+        Radar *radar = static_cast<Radar *>(ego->field_0x14);
+        bool hasTargetContext = false;
+        if (radar != nullptr) {
+            hasTargetContext = radar->lockedPlanetTarget != nullptr || radar->lockedAsteroid != nullptr ||
+                               radar->lockedStation != nullptr;
+            if (!hasTargetContext && radar->lockedEnemy != nullptr) {
+                hasTargetContext = static_cast<unsigned char>(radar->lockedEnemy->field_0x70) != 0 &&
+                                   radar->lockedEnemy->field_0x75 != 0;
+            }
+        }
+        if (hasTargetContext) {
+            const int targetX = static_cast<int>(this->field_0x3e4) + this->field_0x3ea;
+            const int targetY = static_cast<int>(this->field_0x3e6) + this->field_0x3ea;
+            if (Globals::iPad != 0)
+                canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.targetContextOverlayImage),
+                                    targetX, targetY, 0x11, 0x44);
+            else
+                canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.targetContextOverlayImage),
+                                    targetX, targetY);
+        }
+    }
 
     drawOrbitInformation();
 
@@ -1378,6 +1584,10 @@ int Hud::init() {
     this->previousCameraMode = -1;
     this->cameraModeLabelTimer = 0;
     this->cameraModeLabel = String("");
+    this->hitDirectionLeftTimer = 0;
+    this->hitDirectionRightTimer = 0;
+    this->hitDirectionTopTimer = 0;
+    this->hitDirectionBottomTimer = 0;
 
     closeHudMenu();
     if (Status::gStatus != nullptr)

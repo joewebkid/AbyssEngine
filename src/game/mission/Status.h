@@ -204,7 +204,10 @@ public:
     int32_t field_164;                       // 0x164
     String string_168;                       // 0x168 (0x168..0x174)
     int32_t field_174;                       // 0x174
-    int32_t field_178;                       // 0x178 (missionCounter)
+    union {                                  // 0x178
+        int32_t field_178;
+        int32_t missionPassengerCount;
+    };
     uint8_t field_0x17c;                     // 0x17c
     uint8_t _pad_0x17d[7];                    // 0x17d (binary gap)
     int32_t field_0x184;                     // 0x184
