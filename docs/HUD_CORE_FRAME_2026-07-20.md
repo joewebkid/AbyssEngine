@@ -74,6 +74,14 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
   mirror, not a claim that the 64-bit C++ class has the original ARM ABI or is
   byte-identical.
 
+## Status-Bar Follow-Up (2026-08-16)
+
+The shield, hull, armor-regeneration, and gamma-ray rows now use the recovered
+percentage scaling, destination coordinates, divider offset, resources, and
+gamma visibility table. `Hud::resetAnalogStick` also restores both native
+reticle coordinates. Exact evidence and the soft-float return contract are
+recorded in `HUD_STATUS_GAMMA_BAR_2026-08-16.md`.
+
 ## Validation
 
 `cmake --build cmake-build-ucrt --target gof2 -- -k 0` linked `libgof2.a`.

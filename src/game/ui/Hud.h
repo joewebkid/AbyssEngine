@@ -25,9 +25,18 @@ class TouchButton;
 struct HudInitImageSlots {
     int image_0x004;
     int image_0x008;
-    int image_0x2c8;
-    int image_0x2cc;
-    int image_0x2d0;
+    union {
+        int image_0x2c8;
+        int gammaBarFillImage;
+    };
+    union {
+        int image_0x2cc;
+        int gammaBarBgImage;
+    };
+    union {
+        int image_0x2d0;
+        int gammaFrameImage;
+    };
     int image_0x2e8;
     int image_0x2ec;
     int image_0x2f0;

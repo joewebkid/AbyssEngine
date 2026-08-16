@@ -2032,9 +2032,9 @@ void Level::uncoverWanted(int index) {
     }
 }
 
-void Level::update(long long /*time*/, bool param) {
+void Level::update(long long time, bool param) {
     Level *thisptr = this;
-    unsigned dt = (unsigned) param;
+    const unsigned int dt = static_cast<unsigned int>(time);
 
     if (this->flashActive != 0) {
         unsigned remaining = *(unsigned *) &this->flashDurationA - dt;
@@ -2064,7 +2064,7 @@ void Level::update(long long /*time*/, bool param) {
 
     Station *st = (Station *) Status::gStatus->getStation();
     if (((Station *) st)->isAttackedByAliens() != 0 || Status::gStatus->inAlienOrbit() != 0)
-        thisptr->updateAlienAttackers(0);
+        thisptr->updateAlienAttackers(dt);
 
     if (this->playerGuns != nullptr) {
         for (unsigned i = 0; i < this->playerGuns->size(); i = i + 1) {
@@ -2077,25 +2077,25 @@ void Level::update(long long /*time*/, bool param) {
         }
     }
 
-    int aPtr = (int) (intptr_t) Status::gStatus;
-    Station *st2 = (Station *) Status::gStatus->getStation();
-    int idx = ((Station *) st2)->getIndex();
-    Status::gStatus->getCurrentCampaignMission();
-    int gammaBits = ((Status *) (intptr_t) aPtr)->getGammaRayDamagePerSecond(aPtr, idx);
-    float gamma = *(float *) &gammaBits;
+    Station *st2 = Status::gStatus->getStation();
+    union {
+        int bits;
+        float value;
+    } gammaRate = {Status::gStatus->getGammaRayDamagePerSecond(
+        st2->getIndex(), Status::gStatus->getCurrentCampaignMission())};
     PlayerEgo *ego = this->player;
-    if (gamma > 0.0f && ego != nullptr) {
-        int ship = (int) (intptr_t) Status::gStatus->getShip();
-        int eq = (int) (intptr_t)((Ship *) (intptr_t) ship)->getFirstEquipmentOfSort(0x26);
-        float factor = gamma;
-        if (eq != 0) {
-            int attr = ((Item *) (intptr_t) eq)->getAttribute(0x34);
+    if (gammaRate.value > 0.0f && ego != nullptr) {
+        Item *equipment = Status::gStatus->getShip()->getFirstEquipmentOfSort(0x26);
+        float damageRate = gammaRate.value;
+        if (equipment != nullptr) {
+            int attr = equipment->getAttribute(0x34);
             if (attr > 0)
-                factor = (g_up_eqMax - (float) attr) / g_up_eqMax;
+                damageRate *= (100.0f - static_cast<float>(attr)) / 100.0f;
         }
-        int hpBefore = ((Player *) this->player)->getGammaHP();
-        ((Player *) this->player)->damageGamma(factor);
-        if (hpBefore > 0xe && ((Player *) this->player)->getGammaHP() < 0xf) {
+        Player *playerObject = static_cast<Player *>(ego->player);
+        int hpBefore = playerObject->getGammaHP();
+        playerObject->damageGamma(damageRate * static_cast<float>(dt) / 1000.0f);
+        if (hpBefore >= 15 && playerObject->getGammaHP() <= 14) {
             int hud = this->player->getHUD();
             ((Hud *) (intptr_t) hud)->hudEvent(0x2c, this->player, 0);
         }
@@ -2124,7 +2124,8 @@ void Level::update(long long /*time*/, bool param) {
         if (this->field_9c != 0) (this->field_9c)->update(dt);
     }
 
-    this->lodManager->update(dt);
+    if (!param)
+        this->lodManager->update(dt);
 }
 
 void Level::connectPlayers() {

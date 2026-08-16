@@ -1048,40 +1048,23 @@ void Status::unlockBluePrint(int index) {
     }
 }
 
-static const float g_gammaTableA[5] = {0, 0, 0, 0, 0};
-static const float g_gammaTableB[5] = {0, 0, 0, 0, 0};
+// Android ARM .rodata tables returned as IEEE-754 bits by the soft-float ABI.
+static const int g_gammaTableA[5] = {
+    0x3f333333, 0x3ecccccd, 0x3ecccccd, 0x3e99999a, 0x3e4ccccd,
+};
+static const int g_gammaTableB[5] = {
+    0x40400000, 0x40000000, 0x3f800000, 0x3f000000, 0x3e99999a,
+};
 
-static inline int as_int(float f) {
-    union {
-        float f;
-        int i;
-    } u;
-    u.f = f;
-    return u.i;
-}
-
-static inline float as_float(unsigned u) {
-    union {
-        unsigned u;
-        float f;
-    } x;
-    x.u = u;
-    return x.f;
-}
-
-int Status::getGammaRayDamagePerSecond(int station, int system) {
-    unsigned k = station - 0x6d;
-    float result = as_float(0x00000000u);
-    if (k < 5) {
-        if (system < 0x6a) {
-            if (k < 5) return as_int(g_gammaTableA[k]);
-        } else if (currentCampaignMission < 0x9e) {
-            if (k < 5) return as_int(g_gammaTableB[k]);
-        } else if (station == 0x6d) {
-            result = as_float(0x3f800000u);
-        }
-    }
-    return as_int(result);
+int Status::getGammaRayDamagePerSecond(int station, int campaignMission) {
+    const unsigned int index = static_cast<unsigned int>(station - 0x6d);
+    if (index > 4)
+        return 0;
+    if (campaignMission <= 0x69)
+        return g_gammaTableA[index];
+    if (currentCampaignMission <= 0x9d)
+        return g_gammaTableB[index];
+    return station == 0x6d ? 0x3f800000 : 0;
 }
 
 int Status::addStationToStack(Station *s) {

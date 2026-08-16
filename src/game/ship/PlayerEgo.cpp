@@ -1228,10 +1228,13 @@ void PlayerEgo::StopEngineSound() {
             && Status::gStatus->inAlienOrbit() == 0) {
             int idx = Station_getIndex(Status::gStatus->getStation());
             int cm = Status::gStatus->getCurrentCampaignMission();
-            float g = Status::gStatus->getGammaRayDamagePerSecond(idx, cm);
-            if (0.0f < g && this->engineSoundId != -1) {
+            union {
+                int bits;
+                float value;
+            } gammaRate = {Status::gStatus->getGammaRayDamagePerSecond(idx, cm)};
+            if (0.0f < gammaRate.value && this->engineSoundId != -1) {
                 ((FModSound *) (*(void **) g_engine_fmod))->play((int) (intptr_t)((void *&) this->engineSoundId),
-                                                                 (Vector *) 0, (Vector *) 0, g);
+                                                                 (Vector *) 0, (Vector *) 0, 0.0f);
             }
         }
     }
@@ -1704,10 +1707,13 @@ void PlayerEgo::PlayEngineSound() {
         && Status::gStatus->inAlienOrbit() == 0) {
         int idx = Station_getIndex(Status::gStatus->getStation());
         int cm = Status::gStatus->getCurrentCampaignMission();
-        float g = Status::gStatus->getGammaRayDamagePerSecond(idx, cm);
-        if (0.0f < g && this->engineSoundId != -1) {
+        union {
+            int bits;
+            float value;
+        } gammaRate = {Status::gStatus->getGammaRayDamagePerSecond(idx, cm)};
+        if (0.0f < gammaRate.value && this->engineSoundId != -1) {
             ((FModSound *) (*(void **) g_engine_fmod))->play((int) (intptr_t)((void *&) this->engineSoundId),
-                                                             (Vector *) 0, (Vector *) 0, g);
+                                                             (Vector *) 0, (Vector *) 0, 0.0f);
         }
     }
     ((Player *) this->player)->PlayEngineSound(0, (Vector *) 0);

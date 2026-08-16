@@ -89,9 +89,9 @@ static void hud_load_init_images(Hud *self) {
         {0x4a7, &self->armorBarBgImage},
         {0x4a8, &self->armorRegenFillImage},
         {0x524, &self->armorBarFillImage},
-        {0x1f59, &self->initImageSlots.image_0x2d0},
-        {0x1f5a, &self->initImageSlots.image_0x2cc},
-        {0x1f5b, &self->initImageSlots.image_0x2c8},
+        {0x1f59, &self->initImageSlots.gammaFrameImage},
+        {0x1f5a, &self->initImageSlots.gammaBarBgImage},
+        {0x1f5b, &self->initImageSlots.gammaBarFillImage},
         {0x4a9, &self->barDividerImage},
         {0x4bb, &self->initImageSlots.image_0x34c},
         {0x4ba, &self->initImageSlots.image_0x350},
@@ -388,6 +388,7 @@ unsigned int Hud::firePressed() {
 
 void Hud::resetAnalogStick() {
     this->lockBracketX = this->reticleX;
+    this->lockBracketY = this->reticleY;
 }
 
 float Hud::getAnalogY() {
@@ -521,44 +522,74 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox, unsig
         }
     }
 
-    // --- shield/armor bars ---
+    // --- shield/armor/gamma bars ---
     {
-        PlayerEgo *e = ego;
-        Player *player = *(Player **) ego;
-        float scale = (float) this->field_0x446;
+        Player *player = static_cast<Player *>(ego->player);
+        const float fillScale = 0.01f * static_cast<float>(this->field_0x446);
+        const int dividerYOffset = hud_layout_i32(0x1e8);
         canvas->SetColor((unsigned) 0xffffffffu);
 
-        unsigned short barX = this->field_0x442;
-        unsigned short barY = this->field_0x44a;
+        unsigned short frameY = this->field_0x442;
+        unsigned short fillY = this->field_0x44a;
         if (this->hasShieldBar != 0) {
             int shp = player->getShieldHP();
             int frame = (shp < 2 || this->shieldHitFlash == 0) ? this->shieldFrameImage : this->shieldFrameHitImage;
             canvas->DrawImage2D((unsigned) frame, this->field_0x43c, this->field_0x442);
-            canvas->DrawImage2D((unsigned) this->barDividerImage, this->field_0x43e, this->field_0x442);
+            canvas->DrawImage2D((unsigned) this->barDividerImage, this->field_0x43e,
+                                this->field_0x442 + dividerYOffset);
             canvas->DrawImage2D((unsigned) this->shieldBarBgImage, this->field_0x440, this->field_0x44a);
             int rate = player->getShieldDamageRate();
-            int w = (int) ((float) rate * scale);
+            int w = static_cast<int>(static_cast<float>(rate) * fillScale);
             canvas->DrawRegion2D((unsigned) this->shieldBarFillImage, 0, 0, w, this->field_0x44c,
-                                 (float) w, 0, 0, 0, this->field_0x440);
-            barX = this->field_0x444;
-            barY = this->field_0x448;
+                                 0.0f, 0, 0, this->field_0x440, this->field_0x44a);
+            frameY = this->field_0x444;
+            fillY = this->field_0x448;
         }
 
         int ahp = player->getArmorHP();
         int aframe = (ahp < 1) ? this->armorFrameLowImage : this->armorFrameImage;
-        canvas->DrawImage2D((unsigned) aframe, this->field_0x43c, barX);
-        canvas->DrawImage2D((unsigned) this->barDividerImage, this->field_0x43e, barX);
-        canvas->DrawImage2D((unsigned) this->armorBarBgImage, this->field_0x440, barY);
-        int hrate = e->getHullDamageRate();
-        int hw = (int) ((float) hrate * scale);
+        canvas->DrawImage2D((unsigned) aframe, this->field_0x43c, frameY);
+        canvas->DrawImage2D((unsigned) this->barDividerImage, this->field_0x43e,
+                            frameY + dividerYOffset);
+        canvas->DrawImage2D((unsigned) this->armorBarBgImage, this->field_0x440, fillY);
+        int hrate = ego->getHullDamageRate();
+        int hw = static_cast<int>(static_cast<float>(hrate) * fillScale);
         canvas->DrawRegion2D((unsigned) this->armorBarFillImage, 0, 0, hw, this->field_0x44c,
-                             (float) hw, 0, 0, 0, this->field_0x440);
+                             0.0f, 0, 0, this->field_0x440, fillY);
 
         if (this->hasArmorRegen != 0) {
             int arate = player->getArmorDamageRate();
-            int aw = (int) ((float) arate * scale);
+            int aw = static_cast<int>(static_cast<float>(arate) * fillScale);
             canvas->DrawRegion2D((unsigned) this->armorRegenFillImage, 0, 0, aw, this->field_0x44c,
-                                 (float) aw, 0, 0, 0, this->field_0x440);
+                                 0.0f, 0, 0, this->field_0x440, fillY);
+        }
+
+        Status *status = Status::gStatus;
+        Station *station = status != nullptr ? status->getStation() : nullptr;
+        if (station != nullptr) {
+            union {
+                int bits;
+                float value;
+            } gammaRate = {status->getGammaRayDamagePerSecond(
+                station->getIndex(), status->getCurrentCampaignMission())};
+            if (gammaRate.value > 0.0f) {
+                const int gammaFrameY = 2 * static_cast<int>(this->field_0x444) -
+                                        static_cast<int>(this->field_0x442);
+                const int gammaFillY = 2 * static_cast<int>(this->field_0x448) -
+                                       static_cast<int>(this->field_0x44a);
+                canvas->DrawImage2D((unsigned) this->initImageSlots.gammaFrameImage,
+                                    this->field_0x43c, gammaFrameY);
+                canvas->DrawImage2D((unsigned) this->barDividerImage, this->field_0x43e,
+                                    gammaFrameY + dividerYOffset);
+                canvas->DrawImage2D((unsigned) this->initImageSlots.gammaBarBgImage,
+                                    this->field_0x440, gammaFillY);
+                const int gammaWidth = static_cast<int>(
+                    (static_cast<float>(player->getGammaHP()) / 100.0f) *
+                    static_cast<float>(this->field_0x446));
+                canvas->DrawRegion2D((unsigned) this->initImageSlots.gammaBarFillImage,
+                                     0, 0, gammaWidth, this->field_0x44c,
+                                     0.0f, 0, 0, this->field_0x440, gammaFillY);
+            }
         }
     }
 

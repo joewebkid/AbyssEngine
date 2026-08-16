@@ -443,7 +443,7 @@ public:
 
     void incCollectedBounties(int index);
 
-    int getGammaRayDamagePerSecond(int station, int system);
+    int getGammaRayDamagePerSecond(int station, int campaignMission);
 
     void loadWanted();
 
