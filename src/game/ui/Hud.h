@@ -37,16 +37,46 @@ struct HudInitImageSlots {
         int image_0x2d0;
         int gammaFrameImage;
     };
-    int image_0x2e8;
-    int image_0x2ec;
-    int image_0x2f0;
-    int image_0x2fc;
-    int image_0x300;
-    int image_0x304;
-    int image_0x308;
-    int image_0x314;
-    int image_0x318;
-    int image_0x31c;
+    union {
+        int image_0x2e8;
+        int targetContextOverlayImage;
+    };
+    union {
+        int image_0x2ec;
+        int secondaryPressedImage;
+    };
+    union {
+        int image_0x2f0;
+        int secondaryIdleImage;
+    };
+    union {
+        int image_0x2fc;
+        int boostPressedImage;
+    };
+    union {
+        int image_0x300;
+        int boostIdleImage;
+    };
+    union {
+        int image_0x304;
+        int steeringKnobPressedImage;
+    };
+    union {
+        int image_0x308;
+        int steeringKnobIdleImage;
+    };
+    union {
+        int image_0x314;
+        int autoTurretEnabledImage;
+    };
+    union {
+        int image_0x318;
+        int autoTurretDisabledImage;
+    };
+    union {
+        int image_0x31c;
+        int steeringBaseImage;
+    };
     int image_0x320;
     int image_0x324;
     int image_0x334;
@@ -54,8 +84,14 @@ struct HudInitImageSlots {
     int image_0x33c;
     int image_0x340;
     int image_0x344;
-    int image_0x34c;
-    int image_0x350;
+    union {
+        int image_0x34c;
+        int quickMenuPressedImage;
+    };
+    union {
+        int image_0x350;
+        int quickMenuIdleImage;
+    };
     int image_0x360;
     int image_0x364;
     int image_0x368;
@@ -77,14 +113,8 @@ struct HudInitImageSlots {
     int image_0x3a8;
     int image_0x3ac;
     int image_0x3b0;
-    int image_0x4f4;
-    int image_0x4f8;
-    int image_0x4fc;
-    int image_0x500;
-    int image_0x504;
-    int image_0x508;
-    int image_0x50c;
-    int image_0x510;
+    int cameraIdleImages[4];       // Android Hud+0x4f4..+0x500
+    int cameraPressedImages[4];    // Android Hud+0x504..+0x510
 };
 
 
@@ -128,6 +158,7 @@ public:
     unsigned char letterbox;
     String field_0x1f4;
     String field_0x200;
+    unsigned char hasCloak;
     unsigned char hasBoostButton;
     unsigned char hasShieldBar;
     unsigned char hasArmorRegen;
@@ -174,14 +205,14 @@ public:
     int barDividerImage;
     int pauseButtonPressedImage;
     int pauseButtonImage;
-    int lockBracketImage;
-    int lockBracketLockedImage;
-    int orbitMarkerActiveImage;
-    int orbitMarkerIdleImage;
-    int autoTurretOnImage;
-    int autoTurretOffImage;
+    int mainActionIdleImage;
+    int mainActionPressedImage;
+    int dockActionPressedImage;
+    int dockActionIdleImage;
+    int autoTurretEnabledImage;
+    int autoTurretDisabledImage;
     int reticleImage;
-    int missionBannerImage;
+    int secondaryWeaponBannerImage;
     int eventBannerImage;
     int quickMenuHeaderImage;
     int fuelGaugeIconImage;
@@ -225,17 +256,31 @@ public:
     unsigned short field_0x418;
     unsigned short field_0x41a;
     unsigned short field_0x41c;
-    unsigned short field_0x41e;
-    unsigned short field_0x420;
+    union {
+        unsigned short field_0x41e;
+        unsigned short steeringKnobX;
+    };
+    union {
+        unsigned short field_0x420;
+        unsigned short steeringKnobY;
+    };
     unsigned short field_0x422;
-    unsigned short field_0x424;
-    unsigned short field_0x426;
-    unsigned short lockBracketX;
-    unsigned short lockBracketY;
-    unsigned short reticleX;
-    unsigned short reticleY;
-    unsigned short field_0x42c;
-    unsigned short field_0x42e;
+    union {
+        unsigned short field_0x424;
+        unsigned short steeringCenterX;
+    };
+    union {
+        unsigned short field_0x426;
+        unsigned short steeringCenterY;
+    };
+    union {
+        unsigned short field_0x42c;
+        unsigned short steeringBaseX;
+    };
+    union {
+        unsigned short field_0x42e;
+        unsigned short steeringBaseY;
+    };
     unsigned short field_0x430;
     unsigned short field_0x434;
     unsigned short field_0x436;
@@ -261,6 +306,14 @@ public:
     int field_0x468;
     int hitFlashTimer;
     int field_0x470;
+    unsigned char boostReadyLatched;
+    unsigned char cloakReadyLatched;
+    int boostFlashRemaining;
+    int boostFlashPulse;
+    int secondaryFlashRemaining;
+    int secondaryFlashPulse;
+    int quickMenuFlashRemaining;
+    int quickMenuFlashPulse;
     unsigned char autofireEnabled;
     unsigned char fireForTutorial;
     int timeExtenderTimer;
@@ -273,9 +326,9 @@ public:
     int analogStickRadius;
     int eventLineMargin;
     int eventLineMarginAlt;
-    int secondaryLabelTimerSeed;
-    int secondaryLabelTimer;
-    String field_0x51c;
+    int previousCameraMode;
+    int cameraModeLabelTimer;
+    String cameraModeLabel;
     unsigned char hackingGameActive;
     int cargoAggregateCount;
     Array<unsigned int> *uintArray;

@@ -28,8 +28,10 @@ against the available Ghidra output and the recovered first-pass SDK source:
   recurrences `2 * Hud+0x444 - Hud+0x442` and
   `2 * Hud+0x448 - Hud+0x44a`.
 - Gamma fill width is `Player::getGammaHP() / 100.0f * nativeFillWidth`.
-- `Hud::resetAnalogStick` resets both lock-bracket coordinates to the current
-  reticle coordinates.
+- `Hud::resetAnalogStick` copies the native steering-stick centre pair at
+  `Hud+0x424/+0x426` into the live knob pair at `Hud+0x41e/+0x420`. Earlier
+  host-side names that described these fields as lock-bracket/reticle
+  coordinates were incorrect and have been removed.
 
 The same audit repaired the gameplay consumers of the gamma lookup:
 
@@ -61,8 +63,9 @@ returns the IEEE-754 payload in `r0`. Consumers must reinterpret those bits as
 
 This is a source-backed status-bar slice of the large `Hud::draw` body. It does
 not claim a full `Hud::draw` recovery or whole-function ARM byte matching.
-Cargo/passenger state, mission progress, the complete control cluster, and
-remaining reticle branches stay queued as separate packages. The wider
+Cargo/passenger state, mission progress, and remaining target-context branches
+stay queued as separate packages. The flight-control cluster was recovered in
+the follow-up recorded in `HUD_CONTROL_CLUSTER_2026-08-16.md`. The wider
 `Level::update` body remains a separate source-shape and byte-match task.
 
 ## Validation

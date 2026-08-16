@@ -199,6 +199,7 @@ int Globals::translateStarMapInYDirection = 0;
 int Globals::smallButton_dim = 0;
 int Globals::touch_stick_x = 0;
 int Globals::touch_stick_y = 0;
+unsigned char Globals::touchSteeringEnabled = 1;
 
 unsigned char Globals::iPad = 0;
 unsigned char Globals::iPadHD = 0;

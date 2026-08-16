@@ -78,9 +78,11 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
 
 The shield, hull, armor-regeneration, and gamma-ray rows now use the recovered
 percentage scaling, destination coordinates, divider offset, resources, and
-gamma visibility table. `Hud::resetAnalogStick` also restores both native
-reticle coordinates. Exact evidence and the soft-float return contract are
-recorded in `HUD_STATUS_GAMMA_BAR_2026-08-16.md`.
+gamma visibility table. `Hud::resetAnalogStick` also restores the live
+steering-knob coordinates from the native centre pair. Exact evidence and the
+soft-float return contract are recorded in
+`HUD_STATUS_GAMMA_BAR_2026-08-16.md`; the subsequent control-cluster recovery
+is recorded in `HUD_CONTROL_CLUSTER_2026-08-16.md`.
 
 ## Validation
 

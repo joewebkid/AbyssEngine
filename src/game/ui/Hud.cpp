@@ -95,8 +95,8 @@ static void hud_load_init_images(Hud *self) {
         {0x4a9, &self->barDividerImage},
         {0x4bb, &self->initImageSlots.image_0x34c},
         {0x4ba, &self->initImageSlots.image_0x350},
-        {0x4b5, &self->lockBracketLockedImage},
-        {0x4b4, &self->lockBracketImage},
+        {0x4b5, &self->mainActionPressedImage},
+        {0x4b4, &self->mainActionIdleImage},
         {0x536, &self->initImageSlots.image_0x2e8},
         {0x4bd, &self->initImageSlots.image_0x2ec},
         {0x4bc, &self->initImageSlots.image_0x2f0},
@@ -104,15 +104,15 @@ static void hud_load_init_images(Hud *self) {
         {0x4b8, &self->pauseButtonImage},
         {0x4b3, &self->initImageSlots.image_0x2fc},
         {0x4b2, &self->initImageSlots.image_0x300},
-        {0x4b1, &self->orbitMarkerActiveImage},
-        {0x4b0, &self->orbitMarkerIdleImage},
+        {0x4b1, &self->dockActionPressedImage},
+        {0x4b0, &self->dockActionIdleImage},
         {0x4b7, &self->initImageSlots.image_0x304},
         {0x4b6, &self->initImageSlots.image_0x308},
         {0x4c1, &self->initImageSlots.image_0x31c},
         {0x4c5, &self->initImageSlots.image_0x320},
         {0x520, &self->initImageSlots.image_0x324},
         {0x4c3, &self->eventBannerImage},
-        {0x4c2, &self->missionBannerImage},
+        {0x4c2, &self->secondaryWeaponBannerImage},
         {0x4cf, &self->quickMenuTopImage},
         {0x4d1, &self->quickMenuMiddleImage},
         {0x4d0, &self->quickMenuBottomImage},
@@ -126,14 +126,14 @@ static void hud_load_init_images(Hud *self) {
         {0x526, &self->initImageSlots.image_0x364},
         {0x52b, &self->initImageSlots.image_0x368},
         {0x52c, &self->initImageSlots.image_0x36c},
-        {0x528, &self->initImageSlots.image_0x4f4},
-        {0x527, &self->initImageSlots.image_0x504},
-        {0x4e9, &self->initImageSlots.image_0x4f8},
-        {0x4ea, &self->initImageSlots.image_0x508},
-        {0x4be, &self->initImageSlots.image_0x4fc},
-        {0x4bf, &self->initImageSlots.image_0x50c},
-        {0x52a, &self->initImageSlots.image_0x500},
-        {0x529, &self->initImageSlots.image_0x510},
+        {0x528, &self->initImageSlots.cameraIdleImages[0]},
+        {0x527, &self->initImageSlots.cameraPressedImages[0]},
+        {0x4e9, &self->initImageSlots.cameraIdleImages[1]},
+        {0x4ea, &self->initImageSlots.cameraPressedImages[1]},
+        {0x4be, &self->initImageSlots.cameraIdleImages[2]},
+        {0x4bf, &self->initImageSlots.cameraPressedImages[2]},
+        {0x52a, &self->initImageSlots.cameraIdleImages[3]},
+        {0x529, &self->initImageSlots.cameraPressedImages[3]},
         {0x540, &self->initImageSlots.image_0x390},
         {0x541, &self->initImageSlots.image_0x394},
         {0x53f, &self->initImageSlots.image_0x398},
@@ -164,9 +164,8 @@ static void hud_load_init_images(Hud *self) {
         hud_create_image(canvas, 0x4c6, self->reticleImage);
     }
 
-    // These aliases are consumed by already-recovered draw paths.
-    self->autoTurretOnImage = self->initImageSlots.image_0x304;
-    self->autoTurretOffImage = self->initImageSlots.image_0x308;
+    self->autoTurretEnabledImage = self->initImageSlots.autoTurretEnabledImage;
+    self->autoTurretDisabledImage = self->initImageSlots.autoTurretDisabledImage;
     self->fuelGaugeIconImage = self->initImageSlots.image_0x370;
     self->fuelGaugeBarImage = self->initImageSlots.image_0x374;
 }
@@ -197,7 +196,7 @@ static void hud_apply_ipad_control_coords(Hud *self, PaintCanvas *canvas) {
 
     globals->setCoordsSteer(steerAnchor,
                             canvas->GetImage2DWidth(static_cast<unsigned>(self->initImageSlots.image_0x31c)),
-                            canvas->GetImage2DWidth(static_cast<unsigned>(self->orbitMarkerIdleImage)),
+                            canvas->GetImage2DWidth(static_cast<unsigned>(self->dockActionIdleImage)),
                             canvas->GetImage2DWidth(static_cast<unsigned>(self->initImageSlots.image_0x300)),
                             self->field_0x3f8, self->field_0x3fa, self->field_0x42c, self->field_0x42e,
                             self->field_0x424, self->field_0x426, self->field_0x410, self->field_0x412,
@@ -213,6 +212,7 @@ static void hud_apply_ipad_control_coords(Hud *self, PaintCanvas *canvas) {
                            self->field_0x3ec, self->field_0x3ee, self->field_0x3fe, self->field_0x400);
 
     self->field_0x41e = self->field_0x424;
+    self->field_0x420 = self->field_0x426;
     self->iPadSteerAnchor = steerAnchor;
     self->iPadFireAnchor = fireAnchor;
 }
@@ -230,28 +230,28 @@ static void hud_init_coordinates(Hud *self) {
     self->field_0x436 = static_cast<unsigned short>(screenH - hud_layout_i32(0x12c) -
                                                      canvas->GetTextHeight(hud_font()) - hud_layout_i32(0x150));
     self->field_0x3f0 = static_cast<unsigned short>(width(self->initImageSlots.image_0x2ec));
-    self->field_0x3e4 = static_cast<unsigned short>(screenW - hud_layout_i32(0x154) - width(self->lockBracketImage));
-    self->field_0x3e6 = static_cast<unsigned short>(screenH - hud_layout_i32(0x158) - width(self->lockBracketImage));
+    self->field_0x3e4 = static_cast<unsigned short>(screenW - hud_layout_i32(0x154) - width(self->mainActionIdleImage));
+    self->field_0x3e6 = static_cast<unsigned short>(screenH - hud_layout_i32(0x158) - width(self->mainActionIdleImage));
     self->field_0x3ec = static_cast<unsigned short>(screenW - hud_layout_i32(0x15c) - self->field_0x3f0);
     self->field_0x3ee = static_cast<unsigned short>(screenH - hud_layout_i32(0x160) - self->field_0x3f0);
     self->field_0x3ea = static_cast<unsigned short>(hud_layout_i32(0x164));
     self->field_0x3e0 = static_cast<unsigned short>((screenW - width(self->eventBannerImage)) / 2);
     self->field_0x3e2 = static_cast<unsigned short>(hud_layout_i32(0x168));
 
-    self->field_0x3f6 = static_cast<unsigned short>(width(self->initImageSlots.image_0x4f4));
+    self->field_0x3f6 = static_cast<unsigned short>(width(self->initImageSlots.cameraIdleImages[0]));
     self->field_0x3f2 = static_cast<unsigned short>(screenW - self->field_0x3f6 - hud_layout_i32(0x16c));
     self->field_0x3f4 = static_cast<unsigned short>(screenH - hud_layout_i32(0x170) -
-                                                     height(self->initImageSlots.image_0x4f4));
+                                                     height(self->initImageSlots.cameraIdleImages[0]));
     self->field_0x41a = static_cast<unsigned short>(width(self->initImageSlots.image_0x34c));
     self->field_0x41c = static_cast<unsigned short>(hud_layout_i32(0x174));
     self->field_0x416 = static_cast<unsigned short>(screenW - hud_layout_i32(0x178) - self->field_0x41a);
     self->field_0x418 = static_cast<unsigned short>(screenH - hud_layout_i32(0x17c) -
                                                      height(self->initImageSlots.image_0x34c));
 
-    self->field_0x3fc = static_cast<unsigned short>(width(self->orbitMarkerIdleImage));
+    self->field_0x3fc = static_cast<unsigned short>(width(self->dockActionIdleImage));
     self->field_0x3f8 = static_cast<unsigned short>(hud_layout_i32(0x180));
     self->field_0x3fa = static_cast<unsigned short>(screenH - hud_layout_i32(0x184) - self->field_0x3fc);
-    self->field_0x402 = static_cast<unsigned short>(width(self->orbitMarkerIdleImage));
+    self->field_0x402 = static_cast<unsigned short>(width(self->dockActionIdleImage));
     self->field_0x3fe = static_cast<unsigned short>(screenW - hud_layout_i32(0x180) - self->field_0x3fc);
     self->field_0x400 = static_cast<unsigned short>(screenH - hud_layout_i32(0x184) - self->field_0x3fc);
 
@@ -387,12 +387,12 @@ unsigned int Hud::firePressed() {
 }
 
 void Hud::resetAnalogStick() {
-    this->lockBracketX = this->reticleX;
-    this->lockBracketY = this->reticleY;
+    this->steeringKnobX = this->steeringCenterX;
+    this->steeringKnobY = this->steeringCenterY;
 }
 
 float Hud::getAnalogY() {
-    float num = (float) ((int) this->lockBracketY - (int) this->reticleY);
+    float num = (float) ((int) this->steeringKnobY - (int) this->steeringCenterY);
     float den = (float) this->analogStickRadius;
     return num / den;
 }
@@ -448,7 +448,7 @@ void Hud::closeHudMenu() {
 }
 
 float Hud::getAnalogX() {
-    float num = (float) ((int) this->lockBracketX - (int) this->reticleX);
+    float num = (float) ((int) this->steeringKnobX - (int) this->steeringCenterX);
     float den = (float) this->analogStickRadius;
     return num / den;
 }
@@ -473,54 +473,41 @@ uint8_t Hud::jumpMapSelected() {
     return this->jumpMapSelectedFlag;
 }
 
-void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox, unsigned int x, unsigned int y) {
-    (void) t0;
+void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
+               unsigned int currentCameraMode, unsigned int nextCameraMode) {
     (void) t1;
-    (void) x;
-    (void) y;
-
-    this->letterbox = (unsigned char) letterbox;
+    this->letterbox = static_cast<unsigned char>(letterbox);
 
     PaintCanvas *canvas = hud_canvas();
     if (canvas == nullptr || ego == nullptr) return;
 
-    // --- reticle and lock brackets ---
-    canvas->DrawImage2D((unsigned) this->reticleImage, this->field_0x42c, 0);
-    {
-        unsigned char flags = this->touchFlags;
-        unsigned short bx, by;
-        int img;
-        if ((flags & 0x40) != 0) {
-            bx = this->reticleX;
-            by = this->reticleY;
-            img = this->lockBracketLockedImage;
-            this->lockBracketX = bx;
-            this->lockBracketY = by;
-        } else {
-            bx = this->lockBracketX;
-            by = this->lockBracketY;
-            img = this->lockBracketImage;
-        }
-        canvas->DrawImage2D((unsigned) img, bx, by, '\x11');
-    }
+    const int elapsed = static_cast<int>(t0);
+    const bool isMining = ego->isMining();
+    const auto drawSteering = [this, canvas, ego]() {
+        const bool blocked = ego->isAutoPilot() != 0 || ego->isDockingToAsteroid() ||
+                             ego->isDockingToDockingPoint() || this->letterbox != 0 ||
+                             (ego->isDockedToDockingPoint() && ego->isInTurretMode() == 0);
+        const bool dimmed = Globals::touchSteeringEnabled == 0 ||
+                            (blocked && (Globals::touchSteeringEnabled == 0 || ego->isInTurretMode() == 0));
+        if (dimmed)
+            canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                             static_cast<unsigned char>(0xff), static_cast<unsigned char>(0x32));
+        else
+            canvas->SetColor(static_cast<unsigned>(0xffffffffu));
 
-    // --- radar / orbit marker ---
-    {
-        Status *st = Status::gStatus;
-        bool show = false;
-        if (st->inAlienOrbit() == 0) {
-            show = true;
-        } else if (st->getCurrentCampaignMission() == 0x9a) {
-            Level *lvl = ego->level;
-            if (lvl != 0 && lvl->getNumDockingTargets() > 0) show = true;
+        canvas->DrawImage2D(static_cast<unsigned>(this->initImageSlots.steeringBaseImage),
+                            this->field_0x42c, this->field_0x42e);
+        if (Globals::touchSteeringEnabled != 0 && (this->touchFlags & 0x20u) != 0) {
+            canvas->DrawImage2D(static_cast<unsigned>(this->initImageSlots.steeringKnobPressedImage),
+                                this->field_0x41e, this->field_0x420, 0x11, 0x44);
+        } else {
+            this->field_0x41e = this->field_0x424;
+            this->field_0x420 = this->field_0x426;
+            canvas->DrawImage2D(static_cast<unsigned>(this->initImageSlots.steeringKnobIdleImage),
+                                this->field_0x424, this->field_0x426, 0x11, 0x44);
         }
-        if (show && st->getCurrentCampaignMission() > 1) {
-            int img = ((this->touchFlags & 0x80) != 0)
-                          ? this->orbitMarkerActiveImage
-                          : this->orbitMarkerIdleImage;
-            canvas->DrawImage2D((unsigned) img, this->field_0x3f8, 0);
-        }
-    }
+        canvas->SetColor(static_cast<unsigned>(0xffffffffu));
+    };
 
     // --- shield/armor/gamma bars ---
     {
@@ -593,38 +580,171 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox, unsig
         }
     }
 
-    // --- secondary weapon panel ---
-    {
-        Level *lvl = ego->level;
-        PlayerEgo *player = lvl != nullptr ? lvl->getPlayer() : nullptr;
+    if (ego->isInRocketControl()) {
+        const bool secondaryPressed = (this->touchFlags & 8u) != 0 ||
+                                      (this->secondaryFlashRemaining > 0 && this->secondaryFlashPulse <= 0);
+        const int secondaryImage = secondaryPressed ? this->initImageSlots.secondaryPressedImage
+                                                    : this->initImageSlots.secondaryIdleImage;
+        canvas->DrawImage2D(static_cast<unsigned>(secondaryImage), this->field_0x3ec, this->field_0x3ee);
+        if (secondaryPressed && this->secondaryFlashRemaining > 0)
+            this->secondaryFlashPulse = 80;
+        drawSteering();
+        return;
+    }
 
-        if (player != 0 && player->hasAutoTurret() != 0) {
-            bool on = player->autoTurretIsEnabled() != 0 || ((this->autoTurretFlags & 0x20) != 0);
-            int img = on ? this->autoTurretOnImage : this->autoTurretOffImage;
-            canvas->DrawImage2D((unsigned) img, this->field_0x3fe, 0);
-        } else {
-            if (this->secondaryLabelTimer > 0) {
-                unsigned int font = hud_font();
-                int screenW = Globals::w;
-                unsigned short iconW = this->field_0x3ec;
-                canvas->SetColor((unsigned char) 0xff, 0xff, 0xff, 0xff);
-                canvas->DrawImage2D((unsigned) this->eventBannerImage, this->field_0x3ec, 0);
-                int textW = canvas->GetTextWidth(font, this->field_0x3b4);
-                int tx = this->field_0x3ec + ((screenW - iconW) - textW) / 2;
-                canvas->DrawString(font, this->field_0x3b4, tx, 0, false);
-                canvas->SetColor((unsigned) 0xffffffffu);
-                int t = this->secondaryLabelTimer;
-                if (t > 4000) t = 0;
-                this->secondaryLabelTimer = t;
-            }
+    drawSteering();
+
+    // Android draws the phone reticle against the lower-right corner. iPad uses
+    // the two coordinates written by Globals::setCoordsFire.
+    if (Globals::iPad != 0)
+        canvas->DrawImage2D(static_cast<unsigned>(this->reticleImage),
+                            this->iPadFireCoord_0x0c, this->iPadFireCoord_0x0e);
+    else
+        canvas->DrawImage2D(static_cast<unsigned>(this->reticleImage), Globals::w, Globals::h, 0x11, 0x22);
+
+    Status *status = Status::gStatus;
+    if (status != nullptr) {
+        bool showDockAction = status->inAlienOrbit() == 0;
+        if (!showDockAction && status->getCurrentCampaignMission() == 0x9a) {
+            Level *level = ego->level;
+            showDockAction = level != nullptr && level->getNumDockingTargets() >= 1;
+        }
+        Mission *mission = status->getMission();
+        if (showDockAction && status->getCurrentCampaignMission() >= 2 &&
+            (mission == nullptr || mission->getType() != 0xb7)) {
+            const int image = (this->touchFlags & 0x40u) != 0
+                                  ? this->dockActionPressedImage
+                                  : this->dockActionIdleImage;
+            canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x3f8, this->field_0x3fa);
         }
     }
 
-    drawOrbitInformation();
+    canvas->SetColor(static_cast<unsigned>(0xffffffffu));
+    const unsigned int cameraIconMode = nextCameraMode < 4 ? nextCameraMode : 0;
+    const int cameraImage = (this->touchFlags & 0x80u) != 0
+                                ? this->initImageSlots.cameraPressedImages[cameraIconMode]
+                                : this->initImageSlots.cameraIdleImages[cameraIconMode];
+    canvas->DrawImage2D(static_cast<unsigned>(cameraImage), this->field_0x3f2, this->field_0x3f4);
 
-    // --- mission banner ---
-    canvas->SetColor((unsigned) 0xffffffffu);
-    canvas->DrawImage2D((unsigned) this->missionBannerImage, this->field_0x438, 0);
+    if (this->previousCameraMode == -1) {
+        this->previousCameraMode = static_cast<int>(currentCameraMode);
+    } else if (this->previousCameraMode != static_cast<int>(currentCameraMode)) {
+        this->previousCameraMode = static_cast<int>(currentCameraMode);
+        this->cameraModeLabelTimer = elapsed;
+        if (currentCameraMode < 4 && hud_game_text() != nullptr)
+            this->cameraModeLabel = *hud_game_text()->getText(217 + static_cast<int>(currentCameraMode));
+    }
+
+    const bool hasAutoTurret = ego->hasAutoTurret() != 0;
+    if (hasAutoTurret) {
+        const bool enabled = ego->autoTurretIsEnabled() != 0 || (this->autoTurretFlags & 0x20u) != 0;
+        const int image = enabled ? this->autoTurretEnabledImage : this->autoTurretDisabledImage;
+        canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x3fe, this->field_0x400);
+    } else if (this->cameraModeLabelTimer >= 1) {
+        const int bannerY = static_cast<int>(this->field_0x418) -
+                            canvas->GetImage2DHeight(static_cast<unsigned>(this->eventBannerImage)) -
+                            hud_layout_i32(0x20c);
+        int alpha = static_cast<int>((static_cast<float>(this->cameraModeLabelTimer) / 2000.0f) * 255.0f);
+        if (alpha > 255) alpha = 510 - alpha;
+        if (alpha < 0) alpha = 0;
+        canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                         static_cast<unsigned char>(0xff), static_cast<unsigned char>(alpha));
+        canvas->DrawImage2D(static_cast<unsigned>(this->eventBannerImage), this->field_0x3ec, bannerY);
+        const int textWidth = canvas->GetTextWidth(hud_font(), this->cameraModeLabel);
+        const int textX = this->field_0x3ec + (Globals::w - this->field_0x3ec - textWidth) / 2;
+        canvas->DrawString(hud_font(), this->cameraModeLabel, textX,
+                           bannerY + hud_layout_i32(0x210), false);
+        canvas->SetColor(static_cast<unsigned>(0xffffffffu));
+        this->cameraModeLabelTimer += elapsed;
+        if (this->cameraModeLabelTimer > 4000) this->cameraModeLabelTimer = 0;
+    }
+
+    const bool boostReady = ego->getBoostRate() == 1.0f;
+    if (boostReady && this->boostReadyLatched == 0) {
+        this->boostReadyLatched = 1;
+        this->boostFlashRemaining = 2000;
+        this->boostFlashPulse = 80;
+    } else if (!boostReady) {
+        this->boostReadyLatched = 0;
+    }
+    if (this->hasCloak != 0) {
+        if (this->cloakReadyLatched != 0 || ego->isCloaked() != 0 || ego->isRechargingCloak()) {
+            this->cloakReadyLatched = ego->isCloaked() != 0 ? 0 : static_cast<unsigned char>(!ego->isRechargingCloak());
+        } else {
+            this->cloakReadyLatched = 1;
+            this->quickMenuFlashRemaining = 2000;
+            this->quickMenuFlashPulse = 80;
+        }
+        if (this->quickMenuFlashRemaining >= 0) {
+            this->quickMenuFlashRemaining -= elapsed;
+            this->quickMenuFlashPulse -= elapsed;
+        }
+    }
+
+    if (this->quickMenuEmpty == 0) {
+        const bool pressed = (this->touchFlags & 4u) != 0 ||
+                             (this->quickMenuFlashRemaining > 0 && this->quickMenuFlashPulse <= 0);
+        const int image = pressed ? this->initImageSlots.quickMenuPressedImage
+                                  : this->initImageSlots.quickMenuIdleImage;
+        canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x416, this->field_0x418);
+        if (pressed && this->quickMenuFlashRemaining > 0) this->quickMenuFlashPulse = 80;
+    }
+
+    if (this->currentSecondaryWeapon != nullptr && ego->isInTurretMode() == 0 &&
+        this->currentSecondaryWeapon->getAmount() > 0) {
+        const bool pressed = (this->touchFlags & 8u) != 0 ||
+                             (this->secondaryFlashRemaining > 0 && this->secondaryFlashPulse <= 0);
+        const int image = pressed ? this->initImageSlots.secondaryPressedImage
+                                  : this->initImageSlots.secondaryIdleImage;
+        canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x3ec, this->field_0x3ee);
+        if (pressed && this->secondaryFlashRemaining > 0) this->secondaryFlashPulse = 80;
+
+        updateSecondaryWeaponString();
+        canvas->DrawImage2D(static_cast<unsigned>(this->secondaryWeaponBannerImage),
+                            Globals::w >> 1, Globals::h, 0x11, 0x24);
+        canvas->DrawString(hud_font(), this->field_0x3b4, this->secondaryLabelX,
+                           Globals::h - hud_layout_i32(0x04) + hud_layout_i32(0x214), false);
+    }
+
+    if (this->secondaryFlashRemaining >= 0) {
+        this->secondaryFlashRemaining -= elapsed;
+        this->secondaryFlashPulse -= elapsed;
+    }
+    if (this->hasBoostButton != 0) {
+        if (this->boostFlashRemaining >= 0) {
+            this->boostFlashRemaining -= elapsed;
+            this->boostFlashPulse -= elapsed;
+        }
+        unsigned char alpha = 55;
+        if (ego->boosting() == 0) {
+            const float boostRate = ego->getBoostRate();
+            alpha = boostRate >= 1.0f ? 0xff : static_cast<unsigned char>(55.0f + boostRate * 75.0f);
+        }
+        canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                         static_cast<unsigned char>(0xff), alpha);
+        if (Globals::mouseCursorActivated != 0 || isMining || this->letterbox != 0 ||
+            ego->isDockedToDockingPoint()) {
+            canvas->SetColor(static_cast<unsigned>(ego->getBoostRate() < 1.0f ? 0xffffff2fu : 0xffffff00u));
+        }
+        const bool pressed = (this->touchFlags & 2u) != 0 ||
+                             (this->boostFlashRemaining > 0 && this->boostFlashPulse <= 0);
+        const int image = pressed ? this->initImageSlots.boostPressedImage
+                                  : this->initImageSlots.boostIdleImage;
+        canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x410, this->field_0x412);
+        if (pressed && this->boostFlashRemaining > 0) this->boostFlashPulse = 80;
+    }
+
+    canvas->SetColor(static_cast<unsigned>(0xffffffffu));
+    const int mainActionImage = ((this->touchFlags & 0x10u) != 0 || this->autofireEnabled != 0)
+                                    ? this->mainActionPressedImage
+                                    : this->mainActionIdleImage;
+    if (Globals::iPad != 0)
+        canvas->DrawImage2D(static_cast<unsigned>(mainActionImage), this->field_0x3e4,
+                            this->field_0x3e6, 0x11, 0x44);
+    else
+        canvas->DrawImage2D(static_cast<unsigned>(mainActionImage), this->field_0x3e4, this->field_0x3e6);
+
+    drawOrbitInformation();
 
     drawEventQueue();
 
@@ -636,15 +756,6 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox, unsig
 
     drawPauseButton();
 
-    // --- message ---
-    if (this->messageActive != 0) {
-        canvas->SetColor((unsigned char) 0xff, 0xff, 0xff, 0xff);
-        unsigned int font = hud_font();
-        int screenW = Globals::w;
-        int w = canvas->GetTextWidth(font, this->field_0x51c);
-        canvas->DrawString(font, this->field_0x51c, screenW / 2 - w / 2, this->field_0x3e2, false);
-        canvas->SetColor((unsigned) 0xffffffffu);
-    }
 }
 
 void Hud::updateQueue(int dt) {
@@ -731,21 +842,21 @@ unsigned int Hud::touchMove(unsigned int a, unsigned int b, void *key) {
 
     return touchBegin(a, (unsigned int) -1, key);
 found:
-    int dx = (int) a - (int) this->reticleX;
-    int dy = (int) b - (int) this->reticleY;
+    int dx = (int) a - (int) this->steeringCenterX;
+    int dy = (int) b - (int) this->steeringCenterY;
     float f = (float) (dy * dy + dx * dx);
     float r = Globals::gGlobals->sqrt(f);
     int denom = this->analogStickRadius;
     int len = (int) r;
     if (denom < len) {
         short s = (short) (denom * dx / len);
-        short base = this->reticleY;
-        this->lockBracketX = s + this->reticleX;
+        short base = this->steeringCenterY;
+        this->steeringKnobX = s + this->steeringCenterX;
         s = (short) (denom * dy / len);
-        this->lockBracketY = s + base;
+        this->steeringKnobY = s + base;
     } else {
-        this->lockBracketX = (short) a;
-        this->lockBracketY = (short) b;
+        this->steeringKnobX = (short) a;
+        this->steeringKnobY = (short) b;
     }
     return 0x20;
 }
@@ -780,7 +891,7 @@ unsigned int Hud::touchedElement(unsigned int x, unsigned int y) {
         if (this->hasBoostButton != 0 && span(this->field_0x410, w, x) && span(this->field_0x412, w, y)) return 2;
         if (span(this->field_0x3f8, w, x) && span(this->field_0x3fa, w, y)) return 0x40;
         if (span(this->field_0x404, w, x) && span(this->field_0x406, w, y)) return 0x100;
-        if (cspan(this->reticleX, w, x) && cspan(this->reticleY, w2, y)) return 0x20;
+        if (cspan(this->steeringCenterX, w, x) && cspan(this->steeringCenterY, w2, y)) return 0x20;
         if (span(this->field_0x3f2, w, x) && span(this->field_0x3f4, w, y)) {
             this->field_0x470 = 1000;
             return 0x80;
@@ -814,7 +925,7 @@ unsigned int Hud::touchedElement(unsigned int x, unsigned int y) {
         if (this->hasBoostButton != 0 && cspan(this->field_0x410, w, x) && span(this->field_0x412, w, y)) return 2;
         if (span(this->field_0x3f8, w, x) && span(this->field_0x3fa, w, y)) return 0x40;
         if (span(this->field_0x404, w, x) && span(this->field_0x406, w, y)) return 0x100;
-        if (cspan(this->reticleX, w, x) && cspan(this->reticleY, w2, y)) return 0x20;
+        if (cspan(this->steeringCenterX, w, x) && cspan(this->steeringCenterY, w2, y)) return 0x20;
     } else {
         if (span(this->field_0x3f2, w, x) && span(this->field_0x3f4, w, y)) {
             this->field_0x470 = 1000;
@@ -1168,7 +1279,7 @@ int Hud::init() {
     this->multiplierIconImage = -1;
     this->factionLogoImage = -1;
     this->reticleImage = -1;
-    this->missionBannerImage = -1;
+    this->secondaryWeaponBannerImage = -1;
     this->eventBannerImage = -1;
     this->fuelGaugeIconImage = -1;
     this->fuelGaugeBarImage = -1;
@@ -1240,9 +1351,15 @@ int Hud::init() {
         Hud::RADAR_HEIGHT = 0;
     }
 
+    this->hasCloak = 0;
+    this->hasBoostButton = 0;
+    this->hasShieldBar = 0;
+    this->hasArmorRegen = 0;
+    this->hasAutofireUI = 0;
     if (Status::gStatus != nullptr) {
         Ship *ship = Status::gStatus->getShip();
         if (ship != nullptr) {
+            this->hasCloak = ship->hasCloak();
             this->hasBoostButton = ship->getBoostDelay() > 0;
             this->hasShieldBar = ship->getMaxShieldHP() > 0;
             this->hasArmorRegen = ship->getMaxArmorHP() > 0;
@@ -1250,9 +1367,17 @@ int Hud::init() {
         }
     }
 
-    this->secondaryLabelTimerSeed = -1;
-    this->secondaryLabelTimer = 0;
-    this->field_0x51c = String("");
+    this->boostReadyLatched = 1;
+    this->cloakReadyLatched = 1;
+    this->boostFlashRemaining = 0;
+    this->boostFlashPulse = 0;
+    this->secondaryFlashRemaining = 0;
+    this->secondaryFlashPulse = 0;
+    this->quickMenuFlashRemaining = 0;
+    this->quickMenuFlashPulse = 0;
+    this->previousCameraMode = -1;
+    this->cameraModeLabelTimer = 0;
+    this->cameraModeLabel = String("");
 
     closeHudMenu();
     if (Status::gStatus != nullptr)
@@ -1284,49 +1409,25 @@ Hud *Hud::checkIfQuickMenuIsEmpty() {
     this->equipmentArray = equip;
 
     unsigned char empty;
-    bool hasSecondary = false;
     if (equip != 0) {
         for (unsigned int i = 0; i < equip->size(); i++) {
             if ((*equip)[i] != 0) {
-                hasSecondary = true;
-                break;
+                empty = 0;
+                goto update_string;
             }
         }
     }
-    if (hasSecondary) {
+    ship = Status::gStatus->getShip();
+    if (ship->hasJumpDrive() != 0 || Status::gStatus->getWingmen() != 0) {
         empty = 0;
-    } else if (ship->hasJumpDrive() == 0 && Status::gStatus->getWingmen() == 0) {
-        empty = (unsigned char) ship->hasCloak();
     } else {
-        empty = 0;
+        ship = Status::gStatus->getShip();
+        empty = static_cast<unsigned char>(ship->hasCloak() ^ 1);
     }
+
+update_string:
     this->quickMenuEmpty = empty;
-
     updateSecondaryWeaponString();
-    {
-        Ship *ship2 = Status::gStatus->getShip();
-        Array<Item *> *equip2 = ship2->getEquipment(1);
-        this->equipmentArray = equip2;
-
-        bool hasSecondary2 = false;
-        if (equip2 != 0) {
-            for (unsigned int i = 0; i < equip2->size(); i++) {
-                if ((*equip2)[i] != 0) {
-                    hasSecondary2 = true;
-                    break;
-                }
-            }
-        }
-        unsigned char empty2;
-        if (hasSecondary2) {
-            empty2 = 0;
-        } else if (ship2->hasJumpDrive() == 0 && Status::gStatus->getWingmen() == 0) {
-            empty2 = (unsigned char) (ship2->hasCloak() == 0);
-        } else {
-            empty2 = 0;
-        }
-        this->quickMenuEmpty = empty2;
-    }
     return this;
 }
 

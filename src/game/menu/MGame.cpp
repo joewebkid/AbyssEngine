@@ -3336,11 +3336,14 @@ void MGame::OnRender2D() {
                     self->radar->draw((Player *) (self->player), (Hud *) (self->hud),
                                       (int) (intptr_t)(self->level));
                 if (self->cutsceneActive == 0) {
-                    ((MGame *) (self))->nextCamId(self->cameraMode);
                     {
                         long long now = (long long) self->applicationManager->GetSystemTimeMillis();
-                        self->hud->draw(now, (long long) self->deltaTime, self->player,
-                                        self->pauseOpen != 0, 0, 0);
+                        const unsigned int nextCameraMode =
+                            (unsigned int) self->nextCamId(self->cameraMode);
+                        self->hud->draw((long long) self->deltaTime, now, self->player,
+                                        self->pauseOpen != 0,
+                                        (unsigned int) self->cameraMode,
+                                        nextCameraMode);
                     }
                     {
                         long long now = (long long) self->applicationManager->GetSystemTimeMillis();
