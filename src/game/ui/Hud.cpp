@@ -19,6 +19,7 @@
 #include "game/world/Level.h"
 #include "game/world/LevelScript.h"
 #include "game/ship/Player.h"
+#include "engine/audio/FModSound.h"
 #include "engine/render/PaintCanvas.h"
 #include "game/ui/Layout.h"
 
@@ -26,7 +27,8 @@
 
 void Status_replaceHash(void *out, void *tmpl, void *a, void *b, void *c);
 
-static unsigned int g_Hud_heImportantMask = 0;
+// Android Hud::hudEvent .rodata at 0x20377c. Bits are indexed from event 27.
+static constexpr unsigned int kHudImportantEventMask = 0x100019;
 
 struct HudSecurityColor {
     unsigned char r;
@@ -1823,18 +1825,98 @@ void Hud::clearQueue() {
 }
 
 void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
-    (void) ego;
+    GameText *gameText = hud_game_text();
+    String &line = this->field_0x1e0;
 
     switch (eventId) {
         case 1:
+            if (this->hasAutofireUI == 0) return;
+            line = *gameText->getText(37) + String(" ") + *gameText->getText(38);
+            break;
         case 2:
             if (this->hasAutofireUI == 0) return;
+            line = *gameText->getText(37) + String(" ") + *gameText->getText(39);
             break;
         case 3:
-            if (this->hasBoostButton == 0 || ((PlayerEgo *) ((void *) (long) arg))->readyToBoost() == 0) return;
+            if (this->hasBoostButton == 0 || ego->readyToBoost() == 0) return;
+            line = *gameText->getText(314);
             break;
         case 4:
             if (this->hasBoostButton == 0) return;
+            line = *gameText->getText(315);
+            break;
+        case 5:
+            line = *gameText->getText(571) + String(" ") + *gameText->getText(38);
+            Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
+            break;
+        case 6:
+            line = *gameText->getText(571) + String(" ") + *gameText->getText(39);
+            Globals::sound->play(0x1d, nullptr, nullptr, 0.0f);
+            break;
+        case 7:
+            line = *gameText->getText(553);
+            break;
+        case 8:
+            line = *gameText->getText(539);
+            break;
+        case 9:
+            line = *gameText->getText(540);
+            break;
+        case 10: {
+            Station *station = Status::gStatus->getStation();
+            String suffix;
+            if (station->getIndex() != 101)
+                suffix = String(" ") + *gameText->getText(136);
+            line = *gameText->getText(546) + String(": ") + station->getName() + suffix;
+            Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
+            break;
+        }
+        case 11:
+            line = *gameText->getText(546) + String(": ") + *gameText->getText(550);
+            Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
+            break;
+        case 12:
+            line = *gameText->getText(546) + String(": ") + *gameText->getText(547);
+            Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
+            break;
+        case 13:
+            line = *gameText->getText(546) + String(": ") + *gameText->getText(548);
+            Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
+            break;
+        case 14:
+            line = *gameText->getText(546) + String(": ") + *gameText->getText(549);
+            Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
+            break;
+        case 15:
+            line = *gameText->getText(546) + String(": ") + *gameText->getText(545);
+            Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
+            break;
+        case 16:
+            line = *gameText->getText(307);
+            break;
+        case 17:
+            line = *gameText->getText(308);
+            break;
+        case 18:
+            line = *gameText->getText(309);
+            break;
+        case 19:
+            line = this->field_0x100;
+            break;
+        case 20:
+            line = *gameText->getText(541);
+            break;
+        case 21:
+            line = *gameText->getText(525);
+            break;
+        case 22:
+            line = *gameText->getText(542);
+            break;
+        case 23:
+            line = *gameText->getText(543);
+            break;
+        case 24:
+            line = *gameText->getText(544);
             break;
 
         case 25:
@@ -1851,6 +1933,24 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
         case 29:
             this->cloakProgressActive = 0;
             return;
+        case 30: {
+            String amount = String("-") + String(arg) + String("t ");
+            line = String(amount, false) + *gameText->getText(1396);
+            clearQueue();
+            break;
+        }
+        case 31:
+            line = *gameText->getText(324);
+            break;
+        case 32:
+            line = *gameText->getText(218) + String(" ") + *gameText->getText(38);
+            break;
+        case 33:
+            line = *gameText->getText(218) + String(" ") + *gameText->getText(39);
+            break;
+        case 34:
+            line = *gameText->getText(3199);
+            break;
 
         case 0x23:
             this->dockTransferFadeTimer = 0;
@@ -1875,39 +1975,49 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
             this->dockTransferShowMissionMarkers = 0;
             this->dockTransferProgressActive = 1;
             this->dockTransferReverse = 1;
-            return;
+            break;
         case 0x24:
         case 0x26:
         case 0x28:
         case 0x2a:
+            line = *gameText->getText(3200);
             this->dockTransferProgressActive = 0;
             break;
+        case 43:
+            line = *gameText->getText(3203);
+            break;
+        case 44:
+            line = *gameText->getText(3201);
+            break;
+        case 45:
+            line = *gameText->getText(3202);
+            break;
+        case 46:
+            line = *gameText->getText(316);
+            break;
+        case 47: {
+            String amount = String("-") + String(arg) + String("t ");
+            line = String(amount, false) + *gameText->getText(1476);
+            clearQueue();
+            break;
+        }
 
         default:
             break;
     }
 
-    String *line = (String *) &this->field_0x1e0;
-    char probe[12];
-    ((String *) (probe))->Set((line)->data);
-    unsigned int dup = sameHudEventAsBefore(*(String *) probe);
-    { String *_s = ((String *) (probe)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-    if (dup != 0)
-        return;
+    if (sameHudEventAsBefore(line) != 0) return;
 
-    String *str = new String(*line);
-
-    unsigned int idBit = (unsigned int) (eventId - 1);
+    const unsigned int idBit = static_cast<unsigned int>(eventId - 27);
     ListItem *item;
-    if (idBit < 0x15 && ((1u << (idBit & 0x1f)) & g_Hud_heImportantMask) != 0)
-        item = new ListItem(str, 1);
+    if (idBit < 0x15 && ((1u << idBit) & kHudImportantEventMask) != 0)
+        item = new ListItem(new String(line), 1);
     else
-        item = new ListItem(str, 0);
+        item = new ListItem(new String(line));
     addToEventQueue(item);
 
     PaintCanvas *canvas = hud_canvas();
-    if (canvas == nullptr) return;
-    int w = canvas->GetTextWidth(hud_font(), *line);
+    int w = canvas->GetTextWidth(hud_font(), line);
     int screenW = Globals::w;
     this->eventScrollTick = 0;
     this->eventScrolls = 1;

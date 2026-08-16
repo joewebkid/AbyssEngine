@@ -64,6 +64,9 @@ reads rather than replacement coordinates.
   `12001`. GameText `618` pulses through a 2000 ms triangular alpha cycle.
 - `Hud::hudEvent` event pairs `25/26` and `28/29` now start/stop jump and cloak
   progress. Event pairs `0x23..0x2a` now use named docking-transfer fields.
+- A later focused pass recovered the complete `Hud::hudEvent` table and common
+  queue tail. See `HUD_EVENT_ROUTING_2026-08-16.md` for the current body and
+  validation result.
 - `Globals::resetHints` now clears the real 59-byte global hint array with the
   native overlapping SIMD-store shape instead of dereferencing a null shim.
 
@@ -82,8 +85,9 @@ allocation, and instruction scheduling remain ARM work.
 - ARM `_ZN3Hud4drawExxP9PlayerEgobjj`: `8.1%` fuzzy match, original `3223`
   instructions, local `1926`; not linked- or raw-byte-equal.
 - ARM `_ZN3Hud8hudEventEiP9PlayerEgoi`: `6.0%` fuzzy match, original `1088`
-  instructions, local `150`; not linked- or raw-byte-equal.
+  instructions, local `150`; this is the package-time baseline. The subsequent
+  full event-routing pass reaches `9.7%` with `885` local instructions; neither
+  version is linked- or raw-byte-equal.
 - ARM `_ZN7Globals10resetHintsEv`: `48.3%` fuzzy match, original `16`
   instructions, local `13`; the previous local trap body is gone, but the
   function is not byte-equal.
-
