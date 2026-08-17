@@ -499,6 +499,8 @@ static_assert(offsetof(Status, field_14c) == 0x14c, "generatedStation");
 static_assert(offsetof(Status, field_150) == 0x150, "");
 static_assert(offsetof(Status, field_158) == 0x158, "");
 static_assert(offsetof(Status, field_178) == 0x178, "missionCounter");
+static_assert(offsetof(Status, missionPassengerCount) == 0x178,
+              "Status::missionPassengerCount offset");
 static_assert(offsetof(Status, field_0x17c) == 0x17c, "");
 static_assert(offsetof(Status, ship) == 0x190, "");
 static_assert(offsetof(Status, mission) == 0x194, "campaignMission");

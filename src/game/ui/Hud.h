@@ -263,8 +263,8 @@ public:
     unsigned short field_0x432;
     unsigned short field_0x434;
     unsigned short field_0x436;
-    unsigned short field_0x438;
-    unsigned short field_0x43a;
+    unsigned short missionPanelX;
+    unsigned short missionPanelY;
     unsigned short field_0x43c;
     unsigned short field_0x43e;
     unsigned short field_0x440;
@@ -511,6 +511,20 @@ static_assert(__builtin_offsetof(Hud, pauseButtonPressedImage) == 0x2f4,
               "Hud::pauseButtonPressedImage @ +0x2f4");
 static_assert(__builtin_offsetof(Hud, dockActionPressedImage) == 0x30c,
               "Hud::dockActionPressedImage @ +0x30c");
+static_assert(__builtin_offsetof(Hud, missionTimerPanelImage) == 0x320,
+              "Hud::missionTimerPanelImage @ +0x320");
+static_assert(__builtin_offsetof(Hud, cargoPanelImage) == 0x324,
+              "Hud::cargoPanelImage @ +0x324");
+static_assert(__builtin_offsetof(Hud, passengerPanelImage) == 0x334,
+              "Hud::passengerPanelImage @ +0x334");
+static_assert(__builtin_offsetof(Hud, productionCargoPanelImage) == 0x338,
+              "Hud::productionCargoPanelImage @ +0x338");
+static_assert(__builtin_offsetof(Hud, productionRemainingPanelImage) == 0x33c,
+              "Hud::productionRemainingPanelImage @ +0x33c");
+static_assert(__builtin_offsetof(Hud, volatileCargoOverlayImage) == 0x340,
+              "Hud::volatileCargoOverlayImage @ +0x340");
+static_assert(__builtin_offsetof(Hud, missionStatusPanelImage) == 0x344,
+              "Hud::missionStatusPanelImage @ +0x344");
 static_assert(__builtin_offsetof(Hud, reticleImage) == 0x348, "Hud::reticleImage @ +0x348");
 static_assert(__builtin_offsetof(Hud, eventBannerImage) == 0x354,
               "Hud::eventBannerImage @ +0x354");
@@ -536,6 +550,10 @@ static_assert(__builtin_offsetof(Hud, field_0x3e0) == 0x3e0, "Hud coordinate spa
 static_assert(__builtin_offsetof(Hud, field_0x3e8) == 0x3e8, "Hud::field_0x3e8 @ +0x3e8");
 static_assert(__builtin_offsetof(Hud, field_0x428) == 0x428, "Hud::field_0x428 @ +0x428");
 static_assert(__builtin_offsetof(Hud, field_0x432) == 0x432, "Hud::field_0x432 @ +0x432");
+static_assert(__builtin_offsetof(Hud, missionPanelX) == 0x438,
+              "Hud::missionPanelX @ +0x438");
+static_assert(__builtin_offsetof(Hud, missionPanelY) == 0x43a,
+              "Hud::missionPanelY @ +0x43a");
 static_assert(__builtin_offsetof(Hud, field_0x460) == 0x460, "Hud::field_0x460 @ +0x460");
 static_assert(__builtin_offsetof(Hud, chargeProgressFadeTimer) == 0x464,
               "Hud::chargeProgressFadeTimer @ +0x464");

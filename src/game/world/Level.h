@@ -389,6 +389,8 @@ public:
 };
 
 #if __SIZEOF_POINTER__ == 4
+static_assert(__builtin_offsetof(Level, killCountA) == 0x20, "Level::killCountA offset");
+static_assert(__builtin_offsetof(Level, killCountB) == 0x24, "Level::killCountB offset");
 static_assert(__builtin_offsetof(Level, manualSecondaryActive) == 0x69,
               "Level::manualSecondaryActive offset");
 static_assert(__builtin_offsetof(Level, field_188) == 0x188, "Level::field_188 offset");

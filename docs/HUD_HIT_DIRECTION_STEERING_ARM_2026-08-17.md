@@ -84,8 +84,6 @@ and normal color lifetimes while keeping the stronger ARM alignment.
 
 ## Remaining Work
 
-The next contiguous high-value section is the cargo/passenger/production and
-mission-timer panel dispatch immediately after the steering cluster. Its main
-branches exist in C++, but call order, temporary `String` lifetimes, panel
-selection, and campaign-specific exceptions still need a focused source-shape
-audit.
+The cargo/passenger/production and mission-timer follow-up is recorded in
+`HUD_CARGO_MISSION_PANELS_ARM_2026-08-17.md`. The next contiguous package is
+the reticle, dock-action, camera-mode, and auto-turret cluster.
