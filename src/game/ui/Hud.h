@@ -110,7 +110,13 @@ public:
     unsigned char field_0x281;
     unsigned char quickMenuOpen;
     unsigned char quickMenuEmpty;
-    unsigned int touchFlags;
+    union {
+        unsigned int touchFlags;
+        struct {
+            unsigned char touchFlagsLow;
+            unsigned char touchFlagsPadding[3];
+        };
+    };
     int field_0x288;
     Array<void *> *keyArray;
     int *elementBits;
@@ -486,6 +492,8 @@ static_assert(__builtin_offsetof(Hud, dockTransferShowMissionMarkers) == 0x27a,
               "Hud::dockTransferShowMissionMarkers @ +0x27a");
 static_assert(__builtin_offsetof(Hud, fuelGaugeValue) == 0x27c, "Hud::fuelGaugeValue @ +0x27c");
 static_assert(__builtin_offsetof(Hud, touchFlags) == 0x284, "Hud::touchFlags @ +0x284");
+static_assert(__builtin_offsetof(Hud, touchFlagsLow) == 0x284,
+              "Hud::touchFlagsLow @ +0x284");
 static_assert(__builtin_offsetof(Hud, field_0x288) == 0x288, "Hud::field_0x288 @ +0x288");
 static_assert(__builtin_offsetof(Hud, keyArray) == 0x28c, "Hud::keyArray @ +0x28c");
 static_assert(__builtin_offsetof(Hud, elementBits) == 0x290, "Hud::elementBits @ +0x290");

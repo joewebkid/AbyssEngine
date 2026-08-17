@@ -1721,11 +1721,11 @@ int Hud::init() {
 
 void Hud::drawPauseButton() {
     PaintCanvas::gCanvas->SetColor((unsigned) (-1));
-    unsigned char flag = this->touchFlags;
-    int y = this->field_0x40c;
-    int x = this->field_0x40a;
-    int img = (flag & 1) == 0 ? this->pauseButtonImage : this->pauseButtonPressedImage;
-    return PaintCanvas::gCanvas->DrawImage2D((unsigned) (img), (x), (y));
+    if ((this->touchFlagsLow & 1) != 0)
+        return PaintCanvas::gCanvas->DrawImage2D(
+            (unsigned int) this->pauseButtonPressedImage, this->field_0x40a, this->field_0x40c);
+    return PaintCanvas::gCanvas->DrawImage2D(
+        (unsigned int) this->pauseButtonImage, this->field_0x40a, this->field_0x40c);
 }
 
 Hud *Hud::checkIfQuickMenuIsEmpty() {

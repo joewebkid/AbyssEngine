@@ -142,7 +142,13 @@ struct HudArm32Layout {
     std::uint8_t field_281;
     std::uint8_t quickMenuOpen;
     std::uint8_t quickMenuEmpty;
-    std::uint32_t touchFlags;
+    union {
+        std::uint32_t touchFlags;
+        struct {
+            std::uint8_t touchFlagsLow;
+            std::uint8_t touchFlagsPadding[3];
+        };
+    };
     std::uint32_t field_288;
     std::uint32_t keyArray;
     std::uint32_t elementBits;
@@ -245,6 +251,7 @@ static_assert(offsetof(HudArm32Layout, dockTransferProgressActive) == 0x278, "")
 static_assert(offsetof(HudArm32Layout, dockTransferShowMissionMarkers) == 0x27a, "");
 static_assert(offsetof(HudArm32Layout, fuelGaugeValue) == 0x27c, "");
 static_assert(offsetof(HudArm32Layout, touchFlags) == 0x284, "");
+static_assert(offsetof(HudArm32Layout, touchFlagsLow) == 0x284, "");
 static_assert(offsetof(HudArm32Layout, keyArray) == 0x28c, "");
 static_assert(offsetof(HudArm32Layout, imageSlots_298_3b0) == 0x298, "");
 static_assert(offsetof(HudArm32Layout, secondaryWeaponLabel) == 0x3b4, "");

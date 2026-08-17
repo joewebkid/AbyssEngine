@@ -59,8 +59,8 @@ The exact tail offsets also improve several consumers:
 | `Hud::setTimeExtender` | `83.3%` | byte-exact |
 | `Hud::resetAnalogStick` | `33.3%` | byte-exact |
 
-Across all 48 verified `Hud` functions, average similarity is `67.9%`;
-20 are linked-exact and 15 are raw-byte-exact. The immediately preceding
+Across all 48 verified `Hud` functions, average similarity is `68.5%`;
+21 are linked-exact and 15 are raw-byte-exact. The immediately preceding
 image-span snapshot was `59.7%`, nine linked-exact and eight raw-byte-exact.
 
 The follow-up Array ABI package restores the out-of-line
@@ -68,6 +68,10 @@ The follow-up Array ABI package restores the out-of-line
 linked-exact with matching `80/80` instruction counts; only two unwind/LSDA
 tail instructions differ. The specialization itself is `100.0%` linked-exact
 at `29/29`. See `ARRAY_TOUCHBUTTON_ARM_ABI_2026-08-17.md`.
+
+The subsequent pause-button pass adds a low-byte view of the full touch mask
+at `+0x284` and raises `Hud::drawPauseButton` from `61.9%` to `92.7%`
+linked-exact. See `HUD_PAUSE_BUTTON_ARM_2026-08-17.md`.
 
 ## Validation
 
