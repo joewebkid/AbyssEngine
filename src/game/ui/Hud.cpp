@@ -153,14 +153,14 @@ static void hud_load_init_images(Hud *self) {
         {0x526, &self->hitHorizontalArmorImage},
         {0x52b, &self->hitVerticalShieldImage},
         {0x52c, &self->hitHorizontalShieldImage},
-        {0x528, &self->cameraImageSlots.cameraIdleImages[0]},
-        {0x527, &self->cameraImageSlots.cameraPressedImages[0]},
-        {0x4e9, &self->cameraImageSlots.cameraIdleImages[1]},
-        {0x4ea, &self->cameraImageSlots.cameraPressedImages[1]},
-        {0x4be, &self->cameraImageSlots.cameraIdleImages[2]},
-        {0x4bf, &self->cameraImageSlots.cameraPressedImages[2]},
-        {0x52a, &self->cameraImageSlots.cameraIdleImages[3]},
-        {0x529, &self->cameraImageSlots.cameraPressedImages[3]},
+        {0x528, &self->cameraIdleImages[0]},
+        {0x527, &self->cameraPressedImages[0]},
+        {0x4e9, &self->cameraIdleImages[1]},
+        {0x4ea, &self->cameraPressedImages[1]},
+        {0x4be, &self->cameraIdleImages[2]},
+        {0x4bf, &self->cameraPressedImages[2]},
+        {0x52a, &self->cameraIdleImages[3]},
+        {0x529, &self->cameraPressedImages[3]},
         {0x540, &self->image_0x390},
         {0x541, &self->image_0x394},
         {0x53f, &self->image_0x398},
@@ -261,10 +261,10 @@ static void hud_init_coordinates(Hud *self) {
     self->field_0x3e0 = static_cast<unsigned short>((screenW - width(self->eventBannerImage)) / 2);
     self->field_0x3e2 = static_cast<unsigned short>(hud_layout_i32(0x168));
 
-    self->field_0x3f6 = static_cast<unsigned short>(width(self->cameraImageSlots.cameraIdleImages[0]));
+    self->field_0x3f6 = static_cast<unsigned short>(width(self->cameraIdleImages[0]));
     self->field_0x3f2 = static_cast<unsigned short>(screenW - self->field_0x3f6 - hud_layout_i32(0x16c));
     self->field_0x3f4 = static_cast<unsigned short>(screenH - hud_layout_i32(0x170) -
-                                                     height(self->cameraImageSlots.cameraIdleImages[0]));
+                                                     height(self->cameraIdleImages[0]));
     self->field_0x41a = static_cast<unsigned short>(width(self->quickMenuPressedImage));
     self->field_0x41c = static_cast<unsigned short>(hud_layout_i32(0x174));
     self->field_0x416 = static_cast<unsigned short>(screenW - hud_layout_i32(0x178) - self->field_0x41a);
@@ -806,8 +806,8 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     canvas->SetColor(static_cast<unsigned>(0xffffffffu));
     const unsigned int cameraIconMode = nextCameraMode < 4 ? nextCameraMode : 0;
     const int cameraImage = (this->touchFlags & 0x80u) != 0
-                                ? this->cameraImageSlots.cameraPressedImages[cameraIconMode]
-                                : this->cameraImageSlots.cameraIdleImages[cameraIconMode];
+                                ? this->cameraPressedImages[cameraIconMode]
+                                : this->cameraIdleImages[cameraIconMode];
     canvas->DrawImage2D(static_cast<unsigned>(cameraImage), this->field_0x3f2, this->field_0x3f4);
 
     if (this->previousCameraMode == -1) {
@@ -2424,7 +2424,7 @@ Hud::~Hud() {
     this->eventQueue = 0;
 
     if (this->menuButtons != 0) {
-        ArrayReleaseClasses(*this->menuButtons); ArrayRemoveAll(*(this->menuButtons));
+        ArrayReleaseClasses(*this->menuButtons);
         delete this->menuButtons;
     }
     this->menuButtons = 0;

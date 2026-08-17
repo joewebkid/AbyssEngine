@@ -63,8 +63,8 @@ across the region, including `+0x298`, `+0x2c8`, `+0x2e0`, `+0x2f4`,
 `+0x30c`, `+0x348`, `+0x354`, `+0x35c`, `+0x370`, `+0x38c`, `+0x3b0` and the
 String at `+0x3b4`.
 
-The constructor is now `98.8%` similar with the exact `82/82` instruction
-count. Its only remaining immediate-offset difference is the camera-mode
+At the image-span stage, the constructor is `98.8%` similar with the exact
+`82/82` instruction count. Its only immediate-offset difference is the camera-mode
 String: local `+0x4b8`, Android `+0x51c`. The destructor is `90.7%`
 (`80/81`). Across 48 verified `Hud` functions the current average is `59.7%`;
 nine are linked-exact and eight are raw-byte-exact.
@@ -77,13 +77,16 @@ coincidental score improvement in a still-misaligned tail.
 
 ## Remaining Boundary
 
-The coordinate and timer/camera regions are not yet exact. A dedicated ARM
-size probe measures the current object at `0x50c` bytes versus the Android
+At this stage, the coordinate and timer/camera regions are not yet exact. A
+dedicated ARM size probe measures the object at `0x50c` bytes versus the Android
 allocation size `0x53c`.
 The next migration must restore the omitted 16-bit coordinate holes in
 `+0x3c4..+0x463`, then move timers, camera image arrays, camera String and the
 final fields through `+0x53b`. No whole-class or `Hud::init` byte match is
 claimed by this package.
+
+Follow-up: `HUD_RUNTIME_TAIL_2026-08-17.md` completes this migration. The live
+ARM object now has the exact `0x53c` size and the constructor is linked-exact.
 
 ## Validation
 

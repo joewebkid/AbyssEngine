@@ -73,6 +73,9 @@ Follow-up: the image-span migration in
 `+0x3b4` slot. The camera-mode String is now the constructor's only remaining
 offset mismatch.
 
+Final follow-up: `HUD_RUNTIME_TAIL_2026-08-17.md` moves the camera String to
+`+0x51c`; the constructor is now linked-exact.
+
 ## Validation
 
 - UCRT64 native build links `libgof2.a` successfully.

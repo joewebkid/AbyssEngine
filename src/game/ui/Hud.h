@@ -21,12 +21,6 @@ class ListItem;
 class PlayerEgo;
 class TouchButton;
 
-struct HudCameraImageSlots {
-    // Compact runtime storage until the camera tail moves to Hud+0x4f4.
-    int cameraIdleImages[4];
-    int cameraPressedImages[4];
-};
-
 
 
 
@@ -193,6 +187,7 @@ public:
     int image_0x3ac;
     int image_0x3b0;
     String field_0x3b4;
+    int field_0x3c0;
     int field_0x3c4;
     int menuOriginY;
     int menuRowHeight;
@@ -204,6 +199,7 @@ public:
     unsigned short field_0x3e2;
     unsigned short field_0x3e4;
     unsigned short field_0x3e6;
+    unsigned short field_0x3e8;
     unsigned short field_0x3ea;
     unsigned short field_0x3ec;
     unsigned short field_0x3ee;
@@ -247,6 +243,8 @@ public:
         unsigned short field_0x426;
         unsigned short steeringCenterY;
     };
+    unsigned short field_0x428;
+    unsigned short field_0x42a;
     union {
         unsigned short field_0x42c;
         unsigned short steeringBaseX;
@@ -256,6 +254,7 @@ public:
         unsigned short steeringBaseY;
     };
     unsigned short field_0x430;
+    unsigned short field_0x432;
     unsigned short field_0x434;
     unsigned short field_0x436;
     unsigned short field_0x438;
@@ -285,40 +284,49 @@ public:
     int hitFlashTimer;
     int field_0x470;
     unsigned char boostReadyLatched;
+    unsigned char unknown_0x475;
     unsigned char cloakReadyLatched;
+    unsigned char unknown_0x477;
+    unsigned char unknown_0x478[0x0c];
     int boostFlashRemaining;
     int boostFlashPulse;
     int secondaryFlashRemaining;
     int secondaryFlashPulse;
+    int unknown_0x494;
     int quickMenuFlashRemaining;
     int quickMenuFlashPulse;
     unsigned char autofireEnabled;
+    unsigned char unknown_0x4a1[4];
     unsigned char fireForTutorial;
+    unsigned char unknown_0x4a6[6];
+    int hitDirectionLeftTimer;
+    int hitDirectionRightTimer;
+    int hitDirectionTopTimer;
+    int hitDirectionBottomTimer;
     int timeExtenderTimer;
     int timeExtenderDuration;
+    int miningHintPulseTimer;
     unsigned char messageActive;
+    unsigned char unknown_0x4c9[0x0b];
     int menuOriginX;
     int menuOriginYBase;
     int touchHalfExtent;
     int touchHalfExtentSmall;
     int analogStickRadius;
     int eventLineMargin;
+    int field_0x4ec;
     int eventLineMarginAlt;
+    int cameraIdleImages[4];
+    int cameraPressedImages[4];
     int previousCameraMode;
     int cameraModeLabelTimer;
     String cameraModeLabel;
-    int hitDirectionLeftTimer;
-    int hitDirectionRightTimer;
-    int hitDirectionTopTimer;
-    int hitDirectionBottomTimer;
     unsigned char hackingGameActive;
+    unsigned char unknown_0x529[3];
     int cargoAggregateCount;
-    // Host mirror for native Hud+0x4c4 until the remaining tail ABI is rebuilt.
-    int miningHintPulseTimer;
     Array<unsigned int> *uintArray;
     void *digitSprite;
     int multiplierIconImage;
-    HudCameraImageSlots cameraImageSlots;
 
     Hud();
 
@@ -503,6 +511,66 @@ static_assert(__builtin_offsetof(Hud, dockTransferFillImage) == 0x38c,
               "Hud::dockTransferFillImage @ +0x38c");
 static_assert(__builtin_offsetof(Hud, image_0x3b0) == 0x3b0, "Hud final image slot @ +0x3b0");
 static_assert(__builtin_offsetof(Hud, field_0x3b4) == 0x3b4, "Hud::field_0x3b4 @ +0x3b4");
+static_assert(__builtin_offsetof(Hud, field_0x3c0) == 0x3c0, "Hud::field_0x3c0 @ +0x3c0");
+static_assert(__builtin_offsetof(Hud, field_0x3c4) == 0x3c4, "Hud::field_0x3c4 @ +0x3c4");
+static_assert(__builtin_offsetof(Hud, field_0x3e0) == 0x3e0, "Hud coordinate span @ +0x3e0");
+static_assert(__builtin_offsetof(Hud, field_0x3e8) == 0x3e8, "Hud::field_0x3e8 @ +0x3e8");
+static_assert(__builtin_offsetof(Hud, field_0x428) == 0x428, "Hud::field_0x428 @ +0x428");
+static_assert(__builtin_offsetof(Hud, field_0x432) == 0x432, "Hud::field_0x432 @ +0x432");
+static_assert(__builtin_offsetof(Hud, field_0x460) == 0x460, "Hud::field_0x460 @ +0x460");
+static_assert(__builtin_offsetof(Hud, chargeProgressFadeTimer) == 0x464,
+              "Hud::chargeProgressFadeTimer @ +0x464");
+static_assert(__builtin_offsetof(Hud, dockTransferFadeTimer) == 0x468,
+              "Hud::dockTransferFadeTimer @ +0x468");
+static_assert(__builtin_offsetof(Hud, hitFlashTimer) == 0x46c,
+              "Hud::hitFlashTimer @ +0x46c");
+static_assert(__builtin_offsetof(Hud, boostReadyLatched) == 0x474,
+              "Hud::boostReadyLatched @ +0x474");
+static_assert(__builtin_offsetof(Hud, cloakReadyLatched) == 0x476,
+              "Hud::cloakReadyLatched @ +0x476");
+static_assert(__builtin_offsetof(Hud, boostFlashRemaining) == 0x484,
+              "Hud::boostFlashRemaining @ +0x484");
+static_assert(__builtin_offsetof(Hud, secondaryFlashRemaining) == 0x48c,
+              "Hud::secondaryFlashRemaining @ +0x48c");
+static_assert(__builtin_offsetof(Hud, quickMenuFlashRemaining) == 0x498,
+              "Hud::quickMenuFlashRemaining @ +0x498");
+static_assert(__builtin_offsetof(Hud, autofireEnabled) == 0x4a0,
+              "Hud::autofireEnabled @ +0x4a0");
+static_assert(__builtin_offsetof(Hud, fireForTutorial) == 0x4a5,
+              "Hud::fireForTutorial @ +0x4a5");
+static_assert(__builtin_offsetof(Hud, hitDirectionLeftTimer) == 0x4ac,
+              "Hud::hitDirectionLeftTimer @ +0x4ac");
+static_assert(__builtin_offsetof(Hud, timeExtenderTimer) == 0x4bc,
+              "Hud::timeExtenderTimer @ +0x4bc");
+static_assert(__builtin_offsetof(Hud, miningHintPulseTimer) == 0x4c4,
+              "Hud::miningHintPulseTimer @ +0x4c4");
+static_assert(__builtin_offsetof(Hud, messageActive) == 0x4c8,
+              "Hud::messageActive @ +0x4c8");
+static_assert(__builtin_offsetof(Hud, menuOriginX) == 0x4d4,
+              "Hud::menuOriginX @ +0x4d4");
+static_assert(__builtin_offsetof(Hud, eventLineMargin) == 0x4e8,
+              "Hud::eventLineMargin @ +0x4e8");
+static_assert(__builtin_offsetof(Hud, field_0x4ec) == 0x4ec,
+              "Hud::field_0x4ec @ +0x4ec");
+static_assert(__builtin_offsetof(Hud, eventLineMarginAlt) == 0x4f0,
+              "Hud::eventLineMarginAlt @ +0x4f0");
+static_assert(__builtin_offsetof(Hud, cameraIdleImages) == 0x4f4,
+              "Hud::cameraIdleImages @ +0x4f4");
+static_assert(__builtin_offsetof(Hud, cameraPressedImages) == 0x504,
+              "Hud::cameraPressedImages @ +0x504");
+static_assert(__builtin_offsetof(Hud, previousCameraMode) == 0x514,
+              "Hud::previousCameraMode @ +0x514");
+static_assert(__builtin_offsetof(Hud, cameraModeLabel) == 0x51c,
+              "Hud::cameraModeLabel @ +0x51c");
+static_assert(__builtin_offsetof(Hud, hackingGameActive) == 0x528,
+              "Hud::hackingGameActive @ +0x528");
+static_assert(__builtin_offsetof(Hud, cargoAggregateCount) == 0x52c,
+              "Hud::cargoAggregateCount @ +0x52c");
+static_assert(__builtin_offsetof(Hud, uintArray) == 0x530, "Hud::uintArray @ +0x530");
+static_assert(__builtin_offsetof(Hud, digitSprite) == 0x534, "Hud::digitSprite @ +0x534");
+static_assert(__builtin_offsetof(Hud, multiplierIconImage) == 0x538,
+              "Hud::multiplierIconImage @ +0x538");
+static_assert(sizeof(Hud) == 0x53c, "Android Hud allocation is 0x53c bytes");
 #endif
 
 static_assert(__builtin_offsetof(HudEventDisplay, eventBannerDisplayScale) == 0x1e0,

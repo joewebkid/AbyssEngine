@@ -64,6 +64,9 @@ in ownership order. The event/progress region, image span and secondary-label
 String are now complete; see `HUD_RUNTIME_EVENT_PROGRESS_2026-08-17.md` and
 `HUD_RUNTIME_IMAGE_SPAN_2026-08-17.md`.
 
+Final follow-up: `HUD_RUNTIME_TAIL_2026-08-17.md` completes the coordinate and
+camera regions and locks the live ARM object at `0x53c` bytes.
+
 ## Validation
 
 - UCRT64 native build links `libgof2.a` successfully.
