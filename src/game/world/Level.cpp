@@ -3078,7 +3078,7 @@ Level::Level(int mission) {
     field_17c = 0;
     field_180 = 0;
     field_184 = 0;
-    field_69 = 0;
+    manualSecondaryActive = 0;
     field_6c = 0;
     field_288 = 0;
     field_a0 = 0;

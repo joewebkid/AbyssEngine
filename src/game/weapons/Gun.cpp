@@ -30,7 +30,7 @@ struct GunUpdateGlobals {
 // The Level handle (Gun::level is stored as an int address).
 struct GunLevelHandle {
     uint8_t pad_0x00[0x69];
-    uint8_t field_0x69;         // 0x69 (cleared when an EMP/nuke ignites)
+    uint8_t manualSecondaryActive; // 0x69 (cleared when an EMP/nuke ignites)
 };
 
 // A PaintCanvas transform handle (returned by TransformGetTransform).
@@ -46,8 +46,8 @@ static_assert(__builtin_offsetof(GunItemRegistry, nukeDetonations) == 0xc8,
               "GunItemRegistry::nukeDetonations offset");
 static_assert(__builtin_offsetof(GunUpdateGlobals, field_0x12c) == 0x12c,
               "GunUpdateGlobals::field_0x12c offset");
-static_assert(__builtin_offsetof(GunLevelHandle, field_0x69) == 0x69,
-              "GunLevelHandle::field_0x69 offset");
+static_assert(__builtin_offsetof(GunLevelHandle, manualSecondaryActive) == 0x69,
+              "GunLevelHandle::manualSecondaryActive offset");
 static_assert(__builtin_offsetof(GunTransformHandle, visible_0xed) == 0xed,
               "GunTransformHandle::visible_0xed offset");
 #endif
@@ -233,7 +233,7 @@ void Gun::ignite() {
     if (this->weaponType == ITEM_SORT_EMP_BOMB || this->weaponType == ITEM_SORT_NUKE) {
         if (this->weaponType == ITEM_SORT_NUKE)
             reinterpret_cast<GunItemRegistry *>(*gIG_status)->nukeDetonations += 1;
-        reinterpret_cast<GunLevelHandle *>(this->level)->field_0x69 = 0;
+        reinterpret_cast<GunLevelHandle *>(this->level)->manualSecondaryActive = 0;
     }
 
     Array<Player *> *enemies = this->enemies;

@@ -71,7 +71,10 @@ public:
     int field_60;
     int movingStarsIndex;
     uint8_t field_68;
-    uint8_t field_69;
+    union {
+        uint8_t field_69;
+        uint8_t manualSecondaryActive;
+    };
     uint8_t pad_6a[2];
     int field_6c;
     int field_70;
@@ -386,6 +389,8 @@ public:
 };
 
 #if __SIZEOF_POINTER__ == 4
+static_assert(__builtin_offsetof(Level, manualSecondaryActive) == 0x69,
+              "Level::manualSecondaryActive offset");
 static_assert(__builtin_offsetof(Level, field_188) == 0x188, "Level::field_188 offset");
 static_assert(__builtin_offsetof(Level, alarmRequested) == 0x189, "Level::alarmRequested offset");
 static_assert(__builtin_offsetof(Level, field_18a) == 0x18a, "Level::field_18a offset");

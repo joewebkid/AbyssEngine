@@ -293,7 +293,9 @@ public:
     unsigned char unknown_0x475;
     unsigned char cloakReadyLatched;
     unsigned char unknown_0x477;
-    unsigned char unknown_0x478[0x0c];
+    int field_0x478;
+    int field_0x47c;
+    int field_0x480;
     int boostFlashRemaining;
     int boostFlashPulse;
     int secondaryFlashRemaining;
@@ -536,6 +538,8 @@ static_assert(__builtin_offsetof(Hud, boostReadyLatched) == 0x474,
               "Hud::boostReadyLatched @ +0x474");
 static_assert(__builtin_offsetof(Hud, cloakReadyLatched) == 0x476,
               "Hud::cloakReadyLatched @ +0x476");
+static_assert(__builtin_offsetof(Hud, field_0x47c) == 0x47c,
+              "Hud::field_0x47c @ +0x47c");
 static_assert(__builtin_offsetof(Hud, boostFlashRemaining) == 0x484,
               "Hud::boostFlashRemaining @ +0x484");
 static_assert(__builtin_offsetof(Hud, secondaryFlashRemaining) == 0x48c,

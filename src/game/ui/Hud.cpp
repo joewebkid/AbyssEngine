@@ -406,7 +406,7 @@ void Hud::addToEventQueue(ListItem *item) {
 }
 
 unsigned int Hud::firePressed() {
-    return (this->touchFlags >> 4) & 1;
+    return (this->touchFlagsLow >> 4) & 1;
 }
 
 void Hud::resetAnalogStick() {
@@ -519,7 +519,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
 
         canvas->DrawImage2D(static_cast<unsigned>(this->steeringBaseImage),
                             this->field_0x42c, this->field_0x42e);
-        if (Globals::touchSteeringEnabled != 0 && (this->touchFlags & 0x20u) != 0) {
+        if (Globals::touchSteeringEnabled != 0 && (this->touchFlagsLow & 0x20u) != 0) {
             canvas->DrawImage2D(static_cast<unsigned>(this->steeringKnobPressedImage),
                                 this->field_0x41e, this->field_0x420, 0x11, 0x44);
         } else {
@@ -530,6 +530,38 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         }
         canvas->SetColor(static_cast<unsigned>(0xffffffffu));
     };
+
+    if (this->shieldHitFlash != 0) {
+        this->hitFlashTimer += elapsed;
+        if (this->hitFlashTimer > 500) {
+            this->shieldHitFlash = 0;
+            this->hitFlashTimer = 0;
+        }
+    }
+    if (this->field_0x470 >= 1) this->field_0x470 -= elapsed;
+
+    const bool boostReady = ego->getBoostRate() == 1.0f;
+    if (boostReady && this->boostReadyLatched == 0) {
+        this->boostReadyLatched = 1;
+        this->boostFlashRemaining = 2000;
+        this->boostFlashPulse = 80;
+        this->field_0x47c = this->secondaryFlashRemaining < 0
+                                ? this->menuOriginX
+                                : canvas->GetTextHeight(hud_font()) + this->menuOriginX;
+    } else {
+        this->boostReadyLatched = ego->getBoostRate() == 1.0f;
+    }
+    if (this->hasCloak != 0) {
+        if (this->cloakReadyLatched != 0 || ego->isCloaked() != 0 || ego->isRechargingCloak()) {
+            this->cloakReadyLatched = ego->isCloaked() != 0
+                                          ? 0
+                                          : static_cast<unsigned char>(!ego->isRechargingCloak());
+        } else {
+            this->cloakReadyLatched = 1;
+            this->quickMenuFlashRemaining = 2000;
+            this->quickMenuFlashPulse = 80;
+        }
+    }
 
     // --- shield/armor/gamma bars ---
     {
@@ -603,7 +635,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     }
 
     if (ego->isInRocketControl()) {
-        const bool secondaryPressed = (this->touchFlags & 8u) != 0 ||
+        const bool secondaryPressed = (this->touchFlagsLow & 8u) != 0 ||
                                       (this->secondaryFlashRemaining > 0 && this->secondaryFlashPulse <= 0);
         const int secondaryImage = secondaryPressed ? this->secondaryPressedImage
                                                     : this->secondaryIdleImage;
@@ -796,7 +828,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         Mission *mission = status->getMission();
         if (showDockAction && status->getCurrentCampaignMission() >= 2 &&
             (mission == nullptr || mission->getType() != 0xb7)) {
-            const int image = (this->touchFlags & 0x40u) != 0
+            const int image = (this->touchFlagsLow & 0x40u) != 0
                                   ? this->dockActionPressedImage
                                   : this->dockActionIdleImage;
             canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x3f8, this->field_0x3fa);
@@ -805,7 +837,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
 
     canvas->SetColor(static_cast<unsigned>(0xffffffffu));
     const unsigned int cameraIconMode = nextCameraMode < 4 ? nextCameraMode : 0;
-    const int cameraImage = (this->touchFlags & 0x80u) != 0
+    const int cameraImage = (this->touchFlagsLow & 0x80u) != 0
                                 ? this->cameraPressedImages[cameraIconMode]
                                 : this->cameraIdleImages[cameraIconMode];
     canvas->DrawImage2D(static_cast<unsigned>(cameraImage), this->field_0x3f2, this->field_0x3f4);
@@ -843,30 +875,10 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         if (this->cameraModeLabelTimer > 4000) this->cameraModeLabelTimer = 0;
     }
 
-    const bool boostReady = ego->getBoostRate() == 1.0f;
-    if (boostReady && this->boostReadyLatched == 0) {
-        this->boostReadyLatched = 1;
-        this->boostFlashRemaining = 2000;
-        this->boostFlashPulse = 80;
-    } else if (!boostReady) {
-        this->boostReadyLatched = 0;
-    }
-    if (this->hasCloak != 0) {
-        if (this->cloakReadyLatched != 0 || ego->isCloaked() != 0 || ego->isRechargingCloak()) {
-            this->cloakReadyLatched = ego->isCloaked() != 0 ? 0 : static_cast<unsigned char>(!ego->isRechargingCloak());
-        } else {
-            this->cloakReadyLatched = 1;
-            this->quickMenuFlashRemaining = 2000;
-            this->quickMenuFlashPulse = 80;
-        }
-        if (this->quickMenuFlashRemaining >= 0) {
-            this->quickMenuFlashRemaining -= elapsed;
-            this->quickMenuFlashPulse -= elapsed;
-        }
-    }
-
+    if (Globals::mouseCursorActivated != 0 || this->quickMenuOpen != 0)
+        canvas->SetColor(static_cast<unsigned>(0xffffff00u));
     if (this->quickMenuEmpty == 0) {
-        const bool pressed = (this->touchFlags & 4u) != 0 ||
+        const bool pressed = (this->touchFlagsLow & 4u) != 0 ||
                              (this->quickMenuFlashRemaining > 0 && this->quickMenuFlashPulse <= 0);
         const int image = pressed ? this->quickMenuPressedImage
                                   : this->quickMenuIdleImage;
@@ -874,9 +886,10 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         if (pressed && this->quickMenuFlashRemaining > 0) this->quickMenuFlashPulse = 80;
     }
 
-    if (this->currentSecondaryWeapon != nullptr && ego->isInTurretMode() == 0 &&
-        this->currentSecondaryWeapon->getAmount() > 0) {
-        const bool pressed = (this->touchFlags & 8u) != 0 ||
+    if ((this->currentSecondaryWeapon != nullptr && ego->isInTurretMode() == 0 &&
+         this->currentSecondaryWeapon->getAmount() > 0) ||
+        (ego->level != nullptr && ego->level->manualSecondaryActive != 0)) {
+        const bool pressed = (this->touchFlagsLow & 8u) != 0 ||
                              (this->secondaryFlashRemaining > 0 && this->secondaryFlashPulse <= 0);
         const int image = pressed ? this->secondaryPressedImage
                                   : this->secondaryIdleImage;
@@ -884,15 +897,19 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         if (pressed && this->secondaryFlashRemaining > 0) this->secondaryFlashPulse = 80;
 
         updateSecondaryWeaponString();
+        if (Globals::mouseCursorActivated != 0)
+            canvas->SetColor(static_cast<unsigned>(0xffffffffu));
         canvas->DrawImage2D(static_cast<unsigned>(this->secondaryWeaponBannerImage),
                             Globals::w >> 1, Globals::h, 0x11, 0x24);
         canvas->DrawString(hud_font(), this->field_0x3b4, this->secondaryLabelX,
                            Globals::h - hud_layout_i32(0x04) + hud_layout_i32(0x214), false);
+        if (Globals::mouseCursorActivated != 0 || this->quickMenuOpen != 0)
+            canvas->SetColor(static_cast<unsigned>(0xffffff00u));
     }
 
-    if (this->secondaryFlashRemaining >= 0) {
-        this->secondaryFlashRemaining -= elapsed;
-        this->secondaryFlashPulse -= elapsed;
+    if (this->hasCloak != 0 && this->quickMenuFlashRemaining >= 0) {
+        this->quickMenuFlashRemaining -= elapsed;
+        this->quickMenuFlashPulse -= elapsed;
     }
     if (this->hasBoostButton != 0) {
         if (this->boostFlashRemaining >= 0) {
@@ -906,20 +923,26 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         }
         canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
                          static_cast<unsigned char>(0xff), alpha);
-        if (Globals::mouseCursorActivated != 0 || isMining || this->letterbox != 0 ||
+        if (Globals::mouseCursorActivated != 0 || isMining || this->hackingGameActive != 0 ||
             ego->isDockedToDockingPoint()) {
             canvas->SetColor(static_cast<unsigned>(ego->getBoostRate() < 1.0f ? 0xffffff2fu : 0xffffff00u));
         }
-        const bool pressed = (this->touchFlags & 2u) != 0 ||
+        const bool pressed = (this->touchFlagsLow & 2u) != 0 ||
                              (this->boostFlashRemaining > 0 && this->boostFlashPulse <= 0);
+        if (pressed && this->boostFlashRemaining > 0) {
+            this->boostFlashPulse = 80;
+            if (Globals::mouseCursorActivated != 0)
+                canvas->SetColor(static_cast<unsigned>(0xffffffffu));
+        }
         const int image = pressed ? this->boostPressedImage
                                   : this->boostIdleImage;
         canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x410, this->field_0x412);
-        if (pressed && this->boostFlashRemaining > 0) this->boostFlashPulse = 80;
     }
 
     canvas->SetColor(static_cast<unsigned>(0xffffffffu));
-    const int mainActionImage = ((this->touchFlags & 0x10u) != 0 || this->autofireEnabled != 0)
+    if (Globals::mouseCursorActivated != 0 || this->quickMenuOpen != 0)
+        canvas->SetColor(static_cast<unsigned>(0xffffff00u));
+    const int mainActionImage = ((this->touchFlagsLow & 0x10u) != 0 || this->autofireEnabled != 0)
                                     ? this->mainActionPressedImage
                                     : this->mainActionIdleImage;
     if (Globals::iPad != 0)

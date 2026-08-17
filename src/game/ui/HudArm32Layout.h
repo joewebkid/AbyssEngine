@@ -172,7 +172,9 @@ struct HudArm32Layout {
     std::uint8_t unknown_475;
     std::uint8_t cloakReadyLatched;
     std::uint8_t unknown_477;
-    std::uint8_t unknown_478[0x0c];
+    std::int32_t field_478;
+    std::int32_t field_47c;
+    std::int32_t field_480;
     std::int32_t boostFlashRemaining;
     std::int32_t boostFlashPulse;
     std::int32_t secondaryFlashRemaining;
@@ -261,6 +263,7 @@ static_assert(offsetof(HudArm32Layout, dockTransferFadeTimer) == 0x468, "");
 static_assert(offsetof(HudArm32Layout, hitFlashTimer) == 0x46c, "");
 static_assert(offsetof(HudArm32Layout, boostReadyLatched) == 0x474, "");
 static_assert(offsetof(HudArm32Layout, cloakReadyLatched) == 0x476, "");
+static_assert(offsetof(HudArm32Layout, field_47c) == 0x47c, "");
 static_assert(offsetof(HudArm32Layout, boostFlashRemaining) == 0x484, "");
 static_assert(offsetof(HudArm32Layout, secondaryFlashRemaining) == 0x48c, "");
 static_assert(offsetof(HudArm32Layout, quickMenuFlashRemaining) == 0x498, "");
