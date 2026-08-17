@@ -6,6 +6,18 @@
 #include "engine/core/AEString.h"
 #include "engine/math/AEMath.h"
 
+template<class T>
+class Array;
+
+template<class T>
+void ArrayReleaseClasses(Array<T> &array);
+
+class TouchButton;
+
+// Android exports this specialization and Hud ownership paths call it
+// out-of-line rather than expanding the release loop into each destructor.
+template<>
+void ArrayReleaseClasses<TouchButton *>(Array<TouchButton *> &array);
 
 class TouchButton {
 public:

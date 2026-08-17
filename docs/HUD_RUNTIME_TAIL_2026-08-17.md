@@ -59,18 +59,15 @@ The exact tail offsets also improve several consumers:
 | `Hud::setTimeExtender` | `83.3%` | byte-exact |
 | `Hud::resetAnalogStick` | `33.3%` | byte-exact |
 
-Across all 48 verified `Hud` functions, average similarity is `66.9%`;
-18 are linked-exact and 15 are raw-byte-exact. The immediately preceding
+Across all 48 verified `Hud` functions, average similarity is `67.9%`;
+20 are linked-exact and 15 are raw-byte-exact. The immediately preceding
 image-span snapshot was `59.7%`, nine linked-exact and eight raw-byte-exact.
 
-`Hud::~Hud` is currently `72.7%` (`80/52` instructions). The C++ body now
-matches the Android ownership sequence by calling `ArrayReleaseClasses` and
-then deleting the array without the former extra `ArrayRemoveAll`. The local
-header-only template is inlined, while the Android binary calls the emitted
-`ArrayReleaseClasses<TouchButton *>` specialization and retains its cleanup
-landing pad. Restoring that template ABI/source shape is a separate Array
-package; an extra reallocating call is not retained merely to inflate fuzzy
-similarity.
+The follow-up Array ABI package restores the out-of-line
+`ArrayReleaseClasses<TouchButton *>` specialization. `Hud::~Hud` is now `97.5%`
+linked-exact with matching `80/80` instruction counts; only two unwind/LSDA
+tail instructions differ. The specialization itself is `100.0%` linked-exact
+at `29/29`. See `ARRAY_TOUCHBUTTON_ARM_ABI_2026-08-17.md`.
 
 ## Validation
 
@@ -80,6 +77,8 @@ similarity.
 - ARM compilation passes all live `offsetof` checks and
   `sizeof(Hud) == 0x53c`.
 - `tools/verify/verify.py --only '^_ZN3Hud'` compares 48 functions.
+- ARM `nm` reports a strong specialization definition in
+  `ArrayInstantiations.o` and an undefined out-of-line reference in `Hud.o`.
 
 This package establishes the object ABI. It does not claim that large bodies
 such as `Hud::draw`, `Hud::init` or `Hud::hudEvent` are byte-matched.

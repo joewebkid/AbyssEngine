@@ -133,9 +133,12 @@ without ever casting a smaller runtime object to the larger evidence layout.
   fail on the known `SolarSystem *` versus integer system-index mismatch.
 - After the complete runtime migration, the constructor is linked-exact
   `100.0%` (`82/82` original/local instructions), `Hud::init` is `27.2%`
-  (`1077/1121`) and `Hud::hudEvent` is `9.7%` (`1088/886`). Across 48 Hud
-  functions, 18 are linked-exact and 15 are raw-byte-exact. See
+  (`1077/1121`) and `Hud::hudEvent` is `9.7%` (`1088/886`). After restoring the
+  out-of-line `ArrayReleaseClasses<TouchButton *>` specialization, the Hud
+  average is `67.9%`; 20 functions are linked-exact and 15 are raw-byte-exact.
+  See
   `HUD_RUNTIME_PREFIX_2026-08-16.md`,
   `HUD_RUNTIME_EVENT_PROGRESS_2026-08-17.md` and
   `HUD_RUNTIME_IMAGE_SPAN_2026-08-17.md`, with final results in
-  `HUD_RUNTIME_TAIL_2026-08-17.md`.
+  `HUD_RUNTIME_TAIL_2026-08-17.md` and
+  `ARRAY_TOUCHBUTTON_ARM_ABI_2026-08-17.md`.

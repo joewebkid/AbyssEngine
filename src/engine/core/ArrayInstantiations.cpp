@@ -44,6 +44,16 @@ template void ArrayReleaseClasses<Array<ListItem *> *>(Array<Array<ListItem *> *
 
 template void ArrayReleaseClasses<Array<ImagePart *> *>(Array<Array<ImagePart *> *> &);
 
+template<>
+void ArrayReleaseClasses<TouchButton *>(Array<TouchButton *> &array) {
+    for (unsigned int i = 0; i < array.capacity_; ++i) {
+        if (array.data_[i]) delete array.data_[i];
+        array.data_[i] = nullptr;
+    }
+    if (array.data_) ::operator delete[](array.data_);
+    array.data_ = nullptr;
+}
+
 template void ArrayAdd<TouchButton *>(TouchButton *, Array<TouchButton *> &);
 
 template void ArrayAdd<TouchSlider *>(TouchSlider *, Array<TouchSlider *> &);
