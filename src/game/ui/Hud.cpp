@@ -826,7 +826,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
 
     const bool hasAutoTurret = ego->hasAutoTurret() != 0;
     if (hasAutoTurret) {
-        const bool enabled = ego->autoTurretIsEnabled() != 0 || (this->autoTurretFlags & 0x20u) != 0;
+        const bool enabled = ego->autoTurretIsEnabled() != 0 || (this->touchFlags & 0x20000000u) != 0;
         const int image = enabled ? this->autoTurretEnabledImage : this->autoTurretDisabledImage;
         canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x3fe, this->field_0x400);
     } else if (this->cameraModeLabelTimer >= 1) {
@@ -1631,7 +1631,6 @@ int Hud::init() {
     this->field_0x281 = 0;
     this->quickMenuOpen = 0;
     this->quickMenuEmpty = 0;
-    this->autoTurretFlags = 0;
     this->field_0x288 = 0;
     this->field_0x1d0 = 10000;
     this->cargoFullFlag = 0;

@@ -59,7 +59,8 @@ String offsets:
 
 These offsets are not being imitated with constructor-only scratch storage.
 They require the real event, image, coordinate and timer regions to be migrated
-in ownership order.
+in ownership order. The event/progress part of that migration is now complete;
+see `HUD_RUNTIME_EVENT_PROGRESS_2026-08-17.md`.
 
 ## Validation
 

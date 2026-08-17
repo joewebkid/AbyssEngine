@@ -79,25 +79,27 @@ fuel/progress/transfer group at `+0x370..+0x38c`.
 
 ## Runtime Migration Progress
 
-The first live-runtime migration is complete. `menuButtons`, both iPad image
-handles, the packed iPad coordinates, both anchors and the 20-String array now
-occupy their Android offsets on ARM. The later regions remain compact:
+The first two live-runtime migrations are complete. The prefix, 20-String
+array, event Strings, queue, touch and progress state now occupy their Android
+offsets through the image-span boundary at `+0x298`. Later regions remain
+compact:
 
 | Field | Current ARM class | Android object |
 | --- | ---: | ---: |
 | `menuButtons` | `+0x018` | `+0x018` |
 | first/final array String | `+0x01c/+0x100` | `+0x01c/+0x100` |
-| main event String | `+0x124` | `+0x1e0` |
-| `eventQueue` | `+0x174` | `+0x264` |
-| secondary label String | `+0x214` | `+0x3b4` |
-| charge fade timer | `+0x2bc` | `+0x464` |
-| event margins | `+0x30c/+0x310` | `+0x4e8/+0x4f0` |
-| camera label String | `+0x31c` | `+0x51c` |
-| object size | `0x41c` | `0x53c` |
+| main event String | `+0x1e0` | `+0x1e0` |
+| `eventQueue` | `+0x264` | `+0x264` |
+| image-span start | `+0x298` | `+0x298` |
+| secondary label String | `+0x304` | `+0x3b4` |
+| charge fade timer | `+0x3a8` | `+0x464` |
+| event margins | `+0x3f8/+0x3fc` | `+0x4e8/+0x4f0` |
+| camera label String | `+0x408` | `+0x51c` |
+| object size | `0x508` | `0x53c` |
 
-This first correction raises the constructor from `5.6%` to `92.7%` and the
-destructor from `36.7%` to `73.3%`. Later source-backed functions still encode
-compact member offsets until the remaining regions are migrated.
+The two corrections raise the constructor from `5.6%` to `97.6%` and the
+destructor from `36.7%` to `88.2%`. Later source-backed functions still encode
+compact image, coordinate and tail offsets until those regions are migrated.
 
 ## Boundary And Migration Order
 
@@ -109,7 +111,7 @@ identity, not physical offsets.
 The safe runtime migration is deliberately split into four steps:
 
 1. **Complete:** move the prefix, `menuButtons` and 20-String constructor array.
-2. Move event queue and progress state through `+0x294`.
+2. **Complete:** move event queue, touch and progress state through `+0x294`.
 3. Replace compact image storage with the native `+0x298..+0x3b3` slots and
    preserve the 16-bit coordinate holes.
 4. Move timers/camera tail, then lock the real 32-bit `Hud` with
@@ -125,7 +127,9 @@ out-of-bounds runtime bug and is explicitly rejected.
   assertion.
 - ARM corpus: `201` translation units compile; the same `3` unrelated units
   fail on the known `SolarSystem *` versus integer system-index mismatch.
-- After the first runtime-prefix migration, constructor similarity is `92.7%`
-  (`82/82` original/local instructions), destructor `73.3%` (`80/81`),
-  `Hud::init` `9.8%` (`1077/1120`) and `Hud::hudEvent` `9.7%` (`1088/885`).
-  None are linked- or raw-byte-equal. See `HUD_RUNTIME_PREFIX_2026-08-16.md`.
+- After the event/progress migration, constructor similarity is `97.6%`
+  (`82/82` original/local instructions), destructor `88.2%` (`80/81`),
+  `Hud::init` `10.3%` (`1077/1125`) and `Hud::hudEvent` `9.7%` (`1088/885`).
+  Constructor/destructor are not byte-equal. Four small field accessors are
+  now linked- and raw-byte-exact. See `HUD_RUNTIME_PREFIX_2026-08-16.md` and
+  `HUD_RUNTIME_EVENT_PROGRESS_2026-08-17.md`.
