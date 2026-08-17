@@ -31,9 +31,12 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
   pause-button location directly.
 - The iPad branch creates the extra `0x4c6`/`0x6aa` images and routes control
   placement through `Globals::setCoordsSteer` / `setCoordsFire`, using the
-  persisted `GameSettings::{steerAnchorX,fireAnchorX}` values. The fallback
-  anchor table (830/583/415 and 730/513/365) is independently corroborated
-  by the recovered `MenuTouchWindow` settings body.
+  persisted `GameSettings::{steerAnchorX,fireAnchorX}` values. The constructor
+  initializes these anchors to 830/583/415 and 730/513/365 according to the
+  quality level; the coordinate setters write their adjusted values back.
+  The same anchor table is independently corroborated by the recovered
+  `MenuTouchWindow` settings body. The later draw-prelude audit is recorded in
+  `HUD_DRAW_PRELUDE_IPAD_QUEUE_2026-08-17.md`.
 - `Hud::initHudMenu` (`0x1615c8`) now owns the source-backed quick-menu
   construction for modes 0--3: equipment, wingman/cloak/jump actions,
   secondary weapons, utility actions, orbit/docking actions, phone compaction,

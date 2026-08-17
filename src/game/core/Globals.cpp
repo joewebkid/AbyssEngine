@@ -64,8 +64,8 @@ struct GameSettingsRecord {
     uint8_t  flagAt4e;        // 0x4e
     uint8_t  _pad4f;          // 0x4f
     int32_t  intAt50;         // 0x50
-    int32_t  resWidth;        // 0x54
-    int32_t  resHeight;       // 0x58
+    int32_t  steerAnchorX;    // 0x54
+    int32_t  fireAnchorX;     // 0x58
     uint8_t  _pad5c[4];       // 0x5c
     int16_t  shortAt60;       // 0x60
 };
@@ -99,14 +99,6 @@ struct AgentBusyObject {
 struct LineMetrics {
     int32_t  field0;          // 0x00
     int32_t  lineHeight;      // 0x04
-};
-
-// Coordinate helper object used by setCoordsSteer/setCoordsFire; the steer
-// path writes its computed value at +0x54, the fire path at +0x58.
-struct CoordsObject {
-    uint8_t  _pad[0x54];      // 0x00
-    int32_t  steerValue;      // 0x54
-    int32_t  fireValue;       // 0x58
 };
 
 // Object reached through the `secondary` handle in Globals::Globals(): two
@@ -157,8 +149,8 @@ static_assert(offsetof(GameSettingsRecord, intAt48) == 0x48, "intAt48");
 static_assert(offsetof(GameSettingsRecord, shortAt4c) == 0x4c, "shortAt4c");
 static_assert(offsetof(GameSettingsRecord, flagAt4e) == 0x4e, "flagAt4e");
 static_assert(offsetof(GameSettingsRecord, intAt50) == 0x50, "intAt50");
-static_assert(offsetof(GameSettingsRecord, resWidth) == 0x54, "resWidth");
-static_assert(offsetof(GameSettingsRecord, resHeight) == 0x58, "resHeight");
+static_assert(offsetof(GameSettingsRecord, steerAnchorX) == 0x54, "steerAnchorX");
+static_assert(offsetof(GameSettingsRecord, fireAnchorX) == 0x58, "fireAnchorX");
 static_assert(offsetof(GameSettingsRecord, shortAt60) == 0x60, "shortAt60");
 
 static_assert(offsetof(InitZeroObject, tailAt2b) == 0x2b, "tailAt2b");
@@ -168,8 +160,6 @@ static_assert(offsetof(InitZeroObject, tailAt37) == 0x37, "tailAt37");
 
 static_assert(offsetof(AgentBusyObject, guardCounter) == 0xd0, "guardCounter");
 static_assert(offsetof(LineMetrics, lineHeight) == 0x04, "lineHeight");
-static_assert(offsetof(CoordsObject, steerValue) == 0x54, "steerValue");
-static_assert(offsetof(CoordsObject, fireValue) == 0x58, "fireValue");
 static_assert(offsetof(CtorSecondaryObject, slot1) == 0x04, "slot1");
 static_assert(offsetof(CtorSecondaryObject, flagAt13) == 0x13, "flagAt13");
 #endif
@@ -744,6 +734,7 @@ void Globals::setCoordsSteer(int p1, int p2, int p3, int p4,
         o14 = globals_u16((float) o6 - (large ? 180.0f : 90.0f));
         o7 = 20;
     }
+    reinterpret_cast<GameSettingsRecord *>(Globals::options)->steerAnchorX = o6;
 
     o8 = globals_u16((float) o6 + (Globals::iPadHD ? 92.8125f : (Globals::iPadLarge ? 132.0f : 66.0f)));
     o9 = (unsigned short) (o7 + (short) ((unsigned) p2 >> 1));
@@ -1535,15 +1526,15 @@ Globals::Globals() {
     Globals::lastCampaignMissionFailed = -1;
 
     float fv = settings->qualityLevel;
-    int v54 = 0x247;
-    if (1.0f <= fv) v54 = 0x33e;
-    if (fv <= 0.0f) v54 = 0x19f;
-    settings->resWidth = v54;
+    int steerAnchor = 0x247;
+    if (1.0f <= fv) steerAnchor = 0x33e;
+    if (fv <= 0.0f) steerAnchor = 0x19f;
+    settings->steerAnchorX = steerAnchor;
 
-    int v58 = 0x201;
-    if (1.0f <= fv) v58 = 0x2da;
-    if (fv <= 0.0f) v58 = 0x16d;
-    settings->resHeight = v58;
+    int fireAnchor = 0x201;
+    if (1.0f <= fv) fireAnchor = 0x2da;
+    if (fv <= 0.0f) fireAnchor = 0x16d;
+    settings->fireAnchorX = fireAnchor;
 
     Globals::instantActionScore = 0;
     Globals::instantActionWave = 0;
@@ -1713,6 +1704,8 @@ void Globals::setCoordsFire(int p1, int p2, unsigned p3, unsigned p4,
         fireCenter = Globals::iPadHD ? 210.0f : (Globals::iPadLarge ? 300.0f : 150.0f);
         xAdjust = Globals::iPadHD ? 56.25f : (Globals::iPadLarge ? 80.0f : 40.0f);
     }
+    reinterpret_cast<GameSettingsRecord *>(Globals::options)->fireAnchorX =
+        static_cast<int>(fireCenter);
 
     float xBase = (float) ((int) Globals::w - (int) p2);
     o6 = globals_u16(xBase + xAdjust);

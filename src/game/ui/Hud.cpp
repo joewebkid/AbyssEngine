@@ -214,8 +214,8 @@ static void hud_apply_ipad_control_coords(Hud *self, PaintCanvas *canvas) {
     if (globals == nullptr) return;
 
     GameSettings *settings = reinterpret_cast<GameSettings *>(Globals::options);
-    const int steerAnchor = settings->steerAnchorX != 0 ? settings->steerAnchorX : hud_default_steer_anchor();
-    const int fireAnchor = settings->fireAnchorX != 0 ? settings->fireAnchorX : hud_default_fire_anchor();
+    const int steerAnchor = settings->steerAnchorX;
+    const int fireAnchor = settings->fireAnchorX;
 
     globals->setCoordsSteer(steerAnchor,
                             canvas->GetImage2DWidth(static_cast<unsigned>(self->steeringBaseImage)),
@@ -236,8 +236,8 @@ static void hud_apply_ipad_control_coords(Hud *self, PaintCanvas *canvas) {
 
     self->field_0x41e = self->field_0x424;
     self->field_0x420 = self->field_0x426;
-    self->iPadSteerAnchor = steerAnchor;
-    self->iPadFireAnchor = fireAnchor;
+    self->iPadSteerAnchor = settings->steerAnchorX;
+    self->iPadFireAnchor = settings->fireAnchorX;
 }
 
 static void hud_init_coordinates(Hud *self) {
@@ -531,6 +531,20 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         canvas->SetColor(static_cast<unsigned>(0xffffffffu));
     };
 
+    if (!isMining && this->eventQueueDirty != 0 && this->hackingGameActive == 0) {
+        updateQueue(elapsed);
+        drawEventQueue();
+    }
+
+    if (Globals::iPad != 0) {
+        GameSettings *settings = reinterpret_cast<GameSettings *>(Globals::options);
+        if (this->iPadSteerAnchor != settings->steerAnchorX ||
+            this->iPadFireAnchor != settings->fireAnchorX)
+            hud_apply_ipad_control_coords(this, canvas);
+    }
+
+    const unsigned int initialColor = canvas->GetColor();
+
     if (this->shieldHitFlash != 0) {
         this->hitFlashTimer += elapsed;
         if (this->hitFlashTimer > 500) {
@@ -643,6 +657,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         if (secondaryPressed && this->secondaryFlashRemaining > 0)
             this->secondaryFlashPulse = 80;
         drawSteering();
+        canvas->SetColor(initialColor);
         return;
     }
 
@@ -975,7 +990,6 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         }
     }
 
-    const unsigned int progressBaseColor = canvas->GetColor();
     const int progressCenterX = Globals::w >> 1;
     int progressStackOffset = 0;
     GameText *progressText = hud_game_text();
@@ -1085,19 +1099,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                                hud_layout_i32(0x2c) + static_cast<int>(this->field_0x3e2), false);
         }
     }
-    canvas->SetColor(progressBaseColor);
-
-    drawOrbitInformation();
-
-    drawEventQueue();
-
-    if (this->quickMenuOpen != 0)
-        drawMenu(0);
-
-    if (Status::gStatus != nullptr && Status::gStatus->inSupernovaSystem() != 0)
-        drawChallengeModeScore(0);
-
-    drawPauseButton();
+    canvas->SetColor(initialColor);
 
 }
 

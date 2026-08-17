@@ -1,6 +1,7 @@
 #ifndef GOF2_GAME_GAMESETTINGS_H
 #define GOF2_GAME_GAMESETTINGS_H
 
+#include <cstddef>
 #include <cstdint>
 
 struct GameSettings {
@@ -24,5 +25,8 @@ struct GameSettings {
     int steerAnchorX;
     int fireAnchorX;
 };
+
+static_assert(offsetof(GameSettings, steerAnchorX) == 0x54, "GameSettings::steerAnchorX offset");
+static_assert(offsetof(GameSettings, fireAnchorX) == 0x58, "GameSettings::fireAnchorX offset");
 
 #endif
