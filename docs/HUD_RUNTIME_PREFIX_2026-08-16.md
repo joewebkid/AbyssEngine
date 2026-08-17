@@ -32,8 +32,9 @@ array ownership and loop shape. The one known consumer of the final String now
 uses `strings_01c_100[19]`.
 
 Resources `0x4c6` and `0x6aa` are now created directly into the native prefix
-fields. Their former copies in `HudInitImageSlots` were removed. The compact
-helper continues to hold only later, not-yet-migrated image slots.
+fields. Their former copies in `HudInitImageSlots` were removed. The later
+image-span migration has since removed that compact helper entirely; see
+`HUD_RUNTIME_IMAGE_SPAN_2026-08-17.md`.
 
 ## ARM Result
 
@@ -59,8 +60,9 @@ String offsets:
 
 These offsets are not being imitated with constructor-only scratch storage.
 They require the real event, image, coordinate and timer regions to be migrated
-in ownership order. The event/progress part of that migration is now complete;
-see `HUD_RUNTIME_EVENT_PROGRESS_2026-08-17.md`.
+in ownership order. The event/progress region, image span and secondary-label
+String are now complete; see `HUD_RUNTIME_EVENT_PROGRESS_2026-08-17.md` and
+`HUD_RUNTIME_IMAGE_SPAN_2026-08-17.md`.
 
 ## Validation
 

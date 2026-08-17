@@ -68,6 +68,11 @@ offset differences are the secondary-weapon label String, currently `+0x304`
 instead of `+0x3b4`, and camera-mode label String, currently `+0x408` instead
 of `+0x51c`.
 
+Follow-up: the image-span migration in
+`HUD_RUNTIME_IMAGE_SPAN_2026-08-17.md` moved the secondary label to its exact
+`+0x3b4` slot. The camera-mode String is now the constructor's only remaining
+offset mismatch.
+
 ## Validation
 
 - UCRT64 native build links `libgof2.a` successfully.

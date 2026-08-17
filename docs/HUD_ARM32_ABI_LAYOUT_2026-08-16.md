@@ -79,10 +79,10 @@ fuel/progress/transfer group at `+0x370..+0x38c`.
 
 ## Runtime Migration Progress
 
-The first two live-runtime migrations are complete. The prefix, 20-String
-array, event Strings, queue, touch and progress state now occupy their Android
-offsets through the image-span boundary at `+0x298`. Later regions remain
-compact:
+The first three live-runtime migrations are complete. The prefix, 20-String
+array, event Strings, queue, touch/progress state, all 71 Image2D handles and
+the secondary-label String now occupy their Android offsets through `+0x3bf`.
+The coordinate and timer/camera regions remain compact:
 
 | Field | Current ARM class | Android object |
 | --- | ---: | ---: |
@@ -91,31 +91,36 @@ compact:
 | main event String | `+0x1e0` | `+0x1e0` |
 | `eventQueue` | `+0x264` | `+0x264` |
 | image-span start | `+0x298` | `+0x298` |
-| secondary label String | `+0x304` | `+0x3b4` |
-| charge fade timer | `+0x3a8` | `+0x464` |
-| event margins | `+0x3f8/+0x3fc` | `+0x4e8/+0x4f0` |
-| camera label String | `+0x408` | `+0x51c` |
-| object size | `0x508` | `0x53c` |
+| image-span end | `+0x3b0` | `+0x3b0` |
+| secondary label String | `+0x3b4` | `+0x3b4` |
+| charge fade timer | `+0x458` | `+0x464` |
+| event margins | `+0x4a8/+0x4ac` | `+0x4e8/+0x4f0` |
+| camera label String | `+0x4b8` | `+0x51c` |
+| object size | `0x50c` | `0x53c` |
 
-The two corrections raise the constructor from `5.6%` to `97.6%` and the
-destructor from `36.7%` to `88.2%`. Later source-backed functions still encode
-compact image, coordinate and tail offsets until those regions are migrated.
+The three migrations raise the constructor from `5.6%` to `98.8%` and the
+destructor from `36.7%` to `90.7%`. The constructor now differs at only the
+camera-mode String offset. Later source-backed functions still encode compact
+coordinate and tail offsets until those regions are migrated. See
+`HUD_RUNTIME_IMAGE_SPAN_2026-08-17.md` for the resource map and focused ARM
+results.
 
 ## Boundary And Migration Order
 
 `HudArm32Layout` is an evidence contract, not a second runtime `Hud` and not a
-claim that the current class is ABI-correct. `HudInitImageSlots` is also now
-documented accurately as compact host storage whose names preserve source-slot
-identity, not physical offsets.
+claim that the current class is ABI-correct. The former compact
+`HudInitImageSlots` storage has now been removed. A smaller temporary helper
+holds only the eight camera images until their native tail is migrated.
 
 The safe runtime migration is deliberately split into four steps:
 
 1. **Complete:** move the prefix, `menuButtons` and 20-String constructor array.
 2. **Complete:** move event queue, touch and progress state through `+0x294`.
-3. Replace compact image storage with the native `+0x298..+0x3b3` slots and
-   preserve the 16-bit coordinate holes.
-4. Move timers/camera tail, then lock the real 32-bit `Hud` with
-   `sizeof(Hud) == 0x53c` and member `offsetof` assertions.
+3. **Complete:** replace compact image storage with the native
+   `+0x298..+0x3b3` slots and move the secondary-label String to `+0x3b4`.
+4. Restore the packed 16-bit coordinate holes, move the timers/camera tail,
+   then lock the real 32-bit `Hud` with `sizeof(Hud) == 0x53c` and member
+   `offsetof` assertions.
 
 Doing this in stages keeps native ownership and destructor behavior testable;
 casting the current compact object to the larger evidence layout would be an
@@ -127,9 +132,11 @@ out-of-bounds runtime bug and is explicitly rejected.
   assertion.
 - ARM corpus: `201` translation units compile; the same `3` unrelated units
   fail on the known `SolarSystem *` versus integer system-index mismatch.
-- After the event/progress migration, constructor similarity is `97.6%`
-  (`82/82` original/local instructions), destructor `88.2%` (`80/81`),
-  `Hud::init` `10.3%` (`1077/1125`) and `Hud::hudEvent` `9.7%` (`1088/885`).
+- After the image-span migration, constructor similarity is `98.8%`
+  (`82/82` original/local instructions), destructor `90.7%` (`80/81`),
+  `Hud::init` `9.8%` (`1077/1118`) and `Hud::hudEvent` `9.7%` (`1088/885`).
   Constructor/destructor are not byte-equal. Four small field accessors are
-  now linked- and raw-byte-exact. See `HUD_RUNTIME_PREFIX_2026-08-16.md` and
-  `HUD_RUNTIME_EVENT_PROGRESS_2026-08-17.md`.
+  linked- and raw-byte-exact; the wider Hud report has nine linked-exact and
+  eight raw-byte-exact functions. See `HUD_RUNTIME_PREFIX_2026-08-16.md`,
+  `HUD_RUNTIME_EVENT_PROGRESS_2026-08-17.md` and
+  `HUD_RUNTIME_IMAGE_SPAN_2026-08-17.md`.

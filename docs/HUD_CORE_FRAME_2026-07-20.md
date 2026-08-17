@@ -20,8 +20,9 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
 - `Hud::draw` obtains the live `Level` from `PlayerEgo::level`.
 - `Hud::init` now replays the Android `Image2DCreate` resource map for every
   observed init-time image slot. Known local roles retain their names; the
-  remaining source fields are preserved in `HudInitImageSlots` by their
-  original 32-bit byte offsets rather than given speculative semantic names.
+  remaining source fields keep offset-based names rather than speculative
+  semantics. The later runtime migration now places all 71 handles directly
+  at `Hud+0x298..+0x3b0`; see `HUD_RUNTIME_IMAGE_SPAN_2026-08-17.md`.
 - The ARM body at `0x1604e4` directly confirms the event queue length as
   `0x14` (20 entries). The local initialization now uses that capacity.
 - The recovered layout/image coordinate formulas cover the lock, event,
@@ -60,9 +61,9 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
 
 ## Needs Confirmation
 
-- Semantic names and downstream draw consumers for most `HudInitImageSlots`
-  remain unproven. Their resource IDs and original field slots are confirmed;
-  a semantic role is not inferred from the ID alone.
+- Semantic names for several offset-named image slots remain unproven. Their
+  resource IDs and original field slots are confirmed; a semantic role is not
+  inferred from the ID alone.
 - `quickMenuHeaderImage` has no observed `Image2DCreate` assignment in this
   `Hud::init` body. Its producing `initHudMenu` paths are now recovered; cargo
   text templates, challenge-score state fields, and the majority of
@@ -70,9 +71,9 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
 - Quick-menu action-mask execution is now attributed to the unpaused branch of
   `MGame::OnTouchEnd` (`0x17a144`). The exact paused modal/StarMap/cutscene
   prefixes of that large handler remain a separate recovery package.
-- `HudInitImageSlots` and the raw coordinate members are a host-side source
-  mirror, not a claim that the 64-bit C++ class has the original ARM ABI or is
-  byte-identical.
+- The former compact image helper was removed by the later image-span
+  migration. Raw coordinate and tail members are still not a claim that the
+  64-bit C++ class has the original ARM ABI or is byte-identical.
 
 ## Status-Bar Follow-Up (2026-08-16)
 

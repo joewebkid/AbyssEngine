@@ -21,149 +21,10 @@ class ListItem;
 class PlayerEgo;
 class TouchButton;
 
-// Compact host-side storage for Hud::init Image2D fields whose gameplay role
-// has not yet been named. Member names record original Android source slots;
-// this helper does not physically preserve those offsets. HudArm32Layout is
-// the fixed-width ABI evidence model.
-struct HudInitImageSlots {
-    union {
-        int image_0x2c8;
-        int gammaBarFillImage;
-    };
-    union {
-        int image_0x2cc;
-        int gammaBarBgImage;
-    };
-    union {
-        int image_0x2d0;
-        int gammaFrameImage;
-    };
-    union {
-        int image_0x2e8;
-        int targetContextOverlayImage;
-    };
-    union {
-        int image_0x2ec;
-        int secondaryPressedImage;
-    };
-    union {
-        int image_0x2f0;
-        int secondaryIdleImage;
-    };
-    union {
-        int image_0x2fc;
-        int boostPressedImage;
-    };
-    union {
-        int image_0x300;
-        int boostIdleImage;
-    };
-    union {
-        int image_0x304;
-        int steeringKnobPressedImage;
-    };
-    union {
-        int image_0x308;
-        int steeringKnobIdleImage;
-    };
-    union {
-        int image_0x314;
-        int autoTurretEnabledImage;
-    };
-    union {
-        int image_0x318;
-        int autoTurretDisabledImage;
-    };
-    union {
-        int image_0x31c;
-        int steeringBaseImage;
-    };
-    union {
-        int image_0x320;
-        int missionTimerPanelImage;
-    };
-    union {
-        int image_0x324;
-        int cargoPanelImage;
-    };
-    union {
-        int image_0x334;
-        int passengerPanelImage;
-    };
-    union {
-        int image_0x338;
-        int productionCargoPanelImage;
-    };
-    union {
-        int image_0x33c;
-        int productionRemainingPanelImage;
-    };
-    union {
-        int image_0x340;
-        int volatileCargoOverlayImage;
-    };
-    union {
-        int image_0x344;
-        int missionStatusPanelImage;
-    };
-    union {
-        int image_0x34c;
-        int quickMenuPressedImage;
-    };
-    union {
-        int image_0x350;
-        int quickMenuIdleImage;
-    };
-    union {
-        int image_0x360;
-        int hitVerticalArmorImage;
-    };
-    union {
-        int image_0x364;
-        int hitHorizontalArmorImage;
-    };
-    union {
-        int image_0x368;
-        int hitVerticalShieldImage;
-    };
-    union {
-        int image_0x36c;
-        int hitHorizontalShieldImage;
-    };
-    int image_0x370;
-    int image_0x374;
-    union {
-        int image_0x378;
-        int progressPanelImage;
-    };
-    union {
-        int image_0x37c;
-        int chargeProgressFillImage;
-    };
-    union {
-        int image_0x380;
-        int dockTransferMissionMarkerImage;
-    };
-    union {
-        int image_0x384;
-        int dockTransferProductionMarkerImage;
-    };
-    int image_0x388;
-    union {
-        int image_0x38c;
-        int dockTransferFillImage;
-    };
-    int image_0x390;
-    int image_0x394;
-    int image_0x398;
-    int image_0x39c;
-    int image_0x3a0;
-    int image_0x3a4;
-    int image_0x3a8;
-    int image_0x3ac;
-    int image_0x3b0;
-    int cameraIdleImages[4];       // Source slots: Android Hud+0x4f4..+0x500
-    int cameraPressedImages[4];    // Source slots: Android Hud+0x504..+0x510
+struct HudCameraImageSlots {
+    // Compact runtime storage until the camera tail moves to Hud+0x4f4.
+    int cameraIdleImages[4];
+    int cameraPressedImages[4];
 };
 
 
@@ -272,21 +133,65 @@ public:
     int armorBarBgImage;
     int armorRegenFillImage;
     int armorBarFillImage;
+    int gammaBarFillImage;
+    int gammaBarBgImage;
+    int gammaFrameImage;
     int barDividerImage;
+    int image_0x2d8;
+    int image_0x2dc;
+    int mainActionPressedImage;
+    int mainActionIdleImage;
+    int targetContextOverlayImage;
+    int secondaryPressedImage;
+    int secondaryIdleImage;
     int pauseButtonPressedImage;
     int pauseButtonImage;
-    int mainActionIdleImage;
-    int mainActionPressedImage;
+    int boostPressedImage;
+    int boostIdleImage;
+    int steeringKnobPressedImage;
+    int steeringKnobIdleImage;
     int dockActionPressedImage;
     int dockActionIdleImage;
     int autoTurretEnabledImage;
     int autoTurretDisabledImage;
+    int steeringBaseImage;
+    int missionTimerPanelImage;
+    int cargoPanelImage;
+    int image_0x328;
+    int image_0x32c;
+    int image_0x330;
+    int passengerPanelImage;
+    int productionCargoPanelImage;
+    int productionRemainingPanelImage;
+    int volatileCargoOverlayImage;
+    int missionStatusPanelImage;
     int reticleImage;
-    int secondaryWeaponBannerImage;
+    int quickMenuPressedImage;
+    int quickMenuIdleImage;
     int eventBannerImage;
+    int secondaryWeaponBannerImage;
     int quickMenuHeaderImage;
+    int hitVerticalArmorImage;
+    int hitHorizontalArmorImage;
+    int hitVerticalShieldImage;
+    int hitHorizontalShieldImage;
     int fuelGaugeIconImage;
     int fuelGaugeBarImage;
+    int progressPanelImage;
+    int chargeProgressFillImage;
+    int dockTransferMissionMarkerImage;
+    int dockTransferProductionMarkerImage;
+    int progressPanelDuplicateImage;
+    int dockTransferFillImage;
+    int image_0x390;
+    int image_0x394;
+    int image_0x398;
+    int image_0x39c;
+    int image_0x3a0;
+    int image_0x3a4;
+    int image_0x3a8;
+    int image_0x3ac;
+    int image_0x3b0;
     String field_0x3b4;
     int field_0x3c4;
     int menuOriginY;
@@ -413,7 +318,7 @@ public:
     Array<unsigned int> *uintArray;
     void *digitSprite;
     int multiplierIconImage;
-    HudInitImageSlots initImageSlots;
+    HudCameraImageSlots cameraImageSlots;
 
     Hud();
 
@@ -579,6 +484,25 @@ static_assert(__builtin_offsetof(Hud, elementBits) == 0x290, "Hud::elementBits @
 static_assert(__builtin_offsetof(Hud, field_0x294) == 0x294, "Hud::field_0x294 @ +0x294");
 static_assert(__builtin_offsetof(Hud, quickMenuTopImage) == 0x298,
               "Hud image span must begin at +0x298");
+static_assert(__builtin_offsetof(Hud, gammaBarFillImage) == 0x2c8,
+              "Hud::gammaBarFillImage @ +0x2c8");
+static_assert(__builtin_offsetof(Hud, mainActionPressedImage) == 0x2e0,
+              "Hud::mainActionPressedImage @ +0x2e0");
+static_assert(__builtin_offsetof(Hud, pauseButtonPressedImage) == 0x2f4,
+              "Hud::pauseButtonPressedImage @ +0x2f4");
+static_assert(__builtin_offsetof(Hud, dockActionPressedImage) == 0x30c,
+              "Hud::dockActionPressedImage @ +0x30c");
+static_assert(__builtin_offsetof(Hud, reticleImage) == 0x348, "Hud::reticleImage @ +0x348");
+static_assert(__builtin_offsetof(Hud, eventBannerImage) == 0x354,
+              "Hud::eventBannerImage @ +0x354");
+static_assert(__builtin_offsetof(Hud, quickMenuHeaderImage) == 0x35c,
+              "Hud::quickMenuHeaderImage @ +0x35c");
+static_assert(__builtin_offsetof(Hud, fuelGaugeIconImage) == 0x370,
+              "Hud::fuelGaugeIconImage @ +0x370");
+static_assert(__builtin_offsetof(Hud, dockTransferFillImage) == 0x38c,
+              "Hud::dockTransferFillImage @ +0x38c");
+static_assert(__builtin_offsetof(Hud, image_0x3b0) == 0x3b0, "Hud final image slot @ +0x3b0");
+static_assert(__builtin_offsetof(Hud, field_0x3b4) == 0x3b4, "Hud::field_0x3b4 @ +0x3b4");
 #endif
 
 static_assert(__builtin_offsetof(HudEventDisplay, eventBannerDisplayScale) == 0x1e0,

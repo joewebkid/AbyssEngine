@@ -82,7 +82,7 @@ static String hud_cargo_label(Ship *ship) {
 static void hud_draw_volatile_cargo(Hud *self, PaintCanvas *canvas, PlayerEgo *ego) {
     if (ego->hasVolatileGoods() == 0) return;
 
-    const unsigned int image = static_cast<unsigned int>(self->initImageSlots.volatileCargoOverlayImage);
+    const unsigned int image = static_cast<unsigned int>(self->volatileCargoOverlayImage);
     const int width = canvas->GetImage2DWidth(image);
     const int height = canvas->GetImage2DHeight(image);
     float force = ego->getVolatileForce();
@@ -106,7 +106,6 @@ static void hud_load_init_images(Hud *self) {
     PaintCanvas *canvas = hud_canvas();
     if (canvas == nullptr) return;
 
-    self->initImageSlots = {};
     const HudImageInit images[] = {
         {0x4ac, &self->shieldFrameImage},
         {0x4ad, &self->shieldFrameHitImage},
@@ -117,69 +116,69 @@ static void hud_load_init_images(Hud *self) {
         {0x4a7, &self->armorBarBgImage},
         {0x4a8, &self->armorRegenFillImage},
         {0x524, &self->armorBarFillImage},
-        {0x1f59, &self->initImageSlots.gammaFrameImage},
-        {0x1f5a, &self->initImageSlots.gammaBarBgImage},
-        {0x1f5b, &self->initImageSlots.gammaBarFillImage},
+        {0x1f59, &self->gammaFrameImage},
+        {0x1f5a, &self->gammaBarBgImage},
+        {0x1f5b, &self->gammaBarFillImage},
         {0x4a9, &self->barDividerImage},
-        {0x4bb, &self->initImageSlots.image_0x34c},
-        {0x4ba, &self->initImageSlots.image_0x350},
+        {0x4bb, &self->quickMenuPressedImage},
+        {0x4ba, &self->quickMenuIdleImage},
         {0x4b5, &self->mainActionPressedImage},
         {0x4b4, &self->mainActionIdleImage},
-        {0x536, &self->initImageSlots.image_0x2e8},
-        {0x4bd, &self->initImageSlots.image_0x2ec},
-        {0x4bc, &self->initImageSlots.image_0x2f0},
+        {0x536, &self->targetContextOverlayImage},
+        {0x4bd, &self->secondaryPressedImage},
+        {0x4bc, &self->secondaryIdleImage},
         {0x4b9, &self->pauseButtonPressedImage},
         {0x4b8, &self->pauseButtonImage},
-        {0x4b3, &self->initImageSlots.image_0x2fc},
-        {0x4b2, &self->initImageSlots.image_0x300},
+        {0x4b3, &self->boostPressedImage},
+        {0x4b2, &self->boostIdleImage},
         {0x4b1, &self->dockActionPressedImage},
         {0x4b0, &self->dockActionIdleImage},
-        {0x4b7, &self->initImageSlots.image_0x304},
-        {0x4b6, &self->initImageSlots.image_0x308},
-        {0x4c1, &self->initImageSlots.image_0x31c},
-        {0x4c5, &self->initImageSlots.image_0x320},
-        {0x520, &self->initImageSlots.image_0x324},
+        {0x4b7, &self->steeringKnobPressedImage},
+        {0x4b6, &self->steeringKnobIdleImage},
+        {0x4c1, &self->steeringBaseImage},
+        {0x4c5, &self->missionTimerPanelImage},
+        {0x520, &self->cargoPanelImage},
         {0x4c3, &self->eventBannerImage},
         {0x4c2, &self->secondaryWeaponBannerImage},
         {0x4cf, &self->quickMenuTopImage},
         {0x4d1, &self->quickMenuMiddleImage},
         {0x4d0, &self->quickMenuBottomImage},
-        {0x537, &self->initImageSlots.image_0x370},
-        {0x538, &self->initImageSlots.image_0x374},
-        {0x539, &self->initImageSlots.image_0x37c},
-        {0x53a, &self->initImageSlots.image_0x378},
-        {0x53a, &self->initImageSlots.image_0x388},
-        {0x1f41, &self->initImageSlots.image_0x38c},
-        {0x525, &self->initImageSlots.image_0x360},
-        {0x526, &self->initImageSlots.image_0x364},
-        {0x52b, &self->initImageSlots.image_0x368},
-        {0x52c, &self->initImageSlots.image_0x36c},
-        {0x528, &self->initImageSlots.cameraIdleImages[0]},
-        {0x527, &self->initImageSlots.cameraPressedImages[0]},
-        {0x4e9, &self->initImageSlots.cameraIdleImages[1]},
-        {0x4ea, &self->initImageSlots.cameraPressedImages[1]},
-        {0x4be, &self->initImageSlots.cameraIdleImages[2]},
-        {0x4bf, &self->initImageSlots.cameraPressedImages[2]},
-        {0x52a, &self->initImageSlots.cameraIdleImages[3]},
-        {0x529, &self->initImageSlots.cameraPressedImages[3]},
-        {0x540, &self->initImageSlots.image_0x390},
-        {0x541, &self->initImageSlots.image_0x394},
-        {0x53f, &self->initImageSlots.image_0x398},
-        {0x542, &self->initImageSlots.image_0x39c},
-        {0x543, &self->initImageSlots.image_0x3a0},
-        {0x546, &self->initImageSlots.image_0x314},
-        {0x547, &self->initImageSlots.image_0x318},
-        {0x1f58, &self->initImageSlots.image_0x3a4},
-        {0x1f57, &self->initImageSlots.image_0x3a8},
-        {0x4b1, &self->initImageSlots.image_0x3ac},
-        {0x4b0, &self->initImageSlots.image_0x3b0},
-        {0x1f43, &self->initImageSlots.image_0x334},
-        {0x1f42, &self->initImageSlots.image_0x344},
-        {0x1f40, &self->initImageSlots.image_0x380},
-        {0x1f61, &self->initImageSlots.image_0x338},
-        {0x1f60, &self->initImageSlots.image_0x33c},
-        {0x1f5f, &self->initImageSlots.image_0x384},
-        {0x1f5c, &self->initImageSlots.image_0x340},
+        {0x537, &self->fuelGaugeIconImage},
+        {0x538, &self->fuelGaugeBarImage},
+        {0x539, &self->chargeProgressFillImage},
+        {0x53a, &self->progressPanelImage},
+        {0x53a, &self->progressPanelDuplicateImage},
+        {0x1f41, &self->dockTransferFillImage},
+        {0x525, &self->hitVerticalArmorImage},
+        {0x526, &self->hitHorizontalArmorImage},
+        {0x52b, &self->hitVerticalShieldImage},
+        {0x52c, &self->hitHorizontalShieldImage},
+        {0x528, &self->cameraImageSlots.cameraIdleImages[0]},
+        {0x527, &self->cameraImageSlots.cameraPressedImages[0]},
+        {0x4e9, &self->cameraImageSlots.cameraIdleImages[1]},
+        {0x4ea, &self->cameraImageSlots.cameraPressedImages[1]},
+        {0x4be, &self->cameraImageSlots.cameraIdleImages[2]},
+        {0x4bf, &self->cameraImageSlots.cameraPressedImages[2]},
+        {0x52a, &self->cameraImageSlots.cameraIdleImages[3]},
+        {0x529, &self->cameraImageSlots.cameraPressedImages[3]},
+        {0x540, &self->image_0x390},
+        {0x541, &self->image_0x394},
+        {0x53f, &self->image_0x398},
+        {0x542, &self->image_0x39c},
+        {0x543, &self->image_0x3a0},
+        {0x546, &self->autoTurretEnabledImage},
+        {0x547, &self->autoTurretDisabledImage},
+        {0x1f58, &self->image_0x3a4},
+        {0x1f57, &self->image_0x3a8},
+        {0x4b1, &self->image_0x3ac},
+        {0x4b0, &self->image_0x3b0},
+        {0x1f43, &self->passengerPanelImage},
+        {0x1f42, &self->missionStatusPanelImage},
+        {0x1f40, &self->dockTransferMissionMarkerImage},
+        {0x1f61, &self->productionCargoPanelImage},
+        {0x1f60, &self->productionRemainingPanelImage},
+        {0x1f5f, &self->dockTransferProductionMarkerImage},
+        {0x1f5c, &self->volatileCargoOverlayImage},
     };
     for (const HudImageInit &image : images)
         hud_create_image(canvas, image.resourceId, *image.slot);
@@ -192,10 +191,6 @@ static void hud_load_init_images(Hud *self) {
         hud_create_image(canvas, 0x4c6, self->reticleImage);
     }
 
-    self->autoTurretEnabledImage = self->initImageSlots.autoTurretEnabledImage;
-    self->autoTurretDisabledImage = self->initImageSlots.autoTurretDisabledImage;
-    self->fuelGaugeIconImage = self->initImageSlots.image_0x370;
-    self->fuelGaugeBarImage = self->initImageSlots.image_0x374;
 }
 
 static int hud_default_steer_anchor() {
@@ -223,9 +218,9 @@ static void hud_apply_ipad_control_coords(Hud *self, PaintCanvas *canvas) {
     const int fireAnchor = settings->fireAnchorX != 0 ? settings->fireAnchorX : hud_default_fire_anchor();
 
     globals->setCoordsSteer(steerAnchor,
-                            canvas->GetImage2DWidth(static_cast<unsigned>(self->initImageSlots.image_0x31c)),
+                            canvas->GetImage2DWidth(static_cast<unsigned>(self->steeringBaseImage)),
                             canvas->GetImage2DWidth(static_cast<unsigned>(self->dockActionIdleImage)),
-                            canvas->GetImage2DWidth(static_cast<unsigned>(self->initImageSlots.image_0x300)),
+                            canvas->GetImage2DWidth(static_cast<unsigned>(self->boostIdleImage)),
                             self->field_0x3f8, self->field_0x3fa, self->field_0x42c, self->field_0x42e,
                             self->field_0x424, self->field_0x426, self->field_0x410, self->field_0x412,
                             self->field_0x404, self->field_0x406);
@@ -257,7 +252,7 @@ static void hud_init_coordinates(Hud *self) {
     self->field_0x434 = static_cast<unsigned short>(screenW - hud_layout_i32(0x14c));
     self->field_0x436 = static_cast<unsigned short>(screenH - hud_layout_i32(0x12c) -
                                                      canvas->GetTextHeight(hud_font()) - hud_layout_i32(0x150));
-    self->field_0x3f0 = static_cast<unsigned short>(width(self->initImageSlots.image_0x2ec));
+    self->field_0x3f0 = static_cast<unsigned short>(width(self->secondaryPressedImage));
     self->field_0x3e4 = static_cast<unsigned short>(screenW - hud_layout_i32(0x154) - width(self->mainActionIdleImage));
     self->field_0x3e6 = static_cast<unsigned short>(screenH - hud_layout_i32(0x158) - width(self->mainActionIdleImage));
     self->field_0x3ec = static_cast<unsigned short>(screenW - hud_layout_i32(0x15c) - self->field_0x3f0);
@@ -266,15 +261,15 @@ static void hud_init_coordinates(Hud *self) {
     self->field_0x3e0 = static_cast<unsigned short>((screenW - width(self->eventBannerImage)) / 2);
     self->field_0x3e2 = static_cast<unsigned short>(hud_layout_i32(0x168));
 
-    self->field_0x3f6 = static_cast<unsigned short>(width(self->initImageSlots.cameraIdleImages[0]));
+    self->field_0x3f6 = static_cast<unsigned short>(width(self->cameraImageSlots.cameraIdleImages[0]));
     self->field_0x3f2 = static_cast<unsigned short>(screenW - self->field_0x3f6 - hud_layout_i32(0x16c));
     self->field_0x3f4 = static_cast<unsigned short>(screenH - hud_layout_i32(0x170) -
-                                                     height(self->initImageSlots.cameraIdleImages[0]));
-    self->field_0x41a = static_cast<unsigned short>(width(self->initImageSlots.image_0x34c));
+                                                     height(self->cameraImageSlots.cameraIdleImages[0]));
+    self->field_0x41a = static_cast<unsigned short>(width(self->quickMenuPressedImage));
     self->field_0x41c = static_cast<unsigned short>(hud_layout_i32(0x174));
     self->field_0x416 = static_cast<unsigned short>(screenW - hud_layout_i32(0x178) - self->field_0x41a);
     self->field_0x418 = static_cast<unsigned short>(screenH - hud_layout_i32(0x17c) -
-                                                     height(self->initImageSlots.image_0x34c));
+                                                     height(self->quickMenuPressedImage));
 
     self->field_0x3fc = static_cast<unsigned short>(width(self->dockActionIdleImage));
     self->field_0x3f8 = static_cast<unsigned short>(hud_layout_i32(0x180));
@@ -286,12 +281,12 @@ static void hud_init_coordinates(Hud *self) {
     self->field_0x40e = static_cast<unsigned short>(width(self->pauseButtonPressedImage));
     self->field_0x40a = static_cast<unsigned short>(screenW - self->field_0x40e - hud_layout_i32(0x194));
     self->field_0x40c = static_cast<unsigned short>(hud_layout_i32(0x198));
-    self->field_0x438 = static_cast<unsigned short>(screenW - width(self->initImageSlots.image_0x320) -
+    self->field_0x438 = static_cast<unsigned short>(screenW - width(self->missionTimerPanelImage) -
                                                      hud_layout_i32(0x19c));
     self->field_0x43a = static_cast<unsigned short>(hud_layout_i32(0x1a0));
 
-    self->field_0x430 = static_cast<unsigned short>(width(self->initImageSlots.image_0x31c));
-    const int hackingHalfWidth = width(self->initImageSlots.image_0x3a4) / 2;
+    self->field_0x430 = static_cast<unsigned short>(width(self->steeringBaseImage));
+    const int hackingHalfWidth = width(self->image_0x3a4) / 2;
     self->field_0x45c = static_cast<unsigned short>(hackingHalfWidth * 2);
     self->field_0x454 = static_cast<unsigned short>(screenW / 2 - hackingHalfWidth - hud_layout_i32(0x31c));
     self->field_0x458 = static_cast<unsigned short>(screenW / 2 - hackingHalfWidth + hud_layout_i32(0x31c));
@@ -302,16 +297,16 @@ static void hud_init_coordinates(Hud *self) {
 
     self->field_0x42c = static_cast<unsigned short>(hud_layout_i32(0x1a4));
     self->field_0x42e = static_cast<unsigned short>(screenH - hud_layout_i32(0x1a8) -
-                                                     height(self->initImageSlots.image_0x31c));
-    self->field_0x422 = static_cast<unsigned short>(width(self->initImageSlots.image_0x304));
+                                                     height(self->steeringBaseImage));
+    self->field_0x422 = static_cast<unsigned short>(width(self->steeringKnobPressedImage));
     self->field_0x424 = static_cast<unsigned short>(self->field_0x42c + self->field_0x430 / 2);
     self->field_0x41e = self->field_0x424;
     self->field_0x426 = static_cast<unsigned short>(self->field_0x42e + self->field_0x430 / 2);
     self->field_0x420 = self->field_0x426;
-    self->field_0x414 = static_cast<unsigned short>(width(self->initImageSlots.image_0x2fc));
+    self->field_0x414 = static_cast<unsigned short>(width(self->boostPressedImage));
     self->field_0x410 = static_cast<unsigned short>(hud_layout_i32(0x1ac));
     self->field_0x412 = static_cast<unsigned short>(screenH - hud_layout_i32(0x1b0) - self->field_0x414);
-    self->field_0x408 = static_cast<unsigned short>(width(self->initImageSlots.image_0x394));
+    self->field_0x408 = static_cast<unsigned short>(width(self->image_0x394));
     self->field_0x404 = static_cast<unsigned short>(hud_layout_i32(0x188));
     self->field_0x406 = static_cast<unsigned short>(screenH - hud_layout_i32(0x18c) - self->field_0x408);
     self->field_0x450 = hud_layout_i32(0x190);
@@ -522,15 +517,15 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         else
             canvas->SetColor(static_cast<unsigned>(0xffffffffu));
 
-        canvas->DrawImage2D(static_cast<unsigned>(this->initImageSlots.steeringBaseImage),
+        canvas->DrawImage2D(static_cast<unsigned>(this->steeringBaseImage),
                             this->field_0x42c, this->field_0x42e);
         if (Globals::touchSteeringEnabled != 0 && (this->touchFlags & 0x20u) != 0) {
-            canvas->DrawImage2D(static_cast<unsigned>(this->initImageSlots.steeringKnobPressedImage),
+            canvas->DrawImage2D(static_cast<unsigned>(this->steeringKnobPressedImage),
                                 this->field_0x41e, this->field_0x420, 0x11, 0x44);
         } else {
             this->field_0x41e = this->field_0x424;
             this->field_0x420 = this->field_0x426;
-            canvas->DrawImage2D(static_cast<unsigned>(this->initImageSlots.steeringKnobIdleImage),
+            canvas->DrawImage2D(static_cast<unsigned>(this->steeringKnobIdleImage),
                                 this->field_0x424, this->field_0x426, 0x11, 0x44);
         }
         canvas->SetColor(static_cast<unsigned>(0xffffffffu));
@@ -591,16 +586,16 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                                         static_cast<int>(this->field_0x442);
                 const int gammaFillY = 2 * static_cast<int>(this->field_0x448) -
                                        static_cast<int>(this->field_0x44a);
-                canvas->DrawImage2D((unsigned) this->initImageSlots.gammaFrameImage,
+                canvas->DrawImage2D((unsigned) this->gammaFrameImage,
                                     this->field_0x43c, gammaFrameY);
                 canvas->DrawImage2D((unsigned) this->barDividerImage, this->field_0x43e,
                                     gammaFrameY + dividerYOffset);
-                canvas->DrawImage2D((unsigned) this->initImageSlots.gammaBarBgImage,
+                canvas->DrawImage2D((unsigned) this->gammaBarBgImage,
                                     this->field_0x440, gammaFillY);
                 const int gammaWidth = static_cast<int>(
                     (static_cast<float>(player->getGammaHP()) / 100.0f) *
                     static_cast<float>(this->field_0x446));
-                canvas->DrawRegion2D((unsigned) this->initImageSlots.gammaBarFillImage,
+                canvas->DrawRegion2D((unsigned) this->gammaBarFillImage,
                                      0, 0, gammaWidth, this->field_0x44c,
                                      0.0f, 0, 0, this->field_0x440, gammaFillY);
             }
@@ -610,8 +605,8 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     if (ego->isInRocketControl()) {
         const bool secondaryPressed = (this->touchFlags & 8u) != 0 ||
                                       (this->secondaryFlashRemaining > 0 && this->secondaryFlashPulse <= 0);
-        const int secondaryImage = secondaryPressed ? this->initImageSlots.secondaryPressedImage
-                                                    : this->initImageSlots.secondaryIdleImage;
+        const int secondaryImage = secondaryPressed ? this->secondaryPressedImage
+                                                    : this->secondaryIdleImage;
         canvas->DrawImage2D(static_cast<unsigned>(secondaryImage), this->field_0x3ec, this->field_0x3ee);
         if (secondaryPressed && this->secondaryFlashRemaining > 0)
             this->secondaryFlashPulse = 80;
@@ -623,11 +618,11 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     // path. Android Hud::draw turns each asserted side into a 300 ms pulse.
     {
         const int horizontalImage = ego->getShieldDamageRate() >= 1
-                                        ? this->initImageSlots.hitHorizontalShieldImage
-                                        : this->initImageSlots.hitHorizontalArmorImage;
+                                        ? this->hitHorizontalShieldImage
+                                        : this->hitHorizontalArmorImage;
         const int verticalImage = ego->getShieldDamageRate() >= 1
-                                      ? this->initImageSlots.hitVerticalShieldImage
-                                      : this->initImageSlots.hitVerticalArmorImage;
+                                      ? this->hitVerticalShieldImage
+                                      : this->hitVerticalArmorImage;
         const unsigned int flags = ego->hudHitDirectionFlags;
         if ((flags & 0x01u) != 0) this->hitDirectionLeftTimer = 300;
         if ((flags & 0x02u) != 0) this->hitDirectionRightTimer = 300;
@@ -698,7 +693,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                 String label(level->killCountB);
                 label += String(" : ");
                 label += level->killCountA;
-                canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.cargoPanelImage),
+                canvas->DrawImage2D(static_cast<unsigned int>(this->cargoPanelImage),
                                     panelX - hud_layout_i32(0x1ec), panelY);
                 hud_draw_volatile_cargo(this, canvas, ego);
                 canvas->DrawString(hud_font(), label, panelX + hud_layout_i32(0x1fc), panelY + 5, false);
@@ -717,8 +712,8 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                 String passengerLabel(status->missionPassengerCount);
                 passengerLabel += String(" / ");
                 passengerLabel += ship->getMaxPassengers();
-                const int firstImage = usePassengerPanel ? this->initImageSlots.passengerPanelImage
-                                                         : this->initImageSlots.cargoPanelImage;
+                const int firstImage = usePassengerPanel ? this->passengerPanelImage
+                                                         : this->cargoPanelImage;
                 const int firstX = panelX - hud_layout_i32(usePassengerPanel ? 0x1f0 : 0x1ec);
                 canvas->DrawImage2D(static_cast<unsigned int>(firstImage), firstX, panelY);
                 hud_draw_volatile_cargo(this, canvas, ego);
@@ -735,8 +730,8 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
 
                 String statusLabel(mission->getStatusValue());
                 const int passengerHeight = canvas->GetImage2DHeight(
-                    static_cast<unsigned int>(this->initImageSlots.passengerPanelImage));
-                canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.missionStatusPanelImage),
+                    static_cast<unsigned int>(this->passengerPanelImage));
+                canvas->DrawImage2D(static_cast<unsigned int>(this->missionStatusPanelImage),
                                     panelX - hud_layout_i32(0x1f0),
                                     panelY + passengerHeight + hud_layout_i32(0x1f4));
                 canvas->DrawString(hud_font(), statusLabel, panelX + hud_layout_i32(0x200),
@@ -749,15 +744,15 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                 String cargoLabel(amount);
                 cargoLabel += String(" / ");
                 cargoLabel += amount + ship->getFreeSpace();
-                canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.productionCargoPanelImage),
+                canvas->DrawImage2D(static_cast<unsigned int>(this->productionCargoPanelImage),
                                     panelX - hud_layout_i32(0x1f0), panelY);
                 hud_draw_volatile_cargo(this, canvas, ego);
                 canvas->DrawString(hud_font(), cargoLabel, panelX + hud_layout_i32(0x200), panelY + 4, false);
 
                 String remainingLabel(mission->getProductionGoodAmount() - mission->getStatusValue());
                 const int passengerHeight = canvas->GetImage2DHeight(
-                    static_cast<unsigned int>(this->initImageSlots.passengerPanelImage));
-                canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.productionRemainingPanelImage),
+                    static_cast<unsigned int>(this->passengerPanelImage));
+                canvas->DrawImage2D(static_cast<unsigned int>(this->productionRemainingPanelImage),
                                     panelX - hud_layout_i32(0x1f0),
                                     panelY + passengerHeight + hud_layout_i32(0x1f4));
                 canvas->DrawString(hud_font(), remainingLabel, panelX + hud_layout_i32(0x200),
@@ -767,7 +762,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
             } else {
                 const String cargoLabel = hud_cargo_label(ship);
                 const int shift = ship->getCurrentLoad() >= 101 ? -2 * hud_layout_i32(0x2c) : 0;
-                canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.cargoPanelImage),
+                canvas->DrawImage2D(static_cast<unsigned int>(this->cargoPanelImage),
                                     panelX - hud_layout_i32(0x1ec), panelY);
                 hud_draw_volatile_cargo(this, canvas, ego);
                 canvas->DrawString(hud_font(), cargoLabel,
@@ -778,7 +773,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
             Globals *globals = Globals::gGlobals != nullptr ? Globals::gGlobals
                                                             : static_cast<Globals *>(Globals::globals);
             if (globals != nullptr) globals->longToTimeString(t1, timerLabel);
-            canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.missionTimerPanelImage),
+            canvas->DrawImage2D(static_cast<unsigned int>(this->missionTimerPanelImage),
                                 panelX, panelY);
             canvas->DrawString(hud_font(), timerLabel, panelX + hud_layout_i32(0x204), panelY + 5, false);
         }
@@ -811,8 +806,8 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     canvas->SetColor(static_cast<unsigned>(0xffffffffu));
     const unsigned int cameraIconMode = nextCameraMode < 4 ? nextCameraMode : 0;
     const int cameraImage = (this->touchFlags & 0x80u) != 0
-                                ? this->initImageSlots.cameraPressedImages[cameraIconMode]
-                                : this->initImageSlots.cameraIdleImages[cameraIconMode];
+                                ? this->cameraImageSlots.cameraPressedImages[cameraIconMode]
+                                : this->cameraImageSlots.cameraIdleImages[cameraIconMode];
     canvas->DrawImage2D(static_cast<unsigned>(cameraImage), this->field_0x3f2, this->field_0x3f4);
 
     if (this->previousCameraMode == -1) {
@@ -873,8 +868,8 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     if (this->quickMenuEmpty == 0) {
         const bool pressed = (this->touchFlags & 4u) != 0 ||
                              (this->quickMenuFlashRemaining > 0 && this->quickMenuFlashPulse <= 0);
-        const int image = pressed ? this->initImageSlots.quickMenuPressedImage
-                                  : this->initImageSlots.quickMenuIdleImage;
+        const int image = pressed ? this->quickMenuPressedImage
+                                  : this->quickMenuIdleImage;
         canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x416, this->field_0x418);
         if (pressed && this->quickMenuFlashRemaining > 0) this->quickMenuFlashPulse = 80;
     }
@@ -883,8 +878,8 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         this->currentSecondaryWeapon->getAmount() > 0) {
         const bool pressed = (this->touchFlags & 8u) != 0 ||
                              (this->secondaryFlashRemaining > 0 && this->secondaryFlashPulse <= 0);
-        const int image = pressed ? this->initImageSlots.secondaryPressedImage
-                                  : this->initImageSlots.secondaryIdleImage;
+        const int image = pressed ? this->secondaryPressedImage
+                                  : this->secondaryIdleImage;
         canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x3ec, this->field_0x3ee);
         if (pressed && this->secondaryFlashRemaining > 0) this->secondaryFlashPulse = 80;
 
@@ -917,8 +912,8 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         }
         const bool pressed = (this->touchFlags & 2u) != 0 ||
                              (this->boostFlashRemaining > 0 && this->boostFlashPulse <= 0);
-        const int image = pressed ? this->initImageSlots.boostPressedImage
-                                  : this->initImageSlots.boostIdleImage;
+        const int image = pressed ? this->boostPressedImage
+                                  : this->boostIdleImage;
         canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x410, this->field_0x412);
         if (pressed && this->boostFlashRemaining > 0) this->boostFlashPulse = 80;
     }
@@ -949,10 +944,10 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
             const int targetX = static_cast<int>(this->field_0x3e4) + this->field_0x3ea;
             const int targetY = static_cast<int>(this->field_0x3e6) + this->field_0x3ea;
             if (Globals::iPad != 0)
-                canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.targetContextOverlayImage),
+                canvas->DrawImage2D(static_cast<unsigned int>(this->targetContextOverlayImage),
                                     targetX, targetY, 0x11, 0x44);
             else
-                canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.targetContextOverlayImage),
+                canvas->DrawImage2D(static_cast<unsigned int>(this->targetContextOverlayImage),
                                     targetX, targetY);
         }
     }
@@ -964,7 +959,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
 
     if (this->dockTransferProgressActive != 0 && ego->isDockedToDockingPoint() &&
         ego->getHitpoints() >= 1 && progressText != nullptr) {
-        const unsigned int fillImage = static_cast<unsigned int>(this->initImageSlots.dockTransferFillImage);
+        const unsigned int fillImage = static_cast<unsigned int>(this->dockTransferFillImage);
         const int fillWidth = canvas->GetImage2DWidth(fillImage);
         const int fillHeight = canvas->GetImage2DHeight(fillImage);
         const int textHeight = canvas->GetTextHeight(hud_font());
@@ -984,7 +979,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         canvas->SetColor(static_cast<unsigned int>(static_cast<int>(fade * 255.0f) - 256));
 
         const int panelY = 2 * static_cast<int>(this->field_0x3e2);
-        canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.progressPanelImage),
+        canvas->DrawImage2D(static_cast<unsigned int>(this->progressPanelImage),
                             progressCenterX, panelY, 0x11, 0x14);
         canvas->DrawRegion2D(fillImage, 0, 0,
                              static_cast<int>(transferRate * static_cast<float>(fillWidth)), fillHeight,
@@ -999,12 +994,12 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         Mission *mission = Status::gStatus != nullptr ? Status::gStatus->getMission() : nullptr;
         if (this->dockTransferShowMissionMarkers != 0 && mission != nullptr && mission->getType() != 168) {
             canvas->DrawImage2D(
-                static_cast<unsigned int>(this->initImageSlots.dockTransferMissionMarkerImage),
+                static_cast<unsigned int>(this->dockTransferMissionMarkerImage),
                 progressCenterX + labelWidth / 2, labelY + textHeight / 2, 0x11, 0x41);
         }
         if (mission != nullptr && mission->getType() == 174) {
             canvas->DrawImage2D(
-                static_cast<unsigned int>(this->initImageSlots.dockTransferProductionMarkerImage),
+                static_cast<unsigned int>(this->dockTransferProductionMarkerImage),
                 progressCenterX + labelWidth / 2, labelY + textHeight / 2, 0x11, 0x41);
         }
 
@@ -1020,7 +1015,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
             progress = (jumpDrive ? ego->getDriveChargeRate() : ego->getCloakRate()) * 1.05f;
 
         String label = *progressText->getText(jumpDrive ? 318 : 317);
-        const unsigned int fillImage = static_cast<unsigned int>(this->initImageSlots.chargeProgressFillImage);
+        const unsigned int fillImage = static_cast<unsigned int>(this->chargeProgressFillImage);
         const int halfWidth = static_cast<int>(static_cast<float>(canvas->GetImage2DWidth(fillImage)) * 0.5f);
         const int fillHeight = canvas->GetImage2DHeight(fillImage);
         const float fade = static_cast<float>(this->chargeProgressFadeTimer + elapsed) / 1000.0f;
@@ -1029,7 +1024,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         canvas->SetColor(static_cast<unsigned int>(color));
 
         const int panelY = progressStackOffset + 2 * static_cast<int>(this->field_0x3e2);
-        canvas->DrawImage2D(static_cast<unsigned int>(this->initImageSlots.progressPanelImage),
+        canvas->DrawImage2D(static_cast<unsigned int>(this->progressPanelImage),
                             progressCenterX, panelY, 0x11, 0x14);
         canvas->DrawRegion2D(fillImage,
                              static_cast<int>(static_cast<float>(halfWidth) - progress * halfWidth), 0,
