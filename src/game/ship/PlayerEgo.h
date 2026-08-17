@@ -595,6 +595,9 @@ public:
 #if __SIZEOF_POINTER__ == 4
 static_assert(__builtin_offsetof(PlayerEgo, transform) == 0x4, "PlayerEgo::transform offset");
 static_assert(__builtin_offsetof(PlayerEgo, rocketReturnMatrixStorage) == 0x10, "PlayerEgo::rocketReturnMatrix offset");
+static_assert(__builtin_offsetof(PlayerEgo, field_0x14) == 0x14, "PlayerEgo::field_0x14 offset");
+static_assert(__builtin_offsetof(PlayerEgo, hudHitDirectionFlags) == 0x20,
+              "PlayerEgo::hudHitDirectionFlags offset");
 static_assert(__builtin_offsetof(PlayerEgo, maneuverParam) == 0x40, "PlayerEgo::maneuverParam offset");
 static_assert(__builtin_offsetof(PlayerEgo, targetFollowCamera) == 0x48, "PlayerEgo::targetFollowCamera offset");
 #endif

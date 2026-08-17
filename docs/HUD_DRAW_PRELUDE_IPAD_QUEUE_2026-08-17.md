@@ -76,7 +76,7 @@ challenge-score call was added to `MGame`.
 
 ## Remaining Work
 
-Most of the large `Hud::draw` body remains non-exact. The next contiguous
-source-backed target is the hit-direction/damage-indicator lifetime followed
-by the normal steering branch. Large mission, cargo, mining, hacking, and
-progress-text branches still require separate focused passes.
+Most of the large `Hud::draw` body remains non-exact. The hit-direction and
+normal steering follow-up is recorded in
+`HUD_HIT_DIRECTION_STEERING_ARM_2026-08-17.md`. Large mission, cargo, mining,
+hacking, and progress-text branches still require separate focused passes.

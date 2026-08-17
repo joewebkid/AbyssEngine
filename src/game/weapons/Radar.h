@@ -245,6 +245,7 @@ static_assert(offsetof(Radar, players) == 0x34, "Radar::players offset");
 static_assert(offsetof(Radar, lockedGasCloud) == 0x38, "Radar::lockedGasCloud offset");
 static_assert(offsetof(Radar, enabled) == 0x48, "Radar::enabled offset");
 static_assert(offsetof(Radar, imageWidth) == 0x4c, "Radar::imageWidth offset");
+static_assert(offsetof(Radar, imageHeight) == 0x50, "Radar::imageHeight offset");
 static_assert(offsetof(Radar, imageIds_0x5c) == 0x5c, "Radar::imageIds_0x5c offset");
 static_assert(offsetof(Radar, raceSprite) == 0xf0, "Radar::raceSprite offset");
 static_assert(offsetof(Radar, screenX) == 0xfc, "Radar::screenX offset");

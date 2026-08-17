@@ -498,19 +498,17 @@ uint8_t Hud::jumpMapSelected() {
 
 void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                unsigned int currentCameraMode, unsigned int nextCameraMode) {
-    this->letterbox = static_cast<unsigned char>(letterbox);
-
-    PaintCanvas *canvas = hud_canvas();
-    if (canvas == nullptr || ego == nullptr) return;
-
+    (void) letterbox;
     const int elapsed = static_cast<int>(t0);
     const bool isMining = ego->isMining();
-    const auto drawSteering = [this, canvas, ego]() {
+    PaintCanvas *canvas = hud_canvas();
+    const auto drawSteering = [this, canvas, ego](unsigned int finalColor) {
         const bool blocked = ego->isAutoPilot() != 0 || ego->isDockingToAsteroid() ||
-                             ego->isDockingToDockingPoint() || this->letterbox != 0 ||
+                             ego->isDockingToDockingPoint() || this->hackingGameActive != 0 ||
                              (ego->isDockedToDockingPoint() && ego->isInTurretMode() == 0);
         const bool dimmed = Globals::touchSteeringEnabled == 0 ||
-                            (blocked && (Globals::touchSteeringEnabled == 0 || ego->isInTurretMode() == 0));
+                            (blocked && (Globals::touchSteeringEnabled == 0 ||
+                                         ego->isInTurretMode() == 0));
         if (dimmed)
             canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
                              static_cast<unsigned char>(0xff), static_cast<unsigned char>(0x32));
@@ -526,9 +524,9 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
             this->field_0x41e = this->field_0x424;
             this->field_0x420 = this->field_0x426;
             canvas->DrawImage2D(static_cast<unsigned>(this->steeringKnobIdleImage),
-                                this->field_0x424, this->field_0x426, 0x11, 0x44);
+                                this->field_0x41e, this->field_0x420, 0x11, 0x44);
         }
-        canvas->SetColor(static_cast<unsigned>(0xffffffffu));
+        canvas->SetColor(finalColor);
     };
 
     if (!isMining && this->eventQueueDirty != 0 && this->hackingGameActive == 0) {
@@ -656,8 +654,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         canvas->DrawImage2D(static_cast<unsigned>(secondaryImage), this->field_0x3ec, this->field_0x3ee);
         if (secondaryPressed && this->secondaryFlashRemaining > 0)
             this->secondaryFlashPulse = 80;
-        drawSteering();
-        canvas->SetColor(initialColor);
+        drawSteering(initialColor);
         return;
     }
 
@@ -673,55 +670,51 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         const unsigned int flags = ego->hudHitDirectionFlags;
         if ((flags & 0x01u) != 0) this->hitDirectionLeftTimer = 300;
         if ((flags & 0x02u) != 0) this->hitDirectionRightTimer = 300;
-        if ((flags & 0x18u) != 0) this->hitDirectionTopTimer = 300;
         if ((flags & 0x24u) != 0) this->hitDirectionBottomTimer = 300;
+        if ((flags & 0x18u) != 0) this->hitDirectionTopTimer = 300;
 
         Radar *radar = static_cast<Radar *>(ego->field_0x14);
-        if (radar != nullptr) {
-            const int centerX = Globals::w >> 1;
-            const int centerY = Globals::h >> 1;
-            if (this->hitDirectionLeftTimer >= 1) {
-                canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
-                                 static_cast<unsigned char>(0xff),
-                                 static_cast<unsigned char>(255 * this->hitDirectionLeftTimer / 300));
-                canvas->DrawImage2D(static_cast<unsigned int>(horizontalImage),
-                                    centerX - radar->imageWidth, centerY,
-                                    canvas->GetImage2DWidth(static_cast<unsigned int>(horizontalImage)),
-                                    canvas->GetImage2DHeight(static_cast<unsigned int>(horizontalImage)),
-                                    0x11, 0x41, 1);
-                this->hitDirectionLeftTimer -= elapsed;
-            }
-            if (this->hitDirectionRightTimer >= 1) {
-                canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
-                                 static_cast<unsigned char>(0xff),
-                                 static_cast<unsigned char>(255 * this->hitDirectionRightTimer / 300));
-                canvas->DrawImage2D(static_cast<unsigned int>(horizontalImage),
-                                    centerX - radar->imageWidth, centerY, 0x12, 0x42);
-                this->hitDirectionRightTimer -= elapsed;
-            }
-            if (this->hitDirectionTopTimer >= 1) {
-                canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
-                                 static_cast<unsigned char>(0xff),
-                                 static_cast<unsigned char>(255 * this->hitDirectionTopTimer / 300));
-                canvas->DrawImage2D(static_cast<unsigned int>(verticalImage), centerX,
-                                    centerY - radar->imageHeight, 0x11, 0x14);
-                this->hitDirectionTopTimer -= elapsed;
-            }
-            if (this->hitDirectionBottomTimer >= 1) {
-                canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
-                                 static_cast<unsigned char>(0xff),
-                                 static_cast<unsigned char>(255 * this->hitDirectionBottomTimer / 300));
-                canvas->DrawImage2D(static_cast<unsigned int>(verticalImage), centerX,
-                                    centerY - radar->imageHeight,
-                                    canvas->GetImage2DWidth(static_cast<unsigned int>(verticalImage)),
-                                    canvas->GetImage2DHeight(static_cast<unsigned int>(verticalImage)),
-                                    0x21, 0x24, 2);
-                this->hitDirectionBottomTimer -= elapsed;
-            }
+        if (this->hitDirectionLeftTimer >= 1) {
+            canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                             static_cast<unsigned char>(0xff),
+                             static_cast<unsigned char>(255 * this->hitDirectionLeftTimer / 300));
+            canvas->DrawImage2D(static_cast<unsigned int>(horizontalImage),
+                                (Globals::w >> 1) - radar->imageWidth, Globals::h >> 1,
+                                canvas->GetImage2DWidth(static_cast<unsigned int>(horizontalImage)),
+                                canvas->GetImage2DHeight(static_cast<unsigned int>(horizontalImage)),
+                                0x11, 0x41, 1);
+            this->hitDirectionLeftTimer -= elapsed;
+        }
+        if (this->hitDirectionRightTimer >= 1) {
+            canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                             static_cast<unsigned char>(0xff),
+                             static_cast<unsigned char>(255 * this->hitDirectionRightTimer / 300));
+            canvas->DrawImage2D(static_cast<unsigned int>(horizontalImage),
+                                (Globals::w >> 1) - radar->imageWidth, Globals::h >> 1, 0x12, 0x42);
+            this->hitDirectionRightTimer -= elapsed;
+        }
+        if (this->hitDirectionTopTimer >= 1) {
+            canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                             static_cast<unsigned char>(0xff),
+                             static_cast<unsigned char>(255 * this->hitDirectionTopTimer / 300));
+            canvas->DrawImage2D(static_cast<unsigned int>(verticalImage), Globals::w >> 1,
+                                (Globals::h >> 1) - radar->imageHeight, 0x11, 0x14);
+            this->hitDirectionTopTimer -= elapsed;
+        }
+        if (this->hitDirectionBottomTimer >= 1) {
+            canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                             static_cast<unsigned char>(0xff),
+                             static_cast<unsigned char>(255 * this->hitDirectionBottomTimer / 300));
+            canvas->DrawImage2D(static_cast<unsigned int>(verticalImage), Globals::w >> 1,
+                                (Globals::h >> 1) - radar->imageHeight,
+                                canvas->GetImage2DWidth(static_cast<unsigned int>(verticalImage)),
+                                canvas->GetImage2DHeight(static_cast<unsigned int>(verticalImage)),
+                                0x21, 0x24, 2);
+            this->hitDirectionBottomTimer -= elapsed;
         }
     }
 
-    drawSteering();
+    drawSteering(static_cast<unsigned>(0xffffffffu));
 
     // Cargo, passenger and timed-mission panel at Android Hud+0x438/+0x43a.
     // The mission timer is the second draw argument supplied by MGame, not wall
@@ -1443,7 +1436,7 @@ void Hud::drawEventString(String text, bool rightAlign) {
     if (canvas == nullptr) return;
     const unsigned int font = hud_font();
     int x;
-    if (this->letterbox == 0) {
+    if (this->eventTextWraps == 0) {
         int base = this->eventLineMargin;
         int yBase = this->eventLineX;
         if (rightAlign == 0) {
@@ -1633,7 +1626,7 @@ int Hud::init() {
     hud_init_coordinates(this);
 
     this->visible = 1;
-    this->letterbox = 0;
+    this->eventTextWraps = 0;
     this->messageActive = 0;
     this->hackingGameActive = 0;
     this->autofireEnabled = 0;
@@ -2040,7 +2033,7 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
     int screenW = Globals::w;
     this->eventScrollTick = 0;
     this->eventScrolls = 1;
-    this->letterbox =
+    this->eventTextWraps =
             (unsigned char) ((screenW / 2 - this->eventLineMargin) + this->eventLineMarginAlt * -2 < w);
 }
 
@@ -2199,7 +2192,8 @@ void Hud::hudEventMedal(int medalId, int percent) {
     int screenW = Globals::w;
     this->eventScrollTick = 0;
     this->eventScrolls = 1;
-    this->letterbox = ((screenW / 2 - this->eventLineMargin) + this->eventLineMarginAlt * -2 < w) ? 1 : 0;
+    this->eventTextWraps =
+        ((screenW / 2 - this->eventLineMargin) + this->eventLineMarginAlt * -2 < w) ? 1 : 0;
 }
 
 

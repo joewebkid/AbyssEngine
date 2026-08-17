@@ -54,7 +54,7 @@ public:
     unsigned char eventScrolls;
     unsigned char unknown_0x1df;
     String field_0x1e0;
-    unsigned char letterbox;
+    unsigned char eventTextWraps;
     unsigned char unknown_0x1ed[7];
     String field_0x1f4;
     String field_0x200;
@@ -461,7 +461,8 @@ static_assert(__builtin_offsetof(Hud, eventScrollTick) == 0x1d8,
               "Hud::eventScrollTick @ +0x1d8");
 static_assert(__builtin_offsetof(Hud, eventScrolls) == 0x1de, "Hud::eventScrolls @ +0x1de");
 static_assert(__builtin_offsetof(Hud, field_0x1e0) == 0x1e0, "Hud::field_0x1e0 @ +0x1e0");
-static_assert(__builtin_offsetof(Hud, letterbox) == 0x1ec, "Hud::letterbox @ +0x1ec");
+static_assert(__builtin_offsetof(Hud, eventTextWraps) == 0x1ec,
+              "Hud::eventTextWraps @ +0x1ec");
 static_assert(__builtin_offsetof(Hud, field_0x1f4) == 0x1f4, "Hud::field_0x1f4 @ +0x1f4");
 static_assert(__builtin_offsetof(Hud, field_0x200) == 0x200, "Hud::field_0x200 @ +0x200");
 static_assert(__builtin_offsetof(Hud, secondaryLabelX) == 0x218,
@@ -515,6 +516,14 @@ static_assert(__builtin_offsetof(Hud, eventBannerImage) == 0x354,
               "Hud::eventBannerImage @ +0x354");
 static_assert(__builtin_offsetof(Hud, quickMenuHeaderImage) == 0x35c,
               "Hud::quickMenuHeaderImage @ +0x35c");
+static_assert(__builtin_offsetof(Hud, hitVerticalArmorImage) == 0x360,
+              "Hud::hitVerticalArmorImage @ +0x360");
+static_assert(__builtin_offsetof(Hud, hitHorizontalArmorImage) == 0x364,
+              "Hud::hitHorizontalArmorImage @ +0x364");
+static_assert(__builtin_offsetof(Hud, hitVerticalShieldImage) == 0x368,
+              "Hud::hitVerticalShieldImage @ +0x368");
+static_assert(__builtin_offsetof(Hud, hitHorizontalShieldImage) == 0x36c,
+              "Hud::hitHorizontalShieldImage @ +0x36c");
 static_assert(__builtin_offsetof(Hud, fuelGaugeIconImage) == 0x370,
               "Hud::fuelGaugeIconImage @ +0x370");
 static_assert(__builtin_offsetof(Hud, dockTransferFillImage) == 0x38c,
@@ -552,6 +561,12 @@ static_assert(__builtin_offsetof(Hud, fireForTutorial) == 0x4a5,
               "Hud::fireForTutorial @ +0x4a5");
 static_assert(__builtin_offsetof(Hud, hitDirectionLeftTimer) == 0x4ac,
               "Hud::hitDirectionLeftTimer @ +0x4ac");
+static_assert(__builtin_offsetof(Hud, hitDirectionRightTimer) == 0x4b0,
+              "Hud::hitDirectionRightTimer @ +0x4b0");
+static_assert(__builtin_offsetof(Hud, hitDirectionTopTimer) == 0x4b4,
+              "Hud::hitDirectionTopTimer @ +0x4b4");
+static_assert(__builtin_offsetof(Hud, hitDirectionBottomTimer) == 0x4b8,
+              "Hud::hitDirectionBottomTimer @ +0x4b8");
 static_assert(__builtin_offsetof(Hud, timeExtenderTimer) == 0x4bc,
               "Hud::timeExtenderTimer @ +0x4bc");
 static_assert(__builtin_offsetof(Hud, miningHintPulseTimer) == 0x4c4,
