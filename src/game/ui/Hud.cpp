@@ -972,23 +972,31 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     if (Globals::mouseCursorActivated != 0 || this->quickMenuOpen != 0)
         canvas->SetColor(static_cast<unsigned>(0xffffff00u));
     if (this->quickMenuEmpty == 0) {
-        const bool pressed = (this->touchFlagsLow & 4u) != 0 ||
-                             (this->quickMenuFlashRemaining > 0 && this->quickMenuFlashPulse <= 0);
-        const int image = pressed ? this->quickMenuPressedImage
-                                  : this->quickMenuIdleImage;
-        canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x416, this->field_0x418);
-        if (pressed && this->quickMenuFlashRemaining > 0) this->quickMenuFlashPulse = 80;
+        if ((this->touchFlagsLow & 4u) != 0 ||
+            (this->quickMenuFlashRemaining >= 1 && this->quickMenuFlashPulse <= 0)) {
+            canvas->DrawImage2D(static_cast<unsigned int>(this->quickMenuPressedImage),
+                                this->field_0x416, this->field_0x418);
+            if (this->quickMenuFlashRemaining >= 1)
+                this->quickMenuFlashPulse = 80;
+        } else {
+            canvas->DrawImage2D(static_cast<unsigned int>(this->quickMenuIdleImage),
+                                this->field_0x416, this->field_0x418);
+        }
     }
 
     if ((this->currentSecondaryWeapon != nullptr && ego->isInTurretMode() == 0 &&
          this->currentSecondaryWeapon->getAmount() > 0) ||
         (ego->level != nullptr && ego->level->manualSecondaryActive != 0)) {
-        const bool pressed = (this->touchFlagsLow & 8u) != 0 ||
-                             (this->secondaryFlashRemaining > 0 && this->secondaryFlashPulse <= 0);
-        const int image = pressed ? this->secondaryPressedImage
-                                  : this->secondaryIdleImage;
-        canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x3ec, this->field_0x3ee);
-        if (pressed && this->secondaryFlashRemaining > 0) this->secondaryFlashPulse = 80;
+        if ((this->touchFlagsLow & 8u) != 0 ||
+            (this->secondaryFlashRemaining >= 1 && this->secondaryFlashPulse <= 0)) {
+            canvas->DrawImage2D(static_cast<unsigned int>(this->secondaryPressedImage),
+                                this->field_0x3ec, this->field_0x3ee);
+            if (this->secondaryFlashRemaining >= 1)
+                this->secondaryFlashPulse = 80;
+        } else {
+            canvas->DrawImage2D(static_cast<unsigned int>(this->secondaryIdleImage),
+                                this->field_0x3ec, this->field_0x3ee);
+        }
 
         updateSecondaryWeaponString();
         if (Globals::mouseCursorActivated != 0)
@@ -1036,7 +1044,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     canvas->SetColor(static_cast<unsigned>(0xffffffffu));
     if (Globals::mouseCursorActivated != 0 || this->quickMenuOpen != 0)
         canvas->SetColor(static_cast<unsigned>(0xffffff00u));
-    const int mainActionImage = ((this->touchFlagsLow & 0x10u) != 0 || this->autofireEnabled != 0)
+    const int mainActionImage = ((this->touchFlagsLow & 0x10u) != 0 || this->fireForTutorial != 0)
                                     ? this->mainActionPressedImage
                                     : this->mainActionIdleImage;
     if (Globals::iPad != 0)
@@ -1047,17 +1055,11 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
 
     if (!ego->isDockingToAsteroid() && !isMining && ego->isDockingToStream() == 0 &&
         !ego->isInDockingProcedure() && !ego->isDockingToDockingPoint() && ego->isInTurretMode() == 0) {
-        Radar *radar = static_cast<Radar *>(ego->field_0x14);
-        bool hasTargetContext = false;
-        if (radar != nullptr) {
-            hasTargetContext = radar->lockedPlanetTarget != nullptr || radar->lockedAsteroid != nullptr ||
-                               radar->lockedStation != nullptr;
-            if (!hasTargetContext && radar->lockedEnemy != nullptr) {
-                hasTargetContext = static_cast<unsigned char>(radar->lockedEnemy->field_0x70) != 0 &&
-                                   radar->lockedEnemy->field_0x75 != 0;
-            }
-        }
-        if (hasTargetContext) {
+        Radar *targetRadar = static_cast<Radar *>(ego->field_0x14);
+        if (targetRadar->lockedPlanetTarget != nullptr || targetRadar->lockedAsteroid != nullptr ||
+            targetRadar->lockedStation != nullptr ||
+            (targetRadar->lockedEnemy != nullptr && targetRadar->lockedEnemy->field_0x70 != 0 &&
+             targetRadar->lockedEnemy->field_0x75 != 0)) {
             const int targetX = static_cast<int>(this->field_0x3e4) + this->field_0x3ea;
             const int targetY = static_cast<int>(this->field_0x3e6) + this->field_0x3ea;
             if (Globals::iPad != 0)

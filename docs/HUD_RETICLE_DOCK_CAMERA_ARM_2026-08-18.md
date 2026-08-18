@@ -91,7 +91,8 @@ drawing. The timer advances to 4000 ms and then resets to zero.
 
 ## Remaining Work
 
-The next contiguous source-shape package is the quick-menu, secondary weapon,
-boost and main-fire action sequence. Its behavior is already represented in
-C++, but its order, flash-label lifetimes, color exits and branch structure
-still need a strict Android-body pass.
+The quick-menu, secondary weapon, boost and main-fire audit is completed in
+`HUD_QUICK_SECONDARY_FIRE_ARM_2026-08-18.md`. Its remaining secondary String
+lifetime issue is explicitly queued for a broad stack/local-lifetime pass. The
+next contiguous package is the dock-transfer, jump/cloak progress and mining
+hint tail.
