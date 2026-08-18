@@ -65,7 +65,7 @@ keeps the prior local layout while preserving the confirmed behavior fixes.
 - UCRT64 build: green; `libgof2.a` links successfully.
 - ARM corpus: `201/204`; the same three unrelated `SolarSystem`
   pointer/integer failures remain.
-- `Hud::draw`: `29.0%`, `2578` generated instructions versus `3223` target.
+- `Hud::draw`: `29.0%`, `2580` generated instructions versus `3223` target.
 - All 48 `Hud` functions: `69.6%` average, 22 linked-exact and 16
   raw-byte-exact. No exact-function regression occurred.
 
