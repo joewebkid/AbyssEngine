@@ -1077,9 +1077,10 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
 
     if (this->dockTransferProgressActive != 0 && ego->isDockedToDockingPoint() &&
         ego->getHitpoints() >= 1 && progressText != nullptr) {
-        const unsigned int fillImage = static_cast<unsigned int>(this->dockTransferFillImage);
-        const int fillWidth = canvas->GetImage2DWidth(fillImage);
-        const int fillHeight = canvas->GetImage2DHeight(fillImage);
+        const unsigned int gaugeMetricsImage = static_cast<unsigned int>(this->chargeProgressFillImage);
+        const unsigned int dockFillImage = static_cast<unsigned int>(this->dockTransferFillImage);
+        const int fillWidth = canvas->GetImage2DWidth(gaugeMetricsImage);
+        const int fillHeight = canvas->GetImage2DHeight(gaugeMetricsImage);
         const int textHeight = canvas->GetTextHeight(hud_font());
         const int transferred = ego->getDockTransferedAmount();
         const int total = ego->getDockTotalAmount();
@@ -1099,7 +1100,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         const int panelY = 2 * static_cast<int>(this->field_0x3e2);
         canvas->DrawImage2D(static_cast<unsigned int>(this->progressPanelImage),
                             progressCenterX, panelY, 0x11, 0x14);
-        canvas->DrawRegion2D(fillImage, 0, 0,
+        canvas->DrawRegion2D(dockFillImage, 0, 0,
                              static_cast<int>(transferRate * static_cast<float>(fillWidth)), fillHeight,
                              0.0f, 0, 0, progressCenterX - fillWidth / 2,
                              hud_layout_i32(0x218) + panelY);
@@ -1162,10 +1163,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     if (Globals::hints[kMiningTutorialHintIndex] == 0 && !isMining && progressStatus != nullptr &&
         progressStatus->getCurrentCampaignMission() == 2 && levelScript != nullptr &&
         !ego->isDockingToAsteroid() && !ego->isDockedToAsteroid()) {
-        const unsigned long long scriptTime =
-            static_cast<unsigned int>(levelScript->field_0x8) |
-            (static_cast<unsigned long long>(static_cast<unsigned int>(levelScript->field_0xc)) << 32);
-        if (scriptTime >= 12001 && progressText != nullptr) {
+        if (levelScript->scriptTime >= 12001 && progressText != nullptr) {
             this->miningHintPulseTimer += elapsed;
             if (this->miningHintPulseTimer > 2000)
                 this->miningHintPulseTimer = 0;

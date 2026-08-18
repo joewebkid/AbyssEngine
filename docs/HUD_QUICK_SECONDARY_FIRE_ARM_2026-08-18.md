@@ -77,7 +77,8 @@ turret.
 
 ## Remaining Work
 
-The next contiguous package is the dock-transfer, jump/cloak progress and
-mining-hint tail. After that, a broad `Hud::draw` stack/local-lifetime pass is
-required before the native secondary-label temporary chain can be reintroduced
-without destroying whole-function alignment.
+The dock-transfer, jump/cloak progress and mining-hint tail is now audited in
+`HUD_PROGRESS_MINING_TAIL_ARM_2026-08-18.md`. A broad `Hud::draw`
+stack/local-lifetime pass is required before the native secondary-label
+temporary chain can be reintroduced without destroying whole-function
+alignment.
