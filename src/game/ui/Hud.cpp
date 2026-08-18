@@ -497,32 +497,6 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     const int elapsed = static_cast<int>(t0);
     const bool isMining = ego->isMining();
     PaintCanvas *canvas = hud_canvas();
-    const auto drawSteering = [this, canvas, ego](unsigned int finalColor) {
-        const bool blocked = ego->isAutoPilot() != 0 || ego->isDockingToAsteroid() ||
-                             ego->isDockingToDockingPoint() || this->hackingGameActive != 0 ||
-                             (ego->isDockedToDockingPoint() && ego->isInTurretMode() == 0);
-        const bool dimmed = Globals::touchSteeringEnabled == 0 ||
-                            (blocked && (Globals::touchSteeringEnabled == 0 ||
-                                         ego->isInTurretMode() == 0));
-        if (dimmed)
-            canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
-                             static_cast<unsigned char>(0xff), static_cast<unsigned char>(0x32));
-        else
-            canvas->SetColor(static_cast<unsigned>(0xffffffffu));
-
-        canvas->DrawImage2D(static_cast<unsigned>(this->steeringBaseImage),
-                            this->field_0x42c, this->field_0x42e);
-        if (Globals::touchSteeringEnabled != 0 && (this->touchFlagsLow & 0x20u) != 0) {
-            canvas->DrawImage2D(static_cast<unsigned>(this->steeringKnobPressedImage),
-                                this->field_0x41e, this->field_0x420, 0x11, 0x44);
-        } else {
-            this->field_0x41e = this->field_0x424;
-            this->field_0x420 = this->field_0x426;
-            canvas->DrawImage2D(static_cast<unsigned>(this->steeringKnobIdleImage),
-                                this->field_0x41e, this->field_0x420, 0x11, 0x44);
-        }
-        canvas->SetColor(finalColor);
-    };
 
     if (!isMining && this->eventQueueDirty != 0 && this->hackingGameActive == 0) {
         updateQueue(elapsed);
@@ -532,8 +506,37 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     if (Globals::iPad != 0) {
         GameSettings *settings = reinterpret_cast<GameSettings *>(Globals::options);
         if (this->iPadSteerAnchor != settings->steerAnchorX ||
-            this->iPadFireAnchor != settings->fireAnchorX)
-            hud_apply_ipad_control_coords(this, canvas);
+            this->iPadFireAnchor != settings->fireAnchorX) {
+            Globals *globals = static_cast<Globals *>(Globals::globals);
+            const int steerAnchor = settings->steerAnchorX;
+            const int steeringWidth = canvas->GetImage2DWidth(
+                static_cast<unsigned int>(this->steeringBaseImage));
+            const int dockWidth = canvas->GetImage2DWidth(
+                static_cast<unsigned int>(this->dockActionIdleImage));
+            const int boostWidth = canvas->GetImage2DWidth(
+                static_cast<unsigned int>(this->boostIdleImage));
+            globals->setCoordsSteer(
+                steerAnchor, steeringWidth, dockWidth, boostWidth,
+                this->field_0x3f8, this->field_0x3fa, this->field_0x42c, this->field_0x42e,
+                this->field_0x424, this->field_0x426, this->field_0x410, this->field_0x412,
+                this->field_0x404, this->field_0x406);
+
+            this->field_0x41e = this->field_0x424;
+            this->field_0x420 = this->field_0x426;
+
+            const int fireAnchor = settings->fireAnchorX;
+            const int fireWidth = canvas->GetImage2DWidth(
+                static_cast<unsigned int>(this->iPadFireImage));
+            globals->setCoordsFire(
+                fireAnchor, fireWidth, static_cast<unsigned int>(this->iPadFireImage),
+                static_cast<unsigned int>(this->iPadFirePressedImage),
+                reinterpret_cast<unsigned int &>(this->reticleImage), this->iPadFireCoord_0x0c,
+                this->iPadFireCoord_0x0e, this->field_0x3e4, this->field_0x3e6,
+                this->field_0x416, this->field_0x418, this->field_0x3f2, this->field_0x3f4,
+                this->field_0x3ec, this->field_0x3ee, this->field_0x3fe, this->field_0x400);
+            this->iPadSteerAnchor = steerAnchor;
+            this->iPadFireAnchor = fireAnchor;
+        }
     }
 
     const unsigned int initialColor = canvas->GetColor();
@@ -649,7 +652,30 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         canvas->DrawImage2D(static_cast<unsigned>(secondaryImage), this->field_0x3ec, this->field_0x3ee);
         if (secondaryPressed && this->secondaryFlashRemaining > 0)
             this->secondaryFlashPulse = 80;
-        drawSteering(initialColor);
+        {
+            if (Globals::touchSteeringEnabled == 0 ||
+                (ego->isAutoPilot() || ego->isDockingToAsteroid() ||
+                 ego->isDockingToDockingPoint() || this->hackingGameActive != 0 ||
+                 (ego->isDockedToDockingPoint() && ego->isInTurretMode() == 0)) &&
+                    (Globals::touchSteeringEnabled == 0 || ego->isInTurretMode() == 0))
+                canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                                 static_cast<unsigned char>(0xff), static_cast<unsigned char>(0x32));
+            else
+                canvas->SetColor(static_cast<unsigned int>(0xffffffffu));
+
+            canvas->DrawImage2D(static_cast<unsigned int>(this->steeringBaseImage),
+                                this->field_0x42c, this->field_0x42e);
+            if (Globals::touchSteeringEnabled != 0 && (this->touchFlagsLow & 0x20u) != 0) {
+                canvas->DrawImage2D(static_cast<unsigned int>(this->steeringKnobPressedImage),
+                                    this->field_0x41e, this->field_0x420, 0x11, 0x44);
+            } else {
+                this->field_0x41e = this->field_0x424;
+                this->field_0x420 = this->field_0x426;
+                canvas->DrawImage2D(static_cast<unsigned int>(this->steeringKnobIdleImage),
+                                    this->field_0x41e, this->field_0x420, 0x11, 0x44);
+            }
+            canvas->SetColor(initialColor);
+        }
         return;
     }
 
@@ -709,7 +735,30 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         }
     }
 
-    drawSteering(static_cast<unsigned>(0xffffffffu));
+    {
+        if (Globals::touchSteeringEnabled == 0 ||
+            (ego->isAutoPilot() || ego->isDockingToAsteroid() ||
+             ego->isDockingToDockingPoint() || this->hackingGameActive != 0 ||
+             (ego->isDockedToDockingPoint() && ego->isInTurretMode() == 0)) &&
+                (Globals::touchSteeringEnabled == 0 || ego->isInTurretMode() == 0))
+            canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                             static_cast<unsigned char>(0xff), static_cast<unsigned char>(0x32));
+        else
+            canvas->SetColor(static_cast<unsigned int>(0xffffffffu));
+
+        canvas->DrawImage2D(static_cast<unsigned int>(this->steeringBaseImage),
+                            this->field_0x42c, this->field_0x42e);
+        if (Globals::touchSteeringEnabled != 0 && (this->touchFlagsLow & 0x20u) != 0) {
+            canvas->DrawImage2D(static_cast<unsigned int>(this->steeringKnobPressedImage),
+                                this->field_0x41e, this->field_0x420, 0x11, 0x44);
+        } else {
+            this->field_0x41e = this->field_0x424;
+            this->field_0x420 = this->field_0x426;
+            canvas->DrawImage2D(static_cast<unsigned int>(this->steeringKnobIdleImage),
+                                this->field_0x41e, this->field_0x420, 0x11, 0x44);
+        }
+        canvas->SetColor(static_cast<unsigned int>(0xffffffffu));
+    }
 
     // Cargo, passenger and timed-mission panel at Android Hud+0x438/+0x43a.
     // The mission timer is the second draw argument supplied by MGame, not wall
@@ -998,12 +1047,23 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                                 this->field_0x3ec, this->field_0x3ee);
         }
 
-        updateSecondaryWeaponString();
         if (Globals::mouseCursorActivated != 0)
             canvas->SetColor(static_cast<unsigned>(0xffffffffu));
         canvas->DrawImage2D(static_cast<unsigned>(this->secondaryWeaponBannerImage),
                             Globals::w >> 1, Globals::h, 0x11, 0x24);
-        canvas->DrawString(hud_font(), this->field_0x3b4, this->secondaryLabelX,
+
+        String prefix(" (");
+        String amount(this->currentSecondaryWeapon->getAmount());
+        String prefixAmount = prefix + amount;
+        String close(")");
+        String suffixCore = prefixAmount + close;
+        String suffix(suffixCore, false);
+        String secondaryLabel = *hud_game_text()->getText(
+                                    this->currentSecondaryWeapon->getIndex() + 1274) +
+                                suffix;
+        const int secondaryLabelX = (Globals::w >> 1) -
+                                    (canvas->GetTextWidth(hud_font(), secondaryLabel) >> 1);
+        canvas->DrawString(hud_font(), secondaryLabel, secondaryLabelX,
                            Globals::h - hud_layout_i32(0x04) + hud_layout_i32(0x214), false);
         if (Globals::mouseCursorActivated != 0 || this->quickMenuOpen != 0)
             canvas->SetColor(static_cast<unsigned>(0xffffff00u));
@@ -1079,21 +1139,27 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         ego->getHitpoints() >= 1 && progressText != nullptr) {
         const unsigned int gaugeMetricsImage = static_cast<unsigned int>(this->chargeProgressFillImage);
         const unsigned int dockFillImage = static_cast<unsigned int>(this->dockTransferFillImage);
-        const int fillWidth = canvas->GetImage2DWidth(gaugeMetricsImage);
-        const int fillHeight = canvas->GetImage2DHeight(gaugeMetricsImage);
+        const int stackFillHeight = canvas->GetImage2DHeight(gaugeMetricsImage);
         const int textHeight = canvas->GetTextHeight(hud_font());
         const int transferred = ego->getDockTransferedAmount();
         const int total = ego->getDockTotalAmount();
+        const bool reverse = this->dockTransferReverse != 0;
+        const String *baseLabel = progressText->getText(reverse ? 3205 : 3204);
+        String spacer(" ");
 
-        String label = *progressText->getText(this->dockTransferReverse != 0 ? 3205 : 3204);
-        label += ' ';
+        float transferRate = 1.0f - static_cast<float>(transferred) / static_cast<float>(total);
+        if (!reverse)
+            transferRate = static_cast<float>(transferred) / static_cast<float>(total);
+        progressStackOffset = static_cast<int>(static_cast<float>(textHeight) +
+                                               static_cast<float>(stackFillHeight) * 2.5f);
+        String label = *baseLabel + spacer;
 
-        float transferRate = total != 0 ? static_cast<float>(transferred) / static_cast<float>(total) : 0.0f;
-        if (this->dockTransferReverse != 0)
-            transferRate = 1.0f - transferRate;
-
-        float fade = static_cast<float>(this->dockTransferFadeTimer + elapsed) / 1000.0f;
-        if (fade > 1.0f) fade = 1.0f;
+        const int fillWidth = canvas->GetImage2DWidth(gaugeMetricsImage);
+        const int fillHeight = canvas->GetImage2DHeight(gaugeMetricsImage);
+        float fade = 1.0f;
+        const float fadeRate = static_cast<float>(this->dockTransferFadeTimer + elapsed) / 1000.0f;
+        if (fadeRate < 1.0f)
+            fade = fadeRate;
         this->dockTransferFadeTimer += elapsed;
         canvas->SetColor(static_cast<unsigned int>(static_cast<int>(fade * 255.0f) - 256));
 
@@ -1110,20 +1176,19 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         const int labelWidth = canvas->GetTextWidth(hud_font(), label);
         canvas->DrawString(hud_font(), label, progressCenterX - labelWidth / 2, labelY, false);
 
-        Mission *mission = Status::gStatus != nullptr ? Status::gStatus->getMission() : nullptr;
-        if (this->dockTransferShowMissionMarkers != 0 && mission != nullptr && mission->getType() != 168) {
+        if (this->dockTransferShowMissionMarkers != 0 && Status::gStatus->getMission() != nullptr &&
+            Status::gStatus->getMission()->getType() != 168) {
             canvas->DrawImage2D(
                 static_cast<unsigned int>(this->dockTransferMissionMarkerImage),
-                progressCenterX + labelWidth / 2, labelY + textHeight / 2, 0x11, 0x41);
+                progressCenterX + canvas->GetTextWidth(hud_font(), label) / 2,
+                labelY + canvas->GetTextHeight(hud_font()) / 2, 0x11, 0x41);
         }
-        if (mission != nullptr && mission->getType() == 174) {
+        if (Status::gStatus->getMission() != nullptr && Status::gStatus->getMission()->getType() == 174) {
             canvas->DrawImage2D(
                 static_cast<unsigned int>(this->dockTransferProductionMarkerImage),
-                progressCenterX + labelWidth / 2, labelY + textHeight / 2, 0x11, 0x41);
+                progressCenterX + canvas->GetTextWidth(hud_font(), label) / 2,
+                labelY + canvas->GetTextHeight(hud_font()) / 2, 0x11, 0x41);
         }
-
-        progressStackOffset = static_cast<int>(static_cast<float>(textHeight) +
-                                               static_cast<float>(fillHeight) * 2.5f);
     }
 
     if ((this->jumpDriveProgressActive != 0 || this->cloakProgressActive != 0) && progressText != nullptr) {

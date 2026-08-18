@@ -71,7 +71,7 @@ keeps the prior local layout while preserving the confirmed behavior fixes.
 
 ## Remaining Work
 
-The next dense `Hud::draw` package should be a whole-function stack/local
-lifetime pass. It must reconcile String hidden-return slots, progress locals
-and branch joins together; isolated source-shape rewrites have already shown
-that locally correct C++ can make the complete ARM frame worse.
+The first whole-function stack/local-lifetime pass is complete; see
+`HUD_DRAW_STACK_LIFETIME_ARM_2026-08-18.md`. The next pass should explain the
+remaining stack-protector/frame delta and audit boost/progress branch joins
+without reintroducing the rejected outer progress scope.
