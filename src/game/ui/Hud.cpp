@@ -5,6 +5,7 @@
 #include "engine/core/GameText.h"
 #include "game/core/Globals.h"
 #include "game/core/GameSettings.h"
+#include "game/core/Radio.h"
 #include "game/ship/PlayerEgo.h"
 #include "game/ship/PlayerFixedObject.h"
 #include "game/world/Route.h"
@@ -822,35 +823,102 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     if (Globals::mouseCursorActivated != 0 || this->quickMenuOpen != 0)
         canvas->SetColor(static_cast<unsigned>(0xffffff00u));
 
-    // Android draws the phone reticle against the lower-right corner. iPad uses
-    // the two coordinates written by Globals::setCoordsFire.
     if (Globals::iPad != 0)
         canvas->DrawImage2D(static_cast<unsigned>(this->reticleImage),
                             this->iPadFireCoord_0x0c, this->iPadFireCoord_0x0e);
     else
         canvas->DrawImage2D(static_cast<unsigned>(this->reticleImage), Globals::w, Globals::h, 0x11, 0x22);
 
-    if (status != nullptr) {
-        bool showDockAction = status->inAlienOrbit() == 0;
-        if (!showDockAction && status->getCurrentCampaignMission() == 0x9a) {
-            Level *level = ego->level;
-            showDockAction = level != nullptr && level->getNumDockingTargets() >= 1;
-        }
-        Mission *mission = status->getMission();
-        if (showDockAction && status->getCurrentCampaignMission() >= 2 &&
-            (mission == nullptr || mission->getType() != 0xb7)) {
-            const int image = (this->touchFlagsLow & 0x40u) != 0
-                                  ? this->dockActionPressedImage
-                                  : this->dockActionIdleImage;
-            canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x3f8, this->field_0x3fa);
+    if (this->hackingGameActive != 0 && ego->isInTurretMode() == 0) {
+        int image = (this->touchFlagsByte1 & 2u) != 0 ? this->image_0x3a4 : this->image_0x3a8;
+        canvas->DrawImage2D(static_cast<unsigned int>(image), this->field_0x454, this->field_0x456);
+        image = (this->touchFlagsByte1 & 4u) != 0 ? this->image_0x3a4 : this->image_0x3a8;
+        canvas->DrawImage2D(static_cast<unsigned int>(image), this->field_0x458, this->field_0x45a);
+    }
+
+    if (isMining || this->hackingGameActive != 0 || ego->isDockedToDockingPoint() ||
+        ego->isLandingOrTakingOff()) {
+        canvas->SetColor(static_cast<unsigned int>(0xffffff2fu));
+    }
+
+    if ((!Status::gStatus->inAlienOrbit() ||
+         (Status::gStatus->inAlienOrbit() &&
+          Status::gStatus->getCurrentCampaignMission() == 154 &&
+          ego->level->getNumDockingTargets() >= 1)) &&
+        Status::gStatus->getCurrentCampaignMission() >= 2) {
+        if (Status::gStatus->getMission() == nullptr ||
+            Status::gStatus->getMission()->getType() != 183) {
+            int image = (this->touchFlagsLow & 0x40u) != 0
+                            ? this->dockActionPressedImage
+                            : this->dockActionIdleImage;
+            canvas->DrawImage2D(static_cast<unsigned int>(image), this->field_0x3f8,
+                                this->field_0x3fa);
         }
     }
 
+    Radar *radar = static_cast<Radar *>(ego->field_0x14);
+    if (!ego->radioRef->isShowingMessage()) {
+        if ((!ego->isAutoPilot() && !ego->isDockingToAsteroid() &&
+             (!ego->isDockingToDockingPoint() || ego->isLandingOrTakingOff()) &&
+             this->hackingGameActive == 0) ||
+            radar->field_0x54 != 0 || ego->aboutToReachAutoTarget()) {
+            if (this->field_0x0 != 0) {
+                if (this->timeExtenderDuration >= 0) {
+                    this->timeExtenderTimer -= elapsed;
+                    this->timeExtenderDuration -= elapsed;
+                }
+                const unsigned int savedColor = canvas->GetColor();
+                if (this->field_0x280 == 0) {
+                    canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                                     static_cast<unsigned char>(0xff), static_cast<unsigned char>(0x37));
+                }
+                canvas->DrawImage2D(static_cast<unsigned int>(this->image_0x398),
+                                    this->field_0x450 + this->field_0x404, this->field_0x406);
+
+                int image;
+                if ((this->touchFlagsByte1 & 1u) != 0) {
+                    image = this->image_0x39c;
+                } else if (this->timeExtenderDuration >= 1 && this->timeExtenderTimer < 1) {
+                    this->timeExtenderTimer = 80;
+                    image = this->image_0x39c;
+                } else if (this->field_0x281 == 0) {
+                    image = this->image_0x3a0;
+                } else if (this->timeExtenderDuration < 1) {
+                    image = this->image_0x39c;
+                } else {
+                    this->timeExtenderTimer = 80;
+                    image = this->image_0x39c;
+                }
+                canvas->DrawImage2D(static_cast<unsigned int>(image), this->field_0x404,
+                                    this->field_0x406);
+                canvas->SetColor(savedColor);
+            }
+        } else {
+            canvas->DrawImage2D(static_cast<unsigned int>(this->image_0x398),
+                                this->field_0x450 + this->field_0x404, this->field_0x406);
+            const int image = (this->touchFlagsByte1 & 1u) != 0
+                                  ? this->image_0x390
+                                  : this->image_0x394;
+            canvas->DrawImage2D(static_cast<unsigned int>(image), this->field_0x404,
+                                this->field_0x406);
+            if (Globals::mouseCursorActivated != 0 || this->quickMenuOpen != 0)
+                canvas->SetColor(static_cast<unsigned int>(0xffffff00u));
+        }
+    }
+
+    if ((ego->isAutoPilot() || ego->isInDockingProcedure()) &&
+        !ego->isDockedToDockingPoint() && !ego->isLandingOrTakingOff()) {
+        canvas->SetColor(static_cast<unsigned int>(0xffffffffu));
+        canvas->DrawImage2D(static_cast<unsigned int>(this->dockActionPressedImage),
+                            this->field_0x3f8, this->field_0x3fa);
+    }
+
     canvas->SetColor(static_cast<unsigned>(0xffffffffu));
-    const unsigned int cameraIconMode = nextCameraMode < 4 ? nextCameraMode : 0;
+    if (Globals::mouseCursorActivated != 0 || this->quickMenuOpen != 0)
+        canvas->SetColor(static_cast<unsigned int>(0xffffff00u));
     const int cameraImage = (this->touchFlagsLow & 0x80u) != 0
-                                ? this->cameraPressedImages[cameraIconMode]
-                                : this->cameraIdleImages[cameraIconMode];
+                                ? this->cameraPressedImages[nextCameraMode]
+                                : this->cameraIdleImages[nextCameraMode];
     canvas->DrawImage2D(static_cast<unsigned>(cameraImage), this->field_0x3f2, this->field_0x3f4);
 
     if (this->previousCameraMode == -1) {
@@ -858,30 +926,45 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     } else if (this->previousCameraMode != static_cast<int>(currentCameraMode)) {
         this->previousCameraMode = static_cast<int>(currentCameraMode);
         this->cameraModeLabelTimer = elapsed;
-        if (currentCameraMode < 4 && hud_game_text() != nullptr)
-            this->cameraModeLabel = *hud_game_text()->getText(217 + static_cast<int>(currentCameraMode));
+        switch (currentCameraMode) {
+            case 0:
+                this->cameraModeLabel = *hud_game_text()->getText(217);
+                break;
+            case 1:
+                this->cameraModeLabel = *hud_game_text()->getText(218);
+                break;
+            case 2:
+                this->cameraModeLabel = *hud_game_text()->getText(219);
+                break;
+            case 3:
+                this->cameraModeLabel = *hud_game_text()->getText(220);
+                break;
+            default:
+                break;
+        }
     }
 
-    const bool hasAutoTurret = ego->hasAutoTurret() != 0;
-    if (hasAutoTurret) {
-        const bool enabled = ego->autoTurretIsEnabled() != 0 || (this->touchFlags & 0x20000000u) != 0;
-        const int image = enabled ? this->autoTurretEnabledImage : this->autoTurretDisabledImage;
+    if (ego->hasAutoTurret()) {
+        const int image = (ego->autoTurretIsEnabled() || (this->touchFlagsByte3 & 0x20u) != 0)
+                              ? this->autoTurretEnabledImage
+                              : this->autoTurretDisabledImage;
         canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x3fe, this->field_0x400);
     } else if (this->cameraModeLabelTimer >= 1) {
-        const int bannerY = static_cast<int>(this->field_0x418) -
-                            canvas->GetImage2DHeight(static_cast<unsigned>(this->eventBannerImage)) -
+        const int bannerY = this->field_0x418 -
+                            canvas->GetImage2DHeight(static_cast<unsigned int>(this->eventBannerImage)) -
                             hud_layout_i32(0x20c);
+        const int canvasWidth = canvas->GetWidth();
         int alpha = static_cast<int>((static_cast<float>(this->cameraModeLabelTimer) / 2000.0f) * 255.0f);
-        if (alpha > 255) alpha = 510 - alpha;
-        if (alpha < 0) alpha = 0;
+        if (alpha > 255) alpha = static_cast<unsigned char>(-2 - alpha);
+        const unsigned int savedColor = canvas->GetColor();
         canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
-                         static_cast<unsigned char>(0xff), static_cast<unsigned char>(alpha));
+                          static_cast<unsigned char>(0xff), static_cast<unsigned char>(alpha));
         canvas->DrawImage2D(static_cast<unsigned>(this->eventBannerImage), this->field_0x3ec, bannerY);
         const int textWidth = canvas->GetTextWidth(hud_font(), this->cameraModeLabel);
-        const int textX = this->field_0x3ec + (Globals::w - this->field_0x3ec - textWidth) / 2;
+        const int textX = this->field_0x3ec + (canvasWidth - this->field_0x3ec - textWidth) / 2;
         canvas->DrawString(hud_font(), this->cameraModeLabel, textX,
                            bannerY + hud_layout_i32(0x210), false);
-        canvas->SetColor(static_cast<unsigned>(0xffffffffu));
+        canvas->SetColor(savedColor);
         this->cameraModeLabelTimer += elapsed;
         if (this->cameraModeLabelTimer > 4000) this->cameraModeLabelTimer = 0;
     }

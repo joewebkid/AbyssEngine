@@ -112,8 +112,6 @@ dispatch, mouse-cursor or open quick-menu state restores the native
 
 ## Remaining Work
 
-The next contiguous package is the reticle, dock-action, camera-mode, and
-auto-turret cluster. It should verify the pre-reticle color state, alien-orbit
-docking exception, camera image table selection, mode-label timer, and the
-auto-turret substitution branch before moving into quick-menu and weapon
-controls.
+The reticle, dock-action, camera-mode and auto-turret cluster is completed in
+`HUD_RETICLE_DOCK_CAMERA_ARM_2026-08-18.md`. The next contiguous package is the
+quick-menu, secondary weapon, boost and main-fire action sequence.

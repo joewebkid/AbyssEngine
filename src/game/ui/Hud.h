@@ -114,7 +114,9 @@ public:
         unsigned int touchFlags;
         struct {
             unsigned char touchFlagsLow;
-            unsigned char touchFlagsPadding[3];
+            unsigned char touchFlagsByte1;
+            unsigned char touchFlagsByte2;
+            unsigned char touchFlagsByte3;
         };
     };
     int field_0x288;
@@ -497,6 +499,10 @@ static_assert(__builtin_offsetof(Hud, fuelGaugeValue) == 0x27c, "Hud::fuelGaugeV
 static_assert(__builtin_offsetof(Hud, touchFlags) == 0x284, "Hud::touchFlags @ +0x284");
 static_assert(__builtin_offsetof(Hud, touchFlagsLow) == 0x284,
               "Hud::touchFlagsLow @ +0x284");
+static_assert(__builtin_offsetof(Hud, touchFlagsByte1) == 0x285,
+              "Hud::touchFlagsByte1 @ +0x285");
+static_assert(__builtin_offsetof(Hud, touchFlagsByte3) == 0x287,
+              "Hud::touchFlagsByte3 @ +0x287");
 static_assert(__builtin_offsetof(Hud, field_0x288) == 0x288, "Hud::field_0x288 @ +0x288");
 static_assert(__builtin_offsetof(Hud, keyArray) == 0x28c, "Hud::keyArray @ +0x28c");
 static_assert(__builtin_offsetof(Hud, elementBits) == 0x290, "Hud::elementBits @ +0x290");
@@ -511,6 +517,8 @@ static_assert(__builtin_offsetof(Hud, pauseButtonPressedImage) == 0x2f4,
               "Hud::pauseButtonPressedImage @ +0x2f4");
 static_assert(__builtin_offsetof(Hud, dockActionPressedImage) == 0x30c,
               "Hud::dockActionPressedImage @ +0x30c");
+static_assert(__builtin_offsetof(Hud, autoTurretEnabledImage) == 0x314,
+              "Hud::autoTurretEnabledImage @ +0x314");
 static_assert(__builtin_offsetof(Hud, missionTimerPanelImage) == 0x320,
               "Hud::missionTimerPanelImage @ +0x320");
 static_assert(__builtin_offsetof(Hud, cargoPanelImage) == 0x324,
@@ -542,6 +550,12 @@ static_assert(__builtin_offsetof(Hud, fuelGaugeIconImage) == 0x370,
               "Hud::fuelGaugeIconImage @ +0x370");
 static_assert(__builtin_offsetof(Hud, dockTransferFillImage) == 0x38c,
               "Hud::dockTransferFillImage @ +0x38c");
+static_assert(__builtin_offsetof(Hud, image_0x390) == 0x390,
+              "Hud::image_0x390 @ +0x390");
+static_assert(__builtin_offsetof(Hud, image_0x398) == 0x398,
+              "Hud::image_0x398 @ +0x398");
+static_assert(__builtin_offsetof(Hud, image_0x3a8) == 0x3a8,
+              "Hud::image_0x3a8 @ +0x3a8");
 static_assert(__builtin_offsetof(Hud, image_0x3b0) == 0x3b0, "Hud final image slot @ +0x3b0");
 static_assert(__builtin_offsetof(Hud, field_0x3b4) == 0x3b4, "Hud::field_0x3b4 @ +0x3b4");
 static_assert(__builtin_offsetof(Hud, field_0x3c0) == 0x3c0, "Hud::field_0x3c0 @ +0x3c0");
@@ -554,6 +568,10 @@ static_assert(__builtin_offsetof(Hud, missionPanelX) == 0x438,
               "Hud::missionPanelX @ +0x438");
 static_assert(__builtin_offsetof(Hud, missionPanelY) == 0x43a,
               "Hud::missionPanelY @ +0x43a");
+static_assert(__builtin_offsetof(Hud, field_0x450) == 0x450,
+              "Hud::field_0x450 @ +0x450");
+static_assert(__builtin_offsetof(Hud, field_0x454) == 0x454,
+              "Hud::field_0x454 @ +0x454");
 static_assert(__builtin_offsetof(Hud, field_0x460) == 0x460, "Hud::field_0x460 @ +0x460");
 static_assert(__builtin_offsetof(Hud, chargeProgressFadeTimer) == 0x464,
               "Hud::chargeProgressFadeTimer @ +0x464");
@@ -587,6 +605,8 @@ static_assert(__builtin_offsetof(Hud, hitDirectionBottomTimer) == 0x4b8,
               "Hud::hitDirectionBottomTimer @ +0x4b8");
 static_assert(__builtin_offsetof(Hud, timeExtenderTimer) == 0x4bc,
               "Hud::timeExtenderTimer @ +0x4bc");
+static_assert(__builtin_offsetof(Hud, timeExtenderDuration) == 0x4c0,
+              "Hud::timeExtenderDuration @ +0x4c0");
 static_assert(__builtin_offsetof(Hud, miningHintPulseTimer) == 0x4c4,
               "Hud::miningHintPulseTimer @ +0x4c4");
 static_assert(__builtin_offsetof(Hud, messageActive) == 0x4c8,
@@ -605,6 +625,8 @@ static_assert(__builtin_offsetof(Hud, cameraPressedImages) == 0x504,
               "Hud::cameraPressedImages @ +0x504");
 static_assert(__builtin_offsetof(Hud, previousCameraMode) == 0x514,
               "Hud::previousCameraMode @ +0x514");
+static_assert(__builtin_offsetof(Hud, cameraModeLabelTimer) == 0x518,
+              "Hud::cameraModeLabelTimer @ +0x518");
 static_assert(__builtin_offsetof(Hud, cameraModeLabel) == 0x51c,
               "Hud::cameraModeLabel @ +0x51c");
 static_assert(__builtin_offsetof(Hud, hackingGameActive) == 0x528,
