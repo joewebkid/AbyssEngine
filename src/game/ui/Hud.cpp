@@ -2140,11 +2140,11 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
             line = *hud_game_text()->getText(540);
             break;
         case 10: {
-            Station *station = Globals::status->getStation();
-            String suffix;
-            if (station->getIndex() != 101)
-                suffix = String(" ") + *hud_game_text()->getText(136);
-            line = *hud_game_text()->getText(546) + String(": ") + station->getName() + suffix;
+            String stationName(Globals::status->getStation()->getName(), false);
+            line = *hud_game_text()->getText(546) + String(": ") + stationName +
+                   (Globals::status->getStation()->getIndex() == 101
+                            ? String("", false)
+                            : String(" ") + *hud_game_text()->getText(136));
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         }
@@ -2286,14 +2286,17 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
             break;
     }
 
-    if (sameHudEventAsBefore(line) != 0) return;
+    String probe(line, false);
+    if (sameHudEventAsBefore(probe) != 0) return;
 
     const unsigned int idBit = static_cast<unsigned int>(eventId - 27);
+    void *itemStorage = ::operator new(sizeof(ListItem));
+    String *eventText = new String(line, false);
     ListItem *item;
     if (idBit < 0x15 && ((1u << idBit) & kHudImportantEventMask) != 0)
-        item = new ListItem(new String(line), 1);
+        item = new (itemStorage) ListItem(eventText, 1);
     else
-        item = new ListItem(new String(line));
+        item = new (itemStorage) ListItem(eventText);
     addToEventQueue(item);
 
     PaintCanvas *canvas = hud_canvas();
@@ -2402,74 +2405,99 @@ void Hud::drawChallengeModeScore(int unused) {
 }
 
 
-static void **g_Hud_meCanvas = nullptr;
-
-static void **g_Hud_meFont = nullptr;
-
-static void **g_Hud_meScreenW = nullptr;
-static const char g_Hud_meSep[1] = {0};
-static const char g_Hud_meEnd[1] = {0};
-
 void Hud::hudEventMedal(int medalId, int percent) {
-    GameText *gt = hud_game_text();
-    if (gt == nullptr) return;
-    void *name = gt->getText(medalId + 0x5e3);
+    if (percent >= 100)
+        percent = 100;
+    this->field_0x1e0 = *hud_game_text()->getText(medalId + 0x5e3) + String(":") +
+                        String(percent) + String("%");
 
-    char sep[12], acc1[12], num[12], acc2[12], end[12], acc3[12];
-    ((String *) (sep))->ctor_char(g_Hud_meSep, false);
-    *(String *) acc1 = *(String *) name + *(String *) sep;
-    if (percent >= 100) percent = 100;
-    ((String *) (num))->Set((long long) (percent));
-    *(String *) acc2 = *(String *) acc1 + *(String *) num;
-    ((String *) (end))->ctor_char(g_Hud_meEnd, false);
-    *(String *) acc3 = *(String *) acc2 + *(String *) end;
+    String probe(this->field_0x1e0, false);
+    if (sameHudEventAsBefore(probe) != 0) return;
 
-    void *dst = &this->field_0x1e0;
-    *((String *) (dst)) = *((String *) (acc3));
-    { String *_s = ((String *) (acc3)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-    { String *_s = ((String *) (end)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-    { String *_s = ((String *) (acc2)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-    { String *_s = ((String *) (num)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-    { String *_s = ((String *) (acc1)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-    { String *_s = ((String *) (sep)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-
-    char probe[12];
-    ((String *) (probe))->Set(((String *) (dst))->data);
-    int same = sameHudEventAsBefore(*(String *) probe);
-    { String *_s = ((String *) (probe)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-    if (same != 0) return;
-
-    String *str = new String(*(String *) dst);
-    ListItem *item = new ListItem(str, 3);
+    void *itemStorage = ::operator new(sizeof(ListItem));
+    String *str = new String(this->field_0x1e0, false);
+    ListItem *item = new (itemStorage) ListItem(str, 3);
     addToEventQueue(item);
 
-    PaintCanvas *canvas = hud_canvas();
-    if (canvas == nullptr) return;
-    int w = canvas->GetTextWidth(hud_font(), *(String *) dst);
-    int screenW = Globals::w;
+    int textWidth = hud_canvas()->GetTextWidth(hud_font(), this->field_0x1e0);
     this->eventScrollTick = 0;
     this->eventScrolls = 1;
-    this->eventTextWraps =
-        ((screenW / 2 - this->eventLineMargin) + this->eventLineMarginAlt * -2 < w) ? 1 : 0;
+    this->eventTextWraps = textWidth > Globals::w / 2 - this->eventLineMargin -
+                                      2 * this->eventLineMarginAlt;
 }
 
 
-static inline __attribute__((always_inline))
-TouchButton *hud_add_menu_button(Hud *self, const String &text, int y, unsigned int action) {
-    auto *button = new TouchButton(text, 0, self->field_0x3d4, y, self->field_0x3dc, 0x11, 4);
+static inline __attribute__((always_inline)) TouchButton *hud_store_menu_button(
+        Hud *self, TouchButton *button, unsigned int action) {
     button->field_0x0 = static_cast<int>(action);
     button->field_0x4 = 0;
     ArrayAdd<TouchButton *>(button, *self->menuButtons);
     return button;
 }
 
+static inline __attribute__((always_inline)) TouchButton *hud_add_menu_text_button(
+        Hud *self, int textId, int y, unsigned int action) {
+    auto *button = new TouchButton(*hud_game_text()->getText(textId), 0, self->field_0x3d4, y,
+                                   self->field_0x3dc, 0x11, 4);
+    return hud_store_menu_button(self, button, action);
+}
+
+static inline __attribute__((always_inline)) TouchButton *hud_add_menu_item_button(
+        Hud *self, Item *item, int y, unsigned int action) {
+    auto *button = new TouchButton(*hud_game_text()->getText(item->getIndex() + 1274), 0,
+                                   self->field_0x3d4, y, self->field_0x3dc, 0x11, 4);
+    return hud_store_menu_button(self, button, action);
+}
+
+static inline __attribute__((always_inline)) void hud_add_equipment_menu_button(
+        Hud *self, unsigned int itemIndex, int y) {
+    auto *button = new TouchButton(
+            *hud_game_text()->getText((*self->equipmentArray)[itemIndex]->getIndex() + 1274) +
+                    String(String(" (") + String((*self->equipmentArray)[itemIndex]->getAmount()) +
+                                   String(")"),
+                           false),
+            0, self->field_0x3d4, y, self->field_0x3dc, 0x11, 4);
+    const unsigned int action = itemIndex == 0 ? 0x2000
+            : itemIndex == 1                       ? 0x4000
+            : itemIndex == 2                       ? 0x8000
+                                                   : 0x10000;
+    hud_store_menu_button(self, button, action);
+}
+
+static inline __attribute__((always_inline)) void hud_add_station_menu_button(Hud *self, int y) {
+    auto *button = new TouchButton(
+            String(Globals::status->getStation()->getName(), false) +
+                    (Globals::status->getStation()->getIndex() == 101
+                             ? String("", false)
+                             : String(" ") + *hud_game_text()->getText(136)),
+            0, self->field_0x3d4, y, self->field_0x3dc, 0x11, 4);
+    hud_store_menu_button(self, button, 0x800000);
+}
+
+static inline __attribute__((always_inline)) void hud_add_programmed_station_menu_button(
+        Hud *self, int y) {
+    auto *button = new TouchButton(
+            *hud_game_text()->getText(546) + String(": ") +
+                    String(static_cast<Station *>(Level::programmedStation)->getName(), false),
+            0, self->field_0x3d4, y, self->field_0x3dc, 0x11, 4);
+    hud_store_menu_button(self, button, 0x200000);
+}
+
+static inline __attribute__((always_inline)) void hud_add_docking_target_menu_button(
+        Hud *self, Level *lvl, int targetIndex, int y) {
+    auto *button = new TouchButton(
+            reinterpret_cast<PlayerFixedObject *>(
+                    static_cast<intptr_t>(lvl->getDockingTarget(targetIndex)))->getName(),
+            0, self->field_0x3d4, y, self->field_0x3dc, 0x11, 4);
+    hud_store_menu_button(self, button, 0x04000000u << targetIndex);
+}
+
 static inline __attribute__((always_inline)) void hud_compact_orbit_menu_for_phone(Hud *self) {
-    if (Globals::iPad != 0 || self->menuButtons == nullptr || self->menuButtons->size() < 5) return;
+    if (Globals::iPad != 0 || self->menuButtons->size() < 5) return;
 
     const int rowGap = hud_layout_i32(0x30);
     for (unsigned int i = 0; i < self->menuButtons->size(); ++i) {
         TouchButton *button = (*self->menuButtons)[i];
-        if (button == nullptr) continue;
         const Vector position = button->getPosition();
         button->setPosition(static_cast<int>(position.x), static_cast<int>(position.y) - rowGap);
     }
@@ -2486,13 +2514,9 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
     this->quickMenuType = menuType;
     this->menuButtons = menuButtons;
 
-    PaintCanvas *canvas = hud_canvas();
-    GameText *gameText = hud_game_text();
-    Status *status = Globals::status;
-    Ship *ship = status->getShip();
-
     delete this->equipmentArray;
-    this->equipmentArray = ship->getEquipment(1);
+    this->equipmentArray = nullptr;
+    this->equipmentArray = Globals::status->getShip()->getEquipment(1);
     updateSecondaryWeaponString();
     this->menuOriginX = 0;
 
@@ -2534,43 +2558,38 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
             if (this->equipmentArray != nullptr) {
                 for (unsigned int i = 0; i < this->equipmentArray->size(); ++i) {
                     if ((*this->equipmentArray)[i] != nullptr) {
-                        hud_add_menu_button(this, *gameText->getText(266), y, 0x200);
+                        hud_add_menu_text_button(this, 266, y, 0x200);
                         y += rowStep;
                         break;
                     }
                 }
             }
-            if (status->getWingmen() != 0 && status->inSupernovaSystem() == 0 &&
-                status->getCurrentCampaignMission() != 158) {
-                hud_add_menu_button(this, *gameText->getText(306), y, 0x400);
+            if (Globals::status->getWingmen() != 0 && Globals::status->inSupernovaSystem() == 0 &&
+                Globals::status->getCurrentCampaignMission() != 158) {
+                hud_add_menu_text_button(this, 306, y, 0x400);
                 y += rowStep;
             }
-            if (ship->hasCloak()) {
-                Item *cloak = ship->getFirstEquipmentOfSort(21);
-                if (cloak != nullptr) {
-                    TouchButton *button = hud_add_menu_button(this, *gameText->getText(cloak->getIndex() + 1274), y, 0x800);
-                    if (button != nullptr) {
-                        button->setPressProgressHighlight(false);
-                        PlayerEgo *player = lvl != nullptr ? lvl->getPlayer() : nullptr;
-                        if (player != nullptr && (player->isCloaked() || player->isChargingCloak() || player->isRechargingCloak())) {
-                            if (player->isRechargingCloak())
-                                button->setPressProgress(player->getCloakRechargeRate());
-                            button->setHalfTransparent(true);
-                        }
-                    }
-                    y += rowStep;
+            if (Globals::status->getShip()->hasCloak()) {
+                Item *cloak = Globals::status->getShip()->getFirstEquipmentOfSort(21);
+                TouchButton *button = hud_add_menu_item_button(this, cloak, y, 0x800);
+                button->setPressProgressHighlight(false);
+                if (lvl->getPlayer()->isCloaked() || lvl->getPlayer()->isChargingCloak() ||
+                    lvl->getPlayer()->isRechargingCloak()) {
+                    if (lvl->getPlayer()->isRechargingCloak())
+                        button->setPressProgress(lvl->getPlayer()->getCloakRechargeRate());
+                    button->setHalfTransparent(true);
                 }
+                y += rowStep;
             }
-            if (ship->hasJumpDrive() != 0) {
-                TouchButton *button = hud_add_menu_button(this, *gameText->getText(1359), y, 0x1000);
-                PlayerEgo *player = lvl != nullptr ? lvl->getPlayer() : nullptr;
-                if (button != nullptr && player != nullptr && (player->isChargingDrive() || player->emergencySystemActive()))
+            if (Globals::status->getShip()->hasJumpDrive() != 0) {
+                TouchButton *button = hud_add_menu_text_button(this, 1359, y, 0x1000);
+                if (lvl->getPlayer()->isChargingDrive() || lvl->getPlayer()->emergencySystemActive())
                     button->setHalfTransparent(true);
             }
 
-            Item *cargo = ship->getCargo(122);
+            Item *cargo = Globals::status->getShip()->getCargo(122);
             this->fuelGaugeValue = cargo != nullptr ? cargo->getAmount() : 0;
-            hud_create_image(canvas, 0x4f5, this->quickMenuHeaderImage);
+            hud_create_image(hud_canvas(), 0x4f5, this->quickMenuHeaderImage);
             break;
         }
         case 1: {
@@ -2579,90 +2598,71 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
                     Item *item = (*this->equipmentArray)[i];
                     if (item == nullptr) continue;
 
-                    String label = *gameText->getText(item->getIndex() + 1274);
-                    label += String(" (");
-                    label += item->getAmount();
-                    label += String(")");
-                    const unsigned int action = i == 0 ? 0x2000 : i == 1 ? 0x4000 : i == 2 ? 0x8000 : 0x10000;
-                    hud_add_menu_button(this, label, y, action);
+                    hud_add_equipment_menu_button(this, i, y);
                     y += rowStep;
                 }
             }
-            hud_create_image(canvas, 0x4f4, this->quickMenuHeaderImage);
+            hud_create_image(hud_canvas(), 0x4f4, this->quickMenuHeaderImage);
             break;
         }
         case 2: {
-            const int textIds[4] = {307, 308, 309, (status->field_f8 & 0xff) != 0 ? 311 : 310};
+            const int textIds[4] = {307, 308, 309, (Globals::status->field_f8 & 0xff) != 0 ? 311 : 310};
             const unsigned int actions[4] = {0x20000, 0x40000, 0x80000, 0x100000};
             for (unsigned int i = 0; i < 4; ++i) {
-                hud_add_menu_button(this, *gameText->getText(textIds[i]), y, actions[i]);
+                hud_add_menu_text_button(this, textIds[i], y, actions[i]);
                 y += rowStep;
             }
-            hud_create_image(canvas, 0x4f3, this->quickMenuHeaderImage);
+            hud_create_image(hud_canvas(), 0x4f3, this->quickMenuHeaderImage);
             break;
         }
         case 3: {
             if (Globals::iPad != 0)
                 this->menuOriginX = hud_layout_i32(0x28) - this->field_0x3c4;
 
-            if (!status->inAlienOrbit()) {
-                hud_add_menu_button(this, *gameText->getText(549), y, 0x1000000);
+            if (!Globals::status->inAlienOrbit()) {
+                hud_add_menu_text_button(this, 549, y, 0x1000000);
                 y += rowStep;
 
-                if (!status->inEmptyOrbit()) {
-                    Station *station = status->getStation();
-                    if (station != nullptr) {
-                        String stationLabel = station->getName();
-                        // Android rodata at 0x1ca472 is an empty string for station 101.
-                        if (station->getIndex() != 101) {
-                            stationLabel += String(" ");
-                            stationLabel += *gameText->getText(136);
-                        }
-                        hud_add_menu_button(this, stationLabel, y, 0x800000);
+                if (!Globals::status->inEmptyOrbit()) {
+                    hud_add_station_menu_button(this, y);
+                    y += rowStep;
+                }
+
+                if (Globals::status->getSystem()->currentOrbitHasWarpGate()) {
+                    hud_add_menu_text_button(this, 547, y, 0x400000);
+                    y += rowStep;
+                }
+
+                if (lvl->getPlayer()->getRoute()) {
+                    Route *route = reinterpret_cast<Route *>(
+                            static_cast<intptr_t>(lvl->getPlayer()->getRoute()));
+                    if ((route->getLastWaypoint()->state & 0xff) == 0) {
+                        hud_add_menu_text_button(this, 573, y, 0x2000000);
                         y += rowStep;
                     }
                 }
 
-                SolarSystem *system = status->getSystem();
-                if (system != nullptr && system->currentOrbitHasWarpGate()) {
-                    hud_add_menu_button(this, *gameText->getText(547), y, 0x400000);
-                    y += rowStep;
-                }
-
-                PlayerEgo *player = lvl != nullptr ? lvl->getPlayer() : nullptr;
-                Route *route = player != nullptr
-                        ? reinterpret_cast<Route *>(static_cast<intptr_t>(player->getRoute()))
-                        : nullptr;
-                Waypoint *lastWaypoint = route != nullptr ? route->getLastWaypoint() : nullptr;
-                if (lastWaypoint != nullptr && (lastWaypoint->state & 0xff) == 0) {
-                    hud_add_menu_button(this, *gameText->getText(573), y, 0x2000000);
-                    y += rowStep;
-                }
-
                 Station *programmedStation = static_cast<Station *>(Level::programmedStation);
                 if (programmedStation != nullptr) {
-                    String programmedLabel = *gameText->getText(546);
-                    programmedLabel += String(": ");
-                    programmedLabel += programmedStation->getName();
-                    hud_add_menu_button(this, programmedLabel, y, 0x200000);
+                    hud_add_programmed_station_menu_button(this, y);
                     y += rowStep;
                 }
             }
 
-            if (lvl != nullptr) {
-                const int dockingTargetCount = lvl->getNumDockingTargets();
-                for (int i = 0; i < dockingTargetCount; ++i) {
-                    auto *target = reinterpret_cast<PlayerFixedObject *>(static_cast<intptr_t>(lvl->getDockingTarget(i)));
-                    if (target == nullptr) continue;
+            const int dockingTargetCount = lvl->getNumDockingTargets();
+            for (int i = 0; i < dockingTargetCount; ++i) {
+                auto *target = reinterpret_cast<PlayerFixedObject *>(
+                        static_cast<intptr_t>(lvl->getDockingTarget(i)));
+                {
                     String targetName = target->getName();
                     if (targetName.size() == 0) continue;
-                    hud_add_menu_button(this, targetName, y, 0x04000000u << i);
-                    y += rowStep;
                 }
+                hud_add_docking_target_menu_button(this, lvl, i, y);
+                y += rowStep;
             }
 
             hud_compact_orbit_menu_for_phone(this);
-            hud_create_image(canvas, 0x4f4, this->quickMenuHeaderImage);
+            hud_create_image(hud_canvas(), 0x4f4, this->quickMenuHeaderImage);
             break;
         }
         default:
