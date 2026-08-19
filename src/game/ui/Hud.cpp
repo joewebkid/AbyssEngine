@@ -25,6 +25,7 @@
 #include "game/ui/Layout.h"
 
 #include <cstdint>
+#include <new>
 
 void Status_replaceHash(void *out, void *tmpl, void *a, void *b, void *c);
 
@@ -1436,81 +1437,191 @@ found:
 }
 
 
-static inline bool span(unsigned short o, int w, unsigned int v) {
-    return o <= v && v <= (unsigned int) o + w;
-}
-
-static inline bool cspan(unsigned short o, int w, unsigned int v) {
-    return (unsigned int) o - w <= v && v <= (unsigned int) o + w;
-}
-
 unsigned int Hud::touchedElement(unsigned int x, unsigned int y) {
-    Array<TouchButton *> *menu = this->menuButtons;
-    if (this->quickMenuOpen != 0 && menu != 0) {
-        for (unsigned int i = 0; i < menu->size(); i++) {
-            if ((*menu)[i]->OnTouchBegin((int) x, (int) y) != 0)
-                return *(unsigned int *) (*this->menuButtons)[i];
-            menu = this->menuButtons;
+    if (this->quickMenuOpen != 0) {
+        Array<TouchButton *> *menu = this->menuButtons;
+        if (menu != 0) {
+            for (unsigned int i = 0; i < menu->size(); i++) {
+                if ((*menu)[i]->OnTouchBegin((int) x, (int) y) != 0)
+                    return *(unsigned int *) (*this->menuButtons)[i];
+                menu = this->menuButtons;
+            }
+            return 0;
         }
-        return 0;
     }
 
-    int w = this->touchHalfExtent;
-    int w2 = this->touchHalfExtentSmall;
-
-    bool cinematic = Globals::iPad != 0;
-
-    if (cinematic) {
-        if (span(this->field_0x40a, w, x) && span(this->field_0x40c, w, y)) return 1;
-        if (this->hasBoostButton != 0 && span(this->field_0x410, w, x) && span(this->field_0x412, w, y)) return 2;
-        if (span(this->field_0x3f8, w, x) && span(this->field_0x3fa, w, y)) return 0x40;
-        if (span(this->field_0x404, w, x) && span(this->field_0x406, w, y)) return 0x100;
-        if (cspan(this->steeringCenterX, w, x) && cspan(this->steeringCenterY, w2, y)) return 0x20;
-        if (span(this->field_0x3f2, w, x) && span(this->field_0x3f4, w, y)) {
+    if (Globals::iPad != 0) {
+        int extent = this->touchHalfExtent;
+        unsigned int origin = this->field_0x40c;
+        if (origin <= y && origin + extent >= y) {
+            origin = this->field_0x40a;
+            if (origin <= x && origin + extent >= x)
+                return 1;
+        }
+        if (this->hasBoostButton != 0) {
+            origin = this->field_0x412;
+            if (origin <= y && origin + extent >= y) {
+                origin = this->field_0x410;
+                if (origin <= x && origin + extent >= x)
+                    return 2;
+            }
+        }
+        origin = this->field_0x3fa;
+        if (origin <= y && origin + extent >= y) {
+            origin = this->field_0x3f8;
+            if (origin <= x && origin + extent >= x)
+                return 0x40;
+        }
+        origin = this->field_0x406;
+        if (origin <= y && origin + extent >= y) {
+            origin = this->field_0x404;
+            if (origin <= x && origin + extent >= x)
+                return 0x100;
+        }
+        int center = this->steeringCenterX;
+        if (center - extent <= x && center + extent >= x) {
+            center = this->steeringCenterY;
+            int verticalExtent = this->touchHalfExtentSmall;
+            if (center - verticalExtent <= y && center + verticalExtent >= y)
+                return 0x20;
+        }
+        origin = this->field_0x3f2;
+        if (origin <= x && origin + extent >= x &&
+            (origin = this->field_0x3f4) <= y && origin + extent >= y) {
             this->field_0x470 = 1000;
             return 0x80;
         }
-        if (cspan(this->field_0x3ec, w, x) && span(this->field_0x3ee, w, y)) return 8;
-        if (cspan(this->field_0x3e4, w2 >> 1, x) && cspan(this->field_0x3e6, w2 >> 1, y)) return 0x10;
-        if (this->quickMenuEmpty == 0 && span(this->field_0x416, this->field_0x41a, x) &&
-            span(this->field_0x418, this->field_0x41c, y))
-            return 4;
-        if (span(this->field_0x3fe, w, x) && span(this->field_0x400, w, y)) return 0x20000000;
+        center = this->field_0x3ec;
+        if (center - (extent >> 1) <= x && center + extent >= x) {
+            origin = this->field_0x3ee;
+            if (origin <= y && origin + extent >= y)
+                return 8;
+        }
+        int smallExtent = this->touchHalfExtentSmall;
+        center = this->field_0x3e4;
+        if (center - (smallExtent >> 1) <= x && center + (smallExtent >> 1) >= x) {
+            center = this->field_0x3e6;
+            smallExtent >>= 1;
+            if (center - smallExtent <= y && center + smallExtent >= y)
+                return 0x10;
+        }
+        if (this->quickMenuEmpty == 0) {
+            origin = this->field_0x416;
+            if (origin <= x && origin + this->field_0x41a >= x) {
+                origin = this->field_0x418;
+                if (origin <= y && origin + this->field_0x41c >= y)
+                    return 4;
+            }
+        }
+        origin = this->field_0x400;
+        if (origin <= y && origin + extent >= y) {
+            origin = this->field_0x3fe;
+            if (origin <= x && origin + extent >= x)
+                return 0x20000000;
+        }
         if (this->hackingGameActive != 0) {
-            if (span(this->field_0x454, w, x) && span(this->field_0x456, w, y)) return 0x200;
-            if (span(this->field_0x458, w, x) && span(this->field_0x45a, w, y)) return 0x400;
-            if (span(this->field_0x45e, w, x) && span(this->field_0x460, w, y)) return 0x800;
+            origin = this->field_0x456;
+            if (origin <= y && origin + extent >= y &&
+                (origin = this->field_0x454) <= x && origin + extent >= x)
+                return 0x200;
+            origin = this->field_0x45a;
+            if (origin <= y && origin + extent >= y &&
+                (origin = this->field_0x458) <= x && origin + extent >= x)
+                return 0x400;
+            origin = this->field_0x460;
+            if (origin <= y && origin + extent >= y &&
+                (origin = this->field_0x45e) <= x && origin + extent >= x)
+                return 0x800;
         }
         return 0;
     }
 
+    int extent = this->touchHalfExtent;
     if (this->hackingGameActive != 0) {
-        if (span(this->field_0x454, w, x) && span(this->field_0x456, w, y)) return 0x200;
-        if (span(this->field_0x458, w, x) && span(this->field_0x45a, w, y)) return 0x400;
-        if (span(this->field_0x45e, w, x) && span(this->field_0x460, w, y)) return 0x800;
+        unsigned int origin = this->field_0x456;
+        if (origin <= y && origin + extent >= y &&
+            (origin = this->field_0x454) <= x && origin + extent >= x)
+            return 0x200;
+        origin = this->field_0x45a;
+        if (origin <= y && origin + extent >= y &&
+            (origin = this->field_0x458) <= x && origin + extent >= x)
+            return 0x400;
+        origin = this->field_0x460;
+        if (origin <= y && origin + extent >= y &&
+            (origin = this->field_0x45e) <= x && origin + extent >= x)
+            return 0x800;
     }
 
-    int screenW = Globals::w;
-    int screenH = Globals::h;
+    if (y < (unsigned int) (Globals::h >> 2)) {
+        unsigned int origin = this->field_0x40c;
+        if (origin <= y && origin + extent >= y) {
+            origin = this->field_0x40a;
+            if (origin <= x && origin + extent >= x)
+                return 1;
+        }
+        return 0;
+    }
+    if (x < (unsigned int) (Globals::w >> 1)) {
+        if (this->hasBoostButton != 0) {
+            unsigned int origin = this->field_0x412;
+            if (origin <= y && origin + extent >= y) {
+                int center = this->field_0x410;
+                if (center - extent <= x && center + extent >= x)
+                    return 2;
+            }
+        }
+        unsigned int origin = this->field_0x3fa;
+        if (origin <= y && origin + extent >= y &&
+            (origin = this->field_0x3f8) <= x && origin + extent >= x)
+            return 0x40;
+        origin = this->field_0x406;
+        if (origin <= y && origin + extent >= y &&
+            (origin = this->field_0x404) <= x && origin + extent >= x)
+            return 0x100;
+        int center = this->steeringCenterX;
+        if (center - extent <= x && center + extent >= x) {
+            center = this->steeringCenterY;
+            int verticalExtent = this->touchHalfExtentSmall;
+            if (center - verticalExtent <= y && center + verticalExtent >= y)
+                return 0x20;
+        }
+        return 0;
+    }
 
-    if (y < (unsigned int) (screenH >> 2)) {
-        if (span(this->field_0x40a, w, x) && span(this->field_0x40c, w, y)) return 1;
-    } else if (x < (unsigned int) (screenW >> 1)) {
-        if (this->hasBoostButton != 0 && cspan(this->field_0x410, w, x) && span(this->field_0x412, w, y)) return 2;
-        if (span(this->field_0x3f8, w, x) && span(this->field_0x3fa, w, y)) return 0x40;
-        if (span(this->field_0x404, w, x) && span(this->field_0x406, w, y)) return 0x100;
-        if (cspan(this->steeringCenterX, w, x) && cspan(this->steeringCenterY, w2, y)) return 0x20;
-    } else {
-        if (span(this->field_0x3f2, w, x) && span(this->field_0x3f4, w, y)) {
+    unsigned int origin = this->field_0x3f2;
+    if (origin <= x && origin + extent >= x) {
+        origin = this->field_0x3f4;
+        if (origin <= y && origin + extent >= y) {
             this->field_0x470 = 1000;
             return 0x80;
         }
-        if (cspan(this->field_0x3ec, w, x) && span(this->field_0x3ee, w, y)) return 8;
-        if (span(this->field_0x3e4, w2, x) && span(this->field_0x3e6, w2, y)) return 0x10;
-        if (this->quickMenuEmpty == 0 && span(this->field_0x416, this->field_0x41a, x) &&
-            span(this->field_0x418, this->field_0x41c, y))
-            return 4;
-        if (span(this->field_0x3fe, w, x) && span(this->field_0x400, w, y)) return 0x20000000;
+    }
+    int center = this->field_0x3ec;
+    if (center - (extent >> 1) <= x && center + extent >= x) {
+        origin = this->field_0x3ee;
+        if (origin <= y && origin + extent >= y)
+            return 8;
+    }
+    int smallExtent = this->touchHalfExtentSmall;
+    origin = this->field_0x3e4;
+    if (origin <= x && origin + smallExtent >= x) {
+        origin = this->field_0x3e6;
+        if (origin <= y && origin + smallExtent >= y)
+            return 0x10;
+    }
+    if (this->quickMenuEmpty == 0) {
+        origin = this->field_0x416;
+        if (origin <= x && origin + this->field_0x41a >= x) {
+            origin = this->field_0x418;
+            if (origin <= y && origin + this->field_0x41c >= y)
+                return 4;
+        }
+    }
+    origin = this->field_0x400;
+    if (origin <= y && origin + extent >= y) {
+        origin = this->field_0x3fe;
+        if (origin <= x && origin + extent >= x)
+            return 0x20000000;
     }
     return 0;
 }
@@ -1520,146 +1631,85 @@ Hud::Hud() {
 }
 
 
-static GameText **g_Hud_ccGameText = nullptr;
-
-static void **g_Hud_ccTemplate = nullptr;
-static const char g_Hud_ccHashX[1] = {0};
-static const char g_Hud_ccHashN[1] = {0};
-static const char g_Hud_ccUnit[1] = {0};
-static const char g_Hud_ccUnit2[1] = {0};
-
 void Hud::catchCargo(int itemId, int count, bool single, bool missionDelivery, bool extender,
                      bool slotMode, bool aggregate) {
     this->field_0x1d0 = 0;
-    this->cargoFullFlag = single ? 1 : 0;
+    this->cargoFullFlag = single;
 
     if (missionDelivery) {
-        GameText *gt = *g_Hud_ccGameText;
-        void *base = gt->getText(0x219);
-        void *dst = &this->field_0x1f4;
-        *((String *) (dst)) = *((String *) (base));
+        GameText *gameText = static_cast<GameText *>(Globals::gameText);
+        this->field_0x1f4 = *gameText->getText(0x219);
+        {
+            String source(this->field_0x1f4, false);
+            String replacement(*gameText->getText(
+                Globals::status->getMission()->getType() == 3 ? 0x56e : 0x56f), false);
+            String token("#N");
+            String result;
+            Status_replaceHash(&result, Globals::status, &source, &replacement, &token);
+            this->field_0x1f4 = result;
+        }
+        {
+            String source(this->field_0x1f4, false);
+            String replacement(1);
+            String token("#Q");
+            String result;
+            Status_replaceHash(&result, Globals::status, &source, &replacement, &token);
+            this->field_0x1f4 = result;
+        }
 
-        void *tmpl = *g_Hud_ccTemplate;
-        char a40[12];
-        ((String *) (a40))->Set(((String *) (dst))->data);
-        int type = Status::gStatus->getMission()->getType();
-        void *typeTxt = gt->getText(type == 3 ? 0x56e : 0x56f);
-        char a4c[12];
-        ((String *) (a4c))->Set(((String *) (typeTxt))->data);
-        char a58[12];
-        ((String *) (a58))->ctor_char(g_Hud_ccHashX, false);
-        char out1[12];
-        Status_replaceHash(out1, tmpl, a40, a4c, a58);
-        *((String *) (dst)) = *((String *) (out1));
-        { String *_s = ((String *) (out1)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-        { String *_s = ((String *) (a58)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-        { String *_s = ((String *) (a4c)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-        { String *_s = ((String *) (a40)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-
-        tmpl = *g_Hud_ccTemplate;
-        char a64[12];
-        ((String *) (a64))->Set(((String *) (dst))->data);
-        char a70[12];
-        ((String *) (a70))->Set((long long) (1));
-        char a7c[12];
-        ((String *) (a7c))->ctor_char(g_Hud_ccHashN, false);
-        char out2[12];
-        Status_replaceHash(out2, tmpl, a64, a70, a7c);
-        *((String *) (dst)) = *((String *) (out2));
-        { String *_s = ((String *) (out2)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-        { String *_s = ((String *) (a7c)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-        { String *_s = ((String *) (a70)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-        { String *_s = ((String *) (a64)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-
-        String *str = new String(*(String *) dst);
-        ListItem *item = new ListItem(str);
+        void *itemStorage = ::operator new(sizeof(ListItem));
+        String *str = new String(this->field_0x1f4, false);
+        ListItem *item = new (itemStorage) ListItem(str);
         item->field_0x2c = itemId;
         addToEventQueue(item);
         return;
     }
 
     if (single) {
-        GameText *gt = *g_Hud_ccGameText;
-        void *txt = gt->getText(0x142);
-        *((String *) (&this->field_0x1f4)) = *((String *) (txt));
-        String *str = new String(this->field_0x1f4);
-        ListItem *item = new ListItem(str, 1);
+        this->field_0x1f4 = *static_cast<GameText *>(Globals::gameText)->getText(0x142);
+        void *itemStorage = ::operator new(sizeof(ListItem));
+        String *str = new String(this->field_0x1f4, false);
+        ListItem *item = new (itemStorage) ListItem(str, true);
         addToEventQueue(item);
         return;
     }
 
     if (count < 1) return;
 
-    GameText *gt = *g_Hud_ccGameText;
+    GameText *gameText = static_cast<GameText *>(Globals::gameText);
 
     if (aggregate && this->eventQueueDirty != 0) {
-        char a0[12];
-        ((String *) (a0))->Set((long long) (this->cargoAggregateCount));
-        char ac[12];
-        ((String *) (ac))->ctor_char(g_Hud_ccUnit, false);
-        char a94[12];
-        *(String *) a94 = *(String *) a0 + *(String *) ac;
-        char a88[12];
-        ((String *) (a88))->Set(((String *) (a94))->data);
-        void *unit = gt->getText(itemId + 0x4fa);
-        char k34[12];
-        *(String *) k34 = *(String *) a88 + *(String *) unit;
-        { String *_s = ((String *) (a88)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-        { String *_s = ((String *) (a94)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-        { String *_s = ((String *) (ac)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-        { String *_s = ((String *) (a0)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-
-        char b8[12];
-        ((String *) (b8))->Set(((String *) (k34))->data);
-        int idx = sameHudEventAsBeforeAggregate(*(String *) b8);
-        { String *_s = ((String *) (b8)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
+        String amountValue(this->cargoAggregateCount);
+        String amountUnit("t ");
+        String amount = amountValue + amountUnit;
+        String amountCopy(amount, false);
+        String previousLabel = amountCopy + *gameText->getText(itemId + 0x4fa);
+        String lookup(previousLabel, false);
+        int idx = sameHudEventAsBeforeAggregate(lookup);
         if (idx >= 0) {
             this->eventQueueTimer = 2000;
             this->cargoAggregateCount += count;
-            char nAc[12];
-            ((String *) (nAc))->Set((long long) (this->cargoAggregateCount));
-            char nC4[12];
-            ((String *) (nC4))->ctor_char(g_Hud_ccUnit2, false);
-            char nA0[12];
-            *(String *) nA0 = *(String *) nAc + *(String *) nC4;
-            char n94[12];
-            ((String *) (n94))->Set(((String *) (nA0))->data);
-            void *u2 = gt->getText(itemId + 0x4fa);
-            char n88[12];
-            *(String *) n88 = *(String *) n94 + *(String *) u2;
-            *((String *) ((*this->eventQueue)[idx]->name)) = *((String *) (n88));
-            { String *_s = ((String *) (n88)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-            { String *_s = ((String *) (n94)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-            { String *_s = ((String *) (nA0)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-            { String *_s = ((String *) (nC4)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-            { String *_s = ((String *) (nAc)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-            { String *_s = ((String *) (k34)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
+            String newAmountValue(this->cargoAggregateCount);
+            String newAmountUnit("t ");
+            String newAmount = newAmountValue + newAmountUnit;
+            String newAmountCopy(newAmount, false);
+            String newLabel = newAmountCopy + *gameText->getText(itemId + 0x4fa);
+            *(*this->eventQueue)[idx]->name = newLabel;
             return;
         }
-        { String *_s = ((String *) (k34)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
     }
 
     this->cargoAggregateCount = count;
-    char a0[12];
-    ((String *) (a0))->Set((long long) (this->cargoAggregateCount));
-    char ac[12];
-    ((String *) (ac))->ctor_char(g_Hud_ccUnit, false);
-    char a94[12];
-    *(String *) a94 = *(String *) a0 + *(String *) ac;
-    char a88[12];
-    ((String *) (a88))->Set(((String *) (a94))->data);
-    void *unit = gt->getText(itemId + 0x4fa);
-    char k34[12];
-    *(String *) k34 = *(String *) a88 + *(String *) unit;
-    *((String *) (&this->field_0x1f4)) = *((String *) (k34));
-    { String *_s = ((String *) (k34)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-    { String *_s = ((String *) (a88)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-    { String *_s = ((String *) (a94)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-    { String *_s = ((String *) (ac)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-    { String *_s = ((String *) (a0)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
+    String amountValue(this->cargoAggregateCount);
+    String amountUnit("t ");
+    String amount = amountValue + amountUnit;
+    String amountCopy(amount, false);
+    String label = amountCopy + *gameText->getText(itemId + 0x4fa);
+    this->field_0x1f4 = label;
 
-    String *str = new String(this->field_0x1f4);
-    ListItem *item = new ListItem(str);
+    void *itemStorage = ::operator new(sizeof(ListItem));
+    String *str = new String(this->field_0x1f4, false);
+    ListItem *item = new (itemStorage) ListItem(str);
     item->field_0x2c = itemId;
     if (!slotMode || extender) item->field_0x30 = 2;
     if (slotMode) item->field_0x24 = 1;
@@ -1668,32 +1718,25 @@ void Hud::catchCargo(int itemId, int count, bool single, bool missionDelivery, b
 
 
 void Hud::drawEventString(String text, bool rightAlign) {
-    PaintCanvas *canvas = hud_canvas();
-    if (canvas == nullptr) return;
     const unsigned int font = hud_font();
+    PaintCanvas *canvas = hud_canvas();
     int x;
-    if (this->eventTextWraps == 0) {
-        int base = this->eventLineMargin;
-        int yBase = this->eventLineX;
-        if (rightAlign == 0) {
-            int w = canvas->GetTextWidth(font, text);
-            x = (base + 3) - w;
-        } else {
-            x = -3 - base;
-        }
-        x = x + yBase;
-    } else {
-        if (rightAlign == 0) {
-            int margin = this->eventLineMarginAlt;
-            int screenW = Globals::w;
-            int w = canvas->GetTextWidth(font, text);
-            x = ((screenW - 1) - margin) - w;
-        } else {
+    if (this->eventTextWraps != 0) {
+        if (rightAlign) {
             x = this->eventLineMarginAlt + 1;
+        } else {
+            x = Globals::w - 1 - this->eventLineMarginAlt - canvas->GetTextWidth(font, text);
         }
+    } else {
+        int offset;
+        if (rightAlign) {
+            offset = -3 - this->eventLineMargin;
+        } else {
+            offset = this->eventLineMargin + 3 - canvas->GetTextWidth(font, text);
+        }
+        x = offset + this->eventLineX;
     }
-    char y = (char) (this->eventLineY - 1);
-    canvas->DrawString(font, text, x, y, false);
+    canvas->DrawString(font, text, x, this->eventLineY - 1, false);
 }
 
 void Hud::setCurrentSecondaryWeapon(Item *item) {
@@ -1717,17 +1760,12 @@ int Hud::sameHudEventAsBeforeAggregate(String str) {
 
 void Hud::updateSecondaryWeaponString() {
     Item *item = this->currentSecondaryWeapon;
-    PaintCanvas *canvas = hud_canvas();
-    GameText *gameText = hud_game_text();
-    if (item == nullptr || canvas == nullptr || gameText == nullptr) return;
+    if (item == nullptr) return;
 
-    String label = *gameText->getText(item->getIndex() + 1274);
-    label += String(" (");
-    label += String(item->getAmount());
-    label += String(")");
-    this->field_0x3b4 = label;
-
-    this->secondaryLabelX = (Globals::w >> 1) - (canvas->GetTextWidth(hud_font(), this->field_0x3b4) >> 1);
+    this->field_0x3b4 = *hud_game_text()->getText(item->getIndex() + 1274) +
+                        String(" (") + String(this->currentSecondaryWeapon->getAmount()) + String(")");
+    this->field_0x3c0 = (Globals::w >> 1) -
+                       (hud_canvas()->GetTextWidth(hud_font(), this->field_0x3b4) >> 1);
 }
 
 
@@ -2000,7 +2038,6 @@ update_string:
 void Hud::drawMenu(int unused) {
     (void) unused;
     PaintCanvas *canvas = hud_canvas();
-    if (canvas == nullptr || Globals::layout == nullptr) return;
     static_cast<Layout *>(Globals::layout)->drawMask();
 
     const int frameX = this->field_0x3c4 + this->menuOriginX;
@@ -2012,31 +2049,37 @@ void Hud::drawMenu(int unused) {
     canvas->DrawImage2D(static_cast<unsigned>(this->quickMenuHeaderImage), headerX, headerY, 0x11, 0x44);
 
     int rowY = menuY + this->menuRowHeight;
-    if (this->menuButtons != nullptr) {
-        for (unsigned int i = 0; i + 1 < this->menuButtons->size(); ++i) {
-            canvas->DrawImage2D(static_cast<unsigned>(this->quickMenuMiddleImage), frameX, rowY);
-            rowY += this->field_0x3d0;
+    Array<TouchButton *> *buttons = this->menuButtons;
+    if (buttons != nullptr) {
+        unsigned int count = buttons->size();
+        if (count != 0) {
+            for (unsigned int i = 0; i < count - 1; ++i) {
+                canvas->DrawImage2D(static_cast<unsigned>(this->quickMenuMiddleImage), frameX, rowY);
+                rowY += this->field_0x3d0;
+                count = this->menuButtons->size();
+            }
         }
     }
     canvas->DrawImage2D(static_cast<unsigned>(this->quickMenuBottomImage), frameX, rowY);
 
-    if (this->menuButtons != nullptr) {
-        for (unsigned int i = 0; i < this->menuButtons->size(); ++i) {
-            TouchButton *button = (*this->menuButtons)[i];
-            if (button != nullptr)
-                button->draw();
+    buttons = this->menuButtons;
+    if (buttons != nullptr) {
+        unsigned int count = buttons->size();
+        if (count != 0) {
+            for (unsigned int i = 0; i < count; ++i) {
+                (*buttons)[i]->draw();
+                buttons = this->menuButtons;
+                count = buttons->size();
+            }
         }
     }
 
     if (this->quickMenuType != 0) return;
 
-    Status *status = Status::gStatus;
-    Ship *ship = status != nullptr ? status->getShip() : nullptr;
-    if (ship == nullptr) return;
-    if (!ship->hasCloak() && ship->hasJumpDrive() == 0) return;
+    Ship *ship = Globals::status->getShip();
+    if (ship->hasCloak() == 0 && Globals::status->getShip()->hasJumpDrive() == 0) return;
 
-    String cargoLabel("X ");
-    cargoLabel += this->fuelGaugeValue;
+    String cargoLabel = String("X ") + String(this->fuelGaugeValue);
 
     const int gaugeX = headerX;
     const int gaugeY = rowY + hud_layout_i32(0x30) / 2 + hud_layout_i32(0x288);
