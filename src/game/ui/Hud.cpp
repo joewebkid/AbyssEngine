@@ -536,8 +536,8 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                 this->iPadFireCoord_0x0e, this->field_0x3e4, this->field_0x3e6,
                 this->field_0x416, this->field_0x418, this->field_0x3f2, this->field_0x3f4,
                 this->field_0x3ec, this->field_0x3ee, this->field_0x3fe, this->field_0x400);
-            this->iPadSteerAnchor = steerAnchor;
-            this->iPadFireAnchor = fireAnchor;
+            this->iPadSteerAnchor = settings->steerAnchorX;
+            this->iPadFireAnchor = settings->fireAnchorX;
         }
     }
 
@@ -554,12 +554,14 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
 
     const bool boostReady = ego->getBoostRate() == 1.0f;
     if (boostReady && this->boostReadyLatched == 0) {
+        const int secondaryFlashRemaining = this->secondaryFlashRemaining;
+        const int menuOriginX = this->menuOriginX;
         this->boostReadyLatched = 1;
         this->boostFlashRemaining = 2000;
         this->boostFlashPulse = 80;
-        this->field_0x47c = this->secondaryFlashRemaining < 0
-                                ? this->menuOriginX
-                                : canvas->GetTextHeight(hud_font()) + this->menuOriginX;
+        this->field_0x47c = secondaryFlashRemaining < 0
+                                ? menuOriginX
+                                : canvas->GetTextHeight(hud_font()) + menuOriginX;
     } else {
         this->boostReadyLatched = ego->getBoostRate() == 1.0f;
     }
@@ -577,13 +579,12 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
 
     // --- shield/armor/gamma bars ---
     {
-        Player *player = static_cast<Player *>(ego->player);
-        const float fillScale = 0.01f * static_cast<float>(this->field_0x446);
         const int dividerYOffset = hud_layout_i32(0x1e8);
         canvas->SetColor((unsigned) 0xffffffffu);
+        Player *player = static_cast<Player *>(ego->player);
 
-        unsigned short frameY = this->field_0x442;
-        unsigned short fillY = this->field_0x44a;
+        const unsigned short *frameYAddress;
+        const unsigned short *fillYAddress;
         if (this->hasShieldBar != 0) {
             int shp = player->getShieldHP();
             int frame = (shp < 2 || this->shieldHitFlash == 0) ? this->shieldFrameImage : this->shieldFrameHitImage;
@@ -592,13 +593,19 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                                 this->field_0x442 + dividerYOffset);
             canvas->DrawImage2D((unsigned) this->shieldBarBgImage, this->field_0x440, this->field_0x44a);
             int rate = player->getShieldDamageRate();
-            int w = static_cast<int>(static_cast<float>(rate) * fillScale);
+            int w = static_cast<int>((static_cast<float>(rate) * 0.01f) *
+                                     static_cast<float>(this->field_0x446));
             canvas->DrawRegion2D((unsigned) this->shieldBarFillImage, 0, 0, w, this->field_0x44c,
                                  0.0f, 0, 0, this->field_0x440, this->field_0x44a);
-            frameY = this->field_0x444;
-            fillY = this->field_0x448;
+            frameYAddress = &this->field_0x444;
+            fillYAddress = &this->field_0x448;
+        } else {
+            frameYAddress = &this->field_0x442;
+            fillYAddress = &this->field_0x44a;
         }
 
+        const unsigned short frameY = *frameYAddress;
+        const unsigned short fillY = *fillYAddress;
         int ahp = player->getArmorHP();
         int aframe = (ahp < 1) ? this->armorFrameLowImage : this->armorFrameImage;
         canvas->DrawImage2D((unsigned) aframe, this->field_0x43c, frameY);
@@ -606,13 +613,15 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                             frameY + dividerYOffset);
         canvas->DrawImage2D((unsigned) this->armorBarBgImage, this->field_0x440, fillY);
         int hrate = ego->getHullDamageRate();
-        int hw = static_cast<int>(static_cast<float>(hrate) * fillScale);
+        int hw = static_cast<int>((static_cast<float>(hrate) * 0.01f) *
+                                  static_cast<float>(this->field_0x446));
         canvas->DrawRegion2D((unsigned) this->armorBarFillImage, 0, 0, hw, this->field_0x44c,
                              0.0f, 0, 0, this->field_0x440, fillY);
 
         if (this->hasArmorRegen != 0) {
             int arate = player->getArmorDamageRate();
-            int aw = static_cast<int>(static_cast<float>(arate) * fillScale);
+            int aw = static_cast<int>((static_cast<float>(arate) * 0.01f) *
+                                      static_cast<float>(this->field_0x446));
             canvas->DrawRegion2D((unsigned) this->armorRegenFillImage, 0, 0, aw, this->field_0x44c,
                                  0.0f, 0, 0, this->field_0x440, fillY);
         }
