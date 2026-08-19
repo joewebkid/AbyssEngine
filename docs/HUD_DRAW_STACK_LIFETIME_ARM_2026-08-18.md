@@ -89,10 +89,10 @@ verified only after all related lifetimes were present.
 - All 48 Hud functions: `69.6%` average, 22 linked-exact and 16
   raw-byte-exact. No exact-function regression occurred.
 
-## Remaining Work
+## Follow-Up
 
-The remaining eight-byte frame difference includes the original stack-canary
-path, which is still absent locally. No synthetic buffer or manual canary was
-added. The next pass should identify the real source construct that triggered
-the protector and audit the remaining `221` instruction gap, especially boost
-branch shape, progress branch joins and final exception-cleanup edges.
+The eight-byte frame and stack-canary difference was resolved by the next
+package: the original code-generation pattern requires
+`-fstack-protector-strong`, not an artificial source-level scratch buffer. The
+boost body and full-corpus A/B are recorded in
+`HUD_BOOST_STACK_PROTECTOR_ARM_2026-08-19.md`.

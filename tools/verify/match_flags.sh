@@ -30,6 +30,9 @@ fi
 
 # One argument per line. build_objs.sh turns this back into a Bash array before
 # invoking clang, so a local NDK/repository path with spaces stays one argument.
+# Address-taken local String objects in the original Hud functions carry a
+# canary even without a source-level C array. Clang 7 reproduces that frame
+# shape with the strong protector; the basic protector does not.
 GOF2_MATCH_CXXFLAGS="$(printf '%s\n' \
   -target \
   "armv7-none-linux-androideabi${GOF2_MATCH_API}" \
@@ -39,7 +42,7 @@ GOF2_MATCH_CXXFLAGS="$(printf '%s\n' \
   -mfloat-abi=softfp \
   -fpic \
   -frtti \
-  -fstack-protector \
+  -fstack-protector-strong \
   "${GOF2_MATCH_OPT}" \
   -stdlib=libc++ \
   -isystem \

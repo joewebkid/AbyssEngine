@@ -149,12 +149,19 @@ cmake --build cmake-build-match --target verify
 (fpu, stack protector, API level, exceptions/rtti) live in `match_flags.sh`; edit
 there and re-run `verify`. Known facts already baked in: `-mfpu=neon` (the original
 uses NEON), `-D__ANDROID_API__=21` (needed for libc++ `<cmath>` to compile),
-`-mthumb`, `-frtti`, **`-DGOF2_MATCH=1`** (selects the real `Array<T>` over the dev-build
+`-mthumb`, `-frtti`, `-fstack-protector-strong`, **`-DGOF2_MATCH=1`** (selects the real `Array<T>` over the dev-build
 `std::vector` alias, see common.h).
 
 > **`-Oz` vs `-O2` — settled: `-Oz`.** A clean A/B on equal coverage (2326 functions compared in
 > both) gave `-Oz` 468 byte-exact / 66.1% avg vs `-O2` 444 / 54.9%; 24 functions match only at
 > `-Oz` and none only at `-O2`. The original was built `-Oz`. (`match_flags.sh` defaults to it.)
+
+> **Stack protector level - settled: `-fstack-protector-strong`.** On the same
+> 4436-function corpus it raised average fuzzy similarity from `70.1%` to
+> `71.64%` and linked-exact functions from 1848 to 1871, without losing a
+> linked- or raw-byte-exact function. It also reproduces the exact 224-byte
+> `Hud::draw` frame and canary path. See
+> [HUD_BOOST_STACK_PROTECTOR_ARM_2026-08-19.md](HUD_BOOST_STACK_PROTECTOR_ARM_2026-08-19.md).
 
 ## Files
 

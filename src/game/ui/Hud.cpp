@@ -1078,29 +1078,56 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
             this->boostFlashRemaining -= elapsed;
             this->boostFlashPulse -= elapsed;
         }
-        unsigned char alpha = 55;
-        if (ego->boosting() == 0) {
-            const float boostRate = ego->getBoostRate();
-            alpha = boostRate >= 1.0f ? 0xff : static_cast<unsigned char>(55.0f + boostRate * 75.0f);
-        }
+        unsigned char boostAlpha;
+        if (ego->boosting() != 0)
+            boostAlpha = 0;
+        else if (ego->getBoostRate() >= 1.0f)
+            boostAlpha = 200;
+        else
+            boostAlpha = static_cast<unsigned char>(static_cast<int>(ego->getBoostRate() * 75.0f));
         canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
-                         static_cast<unsigned char>(0xff), alpha);
-        if (Globals::mouseCursorActivated != 0 || isMining || this->hackingGameActive != 0 ||
-            ego->isDockedToDockingPoint()) {
-            canvas->SetColor(static_cast<unsigned>(ego->getBoostRate() < 1.0f ? 0xffffff2fu : 0xffffff00u));
+                         static_cast<unsigned char>(0xff),
+                         static_cast<unsigned char>(boostAlpha + 55));
+
+        int boostBlocked = Globals::mouseCursorActivated;
+        if (Globals::mouseCursorActivated != 0)
+            boostBlocked = 1;
+        boostBlocked |= isMining;
+        bool boostAvailable = boostBlocked == 0;
+        if (boostBlocked == 0)
+            boostAvailable = this->hackingGameActive == 0;
+        if (!boostAvailable || ego->isDockedToDockingPoint()) {
+            unsigned int boostColor;
+            if (ego->getBoostRate() < 1.0f)
+                boostColor = static_cast<unsigned>(0xffffff2fu);
+            else
+                boostColor = static_cast<unsigned>(0xffffff00u);
+            canvas->SetColor(boostColor);
         }
-        const bool pressed = (this->touchFlagsLow & 2u) != 0 ||
-                             (this->boostFlashRemaining > 0 && this->boostFlashPulse <= 0);
-        if (pressed && this->boostFlashRemaining > 0) {
+
+        const int boostFlashRemaining = this->boostFlashRemaining;
+        if ((this->touchFlagsLow & 2u) != 0) {
+            if (boostFlashRemaining < 1) {
+                canvas->DrawImage2D(static_cast<unsigned>(this->boostPressedImage),
+                                    this->field_0x410, this->field_0x412);
+                goto boost_drawn;
+            }
+        } else if (boostFlashRemaining < 1 || this->boostFlashPulse >= 1) {
+            canvas->DrawImage2D(static_cast<unsigned>(this->boostIdleImage),
+                                this->field_0x410, this->field_0x412);
+            goto boost_drawn;
+        }
+
+        {
             this->boostFlashPulse = 80;
             if (Globals::mouseCursorActivated != 0)
                 canvas->SetColor(static_cast<unsigned>(0xffffffffu));
+            canvas->DrawImage2D(static_cast<unsigned>(this->boostPressedImage),
+                                this->field_0x410, this->field_0x412);
         }
-        const int image = pressed ? this->boostPressedImage
-                                  : this->boostIdleImage;
-        canvas->DrawImage2D(static_cast<unsigned>(image), this->field_0x410, this->field_0x412);
     }
 
+boost_drawn:
     canvas->SetColor(static_cast<unsigned>(0xffffffffu));
     if (Globals::mouseCursorActivated != 0 || this->quickMenuOpen != 0)
         canvas->SetColor(static_cast<unsigned>(0xffffff00u));

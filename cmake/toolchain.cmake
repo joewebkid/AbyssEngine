@@ -29,7 +29,7 @@ set(_match_api 21)
 set(CMAKE_CXX_FLAGS
     "-target armv7-none-linux-androideabi${_match_api} \
 -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=softfp \
--fPIC -frtti -fstack-protector ${GOF2_MATCH_OPT} \
+-fPIC -frtti -fstack-protector-strong ${GOF2_MATCH_OPT} \
 -stdlib=libc++ \
 -isystem ${GOF2_NDK_LIBCXX_INC} \
 -isystem ${GOF2_NDK_LIBCXXABI_INC} \
