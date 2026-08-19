@@ -1187,10 +1187,9 @@ boost_drawn:
 
     const int progressCenterX = Globals::w >> 1;
     int progressStackOffset = 0;
-    GameText *progressText = hud_game_text();
 
     if (this->dockTransferProgressActive != 0 && ego->isDockedToDockingPoint() &&
-        ego->getHitpoints() >= 1 && progressText != nullptr) {
+        ego->getHitpoints() >= 1) {
         const unsigned int gaugeMetricsImage = static_cast<unsigned int>(this->chargeProgressFillImage);
         const unsigned int dockFillImage = static_cast<unsigned int>(this->dockTransferFillImage);
         const int stackFillHeight = canvas->GetImage2DHeight(gaugeMetricsImage);
@@ -1198,7 +1197,7 @@ boost_drawn:
         const int transferred = ego->getDockTransferedAmount();
         const int total = ego->getDockTotalAmount();
         const bool reverse = this->dockTransferReverse != 0;
-        const String *baseLabel = progressText->getText(reverse ? 3205 : 3204);
+        const String *baseLabel = hud_game_text()->getText(reverse ? 3205 : 3204);
         String spacer(" ");
 
         float transferRate = 1.0f - static_cast<float>(transferred) / static_cast<float>(total);
@@ -1245,14 +1244,28 @@ boost_drawn:
         }
     }
 
-    if ((this->jumpDriveProgressActive != 0 || this->cloakProgressActive != 0) && progressText != nullptr) {
-        const bool jumpDrive = this->jumpDriveProgressActive != 0;
-        float rate = jumpDrive ? ego->getDriveChargeRate() : ego->getCloakRate();
-        float progress = 1.0f;
-        if (rate * 1.05f < 1.0f)
-            progress = (jumpDrive ? ego->getDriveChargeRate() : ego->getCloakRate()) * 1.05f;
+    {
+        float rate;
+        if (this->jumpDriveProgressActive != 0) {
+            rate = ego->getDriveChargeRate();
+        } else {
+            if (this->cloakProgressActive == 0)
+                goto mining_hint;
+            rate = ego->getCloakRate();
+        }
 
-        String label = *progressText->getText(jumpDrive ? 318 : 317);
+        float progress = 1.0f;
+        if (rate * 1.05f < 1.0f) {
+            if (this->jumpDriveProgressActive != 0)
+                progress = ego->getDriveChargeRate() * 1.05f;
+            else
+                progress = ego->getCloakRate() * 1.05f;
+        }
+
+        int textId = 318;
+        if (this->jumpDriveProgressActive == 0)
+            textId = 317;
+        String label = *hud_game_text()->getText(textId);
         const unsigned int fillImage = static_cast<unsigned int>(this->chargeProgressFillImage);
         const int halfWidth = static_cast<int>(static_cast<float>(canvas->GetImage2DWidth(fillImage)) * 0.5f);
         const int fillHeight = canvas->GetImage2DHeight(fillImage);
@@ -1277,25 +1290,24 @@ boost_drawn:
                            false);
     }
 
-    Status *progressStatus = Status::gStatus;
-    LevelScript *levelScript = ego->levelScript;
-    if (Globals::hints[kMiningTutorialHintIndex] == 0 && !isMining && progressStatus != nullptr &&
-        progressStatus->getCurrentCampaignMission() == 2 && levelScript != nullptr &&
+mining_hint:
+    if (Globals::hints[kMiningTutorialHintIndex] == 0 && !ego->isMining() &&
+        Globals::status->getCurrentCampaignMission() == 2 && ego->levelScript->scriptTime >= 12001 &&
         !ego->isDockingToAsteroid() && !ego->isDockedToAsteroid()) {
-        if (levelScript->scriptTime >= 12001 && progressText != nullptr) {
-            this->miningHintPulseTimer += elapsed;
-            if (this->miningHintPulseTimer > 2000)
-                this->miningHintPulseTimer = 0;
-            int alpha = static_cast<int>((static_cast<float>(this->miningHintPulseTimer) / 1000.0f) * 255.0f);
-            if (alpha > 255)
-                alpha = -1 - alpha;
-            canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
-                             static_cast<unsigned char>(0xff), static_cast<unsigned char>(alpha));
-            String label = *progressText->getText(618);
-            const int labelWidth = canvas->GetTextWidth(hud_font(), label);
-            canvas->DrawString(hud_font(), label, progressCenterX - labelWidth / 2,
-                               hud_layout_i32(0x2c) + static_cast<int>(this->field_0x3e2), false);
-        }
+        int pulseTimer = this->miningHintPulseTimer + elapsed;
+        if (pulseTimer > 2000)
+            pulseTimer = 0;
+        this->miningHintPulseTimer = pulseTimer;
+        int alpha = static_cast<int>((static_cast<float>(pulseTimer) / 1000.0f) * 255.0f);
+        if (alpha > 255)
+            alpha = -1 - alpha;
+        hud_canvas()->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                               static_cast<unsigned char>(0xff), static_cast<unsigned char>(alpha));
+        String label = *hud_game_text()->getText(618);
+        const int labelWidth = hud_canvas()->GetTextWidth(hud_font(), label);
+        hud_canvas()->DrawString(hud_font(), label, Globals::w / 2 - labelWidth / 2,
+                                 hud_layout_i32(0x2c) + static_cast<int>(this->field_0x3e2), false);
+        hud_canvas()->SetColor(static_cast<unsigned int>(0xffffffffu));
     }
     canvas->SetColor(initialColor);
 
