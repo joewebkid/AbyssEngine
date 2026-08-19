@@ -635,10 +635,12 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
             } gammaRate = {status->getGammaRayDamagePerSecond(
                 station->getIndex(), status->getCurrentCampaignMission())};
             if (gammaRate.value > 0.0f) {
-                const int gammaFrameY = 2 * static_cast<int>(this->field_0x444) -
-                                        static_cast<int>(this->field_0x442);
-                const int gammaFillY = 2 * static_cast<int>(this->field_0x448) -
-                                       static_cast<int>(this->field_0x44a);
+                const int gammaFrameBase = static_cast<int>(this->field_0x444);
+                const int gammaFrameY = gammaFrameBase -
+                                        static_cast<int>(this->field_0x442) + gammaFrameBase;
+                const int gammaFillBase = static_cast<int>(this->field_0x448);
+                const int gammaFillY = gammaFillBase -
+                                       static_cast<int>(this->field_0x44a) + gammaFillBase;
                 canvas->DrawImage2D((unsigned) this->gammaFrameImage,
                                     this->field_0x43c, gammaFrameY);
                 canvas->DrawImage2D((unsigned) this->barDividerImage, this->field_0x43e,
@@ -656,13 +658,16 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     }
 
     if (ego->isInRocketControl()) {
-        const bool secondaryPressed = (this->touchFlagsLow & 8u) != 0 ||
-                                      (this->secondaryFlashRemaining > 0 && this->secondaryFlashPulse <= 0);
-        const int secondaryImage = secondaryPressed ? this->secondaryPressedImage
-                                                    : this->secondaryIdleImage;
-        canvas->DrawImage2D(static_cast<unsigned>(secondaryImage), this->field_0x3ec, this->field_0x3ee);
-        if (secondaryPressed && this->secondaryFlashRemaining > 0)
-            this->secondaryFlashPulse = 80;
+        if ((this->touchFlagsLow & 8u) != 0 ||
+            (this->secondaryFlashRemaining >= 1 && this->secondaryFlashPulse <= 0)) {
+            canvas->DrawImage2D(static_cast<unsigned int>(this->secondaryPressedImage),
+                                this->field_0x3ec, this->field_0x3ee);
+            if (this->secondaryFlashRemaining >= 1)
+                this->secondaryFlashPulse = 80;
+        } else {
+            canvas->DrawImage2D(static_cast<unsigned int>(this->secondaryIdleImage),
+                                this->field_0x3ec, this->field_0x3ee);
+        }
         {
             if (Globals::touchSteeringEnabled == 0 ||
                 (ego->isAutoPilot() || ego->isDockingToAsteroid() ||
@@ -693,12 +698,16 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     // PlayerEgo+0x20 is a direction bitfield written by the collision/damage
     // path. Android Hud::draw turns each asserted side into a 300 ms pulse.
     {
-        const int horizontalImage = ego->getShieldDamageRate() >= 1
-                                        ? this->hitHorizontalShieldImage
-                                        : this->hitHorizontalArmorImage;
-        const int verticalImage = ego->getShieldDamageRate() >= 1
-                                      ? this->hitVerticalShieldImage
-                                      : this->hitVerticalArmorImage;
+        unsigned int horizontalImageOffset = 0x36c;
+        if (ego->getShieldDamageRate() < 1)
+            horizontalImageOffset = 0x364;
+        const int horizontalImage = *reinterpret_cast<int *>(
+            reinterpret_cast<char *>(this) + horizontalImageOffset);
+        unsigned int verticalImageOffset = 0x368;
+        if (ego->getShieldDamageRate() < 1)
+            verticalImageOffset = 0x360;
+        const int verticalImage = *reinterpret_cast<int *>(
+            reinterpret_cast<char *>(this) + verticalImageOffset);
         const unsigned int flags = ego->hudHitDirectionFlags;
         if ((flags & 0x01u) != 0) this->hitDirectionLeftTimer = 300;
         if ((flags & 0x02u) != 0) this->hitDirectionRightTimer = 300;
