@@ -33,8 +33,11 @@ static constexpr unsigned int kHudImportantEventMask = 0x100019;
 
 struct HudSecurityColor {
     unsigned char r;
+    unsigned char _pad_r[3];
     unsigned char g;
+    unsigned char _pad_g[3];
     unsigned char b;
+    unsigned char _pad_b[3];
 };
 
 // Android ARM .rodata: word_203758 (first halfword of each 32-bit slot).
@@ -42,11 +45,12 @@ static const unsigned short g_Hud_factionLogoResourceIds[4] = {0x4a6, 0x4a3, 0x4
 
 // Android ARM .rodata: byte_203780, read with a 12-byte stride by drawOrbitInformation.
 static const HudSecurityColor g_Hud_securityColors[4] = {
-    {0xff, 0x2a, 0x00},
-    {0xff, 0x6c, 0x00},
-    {0xed, 0xed, 0x00},
-    {0xed, 0x00, 0x00},
+    {0xff, {0, 0, 0}, 0x2a, {0, 0, 0}, 0x00, {0, 0, 0}},
+    {0xff, {0, 0, 0}, 0x6c, {0, 0, 0}, 0x00, {0, 0, 0}},
+    {0xed, {0, 0, 0}, 0xed, {0, 0, 0}, 0x00, {0, 0, 0}},
+    {0xed, {0, 0, 0}, 0x00, {0, 0, 0}, 0x00, {0, 0, 0}},
 };
+static_assert(sizeof(HudSecurityColor) == 12, "Android Hud security colors use a 12-byte stride");
 
 static inline PaintCanvas *hud_canvas() {
     return static_cast<PaintCanvas *>(Globals::Canvas);
@@ -323,8 +327,8 @@ static void hud_init_coordinates(Hud *self) {
     self->menuRowHeight = height(self->quickMenuTopImage);
     self->field_0x3d0 = height(self->quickMenuMiddleImage);
     self->field_0x3d4 = self->field_0x3c4 + hud_layout_i32(0x1b8);
-    self->menuOriginYBase = hud_layout_i32(0x1bc) + self->menuOriginY + self->menuRowHeight -
-                            hud_layout_i32(0x30) / 2;
+    self->menuBaseY = hud_layout_i32(0x1bc) + self->menuOriginY + self->menuRowHeight -
+                      hud_layout_i32(0x30) / 2;
     self->field_0x3dc = width(self->quickMenuMiddleImage) - hud_layout_i32(0x1c0);
 
     self->field_0x43c = static_cast<unsigned short>(hud_layout_i32(0x1c4));
@@ -555,7 +559,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     const bool boostReady = ego->getBoostRate() == 1.0f;
     if (boostReady && this->boostReadyLatched == 0) {
         const int secondaryFlashRemaining = this->secondaryFlashRemaining;
-        const int menuOriginX = this->menuOriginX;
+        const int menuOriginX = this->boostReadyTextX;
         this->boostReadyLatched = 1;
         this->boostFlashRemaining = 2000;
         this->boostFlashPulse = 80;
@@ -669,11 +673,11 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                                 this->field_0x3ec, this->field_0x3ee);
         }
         {
-            if (Globals::touchSteeringEnabled == 0 ||
+            if (Globals::options[0x11] == 0 ||
                 (ego->isAutoPilot() || ego->isDockingToAsteroid() ||
                  ego->isDockingToDockingPoint() || this->hackingGameActive != 0 ||
                  (ego->isDockedToDockingPoint() && ego->isInTurretMode() == 0)) &&
-                    (Globals::touchSteeringEnabled == 0 || ego->isInTurretMode() == 0))
+                    (Globals::options[0x11] == 0 || ego->isInTurretMode() == 0))
                 canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
                                  static_cast<unsigned char>(0xff), static_cast<unsigned char>(0x32));
             else
@@ -681,7 +685,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
 
             canvas->DrawImage2D(static_cast<unsigned int>(this->steeringBaseImage),
                                 this->field_0x42c, this->field_0x42e);
-            if (Globals::touchSteeringEnabled != 0 && (this->touchFlagsLow & 0x20u) != 0) {
+            if (Globals::options[0x11] != 0 && (this->touchFlagsLow & 0x20u) != 0) {
                 canvas->DrawImage2D(static_cast<unsigned int>(this->steeringKnobPressedImage),
                                     this->field_0x41e, this->field_0x420, 0x11, 0x44);
             } else {
@@ -719,48 +723,55 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
             canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
                              static_cast<unsigned char>(0xff),
                              static_cast<unsigned char>(255 * this->hitDirectionLeftTimer / 300));
-            canvas->DrawImage2D(static_cast<unsigned int>(horizontalImage),
-                                (Globals::w >> 1) - radar->imageWidth, Globals::h >> 1,
-                                canvas->GetImage2DWidth(static_cast<unsigned int>(horizontalImage)),
-                                canvas->GetImage2DHeight(static_cast<unsigned int>(horizontalImage)),
-                                0x11, 0x41, 1);
+            canvas->DrawImage2D(
+                static_cast<unsigned int>(horizontalImage),
+                (Globals::w >> 1) - radar->imageWidth,
+                Globals::h >> 1,
+                canvas->GetImage2DWidth(static_cast<unsigned int>(horizontalImage)),
+                canvas->GetImage2DHeight(static_cast<unsigned int>(horizontalImage)),
+                0x11, 0x41, 1);
             this->hitDirectionLeftTimer -= elapsed;
         }
         if (this->hitDirectionRightTimer >= 1) {
             canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
                              static_cast<unsigned char>(0xff),
                              static_cast<unsigned char>(255 * this->hitDirectionRightTimer / 300));
-            canvas->DrawImage2D(static_cast<unsigned int>(horizontalImage),
-                                (Globals::w >> 1) - radar->imageWidth, Globals::h >> 1, 0x12, 0x42);
+            canvas->DrawImage2D(
+                static_cast<unsigned int>(horizontalImage),
+                (Globals::w >> 1) - radar->imageWidth,
+                Globals::h >> 1, 0x12, 0x42);
             this->hitDirectionRightTimer -= elapsed;
         }
         if (this->hitDirectionTopTimer >= 1) {
             canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
                              static_cast<unsigned char>(0xff),
                              static_cast<unsigned char>(255 * this->hitDirectionTopTimer / 300));
-            canvas->DrawImage2D(static_cast<unsigned int>(verticalImage), Globals::w >> 1,
-                                (Globals::h >> 1) - radar->imageHeight, 0x11, 0x14);
+            canvas->DrawImage2D(
+                static_cast<unsigned int>(verticalImage), Globals::w >> 1,
+                (Globals::h >> 1) - radar->imageHeight,
+                0x11, 0x14);
             this->hitDirectionTopTimer -= elapsed;
         }
         if (this->hitDirectionBottomTimer >= 1) {
             canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
                              static_cast<unsigned char>(0xff),
                              static_cast<unsigned char>(255 * this->hitDirectionBottomTimer / 300));
-            canvas->DrawImage2D(static_cast<unsigned int>(verticalImage), Globals::w >> 1,
-                                (Globals::h >> 1) - radar->imageHeight,
-                                canvas->GetImage2DWidth(static_cast<unsigned int>(verticalImage)),
-                                canvas->GetImage2DHeight(static_cast<unsigned int>(verticalImage)),
-                                0x21, 0x24, 2);
+            canvas->DrawImage2D(
+                static_cast<unsigned int>(verticalImage), Globals::w >> 1,
+                (Globals::h >> 1) - radar->imageHeight,
+                canvas->GetImage2DWidth(static_cast<unsigned int>(verticalImage)),
+                canvas->GetImage2DHeight(static_cast<unsigned int>(verticalImage)),
+                0x21, 0x24, 2);
             this->hitDirectionBottomTimer -= elapsed;
         }
     }
 
     {
-        if (Globals::touchSteeringEnabled == 0 ||
+        if (Globals::options[0x11] == 0 ||
             (ego->isAutoPilot() || ego->isDockingToAsteroid() ||
              ego->isDockingToDockingPoint() || this->hackingGameActive != 0 ||
              (ego->isDockedToDockingPoint() && ego->isInTurretMode() == 0)) &&
-                (Globals::touchSteeringEnabled == 0 || ego->isInTurretMode() == 0))
+                (Globals::options[0x11] == 0 || ego->isInTurretMode() == 0))
             canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
                              static_cast<unsigned char>(0xff), static_cast<unsigned char>(0x32));
         else
@@ -768,7 +779,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
 
         canvas->DrawImage2D(static_cast<unsigned int>(this->steeringBaseImage),
                             this->field_0x42c, this->field_0x42e);
-        if (Globals::touchSteeringEnabled != 0 && (this->touchFlagsLow & 0x20u) != 0) {
+        if (Globals::options[0x11] != 0 && (this->touchFlagsLow & 0x20u) != 0) {
             canvas->DrawImage2D(static_cast<unsigned int>(this->steeringKnobPressedImage),
                                 this->field_0x41e, this->field_0x420, 0x11, 0x44);
         } else {
@@ -1318,7 +1329,7 @@ mining_hint:
         this->miningHintPulseTimer = pulseTimer;
         int alpha = static_cast<int>((static_cast<float>(pulseTimer) / 1000.0f) * 255.0f);
         if (alpha > 255)
-            alpha = -1 - alpha;
+            alpha = 255 - alpha;
         hud_canvas()->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
                                static_cast<unsigned char>(0xff), static_cast<unsigned char>(alpha));
         String label = *hud_game_text()->getText(618);
@@ -1363,47 +1374,37 @@ void Hud::updateQueue(int dt) {
 
 
 void Hud::drawOrbitInformation() {
-    Status *status = Status::gStatus;
-    PaintCanvas *canvas = hud_canvas();
-    GameText *gameText = hud_game_text();
-    if (status == nullptr || canvas == nullptr || gameText == nullptr || Globals::layout == nullptr ||
-        status->inAlienOrbit())
-        return;
+    if (Globals::status->inAlienOrbit()) return;
 
-    SolarSystem *system = status->getSystem();
-    Station *station = status->getStation();
-    if (system == nullptr || station == nullptr) return;
+    hud_canvas()->SetColor(0xffffffffu);
+    const int x = hud_canvas()->GetImage2DWidth(
+                          static_cast<unsigned int>(this->factionLogoImage)) +
+                  hud_layout_i32(0x21c);
+    if (Globals::status->getSystem()->hasNoOwner() == 0)
+        hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->factionLogoImage), 3, 3);
 
-    const unsigned int font = hud_font();
-    const int logoWidth = this->factionLogoImage >= 0
-                              ? canvas->GetImage2DWidth(static_cast<unsigned int>(this->factionLogoImage))
-                              : 0;
-    const int x = logoWidth + hud_layout_i32(0x21c);
-
-    canvas->SetColor(0xffffffffu);
-    if (this->factionLogoImage >= 0 && system->hasNoOwner() == 0)
-        canvas->DrawImage2D(static_cast<unsigned int>(this->factionLogoImage), 3, 3);
-
-    const String stationName = station->getName();
-    canvas->DrawString(font, stationName, x, hud_layout_i32(0x220), false);
-    canvas->SetColor(0x777777ffu);
-
-    if (status->getCurrentCampaignMission() < 16) return;
-
-    int securityLevel = system->getSecurityLevel();
-    if (system->getIndex() == 26 && status->field_114 > 1) securityLevel = 3;
-
-    String systemLine = system->getName();
-    systemLine += String(" ");
-    systemLine += *gameText->getText(137);
-    canvas->DrawString(font, systemLine, x, hud_layout_i32(0x224), false);
-
-    const unsigned int colorIndex = static_cast<unsigned int>(securityLevel);
-    if (colorIndex < 4) {
-        const HudSecurityColor &color = g_Hud_securityColors[colorIndex];
-        canvas->SetColor(color.r, color.g, color.b, 0xff);
+    {
+        String stationName = Globals::status->getStation()->getName();
+        hud_canvas()->DrawString(hud_font(), stationName, x, hud_layout_i32(0x220), false);
     }
-    canvas->DrawString(font, *gameText->getText(securityLevel + 402), x, hud_layout_i32(0x228), false);
+    hud_canvas()->SetColor(0x777777ffu);
+
+    if (Globals::status->getCurrentCampaignMission() < 16) return;
+
+    int securityLevel = Globals::status->getSystem()->getSecurityLevel();
+    if (Globals::status->getSystem()->getIndex() == 26 && Globals::status->field_114 > 1)
+        securityLevel = 3;
+
+    hud_canvas()->DrawString(
+            hud_font(),
+            String(Globals::status->getSystem()->getName(), false) + String(" ") +
+                    *hud_game_text()->getText(137),
+            x, hud_layout_i32(0x224), false);
+
+    const HudSecurityColor &color = g_Hud_securityColors[securityLevel];
+    hud_canvas()->SetColor(color.r, color.g, color.b, 0xff);
+    hud_canvas()->DrawString(hud_font(), *hud_game_text()->getText(securityLevel + 402), x,
+                             hud_layout_i32(0x228), false);
 }
 
 unsigned int Hud::touchMove(unsigned int a, unsigned int b, void *key) {
@@ -1697,31 +1698,7 @@ void Hud::drawEventString(String text, bool rightAlign) {
 
 void Hud::setCurrentSecondaryWeapon(Item *item) {
     this->currentSecondaryWeapon = item;
-
     updateSecondaryWeaponString();
-
-    Ship *ship = Status::gStatus->getShip();
-    Array<Item *> *equip = ship->getEquipment(1);
-    this->equipmentArray = equip;
-
-    bool hasSecondary = false;
-    if (equip != 0) {
-        for (unsigned int i = 0; i < equip->size(); i++) {
-            if ((*equip)[i] != 0) {
-                hasSecondary = true;
-                break;
-            }
-        }
-    }
-    unsigned char empty;
-    if (hasSecondary) {
-        empty = 0;
-    } else if (ship->hasJumpDrive() == 0 && Status::gStatus->getWingmen() == 0) {
-        empty = (unsigned char) (ship->hasCloak() == 0);
-    } else {
-        empty = 0;
-    }
-    this->quickMenuEmpty = empty;
 }
 
 int Hud::sameHudEventAsBeforeAggregate(String str) {
@@ -1860,6 +1837,17 @@ int Hud::init() {
     hud_load_init_images(this);
     hud_init_coordinates(this);
 
+    this->boostReadyTextX = hud_layout_i32(0x12c);
+    this->touchHalfExtent = hud_layout_i32(0x130);
+    this->touchHalfExtentSmall = hud_layout_i32(0x134);
+    this->analogStickRadius = hud_layout_i32(0x138);
+    this->radarBottomInset = hud_layout_i32(0x13c);
+    this->eventLineMargin = hud_layout_i32(0x140);
+    this->field_0x4ec = hud_layout_i32(0x144);
+    this->eventLineMarginAlt = hud_layout_i32(0x148);
+    this->menuOriginX = 0;
+    this->menuOriginYBase = 0;
+
     this->visible = 1;
     this->eventTextWraps = 0;
     this->messageActive = 0;
@@ -1914,9 +1902,9 @@ int Hud::init() {
 
     if (Globals::layout != nullptr) {
         this->eventLineX = Globals::w >> 1;
-        this->eventLineY = Globals::h - hud_layout_i32(0x13c);
+        this->eventLineY = Globals::h - this->radarBottomInset;
         Hud::RADAR_WIDTH = Globals::w - 28;
-        Hud::RADAR_HEIGHT = Globals::h - 33 - hud_layout_i32(0x13c) - hud_layout_i32(0x144) -
+        Hud::RADAR_HEIGHT = Globals::h - 33 - this->radarBottomInset - this->field_0x4ec -
                             hud_layout_i32(0x1d8);
     } else {
         this->eventLineX = 0;
@@ -2072,98 +2060,97 @@ void Hud::clearQueue() {
 }
 
 void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
-    GameText *gameText = hud_game_text();
     String &line = this->field_0x1e0;
 
     switch (eventId) {
         case 1:
             if (this->hasAutofireUI == 0) return;
-            line = *gameText->getText(37) + String(" ") + *gameText->getText(38);
+            line = *hud_game_text()->getText(37) + String(" ") + *hud_game_text()->getText(38);
             break;
         case 2:
             if (this->hasAutofireUI == 0) return;
-            line = *gameText->getText(37) + String(" ") + *gameText->getText(39);
+            line = *hud_game_text()->getText(37) + String(" ") + *hud_game_text()->getText(39);
             break;
         case 3:
             if (this->hasBoostButton == 0 || ego->readyToBoost() == 0) return;
-            line = *gameText->getText(314);
+            line = *hud_game_text()->getText(314);
             break;
         case 4:
             if (this->hasBoostButton == 0) return;
-            line = *gameText->getText(315);
+            line = *hud_game_text()->getText(315);
             break;
         case 5:
-            line = *gameText->getText(571) + String(" ") + *gameText->getText(38);
+            line = *hud_game_text()->getText(571) + String(" ") + *hud_game_text()->getText(38);
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         case 6:
-            line = *gameText->getText(571) + String(" ") + *gameText->getText(39);
+            line = *hud_game_text()->getText(571) + String(" ") + *hud_game_text()->getText(39);
             Globals::sound->play(0x1d, nullptr, nullptr, 0.0f);
             break;
         case 7:
-            line = *gameText->getText(553);
+            line = *hud_game_text()->getText(553);
             break;
         case 8:
-            line = *gameText->getText(539);
+            line = *hud_game_text()->getText(539);
             break;
         case 9:
-            line = *gameText->getText(540);
+            line = *hud_game_text()->getText(540);
             break;
         case 10: {
-            Station *station = Status::gStatus->getStation();
+            Station *station = Globals::status->getStation();
             String suffix;
             if (station->getIndex() != 101)
-                suffix = String(" ") + *gameText->getText(136);
-            line = *gameText->getText(546) + String(": ") + station->getName() + suffix;
+                suffix = String(" ") + *hud_game_text()->getText(136);
+            line = *hud_game_text()->getText(546) + String(": ") + station->getName() + suffix;
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         }
         case 11:
-            line = *gameText->getText(546) + String(": ") + *gameText->getText(550);
+            line = *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(550);
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         case 12:
-            line = *gameText->getText(546) + String(": ") + *gameText->getText(547);
+            line = *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(547);
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         case 13:
-            line = *gameText->getText(546) + String(": ") + *gameText->getText(548);
+            line = *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(548);
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         case 14:
-            line = *gameText->getText(546) + String(": ") + *gameText->getText(549);
+            line = *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(549);
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         case 15:
-            line = *gameText->getText(546) + String(": ") + *gameText->getText(545);
+            line = *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(545);
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         case 16:
-            line = *gameText->getText(307);
+            line = *hud_game_text()->getText(307);
             break;
         case 17:
-            line = *gameText->getText(308);
+            line = *hud_game_text()->getText(308);
             break;
         case 18:
-            line = *gameText->getText(309);
+            line = *hud_game_text()->getText(309);
             break;
         case 19:
             line = this->strings_01c_100[19];
             break;
         case 20:
-            line = *gameText->getText(541);
+            line = *hud_game_text()->getText(541);
             break;
         case 21:
-            line = *gameText->getText(525);
+            line = *hud_game_text()->getText(525);
             break;
         case 22:
-            line = *gameText->getText(542);
+            line = *hud_game_text()->getText(542);
             break;
         case 23:
-            line = *gameText->getText(543);
+            line = *hud_game_text()->getText(543);
             break;
         case 24:
-            line = *gameText->getText(544);
+            line = *hud_game_text()->getText(544);
             break;
 
         case 25:
@@ -2173,6 +2160,9 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
         case 26:
             this->jumpDriveProgressActive = 0;
             return;
+        case 27:
+            line = *hud_game_text()->getText(322);
+            break;
         case 28:
             this->chargeProgressFadeTimer = 0;
             this->cloakProgressActive = 1;
@@ -2182,21 +2172,21 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
             return;
         case 30: {
             String amount = String("-") + String(arg) + String("t ");
-            line = String(amount, false) + *gameText->getText(1396);
+            line = String(amount, false) + *hud_game_text()->getText(1396);
             clearQueue();
             break;
         }
         case 31:
-            line = *gameText->getText(324);
+            line = *hud_game_text()->getText(324);
             break;
         case 32:
-            line = *gameText->getText(218) + String(" ") + *gameText->getText(38);
+            line = *hud_game_text()->getText(218) + String(" ") + *hud_game_text()->getText(38);
             break;
         case 33:
-            line = *gameText->getText(218) + String(" ") + *gameText->getText(39);
+            line = *hud_game_text()->getText(218) + String(" ") + *hud_game_text()->getText(39);
             break;
         case 34:
-            line = *gameText->getText(3199);
+            line = *hud_game_text()->getText(3199);
             break;
 
         case 0x23:
@@ -2227,24 +2217,24 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
         case 0x26:
         case 0x28:
         case 0x2a:
-            line = *gameText->getText(3200);
+            line = *hud_game_text()->getText(3200);
             this->dockTransferProgressActive = 0;
             break;
         case 43:
-            line = *gameText->getText(3203);
+            line = *hud_game_text()->getText(3203);
             break;
         case 44:
-            line = *gameText->getText(3201);
+            line = *hud_game_text()->getText(3201);
             break;
         case 45:
-            line = *gameText->getText(3202);
+            line = *hud_game_text()->getText(3202);
             break;
         case 46:
-            line = *gameText->getText(316);
+            line = *hud_game_text()->getText(316);
             break;
         case 47: {
             String amount = String("-") + String(arg) + String("t ");
-            line = String(amount, false) + *gameText->getText(1476);
+            line = String(amount, false) + *hud_game_text()->getText(1476);
             clearQueue();
             break;
         }
@@ -2273,110 +2263,99 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
 }
 
 
-static void **g_Hud_csLayout = nullptr;
-
-static void **g_Hud_csStatus = nullptr;
-
-static void **g_Hud_csScreenW = nullptr;
-static const char g_Hud_csZero[1] = {0};
-
 void Hud::drawChallengeModeScore(int unused) {
     (void) unused;
-    int *layout = (int *) *g_Hud_csLayout;
-    int *status = (int *) *g_Hud_csStatus;
-    int screenW = *(int *) *g_Hud_csScreenW;
-    void *sprite = this->digitSprite;
+    hud_canvas()->SetColor(0xffffffffu);
+    const int frameWidth = static_cast<Sprite *>(this->digitSprite)->getFrameWidth();
+    const int pad = static_cast<Layout *>(Globals::layout)->field_0x2c;
+    const int frameHeight = static_cast<Sprite *>(this->digitSprite)->getFrameHeight();
+    const int y = static_cast<Layout *>(Globals::layout)->field_0x2c;
+    const int screenW = Globals::w;
 
-    PaintCanvas::gCanvas->SetColor((unsigned) (-1));
-    int fw = ((Sprite *) (sprite))->getFrameWidth();
-    int pad = layout[0xb];
-    int fh = ((Sprite *) (sprite))->getFrameHeight();
-    int y = layout[0xb];
-
-    char score[12];
-    ((String *) (score))->Set((long long) (status[0x61]));
-    int slen = (int) ((String *) score)->size();
-    if (slen < 7) {
-        for (int k = 0; k < 7 - slen; k++) {
-            char z[12], acc[12];
-            ((String *) (z))->ctor_char(g_Hud_csZero, false);
-            *(String *) acc = *(String *) z + *(String *) score;
-            *((String *) (score)) = *((String *) (acc));
-            { String *_s = ((String *) (acc)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-            { String *_s = ((String *) (z)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-        }
+    String score(Globals::status->challengeScore);
+    const int scoreLength = static_cast<int>(score.size());
+    if (scoreLength <= 6) {
+        const int zeroCount = 7 - scoreLength;
+        for (int i = 0; i < zeroCount; ++i)
+            score = String("0") + score;
     }
 
-    PaintCanvas::gCanvas->SetColor((unsigned) (-1));
-    int dw = fw - pad;
-    int half = screenW / 2;
-    int span = (dw * 7) / 2;
-    int startX = half - span;
-    {
-        int len = (int) ((String *) score)->size();
-        int x = startX;
-        for (int i = 1; (unsigned int) (i - 1) < (unsigned int) len; i++) {
-            char ch[12];
-            *((String *) (ch)) = ((String *) score)->SubString(i - 1, i);
-            int frame = ((String *) (ch))->ValueOf();
-            { String *_s = ((String *) (ch)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-            ((Sprite *) (sprite))->setFrame(frame);
-            ((Sprite *) (sprite))->setPosition(x, y);
-            ((Sprite *) (sprite))->draw(1.0f, 1.0f);
-            x += dw;
+    hud_canvas()->SetColor(0x77ccffffu);
+    const int digitStep = frameWidth - pad;
+    const int screenCenter = screenW / 2;
+    const int sevenDigitHalfWidth = 7 * digitStep / 2;
+    const int scoreStartX = screenCenter - sevenDigitHalfWidth;
+    int x = scoreStartX;
+    for (int i = 1; static_cast<unsigned int>(i - 1) < score.size(); ++i) {
+        int frame;
+        {
+            String digit = score.SubString(i - 1, i);
+            frame = digit.ValueOf();
         }
+        static_cast<Sprite *>(this->digitSprite)->setFrame(frame);
+        static_cast<Sprite *>(this->digitSprite)->setPosition(x, y);
+        static_cast<Sprite *>(this->digitSprite)->draw(1.0f, 1.0f);
+        x += digitStep;
     }
 
-    if (status[0x60] > 0 && status[0x63] > 1) {
-        PaintCanvas::gCanvas->SetColor((unsigned) (-1));
-        int yRow = y + fh + pad;
-        int scoreVal = status[0x60];
-        if (scoreVal < 0xbb9) {
-            if (scoreVal % 100 >= 0x32) {
-                int mult = status[0x63];
-                float bonus = (float) mult;
-                float base = (float) (mult * 1000);
-                char bonusStr[12];
-                ((String *) (bonusStr))->Set((long long) (int) ((bonus * 0.0f + 1.0f) * base));
-                int bl = (int) ((String *) bonusStr)->size();
-                int bx = (screenW / 2 - ((bl * dw) >> 1));
-                int bonusY = fh + yRow + pad;
-                int len = (int) ((String *) bonusStr)->size();
-                int x = bx;
-                for (int i = 1; (unsigned int) (i - 1) < (unsigned int) len; i++) {
-                    char ch[12];
-                    *((String *) (ch)) = ((String *) bonusStr)->SubString(i - 1, i);
-                    int frame = ((String *) (ch))->ValueOf();
-                    { String *_s = ((String *) (ch)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-                    ((Sprite *) (sprite))->setFrame(frame);
-                    ((Sprite *) (sprite))->setPosition(x, bonusY);
-                    ((Sprite *) (sprite))->draw(1.0f, 1.0f);
-                    x += dw;
+    if (Globals::status->challengeMultiplierTimer > 0 && Globals::status->challengeMultiplier >= 2) {
+        hud_canvas()->SetColor(0xffffffffu);
+        const int rowPad = static_cast<Layout *>(Globals::layout)->field_0x2c;
+        const int timer = Globals::status->challengeMultiplierTimer;
+        const int multiplierY = y + frameHeight + rowPad;
+
+        if (timer <= 3000) {
+            if (timer % 100 >= 50) {
+                const int multiplier = Globals::status->challengeMultiplier;
+                String bonus(static_cast<int>((static_cast<float>(multiplier) * 0.05f + 1.0f) *
+                                              static_cast<float>(1000 * multiplier)));
+                int bonusOffset = 0;
+                const int bonusBaseY = frameHeight + multiplierY;
+                for (int i = 1; static_cast<unsigned int>(i - 1) < bonus.size(); ++i) {
+                    int frame;
+                    {
+                        String digit = bonus.SubString(i - 1, i);
+                        frame = digit.ValueOf();
+                    }
+                    static_cast<Sprite *>(this->digitSprite)->setFrame(frame);
+                    static_cast<Sprite *>(this->digitSprite)->setPosition(
+                            Globals::w / 2 -
+                                            ((static_cast<int>(bonus.size()) * digitStep) >> 1) +
+                                            bonusOffset,
+                            bonusBaseY + static_cast<Layout *>(Globals::layout)->field_0x2c);
+                    bonusOffset += digitStep;
+                    static_cast<Sprite *>(this->digitSprite)->draw(1.0f, 1.0f);
                 }
-                { String *_s = ((String *) (bonusStr)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
             }
         }
-        PaintCanvas::gCanvas->DrawImage2D((unsigned) this->multiplierIconImage, pad + startX, 0);
 
-        char timeStr[12];
-        ((String *) (timeStr))->Set((long long) (status[0x63]));
-        int tx = (half + pad) - span + PaintCanvas::gCanvas->GetImage2DWidth((unsigned) (0));
-        int len = (int) ((String *) timeStr)->size();
-        int x = tx;
-        for (int i = 1; (unsigned int) (i - 1) < (unsigned int) len; i++) {
-            char ch[12];
-            *((String *) (ch)) = ((String *) timeStr)->SubString(i - 1, i);
-            int frame = ((String *) (ch))->ValueOf();
-            { String *_s = ((String *) (ch)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-            ((Sprite *) (sprite))->setFrame(frame);
-            ((Sprite *) (sprite))->setPosition(x, yRow);
-            ((Sprite *) (sprite))->draw(1.0f, 1.0f);
-            x += dw;
+        hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->multiplierIconImage),
+                                  rowPad + scoreStartX, multiplierY);
+        const float growth = static_cast<float>(Globals::status->challengeMultiplierTimer - 7000) *
+                             0.01f;
+        float scale = growth + 1.0f;
+        if (growth < 0.0f)
+            scale = 1.0f;
+
+        String multiplier(Globals::status->challengeMultiplier);
+        x = screenCenter + rowPad - sevenDigitHalfWidth;
+        for (int i = 1; static_cast<unsigned int>(i - 1) < multiplier.size(); ++i) {
+            int frame;
+            {
+                String digit = multiplier.SubString(i - 1, i);
+                frame = digit.ValueOf();
+            }
+            static_cast<Sprite *>(this->digitSprite)->setFrame(frame);
+            static_cast<Sprite *>(this->digitSprite)->setPosition(
+                    x + hud_canvas()->GetImage2DWidth(
+                                static_cast<unsigned int>(this->multiplierIconImage)),
+                    multiplierY);
+            x += digitStep;
+            static_cast<Sprite *>(this->digitSprite)->draw(scale, scale);
         }
-        { String *_s = ((String *) (timeStr)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
     }
-    PaintCanvas::gCanvas->SetColor((unsigned) (-1));
-    { String *_s = ((String *) (score)); if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
+
+    hud_canvas()->SetColor(0xffffffffu);
 }
 
 
@@ -2432,9 +2411,8 @@ void Hud::hudEventMedal(int medalId, int percent) {
 }
 
 
-static TouchButton *hud_add_menu_button(Hud *self, const String &text, int y, unsigned int action) {
-    if (self->menuButtons == nullptr) return nullptr;
-
+static inline __attribute__((always_inline))
+TouchButton *hud_add_menu_button(Hud *self, const String &text, int y, unsigned int action) {
     auto *button = new TouchButton(text, 0, self->field_0x3d4, y, self->field_0x3dc, 0x11, 4);
     button->field_0x0 = static_cast<int>(action);
     button->field_0x4 = 0;
@@ -2442,20 +2420,7 @@ static TouchButton *hud_add_menu_button(Hud *self, const String &text, int y, un
     return button;
 }
 
-static void hud_cache_menu_button_positions(Hud *self) {
-    if (self->menuButtons == nullptr) return;
-
-    const unsigned int count = self->menuButtons->size();
-    for (unsigned int i = 0; i < count && i < 10; ++i) {
-        TouchButton *button = (*self->menuButtons)[i];
-        if (button == nullptr) continue;
-        const Vector position = button->getPosition();
-        Globals::sub_menu_buttons_x[i] = static_cast<int>(position.x);
-        Globals::sub_menu_buttons_y[i] = static_cast<int>(position.y);
-    }
-}
-
-static void hud_compact_orbit_menu_for_phone(Hud *self) {
+static inline __attribute__((always_inline)) void hud_compact_orbit_menu_for_phone(Hud *self) {
     if (Globals::iPad != 0 || self->menuButtons == nullptr || self->menuButtons->size() < 5) return;
 
     const int rowGap = hud_layout_i32(0x30);
@@ -2474,27 +2439,19 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
         this->menuButtons = nullptr;
     }
 
+    Array<TouchButton *> *menuButtons = new Array<TouchButton *>();
     this->quickMenuType = menuType;
-    this->menuButtons = new Array<TouchButton *>();
-    this->menuOriginX = 0;
+    this->menuButtons = menuButtons;
 
     PaintCanvas *canvas = hud_canvas();
     GameText *gameText = hud_game_text();
-    Status *status = Status::gStatus;
-    if (canvas == nullptr || gameText == nullptr || status == nullptr || Globals::layout == nullptr) {
-        this->quickMenuOpen = 1;
-        return;
-    }
-
+    Status *status = Globals::status;
     Ship *ship = status->getShip();
-    if (ship == nullptr) {
-        this->quickMenuOpen = 1;
-        return;
-    }
 
     delete this->equipmentArray;
     this->equipmentArray = ship->getEquipment(1);
     updateSecondaryWeaponString();
+    this->menuOriginX = 0;
 
     const int rowGap = hud_layout_i32(0x30);
     const int buttonHeight = hud_layout_i32(0x1dc);
@@ -2502,12 +2459,29 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
     int y = this->menuBaseY;
 
     if (Globals::iPad != 0) {
-        const int anchor = menuType == 3
-                ? (this->iPadSteerAnchor != 0 ? this->iPadSteerAnchor : hud_default_steer_anchor())
-                : (this->iPadFireAnchor != 0 ? this->iPadFireAnchor : hud_default_fire_anchor());
-        const float fireMenuOffset = Globals::iPadHD != 0 ? 112.5f : (Globals::iPadLarge != 0 ? 160.0f : 80.0f);
-        const int clampedMenuY = anchor - (menuType == 3 ? 0 : static_cast<int>(fireMenuOffset));
-        this->menuOriginY = clampedMenuY < 0 ? 0 : clampedMenuY;
+        GameSettings *settings = reinterpret_cast<GameSettings *>(Globals::options);
+        float menuY;
+        if (menuType == 3) {
+            menuY = static_cast<float>(settings->steerAnchorX);
+        } else {
+            const float fireMenuOffset = Globals::iPadHD != 0
+                    ? 112.5f
+                    : (Globals::iPadLarge != 0 ? 160.0f : 80.0f);
+            menuY = static_cast<float>(settings->fireAnchorX) - fireMenuOffset;
+        }
+        if (menuY >= 0.0f) {
+            if (menuType == 3) {
+                menuY = static_cast<float>(settings->steerAnchorX);
+            } else {
+                const float fireMenuOffset = Globals::iPadHD != 0
+                        ? 112.5f
+                        : (Globals::iPadLarge != 0 ? 160.0f : 80.0f);
+                menuY = static_cast<float>(settings->fireAnchorX) - fireMenuOffset;
+            }
+        } else {
+            menuY = 0.0f;
+        }
+        this->menuOriginY = static_cast<int>(menuY);
         y = this->menuRowHeight + this->menuOriginY - rowGap / 2 + 1;
         this->menuBaseY = y;
     }
@@ -2653,20 +2627,35 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
     }
 
     const unsigned int buttonCount = this->menuButtons->size();
-    if (Globals::iPad != 0 && buttonCount != 0) {
-        this->menuOriginYBase = static_cast<int>(4 - buttonCount) * rowStep;
-        if (menuType == 3)
-            this->menuOriginYBase -= rowGap;
+    if (Globals::iPad != 0) {
+        if (buttonCount != 0) {
+            this->menuOriginYBase = static_cast<int>(4 - buttonCount) * rowStep;
+            if (menuType == 3)
+                this->menuOriginYBase -= rowGap;
+        }
         for (unsigned int i = 0; i < buttonCount; ++i) {
             TouchButton *button = (*this->menuButtons)[i];
-            if (button != nullptr)
-                button->translate(this->menuOriginX, this->menuOriginYBase);
+            button->translate(this->menuOriginX, this->menuOriginYBase);
+            if (i <= 9) {
+                const Vector xPosition = button->getPosition();
+                Globals::sub_menu_buttons_x[i] = static_cast<int>(xPosition.x);
+                const Vector yPosition = button->getPosition();
+                Globals::sub_menu_buttons_y[i] = static_cast<int>(yPosition.y);
+            }
         }
     } else {
         this->menuOriginYBase = buttonCount < 5 ? 0 : -rowGap;
+        for (unsigned int i = 0; i < buttonCount; ++i) {
+            if (i <= 9) {
+                TouchButton *button = (*this->menuButtons)[i];
+                const Vector xPosition = button->getPosition();
+                Globals::sub_menu_buttons_x[i] = static_cast<int>(xPosition.x);
+                const Vector yPosition = button->getPosition();
+                Globals::sub_menu_buttons_y[i] = static_cast<int>(yPosition.y);
+            }
+        }
     }
 
-    hud_cache_menu_button_positions(this);
     this->quickMenuOpen = 1;
 }
 

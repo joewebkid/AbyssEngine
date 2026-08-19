@@ -317,12 +317,14 @@ public:
     int timeExtenderDuration;
     int miningHintPulseTimer;
     unsigned char messageActive;
-    unsigned char unknown_0x4c9[0x0b];
+    unsigned char unknown_0x4c9[3];
     int menuOriginX;
     int menuOriginYBase;
+    int boostReadyTextX;
     int touchHalfExtent;
     int touchHalfExtentSmall;
     int analogStickRadius;
+    int radarBottomInset;
     int eventLineMargin;
     int field_0x4ec;
     int eventLineMarginAlt;
@@ -611,8 +613,20 @@ static_assert(__builtin_offsetof(Hud, miningHintPulseTimer) == 0x4c4,
               "Hud::miningHintPulseTimer @ +0x4c4");
 static_assert(__builtin_offsetof(Hud, messageActive) == 0x4c8,
               "Hud::messageActive @ +0x4c8");
-static_assert(__builtin_offsetof(Hud, menuOriginX) == 0x4d4,
-              "Hud::menuOriginX @ +0x4d4");
+static_assert(__builtin_offsetof(Hud, menuOriginX) == 0x4cc,
+              "Hud::menuOriginX @ +0x4cc");
+static_assert(__builtin_offsetof(Hud, menuOriginYBase) == 0x4d0,
+              "Hud::menuOriginYBase @ +0x4d0");
+static_assert(__builtin_offsetof(Hud, boostReadyTextX) == 0x4d4,
+              "Hud::boostReadyTextX @ +0x4d4");
+static_assert(__builtin_offsetof(Hud, touchHalfExtent) == 0x4d8,
+              "Hud::touchHalfExtent @ +0x4d8");
+static_assert(__builtin_offsetof(Hud, touchHalfExtentSmall) == 0x4dc,
+              "Hud::touchHalfExtentSmall @ +0x4dc");
+static_assert(__builtin_offsetof(Hud, analogStickRadius) == 0x4e0,
+              "Hud::analogStickRadius @ +0x4e0");
+static_assert(__builtin_offsetof(Hud, radarBottomInset) == 0x4e4,
+              "Hud::radarBottomInset @ +0x4e4");
 static_assert(__builtin_offsetof(Hud, eventLineMargin) == 0x4e8,
               "Hud::eventLineMargin @ +0x4e8");
 static_assert(__builtin_offsetof(Hud, field_0x4ec) == 0x4ec,

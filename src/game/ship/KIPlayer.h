@@ -114,7 +114,8 @@ public:
         };
     };
 
-    uint16_t field_0x70;             // 0x70 (2 bytes)
+    uint8_t field_0x70;              // 0x70
+    uint8_t _pad_0x71;               // 0x71
     uint8_t field_0x72;              // 0x72
     uint8_t field_0x73;              // 0x73
     uint8_t field_0x74;              // 0x74

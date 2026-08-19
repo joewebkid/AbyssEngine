@@ -209,10 +209,17 @@ public:
         int32_t missionPassengerCount;
     };
     uint8_t field_0x17c;                     // 0x17c
-    uint8_t _pad_0x17d[7];                    // 0x17d (binary gap)
-    int32_t field_0x184;                     // 0x184
+    uint8_t _pad_0x17d[3];                   // 0x17d (binary gap)
+    int32_t challengeMultiplierTimer;        // 0x180
+    union {                                  // 0x184
+        int32_t field_0x184;
+        int32_t challengeScore;
+    };
     int32_t field_0x188;                     // 0x188
-    int32_t field_0x18c;                     // 0x18c
+    union {                                  // 0x18c
+        int32_t field_0x18c;
+        int32_t challengeMultiplier;
+    };
     Ship *ship;                              // 0x190
     Mission *mission;                        // 0x194 (campaignMission)
     Array<Mission *> *missions;              // 0x198
@@ -502,6 +509,11 @@ static_assert(offsetof(Status, field_178) == 0x178, "missionCounter");
 static_assert(offsetof(Status, missionPassengerCount) == 0x178,
               "Status::missionPassengerCount offset");
 static_assert(offsetof(Status, field_0x17c) == 0x17c, "");
+static_assert(offsetof(Status, challengeMultiplierTimer) == 0x180,
+              "Status::challengeMultiplierTimer offset");
+static_assert(offsetof(Status, challengeScore) == 0x184, "Status::challengeScore offset");
+static_assert(offsetof(Status, challengeMultiplier) == 0x18c,
+              "Status::challengeMultiplier offset");
 static_assert(offsetof(Status, ship) == 0x190, "");
 static_assert(offsetof(Status, mission) == 0x194, "campaignMission");
 static_assert(offsetof(Status, missions) == 0x198, "");

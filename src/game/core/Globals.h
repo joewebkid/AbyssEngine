@@ -142,9 +142,6 @@ public:
     static int smallButton_dim;
     static int touch_stick_x;
     static int touch_stick_y;
-    // Android byte_2181F9: true selects the touch-stick steering branch.
-    static unsigned char touchSteeringEnabled;
-
     static unsigned char iPad;
     static unsigned char iPadHD;
     static unsigned char retinaDisplay;
