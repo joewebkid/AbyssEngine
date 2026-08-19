@@ -396,15 +396,17 @@ void Hud::playerHit() {
 
 void Hud::addToEventQueue(ListItem *item) {
     Array<ListItem *> *q = this->eventQueue;
-    unsigned int idx = 0;
-    do {
-        unsigned int next = idx + 1;
-        if (next >= q->size())
+    unsigned int index = 0;
+    while (true) {
+        const unsigned int next = index + 1;
+        if (next >= q->size()) return;
+        ListItem **items = q->data();
+        if (items[index++ + 1] == nullptr) {
+            items[next] = item;
+            this->eventQueueDirty = 1;
             return;
-        idx = next;
-    } while ((*q)[idx] != 0);
-    (*q)[idx] = item;
-    this->eventQueueDirty = 1;
+        }
+    }
 }
 
 unsigned int Hud::firePressed() {
@@ -1343,34 +1345,33 @@ mining_hint:
 
 }
 
-void Hud::updateQueue(int dt) {
-    int t = this->eventQueueTimer + dt;
-    this->eventQueueTimer = t;
-    int v;
-    if (t >= 0xfa1) {
+int Hud::updateQueue(int dt) {
+    int result = this->eventQueueTimer + dt;
+    this->eventQueueTimer = result;
+    if (result > 4000) {
         this->eventQueueTimer = 0;
-        Array<ListItem *> *q = this->eventQueue;
-        delete (*q)[0];
-        (*q)[0] = 0;
+        delete (*this->eventQueue)[0];
+        (*this->eventQueue)[0] = 0;
         unsigned int i = 0;
         while (true) {
-            if (q->size() <= i + 1)
+            if (i + 1 >= this->eventQueue->size())
                 break;
-            (*q)[i] = (*q)[i + 1];
+            (*this->eventQueue)[i] = (*this->eventQueue)[i + 1];
             i = i + 1;
         }
-        if ((*q)[1] == 0) {
+        if ((*this->eventQueue)[1] == 0) {
             this->eventQueueDirty = 0;
         }
-        v = 0;
-    } else {
-        if (t < 0x7d1)
-            return;
-        if (this->eventQueuePaused != 0)
-            return;
-        v = 1;
+        result = 0;
+        this->eventQueuePaused = result;
+    } else if (result > 2000) {
+        result = this->eventQueuePaused;
+        if (result == 0) {
+            result = 1;
+            this->eventQueuePaused = result;
+        }
     }
-    this->eventQueuePaused = v;
+    return result;
 }
 
 
@@ -1770,39 +1771,45 @@ void Hud::updateSecondaryWeaponString() {
 
 
 void Hud::drawEventQueue() {
-    PaintCanvas *canvas = hud_canvas();
-    Array<ListItem *> *queue = this->eventQueue;
-    if (canvas == nullptr || Globals::layout == nullptr || queue == nullptr) return;
-
-    const bool targetVisible = Radar::drawTarget != 0;
-    const int targetY = targetVisible ? this->field_0x3e2 : 0;
+    const unsigned char targetVisible = Radar::drawTarget;
+    const int targetY = Radar::drawTarget ? this->field_0x3e2 : 0;
     const int bannerBaseY = hud_layout_i32(0x1e4);
+    const int rawAlpha = static_cast<int>(
+            (static_cast<float>(this->eventQueueTimer) / 2000.0f) * 255.0f);
     const float bannerSlide = hud_layout_f32(0x1e0);
-    const int rawAlpha = static_cast<int>((static_cast<float>(this->eventQueueTimer) / 2000.0f) * 255.0f);
-    const unsigned char alpha = rawAlpha <= 255 ? static_cast<unsigned char>(rawAlpha)
-                                                 : static_cast<unsigned char>(-2 - rawAlpha);
+    unsigned char alpha = static_cast<unsigned char>(rawAlpha);
+    if (rawAlpha > 255)
+        alpha = static_cast<unsigned char>(-2 - rawAlpha);
 
-    canvas->SetColor(0xff, 0xff, 0xff, alpha);
-    canvas->DrawImage2D(static_cast<unsigned int>(this->eventBannerImage), this->field_0x3e0,
-                        targetY - bannerBaseY);
+    hud_canvas()->SetColor(0xff, 0xff, 0xff, alpha);
+    float direction = -1.0f;
+    if (!targetVisible)
+        direction = -2.0f;
+    const int textSlideY = static_cast<int>(direction * bannerSlide);
+    const int bannerTargetY = Radar::drawTarget ? this->field_0x3e2 : 0;
+    hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->eventBannerImage),
+                              this->field_0x3e0,
+                              bannerTargetY - hud_layout_i32(0x1e4));
 
-    if (queue->size() > 1 && (*queue)[1] != nullptr) {
-        ListItem *item = (*queue)[1];
-        switch (item->buttonKind) {
-            case 2: canvas->SetColor(0x00, 0xed, 0x00, alpha); break;
-            case 1: canvas->SetColor(0xff, 0x2a, 0x00, alpha); break;
-            case 3: canvas->SetColor(0xff, 0x80, 0x00, alpha); break;
-            default: canvas->SetColor(0xff, 0xff, 0xff, alpha); break;
-        }
+    ListItem *item = this->eventQueue->data()[1];
+    if (item != nullptr) {
+        if (item->buttonKind == 2)
+            hud_canvas()->SetColor(0x00, 0xed, 0x00, alpha);
+        else if (item->buttonKind == 1)
+            hud_canvas()->SetColor(0xff, 0x2a, 0x00, alpha);
+        else if (item->buttonKind == 3)
+            hud_canvas()->SetColor(0xff, 0x80, 0x00, alpha);
+        else
+            hud_canvas()->SetColor(0xff, 0xff, 0xff, alpha);
 
         String *label = static_cast<String *>(item->name);
-        const int textWidth = canvas->GetTextWidth(hud_font(), *label);
-        const float direction = targetVisible ? -1.0f : -2.0f;
-        const int textY = static_cast<int>(direction * bannerSlide) + bannerBaseY + targetY;
-        canvas->DrawString(hud_font(), *label, (Globals::w >> 1) - textWidth / 2, textY, false);
+        const int textWidth = hud_canvas()->GetTextWidth(hud_font(), *label);
+        hud_canvas()->DrawString(hud_font(), *label,
+                                 (Globals::w >> 1) - textWidth / 2,
+                                 textSlideY + bannerBaseY + targetY, false);
     }
 
-    canvas->SetColor(0xffffffffu);
+    hud_canvas()->SetColor(0xffffffffu);
 }
 
 unsigned int Hud::touchBegin(unsigned int a, unsigned int b, void *key) {

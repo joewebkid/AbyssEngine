@@ -427,7 +427,7 @@ public:
 
     unsigned int touchedElement(unsigned int x, unsigned int y);
 
-    void updateQueue(int dt);
+    int updateQueue(int dt);
 
     void updateSecondaryWeaponString();
 
