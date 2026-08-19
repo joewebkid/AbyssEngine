@@ -83,7 +83,8 @@ linked-exact and 16 raw-byte-exact. `Hud::init` is `24.2%`, and
 
 ## Remaining Work
 
-`Hud::draw` still lacks 196 target instructions. The next body pass should
-focus on mission/cargo String expression lifetimes and the remaining progress
-and mining joins. The frame/canary problem is closed and must not be revisited
-with artificial stack objects.
+The mission/cargo String and global-call pass is continued in
+`HUD_MISSION_CARGO_LIFETIME_ARM_2026-08-19.md`. After that package,
+`Hud::draw` is `42.9%` at `3018/3223` instructions. The next body pass should
+focus on the remaining progress/mining joins. The frame/canary problem is
+closed and must not be revisited with artificial stack objects.
