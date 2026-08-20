@@ -74,15 +74,18 @@ initial MGame/HUD, Radar, and resource-chain comparison is recorded in
 | Weapons | `Gun`, `AbstractGun`, `SpriteGun`, `BeamGun`, and related runtime helper work have focused evidence. | Constructors, vtables, and bodies remain under ARM audit. |
 | Resource loading | AEM/AEI loader and resource-table relationships are documented from native call paths. | Format understanding is not a claim that all resource paths are finished. |
 
-## Latest Hud Challenge And Orbit Verification
+## Latest Hud Verification
 
 The `HUD_EVENT_PRESENTATION_ARM_2026-08-20.md` and
-`HUD_CHALLENGE_ORBIT_LIFETIME_ARM_2026-08-20.md` follow-ups supersede the older
-inline Hud figures above. The 48-function Hud set now averages `88.4%`, with
-26 linked-exact and 19 byte-exact functions. Current focused scores include
+`HUD_CHALLENGE_ORBIT_LIFETIME_ARM_2026-08-20.md` follow-ups are extended by
+`HUD_INIT_MENU_SOURCE_SHAPE_ARM_2026-08-21.md` and supersede the older inline
+Hud figures above. The 48-function Hud set now averages `88.5%`, with 26
+linked-exact and 19 byte-exact functions. Current focused scores include
 `drawEventQueue` 75.4%, `drawEventString` 90.1%, `drawChallengeModeScore`
-49.0%, and `drawOrbitInformation` 56.3%. The challenge off-phase cleanup and
-the orbit system-line hidden-return lifetime now follow the Android body.
+49.0%, `drawOrbitInformation` 56.3%, and `initHudMenu` 35.0% at `1245/1188`
+target/base instructions. The menu pass restores post-state cloak/jump action
+insertion, the paired command action table, signed docking actions and native
+menu-count reloads.
 
 ## Priorities
 
