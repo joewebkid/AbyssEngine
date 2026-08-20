@@ -27,8 +27,6 @@
 #include <cstdint>
 #include <new>
 
-void Status_replaceHash(void *out, void *tmpl, void *a, void *b, void *c);
-
 // Android Hud::hudEvent .rodata at 0x20377c. Bits are indexed from event 27.
 static constexpr unsigned int kHudImportantEventMask = 0x100019;
 
@@ -1358,18 +1356,24 @@ int Hud::updateQueue(int dt) {
 void Hud::drawOrbitInformation() {
     if (Globals::status->inAlienOrbit()) return;
 
-    hud_canvas()->SetColor(0xffffffffu);
-    const int x = hud_canvas()->GetImage2DWidth(
-                          static_cast<unsigned int>(this->factionLogoImage)) +
-                  hud_layout_i32(0x21c);
+    static_cast<PaintCanvas *>(Globals::Canvas)->SetColor(0xffffffffu);
+    const int x = static_cast<PaintCanvas *>(Globals::Canvas)->GetImage2DWidth(
+                      static_cast<unsigned int>(this->factionLogoImage)) +
+                  *reinterpret_cast<int *>(static_cast<char *>(Globals::layout) + 0x21c);
     if (Globals::status->getSystem()->hasNoOwner() == 0)
-        hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->factionLogoImage), 3, 3);
+        static_cast<PaintCanvas *>(Globals::Canvas)->DrawImage2D(
+            static_cast<unsigned int>(this->factionLogoImage), 3, 3);
 
     {
+        PaintCanvas *canvas = static_cast<PaintCanvas *>(Globals::Canvas);
+        const unsigned int font =
+            static_cast<unsigned int>(reinterpret_cast<uintptr_t>(Globals::font));
         String stationName = Globals::status->getStation()->getName();
-        hud_canvas()->DrawString(hud_font(), stationName, x, hud_layout_i32(0x220), false);
+        canvas->DrawString(
+            font, stationName, x,
+            *reinterpret_cast<int *>(static_cast<char *>(Globals::layout) + 0x220), false);
     }
-    hud_canvas()->SetColor(0x777777ffu);
+    static_cast<PaintCanvas *>(Globals::Canvas)->SetColor(0x777777ffu);
 
     if (Globals::status->getCurrentCampaignMission() < 16) return;
 
@@ -1377,16 +1381,26 @@ void Hud::drawOrbitInformation() {
     if (Globals::status->getSystem()->getIndex() == 26 && Globals::status->field_114 > 1)
         securityLevel = 3;
 
-    hud_canvas()->DrawString(
-            hud_font(),
+    {
+        PaintCanvas *canvas = static_cast<PaintCanvas *>(Globals::Canvas);
+        const unsigned int font =
+            static_cast<unsigned int>(reinterpret_cast<uintptr_t>(Globals::font));
+        String systemLine =
             String(Globals::status->getSystem()->getName(), false) + String(" ") +
-                    *hud_game_text()->getText(137),
-            x, hud_layout_i32(0x224), false);
+            *static_cast<GameText *>(Globals::gameText)->getText(137);
+        canvas->DrawString(
+            font, systemLine, x,
+            *reinterpret_cast<int *>(static_cast<char *>(Globals::layout) + 0x224), false);
+    }
 
-    const HudSecurityColor &color = g_Hud_securityColors[securityLevel];
-    hud_canvas()->SetColor(color.r, color.g, color.b, 0xff);
-    hud_canvas()->DrawString(hud_font(), *hud_game_text()->getText(securityLevel + 402), x,
-                             hud_layout_i32(0x228), false);
+    static_cast<PaintCanvas *>(Globals::Canvas)->SetColor(
+        g_Hud_securityColors[securityLevel].r,
+        g_Hud_securityColors[securityLevel].g,
+        g_Hud_securityColors[securityLevel].b, 0xff);
+    static_cast<PaintCanvas *>(Globals::Canvas)->DrawString(
+        static_cast<unsigned int>(reinterpret_cast<uintptr_t>(Globals::font)),
+        *static_cast<GameText *>(Globals::gameText)->getText(securityLevel + 402), x,
+        *reinterpret_cast<int *>(static_cast<char *>(Globals::layout) + 0x228), false);
 }
 
 unsigned int Hud::touchMove(unsigned int a, unsigned int b, void *key) {
@@ -1618,25 +1632,15 @@ void Hud::catchCargo(int itemId, int count, bool single, bool missionDelivery, b
     this->cargoFullFlag = single;
 
     if (missionDelivery) {
-        GameText *gameText = static_cast<GameText *>(Globals::gameText);
-        this->field_0x1f4 = *gameText->getText(0x219);
-        {
-            String source(this->field_0x1f4, false);
-            String replacement(*gameText->getText(
-                Globals::status->getMission()->getType() == 3 ? 0x56e : 0x56f), false);
-            String token("#N");
-            String result;
-            Status_replaceHash(&result, Globals::status, &source, &replacement, &token);
-            this->field_0x1f4 = result;
-        }
-        {
-            String source(this->field_0x1f4, false);
-            String replacement(1);
-            String token("#Q");
-            String result;
-            Status_replaceHash(&result, Globals::status, &source, &replacement, &token);
-            this->field_0x1f4 = result;
-        }
+        this->field_0x1f4 = *static_cast<GameText *>(Globals::gameText)->getText(0x219);
+        this->field_0x1f4 = Globals::status->replaceHash(
+            String(this->field_0x1f4, false),
+            String(*static_cast<GameText *>(Globals::gameText)->getText(
+                       Globals::status->getMission()->getType() == 3 ? 0x56e : 0x56f),
+                   false),
+            String("#N"));
+        this->field_0x1f4 = Globals::status->replaceHash(
+            String(this->field_0x1f4, false), String(1), String("#Q"));
 
         void *itemStorage = ::operator new(sizeof(ListItem));
         String *str = new String(this->field_0x1f4, false);
@@ -1651,42 +1655,30 @@ void Hud::catchCargo(int itemId, int count, bool single, bool missionDelivery, b
         void *itemStorage = ::operator new(sizeof(ListItem));
         String *str = new String(this->field_0x1f4, false);
         ListItem *item = new (itemStorage) ListItem(str, true);
-        addToEventQueue(item);
-        return;
+        return addToEventQueue(item);
     }
 
     if (count < 1) return;
 
-    GameText *gameText = static_cast<GameText *>(Globals::gameText);
-
     if (aggregate && this->eventQueueDirty != 0) {
-        String amountValue(this->cargoAggregateCount);
-        String amountUnit("t ");
-        String amount = amountValue + amountUnit;
-        String amountCopy(amount, false);
-        String previousLabel = amountCopy + *gameText->getText(itemId + 0x4fa);
-        String lookup(previousLabel, false);
-        int idx = sameHudEventAsBeforeAggregate(lookup);
+        String previousLabel =
+            String(String(this->cargoAggregateCount) + String("t "), false) +
+            *static_cast<GameText *>(Globals::gameText)->getText(itemId + 0x4fa);
+        int idx = sameHudEventAsBeforeAggregate(String(previousLabel, false));
         if (idx >= 0) {
             this->eventQueueTimer = 2000;
             this->cargoAggregateCount += count;
-            String newAmountValue(this->cargoAggregateCount);
-            String newAmountUnit("t ");
-            String newAmount = newAmountValue + newAmountUnit;
-            String newAmountCopy(newAmount, false);
-            String newLabel = newAmountCopy + *gameText->getText(itemId + 0x4fa);
-            *(*this->eventQueue)[idx]->name = newLabel;
+            *(*this->eventQueue)[idx]->name =
+                String(String(this->cargoAggregateCount) + String("t "), false) +
+                *static_cast<GameText *>(Globals::gameText)->getText(itemId + 0x4fa);
             return;
         }
     }
 
     this->cargoAggregateCount = count;
-    String amountValue(this->cargoAggregateCount);
-    String amountUnit("t ");
-    String amount = amountValue + amountUnit;
-    String amountCopy(amount, false);
-    String label = amountCopy + *gameText->getText(itemId + 0x4fa);
-    this->field_0x1f4 = label;
+    this->field_0x1f4 =
+        String(String(this->cargoAggregateCount) + String("t "), false) +
+        *static_cast<GameText *>(Globals::gameText)->getText(itemId + 0x4fa);
 
     void *itemStorage = ::operator new(sizeof(ListItem));
     String *str = new String(this->field_0x1f4, false);
@@ -1793,39 +1785,43 @@ void Hud::drawEventQueue() {
 }
 
 unsigned int Hud::touchBegin(unsigned int a, unsigned int b, void *key) {
-    unsigned int e = touchedElement(a, b);
-    if (e == 0) {
-        for (int i = 0; i != 0x19; i = i + 1) {
-            if ((*this->keyArray)[i] == key) {
-                this->touchFlags = this->touchFlags & ~(unsigned int) this->elementBits[i];
-                this->elementBits[i] = 0;
-                (*this->keyArray)[i] = 0;
+    unsigned int element = touchedElement(a, b);
+    if (element != 0) {
+        void **keys = this->keyArray->data_;
+        for (unsigned int i = 0; i < 0x19; ++i) {
+            if (keys[i] == key) {
+                int *bits = this->elementBits;
+                unsigned int previous = static_cast<unsigned int>(bits[i]);
+                unsigned int flags;
+                if (element == previous)
+                    flags = this->touchFlags;
+                else
+                    flags = this->touchFlags & ~previous;
+                this->touchFlags = flags | element;
+                bits[i] = static_cast<int>(element);
+                return this->touchFlags;
+            }
+        }
+
+        for (unsigned int i = 0; i <= 0x18; ++i) {
+            if (keys[i] == nullptr) {
+                keys[i] = key;
+                this->elementBits[i] = static_cast<int>(element);
+                this->touchFlags |= element;
+                return this->touchFlags;
             }
         }
     } else {
-        unsigned int j;
-        for (j = 0; j < 0x19; j = j + 1) {
-            if ((*this->keyArray)[j] == key) {
-                unsigned int v = (unsigned int) this->elementBits[j];
-                if (e == v)
-                    v = this->touchFlags;
-                else
-                    v = this->touchFlags & ~v;
-                this->touchFlags = v | e;
-                this->elementBits[j] = e;
-                goto done;
-            }
-        }
-        for (j = 0; j < 0x19; j = j + 1) {
-            if ((*this->keyArray)[j] == 0) {
-                (*this->keyArray)[j] = key;
-                this->elementBits[j] = e;
-                this->touchFlags = e | this->touchFlags;
-                break;
+        for (int i = 0; i != 25; ++i) {
+            void **keys = this->keyArray->data_;
+            if (keys[i] == key) {
+                int *bits = this->elementBits;
+                this->touchFlags &= ~static_cast<unsigned int>(bits[i]);
+                bits[i] = 0;
+                keys[i] = nullptr;
             }
         }
     }
-done:
     return this->touchFlags;
 }
 
@@ -1993,30 +1989,36 @@ update_string:
 
 void Hud::drawMenu(int unused) {
     (void) unused;
-    PaintCanvas *canvas = hud_canvas();
     static_cast<Layout *>(Globals::layout)->drawMask();
 
-    const int frameX = this->field_0x3c4 + this->menuOriginX;
-    const int menuY = this->menuOriginYBase + this->menuOriginY;
-    canvas->DrawImage2D(static_cast<unsigned>(this->quickMenuTopImage), frameX, menuY);
+    hud_canvas()->DrawImage2D(
+        static_cast<unsigned>(this->quickMenuTopImage),
+        this->field_0x3c4 + this->menuOriginX,
+        this->menuOriginY + this->menuOriginYBase);
+    hud_canvas()->DrawImage2D(
+        static_cast<unsigned>(this->quickMenuHeaderImage),
+        this->menuOriginX + this->field_0x3d4 + this->field_0x3dc / 2,
+        this->menuOriginY + this->menuOriginYBase + this->menuRowHeight / 2 -
+            hud_layout_i32(0x22c),
+        0x11, 0x44);
 
-    const int headerX = this->menuOriginX + this->field_0x3d4 + this->field_0x3dc / 2;
-    const int headerY = menuY + this->menuRowHeight / 2 - hud_layout_i32(0x22c);
-    canvas->DrawImage2D(static_cast<unsigned>(this->quickMenuHeaderImage), headerX, headerY, 0x11, 0x44);
-
-    int rowY = menuY + this->menuRowHeight;
+    int rowY = this->menuRowHeight + this->menuOriginY + this->menuOriginYBase;
     Array<TouchButton *> *buttons = this->menuButtons;
     if (buttons != nullptr) {
         unsigned int count = buttons->size();
         if (count != 0) {
             for (unsigned int i = 0; i < count - 1; ++i) {
-                canvas->DrawImage2D(static_cast<unsigned>(this->quickMenuMiddleImage), frameX, rowY);
+                hud_canvas()->DrawImage2D(
+                    static_cast<unsigned>(this->quickMenuMiddleImage),
+                    this->field_0x3c4 + this->menuOriginX, rowY);
                 rowY += this->field_0x3d0;
                 count = this->menuButtons->size();
             }
         }
     }
-    canvas->DrawImage2D(static_cast<unsigned>(this->quickMenuBottomImage), frameX, rowY);
+    hud_canvas()->DrawImage2D(
+        static_cast<unsigned>(this->quickMenuBottomImage),
+        this->field_0x3c4 + this->menuOriginX, rowY);
 
     buttons = this->menuButtons;
     if (buttons != nullptr) {
@@ -2037,15 +2039,19 @@ void Hud::drawMenu(int unused) {
 
     String cargoLabel = String("X ") + String(this->fuelGaugeValue);
 
-    const int gaugeX = headerX;
+    const int gaugeX = this->menuOriginX + this->field_0x3d4 + this->field_0x3dc / 2;
     const int gaugeY = rowY + hud_layout_i32(0x30) / 2 + hud_layout_i32(0x288);
-    canvas->DrawImage2D(static_cast<unsigned>(this->fuelGaugeBarImage), gaugeX, gaugeY, 0x11, 0x14);
-    canvas->DrawImage2D(static_cast<unsigned>(this->fuelGaugeIconImage), gaugeX - hud_layout_i32(0x230),
-                        hud_layout_i32(0x30) + gaugeY + hud_layout_i32(0x28c), 0x11, 0x12);
+    hud_canvas()->DrawImage2D(
+        static_cast<unsigned>(this->fuelGaugeBarImage), gaugeX, gaugeY, 0x11, 0x14);
+    hud_canvas()->DrawImage2D(
+        static_cast<unsigned>(this->fuelGaugeIconImage), gaugeX - hud_layout_i32(0x230),
+        hud_layout_i32(0x30) + gaugeY + hud_layout_i32(0x28c), 0x11, 0x12);
 
-    const int textY = gaugeY + canvas->GetImage2DHeight(static_cast<unsigned>(this->fuelGaugeBarImage)) / 2 -
-                      canvas->GetTextHeight(hud_font()) / 2 + hud_layout_i32(0x234);
-    canvas->DrawString(hud_font(), cargoLabel, gaugeX + hud_layout_i32(0x230), textY, false);
+    hud_canvas()->DrawString(
+        hud_font(), cargoLabel, hud_layout_i32(0x230) + gaugeX,
+        gaugeY + hud_canvas()->GetImage2DHeight(static_cast<unsigned>(this->fuelGaugeBarImage)) / 2 -
+            hud_canvas()->GetTextHeight(hud_font()) / 2 + hud_layout_i32(0x234),
+        false);
 }
 
 void Hud::clearQueue() {

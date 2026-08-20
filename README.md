@@ -106,6 +106,7 @@ metadata only; original game binaries and asset dumps are not included.
 - [Hud boost and ARM stack-protector audit](docs/HUD_BOOST_STACK_PROTECTOR_ARM_2026-08-19.md)
 - [Hud mission/cargo String lifetime audit](docs/HUD_MISSION_CARGO_LIFETIME_ARM_2026-08-19.md)
 - [Hud init ARM recovery](docs/HUD_INIT_ARM_2026-08-20.md)
+- [Hud cargo/menu/touch/orbit ARM pass](docs/HUD_CARGO_MENU_TOUCH_ORBIT_ARM_2026-08-20.md)
 - [AEM/AEI loader notes](docs/AEM_AEI_NATIVE_LOADER_SPEC.md)
 - [DeepOpen J2ME crosswalk](docs/DEEPOPEN_J2ME_CROSSWALK_2026-07-20.md)
 - [Recovery evidence guide (RU)](docs/RECOVERY_EVIDENCE_GUIDE_RU.md)
