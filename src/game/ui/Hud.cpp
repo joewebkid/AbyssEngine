@@ -1434,62 +1434,60 @@ found:
 
 unsigned int Hud::touchedElement(unsigned int x, unsigned int y) {
     if (this->quickMenuOpen != 0) {
-        Array<TouchButton *> *menu = this->menuButtons;
-        if (menu != 0) {
-            for (unsigned int i = 0; i < menu->size(); i++) {
-                if ((*menu)[i]->OnTouchBegin((int) x, (int) y) != 0)
+        if (this->menuButtons != nullptr) {
+            for (unsigned int i = 0; i < this->menuButtons->size(); i++) {
+                if ((*this->menuButtons)[i]->OnTouchBegin((int) x, (int) y) != 0)
                     return *(unsigned int *) (*this->menuButtons)[i];
-                menu = this->menuButtons;
             }
             return 0;
         }
     }
 
     if (Globals::iPad != 0) {
-        int extent = this->touchHalfExtent;
         unsigned int origin = this->field_0x40c;
-        if (origin <= y && origin + extent >= y) {
+        if (origin <= y && origin + this->touchHalfExtent >= y) {
             origin = this->field_0x40a;
-            if (origin <= x && origin + extent >= x)
+            if (origin <= x && origin + this->touchHalfExtent >= x)
                 return 1;
         }
         if (this->hasBoostButton != 0) {
             origin = this->field_0x412;
-            if (origin <= y && origin + extent >= y) {
+            if (origin <= y && origin + this->touchHalfExtent >= y) {
                 origin = this->field_0x410;
-                if (origin <= x && origin + extent >= x)
+                if (origin <= x && origin + this->touchHalfExtent >= x)
                     return 2;
             }
         }
         origin = this->field_0x3fa;
-        if (origin <= y && origin + extent >= y) {
+        if (origin <= y && origin + this->touchHalfExtent >= y) {
             origin = this->field_0x3f8;
-            if (origin <= x && origin + extent >= x)
+            if (origin <= x && origin + this->touchHalfExtent >= x)
                 return 0x40;
         }
         origin = this->field_0x406;
-        if (origin <= y && origin + extent >= y) {
+        if (origin <= y && origin + this->touchHalfExtent >= y) {
             origin = this->field_0x404;
-            if (origin <= x && origin + extent >= x)
+            if (origin <= x && origin + this->touchHalfExtent >= x)
                 return 0x100;
         }
         int center = this->steeringCenterX;
-        if (center - extent <= x && center + extent >= x) {
+        if (center - this->touchHalfExtent <= x && center + this->touchHalfExtent >= x) {
             center = this->steeringCenterY;
             int verticalExtent = this->touchHalfExtentSmall;
             if (center - verticalExtent <= y && center + verticalExtent >= y)
                 return 0x20;
         }
         origin = this->field_0x3f2;
-        if (origin <= x && origin + extent >= x &&
-            (origin = this->field_0x3f4) <= y && origin + extent >= y) {
+        if (origin <= x && origin + this->touchHalfExtent >= x &&
+            (origin = this->field_0x3f4) <= y && origin + this->touchHalfExtent >= y) {
             this->field_0x470 = 1000;
             return 0x80;
         }
         center = this->field_0x3ec;
-        if (center - (extent >> 1) <= x && center + extent >= x) {
+        if (center - (this->touchHalfExtent >> 1) <= x &&
+            center + this->touchHalfExtent >= x) {
             origin = this->field_0x3ee;
-            if (origin <= y && origin + extent >= y)
+            if (origin <= y && origin + this->touchHalfExtent >= y)
                 return 8;
         }
         int smallExtent = this->touchHalfExtentSmall;
@@ -1509,49 +1507,48 @@ unsigned int Hud::touchedElement(unsigned int x, unsigned int y) {
             }
         }
         origin = this->field_0x400;
-        if (origin <= y && origin + extent >= y) {
+        if (origin <= y && origin + this->touchHalfExtent >= y) {
             origin = this->field_0x3fe;
-            if (origin <= x && origin + extent >= x)
+            if (origin <= x && origin + this->touchHalfExtent >= x)
                 return 0x20000000;
         }
         if (this->hackingGameActive != 0) {
             origin = this->field_0x456;
-            if (origin <= y && origin + extent >= y &&
-                (origin = this->field_0x454) <= x && origin + extent >= x)
+            if (origin <= y && origin + this->touchHalfExtent >= y &&
+                (origin = this->field_0x454) <= x && origin + this->touchHalfExtent >= x)
                 return 0x200;
             origin = this->field_0x45a;
-            if (origin <= y && origin + extent >= y &&
-                (origin = this->field_0x458) <= x && origin + extent >= x)
+            if (origin <= y && origin + this->touchHalfExtent >= y &&
+                (origin = this->field_0x458) <= x && origin + this->touchHalfExtent >= x)
                 return 0x400;
             origin = this->field_0x460;
-            if (origin <= y && origin + extent >= y &&
-                (origin = this->field_0x45e) <= x && origin + extent >= x)
+            if (origin <= y && origin + this->touchHalfExtent >= y &&
+                (origin = this->field_0x45e) <= x && origin + this->touchHalfExtent >= x)
                 return 0x800;
         }
         return 0;
     }
 
-    int extent = this->touchHalfExtent;
     if (this->hackingGameActive != 0) {
         unsigned int origin = this->field_0x456;
-        if (origin <= y && origin + extent >= y &&
-            (origin = this->field_0x454) <= x && origin + extent >= x)
+        if (origin <= y && origin + this->touchHalfExtent >= y &&
+            (origin = this->field_0x454) <= x && origin + this->touchHalfExtent >= x)
             return 0x200;
         origin = this->field_0x45a;
-        if (origin <= y && origin + extent >= y &&
-            (origin = this->field_0x458) <= x && origin + extent >= x)
+        if (origin <= y && origin + this->touchHalfExtent >= y &&
+            (origin = this->field_0x458) <= x && origin + this->touchHalfExtent >= x)
             return 0x400;
         origin = this->field_0x460;
-        if (origin <= y && origin + extent >= y &&
-            (origin = this->field_0x45e) <= x && origin + extent >= x)
+        if (origin <= y && origin + this->touchHalfExtent >= y &&
+            (origin = this->field_0x45e) <= x && origin + this->touchHalfExtent >= x)
             return 0x800;
     }
 
     if (y < (unsigned int) (Globals::h >> 2)) {
         unsigned int origin = this->field_0x40c;
-        if (origin <= y && origin + extent >= y) {
+        if (origin <= y && origin + this->touchHalfExtent >= y) {
             origin = this->field_0x40a;
-            if (origin <= x && origin + extent >= x)
+            if (origin <= x && origin + this->touchHalfExtent >= x)
                 return 1;
         }
         return 0;
@@ -1559,22 +1556,23 @@ unsigned int Hud::touchedElement(unsigned int x, unsigned int y) {
     if (x < (unsigned int) (Globals::w >> 1)) {
         if (this->hasBoostButton != 0) {
             unsigned int origin = this->field_0x412;
-            if (origin <= y && origin + extent >= y) {
+            if (origin <= y && origin + this->touchHalfExtent >= y) {
                 int center = this->field_0x410;
-                if (center - extent <= x && center + extent >= x)
+                if (center - this->touchHalfExtent <= x &&
+                    center + this->touchHalfExtent >= x)
                     return 2;
             }
         }
         unsigned int origin = this->field_0x3fa;
-        if (origin <= y && origin + extent >= y &&
-            (origin = this->field_0x3f8) <= x && origin + extent >= x)
+        if (origin <= y && origin + this->touchHalfExtent >= y &&
+            (origin = this->field_0x3f8) <= x && origin + this->touchHalfExtent >= x)
             return 0x40;
         origin = this->field_0x406;
-        if (origin <= y && origin + extent >= y &&
-            (origin = this->field_0x404) <= x && origin + extent >= x)
+        if (origin <= y && origin + this->touchHalfExtent >= y &&
+            (origin = this->field_0x404) <= x && origin + this->touchHalfExtent >= x)
             return 0x100;
         int center = this->steeringCenterX;
-        if (center - extent <= x && center + extent >= x) {
+        if (center - this->touchHalfExtent <= x && center + this->touchHalfExtent >= x) {
             center = this->steeringCenterY;
             int verticalExtent = this->touchHalfExtentSmall;
             if (center - verticalExtent <= y && center + verticalExtent >= y)
@@ -1584,17 +1582,18 @@ unsigned int Hud::touchedElement(unsigned int x, unsigned int y) {
     }
 
     unsigned int origin = this->field_0x3f2;
-    if (origin <= x && origin + extent >= x) {
+    if (origin <= x && origin + this->touchHalfExtent >= x) {
         origin = this->field_0x3f4;
-        if (origin <= y && origin + extent >= y) {
+        if (origin <= y && origin + this->touchHalfExtent >= y) {
             this->field_0x470 = 1000;
             return 0x80;
         }
     }
     int center = this->field_0x3ec;
-    if (center - (extent >> 1) <= x && center + extent >= x) {
+    if (center - (this->touchHalfExtent >> 1) <= x &&
+        center + this->touchHalfExtent >= x) {
         origin = this->field_0x3ee;
-        if (origin <= y && origin + extent >= y)
+        if (origin <= y && origin + this->touchHalfExtent >= y)
             return 8;
     }
     int smallExtent = this->touchHalfExtentSmall;
@@ -1613,9 +1612,9 @@ unsigned int Hud::touchedElement(unsigned int x, unsigned int y) {
         }
     }
     origin = this->field_0x400;
-    if (origin <= y && origin + extent >= y) {
+    if (origin <= y && origin + this->touchHalfExtent >= y) {
         origin = this->field_0x3fe;
-        if (origin <= x && origin + extent >= x)
+        if (origin <= x && origin + this->touchHalfExtent >= x)
             return 0x20000000;
     }
     return 0;
@@ -2065,97 +2064,105 @@ void Hud::clearQueue() {
 }
 
 void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
-    String &line = this->field_0x1e0;
-
     switch (eventId) {
         case 1:
             if (this->hasAutofireUI == 0) return;
-            line = *hud_game_text()->getText(37) + String(" ") + *hud_game_text()->getText(38);
+            this->field_0x1e0 =
+                    *hud_game_text()->getText(37) + String(" ") + *hud_game_text()->getText(38);
             break;
         case 2:
             if (this->hasAutofireUI == 0) return;
-            line = *hud_game_text()->getText(37) + String(" ") + *hud_game_text()->getText(39);
+            this->field_0x1e0 =
+                    *hud_game_text()->getText(37) + String(" ") + *hud_game_text()->getText(39);
             break;
         case 3:
             if (this->hasBoostButton == 0 || ego->readyToBoost() == 0) return;
-            line = *hud_game_text()->getText(314);
+            this->field_0x1e0 = *hud_game_text()->getText(314);
             break;
         case 4:
             if (this->hasBoostButton == 0) return;
-            line = *hud_game_text()->getText(315);
+            this->field_0x1e0 = *hud_game_text()->getText(315);
             break;
         case 5:
-            line = *hud_game_text()->getText(571) + String(" ") + *hud_game_text()->getText(38);
+            this->field_0x1e0 =
+                    *hud_game_text()->getText(571) + String(" ") + *hud_game_text()->getText(38);
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         case 6:
-            line = *hud_game_text()->getText(571) + String(" ") + *hud_game_text()->getText(39);
+            this->field_0x1e0 =
+                    *hud_game_text()->getText(571) + String(" ") + *hud_game_text()->getText(39);
             Globals::sound->play(0x1d, nullptr, nullptr, 0.0f);
             break;
         case 7:
-            line = *hud_game_text()->getText(553);
+            this->field_0x1e0 = *hud_game_text()->getText(553);
             break;
         case 8:
-            line = *hud_game_text()->getText(539);
+            this->field_0x1e0 = *hud_game_text()->getText(539);
             break;
         case 9:
-            line = *hud_game_text()->getText(540);
+            this->field_0x1e0 = *hud_game_text()->getText(540);
             break;
         case 10: {
-            String stationName(Globals::status->getStation()->getName(), false);
-            line = *hud_game_text()->getText(546) + String(": ") + stationName +
-                   (Globals::status->getStation()->getIndex() == 101
-                            ? String("", false)
-                            : String(" ") + *hud_game_text()->getText(136));
+            this->field_0x1e0 =
+                    *hud_game_text()->getText(546) + String(": ") +
+                    String(Globals::status->getStation()->getName(), false) +
+                    (Globals::status->getStation()->getIndex() == 101
+                             ? String("", false)
+                             : String(" ") + *hud_game_text()->getText(136));
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         }
         case 11:
-            line = *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(550);
+            this->field_0x1e0 =
+                    *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(550);
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         case 12:
-            line = *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(547);
+            this->field_0x1e0 =
+                    *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(547);
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         case 13:
-            line = *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(548);
+            this->field_0x1e0 =
+                    *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(548);
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         case 14:
-            line = *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(549);
+            this->field_0x1e0 =
+                    *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(549);
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         case 15:
-            line = *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(545);
+            this->field_0x1e0 =
+                    *hud_game_text()->getText(546) + String(": ") + *hud_game_text()->getText(545);
             Globals::sound->play(0x1c, nullptr, nullptr, 0.0f);
             break;
         case 16:
-            line = *hud_game_text()->getText(307);
+            this->field_0x1e0 = *hud_game_text()->getText(307);
             break;
         case 17:
-            line = *hud_game_text()->getText(308);
+            this->field_0x1e0 = *hud_game_text()->getText(308);
             break;
         case 18:
-            line = *hud_game_text()->getText(309);
+            this->field_0x1e0 = *hud_game_text()->getText(309);
             break;
         case 19:
-            line = this->strings_01c_100[19];
+            this->field_0x1e0 = this->strings_01c_100[19];
             break;
         case 20:
-            line = *hud_game_text()->getText(541);
+            this->field_0x1e0 = *hud_game_text()->getText(541);
             break;
         case 21:
-            line = *hud_game_text()->getText(525);
+            this->field_0x1e0 = *hud_game_text()->getText(525);
             break;
         case 22:
-            line = *hud_game_text()->getText(542);
+            this->field_0x1e0 = *hud_game_text()->getText(542);
             break;
         case 23:
-            line = *hud_game_text()->getText(543);
+            this->field_0x1e0 = *hud_game_text()->getText(543);
             break;
         case 24:
-            line = *hud_game_text()->getText(544);
+            this->field_0x1e0 = *hud_game_text()->getText(544);
             break;
 
         case 25:
@@ -2166,7 +2173,7 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
             this->jumpDriveProgressActive = 0;
             return;
         case 27:
-            line = *hud_game_text()->getText(322);
+            this->field_0x1e0 = *hud_game_text()->getText(322);
             break;
         case 28:
             this->chargeProgressFadeTimer = 0;
@@ -2177,21 +2184,23 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
             return;
         case 30: {
             String amount = String("-") + String(arg) + String("t ");
-            line = String(amount, false) + *hud_game_text()->getText(1396);
+            this->field_0x1e0 = String(amount, false) + *hud_game_text()->getText(1396);
             clearQueue();
             break;
         }
         case 31:
-            line = *hud_game_text()->getText(324);
+            this->field_0x1e0 = *hud_game_text()->getText(324);
             break;
         case 32:
-            line = *hud_game_text()->getText(218) + String(" ") + *hud_game_text()->getText(38);
+            this->field_0x1e0 =
+                    *hud_game_text()->getText(218) + String(" ") + *hud_game_text()->getText(38);
             break;
         case 33:
-            line = *hud_game_text()->getText(218) + String(" ") + *hud_game_text()->getText(39);
+            this->field_0x1e0 =
+                    *hud_game_text()->getText(218) + String(" ") + *hud_game_text()->getText(39);
             break;
         case 34:
-            line = *hud_game_text()->getText(3199);
+            this->field_0x1e0 = *hud_game_text()->getText(3199);
             break;
 
         case 0x23:
@@ -2222,24 +2231,24 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
         case 0x26:
         case 0x28:
         case 0x2a:
-            line = *hud_game_text()->getText(3200);
+            this->field_0x1e0 = *hud_game_text()->getText(3200);
             this->dockTransferProgressActive = 0;
             break;
         case 43:
-            line = *hud_game_text()->getText(3203);
+            this->field_0x1e0 = *hud_game_text()->getText(3203);
             break;
         case 44:
-            line = *hud_game_text()->getText(3201);
+            this->field_0x1e0 = *hud_game_text()->getText(3201);
             break;
         case 45:
-            line = *hud_game_text()->getText(3202);
+            this->field_0x1e0 = *hud_game_text()->getText(3202);
             break;
         case 46:
-            line = *hud_game_text()->getText(316);
+            this->field_0x1e0 = *hud_game_text()->getText(316);
             break;
         case 47: {
             String amount = String("-") + String(arg) + String("t ");
-            line = String(amount, false) + *hud_game_text()->getText(1476);
+            this->field_0x1e0 = String(amount, false) + *hud_game_text()->getText(1476);
             clearQueue();
             break;
         }
@@ -2248,26 +2257,26 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
             break;
     }
 
-    String probe(line, false);
+    String probe(this->field_0x1e0, false);
     if (sameHudEventAsBefore(probe) != 0) return;
 
     const unsigned int idBit = static_cast<unsigned int>(eventId - 27);
     void *itemStorage = ::operator new(sizeof(ListItem));
-    String *eventText = new String(line, false);
     ListItem *item;
-    if (idBit < 0x15 && ((1u << idBit) & kHudImportantEventMask) != 0)
+    if (idBit < 0x15 && ((1u << idBit) & kHudImportantEventMask) != 0) {
+        String *eventText = new String(this->field_0x1e0, false);
         item = new (itemStorage) ListItem(eventText, 1);
-    else
+    } else {
+        String *eventText = new String(this->field_0x1e0, false);
         item = new (itemStorage) ListItem(eventText);
+    }
     addToEventQueue(item);
 
-    PaintCanvas *canvas = hud_canvas();
-    int w = canvas->GetTextWidth(hud_font(), line);
-    int screenW = Globals::w;
+    const int textWidth = hud_canvas()->GetTextWidth(hud_font(), this->field_0x1e0);
     this->eventScrollTick = 0;
     this->eventScrolls = 1;
-    this->eventTextWraps =
-            (unsigned char) ((screenW / 2 - this->eventLineMargin) + this->eventLineMarginAlt * -2 < w);
+    this->eventTextWraps = static_cast<unsigned char>(
+            textWidth > Globals::w / 2 - this->eventLineMargin - 2 * this->eventLineMarginAlt);
 }
 
 
@@ -2457,24 +2466,26 @@ static inline __attribute__((always_inline)) void hud_add_docking_target_menu_bu
 static inline __attribute__((always_inline)) void hud_compact_orbit_menu_for_phone(Hud *self) {
     if (Globals::iPad != 0 || self->menuButtons->size() < 5) return;
 
-    const int rowGap = hud_layout_i32(0x30);
     for (unsigned int i = 0; i < self->menuButtons->size(); ++i) {
         TouchButton *button = (*self->menuButtons)[i];
-        const Vector position = button->getPosition();
-        button->setPosition(static_cast<int>(position.x), static_cast<int>(position.y) - rowGap);
+        const float x = button->getPosition().x;
+        const Vector position = (*self->menuButtons)[i]->getPosition();
+        button->setPosition(static_cast<int>(x),
+                            static_cast<int>(position.y -
+                                             static_cast<float>(hud_layout_i32(0x30))));
     }
 }
 
 void Hud::initHudMenu(int menuType, Level *lvl) {
-    if (this->menuButtons != nullptr) {
-        ArrayReleaseClasses(*this->menuButtons);
-        delete this->menuButtons;
-        this->menuButtons = nullptr;
+    Array<TouchButton *> **menuSlot = &this->menuButtons;
+    if (*menuSlot != nullptr) {
+        ArrayReleaseClasses(**menuSlot);
+        delete *menuSlot;
+        *menuSlot = nullptr;
     }
 
-    Array<TouchButton *> *menuButtons = new Array<TouchButton *>();
+    *menuSlot = new Array<TouchButton *>();
     this->quickMenuType = menuType;
-    this->menuButtons = menuButtons;
 
     delete this->equipmentArray;
     this->equipmentArray = nullptr;
@@ -2568,8 +2579,8 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
             break;
         }
         case 2: {
-            const int textIds[4] = {307, 308, 309, (Globals::status->field_f8 & 0xff) != 0 ? 311 : 310};
-            const unsigned int actions[4] = {0x20000, 0x40000, 0x80000, 0x100000};
+            int textIds[4] = {307, 308, 309, (Globals::status->field_f8 & 0xff) != 0 ? 311 : 310};
+            unsigned int actions[4] = {0x20000, 0x40000, 0x80000, 0x100000};
             for (unsigned int i = 0; i < 4; ++i) {
                 hud_add_menu_text_button(this, textIds[i], y, actions[i]);
                 y += rowStep;
@@ -2631,7 +2642,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
             break;
     }
 
-    const unsigned int buttonCount = this->menuButtons->size();
+    const unsigned int buttonCount = (*menuSlot)->size();
     if (Globals::iPad != 0) {
         if (buttonCount != 0) {
             this->menuOriginYBase = static_cast<int>(4 - buttonCount) * rowStep;
@@ -2639,7 +2650,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
                 this->menuOriginYBase -= rowGap;
         }
         for (unsigned int i = 0; i < buttonCount; ++i) {
-            TouchButton *button = (*this->menuButtons)[i];
+            TouchButton *button = (**menuSlot)[i];
             button->translate(this->menuOriginX, this->menuOriginYBase);
             if (i <= 9) {
                 const Vector xPosition = button->getPosition();
@@ -2652,7 +2663,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
         this->menuOriginYBase = buttonCount < 5 ? 0 : -rowGap;
         for (unsigned int i = 0; i < buttonCount; ++i) {
             if (i <= 9) {
-                TouchButton *button = (*this->menuButtons)[i];
+                TouchButton *button = (**menuSlot)[i];
                 const Vector xPosition = button->getPosition();
                 Globals::sub_menu_buttons_x[i] = static_cast<int>(xPosition.x);
                 const Vector yPosition = button->getPosition();
