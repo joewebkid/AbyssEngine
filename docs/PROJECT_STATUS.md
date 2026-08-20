@@ -74,16 +74,15 @@ initial MGame/HUD, Radar, and resource-chain comparison is recorded in
 | Weapons | `Gun`, `AbstractGun`, `SpriteGun`, `BeamGun`, and related runtime helper work have focused evidence. | Constructors, vtables, and bodies remain under ARM audit. |
 | Resource loading | AEM/AEI loader and resource-table relationships are documented from native call paths. | Format understanding is not a claim that all resource paths are finished. |
 
-## Latest Hud Event Presentation
+## Latest Hud Challenge And Orbit Verification
 
-The `HUD_EVENT_PRESENTATION_ARM_2026-08-20.md` follow-up supersedes the older
-inline Hud event-family figures above. The 48-function Hud set now averages
-`88.2%`, with 26 linked-exact and 19 byte-exact functions. Current focused
-scores are `drawEventQueue` 75.4%, `drawEventString` 90.1%,
-`sameHudEventAsBefore` 94.1%, `sameHudEventAsBeforeAggregate` 93.9%, and
-`drawChallengeModeScore` 48.7%. The challenge score body now has the confirmed
-whole-row blink behavior even though its basic-block layout reduced fuzzy
-similarity by 1.4 points.
+The `HUD_EVENT_PRESENTATION_ARM_2026-08-20.md` and
+`HUD_CHALLENGE_ORBIT_LIFETIME_ARM_2026-08-20.md` follow-ups supersede the older
+inline Hud figures above. The 48-function Hud set now averages `88.4%`, with
+26 linked-exact and 19 byte-exact functions. Current focused scores include
+`drawEventQueue` 75.4%, `drawEventString` 90.1%, `drawChallengeModeScore`
+49.0%, and `drawOrbitInformation` 56.3%. The challenge off-phase cleanup and
+the orbit system-line hidden-return lifetime now follow the Android body.
 
 ## Priorities
 

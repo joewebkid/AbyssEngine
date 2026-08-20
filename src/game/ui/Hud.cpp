@@ -1385,11 +1385,11 @@ void Hud::drawOrbitInformation() {
         PaintCanvas *canvas = static_cast<PaintCanvas *>(Globals::Canvas);
         const unsigned int font =
             static_cast<unsigned int>(reinterpret_cast<uintptr_t>(Globals::font));
-        String systemLine =
-            String(Globals::status->getSystem()->getName(), false) + String(" ") +
-            *static_cast<GameText *>(Globals::gameText)->getText(137);
         canvas->DrawString(
-            font, systemLine, x,
+            font,
+            String(Globals::status->getSystem()->getName(), false) + String(" ") +
+                *static_cast<GameText *>(Globals::gameText)->getText(137),
+            x,
             *reinterpret_cast<int *>(static_cast<char *>(Globals::layout) + 0x224), false);
     }
 
@@ -2289,24 +2289,24 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
 void Hud::drawChallengeModeScore(int unused) {
     (void) unused;
     hud_canvas()->SetColor(0xffffffffu);
-    const int frameWidth = static_cast<Sprite *>(this->digitSprite)->getFrameWidth();
+    int frameWidth = static_cast<Sprite *>(this->digitSprite)->getFrameWidth();
     const int pad = static_cast<Layout *>(Globals::layout)->field_0x2c;
     const int frameHeight = static_cast<Sprite *>(this->digitSprite)->getFrameHeight();
     const int y = static_cast<Layout *>(Globals::layout)->field_0x2c;
     const int screenW = Globals::w;
 
     String score(Globals::status->challengeScore);
-    const int scoreLength = static_cast<int>(score.size());
+    const unsigned int scoreLength = score.size();
     if (scoreLength <= 6) {
-        const int zeroCount = 7 - scoreLength;
+        const int zeroCount = 7 - static_cast<int>(scoreLength);
         for (int i = 0; i < zeroCount; ++i)
             score = String("0") + score;
     }
 
     hud_canvas()->SetColor(0x77ccffffu);
-    const int digitStep = frameWidth - pad;
+    frameWidth -= pad;
     const int screenCenter = screenW / 2;
-    const int sevenDigitHalfWidth = 7 * digitStep / 2;
+    const int sevenDigitHalfWidth = 7 * frameWidth / 2;
     const int scoreStartX = screenCenter - sevenDigitHalfWidth;
     int x = scoreStartX;
     for (int i = 1; static_cast<unsigned int>(i - 1) < score.size(); ++i) {
@@ -2318,7 +2318,7 @@ void Hud::drawChallengeModeScore(int unused) {
         static_cast<Sprite *>(this->digitSprite)->setFrame(frame);
         static_cast<Sprite *>(this->digitSprite)->setPosition(x, y);
         static_cast<Sprite *>(this->digitSprite)->draw(1.0f, 1.0f);
-        x += digitStep;
+        x += frameWidth;
     }
 
     if (Globals::status->challengeMultiplierTimer > 0 && Globals::status->challengeMultiplier >= 2) {
@@ -2329,7 +2329,7 @@ void Hud::drawChallengeModeScore(int unused) {
 
         if (timer <= 3000) {
             if (timer % 100 < 50)
-                goto challenge_score_done;
+                goto challenge_score_cleanup;
 
             const int multiplier = Globals::status->challengeMultiplier;
             String bonus(static_cast<int>((static_cast<float>(multiplier) * 0.05f + 1.0f) *
@@ -2344,10 +2344,10 @@ void Hud::drawChallengeModeScore(int unused) {
                 }
                 static_cast<Sprite *>(this->digitSprite)->setFrame(frame);
                 static_cast<Sprite *>(this->digitSprite)->setPosition(
-                        Globals::w / 2 - ((static_cast<int>(bonus.size()) * digitStep) >> 1) +
+                        Globals::w / 2 - ((static_cast<int>(bonus.size()) * frameWidth) >> 1) +
                                 bonusOffset,
                         bonusBaseY + static_cast<Layout *>(Globals::layout)->field_0x2c);
-                bonusOffset += digitStep;
+                bonusOffset += frameWidth;
                 static_cast<Sprite *>(this->digitSprite)->draw(1.0f, 1.0f);
             }
         }
@@ -2373,13 +2373,14 @@ void Hud::drawChallengeModeScore(int unused) {
                     x + hud_canvas()->GetImage2DWidth(
                                 static_cast<unsigned int>(this->multiplierIconImage)),
                     multiplierY);
-            x += digitStep;
+            x += frameWidth;
             static_cast<Sprite *>(this->digitSprite)->draw(scale, scale);
         }
     }
 
-challenge_score_done:
     hud_canvas()->SetColor(0xffffffffu);
+challenge_score_cleanup:
+    return;
 }
 
 
