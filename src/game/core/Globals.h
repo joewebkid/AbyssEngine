@@ -302,8 +302,8 @@ public:
     static float boost_y;
     static float boost_z;
     static void *globals;
-    static float pause_x;
-    static float pause_y;
+    static int pause_x;
+    static int pause_y;
     static float pause_z;
     static void *gameText;
     static void *fontAlien;

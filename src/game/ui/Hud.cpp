@@ -42,7 +42,7 @@ struct HudSecurityColor {
 };
 
 // Android ARM .rodata: word_203758 (first halfword of each 32-bit slot).
-static const unsigned short g_Hud_factionLogoResourceIds[4] = {0x4a6, 0x4a3, 0x4a5, 0x4a4};
+static const unsigned int g_Hud_factionLogoResourceIds[4] = {0x4a6, 0x4a3, 0x4a5, 0x4a4};
 
 // Android ARM .rodata: byte_203780, read with a 12-byte stride by drawOrbitInformation.
 static const HudSecurityColor g_Hud_securityColors[4] = {
@@ -93,106 +93,92 @@ hud_draw_volatile_cargo(Hud *self, PlayerEgo *ego) {
                                self->missionPanelX - hud_layout_i32(0x1ec), self->missionPanelY);
 }
 
-static void hud_create_image(PaintCanvas *canvas, unsigned short resourceId, int &slot) {
-    unsigned int image = 0;
-    canvas->Image2DCreate(resourceId, image);
-    slot = static_cast<int>(image);
+static inline __attribute__((always_inline)) void hud_create_image(unsigned short resourceId, int &slot) {
+    hud_canvas()->Image2DCreate(resourceId, reinterpret_cast<unsigned int &>(slot));
 }
 
-struct HudImageInit {
-    unsigned short resourceId;
-    int *slot;
-};
-
-static void hud_load_init_images(Hud *self) {
-    PaintCanvas *canvas = hud_canvas();
-    if (canvas == nullptr) return;
-
-    const HudImageInit images[] = {
-        {0x4ac, &self->shieldFrameImage},
-        {0x4ad, &self->shieldFrameHitImage},
-        {0x4ae, &self->shieldBarBgImage},
-        {0x4af, &self->shieldBarFillImage},
-        {0x4aa, &self->armorFrameImage},
-        {0x4ab, &self->armorFrameLowImage},
-        {0x4a7, &self->armorBarBgImage},
-        {0x4a8, &self->armorRegenFillImage},
-        {0x524, &self->armorBarFillImage},
-        {0x1f59, &self->gammaFrameImage},
-        {0x1f5a, &self->gammaBarBgImage},
-        {0x1f5b, &self->gammaBarFillImage},
-        {0x4a9, &self->barDividerImage},
-        {0x4bb, &self->quickMenuPressedImage},
-        {0x4ba, &self->quickMenuIdleImage},
-        {0x4b5, &self->mainActionPressedImage},
-        {0x4b4, &self->mainActionIdleImage},
-        {0x536, &self->targetContextOverlayImage},
-        {0x4bd, &self->secondaryPressedImage},
-        {0x4bc, &self->secondaryIdleImage},
-        {0x4b9, &self->pauseButtonPressedImage},
-        {0x4b8, &self->pauseButtonImage},
-        {0x4b3, &self->boostPressedImage},
-        {0x4b2, &self->boostIdleImage},
-        {0x4b1, &self->dockActionPressedImage},
-        {0x4b0, &self->dockActionIdleImage},
-        {0x4b7, &self->steeringKnobPressedImage},
-        {0x4b6, &self->steeringKnobIdleImage},
-        {0x4c1, &self->steeringBaseImage},
-        {0x4c5, &self->missionTimerPanelImage},
-        {0x520, &self->cargoPanelImage},
-        {0x4c3, &self->eventBannerImage},
-        {0x4c2, &self->secondaryWeaponBannerImage},
-        {0x4cf, &self->quickMenuTopImage},
-        {0x4d1, &self->quickMenuMiddleImage},
-        {0x4d0, &self->quickMenuBottomImage},
-        {0x537, &self->fuelGaugeIconImage},
-        {0x538, &self->fuelGaugeBarImage},
-        {0x539, &self->chargeProgressFillImage},
-        {0x53a, &self->progressPanelImage},
-        {0x53a, &self->progressPanelDuplicateImage},
-        {0x1f41, &self->dockTransferFillImage},
-        {0x525, &self->hitVerticalArmorImage},
-        {0x526, &self->hitHorizontalArmorImage},
-        {0x52b, &self->hitVerticalShieldImage},
-        {0x52c, &self->hitHorizontalShieldImage},
-        {0x528, &self->cameraIdleImages[0]},
-        {0x527, &self->cameraPressedImages[0]},
-        {0x4e9, &self->cameraIdleImages[1]},
-        {0x4ea, &self->cameraPressedImages[1]},
-        {0x4be, &self->cameraIdleImages[2]},
-        {0x4bf, &self->cameraPressedImages[2]},
-        {0x52a, &self->cameraIdleImages[3]},
-        {0x529, &self->cameraPressedImages[3]},
-        {0x540, &self->image_0x390},
-        {0x541, &self->image_0x394},
-        {0x53f, &self->image_0x398},
-        {0x542, &self->image_0x39c},
-        {0x543, &self->image_0x3a0},
-        {0x546, &self->autoTurretEnabledImage},
-        {0x547, &self->autoTurretDisabledImage},
-        {0x1f58, &self->image_0x3a4},
-        {0x1f57, &self->image_0x3a8},
-        {0x4b1, &self->image_0x3ac},
-        {0x4b0, &self->image_0x3b0},
-        {0x1f43, &self->passengerPanelImage},
-        {0x1f42, &self->missionStatusPanelImage},
-        {0x1f40, &self->dockTransferMissionMarkerImage},
-        {0x1f61, &self->productionCargoPanelImage},
-        {0x1f60, &self->productionRemainingPanelImage},
-        {0x1f5f, &self->dockTransferProductionMarkerImage},
-        {0x1f5c, &self->volatileCargoOverlayImage},
-    };
-    for (const HudImageInit &image : images)
-        hud_create_image(canvas, image.resourceId, *image.slot);
+static inline __attribute__((always_inline)) void hud_load_init_images(Hud *self) {
+    hud_create_image(0x4ac, self->shieldFrameImage);
+    hud_create_image(0x4ad, self->shieldFrameHitImage);
+    hud_create_image(0x4ae, self->shieldBarBgImage);
+    hud_create_image(0x4af, self->shieldBarFillImage);
+    hud_create_image(0x4aa, self->armorFrameImage);
+    hud_create_image(0x4ab, self->armorFrameLowImage);
+    hud_create_image(0x4a7, self->armorBarBgImage);
+    hud_create_image(0x4a8, self->armorRegenFillImage);
+    hud_create_image(0x524, self->armorBarFillImage);
+    hud_create_image(0x1f59, self->gammaFrameImage);
+    hud_create_image(0x1f5a, self->gammaBarBgImage);
+    hud_create_image(0x1f5b, self->gammaBarFillImage);
+    hud_create_image(0x4a9, self->barDividerImage);
+    hud_create_image(0x4bb, self->quickMenuPressedImage);
+    hud_create_image(0x4ba, self->quickMenuIdleImage);
 
     if (Globals::iPad != 0) {
-        hud_create_image(canvas, 0x4c6, self->iPadFireImage);
-        hud_create_image(canvas, 0x6aa, self->iPadFirePressedImage);
+        hud_create_image(0x4c6, self->iPadFireImage);
+        hud_create_image(0x6aa, self->iPadFirePressedImage);
         self->reticleImage = self->iPadFireImage;
     } else {
-        hud_create_image(canvas, 0x4c6, self->reticleImage);
+        hud_create_image(0x4c6, self->reticleImage);
     }
 
+    hud_create_image(0x4b5, self->mainActionPressedImage);
+    hud_create_image(0x4b4, self->mainActionIdleImage);
+    hud_create_image(0x536, self->targetContextOverlayImage);
+    hud_create_image(0x4bd, self->secondaryPressedImage);
+    hud_create_image(0x4bc, self->secondaryIdleImage);
+    hud_create_image(0x4b9, self->pauseButtonPressedImage);
+    hud_create_image(0x4b8, self->pauseButtonImage);
+    hud_create_image(0x4b3, self->boostPressedImage);
+    hud_create_image(0x4b2, self->boostIdleImage);
+    hud_create_image(0x4b1, self->dockActionPressedImage);
+    hud_create_image(0x4b0, self->dockActionIdleImage);
+    hud_create_image(0x4b7, self->steeringKnobPressedImage);
+    hud_create_image(0x4b6, self->steeringKnobIdleImage);
+    hud_create_image(0x4c1, self->steeringBaseImage);
+    hud_create_image(0x4c5, self->missionTimerPanelImage);
+    hud_create_image(0x520, self->cargoPanelImage);
+    hud_create_image(0x4c3, self->eventBannerImage);
+    hud_create_image(0x4c2, self->secondaryWeaponBannerImage);
+    hud_create_image(0x4cf, self->quickMenuTopImage);
+    hud_create_image(0x4d1, self->quickMenuMiddleImage);
+    hud_create_image(0x4d0, self->quickMenuBottomImage);
+    hud_create_image(0x537, self->fuelGaugeIconImage);
+    hud_create_image(0x538, self->fuelGaugeBarImage);
+    hud_create_image(0x539, self->chargeProgressFillImage);
+    hud_create_image(0x53a, self->progressPanelImage);
+    hud_create_image(0x53a, self->progressPanelDuplicateImage);
+    hud_create_image(0x1f41, self->dockTransferFillImage);
+    hud_create_image(0x525, self->hitVerticalArmorImage);
+    hud_create_image(0x526, self->hitHorizontalArmorImage);
+    hud_create_image(0x52b, self->hitVerticalShieldImage);
+    hud_create_image(0x52c, self->hitHorizontalShieldImage);
+    hud_create_image(0x528, self->cameraIdleImages[0]);
+    hud_create_image(0x527, self->cameraPressedImages[0]);
+    hud_create_image(0x4e9, self->cameraIdleImages[1]);
+    hud_create_image(0x4ea, self->cameraPressedImages[1]);
+    hud_create_image(0x4be, self->cameraIdleImages[2]);
+    hud_create_image(0x4bf, self->cameraPressedImages[2]);
+    hud_create_image(0x52a, self->cameraIdleImages[3]);
+    hud_create_image(0x529, self->cameraPressedImages[3]);
+    hud_create_image(0x540, self->image_0x390);
+    hud_create_image(0x541, self->image_0x394);
+    hud_create_image(0x53f, self->image_0x398);
+    hud_create_image(0x542, self->image_0x39c);
+    hud_create_image(0x543, self->image_0x3a0);
+    hud_create_image(0x546, self->autoTurretEnabledImage);
+    hud_create_image(0x547, self->autoTurretDisabledImage);
+    hud_create_image(0x1f58, self->image_0x3a4);
+    hud_create_image(0x1f57, self->image_0x3a8);
+    hud_create_image(0x4b1, self->image_0x3ac);
+    hud_create_image(0x4b0, self->image_0x3b0);
+    hud_create_image(0x1f43, self->passengerPanelImage);
+    hud_create_image(0x1f42, self->missionStatusPanelImage);
+    hud_create_image(0x1f40, self->dockTransferMissionMarkerImage);
+    hud_create_image(0x1f61, self->productionCargoPanelImage);
+    hud_create_image(0x1f60, self->productionRemainingPanelImage);
+    hud_create_image(0x1f5f, self->dockTransferProductionMarkerImage);
+    hud_create_image(0x1f5c, self->volatileCargoOverlayImage);
 }
 
 static int hud_default_steer_anchor() {
@@ -209,26 +195,22 @@ static int hud_default_fire_anchor() {
     return 513;
 }
 
-static void hud_apply_ipad_control_coords(Hud *self, PaintCanvas *canvas) {
-    if (Globals::iPad == 0 || canvas == nullptr) return;
-
-    Globals *globals = Globals::gGlobals != nullptr ? Globals::gGlobals : static_cast<Globals *>(Globals::globals);
-    if (globals == nullptr) return;
-
+static inline __attribute__((always_inline)) void hud_apply_ipad_control_coords(Hud *self) {
+    Globals *globals = static_cast<Globals *>(Globals::globals);
     GameSettings *settings = reinterpret_cast<GameSettings *>(Globals::options);
     const int steerAnchor = settings->steerAnchorX;
     const int fireAnchor = settings->fireAnchorX;
 
     globals->setCoordsSteer(steerAnchor,
-                            canvas->GetImage2DWidth(static_cast<unsigned>(self->steeringBaseImage)),
-                            canvas->GetImage2DWidth(static_cast<unsigned>(self->dockActionIdleImage)),
-                            canvas->GetImage2DWidth(static_cast<unsigned>(self->boostIdleImage)),
+                            hud_canvas()->GetImage2DWidth(static_cast<unsigned>(self->steeringBaseImage)),
+                            hud_canvas()->GetImage2DWidth(static_cast<unsigned>(self->dockActionIdleImage)),
+                            hud_canvas()->GetImage2DWidth(static_cast<unsigned>(self->boostIdleImage)),
                             self->field_0x3f8, self->field_0x3fa, self->field_0x42c, self->field_0x42e,
                             self->field_0x424, self->field_0x426, self->field_0x410, self->field_0x412,
                             self->field_0x404, self->field_0x406);
 
     globals->setCoordsFire(fireAnchor,
-                           canvas->GetImage2DWidth(static_cast<unsigned>(self->iPadFireImage)),
+                           hud_canvas()->GetImage2DWidth(static_cast<unsigned>(self->iPadFireImage)),
                            static_cast<unsigned>(self->iPadFireImage),
                            static_cast<unsigned>(self->iPadFirePressedImage),
                            reinterpret_cast<unsigned int &>(self->reticleImage), self->iPadFireCoord_0x0c,
@@ -242,25 +224,22 @@ static void hud_apply_ipad_control_coords(Hud *self, PaintCanvas *canvas) {
     self->iPadFireAnchor = settings->fireAnchorX;
 }
 
-static void hud_init_coordinates(Hud *self) {
-    PaintCanvas *canvas = hud_canvas();
-    if (canvas == nullptr || Globals::layout == nullptr) return;
-
+static inline __attribute__((always_inline)) void hud_init_coordinates(Hud *self) {
     const int screenW = Globals::w;
     const int screenH = Globals::h;
-    const auto width = [canvas](int image) { return canvas->GetImage2DWidth(static_cast<unsigned>(image)); };
-    const auto height = [canvas](int image) { return canvas->GetImage2DHeight(static_cast<unsigned>(image)); };
+    const auto width = [](int image) { return hud_canvas()->GetImage2DWidth(static_cast<unsigned>(image)); };
+    const auto height = [](int image) { return hud_canvas()->GetImage2DHeight(static_cast<unsigned>(image)); };
 
     self->field_0x434 = static_cast<unsigned short>(screenW - hud_layout_i32(0x14c));
     self->field_0x436 = static_cast<unsigned short>(screenH - hud_layout_i32(0x12c) -
-                                                     canvas->GetTextHeight(hud_font()) - hud_layout_i32(0x150));
+                                                     hud_canvas()->GetTextHeight(hud_font()) - hud_layout_i32(0x150));
     self->field_0x3f0 = static_cast<unsigned short>(width(self->secondaryPressedImage));
     self->field_0x3e4 = static_cast<unsigned short>(screenW - hud_layout_i32(0x154) - width(self->mainActionIdleImage));
     self->field_0x3e6 = static_cast<unsigned short>(screenH - hud_layout_i32(0x158) - width(self->mainActionIdleImage));
     self->field_0x3ec = static_cast<unsigned short>(screenW - hud_layout_i32(0x15c) - self->field_0x3f0);
     self->field_0x3ee = static_cast<unsigned short>(screenH - hud_layout_i32(0x160) - self->field_0x3f0);
     self->field_0x3ea = static_cast<unsigned short>(hud_layout_i32(0x164));
-    self->field_0x3e0 = static_cast<unsigned short>((screenW - width(self->eventBannerImage)) / 2);
+    self->field_0x3e0 = static_cast<unsigned short>(screenW / 2 - width(self->eventBannerImage) / 2);
     self->field_0x3e2 = static_cast<unsigned short>(hud_layout_i32(0x168));
 
     self->field_0x3f6 = static_cast<unsigned short>(width(self->cameraIdleImages[0]));
@@ -288,8 +267,9 @@ static void hud_init_coordinates(Hud *self) {
     self->missionPanelY = static_cast<unsigned short>(hud_layout_i32(0x1a0));
 
     self->field_0x430 = static_cast<unsigned short>(width(self->steeringBaseImage));
-    const int hackingHalfWidth = width(self->image_0x3a4) / 2;
-    self->field_0x45c = static_cast<unsigned short>(hackingHalfWidth * 2);
+    const int hackingImageWidth = width(self->image_0x3a4);
+    self->field_0x45c = static_cast<unsigned short>(hackingImageWidth);
+    const int hackingHalfWidth = hackingImageWidth >> 1;
     self->field_0x454 = static_cast<unsigned short>(screenW / 2 - hackingHalfWidth - hud_layout_i32(0x31c));
     self->field_0x458 = static_cast<unsigned short>(screenW / 2 - hackingHalfWidth + hud_layout_i32(0x31c));
     self->field_0x460 = self->field_0x3ee;
@@ -317,7 +297,7 @@ static void hud_init_coordinates(Hud *self) {
         self->field_0x3c4 = screenW - hud_layout_i32(0x28) - width(self->quickMenuTopImage);
         self->menuOriginY = self->field_0x418 - hud_layout_i32(0x2c) - 6 * hud_layout_i32(0x30) -
                             height(self->quickMenuTopImage);
-        hud_apply_ipad_control_coords(self, canvas);
+        hud_apply_ipad_control_coords(self);
     } else {
         self->field_0x3c4 = (screenW - width(self->quickMenuTopImage)) / 2;
         self->menuOriginY = hud_layout_i32(0x1b4);
@@ -1861,69 +1841,86 @@ unsigned int Hud::sameHudEventAsBefore(String str) {
 }
 
 
-int Hud::init() {
-    this->menuButtons = nullptr;
-    this->equipmentArray = nullptr;
-    this->eventQueue = nullptr;
-    this->keyArray = nullptr;
-    this->elementBits = nullptr;
-    this->uintArray = nullptr;
-    this->quickMenuType = 0;
-    this->digitSprite = nullptr;
-    this->quickMenuHeaderImage = -1;
-    this->multiplierIconImage = -1;
-    this->factionLogoImage = -1;
-    this->reticleImage = -1;
-    this->secondaryWeaponBannerImage = -1;
-    this->eventBannerImage = -1;
-    this->fuelGaugeIconImage = -1;
-    this->fuelGaugeBarImage = -1;
-
+void Hud::init() {
     hud_load_init_images(this);
+
+    this->hitDirectionLeftTimer = 0;
+    this->hitDirectionRightTimer = 0;
+    this->hitDirectionTopTimer = 0;
+    this->hitDirectionBottomTimer = 0;
+    *reinterpret_cast<int *>(this->unknown_0x4a1) = 0;
+    // Android copies Layout+0x12c..0x14b as two 128-bit chunks.
+    typedef int HudLayoutWords __attribute__((vector_size(16)));
+    HudLayoutWords *destination = reinterpret_cast<HudLayoutWords *>(&this->boostReadyTextX);
+    const HudLayoutWords *source = reinterpret_cast<const HudLayoutWords *>(
+        static_cast<char *>(Globals::layout) + 0x12c);
+    destination[0] = source[0];
+    destination[1] = source[1];
     hud_init_coordinates(this);
 
-    this->boostReadyTextX = hud_layout_i32(0x12c);
-    this->touchHalfExtent = hud_layout_i32(0x130);
-    this->touchHalfExtentSmall = hud_layout_i32(0x134);
-    this->analogStickRadius = hud_layout_i32(0x138);
-    this->radarBottomInset = hud_layout_i32(0x13c);
-    this->eventLineMargin = hud_layout_i32(0x140);
-    this->field_0x4ec = hud_layout_i32(0x144);
-    this->eventLineMarginAlt = hud_layout_i32(0x148);
-    this->menuOriginX = 0;
-    this->menuOriginYBase = 0;
-
-    this->visible = 1;
-    this->eventTextWraps = 0;
-    this->messageActive = 0;
-    this->hackingGameActive = 0;
+    this->boostFlashRemaining = 0;
+    this->boostFlashPulse = 0;
+    this->secondaryFlashRemaining = 0;
+    this->secondaryFlashPulse = 0;
     this->autofireEnabled = 0;
+    this->boostReadyLatched = 1;
+    this->cloakReadyLatched = 1;
+    this->quickMenuFlashRemaining = 0;
+    this->quickMenuFlashPulse = 0;
+    this->timeExtenderTimer = 0;
+    this->miningHintPulseTimer = 0;
     this->fireForTutorial = 0;
+    this->quickMenuOpen = 0;
+    this->image_0x15c = -1;
+
+    this->eventQueue = new Array<ListItem *>();
+    ArraySetLength(0x14, *(this->eventQueue));
+
+    this->eventLineX = Globals::w >> 1;
+    this->eventLineY = Globals::h - this->radarBottomInset;
+    Hud::RADAR_WIDTH = Globals::w - 28;
+    Hud::RADAR_HEIGHT = Globals::h - 33 - this->radarBottomInset - this->field_0x4ec -
+                        hud_layout_i32(0x1d8);
+    this->field_0x1d0 = 10000;
+    this->eventScrolls = 0;
+    this->secondaryLabelX = Globals::w - 5;
+
+    this->hasBoostButton = Globals::status->getShip()->getBoostDelay() > 0;
+    this->hasShieldBar = Globals::status->getShip()->getMaxShieldHP() > 0;
+    this->hasArmorRegen = Globals::status->getShip()->getMaxArmorHP() > 0;
+    union {
+        int integer;
+        float real;
+    } firePower = {Globals::status->getShip()->getFirePower()};
+    this->hasAutofireUI = firePower.real > 0.0f;
+    this->hasCloak = Globals::status->getShip()->hasCloak();
+
     this->eventQueueDirty = 0;
+    this->unknown_0x234 = 0;
+    this->cargoFullFlag = 0;
+    this->unknown_0x236[0] = 0;
+    this->visible = 1;
+    this->jumpMapSelectedFlag = 0;
     this->eventQueueTimer = 0;
     this->eventQueuePaused = 0;
-    this->jumpMapSelectedFlag = 0;
-    this->field_0x275 = 0;
-    this->field_0x276 = 0;
-    this->weaponSelectState = 0;
-    this->field_0x27a = 0;
-    this->field_0x27b = 0;
-    this->field_0x280 = 0;
-    this->field_0x281 = 0;
-    this->quickMenuOpen = 0;
-    this->quickMenuEmpty = 0;
-    this->field_0x288 = 0;
-    this->field_0x1d0 = 10000;
-    this->cargoFullFlag = 0;
     this->shieldHitFlash = 0;
     this->hitFlashTimer = 0;
-    this->field_0x470 = 0;
-    this->chargeProgressFadeTimer = 0;
-    this->timeExtenderTimer = 0;
-    this->timeExtenderDuration = 0;
+    this->currentSecondaryWeapon = nullptr;
+    this->menuButtons = nullptr;
+    this->menuOriginX = 0;
+    this->menuOriginYBase = 0;
+    this->field_0x276 = 0;
+    this->dockTransferProgressActive = 0;
+    this->fuelGaugeValue = 0;
+    this->factionLogoImage = -1;
+    this->field_0x0 = 0;
+    this->field_0x280 = 1;
+    this->field_0x281 = 0;
+    this->timeExtenderTimer = -1;
+    this->timeExtenderDuration = -1;
     this->cargoAggregateCount = 0;
-    this->field_0x468 = 0;
-    this->miningHintPulseTimer = 0;
+    this->messageActive = 0;
+    this->hackingGameActive = 0;
 
     this->keyArray = new Array<void *>();
     ArraySetLength(0x19, *(this->keyArray));
@@ -1934,75 +1931,28 @@ int Hud::init() {
     }
     this->touchFlags = 0;
 
-    PaintCanvas *canvas = hud_canvas();
-    if (canvas != nullptr && Status::gStatus != nullptr && Status::gStatus->inAlienOrbit() == 0) {
-        SolarSystem *system = Status::gStatus->getSystem();
-        const int race = system != nullptr ? system->getRace() : -1;
-        if (race >= 0 && race < 4)
-            hud_create_image(canvas, g_Hud_factionLogoResourceIds[race], this->factionLogoImage);
+    if (Globals::status->inAlienOrbit() == 0) {
+        const int race = Globals::status->getSystem()->getRace();
+        hud_create_image(static_cast<unsigned short>(g_Hud_factionLogoResourceIds[race]),
+                         this->factionLogoImage);
     }
 
-    this->eventQueue = new Array<ListItem *>();
-    ArraySetLength(0x14, *(this->eventQueue));
-
-    if (Globals::layout != nullptr) {
-        this->eventLineX = Globals::w >> 1;
-        this->eventLineY = Globals::h - this->radarBottomInset;
-        Hud::RADAR_WIDTH = Globals::w - 28;
-        Hud::RADAR_HEIGHT = Globals::h - 33 - this->radarBottomInset - this->field_0x4ec -
-                            hud_layout_i32(0x1d8);
-    } else {
-        this->eventLineX = 0;
-        this->eventLineY = 0;
-        Hud::RADAR_WIDTH = 0;
-        Hud::RADAR_HEIGHT = 0;
-    }
-
-    this->hasCloak = 0;
-    this->hasBoostButton = 0;
-    this->hasShieldBar = 0;
-    this->hasArmorRegen = 0;
-    this->hasAutofireUI = 0;
-    if (Status::gStatus != nullptr) {
-        Ship *ship = Status::gStatus->getShip();
-        if (ship != nullptr) {
-            this->hasCloak = ship->hasCloak();
-            this->hasBoostButton = ship->getBoostDelay() > 0;
-            this->hasShieldBar = ship->getMaxShieldHP() > 0;
-            this->hasArmorRegen = ship->getMaxArmorHP() > 0;
-            this->hasAutofireUI = ship->getFirePower() > 0.0f;
-        }
-    }
-
-    this->boostReadyLatched = 1;
-    this->cloakReadyLatched = 1;
-    this->boostFlashRemaining = 0;
-    this->boostFlashPulse = 0;
-    this->secondaryFlashRemaining = 0;
-    this->secondaryFlashPulse = 0;
-    this->quickMenuFlashRemaining = 0;
-    this->quickMenuFlashPulse = 0;
     this->previousCameraMode = -1;
     this->cameraModeLabelTimer = 0;
-    this->cameraModeLabel = String("");
-    this->hitDirectionLeftTimer = 0;
-    this->hitDirectionRightTimer = 0;
-    this->hitDirectionTopTimer = 0;
-    this->hitDirectionBottomTimer = 0;
+    {
+        String emptyCameraMode("", false);
+        this->cameraModeLabel = emptyCameraMode;
+    }
 
     closeHudMenu();
-    if (Status::gStatus != nullptr)
-        checkIfQuickMenuIsEmpty();
+    checkIfQuickMenuIsEmpty();
     releaseAllKeys();
 
-    if (canvas != nullptr && Globals::layout != nullptr) {
-        Globals::pause_x = static_cast<float>(this->field_0x40a);
-        Globals::pause_y = static_cast<float>(this->field_0x40c);
-    } else {
-        Globals::pause_x = 0.0f;
-        Globals::pause_y = 0.0f;
-    }
-    return 0;
+    this->uintArray = nullptr;
+    Globals::pause_x = Globals::w -
+                       hud_canvas()->GetImage2DWidth(static_cast<unsigned>(this->pauseButtonPressedImage)) -
+                       hud_layout_i32(0x194);
+    Globals::pause_y = hud_layout_i32(0x198);
 }
 
 void Hud::drawPauseButton() {
@@ -2014,7 +1964,7 @@ void Hud::drawPauseButton() {
         (unsigned int) this->pauseButtonImage, this->field_0x40a, this->field_0x40c);
 }
 
-Hud *Hud::checkIfQuickMenuIsEmpty() {
+void Hud::checkIfQuickMenuIsEmpty() {
     Ship *ship = Status::gStatus->getShip();
     Array<Item *> *equip = ship->getEquipment(1);
     this->equipmentArray = equip;
@@ -2039,7 +1989,6 @@ Hud *Hud::checkIfQuickMenuIsEmpty() {
 update_string:
     this->quickMenuEmpty = empty;
     updateSecondaryWeaponString();
-    return this;
 }
 
 void Hud::drawMenu(int unused) {
@@ -2596,7 +2545,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
 
             Item *cargo = Globals::status->getShip()->getCargo(122);
             this->fuelGaugeValue = cargo != nullptr ? cargo->getAmount() : 0;
-            hud_create_image(hud_canvas(), 0x4f5, this->quickMenuHeaderImage);
+            hud_create_image(0x4f5, this->quickMenuHeaderImage);
             break;
         }
         case 1: {
@@ -2609,7 +2558,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
                     y += rowStep;
                 }
             }
-            hud_create_image(hud_canvas(), 0x4f4, this->quickMenuHeaderImage);
+            hud_create_image(0x4f4, this->quickMenuHeaderImage);
             break;
         }
         case 2: {
@@ -2619,7 +2568,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
                 hud_add_menu_text_button(this, textIds[i], y, actions[i]);
                 y += rowStep;
             }
-            hud_create_image(hud_canvas(), 0x4f3, this->quickMenuHeaderImage);
+            hud_create_image(0x4f3, this->quickMenuHeaderImage);
             break;
         }
         case 3: {
@@ -2669,7 +2618,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
             }
 
             hud_compact_orbit_menu_for_phone(this);
-            hud_create_image(hud_canvas(), 0x4f4, this->quickMenuHeaderImage);
+            hud_create_image(0x4f4, this->quickMenuHeaderImage);
             break;
         }
         default:
