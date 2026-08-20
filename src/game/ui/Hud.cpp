@@ -1690,25 +1690,28 @@ void Hud::catchCargo(int itemId, int count, bool single, bool missionDelivery, b
 
 
 void Hud::drawEventString(String text, bool rightAlign) {
-    const unsigned int font = hud_font();
     PaintCanvas *canvas = hud_canvas();
-    int x;
+    const unsigned int font = hud_font();
     if (this->eventTextWraps != 0) {
+        int x;
         if (rightAlign) {
             x = this->eventLineMarginAlt + 1;
         } else {
             x = Globals::w - 1 - this->eventLineMarginAlt - canvas->GetTextWidth(font, text);
         }
-    } else {
-        int offset;
-        if (rightAlign) {
-            offset = -3 - this->eventLineMargin;
-        } else {
-            offset = this->eventLineMargin + 3 - canvas->GetTextWidth(font, text);
-        }
-        x = offset + this->eventLineX;
+        canvas->DrawString(font, text, x, this->eventLineY - 1, false);
+        return;
     }
-    canvas->DrawString(font, text, x, this->eventLineY - 1, false);
+
+    const int margin = this->eventLineMargin;
+    const int lineX = this->eventLineX;
+    int offset;
+    if (rightAlign) {
+        offset = -3 - margin;
+    } else {
+        offset = margin + 3 - canvas->GetTextWidth(font, text);
+    }
+    canvas->DrawString(font, text, offset + lineX, this->eventLineY - 1, false);
 }
 
 void Hud::setCurrentSecondaryWeapon(Item *item) {
@@ -1717,14 +1720,13 @@ void Hud::setCurrentSecondaryWeapon(Item *item) {
 }
 
 int Hud::sameHudEventAsBeforeAggregate(String str) {
-    Array<ListItem *> *q = this->eventQueue;
-    int i = (int) q->size();
+    int i = static_cast<int>(this->eventQueue->size());
     ListItem *e;
     do {
         i = i + -1;
         if (i < 1)
             return -1;
-        e = (*q)[i];
+        e = (*this->eventQueue)[i];
     } while (e == 0 || ((String *) e->name)->Compare_str(&str) != 0);
     return i;
 }
@@ -1742,8 +1744,9 @@ void Hud::updateSecondaryWeaponString() {
 
 
 void Hud::drawEventQueue() {
-    const unsigned char targetVisible = Radar::drawTarget;
-    const int targetY = Radar::drawTarget ? this->field_0x3e2 : 0;
+    const unsigned char *targetVisibleSlot = &Radar::drawTarget;
+    const unsigned char targetVisible = *targetVisibleSlot;
+    const int targetY = *targetVisibleSlot ? this->field_0x3e2 : 0;
     const int bannerBaseY = hud_layout_i32(0x1e4);
     const int rawAlpha = static_cast<int>(
             (static_cast<float>(this->eventQueueTimer) / 2000.0f) * 255.0f);
@@ -1757,13 +1760,14 @@ void Hud::drawEventQueue() {
     if (!targetVisible)
         direction = -2.0f;
     const int textSlideY = static_cast<int>(direction * bannerSlide);
-    const int bannerTargetY = Radar::drawTarget ? this->field_0x3e2 : 0;
+    const int bannerTargetY = *targetVisibleSlot ? this->field_0x3e2 : 0;
     hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->eventBannerImage),
                               this->field_0x3e0,
                               bannerTargetY - hud_layout_i32(0x1e4));
 
     ListItem *item = this->eventQueue->data()[1];
     if (item != nullptr) {
+        const int textBaseY = bannerBaseY + targetY;
         if (item->buttonKind == 2)
             hud_canvas()->SetColor(0x00, 0xed, 0x00, alpha);
         else if (item->buttonKind == 1)
@@ -1774,10 +1778,13 @@ void Hud::drawEventQueue() {
             hud_canvas()->SetColor(0xff, 0xff, 0xff, alpha);
 
         String *label = static_cast<String *>(item->name);
+        PaintCanvas *textCanvas = hud_canvas();
+        const int screenWidth = Globals::w;
+        const unsigned int font = hud_font();
         const int textWidth = hud_canvas()->GetTextWidth(hud_font(), *label);
-        hud_canvas()->DrawString(hud_font(), *label,
-                                 (Globals::w >> 1) - textWidth / 2,
-                                 textSlideY + bannerBaseY + targetY, false);
+        textCanvas->DrawString(font, *label,
+                               (screenWidth >> 1) - textWidth / 2,
+                               textSlideY + textBaseY, false);
     }
 
     hud_canvas()->SetColor(0xffffffffu);
@@ -1825,10 +1832,9 @@ unsigned int Hud::touchBegin(unsigned int a, unsigned int b, void *key) {
 }
 
 unsigned int Hud::sameHudEventAsBefore(String str) {
-    Array<ListItem *> *q = this->eventQueue;
-    int i = (int) q->size();
+    int i = static_cast<int>(this->eventQueue->size());
     while (--i >= 1) {
-        ListItem *e = (*q)[i];
+        ListItem *e = (*this->eventQueue)[i];
         if (e != 0 && ((String *) e->name)->Compare_str(&str) == 0)
             return 1;
     }
@@ -2322,34 +2328,34 @@ void Hud::drawChallengeModeScore(int unused) {
         const int multiplierY = y + frameHeight + rowPad;
 
         if (timer <= 3000) {
-            if (timer % 100 >= 50) {
-                const int multiplier = Globals::status->challengeMultiplier;
-                String bonus(static_cast<int>((static_cast<float>(multiplier) * 0.05f + 1.0f) *
-                                              static_cast<float>(1000 * multiplier)));
-                int bonusOffset = 0;
-                const int bonusBaseY = frameHeight + multiplierY;
-                for (int i = 1; static_cast<unsigned int>(i - 1) < bonus.size(); ++i) {
-                    int frame;
-                    {
-                        String digit = bonus.SubString(i - 1, i);
-                        frame = digit.ValueOf();
-                    }
-                    static_cast<Sprite *>(this->digitSprite)->setFrame(frame);
-                    static_cast<Sprite *>(this->digitSprite)->setPosition(
-                            Globals::w / 2 -
-                                            ((static_cast<int>(bonus.size()) * digitStep) >> 1) +
-                                            bonusOffset,
-                            bonusBaseY + static_cast<Layout *>(Globals::layout)->field_0x2c);
-                    bonusOffset += digitStep;
-                    static_cast<Sprite *>(this->digitSprite)->draw(1.0f, 1.0f);
+            if (timer % 100 < 50)
+                goto challenge_score_done;
+
+            const int multiplier = Globals::status->challengeMultiplier;
+            String bonus(static_cast<int>((static_cast<float>(multiplier) * 0.05f + 1.0f) *
+                                          static_cast<float>(1000 * multiplier)));
+            int bonusOffset = 0;
+            const int bonusBaseY = frameHeight + multiplierY;
+            for (int i = 1; static_cast<unsigned int>(i - 1) < bonus.size(); ++i) {
+                int frame;
+                {
+                    String digit = bonus.SubString(i - 1, i);
+                    frame = digit.ValueOf();
                 }
+                static_cast<Sprite *>(this->digitSprite)->setFrame(frame);
+                static_cast<Sprite *>(this->digitSprite)->setPosition(
+                        Globals::w / 2 - ((static_cast<int>(bonus.size()) * digitStep) >> 1) +
+                                bonusOffset,
+                        bonusBaseY + static_cast<Layout *>(Globals::layout)->field_0x2c);
+                bonusOffset += digitStep;
+                static_cast<Sprite *>(this->digitSprite)->draw(1.0f, 1.0f);
             }
         }
 
         hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->multiplierIconImage),
                                   rowPad + scoreStartX, multiplierY);
-        const float growth = static_cast<float>(Globals::status->challengeMultiplierTimer - 7000) *
-                             0.01f;
+        const float growth =
+                static_cast<float>(Globals::status->challengeMultiplierTimer - 7000) * 0.01f;
         float scale = growth + 1.0f;
         if (growth < 0.0f)
             scale = 1.0f;
@@ -2372,6 +2378,7 @@ void Hud::drawChallengeModeScore(int unused) {
         }
     }
 
+challenge_score_done:
     hud_canvas()->SetColor(0xffffffffu);
 }
 
