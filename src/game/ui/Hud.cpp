@@ -1168,16 +1168,19 @@ boost_drawn:
     canvas->SetColor(static_cast<unsigned>(0xffffffffu));
     if (Globals::mouseCursorActivated != 0 || this->quickMenuOpen != 0)
         canvas->SetColor(static_cast<unsigned>(0xffffff00u));
-    const int mainActionImage = ((this->touchFlagsLow & 0x10u) != 0 || this->fireForTutorial != 0)
-                                    ? this->mainActionPressedImage
-                                    : this->mainActionIdleImage;
-    if (Globals::iPad != 0)
-        canvas->DrawImage2D(static_cast<unsigned>(mainActionImage), this->field_0x3e4,
-                            this->field_0x3e6, 0x11, 0x44);
+    int mainActionImage;
+    if ((this->touchFlagsLow & 0x10u) != 0 || this->fireForTutorial != 0)
+        mainActionImage = this->mainActionPressedImage;
     else
-        canvas->DrawImage2D(static_cast<unsigned>(mainActionImage), this->field_0x3e4, this->field_0x3e6);
+        mainActionImage = this->mainActionIdleImage;
+    if (Globals::iPad != 0)
+        hud_canvas()->DrawImage2D(static_cast<unsigned>(mainActionImage), this->field_0x3e4,
+                                 this->field_0x3e6, 0x11, 0x44);
+    else
+        hud_canvas()->DrawImage2D(static_cast<unsigned>(mainActionImage), this->field_0x3e4,
+                                 this->field_0x3e6);
 
-    if (!ego->isDockingToAsteroid() && !isMining && ego->isDockingToStream() == 0 &&
+    if (!ego->isDockingToAsteroid() && !ego->isMining() && ego->isDockingToStream() == 0 &&
         !ego->isInDockingProcedure() && !ego->isDockingToDockingPoint() && ego->isInTurretMode() == 0) {
         Radar *targetRadar = static_cast<Radar *>(ego->field_0x14);
         if (targetRadar->lockedPlanetTarget != nullptr || targetRadar->lockedAsteroid != nullptr ||
@@ -1187,11 +1190,11 @@ boost_drawn:
             const int targetX = static_cast<int>(this->field_0x3e4) + this->field_0x3ea;
             const int targetY = static_cast<int>(this->field_0x3e6) + this->field_0x3ea;
             if (Globals::iPad != 0)
-                canvas->DrawImage2D(static_cast<unsigned int>(this->targetContextOverlayImage),
-                                    targetX, targetY, 0x11, 0x44);
+                hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->targetContextOverlayImage),
+                                         targetX, targetY, 0x11, 0x44);
             else
-                canvas->DrawImage2D(static_cast<unsigned int>(this->targetContextOverlayImage),
-                                    targetX, targetY);
+                hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->targetContextOverlayImage),
+                                         targetX, targetY);
         }
     }
 
@@ -1310,7 +1313,7 @@ mining_hint:
         this->miningHintPulseTimer = pulseTimer;
         int alpha = static_cast<int>((static_cast<float>(pulseTimer) / 1000.0f) * 255.0f);
         if (alpha > 255)
-            alpha = 255 - alpha;
+            alpha = -1 - alpha;
         hud_canvas()->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
                                static_cast<unsigned char>(0xff), static_cast<unsigned char>(alpha));
         String label = *hud_game_text()->getText(618);
