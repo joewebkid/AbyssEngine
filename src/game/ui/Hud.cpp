@@ -1071,39 +1071,34 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     }
 
     if ((this->currentSecondaryWeapon != nullptr && ego->isInTurretMode() == 0 &&
-         this->currentSecondaryWeapon->getAmount() > 0) ||
-        (ego->level != nullptr && ego->level->manualSecondaryActive != 0)) {
+          this->currentSecondaryWeapon->getAmount() > 0) ||
+        ego->level->manualSecondaryActive != 0) {
         if ((this->touchFlagsLow & 8u) != 0 ||
             (this->secondaryFlashRemaining >= 1 && this->secondaryFlashPulse <= 0)) {
-            canvas->DrawImage2D(static_cast<unsigned int>(this->secondaryPressedImage),
-                                this->field_0x3ec, this->field_0x3ee);
+            hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->secondaryPressedImage),
+                                     this->field_0x3ec, this->field_0x3ee);
             if (this->secondaryFlashRemaining >= 1)
                 this->secondaryFlashPulse = 80;
         } else {
-            canvas->DrawImage2D(static_cast<unsigned int>(this->secondaryIdleImage),
-                                this->field_0x3ec, this->field_0x3ee);
+            hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->secondaryIdleImage),
+                                     this->field_0x3ec, this->field_0x3ee);
         }
 
         if (Globals::mouseCursorActivated != 0)
-            canvas->SetColor(static_cast<unsigned>(0xffffffffu));
-        canvas->DrawImage2D(static_cast<unsigned>(this->secondaryWeaponBannerImage),
-                            Globals::w >> 1, Globals::h, 0x11, 0x24);
+            hud_canvas()->SetColor(static_cast<unsigned>(0xffffffffu));
+        hud_canvas()->DrawImage2D(static_cast<unsigned>(this->secondaryWeaponBannerImage),
+                                 Globals::w >> 1, Globals::h, 0x11, 0x24);
 
-        String prefix(" (");
-        String amount(this->currentSecondaryWeapon->getAmount());
-        String prefixAmount = prefix + amount;
-        String close(")");
-        String suffixCore = prefixAmount + close;
-        String suffix(suffixCore, false);
-        String secondaryLabel = *hud_game_text()->getText(
-                                    this->currentSecondaryWeapon->getIndex() + 1274) +
-                                suffix;
+        String secondaryLabel =
+            *hud_game_text()->getText(this->currentSecondaryWeapon->getIndex() + 1274) +
+            String(String(" (") + String(this->currentSecondaryWeapon->getAmount()) + String(")"),
+                   false);
         const int secondaryLabelX = (Globals::w >> 1) -
-                                    (canvas->GetTextWidth(hud_font(), secondaryLabel) >> 1);
-        canvas->DrawString(hud_font(), secondaryLabel, secondaryLabelX,
-                           Globals::h - hud_layout_i32(0x04) + hud_layout_i32(0x214), false);
+                                    (hud_canvas()->GetTextWidth(hud_font(), secondaryLabel) >> 1);
+        hud_canvas()->DrawString(hud_font(), secondaryLabel, secondaryLabelX,
+                                 Globals::h - hud_layout_i32(0x04) + hud_layout_i32(0x214), false);
         if (Globals::mouseCursorActivated != 0 || this->quickMenuOpen != 0)
-            canvas->SetColor(static_cast<unsigned>(0xffffff00u));
+            hud_canvas()->SetColor(static_cast<unsigned>(0xffffff00u));
     }
 
     if (this->hasCloak != 0 && this->quickMenuFlashRemaining >= 0) {
@@ -1211,14 +1206,13 @@ boost_drawn:
         const int total = ego->getDockTotalAmount();
         const bool reverse = this->dockTransferReverse != 0;
         const String *baseLabel = hud_game_text()->getText(reverse ? 3205 : 3204);
-        String spacer(" ");
 
         float transferRate = 1.0f - static_cast<float>(transferred) / static_cast<float>(total);
         if (!reverse)
             transferRate = static_cast<float>(transferred) / static_cast<float>(total);
         progressStackOffset = static_cast<int>(static_cast<float>(textHeight) +
                                                static_cast<float>(stackFillHeight) * 2.5f);
-        String label = *baseLabel + spacer;
+        String label = *baseLabel + String(" ");
 
         const int fillWidth = canvas->GetImage2DWidth(gaugeMetricsImage);
         const int fillHeight = canvas->GetImage2DHeight(gaugeMetricsImage);
@@ -1278,7 +1272,7 @@ boost_drawn:
         int textId = 318;
         if (this->jumpDriveProgressActive == 0)
             textId = 317;
-        String label = *hud_game_text()->getText(textId);
+        String label(*hud_game_text()->getText(textId), false);
         const unsigned int fillImage = static_cast<unsigned int>(this->chargeProgressFillImage);
         const int halfWidth = static_cast<int>(static_cast<float>(canvas->GetImage2DWidth(fillImage)) * 0.5f);
         const int fillHeight = canvas->GetImage2DHeight(fillImage);
@@ -1316,7 +1310,7 @@ mining_hint:
             alpha = -1 - alpha;
         hud_canvas()->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
                                static_cast<unsigned char>(0xff), static_cast<unsigned char>(alpha));
-        String label = *hud_game_text()->getText(618);
+        String label(*hud_game_text()->getText(618), false);
         const int labelWidth = hud_canvas()->GetTextWidth(hud_font(), label);
         hud_canvas()->DrawString(hud_font(), label, Globals::w / 2 - labelWidth / 2,
                                  hud_layout_i32(0x2c) + static_cast<int>(this->field_0x3e2), false);
