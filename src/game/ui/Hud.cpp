@@ -2593,7 +2593,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
                     y += rowStep;
                 }
             }
-            hud_create_image(0x4f4, this->quickMenuHeaderImage);
+            hud_create_image(0x4f6, this->quickMenuHeaderImage);
             break;
         }
         case 2: {

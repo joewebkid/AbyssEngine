@@ -40,7 +40,9 @@ This pass is based on the Android ARM bodies at `0x1604e4` (`Hud::init`),
 - `Hud::initHudMenu` (`0x1615c8`) now owns the source-backed quick-menu
   construction for modes 0--3: equipment, wingman/cloak/jump actions,
   secondary weapons, utility actions, orbit/docking actions, phone compaction,
-  iPad placement, button-coordinate export, and headers `0x4f3`--`0x4f5`.
+  iPad placement, button-coordinate export, and headers `0x4f3`--`0x4f6`.
+  The exact per-mode order is `0x4f5`, `0x4f6`, `0x4f3`, `0x4f4`; see
+  `HUD_INIT_MENU_RESOURCE_CHAIN_ARM_2026-08-22.md`.
   The two non-HD iPad offsets are ARM float constants `160.0f` and `80.0f`;
   the HD path uses `112.5f`.
 - The corresponding `Hud::drawMenu` frame path (`0x166278`) now draws its top,

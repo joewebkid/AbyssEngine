@@ -42,7 +42,7 @@ producer or role is still unnamed.
 | `+0x348` | reticle / iPad fire image | `0x4c6` |
 | `+0x34c/+0x350` | quick-menu pressed/idle | `0x4bb/0x4ba` |
 | `+0x354/+0x358` | event and secondary-weapon banners | `0x4c3/0x4c2` |
-| `+0x35c` | quick-menu header, created by `initHudMenu` | `0x4f4` |
+| `+0x35c` | quick-menu header, created by `initHudMenu` modes 0/1/2/3 | `0x4f5/0x4f6/0x4f3/0x4f4` |
 | `+0x360..+0x36c` | armor/shield hit-direction images | `0x525/0x526/0x52b/0x52c` |
 | `+0x370/+0x374` | fuel icon/bar | `0x537/0x538` |
 | `+0x378/+0x37c` | progress panel and charge fill | `0x53a/0x539` |
