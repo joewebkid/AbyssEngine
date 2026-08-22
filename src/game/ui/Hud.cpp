@@ -77,18 +77,18 @@ static inline float hud_layout_f32(unsigned int offset) {
 
 static inline __attribute__((always_inline)) void
 hud_draw_volatile_cargo(Hud *self, PlayerEgo *ego) {
-    if (ego->hasVolatileGoods() == 0) return;
-
-    const unsigned int image = static_cast<unsigned int>(self->volatileCargoOverlayImage);
-    const int width = hud_canvas()->GetImage2DWidth(image);
-    const int height = hud_canvas()->GetImage2DHeight(image);
-    float force = 1.0f;
-    if (ego->getVolatileForce() <= 1.0f)
-        force = ego->getVolatileForce();
-    hud_canvas()->DrawRegion2D(image, 0, 0,
-                               static_cast<int>(force * static_cast<float>(width)), height,
-                               0.0f, 0, 0,
-                               self->missionPanelX - hud_layout_i32(0x1ec), self->missionPanelY);
+    if (ego->hasVolatileGoods() != 0) {
+        const unsigned int image = static_cast<unsigned int>(self->volatileCargoOverlayImage);
+        const int width = hud_canvas()->GetImage2DWidth(image);
+        const int height = hud_canvas()->GetImage2DHeight(image);
+        float force = 1.0f;
+        if (!(ego->getVolatileForce() > 1.0f))
+            force = ego->getVolatileForce();
+        hud_canvas()->DrawRegion2D(image, 0, 0,
+                                   static_cast<int>(force * static_cast<float>(width)), height,
+                                   0.0f, 0, 0,
+                                   self->missionPanelX - hud_layout_i32(0x1ec), self->missionPanelY);
+    }
 }
 
 static inline __attribute__((always_inline)) void hud_create_image(unsigned short resourceId, int &slot) {

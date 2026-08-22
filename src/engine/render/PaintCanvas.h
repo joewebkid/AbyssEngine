@@ -219,9 +219,9 @@ namespace AbyssEngine {
 
         void Image2DCreate(unsigned short resId, unsigned int &out);
 
-        unsigned short GetImage2DWidth(unsigned int index);
+        int GetImage2DWidth(unsigned int index);
 
-        unsigned short GetImage2DHeight(unsigned int index);
+        int GetImage2DHeight(unsigned int index);
 
         void RestoreImage2D(Image2D *image);
 
