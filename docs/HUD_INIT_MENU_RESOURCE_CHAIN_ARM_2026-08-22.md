@@ -79,3 +79,7 @@ This pass proves mode routing, resources, action masks, geometry and the draw
 consumer. It does not claim byte identity for either function. The resource
 table is evidence for Image2D selection only; the original proprietary atlas
 payload is not stored in this repository.
+
+Follow-up: `HUD_INIT_MENU_LAYOUT_RECURRENCE_ARM_2026-08-22.md` supersedes the
+numeric `initHudMenu` snapshot above. Restoring the native per-row layout loads
+raises the function to `39.1%` at `1245/1236` target/base instructions.

@@ -2418,29 +2418,6 @@ static inline __attribute__((always_inline)) TouchButton *hud_add_menu_text_butt
     return hud_store_menu_button(self, menuSlot, button, action);
 }
 
-static inline __attribute__((always_inline)) void hud_add_equipment_menu_button(
-        Hud *self, Array<TouchButton *> **menuSlot, unsigned int itemIndex, int y) {
-    auto *button = new TouchButton(
-            *hud_game_text()->getText((*self->equipmentArray)[itemIndex]->getIndex() + 1274) +
-                    String(String(" (") + String((*self->equipmentArray)[itemIndex]->getAmount()) +
-                                   String(")"),
-                           false),
-            0, self->field_0x3d4, y, self->field_0x3dc, 0x11, 4);
-    unsigned int action;
-    if ((itemIndex & 0x7fffffffu) != 0) {
-        if ((itemIndex & 0x7fffffffu) == 1) {
-            action = 0x4000;
-        } else {
-            action = 0x10000;
-            if (itemIndex == 2)
-                action = 0x8000;
-        }
-    } else {
-        action = 0x2000;
-    }
-    hud_store_menu_button(self, menuSlot, button, action);
-}
-
 static inline __attribute__((always_inline)) void hud_add_station_menu_button(
         Hud *self, Array<TouchButton *> **menuSlot, int y) {
     auto *button = new TouchButton(
@@ -2507,9 +2484,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
     updateSecondaryWeaponString();
     this->menuOriginX = 0;
 
-    const int rowGap = hud_layout_i32(0x30);
     const int buttonHeight = hud_layout_i32(0x1dc);
-    const int rowStep = rowGap + buttonHeight;
     int y = this->menuBaseY;
 
     if (Globals::iPad != 0) {
@@ -2536,7 +2511,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
             menuY = 0.0f;
         }
         this->menuOriginY = static_cast<int>(menuY);
-        y = this->menuRowHeight + this->menuOriginY - rowGap / 2 + 1;
+        y = this->menuRowHeight + this->menuOriginY - hud_layout_i32(0x30) / 2 + 1;
         this->menuBaseY = y;
     }
 
@@ -2546,7 +2521,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
                 for (unsigned int i = 0; i < this->equipmentArray->size(); ++i) {
                     if ((*this->equipmentArray)[i] != nullptr) {
                         hud_add_menu_text_button(this, menuSlot, 266, y, 0x200);
-                        y += rowStep;
+                        y += hud_layout_i32(0x30) + buttonHeight;
                         break;
                     }
                 }
@@ -2554,7 +2529,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
             if (Globals::status->getWingmen() != 0 && Globals::status->inSupernovaSystem() == 0 &&
                 Globals::status->getCurrentCampaignMission() != 158) {
                 hud_add_menu_text_button(this, menuSlot, 306, y, 0x400);
-                y += rowStep;
+                y += hud_layout_i32(0x30) + buttonHeight;
             }
             if (Globals::status->getShip()->hasCloak()) {
                 Item *cloak = Globals::status->getShip()->getFirstEquipmentOfSort(21);
@@ -2568,7 +2543,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
                     button->setHalfTransparent(true);
                 }
                 hud_store_menu_button(this, menuSlot, button, 0x800);
-                y += rowStep;
+                y += hud_layout_i32(0x30) + buttonHeight;
             }
             if (Globals::status->getShip()->hasJumpDrive() != 0) {
                 auto *button = new TouchButton(*hud_game_text()->getText(1359), 0,
@@ -2589,8 +2564,28 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
                     Item *item = (*this->equipmentArray)[i];
                     if (item == nullptr) continue;
 
-                    hud_add_equipment_menu_button(this, menuSlot, i, y);
-                    y += rowStep;
+                    auto *button = new TouchButton(
+                            *hud_game_text()->getText(
+                                    (*this->equipmentArray)[i]->getIndex() + 1274) +
+                                    String(String(" (") +
+                                                   String((*this->equipmentArray)[i]->getAmount()) +
+                                                   String(")"),
+                                           false),
+                            0, this->field_0x3d4, y, this->field_0x3dc, 0x11, 4);
+                    unsigned int action;
+                    if ((i & 0x7fffffffu) != 0) {
+                        if ((i & 0x7fffffffu) == 1) {
+                            action = 0x4000;
+                        } else {
+                            action = 0x10000;
+                            if (i == 2)
+                                action = 0x8000;
+                        }
+                    } else {
+                        action = 0x2000;
+                    }
+                    hud_store_menu_button(this, menuSlot, button, action);
+                    y += hud_layout_i32(0x30) + buttonHeight;
                 }
             }
             hud_create_image(0x4f6, this->quickMenuHeaderImage);
@@ -2608,7 +2603,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
                 button->field_0x0 = actions[i];
                 button->field_0x4 = actions[i] >> 31;
                 ArrayAdd<TouchButton *>(button, **menuSlot);
-                y += rowStep;
+                y += hud_layout_i32(0x30) + buttonHeight;
             }
             hud_create_image(0x4f3, this->quickMenuHeaderImage);
             break;
@@ -2619,16 +2614,16 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
 
             if (!Globals::status->inAlienOrbit()) {
                 hud_add_menu_text_button(this, menuSlot, 549, y, 0x1000000);
-                y += rowStep;
+                y += hud_layout_i32(0x30) + buttonHeight;
 
                 if (!Globals::status->inEmptyOrbit()) {
                     hud_add_station_menu_button(this, menuSlot, y);
-                    y += rowStep;
+                    y += hud_layout_i32(0x30) + buttonHeight;
                 }
 
                 if (Globals::status->getSystem()->currentOrbitHasWarpGate()) {
                     hud_add_menu_text_button(this, menuSlot, 547, y, 0x400000);
-                    y += rowStep;
+                    y += hud_layout_i32(0x30) + buttonHeight;
                 }
 
                 if (lvl->getPlayer()->getRoute()) {
@@ -2636,14 +2631,14 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
                             static_cast<intptr_t>(lvl->getPlayer()->getRoute()));
                     if ((route->getLastWaypoint()->state & 0xff) == 0) {
                         hud_add_menu_text_button(this, menuSlot, 573, y, 0x2000000);
-                        y += rowStep;
+                        y += hud_layout_i32(0x30) + buttonHeight;
                     }
                 }
 
                 Station *programmedStation = static_cast<Station *>(Level::programmedStation);
                 if (programmedStation != nullptr) {
                     hud_add_programmed_station_menu_button(this, menuSlot, y);
-                    y += rowStep;
+                    y += hud_layout_i32(0x30) + buttonHeight;
                 }
             }
 
@@ -2656,7 +2651,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
                     if (targetName.size() == 0) continue;
                 }
                 hud_add_docking_target_menu_button(this, menuSlot, lvl, i, y);
-                y += rowStep;
+                y += hud_layout_i32(0x30) + buttonHeight;
             }
 
             hud_compact_orbit_menu_for_phone(this, menuSlot);
@@ -2671,9 +2666,11 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
     unsigned int buttonCount = buttons->size();
     if (Globals::iPad != 0) {
         if (buttonCount != 0) {
-            this->menuOriginYBase = static_cast<int>(4 - buttonCount) * rowStep;
+            const int menuRowGap = hud_layout_i32(0x30);
+            this->menuOriginYBase = static_cast<int>(4 - buttonCount) *
+                    (buttonHeight + menuRowGap);
             if (requestedMenuType == 3)
-                this->menuOriginYBase -= rowGap;
+                this->menuOriginYBase -= menuRowGap;
         }
         unsigned int i = 0;
         while (i < buttonCount) {
@@ -2690,7 +2687,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
             buttonCount = buttons->size();
         }
     } else {
-        this->menuOriginYBase = buttonCount < 5 ? 0 : -rowGap;
+        this->menuOriginYBase = buttonCount < 5 ? 0 : -hud_layout_i32(0x30);
         for (unsigned int i = 0; i < buttonCount; ++i) {
             if (i <= 9) {
                 TouchButton *button = (*buttons)[i];

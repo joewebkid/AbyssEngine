@@ -78,3 +78,9 @@ The next large package should return to `Hud::draw` as a coherent multi-branch
 control-flow and register-lifetime pass. Isolated Canvas or stack edits have
 already been shown to regress it; the next attempt should cover one complete
 cluster from predicate through final color restore.
+
+Follow-up: the later `HUD_INIT_MENU_RESOURCE_CHAIN_ARM_2026-08-22.md` corrects
+the mode-1 header resource, and
+`HUD_INIT_MENU_LAYOUT_RECURRENCE_ARM_2026-08-22.md` supersedes this package's
+numeric snapshot. The latter raises `initHudMenu` to `39.1%` at `1245/1236`
+target/base instructions by restoring the native layout-load recurrence.
