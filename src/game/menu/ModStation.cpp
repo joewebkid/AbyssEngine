@@ -12,6 +12,7 @@
 #include "engine/math/EaseInOutMatrix.h"
 #include "game/mission/Item.h"
 #include "game/ui/MissionsWindow.h"
+#include "game/ui/StatusWindow.h"
 #include "game/world/NewsTicker.h"
 #include "game/world/StarMap.h"
 #include "game/mission/Achievements.h"
@@ -79,12 +80,6 @@ struct HangarWindow {
     void OnTouchBegin(int touch, int coord);
 
     unsigned int OnTouchMove(int touch, int coord);
-};
-
-struct StatusWindow {
-    int OnTouchBegin(int x, int y);
-
-    int OnTouchMove(int x, int y);
 };
 
 // ---- Models for untyped runtime handles touched via byte offsets ----
@@ -1639,13 +1634,9 @@ void HangarWindow_showCreditsBuyWindow_ote(HangarWindow *w);
 
 void HangarWindow_setSellMode_ote(int w);
 
-int SpaceLounge_OnTouchEnd_ote(int l, int p1, int p2);
-
 int SpaceLounge_hangarNeedsUpdate_ote();
 
 void SpaceLounge_refresh_ote();
-
-int StatusWindow_OnTouchEnd_ote(int w, int p1, int p2);
 
 int MenuTouchWindow_OnTouchEnd_ote(MenuTouchWindow *w, int p1, int p2, void *p3);
 
@@ -2235,7 +2226,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
     }
 
     if (this->modalFlags.bytes[0] != 0) {
-        if (StatusWindow_OnTouchEnd_ote((int) (intptr_t) this->statusWindow, x, y) != 0) {
+        if (static_cast<StatusWindow *>(this->statusWindow)->OnTouchEnd(x, y) != 0) {
             this->modalFlags.bytes[0] = 0;
             this->resetLight();
         }
@@ -2301,7 +2292,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
         return;
     }
     if (this->subWindowFlags.bytes[1] != 0) {
-        if (SpaceLounge_OnTouchEnd_ote((int) (intptr_t) this->spaceLounge, x, y) != 0) {
+        if (static_cast<SpaceLounge *>(this->spaceLounge)->OnTouchEnd(x, y) != 0) {
             this->subWindowFlags.bytes[1] = 0;
             this->resetIdleCamForHangar();
             this->resetLight();

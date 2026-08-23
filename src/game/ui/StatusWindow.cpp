@@ -95,7 +95,7 @@ static GameText **g_swe_gameText = nullptr;
 static Globals **g_swe_globals = nullptr;
 static void *g_swe_font = nullptr;
 
-void StatusWindow::OnTouchEnd(int x, int y) {
+int StatusWindow::OnTouchEnd(int x, int y) {
     int vy = this->scrollVelocity;
     int newOff = this->scrollOffset + vy;
     float vf = (float) vy;
@@ -109,7 +109,7 @@ void StatusWindow::OnTouchEnd(int x, int y) {
     this->scrollVelocityF = (absvy > 3) ? vf : 0.0f;
 
     if (layout->OnTouchEnd(x, y) != 0)
-        return;
+        return 1;
 
     if (*g_swe_dialogBlock == 0) {
         for (unsigned int i = 0; i < this->tabButtons->size(); i++) {
@@ -176,6 +176,7 @@ void StatusWindow::OnTouchEnd(int x, int y) {
             layout->initHelpWindow(title);
         }
     }
+    return 0;
 }
 
 int StatusWindow::OnTouchBegin(int x, int y) {

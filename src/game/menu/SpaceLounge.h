@@ -100,7 +100,7 @@ public:
 
     int OnTouchBegin(int x, int y);
 
-    void OnTouchEnd(int x, int y);
+    int OnTouchEnd(int x, int y);
 
     int OnTouchMove(int x, int y);
 

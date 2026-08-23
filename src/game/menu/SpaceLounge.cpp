@@ -352,7 +352,7 @@ static inline bool hit_agent(SpaceLounge *self, int x, int y, int i) {
     return (float) x < b[0] && (float) y < a[1] && b[1] < (float) y;
 }
 
-void SpaceLounge::OnTouchEnd(int x, int y) {
+int SpaceLounge::OnTouchEnd(int x, int y) {
     String helpBig;
     String helpSmall;
     char matrix[60];
@@ -366,7 +366,7 @@ void SpaceLounge::OnTouchEnd(int x, int y) {
         } else if (result == 0) {
             ((SpaceLounge *) (this))->onKeyPress(0x10000);
         }
-        return;
+        return 0;
     }
 
     if (this->mapVisible != 0) {
@@ -374,7 +374,7 @@ void SpaceLounge::OnTouchEnd(int x, int y) {
             this->cutScene->resetCamera();
             this->mapVisible = 0;
         }
-        return;
+        return 0;
     }
 
     void *layoutSlot = *(void **) &SpaceLounge_touch_layout_slot;
@@ -383,6 +383,7 @@ void SpaceLounge::OnTouchEnd(int x, int y) {
         if (this->listVisible != 0) {
             ((Layout *) (layout))->resetWindowDimensions();
             this->listVisible = 0;
+            return 0;
         } else if (this->mode != 0) {
             if (this->selectedAgent >= 0) {
                 void *agent = selected_agent(this);
@@ -392,8 +393,9 @@ void SpaceLounge::OnTouchEnd(int x, int y) {
             }
             this->mode = 0;
             this->singleOffer = 0;
+            return 0;
         }
-        return;
+        return 1;
     }
 
     if (this->listVisible != 0) {
@@ -404,7 +406,7 @@ void SpaceLounge::OnTouchEnd(int x, int y) {
             helpSmall.Set(((String *) text)->data);
             ((Layout *) (layout))->initHelpWindow(helpSmall);
         }
-        return;
+        return 0;
     }
 
     switch (this->mode) {
@@ -425,7 +427,7 @@ void SpaceLounge::OnTouchEnd(int x, int y) {
                 }
                 this->introDone = 1;
                 this->headBobPhase = 0;
-                return;
+                return 0;
             }
             if (this->agents != 0) {
                 this->hoverAgent = -1;
@@ -435,7 +437,7 @@ void SpaceLounge::OnTouchEnd(int x, int y) {
                     if (hit_agent(this, x, y, i)) {
                         this->selectedAgent = i;
                         ((SpaceLounge *) (this))->onKeyPress(0x10000);
-                        return;
+                        return 0;
                     }
                 }
             }
@@ -470,6 +472,7 @@ void SpaceLounge::OnTouchEnd(int x, int y) {
         helpBig.Set(((String *) text)->data);
         ((Layout *) (layout))->initHelpWindow(helpBig);
     }
+    return 0;
 }
 
 int SpaceLounge::getSoundId(Agent *agent) {
