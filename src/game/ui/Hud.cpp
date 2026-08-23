@@ -2289,7 +2289,7 @@ void Hud::drawChallengeModeScore(int unused) {
     int frameWidth = static_cast<Sprite *>(this->digitSprite)->getFrameWidth();
     const int pad = static_cast<Layout *>(Globals::layout)->field_0x2c;
     const int frameHeight = static_cast<Sprite *>(this->digitSprite)->getFrameHeight();
-    const int y = static_cast<Layout *>(Globals::layout)->field_0x2c;
+    int y = static_cast<Layout *>(Globals::layout)->field_0x2c;
     const int screenW = Globals::w;
 
     String score(Globals::status->challengeScore);
@@ -2322,7 +2322,7 @@ void Hud::drawChallengeModeScore(int unused) {
         hud_canvas()->SetColor(0xffffffffu);
         const int rowPad = static_cast<Layout *>(Globals::layout)->field_0x2c;
         const int timer = Globals::status->challengeMultiplierTimer;
-        const int multiplierY = y + frameHeight + rowPad;
+        y += frameHeight + rowPad;
 
         if (timer <= 3000) {
             if (timer % 100 < 50)
@@ -2332,7 +2332,7 @@ void Hud::drawChallengeModeScore(int unused) {
             String bonus(static_cast<int>((static_cast<float>(multiplier) * 0.05f + 1.0f) *
                                           static_cast<float>(1000 * multiplier)));
             int bonusOffset = 0;
-            const int bonusBaseY = frameHeight + multiplierY;
+            const int bonusBaseY = frameHeight + y;
             for (int i = 1; static_cast<unsigned int>(i - 1) < bonus.size(); ++i) {
                 int frame;
                 {
@@ -2341,8 +2341,8 @@ void Hud::drawChallengeModeScore(int unused) {
                 }
                 static_cast<Sprite *>(this->digitSprite)->setFrame(frame);
                 static_cast<Sprite *>(this->digitSprite)->setPosition(
-                        Globals::w / 2 - ((static_cast<int>(bonus.size()) * frameWidth) >> 1) +
-                                bonusOffset,
+                        Globals::w / 2 -
+                                static_cast<int>((bonus.size() * frameWidth) >> 1) + bonusOffset,
                         bonusBaseY + static_cast<Layout *>(Globals::layout)->field_0x2c);
                 bonusOffset += frameWidth;
                 static_cast<Sprite *>(this->digitSprite)->draw(1.0f, 1.0f);
@@ -2350,7 +2350,7 @@ void Hud::drawChallengeModeScore(int unused) {
         }
 
         hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->multiplierIconImage),
-                                  rowPad + scoreStartX, multiplierY);
+                                  rowPad + scoreStartX, y);
         const float growth =
                 static_cast<float>(Globals::status->challengeMultiplierTimer - 7000) * 0.01f;
         float scale = growth + 1.0f;
@@ -2369,7 +2369,7 @@ void Hud::drawChallengeModeScore(int unused) {
             static_cast<Sprite *>(this->digitSprite)->setPosition(
                     x + hud_canvas()->GetImage2DWidth(
                                 static_cast<unsigned int>(this->multiplierIconImage)),
-                    multiplierY);
+                    y);
             x += frameWidth;
             static_cast<Sprite *>(this->digitSprite)->draw(scale, scale);
         }
