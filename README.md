@@ -108,6 +108,7 @@ metadata only; original game binaries and asset dumps are not included.
 - [Hud init ARM recovery](docs/HUD_INIT_ARM_2026-08-20.md)
 - [Hud cargo/menu/touch/orbit ARM pass](docs/HUD_CARGO_MENU_TOUCH_ORBIT_ARM_2026-08-20.md)
 - [MenuTouchWindow main dispatcher and free-camera ARM pass](docs/MENUTOUCH_MAIN_DISPATCH_FREECAM_ARM_2026-08-23.md)
+- [MenuTouchWindow state/dialog/options ARM pass](docs/MENUTOUCH_STATE_DIALOG_OPTIONS_ARM_2026-08-23.md)
 - [AEM/AEI loader notes](docs/AEM_AEI_NATIVE_LOADER_SPEC.md)
 - [DeepOpen J2ME crosswalk](docs/DEEPOPEN_J2ME_CROSSWALK_2026-07-20.md)
 - [Recovery evidence guide (RU)](docs/RECOVERY_EVIDENCE_GUIDE_RU.md)

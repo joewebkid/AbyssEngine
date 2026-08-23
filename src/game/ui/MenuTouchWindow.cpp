@@ -160,6 +160,11 @@ static inline void _mtw_options_update_accel_from_engine() {
     _mtw_option_set_float(0x20, (float) engine->GetAccelValue()[2]);
 }
 
+static inline void _mtw_set_fade_value(MenuTouchWindow *window, float value) {
+    static_assert(sizeof(window->fadeValue) == sizeof(value), "MenuTouchWindow fade storage");
+    std::memcpy(&window->fadeValue, &value, sizeof(value));
+}
+
 static inline void _mtw_AppMgr_SetCurrentApplicationModule(void *app, int id) {
     ((AbyssEngine::ApplicationManager *) app)->SetCurrentApplicationModule(id);
 }
@@ -314,128 +319,165 @@ static inline int _mtw_onTouchEnd_listState(void *self, int x, int y, int state)
     return 0;
 }
 
-static inline int _mtw_onTouchEnd_optionsState(void *self, int x, int y) {
+static inline __attribute__((always_inline)) void _mtw_onTouchEnd_controlOptions(MenuTouchWindow *window, int x, int y) {
+    auto *choice = (ChoiceWindow *) window->choiceWindow;
+    if (window->messageShowing != 0 && window->accelerometerCalibrationPending != 0 &&
+        _mtw_ChoiceWindow_OnTouchEnd(choice, x, y) == 0) {
+        _mtw_options_update_accel_from_engine();
+        window->accelerometerCalibrationPending = 0;
+        window->messageShowing = 0;
+    }
+
+    TouchSlider *mainSlider = _mtw_slider(window, 0);
+    size_t activePresetOffset = _mtw_option_byte(0x30) != 0 ? 0x14 : 0x18;
+    if (mainSlider != nullptr)
+        _mtw_option_set_float(activePresetOffset, mainSlider->getValue());
+
+    Layout *layout = (Layout *) Globals::layout;
+    if (window->upButtonPressed != 0) {
+        int rowTop = layout->buttonInsetX + window->listTopY;
+        if (rowTop < y && y < rowTop + window->listEntryHeight) {
+            int colLeft = layout->buttonInsetX + layout->field_0xc_leftMargin;
+            if (colLeft < x && x < colLeft + layout->field_0x20_top + window->listEntryWidth) {
+                _mtw_option_byte(0x30) = 1;
+                if (window->optBtnD0 != nullptr) ((TouchButton *) window->optBtnD0)->setHalfTransparent(true);
+                if (mainSlider != nullptr) mainSlider->setValue(_mtw_option_float(0x14));
+                if (Globals::sound != nullptr) Globals::sound->play(0x7b, nullptr, nullptr, 0.0f);
+            }
+        }
+    }
+    if (window->downButtonPressed != 0) {
+        int rowTop = window->listTopY + layout->buttonInsetX + window->listEntryHeight;
+        if (rowTop < y && y < (window->listTopY - layout->buttonInsetX) + window->listBottomY) {
+            int colLeft = layout->buttonInsetX + layout->field_0xc_leftMargin;
+            if (colLeft < x && x < colLeft + layout->field_0x20_top + window->listEntryWidth) {
+                _mtw_option_byte(0x30) = 0;
+                if (window->optBtnD0 != nullptr) ((TouchButton *) window->optBtnD0)->setHalfTransparent(false);
+                if (mainSlider != nullptr) mainSlider->setValue(_mtw_option_float(0x18));
+                if (Globals::sound != nullptr) Globals::sound->play(0x7b, nullptr, nullptr, 0.0f);
+            }
+        }
+    }
+
+    window->upButtonPressed = 0;
+    window->downButtonPressed = 0;
+
+    if (window->optBtnCC != nullptr && ((TouchButton *) window->optBtnCC)->OnTouchEnd(x, y) != 0) {
+        _mtw_option_byte(0x11) ^= 1u;
+        ((TouchButton *) window->optBtnCC)->setAlwaysPressed(_mtw_option_byte(0x11) != 0);
+    }
+    if (window->optBtnD0 != nullptr && ((TouchButton *) window->optBtnD0)->OnTouchEnd(x, y) != 0) {
+        _mtw_ChoiceWindow_set(choice, _mtw_GameText_getText(Globals::gameText, 493));
+        window->accelerometerCalibrationPending = 1;
+        window->messageShowing = 1;
+    }
+    if (mainSlider != nullptr)
+        mainSlider->OnTouchEnd(x, y);
+}
+
+static inline __attribute__((always_inline)) void _mtw_onTouchEnd_audioOptions(MenuTouchWindow *window, int x, int y) {
+    auto *choice = (ChoiceWindow *) window->choiceWindow;
+    if (window->optBtnD4 != nullptr && ((TouchButton *) window->optBtnD4)->OnTouchEnd(x, y) != 0)
+        _mtw_options_set_category(window, 1, 0x0d, 1, _mtw_option_byte(0x0d) == 0);
+    if (window->optBtnD8 != nullptr && ((TouchButton *) window->optBtnD8)->OnTouchEnd(x, y) != 0) {
+        _mtw_options_set_category(window, 2, 0x0c, 2, _mtw_option_byte(0x0c) == 0);
+        if (Globals::sound != nullptr) Globals::sound->play(0x7e, nullptr, nullptr, 0.0f);
+    }
+    if (window->optBtnDC != nullptr && ((TouchButton *) window->optBtnDC)->OnTouchEnd(x, y) != 0)
+        _mtw_options_set_category(window, 3, 0x0e, 3, _mtw_option_byte(0x0e) == 0);
+
+    _mtw_options_sync_slider_values(window);
+
+    Array<TouchSlider *> *sliders = _mtw_sliders(window);
+    if (sliders != nullptr) {
+        for (unsigned int i = 1; i < sliders->size(); i++) {
+            if (i == 5 && ((Layout *) Globals::layout)->field_0x284_sliderSlot5Enabled == 0)
+                continue;
+            TouchSlider *slider = (*sliders)[i];
+            if (slider == nullptr || slider->OnTouchEnd(x, y) == 0)
+                continue;
+
+            if (i == 2) {
+                if (Globals::sound != nullptr) Globals::sound->play(0x7e, nullptr, nullptr, 0.0f);
+            } else if (i == 5) {
+                float value = slider->getValue();
+                if (Globals::iPadLargePossible != 0) {
+                    float scale = 1.0f;
+                    if (value <= 0.66f) scale = 0.5f;
+                    if (value <= 0.33f) scale = 0.0f;
+                    _mtw_option_set_float(0x48, scale);
+                    _mtw_ChoiceWindow_set(choice, _mtw_GameText_getText(Globals::gameText, 122));
+                    if (Globals::recordHandler != nullptr)
+                        ((RecordHandler *) Globals::recordHandler)->saveOptions();
+                } else {
+                    int textId = 512;
+                    if (value <= 0.66f) textId = 511;
+                    if (value <= 0.33f) textId = 510;
+                    _mtw_ChoiceWindow_set(choice, _mtw_GameText_getText(Globals::gameText, textId));
+                }
+                window->messageShowing = 1;
+            }
+        }
+    }
+
+    if (Globals::iPadLargePossible != 0 && window->scrollExtraButton != nullptr &&
+        ((TouchButton *) window->scrollExtraButton)->OnTouchEnd(x, y) != 0) {
+        _mtw_option_byte(0x4c) ^= 1u;
+        if (Globals::recordHandler != nullptr)
+            ((RecordHandler *) Globals::recordHandler)->saveOptions();
+        ((TouchButton *) window->scrollExtraButton)->setAlwaysPressed(_mtw_option_byte(0x4c) != 0);
+        _mtw_ChoiceWindow_set(choice, _mtw_GameText_getText(Globals::gameText, 122));
+        window->messageShowing = 1;
+    }
+}
+
+static inline __attribute__((always_inline)) int _mtw_onTouchEnd_optionsState(void *self, int x, int y) {
     auto *window = (MenuTouchWindow *) self;
     auto *choice = (ChoiceWindow *) window->choiceWindow;
-    auto *raw = (uint8_t *) window;
     int state = window->menuState;
+
+    if (state == 3) {
+        if (Globals::iPad == 0) {
+            auto *buttons = (Array<TouchButton *> *) window->optionsButtons;
+            if (buttons != nullptr) {
+                for (unsigned int i = 0; i < buttons->size(); ++i) {
+                    TouchButton *button = (*buttons)[i];
+                    if (button == nullptr || button->OnTouchEnd(x, y) == 0) continue;
+                    switch (button->field_0x0) {
+                        case 4: window->menuState = 4; break;
+                        case 7: window->menuState = 6; break;
+                        case 8: window->menuState = 7; break;
+                        case 9: window->menuState = 8; break;
+                        case 25: window->menuState = 14; break;
+                        default: break;
+                    }
+                }
+            }
+            return _mtw_onTouchEnd_listTail(window, x, y);
+        }
+
+        if (window->scrollUpButton != nullptr && ((TouchButton *) window->scrollUpButton)->OnTouchEnd(x, y) != 0)
+            window->menuState = 11;
+        _mtw_onTouchEnd_controlOptions(window, x, y);
+        if (window->messageShowing != 0 && _mtw_ChoiceWindow_OnTouchEnd(choice, x, y) == 0) {
+            window->messageShowing = 0;
+            return _mtw_onTouchEnd_listTail(window, x, y);
+        }
+        _mtw_onTouchEnd_audioOptions(window, x, y);
+        return _mtw_onTouchEnd_listTail(window, x, y);
+    }
 
     if (state == 7) {
         if (window->messageShowing != 0 && _mtw_ChoiceWindow_OnTouchEnd(choice, x, y) == 0) {
             window->messageShowing = 0;
             return _mtw_onTouchEnd_listTail(window, x, y);
         }
-
-        if (window->optBtnD4 != nullptr && ((TouchButton *) window->optBtnD4)->OnTouchEnd(x, y) != 0)
-            _mtw_options_set_category(window, 1, 0x0d, 1, _mtw_option_byte(0x0d) == 0);
-        if (window->optBtnD8 != nullptr && ((TouchButton *) window->optBtnD8)->OnTouchEnd(x, y) != 0) {
-            _mtw_options_set_category(window, 2, 0x0c, 2, _mtw_option_byte(0x0c) == 0);
-            if (Globals::sound != nullptr) Globals::sound->play(0x7e, nullptr, nullptr, 0.0f);
-        }
-        if (window->optBtnDC != nullptr && ((TouchButton *) window->optBtnDC)->OnTouchEnd(x, y) != 0)
-            _mtw_options_set_category(window, 3, 0x0e, 3, _mtw_option_byte(0x0e) == 0);
-
-        _mtw_options_sync_slider_values(window);
-
-        Array<TouchSlider *> *sliders = _mtw_sliders(window);
-        if (sliders != nullptr) {
-            for (unsigned int i = 1; i < sliders->size(); i++) {
-                if (i == 5 && ((Layout *) Globals::layout)->field_0x284_sliderSlot5Enabled == 0)
-                    continue;
-                TouchSlider *slider = (*sliders)[i];
-                if (slider == nullptr || slider->OnTouchEnd(x, y) == 0)
-                    continue;
-
-                if (i == 2) {
-                    if (Globals::sound != nullptr) Globals::sound->play(0x7e, nullptr, nullptr, 0.0f);
-                } else if (i == 5) {
-                    float value = slider->getValue();
-                    if (Globals::iPadLargePossible != 0) {
-                        float scale = 1.0f;
-                        if (value <= 0.66f) scale = 0.5f;
-                        if (value <= 0.33f) scale = 0.0f;
-                        _mtw_option_set_float(0x48, scale);
-                        _mtw_ChoiceWindow_set(choice, _mtw_GameText_getText(Globals::gameText, 122));
-                        if (Globals::recordHandler != nullptr)
-                            ((RecordHandler *) Globals::recordHandler)->saveOptions();
-                    } else {
-                        int textId = 512;
-                        if (value <= 0.66f) textId = 511;
-                        if (value <= 0.33f) textId = 510;
-                        _mtw_ChoiceWindow_set(choice, _mtw_GameText_getText(Globals::gameText, textId));
-                    }
-                    window->messageShowing = 1;
-                }
-            }
-        }
-
-        if (Globals::iPadLargePossible != 0 && window->scrollExtraButton != nullptr &&
-            ((TouchButton *) window->scrollExtraButton)->OnTouchEnd(x, y) != 0) {
-            _mtw_option_byte(0x4c) ^= 1u;
-            if (Globals::recordHandler != nullptr)
-                ((RecordHandler *) Globals::recordHandler)->saveOptions();
-            ((TouchButton *) window->scrollExtraButton)->setAlwaysPressed(_mtw_option_byte(0x4c) != 0);
-            _mtw_ChoiceWindow_set(choice, _mtw_GameText_getText(Globals::gameText, 122));
-            window->messageShowing = 1;
-        }
-
+        _mtw_onTouchEnd_audioOptions(window, x, y);
         return _mtw_onTouchEnd_listTail(window, x, y);
     }
 
     if (state == 8) {
-        if (window->messageShowing != 0 && raw[0x176] != 0 &&
-            _mtw_ChoiceWindow_OnTouchEnd(choice, x, y) == 0) {
-            _mtw_options_update_accel_from_engine();
-            raw[0x176] = 0;
-            window->messageShowing = 0;
-        }
-
-        TouchSlider *mainSlider = _mtw_slider(window, 0);
-        size_t activePresetOffset = _mtw_option_byte(0x30) != 0 ? 0x14 : 0x18;
-        if (mainSlider != nullptr)
-            _mtw_option_set_float(activePresetOffset, mainSlider->getValue());
-
-        Layout *layout = (Layout *) Globals::layout;
-        if (window->upButtonPressed != 0) {
-            int rowTop = layout->buttonInsetX + window->listTopY;
-            if (rowTop < y && y < rowTop + window->listEntryHeight) {
-                int colLeft = layout->buttonInsetX + layout->field_0xc_leftMargin;
-                if (colLeft < x && x < colLeft + layout->field_0x20_top + window->listEntryWidth) {
-                    _mtw_option_byte(0x30) = 1;
-                    if (window->optBtnD0 != nullptr) ((TouchButton *) window->optBtnD0)->setHalfTransparent(true);
-                    if (mainSlider != nullptr) mainSlider->setValue(_mtw_option_float(0x14));
-                    if (Globals::sound != nullptr) Globals::sound->play(0x7b, nullptr, nullptr, 0.0f);
-                }
-            }
-        }
-        if (window->downButtonPressed != 0) {
-            int rowTop = window->listTopY + layout->buttonInsetX + window->listEntryHeight;
-            if (rowTop < y && y < (window->listTopY - layout->buttonInsetX) + window->listBottomY) {
-                int colLeft = layout->buttonInsetX + layout->field_0xc_leftMargin;
-                if (colLeft < x && x < colLeft + layout->field_0x20_top + window->listEntryWidth) {
-                    _mtw_option_byte(0x30) = 0;
-                    if (window->optBtnD0 != nullptr) ((TouchButton *) window->optBtnD0)->setHalfTransparent(false);
-                    if (mainSlider != nullptr) mainSlider->setValue(_mtw_option_float(0x18));
-                    if (Globals::sound != nullptr) Globals::sound->play(0x7b, nullptr, nullptr, 0.0f);
-                }
-            }
-        }
-
-        window->upButtonPressed = 0;
-        window->downButtonPressed = 0;
-
-        if (window->optBtnCC != nullptr && ((TouchButton *) window->optBtnCC)->OnTouchEnd(x, y) != 0) {
-            _mtw_option_byte(0x11) ^= 1u;
-            ((TouchButton *) window->optBtnCC)->setAlwaysPressed(_mtw_option_byte(0x11) != 0);
-        }
-        if (window->optBtnD0 != nullptr && ((TouchButton *) window->optBtnD0)->OnTouchEnd(x, y) != 0) {
-            _mtw_ChoiceWindow_set(choice, _mtw_GameText_getText(Globals::gameText, 493));
-            raw[0x176] = 1;
-            window->messageShowing = 1;
-        }
-        if (mainSlider != nullptr)
-            mainSlider->OnTouchEnd(x, y);
-
+        _mtw_onTouchEnd_controlOptions(window, x, y);
         return _mtw_onTouchEnd_listTail(window, x, y);
     }
 
@@ -617,30 +659,36 @@ static inline int _mtw_onTouchEnd_languageState(void *self, int x, int y) {
     return 0;
 }
 
-static inline int _mtw_onTouchEnd_storeCreditsState(void *self, int x, int y) {
+static inline __attribute__((always_inline)) int _mtw_onTouchEnd_storeCreditsState(void *self, int x, int y) {
     auto *window = (MenuTouchWindow *) self;
+    if (window->storeInitDialogShowing != 0) {
+        if (_mtw_ChoiceWindow_OnTouchEnd(window->choiceWindow, x, y) == 0)
+            window->menuState = 12;
+        window->storeInitDialogShowing = 0;
+        window->messageShowing = 0;
+        return 0;
+    }
+
     auto *buttons = (Array<TouchButton *> *) window->buttonsB8;
-    if (buttons == nullptr) return 0;
+    if (buttons == nullptr) return _mtw_onTouchEnd_listTail(window, x, y);
 
     for (unsigned int i = 0; i < buttons->size(); i++) {
         TouchButton *button = (*buttons)[i];
         if (button == nullptr || button->OnTouchEnd(x, y) == 0) continue;
 
-        if (i == 2) {
-            if (!Globals::iap_hack_dlc3Bought) {
-                NFC().iap_buy_dlc_supernova();
-                return 1;
-            }
-        } else if (i == 1) {
-            if (!Globals::iap_hack_dlc1Bought) {
-                NFC().iap_buy_dlc_valkyrie();
-                return 1;
-            }
+        window->field_0x234 = (int) i;
+        if (i == 2 && !Globals::iap_hack_dlc3Bought) {
+            NFC().iap_buy_dlc_supernova();
+            return 0;
+        }
+        if (i == 1 && !Globals::iap_hack_dlc1Bought) {
+            NFC().iap_buy_dlc_valkyrie();
+            return 0;
         }
         window->menuState = 12;
-        return 1;
+        return _mtw_onTouchEnd_listTail(window, x, y);
     }
-    return 0;
+    return _mtw_onTouchEnd_listTail(window, x, y);
 }
 
 static inline void _mtw_show_cargo_summary(MenuTouchWindow *window) {
@@ -675,6 +723,76 @@ static inline void _mtw_show_cargo_summary(MenuTouchWindow *window) {
     if (window->choiceWindow != nullptr)
         window->choiceWindow->set(title, cargoText, false);
     window->messageShowing = 1;
+}
+
+static inline __attribute__((always_inline)) int _mtw_onTouchEnd_cargoSummaryState(MenuTouchWindow *window, int x, int y) {
+    if (window->messageShowing == 0 ||
+        _mtw_ChoiceWindow_OnTouchEnd(window->choiceWindow, x, y) != 0)
+        return _mtw_onTouchEnd_listTail(window, x, y);
+
+    window->menuState = 0;
+    window->messageShowing = 0;
+    return _mtw_onTouchEnd_listTail(window, x, y);
+}
+
+static inline __attribute__((always_inline)) void _mtw_start_selected_menu_game(MenuTouchWindow *window) {
+    switch (window->field_0x234) {
+        case 2:
+            window->startSupernova();
+            break;
+        case 1:
+            window->startValkyrie();
+            break;
+        default:
+            window->startGOF2();
+            break;
+    }
+}
+
+static inline __attribute__((always_inline)) int _mtw_onTouchEnd_challengeSelectState(MenuTouchWindow *window, int x, int y) {
+    if (window->returnToMenuSubFlag != 0) {
+        int result = _mtw_ChoiceWindow_OnTouchEnd(window->choiceWindow, x, y);
+        if (result == 1) {
+            window->returnToMenuSubFlag = 0;
+            window->messageShowing = 0;
+            return 0;
+        }
+        if (result != 0) return 0;
+
+        _mtw_start_selected_menu_game(window);
+        return 0;
+    }
+
+    auto *buttons = (Array<TouchButton *> *) window->buttonsB4;
+    if (buttons == nullptr) return _mtw_onTouchEnd_listTail(window, x, y);
+
+    for (unsigned int i = 0; i < buttons->size(); ++i) {
+        TouchButton *button = (*buttons)[i];
+        if (button == nullptr || button->OnTouchEnd(x, y) == 0) continue;
+
+        _mtw_set_fade_value(window, i == 0 ? 0.5f : 1.5f);
+        if (i == 0 && Globals::status->getPlayingTime() < 1) {
+            _mtw_start_selected_menu_game(window);
+            return 0;
+        }
+
+        int textId = i == 0 ? 52 : 26;
+        _mtw_ChoiceWindow_set(window->choiceWindow, _mtw_GameText_getText(Globals::gameText, textId), true);
+        window->returnToMenuSubFlag = 1;
+        window->messageShowing = 1;
+        return 0;
+    }
+
+    return _mtw_onTouchEnd_listTail(window, x, y);
+}
+
+static inline __attribute__((always_inline)) int _mtw_onTouchEnd_storeInfoState(MenuTouchWindow *window, int x, int y) {
+    if (window->messageShowing == 0 ||
+        _mtw_ChoiceWindow_OnTouchEnd(window->choiceWindow, x, y) != 0)
+        return _mtw_onTouchEnd_listTail(window, x, y);
+
+    window->messageShowing = 0;
+    return 0;
 }
 
 static inline void _mtw_show_google_link_required(MenuTouchWindow *window) {
@@ -1861,7 +1979,7 @@ int MenuTouchWindow::OnTouchEnd(int x, int y, void *touchId) {
             _mtw_onTouchEnd_listState(this, x, y, state);
             break;
         case 3:
-            _mtw_onTouchEnd_genericButtons(this, x, y, 0xac);
+            _mtw_onTouchEnd_optionsState(this, x, y);
             break;
         case 4:
             _mtw_onTouchEnd_scrollState(this, x, y, 0xf0);
@@ -1873,14 +1991,17 @@ int MenuTouchWindow::OnTouchEnd(int x, int y, void *touchId) {
         case 9:
             _mtw_onTouchEnd_missionsState(this, x, y);
             break;
+        case 0xa:
+            _mtw_onTouchEnd_cargoSummaryState(this, x, y);
+            break;
         case 0xb:
             _mtw_onTouchEnd_cinematicState(this, x, y);
             break;
         case 0xc:
-            _mtw_onTouchEnd_genericButtons(this, x, y, 0xb4);
+            _mtw_onTouchEnd_challengeSelectState(this, x, y);
             break;
         case 0xd:
-            _mtw_onTouchEnd_genericButtons(this, x, y, 0x4);
+            _mtw_onTouchEnd_storeInfoState(this, x, y);
             break;
         case 0xe:
             _mtw_onTouchEnd_languageState(this, x, y);
@@ -3528,6 +3649,7 @@ MenuTouchWindow::MenuTouchWindow(int menuType) {
     this->scrollSlots = 0;
     this->field_0x230 = 0;
     this->field_0x234 = 0;
+    this->accelerometerCalibrationPending = 0;
     this->cutsceneMode = 0;
     this->previewStrings0 = 0;
     this->previewStrings1 = 0;

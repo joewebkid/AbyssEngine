@@ -77,7 +77,8 @@ public:
     uint8_t pad_0x171[2];
     uint8_t saveDialogShowing;
     uint8_t returnToMenuSubFlag;
-    uint8_t pad_0x175[2];
+    uint8_t pad_0x175;
+    uint8_t accelerometerCalibrationPending;
     uint8_t quitConfirmShowing;
     uint8_t returnToMenuShowing;
     uint8_t leaderboardDialogShowing;
