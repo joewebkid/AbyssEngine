@@ -581,7 +581,7 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
     // --- shield/armor/gamma bars ---
     {
         const int dividerYOffset = hud_layout_i32(0x1e8);
-        canvas->SetColor((unsigned) 0xffffffffu);
+        hud_canvas()->SetColor((unsigned) 0xffffffffu);
         Player *player = static_cast<Player *>(ego->player);
 
         const unsigned short *frameYAddress;
@@ -589,15 +589,17 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         if (this->hasShieldBar != 0) {
             int shp = player->getShieldHP();
             int frame = (shp < 2 || this->shieldHitFlash == 0) ? this->shieldFrameImage : this->shieldFrameHitImage;
-            canvas->DrawImage2D((unsigned) frame, this->field_0x43c, this->field_0x442);
-            canvas->DrawImage2D((unsigned) this->barDividerImage, this->field_0x43e,
-                                this->field_0x442 + dividerYOffset);
-            canvas->DrawImage2D((unsigned) this->shieldBarBgImage, this->field_0x440, this->field_0x44a);
+            hud_canvas()->DrawImage2D((unsigned) frame, this->field_0x43c, this->field_0x442);
+            hud_canvas()->DrawImage2D((unsigned) this->barDividerImage, this->field_0x43e,
+                                      this->field_0x442 + dividerYOffset);
+            hud_canvas()->DrawImage2D((unsigned) this->shieldBarBgImage, this->field_0x440,
+                                      this->field_0x44a);
             int rate = player->getShieldDamageRate();
             int w = static_cast<int>((static_cast<float>(rate) * 0.01f) *
                                      static_cast<float>(this->field_0x446));
-            canvas->DrawRegion2D((unsigned) this->shieldBarFillImage, 0, 0, w, this->field_0x44c,
-                                 0.0f, 0, 0, this->field_0x440, this->field_0x44a);
+            hud_canvas()->DrawRegion2D((unsigned) this->shieldBarFillImage, 0, 0, w,
+                                       this->field_0x44c, 0.0f, 0, 0,
+                                       this->field_0x440, this->field_0x44a);
             frameYAddress = &this->field_0x444;
             fillYAddress = &this->field_0x448;
         } else {
@@ -609,65 +611,65 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         const unsigned short fillY = *fillYAddress;
         int ahp = player->getArmorHP();
         int aframe = (ahp < 1) ? this->armorFrameLowImage : this->armorFrameImage;
-        canvas->DrawImage2D((unsigned) aframe, this->field_0x43c, frameY);
-        canvas->DrawImage2D((unsigned) this->barDividerImage, this->field_0x43e,
-                            frameY + dividerYOffset);
-        canvas->DrawImage2D((unsigned) this->armorBarBgImage, this->field_0x440, fillY);
+        hud_canvas()->DrawImage2D((unsigned) aframe, this->field_0x43c, frameY);
+        hud_canvas()->DrawImage2D((unsigned) this->barDividerImage, this->field_0x43e,
+                                  frameY + dividerYOffset);
+        hud_canvas()->DrawImage2D((unsigned) this->armorBarBgImage, this->field_0x440, fillY);
         int hrate = ego->getHullDamageRate();
         int hw = static_cast<int>((static_cast<float>(hrate) * 0.01f) *
                                   static_cast<float>(this->field_0x446));
-        canvas->DrawRegion2D((unsigned) this->armorBarFillImage, 0, 0, hw, this->field_0x44c,
-                             0.0f, 0, 0, this->field_0x440, fillY);
+        hud_canvas()->DrawRegion2D((unsigned) this->armorBarFillImage, 0, 0, hw,
+                                   this->field_0x44c, 0.0f, 0, 0,
+                                   this->field_0x440, fillY);
 
         if (this->hasArmorRegen != 0) {
             int arate = player->getArmorDamageRate();
             int aw = static_cast<int>((static_cast<float>(arate) * 0.01f) *
                                       static_cast<float>(this->field_0x446));
-            canvas->DrawRegion2D((unsigned) this->armorRegenFillImage, 0, 0, aw, this->field_0x44c,
-                                 0.0f, 0, 0, this->field_0x440, fillY);
+            hud_canvas()->DrawRegion2D((unsigned) this->armorRegenFillImage, 0, 0, aw,
+                                       this->field_0x44c, 0.0f, 0, 0,
+                                       this->field_0x440, fillY);
         }
 
-        Status *status = Status::gStatus;
-        Station *station = status != nullptr ? status->getStation() : nullptr;
-        if (station != nullptr) {
-            union {
-                int bits;
-                float value;
-            } gammaRate = {status->getGammaRayDamagePerSecond(
-                station->getIndex(), status->getCurrentCampaignMission())};
-            if (gammaRate.value > 0.0f) {
-                const int gammaFrameBase = static_cast<int>(this->field_0x444);
-                const int gammaFrameY = gammaFrameBase -
-                                        static_cast<int>(this->field_0x442) + gammaFrameBase;
-                const int gammaFillBase = static_cast<int>(this->field_0x448);
-                const int gammaFillY = gammaFillBase -
-                                       static_cast<int>(this->field_0x44a) + gammaFillBase;
-                canvas->DrawImage2D((unsigned) this->gammaFrameImage,
-                                    this->field_0x43c, gammaFrameY);
-                canvas->DrawImage2D((unsigned) this->barDividerImage, this->field_0x43e,
-                                    gammaFrameY + dividerYOffset);
-                canvas->DrawImage2D((unsigned) this->gammaBarBgImage,
-                                    this->field_0x440, gammaFillY);
-                const int gammaWidth = static_cast<int>(
-                    (static_cast<float>(player->getGammaHP()) / 100.0f) *
-                    static_cast<float>(this->field_0x446));
-                canvas->DrawRegion2D((unsigned) this->gammaBarFillImage,
-                                     0, 0, gammaWidth, this->field_0x44c,
-                                     0.0f, 0, 0, this->field_0x440, gammaFillY);
-            }
+        Status *status = Globals::status;
+        Station *station = status->getStation();
+        union {
+            int bits;
+            float value;
+        } gammaRate = {status->getGammaRayDamagePerSecond(
+            station->getIndex(), status->getCurrentCampaignMission())};
+        if (gammaRate.value > 0.0f) {
+            const int gammaFrameBase = static_cast<int>(this->field_0x444);
+            const int gammaFrameY = gammaFrameBase -
+                                    static_cast<int>(this->field_0x442) + gammaFrameBase;
+            const int gammaFillBase = static_cast<int>(this->field_0x448);
+            const int gammaFillY = gammaFillBase -
+                                   static_cast<int>(this->field_0x44a) + gammaFillBase;
+            hud_canvas()->DrawImage2D((unsigned) this->gammaFrameImage,
+                                      this->field_0x43c, gammaFrameY);
+            hud_canvas()->DrawImage2D((unsigned) this->barDividerImage, this->field_0x43e,
+                                      gammaFrameY + dividerYOffset);
+            hud_canvas()->DrawImage2D((unsigned) this->gammaBarBgImage,
+                                      this->field_0x440, gammaFillY);
+            const int gammaWidth = static_cast<int>(
+                (static_cast<float>(player->getGammaHP()) / 100.0f) *
+                static_cast<float>(this->field_0x446));
+            hud_canvas()->DrawRegion2D((unsigned) this->gammaBarFillImage,
+                                       0, 0, gammaWidth, this->field_0x44c,
+                                       0.0f, 0, 0, this->field_0x440, gammaFillY);
         }
     }
 
     if (ego->isInRocketControl()) {
         if ((this->touchFlagsLow & 8u) != 0 ||
             (this->secondaryFlashRemaining >= 1 && this->secondaryFlashPulse <= 0)) {
-            canvas->DrawImage2D(static_cast<unsigned int>(this->secondaryPressedImage),
-                                this->field_0x3ec, this->field_0x3ee);
+            hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->secondaryPressedImage),
+                                      this->field_0x3ec, this->field_0x3ee);
             if (this->secondaryFlashRemaining >= 1)
                 this->secondaryFlashPulse = 80;
         } else {
-            canvas->DrawImage2D(static_cast<unsigned int>(this->secondaryIdleImage),
-                                this->field_0x3ec, this->field_0x3ee);
+            hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->secondaryIdleImage),
+                                      this->field_0x3ec, this->field_0x3ee);
         }
         {
             if (Globals::options[0x11] == 0 ||
@@ -675,23 +677,23 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                  ego->isDockingToDockingPoint() || this->hackingGameActive != 0 ||
                  (ego->isDockedToDockingPoint() && ego->isInTurretMode() == 0)) &&
                     (Globals::options[0x11] == 0 || ego->isInTurretMode() == 0))
-                canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
-                                 static_cast<unsigned char>(0xff), static_cast<unsigned char>(0x32));
+                hud_canvas()->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                                       static_cast<unsigned char>(0xff), static_cast<unsigned char>(0x32));
             else
-                canvas->SetColor(static_cast<unsigned int>(0xffffffffu));
+                hud_canvas()->SetColor(static_cast<unsigned int>(0xffffffffu));
 
-            canvas->DrawImage2D(static_cast<unsigned int>(this->steeringBaseImage),
-                                this->field_0x42c, this->field_0x42e);
+            hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->steeringBaseImage),
+                                      this->field_0x42c, this->field_0x42e);
             if (Globals::options[0x11] != 0 && (this->touchFlagsLow & 0x20u) != 0) {
-                canvas->DrawImage2D(static_cast<unsigned int>(this->steeringKnobPressedImage),
-                                    this->field_0x41e, this->field_0x420, 0x11, 0x44);
+                hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->steeringKnobPressedImage),
+                                          this->field_0x41e, this->field_0x420, 0x11, 0x44);
             } else {
                 this->field_0x41e = this->field_0x424;
                 this->field_0x420 = this->field_0x426;
-                canvas->DrawImage2D(static_cast<unsigned int>(this->steeringKnobIdleImage),
-                                    this->field_0x41e, this->field_0x420, 0x11, 0x44);
+                hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->steeringKnobIdleImage),
+                                          this->field_0x41e, this->field_0x420, 0x11, 0x44);
             }
-            canvas->SetColor(initialColor);
+            hud_canvas()->SetColor(initialColor);
         }
         return;
     }
@@ -717,47 +719,47 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
 
         Radar *radar = static_cast<Radar *>(ego->field_0x14);
         if (this->hitDirectionLeftTimer >= 1) {
-            canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
-                             static_cast<unsigned char>(0xff),
-                             static_cast<unsigned char>(255 * this->hitDirectionLeftTimer / 300));
-            canvas->DrawImage2D(
+            hud_canvas()->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                                   static_cast<unsigned char>(0xff),
+                                   static_cast<unsigned char>(255 * this->hitDirectionLeftTimer / 300));
+            hud_canvas()->DrawImage2D(
                 static_cast<unsigned int>(horizontalImage),
                 (Globals::w >> 1) - radar->imageWidth,
                 Globals::h >> 1,
-                canvas->GetImage2DWidth(static_cast<unsigned int>(horizontalImage)),
-                canvas->GetImage2DHeight(static_cast<unsigned int>(horizontalImage)),
+                hud_canvas()->GetImage2DWidth(static_cast<unsigned int>(horizontalImage)),
+                hud_canvas()->GetImage2DHeight(static_cast<unsigned int>(horizontalImage)),
                 0x11, 0x41, 1);
             this->hitDirectionLeftTimer -= elapsed;
         }
         if (this->hitDirectionRightTimer >= 1) {
-            canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
-                             static_cast<unsigned char>(0xff),
-                             static_cast<unsigned char>(255 * this->hitDirectionRightTimer / 300));
-            canvas->DrawImage2D(
+            hud_canvas()->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                                   static_cast<unsigned char>(0xff),
+                                   static_cast<unsigned char>(255 * this->hitDirectionRightTimer / 300));
+            hud_canvas()->DrawImage2D(
                 static_cast<unsigned int>(horizontalImage),
                 (Globals::w >> 1) - radar->imageWidth,
                 Globals::h >> 1, 0x12, 0x42);
             this->hitDirectionRightTimer -= elapsed;
         }
         if (this->hitDirectionTopTimer >= 1) {
-            canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
-                             static_cast<unsigned char>(0xff),
-                             static_cast<unsigned char>(255 * this->hitDirectionTopTimer / 300));
-            canvas->DrawImage2D(
+            hud_canvas()->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                                   static_cast<unsigned char>(0xff),
+                                   static_cast<unsigned char>(255 * this->hitDirectionTopTimer / 300));
+            hud_canvas()->DrawImage2D(
                 static_cast<unsigned int>(verticalImage), Globals::w >> 1,
                 (Globals::h >> 1) - radar->imageHeight,
                 0x11, 0x14);
             this->hitDirectionTopTimer -= elapsed;
         }
         if (this->hitDirectionBottomTimer >= 1) {
-            canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
-                             static_cast<unsigned char>(0xff),
-                             static_cast<unsigned char>(255 * this->hitDirectionBottomTimer / 300));
-            canvas->DrawImage2D(
+            hud_canvas()->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                                   static_cast<unsigned char>(0xff),
+                                   static_cast<unsigned char>(255 * this->hitDirectionBottomTimer / 300));
+            hud_canvas()->DrawImage2D(
                 static_cast<unsigned int>(verticalImage), Globals::w >> 1,
                 (Globals::h >> 1) - radar->imageHeight,
-                canvas->GetImage2DWidth(static_cast<unsigned int>(verticalImage)),
-                canvas->GetImage2DHeight(static_cast<unsigned int>(verticalImage)),
+                hud_canvas()->GetImage2DWidth(static_cast<unsigned int>(verticalImage)),
+                hud_canvas()->GetImage2DHeight(static_cast<unsigned int>(verticalImage)),
                 0x21, 0x24, 2);
             this->hitDirectionBottomTimer -= elapsed;
         }
@@ -769,23 +771,23 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
              ego->isDockingToDockingPoint() || this->hackingGameActive != 0 ||
              (ego->isDockedToDockingPoint() && ego->isInTurretMode() == 0)) &&
                 (Globals::options[0x11] == 0 || ego->isInTurretMode() == 0))
-            canvas->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
-                             static_cast<unsigned char>(0xff), static_cast<unsigned char>(0x32));
+            hud_canvas()->SetColor(static_cast<unsigned char>(0xff), static_cast<unsigned char>(0xff),
+                                   static_cast<unsigned char>(0xff), static_cast<unsigned char>(0x32));
         else
-            canvas->SetColor(static_cast<unsigned int>(0xffffffffu));
+            hud_canvas()->SetColor(static_cast<unsigned int>(0xffffffffu));
 
-        canvas->DrawImage2D(static_cast<unsigned int>(this->steeringBaseImage),
-                            this->field_0x42c, this->field_0x42e);
+        hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->steeringBaseImage),
+                                  this->field_0x42c, this->field_0x42e);
         if (Globals::options[0x11] != 0 && (this->touchFlagsLow & 0x20u) != 0) {
-            canvas->DrawImage2D(static_cast<unsigned int>(this->steeringKnobPressedImage),
-                                this->field_0x41e, this->field_0x420, 0x11, 0x44);
+            hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->steeringKnobPressedImage),
+                                      this->field_0x41e, this->field_0x420, 0x11, 0x44);
         } else {
             this->field_0x41e = this->field_0x424;
             this->field_0x420 = this->field_0x426;
-            canvas->DrawImage2D(static_cast<unsigned int>(this->steeringKnobIdleImage),
-                                this->field_0x41e, this->field_0x420, 0x11, 0x44);
+            hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->steeringKnobIdleImage),
+                                      this->field_0x41e, this->field_0x420, 0x11, 0x44);
         }
-        canvas->SetColor(static_cast<unsigned int>(0xffffffffu));
+        hud_canvas()->SetColor(static_cast<unsigned int>(0xffffffffu));
     }
 
     // Cargo, passenger and timed-mission panel at Android Hud+0x438/+0x43a.

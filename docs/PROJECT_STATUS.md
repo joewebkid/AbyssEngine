@@ -86,6 +86,13 @@ The event dispatch/String lifetime follow-up in
 aggregate: `hudEvent` is now `76.3%` and `hudEventMedal` is `84.9%`. All 48 Hud
 functions average `91.0%`; linked-exact and byte-exact counts remain 27 and 19.
 
+The health/hit Canvas follow-up in
+`HUD_HEALTH_HIT_CANVAS_ARM_2026-08-23.md` raises `Hud::draw` from `50.0%` to
+`51.4%` at `3223/3025` target/base instructions. It removes non-native gamma
+guards and restores native Canvas reload boundaries across the health,
+rocket-control, directional-hit and steering cluster. The 48-function average
+and exact counts remain `91.0%`, 27 linked-exact and 19 byte-exact.
+
 ## Latest Hud Verification
 
 The `HUD_EVENT_PRESENTATION_ARM_2026-08-20.md` and
@@ -96,9 +103,11 @@ The `HUD_EVENT_PRESENTATION_ARM_2026-08-20.md` and
 `HUD_INIT_MENU_FRAME_LIFETIME_ARM_2026-08-23.md`,
 `HUD_CHALLENGE_ORBIT_PRESENTATION_SHAPE_ARM_2026-08-23.md`, and
 `HUD_TOUCH_KEY_LIFECYCLE_ARM_2026-08-23.md`, followed by
-`HUD_EVENT_DISPATCH_STRING_LIFETIME_ARM_2026-08-23.md`, and supersede the older
-inline Hud figures above. The 48-function Hud set now averages `91.0%`, with 27
-linked-exact and 19 byte-exact functions. Current focused scores include
+`HUD_EVENT_DISPATCH_STRING_LIFETIME_ARM_2026-08-23.md` and
+`HUD_HEALTH_HIT_CANVAS_ARM_2026-08-23.md`, and supersede the older inline Hud
+figures above. The 48-function Hud set now averages `91.0%`, with 27
+linked-exact and 19 byte-exact functions. `Hud::draw` is now `51.4%` at
+`3223/3025` target/base instructions. Other current focused scores include
 `drawEventQueue` 75.4%, `drawEventString` 90.1%, `drawChallengeModeScore`
 49.3%, `drawOrbitInformation` 56.3%, and `initHudMenu` 44.3% at `1245/1199`
 target/base instructions. The menu pass restores post-state cloak/jump action
