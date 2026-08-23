@@ -69,11 +69,11 @@ static inline void _mtw_ChoiceWindow_set(void *cw, void *s1, void *s2, bool b) {
 
 void _mtw_render3D_inner(void *obj);
 
-static inline int _mtw_Layout_OnTouchEnd(void *layout, int y, int x) {
+static inline int _mtw_Layout_OnTouchEnd(void *layout, int x, int y) {
     return ((Layout *) layout)->OnTouchEnd(x, y);
 }
 
-static inline int _mtw_ChoiceWindow_OnTouchEnd(void *cw, int y, int x = 0) {
+static inline int _mtw_ChoiceWindow_OnTouchEnd(void *cw, int x, int y) {
     return cw ? ((ChoiceWindow *) cw)->OnTouchEnd(x, y) : 0;
 }
 
@@ -169,6 +169,9 @@ static inline void _mtw_AppMgr_Quit(void *app) { ((AbyssEngine::ApplicationManag
 void _mtw_Globals_reportLeaderboards();
 
 extern int g_android_link_game_gp;
+extern int g_android_gp_is_linked;
+extern int g_android_show_achievements;
+extern int g_android_show_leaderboards;
 
 static constexpr int kMtwLanguageButtonIds[10] = {27, 28, 30, 29, 31, 32, 33, 35, 38, 39};
 static constexpr int kMtwLanguageTextIds[10] = {2, 1, 4, 3, 5, 7, 8, 14, 12, 13};
@@ -189,7 +192,7 @@ static inline GameRecord *_mtw_selectedPreviewRecord(MenuTouchWindow *window) {
     return records->data_[idx];
 }
 
-static inline int _mtw_onTouchEnd_listTail(MenuTouchWindow *window, int y, int x) {
+static inline int _mtw_onTouchEnd_listTail(MenuTouchWindow *window, int x, int y) {
     if ((unsigned int) (window->menuState - 1) <= 1) {
         int drag = window->dragVelocity;
         int nextOffset = window->scrollOffset + drag;
@@ -228,7 +231,7 @@ static inline int _mtw_onTouchEnd_listTail(MenuTouchWindow *window, int y, int x
     return 0;
 }
 
-static inline int _mtw_onTouchEnd_listState(void *self, int y, int x, int state) {
+static inline int _mtw_onTouchEnd_listState(void *self, int x, int y, int state) {
     auto *window = (MenuTouchWindow *) self;
     auto *choice = (ChoiceWindow *) window->choiceWindow;
     auto *raw = (uint8_t *) window;
@@ -236,7 +239,7 @@ static inline int _mtw_onTouchEnd_listState(void *self, int y, int x, int state)
     if (state == 1) {
         if (window->messageShowing != 0) {
             if (window->listStateSuppress != 0) return 0;
-            int choiceResult = _mtw_ChoiceWindow_OnTouchEnd(choice, y, x);
+            int choiceResult = _mtw_ChoiceWindow_OnTouchEnd(choice, x, y);
             if (raw[0x1da] != 0 ||
                 (choiceResult == 0 && choice->hasChoice() != 0 && window->loadGame(window->selectedRow) == 0)) {
                 return 0;
@@ -246,7 +249,7 @@ static inline int _mtw_onTouchEnd_listState(void *self, int y, int x, int state)
 
         auto *ok = (TouchButton *) window->okButton;
         if (ok == nullptr || ok->OnTouchEnd(x, y) == 0)
-            return _mtw_onTouchEnd_listTail(window, y, x);
+            return _mtw_onTouchEnd_listTail(window, x, y);
         if (_mtw_selectedPreviewRecord(window) == nullptr)
             return 0;
 
@@ -265,7 +268,7 @@ static inline int _mtw_onTouchEnd_listState(void *self, int y, int x, int state)
         if (window->messageShowing == 0) {
             auto *ok = (TouchButton *) window->okButton;
             if (ok == nullptr || ok->OnTouchEnd(x, y) == 0)
-                return _mtw_onTouchEnd_listTail(window, y, x);
+                return _mtw_onTouchEnd_listTail(window, x, y);
 
             int idx = window->selectedRow;
             if (idx == 0) {
@@ -290,7 +293,7 @@ static inline int _mtw_onTouchEnd_listState(void *self, int y, int x, int state)
             return 0;
 
         bool confirmOverwrite = window->saveDialogShowing != 0;
-        int choiceResult = _mtw_ChoiceWindow_OnTouchEnd(choice, y, x);
+        int choiceResult = _mtw_ChoiceWindow_OnTouchEnd(choice, x, y);
         if (!confirmOverwrite) {
             if (choiceResult != 0) return 0;
             window->messageShowing = 0;
@@ -311,16 +314,16 @@ static inline int _mtw_onTouchEnd_listState(void *self, int y, int x, int state)
     return 0;
 }
 
-static inline int _mtw_onTouchEnd_optionsState(void *self, int y, int x) {
+static inline int _mtw_onTouchEnd_optionsState(void *self, int x, int y) {
     auto *window = (MenuTouchWindow *) self;
     auto *choice = (ChoiceWindow *) window->choiceWindow;
     auto *raw = (uint8_t *) window;
     int state = window->menuState;
 
     if (state == 7) {
-        if (window->messageShowing != 0 && _mtw_ChoiceWindow_OnTouchEnd(choice, y, x) == 0) {
+        if (window->messageShowing != 0 && _mtw_ChoiceWindow_OnTouchEnd(choice, x, y) == 0) {
             window->messageShowing = 0;
-            return _mtw_onTouchEnd_listTail(window, y, x);
+            return _mtw_onTouchEnd_listTail(window, x, y);
         }
 
         if (window->optBtnD4 != nullptr && ((TouchButton *) window->optBtnD4)->OnTouchEnd(x, y) != 0)
@@ -376,12 +379,12 @@ static inline int _mtw_onTouchEnd_optionsState(void *self, int y, int x) {
             window->messageShowing = 1;
         }
 
-        return _mtw_onTouchEnd_listTail(window, y, x);
+        return _mtw_onTouchEnd_listTail(window, x, y);
     }
 
     if (state == 8) {
         if (window->messageShowing != 0 && raw[0x176] != 0 &&
-            _mtw_ChoiceWindow_OnTouchEnd(choice, y, x) == 0) {
+            _mtw_ChoiceWindow_OnTouchEnd(choice, x, y) == 0) {
             _mtw_options_update_accel_from_engine();
             raw[0x176] = 0;
             window->messageShowing = 0;
@@ -433,13 +436,13 @@ static inline int _mtw_onTouchEnd_optionsState(void *self, int y, int x) {
         if (mainSlider != nullptr)
             mainSlider->OnTouchEnd(x, y);
 
-        return _mtw_onTouchEnd_listTail(window, y, x);
+        return _mtw_onTouchEnd_listTail(window, x, y);
     }
 
     return 0;
 }
 
-static inline int _mtw_onTouchEnd_scrollState(void *self, int y, int x, int which) {
+static inline int _mtw_onTouchEnd_scrollState(void *self, int x, int y, int which) {
     auto *window = (MenuTouchWindow *) self;
     ScrollTouchWindow *sw = (which == 0xf0) ? (ScrollTouchWindow *) window->scrollWindowA : (ScrollTouchWindow *) window->scrollWindowB;
     if (sw != nullptr) {
@@ -511,10 +514,10 @@ static inline int _mtw_onTouchEnd_scrollState(void *self, int y, int x, int whic
             break;
         }
     }
-    return _mtw_onTouchEnd_listTail(window, y, x);
+    return _mtw_onTouchEnd_listTail(window, x, y);
 }
 
-static inline int _mtw_onTouchEnd_missionsState(void *self, int y, int x) {
+static inline int _mtw_onTouchEnd_missionsState(void *self, int x, int y) {
     auto *window = (MenuTouchWindow *) self;
     if (window->missionsWindow != nullptr) {
         ((MissionsWindow *) window->missionsWindow)->OnTouchEnd(x, y);
@@ -523,7 +526,7 @@ static inline int _mtw_onTouchEnd_missionsState(void *self, int y, int x) {
     return 0;
 }
 
-static inline int _mtw_onTouchEnd_cinematicState(void *self, int y, int x) {
+static inline int _mtw_onTouchEnd_cinematicState(void *self, int x, int y) {
     auto *window = (MenuTouchWindow *) self;
     if (Globals::iPad != 0 && Globals::iPadAssetsWithLowerRes == 0) {
         window->cinematicTouchState = 0;
@@ -550,7 +553,7 @@ static inline int _mtw_onTouchEnd_cinematicState(void *self, int y, int x) {
             _mtw_apply_ipad_control_coords(window);
         }
     }
-    return _mtw_onTouchEnd_listTail(window, y, x);
+    return _mtw_onTouchEnd_listTail(window, x, y);
 }
 
 static inline int _mtw_language_from_button_id(int id) {
@@ -574,7 +577,7 @@ static inline void _mtw_rebuild_sound_for_language_change(int previousLang, int 
     Globals::switch_to_target_setting = (app != nullptr && app->currentModuleId == 5) ? 1 : 2;
 }
 
-static inline int _mtw_onTouchEnd_languageState(void *self, int y, int x) {
+static inline int _mtw_onTouchEnd_languageState(void *self, int x, int y) {
     auto *window = (MenuTouchWindow *) self;
     auto *buttons = (Array<TouchButton *> *) window->buttonsB0;
     if (buttons == nullptr) return 0;
@@ -614,7 +617,7 @@ static inline int _mtw_onTouchEnd_languageState(void *self, int y, int x) {
     return 0;
 }
 
-static inline int _mtw_onTouchEnd_storeCreditsState(void *self, int y, int x) {
+static inline int _mtw_onTouchEnd_storeCreditsState(void *self, int x, int y) {
     auto *window = (MenuTouchWindow *) self;
     auto *buttons = (Array<TouchButton *> *) window->buttonsB8;
     if (buttons == nullptr) return 0;
@@ -640,7 +643,158 @@ static inline int _mtw_onTouchEnd_storeCreditsState(void *self, int y, int x) {
     return 0;
 }
 
-static inline int _mtw_onTouchEnd_genericButtons(void *self, int y, int x, int fieldOff) {
+static inline void _mtw_show_cargo_summary(MenuTouchWindow *window) {
+    Ship *ship = Globals::status != nullptr ? Globals::status->getShip() : nullptr;
+    Array<Item *> *cargo = ship != nullptr ? ship->getCargo() : nullptr;
+    String cargoText;
+
+    if (cargo == nullptr || cargo->size() == 0) {
+        cargoText = _mtw_text_copy(286);
+    } else {
+        int previousType = (*cargo)[0] != nullptr ? (*cargo)[0]->getType() : -1;
+        for (unsigned int i = 0; i < cargo->size(); ++i) {
+            Item *item = (*cargo)[i];
+            if (item == nullptr) continue;
+
+            cargoText += _mtw_text_copy(item->getIndex() + 1274);
+            if (item->getAmount() >= 2)
+                cargoText += String(" (") + String(item->getAmount()) + String(")");
+            cargoText += String("\n");
+
+            if (item->getType() != previousType) {
+                cargoText += String("\n");
+                previousType = item->getType();
+            }
+        }
+    }
+
+    int currentLoad = ship != nullptr ? ship->getCurrentLoad() : 0;
+    int maxLoad = ship != nullptr ? ship->getMaxLoad() : 0;
+    String loadText = String(currentLoad) + String(" / ") + String(maxLoad) + String("t");
+    String title = _mtw_text_copy(166) + String(" ") + loadText;
+    if (window->choiceWindow != nullptr)
+        window->choiceWindow->set(title, cargoText, false);
+    window->messageShowing = 1;
+}
+
+static inline void _mtw_show_google_link_required(MenuTouchWindow *window) {
+    if (window->choiceWindow != nullptr)
+        window->choiceWindow->set(String("No link with Google+"), _mtw_text_copy(3398), true);
+    window->genericConfirmB = 1;
+    window->messageShowing = 1;
+}
+
+static inline int _mtw_onTouchEnd_mainState(MenuTouchWindow *window, int x, int y) {
+    auto *buttons = (Array<TouchButton *> *) window->buttons;
+    if (buttons != nullptr) {
+        for (unsigned int i = 0; i < buttons->size(); ++i) {
+            TouchButton *button = (*buttons)[i];
+            if (button == nullptr || button->OnTouchEnd(x, y) == 0 || button->field_0x4 != 0)
+                continue;
+
+            switch (button->field_0x0) {
+                case 0:
+                    window->menuState = 17;
+                    break;
+                case 1:
+                    window->loadPreviewRecords();
+                    window->selectedRow = 0;
+                    ((uint8_t *) window)[0x1dc] = 0;
+                    window->createRecordButtons(false);
+                    window->menuState = 1;
+                    break;
+                case 2:
+                    window->loadPreviewRecords();
+                    window->selectedRow = 0;
+                    ((uint8_t *) window)[0x1dc] = 0;
+                    window->createRecordButtons(true);
+                    window->menuState = 2;
+                    break;
+                case 3:
+                    window->menuState = 3;
+                    break;
+                case 4:
+                    window->menuState = 4;
+                    break;
+                case 6:
+                    if (window->choiceWindow != nullptr)
+                        window->choiceWindow->set(_mtw_text_copy(523), true);
+                    window->quitConfirmShowing = 1;
+                    window->messageShowing = 1;
+                    break;
+                case 10:
+                    window->menuState = 9;
+                    if (window->missionsWindow != nullptr) {
+                        window->missionsWindow->init();
+                    } else {
+                        window->missionsWindow = new MissionsWindow();
+                    }
+                    break;
+                case 11:
+                    window->loadGame(Globals::lastRecordWritten);
+                    break;
+                case 12:
+                    window->menuState = 10;
+                    _mtw_show_cargo_summary(window);
+                    break;
+                case 18:
+                    window->skipCutsceneRequested = 1;
+                    return 1;
+                case 19:
+                    window->menuState = 13;
+                    break;
+                case 25:
+                    window->menuState = 14;
+                    break;
+                case 107:
+                    window->menuState = 18;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    auto *auxiliary = (Array<TouchButton *> *) window->scrollEntries;
+    if (auxiliary != nullptr) {
+        for (unsigned int i = 0; i < auxiliary->size(); ++i) {
+            TouchButton *button = (*auxiliary)[i];
+            if (button == nullptr || button->field_0x4 != 0)
+                continue;
+
+            int id = button->field_0x0;
+            if (id == 23 || id == 24) {
+                if (button->OnTouchEnd(x, y) == 0) continue;
+                if (!g_android_gp_is_linked) {
+                    _mtw_show_google_link_required(window);
+                } else if (id == 23) {
+                    g_android_show_leaderboards = 1;
+                } else {
+                    g_android_show_achievements = 1;
+                }
+            } else if (id == 53) {
+                if (button->OnTouchEnd(x, y) == 0) continue;
+                if (auto *appData = (MtwAppData *) _mtw_AppMgr_GetApplicationData()) {
+                    appData->dlcMenuAckFlag = 0;
+                    appData->dlcMenuRequestFlag = 1;
+                }
+                if (window->choiceWindow != nullptr)
+                    window->choiceWindow->set(_mtw_text_copy(71), _mtw_text_copy(425));
+                window->messageShowing = 1;
+                window->dlcMessageShowing = 1;
+            } else if (id == 17 && button->OnTouchEnd(x, y) != 0) {
+                if (window->choiceWindow != nullptr)
+                    window->choiceWindow->set(_mtw_text_copy(53), true);
+                window->returnToMenuShowing = 1;
+                window->messageShowing = 1;
+            }
+        }
+    }
+
+    return _mtw_onTouchEnd_listTail(window, x, y);
+}
+
+static inline int _mtw_onTouchEnd_genericButtons(void *self, int x, int y, int fieldOff) {
     auto *window = (MenuTouchWindow *) self;
     Array<TouchButton *> *btnArr = nullptr;
     if (fieldOff == 0x4) btnArr = (Array<TouchButton *> *) window->buttons;
@@ -1081,7 +1235,8 @@ static inline void _mtw_build_footer_button(MenuTouchWindow *window, int id, int
 
 static inline void _mtw_build_social_buttons(MenuTouchWindow *window) {
     auto *buttons = (Array<TouchButton *> *) window->buttons;
-    if (buttons == nullptr) return;
+    auto *auxiliary = (Array<TouchButton *> *) window->scrollEntries;
+    if (buttons == nullptr || auxiliary == nullptr) return;
 
     Vector base{};
     if (buttons->size() > 0 && buttons->data_[0] != nullptr)
@@ -1094,12 +1249,12 @@ static inline void _mtw_build_social_buttons(MenuTouchWindow *window) {
     auto *leaderboards = new TouchButton(String("Leaderboards"), 17, leadX, y, 0x44);
     leaderboards->field_0x0 = 23;
     leaderboards->field_0x4 = 0;
-    _mtw_add_button_ptr(buttons, leaderboards);
+    _mtw_add_button_ptr(auxiliary, leaderboards);
 
     auto *achievements = new TouchButton(String("Achievements"), 17, achX, y, 0x44);
     achievements->field_0x0 = 24;
     achievements->field_0x4 = 0;
-    _mtw_add_button_ptr(buttons, achievements);
+    _mtw_add_button_ptr(auxiliary, achievements);
 }
 
 static inline void _mtw_build_policy_buttons(MenuTouchWindow *window) {
@@ -1200,8 +1355,12 @@ static inline void _mtw_build_main_buttons(MenuTouchWindow *window, int menuType
     }
 
     Layout *layout = (Layout *) Globals::layout;
-    if (layout != nullptr && layout->field_0x285 != 0)
-        _mtw_build_footer_button(window, 17, 33);
+    if (layout != nullptr && layout->field_0x285 != 0) {
+        auto *auxiliary = (Array<TouchButton *> *) window->scrollEntries;
+        int x = Globals::w - layout->field_0x2c;
+        int y = Globals::h - layout->field_0x2c;
+        _mtw_add_button_ptr(auxiliary, _mtw_new_text_button(17, 33, x, y, 0x22));
+    }
 }
 
 static inline void _mtw_build_options_buttons(MenuTouchWindow *window, bool includeReset) {
@@ -1600,7 +1759,7 @@ float MenuTouchWindow::getRelativeScrollStartPos() {
     return -(float) offset / (float) this->pageHeight;
 }
 
-int MenuTouchWindow::OnTouchEnd(int y, int x, void *touchId) {
+int MenuTouchWindow::OnTouchEnd(int x, int y, void *touchId) {
     if (this->menuState == 0xb && touchId != 0) {
         if (this->cinematicTouchIdA == touchId)
             this->cinematicTouchIdA = 0;
@@ -1625,7 +1784,7 @@ int MenuTouchWindow::OnTouchEnd(int y, int x, void *touchId) {
         if (this->messageShowing != 0) {
             void *cw = this->choiceWindow;
             if (this->returnToMenuShowing != 0) {
-                int r = _mtw_ChoiceWindow_OnTouchEnd(cw, y);
+                int r = _mtw_ChoiceWindow_OnTouchEnd(cw, x, y);
                 if (r == 1) {
                     this->returnToMenuShowing = 0;
                     this->messageShowing = 0;
@@ -1635,7 +1794,7 @@ int MenuTouchWindow::OnTouchEnd(int y, int x, void *touchId) {
                 return 0;
             }
             if (this->genericConfirmB != 0) {
-                int r = _mtw_ChoiceWindow_OnTouchEnd(cw, y);
+                int r = _mtw_ChoiceWindow_OnTouchEnd(cw, x, y);
                 if (r != 1) {
                     if (r != 0) return 0;
                     g_android_link_game_gp = 1;
@@ -1645,7 +1804,7 @@ int MenuTouchWindow::OnTouchEnd(int y, int x, void *touchId) {
                 return 0;
             }
             if (this->quitConfirmShowing != 0) {
-                int r = _mtw_ChoiceWindow_OnTouchEnd(cw, y);
+                int r = _mtw_ChoiceWindow_OnTouchEnd(cw, x, y);
                 if (r == 1) {
                     this->quitConfirmShowing = 0;
                     this->messageShowing = 0;
@@ -1662,83 +1821,79 @@ int MenuTouchWindow::OnTouchEnd(int y, int x, void *touchId) {
                 return 0;
             }
             if (this->leaderboardDialogShowing != 0) {
-                unsigned int r = (unsigned int) _mtw_ChoiceWindow_OnTouchEnd(cw, y);
+                unsigned int r = (unsigned int) _mtw_ChoiceWindow_OnTouchEnd(cw, x, y);
                 if (r < 2) _mtw_Globals_reportLeaderboards();
                 this->leaderboardDialogShowing = 0;
                 this->messageShowing = 0;
             }
             if (this->dlcMessageShowing != 0) {
-                _mtw_ChoiceWindow_OnTouchEnd(cw, y);
+                _mtw_ChoiceWindow_OnTouchEnd(cw, x, y);
                 this->messageShowing = 0;
                 return 0;
             }
             if (this->dlcErrorDialogShowing != 0 || this->dlcResultDialogShowing != 0) {
-                _mtw_ChoiceWindow_OnTouchEnd(cw, y);
+                _mtw_ChoiceWindow_OnTouchEnd(cw, x, y);
                 this->messageShowing = 0;
                 return 0;
             }
             if (this->loadFailedDialogShowing != 0) {
                 this->loadFailedDialogShowing = 0;
-            } else if (this->genericConfirmA != 0 && _mtw_ChoiceWindow_OnTouchEnd(cw, y) == 0) {
+            } else if (this->genericConfirmA != 0 && _mtw_ChoiceWindow_OnTouchEnd(cw, x, y) == 0) {
                 this->messageShowing = 0;
                 this->genericConfirmA = 0;
                 return 0;
-            } else if (this->supernovaMessageShowing != 0 && _mtw_ChoiceWindow_OnTouchEnd(cw, y) == 0) {
+            } else if (this->supernovaMessageShowing != 0 && _mtw_ChoiceWindow_OnTouchEnd(cw, x, y) == 0) {
                 this->supernovaMessageShowing = 0;
-            } else if (this->supernovaPurchaseDialogShowing != 0 && _mtw_ChoiceWindow_OnTouchEnd(cw, y) == 0) {
+            } else if (this->supernovaPurchaseDialogShowing != 0 && _mtw_ChoiceWindow_OnTouchEnd(cw, x, y) == 0) {
                 this->supernovaPurchaseDialogShowing = 0;
             } else {
-                _mtw_ChoiceWindow_OnTouchEnd(cw, y);
+                _mtw_ChoiceWindow_OnTouchEnd(cw, x, y);
             }
             this->messageShowing = 0;
             return 0;
         }
-        if (_mtw_onTouchEnd_genericButtons(this, y, x, 0x4) != 0 &&
-            this->skipCutsceneRequested != 0) {
-            return 1;
-        }
-        return _mtw_onTouchEnd_listTail(this, y, x);
+        return _mtw_onTouchEnd_mainState(this, x, y);
     }
 
     switch (state) {
         case 1:
         case 2:
-            _mtw_onTouchEnd_listState(this, y, x, state);
+            _mtw_onTouchEnd_listState(this, x, y, state);
             break;
         case 3:
-            _mtw_onTouchEnd_genericButtons(this, y, x, 0xac);
+            _mtw_onTouchEnd_genericButtons(this, x, y, 0xac);
             break;
         case 4:
-            _mtw_onTouchEnd_scrollState(this, y, x, 0xf0);
+            _mtw_onTouchEnd_scrollState(this, x, y, 0xf0);
             break;
         case 7:
         case 8:
-            _mtw_onTouchEnd_optionsState(this, y, x);
+            _mtw_onTouchEnd_optionsState(this, x, y);
             break;
         case 9:
-            _mtw_onTouchEnd_missionsState(this, y, x);
+            _mtw_onTouchEnd_missionsState(this, x, y);
             break;
         case 0xb:
-            _mtw_onTouchEnd_cinematicState(this, y, x);
+            _mtw_onTouchEnd_cinematicState(this, x, y);
             break;
         case 0xc:
-            _mtw_onTouchEnd_genericButtons(this, y, x, 0xb4);
+            _mtw_onTouchEnd_genericButtons(this, x, y, 0xb4);
             break;
         case 0xd:
-            _mtw_onTouchEnd_genericButtons(this, y, x, 0x4);
+            _mtw_onTouchEnd_genericButtons(this, x, y, 0x4);
             break;
         case 0xe:
-            _mtw_onTouchEnd_languageState(this, y, x);
+            _mtw_onTouchEnd_languageState(this, x, y);
             break;
         case 0xf:
         case 0x10:
-            _mtw_onTouchEnd_scrollState(this, y, x, 0xf4);
+            _mtw_onTouchEnd_scrollState(this, x, y, 0xf4);
             break;
         case 0x11:
-            _mtw_onTouchEnd_storeCreditsState(this, y, x);
+            _mtw_onTouchEnd_storeCreditsState(this, x, y);
             break;
         default:
-            _mtw_onTouchEnd_genericButtons(this, y, x, 0x4);
+            _mtw_onTouchEnd_genericButtons(this, x, y, 0x4);
             break;
     }
     return 0;

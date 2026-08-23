@@ -94,11 +94,10 @@ also reinitializes the current star-system light. If the menu remains open and
 free-camera mode is active while cinematic mode is false, Android disables
 cinematic mode and clears the same HUD touch field.
 
-The native call immediately following `MenuTouchWindow::isMakingScreenshot`
-does not visibly reload both coordinate registers before
-`MGame::freeCamTouchEnd`. The C++ path retains the real touch coordinates for
-functional safety. Exact register lifetime at this boundary remains a
-source-shape question and is not presented as byte-matched.
+The follow-up audit in `MENUTOUCH_MAIN_DISPATCH_FREECAM_ARM_2026-08-23.md`
+resolves this boundary. Native `MGame::freeCamTouchEnd` does not consume either
+coordinate argument, so the compiler intentionally leaves `r1/r2` unreloaded;
+only `this`, touch ID, and stored drag deltas are live.
 
 ## Verification
 
@@ -120,9 +119,7 @@ source-backed behavior gain, not an ARM byte-match claim.
 
 1. Audit the complete `MGame::OnTouchEnd` block order and stack/local lifetime
    instead of tuning isolated fuzzy matches.
-2. Resolve the free-camera call-register lifetime from native disassembly.
-3. Recover the remaining `MenuTouchWindow` main-state button dispatch so the
-   skip producer is embedded in the full native loop rather than a partial
-   generic helper.
-4. Audit the full packed `Globals::options` record before assigning semantic
+2. Continue `MenuTouchWindow::OnTouchEnd` whole-switch String and stack-lifetime
+   work after the main dispatcher recovered by the follow-up pass.
+3. Audit the full packed `Globals::options` record before assigning semantic
    names to every neighboring byte and float.

@@ -41,7 +41,7 @@ public:
     Array<void *> *buttonsB4;
     Array<void *> *buttonsB8;
     void *previewRecords;
-    Array<void *> *scrollEntries;
+    Array<void *> *scrollEntries; // +0xc0: shared auxiliary/social/scroll buttons
     TouchButton *okButton;
     TouchButton *backButton;
     TouchButton *optBtnCC;
@@ -153,7 +153,7 @@ public:
 
     float getRelativeScrollStartPos();
 
-    int OnTouchEnd(int y, int x, void *touchId);
+    int OnTouchEnd(int x, int y, void *touchId);
 
     void createRecordButtons(bool inSaveMode);
 
