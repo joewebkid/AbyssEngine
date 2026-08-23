@@ -16,7 +16,10 @@ class GameRecord;
 
 class MenuTouchWindow {
 public:
-    uint8_t cinematicSteerActive;
+    union {
+        uint8_t cinematicSteerActive;
+        uint8_t skipCutsceneRequested;
+    };
     uint8_t pendingActivate;
     uint8_t pad_0x2[2];
     Array<void *> *buttons;

@@ -652,6 +652,8 @@ static inline int _mtw_onTouchEnd_genericButtons(void *self, int y, int x, int f
         for (int i = 0; i < btnArr->size(); i++) {
             TouchButton *btn = (*btnArr)[i];
             if (btn != nullptr && btn->OnTouchEnd(x, y) != 0) {
+                if (window->menuState == 0 && btn->field_0x0 == 18 && btn->field_0x4 == 0)
+                    window->skipCutsceneRequested = 1;
                 return 1;
             }
         }
@@ -1691,7 +1693,11 @@ int MenuTouchWindow::OnTouchEnd(int y, int x, void *touchId) {
             this->messageShowing = 0;
             return 0;
         }
-        return _mtw_onTouchEnd_genericButtons(this, y, x, 0x4), 0;
+        if (_mtw_onTouchEnd_genericButtons(this, y, x, 0x4) != 0 &&
+            this->skipCutsceneRequested != 0) {
+            return 1;
+        }
+        return _mtw_onTouchEnd_listTail(this, y, x);
     }
 
     switch (state) {
@@ -3355,7 +3361,7 @@ MenuTouchWindow::MenuTouchWindow(int menuType) {
     this->buttonsB8 = 0;
     this->buttonsB0 = 0;
     this->buttonsB4 = 0;
-    this->cinematicSteerActive = 0;
+    this->skipCutsceneRequested = 0;
     this->field_0x120 = -1;
     this->selectedRow = 0;
     this->field_0x1c4 = 0;

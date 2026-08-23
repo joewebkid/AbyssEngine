@@ -1091,18 +1091,24 @@ void MGame::UseKhadorDrive() {
 }
 
 
-static int g_initParticleFlag;
-
-// g_initParticleFlag holds a pointer (as int) to a small particle-system global;
-// byte at +0xf is a "particles enabled" flag. Modeled here for named access.
-struct ParticleSystemGlobal {
+// Android stores the related effects controls in the packed Globals::options
+// record: word_2181F7 is options+0xf and flt_218210 is options+0x28.
+struct MGameOptionsView {
     uint8_t _pad0[0xf];
-    uint8_t particlesEnabled;  // offset 0xf
+    uint8_t fullEffectsEnabled;  // offset 0xf
+    uint8_t _pad10[0x18];
+    float particleQuality;       // offset 0x28
 };
 #if __SIZEOF_POINTER__ == 4
-static_assert(offsetof(ParticleSystemGlobal, particlesEnabled) == 0xf,
-              "ParticleSystemGlobal::particlesEnabled @ 0xf");
+static_assert(offsetof(MGameOptionsView, fullEffectsEnabled) == 0xf,
+              "MGameOptionsView::fullEffectsEnabled @ 0xf");
+static_assert(offsetof(MGameOptionsView, particleQuality) == 0x28,
+              "MGameOptionsView::particleQuality @ 0x28");
 #endif
+
+static MGameOptionsView *mgame_options() {
+    return reinterpret_cast<MGameOptionsView *>(Globals::options);
+}
 
 static int *g_initEngineSnd;
 
@@ -1340,9 +1346,8 @@ int MGame::OnInitialize() {
         }
 
         self->field_0xc8 = 0;
-        bool renderParticles =
-            ((ParticleSystemGlobal *) (intptr_t) g_initParticleFlag)->particlesEnabled != 0;
-        if (!renderParticles) {
+        const bool fullEffectsEnabled = mgame_options()->fullEffectsEnabled != 0;
+        if (!fullEffectsEnabled) {
             if (Status::gStatus->getCurrentCampaignMission() > 1) {
                 Vec3 p = self->player->getPosition();
                 (void) p;
@@ -1362,7 +1367,9 @@ int MGame::OnInitialize() {
 
         self->level->getStarSystem();
         ((StarSystem *) (0))->initLight();
-        self->level->enableParticleEffects(true, renderParticles);
+        const float particleQuality = mgame_options()->particleQuality;
+        self->level->enableParticleEffects(particleQuality >= 0.25f,
+                                           particleQuality > 0.7f);
 
         Status::gStatus->getShip();
         float fireRate = (float) Status::gStatus->getShip()->getFireRateFactor();
@@ -1545,10 +1552,6 @@ static void mgame_open_hud_menu(MGame *self, int menuType) {
     self->hud->initHudMenu(menuType, self->level);
 }
 
-static uint8_t &mgame_pause_music_disabled_flag(MGame *self) {
-    return reinterpret_cast<uint8_t *>(&self->field_0x1a4)[0];
-}
-
 static void mgame_open_pause_menu(MGame *self) {
     self->pauseSounds();
     if (self->pauseOpen != 0) {
@@ -1567,7 +1570,7 @@ static void mgame_open_pause_menu(MGame *self) {
 
     FModSound *sound = Globals::sound;
     self->pauseSnapshot = self->pauseOpen;
-    mgame_pause_music_disabled_flag(self) =
+    self->pauseMusicCategoryDisabled =
         sound != nullptr ? static_cast<uint8_t>(sound->IsCategoryEnabled(2) ^ 1) : 0;
     if (sound != nullptr)
         sound->pauseAllPlaying();
@@ -1708,8 +1711,7 @@ static void mgame_handle_menu_touch_end(MGame *self, int x, int y, void *touchId
     if (self->freeCamMode != 0) {
         MGameAppData *applicationData =
             reinterpret_cast<MGameAppData *>(static_cast<intptr_t>(ApplicationManager_GetApplicationData()));
-        if (applicationData == nullptr || applicationData->modalActive != 0 ||
-            applicationData->transitionActive != 0)
+        if (applicationData->modalActive != 0 || applicationData->transitionActive != 0)
             return;
         if (menuWindow->isShowingMessage() == 0 && !menuWindow->isMakingScreenshot())
             self->freeCamTouchEnd(x, y, touchId);
@@ -1719,6 +1721,32 @@ static void mgame_handle_menu_touch_end(MGame *self, int x, int y, void *touchId
         self->pauseSnapshot = 0;
         self->pauseOpen = 0;
         self->resumeSounds();
+
+        const bool categoryEnabled = Globals::sound->IsCategoryEnabled(2) != 0;
+        if (categoryEnabled && self->pauseMusicCategoryDisabled == 0) {
+            self->player->ResumeEngineSound();
+            Array<KIPlayer *> *enemies = self->level->getEnemies();
+            if (enemies != nullptr) {
+                for (unsigned int i = 0; i < enemies->size(); ++i)
+                    (*enemies)[i]->ResumeEngineSound();
+            }
+        } else if (!categoryEnabled && self->pauseMusicCategoryDisabled == 0) {
+            if (self->player != nullptr)
+                self->player->StopEngineSound();
+            Array<KIPlayer *> *enemies = self->level->getEnemies();
+            if (enemies != nullptr) {
+                for (unsigned int i = 0; i < enemies->size(); ++i)
+                    (*enemies)[i]->StopEngineSound();
+            }
+        } else {
+            self->player->PlayEngineSound();
+            Array<KIPlayer *> *enemies = self->level->getEnemies();
+            if (enemies != nullptr) {
+                for (unsigned int i = 0; i < enemies->size(); ++i)
+                    (*enemies)[i]->PlayEngineSound();
+            }
+        }
+
         self->menuTouchOpen = 0;
         self->touch0Id = 0;
         self->touch1Id = 0;
@@ -1727,12 +1755,41 @@ static void mgame_handle_menu_touch_end(MGame *self, int x, int y, void *touchId
         StarSystem *starSystem = self->level->getStarSystem();
         if (starSystem != nullptr)
             starSystem->initLight();
+
+        const float particleQuality = mgame_options()->particleQuality;
+        self->level->enableParticleEffects(particleQuality > 0.0f, particleQuality > 0.7f);
+
+        if (menuWindow->skipCutsceneRequested != 0) {
+            menuWindow->skipCutsceneRequested = 0;
+            const int campaignMission = Status::gStatus->getCurrentCampaignMission();
+            const unsigned int skipIndex = static_cast<unsigned int>(campaignMission - 154);
+            if (skipIndex < 5 && ((1u << skipIndex) & 0x19u) != 0) {
+                self->levelScript->skipCutscene();
+            } else if (campaignMission == 1) {
+                Globals::switch_to_target_setting = 0;
+                self->active = 0;
+                static_cast<ApplicationManager *>(Globals::appManager)
+                        ->SetCurrentApplicationModule(5);
+            } else if (campaignMission == 0) {
+                Status::gStatus->nextCampaignMission(true);
+                Status::gStatus->setKills(3);
+                Globals::switch_to_target_setting = 1;
+                self->active = 0;
+                static_cast<ApplicationManager *>(Globals::appManager)
+                        ->SetCurrentApplicationModule(2);
+                Level::initStreamOutPosition = 0;
+            }
+        }
+        self->freeCamMode = 0;
     }
 
-    if (self->freeCamMode == 0 && menuWindow->inCinematicMode()) {
+    if (menuWindow->inCinematicMode()) {
         self->setCinematicMode(true);
         self->hudTouchFlags = 0;
-    } else if (self->freeCamMode != 0 && !menuWindow->inCinematicMode()) {
+        StarSystem *starSystem = self->level->getStarSystem();
+        if (starSystem != nullptr)
+            starSystem->initLight();
+    } else if (self->freeCamMode != 0) {
         self->setCinematicMode(false);
         self->hudTouchFlags = 0;
     }

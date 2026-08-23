@@ -165,7 +165,13 @@ public:
     int field_0x198;
     int field_0x19c;
     int field_0x1a0;
-    uint16_t field_0x1a4;
+    union {
+        uint16_t field_0x1a4;
+        struct {
+            uint8_t pauseMusicCategoryDisabled;
+            uint8_t field_0x1a5;
+        };
+    };
     uint8_t pauseSnapshot;
     uint8_t _pad_0x1a7[1];
     float flFastForwardFactor;
@@ -347,6 +353,8 @@ static_assert(offsetof(MGame, maneuverStartX) == 384, "MGame::maneuverStartX @ 3
 static_assert(offsetof(MGame, maneuverStartY) == 388, "MGame::maneuverStartY @ 388");
 static_assert(offsetof(MGame, field_0x19c) == 412, "MGame::field_0x19c @ 412");
 static_assert(offsetof(MGame, field_0x1a0) == 416, "MGame::field_0x1a0 @ 416");
+static_assert(offsetof(MGame, pauseMusicCategoryDisabled) == 420,
+              "MGame::pauseMusicCategoryDisabled @ 420");
 static_assert(offsetof(MGame, pauseSnapshot) == 422, "MGame::pauseSnapshot @ 422");
 static_assert(offsetof(MGame, flFastForwardFactor) == 424, "MGame::flFastForwardFactor @ 424");
 static_assert(offsetof(MGame, field_0x1ac) == 428, "MGame::field_0x1ac @ 428");
