@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-08-22
+Last reviewed: 2026-08-23
 
 ## How To Read Progress
 
@@ -75,6 +75,12 @@ initial MGame/HUD, Radar, and resource-chain comparison is recorded in
 | Weapons | `Gun`, `AbstractGun`, `SpriteGun`, `BeamGun`, and related runtime helper work have focused evidence. | Constructors, vtables, and bodies remain under ARM audit. |
 | Resource loading | AEM/AEI loader and resource-table relationships are documented from native call paths. | Format understanding is not a claim that all resource paths are finished. |
 
+The touch/key lifecycle follow-up in
+`HUD_TOUCH_KEY_LIFECYCLE_ARM_2026-08-23.md` supersedes the Hud aggregate in the
+table above: `touchBegin`, `touchMove` and `touchEnd` are now `87.0%`, `97.1%`
+and `97.8%`; `closeHudMenu` is `100%` linked-exact. All 48 Hud functions average
+`90.7%`, with 27 linked-exact and 19 byte-exact.
+
 ## Latest Hud Verification
 
 The `HUD_EVENT_PRESENTATION_ARM_2026-08-20.md` and
@@ -83,8 +89,9 @@ The `HUD_EVENT_PRESENTATION_ARM_2026-08-20.md` and
 `HUD_INIT_MENU_RESOURCE_CHAIN_ARM_2026-08-22.md` and
 `HUD_INIT_MENU_LAYOUT_RECURRENCE_ARM_2026-08-22.md`, then
 `HUD_INIT_MENU_FRAME_LIFETIME_ARM_2026-08-23.md`,
-`HUD_CHALLENGE_ORBIT_PRESENTATION_SHAPE_ARM_2026-08-23.md`, and supersede the older
-inline Hud figures above. The 48-function Hud set now averages `89.6%`, with 26
+`HUD_CHALLENGE_ORBIT_PRESENTATION_SHAPE_ARM_2026-08-23.md`, and
+`HUD_TOUCH_KEY_LIFECYCLE_ARM_2026-08-23.md`, and supersede the older inline Hud
+figures above. The 48-function Hud set now averages `90.7%`, with 27
 linked-exact and 19 byte-exact functions. Current focused scores include
 `drawEventQueue` 75.4%, `drawEventString` 90.1%, `drawChallengeModeScore`
 49.3%, `drawOrbitInformation` 56.3%, and `initHudMenu` 44.3% at `1245/1199`
@@ -98,6 +105,11 @@ frame-lifetime pass then restores the Android 160-byte dynamic alignment,
 iPad anchor operand order and post-translate button reloads. The remaining
 mode-1/mode-2 shared String/action area is still allocated at `sp+0x70` rather
 than the native `sp+0x40`, so no byte-match is claimed.
+
+The touch/key follow-up restores the original moved-touch Y coordinate and the
+native key-slot cleanup lifecycle. Its focused scores are `87.0%` for
+`touchBegin`, `97.1%` for `touchMove`, `97.8%` for `touchEnd`, and linked-exact
+`100%` for `closeHudMenu`.
 
 ## Priorities
 

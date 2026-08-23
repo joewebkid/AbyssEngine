@@ -423,13 +423,13 @@ uint8_t Hud::cargoFull() {
 }
 
 unsigned int Hud::touchEnd(unsigned int a, unsigned int b, void *key) {
-    int i = 0;
     unsigned int ret = 0;
-    for (; i != 0x19; i = i + 1) {
-        if ((*this->keyArray)[i] == key) {
+    for (int i = 0; i != 0x19; i = i + 1) {
+        void **keys = this->keyArray->data_;
+        if (keys[i] == key) {
             ret = (unsigned int) this->elementBits[i];
             this->touchFlags = this->touchFlags & ~ret;
-            (*this->keyArray)[i] = 0;
+            keys[i] = nullptr;
             this->elementBits[i] = 0;
         }
     }
@@ -461,7 +461,7 @@ void Hud::releaseAllKeys() {
 
 void Hud::closeHudMenu() {
     if (this->menuButtons != 0) {
-        ArrayReleaseClasses(*this->menuButtons); ArrayRemoveAll(*(this->menuButtons));
+        ArrayReleaseClasses(*this->menuButtons);
         delete this->menuButtons;
         this->menuButtons = 0;
     }
@@ -1417,13 +1417,14 @@ void Hud::drawOrbitInformation() {
 }
 
 unsigned int Hud::touchMove(unsigned int a, unsigned int b, void *key) {
+    const short touchY = static_cast<short>(b);
     unsigned int i = 0;
     for (; i <= 0x18; i = i + 1) {
         if ((*this->keyArray)[i] == key && this->elementBits[i] == 0x20)
             goto found;
     }
 
-    return touchBegin(a, (unsigned int) -1, key);
+    return touchBegin(a, b, key);
 found:
     int dx = (int) a - (int) this->steeringCenterX;
     int dy = (int) b - (int) this->steeringCenterY;
@@ -1439,7 +1440,7 @@ found:
         this->steeringKnobY = s + base;
     } else {
         this->steeringKnobX = (short) a;
-        this->steeringKnobY = (short) b;
+        this->steeringKnobY = touchY;
     }
     return 0x20;
 }
@@ -1811,12 +1812,9 @@ unsigned int Hud::touchBegin(unsigned int a, unsigned int b, void *key) {
             if (keys[i] == key) {
                 int *bits = this->elementBits;
                 unsigned int previous = static_cast<unsigned int>(bits[i]);
-                unsigned int flags;
-                if (element == previous)
-                    flags = this->touchFlags;
-                else
-                    flags = this->touchFlags & ~previous;
-                this->touchFlags = flags | element;
+                if (element != previous)
+                    this->touchFlags &= ~previous;
+                this->touchFlags |= element;
                 bits[i] = static_cast<int>(element);
                 return this->touchFlags;
             }
