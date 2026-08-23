@@ -10,6 +10,7 @@
 
 class CutScene;
 class DialogueWindow;
+class MissionsWindow;
 class NewsTicker;
 class StarMap;
 namespace AbyssEngine { 
@@ -70,7 +71,7 @@ public:
     void *spaceLounge;
     void *hangarWindow;
     void *statusWindow;
-    DialogueWindow *m_pDialogueWindow;
+    MissionsWindow *missionsWindow;
     DialogueWindow *dialogueWindow;
     void *medalChoiceWindow;
     int *buttonRow;

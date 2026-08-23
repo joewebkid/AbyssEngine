@@ -495,21 +495,21 @@ void MissionsWindow::render3D() {
         this->m_pStarMap->render();
 }
 
-void MissionsWindow::OnTouchEnd(int y, int z) {
+int MissionsWindow::OnTouchEnd(int y, int z) {
     if (this->m_mode == 1) {
-        this->m_pWantedWindow->OnTouchEnd(y, z);
+        int result = this->m_pWantedWindow->OnTouchEnd(y, z);
         if (this->m_pWantedWindow->lastButtonHit == 0) {
             this->m_mode = 0;
             this->m_pWantedWindow->lastButtonHit = 1;
         }
-        return;
+        return result;
     }
 
     if (this->m_choiceActive != 0) {
         int r = this->m_pChoiceWindow->OnTouchEnd(y, z);
         if (r == 1) {
             this->m_choiceActive = 0;
-            return;
+            return 0;
         }
         if (r == 0) {
             Status *st = Status::gStatus;
@@ -540,7 +540,7 @@ void MissionsWindow::OnTouchEnd(int y, int z) {
             unsigned char savedFlag = this->m_hangarNeedsUpdate;
             this->init();
             this->m_hangarNeedsUpdate = savedFlag;
-            return;
+            return 0;
         }
     }
 
@@ -598,12 +598,12 @@ void MissionsWindow::OnTouchEnd(int y, int z) {
                 }
                 this->m_starMapActive = 1;
                 (*g_mwt_resetLayout)->resetWindowDimensions();
-                return;
+                return 0;
             }
             Layout *layout = *g_mwt_layout;
-            if (layout->OnTouchEnd(z, 0) != 0) {
+            if (layout->OnTouchEnd(y, z) != 0) {
                 layout->resetWindowDimensions();
-                return;
+                return 1;
             }
             if (layout->helpPressed() != 0) {
                 String *t = g_mw_gameText->getText(0x27b);
@@ -643,6 +643,7 @@ void MissionsWindow::OnTouchEnd(int y, int z) {
             this->m_starMapActive = 0;
         }
     }
+    return 0;
 }
 
 void MissionsWindow::update(int dt) {

@@ -189,9 +189,10 @@ static Layout **g_WantedWindow_end_layout_a = nullptr;
 static Layout **g_WantedWindow_end_layout_b = nullptr;
 static GameText **g_WantedWindow_end_text = nullptr;
 
-void WantedWindow::OnTouchEnd(int x, int y) {
+int WantedWindow::OnTouchEnd(int x, int y) {
     if (this->showingMap != 0) {
-        this->starMap->OnTouchEnd(x, y);
+        if (this->starMap->OnTouchEnd(x, y) == 0)
+            return 0;
         uint32_t h;
         uint32_t w;
         uint32_t halfW = 0;
@@ -220,7 +221,7 @@ void WantedWindow::OnTouchEnd(int x, int y) {
         this->windowWidth = w;
         this->windowHeight = h;
         this->showingMap = 0;
-        return;
+        return 0;
     }
 
     int delta = this->dragDelta;
@@ -243,7 +244,7 @@ void WantedWindow::OnTouchEnd(int x, int y) {
         }
     }
 
-    {
+    if (static_cast<int>(this->highlightedWanted) > -1) {
         uint32_t idx = this->getWantedAtPosition(x, y);
         this->selectedWanted = idx;
         this->highlightedWanted = idx;
@@ -293,12 +294,14 @@ void WantedWindow::OnTouchEnd(int x, int y) {
         Layout *layout = *g_WantedWindow_end_layout_b;
         if (layout->OnTouchEnd(x, y) != 0) {
             layout->resetWindowDimensions();
+            return 1;
         } else if (layout->helpPressed() != 0) {
             String help;
             help.copy((*g_WantedWindow_end_text)->getText(0x27b), false);
             layout->initHelpWindow(help);
         }
     }
+    return 0;
 }
 
 static Layout **g_WantedWindow_draw_layout = nullptr;
@@ -470,12 +473,12 @@ int WantedWindow::init() {
     Layout *layout = *g_WantedWindow_init_layout;
 
     for (uint32_t i = 0; i < allWanted->size(); ++i) {
-        int race = ((SolarSystem *) (long) status->getSystem())->getRace();
+        int race = status->getSystem()->getRace();
         Wanted *wanted = (*allWanted)[i];
         if (race == wanted->getBoard()) {
-            race = ((SolarSystem *) (long) status->getSystem())->getRace();
+            race = status->getSystem()->getRace();
             if (race != 0 || status->getCurrentCampaignMission() < 0x80) {
-                race = ((SolarSystem *) (long) status->getSystem())->getRace();
+                race = status->getSystem()->getRace();
                 if (race == 0 && status->getCurrentCampaignMission() >= 0xa2) {
                     ArrayAdd(wanted, *(this->wantedList));
                 }

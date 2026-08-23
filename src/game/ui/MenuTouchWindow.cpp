@@ -640,8 +640,8 @@ _mtw_onTouchEnd_dlcStoreState(MenuTouchWindow *window, int x, int y) {
 
 static inline int _mtw_onTouchEnd_missionsState(void *self, int x, int y) {
     auto *window = (MenuTouchWindow *) self;
-    if (window->missionsWindow != nullptr) {
-        ((MissionsWindow *) window->missionsWindow)->OnTouchEnd(x, y);
+    if (window->missionsWindow != nullptr &&
+        window->missionsWindow->OnTouchEnd(x, y) != 0) {
         window->menuState = 0;
     }
     return 0;

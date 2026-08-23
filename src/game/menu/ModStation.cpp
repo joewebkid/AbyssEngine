@@ -483,7 +483,7 @@ ModStation::ModStation() {
     this->radioMessages = 0;
     this->screenFlags.bytes[2] = 0;
     this->pendingHangarClose = 0;
-    this->m_pDialogueWindow = 0;
+    this->missionsWindow = 0;
     this->choiceWindow = 0;
 
     Station *st = (Station *) Status_getStation_msc();
@@ -620,7 +620,7 @@ void ModStation::checkMedals() {
 void ModStation::OnRender3D() {
     if (this->stationActive == 0)
         return;
-    PaintCanvas::gCanvas->ClearBuffer((unsigned int) (long) PaintCanvas::gCanvas);
+    PaintCanvas::gCanvas->ClearBuffer(0);
 
     uint8_t *p65 = &this->subWindowFlags.bytes[1];
     if (this->cutScene == 0 || this->subWindowFlags.bytes[2] != 0 || this->subWindowFlags.bytes[0] != 0 ||
@@ -640,7 +640,7 @@ void ModStation::OnRender3D() {
     else if (this->subWindowFlags.bytes[3] != 0)
         ((StarMap *) ((void *&) this->starMap))->render();
     else if (this->subWindowFlags.bytes[0] != 0)
-        ((MissionsWindow *) (this->m_pDialogueWindow))->render3D();
+        this->missionsWindow->render3D();
     else if (this->subWindowFlags.bytes[2] == 0 && this->cutScene != 0)
         ((CutScene *) (this->cutScene))->render3D();
     ((PaintCanvas *) PaintCanvas::gCanvas)->End3d();
@@ -790,8 +790,6 @@ void CutScene_ctor_ou(CutScene *cs, int kind);
 int CutScene_initialize_ou(CutScene * cs);
 
 void StarMap_update_ou(int sm, int dt);
-
-void MissionsWindow_update_ou(int w);
 
 void HangarWindow_update_ou(int w);
 
@@ -974,7 +972,7 @@ void ModStation::OnUpdate() {
     } else if (this->subWindowFlags.bytes[3] != 0) {
         HangarWindow_update_ou((int) (intptr_t) this->hangarWindow);
     } else if (this->subWindowFlags.bytes[2] != 0) {
-        MissionsWindow_update_ou((int) (intptr_t) this->m_pDialogueWindow);
+        this->missionsWindow->update(this->dt);
     } else if (this->subWindowFlags.bytes[0] != 0) {
         SpaceLounge_update_ou((int) (intptr_t) this->spaceLounge);
     } else if (this->subWindowFlags.bytes[1] != 0) {
@@ -1178,7 +1176,7 @@ void ModStation::resetIdleCamForHangar() {
         if (Station_getIndex(st) == 100) {
             race = 7;
         } else {
-            race = ((SolarSystem *) (long) Status::gStatus->getSystem())->getRace();
+            race = Status::gStatus->getSystem()->getRace();
         }
     }
 
@@ -1363,7 +1361,7 @@ void ModStation::OnTouchMove(int x, int y, void *touch) {
         return;
     }
     if (this->subWindowFlags.bytes[0] != 0) {
-        ((MissionsWindow *) (this->m_pDialogueWindow))->OnTouchMove(x, y);
+        this->missionsWindow->OnTouchMove(x, y);
         return;
     }
     if (this->m_nStarMapWindowOpen.bytes[2] != 0) {
@@ -1426,9 +1424,9 @@ void ModStation::OnRelease() {
     delete (SpaceLounge *) this->spaceLounge;
     this->spaceLounge = 0;
 
-    if (this->m_pDialogueWindow != 0)
-        ms_op_delete(MissionsWindow_dtor(this->m_pDialogueWindow));
-    this->m_pDialogueWindow = 0;
+    if (this->missionsWindow != 0)
+        ms_op_delete(MissionsWindow_dtor(this->missionsWindow));
+    this->missionsWindow = 0;
 
     if (this->dialogueWindow != 0)
         ms_op_delete(DialogueWindow_dtor(this->dialogueWindow));
@@ -1652,8 +1650,6 @@ int SpaceLounge_hangarNeedsUpdate_ote();
 void SpaceLounge_refresh_ote();
 
 int StatusWindow_OnTouchEnd_ote(int w, int p1, int p2);
-
-int MissionsWindow_OnTouchEnd_ote(int w, int p1);
 
 int MenuTouchWindow_OnTouchEnd_ote(MenuTouchWindow *w, int p1, int p2, void *p3);
 
@@ -2329,7 +2325,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
         return;
     }
     if (this->subWindowFlags.bytes[1] != 0) {
-        if (MissionsWindow_OnTouchEnd_ote((int) (intptr_t) this->m_pDialogueWindow, x) != 0) {
+        if (this->missionsWindow->OnTouchEnd(x, y) != 0) {
             this->subWindowFlags.bytes[0] = 0;
             int snd = **(int **) g_ote_sound;
             FModSound_setParamValue_ote(snd, 0, snd, 0.0f);
@@ -2496,7 +2492,7 @@ void ModStation::OnTouchBegin(int x, int y, void *touch) {
         return;
     }
     if (this->subWindowFlags.bytes[0] != 0) {
-        ((MissionsWindow *) (this->m_pDialogueWindow))->OnTouchBegin(x, y);
+        this->missionsWindow->OnTouchBegin(x, y);
         return;
     }
     if (this->m_nStarMapWindowOpen.bytes[2] != 0) {
@@ -2542,8 +2538,6 @@ void SpaceLounge_draw_r2d(ModStation * self);
 
 void SpaceLounge_draw3DShip_r2d();
 
-void MissionsWindow_draw_r2d(void *w);
-
 void StarMap_draw_r2d(ModStation * self);
 void StatusWindow_draw_r2d(ModStation * self);
 void MenuTouchWindow_draw_r2d(ModStation * self);
@@ -2570,7 +2564,7 @@ void ModStation::OnRender2D() {
     } else if (this->subWindowFlags.bytes[1] != 0) {
         SpaceLounge_draw_r2d(this);
     } else if (this->subWindowFlags.bytes[0] != 0) {
-        MissionsWindow_draw_r2d(this->m_pDialogueWindow);
+        this->missionsWindow->draw();
     } else if (this->subWindowFlags.bytes[3] != 0) {
         StarMap_draw_r2d(this);
     } else if (this->modalFlags.bytes[0] != 0) {

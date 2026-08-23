@@ -110,6 +110,7 @@ metadata only; original game binaries and asset dumps are not included.
 - [MenuTouchWindow main dispatcher and free-camera ARM pass](docs/MENUTOUCH_MAIN_DISPATCH_FREECAM_ARM_2026-08-23.md)
 - [MenuTouchWindow state/dialog/options ARM pass](docs/MENUTOUCH_STATE_DIALOG_OPTIONS_ARM_2026-08-23.md)
 - [MenuTouchWindow DLC/store state ARM pass](docs/MENUTOUCH_DLC_STORE_STATE_ARM_2026-08-23.md)
+- [MissionsWindow/WantedWindow touch-end return ABI ARM pass](docs/MISSIONSWINDOW_TOUCH_END_RETURN_ABI_ARM_2026-08-23.md)
 - [AEM/AEI loader notes](docs/AEM_AEI_NATIVE_LOADER_SPEC.md)
 - [DeepOpen J2ME crosswalk](docs/DEEPOPEN_J2ME_CROSSWALK_2026-07-20.md)
 - [Recovery evidence guide (RU)](docs/RECOVERY_EVIDENCE_GUIDE_RU.md)
