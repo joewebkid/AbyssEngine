@@ -81,6 +81,11 @@ table above: `touchBegin`, `touchMove` and `touchEnd` are now `87.0%`, `97.1%`
 and `97.8%`; `closeHudMenu` is `100%` linked-exact. All 48 Hud functions average
 `90.7%`, with 27 linked-exact and 19 byte-exact.
 
+The event dispatch/String lifetime follow-up in
+`HUD_EVENT_DISPATCH_STRING_LIFETIME_ARM_2026-08-23.md` further supersedes that
+aggregate: `hudEvent` is now `76.3%` and `hudEventMedal` is `84.9%`. All 48 Hud
+functions average `91.0%`; linked-exact and byte-exact counts remain 27 and 19.
+
 ## Latest Hud Verification
 
 The `HUD_EVENT_PRESENTATION_ARM_2026-08-20.md` and
@@ -90,8 +95,9 @@ The `HUD_EVENT_PRESENTATION_ARM_2026-08-20.md` and
 `HUD_INIT_MENU_LAYOUT_RECURRENCE_ARM_2026-08-22.md`, then
 `HUD_INIT_MENU_FRAME_LIFETIME_ARM_2026-08-23.md`,
 `HUD_CHALLENGE_ORBIT_PRESENTATION_SHAPE_ARM_2026-08-23.md`, and
-`HUD_TOUCH_KEY_LIFECYCLE_ARM_2026-08-23.md`, and supersede the older inline Hud
-figures above. The 48-function Hud set now averages `90.7%`, with 27
+`HUD_TOUCH_KEY_LIFECYCLE_ARM_2026-08-23.md`, followed by
+`HUD_EVENT_DISPATCH_STRING_LIFETIME_ARM_2026-08-23.md`, and supersede the older
+inline Hud figures above. The 48-function Hud set now averages `91.0%`, with 27
 linked-exact and 19 byte-exact functions. Current focused scores include
 `drawEventQueue` 75.4%, `drawEventString` 90.1%, `drawChallengeModeScore`
 49.3%, `drawOrbitInformation` 56.3%, and `initHudMenu` 44.3% at `1245/1199`
@@ -110,6 +116,11 @@ The touch/key follow-up restores the original moved-touch Y coordinate and the
 native key-slot cleanup lifecycle. Its focused scores are `87.0%` for
 `touchBegin`, `97.1%` for `touchMove`, `97.8%` for `touchEnd`, and linked-exact
 `100%` for `closeHudMenu`.
+
+The event dispatch follow-up restores the complete seven-String cargo-loss
+expressions for events 30 and 47, types the packed dock-transfer state and
+places medal percentage clamping inside the native String chain. `hudEvent`
+reaches `76.3%` and `hudEventMedal` reaches `84.9%`.
 
 ## Priorities
 

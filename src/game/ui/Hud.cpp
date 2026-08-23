@@ -2204,8 +2204,9 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
             this->cloakProgressActive = 0;
             return;
         case 30: {
-            String amount = String("-") + String(arg) + String("t ");
-            this->field_0x1e0 = String(amount, false) + *hud_game_text()->getText(1396);
+            this->field_0x1e0 =
+                    String(String("-") + String(arg) + String("t "), false) +
+                    *hud_game_text()->getText(1396);
             clearQueue();
             break;
         }
@@ -2227,26 +2228,22 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
         case 0x23:
             this->dockTransferFadeTimer = 0;
             this->dockTransferShowMissionMarkers = 1;
-            this->dockTransferProgressActive = 1;
-            this->dockTransferReverse = 0;
+            this->dockTransferState = 0x0001;
             return;
         case 0x25:
             this->dockTransferFadeTimer = 0;
             this->dockTransferShowMissionMarkers = 1;
-            this->dockTransferProgressActive = 1;
-            this->dockTransferReverse = 1;
+            this->dockTransferState = 0x0101;
             return;
         case 0x27:
             this->dockTransferFadeTimer = 0;
             this->dockTransferShowMissionMarkers = 0;
-            this->dockTransferProgressActive = 1;
-            this->dockTransferReverse = 0;
+            this->dockTransferState = 0x0001;
             return;
         case 0x29:
             this->dockTransferFadeTimer = 0;
             this->dockTransferShowMissionMarkers = 0;
-            this->dockTransferProgressActive = 1;
-            this->dockTransferReverse = 1;
+            this->dockTransferState = 0x0101;
             break;
         case 0x24:
         case 0x26:
@@ -2268,8 +2265,9 @@ void Hud::hudEvent(int eventId, PlayerEgo *ego, int arg) {
             this->field_0x1e0 = *hud_game_text()->getText(316);
             break;
         case 47: {
-            String amount = String("-") + String(arg) + String("t ");
-            this->field_0x1e0 = String(amount, false) + *hud_game_text()->getText(1476);
+            this->field_0x1e0 =
+                    String(String("-") + String(arg) + String("t "), false) +
+                    *hud_game_text()->getText(1476);
             clearQueue();
             break;
         }
@@ -2400,13 +2398,10 @@ challenge_score_cleanup:
 
 
 void Hud::hudEventMedal(int medalId, int percent) {
-    if (percent >= 100)
-        percent = 100;
     this->field_0x1e0 = *hud_game_text()->getText(medalId + 0x5e3) + String(":") +
-                        String(percent) + String("%");
+                        String(percent >= 100 ? 100 : percent) + String("%");
 
-    String probe(this->field_0x1e0, false);
-    if (sameHudEventAsBefore(probe) != 0) return;
+    if (sameHudEventAsBefore(String(this->field_0x1e0, false)) != 0) return;
 
     void *itemStorage = ::operator new(sizeof(ListItem));
     String *str = new String(this->field_0x1e0, false);

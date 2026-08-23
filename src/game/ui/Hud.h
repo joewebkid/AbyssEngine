@@ -95,6 +95,7 @@ public:
     };
     union {
         unsigned short weaponSelectState;
+        unsigned short dockTransferState;
         struct {
             unsigned char dockTransferProgressActive;
             unsigned char dockTransferReverse;
@@ -493,6 +494,8 @@ static_assert(__builtin_offsetof(Hud, jumpMapSelectedFlag) == 0x274,
               "Hud::jumpMapSelectedFlag @ +0x274");
 static_assert(__builtin_offsetof(Hud, cloakProgressActive) == 0x276,
               "Hud::cloakProgressActive @ +0x276");
+static_assert(__builtin_offsetof(Hud, dockTransferState) == 0x278,
+              "Hud::dockTransferState @ +0x278");
 static_assert(__builtin_offsetof(Hud, dockTransferProgressActive) == 0x278,
               "Hud::dockTransferProgressActive @ +0x278");
 static_assert(__builtin_offsetof(Hud, dockTransferShowMissionMarkers) == 0x27a,
