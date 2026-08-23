@@ -1,5 +1,10 @@
 # Hud init ARM recovery (2026-08-20)
 
+> Historical checkpoint. The 2026-08-23 call-frame follow-up supersedes the
+> numeric result below: `Hud::init` is now 81.1% at 1077/1068 instructions,
+> with the exact 188-byte stack reservation. See
+> `HUD_INIT_COORDINATE_CALL_FRAME_ARM_2026-08-23.md`.
+
 ## Evidence
 
 - Android 2.0.16 `libgof2hdaa.so` ARM body and exported symbols.
@@ -48,17 +53,16 @@ queue and touch-array order. Correcting the return/global ABI and contiguous
 layout copy raised it to the final 64.7%.
 
 No artificial stack scratch, volatile register forcing, inline assembly or
-padding was retained. The 16-byte vector type models the two 128-bit copies
-visible in the original body and preserves the same 32-byte field semantics.
+padding was retained. This checkpoint used a 16-byte vector type for the
+32-byte field span; the later pass replaced it with the four ordered 64-bit
+transfers visible in IDA.
 
 ## Build status and remaining work
 
 - UCRT64 `libgof2.a` builds successfully.
 - The ARM pass remains 201/204 with the same three unrelated
   `SolarSystem *` versus integer failures.
-- `Hud::init` is source-backed but not byte-exact. Most remaining differences
-  are in coordinate/iPad local lifetimes, stack reservation (196 versus 188
-  bytes), compiler register allocation and literal-pool placement.
-- A future pass should compare the two `Globals::setCoordsSteer/setCoordsFire`
-  call frames and hidden temporaries as a focused unit. The recovered runtime
-  order and values should not be replaced with speculative scratch locals.
+- `Hud::init` is source-backed but not byte-exact. The later call-frame pass
+  completed the focused `setCoordsSteer/setCoordsFire` comparison and matched
+  the 188-byte stack reservation. Remaining differences are compiler register
+  allocation, NEON element spelling, cleanup scheduling and literal pools.

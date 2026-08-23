@@ -95,6 +95,14 @@ static inline __attribute__((always_inline)) void hud_create_image(unsigned shor
     hud_canvas()->Image2DCreate(resourceId, reinterpret_cast<unsigned int &>(slot));
 }
 
+static inline __attribute__((always_inline)) int hud_image_width(int image) {
+    return hud_canvas()->GetImage2DWidth(static_cast<unsigned int>(image));
+}
+
+static inline __attribute__((always_inline)) int hud_image_height(int image) {
+    return hud_canvas()->GetImage2DHeight(static_cast<unsigned int>(image));
+}
+
 static inline __attribute__((always_inline)) void hud_load_init_images(Hud *self) {
     hud_create_image(0x4ac, self->shieldFrameImage);
     hud_create_image(0x4ad, self->shieldFrameHitImage);
@@ -194,131 +202,139 @@ static int hud_default_fire_anchor() {
 }
 
 static inline __attribute__((always_inline)) void hud_apply_ipad_control_coords(Hud *self) {
-    Globals *globals = static_cast<Globals *>(Globals::globals);
     GameSettings *settings = reinterpret_cast<GameSettings *>(Globals::options);
+    Globals *steerGlobals = static_cast<Globals *>(Globals::globals);
     const int steerAnchor = settings->steerAnchorX;
-    const int fireAnchor = settings->fireAnchorX;
+    const int steeringWidth = hud_canvas()->GetImage2DWidth(
+        static_cast<unsigned>(self->steeringBaseImage));
+    const int dockWidth = hud_canvas()->GetImage2DWidth(
+        static_cast<unsigned>(self->dockActionIdleImage));
+    const int boostWidth = hud_canvas()->GetImage2DWidth(
+        static_cast<unsigned>(self->boostIdleImage));
 
-    globals->setCoordsSteer(steerAnchor,
-                            hud_canvas()->GetImage2DWidth(static_cast<unsigned>(self->steeringBaseImage)),
-                            hud_canvas()->GetImage2DWidth(static_cast<unsigned>(self->dockActionIdleImage)),
-                            hud_canvas()->GetImage2DWidth(static_cast<unsigned>(self->boostIdleImage)),
-                            self->field_0x3f8, self->field_0x3fa, self->field_0x42c, self->field_0x42e,
-                            self->field_0x424, self->field_0x426, self->field_0x410, self->field_0x412,
-                            self->field_0x404, self->field_0x406);
-
-    globals->setCoordsFire(fireAnchor,
-                           hud_canvas()->GetImage2DWidth(static_cast<unsigned>(self->iPadFireImage)),
-                           static_cast<unsigned>(self->iPadFireImage),
-                           static_cast<unsigned>(self->iPadFirePressedImage),
-                           reinterpret_cast<unsigned int &>(self->reticleImage), self->iPadFireCoord_0x0c,
-                           self->iPadFireCoord_0x0e, self->field_0x3e4, self->field_0x3e6,
-                           self->field_0x416, self->field_0x418, self->field_0x3f2, self->field_0x3f4,
-                           self->field_0x3ec, self->field_0x3ee, self->field_0x3fe, self->field_0x400);
+    steerGlobals->setCoordsSteer(steerAnchor, steeringWidth, dockWidth, boostWidth,
+                                 self->field_0x3f8, self->field_0x3fa,
+                                 self->field_0x42c, self->field_0x42e,
+                                 self->field_0x424, self->field_0x426,
+                                 self->field_0x410, self->field_0x412,
+                                 self->field_0x404, self->field_0x406);
 
     self->field_0x41e = self->field_0x424;
     self->field_0x420 = self->field_0x426;
+
+    const unsigned int fireImage = static_cast<unsigned int>(self->iPadFireImage);
+    const int fireAnchor = settings->fireAnchorX;
+    Globals *fireGlobals = static_cast<Globals *>(Globals::globals);
+    const int fireWidth = hud_canvas()->GetImage2DWidth(fireImage);
+    fireGlobals->setCoordsFire(fireAnchor, fireWidth, fireImage,
+                              static_cast<unsigned>(self->iPadFirePressedImage),
+                              reinterpret_cast<unsigned int &>(self->reticleImage),
+                              self->iPadFireCoord_0x0c, self->iPadFireCoord_0x0e,
+                              self->field_0x3e4, self->field_0x3e6,
+                              self->field_0x416, self->field_0x418,
+                              self->field_0x3f2, self->field_0x3f4,
+                              self->field_0x3ec, self->field_0x3ee,
+                              self->field_0x3fe, self->field_0x400);
+
     self->iPadSteerAnchor = settings->steerAnchorX;
     self->iPadFireAnchor = settings->fireAnchorX;
 }
 
 static inline __attribute__((always_inline)) void hud_init_coordinates(Hud *self) {
-    const int screenW = Globals::w;
-    const int screenH = Globals::h;
-    const auto width = [](int image) { return hud_canvas()->GetImage2DWidth(static_cast<unsigned>(image)); };
-    const auto height = [](int image) { return hud_canvas()->GetImage2DHeight(static_cast<unsigned>(image)); };
-
-    self->field_0x434 = static_cast<unsigned short>(screenW - hud_layout_i32(0x14c));
-    self->field_0x436 = static_cast<unsigned short>(screenH - hud_layout_i32(0x12c) -
+    self->field_0x434 = static_cast<unsigned short>(Globals::w - hud_layout_i32(0x14c));
+    self->field_0x436 = static_cast<unsigned short>(Globals::h - hud_layout_i32(0x12c) -
                                                      hud_canvas()->GetTextHeight(hud_font()) - hud_layout_i32(0x150));
-    self->field_0x3f0 = static_cast<unsigned short>(width(self->secondaryPressedImage));
-    self->field_0x3e4 = static_cast<unsigned short>(screenW - hud_layout_i32(0x154) - width(self->mainActionIdleImage));
-    self->field_0x3e6 = static_cast<unsigned short>(screenH - hud_layout_i32(0x158) - width(self->mainActionIdleImage));
-    self->field_0x3ec = static_cast<unsigned short>(screenW - hud_layout_i32(0x15c) - self->field_0x3f0);
-    self->field_0x3ee = static_cast<unsigned short>(screenH - hud_layout_i32(0x160) - self->field_0x3f0);
+    self->field_0x3f0 = static_cast<unsigned short>(hud_image_width(self->secondaryPressedImage));
+    self->field_0x3e4 = static_cast<unsigned short>(Globals::w - hud_layout_i32(0x154) - hud_image_width(self->mainActionIdleImage));
+    self->field_0x3e6 = static_cast<unsigned short>(Globals::h - hud_layout_i32(0x158) - hud_image_width(self->mainActionIdleImage));
+    self->field_0x3ec = static_cast<unsigned short>(Globals::w - hud_layout_i32(0x15c) - self->field_0x3f0);
+    self->field_0x3ee = static_cast<unsigned short>(Globals::h - hud_layout_i32(0x160) - self->field_0x3f0);
     self->field_0x3ea = static_cast<unsigned short>(hud_layout_i32(0x164));
-    self->field_0x3e0 = static_cast<unsigned short>(screenW / 2 - width(self->eventBannerImage) / 2);
+    self->field_0x3e0 = static_cast<unsigned short>(Globals::w / 2 - hud_image_width(self->eventBannerImage) / 2);
     self->field_0x3e2 = static_cast<unsigned short>(hud_layout_i32(0x168));
 
-    self->field_0x3f6 = static_cast<unsigned short>(width(self->cameraIdleImages[0]));
-    self->field_0x3f2 = static_cast<unsigned short>(screenW - self->field_0x3f6 - hud_layout_i32(0x16c));
-    self->field_0x3f4 = static_cast<unsigned short>(screenH - hud_layout_i32(0x170) -
-                                                     height(self->cameraIdleImages[0]));
-    self->field_0x41a = static_cast<unsigned short>(width(self->quickMenuPressedImage));
+    self->field_0x3f6 = static_cast<unsigned short>(hud_image_width(self->cameraIdleImages[0]));
+    self->field_0x3f2 = static_cast<unsigned short>(Globals::w - self->field_0x3f6 - hud_layout_i32(0x16c));
+    self->field_0x3f4 = static_cast<unsigned short>(Globals::h - hud_layout_i32(0x170) -
+                                                     hud_image_height(self->cameraIdleImages[0]));
+    self->field_0x41a = static_cast<unsigned short>(hud_image_width(self->quickMenuPressedImage));
     self->field_0x41c = static_cast<unsigned short>(hud_layout_i32(0x174));
-    self->field_0x416 = static_cast<unsigned short>(screenW - hud_layout_i32(0x178) - self->field_0x41a);
-    self->field_0x418 = static_cast<unsigned short>(screenH - hud_layout_i32(0x17c) -
-                                                     height(self->quickMenuPressedImage));
+    self->field_0x416 = static_cast<unsigned short>(Globals::w - hud_layout_i32(0x178) - self->field_0x41a);
+    self->field_0x418 = static_cast<unsigned short>(Globals::h - hud_layout_i32(0x17c) -
+                                                     hud_image_height(self->quickMenuPressedImage));
 
-    self->field_0x3fc = static_cast<unsigned short>(width(self->dockActionIdleImage));
+    self->field_0x3fc = static_cast<unsigned short>(hud_image_width(self->dockActionIdleImage));
     self->field_0x3f8 = static_cast<unsigned short>(hud_layout_i32(0x180));
-    self->field_0x3fa = static_cast<unsigned short>(screenH - hud_layout_i32(0x184) - self->field_0x3fc);
-    self->field_0x402 = static_cast<unsigned short>(width(self->dockActionIdleImage));
-    self->field_0x3fe = static_cast<unsigned short>(screenW - hud_layout_i32(0x180) - self->field_0x3fc);
-    self->field_0x400 = static_cast<unsigned short>(screenH - hud_layout_i32(0x184) - self->field_0x3fc);
+    self->field_0x3fa = static_cast<unsigned short>(Globals::h - hud_layout_i32(0x184) - self->field_0x3fc);
+    self->field_0x402 = static_cast<unsigned short>(hud_image_width(self->dockActionIdleImage));
+    self->field_0x3fe = static_cast<unsigned short>(Globals::w - hud_layout_i32(0x180) - self->field_0x3fc);
+    self->field_0x400 = static_cast<unsigned short>(Globals::h - hud_layout_i32(0x184) - self->field_0x3fc);
 
-    self->field_0x40e = static_cast<unsigned short>(width(self->pauseButtonPressedImage));
-    self->field_0x40a = static_cast<unsigned short>(screenW - self->field_0x40e - hud_layout_i32(0x194));
+    self->field_0x40e = static_cast<unsigned short>(hud_image_width(self->pauseButtonPressedImage));
+    self->field_0x40a = static_cast<unsigned short>(Globals::w - self->field_0x40e - hud_layout_i32(0x194));
     self->field_0x40c = static_cast<unsigned short>(hud_layout_i32(0x198));
-    self->missionPanelX = static_cast<unsigned short>(screenW - width(self->missionTimerPanelImage) -
+    self->missionPanelX = static_cast<unsigned short>(Globals::w - hud_image_width(self->missionTimerPanelImage) -
                                                        hud_layout_i32(0x19c));
     self->missionPanelY = static_cast<unsigned short>(hud_layout_i32(0x1a0));
 
-    self->field_0x430 = static_cast<unsigned short>(width(self->steeringBaseImage));
-    const int hackingImageWidth = width(self->image_0x3a4);
+    self->field_0x430 = static_cast<unsigned short>(hud_image_width(self->steeringBaseImage));
+    const unsigned short hackingImageWidth = static_cast<unsigned short>(hud_image_width(self->image_0x3a4));
     self->field_0x45c = static_cast<unsigned short>(hackingImageWidth);
-    const int hackingHalfWidth = hackingImageWidth >> 1;
-    self->field_0x454 = static_cast<unsigned short>(screenW / 2 - hackingHalfWidth - hud_layout_i32(0x31c));
-    self->field_0x458 = static_cast<unsigned short>(screenW / 2 - hackingHalfWidth + hud_layout_i32(0x31c));
+    const short hackingBaseX = static_cast<short>(Globals::w / 2) - (hackingImageWidth >> 1);
+    self->field_0x454 = static_cast<unsigned short>(hackingBaseX - hud_layout_i32(0x31c));
+    self->field_0x458 = static_cast<unsigned short>(hud_layout_i32(0x31c) +
+                                                     Globals::w / 2 - (hackingImageWidth >> 1));
     self->field_0x460 = self->field_0x3ee;
-    self->field_0x45e = static_cast<unsigned short>(screenW / 2 - hackingHalfWidth);
-    self->field_0x456 = static_cast<unsigned short>(screenH / 2 - hud_layout_i32(0x320));
+    self->field_0x45e = static_cast<unsigned short>(hackingBaseX);
+    const int controlScreenH = Globals::h;
+    self->field_0x456 = static_cast<unsigned short>(controlScreenH / 2 - hud_layout_i32(0x320));
     self->field_0x45a = self->field_0x456;
 
     self->field_0x42c = static_cast<unsigned short>(hud_layout_i32(0x1a4));
-    self->field_0x42e = static_cast<unsigned short>(screenH - hud_layout_i32(0x1a8) -
-                                                     height(self->steeringBaseImage));
-    self->field_0x422 = static_cast<unsigned short>(width(self->steeringKnobPressedImage));
+    self->field_0x42e = static_cast<unsigned short>(controlScreenH - hud_layout_i32(0x1a8) -
+                                                     hud_image_height(self->steeringBaseImage));
+    self->field_0x422 = static_cast<unsigned short>(hud_image_width(self->steeringKnobPressedImage));
     self->field_0x424 = static_cast<unsigned short>(self->field_0x42c + self->field_0x430 / 2);
     self->field_0x41e = self->field_0x424;
     self->field_0x426 = static_cast<unsigned short>(self->field_0x42e + self->field_0x430 / 2);
     self->field_0x420 = self->field_0x426;
-    self->field_0x414 = static_cast<unsigned short>(width(self->boostPressedImage));
+    self->field_0x414 = static_cast<unsigned short>(hud_image_width(self->boostPressedImage));
     self->field_0x410 = static_cast<unsigned short>(hud_layout_i32(0x1ac));
-    self->field_0x412 = static_cast<unsigned short>(screenH - hud_layout_i32(0x1b0) - self->field_0x414);
-    self->field_0x408 = static_cast<unsigned short>(width(self->image_0x394));
+    self->field_0x412 = static_cast<unsigned short>(Globals::h - hud_layout_i32(0x1b0) - self->field_0x414);
+    self->field_0x408 = static_cast<unsigned short>(hud_image_width(self->image_0x394));
     self->field_0x404 = static_cast<unsigned short>(hud_layout_i32(0x188));
-    self->field_0x406 = static_cast<unsigned short>(screenH - hud_layout_i32(0x18c) - self->field_0x408);
+    self->field_0x406 = static_cast<unsigned short>(Globals::h - hud_layout_i32(0x18c) - self->field_0x408);
     self->field_0x450 = hud_layout_i32(0x190);
 
+    const int menuScreenW = Globals::w;
     if (Globals::iPad != 0) {
-        self->field_0x3c4 = screenW - hud_layout_i32(0x28) - width(self->quickMenuTopImage);
+        self->field_0x3c4 = menuScreenW - hud_layout_i32(0x28) - hud_image_width(self->quickMenuTopImage);
         self->menuOriginY = self->field_0x418 - hud_layout_i32(0x2c) - 6 * hud_layout_i32(0x30) -
-                            height(self->quickMenuTopImage);
+                            hud_image_height(self->quickMenuTopImage);
         hud_apply_ipad_control_coords(self);
     } else {
-        self->field_0x3c4 = (screenW - width(self->quickMenuTopImage)) / 2;
+        self->field_0x3c4 = menuScreenW / 2 - hud_image_width(self->quickMenuTopImage) / 2;
         self->menuOriginY = hud_layout_i32(0x1b4);
         self->iPadSteerAnchor = 0;
         self->iPadFireAnchor = 0;
     }
 
-    self->menuRowHeight = height(self->quickMenuTopImage);
-    self->field_0x3d0 = height(self->quickMenuMiddleImage);
+    self->menuRowHeight = hud_image_height(self->quickMenuTopImage);
+    self->field_0x3d0 = hud_image_height(self->quickMenuMiddleImage);
     self->field_0x3d4 = self->field_0x3c4 + hud_layout_i32(0x1b8);
     self->menuBaseY = hud_layout_i32(0x1bc) + self->menuOriginY + self->menuRowHeight -
                       hud_layout_i32(0x30) / 2;
-    self->field_0x3dc = width(self->quickMenuMiddleImage) - hud_layout_i32(0x1c0);
+    self->field_0x3dc = hud_image_width(self->quickMenuMiddleImage) - hud_layout_i32(0x1c0);
 
     self->field_0x43c = static_cast<unsigned short>(hud_layout_i32(0x1c4));
-    self->field_0x43e = static_cast<unsigned short>(self->field_0x43c + width(self->shieldFrameImage));
+    self->field_0x43e = static_cast<unsigned short>(self->field_0x43c + hud_image_width(self->shieldFrameImage));
     self->field_0x444 = static_cast<unsigned short>(hud_layout_i32(0x1c8));
     self->field_0x448 = static_cast<unsigned short>(hud_layout_i32(0x1cc));
     self->field_0x442 = static_cast<unsigned short>(hud_layout_i32(0x1d0));
     self->field_0x44a = static_cast<unsigned short>(hud_layout_i32(0x1d4));
-    self->field_0x446 = static_cast<unsigned short>(width(self->shieldBarFillImage));
+    self->field_0x446 = static_cast<unsigned short>(hud_image_width(self->shieldBarFillImage));
     self->field_0x440 = self->field_0x43e;
-    self->field_0x44c = static_cast<unsigned short>(height(self->shieldBarFillImage));
+    self->field_0x44c = static_cast<unsigned short>(hud_image_height(self->shieldBarFillImage));
 }
 
 void drawControlsInterface(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
@@ -1847,13 +1863,17 @@ void Hud::init() {
     this->hitDirectionTopTimer = 0;
     this->hitDirectionBottomTimer = 0;
     *reinterpret_cast<int *>(this->unknown_0x4a1) = 0;
-    // Android copies Layout+0x12c..0x14b as two 128-bit chunks.
-    typedef int HudLayoutWords __attribute__((vector_size(16)));
-    HudLayoutWords *destination = reinterpret_cast<HudLayoutWords *>(&this->boostReadyTextX);
-    const HudLayoutWords *source = reinterpret_cast<const HudLayoutWords *>(
-        static_cast<char *>(Globals::layout) + 0x12c);
-    destination[0] = source[0];
-    destination[1] = source[1];
+    // Android copies Layout+0x12c..0x14b through four 64-bit values.
+    char *layout = static_cast<char *>(Globals::layout);
+    char *destination = reinterpret_cast<char *>(&this->boostReadyTextX);
+    const uint64_t layout12c = *reinterpret_cast<const uint64_t *>(layout + 0x12c);
+    const uint64_t layout134 = *reinterpret_cast<const uint64_t *>(layout + 0x134);
+    *reinterpret_cast<uint64_t *>(destination) = layout12c;
+    *reinterpret_cast<uint64_t *>(destination + 8) = layout134;
+    const uint64_t layout144 = *reinterpret_cast<const uint64_t *>(layout + 0x144);
+    *reinterpret_cast<uint64_t *>(destination + 16) =
+        *reinterpret_cast<const uint64_t *>(layout + 0x13c);
+    *reinterpret_cast<uint64_t *>(destination + 24) = layout144;
     hud_init_coordinates(this);
 
     this->boostFlashRemaining = 0;
@@ -1861,8 +1881,8 @@ void Hud::init() {
     this->secondaryFlashRemaining = 0;
     this->secondaryFlashPulse = 0;
     this->autofireEnabled = 0;
-    this->boostReadyLatched = 1;
     this->cloakReadyLatched = 1;
+    this->boostReadyLatched = 1;
     this->quickMenuFlashRemaining = 0;
     this->quickMenuFlashPulse = 0;
     this->timeExtenderTimer = 0;
