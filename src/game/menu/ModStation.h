@@ -60,8 +60,14 @@ public:
     int activeMission;
     void *radioMessages;
     int field_0x5c;
+    // Android +0x60..+0x63: [0]=radio/cutscene, [1]=station main UI,
+    // [2]=DLC MenuTouchWindow, [3]=primary ChoiceWindow.
     FlagWord m_nStarMapWindowOpen;
+    // Android +0x64..+0x67: [0]=missions, [1]=space lounge,
+    // [2]=hangar, [3]=StarMap.
     FlagWord subWindowFlags;
+    // Android +0x68..+0x6b: [0]=status, [1]=dialogue,
+    // [2]=medal ChoiceWindow. Byte [3] is separate station state.
     FlagWord modalFlags;
     FlagWord screenFlags;
     union {

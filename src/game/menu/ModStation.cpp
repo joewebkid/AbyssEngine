@@ -875,7 +875,7 @@ void ModStation::OnUpdate() {
         AppData *appData = (AppData *) (intptr_t) ApplicationManager_GetApplicationData_ou();
         if (appData->restoreNotice != 0) {
             ChoiceWindow_setNotice_ou((int) (intptr_t) this->choiceWindow, GameText_getText_ou(**g_ou_textRoot));
-            this->screenFlags.bytes[3] = 1;
+            this->m_nStarMapWindowOpen.bytes[3] = 1;
             appData->restoreNotice = 0;
         }
         if (appData->purchaseReady != 0 && appData->purchaseList != 0 &&
@@ -887,7 +887,7 @@ void ModStation::OnUpdate() {
                 Status_changeCredits_ou(*status);
                 this->autosave();
                 ChoiceWindow_setNotice_ou((int) (intptr_t) this->choiceWindow, GameText_getText_ou(**g_ou_textRoot));
-                this->screenFlags.bytes[3] = 1;
+                this->m_nStarMapWindowOpen.bytes[3] = 1;
                 appData->purchaseReady = 0;
                 if ((int) (intptr_t) this->hangarWindow != 0)
                     HangarWindow_hideMessage_ou();
@@ -965,26 +965,26 @@ void ModStation::OnUpdate() {
             this->m_nStarMapWindowOpen.bytes[0] = 0;
             goto epilogue;
         }
-    } else if (this->modalFlags.bytes[0] != 0) {
-        this->dialogueWindow->update(0);
     } else if (this->modalFlags.bytes[1] != 0) {
-        StarMap_update_ou((int) (intptr_t) this->starMap, this->dt);
+        this->dialogueWindow->update(this->dt);
     } else if (this->subWindowFlags.bytes[3] != 0) {
-        HangarWindow_update_ou((int) (intptr_t) this->hangarWindow);
+        StarMap_update_ou((int) (intptr_t) this->starMap, this->dt);
     } else if (this->subWindowFlags.bytes[2] != 0) {
-        this->missionsWindow->update(this->dt);
+        HangarWindow_update_ou((int) (intptr_t) this->hangarWindow);
     } else if (this->subWindowFlags.bytes[0] != 0) {
-        SpaceLounge_update_ou((int) (intptr_t) this->spaceLounge);
+        this->missionsWindow->update(this->dt);
     } else if (this->subWindowFlags.bytes[1] != 0) {
+        SpaceLounge_update_ou((int) (intptr_t) this->spaceLounge);
+    } else if (this->modalFlags.bytes[0] != 0) {
         StatusWindow_update_ou((int) (intptr_t) this->statusWindow);
     }
 
-    if (this->screenFlags.bytes[3] != 0)
+    if (this->m_nStarMapWindowOpen.bytes[3] != 0)
         ChoiceWindow_update_ou((int) (intptr_t) this->choiceWindow);
-    if (this->screenFlags.bytes[2] != 0)
+    if (this->m_nStarMapWindowOpen.bytes[2] != 0)
         MenuTouchWindow_update_ou(this->dlcMenu, this->dt);
 
-    if (this->screenFlags.bytes[3] == 0 && this->modalFlags.bytes[1] == 0 &&
+    if (this->m_nStarMapWindowOpen.bytes[3] == 0 && this->modalFlags.bytes[1] == 0 &&
         this->screenFlags.bytes[0] == 0) {
         if (this->buttonCreditsFlags.bytes[2] == 0) {
             this->checkPendingProducts();
@@ -999,7 +999,7 @@ void ModStation::OnUpdate() {
             Status *rec = (Status *) (intptr_t) *(int *) g_ou_status;
             if (rec->byte_0x2a == 0) {
                 ChoiceWindow_setNotice_ou((int) (intptr_t) this->choiceWindow, GameText_getText_ou(**g_ou_textRoot));
-                this->screenFlags.bytes[3] = 1;
+                this->m_nStarMapWindowOpen.bytes[3] = 1;
                 rec->byte_0x2a = 1;
                 this->screenFlags.bytes[2] = 0;
             }
@@ -1623,8 +1623,6 @@ void Layout_initHelpWindow_ote(int l, int textStr);
 
 void Layout_showMissionRewardMessage_ote(int l, int flag);
 
-int ChoiceWindow_OnTouchEnd_ote(int cw, int p1);
-
 void ChoiceWindow_set_ote(int cw, int textStr, int flag);
 
 void ChoiceWindow_setNotice_ote(int cw, int textStr);
@@ -1640,8 +1638,6 @@ void HangarWindow_initialize_ote();
 void HangarWindow_showCreditsBuyWindow_ote(HangarWindow *w);
 
 void HangarWindow_setSellMode_ote(int w);
-
-int StarMap_OnTouchEnd_ote(int sm, int p1);
 
 int SpaceLounge_OnTouchEnd_ote(int l, int p1, int p2);
 
@@ -1698,7 +1694,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
     }
 
     if (this->modalFlags.bytes[1] != 0) {
-        if (this->dialogueWindow->OnTouchEnd(x, x) != 0) {
+        if (this->dialogueWindow->OnTouchEnd(x, y) != 0) {
             if (this->activeMission != 0) {
                 {
                         Mission *mission = (Mission *) this->activeMission;
@@ -2064,13 +2060,13 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
             return;
     }
 
-    if (this->screenFlags.bytes[3] != 0) {
-        int r = ChoiceWindow_OnTouchEnd_ote((int) (intptr_t) this->choiceWindow, x);
+    if (this->m_nStarMapWindowOpen.bytes[3] != 0) {
+        int r = static_cast<ChoiceWindow *>(this->choiceWindow)->OnTouchEnd(x, y);
         if (r == 1) {
             char departed = this->modalFlags.bytes[3];
             this->departPendingFlags.bytes[2] = 0;
             if (departed == 0) {
-                this->screenFlags.bytes[3] = 0;
+                this->m_nStarMapWindowOpen.bytes[3] = 0;
                 this->scrollBoxFlags.bytes[0] = 0;
             } else {
                 this->departPendingFlags.bytes[2] = 0;
@@ -2142,7 +2138,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                             this->autosave();
                             {
                                 if (this->scrollBoxFlags.bytes[0] != 0) {
-                                    this->screenFlags.bytes[3] = 0;
+                                    this->m_nStarMapWindowOpen.bytes[3] = 0;
                                     this->scrollBoxFlags.bytes[0] = 0;
                                     AppData *appData = (AppData *) (intptr_t) ApplicationManager_GetApplicationData_ote();
                                     appData->hideRadio = 1;
@@ -2157,7 +2153,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                             return;
                                         }
                                         Status_changeCredits_ote(*status);
-                                        this->screenFlags.bytes[3] = 0;
+                                        this->m_nStarMapWindowOpen.bytes[3] = 0;
                                         this->screenFlags.bytes[1] = 0;
                                         Station *home = (Station *) *status;
                                         Galaxy_getStation_ote(**(int **) g_ote_galaxy);
@@ -2169,7 +2165,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                         this->pendingHangarClose = 0;
                                         this->subWindowFlags.bytes[2] = 0;
                                     }
-                                    this->screenFlags.bytes[3] = 0;
+                                    this->m_nStarMapWindowOpen.bytes[3] = 0;
                                 } else {
                                     Status_changeCredits_ote(*status);
                                     Ship_removeCargo_ote(Status_getShip_ote(), 0x6d);
@@ -2187,13 +2183,13 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                         ChoiceWindow_setFee_frag(this->choiceWindow, credits, 0);
                         this->modalFlags.bytes[3] = 1;
                         this->departPendingFlags.bytes[2] = 1;
-                        this->screenFlags.bytes[3] = 1;
+                        this->m_nStarMapWindowOpen.bytes[3] = 1;
                         return;
                     }
 
                     {
                         if (this->scrollBoxFlags.bytes[0] != 0) {
-                            this->screenFlags.bytes[3] = 0;
+                            this->m_nStarMapWindowOpen.bytes[3] = 0;
                             this->scrollBoxFlags.bytes[0] = 0;
                             AppData *appData = (AppData *) (intptr_t) ApplicationManager_GetApplicationData_ote();
                             appData->hideRadio = 1;
@@ -2208,7 +2204,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                     return;
                                 }
                                 Status_changeCredits_ote(*status);
-                                this->screenFlags.bytes[3] = 0;
+                                this->m_nStarMapWindowOpen.bytes[3] = 0;
                                 this->screenFlags.bytes[1] = 0;
                                 Station *home = (Station *) *status;
                                 Galaxy_getStation_ote(**(int **) g_ote_galaxy);
@@ -2220,7 +2216,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                 this->pendingHangarClose = 0;
                                 this->subWindowFlags.bytes[2] = 0;
                             }
-                            this->screenFlags.bytes[3] = 0;
+                            this->m_nStarMapWindowOpen.bytes[3] = 0;
                         } else {
                             Status_changeCredits_ote(*status);
                             Ship_removeCargo_ote(Status_getShip_ote(), 0x6d);
@@ -2246,7 +2242,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
         return;
     }
     if (this->subWindowFlags.bytes[3] != 0) {
-        if (StarMap_OnTouchEnd_ote((int) (intptr_t) this->starMap, x) != 0) {
+        if (this->starMap->OnTouchEnd(x, y) != 0) {
             this->subWindowFlags.bytes[3] = 0;
             this->resetLight();
         }
@@ -2304,7 +2300,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
         }
         return;
     }
-    if (this->subWindowFlags.bytes[0] != 0) {
+    if (this->subWindowFlags.bytes[1] != 0) {
         if (SpaceLounge_OnTouchEnd_ote((int) (intptr_t) this->spaceLounge, x, y) != 0) {
             this->subWindowFlags.bytes[1] = 0;
             this->resetIdleCamForHangar();
@@ -2324,7 +2320,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
         }
         return;
     }
-    if (this->subWindowFlags.bytes[1] != 0) {
+    if (this->subWindowFlags.bytes[0] != 0) {
         if (this->missionsWindow->OnTouchEnd(x, y) != 0) {
             this->subWindowFlags.bytes[0] = 0;
             int snd = **(int **) g_ote_sound;
@@ -2332,10 +2328,10 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
         }
         return;
     }
-    if (this->screenFlags.bytes[2] != 0) {
+    if (this->m_nStarMapWindowOpen.bytes[2] != 0) {
         if (MenuTouchWindow_OnTouchEnd_ote((MenuTouchWindow *) this->dlcMenu,
                                            x, y, touch) != 0) {
-            this->screenFlags.bytes[2] = 0;
+            this->m_nStarMapWindowOpen.bytes[2] = 0;
             {
                 int *row = (int *) ModStation_ote_buttonRow(this);
                 if (row != nullptr) {
@@ -2353,7 +2349,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
         }
         return;
     }
-    if (this->screenFlags.bytes[1] != 0) {
+    if (this->m_nStarMapWindowOpen.bytes[1] != 0) {
         {
                 int *help = *(int **) g_ote_helpLayout;
 
@@ -2396,7 +2392,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                         this->dlcMenu = w;
                     }
                     Status_checkForLevelUp_ote();
-                    this->screenFlags.bytes[2] = 1;
+                    this->m_nStarMapWindowOpen.bytes[2] = 1;
                     {
                         int *row = (int *) ModStation_ote_buttonRow(this);
                         if (row != nullptr) {
@@ -2442,7 +2438,7 @@ void ModStation::OnTouchBegin(int x, int y, void *touch) {
         return;
     this->scrollFlags.bytes[0] = 1;
     this->activeTouch = touch;
-    int flag = this->m_nStarMapWindowOpen.word;
+    const int flag = this->m_nStarMapWindowOpen.bytes[0];
     this->touchX = x;
     this->touchY = y;
     if (flag != 0) {
@@ -2569,9 +2565,9 @@ void ModStation::OnRender2D() {
         StarMap_draw_r2d(this);
     } else if (this->modalFlags.bytes[0] != 0) {
         StatusWindow_draw_r2d(this);
-    } else if (this->modalFlags.bytes[2] != 0) {
+    } else if (this->m_nStarMapWindowOpen.bytes[2] != 0) {
         MenuTouchWindow_draw_r2d(this);
-    } else if (this->screenFlags.bytes[0] != 0) {
+    } else if (this->m_nStarMapWindowOpen.bytes[0] != 0) {
         Radio_draw_r2d(this);
         CutScene_render2D_r2d();
     } else {
@@ -2581,7 +2577,7 @@ void ModStation::OnRender2D() {
             Layout_drawCredits_r2d(layout);
     }
 
-    if (this->modalFlags.bytes[2] != 0 || this->modalFlags.bytes[3] != 0)
+    if (this->modalFlags.bytes[2] != 0 || this->m_nStarMapWindowOpen.bytes[3] != 0)
         ChoiceWindow_draw_r2d(this);
     if (this->modalFlags.bytes[1] != 0) {
         if (this->dialogueWindow != 0)
