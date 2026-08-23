@@ -37,10 +37,13 @@ struct MtwAppData {
     uint8_t storeInitFlag;          // 0xc
     uint8_t rateGameFlagA;          // 0xd
     uint8_t rateGameFlagB;          // 0xe
-    uint8_t pad_0xf[0x2e];
+    uint8_t pad_0xf[0x2d];
+    // Android state 15 acknowledges the DLC launch dialog through this byte.
+    uint8_t dlcMenuAcceptedFlag;    // 0x3c
     uint8_t dlcMenuRequestFlag;     // 0x3d
-    uint8_t pad_0x3e[2];
-    uint8_t purchaseReadyFlag;      // 0x40
+    uint8_t pad_0x3e;
+    uint8_t dlcRestoreRequestFlag;  // 0x3f
+    uint8_t dlcStoreReadyFlag;      // 0x40
     uint8_t purchaseResultFlag;     // 0x41
     uint8_t purchaseErrorFlag;      // 0x42
     uint8_t pad_0x43[5];
@@ -53,8 +56,10 @@ static_assert(offsetof(MtwAppData, storeResultCode) == 0x8, "appdata 0x8");
 static_assert(offsetof(MtwAppData, storeInitFlag) == 0xc, "appdata 0xc");
 static_assert(offsetof(MtwAppData, rateGameFlagA) == 0xd, "appdata 0xd");
 static_assert(offsetof(MtwAppData, rateGameFlagB) == 0xe, "appdata 0xe");
+static_assert(offsetof(MtwAppData, dlcMenuAcceptedFlag) == 0x3c, "appdata 0x3c");
 static_assert(offsetof(MtwAppData, dlcMenuRequestFlag) == 0x3d, "appdata 0x3d");
-static_assert(offsetof(MtwAppData, purchaseReadyFlag) == 0x40, "appdata 0x40");
+static_assert(offsetof(MtwAppData, dlcRestoreRequestFlag) == 0x3f, "appdata 0x3f");
+static_assert(offsetof(MtwAppData, dlcStoreReadyFlag) == 0x40, "appdata 0x40");
 static_assert(offsetof(MtwAppData, purchaseResultFlag) == 0x41, "appdata 0x41");
 static_assert(offsetof(MtwAppData, purchaseErrorFlag) == 0x42, "appdata 0x42");
 static_assert(offsetof(MtwAppData, purchaseCode) == 0x48, "appdata 0x48");
@@ -186,6 +191,11 @@ static constexpr unsigned short kMtwStoreImagePairs[3][2] = {
     {9504, 9505},
     {9502, 9503},
 };
+
+// Android stores the five purchase bits as three exported Globals bytes plus
+// two adjacent, unexported bytes. The latter names are descriptive only.
+static uint8_t g_mtwIapDlcVipBought;
+static uint8_t g_mtwIapDlcFullPackageBought;
 
 static inline String _mtw_text_copy(int textId);
 static inline void _mtw_apply_ipad_control_coords(MenuTouchWindow *window);
@@ -509,53 +519,122 @@ static inline int _mtw_onTouchEnd_scrollState(void *self, int x, int y, int whic
                             ad->rateGameFlagA = 1;
                         NFC().rateGame();
                     }
-                } else if (which == 0xf4) {
-                    if (btn->field_0x0 == 60 && btn->OnTouchEnd(x, y) != 0) {
-                        window->messageShowing = 0;
-                        window->dlcResultDialogShowing = 1;
-                    } else if (btn->field_0x0 == 53 && btn->OnTouchEnd(x, y) != 0) {
-                        NFC().iap_restore_purchases();
-                        window->purchaseRestorePending = 1;
-                    } else if (btn->field_0x0 == 52 && btn->OnTouchEnd(x, y) != 0) {
-                        switch (window->field_0x1e0) {
-                            case 0: NFC().iap_buy_dlc_valkyrie(); break;
-                            case 1: NFC().iap_buy_dlc_kaamo_club(); break;
-                            case 2: NFC().iap_buy_dlc_supernova(); break;
-                            case 3: NFC().iap_buy_dlc_vip(); break;
-                            case 4: NFC().iap_buy_dlc_full_package(); break;
-                            default: break;
-                        }
-                        window->messageShowing = 0;
-                    }
                 }
             }
         }
     }
 
-    if (which == 0xf4 && window->scrollSlots != nullptr) {
-        auto *slots = (Array<TouchButton *> *) window->scrollSlots;
-        for (unsigned int i = 0; i < slots->size(); i++) {
-            TouchButton *btn = (*slots)[i];
-            if (btn == nullptr || btn->OnTouchEnd(x, y) == 0) continue;
+    return _mtw_onTouchEnd_listTail(window, x, y);
+}
 
-            if (window->field_0x1e0 == (int) i) {
-                switch (window->field_0x1e0) {
-                    case 0: NFC().iap_buy_dlc_valkyrie(); break;
-                    case 1: NFC().iap_buy_dlc_kaamo_club(); break;
-                    case 2: NFC().iap_buy_dlc_supernova(); break;
-                    case 3: NFC().iap_buy_dlc_vip(); break;
-                    case 4: NFC().iap_buy_dlc_full_package(); break;
-                    default: break;
-                }
-            } else {
-                window->field_0x1e0 = (int) i;
-                if (window->scrollWindowB != nullptr)
-                    window->scrollWindowB->setText(String(""), _mtw_text_copy(window->field_0x1e0 + 87));
-            }
+static inline bool _mtw_dlc_is_owned(int selection) {
+    switch (selection) {
+        case 0: return Globals::iap_hack_dlc1Bought != 0;
+        case 1: return Globals::iap_hack_dlc2Bought != 0;
+        case 2: return Globals::iap_hack_dlc3Bought != 0;
+        case 3: return g_mtwIapDlcVipBought != 0;
+        case 4: return g_mtwIapDlcFullPackageBought != 0;
+        default: return false;
+    }
+}
+
+static inline void _mtw_request_dlc_purchase(int selection) {
+    switch (selection) {
+        case 0: NFC().iap_buy_dlc_valkyrie(); break;
+        case 1: NFC().iap_buy_dlc_kaamo_club(); break;
+        case 2: NFC().iap_buy_dlc_supernova(); break;
+        case 3: NFC().iap_buy_dlc_vip(); break;
+        case 4: NFC().iap_buy_dlc_full_package(); break;
+        default: break;
+    }
+}
+
+// Android MenuTouchWindow::OnTouchEnd case 15. State 16 has a distinct
+// begin/move path but no corresponding end-case in either Android dump.
+static inline __attribute__((always_inline)) int
+_mtw_onTouchEnd_dlcStoreState(MenuTouchWindow *window, int x, int y) {
+    MtwAppData *appData = (MtwAppData *) _mtw_AppMgr_GetApplicationData();
+
+    if (window->dlcMessageShowing != 0) {
+        if (_mtw_ChoiceWindow_OnTouchEnd(window->choiceWindow, x, y) == 0) {
+            appData->dlcMenuAcceptedFlag = 1;
+            window->dlcMessageShowing = 0;
             window->messageShowing = 0;
+        }
+        return 0;
+    }
+
+    if (window->dlcErrorDialogShowing != 0 || window->dlcResultDialogShowing != 0) {
+        window->messageShowing = 0;
+        window->dlcResultDialogShowing = 0;
+        window->dlcErrorDialogShowing = 0;
+        return 0;
+    }
+
+    if (window->messageShowing != 0) {
+        if (_mtw_ChoiceWindow_OnTouchEnd(window->choiceWindow, x, y) == 0) {
+            window->messageShowing = 0;
+            appData->dlcStoreReadyFlag = 0;
+        }
+        return 0;
+    }
+
+    if (window->scrollWindowB != nullptr)
+        window->scrollWindowB->OnTouchEnd(x, y);
+
+    auto *entries = (Array<TouchButton *> *) window->scrollEntries;
+    if (entries != nullptr) {
+        for (unsigned int i = 0; i < entries->size(); ++i) {
+            TouchButton *button = (*entries)[i];
+            if (button == nullptr) continue;
+
+            if (button->field_0x0 == 60 && button->field_0x4 == 0) {
+                if (button->OnTouchEnd(x, y) != 0) {
+                    appData->purchaseCode = 0xffffffffu;
+                    appData->dlcRestoreRequestFlag = 1;
+                    window->messageShowing = 0;
+                    window->purchaseRestorePending = 1;
+                }
+            } else if (button->field_0x0 == 52 && button->field_0x4 == 0 &&
+                       button->OnTouchEnd(x, y) != 0) {
+                int selection = window->field_0x1e0;
+                if (!_mtw_dlc_is_owned(selection))
+                    _mtw_request_dlc_purchase(selection);
+                appData->purchaseCode = (unsigned int) selection;
+                window->messageShowing = 0;
+            }
+        }
+    }
+
+    auto *slots = (Array<TouchButton *> *) window->scrollSlots;
+    if (slots != nullptr) {
+        int previousSelection = window->field_0x1e0;
+        for (unsigned int i = 0; i < slots->size(); ++i) {
+            TouchButton *slot = (*slots)[i];
+            if (slot == nullptr || slot->OnTouchEnd(x, y) == 0) continue;
+
+            window->field_0x1e0 = (int) i;
+            if (previousSelection == (int) i) {
+                _mtw_request_dlc_purchase(previousSelection);
+            } else if (window->scrollWindowB != nullptr) {
+                window->scrollWindowB->setText(String(""), _mtw_text_copy(window->field_0x1e0 + 87));
+            }
             break;
         }
     }
+
+    // The native body queries this hit region's image height but does not
+    // mutate state in the recovered control-flow. Keep the observed probe.
+    if (window->scrollbarHit != 0 && window->heapBufB != nullptr &&
+        window->field_0x1e0 >= 0 && Globals::layout != nullptr && Globals::Canvas != nullptr) {
+        int imageId = ((const int *) window->heapBufB)[window->field_0x1e0];
+        PaintCanvas *canvas = (PaintCanvas *) Globals::Canvas;
+        int xThreshold = Globals::w - ((Layout *) Globals::layout)->field_0x28 -
+                         canvas->GetImage2DWidth((unsigned int) imageId);
+        if (xThreshold < x)
+            (void) canvas->GetImage2DHeight((unsigned int) imageId);
+    }
+
     return _mtw_onTouchEnd_listTail(window, x, y);
 }
 
@@ -677,11 +756,11 @@ static inline __attribute__((always_inline)) int _mtw_onTouchEnd_storeCreditsSta
         if (button == nullptr || button->OnTouchEnd(x, y) == 0) continue;
 
         window->field_0x234 = (int) i;
-        if (i == 2 && !Globals::iap_hack_dlc3Bought) {
+        if (i == 2 && !_mtw_dlc_is_owned(2)) {
             NFC().iap_buy_dlc_supernova();
             return 0;
         }
-        if (i == 1 && !Globals::iap_hack_dlc1Bought) {
+        if (i == 1 && !_mtw_dlc_is_owned(0)) {
             NFC().iap_buy_dlc_valkyrie();
             return 0;
         }
@@ -2007,8 +2086,10 @@ int MenuTouchWindow::OnTouchEnd(int x, int y, void *touchId) {
             _mtw_onTouchEnd_languageState(this, x, y);
             break;
         case 0xf:
+            _mtw_onTouchEnd_dlcStoreState(this, x, y);
+            break;
         case 0x10:
-            _mtw_onTouchEnd_scrollState(this, x, y, 0xf4);
+            _mtw_onTouchEnd_listTail(this, x, y);
             break;
         case 0x11:
             _mtw_onTouchEnd_storeCreditsState(this, x, y);
@@ -2865,7 +2946,7 @@ void MenuTouchWindow::update(int dt) {
     unsigned char busy = this->dlcMessageShowing;
 
     if (busy != 0 || this->purchaseRestorePending != 0) {
-        if (appData->purchaseReadyFlag != 0) {
+        if (appData->dlcStoreReadyFlag != 0) {
             Layout *layout = (Layout *) Globals::layout;
             void *canvas = Globals::Canvas;
             this->contentHeight = (((Globals::h - layout->field_0x10_rightMargin)
@@ -2878,7 +2959,7 @@ void MenuTouchWindow::update(int dt) {
             this->messageShowing = 0;
             this->dlcMessageShowing = 0;
             this->pageHeight = (ih + rowH) * 5;
-            appData->purchaseReadyFlag = 0;
+            appData->dlcStoreReadyFlag = 0;
             optObj->flag_0x3b = 1;
             _mtw_RecordHandler_saveOptions(Globals::recordHandler);
             busy = this->dlcMessageShowing;
@@ -2903,37 +2984,33 @@ void MenuTouchWindow::update(int dt) {
         void *cw = this->choiceWindow;
         switch (code) {
             case 0: {
-                Status *status = Globals::status;
-                status->flag_0x35 = 1;
-                _mtw_Status_setSystemVisibility(status, 0x19, true);
+                Globals::iap_hack_dlc1Bought = 1;
+                _mtw_Status_setSystemVisibility(Globals::status, 0x19, true);
                 _mtw_ChoiceWindow_set(cw, _mtw_GameText_getText(Globals::gameText, g_mtw_upTextIds[1]));
             }
             break;
             case 1: {
                 Globals::status->mode_0x114 = 3;
-                ((OptionsRecord *) Globals::options)->flag_0x36 = 1;
+                Globals::iap_hack_dlc2Bought = 1;
                 _mtw_ChoiceWindow_set(cw, _mtw_GameText_getText(Globals::gameText, g_mtw_upTextIds[2]));
             }
             break;
             case 2: {
-                Status *status = Globals::status;
-                status->flag_0x37 = 1;
-                _mtw_Status_setSystemVisibility(status, 0x19, true);
+                Globals::iap_hack_dlc3Bought = 1;
+                _mtw_Status_setSystemVisibility(Globals::status, 0x19, true);
                 _mtw_ChoiceWindow_set(cw, _mtw_GameText_getText(Globals::gameText, g_mtw_upTextIds[3]));
             }
             break;
             case 3: {
-                ((OptionsRecord *) Globals::options)->flag_0x38 = 1;
+                g_mtwIapDlcVipBought = 1;
                 _mtw_ChoiceWindow_set(cw, _mtw_GameText_getText(Globals::gameText, g_mtw_upTextIds[4]));
             }
             break;
             case 4: {
-                OptionsRecord *flags = (OptionsRecord *) Globals::options;
-                Status *status = Globals::status;
-                flags->flag_0x35 = 1;
-                flags->flag_0x39 = 1;
-                flags->flag_0x37 = 1;
-                _mtw_Status_setSystemVisibility(status, 0x19, true);
+                Globals::iap_hack_dlc1Bought = 1;
+                g_mtwIapDlcFullPackageBought = 1;
+                Globals::iap_hack_dlc3Bought = 1;
+                _mtw_Status_setSystemVisibility(Globals::status, 0x19, true);
                 _mtw_ChoiceWindow_set(cw, _mtw_GameText_getText(Globals::gameText, g_mtw_upTextIds[5]));
             }
             break;
