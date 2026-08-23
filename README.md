@@ -113,6 +113,7 @@ metadata only; original game binaries and asset dumps are not included.
 - [MissionsWindow/WantedWindow touch-end return ABI ARM pass](docs/MISSIONSWINDOW_TOUCH_END_RETURN_ABI_ARM_2026-08-23.md)
 - [ModStation subwindow routing ARM pass](docs/MODSTATION_SUBWINDOW_ROUTING_ARM_2026-08-23.md)
 - [Station subwindow touch-return ABI ARM pass](docs/STATION_SUBWINDOW_TOUCH_RETURN_ABI_ARM_2026-08-23.md)
+- [Hangar touch-return ABI ARM pass](docs/HANGAR_TOUCH_RETURN_ABI_ARM_2026-08-23.md)
 - [AEM/AEI loader notes](docs/AEM_AEI_NATIVE_LOADER_SPEC.md)
 - [DeepOpen J2ME crosswalk](docs/DEEPOPEN_J2ME_CROSSWALK_2026-07-20.md)
 - [Recovery evidence guide (RU)](docs/RECOVERY_EVIDENCE_GUIDE_RU.md)

@@ -11,6 +11,7 @@
 #include "engine/math/EaseInOut.h"
 #include "engine/math/EaseInOutMatrix.h"
 #include "game/mission/Item.h"
+#include "game/ui/HangarWindow.h"
 #include "game/ui/MissionsWindow.h"
 #include "game/ui/StatusWindow.h"
 #include "game/world/NewsTicker.h"
@@ -75,12 +76,6 @@ const float *modStationCameraYaw() {
 }
 
 } // namespace
-
-struct HangarWindow {
-    void OnTouchBegin(int touch, int coord);
-
-    unsigned int OnTouchMove(int touch, int coord);
-};
 
 // ---- Models for untyped runtime handles touched via byte offsets ----
 
@@ -1622,8 +1617,6 @@ void ChoiceWindow_set_ote(int cw, int textStr, int flag);
 
 void ChoiceWindow_setNotice_ote(int cw, int textStr);
 
-int HangarWindow_OnTouchEnd_ote(HangarWindow *w, int p1, int p2);
-
 void HangarWindow_ctor_ote(HangarWindow *w);
 
 void HangarWindow_dtor_ote(HangarWindow *w);
@@ -2240,7 +2233,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
         return;
     }
     if (this->subWindowFlags.bytes[2] != 0) {
-        if (HangarWindow_OnTouchEnd_ote((HangarWindow *) this->hangarWindow, x, y) != 0) {
+        if (static_cast<HangarWindow *>(this->hangarWindow)->OnTouchEnd(x, y) != 0) {
             int *st = *(int **) g_ote_status;
 
             Status_getShip_ote();

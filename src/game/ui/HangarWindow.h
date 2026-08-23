@@ -122,7 +122,7 @@ public:
 
     void OnTouchBegin(int touch, int coord);
 
-    void OnTouchEnd(int touch, int coord);
+    int OnTouchEnd(int touch, int coord);
 
     unsigned int OnTouchMove(int touch, int coord);
 

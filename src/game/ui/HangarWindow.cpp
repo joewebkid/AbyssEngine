@@ -1162,7 +1162,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
 
 #endif
 
-void HangarWindow::OnTouchEnd(int touch, int coord) {
+int HangarWindow::OnTouchEnd(int touch, int coord) {
     Layout *layout = static_cast<Layout *>(Globals::layout);
     Status *status = Globals::status != nullptr ? Globals::status : Status::gStatus;
     GameText *gameText = static_cast<GameText *>(Globals::gameText);
@@ -1170,7 +1170,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
         gameText = GameText::gGameText;
     }
     if (layout == nullptr || status == nullptr || gameText == nullptr || this->hangarList == nullptr) {
-        return;
+        return 0;
     }
 
     auto buttonAt = [this](unsigned int index) -> TouchButton * {
@@ -1226,7 +1226,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
     this->dragging = 0;
     if (this->suppressTouchEnd != 0) {
         this->suppressTouchEnd = 0;
-        return;
+        return 0;
     }
 
     if (this->dialogActive == 0) {
@@ -1278,7 +1278,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
             }
             if (this->sellConfirmPending != 0) {
                 this->sellConfirmPending = 0;
-                return;
+                return 0;
             }
 
             TouchButton *autoComplete = buttonAt(kHangarButtonBlueprintAutoComplete);
@@ -1311,7 +1311,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                                 Globals::sound->play(0x61, nullptr, nullptr, 0.0f);
                             }
                         }
-                        return;
+                        return 0;
                     case kHangarButtonSelectShip:
                     case kHangarButtonSelectItemFirst:
                     case kHangarButtonSelectItemSecond:
@@ -1320,13 +1320,13 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                     case kHangarButtonMoveToCargoEntry:
                     case kHangarButtonSelectBlueprint:
                         this->selectItem(this->selectedItem);
-                        return;
+                        return 0;
                     case kHangarButtonCurrentAmount:
                         this->transaction(false);
                         if (Globals::sound != nullptr) {
                             Globals::sound->play(0x64, nullptr, nullptr, 0.0f);
                         }
-                        return;
+                        return 0;
                     case kHangarButtonStationAmount: {
                         this->transaction(true);
                         if (Globals::sound != nullptr) {
@@ -1338,7 +1338,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                             this->autoEquipPending = 1;
                             this->autoEquipIndex = this->hangarList->getCurrentItemIndex();
                         }
-                        return;
+                        return 0;
                     }
                     case kHangarButtonSellShip:
                         if (this->dialog != nullptr) {
@@ -1346,7 +1346,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                             this->sellShipPending = 1;
                             this->dialogActive = 1;
                         }
-                        return;
+                        return 0;
                     case kHangarButtonCredits: {
                         g_hangarCreditOfferShown = 1;
                         RecordHandler *recordHandler = static_cast<RecordHandler *>(Globals::recordHandler);
@@ -1354,7 +1354,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                             recordHandler->saveOptions();
                         }
                         this->showCreditsBuyWindow();
-                        return;
+                        return 0;
                     }
                     default:
                         break;
@@ -1381,13 +1381,13 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                 }
                 this->showCreditsBuyWindow();
             }
-            return;
+            return 0;
         }
 
         if (this->viewMode == 1) {
             layout->resetWindowDimensions();
             this->viewMode = 0;
-            return;
+            return 0;
         }
         const unsigned int tab = this->hangarList->getCurrentTab();
         if (tab == 4) {
@@ -1398,7 +1398,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
             this->refreshCurrentContentHeight();
             this->scrollOffset = 0;
             this->scrollOffsetBackup = 0;
-            return;
+            return 0;
         }
         if (tab == 3) {
             this->hangarList->setCurrentTab(0, true);
@@ -1407,13 +1407,14 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
         } else if (this->readyToClose()) {
             this->setSellMode(false);
             resetSelection();
+            return 1;
         }
-        return;
+        return 0;
     }
 
     if (this->dialog == nullptr) {
         this->dialogActive = 0;
-        return;
+        return 0;
     }
 
     if (this->autoCompletePending != 0) {
@@ -1438,7 +1439,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
             }
         }
         this->autoCompletePending = 0;
-        return;
+        return 0;
     }
 
     if (this->replaceEquipPending != 0) {
@@ -1454,7 +1455,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
             this->dialogActive = 0;
             this->replaceEquipPending = 0;
         }
-        return;
+        return 0;
     }
 
     if (this->notEnoughCredits != 0) {
@@ -1470,7 +1471,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
             }
             this->showCreditsBuyWindow();
         }
-        return;
+        return 0;
     }
 
     if (this->buyCreditsActive != 0) {
@@ -1489,7 +1490,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
             if (module != nullptr) {
                 module->pendingHangarClose = 0;
             }
-            return;
+            return 0;
         }
 
         const auto buyCredits = [](unsigned int product) {
@@ -1507,7 +1508,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
             TouchButton *button = buttonAt(i);
             if (button != nullptr && button->OnTouchEnd(touch, coord) != 0) {
                 buyCredits(i - kHangarButtonPaidCreditsFirst);
-                return;
+                return 0;
             }
         }
         TouchButton *more = buttonAt(kHangarButtonCreditsMore);
@@ -1523,7 +1524,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                 this->showFreeCreditsWindow();
             }
         }
-        return;
+        return 0;
     }
 
     if (this->freeCreditsActive != 0) {
@@ -1532,7 +1533,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
             setCreditButtonsVisible(kHangarButtonFreeCreditsFirst, kHangarButtonBlueprintAutoComplete, false);
             this->freeCreditsActive = 0;
             this->showCreditsBuyWindow();
-            return;
+            return 0;
         }
 
         uint8_t *appData = ApplicationManager::gAppManager != nullptr
@@ -1578,9 +1579,9 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
             }
             // The ARM reward table (dword_202844) has no recovered data object yet.
             // Do not invent a credit amount; NFC and claim-state routing are confirmed.
-            return;
+            return 0;
         }
-        return;
+        return 0;
     }
 
     if (this->bluePrintPurchasePending != 0) {
@@ -1622,7 +1623,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
             this->localBluePrint = 0;
         }
         this->refreshCurrentContentHeight();
-        return;
+        return 0;
     }
 
     if (this->sellShipPending != 0) {
@@ -1639,7 +1640,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
             this->hangarList->initShopTab(this->itemList, status->getStation()->getShips());
             this->refreshCurrentContentHeight();
         }
-        return;
+        return 0;
     }
 
     if (this->shipSwapPending != 0) {
@@ -1647,11 +1648,11 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
         if (result == 1) {
             this->shipSwapPending = 0;
             this->dialogActive = 0;
-            return;
+            return 0;
         }
         if (result != 0 || this->selectedItem == nullptr || this->selectedItem->ship == nullptr ||
             status->getShip() == nullptr || status->getStation() == nullptr) {
-            return;
+            return 0;
         }
 
         Ship *oldShip = status->getShip();
@@ -1661,7 +1662,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
         if (newShip == nullptr || returnedShip == nullptr) {
             delete newShip;
             delete returnedShip;
-            return;
+            return 0;
         }
         Array<Item *> *cargo = oldShip->getCargo();
         if (cargo != nullptr) {
@@ -1709,7 +1710,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
         this->shipSwapPending = 0;
         this->dialogActive = 0;
         resetSelection();
-        return;
+        return 0;
     }
 
     const int result = this->dialog->OnTouchEnd(touch, coord);
@@ -1724,7 +1725,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
             this->dlcMenuPending = 0;
             this->dialogActive = 0;
         }
-        return;
+        return 0;
     }
 
     if (this->buyMode != 0) {
@@ -1738,16 +1739,16 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                 this->buyMode = 0;
             } else if (this->autoEquipped == 0) {
                 this->buyMode = 1;
-                return;
+                return 0;
             } else {
                 resetTabs();
-                return;
+                return 0;
             }
         } else {
-            return;
+            return 0;
         }
         resetSelection();
-        return;
+        return 0;
     }
 
     if (result == 0) {
@@ -1757,6 +1758,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
             module->pendingHangarClose = 0;
         }
     }
+    return 0;
 }
 
 void HangarWindow::update(int delta) {
