@@ -2513,19 +2513,21 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
         if (this->quickMenuType == 3) {
             menuY = static_cast<float>(settings->steerAnchorX);
         } else {
+            const float fireAnchorX = static_cast<float>(settings->fireAnchorX);
             const float fireMenuOffset = Globals::iPadHD != 0
                     ? 112.5f
                     : (Globals::iPadLarge != 0 ? 160.0f : 80.0f);
-            menuY = static_cast<float>(settings->fireAnchorX) - fireMenuOffset;
+            menuY = fireAnchorX - fireMenuOffset;
         }
         if (menuY >= 0.0f) {
             if (this->quickMenuType == 3) {
                 menuY = static_cast<float>(settings->steerAnchorX);
             } else {
+                const float fireAnchorX = static_cast<float>(settings->fireAnchorX);
                 const float fireMenuOffset = Globals::iPadHD != 0
                         ? 112.5f
                         : (Globals::iPadLarge != 0 ? 160.0f : 80.0f);
-                menuY = static_cast<float>(settings->fireAnchorX) - fireMenuOffset;
+                menuY = fireAnchorX - fireMenuOffset;
             }
         } else {
             menuY = 0.0f;
@@ -2613,7 +2615,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
         }
         case 2: {
             int textIds[4] = {307, 308, 309, (Globals::status->field_f8 & 0xff) != 0 ? 311 : 310};
-            std::int64_t actionPairs[2];
+            alignas(16) std::int64_t actionPairs[2];
             actionPairs[0] = 0x4000000020000LL;
             actionPairs[1] = 0x10000000080000LL;
             int *actions = reinterpret_cast<int *>(actionPairs);
@@ -2694,13 +2696,12 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
         }
         unsigned int i = 0;
         while (i < buttonCount) {
-            TouchButton *button = (*buttons)[i];
-            button->translate(this->menuOriginX, this->menuOriginYBase);
+            (*buttons)[i]->translate(this->menuOriginX, this->menuOriginYBase);
             if (i <= 9) {
-                const Vector xPosition = button->getPosition();
-                Globals::sub_menu_buttons_x[i] = static_cast<int>(xPosition.x);
-                const Vector yPosition = button->getPosition();
-                Globals::sub_menu_buttons_y[i] = static_cast<int>(yPosition.y);
+                Globals::sub_menu_buttons_x[i] =
+                        static_cast<int>((*buttons)[i]->getPosition().x);
+                Globals::sub_menu_buttons_y[i] =
+                        static_cast<int>((*buttons)[i]->getPosition().y);
             }
             buttons = *menuSlot;
             ++i;
@@ -2710,11 +2711,10 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
         this->menuOriginYBase = buttonCount < 5 ? 0 : -hud_layout_i32(0x30);
         for (unsigned int i = 0; i < buttonCount; ++i) {
             if (i <= 9) {
-                TouchButton *button = (*buttons)[i];
-                const Vector xPosition = button->getPosition();
-                Globals::sub_menu_buttons_x[i] = static_cast<int>(xPosition.x);
-                const Vector yPosition = button->getPosition();
-                Globals::sub_menu_buttons_y[i] = static_cast<int>(yPosition.y);
+                Globals::sub_menu_buttons_x[i] =
+                        static_cast<int>((*buttons)[i]->getPosition().x);
+                Globals::sub_menu_buttons_y[i] =
+                        static_cast<int>((*buttons)[i]->getPosition().y);
                 buttonCount = (*menuSlot)->size();
             }
         }
