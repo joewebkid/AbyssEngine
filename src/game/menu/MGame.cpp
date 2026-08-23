@@ -9,6 +9,7 @@
 #include "engine/render/AEGeometry.h"
 #include "game/ui/ChoiceWindow.h"
 #include "engine/audio/FModSound.h"
+#include "engine/file/FileRead.h"
 #include "game/world/Galaxy.h"
 #include "game/mission/Item.h"
 #include "game/world/LevelScript.h"
@@ -1498,6 +1499,7 @@ namespace {
 
 enum MGameHudAction : unsigned int {
     kHudActionPause = 0x00000001,
+    kHudActionBoost = 0x00000002,
     kHudActionQuickMenu = 0x00000004,
     kHudActionFire = 0x00000008,
     kHudActionCamera = 0x00000080,
@@ -1589,10 +1591,6 @@ static void mgame_open_pause_menu(MGame *self) {
 }
 
 static void mgame_dispatch_combat_touch_actions(MGame *self, unsigned int actions) {
-    if (self->levelScript == nullptr || self->levelScript->startSequence() != 0 ||
-        self->player->isDead() || self->jumpActive != 0 || self->jumpDriveActive != 0)
-        return;
-
     Player *playerBody = static_cast<Player *>(self->player->player);
     if ((actions & kHudActionFire) != 0 && playerBody != nullptr &&
         playerBody->gunAvailable(1) && !self->player->isMining() &&
@@ -1702,21 +1700,6 @@ static void mgame_handle_star_map_touch_end(MGame *self, int x, int y) {
     self->starMap = nullptr;
 }
 
-static void mgame_handle_basic_choice_window_touch_end(MGame *self, int x, int y) {
-    if (self->choiceWindow == nullptr)
-        return;
-
-    // This is the ordinary MGame+0xce path. The neighboring flags select
-    // campaign/jump-specific ChoiceWindow handlers and must not be collapsed
-    // into the basic dismissal case.
-    if (self->field_0xcf == 0 && self->_bca == 0 && self->field_0x1e4 == 0 &&
-        self->choiceWindow->OnTouchEnd(x, y) == 0) {
-        self->pauseOpen = 0;
-        self->choiceWindowOpen = 0;
-        self->resumeSounds();
-    }
-}
-
 static void mgame_handle_menu_touch_end(MGame *self, int x, int y, void *touchId) {
     MenuTouchWindow *menuWindow = self->menuWindow;
     if (menuWindow == nullptr)
@@ -1762,6 +1745,222 @@ static void mgame_reset_dialogue_input(MGame *self) {
     self->hud->releaseAllKeys();
 }
 
+static Station *mgame_load_station(int stationId) {
+    auto *reader = new FileRead();
+    Station *station = reinterpret_cast<Station *>(
+            static_cast<intptr_t>(reader->loadStation(stationId)));
+    delete reader;
+    return station;
+}
+
+static Station *mgame_get_galaxy_station(int stationId) {
+    return reinterpret_cast<Station *>(
+            static_cast<intptr_t>(Galaxy::gGalaxy->getStation(stationId)));
+}
+
+static void mgame_store_player_vitals(MGame *self, Status *status) {
+    Player *player = reinterpret_cast<Player *>(self->player->player);
+    status->field_64 = player->getHitpoints();
+    status->field_5c = player->getShieldHP();
+    status->field_60 = player->getArmorHP();
+    status->field_68 = player->getGammaHP();
+}
+
+static void mgame_switch_module(MGame *self, unsigned int module) {
+    self->active = 0;
+    self->applicationManager->SetCurrentApplicationModule(module);
+}
+
+static void mgame_clear_completed_mission(MGame *self, Status *status) {
+    Mission *emptyMission = reinterpret_cast<Mission *>(Mission::empty);
+    self->level->removeObjectives();
+    status->setMission(emptyMission);
+    self->player->setRoute(nullptr);
+    if (self->player->goingToWaypoint())
+        self->player->setAutoPilot(nullptr);
+    self->player->removeRoute();
+    self->level->setPlayerRoute(nullptr);
+}
+
+static void mgame_create_followup_drill_mission(MGame *self, Status *status) {
+    self->field_0x1e0 = self->level->killCountB;
+    Item *drill = (*Item::g_items)[216]->makeItem(10);
+    status->getShip()->setEquipment(drill, 0);
+
+    String client("Client", false);
+    int *clientImage = static_cast<ImageFactory *>(Globals::imageFactory)->createChar(true, 0);
+    Mission *followup = new Mission(183, client, clientImage, 0, 0,
+                                    status->getStation()->getIndex(), 1);
+    status->setMission(followup);
+    status->setFreelanceMission(followup);
+    mgame_switch_module(self, 2);
+}
+
+static void mgame_handle_completed_mission(MGame *self, Status *status,
+                                           Mission *mission, Mission *campaignMission) {
+    const bool campaignWonBehindFreelance =
+            campaignMission->hasWon() && !mission->isCampaignMission();
+    Mission *completedMission = mission->hasWon() ? mission : campaignMission;
+
+    if (completedMission->isInstantActionMission()) {
+        Globals::switch_to_target_setting = 2;
+        mgame_switch_module(self, 1);
+        return;
+    }
+
+    const bool campaign = completedMission->isCampaignMission();
+    if (campaign) {
+        status->nextCampaignMission(true);
+    } else {
+        status->setFreelanceMission(reinterpret_cast<Mission *>(Mission::empty));
+        static_cast<Layout *>(Globals::layout)->showMissionRewardMessage(
+                completedMission->getReward() + completedMission->getBonus(), false);
+    }
+    status->changeCredits(completedMission->getReward() + completedMission->getBonus());
+    self->levelScript->m_nTimeLimit = 0;
+
+    if (campaign) {
+        switch (status->getCurrentCampaignMission()) {
+            case 15:
+                status->setStation(mgame_load_station(98));
+                Globals::switch_to_target_setting = 0;
+                mgame_store_player_vitals(self, status);
+                mgame_switch_module(self, 5);
+                return;
+            case 22:
+                Globals::switch_to_target_setting = 0;
+                mgame_store_player_vitals(self, status);
+                mgame_switch_module(self, 5);
+                return;
+            case 43:
+                status->setStation(mgame_load_station(10));
+                Globals::switch_to_target_setting = 0;
+                mgame_store_player_vitals(self, status);
+                mgame_switch_module(self, 5);
+                return;
+            case 42:
+                delete self->level->objectivesB;
+                self->level->objectivesB = nullptr;
+                delete self->level->objectivesA;
+                self->level->objectivesA = nullptr;
+                break;
+            case 65:
+                Globals::switch_to_target_setting = 1;
+                mgame_store_player_vitals(self, status);
+                Level::initStreamOutPosition = 1;
+                status->departStation(mgame_load_station(100));
+                mgame_switch_module(self, 2);
+                return;
+            case 81:
+                Globals::switch_to_target_setting = 1;
+                mgame_store_player_vitals(self, status);
+                Level::initStreamOutPosition = 1;
+                status->setStation(status->playerStation);
+                status->departStation(status->playerStation);
+                mgame_switch_module(self, 2);
+                return;
+            case 74:
+                status->setStation(mgame_load_station(100));
+                Globals::sound->stopAll();
+                Globals::switch_to_target_setting = 0;
+                mgame_store_player_vitals(self, status);
+                mgame_switch_module(self, 5);
+                return;
+            case 95:
+                Globals::switch_to_target_setting = 1;
+                mgame_store_player_vitals(self, status);
+                Level::initStreamOutPosition = 1;
+                status->departStation(mgame_get_galaxy_station(10));
+                mgame_switch_module(self, 2);
+                return;
+            case 96:
+            case 127:
+                Globals::switch_to_target_setting = 1;
+                mgame_store_player_vitals(self, status);
+                Level::initStreamOutPosition = 1;
+                status->departStation(mgame_get_galaxy_station(98));
+                mgame_switch_module(self, 2);
+                return;
+            case 100:
+                mgame_store_player_vitals(self, status);
+                Globals::switch_to_target_setting = 0;
+                Level::initStreamOutPosition = 0;
+                status->departStation(mgame_get_galaxy_station(120));
+                mgame_switch_module(self, 5);
+                return;
+            case 110:
+                mgame_store_player_vitals(self, status);
+                Globals::switch_to_target_setting = 0;
+                Level::initStreamOutPosition = 0;
+                status->departStation(mgame_get_galaxy_station(10));
+                self->applicationManager->SetCurrentApplicationModule(5);
+                Globals::enterSpaceLounge = 1;
+                self->active = 0;
+                return;
+            case 120:
+                Globals::switch_to_target_setting = 1;
+                mgame_store_player_vitals(self, status);
+                Level::initStreamOutPosition = 0;
+                status->departStation(mgame_get_galaxy_station(126));
+                mgame_switch_module(self, 5);
+                return;
+            case 126:
+                Globals::switch_to_target_setting = 1;
+                mgame_store_player_vitals(self, status);
+                Level::initStreamOutPosition = 0;
+                status->departStation(mgame_get_galaxy_station(120));
+                mgame_switch_module(self, 2);
+                return;
+            case 134:
+                Globals::switch_to_target_setting = 0;
+                mgame_store_player_vitals(self, status);
+                Level::initStreamOutPosition = 0;
+                status->departStation(mgame_get_galaxy_station(112));
+                mgame_switch_module(self, 5);
+                return;
+            case 144:
+                Globals::switch_to_target_setting = 1;
+                mgame_store_player_vitals(self, status);
+                Level::initStreamOutPosition = 0;
+                status->departStation(mgame_get_galaxy_station(112));
+                mgame_switch_module(self, 2);
+                return;
+            case 155:
+                Level::initStreamOutPosition = 1;
+                Globals::switch_to_target_setting = 1;
+                status->departStation(mgame_get_galaxy_station(status->field_84));
+                mgame_switch_module(self, 2);
+                return;
+            case 161:
+                mgame_store_player_vitals(self, status);
+                Globals::switch_to_target_setting = 0;
+                Level::initStreamOutPosition = 0;
+                status->departStation(mgame_get_galaxy_station(93));
+                mgame_switch_module(self, 2);
+                return;
+            case 162:
+                mgame_store_player_vitals(self, status);
+                Globals::switch_to_target_setting = 0;
+                Level::initStreamOutPosition = 0;
+                status->departStation(mgame_get_galaxy_station(93));
+                mgame_switch_module(self, 5);
+                return;
+            default:
+                break;
+        }
+    }
+
+    if (!campaignWonBehindFreelance)
+        mgame_clear_completed_mission(self, status);
+
+    if (!campaign && completedMission->getType() == 183) {
+        mgame_create_followup_drill_mission(self, status);
+        return;
+    }
+
+    mgame_reset_dialogue_input(self);
+}
+
 static void mgame_clear_failed_freelance_mission(MGame *self, Mission *mission) {
     Status *status = Status::gStatus;
     if (mission->getType() == 12) {
@@ -1793,6 +1992,98 @@ static void mgame_clear_failed_freelance_mission(MGame *self, Mission *mission) 
     mgame_reset_dialogue_input(self);
 }
 
+static void mgame_handle_cargo_conversion_choice(MGame *self, int x, int y) {
+    const int selection = self->choiceWindow->OnTouchEnd(x, y);
+    if (selection == 1) {
+        self->choiceWindowOpen = 0;
+        self->field_0xca = 0;
+        self->pauseOpen = 0;
+        self->resumeSounds();
+        return;
+    }
+    if (selection != 0)
+        return;
+
+    String convertedCargo;
+    Ship *ship = Status::gStatus->getShip();
+    bool convertedAny = false;
+    for (int sourceItem = 154; sourceItem < 166; ++sourceItem) {
+        const int replacementItem = sourceItem == 165 ? 218 : sourceItem + 11;
+        const int batchSize = Status::gStatus->hardCoreMode() ? 100 : 30;
+        int convertedCount = 0;
+        while (ship->hasCargo(sourceItem, batchSize)) {
+            ship->removeCargo(sourceItem, batchSize);
+            ship->addCargo((*Item::g_items)[replacementItem]->makeItem(1));
+            ++convertedCount;
+            convertedAny = true;
+        }
+        if (convertedCount != 0) {
+            convertedCargo += String("\n", false) + String(convertedCount) +
+                              String("t ", false) +
+                              *GameText::gGameText->getText(replacementItem + 1274);
+        }
+    }
+
+    self->field_0xca = 0;
+    if (convertedAny) {
+        self->choiceWindow->set(*GameText::gGameText->getText(291) +
+                                String("\n", false) + convertedCargo);
+    } else {
+        self->choiceWindow->set(*GameText::gGameText->getText(292));
+    }
+}
+
+static bool mgame_handle_terminal_choice(MGame *self, int x, int y) {
+    const bool terminalChoice = (self->field_0x1e4 & 0xff) != 0;
+    const int selection = self->choiceWindow->OnTouchEnd(x, y);
+    if (!terminalChoice) {
+        if (selection == 0) {
+            self->pauseOpen = 0;
+            self->choiceWindowOpen = 0;
+            self->resumeSounds();
+        }
+        return false;
+    }
+
+    if (selection == 2)
+        return true;
+    if (selection == 1) {
+        Globals::gGlobals->playMusicAndFadeOutCurrent(2);
+        self->active = 0;
+        self->applicationManager->SetCurrentApplicationModule(1);
+        Status::gStatus->resetGame();
+        return true;
+    }
+    if (selection != 0)
+        return false;
+
+    if (self->menuWindow == nullptr)
+        self->menuWindow = new MenuTouchWindow(1);
+    self->menuWindow->startSupernovaChallenge();
+    return true;
+}
+
+static void mgame_handle_boost_touch(MGame *self, unsigned int actions) {
+    if ((actions & kHudActionBoost) == 0 || !self->player->isBoostRefreshed() ||
+        self->player->boosting() || self->player->isMining() ||
+        self->player->isDockedToDockingPoint()) {
+        return;
+    }
+
+    self->player->setThrust(1.0f);
+    self->boostTouchThrust = 1.0f;
+    self->boostTouchDuration = 100.0f;
+    static_cast<Engine *>(self->applicationManager->GetEngine())->field_0x360 = 0;
+    self->player->boost();
+}
+
+static void mgame_finish_autopilot_transition(MGame *self, bool wasAutoPilot) {
+    if (!wasAutoPilot && self->player->isAutoPilot()) {
+        self->boostTouchThrust = 1.0f;
+        self->boostTouchDuration = 100.0f;
+    }
+}
+
 static void mgame_handle_dialogue_touch_end(MGame *self, int x, int y) {
     DialogueWindow *dialogueWindow = self->dialogueWindow;
     if (dialogueWindow == nullptr || dialogueWindow->OnTouchEnd(x, y) == 0)
@@ -1816,6 +2107,7 @@ static void mgame_handle_dialogue_touch_end(MGame *self, int x, int y) {
                 Globals::gGlobals->playMusicAndFadeOutCurrent(2);
             self->active = 0;
             self->applicationManager->SetCurrentApplicationModule(1);
+            status->resetGame();
         } else {
             mgame_clear_failed_freelance_mission(self, mission);
         }
@@ -1823,8 +2115,7 @@ static void mgame_handle_dialogue_touch_end(MGame *self, int x, int y) {
     }
 
     if (mission->hasWon() || (campaignMission != nullptr && campaignMission->hasWon())) {
-        // Android follows this with reward handling and a large set of
-        // campaign-specific station transitions. Keep that dispatcher separate.
+        mgame_handle_completed_mission(self, status, mission, campaignMission);
         return;
     }
 
@@ -2031,6 +2322,7 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
         this->activeTouchId = 0;
     }
 
+    const bool wasAutoPilot = this->player->isAutoPilot();
     this->flFastForwardWeight = 1.0f;
     TFC_setFastForwardMode(this->camera, 0);
     this->player->resumeFlag = 1;
@@ -2097,14 +2389,16 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
                 }
                 return;
             }
-            mgame_handle_basic_choice_window_touch_end(this, p1, p2);
-            return;
+            if (this->field_0xca != 0)
+                mgame_handle_cargo_conversion_choice(this, p1, p2);
+            else if (mgame_handle_terminal_choice(this, p1, p2))
+                return;
         }
-        if (this->autopilotMenuOpen != 0) {
+        else if (this->autopilotMenuOpen != 0) {
             mgame_handle_autopilot_menu_touch_end(this, p1, p2);
             return;
         }
-        if (this->dockChoiceOpen == 0) {
+        else if (this->dockChoiceOpen == 0) {
             if (this->starMapOpen != 0) {
                 mgame_handle_star_map_touch_end(this, p1, p2);
                 return;
@@ -2133,21 +2427,35 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
         return;
     }
 
+    if (this->levelScript->startSequence() || this->player->isDead()) {
+        this->levelScript->skipSequence();
+        return;
+    }
+    if (this->jumpActive != 0 || this->jumpDriveActive != 0)
+        return;
+
+    mgame_handle_boost_touch(this, actions);
     mgame_dispatch_combat_touch_actions(this, actions);
+    if (this->player->isInRocketControl())
+        return;
 
     if ((actions & kHudActionOrbit) == 0 && this->orbitMenuOpen != 0) {
         mgame_dispatch_orbit_menu(this, actions);
+        mgame_finish_autopilot_transition(this, wasAutoPilot);
         return;
     }
 
-    if ((actions & kHudActionOrbit) != 0 && mgame_try_open_orbit_menu(this))
+    if ((actions & kHudActionOrbit) != 0 && mgame_try_open_orbit_menu(this)) {
+        mgame_finish_autopilot_transition(this, wasAutoPilot);
         return;
+    }
 
     if ((actions & kHudActionQuickMenu) != 0 && !this->player->isMining()) {
         if (this->hudMenuOpen == 0)
             mgame_open_hud_menu(this, 0);
         else
             mgame_close_hud_menu(this, true);
+        mgame_finish_autopilot_transition(this, wasAutoPilot);
         return;
     }
 
@@ -2161,10 +2469,12 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
         } else if (this->cameraMode == 3) {
             this->freeCamTouchEnd(p1, p2, touchId);
         }
+        mgame_finish_autopilot_transition(this, wasAutoPilot);
         return;
     }
 
     mgame_dispatch_hud_menu(this, actions);
+    mgame_finish_autopilot_transition(this, wasAutoPilot);
 }
 
 

@@ -170,8 +170,8 @@ public:
     uint8_t _pad_0x1a7[1];
     float flFastForwardFactor;
     int field_0x1ac;
-    int field_0x1b0;
-    int field_0x1b4;
+    union { int field_0x1b0; float boostTouchThrust; };
+    union { int field_0x1b4; float boostTouchDuration; };
     union { uint16_t thrustActive; struct { uint8_t _b1b8; uint8_t thrustEngaged; }; };
     uint8_t _pad_0x1ba[2];
     int field_0x1bc;
