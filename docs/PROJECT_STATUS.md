@@ -156,6 +156,15 @@ Android `LABEL_117` convergence for replace-equipment, credit and sell-ship
 dialogs. `HangarWindow::OnTouchEnd` reaches `11.8%` at `2154/1968`; no
 linked- or raw-byte-exact result is claimed.
 
+`HANGAR_SET_SELL_MODE_STORE_BLUEPRINT_2026-08-24.md` replaces the remaining
+shim-based `HangarWindow::setSellMode` Store/Blueprint body with the Android
+inventory rebuild, fabrication, pending-product, route-warning and
+auto-equip flows. It also confirms that the second ship-swap cancellation and
+both ship-purchase error notices clear the pending-swap word at `+0x90`.
+Focused ARM validation measures `setSellMode` at `13.5%` (`708/643`) and
+keeps `OnTouchEnd` at `11.8%` (`2154/1973`); both remain source-backed, not
+linked- or byte-exact.
+
 ## Priorities
 
 1. Recover large behavior bodies only with an evidence packet and uncertainty list.
