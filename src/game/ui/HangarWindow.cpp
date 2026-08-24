@@ -1908,53 +1908,30 @@ void HangarWindow::demountItem(Item *item, int slot) {
 
 
 
-void HangarWindow::OnTouchBegin(int touch, int coord) {
+int HangarWindow::OnTouchBegin(int touch, int coord) {
     Layout *layout = static_cast<Layout *>(Globals::layout);
-    Status *status = Globals::status != nullptr ? Globals::status : Status::gStatus;
+    Status *status = static_cast<Status *>(Globals::status);
     GameText *gameText = static_cast<GameText *>(Globals::gameText);
-    if (gameText == nullptr) {
-        gameText = GameText::gGameText;
-    }
-    if (layout == nullptr || status == nullptr || gameText == nullptr || this->hangarList == nullptr) {
-        return;
-    }
-
-    auto buttonAt = [this](unsigned int index) -> TouchButton * {
-        if (this->buttons == nullptr || index >= this->buttons->size()) {
-            return nullptr;
-        }
-        return this->buttons->data()[index];
-    };
 
     this->holdTime = 0;
     this->repeatTimer = 0;
-    bool handled = layout->OnTouchBegin(touch, coord) != 0;
+    int handled = layout->OnTouchBegin(touch, coord);
 
     if (this->dialogActive != 0) {
-        const unsigned int first = this->buyCreditsActive != 0
-                                       ? kHangarButtonPaidCreditsFirst
-                                       : kHangarButtonFreeCreditsFirst;
-        const unsigned int last = this->buyCreditsActive != 0
-                                      ? kHangarButtonCreditsMore
-                                      : kHangarButtonBlueprintAutoComplete;
-        if (this->buyCreditsActive != 0 || this->freeCreditsActive != 0) {
-            for (unsigned int i = first; i < last; ++i) {
-                TouchButton *button = buttonAt(i);
-                if (button != nullptr) {
-                    button->OnTouchBegin(touch, coord);
-                }
+        if (this->buyCreditsActive != 0) {
+            for (unsigned int i = kHangarButtonPaidCreditsFirst;
+                 i != kHangarButtonCreditsMore; ++i) {
+                (*this->buttons)[i]->OnTouchBegin(touch, coord);
             }
-            if (this->buyCreditsActive != 0) {
-                TouchButton *moreButton = buttonAt(kHangarButtonCreditsMore);
-                if (moreButton != nullptr) {
-                    moreButton->OnTouchBegin(touch, coord);
-                }
+            (*this->buttons)[kHangarButtonCreditsMore]->OnTouchBegin(touch, coord);
+        } else if (this->freeCreditsActive != 0) {
+            for (unsigned int i = kHangarButtonFreeCreditsFirst;
+                 i != kHangarButtonBlueprintAutoComplete; ++i) {
+                (*this->buttons)[i]->OnTouchBegin(touch, coord);
             }
         }
-        if (this->dialog != nullptr) {
-            this->dialog->OnTouchBegin(touch, coord);
-        }
-        return;
+        this->dialog->OnTouchBegin(touch, coord);
+        return 0;
     }
 
     this->touchStartY = coord;
@@ -1963,44 +1940,56 @@ void HangarWindow::OnTouchBegin(int touch, int coord) {
     this->dragging = 1;
 
     if (this->viewMode == 1) {
-        if (this->listItemWindow != nullptr) {
-            this->listItemWindow->OnTouchBegin(touch, coord);
-        }
-        return;
+        this->listItemWindow->OnTouchBegin(touch, coord);
+        return 0;
     }
 
-    bool outsideList = true;
+    int outsideList = 1;
+    int row = 0;
     if (layout->field_0xc < coord && coord < Globals::h - layout->field_0x10) {
-        const int row = IDIV(coord - layout->field_0xc - layout->field_0x20 - this->rowLayoutMetrics.rowGap -
-                                 this->scrollOffset,
-                             layout->field_0x70 + this->rowLayoutMetrics.rowGap);
+        row = IDIV(coord - layout->field_0xc - layout->field_0x20 - this->rowLayoutMetrics.rowGap -
+                       this->scrollOffset,
+                   layout->field_0x70 + this->rowLayoutMetrics.rowGap);
+        // Android's body has no lower-bound check because touch coordinates keep
+        // this calculation non-negative. Preserve that invariant locally.
         if (row >= 0 && row < this->hangarList->getCurrentLength()) {
             this->hangarList->setCurrentItemIndex(row);
-            this->highlightItem(this->hangarList->getCurrentItem());
-            outsideList = false;
-
             ListItem *current = this->hangarList->getCurrentItem();
-            if (this->upgradeMode != 0 && current != nullptr && current->isShip() &&
+            this->highlightItem(current);
+            outsideList = 0;
+
+            if (this->upgradeMode != 0 && current->isShip() &&
                 this->hangarList->getCurrentTab() == 1) {
-                Ship *ship = status->getShip();
-                Station *station = status->getStation();
-                if (ship != nullptr && station != nullptr && this->itemList != nullptr) {
-                    ship->setCargo(Item::extractItems(this->itemList, true));
-                    station->setItems(Item::extractItems(this->itemList, false), false);
-                }
+                status->getShip()->setCargo(Item::extractItems(this->itemList, true));
+                status->getStation()->setItems(Item::extractItems(this->itemList, false), false);
             }
         }
     }
 
-    const bool mustConfirmBlueprint = this->hangarList->getCurrentTab() == 4 &&
-                                      this->buyMode != 0 &&
-                                      (outsideList || this->selectedItem != this->bluePrintItem) &&
-                                      this->bluePrintBuyCount > 0 &&
-                                      this->dialogActive == 0 && this->bluePrint != nullptr &&
-                                      !this->bluePrint->isEmpty() && status->getStation() != nullptr &&
-                                      this->bluePrint->getStationIndex() != status->getStation()->getIndex();
-    if (mustConfirmBlueprint && this->bluePrintItem != nullptr && this->bluePrintItem->item != nullptr &&
-        this->dialog != nullptr) {
+    const bool keepInputRouting = this->hangarList->getCurrentTab() != 4 || this->buyMode == 0 ||
+                                  (!outsideList && this->selectedItem == this->bluePrintItem) ||
+                                  this->bluePrintBuyCount < 1 || this->dialogActive != 0 ||
+                                  this->bluePrint->isEmpty() ||
+                                  this->bluePrint->getStationIndex() == status->getStation()->getIndex();
+    if (keepInputRouting) {
+        for (unsigned int i = 0; i < this->tabButtons->size(); ++i) {
+            handled |= (*this->tabButtons)[i]->OnTouchBegin(touch, coord);
+        }
+        for (unsigned int i = 0; i < this->buttons->size(); ++i) {
+            TouchButton *button = (*this->buttons)[i];
+            if (button != nullptr) {
+                button->OnTouchBegin(touch, coord);
+            }
+        }
+
+        if (this->autoEquipPending != 0 && this->hangarList->getCurrentTab() == 1) {
+            const int index = static_cast<int>(this->autoEquipIndex);
+            if (index >= 0 && ((~handled & (index == this->hangarList->getCurrentItemIndex())) == 0)) {
+                this->autoEquipPending = 0;
+                this->autoEquipSecondaryWeapons(index);
+            }
+        }
+    } else {
         const int itemIndex = this->bluePrintItem->item->getIndex();
         this->localBluePrint = itemIndex == 209 || itemIndex == 204;
         String message = *gameText->getText(this->localBluePrint != 0 ? 289 : 288);
@@ -2013,33 +2002,8 @@ void HangarWindow::OnTouchBegin(int touch, int coord) {
         this->dialogActive = 1;
         this->bluePrintPurchasePending = 1;
         this->suppressTouchEnd = 1;
-        return;
     }
-
-    if (this->tabButtons != nullptr) {
-        for (unsigned int i = 0; i < this->tabButtons->size(); ++i) {
-            TouchButton *tab = this->tabButtons->data()[i];
-            if (tab != nullptr) {
-                handled = tab->OnTouchBegin(touch, coord) != 0 || handled;
-            }
-        }
-    }
-    if (this->buttons != nullptr) {
-        for (unsigned int i = 0; i < this->buttons->size(); ++i) {
-            TouchButton *button = this->buttons->data()[i];
-            if (button != nullptr) {
-                button->OnTouchBegin(touch, coord);
-            }
-        }
-    }
-
-    if (this->autoEquipPending != 0 && this->hangarList->getCurrentTab() == 1) {
-        const int index = static_cast<int>(this->autoEquipIndex);
-        if (index >= 0 && (handled || index != this->hangarList->getCurrentItemIndex())) {
-            this->autoEquipPending = 0;
-            this->autoEquipSecondaryWeapons(index);
-        }
-    }
+    return 0;
 }
 
 
