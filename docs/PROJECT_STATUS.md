@@ -131,6 +131,17 @@ expressions for events 30 and 47, types the packed dock-transfer state and
 places medal percentage clamping inside the native String chain. `hudEvent`
 reaches `76.3%` and `hudEventMedal` reaches `84.9%`.
 
+## Latest Hangar Verification
+
+The `HANGAR_TOUCH_END_ECONOMY_SHIP_SWAP_2026-08-24.md` follow-up extends the
+previous layout and input passes with the exact Android social-credit reward
+table, blueprint cancellation route, and the two-stage ship-swap/DLC/trade-in
+flow. The focus run is still `201/204` because of three unrelated
+`SolarSystem *` compile errors. `HangarWindow::OnTouchEnd` rises from `6.0%`
+at `2154/1487` target/base instructions to `6.4%` at `2154/1776`.
+`OnTouchBegin`, `OnTouchMove`, and `update` remain respectively `27.2%`,
+`78.1%`, and `48.3%`. No Hangar method is claimed linked- or byte-exact.
+
 ## Priorities
 
 1. Recover large behavior bodies only with an evidence packet and uncertainty list.

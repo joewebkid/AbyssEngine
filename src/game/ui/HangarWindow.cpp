@@ -132,9 +132,13 @@ static float hw_buy_heightScale;
 static const char hw_init_buy[1] = "", hw_init_sell[1] = "", hw_init_lbl[1] = "",
         hw_init_more[1] = "", hw_init_back[1] = "", hw_init_help[1] = "";
 static uint8_t g_hangarIntroShown = 0;
+// Android dword_202844 at 0x202844. Slot zero is the record-store action;
+// slots 1..4 are the four visible social-credit offers.
+static constexpr int kHangarSocialCreditReward[5] = {0, 7500, 5000, 5000, 7500};
+
 // The ARM renderer uses separate persisted bytes for these offers. Their
-// RecordHandler slots are not typed yet, so keep the state local until that
-// persistence mapping is recovered instead of dereferencing placeholder data.
+// RecordHandler slots are not typed yet, so retain the corresponding local
+// state until that persistence object is recovered.
 static uint8_t g_hangarCreditOfferShown = 0;
 static uint8_t g_hangarSocialCreditClaimed[5] = {};
 
@@ -1513,9 +1517,11 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
         }
         TouchButton *more = buttonAt(kHangarButtonCreditsMore);
         if (more != nullptr && more->OnTouchEnd(touch, coord) != 0) {
-            const bool allSocialOffersClaimed = std::all_of(
-                g_hangarSocialCreditClaimed, g_hangarSocialCreditClaimed + 4,
-                [](uint8_t claimed) { return claimed != 0; });
+            const bool allSocialOffersClaimed =
+                g_hangarSocialCreditClaimed[1] != 0 &&
+                g_hangarSocialCreditClaimed[2] != 0 &&
+                g_hangarSocialCreditClaimed[3] != 0 &&
+                g_hangarSocialCreditClaimed[4] != 0;
             uint8_t *appData = ApplicationManager::gAppManager != nullptr
                                    ? static_cast<uint8_t *>(ApplicationManager::gAppManager->GetApplicationData())
                                    : nullptr;
@@ -1557,28 +1563,30 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
             case 1:
                 if (appData != nullptr) appData[160] = 1;
                 NFC().free_credits_likeGOF2OnFacebook();
-                g_hangarSocialCreditClaimed[0] = 1;
+                status->changeCredits(kHangarSocialCreditReward[offerIndex]);
+                g_hangarSocialCreditClaimed[offerIndex] = 1;
                 break;
             case 2:
                 if (appData != nullptr) appData[161] = 1;
                 NFC().free_credits_likeFishlabsOnFacebook();
-                g_hangarSocialCreditClaimed[1] = 1;
+                status->changeCredits(kHangarSocialCreditReward[offerIndex]);
+                g_hangarSocialCreditClaimed[offerIndex] = 1;
                 break;
             case 3:
                 if (appData != nullptr) appData[162] = 1;
                 NFC().free_credits_subscribeToYoutubeChannel();
-                g_hangarSocialCreditClaimed[2] = 1;
+                status->changeCredits(kHangarSocialCreditReward[offerIndex]);
+                g_hangarSocialCreditClaimed[offerIndex] = 1;
                 break;
             case 4:
                 if (appData != nullptr) appData[163] = 1;
                 NFC().free_credits_followOnTwitter();
-                g_hangarSocialCreditClaimed[3] = 1;
+                status->changeCredits(kHangarSocialCreditReward[offerIndex]);
+                g_hangarSocialCreditClaimed[offerIndex] = 1;
                 break;
             default:
                 break;
             }
-            // The ARM reward table (dword_202844) has no recovered data object yet.
-            // Do not invent a credit amount; NFC and claim-state routing are confirmed.
             return 0;
         }
         return 0;
@@ -1588,17 +1596,15 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
         const int result = this->dialog->OnTouchEnd(touch, coord);
         Item *item = this->bluePrintItem != nullptr ? this->bluePrintItem->item : nullptr;
         const int cost = item != nullptr ? item->getBlueprintAmount() * 200 : 0;
-        if (result == 0 && this->localBluePrint == 0 && cost <= status->getCredits()) {
+        const bool canBuy = cost <= status->getCredits() && this->localBluePrint == 0;
+        if (result == 0 && canBuy) {
             status->changeCredits(-cost);
             this->setSellMode(false);
             resetSelection();
             this->localBluePrint = 0;
             this->bluePrintPurchasePending = 0;
-        } else if (result == 1 && this->localBluePrint == 0 && cost <= status->getCredits()) {
-            this->bluePrintPurchasePending = 0;
-            this->dialogActive = 0;
-            this->localBluePrint = 0;
-        } else {
+        } else if (result == 1 || cost > status->getCredits() ||
+                   (result == 0 && this->localBluePrint != 0)) {
             if (item != nullptr) {
                 item->setStationAmount(this->savedStationAmount);
                 item->setAmount(this->savedAmount);
@@ -1645,25 +1651,94 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
 
     if (this->shipSwapPending != 0) {
         const int result = this->dialog->OnTouchEnd(touch, coord);
-        if (result == 1) {
-            this->shipSwapPending = 0;
-            this->dialogActive = 0;
-            return 0;
-        }
-        if (result != 0 || this->selectedItem == nullptr || this->selectedItem->ship == nullptr ||
-            status->getShip() == nullptr || status->getStation() == nullptr) {
+        Ship *oldShip = status->getShip();
+        Station *station = status->getStation();
+        Ship *shopShip = this->selectedItem == nullptr ? nullptr : this->selectedItem->ship;
+        if (oldShip == nullptr || station == nullptr || shopShip == nullptr) {
             return 0;
         }
 
-        Ship *oldShip = status->getShip();
-        Ship *shopShip = this->selectedItem->ship;
-        Ship *newShip = shopShip->clone();
-        Ship *returnedShip = oldShip->clone();
+        bool purchaseWithoutTradeIn = false;
+        // Android compares Status+0x114 with 3 before entering its two-step
+        // ship purchase confirmation. The field has no safe semantic name yet.
+        if (status->field_114 == 3 && this->upgradeMode == 0) {
+            if (this->swapConfirmFlag != 0) {
+                if (result == 1) {
+                    if (station->hasShip(oldShip->getIndex()) != 0) {
+                        this->dialog->set(*gameText->getText(328));
+                        this->dialogActive = 1;
+                        return 0;
+                    }
+                    if (shopShip->getPrice() > status->getCredits()) {
+                        String message = *gameText->getText(203);
+                        message = status->replaceHash(message, String("#C"),
+                                                      Layout::formatCredits(status->getCredits()));
+                        message += String("\n\n");
+                        message += *gameText->getText(124);
+                        this->dialog->set(message, true);
+                        this->dialogActive = 1;
+                        this->notEnoughCredits = 1;
+                        return 0;
+                    }
+                    purchaseWithoutTradeIn = true;
+                } else if (result != 0) {
+                    return 0;
+                }
+            } else {
+                if (result == 0) {
+                    String empty("");
+                    this->dialog->set(empty, *gameText->getText(327), true,
+                                      *gameText->getText(330), *gameText->getText(331),
+                                      *gameText->getText(330), -1, -1);
+                    this->swapConfirmFlag = 1;
+                    return 0;
+                }
+                if (result == 1) {
+                    this->shipSwapPending = 0;
+                    this->dialogActive = 0;
+                }
+                return 0;
+            }
+        } else if (this->upgradeMode == 0 && this->dlcMenuPending != 0) {
+            if (result == 0) {
+                ModStation *module = stationModule();
+                if (module != nullptr) {
+                    module->showDlcMenu();
+                }
+                this->shipSwapPending = 0;
+                this->swapConfirmFlag = 0;
+                this->dlcMenuPending = 0;
+                this->dialogActive = 0;
+                return 0;
+            }
+            if (result != 1) {
+                return 0;
+            }
+            this->dlcMenuPending = 0;
+        } else {
+            if (result == 1) {
+                this->shipSwapPending = 0;
+                this->swapConfirmFlag = 0;
+                this->dialogActive = 0;
+                return 0;
+            }
+            if (result != 0) {
+                return 0;
+            }
+        }
+
+        // The incoming ship receives the old loadout. The trade-in left at the
+        // station is a fresh hull plus modifications only; Android does not
+        // duplicate cargo or mounted equipment into the station inventory.
+        Ship *newShip = shopShip->makeShip(-1);
+        Ship *returnedShip = oldShip->makeShip(-1);
         if (newShip == nullptr || returnedShip == nullptr) {
             delete newShip;
             delete returnedShip;
             return 0;
         }
+        newShip->setRace(shopShip->getRace());
+        newShip->adjustPrice();
         Array<Item *> *cargo = oldShip->getCargo();
         if (cargo != nullptr) {
             for (unsigned int i = 0; i < cargo->size(); ++i) {
@@ -1686,13 +1761,17 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
         Array<int> *mods = oldShip->getMods();
         if (mods != nullptr) {
             for (unsigned int i = 0; i < mods->size(); ++i) {
-                newShip->addMod(mods->data()[i]);
+                const int mod = mods->data()[i];
+                newShip->addMod(mod);
+                returnedShip->addMod(mod);
             }
         }
-        if (this->upgradeMode == 0) {
+
+        if (purchaseWithoutTradeIn) {
+            status->changeCredits(-shopShip->getPrice());
+        } else if (this->upgradeMode == 0) {
             status->changeCredits(oldShip->getPrice() - shopShip->getPrice());
         }
-        Station *station = status->getStation();
         station->removeShip(shopShip);
         station->addShip(returnedShip);
         status->setShip(newShip);
@@ -1708,8 +1787,17 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
         this->hangarList->setCurrentTab(0, true);
         this->refreshCurrentContentHeight();
         this->shipSwapPending = 0;
+        this->swapConfirmFlag = 0;
         this->dialogActive = 0;
-        resetSelection();
+
+        if (this->upgradeMode == 0) {
+            String messageTemplate = *gameText->getText(303);
+            String shipName = *gameText->getText(newShip->getIndex() + 913);
+            String message = status->replaceHash(messageTemplate, String("#N"), shipName);
+            this->dialog->set(message);
+            this->dialogActive = 1;
+        }
+        this->field_0x0 = 1;
         return 0;
     }
 
