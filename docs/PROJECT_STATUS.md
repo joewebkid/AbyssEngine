@@ -142,6 +142,13 @@ at `2154/1487` target/base instructions to `6.4%` at `2154/1776`.
 `OnTouchBegin`, `OnTouchMove`, and `update` remain respectively `27.2%`,
 `78.1%`, and `48.3%`. No Hangar method is claimed linked- or byte-exact.
 
+The following `HANGAR_TOUCH_END_LIST_DIALOG_SOURCE_SHAPE_2026-08-24.md` pass
+restores Android's continued list-action walk and scoped help-text String
+branches. `HangarWindow::OnTouchEnd` rises to `11.2%` at `2154/1871`
+target/base instructions. The shared modal application-module close flag is
+explicitly still untyped; the only confirmed nonzero Hangar return remains the
+top-level `Layout -> readyToClose()` route.
+
 ## Priorities
 
 1. Recover large behavior bodies only with an evidence packet and uncertainty list.

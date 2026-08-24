@@ -1324,13 +1324,16 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
                     case kHangarButtonMoveToCargoEntry:
                     case kHangarButtonSelectBlueprint:
                         this->selectItem(this->selectedItem);
-                        return 0;
+                        // Android keeps scanning the action array after these
+                        // state changes. TouchButton resets its own latch, so a
+                        // second action cannot be consumed by this same touch.
+                        continue;
                     case kHangarButtonCurrentAmount:
                         this->transaction(false);
                         if (Globals::sound != nullptr) {
                             Globals::sound->play(0x64, nullptr, nullptr, 0.0f);
                         }
-                        return 0;
+                        continue;
                     case kHangarButtonStationAmount: {
                         this->transaction(true);
                         if (Globals::sound != nullptr) {
@@ -1342,7 +1345,7 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
                             this->autoEquipPending = 1;
                             this->autoEquipIndex = this->hangarList->getCurrentItemIndex();
                         }
-                        return 0;
+                        continue;
                     }
                     case kHangarButtonSellShip:
                         if (this->dialog != nullptr) {
@@ -1350,7 +1353,7 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
                             this->sellShipPending = 1;
                             this->dialogActive = 1;
                         }
-                        return 0;
+                        continue;
                     case kHangarButtonCredits: {
                         g_hangarCreditOfferShown = 1;
                         RecordHandler *recordHandler = static_cast<RecordHandler *>(Globals::recordHandler);
@@ -1358,7 +1361,7 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
                             recordHandler->saveOptions();
                         }
                         this->showCreditsBuyWindow();
-                        return 0;
+                        continue;
                     }
                     default:
                         break;
@@ -1367,12 +1370,42 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
             }
 
             if (layout->helpPressed() != 0) {
-                const int helpTextIds[] = {623, 622, 625, 624, 626};
                 const unsigned int tab = this->hangarList->getCurrentTab();
                 if (this->viewMode == 1) {
-                    layout->initHelpWindow(*gameText->getText(643));
-                } else if (tab < 5) {
-                    layout->initHelpWindow(*gameText->getText(helpTextIds[tab]));
+                    String helpText = *gameText->getText(643);
+                    layout->initHelpWindow(helpText);
+                } else {
+                    // The Android body has a separate GameText/String lifetime
+                    // for every tab instead of an inferred indexed table.
+                    switch (tab) {
+                    case 0: {
+                        String helpText = *gameText->getText(623);
+                        layout->initHelpWindow(helpText);
+                        break;
+                    }
+                    case 1: {
+                        String helpText = *gameText->getText(622);
+                        layout->initHelpWindow(helpText);
+                        break;
+                    }
+                    case 2: {
+                        String helpText = *gameText->getText(625);
+                        layout->initHelpWindow(helpText);
+                        break;
+                    }
+                    case 3: {
+                        String helpText = *gameText->getText(624);
+                        layout->initHelpWindow(helpText);
+                        break;
+                    }
+                    case 4: {
+                        String helpText = *gameText->getText(626);
+                        layout->initHelpWindow(helpText);
+                        break;
+                    }
+                    default:
+                        break;
+                    }
                 }
             }
 
