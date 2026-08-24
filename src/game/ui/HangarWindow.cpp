@@ -1492,7 +1492,7 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
             this->dialogActive = 0;
             this->replaceEquipPending = 0;
         }
-        return 0;
+        goto common_choice_tail;
     }
 
     if (this->notEnoughCredits != 0) {
@@ -1508,7 +1508,7 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
             }
             this->showCreditsBuyWindow();
         }
-        return 0;
+        goto common_choice_tail;
     }
 
     if (this->buyCreditsActive != 0) {
@@ -1528,7 +1528,6 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
                 module->closeHangarAfterCredits = 0;
                 return 1;
             }
-            return 0;
         }
 
         const auto buyCredits = [](unsigned int product) {
@@ -1546,7 +1545,7 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
             TouchButton *button = buttonAt(i);
             if (button != nullptr && button->OnTouchEnd(touch, coord) != 0) {
                 buyCredits(i - kHangarButtonPaidCreditsFirst);
-                return 0;
+                break;
             }
         }
         TouchButton *more = buttonAt(kHangarButtonCreditsMore);
@@ -1564,7 +1563,7 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
                 this->showFreeCreditsWindow();
             }
         }
-        return 0;
+        goto common_choice_tail;
     }
 
     if (this->freeCreditsActive != 0) {
@@ -1573,7 +1572,6 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
             setCreditButtonsVisible(kHangarButtonFreeCreditsFirst, kHangarButtonBlueprintAutoComplete, false);
             this->freeCreditsActive = 0;
             this->showCreditsBuyWindow();
-            return 0;
         }
 
         uint8_t *appData = ApplicationManager::gAppManager != nullptr
@@ -1621,9 +1619,9 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
             default:
                 break;
             }
-            return 0;
+            continue;
         }
-        return 0;
+        goto common_choice_tail;
     }
 
     if (this->bluePrintPurchasePending != 0) {
@@ -1680,7 +1678,7 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
             this->hangarList->initShopTab(this->itemList, status->getStation()->getShips());
             this->refreshCurrentContentHeight();
         }
-        return 0;
+        goto common_choice_tail;
     }
 
     if (this->shipSwapPending != 0) {
@@ -1835,8 +1833,8 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
         return 0;
     }
 
-    const int result = this->dialog->OnTouchEnd(touch, coord);
     if (this->dlcMenuPending != 0) {
+        const int result = this->dialog->OnTouchEnd(touch, coord);
         if (result == 0) {
             ModStation *module = stationModule();
             if (module != nullptr) {
@@ -1850,7 +1848,12 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
         return 0;
     }
 
-    if (this->buyMode != 0) {
+common_choice_tail:
+    // Android LABEL_117: specialised modal branches converge here and invoke
+    // ChoiceWindow again before processing the shared buy/owner-close route.
+    const uint8_t wasBuying = this->buyMode;
+    const int result = this->dialog->OnTouchEnd(touch, coord);
+    if (wasBuying != 0) {
         if (result == 1) {
             this->buyMode = 0;
             this->dialogActive = 0;
