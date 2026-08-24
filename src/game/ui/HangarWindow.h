@@ -1,5 +1,7 @@
 #ifndef GOF2_HANGARWINDOW_H
 #define GOF2_HANGARWINDOW_H
+#include <cstddef>
+
 #include "engine/core/Array.h"
 #include "../../engine/core/AEString.h"
 #include "game/core/HangarList.h"
@@ -47,6 +49,11 @@ public:
     int contentHeight;
     void *columnWidths;
     int viewMode;
+    // Android keeps three four-byte values between viewMode and selectedItem.
+    // Their consumers have not established useful names yet.
+    int field_0x5c;
+    int field_0x60;
+    int field_0x64;
     ListItem *selectedItem;
     int holdTime;
     int repeatTimer;
@@ -57,10 +64,12 @@ public:
     ListItem *bluePrintItem;
     uint8_t buyMode;
     uint8_t specialMode;
+    uint8_t field_0x8a;
+    uint8_t field_0x8b;
     int savedStationAmount;
-    uint16_t shipSwapPending;
-    uint8_t dlcMenuPending;
+    uint8_t shipSwapPending;
     uint8_t swapConfirmFlag;
+    uint8_t dlcMenuPending;
     uint8_t sellShipPending;
     int bluePrintBuyCount;
     int savedCredits;
@@ -74,20 +83,19 @@ public:
     uint8_t notEnoughCredits;
     uint8_t freeCreditsActive;
     uint8_t autoCompletePending;
+    uint8_t field_0xb2;
+    uint8_t field_0xb3;
     int scrollOffset;
     int lastTouchY;
     int scrollOffsetBackup;
     int scrollDelta;
-    int field_0xc1;
     float damping;
-    int field_0xc5;
     float velocity;
-    int field_0xc9;
     int touchStartY;
-    int field_0xcd;
     uint8_t dragging;
     uint8_t suppressTouchEnd;
     uint8_t sellConfirmPending;
+    uint8_t field_0xd3;
     int currentContentHeight;
     int visibleHeight;
     int progressBarWidth;
@@ -124,7 +132,7 @@ public:
 
     int OnTouchEnd(int touch, int coord);
 
-    unsigned int OnTouchMove(int touch, int coord);
+    int OnTouchMove(int touch, int coord);
 
     bool isInitialized();
 
@@ -185,4 +193,34 @@ public:
     // Static data members present in the original binary (defined for symbol parity).
     static int lastTab;
 };
+
+#if defined(GOF2_MATCH)
+static_assert(offsetof(HangarWindow, tabButtons) == 0x04, "HangarWindow::tabButtons @ 0x04");
+static_assert(offsetof(HangarWindow, hangarList) == 0x14, "HangarWindow::hangarList @ 0x14");
+static_assert(offsetof(HangarWindow, dialog) == 0x20, "HangarWindow::dialog @ 0x20");
+static_assert(offsetof(HangarWindow, buttons) == 0x24, "HangarWindow::buttons @ 0x24");
+static_assert(offsetof(HangarWindow, viewMode) == 0x58, "HangarWindow::viewMode @ 0x58");
+static_assert(offsetof(HangarWindow, selectedItem) == 0x68, "HangarWindow::selectedItem @ 0x68");
+static_assert(offsetof(HangarWindow, holdTime) == 0x6c, "HangarWindow::holdTime @ 0x6c");
+static_assert(offsetof(HangarWindow, bluePrint) == 0x80, "HangarWindow::bluePrint @ 0x80");
+static_assert(offsetof(HangarWindow, buyMode) == 0x88, "HangarWindow::buyMode @ 0x88");
+static_assert(offsetof(HangarWindow, bluePrintBuyCount) == 0x94, "HangarWindow::bluePrintBuyCount @ 0x94");
+static_assert(offsetof(HangarWindow, scrollOffset) == 0xb4, "HangarWindow::scrollOffset @ 0xb4");
+static_assert(offsetof(HangarWindow, scrollDelta) == 0xc0, "HangarWindow::scrollDelta @ 0xc0");
+static_assert(offsetof(HangarWindow, damping) == 0xc4, "HangarWindow::damping @ 0xc4");
+static_assert(offsetof(HangarWindow, velocity) == 0xc8, "HangarWindow::velocity @ 0xc8");
+static_assert(offsetof(HangarWindow, touchStartY) == 0xcc, "HangarWindow::touchStartY @ 0xcc");
+static_assert(offsetof(HangarWindow, dragging) == 0xd0, "HangarWindow::dragging @ 0xd0");
+static_assert(offsetof(HangarWindow, currentContentHeight) == 0xd4,
+              "HangarWindow::currentContentHeight @ 0xd4");
+static_assert(offsetof(HangarWindow, autoEquipPending) == 0xf8,
+              "HangarWindow::autoEquipPending @ 0xf8");
+static_assert(offsetof(HangarWindow, rowLayoutMetrics) == 0x100,
+              "HangarWindow::rowLayoutMetrics @ 0x100");
+static_assert(offsetof(HangarWindow, replaceEquipPending) == 0x11c,
+              "HangarWindow::replaceEquipPending @ 0x11c");
+static_assert(offsetof(HangarWindow, routeWarningPending) == 0x130,
+              "HangarWindow::routeWarningPending @ 0x130");
+static_assert(sizeof(HangarWindow) == 0x134, "HangarWindow ARM allocation is 0x134 bytes");
+#endif
 #endif

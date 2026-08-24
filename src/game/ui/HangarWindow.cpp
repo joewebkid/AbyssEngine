@@ -2632,64 +2632,62 @@ void HangarWindow::mountItem(Item *item) {
 
 
 
-unsigned int HangarWindow::OnTouchMove(int touch, int coord) {
+int HangarWindow::OnTouchMove(int touch, int coord) {
     Layout *layout = static_cast<Layout *>(Globals::layout);
-    ((Layout *) (layout))->OnTouchMove(touch, coord);
+    layout->OnTouchMove(touch, coord);
 
     if (this->dialogActive != 0) {
         if (this->buyCreditsActive != 0) {
-            for (int i = 0xc; i != 0x11; i++)
-                (*this->buttons)[(i * 4) >> 2]->OnTouchMove(touch, coord);
-            (*this->buttons)[(0x44) >> 2]->OnTouchMove(touch, coord);
+            for (unsigned int i = kHangarButtonPaidCreditsFirst;
+                 i <= kHangarButtonPaidCreditsLast; ++i) {
+                (*this->buttons)[i]->OnTouchMove(touch, coord);
+            }
+            (*this->buttons)[kHangarButtonCreditsMore]->OnTouchMove(touch, coord);
         } else if (this->freeCreditsActive != 0) {
-            for (int i = 0x12; i != 0x17; i++)
-                (*this->buttons)[(i * 4) >> 2]->OnTouchMove(touch, coord);
+            for (unsigned int i = kHangarButtonFreeCreditsFirst;
+                 i <= kHangarButtonFreeCreditsLast; ++i) {
+                (*this->buttons)[i]->OnTouchMove(touch, coord);
+            }
         }
         this->dialog->OnTouchMove(touch, coord);
-        return 0;
-    }
-
-    if (this->viewMode == 1) {
+    } else if (this->viewMode == 1) {
         this->listItemWindow->OnTouchMove(touch, coord);
-        return 0;
-    }
+    } else {
+        if (layout->field_0xc < coord && coord < Globals::h - layout->field_0x10) {
+            const int delta = coord - this->lastTouchY;
+            this->scrollDelta = delta;
+            this->damping = 1.0f;
+            this->scrollOffset += delta;
+            this->lastTouchY = coord;
 
-    if (layout->field_0xc < coord && coord < Globals::h - layout->field_0x10) {
-        int dy = coord - this->lastTouchY;
-        this->scrollDelta = dy;
-        this->damping = 1.0f;
-        this->scrollOffset = this->scrollOffset + dy;
-        this->lastTouchY = coord;
+            TouchButton *currentAmountButton = (*this->buttons)[kHangarButtonCurrentAmount];
+            TouchButton *stationAmountButton = (*this->buttons)[kHangarButtonStationAmount];
+            const int isTouched = currentAmountButton->isTouched()
+                                      ? 1
+                                      : stationAmountButton->isTouched();
+            int touchDistance = coord - this->touchStartY;
+            if (touchDistance < 0) {
+                touchDistance = this->touchStartY - coord;
+            }
 
-        void *btnUp = (*this->buttons)[(0x20) >> 2];
-        void *btnDown = (*this->buttons)[(0x24) >> 2];
-        int touched = ((TouchButton *) (btnUp))->isTouched();
-        if (touched != 0)
-            touched = 1;
-        else
-            touched = ((TouchButton *) (btnDown))->isTouched();
+            if (isTouched == 0 && touchDistance >= 6) {
+                this->holdTime = 0;
+                this->repeatTimer = 0;
+                for (unsigned int i = 0; i < this->buttons->size(); ++i) {
+                    (*this->buttons)[i]->OnTouchMove(touch, coord);
+                }
+                this->setSellMode(false);
+                this->sellConfirmPending = 0;
+                this->selectedItem = nullptr;
+                (*this->buttons)[kHangarButtonCurrentAmount]->resetTouch();
+                (*this->buttons)[kHangarButtonStationAmount]->resetTouch();
+            }
+        }
 
-        int adist = coord - this->touchStartY;
-        if (adist < 0)
-            adist = -adist;
-
-        if (touched == 0 && adist > 5) {
-            this->holdTime = 0;
-            this->repeatTimer = 0;
-            Array<TouchButton *> *buttons = this->buttons;
-            for (unsigned int i = 0; i < buttons->size(); i++)
-                buttons->data()[i]->OnTouchMove(touch, coord);
-            this->setSellMode(false);
-            this->sellConfirmPending = 0;
-            this->selectedItem = 0;
-            ((TouchButton *) (btnUp))->resetTouch();
-            ((TouchButton *) (btnDown))->resetTouch();
+        for (unsigned int i = 0; i < this->tabButtons->size(); ++i) {
+            (*this->tabButtons)[i]->OnTouchMove(touch, coord);
         }
     }
-
-    Array<TouchButton *> *tabs = this->tabButtons;
-    for (unsigned int i = 0; i < tabs->size(); i++)
-        ((TouchButton *) (tabs->data()[i]))->OnTouchMove(touch, coord);
     return 0;
 }
 
@@ -3077,10 +3075,12 @@ void HangarWindow::initialize() {
     self->shipSwapPending = 0;
     self->swapConfirmFlag = 0;
 
-    self->field_0xc1 = 0;
-    self->field_0xc5 = 0;
-    self->field_0xc9 = 0;
-    self->field_0xcd = 0;
+    self->damping = 0.0f;
+    self->velocity = 0.0f;
+    self->touchStartY = 0;
+    self->dragging = 0;
+    self->suppressTouchEnd = 0;
+    self->sellConfirmPending = 0;
     self->savedScrollOffset = 0;
     self->field_0x0 = 0;
     self->active = 1;
@@ -3126,6 +3126,9 @@ HangarWindow::HangarWindow() {
     this->contentHeight = 0;
     this->columnWidths = nullptr;
     this->viewMode = 0;
+    this->field_0x5c = 0;
+    this->field_0x60 = 0;
+    this->field_0x64 = 0;
     this->selectedItem = nullptr;
     this->holdTime = 0;
     this->repeatTimer = 0;
@@ -3136,6 +3139,8 @@ HangarWindow::HangarWindow() {
     this->bluePrintItem = nullptr;
     this->buyMode = 0;
     this->specialMode = 0;
+    this->field_0x8a = 0;
+    this->field_0x8b = 0;
     this->savedStationAmount = 0;
     this->shipSwapPending = 0;
     this->dlcMenuPending = 0;
@@ -3153,20 +3158,19 @@ HangarWindow::HangarWindow() {
     this->notEnoughCredits = 0;
     this->freeCreditsActive = 0;
     this->autoCompletePending = 0;
+    this->field_0xb2 = 0;
+    this->field_0xb3 = 0;
     this->scrollOffset = 0;
     this->lastTouchY = 0;
     this->scrollOffsetBackup = 0;
     this->scrollDelta = 0;
-    this->field_0xc1 = 0;
     this->damping = 0.0f;
-    this->field_0xc5 = 0;
     this->velocity = 0.0f;
-    this->field_0xc9 = 0;
     this->touchStartY = 0;
-    this->field_0xcd = 0;
     this->dragging = 0;
     this->suppressTouchEnd = 0;
     this->sellConfirmPending = 0;
+    this->field_0xd3 = 0;
     this->currentContentHeight = 0;
     this->visibleHeight = 0;
     this->progressBarWidth = 0;
