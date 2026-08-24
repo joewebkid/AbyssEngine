@@ -472,7 +472,7 @@ ModStation::ModStation() {
     this->activeMission = 0;
     this->radioMessages = 0;
     this->screenFlags.bytes[2] = 0;
-    this->pendingHangarClose = 0;
+    this->closeHangarAfterCredits = 0;
     this->missionsWindow = 0;
     this->choiceWindow = 0;
 
@@ -2145,8 +2145,8 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                         **(int **) g_ote_module = 0;
                                         ApplicationManager_SetCurrentApplicationModule_ote(**(int **) g_ote_module);
                                     }
-                                    if (this->pendingHangarClose != 0 && this->subWindowFlags.bytes[2] != 0) {
-                                        this->pendingHangarClose = 0;
+                                    if (this->closeHangarAfterCredits != 0 && this->subWindowFlags.bytes[2] != 0) {
+                                        this->closeHangarAfterCredits = 0;
                                         this->subWindowFlags.bytes[2] = 0;
                                     }
                                     this->m_nStarMapWindowOpen.bytes[3] = 0;
@@ -2196,8 +2196,8 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                 **(int **) g_ote_module = 0;
                                 ApplicationManager_SetCurrentApplicationModule_ote(**(int **) g_ote_module);
                             }
-                            if (this->pendingHangarClose != 0 && this->subWindowFlags.bytes[2] != 0) {
-                                this->pendingHangarClose = 0;
+                            if (this->closeHangarAfterCredits != 0 && this->subWindowFlags.bytes[2] != 0) {
+                                this->closeHangarAfterCredits = 0;
                                 this->subWindowFlags.bytes[2] = 0;
                             }
                             this->m_nStarMapWindowOpen.bytes[3] = 0;
@@ -2350,7 +2350,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                         this->hangarWindow = hw;
                     }
                     HangarWindow_initialize_ote();
-                    this->pendingHangarClose = 1;
+                    this->closeHangarAfterCredits = 1;
                     this->subWindowFlags.bytes[2] = 1;
                     HangarWindow_showCreditsBuyWindow_ote((HangarWindow *) this->hangarWindow);
                 }
@@ -3193,7 +3193,7 @@ void ModStation::OnInitialize() {
         this->hintFlags.bytes[0] = 0;
         this->hintFlags.halfwords[1] = 0;
         this->field_0x12c.bytes[0] = 0;
-        this->pendingHangarClose = 0;
+        this->closeHangarAfterCredits = 0;
         this->m_nStarMapWindowOpen.bytes[3] = 0;
         DlcMenu_build_oiImpl(this);
         next = 0x3c;

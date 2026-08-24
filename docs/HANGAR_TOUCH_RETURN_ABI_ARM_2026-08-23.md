@@ -29,16 +29,22 @@ decompiler inference error, not an ABI fact.
 - Layout close while the selected tab is the blueprint tab (`4`) or the
   store-specific tab (`3`).
 
-It returns `1` only on the top-level Layout close path when all of these hold:
+It returns `1` on the top-level Layout close path when all of these hold:
 
 1. no detail view owns the close;
 2. the active tab is neither `4` nor `3`;
 3. `HangarWindow::readyToClose()` accepts the close.
 
-Before that sole `1`, the Android body calls `setSellMode(false)`, clears the
+Before that Layout-close `1`, the Android body calls `setSellMode(false)`, clears the
 selected item and resets the Hangar list's current item index. The local
 source already performs the equivalent cleanup through `setSellMode(false)`
 and `resetSelection()`.
+
+The later `HANGAR_MODAL_CLOSE_CREDITS_ARM_2026-08-24.md` audit found one
+additional, independently confirmed owner-close route: the station-launched
+paid-credit flow. `ModStation+0x18` marks that temporary Hangar route; its
+dialog close clears the byte and returns `1` to the station owner. Internal
+Hangar credit screens still return `0`.
 
 ## Source-Backed Changes
 

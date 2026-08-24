@@ -284,7 +284,7 @@ void HangarWindow::render() {
             AbyssEngine::ApplicationManager::gAppManager->GetApplicationModule(5));
     }
 
-    if (stationModule == nullptr || stationModule->pendingHangarClose == 0) {
+    if (stationModule == nullptr || stationModule->closeHangarAfterCredits == 0) {
         int tab2 = this->viewMode;
         if (tab2 == 0) {
             layout->drawBG();
@@ -1524,8 +1524,9 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
                 appData[64] = 0;
             }
             ModStation *module = stationModule();
-            if (module != nullptr) {
-                module->pendingHangarClose = 0;
+            if (module != nullptr && module->closeHangarAfterCredits != 0) {
+                module->closeHangarAfterCredits = 0;
+                return 1;
             }
             return 0;
         }
@@ -1875,8 +1876,9 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
     if (result == 0) {
         this->dialogActive = 0;
         ModStation *module = stationModule();
-        if (module != nullptr) {
-            module->pendingHangarClose = 0;
+        if (module != nullptr && module->closeHangarAfterCredits != 0) {
+            module->closeHangarAfterCredits = 0;
+            return 1;
         }
     }
     return 0;

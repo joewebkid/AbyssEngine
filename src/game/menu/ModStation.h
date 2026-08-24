@@ -1,5 +1,6 @@
 #ifndef GOF2_MODSTATION_H
 #define GOF2_MODSTATION_H
+#include <cstddef>
 #include <cstdint>
 #include "../../engine/core/AEString.h"
 #include "engine/math/EaseInOutMatrix.h"
@@ -33,7 +34,10 @@ public:
     int state;
     StarMap *starMap;
     CutScene *cutScene;
-    char pendingHangarClose;
+    // Android +0x18. ModStation sets this before opening Hangar's paid-credit
+    // flow from the station screen; Hangar consumes it and returns nonzero
+    // once that temporary flow has closed.
+    char closeHangarAfterCredits;
     NewsTicker *newsTicker;
     union {
         AbyssEngine::EaseInOutMatrix *cameraTween;   // 0x20
@@ -210,5 +214,10 @@ public:
 
     void showMapWindow();
 };
+
+#if __SIZEOF_POINTER__ == 4
+static_assert(offsetof(ModStation, closeHangarAfterCredits) == 0x18,
+              "ModStation::closeHangarAfterCredits @ 0x18");
+#endif
 
 #endif
