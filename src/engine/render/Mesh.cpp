@@ -1,23 +1,24 @@
 #include "engine/render/Mesh.h"
+#include "engine/core/AbyssEngine.h"
 #include "engine/math/AEMath.h"
+#include "engine/math/BSphere.h"
 #include "engine/math/Transform.h"
 #include "engine/file/AEFile.h"
+#include <cstring>
 
 namespace AbyssEngine {
     int MeshConvertToVBO(Mesh * mesh);
-
-    static unsigned char *g_hasNormalsFlag = nullptr;
 
     Mesh::Mesh(Mesh *src) {
         Mesh * self = this;
 
         self->boundsCenterX = 0.0f;
         self->boundsCenterY = 0.0f;
-        self->boundsCenterZ = 1.0f;
+        self->boundsCenterZ = 0.0f;
         self->boundsRadius = 0.0f;
-        self->boundsRadiusSq = 0.0f;
+        self->boundsRadiusSq = 1.0f;
         self->pivotX = 0.0f;
-        self->pivotY = 1.0f;
+        self->pivotY = 0.0f;
         self->pivotZ = 0.0f;
 
         if (src == 0)
@@ -26,24 +27,17 @@ namespace AbyssEngine {
         if (src->vboEligible != 0)
             MeshConvertToVBO(src);
 
-        self->boundsCenterX = src->boundsCenterX;
-        self->boundsCenterY = src->boundsCenterY;
-        self->boundsCenterZ = src->boundsCenterZ;
-        self->boundsRadius = src->boundsRadius;
-        self->boundsRadiusSq = src->boundsRadiusSq;
+        *reinterpret_cast<AEMath::BSphere *>(&self->boundsCenterX) =
+            *reinterpret_cast<const AEMath::BSphere *>(&src->boundsCenterX);
 
-        const bool hasTangents = (*g_hasNormalsFlag != 0);
-
+        unsigned char vertexFormat = src->vertexFormat;
         self->vboByteSize = 0;
-        self->vertexFormat = src->vertexFormat;
+        self->vertexFormat = vertexFormat;
         self->materialId = 0;
         self->shaderAnimValue0 = 0;
         self->vertexCount = src->vertexCount;
-        self->positions = src->positions;
-        self->texCoords = src->texCoords;
-        self->colors = src->colors;
-        self->normals = src->normals;
-        if (hasTangents) {
+        memcpy(&self->positions, &src->positions, sizeof(self->positions) * 4);
+        if (Engine::enableShader) {
             self->tangents = src->tangents;
             self->binormals = src->binormals;
         }
@@ -59,46 +53,33 @@ namespace AbyssEngine {
             self->animation = new Transform(srcAnim);
         }
 
-        self->pivotX = src->pivotX;
-        self->pivotY = src->pivotY;
-        self->pivotZ = src->pivotZ;
+        *reinterpret_cast<AEMath::Vector *>(&self->pivotX) =
+            *reinterpret_cast<const AEMath::Vector *>(&src->pivotX);
 
+        unsigned char hasAnimation = src->hasAnimation;
         self->shared = 1;
-        self->hasAnimation = src->hasAnimation;
+        self->hasAnimation = hasAnimation;
         self->uploaded = src->uploaded;
-        self->positionVBO = src->positionVBO;
-        self->indexVBO = src->indexVBO;
-        self->texCoordVBO = src->texCoordVBO;
-        self->normalVBO = src->normalVBO;
+        memcpy(&self->positionVBO, &src->positionVBO, sizeof(self->positionVBO) * 4);
         self->colorVBO = src->colorVBO;
         self->vboEligible = src->vboEligible;
-        if (hasTangents) {
+        if (Engine::enableShader) {
             self->tangentVBO = src->tangentVBO;
             self->binormalVBO = src->binormalVBO;
         }
         self->enhancedData = src->enhancedData;
     }
 
-    static float *g_maxA = nullptr;
-    static float *g_maxB = nullptr;
-    static float *g_maxC = nullptr;
-    static float *g_maxD = nullptr;
-    static float *g_maxE = nullptr;
-    static float *g_maxF = nullptr;
-    static float *g_maxG = nullptr;
-    static float *g_maxH = nullptr;
-    static float *g_animRate = nullptr;
-    static float g_uvDiv = 0.0f, g_uvMulA = 0.0f, g_uvDivB = 0.0f;
-
     namespace {
-        inline void bumpMax(float *slot, float v) {
-            if (v > 0.0f && *slot < v)
-                *slot = v;
+        inline void updateTimeBetweenFrames(float value) {
+            if (value > 0.0f)
+                timeBetweenFrames = value;
         }
     }
 
     int Mesh::ReadEnhancedDataFromFile(unsigned int file, unsigned int flags) {
         Mesh * self = this;
+        unsigned char format = (unsigned char) flags;
         Transform *anim = new Transform();
 
         if (AEFile::Read(4, &self->boundsCenterX, file) == 0) goto fail;
@@ -112,7 +93,7 @@ namespace AbyssEngine {
         }
 
         {
-            unsigned short type;
+            short type;
 
             if (AEFile::Read(2, &type, file) == 0) goto fail;
             if (type == 1) {
@@ -121,10 +102,10 @@ namespace AbyssEngine {
                 for (unsigned int i = 0; i < count; ++i) {
                     float key;
                     if (AEFile::Read(4, &key, file) == 0) goto fail;
-                    bumpMax(g_maxB, key);
-                    unsigned char vec[12];
+                    updateTimeBetweenFrames(key);
+                    float vec[3];
                     if (AEFile::Read(0xc, vec, file) == 0) goto fail;
-                    anim->InsertKeyFrame(7, key);
+                    anim->InsertKeyFrame(vec, 7, (int) key);
                 }
             } else if (type == 0) {
                 for (unsigned int axis = 0; axis < 3; ++axis) {
@@ -133,16 +114,16 @@ namespace AbyssEngine {
                     for (unsigned int j = 0; j < count; ++j) {
                         float value;
                         if (AEFile::Read(4, &value, file) == 0) goto fail;
-                        bumpMax(g_maxA, value);
+                        updateTimeBetweenFrames(value);
                         float key;
                         if (AEFile::Read(4, &key, file) == 0) goto fail;
                         if (axis == 2) {
-                            anim->InsertKeyFrame(2, value);
+                            anim->InsertKeyFrame(&key, 2, (int) value);
                         } else if (axis == 1) {
-                            value = -value;
-                            anim->InsertKeyFrame(4, value);
+                            key = -key;
+                            anim->InsertKeyFrame(&key, 4, (int) value);
                         } else {
-                            anim->InsertKeyFrame(1, value);
+                            anim->InsertKeyFrame(&key, 1, (int) value);
                         }
                     }
                 }
@@ -155,10 +136,10 @@ namespace AbyssEngine {
                 for (unsigned int i = 0; i < count; ++i) {
                     float key;
                     if (AEFile::Read(4, &key, file) == 0) goto fail;
-                    bumpMax(g_maxD, key);
-                    unsigned char vec[12];
+                    updateTimeBetweenFrames(key);
+                    float vec[3];
                     if (AEFile::Read(0xc, vec, file) == 0) goto fail;
-                    anim->InsertKeyFrame(0x1c0, key);
+                    anim->InsertKeyFrame(vec, 0x1c0, (int) key);
                 }
             } else if (type == 0) {
                 for (unsigned int axis = 0; axis < 3; ++axis) {
@@ -167,15 +148,15 @@ namespace AbyssEngine {
                     for (unsigned int j = 0; j < count; ++j) {
                         float value;
                         if (AEFile::Read(4, &value, file) == 0) goto fail;
-                        bumpMax(g_maxC, value);
+                        updateTimeBetweenFrames(value);
                         float key;
                         if (AEFile::Read(4, &key, file) == 0) goto fail;
                         if (axis == 2) {
-                            anim->InsertKeyFrame(0x100, value);
+                            anim->InsertKeyFrame(&key, 0x100, (int) value);
                         } else if (axis == 1) {
-                            anim->InsertKeyFrame(0x80, value);
+                            anim->InsertKeyFrame(&key, 0x80, (int) value);
                         } else {
-                            anim->InsertKeyFrame(0x40, value);
+                            anim->InsertKeyFrame(&key, 0x40, (int) value);
                         }
                     }
                 }
@@ -188,10 +169,10 @@ namespace AbyssEngine {
                 for (unsigned int i = 0; i < count; ++i) {
                     float key;
                     if (AEFile::Read(4, &key, file) == 0) goto fail;
-                    bumpMax(g_maxF, key);
-                    unsigned char vec[12];
+                    updateTimeBetweenFrames(key);
+                    float vec[3];
                     if (AEFile::Read(0xc, vec, file) == 0) goto fail;
-                    anim->InsertKeyFrame(0x38, key);
+                    anim->InsertKeyFrame(vec, 0x38, (int) key);
                 }
             } else if (type == 0) {
                 for (unsigned int axis = 0; axis < 3; ++axis) {
@@ -200,21 +181,21 @@ namespace AbyssEngine {
                     for (unsigned int j = 0; j < count; ++j) {
                         float value;
                         if (AEFile::Read(4, &value, file) == 0) goto fail;
-                        bumpMax(g_maxE, value);
+                        updateTimeBetweenFrames(value);
                         float key;
                         if (AEFile::Read(4, &key, file) == 0) goto fail;
                         if (axis == 2) {
-                            anim->InsertKeyFrame(0x20, value);
+                            anim->InsertKeyFrame(&key, 0x20, (int) value);
                         } else if (axis == 1) {
-                            anim->InsertKeyFrame(0x10, value);
+                            anim->InsertKeyFrame(&key, 0x10, (int) value);
                         } else {
-                            anim->InsertKeyFrame(8, value);
+                            anim->InsertKeyFrame(&key, 8, (int) value);
                         }
                     }
                 }
             }
 
-            if ((flags & 0x18) != 0) {
+            if ((format & 0x18) != 0) {
                 if (AEFile::Read(2, &type, file) == 0) goto fail;
                 if (type == 2) {
                     unsigned short count;
@@ -222,15 +203,15 @@ namespace AbyssEngine {
                     for (unsigned int i = 0; i < count; ++i) {
                         float value;
                         if (AEFile::Read(4, &value, file) == 0) goto fail;
-                        bumpMax(g_maxG, value);
+                        updateTimeBetweenFrames(value);
                         float key;
                         if (AEFile::Read(4, &key, file) == 0) goto fail;
-                        anim->InsertKeyFrame(0x200, value);
+                        anim->InsertKeyFrame(&key, 0x200, (int) value);
                     }
                 }
             }
 
-            if ((flags & 0x10) != 0) {
+            if ((format & 0x10) != 0) {
                 unsigned short present;
                 if (AEFile::Read(2, &present, file) == 0) goto fail;
                 if (present != 0) {
@@ -243,13 +224,13 @@ namespace AbyssEngine {
                         for (int j = 0; j < (short) count; ++j) {
                             float value;
                             if (AEFile::Read(4, &value, file) == 0) goto fail;
-                            bumpMax(g_maxH, value);
+                            updateTimeBetweenFrames(value);
                             float key;
                             if (AEFile::Read(4, &key, file) == 0) goto fail;
-                            key = key / g_uvDiv;
+                            key = key / 100.0f;
                             if (c == 6)
-                                key = (key * g_uvMulA) / g_uvDivB;
-                            anim->InsertKeyFrame(kChannels[c], value);
+                                key = (key * 6.2832f) / 360.0f;
+                            anim->InsertKeyFrame(&key, kChannels[c], (int) value);
                             self->hasAnimation = 1;
                         }
                     }
@@ -258,17 +239,20 @@ namespace AbyssEngine {
         }
 
         if (anim->keyFrames.size() < 1) {
-            delete anim;
+            anim->~Transform();
+            ::operator delete((void *) anim);
         } else {
             self->animation = anim;
-            float rate = *g_animRate;
+            float rate = timeBetweenFrames;
             anim->animationStart = (int) rate;
-            anim->SetAnimationRangeInTime((long long) rate, (long long) rate);
+            // Android uses a fixed upper bound and lets Transform clamp it to animationLength.
+            anim->SetAnimationRangeInTime((long long) rate, 10000000LL);
         }
         return 1;
 
     fail:
-        delete anim;
+        anim->~Transform();
+        ::operator delete((void *) anim);
         return -1;
     }
 }

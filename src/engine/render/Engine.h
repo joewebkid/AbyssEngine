@@ -581,7 +581,7 @@ namespace AbyssEngine {
         static unsigned char EnableRefract;
         static void *LodDistShader;
         static unsigned char DisableRefract;
-        static int AnisotropyValue;
+        static float AnisotropyValue;
         static unsigned char KeepRawMeshData;
         static unsigned char backupSaveGames;
         static int MultiSampleValue;

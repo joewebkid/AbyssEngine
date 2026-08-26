@@ -165,6 +165,19 @@ Known AEI type byte upload routes:
 The mipmap flag is initially `(typeByte & 0x02) != 0`. Type `0x17` is a
 special case that forces mipmaps off.
 
+## Runtime Texture Ownership Update (2026-08-27)
+
+The `TextureCreateFromFile` wrapper now passes its managed flag unchanged and
+is a normalized `100%` ARM match. `TextureCreateFromFileIntern` implements the
+confirmed per-format mip sizing, filtering, cubemap uploads and both managed
+ownership routes.
+
+When managed loading is requested without an output record, the loader creates
+a `0x1c` `AELoadedTexture`, stores source path and scale, accounts uploaded
+bytes, appends it to the `PaintCanvas+0x10` array and returns that array index.
+See `AEI_TEXTURE_UPLOAD_ARM_2026-08-27.md` for the layout, error behavior and
+focused verifier results.
+
 ## Importer Implications
 
 An AEM-to-GLB importer must not treat offset `0x18` as a universal vertex

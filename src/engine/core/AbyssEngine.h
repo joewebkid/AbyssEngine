@@ -32,6 +32,15 @@ namespace AbyssEngine {
     using AEMath::Vector;
     using AEMath::Matrix;
 
+    typedef void (*ImageCallback)(Image *, void *);
+
+    int TextureCreateFromFile(Engine *engine, const char *path, ImageCallback callback, void *userData,
+                              unsigned int *outIds, bool managed, float scale);
+
+    int TextureCreateFromFileIntern(Engine *engine, const char *path, ImageCallback callback, void *userData,
+                                    unsigned int *outIds, float scale, AELoadedTexture *loadedTexture,
+                                    bool managed);
+
     struct ESMatrix {
         float m[4][4];
     };

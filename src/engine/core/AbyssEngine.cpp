@@ -51,13 +51,6 @@ namespace AbyssEngine {
     extern char *g_Engine_shaderModeFlag;
     extern char *g_GameText_arabicEnabledFlag;
     extern char *g_MeshIntersect_flipVFlag;
-    extern char *g_Mesh_extraArraysFlag;
-    extern char *g_Mesh_keepCpuCopyFlag;
-    extern char *g_Mesh_shaderPathFlag;
-    extern char *g_Mesh_tangentDelFlag;
-    extern char *g_Mesh_tangentEnabledFlag;
-    extern int *g_Mesh_vboByteCounter;
-    extern char *g_Mesh_vboEnabledFlag;
     extern char *g_SpriteSystem_tangentFlag;
     extern char *g_SpriteSystem_uvFlipFlag;
     extern void (*g_MeshRelease_freeFn)(AbyssEngine::Engine *, AbyssEngine::Mesh **);
@@ -558,7 +551,7 @@ namespace AbyssEngine {
             return -4;
 
         unsigned char flags = mesh->vertexFormat;
-        if (*g_Mesh_shaderPathFlag == 0 && mesh->uploaded != 0) {
+        if (Engine::enableShader == 0 && mesh->uploaded != 0) {
             glBindBuffer(0x8892, mesh->positionVBO);
             engine->AEClientState(0x8074, true);
             glVertexPointer(3, 0x1406, 0, 0);
@@ -808,112 +801,107 @@ namespace AbyssEngine {
 }
 
 namespace AbyssEngine {
-    static char *g_uvFlipFlag;
-    static char *g_tangentEnabled;
-
     int MeshReadData(Engine *engine, const unsigned int &handleRef, unsigned int flags, Mesh **slot,
                      Material *mat);
 
     int MeshReadData(Engine *engine, const unsigned int &handleRef, unsigned int flags, Mesh **slot,
                      Material *mat) {
-        unsigned int handle = handleRef;
         unsigned int subBit = flags & 0x1a;
-        unsigned char mode = 0;
-
         if (subBit != 0) {
-            if (AEFile::Read((uint32_t)(0xc), &(*slot)->pivotX, handle) == 0)
+            if (AEFile::Read((uint32_t)(0xc), &(*slot)->pivotX, handleRef) == 0)
                 return -1;
         }
 
         Mesh *m = *slot;
 
         if (m->vertexFormat & 0x10) {
-            if (AEFile::Read((uint32_t)(2), &m->indexCount, handle) == 0)
+            if (AEFile::Read((uint32_t)(2), &m->indexCount, handleRef) == 0)
                 return -1;
             void *idx = ::operator new[]((unsigned int) m->indexCount << 1);
             (*slot)->indices = idx;
-            if (AEFile::Read((uint32_t)((unsigned int) (*slot)->indexCount << 1), (*slot)->indices, handle) == 0)
+            if (AEFile::Read((uint32_t)((unsigned int) (*slot)->indexCount << 1), (*slot)->indices, handleRef) == 0)
                 return -1;
             m = *slot;
         }
 
-        if (AEFile::Read((uint32_t)(2), &m->vertexCount, handle) == 0)
+        if (AEFile::Read((uint32_t)(2), &m->vertexCount, handleRef) == 0)
             return -1;
 
-        float minv[3] = {1e30f, 1e30f, 1e30f};
-        float maxv[3] = {-1e30f, -1e30f, -1e30f};
-        bool compressedPos = (int) (flags << 0x1d) < 0;
+        unsigned int compressedData = flags << 0x1d;
         unsigned int vcount = (*slot)->vertexCount;
 
-        if (compressedPos) {
-            void *raw = ::operator new[](vcount * 6);
-            if (AEFile::Read((uint32_t)(vcount * 6), raw, handle) == 0) {
-                ::operator delete[](raw);
-                return -1;
-            }
-            m = *slot;
-            void *pos = ::operator new[](vcount * 0xc);
-            m->positions = pos;
-            m = *slot;
-            short *rawShorts = (short *) raw;
-            float *posFloats = (float *) m->positions;
-            unsigned int n3 = vcount * 3;
-            for (unsigned int i = 0; i < n3; ++i) {
-                int axis = (int) ((unsigned) i / (unsigned) 3);
-                axis = (int) i - axis * 3;
-                float v = AbyssEngine::AEMath::VectorSignedToFloat((int) rawShorts[i], mode);
-                posFloats[i] = v;
-                if (v < minv[axis]) minv[axis] = v;
-                if (maxv[axis] < v) maxv[axis] = v;
-            }
-            ::operator delete[](raw);
-        } else if ((flags & 3) == 0) {
-            if ((flags & 0x18) != 0) {
+        {
+            float minv[3] = {10000000.0f, 10000000.0f, 10000000.0f};
+            float maxv[3] = {-10000000.0f, -10000000.0f, -10000000.0f};
+
+            if ((flags & 4) != 0) {
+                void *raw = ::operator new[](vcount * 6);
+                if (AEFile::Read((uint32_t)(vcount * 6), raw, handleRef) == 0) {
+                    ::operator delete[](raw);
+                    return -1;
+                }
                 m = *slot;
                 void *pos = ::operator new[](vcount * 0xc);
                 m->positions = pos;
-                if (AEFile::Read((uint32_t)((*slot)->vertexCount * 0xc), (*slot)->positions, handle) == 0)
+                m = *slot;
+                short *rawShorts = (short *) raw;
+                float *posFloats = (float *) m->positions;
+                unsigned int n3 = vcount * 3;
+                for (unsigned int i = 0; i < n3; ++i) {
+                    int axis = (int) ((unsigned) i / (unsigned) 3);
+                    axis = (int) i - axis * 3;
+                    float v = (float) rawShorts[i];
+                    posFloats[i] = v;
+                    if (v < minv[axis]) minv[axis] = v;
+                    if (maxv[axis] < v) maxv[axis] = v;
+                }
+                ::operator delete[](raw);
+            } else if ((flags << 0x1e) != 0) {
+                void *raw = ::operator new[](vcount * 0xc);
+                if (AEFile::Read((uint32_t)(vcount * 0xc), raw, handleRef) == 0) {
+                    ::operator delete[](raw);
+                    return -1;
+                }
+                m = *slot;
+                void *pos = ::operator new[](vcount * 0xc);
+                m->positions = pos;
+                m = *slot;
+                int *rawInts = (int *) raw;
+                float *posFloats = (float *) m->positions;
+                unsigned int n3 = vcount * 3;
+                for (unsigned int i = 0; i < n3; ++i) {
+                    int axis = (int) ((unsigned) i / (unsigned) 3);
+                    axis = (int) i - axis * 3;
+                    float v = (float) rawInts[i];
+                    posFloats[i] = v;
+                    if (v < minv[axis]) minv[axis] = v;
+                    if (maxv[axis] < v) maxv[axis] = v;
+                }
+                ::operator delete[](raw);
+            } else if ((flags & 0x18) != 0) {
+                m = *slot;
+                void *pos = ::operator new[](vcount * 0xc);
+                m->positions = pos;
+                if (AEFile::Read((uint32_t)((*slot)->vertexCount * 0xc), (*slot)->positions, handleRef) == 0)
                     return -1;
             }
-        } else {
-            void *raw = ::operator new[](vcount * 0xc);
-            if (AEFile::Read((uint32_t)(vcount * 0xc), raw, handle) == 0) {
-                ::operator delete[](raw);
-                return -1;
-            }
-            m = *slot;
-            void *pos = ::operator new[](vcount * 0xc);
-            m->positions = pos;
-            m = *slot;
-            int *rawInts = (int *) raw;
-            float *posFloats = (float *) m->positions;
-            unsigned int n3 = vcount * 3;
-            for (unsigned int i = 0; i < n3; ++i) {
-                int axis = (int) ((unsigned) i / (unsigned) 3);
-                axis = (int) i - axis * 3;
-                float v = AbyssEngine::AEMath::VectorSignedToFloat(rawInts[i], mode);
-                posFloats[i] = v;
-                if (v < minv[axis]) minv[axis] = v;
-                if (maxv[axis] < v) maxv[axis] = v;
-            }
-            ::operator delete[](raw);
-        }
 
-        float center[3];
-        center[0] = (maxv[0] + minv[0]) * 0.5f;
-        center[1] = (maxv[1] + minv[1]) * 0.5f;
-        center[2] = (maxv[2] + minv[2]) * 0.5f;
-        *(Vector *) &(*slot)->boundsCenterX = *(const Vector *) center;
-        float halfDiag[3] = {minv[0], minv[1], minv[2]};
-        *(Vector *) center -= *(const Vector *) halfDiag;
-        (*slot)->boundsRadius = AEMath::VectorLength(*(const Vector *) center);
+            float center[3];
+            center[0] = (maxv[0] + minv[0]) * 0.5f;
+            center[1] = (maxv[1] + minv[1]) * 0.5f;
+            center[2] = (maxv[2] + minv[2]) * 0.5f;
+            *(Vector *) &(*slot)->boundsCenterX = *(const Vector *) center;
+            float halfDiag[3] = {minv[0], minv[1], minv[2]};
+            *(Vector *) center -= *(const Vector *) halfDiag;
+            (*slot)->boundsRadius = AEMath::VectorLength(*(const Vector *) center);
+        }
 
         m = *slot;
 
         if (m->vertexFormat & 2) {
-            if (compressedPos) {
+            if (compressedData != 0) {
                 void *raw = ::operator new[](vcount << 2);
-                if (AEFile::Read((uint32_t)(vcount << 2), raw, handle) == 0) {
+                if (AEFile::Read((uint32_t)(vcount << 2), raw, handleRef) == 0) {
                     ::operator delete[](raw);
                     return -1;
                 }
@@ -921,27 +909,25 @@ namespace AbyssEngine {
                 void *uv = ::operator new[](vcount << 3);
                 m->texCoords = uv;
                 m = *slot;
-                char flip = *g_uvFlipFlag;
+                const bool flip = Engine::enableShader != 0;
                 short *rawShorts = (short *) raw;
                 float *uvFloats = (float *) m->texCoords;
-                const double scale = 1.0 / 32767.0;
+                const double scale = 1.0 / 4096.0;
                 for (unsigned int i = 0; i < (vcount << 1); i += 2) {
-                    double u = (double) AbyssEngine::AEMath::VectorSignedToFloat(
-                                   (int) rawShorts[i], mode) * scale;
+                    double u = (double) rawShorts[i] * scale;
                     float *p = uvFloats + i;
                     p[0] = (float) u;
-                    double v = (double) AbyssEngine::AEMath::VectorSignedToFloat(
-                                   (int) rawShorts[i + 1], mode) * scale;
-                    double vv = (flip == 0) ? v : (1.0 - v);
+                    double v = (double) rawShorts[i + 1] * scale;
+                    double vv = flip ? (1.0 - v) : v;
                     p[1] = (float) vv;
                 }
                 ::operator delete[](raw);
             } else if ((flags & 0x18) != 0) {
                 void *uv = ::operator new[](vcount << 3);
                 m->texCoords = uv;
-                if (AEFile::Read((uint32_t)((*slot)->vertexCount << 3), (*slot)->texCoords, handle) == 0)
+                if (AEFile::Read((uint32_t)((*slot)->vertexCount << 3), (*slot)->texCoords, handleRef) == 0)
                     return -1;
-                if (*g_uvFlipFlag != 0) {
+                if (Engine::enableShader != 0) {
                     m = *slot;
                     float *uvFloats = (float *) m->texCoords;
                     for (unsigned int i = 0; i < (unsigned int) (m->vertexCount << 1); i += 2) {
@@ -955,9 +941,9 @@ namespace AbyssEngine {
         m = *slot;
 
         if (m->vertexFormat & 4) {
-            if (compressedPos) {
+            if (compressedData != 0) {
                 void *raw = ::operator new[](vcount * 6);
-                if (AEFile::Read((uint32_t)(vcount * 6), raw, handle) == 0) {
+                if (AEFile::Read((uint32_t)(vcount * 6), raw, handleRef) == 0) {
                     ::operator delete[](raw);
                     return -1;
                 }
@@ -965,12 +951,12 @@ namespace AbyssEngine {
                 void *nrm = ::operator new[](vcount * 0xc);
                 m->normals = nrm;
                 m = *slot;
-                const double scale = 1.0 / 32767.0;
+                const double scale = 1.0 / 32768.0;
                 short *s = (short *) raw;
                 for (unsigned int i = 0; i < vcount * 3; i += 3) {
-                    float nx = (float) ((double) AbyssEngine::AEMath::VectorSignedToFloat((int) s[0], mode) * scale);
-                    float ny = (float) ((double) AbyssEngine::AEMath::VectorSignedToFloat((int) s[1], mode) * scale);
-                    float nz = (float) ((double) AbyssEngine::AEMath::VectorSignedToFloat((int) s[2], mode) * scale);
+                    float nx = (float) ((double) s[0] * scale);
+                    float ny = (float) ((double) s[1] * scale);
+                    float nz = (float) ((double) s[2] * scale);
                     float len2 = nx * nx + ny * ny + nz * nz;
                     float len = sqrtf(len2);
                     float *normalFloats = (float *) m->normals;
@@ -984,13 +970,13 @@ namespace AbyssEngine {
                         if (ny > 1.0f) ny = 1.0f;
                         if (nz < -1.0f) nz = -1.0f;
                         if (nz > 1.0f) nz = 1.0f;
-                        normalFloats[i + 0] = ny;
-                        normalFloats[i + 1] = nx;
+                        normalFloats[i + 0] = nx;
+                        normalFloats[i + 1] = ny;
                         normalFloats[i + 2] = nz;
                     } else {
-                        ((unsigned int *) normalFloats)[i + 1] = 0x3f800000;
-                        ((unsigned int *) normalFloats)[i + 0] = 0;
-                        normalFloats[i + 2] = 1.0f;
+                        normalFloats[i + 0] = 0.0f;
+                        normalFloats[i + 1] = 1.0f;
+                        normalFloats[i + 2] = 0.0f;
                     }
                     s += 3;
                     m = *slot;
@@ -999,11 +985,11 @@ namespace AbyssEngine {
             } else if ((flags & 0x18) != 0) {
                 void *nrm = ::operator new[](vcount * 0xc);
                 m->normals = nrm;
-                if (AEFile::Read((uint32_t)((*slot)->vertexCount * 0xc), (*slot)->normals, handle) == 0)
+                if (AEFile::Read((uint32_t)((*slot)->vertexCount * 0xc), (*slot)->normals, handleRef) == 0)
                     return -1;
             }
 
-            if (*g_tangentEnabled != 0) {
+            if (Engine::enableShader != 0) {
                 m = *slot;
                 void *tan = ::operator new[](vcount * 0xc);
                 m->tangents = tan;
@@ -1015,7 +1001,8 @@ namespace AbyssEngine {
                 unsigned int triCount = (unsigned int) ((unsigned) (unsigned short) m->indexCount / (unsigned) 3);
                 float *accum = (float *) ::operator new[](vcount * 0xc);
 
-                for (unsigned int b = 0; b < vcount * 3; ++b) accum[b] = 0.0f;
+                if (vcount != 0)
+                    memset(accum, 0, vcount * 0xc);
 
                 for (unsigned int t = 0; t < triCount; ++t) {
                     m = *slot;
@@ -1035,23 +1022,17 @@ namespace AbyssEngine {
                     float *p1 = posBase + i1 * 3;
                     float denom = (uvBase[i1 * 2] - uv0u) * dv1 -
                                   (uvBase[i2 * 2] - uv0u) * dv2;
-                    float r = (denom != 0.0f) ? (1.0f / denom) : 0.0f;
+                    float r = 1.0f / denom;
                     float tng[3];
                     tng[1] = ((p1[1] - p0[1]) * dv1 - (p2[1] - p0[1]) * dv2) * r;
                     tng[0] = ((p1[0] - p0[0]) * dv1 - (p2[0] - p0[0]) * dv2) * r;
                     tng[2] = ((p1[2] - p0[2]) * dv1 - (p2[2] - p0[2]) * dv2) * r;
                     float *a = accum + i0 * 3;
-                    a[0] += tng[0];
-                    a[1] += tng[1];
-                    a[2] += tng[2];
+                    *(Vector *) a += *(const Vector *) tng;
                     a = accum + i1 * 3;
-                    a[0] += tng[0];
-                    a[1] += tng[1];
-                    a[2] += tng[2];
+                    *(Vector *) a += *(const Vector *) tng;
                     a = accum + i2 * 3;
-                    a[0] += tng[0];
-                    a[1] += tng[1];
-                    a[2] += tng[2];
+                    *(Vector *) a += *(const Vector *) tng;
                 }
 
                 for (unsigned int v = 0; v < vcount; ++v) {
@@ -1075,8 +1056,8 @@ namespace AbyssEngine {
                     tb[0] = tanOut[0];
                     tb[1] = tanOut[1];
                     tb[2] = tanOut[2];
-                    float binOut[3] = {tg[0], tg[1], tg[2]};
-                    *(Vector *) binOut = AEMath::VectorCross(*(const Vector *) binOut, *(const Vector *) nrm);
+                    float binOut[3];
+                    *(Vector *) binOut = AEMath::VectorCross(*(const Vector *) nrm, *(const Vector *) tanOut);
                     float *bb = (float *) (*slot)->binormals + v * 3;
                     bb[0] = binOut[0];
                     bb[1] = binOut[1];
@@ -1089,9 +1070,9 @@ namespace AbyssEngine {
         m = *slot;
 
         if (m->vertexFormat & 8) {
-            if (compressedPos) {
+            if (compressedData != 0) {
                 void *raw = ::operator new[](vcount << 2);
-                if (AEFile::Read((uint32_t)(vcount << 2), raw, handle) == 0) {
+                if (AEFile::Read((uint32_t)(vcount << 2), raw, handleRef) == 0) {
                     ::operator delete[](raw);
                     return -1;
                 }
@@ -1103,32 +1084,28 @@ namespace AbyssEngine {
                 unsigned char *rawBytes = (unsigned char *) raw;
                 float *colorFloats = (float *) m->colors;
                 for (unsigned int i = 0; i < (vcount << 2); ++i) {
-                    float c = AbyssEngine::AEMath::VectorUnsignedToFloat(
-                        (unsigned int) rawBytes[i], mode);
-                    colorFloats[i] = c / inv;
+                    colorFloats[i] = (float) rawBytes[i] / inv;
                 }
                 ::operator delete[](raw);
             } else if ((flags & 0x18) != 0) {
                 void *col = ::operator new[](vcount << 4);
                 m->colors = col;
-                if (AEFile::Read((uint32_t)((*slot)->vertexCount << 4), (*slot)->colors, handle) == 0)
+                if (AEFile::Read((uint32_t)((*slot)->vertexCount << 4), (*slot)->colors, handleRef) == 0)
                     return -1;
             }
         }
 
         if (subBit != 0) {
-            if ((*slot)->ReadEnhancedDataFromFile(handle, flags) == 0)
+            if ((*slot)->ReadEnhancedDataFromFile(handleRef, flags) == 0)
                 return -1;
-            unsigned short childCount = 0;
-            if (AEFile::Read((uint32_t)(2), &childCount, handle) == 0)
+            unsigned short childCount;
+            if (AEFile::Read((uint32_t)(2), &childCount, handleRef) == 0)
                 return -1;
             Transform *xf = (*slot)->animation;
             if (xf != 0)
                 ((AEMath::BSphere *) &(*slot)->boundsCenterX)->Merge(xf->bounds());
             for (unsigned int c = 0; c < childCount; ++c) {
-                Mesh *childPtr = (Mesh *) ::operator new(0x88);
-                memset(childPtr, 0, 0x88);
-                childPtr->boundsRadiusSq = 1.0f;
+                Mesh *childPtr = new Mesh();
                 childPtr->vboEligible = 1;
                 childPtr->vertexFormat = (*slot)->vertexFormat;
                 childPtr->material = (*slot)->material;
@@ -1136,13 +1113,7 @@ namespace AbyssEngine {
                     return -1;
                 ((AEMath::BSphere *) &(*slot)->boundsCenterX)->Merge(
                     *(const AEMath::BSphere *) &childPtr->boundsCenterX);
-                {
-                    EngineArrayHeader *a = (EngineArrayHeader *) &(*slot)->animation->meshes;
-                    a->capacity = a->count + 1;
-                    a->data = realloc(a->data, (a->count + 1) * sizeof(Mesh *));
-                    ((Mesh **) a->data)[a->count] = childPtr;
-                    a->count = a->capacity;
-                }
+                ArrayAdd<Mesh *>(childPtr, (*slot)->animation->meshes);
             }
         }
 
@@ -1455,10 +1426,7 @@ namespace AbyssEngine {
         if (vertexCount < 4 || triCount == 0 || (vertexFormat & 1) == 0)
             return -4;
 
-        Mesh *m = (Mesh *) operator new(0x88);
-
-        memset(m, 0, 0x88);
-        m->boundsRadiusSq = 1.0f;
+        Mesh *m = new Mesh();
 
         *out = m;
         m->vertexCount = (short) vertexCount;
@@ -1485,7 +1453,7 @@ namespace AbyssEngine {
             p = operator new[](posBytes);
             m->normals = p;
             memset(p, 0, posBytes);
-            if (*g_Mesh_tangentEnabledFlag != 0) {
+            if (Engine::enableShader != 0) {
                 p = operator new[](posBytes);
                 m->tangents = p;
                 memset(p, 0, posBytes);
@@ -2006,7 +1974,7 @@ namespace AbyssEngine {
 
 namespace AbyssEngine {
     int MeshConvertToVBOIntern(Mesh *m) {
-        if (m == 0 || *g_Mesh_vboEnabledFlag == 0)
+        if (m == 0 || Engine::vboSupported == 0)
             return -4;
         if (m->uploaded != 0 || (short) m->indexCount == 0)
             return -4;
@@ -2040,7 +2008,7 @@ namespace AbyssEngine {
             glBindBuffer(0x8892, m->normalVBO);
             glBufferData(0x8892, vcount * 0xc, m->normals, 0x88e4);
             m->vboByteSize += (int) (vcount * 0xc);
-            if (*g_Mesh_tangentEnabledFlag != 0) {
+            if (Engine::enableShader != 0) {
                 glGenBuffers(1, &m->tangentVBO);
                 glBindBuffer(0x8892, m->tangentVBO);
                 glBufferData(0x8892, vcount * 0xc, tanArr, 0x88e4);
@@ -2063,7 +2031,7 @@ namespace AbyssEngine {
         glBindBuffer(0x8893, 0);
 
         if (glGetError() == 0) {
-            if (*g_Mesh_keepCpuCopyFlag == 0) {
+            if (Engine::KeepRawMeshData == 0) {
                 if (m->positions != 0) operator delete[](m->positions);
                 m->positions = 0;
                 if (m->texCoords != 0) operator delete[](m->texCoords);
@@ -2080,7 +2048,7 @@ namespace AbyssEngine {
                 m->binormals = 0;
             }
             m->uploaded = 1;
-            *g_Mesh_vboByteCounter += m->vboByteSize;
+            Engine::vboSize += m->vboByteSize;
             return 1;
         }
 
@@ -2094,7 +2062,7 @@ namespace AbyssEngine {
             }
             if (f & 4) {
                 glDeleteBuffers(1, &m->normalVBO);
-                if (*g_Mesh_tangentDelFlag != 0) {
+                if (Engine::enableShader != 0) {
                     glDeleteBuffers(1, &m->tangentVBO);
                     glDeleteBuffers(1, &m->binormalVBO);
                 }
@@ -2133,16 +2101,10 @@ namespace AbyssEngine {
 }
 
 namespace AbyssEngine {
-    typedef void (*ImageCallback)(Image *, void *);
-
-    int TextureCreateFromFileIntern(Engine *engine, const char *path, ImageCallback cb, void *user,
-                                    unsigned int *outIds, float scale, AELoadedTexture *outTex,
-                                    bool flag);
-
     int TextureCreateFromFile(Engine *engine, const char *path, ImageCallback cb, void *user,
-                              unsigned int *outIds, bool /*flag*/, float scale) {
+                              unsigned int *outIds, bool flag, float scale) {
         TextureCreateFromFileIntern(engine, path, cb, user, outIds, scale,
-                                    (AELoadedTexture *) 0, false);
+                                    (AELoadedTexture *) 0, flag);
         return 1;
     }
 }
@@ -2153,12 +2115,6 @@ namespace AbyssEngine {
     extern "C" {
     void glTexEnvi(unsigned int t, unsigned int p, int v);
     }
-
-    static char *g_cubemapEnabledFlag;
-    static char *g_texEnvFlag;
-    static char *g_clampFlag;
-    static float *g_anisoMaxPtr;
-    static char *g_labelObjectsFlag;
 
     int ImageCreateFromFile(Engine *engine, const char *path, Image **out);
 
@@ -2172,14 +2128,15 @@ namespace AbyssEngine {
     }
 
     int TextureCreateFromFileIntern(Engine *engine, const char *path, void (*cb)(Image *, void *),
-                                    void *user, unsigned int *outIds, float aniso,
-                                    AELoadedTexture *outTex, bool /*flag*/) {
+                                    void *user, unsigned int *outIds, float scale,
+                                    AELoadedTexture *outTex, bool flag) {
         Image *imgPtr = 0;
         *outIds = 0;
         engine->lastGlError = glGetError();
 
-        if (ImageCreateFromFile(engine, path, &imgPtr) != 1)
-            return -4;
+        int result = ImageCreateFromFile(engine, path, &imgPtr);
+        if (result != 1)
+            return result;
         if (cb != 0)
             cb(imgPtr, user);
 
@@ -2187,28 +2144,14 @@ namespace AbyssEngine {
         Image *img = imgPtr;
         int format = (int) img->format;
 
-        if (format == 6) {
-            if (*g_cubemapEnabledFlag != 0) {
-                glBindTexture(0x8513, *outIds);
-                glTexParameteri(0x8513, 0x2800, 0x2601);
-                glTexParameteri(0x8513, 0x2801, 0x2601);
-                int faceH = (int) ((unsigned) img->height / (unsigned) 6);
-                unsigned int w = img->width;
-                const unsigned int faces[6] = {0x8517, 0x8516, 0x8519, 0x8515, 0x851a, 0x8518};
-                int faceBytes = faceH * (int) w;
-                for (int fi = 0; fi < 6; ++fi) {
-                    glTexImage2D(faces[fi], 0, 0x1908, (int) w, faceH, 0, 0x1908, 0x1401,
-                                 (unsigned char *) img->data + faceBytes * 4 * fi);
-                }
-            }
-        } else {
+        if (format != 6) {
             glBindTexture(0xde1, *outIds);
             glPixelStorei(0xcf5, 1);
-            if (*g_texEnvFlag == 0)
+            if (Engine::enableShader == 0)
                 glTexEnvi(0x2300, 0x2200, 0x2100);
 
             int wrap;
-            if (*g_clampFlag != 0) {
+            if (Engine::clampTextures) {
                 glTexParameteri(0xde1, 0x2802, 0x812f);
                 wrap = 0x812f;
             } else {
@@ -2217,7 +2160,15 @@ namespace AbyssEngine {
             }
             glTexParameteri(0xde1, 0x2803, wrap);
 
-            if (img->hasMipmaps == 0) {
+            if (img->hasMipmaps != 0) {
+                if (Engine::AnisotropyValue > 0.0f) {
+                    glTexParameterf(0xde1, 0x84fe, Engine::AnisotropyValue);
+                    glTexParameteri(0xde1, 0x2801, 0x2703);
+                } else {
+                    glTexParameteri(0xde1, 0x2801, 0x2703);
+                    glTexParameteri(0xde1, 0x2800, 0x2601);
+                }
+            } else {
                 if (engine->linearFilterFlag != 0) {
                     glTexParameteri(0xde1, 0x2800, 0x2601);
                     glTexParameteri(0xde1, 0x2801, 0x2601);
@@ -2225,15 +2176,9 @@ namespace AbyssEngine {
                     glTexParameteri(0xde1, 0x2800, 0x2600);
                     glTexParameteri(0xde1, 0x2801, 0x2600);
                 }
-            } else if (*g_anisoMaxPtr <= 0.0f) {
-                glTexParameteri(0xde1, 0x2801, 0x2703);
-                glTexParameteri(0xde1, 0x2800, 0x2601);
-            } else {
-                glTexParameterf(0xde1, 0x84fe, *g_anisoMaxPtr);
-                glTexParameteri(0xde1, 0x2801, 0x2703);
             }
 
-            if (*g_clampFlag != 0) {
+            if (Engine::clampTextures) {
                 glTexParameteri(0xde1, 0x2800, 0x2601);
                 glTexParameteri(0xde1, 0x2801, 0x2601);
             }
@@ -2254,72 +2199,83 @@ namespace AbyssEngine {
                     if (img->hasMipmaps != 0) glGenerateMipmap(0xde1);
                     break;
                 case 4:
-                    if (img->hasMipmaps == 0)
+                    if (img->hasMipmaps == 0) {
                         glCompressedTexImage2D(0xde1, 0, 0x8c03, w, h, 0, (int) img->dataLen, img->data);
-                    else {
-                        unsigned int cw = (unsigned int) img->width;
-                        unsigned int ch = (unsigned int) img->height;
+                    } else {
+                        unsigned int ch = img->height;
+                        unsigned int cw = img->width;
                         int level = 0;
                         for (unsigned int off = 0; off < img->dataLen;) {
-                            unsigned int blockSz = (cw * ch) >> 1;
-                            if ((int) blockSz < 0x10)
-                                blockSz = (unsigned int) 0x10;
+                            int blocksWide = (int) (cw >> 3);
+                            unsigned int rowSize = (2 * ch) & 0xfffffff8;
+                            if (cw < 0x10)
+                                blocksWide = 2;
+                            if (ch < 8)
+                                rowSize = 0x10;
+                            unsigned int blockSz = rowSize * (unsigned int) blocksWide;
                             glCompressedTexImage2D(0xde1, level, 0x8c03, (int) cw, (int) ch, 0, (int) blockSz,
                                                    (unsigned char *) img->data + off);
                             off += blockSz;
-                            unsigned int nw = 1, nh = 1;
-                            if (ch >> 1 > 1) nh = ch >> 1;
-                            if (cw >> 1 > 1) nw = cw >> 1;
+                            unsigned int nh = 1;
+                            unsigned int nw = 1;
+                            if ((ch >> 1) > 1) nh = ch >> 1;
+                            if ((cw >> 1) > 1) nw = cw >> 1;
                             ++level;
-                            cw = nw;
                             ch = nh;
+                            cw = nw;
                         }
                     }
                     break;
                 case 5:
-                    if (img->hasMipmaps == 0)
-                        glCompressedTexImage2D(0xde1, 0, 0x8c02, w, h, 0, (int) img->dataLen, img->data);
-                    else {
-                        unsigned int cw = (unsigned int) img->width;
-                        unsigned int ch = (unsigned int) img->height;
+                    if (img->hasMipmaps != 0) {
+                        unsigned int ch = img->height;
+                        unsigned int cw = img->width;
                         int level = 0;
                         for (unsigned int off = 0; off < img->dataLen;) {
-                            unsigned int blockSz = (cw * ch) >> 1;
-                            if ((int) blockSz < 0x10)
-                                blockSz = (unsigned int) 0x10;
+                            int blockRows = (int) (ch >> 2);
+                            unsigned int rowSize = (2 * cw) & 0xfffffff8;
+                            if (ch < 8)
+                                blockRows = 2;
+                            if (cw < 8)
+                                rowSize = 0x10;
+                            unsigned int blockSz = rowSize * (unsigned int) blockRows;
                             glCompressedTexImage2D(0xde1, level, 0x8c02, (int) cw, (int) ch, 0, (int) blockSz,
                                                    (unsigned char *) img->data + off);
                             off += blockSz;
-                            unsigned int nw = 1, nh = 1;
-                            if (ch >> 1 > 1) nh = ch >> 1;
-                            if (cw >> 1 > 1) nw = cw >> 1;
+                            unsigned int nh = 1;
+                            unsigned int nw = 1;
+                            if ((ch >> 1) > 1) nh = ch >> 1;
+                            if ((cw >> 1) > 1) nw = cw >> 1;
                             ++level;
-                            cw = nw;
                             ch = nh;
+                            cw = nw;
                         }
+                    } else {
+                        glCompressedTexImage2D(0xde1, 0, 0x8c02, w, h, 0, (int) img->dataLen, img->data);
                     }
                     break;
                 case 7:
-                    if (img->hasMipmaps == 0)
-                        glCompressedTexImage2D(0xde1, 0, 0x8c93, w, h, 0, (int) img->dataLen, img->data);
-                    else {
-                        unsigned int cw = (unsigned int) img->width;
-                        unsigned int ch = (unsigned int) img->height;
+                    if (img->hasMipmaps != 0) {
+                        unsigned int ch = img->height;
+                        unsigned int cw = img->width;
                         int level = 0;
                         for (unsigned int off = 0; off < img->dataLen;) {
-                            unsigned int blockSz = (cw * ch) >> 0;
-                            if ((int) blockSz < 0x10)
-                                blockSz = (unsigned int) 0x10;
+                            unsigned int blockSz = ch * cw;
+                            if (blockSz <= 0x10)
+                                blockSz = 0x10;
                             glCompressedTexImage2D(0xde1, level, 0x8c93, (int) cw, (int) ch, 0, (int) blockSz,
                                                    (unsigned char *) img->data + off);
                             off += blockSz;
-                            unsigned int nw = 1, nh = 1;
-                            if (ch >> 1 > 1) nh = ch >> 1;
-                            if (cw >> 1 > 1) nw = cw >> 1;
+                            unsigned int nh = 1;
+                            unsigned int nw = 1;
+                            if ((ch >> 1) > 1) nh = ch >> 1;
+                            if ((cw >> 1) > 1) nw = cw >> 1;
                             ++level;
                             cw = nw;
                             ch = nh;
                         }
+                    } else {
+                        glCompressedTexImage2D(0xde1, 0, 0x8c93, w, h, 0, (int) img->dataLen, img->data);
                     }
                     break;
                 case 8:
@@ -2328,58 +2284,80 @@ namespace AbyssEngine {
                     unsigned int glFmt = 0x83f0;
                     if (format == 9) glFmt = 0x83f2;
                     if (format == 10) glFmt = 0x83f3;
-                    if (img->hasMipmaps == 0)
-                        glCompressedTexImage2D(0xde1, 0, glFmt, w, h, 0, (int) img->dataLen, img->data);
-                    else {
-                        unsigned int cw = (unsigned int) img->width;
-                        unsigned int ch = (unsigned int) img->height;
+                    if (img->hasMipmaps != 0) {
+                        unsigned int ch = img->height;
+                        unsigned int cw = img->width;
                         int level = 0;
                         for (unsigned int off = 0; off < img->dataLen;) {
-                            unsigned int blockSz = (cw * ch) >> 1;
-                            if ((int) blockSz < 0x10)
-                                blockSz = (unsigned int) 0x10;
+                            unsigned int blockSz = ch * cw;
+                            if ((unsigned int) (format - 9) > 1) {
+                                if (blockSz > 0xf)
+                                    blockSz >>= 1;
+                                else
+                                    blockSz = (format == 8) ? 8U : 0x10U;
+                            } else if (blockSz <= 0x10) {
+                                blockSz = 0x10;
+                            }
                             glCompressedTexImage2D(0xde1, level, glFmt, (int) cw, (int) ch, 0, (int) blockSz,
                                                    (unsigned char *) img->data + off);
                             off += blockSz;
-                            unsigned int nw = 1, nh = 1;
-                            if (ch >> 1 > 1) nh = ch >> 1;
-                            if (cw >> 1 > 1) nw = cw >> 1;
+                            unsigned int nh = 1;
+                            unsigned int nw = 1;
+                            if ((ch >> 1) > 1) nh = ch >> 1;
+                            if ((cw >> 1) > 1) nw = cw >> 1;
                             ++level;
                             cw = nw;
                             ch = nh;
                         }
+                    } else {
+                        glCompressedTexImage2D(0xde1, 0, glFmt, w, h, 0, (int) img->dataLen, img->data);
                     }
                     break;
                 }
                 case 0xb:
-                    if (img->hasMipmaps == 0)
-                        glCompressedTexImage2D(0xde1, 0, 0x8d64, w, h, 0, (int) img->dataLen, img->data);
-                    else {
-                        unsigned int cw = (unsigned int) img->width;
-                        unsigned int ch = (unsigned int) img->height;
+                    if (img->hasMipmaps != 0) {
+                        unsigned int ch = img->height;
+                        unsigned int cw = img->width;
                         int level = 0;
                         for (unsigned int off = 0; off < img->dataLen;) {
                             unsigned int blockSz = (cw * ch) >> 1;
-                            if ((int) blockSz < 8)
-                                blockSz = (unsigned int) 8;
+                            if (cw < 8)
+                                blockSz = 8;
                             glCompressedTexImage2D(0xde1, level, 0x8d64, (int) cw, (int) ch, 0, (int) blockSz,
                                                    (unsigned char *) img->data + off);
                             off += blockSz;
-                            unsigned int nw = 1, nh = 1;
-                            if (ch >> 1 > 1) nh = ch >> 1;
-                            if (cw >> 1 > 1) nw = cw >> 1;
+                            unsigned int nh = 1;
+                            unsigned int nw = 1;
+                            if ((ch >> 1) > 1) nh = ch >> 1;
+                            if ((cw >> 1) > 1) nw = cw >> 1;
                             ++level;
                             cw = nw;
                             ch = nh;
                         }
+                    } else {
+                        glCompressedTexImage2D(0xde1, 0, 0x8d64, w, h, 0, (int) img->dataLen, img->data);
                     }
                     break;
                 default:
                     break;
             }
+        } else if (Engine::enableShader != 0) {
+            glBindTexture(0x8513, *outIds);
+            glTexParameteri(0x8513, 0x2800, 0x2601);
+            glTexParameteri(0x8513, 0x2801, 0x2601);
+            int faceH = (int) ((unsigned int) img->height / 6U);
+            int faceW = img->width;
+            int faceBytes = 4 * faceH * faceW;
+            unsigned char *pixels = (unsigned char *) img->data;
+            glTexImage2D(0x8517, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, pixels);
+            glTexImage2D(0x8516, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, pixels + faceBytes);
+            glTexImage2D(0x8519, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, pixels + faceBytes * 2);
+            glTexImage2D(0x8515, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, pixels + faceBytes * 3);
+            glTexImage2D(0x851a, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, pixels + faceBytes * 4);
+            glTexImage2D(0x8518, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, pixels + faceBytes * 5);
         }
 
-        if (outTex == 0) {
+        if (!flag) {
             int err = (int) glGetError();
             engine->lastGlError = (unsigned int) err;
             if (err != 0) {
@@ -2390,20 +2368,46 @@ namespace AbyssEngine {
                 return -4;
             }
             AELabelObject(0x1702, *outIds, path);
+        } else if (outTex != 0) {
+            outTex->valid = 1;
+            outTex->isCube = (format == 6) ? 1 : 0;
+            unsigned int byteSize;
+            if (glGetError() != 0) {
+                outTex->glId = 0xffffffff;
+                outTex->byteSize = 0;
+                glDeleteTextures(1, outIds);
+                byteSize = outTex->byteSize;
+            } else {
+                AELabelObject(0x1702, *outIds, path);
+                outTex->glId = *outIds;
+                byteSize = img->dataLen;
+                outTex->byteSize = byteSize;
+                ++Engine::ImageCount;
+            }
+            engine->textureByteCounter += (int) byteSize;
         } else {
-            AELoadedTexture *tex = outTex;
+            AELoadedTexture *tex = new AELoadedTexture;
+            tex->scale = scale;
             tex->valid = 1;
             tex->isCube = (format == 6) ? 1 : 0;
-            if (glGetError() == 0) {
+            tex->name.Set(path);
+            unsigned int byteSize;
+            if (glGetError() != 0) {
+                glDeleteTextures(1, outIds);
+                byteSize = 0;
+                tex->byteSize = 0;
+                tex->glId = 0xffffffff;
+            } else {
                 AELabelObject(0x1702, *outIds, path);
                 tex->glId = *outIds;
-                tex->byteSize = img->dataLen;
-            } else {
-                tex->glId = 0xffffffff;
-                tex->byteSize = 0;
-                glDeleteTextures(1, outIds);
+                byteSize = img->dataLen;
+                tex->byteSize = byteSize;
+                ++Engine::ImageCount;
             }
-            engine->textureByteCounter += (int) tex->byteSize;
+            engine->textureByteCounter += (int) byteSize;
+            PaintCanvas *canvas = (PaintCanvas *) engine->paintCanvas;
+            ArrayAdd<AELoadedTexture *>(tex, canvas->cubeTextures);
+            *outIds = canvas->cubeTextures.count - 1;
         }
 
         ImageRelease(&imgPtr);
@@ -2469,53 +2473,55 @@ namespace AbyssEngine {
 
 namespace AbyssEngine {
     void MeshReleaseIntern(Engine * /*engine*/, Mesh **slot) {
-        Mesh *m = *slot;
-        if (m == 0)
+        if (*slot == 0)
             return;
 
-        if (m->shared == 0) {
-            if (m->uploaded != 0) {
-                glDeleteBuffers(1, &m->positionVBO);
-                glDeleteBuffers(1, &m->indexVBO);
-                unsigned char flags = m->vertexFormat;
+        if ((*slot)->shared == 0) {
+            if ((*slot)->uploaded != 0) {
+                glDeleteBuffers(1, &(*slot)->positionVBO);
+                glDeleteBuffers(1, &(*slot)->indexVBO);
+                unsigned char flags = (*slot)->vertexFormat;
                 if (flags & 2) {
-                    glDeleteBuffers(1, &m->texCoordVBO);
-                    flags = m->vertexFormat;
+                    glDeleteBuffers(1, &(*slot)->texCoordVBO);
+                    flags = (*slot)->vertexFormat;
                 }
                 if (flags & 4) {
-                    glDeleteBuffers(1, &m->normalVBO);
-                    if (*g_Mesh_tangentEnabledFlag != 0) {
-                        glDeleteBuffers(1, &m->tangentVBO);
-                        glDeleteBuffers(1, &m->binormalVBO);
+                    glDeleteBuffers(1, &(*slot)->normalVBO);
+                    if (Engine::enableShader != 0) {
+                        glDeleteBuffers(1, &(*slot)->tangentVBO);
+                        glDeleteBuffers(1, &(*slot)->binormalVBO);
                     }
                 }
-                if (m->vertexFormat & 8)
-                    glDeleteBuffers(1, &m->colorVBO);
+                if ((*slot)->vertexFormat & 8)
+                    glDeleteBuffers(1, &(*slot)->colorVBO);
             }
 
-            if (m->indices != 0) operator delete[](m->indices);
-            m->indices = 0;
-            if (m->positions != 0) operator delete[](m->positions);
-            m->positions = 0;
-            if (m->texCoords != 0) operator delete[](m->texCoords);
-            m->texCoords = 0;
-            if (m->colors != 0) operator delete[](m->colors);
-            m->colors = 0;
-            if (m->normals != 0) operator delete[](m->normals);
-            m->normals = 0;
+            if ((*slot)->indices != 0) operator delete[]((*slot)->indices);
+            (*slot)->indices = 0;
+            if ((*slot)->positions != 0) operator delete[]((*slot)->positions);
+            (*slot)->positions = 0;
+            if ((*slot)->texCoords != 0) operator delete[]((*slot)->texCoords);
+            (*slot)->texCoords = 0;
+            if ((*slot)->colors != 0) operator delete[]((*slot)->colors);
+            (*slot)->colors = 0;
+            if ((*slot)->normals != 0) operator delete[]((*slot)->normals);
+            (*slot)->normals = 0;
 
-            if (*g_Mesh_extraArraysFlag != 0) {
-                if (m->tangents != 0) operator delete[](m->tangents);
-                m->tangents = 0;
-                if (m->binormals != 0) operator delete[](m->binormals);
-                m->binormals = 0;
+            if (Engine::enableShader != 0) {
+                if ((*slot)->tangents != 0) operator delete[]((*slot)->tangents);
+                (*slot)->tangents = 0;
+                if ((*slot)->binormals != 0) operator delete[]((*slot)->binormals);
+                (*slot)->binormals = 0;
             }
         }
 
-        delete m->animation;
-        m->animation = 0;
-
-        operator delete((void *) m);
+        if ((*slot)->animation != 0) {
+            (*slot)->animation->~Transform();
+            operator delete((void *) (*slot)->animation);
+        }
+        (*slot)->animation = 0;
+        if (*slot != 0)
+            operator delete((void *) *slot);
         *slot = 0;
     }
 }
@@ -2536,7 +2542,7 @@ namespace AbyssEngine {
 
     int MeshConvertToVBO(Mesh *mesh) {
         int result = -4;
-        if (mesh != 0 && *g_Mesh_vboEnabledFlag != 0) {
+        if (mesh != 0 && Engine::vboSupported != 0) {
             if (mesh->uploaded != 0 || mesh->vboEligible == 0)
                 return -4;
             MeshConvertToVBOIntern(mesh);
@@ -2574,29 +2580,26 @@ namespace AbyssEngine {
         if (engine == 0 || path == 0)
             return -4;
 
-        Mesh *m = (Mesh *) ::operator new(0x88);
-        memset(m, 0, 0x88);
-        m->boundsRadiusSq = 1.0f;
+        Mesh *m = new Mesh();
         *out = m;
         m->material = mat;
 
         unsigned int handle = 0;
-        if (AEFile::OpenRead(path, &m->positionVBO) == 0) {
+        if (AEFile::OpenRead(path, &handle) == 0) {
             if (*out != 0)
                 ::operator delete((void *) *out);
             *out = 0;
             return -1;
         }
 
-        char magic[7];
-        for (int i = 0; i < 4; ++i) magic[i] = '*';
+        char magic[8] = "*******";
         if (AEFile::Read((uint32_t)(7), magic, handle) == 0) {
             MeshRelease(engine, out);
             AEFile::Close(handle);
             return -1;
         }
 
-        // Mesh-file format magic, verified against the original signature table:
+        // Mesh-file format magic, verified against the Android signature table:
         // AEMesh, V2AEMesh, V3AEMesh, V4AEMesh, V5AEMesh.
         static const char sigMesh[7] = {'A', 'E', 'M', 'e', 's', 'h', 0};
         static const char sigV2[7] = {'V', '2', 'A', 'E', 'M', 'e', 's'};
@@ -2619,13 +2622,11 @@ namespace AbyssEngine {
             return -1;
         }
 
-        if ((fmt & 0x1b) != 0) {
-            unsigned short ver = 0;
-            if (AEFile::Read((uint32_t)(2), &ver, handle) == 0) {
-                MeshRelease(engine, out);
-                AEFile::Close(handle);
-                return -1;
-            }
+        timeBetweenFrames = 1000000.0f;
+        if ((fmt & 0x1b) != 0 && AEFile::Read((uint32_t)(2), magic, handle) == 0) {
+            MeshRelease(engine, out);
+            AEFile::Close(handle);
+            return -1;
         }
 
         if (AEFile::Read((uint32_t)(1), &(*out)->vertexFormat, handle) == 0 || (*out)->vertexFormat == 0) {
@@ -2634,26 +2635,20 @@ namespace AbyssEngine {
             return -1;
         }
 
-        bool ok = false;
         if ((fmt & 0x1a) == 0) {
             if (MeshReadData(engine, handle, fmt, out, mat) != -1)
-                ok = true;
+                goto loaded;
         } else {
-            unsigned short subCount = 0;
+            unsigned short subCount;
             if (AEFile::Read((uint32_t)(2), &subCount, handle) == 0) {
                 MeshRelease(engine, out);
                 AEFile::Close(handle);
                 return -1;
             }
-            if (subCount < 2) {
-                if (MeshReadData(engine, handle, fmt, out, mat) != -1)
-                    ok = true;
-            } else {
+            if (subCount >= 2) {
                 (*out)->animation = new Transform();
                 for (unsigned int s = 0; s < subCount; ++s) {
-                    Mesh *childPtr = (Mesh *) ::operator new(0x88);
-                    memset(childPtr, 0, 0x88);
-                    childPtr->boundsRadiusSq = 1.0f;
+                    Mesh *childPtr = new Mesh();
                     childPtr->vboEligible = 1;
                     childPtr->vertexFormat = (*out)->vertexFormat;
                     childPtr->material = mat;
@@ -2664,32 +2659,26 @@ namespace AbyssEngine {
                     }
                     ((AEMath::BSphere *) &(*out)->boundsCenterX)->Merge(
                         *(const AEMath::BSphere *) &childPtr->boundsCenterX);
-                    {
-                        EngineArrayHeader *a = (EngineArrayHeader *) &(*out)->animation->meshes;
-                        a->capacity = a->count + 1;
-                        a->data = realloc(a->data, (a->count + 1) * sizeof(Mesh *));
-                        ((Mesh **) a->data)[a->count] = childPtr;
-                        a->count = a->capacity;
-                    }
+                    ArrayAdd<Mesh *>(childPtr, (*out)->animation->meshes);
                 }
-                ok = true;
+                goto loaded;
             }
-        }
-
-        if (ok) {
-            AEFile::Close(handle);
-            Transform *xf = (*out)->animation;
-            if (xf != 0) {
-                xf->CollectAnimationData();
-                long long t = (long long) (0.0f);
-                xf->SetAnimationRangeInTime(t, t);
-            }
-            return 1;
+            if (MeshReadData(engine, handle, fmt, out, mat) != -1)
+                goto loaded;
         }
 
         MeshRelease(engine, out);
         AEFile::Close(handle);
         return -1;
+
+    loaded:
+        AEFile::Close(handle);
+        Transform *xf = (*out)->animation;
+        if (xf != 0) {
+            xf->CollectAnimationData();
+            xf->SetAnimationRangeInTime((long long) timeBetweenFrames, 10000000LL);
+        }
+        return 1;
     }
 }
 

@@ -3,6 +3,8 @@
 #include "engine/core/Array.h"
 #include "../core/AEString.h"
 namespace AbyssEngine {
+    class Engine;
+    class Material;
     class Transform;
 
     class Mesh {
@@ -185,10 +187,51 @@ namespace AbyssEngine {
             uint8_t field_0x85;
         };
 
+        Mesh()
+            : vertexFormat(0),
+              vertexCount(0),
+              positions(0),
+              texCoords(0),
+              colors(0),
+              normals(0),
+              tangents(0),
+              binormals(0),
+              materialId(0),
+              shaderAnimValue0(0.0f),
+              indexCount(0),
+              field_0x2a(0),
+              indices(0),
+              material(0),
+              animation(0),
+              shared(0),
+              boundsCenterX(0.0f),
+              boundsCenterY(0.0f),
+              boundsCenterZ(0.0f),
+              boundsRadius(0.0f),
+              boundsRadiusSq(1.0f),
+              pivotX(0.0f),
+              pivotY(0.0f),
+              pivotZ(0.0f),
+              uploaded(0),
+              positionVBO(0),
+              indexVBO(0),
+              texCoordVBO(0),
+              normalVBO(0),
+              tangentVBO(0),
+              binormalVBO(0),
+              colorVBO(0),
+              vboByteSize(0),
+              enhancedData(0),
+              vboEligible(0),
+              hasAnimation(0) {}
+
         Mesh(Mesh *src);
 
         int ReadEnhancedDataFromFile(unsigned int file, unsigned int flags);
     };
+
+    int MeshConvertToVBO(Mesh *mesh);
+    int MeshCreateFromFile(Engine *engine, const char *path, Mesh **out, Material *material);
 }
 
 #endif

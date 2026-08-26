@@ -163,10 +163,10 @@ struct PCMeshInfoView {
 
 // Texture-resource info record (payload of a texture resource).
 //   +0x00 char*    file path
-//   +0x04 uint32   loader parameter
+//   +0x04 float    creation scale
 struct PCTexInfoView {
     char *path;        // +0x00
-    uint32_t param;    // +0x04
+    float value;       // +0x04
 };
 
 // ---------------------------------------------------------------------------
@@ -442,10 +442,6 @@ void paintcanvas_ext_sprite_rgba(unsigned int, float, float, float, float, void 
 
 void *paintcanvas_ext_alloc(unsigned int);
 
-void *paintcanvas_ext_transform_ctor(void *);
-
-void paintcanvas_ext_add_child(void *, void *);
-
 void paintcanvas_ext_dr_setwvm(void *self, void *m);
 
 void paintcanvas_ext_dr_glLineWidth(float w);
@@ -602,14 +598,6 @@ void *paintcanvas_ext_cube_restore(void *);
 
 void paintcanvas_ext_cube_tail(void *);
 
-void *paintcanvas_ext_tfc_findres(void *self, unsigned short id);
-
-void *paintcanvas_ext_tfc_new_transform();
-
-void paintcanvas_ext_tfc_mtx_assign(void *dst, void *src);
-
-void paintcanvas_ext_tfc_meshcreate(void *self, unsigned short id, unsigned int *out, bool b);
-
 void paintcanvas_ext_set_wvm2(void *self, void *m);
 
 void paintcanvas_ext_meshdraw(void *engine, void *mesh);
@@ -733,8 +721,6 @@ static inline void tcg_glActiveTexture(unsigned unit) { glActiveTexture(unit); }
 static inline void tcg_glBindTexture(unsigned target, unsigned tex) { glBindTexture(target, tex); }
 
 int paintcanvas_ext_ss2_sscreate(void *eng, unsigned short id, bool b, void **out);
-
-void paintcanvas_ext_ss2_matcreate(void *self, unsigned short id, unsigned int *out);
 
 void paintcanvas_ext_gsp_vec_assign(void *dst, void *src);
 
@@ -946,8 +932,6 @@ float paintcanvas_ext_sgo_signedtofloat(int v, unsigned int mode);
 
 void paintcanvas_ext_sgo_setpersp(void *self, float a, float b, float c);
 
-void paintcanvas_ext_mc_matcreate(void *self, unsigned short id, unsigned int *out);
-
 void paintcanvas_ext_dm_memcpy(void *dst, const void *src, unsigned int n);
 
 void paintcanvas_ext_dm_settrans(void *out, float v);
@@ -1058,19 +1042,7 @@ void paintcanvas_ext_di3_setwvm(void *self, void *m);
 
 void paintcanvas_ext_di3_meshdraw(void *eng, void *mesh);
 
-int paintcanvas_ext_meshcreate(void *, void *);
-
 int paintcanvas_ext_font_get_spacing(void *);
-
-void *paintcanvas_ext_mc2_findres(void *self, unsigned short id);
-
-void paintcanvas_ext_mc2_matcreate(void *self, unsigned short id, unsigned int *out);
-
-int paintcanvas_ext_mc2_meshfromfile(void *eng, char *path, void **out, void *mat);
-
-void *paintcanvas_ext_mc2_new_mesh_copy(void *src);
-
-void paintcanvas_ext_mc2_converttovbo(void *mesh);
 
 float paintcanvas_ext_fsp_unsignedtofloat(unsigned int v, unsigned int mode);
 
@@ -1337,9 +1309,10 @@ void PaintCanvas::SpriteSystemSetRGBA(unsigned int index, unsigned short sub,
 }
 
 void PaintCanvas::TransformCreate(unsigned int &out) {
-    void *obj = paintcanvas_ext_alloc(0x180);
-    paintcanvas_ext_transform_ctor(obj);
-    paintcanvas_ext_add_child(obj, &this->transformCount);
+    Transform *transform = new Transform();
+    ArrayAdd<Transform *>(
+        transform,
+        *reinterpret_cast<Array<Transform *> *>(&this->transformCount));
     out = this->transformCount - 1;
 }
 
@@ -2297,7 +2270,7 @@ void PaintCanvas::ChangeCubeTexture(unsigned int idx) {
 
 
 void PaintCanvas::TransformCreate(unsigned short resId, unsigned int &out) {
-    PCResourceView *res = (PCResourceView *) paintcanvas_ext_tfc_findres(this, resId);
+    PCResourceView *res = reinterpret_cast<PCResourceView *>(this->FindResource(resId));
     if (res == 0) {
         return;
     }
@@ -2306,22 +2279,34 @@ void PaintCanvas::TransformCreate(unsigned short resId, unsigned int &out) {
         return;
     }
     PCTransformInfoView *info = (PCTransformInfoView *) res->payload;
-    char *tf = (char *) paintcanvas_ext_tfc_new_transform();
-    ArrayAdd<Transform *>((Transform *) tf, *reinterpret_cast<Array<Transform *> *>(&this->transformCount));
+    Transform *transform = new Transform();
+    ArrayAdd<Transform *>(
+        transform,
+        *reinterpret_cast<Array<Transform *> *>(&this->transformCount));
     unsigned int idx = this->transformCount - 1;
     res->handle = (int) idx;
     out = idx;
-    paintcanvas_ext_tfc_mtx_assign(tf, info);
+    transform->worldMatrix = *reinterpret_cast<const AEMath::Matrix *>(info);
 
-    unsigned int childMesh = 0xffffffff;
     for (unsigned int i = 0; i < info->childMeshCount; i++) {
         unsigned short mid = ((unsigned short *) info->childMeshIds)[i];
-        paintcanvas_ext_tfc_meshcreate(this, mid, &childMesh, false);
+        unsigned int childMesh = 0xffffffff;
+        this->MeshCreate(mid, childMesh, false);
+        if (childMesh != 0xffffffff) {
+            ArrayAdd<Mesh *>(
+                reinterpret_cast<Mesh *>(this->meshes[childMesh]),
+                transform->meshes);
+        }
     }
-    unsigned int childTf = 0xffffffff;
     for (unsigned int i = 0; i < info->childTfCount; i++) {
         unsigned short tid = ((unsigned short *) info->childTfIds)[i];
+        unsigned int childTf = 0xffffffff;
         this->TransformCreate(tid, childTf);
+        if (childTf != 0xffffffff) {
+            ArrayAdd<Transform *>(
+                reinterpret_cast<Transform *>(this->transforms[childTf]),
+                transform->children);
+        }
     }
 }
 
@@ -2919,7 +2904,7 @@ void PaintCanvas::SpriteSystemCreate(unsigned short resId, bool flag,
     int ok = paintcanvas_ext_ss2_sscreate(this->engine, resId, flag, &ss);
     if (ok == 1) {
         unsigned int mat = 0xffffffff;
-        paintcanvas_ext_ss2_matcreate(this, matResId, &mat);
+        this->MaterialCreate(matResId, mat);
         if (mat <= this->materials.count) {
             ::Node *node = ((PCSpriteSystemView2 *) ss)->node;
             node->field_0x30 =
@@ -2927,9 +2912,9 @@ void PaintCanvas::SpriteSystemCreate(unsigned short resId, bool flag,
         }
         unsigned int i;
         for (i = 0; i < this->spriteSystems.count; i++) {
-            void **slot = (void **) &this->spriteSystems.data_[i * 4];
+            AbyssEngine::SpriteSystem **slot = &this->spriteSystems.data_[i];
             if (*slot == nullptr) {
-                *slot = ss;
+                *slot = static_cast<AbyssEngine::SpriteSystem *>(ss);
                 ss = 0;
                 out = i;
                 return;
@@ -3012,9 +2997,9 @@ void PaintCanvas::SpriteSystemCreate(unsigned short resId,
     if (ok == 1) {
         unsigned int i;
         for (i = 0; i < this->spriteSystems.count; i++) {
-            void **slot = (void **) &this->spriteSystems.data_[i * 4];
+            AbyssEngine::SpriteSystem **slot = &this->spriteSystems.data_[i];
             if (*slot == nullptr) {
-                *slot = ss;
+                *slot = static_cast<AbyssEngine::SpriteSystem *>(ss);
                 ss = 0;
                 out = i;
                 return;
@@ -3775,42 +3760,38 @@ void PaintCanvas::TransformRemoveChild(unsigned int parent, unsigned int child) 
     }
 }
 
-int paintcanvas_ext_tc_texfromfile(void *eng, char *path,
-                                              void (*cb)(AbyssEngine::Image *, void *), void *ud,
-                                              unsigned int *out, bool b, float f);
-
-int paintcanvas_ext_tc_texfromfileintern(void *eng, char *path,
-                                                    void (*cb)(AbyssEngine::Image *, void *), void *ud,
-                                                    unsigned int *out, float f, void *lt, bool b);
-
 void PaintCanvas::TextureCreate(unsigned short resId, void (*callback)(AbyssEngine::Image *, void *),
                                 void *userData, unsigned int &out, bool useCallbackLoader) {
-    Engine *eng = (Engine *) this->engine;
-    eng->boundTextures[0] = -1;
-    eng->boundTextures[1] = -1;
+    ((Engine *) this->engine)->boundTextures[0] = -1;
+    ((Engine *) this->engine)->boundTextures[1] = -1;
 
-    PCResourceView *res = (PCResourceView *) paintcanvas_ext_tc_findres(this, resId);
+    PCResourceView *res = (PCResourceView *) this->FindResource(resId);
     if (res != 0) {
         unsigned int idx = (unsigned int) res->handle;
-        if (idx == 0xffffffff) {
-            PCTexInfoView *info = (PCTexInfoView *) res->payload;
-            float f = (float) (int) info->param;
-            char *path = info->path;
-            int ok;
-            if (!useCallbackLoader) {
-                ok = paintcanvas_ext_tc_texfromfileintern(this->engine, path,
-                                                          callback, userData, &idx, f, 0, false);
-            } else {
-                ok = paintcanvas_ext_tc_texfromfile(this->engine, path,
-                                                    callback, userData, &idx, true, f);
-            }
-            if (ok != 1) {
-                return;
-            }
-            idx = 0;
-            res->handle = 0;
+        if (idx != 0xffffffff) {
+            out = idx;
+            return;
         }
-        out = idx;
+
+        {
+            PCTexInfoView *info = (PCTexInfoView *) res->payload;
+            unsigned int texture = 0;
+            float scale = info->value;
+            char *path = info->path;
+            int result;
+            if (useCallbackLoader)
+                result = AbyssEngine::TextureCreateFromFile((Engine *) this->engine, path,
+                                                            callback, userData, &texture, true, scale);
+            else
+                result = AbyssEngine::TextureCreateFromFileIntern((Engine *) this->engine, path,
+                                                                  callback, userData, &texture, scale,
+                                                                  nullptr, true);
+            if (result == 1) {
+                idx = texture;
+                res->handle = (int) texture;
+                out = idx;
+            }
+        }
     }
 }
 
@@ -4203,12 +4184,12 @@ void PaintCanvas::MeshCreate(unsigned short vertexCount, unsigned short triangle
     int result = -1;
     unsigned int mat = 0xffffffff;
     void *mesh = 0;
-    paintcanvas_ext_mc_matcreate(this, matResId, &mat);
+    this->MaterialCreate(matResId, mat);
     int ok = paintcanvas_ext_mc_meshcreate(this->engine, vertexCount, triangleCount,
                                            meshType, &mesh);
     if (ok == 1) {
-        if (0xfffffffe < this->materials.count) {
-            void *m = this->materials.data_[-4];
+        if (mat <= this->materials.count) {
+            void *m = this->materials.data_[mat];
             if (mesh) {
                 ((AbyssEngine::Mesh *) mesh)->field_0x30 = m;
             }
@@ -4577,11 +4558,10 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
 
 void PaintCanvas::MeshCreate(unsigned short a, unsigned short b,
                              signed char c, unsigned int &out) {
-    char mesh[4];
-    *(void **) mesh = 0;
-    int result = paintcanvas_ext_meshcreate(this->engine, mesh);
+    void *mesh = 0;
+    int result = paintcanvas_ext_mc_meshcreate(this->engine, a, b, c, &mesh);
     if (result == 1) {
-        ArrayAdd<AbyssEngine::Mesh *>(*(AbyssEngine::Mesh **) mesh,
+        ArrayAdd<AbyssEngine::Mesh *>(static_cast<AbyssEngine::Mesh *>(mesh),
                                       *reinterpret_cast<::Array<AbyssEngine::Mesh *> *>(&this->meshCount));
         result = (int) this->meshCount - 1;
     } else {
@@ -4606,53 +4586,45 @@ void *PaintCanvas::TransformGetTransform(unsigned int index) {
 }
 
 
-static char g_meshcreate_vboflag_79d5c_storage = 0;
-static char *const g_meshcreate_vboflag_79d5c = &g_meshcreate_vboflag_79d5c_storage;
-
-
 void PaintCanvas::MeshCreate(unsigned short resId, unsigned int &out,
                              bool forceClone) {
-    PCResourceView *res = (PCResourceView *) paintcanvas_ext_mc2_findres(this, resId);
-    if (res == 0) {
-        return;
-    }
-    unsigned int idx = (unsigned int) res->handle;
-    if (idx == 0xffffffff) {
-        PCMeshInfoView *info = (PCMeshInfoView *) res->payload;
-        unsigned int mat = 0xffffffff;
-        paintcanvas_ext_mc2_matcreate(this, info->matResId, &mat);
-        void *matptr = 0;
-        if (0xfffffffe < this->materials.count) {
-            matptr = this->materials.data_[-4];
-        }
-        void *mesh = 0;
-        int ok = paintcanvas_ext_mc2_meshfromfile(this->engine,
-                                                  info->path, &mesh, matptr);
-        if (ok != 1) {
+    PCResourceView *res = reinterpret_cast<PCResourceView *>(this->FindResource(resId));
+    if (res != 0) {
+        unsigned int idx = (unsigned int) res->handle;
+        if (idx != 0xffffffff) {
+            AbyssEngine::Mesh **meshes = reinterpret_cast<AbyssEngine::Mesh **>(this->meshes);
+            AbyssEngine::Mesh *existing = meshes[idx];
+            if (existing->animation != 0 || forceClone) {
+                AbyssEngine::Mesh *clone = new AbyssEngine::Mesh(
+                    meshes[(unsigned int) res->handle]);
+                ArrayAdd<AbyssEngine::Mesh *>(clone,
+                                              *reinterpret_cast<::Array<AbyssEngine::Mesh *> *>(&this->meshCount));
+                idx = this->meshCount - 1;
+            }
+            out = idx;
             return;
         }
-        if (*g_meshcreate_vboflag_79d5c != 0) {
-            if (mesh) {
-                ((AbyssEngine::Mesh *) mesh)->field_0x84 = 1;
-            }
-            paintcanvas_ext_mc2_converttovbo(mesh);
+
+        PCMeshInfoView *info = (PCMeshInfoView *) res->payload;
+        unsigned int mat = 0xffffffff;
+        this->MaterialCreate(info->matResId, mat);
+        AbyssEngine::Material *matptr = 0;
+        if (mat <= this->materials.count) {
+            matptr = this->materials.data_[mat];
         }
-        ArrayAdd<AbyssEngine::Mesh *>((AbyssEngine::Mesh *) mesh,
-                                      *reinterpret_cast<::Array<AbyssEngine::Mesh *> *>(&this->meshCount));
-        idx = this->meshCount - 1;
-        res->handle = (int) idx;
-    } else {
-        char **meshes = this->meshes;
-        PCMeshView *existing = (PCMeshView *) meshes[idx];
-        if (existing->materialRes != 0 || forceClone) {
-            void *clone = paintcanvas_ext_mc2_new_mesh_copy(
-                ((void **) meshes)[(unsigned int) res->handle]);
-            ArrayAdd<AbyssEngine::Mesh *>((AbyssEngine::Mesh *) clone,
+        AbyssEngine::Mesh *mesh = 0;
+        if (AbyssEngine::MeshCreateFromFile(this->engine, info->path, &mesh, matptr) == 1) {
+            if (Engine::vboSupported) {
+                mesh->vboEligible = 1;
+                AbyssEngine::MeshConvertToVBO(mesh);
+            }
+            ArrayAdd<AbyssEngine::Mesh *>(mesh,
                                           *reinterpret_cast<::Array<AbyssEngine::Mesh *> *>(&this->meshCount));
             idx = this->meshCount - 1;
+            res->handle = (int) idx;
+            out = idx;
         }
     }
-    out = idx;
 }
 
 

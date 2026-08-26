@@ -3409,29 +3409,35 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         18182, 4,
         new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_002.aem", 20027, false));
     ADD_RES(resources[1880], 
-        20027, 4,
+        18183, 4,
         new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_003.aem", 20027, false));
     ADD_RES(resources[1881], 
         18184, 4,
         new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_004.aem", 20027, false));
     ADD_RES(resources[1882], 
-        20027, 4,
+        18185, 4,
         new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_005.aem", 20027, false));
     ADD_RES(resources[1884], 
         18187, 4,
         new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_007.aem", 20027, false));
     ADD_RES(resources[1885], 
-        20027, 4,
+        18188, 4,
         new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_008.aem", 20027, false));
     ADD_RES(resources[1886], 
         18189, 4,
         new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_009.aem", 20027, false));
+    ADD_RES(resources[1887],
+        18190, 4,
+        new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_010.aem", 20027, false));
     ADD_RES(resources[1888], 
         18191, 4,
         new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_011.aem", 20027, false));
     ADD_RES(resources[1889], 
         18192, 4,
         new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_012.aem", 20027, false));
+    ADD_RES(resources[1890],
+        18193, 4,
+        new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_013.aem", 20027, false));
     ADD_RES(resources[1891], 
         18194, 4,
         new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_014.aem", 20027, false));
