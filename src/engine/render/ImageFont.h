@@ -22,6 +22,8 @@ namespace AbyssEngine {
     // Android ARM: PaintCanvas selects the atlas; this family owns glyph
     // advance, clipping, direction and shader-path vertex colour.
     int ImageFontGetWidth(ImageFont *font, const unsigned short *text, unsigned int len);
+    int ImageFontGetWidth(ImageFont *font, const unsigned short *text, unsigned int start,
+                          unsigned int len);
     int ImageFontGetHeight(ImageFont *font);
     void ImageFontSetSpacing(ImageFont *font, short spacing);
     int ImageFontGetSpacing(ImageFont *font);
@@ -29,8 +31,8 @@ namespace AbyssEngine {
     int ImageFontGetYOffset(ImageFont *font);
     void ImageFontDrawString(ImageFont *font, const unsigned short *text, int x, int y,
                              PaintCanvas *canvas, Engine *engine, bool rtl);
-    int ImageFontDrawString(ImageFont *font, const unsigned short *text, unsigned int len,
-                            int x, int y, PaintCanvas *canvas, Engine *engine, bool rtl);
+    void ImageFontDrawString(ImageFont *font, const unsigned short *text, unsigned int len,
+                             int x, int y, PaintCanvas *canvas, Engine *engine, bool rtl);
     int ImageCreateFontFromFile(Engine *engine, const char *path, unsigned short index,
                                 ImageFont **out);
 }

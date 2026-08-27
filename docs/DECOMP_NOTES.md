@@ -97,6 +97,41 @@ Goal: a **matching decompilation** of the full *Abyss Engine* + *Galaxy on Fire 
 > extras and `*.native.json`, exports `COLOR_0`, supports explicit UV policy,
 > and emits glTF translate/scale channels for known enhanced animation groups.
 
+> **AEI parser update (2026-08-27):** `ImageCreateFromFile` and
+> `ImageCreateRegionFromFile` now validate `AEimage\0`, use the typed
+> `MeshCreate` ABI, restore the confirmed atlas triangle order and implement
+> the Android payload-format/mipmap branches. iOS independently confirms the
+> common header, region geometry and raw/PVRTC/ATC/S3TC families. Focused ARM
+> scores are `34.0%` and `81.0%`; neither is byte-exact. See
+> `docs/AEI_IMAGE_PARSER_ARM_2026-08-27.md`.
+
+> **AEI font parser update (2026-08-27):** `ImageCreateFontFromFile` now
+> follows the Android payload-skip table, selects the appended font set and
+> creates correct `x/y/width/height` glyph quads with triangle order
+> `0,2,1, 0,3,2`. iOS independently confirms the format. All 21 extracted
+> font/interface atlases and 23,370 glyph records parse to the final byte.
+> Focused ARM match rises from `44.3%` to `57.6%` with an exact `314/314`
+> instruction span; source-backed does not yet mean byte-exact. See
+> `docs/AEI_FONT_ATLAS_PARSER_ARM_2026-08-27.md`.
+
+> **ImageFont runtime update (2026-08-27):** both width overloads and the
+> Android/iOS draw body now restore native advance, the special width-11 space
+> correction, reverse/forward traversal, Arabic non-Arabic-string override,
+> `yOffset - 2` baseline, screen clipping, shader batching with engine RGBA,
+> and the fixed-function per-glyph matrix. Substring width is byte-exact,
+> ordinary width is `97.8%`, and `SetWorldViewMatrix` remains linked-exact.
+> The large draw body is source-backed but only `17.1%`, so byte-match is not
+> claimed. See `docs/IMAGE_FONT_DRAW_RUNTIME_ARM_2026-08-27.md`.
+
+> **Inline font-color update (2026-08-27):** the prior `|`-based placeholder
+> has been replaced with the native `<c:RRGGBBAA>` grammar. Typed
+> `String::SplitTags` now returns alternating text/value segments;
+> `DrawStringColor` binds the atlas, advances X by recovered text width,
+> applies `%x` colors, handles empty restore tags, restores the entry color and
+> releases the split array. ARM match rises from `18.5%` to `93.3%` for draw
+> and from `18.0%` to `76.3%` for splitting. See
+> `docs/DRAW_STRING_COLOR_TAGS_ARM_2026-08-27.md`.
+
 ---
 
 ## 1. Source inventory & triage

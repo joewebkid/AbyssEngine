@@ -26,21 +26,8 @@ using ParticleSet = ParticleSettings::ParticleSet;
 
 class ParticleSystemSprite : public IParticleSystem {
 public:
-    uint8_t started;
-    uint32_t canvasHandle;
-    uint8_t flags;
-    uint8_t flags2;
-    char cAlphaChannelMode;
-    int particleCount;
-    int baseSize;
-    uint32_t spriteId;
-    uint32_t idOffset;
-    uint8_t initialized;
-    int liveCount;
-    void *spriteData;
-    int *ages;
-    int8_t *setIndices;
     float cachedPow;
+    uint32_t field_0x74;
 
     ParticleSystemSprite(PaintCanvas *canvas, const Matrix *matrix,
                          const Array<ParticleSettings::ParticleSet> &particleSets,
@@ -72,4 +59,8 @@ public:
 
     static void render(PaintCanvas *canvas, uint32_t handle);
 };
+
+#if UINTPTR_MAX == 0xffffffffu
+static_assert(sizeof(ParticleSystemSprite) == 0x78, "ParticleSystemSprite ARM size");
+#endif
 #endif

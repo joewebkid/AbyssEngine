@@ -23,30 +23,17 @@ using ParticleSet = ParticleSettings::ParticleSet;
 
 class ParticleSystemMesh : public IParticleSystem {
 public:
-    uint8_t dirty;
-    uint8_t visible;
-    Vector motion;
-    uint8_t trailFlags;
-    uint8_t edgeFlags;
-    uint8_t colorMask;
-    uint32_t particleCount;
-    uint8_t flipRight;
-    int currentId;
-    uint32_t mesh;
-    uint32_t firstPoint;
-    uint8_t initialized;
-    uint32_t emitCounter;
-    Vector *positions;
-    int *ages;
-    int8_t *setIds;
-    uint32_t pointCount;
+    uint32_t pointCount; // +0x70
     uint8_t wide;
+    uint8_t field_0x75[3];
     uint32_t field_0x78;
     uint32_t field_0x7c;
     uint32_t field_0x80;
     uint32_t field_0x84;
     uint32_t field_0x88;
+    uint32_t field_0x8c;
     uint8_t newSectionStarted;
+    uint8_t field_0x91[3];
     uint32_t frameCounter;
     uint32_t edgeCount;
     uint32_t stride;
@@ -92,10 +79,14 @@ public:
 
     void updateSingleColor(int id);
 
-    static void render(PaintCanvas *canvas, uint32_t texture);
+    static void render(PaintCanvas *canvas, uint32_t transformId);
 
     static void render(PaintCanvas *canvas, uint32_t mesh, uint32_t texture, BlendMode blend);
 
     static void emitTrail(int self);
 };
+
+#if UINTPTR_MAX == 0xffffffffu
+static_assert(sizeof(ParticleSystemMesh) == 0xa0, "ParticleSystemMesh ARM size");
+#endif
 #endif

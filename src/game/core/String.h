@@ -61,7 +61,7 @@ void String_ToLowerCase(String * self);
 void String_ConvertFromUTF8(String * self);
 
 void *String_Split(String * self, String * sep);
-void String_SplitTags(String * self, String * tag);
+Array<String *> *String_SplitTags(String * self, String * tag);
 
 char *String_GetAEChar(String * self);
 int String_ValueOf(String * self);

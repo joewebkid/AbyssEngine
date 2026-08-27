@@ -7,6 +7,7 @@
 #include "engine/math/Transform.h"
 #include <cstdint>
 #include <cstddef>
+#include <cstdio>
 
 namespace AbyssEngine {
     class SpriteSystem;
@@ -294,17 +295,6 @@ struct PCCubeTexView {
 };
 
 // ---------------------------------------------------------------------------
-// Font handle (entries of PaintCanvas::fonts) for raw-offset sites.
-//   +0x00 uint16   ascent/height key
-//   +0x08 void*    texture/atlas pointer (also read as uint texture id)
-// ---------------------------------------------------------------------------
-struct PCFontView {
-    uint16_t key;      // +0x00
-    uint8_t pad02[0x08 - 0x02];
-    void *atlas;       // +0x08
-};
-
-// ---------------------------------------------------------------------------
 // Gravity sample returned by the *_getgrav externs.
 //   +0x08 double    angle value
 // ---------------------------------------------------------------------------
@@ -318,25 +308,6 @@ struct PCGravView {
 //   +0x08 int       length
 // ---------------------------------------------------------------------------
 struct PCStrLenView {
-    uint8_t pad00[0x08];
-    int length;        // +0x08
-};
-
-// ---------------------------------------------------------------------------
-// Split-tags array record returned by paintcanvas_ext_dsc_splittags.
-//   +0x00 uint32   count
-//   +0x04 char**   data
-// ---------------------------------------------------------------------------
-struct PCSplitArrayView {
-    uint32_t count;    // +0x00
-    char **data;       // +0x04
-};
-
-// ---------------------------------------------------------------------------
-// String part record (entries of PCSplitArrayView::data).
-//   +0x08 int       length
-// ---------------------------------------------------------------------------
-struct PCStrPartView {
     uint8_t pad00[0x08];
     int length;        // +0x08
 };
@@ -376,7 +347,6 @@ static_assert(offsetof(PCTransformView, animStart) == 0x100, "tf animstart");
 static_assert(offsetof(PCCubeTexView, scale) == 0x10, "cube scale");
 static_assert(offsetof(PCCubeTexView, restoreFlag) == 0x14, "cube restore");
 static_assert(offsetof(PCCubeTexView, memSize) == 0x18, "cube mem");
-static_assert(offsetof(PCFontView, atlas) == 0x08, "font atlas");
 static_assert(offsetof(PCGravView, angle) == 0x08, "grav angle");
 static_assert(offsetof(PCRegionView, height) == 0x1c, "region h");
 #endif
@@ -990,33 +960,7 @@ void paintcanvas_ext_gl_scalef(float, float, float);
 
 void paintcanvas_ext_gl_multmatrix(void *);
 
-void paintcanvas_ext_dsc_settexture(void *self, unsigned int tex);
-
-void paintcanvas_ext_dsc_getcolor(void *self);
-
 void paintcanvas_ext_dsc_str_copy(void *out, const AbyssEngine::String *src, bool copy);
-
-void paintcanvas_ext_dsc_str_fromchar(void *out, const char *s, bool copy);
-
-void *paintcanvas_ext_dsc_splittags(void *str, void *sep);
-
-void paintcanvas_ext_dsc_str_dtor(void *s);
-
-unsigned short *paintcanvas_ext_dsc_str_cast(void *str);
-
-int paintcanvas_ext_dsc_textwidth(void *self, unsigned int font, void *str);
-
-void paintcanvas_ext_dsc_setcolor(void *self);
-
-char *paintcanvas_ext_dsc_getAEChar(void *str);
-
-int paintcanvas_ext_dsc_sscanf(const char *s, const char *fmt, void *out);
-
-void paintcanvas_ext_dsc_releaseclasses(void *arr);
-
-void *paintcanvas_ext_dsc_arr_dtor(void *arr);
-
-void paintcanvas_ext_dsc_op_delete(void *p);
 
 void paintcanvas_ext_smfg_pushmat(const float *m, void *array);
 
@@ -1954,8 +1898,8 @@ void PaintCanvas::SpriteSystemSetUv(unsigned int index, unsigned short sub,
     }
 }
 
-void PaintCanvas::SetWorldViewMatrix(const AbyssEngine::AEMath::Matrix &) {
-    return paintcanvas_ext_set_wvm(this->engine);
+void PaintCanvas::SetWorldViewMatrix(const AbyssEngine::AEMath::Matrix &matrix) {
+    this->engine->SetWorldViewMatrix(matrix);
 }
 
 void PaintCanvas::CameraSetLocal(unsigned int index, const Matrix &matrix) {
@@ -2776,7 +2720,7 @@ void PaintCanvas::FontCreate(unsigned short resId, unsigned int &out,
     if (texres->handle != -1) {
         font->field_0x8 = (void *) (uintptr_t) (unsigned int) texres->handle;
     }
-    PCArrayAdd<AbyssEngine::ImageFont *>(font, &this->fonts);
+    ArrayAdd<AbyssEngine::ImageFont *>(font, this->fonts);
     int idx = this->fonts.count - 1;
     res->handle = idx;
     out = idx;
@@ -4370,56 +4314,40 @@ void PaintCanvas::DrawString(unsigned int index, const unsigned short *str,
 }
 
 
-static const char g_dsc_pipe_882c4[] = "|";
-
 static const char g_dsc_fmt_882ee[] = "%x";
-
-void paintcanvas_ext_dsc_fontdraw(void *font, unsigned short *txt, unsigned int len,
-                                             int x, int y, void *self, void *eng, bool b);
 
 void PaintCanvas::DrawStringColor(unsigned int index, const AbyssEngine::String &text,
                                   int x, int y, bool b) {
-    if (index >= this->fonts.count) {
-        return;
-    }
-    PCFontView *font0 = (PCFontView *) ((char **) this->fonts.data_)[index];
-    paintcanvas_ext_dsc_settexture(this, (unsigned int) (uintptr_t) font0->atlas);
-    paintcanvas_ext_dsc_getcolor(this);
+    if (index < this->fonts.count) {
+        this->SetTexture((unsigned int) (uintptr_t) this->fonts.data_[index]->field_0x8,
+                         0xffffffff);
+        unsigned int savedColor = this->GetColor();
+        String source(text, false);
+        Array<String *> *parts = source.SplitTags(String("c", false));
 
-    char str[16];
-    char sep[16];
-    paintcanvas_ext_dsc_str_copy(str, &text, false);
-    paintcanvas_ext_dsc_str_fromchar(sep, g_dsc_pipe_882c4, false);
-    PCSplitArrayView *parts = (PCSplitArrayView *) paintcanvas_ext_dsc_splittags(str, sep);
-    paintcanvas_ext_dsc_str_dtor(sep);
-
-    if (parts != 0) {
-        bool draw = true;
-        for (unsigned int i = 0; i < parts->count; i++) {
-            char **data = parts->data;
-            char *part = data[i];
-            if (draw) {
-                void *font = ((char **) this->fonts.data_)[index];
-                unsigned short *txt = paintcanvas_ext_dsc_str_cast(part);
-                paintcanvas_ext_dsc_fontdraw(font, txt, (unsigned int) ((PCStrPartView *) part)->length, x,
-                                             y, this, this->engine, b);
-                x += paintcanvas_ext_dsc_textwidth(this, index, part);
-            } else if (((PCStrPartView *) part)->length == 0) {
-                paintcanvas_ext_dsc_setcolor(this);
-            } else {
-                int color = 0;
-                char *s = paintcanvas_ext_dsc_getAEChar(part);
-                paintcanvas_ext_dsc_sscanf(s, g_dsc_fmt_882ee, &color);
-                paintcanvas_ext_dsc_setcolor(this);
+        if (parts != 0) {
+            bool drawText = true;
+            for (unsigned int i = 0; i < parts->count; ++i) {
+                if (drawText) {
+                    ImageFontDrawString(this->fonts.data_[index],
+                                        (unsigned short *) *parts->data_[i],
+                                        parts->data_[i]->size(), x, y, this, this->engine, b);
+                    x += this->GetTextWidth(index, *parts->data_[i]);
+                } else if (parts->data_[i]->size() != 0) {
+                    unsigned int color = 0;
+                    char *encodedColor = parts->data_[i]->GetAEChar();
+                    std::sscanf(encodedColor, g_dsc_fmt_882ee, &color);
+                    this->SetColor(color);
+                } else {
+                    this->SetColor(savedColor);
+                }
+                drawText = !drawText;
             }
-            draw = !draw;
+            this->SetColor(savedColor);
+            ArrayReleaseClasses<String *>(*parts);
+            delete parts;
         }
-        paintcanvas_ext_dsc_setcolor(this);
-        paintcanvas_ext_dsc_releaseclasses(parts);
-        void *p = paintcanvas_ext_dsc_arr_dtor(parts);
-        paintcanvas_ext_dsc_op_delete(p);
     }
-    paintcanvas_ext_dsc_str_dtor(str);
 }
 
 

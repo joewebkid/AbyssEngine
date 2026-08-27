@@ -389,55 +389,48 @@ void String::ConvertFromUTF8() {
 
 static const char kOpen[] = "<";
 static const char kClose[] = ">";
-static const char kSlash[] = "</";
+static const char kTagValue[] = ":";
 
-void String::SplitTags(String tag) {
-    if (this->length == 0 || tag.length == 0)
-        return;
+Array<String *> *String::SplitTags(String tag) {
+    if (this->data == 0 || this->length == 0 || tag.length == 0)
+        return 0;
 
-    {
-        String open(kOpen, false);
-        String close(kClose, false);
-        tag = open + tag + close;
-    }
+    tag = String(kOpen, false) + tag + String(kTagValue, false);
 
     Array<String *> *arr = new Array<String *>();
 
-    int endPos = 0;
-    unsigned int pos = 0;
-    unsigned int idx;
-    while ((idx = ((String *) (this))->IndexOf(pos, tag)) != 0xffffffff) {
-        if (pos <= idx) {
-            String *piece = new String();
-            *piece = this->SubString(pos, idx);
+    int closePos = 0;
+    unsigned int pos;
+    for (pos = 0; ; pos = (unsigned int) closePos + 1) {
+        unsigned int openPos = this->IndexOf(pos, tag);
+        if (openPos == 0xffffffff)
+            break;
+        if (pos <= openPos) {
+            String *piece = new String(this->SubString(pos, openPos));
             ArrayAdd(piece, *arr);
 
-            unsigned int afterTag = (unsigned int) tag.length + idx;
-            String closer;
-            ((String *) (&closer))->ctor_char(kSlash, false);
-            endPos = (int) ((String *) (this))->IndexOf(afterTag, closer);
-            if (endPos == -1)
-                goto done;
+            unsigned int valueStart = (unsigned int) tag.length + openPos;
+            String closer(kClose, false);
+            closePos = (int) this->IndexOf(valueStart, closer);
+            if (closePos == -1)
+                return arr;
 
-            String *piece2 = new String();
-            *piece2 = this->SubString(afterTag, (unsigned int) endPos);
-            ArrayAdd(piece2, *arr);
+            String *value = new String(this->SubString(valueStart, (unsigned int) closePos));
+            ArrayAdd(value, *arr);
         }
-        pos = endPos + 1;
     }
 
     if (pos != 0 && pos < (unsigned int) this->length) {
-        String *piece = new String();
-        *piece = this->SubString(pos, (unsigned int) this->length);
+        String *piece = new String(this->SubString(pos, (unsigned int) this->length));
         ArrayAdd(piece, *arr);
     }
 
     if (arr->size() == 0) {
         ArrayRemoveAll(*arr);
         delete arr;
+        return 0;
     }
-done:
-    ;
+    return arr;
 }
 
 static const char kZeroDot[] = "0.";

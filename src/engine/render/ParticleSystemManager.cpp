@@ -11,43 +11,13 @@
 #include "engine/render/PaintCanvas.h"
 #include "engine/render/ParticleSettingsRef.h"
 
-void _psm_ArrayReleaseSprites(void *arr);
-
-void _psm_ReleaseSpriteSystemResource(void *canvas, unsigned res);
-
-void _psm_renderSpritesExt(void *self);
-
 void _psm_constructAfterCamera(void *self);
 
-void _ips_emitManual(void *sys, float x, float y, float z);
-
-void _psm_spriteRender4(void *canvas, unsigned a, unsigned b, unsigned c);
-
-void _psm_spriteRender2(void *canvas, unsigned a);
-
-void _psm_arraySpriteCtor(void *arr);
-
-void _psm_arraySpriteDtor(void *arr);
-
 void _ips_enableUpdate(void *sys, bool enable);
-
-short _ips_getParticleCount16(void *sys);
-
-int _psm_addSpriteSystem(void *self, const void *matrix, unsigned int set, bool flag);
 
 int _psm_firstUpdate(void *self, int a, int b, int c);
 
 void _ips_reset(void *sys);
-
-void _psm_meshRender4(void *canvas, unsigned a, unsigned b, unsigned c);
-
-void _psm_meshRender2(void *canvas, unsigned a);
-
-void *_psmesh_ctor(void *self, void *canvas, const void *matrix, const void *sets,
-                   bool b4, bool b5);
-
-void *_pss_ctor(void *self, void *canvas, const void *matrix, const void *sets,
-                bool b4, bool b5);
 
 int _ips_getParticleCount(void *sys);
 
@@ -106,14 +76,14 @@ void ParticleSystemManager::update(long long dt) {
         if (p != nullptr) {
             p->update(d);
             p = sprites[i];
-            if (p->canvas == nullptr) {
+            if (p->resetEmitterVelocityPending != 0) {
+                p->resetEmitterVelocity();
+            } else {
                 if (accum > 9 || p->emitterVelocityDirty != 0) {
                     p->calcEmitterVelocity(this->accumulatedDt);
                     p = sprites[i];
                 }
                 p->emit(d);
-            } else {
-                p->resetEmitterVelocity();
             }
         }
     }
@@ -124,14 +94,14 @@ void ParticleSystemManager::update(long long dt) {
         if (p != nullptr) {
             p->update(d);
             p = meshes[i];
-            if (p->canvas == nullptr) {
+            if (p->resetEmitterVelocityPending != 0) {
+                p->resetEmitterVelocity();
+            } else {
                 if (accum > 9 || p->emitterVelocityDirty != 0) {
                     p->calcEmitterVelocity(this->accumulatedDt);
                     p = meshes[i];
                 }
                 p->emit(d);
-            } else {
-                p->resetEmitterVelocity();
             }
         }
     }
@@ -158,7 +128,7 @@ void ParticleSystemManager::reset() {
 void ParticleSystemManager::releaseSprites() {
     ArrayReleaseClasses(this->spriteSystems);
     if (this->spriteSystemId != 0xffffffff) {
-        _psm_ReleaseSpriteSystemResource(this->canvas, this->spriteSystemId);
+        this->canvas->ReleaseSpriteSystemResource(this->spriteSystemId);
         this->spriteSystemId = 0xffffffff;
     }
 }
@@ -166,7 +136,7 @@ void ParticleSystemManager::releaseSprites() {
 void ParticleSystemManager::construct() {
     this->accumulatedDt = 0;
     this->enabled = 0;
-    this->spriteMeshId = 0xffffffff;
+    this->spriteGeneratedTextureId = 0xffffffff;
     this->spriteSystemId = 0xffffffff;
     this->spriteParticleCount = 0;
     this->meshId = 0xffffffff;
@@ -178,12 +148,10 @@ void ParticleSystemManager::construct() {
 void ParticleSystemManager::render3d() {
     if (this->enabled == 0)
         return;
-    bool meshActive = (this->flags & 0xff00) != 0;
-    bool spriteActive = (this->flags & 0x00ff) != 0;
-    if (meshActive)
+    if (this->flagsHigh != 0)
         renderMeshes();
-    if (spriteActive)
-        _psm_renderSpritesExt(this);
+    if (this->flagsLow != 0)
+        renderSprites();
 }
 
 void ParticleSystemManager::setParticleSetByIndex(int handle, unsigned char setIndex) {
@@ -243,9 +211,9 @@ void ParticleSystemManager::cameraToggle(ParticleSettings::CameraSet cam) {
 unsigned int ParticleSystemManager::addMeshSystem(AbyssEngine::AEMath::Matrix const *matrix,
                                                   Array<ParticleSettings::ParticleSet> const &sets,
                                                   bool flag) {
-    void *sys = ::operator new(0xa0);
-    _psmesh_ctor(sys, this->canvas, matrix, &sets, flag, this->meshUsesExtra != 0);
-    ArrayAdd<ParticleSystemMesh *>(static_cast<ParticleSystemMesh *>(sys), meshArray());
+    ParticleSystemMesh *sys = new ParticleSystemMesh(static_cast<PaintCanvas *>(this->canvas), matrix, sets,
+                                                     flag, this->meshUsesExtra != 0);
+    ArrayAdd<ParticleSystemMesh *>(sys, meshArray());
 
     this->meshParticleCount += _ips_getParticleCount(sys);
 
@@ -303,9 +271,10 @@ unsigned long long ParticleSystemManager::emitManual(int handle, AbyssEngine::AE
 
 void ParticleSystemManager::renderSprites() {
     if (this->spriteTextureId != -1)
-        _psm_spriteRender2(this->canvas, this->spriteSystemId);
+        ParticleSystemSprite::render(this->canvas, this->spriteSystemId);
     else if (this->spriteUvId != -1)
-        _psm_spriteRender4(this->canvas, this->spriteSystemId, this->spriteMeshId, this->spriteBlendMode);
+        ParticleSystemSprite::render(this->canvas, this->spriteSystemId, this->spriteGeneratedTextureId,
+                                     static_cast<BlendMode>(this->spriteBlendMode));
 }
 
 void ParticleSystemManager::systemSetMatrix(int handle, AbyssEngine::AEMath::Matrix const *matrix) {
@@ -376,42 +345,41 @@ void ParticleSystemManager::initSprites() {
     if (this->cameraSet == 0)
         return;
 
-    PaintCanvas *canvas = (PaintCanvas *) this->canvas;
     if ((unsigned short) this->spriteTextureId == 0xffff) {
         if (this->spriteUvId != -1) {
-            canvas->SpriteSystemCreate((unsigned short) this->spriteParticleCount, false,
-                                       this->spriteSystemId);
-            canvas->TextureCreate((unsigned short) this->spriteUvId, this->spriteSystemId,
-                                  (((char) (unsigned long) this + ',') != 0));
+            this->canvas->SpriteSystemCreate((unsigned short) this->spriteParticleCount, false,
+                                             this->spriteSystemId);
+            this->canvas->TextureCreate((unsigned short) this->spriteUvId,
+                                        this->spriteGeneratedTextureId, false);
         }
     } else {
-        canvas->SpriteSystemCreate((unsigned short) this->spriteParticleCount, false,
-                                   (unsigned short) this->spriteTextureId, this->spriteSystemId);
+        this->canvas->SpriteSystemCreate((unsigned short) this->spriteParticleCount, false,
+                                         (unsigned short) this->spriteTextureId, this->spriteSystemId);
     }
 
-    short offset = 0;
-    canvas->SpriteSystemSetAllSize((unsigned int) (short) this->spriteSystemId, 0);
+    uint16_t particleOffset = 0;
+    this->canvas->SpriteSystemSetAllSize(this->spriteSystemId, 0);
 
     // Android HD initSprites @ 0x1936c8 reads the default live definition
     // at ParticleSettingsRef::cur + 0x88..0x94.
     const ParticleSettings::SetDefinition &defaultSet = ParticleSettingsRef::cur.sets[0];
-    canvas->SpriteSystemSetAllUv(this->spriteSystemId,
-                                 defaultSet.uvU0, defaultSet.uvV0,
-                                 defaultSet.uvU1, defaultSet.uvV1);
+    this->canvas->SpriteSystemSetAllUv(this->spriteSystemId,
+                                       defaultSet.uvU0, defaultSet.uvV0,
+                                       defaultSet.uvU1, defaultSet.uvV1);
 
     IParticleSystem **sprites = (IParticleSystem **) this->spriteSystems.data_;
     for (unsigned i = 0; i < this->spriteSystems.count; ++i) {
         IParticleSystem *sys = sprites[i];
-        sys->init(this->spriteSystemId, (uint16_t) offset);
-        offset += _ips_getParticleCount16(sprites[i]);
+        sys->init(this->spriteSystemId, particleOffset);
+        particleOffset = static_cast<uint16_t>(particleOffset + sys->getParticleCount());
     }
 }
 
 int ParticleSystemManager::addSpriteSystem(AbyssEngine::AEMath::Matrix const *matrix,
                                            Array<ParticleSettings::ParticleSet> const &sets, bool flag) {
-    void *sys = ::operator new(0x78);
-    _pss_ctor(sys, this->canvas, matrix, &sets, flag, this->spriteUsesExtra != 0);
-    ArrayAdd<ParticleSystemSprite *>(static_cast<ParticleSystemSprite *>(sys), spriteArray());
+    ParticleSystemSprite *sys = new ParticleSystemSprite(static_cast<PaintCanvas *>(this->canvas), matrix, sets,
+                                                         flag, this->spriteUsesExtra != 0);
+    ArrayAdd<ParticleSystemSprite *>(sys, spriteArray());
     this->spriteParticleCount += _ips_getParticleCount(sys);
     return this->spriteSystems.count - 1;
 }
@@ -423,33 +391,30 @@ void ParticleSystemManager::initMesh() {
     this->meshId = 0xffffffff;
     this->transformId = 0xffffffff;
 
-    PaintCanvas *canvas = (PaintCanvas *) this->canvas;
-    int verts = (int) ((this->meshParticleCount & 0x3fff) << 2);
-    int indices = (int) ((this->meshParticleCount & 0x7fff) << 1);
+    const uint16_t particleCount = static_cast<uint16_t>(this->meshParticleCount);
+    const uint16_t vertexCount = static_cast<uint16_t>(particleCount << 2);
+    const uint16_t triangleCount = static_cast<uint16_t>(particleCount << 1);
 
     if (this->meshTextureId == -1) {
         if (this->meshUvId != -1) {
-            canvas->MeshCreate((unsigned short) verts, (unsigned short) indices, (signed char) 0x1b,
-                               this->meshId);
-            canvas->TextureCreate((unsigned short) this->meshUvId, this->meshId,
-                                  (((char) (unsigned long) this + 'P') != 0));
+            this->canvas->MeshCreate(vertexCount, triangleCount, 0x1b, this->meshId);
+            this->canvas->TextureCreate((unsigned short) this->meshUvId,
+                                        this->meshGeneratedTextureId, false);
         }
     } else {
-        canvas->MeshCreate((unsigned short) verts, (unsigned short) indices, (signed char) 0x1b,
-                           (unsigned short) this->meshTextureId, this->meshId);
+        this->canvas->MeshCreate(vertexCount, triangleCount, 0x1b,
+                                 (unsigned short) this->meshTextureId, this->meshId);
     }
 
-    canvas->TransformCreate(this->transformId);
-    canvas->TransformAddMeshId(this->transformId, this->meshId);
+    this->canvas->TransformCreate(this->transformId);
+    this->canvas->TransformAddMeshId(this->transformId, this->meshId);
 
-    short offset = 0;
+    uint16_t particleOffset = 0;
     IParticleSystem **meshes = (IParticleSystem **) this->meshSystems;
     for (unsigned i = 0; i < this->meshSystemCount; ++i) {
         IParticleSystem *sys = meshes[i];
-        sys->init(this->meshId, (uint16_t) offset);
-
-        short count = _ips_getParticleCount16(meshes[i]);
-        offset += (short) (count * 4);
+        sys->init(this->meshId, particleOffset);
+        particleOffset = static_cast<uint16_t>(particleOffset + sys->getParticleCount() * 4);
     }
 }
 
@@ -475,7 +440,24 @@ void ParticleSystemManager::enableSystemEmit(int handle, bool enable) {
 
 int ParticleSystemManager::addSystem(AbyssEngine::AEMath::Matrix const *matrix,
                                      ParticleSettings::ParticleSet set, bool flag) {
-    return _psm_addSpriteSystem(this, matrix, set, flag);
+    Array<ParticleSettings::ParticleSet> sets;
+    ArrayAdd(set, sets);
+
+    const uint8_t *systemFlags = reinterpret_cast<const uint8_t *>(
+        &ParticleSettingsRef::cur.sets[static_cast<int>(set)].flags);
+    const uint32_t flags = *reinterpret_cast<const uint32_t *>(systemFlags);
+    int handle = -1;
+    if ((flags & 0x1u) != 0) {
+        handle = addSpriteSystem(matrix, sets, flag);
+    } else if ((flags & 0x2u) != 0) {
+        handle = static_cast<int>(addMeshSystem(matrix, sets, flag));
+    } else {
+        return handle;
+    }
+
+    if ((systemFlags[3] & 0x1u) != 0)
+        enableSystemUpdate(handle, false);
+    return handle;
 }
 
 int ParticleSystemManager::init() {
@@ -507,9 +489,12 @@ void ParticleSystemManager::resetSystem(int handle) {
 
 void ParticleSystemManager::renderMeshes() {
     if (this->meshTextureId != -1)
-        _psm_meshRender2(this->canvas, this->transformId);
+        ParticleSystemMesh::render(this->canvas, this->transformId);
+    // Android 1.1.19 checks the shared sprite UV selector here, not meshUvId.
+    // Keep the observed binary behavior even though the field choice looks asymmetric.
     else if (this->spriteUvId != -1)
-        _psm_meshRender4(this->canvas, this->transformId, this->meshExtraId, this->meshBlendMode);
+        ParticleSystemMesh::render(this->canvas, this->transformId, this->meshGeneratedTextureId,
+                                   static_cast<BlendMode>(this->meshBlendMode));
 }
 
 void ParticleSystemManager::renderPost3d() {

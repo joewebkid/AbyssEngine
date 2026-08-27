@@ -15,8 +15,10 @@ Primary native anchors in the Android HD binary:
 | `AbyssEngine::MeshCreateFromFile` | `0x6d074` | Opens AEM, detects magic/version and dispatches mesh reads. |
 | `AbyssEngine::Mesh::ReadEnhancedDataFromFile` | `0x6bbec` | Reads enhanced bounds and animation groups. |
 | `AbyssEngine::ImageCreateRegionFromFile` | `0x6eeb8` | Reads AEI atlas rects and creates an `Image2D` quad. |
+| `AbyssEngine::ImageCreateFontFromFile` | `0x6f13c` | Reads appended font sets and creates one glyph quad per code point. |
 | `AbyssEngine::ImageCreateFromFile` | `0x6f4d4` | Reads AEI pixel payloads. |
 | `AbyssEngine::TextureCreateFromFileIntern` | `0x6f7f4` | Uploads raw/compressed image data to GL. |
+| `AbyssEngine::ImageFontRelease` | `0x7227e` | Releases the code table and all per-glyph meshes. |
 | `PaintCanvas::Image2DCreate` | `0x79c78` | Resolves texture resource id plus AEI region index. |
 | `PaintCanvas::MeshCreate` | `0x79d5c` | Resolves mesh resource, material id and calls `MeshCreateFromFile`. |
 | `PaintCanvas::MaterialCreate` | `0x79e4c` | Resolves texture ids and material/blend state. |
@@ -146,7 +148,10 @@ AEI header:
 
 `ImageCreateRegionFromFile` only needs the header and rect table. It creates a
 4-vertex, 2-triangle quad with positions `(0,0)`, `(w,0)`, `(w,h)`, `(0,h)`
-and UVs from `x/y/w/h` divided by atlas width/height.
+and UVs from `x/y/w/h` divided by atlas width/height. The confirmed triangle
+order is `0,2,1, 0,3,2`. The rect origin is normalized as unsigned, while the
+far edge adds the size to a signed 16-bit interpretation of the origin. See
+`AEI_IMAGE_PARSER_ARM_2026-08-27.md` for the Android/iOS cross-check.
 
 Known AEI type byte upload routes:
 
@@ -162,8 +167,43 @@ Known AEI type byte upload routes:
 | `0x21`, `0x23` | `9` | S3TC/DXT3 |
 | `0x24`, `0x26` | `10` | S3TC/DXT5 |
 
-The mipmap flag is initially `(typeByte & 0x02) != 0`. Type `0x17` is a
-special case that forces mipmaps off.
+The mipmap flag is initially `(typeByte & 0x02) != 0`. Android types `0x17`
+and `0x40` force mipmaps off. The inspected iOS parser confirms the common
+raw/PVRTC/ATC/S3TC families, while the ETC family in this table is specific to
+the Android body.
+
+## AEI Font Metadata Tail
+
+`ImageCreateFontFromFile` walks the same header and region table, skips the
+pixel payload according to the native type byte and then reads appended font
+sets. Each set contains a `u16 glyphCount`, `glyphCount` UTF-16 code points and
+`glyphCount` records of `u16 x, y, width, height`.
+
+The selected set becomes an ARM32 `ImageFont` with a code table and a
+`Mesh **` table. Each glyph is a four-vertex `0x13` mesh with positions from
+its width/height, UVs from its atlas rectangle, and triangle order
+`0,2,1, 0,3,2`. The exact stream, ownership and 21-file/23,370-glyph asset
+validation are recorded in `AEI_FONT_ATLAS_PARSER_ARM_2026-08-27.md`.
+
+## ImageFont Runtime
+
+The matching runtime uses glyph-mesh width plus signed font spacing for each
+UTF-16 code unit. Space code `0x20` has one confirmed two-pixel correction when
+its mesh width is `11`. Draw Y is `y + yOffset - 2`; default traversal is
+reverse, while the canvas direction field, call flag and the shader-path
+Arabic-language check can select forward traversal.
+
+The shader route batches up to 100 glyph quads in `PaintCanvas::quad2dMesh`,
+including current RGBA and copied atlas UVs. The fixed-function route draws
+each glyph through a translated local matrix. See
+`IMAGE_FONT_DRAW_RUNTIME_ARM_2026-08-27.md` for native anchors and verifier
+results.
+
+Inline font color uses the source grammar `<c:RRGGBBAA>`. An empty `<c:>`
+restores the color active before `DrawStringColor`, and the saved color is also
+restored after the complete segmented draw. `String::SplitTags` owns the
+alternating text/value segmentation. See
+`DRAW_STRING_COLOR_TAGS_ARM_2026-08-27.md`.
 
 ## Runtime Texture Ownership Update (2026-08-27)
 

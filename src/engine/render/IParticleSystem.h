@@ -4,6 +4,7 @@
 #include "../core/AEString.h"
 #include "engine/math/Matrix.h"
 #include "engine/math/Vector.h"
+#include "engine/core/AERandom.h"
 #include "engine/render/ParticleSettings.h"
 
 #include "engine/math/AEMath.h"
@@ -15,48 +16,46 @@ namespace AbyssEngine {
 }
 using ::AbyssEngine::PaintCanvas;
 
-void AERandom_dtor(void *self);
-
 class IParticleSystem {
 public:
-    volatile uint16_t field_0x4;
-    volatile uint8_t emitterVelocityDirty;
+    // Android ARM layout: base ends at +0x70. Do not add host-only state here.
+    uint8_t resetEmitterVelocityPending; // +0x04
+    uint8_t emitterVelocityDirty;        // +0x05
+    uint16_t field_0x6;
     PaintCanvas *canvas;
     uint8_t emitEnabled;
     uint8_t renderEnabled;
     uint8_t updateEnabled;
-    uint8_t random[8];
+    uint8_t field_0x0f;
+    AERandom random;
     AbyssEngine::AEMath::Matrix const *matrix;
     AbyssEngine::AEMath::Vector emitterVelocity;
     AbyssEngine::AEMath::Vector lastEmitterPosition;
-    int32_t field_0x2c;
-    int32_t field_0x30;
     uint32_t flags;
+    Array<ParticleSettings::ParticleSet> particleSets;
     uint8_t particleSetIndex;
     uint8_t alphaFade;
+    uint16_t field_0x46;
     int32_t maxParticles;
     uint8_t mirror;
+    uint8_t field_0x4d[3];
     int32_t currentParticle;
-    int32_t field_0x54;
-    int32_t field_0x58;
-    uint8_t field_0x5c;
+    uint32_t resource;
+    uint32_t resourceOffset;
+    uint8_t initialized;
+    uint8_t field_0x5d[3];
     float emitTimer;
     AbyssEngine::AEMath::Vector *particleVelocities;
     int *particleAges;
     int8_t *particleSetIds;
-    Array<ParticleSettings::ParticleSet> *particleSets;
 
     IParticleSystem(PaintCanvas *canvas, AbyssEngine::AEMath::Matrix const *matrix,
                     Array<ParticleSettings::ParticleSet> const &sets,
                     bool mirror, bool alphaFade);
 
-    IParticleSystem() {
-    }
+    IParticleSystem() = default;
 
-    ~IParticleSystem() {
-        delete this->particleSets;
-        AERandom_dtor(reinterpret_cast<void *>(this->random));
-    }
+    ~IParticleSystem() = default;
 
     virtual int init(uint32_t resource, uint16_t idOffset) = 0;
 
@@ -101,4 +100,8 @@ public:
 
     void resetEmitterVelocity();
 };
+
+#if UINTPTR_MAX == 0xffffffffu
+static_assert(sizeof(IParticleSystem) == 0x70, "IParticleSystem ARM size");
+#endif
 #endif

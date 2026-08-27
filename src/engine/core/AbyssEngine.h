@@ -34,6 +34,11 @@ namespace AbyssEngine {
 
     typedef void (*ImageCallback)(Image *, void *);
 
+    int ImageCreateFromFile(Engine *engine, const char *path, Image **out);
+
+    int ImageCreateRegionFromFile(Engine *engine, const char *path, unsigned short index,
+                                  Image2D *region);
+
     int TextureCreateFromFile(Engine *engine, const char *path, ImageCallback callback, void *userData,
                               unsigned int *outIds, bool managed, float scale);
 

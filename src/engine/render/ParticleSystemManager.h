@@ -32,9 +32,13 @@ class ParticleSystemManager {
 public:
     union {
         uint16_t flags;
-        uint8_t flagsLow;   // low byte; some callers write only this byte
+        struct {
+            uint8_t flagsLow;
+            uint8_t flagsHigh;
+        };
     };
-    void *canvas;
+    PaintCanvas *canvas;
+    uint32_t field_0x8;
     int32_t cameraSet;
     int32_t accumulatedDt;
     uint8_t enabled;
@@ -43,7 +47,7 @@ public:
     int16_t spriteTextureId;
     int16_t spriteUvId;
     uint32_t spriteBlendMode;
-    uint32_t spriteMeshId;
+    uint32_t spriteGeneratedTextureId;
     uint32_t spriteSystemId;
     uint32_t spriteParticleCount;
     uint8_t spriteUsesExtra;
@@ -54,7 +58,7 @@ public:
     int16_t meshTextureId;
     int16_t meshUvId;
     uint32_t meshBlendMode;
-    uint32_t meshExtraId;
+    uint32_t meshGeneratedTextureId;
     uint32_t meshId;
     uint32_t transformId;
     uint32_t meshParticleCount;
@@ -134,4 +138,8 @@ private:
     }
 
 };
+
+#if UINTPTR_MAX == 0xffffffffu
+static_assert(sizeof(ParticleSystemManager) == 0x64, "ParticleSystemManager ARM size");
+#endif
 #endif

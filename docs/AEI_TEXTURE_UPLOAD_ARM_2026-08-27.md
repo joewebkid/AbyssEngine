@@ -109,5 +109,6 @@ claimed identical.
   and switch/local lifetime while retaining the confirmed format formulas.
 - Exercise suspend/reload with a real GLES context and representative raw,
   compressed, mipmapped, and cubemap AEI assets.
-- Byte-match `ImageCreateFromFile` and `ImageCreateRegionFromFile` as separate
-  focused packages.
+- Continue the dedicated source-shape pass recorded in
+  `AEI_IMAGE_PARSER_ARM_2026-08-27.md`: the parser bodies are now source-backed
+  and the region function is `81.0%`, but neither is byte-exact.

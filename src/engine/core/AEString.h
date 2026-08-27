@@ -5,6 +5,9 @@
 
 #define AESTRING_SHIM inline
 
+template<class T>
+class Array;
+
 namespace AbyssEngine {
     class String {
     public:
@@ -115,7 +118,7 @@ namespace AbyssEngine {
 
         void *Split(String sep);
 
-        void SplitTags(String tag);
+        ::Array<String *> *SplitTags(String tag);
 
         AESTRING_SHIM int StrLen_char(const char *s) { return StrLen(s); }
         AESTRING_SHIM int StrLen_wchar(const uint16_t *s) { return StrLen((const unsigned short *) s); }

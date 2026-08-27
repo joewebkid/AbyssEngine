@@ -35,6 +35,7 @@ float Level::b;
 #include "engine/core/ApplicationManager.h"
 #include "engine/file/FileRead.h"
 #include "engine/math/AEMath.h"
+#include "engine/math/Matrix.h"
 #include "engine/math/BoundingSphere.h"
 #include "engine/math/BoundingAAB.h"
 #include "game/core/Globals.h"
@@ -89,6 +90,14 @@ constexpr float kEngineParticleUvU1[9] = {
 constexpr float kEngineParticleUvV1[9] = {
     0.123046875f, 0.12109375f, 0.119140625f, 0.123046875f, 0.123046875f,
     0.123046875f, 0.123046875f, 0.123046875f, 0.123046875f,
+};
+
+// Android rodata: 0x1fc4d0. Indexed directly by SolarSystem::getTextureIndex().
+constexpr uint32_t kSystemParticleTintByTexture[19] = {
+    0x00a020ffu, 0x8c1402ffu, 0x006d7bffu, 0x2c9bd8ffu, 0x7a7a7affu,
+    0xce5a46ffu, 0x69a07dffu, 0xa7a07effu, 0x7eb59fffu, 0xcedee1ffu,
+    0x9274d4ffu, 0xdb6923ffu, 0xffffffffu, 0x9ae4ffffu, 0xaeb77dffu,
+    0xdb6923ffu, 0x47665effu, 0x738d95ffu, 0xaba075ffu,
 };
 
 ParticleSettings::SetDefinition *levelCurrentParticleSets() {
@@ -3921,6 +3930,51 @@ void Level::initParticleSystems() {
         local = CameraGetLocal(canvas, canvas->CameraGetCurrent());
         sys = this->particleSystemMgr->addSystem(local, ParticleSettings::ParticleSet_7, false);
         this->field_284 = sys;
+
+        // Android Level::initParticleSystems @ 0xbda20..0xbdb46 writes the
+        // system-space star particle colours into ParticleSettingsRef::cur.
+        ParticleSettings::SetDefinition *particleSets = levelCurrentParticleSets();
+        if (Status::gStatus->inAlienOrbit()) {
+            particleSets[ParticleSettings::ParticleSet_7].color0 =
+                (particleSets[ParticleSettings::ParticleSet_7].color0 & 0x000000ffu) |
+                0x9274d400u;
+            particleSets[ParticleSettings::ParticleSet_8].color0 =
+                (particleSets[ParticleSettings::ParticleSet_8].color0 & 0x000000ffu) |
+                0x9274d400u;
+        } else {
+            particleSets[ParticleSettings::ParticleSet_8].color0 = 0xe2282880u;
+            particleSets[ParticleSettings::ParticleSet_8].color1 = 0x00ff0080u;
+
+            int tint = static_cast<int>(kSystemParticleTintByTexture[
+                Status::gStatus->getSystem()->getTextureIndex()]);
+            bool supernova = Status::gStatus->inSupernovaSystem() != 0;
+            float scale = supernova ? 0.5f : 0.6f;
+            int red = static_cast<int>(scale * static_cast<float>((tint >> 24) & 0xff));
+            int green = static_cast<int>(scale * static_cast<float>((tint >> 16) & 0xff));
+            int blue = static_cast<int>(scale * static_cast<float>((tint >> 8) & 0xff));
+            int alpha = supernova ? 0xff : 0xbb;
+            int color = alpha | (green << 16) | (red << 24) | (blue << 8);
+            particleSets[ParticleSettings::ParticleSet_7].color0 = color;
+            particleSets[ParticleSettings::ParticleSet_7].color1 = color;
+        }
+    }
+
+    // Android Level::initParticleSystems @ 0xbdb4a..0xbdbe0 keeps the star
+    // particle velocity neutral except for active supernova campaign scenes.
+    ParticleSettings::SetDefinition &starParticles =
+        levelCurrentParticleSets()[ParticleSettings::ParticleSet_7];
+    if (Status::gStatus->inSupernovaSystem() == 0 ||
+        Status::gStatus->getCurrentCampaignMission() == 0x59 ||
+        Status::gStatus->getCurrentCampaignMission() > 0x9d) {
+        starParticles.velBaseX = 0.0f;
+        starParticles.velBaseY = 0.0f;
+        starParticles.velBaseZ = 0.0f;
+    } else {
+        Vector direction = -AbyssEngine::AEMath::VectorNormalize(
+            this->starSystem->getLightDirection());
+        starParticles.velBaseX = direction.x * 2000.0f;
+        starParticles.velBaseY = direction.y * 2000.0f;
+        starParticles.velBaseZ = direction.z * 2000.0f;
     }
 
     if (this->field_80 != 0)
@@ -3934,95 +3988,46 @@ void Level::initParticleSystems() {
     if (this->field_98 != 0)
         (this->field_98)->init();
 
-    {
-        ParticleSystemManager *mgr = this->particleSystemMgr;
-        if (mgr == nullptr) {
-            this->field_38 = -1;
-        } else {
-            int sys = mgr->addSystem(0, ParticleSettings::ParticleSet_0xa, true);
-            mgr->enableSystemEmit(sys, true);
-            this->field_38 = sys;
-        }
-    }
-    {
-        ParticleSystemManager *mgr = this->particleSystemMgr;
-        if (mgr == nullptr) {
-            this->field_3c = -1;
-        } else {
-            int sys = mgr->addSystem(0, ParticleSettings::ParticleSet_0xb, true);
-            mgr->enableSystemEmit(sys, true);
-            this->field_3c = sys;
-        }
-    }
-    {
-        ParticleSystemManager *mgr = this->particleSystemMgr;
-        if (mgr == nullptr) {
-            this->field_48 = -1;
-        } else {
-            int sys = mgr->addSystem(0, ParticleSettings::ParticleSet_0x14, true);
-            mgr->enableSystemEmit(sys, true);
-            this->field_48 = sys;
-        }
-    }
-    {
-        ParticleSystemManager *mgr = this->particleSystemMgr;
-        if (mgr == nullptr) {
-            this->field_34 = -1;
-        } else {
-            int sys = mgr->addSystem(0, ParticleSettings::ParticleSet_0x15, true);
-            mgr->enableSystemEmit(sys, true);
-            this->field_34 = sys;
-        }
-    }
-    {
-        ParticleSystemManager *mgr = this->particleSystemMgr;
-        if (mgr == nullptr) {
-            this->field_50 = -1;
-        } else {
-            int sys = mgr->addSystem(0, ParticleSettings::ParticleSet_0x16, true);
-            mgr->enableSystemEmit(sys, true);
-            this->field_50 = sys;
-        }
-    }
-    {
-        ParticleSystemManager *mgr = this->particleSystemMgr;
-        if (mgr == nullptr) {
-            this->field_54 = -1;
-        } else {
-            int sys = mgr->addSystem(0, ParticleSettings::ParticleSet_0x17, true);
-            mgr->enableSystemEmit(sys, true);
-            this->field_54 = sys;
-        }
-    }
+    // Android Level::initParticleSystems @ 0xbd6f8 constructs these sprite
+    // systems on Level+0x74 with an identity transform before this manager is
+    // initialized. They are not enabled at construction time.
+    ParticleSystemManager *levelEffects = this->field_74;
+    AbyssEngine::AEMath::Matrix field38Identity;
+    this->field_38 = levelEffects->addSystem(
+        &field38Identity, ParticleSettings::ParticleSet_0xa, false);
+    AbyssEngine::AEMath::Matrix field3cIdentity;
+    this->field_3c = levelEffects->addSystem(
+        &field3cIdentity, ParticleSettings::ParticleSet_0xb, false);
+    AbyssEngine::AEMath::Matrix field48Identity;
+    this->field_48 = levelEffects->addSystem(
+        &field48Identity, ParticleSettings::ParticleSet_0x14, false);
+    AbyssEngine::AEMath::Matrix field34Identity;
+    this->field_34 = levelEffects->addSystem(
+        &field34Identity, ParticleSettings::ParticleSet_0x15, false);
+    AbyssEngine::AEMath::Matrix field50Identity;
+    this->field_50 = levelEffects->addSystem(
+        &field50Identity, ParticleSettings::ParticleSet_0x16, false);
+    AbyssEngine::AEMath::Matrix field54Identity;
+    this->field_54 = levelEffects->addSystem(
+        &field54Identity, ParticleSettings::ParticleSet_0x17, false);
+
     if (Status::gStatus->getCurrentCampaignMission() == 0x50) {
-        {
-        ParticleSystemManager *mgr = this->particleSystemMgr;
-        if (mgr == nullptr) {
-            this->field_58 = -1;
-        } else {
-            int sys = mgr->addSystem(0, ParticleSettings::ParticleSet_0x18, true);
-            mgr->enableSystemEmit(sys, true);
-            this->field_58 = sys;
-        }
-    }
-        {
-        ParticleSystemManager *mgr = this->particleSystemMgr;
-        if (mgr == nullptr) {
-            this->field_5c = -1;
-        } else {
-            int sys = mgr->addSystem(0, ParticleSettings::ParticleSet_0x18, true);
-            mgr->enableSystemEmit(sys, true);
-            this->field_5c = sys;
-        }
-    }
+        // Android ARM call sites 0xbdd56 and 0xbdd82 use independent
+        // identity matrices, ParticleSet_0x18 and false for both handles.
+        AbyssEngine::AEMath::Matrix firstMission80Identity;
+        this->field_58 = levelEffects->addSystem(
+            &firstMission80Identity, ParticleSettings::ParticleSet_0x18, false);
+        AbyssEngine::AEMath::Matrix secondMission80Identity;
+        this->field_5c = levelEffects->addSystem(
+            &secondMission80Identity, ParticleSettings::ParticleSet_0x18, false);
     }
 
-    (this->field_74)->init();
-    (this->field_74)->enableSystemEmit(this->field_50, true);
-    (this->field_74)->enableSystemEmit(this->field_54, true);
+    levelEffects->init();
+    levelEffects->enableSystemEmit(this->field_50, false);
+    levelEffects->enableSystemEmit(this->field_54, false);
     if (Status::gStatus->getCurrentCampaignMission() == 0x50) {
-        (this->field_74)->enableSystemEmit(this->field_58, true);
-        (this->field_74)->enableSystemEmit(this->field_5c, true);
+        levelEffects->enableSystemEmit(this->field_58, false);
+        levelEffects->enableSystemEmit(this->field_5c, false);
     }
 
     this->field_9c->init();

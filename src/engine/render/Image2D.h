@@ -19,4 +19,13 @@ namespace AbyssEngine {
     };
 }
 
+#if __SIZEOF_POINTER__ == 4
+#include <cstddef>
+static_assert(sizeof(AbyssEngine::Image2D) == 0x14, "Image2D size");
+static_assert(offsetof(AbyssEngine::Image2D, field_0x4) == 0x4, "Image2D.field_0x4");
+static_assert(offsetof(AbyssEngine::Image2D, atlasW) == 0x8, "Image2D.atlasW");
+static_assert(offsetof(AbyssEngine::Image2D, offX) == 0xc, "Image2D.offX");
+static_assert(offsetof(AbyssEngine::Image2D, sizeX) == 0x10, "Image2D.sizeX");
+#endif
+
 #endif
