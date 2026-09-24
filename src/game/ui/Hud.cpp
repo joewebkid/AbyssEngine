@@ -56,7 +56,7 @@ static inline PaintCanvas *hud_canvas() {
 }
 
 static inline unsigned int hud_font() {
-    return static_cast<unsigned int>(reinterpret_cast<uintptr_t>(Globals::font));
+    return Globals::font;
 }
 
 static inline GameText *hud_game_text() {
@@ -68,11 +68,11 @@ static inline GameText *hud_game_text() {
 static constexpr int kMiningTutorialHintIndex = 0x11;
 
 static inline int hud_layout_i32(unsigned int offset) {
-    return *reinterpret_cast<int *>(static_cast<char *>(Globals::layout) + offset);
+    return *reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::layout) + offset);
 }
 
 static inline float hud_layout_f32(unsigned int offset) {
-    return *reinterpret_cast<float *>(static_cast<char *>(Globals::layout) + offset);
+    return *reinterpret_cast<float *>(reinterpret_cast<char *>(Globals::layout) + offset);
 }
 
 static inline __attribute__((always_inline)) void
@@ -121,11 +121,14 @@ static inline __attribute__((always_inline)) void hud_load_init_images(Hud *self
     hud_create_image(0x4ba, self->quickMenuIdleImage);
 
     if (Globals::iPad != 0) {
-        hud_create_image(0x4c6, self->iPadFireImage);
-        hud_create_image(0x6aa, self->iPadFirePressedImage);
+        hud_canvas()->Image2DCreate(
+            0x4c6, reinterpret_cast<unsigned int &>(self->iPadFireImage));
+        hud_canvas()->Image2DCreate(
+            0x6aa, reinterpret_cast<unsigned int &>(self->iPadFirePressedImage));
         self->reticleImage = self->iPadFireImage;
     } else {
-        hud_create_image(0x4c6, self->reticleImage);
+        hud_canvas()->Image2DCreate(
+            0x4c6, reinterpret_cast<unsigned int &>(self->reticleImage));
     }
 
     hud_create_image(0x4b5, self->mainActionPressedImage);
@@ -423,11 +426,12 @@ uint8_t Hud::cargoFull() {
 }
 
 unsigned int Hud::touchEnd(unsigned int a, unsigned int b, void *key) {
+    int i = 0;
     unsigned int ret = 0;
-    for (int i = 0; i != 0x19; i = i + 1) {
+    for (; i != 0x19; i = i + 1) {
         void **keys = this->keyArray->data_;
         if (keys[i] == key) {
-            ret = (unsigned int) this->elementBits[i];
+            ret = static_cast<unsigned int>(this->elementBits[i]);
             this->touchFlags = this->touchFlags & ~ret;
             keys[i] = nullptr;
             this->elementBits[i] = 0;
@@ -841,16 +845,20 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
                 }
 
                 String statusLabel(Globals::status->getMission()->getStatusValue());
-                const int passengerHeight = hud_canvas()->GetImage2DHeight(
-                    static_cast<unsigned int>(this->passengerPanelImage));
                 hud_canvas()->DrawImage2D(
                     static_cast<unsigned int>(this->missionStatusPanelImage),
                     this->missionPanelX - hud_layout_i32(0x1f0),
-                    this->missionPanelY + passengerHeight + hud_layout_i32(0x1f4));
+                    this->missionPanelY +
+                        hud_canvas()->GetImage2DHeight(
+                            static_cast<unsigned int>(this->passengerPanelImage)) +
+                        hud_layout_i32(0x1f4));
                 hud_canvas()->DrawString(
                     hud_font(), statusLabel,
                     this->missionPanelX + hud_layout_i32(0x200),
-                    this->missionPanelY + passengerHeight + hud_layout_i32(0x1f4) +
+                    this->missionPanelY +
+                        hud_canvas()->GetImage2DHeight(
+                            static_cast<unsigned int>(this->passengerPanelImage)) +
+                        hud_layout_i32(0x1f4) +
                         2 * hud_layout_i32(0x1f8),
                     false);
             } else if (Globals::status->getMission() != nullptr &&
@@ -876,16 +884,20 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
 
                 String remainingLabel(Globals::status->getMission()->getProductionGoodAmount() -
                                       Globals::status->getMission()->getStatusValue());
-                const int passengerHeight = hud_canvas()->GetImage2DHeight(
-                    static_cast<unsigned int>(this->passengerPanelImage));
                 hud_canvas()->DrawImage2D(
                     static_cast<unsigned int>(this->productionRemainingPanelImage),
                     this->missionPanelX - hud_layout_i32(0x1f0),
-                    this->missionPanelY + passengerHeight + hud_layout_i32(0x1f4));
+                    this->missionPanelY +
+                        hud_canvas()->GetImage2DHeight(
+                            static_cast<unsigned int>(this->passengerPanelImage)) +
+                        hud_layout_i32(0x1f4));
                 hud_canvas()->DrawString(
                     hud_font(), remainingLabel,
                     this->missionPanelX + hud_layout_i32(0x200),
-                    this->missionPanelY + passengerHeight + hud_layout_i32(0x1f4) +
+                    this->missionPanelY +
+                        hud_canvas()->GetImage2DHeight(
+                            static_cast<unsigned int>(this->passengerPanelImage)) +
+                        hud_layout_i32(0x1f4) +
                         hud_layout_i32(0x1f8),
                     false);
             } else {
@@ -1000,6 +1012,8 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
         } else {
             canvas->DrawImage2D(static_cast<unsigned int>(this->image_0x398),
                                 this->field_0x450 + this->field_0x404, this->field_0x406);
+            if (Globals::mouseCursorActivated != 0)
+                canvas->SetColor(static_cast<unsigned int>(0xffffffffu));
             const int image = (this->touchFlagsByte1 & 1u) != 0
                                   ? this->image_0x390
                                   : this->image_0x394;
@@ -1371,24 +1385,23 @@ int Hud::updateQueue(int dt) {
 void Hud::drawOrbitInformation() {
     if (Globals::status->inAlienOrbit()) return;
 
-    static_cast<PaintCanvas *>(Globals::Canvas)->SetColor(0xffffffffu);
-    const int x = static_cast<PaintCanvas *>(Globals::Canvas)->GetImage2DWidth(
+    Globals::Canvas->SetColor(0xffffffffu);
+    const int x = Globals::Canvas->GetImage2DWidth(
                       static_cast<unsigned int>(this->factionLogoImage)) +
-                  *reinterpret_cast<int *>(static_cast<char *>(Globals::layout) + 0x21c);
+                  *reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::layout) + 0x21c);
     if (Globals::status->getSystem()->hasNoOwner() == 0)
-        static_cast<PaintCanvas *>(Globals::Canvas)->DrawImage2D(
+        Globals::Canvas->DrawImage2D(
             static_cast<unsigned int>(this->factionLogoImage), 3, 3);
 
     {
-        PaintCanvas *canvas = static_cast<PaintCanvas *>(Globals::Canvas);
-        const unsigned int font =
-            static_cast<unsigned int>(reinterpret_cast<uintptr_t>(Globals::font));
+        PaintCanvas *canvas = Globals::Canvas;
+        const unsigned int font = Globals::font;
         String stationName = Globals::status->getStation()->getName();
         canvas->DrawString(
             font, stationName, x,
-            *reinterpret_cast<int *>(static_cast<char *>(Globals::layout) + 0x220), false);
+            *reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::layout) + 0x220), false);
     }
-    static_cast<PaintCanvas *>(Globals::Canvas)->SetColor(0x777777ffu);
+    Globals::Canvas->SetColor(0x777777ffu);
 
     if (Globals::status->getCurrentCampaignMission() < 16) return;
 
@@ -1397,25 +1410,23 @@ void Hud::drawOrbitInformation() {
         securityLevel = 3;
 
     {
-        PaintCanvas *canvas = static_cast<PaintCanvas *>(Globals::Canvas);
-        const unsigned int font =
-            static_cast<unsigned int>(reinterpret_cast<uintptr_t>(Globals::font));
+        PaintCanvas *canvas = Globals::Canvas;
+        const unsigned int font = Globals::font;
         canvas->DrawString(
             font,
             String(Globals::status->getSystem()->getName(), false) + String(" ") +
-                *static_cast<GameText *>(Globals::gameText)->getText(137),
+                *Globals::gameText->getText(137),
             x,
-            *reinterpret_cast<int *>(static_cast<char *>(Globals::layout) + 0x224), false);
+            *reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::layout) + 0x224), false);
     }
 
-    static_cast<PaintCanvas *>(Globals::Canvas)->SetColor(
+    Globals::Canvas->SetColor(
         g_Hud_securityColors[securityLevel].r,
         g_Hud_securityColors[securityLevel].g,
         g_Hud_securityColors[securityLevel].b, 0xff);
-    static_cast<PaintCanvas *>(Globals::Canvas)->DrawString(
-        static_cast<unsigned int>(reinterpret_cast<uintptr_t>(Globals::font)),
-        *static_cast<GameText *>(Globals::gameText)->getText(securityLevel + 402), x,
-        *reinterpret_cast<int *>(static_cast<char *>(Globals::layout) + 0x228), false);
+    Globals::Canvas->DrawString(
+        Globals::font, *Globals::gameText->getText(securityLevel + 402), x,
+        *reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::layout) + 0x228), false);
 }
 
 unsigned int Hud::touchMove(unsigned int a, unsigned int b, void *key) {
@@ -1448,7 +1459,7 @@ found:
 }
 
 
-unsigned int Hud::touchedElement(unsigned int x, unsigned int y) {
+int Hud::touchedElement(unsigned int x, unsigned int y) {
     if (this->quickMenuOpen != 0) {
         if (this->menuButtons != nullptr) {
             for (unsigned int i = 0; i < this->menuButtons->size(); i++) {
@@ -1643,8 +1654,8 @@ Hud::Hud() {
 
 void Hud::catchCargo(int itemId, int count, bool single, bool missionDelivery, bool extender,
                      bool slotMode, bool aggregate) {
-    this->field_0x1d0 = 0;
     this->cargoFullFlag = single;
+    this->field_0x1d0 = 0;
 
     if (missionDelivery) {
         this->field_0x1f4 = *static_cast<GameText *>(Globals::gameText)->getText(0x219);
@@ -1657,9 +1668,7 @@ void Hud::catchCargo(int itemId, int count, bool single, bool missionDelivery, b
         this->field_0x1f4 = Globals::status->replaceHash(
             String(this->field_0x1f4, false), String(1), String("#Q"));
 
-        void *itemStorage = ::operator new(sizeof(ListItem));
-        String *str = new String(this->field_0x1f4, false);
-        ListItem *item = new (itemStorage) ListItem(str);
+        ListItem *item = new ListItem(new String(this->field_0x1f4, false));
         item->field_0x2c = itemId;
         addToEventQueue(item);
         return;
@@ -1667,15 +1676,16 @@ void Hud::catchCargo(int itemId, int count, bool single, bool missionDelivery, b
 
     if (single) {
         this->field_0x1f4 = *static_cast<GameText *>(Globals::gameText)->getText(0x142);
-        void *itemStorage = ::operator new(sizeof(ListItem));
-        String *str = new String(this->field_0x1f4, false);
-        ListItem *item = new (itemStorage) ListItem(str, true);
+        ListItem *item = new ListItem(new String(this->field_0x1f4, false), true);
         return addToEventQueue(item);
     }
 
     if (count < 1) return;
 
-    if (aggregate && this->eventQueueDirty != 0) {
+    bool skipAggregate = aggregate == 0;
+    if (aggregate)
+        skipAggregate = this->eventQueueDirty == 0;
+    if (!skipAggregate) {
         String previousLabel =
             String(String(this->cargoAggregateCount) + String("t "), false) +
             *static_cast<GameText *>(Globals::gameText)->getText(itemId + 0x4fa);
@@ -1695,9 +1705,7 @@ void Hud::catchCargo(int itemId, int count, bool single, bool missionDelivery, b
         String(String(this->cargoAggregateCount) + String("t "), false) +
         *static_cast<GameText *>(Globals::gameText)->getText(itemId + 0x4fa);
 
-    void *itemStorage = ::operator new(sizeof(ListItem));
-    String *str = new String(this->field_0x1f4, false);
-    ListItem *item = new (itemStorage) ListItem(str);
+    ListItem *item = new ListItem(new String(this->field_0x1f4, false));
     item->field_0x2c = itemId;
     if (!slotMode || extender) item->field_0x30 = 2;
     if (slotMode) item->field_0x24 = 1;
@@ -1719,8 +1727,8 @@ void Hud::drawEventString(String text, bool rightAlign) {
         return;
     }
 
-    const int margin = this->eventLineMargin;
     const int lineX = this->eventLineX;
+    const int margin = this->eventLineMargin;
     int offset;
     if (rightAlign) {
         offset = -3 - margin;
@@ -1736,15 +1744,13 @@ void Hud::setCurrentSecondaryWeapon(Item *item) {
 }
 
 int Hud::sameHudEventAsBeforeAggregate(String str) {
-    int i = static_cast<int>(this->eventQueue->size());
-    ListItem *e;
-    do {
-        i = i + -1;
-        if (i < 1)
-            return -1;
-        e = (*this->eventQueue)[i];
-    } while (e == 0 || ((String *) e->name)->Compare_str(&str) != 0);
-    return i;
+    int i = this->eventQueue->size() - 1;
+    for (; i >= 1; --i) {
+        ListItem *entry = (*this->eventQueue)[i];
+        if (entry != nullptr && ((String *) entry->name)->Compare_str(&str) == 0)
+            return i;
+    }
+    return -1;
 }
 
 
@@ -1760,9 +1766,8 @@ void Hud::updateSecondaryWeaponString() {
 
 
 void Hud::drawEventQueue() {
-    const unsigned char *targetVisibleSlot = &Radar::drawTarget;
-    const unsigned char targetVisible = *targetVisibleSlot;
-    const int targetY = *targetVisibleSlot ? this->field_0x3e2 : 0;
+    const int targetVisible = static_cast<unsigned char>(Radar::drawTarget);
+    const int targetY = Radar::drawTarget ? this->field_0x3e2 : 0;
     const int bannerBaseY = hud_layout_i32(0x1e4);
     const int rawAlpha = static_cast<int>(
             (static_cast<float>(this->eventQueueTimer) / 2000.0f) * 255.0f);
@@ -1776,18 +1781,18 @@ void Hud::drawEventQueue() {
     if (!targetVisible)
         direction = -2.0f;
     const int textSlideY = static_cast<int>(direction * bannerSlide);
-    const int bannerTargetY = *targetVisibleSlot ? this->field_0x3e2 : 0;
     hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->eventBannerImage),
                               this->field_0x3e0,
-                              bannerTargetY - hud_layout_i32(0x1e4));
+                              (Radar::drawTarget ? this->field_0x3e2 : 0) -
+                                      hud_layout_i32(0x1e4));
 
     ListItem *item = this->eventQueue->data()[1];
     if (item != nullptr) {
         const int textBaseY = bannerBaseY + targetY;
-        if (item->buttonKind == 2)
-            hud_canvas()->SetColor(0x00, 0xed, 0x00, alpha);
-        else if (item->buttonKind == 1)
+        if (item->buttonKind == 1)
             hud_canvas()->SetColor(0xff, 0x2a, 0x00, alpha);
+        else if (item->buttonKind == 2)
+            hud_canvas()->SetColor(0x00, 0xed, 0x00, alpha);
         else if (item->buttonKind == 3)
             hud_canvas()->SetColor(0xff, 0x80, 0x00, alpha);
         else
@@ -1845,8 +1850,8 @@ unsigned int Hud::touchBegin(unsigned int a, unsigned int b, void *key) {
 }
 
 unsigned int Hud::sameHudEventAsBefore(String str) {
-    int i = static_cast<int>(this->eventQueue->size());
-    while (--i >= 1) {
+    int i = this->eventQueue->size() - 1;
+    for (; i >= 1; --i) {
         ListItem *e = (*this->eventQueue)[i];
         if (e != 0 && ((String *) e->name)->Compare_str(&str) == 0)
             return 1;
@@ -1863,17 +1868,14 @@ void Hud::init() {
     this->hitDirectionTopTimer = 0;
     this->hitDirectionBottomTimer = 0;
     *reinterpret_cast<int *>(this->unknown_0x4a1) = 0;
-    // Android copies Layout+0x12c..0x14b through four 64-bit values.
-    char *layout = static_cast<char *>(Globals::layout);
-    char *destination = reinterpret_cast<char *>(&this->boostReadyTextX);
-    const uint64_t layout12c = *reinterpret_cast<const uint64_t *>(layout + 0x12c);
-    const uint64_t layout134 = *reinterpret_cast<const uint64_t *>(layout + 0x134);
-    *reinterpret_cast<uint64_t *>(destination) = layout12c;
-    *reinterpret_cast<uint64_t *>(destination + 8) = layout134;
-    const uint64_t layout144 = *reinterpret_cast<const uint64_t *>(layout + 0x144);
-    *reinterpret_cast<uint64_t *>(destination + 16) =
-        *reinterpret_cast<const uint64_t *>(layout + 0x13c);
-    *reinterpret_cast<uint64_t *>(destination + 24) = layout144;
+    this->boostReadyTextX = static_cast<Layout *>(Globals::layout)->field_0x12c;
+    this->touchHalfExtent = static_cast<Layout *>(Globals::layout)->field_0x130;
+    this->touchHalfExtentSmall = static_cast<Layout *>(Globals::layout)->field_0x134;
+    this->analogStickRadius = static_cast<Layout *>(Globals::layout)->field_0x138;
+    this->radarBottomInset = static_cast<Layout *>(Globals::layout)->field_0x13c;
+    this->eventLineMargin = static_cast<Layout *>(Globals::layout)->field_0x140;
+    this->field_0x4ec = static_cast<Layout *>(Globals::layout)->field_0x144;
+    this->eventLineMarginAlt = static_cast<Layout *>(Globals::layout)->field_0x148;
     hud_init_coordinates(this);
 
     this->boostFlashRemaining = 0;
@@ -1950,9 +1952,11 @@ void Hud::init() {
     this->touchFlags = 0;
 
     if (Globals::status->inAlienOrbit() == 0) {
+        PaintCanvas *canvas = hud_canvas();
         const int race = Globals::status->getSystem()->getRace();
-        hud_create_image(static_cast<unsigned short>(g_Hud_factionLogoResourceIds[race]),
-                         this->factionLogoImage);
+        canvas->Image2DCreate(
+            static_cast<unsigned short>(g_Hud_factionLogoResourceIds[race]),
+            reinterpret_cast<unsigned int &>(this->factionLogoImage));
     }
 
     this->previousCameraMode = -1;
@@ -2020,11 +2024,11 @@ void Hud::drawMenu(int unused) {
     hud_canvas()->DrawImage2D(
         static_cast<unsigned>(this->quickMenuHeaderImage),
         this->menuOriginX + this->field_0x3d4 + this->field_0x3dc / 2,
-        this->menuOriginY + this->menuOriginYBase + this->menuRowHeight / 2 -
+            this->menuOriginY + this->menuOriginYBase + this->menuRowHeight / 2 -
             hud_layout_i32(0x22c),
-        0x11, 0x44);
+        0x11u, 0x44u);
 
-    int rowY = this->menuRowHeight + this->menuOriginY + this->menuOriginYBase;
+    int rowY = this->menuOriginY + this->menuOriginYBase + this->menuRowHeight;
     Array<TouchButton *> *buttons = this->menuButtons;
     if (buttons != nullptr) {
         unsigned int count = buttons->size();
@@ -2064,10 +2068,10 @@ void Hud::drawMenu(int unused) {
     const int gaugeX = this->menuOriginX + this->field_0x3d4 + this->field_0x3dc / 2;
     const int gaugeY = rowY + hud_layout_i32(0x30) / 2 + hud_layout_i32(0x288);
     hud_canvas()->DrawImage2D(
-        static_cast<unsigned>(this->fuelGaugeBarImage), gaugeX, gaugeY, 0x11, 0x14);
+        static_cast<unsigned>(this->fuelGaugeBarImage), gaugeX, gaugeY, 0x11u, 0x14u);
     hud_canvas()->DrawImage2D(
         static_cast<unsigned>(this->fuelGaugeIconImage), gaugeX - hud_layout_i32(0x230),
-        hud_layout_i32(0x30) + gaugeY + hud_layout_i32(0x28c), 0x11, 0x12);
+        hud_layout_i32(0x30) + gaugeY + hud_layout_i32(0x28c), 0x11u, 0x12u);
 
     hud_canvas()->DrawString(
         hud_font(), cargoLabel, hud_layout_i32(0x230) + gaugeX,
@@ -2307,7 +2311,7 @@ void Hud::drawChallengeModeScore(int unused) {
     int frameWidth = static_cast<Sprite *>(this->digitSprite)->getFrameWidth();
     const int pad = static_cast<Layout *>(Globals::layout)->field_0x2c;
     const int frameHeight = static_cast<Sprite *>(this->digitSprite)->getFrameHeight();
-    int y = static_cast<Layout *>(Globals::layout)->field_0x2c;
+    const int scoreY = static_cast<Layout *>(Globals::layout)->field_0x2c;
     const int screenW = Globals::w;
 
     String score(Globals::status->challengeScore);
@@ -2331,7 +2335,7 @@ void Hud::drawChallengeModeScore(int unused) {
             frame = digit.ValueOf();
         }
         static_cast<Sprite *>(this->digitSprite)->setFrame(frame);
-        static_cast<Sprite *>(this->digitSprite)->setPosition(x, y);
+        static_cast<Sprite *>(this->digitSprite)->setPosition(x, scoreY);
         static_cast<Sprite *>(this->digitSprite)->draw(1.0f, 1.0f);
         x += frameWidth;
     }
@@ -2340,7 +2344,7 @@ void Hud::drawChallengeModeScore(int unused) {
         hud_canvas()->SetColor(0xffffffffu);
         const int rowPad = static_cast<Layout *>(Globals::layout)->field_0x2c;
         const int timer = Globals::status->challengeMultiplierTimer;
-        y += frameHeight + rowPad;
+        const int rowY = scoreY + frameHeight + rowPad;
 
         if (timer <= 3000) {
             if (timer % 100 < 50)
@@ -2350,8 +2354,9 @@ void Hud::drawChallengeModeScore(int unused) {
             String bonus(static_cast<int>((static_cast<float>(multiplier) * 0.05f + 1.0f) *
                                           static_cast<float>(1000 * multiplier)));
             int bonusOffset = 0;
-            const int bonusBaseY = frameHeight + y;
-            for (int i = 1; static_cast<unsigned int>(i - 1) < bonus.size(); ++i) {
+            const int bonusBaseY = frameHeight + rowY;
+            int i = 1;
+            while (static_cast<unsigned int>(i - 1) < bonus.size()) {
                 int frame;
                 {
                     String digit = bonus.SubString(i - 1, i);
@@ -2362,13 +2367,14 @@ void Hud::drawChallengeModeScore(int unused) {
                         Globals::w / 2 -
                                 static_cast<int>((bonus.size() * frameWidth) >> 1) + bonusOffset,
                         bonusBaseY + static_cast<Layout *>(Globals::layout)->field_0x2c);
+                ++i;
                 bonusOffset += frameWidth;
                 static_cast<Sprite *>(this->digitSprite)->draw(1.0f, 1.0f);
             }
         }
 
         hud_canvas()->DrawImage2D(static_cast<unsigned int>(this->multiplierIconImage),
-                                  rowPad + scoreStartX, y);
+                                  rowPad + scoreStartX, rowY);
         const float growth =
                 static_cast<float>(Globals::status->challengeMultiplierTimer - 7000) * 0.01f;
         float scale = growth + 1.0f;
@@ -2377,7 +2383,8 @@ void Hud::drawChallengeModeScore(int unused) {
 
         String multiplier(Globals::status->challengeMultiplier);
         x = screenCenter + rowPad - sevenDigitHalfWidth;
-        for (int i = 1; static_cast<unsigned int>(i - 1) < multiplier.size(); ++i) {
+        int i = 1;
+        while (static_cast<unsigned int>(i - 1) < multiplier.size()) {
             int frame;
             {
                 String digit = multiplier.SubString(i - 1, i);
@@ -2387,7 +2394,8 @@ void Hud::drawChallengeModeScore(int unused) {
             static_cast<Sprite *>(this->digitSprite)->setPosition(
                     x + hud_canvas()->GetImage2DWidth(
                                 static_cast<unsigned int>(this->multiplierIconImage)),
-                    y);
+                    rowY);
+            ++i;
             x += frameWidth;
             static_cast<Sprite *>(this->digitSprite)->draw(scale, scale);
         }
@@ -2405,16 +2413,16 @@ void Hud::hudEventMedal(int medalId, int percent) {
 
     if (sameHudEventAsBefore(String(this->field_0x1e0, false)) != 0) return;
 
-    void *itemStorage = ::operator new(sizeof(ListItem));
-    String *str = new String(this->field_0x1e0, false);
-    ListItem *item = new (itemStorage) ListItem(str, 3);
+    ListItem *item = new ListItem(new String(this->field_0x1e0, false), 3);
     addToEventQueue(item);
 
     int textWidth = hud_canvas()->GetTextWidth(hud_font(), this->field_0x1e0);
+    const int screenWidth = Globals::w;
+    const int lineMargin = this->eventLineMargin;
+    const int lineMarginAlt = this->eventLineMarginAlt;
     this->eventScrollTick = 0;
     this->eventScrolls = 1;
-    this->eventTextWraps = textWidth > Globals::w / 2 - this->eventLineMargin -
-                                      2 * this->eventLineMarginAlt;
+    this->eventTextWraps = textWidth > screenWidth / 2 - lineMargin - 2 * lineMarginAlt;
 }
 
 
@@ -2537,7 +2545,12 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
             if (this->equipmentArray != nullptr) {
                 for (unsigned int i = 0; i < this->equipmentArray->size(); ++i) {
                     if ((*this->equipmentArray)[i] != nullptr) {
-                        hud_add_menu_text_button(this, menuSlot, 266, y, 0x200);
+                        auto *button = new TouchButton(
+                            *hud_game_text()->getText(266), 0, this->field_0x3d4, y,
+                            this->field_0x3dc, 0x11, 4);
+                        button->field_0x0 = 0x200;
+                        button->field_0x4 = 0;
+                        ArrayAdd<TouchButton *>(button, **menuSlot);
                         y += hud_layout_i32(0x30) + buttonHeight;
                         break;
                     }
@@ -2545,7 +2558,12 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
             }
             if (Globals::status->getWingmen() != 0 && Globals::status->inSupernovaSystem() == 0 &&
                 Globals::status->getCurrentCampaignMission() != 158) {
-                hud_add_menu_text_button(this, menuSlot, 306, y, 0x400);
+                auto *button = new TouchButton(
+                    *hud_game_text()->getText(306), 0, this->field_0x3d4, y,
+                    this->field_0x3dc, 0x11, 4);
+                button->field_0x0 = 0x400;
+                button->field_0x4 = 0;
+                ArrayAdd<TouchButton *>(button, **menuSlot);
                 y += hud_layout_i32(0x30) + buttonHeight;
             }
             if (Globals::status->getShip()->hasCloak()) {
@@ -2559,7 +2577,9 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
                         button->setPressProgress(lvl->getPlayer()->getCloakRechargeRate());
                     button->setHalfTransparent(true);
                 }
-                hud_store_menu_button(this, menuSlot, button, 0x800);
+                button->field_0x0 = 0x800;
+                button->field_0x4 = 0;
+                ArrayAdd<TouchButton *>(button, **menuSlot);
                 y += hud_layout_i32(0x30) + buttonHeight;
             }
             if (Globals::status->getShip()->hasJumpDrive() != 0) {
@@ -2567,7 +2587,9 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
                                                this->field_0x3d4, y, this->field_0x3dc, 0x11, 4);
                 if (lvl->getPlayer()->isChargingDrive() || lvl->getPlayer()->emergencySystemActive())
                     button->setHalfTransparent(true);
-                hud_store_menu_button(this, menuSlot, button, 0x1000);
+                button->field_0x0 = 0x1000;
+                button->field_0x4 = 0;
+                ArrayAdd<TouchButton *>(button, **menuSlot);
             }
 
             Item *cargo = Globals::status->getShip()->getCargo(122);
@@ -2735,8 +2757,8 @@ Hud::~Hud() {
     this->uintArray = 0;
 }
 
-bool Hud::drawTitleImage(bool visible) {
-    return visible;
+void Hud::drawTitleImage(bool visible) {
+    (void) visible;
 }
 
 // Static data members present in the original binary (defined for symbol parity).

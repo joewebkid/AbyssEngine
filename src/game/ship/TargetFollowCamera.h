@@ -56,6 +56,7 @@ public:
     uint8_t useTargetsUpVec;
     float shakeAmount;
     int shakeFrequency;
+    uint8_t _pad_0x118[8];
     int rumbleStrength;
     uint8_t smallRumble;
     float handlingDampingA;
@@ -153,4 +154,16 @@ public:
 
     void update(int dt);
 };
+
+#if __SIZEOF_POINTER__ == 4
+static_assert(__builtin_offsetof(TargetFollowCamera, rumbleStrength) == 0x120,
+              "TargetFollowCamera::rumbleStrength offset");
+static_assert(__builtin_offsetof(TargetFollowCamera, rollAngle) == 0x130,
+              "TargetFollowCamera::rollAngle offset");
+static_assert(__builtin_offsetof(TargetFollowCamera, fixed) == 0x138,
+              "TargetFollowCamera::fixed offset");
+static_assert(__builtin_offsetof(TargetFollowCamera, localMatrix) == 0x13c,
+              "TargetFollowCamera::localMatrix offset");
+static_assert(sizeof(TargetFollowCamera) == 0x178, "TargetFollowCamera size");
+#endif
 #endif

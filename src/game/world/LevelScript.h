@@ -67,6 +67,7 @@ public:
     Radar *m_pRadar;
     AEGeometry *m_pGeometry5;
     AEGeometry *m_pGeometry6;
+    uint8_t _unknown_tail_0xe0[8];
 
     LevelScript(Level *level, Hud *hud, Radar *radar, TargetFollowCamera *camera);
 
@@ -90,7 +91,7 @@ public:
 
     void skipCutscene();
 
-    void process(int delta);
+    bool process(int delta);
 
     void lookBehind();
 
@@ -98,4 +99,9 @@ public:
 
     void setEvent(int event);
 };
+
+#if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(LevelScript) == 0xe8,
+              "Android LevelScript allocation is 0xe8 bytes");
+#endif
 #endif

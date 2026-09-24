@@ -60,7 +60,7 @@ NewsTicker::NewsTicker(int x, int y, int width, int faction, int level) {
             break;
         }
         NewsItem *item = (*allItems)[random->nextInt(allItems->size())];
-        if (status->getSystem() > 0x15 && item->id == 0x0d) {
+        if (status->getSystem()->getIndex() > 0x15 && item->id == 0x0d) {
             continue;
         }
         if (item->field_0x14 < 0xa1 || item->field_0x10 > level) {
@@ -224,4 +224,3 @@ uint32_t NewsTicker::OnTouchEnd(int, int) {
 String NewsTicker::replaceTokens(String text) {
     return text;
 }
-

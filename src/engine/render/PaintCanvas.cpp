@@ -2779,21 +2779,15 @@ int tcg_TextureCreateFromFile(void *engine, const char *path, void *cb, void *ud
                                          unsigned *outId, bool b, float f);
 
 
-static int *g_tcg_canary_storage = 0;
-static int **g_tcg_canary = &g_tcg_canary_storage;
-
 void PaintCanvas::TextureCreateGlobal(AbyssEngine::String name, unsigned int unit) {
-    int *canary = *g_tcg_canary;
-    int saved = *canary;
-
+    unsigned int texture = 0;
     char *path = name.GetAEChar();
-    unsigned outId;
-    int rc = tcg_TextureCreateFromFile(this->engine, path, 0, 0, &outId, false,
-                                       0.0f);
+    int rc = AbyssEngine::TextureCreateFromFile((AbyssEngine::Engine *) this->engine, path, nullptr,
+                                                nullptr, &texture, false, 0.0f);
     if (rc == 1) {
-        tcg_glActiveTexture(unit + 0x84c0);
-        tcg_glBindTexture(0xde1, 0);
-        tcg_glActiveTexture(0x84c0);
+        glActiveTexture(unit + 0x84c0);
+        glBindTexture(0xde1, texture);
+        glActiveTexture(0x84c0);
     }
     ::operator delete[](path);
 }

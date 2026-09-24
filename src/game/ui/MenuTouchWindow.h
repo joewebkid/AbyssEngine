@@ -133,6 +133,7 @@ public:
     int field_0x230;
     int field_0x234;
     uint8_t cutsceneMode;
+    uint8_t pad_0x239[7];
 
     MenuTouchWindow(int menuType);
 
@@ -192,4 +193,8 @@ public:
 
     void startGOF2();
 };
+#if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(MenuTouchWindow) == 0x240,
+              "MenuTouchWindow Android ARM size");
+#endif
 #endif

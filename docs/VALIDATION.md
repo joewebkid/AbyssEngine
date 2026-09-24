@@ -30,15 +30,37 @@ cmake --build cmake-build-match --target verify
 FN=_Z8ArrayAddIP14AEPakFileEntryEvT_R5ArrayIS2_E cmake --build cmake-build-match --target verify-fn
 
 # or directly:
-python3 tools/verify/verify.py --build-dir cmake-build-match/verify --no-build --only '^_ZN5Radar'
+python3 tools/verify/verify.py --build-dir cmake-build-match/verify --no-build \
+  --unit game/weapons/Radar --only '^_ZN5Radar'
 python3 tools/verify/verify.py --build-dir cmake-build-match/verify --no-build --show _ZN5Radar10hasScannerEv
 # On Windows/MSYS, add the known translation unit to avoid scanning every object:
 python3 tools/verify/verify.py --build-dir cmake-build-match/verify --no-build \
   --unit game/menu/MGame --show _ZN5MGame10OnTouchEndEiiPv
+# Focused Radar inspection also avoids a whole-corpus scan:
+python3 tools/verify/verify.py --build-dir cmake-build-match/verify --no-build \
+  --unit game/weapons/Radar --show _ZN5Radar4drawEP6PlayerP3Hudi
 ```
 
 Normal development is unchanged: `cmake --preset debug` still uses local Apple
 clang and never touches OrbStack/local NDK verify tooling.
+
+## Radar Snapshot (2026-09-15)
+
+The unchanged 19-symbol family averages **99.0% source-shape**, with 13
+linked-exact and eight raw-byte-exact symbols. Large draw itself measures
+**90.8% source-shape / 41.7% strict fuzzy**, not byte-exact. Constructor and
+destructor aliases and short accessors affect the unweighted mean; never
+describe it as 99% exact draw or game recovery. See
+[the evidence and remaining work](RADAR_DRAW_SOURCE_SHAPE_2026-09-15.md) and
+[the per-function snapshot](validation/radar_family_2026-09-15.json).
+
+`--unit` now selects a single object for family reports too, before any corpus
+traversal or comparison. Add `--no-build` to reuse current objects. Such reports
+contain `scoped_unit`, not global coverage claims, and reject
+`--fail-on-wrong-type`: that gate still requires the full unfiltered corpus.
+Run `python3 -m unittest discover -s tools/verify -p 'test_*.py'` for the scoped
+runner and ASM normalization regressions. Never run simultaneous reports or
+`--show` operations that rewrite the same target object.
 
 ## ParticleSettingsRef Native Smoke
 
@@ -76,7 +98,8 @@ r18b clang 7.0.2** for `armeabi-v7a`. We validate against it like this:
    relocatable ARM `.o` carrying the real mangled symbol names (`delink.py`).
 3. **Diff**: disassemble both sides with `arm-linux-gnueabihf-objdump`, truncate to
    each symbol's real size, normalize away post-link absolute addresses, and
-   compute a per-function fuzzy match plus a byte-exact flag (`asmdiff.py`).
+   compute strict fuzzy, source-shape, linked-exact and byte-exact evidence
+   (`asmdiff.py`).
 4. **Auto-discovery**: any mangled symbol present in *both* our object and the
    `.so` symbol table is compared — coverage grows automatically as more TUs
    compile. No function list to maintain.
@@ -89,11 +112,11 @@ r18b clang 7.0.2** for `armeabi-v7a`. We validate against it like this:
 ## Reading the report
 
 ```
- match  bytes  unit                               symbol
-  100.0%   ==  engine/math/AEMath                 _ZN11AbyssEngine6AEMath...mlERKNS0_6VectorES3_
-   67.5%       engine/math/AEMath                 _ZN11AbyssEngine6AEMath6MatrixmLERKS1_
+ match   source  link  unit                               symbol
+  100.0%  100.0%    ==  engine/math/AEMath                 _ZN11AbyssEngine6AEMath...mlERKNS0_6VectorES3_
+   67.5%   96.4%        engine/math/AEMath                 _ZN11AbyssEngine6AEMath6MatrixmLERKS1_
 ...
-N comparisons   avg 67.5%   100%-fuzzy 30   byte-exact 21
+N comparisons   avg fuzzy 67.5%   avg source 96.4%   100%-fuzzy 30   byte-exact 21
 coverage: compared 2311/4524 original functions   missing 2213 (-> cmake-build-match/verify/missing.txt)
 report -> cmake-build-match/verify/report.json
 ```
@@ -111,6 +134,20 @@ report -> cmake-build-match/verify/report.json
   when the original contains a literal pool (clang marks pools as data on our side;
   the delinked original has no such marker so objdump decodes the pool as code) — so
   trust `bytes ==` for "matched", `match` for "getting warmer".
+- **`source` (`source_match`)** is an allocation-insensitive source-shape score,
+  not a byte-match claim. It is the equal-weight mean of five separately recorded
+  signals: duplicate-preserving instruction-shape inventory, opcode inventory,
+  control-flow shape, call-count agreement, and instruction-count agreement. Control
+  flow accepts either the ordered branch sequence or its duplicate-preserving inventory
+  so compiler-only basic-block placement is not treated as missing behavior. It ignores
+  which general-purpose register or local stack slot Clang selected and tolerates
+  non-control instruction scheduling. It still penalizes changed calls, branch kinds,
+  operation counts, constants, argument order and object-field offsets.
+  Use it to audit recovered behavior across compiler allocation differences; use `L`
+  or `==` for exact machine-code claims. Per-function components are written as
+  `instruction_inventory_match`, `opcode_inventory_match`, `control_flow_match`,
+  `ordered_control_flow_match`, `control_inventory_match`, `call_count_match`, and
+  `size_match` in `report.json`.
 - **`coverage` / `missing`** is the progress metric: how many of the original's
   `.text` functions we compared at all. *Missing* = original functions with no
   counterpart in our build — either not decompiled/compiled yet, or whose signature
@@ -129,9 +166,19 @@ report -> cmake-build-match/verify/report.json
   `cmake-build-match/verify/missing_wrong_type.txt`; `report.json` carries the counts
   (`missing_wrong_type`, `missing_absent`) and the structured `wrong_type` list. Demangling uses
   `c++filt -n` (Itanium-aware on macOS — no OrbStack needed for this step).
-- `report.json` has the full per-function data plus the coverage counts
+- `report.json` has the full per-function data, `avg_match`, `avg_source_match`,
+  the source-shape component scores, plus the coverage counts
   (`count`, `compared_unique`, `original_functions`, `missing`, `missing_wrong_type`,
   `missing_absent`) and the structured `wrong_type` pairings for scripting/CI.
+
+As of 2026-09-23, `source_match` combines five equally weighted evidence
+signals: allocation-normalized instruction inventory, opcode inventory,
+control-flow shape, call-count agreement, and instruction-count agreement.
+The report keeps both ordered control flow and duplicate-preserving control
+inventory; `control_flow_match` uses the stronger of the two so compiler-only
+basic-block placement does not dominate the source score. This affects only
+the evidence score. Strict fuzzy, linked-exact, and byte-exact comparisons are
+unchanged and remain the authority for binary matching.
 
 ## Tuning compiler flags
 
@@ -195,8 +242,20 @@ differently than the original is invisible (not wrong — just not compared):
   the report from ~724 → 910 linked-exact and ~2327 → 2474 compared. The macOS dev build keeps the
   `std::vector` alias (the `#else` branch in common.h) for natural 64-bit development.
 - TUs that don't compile under the ARM toolchain yet are skipped (see the build summary); their
-  functions simply aren't compared until they build. (Currently only `MGame.cpp` — a pre-existing
-  `expected statement` parse error, unrelated to containers.)
+  functions simply aren't compared until they build. In the 2026-09-24 verification run, the NDK r18b
+  build compiles all 204 source-mapped translation units with zero failures. This confirms the
+  earlier `Player`, `NewsTicker`, and `StarMap` `SolarSystem*`/`int` conflicts are resolved. Count
+  source-mapped objects, not orphan `.o` files left in the base directory.
+
+The same verification run's full-corpus report compared 4,274/4,524 original functions
+across 4,613 symbols, skipped no units, and preserved all 2,037 linked-exact and
+932 raw-byte-exact functions from its baseline. The focused five-symbol
+`TextureCreate*` report is saved at
+`_work/texture-create-arm-scalar-trial.json`; it measures 97.54% unweighted
+and 93.07%
+instruction-weighted source-shape. The 99% target was not reached; see
+[`AEI_TEXTURE_CREATE_SOURCE_SHAPE_ARM_2026-09-24.md`](AEI_TEXTURE_CREATE_SOURCE_SHAPE_ARM_2026-09-24.md)
+for per-function metrics and rejected trials.
 
 ## Direct CLI (without CMake)
 
@@ -211,5 +270,19 @@ Both the build and the diff fan out across `GOF2_VERIFY_JOBS` workers (default 8
 delink/objdump calls have a 90s timeout (`asmdiff.DISASM_TIMEOUT`): if an OrbStack/local tool call
 wedges, that one unit is skipped with a warning instead of hanging the whole run. If you kill an
 OrbStack run mid-diff, check for an orphaned `arm-linux-gnueabihf-objdump` under `orb` and `kill` it.
-For `--show`/`verify-fn`, run one function at a time per translation unit; parallel `--show` calls
-for symbols from the same `.o` can race while rewriting the shared `verify/target/.../*.o`.
+For `--show`/`verify-fn` and scoped family reports, run one operation at a time per translation
+unit; parallel operations for the same `.o` can race while rewriting `verify/target/.../*.o`.
+
+## Selective fionera transfer snapshot (2026-09-20)
+
+After rebuilding current ARM objects with NDK r18b, focused reports measured:
+
+- `PlayerTurret`: 21 symbols, 95.5% source-shape, 12 linked-exact, four byte-exact.
+- `TargetFollowCamera`: 42 symbols, 92.5% source-shape, 27 linked-exact, 19 byte-exact.
+- `Gun`: 28 symbols, 72.5% source-shape, 14 linked-exact, 13 byte-exact.
+- `CameraC2`: 100% strict/source and linked-exact.
+- `ListItemWindow::update`: strict/source `71.7/93.6% -> 84.8/96.9%`.
+
+These are scoped family results, not a replacement whole-corpus snapshot. ARM
+layout constants independently confirm `PlayerTurret=0x168`, `Camera=0x5c`,
+and the `TargetFollowCamera` tail offsets `0x120/0x130/0x138/0x13c`.

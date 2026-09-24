@@ -374,7 +374,7 @@ public:
         return *reinterpret_cast<const AbyssEngine::AEMath::Matrix *>(rocketReturnMatrixStorage);
     }
 
-    int getThrust();
+    float getThrust();
 
     float getVolatileForce();
 
@@ -424,7 +424,7 @@ public:
 
     unsigned char isCloaked();
 
-    int isDead();
+    bool isDead();
 
     bool isDockedToAsteroid();
 
@@ -542,7 +542,7 @@ public:
 
     void setThrust(float v);
 
-    void setTurretMode(bool enable);
+    int setTurretMode(bool enable);
 
     void setTurretPosition(AbyssEngine::AEMath::Vector v);
 
@@ -572,7 +572,7 @@ public:
 
     void throttleChanged();
 
-    void toggleCloaking();
+    int toggleCloaking();
 
     int tryToStartEmergencySystem();
 

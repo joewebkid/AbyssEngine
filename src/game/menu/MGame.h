@@ -29,7 +29,7 @@ namespace AbyssEngine {
 using ::AbyssEngine::ApplicationManager;
 
 #pragma pack(push, 1)
-class MGame : public IApplicationModule {
+class alignas(4) MGame : public IApplicationModule {
 public:
     int loadProgress;
     int loadingImage;
@@ -53,7 +53,7 @@ public:
     uint8_t active;
     uint8_t _pad_0x55[3];
     PlayerEgo *player;
-    union { int field_0x5c; struct { uint8_t _b5c; uint8_t pauseOpen; uint8_t cutsceneActive; uint8_t jumpActive; }; };
+    union { int field_0x5c; struct { bool _b5c; uint8_t pauseOpen; uint8_t cutsceneActive; uint8_t jumpActive; }; };
     uint8_t gameOverActive;
     uint8_t campaignMission;
     uint8_t _pad_0x62[2];
@@ -76,9 +76,9 @@ public:
     float flCameraRoll;
     void *activeTouchId;
     union {
-        int dockChoiceOpen;
+        int dockChoiceFlags;
         struct {
-            uint8_t field_0xc1;
+            union { uint8_t dockChoiceOpen; uint8_t field_0xc1; };
             union { uint8_t autopilotMenuOpen; uint8_t field_0xc2; };
             union { uint8_t field_0xc6; uint8_t field_0xc3; };
             uint8_t starMapOpen;
@@ -93,7 +93,15 @@ public:
             uint8_t menuTouchOpen;
         };
     };
-    union { int field_0xca; struct { uint8_t _bca; uint8_t touchesStream; uint8_t touchesStation; uint8_t jumpGateSoundStarted; }; };
+    union {
+        int field_0xca;
+        struct {
+            union { uint8_t cargoConversionChoiceOpen; uint8_t _bca; };
+            uint8_t touchesStream;
+            uint8_t touchesStation;
+            uint8_t jumpGateSoundStarted;
+        };
+    };
     union {
         uint16_t choiceWindowFlags;
         struct {
@@ -162,9 +170,7 @@ public:
     int field_0x18c;
     int field_0x190;
     int field_0x194;
-    int field_0x198;
-    int field_0x19c;
-    int field_0x1a0;
+    AbyssEngine::AEMath::Vector soundListenerPreviousPosition;
     union {
         uint16_t field_0x1a4;
         struct {
@@ -174,25 +180,37 @@ public:
     };
     uint8_t pauseSnapshot;
     uint8_t _pad_0x1a7[1];
-    float flFastForwardFactor;
-    int field_0x1ac;
+    union {
+        int mouseDeltaSnapshotX;
+        float flFastForwardFactor;
+    };
+    union {
+        int mouseDeltaSnapshotY;
+        int field_0x1ac;
+    };
     union { int field_0x1b0; float boostTouchThrust; };
     union { int field_0x1b4; float boostTouchDuration; };
     union { uint16_t thrustActive; struct { uint8_t _b1b8; uint8_t thrustEngaged; }; };
     uint8_t _pad_0x1ba[2];
     int field_0x1bc;
-    int thrustStartY;
+    union { int thrustStartY; float thrustStartYFloat; };
     int field_0x1c4;
     int thrustResetX;
     int thrustThreshold;
-    int thrustBase;
+    union { int thrustBase; float thrustBaseFloat; };
     int field_0x1d4;
     int field_0x1d8;
-    uint8_t _pad_0x1dc[1];
+    uint8_t field_0x1dc;
     uint8_t field_0x1dd;
     uint8_t _pad_0x1de[2];
     int field_0x1e0;
-    uint16_t field_0x1e4;
+    union {
+        uint16_t field_0x1e4;
+        struct {
+            uint8_t field_0x1e4_lo;
+            uint8_t campaignDamageHintShown;
+        };
+    };
     uint8_t field_0x1e6;
     uint8_t _pad_0x1e7[1];
     int gameRecord;
@@ -242,11 +260,11 @@ public:
 
     void dialogueEvent();
 
-    void dockEvent(int p1, int p2);
+    int dockEvent(int p1, int p2);
 
     void freeCamTouchBegin(int x, int y, void *id);
 
-    void freeCamTouchEnd(int p1, int p2, void *id);
+    int freeCamTouchEnd(int p1, int p2, void *id);
 
     void freeCamTouchMove(int x, int y, void *touchId);
 
@@ -274,11 +292,11 @@ public:
 
     void startJumpScene();
 
-    void successCheck();
+    int successCheck();
 
     void switchCamera(int id);
 
-    void updateJumpScene();
+    int updateJumpScene();
 
     void useCloak();
 };
@@ -315,6 +333,8 @@ static_assert(offsetof(MGame, starMapOpen) == 199, "MGame::starMapOpen @ 199");
 static_assert(offsetof(MGame, field_0xc8) == 200, "MGame::field_0xc8 @ 200");
 static_assert(offsetof(MGame, menuTouchOpen) == 201, "MGame::menuTouchOpen @ 201");
 static_assert(offsetof(MGame, field_0xca) == 202, "MGame::field_0xca @ 202");
+static_assert(offsetof(MGame, cargoConversionChoiceOpen) == 202,
+              "MGame::cargoConversionChoiceOpen @ 202");
 static_assert(offsetof(MGame, touchesStream) == 203, "MGame::touchesStream @ 203");
 static_assert(offsetof(MGame, touchesStation) == 204, "MGame::touchesStation @ 204");
 static_assert(offsetof(MGame, jumpGateSoundStarted) == 205, "MGame::jumpGateSoundStarted @ 205");
@@ -351,8 +371,8 @@ static_assert(offsetof(MGame, maneuverHoldTime) == 376, "MGame::maneuverHoldTime
 static_assert(offsetof(MGame, maneuverActive) == 380, "MGame::maneuverActive @ 380");
 static_assert(offsetof(MGame, maneuverStartX) == 384, "MGame::maneuverStartX @ 384");
 static_assert(offsetof(MGame, maneuverStartY) == 388, "MGame::maneuverStartY @ 388");
-static_assert(offsetof(MGame, field_0x19c) == 412, "MGame::field_0x19c @ 412");
-static_assert(offsetof(MGame, field_0x1a0) == 416, "MGame::field_0x1a0 @ 416");
+static_assert(offsetof(MGame, soundListenerPreviousPosition) == 408,
+              "MGame::soundListenerPreviousPosition @ 408");
 static_assert(offsetof(MGame, pauseMusicCategoryDisabled) == 420,
               "MGame::pauseMusicCategoryDisabled @ 420");
 static_assert(offsetof(MGame, pauseSnapshot) == 422, "MGame::pauseSnapshot @ 422");

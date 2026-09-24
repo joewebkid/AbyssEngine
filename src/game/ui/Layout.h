@@ -150,12 +150,15 @@ public:
         int listItemIconTopInsetY;
     };
     int field_0x128;
-    uint8_t _pad_0x12c[4];
+    int field_0x12c;
     int field_0x130;
     int field_0x134;
     int field_0x138;
     int field_0x13c;
-    uint8_t _pad_0x140[24];
+    int field_0x140;
+    int field_0x144;
+    int field_0x148;
+    uint8_t _pad_0x14c[12];
     int field_0x158;
     int field_0x15c;
     uint8_t _pad_0x160[24];
@@ -169,7 +172,7 @@ public:
     int field_0x1a0;
     int field_0x1a4;
     uint8_t _pad_0x1a8[56];
-    int field_0x1e0;
+    float field_0x1e0;
     int field_0x1e4;
     int field_0x1e8;
     int field_0x1ec;
@@ -467,11 +470,11 @@ public:
 
     void enableFillScreen(bool v);
 
-    static String formatNumber(int n);
+    String formatNumber(int n);
 
     static String tagString(String in);
 
-    static String formatCredits(int n);
+    String formatCredits(int n);
 
     int getFooterTransitionWidth();
 

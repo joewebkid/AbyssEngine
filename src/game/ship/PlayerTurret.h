@@ -20,14 +20,13 @@ public:
 
 
     bool turretEnabled;
-    char field_0x3e;
     bool isSentryGun;
-    Vector cachedPosition;
-    Vector hostWorldOffset;
-    Vector aimPoint;
-    int reviveFlag;
+    Vector &cachedPosition() { return reinterpret_cast<Vector &>(this->posX); }
+    Vector &hostWorldOffset() { return reinterpret_cast<Vector &>(this->field_0x90); }
+    Vector &aimPoint() { return reinterpret_cast<Vector &>(this->field_0x9c); }
+    int &reviveFlag() { return reinterpret_cast<int &>(this->rotationSpeed); }
+    int &frameDelta() { return reinterpret_cast<int &>(this->type); }
 
-    int frameDelta;
     int spawnInvulnTimer;
     int explosionTimer;
     int pickEnemyTimer;
@@ -79,5 +78,19 @@ public:
 
     void pickEnemy();
 };
+
+#if __SIZEOF_POINTER__ == 4
+static_assert(__builtin_offsetof(PlayerTurret, isSentryGun) == 0x125,
+              "PlayerTurret::isSentryGun offset");
+static_assert(__builtin_offsetof(PlayerTurret, spawnInvulnTimer) == 0x128,
+              "PlayerTurret::spawnInvulnTimer offset");
+static_assert(__builtin_offsetof(PlayerTurret, explosion) == 0x13c,
+              "PlayerTurret::explosion offset");
+static_assert(__builtin_offsetof(PlayerTurret, turretHost) == 0x154,
+              "PlayerTurret::turretHost offset");
+static_assert(__builtin_offsetof(PlayerTurret, turretRange) == 0x164,
+              "PlayerTurret::turretRange offset");
+static_assert(sizeof(PlayerTurret) == 0x168, "PlayerTurret size");
+#endif
 
 #endif

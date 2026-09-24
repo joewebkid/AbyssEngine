@@ -225,11 +225,12 @@ public:
 
     void update(AbyssEngine::AEMath::Vector value);
 
-    int draw(Player *player, Hud *hud, int mode);
+    // Android/iOS render callers consume no return value; SSP checks are not results.
+    void draw(Player *player, Hud *hud, int elapsed);
 
     AbyssEngine::AEMath::Vector elipsoidIntersect(int y, int x, AbyssEngine::AEMath::Vector value);
 
-    int drawCurrentLock(Hud *hud);
+    void drawCurrentLock(Hud *hud);
 
     AbyssEngine::String calcDistance(float x, float y, float z, float originX, float originY, float originZ);
 
