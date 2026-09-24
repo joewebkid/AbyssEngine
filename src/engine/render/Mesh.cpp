@@ -73,7 +73,7 @@ namespace AbyssEngine {
     namespace {
         inline void updateTimeBetweenFrames(float value) {
             if (value > 0.0f) {
-                if (timeBetweenFrames < value)
+                if (timeBetweenFrames > value)
                     timeBetweenFrames = value;
             }
         }
@@ -129,7 +129,7 @@ namespace AbyssEngine {
                         }
                     }
                 }
-            } else goto fail;
+            }
 
             if (AEFile::Read(2, &type, file) == 0) goto fail;
             if (type == 1) {
@@ -162,7 +162,7 @@ namespace AbyssEngine {
                         }
                     }
                 }
-            } else goto fail;
+            }
 
             if (AEFile::Read(2, &type, file) == 0) goto fail;
             if (type == 1) {
@@ -195,7 +195,7 @@ namespace AbyssEngine {
                         }
                     }
                 }
-            } else goto fail;
+            }
 
             if ((format & 0x18) != 0) {
                 if (AEFile::Read(2, &type, file) == 0) goto fail;
@@ -210,8 +210,6 @@ namespace AbyssEngine {
                         if (AEFile::Read(4, &key, file) == 0) goto fail;
                         anim->InsertKeyFrame(&key, 0x200, (int) value);
                     }
-                } else if (type != 0) {
-                    goto fail;
                 }
             }
 
