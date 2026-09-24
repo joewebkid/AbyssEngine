@@ -386,7 +386,7 @@ void ChoiceWindow::draw() {
 
         if (Status::gStatus->hardCoreMode() == 0 &&
             Achievements::gAchievements->isEliteMedal(this->medal) == 0) {
-            String creditsText = Layout::formatCredits(
+            String creditsText = Globals::layout->formatCredits(
                 g_ChoiceWindow_creditValues_1471bc[this->count]);
 
             void *font = *g_ChoiceWindow_font_1471bc_a;

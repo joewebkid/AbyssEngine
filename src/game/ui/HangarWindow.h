@@ -134,7 +134,7 @@ public:
 
     int OnTouchMove(int touch, int coord);
 
-    bool isInitialized();
+    int isInitialized();
 
     ListItem *getCurrentItem();
 
@@ -172,7 +172,7 @@ public:
 
     void render3D();
 
-    void selectItem(ListItem *item);
+    int selectItem(ListItem *item);
 
     void setSellMode(bool buy);
 
@@ -194,7 +194,7 @@ public:
     static int lastTab;
 };
 
-#if defined(GOF2_MATCH)
+#if __SIZEOF_POINTER__ == 4
 static_assert(offsetof(HangarWindow, tabButtons) == 0x04, "HangarWindow::tabButtons @ 0x04");
 static_assert(offsetof(HangarWindow, hangarList) == 0x14, "HangarWindow::hangarList @ 0x14");
 static_assert(offsetof(HangarWindow, dialog) == 0x20, "HangarWindow::dialog @ 0x20");

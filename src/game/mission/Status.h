@@ -439,9 +439,9 @@ public:
 
     bool stringHasToken(String haystack, String needle);
 
-    String replaceHash(String haystack, String needle);
+    String replaceHash(String haystack, String replacement);
 
-    String replaceHash(String haystack, String needle, String replacement);
+    String replaceHash(String haystack, String replacement, String needle);
 
     void calcCargoPrices();
 

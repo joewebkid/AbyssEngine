@@ -248,6 +248,7 @@ namespace AbyssEngine {
         union {
             int autoPilotEngaged;
             uint32_t field_0x360;
+            float inputWheel;
         };
 
         uint8_t _pad0x364[4];

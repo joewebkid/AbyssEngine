@@ -333,18 +333,18 @@ int Globals::secondaryWeaponsProbChange;
 int Globals::lastCampaignMissionFailCount;
 unsigned char Globals::startLiteVersionWithMoreCredits;
 void *Globals::rnd;
-void *Globals::font;
+unsigned int Globals::font;
 unsigned char Globals::keys[1020];
 void *Globals::bankZ;
 unsigned char Globals::hints[59];
 void *Globals::items;
 void *Globals::ships;
-void *Globals::Canvas;
+AbyssEngine::PaintCanvas *Globals::Canvas;
 float Globals::fire_x;
 float Globals::fire_y;
 float Globals::fire_z;
 void *Globals::galaxy;
-void *Globals::layout;
+Layout *Globals::layout;
 float Globals::boost_x;
 float Globals::boost_y;
 float Globals::boost_z;
@@ -352,7 +352,7 @@ void *Globals::globals;
 int Globals::pause_x;
 int Globals::pause_y;
 float Globals::pause_z;
-void *Globals::gameText;
+GameText *Globals::gameText;
 void *Globals::fontAlien;
 void *Globals::generator;
 AbyssEngine::ApplicationManager *ApplicationManager::gAppManager = nullptr;
@@ -1764,6 +1764,10 @@ void Globals::releaseResources() {
 
 static inline unsigned int &globals_font_slot(void *&slot) {
     return *reinterpret_cast<unsigned int *>(&slot);
+}
+
+static inline unsigned int &globals_font_slot(unsigned int &slot) {
+    return slot;
 }
 
 static inline unsigned int &globals_font_slot(int &slot) {

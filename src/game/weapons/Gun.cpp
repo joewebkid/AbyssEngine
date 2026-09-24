@@ -1,4 +1,5 @@
 #include "game/weapons/Gun.h"
+#include <new>
 #include <cstdint>
 #include "game/ship/Player.h"
 #include "game/mission/Item.h"
@@ -56,20 +57,13 @@ static_assert(__builtin_offsetof(GunTransformHandle, visible_0xed) == 0xed,
 
 typedef Array<Vector> VecArray;
 
+static inline void Gun_VecArray_ctor(VecArray *a) { new(a) VecArray(); }
 
-void Gun_VecArray_ctor(void *a);
+void Gun_VecPtrArray_ctor(Array<int> *a);
 
-void Gun_VecPtrArray_ctor(void *a);
+void Gun_VecArray_setLength(int n, VecArray *a);
 
-void Gun_VecArray_setLength(int n, void *a);
-
-void Gun_VecPtrArray_setLength(int n, void *a);
-
-void Gun_ArrayReleaseClasses(VecArray * a);
-void *Gun_ArrayDtor(VecArray * a);
-
-typedef void (*dtor_fn)(void *);
-static dtor_fn const gGunStringDtor = nullptr;
+void Gun_VecPtrArray_setLength(int n, Array<int> *a);
 
 Gun::~Gun() noexcept(false) {
     delete[] this->lifetimes;
@@ -84,22 +78,20 @@ Gun::~Gun() noexcept(false) {
     delete[] this->randomFlags;
     this->randomFlags = 0;
 
-    VecArray *arr = reinterpret_cast<VecArray *>(this->wobbleOffsets);
+    Array<Vector *> *arr = reinterpret_cast<Array<Vector *> *>(this->wobbleOffsets);
     if (arr != 0) {
-        Gun_ArrayReleaseClasses(arr);
-        VecArray *arr2 = reinterpret_cast<VecArray *>(this->wobbleOffsets);
+        ArrayReleaseClasses(*arr);
+        Array<Vector *> *arr2 = reinterpret_cast<Array<Vector *> *>(this->wobbleOffsets);
         if (arr2 != 0) {
-            void *p = Gun_ArrayDtor(arr2);
-            ::operator delete(p);
+            delete arr2;
         }
     }
     this->wobbleOffsets = 0;
 
-    dtor_fn d = gGunStringDtor;
-    d(&this->field_0x2c);
-    d(&this->field_0x20);
-    d(&this->directionCount);
-    d(&this->count);
+    reinterpret_cast<VecArray *>(&this->field_0x2c)->~VecArray();
+    reinterpret_cast<VecArray *>(&this->field_0x20)->~VecArray();
+    reinterpret_cast<VecArray *>(&this->directionCount)->~VecArray();
+    reinterpret_cast<VecArray *>(&this->count)->~VecArray();
 }
 
 void Gun::setFriendGun(bool v) {
@@ -311,10 +303,10 @@ void Gun::render() {
 }
 
 Gun::Gun(int kind, int p2, int count, int p4, int p5, int p6, float p7, Vector dir, Vector vel) {
-    Gun_VecArray_ctor(&this->count);
-    Gun_VecArray_ctor(&this->directionCount);
-    Gun_VecArray_ctor(&this->field_0x20);
-    Gun_VecArray_ctor(&this->field_0x2c);
+    Gun_VecArray_ctor(reinterpret_cast<VecArray *>(&this->count));
+    Gun_VecArray_ctor(reinterpret_cast<VecArray *>(&this->directionCount));
+    Gun_VecArray_ctor(reinterpret_cast<VecArray *>(&this->field_0x20));
+    Gun_VecArray_ctor(reinterpret_cast<VecArray *>(&this->field_0x2c));
     this->offset.x = 0;
     this->offset.y = 0;
     this->offset.z = 0;
@@ -360,13 +352,13 @@ Gun::Gun(int kind, int p2, int count, int p4, int p5, int p6, float p7, Vector d
     this->field_0x78 = p4 << 1;
     this->lifetimes = new int[count];
     this->hitFlags = new uint8_t[count];
-    void *arr = ::operator new(0xc);
+    Array<int> *arr = static_cast<Array<int> *>(::operator new(0xc));
     Gun_VecPtrArray_ctor(arr);
-    this->wobbleOffsets = static_cast<Array<int> *>(arr);
-    Gun_VecArray_setLength(count, &this->count);
-    Gun_VecArray_setLength(count, &this->directionCount);
-    Gun_VecArray_setLength(count, &this->field_0x20);
-    Gun_VecArray_setLength(count, &this->field_0x2c);
+    this->wobbleOffsets = arr;
+    Gun_VecArray_setLength(count, reinterpret_cast<VecArray *>(&this->count));
+    Gun_VecArray_setLength(count, reinterpret_cast<VecArray *>(&this->directionCount));
+    Gun_VecArray_setLength(count, reinterpret_cast<VecArray *>(&this->field_0x20));
+    Gun_VecArray_setLength(count, reinterpret_cast<VecArray *>(&this->field_0x2c));
     Gun_VecPtrArray_setLength(count, this->wobbleOffsets);
     Vector *positions = reinterpret_cast<Vector *>(this->positions);
     for (int i = 0; i < (int) count; i = i + 1) {
@@ -399,13 +391,14 @@ void Gun::setEnemy(Player *enemy) {
     this->enemies = reinterpret_cast<Array<Player *> *>(enemy);
 }
 
-static const float kZOffset = 0.1f;
+static const float kZOffset = 100.0f;
 
 void Gun::setOffset(Vector *v) {
+    float z = v->z;
     Vector local;
     local.x = v->x;
     local.y = v->y;
-    local.z = v->z + kZOffset;
+    local.z = z + kZOffset;
     this->offset = local;
 }
 

@@ -1048,7 +1048,6 @@ void Status::unlockBluePrint(int index) {
     }
 }
 
-// Android ARM .rodata tables returned as IEEE-754 bits by the soft-float ABI.
 static const int g_gammaTableA[5] = {
     0x3f333333, 0x3ecccccd, 0x3ecccccd, 0x3e99999a, 0x3e4ccccd,
 };
@@ -1296,26 +1295,23 @@ void Status::setStation(Station *s) {
     delete list;
 }
 
-String Status::replaceHash(String haystack, String needle, String replacement) {
+String Status::replaceHash(String haystack, String replacement, String needle) {
     int idx = (int) haystack.IndexOf(needle);
     if (idx < 0) {
-        return haystack;
+        return String(haystack, false);
     }
 
-    String prefix;
-    prefix = haystack.SubString(0, idx);
-
-    String suffix;
-    suffix = haystack.SubString(needle.size() + idx, haystack.size());
-
-    if (prefix.size() == 0) {
-        return replacement + suffix;
+    String prefix = haystack.SubString(0, idx);
+    if (prefix.size() != 0) {
+        return prefix + String(replacement, false) +
+               haystack.SubString(needle.size() + idx, haystack.size());
     }
-    return prefix + replacement + suffix;
+    return String(replacement, false) +
+           haystack.SubString(needle.size() + idx, haystack.size());
 }
 
-String Status::replaceHash(String haystack, String needle) {
-    return replaceHash(haystack, needle, String(""));
+String Status::replaceHash(String haystack, String replacement) {
+    return replaceHash(String(haystack, false), String(replacement, false), String("#", false));
 }
 
 void Status::changeRating(int delta) {

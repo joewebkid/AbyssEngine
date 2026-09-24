@@ -426,13 +426,13 @@ public:
 
     unsigned int touchMove(unsigned int a, unsigned int b, void *key);
 
-    unsigned int touchedElement(unsigned int x, unsigned int y);
+    int touchedElement(unsigned int x, unsigned int y);
 
     int updateQueue(int dt);
 
     void updateSecondaryWeaponString();
 
-    bool drawTitleImage(bool visible);
+    void drawTitleImage(bool visible);
 
     // Static data members present in the original binary (defined for symbol parity).
     static int RADAR_WIDTH;

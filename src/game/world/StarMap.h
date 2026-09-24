@@ -136,6 +136,8 @@ public:
     int32_t routeStart;
     int32_t routeTarget;
     uint8_t suppressNextClose;
+    // Android constructor writes through +0x1e4; tail fields are not typed yet.
+    uint8_t _unrecovered_tail[0x24];
 
     StarMap(bool jumpMapMode, Mission *mission, bool param3, int param4);
 
@@ -177,4 +179,7 @@ public:
 
     uint8_t missionChanged();
 };
+#if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(StarMap) == 0x1e8, "StarMap native allocation size");
+#endif
 #endif
