@@ -116,6 +116,7 @@ metadata only; original game binaries and asset dumps are not included.
 - [Hangar touch-return ABI ARM pass](docs/HANGAR_TOUCH_RETURN_ABI_ARM_2026-08-23.md)
 - [AEM/AEI loader notes](docs/AEM_AEI_NATIVE_LOADER_SPEC.md)
 - [AEI texture upload and ownership ARM pass](docs/AEI_TEXTURE_UPLOAD_ARM_2026-08-27.md)
+- [TextureCreate family ARM source-shape pass](docs/AEI_TEXTURE_CREATE_SOURCE_SHAPE_ARM_2026-09-24.md)
 - [DeepOpen J2ME crosswalk](docs/DEEPOPEN_J2ME_CROSSWALK_2026-07-20.md)
 - [Recovery evidence guide (RU)](docs/RECOVERY_EVIDENCE_GUIDE_RU.md)
 - [Notice](NOTICE.md)

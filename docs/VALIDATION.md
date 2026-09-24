@@ -242,10 +242,20 @@ differently than the original is invisible (not wrong — just not compared):
   the report from ~724 → 910 linked-exact and ~2327 → 2474 compared. The macOS dev build keeps the
   `std::vector` alias (the `#else` branch in common.h) for natural 64-bit development.
 - TUs that don't compile under the ARM toolchain yet are skipped (see the build summary); their
-  functions simply aren't compared until they build. The 2026-09-23 full gate builds all 209
-  discovered ARM objects with zero translation-unit failures; the older `Player`, `NewsTicker`
-  and `StarMap` `SolarSystem*`/`int` conflicts are resolved. Count source-mapped objects, not
-  orphan `.o` files left in the base directory.
+  functions simply aren't compared until they build. In the 2026-09-24 Luna worktree, the NDK r18b
+  build compiles all 204 source-mapped translation units with zero failures. This confirms the
+  earlier `Player`, `NewsTicker`, and `StarMap` `SolarSystem*`/`int` conflicts are resolved. Count
+  source-mapped objects, not orphan `.o` files left in the base directory.
+
+The same worktree's full-corpus report compared 4,274/4,524 original functions
+across 4,613 symbols, skipped no units, and preserved all 2,037 linked-exact and
+932 raw-byte-exact functions from its baseline. The focused five-symbol
+`TextureCreate*` report is saved at
+`_work/texture-create-arm-scalar-trial.json`; it measures 97.54% unweighted
+and 93.07%
+instruction-weighted source-shape. The 99% target was not reached; see
+[`AEI_TEXTURE_CREATE_SOURCE_SHAPE_ARM_2026-09-24.md`](AEI_TEXTURE_CREATE_SOURCE_SHAPE_ARM_2026-09-24.md)
+for per-function metrics and rejected trials.
 
 ## Direct CLI (without CMake)
 

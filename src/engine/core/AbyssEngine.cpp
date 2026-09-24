@@ -2233,14 +2233,13 @@ namespace AbyssEngine {
             switch (format) {
                 case 1:
                     glTexImage2D(0xde1, 0, 0x1909, w, h, 0, 0x1909, 0x1401, img->data);
-                    if (img->hasMipmaps != 0) glGenerateMipmap(0xde1);
-                    break;
+                    goto raw_texture_mipmap;
                 case 2:
                     glTexImage2D(0xde1, 0, 0x1907, w, h, 0, 0x1907, 0x1401, img->data);
-                    if (img->hasMipmaps != 0) glGenerateMipmap(0xde1);
-                    break;
+                    goto raw_texture_mipmap;
                 case 3:
                     glTexImage2D(0xde1, 0, 0x1908, w, h, 0, 0x1908, 0x1401, img->data);
+                raw_texture_mipmap:
                     if (img->hasMipmaps != 0) glGenerateMipmap(0xde1);
                     break;
                 case 4:
@@ -2263,8 +2262,8 @@ namespace AbyssEngine {
                             off += blockSz;
                             unsigned int nh = 1;
                             unsigned int nw = 1;
-                            if ((ch >> 1) > 1) nh = ch >> 1;
-                            if ((cw >> 1) > 1) nw = cw >> 1;
+                            if (ch > 3) nh = ch >> 1;
+                            if (cw > 3) nw = cw >> 1;
                             ++level;
                             ch = nh;
                             cw = nw;
@@ -2289,8 +2288,8 @@ namespace AbyssEngine {
                             off += blockSz;
                             unsigned int nh = 1;
                             unsigned int nw = 1;
-                            if ((ch >> 1) > 1) nh = ch >> 1;
-                            if ((cw >> 1) > 1) nw = cw >> 1;
+                            if (ch > 3) nh = ch >> 1;
+                            if (cw > 3) nw = cw >> 1;
                             ++level;
                             ch = nh;
                             cw = nw;
@@ -2313,8 +2312,8 @@ namespace AbyssEngine {
                             off += blockSz;
                             unsigned int nh = 1;
                             unsigned int nw = 1;
-                            if ((ch >> 1) > 1) nh = ch >> 1;
-                            if ((cw >> 1) > 1) nw = cw >> 1;
+                            if (ch > 3) nh = ch >> 1;
+                            if (cw > 3) nw = cw >> 1;
                             ++level;
                             cw = nw;
                             ch = nh;
@@ -2348,8 +2347,8 @@ namespace AbyssEngine {
                             off += blockSz;
                             unsigned int nh = 1;
                             unsigned int nw = 1;
-                            if ((ch >> 1) > 1) nh = ch >> 1;
-                            if ((cw >> 1) > 1) nw = cw >> 1;
+                            if (ch > 3) nh = ch >> 1;
+                            if (cw > 3) nw = cw >> 1;
                             ++level;
                             cw = nw;
                             ch = nh;
@@ -2373,8 +2372,8 @@ namespace AbyssEngine {
                             off += blockSz;
                             unsigned int nh = 1;
                             unsigned int nw = 1;
-                            if ((ch >> 1) > 1) nh = ch >> 1;
-                            if ((cw >> 1) > 1) nw = cw >> 1;
+                            if (ch > 3) nh = ch >> 1;
+                            if (cw > 3) nw = cw >> 1;
                             ++level;
                             cw = nw;
                             ch = nh;
@@ -2653,7 +2652,7 @@ namespace AbyssEngine {
                     if (((fmt & 0x1b) == 0 || AEFile::Read((uint32_t)(2), magic, handle)) &&
                         AEFile::Read((uint32_t)(1), &(*out)->vertexFormat, handle) &&
                         (*out)->vertexFormat) {
-
+                        
                         if ((fmt & 0x1a) != 0) {
                             unsigned short subCount;
                             if (AEFile::Read((uint32_t)(2), &subCount, handle)) {
@@ -2688,7 +2687,7 @@ namespace AbyssEngine {
         } else {
             if (*out != 0)
                 ::operator delete((void *) *out);
-            *out = 0;
+            *out = 0;W
         }
         return -1;
 
