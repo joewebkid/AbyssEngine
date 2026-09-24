@@ -1373,7 +1373,7 @@ static inline void _mtw_build_language_buttons(MenuTouchWindow *window, bool inc
                     ? yBase - layout->field_0x29c_buttonRowGap - layout->field_0x30 + step * i
                     : yBase - 12 - layout->field_0x29c_buttonRowGap + step * (i >> 1);
 
-        unsigned int font = (unsigned int) (uintptr_t) Globals::font;
+        unsigned int font = Globals::font;
         if ((i | 1) == 9)
             font = (unsigned int) Globals::fontLangSelect;
         int spacing = canvas != nullptr ? canvas->FontGetSpacing(font) : 0;
@@ -2333,7 +2333,7 @@ void MenuTouchWindow::createRecordButtons(bool inSaveMode) {
             rowData[2] = e;
 
             auto *credits = new String();
-            *credits = Layout::formatCredits(slot->field_0x08);
+            *credits = Globals::layout->formatCredits(slot->field_0x08);
             rowData = ((Array<void *> *) this->recordRows->data_[i])->data_;
             rowData[3] = credits;
 
@@ -3813,11 +3813,11 @@ void MenuTouchWindow::drawLoadSaveMenu(bool param1) {
         int mode = (i == this->selectedRow) ? 4 : 3;
         _mtw_Layout_drawBox(layout, mode, boxX, rowY, inner - 3, layout->field_0x70_rowHeight, &box);
 
-        void *font = Globals::font;
+        unsigned int font = Globals::font;
         int yName = strip58 + rowY;
         String **cols = (String **) (uintptr_t) ((Array<void *> *) this->recordRows->data_[i])->data_;
 
-        canvas->DrawString((unsigned int) (uintptr_t) font, *cols[0],
+        canvas->DrawString(font, *cols[0],
                            layout->buttonInsetX + this->listX + layout->field_0x2c_rowHeight,
                            (char) yName, false);
 

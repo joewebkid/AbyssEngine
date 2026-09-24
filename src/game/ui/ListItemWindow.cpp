@@ -182,7 +182,7 @@ void liw_fill_ship_rows(ListItemWindow *self, ListItem *listItem) {
         static_cast<int>(shopHandling * 100.0f),
         static_cast<int>(currentShip->getUnmoddedHandling() * 100.0f));
 
-    const String price = Layout::formatCredits(listItem->getPrice());
+    const String price = Globals::layout->formatCredits(listItem->getPrice());
     liw_add_ship_stat(self, 132, price, listItem->getPrice(), currentShip->getPrice());
 
     String empty("", false);
@@ -240,7 +240,7 @@ void liw_fill_item_rows(ListItemWindow *self, ListItem *listItem, bool includePr
     if (includePrice && !listItem->isBluePrint() && !listItem->isPendingProduct()) {
         const String newline("\n", false);
         const String label = newline + liw_text(132);
-        const String value = newline + Layout::formatCredits(item->getSinglePrice());
+        const String value = newline + Globals::layout->formatCredits(item->getSinglePrice());
         liw_add_row(self, label, value);
     }
 
@@ -296,7 +296,7 @@ PaintCanvas *liw_canvas() {
 }
 
 unsigned int liw_font() {
-    return static_cast<unsigned int>(reinterpret_cast<uintptr_t>(Globals::font));
+    return Globals::font;
 }
 
 unsigned short liw_preview_race_texture_resource(int race) {
@@ -722,24 +722,24 @@ void ListItemWindow::update(int frameTime) {
 
     int idx = this->item->ship->getIndex();
 
-    float angle = static_cast<float>(this->dragAccum) / 120.0f;
-    this->previewAngle = angle;
+    float baseScale = this->previewScaleBias;
+    this->previewAngle = (float) this->dragAccum / 120.0f;
 
-    PaintCanvas *canvas = liw_canvas();
-    Matrix *loc = static_cast<Matrix *>(canvas->TransformGetLocal(this->previewTransformId));
-    AbyssEngine::AEMath::MatrixSetRotation(*loc, 0.0f, angle, 0.0f);
-    const float scale = kShipPreviewScales[idx] + this->previewScaleBias;
-    loc = static_cast<Matrix *>(canvas->TransformGetLocal(this->previewTransformId));
+    PaintCanvas **canvas = &Globals::Canvas;
+    Matrix *loc = static_cast<Matrix *>((*canvas)->TransformGetLocal(this->previewTransformId));
+    AbyssEngine::AEMath::MatrixSetRotation(*loc, 0.0f, this->previewAngle, 0.0f);
+    float scale = kShipPreviewScales[idx] + baseScale;
+    loc = static_cast<Matrix *>((*canvas)->TransformGetLocal(this->previewTransformId));
     AbyssEngine::AEMath::MatrixSetScaling(*loc, scale, scale, scale);
 
     if (this->previewSecondaryTransformId != 0xffffffffu) {
-        loc = static_cast<Matrix *>(canvas->TransformGetLocal(this->previewSecondaryTransformId));
-        AbyssEngine::AEMath::MatrixSetRotation(*loc, 0.0f, angle, 0.0f);
-        loc = static_cast<Matrix *>(canvas->TransformGetLocal(this->previewSecondaryTransformId));
+        loc = static_cast<Matrix *>((*canvas)->TransformGetLocal(this->previewSecondaryTransformId));
+        AbyssEngine::AEMath::MatrixSetRotation(*loc, 0.0f, this->previewAngle, 0.0f);
+        loc = static_cast<Matrix *>((*canvas)->TransformGetLocal(this->previewSecondaryTransformId));
         AbyssEngine::AEMath::MatrixSetScaling(*loc, scale, scale, scale);
     }
 
-    this->previewGeometry->setRotation(0.0f, angle, 0.0f);
+    this->previewGeometry->setRotation(0.0f, this->previewAngle, 0.0f);
 }
 
 ListItemWindow::ListItemWindow() {
@@ -751,7 +751,7 @@ ListItemWindow::ListItemWindow() {
     this->item = 0;
     this->scrollWindow = 0;
     PaintCanvas *canvas = liw_canvas();
-    int h = canvas->GetTextHeight(static_cast<unsigned int>(reinterpret_cast<uintptr_t>(Globals::font)));
+    int h = canvas->GetTextHeight(Globals::font);
     this->textHalfHeight = h / 2 - 1;
     this->previewHeight = 0;
 }

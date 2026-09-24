@@ -374,9 +374,8 @@ void PlayerEgo::forceBoost() {
     this->field_0xd0 = 0;
 }
 
-int PlayerEgo::isDead() {
-    PlayerEgo *self = this;
-    return ((PlayerEgo *) (self))->getHitpoints() < 1;
+bool PlayerEgo::isDead() {
+    return getHitpoints() < 1;
 }
 
 int PlayerEgo::getAutoPilotTarget() {
@@ -516,9 +515,8 @@ void PlayerEgo::turnHorizontal(int a, float v) {
     }
 }
 
-int PlayerEgo::getThrust() {
-    PlayerEgo *self = this;
-    return ((int &) this->thrust);
+float PlayerEgo::getThrust() {
+    return this->thrust;
 }
 
 float PlayerEgo::getCloakRate() {
@@ -2075,14 +2073,14 @@ void PlayerEgo::stopMining() {
 
 
 
-void PlayerEgo::setTurretMode(bool enable) {
+int PlayerEgo::setTurretMode(bool enable) {
     if (this->turretMode == 0 || ((void *&) this->miningGame) != 0 || this->autoTurretEquipped != 0) {
         if (((void *&) this->rocketControlGun) != 0) {
             PaintCanvas::gCanvas->CameraSetCurrent(
                 (unsigned int) (((TargetFollowCamera *) (intptr_t) this->targetFollowCamera)->id));
             ((LevelScript *) (this->level))->resetCamera(((LevelScript *) this->level)->m_pLevel);
         }
-        return;
+        return 0;
     }
 
     this->turretActive = (unsigned char) enable;
@@ -2092,7 +2090,7 @@ void PlayerEgo::setTurretMode(bool enable) {
         ((LevelScript *) (this->level))->resetCamera(((LevelScript *) this->level)->m_pLevel);
     } else {
         if (((void *&) this->rocketControlGun) != 0)
-            return;
+            return 0;
         if (this->dockCameraNode == 0) {
             PaintCanvas::gCanvas->CameraCreate(this->turretCamera);
             float farPlane = (PE_status()->inAlienOrbit() != 0) ? g_PE_tm_farAlien : g_PE_tm_farNormal;
@@ -2134,6 +2132,7 @@ void PlayerEgo::setTurretMode(bool enable) {
         else
             ((FModSound *) (*g_PE_tm_hum))->play(0x8cf, (Vector *) 0, (Vector *) 0, (float) v);
     }
+    return 1;
 }
 
 void PlayerEgo::rotate(float rx, float ry, float rz) {
@@ -2887,10 +2886,10 @@ void PlayerEgo::render(bool allowHud) {
 
 
 
-void PlayerEgo::toggleCloaking() {
+int PlayerEgo::toggleCloaking() {
     if (this->chargingCloak == 0) {
         if (this->cloaked != 0 || this->cloakRechargeTimer > 0)
-            return;
+            return this->cloaked != 0;
         int need = ((Item *) (this->cloak))->getAttribute(0);
         void *cargo = ((Ship *) (PE_status()->getShip()))->getCargo(0x7a);
         int have = (cargo == 0) ? 0 : ((Item *) (cargo))->getAmount();
@@ -2899,12 +2898,13 @@ void PlayerEgo::toggleCloaking() {
             this->chargingCloak = 1;
             ((Hud *) (((void *&) this->hud)))->hudEvent(0x1e, this, 0);
             ((Hud *) (((void *&) this->hud)))->hudEvent(0x1c, this, 0);
+            return 1;
         }
-        return;
+        return 0;
     }
 
     if (this->cloakDischargeMax > this->cloakCharge)
-        return;
+        return this->cloaked != 0;
 
     ((FModSound *) (*g_PE_tc_sound))->play(0x1e, (Vector *) 0, (Vector *) 0, 0);
     void *canvas = (void *) PaintCanvas::gCanvas;
@@ -2969,6 +2969,7 @@ void PlayerEgo::toggleCloaking() {
                 (unsigned int) (((AEGeometry *) this->turretGeometry)->meshId), (unsigned int) (mat));
         }
     }
+    return 1;
 }
 
 // Static data members present in the original binary (defined for symbol parity).

@@ -15,9 +15,11 @@ class BoundingVolume;
 class Station;
 class Status;
 class FModSound;
+class GameText;
 namespace AbyssEngine { 
     class ApplicationManager;
     class Engine;
+    class PaintCanvas;
  }
 
 
@@ -286,18 +288,18 @@ public:
     static int lastCampaignMissionFailCount;
     static unsigned char startLiteVersionWithMoreCredits;
     static void *rnd;
-    static void *font;
+    static unsigned int font;
     static unsigned char keys[1020];
     static void *bankZ;
     static unsigned char hints[59];
     static void *items;
     static void *ships;
-    static void *Canvas;
+    static AbyssEngine::PaintCanvas *Canvas;
     static float fire_x;
     static float fire_y;
     static float fire_z;
     static void *galaxy;
-    static void *layout;
+    static Layout *layout;
     static float boost_x;
     static float boost_y;
     static float boost_z;
@@ -305,7 +307,7 @@ public:
     static int pause_x;
     static int pause_y;
     static float pause_z;
-    static void *gameText;
+    static GameText *gameText;
     static void *fontAlien;
     static void *generator;
 };

@@ -28,6 +28,7 @@ public:
     int boxWidth;
     int boxX;
     int boxY;
+    uint8_t _unknown_tail_0x40[8];
 
     Radio();
 
@@ -47,4 +48,8 @@ public:
 
     void draw(int64_t time, PlayerEgo *ego, LevelScript *script);
 };
+
+#if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(Radio) == 0x48, "Android Radio allocation is 0x48 bytes");
+#endif
 #endif

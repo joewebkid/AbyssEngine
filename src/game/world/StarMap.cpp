@@ -324,7 +324,7 @@ void StarMap::depart(bool jump) {
         }
         if (jump && used != 0) {
             int toSystem = Station_getSystem(stations->data()[selected]);
-            int current = Status::gStatus->getSystem();
+            int current = Status::gStatus->getSystem()->getIndex();
             *g_StarMap_depart_jumpFlag_a = (uint8_t)(toSystem != current);
             if (toSystem != current) {
                 *g_StarMap_depart_jumpCost_a = this->jumpCost;
@@ -357,7 +357,7 @@ void StarMap::depart(bool jump) {
                 goto no_jump;
             }
             int toSystem = Station_getSystem(*g_StarMap_depart_status2);
-            int current = Status::gStatus->getSystem();
+            int current = Status::gStatus->getSystem()->getIndex();
             *g_StarMap_depart_jumpFlag_b = (uint8_t)(toSystem != current);
             if (toSystem != current) {
                 *g_StarMap_depart_jumpCost_b = this->jumpCost;
@@ -479,7 +479,8 @@ int StarMap::OnTouchEnd(int x, int y) {
                 this->pad_0xa8_a == 0 &&
                 this->lastSelectedSystem == this->selectedSystem) {
                 if (this->jumpMapModeB == 0 &&
-                    ((SolarSystem *) (long) (Status::gStatus->getSystem()))->systemIsInSystemRoutes(Status::gStatus->getSystem()) ==
+                    Status::gStatus->getSystem()->systemIsInSystemRoutes(
+                            this->systems->data()[this->selectedSystem]->getIndex()) ==
                     0) {
                     this->choiceWindow->set(*(String *) ((GameText *) (*g_StarMap_end_text))->getText(0x1a4), false);
                     this->choiceVisible = 1;
@@ -896,7 +897,7 @@ uint32_t StarMap::OnTouchBegin(int x, int y) {
                     if (oldSystem != this->selectedSystem) {
                         ((FModSound *) (sound))->play(0x67, 0, 0, 0.0f);
                     }
-                    int current = Status::gStatus->getSystem();
+                    int current = Status::gStatus->getSystem()->getIndex();
                     int dist = this->pathFinder->getJumpDistance(this->systems, current, this->selectedSystem);
                     this->jumpCost = dist;
                     if (dist == 0 && current != this->selectedSystem) {
@@ -1247,7 +1248,7 @@ void StarMap::drawOnScreenInfo(int index, bool stationMode) {
         int textW = ((PaintCanvas *) (long) (canvas))->GetTextWidth((unsigned int) (long) (*g_StarMap_info_font), name);
         int drawX = (int) (x - (float) (textW / 2));
         int drawY = (int) (y + (float) (this->iconWidth >> 1) - 3.0f);
-        int currentSystem = Status::gStatus->getSystem();
+        int currentSystem = Status::gStatus->getSystem()->getIndex();
         if (currentSystem == system->getIndex()) {
             ((Layout *) (*g_StarMap_info_layout))->getPulseValue((float) this->alpha);
             ((PaintCanvas *) (long) (canvas))->SetColor((unsigned char) (0xff), (unsigned char) (0xff),
@@ -1364,7 +1365,7 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     int campaign = Status::gStatus->getCurrentCampaignMission();
     this->isGalaxyMode = campaign > 0xf;
     this->mode = campaign > 0xf ? 0 : 3;
-    this->selectedSystem = Status::gStatus->getSystem();
+    this->selectedSystem = Status::gStatus->getSystem()->getIndex();
 
     if (param3 != 0) {
         ((AEGeometry *) (&pos))->getPosition();
@@ -1423,7 +1424,7 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
             }
         }
         if (this->targetSystem >= 0) {
-            int current = Status::gStatus->getSystem();
+            int current = Status::gStatus->getSystem()->getIndex();
             this->systemPath =
                     this->pathFinder->getSystemPath(this->systems, current, this->targetSystem);
             this->pathAnim = 1;
@@ -1475,4 +1476,3 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     ;
     return 0;
 }
-

@@ -259,7 +259,7 @@ void LevelScript::skipCutscene() {
     }
 }
 
-void LevelScript::process(int delta) {
+bool LevelScript::process(int delta) {
     Level *level = m_pLevel;
     level->getMessages();
     level->getPlayer();
@@ -270,6 +270,7 @@ void LevelScript::process(int delta) {
         float frameDelta = (float) delta * 0.001f;
         m_pCamera->update((int) frameDelta);
     }
+    return m_bStartSequence != 0;
 }
 
 void LevelScript::lookBehind() {

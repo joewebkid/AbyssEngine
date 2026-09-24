@@ -324,7 +324,7 @@ int MissionsWindow::init() {
         String body(text);
         int rew = fm->getReward();
         int bonus = fm->getBonus();
-        String reward = Layout::formatCredits(rew + bonus);
+        String reward = Globals::layout->formatCredits(rew + bonus);
         String suffix("", false);
         String merged;
         Status_replaceHash(&merged, key, &body, &reward, &suffix);

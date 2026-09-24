@@ -623,7 +623,7 @@ void Player::damageEmp(int amount, bool flag) {
         KIPlayer *ki = self->kiPlayer;
         bool runLab = true;
         if ((unsigned int) (ki->shipGroup - 9) >= 2) {
-            int sys = Status::gStatus->getSystem();
+            SolarSystem *sys = Status::gStatus->getSystem();
             ki = self->kiPlayer;
             if (sys != 0 && ki->field_0x42 != 0) {
                 if (amount > 0) {
@@ -1504,4 +1504,4 @@ void Player::StopEngineSound() {
 }
 
 // Static data members present in the original binary (defined for symbol parity).
-void *Player::velocity;
+int Player::velocity = 100;

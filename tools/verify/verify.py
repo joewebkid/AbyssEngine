@@ -42,8 +42,11 @@ def delink(base_o, target_o):
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=asmdiff.DISASM_TIMEOUT)
 
 
-def find_base_objects(build_dir):
+def find_base_objects(build_dir, unit=None):
     base_root = os.path.join(build_dir, "base")
+    if unit is not None:
+        path = os.path.join(base_root, unit + ".o")
+        return [(unit, path)] if os.path.isfile(path) else []
     objs = []
     for dirpath, _, files in os.walk(base_root):
         for f in files:
@@ -87,14 +90,14 @@ def _diff_unit(unit, base_o, target_root, only_re):
     return out, None, our_syms
 
 
-def collect(build_dir, only=None):
+def collect(build_dir, only=None, unit=None):
     """Returns (rows, skips, our_syms). skips is a list of (unit, reason) for units that
     couldn't be compared; our_syms is the union of mangled symbols our build defines across all
     units. The per-unit delink+disasm work is all subprocesses (GIL released), so we fan
     it out across a thread pool — same GOF2_VERIFY_JOBS knob build_objs.sh uses."""
     target_root = os.path.join(build_dir, "target")
     only_re = re.compile(only) if only else None
-    units = find_base_objects(build_dir)
+    units = find_base_objects(build_dir, unit=unit)
     jobs = max(1, int(os.environ.get("GOF2_VERIFY_JOBS", "8")))
     rows, skips, our_syms = [], [], set()
     with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as ex:
@@ -220,12 +223,18 @@ def main():
                     help="print side-by-side disassembly diff for one symbol "
                          "(falls back to the FN environment variable)")
     ap.add_argument("--unit", default=None, metavar="UNIT",
-                    help="limit --show to base/UNIT.o (for example game/menu/MGame)")
+                    help="limit --show or the report to base/UNIT.o (for example game/weapons/Radar)")
     ap.add_argument("--report", default=None, help="write JSON report to this path")
     ap.add_argument("--fail-on-wrong-type", action="store_true",
                     help="exit non-zero if any function is implemented under a different "
                          "(wrong) signature than the original binary (missing_wrong_type > 0)")
     args = ap.parse_args()
+
+    if args.unit and args.show is None:
+        if args.fail_on_wrong_type:
+            ap.error("--fail-on-wrong-type requires the full corpus; omit --unit")
+        # A scoped report cannot make whole-binary coverage/signature claims.
+        args.only = args.only or ".*"
 
     if not args.no_build and not args.show:
         run(["bash", os.path.join(HERE, "build_objs.sh"), args.build_dir])
@@ -245,13 +254,14 @@ def main():
         r = asmdiff.compare(tf, bf)
         r = next((x for x in r if x["symbol"] == sym), None)
         if r:
-            print(f"# match {r['match']}%   linked_equal={r['linked_equal']}   "
+            print(f"# match {r['match']}%   source_match={r['source_match']}%   "
+                  f"linked_equal={r['linked_equal']}   "
                   f"bytes_equal={r['bytes_equal']}   "
                   f"insns target={r['n_target']} base={r['n_base']}\n")
         print(asmdiff.unified(tf, bf, sym) or "(identical after normalization)")
         return 0
 
-    rows, skips, our_syms = collect(args.build_dir, only=args.only)
+    rows, skips, our_syms = collect(args.build_dir, only=args.only, unit=args.unit)
     if not rows:
         print("No comparable functions found. Did the ARM build produce any .o files?")
         return 1
@@ -260,21 +270,24 @@ def main():
     bytes_eq = sum(1 for r in rows if r["bytes_equal"])
     linked_eq = sum(1 for r in rows if r["linked_equal"])
     avg = sum(r["match"] for r in rows) / len(rows)
+    avg_source = sum(r["source_match"] for r in rows) / len(rows)
 
     # 'L' = byte-identical after linking (matches modulo relocation fields); '==' = raw
     # bytes identical (the rarer subset with no external refs at all). The unit column is sized to
     # the widest unit so the symbol column stays aligned, and symbols are printed in full.
     uw = max(len("unit"), max(len(r["unit"]) for r in rows))
-    header = f"{'match':>7}  {'link':>4}  {'unit':<{uw}}  symbol"
+    header = f"{'match':>7}  {'source':>7}  {'link':>4}  {'unit':<{uw}}  symbol"
     print()
     print(header)
     print("-" * len(header))
     for r in rows:
         flag = "==" if r["bytes_equal"] else ("L" if r["linked_equal"] else "")
-        print(f"{r['match']:6.1f}%  {flag:>4}  {r['unit']:<{uw}}  {r['symbol']}")
+        print(f"{r['match']:6.1f}%  {r['source_match']:6.1f}%  "
+              f"{flag:>4}  {r['unit']:<{uw}}  {r['symbol']}")
     print("-" * len(header))
 
-    report = {"avg_match": round(avg, 2), "count": len(rows),
+    report = {"avg_match": round(avg, 2), "avg_source_match": round(avg_source, 2),
+              "count": len(rows),
               "fuzzy_perfect": perfect, "byte_exact": bytes_eq,
               "linked_exact": linked_eq, "skipped": len(skips)}
 
@@ -348,7 +361,8 @@ def main():
             for s in extra:
                 f.write(f"{s}    {dm_extra.get(s, s)}\n")
 
-    print(f"{len(rows)} comparisons   avg {avg:.1f}%   "
+    print(f"{len(rows)} comparisons   avg fuzzy {avg:.1f}%   "
+          f"avg source {avg_source:.1f}%   "
           f"100%-fuzzy {perfect}   linked-exact {linked_eq}   byte-exact {bytes_eq}")
     if not args.only:
         print(f"coverage: compared {report['compared_unique']}/{report['original_functions']} "
@@ -366,6 +380,8 @@ def main():
         print(f"skipped {len(skips)} units (couldn't delink/diff): {units}")
 
     report["functions"] = rows
+    if args.unit:
+        report["scoped_unit"] = args.unit
     out = args.report or os.path.join(args.build_dir, "report.json")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     json.dump(report, open(out, "w"), indent=2)
