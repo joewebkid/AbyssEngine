@@ -112,3 +112,10 @@ claimed identical.
 - Continue the dedicated source-shape pass recorded in
   `AEI_IMAGE_PARSER_ARM_2026-08-27.md`: the parser bodies are now source-backed
   and the region function is `81.0%`, but neither is byte-exact.
+
+## Current TextureCreate follow-up
+
+The current branch's five-symbol source-shape report and full ARM corpus
+validation are recorded in
+[`AEI_TEXTURE_CREATE_SOURCE_SHAPE_ARM_2026-09-24.md`](AEI_TEXTURE_CREATE_SOURCE_SHAPE_ARM_2026-09-24.md).
+That report supersedes this pass's historical ARM coverage and wrapper metrics.
