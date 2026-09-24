@@ -72,8 +72,10 @@ namespace AbyssEngine {
 
     namespace {
         inline void updateTimeBetweenFrames(float value) {
-            if (value > 0.0f)
-                timeBetweenFrames = value;
+            if (value > 0.0f) {
+                if (timeBetweenFrames < value)
+                    timeBetweenFrames = value;
+            }
         }
     }
 
@@ -93,7 +95,7 @@ namespace AbyssEngine {
         }
 
         {
-            short type;
+            short type = -1;
 
             if (AEFile::Read(2, &type, file) == 0) goto fail;
             if (type == 1) {
@@ -127,7 +129,7 @@ namespace AbyssEngine {
                         }
                     }
                 }
-            }
+            } else goto fail;
 
             if (AEFile::Read(2, &type, file) == 0) goto fail;
             if (type == 1) {
@@ -160,7 +162,7 @@ namespace AbyssEngine {
                         }
                     }
                 }
-            }
+            } else goto fail;
 
             if (AEFile::Read(2, &type, file) == 0) goto fail;
             if (type == 1) {
@@ -193,7 +195,7 @@ namespace AbyssEngine {
                         }
                     }
                 }
-            }
+            } else goto fail;
 
             if ((format & 0x18) != 0) {
                 if (AEFile::Read(2, &type, file) == 0) goto fail;
@@ -208,6 +210,8 @@ namespace AbyssEngine {
                         if (AEFile::Read(4, &key, file) == 0) goto fail;
                         anim->InsertKeyFrame(&key, 0x200, (int) value);
                     }
+                } else if (type != 0) {
+                    goto fail;
                 }
             }
 
@@ -239,8 +243,10 @@ namespace AbyssEngine {
         }
 
         if (anim->keyFrames.size() < 1) {
-            anim->~Transform();
-            ::operator delete((void *) anim);
+            if (anim) {
+                anim->~Transform();
+                ::operator delete((void *) anim);
+            }
         } else {
             self->animation = anim;
             float rate = timeBetweenFrames;
@@ -251,8 +257,10 @@ namespace AbyssEngine {
         return 1;
 
     fail:
-        anim->~Transform();
-        ::operator delete((void *) anim);
+        if (anim) {
+            anim->~Transform();
+            ::operator delete((void *) anim);
+        }
         return -1;
     }
 }
