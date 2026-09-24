@@ -2653,7 +2653,7 @@ namespace AbyssEngine {
                     if (((fmt & 0x1b) == 0 || AEFile::Read((uint32_t)(2), magic, handle)) &&
                         AEFile::Read((uint32_t)(1), &(*out)->vertexFormat, handle) &&
                         (*out)->vertexFormat) {
-                        
+
                         if ((fmt & 0x1a) != 0) {
                             unsigned short subCount;
                             if (AEFile::Read((uint32_t)(2), &subCount, handle)) {
