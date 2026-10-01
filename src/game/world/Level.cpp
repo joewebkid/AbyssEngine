@@ -5,6 +5,7 @@ float Level::g;
 float Level::b;
 
 #include "game/mission/Mission.h"
+#include "game/mission/Generator.h"
 #include "game/ship/Ship.h"
 #include "engine/render/AEGeometry.h"
 #include "engine/render/PaintCanvas.h"
@@ -23,6 +24,7 @@ float Level::b;
 #include "game/world/Station.h"
 #include "engine/render/LODManager.h"
 #include "game/world/Wanted.h"
+#include "game/world/Standing.h"
 #include "game/mission/Status.h"
 #include "game/ship/KIPlayer.h"
 #include "game/weapons/ObjectGun.h"
@@ -43,6 +45,8 @@ float Level::b;
 #include "game/ship/PlayerFighter.h"
 #include "game/ship/PlayerGasCloud.h"
 #include "game/ship/PlayerStatic.h"
+#include "game/ship/PlayerStation.h"
+#include "game/ship/PlayerJunk.h"
 #include "game/weapons/RocketGun.h"
 #include "game/world/Galaxy.h"
 
@@ -61,6 +65,7 @@ float Level::b;
 #include "game/mission/DifficultyRecord.h"
 #include <cstdint>
 #include <cstddef>
+#include <cstring>
 
 namespace {
 
@@ -241,7 +246,6 @@ static char **g_init_bmFlag = nullptr;
 
 static char **g_ca_lowDetail = nullptr;
 
-static float g_ccm_pos0 = 0;
 
 static float g_up_eqMax = 0;
 
@@ -276,7 +280,6 @@ static float g_cso_posX = 0;
 
 static float g_cso_posZ = 0;
 
-static int *g_cs_diffRec = nullptr;
 
 static int *g_ag_diffRec = nullptr;
 
@@ -1553,43 +1556,1017 @@ void Level::updateAlienAttackers(int dt) {
     }
 }
 
+// Android 2.0.16 0xaffd8; lengths checked against ARM call arguments.
 void Level::createMission() {
-    Mission *mission = (Mission *) Status::gStatus->getMission();
-    if (mission == 0)
-        return;
-
-    if (Status::gStatus->inAlienOrbit() != 0) {
-        int lvl = Status::gStatus->getLevel();
-        AbyssEngine::AERandom *rng = AERandom::gRandom;
-        int roll = rng->nextInt();
-        float base = (float) lvl * 0.5f - 1.0f;
-        unsigned count = 2;
-        if (2.0f <= base + (float) roll) {
-            int r2 = rng->nextInt();
-            count = (unsigned) (base + (float) r2);
+    Mission *mission = Globals::status->getMission();
+    if (!mission) return;
+    Vector egoPosition = player->geometry->getPosition();
+    if (Globals::status->inAlienOrbit()) {
+        int count = 2;
+        int level = Globals::status->getLevel();
+        int roll = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
+        float base = float(level) * 0.5f - 1.0f;
+        if (base + float(roll) >= 2.0f)
+            count = int(base + float(static_cast<AERandom *>(Globals::rnd)->nextInt(2)));
+        int campaign = Globals::status->getCurrentCampaignMission();
+        if (Globals::status->getCurrentCampaignMission() == 33) count = 2;
+        if (campaign == 68) count = 2;
+        enemies = new Array<KIPlayer *>();
+        ArraySetLength(count, *enemies);
+        for (int i = 0; i < count; ++i) {
+            int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(9);
+            (*enemies)[i] = createShip(9, 0, type, nullptr, true, false);
+            float x = float(static_cast<AERandom *>(Globals::rnd)->nextInt(120000) - 60000);
+            float y = float(static_cast<AERandom *>(Globals::rnd)->nextInt(80000) - 40000);
+            float z = float(static_cast<AERandom *>(Globals::rnd)->nextInt(120000) - 60000);
+            (*enemies)[i]->setPosition(x, y, z);
+            (*enemies)[i]->player->setAlwaysEnemy(true);
         }
-        int campA = Status::gStatus->getCurrentCampaignMission();
-        int campB = Status::gStatus->getCurrentCampaignMission();
-        if (campB == 0x21) count = 2;
-        if (campA == 0x44) count = 2;
-
-        this->enemies = new Array<KIPlayer *>();
-        ArraySetLength(count, *(this->enemies));
-
-        Globals *globals = Globals::gGlobals;
-        for (unsigned i = 0; i < count; i = i + 1) {
-            int fighter = (int) globals->getRandomEnemyFighter(9);
-            int ship = (int) (intptr_t) this->createShip(9, 0, fighter, (Waypoint *) (intptr_t) 0, 1, 0);
-            (*this->enemies)[i] = (KIPlayer *) (intptr_t) ship;
-            KIPlayer *kp = (*this->enemies)[i];
-            float x = (float) (rng->nextInt(120000) - 60000);
-            float y = (float) (rng->nextInt(80000) - 40000);
-            float z = (float) (rng->nextInt(120000) - 60000);
-            kp->setPosition(x, y, z);
-            kp->player->setAlwaysEnemy(true);
+        return;
+    }
+    if (!mission->isEmpty()) {
+        int race = Globals::status->getSystem()->getRace();
+        int enemyRace;
+        if (static_cast<AERandom *>(Globals::rnd)->nextInt(100) >= 75)
+            enemyRace = reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()))->getEnemyRace(race);
+        else enemyRace = 8;
+        switch (mission->getType()) {
+            case 1: {
+                int coords[9];
+                coords[0] = static_cast<AERandom *>(Globals::rnd)->nextInt(100000) - 50000;
+                coords[1] = 0; coords[2] = 50000;
+                coords[3] = static_cast<AERandom *>(Globals::rnd)->nextInt(100000) - 50000;
+                coords[4] = 0; coords[5] = 75000;
+                coords[6] = static_cast<AERandom *>(Globals::rnd)->nextInt(100000) - 50000;
+                coords[7] = 0; coords[8] = 100000;
+                enemyRoute = new Route(coords, 9);
+                float difficulty = float(Globals::status->getMission()->getDifficulty()) / 10.0f * 5.0f;
+                int friendRoll = static_cast<AERandom *>(Globals::rnd)->nextInt(5);
+                int base = int(difficulty) + 3;
+                int count = int(float(base) + (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * float(base));
+                enemies = new Array<KIPlayer *>();
+                ArraySetLength(count + friendRoll + 3, *enemies);
+                for (int i = 0; i < count; ++i) {
+                    int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(enemyRace);
+                    (*enemies)[i] = createShip(enemyRace, 0, type, nullptr, true, false);
+                    (*enemies)[i]->player->setAlwaysEnemy(true);
+                }
+                for (unsigned i = count; i < enemies->size(); ++i) {
+                    int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(race);
+                    Route *spawnRoute = enemyRoute;
+                    int index = static_cast<AERandom *>(Globals::rnd)->nextInt(spawnRoute->length());
+                    Waypoint *wp = spawnRoute->getWaypoint(index);
+                    (*enemies)[i] = createShip(race, 0, type, wp, true, false);
+                    (*enemies)[i]->player->setAlwaysFriend(true);
+                }
+                objectivesA = new Objective(7, count, this);
+                return;
+            }
+            case 2: {
+                int coords[6];
+                coords[0] = int(float(-20000 - static_cast<AERandom *>(Globals::rnd)->nextInt(20000))); coords[1] = 0;
+                coords[2] = int(float(-20000 - static_cast<AERandom *>(Globals::rnd)->nextInt(20000)));
+                coords[3] = coords[4] = coords[5] = 0;
+                enemyRoute = new Route(coords, 6);
+                int amount = mission->getProductionGoodAmount();
+                int count = int(float(mission->getDifficulty()) / 10.0f * 4.0f) + 2;
+                enemies = new Array<KIPlayer *>();
+                ArraySetLength(count + amount, *enemies);
+                for (int i = 0; i < count; ++i) {
+                    int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(enemyRace);
+                    (*enemies)[i] = createShip(enemyRace, 0, type, nullptr, true, false);
+                    int x = enemyRoute->getWaypoint(0)->x + i * 2000;
+                    int y = enemyRoute->getWaypoint(0)->y + i * 2000;
+                    int z = enemyRoute->getWaypoint(0)->z + i * 2000;
+                    (*enemies)[i]->setPosition(float(x), float(y), float(z));
+                    (*enemies)[i]->player->setAlwaysEnemy(true);
+                    (*enemies)[i]->setRoute(enemyRoute->clone());
+                    (*enemies)[i]->getRoute()->reachWaypoint(0);
+                }
+                for (unsigned i = 0; i + count < enemies->size(); ++i) {
+                    int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(race);
+                    (*enemies)[count + i] = createShip(race, 0, type, nullptr, true, false);
+                    (*enemies)[count + i]->player->setAlwaysFriend(true);
+                    Vector position = (*asteroids)[i + (asteroids->size() >> 1)]->getPosition();
+                    (*enemies)[count + i]->setPosition(position.x, position.y + 2000.0f, position.z);
+                    (*enemies)[count + i]->cargo = nullptr;
+                    *reinterpret_cast<unsigned char *>(&(*enemies)[count + i]->hasCargo) = 0;
+                    (*enemies)[count + i]->setSpeed(0.0f);
+                    (*enemies)[count + i]->setRotationSpeed(0.0f);
+                    Player *ship = (*enemies)[count + i]->player;
+                    ship->setHitpoints(ship->getMaxHitpoints() * 3);
+                }
+                objectivesA = new Objective(18, 0, count, this);
+                objectivesB = new Objective(18, count, count + amount, this);
+                return;
+            }
+            case 3:
+            case 5: {
+                int coords[3];
+                int distance = static_cast<AERandom *>(Globals::rnd)->nextInt(80000) + 40000;
+                coords[0] = (static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1) * distance;
+                coords[1] = 0;
+                distance = static_cast<AERandom *>(Globals::rnd)->nextInt(80000) + 40000;
+                coords[2] = (static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1) * distance;
+                playerRoute = new Route(coords, 3);
+                enemies = new Array<KIPlayer *>();
+                ArraySetLength(mission->getProductionGoodAmount(), *enemies);
+                for (unsigned i = 0; i < enemies->size(); ++i) {
+                    int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                    (*enemies)[i] = createShip(8, 0, type, playerRoute->getWaypoint(0), true, false);
+                    (*enemies)[i]->setToSleep();
+                }
+                static_cast<PlayerFighter *>((*enemies)[enemies->size() - 1])->setMissionCrate(true);
+                (*enemies)[enemies->size() - 1]->name = *Globals::gameText->getText(1611);
+                objectivesA = new Objective(11, enemies->size() - 1, this);
+                objectivesB = new Objective(12, enemies->size() - 1, this);
+                return;
+            }
+            case 4: {
+                if (static_cast<AERandom *>(Globals::rnd)->nextInt(2)) playerRoute = createRoute(static_cast<AERandom *>(Globals::rnd)->nextInt(2) + 2);
+                else {
+                    int coords[] = {int(field_c8), int(field_cc), int(field_d0)};
+                    playerRoute = new Route(coords, 3);
+                }
+                int base = int(float(Globals::status->getMission()->getDifficulty()) / 10.0f * 5.0f) + 2;
+                int count = int(float(base) + (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * float(base));
+                enemies = new Array<KIPlayer *>();
+                ArraySetLength(count, *enemies);
+                for (unsigned i = 0; i < enemies->size(); ++i) {
+                    int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                    Route *spawnRoute = playerRoute;
+                    int index = static_cast<AERandom *>(Globals::rnd)->nextInt(spawnRoute->length());
+                    (*enemies)[i] = createShip(8, 0, type, spawnRoute->getWaypoint(index), true, false);
+                    (*enemies)[i]->setToSleep();
+                }
+                objectivesA = new Objective(18, 0, count, this);
+                return;
+            }
+            case 6: {
+                int coords[3];
+                int distance = static_cast<AERandom *>(Globals::rnd)->nextInt(80000) + 60000;
+                coords[0] = (static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1) * distance;
+                coords[1] = 0;
+                distance = static_cast<AERandom *>(Globals::rnd)->nextInt(80000) + 60000;
+                coords[2] = (static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1) * distance;
+                playerRoute = new Route(coords, 3);
+                enemies = new Array<KIPlayer *>();
+                ArraySetLength(1, *enemies);
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                (*enemies)[0] = createShip(8, 0, type, playerRoute->getWaypoint(0), true, false);
+                (*enemies)[0]->setToSleep();
+                Player *ship = (*enemies)[0]->player;
+                ship->setMaxHitpoints(3 * ship->getMaxHitpoints());
+                (*enemies)[0]->setSpeed(3.0f);
+                static_cast<PlayerFighter *>((*enemies)[0])->setRotate(3);
+                objectivesA = new Objective(1, 0, this);
+                return;
+            }
+            case 7: {
+                int coords[3];
+                coords[0] = static_cast<AERandom *>(Globals::rnd)->nextInt(40000) - 20000;
+                coords[1] = static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+                coords[2] = static_cast<AERandom *>(Globals::rnd)->nextInt(30000) + 40000;
+                Route *route = new Route(coords, 3);
+                float difficulty = float(Globals::status->getMission()->getDifficulty()) / 10.0f;
+                int guards = int(difficulty + difficulty);
+                int otherDifficulty = Globals::status->getMission()->getDifficulty();
+                enemies = new Array<KIPlayer *>();
+                ArraySetLength(int(float(otherDifficulty) / 10.0f * 20.0f) + guards + 15, *enemies);
+                for (unsigned i = 0; i < enemies->size() - guards; ++i) {
+                    (*enemies)[i] = reinterpret_cast<KIPlayer *>(createStaticObject(route->getWaypoint(0), 16917, true));
+                    (*enemies)[i]->player->setAlwaysEnemy(true);
+                }
+                for (unsigned i = enemies->size() - guards; i < enemies->size(); ++i) {
+                    int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                    (*enemies)[i] = createShip(8, 0, type, nullptr, true, false);
+                }
+                objectivesA = new Objective(7, enemies->size() - guards, this);
+                timeLimit = 121000;
+                static_cast<Globals *>(Globals::globals)->addSoundResourceToList(22);
+                return;
+            }
+            case 8: case 11: case 13: case 14: return;
+            case 9: {
+                int coords[] = {10000, 0, 100000, 10000, 0, 150000, 10000, 0, 200000};
+                enemyRoute = new Route(coords, 9);
+                int base = int(float(Globals::status->getMission()->getDifficulty()) / 10.0f * 5.0f) + 3;
+                int count = int(float(base) + (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * float(base));
+                enemies = new Array<KIPlayer *>();
+                ArraySetLength(count + 5, *enemies);
+                enemyRace = reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()))->getEnemyRace(mission->getClientRace());
+                int freighterType = 15;
+                int clientRace = 0;
+                if (mission->getClientRace() <= 3) {
+                    clientRace = mission->getClientRace();
+                    if (clientRace == 1) freighterType = 13;
+                }
+                for (unsigned i = 0; i < enemies->size(); ++i) {
+                    if (int(i) >= count) {
+                        (*enemies)[i] = createShip(clientRace, 1, freighterType, nullptr, true, false);
+                        Player *ship = (*enemies)[i]->player;
+                        int level = Globals::status->getLevel() <= 20 ? Globals::status->getLevel() : 20;
+                        float health = float(2 * level) + 150.0f;
+                        int campaign = Globals::status->gameWon() ? 45 : Globals::status->getCurrentCampaignMission();
+                        float factor = *reinterpret_cast<float *>(Globals::options + 0x2c) > 0.7f ? 1.4f : 1.0f;
+                        ship->setMaxHitpoints(int((health + float(2 * campaign)) * factor));
+                        static_cast<PlayerFixedObject *>((*enemies)[i])->setMoving(true);
+                        (*enemies)[i]->player->setAlwaysFriend(true);
+                        (*enemies)[i]->cargo = nullptr;
+                        *reinterpret_cast<unsigned char *>(&(*enemies)[i]->hasCargo) = 0;
+                    } else {
+                        int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(enemyRace);
+                        Route *spawnRoute = enemyRoute;
+                        int index = static_cast<AERandom *>(Globals::rnd)->nextInt(spawnRoute->length());
+                        (*enemies)[i] = createShip(enemyRace, 0, type, spawnRoute->getWaypoint(index), true, false);
+                        (*enemies)[i]->setToSleep();
+                        (*enemies)[i]->player->setAlwaysEnemy(true);
+                    }
+                }
+                (*enemies)[count]->setPosition(-2500.0f, -300.0f, 27000.0f);
+                (*enemies)[count + 1]->setPosition(6500.0f, 3000.0f, 24000.0f);
+                (*enemies)[count + 2]->setPosition(-4000.0f, -2000.0f, 19000.0f);
+                (*enemies)[count + 3]->setPosition(9000.0f, -6000.0f, 17000.0f);
+                (*enemies)[count + 4]->setPosition(3000.0f, 7000.0f, 15000.0f);
+                objectivesA = new Objective(18, 0, count, this);
+                objectivesB = new Objective(18, count, count + 5, this);
+                return;
+            }
+            case 10: {
+                int coords[6];
+                coords[0] = static_cast<AERandom *>(Globals::rnd)->nextInt(5000) - 2500;
+                coords[1] = static_cast<AERandom *>(Globals::rnd)->nextInt(5000) - 2500;
+                coords[2] = static_cast<AERandom *>(Globals::rnd)->nextInt(30000) + 80000;
+                coords[3] = static_cast<AERandom *>(Globals::rnd)->nextInt(5000) - 2500;
+                coords[4] = static_cast<AERandom *>(Globals::rnd)->nextInt(5000) - 2500;
+                coords[5] = static_cast<AERandom *>(Globals::rnd)->nextInt(30000) + 120000;
+                playerRoute = new Route(coords, 6);
+                int freighters = static_cast<AERandom *>(Globals::rnd)->nextInt(2) + 2;
+                int base = int(float(Globals::status->getMission()->getDifficulty()) / 10.0f * 5.0f) + 3;
+                enemyRace = reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()))->getEnemyRace(mission->getClientRace());
+                if (enemyRace == 8) enemyRace = 0;
+                enemies = new Array<KIPlayer *>();
+                int count = int(float(base) + (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * float(base));
+                ArraySetLength(count + freighters, *enemies);
+                int freighterType = enemyRace == 1 ? 13 : 15;
+                for (int i = 0; i < freighters; ++i) {
+                    (*enemies)[i] = createShip(enemyRace, 1, freighterType, playerRoute->getWaypoint(1), true, false);
+                    (*enemies)[i]->setToSleep();
+                    (*enemies)[i]->player->setAlwaysEnemy(true);
+                    static_cast<PlayerFixedObject *>((*enemies)[i])->setMoving(false);
+                    int x = playerRoute->getWaypoint(1)->x;
+                    x += static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+                    int y = playerRoute->getWaypoint(1)->y;
+                    y += static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+                    int z = playerRoute->getWaypoint(1)->z;
+                    z += static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+                    (*enemies)[i]->setPosition(float(x), float(y), float(z));
+                    Player *ship = (*enemies)[i]->player;
+                    float health = float(ship->getMaxHitpoints()) * 0.7f;
+                    float factor = *reinterpret_cast<float *>(Globals::options + 0x2c) > 0.7f ? 1.4f : 1.0f;
+                    ship->setMaxHitpoints(int(health * factor));
+                }
+                for (unsigned i = freighters; i < enemies->size(); ++i) {
+                    int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(enemyRace);
+                    Route *spawnRoute = playerRoute;
+                    int index = static_cast<AERandom *>(Globals::rnd)->nextInt(spawnRoute->length());
+                    (*enemies)[i] = createShip(enemyRace, 0, type, spawnRoute->getWaypoint(index), true, false);
+                    (*enemies)[i]->setToSleep();
+                    (*enemies)[i]->player->setAlwaysEnemy(true);
+                }
+                objectivesA = new Objective(7, freighters, this);
+                return;
+            }
+            case 12: {
+                playerRoute = createRoute(static_cast<AERandom *>(Globals::rnd)->nextInt(2) + 3);
+                int count = int(float(mission->getDifficulty()) / 10.0f * 4.0f) + 3;
+                if ((count & 1) == 0) ++count;
+                ++count;
+                enemies = new Array<KIPlayer *>();
+                ArraySetLength(count, *enemies);
+                int agentRace = mission->getAgent()->getRace();
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(mission->getAgent()->getRace());
+                (*enemies)[0] = createShip(agentRace, 0, type, nullptr, true, false);
+                float x = egoPosition.x + float(static_cast<AERandom *>(Globals::rnd)->nextInt(1400) - 700);
+                float y = egoPosition.y + float(static_cast<AERandom *>(Globals::rnd)->nextInt(1400) - 700);
+                (*enemies)[0]->setPosition(x, y, egoPosition.z + 1000.0f);
+                (*enemies)[0]->setSpeed(3.0f);
+                static_cast<PlayerFighter *>((*enemies)[0])->setRotate(3);
+                (*enemies)[0]->player->setHitpoints(9999999);
+                (*enemies)[0]->setRoute(playerRoute->clone());
+                (*enemies)[0]->player->setAlwaysFriend(true);
+                (*enemies)[0]->name = mission->getAgent()->getName();
+                (*enemies)[0]->cargo = nullptr;
+                for (unsigned i = 1; i < enemies->size(); ++i) {
+                    int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                    Route *spawnRoute = playerRoute;
+                    int index = static_cast<AERandom *>(Globals::rnd)->nextInt(spawnRoute->length());
+                    (*enemies)[i] = createShip(8, 0, type, spawnRoute->getWaypoint(index), true, false);
+                    (*enemies)[i]->setToSleep();
+                }
+                objectivesA = new Objective(20, 1, count, this);
+                objectivesB = new Objective(21, 1, count, this);
+                return;
+            }
+            case 15: {
+                int coords[9];
+                coords[0] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000; coords[1] = 0; coords[2] = 70000;
+                coords[3] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000; coords[4] = 0; coords[5] = 100000;
+                coords[6] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000; coords[7] = 0; coords[8] = 140000;
+                enemyRoute = new Route(coords, 3); // Original passes three words despite filling nine.
+                float difficulty = float(Globals::status->getMission()->getDifficulty()) / 10.0f;
+                int base = int(difficulty + difficulty) + 1;
+                int count = int(float(base) + (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * float(base));
+                enemyRace = reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()))->getEnemyRace(mission->getClientRace());
+                int clientRace = mission->getClientRace();
+                miningPlant = 1;
+                enemies = new Array<KIPlayer *>();
+                ArraySetLength(count + miningPlant + 2, *enemies);
+                for (int i = 0; i < count; ++i) {
+                    int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(enemyRace);
+                    Route *spawnRoute = enemyRoute;
+                    int index = static_cast<AERandom *>(Globals::rnd)->nextInt(spawnRoute->length());
+                    (*enemies)[i] = createShip(enemyRace, 0, type, spawnRoute->getWaypoint(index), true, false);
+                    (*enemies)[i]->player->setAlwaysEnemy(true);
+                }
+                miningPlantIndex = count;
+                (*enemies)[miningPlantIndex] = reinterpret_cast<KIPlayer *>(createStaticObject(asteroidWaypoint, 19080, true));
+                static_cast<PlayerFixedObject *>((*enemies)[miningPlantIndex])->setDockingType(1);
+                static_cast<PlayerFixedObject *>((*enemies)[miningPlantIndex])->setMoving(false);
+                (*enemies)[miningPlantIndex]->setPosition(Vector{field_c8, field_cc, field_d0});
+                int dockingCoords[] = {int(field_c8 + 0.0f), int(field_cc + 0.0f), int(field_d0 - 30000.0f), -1, -1, -1};
+                int times[] = {0, 6000};
+                Array<KIPlayer *> *targets = new Array<KIPlayer *>();
+                ArraySetLength(2, *targets);
+                (*targets)[1] = (*enemies)[miningPlantIndex];
+                Route *route = new Route(dockingCoords, targets, times, 6);
+                route->setLoop(true);
+                Route *clone = route->clone();
+                for (int i = count + miningPlant; i < count + miningPlant + 2; ++i) {
+                    int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(clientRace);
+                    Route *assigned;
+                    if (i == count + miningPlant) {
+                        (*enemies)[i] = createShip(clientRace, 0, type, route->getWaypoint(0), true, false);
+                        assigned = route;
+                    } else {
+                        (*enemies)[i] = createShip(clientRace, 0, type, clone->getWaypoint(0), true, false);
+                        assigned = clone;
+                    }
+                    (*enemies)[i]->setRoute(assigned);
+                    (*enemies)[i]->player->setAlwaysFriend(true);
+                    (*enemies)[i]->player->setNeverAttack(true);
+                }
+                int amount = mission->getProductionGoodAmount();
+                int index = mission->getProductionGoodIndex();
+                objectivesA = new Objective(28, amount, index, this);
+                return;
+            }
+            case 184: {
+                int coords[9];
+                coords[0] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000; coords[1] = 0; coords[2] = 70000;
+                coords[3] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000; coords[4] = 0; coords[5] = 100000;
+                coords[6] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000; coords[7] = 0; coords[8] = 140000;
+                enemyRoute = new Route(coords, 3);
+                Globals::status->getMission()->getDifficulty();
+                reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()))->getEnemyRace(mission->getClientRace());
+                int clientRace = mission->getClientRace();
+                enemies = new Array<KIPlayer *>();
+                ArraySetLength(4, *enemies);
+                Waypoint *wp = new Waypoint(-30000, 0, 40000, nullptr);
+                (*enemies)[0] = reinterpret_cast<KIPlayer *>(createStaticObject(wp, 19080, true));
+                static_cast<PlayerFixedObject *>((*enemies)[0])->setMoving(false);
+                static_cast<PlayerFixedObject *>((*enemies)[0])->setDockingType(2);
+                static_cast<PlayerFixedObject *>((*enemies)[0])->setName(String(*Globals::gameText->getText(3208), false));
+                wp = new Waypoint(30000, 0, 40000, nullptr);
+                (*enemies)[1] = reinterpret_cast<KIPlayer *>(createStaticObject(wp, 18830, true));
+                static_cast<PlayerFixedObject *>((*enemies)[1])->setMoving(false);
+                static_cast<PlayerFixedObject *>((*enemies)[1])->setDockingType(1);
+                static_cast<PlayerFixedObject *>((*enemies)[1])->setName(String(*Globals::gameText->getText(3209), false));
+                int dockingCoords[] = {-1, -1, -1, 0, 0, 40000, -1, -1, -1}; // 0x1fd040
+                int times[] = {10000, 0, 10000};
+                Array<KIPlayer *> *targets = new Array<KIPlayer *>();
+                ArraySetLength(3, *targets);
+                (*targets)[0] = (*enemies)[0]; (*targets)[2] = (*enemies)[1];
+                Route *route = new Route(dockingCoords, targets, times, 9);
+                route->setLoop(true);
+                Route *clone = route->clone();
+                for (int i = 2; i != 4; ++i) {
+                    int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(clientRace);
+                    Route *assigned;
+                    if (i == 2) {
+                        (*enemies)[i] = createShip(clientRace, 0, type, route->getWaypoint(0), true, false);
+                        assigned = route;
+                    } else {
+                        (*enemies)[i] = createShip(clientRace, 0, type, clone->getWaypoint(0), true, false);
+                        assigned = clone;
+                    }
+                    (*enemies)[i]->setRoute(assigned);
+                    (*enemies)[i]->player->setAlwaysFriend(true);
+                    (*enemies)[i]->player->setNeverAttack(true);
+                }
+                int amount = mission->getProductionGoodAmount();
+                int index = mission->getProductionGoodIndex();
+                objectivesA = new Objective(29, amount, index, this);
+                return;
+            }
+            case 183: {
+                int coords[] = {-55000, 0, -35000, -30000, 0, -50000}; // 0x1fcff0 includes words 2..5.
+                enemyRoute = new Route(coords, 6);
+                enemies = new Array<KIPlayer *>();
+                ArraySetLength(14, *enemies);
+                for (int i = 0; i != 8; ++i) {
+                    (*enemies)[i] = createShip(10, 0, 44, enemyRoute->getWaypoint(0), true, false);
+                    (*enemies)[i]->player->setAlwaysEnemy(true);
+                    (*enemies)[i]->player->setMaxHitpoints(250);
+                }
+                (*enemies)[8] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 18781, false));
+                static_cast<PlayerFixedObject *>((*enemies)[8])->setMoving(false);
+                static_cast<PlayerFixedObject *>((*enemies)[8])->setDockingType(2);
+                static_cast<PlayerFixedObject *>((*enemies)[8])->setName(String(*Globals::gameText->getText(3208), false));
+                (*enemies)[8]->player->setAlwaysFriend(true);
+                (*enemies)[8]->geometry->rotate(Vector{0.0f, -2.356194496154785f, 0.0f});
+                (*enemies)[8]->shipGroup = 10;
+                (*enemies)[8]->field_0x74 = 1;
+                if ((*enemies)[8]->cargo) delete (*enemies)[8]->cargo;
+                (*enemies)[8]->cargo = nullptr;
+                Waypoint *wp = new Waypoint(-70000, -5000, -35000, nullptr);
+                (*enemies)[9] = reinterpret_cast<KIPlayer *>(createStaticObject(wp, 18804, true));
+                (*enemies)[9]->setPosition(wp->getPosition());
+                static_cast<PlayerFixedObject *>((*enemies)[9])->setMoving(false);
+                (*enemies)[9]->field_0x70 = 0;
+                static_cast<PlayerFixedObject *>((*enemies)[9])->setDockingType(1);
+                (*enemies)[9]->player->setAlwaysFriend(true);
+                (*enemies)[9]->player->setHitpoints(9999999);
+                (*enemies)[9]->shipGroup = 10;
+                (*enemies)[9]->field_0x74 = 1;
+                if ((*enemies)[9]->cargo) delete (*enemies)[9]->cargo;
+                (*enemies)[9]->cargo = nullptr;
+                int dockingCoords[] = {-1, -1, -1, 30000, 1000, 40000, -1, -1, -1};
+                int times[] = {20000, 0, 20000};
+                Array<KIPlayer *> *targets = new Array<KIPlayer *>();
+                ArraySetLength(3, *targets);
+                (*targets)[0] = (*enemies)[9]; (*targets)[2] = (*enemies)[8];
+                Route *route = new Route(dockingCoords, targets, times, 9);
+                route->setLoop(true);
+                for (int i = 10; i != 14; ++i) {
+                    (*enemies)[i] = createShip(0, 0, 51, route->getWaypoint(0), true, false);
+                    (*enemies)[i]->setRoute(route->clone());
+                    (*enemies)[i]->player->setAlwaysFriend(true);
+                    // Original STRH clears fighter extension bytes +0x13d/+0x13e.
+                    *(reinterpret_cast<unsigned char *>((*enemies)[i]) + sizeof(KIPlayer) + 0x19) = 0;
+                    *(reinterpret_cast<unsigned char *>((*enemies)[i]) + sizeof(KIPlayer) + 0x1a) = 0;
+                    Vector position;
+                    switch ((i - 10) & 0x7fffffff) {
+                        case 2: position.x = 25000.0f; position.y = 0.0f; position.z = -36000.0f; break;
+                        case 1: position.x = 10000.0f; position.y = -7000.0f; position.z = -30000.0f; break;
+                        case 0: position.x = 20000.0f; position.y = -3000.0f; position.z = -50000.0f; break;
+                        default: position.x = 12000.0f; position.y = 6000.0f; position.z = -45000.0f; break;
+                    }
+                    (*enemies)[i]->setPosition(position);
+                }
+                player->setPosition(-30000.0f, 5000.0f, -100000.0f);
+                missionSpawnPosition = player->getPosition();
+                timeLimit = 181000;
+                objectivesA = new Objective(3, 181000, this);
+                return;
+            }
+            default: return;
         }
     }
+    static_cast<AERandom *>(Globals::rnd)->reset();
+    missionPtr = 0;
+    createScene();
+    missionPtr = 3;
+    bool earlySystem = false;
+    if (Globals::status->getSystem()->getIndex() == 15)
+        earlySystem = Globals::status->getCurrentCampaignMission() < 16;
+    int stationIndex = Globals::status->getStation()->getIndex();
+    int attackRoll = static_cast<AERandom *>(Globals::rnd)->nextInt(100);
+    Mission *freelance = Globals::status->getFreelanceMission();
+    int freelanceEnemies = 0;
+    if (freelance && (freelance->getType() == 0 || freelance->getType() == 11 || freelance->getType() == 15))
+        freelanceEnemies = int(float(freelance->getDifficulty()) / 10.0f * 5.0f);
+    if (Globals::status->getSystem() && Globals::status->getSystem()->hasPirateBase())
+        freelanceEnemies = static_cast<AERandom *>(Globals::rnd)->nextInt(1) + 2;
+    int security = Globals::status->getSystem()->getSecurityLevel();
+    security -= static_cast<unsigned char>(Globals::status->hardCoreMode()) & (security > 0);
+    bool attackers;
+    if (earlySystem && !Globals::status->hardCoreMode()) attackers = false;
+    else {
+        int probability = security == 0 ? 90 : security == 1 ? 65 : security == 2 ? 35 : 10;
+        attackers = attackRoll < probability;
+    }
+    int hostileCoords[3];
+    hostileCoords[0] = static_cast<AERandom *>(Globals::rnd)->nextInt(100000) - 50000;
+    hostileCoords[1] = 0;
+    hostileCoords[2] = static_cast<AERandom *>(Globals::rnd)->nextInt(50000) + 50000;
+    field_180 = new Route(hostileCoords, 3);
+    int race = Globals::status->getSystem()->getRace();
+    int enemyRace;
+    if (static_cast<AERandom *>(Globals::rnd)->nextInt(100) >= 75)
+        enemyRace = reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()))->getEnemyRace(race);
+    else enemyRace = 8;
+    hostileCount = attackers ? static_cast<AERandom *>(Globals::rnd)->nextInt(4) : 0;
+    if (hostileCount >= 1) {
+        if (Globals::status->hardCoreMode()) hostileCount = static_cast<AERandom *>(Globals::rnd)->nextInt(6) + 2;
+        hostileCount = int(float(hostileCount) + (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * float(hostileCount));
+        hostileCount += Globals::status->getLevel() / 4;
+    }
+    if (security == 3 && attackers && *reinterpret_cast<float *>(Globals::options + 0x2c) < 1.0f)
+        hostileCount = static_cast<AERandom *>(Globals::rnd)->nextInt(2) + 1;
+    int additionalFriends = 0;
+    if (stationIndex == 78) { field_164 = 0; field_168 = 0; }
+    else {
+        field_164 = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
+        field_168 = static_cast<AERandom *>(Globals::rnd)->nextInt(5);
+        additionalFriends = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
+    }
+    if (earlySystem) security = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
+    friendCount = security + additionalFriends + field_168 / 4;
+    if (attackers && Globals::status->getCurrentCampaignMission() >= 32 && static_cast<AERandom *>(Globals::rnd)->nextInt(100) <= 7)
+        friendCount = hostileCount = 9;
+    int pirateBase = static_cast<int>(Globals::status->getStation()->stationHasPirateBase());
+    int pirateGuards = pirateBase ? int((*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * 5.0f + 5.0f) : 0;
+    if (Globals::status->getSystem() && Globals::status->getSystem()->hasPirateBase()) {
+        freelanceEnemies = static_cast<AERandom *>(Globals::rnd)->nextInt(1) + 2;
+        if (Globals::status->hardCoreMode()) freelanceEnemies = static_cast<AERandom *>(Globals::rnd)->nextInt(3) + 2 * freelanceEnemies;
+        attackers = false; hostileCount = 0;
+    }
+    int blueprint = static_cast<int>(Globals::status->getStation()->stationHasHiddenBlueprint(true));
+    if (comingFromAlienWorld || Globals::status->getStation()->isAttackedByAliens()) {
+        if (Globals::status->getCurrentCampaignMission() != 42) {
+            if (field_168 <= 2) field_168 = 2;
+            hostileCount = static_cast<AERandom *>(Globals::rnd)->nextInt(4) + 2;
+            if (landmarks && (*landmarks)[3]) field_180->setNewCoords((*landmarks)[3]->getPosition());
+            attackers = true; enemyRace = 9;
+        }
+    }
+    Wanted *wanted = Globals::status->getWantedInCurrentOrbit();
+    if (wanted && friendCount >= 3) friendCount = 2;
+    float ninjaChanceFloat = 0.0f;
+    if (Globals::status->getCurrentCampaignMission() >= 101 && Globals::status->getCurrentCampaignMission() <= 144)
+        ninjaChanceFloat = float(Globals::status->getCurrentCampaignMission()) / 144.0f * 15.0f + 5.0f;
+    int ninjaChance = int(ninjaChanceFloat) << Globals::status->hardCoreMode();
+    int ninjas = 0;
+    if (ninjaChance >= 1 && static_cast<AERandom *>(Globals::rnd)->nextInt(100) < ninjaChance)
+        ninjas = (static_cast<AERandom *>(Globals::rnd)->nextInt(3) + 2) << Globals::status->hardCoreMode();
+    bool namedFirstFriend = false;
+    if (freelance && freelance->getType() == 13 && !Globals::status->field_0xf1 && freelance->getTargetStation() == Globals::status->getStation()->getIndex()) {
+        field_164 = field_168 = freelanceEnemies = hostileCount = 0; attackers = false;
+        friendCount = Globals::status->field_0xf0 ? 6 : 7;
+        namedFirstFriend = !Globals::status->field_0xf0;
+    } else {
+        if (Globals::status->getStation()->hasAttackedFriends()) {
+            if (friendCount <= 7) friendCount = 7;
+            alarmRequested = field_18a = 1;
+        }
+        if (field_164 + friendCount + field_168 + hostileCount + freelanceEnemies == 0) friendCount = 4;
+    }
+    int currentStation = Globals::status->getStation()->getIndex();
+    if (currentStation == 102 || currentStation == 103 || currentStation == 104) {
+        friendCount = field_164 = field_168 = 0;
+        hostileCount = static_cast<AERandom *>(Globals::rnd)->nextInt(5) + 3;
+        attackers = true; enemyRace = 8;
+    } else if (currentStation == 100 || currentStation == 101 || currentStation == 108 || currentStation == 10) {
+        friendCount = field_164 = field_168 = hostileCount = 0; attackers = false;
+    }
+    if ((Globals::status->getCurrentCampaignMission() == 36 || Globals::status->getCurrentCampaignMission() == 37)
+        && Globals::status->getSystem() && Globals::status->getSystem()->getIndex() == 5) {
+        hostileCount = friendCount = 0; attackers = false;
+    }
+    if (Globals::status->getCurrentCampaignMission() >= 42 && Globals::status->getCurrentCampaignMission() <= 43 && !Globals::status->inAlienOrbit()) {
+        freelanceEnemies = hostileCount = 0; attackers = false;
+    }
+    if (Globals::status->inBlackMarketSystem()) {
+        freelanceEnemies = friendCount = 0;
+        hostileCount = static_cast<AERandom *>(Globals::rnd)->nextInt(4) + 6;
+        if (Globals::status->hardCoreMode()) hostileCount = static_cast<AERandom *>(Globals::rnd)->nextInt(3) + 2 * hostileCount;
+        field_168 = field_164 = 0; attackers = true; enemyRace = 8;
+    }
+    if (Globals::status->inPirateLootOrbit()) {
+        freelanceEnemies = friendCount = 0;
+        hostileCount = static_cast<AERandom *>(Globals::rnd)->nextInt(4) + 10;
+        if (Globals::status->hardCoreMode()) hostileCount = static_cast<AERandom *>(Globals::rnd)->nextInt(3) + 2 * hostileCount;
+        field_168 = field_164 = 0; attackers = true; enemyRace = 8;
+    }
+    if (Globals::status->getStation()->getIndex() == 108) {
+        if (Globals::status->field_114) { attackers = false; hostileCount = 0; }
+        else {
+            friendCount = field_164 = field_168 = 0;
+            field_288 = 1;
+            hostileCount = Globals::status->hardCoreMode() ? 8 : 6;
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(hostileCount + 4, *enemies);
+            for (int i = 0; i != 4; ++i) {
+                (*enemies)[i] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 14243, true));
+                (*enemies)[i]->name = *Globals::gameText->getText(441);
+            }
+            (*enemies)[0]->setPosition(45000.0f, 5000.0f, 55000.0f);
+            (*enemies)[1]->setPosition(80000.0f, -30000.0f, -12000.0f);
+            (*enemies)[2]->setPosition(-15000.0f, 45000.0f, 55000.0f);
+            (*enemies)[3]->setPosition(-65000.0f, -20000.0f, -45000.0f);
+            for (unsigned i = 4; i < enemies->size(); ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                (*enemies)[i] = createShip(8, 0, type, nullptr, true, false);
+            }
+            // Android data 0x2151c0 is the seven-part client image used here.
+            static int clientImage[] = {4, 2, 0, 2, 2, 0, 0};
+            Mission *generated = new Mission(4, String(*Globals::gameText->getText(1601), false), clientImage, 4, 0, 108, 0);
+            Globals::status->setFreelanceMission(generated);
+            Globals::status->setMission(generated);
+            objectivesA = new Objective(18, 0, enemies->size(), this);
+            return;
+        }
+    }
+    bool guardedFreighter = false;
+    if (Globals::status->getCampaignMission() && reinterpret_cast<Mission *>(static_cast<intptr_t>(Globals::status->getCampaignMission()))->getType() == 163 && Globals::status->field_90) {
+        for (unsigned i = 0; i < Globals::status->field_90->size(); ++i) {
+            if ((*Globals::status->field_90)[i] == Globals::status->getStation()->getIndex()) { guardedFreighter = true; break; }
+        }
+    }
+    int friendCoords[3];
+    friendCoords[0] = static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+    friendCoords[1] = static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+    friendCoords[2] = static_cast<AERandom *>(Globals::rnd)->nextInt(30000) + 20000;
+    Route *ambientFriendRoute = new Route(friendCoords, 3);
+    if (guardedFreighter) {
+        hostileCount = field_164 = 0;
+        enemies = new Array<KIPlayer *>();
+        ArraySetLength(friendCount + 8, *enemies);
+        int distance = static_cast<AERandom *>(Globals::rnd)->nextInt(30000) + 80000;
+        int coords[3];
+        coords[0] = (static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1) * distance;
+        coords[1] = static_cast<AERandom *>(Globals::rnd)->nextInt(3000) - 6000;
+        coords[2] = static_cast<AERandom *>(Globals::rnd)->nextInt(50000) + 120000;
+        playerRoute = new Route(coords, 3);
+        enemyRoute = playerRoute->clone();
+        enemyRoute->setLoop(true);
+        (*enemies)[0] = createShip(race, 1, race == 1 ? 13 : 15, playerRoute->getWaypoint(), true, false);
+        static_cast<PlayerFixedObject *>((*enemies)[0])->setMoving(false);
+        (*enemies)[0]->setPosition(float(coords[0]), float(coords[1]), float(coords[2]));
+        if ((*enemies)[0]->cargo) {
+            int item = static_cast<AERandom *>(Globals::rnd)->nextInt(6);
+            static const int cargoItems[] = {36, 22, 23}; // 0x1fdb90
+            if (unsigned(item - 3) < 3) item = cargoItems[item - 3];
+            (*(*enemies)[0]->cargo)[0] = item;
+            (*enemies)[0]->name = *Globals::gameText->getText(1664);
+        }
+        for (int i = 1; i != 6; ++i) {
+            int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(race);
+            (*enemies)[i] = createShip(race, 0, type, playerRoute->getWaypoint(), true, false);
+            (*enemies)[i]->setRoute(enemyRoute->clone());
+        }
+        Matrix matrix;
+        const float identity[] = {1,0,0,0,0,1,0,0,0,0,1,0,1,1,1};
+        std::memcpy(&matrix, identity, sizeof(matrix));
+        Vector rotated{0.0f, 0.0f, 0.0f};
+        Vector position = (*enemies)[0]->getPosition();
+        static const float freighterTurrets[4][2][7] = {
+            {{0.0f, 0.0f, -1097.1400146484375f, -4178.22998046875f, 0.0f, 0.0f, 3.1415927410125732f}, {0.0f, 0.0f, 1158.0899658203125f, 1180.5899658203125f, 0.0f, 0.0f, 0.0f}},
+            {{1.0f, 0.0f, -1096.97998046875f, -2691.52001953125f, 0.0f, 0.0f, 3.1415927410125732f}, {1.0f, 0.0f, 1893.47998046875f, 1068.0699462890625f, 0.0f, 0.0f, 0.0f}},
+            {{2.0f, 0.0f, -484.718994140625f, 1741.219970703125f, 0.0f, 0.0f, 3.1415927410125732f}, {2.0f, 0.0f, 1458.8399658203125f, -2304.280029296875f, 0.0f, 0.0f, 0.0f}},
+            {{3.0f, 0.0f, -516.0800170898438f, -3744.449951171875f, 0.0f, 0.0f, 3.1415927410125732f}, {3.0f, 0.0f, 515.7659912109375f, -3744.449951171875f, 0.0f, 0.0f, 0.0f}}
+        }; // Android rodata 0x1fcc94
+        for (int i = 0; i != 2; ++i) {
+            (*enemies)[i + 6] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 14363, true));
+            (*enemies)[i + 6]->player->setMaxHitpoints(1000);
+            const float *record = freighterTurrets[race][i];
+            rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, Vector{record[4], record[5], record[6]});
+            (*enemies)[i + 6]->geometry->setRotation(rotated);
+            rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, Vector{record[1], record[2], record[3]});
+            (*enemies)[i + 6]->setPosition(Vector{position.x + rotated.x, position.y + rotated.y, position.z + rotated.z});
+            static_cast<PlayerTurret *>((*enemies)[i + 6])->setScaling(0.3f);
+            (*enemies)[i + 6]->shipGroup = race;
+        }
+        for (int i = 8; i < friendCount + 8; ++i) {
+            int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(race);
+            (*enemies)[i] = createShip(race, 0, type, ambientFriendRoute->getWaypoint(), true, false);
+        }
+        return;
+    }
+    bool miningStation = false;
+    if (Globals::status->getCampaignMission() && reinterpret_cast<Mission *>(static_cast<intptr_t>(Globals::status->getCampaignMission()))->getType() == 167)
+        miningStation = Globals::status->getStation()->getIndex() == reinterpret_cast<Mission *>(static_cast<intptr_t>(Globals::status->getCampaignMission()))->getTargetStation();
+    bool largeOutpost = false, smallOutpost = false, alternateLarge = false;
+    if (race == 0 && field_168 > 0) {
+        if (static_cast<AERandom *>(Globals::rnd)->nextInt(100) <= 29) {
+            if (static_cast<AERandom *>(Globals::rnd)->nextInt(100) <= 29) {
+                alternateLarge = Globals::status->getCurrentCampaignMission() > 103;
+                largeOutpost = true;
+            } else largeOutpost = true;
+        }
+    } else if (race == 1 && field_168 > 0) {
+        if (static_cast<AERandom *>(Globals::rnd)->nextInt(100) <= 29)
+            smallOutpost = Globals::status->getCurrentCampaignMission() > 140;
+    } else if (race != 1) {
+        largeOutpost = false;
+    }
+    if (Globals::status->inSupernovaSystem()) {
+        friendCount = field_164 = field_168 = hostileCount = 0;
+        largeOutpost = false; attackers = false;
+    }
+    if (wanted) friendCount += wanted->getNumWingmen() + 1;
+    int largeTurrets = largeOutpost ? (alternateLarge ? 8 : 7) : 0;
+    int smallTurrets = smallOutpost ? 5 : 0;
+    enemies = new Array<KIPlayer *>();
+    ArraySetLength(friendCount + field_164 + field_168 + hostileCount + freelanceEnemies + largeTurrets + smallTurrets + pirateBase + pirateGuards + ninjas + miningStation + blueprint, *enemies);
+    for (int i = 0; i < friendCount; ++i) {
+        if (i == 0 && wanted) {
+            int wantedRace = unsigned(wanted->getRace()) > 3 ? 8 : wanted->getRace();
+            int type = wanted->getShip();
+            (*enemies)[0] = createShip(wantedRace, 0, type, ambientFriendRoute->getWaypoint(), true, false);
+            int health = wanted->getHitpoints();
+            int level = Globals::status->getLevel() <= 20 ? Globals::status->getLevel() : 20;
+            health += 15 * level;
+            int campaign = Globals::status->gameWon() ? 45 : Globals::status->getCurrentCampaignMission();
+            health += 4 * campaign;
+            int adjustedHealth = int(float(health) + (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * float(health));
+            (*enemies)[0]->player->setMaxHitpoints(adjustedHealth);
+            (*enemies)[0]->player->setHitpoints(adjustedHealth);
+            (*enemies)[0]->name = wanted->getName();
+            if ((*enemies)[0]->cargo) delete (*enemies)[0]->cargo;
+            (*enemies)[0]->cargo = nullptr;
+            (*enemies)[0]->cargo = new Array<int>();
+            ArrayAdd(wanted->getLoot(), *(*enemies)[0]->cargo);
+            ArrayAdd(wanted->getLootAmount(), *(*enemies)[0]->cargo);
+            (*enemies)[0]->field_0x42 = 1;
+            (*enemies)[0]->field_0x48 = wanted->getIndex();
+            (*enemies)[0]->setSpeed(4.5f);
+            for (int j = 1; j <= wanted->getNumWingmen(); ++j) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(wantedRace);
+                (*enemies)[j] = createShip(wantedRace, 0, type, ambientFriendRoute->getWaypoint(), true, false);
+                (*enemies)[j]->player->setMaxHitpoints(adjustedHealth / 2);
+                (*enemies)[j]->player->setHitpoints(adjustedHealth / 2);
+            }
+        } else if (!wanted || i > wanted->getNumWingmen()) {
+            int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(race);
+            (*enemies)[i] = createShip(race, 0, type, ambientFriendRoute->getWaypoint(), true, false);
+        }
+    }
+    int index = friendCount;
+    for (; index < friendCount + field_164; ++index) {
+        int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(race);
+        (*enemies)[index] = createShip(race, 0, type, nullptr, true, false);
+        (*enemies)[index]->setDead();
+        int coords[3];
+        coords[0] = static_cast<AERandom *>(Globals::rnd)->nextInt(400000) - 200000;
+        coords[1] = static_cast<AERandom *>(Globals::rnd)->nextInt(200000) - 100000;
+        coords[2] = static_cast<AERandom *>(Globals::rnd)->nextInt(100000) + 50000;
+        (*enemies)[index]->setRoute(new Route(coords, 3));
+        (*enemies)[index]->setJumper(true);
+    }
+    int foreignRace = race == 2 ? 0 : race;
+    for (; index < friendCount + field_164 + field_168; ++index) {
+        int start = friendCount + field_164;
+        if (index == start && largeOutpost) {
+            if (alternateLarge) {
+                Vector position;
+                position.x = float(static_cast<AERandom *>(Globals::rnd)->nextInt(80000) - 40000);
+                position.y = float(static_cast<AERandom *>(Globals::rnd)->nextInt(40000) - 20000);
+                position.z = float(static_cast<AERandom *>(Globals::rnd)->nextInt(80000) + 100000);
+                Waypoint *wp = new Waypoint(int(position.x), int(position.y), int(position.z), nullptr);
+                (*enemies)[index] = reinterpret_cast<KIPlayer *>(createStaticObject(wp, 18804, true));
+                (*enemies)[index]->setSpacePoints(nullptr);
+                (*enemies)[index]->setPosition(position);
+                static_cast<PlayerFixedObject *>((*enemies)[index])->setMoving(false);
+                (*enemies)[index]->player->setHitpoints(9999999);
+                if ((*enemies)[index]->cargo) delete (*enemies)[index]->cargo;
+                (*enemies)[index]->cargo = nullptr;
+                (*enemies)[index]->field_0x70 = 0;
+            } else (*enemies)[index] = createShip(race, 1, 14, nullptr, true, false);
+            static_cast<PlayerFixedObject *>((*enemies)[index])->setMoving(false);
+            float x = float(static_cast<AERandom *>(Globals::rnd)->nextInt(80000) - 40000);
+            float y = float(static_cast<AERandom *>(Globals::rnd)->nextInt(10000) - 5000);
+            float z = float(static_cast<AERandom *>(Globals::rnd)->nextInt(80000) + 40000);
+            (*enemies)[index]->setPosition(x, y, z);
+        } else if (index == start && smallOutpost) {
+            Vector position;
+            position.x = float(static_cast<AERandom *>(Globals::rnd)->nextInt(80000) - 40000);
+            position.y = float(static_cast<AERandom *>(Globals::rnd)->nextInt(40000) - 20000);
+            position.z = float(static_cast<AERandom *>(Globals::rnd)->nextInt(80000) + 60000);
+            Waypoint *wp = new Waypoint(int(position.x), int(position.y), int(position.z), nullptr);
+            (*enemies)[index] = reinterpret_cast<KIPlayer *>(createStaticObject(wp, 19051, true));
+            (*enemies)[index]->setSpacePoints(nullptr);
+            (*enemies)[index]->setPosition(position);
+            static_cast<PlayerFixedObject *>((*enemies)[index])->setMoving(false);
+            (*enemies)[index]->player->setHitpoints(9999999);
+            static_cast<PlayerFixedObject *>((*enemies)[index])->setName(String(*Globals::gameText->getText(1667), false));
+            (*enemies)[index]->field_0x70 = 0;
+            if ((*enemies)[index]->cargo) delete (*enemies)[index]->cargo;
+            (*enemies)[index]->cargo = nullptr;
+        } else {
+            bool foreign = static_cast<AERandom *>(Globals::rnd)->nextInt(100) <= 29;
+            int shipRace = foreign ? (race == 0 ? 2 : foreignRace) : race;
+            (*enemies)[index] = createShip(shipRace, 1, shipRace == 1 ? 13 : 15, nullptr, true, false);
+            static_cast<PlayerFixedObject *>((*enemies)[index])->setMoving(true);
+            int distance = static_cast<AERandom *>(Globals::rnd)->nextInt(60000) - 80000;
+            float x = float((static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1) * distance);
+            float y = float(static_cast<AERandom *>(Globals::rnd)->nextInt(40000) - 20000);
+            float z = float(static_cast<AERandom *>(Globals::rnd)->nextInt(160000) - 80000);
+            (*enemies)[index]->setPosition(x, y, z);
+        }
+    }
+    if (largeTurrets) {
+        Matrix matrix;
+        const float identity[] = {1,0,0,0,0,1,0,0,0,0,1,0,1,1,1};
+        std::memcpy(&matrix, identity, sizeof(matrix));
+        Vector rotated{0.0f, 0.0f, 0.0f};
+        Vector position = (*enemies)[friendCount + field_164]->getPosition();
+        static const float alternateTurrets[8][6] = {
+            {-6725.87890625f, 2458.2626953125f, -66.0760498046875f, -0.0f, 1.570796012878418f, 0.0f},
+            {5824.43408203125f, 2458.2626953125f, 10243.14453125f, -0.0f, -1.570796012878418f, -0.0f},
+            {-6725.87890625f, 2458.2626953125f, 2099.96435546875f, -0.0f, 1.570796012878418f, 0.0f},
+            {5824.43408203125f, 2458.2626953125f, 8436.650390625f, -0.0f, -1.570796012878418f, -0.0f},
+            {-5548.7109375f, -2743.15185546875f, 11954.466796875f, -3.1415929794311523f, 1.570796012878418f, -0.0f},
+            {-5548.7109375f, -2743.15185546875f, -3710.50390625f, -3.1415929794311523f, 1.570796012878418f, -0.0f},
+            {4981.2587890625f, -2743.15185546875f, 14659.005859375f, 3.1415929794311523f, -2.1816608905792236f, 0.0f},
+            {0.0f, 2458.2626953125f, -32811.1015625f, -0.0f, -0.0f, -0.0f}
+        }; // Android rodata 0x1fcd74
+        static const float largeTurretRecords[7][6] = {
+            {5321.740234375f, 1893.0999755859375f, -15570.7001953125f, 0.0f, 0.0f, -1.5707963705062866f},
+            {2355.669921875f, 1115.47998046875f, 7324.10009765625f, 0.0f, 0.0f, -1.5707963705062866f},
+            {0.0f, -4261.27978515625f, 4876.27978515625f, 0.0f, 0.0f, 3.1415927410125732f},
+            {-5321.740234375f, 1893.0999755859375f, -15570.7001953125f, 0.0f, 0.0f, 1.5707963705062866f},
+            {0.0f, 5668.83984375f, -13871.7001953125f, 0.0f, 0.0f, 0.0f},
+            {-2355.669921875f, 1115.47998046875f, 7324.10009765625f, 0.0f, 0.0f, 1.5707963705062866f},
+            {0.00020068499725311995f, 2855.300048828125f, 4161.14990234375f, 0.0f, 0.0f, 0.0f}
+        }; // Android rodata 0x1fce34
+        for (int i = 0; index < friendCount + field_164 + field_168 + largeTurrets; ++index, ++i) {
+            (*enemies)[index] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 6772, true));
+            (*enemies)[index]->player->setMaxHitpoints(1000);
+            const float *record = alternateLarge ? alternateTurrets[i] : largeTurretRecords[i];
+            rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, Vector{record[3], record[4], record[5]});
+            (*enemies)[index]->geometry->setRotation(rotated);
+            rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, Vector{record[0], record[1], record[2]});
+            (*enemies)[index]->setPosition(Vector{position.x + rotated.x, position.y + rotated.y, position.z + rotated.z});
+            static_cast<PlayerTurret *>((*enemies)[index])->setScaling(6.0f);
+            (*enemies)[index]->cargo = nullptr;
+            (*enemies)[index]->shipGroup = race;
+        }
+    }
+    if (smallTurrets) {
+        Matrix matrix;
+        const float identity[] = {1,0,0,0,0,1,0,0,0,0,1,0,1,1,1};
+        std::memcpy(&matrix, identity, sizeof(matrix));
+        Vector rotated{0.0f, 0.0f, 0.0f};
+        Vector position = (*enemies)[friendCount + field_164]->getPosition();
+        static const float smallTurretRecords[5][6] = {
+            {10283.1796875f, -1122.7913818359375f, 26039.26171875f, 0.0f, 0.0f, 0.0f},
+            {-10171.173828125f, -1082.7020263671875f, 25906.552734375f, 0.0f, 0.0f, 0.0f},
+            {-15624.38671875f, -787.19921875f, -7569.43017578125f, 0.0f, 0.0f, 0.0f},
+            {15624.38671875f, -787.19921875f, -7569.43017578125f, 0.0f, 0.0f, 0.0f},
+            {0.0f, 4901.47314453125f, 3083.96435546875f, 0.0f, 0.0f, 0.0f}
+        }; // Android rodata 0x1fcedc
+        for (int i = 0; index < friendCount + field_164 + field_168 + smallTurrets; ++index, ++i) {
+            (*enemies)[index] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 6774, true));
+            (*enemies)[index]->player->setMaxHitpoints(1000);
+            const float *record = smallTurretRecords[i];
+            rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, Vector{record[3], record[4], record[5]});
+            (*enemies)[index]->geometry->setRotation(rotated);
+            rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, Vector{record[0], record[1], record[2]});
+            (*enemies)[index]->setPosition(Vector{position.x + rotated.x, position.y + rotated.y, position.z + rotated.z});
+            static_cast<PlayerTurret *>((*enemies)[index])->setScaling(6.0f);
+            (*enemies)[index]->cargo = nullptr;
+            (*enemies)[index]->shipGroup = 1;
+        }
+    }
+    if (attackers) {
+        int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(enemyRace);
+        bool hardcore = Globals::status->hardCoreMode();
+        if (enemyRace == 8 && initStreamOutPosition) {
+            int roll = static_cast<AERandom *>(Globals::rnd)->nextInt(100);
+            int threshold = hardcore ? 40 : 20;
+            if (roll < Globals::status->getLevel() + threshold) {
+                missionSpawnPosition = player->getPosition() / 3.0f;
+                field_180->setNewCoords(missionSpawnPosition);
+            }
+        }
+        for (; index < friendCount + field_164 + field_168 + largeTurrets + smallTurrets + hostileCount; ++index) {
+            (*enemies)[index] = createShip(enemyRace, 0, type, field_180->getWaypoint(), true, false);
+            if (Globals::status->inPirateLootOrbit()) {
+                Player *ship = (*enemies)[index]->player;
+                ship->setHitpoints(ship->getMaxHitpoints() * 2);
+                (*enemies)[index]->setSpeed(3.5f);
+                static_cast<PlayerFighter *>((*enemies)[index])->setRotate(3);
+                missionSpawnPosition = player->getPosition();
+                int distance = static_cast<AERandom *>(Globals::rnd)->nextInt(50000);
+                missionSpawnPosition.x += float((static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1) * distance + 20000);
+                distance = static_cast<AERandom *>(Globals::rnd)->nextInt(50000);
+                missionSpawnPosition.y += float((static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1) * distance + 10000);
+                distance = static_cast<AERandom *>(Globals::rnd)->nextInt(50000);
+                missionSpawnPosition.z += float((static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1) * distance + 20000);
+                (*enemies)[index]->setPosition(missionSpawnPosition);
+            }
+        }
+    } else index = friendCount + field_164 + field_168 + largeTurrets + smallTurrets + hostileCount;
+    int freelanceEnd = friendCount + field_164 + field_168 + largeTurrets + smallTurrets + hostileCount + freelanceEnemies;
+    for (; index < freelanceEnd; ++index) {
+        int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+        (*enemies)[index] = createShip(8, 0, type, nullptr, true, false);
+        missionSpawnPosition = player->getPosition();
+        float x = missionSpawnPosition.x - 80000.0f + float(static_cast<AERandom *>(Globals::rnd)->nextInt(160000));
+        float y = missionSpawnPosition.y - 50000.0f + float(static_cast<AERandom *>(Globals::rnd)->nextInt(100000));
+        float z = missionSpawnPosition.z - 80000.0f + float(static_cast<AERandom *>(Globals::rnd)->nextInt(160000));
+        (*enemies)[index]->setPosition(x, y, z);
+    }
+    if (pirateBase) {
+        Vector basePosition{0.0f, 0.0f, 0.0f};
+        static const int piratePositions[4][3] = {
+            {-200000, -100000, 50000},
+            {50000, 200000, -100000},
+            {140000, -150000, 7000},
+            {170000, -170000, 10000}
+        }; // Android rodata 0x1fcf54
+        for (; index < freelanceEnd + pirateBase; ++index) {
+            int base = Globals::status->getStation()->getPirateStationIndex();
+            int coords[] = {piratePositions[base][0], piratePositions[base][1], piratePositions[base][2]};
+            Route *route = new Route(coords, 3);
+            (*enemies)[index] = reinterpret_cast<KIPlayer *>(createStaticObject(route->getWaypoint(), 14243, true));
+            basePosition = route->getWaypoint()->getPosition();
+            (*enemies)[index]->setToSleep();
+            (*enemies)[index]->name = *Globals::gameText->getText(441);
+        }
+        for (; index < freelanceEnd + pirateBase + pirateGuards; ++index) {
+            int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+            (*enemies)[index] = createShip(8, 0, type, nullptr, true, false);
+            int dx = static_cast<AERandom *>(Globals::rnd)->nextInt(20000);
+            int sx = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
+            int dy = static_cast<AERandom *>(Globals::rnd)->nextInt(20000);
+            int sy = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
+            int dz = static_cast<AERandom *>(Globals::rnd)->nextInt(20000);
+            int sz = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
+            (*enemies)[index]->setPosition(float(int(basePosition.x + float((sx == 0 ? 1 : -1) * dx + 10000))),
+                                          float(int(basePosition.y + float((sy == 0 ? 1 : -1) * dy + 10000))),
+                                          float(int(basePosition.z + float((sz == 0 ? 1 : -1) * dz + 10000))));
+            (*enemies)[index]->setToSleep();
+            // Fighter extension byte +0x12f; do not use the duplicated derived fields.
+            *(reinterpret_cast<unsigned char *>((*enemies)[index]) + sizeof(KIPlayer) + 0x0b) = 1;
+        }
+    }
+    if (ninjas >= 1) {
+        missionSpawnPosition = player->getPosition();
+        int distance = static_cast<AERandom *>(Globals::rnd)->nextInt(50000);
+        missionSpawnPosition.x += float((static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1) * distance + 20000);
+        distance = static_cast<AERandom *>(Globals::rnd)->nextInt(50000);
+        missionSpawnPosition.y += float((static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1) * distance + 10000);
+        distance = static_cast<AERandom *>(Globals::rnd)->nextInt(50000);
+        missionSpawnPosition.z += float((static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1) * distance + 20000);
+        int coords[] = {int(missionSpawnPosition.x), int(missionSpawnPosition.y), int(missionSpawnPosition.z)};
+        Route *route = new Route(coords, 3);
+        for (; index < freelanceEnd + pirateBase + pirateGuards + ninjas; ++index) {
+            (*enemies)[index] = createShip(10, 0, 44, route->getWaypoint(), true, false);
+            (*enemies)[index]->player->setAlwaysEnemy(true);
+        }
+        delete route;
+    }
+    if (miningStation) {
+        miningPlantIndex = friendCount + field_164 + field_168 + hostileCount + freelanceEnemies + largeTurrets + smallTurrets + pirateBase + pirateGuards + ninjas;
+        Waypoint *wp = new Waypoint(-90000, 0, 20000, nullptr);
+        (*enemies)[miningPlantIndex] = reinterpret_cast<KIPlayer *>(createStaticObject(wp, 19080, true));
+        static_cast<PlayerFixedObject *>((*enemies)[miningPlantIndex])->setDockingType(1);
+        static_cast<PlayerFixedObject *>((*enemies)[miningPlantIndex])->setMoving(false);
+        (*enemies)[miningPlantIndex]->setPosition(Vector{field_c8, field_cc, field_d0});
+        (*enemies)[miningPlantIndex]->player->setAlwaysFriend(true);
+        static_cast<PlayerFixedObject *>((*enemies)[miningPlantIndex])->setName(String(*Globals::gameText->getText(3210), false));
+    }
+    if (blueprint) {
+        int hidden = Globals::status->getStation()->getHiddenBlueprintIndex();
+        static const int blueprintRaces[5] = {
+            1, 3, 2, 0, 2
+        }; // Android rodata 0x1fcf84
+        static const float blueprintPositions[5][3] = {
+            {-20000.0f, 30000.0f, 80000.0f},
+            {40000.0f, -30000.0f, 100000.0f},
+            {-80000.0f, 80000.0f, -90000.0f},
+            {40000.0f, 20000.0f, 140000.0f},
+            {40000.0f, 20000.0f, 140000.0f}
+        }; // Android rodata 0x1fcf98
+        static const int blueprintMeshes[5] = {
+            14, 11, 12, 13, 12
+        }; // Android rodata 0x1fcfd4
+        int target = friendCount + field_164 + field_168 + hostileCount + freelanceEnemies + largeTurrets + smallTurrets + pirateBase + pirateGuards + ninjas + miningStation;
+        (*enemies)[target] = createShip(blueprintRaces[hidden], 1, hidden == 0 ? 13 : 15, nullptr, true, false);
+        PlayerFixedObject *object = static_cast<PlayerFixedObject *>((*enemies)[target]);
+        object->setDockingType(3);
+        object->field_0x70 = Globals::status->getStation()->stationHasHiddenBlueprint(false);
+        (*enemies)[target]->setPosition(Vector{field_c8, field_cc, field_d0});
+        object->setDeadButSelectable();
+        (*enemies)[target]->setPosition(blueprintPositions[hidden][0], blueprintPositions[hidden][1], blueprintPositions[hidden][2]);
+        if (object->cargo) delete object->cargo;
+        object->cargo = nullptr;
+        if (Globals::status->getStation()->stationHasHiddenBlueprint(false)) {
+            Generator *generator = new Generator();
+            object->cargo = generator->getLootList(115, 1);
+            delete generator;
+        }
+        FileRead *reader = new FileRead();
+        Array<SpacePoint *> *points = reader->loadSpacePoints(blueprintMeshes[hidden], -1);
+        delete reader;
+        object->setSpacePoints(points);
+    }
+    if (namedFirstFriend) (*enemies)[0]->name = *Globals::gameText->getText(1663);
 }
+
 
 void Level::createAsteroids() {
     int *rngObj = (int *) &AERandom::gRandom;
@@ -1812,32 +2789,1644 @@ void Level::createAsteroids() {
         ::operator delete[](prob);
 }
 
+// Android 0xb4bb8: campaign dispatch; route payloads are read from 2.0.16 rodata.
 void Level::createCampaignMission() {
-    int idx = Status::gStatus->getCurrentCampaignMission();
-
-    if (idx == 0) {
-        this->enemies = new Array<KIPlayer *>();
-        ArraySetLength(3, *(this->enemies));
-        float c = g_ccm_pos0;
-        for (unsigned i = 0; i < this->enemies->size(); i = i + 1) {
-            int type = (i == 1) ? 0x17 : 2;
-            int ship = (int) (intptr_t) this->createShip(8, 0, type, (Waypoint *) (intptr_t) 0, 1, 0);
-            (*this->enemies)[i] = (KIPlayer *) (intptr_t) ship;
-            ((*this->enemies)[i])->setToSleep();
-            (*this->enemies)[i]->player->setAlwaysEnemy(true);
-            KIPlayer *kp = (*this->enemies)[i];
-            kp->setPosition(c, c, c);
-            kp->cargo = nullptr;
-            kp->hasCargo = 0;
-            Player *ep = kp->player;
-            ep->setHitpoints(ep->getMaxHitpoints());
-            if (i < 3)
-                ((PlayerFighter *) (*this->enemies)[i])->setExhaustVisible(false);
+    Vector egoPosition = player->geometry->getPosition();
+    int campaign = Globals::status->getCurrentCampaignMission();
+    switch (campaign) {
+        case 0:
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(3, *enemies);
+            for (unsigned i = 0; i < enemies->size(); ++i) {
+                (*enemies)[i] = createShip(8, 0, i == 1 ? 23 : 2, nullptr, true, false);
+                (*enemies)[i]->setToSleep();
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+                (*enemies)[i]->setPosition(50000.0f, 50000.0f, 50000.0f);
+                (*enemies)[i]->cargo = nullptr;
+                *reinterpret_cast<unsigned char *>(&(*enemies)[i]->hasCargo) = 0;
+                (*enemies)[i]->player->setHitpoints(150);
+                if (i <= 2) static_cast<PlayerFighter *>((*enemies)[i])->setExhaustVisible(false);
+            }
+            static_cast<Player *>(player->player)->setHitpoints(9999999);
+            Globals::status->field_64 = 9999999;
+            static_cast<Player *>(player->player)->field_5e = 1;
+            break;
+        case 1: {
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(1, *enemies);
+            (*enemies)[0] = createShip(3, 0, 30, nullptr, true, false);
+            (*enemies)[0]->setPosition(300.0f, 50.0f, -6000.0f);
+            int coords[] = {0, 0, -5000, 0, 0, 0}; // 0x1fd078, 6 words
+            enemyRoute = new Route(coords, 6);
+            (*enemies)[0]->setRoute(enemyRoute);
+            (*enemies)[0]->setSpeed(0.0f);
+            static_cast<PlayerFighter *>((*enemies)[0])->setExhaustVisible(false);
+            break;
         }
-        Player *pp = (Player *) this->player->player;
-        pp->setHitpoints(pp->getMaxHitpoints());
-        return;
+        case 4:
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(1, *enemies);
+            (*enemies)[0] = createShip(8, 0, 2, nullptr, true, false);
+            (*enemies)[0]->setInitActive(false);
+            (*enemies)[0]->player->setAlwaysEnemy(true);
+            (*enemies)[0]->setPosition(0.0f, 0.0f, -200000.0f);
+            (*enemies)[0]->setToSleep();
+            break;
+        case 7: {
+            int coords[] = {-4000, -3000, 80000, 10000, 7000, 160000}; // 0x1fd090
+            playerRoute = new Route(coords, 6);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(4, *enemies);
+            for (int i = 0; i != 3; ++i) {
+                (*enemies)[i] = createShip(8, 0, 2, playerRoute->getWaypoint(1), true, false);
+                (*enemies)[i]->setToSleep();
+            }
+            (*enemies)[3] = createShip(3, 0, 30, nullptr, true, false);
+            (*enemies)[3]->player->setAlwaysFriend(true);
+            (*enemies)[3]->setPosition(egoPosition.x + 700.0f, egoPosition.y + 50.0f, egoPosition.z + 6000.0f);
+            (*enemies)[3]->setRoute(playerRoute->clone());
+            (*enemies)[3]->player->setHitpoints(9999999);
+            (*enemies)[3]->name = *Globals::gameText->getText(1599);
+            static_cast<PlayerFighter *>((*enemies)[3])->setBoostProb(0);
+            objectivesA = new Objective(18, 0, 3, this);
+            break;
+        }
+        case 14: {
+            int coords[] = {40000, 5000, 30000}; // 0x1fd0a8
+            enemyRoute = new Route(coords, 3);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(7, *enemies);
+            for (int i = 0; i != 3; ++i)
+                (*enemies)[i] = createShip(8, 0, 0, enemyRoute->getWaypoint(), true, false);
+            for (int i = 3; i != 5; ++i)
+                (*enemies)[i] = createShip(0, 0, 5, enemyRoute->getWaypoint(), true, false);
+            for (int i = 5; i != 7; ++i)
+                (*enemies)[i] = createShip(0, 1, 14, enemyRoute->getWaypoint(), true, false);
+            Vector position = enemyRoute->getWaypoint()->getPosition();
+            position.x += 7000.0f;
+            (*enemies)[enemies->size() - 2]->setPosition(position);
+            position = enemyRoute->getWaypoint()->getPosition();
+            position.x -= 9000.0f;
+            position.y += 2000.0f;
+            position.z += 7000.0f;
+            (*enemies)[enemies->size() - 1]->setPosition(position);
+            player->setPosition(40000.0f, 0.0f, 120000.0f);
+            objectivesA = new Objective(31, 0, this);
+            break;
+        }
+        case 16: {
+            int coords[] = {0, 0, 170000}; // 0x1fd0b8
+            enemyRoute = new Route(coords, 3);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(10, *enemies);
+            Waypoint *waypoint = enemyRoute->getWaypoint();
+            for (int i = 0; i != 3; ++i) {
+                (*enemies)[i] = createShip(0, 1, 15, enemyRoute->getWaypoint(), true, false);
+                (*enemies)[i]->player->setAlwaysFriend(true);
+                static_cast<PlayerFixedObject *>((*enemies)[i])->setMoving(false);
+                Player *body = (*enemies)[i]->player;
+                body->setMaxHitpoints(body->getMaxHitpoints() / 3);
+                delete (*enemies)[i]->cargo;
+                (*enemies)[i]->cargo = nullptr;
+            }
+            (*enemies)[0]->setPosition(float(waypoint->x), float(waypoint->y), float(waypoint->z));
+            Player *body = (*enemies)[0]->player;
+            body->setMaxHitpoints(body->getMaxHitpoints() / 6);
+            (*enemies)[1]->setPosition(float(waypoint->x + 3000), float(waypoint->y + 2000), float(waypoint->z - 3000));
+            (*enemies)[2]->setPosition(float(waypoint->x - 9000), float(waypoint->y - 8000), float(waypoint->z - 7000));
+            for (int i = 3; i != 7; ++i) {
+                (*enemies)[i] = createShip(9, 0, 8, enemyRoute->getWaypoint(), true, false);
+                Player *enemy = (*enemies)[i]->player;
+                enemy->setMaxHitpoints(10 * enemy->getMaxHitpoints());
+                int x = waypoint->x + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+                int y = waypoint->y + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+                (*enemies)[i]->setPosition(float(x), float(y), float(waypoint->z + 50000));
+            }
+            for (int i = 7; i != 10; ++i) {
+                (*enemies)[i] = createShip(0, 0, 5, nullptr, true, false);
+                (*enemies)[i]->player->setAlwaysFriend(true);
+                (*enemies)[i]->player->setHitpoints(600);
+                float x = egoPosition.x + float(static_cast<AERandom *>(Globals::rnd)->nextInt(4000) - 2000);
+                float y = egoPosition.y + float(static_cast<AERandom *>(Globals::rnd)->nextInt(3400) - 1700);
+                float z = (egoPosition.z + 2000.0f) + float(static_cast<AERandom *>(Globals::rnd)->nextInt(4000) - 2000);
+                (*enemies)[i]->setPosition(x, y, z);
+            }
+            if ((*landmarks)[3]) {
+                (*landmarks)[3]->setVisible(true);
+                (*landmarks)[3]->setPosition(float(waypoint->x), float(waypoint->y), float(waypoint->z + 40000));
+            }
+            objectivesA = new Objective(22, 0, this);
+            break;
+        }
+        case 21: {
+            int playerCoords[] = {40000, -40000, 120000, -10000, 20000, 190000}; // 0x1fd0c8
+            playerRoute = new Route(playerCoords, 6);
+            int firstCoords[] = {40000, -40000, 120000, 0, 0, 0}; // 0x1fd0e0
+            Route *firstRoute = new Route(firstCoords, 3);
+            firstRoute->setLoop(true);
+            int secondCoords[] = {-10000, 20000, 190000, 0, 0, 0}; // 0x1fd0f8
+            Route *secondRoute = new Route(secondCoords, 3);
+            secondRoute->setLoop(true);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(4, *enemies);
+            (*enemies)[1] = createShip(0, 0, 5, firstRoute->getWaypoint(), true, false);
+            (*enemies)[2] = createShip(0, 0, 5, firstRoute->getWaypoint(), true, false);
+            (*enemies)[3] = createShip(0, 0, 5, firstRoute->getWaypoint(), true, false);
+            (*enemies)[0] = createShip(0, 0, 17, secondRoute->getWaypoint(), true, false);
+            (*enemies)[0]->name = *Globals::gameText->getText(1611);
+            (*enemies)[0]->player->setAlwaysEnemy(true);
+            for (unsigned i = 0; i < enemies->size(); ++i) {
+                (*enemies)[i]->setToSleep();
+                (*enemies)[i]->setRoute(i ? firstRoute->clone() : secondRoute);
+                (*enemies)[i]->geometry->setRotation(0.0f, 3.1416f, 0.0f);
+            }
+            int x = secondRoute->getWaypoint()->x + 1000;
+            int y = secondRoute->getWaypoint()->y;
+            int z = secondRoute->getWaypoint()->z + 2000;
+            (*enemies)[0]->setPosition(float(x), float(y), float(z));
+            objectivesA = new Objective(22, 0, this);
+            objectivesB = new Objective(7, 1, this);
+            delete firstRoute;
+            break;
+        }
+        case 24: {
+            int coords[] = {100000, 0, 0, 100000, 0, -30000}; // 0x1fd110
+            enemyRoute = new Route(coords, 6);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(5, *enemies);
+            for (int i = 0; i != 3; ++i) {
+                (*enemies)[i] = createShip(9, 0, 8, enemyRoute->getWaypoint(), true, false);
+                (*enemies)[i]->setRoute(enemyRoute->clone());
+            }
+            for (int i = 3; i != 5; ++i) {
+                (*enemies)[i] = createShip(2, 1, 15, enemyRoute->getWaypoint(), true, false);
+                static_cast<PlayerFixedObject *>((*enemies)[i])->setMoving(false);
+                Player *body = (*enemies)[i]->player;
+                body->setMaxHitpoints(body->getMaxHitpoints() / 3);
+                delete (*enemies)[i]->cargo;
+                (*enemies)[i]->cargo = nullptr;
+            }
+            (*landmarks)[3]->setVisible(false);
+            objectivesA = new Objective(31, 0, this);
+            break;
+        }
+        case 25:
+        case 29:
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(3, *enemies);
+            for (int i = 0; i != 3; ++i) {
+                (*enemies)[i] = createShip(9, 0, 8, nullptr, true, false);
+                int signRoll = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
+                int distanceX = static_cast<AERandom *>(Globals::rnd)->nextInt(80000);
+                int signY = static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1;
+                int y = (static_cast<AERandom *>(Globals::rnd)->nextInt(80000) + 20000) * signY;
+                int x = (signRoll == 0 ? 1 : -1) * (distanceX + 20000);
+                int signZ = static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1;
+                float z = float((static_cast<AERandom *>(Globals::rnd)->nextInt(80000) + 20000) * signZ);
+                (*enemies)[i]->setPosition(float(x), float(y), z);
+            }
+            break;
+        case 26:
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(2, *enemies);
+            for (int i = 0; i != 2; ++i) {
+                (*enemies)[i] = createShip(9, 0, 8, nullptr, true, false);
+                Vector position = player->getPosition();
+                Vector direction = player->geometry->getDirection();
+                direction = AbyssEngine::AEMath::VectorNormalize(direction);
+                position -= direction * 8000.0f;
+                position.x += float(static_cast<AERandom *>(Globals::rnd)->nextInt(1400) - 700);
+                position.y += float(static_cast<AERandom *>(Globals::rnd)->nextInt(1400) - 700);
+                position.z += float(static_cast<AERandom *>(Globals::rnd)->nextInt(1400) - 700);
+                (*enemies)[i]->setPosition(position);
+            }
+            objectivesA = new Objective(7, 2, this);
+            break;
+        case 28: {
+            (*landmarks)[3]->setPosition(100000.0f, -50000.0f, -40000.0f);
+            Vector position = (*landmarks)[3]->getPosition();
+            missionSpawnPosition = position;
+            int coords[] = {int(missionSpawnPosition.x), int(missionSpawnPosition.y), int(missionSpawnPosition.z)};
+            enemyRoute = new Route(coords, 3);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(8, *enemies);
+            for (int i = 0; i != 5; ++i)
+                (*enemies)[i] = createShip(9, 0, 8, enemyRoute->getWaypoint(), true, false);
+            for (int i = 5; i != 8; ++i) {
+                (*enemies)[i] = createShip(0, 1, 15, enemyRoute->getWaypoint(), true, false);
+                static_cast<PlayerFixedObject *>((*enemies)[i])->setMoving(false);
+                Player *body = (*enemies)[i]->player;
+                body->setMaxHitpoints(body->getMaxHitpoints() / 4);
+                delete (*enemies)[i]->cargo;
+                (*enemies)[i]->cargo = nullptr;
+            }
+            break;
+        }
+        case 36: {
+            Mission *mission = Globals::status->getMission();
+            mission->setAgent(new Agent(-1, String(*static_cast<GameText *>(Globals::gameText)->getText(1604), false),
+                                       29, 5, 1, true, -1, -1, -1, -1));
+            int coords[] = {110000, -10000, -80000, 70000, 0, -100000,
+                            -100000, 10000, -80000, -130000, -50000, -150000}; // 0x1fd128
+            playerRoute = new Route(coords, 12);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(8, *enemies);
+            (*enemies)[0] = createShip(1, 0, 9, nullptr, true, false);
+            float x = egoPosition.x + float(static_cast<AERandom *>(Globals::rnd)->nextInt(1400) - 700);
+            float y = egoPosition.y + float(static_cast<AERandom *>(Globals::rnd)->nextInt(1400) - 700);
+            (*enemies)[0]->setPosition(x, y, egoPosition.z + 1000.0f);
+            (*enemies)[0]->setSpeed(3.0f);
+            static_cast<PlayerFighter *>((*enemies)[0])->setRotate(3);
+            (*enemies)[0]->player->setHitpoints(9999999);
+            (*enemies)[0]->setRoute(playerRoute->clone());
+            (*enemies)[0]->player->setAlwaysFriend(true);
+            (*enemies)[0]->name = *static_cast<GameText *>(Globals::gameText)->getText(1604);
+            (*enemies)[0]->cargo = nullptr;
+            for (unsigned i = 1; i < enemies->size(); ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                Route *spawnRoute = playerRoute;
+                int waypoint = static_cast<AERandom *>(Globals::rnd)->nextInt(spawnRoute->length());
+                (*enemies)[i] = createShip(8, 0, type, spawnRoute->getWaypoint(waypoint), true, false);
+                (*enemies)[i]->setToSleep();
+            }
+            objectivesA = new Objective(20, 1, 8, this);
+            objectivesB = new Objective(21, 1, 8, this);
+            break;
+        }
+        case 38: {
+            int coords[] = {90000, 10000, 80000};
+            enemyRoute = new Route(coords, 3);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(7, *enemies);
+            for (int i = 0; i != 2; ++i) {
+                (*enemies)[i] = createShip(2, 1, 15, enemyRoute->getWaypoint(), true, false);
+                (*enemies)[i]->player->setAlwaysFriend(true);
+                static_cast<PlayerFixedObject *>((*enemies)[i])->setMoving(false);
+                int x = enemyRoute->getWaypoint()->x + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+                int y = enemyRoute->getWaypoint()->y + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+                int z = enemyRoute->getWaypoint()->z + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+                (*enemies)[i]->setPosition(float(x), float(y), float(z));
+            }
+            for (unsigned i = 2; i < enemies->size(); ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(3);
+                (*enemies)[i] = createShip(3, 0, type, enemyRoute->getWaypoint(), true, false);
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+            }
+            objectivesA = new Objective(18, 2, 7, this);
+            objectivesB = new Objective(7, 2, this);
+            break;
+        }
+        case 40: {
+            int enemyCoords[] = {-20000, -3000, 200000};
+            int friendCoords[] = {-20000, -3000, 35000, -20000, -3000, 200000}; // 0x1fd180 + immediates
+            enemyRoute = new Route(enemyCoords, 3);
+            friendRoute = new Route(friendCoords, 6);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(13, *enemies);
+            (*enemies)[0] = createShip(0, 1, 13, nullptr, true, false);
+            (*enemies)[0]->player->setAlwaysFriend(true);
+            (*enemies)[0]->name = *static_cast<GameText *>(Globals::gameText)->getText(1604);
+            (*enemies)[0]->player->setMaxHitpoints(5 * Globals::status->getLevel() + 1800);
+            (*enemies)[0]->setPosition(-9999999.0f, -9999999.0f, -9999999.0f);
+            (*enemies)[0]->setToSleep();
+            (*enemies)[0]->setVisible(false);
+            for (int i = 1; i != 5; ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(0);
+                (*enemies)[i] = createShip(0, 0, type, nullptr, true, false);
+                (*enemies)[i]->setRoute(friendRoute->clone());
+                (*enemies)[i]->player->setAlwaysFriend(true);
+                if (i == 2) (*enemies)[2]->name = *static_cast<GameText *>(Globals::gameText)->getText(1605);
+            }
+            for (int i = 5; i != 9; ++i) {
+                (*enemies)[i] = createShip(9, 0, 8, enemyRoute->getWaypoint(), true, false);
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+            }
+            for (int i = 9; i != 13; ++i) {
+                (*enemies)[i] = createShip(9, 0, 8, nullptr, true, false);
+                (*enemies)[i]->setPosition(Vector{-500000.0f, -500000.0f, -500000.0f});
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+                (*enemies)[i]->setToSleep();
+            }
+            (*landmarks)[3]->setPosition(-20000.0f, -3000.0f, 200000.0f);
+            if (initStreamOutPosition) {
+                player->setPosition(-105000.0f, 0.0f, 80000.0f);
+                player->geometry->setRotation(0.0f, 1.5708f, 0.0f);
+            }
+            objectivesB = new Objective(7, 1, this);
+            break;
+        }
+        case 41:
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(8, *enemies);
+            (*enemies)[0] = createShip(1, 1, 13, nullptr, true, false);
+            (*enemies)[0]->player->setAlwaysFriend(true);
+            (*enemies)[0]->name = *static_cast<GameText *>(Globals::gameText)->getText(1604);
+            if (lastMissionFreighterHitpoints <= 0)
+                lastMissionFreighterHitpoints = int(float(5 * Globals::status->getLevel() + 1800) * 0.7f);
+            (*enemies)[0]->player->setHitpoints(lastMissionFreighterHitpoints);
+            static_cast<PlayerFixedObject *>((*enemies)[0])->setMoving(true);
+            (*enemies)[0]->setPosition(0.0f, 0.0f, -300000.0f);
+            for (int i = 1; i != 8; ++i) {
+                (*enemies)[i] = createShip(9, 0, 8, nullptr, true, false);
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+            }
+            (*enemies)[1]->setPosition(0.0f, 0.0f, -260000.0f);
+            (*enemies)[2]->setPosition(-10000.0f, 10000.0f, -240000.0f);
+            (*enemies)[3]->setPosition(13000.0f, 2000.0f, -220000.0f);
+            (*enemies)[4]->setPosition(-72000.0f, -4000.0f, -210000.0f);
+            (*enemies)[5]->setPosition(60000.0f, -40000.0f, -190000.0f);
+            (*enemies)[6]->setPosition(-18000.0f, 30000.0f, -160000.0f);
+            (*enemies)[7]->setPosition(17000.0f, 40000.0f, -140000.0f);
+            player->setPosition(3000.0f, 2000.0f, -320000.0f);
+            player->geometry->setRotation(0.0f, 0.0f, 0.0f);
+            objectivesA = new Objective(25, 0, this);
+            objectivesB = new Objective(7, 1, this);
+            break;
+        case 48:
+        case 49:
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(5, *enemies);
+            for (unsigned i = 0; i < enemies->size(); ++i) {
+                (*enemies)[i] = createShip(1, 0, 9, nullptr, true, false);
+                (*enemies)[i]->player->setAlwaysEnemy(false);
+                (*enemies)[i]->player->setAlwaysFriend(true);
+            }
+            break;
+        case 50:
+            if ((*landmarks)[1]) missionSpawnPosition = (*landmarks)[1]->getPosition();
+            else missionSpawnPosition = Vector{0.0f, 0.0f, 40000.0f};
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(4, *enemies);
+            for (unsigned i = 0; i < enemies->size(); ++i) {
+                (*enemies)[i] = createShip(1, 0, 9, nullptr, true, false);
+                (*enemies)[i]->player->setAlwaysEnemy(false);
+                (*enemies)[i]->player->setAlwaysFriend(true);
+            }
+            break;
+        case 51: {
+            if ((*landmarks)[1]) missionSpawnPosition = (*landmarks)[1]->getPosition();
+            else missionSpawnPosition = Vector{0.0f, 0.0f, 40000.0f};
+            int coords[] = {int(missionSpawnPosition.x), int(missionSpawnPosition.y), int(missionSpawnPosition.z)};
+            enemyRoute = new Route(coords, 3);
+            enemyRoute->setLoop(true);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(6, *enemies);
+            (*enemies)[0] = createShip(1, 1, 13, nullptr, true, false);
+            (*enemies)[0]->player->setAlwaysEnemy(true);
+            missionSpawnPosition = missionSpawnPosition + (player->getPosition() - missionSpawnPosition) / 3.0f;
+            (*enemies)[0]->setPosition(missionSpawnPosition.x, missionSpawnPosition.y, missionSpawnPosition.z);
+            for (unsigned i = 1; i < enemies->size(); ++i) {
+                (*enemies)[i] = createShip(1, 0, 9, enemyRoute->getWaypoint(), true, false);
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+                (*enemies)[i]->setRoute(enemyRoute->clone());
+            }
+            break;
+        }
+        case 52: {
+            if ((*landmarks)[1]) missionSpawnPosition = (*landmarks)[1]->getPosition();
+            else missionSpawnPosition = Vector{0.0f, 0.0f, 40000.0f};
+            int coords[] = {int(missionSpawnPosition.x), int(missionSpawnPosition.y), int(missionSpawnPosition.z)};
+            enemyRoute = new Route(coords, 3);
+            enemyRoute->setLoop(true);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(8, *enemies);
+            (*enemies)[0] = createShip(1, 1, 13, nullptr, true, false);
+            (*enemies)[0]->player->setAlwaysEnemy(true);
+            missionSpawnPosition = missionSpawnPosition + (player->getPosition() - missionSpawnPosition) / 2.0f;
+            (*enemies)[0]->setPosition(missionSpawnPosition.x, missionSpawnPosition.y, missionSpawnPosition.z);
+            (*enemies)[1] = createShip(1, 1, 13, nullptr, true, false);
+            (*enemies)[1]->player->setAlwaysEnemy(true);
+            missionSpawnPosition.x += 16000.0f;
+            missionSpawnPosition.y += 13000.0f;
+            missionSpawnPosition.z += 16000.0f;
+            (*enemies)[1]->setPosition(missionSpawnPosition.x, missionSpawnPosition.y, missionSpawnPosition.z);
+            for (unsigned i = 2; i < enemies->size(); ++i) {
+                (*enemies)[i] = createShip(1, 0, 9, enemyRoute->getWaypoint(), true, false);
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+                (*enemies)[i]->setRoute(enemyRoute->clone());
+            }
+            break;
+        }
+        case 56: {
+            int coords[] = {0, 0, -60000, -12000, -7000, -110000, 15000, 3000, -160000}; // 0x1fd190
+            playerRoute = new Route(coords, 9);
+            friendRoute = playerRoute->clone();
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(9, *enemies);
+            for (int i = 0; i != 3; ++i) {
+                (*enemies)[i] = createShip(8, 0, 24, nullptr, true, false);
+                (*enemies)[i]->player->setAlwaysFriend(true);
+                (*enemies)[i]->player->setAlwaysEnemy(false);
+                (*enemies)[i]->setToSleep();
+                missionSpawnPosition = player->getPosition() * 0.8f;
+                float x = missionSpawnPosition.x - 3500.0f + float(static_cast<AERandom *>(Globals::rnd)->nextInt(7000));
+                float y = missionSpawnPosition.y - 3500.0f + float(static_cast<AERandom *>(Globals::rnd)->nextInt(7000));
+                float z = missionSpawnPosition.z - 3500.0f + float(static_cast<AERandom *>(Globals::rnd)->nextInt(7000));
+                (*enemies)[i]->setPosition(x, y, z);
+                (*enemies)[i]->setRoute(friendRoute->clone());
+                (*enemies)[i]->player->setHitpoints(9999999);
+            }
+            for (unsigned i = 3; i < enemies->size(); ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                int waypoint = i < 5 ? 0 : (i < 10 ? 1 : 2);
+                (*enemies)[i] = createShip(8, 0, type, playerRoute->getWaypoint(waypoint), true, false);
+                (*enemies)[i]->setToSleep();
+            }
+            objectivesA = new Objective(18, 3, 9, this);
+            break;
+        }
+        case 63: {
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(7, *enemies);
+            int coords[] = {0, 0, 0};
+            Route *route = new Route(coords, 3);
+            (*enemies)[0] = reinterpret_cast<KIPlayer *>(createStaticObject(route->getWaypoint(), 14243, true));
+            Vector position = route->getWaypoint()->getPosition();
+            (*enemies)[0]->setToSleep();
+            (*enemies)[0]->name = *static_cast<GameText *>(Globals::gameText)->getText(441);
+            for (unsigned i = 1; i < enemies->size(); ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                (*enemies)[i] = createShip(8, 0, type, nullptr, true, false);
+                int dx = static_cast<AERandom *>(Globals::rnd)->nextInt(20000);
+                int sx = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
+                int dy = static_cast<AERandom *>(Globals::rnd)->nextInt(20000);
+                int sy = static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1;
+                int y = sy * dy + 10000;
+                int x = (sx == 0 ? 1 : -1) * dx + 10000;
+                int dz = static_cast<AERandom *>(Globals::rnd)->nextInt(20000);
+                int sz = static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1;
+                float z = float(int(position.z + float(sz * dz + 10000)));
+                (*enemies)[i]->setPosition(float(int(position.x + float(x))), float(int(position.y + float(y))), z);
+                (*enemies)[i]->setToSleep();
+            }
+            objectivesA = new Objective(27, 4, this);
+            break;
+        }
+        case 64: {
+            PlayerEgo *ego = player;
+            Vector position = player->getPosition();
+            Vector direction = player->geometry->getDirection();
+            ego->setPosition(position - direction * 40000.0f);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(9, *enemies);
+            int coords[] = {100000, 0, 0};
+            enemyRoute = new Route(coords, 3);
+            (*enemies)[0] = createShip(0, 0, 38, nullptr, true, false);
+            (*enemies)[0]->player->setAlwaysFriend(true);
+            (*enemies)[0]->name = *static_cast<GameText *>(Globals::gameText)->getText(1617);
+            (*enemies)[0]->setPosition(0.0f, 0.0f, 0.0f);
+            (*enemies)[0]->geometry->setDirection(Vector{1.0f, 0.0f, 0.0f}, Vector{0.0f, 1.0f, 0.0f});
+            (*enemies)[0]->setRoute(enemyRoute->clone());
+            (*enemies)[0]->cargo = nullptr;
+            for (unsigned i = 1; i < enemies->size(); ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                (*enemies)[i] = createShip(8, 0, type, nullptr, true, false);
+                int dx = static_cast<AERandom *>(Globals::rnd)->nextInt(1500);
+                int sx = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
+                int dy = static_cast<AERandom *>(Globals::rnd)->nextInt(1500);
+                int sy = static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1;
+                int y = sy * (dy + 1000);
+                int x = (sx == 0 ? 1 : -1) * (dx + 1000);
+                int dz = static_cast<AERandom *>(Globals::rnd)->nextInt(1500);
+                int sz = static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1;
+                (*enemies)[i]->setPosition(float(x), float(y), float(sz * (dz + 1000)));
+                (*enemies)[i]->geometry->setDirection(Vector{1.0f, 0.0f, 0.0f}, Vector{0.0f, 1.0f, 0.0f});
+                (*enemies)[i]->setRoute(enemyRoute->clone());
+            }
+            objectivesA = new Objective(22, 0, this);
+            objectivesB = new Objective(1, 0, this);
+            break;
+        }
+        case 65: {
+            int coords[] = {0, 0, 0};
+            enemyRoute = new Route(coords, 3);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(1, *enemies);
+            (*enemies)[0] = createShip(0, 0, 38, nullptr, true, false);
+            (*enemies)[0]->player->setAlwaysFriend(true);
+            (*enemies)[0]->name = *static_cast<GameText *>(Globals::gameText)->getText(1617);
+            (*enemies)[0]->setRoute(enemyRoute->clone());
+            (*enemies)[0]->player->setHitpoints(9999999);
+            break;
+        }
+        case 67: {
+            int coords[] = {220000, -20000, -10000}; // 0x1fd1c8
+            enemyRoute = new Route(coords, 3);
+            playerRoute = enemyRoute->clone();
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(11, *enemies);
+            (*enemies)[0] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 14243, true));
+            (*enemies)[0]->name = *static_cast<GameText *>(Globals::gameText)->getText(441);
+            (*enemies)[0]->setPosition(float(coords[0]), float(coords[1]), float(coords[2]));
+            (*enemies)[0]->player->setAlwaysEnemy(false);
+            (*enemies)[0]->player->setAlwaysFriend(true);
+            (*enemies)[0]->setToSleep();
+            for (unsigned i = 1; i < enemies->size() - 1; ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                (*enemies)[i] = createShip(8, 0, type, enemyRoute->getWaypoint(), true, false);
+                (*enemies)[i]->setToSleep();
+                // Android writes the first fighter extension word +4 (+0x128).
+                *reinterpret_cast<int *>(reinterpret_cast<unsigned char *>((*enemies)[i]) + sizeof(KIPlayer) + 4) = 150000;
+                if (i >= 5) (*enemies)[i]->setPosition(800000.0f, 800000.0f, 800000.0f);
+            }
+            (*enemies)[1]->setPosition(float(coords[0] + 30000), float(coords[1]), float(coords[2]));
+            (*enemies)[enemies->size() - 1] = createShip(0, 0, 27, nullptr, true, false);
+            Vector position = player->getPosition();
+            (*enemies)[enemies->size() - 1]->setPosition(position + Vector{2000.0f, 500.0f, -7000.0f});
+            (*enemies)[enemies->size() - 1]->player->setAlwaysFriend(true);
+            (*enemies)[enemies->size() - 1]->name = *static_cast<GameText *>(Globals::gameText)->getText(1633);
+            (*enemies)[enemies->size() - 1]->player->setMaxHitpoints(9999999);
+            (*enemies)[enemies->size() - 1]->setRoute(playerRoute->clone());
+            objectivesA = new Objective(22, 0, this);
+            objectivesB = new Objective(1, 0, this);
+            break;
+        }
+        case 69: {
+            Vector position = (*static_cast<Array<AEGeometry *> *>(starSystem->getPlanets()))[1]->getPosition();
+            position *= 4.0f;
+            int coords[] = {int(position.x), int(position.y), int(position.z),
+                            int(position.x * 10.0f), int(position.y * 10.0f), int(position.z * 10.0f)};
+            enemyRoute = new Route(coords, 6);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(5, *enemies);
+            (*enemies)[0] = createShip(0, 0, 12, nullptr, true, false);
+            (*enemies)[0]->player->setAlwaysFriend(true);
+            (*enemies)[0]->name = *static_cast<GameText *>(Globals::gameText)->getText(1631);
+            (*enemies)[0]->setRoute(enemyRoute->clone());
+            (*enemies)[0]->setPosition(position);
+            (*enemies)[0]->setSpeed(5.5f);
+            position = AbyssEngine::AEMath::VectorNormalize(position);
+            (*enemies)[0]->geometry->setDirection(position, Vector{0.0f, 1.0f, 0.0f});
+            int friendCoords[] = {0, 0, 20000};
+            friendRoute = new Route(friendCoords, 3);
+            for (unsigned i = 1; i < enemies->size(); ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(0);
+                (*enemies)[i] = createShip(0, 0, type, friendRoute->getWaypoint(), true, false);
+            }
+            objectivesA = new Objective(22, 0, this);
+            break;
+        }
+        case 70: {
+            PlayerEgo *ego = player;
+            Vector position = player->getPosition();
+            Vector direction = player->geometry->getDirection();
+            ego->setPosition(position - direction * 120000.0f);
+            Vector landmarkPosition = (*landmarks)[1]->getPosition();
+            Vector playerPosition = player->getPosition();
+            int coords[] = {int(landmarkPosition.x), int(landmarkPosition.y), int(landmarkPosition.z)};
+            enemyRoute = new Route(coords, 3);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(1, *enemies);
+            (*enemies)[0] = createShip(0, 0, 12, nullptr, true, false);
+            (*enemies)[0]->player->setAlwaysFriend(true);
+            (*enemies)[0]->name = *static_cast<GameText *>(Globals::gameText)->getText(1631);
+            (*enemies)[0]->setRoute(enemyRoute->clone());
+            missionSpawnPosition = playerPosition + (landmarkPosition - playerPosition) / 4.0f;
+            (*enemies)[0]->setPosition(missionSpawnPosition);
+            Vector facing = AbyssEngine::AEMath::VectorNormalize(landmarkPosition - playerPosition);
+            (*enemies)[0]->geometry->setDirection(facing, Vector{0.0f, 1.0f, 0.0f});
+            Player *body = (*enemies)[0]->player;
+            body->setHitpoints(int(float(body->getMaxHitpoints()) * 2.5f));
+            objectivesA = new Objective(1, 0, this);
+            break;
+        }
+        case 73: {
+            int coords[] = {80000, 0, 60000, 150000, 0, -50000}; // 0x1fd1e8
+            enemyRoute = new Route(coords, 6);
+            player->setPosition(-30000.0f, 0.0f, 150000.0f);
+            Vector target = {float(coords[3] + 20000), float(coords[4]), float(coords[5])};
+            Vector direction = AbyssEngine::AEMath::VectorNormalize(target - player->getPosition());
+            player->geometry->setDirection(direction, Vector{0.0f, 1.0f, 0.0f});
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(12, *enemies);
+            for (int i = 0; i != 8; ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                (*enemies)[i] = createShip(8, 0, type, enemyRoute->getWaypoint(0), true, false);
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+                (*enemies)[i]->setToSleep();
+                if (i >= 4) (*enemies)[i]->setPosition(Vector{-800000.0f, -800000.0f, -800000.0f});
+            }
+            for (unsigned i = 8; i < enemies->size(); ++i) {
+                (*enemies)[i] = createShip(0, 1, 15, nullptr, true, false);
+                (*enemies)[i]->player->setAlwaysFriend(true);
+                (*enemies)[i]->cargo = nullptr;
+                static_cast<PlayerFixedObject *>((*enemies)[i])->setMoving(true);
+                int x = enemyRoute->getWaypoint(1)->x + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+                int y = enemyRoute->getWaypoint(1)->y + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+                int z = enemyRoute->getWaypoint(1)->z + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+                (*enemies)[i]->setPosition(float(x), float(y), float(z));
+            }
+            objectivesA = new Objective(18, 0, 8, this);
+            objectivesB = new Objective(18, 8, 12, this);
+            break;
+        }
+        case 78: {
+            Matrix matrix;
+            const float initial[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1}; // Android 0xb7ed8/0xb7ee0
+            std::memcpy(matrix.m, initial, sizeof(initial));
+            struct TurretPlacement { int flag; Vector position; Vector rotation; };
+            // First two 28-byte records from Android rodata 0x1fd200.
+            static const TurretPlacement placements[] = {
+                {0, {-3994.97f, 23359.0f, -7378.10f}, {0.0f, 0.0f, 1.57079637f}},
+                {0, {3994.96f, 23359.0f, -7378.10f}, {0.0f, 0.0f, -1.57079637f}}
+            };
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(22, *enemies);
+            Vector rotated{0.0f, 0.0f, 0.0f};
+            for (int i = 0; i != 2; ++i) {
+                (*enemies)[i] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 14363, true));
+                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, placements[i].rotation);
+                (*enemies)[i]->geometry->setRotation(rotated);
+                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, placements[i].position);
+                Vector position = {rotated.x + (i == 0 ? 1200.0f : -1200.0f), rotated.y, rotated.z};
+                (*enemies)[i]->setPosition(position);
+            }
+            int baseX = -17000;
+            for (unsigned i = 2; i < enemies->size(); ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                (*enemies)[i] = createShip(8, 0, type, nullptr, true, false);
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+                int x = static_cast<AERandom *>(Globals::rnd)->nextInt(2000) + baseX;
+                float y = float(static_cast<AERandom *>(Globals::rnd)->nextInt(10000) - 5000);
+                int z = static_cast<AERandom *>(Globals::rnd)->nextInt(10000) + 155000;
+                (*enemies)[i]->setPosition(Vector{float(x), y, float(z)});
+                (*enemies)[i]->geometry->setDirection(Vector{0.0f, 0.0f, -1.0f}, Vector{0.0f, 1.0f, 0.0f});
+                (*enemies)[i]->setToSleep();
+                baseX += 2000;
+            }
+            break;
+        }
+        case 79:
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(7, *enemies);
+            for (unsigned i = 0; i < enemies->size(); ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(9);
+                (*enemies)[i] = createShip(9, 0, type, nullptr, true, false);
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+            }
+            break;
+        case 81: {
+            enemies = new Array<KIPlayer *>();
+            Station *station = reinterpret_cast<Station *>(static_cast<intptr_t>(
+                static_cast<Galaxy *>(Globals::galaxy)->getStation(101)));
+            ArrayAdd(static_cast<KIPlayer *>(new PlayerStation(station)), *enemies);
+            (*enemies)[0]->name = station->getName();
+            (*enemies)[0]->shipGroup = 8;
+            delete station;
+            for (int i = 8; i; --i) ArrayAdd(static_cast<KIPlayer *>(createShip(9, 0, 8, nullptr, true, false)), *enemies);
+            break;
+        }
+        case 87:
+            objectivesA = new Objective(22, 0, this);
+            break;
+        case 80: {
+            enemies = new Array<KIPlayer *>();
+            Vector stationPosition = {0.0f, 0.0f, 160000.0f};
+            Station *station = reinterpret_cast<Station *>(static_cast<intptr_t>(
+                static_cast<Galaxy *>(Globals::galaxy)->getStation(101)));
+            ArrayAdd(static_cast<KIPlayer *>(new PlayerStation(station)), *enemies);
+            (*enemies)[0]->name = station->getName();
+            (*enemies)[0]->shipGroup = 8;
+            (*enemies)[0]->setPosition(stationPosition);
+            (*enemies)[0]->geometry->setRotation(Vector{0.0f, 0.0f, 0.0f});
+            delete station;
+            Matrix matrix;
+            const float initial[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1};
+            std::memcpy(matrix.m, initial, sizeof(initial));
+            AbyssEngine::AEMath::MatrixSetRotation(matrix, 0.0f, 3.1416f, 0.0f);
+            int hp;
+            if (Globals::status->getLevel() <= 20) hp = 15 * Globals::status->getLevel() + 220;
+            else hp = 520;
+            struct TurretPlacement { float flag; Vector position; Vector rotation; };
+            // Twelve 28-byte records, Android rodata 0x1fd200..0x1fd350.
+            static const TurretPlacement placements[] = {
+                {0.0f, {-3994.969970703125f, 23359.0f, -7378.10009765625f}, {0.0f, 0.0f, 1.5707963705062866f}},
+                {0.0f, {3994.9599609375f, 23359.0f, -7378.10009765625f}, {0.0f, 0.0f, -1.5707963705062866f}},
+                {1.0f, {1988.030029296875f, -37327.1015625f, -4511.4599609375f}, {0.0f, 0.0f, -1.5707963705062866f}},
+                {1.0f, {-1995.02001953125f, -37327.1015625f, -4511.4599609375f}, {0.0f, 0.0f, 1.5707963705062866f}},
+                {0.0f, {-3264.75f, -22848.599609375f, 791.5239868164062f}, {0.0f, 0.0f, 1.5707963705062866f}},
+                {0.0f, {3273.2900390625f, -22848.599609375f, 791.5239868164062f}, {0.0f, 0.0f, -1.5707963705062866f}},
+                {0.0f, {-29726.69921875f, -10994.7998046875f, -3765.530029296875f}, {0.0f, 0.0f, 3.1415927410125732f}},
+                {0.0f, {29716.19921875f, -10994.7998046875f, -3765.530029296875f}, {0.0f, 0.0f, 3.1415927410125732f}},
+                {0.0f, {29716.19921875f, 4854.22021484375f, -3758.77001953125f}, {0.0f, 0.0f, 0.0f}},
+                {1.0f, {17013.0f, -764.3909912109375f, -1690.6500244140625f}, {0.0f, 0.0f, 0.0f}},
+                {1.0f, {-17013.30078125f, -764.5120239257812f, -1690.6500244140625f}, {0.0f, 0.0f, 0.0f}},
+                {0.0f, {-29726.69921875f, 4854.22021484375f, -3758.77001953125f}, {0.0f, 0.0f, 0.0f}},
+            };
+            Vector rotated{0.0f, 0.0f, 0.0f};
+            for (int i = 0; i != 12; ++i) {
+                int type = (0x9f3u & (1u << i)) ? 14363 : 14365;
+                ArrayAdd(reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, type, true)), *enemies);
+                KIPlayer *turret = (*enemies)[i + 1];
+                turret->player->setMaxHitpoints(hp);
+                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, placements[i].rotation);
+                turret->geometry->setRotation(rotated);
+                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, placements[i].position);
+                turret->setPosition(Vector{stationPosition.x + rotated.x, stationPosition.y + rotated.y,
+                                           stationPosition.z + rotated.z});
+                turret->shipGroup = 8;
+                turret->player->setAlwaysEnemy(true);
+            }
+            int coords[] = {0, 0, int(stationPosition.z * 0.5f)};
+            enemyRoute = new Route(coords, 3);
+            for (int i = 6; i; --i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                KIPlayer *fighter = createShip(8, 0, type, enemyRoute->getWaypoint(), true, false);
+                fighter->player->setAlwaysEnemy(true);
+                fighter->player->setAlwaysFriend(false);
+                ArrayAdd(fighter, *enemies);
+            }
+            for (int i = 3; i; --i) {
+                KIPlayer *fighter = createShip(0, 0, 17, enemyRoute->getWaypoint(), true, false);
+                fighter->player->setAlwaysFriend(true);
+                fighter->player->setAlwaysEnemy(false);
+                ArrayAdd(fighter, *enemies);
+            }
+            player->setPosition(-70000.0f, 0.0f, -30000.0f);
+            player->geometry->setDirection(Vector{1.0f, 0.0f, 1.0f}, Vector{0.0f, 1.0f, 0.0f});
+            objectivesA = new Objective(22, 0, this);
+            break;
+        }
+        case 91: {
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(1, *enemies);
+            Waypoint *waypoint = new Waypoint(-20000, 0, 60000, nullptr);
+            (*enemies)[0] = reinterpret_cast<KIPlayer *>(createStaticObject(waypoint, 18766, false));
+            static_cast<PlayerFixedObject *>((*enemies)[0])->setMoving(false);
+            static_cast<PlayerFixedObject *>((*enemies)[0])->setDockingType(0);
+            (*enemies)[0]->setPosition(waypoint->getPosition());
+            (*enemies)[0]->player->setAlwaysFriend(true);
+            Player *body = (*enemies)[0]->player;
+            body->setHitpoints(body->getHitpoints() / 20);
+            (*enemies)[0]->geometry->setRotation(Vector{0.0f, 5.49778748f, 0.0f});
+            (*enemies)[0]->setActive(false);
+            delete (*enemies)[0]->cargo;
+            (*enemies)[0]->cargo = nullptr;
+            objectivesB = new Objective(1, 0, this);
+            break;
+        }
+        case 92: {
+            int coords[9];
+            coords[0] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000;
+            coords[1] = 0;
+            coords[2] = -70000;
+            coords[3] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000;
+            coords[4] = 0;
+            coords[5] = -100000;
+            coords[6] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000;
+            coords[7] = 0;
+            coords[8] = -140000;
+            enemyRoute = new Route(coords, 9);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(4, *enemies);
+            for (int i = 0; i != 3; ++i) {
+                Route *spawnRoute = enemyRoute;
+                int waypoint = static_cast<AERandom *>(Globals::rnd)->nextInt(spawnRoute->length());
+                (*enemies)[i] = createShip(10, 0, 44, spawnRoute->getWaypoint(waypoint), true, false);
+                (*enemies)[i]->setToSleep();
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+                static_cast<PlayerFighter *>((*enemies)[i])->setAIDisabled(true);
+                static_cast<PlayerFighter *>((*enemies)[i])->setCloakingPossible(false);
+            }
+            Waypoint *waypoint = new Waypoint(80000, 0, 110000, nullptr);
+            (*enemies)[3] = reinterpret_cast<KIPlayer *>(createStaticObject(waypoint, 17049, false));
+            static_cast<PlayerFixedObject *>((*enemies)[3])->setMoving(false);
+            (*enemies)[3]->player->setAlwaysFriend(true);
+            static_cast<PlayerFixedObject *>((*enemies)[3])->setDockingType(1);
+            static_cast<PlayerFixedObject *>((*enemies)[3])->setName(
+                String(*static_cast<GameText *>(Globals::gameText)->getText(3209), false));
+            delete (*enemies)[3]->cargo;
+            (*enemies)[3]->cargo = nullptr;
+            objectivesA = new Objective(22, 0, this);
+            objectivesB = new Objective(1, 3, this);
+            break;
+        }
+        case 94: {
+            int coords[] = {-700000, 0, -700000};
+            enemyRoute = new Route(coords, 3);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(10, *enemies);
+            for (int i = 0; i != 6; ++i) {
+                Route *spawnRoute = enemyRoute;
+                int waypoint = static_cast<AERandom *>(Globals::rnd)->nextInt(spawnRoute->length());
+                (*enemies)[i] = createShip(10, 0, 44, spawnRoute->getWaypoint(waypoint), true, false);
+                (*enemies)[i]->setToSleep();
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+            }
+            (*enemies)[6] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 18781, false));
+            static_cast<PlayerFixedObject *>((*enemies)[6])->setMoving(false);
+            static_cast<PlayerFixedObject *>((*enemies)[6])->setDockingType(2);
+            static_cast<PlayerFixedObject *>((*enemies)[6])->setName(
+                String(*static_cast<GameText *>(Globals::gameText)->getText(3208), false));
+            (*enemies)[6]->player->setAlwaysFriend(true);
+            (*enemies)[6]->geometry->rotate(Vector{0.0f, -2.35619450f, 0.0f});
+            delete (*enemies)[6]->cargo;
+            (*enemies)[6]->cargo = nullptr;
+            Waypoint *waypoint = new Waypoint(30000, -5000, 40000, nullptr);
+            (*enemies)[7] = reinterpret_cast<KIPlayer *>(createStaticObject(waypoint, 17049, false));
+            static_cast<PlayerFixedObject *>((*enemies)[7])->setMoving(false);
+            static_cast<PlayerFixedObject *>((*enemies)[7])->setDockingType(1);
+            static_cast<PlayerFixedObject *>((*enemies)[7])->setName(
+                String(*static_cast<GameText *>(Globals::gameText)->getText(3209), false));
+            (*enemies)[7]->player->setAlwaysFriend(true);
+            delete (*enemies)[7]->cargo;
+            (*enemies)[7]->cargo = nullptr;
+            int patrolCoords[] = {-1, -1, -1, 20000, -3000, 30000, -1, -1, -1}; // 0x1fd390
+            int times[] = {12000, 0, 12000};
+            Array<KIPlayer *> *targets = new Array<KIPlayer *>();
+            ArraySetLength(3, *targets);
+            (*targets)[0] = (*enemies)[6];
+            (*targets)[2] = (*enemies)[7];
+            Route *route = new Route(patrolCoords, targets, times, 9);
+            route->setLoop(true);
+            Route *clone = route->clone();
+            for (int i = 8; i != 10; ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(3);
+                if (i == 8) {
+                    (*enemies)[8] = createShip(3, 0, type, route->getWaypoint(0), true, false);
+                    (*enemies)[8]->setRoute(route);
+                } else {
+                    (*enemies)[i] = createShip(3, 0, type, clone->getWaypoint(0), true, false);
+                    (*enemies)[i]->setRoute(clone);
+                }
+                (*enemies)[i]->player->setAlwaysFriend(true);
+                (*enemies)[i]->player->setNeverAttack(true);
+            }
+            objectivesB = new Objective(1, 7, this);
+            break;
+        }
+        case 97: {
+            int coords[] = {0, 0, 50000};
+            enemyRoute = new Route(coords, 3);
+            int enemyCount = Globals::isRunningHDonWeakDevice ? 8 : 12;
+            unsigned total = Globals::isRunningHDonWeakDevice ? 11 : 19;
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(total, *enemies);
+            for (int i = 0; i != enemyCount; ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                (*enemies)[i] = createShip(8, 0, type, enemyRoute->getWaypoint(0), true, false);
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+            }
+            unsigned friendEnd = Globals::isRunningHDonWeakDevice ? 11 : 16;
+            for (unsigned i = enemyCount; i < friendEnd; ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(2);
+                (*enemies)[i] = createShip(2, 0, type, enemyRoute->getWaypoint(0), true, false);
+                (*enemies)[i]->player->setAlwaysFriend(true);
+            }
+            for (unsigned i = friendEnd; i < total; ++i) {
+                (*enemies)[i] = createShip(2, 1, 15, enemyRoute->getWaypoint(0), true, false);
+                static_cast<PlayerFixedObject *>((*enemies)[i])->setMoving(false);
+                (*enemies)[i]->player->setAlwaysFriend(true);
+            }
+            objectivesA = new Objective(18, 0, enemyCount, this);
+            break;
+        }
+        case 100: {
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(2, *enemies);
+            missionSpawnPosition = player->getPosition();
+            int distance = static_cast<AERandom *>(Globals::rnd)->nextInt(50000);
+            int sign = static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1;
+            missionSpawnPosition.x += float(sign * distance + 20000);
+            distance = static_cast<AERandom *>(Globals::rnd)->nextInt(50000);
+            sign = static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1;
+            missionSpawnPosition.y += float(sign * distance + 10000);
+            distance = static_cast<AERandom *>(Globals::rnd)->nextInt(50000);
+            sign = static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1;
+            missionSpawnPosition.z += float(sign * distance + 20000);
+            int coords[] = {int(missionSpawnPosition.x), int(missionSpawnPosition.y), int(missionSpawnPosition.z)};
+            Route *route = new Route(coords, 3);
+            for (int i = 0; i != 2; ++i) {
+                (*enemies)[i] = createShip(10, 0, 44, route->getWaypoint(), true, false);
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+            }
+            objectivesA = new Objective(4, 1, this);
+            break;
+        }
+        case 89: {
+            int friendCoords[] = {-63000, 0, 75000, -60000, 0, 110000}; // 0x1fd350
+            friendRoute = new Route(friendCoords, 6);
+            friendRoute->setLoop(true);
+            int enemyCoords[] = {-63000, -5000, 75000, -60000, -5000, 110000}; // 0x1fd368
+            enemyRoute = new Route(enemyCoords, 6);
+            enemyRoute->setLoop(true);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(12, *enemies);
+            (*enemies)[0] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 16992, false));
+            static_cast<PlayerFixedObject *>((*enemies)[0])->setMoving(false);
+            Player *body = new Player(7500, 9999999, false, false, false);
+            (*enemies)[1] = new PlayerFixedObject(18781, 0, body, nullptr, 0.0f, 0.0f, 0.0f);
+            AEGeometry *geometry = new AEGeometry(21076, static_cast<PaintCanvas *>(Globals::Canvas), false);
+            AEGeometry *childA = new AEGeometry(21876, static_cast<PaintCanvas *>(Globals::Canvas), false);
+            AEGeometry *childB = new AEGeometry(22076, static_cast<PaintCanvas *>(Globals::Canvas), false);
+            geometry->addChild(childA->transform);
+            geometry->addChild(childB->transform);
+            delete childA;
+            delete childB;
+            (*enemies)[1]->setShipGroup(geometry, -1, false);
+            (*enemies)[1]->setPosition(Vector{-77000.0f, -3000.0f, 90000.0f});
+            (*enemies)[1]->geometry->setRotation(0.0f, 1.5708f, 0.0f);
+            body = new Player(7500, 9999999, false, false, false);
+            (*enemies)[2] = new PlayerFixedObject(18781, 0, body, nullptr, 0.0f, 0.0f, 0.0f);
+            geometry = new AEGeometry(21076, static_cast<PaintCanvas *>(Globals::Canvas), false);
+            childA = new AEGeometry(21876, static_cast<PaintCanvas *>(Globals::Canvas), false);
+            childB = new AEGeometry(18832, static_cast<PaintCanvas *>(Globals::Canvas), false);
+            AEGeometry *childC = new AEGeometry(18833, static_cast<PaintCanvas *>(Globals::Canvas), false);
+            geometry->addChild(childA->transform);
+            geometry->addChild(childB->transform);
+            geometry->addChild(childC->transform);
+            delete childA;
+            delete childB;
+            delete childC;
+            (*enemies)[2]->setShipGroup(geometry, -1, false);
+            (*enemies)[2]->setVisible(false);
+            (*enemies)[2]->setPosition(Vector{-77000.0f, -3000.0f, 90000.0f});
+            (*enemies)[2]->geometry->setRotation(0.0f, 1.5708f, 0.0f);
+            for (int i = 0; i != 8; ++i) {
+                Route *route = i < 4 ? friendRoute : enemyRoute;
+                int waypoint = i < 4 ? (i > 1) : (i < 7);
+                Waypoint *spawn = route->getWaypoint(waypoint);
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(3);
+                KIPlayer *fighter = createShip(3, 0, type, spawn, true, false);
+                fighter->setRoute(friendRoute->clone());
+                missionSpawnPosition = fighter->getPosition();
+                if (missionSpawnPosition.y > -4000.0f && missionSpawnPosition.y < 2000.0f)
+                    fighter->setPosition(missionSpawnPosition.x, missionSpawnPosition.y + missionSpawnPosition.y,
+                                         missionSpawnPosition.z);
+                // Android fighter extension byte +0x1a (+0x13e), purpose not yet named.
+                *(reinterpret_cast<unsigned char *>(fighter) + sizeof(KIPlayer) + 0x1a) = 0;
+                (*enemies)[i + 3] = fighter;
+            }
+            (*enemies)[enemies->size() - 1] = createShip(3, 1, 15, nullptr, true, false);
+            (*enemies)[enemies->size() - 1]->setPosition(-63000.0f, -3000.0f, 65000.0f);
+            break;
+        }
+        case 102: {
+            int enemyCoords[9];
+            enemyCoords[0] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000;
+            enemyCoords[1] = 0;
+            enemyCoords[2] = -70000;
+            enemyCoords[3] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000;
+            enemyCoords[4] = 0;
+            enemyCoords[5] = -100000;
+            enemyCoords[6] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000;
+            enemyCoords[7] = 0;
+            enemyCoords[8] = -140000;
+            enemyRoute = new Route(enemyCoords, 9);
+            int friendCoords[9];
+            friendCoords[0] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000;
+            friendCoords[1] = 0;
+            friendCoords[2] = -20000;
+            friendCoords[3] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000;
+            friendCoords[4] = 0;
+            friendCoords[5] = -500000;
+            friendCoords[6] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000;
+            friendCoords[7] = 0;
+            friendCoords[8] = -70000;
+            friendRoute = new Route(friendCoords, 9);
+            Waypoint *first = new Waypoint(-50000, 1000, 70000, nullptr);
+            Waypoint *second = new Waypoint(20000, 10000, 10000, nullptr);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(10, *enemies);
+            (*enemies)[0] = reinterpret_cast<KIPlayer *>(createStaticObject(first, 18804, true));
+            (*enemies)[0]->setPosition(first->getPosition());
+            static_cast<PlayerFixedObject *>((*enemies)[0])->setMoving(false);
+            (*enemies)[0]->field_0x70 = 0;
+            static_cast<PlayerFixedObject *>((*enemies)[0])->setDockingType(1);
+            (*enemies)[0]->player->setAlwaysFriend(true);
+            (*enemies)[0]->player->setHitpoints(9999999);
+            (*enemies)[0]->field_0x74 = 1;
+            delete (*enemies)[0]->cargo;
+            (*enemies)[0]->cargo = nullptr;
+            (*enemies)[1] = reinterpret_cast<KIPlayer *>(createStaticObject(first, 21113, true));
+            (*enemies)[1]->setPosition(0.0f, 0.0f, 0.0f);
+            static_cast<PlayerFixedObject *>((*enemies)[1])->setMoving(false);
+            static_cast<PlayerFixedObject *>((*enemies)[1])->setDockingType(0);
+            (*enemies)[1]->player->setAlwaysFriend(true);
+            (*enemies)[1]->player->setHitpoints(9999999);
+            (*enemies)[1]->geometry->rotate(Vector{0.0f, 3.14159274f, 0.0f});
+            (*enemies)[1]->setActive(false);
+            delete (*enemies)[1]->cargo;
+            (*enemies)[1]->cargo = nullptr;
+            int x = 25000;
+            int z = -30000;
+            for (int i = 2; i != 6; ++i) {
+                (*enemies)[i] = createShip(0, 0, 51, second, true, false);
+                Vector position = first->getPosition();
+                Vector offset;
+                if (i == 2) { offset.x = 10000.0f; offset.y = 6000.0f; offset.z = -20000.0f; }
+                else { offset.x = float(x); offset.y = 10000.0f; offset.z = float(z); }
+                (*enemies)[i]->setPosition(position + offset);
+                (*enemies)[i]->player->setAlwaysFriend(true);
+                z -= 5000;
+                x += 5000;
+                // Android clears two adjacent fighter extension flags +0x19/+0x1a.
+                *(reinterpret_cast<unsigned char *>((*enemies)[i]) + sizeof(KIPlayer) + 0x19) = 0;
+                *(reinterpret_cast<unsigned char *>((*enemies)[i]) + sizeof(KIPlayer) + 0x1a) = 0;
+            }
+            int coords[] = {-1, -1, -1, -30000, 1000, 40000, -1, -1, -1}; // 0x1fd3d8
+            int times[] = {20000, 0, 20000};
+            Array<KIPlayer *> *targets = new Array<KIPlayer *>();
+            ArraySetLength(3, *targets);
+            (*targets)[0] = (*enemies)[0];
+            (*targets)[2] = (*enemies)[1];
+            Route *route = new Route(coords, targets, times, 9);
+            route->setLoop(true);
+            for (int i = 2; i != 6; ++i) (*enemies)[i]->setRoute(i == 2 ? route : route->clone());
+            for (int i = 6; i != 10; ++i) {
+                (*enemies)[i] = createShip(10, 0, 44, second, true, false);
+                (*enemies)[i]->setPosition(Vector{1000000.0f, 1000000.0f, 1000000.0f});
+                (*enemies)[i]->setToSleep();
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+            }
+            objectivesA = new Objective(4, 8, this);
+            objectivesB = new Objective(18, 2, 6, this);
+            break;
+        }
+        case 105: {
+            int coords[] = {7000000, 7000000, 7000000, 0, 0, 0}; // 0x1fd410; constructor consumes three words
+            enemyRoute = new Route(coords, 3);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(5, *enemies);
+            for (int i = 0; i != 2; ++i) {
+                (*enemies)[i] = createShip(0, 0, 37, enemyRoute->getWaypoint(0), true, false);
+                (*enemies)[i]->player->setAlwaysFriend(true);
+            }
+            for (int i = 2; i != 5; ++i) {
+                (*enemies)[i] = createShip(10, 0, 44, enemyRoute->getWaypoint(0), true, false);
+                (*enemies)[i]->setToSleep();
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+            }
+            Vector direction = AbyssEngine::AEMath::VectorNormalize(starSystem->getLightDirection());
+            int flightCoords[] = {int(direction.x * 650000.0f), 0, int(direction.z * 650000.0f)};
+            Route *route = new Route(flightCoords, 3);
+            player->geometry->setDirection(direction, Vector{0.0f, 1.0f, 0.0f});
+            player->setRoute(route);
+            setPlayerRoute(route);
+            for (int i = 0; i != 2; ++i) {
+                Vector position = player->getPosition();
+                Vector right = player->geometry->getRightVector();
+                Vector lateral = position + right * (i == 0 ? 2100.0f : -2100.0f);
+                Vector forward = player->geometry->getDirection();
+                (*enemies)[i]->setPosition(lateral + forward * 2000.0f);
+                (*enemies)[i]->geometry->setDirection(direction, Vector{0.0f, 1.0f, 0.0f});
+                (*enemies)[i]->setRoute(route->clone());
+                (*enemies)[i]->setEnemies(nullptr);
+                *(reinterpret_cast<unsigned char *>((*enemies)[i]) + sizeof(KIPlayer) + 0x19) = 0;
+                static_cast<PlayerFighter *>((*enemies)[i])->setAIDisabled(true);
+            }
+            break;
+        }
+        case 106: {
+            int coords[] = {-500000, 0, -1700000, -500000, 0, -3700000}; // 0x1fd428
+            enemyRoute = new Route(coords, 6);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(1, *enemies);
+            (*enemies)[0] = createShip(10, 0, 44, enemyRoute->getWaypoint(0), true, false);
+            (*enemies)[0]->setPosition(enemyRoute->getWaypoint(0)->getPosition());
+            (*enemies)[0]->geometry->setDirection(Vector{-1.0f, 0.0f, 0.0f}, Vector{0.0f, 1.0f, 0.0f});
+            (*enemies)[0]->setRoute(enemyRoute->clone());
+            (*enemies)[0]->player->setAlwaysFriend(true);
+            (*enemies)[0]->player->setAlwaysEnemy(false);
+            (*enemies)[0]->player->setHitpoints(1);
+            static_cast<PlayerFighter *>((*enemies)[0])->setCloakingPossible(false);
+            break;
+        }
+        default: {
+            switch (campaign) {
+        case 131:
+            objectivesA = new Objective(4, 0, this);
+            break;
+        case 135: {
+            int coords[] = {7000000, 7000000, 7000000};
+            enemyRoute = new Route(coords, 3);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(3, *enemies);
+            (*enemies)[0] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 19080, true));
+            (*enemies)[0]->setPosition(0.0f, 0.0f, 0.0f);
+            static_cast<PlayerFixedObject *>((*enemies)[0])->setMoving(false);
+            static_cast<PlayerFixedObject *>((*enemies)[0])->setName(
+                String(*static_cast<GameText *>(Globals::gameText)->getText(3210), false));
+            static_cast<PlayerFixedObject *>((*enemies)[0])->setDockingType(1);
+            (*enemies)[0]->player->setAlwaysFriend(true);
+            delete (*enemies)[0]->cargo;
+            (*enemies)[0]->cargo = nullptr;
+            for (int i = 1; i != 3; ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                (*enemies)[i] = createShip(8, 0, type, enemyRoute->getWaypoint(0), true, false);
+                (*enemies)[i]->setToSleep();
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+            }
+            for (unsigned i = 0; i < asteroids->size(); ++i)
+                static_cast<PlayerAsteroid *>((*asteroids)[i])->setAsteroidIndex(155);
+            break;
+        }
+        case 137:
+            objectivesA = new Objective(4, 4, this);
+            break;
+        case 139: {
+            Globals::status->field_178 = 0;
+            int enemyCoords[] = {-70000, 0, 80000, -30000, 0, 60000}; // 0x1fd488
+            enemyRoute = new Route(enemyCoords, 6);
+            enemyRoute->setLoop(true);
+            int friendCoords[] = {-220000, 0, 40000, -180000, 0, 20000}; // 0x1fd4a0
+            friendRoute = new Route(friendCoords, 6);
+            friendRoute->setLoop(true);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(22, *enemies);
+            Waypoint *first = new Waypoint(-50000, -1500, 70000, nullptr);
+            Waypoint *second = new Waypoint(-200000, -1500, 30000, nullptr);
+            (*enemies)[0] = reinterpret_cast<KIPlayer *>(createStaticObject(first, 19051, true));
+            (*enemies)[0]->setPosition(first->getPosition());
+            static_cast<PlayerFixedObject *>((*enemies)[0])->setMoving(false);
+            static_cast<PlayerFixedObject *>((*enemies)[0])->setDockingType(3);
+            (*enemies)[0]->player->setHitpoints(9999999);
+            static_cast<PlayerFixedObject *>((*enemies)[0])->setName(
+                *static_cast<GameText *>(Globals::gameText)->getText(1667) + String(" 1", false));
+            delete (*enemies)[0]->cargo;
+            (*enemies)[0]->cargo = nullptr;
+            (*enemies)[1] = reinterpret_cast<KIPlayer *>(createStaticObject(second, 19051, true));
+            (*enemies)[1]->setPosition(second->getPosition());
+            static_cast<PlayerFixedObject *>((*enemies)[1])->setMoving(false);
+            static_cast<PlayerFixedObject *>((*enemies)[1])->setDockingType(3);
+            (*enemies)[1]->player->setHitpoints(9999999);
+            static_cast<PlayerFixedObject *>((*enemies)[1])->setName(
+                *static_cast<GameText *>(Globals::gameText)->getText(1667) + String(" 2", false));
+            delete (*enemies)[1]->cargo;
+            (*enemies)[1]->cargo = nullptr;
+            Matrix matrix;
+            const float initial[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1}; // 0xb9d70
+            std::memcpy(matrix.m, initial, sizeof(initial));
+            // Five 24-byte position/rotation records from Android 0x1fcedc.
+            struct TurretPlacement { Vector position; Vector rotation; };
+            static const TurretPlacement placements[] = {
+                {{10283.1796875f, -1122.7913818359375f, 26039.26171875f}, {0, 0, 0}},
+                {{-10171.173828125f, -1082.7020263671875f, 25906.552734375f}, {0, 0, 0}},
+                {{-15624.38671875f, -787.19921875f, -7569.43017578125f}, {0, 0, 0}},
+                {{15624.38671875f, -787.19921875f, -7569.43017578125f}, {0, 0, 0}},
+                {{0, 4901.47314453125f, 3083.96435546875f}, {0, 0, 0}}
+            };
+            int placement = 0;
+            Vector rotated{0.0f, 0.0f, 0.0f};
+            for (int i = 2; i != 12; ++i) {
+                (*enemies)[i] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 6774, true));
+                (*enemies)[i]->player->setMaxHitpoints(1000);
+                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, placements[placement].rotation);
+                (*enemies)[i]->geometry->setRotation(rotated);
+                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, placements[placement].position);
+                Waypoint *anchor = i >= 7 ? second : first;
+                float x = anchor->getPosition().x + rotated.x;
+                float y = anchor->getPosition().y + rotated.y;
+                float z = anchor->getPosition().z + rotated.z;
+                (*enemies)[i]->setPosition(Vector{x, y, z});
+                static_cast<PlayerTurret *>((*enemies)[i])->setScaling(6.0f);
+                (*enemies)[i]->cargo = nullptr;
+                (*enemies)[i]->shipGroup = 1;
+                placement = placement == 4 ? 0 : placement + 1;
+            }
+            for (int i = 12; i != 22; ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(1);
+                Route *route;
+                if (i > 16) {
+                    (*enemies)[i] = createShip(1, 0, type, second, true, false);
+                    route = friendRoute;
+                } else {
+                    (*enemies)[i] = createShip(1, 0, type, first, true, false);
+                    route = enemyRoute;
+                }
+                (*enemies)[i]->setRoute(route->clone());
+            }
+            break;
+        }
+        case 142: {
+            int coords[] = {90000, 0, 42000};
+            playerRoute = new Route(coords, 3);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(1, *enemies);
+            (*enemies)[0] = createShip(3, 0, 30, nullptr, true, false);
+            (*enemies)[0]->player->setAlwaysFriend(true);
+            (*enemies)[0]->setRoute(playerRoute->clone());
+            (*enemies)[0]->player->setHitpoints(9999999);
+            (*enemies)[0]->name = *static_cast<GameText *>(Globals::gameText)->getText(1599);
+            static_cast<PlayerFighter *>((*enemies)[0])->setBoostProb(0);
+            Vector position = player->getPosition();
+            Vector right = player->geometry->getRightVector();
+            Vector lateral = position + right * 2100.0f;
+            Vector direction = player->geometry->getDirection();
+            (*enemies)[0]->setPosition(lateral + direction * 2000.0f);
+            Vector facing = player->GetDirVector();
+            (*enemies)[0]->geometry->setDirection(facing, Vector{0.0f, 1.0f, 0.0f});
+            objectivesA = new Objective(4, 4, this);
+            break;
+        }
+        case 144: {
+            int coords[] = {60000, 10000, 100000, -50000, 0, 50000}; // 0x1fd4c8
+            enemyRoute = new Route(coords, 6);
+            enemyRoute->getWaypoint(0)->reached();
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(13, *enemies);
+            Vector first = enemyRoute->getWaypoint(1)->getPosition();
+            Vector second = enemyRoute->getWaypoint(0)->getPosition();
+            Vector direction = first - second;
+            direction.y = 0.0f;
+            direction = AbyssEngine::AEMath::VectorNormalize(direction);
+            Vector origin = enemyRoute->getWaypoint(0)->getPosition();
+            (*enemies)[0] = createShip(2, 0, 49, nullptr, true, false);
+            (*enemies)[0]->setPosition(enemyRoute->getWaypoint(0)->getPosition());
+            (*enemies)[0]->player->setAlwaysEnemy(true);
+            (*enemies)[0]->setRoute(enemyRoute->getExactClone());
+            (*enemies)[0]->name = *static_cast<GameText *>(Globals::gameText)->getText(1636);
+            (*enemies)[0]->geometry->setDirection(direction, Vector{0.0f, 1.0f, 0.0f});
+            static_cast<PlayerFighter *>((*enemies)[0])->setAIDisabled(true);
+            static_cast<PlayerFighter *>((*enemies)[0])->setCloakingPossible(false);
+            Matrix matrix = (*enemies)[0]->geometry->getMatrix();
+            missionSpawnPosition = origin;
+            int rearX = -65000;
+            int frontX = -5000;
+            int middleX = -19500;
+            int otherFrontX = 8000;
+            for (int i = 1; i != 13; ++i) {
+                (*enemies)[i] = createShip(10, 0, 44, nullptr, true, false);
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+                (*enemies)[i]->geometry->setDirection(direction, Vector{0.0f, 1.0f, 0.0f});
+                static_cast<PlayerFighter *>((*enemies)[i])->setAIDisabled(true);
+                static_cast<PlayerFighter *>((*enemies)[i])->setCloakingPossible(false);
+                (*enemies)[i]->setRoute(enemyRoute->getExactClone());
+                Vector offset;
+                if (i <= 2) { offset.x = float(frontX); offset.y = 300.0f; offset.z = 200.0f; }
+                else if (i <= 4) { offset.x = float(otherFrontX); offset.y = 300.0f; offset.z = 200.0f; }
+                else if (i <= 9) { offset.x = float(middleX); offset.y = i == 7 ? -300.0f : 500.0f; offset.z = -5000.0f; }
+                else { offset.x = float(rearX); offset.y = -400.0f; offset.z = -5000.0f; }
+                missionSpawnPosition = offset;
+                missionSpawnPosition.x += float(static_cast<AERandom *>(Globals::rnd)->nextInt(60) - 30);
+                missionSpawnPosition.y += float(static_cast<AERandom *>(Globals::rnd)->nextInt(60) - 30);
+                missionSpawnPosition.z += float(static_cast<AERandom *>(Globals::rnd)->nextInt(60) - 30);
+                missionSpawnPosition = AbyssEngine::AEMath::MatrixTransformVector(matrix, missionSpawnPosition);
+                (*enemies)[i]->setPosition(missionSpawnPosition);
+                rearX += 6500;
+                frontX += 1500;
+                middleX += 3250;
+                otherFrontX -= 1500;
+            }
+            break;
+        }
+        case 145: {
+            int coords[] = {-45000, 0, 60000};
+            enemyRoute = new Route(coords, 3);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(14, *enemies);
+            (*enemies)[0] = createShip(2, 0, 49, nullptr, true, false);
+            missionSpawnPosition = Vector{30000.0f, 0.0f, 80000.0f};
+            (*enemies)[0]->setPosition(missionSpawnPosition);
+            (*enemies)[0]->player->setAlwaysEnemy(true);
+            (*enemies)[0]->name = *static_cast<GameText *>(Globals::gameText)->getText(1636);
+            (*enemies)[0]->setRoute(enemyRoute->clone());
+            *(reinterpret_cast<unsigned char *>((*enemies)[0]) + sizeof(KIPlayer) + 0x19) = 0;
+            Vector direction = AbyssEngine::AEMath::VectorNormalize(Vector{-50000.0f, 0.0f, 50000.0f} - (*enemies)[0]->getPosition());
+            (*enemies)[0]->geometry->setDirection(direction, Vector{0.0f, 1.0f, 0.0f});
+            static_cast<PlayerFighter *>((*enemies)[0])->setAIDisabled(true);
+            int x = 23000;
+            int z = 72000;
+            for (int i = 1; i != 13; ++i) {
+                (*enemies)[i] = createShip(10, 0, 44, enemyRoute->getWaypoint(0), true, false);
+                int y = static_cast<AERandom *>(Globals::rnd)->nextInt(1000);
+                y += (static_cast<AERandom *>(Globals::rnd)->nextInt(1000) - 500) * i;
+                int randomZ = static_cast<AERandom *>(Globals::rnd)->nextInt(2500);
+                (*enemies)[i]->setPosition(float(x), float(y), float(z + randomZ));
+                (*enemies)[i]->setRoute(enemyRoute->clone());
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+                static_cast<PlayerFighter *>((*enemies)[i])->setAIDisabled(true);
+                *(reinterpret_cast<unsigned char *>((*enemies)[i]) + sizeof(KIPlayer) + 0x19) = 0;
+                static_cast<PlayerFighter *>((*enemies)[i])->setCloakingPossible(false);
+                Vector facing = AbyssEngine::AEMath::VectorNormalize(Vector{-50000.0f, 0.0f, 50000.0f} - (*enemies)[i]->getPosition());
+                (*enemies)[i]->geometry->setDirection(facing, Vector{0.0f, 1.0f, 0.0f});
+                x += 3000;
+                z += 2000;
+            }
+            (*enemies)[enemies->size() - 1] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 19050, true));
+            (*enemies)[enemies->size() - 1]->setPosition(-50000.0f, 0.0f, 50000.0f);
+            (*enemies)[enemies->size() - 1]->setVisible(false);
+            (*enemies)[enemies->size() - 1]->setActive(false);
+            (*enemies)[enemies->size() - 1]->name = *static_cast<GameText *>(Globals::gameText)->getText(3207);
+            (*enemies)[enemies->size() - 1]->shipGroup = 3;
+            (*enemies)[enemies->size() - 1]->player->setHitpoints(9999999);
+            (*enemies)[enemies->size() - 1]->field_0x74 = 1;
+            objectivesA = new Objective(4, 2, this);
+            break;
+        }
+        case 147:
+            objectivesA = new Objective(4, 1, this);
+            break;
+        case 155:
+            objectivesA = new Objective(4, 2, this);
+            break;
+        case 154: {
+            int coords[] = {200000, 0, 70000};
+            enemyRoute = new Route(coords, 3);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(22, *enemies);
+            int friendCoords[] = {0, 0, 40000};
+            friendRoute = new Route(friendCoords, 3);
+            (*enemies)[0] = createShip(0, 0, 51, friendRoute->getWaypoint(0), true, false);
+            (*enemies)[0]->player->setAlwaysFriend(true);
+            Vector position = player->getPosition();
+            Vector right = player->geometry->getRightVector();
+            Vector lateral = position + right * 2100.0f;
+            Vector forward = player->geometry->getDirection();
+            (*enemies)[0]->setPosition(lateral + forward * 2000.0f);
+            Vector facing = player->GetDirVector();
+            (*enemies)[0]->geometry->setDirection(facing, Vector{0.0f, 1.0f, 0.0f});
+            (*enemies)[0]->setEnemies(nullptr);
+            *(reinterpret_cast<unsigned char *>((*enemies)[0]) + sizeof(KIPlayer) + 0x19) = 0;
+            delete (*enemies)[0]->cargo;
+            (*enemies)[0]->cargo = nullptr;
+            (*enemies)[1] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 16928, false));
+            static_cast<PlayerFixedObject *>((*enemies)[1])->setMoving(false);
+            static_cast<PlayerFixedObject *>((*enemies)[1])->setDockingType(3);
+            static_cast<PlayerFixedObject *>((*enemies)[1])->setName(
+                String(*static_cast<GameText *>(Globals::gameText)->getText(77), false));
+            (*enemies)[1]->player->setAlwaysFriend(true);
+            (*enemies)[1]->geometry->setRotation(0.0f, 3.1416f, 0.0f);
+            (*enemies)[1]->field_0x70 = 0;
+            (*enemies)[1]->field_0x74 = 1;
+            delete (*enemies)[1]->cargo;
+            (*enemies)[1]->cargo = nullptr;
+            int patrolCoords[] = {-10000, 1000, 15000, -1, -1, -1, -10000, 1000, 15000}; // 0x1fd510
+            int times[] = {0, 10000, 0};
+            Array<KIPlayer *> *targets = new Array<KIPlayer *>();
+            ArraySetLength(3, *targets);
+            (*targets)[1] = (*enemies)[1];
+            Route *route = new Route(patrolCoords, targets, times, 9);
+            (*enemies)[0]->setRoute(route);
+            *(reinterpret_cast<unsigned char *>((*enemies)[0]) + sizeof(KIPlayer) + 0x1a) = 0;
+            (*enemies)[0]->player->setVulnerable(false);
+            Vector center = {0.0f, 0.0f, 40000.0f};
+            for (int i = 2; i != 22; ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(9);
+                (*enemies)[i] = createShip(9, 0, type, enemyRoute->getWaypoint(0), true, false);
+                (*enemies)[i]->setActive(true);
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+                int sign = ((~(2 * i) & 2) - 1);
+                Vector offset;
+                if (i > 10) {
+                    int x = (static_cast<AERandom *>(Globals::rnd)->nextInt(100) + 1600) * sign;
+                    float y = float(static_cast<AERandom *>(Globals::rnd)->nextInt(100) - 200);
+                    int z = static_cast<AERandom *>(Globals::rnd)->nextInt(500) + 1000;
+                    offset.x = float(x); offset.y = y; offset.z = float(z);
+                } else {
+                    int x = (static_cast<AERandom *>(Globals::rnd)->nextInt(100) + 900) * sign;
+                    float y = float(static_cast<AERandom *>(Globals::rnd)->nextInt(200) - 200);
+                    int z = static_cast<AERandom *>(Globals::rnd)->nextInt(400) - 200;
+                    offset.x = float(x); offset.y = y; offset.z = float(z);
+                }
+                (*enemies)[i]->setPosition(center + float(i) * offset);
+                Vector ego = player->getPosition();
+                Vector fighter = (*enemies)[i]->getPosition();
+                Vector direction = AbyssEngine::AEMath::VectorNormalize(ego - fighter);
+                (*enemies)[i]->geometry->setDirection(direction, Vector{0.0f, 1.0f, 0.0f});
+            }
+            objectivesA = new Objective(4, 11, this);
+            break;
+        }
+        case 157: {
+            int friendCoords[] = {70000, 0, 20000, 30000, 10000, 60000}; // 0x1fd548
+            friendRoute = new Route(friendCoords, 6);
+            friendRoute->getWaypoint(0)->reached();
+            int enemyCoords[] = {-110000, 10000, 170000, -110000, 0, 20000}; // 0x1fd560
+            enemyRoute = new Route(enemyCoords, 6);
+            enemyRoute->getWaypoint(0)->reached();
+            enemies = new Array<KIPlayer *>();
+            unsigned weak = static_cast<unsigned char>(Globals::isRunningHDonWeakDevice);
+            unsigned optional = weak ^ 1;
+            ArraySetLength((weak ? 10 : 20) + optional + 3, *enemies);
+            unsigned count = weak ? 5 : 10;
+            unsigned enemyStart = count + optional;
+            unsigned boss = enemyStart + count;
+            unsigned stationIndex = boss + 2;
+            Station *station = reinterpret_cast<Station *>(static_cast<intptr_t>(
+                static_cast<Galaxy *>(Globals::galaxy)->getStation(101)));
+            (*enemies)[stationIndex] = new PlayerStation(station);
+            (*enemies)[stationIndex]->name = station->getName();
+            (*enemies)[stationIndex]->shipGroup = 3;
+            (*enemies)[stationIndex]->setPosition(Vector{-120000.0f, 0.0f, 20000.0f});
+            delete (*enemies)[stationIndex]->cargo;
+            (*enemies)[stationIndex]->cargo = nullptr;
+            delete station;
+            for (unsigned i = 0; i != count; ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(0);
+                (*enemies)[i] = createShip(0, 0, type, friendRoute->getWaypoint(0), true, false);
+                (*enemies)[i]->player->setAlwaysFriend(true);
+                (*enemies)[i]->setRoute(friendRoute->getExactClone());
+            }
+            for (unsigned i = count; i < enemyStart; ++i) {
+                (*enemies)[i] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 18804, true));
+                static_cast<PlayerFixedObject *>((*enemies)[i])->setMoving(false);
+                (*enemies)[i]->player->setAlwaysFriend(true);
+                (*enemies)[i]->setPosition(30000.0f, -15000.0f, -50000.0f);
+                delete (*enemies)[i]->cargo;
+                (*enemies)[i]->cargo = nullptr;
+            }
+            Vector first = enemyRoute->getWaypoint(1)->getPosition();
+            Vector second = enemyRoute->getWaypoint(0)->getPosition();
+            Vector direction = first - second;
+            direction.y = 0.0f;
+            direction = AbyssEngine::AEMath::VectorNormalize(direction);
+            Vector origin = enemyRoute->getWaypoint(0)->getPosition();
+            int firstX = -1000;
+            for (unsigned i = 0; i < count; ++i) {
+                unsigned slot = enemyStart + i;
+                (*enemies)[slot] = createShip(10, 0, 44, nullptr, true, false);
+                (*enemies)[slot]->player->setAlwaysEnemy(true);
+                (*enemies)[slot]->setVisible(false);
+                (*enemies)[slot]->setActive(false);
+                (*enemies)[slot]->geometry->setDirection(direction, Vector{0.0f, 1.0f, 0.0f});
+                static_cast<PlayerFighter *>((*enemies)[slot])->setAIDisabled(true);
+                static_cast<PlayerFighter *>((*enemies)[slot])->setCloakingPossible(false);
+                (*enemies)[slot]->setRoute(enemyRoute->getExactClone());
+                int x = firstX;
+                float z = 5000.0f;
+                if (i >= 2) {
+                    if (i < 5) { x = 3000 * int(i) - 9000; z = 7000.0f; }
+                    else if (i < 9) { x = 3000 * int(i) - 20000; z = 9000.0f; }
+                    else { x = 0; z = 11000.0f; }
+                }
+                missionSpawnPosition = Vector{float(x), 0.0f, z};
+                missionSpawnPosition.x += float(static_cast<AERandom *>(Globals::rnd)->nextInt(200) - 100);
+                missionSpawnPosition.y += float(static_cast<AERandom *>(Globals::rnd)->nextInt(200) - 100);
+                missionSpawnPosition.z += float(static_cast<AERandom *>(Globals::rnd)->nextInt(200) - 100);
+                (*enemies)[slot]->setPosition(origin + missionSpawnPosition);
+                firstX += 2000;
+            }
+            (*enemies)[boss] = createShip(2, 0, 49, nullptr, true, false);
+            (*enemies)[boss]->setPosition(origin);
+            (*enemies)[boss]->player->setAlwaysEnemy(true);
+            static_cast<PlayerFighter *>((*enemies)[boss])->setAIDisabled(true);
+            (*enemies)[boss]->geometry->setDirection(direction, Vector{0.0f, 1.0f, 0.0f});
+            (*enemies)[boss]->setActive(false);
+            (*enemies)[boss]->setVisible(false);
+            (*enemies)[boss]->setSpeed(5.0f);
+            (*enemies)[boss]->name = *static_cast<GameText *>(Globals::gameText)->getText(1636);
+            delete (*enemies)[boss]->cargo;
+            (*enemies)[boss]->cargo = nullptr;
+            for (unsigned i = optional + 2 * count + 1; i < stationIndex; ++i) {
+                (*enemies)[i] = createShip(3, 0, 20, nullptr, true, false);
+                (*enemies)[i]->setPosition(50000.0f, 50000.0f, 50000.0f);
+                static_cast<PlayerFighter *>((*enemies)[i])->setAIDisabled(true);
+                (*enemies)[i]->setActive(false);
+                (*enemies)[i]->setVisible(false);
+                (*enemies)[i]->name = *static_cast<GameText *>(Globals::gameText)->getText(1623);
+            }
+            player->setPosition(100000.0f, 0.0f, 20000.0f);
+            Vector facing = AbyssEngine::AEMath::VectorNormalize(Vector{-1.0f, -0.2f, -0.5f});
+            player->geometry->setDirection(facing, Vector{0.0f, 1.0f, 0.0f});
+            break;
+        }
+        case 158: {
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(1, *enemies);
+            (*enemies)[0] = createShip(10, 0, 49, nullptr, true, false);
+            (*enemies)[0]->setPosition(9000.0f, 0.0f, -13000.0f);
+            Vector direction = AbyssEngine::AEMath::VectorNormalize(Vector{-1.0f, 0.0f, 3.0f});
+            (*enemies)[0]->geometry->setDirection(direction, Vector{0.0f, 1.0f, 0.0f});
+            (*enemies)[0]->player->setAlwaysEnemy(true);
+            (*enemies)[0]->setSpeed(5.3f);
+            Player *body = (*enemies)[0]->player;
+            body->setMaxEmpPoints(3 * body->getMaxEmpPoints());
+            static_cast<PlayerFighter *>((*enemies)[0])->setCloakingPossible(false);
+            (*enemies)[0]->name = *static_cast<GameText *>(Globals::gameText)->getText(1636);
+            static_cast<PlayerFighter *>((*enemies)[0])->setAIDisabled(true);
+            delete (*enemies)[0]->cargo;
+            (*enemies)[0]->cargo = nullptr;
+            for (int i = 3; i; --i) {
+                KIPlayer *turret = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 18882, true));
+                turret->player->setRadius(800);
+                turret->player->setAlwaysEnemy(true);
+                turret->player->setAlwaysFriend(false);
+                turret->player->setMaxHitpoints(100);
+                turret->setPosition(50000.0f, 50000.0f, 50000.0f);
+                turret->setActive(false);
+                ArrayAdd(turret, *enemies);
+            }
+            objectivesA = new Objective(22, 0, this);
+            break;
+        }
+        case 132:
+        case 133:
+        case 134:
+        case 136:
+        case 138:
+        case 140:
+        case 141:
+        case 143:
+        case 146:
+        case 148:
+        case 149:
+        case 150:
+        case 151:
+        case 152:
+        case 153:
+        case 156:
+            break;
+        default: {
+            switch (campaign) {
+        case 114: {
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(6, *enemies);
+            Vector position = {0.0f, 0.0f, 0.0f};
+            int coords[] = {0, 0, 30000};
+            enemyRoute = new Route(coords, 3);
+            for (int i = 0; i != 6; ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                (*enemies)[i] = createShip(8, 0, type, enemyRoute->getWaypoint(0), true, false);
+                position = (*asteroids)[i + (asteroids->size() >> 1)]->getPosition();
+                (*enemies)[i]->setPosition(position.x, position.y + 2000.0f, position.z);
+                (*enemies)[i]->setToSleep();
+                *reinterpret_cast<int *>(reinterpret_cast<unsigned char *>((*enemies)[i]) + sizeof(KIPlayer) + 4) = 7000;
+                Player *body = (*enemies)[i]->player;
+                body->setMaxHitpoints(2 * body->getMaxHitpoints());
+                body = (*enemies)[i]->player;
+                body->setHitpoints(body->getMaxHitpoints());
+            }
+            objectivesA = new Objective(18, 0, 6, this);
+            break;
+        }
+        case 120: {
+            int coords[] = {0, 0, -80000};
+            enemyRoute = new Route(coords, 3);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(2, *enemies);
+            for (int i = 0; i != 2; ++i) {
+                (*enemies)[i] = createShip(10, 0, 44, enemyRoute->getWaypoint(0), true, false);
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+                Vector position = player->getPosition();
+                Vector right = player->geometry->getRightVector();
+                Vector lateral = position + right * 50000.0f;
+                Vector forward = player->geometry->getDirection();
+                (*enemies)[i]->setPosition(lateral + forward * (i == 0 ? 4000.0f : -4000.0f));
+            }
+            objectivesA = new Objective(4, 0, this);
+            break;
+        }
+        case 123:
+            objectivesA = new Objective(4, 3, this);
+            break;
+        case 125: {
+            int coords[] = {0, 0, 0, 7000000, 7000000, 7000000}; // 0x1fd460
+            enemyRoute = new Route(coords, 6);
+            enemies = new Array<KIPlayer *>();
+            ArraySetLength(15, *enemies);
+            for (int i = 0; i != 8; ++i) {
+                int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
+                if (i < 2) (*enemies)[i] = createShip(8, 0, type, enemyRoute->getWaypoint(0), true, false);
+                else {
+                    (*enemies)[i] = createShip(8, 0, type, enemyRoute->getWaypoint(1), true, false);
+                    (*enemies)[i]->setToSleep();
+                }
+                (*enemies)[i]->player->setAlwaysEnemy(true);
+            }
+            Waypoint *first = new Waypoint(-80000, 0, -160000, nullptr);
+            Waypoint *second = new Waypoint(-72000, 0, -190000, nullptr);
+            Waypoint *third = new Waypoint(-66000, 53000, -170000, nullptr);
+            (*enemies)[8] = reinterpret_cast<KIPlayer *>(createStaticObject(first, 18785, true));
+            (*enemies)[9] = reinterpret_cast<KIPlayer *>(createStaticObject(second, 18785, true));
+            (*enemies)[10] = reinterpret_cast<KIPlayer *>(createStaticObject(third, 18785, true));
+            for (int i = 8; i != 11; ++i) {
+                static_cast<PlayerFixedObject *>((*enemies)[i])->setMoving(false);
+                static_cast<PlayerFixedObject *>((*enemies)[i])->setDockingType(3);
+                (*enemies)[i]->player->setAlwaysEnemy(false);
+                (*enemies)[i]->player->setAlwaysFriend(true);
+                (*enemies)[i]->field_0x74 = 1;
+                delete (*enemies)[i]->cargo;
+                (*enemies)[i]->cargo = nullptr;
+            }
+            int x = -72000;
+            int y = 0;
+            int z = -145000;
+            for (int i = 11; i != 15; ++i) {
+                (*enemies)[i] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 18786, true));
+                static_cast<PlayerFixedObject *>((*enemies)[i])->setMoving(false);
+                int randomY = static_cast<AERandom *>(Globals::rnd)->nextInt(1500);
+                (*enemies)[i]->setPosition(float(x), float(y + randomY), float(z));
+                (*enemies)[i]->geometry->rotate(float(i) - 4.3197f, float(i) - 11.519f, float(i) - 5.7596f);
+                (*enemies)[i]->field_0x74 = 1;
+                delete (*enemies)[i]->cargo;
+                (*enemies)[i]->cargo = nullptr;
+                z -= 4000;
+                x += 4000;
+                y -= 200;
+            }
+            objectivesA = new Objective(4, 7, this);
+            break;
+        }
+        default: break;
+            }
+            break;
+        }
+            }
+            break;
+        }
     }
+    messages = createRadioMessages(Globals::status->getCurrentCampaignMission());
 }
 
 void Level::updateOrbit(int dt) {
@@ -2372,496 +4961,583 @@ void Level::enemyDied(int r1, bool r2arg) {
     }
 }
 
-struct RMSpec {
-    int id, speaker, kind, delay;
-};
-
-void Level::createRadioMessages(int set) {
-    this->messages = nullptr;
-
+// Android 2.0.16 0xc0de4..0xc3ae8: ordered constructor calls, not a rodata table.
+Array<RadioMessage *> *Level::createRadioMessages(int set) {
+    messages = nullptr;
     switch (set) {
-        case 0: {
-            static const RMSpec t[] = {
-                {0x684, 0x11, 5, 0x5dc}, {0x685, 0, 6, 0}, {0x686, 0, 6, 1}, {0x687, 10, 6, 2}, {0x688, 0xb, 6, 3},
-                {0x689, 9, 6, 4}, {0x68a, 9, 6, 5}, {0x68b, 9, 6, 6}, {0x68c, 0, 6, 7}, {0x693, 0, 9, 0},
-                {0x694, 0, 6, 9},
-                {0x695, 0, 6, 10}, {0x696, 0xf, 6, 0xb}, {0x697, 0, 6, 0xc}, {0x698, 0, 6, 0xd}, {0x699, 0, 6, 0xe},
-                {0x69a, 0, 0x1b, 0xc}, {0x69b, 0xf, 6, 0x10}, {0x69c, 0, 6, 0x11}, {0x69d, 0xf, 6, 0x12},
-                {0x69e, 0, 6, 0x13}, {0x69f, 0, 6, 0x14}, {0x6a0, 0xf, 6, 0x15},
-            };
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(0x17, *(this->messages));
-            for (unsigned i = 0; i < 0x17; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 0:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(23, *messages);
+            (*messages)[0] = new RadioMessage(1668, 17, 5, 1500);
+            (*messages)[1] = new RadioMessage(1669, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(1670, 0, 6, 1);
+            (*messages)[3] = new RadioMessage(1671, 10, 6, 2);
+            (*messages)[4] = new RadioMessage(1672, 11, 6, 3);
+            (*messages)[5] = new RadioMessage(1673, 9, 6, 4);
+            (*messages)[6] = new RadioMessage(1674, 9, 6, 5);
+            (*messages)[7] = new RadioMessage(1675, 9, 6, 6);
+            (*messages)[8] = new RadioMessage(1676, 0, 6, 7);
+            (*messages)[9] = new RadioMessage(1683, 0, 9, 0, 3);
+            (*messages)[10] = new RadioMessage(1684, 0, 6, 9);
+            (*messages)[11] = new RadioMessage(1685, 0, 6, 10);
+            (*messages)[12] = new RadioMessage(1686, 15, 6, 11);
+            (*messages)[13] = new RadioMessage(1687, 0, 6, 12);
+            (*messages)[14] = new RadioMessage(1688, 0, 6, 13);
+            (*messages)[15] = new RadioMessage(1689, 0, 6, 14);
+            (*messages)[16] = new RadioMessage(1690, 0, 27, 12);
+            (*messages)[17] = new RadioMessage(1691, 15, 6, 16);
+            (*messages)[18] = new RadioMessage(1692, 0, 6, 17);
+            (*messages)[19] = new RadioMessage(1693, 15, 6, 18);
+            (*messages)[20] = new RadioMessage(1694, 0, 6, 19);
+            (*messages)[21] = new RadioMessage(1695, 0, 6, 20);
+            (*messages)[22] = new RadioMessage(1696, 15, 6, 21);
             break;
-        }
-        case 1: {
-            static const RMSpec t[] = {{0x6a1, 2, 5, 10000}, {0x6a2, 2, 6, 0}, {0x6a3, 2, 6, 1}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(3, *(this->messages));
-            for (unsigned i = 0; i < 3; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 1:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(3, *messages);
+            (*messages)[0] = new RadioMessage(1697, 2, 5, 10000);
+            (*messages)[1] = new RadioMessage(1698, 2, 6, 0);
+            (*messages)[2] = new RadioMessage(1699, 2, 6, 1);
             break;
-        }
-        case 7: {
-            static const RMSpec t[] = {{0x6dc, 2, 0x10, 0}, {0x6dd, 0, 6, 0}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(2, *(this->messages));
-            for (unsigned i = 0; i < 2; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 7:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(2, *messages);
+            (*messages)[0] = new RadioMessage(1756, 2, 16, 0);
+            (*messages)[1] = new RadioMessage(1757, 0, 6, 0);
             break;
-        }
-        case 0x10: {
-            static const RMSpec t[] = {
-                {0x72e, 0x13, 5, 10000}, {0x72f, 0, 6, 0}, {0x730, 0, 9, 0},
-                {0x731, 1, 6, 2}, {0x732, 0, 6, 3}
-            };
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(5, *(this->messages));
-            for (unsigned i = 0; i < 5; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 14:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(5, *messages);
+            (*messages)[0] = new RadioMessage(1820, 18, 5, 10000);
+            (*messages)[1] = new RadioMessage(1821, 18, 20, 1);
+            (*messages)[2] = new RadioMessage(1822, 0, 6, 1);
+            (*messages)[3] = new RadioMessage(1823, 18, 6, 2);
+            (*messages)[4] = new RadioMessage(1824, 17, 6, 3);
             break;
-        }
-        case 0x15: {
-            static const RMSpec t[] = {
-                {0x759, 10, 0x10, 0}, {0x75a, 0, 6, 0}, {0x75b, 10, 0x19, 2},
-                {0x75c, 0xe, 8, 0}, {0x75d, 0xe, 0x15, 0}
-            };
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(5, *(this->messages));
-            for (unsigned i = 0; i < 5; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 16:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(5, *messages);
+            (*messages)[0] = new RadioMessage(1838, 19, 5, 10000);
+            (*messages)[1] = new RadioMessage(1839, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(1840, 0, 9, 0, 3);
+            (*messages)[3] = new RadioMessage(1841, 1, 6, 2);
+            (*messages)[4] = new RadioMessage(1842, 0, 6, 3);
             break;
-        }
-        case 0x18: {
-            static const RMSpec t[] = {
-                {0x77d, 0x13, 5, 12000}, {0x77e, 6, 6, 0}, {0x77f, 0, 6, 1},
-                {0x780, 6, 0x16, 3}, {0x781, 6, 6, 3}
-            };
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(5, *(this->messages));
-            for (unsigned i = 0; i < 5; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 21:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(5, *messages);
+            (*messages)[0] = new RadioMessage(1881, 10, 16, 0);
+            (*messages)[1] = new RadioMessage(1882, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(1883, 10, 25, 2);
+            (*messages)[3] = new RadioMessage(1884, 14, 8, 0);
+            (*messages)[4] = new RadioMessage(1885, 14, 21, 0);
             break;
-        }
-        case 0x19: {
-            static const RMSpec t[] = {{0x785, 0, 5, 20000}, {0x786, 6, 6, 0}, {0x787, 0, 6, 1}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(3, *(this->messages));
-            for (unsigned i = 0; i < 3; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 24:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(5, *messages);
+            (*messages)[0] = new RadioMessage(1917, 19, 5, 12000);
+            (*messages)[1] = new RadioMessage(1918, 6, 6, 0);
+            (*messages)[2] = new RadioMessage(1919, 0, 6, 1);
+            (*messages)[3] = new RadioMessage(1920, 6, 22, 3);
+            (*messages)[4] = new RadioMessage(1921, 6, 6, 3);
             break;
-        }
-        case 0x26: {
-            static const RMSpec t[] = {{0x7ed, 0x15, 5, 15000}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(1, *(this->messages));
-            for (unsigned i = 0; i < 1; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 25:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(3, *messages);
+            (*messages)[0] = new RadioMessage(1925, 0, 5, 20000);
+            (*messages)[1] = new RadioMessage(1926, 6, 6, 0);
+            (*messages)[2] = new RadioMessage(1927, 0, 6, 1);
             break;
-        }
-        case 0x28: {
-            static const RMSpec t[] = {
-                {0x7fa, 0, 5, 10000}, {0x7fb, 8, 6, 0}, {0x7fc, 0, 6, 1}, {0x7fd, 7, 5, 40000},
-                {0x7fe, 0, 6, 3}, {0x7ff, 7, 0xc, 0}, {0x800, 0, 0x18, 0}
-            };
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(7, *(this->messages));
-            for (unsigned i = 0; i < 7; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 28:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(3, *messages);
+            (*messages)[0] = new RadioMessage(1944, 0, 5, 20000);
+            (*messages)[1] = new RadioMessage(1945, 19, 6, 0);
+            (*messages)[2] = new RadioMessage(1946, 0, 6, 1);
             break;
-        }
-        case 0x29: {
-            RMSpec t[] = {
-                {0x804, 0, 5, 80000}, {0x805, 7, 6, 0}, {0x806, 0, 6, 1},
-                {0x807, 7, 6, 2}, {0x808, 7, 0x1a, -100000}, {0x809, 7, 6, 4},
-                {0x80f, 0, 1, 0}, {0x810, 0, 6, 6}
-            };
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(8, *(this->messages));
-            for (unsigned i = 0; i < 8; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 29:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(6, *messages);
+            (*messages)[0] = new RadioMessage(1948, 0, 23, 0);
+            (*messages)[1] = new RadioMessage(1949, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(1950, 0, 6, 1);
+            (*messages)[3] = new RadioMessage(1951, 0, 6, 2);
+            (*messages)[4] = new RadioMessage(1952, 19, 5, 120000);
+            (*messages)[5] = new RadioMessage(1953, 0, 6, 4);
             break;
-        }
-        case 0x31: {
-            static const RMSpec t[] = {{0x848, 0, 5, 8000}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(1, *(this->messages));
-            for (unsigned i = 0; i < 1; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 38:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(2029, 21, 5, 15000);
             break;
-        }
-        case 0x32: {
-            static const RMSpec t[] = {{0x849, 0x3f, 5, 8000}, {0x84a, 0, 6, 0}, {0x84b, 0x3f, 6, 1}, {0x84c, 0, 6, 2}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(4, *(this->messages));
-            for (unsigned i = 0; i < 4; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 40:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(7, *messages);
+            (*messages)[0] = new RadioMessage(2042, 0, 5, 10000);
+            (*messages)[1] = new RadioMessage(2043, 8, 6, 0);
+            (*messages)[2] = new RadioMessage(2044, 0, 6, 1);
+            (*messages)[3] = new RadioMessage(2045, 7, 5, 40000);
+            (*messages)[4] = new RadioMessage(2046, 0, 6, 3);
+            (*messages)[5] = new RadioMessage(2047, 7, 12, 0);
+            (*messages)[6] = new RadioMessage(2048, 0, 24, 0);
             break;
-        }
-        case 0x33: {
-            static const RMSpec t[] = {{0x84d, 0x3f, 5, 8000}, {0x84e, 0, 6, 0}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(2, *(this->messages));
-            for (unsigned i = 0; i < 2; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 41:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(8, *messages);
+            (*messages)[0] = new RadioMessage(2052, 0, 5, 80000);
+            (*messages)[1] = new RadioMessage(2053, 7, 6, 0);
+            (*messages)[2] = new RadioMessage(2054, 0, 6, 1);
+            (*messages)[3] = new RadioMessage(2055, 7, 6, 2);
+            (*messages)[4] = new RadioMessage(2056, 7, 26, -100000);
+            (*messages)[5] = new RadioMessage(2057, 7, 6, 4);
+            (*messages)[6] = new RadioMessage(2063, 0, 1, 0);
+            (*messages)[7] = new RadioMessage(2064, 0, 6, 6);
             break;
-        }
-        case 0x34: {
-            static const RMSpec t[] = {{0x84f, 0x3f, 5, 8000}, {0x850, 0, 6, 0}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(2, *(this->messages));
-            for (unsigned i = 0; i < 2; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 49:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(2120, 0, 5, 8000);
             break;
-        }
-        case 0x36: {
-            static const RMSpec t[] = {{0x851, 0, 5, 8000}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(1, *(this->messages));
-            for (unsigned i = 0; i < 1; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 50:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(4, *messages);
+            (*messages)[0] = new RadioMessage(2121, 63, 5, 8000);
+            (*messages)[1] = new RadioMessage(2122, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(2123, 63, 6, 1);
+            (*messages)[3] = new RadioMessage(2124, 0, 6, 2);
             break;
-        }
-        case 0x37: {
-            static const RMSpec t[] = {{0x85a, 0, 5, 8000}, {0x85b, 0, 6, 0}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(2, *(this->messages));
-            for (unsigned i = 0; i < 2; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 51:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(2, *messages);
+            (*messages)[0] = new RadioMessage(2125, 63, 5, 8000);
+            (*messages)[1] = new RadioMessage(2126, 0, 6, 0);
             break;
-        }
-        case 0x38: {
-            static const RMSpec t[] = {
-                {0x86a, 0x1b, 5, 8000}, {0x86b, 0, 6, 0}, {0x86c, 0x1c, 0x10, 0},
-                {0x86d, 0, 0x14, 3}, {0x86e, 0, 6, 3}, {0x86f, 0x1b, 0x1c, 0}
-            };
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(6, *(this->messages));
-            for (unsigned i = 0; i < 6; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 52:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(2, *messages);
+            (*messages)[0] = new RadioMessage(2127, 63, 5, 8000);
+            (*messages)[1] = new RadioMessage(2128, 0, 6, 0);
             break;
-        }
-        case 0x40: {
-            static const RMSpec t[] = {
-                {0x8b4, 0, 5, 8000}, {0x8b5, 0x14, 6, 0}, {0x8b6, 0, 6, 1}, {0x8b7, 0x1e, 6, 2},
-                {0x8b8, 0, 6, 3}, {0x8b9, 0x1e, 0x14, 5}, {0x8ba, 0, 6, 5}
-            };
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(7, *(this->messages));
-            for (unsigned i = 0; i < 7; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 53:
+        case 54:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(2129, 0, 5, 8000);
             break;
-        }
-        case 0x41: {
-            static const RMSpec t[] = {{0x8cb, 0, 5, 12000}, {0x8cc, 0x14, 6, 0}, {0x8cd, 0, 6, 1}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(3, *(this->messages));
-            for (unsigned i = 0; i < 3; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 55:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(2, *messages);
+            (*messages)[0] = new RadioMessage(2138, 0, 5, 8000);
+            (*messages)[1] = new RadioMessage(2139, 0, 6, 0);
             break;
-        }
-        case 0x43: {
-            static const RMSpec t[] = {
-                {0x8ef, 0, 0x10, 0}, {0x8f0, 0x1f, 6, 0}, {0x8f1, 0x1e, 6, 1},
-                {0x8f2, 0, 0x14, 2}, {0x8f3, 0x1f, 6, 3}, {0x8f4, 0, 6, 4}, {0x8f5, 0, 0x14, 8},
-                {0x8f6, 0x1f, 6, 6}, {0x8f7, 0, 6, 7}, {0x8f8, 0x1f, 6, 8}, {0x8f9, 0, 6, 9},
-                {0x8fa, 0x1f, 6, 10}
-            };
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(0xc, *(this->messages));
-            for (unsigned i = 0; i < 0xc; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 56:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(6, *messages);
+            (*messages)[0] = new RadioMessage(2154, 27, 5, 8000);
+            (*messages)[1] = new RadioMessage(2155, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(2156, 28, 16, 0);
+            (*messages)[3] = new RadioMessage(2157, 0, 20, 3);
+            (*messages)[4] = new RadioMessage(2158, 0, 6, 3);
+            (*messages)[5] = new RadioMessage(2159, 27, 28, 0);
             break;
-        }
-        case 0x45: {
-            static const RMSpec t[] = {{0x90e, 0, 5, 8000}, {0x90f, 0, 6, 0}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(2, *(this->messages));
-            for (unsigned i = 0; i < 2; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 62:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(2209, 0, 5, 8000);
             break;
-        }
-        case 0x46: {
-            static const RMSpec t[] = {{0x910, 0, 5, 8000}, {0x911, 0, 6, 0}, {0x912, 0x22, 6, 1}, {0x913, 0, 6, 2}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(4, *(this->messages));
-            for (unsigned i = 0; i < 4; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 63:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(3, *messages);
+            (*messages)[0] = new RadioMessage(2223, 0, 5, 8000);
+            (*messages)[1] = new RadioMessage(2224, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(2225, 29, 6, 1);
             break;
-        }
-        case 0x49: {
-            static const RMSpec t[] = {
-                {0x92b, 0, 5, 8000}, {0x92c, 0, 0x10, 0}, {0x92d, 0xb, 6, 1}, {0x92e, 0, 6, 2},
-                {0x92f, 0, 0x1b, 1}, {0x930, 0x21, 0x1b, 2}, {0x931, 0, 0x1b, 3},
-                {0x932, 0, 6, 6}
-            };
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(8, *(this->messages));
-            for (unsigned i = 0; i < 8; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 64:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(7, *messages);
+            (*messages)[0] = new RadioMessage(2228, 0, 5, 8000);
+            (*messages)[1] = new RadioMessage(2229, 20, 6, 0);
+            (*messages)[2] = new RadioMessage(2230, 0, 6, 1);
+            (*messages)[3] = new RadioMessage(2231, 30, 6, 2);
+            (*messages)[4] = new RadioMessage(2232, 0, 6, 3);
+            (*messages)[5] = new RadioMessage(2233, 30, 20, 5);
+            (*messages)[6] = new RadioMessage(2234, 0, 6, 5);
             break;
-        }
-        case 0x77: {
-            static const RMSpec t[] = {{0xab9, 0x11, 0x1b, 1}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(1, *(this->messages));
-            for (unsigned i = 0; i < 1; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 65:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(3, *messages);
+            (*messages)[0] = new RadioMessage(2251, 0, 5, 12000);
+            (*messages)[1] = new RadioMessage(2252, 20, 6, 0);
+            (*messages)[2] = new RadioMessage(2253, 0, 6, 1);
             break;
-        }
-        case 0x78: {
-            static const RMSpec t[] = {{0xac5, 0, 5, 0x5dc}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(1, *(this->messages));
-            for (unsigned i = 0; i < 1; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 67:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(12, *messages);
+            (*messages)[0] = new RadioMessage(2287, 0, 16, 0);
+            (*messages)[1] = new RadioMessage(2288, 31, 6, 0);
+            (*messages)[2] = new RadioMessage(2289, 30, 6, 1);
+            (*messages)[3] = new RadioMessage(2290, 0, 20, 2);
+            (*messages)[4] = new RadioMessage(2291, 31, 6, 3);
+            (*messages)[5] = new RadioMessage(2292, 0, 6, 4);
+            (*messages)[6] = new RadioMessage(2293, 0, 20, 8);
+            (*messages)[7] = new RadioMessage(2294, 31, 6, 6);
+            (*messages)[8] = new RadioMessage(2295, 0, 6, 7);
+            (*messages)[9] = new RadioMessage(2296, 31, 6, 8);
+            (*messages)[10] = new RadioMessage(2297, 0, 6, 9);
+            (*messages)[11] = new RadioMessage(2298, 31, 6, 10);
             break;
-        }
-        case 0x83: {
-            static const RMSpec t[] = {{0xb2b, 0, 0x1b, 2}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(1, *(this->messages));
-            for (unsigned i = 0; i < 1; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 69:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(2, *messages);
+            (*messages)[0] = new RadioMessage(2318, 0, 5, 8000);
+            (*messages)[1] = new RadioMessage(2319, 0, 6, 0);
             break;
-        }
-        case 0x85: {
-            static const RMSpec t[] = {{0xb33, 0x11, 0x1b, 1}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(1, *(this->messages));
-            for (unsigned i = 0; i < 1; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 70:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(4, *messages);
+            (*messages)[0] = new RadioMessage(2320, 0, 5, 8000);
+            (*messages)[1] = new RadioMessage(2321, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(2322, 34, 6, 1);
+            (*messages)[3] = new RadioMessage(2323, 0, 6, 2);
             break;
-        }
-        case 0x87: {
-            static const RMSpec t[] = {
-                {0xb43, 0x31, 0x1b, 1}, {0xb44, 0, 6, 0}, {0xb45, 0, 0x1b, 2},
-                {0xb46, 0, 0x1b, 3}
-            };
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(4, *(this->messages));
-            for (unsigned i = 0; i < 4; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 73:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(8, *messages);
+            (*messages)[0] = new RadioMessage(2347, 0, 5, 8000);
+            (*messages)[1] = new RadioMessage(2348, 0, 16, 0);
+            (*messages)[2] = new RadioMessage(2349, 11, 6, 1);
+            (*messages)[3] = new RadioMessage(2350, 0, 6, 2);
+            (*messages)[4] = new RadioMessage(2351, 0, 27, 1);
+            (*messages)[5] = new RadioMessage(2352, 33, 27, 2);
+            (*messages)[6] = new RadioMessage(2353, 0, 27, 3);
+            (*messages)[7] = new RadioMessage(2354, 0, 6, 6);
             break;
-        }
-        case 0x89: {
-            static const RMSpec t[] = {
-                {0xb4f, 0x32, 5, 0x5dc}, {0xb50, 0, 6, 0}, {0xb51, 0x32, 6, 1},
-                {0xb52, 0, 6, 2}, {0xb53, 0x32, 6, 3}
-            };
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(5, *(this->messages));
-            for (unsigned i = 0; i < 5; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 78:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(4, *messages);
+            (*messages)[0] = new RadioMessage(2409, 0, 5, 2000);
+            (*messages)[1] = new RadioMessage(2410, 0, 27, 9);
+            (*messages)[2] = new RadioMessage(2411, 0, 27, 11);
+            (*messages)[3] = new RadioMessage(2412, 11, 6, 2);
             break;
-        }
-        case 0x90: {
-            static const RMSpec t[] = {
-                {0xb98, 0x27, 5, 7000}, {0xb99, 0x27, 6, 0}, {0xb9a, 0, 6, 1},
-                {0xb9b, 0x27, 6, 2}
-            };
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(4, *(this->messages));
-            for (unsigned i = 0; i < 4; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 79:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(2413, 0, 5, 6000);
             break;
-        }
-        case 0x91: {
-            static const RMSpec t[] = {{0xb9c, 0, 5, 7000}, {0xb9d, 0x27, 6, 0}, {0xb9e, 0x27, 0x1b, 5}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(3, *(this->messages));
-            for (unsigned i = 0; i < 3; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 80:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(12, *messages);
+            (*messages)[0] = new RadioMessage(2414, 0, 5, 8000);
+            (*messages)[1] = new RadioMessage(2415, 6, 5, 25000);
+            (*messages)[2] = new RadioMessage(2416, 26, 6, 1);
+            (*messages)[3] = new RadioMessage(2417, 0, 6, 2);
+            (*messages)[4] = new RadioMessage(2418, 6, 6, 3);
+            (*messages)[5] = new RadioMessage(2419, 26, 6, 4);
+            (*messages)[6] = new RadioMessage(2420, 6, 6, 5);
+            (*messages)[7] = new RadioMessage(2421, 26, 6, 6);
+            (*messages)[8] = new RadioMessage(2422, 0, 6, 7);
+            (*messages)[9] = new RadioMessage(2423, 26, 9, 1, 18);
+            (*messages)[10] = new RadioMessage(2424, 26, 27, 12);
+            (*messages)[11] = new RadioMessage(2425, 26, 6, 10);
             break;
-        }
-        case 0x93: {
-            static const RMSpec t[] = {{0xbac, 0, 5, 7000}, {0xbad, 0, 6, 0}};
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(2, *(this->messages));
-            for (unsigned i = 0; i < 2; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 81:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(4, *messages);
+            (*messages)[0] = new RadioMessage(2432, 26, 5, 16000);
+            (*messages)[1] = new RadioMessage(2433, 31, 6, 0);
+            (*messages)[2] = new RadioMessage(2434, 26, 6, 1);
+            (*messages)[3] = new RadioMessage(2435, 26, 6, 2);
             break;
-        }
-        case 0x50: {
-            static const RMSpec t[] = {
-                {0x96e, 0, 5, 8000}, {0x96f, 6, 5, 25000}, {0x970, 0x1a, 6, 1},
-                {0x971, 0, 6, 2}, {0x972, 6, 6, 3}
-            };
-            {
-            this->messages = new Array<RadioMessage *>();
-            ArraySetLength(5, *(this->messages));
-            for (unsigned i = 0; i < 5; i = i + 1) {
-                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
-                new(m) RadioMessage(t[i].id, t[i].speaker, t[i].kind, t[i].delay);
-                (*this->messages)[i] = m;
-            }
-        }
+        case 87:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(6, *messages);
+            (*messages)[0] = new RadioMessage(2480, 6, 5, 1500);
+            (*messages)[1] = new RadioMessage(2481, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(2482, 6, 6, 1);
+            (*messages)[3] = new RadioMessage(2483, 0, 6, 2);
+            (*messages)[4] = new RadioMessage(2484, 6, 6, 3);
+            (*messages)[5] = new RadioMessage(2485, 0, 6, 4);
             break;
-        }
+        case 89:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(2494, 17, 5, 2000);
+            break;
+        case 91:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(7, *messages);
+            (*messages)[0] = new RadioMessage(2504, 0, 5, 1500);
+            (*messages)[1] = new RadioMessage(2505, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(2506, 0, 6, 1);
+            (*messages)[3] = new RadioMessage(2507, 60, 6, 2);
+            (*messages)[4] = new RadioMessage(2508, 0, 6, 3);
+            (*messages)[5] = new RadioMessage(2509, 0, 27, 2);
+            (*messages)[6] = new RadioMessage(2510, 60, 27, 4);
+            break;
+        case 92:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(10, *messages);
+            (*messages)[0] = new RadioMessage(2513, 59, 5, 1500);
+            (*messages)[1] = new RadioMessage(2514, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(2515, 59, 6, 1);
+            (*messages)[3] = new RadioMessage(2516, 0, 6, 2);
+            (*messages)[4] = new RadioMessage(2517, 0, 27, 2);
+            (*messages)[5] = new RadioMessage(2518, 0, 6, 4);
+            (*messages)[6] = new RadioMessage(2519, 0, 27, 6);
+            (*messages)[7] = new RadioMessage(2520, 0, 6, 6);
+            (*messages)[8] = new RadioMessage(2521, 0, 9, 0, 3);
+            (*messages)[9] = new RadioMessage(2522, 59, 27, 10);
+            break;
+        case 94:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(6, *messages);
+            (*messages)[0] = new RadioMessage(2541, 0, 5, 1500);
+            (*messages)[1] = new RadioMessage(2542, 59, 6, 0);
+            (*messages)[2] = new RadioMessage(2543, 0, 6, 1);
+            (*messages)[3] = new RadioMessage(2544, 0, 27, 1);
+            (*messages)[4] = new RadioMessage(2545, 0, 6, 3);
+            (*messages)[5] = new RadioMessage(2546, 0, 6, 4);
+            break;
+        case 95:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(2555, 17, 27, 1);
+            break;
+        case 97:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(3, *messages);
+            (*messages)[0] = new RadioMessage(2582, 0, 5, 1500);
+            (*messages)[1] = new RadioMessage(2583, 22, 6, 0);
+            (*messages)[2] = new RadioMessage(2584, 0, 6, 1);
+            break;
+        case 99:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(2600, 17, 27, 1);
+            break;
+        case 100:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(2, *messages);
+            (*messages)[0] = new RadioMessage(2613, 0, 5, 1500);
+            (*messages)[1] = new RadioMessage(2614, 0, 6, 0);
+            break;
+        case 102:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(9, *messages);
+            (*messages)[0] = new RadioMessage(2625, 18, 5, 8000);
+            (*messages)[1] = new RadioMessage(2626, 18, 6, 0);
+            (*messages)[2] = new RadioMessage(2627, 18, 6, 1);
+            (*messages)[3] = new RadioMessage(2628, 18, 27, 3);
+            (*messages)[4] = new RadioMessage(2629, 0, 30, 1);
+            (*messages)[5] = new RadioMessage(2630, 0, 30, 2);
+            (*messages)[6] = new RadioMessage(2631, 0, 30, 3);
+            (*messages)[7] = new RadioMessage(2632, 18, 27, 5);
+            (*messages)[8] = new RadioMessage(2633, 0, 27, 7);
+            break;
+        case 105:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(9, *messages);
+            (*messages)[0] = new RadioMessage(2657, 20, 5, 0);
+            (*messages)[1] = new RadioMessage(2658, 61, 27, 2);
+            (*messages)[2] = new RadioMessage(2659, 0, 27, 5);
+            (*messages)[3] = new RadioMessage(2660, 20, 27, 6);
+            (*messages)[4] = new RadioMessage(2661, 0, 6, 3);
+            (*messages)[5] = new RadioMessage(2662, 0, 27, 7);
+            (*messages)[6] = new RadioMessage(2663, 20, 6, 5);
+            (*messages)[7] = new RadioMessage(2664, 0, 27, 9);
+            (*messages)[8] = new RadioMessage(2665, 0, 27, 10);
+            break;
+        case 106:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(6, *messages);
+            (*messages)[0] = new RadioMessage(2666, 0, 5, 1500);
+            (*messages)[1] = new RadioMessage(2667, 20, 6, 0);
+            (*messages)[2] = new RadioMessage(2668, 20, 6, 1);
+            (*messages)[3] = new RadioMessage(2669, 0, 6, 2);
+            (*messages)[4] = new RadioMessage(2670, 0, 6, 3);
+            (*messages)[5] = new RadioMessage(2671, 0, 27, 6);
+            break;
+        case 109:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(2687, 17, 27, 1);
+            break;
+        case 114:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(3, *messages);
+            (*messages)[0] = new RadioMessage(2708, 0, 5, 8000);
+            (*messages)[1] = new RadioMessage(2709, 10, 27, 1);
+            (*messages)[2] = new RadioMessage(2710, 0, 6, 1);
+            break;
+        case 119:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(2745, 17, 27, 1);
+            break;
+        case 120:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(2757, 0, 5, 1500);
+            break;
+        case 123:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(4, *messages);
+            (*messages)[0] = new RadioMessage(2785, 22, 5, 8000);
+            (*messages)[1] = new RadioMessage(2786, 38, 6, 0);
+            (*messages)[2] = new RadioMessage(2787, 22, 6, 1);
+            (*messages)[3] = new RadioMessage(2788, 0, 6, 2);
+            break;
+        case 125:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(8, *messages);
+            (*messages)[0] = new RadioMessage(2804, 0, 5, 1500);
+            (*messages)[1] = new RadioMessage(2814, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(2815, 0, 27, 2);
+            (*messages)[3] = new RadioMessage(2816, 10, 27, 3);
+            (*messages)[4] = new RadioMessage(2817, 0, 27, 4);
+            (*messages)[5] = new RadioMessage(2818, 0, 27, 5);
+            (*messages)[6] = new RadioMessage(2820, 0, 27, 6);
+            (*messages)[7] = new RadioMessage(2821, 0, 27, 7);
+            break;
+        case 126:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(2828, 17, 27, 1);
+            break;
+        case 131:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(2859, 0, 27, 2);
+            break;
+        case 133:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(2867, 17, 27, 1);
+            break;
+        case 135:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(4, *messages);
+            (*messages)[0] = new RadioMessage(2883, 49, 27, 1);
+            (*messages)[1] = new RadioMessage(2884, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(2885, 0, 27, 2);
+            (*messages)[3] = new RadioMessage(2886, 0, 27, 3);
+            break;
+        case 137:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(5, *messages);
+            (*messages)[0] = new RadioMessage(2895, 50, 5, 1500);
+            (*messages)[1] = new RadioMessage(2896, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(2897, 50, 6, 1);
+            (*messages)[3] = new RadioMessage(2898, 0, 6, 2);
+            (*messages)[4] = new RadioMessage(2899, 50, 6, 3);
+            break;
+        case 139:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(6, *messages);
+            (*messages)[0] = new RadioMessage(2924, 0, 5, 8000);
+            (*messages)[1] = new RadioMessage(2925, 0, 27, 1);
+            (*messages)[2] = new RadioMessage(2926, 50, 6, 1);
+            (*messages)[3] = new RadioMessage(2927, 50, 6, 2);
+            (*messages)[4] = new RadioMessage(2928, 0, 27, 2);
+            (*messages)[5] = new RadioMessage(2929, 0, 27, 3);
+            break;
+        case 142:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(5, *messages);
+            (*messages)[0] = new RadioMessage(2952, 2, 5, 1500);
+            (*messages)[1] = new RadioMessage(2953, 2, 27, 1);
+            (*messages)[2] = new RadioMessage(2954, 0, 6, 1);
+            (*messages)[3] = new RadioMessage(2955, 2, 6, 2);
+            (*messages)[4] = new RadioMessage(2956, 2, 27, 3);
+            break;
+        case 144:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(4, *messages);
+            (*messages)[0] = new RadioMessage(2968, 39, 5, 7000);
+            (*messages)[1] = new RadioMessage(2969, 39, 6, 0);
+            (*messages)[2] = new RadioMessage(2970, 0, 6, 1);
+            (*messages)[3] = new RadioMessage(2971, 39, 6, 2);
+            break;
+        case 145:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(3, *messages);
+            (*messages)[0] = new RadioMessage(2972, 0, 5, 7000);
+            (*messages)[1] = new RadioMessage(2973, 39, 6, 0);
+            (*messages)[2] = new RadioMessage(2974, 39, 27, 5);
+            break;
+        case 147:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(2, *messages);
+            (*messages)[0] = new RadioMessage(2988, 0, 5, 7000);
+            (*messages)[1] = new RadioMessage(2989, 0, 6, 0);
+            break;
+        case 154:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(12, *messages);
+            (*messages)[0] = new RadioMessage(3039, 0, 5, 9000);
+            (*messages)[1] = new RadioMessage(3040, 26, 6, 0);
+            (*messages)[2] = new RadioMessage(3041, 0, 6, 1);
+            (*messages)[3] = new RadioMessage(3042, 26, 6, 2);
+            (*messages)[4] = new RadioMessage(3043, 0, 6, 3);
+            (*messages)[5] = new RadioMessage(3044, 26, 6, 4);
+            (*messages)[6] = new RadioMessage(3045, 0, 6, 5);
+            (*messages)[7] = new RadioMessage(3046, 26, 27, 9);
+            (*messages)[8] = new RadioMessage(3047, 0, 27, 10);
+            (*messages)[9] = new RadioMessage(3048, 55, 6, 8);
+            (*messages)[10] = new RadioMessage(3049, 0, 6, 9);
+            (*messages)[11] = new RadioMessage(3050, 0, 27, 11);
+            break;
+        case 157:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(17, *messages);
+            (*messages)[0] = new RadioMessage(3077, 0, 5, 7000);
+            (*messages)[1] = new RadioMessage(3078, 38, 6, 0);
+            (*messages)[2] = new RadioMessage(3079, 0, 6, 1);
+            (*messages)[3] = new RadioMessage(3080, 39, 6, 2);
+            (*messages)[4] = new RadioMessage(3081, 1, 27, 5);
+            (*messages)[5] = new RadioMessage(3082, 0, 6, 4);
+            (*messages)[6] = new RadioMessage(3083, 6, 12, 21);
+            (*messages)[7] = new RadioMessage(3084, 0, 6, 6);
+            (*messages)[8] = new RadioMessage(3085, 6, 27, 6);
+            (*messages)[9] = new RadioMessage(3086, 26, 6, 8);
+            (*messages)[10] = new RadioMessage(3087, 6, 6, 9);
+            (*messages)[11] = new RadioMessage(3088, 1, 6, 10);
+            (*messages)[12] = new RadioMessage(3089, 39, 27, 8);
+            (*messages)[13] = new RadioMessage(3090, 0, 27, 9);
+            (*messages)[14] = new RadioMessage(3091, 26, 6, 13);
+            (*messages)[15] = new RadioMessage(3092, 0, 6, 14);
+            (*messages)[16] = new RadioMessage(3093, 26, 6, 15);
+            break;
+        case 158:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(11, *messages);
+            (*messages)[0] = new RadioMessage(3094, 0, 5, 10000);
+            (*messages)[1] = new RadioMessage(3095, 0, 6, 0);
+            (*messages)[2] = new RadioMessage(3096, 39, 6, 1);
+            (*messages)[3] = new RadioMessage(3097, 0, 6, 2);
+            (*messages)[4] = new RadioMessage(3098, 39, 6, 3);
+            (*messages)[5] = new RadioMessage(3099, 39, 31, 0);
+            (*messages)[6] = new RadioMessage(3100, 0, 6, 5);
+            (*messages)[7] = new RadioMessage(3101, 39, 12, 0);
+            (*messages)[8] = new RadioMessage(3102, 0, 6, 7);
+            (*messages)[9] = new RadioMessage(3103, 39, 19, 0);
+            (*messages)[10] = new RadioMessage(3104, 0, 1, 0);
+            break;
+        case 160:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(3121, 17, 27, 1);
+            break;
+        case 161:
+            messages = new Array<RadioMessage *>();
+            ArraySetLength(1, *messages);
+            (*messages)[0] = new RadioMessage(3125, 17, 27, 1);
+            break;
         default:
             break;
     }
+    return messages;
 }
 
 static inline float clampChannel(float scaled) {
@@ -3178,57 +5854,444 @@ void Level::createStaticObjects() {
     }
 }
 
-int Level::createStaticObject(Waypoint *wp, int type, bool jitter) {
-    Level * thisptr = this;
-
-    int x = 0, y = 0, z = 0;
-    if (wp != 0) {
-        x = wp->x;
-        y = wp->y;
-        z = wp->z;
-    }
+// Android 2.0.16 0xbe6c0..0xc00c4; iOS sub_12283C independently confirms the branches.
+intptr_t Level::createStaticObject(Waypoint *wp, int type, bool jitter) {
+    int x = wp ? wp->x : 0;
+    int y = wp ? wp->y : 0;
+    int z = wp ? wp->z : 0;
     if (jitter) {
-        AbyssEngine::AERandom *rng = AERandom::gRandom;
-        x = x + rng->nextInt(20000) - 10000;
-        y = y + rng->nextInt(20000) - 10000;
-        z = z + rng->nextInt(20000) - 10000;
+        x += static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+        y += static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
+        z += static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
     }
-
-    if (type == 0x4215) {
-        int r = AERandom::gRandom->nextInt();
-        type = (r == 0) ? 0x4215 : (r == 1) ? 0x4216 : 0x4217;
+    KIPlayer *object = nullptr;
+    if (type == 16917) {
+        int roll = static_cast<AERandom *>(Globals::rnd)->nextInt(3);
+        unsigned short mesh = roll == 0 ? 16917 : roll == 1 ? 16918 : 16919;
+        auto *geometry = new AEGeometry(mesh, Globals::Canvas, false);
+        auto *body = new Player(1000, 1, false, false, false);
+        object = new PlayerJunk(16917, body, geometry, float(x), float(y), float(z));
+        object->geometry->rotate(float(x), float(y), float(z));
+    } else {
+        // The original creates this wrapper before dispatch, even when a branch
+        // subsequently installs its own composite. It does not delete it here.
+        AEGeometry *geometry;
+        if (type == 6772 || type == 14363 || type == 6774)
+            geometry = new AEGeometry(Globals::Canvas);
+        else
+            geometry = new AEGeometry(static_cast<unsigned short>(type), Globals::Canvas, false);
+        if ((unsigned)(type - 18880) < 3 || type == 6772 || type == 6774 || type == 14363) {
+            auto *body = new Player(1000, 100, false, false, false);
+            object = new PlayerTurret(type, body, geometry, float(x), float(y), float(z));
+            object->setLevel(this);
+            object->name = *Globals::gameText->getText(1666);
+            object->cargo = nullptr;
+        } else if (type == 14365) {
+            auto *body = new Player(1000, 100, false, false, false);
+            object = new PlayerTurret(14365, body, geometry, float(x), float(y), float(z));
+            object->setLevel(this);
+            object->name = *Globals::gameText->getText(1665);
+            object->field_0x25 = 0;
+            object->cargo = nullptr;
+        } else if (type == 19050) {
+            // Player allocation is an original side effect; PlayerStatic has no Player parameter.
+            new Player(1000, 9999999, false, false, false);
+            object = new PlayerStatic(19050, geometry, float(x), float(y), float(z));
+        } else if ((unsigned)(type - 18750) <= 31 && (0x1249u & (1u << (type - 18750)))) {
+            auto *body = new Player(1000, 9999999, false, false, false);
+            body->setVulnerable(false);
+            auto *fixed = new PlayerFixedObject(type, 3, body, nullptr, float(x), float(y), float(z));
+            auto *base = new AEGeometry(static_cast<unsigned short>(type), Globals::Canvas, false);
+            auto *childA = new AEGeometry(static_cast<unsigned short>(type + 2), Globals::Canvas, false);
+            auto *childB = new AEGeometry(static_cast<unsigned short>(type + 1), Globals::Canvas, false);
+            base->addChild(childA->transform);
+            base->addChild(childB->transform);
+            if (type == 18762 && Globals::status->getCurrentCampaignMission() == 145) {
+                auto *extra = new AEGeometry(18765, Globals::Canvas, false);
+                base->addChild(extra->transform);
+                delete extra;
+            }
+            delete childA;
+            delete childB;
+            fixed->setShipGroup(base, -1, false);
+            fixed->field_0x70 = 1;
+            static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+            fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(2001, nullptr)));
+            object = fixed;
+        } else {
+            switch (type) {
+                case 14243: {
+                    int level = Globals::status->getLevel() <= 20 ? 15 * Globals::status->getLevel() + 20 : 320;
+                    int campaign = Globals::status->gameWon() ? 180 : 4 * Globals::status->getCurrentCampaignMission();
+                    float hp = float(5 * (campaign + level));
+                    hp += (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * hp;
+                    auto *body = new Player(7500, int(hp), false, false, false);
+                    auto *fixed = new PlayerFixedObject(14243, 8, body, nullptr, float(x), float(y), float(z));
+                    auto *base = new AEGeometry(14243, Globals::Canvas, false);
+                    fixed->setShipGroup(base, -1, false);
+                    auto *childA = new AEGeometry(14244, Globals::Canvas, false);
+                    auto *childB = new AEGeometry(14245, Globals::Canvas, false);
+                    fixed->geometry->addChild(childA->transform);
+                    fixed->geometry->addChild(childB->transform);
+                    delete childB;
+                    delete childA;
+                    fixed->setWreckedMeshId(14246);
+                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(1002, nullptr)));
+                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+                    object = fixed;
+                    break;
+                }
+                case 16928: {
+                    auto *body = new Player(1000, 9999999, false, false, false);
+                    auto *fixed = new PlayerFixedObject(16928, 0, body, nullptr, float(x), float(y), float(z));
+                    auto *base = new AEGeometry(16928, Globals::Canvas, false);
+                    fixed->setShipGroup(base, -1, false);
+                    auto *childA = new AEGeometry(16929, Globals::Canvas, false);
+                    auto *childB = new AEGeometry(16930, Globals::Canvas, false);
+                    fixed->geometry->addChild(childA->transform);
+                    fixed->geometry->addChild(childB->transform);
+                    delete childB;
+                    delete childA;
+                    auto *transform = static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->transform));
+                    transform->Update(static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->transform))->animationLength, false);
+                    transform = static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->childTransform));
+                    transform->Update(static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->childTransform))->animationLength, false);
+                    transform = static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->parentTransform));
+                    transform->Update(static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->parentTransform))->animationLength, false);
+                    fixed->field_0x70 = 1;
+                    fixed->setWreckedMeshId(14246);
+                    auto *file = new FileRead();
+                    auto *points = file->loadSpacePoints(7, -1);
+                    delete file;
+                    fixed->setSpacePoints(points);
+                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(1003, nullptr)));
+                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+                    object = fixed;
+                    break;
+                }
+                case 19080: {
+                    auto *body = new Player(1000, 9999999, false, false, false);
+                    body->setVulnerable(false);
+                    auto *fixed = new PlayerFixedObject(19080, 3, body, nullptr, float(x), float(y), float(z));
+                    auto *base = new AEGeometry(19080, Globals::Canvas, false);
+                    auto *childA = new AEGeometry(19085, Globals::Canvas, false);
+                    auto *childB = new AEGeometry(19084, Globals::Canvas, false);
+                    auto *childC = new AEGeometry(19081, Globals::Canvas, false);
+                    auto *childD = new AEGeometry(19082, Globals::Canvas, false);
+                    auto *childE = new AEGeometry(19083, Globals::Canvas, false);
+                    base->addChild(childA->transform);
+                    base->addChild(childB->transform);
+                    base->addChild(childC->transform);
+                    auto *childF = new AEGeometry(19086, Globals::Canvas, false);
+                    auto *childG = new AEGeometry(19088, Globals::Canvas, false);
+                    auto *childH = new AEGeometry(19087, Globals::Canvas, false);
+                    base->addChild(childF->transform);
+                    base->addChild(childG->transform);
+                    base->addChild(childH->transform);
+                    delete childF;
+                    delete childG;
+                    delete childH;
+                    base->addChild(childD->transform);
+                    base->addChild(childE->transform);
+                    delete childA;
+                    delete childB;
+                    delete childC;
+                    delete childD;
+                    delete childE;
+                    fixed->setShipGroup(base, -1, false);
+                    fixed->field_0x70 = 1;
+                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+                    fixed->setWreckedMeshId(19080);
+                    auto *file = new FileRead();
+                    auto *points = file->loadSpacePoints(1, -1);
+                    delete file;
+                    fixed->setSpacePoints(points);
+                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(2000, nullptr)));
+                    fixed->player->radius = 0;
+                    object = fixed;
+                    break;
+                }
+                case 16992: {
+                    auto *body = new Player(1000, 9999999, false, false, false);
+                    auto *fixed = new PlayerFixedObject(16992, 0, body, nullptr, float(x), float(y), float(z));
+                    auto *base = new AEGeometry(16992, Globals::Canvas, false);
+                    fixed->setShipGroup(base, -1, false);
+                    fixed->field_0x70 = 1;
+                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+                    fixed->setWreckedMeshId(18300);
+                    auto *file = new FileRead();
+                    auto *points = file->loadSpacePoints(2, -1);
+                    delete file;
+                    fixed->setSpacePoints(points);
+                    object = fixed;
+                    break;
+                }
+                case 18785: {
+                    auto *body = new Player(1000, 9999999, false, false, false);
+                    auto *fixed = new PlayerFixedObject(18785, 2, body, nullptr, float(x), float(y), float(z));
+                    auto *base = new AEGeometry(18785, Globals::Canvas, false);
+                    auto *child0 = new AEGeometry(18831, Globals::Canvas, false);
+                    base->addChild(child0->transform);
+                    delete child0;
+                    fixed->setShipGroup(base, -1, false);
+                    fixed->field_0x70 = 1;
+                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+                    fixed->setWreckedMeshId(18300);
+                    fixed->shipGroup = 2;
+                    auto *file = new FileRead();
+                    auto *points = file->loadSpacePoints(2, -1);
+                    delete file;
+                    fixed->setSpacePoints(points);
+                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(2003, nullptr)));
+                    object = fixed;
+                    break;
+                }
+                case 18786: {
+                    auto *body = new Player(0, 9999999, false, false, false);
+                    auto *fixed = new PlayerFixedObject(18786, 2, body, nullptr, float(x), float(y), float(z));
+                    auto *base = new AEGeometry(18786, Globals::Canvas, false);
+                    fixed->setShipGroup(base, -1, false);
+                    fixed->field_0x70 = 0;
+                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+                    fixed->setWreckedMeshId(18300);
+                    object = fixed;
+                    break;
+                }
+                case 19051: {
+                    auto *body = new Player(0, 9999999, false, false, false);
+                    auto *fixed = new PlayerFixedObject(19051, 1, body, nullptr, float(x), float(y), float(z));
+                    auto *base = new AEGeometry(19051, Globals::Canvas, false);
+                    auto *child0 = new AEGeometry(19052, Globals::Canvas, false);
+                    base->addChild(child0->transform);
+                    delete child0;
+                    auto *child1 = new AEGeometry(19053, Globals::Canvas, false);
+                    base->addChild(child1->transform);
+                    delete child1;
+                    fixed->setShipGroup(base, -1, false);
+                    fixed->field_0x70 = 1;
+                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+                    fixed->setWreckedMeshId(18300);
+                    auto *file = new FileRead();
+                    auto *points = file->loadSpacePoints(8, -1);
+                    delete file;
+                    fixed->setSpacePoints(points);
+                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(2006, nullptr)));
+                    object = fixed;
+                    break;
+                }
+                case 21113: {
+                    auto *body = new Player(0, 9999999, false, false, false);
+                    body->setVulnerable(false);
+                    auto *fixed = new PlayerFixedObject(16800, 1, body, nullptr, float(x), float(y), float(z));
+                    auto *base = new AEGeometry(16800, Globals::Canvas, false);
+                    fixed->setShipGroup(base, -1, false);
+                    fixed->field_0x70 = 1;
+                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+                    fixed->setWreckedMeshId(21113);
+                    auto *file = new FileRead();
+                    auto *points = file->loadSpacePoints(10, -1);
+                    delete file;
+                    fixed->setSpacePoints(points);
+                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(2002, nullptr)));
+                    object = fixed;
+                    break;
+                }
+                case 18781: {
+                    auto *body = new Player(1000, 9999999, false, false, false);
+                                        auto *fixed = new PlayerFixedObject(18781, 3, body, nullptr, float(x), float(y), float(z));
+                    auto *base = new AEGeometry(21076, Globals::Canvas, false);
+                    auto *childA = new AEGeometry(21876, Globals::Canvas, false);
+                    auto *childB = new AEGeometry(22076, Globals::Canvas, false);
+                    auto *childC = new AEGeometry(18781, Globals::Canvas, false);
+                    auto *childD = new AEGeometry(18781, Globals::Canvas, false);
+                    auto *childE = new AEGeometry(18782, Globals::Canvas, false);
+                    auto *childF = new AEGeometry(18783, Globals::Canvas, false);
+                    auto *childG = new AEGeometry(18784, Globals::Canvas, false);
+                    base->addChild(childG->transform);
+                    base->addChild(childA->transform);
+                    base->addChild(childB->transform);
+                    base->addChild(childC->transform);
+                    base->addChild(childD->transform);
+                    base->addChild(childE->transform);
+                    base->addChild(childF->transform);
+                    delete childA;
+                    delete childB;
+                    delete childC;
+                    delete childD;
+                    delete childE;
+                    delete childF;
+                    delete childG;
+                    fixed->setShipGroup(base, -1, false);
+                    fixed->field_0x70 = 1;
+                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+                    fixed->setWreckedMeshId(18300);
+                    auto *file = new FileRead();
+                    auto *points = file->loadSpacePoints(6, -1);
+                    delete file;
+                    fixed->setSpacePoints(points);
+                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(111, nullptr)));
+                    object = fixed;
+                    break;
+                }
+                case 18766: {
+                    int level = Globals::status->getLevel() <= 20 ? 15 * Globals::status->getLevel() + 100 : 400;
+                    int campaign = Globals::status->gameWon() ? 180 : 4 * Globals::status->getCurrentCampaignMission();
+                    float hp = float(5 * (campaign + level));
+                    hp += (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * hp;
+                    auto *body = new Player(1000, int(hp), false, false, false);
+                    auto *fixed = new PlayerFixedObject(18766, 3, body, nullptr, float(x), float(y), float(z));
+                    auto *base = new AEGeometry(19072, Globals::Canvas, false);
+                    auto *childA = new AEGeometry(18766, Globals::Canvas, false);
+                        auto *childB = new AEGeometry(19073, Globals::Canvas, false);
+                        auto *childC = new AEGeometry(19074, Globals::Canvas, false);
+                        auto *childD = new AEGeometry(19075, Globals::Canvas, false);
+                        auto *childE = new AEGeometry(19076, Globals::Canvas, false);
+                        base->addChild(childA->transform);
+                        childA->addChild(childB->transform);
+                        childA->addChild(childC->transform);
+                        childA->addChild(childD->transform);
+                        childA->addChild(childE->transform);
+                        delete childA;
+                        delete childB;
+                        delete childC;
+                        delete childD;
+                        delete childE;
+                    fixed->setShipGroup(base, -1, false);
+                    fixed->field_0x40b = 1;
+                    fixed->field_0x70 = 1;
+                    auto *bounds = new Array<BoundingVolume *>();
+                    ArraySetLength(2, *bounds);
+                    (*bounds)[0] = new BoundingAAB(float(x), float(y), float(z), 0.0f, -199.0f, 4708.0f, 980.0f, 1530.0f, 1240.0f);
+                    (*bounds)[1] = new BoundingAAB(float(x), float(y), float(z), 0.0f, -14.0f, -98.0f, 4500.0f, 1405.0f, 8860.0f);
+                    fixed->setBV(bounds);
+                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+                    fixed->setWreckedMeshId(18300);
+                    auto *file = new FileRead();
+                    auto *points = file->loadSpacePoints(3, -1);
+                    delete file;
+                    fixed->setSpacePoints(points);
+                    object = fixed;
+                    break;
+                }
+                case 18804: {
+                    int level = Globals::status->getLevel() <= 20 ? 15 * Globals::status->getLevel() + 100 : 400;
+                    int campaign = Globals::status->gameWon() ? 180 : 4 * Globals::status->getCurrentCampaignMission();
+                    float hp = float(5 * (campaign + level));
+                    hp += (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * hp;
+                    auto *body = new Player(0, int(hp), false, false, false);
+                    auto *fixed = new PlayerFixedObject(18804, 0, body, nullptr, float(x), float(y), float(z));
+                    auto *base = new AEGeometry(18804, Globals::Canvas, false);
+                    auto *childA = new AEGeometry(18805, Globals::Canvas, false);
+                        auto *childB = new AEGeometry(18807, Globals::Canvas, false);
+                        auto *childC = new AEGeometry(18808, Globals::Canvas, false);
+                        auto *childD = new AEGeometry(18809, Globals::Canvas, false);
+                        auto *childE = new AEGeometry(18810, Globals::Canvas, false);
+                        auto *childF = new AEGeometry(18806, Globals::Canvas, false);
+                        base->addChild(childA->transform);
+                        base->addChild(childB->transform);
+                        base->addChild(childC->transform);
+                        base->addChild(childD->transform);
+                        base->addChild(childE->transform);
+                        base->addChild(childF->transform);
+                        delete childA;
+                        delete childB;
+                        delete childC;
+                        delete childD;
+                        delete childE;
+                        delete childF;
+                    fixed->setShipGroup(base, -1, false);
+                    fixed->field_0x70 = 1;
+                    fixed->setWreckedMeshId(18766);
+                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+                    auto *file = new FileRead();
+                    auto *points = file->loadSpacePoints(5, -1);
+                    delete file;
+                    fixed->setSpacePoints(points);
+                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(2005, nullptr)));
+                    object = fixed;
+                    break;
+                }
+                case 17049: {
+                    int level = Globals::status->getLevel() <= 20 ? 15 * Globals::status->getLevel() + 100 : 400;
+                    int campaign = Globals::status->gameWon() ? 180 : 4 * Globals::status->getCurrentCampaignMission();
+                    float hp = float(5 * (campaign + level));
+                    hp += (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * hp;
+                    auto *body = new Player(1000, int(hp), false, false, false);
+                    auto *fixed = new PlayerFixedObject(17049, 3, body, nullptr, float(x), float(y), float(z));
+                    auto *base = new AEGeometry(17049, Globals::Canvas, false);
+                    unsigned int transform = -1u;
+                        Globals::Canvas->TransformCreate(transform);
+                        Globals::Canvas->TransformAddMesh(transform, 17055, false);
+                        base->addChild(transform);
+                        unsigned int firstA = -1u, firstB = -1u;
+                        for (int i = 0; i != 3; ++i) {
+                            unsigned int a = -1u, b = -1u;
+                            Globals::Canvas->TransformCreate(a);
+                            Globals::Canvas->TransformCreate(b);
+                            Globals::Canvas->TransformAddMesh(a, 17052, false);
+                            Globals::Canvas->TransformAddMesh(b, 17053, false);
+                            float offset = i == 0 ? -2150.0f : i == 1 ? 2150.0f : 4300.0f;
+                            MatrixSetTranslation(*static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(a)), 0.0f, 0.0f, offset);
+                            MatrixSetTranslation(*static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(b)), 0.0f, 0.0f, offset);
+                            if (firstA == -1u) { firstA = a; firstB = b; }
+                            else { Globals::Canvas->TransformAddChild(firstA, a); Globals::Canvas->TransformAddChild(firstB, b); }
+                        }
+                        base->addChild(firstA);
+                        transform = -1u;
+                        Globals::Canvas->TransformCreate(transform);
+                        Globals::Canvas->TransformAddMesh(transform, 17054, false);
+                        base->addChild(transform);
+                        unsigned short lod = 17050;
+                        int distance = 35000;
+                        base->setLodMeshes(&lod, &distance, 1);
+                        base->setLodChildTransform(firstB);
+                    fixed->setShipGroup(base, -1, false);
+                    fixed->field_0x40b = 1;
+                    fixed->field_0x70 = 1;
+                    auto *bounds = new Array<BoundingVolume *>();
+                    ArraySetLength(2, *bounds);
+                    (*bounds)[0] = new BoundingAAB(float(x), float(y), float(z), 0.0f, -199.0f, 4708.0f, 980.0f, 1530.0f, 1240.0f);
+                    (*bounds)[1] = new BoundingAAB(float(x), float(y), float(z), 0.0f, -14.0f, -98.0f, 4500.0f, 1405.0f, 8860.0f);
+                    fixed->setBV(bounds);
+                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+                    fixed->setWreckedMeshId(18300);
+                    fixed->shipGroup = 3;
+                    auto *file = new FileRead();
+                    auto *points = file->loadSpacePoints(4, -1);
+                    delete file;
+                    fixed->setSpacePoints(points);
+                    object = fixed;
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
     }
-
-    (void) type;
-    (void) x;
-    (void) y;
-    (void) z;
-    (void) thisptr;
-    return 0;
+    object->setLevel(this);
+    return reinterpret_cast<intptr_t>(object);
 }
 
-void *Level::getBoundingVolume(int /*unused*/, AEGeometry *kind) {
-    int index = (int) (intptr_t) kind;
-    FileRead *fr = (FileRead *) ::operator new(1);
-    new(fr) FileRead();
+void *Level::getBoundingVolume(int index, AEGeometry * /*unused*/) {
+    FileRead *fr = new FileRead();
 
-    int *coll;
+    Array<int32_t> *coll;
     if (index < 2000)
-        coll = (int *) fr->loadStationCollision(index);
+        coll = fr->loadStationCollision(index);
     else
-        coll = (int *) fr->loadStaticCollision(index);
-    (fr->~FileRead(), ::operator delete(fr));
+        coll = fr->loadStaticCollision(index);
+    delete fr;
 
     void *result = 0;
     if (coll != 0) {
-        unsigned n = *(unsigned *) coll[1];
+        unsigned n = static_cast<unsigned>(coll->data_[0]);
         Array<BoundingVolume *> *arr = new Array<BoundingVolume *>();
         ArraySetLength(n, *arr);
         result = arr;
 
         int cursor = 1;
         for (unsigned i = 0; i < n; i = i + 1) {
-            const int *data = (const int *) (intptr_t) coll[1];
+            const int *data = coll->data_;
             const int *r = data + cursor;
             int shape = data[cursor];
             BoundingVolume *bv = 0;
@@ -3248,16 +6311,15 @@ void *Level::getBoundingVolume(int /*unused*/, AEGeometry *kind) {
             }
             (*arr)[i] = bv;
         }
-
-        ::operator delete((void *) (intptr_t) coll[1]);
-        ::operator delete(coll);
+        ArrayRelease(*coll);
+        delete coll;
     }
     return result;
 }
 
 PlayerFixedObject *Level::createShip(int race, int shipClass, int type, Waypoint *wp, bool hostile, bool group) {
     Level * thisptr = this;
-    int camp = Status::gStatus->getCurrentCampaignMission();
+    int camp = Globals::status->getCurrentCampaignMission();
 
     int x = 0, y = 0, z = 0;
     if (wp != 0) {
@@ -3265,14 +6327,13 @@ PlayerFixedObject *Level::createShip(int race, int shipClass, int type, Waypoint
         y = wp->y;
         z = wp->z;
     }
-    AbyssEngine::AERandom *rng = AERandom::gRandom;
-    int jx = rng->nextInt(40000);
-    int jy = rng->nextInt(40000);
-    int jz = rng->nextInt(40000);
+    int jx = static_cast<AERandom *>(Globals::rnd)->nextInt(40000);
+    int jy = static_cast<AERandom *>(Globals::rnd)->nextInt(40000);
+    int jz = static_cast<AERandom *>(Globals::rnd)->nextInt(40000);
 
-    int lvl = Status::gStatus->getLevel();
+    int lvl = Globals::status->getLevel();
     if (0x15 <= lvl) lvl = 0x14;
-    int ramp = (Status::gStatus->gameWon() != 0) ? 0xb4 : (camp << 2);
+    int ramp = (Globals::status->gameWon() != 0) ? 0xb4 : (camp << 2);
     int hp = ramp + lvl * 0xe + 0x14;
     if (type == 0x33) hp = (int) ((float) hp * 1.7f);
     else if (type == 0x31) hp = (int) ((float) hp * 17.0f);
@@ -3280,7 +6341,7 @@ PlayerFixedObject *Level::createShip(int race, int shipClass, int type, Waypoint
     if ((unsigned) (camp - 0x31) < 8 && (0x8fU >> ((unsigned) (camp - 0x31) & 0xff) & 1) != 0)
         hp = 0x10e;
 
-    int dmgLvl = Status::gStatus->getLevel();
+    int dmgLvl = Globals::status->getLevel();
     if (0x15 <= dmgLvl) dmgLvl = 0x14;
     int empA = dmgLvl * 5 + 0x28;
     int empB;
@@ -3292,15 +6353,14 @@ PlayerFixedObject *Level::createShip(int race, int shipClass, int type, Waypoint
     } else {
         empB = 15000;
     }
-    hp = (int) ((float) hp + (((DifficultyRecord *) (intptr_t) * g_cs_diffRec)->hpScale - 0.5f) * (float) hp);
+    hp = (int) ((float) hp + (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * (float) hp);
     if (camp == 0x9a) {
-        int alien = Status::gStatus->inAlienOrbit();
+        int alien = Globals::status->inAlienOrbit();
         hp = hp << (alien & (race == 9));
     }
 
-    Player *pl = (Player *) ::operator new(0x114);
-    int playerHp = (Status::gStatus->hardCoreMode() != 0) ? 0x28a : 1000;
-    new(pl) Player(playerHp, hp, 1, 1, 0);
+    int playerHp = (Globals::status->hardCoreMode() != 0) ? 0x28a : 1000;
+    Player *pl = new Player(playerHp, hp, 1, 1, 0);
     float fx = (float) (x + jx - 20000);
     float fy = (float) (y + jy - 20000);
     float fz = (float) (z + jz - 20000);
@@ -3308,10 +6368,9 @@ PlayerFixedObject *Level::createShip(int race, int shipClass, int type, Waypoint
 
     PlayerFixedObject *obj = 0;
     if (shipClass == 0) {
-        PlayerFighter *pf = (PlayerFighter *) ::operator new(0x2f0);
-        new(pf) PlayerFighter(type, race, pl, 0, fx, fy, fz, 0);
+        PlayerFighter *pf = new PlayerFighter(type, race, pl, 0, fx, fy, fz, hostile);
         obj = (PlayerFixedObject *) pf;
-        AEGeometry *gg = Globals::gGlobals->getShipGroup(type, race, group);
+        AEGeometry *gg = static_cast<Globals *>(Globals::globals)->getShipGroup(type, race, group);
         obj->setShipGroup(gg, type, hostile != 0);
         if (this->missionPtr != 1 && this->missionPtr != 0x17) {
             AEGeometry *g = obj->parentGeometry;
@@ -3326,14 +6385,61 @@ PlayerFixedObject *Level::createShip(int race, int shipClass, int type, Waypoint
             }
         }
     } else if (shipClass == 1) {
-        obj = (PlayerFixedObject *) ::operator new(0x1bc);
-        new(obj) PlayerFixedObject(type, race, pl, 0, fx, fy, fz);
+        obj = new PlayerFixedObject(type, race, pl, 0, fx, fy, fz);
 
-        int wreck = -1;
-        void *bv = nullptr;
-        obj->setWreckedMeshId(wreck);
-        obj->setBV((BoundingVolume *) bv);
-        AEGeometry *gg = Globals::gGlobals->getShipGroup(type, race, 0);
+        auto *bounds = new Array<BoundingVolume *>();
+        // Android createShip 0xc0214: freighter bounds and wrecks.
+        switch (race) {
+            case 0:
+                if (type == 14) {
+                    ArraySetLength(11, *bounds);
+                (*bounds)[0] = new BoundingAAB(fx, fy, fz, 0.0f, -2240.0f, 21608.0f, 760.0f, 640.0f, 2890.0f);
+                (*bounds)[1] = new BoundingAAB(fx, fy, fz, 0.0f, -2342.0f, 18392.0f, 1260.0f, 3560.0f, 3670.0f);
+                (*bounds)[2] = new BoundingAAB(fx, fy, fz, 0.0f, -786.0f, 8926.0f, 7410.0f, 7740.0f, 15540.0f);
+                (*bounds)[3] = new BoundingAAB(fx, fy, fz, 0.0f, -4950.0f, 9656.0f, 820.0f, 1040.0f, 7150.0f);
+                (*bounds)[4] = new BoundingAAB(fx, fy, fz, 0.0f, 3420.0f, -452.0f, 1310.0f, 940.0f, 4880.0f);
+                (*bounds)[5] = new BoundingAAB(fx, fy, fz, 0.0f, -270.0f, -9018.0f, 7520.0f, 6870.0f, 20470.0f);
+                (*bounds)[6] = new BoundingAAB(fx, fy, fz, 0.0f, -5088.0f, -7962.0f, 1300.0f, 2900.0f, 13210.0f);
+                (*bounds)[7] = new BoundingAAB(fx, fy, fz, 0.0f, 3526.0f, -11604.0f, 3260.0f, 880.0f, 10640.0f);
+                (*bounds)[8] = new BoundingAAB(fx, fy, fz, 0.0f, 5212.0f, -12332.0f, 3260.0f, 2640.0f, 8410.0f);
+                (*bounds)[9] = new BoundingAAB(fx, fy, fz, 0.0f, 2004.0f, -15852.0f, 15860.0f, 2510.0f, 10910.0f);
+                (*bounds)[10] = new BoundingAAB(fx, fy, fz, 0.0f, -2610.0f, -15852.0f, 15860.0f, 2510.0f, 10910.0f);
+                    obj->setWreckedMeshId(18304);
+                } else {
+                    ArraySetLength(3, *bounds);
+                (*bounds)[0] = new BoundingAAB(fx, fy, fz, 0.0f, -73.0f, 123.0f, 3000.0f, 2860.0f, 10430.0f);
+                (*bounds)[1] = new BoundingAAB(fx, fy, fz, 0.0f, -280.0f, -4257.0f, 3470.0f, 1815.0f, 2200.0f);
+                (*bounds)[2] = new BoundingAAB(fx, fy, fz, 0.0f, -770.0f, -4279.0f, 5220.0f, 680.0f, 2270.0f);
+                    obj->setWreckedMeshId(18302);
+                }
+                break;
+            case 1:
+                ArraySetLength(5, *bounds);
+                (*bounds)[0] = new BoundingAAB(fx, fy, fz, 0.0f, 351.0f, 5827.0f, 3930.0f, 1590.0f, 2070.0f);
+                (*bounds)[1] = new BoundingAAB(fx, fy, fz, 0.0f, 616.0f, 4573.0f, 4440.0f, 2120.0f, 1035.0f);
+                (*bounds)[2] = new BoundingAAB(fx, fy, fz, 0.0f, 780.0f, 3303.0f, 4970.0f, 2620.0f, 1895.0f);
+                (*bounds)[3] = new BoundingAAB(fx, fy, fz, 0.0f, 456.0f, -309.0f, 2695.0f, 3530.0f, 6600.0f);
+                (*bounds)[4] = new BoundingAAB(fx, fy, fz, 0.0f, 248.0f, -5587.0f, 3325.0f, 3020.0f, 4205.0f);
+                obj->setWreckedMeshId(18303);
+                break;
+            case 2:
+                ArraySetLength(3, *bounds);
+                (*bounds)[0] = new BoundingAAB(fx, fy, fz, 0.0f, -85.0f, 24.0f, 4335.0f, 1245.0f, 10880.0f);
+                (*bounds)[1] = new BoundingAAB(fx, fy, fz, 0.0f, 710.0f, 292.0f, 2990.0f, 935.0f, 11450.0f);
+                (*bounds)[2] = new BoundingAAB(fx, fy, fz, 0.0f, 1510.0f, -2886.0f, 2750.0f, 1010.0f, 2750.0f);
+                obj->setWreckedMeshId(18301);
+                break;
+            case 3:
+                ArraySetLength(2, *bounds);
+                (*bounds)[0] = new BoundingAAB(fx, fy, fz, 0.0f, -199.0f, 4708.0f, 980.0f, 1530.0f, 1240.0f);
+                (*bounds)[1] = new BoundingAAB(fx, fy, fz, 0.0f, -14.0f, -98.0f, 4500.0f, 1405.0f, 8860.0f);
+                obj->setWreckedMeshId(18300);
+                break;
+            default:
+                break;
+        }
+        obj->setBV(bounds);
+        AEGeometry *gg = static_cast<Globals *>(Globals::globals)->getShipGroup(type, race, 0);
         obj->setShipGroup(gg, type, false);
         this->lodManager->addObject(obj->geometry);
         *(unsigned char *) &obj->field_0x40 = 1;

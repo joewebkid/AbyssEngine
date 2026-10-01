@@ -21,6 +21,7 @@ static void *g_PJ_random = nullptr;
 PlayerJunk::PlayerJunk(int type, Player *player, AEGeometry *geometry,
                        float x, float y, float z)
     : KIPlayer(type, -1, player, geometry, x, y, z, false) {
+    countsAsEnemyExcludeFlag = 1;
 }
 
 PlayerJunk::~PlayerJunk() {
@@ -48,7 +49,7 @@ void PlayerJunk::render() {
 }
 
 void PlayerJunk::update(int elapsed) {
-    this->field_0x120 = elapsed;
+    this->elapsedTime = elapsed;
     if (this->player->getHitpoints() < 1) {
         if ((uint32_t)(this->state - 3) >= 2) {
             this->level->junkDied();

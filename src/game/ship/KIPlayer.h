@@ -35,7 +35,7 @@ public:
     int field_0x10;                  // 0x10
     int field_0x14;                  // 0x14
     String name;                     // 0x18 (12 bytes -> ends 0x24)
-    uint8_t field_0x24;              // 0x24
+    union { uint8_t field_0x24; unsigned char empActive; }; // 0x24
 
     union {
         uint8_t garbledWingmanFlag;
@@ -43,15 +43,19 @@ public:
     };
 
     uint8_t _pad_0x26[2];            // 0x26..0x27
-    int shipGroup;                   // 0x28
+    union { int shipGroup; int faction; }; // 0x28
 
     union {
-        int autoPilotState;
-        int field_0x2c;              // 0x2c
+        struct {
+            union {
+                int autoPilotState;
+                int field_0x2c;      // 0x2c
+            };
+            int field_0x30;          // 0x30
+            int field_0x34;          // 0x34
+        };
+        Vector position; // PlayerFixedObject cached position, Android +0x2c.
     };
-
-    int field_0x30;                  // 0x30
-    int field_0x34;                  // 0x34
     int field_0x38;                  // 0x38
 
     union {
@@ -76,8 +80,8 @@ public:
         };
 
         struct {
-            char field_0x40b;            // 0x40
-            char field_0x41b;            // 0x41
+            union { char field_0x40b; uint8_t collisionEnabled; }; // 0x40
+            union { char field_0x41b; uint8_t field_0x41; }; // 0x41
             char field_0x42b;            // 0x42
             char field_0x43b;            // 0x43
         };
@@ -86,11 +90,11 @@ public:
     int field_0x44;                  // 0x44
     int field_0x48;                  // 0x48
     int hasCargo;                    // 0x4c
-    Array<int> *cargo;               // 0x50
+    union { Array<int> *cargo; Array<int> *lootList; }; // 0x50
     Level *level;                    // 0x54
-    float posX;                      // 0x58
-    float posY;                      // 0x5c
-    float posZ;                      // 0x60
+    union { float posX; float spawnX; }; // 0x58
+    union { float posY; float spawnY; }; // 0x5c
+    union { float posZ; float spawnZ; }; // 0x60
     uint32_t field_0x64;             // 0x64
     uint8_t diedWithMissionCrate;    // 0x68
 
@@ -122,20 +126,25 @@ public:
     uint8_t field_0x75;              // 0x75
     uint8_t field_0x76;              // 0x76
     uint8_t _pad_0x77;               // 0x77
-    AEGeometry *crateGeometry;       // 0x78
+    union { AEGeometry *crateGeometry; AEGeometry *secondaryGeometry; }; // 0x78
     int shipGroupFlag;               // 0x7c
     int field_0x80;                  // 0x80
     int field_0x84;                  // 0x84
     int state;                       // 0x88
     int field_0x8c;                  // 0x8c
-    int field_0x90;                  // 0x90
-    int field_0x94;                  // 0x94
-    int field_0x98;                  // 0x98
+    union {
+        struct {
+            int field_0x90;          // 0x90
+            int field_0x94;          // 0x94
+            int field_0x98;          // 0x98
+        };
+        Vector targetPos; // PlayerFixedObject target position, Android +0x90.
+    };
     int field_0x9c;                  // 0x9c
     int field_0xa0;                  // 0xa0
     int field_0xa4;                  // 0xa4
     float rotationSpeed;             // 0xa8
-    int type;                        // 0xac
+    union { int type; int kind; }; // 0xac
     uint8_t _pad_0xb0;               // 0xb0
     uint8_t sleepFlag;               // 0xb1
     uint8_t initActiveFlag;          // 0xb2
@@ -150,7 +159,7 @@ public:
     Array<SpacePoint *> *spacePoints;// 0xcc
     int carriesMissionCrate;         // 0xd0
     uint32_t jumpSphere;             // 0xd4
-    int field_0xd8;                  // 0xd8
+    union { int field_0xd8; int explosionTimer; }; // 0xd8
     uint8_t wingmanFlag;             // 0xdc
     uint8_t _pad_0xdd[3];            // 0xdd..0xdf
     int wingmanCommand;              // 0xe0
@@ -161,10 +170,10 @@ public:
     uint8_t jumpDone;                // 0xf4
     uint8_t visibleFlag;             // 0xf5
     uint8_t _pad_0xf6[2];            // 0xf6..0xf7
-    int engineSoundEvent;            // 0xf8
+    union { int engineSoundEvent; int aiActiveCounter; }; // 0xf8
     uint32_t field_0xfc;             // 0xfc
     uint8_t field_0x100;             // 0x100
-    uint8_t field_0x101;             // 0x101
+    union { uint8_t field_0x101; unsigned char finished; }; // 0x101
     uint8_t _pad_0x102[2];           // 0x102..0x103
     int field_0x104;                 // 0x104
     int field_0x108;                 // 0x108

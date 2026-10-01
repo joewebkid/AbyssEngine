@@ -20,25 +20,10 @@ class Explosion;
 
 typedef AbyssEngine::AEMath::Vector V3;
 
+// Original ARM allocation is 0x1bc; core state belongs to KIPlayer.
+#pragma pack(push, 4)
 class PlayerFixedObject : public KIPlayer {
 public:
-    unsigned char empActive;
-    int faction;
-    Vector position;
-    uint8_t field_0x40;
-    uint8_t field_0x41;
-    unsigned char hasCargo;
-    Array<int> *lootList;
-    float spawnX;
-    float spawnY;
-    float spawnZ;
-    AEGeometry *secondaryGeometry;
-    uint8_t collisionEnabled;
-    Vector targetPos;
-    int kind;
-    int explosionTimer;
-    int32_t aiActiveCounter;
-    unsigned char finished;
     AEGeometry *wreckGeometry;
     Array<BoundingVolume *> *boundingVolumes;
     Array<BoundingVolume *> *wreckCollision;
@@ -57,6 +42,7 @@ public:
     int32_t intPosY;
     int32_t intPosZ;
     uint16_t wreckMeshId;
+    int field_188; // Android gap between wreckMeshId and explosion.
     Explosion *explosion;
     int explosionElapsed;
     int wreckType;
@@ -125,4 +111,15 @@ public:
 
     void update(int dt) override;
 };
+#pragma pack(pop)
+
+#if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(PlayerFixedObject) == 0x1bc, "PlayerFixedObject ARM size");
+static_assert(__builtin_offsetof(PlayerFixedObject, wreckGeometry) == 0x124, "PFO wreckGeometry offset");
+static_assert(__builtin_offsetof(PlayerFixedObject, boundingVolumes) == 0x128, "PFO bounds offset");
+static_assert(__builtin_offsetof(PlayerFixedObject, moving) == 0x134, "PFO moving offset");
+static_assert(__builtin_offsetof(PlayerFixedObject, intPosX) == 0x178, "PFO intPosX offset");
+static_assert(__builtin_offsetof(PlayerFixedObject, explosion) == 0x18c, "PFO explosion offset");
+static_assert(__builtin_offsetof(PlayerFixedObject, name) == 0x1ac, "PFO name offset");
+#endif
 #endif
