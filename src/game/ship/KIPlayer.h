@@ -178,31 +178,52 @@ public:
     KIPlayer(int faction, int group, Player *player, AEGeometry *geom,
              float x, float y, float z, bool active);
 
+
+    // Android .rel.dyn _ZTV8KIPlayer: preserve all 24 slots (including D1/D0).
     virtual ~KIPlayer();
-
-    virtual void PauseEngineSound();
-
-    virtual void PlayEngineSound();
-
-    virtual void ResumeEngineSound();
-
-    virtual void StopEngineSound();
-
+    virtual void setShipGroup(AEGeometry *geom, int group, bool flag);
     virtual void awake();
+    virtual void setWingmanCommand(int cmd, KIPlayer *target);
+    virtual void setLevel(Level *lvl);
+    virtual void revive();
+    virtual void setSpeed(float v);
+    virtual void translate(const Vector &v);
+    virtual void render();
+    virtual Vector getPosition();
+    virtual void initPush(const Vector &target, int radius);
+    virtual void push(int dt);
+    virtual void update(int dt);
+    virtual int collide(float x, float y, float z);
+    virtual int outerCollide(float x, float y, float z);
+    virtual int outerCollide(const Vector &v);
+    virtual void setPosition(const Vector &v);
+    virtual void setPosition(float x, float y, float z);
+    virtual int getSpeed();
+    virtual Vector getProjectionVector(const Vector &v);
+    virtual Vector getCollisionNormal(const Vector &position);
+    virtual Vector projectCollisionOnSurface(const Vector &position);
+    virtual void setState(int state);
 
-    virtual void captureCrate(Hud *hud);
+    void PauseEngineSound();
 
-    virtual int cargoAvailable();
+    void PlayEngineSound();
 
-    virtual void createCrate(int type);
+    void ResumeEngineSound();
+
+    void StopEngineSound();
+
+
+    void captureCrate(Hud *hud);
+
+    int cargoAvailable();
+
+    void createCrate(int type);
 
     SpacePoint *getNearestDockingPoint(const Vector &dir);
 
     SpacePoint *getNearestNavigationPoint(const Vector &dir, SpacePoint *target);
 
-    virtual Vector getPosition();
 
-    int getSpeed();
 
     int getType();
 
@@ -222,15 +243,10 @@ public:
 
     void jump();
 
-    virtual int collide(float x, float y, float z);
 
-    virtual int outerCollide(const Vector &v);
 
-    virtual int outerCollide(float x, float y, float z);
 
-    virtual void render();
 
-    virtual void update(int dt);
 
     void reset();
 
@@ -246,19 +262,15 @@ public:
 
     void setJumper(bool b);
 
-    virtual void setPosition(float x, float y, float z);
 
-    void setPosition(const Vector &v);
 
     void setRotationSpeed(float speed);
 
     void setRoute(Route *route);
 
-    virtual void setShipGroup(AEGeometry *geom, int group, bool flag);
 
     void setSpacePoints(Array<SpacePoint *> *pts);
 
-    void setState(int state);
 
     void setToSleep();
 
@@ -266,23 +278,16 @@ public:
 
     void setWingman(bool b, int cmd);
 
-    virtual void setWingmanCommand(int cmd, KIPlayer *target);
 
-    virtual void setSpeed(float v);
 
-    virtual void revive();
 
-    virtual void push(int dt);
 
-    virtual void translate(const Vector &v);
 
-    virtual void initPush(const Vector &target, int radius);
 
     Route *getRoute();
 
     Array<SpacePoint *> *getSpacePoints();
 
-    virtual void setLevel(Level *lvl);
 
     void addGun(Gun *gun, int slot);
 
@@ -294,11 +299,8 @@ public:
 
     void setInitialRotation(Vector rotation);
 
-    virtual Vector getProjectionVector(const Vector &v);
 
-    Vector getCollisionNormal(const Vector &position);
 
-    virtual Vector projectCollisionOnSurface(const Vector &position);
 };
 
 #if __SIZEOF_POINTER__ == 4

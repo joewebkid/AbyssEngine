@@ -140,7 +140,7 @@ int RadioMessage::triggered(int64_t time, PlayerEgo *ego, LevelScript *script) {
             if (ego->getRoute() == 0) {
                 break;
             }
-            int current = reinterpret_cast<Route *>(static_cast<intptr_t>(ego->getRoute()))->getCurrent();
+            int current = ego->getRoute()->getCurrent();
             int last = this->lastRouteIndex;
             int value = 0;
             if (current > last) {
@@ -346,7 +346,7 @@ int RadioMessage::triggered(int64_t time, PlayerEgo *ego, LevelScript *script) {
             if (ego->getRoute() == 0) {
                 break;
             }
-            int current = reinterpret_cast<Route *>(static_cast<intptr_t>(ego->getRoute()))->getCurrent();
+            int current = ego->getRoute()->getCurrent();
             int last = this->lastRouteIndex;
             this->lastRouteIndex = current;
             Array<Player *> *list = static_cast<Player *>(ego->player)->getEnemies();
