@@ -1576,10 +1576,11 @@ void Level::createMission() {
         for (int i = 0; i < count; ++i) {
             int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(9);
             (*enemies)[i] = createShip(9, 0, type, nullptr, true, false);
+            KIPlayer *spawned = (*enemies)[i];
             float x = float(static_cast<AERandom *>(Globals::rnd)->nextInt(120000) - 60000);
             float y = float(static_cast<AERandom *>(Globals::rnd)->nextInt(80000) - 40000);
             float z = float(static_cast<AERandom *>(Globals::rnd)->nextInt(120000) - 60000);
-            (*enemies)[i]->setPosition(x, y, z);
+            spawned->setPosition(x, y, z);
             (*enemies)[i]->player->setAlwaysEnemy(true);
         }
         return;
@@ -1635,10 +1636,11 @@ void Level::createMission() {
                 for (int i = 0; i < count; ++i) {
                     int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(enemyRace);
                     (*enemies)[i] = createShip(enemyRace, 0, type, nullptr, true, false);
+                    KIPlayer *spawned = (*enemies)[i];
                     int x = enemyRoute->getWaypoint(0)->x + i * 2000;
                     int y = enemyRoute->getWaypoint(0)->y + i * 2000;
                     int z = enemyRoute->getWaypoint(0)->z + i * 2000;
-                    (*enemies)[i]->setPosition(float(x), float(y), float(z));
+                    spawned->setPosition(float(x), float(y), float(z));
                     (*enemies)[i]->player->setAlwaysEnemy(true);
                     (*enemies)[i]->setRoute(enemyRoute->clone());
                     (*enemies)[i]->getRoute()->reachWaypoint(0);
@@ -1647,7 +1649,8 @@ void Level::createMission() {
                     int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(race);
                     (*enemies)[count + i] = createShip(race, 0, type, nullptr, true, false);
                     (*enemies)[count + i]->player->setAlwaysFriend(true);
-                    Vector position = (*asteroids)[i + (asteroids->size() >> 1)]->getPosition();
+                    Vector position;
+                    position = (*asteroids)[i + (asteroids->size() >> 1)]->getPosition();
                     (*enemies)[count + i]->setPosition(position.x, position.y + 2000.0f, position.z);
                     (*enemies)[count + i]->cargo = nullptr;
                     *reinterpret_cast<unsigned char *>(&(*enemies)[count + i]->hasCargo) = 0;
@@ -2335,10 +2338,11 @@ void Level::createMission() {
                 (*enemies)[index]->field_0x70 = 0;
             } else (*enemies)[index] = createShip(race, 1, 14, nullptr, true, false);
             static_cast<PlayerFixedObject *>((*enemies)[index])->setMoving(false);
+            KIPlayer *outpost = (*enemies)[index];
             float x = float(static_cast<AERandom *>(Globals::rnd)->nextInt(80000) - 40000);
             float y = float(static_cast<AERandom *>(Globals::rnd)->nextInt(10000) - 5000);
             float z = float(static_cast<AERandom *>(Globals::rnd)->nextInt(80000) + 40000);
-            (*enemies)[index]->setPosition(x, y, z);
+            outpost->setPosition(x, y, z);
         } else if (index == start && smallOutpost) {
             Vector position;
             position.x = float(static_cast<AERandom *>(Globals::rnd)->nextInt(80000) - 40000);
@@ -2359,11 +2363,12 @@ void Level::createMission() {
             int shipRace = foreign ? (race == 0 ? 2 : foreignRace) : race;
             (*enemies)[index] = createShip(shipRace, 1, shipRace == 1 ? 13 : 15, nullptr, true, false);
             static_cast<PlayerFixedObject *>((*enemies)[index])->setMoving(true);
+            KIPlayer *freighter = (*enemies)[index];
             int distance = static_cast<AERandom *>(Globals::rnd)->nextInt(60000) - 80000;
             float x = float((static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1) * distance);
             float y = float(static_cast<AERandom *>(Globals::rnd)->nextInt(40000) - 20000);
             float z = float(static_cast<AERandom *>(Globals::rnd)->nextInt(160000) - 80000);
-            (*enemies)[index]->setPosition(x, y, z);
+            freighter->setPosition(x, y, z);
         }
     }
     if (largeTurrets) {
@@ -2393,18 +2398,19 @@ void Level::createMission() {
         }; // Android rodata 0x1fce34
         for (int i = 0; index < friendCount + field_164 + field_168 + largeTurrets; ++index, ++i) {
             (*enemies)[index] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 6772, true));
-            (*enemies)[index]->player->setMaxHitpoints(1000);
+            PlayerTurret *turret = static_cast<PlayerTurret *>((*enemies)[index]);
+            turret->player->setMaxHitpoints(1000);
             const float *record = alternateLarge ? alternateTurrets[i] : largeTurretRecords[i];
             rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, Vector{record[3], record[4], record[5]});
-            (*enemies)[index]->geometry->setRotation(rotated);
+            turret->geometry->setRotation(rotated);
             rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, Vector{record[0], record[1], record[2]});
-            (*enemies)[index]->setPosition(Vector{position.x + rotated.x, position.y + rotated.y, position.z + rotated.z});
-            static_cast<PlayerTurret *>((*enemies)[index])->setScaling(6.0f);
-            (*enemies)[index]->cargo = nullptr;
-            (*enemies)[index]->shipGroup = race;
+            turret->setPosition(Vector{position.x + rotated.x, position.y + rotated.y, position.z + rotated.z});
+            turret->setScaling(6.0f);
+            turret->cargo = nullptr;
+            turret->shipGroup = race;
         }
     }
-    if (smallTurrets) {
+    if (smallOutpost) {
         Matrix matrix;
         const float identity[] = {1,0,0,0,0,1,0,0,0,0,1,0,1,1,1};
         std::memcpy(&matrix, identity, sizeof(matrix));
@@ -2419,15 +2425,16 @@ void Level::createMission() {
         }; // Android rodata 0x1fcedc
         for (int i = 0; index < friendCount + field_164 + field_168 + smallTurrets; ++index, ++i) {
             (*enemies)[index] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 6774, true));
-            (*enemies)[index]->player->setMaxHitpoints(1000);
+            PlayerTurret *turret = static_cast<PlayerTurret *>((*enemies)[index]);
+            turret->player->setMaxHitpoints(1000);
             const float *record = smallTurretRecords[i];
             rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, Vector{record[3], record[4], record[5]});
-            (*enemies)[index]->geometry->setRotation(rotated);
+            turret->geometry->setRotation(rotated);
             rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, Vector{record[0], record[1], record[2]});
-            (*enemies)[index]->setPosition(Vector{position.x + rotated.x, position.y + rotated.y, position.z + rotated.z});
-            static_cast<PlayerTurret *>((*enemies)[index])->setScaling(6.0f);
-            (*enemies)[index]->cargo = nullptr;
-            (*enemies)[index]->shipGroup = 1;
+            turret->setPosition(Vector{position.x + rotated.x, position.y + rotated.y, position.z + rotated.z});
+            turret->setScaling(6.0f);
+            turret->cargo = nullptr;
+            turret->shipGroup = 1;
         }
     }
     if (attackers) {
@@ -2459,15 +2466,15 @@ void Level::createMission() {
             }
         }
     } else index = friendCount + field_164 + field_168 + largeTurrets + smallTurrets + hostileCount;
-    int freelanceEnd = friendCount + field_164 + field_168 + largeTurrets + smallTurrets + hostileCount + freelanceEnemies;
-    for (; index < freelanceEnd; ++index) {
+    for (; index < friendCount + field_164 + field_168 + largeTurrets + smallTurrets + hostileCount + freelanceEnemies; ++index) {
         int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
         (*enemies)[index] = createShip(8, 0, type, nullptr, true, false);
         missionSpawnPosition = player->getPosition();
+        KIPlayer *spawned = (*enemies)[index];
         float x = missionSpawnPosition.x - 80000.0f + float(static_cast<AERandom *>(Globals::rnd)->nextInt(160000));
         float y = missionSpawnPosition.y - 50000.0f + float(static_cast<AERandom *>(Globals::rnd)->nextInt(100000));
         float z = missionSpawnPosition.z - 80000.0f + float(static_cast<AERandom *>(Globals::rnd)->nextInt(160000));
-        (*enemies)[index]->setPosition(x, y, z);
+        spawned->setPosition(x, y, z);
     }
     if (pirateBase) {
         Vector basePosition{0.0f, 0.0f, 0.0f};
@@ -2477,7 +2484,7 @@ void Level::createMission() {
             {140000, -150000, 7000},
             {170000, -170000, 10000}
         }; // Android rodata 0x1fcf54
-        for (; index < freelanceEnd + pirateBase; ++index) {
+        for (; index < friendCount + field_164 + field_168 + largeTurrets + smallTurrets + hostileCount + freelanceEnemies + pirateBase; ++index) {
             int base = Globals::status->getStation()->getPirateStationIndex();
             int coords[] = {piratePositions[base][0], piratePositions[base][1], piratePositions[base][2]};
             Route *route = new Route(coords, 3);
@@ -2486,7 +2493,7 @@ void Level::createMission() {
             (*enemies)[index]->setToSleep();
             (*enemies)[index]->name = *Globals::gameText->getText(441);
         }
-        for (; index < freelanceEnd + pirateBase + pirateGuards; ++index) {
+        for (; index < friendCount + field_164 + field_168 + largeTurrets + smallTurrets + hostileCount + freelanceEnemies + pirateBase + pirateGuards; ++index) {
             int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
             (*enemies)[index] = createShip(8, 0, type, nullptr, true, false);
             int dx = static_cast<AERandom *>(Globals::rnd)->nextInt(20000);
@@ -2513,7 +2520,7 @@ void Level::createMission() {
         missionSpawnPosition.z += float((static_cast<AERandom *>(Globals::rnd)->nextInt(2) == 0 ? 1 : -1) * distance + 20000);
         int coords[] = {int(missionSpawnPosition.x), int(missionSpawnPosition.y), int(missionSpawnPosition.z)};
         Route *route = new Route(coords, 3);
-        for (; index < freelanceEnd + pirateBase + pirateGuards + ninjas; ++index) {
+        for (; index < friendCount + field_164 + field_168 + largeTurrets + smallTurrets + hostileCount + freelanceEnemies + pirateBase + pirateGuards + ninjas; ++index) {
             (*enemies)[index] = createShip(10, 0, 44, route->getWaypoint(), true, false);
             (*enemies)[index]->player->setAlwaysEnemy(true);
         }
@@ -2898,18 +2905,20 @@ void Level::createCampaignMission() {
                 (*enemies)[i] = createShip(9, 0, 8, enemyRoute->getWaypoint(), true, false);
                 Player *enemy = (*enemies)[i]->player;
                 enemy->setMaxHitpoints(10 * enemy->getMaxHitpoints());
+                KIPlayer *spawned = (*enemies)[i];
                 int x = waypoint->x + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
                 int y = waypoint->y + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
-                (*enemies)[i]->setPosition(float(x), float(y), float(waypoint->z + 50000));
+                spawned->setPosition(float(x), float(y), float(waypoint->z + 50000));
             }
             for (int i = 7; i != 10; ++i) {
                 (*enemies)[i] = createShip(0, 0, 5, nullptr, true, false);
                 (*enemies)[i]->player->setAlwaysFriend(true);
                 (*enemies)[i]->player->setHitpoints(600);
+                KIPlayer *spawned = (*enemies)[i];
                 float x = egoPosition.x + float(static_cast<AERandom *>(Globals::rnd)->nextInt(4000) - 2000);
                 float y = egoPosition.y + float(static_cast<AERandom *>(Globals::rnd)->nextInt(3400) - 1700);
                 float z = (egoPosition.z + 2000.0f) + float(static_cast<AERandom *>(Globals::rnd)->nextInt(4000) - 2000);
-                (*enemies)[i]->setPosition(x, y, z);
+                spawned->setPosition(x, y, z);
             }
             if ((*landmarks)[3]) {
                 (*landmarks)[3]->setVisible(true);
@@ -2940,10 +2949,11 @@ void Level::createCampaignMission() {
                 (*enemies)[i]->setRoute(i ? firstRoute->clone() : secondRoute);
                 (*enemies)[i]->geometry->setRotation(0.0f, 3.1416f, 0.0f);
             }
+            KIPlayer *lead = (*enemies)[0];
             int x = secondRoute->getWaypoint()->x + 1000;
             int y = secondRoute->getWaypoint()->y;
             int z = secondRoute->getWaypoint()->z + 2000;
-            (*enemies)[0]->setPosition(float(x), float(y), float(z));
+            lead->setPosition(float(x), float(y), float(z));
             objectivesA = new Objective(22, 0, this);
             objectivesB = new Objective(7, 1, this);
             delete firstRoute;
@@ -3032,9 +3042,10 @@ void Level::createCampaignMission() {
             enemies = new Array<KIPlayer *>();
             ArraySetLength(8, *enemies);
             (*enemies)[0] = createShip(1, 0, 9, nullptr, true, false);
+            KIPlayer *lead = (*enemies)[0];
             float x = egoPosition.x + float(static_cast<AERandom *>(Globals::rnd)->nextInt(1400) - 700);
             float y = egoPosition.y + float(static_cast<AERandom *>(Globals::rnd)->nextInt(1400) - 700);
-            (*enemies)[0]->setPosition(x, y, egoPosition.z + 1000.0f);
+            lead->setPosition(x, y, egoPosition.z + 1000.0f);
             (*enemies)[0]->setSpeed(3.0f);
             static_cast<PlayerFighter *>((*enemies)[0])->setRotate(3);
             (*enemies)[0]->player->setHitpoints(9999999);
@@ -3062,10 +3073,11 @@ void Level::createCampaignMission() {
                 (*enemies)[i] = createShip(2, 1, 15, enemyRoute->getWaypoint(), true, false);
                 (*enemies)[i]->player->setAlwaysFriend(true);
                 static_cast<PlayerFixedObject *>((*enemies)[i])->setMoving(false);
+                KIPlayer *spawned = (*enemies)[i];
                 int x = enemyRoute->getWaypoint()->x + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
                 int y = enemyRoute->getWaypoint()->y + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
                 int z = enemyRoute->getWaypoint()->z + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
-                (*enemies)[i]->setPosition(float(x), float(y), float(z));
+                spawned->setPosition(float(x), float(y), float(z));
             }
             for (unsigned i = 2; i < enemies->size(); ++i) {
                 int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(3);
@@ -3219,10 +3231,11 @@ void Level::createCampaignMission() {
                 (*enemies)[i]->player->setAlwaysEnemy(false);
                 (*enemies)[i]->setToSleep();
                 missionSpawnPosition = player->getPosition() * 0.8f;
+                KIPlayer *spawned = (*enemies)[i];
                 float x = missionSpawnPosition.x - 3500.0f + float(static_cast<AERandom *>(Globals::rnd)->nextInt(7000));
                 float y = missionSpawnPosition.y - 3500.0f + float(static_cast<AERandom *>(Globals::rnd)->nextInt(7000));
                 float z = missionSpawnPosition.z - 3500.0f + float(static_cast<AERandom *>(Globals::rnd)->nextInt(7000));
-                (*enemies)[i]->setPosition(x, y, z);
+                spawned->setPosition(x, y, z);
                 (*enemies)[i]->setRoute(friendRoute->clone());
                 (*enemies)[i]->player->setHitpoints(9999999);
             }
@@ -3411,10 +3424,11 @@ void Level::createCampaignMission() {
                 (*enemies)[i]->player->setAlwaysFriend(true);
                 (*enemies)[i]->cargo = nullptr;
                 static_cast<PlayerFixedObject *>((*enemies)[i])->setMoving(true);
+                KIPlayer *spawned = (*enemies)[i];
                 int x = enemyRoute->getWaypoint(1)->x + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
                 int y = enemyRoute->getWaypoint(1)->y + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
                 int z = enemyRoute->getWaypoint(1)->z + static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
-                (*enemies)[i]->setPosition(float(x), float(y), float(z));
+                spawned->setPosition(float(x), float(y), float(z));
             }
             objectivesA = new Objective(18, 0, 8, this);
             objectivesB = new Objective(18, 8, 12, this);
@@ -3435,9 +3449,11 @@ void Level::createCampaignMission() {
             Vector rotated{0.0f, 0.0f, 0.0f};
             for (int i = 0; i != 2; ++i) {
                 (*enemies)[i] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 14363, true));
-                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, placements[i].rotation);
+                Vector mountPosition{placements[i].position.x, placements[i].position.y, placements[i].position.z};
+                Vector mountRotation{placements[i].rotation.x, placements[i].rotation.y, placements[i].rotation.z};
+                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, mountRotation);
                 (*enemies)[i]->geometry->setRotation(rotated);
-                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, placements[i].position);
+                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, mountPosition);
                 Vector position = {rotated.x + (i == 0 ? 1200.0f : -1200.0f), rotated.y, rotated.z};
                 (*enemies)[i]->setPosition(position);
             }
@@ -3446,10 +3462,11 @@ void Level::createCampaignMission() {
                 int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(8);
                 (*enemies)[i] = createShip(8, 0, type, nullptr, true, false);
                 (*enemies)[i]->player->setAlwaysEnemy(true);
+                KIPlayer *spawned = (*enemies)[i];
                 int x = static_cast<AERandom *>(Globals::rnd)->nextInt(2000) + baseX;
                 float y = float(static_cast<AERandom *>(Globals::rnd)->nextInt(10000) - 5000);
                 int z = static_cast<AERandom *>(Globals::rnd)->nextInt(10000) + 155000;
-                (*enemies)[i]->setPosition(Vector{float(x), y, float(z)});
+                spawned->setPosition(Vector{float(x), y, float(z)});
                 (*enemies)[i]->geometry->setDirection(Vector{0.0f, 0.0f, -1.0f}, Vector{0.0f, 1.0f, 0.0f});
                 (*enemies)[i]->setToSleep();
                 baseX += 2000;
@@ -3519,9 +3536,11 @@ void Level::createCampaignMission() {
                 ArrayAdd(reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, type, true)), *enemies);
                 KIPlayer *turret = (*enemies)[i + 1];
                 turret->player->setMaxHitpoints(hp);
-                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, placements[i].rotation);
+                Vector mountPosition{placements[i].position.x, placements[i].position.y, placements[i].position.z};
+                Vector mountRotation{placements[i].rotation.x, placements[i].rotation.y, placements[i].rotation.z};
+                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, mountRotation);
                 turret->geometry->setRotation(rotated);
-                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, placements[i].position);
+                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, mountPosition);
                 turret->setPosition(Vector{stationPosition.x + rotated.x, stationPosition.y + rotated.y,
                                            stationPosition.z + rotated.z});
                 turret->shipGroup = 8;
@@ -3658,8 +3677,9 @@ void Level::createCampaignMission() {
         case 97: {
             int coords[] = {0, 0, 50000};
             enemyRoute = new Route(coords, 3);
-            int enemyCount = Globals::isRunningHDonWeakDevice ? 8 : 12;
-            unsigned total = Globals::isRunningHDonWeakDevice ? 11 : 19;
+            unsigned weak = static_cast<unsigned char>(Globals::isRunningHDonWeakDevice);
+            int enemyCount = weak ? 8 : 12;
+            unsigned total = weak ? 11 : 19;
             enemies = new Array<KIPlayer *>();
             ArraySetLength(total, *enemies);
             for (int i = 0; i != enemyCount; ++i) {
@@ -3667,7 +3687,7 @@ void Level::createCampaignMission() {
                 (*enemies)[i] = createShip(8, 0, type, enemyRoute->getWaypoint(0), true, false);
                 (*enemies)[i]->player->setAlwaysEnemy(true);
             }
-            unsigned friendEnd = Globals::isRunningHDonWeakDevice ? 11 : 16;
+            unsigned friendEnd = weak ? 11 : 16;
             for (unsigned i = enemyCount; i < friendEnd; ++i) {
                 int type = static_cast<Globals *>(Globals::globals)->getRandomEnemyFighter(2);
                 (*enemies)[i] = createShip(2, 0, type, enemyRoute->getWaypoint(0), true, false);
@@ -3970,18 +3990,21 @@ void Level::createCampaignMission() {
             Vector rotated{0.0f, 0.0f, 0.0f};
             for (int i = 2; i != 12; ++i) {
                 (*enemies)[i] = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, 6774, true));
-                (*enemies)[i]->player->setMaxHitpoints(1000);
-                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, placements[placement].rotation);
-                (*enemies)[i]->geometry->setRotation(rotated);
-                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, placements[placement].position);
+                PlayerTurret *turret = static_cast<PlayerTurret *>((*enemies)[i]);
+                turret->player->setMaxHitpoints(1000);
+                Vector mountPosition{placements[placement].position.x, placements[placement].position.y, placements[placement].position.z};
+                Vector mountRotation{placements[placement].rotation.x, placements[placement].rotation.y, placements[placement].rotation.z};
+                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, mountRotation);
+                turret->geometry->setRotation(rotated);
+                rotated = AbyssEngine::AEMath::MatrixRotateVector(matrix, mountPosition);
                 Waypoint *anchor = i >= 7 ? second : first;
                 float x = anchor->getPosition().x + rotated.x;
                 float y = anchor->getPosition().y + rotated.y;
                 float z = anchor->getPosition().z + rotated.z;
-                (*enemies)[i]->setPosition(Vector{x, y, z});
-                static_cast<PlayerTurret *>((*enemies)[i])->setScaling(6.0f);
-                (*enemies)[i]->cargo = nullptr;
-                (*enemies)[i]->shipGroup = 1;
+                turret->setPosition(Vector{x, y, z});
+                turret->setScaling(6.0f);
+                turret->cargo = nullptr;
+                turret->shipGroup = 1;
                 placement = placement == 4 ? 0 : placement + 1;
             }
             for (int i = 12; i != 22; ++i) {
@@ -4009,11 +4032,12 @@ void Level::createCampaignMission() {
             (*enemies)[0]->player->setHitpoints(9999999);
             (*enemies)[0]->name = *static_cast<GameText *>(Globals::gameText)->getText(1599);
             static_cast<PlayerFighter *>((*enemies)[0])->setBoostProb(0);
+            KIPlayer *escort = (*enemies)[0];
             Vector position = player->getPosition();
             Vector right = player->geometry->getRightVector();
             Vector lateral = position + right * 2100.0f;
             Vector direction = player->geometry->getDirection();
-            (*enemies)[0]->setPosition(lateral + direction * 2000.0f);
+            escort->setPosition(lateral + direction * 2000.0f);
             Vector facing = player->GetDirVector();
             (*enemies)[0]->geometry->setDirection(facing, Vector{0.0f, 1.0f, 0.0f});
             objectivesA = new Objective(4, 4, this);
@@ -4129,11 +4153,12 @@ void Level::createCampaignMission() {
             friendRoute = new Route(friendCoords, 3);
             (*enemies)[0] = createShip(0, 0, 51, friendRoute->getWaypoint(0), true, false);
             (*enemies)[0]->player->setAlwaysFriend(true);
+            KIPlayer *escort = (*enemies)[0];
             Vector position = player->getPosition();
             Vector right = player->geometry->getRightVector();
             Vector lateral = position + right * 2100.0f;
             Vector forward = player->geometry->getDirection();
-            (*enemies)[0]->setPosition(lateral + forward * 2000.0f);
+            escort->setPosition(lateral + forward * 2000.0f);
             Vector facing = player->GetDirVector();
             (*enemies)[0]->geometry->setDirection(facing, Vector{0.0f, 1.0f, 0.0f});
             (*enemies)[0]->setEnemies(nullptr);
@@ -4166,6 +4191,7 @@ void Level::createCampaignMission() {
                 (*enemies)[i] = createShip(9, 0, type, enemyRoute->getWaypoint(0), true, false);
                 (*enemies)[i]->setActive(true);
                 (*enemies)[i]->player->setAlwaysEnemy(true);
+                KIPlayer *spawned = (*enemies)[i];
                 int sign = ((~(2 * i) & 2) - 1);
                 Vector offset;
                 if (i > 10) {
@@ -4179,11 +4205,12 @@ void Level::createCampaignMission() {
                     int z = static_cast<AERandom *>(Globals::rnd)->nextInt(400) - 200;
                     offset.x = float(x); offset.y = y; offset.z = float(z);
                 }
-                (*enemies)[i]->setPosition(center + float(i) * offset);
+                spawned->setPosition(center + float(i) * offset);
+                AEGeometry *facingGeometry = (*enemies)[i]->geometry;
                 Vector ego = player->getPosition();
                 Vector fighter = (*enemies)[i]->getPosition();
                 Vector direction = AbyssEngine::AEMath::VectorNormalize(ego - fighter);
-                (*enemies)[i]->geometry->setDirection(direction, Vector{0.0f, 1.0f, 0.0f});
+                facingGeometry->setDirection(direction, Vector{0.0f, 1.0f, 0.0f});
             }
             objectivesA = new Objective(4, 11, this);
             break;
@@ -5865,9 +5892,12 @@ intptr_t Level::createStaticObject(Waypoint *wp, int type, bool jitter) {
         z += static_cast<AERandom *>(Globals::rnd)->nextInt(20000) - 10000;
     }
     KIPlayer *object = nullptr;
+    int collisionIndex;
     if (type == 16917) {
         int roll = static_cast<AERandom *>(Globals::rnd)->nextInt(3);
-        unsigned short mesh = roll == 0 ? 16917 : roll == 1 ? 16918 : 16919;
+        unsigned short mesh = 16919;
+        if (roll == 1) mesh = 16918;
+        if (roll == 0) mesh = 16917;
         auto *geometry = new AEGeometry(mesh, Globals::Canvas, false);
         auto *body = new Player(1000, 1, false, false, false);
         object = new PlayerJunk(16917, body, geometry, float(x), float(y), float(z));
@@ -5880,12 +5910,36 @@ intptr_t Level::createStaticObject(Waypoint *wp, int type, bool jitter) {
             geometry = new AEGeometry(Globals::Canvas);
         else
             geometry = new AEGeometry(static_cast<unsigned short>(type), Globals::Canvas, false);
-        if ((unsigned)(type - 18880) < 3 || type == 6772 || type == 6774 || type == 14363) {
+        if ((unsigned)(type - 18880) < 3 || type == 6772 || type == 6774) {
+        createTurret:
             auto *body = new Player(1000, 100, false, false, false);
             object = new PlayerTurret(type, body, geometry, float(x), float(y), float(z));
             object->setLevel(this);
             object->name = *Globals::gameText->getText(1666);
             object->cargo = nullptr;
+        } else if (type == 14243) {
+            int level;
+            if (Globals::status->getLevel() > 20) level = 320;
+            else level = 15 * Globals::status->getLevel() + 20;
+            int campaign = Globals::status->gameWon() ? 180 : 4 * Globals::status->getCurrentCampaignMission();
+            float hp = float(5 * (campaign + level));
+            hp += (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * hp;
+            auto *body = new Player(7500, int(hp), false, false, false);
+            auto *fixed = new PlayerFixedObject(14243, 8, body, nullptr, float(x), float(y), float(z));
+            auto *base = new AEGeometry(14243, Globals::Canvas, false);
+            fixed->setShipGroup(base, -1, false);
+            auto *childA = new AEGeometry(14244, Globals::Canvas, false);
+            auto *childB = new AEGeometry(14245, Globals::Canvas, false);
+            fixed->geometry->addChild(childA->transform);
+            fixed->geometry->addChild(childB->transform);
+            delete childB;
+            delete childA;
+            fixed->setWreckedMeshId(14246);
+            fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(1002, nullptr)));
+            static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+            object = fixed;
+        } else if (type == 14363) {
+            goto createTurret;
         } else if (type == 14365) {
             auto *body = new Player(1000, 100, false, false, false);
             object = new PlayerTurret(14365, body, geometry, float(x), float(y), float(z));
@@ -5893,6 +5947,72 @@ intptr_t Level::createStaticObject(Waypoint *wp, int type, bool jitter) {
             object->name = *Globals::gameText->getText(1665);
             object->field_0x25 = 0;
             object->cargo = nullptr;
+        } else if (type == 16928) {
+            auto *body = new Player(1000, 9999999, false, false, false);
+            auto *fixed = new PlayerFixedObject(16928, 0, body, nullptr, float(x), float(y), float(z));
+            auto *base = new AEGeometry(16928, Globals::Canvas, false);
+            fixed->setShipGroup(base, -1, false);
+            auto *childA = new AEGeometry(16929, Globals::Canvas, false);
+            auto *childB = new AEGeometry(16930, Globals::Canvas, false);
+            fixed->geometry->addChild(childA->transform);
+            fixed->geometry->addChild(childB->transform);
+            delete childB;
+            delete childA;
+            auto *transform = static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->transform));
+            transform->Update(static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->transform))->animationLength, false);
+            transform = static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->childTransform));
+            transform->Update(static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->childTransform))->animationLength, false);
+            transform = static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->parentTransform));
+            transform->Update(static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->parentTransform))->animationLength, false);
+            fixed->field_0x70 = 1;
+            fixed->setWreckedMeshId(14246);
+            auto *file = new FileRead();
+            auto *points = file->loadSpacePoints(7, -1);
+            delete file;
+            fixed->setSpacePoints(points);
+            fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(1003, nullptr)));
+            static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+            object = fixed;
+        } else if (type == 19080) {
+            auto *body = new Player(1000, 9999999, false, false, false);
+            body->setVulnerable(false);
+            auto *fixed = new PlayerFixedObject(19080, 3, body, nullptr, float(x), float(y), float(z));
+            auto *base = new AEGeometry(19080, Globals::Canvas, false);
+            auto *childA = new AEGeometry(19085, Globals::Canvas, false);
+            auto *childB = new AEGeometry(19084, Globals::Canvas, false);
+            auto *childC = new AEGeometry(19081, Globals::Canvas, false);
+            auto *childD = new AEGeometry(19082, Globals::Canvas, false);
+            auto *childE = new AEGeometry(19083, Globals::Canvas, false);
+            base->addChild(childA->transform);
+            base->addChild(childB->transform);
+            base->addChild(childC->transform);
+            auto *childF = new AEGeometry(19086, Globals::Canvas, false);
+            auto *childG = new AEGeometry(19088, Globals::Canvas, false);
+            auto *childH = new AEGeometry(19087, Globals::Canvas, false);
+            base->addChild(childF->transform);
+            base->addChild(childG->transform);
+            base->addChild(childH->transform);
+            delete childF;
+            delete childG;
+            delete childH;
+            base->addChild(childD->transform);
+            base->addChild(childE->transform);
+            delete childA;
+            delete childB;
+            delete childC;
+            delete childD;
+            delete childE;
+            fixed->setShipGroup(base, -1, false);
+            fixed->field_0x70 = 1;
+            static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+            fixed->setWreckedMeshId(19080);
+            auto *file = new FileRead();
+            auto *points = file->loadSpacePoints(1, -1);
+            delete file;
+            fixed->setSpacePoints(points);
+            fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(2000, nullptr)));
+            fixed->player->radius = 0;
+            object = fixed;
         } else if (type == 19050) {
             // Player allocation is an original side effect; PlayerStatic has no Player parameter.
             new Player(1000, 9999999, false, false, false);
@@ -5918,356 +6038,257 @@ intptr_t Level::createStaticObject(Waypoint *wp, int type, bool jitter) {
             static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
             fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(2001, nullptr)));
             object = fixed;
-        } else {
-            switch (type) {
-                case 14243: {
-                    int level = Globals::status->getLevel() <= 20 ? 15 * Globals::status->getLevel() + 20 : 320;
-                    int campaign = Globals::status->gameWon() ? 180 : 4 * Globals::status->getCurrentCampaignMission();
-                    float hp = float(5 * (campaign + level));
-                    hp += (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * hp;
-                    auto *body = new Player(7500, int(hp), false, false, false);
-                    auto *fixed = new PlayerFixedObject(14243, 8, body, nullptr, float(x), float(y), float(z));
-                    auto *base = new AEGeometry(14243, Globals::Canvas, false);
-                    fixed->setShipGroup(base, -1, false);
-                    auto *childA = new AEGeometry(14244, Globals::Canvas, false);
-                    auto *childB = new AEGeometry(14245, Globals::Canvas, false);
-                    fixed->geometry->addChild(childA->transform);
-                    fixed->geometry->addChild(childB->transform);
-                    delete childB;
-                    delete childA;
-                    fixed->setWreckedMeshId(14246);
-                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(1002, nullptr)));
-                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
-                    object = fixed;
-                    break;
+        } else if (type == 18766) {
+            int level;
+            if (Globals::status->getLevel() > 20) level = 400;
+            else level = 15 * Globals::status->getLevel() + 100;
+            int campaign = Globals::status->gameWon() ? 180 : 4 * Globals::status->getCurrentCampaignMission();
+            float hp = float(5 * (campaign + level));
+            hp += (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * hp;
+            auto *body = new Player(1000, int(hp), false, false, false);
+            auto *fixed = new PlayerFixedObject(18766, 3, body, nullptr, float(x), float(y), float(z));
+            auto *base = new AEGeometry(19072, Globals::Canvas, false);
+            auto *childA = new AEGeometry(18766, Globals::Canvas, false);
+                auto *childB = new AEGeometry(19073, Globals::Canvas, false);
+                auto *childC = new AEGeometry(19074, Globals::Canvas, false);
+                auto *childD = new AEGeometry(19075, Globals::Canvas, false);
+                auto *childE = new AEGeometry(19076, Globals::Canvas, false);
+                base->addChild(childA->transform);
+                childA->addChild(childB->transform);
+                childA->addChild(childC->transform);
+                childA->addChild(childD->transform);
+                childA->addChild(childE->transform);
+                delete childA;
+                delete childB;
+                delete childC;
+                delete childD;
+                delete childE;
+            fixed->setShipGroup(base, -1, false);
+            fixed->field_0x40b = 1;
+            fixed->field_0x70 = 1;
+            auto *bounds = new Array<BoundingVolume *>();
+            ArraySetLength(2, *bounds);
+            (*bounds)[0] = new BoundingAAB(float(x), float(y), float(z), 0.0f, -199.0f, 4708.0f, 980.0f, 1530.0f, 1240.0f);
+            (*bounds)[1] = new BoundingAAB(float(x), float(y), float(z), 0.0f, -14.0f, -98.0f, 4500.0f, 1405.0f, 8860.0f);
+            fixed->setBV(bounds);
+            static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+            fixed->setWreckedMeshId(18300);
+            auto *file = new FileRead();
+            auto *points = file->loadSpacePoints(3, -1);
+            delete file;
+            fixed->setSpacePoints(points);
+            object = fixed;
+        } else if (type == 18781) {
+            auto *body = new Player(1000, 9999999, false, false, false);
+                                auto *fixed = new PlayerFixedObject(18781, 3, body, nullptr, float(x), float(y), float(z));
+            auto *base = new AEGeometry(21076, Globals::Canvas, false);
+            auto *childA = new AEGeometry(21876, Globals::Canvas, false);
+            auto *childB = new AEGeometry(22076, Globals::Canvas, false);
+            auto *childC = new AEGeometry(18781, Globals::Canvas, false);
+            auto *childD = new AEGeometry(18781, Globals::Canvas, false);
+            auto *childE = new AEGeometry(18782, Globals::Canvas, false);
+            auto *childF = new AEGeometry(18783, Globals::Canvas, false);
+            auto *childG = new AEGeometry(18784, Globals::Canvas, false);
+            base->addChild(childG->transform);
+            base->addChild(childA->transform);
+            base->addChild(childB->transform);
+            base->addChild(childC->transform);
+            base->addChild(childD->transform);
+            base->addChild(childE->transform);
+            base->addChild(childF->transform);
+            delete childA;
+            delete childB;
+            delete childC;
+            delete childD;
+            delete childE;
+            delete childF;
+            delete childG;
+            fixed->setShipGroup(base, -1, false);
+            fixed->field_0x70 = 1;
+            static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+            fixed->setWreckedMeshId(18300);
+            auto *file = new FileRead();
+            auto *points = file->loadSpacePoints(6, -1);
+            delete file;
+            fixed->setSpacePoints(points);
+            fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(111, nullptr)));
+            object = fixed;
+        } else if (type == 16992) {
+            auto *body = new Player(1000, 9999999, false, false, false);
+            auto *fixed = new PlayerFixedObject(16992, 0, body, nullptr, float(x), float(y), float(z));
+            auto *base = new AEGeometry(16992, Globals::Canvas, false);
+            fixed->setShipGroup(base, -1, false);
+            fixed->field_0x70 = 1;
+            static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+            fixed->setWreckedMeshId(18300);
+            auto *file = new FileRead();
+            auto *points = file->loadSpacePoints(2, -1);
+            delete file;
+            fixed->setSpacePoints(points);
+            object = fixed;
+        } else if (type == 17049) {
+            int level;
+            if (Globals::status->getLevel() > 20) level = 400;
+            else level = 15 * Globals::status->getLevel() + 100;
+            int campaign = Globals::status->gameWon() ? 180 : 4 * Globals::status->getCurrentCampaignMission();
+            float hp = float(5 * (campaign + level));
+            hp += (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * hp;
+            auto *body = new Player(1000, int(hp), false, false, false);
+            auto *fixed = new PlayerFixedObject(17049, 3, body, nullptr, float(x), float(y), float(z));
+            auto *base = new AEGeometry(17049, Globals::Canvas, false);
+            unsigned int transform = -1u;
+                Globals::Canvas->TransformCreate(transform);
+                Globals::Canvas->TransformAddMesh(transform, 17055, false);
+                base->addChild(transform);
+                unsigned int firstA = -1u, firstB = -1u;
+                for (int i = 0; i != 3; ++i) {
+                    unsigned int a = -1u, b = -1u;
+                    Globals::Canvas->TransformCreate(a);
+                    Globals::Canvas->TransformCreate(b);
+                    Globals::Canvas->TransformAddMesh(a, 17052, false);
+                    Globals::Canvas->TransformAddMesh(b, 17053, false);
+                    float offset = i == 0 ? -2150.0f : i == 1 ? 2150.0f : 4300.0f;
+                    MatrixSetTranslation(*static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(a)), 0.0f, 0.0f, offset);
+                    MatrixSetTranslation(*static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(b)), 0.0f, 0.0f, offset);
+                    if (firstA == -1u) { firstA = a; firstB = b; }
+                    else { Globals::Canvas->TransformAddChild(firstA, a); Globals::Canvas->TransformAddChild(firstB, b); }
                 }
-                case 16928: {
-                    auto *body = new Player(1000, 9999999, false, false, false);
-                    auto *fixed = new PlayerFixedObject(16928, 0, body, nullptr, float(x), float(y), float(z));
-                    auto *base = new AEGeometry(16928, Globals::Canvas, false);
-                    fixed->setShipGroup(base, -1, false);
-                    auto *childA = new AEGeometry(16929, Globals::Canvas, false);
-                    auto *childB = new AEGeometry(16930, Globals::Canvas, false);
-                    fixed->geometry->addChild(childA->transform);
-                    fixed->geometry->addChild(childB->transform);
-                    delete childB;
-                    delete childA;
-                    auto *transform = static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->transform));
-                    transform->Update(static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->transform))->animationLength, false);
-                    transform = static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->childTransform));
-                    transform->Update(static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->childTransform))->animationLength, false);
-                    transform = static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->parentTransform));
-                    transform->Update(static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(fixed->geometry->parentTransform))->animationLength, false);
-                    fixed->field_0x70 = 1;
-                    fixed->setWreckedMeshId(14246);
-                    auto *file = new FileRead();
-                    auto *points = file->loadSpacePoints(7, -1);
-                    delete file;
-                    fixed->setSpacePoints(points);
-                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(1003, nullptr)));
-                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
-                    object = fixed;
-                    break;
-                }
-                case 19080: {
-                    auto *body = new Player(1000, 9999999, false, false, false);
-                    body->setVulnerable(false);
-                    auto *fixed = new PlayerFixedObject(19080, 3, body, nullptr, float(x), float(y), float(z));
-                    auto *base = new AEGeometry(19080, Globals::Canvas, false);
-                    auto *childA = new AEGeometry(19085, Globals::Canvas, false);
-                    auto *childB = new AEGeometry(19084, Globals::Canvas, false);
-                    auto *childC = new AEGeometry(19081, Globals::Canvas, false);
-                    auto *childD = new AEGeometry(19082, Globals::Canvas, false);
-                    auto *childE = new AEGeometry(19083, Globals::Canvas, false);
-                    base->addChild(childA->transform);
-                    base->addChild(childB->transform);
-                    base->addChild(childC->transform);
-                    auto *childF = new AEGeometry(19086, Globals::Canvas, false);
-                    auto *childG = new AEGeometry(19088, Globals::Canvas, false);
-                    auto *childH = new AEGeometry(19087, Globals::Canvas, false);
-                    base->addChild(childF->transform);
-                    base->addChild(childG->transform);
-                    base->addChild(childH->transform);
-                    delete childF;
-                    delete childG;
-                    delete childH;
-                    base->addChild(childD->transform);
-                    base->addChild(childE->transform);
-                    delete childA;
-                    delete childB;
-                    delete childC;
-                    delete childD;
-                    delete childE;
-                    fixed->setShipGroup(base, -1, false);
-                    fixed->field_0x70 = 1;
-                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
-                    fixed->setWreckedMeshId(19080);
-                    auto *file = new FileRead();
-                    auto *points = file->loadSpacePoints(1, -1);
-                    delete file;
-                    fixed->setSpacePoints(points);
-                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(2000, nullptr)));
-                    fixed->player->radius = 0;
-                    object = fixed;
-                    break;
-                }
-                case 16992: {
-                    auto *body = new Player(1000, 9999999, false, false, false);
-                    auto *fixed = new PlayerFixedObject(16992, 0, body, nullptr, float(x), float(y), float(z));
-                    auto *base = new AEGeometry(16992, Globals::Canvas, false);
-                    fixed->setShipGroup(base, -1, false);
-                    fixed->field_0x70 = 1;
-                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
-                    fixed->setWreckedMeshId(18300);
-                    auto *file = new FileRead();
-                    auto *points = file->loadSpacePoints(2, -1);
-                    delete file;
-                    fixed->setSpacePoints(points);
-                    object = fixed;
-                    break;
-                }
-                case 18785: {
-                    auto *body = new Player(1000, 9999999, false, false, false);
-                    auto *fixed = new PlayerFixedObject(18785, 2, body, nullptr, float(x), float(y), float(z));
-                    auto *base = new AEGeometry(18785, Globals::Canvas, false);
-                    auto *child0 = new AEGeometry(18831, Globals::Canvas, false);
-                    base->addChild(child0->transform);
-                    delete child0;
-                    fixed->setShipGroup(base, -1, false);
-                    fixed->field_0x70 = 1;
-                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
-                    fixed->setWreckedMeshId(18300);
-                    fixed->shipGroup = 2;
-                    auto *file = new FileRead();
-                    auto *points = file->loadSpacePoints(2, -1);
-                    delete file;
-                    fixed->setSpacePoints(points);
-                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(2003, nullptr)));
-                    object = fixed;
-                    break;
-                }
-                case 18786: {
-                    auto *body = new Player(0, 9999999, false, false, false);
-                    auto *fixed = new PlayerFixedObject(18786, 2, body, nullptr, float(x), float(y), float(z));
-                    auto *base = new AEGeometry(18786, Globals::Canvas, false);
-                    fixed->setShipGroup(base, -1, false);
-                    fixed->field_0x70 = 0;
-                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
-                    fixed->setWreckedMeshId(18300);
-                    object = fixed;
-                    break;
-                }
-                case 19051: {
-                    auto *body = new Player(0, 9999999, false, false, false);
-                    auto *fixed = new PlayerFixedObject(19051, 1, body, nullptr, float(x), float(y), float(z));
-                    auto *base = new AEGeometry(19051, Globals::Canvas, false);
-                    auto *child0 = new AEGeometry(19052, Globals::Canvas, false);
-                    base->addChild(child0->transform);
-                    delete child0;
-                    auto *child1 = new AEGeometry(19053, Globals::Canvas, false);
-                    base->addChild(child1->transform);
-                    delete child1;
-                    fixed->setShipGroup(base, -1, false);
-                    fixed->field_0x70 = 1;
-                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
-                    fixed->setWreckedMeshId(18300);
-                    auto *file = new FileRead();
-                    auto *points = file->loadSpacePoints(8, -1);
-                    delete file;
-                    fixed->setSpacePoints(points);
-                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(2006, nullptr)));
-                    object = fixed;
-                    break;
-                }
-                case 21113: {
-                    auto *body = new Player(0, 9999999, false, false, false);
-                    body->setVulnerable(false);
-                    auto *fixed = new PlayerFixedObject(16800, 1, body, nullptr, float(x), float(y), float(z));
-                    auto *base = new AEGeometry(16800, Globals::Canvas, false);
-                    fixed->setShipGroup(base, -1, false);
-                    fixed->field_0x70 = 1;
-                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
-                    fixed->setWreckedMeshId(21113);
-                    auto *file = new FileRead();
-                    auto *points = file->loadSpacePoints(10, -1);
-                    delete file;
-                    fixed->setSpacePoints(points);
-                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(2002, nullptr)));
-                    object = fixed;
-                    break;
-                }
-                case 18781: {
-                    auto *body = new Player(1000, 9999999, false, false, false);
-                                        auto *fixed = new PlayerFixedObject(18781, 3, body, nullptr, float(x), float(y), float(z));
-                    auto *base = new AEGeometry(21076, Globals::Canvas, false);
-                    auto *childA = new AEGeometry(21876, Globals::Canvas, false);
-                    auto *childB = new AEGeometry(22076, Globals::Canvas, false);
-                    auto *childC = new AEGeometry(18781, Globals::Canvas, false);
-                    auto *childD = new AEGeometry(18781, Globals::Canvas, false);
-                    auto *childE = new AEGeometry(18782, Globals::Canvas, false);
-                    auto *childF = new AEGeometry(18783, Globals::Canvas, false);
-                    auto *childG = new AEGeometry(18784, Globals::Canvas, false);
-                    base->addChild(childG->transform);
-                    base->addChild(childA->transform);
-                    base->addChild(childB->transform);
-                    base->addChild(childC->transform);
-                    base->addChild(childD->transform);
-                    base->addChild(childE->transform);
-                    base->addChild(childF->transform);
-                    delete childA;
-                    delete childB;
-                    delete childC;
-                    delete childD;
-                    delete childE;
-                    delete childF;
-                    delete childG;
-                    fixed->setShipGroup(base, -1, false);
-                    fixed->field_0x70 = 1;
-                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
-                    fixed->setWreckedMeshId(18300);
-                    auto *file = new FileRead();
-                    auto *points = file->loadSpacePoints(6, -1);
-                    delete file;
-                    fixed->setSpacePoints(points);
-                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(111, nullptr)));
-                    object = fixed;
-                    break;
-                }
-                case 18766: {
-                    int level = Globals::status->getLevel() <= 20 ? 15 * Globals::status->getLevel() + 100 : 400;
-                    int campaign = Globals::status->gameWon() ? 180 : 4 * Globals::status->getCurrentCampaignMission();
-                    float hp = float(5 * (campaign + level));
-                    hp += (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * hp;
-                    auto *body = new Player(1000, int(hp), false, false, false);
-                    auto *fixed = new PlayerFixedObject(18766, 3, body, nullptr, float(x), float(y), float(z));
-                    auto *base = new AEGeometry(19072, Globals::Canvas, false);
-                    auto *childA = new AEGeometry(18766, Globals::Canvas, false);
-                        auto *childB = new AEGeometry(19073, Globals::Canvas, false);
-                        auto *childC = new AEGeometry(19074, Globals::Canvas, false);
-                        auto *childD = new AEGeometry(19075, Globals::Canvas, false);
-                        auto *childE = new AEGeometry(19076, Globals::Canvas, false);
-                        base->addChild(childA->transform);
-                        childA->addChild(childB->transform);
-                        childA->addChild(childC->transform);
-                        childA->addChild(childD->transform);
-                        childA->addChild(childE->transform);
-                        delete childA;
-                        delete childB;
-                        delete childC;
-                        delete childD;
-                        delete childE;
-                    fixed->setShipGroup(base, -1, false);
-                    fixed->field_0x40b = 1;
-                    fixed->field_0x70 = 1;
-                    auto *bounds = new Array<BoundingVolume *>();
-                    ArraySetLength(2, *bounds);
-                    (*bounds)[0] = new BoundingAAB(float(x), float(y), float(z), 0.0f, -199.0f, 4708.0f, 980.0f, 1530.0f, 1240.0f);
-                    (*bounds)[1] = new BoundingAAB(float(x), float(y), float(z), 0.0f, -14.0f, -98.0f, 4500.0f, 1405.0f, 8860.0f);
-                    fixed->setBV(bounds);
-                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
-                    fixed->setWreckedMeshId(18300);
-                    auto *file = new FileRead();
-                    auto *points = file->loadSpacePoints(3, -1);
-                    delete file;
-                    fixed->setSpacePoints(points);
-                    object = fixed;
-                    break;
-                }
-                case 18804: {
-                    int level = Globals::status->getLevel() <= 20 ? 15 * Globals::status->getLevel() + 100 : 400;
-                    int campaign = Globals::status->gameWon() ? 180 : 4 * Globals::status->getCurrentCampaignMission();
-                    float hp = float(5 * (campaign + level));
-                    hp += (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * hp;
-                    auto *body = new Player(0, int(hp), false, false, false);
-                    auto *fixed = new PlayerFixedObject(18804, 0, body, nullptr, float(x), float(y), float(z));
-                    auto *base = new AEGeometry(18804, Globals::Canvas, false);
-                    auto *childA = new AEGeometry(18805, Globals::Canvas, false);
-                        auto *childB = new AEGeometry(18807, Globals::Canvas, false);
-                        auto *childC = new AEGeometry(18808, Globals::Canvas, false);
-                        auto *childD = new AEGeometry(18809, Globals::Canvas, false);
-                        auto *childE = new AEGeometry(18810, Globals::Canvas, false);
-                        auto *childF = new AEGeometry(18806, Globals::Canvas, false);
-                        base->addChild(childA->transform);
-                        base->addChild(childB->transform);
-                        base->addChild(childC->transform);
-                        base->addChild(childD->transform);
-                        base->addChild(childE->transform);
-                        base->addChild(childF->transform);
-                        delete childA;
-                        delete childB;
-                        delete childC;
-                        delete childD;
-                        delete childE;
-                        delete childF;
-                    fixed->setShipGroup(base, -1, false);
-                    fixed->field_0x70 = 1;
-                    fixed->setWreckedMeshId(18766);
-                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
-                    auto *file = new FileRead();
-                    auto *points = file->loadSpacePoints(5, -1);
-                    delete file;
-                    fixed->setSpacePoints(points);
-                    fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(2005, nullptr)));
-                    object = fixed;
-                    break;
-                }
-                case 17049: {
-                    int level = Globals::status->getLevel() <= 20 ? 15 * Globals::status->getLevel() + 100 : 400;
-                    int campaign = Globals::status->gameWon() ? 180 : 4 * Globals::status->getCurrentCampaignMission();
-                    float hp = float(5 * (campaign + level));
-                    hp += (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * hp;
-                    auto *body = new Player(1000, int(hp), false, false, false);
-                    auto *fixed = new PlayerFixedObject(17049, 3, body, nullptr, float(x), float(y), float(z));
-                    auto *base = new AEGeometry(17049, Globals::Canvas, false);
-                    unsigned int transform = -1u;
-                        Globals::Canvas->TransformCreate(transform);
-                        Globals::Canvas->TransformAddMesh(transform, 17055, false);
-                        base->addChild(transform);
-                        unsigned int firstA = -1u, firstB = -1u;
-                        for (int i = 0; i != 3; ++i) {
-                            unsigned int a = -1u, b = -1u;
-                            Globals::Canvas->TransformCreate(a);
-                            Globals::Canvas->TransformCreate(b);
-                            Globals::Canvas->TransformAddMesh(a, 17052, false);
-                            Globals::Canvas->TransformAddMesh(b, 17053, false);
-                            float offset = i == 0 ? -2150.0f : i == 1 ? 2150.0f : 4300.0f;
-                            MatrixSetTranslation(*static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(a)), 0.0f, 0.0f, offset);
-                            MatrixSetTranslation(*static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(b)), 0.0f, 0.0f, offset);
-                            if (firstA == -1u) { firstA = a; firstB = b; }
-                            else { Globals::Canvas->TransformAddChild(firstA, a); Globals::Canvas->TransformAddChild(firstB, b); }
-                        }
-                        base->addChild(firstA);
-                        transform = -1u;
-                        Globals::Canvas->TransformCreate(transform);
-                        Globals::Canvas->TransformAddMesh(transform, 17054, false);
-                        base->addChild(transform);
-                        unsigned short lod = 17050;
-                        int distance = 35000;
-                        base->setLodMeshes(&lod, &distance, 1);
-                        base->setLodChildTransform(firstB);
-                    fixed->setShipGroup(base, -1, false);
-                    fixed->field_0x40b = 1;
-                    fixed->field_0x70 = 1;
-                    auto *bounds = new Array<BoundingVolume *>();
-                    ArraySetLength(2, *bounds);
-                    (*bounds)[0] = new BoundingAAB(float(x), float(y), float(z), 0.0f, -199.0f, 4708.0f, 980.0f, 1530.0f, 1240.0f);
-                    (*bounds)[1] = new BoundingAAB(float(x), float(y), float(z), 0.0f, -14.0f, -98.0f, 4500.0f, 1405.0f, 8860.0f);
-                    fixed->setBV(bounds);
-                    static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
-                    fixed->setWreckedMeshId(18300);
-                    fixed->shipGroup = 3;
-                    auto *file = new FileRead();
-                    auto *points = file->loadSpacePoints(4, -1);
-                    delete file;
-                    fixed->setSpacePoints(points);
-                    object = fixed;
-                    break;
-                }
-                default:
-                    break;
-            }
+                base->addChild(firstA);
+                transform = -1u;
+                Globals::Canvas->TransformCreate(transform);
+                Globals::Canvas->TransformAddMesh(transform, 17054, false);
+                base->addChild(transform);
+                unsigned short lod = 17050;
+                int distance = 35000;
+                base->setLodMeshes(&lod, &distance, 1);
+                base->setLodChildTransform(firstB);
+            fixed->setShipGroup(base, -1, false);
+            fixed->field_0x40b = 1;
+            fixed->field_0x70 = 1;
+            auto *bounds = new Array<BoundingVolume *>();
+            ArraySetLength(2, *bounds);
+            (*bounds)[0] = new BoundingAAB(float(x), float(y), float(z), 0.0f, -199.0f, 4708.0f, 980.0f, 1530.0f, 1240.0f);
+            (*bounds)[1] = new BoundingAAB(float(x), float(y), float(z), 0.0f, -14.0f, -98.0f, 4500.0f, 1405.0f, 8860.0f);
+            fixed->setBV(bounds);
+            static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+            fixed->setWreckedMeshId(18300);
+            fixed->shipGroup = 3;
+            auto *file = new FileRead();
+            auto *points = file->loadSpacePoints(4, -1);
+            delete file;
+            fixed->setSpacePoints(points);
+            object = fixed;
+        } else if (type == 18785) {
+            auto *body = new Player(1000, 9999999, false, false, false);
+            auto *fixed = new PlayerFixedObject(18785, 2, body, nullptr, float(x), float(y), float(z));
+            auto *base = new AEGeometry(18785, Globals::Canvas, false);
+            auto *child0 = new AEGeometry(18831, Globals::Canvas, false);
+            base->addChild(child0->transform);
+            delete child0;
+            fixed->setShipGroup(base, -1, false);
+            fixed->field_0x70 = 1;
+            static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+            fixed->setWreckedMeshId(18300);
+            fixed->shipGroup = 2;
+            auto *file = new FileRead();
+            auto *points = file->loadSpacePoints(2, -1);
+            delete file;
+            fixed->setSpacePoints(points);
+            fixed->setBV(static_cast<Array<BoundingVolume *> *>(getBoundingVolume(2003, nullptr)));
+            object = fixed;
+        } else if (type == 18786) {
+            auto *body = new Player(0, 9999999, false, false, false);
+            auto *fixed = new PlayerFixedObject(18786, 2, body, nullptr, float(x), float(y), float(z));
+            auto *base = new AEGeometry(18786, Globals::Canvas, false);
+            fixed->setShipGroup(base, -1, false);
+            fixed->field_0x70 = 0;
+            static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+            fixed->setWreckedMeshId(18300);
+            object = fixed;
+        } else if (type == 18804) {
+            int level;
+            if (Globals::status->getLevel() > 20) level = 400;
+            else level = 15 * Globals::status->getLevel() + 100;
+            int campaign = Globals::status->gameWon() ? 180 : 4 * Globals::status->getCurrentCampaignMission();
+            float hp = float(5 * (campaign + level));
+            hp += (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * hp;
+            auto *body = new Player(0, int(hp), false, false, false);
+            auto *fixed = new PlayerFixedObject(18804, 0, body, nullptr, float(x), float(y), float(z));
+            auto *base = new AEGeometry(18804, Globals::Canvas, false);
+            auto *childA = new AEGeometry(18805, Globals::Canvas, false);
+                auto *childB = new AEGeometry(18807, Globals::Canvas, false);
+                auto *childC = new AEGeometry(18808, Globals::Canvas, false);
+                auto *childD = new AEGeometry(18809, Globals::Canvas, false);
+                auto *childE = new AEGeometry(18810, Globals::Canvas, false);
+                auto *childF = new AEGeometry(18806, Globals::Canvas, false);
+                base->addChild(childA->transform);
+                base->addChild(childB->transform);
+                base->addChild(childC->transform);
+                base->addChild(childD->transform);
+                base->addChild(childE->transform);
+                base->addChild(childF->transform);
+                delete childA;
+                delete childB;
+                delete childC;
+                delete childD;
+                delete childE;
+                delete childF;
+            fixed->setShipGroup(base, -1, false);
+            fixed->field_0x70 = 1;
+            fixed->setWreckedMeshId(18766);
+            static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+            auto *file = new FileRead();
+            auto *points = file->loadSpacePoints(5, -1);
+            delete file;
+            fixed->setSpacePoints(points);
+            object = fixed;
+            collisionIndex = 2005;
+            goto installBounds;
+        } else if (type == 19051) {
+            auto *body = new Player(0, 9999999, false, false, false);
+            auto *fixed = new PlayerFixedObject(19051, 1, body, nullptr, float(x), float(y), float(z));
+            auto *base = new AEGeometry(19051, Globals::Canvas, false);
+            auto *child0 = new AEGeometry(19052, Globals::Canvas, false);
+            base->addChild(child0->transform);
+            delete child0;
+            auto *child1 = new AEGeometry(19053, Globals::Canvas, false);
+            base->addChild(child1->transform);
+            delete child1;
+            fixed->setShipGroup(base, -1, false);
+            fixed->field_0x70 = 1;
+            static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+            fixed->setWreckedMeshId(18300);
+            auto *file = new FileRead();
+            auto *points = file->loadSpacePoints(8, -1);
+            delete file;
+            fixed->setSpacePoints(points);
+            object = fixed;
+            collisionIndex = 2006;
+            goto installBounds;
+        } else if (type == 21113) {
+            auto *body = new Player(0, 9999999, false, false, false);
+            body->setVulnerable(false);
+            auto *fixed = new PlayerFixedObject(16800, 1, body, nullptr, float(x), float(y), float(z));
+            auto *base = new AEGeometry(16800, Globals::Canvas, false);
+            fixed->setShipGroup(base, -1, false);
+            fixed->field_0x70 = 1;
+            static_cast<KIPlayer *>(fixed)->setPosition(float(x), float(y), float(z));
+            fixed->setWreckedMeshId(21113);
+            auto *file = new FileRead();
+            auto *points = file->loadSpacePoints(10, -1);
+            delete file;
+            fixed->setSpacePoints(points);
+            object = fixed;
+            collisionIndex = 2002;
+            goto installBounds;
         }
     }
+    goto setObjectLevel;
+installBounds:
+    // Android shares this tail for collision IDs 2005, 2006 and 2002.
+    static_cast<PlayerFixedObject *>(object)->setBV(
+        static_cast<Array<BoundingVolume *> *>(getBoundingVolume(collisionIndex, nullptr)));
+setObjectLevel:
     object->setLevel(this);
     return reinterpret_cast<intptr_t>(object);
 }

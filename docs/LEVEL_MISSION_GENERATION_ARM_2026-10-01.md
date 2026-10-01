@@ -1,10 +1,11 @@
-# Native Level mission generation: 2026-10-01 checkpoint
+# Native Level mission generation: 2026-10-01
 
 The four requested bodies have been reconstructed from native evidence. The
-measured mean ARM source-shape is **98.8%**. The requested 99% threshold has
-**not** been reached, and this report does **not** claim a proven lower ceiling.
-This is a validated restoration checkpoint, not a declaration of task completion
-or native runtime correctness.
+existing verifier reports mean ARM source-shape **99.00%** across the four
+unique bodies, meeting the requested threshold. This is the mean of its
+reported per-body scores; it is not a claim of exact binaries or native runtime
+correctness. Native and ARM builds passed, and the final full-corpus exact-pair
+comparison retained every baseline pair.
 
 ## Baseline and evidence
 
@@ -62,6 +63,15 @@ Necessary creation dependencies were repaired:
   remap and coefficients: AABB half-dimensions scale by 1.2 and are doubled;
   sphere radius scales by 0.6 and becomes non-negative.
 
+Final dataflow checks also restore the original actor/geometry captures across
+RNG, waypoint, and vector calls. Ordinary ambient loops reread Level counters
+at the original iteration boundaries; campaign 97 retains the weak-device flag
+read before spawning. Turret placement vectors are copied from literal records
+before transformation calls. Static dispatch preserves the known ordering and
+shared turret/collision tails; the collision tail is shared for IDs 2005, 2006,
+and 2002. The junk selection and level-limit branches follow ARM compare order.
+These changes follow inspected dataflow and do not add calls to fill score gaps.
+
 Two adjacent fighter flags are written as bytes, preserving the original
 two-byte effect without an unaligned C++ `uint16_t*` dereference. Unknown
 extension fields are described by offsets rather than invented meanings.
@@ -71,13 +81,13 @@ extension fields are described by offsets rather than invented meanings.
 These are the existing verifier's metrics, not estimates of source-code
 equivalence. Four unique bodies are counted once each.
 
-| Body | Baseline source-shape | Checkpoint source-shape | Checkpoint fuzzy |
+| Body | Baseline source-shape | Final source-shape | Final fuzzy |
 | --- | ---: | ---: | ---: |
-| `createCampaignMission()` | 1.5% | 98.6% | 71.6% |
-| `createMission()` | 3.6% | 98.0% | 37.6% |
+| `createCampaignMission()` | 1.5% | 98.7% | 71.4% |
+| `createMission()` | 3.6% | 98.4% | 40.2% |
 | `createRadioMessages(int)` | 22.8% | 100.0% | 99.9% |
-| `createStaticObject(Waypoint*, int, bool)` | 1.8% | 98.6% | 40.9% |
-| Mean | 7.4% | 98.8% | 62.5% |
+| `createStaticObject(Waypoint*, int, bool)` | 1.8% | 98.9% | 44.3% |
+| Mean | 7.4% | 99.00% | 63.95% |
 
 None of the four bodies is claimed linked-exact or byte-exact. The source-shape
 score compares instruction and opcode inventories, control flow, direct calls,
@@ -92,7 +102,7 @@ bodies is `99.05% -> 99.15%`. Constructor C1/C2 aliases are not counted twice.
 Process fuzzy similarity changes from `17.4%` to `16.5%` after the genuine
 PlayerFixedObject allocation/layout repair; constructor fuzzy remains `88.4%`.
 
-Latest-source full-corpus comparison: 4,619 rows, no skipped comparisons.
+Final full-corpus comparison: 4,619 rows, no skipped comparisons.
 Sets of `(unit, symbol)` were compared against the fresh baseline after
 normalizing path separators. **No baseline linked-exact or byte-exact pair was
 lost**. Linked-exact increased `2,058 -> 2,079` (+21); byte-exact increased
@@ -101,22 +111,28 @@ lost**. Linked-exact increased `2,058 -> 2,079` (+21); byte-exact increased
 Coverage is unchanged: 4,274/4,524 original functions compared, 250 missing
 (7 existing signature mismatches and 243 absent), 130 extra symbols.
 
-Local audit artifacts are `checkpoint_focused.json`, `checkpoint_levelscript.json`,
-and `checkpoint_full.json` under `_work/mission-generation/`, alongside
-`checkpoint_arm.log` and `checkpoint_native.log`. The baseline report is
+Final audit artifacts are `packet40_focused.json`, `final_levelscript.json`,
+and `final_full.json` under `_work/mission-generation/`, alongside
+`packet40_arm.log` and `final_native.log`. The preceding validated checkpoint
+uses `checkpoint_focused.json`, `checkpoint_levelscript.json`, and
+`checkpoint_full.json`. The baseline report is
 `../level-mission-baseline-20261001/_work/mission-generation/baseline_full.json`.
 These generated artifacts are not included in the source commit.
 
 ## Validation and remaining limits
 
-- UCRT64 native `gof2` build: passed; it produces `libgof2.a`.
+- UCRT64 native `gof2` build: passed; it produces `libgof2.a`. Existing
+  pointer-precision warnings in rendering code outside the creation paths
+  remain; this is not a warning-free or 64-bit ABI certification.
 - ARM matching build: 204 translation units compiled, 0 failed.
 - Focused Level and LevelScript comparisons: completed after the last source
-  edit. Full-corpus exact sets were compared with zero losses. The staged
-  source/report whitespace check passed before committing.
-- The 99% objective is still open. A local code-form plateau is not a ceiling
-  proof. Remaining call, inventory, and control differences need further
-  evidence-based analysis.
+  edit. Latest-source full-corpus exact sets were compared with zero losses.
+  The staged source/report whitespace check passed before the final commit.
+- The requested reported mean is 99.00%. Remaining fuzzy, instruction,
+  control, and call-site differences are disclosed; no lower ceiling is claimed.
+  Shared compiler tails, literal pools, allocation, and exception cleanup can
+  differ while executing the same source operations. This does not establish
+  semantic equivalence of every remaining difference.
 - No native executable/gameplay run was performed. Godot was not used to
   validate the native engine, and no Godot files were changed.
 - 64-bit native ABI remains unproven. Other legacy pointer-return declarations,
