@@ -1,7 +1,7 @@
-"""Compile current MeshReadData and selected vector math bodies verbatim.
+"""Compile current MeshReadData, optional caller and vector math bodies verbatim.
 
 The Windows linker retains unrelated dependencies of AbyssEngine.cpp, so this
-test extracts their exact function text. This is a reader-body smoke test,
+test extracts their exact function text. This is a function-body smoke test,
 not a whole-TU linkage or native ABI test. The native library build is separate.
 """
 import argparse
@@ -12,6 +12,7 @@ import subprocess
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--compiler', default='g++')
 parser.add_argument('--output-dir', type=Path, required=True)
+parser.add_argument('--create-smoke', action='store_true', help='Also exercise the current caller with the real reader and enhanced parser')
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
 def extract(source, pattern):
@@ -54,3 +55,16 @@ subprocess.run([args.compiler, '-std=c++14', '-I' + str(root / 'src'),
                 str(root / 'src/engine/math/Vector.cpp'), '-o', str(exe)], check=True)
 subprocess.run([str(exe)], check=True)
 print('MeshReadData color/position/tangent/truncation smoke passed')
+if args.create_smoke:
+    create_body = extract(source, r'    int MeshCreateFromFile\(Engine \*engine, const char \*path, Mesh \*\*out, Material \*mat\) \{')
+    create_include = output / 'mesh_create_under_test.inc'
+    create_include.write_text('namespace AbyssEngine {\n' + create_body + '\n}\n')
+    assert create_body in create_include.read_text()
+    create_exe = output / 'mesh_create_smoke.exe'
+    subprocess.run([args.compiler, '-std=c++14', '-ffunction-sections', '-fdata-sections',
+                    '-I' + str(root / 'src'), '-I' + str(root / 'third_party/gl'), '-I' + str(output),
+                    str(root / 'tools/mesh_create_smoke.cpp'),
+                    str(root / 'src/engine/render/Mesh.cpp'), str(root / 'src/engine/math/Vector.cpp'),
+                    '-Wl,--gc-sections', '-o', str(create_exe)], check=True)
+    subprocess.run([str(create_exe)], check=True)
+    print('MeshCreateFromFile plain/enhanced success, reader failure and file lifecycle smoke passed')

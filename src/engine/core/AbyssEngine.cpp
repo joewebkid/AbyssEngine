@@ -2683,7 +2683,7 @@ namespace AbyssEngine {
                                     }
                                     goto loaded;
                                 }
-                                if (MeshReadData(engine, handle, fmt, out, mat) != -1)
+                                if (MeshReadData(engine, handle, fmt, out, mat) == 1)
                                     goto loaded;
                             }
                         } else if (MeshReadData(engine, handle, fmt, out, mat) != -1) {

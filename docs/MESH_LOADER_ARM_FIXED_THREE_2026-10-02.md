@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **97.17% unweighted / 97.38% weighted**.
+Latest validated continuation: source **97.90% unweighted / 97.74% weighted**.
 The result tables below preserve earlier measurements. Chronological continuation
 sections record later per-body results, corpus evidence and rejected trials.
 
@@ -972,3 +972,89 @@ ARM/native library and reader/parser gates remain applicable. Exact sets stay
 2,079 linked / 959 raw with no losses. Means stay **97.17% unweighted / 97.38%
 weighted**. The >=99.0% objective remains unmet; these negative results do not
 prove an objective compiler ceiling.
+
+## Continuation: separate single-mesh reader success checks
+
+Nine valid isolated trials start from `60853546`. The first four change only
+the control flow after the uncompressed color read in MeshReadData; none
+improves source match and all were restored.
+
+| Reader color-completion trial | Read source / strict | Compiled instructions |
+|---|---|---:|
+| Return directly when enhanced data is absent | 96.9 / 54.7 | 883 |
+| Combined completion guard | 97.3 / 55.1 | 873 |
+| Result local and combined guard | 97.3 / 55.1 | 873 |
+| Inverted read-success branch | 97.4 / 55.2 | 865 |
+
+The remaining five trials test equivalent predicates on the two existing
+single-mesh MeshReadData calls in MeshCreateFromFile. Both the current reader
+definition and Android original return only 1/-1. The original uncompressed
+color return selection is visible at `0x6cf0c..0x6cf16`; the remaining exits
+select those same two values. Thus ==1, !=-1, >0 and >=0 are equivalent for
+this verified callee, without new calls, arguments, side effects or branches.
+
+| Caller status trial | Create source / strict | Compiled instructions | Calls |
+|---|---|---:|---:|
+| Enhanced single-mesh success ==1 | **98.4 / 60.7** | 289 | 100.0 |
+| Plain single-mesh success ==1 | 98.4 / 60.3 | 289 | 100.0 |
+| Both single-mesh successes ==1 | 95.5 / 61.3 | 280 | 95.8 |
+| Plain single-mesh success >0 | 97.3 / 60.0 | 289 | 100.0 |
+| Plain single-mesh success >=0 | 97.3 / 60.0 | 289 | 100.0 |
+
+Only the first caller row is retained: a one-condition change in the enhanced
+single-mesh path, with the ordinary and child paths untouched. Compared with
+the previous 96.2/61.6/280 result, source rises to 98.4 and strict falls to
+60.7. Inventory/opcodes/control/calls/size are 94.7/97.9/100.0/100.0/99.3;
+ordered control is 91.7. The original has 291 instructions.
+
+Original Android calls the reader at `0x6d2bc` (child), `0x6d2f8` (enhanced
+single), and `0x6d30e` (plain single). Using identical !=-1 predicates allowed
+the current compiler to merge the single paths; the retained equivalent check
+keeps all three call sites. Both original single checks test -1 via adds #1.
+Direct object disassembly confirms three MeshReadData call relocations at
+Core object offsets `0x3ea2`, `0x3ee2` and `0x3f28` (object offsets, not Android
+virtual addresses); `_work/createstatus_create_disassembly.txt` preserves them.
+The selected ==1 C++ spelling is consequently a heuristic for compiler shape,
+NOT recovered exact source or an exact instruction-level compare. Its
+equivalence depends on the verified 1/-1 reader contract. No matcher, flags,
+helpers, aliases or denominator changed.
+
+At the preceding Create score of 96.2, even Read=Enhanced=100 would produce
+only 98.733333 unweighted. This is a conditional arithmetic bound on that
+particular state, not an objective compiler ceiling. Improving Create removes
+that particular barrier; neither required mean has yet reached 99.0.
+
+Native UCRT64 gof2 static-library build passed. Existing production Mesh.cpp
+enhanced parser tests and verbatim reader/production vector-math smoke passed.
+The new `tools/mesh_create_smoke.cpp`, enabled by the existing runner's
+`--create-smoke`, exercises verbatim current Create and Read definitions with
+production Mesh.cpp. It covers plain AEMesh success, V4 single-mesh success
+for subCount 0 and 1, truncated position data, truncated child-count data,
+engine/path guards and OpenRead failure. It checks output cleanup and exactly
+one file close on opened-file success/failure. File access, release and
+unexercised Transform/clone boundaries are mocked; the reader result itself
+is not mocked. These are bounded body tests,
+not a whole-Core.cpp executable linkage, native ABI proof or game/device run.
+The pre-existing enhanced-error ==0 convention remains unchanged: do not infer
+that all enhanced-data truncations are rejected from these selected fixtures.
+
+Fresh full ARM validation rebuilt all 204 translation units in
+`_work/createstatus-full`: 4,619 comparisons, zero skipped, 4,274/4,524 originals
+compared, missing 250 (7 wrong type, 243 absent), extra 130. Actual normalized
+`(unit, symbol)` sets equal the clean baseline: linked-exact 2,079, byte-exact
+959; lost [] and gained [] for each. Other 202 ARM objects remain byte-identical
+to baseline. Core equals the accepted focused trial; Mesh equals optional-full.
+Boundary comparison against the clean baseline confirms both source files and
+signatures are unchanged outside the three authorized bodies.
+
+Full strict/source means: 75.98/88.99. Report SHA-256: `505c0cbc329601461e7e58db51515fb6ad854e881fcde5d41f0430f701b948d0`.
+Evidence: `_work/createstatus_full.json`, `_work/createstatus_three.json`,
+`_work/createstatus_full_build.log`, `_work/createstatus_full_verify.log`,
+`_work/createstatus_native.log`, `_work/createstatus_read_smoke.log`, `_work/createstatus_smoke.exe`,
+`_work/createstatus-read-smoke/`, and the nine focused trial reports.
+
+Fixed source scores: Create **98.4**, Read **97.4**, Enhanced **97.9**.
+Original weights remain 291/873/636, total 1,800. Means: **97.900000%
+unweighted / 97.738333% weighted** (97.90/97.74 displayed).
+The required >=99.0% pair is still unmet; the goal remains active with no
+demonstrated objective compiler ceiling or proven native game/ABI readiness.
