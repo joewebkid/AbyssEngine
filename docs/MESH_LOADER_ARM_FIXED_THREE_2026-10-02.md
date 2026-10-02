@@ -815,3 +815,39 @@ Evidence: `_work/trinumer_full.json`, `_work/trinumer_three.json`,
 Fixed source scores: Create 96.2, Read 97.4, Enhanced 97.8, unchanged weights
 291/873/636, total 1,800. Means: **97.133333% unweighted / 97.347333% weighted** (97.13/97.35 displayed). The >=99.0% gate remains unmet.
 No objective compiler ceiling or native game/device runtime readiness is proven.
+
+## Continuation: UV denominator, flag branches and normal-order interaction
+
+Fourteen isolated trials from `e8339586` produce no source-score gain. The last
+five specifically recheck normal-order interactions after the accepted triangle
+numerator scheduling, rather than relying on their older measurements. All
+production source changes were restored; flags and verifier remain unchanged.
+
+| Trial | Read source / strict | Compiled instructions |
+|---|---|---:|
+| Load origin U after the V differences | 97.4 / 55.4 | 871 |
+| Named U differences before denominator | 97.4 / 55.4 | 871 |
+| Both preceding UV changes | 97.4 / 55.4 | 871 |
+| Reciprocal after numerator calculations | 97.4 / 55.4 | 871 |
+| Named denominator products before subtraction | 97.4 / 55.4 | 871 |
+| Signed high-bit test of compressedData for positions | 97.1 / 55.5 | 869 |
+| Unsigned >= 0x80000000 test for positions | 97.1 / 55.5 | 869 |
+| Right-shift compressedData high bit for positions | 97.4 / 55.4 | 871 |
+| Signed compressedData local and position predicate | 97.1 / 55.5 | 869 |
+| Normal Y loads and quotients before X | 97.4 / 53.3 | 872 |
+| All normal Y stages before X | 97.4 / 53.5 | 872 |
+| Only normal Y quotient before X | 97.4 / 55.4 | 871 |
+| Only upper Y clamp before X | 97.4 / 55.2 | 871 |
+| Normal Y quotient/clamp stages before X | 97.4 / 55.2 | 871 |
+
+The high-bit tests followed original `0x6c6a8..0x6c6ba`, which shifts flags by
+29 and branches on the sign bit; unsigned variants avoid a signed-conversion
+assumption. None improves the recorded source score. Existing format tests
+remain. Rechecking the source-backed Y-before-X ordering under the new tangent
+scheduling also gives no gain, so the current normal code remains.
+
+Tracked status was clean after every sweep completed and before adding this
+section. No code/test change remains; the previous fresh 204-TU ARM/native
+library and reader/parser gates remain applicable, with exact pair sets 2,079
+linked / 959 raw and no losses. Means remain **97.13% unweighted / 97.35%
+weighted**. The >=99.0% goal is unmet; no objective compiler ceiling is proven.
