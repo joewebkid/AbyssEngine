@@ -941,3 +941,34 @@ Fixed source scores: Create 96.2, Read 97.4, Enhanced 97.9. The original
 291/873/636 weights still total 1,800. Means: **97.166667% unweighted / 97.382667% weighted** (97.17/97.38 displayed).
 The >=99.0% gate remains unmet; no objective compiler ceiling or game/ABI
 readiness is proven.
+
+## Continuation: V5 finish flow and incremental prefix count reuse
+
+Seven valid isolated trials start from `de31dd9d`; none improves the requested
+source score. Every source change was restored. Canonical flags, the matcher
+and the three unique-body denominator remain unchanged.
+
+| Trial | Enhanced source / strict | Compiled instructions |
+|---|---|---:|
+| Early finish when V5 presence is zero | 97.9 / 67.5 | 636 |
+| Early finish when V5 format bit is absent | 97.9 / 67.5 | 636 |
+| Both early-finish guards | 97.9 / 67.5 | 636 |
+| Express unsigned presence != 0 as > 0 | 97.9 / 67.5 | 636 |
+| Share the optional word with earlier vector-group counts | 97.3 / 63.7 | 635 |
+| Share the optional word with earlier axis-group counts | 97.5 / 50.7 | 641 |
+| Share the optional word with all earlier group counts | 97.5 / 52.2 | 629 |
+
+All four finish-flow trials produce Mesh.o byte-identical to the preceding
+validated full object, not just equal displayed scores. These particular
+equivalent CFG spellings normalize to the same compiled result. The prefix
+trials were incremental tests motivated by original v66/sp+28 count reuse;
+they explicitly preserve the separate signed V5 count and do not repeat the
+earlier invalid read substitution. Broadening reuse regresses the measured
+shape, so only the previously accepted final count/presence pair remains.
+
+Tracked source status was clean after the sweeps and before this report-only
+addition. No implementation/test changes remain; the preceding fresh 204-TU
+ARM/native library and reader/parser gates remain applicable. Exact sets stay
+2,079 linked / 959 raw with no losses. Means stay **97.17% unweighted / 97.38%
+weighted**. The >=99.0% objective remains unmet; these negative results do not
+prove an objective compiler ceiling.
