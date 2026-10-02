@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **98.375% unweighted / 97.45192% original-instruction
+implementation bodies measure **98.655% unweighted / 97.67433% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**83.005% / 74.73552%**, respectively. Source-shape is an inventory/control-flow
+**84.915% / 76.70867%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -271,6 +271,51 @@ No native executable/runtime test is claimed. Remaining instruction/control
 inventories are incomplete recovery, not a proved compiler ceiling. The 99%
 objective remains active and unmet.
 
+## Follow-up after checkpoint 42331c92
+
+Checkpoint 42331c92 measured 98.375% / 97.45192%. This continuation edits
+StarMap.cpp, report and snapshots only. draw improves **98.0% -> 98.3%**,
+strict **83.2% -> 87.6%**, original/current instructions: 916/909.
+init improves **97.3% -> 97.7%**, strict **67.0% -> 72.6%**, instructions:
+750/735. depart improves **95.1% -> 100.0% source-shape**, strict
+**60.1% -> 88.3%**, instructions: 205/205. depart remains non-exact.
+
+- draw uses the three-argument DrawImage2D overload for the system header
+  image, as direct ARM at 0xc95d2 calls Ejii rather than Ejiih. Restores mode
+  reload after Ease getters and clamps the locally computed alpha. Security
+  label Y uses fresh Layout fields after intervening calls. Footer font,
+  Canvas, X and width are captured before GetTextWidth; Y reloads Layout
+  afterward, matching original native read order.
+- init removes the extra Vector assignment through local pos: Android
+  0xc6eaa/0xc6eb4 and 0xc6eda/0xc6ee4 use getPosition followed by one
+  assignment into scratchVector. Canvas is captured across CameraGetCurrent;
+  key font/Canvas are captured before GameText::getText. Station array deletion
+  rereads the member after ArrayReleaseClasses, as 0xc7076 does.
+- init's planet-mode camera position had another incorrect getPosition
+  receiver: direct ARM 0xc7000/0xc7006 loads +0x68/+0x60 and calls getPosition
+  at 0xc7012. It now uses systemGeoms[selectedSystem] rather than planetGeom.
+  Makes the camera copy explicit as the 60-byte memcpy at 0xc7044/0xc7048
+  before changing word 11 and reuses the existing local matrix. Matrix is
+  already 60 bytes in the shared header, so this does not repair a copy-size
+  mismatch. No fabricated padding or forced extra instructions were added.
+- depart removes getJumpgateUsed, absent from the Android body. The original
+  0xc7e54 jumpgateUsed call is followed by a jump/jumpMapModeB test. Reloads
+  stations/selectedStation after callbacks and during cleanup, restores
+  programmedStation's post-equals member read, and uses Globals::achievements
+  and Globals::appManager as original. Production Level files are untouched.
+
+Packages: draw-eighth-trial, init-eighth-trial, depart-eighth-trial (accepted
+as eighth-focused). Direct evidence: _work/draw-original-direct.asm,
+init-original-direct.asm, depart-original-direct.asm; original IDA extracts:
+draw-android.c, init-android.c, depart-android.c. The earlier full-corpus run
+was cancelled before completion when these additional source repairs were
+identified; no results from that cancelled run are accepted.
+
+No native executable/runtime test is claimed. The fixed 20-body, 7101-original-
+instruction denominator and alias exclusions are unchanged. The 99% objective
+remains active and unmet; source-shape 100% for depart does not mean exact code
+or validated gameplay.
+
 ## Evidence and version boundaries
 
 Primary reference is **Android ARMv7 GOF2 HD 2.0.16**,
@@ -384,7 +429,7 @@ for this checkpoint.
 
 Full corpus: **4619 comparisons, zero skips** in both clean baseline and final.
 Overall source-shape 88.99% -> 89.06%; ordered fuzzy
-75.97% -> 76.13% (including all corpus entries).
+75.97% -> 76.14% (including all corpus entries).
 Coverage remains 4274/4524 original functions, 250 missing (7 wrong-type / 243
 absent). Final extra symbols: 129, baseline: 130. Existing coverage gaps were
 not removed from reporting.
@@ -404,18 +449,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/seventh-corpus.log`; focused log:
+Latest full log: `_work/eighth-corpus.log`; focused log:
 `_work/station-seventh-trial.log` (copied report: seventh-focused.json); native log: `_work/native-seventh.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a and bc98481c, with no new gains or losses since
-7fc7701c. The latest comparison against bc98481c preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c and 42331c92, with no new gains or losses since
+7fc7701c. The latest comparison against 42331c92 preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/seventh-gate.json, seventh-previous-gate.json and
-seventh-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/eighth-gate.json, eighth-previous-gate.json and
+eighth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `e0c80d7e71330a763da925f902a36a763c68daa7837354365b2b512a058b7976`.
+final full JSON SHA-256: `abe67bf3808e770f9b5f91e32bbe1a898ab6707bd3d2b2013740814312ab9575`.
 
 
 ### Reproduction

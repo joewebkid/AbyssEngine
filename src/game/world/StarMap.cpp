@@ -141,12 +141,14 @@ void StarMap::draw() {
         if (this->transitionIn != 0) {
             t = 1.0f - t;
         }
-        this->alpha = (int) (t * 255.0f);
+        mode = this->mode;
+        alpha = (int)(t * 255.0f);
+        this->alpha = alpha;
     }
 
     if (mode != 3 || this->transitionIn != 0 || this->transitionOut != 0) {
         Globals::Canvas->SetColor((unsigned char) (0xff), (unsigned char) (0xff), (unsigned char) (0xff),
-                          (unsigned char) (this->alpha < 34 ? this->alpha : 34));
+                          (unsigned char) (alpha < 34 ? alpha : 34));
         Array<bool> *visibility;
         for (uint32_t i = 0; i < this->systemGeoms->size(); i++) {
             visibility = Globals::status->getSystemVisibilities();
@@ -233,7 +235,7 @@ void StarMap::draw() {
             Layout *drawLayout = (Layout *) Globals::layout;
             Globals::Canvas->DrawImage2D((unsigned int) (this->systemNameImage), drawLayout->field_0x2c_rowHeight,
                                  drawLayout->field_0xc_leftMargin +
-                                 drawLayout->field_0x2c_rowHeight, (unsigned char) (0));
+                                 drawLayout->field_0x2c_rowHeight);
             int rowHeight = Globals::layout->field_0x2c_rowHeight;
             int imageWidth = Globals::Canvas->GetImage2DWidth(this->systemNameImage);
             Globals::Canvas->SetColor(255, 128, 0, (unsigned char)(this->alpha ^ 255));
@@ -249,7 +251,7 @@ void StarMap::draw() {
             int security = this->systems->data()[this->selectedSystem]->getSecurityLevel();
             Globals::Canvas->SetColor(securityColors[security][0], securityColors[security][1], securityColors[security][2], (unsigned char)(this->alpha ^ 255));
             Globals::Canvas->DrawString(Globals::font, *Globals::gameText->getText(security + 402), textX,
-                drawLayout->field_0x2c_rowHeight + drawLayout->field_0xc_leftMargin + drawLayout->field_0x4 * 2 + 2, false);
+                Globals::layout->field_0x2c_rowHeight + Globals::layout->field_0xc_leftMargin + Globals::layout->field_0x4 * 2 + 2, false);
         }
         for (uint32_t i = 0; i < this->stations->size(); i++) {
             if (i != (uint32_t) this->selectedStation) {
@@ -271,9 +273,14 @@ void StarMap::draw() {
         String cost = *Globals::gameText->getText(578) + String(" ", false) +
                       String(String(this->jumpCost) + String(" / ", false) + String(this->cargoAmount), false);
         if (this->jumpCost > this->cargoAmount) Globals::Canvas->SetColor(0xff2a00ffu);
+        unsigned int font = Globals::font;
+        PaintCanvas *canvas = Globals::Canvas;
         int *layoutWords = reinterpret_cast<int *>(Globals::layout);
-        Globals::Canvas->DrawString(Globals::font, cost,
-            layoutWords[183] + layoutWords[185] / 2 - Globals::Canvas->GetTextWidth(Globals::font, cost) / 2,
+        int footerX = layoutWords[183];
+        int footerWidth = layoutWords[185];
+        int textWidth = Globals::Canvas->GetTextWidth(Globals::font, cost);
+        layoutWords = reinterpret_cast<int *>(Globals::layout);
+        canvas->DrawString(font, cost, footerX + footerWidth / 2 - textWidth / 2,
             layoutWords[184] + layoutWords[186] - layoutWords[5], false);
         Globals::Canvas->SetColor(0xffffffffu);
     }
@@ -290,17 +297,12 @@ void StarMap::depart(bool jump) {
     }
 
     if (this->jumpMapModeA != 0) {
-        Array<Station *> *stations = this->stations;
-        Globals::status->departStation(stations->data()[selected]);
+        Globals::status->departStation(this->stations->data()[selected]);
         Level::programmedStation = nullptr;
         Level::setInitStreamOut();
         Globals::status->jumpgateUsed();
-        int used = Globals::status->getJumpgateUsed();
-        if (jump) {
-            used = this->jumpMapModeB;
-        }
-        if (jump && used != 0) {
-            int toSystem = stations->data()[selected]->getSystem();
+        if (jump && this->jumpMapModeB != 0) {
+            int toSystem = this->stations->data()[this->selectedStation]->getSystem();
             int current = Globals::status->getSystem()->getIndex();
             Level::doInstantJump = static_cast<unsigned char>(toSystem != current);
             if (toSystem != current) {
@@ -322,7 +324,7 @@ void StarMap::depart(bool jump) {
 
         Station *target = this->stations->data()[this->selectedStation];
         if (target->equals((Station *) Globals::status->getStation()) == 0) {
-            Level::programmedStation = target;
+            Level::programmedStation = this->stations->data()[this->selectedStation];
         }
 
         if (jump) {
@@ -343,24 +345,23 @@ void StarMap::depart(bool jump) {
         no_jump:
             Level::doInstantJump = 0;
         }
-        Achievements::gAchievements->resetNewMedals();
+        static_cast<Achievements *>(Globals::achievements)->resetNewMedals();
     }
 
 cleanup: {
-        Array<Station *> *stations = this->stations;
-        for (uint32_t i = 0; i < stations->size(); i++) {
+        for (uint32_t i = 0; i < this->stations->size(); i++) {
             if (i != (uint32_t) this->selectedStation) {
-                delete (*stations)[i];
-                (*stations)[i] = 0;
+                delete this->stations->data()[i];
+                this->stations->data()[i] = 0;
             }
         }
-        delete stations;
+        delete this->stations;
         this->stations = (Array<Station *> *) 0;
     }
     ((FModSound *) (Globals::sound))->stop(0x66);
     Globals::switch_to_target_setting = 1;
 
-    ApplicationManager::gAppManager->SetCurrentApplicationModule(2);
+    static_cast<ApplicationManager *>(Globals::appManager)->SetCurrentApplicationModule(2);
 }
 
 static inline float absf_end(float v) {
@@ -1516,7 +1517,6 @@ campaign_targets:
 
 int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     Matrix matrix;
-    Vector pos;
 
     Globals::Canvas->FogEnable(0, AbyssEngine::FogMode_dummy);
     this->autoMode = (uint8_t) param3;
@@ -1581,11 +1581,9 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     this->selectedSystem = Globals::status->getSystem()->getIndex();
 
     if (param3 != 0) {
-        pos = this->systemGeoms->data()[param4]->getPosition();
-        this->scratchVector = pos;
+        this->scratchVector = this->systemGeoms->data()[param4]->getPosition();
     } else if (!jumpMapMode || this->isGalaxyMode == 0) {
-        pos = this->systemGeoms->data()[this->selectedSystem]->getPosition();
-        this->scratchVector = pos;
+        this->scratchVector = this->systemGeoms->data()[this->selectedSystem]->getPosition();
     } else {
         Station *target = reinterpret_cast<Station *>(static_cast<intptr_t>(static_cast<Galaxy *>(Globals::galaxy)->getStation(mission->getTargetStation())));
         if (target && target->getSystem() >= 0) {
@@ -1596,7 +1594,9 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
         if (target != Globals::status->playerStation && target) delete target;
     }
 
-    __builtin_memcpy(&matrix, Globals::Canvas->CameraGetLocal(Globals::Canvas->CameraGetCurrent()), 0x3c);
+    PaintCanvas *cameraCanvas = Globals::Canvas;
+    unsigned int currentCamera = Globals::Canvas->CameraGetCurrent();
+    __builtin_memcpy(&matrix, cameraCanvas->CameraGetLocal(currentCamera), 0x3c);
     AbyssEngine::AEMath::MatrixSetTranslation(matrix, this->scratchVector.x, this->scratchVector.y, 0.0f);
     Globals::Canvas->CameraSetLocal(this->camera, matrix);
     this->cameraBaseX = this->scratchVector.x / 20.0f;
@@ -1604,18 +1604,19 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     if (this->mode == 3) {
         this->selectedStation = -1;
         initStarSystem();
-        this->scratchVector = this->planetGeom->getPosition();
+        this->scratchVector = this->systemGeoms->data()[this->selectedSystem]->getPosition();
         this->scratchVector.z -= 500.0f;
-        PaintCanvas *cameraCanvas = Globals::Canvas;
-        Matrix cameraMatrix = *static_cast<Matrix *>(cameraCanvas->CameraGetLocal(cameraCanvas->CameraGetCurrent()));
-        cameraMatrix.m[11] = this->scratchVector.z;
-        Globals::Canvas->CameraSetLocal(this->camera, cameraMatrix);
+        cameraCanvas = Globals::Canvas;
+        currentCamera = Globals::Canvas->CameraGetCurrent();
+        __builtin_memcpy(&matrix, cameraCanvas->CameraGetLocal(currentCamera), 0x3c);
+        matrix.m[11] = this->scratchVector.z;
+        Globals::Canvas->CameraSetLocal(this->camera, matrix);
     } else {
         this->lastSelectedSystem = this->selectedSystem;
         Array<Station *> *stations = this->stations;
         if (stations != 0) {
             ArrayReleaseClasses(*stations);
-            delete stations;
+            if (this->stations != 0) delete this->stations;
             this->stations = (Array<Station *> *) 0;
         }
         this->stations = new Array<Station *>();
@@ -1695,7 +1696,9 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     this->keyBoxWidth = 0;
     static const int keyTextIds[6] = {0x190, 0x191, 0x223, 0x22c, 0x22b, 0x112};
     for (int i = 0; i < 6; i++) {
-        int width = Globals::Canvas->GetTextWidth((unsigned int) (long) (Globals::font),
+        unsigned int keyFont = Globals::font;
+        PaintCanvas *keyCanvas = Globals::Canvas;
+        int width = keyCanvas->GetTextWidth(keyFont,
                                                                     *((GameText *) (Globals::gameText))->getText(
                                                                         keyTextIds[i]));
         if (this->keyBoxWidth < width) {
