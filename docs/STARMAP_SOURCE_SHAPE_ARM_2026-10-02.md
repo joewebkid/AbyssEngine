@@ -872,6 +872,47 @@ corpus: 4619 comparisons, zero skips. Baseline and checkpoint c8b7e875 gates
 preserve all exact pairs (2083 linked / 960 byte), with zero losses. Default
 99% gate exits 1 with its threshold message. Native runtime remains untested.
 
+## Follow-up after checkpoint cf030a4e
+
+Two evidence-guided source hypotheses were tested and rejected. Production
+StarMap.cpp is restored exactly to cf030a4e; no metric gain is claimed.
+
+- OnTouchEnd passenger warning: original cb464 compares #9 and cb466 uses
+  BLE, while the retained object compares #10 at 2460 and uses BLT at 2462.
+  These signed integer predicates are equivalent. Splitting the combined
+  mission-91/94 condition into an explicit high-capacity continuation to
+  mission 94 still generated the same #10/BLT sequence and identical focused
+  JSON. The added label/nesting was removed. This is not a reason to force
+  registers, flags, artificial calls or arithmetic into the source.
+- drawOnScreenInfo: IDA's system target expression places missionTarget on
+  the left of bitwise OR. Swapping the two Boolean operands was tested
+  without changing call count or mission behavior. Entire focused JSON and
+  ARM object SHA-256 remained identical. The simpler retained expression
+  was restored; IDA spelling is not proof of original C++ source spelling.
+
+Read-only direct ARM review also confirms that the retained freighter marker
+paths capture Status before station-index/warp-gate getter calls (original
+c855c before c8564 and c85b8 before c85c0; current e5c before e62 and eba
+before ec0). Mission-163 loop bound already uses CMP index,count/BCC
+(original c8670/c8672, current f6c/f6e). Freelance/pending-product selection
+matches the reviewed getter ordering; no unverified source adjustment is
+retained for those reads. This review does not prove entire-function equality.
+
+Packages: _work/passenger-twentyfirst.json/log/asm,
+_work/target-or-twentyfirst.json/log, before-passenger-twentyfirst.cpp and
+before-target-or-twentyfirst.cpp. Final restored package:
+_work/twentyfirst-restored-focused.json/log. A fresh rebuild compiled all 204
+ARM translation units with zero failures, compared 22 symbols with zero skips,
+and produced byte-identical raw focused JSON to _work/final-focused.json.
+Restored StarMap.o SHA-256 equals the accepted checkpoint:
+d7d0ea4bee4c66d8cc336a177ab18134b036fb6af4d30cf084775dfd011c1a5c.
+
+The native static-library and full-corpus checks from cf030a4e therefore remain
+the latest accepted production validation; no new native/full run is claimed
+for rejected trials. Fixed means stay 99.095% / 98.25001%, with weighted
+threshold unmet. This follow-up commits only this evidence report. There is
+no basis here to declare a compiler ceiling or relax the 99% objective.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
