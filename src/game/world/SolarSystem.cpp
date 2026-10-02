@@ -9,8 +9,8 @@ SolarSystem::SolarSystem(int unk0, String displayName, int security,
                          int jumpgateId, int texture, int *starRGB,
                          Array<int> *stations, Array<int> *linkedSystems,
                          Array<int> *forbidden) {
-    this->name = displayName;
     this->systemId = unk0;
+    this->name = String(displayName, false);
     this->visible = isVisible;
     this->securityLevel = security;
     this->faction = factionId;
