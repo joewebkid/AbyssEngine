@@ -49,6 +49,10 @@ Additional ARM contracts: the shared ammo tail contains one Item::changeAmount c
 
 Rejected follow-up forms: expanded weapon classification and an unsigned rejectBox mask did not improve source-shape; both were removed. Naming the scatter distance as an int reproduces the original single conversion but emitted identical instructions. These distinctions are recorded rather than treating every source edit as a score improvement.
 
+Typed-access follow-up: Gun methods now access the active position/direction/up/hit Array<Vector> members directly. The Vector stored at 0x90 has a typed `homingDirection` member and an ARM offset assertion; its legacy integer aliases remain for BeamGun's existing address-based access. The semantic name is inferred from use, while the Vector type and offset are proven by the native assignment calls. Weapon-range subtractions now convert to unsigned before subtraction, matching ARM wraparound without signed-overflow undefined behavior. These changes leave the measured ARM body scores unchanged and are not credited as a percentage gain.
+
+Rejected word-flag experiments: combining radial/particle predicates with bitwise OR changed compiler output but reduced collision source-shape (95.9%, 95.6%, 96.1% versus retained 96.6%); none was retained. A copied-back source initially preserved its earlier timestamp and caused an incremental build to reuse a rejected object. That diagnostic was discarded; source timestamps were refreshed and ARM/native checks rerun before recording this checkpoint. The final object is newer than the final source/header. Host checks use the active typed array/Vector members rather than reading inactive legacy aliases.
+
 Rejected experiment: declarations suppressing template emission did not improve the constructor under the canonical flags. They were removed. No volatile access, assembly padding, injected register moves or shared metric normalization was introduced. Source-shape still depends on compiler output and is not equivalent to byte identity.
 
 ## Checks and limits

@@ -189,7 +189,7 @@ void Gun::ignite() {
             if (weaponType == ITEM_SORT_EMP_BOMB && target->isAsteroid()) continue;
             if (!target->isActive()) continue;
             for (unsigned i = 0; i < count; ++i) {
-                Vector difference = reinterpret_cast<Vector *>(positions)[i];
+                Vector difference = positionArray[i];
                 basePos = difference;
                 Vector targetPosition = target->getPosition();
                 targetDir = targetPosition;
@@ -197,7 +197,7 @@ void Gun::ignite() {
                 int distance = static_cast<int>(VectorLength(targetDir));
                 if (magnitude > distance) {
                     hitFlags[i] = 1;
-                    reinterpret_cast<Vector *>(hitPositions)[i] = basePos;
+                    hitArray[i] = basePos;
                     int range = magnitude;
                     float numerator = static_cast<float>(range - distance);
                     float denominator = static_cast<float>(range);
@@ -211,7 +211,7 @@ void Gun::ignite() {
                         if (force < 0.0f) scale = 0.0f;
                     }
                     int emp = (*static_cast<Array<Item *> *>(Globals::items))[itemIndex]->getAttribute(10);
-                    unsigned kind = weaponType - 11;
+                    unsigned kind = static_cast<unsigned>(weaponType) - 11u;
                     if ((kind <= 31 && ((1u << kind) & 0x80800001u)) || weaponType == ITEM_SORT_NUKE) {
                         if (emp != -979797979) target->setEmpForce(scale * emp);
                         target->setBombForce(scale);
@@ -220,7 +220,7 @@ void Gun::ignite() {
                             target->damage(static_cast<int>(scale * damage), friendGun, itemIndex);
                             if (target->isGasCloud() && weaponType == ITEM_SORT_IONIZING_MISSILE)
                                 static_cast<PlayerGasCloud *>(target->getKIPlayer())->explode(itemIndex,
-                                    reinterpret_cast<Vector *>(positions)[i], static_cast<float>(magnitude));
+                                    positionArray[i], static_cast<float>(magnitude));
                             if (itemIndex == 179 && target->isAsteroid()) {
                                 if (scale * damage >= target->getHitpoints() && !static_cast<Achievements *>(Globals::achievements)->hasMedal(44, 1)) {
                                     auto *statusBytes = reinterpret_cast<char *>(Globals::status);
@@ -244,7 +244,7 @@ void Gun::ignite() {
                     Vector normalized = VectorNormalize(targetDir);
                     targetDir = normalized;
                     target->setHitVector(targetDir.x, targetDir.y, targetDir.z);
-                    Vector projectileSpeed = reinterpret_cast<Vector *>(velocities)[i];
+                    Vector projectileSpeed = directionArray[i];
                     targetDir = projectileSpeed;
                     Vector normalizedSpeed = VectorNormalize(targetDir);
                     targetDir = normalizedSpeed;
@@ -289,9 +289,9 @@ Gun::Gun(int kind, int p2, int count, int p4, int p5, int p6, float p7, Vector d
     this->offset.x = 0;
     this->offset.y = 0;
     this->offset.z = 0;
-    this->field_0x90 = 0;
-    this->field_0x94 = 0;
-    this->field_0x98 = 0;
+    this->homingDirection.x = 0;
+    this->homingDirection.y = 0;
+    this->homingDirection.z = 0;
     this->level = 0;
     this->lifetimes = 0;
     this->enemies = 0;
@@ -340,7 +340,7 @@ Gun::Gun(int kind, int p2, int count, int p4, int p5, int p6, float p7, Vector d
     ArraySetLength(count, this->hitArray);
     ArraySetLength(count, *this->wobbleOffsets);
     for (int i = 0; i < count; i = i + 1) {
-        reinterpret_cast<Vector *>(this->positions)[i].x = 50000.0f;
+        positionArray[i].x = 50000.0f;
         this->lifetimes[i] = -1000000;
         this->hitFlags[i] = 0;
         this->wobbleOffsets->data_[i] = 0;
@@ -408,37 +408,37 @@ void Gun::update(int dt) {
         for (unsigned i = 0; i < count; ++i) {
             int remaining = lifetimes[i];
             int threshold = 0;
-            if (static_cast<unsigned>(weaponType - ITEM_SORT_ROCKET) < 2 ||
+            if ((static_cast<unsigned>(weaponType) - ITEM_SORT_ROCKET) < 2 ||
                 weaponType == ITEM_SORT_CLUSTER_MISSILE) threshold = -2000;
             if (remaining > threshold) {
                 lifetimes[i] = remaining - dt;
                 if (weaponType == ITEM_SORT_MINE) {
-                    Vector step = reinterpret_cast<Vector *>(velocities)[i] * fdt;
+                    Vector step = directionArray[i] * fdt;
                     float fade = static_cast<float>(initialLifetime - lifetimes[i]) / -500.0f + 1.0f;
                     if (fade < 0.0f) fade = 0.0f;
                     Vector scaled = step * fade;
-                    reinterpret_cast<Vector *>(positions)[i] += scaled;
+                    positionArray[i] += scaled;
                 } else {
-                    Vector scaled = reinterpret_cast<Vector *>(velocities)[i] * fdt;
-                    reinterpret_cast<Vector *>(positions)[i] += scaled;
+                    Vector scaled = directionArray[i] * fdt;
+                    positionArray[i] += scaled;
                 }
                 remaining = lifetimes[i];
                 if (remaining <= 0) {
-                    unsigned kind = weaponType - 6;
+                    unsigned kind = static_cast<unsigned>(weaponType) - 6u;
                     if (kind <= 0x1c && ((1u << kind) & 0x10000003u)) {
                         ignite();
                         remaining = lifetimes[i];
                     }
                     if (remaining <= -2000 &&
-                        (static_cast<unsigned>(weaponType - ITEM_SORT_ROCKET) < 2 ||
+                        ((static_cast<unsigned>(weaponType) - ITEM_SORT_ROCKET) < 2 ||
                          weaponType == ITEM_SORT_CLUSTER_MISSILE))
                         *reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::status) + 0x12c) = 0;
                 }
                 if (weaponType == ITEM_SORT_SHOCK_BLAST) ignite();
             } else {
-                auto &position = reinterpret_cast<Vector *>(positions)[i];
+                auto &position = positionArray[i];
                 position.x = position.y = position.z = 50000.0f;
-                auto &speed = reinterpret_cast<Vector *>(velocities)[i];
+                auto &speed = directionArray[i];
                 speed.x = speed.y = speed.z = 0.0f;
             }
         }
@@ -447,7 +447,7 @@ void Gun::update(int dt) {
 
 void Gun::translate(const Vector &v) {
     for (unsigned i = 0; i < this->count; i = i + 1) {
-        reinterpret_cast<Vector *>(this->positions)[i] += v;
+        positionArray[i] += v;
     }
 }
 
@@ -483,18 +483,18 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         int selected = fireIndex;
         lifetimes[0] = initialLifetime;
         if (selected <= -1) {
-            *reinterpret_cast<Vector *>(&field_0x90) = level->getPlayer()->geometry->getDirection();
+            homingDirection = level->getPlayer()->geometry->getDirection();
             Vector pos = level->getPlayer()->getPosition();
             Vector dir = level->getPlayer()->geometry->getDirection();
-            *reinterpret_cast<Vector *>(positions) = pos + 30000.0f * dir;
-            *reinterpret_cast<Vector *>(velocities) = level->getPlayer()->geometry->getDirection();
+            positionArray[0] = pos + 30000.0f * dir;
+            directionArray[0] = level->getPlayer()->geometry->getDirection();
             field_0x8c = 30000;
         } else {
             Player *enemy = (*enemies)[fireIndex];
             Vector difference = enemy->getPosition() - level->getPlayer()->getPosition();
-            *reinterpret_cast<Vector *>(&field_0x90) = VectorNormalize(difference);
-            *reinterpret_cast<Vector *>(positions) = (*enemies)[fireIndex]->getPosition();
-            *reinterpret_cast<Vector *>(velocities) = level->getPlayer()->geometry->getDirection();
+            homingDirection = VectorNormalize(difference);
+            positionArray[0] = (*enemies)[fireIndex]->getPosition();
+            directionArray[0] = level->getPlayer()->geometry->getDirection();
             field_0x8c = nearest;
         }
         return true;
@@ -502,7 +502,7 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
     bool fired = false;
     for (unsigned i = 0; i < count; ++i) {
         int threshold = 0;
-        if (static_cast<unsigned>(weaponType - ITEM_SORT_ROCKET) < 2 ||
+        if ((static_cast<unsigned>(weaponType) - ITEM_SORT_ROCKET) < 2 ||
             weaponType == ITEM_SORT_CLUSTER_MISSILE) threshold = -2000;
         if (lifetimes[i] > threshold ||
             (weaponType == ITEM_SORT_SENTRY_GUN && level->field_6c > 2)) continue;
@@ -511,7 +511,7 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         active = 1;
         hitSmall = 1;
         *reinterpret_cast<unsigned *>(&_pad_0xa0) = i;
-        reinterpret_cast<Vector *>(positions)[i] = MatrixGetPosition(m);
+        positionArray[i] = MatrixGetPosition(m);
         Vector zero{0, 0, 0};
         if (offset != zero) {
             if (weaponType != ITEM_SORT_SHOCK_BLAST) {
@@ -522,14 +522,14 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
                         field_0xa6 ^= 1;
                     }
                     Vector displacement = MatrixRotateVector(m, targetDir);
-                    reinterpret_cast<Vector *>(positions)[i] += displacement;
+                    positionArray[i] += displacement;
                 }
                 if (field_0xa5 && field_0xa6) {
                     targetDir = offset;
                     if (field_0xa7) targetDir.y = -targetDir.y;
                     field_0xa7 ^= 1;
                     Vector displacement = MatrixRotateVector(m, targetDir);
-                    reinterpret_cast<Vector *>(positions)[i] += displacement;
+                    positionArray[i] += displacement;
                 }
             }
         }
@@ -547,19 +547,19 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         }
         Vector rotatedLaunch = MatrixRotateVector(m, velocity);
         launch += rotatedLaunch;
-        reinterpret_cast<Vector *>(velocities)[i] = launch;
-        reinterpret_cast<Vector *>(upVectors)[i] = MatrixGetUp(m);
+        directionArray[i] = launch;
+        upArray[i] = MatrixGetUp(m);
         float error = errorMagnitudePercentage;
         if (error > 0.0f) {
             int random = static_cast<AERandom *>(Globals::rnd)->nextInt(static_cast<int>(error));
             float half = error * 0.005f;
-            reinterpret_cast<Vector *>(velocities)[i].x += random * 0.01f - half;
-            reinterpret_cast<Vector *>(velocities)[i].y += static_cast<AERandom *>(Globals::rnd)->nextInt(static_cast<int>(errorMagnitudePercentage)) * 0.01f - half;
-            reinterpret_cast<Vector *>(velocities)[i].z += static_cast<AERandom *>(Globals::rnd)->nextInt(static_cast<int>(errorMagnitudePercentage)) * 0.01f - half;
+            directionArray[i].x += random * 0.01f - half;
+            directionArray[i].y += static_cast<AERandom *>(Globals::rnd)->nextInt(static_cast<int>(errorMagnitudePercentage)) * 0.01f - half;
+            directionArray[i].z += static_cast<AERandom *>(Globals::rnd)->nextInt(static_cast<int>(errorMagnitudePercentage)) * 0.01f - half;
         }
-        Vector normalized = VectorNormalize(reinterpret_cast<Vector *>(velocities)[i]);
-        reinterpret_cast<Vector *>(velocities)[i] = normalized;
-        reinterpret_cast<Vector *>(velocities)[i] *= pitchRate;
+        Vector normalized = VectorNormalize(directionArray[i]);
+        directionArray[i] = normalized;
+        directionArray[i] *= pitchRate;
         lifetimes[i] = weaponType == ITEM_SORT_SENTRY_GUN ? 0 : initialLifetime;
         unsigned keepAmmo = 1;
         if (!friendGun && equipment && ammoCount >= 1 && equipment->getType() == 1) {
@@ -595,10 +595,10 @@ void Gun::calcCharacterCollision() {
     using namespace AbyssEngine::AEMath;
     if (!enemies) return;
     int kind = weaponType;
-    unsigned radial = static_cast<unsigned>(kind - 6) < 2 || kind == 42 || kind == 34;
+    unsigned radial = (static_cast<unsigned>(kind) - 6u) < 2 || kind == 42 || kind == 34;
     unsigned mine = kind == 11;
     unsigned scatter = kind == 25;
-    unsigned particle = radial || static_cast<unsigned>(kind - 4) < 2 || kind == 40;
+    unsigned particle = radial || (static_cast<unsigned>(kind) - 4u) < 2 || kind == 40;
     unsigned detonate = radial | mine;
     lastHitKIPlayer = 0;
     for (unsigned enemyIndex = 0; enemyIndex < enemies->size(); ++enemyIndex) {
@@ -607,8 +607,8 @@ void Gun::calcCharacterCollision() {
             (enemy->getKIPlayer() && enemy->getKIPlayer()->field_0x41))) continue;
         if (!enemy->isActive() || enemy->getHitpoints() < 1) continue;
         for (unsigned i = 0; i < count; ++i) {
-            Vector position = reinterpret_cast<Vector *>(positions)[i];
-            Vector speed = reinterpret_cast<Vector *>(velocities)[i];
+            Vector position = positionArray[i];
+            Vector speed = directionArray[i];
             Vector center = MatrixGetPosition(enemy->transformMatrix);
             int radius = useCustomRadius ? customRadius : enemy->radius;
             if (mine) radius *= 5;
@@ -650,7 +650,7 @@ collided:
                     enemy->damage(9999, false, itemIndex);
                     bool otherMedal = true;
                     if (!static_cast<Achievements *>(Globals::achievements)->hasMedal(41, 1) &&
-                        (static_cast<unsigned>(weaponType - 4) < 2 || weaponType == 40 || weaponType == 34)) {
+                        ((static_cast<unsigned>(weaponType) - 4u) < 2 || weaponType == 40 || weaponType == 34)) {
                         otherMedal = false;
                         char *status = reinterpret_cast<char *>(Globals::status);
                         int &progress = *reinterpret_cast<int *>(status + 0x12c);
@@ -691,10 +691,10 @@ collided:
                 }
                 Vector difference = center - position;
                 Vector normalized = VectorNormalize(difference);
-                reinterpret_cast<Vector *>(velocities)[i] = normalized;
-                Vector movement = reinterpret_cast<Vector *>(velocities)[i] * pitchRate;
+                directionArray[i] = normalized;
+                Vector movement = directionArray[i] * pitchRate;
                 Vector scaledMovement = movement * 100.0f;
-                reinterpret_cast<Vector *>(positions)[i] += scaledMovement;
+                positionArray[i] += scaledMovement;
                 return;
             }
             if (detonate) { ignite(); return; }
@@ -738,7 +738,7 @@ collided:
             }
             if (scatter) {
                 hitFlags[i] = 1;
-                reinterpret_cast<Vector *>(hitPositions)[i] = position;
+                hitArray[i] = position;
                 for (unsigned k = 0; k < enemies->size(); ++k) {
                     Player *nearby = (*enemies)[k];
                     Vector difference = nearby->getPosition();

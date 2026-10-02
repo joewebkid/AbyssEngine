@@ -84,9 +84,14 @@ public:
     uint8_t ignited;
     char field_0x89;
     int32_t field_0x8c;
-    int field_0x90;
-    int field_0x94;
-    int field_0x98;
+    union {
+        Vector homingDirection;
+        struct {
+            int field_0x90;
+            int field_0x94;
+            int field_0x98;
+        };
+    };
     int fireIndex;
     uint8_t _pad_0xa0[4];
 
@@ -186,6 +191,7 @@ static_assert(offsetof(Gun, geometries) == 0x10c, "Gun::geometries offset");
 static_assert(offsetof(Gun, field_0x20) == 0x20, "Gun::field_0x20 offset");
 static_assert(offsetof(Gun, field_0x2c) == 0x2c, "Gun::field_0x2c offset");
 static_assert(offsetof(Gun, level) == 0x38, "Gun::level offset");
+static_assert(offsetof(Gun, homingDirection) == 0x90, "Gun::homingDirection offset");
 static_assert(offsetof(Gun, lifetimes) == 0x3c, "Gun::lifetimes offset");
 static_assert(offsetof(Gun, hitFlags) == 0x40, "Gun::hitFlags offset");
 static_assert(offsetof(Gun, fireDelay) == 0x48, "Gun::fireDelay offset");
