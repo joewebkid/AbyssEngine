@@ -1287,10 +1287,14 @@ void StarMap::initStarSystem() {
     this->planetGeom->setPosition(this->systemGeoms->data()[this->selectedSystem]->getPosition());
     this->planetGeom->setRotation(0.0f, 0.0f, 0.0f);
     if (this->systems->data()[this->selectedSystem]->getTextureIndex() == 15) {
-        float scale = 0.007f;
-        if (Globals::status->getCurrentCampaignMission() > 105)
-            scale = Globals::status->getCurrentCampaignMission() > 157 ? 0.004f : 0.01f;
-        this->planetGeom->setScaling(scale, scale, scale);
+        if (Globals::status->getCurrentCampaignMission() <= 105) {
+            this->planetGeom->setScaling(0.007f, 0.007f, 0.007f);
+        } else {
+            int campaign = Globals::status->getCurrentCampaignMission();
+            AEGeometry *planetGeom = this->planetGeom;
+            if (campaign <= 157) planetGeom->setScaling(0.01f, 0.01f, 0.01f);
+            else planetGeom->setScaling(0.004f, 0.004f, 0.004f);
+        }
     } else {
         this->planetGeom->setScaling(0.004f, 0.004f, 0.004f);
     }

@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.000% unweighted / 98.12905% original-instruction
+implementation bodies measure **99.030% unweighted / 98.18904% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**85.760% / 78.24778%**, respectively. Source-shape is an inventory/control-flow
+**85.845% / 78.41776%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -759,6 +759,46 @@ gates against clean baseline and 613af2c6 pass with zero losses: 2083 linked /
 960 byte. Default 99% gate remains FAIL because the weighted mean is below 99,
 with the expected threshold message. No native executable/runtime test claimed.
 
+## Follow-up after checkpoint f9e870cf
+
+Only initStarSystem's texture-15 planet-scale branch changes. The retained code
+computed one float scale through a default and a ternary. Direct Android ARM
+c7bf6..c7c32 instead takes the <=105 path first, reads campaign again only on
+its >105 path, then reads planetGeom before comparing the second result to 157.
+The result selects 0.01/0.004 with ITE LE and LDRLE/LDRGT; the low path uses
+0.007. The non-texture-15 path retains its separate 0.004 scaling call.
+
+Source now spells those branches as direct setScaling calls and captures the
+second campaign result and subsequent planetGeom read locally. This preserves
+thresholds, repeated getter calls, pointer reload after that getter, and scaling
+values. It does not prove original C++ spelling. No shared Matrix, Array,
+compiler/profile/verifier files are changed.
+
+Two focused packages were measured:
+- _work/station-scale-eighteenth.json/log: explicit high/low scale calls with
+  the >105 path written first: source 96.3% -> 96.6%, strict 82.0% -> 82.1%,
+  instructions 710/680 -> 710/679.
+- _work/station-scale-order-eighteenth.json/log: <=105 path first, accepted:
+  source 96.9%, strict 83.7%, 710/679. All other focused rows are unchanged.
+
+The final object (_work/eighteenth-current.asm) emits CMP #105/BGT at
+3022/3024, reads planetGeom at 3048 after the second campaign call at 3042,
+then CMP #157/ITE LE/LDRLE/LDRGT at 304c..3052. These correspond to Android
+c7bfc/c7bfe, c7c22 after c7c1c, and c7c26..c7c2c. Source means are
+99.030% / 98.18904%; strict means are 85.845% / 78.41776%. Both >=99 are
+still required; the weighted threshold remains unmet.
+Accepted StarMap.o SHA-256:
+32aad49ebce037cd4761026f8f74717d57b5f7e2a9f4d27f5a48c75c6cd01cb6.
+Original evidence: _work/station-original-direct.asm, station-android.c (IDA
+crosscheck); previous inputs: _work/checkpoint17-focused.json/corpus.json.
+
+Validation: all 204 ARM TUs compiled, zero failures; native gof2 static-library
+build passed; complete full corpus has 4619 comparisons and zero skips. Baseline
+and f9e870cf exact-pair gates pass with zero losses (2083 linked / 960 byte).
+Default 99% gate fails with the expected threshold message because the weighted
+mean is below 99. Its remaining deficit is 0.81095620 percentage points. No
+native executable/runtime test is claimed.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -796,18 +836,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/seventeenth-corpus.log`; focused log:
-`_work/init-width-seventeenth.log`; native log: `_work/native-seventeenth.log`.
+Latest full log: `_work/eighteenth-corpus.log`; focused log:
+`_work/station-scale-order-eighteenth.log`; native log: `_work/native-eighteenth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3 and 613af2c6, with no new gains or losses since
-7fc7701c. The latest comparison against 613af2c6 preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6 and f9e870cf, with no new gains or losses since
+7fc7701c. The latest comparison against f9e870cf preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/seventeenth-gate.json, seventeenth-previous-gate.json and
-seventeenth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/eighteenth-gate.json, eighteenth-previous-gate.json and
+eighteenth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `35944b8d25ea163e754ac8f0eaca03a24dd25ba544269a81ecb2b470930898e5`.
+final full JSON SHA-256: `d764429d2c6b0e74de8202f62eb3962e9c6c64722fefd82f3fc7a35fb3b41244`.
 
 
 ### Reproduction
@@ -843,7 +883,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.5% | 82.1% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.0% | 89.1% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/736 | 72.9% | 98.3% | 77.0% | - |
-| `_ZN7StarMap14initStarSystemEv` | 710/680 | 80.9% | 96.3% | 82.0% | - |
+| `_ZN7StarMap14initStarSystemEv` | 710/679 | 80.9% | 96.9% | 83.7% | - |
 | `_ZN7StarMapC1EbP7Missionbi` | 333/332 | 85.1% | 98.0% | 84.2% | - |
 | `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 99.3% | 97.4% | - |
 | `_ZN7StarMap11OnTouchMoveEii` | 265/255 | 81.3% | 98.4% | 79.2% | - |
