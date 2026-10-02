@@ -287,3 +287,39 @@ Full strict/source means remain 75.98% / 88.99%. Local full evidence:
 `9fe384f4fc0c963410fc0b6c18fceda10bdfb1cbbd10e905dbefc1e89182dfc2`;
 `component_three.json`, component_full_build.log, component_full_verify.log,
 component_native.log and component_smoke.exe. The >=99.0% criterion is unmet.
+
+## Continuation: compressed UV destination read
+
+Primary ARM `0x6c92c` loads the captured Mesh's texCoords inside the compressed
+UV conversion loop. Restore this field read instead of retaining the destination
+pointer before the loop. Source shape rises ReadData 96.5 -> 97.0; strict
+49.8 -> 52.6; focused compiled instruction count is 879 (original 873).
+Remove the now-unused cached pointer declaration. This is an original operand
+read-order restoration, not a changed formula or a new call.
+
+Additional rejected trials: flat MeshCreate failure flow (95.8 / 59.2; no source
+gain), explicit preloads of all signature bytes (95.8 / 58.9; unchanged), earlier
+bounds-minimum capture (Read 96.3 / 49.8), color destination reread (96.9 / 52.4),
+color count capture (96.7 / 52.7), both color changes (96.6 / 51.5), and float-UV
+flip pointer/count restoration (96.9 / 52.5). Read trials other than bounds
+capture include the accepted compressed UV change. Rejected edits were restored.
+No Image/Texture blocks, headers, helper bodies, matcher or flags changed.
+
+Native static-library build passes. The existing parser smoke's Mesh.cpp source
+is unchanged since the preceding successful run. It still does not execute
+MeshReadData's UV loop. Fresh full ARM validation passes: 204/204 TUs, 4,619 comparisons, zero skips.
+Both exact sets equal the clean baseline: linked 2,079 / raw 959; lost [] and
+gained [] for each. The other 202 objects remain byte-identical to baseline.
+The focused and fully rebuilt AbyssEngine objects are byte-identical.
+
+Next-search constraint: holding Create at 95.8, even two perfect remaining
+bodies yield only 98.60 unweighted. Create must improve (at least 97.0 if
+both other bodies were perfect) for the requested two-mean gate. This is an
+arithmetic bound on the current scores, not a compiler-ceiling claim.
+
+Current fixed-three scores: Create 95.8 / Read 97.0 / Enhanced 97.4 source.
+Means are **96.73% unweighted / 96.95% weighted**. Full strict/source remain
+75.98% / 88.99%. Evidence: `_work/uv_full.json` SHA-256
+`e782a10c04758934c206d532ae5ca6b4010de4430fe25d29e4d3bb9628dc8f60`;
+uv_three.json, uv_full_build.log, uv_full_verify.log and uv_native.log.
+The >=99.0% gate is not achieved. No push, PR or merge was performed.

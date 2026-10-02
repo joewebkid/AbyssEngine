@@ -888,12 +888,12 @@ namespace AbyssEngine {
                 m = *slot;
                 const bool flip = Engine::enableShader != 0;
                 short *rawShorts = (short *) raw;
-                float *uvFloats = (float *) m->texCoords;
+
                 vcount = m->vertexCount;
                 const double scale = 1.0 / 4096.0;
                 for (unsigned int i = 0; i < (vcount << 1); i += 2) {
                     double u = (double) rawShorts[i] * scale;
-                    float *p = uvFloats + i;
+                    float *p = (float *) m->texCoords + i;
                     p[0] = (float) u;
                     double v = (double) rawShorts[i + 1] * scale;
                     double vv = flip ? (1.0 - v) : v;
