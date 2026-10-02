@@ -116,7 +116,7 @@ public:
     uint8_t playerGun;
     int slotIndex;
     uint8_t levelCollision;
-    uint8_t friendGun;
+    bool friendGun;
     float errorMagnitudePercentage;
     int magnitude;
     int customRadius;

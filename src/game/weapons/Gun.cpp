@@ -203,7 +203,7 @@ void Gun::ignite() {
                         force = static_cast<float>(10000 - distance) / 10000.0f;
                     else force = static_cast<float>(magnitude - distance) / static_cast<float>(magnitude);
                     float scale = 1.0f;
-                    if (force <= 1.0f) {
+                    if (!(force > 1.0f)) {
                         scale = force;
                         if (force < 0.0f) scale = 0.0f;
                     }
@@ -443,9 +443,8 @@ void Gun::update(int dt) {
 }
 
 void Gun::translate(const Vector &v) {
-    Vector *positions = reinterpret_cast<Vector *>(this->positions);
     for (unsigned i = 0; i < this->count; i = i + 1) {
-        positions[i] += v;
+        reinterpret_cast<Vector *>(this->positions)[i] += v;
     }
 }
 
@@ -593,11 +592,11 @@ void Gun::calcCharacterCollision() {
     using namespace AbyssEngine::AEMath;
     if (!enemies) return;
     int kind = weaponType;
-    bool radial = static_cast<unsigned>(kind - 6) < 2 || kind == 42 || kind == 34;
-    bool mine = kind == 11;
-    bool scatter = kind == 25;
-    bool particle = radial || static_cast<unsigned>(kind - 4) < 2 || kind == 40;
-    bool detonate = radial || mine;
+    unsigned radial = static_cast<unsigned>(kind - 6) < 2 || kind == 42 || kind == 34;
+    unsigned mine = kind == 11;
+    unsigned scatter = kind == 25;
+    unsigned particle = radial || static_cast<unsigned>(kind - 4) < 2 || kind == 40;
+    unsigned detonate = radial | mine;
     lastHitKIPlayer = 0;
     for (unsigned enemyIndex = 0; enemyIndex < enemies->size(); ++enemyIndex) {
         Player *enemy = (*enemies)[enemyIndex];
@@ -613,13 +612,14 @@ void Gun::calcCharacterCollision() {
             else if (scatter) {
                 Vector difference = center - reinterpret_cast<Level *>(static_cast<intptr_t>(level))->getPlayer()->getPosition();
                 int distance = static_cast<int>(VectorLength(difference));
+                float factor;
                 if (enemy->getKIPlayer() && enemy->getKIPlayer()->_pad_0x71)
-                    radius = static_cast<int>(radius * 0.5f);
+                    factor = radius * 0.5f;
                 else if (distance < 20001) {
-                    float factor = radius * 1.5f;
+                    factor = radius * 1.5f;
                     if (distance > 10000) factor = static_cast<float>(radius * 2);
-                    radius = static_cast<int>(factor);
-                } else radius = radius * 3;
+                } else factor = static_cast<float>(radius * 3);
+                radius = static_cast<int>(factor);
             }
             KIPlayer *ki = enemy->getKIPlayer();
             if (!reinterpret_cast<unsigned char *>(&enemy->empDisabled)[1] && (!ki || !reinterpret_cast<unsigned char *>(&ki->field_0x8c)[0])) continue;
@@ -632,11 +632,11 @@ void Gun::calcCharacterCollision() {
                 float extent = static_cast<float>(radius);
                 float negativeExtent = static_cast<float>(-radius);
                 float x = (center.x - position.x) + speed.x;
-                if (x >= extent || x <= negativeExtent) continue;
+                if (!(x < extent) || !(x > negativeExtent)) continue;
                 float y = (center.y - position.y) + speed.y;
-                if (y >= extent || y <= negativeExtent) continue;
+                if (!(y < extent) || !(y > negativeExtent)) continue;
                 float z = (center.z - position.z) + speed.z;
-                if (rejectBox || z >= extent || z <= negativeExtent) continue;
+                if (rejectBox | !(z < extent) | !(z > negativeExtent)) continue;
             }
 collided:
             if (enemy->isAsteroid()) {
@@ -683,8 +683,8 @@ collided:
                 Vector normalized = VectorNormalize(difference);
                 reinterpret_cast<Vector *>(velocities)[i] = normalized;
                 Vector movement = reinterpret_cast<Vector *>(velocities)[i] * pitchRate;
-                movement = movement * 100.0f;
-                reinterpret_cast<Vector *>(positions)[i] += movement;
+                Vector scaledMovement = movement * 100.0f;
+                reinterpret_cast<Vector *>(positions)[i] += scaledMovement;
                 return;
             }
             if (detonate) { ignite(); return; }
@@ -735,7 +735,7 @@ collided:
                     if (magnitude > static_cast<int>(distance)) {
                         float scale = 1.0f;
                         float force = static_cast<float>(magnitude - static_cast<int>(distance)) / magnitude;
-                        if (force <= 1.0f) {
+                        if (!(force > 1.0f)) {
                             scale = force;
                             if (force < 0.0f) scale = 0.0f;
                         }
