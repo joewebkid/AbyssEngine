@@ -1400,3 +1400,38 @@ Fixed scores stay Create 98.4, Read 97.5, Enhanced 97.9. Original instruction
 weights remain 291/873/636, total 1,800. Means **97.933333% unweighted /
 97.786833% weighted** (97.93/97.79 displayed) remain below both >=99.0% gates.
 The goal stays active; this semantic correction does not establish a compiler ceiling.
+
+## Continuation: full-diagonal temporary lifetimes
+
+Six valid source trials start from `a773d118` and preserve the now-verified
+full max-minus-min diagonal. They keep the center arithmetic, helper calls,
+file reads and cleanup unchanged; none improves the requested source score.
+
+| Trial | Read source / strict | Compiled instructions |
+|---|---|---:|
+| Float center in a nested scope | 97.5 / 55.6 | 869 |
+| Vector center in a nested scope | 97.5 / 55.6 | 869 |
+| Declare minimum copy before maximum copy | 97.5 / 55.6 | 869 |
+| Copy both extents before center assignment | 97.5 / 54.8 | 869 |
+| Copy both extents before center calculation | 97.1 / 54.7 | 877 |
+| Use those extent copies for center and diagonal | 97.1 / 54.7 | 877 |
+
+Original `0x6c844..0x6c8ac` loads both triples for the midpoint, retains their
+values across Vector assignment and copies them for subtraction. The trials
+test that value/lifetime structure without changing the verified operands.
+The last two forms produce whole Core objects byte-identical to each other:
+using copied values instead of the original arrays in that early-copy form
+does not change compiler output. The first five objects all differ from the
+accepted fullbounds-full object, even when displayed scores are unchanged;
+equal scores alone are not reported as binary identity.
+
+Evidence: `_work/read_full_bounds_lifetime_sweep.py` and five
+`_work/readboundslife-*.json` reports; `_work/read_bounds_shared_values_trial.py`
+and `_work/readboundsshared-values.json`. Every trial used the canonical flags
+and unchanged focused unit verifier, then restored its own source snapshot.
+Tracked source status is clean and baseline body/signature checks pass.
+Only this report changes; the preceding fresh 204-TU ARM/native and corrected
+bounds/reader/parser/caller validation remains applicable. Actual exact pair
+sets stay 2,079 linked / 959 raw without losses or additions. Scores remain
+98.4 / 97.5 / 97.9, means **97.93% unweighted / 97.79% weighted**.
+Both >=99.0% gates remain unmet; no compiler ceiling is demonstrated.
