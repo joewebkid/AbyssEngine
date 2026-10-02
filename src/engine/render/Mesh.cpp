@@ -95,7 +95,7 @@ namespace AbyssEngine {
         }
 
         {
-            short type = -1;
+            short type;
 
             if (AEFile::Read(2, &type, file) == 0) goto fail;
             if (type == 1) {

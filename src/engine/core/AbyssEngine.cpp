@@ -932,13 +932,13 @@ namespace AbyssEngine {
                 m = *slot;
                 const double scale = 1.0 / 32768.0;
                 short *s = (short *) raw;
-                Vector *normals = (Vector *) m->normals;
+                float *normals = (float *) m->normals;
                 vcount = m->vertexCount;
-                for (unsigned int i = 0; i < (*slot)->vertexCount; ++i) {
-                    float nx = (float) ((double) s[0] * scale);
-                    float ny = (float) ((double) s[1] * scale);
-                    float nz = (float) ((double) s[2] * scale);
-                    float len2 = nx * nx + ny * ny + nz * nz;
+                for (unsigned int i = 0; i < 3u * (*slot)->vertexCount; i += 3) {
+                    float nx = (float) ((double) s[i] * scale);
+                    float ny = (float) ((double) s[i + 1] * scale);
+                    float nz = (float) ((double) s[i + 2] * scale);
+                    float len2 = ny * ny + nx * nx + nz * nz;
                     float len = sqrtf(len2);
                     if (len != 0.0f) {
                         float dxf = nx / len;
@@ -954,17 +954,16 @@ namespace AbyssEngine {
                         if (dxf > 1.0f) x = 1.0f;
                         if (dyf > 1.0f) y = 1.0f;
                         if (dzf > 1.0f) z = 1.0f;
-                        normals = (Vector *) (*slot)->normals;
-                        normals[i].x = x;
-                        normals[i].y = y;
-                        normals[i].z = z;
+                        normals = (float *) (*slot)->normals;
+                        normals[i] = x;
+                        normals[i + 1] = y;
+                        normals[i + 2] = z;
                     } else {
-                        normals = (Vector *) (*slot)->normals;
-                        normals[i].x = 0.0f;
-                        normals[i].y = 1.0f;
-                        normals[i].z = 0.0f;
+                        normals = (float *) (*slot)->normals;
+                        normals[i] = 0.0f;
+                        normals[i + 1] = 1.0f;
+                        normals[i + 2] = 0.0f;
                     }
-                    s += 3;
                 }
                 ::operator delete[](raw);
             } else if ((flags & 0x18) != 0) {

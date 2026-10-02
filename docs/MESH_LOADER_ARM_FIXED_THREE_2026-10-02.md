@@ -252,3 +252,38 @@ above. Local evidence: _work/zero_full.json SHA-256
 `8607d75aab7788048e1c2a85937c5edadabd268a1df0153efbf5239b5dd0c52c`;
 _work/zero_three.json, zero_full_build.log, zero_full_verify.log,
 zero_native.log and zero_smoke.exe. No ARM game runtime was executed.
+
+## Continuation: normal component loop and enhanced type read
+
+The original normal loop increments its source component index by three and
+compares it against three times the vertex count. Restore that indexing and
+write the destination as three float components. The length expression follows
+the original ARM accumulation order, y-square then x-square then z-square;
+canonical Clang produced the same focused object for both tested source orders.
+The component-loop change improves ReadData from source 96.4 / strict 49.9
+(868 instructions) to source 96.5 / strict 49.8 (869 instructions).
+
+Enhanced's type local was initialized to -1 even though the original reads it
+without a preceding store. Removing that added store raises source 97.3 ->
+97.4 and strict 64.3 -> 64.4, with 637 compiled versus 636 original instructions.
+An early-return rewrite of MeshCreateFromFile generated unchanged scores and
+was reverted. No matcher, flags or denominator changes were made.
+
+Native static-library build and the existing parser smoke pass. The smoke
+covers enhanced reads and truncation cleanup; it does not execute MeshReadData's
+normal conversion. Removing the type initializer retains the original risk for
+any file backend that reports a nonzero short read without writing the entire
+requested field. The production API's nonzero-success behavior is unchanged.
+Full fresh ARM corpus validation passes in this continuation: 204/204 TUs,
+4,619 comparisons, zero skips. Both exact sets equal the original baseline:
+linked 2,079 / raw 959; lost [] and gained [] for each. All other 202 objects
+are byte-identical to the baseline, and both focused target objects equal the
+corresponding fully rebuilt objects.
+
+Current source results: Create **95.8%**, Read **96.5%**, Enhanced **97.4%**.
+Current fixed-three means: **96.57% unweighted / 96.70% weighted**.
+Full strict/source means remain 75.98% / 88.99%. Local full evidence:
+`_work/component_full.json` SHA-256
+`9fe384f4fc0c963410fc0b6c18fceda10bdfb1cbbd10e905dbefc1e89182dfc2`;
+`component_three.json`, component_full_build.log, component_full_verify.log,
+component_native.log and component_smoke.exe. The >=99.0% criterion is unmet.
