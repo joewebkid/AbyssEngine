@@ -1098,6 +1098,45 @@ corpus: 4619 comparisons, zero skips. Baseline and checkpoint f7cbbae0 gates
 preserve all exact pairs (2083 linked / 960 byte), with zero losses. Default
 99% gate exits 1 with its threshold message. Native runtime remains untested.
 
+## Follow-up after checkpoint 0fe3756d
+
+Two source-form trials were rejected; production source is unchanged.
+
+- The final race-image branches used race != 0 with the default image first,
+  rather than race == 0 with the neutral image first. This produced identical
+  complete focused JSON and object bytes to the accepted checkpoint; the trial
+  was removed. Package: _work/race-branch-twentysixth.json/log.
+- OnTouchMove's pitch clamp was expressed as one nested conditional using
+  the same two comparisons and retaining the negative-bound NaN result.
+  This was a source-form hypothesis, not a recovered original C++ expression.
+  Source match fell 98.4% -> 97.4%, despite strict rising 79.2% -> 80.9%;
+  current instruction count fell 255 -> 252, instruction inventory 97.7% ->
+  95.9%, opcode inventory 98.1% -> 96.3%, size match 96.2% -> 95.0%.
+  All other rows were unchanged. Rejected package:
+  _work/move-clamp-twentysixth.json/log.
+
+Read-only comparison of _work/move-original-direct.asm with
+_work/twentyfifth-current.asm confirms both original and accepted objects
+already use VNMUL for the negative products. Original cac74/cac7c/cac8a/cac9c
+contain four pitch comparisons; accepted 4f08/4f10 contains two. The literal
+pool at cae60 is -8192 (0xc6000000), cae68 is +8192 (0x46000000).
+No redundant checks were inserted merely to reproduce compiler instruction
+count. OnTouchEnd's separate original 3217 text-window site remains a known
+structural difference; no extra gameplay call or new source correction is
+claimed from that observation.
+
+Fresh restore package _work/twentysixth-restored-focused.json/log passes all
+204 ARM translation units with zero failures, 22 comparisons and zero skips.
+Its complete JSON is byte-identical to _work/final-focused.json, and the
+restored StarMap.o SHA-256 is
+7cfc414cb456444e775d12e657c5c23d6507a5545af3096010f027fdb2380de9.
+Backups: before-race-branch-twentysixth.cpp and
+before-move-clamp-twentysixth.cpp. Source means remain 99.150% / 98.40898%;
+strict means remain 86.995% / 80.82947%. The native static-library and full
+corpus results below remain those of checkpoint 0fe3756d; neither is claimed
+as a new run for this report-only follow-up. The weighted 99% objective is
+still unmet; native runtime remains untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
