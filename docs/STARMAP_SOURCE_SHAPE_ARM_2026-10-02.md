@@ -1272,6 +1272,38 @@ remain 86.985% / 80.79548%. Native static-library/full-corpus results below
 remain those of 364ddd7d; this report-only follow-up claims no new full/native
 run. Weighted 99% is still unmet, and native runtime remains untested.
 
+## Follow-up after checkpoint 9f17e758
+
+update's two projection-result selections were tested with an explicit local
+depth default of -1.0f, changed to +1.0f when GetScreenPosition returns nonzero,
+followed by the existing member-array reload and single Z store. The accepted
+source uses a ternary with the same values. No extra stores or calls were
+introduced, and this was a source-form hypothesis, not recovered C++ syntax.
+
+Original system c9bca/c9bd0 loads -1/+1; c9c0a starts with -1 and c9c10/c9c12
+selects +1 under NE. Original station c9cae/c9cb4/c9cb6 follows the same rule.
+Current 3230/3232 and 32d6/32d8 selects -1 under EQ, starting from +1.
+The inverse condition and inverse default give the same zero/nonzero result.
+Original c9c06/c9caa and current 3226/32cc reload the member arrays after
+GetScreenPosition; the trial retained those callback-spanning reloads.
+
+The trial produced identical complete focused JSON and identical object bytes
+to the accepted checkpoint; it was removed. Package:
+_work/depth-select-thirtieth.json/log. This rules out the explicit-local form
+as a source-match improvement, without claiming a compiler ceiling or exact
+function equivalence. Primary evidence: _work/update-original-direct.asm;
+accepted disassembly: _work/station-textx-twentyeighth.asm.
+
+Fresh restore: _work/thirtieth-restored-focused.json/log, all 204 ARM TUs
+compiled, zero failures, 22 rows, zero skips. Complete JSON is byte-identical
+to _work/final-focused.json, and StarMap.o SHA-256 is
+1a12eaa4a0002c78e01fccc2a8a8b2a7aee04366607cd84e6fe97bfdace9879d.
+Backup: _work/before-depth-select-thirtieth.cpp. Production source, source
+means 99.160% / 98.44298%, strict means 86.985% / 80.79548% and exact pairs
+remain unchanged. Full-corpus and native static-library results below remain
+those of 364ddd7d; no new full/native run is claimed. Weighted 99% remains
+unmet; native runtime remains untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
