@@ -1,13 +1,13 @@
-# Particle control helpers: ARM recovery, partial gate
+# Particle control helpers: ARM 99% source-shape gate
 
-Date: 2026-10-02. Status: **partial, not ready at the requested 99.0% gate**.
+Date: 2026-10-02. Status: **99.0% source-shape and all validation gates passed**.
 
-The fixed 11-body cluster reaches **98.772727% unweighted source-shape** and
-**96.977273% weighted by executable instructions**. The initially fixed verifier
-`n_target` weights give **96.995122%**; this convention also counts literal-pool
+The fixed 11-body cluster reaches **99.090909% unweighted source-shape** and
+**99.379545% weighted by executable instructions**. The initially fixed verifier
+`n_target` weights give **99.369845%**; this convention also counts literal-pool
 records. Baseline was 75.345455% unweighted, 80.181136% executable-instruction
 weighted, and 79.961419% verifier-record weighted. Strict fuzzy reaches
-93.890909% unweighted / 69.354545% executable-instruction weighted / 69.664302%
+95.836364% unweighted / 84.042727% executable-instruction weighted / 84.184035%
 verifier-record weighted. Three bodies remain linked-exact and byte-exact; normalized 100%
 for a manager helper is explicitly not a linked/byte-exact claim.
 
@@ -44,7 +44,7 @@ not changed. Player, Gun, Mesh, StarMap, shared configs and verifier remain unto
 `_work/particle-fixed-bodies.json` and fresh focused baseline were saved before
 production edits. The set contains 11 different original addresses and **zero
 aliases**, confirmed by grouping all symbol-map entries by address. The weights
-are baseline `n_target`: **451 instructions total**. Neither the set nor weights
+are baseline `n_target`: **451 normalized records total**. Neither the set nor weights
 changed after the initial measurement. Larger class-family means are not the gate.
 
 - Manager selector: `(int handle, unsigned char setIndex)`.
@@ -72,7 +72,7 @@ would require an explicit compatibility decision.
 | `00181d96` | `_ZN15IParticleSystem10enableEmitEb` | 7 | 100.0 → 100.0 | 100.0 → 100.0 | True / True |
 | `00181da4` | `_ZN15IParticleSystem12enableRenderEb` | 13 | 100.0 → 100.0 | 100.0 → 100.0 | True / True |
 | `00181dbe` | `_ZN15IParticleSystem12enableUpdateEb` | 2 | 100.0 → 100.0 | 100.0 → 100.0 | True / True |
-| `00182790` | `_ZN15IParticleSystem10emitManualEN11AbyssEngine6AEMath6VectorEiPKS2_f` | 306 | 84.7 → 96.1 | 32.8 → 56.6 | False / False |
+| `00182790` | `_ZN15IParticleSystem10emitManualEN11AbyssEngine6AEMath6VectorEiPKS2_f` | 306 | 84.7 → 99.6 | 32.8 → 78.0 | False / False |
 | `00183ab8` | `_ZN21ParticleSystemManager18enableSystemUpdateEib` | 15 | 61.1 → 100.0 | 28.6 → 100.0 | False / False |
 | `00183b24` | `_ZN21ParticleSystemManager21setParticleSetByIndexEih` | 15 | 61.1 → 100.0 | 28.6 → 100.0 | False / False |
 | `00183b6c` | `_ZN21ParticleSystemManager16enableSystemEmitEib` | 15 | 58.3 → 97.3 | 21.4 → 93.3 | False / False |
@@ -89,7 +89,7 @@ same fixed weights. A supplementary audit of these same original bodies, excludi
 the normalized `.word` records, gives **440 executable instructions** (302 for
 base manual, and one fewer record in each of the seven manager helpers). It does
 not replace or improve the initially scored 451-record gate: **both weighting
-conventions fail 99.0%**. Both are recorded explicitly in the JSON report.
+conventions pass 99.0%**. Both are recorded explicitly in the JSON report.
 Scores are the verifier's recorded one-decimal per-body
 values; displayed aggregate precision does not increase measurement precision.
 
@@ -139,8 +139,21 @@ to this gate or silently repaired.
 | Reload current slot and RNG-bound fields | Accepted; manual 93.5%; callback-slot smoke verifies the changed behavior |
 | Capture setter scalars and native RNG operand timing | Accepted; raw-scratch manual 95.6% |
 | ARM unordered lifetime fallback, compare operand order, delayed RNG conversions | Accepted semantics; raw-scratch manual 96.5%, fuzzy 57.3% |
-| Typed Vector/UV/definition storage | Accepted final; manual 96.1%, fuzzy 56.6%; raw-cast 0.4-point advantage rejected to avoid retaining unsafe scratch representation |
+| Typed Vector/UV/definition storage | Accepted at the partial checkpoint; manual 96.1%, fuzzy 56.6%; raw-cast 0.4-point advantage rejected to avoid retaining unsafe scratch representation |
 | Signed-shift backend test instead of bit mask | No improvement after pointer selection; plain bit test retained |
+| Reuse typed scratch alone | Rejected alone: unchanged 96.1%, fuzzy 56.3% |
+| Native zero-fill and X conversion before third velocity RNG; position component snapshots | Accepted with scratch reuse: 98.3%, fuzzy 75.7% |
+| Explicit nonzero emission branch with memcpy from separate returned Vector | Rejected final form: control-flow 100%, but eight extra instructions; 98.6%, fuzzy 79.2% |
+| Direct construction of returned Vector in scratch storage | Accepted: 99.6%, fuzzy 78.0%, 307 vs 306 records; both fixed-set mean gates pass |
+
+The new source uses one real typed scratch object after copying its velocity
+into the particle slot. Its zero case is a native all-zero 12-byte Vector clear.
+The X integer is converted before the third RNG call, as the ARM does. Emission
+uses conditional direct construction into local storage, avoiding the separate
+Vector assignment call and an intermediate-copy load/store sequence. Vector has
+three float fields, size 12, an implicit copy constructor and trivial destructor;
+placement construction allocates no heap memory. These are source/dataflow forms,
+not a claim of recovered original C++ spelling. No registers are named in source.
 
 No meaningless volatile, dead branches, forced register assignments, alternate
 flags, verifier modifications, aliases, or reduced body set were used.
@@ -176,30 +189,30 @@ rebuilt successfully, then the complete baseline was rerun without changing its
 The three focused byte-exact switches and the complete focused family's 16 linked /
 10 byte pairs are preserved; actual set differences are empty, not just equal counts.
 
-Full ARM gates completed on 204/204 translation units, zero final compile failures,
-and zero skipped comparison units. Both full reports contain 4,619 symbol/unit
-pairs covering 4,274/4,524 unique originals; missing 250, wrong-signature seven.
-Baseline averages are 75.97% strict fuzzy / 88.99% source; final 76.08% / 89.05%.
-These corpus means are not the fixed cluster's acceptance means.
+The renewed full ARM gate completed on **204/204 translation units**, zero
+compile failures and zero skipped units. Baseline and final each compare
+4,619 symbol/unit pairs covering 4,274/4,524
+unique originals; missing 250, wrong-signature 7.
+Corpus averages are 75.97% → 76.09% strict fuzzy and
+88.99% → 89.05% source-shape. These corpus means
+are separate from the fixed cluster acceptance means.
 
-The **actual `(unit, mangled_symbol)` sets** were compared after normalizing path
-separators. Both baseline and final have **2,079 linked-exact pairs and 959
-byte-exact pairs**. For each set, **lost = [] and gained = []**; SHA-256 digests
-of sorted pairs are identical and stored in the JSON. Every fixed-body final row
-also exactly agrees with the independently built full-corpus row for source,
-strict fuzzy, exact flags and instruction lengths. The complete focused family's
-16 linked / 10 byte pairs and the unedited render/resource-builder bodies are
-preserved. No equality-of-counts substitution was used.
+Actual `(unit, mangled_symbol)` sets were compared after normalizing path
+separators: **linked-exact: 2079 → 2079, lost = 0, gained = 0; byte-exact: 959 → 959, lost = 0, gained = 0**. The JSON stores sorted-pair SHA-256
+digests and complete lost/gained lists. Every fixed-body focused row agrees with
+the independently built full-corpus row for both scores, both exact flags and
+instruction lengths. Source-file hashes were checked again before saving this
+report. No equality-of-counts substitution was used.
 
 ## Remaining risks and readiness
 
-- The requested **both-means >=99.0%** condition is not met. No 70–98% result is
-  described as success; this recovery package is partial.
-- The 306-instruction base manual body dominates the weighted result. Final
-  source components are instruction inventory 88.4%, opcode inventory 98.2%,
-  control flow 94.7%, call count 100%, and size 99.0%; 309 generated versus 306
-  target instructions. Large differences remain in allocation, frame and branch
-  shape. None of this makes the manual body linked-exact.
+- The requested **both-means >=99.0%** condition passes the new focused report.
+  The renewed native, ARM-TU, full-corpus and exact-set gates also pass.
+- The 302-instruction (306-record) base manual body dominates the weighted result. Final
+  source components are instruction inventory 98.9%, opcode inventory 99.5%,
+  control flow 100%, call count 100%, and size 99.7%; 307 generated versus 306
+  target records. Strict fuzzy is 78.0%; source-shape 99.6% does not make the
+  manual body linked-exact.
 - The unchanged decoder carries `<und>` from literal-pool IT halfwords into some
   later short functions. The allocation normalizer also treats original `fp`
   object-base accesses as frame accesses: original `mov fp,r0` holds `this`, not

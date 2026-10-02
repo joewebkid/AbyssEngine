@@ -1,5 +1,5 @@
 {
-  "status": "partial",
+  "status": "all_validation_gates_passed",
   "threshold": 99.0,
   "base_commit": "f60694dd0ca578831cec832e7026b32644642d97",
   "fixed_before_edits": true,
@@ -18,12 +18,12 @@
   },
   "final_means": {
     "source_match": {
-      "unweighted": 98.77272727272727,
-      "instruction_weighted": 96.9951219512195
+      "unweighted": 99.0909090909091,
+      "instruction_weighted": 99.36984478935697
     },
     "match": {
-      "unweighted": 93.89090909090909,
-      "instruction_weighted": 69.66430155210644
+      "unweighted": 95.83636363636364,
+      "instruction_weighted": 84.1840354767184
     }
   },
   "functions": [
@@ -174,19 +174,19 @@
       },
       "final": {
         "symbol": "_ZN15IParticleSystem10emitManualEN11AbyssEngine6AEMath6VectorEiPKS2_f",
-        "match": 56.6,
+        "match": 78.0,
         "bytes_equal": false,
         "linked_equal": false,
         "n_target": 306,
-        "n_base": 309,
-        "source_match": 96.1,
-        "instruction_inventory_match": 88.4,
-        "opcode_inventory_match": 98.2,
-        "control_flow_match": 94.7,
-        "ordered_control_flow_match": 86.8,
-        "control_inventory_match": 94.7,
+        "n_base": 307,
+        "source_match": 99.6,
+        "instruction_inventory_match": 98.9,
+        "opcode_inventory_match": 99.5,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
         "call_count_match": 100.0,
-        "size_match": 99.0,
+        "size_match": 99.7,
         "unit": "engine\\render\\IParticleSystem"
       },
       "executable_instruction_weight": 302
@@ -483,12 +483,12 @@
     "executable_instruction_total": 440,
     "fixed_set_unchanged": true,
     "baseline_source_weighted": 80.18113636363637,
-    "final_source_weighted": 96.97727272727273,
-    "final_fuzzy_weighted": 69.35454545454546
+    "final_source_weighted": 99.37954545454545,
+    "final_fuzzy_weighted": 84.04272727272728
   },
   "weight_definition": "Originally frozen verifier n_target; includes normalized literal-pool data records. Executable-only audit recorded separately without changing the fixed body set.",
   "source_sha256": {
-    "src/engine/render/IParticleSystem.cpp": "4d07a1e9a2febb7e6f5e809a9877154badb2cf4b5c31b174b8399d940371a5da",
+    "src/engine/render/IParticleSystem.cpp": "afd503bfd1fc2d871a3563c05a31a99e01c7bdc325dd0f63083027e417a9b545",
     "src/engine/render/ParticleSystemManager.cpp": "ffeb0bb70c0fac5016bfec47a7293f798d3cc3df799bd01200e7190a791952b9",
     "src/engine/render/ParticleSystemManager.h": "e745c569944d381398dd7382f57e790d70b03311167837e32f99273e089e9fd3"
   },
@@ -508,18 +508,7 @@
       "bytes_equal": "0af0790701cf884abef2b7b71d9755c4838809c7a16671ca768631050a873532"
     }
   },
-  "final_full": {
-    "count": 4619,
-    "compared_unique": 4274,
-    "original_functions": 4524,
-    "missing": 250,
-    "missing_wrong_type": 7,
-    "linked_exact": 2079,
-    "byte_exact": 959,
-    "skipped": 0,
-    "avg_match": 76.08,
-    "avg_source_match": 89.05
-  },
+  "previous_partial_commit": "2313bd1c",
   "full_exact_set_comparison": {
     "linked_equal": {
       "baseline_count": 2079,
@@ -538,11 +527,24 @@
       "final_sha256": "0af0790701cf884abef2b7b71d9755c4838809c7a16671ca768631050a873532"
     }
   },
+  "final_full": {
+    "count": 4619,
+    "compared_unique": 4274,
+    "original_functions": 4524,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "linked_exact": 2079,
+    "byte_exact": 959,
+    "skipped": 0,
+    "avg_match": 76.09,
+    "avg_source_match": 89.05
+  },
   "validation": {
     "native_static_library": "passed",
     "final_arm_translation_units": 204,
     "arm_translation_unit_failures": 0,
     "host_control_smoke": "passed",
-    "arm32_runtime": "not executed"
+    "arm32_runtime": "not executed",
+    "fixed_focused_rows_equal_full_rows": true
   }
 }

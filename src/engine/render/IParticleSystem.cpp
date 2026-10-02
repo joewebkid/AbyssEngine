@@ -499,16 +499,15 @@ void IParticleSystem::emitManual(Vector position, int particleSet, Vector const 
         Vector randomVelocity;
         int spread = def->velSpread;
         if (spread == 0) {
-            randomVelocity.x = 0.0f;
-            randomVelocity.y = 0.0f;
-            randomVelocity.z = 0.0f;
+            std::memset(&randomVelocity, 0, sizeof(randomVelocity));
         } else {
             int range = spread << 1;
             int x = this->random.nextInt(range) - spread;
             float y = (float) (this->random.nextInt(range) - spread);
             float baseY = def->velBaseY;
+            float floatX = (float) x;
             float z = (float) (this->random.nextInt(range) - spread);
-            randomVelocity.x = (float) x;
+            randomVelocity.x = floatX;
             randomVelocity.y = baseY + y;
             randomVelocity.z = z;
         }
@@ -524,13 +523,12 @@ void IParticleSystem::emitManual(Vector position, int particleSet, Vector const 
 
         int posSpread = def->posSpread;
         if (posSpread != 0) {
-            Vector randomPosition;
-            randomPosition.x =
-                    (float) (this->random.nextInt(posSpread << 1) - posSpread);
-            randomPosition.y = 0.0f;
-            randomPosition.z =
-                    (float) (this->random.nextInt(posSpread << 1) - posSpread);
-            position += randomPosition;
+            randomVelocity.y = 0.0f;
+            float x = (float) (this->random.nextInt(posSpread << 1) - posSpread);
+            float z = (float) (this->random.nextInt(posSpread << 1) - posSpread);
+            randomVelocity.x = x;
+            randomVelocity.z = z;
+            position += randomVelocity;
         }
 
         int ySpread = def->ySpread;
@@ -560,8 +558,12 @@ void IParticleSystem::emitManual(Vector position, int particleSet, Vector const 
             float size0 = baseSize0 + (float) sizeDelta0;
             float size1 = baseSize1 + (float) this->random.nextInt(def->lifeRandom);
             float velocityScale = def->velocityFromSlot;
-            Vector emitVelocity = velocityScale == 0.0f
-                ? Vector{0.0f, 0.0f, 0.0f} : velocityScale * this->particleVelocities[this->currentParticle];
+            Vector emitVelocity;
+            if (velocityScale != 0.0f) {
+                new (&emitVelocity) Vector(velocityScale * this->particleVelocities[this->currentParticle]);
+            } else {
+                std::memset(&emitVelocity, 0, sizeof(emitVelocity));
+            }
 
             this->setParticle(position, life, color, u0, v0, u1, v1,
                               fade > 0, size0, size1, emitVelocity);
@@ -575,8 +577,12 @@ void IParticleSystem::emitManual(Vector position, int particleSet, Vector const 
             float u1 = uvp[1];
             float v0 = uvp[2];
             float v1 = uvp[3];
-            Vector emitVelocity = velocityScale == 0.0f
-                ? Vector{0.0f, 0.0f, 0.0f} : velocityScale * this->particleVelocities[this->currentParticle];
+            Vector emitVelocity;
+            if (velocityScale != 0.0f) {
+                new (&emitVelocity) Vector(velocityScale * this->particleVelocities[this->currentParticle]);
+            } else {
+                std::memset(&emitVelocity, 0, sizeof(emitVelocity));
+            }
 
             this->setParticle(position, lifetime, color, u0, v0, u1, v1,
                               fade > 0, size0, size1, emitVelocity);
