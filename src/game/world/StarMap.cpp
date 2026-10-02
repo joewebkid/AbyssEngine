@@ -920,8 +920,8 @@ StarMap::StarMap(bool jumpMapMode, Mission *mission, bool param3, int param4)
         if (this->systems->data()[i]->getTextureIndex() == 15 && Globals::status->getCurrentCampaignMission() <= 157) {
             int campaign = Globals::status->getCurrentCampaignMission();
             AEGeometry *scaleGeom = this->systemGeoms->data()[i];
-            if (campaign > 105) scaleGeom->setScaling(0.025f, 0.025f, 0.025f);
-            else scaleGeom->setScaling(0.018f, 0.018f, 0.018f);
+            if (campaign <= 105) scaleGeom->setScaling(0.018f, 0.018f, 0.018f);
+            else scaleGeom->setScaling(0.025f, 0.025f, 0.025f);
         } else {
             this->systemGeoms->data()[i]->setScaling(0.012f, 0.012f, 0.012f);
         }

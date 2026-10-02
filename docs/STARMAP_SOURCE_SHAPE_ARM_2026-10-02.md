@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.075% unweighted / 98.23125% original-instruction
+implementation bodies measure **99.095% unweighted / 98.25001% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**86.365% / 78.90546%**, respectively. Source-shape is an inventory/control-flow
+**86.425% / 78.96174%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -838,6 +838,40 @@ preservation gates pass with zero exact-pair losses (2083 linked / 960 byte).
 The default target gate exits 1 with its expected threshold failure; the
 weighted deficit is 0.76875088 percentage points. Runtime remains untested.
 
+## Follow-up after checkpoint c8b7e875
+
+Constructor campaign scaling now spells the low-mission branch first:
+if campaign <=105, set 0.018; otherwise set 0.025. Getter count, geometry
+capture order and all threshold values remain unchanged. Original Android
+c6960 compares #105 and c6968..c696c uses ITE GT/LDRGT/LDRLE. The previous
+source's high-mission-first order compiled as CMP #106/ITE LT/LDRLT/LDRGE.
+The new object uses CMP #105 at 42f0, ITE GT at 42f8 and LDRGT/LDRLE at
+42fa/42fc. This directly closes the verified predicate-form difference;
+no claim of exact original source spelling or whole-function equality is made.
+
+Focused package: _work/ctor-order-twentieth.json/log. C1 source 98.9% -> 99.3%,
+strict 94.6% -> 95.8%, original/current instructions stay 333/333. C2 agrees
+and is excluded from both means. All other focused rows are unchanged.
+Fixed means: 99.095% / 98.25001%; strict 86.425% / 78.96174%.
+The weighted 99% target is still unmet, with a 0.74999296 point deficit.
+No corpus, weight, shared file, verifier or compilation flag was changed.
+
+Evidence: _work/ctor-original-direct.asm, ctor-android.c (IDA crosscheck),
+twentieth-current.asm. Current StarMap.o SHA-256: d7d0ea4bee4c66d8cc336a177ab18134b036fb6af4d30cf084775dfd011c1a5c.
+Previous inputs: _work/checkpoint19-focused.json/corpus.json.
+
+Current weighted deficit contributions relative to 99% (fixed original
+instruction weights): OnTouchEnd +0.21905365, initStarSystem +0.20997043,
+drawOnScreenInfo +0.18697367, init +0.07393325, update +0.06837065,
+drawKey +0.04157161 and OnTouchMove +0.02239121 percentage points.
+Bodies above 99% partially offset these deficits. This ranks the next
+evidence review; it does not establish a compiler ceiling or justify padding.
+
+Native static-library build and all 204 ARM translation units passed. Full
+corpus: 4619 comparisons, zero skips. Baseline and checkpoint c8b7e875 gates
+preserve all exact pairs (2083 linked / 960 byte), with zero losses. Default
+99% gate exits 1 with its threshold message. Native runtime remains untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -875,18 +909,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/nineteenth-corpus.log`; focused log:
-`_work/ctor-scale-nineteenth.log`; native log: `_work/native-nineteenth.log`.
+Latest full log: `_work/twentieth-corpus.log`; focused log:
+`_work/ctor-order-twentieth.log`; native log: `_work/native-twentieth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf and 80ea89b1, with no new gains or losses since
-7fc7701c. The latest comparison against 80ea89b1 preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1 and c8b7e875, with no new gains or losses since
+7fc7701c. The latest comparison against c8b7e875 preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/nineteenth-gate.json, nineteenth-previous-gate.json and
-nineteenth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/twentieth-gate.json, twentieth-previous-gate.json and
+twentieth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `a62937f0028cbcaa402098dd077fca36aa30f3cf1b4ec28291b25c31db7a5042`.
+final full JSON SHA-256: `59117cc27f43cde10ee170ccf8f061f99e396106a9b124901973b19e487025f3`.
 
 
 ### Reproduction
@@ -923,7 +957,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.0% | 89.1% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/736 | 72.9% | 98.3% | 77.0% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/679 | 80.9% | 96.9% | 83.7% | - |
-| `_ZN7StarMapC1EbP7Missionbi` | 333/333 | 85.1% | 98.9% | 94.6% | - |
+| `_ZN7StarMapC1EbP7Missionbi` | 333/333 | 85.1% | 99.3% | 95.8% | - |
 | `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 99.3% | 97.4% | - |
 | `_ZN7StarMap11OnTouchMoveEii` | 265/255 | 81.3% | 98.4% | 79.2% | - |
 | `_ZN7StarMap7drawKeyEv` | 246/243 | 59.5% | 97.8% | 34.8% | - |
