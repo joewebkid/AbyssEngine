@@ -13,6 +13,9 @@ int main() {
         assert(gun.field_0x20 == slots && gun.field_0x2c == slots);
         assert(gun.wobbleOffsets->size() == static_cast<unsigned>(slots));
         assert(gun.velocity.z == 4.0f * 0.15339000523090363f);
+        auto *testLevel = reinterpret_cast<Level *>(&gun);
+        gun.setLevel(testLevel);
+        assert(gun.level == testLevel); // Preserve the full native host pointer.
         for (int i = 0; i < slots; ++i) {
             assert(gun.lifetimes[i] == -1000000 && gun.hitFlags[i] == 0);
             assert(gun.wobbleOffsets->data_[i] == nullptr);

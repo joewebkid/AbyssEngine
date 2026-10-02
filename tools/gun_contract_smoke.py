@@ -34,7 +34,7 @@ def main():
     end = source.index("void Gun::setOffset(Vector", start)
     selected += source[start:end]
     for signature in ("Gun::Gun(", "Gun::~Gun()", "void Gun::setEnemy(",
-                      "void Gun::removeAllEnemies()", "void Gun::setOffset(int",
+                      "void Gun::removeAllEnemies()", "void Gun::setLevel(", "void Gun::setOffset(int",
                       "void Gun::setOffset(Vector"):
         selected += body(source, signature)
     math = (ROOT / "src/engine/math/AEMath.cpp").read_text()

@@ -95,7 +95,7 @@ void Gun::setLevelCollision(bool v) {
 }
 
 void Gun::setLevel(Level *lvl) {
-    this->level = (int) (intptr_t) lvl;
+    this->level = lvl;
 }
 
 void Gun::removeAllEnemies() {
@@ -180,7 +180,7 @@ void Gun::ignite() {
     if (weaponType == ITEM_SORT_NUKE)
         ++*reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::status) + 0xc8);
     if (weaponType == ITEM_SORT_EMP_BOMB || weaponType == ITEM_SORT_NUKE)
-        reinterpret_cast<Level *>(static_cast<intptr_t>(level))->manualSecondaryActive = 0;
+        level->manualSecondaryActive = 0;
     ignited = 1;
     if (enemies) {
         lastHitKIPlayer = 0;
@@ -198,10 +198,13 @@ void Gun::ignite() {
                 if (magnitude > distance) {
                     hitFlags[i] = 1;
                     reinterpret_cast<Vector *>(hitPositions)[i] = basePos;
+                    int range = magnitude;
+                    float numerator = static_cast<float>(range - distance);
+                    float denominator = static_cast<float>(range);
                     float force;
                     if (weaponType == ITEM_SORT_MINE)
                         force = static_cast<float>(10000 - distance) / 10000.0f;
-                    else force = static_cast<float>(magnitude - distance) / static_cast<float>(magnitude);
+                    else force = numerator / denominator;
                     float scale = 1.0f;
                     if (!(force > 1.0f)) {
                         scale = force;
@@ -224,7 +227,7 @@ void Gun::ignite() {
                                     int &progress = *reinterpret_cast<int *>(statusBytes + 0x144);
                                     ++progress;
                                     if (progress >= static_cast<Achievements *>(Globals::achievements)->getValue(44, 1)) {
-                                        auto *ego = reinterpret_cast<Level *>(static_cast<intptr_t>(level))->getPlayer();
+                                        auto *ego = level->getPlayer();
                                         auto *hud = reinterpret_cast<Hud *>(static_cast<intptr_t>(ego->getHUD()));
                                         hud->hudEventMedal(44, 100);
                                         reinterpret_cast<char *>(Globals::status)[0x148] = 1;
@@ -472,25 +475,26 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
             if (enemy->getKIPlayer() &&
                 enemy->getKIPlayer()->field_0x73 &&
                 enemy->isActive() && !enemy->isDead()) {
-                Vector difference = enemy->getPosition() - reinterpret_cast<Level *>(static_cast<intptr_t>(level))->getPlayer()->getPosition();
+                Vector difference = enemy->getPosition() - level->getPlayer()->getPosition();
                 int distance = static_cast<int>(VectorLength(difference));
                 if (nearest > distance) { fireIndex = i; nearest = distance; }
             }
         }
+        int selected = fireIndex;
         lifetimes[0] = initialLifetime;
-        if (fireIndex <= -1) {
-            *reinterpret_cast<Vector *>(&field_0x90) = reinterpret_cast<Level *>(static_cast<intptr_t>(level))->getPlayer()->geometry->getDirection();
-            Vector pos = reinterpret_cast<Level *>(static_cast<intptr_t>(level))->getPlayer()->getPosition();
-            Vector dir = reinterpret_cast<Level *>(static_cast<intptr_t>(level))->getPlayer()->geometry->getDirection();
-            *reinterpret_cast<Vector *>(positions) = pos + dir * 30000.0f;
-            *reinterpret_cast<Vector *>(velocities) = reinterpret_cast<Level *>(static_cast<intptr_t>(level))->getPlayer()->geometry->getDirection();
+        if (selected <= -1) {
+            *reinterpret_cast<Vector *>(&field_0x90) = level->getPlayer()->geometry->getDirection();
+            Vector pos = level->getPlayer()->getPosition();
+            Vector dir = level->getPlayer()->geometry->getDirection();
+            *reinterpret_cast<Vector *>(positions) = pos + 30000.0f * dir;
+            *reinterpret_cast<Vector *>(velocities) = level->getPlayer()->geometry->getDirection();
             field_0x8c = 30000;
         } else {
             Player *enemy = (*enemies)[fireIndex];
-            Vector difference = enemy->getPosition() - reinterpret_cast<Level *>(static_cast<intptr_t>(level))->getPlayer()->getPosition();
+            Vector difference = enemy->getPosition() - level->getPlayer()->getPosition();
             *reinterpret_cast<Vector *>(&field_0x90) = VectorNormalize(difference);
-            *reinterpret_cast<Vector *>(positions) = enemy->getPosition();
-            *reinterpret_cast<Vector *>(velocities) = reinterpret_cast<Level *>(static_cast<intptr_t>(level))->getPlayer()->geometry->getDirection();
+            *reinterpret_cast<Vector *>(positions) = (*enemies)[fireIndex]->getPosition();
+            *reinterpret_cast<Vector *>(velocities) = level->getPlayer()->geometry->getDirection();
             field_0x8c = nearest;
         }
         return true;
@@ -501,7 +505,7 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         if (static_cast<unsigned>(weaponType - ITEM_SORT_ROCKET) < 2 ||
             weaponType == ITEM_SORT_CLUSTER_MISSILE) threshold = -2000;
         if (lifetimes[i] > threshold ||
-            (weaponType == ITEM_SORT_SENTRY_GUN && reinterpret_cast<Level *>(static_cast<intptr_t>(level))->field_6c > 2)) continue;
+            (weaponType == ITEM_SORT_SENTRY_GUN && level->field_6c > 2)) continue;
         timer = 0;
         delayTimer = 0;
         active = 1;
@@ -557,7 +561,7 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         reinterpret_cast<Vector *>(velocities)[i] = normalized;
         reinterpret_cast<Vector *>(velocities)[i] *= pitchRate;
         lifetimes[i] = weaponType == ITEM_SORT_SENTRY_GUN ? 0 : initialLifetime;
-        bool keepAmmo = true;
+        unsigned keepAmmo = 1;
         if (!friendGun && equipment && ammoCount >= 1 && equipment->getType() == 1) {
             keepAmmo = false;
             if (itemIndex == 179)
@@ -565,12 +569,10 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         }
         delayActive = 1;
         if (playerGun && hitSmall)
-            reinterpret_cast<TargetFollowCamera *>(static_cast<intptr_t>(reinterpret_cast<Level *>(static_cast<intptr_t>(level))->getPlayer()->getTargetFollowCamera()))->hitSmall();
-        if (weaponType != ITEM_SORT_CLUSTER_MISSILE && !keepAmmo) {
+            reinterpret_cast<TargetFollowCamera *>(static_cast<intptr_t>(level->getPlayer()->getTargetFollowCamera()))->hitSmall();
+        if (!((weaponType == ITEM_SORT_CLUSTER_MISSILE) | keepAmmo)) {
             --ammoCount;
-            equipment->changeAmount(-1);
-            if (!ammoCount) Globals::status->getShip()->freeSlot(equipment);
-            return true;
+            goto spendAmmo;
         }
         fired = true;
         if (weaponType != ITEM_SORT_CLUSTER_MISSILE) return true;
@@ -578,11 +580,12 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
     if (weaponType != ITEM_SORT_CLUSTER_MISSILE) return false;
     if (fired) {
         --ammoCount;
-        if (equipment) {
-            equipment->changeAmount(-1);
-            if (!ammoCount) Globals::status->getShip()->freeSlot(equipment);
-        }
+        if (equipment) goto spendAmmo;
     }
+    return true;
+spendAmmo:
+    equipment->changeAmount(-1);
+    if (!ammoCount) Globals::status->getShip()->freeSlot(equipment);
     return true;
 }
 
@@ -610,7 +613,7 @@ void Gun::calcCharacterCollision() {
             int radius = useCustomRadius ? customRadius : enemy->radius;
             if (mine) radius *= 5;
             else if (scatter) {
-                Vector difference = center - reinterpret_cast<Level *>(static_cast<intptr_t>(level))->getPlayer()->getPosition();
+                Vector difference = center - level->getPlayer()->getPosition();
                 int distance = static_cast<int>(VectorLength(difference));
                 float factor;
                 if (enemy->getKIPlayer() && enemy->getKIPlayer()->_pad_0x71)
@@ -630,9 +633,10 @@ void Gun::calcCharacterCollision() {
             }
             {
                 float extent = static_cast<float>(radius);
-                float negativeExtent = static_cast<float>(-radius);
                 float x = (center.x - position.x) + speed.x;
-                if (!(x < extent) || !(x > negativeExtent)) continue;
+                if (!(x < extent)) continue;
+                float negativeExtent = static_cast<float>(-radius);
+                if (!(x > negativeExtent)) continue;
                 float y = (center.y - position.y) + speed.y;
                 if (!(y < extent) || !(y > negativeExtent)) continue;
                 float z = (center.z - position.z) + speed.z;
@@ -652,7 +656,7 @@ collided:
                         int &progress = *reinterpret_cast<int *>(status + 0x12c);
                         ++progress;
                         if (progress >= static_cast<Achievements *>(Globals::achievements)->getValue(41, 1)) {
-                            auto *egoPlayer = reinterpret_cast<Level *>(static_cast<intptr_t>(level))->getPlayer();
+                            auto *egoPlayer = level->getPlayer();
                             reinterpret_cast<Hud *>(static_cast<intptr_t>(egoPlayer->getHUD()))->hudEventMedal(41, 100);
                             reinterpret_cast<char *>(Globals::status)[0x130] = 1;
                         }
@@ -662,7 +666,7 @@ collided:
                         int &progress = *reinterpret_cast<int *>(status + 0x144);
                         ++progress;
                         if (progress >= static_cast<Achievements *>(Globals::achievements)->getValue(44, 1)) {
-                            auto *egoPlayer = reinterpret_cast<Level *>(static_cast<intptr_t>(level))->getPlayer();
+                            auto *egoPlayer = level->getPlayer();
                             reinterpret_cast<Hud *>(static_cast<intptr_t>(egoPlayer->getHUD()))->hudEventMedal(44, 100);
                             reinterpret_cast<char *>(Globals::status)[0x148] = 1;
                         }
@@ -671,13 +675,19 @@ collided:
                 }
             } else if (mine) {
                 float extent = static_cast<float>(enemy->radius);
-                float negativeExtent = static_cast<float>(-enemy->radius);
                 float x = (center.x - position.x) + speed.x;
-                float y = (center.y - position.y) + speed.y;
-                float z = (center.z - position.z) + speed.z;
-                if (x < extent && x > negativeExtent && y < extent && y > negativeExtent && z < extent && z > negativeExtent) {
-                    ignite();
-                    return;
+                if (x < extent) {
+                    float negativeExtent = static_cast<float>(-enemy->radius);
+                    if (x > negativeExtent) {
+                        float y = (center.y - position.y) + speed.y;
+                        if (y < extent && y > negativeExtent) {
+                            float z = (center.z - position.z) + speed.z;
+                            if (z < extent && z > negativeExtent) {
+                                ignite();
+                                return;
+                            }
+                        }
+                    }
                 }
                 Vector difference = center - position;
                 Vector normalized = VectorNormalize(difference);
@@ -689,22 +699,25 @@ collided:
             }
             if (detonate) { ignite(); return; }
             if (empDamage != -979797979) enemy->damageEmp(empDamage, friendGun);
-            int amount = damage;
+            int amount;
             if (owner && !owner->enemyFlagsLo) {
                 if (reinterpret_cast<unsigned char *>(&enemy->empDisabled)[1]) amount = static_cast<int>(damage * 0.2f);
-            } else if (reinterpret_cast<unsigned char *>(&enemy->empDisabled)[1]) {
-                auto *lvl = reinterpret_cast<Level *>(static_cast<intptr_t>(level));
-                if (lvl->getPlayer() && lvl->getPlayer()->isDockedToDockingPoint())
+                else amount = damage;
+            } else {
+                if (reinterpret_cast<unsigned char *>(&enemy->empDisabled)[1] &&
+                    level->getPlayer() &&
+                    level->getPlayer()->isDockedToDockingPoint())
                     amount = static_cast<int>((damage * 3.0f) * 0.25f);
+                else amount = damage;
             }
             enemy->damage(amount, friendGun, itemIndex);
             reinterpret_cast<unsigned char *>(&enemy->field_54)[0] = 1;
-            if (playerGun) reinterpret_cast<unsigned char *>(&reinterpret_cast<Level *>(static_cast<intptr_t>(level))->field_30)[0] = 1;
+            if (playerGun) reinterpret_cast<unsigned char *>(&level->field_30)[0] = 1;
             enemy->setHitVector(-speed.x, -speed.y, -speed.z);
             lifetimes[i] = -1000000;
             lastHitKIPlayer = static_cast<int>(reinterpret_cast<intptr_t>(enemy->getKIPlayer()));
             if (particle) {
-                auto *particleLevel = reinterpret_cast<Level *>(static_cast<intptr_t>(level));
+                auto *particleLevel = level;
                 particleLevel->field_74->emitManual(particleLevel->field_3c, position, 0, speed, -1.0f);
             } else if (geometries) {
                 auto *transform = static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(geometries[i]));
@@ -731,10 +744,10 @@ collided:
                     Vector difference = nearby->getPosition();
                     targetDir = difference;
                     targetDir -= position;
-                    float distance = VectorLength(targetDir);
-                    if (magnitude > static_cast<int>(distance)) {
+                    int distance = static_cast<int>(VectorLength(targetDir));
+                    if (magnitude > distance) {
                         float scale = 1.0f;
-                        float force = static_cast<float>(magnitude - static_cast<int>(distance)) / magnitude;
+                        float force = static_cast<float>(magnitude - distance) / magnitude;
                         if (!(force > 1.0f)) {
                             scale = force;
                             if (force < 0.0f) scale = 0.0f;

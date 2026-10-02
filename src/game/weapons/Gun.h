@@ -56,7 +56,7 @@ public:
             int hitPositionsCapacity;
         };
     };
-    int level;
+    Level *level;
     int *lifetimes;
     uint8_t *hitFlags;
     int initialLifetime;
