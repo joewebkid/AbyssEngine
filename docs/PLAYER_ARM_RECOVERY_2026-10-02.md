@@ -28,15 +28,15 @@ Total fixed weight: 2534.
 
 | Metric, 99 unique bodies | Baseline | Final |
 |---|---:|---:|
-| Source-shape, unweighted | 95.029293% | 99.290909% |
-| Source-shape, instruction-weighted | 87.325020% | 98.066575% |
-| Strict fuzzy, unweighted | 86.264646% | 94.732323% |
-| Strict fuzzy, instruction-weighted | 63.474665% | 78.378216% |
+| Source-shape, unweighted | 95.029293% | 99.371717% |
+| Source-shape, instruction-weighted | 87.325020% | 98.173402% |
+| Strict fuzzy, unweighted | 86.264646% | 95.053535% |
+| Strict fuzzy, instruction-weighted | 63.474665% | 78.982755% |
 | Linked-exact unique bodies | 47 | 58 |
 | Byte-exact unique bodies | 43 | 50 |
 
 Historical-style symbol figures (101, aliases included): source 95.07% ->
-99.27%, strict 86.42% -> 94.78%,
+99.35%, strict 86.42% -> 95.10%,
 linked-exact 48 -> 59, byte-exact 43 -> 50.
 They are supplemental, not the gate denominator.
 
@@ -117,6 +117,25 @@ They are supplemental, not the gate denominator.
 - Evidence `_work/player_position_api.json`, `_work/player_position_smoke.log`,
   `_work/native_position.log`, `_work/all_arm_position.log`, `_work/full_position.json`.
 
+## Continuation after 20c31541
+
+- update expresses velocity as one arithmetic expression, preserving the verified math call order.
+  Original temporaries expire at expression boundaries; this compiles to the original stack layout
+  instead of extending the lifetime of named intermediate vectors. Scalar NEON maximum supplies
+  shake in lane zero with zero upper lane (only lane zero is consumed); lower-lane math and NaN
+  predicate are unchanged. Chosen C++ spellings are equivalent reconstruction trials, not recovered
+  source text. Original vmax instruction is primary evidence; host tests do not execute ARM NEON.
+- setGammaHP caps the integer before float conversion unless value is the original 9999999 sentinel.
+  Since signed-int-to-float conversion is monotone, this preserves original float output for all int32
+  inputs. Source/strict-normalized results reach 100%, but linked/raw-byte equality is still false.
+  Original pool words independently confirm sentinel 0x0098967f and cap 0x42c80000 (100.0f).
+  Smoke covers INT_MIN/MAX, negative/zero, cap boundaries and sentinel neighbors.
+- Separate trial outputs lived under `_work/trial_expression`, `_work/trial_lane`, `_work/trial_gamma_cap`,
+  leaving the live full-position corpus objects unchanged. Current source report
+  `_work/player_expression_gamma.json`; smoke `_work/player_expression_gamma_smoke.log`, native
+  `_work/native_expression_gamma.log`, all-ARM `_work/all_arm_expression_gamma.log`, full corpus
+  `_work/full_expression_gamma.json`.
+
 ## Trials and unresolved dependencies
 
 - Initial package: source shape 98.268687% unique / 95.862076% weighted, no exact loss.
@@ -155,7 +174,7 @@ They are supplemental, not the gate denominator.
 - Native UCRT64 `gof2`: clean worktree configure, complete build, and final rebuild all succeed;
   output `cmake-build-ucrt/libgof2.a`. Pre-existing warnings in other units remain.
 - All **204/204** ARM translation units recompiled using the canonical NDK r18b clang flags:
-  `_work/all_arm_position.log`, failed []. ARM header static assertions passed.
+  `_work/all_arm_expression_gamma.log`, failed []. ARM header static assertions passed.
 - `python tools/test_player_recovery.py --so _work/bins/android_2.0.16_libgof2hdaa.so` passes.
   It compiles actual focused Player bodies extracted from the current source, with explicit audio,
   Matrix-constructor and Gun constructor/destructor/setEnemies boundary doubles. Tests EMP duration/elapsed separation,
@@ -173,7 +192,7 @@ Full corpus, exact **(unit, symbol)** pair-set comparison, not just counts:
 |---|---:|---:|
 | Comparisons | 4619 | 4621 |
 | Source-shape mean | 88.99% | 89.09% |
-| Strict fuzzy mean | 75.97% | 76.16% |
+| Strict fuzzy mean | 75.97% | 76.17% |
 | Linked-exact | 2079 | 2092 |
 | Byte-exact | 959 | 966 |
 | Skipped | 0 | 0 |
@@ -187,7 +206,7 @@ They are not Player member bodies and are excluded from the fixed 99-body gate.
 The earlier 2dfe6132 continuation left existing non-Player member/helper metrics unchanged against c5874214.
 
 Lost linked-exact pairs: 0. Lost byte-exact pairs: 0.
-Also zero linked/byte exact-pair losses against 50884ca8. Continuation gains:
+Also zero linked/byte exact-pair losses against 20c31541. Continuation gains:
 0 linked and
 0 byte pairs.
 Gained linked pairs: 13; gained byte pairs:
@@ -195,13 +214,13 @@ Gained linked pairs: 13; gained byte pairs:
 checkpoint limitations and were not repaired by touching foreign families.
 Reports `_work/full_baseline.json`, `_work/full_final.json` (previous commit), and
 `_work/full_resume.json` (2dfe6132), `_work/full_next.json` (50884ca8),
-and `_work/full_position.json` (latest continuation)
+`_work/full_position.json` (20c31541), and `_work/full_expression_gamma.json` (latest continuation)
 remain generated local evidence.
 
 ## Remaining weighted gap
 
-The fixed weighted score is 98.066575%, leaving
-0.933425 percentage points to the 99.0% threshold.
+The fixed weighted score is 98.173402%, leaving
+0.826598 percentage points to the 99.0% threshold.
 The largest remaining weighted deficits are listed by the fixed body table below.
 This ranks the remaining work; it does not assign every mismatch to a semantic error.
 Constructor comparison immediates and scheduling, Pause/StopEngineSound shrink-wrapped
@@ -244,7 +263,7 @@ Addresses and aliases were frozen before edits. A changed metric alone is not a 
 | 0x000a2ce4 | `_ZN6Player12setHitpointsEi` | 6 | 100.0 -> 100.0 | 100.0 -> 100.0 | 0 -> 0 | 0 -> 0 | unchanged |
 | 0x000a2cf6 | `_ZN6Player11setShieldHPEi` | 10 | 96.0 -> 96.0 | 80.0 -> 80.0 | 0 -> 0 | 0 -> 0 | unchanged |
 | 0x000a2d1c | `_ZN6Player10setArmorHPEi` | 6 | 100.0 -> 100.0 | 100.0 -> 100.0 | 0 -> 0 | 0 -> 0 | unchanged |
-| 0x000a2d30 | `_ZN6Player10setGammaHPEi` | 15 | 93.1 -> 93.1 | 75.9 -> 75.9 | 0 -> 0 | 0 -> 0 | unchanged |
+| 0x000a2d30 | `_ZN6Player10setGammaHPEi` | 15 | 93.1 -> 100.0 | 75.9 -> 100.0 | 0 -> 0 | 0 -> 0 | accepted |
 | 0x000a2d64 | `_ZN6Player15setMaxEmpPointsEi` | 2 | 100.0 -> 100.0 | 100.0 -> 100.0 | 0 -> 0 | 0 -> 0 | unchanged |
 | 0x000a2d6c | `_ZN6Player15setMaxHitpointsEi` | 3 | 100.0 -> 100.0 | 100.0 -> 100.0 | 0 -> 0 | 0 -> 0 | unchanged |
 | 0x000a2d76 | `_ZN6Player14setMaxShieldHPEi` | 5 | 100.0 -> 100.0 | 100.0 -> 100.0 | 0 -> 0 | 0 -> 0 | unchanged |
@@ -310,7 +329,7 @@ Addresses and aliases were frozen before edits. A changed metric alone is not a 
 | 0x000a40ac | `_ZN6Player17ResumeEngineSoundEb` | 19 | 87.6 -> 98.9 | 70.6 -> 89.5 | 0 -> 0 | 0 -> 0 | accepted |
 | 0x000a40e0 | `_ZN6Player15StopEngineSoundEv` | 15 | 78.7 -> 90.9 | 22.2 -> 77.4 | 0 -> 0 | 0 -> 0 | accepted |
 | 0x000a4108 | `_ZN6Player14GetEngineEventEv` | 2 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 1 -> 1 | unchanged |
-| 0x000a4110 | `_ZN6Player6updateEib` | 152 | 56.8 -> 97.8 | 39.7 -> 83.8 | 0 -> 0 | 0 -> 0 | accepted |
+| 0x000a4110 | `_ZN6Player6updateEib` | 152 | 56.8 -> 98.9 | 39.7 -> 91.5 | 0 -> 0 | 0 -> 0 | accepted |
 | 0x000a42dc | `_ZN6Player4healEf` | 29 | 88.4 -> 88.4 | 73.3 -> 73.3 | 0 -> 0 | 0 -> 0 | no-gain trial; semantics unchanged |
 | 0x000a433a | `_ZN6Player19pitchAllPrimaryGunsEf` | 16 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 1 -> 1 | unchanged |
 | 0x000a4360 | `_ZN6Player11replaceGunsEiiiiib` | 1 | 76.7 -> 100.0 | 66.7 -> 100.0 | 0 -> 1 | 0 -> 1 | accepted |

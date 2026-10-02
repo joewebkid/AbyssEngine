@@ -11,6 +11,7 @@
 #include <limits>
 #include <cstring>
 #include <new>
+#include <initializer_list>
 
 unsigned char Globals::options[100] = {};
 FModSound *Globals::sound = nullptr;
@@ -171,5 +172,12 @@ int main() {
     player.gammaHP = std::numeric_limits<float>::quiet_NaN();
     player.damageGamma(1);
     assert(std::isnan(player.gammaHP)); // ARM's <= comparison preserves NaN.
+    for (int value : {std::numeric_limits<int>::min(), -1, 0, 99, 100, 101,
+                      9999998, 9999999, 10000000, std::numeric_limits<int>::max()}) {
+        player.setGammaHP(value);
+        float expected = static_cast<float>(value);
+        if (value > 100 && value != 9999999) expected = 100.0f;
+        assert(player.gammaHP == expected);
+    }
     std::puts("Player recovery host smoke: OK");
 }

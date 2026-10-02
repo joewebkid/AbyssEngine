@@ -764,15 +764,8 @@ Player::~Player() {
 }
 
 void Player::setGammaHP(int value) {
-    float f = (float) value;
-    float sel = f;
-    if (value != 9999999) {
-        sel = 100.0f;
-    }
-    if (value > 100) {
-        f = sel;
-    }
-    this->gammaHP = f;
+    if (value > 100 && value != 9999999) value = 100;
+    this->gammaHP = static_cast<float>(value);
     this->updateDamageRate();
 }
 
@@ -1255,10 +1248,8 @@ void Player::update(int dt, bool doSound) {
     }
     if (Globals::options[0x0f] && doSound && enginePositionVec != reinterpret_cast<void *>(static_cast<intptr_t>(-1))) {
         float audioSpeed = static_cast<float>(Player::velocity);
-        Vector current = AbyssEngine::AEMath::MatrixGetPosition(transformMatrix);
-        Vector delta = current - *reinterpret_cast<Vector *>(position);
-        Vector scaled = audioSpeed * delta;
-        Vector velocity = scaled / static_cast<float>(dt);
+        Vector velocity = (audioSpeed * (AbyssEngine::AEMath::MatrixGetPosition(transformMatrix) -
+                                        *reinterpret_cast<Vector *>(position))) / static_cast<float>(dt);
         Vector eventPosition = AbyssEngine::AEMath::MatrixGetPosition(transformMatrix);
         engineEvent = Globals::sound->updateEvent3DAttributes(engineEvent, static_cast<int>(reinterpret_cast<intptr_t>(enginePositionVec)), &eventPosition, &velocity, false);
         engineSoundPlaying = 1;
@@ -1268,7 +1259,7 @@ void Player::update(int dt, bool doSound) {
     }
     float shake = flShake + static_cast<float>(dt) * -0.001f * 0.025f;
 #if defined(__ARM_NEON)
-    flShake = vget_lane_f32(vmax_f32(vdup_n_f32(shake), vdup_n_f32(0.0f)), 0);
+    flShake = vget_lane_f32(vmax_f32(vset_lane_f32(shake, vdup_n_f32(0.0f), 0), vdup_n_f32(0.0f)), 0);
 #else
     flShake = std::max(shake, 0.0f);
 #endif
