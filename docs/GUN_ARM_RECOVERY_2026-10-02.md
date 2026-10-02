@@ -87,6 +87,10 @@ ShootAt branch-order follow-up: ARM 0x152510..0x152514 reads the slot lifetime b
 
 Private controls: targeted branch first alone leaves source at 98.4% (strict 62.0%); early lifetime alone lowers source to 98.2% (strict 70.2%). Restoring the unsigned-range threshold in the combined variant lowers source to 97.9% (strict 66.8%). None of those alternatives was integrated. This measured interaction is recorded rather than claiming an independent gain from each edit. Native build, all 204 ARM TUs and host lifetime/mount checks pass; the latter do not exercise the full homing path.
 
+Outer collision reload audit at 5a37d98f: an explicit cached enemies pointer refreshed in the for increment, and a separate reload label with the same early-skip paths, both compile to the identical canonical collision body (96.6% source / 50.6% strict, 629 versus original 647 instructions). Full parsed-body identity was checked, not just rounded metrics. Neither form was integrated. The live source/header/object/compiler-flag hashes still match the committed snapshot.
+
+Parser handoff check: the saved proposal had CRLF line endings while asmdiff.py uses LF, so plain `git apply --check` initially rejected its context. The local proposal was normalized to LF; the same unchanged logical patch now passes `git apply --check` against the current shared parser. No shared parser edit was made. The last three completed canonical full reports (allocation-ignite, mount and shoot-order checkpoints) all exit 1 with the same seven wrong-type alias diagnostics. Native exports already exist, so no further native ABI-alias modification is justified by those diagnostics. The pending decision concerns the originally excluded tools/verify/asmdiff.py; the reviewable patch and prototype evidence remain available. The instruction-weighted 99.0% requirement also remains unmet independently of that parser decision.
+
 ## Checks and limits
 
 - Native CMake `gof2` static-library build: passed.
