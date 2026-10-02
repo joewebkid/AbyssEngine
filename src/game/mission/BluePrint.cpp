@@ -30,7 +30,10 @@ String BluePrint::getStationName() {
 }
 
 BluePrint::~BluePrint() {
-    delete ingredientCounters;
+    if (ingredientCounters) {
+        ArrayRelease(*ingredientCounters);
+        delete ingredientCounters;
+    }
     ingredientCounters = nullptr;
 }
 
