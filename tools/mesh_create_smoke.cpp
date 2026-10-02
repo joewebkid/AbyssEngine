@@ -33,26 +33,31 @@ void dispose(AbyssEngine::Mesh *mesh) {
     delete mesh->animation;
     delete mesh;
 }
-void fixture(bool enhanced, unsigned short subCount) {
+void fixture(bool enhanced, unsigned short subCount, bool uv = false, unsigned short vertices = 1) {
     input.clear();
     const char plain[] = {'A', 'E', 'M', 'e', 's', 'h', 0};
     const char v4[] = {'V', '4', 'A', 'E', 'M', 'e', 's'};
     const char *magic = enhanced ? v4 : plain;
     for (int i = 0; i < 7; ++i) put(magic[i]);
     if (enhanced) put<unsigned short>(0);
-    put<unsigned char>(1);
+    put<unsigned char>(uv ? 3 : 1);
     if (enhanced) {
         put(subCount);
         for (int i = 0; i < 3; ++i) put(0.0f); // Pivot.
     }
-    put<unsigned short>(1);
+    put(vertices);
     if (enhanced) {
-        put(1.0f); put(2.0f); put(3.0f);
+        for (unsigned int i = 0; i < vertices; ++i) { put(1.0f); put(2.0f); put(3.0f); }
+        if (uv) {
+            for (unsigned int i = 0; i < vertices; ++i) {
+                put(i == 0 ? 0.25f : 0.5f); put(i == 0 ? 0.75f : 0.125f);
+            }
+        }
         put(1.0f); put(2.0f); put(3.0f); put(4.0f); // Enhanced bounds.
         for (int i = 0; i < 4; ++i) put<short>(9); // Unknown groups: no keys.
         put<unsigned short>(0); // Children.
     } else {
-        put<short>(1); put<short>(2); put<short>(3);
+        for (unsigned int i = 0; i < vertices; ++i) { put<short>(1); put<short>(2); put<short>(3); }
     }
 }
 }
@@ -131,5 +136,17 @@ int main() {
             assert(MeshCreateFromFile(engine, "fixture", &slot, nullptr) == -1);
             assert(slot == nullptr && opened == 1 && closed == 1 && released == 1);
         }
+    }
+    // Float V4 UVs exercise the actual reader's shader-dependent V flip.
+    for (int shader = 0; shader < 2; ++shader) {
+        Engine::enableShader = static_cast<unsigned char>(shader);
+        fixture(true, 0, true, 2); reset(input.size());
+        assert(MeshCreateFromFile(engine, "fixture", &slot, nullptr) == 1);
+        assert(slot != nullptr && slot->vertexCount == 2 && slot->animation == nullptr);
+        const auto *uv = static_cast<const float *>(slot->texCoords);
+        assert(uv[0] == 0.25f && uv[1] == (shader ? 0.25f : 0.75f));
+        assert(uv[2] == 0.5f && uv[3] == (shader ? 0.875f : 0.125f));
+        assert(cursor == input.size() && opened == 1 && closed == 1 && released == 0);
+        dispose(slot); slot = nullptr;
     }
 }

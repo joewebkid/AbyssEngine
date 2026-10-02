@@ -911,7 +911,7 @@ namespace AbyssEngine {
                     m = *slot;
                     float *uvFloats = (float *) m->texCoords;
                     vcount = m->vertexCount;
-                    for (unsigned int i = 0; i < (unsigned int) (m->vertexCount << 1); i += 2) {
+                    for (unsigned int i = 0; i < (vcount << 1); i += 2) {
                         float *p = uvFloats + (i + 1);
                         *p = 1.0f - *p;
                     }

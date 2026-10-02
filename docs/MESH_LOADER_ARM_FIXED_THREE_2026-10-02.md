@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **97.90% unweighted / 97.74% weighted**.
+Latest validated continuation: source **97.93% unweighted / 97.79% weighted**.
 The result tables below preserve earlier measurements. Chronological continuation
 sections record later per-body results, corpus evidence and rejected trials.
 
@@ -1169,3 +1169,61 @@ applicable, with actual linked-exact 2,079 / byte-exact 959 pair sets intact.
 Fixed source scores remain 98.4 / 97.4 / 97.9 and means **97.90% unweighted /
 97.74% weighted**. The >=99.0% goal stays active. These negative compiler-form
 results establish neither a compiler ceiling nor native game/ABI readiness.
+
+## Continuation: captured float-UV component bound
+
+Four valid isolated trials start from `55ab1ab6`, revisiting the uncompressed
+UV loop following the accepted bounds/color/numerator scheduling changes.
+Canonical flags, matcher and denominator remain unchanged.
+
+| Trial | Read source / strict | Compiled instructions |
+|---|---|---:|
+| Use the captured vertex count for the UV bound | **97.5 / 55.7** | 872 |
+| Reread texCoords from the owner inside the loop | 97.5 / 55.0 | 872 |
+| Combine captured bound and owner reread | 97.1 / 55.8 | 861 |
+| Combined form with a precomputed component count | 97.1 / 55.8 | 861 |
+
+Only the first variant is retained. It changes the loop limit from repeated
+`m->vertexCount << 1` to `vcount << 1`, using the count already assigned just
+before the loop. No extra state, calls or effects are introduced. Original
+Android loads the unsigned-short count at `0x6c9e2`, doubles it at `0x6c9e4`
+and compares against that retained component limit at `0x6ca28`. It also
+rereads the UV pointer at `0x6ca14`; that separate source form was tested but
+is not retained because the combined change regresses the required score.
+This is a partial source-backed loop-bound correction, not a claim of exact
+recovered C++ or complete recovered ownership semantics.
+
+Read source rises 97.4 -> 97.5, strict 55.4 -> 55.7. Its inventory/opcodes/
+control/calls/size scores are 92.5/96.9/98.1/100.0/99.9; ordered control 90.3.
+Compiled instruction count 872 versus original 873.
+
+Native UCRT64 gof2 static-library build passed, as did the actual Mesh.cpp
+enhanced parser smoke and the verbatim reader/production vector-math smoke.
+The Create/Read/actual enhanced-parser test now loads two-vertex V4 float UV
+fixtures with shader disabled/enabled, checking both U values and unchanged
+V versus 1-V, complete file consumption, output count and file lifecycle.
+Two distinct UV pairs verify both loop iterations. Existing plain/enhanced
+success, selected reader failures, guard and OpenRead-failure checks pass.
+File/release/unused Transform boundaries remain mocked; this is not native
+ABI proof or a native game/device runtime test.
+
+Fresh full ARM rebuild of all 204 translation units in `_work/floatuvbound-full`
+passes: 4,619 comparisons, zero skipped, 4,274/4,524 originals compared,
+missing 250 (7 wrong type, 243 absent), extra 130. Actual normalized
+`(unit, symbol)` sets equal baseline: linked-exact 2,079, byte-exact 959,
+lost [] and gained [] for both. The other 202 objects remain byte-identical
+to baseline; Core equals the accepted focused object, Mesh equals the
+preceding full object. Baseline function-boundary checks confirm no changes
+outside the three allowed bodies or to their signatures.
+
+Full strict/source averages: 75.98/88.99. Full report SHA-256: `07cdf48375f9a147f2032c5b051da55cf769f2032c023e671d49ce2c5ad3d191`.
+Evidence: `_work/floatuvbound_full.json`, `_work/floatuvbound_three.json`,
+`_work/floatuvbound_full_build.log`, `_work/floatuvbound_full_verify.log`,
+`_work/floatuvbound_native.log`, `_work/floatuvbound_read_smoke.log`,
+`_work/floatuvbound_smoke.exe`, `_work/floatuvbound-read-smoke/`, and the four
+`_work/readfloatuvowner-*.json` trial reports.
+
+Fixed source scores: Create 98.4, Read **97.5**, Enhanced 97.9. Original weights
+remain 291/873/636, total 1,800. Means: **97.933333% unweighted / 97.786833%
+weighted** (97.93/97.79 displayed). Both required >=99.0% gates remain unmet;
+the goal stays active without a demonstrated compiler ceiling.
