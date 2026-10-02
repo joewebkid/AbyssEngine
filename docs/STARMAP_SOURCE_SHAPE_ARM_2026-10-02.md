@@ -1009,6 +1009,53 @@ zero skips. Baseline and checkpoint 43f3e1c2 preservation gates pass with zero
 losses (2083 linked / 960 byte). The default 99% gate exits 1 with the expected
 threshold message. Runtime remains untested.
 
+## Follow-up after checkpoint fcb1741b
+
+Three source hypotheses were measured and rejected. Production StarMap.cpp
+is restored to fcb1741b; this follow-up changes only this evidence report.
+
+- OnTouchEnd mission 142: guard both checks with one warningText <0 branch,
+  then use if/else-if for missing equipment and free-space warnings. This
+  keeps repeated campaign/station/ship calls and their short-circuit behavior.
+  The compiler already produces the same result for the retained two guards:
+  complete focused JSON is identical. Removed the extra source nesting.
+- Info target-result int: the prior viewport-order repair changed register
+  allocation across the method, so the local-result type was retested against
+  this new checkpoint, not reused from the fifteenth report. Original c876e..
+  c8776 uses CMP #-1/IT GT/ORRS; the new checkpoint uses EOR with the return
+  value's sign bit at 1058..105e. Changing only targetMatch bool to int worsens
+  info source 98.6% -> 98.5%, strict 74.9% -> 74.7%, current instructions
+  1197 -> 1196, ordered control-flow 89.1% -> 88.6%. Rejected. ARM does not
+  prove the original C++ local type, and no register/flag workaround is added.
+- Info mission 120: explicit station/system branches and a negative-index
+  continuation to freighter checks were tested against the ternary condition.
+  Original c8544/c8546 compares #0/BGE while the current cE34/cE38 sequence
+  compares #-1/BGT (addresses e34/e38 in angle-search-twentythird.asm).
+  The predicates are equivalent signed tests; complete focused JSON and object
+  SHA-256 remain identical despite the source restructuring. Removed the label.
+
+Read-only mapping checked all seven Android getStationEnumIndex call sites in
+info against the current object. The first, mission-163 search, fallback and
+pending-product tests already preserve their signed zero/negative branch forms.
+The target Boolean formation and mission-120/freelance branch layout retain
+instruction differences. This map identifies residual evidence, not a proven
+compiler ceiling or permission to change the metric. The signed int32_t return
+casts remain necessary; the shared header's unsigned declaration is unchanged.
+
+Packages: _work/142-group-twentyfourth.json/log,
+target-result-twentyfourth.json/log and mission120-twentyfourth.json/log.
+Own source backups: before-142-group-twentyfourth.cpp,
+before-target-result-twentyfourth.cpp and before-mission120-twentyfourth.cpp.
+After restoring with a fresh timestamp, _work/twentyfourth-restored-focused
+JSON/log proves 204 ARM TUs compiled, zero failures, 22 comparisons, zero skips,
+and raw JSON byte equality to the accepted _work/final-focused.json.
+Restored StarMap.o SHA-256 equals the accepted fcb1741b object:
+e650943d8de8560afae62079ab176de5b80264992479581ade08d5278c49e0ae.
+
+The previous native static-library/full-corpus validations remain the latest
+accepted production evidence; no new full or native run is claimed for these
+rejected variants. Fixed means stay 99.150% / 98.40898%, weighted target unmet.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
