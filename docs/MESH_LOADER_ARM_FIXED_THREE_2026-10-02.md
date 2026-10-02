@@ -851,3 +851,36 @@ section. No code/test change remains; the previous fresh 204-TU ARM/native
 library and reader/parser gates remain applicable, with exact pair sets 2,079
 linked / 959 raw and no losses. Means remain **97.13% unweighted / 97.35%
 weighted**. The >=99.0% goal is unmet; no objective compiler ceiling is proven.
+
+## Continuation: Create allocation expression and boolean input guard
+
+Eight isolated Create trials from `5256c600` provide no source-score gain.
+All implementation changes were restored; canonical flags, body boundaries
+and matching rules stay unchanged.
+
+| Trial | Create source / strict | Compiled instructions |
+|---|---|---:|
+| Separate top-level raw allocation and placement construction | 96.2 / 61.6 | 280 |
+| Separate child raw allocation and placement construction | 96.2 / 60.6 | 280 |
+| Both allocation/construction expressions separated | 96.2 / 60.6 | 280 |
+| Top-level void storage followed by placement construction | 96.2 / 61.6 | 280 |
+| Explicit invalid-pointer boolean chain | 96.2 / 62.0 | 280 |
+| Explicit valid-pointer boolean chain | 96.2 / 62.0 | 280 |
+| Bitwise AND of the two boolean pointer comparisons | 96.2 / 61.6 | 280 |
+| Ternary input guard | 96.2 / 61.6 | 280 |
+
+The allocation trials keep the existing Mesh constructor and sizeof(Mesh);
+they add no manual copied field initialization. Original operator-new then
+initialization instructions motivate this source-form test, but do not imply
+the original source used placement new. The boolean chains follow the original
+conditional pointer test: the decompiler records the engine-null predicate and
+updates it with the path-null predicate only when engine is present. They
+slightly improve strict matching, but the requested recorded source score
+does not change. Ordinary new expressions and the existing guard are retained.
+
+Tracked source status was clean after the completed sweeps and before this
+report update. No source/test change remains; the preceding fresh complete ARM
+corpus/native library and reader/parser validation remains applicable. Exact
+sets remain 2,079 linked / 959 raw with no losses. Fixed means stay **97.13%
+unweighted / 97.35% weighted**. The >=99.0% goal remains unmet; these negative
+results do not prove a compiler ceiling or establish game/ABI readiness.
