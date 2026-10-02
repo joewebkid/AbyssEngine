@@ -1438,7 +1438,7 @@ campaign_targets:
     int drawY = (int)(this->scratchVector.y + (float)(this->iconWidth >> 1) - 3.0f);
     if (stationMode) {
         int textW = textCanvas->GetTextWidth(textFont, this->stations->data()[index]->getName());
-        float drawX = textX - (float)(textW / 2);
+        int drawX = (int)(textX - (float)(textW / 2));
         int current = Globals::status->getStation()->getIndex();
         if (current == this->stations->data()[index]->getIndex()) {
             int alpha = this->alpha;

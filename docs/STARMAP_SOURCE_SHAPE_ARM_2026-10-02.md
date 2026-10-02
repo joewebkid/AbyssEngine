@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.150% unweighted / 98.40898% original-instruction
+implementation bodies measure **99.160% unweighted / 98.44298% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**86.995% / 80.82947%**, respectively. Source-shape is an inventory/control-flow
+**86.985% / 80.79548%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -1187,6 +1187,45 @@ The native static-library and full-corpus validations remain those of
 0fe3756d; this report-only package claims no new full/native run.
 The weighted 99% target is still unmet. Native runtime remains untested.
 
+## Follow-up after checkpoint 72465845
+
+The station text X coordinate in drawOnScreenInfo is now converted once to
+int after subtracting half the text width, and that integer is used by station
+name and technology draws. The system text branch already used an int.
+The previous station implementation kept X as float until each drawing call.
+This supersedes the earlier retained-form description in the fifth checkpoint;
+it does not claim recovery of the original C++ spelling.
+
+Original Android c897a subtracts the half-width; c898e converts X to signed
+integer and c8992 moves it into r4 before c8996's repeated Station::getIndex.
+The name draw at c8b76 passes that integer in r3. New object 1268 subtracts,
+127c converts, 1280 moves into r4 and 1284 performs the repeated getter.
+Old object performed the repeated getter at 1278 before that X conversion.
+The new scheduling follows the original early conversion and integer lifetime.
+No coordinate is converted back to float, and no marker/scratchVector reload
+across callbacks was replaced by this local text-coordinate snapshot.
+
+Focused package: _work/station-textx-twentyeighth.json/log. Info source
+98.6% -> 98.8%; strict 75.5% -> 75.3%; current instructions 1196 -> 1198;
+instruction inventory 97.2% -> 97.5%, opcode inventory 98.4% -> 98.7%,
+size match 99.2% -> 99.4%. Other focused rows, including exact bodies and
+aliases, are unchanged. Fixed source means become 99.160% / 98.44298%;
+strict means become 86.985% / 80.79548%. This is a measured source gain
+with a small strict decline, not an exact-match or runtime-equivalence claim.
+The weighted target remains below 99%.
+
+Evidence: _work/info-original-direct.asm and
+_work/station-textx-twentyeighth.asm. Backup:
+_work/before-station-textx-twentyeighth.cpp. Previous checkpoint inputs:
+_work/checkpoint28-before-focused.json/corpus.json. Final object SHA-256:
+1a12eaa4a0002c78e01fccc2a8a8b2a7aee04366607cd84e6fe97bfdace9879d.
+
+Native static-library build and all 204 ARM translation units pass. The full
+corpus contains 4619 comparisons with zero skips. Baseline and previous
+checkpoint 72465845 preservation gates pass with zero lost exact pairs;
+all 2083 linked-exact / 960 byte-exact pairs are retained. Default 99% gate
+exits 1 with the unchanged threshold message. Native runtime is untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -1224,18 +1263,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/twentyfifth-corpus.log`; focused log:
-`_work/icon-canvas-final-twentyfifth.log`; native log: `_work/native-twentyfifth.log`.
+Latest full log: `_work/twentyeighth-corpus.log`; focused log:
+`_work/station-textx-twentyeighth.log`; native log: `_work/native-twentyeighth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b and f7cbbae0, with no new gains or losses since
-7fc7701c. The latest comparison against f7cbbae0 preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
+7fc7701c. The latest comparison against 72465845 preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/twentyfifth-gate.json, twentyfifth-previous-gate.json and
-twentyfifth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/twentyeighth-gate.json, twentyeighth-previous-gate.json and
+twentyeighth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `e2bf0ca5576e395572ceb256756700da68c27f7437e6e50888cc4fe1d84d3b8b`.
+final full JSON SHA-256: `1f9a2b70a89efd170a9e5e47ce81ff7a7df431479becce4f599c585bbafcd77f`.
 
 
 ### Reproduction
@@ -1266,7 +1305,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
-| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1196 | 78.9% | 98.6% | 75.5% | - |
+| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1198 | 78.9% | 98.8% | 75.3% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.5% | 82.1% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.0% | 89.1% | - |
