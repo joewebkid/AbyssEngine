@@ -1594,7 +1594,8 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     this->easeX = new AbyssEngine::EaseInOut();
     this->easeY = new AbyssEngine::EaseInOut();
     this->easeZ = new AbyssEngine::EaseInOut();
-    this->dragScale = ((Layout *) Globals::layout)->field_0x90;
+    // Android c6d7e/c6d82 copies this float's bits; Layout currently declares the slot as int.
+    __builtin_memcpy(&this->dragScale, &Globals::layout->field_0x90, sizeof(this->dragScale));
     this->prevCamera = (uint32_t)Globals::Canvas->CameraGetCurrent();
     Globals::Canvas->CameraCreate(this->camera);
     Globals::Canvas->CameraSetPerspective(this->camera, 1.1504f, 200.0f, 64000.0f);
