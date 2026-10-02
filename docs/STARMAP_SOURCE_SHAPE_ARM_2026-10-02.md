@@ -1137,6 +1137,56 @@ corpus results below remain those of checkpoint 0fe3756d; neither is claimed
 as a new run for this report-only follow-up. The weighted 99% objective is
 still unmet; native runtime remains untested.
 
+## Follow-up after checkpoint 03aa0342
+
+Production source remains unchanged after five focused source-form trials.
+They test concrete Android instruction differences, not recovered C++ syntax.
+
+- OnTouchEnd's confirmation tail was nested under else if (result == 0),
+  following the original result-1/result-0 dispatch at caec4/caec8. Current
+  1eac/1eb2 tests zero first. The nested form produced identical complete
+  focused JSON; it was removed. Package: choice-result-twentyseventh.json/log.
+- init's target-station ownership test combined its two Boolean predicates
+  with bitwise AND. Original c6f7a..c6f82 reads playerStation and compares it
+  before the conditional null comparison; current 4af0..4afe tests null first.
+  The alternate expression produced identical JSON and object SHA-256; it
+  was removed. Package: target-ownership-twentyseventh.json/log. No invalid
+  ownership or callback-visible bug is claimed for the retained expression.
+- update's station-centering yaw and pitch assignments were placed directly
+  into their positive/negative quarter-step branches. Original ca218..ca228
+  and ca52c..ca53e branch to select the direction; current 3832..383e and
+  3878..3888 use conditional instructions. The combined trial reduced update
+  source 98.5% -> 98.4%, instruction inventory 96.7% -> 96.3% and opcode
+  inventory 98.2% -> 97.9%; strict rose 82.1% -> 82.2%. Counts, calls and all
+  other rows were unchanged. Package: angle-branches-twentyseventh.json/log.
+- Isolated yaw assignment produced identical complete JSON to the accepted
+  version. Isolated pitch assignment produced identical complete JSON to the
+  rejected combined trial. Both were removed. Packages:
+  yaw-branch-twentyseventh.json/log and pitch-branch-twentyseventh.json/log.
+
+Read-only checks rule out two additional proposed corrections: the station
+inertia block at current 282a..287e already matches original cb896..cb8ea's
+coordinate loads, absolute-value selections, 150 thresholds and velocity
+stores. Cargo/jumpCost are signed int32_t, matching original cb5e0/cb5e2 and
+cb60a/cb60e's signed BGE conditions. These observations do not prove the
+remaining function equivalent. Allocation-shape inventory review of init,
+info, update and drawKey did not change the verifier, its normalizations or
+its weights. The previously documented shared Matrix constructor/inline
+initialization difference remains; no scope workaround was introduced.
+
+Fresh restore: _work/twentyseventh-restored-focused.json/log, 204 ARM TUs
+compiled, zero failures, 22 rows, zero skips. Complete restored JSON is
+byte-identical to _work/final-focused.json. StarMap.o SHA-256 remains
+7cfc414cb456444e775d12e657c5c23d6507a5545af3096010f027fdb2380de9.
+Backups: before-choice-result-twentyseventh.cpp,
+before-target-ownership-twentyseventh.cpp and
+before-angle-branches-twentyseventh.cpp. All package names above are in _work.
+
+Source means remain 99.150% / 98.40898%; strict 86.995% / 80.82947%.
+The native static-library and full-corpus validations remain those of
+0fe3756d; this report-only package claims no new full/native run.
+The weighted 99% target is still unmet. Native runtime remains untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
