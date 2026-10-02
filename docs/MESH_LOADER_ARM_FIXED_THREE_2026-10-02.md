@@ -1,6 +1,8 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
 Latest validated continuation: source **97.93% unweighted / 97.79% weighted**.
+Latest semantic correction: original full bounds diagonal; earlier half-diagonal
+radius assertions are superseded by the verified operand/ABI evidence below.
 The result tables below preserve earlier measurements. Chronological continuation
 sections record later per-body results, corpus evidence and rejected trials.
 
@@ -1322,3 +1324,79 @@ ARM/native and reader/parser/caller validation still applies to unchanged
 production/test sources. Exact linked 2,079 / raw 959 pair sets remain intact.
 Fixed scores stay 98.4 / 97.5 / 97.9, with means **97.93% unweighted / 97.79%
 weighted**. Both >=99.0% gates remain unmet; the goal stays active.
+
+## Continuation: verify the original full bounds diagonal
+
+This continuation finds a semantic error in the preceding reader reconstruction.
+The old center-minus-minimum expression and its sqrt(24) smoke expectation
+were unsupported assumptions. They are superseded by the direct original
+caller/helper ABI evidence below. The required source means do not increase;
+retaining a known incorrect operand solely because it ties a shape score would
+leave the native reconstruction and its validation wrong.
+
+Original constant words mapped through the ELF PT_LOAD segments are
+`0x6c9ec = +10000000.0f` and `0x6c9f0 = -10000000.0f`. Initialization at
+`0x6c6a0..0x6c6ac` puts maxima at sp+108/112/116 and minima at sp+120/124/128.
+At `0x6c844..0x6c876` both triples are loaded to compute the center midpoint.
+Vector assignment at `0x6c88c` stores that center in the mesh. The later stores
+at `0x6c896..0x6c8ac` copy maxima into sp+80/84/88 and minima into sp+68/72/76.
+Before subtraction at `0x6c8b0`, r0 points to result sp+96, r1 to maximum
+sp+80 and r2 to minimum sp+68. The original operator- body in the delinked
+AEMath target directly subtracts [r2] from [r1] and writes the three components
+to [r0]. This confirms the hidden-result ABI, not merely the symbol name.
+Original VectorLength at `0x6c8b6` receives that result and computes its length
+with no half multiplier. Thus the computed legacy radius is length(max-min),
+not length(center-min). The earlier radius test was mirroring the mistaken
+implementation; its pass did not prove fidelity to this original behavior.
+
+Three exact-operand forms were compiled with unchanged flags and matcher:
+
+| Full-diagonal source form | Read source / strict | Compiled instructions |
+|---|---|---:|
+| Copies of float maximum/minimum triples | 97.5 / 55.6 | 869 |
+| Copies as Vector maximum/minimum objects | **97.5 / 55.6** | 869 |
+| Temporary Vector operands | 97.5 / 55.6 | 869 |
+
+The named Vector form is retained as the simplest typed expression of the
+verified operands; helpers remain unchanged. Source match stays 97.5, strict
+falls 55.7 -> 55.6, reported instruction count is 869 versus original 873.
+The center calculation, file reads, conversions, cleanup and all other bodies
+remain unchanged. Exact original C++ variable names/temporary syntax are not
+claimed recovered.
+
+Reader smoke now checks radius sqrt(96) for the original two-vertex fixture
+and sqrt(2)/sqrt(18) for the three tangent fixtures; center and tangent/binormal
+checks still pass. Running these corrected checks against the preceding
+verbatim reader include fails at the full-diagonal assertion (exit 3), while
+the current reader passes. Windows abort reporting is disabled in this test
+to keep this deliberate negative regression check noninteractive. Actual
+Mesh.cpp enhanced parser, Create/Read/actual enhanced parser with two-vertex
+float UVs, all existing truncations and UCRT64 gof2 library build pass.
+File/unused Transform boundaries remain mocked, and no game/device runtime
+or native ABI readiness is proved. Computed legacy radii follow the full
+diagonal and can roughly double the preceding values (exactly double in the
+checked fixtures; float midpoint rounding can affect other inputs).
+Native-game impact is unverified. Enhanced metadata follows its existing path.
+
+Fresh full ARM rebuild covers all 204 translation units in `_work/fullbounds-full`.
+Full corpus: 4,619 comparisons, zero skipped, 4,274/4,524 originals compared,
+missing 250 (7 wrong type, 243 absent), extra 130. Actual normalized
+`(unit, symbol)` linked-exact/byte-exact sets equal baseline: 2,079/959,
+lost [] and gained [] for both. The other 202 objects are byte-identical to
+baseline, Core equals the typed focused winner, Mesh equals floatuvbound-full.
+Baseline body/signature comparison confirms no source edits outside the
+three authorized bodies.
+
+Full strict/source averages: 75.98/88.99. SHA-256: `38477dcc98c9413d109d3344fcde3e4ce2fac4ed6cb9532d620d1114dcb6ff33`.
+Evidence: `_work/read_full_bounds_diagonal_sweep.py`, three
+`_work/readfulldiag-*.json` reports, `_work/fullbounds_full.json`,
+`_work/fullbounds_three.json`, `_work/fullbounds_full_build.log`,
+`_work/fullbounds_full_verify.log`, `_work/fullbounds_native.log`,
+`_work/fullbounds_read_smoke.log`, `_work/fullbounds_old_reader_regression.log`,
+`_work/fullbounds_smoke.exe`, `_work/fullbounds-read-smoke/`, original_mesh.asm
+and the original AEMath target object for operator-/VectorLength inspection.
+
+Fixed scores stay Create 98.4, Read 97.5, Enhanced 97.9. Original instruction
+weights remain 291/873/636, total 1,800. Means **97.933333% unweighted /
+97.786833% weighted** (97.93/97.79 displayed) remain below both >=99.0% gates.
+The goal stays active; this semantic correction does not establish a compiler ceiling.

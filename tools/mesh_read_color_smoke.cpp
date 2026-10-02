@@ -39,6 +39,9 @@ void AEMath::BSphere::Merge(const AEMath::BSphere &) { std::abort(); }
 #include "mesh_read_under_test.inc"
 
 int main() {
+#ifdef _WIN32
+    _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+#endif
     using namespace AbyssEngine;
     const unsigned int handle = 1;
     const unsigned char rgba[] = {0, 1, 127, 255, 64, 128, 192, 254};
@@ -61,7 +64,8 @@ int main() {
     const auto *converted = static_cast<const float *>(mesh.positions);
     for (size_t i = 0; i < 6; ++i) assert(converted[i] == positions[i]);
     assert(mesh.boundsCenterX == 2 && mesh.boundsCenterY == 1 && mesh.boundsCenterZ == 6);
-    assert(std::fabs(mesh.boundsRadius - std::sqrt(24.0f)) < 0.000001f);
+    // Original reader takes length(max - min), not length(center - min).
+    assert(std::fabs(mesh.boundsRadius - std::sqrt(96.0f)) < 0.000001f);
     ::operator delete[](mesh.positions);
     ::operator delete[](mesh.colors);
 
@@ -111,6 +115,7 @@ int main() {
         slot = &triangle;
         assert(MeshReadData(nullptr, handle, 1, &slot, nullptr) == 1);
         assert(cursor == input.size());
+        assert(std::fabs(triangle.boundsRadius - std::sqrt(fixture == 0 ? 2.0f : 18.0f)) < 0.000001f);
         const float tx = fixture == 0 ? 1.0f : 1.0f / std::sqrt(5.0f);
         const float ty = fixture == 1 ? 2.0f / std::sqrt(5.0f) : 0.0f;
         const float tz = fixture == 2 ? 2.0f / std::sqrt(5.0f) : 0.0f;

@@ -870,8 +870,9 @@ namespace AbyssEngine {
             center[1] = (maxv[1] + minv[1]) * 0.5f;
             center[2] = (maxv[2] + minv[2]) * 0.5f;
             *(Vector *) &(*slot)->boundsCenterX = *(const Vector *) center;
-            float halfDiag[3] = {minv[0], minv[1], minv[2]};
-            Vector diagonal = *(const Vector *) center - *(const Vector *) halfDiag;
+            Vector maximum = {maxv[0], maxv[1], maxv[2]};
+            Vector minimum = {minv[0], minv[1], minv[2]};
+            Vector diagonal = maximum - minimum;
             (*slot)->boundsRadius = AEMath::VectorLength(diagonal);
         }
 
