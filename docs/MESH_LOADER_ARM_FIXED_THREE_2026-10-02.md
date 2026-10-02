@@ -1,8 +1,8 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
 Latest validated continuation: source **96.93% unweighted / 97.08% weighted**.
-The result tables below preserve earlier measurements; the final continuation
-contains the current per-body results and full-corpus evidence.
+The result tables below preserve earlier measurements. Chronological continuation
+sections record later per-body results, corpus evidence and rejected trials.
 
 Status: **partial; the required two >=99.0% means are NOT achieved**.
 There is no demonstrated objective compiler ceiling. This report supersedes
@@ -401,3 +401,34 @@ Current scores: Create 96.2 / Read 97.0 / Enhanced 97.6 source. Means are
 dispatch_three.json, dispatch_full_build.log, dispatch_full_verify.log,
 dispatch_native.log and dispatch_smoke.exe. The >=99.0% gate remains unmet.
 No push, PR or merge was performed.
+
+## Continuation: Create branch/return audit without accepted edits
+
+Rechecked the current tracked state (8d60ca51) and measured eight additional
+ordinary source forms with unchanged canonical ARM flags and matcher:
+
+| Trial | Create source / strict | Instructions | Decision |
+|---|---|---:|---|
+| Inverted enhanced/non-enhanced order | 96.2 / 61.6 | 280 | unchanged |
+| Single-part branch before multi-part branch | 95.0 / 57.8 | 280 | rejected |
+| Both branch orders inverted | 95.0 / 57.8 | 280 | rejected |
+| Cases 0/1/default for subCount | 95.0 / 57.8 | 280 | rejected |
+| Count switch plus inverted outer branch | 95.0 / 57.8 | 280 | rejected |
+| Separate new Transform from output assignment | 96.2 / 61.6 | 280 | unchanged |
+| Common result variable/return label | 96.2 / 62.0 | 280 | no source gain |
+| Separate engine/path guards | 96.2 / 61.6 | 280 | unchanged |
+
+Every trial was restored to the validated source; git tracked status was clean
+before this report addition. No accepted source change means the preceding full
+ARM/native/parser evidence still applies; no unnecessary full rebuild was run.
+Create still has 24 target versus 23 compiled calls, with its two original
+single-mesh reader call sites folded into one compiled site. The new Transform
+assignment already reads *out after construction, so no field-read repair is
+needed there. Remaining allocation-normalized inventory differences include
+parameter spills/reloads, zero-offset memory encoding and the input guard's
+conditional form. These trials reject specific source hypotheses; they do not
+prove that all legitimate C++ forms are exhausted or establish a compiler ceiling.
+
+Current validated source means remain **96.93% unweighted / 97.08% weighted**;
+Create 96.2 / Read 97.0 / Enhanced 97.6. No exact pair was lost by these restored
+trials. The >=99.0% goal remains unmet and active.
