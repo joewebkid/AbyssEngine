@@ -1,0 +1,51 @@
+{
+  "real_object": "_work/gun-current/verify/base/engine/core/ArrayInstantiations.o",
+  "old_symbols": 38,
+  "proposed_symbols": 50,
+  "existing_disassembly_unchanged": true,
+  "distinct_sections_at_zero_test": "passed",
+  "seven_cases": [
+    {
+      "symbol": "_ZN5ArrayIPN11AbyssEngine7KeyCodeEEC2Ev",
+      "previously_parsed": false,
+      "now_parsed": true,
+      "same_body_as": "_ZN5ArrayIPN11AbyssEngine7KeyCodeEEC1Ev"
+    },
+    {
+      "symbol": "_ZN5ArrayIPN11AbyssEngine7KeyCodeEED2Ev",
+      "previously_parsed": false,
+      "now_parsed": true,
+      "same_body_as": "_ZN5ArrayIPN11AbyssEngine7KeyCodeEED1Ev"
+    },
+    {
+      "symbol": "_ZN5ArrayIPS_IP9ImagePartEEC2Ev",
+      "previously_parsed": false,
+      "now_parsed": true,
+      "same_body_as": "_ZN5ArrayIPS_IP9ImagePartEEC1Ev"
+    },
+    {
+      "symbol": "_ZN5ArrayIP9BluePrintEC2Ev",
+      "previously_parsed": false,
+      "now_parsed": true,
+      "same_body_as": "_ZN5ArrayIP9BluePrintEC1Ev"
+    },
+    {
+      "symbol": "_ZN5ArrayIP9BluePrintED2Ev",
+      "previously_parsed": false,
+      "now_parsed": true,
+      "same_body_as": "_ZN5ArrayIP9BluePrintED1Ev"
+    },
+    {
+      "symbol": "_ZN5ArrayIP14PendingProductED2Ev",
+      "previously_parsed": false,
+      "now_parsed": true,
+      "same_body_as": "_ZN5ArrayIP14PendingProductED1Ev"
+    },
+    {
+      "symbol": "_ZN5ArrayIbED2Ev",
+      "previously_parsed": false,
+      "now_parsed": true,
+      "same_body_as": "_ZN5ArrayIbED1Ev"
+    }
+  ]
+}
