@@ -469,3 +469,35 @@ report addition; no source/body or verifier change remains. The preceding full
 native/ARM/parser validation and exact sets still apply; no repeat full build
 was necessary. Current means remain **96.93% unweighted / 97.08% weighted**.
 The >=99.0% gate is unmet. No objective compiler ceiling is demonstrated.
+
+## Continuation: ReadData storage, Vector temporaries and format predicates
+
+Eleven isolated source trials from the validated source produce no source-score
+gain. Canonical flags, the matcher, the three bodies and their weights remain
+unchanged. Every trial was restored before this report update.
+
+| Trial | Read source / strict | Compiled instructions |
+|---|---|---:|
+| One raw pointer reused across sequential streams | 97.0 / 52.6 | 879 |
+| Destination allocation assigned directly to fields | 97.0 / 52.6 | 879 |
+| Shared raw pointer and direct destination assignments | 97.0 / 52.6 | 879 |
+| Final tangent inputs copied as Vector objects | 97.0 / 52.8 | 877 |
+| Triangle tangent assembled as a Vector | 97.0 / 52.6 | 879 |
+| Both tangent Vector forms | 97.0 / 52.8 | 877 |
+| Bounds center/minimum scratch as Vector objects | 97.0 / 52.6 | 879 |
+| Bounds Vector form plus final tangent Vector inputs | 97.0 / 52.8 | 877 |
+| Compressed predicate expressed as flags & 7 | 97.0 / 52.6 | 879 |
+| Integer-position predicate expressed as flags & 3 | 97.0 / 52.6 | 879 |
+| Both masked predicates | 97.0 / 52.6 | 879 |
+
+The bit predicates are equivalent for the unsigned flags argument; both its
+left-shift tests and these masks depend on the same low bits. Allocation,
+read/free order and failure exits were unchanged. Typed Vector inputs slightly
+improve strict/size evidence but not the requested recorded source score;
+therefore no implementation change was accepted solely for cleaner syntax.
+
+The tracked source status was clean before adding this section. No source
+change remains, so the prior full ARM/native/parser gate and its exact sets
+remain authoritative; no repeat full build was necessary. Current means remain
+**96.93% unweighted / 97.08% weighted**. The >=99.0% gate is unmet, and these
+specific negative results do not establish an objective compiler ceiling.
