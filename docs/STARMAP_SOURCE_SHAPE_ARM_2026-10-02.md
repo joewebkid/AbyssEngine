@@ -1226,6 +1226,52 @@ checkpoint 72465845 preservation gates pass with zero lost exact pairs;
 all 2083 linked-exact / 960 byte-exact pairs are retained. Default 99% gate
 exits 1 with the unchanged threshold message. Native runtime is untested.
 
+## Follow-up after checkpoint 364ddd7d
+
+Two initStarSystem source-form trials were rejected because each produced
+identical complete focused JSON and object bytes to the accepted checkpoint.
+
+- An explicit i >= stationGeoms->size() break at the beginning of the main
+  station loop was tested in place of the for-condition. Original c76e0/c76e8
+  tests exit at the top and c792a jumps back unconditionally; current
+  2d32..2d3a tests continuation at the bottom. The alternate source form did
+  not change compiler output. Package: station-loop-twentyninth.json/log.
+- The ring predicate was expressed as a negative guard that skipped only the
+  ring creation block. It preserved the unsigned texture bound before the
+  shift and the conditional orbitHasPlanetRing call. Original c7896 branches
+  to the secondary test when the texture bit is absent; c794a branches back
+  to creation on success. The guard did not change compiler output. Package:
+  ring-guard-twentyninth.json/log. Neither expression is recovered C++ syntax.
+
+Read-only comparison confirms the station-distance calculation already
+matches: original c77ac/c77b2..c77ba chooses previous distance before nextInt
+at c77c6, then c77ca adds it and c77d0 adds 1600. Current 2b96..2bba has the
+same ordering. The previously rejected fifteenth-checkpoint addition trial
+was not repeated.
+
+Allocation-shape counter review also found an input-data caveat: original-only
+BVC and SUBS #35 tokens correspond to the two Thumb halfwords at c7d74/c7d76.
+Their combined word is 0x3c23d70a (float 0.01), loaded as scale data by LDRLE
+at c7c2a. These are literal data, not evidence of a missing gameplay branch.
+The raw/normalized inventory distinction does not establish a compiler ceiling
+or prove a maximum attainable score. No instructions, padding or extra calls
+were added to imitate literal bytes; the frozen verifier and 7101 weights
+remain unchanged.
+
+Fresh restore package: _work/twentyninth-restored-focused.json/log. All 204
+ARM translation units compiled, zero failures, 22 rows, zero skips. Complete
+JSON is byte-identical to _work/final-focused.json, and StarMap.o SHA-256 is
+1a12eaa4a0002c78e01fccc2a8a8b2a7aee04366607cd84e6fe97bfdace9879d.
+Backups: before-station-loop-twentyninth.cpp and
+before-ring-guard-twentyninth.cpp, both under _work. Original evidence:
+_work/station-original-direct.asm; accepted disassembly:
+_work/station-textx-twentyeighth.asm.
+
+Production code and source means remain 99.160% / 98.44298%; strict means
+remain 86.985% / 80.79548%. Native static-library/full-corpus results below
+remain those of 364ddd7d; this report-only follow-up claims no new full/native
+run. Weighted 99% is still unmet, and native runtime remains untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
