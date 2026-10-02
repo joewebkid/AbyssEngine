@@ -1056,8 +1056,8 @@ namespace AbyssEngine {
 
         if (m->vertexFormat & 8) {
             if (compressedData != 0) {
-                void *raw = ::operator new[]((*slot)->vertexCount << 2);
-                if (AEFile::Read((uint32_t)((*slot)->vertexCount << 2), raw, handleRef) == 0) {
+                void *raw = ::operator new[](m->vertexCount << 2);
+                if (AEFile::Read((uint32_t)(m->vertexCount << 2), raw, handleRef) == 0) {
                     ::operator delete[](raw);
                     return -1;
                 }

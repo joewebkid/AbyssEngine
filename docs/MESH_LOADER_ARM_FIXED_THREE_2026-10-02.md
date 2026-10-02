@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **97.00% unweighted / 97.15% weighted**.
+Latest validated continuation: source **97.03% unweighted / 97.20% weighted**.
 The result tables below preserve earlier measurements. Chronological continuation
 sections record later per-body results, corpus evidence and rejected trials.
 
@@ -554,3 +554,78 @@ Exactly these three bodies give **97.00% unweighted / 97.153333% weighted**
 remains unmet. No objective compiler ceiling is demonstrated. This validates
 the native library and bounded parser behavior; no native game executable or
 Android device runtime test was performed, and source-shape is not ABI proof.
+
+## Continuation: compressed color read through the captured mesh owner
+
+The original Android color path loads mesh into r4 at `0x6ce74`, reads its
+vertex count at `0x6ce82`, allocates raw bytes at `0x6ce86`, then reads the count
+from that same r4 at `0x6ce8e` before AEFile::Read at `0x6ce96`. It does not
+reload the mesh slot between these calls. The retained change uses the already
+captured `m` for both raw color allocation/read sizes, rather than rereading
+`*slot`. It still rereads the vertex-count field after allocation. No count
+formula, conversion, destination allocation or cleanup changed. This is an
+original memory-operand observation; the exact C++ spelling is not recovered.
+
+Nineteen isolated trials used the same canonical flags and matcher:
+
+| Trial | Body source / strict | Compiled instructions |
+|---|---|---:|
+| V5 channel defaults to 0x400, case 0 leaves it intact | Enhanced 97.8 / 64.9 | 637 |
+| Unsigned V5 channel loop through 6 | Enhanced 97.8 / 64.9 | 637 |
+| Explicit 0x7fffffff channel mask | Enhanced 97.8 / 64.9 | 637 |
+| Wide unsigned format variable | Enhanced 97.8 / 64.9 | 637 |
+| Direct flags predicates | Enhanced 97.8 / 64.9 | 637 |
+| C++ delete expressions for cleanup | Enhanced 97.8 / 64.9 | 637 |
+| Position loop terminates on unequal count | Read 97.0 / 52.6 | 879 |
+| UV loop terminates on unequal count | Read 96.8 / 52.4 | 879 |
+| Independent UV byte offset | Read 97.0 / 52.2 | 879 |
+| UV source pair pointer | Read 97.0 / 52.6 | 879 |
+| UV flip defaults to subtraction, then tests !flip | Read 97.0 / 52.6 | 879 |
+| Cached shader flag as unsigned byte | Read 97.0 / 52.6 | 879 |
+| Position loop uses remaining-component counter | Read 96.9 / 52.4 | 879 |
+| Captured raw owner for six-byte streams | Read 96.5 / 53.0 | 881 |
+| Captured raw owner for twelve-byte stream | Read 96.8 / 52.7 | 868 |
+| Captured raw owner for both four-byte streams | Read 97.1 / 51.7 | 877 |
+| Captured raw owner for all streams | Read 96.9 / 52.8 | 864 |
+| Captured raw owner only for UV | Read 97.0 / 52.1 | 879 |
+| Captured raw owner only for colors | **Read 97.1 / 52.2** | 877 |
+
+Only the color owner change was retained. Removing its redundant `m = *slot`
+assignment produced an identical focused ARM object. Strict matching regresses
+from 52.6 to 52.2 while requested source-shape improves from 97.0 to 97.1.
+Its components are inventory 91.3, opcodes 96.5, control 98.1, calls 100.0,
+size 99.4. Rejected source changes were restored; no verifier edits remain.
+
+Fresh gates:
+
+- Native UCRT64 `gof2` static library build passed; the existing enhanced parser
+  smoke passed against the unchanged Mesh.cpp version.
+- Added `tools/mesh_read_color_smoke.cpp` and its build runner
+  `tools/run_mesh_read_color_smoke.py`. It tests two integer vertices and eight
+  compressed RGBA bytes including 0/255, every shorter byte prefix, and the
+  zero-byte-read failure contract. It verifies converted positions/colors;
+  after failed color reads the test caller frees the existing position buffer,
+  as the reader does not roll back its earlier successful allocations.
+- Whole AbyssEngine.cpp smoke linkage was unsuccessful because the Windows
+  linker retained unrelated dependencies. The runner therefore compiles the
+  current reader definition extracted verbatim, with mocked file/math/engine
+  boundaries; other enhanced/tangent/child paths abort if called. It does not
+  test whole-TU linkage, allocation-induced slot mutation or native ABI. The
+  production translation unit is separately covered by the library/ARM builds.
+- All 204 ARM translation units rebuilt in `_work/colorowner-full`; 4,619
+  comparisons, zero skips, 4,274/4,524 originals compared, missing 250 (7 wrong
+  type, 243 absent), extra 130. Full strict/source means remain 75.98/88.99.
+- Actual `(unit, symbol)` sets equal baseline: linked-exact 2,079, byte-exact
+  959, lost **[]** and gained **[]** for each. The other 202 objects are
+  byte-identical to baseline; new Core equals the focused final object and Mesh
+  equals the preceding validated full object.
+- Full report SHA-256:
+  `89eae74efd7e00aa8bbbcfb6776cf676db9d779f204ed3251f41ae5d561ea203`.
+  Evidence: `_work/colorowner_full.json`, `_work/colorowner_three.json`,
+  `_work/colorowner_full_build.log`, `_work/colorowner_full_verify.log`,
+  `_work/colorowner_native.log`, `_work/colorowner-read-smoke/`.
+
+Fixed three source scores: Create **96.2**, Read **97.1**, Enhanced **97.8**.
+Weights stay 291/873/636, total 1,800. Means are **97.033333% unweighted /
+97.201833% weighted** (97.03/97.20 displayed). The >=99.0% goal remains unmet.
+No objective compiler ceiling or native game/device runtime readiness is proven.
