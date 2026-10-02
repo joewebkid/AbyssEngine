@@ -264,10 +264,7 @@ void StarMap::draw() {
     if (this->showKey != 0) {
         drawKey();
     }
-    {
-        String header(*Globals::gameText->getText(177), false);
-        Globals::layout->drawHeader(header);
-    }
+    Globals::layout->drawHeader(String(*Globals::gameText->getText(177), false));
     ((Layout *) (Globals::layout))->drawEmptyFooter(1);
     if ((Globals::status->getShip()->hasJumpDriveIntegrated() || this->jumpMapModeB) && this->jumpCost > 0 &&
         this->selectedSystem >= 0 && this->selectedSystem != Globals::status->getSystem()->getIndex()) {
@@ -601,8 +598,7 @@ int StarMap::OnTouchEnd(int x, int y) {
         }
     }
     if (Globals::layout->helpPressed()) {
-        String help(*Globals::gameText->getText(this->mode == 0 ? 628 : 631), false);
-        Globals::layout->initHelpWindow(help);
+        Globals::layout->initHelpWindow(String(*Globals::gameText->getText(this->mode == 0 ? 628 : 631), false));
     }
     return 0;
 }
@@ -618,16 +614,14 @@ static inline float absf_update(float v) {
 }
 
 void StarMap::update(int dt) {
-    Matrix matrix;
     Vector tmp;
 
     this->lastDt = dt;
     if (this->mode == 0 || this->transitionIn != 0 || this->transitionOut != 0) {
-        Array<Vector *> *positions = this->systemPositions;
-        for (uint32_t i = 0; i < positions->size(); i++) {
-            tmp = this->systemGeoms->data()[i]->getPosition();
-            int visible = Globals::Canvas->GetScreenPosition(tmp, *positions->data()[i]);
-            positions->data()[i]->z = visible != 0 ? 1.0f : -1.0f;
+        for (uint32_t i = 0; i < this->systemPositions->size(); i++) {
+            Vector position = this->systemGeoms->data()[i]->getPosition();
+            int visible = Globals::Canvas->GetScreenPosition(position, *this->systemPositions->data()[i]);
+            this->systemPositions->data()[i]->z = visible != 0 ? 1.0f : -1.0f;
         }
     }
     if (this->mode == 3 || this->transitionIn != 0 || this->transitionOut != 0) {
@@ -660,7 +654,6 @@ void StarMap::update(int dt) {
             this->markerGeom->setPosition(start + (tmp - start) * t);
         }
         PaintCanvas *canvas = Globals::Canvas;
-        canvas->CameraGetCurrent();
         tmp = AbyssEngine::AEMath::MatrixGetPosition(*static_cast<Matrix *>(
             canvas->CameraGetLocal(canvas->CameraGetCurrent())));
         this->scratchVector = tmp;
@@ -684,15 +677,23 @@ void StarMap::update(int dt) {
         tmp.z = this->easeZ->GetValue();
         this->scratchVector = tmp;
         PaintCanvas *canvas = Globals::Canvas;
-        __builtin_memcpy(
-            &matrix, canvas->CameraGetLocal(
-                canvas->CameraGetCurrent()), 0x3c);
+        Matrix matrix = *static_cast<Matrix *>(canvas->CameraGetLocal(canvas->CameraGetCurrent()));
         AbyssEngine::AEMath::MatrixSetTranslation(matrix, this->scratchVector.x, this->scratchVector.y, this->scratchVector.z);
         canvas->CameraSetLocal(canvas->CameraGetCurrent(),
                                                           *(const AbyssEngine::AEMath::Matrix *) (&matrix));
-        if (absf_update(this->scratchVector.x - this->easeX->GetMaxValue()) <= 1.0f &&
-            absf_update(this->scratchVector.y - this->easeY->GetMaxValue()) <= 1.0f &&
-            absf_update(this->scratchVector.z - this->easeZ->GetMaxValue()) <= 1.0f) {
+        float side = this->scratchVector.x - this->easeX->GetMaxValue();
+        float delta = this->scratchVector.x - this->easeX->GetMaxValue();
+        bool finished = false;
+        if ((side > 0.0f ? delta : -delta) <= 1.0f) {
+            side = this->scratchVector.y - this->easeY->GetMaxValue();
+            delta = this->scratchVector.y - this->easeY->GetMaxValue();
+            if ((side > 0.0f ? delta : -delta) <= 1.0f) {
+                side = this->scratchVector.z - this->easeZ->GetMaxValue();
+                delta = this->scratchVector.z - this->easeZ->GetMaxValue();
+                finished = (side > 0.0f ? delta : -delta) <= 1.0f;
+            }
+        }
+        if (finished) {
             if (this->transitionIn == 0) {
                 if (this->stationGeoms != 0) {
                     ArrayReleaseClasses(*this->stationGeoms); delete this->stationGeoms;
@@ -806,9 +807,7 @@ void StarMap::update(int dt) {
         if (combinedY >= 141) this->velocityY = (float)(140 - combinedY) * 0.1f;
         else if (combinedY < -400) this->velocityY = (float)(-400 - combinedY) * 0.1f;
         PaintCanvas *canvas = Globals::Canvas;
-        __builtin_memcpy(
-            &matrix, canvas->CameraGetLocal(
-                canvas->CameraGetCurrent()), 0x3c);
+        Matrix matrix = *static_cast<Matrix *>(canvas->CameraGetLocal(canvas->CameraGetCurrent()));
         AbyssEngine::AEMath::MatrixSetTranslation(matrix,
                              (this->cameraBaseX + (float) this->panX) * 20.0f,
                              (this->cameraBaseZ + (float) this->panY) * 20.0f,
@@ -1146,25 +1145,24 @@ void StarMap::initStarSystem() {
             0x140, 0x0c0, 0x100, 0x100, 0x0c0, 0x100, 0x0c0, 0x0c0,
             0x140, 0x100, 0x0c0, 0x0c0, 0x140, 0x100, 0x140, 0x100,
             0x100, 0x100, 0x140, 0x0c0, 0x140, 0x100};
-    static const uint16_t planetTextures[19] = {
+    static const uint32_t planetTextures[19] = {
             0x272f, 0x2730, 0x2731, 0x2732, 0x2733, 0x2734, 0x2735,
             0x2736, 0x2737, 0x2738, 0x2739, 0x2730, 0x2737, 0x2733,
             0x272f, 0x2ddd, 0x2736, 0x2731, 0x2735};
-    static const uint16_t systemNameImages[4] = {0x4a6, 0x4a3, 0x4a5, 0x4a4};
-    SolarSystem *system = this->systems->data()[this->selectedSystem];
-    uint32_t count = ((Array<void *> *) system->getStations())->size();
+    static const uint32_t systemNameImages[4] = {0x4a6, 0x4a3, 0x4a5, 0x4a4};
+    uint32_t count = ((Array<void *> *) this->systems->data()[this->selectedSystem]->getStations())->size();
 
     Array<Station *> *stations = new Array<Station *>();
     this->stations = stations;
     ArraySetLength(count, *stations);
     FileRead *reader = new FileRead();
-    this->stations = ((FileRead *)reader)->loadStationsBinary(system);
+    this->stations = ((FileRead *)reader)->loadStationsBinary(this->systems->data()[this->selectedSystem]);
     delete reader;
 
     this->stationAngles = new int[count];
     this->stationDistances = new int[count];
     this->centeredStation = -1;
-    AERandom::gRandom->setSeed((long long) system->getIndex() * 1000);
+    static_cast<AERandom *>(Globals::rnd)->setSeed((long long) this->systems->data()[this->selectedSystem]->getIndex() * 1000);
 
     Array<AEGeometry *> *stationGeoms = new Array<AEGeometry *>();
     this->stationGeoms = stationGeoms;
@@ -1175,51 +1173,55 @@ void StarMap::initStarSystem() {
 
     Array<uint8_t> *used = new Array<uint8_t>();
     this->usedFlags = used;
-    ArraySetLength(stationGeoms->size(), *used);
-    for (uint32_t i = 0; i < used->size(); i++) {
-        (*used)[i] = 0;
+    ArraySetLength(this->stationGeoms->size(), *used);
+    for (uint32_t i = 0; i < this->usedFlags->size(); i++) {
+        this->usedFlags->data()[i] = 0;
     }
 
-    for (uint32_t i = 1; i < stationGeoms->size(); i++) {
-        uint32_t stationIndex = i - 1;
-        int tex = this->stations->data()[stationIndex]->getTextureIndex();
-        AEGeometry *geom = new AEGeometry((uint16_t)(tex + 0x4704), Globals::Canvas, false);
-        stationGeoms->data()[i] = geom;
-        uint32_t angleSlot;
-        do {
-            angleSlot = AERandom::gRandom->nextInt(used->size());
-        } while ((*used)[angleSlot] != 0);
-        (*used)[angleSlot] = 1;
-        this->stationAngles[stationIndex] = (int)angleSlot * (0x10000 / (int)used->size());
-        int dist = (i == 1) ? 0x1900 : this->stationDistances[i - 2];
-        dist += AERandom::gRandom->nextInt(0x15e0) + 0x640;
-        this->stationDistances[stationIndex] = dist;
-        float angle = (float)this->stationAngles[stationIndex] * 0.000015259f * 6.2832f;
-        Matrix rotation;
-        AbyssEngine::AEMath::MatrixSetRotation(rotation, 0.0f, angle, 0.0f);
-        Vector radial = {0.0f, 0.0f, (float)dist};
-        geom->translate(AbyssEngine::AEMath::MatrixTransformVector(rotation, radial));
-        float scale = (float)(16 * stationScale[tex]) * 0.000015259f;
-        geom->setScaling(scale, scale, scale);
-        this->scratchVector = AbyssEngine::AEMath::VectorNormalize(geom->getPosition());
-        root->addChild(geom->transform);
-        // Android ARM 0xc7580 + 0x3e8 literal is 0x00210200 (not a function pointer).
-        if ((tex <= 21 && (0x00210200u & (1u << tex))) ||
-            Globals::status->orbitHasPlanetRing(this->stations->data()[stationIndex]->getIndex())) {
-            unsigned int ringTransform = 0xffffffffu;
-            Globals::Canvas->TransformCreate(ringTransform);
-            Globals::Canvas->TransformAddMesh(ringTransform, 0x41d5, false);
-            Globals::Canvas->TransformSetLocal(ringTransform, geom->getMatrix());
-            root->addChild(ringTransform);
+    for (uint32_t i = 0; i < this->stationGeoms->size(); i++) {
+        if (i != 0) {
+            uint32_t stationIndex = i - 1;
+            AEGeometry *geom = new AEGeometry((uint16_t)(this->stations->data()[stationIndex]->getTextureIndex() + 0x4704), Globals::Canvas, false);
+            this->stationGeoms->data()[i] = geom;
+            Matrix rotation;
+            uint32_t angleSlot;
+            do {
+                angleSlot = static_cast<AERandom *>(Globals::rnd)->nextInt(this->usedFlags->size());
+            } while (this->usedFlags->data()[angleSlot] != 0);
+            this->usedFlags->data()[angleSlot] = 1;
+            this->stationAngles[stationIndex] = (int)(angleSlot * (0x10000u / this->usedFlags->size()));
+            float angle = (float)this->stationAngles[stationIndex] * 0.000015259f * 6.2832f;
+            AbyssEngine::AEMath::MatrixSetRotation(rotation, 0.0f, angle, 0.0f);
+            int dist = (i == 1) ? 0x1900 : this->stationDistances[i - 2];
+            dist += static_cast<AERandom *>(Globals::rnd)->nextInt(0x15e0) + 0x640;
+            this->stationDistances[stationIndex] = dist;
+            Vector radial = {0.0f, 0.0f, (float)dist};
+            Vector translated = {0.0f, 0.0f, 0.0f};
+            translated = AbyssEngine::AEMath::MatrixTransformVector(rotation, radial);
+            this->stationGeoms->data()[i]->translate(translated);
+            int tex = this->stations->data()[stationIndex]->getTextureIndex();
+            float scale = (float)(16 * stationScale[tex]) * 0.000015259f;
+            this->stationGeoms->data()[i]->setScaling(scale, scale, scale);
+            this->scratchVector = AbyssEngine::AEMath::VectorNormalize(this->stationGeoms->data()[i]->getPosition());
+            this->starSystemRoot->addChild(this->stationGeoms->data()[i]->transform);
+            // Android ARM 0xc7580 + 0x3e8 literal is 0x00210200 (not a function pointer).
+            if ((tex <= 21 && (0x00210200u & (1u << tex))) ||
+                Globals::status->orbitHasPlanetRing(this->stations->data()[stationIndex]->getIndex())) {
+                unsigned int ringTransform = 0xffffffffu;
+                Globals::Canvas->TransformCreate(ringTransform);
+                Globals::Canvas->TransformAddMesh(ringTransform, 0x41d5, false);
+                Globals::Canvas->TransformSetLocal(ringTransform, this->stationGeoms->data()[i]->getMatrix());
+                this->starSystemRoot->addChild(ringTransform);
+            }
+            if (this->markerGeom != 0 && this->selectedSystem == Globals::status->field_7c &&
+                this->stations->data()[stationIndex]->getIndex() == Globals::status->field_80) {
+                this->centeredStation = i;
+            }
         }
-        if (this->markerGeom != 0 && this->selectedSystem == Globals::status->field_7c &&
-            this->stations->data()[stationIndex]->getIndex() == Globals::status->field_80) {
-            this->centeredStation = i;
-        }
-        if (geom) root->addChild(geom->transform);
+        if (this->stationGeoms->data()[i]) this->starSystemRoot->addChild(this->stationGeoms->data()[i]->transform);
     }
 
-    stationGeoms->data()[1]->setVisible(false);
+    this->stationGeoms->data()[1]->setVisible(false);
 
     Array<AEGeometry *> *rings = new Array<AEGeometry *>();
     this->ringGeoms = rings;
@@ -1227,22 +1229,23 @@ void StarMap::initStarSystem() {
     for (uint32_t i = 0; i < rings->size(); i++) {
         AEGeometry *ring = new AEGeometry((uint16_t) 0x1a7b, Globals::Canvas, false);
         (*rings)[i] = ring;
-        root->addChild(ring->transform);
-        ring->setRotation(0.0f, (float)AERandom::gRandom->nextInt(0x0c45) / 1000.0f, 0.0f);
-        float scale = (float)(this->stationDistances[i] << 1) * 0.000015259f;
-        ring->setScaling(scale, scale, scale);
+        this->starSystemRoot->addChild(this->ringGeoms->data()[i]->transform);
+        AEGeometry *ringGeom = this->ringGeoms->data()[i];
+        float distance = (float)this->stationDistances[i];
+        ringGeom->setRotation(0.0f, (float)static_cast<AERandom *>(Globals::rnd)->nextInt(0x0c45) / 1000.0f, 0.0f);
+        float scale = (float)(2 * (int)distance) * 0.000015259f;
+        this->ringGeoms->data()[i]->setScaling(scale, scale, scale);
     }
 
-    Vector selected;
-    selected = this->systemGeoms->data()[this->selectedSystem]->getPosition();
-    root->setPosition(selected);
-    root->setScaling(0.0078125f, 0.0078125f, 0.0078125f);
-    root->setRotation(0.0f, 90.0f, 0.0f);
-    root->setRotation(-0.3927f, 0.3927f, -0.098175f);
+    this->starSystemRoot->setPosition(this->systemGeoms->data()[this->selectedSystem]->getPosition());
+    this->starSystemRoot->setScaling(0.0078125f, 0.0078125f, 0.0078125f);
+    this->starSystemRoot->setRotation(0.0f, 90.0f, 0.0f);
+    AEGeometry *systemRoot = this->starSystemRoot;
     this->yaw = 4096.0f;
     this->pitch = -4096.0f;
+    systemRoot->setRotation(-0.3927f, 0.3927f, -0.098175f);
     this->selectedStation = -1;
-    Globals::Canvas->Image2DCreate(systemNameImages[system->getRace()], this->systemNameImage);
+    Globals::Canvas->Image2DCreate(systemNameImages[this->systems->data()[this->selectedSystem]->getRace()], this->systemNameImage);
 
     if (this->stationPositions != 0) {
         ArrayReleaseClasses(*this->stationPositions); delete this->stationPositions;
@@ -1256,136 +1259,157 @@ void StarMap::initStarSystem() {
         (*stationPositions)[i] = p;
     }
 
-    static_cast<Engine *>(ApplicationManager::gAppManager->GetEngine())->LightSetLightDirection(0.0f, -1.0f, -1.0f, 0x4000);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(Globals::appManager)->GetEngine())->LightSetLightDirection(0.0f, -1.0f, -1.0f, 0x4000);
     if (this->planetGeom != 0) {
         delete this->planetGeom;
     }
     this->planetTexture = 0xffffffffu;
     this->planetGeom = (AEGeometry *) 0;
-    uint16_t texture = planetTextures[system->getTextureIndex()];
+    uint16_t texture = planetTextures[this->systems->data()[this->selectedSystem]->getTextureIndex()];
     if (this->selectedSystem == 0x1b) {
         texture = 0x2734;
     }
     Globals::Canvas->TextureCreate(texture, this->planetTexture, false);
     AEGeometry *planet = new AEGeometry((uint16_t) 0x1a70, Globals::Canvas, false);
     this->planetGeom = planet;
-    planet->setPosition(selected);
-    planet->setRotation(0.0f, 0.0f, 0.0f);
-    if (system->getTextureIndex() == 15) {
-        int campaign = Globals::status->getCurrentCampaignMission();
-        float scale = campaign > 157 ? 0.004f : (campaign > 105 ? 0.01f : 0.007f);
-        planet->setScaling(scale, scale, scale);
+    this->planetGeom->setPosition(this->systemGeoms->data()[this->selectedSystem]->getPosition());
+    this->planetGeom->setRotation(0.0f, 0.0f, 0.0f);
+    if (this->systems->data()[this->selectedSystem]->getTextureIndex() == 15) {
+        float scale = 0.007f;
+        if (Globals::status->getCurrentCampaignMission() > 105)
+            scale = Globals::status->getCurrentCampaignMission() > 157 ? 0.004f : 0.01f;
+        this->planetGeom->setScaling(scale, scale, scale);
     } else {
-        planet->setScaling(0.004f, 0.004f, 0.004f);
+        this->planetGeom->setScaling(0.004f, 0.004f, 0.004f);
     }
     this->systemGeoms->data()[this->selectedSystem]->setVisible(false);
 
-    Vector lightPosition = planet->getPosition();
-    static_cast<Engine *>(ApplicationManager::gAppManager->GetEngine())->LightSetLightPosition(lightPosition.x, lightPosition.y, lightPosition.z, 0x4000);
-    static_cast<Engine *>(ApplicationManager::gAppManager->GetEngine())->LightSetLightColorAmbient(0.2f, 0.2f, 0.2f, 0x4000);
-    static_cast<Engine *>(ApplicationManager::gAppManager->GetEngine())->LightSetLightColorDiffuse(2.0f, 2.0f, 2.0f, 0x4000);
-    static_cast<Engine *>(ApplicationManager::gAppManager->GetEngine())->LightSetMaterialColorAmbient(1.0f, 1.0f, 1.0f);
-    static_cast<Engine *>(ApplicationManager::gAppManager->GetEngine())->LightSetMaterialColorDiffuse(1.0f, 1.0f, 1.0f);
-    static_cast<Engine *>(ApplicationManager::gAppManager->GetEngine())->LightSetMaterialColorSpecular(0.0f, 0.0f, 0.0f);
-    static_cast<Engine *>(ApplicationManager::gAppManager->GetEngine())->LightSetMaterialColorShininess(10.0f);
-    static_cast<Engine *>(ApplicationManager::gAppManager->GetEngine())->field_0x32c = 1;
-    AERandom::gRandom->setSeed((long long)Globals::status->getPlayingTime());
+    Vector lightPosition = this->planetGeom->getPosition();
+    static_cast<Engine *>(static_cast<ApplicationManager *>(Globals::appManager)->GetEngine())->LightSetLightPosition(lightPosition.x, lightPosition.y, lightPosition.z, 0x4000);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(Globals::appManager)->GetEngine())->LightSetLightColorAmbient(0.2f, 0.2f, 0.2f, 0x4000);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(Globals::appManager)->GetEngine())->LightSetLightColorDiffuse(2.0f, 2.0f, 2.0f, 0x4000);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(Globals::appManager)->GetEngine())->LightSetMaterialColorAmbient(1.0f, 1.0f, 1.0f);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(Globals::appManager)->GetEngine())->LightSetMaterialColorDiffuse(1.0f, 1.0f, 1.0f);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(Globals::appManager)->GetEngine())->LightSetMaterialColorSpecular(0.0f, 0.0f, 0.0f);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(Globals::appManager)->GetEngine())->LightSetMaterialColorShininess(10.0f);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(Globals::appManager)->GetEngine())->field_0x32c = 1;
+    static_cast<AERandom *>(Globals::rnd)->setSeed((long long)Globals::status->getPlayingTime());
 }
 
 void StarMap::drawOnScreenInfo(int index, bool stationMode) {
-    Array<Vector *> *positions =
-            stationMode ? this->stationPositions : this->systemPositions;
-    this->scratchVector = *positions->data()[index];
+    Array<Vector *> *positions = stationMode ? this->stationPositions : this->systemPositions;
+    this->scratchVector = Vector(*positions->data()[index]);
     float x = this->scratchVector.x;
     float y = this->scratchVector.y;
-    if (x < -50.0f || x > (float) (Globals::w + 0x32) ||
-        y < -50.0f || y > (float) (Globals::h + 0x32)) {
-        return;
-    }
-
-    Globals::Canvas->SetColor((unsigned int) (0xffffffffu));
+    if (x < -50.0f || x > (float)(Globals::w + 50) ||
+        y < -50.0f || y > (float)(Globals::h + 50)) return;
+    Globals::Canvas->SetColor(0xffffffffu);
     int *icons = this->iconBuffer;
-    for (int i = 0; i != 5; i++) {
-        icons[i] = -1;
-    }
-
-    Mission *campaign = (Mission *)(intptr_t)Globals::status->getCampaignMission();
+    for (int i = 0; i != 5; ++i) icons[i] = -1;
+    int discovered = stationMode ? this->stations->data()[index]->isDiscovered() :
+                                  this->systems->data()[index]->isFullyDiscovered();
+    if (discovered) this->iconBuffer[0] = this->keyImageDiscovered;
+    Mission *campaign = reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()));
     Mission *freelance = Globals::status->getFreelanceMission();
-
-    if (stationMode) {
-        int stationId = this->stations->data()[index]->getIndex();
-        if (this->stations->data()[index]->isDiscovered() != 0) {
-            icons[0] = this->keyImageDiscovered;
-        }
-        if (Globals::status->getCurrentCampaignMission() == 52 && stationId == 74) {
-            icons[1] = this->keyImageWanted;
-        }
-        if (campaign != nullptr && Globals::status->getCurrentCampaignMission() == 116 && stationId >= 90 && stationId <= 94 &&
-            (campaign->getStatusValue() & (1 << (stationId - 90))) == 0) {
-            icons[1] = this->keyImageWanted;
-        }
-        if (Globals::status->getCurrentCampaignMission() == 120 && stationId == 93) {
-            icons[1] = this->keyImageWanted;
-        }
-        if (campaign != nullptr && Globals::status->getCurrentCampaignMission() == 125 && Globals::status->isFreighterMissionStation(stationId) != 0 &&
-            (campaign->getStatusValue() & (1 << Globals::status->getFreighterMissionStationBit(stationId))) == 0) {
-            icons[1] = this->keyImageWanted;
-        }
-        if (campaign != nullptr && campaign->isEmpty() == 0) {
-            bool missionTarget = false;
-            if (campaign->getType() == 163 && Globals::status->field_90 != nullptr) {
-                for (uint32_t i = 0; i < Globals::status->field_90->size(); ++i) {
-                    if ((*Globals::status->field_90)[i] == stationId) {
-                        missionTarget = true;
-                        break;
-                    }
-                }
-            }
-            bool excluded = Globals::status->getCurrentCampaignMission() == 52 || Globals::status->getCurrentCampaignMission() == 120 || Globals::status->getCurrentCampaignMission() == 128 ||
-                            Globals::status->getCurrentCampaignMission() == 130 || (Globals::status->getCurrentCampaignMission() >= 148 && Globals::status->getCurrentCampaignMission() < 152);
-            if (excluded) {
-                missionTarget = false;
-            } else {
-                if (Globals::status->getCurrentCampaignMission() == 59 && stationId == 101) {
+    if (Globals::status->getCurrentCampaignMission() == 52 &&
+        (stationMode ? this->stations->data()[index]->getIndex() == 74 :
+                       this->systems->data()[index]->getStationEnumIndex(74) >= 0)) {
+        this->iconBuffer[1] = this->keyImageWanted;
+    }
+    if (Globals::status->getCurrentCampaignMission() == 116 && stationMode &&
+        this->stations->data()[index]->getIndex() >= 90 && this->stations->data()[index]->getIndex() <= 94) {
+        int statusValue = reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()))->getStatusValue();
+        if (!(statusValue & (1 << (this->stations->data()[index]->getIndex() - 90))))
+            this->iconBuffer[1] = this->keyImageWanted;
+    }
+    if (Globals::status->getCurrentCampaignMission() == 120 &&
+        (stationMode ? this->stations->data()[index]->getIndex() == 93 :
+                       this->systems->data()[index]->getStationEnumIndex(93) >= 0)) {
+        this->iconBuffer[1] = this->keyImageWanted;
+    }
+    bool freighterMarker = false;
+    if (Globals::status->getCurrentCampaignMission() == 125 && stationMode &&
+        Globals::status->isFreighterMissionStation(this->stations->data()[index]->getIndex())) {
+        int statusValue = reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()))->getStatusValue();
+        if (!(statusValue & (1 << Globals::status->getFreighterMissionStationBit(this->stations->data()[index]->getIndex()))))
+            freighterMarker = true;
+    }
+    if (!freighterMarker && Globals::status->getCurrentCampaignMission() == 125 && !stationMode &&
+        Globals::status->isFreighterMissionStation(this->systems->data()[index]->getWarpGateIndex())) {
+        int statusValue = reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()))->getStatusValue();
+        if (!(statusValue & (1 << Globals::status->getFreighterMissionStationBit(this->systems->data()[index]->getWarpGateIndex()))))
+            freighterMarker = true;
+    }
+    if (freighterMarker) this->iconBuffer[1] = this->keyImageWanted;
+    if (campaign) {
+        bool missionTarget = false;
+        if (campaign->getType() == 163 && Globals::status->field_90) {
+            for (uint32_t i = 0; i < Globals::status->field_90->size(); ++i) {
+                if (stationMode ? Globals::status->field_90->data()[i] == this->stations->data()[index]->getIndex() :
+                    this->systems->data()[index]->getStationEnumIndex(Globals::status->field_90->data()[i]) >= 0) {
                     missionTarget = true;
-                }
-                if (campaign->getTargetStation() == stationId ||
-                    (campaign->getTargetStation() < 0 && Globals::status->getCurrentCampaignMission() >= 33 && Globals::status->field_80 == stationId)) {
-                    missionTarget = true;
-                }
-            }
-            if (missionTarget) {
-                icons[1] = this->keyImageWanted;
-            }
-        }
-        if (freelance != nullptr && freelance->isEmpty() == 0) {
-            int target = freelance->getTargetStation();
-            if (freelance->getType() == 14 && freelance->getAgent() != nullptr) {
-                target = freelance->getAgent()->getStation();
-            }
-            if (stationId == target) {
-                icons[2] = this->keyImageMission;
-            }
-        }
-        int current = Globals::status->getStation()->getIndex();
-        if (this->selectedSystem >= 0 &&
-            this->systems->data()[this->selectedSystem]->getWarpGateIndex() == stationId) {
-            icons[3] = this->keyImageCurrent;
-        }
-        Array<PendingProduct *> *pendingProducts = Globals::status->pendingProducts;
-        if (pendingProducts != nullptr) {
-            for (uint32_t i = 0; i < pendingProducts->size(); ++i) {
-                PendingProduct *product = (*pendingProducts)[i];
-                if (product != nullptr && product->stationIndex == stationId) {
-                    icons[4] = this->keyImageRetreat;
                     break;
                 }
             }
         }
+        if (!campaign->isEmpty() && Globals::status->getCurrentCampaignMission() != 52 &&
+            Globals::status->getCurrentCampaignMission() != 120 && Globals::status->getCurrentCampaignMission() != 128 &&
+            Globals::status->getCurrentCampaignMission() != 130 &&
+            (Globals::status->getCurrentCampaignMission() < 148 || Globals::status->getCurrentCampaignMission() >= 152)) {
+            bool suppressed = Globals::status->getCurrentCampaignMission() == 59 &&
+                (stationMode ? this->stations->data()[index]->getIndex() == 101 :
+                               this->systems->data()[index]->getIndex() == 23);
+            if (!suppressed) {
+                bool targetMatch;
+                if (stationMode) {
+                    int stationId = this->stations->data()[index]->getIndex();
+                    targetMatch = (stationId == campaign->getTargetStation()) | missionTarget;
+                } else {
+                    SolarSystem *system = this->systems->data()[index];
+                    targetMatch = (system->getStationEnumIndex(campaign->getTargetStation()) >= 0) | missionTarget;
+                }
+                if (targetMatch || (Globals::status->getCurrentCampaignMission() >= 33 &&
+                    (stationMode ? this->stations->data()[index]->getIndex() == Globals::status->field_80 :
+                        this->systems->data()[index]->getStationEnumIndex(Globals::status->field_80) >= 0) &&
+                    campaign->getTargetStation() == -1)) this->iconBuffer[1] = this->keyImageWanted;
+            }
+        }
+    }
+    if (freelance && !freelance->isEmpty()) {
+        if (stationMode) {
+            int stationId = this->stations->data()[index]->getIndex();
+            int target = freelance->getType() == 14 ? freelance->getAgent()->getStation() : freelance->getTargetStation();
+            if (stationId == target) this->iconBuffer[2] = this->keyImageMission;
+        } else {
+            SolarSystem *system = this->systems->data()[index];
+            int target = freelance->getType() == 14 && Globals::status->getShip()->hasCargo(115, 1) ?
+                freelance->getAgent()->getStation() : freelance->getTargetStation();
+            if (system->getStationEnumIndex(target) >= 0) this->iconBuffer[2] = this->keyImageMission;
+        }
+    }
+    if (stationMode && this->selectedSystem >= 0) {
+        int warpGate = this->systems->data()[this->selectedSystem]->getWarpGateIndex();
+        if (warpGate == this->stations->data()[index]->getIndex()) this->iconBuffer[3] = this->keyImageCurrent;
+    }
+    Array<PendingProduct *> *pendingProducts = reinterpret_cast<Array<PendingProduct *> *>(intptr_t(Globals::status->getPendingProducts()));
+    if (pendingProducts) {
+        for (uint32_t i = 0; i < pendingProducts->size(); ++i) {
+            PendingProduct *product = pendingProducts->data()[i];
+            if (product && (stationMode ? product->stationIndex == this->stations->data()[index]->getIndex() :
+                           this->systems->data()[index]->getStationEnumIndex(product->stationIndex) >= 0)) {
+                this->iconBuffer[4] = this->keyImageRetreat;
+                break;
+            }
+        }
+    }
+    x = this->scratchVector.x;
+    y = this->scratchVector.y;
+    if (stationMode) {
         int textW = Globals::Canvas->GetTextWidth(Globals::font, this->stations->data()[index]->getName());
         int drawX = (int) (x - (float) (textW / 2));
         int drawY = (int) (y + (float) (this->iconWidth >> 1) - 3.0f);
-        if (current == stationId) {
+        int current = Globals::status->getStation()->getIndex();
+        if (current == this->stations->data()[index]->getIndex()) {
             int pulse = (int)(((Layout *) Globals::layout)->getPulseValue(0.005f) * (255 - this->alpha));
             Globals::Canvas->SetColor(0xff, 0xff, 0xff, pulse);
             Globals::Canvas->DrawImage2D(this->currentMarkerIcon, (int)x, (int)y, 0x11, 0x44);
@@ -1408,84 +1432,25 @@ void StarMap::drawOnScreenInfo(int index, bool stationMode) {
             Globals::Canvas->SetColor((unsigned char) (0xff), (unsigned char) (0xff),
                                                         (unsigned char) (0xff), (unsigned char)~this->alpha);
             Globals::Canvas->DrawImage2D((unsigned int) (this->cursorIcon), (int) x, (int) y, 0x11, 0x44);
+            if (this->selectedStation >= 0) {
+                int objectAlpha = 255 - this->alpha;
+                Globals::Canvas->SetColor(255, 255, 255, (unsigned char)(objectAlpha < 64 ? objectAlpha : 64));
+            }
             Globals::Canvas->DrawString((unsigned int) (long) (Globals::font), this->stations->data()[index]->getName(), drawX,
                                                           drawY, false);
         }
     } else {
-        int systemId = this->systems->data()[index]->getIndex();
-        if (this->systems->data()[index]->isFullyDiscovered() != 0) {
-            icons[0] = this->keyImageDiscovered;
-        }
-        if (Globals::status->getCurrentCampaignMission() == 52 && this->systems->data()[index]->getStationEnumIndex(74) >= 0) {
-            icons[1] = this->keyImageWanted;
-        }
-        if (Globals::status->getCurrentCampaignMission() == 120 && this->systems->data()[index]->getStationEnumIndex(93) >= 0) {
-            icons[1] = this->keyImageWanted;
-        }
-        if (campaign != nullptr && Globals::status->getCurrentCampaignMission() == 125) {
-            int warpGate = this->systems->data()[index]->getWarpGateIndex();
-            if (Globals::status->isFreighterMissionStation(warpGate) != 0 &&
-                (campaign->getStatusValue() & (1 << Globals::status->getFreighterMissionStationBit(warpGate))) == 0) {
-                icons[1] = this->keyImageWanted;
-            }
-        }
-        if (campaign != nullptr && campaign->isEmpty() == 0) {
-            bool missionTarget = false;
-            if (campaign->getType() == 163 && Globals::status->field_90 != nullptr) {
-                for (uint32_t i = 0; i < Globals::status->field_90->size(); ++i) {
-                    if (this->systems->data()[index]->getStationEnumIndex((*Globals::status->field_90)[i]) >= 0) {
-                        missionTarget = true;
-                        break;
-                    }
-                }
-            }
-            bool excluded = Globals::status->getCurrentCampaignMission() == 52 || Globals::status->getCurrentCampaignMission() == 120 || Globals::status->getCurrentCampaignMission() == 128 ||
-                            Globals::status->getCurrentCampaignMission() == 130 || (Globals::status->getCurrentCampaignMission() >= 148 && Globals::status->getCurrentCampaignMission() < 152);
-            if (excluded) {
-                missionTarget = false;
-            } else {
-                if (Globals::status->getCurrentCampaignMission() == 59 && systemId == 23) {
-                    missionTarget = true;
-                }
-                if (this->systems->data()[index]->getStationEnumIndex(campaign->getTargetStation()) >= 0 ||
-                    (campaign->getTargetStation() < 0 && Globals::status->getCurrentCampaignMission() >= 33 &&
-                     this->systems->data()[index]->getStationEnumIndex(Globals::status->field_80) >= 0)) {
-                    missionTarget = true;
-                }
-            }
-            if (missionTarget) {
-                icons[1] = this->keyImageWanted;
-            }
-        }
-        if (freelance != nullptr && freelance->isEmpty() == 0) {
-            int target = freelance->getTargetStation();
-            if (freelance->getType() == 14 && Globals::status->getShip()->hasCargo(115, 1) &&
-                freelance->getAgent() != nullptr) {
-                target = freelance->getAgent()->getStation();
-            }
-            if (this->systems->data()[index]->getStationEnumIndex(target) >= 0) {
-                icons[2] = this->keyImageMission;
-            }
-        }
-        Array<PendingProduct *> *pendingProducts = Globals::status->pendingProducts;
-        if (pendingProducts != nullptr) {
-            for (uint32_t i = 0; i < pendingProducts->size(); ++i) {
-                PendingProduct *product = (*pendingProducts)[i];
-                if (product != nullptr && this->systems->data()[index]->getStationEnumIndex(product->stationIndex) >= 0) {
-                    icons[4] = this->keyImageRetreat;
-                    break;
-                }
-            }
-        }
         int textW = Globals::Canvas->GetTextWidth(Globals::font, this->systems->data()[index]->getName());
         int drawX = (int) (x - (float) (textW / 2));
         int drawY = (int) (y + (float) (this->iconWidth >> 1) - 3.0f);
+        if (this->pad_0xa8_a) this->systems->data()[index]->getIndex();
         int currentSystem = Globals::status->getSystem()->getIndex();
-        if (currentSystem == systemId) {
+        if (currentSystem == this->systems->data()[index]->getIndex()) {
             int pulse = (int)(((Layout *) Globals::layout)->getPulseValue(0.005f) * this->alpha);
             Globals::Canvas->SetColor(0xff, 0xff, 0xff, pulse);
             Globals::Canvas->DrawImage2D(this->currentMarkerIcon, (int)x, (int)y, 0x11, 0x44);
         }
+        Globals::Canvas->SetColor(255, 255, 255, (unsigned char)this->alpha);
         if (this->selectedSystem == index) {
             Globals::Canvas->SetColor((unsigned char) (0xff), (unsigned char) (0x80),
                                                         (unsigned char) (0), (unsigned char) (this->alpha));
@@ -1512,31 +1477,29 @@ void StarMap::drawOnScreenInfo(int index, bool stationMode) {
             Globals::Canvas->DrawImage2D(this->image_0x134, drawX,
                 (int)((float)drawY + (float)Globals::layout->field_0x2c_rowHeight * 0.5f), 0x11, 0x12);
         }
+        Globals::Canvas->SetColor(255, 255, 255, (unsigned char)this->alpha);
         if (this->selectedSystem == index) {
-            if (this->systems->data()[index]->hasNoOwner() == 0) {
-                Globals::Canvas->DrawString(Globals::font, *Globals::gameText->getText(this->systems->data()[index]->getRace() + 406),
-                                   drawX, drawY + ((Layout *)Globals::layout)->field_0x4, false);
+            Globals::Canvas->DrawImage2D(this->selectIcon, (int)this->scratchVector.x, (int)this->scratchVector.y, 0x11, 0x44);
+            int securityLine = Globals::layout->field_0x4;
+            if (!this->systems->data()[index]->hasNoOwner()) {
+                Globals::Canvas->DrawString(Globals::font,
+                    *Globals::gameText->getText(this->systems->data()[this->selectedSystem]->getRace() + 406),
+                    drawX, drawY + Globals::layout->field_0x4, false);
+                securityLine = 2 * Globals::layout->field_0x4;
             }
-            int security = this->systems->data()[index]->getSecurityLevel();
-            if (systemId == 26 && Globals::status->field_114 > 1) {
-                security = 3;
-            }
-            static const unsigned char securityColor[4][3] = {
-                    {0xff, 0x2a, 0x00}, {0xff, 0x6c, 0x00},
-                    {0xed, 0xed, 0x00}, {0x00, 0xed, 0x00}};
+            int security = this->systems->data()[this->selectedSystem]->getSecurityLevel();
+            if (index == 26 && Globals::status->field_114 > 1) security = 3;
+            // Android rodata 0x1fde10: three 32-bit channel slots per level.
+            static const int securityColor[4][3] = {{255,42,0},{255,108,0},{237,237,0},{0,237,0}};
             Globals::Canvas->SetColor(securityColor[security][0], securityColor[security][1],
-                             securityColor[security][2], this->alpha);
-            int securityY = drawY + ((this->systems->data()[index]->hasNoOwner() == 0) ?
-                    2 * ((Layout *)Globals::layout)->field_0x4 : ((Layout *)Globals::layout)->field_0x4);
+                                     securityColor[security][2], (unsigned char)this->alpha);
             Globals::Canvas->DrawString(Globals::font, *Globals::gameText->getText(security + 402),
-                               drawX, securityY, false);
-            Globals::Canvas->SetColor(0xff, 0xff, 0xff, this->alpha);
-        }
-        if (this->selectedSystem == index) {
-            Globals::Canvas->DrawImage2D((unsigned int) (this->selectIcon), (int) x, (int) y, 0x11, 0x44);
+                                       drawX, drawY + securityLine, false);
+            Globals::Canvas->SetColor(255, 255, 255, (unsigned char)this->alpha);
         } else {
-            Globals::Canvas->DrawImage2D((unsigned int) (this->cursorIcon), (int) x, (int) y, 0x11, 0x44);
-            if (this->selectedSystem >= 0) Globals::Canvas->SetColor(255, 255, 255, (unsigned char)(this->alpha < 64 ? this->alpha : 64));
+            Globals::Canvas->DrawImage2D(this->cursorIcon, (int)this->scratchVector.x, (int)this->scratchVector.y, 0x11, 0x44);
+            if (this->selectedSystem >= 0)
+                Globals::Canvas->SetColor(255, 255, 255, (unsigned char)(this->alpha < 64 ? this->alpha : 64));
         }
     }
 

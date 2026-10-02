@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **96.925% unweighted / 94.59986% original-instruction
+implementation bodies measure **97.505% unweighted / 96.19283% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**74.03% / 56.66130%**, respectively. Source-shape is an inventory/control-flow
+**76.655% / 63.94298%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -50,6 +50,52 @@ This continuation changes StarMap.cpp only:
 The remaining gaps are measured, not a proven compiler ceiling. Direct call
 inspection also identified by-value Header/Help temporary copies for further
 work. The 99% objective remains unmet.
+
+## Follow-up after checkpoint dca65361
+
+Checkpoint dca65361 measured 96.925% / 94.59986%. This continuation edits
+StarMap.cpp only and keeps the original corpus and verifier unchanged.
+
+- drawOnScreenInfo: 90.9% -> 96.6%, strict 22.9% -> 48.9%. Replaced duplicated
+  station/system campaign/freelance/pending branches with Android's common
+  ordering, repeated Station indices and Status getters. Mission 59 suppresses
+  the common marker at station 101/system 23; it does not add a target there.
+  Restored station name alpha clamp 64, unconditional alpha resets after the
+  current-system pulse, select icon before race/security labels and the single
+  hasNoOwner query that determines the security-label row.
+- draw: 97.2% -> 98.0%, strict 81.7% -> 83.2%. Direct temporary Header String
+  removes a copy that direct ARM call inspection showed was absent.
+- OnTouchEnd: 97.2% -> 96.8%, strict 67.6% -> 68.4%. Direct temporary Help
+  String matches the Android by-value call. This semantic/ABI-shape correction
+  was retained despite the small source-shape decrease.
+- initStarSystem: 91.2% -> 95.9%, strict 48.6% -> 69.2%. Canonical Globals::rnd
+  and Globals::appManager, repeated texture reads/member loads, unsigned angle
+  division, translated Vector assignment, fresh planet position and campaign
+  reads. Restored index-zero child check; ArraySetLength explicitly zeroes its
+  pointer storage, so this does not read uninitialized memory. Restored ring
+  distance float/int conversion and yaw/pitch write ordering.
+- ELF bytes prove systemNameImages at 0x1fdde8 and planetTextures at 0x1fdd14
+  have 32-bit slots; uint32_t tables preserve that stride while retaining the
+  same low-16-bit IDs accepted by the rendering API.
+- update: 93.9% -> 94.7%, strict 54.1% -> 57.7%. Removed a gratuitous third
+  CameraGetCurrent call, kept fresh position values for projection, scoped
+  camera matrix copies at their uses, and restored two GetMaxValue reads per
+  checked transition axis, short-circuiting Y/Z as Android does.
+
+Packages: info-common-trial, info-colors-trial, station-reloads-trial2,
+update-reloads-trial, station-layout-trial, third-focused. The initial station
+reload trial failed on a leftover local system argument; corrected before any
+measurement was accepted. Native log is _work/native-third.log.
+
+Original campaign-116/125 and type-14 freelance branches assume valid mission/agent
+objects; those Android contracts are retained and need native runtime coverage.
+ArraySetLength pointer-zeroing was checked in src/engine/core/Array.h before
+restoring the index-zero child check.
+
+The target remains unmet. Further direct evidence identifies another extra
+CameraGetCurrent call in OnTouchMove and residual instruction/control inventories
+in the large bodies. This is incomplete source recovery, not a claimed compiler
+ceiling or runtime validation.
 
 ## Evidence and version boundaries
 
@@ -164,7 +210,7 @@ for this checkpoint.
 
 Full corpus: **4619 comparisons, zero skips** in both clean baseline and final.
 Overall source-shape 88.99% -> 89.05%; ordered fuzzy
-75.97% -> 76.09% (including all corpus entries).
+75.97% -> 76.10% (including all corpus entries).
 Coverage remains 4274/4524 original functions, 250 missing (7 wrong-type / 243
 absent). Final extra symbols: 129, baseline: 130. Existing coverage gaps were
 not removed from reporting.
@@ -184,14 +230,16 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Continuation full log: `_work/followup-corpus.log`; focused log:
-`_work/draw-reloads-trial.log`; native log: `_work/native-followup.log`.
-Exact-pair preservation also passed against checkpoint 7fc7701c, with no new
-gains or losses since that checkpoint.
+Latest full log: `_work/third-corpus.log`; focused log:
+`_work/third-focused.log`; native log: `_work/native-third.log`.
+Exact-pair preservation also passed against checkpoints 7fc7701c and dca65361,
+with no new gains or losses since 7fc7701c. Latest preservation gate and
+99% gate logs are _work/third-gate.json, third-previous-gate.json and
+third-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `19007eac66d4af11c38018c1c9655e7ef7c63a38923a8cedb560fdb6c64278c1`.
+final full JSON SHA-256: `5af5cfaa1484b6cf1bdf73213184582d5568012d2c96071ef336d7845c19e879`.
 
 
 ### Reproduction
@@ -220,12 +268,12 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
-| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1135 | 78.9% | 90.9% | 22.9% | - |
-| `_ZN7StarMap10OnTouchEndEii` | 1037/1017 | 66.6% | 97.2% | 67.6% | - |
-| `_ZN7StarMap6updateEi` | 971/958 | 76.6% | 93.9% | 54.1% | - |
-| `_ZN7StarMap4drawEv` | 916/913 | 49.7% | 97.2% | 81.7% | - |
+| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1223 | 78.9% | 96.6% | 48.9% | - |
+| `_ZN7StarMap10OnTouchEndEii` | 1037/1008 | 66.6% | 96.8% | 68.4% | - |
+| `_ZN7StarMap6updateEi` | 971/970 | 76.6% | 94.7% | 57.7% | - |
+| `_ZN7StarMap4drawEv` | 916/906 | 49.7% | 98.0% | 83.2% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/740 | 72.9% | 97.3% | 67.0% | - |
-| `_ZN7StarMap14initStarSystemEv` | 710/639 | 80.9% | 91.2% | 48.6% | - |
+| `_ZN7StarMap14initStarSystemEv` | 710/672 | 80.9% | 95.9% | 69.2% | - |
 | `_ZN7StarMapC1EbP7Missionbi` | 333/330 | 85.1% | 93.4% | 60.3% | - |
 | `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 94.8% | 63.5% | - |
 | `_ZN7StarMap11OnTouchMoveEii` | 265/255 | 81.3% | 90.7% | 60.4% | - |
