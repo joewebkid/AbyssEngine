@@ -22,18 +22,40 @@ class Gun {
 public:
     int lastHitKIPlayer;
     Player *owner;
-    unsigned count;
-    char *positions;
-    int positionsCapacity;
-    int directionCount;
-    char *velocities;
-    int velocitiesCapacity;
-    int field_0x20;
-    char *upVectors;
-    int upVectorsCapacity;
-    int field_0x2c;
-    char *hitPositions;
-    int hitPositionsCapacity;
+    // Android inline Array<Vector> at 0x08/0x14/0x20/0x2c.
+    // Legacy field aliases preserve existing consumers; Array sets host alignment.
+    union {
+        Array<Vector> positionArray;
+        struct {
+            unsigned count;
+            char *positions;
+            int positionsCapacity;
+        };
+    };
+    union {
+        Array<Vector> directionArray;
+        struct {
+            int directionCount;
+            char *velocities;
+            int velocitiesCapacity;
+        };
+    };
+    union {
+        Array<Vector> upArray;
+        struct {
+            int field_0x20;
+            char *upVectors;
+            int upVectorsCapacity;
+        };
+    };
+    union {
+        Array<Vector> hitArray;
+        struct {
+            int field_0x2c;
+            char *hitPositions;
+            int hitPositionsCapacity;
+        };
+    };
     int level;
     int *lifetimes;
     uint8_t *hitFlags;
@@ -80,7 +102,7 @@ public:
 
     uint8_t field_0xa8;
     uint8_t delayActive;
-    Array<int> *wobbleOffsets;
+    Array<Vector *> *wobbleOffsets;
     float field_0xb0;
     Array<Player *> *enemies;
     Sparks *impact;
@@ -146,9 +168,9 @@ public:
 
     void setPlayerGun(bool v);
 
-    void shoot(Matrix m, int n, bool b);
+    bool shoot(Matrix m, int n, bool b);
 
-    void shootAt(Matrix m, int n, Player *p, bool b);
+    bool shootAt(Matrix m, int n, Player *p, bool b);
 
     void translate(const Vector &v);
 
@@ -156,6 +178,11 @@ public:
 };
 
 #if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(Gun) == 0x114, "Gun Android size");
+static_assert(offsetof(Gun, positionArray) == 0x08, "Gun::positionArray offset");
+static_assert(offsetof(Gun, directionArray) == 0x14, "Gun::directionArray offset");
+static_assert(offsetof(Gun, wobbleOffsets) == 0xac, "Gun::wobbleOffsets offset");
+static_assert(offsetof(Gun, geometries) == 0x10c, "Gun::geometries offset");
 static_assert(offsetof(Gun, field_0x20) == 0x20, "Gun::field_0x20 offset");
 static_assert(offsetof(Gun, field_0x2c) == 0x2c, "Gun::field_0x2c offset");
 static_assert(offsetof(Gun, level) == 0x38, "Gun::level offset");
