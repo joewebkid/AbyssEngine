@@ -164,7 +164,7 @@ void StarMap::draw() {
                     if (to < visibility->size() && visibility->data()[to] != 0 && to < this->systemPositions->size() &&
                         (this->autoMode == 0 || this->pulseSystem != (int)to || this->autoTimer >= 4000)) {
                         this->scratchVector2 = Vector(*this->systemPositions->data()[to]);
-                        if (this->scratchVector.z >= 0.0f || this->scratchVector2.z >= 0.0f) {
+                        if (!(this->scratchVector.z < 0.0f && this->scratchVector2.z < 0.0f)) {
                             Globals::Canvas->DrawLine((int) this->scratchVector.x, (int) this->scratchVector.y,
                                               (int) this->scratchVector2.x, (int) this->scratchVector2.y);
                         }

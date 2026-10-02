@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **98.950% unweighted / 98.00707% original-instruction
+implementation bodies measure **98.960% unweighted / 98.03287% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**85.640% / 77.95923%**, respectively. Source-shape is an inventory/control-flow
+**85.650% / 77.98503%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -610,6 +610,35 @@ thirteenth-generic-retry.json, thirteenth-GlowShader-retry.json and
 thirteenth-GreenShader-retry.json. Final evidence must come from the complete
 rerun, never a synthetic merger of the incomplete and unit reports.
 
+## Follow-up after checkpoint e07a1f16
+
+Only the first route-line depth predicate in draw changes. Direct Android ARM
+at c92a6..c92c0 compares the first Z to zero and branches with BPL to DrawLine;
+the second comparison skips DrawLine with BMI. This draws unless both depths
+are ordered negative. The retained source used z1 >= 0 || z2 >= 0, which differs
+on unordered comparisons. It now uses !(z1 < 0 && z2 < 0), the form already used
+for the current-route line immediately below. This is machine-predicate evidence,
+not recovery of the original C++ spelling or floating-point exception flags.
+Normal projected depths are +1/-1; no broader NaN-safe rendering claim is made.
+
+Focused draw source-shape: 98.3% -> 98.5%; strict: 87.6% -> 87.8%; instruction
+counts remain 916/909. The unchanged fixed means become 98.960% / 98.03287%;
+strict means become 85.650% / 77.98503%. All other focused rows are unchanged.
+The 99% objective remains unmet. Primary evidence: _work/draw-original-direct.asm;
+focused package: _work/draw-depth-fourteenth.json/log. Current object disassembly
+_work/fourteenth-current.asm emits VCMPE/BPL at 3ba/3c2 and VCMPE/BMI at
+3c8/3d0, matching the original branch predicates. Object SHA-256:
+a5d385c6e8385bcd581713e528a815432c9f502c284b42f62fac14e4b543bc3b.
+Previous accepted focused
+and full inputs are preserved as _work/checkpoint13-focused.json and
+_work/checkpoint13-corpus.json. No compiler/profile/verifier edits were made.
+
+Validation for this package: 204 ARM TUs compiled, zero failures; native gof2
+static-library build passed; complete full corpus has 4619 comparisons and zero
+skips. Baseline and checkpoint e07a1f16 exact-pair gates pass with zero losses
+(2083 linked / 960 byte). Default 99% gate remains FAIL with the expected
+threshold message, not a missing-unit error.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -647,18 +676,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/thirteenth-corpus.log`; focused log:
-`_work/update-compare-thirteenth.log`; native log: `_work/native-thirteenth.log`.
+Latest full log: `_work/fourteenth-corpus.log`; focused log:
+`_work/draw-depth-fourteenth.log`; native log: `_work/native-fourteenth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6 and 644c59e5, with no new gains or losses since
-7fc7701c. The latest comparison against 644c59e5 (unchanged production objects from eeebc3e6) preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5 and e07a1f16, with no new gains or losses since
+7fc7701c. The latest comparison against e07a1f16 preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/thirteenth-gate.json, thirteenth-previous-gate.json and
-thirteenth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/fourteenth-gate.json, fourteenth-previous-gate.json and
+fourteenth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `0f43e54cca6ca91903244bd92d19df15feed6315afeae3e2e6a67d6561ef50d6`.
+final full JSON SHA-256: `5bdad6a9a44152fc769f6dfe7e64a471d83e2f05f0a87e6b89306341e924171e`.
 
 
 ### Reproduction
@@ -692,7 +721,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1221 | 78.9% | 97.9% | 65.1% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.5% | 82.1% | - |
-| `_ZN7StarMap4drawEv` | 916/909 | 49.7% | 98.3% | 87.6% | - |
+| `_ZN7StarMap4drawEv` | 916/909 | 49.7% | 98.5% | 87.8% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/737 | 72.9% | 98.0% | 76.1% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/680 | 80.9% | 96.3% | 82.0% | - |
 | `_ZN7StarMapC1EbP7Missionbi` | 333/332 | 85.1% | 98.0% | 84.2% | - |
