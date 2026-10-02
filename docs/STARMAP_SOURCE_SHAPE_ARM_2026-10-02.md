@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.095% unweighted / 98.25001% original-instruction
+implementation bodies measure **99.130% unweighted / 98.36899% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**86.425% / 78.96174%**, respectively. Source-shape is an inventory/control-flow
+**86.915% / 80.62750%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -913,6 +913,61 @@ for rejected trials. Fixed means stay 99.095% / 98.25001%, with weighted
 threshold unmet. This follow-up commits only this evidence report. There is
 no basis here to declare a compiler ceiling or relax the 99% objective.
 
+## Follow-up after checkpoint 7e7528b7
+
+drawOnScreenInfo now checks X bounds before reading/checking Y, as the
+Android instruction sequence does. Original c83a4/c83ac checks X against -50,
+c83c2/c83ca checks against width+50, c83ce then loads Y and c83d2/c83da checks
+its lower bound. The retained source loaded X and Y together and combined
+all four predicates; its object moved the Y lower check ahead of X upper.
+The new source splits the same predicates into one X guard followed by one
+Y guard. Constants, comparison directions, early-return results and getter
+count are unchanged. It uses ordinary control flow without barriers or flags.
+
+New object: X lower c98/ca0, X upper cb6/cbe, then Y load cc2 and lower check
+cc6/cce. The change matches verified ordering; no exact C++ source recovery,
+whole-function equality or native runtime equivalence is claimed.
+Focused package: _work/info-bounds-twentysecond.json/log/asm. Info source
+97.9% -> 98.6%, strict 65.1% -> 74.9%, original/current instructions
+1207/1221 -> 1207/1197. Call count stays 100%; ordered control-flow 88.8% ->
+89.1%. All other focused rows are unchanged. Fixed means become
+99.130% / 98.36899%; strict 86.915% / 80.62750%. Weighted 99% remains unmet.
+Current StarMap.o SHA-256: c3a12acbd35219b39533f3d129d25207f26cb34ea2a7b967b43c06d8f4e502e1.
+Previous inputs: _work/checkpoint22-before-focused.json/corpus.json.
+
+The current weighted shortfall is 0.63100972 percentage points. Deficit
+contributions relative to 99% are OnTouchEnd +0.21905365, initStarSystem
++0.20997043, init +0.07393325, update +0.06837065, info +0.06799042,
+drawKey +0.04157161 and OnTouchMove +0.02239121; bodies above 99% offset
+part of their sum. These are measured priorities, not a proven ceiling.
+
+Two station-angle hypotheses were rejected before this retained package:
+
+- Capture usedFlags after random nextInt and reuse it through flag store and
+  size read: original c775c..c776c uses this captured pointer. It removes the
+  current object's extra member reload after the flag store and raises strict
+  station matching 83.7% -> 84.0%, but source decreases 96.9% -> 96.8% and
+  current instruction count 679 -> 678. No separate valid-game behavior defect
+  is demonstrated by the alias-sensitive reread, so this score-lowering variant
+  is not retained. Package: _work/angle-flags-twentysecond.json/log; disassembly
+  _work/twentysecond-current.asm describes this rejected object, not final.
+- Compute stationAngle before assigning it into the member array and use that
+  local for radians. This tests original c7772 division before c7786 loads the
+  stationAngles member. Entire focused JSON is identical to the accepted
+  pre-turn checkpoint. Removed the extra source local. Package:
+  _work/angle-value-twentysecond.json/log.
+
+Original evidence: station-original-direct.asm, station-android.c (IDA
+crosscheck), info-original-direct.asm and info-android.c. Source for each
+station trial was restored from _work/before-angle-flags-twentysecond.cpp
+with a fresh file timestamp before the final focused build. No rejected
+station edit remains in the production diff.
+
+Native static-library build and all 204 ARM translation units passed. Full
+corpus: 4619 comparisons, zero skips. Baseline and checkpoint 7e7528b7
+preservation gates pass with zero losses (2083 linked / 960 byte). The default
+99% gate fails with its expected threshold message. Runtime remains untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -950,18 +1005,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/twentieth-corpus.log`; focused log:
-`_work/ctor-order-twentieth.log`; native log: `_work/native-twentieth.log`.
+Latest full log: `_work/twentysecond-corpus.log`; focused log:
+`_work/info-bounds-twentysecond.log`; native log: `_work/native-twentysecond.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1 and c8b7e875, with no new gains or losses since
-7fc7701c. The latest comparison against c8b7e875 preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e and 7e7528b7, with no new gains or losses since
+7fc7701c. The latest comparison against 7e7528b7 preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/twentieth-gate.json, twentieth-previous-gate.json and
-twentieth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/twentysecond-gate.json, twentysecond-previous-gate.json and
+twentysecond-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `59117cc27f43cde10ee170ccf8f061f99e396106a9b124901973b19e487025f3`.
+final full JSON SHA-256: `f3c8cc7c492209885ee0fd5dbc621cb41c1759f52b9e92197280e3aac776440c`.
 
 
 ### Reproduction
@@ -992,7 +1047,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
-| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1221 | 78.9% | 97.9% | 65.1% | - |
+| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1197 | 78.9% | 98.6% | 74.9% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.5% | 82.1% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.0% | 89.1% | - |

@@ -1319,9 +1319,9 @@ void StarMap::drawOnScreenInfo(int index, bool stationMode) {
     Array<Vector *> *positions = stationMode ? this->stationPositions : this->systemPositions;
     this->scratchVector = Vector(*positions->data()[index]);
     float x = this->scratchVector.x;
+    if (x < -50.0f || x > (float)(Globals::w + 50)) return;
     float y = this->scratchVector.y;
-    if (x < -50.0f || x > (float)(Globals::w + 50) ||
-        y < -50.0f || y > (float)(Globals::h + 50)) return;
+    if (y < -50.0f || y > (float)(Globals::h + 50)) return;
     Globals::Canvas->SetColor(0xffffffffu);
     int *icons = this->iconBuffer;
     for (int i = 0; i != 5; ++i) icons[i] = -1;
