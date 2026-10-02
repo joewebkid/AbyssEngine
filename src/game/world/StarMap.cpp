@@ -772,13 +772,13 @@ void StarMap::update(int dt) {
                 float currentX = this->scratchVector.x;
                 float currentY = this->scratchVector.y;
                 float sx = 0.0f;
-                if (currentX >= targetX) {
+                if (!(currentX < targetX)) {
                     if (currentX > targetX) sx = (currentX - targetX) / -30.0f;
                 } else {
                     sx = (currentX - targetX) / -30.0f;
                 }
                 float sy = (currentY - targetY) / -30.0f;
-                if (currentY <= targetY && currentY >= targetY) sy = 0.0f;
+                if (!(currentY > targetY) && !(currentY < targetY)) sy = 0.0f;
                 if (abs((int)sx) > abs((int)(this->scratchVector.x - targetX))) sx *= 0.5f;
                 if (abs((int)sy) > abs((int)(this->scratchVector.y - targetY))) sy *= 0.5f;
                 this->velocityX = sx;
