@@ -56,7 +56,7 @@ int BluePrint::getStationIndex() { return stationIndex; }
 
 int BluePrint::getQuantity() { return remainingBatch; }
 
-bool BluePrint::isUnlocked() { return locked != 0; }
+int BluePrint::isUnlocked() { return locked; }
 
 void BluePrint::unlock() {
     locked = 1;
