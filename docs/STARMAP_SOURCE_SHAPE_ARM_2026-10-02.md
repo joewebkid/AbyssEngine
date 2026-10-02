@@ -1355,6 +1355,41 @@ No new build/full-corpus result is claimed. Source means remain 99.160% /
 static-library results remain valid for the unchanged production source.
 The weighted target is unmet, and native runtime remains untested.
 
+## Investigation after checkpoint b1ca08e8
+
+A drawKey source trial grouped drawBox and the imageX/textX/y coordinate
+assignments into one comma expression. This extended the temporary by-value
+String lifetime through those integer calculations without creating another
+String copy. The primary Android code computes coordinates at c817c..c8192
+between drawBox at c8178 and String destruction at c8196. Accepted code has
+drawBox at 1a58, destruction at 1a5e and coordinates after it. This was a
+source-shape hypothesis; the original C++ expression was not recovered.
+
+The focused trial _work/key-lifetime-thirtysecond.json is identical to the
+accepted focused JSON across all fields and 22 rows, including drawKey source
+97.8%, strict 34.8% and 246/243 original/current instructions. There was no
+measurable benefit, so the comma-expression trial was removed. No trial-object
+byte-identity claim is made; the trial object was not separately hashed before
+restoration. Backup: _work/before-key-lifetime-thirtysecond.cpp. Evidence:
+_work/drawkey-original-addresses.asm and accepted
+_work/station-textx-twentyeighth.asm.
+
+A fresh restored-source focused run compiled 204/204 TUs, zero failures,
+compared 22 symbols with zero skips, and reproduced the entire accepted JSON.
+The build log contains transient MSYS child-copy/mkdir diagnostics, but the
+terminal build summary reports all 204 compiled with zero failures; neither
+that summary alone nor exit status was used instead of the object check.
+Restored StarMap.o SHA-256 also equals the accepted object:
+1a12eaa4a0002c78e01fccc2a8a8b2a7aee04366607cd84e6fe97bfdace9879d.
+Fresh evidence: _work/thirtysecond-restored-focused.json/log.
+
+Production source remains unchanged. Means remain source 99.160% / 98.44298%
+and strict 86.985% / 80.79548%, with six unique linked-exact and three unique
+byte-exact bodies. Full-corpus/native results below remain those of 364ddd7d;
+no new full-corpus or native-library run is claimed. Both 99% source gates
+must pass before completion; the weighted target remains unmet and native
+runtime remains untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
