@@ -108,7 +108,7 @@ uint32_t SolarSystem::getStationEnumIndex(int idx) {
 }
 
 String SolarSystem::getName() {
-    return this->name;
+    return String(this->name, false);
 }
 
 static const int kPirateBaseStations[4] = {0, 0, 0, 0};
