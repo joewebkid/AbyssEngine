@@ -432,3 +432,40 @@ prove that all legitimate C++ forms are exhausted or establish a compiler ceilin
 Current validated source means remain **96.93% unweighted / 97.08% weighted**;
 Create 96.2 / Read 97.0 / Enhanced 97.6. No exact pair was lost by these restored
 trials. The >=99.0% goal remains unmet and active.
+
+## Continuation: signature storage and normal operation order
+
+Six further Create signature forms are invariant under the canonical compiler:
+unsigned loop index, `i != 7`, explicit unsigned byte, signed fmt, complete
+string arrays, and string pointers. All produce source 96.2 / strict 61.6,
+280 compiled instructions. Seven bytes remain the comparison denominator;
+full string declarations do not add an eighth-byte comparison.
+
+ReadData trials from the validated source:
+
+| Trial | Source / strict | Compiled instructions |
+|---|---|---:|
+| Only float-UV flip destination reread | 97.0 / 52.3 | 880 |
+| Normal raw index plus independent end-component pointer | 96.9 / 51.2 | 880 |
+| Entire normal pipeline reordered Y/X/Z | 96.9 / 50.8 | 880 |
+| Only normal load declarations Y before X | 96.9 / 50.5 | 880 |
+| Only quotient declarations Y before X | 97.0 / 52.6 | 879 |
+| Only lower clamp declarations Y before X | 97.0 / 52.6 | 879 |
+| Only conversion declarations Y before X | 97.0 / 52.6 | 879 |
+| Only upper clamps Y before X | 97.0 / 52.4 | 879 |
+| Quotients and all clamps Y before X | 97.0 / 52.4 | 879 |
+| Common Z write after the normal/zero branches | 97.0 / 52.6 | 879 |
+
+The primary ARM independently confirms raw Y at `(raw+2)[component_index]`,
+X at `(end_component_pointer-4)` and Z at the end pointer, with component index
+increment 3 and pointer increment 6 bytes (`0x6ca8a..0x6caa6`, `0x6cab2..0x6caba`,
+`0x6cbb6..0x6cbba`). The square sum is Y² + X² + Z², already used by the current
+source. Quotient/lower/upper stages visit Y before X before Z, while output
+stores remain X/Y/Z (`0x6cb2a..0x6cbac`). The final Z store is shared after the
+branches. These observations do not justify accepting a worse measured form.
+
+All sixteen trials were restored. Git tracked status was clean before this
+report addition; no source/body or verifier change remains. The preceding full
+native/ARM/parser validation and exact sets still apply; no repeat full build
+was necessary. Current means remain **96.93% unweighted / 97.08% weighted**.
+The >=99.0% gate is unmet. No objective compiler ceiling is demonstrated.
