@@ -8,8 +8,8 @@ Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor 
 |---|---:|---:|
 | Source-shape, unweighted | 73.5923% | 99.4846% |
 | Source-shape, original-instruction-weighted | 26.9159% | 97.7898% |
-| Strict instruction shape, unweighted | 66.8038% | 93.4846% |
-| Strict instruction shape, weighted | 15.4981% | 70.7491% |
+| Strict instruction shape, unweighted | 66.8038% | 93.4962% |
+| Strict instruction shape, weighted | 15.4981% | 70.8297% |
 | Linked-exact unique bodies | 14 | 19 |
 | Byte-exact unique bodies | 13 | 13 |
 
@@ -55,6 +55,10 @@ Rejected word-flag experiments: combining radial/particle predicates with bitwis
 
 Rejected experiment: declarations suppressing template emission did not improve the constructor under the canonical flags. They were removed. No volatile access, assembly padding, injected register moves or shared metric normalization was introduced. Source-shape still depends on compiler output and is not equivalent to byte identity.
 
+Camera-copy follow-up: inspected `Camera.h`, `Matrix.h` and `PaintCanvas::CameraGetLocal`. The camera contains an actual Matrix at offset 0x0c; the fallback is also a Matrix object. Render and collision now copy-initialize local Matrix objects from that returned address instead of treating a byte buffer as a live Matrix. The implicit copy constructor preserves the original 60-byte copy without calling the default constructor. Both ARM body results and all baseline exact pairs remain unchanged. In shootAt, a reference to targetDir is formed before the non-homing mount loop, matching the native hoisted member address. Source-shape remains 98.0%; strict shootAt shape improves from 62.6% to 62.9%.
+
+Rejected follow-ups: a positive Y/Z bounds block with a collision label and signed collision loop indices emitted identical results. A switch-based radial classifier reduced collision source-shape to 96.2% and was removed.
+
 ## Checks and limits
 
 - Native CMake `gof2` static-library build: passed.
@@ -66,7 +70,7 @@ Rejected experiment: declarations suppressing template emission did not improve 
 - Full corpus: **4625 comparisons**, 4274/4524 original functions, 250 missing (7 wrong-type, 243 absent), 130 extras, 2088 linked-exact and 959 byte-exact. Baseline linked/byte exact-pair losses across the entire corpus: **zero / zero**. Six additional comparison rows arise from template emission; original coverage and the fixed Gun denominator did not change.
 - Snapshot: `validation/gun_family_2026-10-02.json` contains all 28 Gun rows, baseline rows, unique-body/alias labels, both means, full-corpus totals and exact-pair loss sets.
 
-Clean-base and checkpoint full corpus both fail `--fail-on-wrong-type` (exit 1): the identical seven C2/D2 template aliases are classified as wrong-type (KeyCode pointers, nested ImagePart arrays, BluePrint pointers, PendingProduct destructor and bool-array destructor). Baseline: 4619 comparisons, 4274/4524 original functions, 250 missing (7 wrong-type, 243 absent), 130 extras, 2079 linked-exact, 959 byte-exact. This task does not repair or waive that pre-existing gate.
+Clean-base and checkpoint full corpus both fail `--fail-on-wrong-type` (exit 1): the identical seven C2/D2 template aliases are classified as wrong-type (KeyCode pointers, nested ImagePart arrays, BluePrint pointers, PendingProduct destructor and bool-array destructor). Baseline: 4619 comparisons, 4274/4524 original functions, 250 missing (7 wrong-type, 243 absent), 130 extras, 2079 linked-exact, 959 byte-exact. Inspection of the missing and extra exports confirms that these seven cases have matching demangled parameter signatures but emit C1/D1 where the original expects C2/D2; the label does not establish a parameter-type mismatch. Repair requires work outside the authorized Gun files. The user authorized a separate ABI-alias repair outside Gun while retaining the strict gate. That repair is pending at this Gun checkpoint; no verifier waiver has been applied.
 
 C1/C2 share original address `0x151f20`; D1/D2 share `0x152134`. Only C1 and D1 count in the unique-body means. D2's separately emitted local result is kept as a diagnostic row, not deleted or counted as a new original body. Its lowered local score is disclosed even though D1 remains linked-exact.
 

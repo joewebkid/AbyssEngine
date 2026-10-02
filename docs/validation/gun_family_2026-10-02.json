@@ -16,8 +16,8 @@
     "original_instructions": 2393,
     "source_unweighted": 99.48461538461538,
     "source_weighted": 97.7898035938153,
-    "strict_unweighted": 93.48461538461538,
-    "strict_weighted": 70.74905975762641,
+    "strict_unweighted": 93.49615384615385,
+    "strict_weighted": 70.82966987045549,
     "linked_exact": 19,
     "byte_exact": 13
   },
@@ -109,7 +109,7 @@
     },
     {
       "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
-      "match": 62.6,
+      "match": 62.9,
       "bytes_equal": false,
       "linked_equal": false,
       "n_target": 643,
@@ -1443,9 +1443,9 @@
     "object_newer_than_source_and_header": true
   },
   "input_sha256": {
-    "src\\game\\weapons\\Gun.cpp": "e7b5a573002786dda3634be7b566bd523b10a08356a5b11019ace6ff61ebb16a",
+    "src\\game\\weapons\\Gun.cpp": "27b96d7863f7fb81c42aa861a879fcab93ded42f80d382d5d4ea67a7ee042ab2",
     "src\\game\\weapons\\Gun.h": "400097d0e265812992483f4556cf6cfa63302d60978129c9211aae9bdd904f2c",
-    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "7a09a55d01447ac4db642e8663fefaaed98649f6d980ff21995613fee41e51bd",
+    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "aa2fddd67bd12c3e740f7be749f65cf850d4e2f6169f12baf1598b91bd816d76",
     "_work\\gun-current\\verify\\.flags": "b7741d9045ccee7cadcb1e3f3027e57029d127537931305e306e50bc830d174c"
   }
 }

@@ -270,9 +270,7 @@ void Gun::render() {
                 auto *canvas = Globals::Canvas;
                 unsigned current = canvas->CameraGetCurrent();
                 // Native copies all 60 bytes without constructing another Matrix.
-                alignas(Matrix) unsigned char cameraBytes[sizeof(Matrix)];
-                memcpy(cameraBytes, canvas->CameraGetLocal(current), sizeof(Matrix));
-                auto &camera = *reinterpret_cast<Matrix *>(cameraBytes);
+                Matrix camera = *static_cast<const Matrix *>(canvas->CameraGetLocal(current));
                 const auto *local = static_cast<const Matrix *>(
                     Globals::Canvas->TransformGetLocal(geometries[i]));
                 targetDir = AbyssEngine::AEMath::MatrixGetPosition(*local);
@@ -499,6 +497,7 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         }
         return true;
     }
+    Vector &mountDirection = targetDir;
     bool fired = false;
     for (unsigned i = 0; i < count; ++i) {
         int threshold = 0;
@@ -516,19 +515,19 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         if (offset != zero) {
             if (weaponType != ITEM_SORT_SHOCK_BLAST) {
                 if (!field_0xa5 || field_0xa4_b0) {
-                    targetDir = offset;
+                    mountDirection = offset;
                     if (field_0xa4_b0) {
-                        if (field_0xa6) targetDir.x = -targetDir.x;
+                        if (field_0xa6) mountDirection.x = -mountDirection.x;
                         field_0xa6 ^= 1;
                     }
-                    Vector displacement = MatrixRotateVector(m, targetDir);
+                    Vector displacement = MatrixRotateVector(m, mountDirection);
                     positionArray[i] += displacement;
                 }
                 if (field_0xa5 && field_0xa6) {
-                    targetDir = offset;
-                    if (field_0xa7) targetDir.y = -targetDir.y;
+                    mountDirection = offset;
+                    if (field_0xa7) mountDirection.y = -mountDirection.y;
                     field_0xa7 ^= 1;
-                    Vector displacement = MatrixRotateVector(m, targetDir);
+                    Vector displacement = MatrixRotateVector(m, mountDirection);
                     positionArray[i] += displacement;
                 }
             }
@@ -726,9 +725,7 @@ collided:
                 transform->SetAnimationState(static_cast<AbyssEngine::AnimationMode>(1), nullptr);
                 auto *canvas = Globals::Canvas;
                 unsigned current = canvas->CameraGetCurrent();
-                alignas(Matrix) unsigned char cameraBytes[sizeof(Matrix)];
-                memcpy(cameraBytes, canvas->CameraGetLocal(current), sizeof(Matrix));
-                auto &camera = *reinterpret_cast<Matrix *>(cameraBytes);
+                Matrix camera = *static_cast<const Matrix *>(canvas->CameraGetLocal(current));
                 MatrixSetTranslation(camera, position.x, position.y, position.z);
                 Globals::Canvas->TransformSetLocal(geometries[i], camera);
             }
