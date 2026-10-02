@@ -987,8 +987,11 @@ namespace AbyssEngine {
                 unsigned int triCount = (unsigned int) ((unsigned) (unsigned short) m->indexCount / (unsigned) 3);
                 float *accum = (float *) ::operator new[](vcount * 0xc);
 
-                if (vcount != 0)
-                    memset(accum, 0, vcount * 0xc);
+                for (unsigned int v = 0; v < vcount; ++v) {
+                    accum[v * 3] = 0.0f;
+                    accum[v * 3 + 1] = 0.0f;
+                    accum[v * 3 + 2] = 0.0f;
+                }
 
                 for (unsigned int t = 0; t < triCount; ++t) {
                     m = *slot;

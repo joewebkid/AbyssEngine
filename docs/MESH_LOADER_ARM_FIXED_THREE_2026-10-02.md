@@ -218,3 +218,37 @@ and existing release/ownership behavior are not comprehensively runtime-tested.
 Float-to-integer conversion of malformed nonfinite/out-of-range times remains
 a native-versus-portable-C++ boundary. No Android device/ARM executable was run.
 The 99.0% criterion remains unmet; **partial is not readiness**.
+
+## Continuation: component accumulator initialization
+
+Three additional isolated source trials followed the first commit:
+
+| Trial | Body | Source / strict | Decision |
+|---|---|---|---|
+| Unsigned axis and explicit original `0x7fffffff` mask | Enhanced | 97.3 / 64.3 | rejected: no gain |
+| One shared unsigned count object across enhanced sections | Enhanced | 97.1 / 65.2 | rejected: source regression |
+| Explicit per-vertex three-component zero initialization | ReadData | 96.4 / 49.9 | accepted: full corpus gate passed |
+
+The accepted loop replaces the accumulator's single explicit memset. The
+original decompiler's remainder-shaped memset size is evidence of a loop
+lowering; this is a source-form hypothesis, not recovered original C++.
+For the unsigned-short-derived vertex count the loop clears exactly the same
+components. Canonical flags and matching rules remain unchanged. The trial's
+ReadData components are inventory 90.6, opcodes 96.5, control 97.3, calls 98.2,
+size 99.4; instruction count 868 versus original 873. Call-count matching
+regresses from 100.0 to 98.2, while the requested source score improves.
+
+Native static-library build and the existing executable parser smoke pass.
+A fresh 204/204 ARM rebuild passes; 202 unaffected object files remain
+byte-identical to the clean baseline. Full exact-set comparison passes: both
+sets remain identical (linked 2,079; raw 959; lost/gained empty).
+The earlier tables remain the record of the first commit, not measurements
+of this continuation. The >=99.0% objective remains unmet.
+
+Current fixed-three source means are **96.50% unweighted / 96.62% weighted**.
+Full corpus: 4,619 comparisons, 4,274/4,524 unique/original functions, zero
+skips; full strict 75.98%, source 88.99%. Set hashes remain the hashes recorded
+above. Local evidence: _work/zero_full.json SHA-256
+`8607d75aab7788048e1c2a85937c5edadabd268a1df0153efbf5239b5dd0c52c`;
+_work/zero_three.json, zero_full_build.log, zero_full_verify.log,
+zero_native.log and zero_smoke.exe. No ARM game runtime was executed.
