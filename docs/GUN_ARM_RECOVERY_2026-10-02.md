@@ -69,6 +69,8 @@ Weapon-threshold follow-up: update and shootAt now explicitly enumerate ROCKET, 
 
 Correction to the earlier update hypothesis: the existing scalar fade clamp already compiles to the original VMAX operation at 0x153876. The rejected NEON wrappers were unnecessary; no wrapper is retained. Independent collision trials with explicit radial assignments, reordered classification and a long-lived radius reference yielded no source-shape improvement. The radial-assignment trial improved strict shape to 55.0% but reduced source-shape to 95.8%; it was rejected. Only the two threshold predicates changed in this checkpoint.
 
+Further collision equivalence audit at checkpoint 91221246: eight private canonical-compiler trials covered explicit radial IDs 6/7, explicit particle IDs 4/5 (including medal classification), both combined, bool versus int local predicates, and unsigned cached differences for mine/scatter separately and combined. All eight parsed ARM collision bodies are identical to the committed body: 629 instructions versus original 647, 96.6% source-shape and 50.6% strict. Merely changing the predicate syntax or scalar type cannot repair the observed rematerialization in these trials. None was integrated; live Gun source, canonical object and shared verifier remain unchanged. The evidence, body-identity checks and input hashes are recorded in validation/gun_collision_equivalent_forms_2026-10-02.json. This is a bounded negative result, not proof that no other source form can reach the target.
+
 ## Checks and limits
 
 - Native CMake `gof2` static-library build: passed.
