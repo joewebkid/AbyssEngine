@@ -1275,3 +1275,50 @@ reader/parser/caller validation remains applicable: actual linked-exact
 Fixed scores stay Create 98.4, Read 97.5, Enhanced 97.9; means **97.93%
 unweighted / 97.79% weighted**. Both >=99.0% requirements remain unmet and
 the goal stays active; these trials do not establish a compiler ceiling.
+
+## Continuation: Create local scopes after separated call paths
+
+Six valid scope/initialization trials and one equivalent common-return trial
+start from `d103167d`. They specifically revisit the caller after the retained
+==1 enhanced-single predicate prevented merging its two single-mesh paths.
+The earlier scope results on the merged-call caller are not treated as proof
+of unchanged behavior of this different compiler state. No trial improves
+source match; all source changes were restored.
+
+| Trial | Create source / strict | Compiled instructions | Call-count match |
+|---|---|---:|---:|
+| Magic local to OpenRead success, array initializer | 98.2 / 52.8 | 289 | 100.0 |
+| subCount local to enhanced branch | 97.7 / 54.8 | 289 | 100.0 |
+| childPtr local to child loop | 98.4 / 55.5 | 289 | 100.0 |
+| Local magic and subCount | 97.7 / 57.2 | 289 | 100.0 |
+| Local subCount and childPtr | 97.7 / 58.6 | 289 | 100.0 |
+| All three narrowed scopes | 98.0 / 57.9 | 289 | 100.0 |
+| Assign result and return from one common label | 98.4 / 61.0 | 289 | 100.0 |
+
+The common-return trial improves only strict match from 60.7 to 61.0, so it
+is not retained for the requested source means. Scope trials preserve each
+variable's reads and pointer ownership; array initialization writes the same
+eight magic bytes as the existing strcpy, including the null terminator.
+No destructor-bearing automatic object or extra file operation is introduced.
+
+Two additional exploratory loop-entry forms were compiled, but are excluded
+as source-backed replacements: child do-while scores 98.0/59.1/288, and
+common-return plus do-while 98.0/59.4/288 (call-count match 100.0 each).
+An initial interpretation that the original enters its first child iteration
+immediately after Transform creation was wrong. Direct original disassembly
+shows counter zero at `0x6d236`, a branch at `0x6d238` to the subCount comparison
+at `0x6d2e2`, then bcc at `0x6d2e8` to child creation at `0x6d248`.
+Thus the original checks the count after Transform creation even on first
+entry. The do-while forms omit that guard; they were never accepted or claimed
+runtime-validated. The current for-loop preserves the demonstrated entry test.
+
+Evidence: `_work/create_scope_callpath_interaction.py` and six
+`_work/createscopecallpath-*.json` reports, `_work/create_loop_return_interaction.py`
+and three `_work/createloopreturn-*.json` reports, plus original_mesh.asm around
+`0x6d236..0x6d2e8`. Canonical flags, matcher and denominator are unchanged.
+Tracked source status is clean after both sweeps, and baseline body/signature
+boundary checks pass. Only this report changes; the preceding fresh full
+ARM/native and reader/parser/caller validation still applies to unchanged
+production/test sources. Exact linked 2,079 / raw 959 pair sets remain intact.
+Fixed scores stay 98.4 / 97.5 / 97.9, with means **97.93% unweighted / 97.79%
+weighted**. Both >=99.0% gates remain unmet; the goal stays active.
