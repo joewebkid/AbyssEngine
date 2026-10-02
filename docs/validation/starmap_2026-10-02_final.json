@@ -1,6 +1,6 @@
 {
-  "avg_match": 81.16,
-  "avg_source_match": 98.17,
+  "avg_match": 82.27,
+  "avg_source_match": 98.3,
   "count": 22,
   "fuzzy_perfect": 6,
   "byte_exact": 3,
@@ -39,23 +39,6 @@
       "control_inventory_match": 97.2,
       "call_count_match": 100.0,
       "size_match": 98.5,
-      "unit": "game/world/StarMap"
-    },
-    {
-      "symbol": "_ZN7StarMap6updateEi",
-      "match": 57.9,
-      "bytes_equal": false,
-      "linked_equal": false,
-      "n_target": 971,
-      "n_base": 970,
-      "source_match": 94.7,
-      "instruction_inventory_match": 89.6,
-      "opcode_inventory_match": 93.9,
-      "control_flow_match": 91.2,
-      "ordered_control_flow_match": 82.7,
-      "control_inventory_match": 91.2,
-      "call_count_match": 98.6,
-      "size_match": 99.9,
       "unit": "game/world/StarMap"
     },
     {
@@ -158,6 +141,23 @@
       "control_inventory_match": 92.0,
       "call_count_match": 100.0,
       "size_match": 97.4,
+      "unit": "game/world/StarMap"
+    },
+    {
+      "symbol": "_ZN7StarMap6updateEi",
+      "match": 82.3,
+      "bytes_equal": false,
+      "linked_equal": false,
+      "n_target": 971,
+      "n_base": 953,
+      "source_match": 97.7,
+      "instruction_inventory_match": 95.8,
+      "opcode_inventory_match": 97.4,
+      "control_flow_match": 97.0,
+      "ordered_control_flow_match": 95.0,
+      "control_inventory_match": 97.0,
+      "call_count_match": 100.0,
+      "size_match": 98.2,
       "unit": "game/world/StarMap"
     },
     {

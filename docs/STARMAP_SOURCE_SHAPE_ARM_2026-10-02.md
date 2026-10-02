@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **98.115% unweighted / 96.69851% original-instruction
+implementation bodies measure **98.265% unweighted / 97.10873% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**80.315% / 66.97120%**, respectively. Source-shape is an inventory/control-flow
+**81.535% / 70.30769%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -132,6 +132,49 @@ through the unchanged asmdiff reader and recorded in _work/move-inventory.txt.
 The 99% goal is still unmet; OnTouchMove predication and the large-body
 instruction/control inventories remain work, not a claimed compiler ceiling.
 
+## Follow-up after checkpoint b5010fdb
+
+Checkpoint b5010fdb measured 98.115% / 96.69851%. This continuation edits
+StarMap.cpp and its evidence only. update improves **94.7% -> 97.7%**, strict
+**57.9% -> 82.3%**; original/current instructions: 971/953, call count 100%.
+
+- Android update at 0xc9b90 projects station positions without an added null
+  guard; uses fresh member accesses and fresh Globals::Canvas for marker
+  Transform lookup and CameraSetLocal calls. Direct Vector temporaries remove
+  extra assignment calls in marker interpolation, direction and normalization.
+- Direct ARM instructions at 0xc9d6e-0xc9d82 and 0xca0f4-0xca0fc prove
+  double intermediates for marker scale and automatic-selection scale. ELF
+  PT_LOAD mapping decodes doubles -0.014, 0.02 and 0.002 at 0xc9d40/48/50.
+  Restore double literals and final float conversion; IDA float notation alone
+  would have lost this precision. Source-shape grows 97.2% -> 97.7%.
+- Positive-test absolute-value selection preserves Android's signed-zero and
+  NaN paths. Station speed keeps the original less-than-ten selection and pitch
+  keeps the negative-bound NaN path. Galaxy centering explicitly emits +0 at
+  equal screen coordinates; Y equality retains both ordered comparisons so
+  unordered values still follow the original division path.
+- Restored galaxy-mode-first flow, station-center-before-inertia flow, integer
+  yaw distance <=10, signed selected-index check and per-iteration station
+  geometry loads. Transition completion uses nested X/Y/Z checks and the
+  transition-in branch first; no synthetic finished variable remains.
+- Original transition-out calls release helpers before optional destruction.
+  Restore that order, retaining the initialized-array contract verified in
+  initStarSystem (stationGeoms, ringGeoms and usedFlags are allocated before
+  transition-in, then released on transition-out). Station centering assumes
+  a valid selectedStation as Android does; no native runtime proof is claimed.
+
+Packages: update-fifth-trial, update-fifth-flow, update-fifth-release and
+update-fifth-nested and update-fifth-double (accepted fifth-focused). Original evidence is
+_work/update-android.c and update-original-direct.asm; Array helper contracts were checked in Array.h.
+Direct real external-call inventories now agree for update except the documented
+Array<bool>/Array<uint8_t> release/destructor spelling retained to preserve the
+baseline exact pair. _work/update-fifth-real-call-differences.txt excludes
+literal-pool pseudo-calls and records those two name substitutions.
+Removing the synthetic completion variable produced the same ARM measurement,
+so the simpler faithful control flow was retained without claiming a gain.
+The first fifth-corpus run was deliberately stopped after new double-precision
+evidence required a source revision. Final full run: fifth-double-corpus.
+The 99% target remains unmet; residual inventories require further evidence.
+
 ## Evidence and version boundaries
 
 Primary reference is **Android ARMv7 GOF2 HD 2.0.16**,
@@ -245,7 +288,7 @@ for this checkpoint.
 
 Full corpus: **4619 comparisons, zero skips** in both clean baseline and final.
 Overall source-shape 88.99% -> 89.06%; ordered fuzzy
-75.97% -> 76.12% (including all corpus entries).
+75.97% -> 76.13% (including all corpus entries).
 Coverage remains 4274/4524 original functions, 250 missing (7 wrong-type / 243
 absent). Final extra symbols: 129, baseline: 130. Existing coverage gaps were
 not removed from reporting.
@@ -265,17 +308,17 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/fourth-corpus.log`; focused log:
-`_work/move-flow-trial.log` (copied report: fourth-focused.json); native log: `_work/native-fourth.log`.
-Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361
-and 50e10b79, with no new gains or losses since 7fc7701c. The latest comparison
-against 50e10b79 preserves all 2083 linked-exact and 960 byte-exact pairs.
-Latest preservation gate and 99% gate logs are _work/fourth-gate.json,
-fourth-previous-gate.json and fourth-target-gate.log (exit 0, 0 and 1 respectively).
+Latest full log: `_work/fifth-double-corpus.log`; focused log:
+`_work/update-fifth-double.log` (copied report: fifth-focused.json); native log: `_work/native-fifth-double.log`.
+Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
+50e10b79 and b5010fdb, with no new gains or losses since 7fc7701c.
+The latest comparison against b5010fdb preserves all 2083 linked-exact and
+960 byte-exact pairs. Latest preservation gate and 99% gate logs are
+_work/fifth-gate.json, fifth-previous-gate.json and fifth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `6f7bd555f7c5d057b494f2476ad2b33624bebec4f4fc6094145f7d1b58867bcc`.
+final full JSON SHA-256: `f51819b3e75b6904e2d3e536101dae78a051056c84488a5ed77f9e55b364c2a4`.
 
 
 ### Reproduction
@@ -306,7 +349,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 |---|---:|---:|---:|---:|---|
 | `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1223 | 78.9% | 96.6% | 48.9% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1008 | 66.6% | 96.8% | 68.4% | - |
-| `_ZN7StarMap6updateEi` | 971/970 | 76.6% | 94.7% | 57.9% | - |
+| `_ZN7StarMap6updateEi` | 971/953 | 76.6% | 97.7% | 82.3% | - |
 | `_ZN7StarMap4drawEv` | 916/906 | 49.7% | 98.0% | 83.2% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/740 | 72.9% | 97.3% | 67.0% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/672 | 80.9% | 95.9% | 69.2% | - |
