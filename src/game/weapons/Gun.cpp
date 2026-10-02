@@ -416,7 +416,7 @@ void Gun::update(int dt) {
         for (unsigned i = 0; i < count; ++i) {
             int remaining = lifetimes[i];
             int threshold = 0;
-            if ((static_cast<unsigned>(weaponType) - ITEM_SORT_ROCKET) < 2 ||
+            if (weaponType == ITEM_SORT_ROCKET || weaponType == ITEM_SORT_MISSILE ||
                 weaponType == ITEM_SORT_CLUSTER_MISSILE) threshold = -2000;
             if (remaining > threshold) {
                 lifetimes[i] = remaining - dt;
@@ -511,7 +511,7 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
     bool fired = false;
     for (unsigned i = 0; i < count; ++i) {
         int threshold = 0;
-        if ((static_cast<unsigned>(weaponType) - ITEM_SORT_ROCKET) < 2 ||
+        if (weaponType == ITEM_SORT_ROCKET || weaponType == ITEM_SORT_MISSILE ||
             weaponType == ITEM_SORT_CLUSTER_MISSILE) threshold = -2000;
         if (lifetimes[i] > threshold ||
             (weaponType == ITEM_SORT_SENTRY_GUN && level->field_6c > 2)) continue;

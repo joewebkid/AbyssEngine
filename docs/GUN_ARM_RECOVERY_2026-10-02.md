@@ -2,14 +2,14 @@
 
 ## Status: partial; the requested target is not achieved
 
-Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.5308% unweighted / 97.9658% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
+Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.6308% unweighted / 98.2300% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
 
 | Metric | Clean base | This checkpoint |
 |---|---:|---:|
-| Source-shape, unweighted | 73.5923% | 99.5308% |
-| Source-shape, original-instruction-weighted | 26.9159% | 97.9658% |
-| Strict instruction shape, unweighted | 66.8038% | 94.1346% |
-| Strict instruction shape, weighted | 15.4981% | 73.3016% |
+| Source-shape, unweighted | 73.5923% | 99.6308% |
+| Source-shape, original-instruction-weighted | 26.9159% | 98.2300% |
+| Strict instruction shape, unweighted | 66.8038% | 94.2038% |
+| Strict instruction shape, weighted | 15.4981% | 73.2375% |
 | Linked-exact unique bodies | 14 | 19 |
 | Byte-exact unique bodies | 13 | 13 |
 
@@ -35,11 +35,11 @@ Toolchain: NDK r18b clang 7.0.2, canonical `tools/verify/match_flags.sh`, `-Oz`,
 | Initial velocity and parking | Literal `0x3e1d1245` at `0x152124` scales input velocity independently of projectile speed. Initial lifetime -1000000; initial x=50000; active/hitSmall and adjacent flags initialized at their actual slots. | Accepted because raw ARM proved the operands and field destinations, not because a guessed multiplier improved a score. |
 | Ownership | Destructor body `0x152134`; setEnemy replacement at `0x1523c2`. Wobble Vector objects and inline arrays are released; enemy Player objects are not owned. removeAllEnemies detaches. | D1 remains linked-exact; setEnemy becomes linked-exact. |
 | Animation resources and mounts | Android rodata at `0x202b04` and `0x202ea8..0x203100`; actual Item/Canvas/Transform APIs. | setIndex linked-exact; integer setOffset 99.0% source-shape. No guessed ship-coordinate table. |
-| Firing | shootAt `0x152428`; actual bool return, equipment/ammo gate, mine scatter, homing, mount mirrors, slot thresholds and sentry capacity. | Correct reloads, Vector return/copy forms, scalar-first multiplication and common ammo tail raised shootAt to 98.0%; shoot wrapper becomes linked-exact. |
+| Firing | shootAt `0x152428`; actual bool return, equipment/ammo gate, mine scatter, homing, mount mirrors, slot thresholds and sentry capacity. | Correct reloads, Vector return/copy forms, scalar-first multiplication and common ammo tail raised shootAt to 98.0%; explicit threshold classification raises it to 98.3%. Shoot wrapper becomes linked-exact. |
 | Launch position versus velocity | Native launch vector receives rotated input velocity; mount offset affects position. | Removed the incorrect position addition. Validated against ARM call operands. |
 | Ignite | Radial damage/EMP, falloff, shock push, nuclear cloud/status effects and achievement progress; member vectors retain native intermediate updates. | Correct Vector temporaries/reloads, bool field, unordered-aware falloff and preparation of numerator/denominator before mine selection raised ignite to 97.2%; the later temporary-lifetime repair raises it to 98.4%. |
 | Collision | Player/KI field predicates, outerCollide, strict axis bounds, mine attraction, particle/EMP/direct damage, native manual particle arguments and scatter damage. | Branch structure, reloads, ordered float tests, flags, scatter conversion and staged axis calculations raise collision to 96.6%; still the largest weighted deficit. |
-| Update | `0x153754`; proper integer Transform::Update argument, rocket grace interval, mine fade, scaled Vector temporaries, expiry/medal handling. | Correct call and temporary contracts raise update to 97.5%. |
+| Update | `0x153754`; proper integer Transform::Update argument, rocket grace interval, mine fade, scaled Vector temporaries, expiry/medal handling. | Correct call and temporary contracts raise update to 97.5%; explicit threshold classification raises it to 99.8%. |
 | Level collision | Android empty body `0x153750`. | Kept the actual stub; no speculative collision behavior added. |
 | Translate | Android `0x153a50`; positions pointer is reloaded each iteration after the externally defined Vector addition. | Removing the cached pointer makes translate linked-exact. |
 
@@ -64,6 +64,10 @@ Vector lifetime follow-up: original ignite ARM reuses the 12-byte temporary at s
 The mine branch in collision uses two successive pairs of Vector temporaries; the first pair now ends after assigning the normalized direction, before movement multiplication. Collision source remains 96.6%; strict shape improves from 50.3% to 50.6%. The scatter distance is expressed directly through VectorLength of the difference; it emits identical instructions and removes one unnecessary named value. Native/host build and smoke checks pass; the latter still does not exercise these combat methods.
 
 Rejected follow-ups at this checkpoint: safe NEON vmax wrappers reproduce the original update operation at 0x153876 but lowered update source-shape to 97.0% / 97.1% versus retained 97.5%; neither was retained. A switch/shared label for ignite dispatch and shorter shootAt lifetimes improved strict metrics but reduced source-shape and were removed. Changing weaponType to int was also removed: ItemSort already has fixed underlying int, so its -1 sentinel is valid, and the trial lowered ignite source-shape. No uninitialized vector lane, volatile operand or instruction padding was used.
+
+Weapon-threshold follow-up: update and shootAt now explicitly enumerate ROCKET, MISSILE and CLUSTER_MISSILE instead of an unsigned two-value range plus CLUSTER. Raw IDs 4, 5 and 40 prove that these predicates are equivalent for every value of the fixed-int ItemSort field. Under the unchanged canonical compiler, update source-shape improves from 97.5% to 99.8% and strict shape from 83.2% to 86.1%; shootAt source-shape improves from 98.0% to 98.3%, while strict shape decreases from 62.9% to 61.8%. The accepted source form follows the requested source-shape objective; it is not claimed as recovered original C++ syntax or strict-instruction improvement in shootAt. No baseline exact pair is affected.
+
+Correction to the earlier update hypothesis: the existing scalar fade clamp already compiles to the original VMAX operation at 0x153876. The rejected NEON wrappers were unnecessary; no wrapper is retained. Independent collision trials with explicit radial assignments, reordered classification and a long-lived radius reference yielded no source-shape improvement. The radial-assignment trial improved strict shape to 55.0% but reduced source-shape to 95.8%; it was rejected. Only the two threshold predicates changed in this checkpoint.
 
 ## Checks and limits
 
