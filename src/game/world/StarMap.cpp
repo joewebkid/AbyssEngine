@@ -1546,13 +1546,14 @@ campaign_targets:
     for (int i = 0; i != 5; i++) {
         int image = this->iconBuffer[i];
         if (image != -1) {
+            PaintCanvas *canvas = Globals::Canvas;
             if (i == 0) {
                 int dx = Globals::iPadHD != 0 ? 12 : 18;
                 int dy = Globals::iPadHD != 0 ? 24 : 35;
-                Globals::Canvas->DrawImage2D((unsigned int) ((uint32_t) image), (int) iconX - dx,
+                canvas->DrawImage2D((unsigned int) ((uint32_t) image), (int) iconX - dx,
                                     (int) iconY + this->iconWidth - dy);
             } else {
-                Globals::Canvas->DrawImage2D((unsigned int) ((uint32_t) image), (int) iconX, (int) iconY);
+                canvas->DrawImage2D((unsigned int) ((uint32_t) image), (int) iconX, (int) iconY);
                 iconY += this->missionIconWidth;
             }
         }

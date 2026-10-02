@@ -6,7 +6,7 @@
 implementation bodies measure **99.150% unweighted / 98.40898% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**86.965% / 80.72749%**, respectively. Source-shape is an inventory/control-flow
+**86.995% / 80.82947%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -1029,7 +1029,7 @@ is restored to fcb1741b; this follow-up changes only this evidence report.
   prove the original C++ local type, and no register/flag workaround is added.
 - Info mission 120: explicit station/system branches and a negative-index
   continuation to freighter checks were tested against the ternary condition.
-  Original c8544/c8546 compares #0/BGE while the current cE34/cE38 sequence
+  Original c8544/c8546 compares #0/BGE while the current e34/e38 sequence
   compares #-1/BGT (addresses e34/e38 in angle-search-twentythird.asm).
   The predicates are equivalent signed tests; complete focused JSON and object
   SHA-256 remain identical despite the source restructuring. Removed the label.
@@ -1055,6 +1055,48 @@ e650943d8de8560afae62079ab176de5b80264992479581ade08d5278c49e0ae.
 The previous native static-library/full-corpus validations remain the latest
 accepted production evidence; no new full or native run is claimed for these
 rejected variants. Fixed means stay 99.150% / 98.40898%, weighted target unmet.
+
+## Follow-up after checkpoint f7cbbae0
+
+drawOnScreenInfo's icon loop now captures Globals::Canvas once after confirming
+that an icon exists, before choosing the first-icon or regular-icon branch.
+Both branches draw through that snapshot. Original Android c9036 loads Canvas
+before c903a tests the loop index, then the first-icon path reads iPadHD at
+c904c and iconWidth at c9050. The retained object used separate Canvas reads
+at 1918 for regular icons and 193e after the first-icon offset calculations.
+
+The new object reads Canvas at 1916, tests index at 191a, then reads iPadHD
+at 192c and width at 1930. Its regular drawing path still reloads missionIconWidth
+only after DrawImage2D returns, as original c9040/c9044 does. No callback-spanning
+icon-width snapshot was added. The change removes one extra instruction and
+matches verified receiver/read ordering; no full-function or runtime equivalence
+is claimed. It does not add calls, barriers, padding or compiler flags.
+
+Focused package: _work/icon-canvas-final-twentyfifth.json/log. Info source
+remains 98.6%; strict 74.9% -> 75.5%, current instructions 1197 -> 1196,
+instruction inventory 97.1% -> 97.2%, opcode inventory 98.5% -> 98.4%.
+Call/control scores and all other focused rows are unchanged. The fixed means
+remain 99.150% / 98.40898%; strict means improve to 86.995% / 80.82947%.
+This is a verified ordering correction, not a claimed gain toward the source
+threshold. The weighted 99% objective remains unmet.
+
+An additional first-icon offset spelling (negative Y offset first, then width,
+then X offset) was tested. It generated identical complete focused JSON and
+object bytes to the Canvas-only version, so the extra source local/order change
+was removed before final validation. Packages:
+_work/icon-canvas-twentyfifth.json/log, icon-offsets-twentyfifth.json/log,
+twentyfifth-current.asm. The latter disassembly also describes the final object,
+whose fresh focused rebuild confirms identical SHA-256:
+7cfc414cb456444e775d12e657c5c23d6507a5545af3096010f027fdb2380de9.
+Own backups: before-icon-canvas-twentyfifth.cpp and
+icon-canvas-accepted-twentyfifth.cpp. Previous accepted inputs:
+_work/checkpoint25-before-focused.json/corpus.json.
+Original evidence: _work/info-original-direct.asm, info-android.c (IDA crosscheck).
+
+Native static-library build and all 204 ARM translation units passed. Full
+corpus: 4619 comparisons, zero skips. Baseline and checkpoint f7cbbae0 gates
+preserve all exact pairs (2083 linked / 960 byte), with zero losses. Default
+99% gate exits 1 with its threshold message. Native runtime remains untested.
 
 ## Validation
 
@@ -1093,18 +1135,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/twentythird-corpus.log`; focused log:
-`_work/angle-search-twentythird.log`; native log: `_work/native-twentythird.log`.
+Latest full log: `_work/twentyfifth-corpus.log`; focused log:
+`_work/icon-canvas-final-twentyfifth.log`; native log: `_work/native-twentyfifth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7 and 43f3e1c2, with no new gains or losses since
-7fc7701c. The latest comparison against 43f3e1c2 preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b and f7cbbae0, with no new gains or losses since
+7fc7701c. The latest comparison against f7cbbae0 preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/twentythird-gate.json, twentythird-previous-gate.json and
-twentythird-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/twentyfifth-gate.json, twentyfifth-previous-gate.json and
+twentyfifth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `fc4e129d97d6c724da025c95a4faba6cf0fcd8d84abf2fc8a3cf15a7ea3cf89d`.
+final full JSON SHA-256: `e2bf0ca5576e395572ceb256756700da68c27f7437e6e50888cc4fe1d84d3b8b`.
 
 
 ### Reproduction
@@ -1135,7 +1177,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
-| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1197 | 78.9% | 98.6% | 74.9% | - |
+| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1196 | 78.9% | 98.6% | 75.5% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.5% | 82.1% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.0% | 89.1% | - |
