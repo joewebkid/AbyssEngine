@@ -1,12 +1,12 @@
-# StarMap Android ARM recovery Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ 2026-10-02
+# StarMap Android ARM recovery - 2026-10-02
 
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **95.65% unweighted / 91.29538% original-instruction
+implementation bodies measure **96.925% unweighted / 94.59986% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**69.74% / 45.21660%**, respectively. Source-shape is an inventory/control-flow
+**74.03% / 56.66130%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -24,6 +24,32 @@ Constructor C2 and destructor D2 aliases are checked against C1/D1 but excluded
 from both means. No bodies, weights or verifier settings were changed to raise
 the result. No volatile/register barriers, dead-code padding or synthetic
 explicit template instantiations were added.
+
+## Follow-up after checkpoint 7fc7701c
+
+The first checkpoint (95.65% / 91.29538%) remains in commit 7fc7701c.
+This continuation changes StarMap.cpp only:
+
+- OnTouchEnd: 86.3% -> 97.2%, strict 33.0% -> 67.6%. Android station
+  warning branches continue through inertia and Help rather than returning
+  early. Restored automatic-map suppression, repeated mission/ship access,
+  the direct Status::playerStation load, max-before-min easing calls and
+  the temporary concatenation expression. Help is constructed only when used.
+- init: 90.0% -> 97.3%, strict 57.9% -> 67.0%. Restored separate route/no-route
+  station scans and repeated getters. On entering planet mode, copies the
+  current camera and changes only Z, rather than replacing its translation.
+  Uses Globals::galaxy and the original borrowed playerStation comparison.
+- draw: 89.9% -> 97.2%, strict 39.6% -> 81.7%. Restored per-iteration
+  visibility reads, original geometry-count bound, value snapshots before
+  Vector assignment, the current-route negative-Z test, temporary name/header
+  lifetime, shared text X and the explicit two-argument cost String copy.
+- Focused packages: _work/touch-reloads-trial, touch-order-trial2,
+  init-reloads-trial, draw-reloads-trial JSON/logs. touch-order-trial had one
+  local namespace compile error, fixed before accepting any measurement.
+
+The remaining gaps are measured, not a proven compiler ceiling. Direct call
+inspection also identified by-value Header/Help temporary copies for further
+work. The 99% objective remains unmet.
 
 ## Evidence and version boundaries
 
@@ -137,14 +163,14 @@ integrity or exact-pair preservation. The default 99% gate must remain red
 for this checkpoint.
 
 Full corpus: **4619 comparisons, zero skips** in both clean baseline and final.
-Overall source-shape 88.99% в†’ 89.05%; ordered fuzzy
-75.97% в†’ 76.07% (including all corpus entries).
+Overall source-shape 88.99% -> 89.05%; ordered fuzzy
+75.97% -> 76.09% (including all corpus entries).
 Coverage remains 4274/4524 original functions, 250 missing (7 wrong-type / 243
 absent). Final extra symbols: 129, baseline: 130. Existing coverage gaps were
 not removed from reporting.
 
 Exact pair preservation gate: **PASS**, zero lost (unit, symbol) pairs.
-Linked-exact **2079 РІвЂ вЂ™ 2083**; byte-exact **959 РІвЂ вЂ™ 960**. Gains are confined to
+Linked-exact **2079 -> 2083**; byte-exact **959 -> 960**. Gains are confined to
 StarMap: initLights, missionChanged, askForJumpIntoAlienWorld and setStart;
 missionChanged also becomes byte-exact.
 
@@ -158,10 +184,14 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
+Continuation full log: `_work/followup-corpus.log`; focused log:
+`_work/draw-reloads-trial.log`; native log: `_work/native-followup.log`.
+Exact-pair preservation also passed against checkpoint 7fc7701c, with no new
+gains or losses since that checkpoint.
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `ced2430b6b62170949d749b9b517a62b8ceda468819adb0390e88c0da2f807d4`.
+final full JSON SHA-256: `19007eac66d4af11c38018c1c9655e7ef7c63a38923a8cedb560fdb6c64278c1`.
 
 
 ### Reproduction
@@ -190,24 +220,24 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
-| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1135 | 78.9% | 90.9% | 22.9% | Р Р†Р вЂљРІР‚Сњ |
-| `_ZN7StarMap10OnTouchEndEii` | 1037/895 | 66.6% | 86.3% | 33.0% | Р Р†Р вЂљРІР‚Сњ |
-| `_ZN7StarMap6updateEi` | 971/958 | 76.6% | 93.9% | 54.1% | Р Р†Р вЂљРІР‚Сњ |
-| `_ZN7StarMap4drawEv` | 916/870 | 49.7% | 89.9% | 39.6% | Р Р†Р вЂљРІР‚Сњ |
-| `_ZN7StarMap4initEbP7Missionbi` | 750/673 | 72.9% | 90.0% | 57.9% | Р Р†Р вЂљРІР‚Сњ |
-| `_ZN7StarMap14initStarSystemEv` | 710/639 | 80.9% | 91.2% | 48.6% | Р Р†Р вЂљРІР‚Сњ |
-| `_ZN7StarMapC1EbP7Missionbi` | 333/330 | 85.1% | 93.4% | 60.3% | Р Р†Р вЂљРІР‚Сњ |
-| `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 94.8% | 63.5% | Р Р†Р вЂљРІР‚Сњ |
-| `_ZN7StarMap11OnTouchMoveEii` | 265/255 | 81.3% | 90.7% | 60.4% | Р Р†Р вЂљРІР‚Сњ |
-| `_ZN7StarMap7drawKeyEv` | 246/243 | 59.5% | 97.8% | 34.8% | Р Р†Р вЂљРІР‚Сњ |
-| `_ZN7StarMap6departEb` | 205/204 | 94.9% | 95.1% | 60.1% | Р Р†Р вЂљРІР‚Сњ |
-| `_ZN7StarMapD1Ev` | 69/70 | 92.0% | 99.4% | 95.0% | Р Р†Р вЂљРІР‚Сњ |
-| `_ZN7StarMap6renderEv` | 47/47 | 95.7% | 99.6% | 97.9% | Р Р†Р вЂљРІР‚Сњ |
+| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1135 | 78.9% | 90.9% | 22.9% | - |
+| `_ZN7StarMap10OnTouchEndEii` | 1037/1017 | 66.6% | 97.2% | 67.6% | - |
+| `_ZN7StarMap6updateEi` | 971/958 | 76.6% | 93.9% | 54.1% | - |
+| `_ZN7StarMap4drawEv` | 916/913 | 49.7% | 97.2% | 81.7% | - |
+| `_ZN7StarMap4initEbP7Missionbi` | 750/740 | 72.9% | 97.3% | 67.0% | - |
+| `_ZN7StarMap14initStarSystemEv` | 710/639 | 80.9% | 91.2% | 48.6% | - |
+| `_ZN7StarMapC1EbP7Missionbi` | 333/330 | 85.1% | 93.4% | 60.3% | - |
+| `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 94.8% | 63.5% | - |
+| `_ZN7StarMap11OnTouchMoveEii` | 265/255 | 81.3% | 90.7% | 60.4% | - |
+| `_ZN7StarMap7drawKeyEv` | 246/243 | 59.5% | 97.8% | 34.8% | - |
+| `_ZN7StarMap6departEb` | 205/204 | 94.9% | 95.1% | 60.1% | - |
+| `_ZN7StarMapD1Ev` | 69/70 | 92.0% | 99.4% | 95.0% | - |
+| `_ZN7StarMap6renderEv` | 47/47 | 95.7% | 99.6% | 97.9% | - |
 | `_ZN7StarMap10initLightsEv` | 21/21 | 87.8% | 100.0% | 100.0% | linked |
 | `_ZN7StarMap24askForJumpIntoAlienWorldEv` | 21/21 | 97.1% | 100.0% | 100.0% | linked |
 | `_ZN7StarMap8setStartEii` | 17/17 | 88.9% | 100.0% | 100.0% | linked |
 | `_ZN7StarMap14isInPlanetModeEv` | 5/5 | 100.0% | 100.0% | 100.0% | byte |
-| `_ZN7StarMap14setJumpMapModeEbb` | 3/3 | 86.7% | 100.0% | 66.7% | Р Р†Р вЂљРІР‚Сњ |
+| `_ZN7StarMap14setJumpMapModeEbb` | 3/3 | 86.7% | 100.0% | 66.7% | - |
 | `_ZN7StarMap14missionChangedEv` | 2/2 | 90.0% | 100.0% | 100.0% | byte |
 | `_ZN7StarMap8renderBGEv` | 1/1 | 100.0% | 100.0% | 100.0% | byte |
 
