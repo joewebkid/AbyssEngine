@@ -1502,6 +1502,45 @@ is unchanged. Source means remain 99.160% / 98.44298%, strict 87.135% /
 is claimed; those results remain the accepted 84fab485 validations. Native
 runtime remains untested.
 
+## Investigation after checkpoint 8273bb53
+
+Read-only raw-machine call-site counts for update match: 74 direct and six
+register-indirect sites in both primary Android and accepted object. The direct
+original count includes only resolved PLT targets, excluding pool word ca79c
+which the stripped disassembler displays as a BL to an unrelated address.
+Current direct sites are counted from ARM call relocations. Normalized direct
+call tokens also count 74 on both sides. This is static-site evidence, not
+calls per execution or runtime correctness.
+
+The only direct callee-name differences are original ArrayRelease<bool> and
+Array<bool>::D2 at ca282/ca28c versus current ArrayRelease<uint8_t> and
+Array<uint8_t>::D2, one each. Every other direct-callee count matches. The
+six original indirect sites c9ee2/c9eea/c9ef2/c9efe/c9f06/c9f0e correspond to
+accepted 350a/3512/351a/3526/352e/3536. No missing gameplay call was identified
+by this count. This does not authorize changing the retained array type or
+manufacturing template symbols; the exact-pair preservation requirement stays
+in force. Future update trials should address arithmetic/control differences,
+not add calls based on the five-instruction count deficit.
+
+Station marker selection also already matches primary c78dc..c7908 at accepted
+2ce4..2d10: marker guard, current-system comparison, Station::getIndex, then
+fresh Status pointer/field_80 loads and the conditional centeredStation store.
+No earlier Status snapshot was introduced. Final playing-time seed also keeps
+both return words when passing to setSeed; no narrowing correction is needed.
+Auto-pulse update reloads pulseSystem/autoTimer after OnTouchBegin at original
+ca0ce/ca0d2 and accepted 36f2/36f6, preserving callback-visible state. Its scale
+calculation already uses float division followed by double multiplication and
+float conversion. These inspected regions do not justify another source trial.
+
+Evidence: _work/update-original-direct.asm, _work/station-original-direct.asm,
+_work/object-alpha-thirtyfourth.asm and tracked
+ docs/validation/starmap_2026-10-02_update_calls.json. Accepted object SHA-256
+was rechecked unchanged: 7bf78a18dd1e94481cc71f880ebe406dd9ddfa380f69cebe697d95293b75bb05.
+No production change or new build/full-corpus result is claimed. Source means
+remain 99.160% / 98.44298%, strict 87.135% / 81.30541%; latest validations
+remain those of 84fab485 and the restored focused run after its investigation.
+Weighted 99% remains unmet; native runtime remains untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
