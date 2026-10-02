@@ -1,0 +1,156 @@
+[
+  {
+    "android_address": "0x157040",
+    "symbols": [
+      "_ZN12PlayerTurretC1EiP6PlayerP10AEGeometryfff",
+      "_ZN12PlayerTurretC2EiP6PlayerP10AEGeometryfff"
+    ],
+    "n_target": 259,
+    "target_instruction_count": 250
+  },
+  {
+    "android_address": "0x157340",
+    "symbols": [
+      "_ZN12PlayerTurretD1Ev",
+      "_ZN12PlayerTurretD2Ev"
+    ],
+    "n_target": 34,
+    "target_instruction_count": 33
+  },
+  {
+    "android_address": "0x1573ac",
+    "symbols": [
+      "_ZN12PlayerTurretD0Ev"
+    ],
+    "n_target": 5,
+    "target_instruction_count": 5
+  },
+  {
+    "android_address": "0x1573bc",
+    "symbols": [
+      "_ZN12PlayerTurret8setLevelEP5Level"
+    ],
+    "n_target": 20,
+    "target_instruction_count": 20
+  },
+  {
+    "android_address": "0x1573f0",
+    "symbols": [
+      "_ZN12PlayerTurret10setScalingEf"
+    ],
+    "n_target": 4,
+    "target_instruction_count": 4
+  },
+  {
+    "android_address": "0x1573fc",
+    "symbols": [
+      "_ZN12PlayerTurret11setPositionERKN11AbyssEngine6AEMath6VectorE"
+    ],
+    "n_target": 13,
+    "target_instruction_count": 13
+  },
+  {
+    "android_address": "0x157418",
+    "symbols": [
+      "_ZN12PlayerTurret14setTurretRangeEi"
+    ],
+    "n_target": 2,
+    "target_instruction_count": 2
+  },
+  {
+    "android_address": "0x15741e",
+    "symbols": [
+      "_ZN12PlayerTurret7setHostEP8KIPlayerRKN11AbyssEngine6AEMath6VectorE"
+    ],
+    "n_target": 4,
+    "target_instruction_count": 4
+  },
+  {
+    "android_address": "0x15742c",
+    "symbols": [
+      "_ZN12PlayerTurret7getHostEv"
+    ],
+    "n_target": 2,
+    "target_instruction_count": 2
+  },
+  {
+    "android_address": "0x157432",
+    "symbols": [
+      "_ZN12PlayerTurret5resetEv"
+    ],
+    "n_target": 10,
+    "target_instruction_count": 10
+  },
+  {
+    "android_address": "0x157450",
+    "symbols": [
+      "_ZN12PlayerTurret6updateEi"
+    ],
+    "n_target": 275,
+    "target_instruction_count": 270
+  },
+  {
+    "android_address": "0x15774c",
+    "symbols": [
+      "_ZN12PlayerTurret15handleSentryGunEi"
+    ],
+    "n_target": 20,
+    "target_instruction_count": 20
+  },
+  {
+    "android_address": "0x157782",
+    "symbols": [
+      "_ZN12PlayerTurret12handleTurretEi"
+    ],
+    "n_target": 19,
+    "target_instruction_count": 19
+  },
+  {
+    "android_address": "0x1577b8",
+    "symbols": [
+      "_ZN12PlayerTurret9pickEnemyEv"
+    ],
+    "n_target": 132,
+    "target_instruction_count": 131
+  },
+  {
+    "android_address": "0x157908",
+    "symbols": [
+      "_ZN12PlayerTurret14handleRotationEiP10AEGeometryS1_"
+    ],
+    "n_target": 244,
+    "target_instruction_count": 234
+  },
+  {
+    "android_address": "0x157bcc",
+    "symbols": [
+      "_ZN12PlayerTurret6renderEv"
+    ],
+    "n_target": 19,
+    "target_instruction_count": 19
+  },
+  {
+    "android_address": "0x157c00",
+    "symbols": [
+      "_ZN12PlayerTurret7collideEfff"
+    ],
+    "n_target": 2,
+    "target_instruction_count": 2
+  },
+  {
+    "android_address": "0x157c04",
+    "symbols": [
+      "_ZN12PlayerTurret12outerCollideEfff"
+    ],
+    "n_target": 2,
+    "target_instruction_count": 2
+  },
+  {
+    "android_address": "0x157c08",
+    "symbols": [
+      "_ZN12PlayerTurret6reviveEv"
+    ],
+    "n_target": 26,
+    "target_instruction_count": 26
+  }
+]
