@@ -1227,3 +1227,51 @@ Fixed source scores: Create 98.4, Read **97.5**, Enhanced 97.9. Original weights
 remain 291/873/636, total 1,800. Means: **97.933333% unweighted / 97.786833%
 weighted** (97.93/97.79 displayed). Both required >=99.0% gates remain unmet;
 the goal stays active without a demonstrated compiler ceiling.
+
+## Continuation: raw-owner interactions and enhanced format masks
+
+Eight valid isolated trials start from `b11b2704`. The reader trials revisit
+captured raw-buffer owners after the accepted float-UV bound change, not on
+the older reader state used for the earlier owner experiments. All counts
+still read the vertex-count field before allocation and again before file
+reading; only the mesh pointer supplying those fields is changed. No count
+formula, stream conversion, read order or cleanup is changed.
+
+| Trial | Body | Source / strict | Compiled instructions |
+|---|---|---|---:|
+| Captured owner for compressed UV raw buffer | Read | 97.4 / 55.2 | 870 |
+| Captured owner for compressed normal raw buffer | Read | 97.5 / 55.7 | 871 |
+| Captured owner for short-position raw buffer | Read | 96.9 / 56.1 | 873 |
+| Captured owner for int-position raw buffer | Read | 96.9 / 56.1 | 861 |
+| Captured owners for both UV and normal raw buffers | Read | 97.4 / 55.2 | 869 |
+| Unsigned int enhanced format variable | Enhanced | 97.9 / 67.5 | 636 |
+| Direct flags predicates instead of format local | Enhanced | 97.9 / 67.5 | 636 |
+| Retain flags & 0x18 as the format local | Enhanced | 97.9 / 67.5 | 636 |
+
+Original UV destination setup at `0x6c8ea..0x6c90a` retains its owner across
+allocation before rereading slot for the conversion loop. Original compressed
+normal raw reads use the same captured r4 across allocation at
+`0x6ca44..0x6ca60`. These are memory-operand leads for testing lifetime/owner
+forms, not recovered exact source. The normal-owner alternative ties the
+current displayed score and strict score but reduces the instruction count
+away from 873; it is not retained. Matching 873 instructions in the short
+position alternative also fails to improve the actual source-shape metric.
+
+Enhanced format trials revisit the earlier two equivalent predicates after
+the accepted optional-count/presence storage reuse. Only mask bits 0x18 and
+0x10 are used by the body, so retaining just 0x18 preserves all predicates,
+including inputs with unrelated higher bits. Wide-format and direct-flags
+trials produce entire Mesh objects byte-identical to floatuvbound-full. The
+retained-mask object differs but has unchanged reported source/strict/count.
+Neither matcher nor flags was altered, and no variant was accepted.
+
+Evidence: `_work/read_owner_uvbound_interaction.py` and five
+`_work/readowneruvbound-*.json` reports; `_work/enh_flag_optional_interaction.py`
+and three `_work/enhflagoptional-*.json` reports. Tracked source status is
+clean after both sweeps; the baseline body/signature boundary check passes.
+Only this report changes, so the preceding fresh full ARM/native and
+reader/parser/caller validation remains applicable: actual linked-exact
+2,079 / byte-exact 959 pair sets remain intact without losses or additions.
+Fixed scores stay Create 98.4, Read 97.5, Enhanced 97.9; means **97.93%
+unweighted / 97.79% weighted**. Both >=99.0% requirements remain unmet and
+the goal stays active; these trials do not establish a compiler ceiling.
