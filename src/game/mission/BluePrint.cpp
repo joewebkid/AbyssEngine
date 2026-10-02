@@ -26,7 +26,7 @@ bool BluePrint::isEmpty() {
 }
 
 String BluePrint::getStationName() {
-    return stationName;
+    return String(stationName, false);
 }
 
 BluePrint::~BluePrint() {
