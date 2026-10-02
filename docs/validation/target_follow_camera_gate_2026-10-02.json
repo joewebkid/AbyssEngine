@@ -1,0 +1,112 @@
+{
+  "baseline": {
+    "symbols": 42,
+    "unique_bodies": 40,
+    "symbol_source_mean": 93.79523809523809,
+    "symbol_instruction_weighted": 89.0294964028777,
+    "unique_source_mean": 93.69,
+    "unique_instruction_weighted": 88.72494023904383,
+    "unique_fuzzy_mean": 88.08,
+    "instruction_weight_total": 1255,
+    "linked_exact": 27,
+    "byte_exact": 19
+  },
+  "final": {
+    "symbols": 42,
+    "unique_bodies": 40,
+    "symbol_source_mean": 99.96666666666667,
+    "symbol_instruction_weighted": 99.34028776978417,
+    "unique_source_mean": 99.965,
+    "unique_instruction_weighted": 99.26932270916335,
+    "unique_fuzzy_mean": 96.86749999999999,
+    "instruction_weight_total": 1255,
+    "linked_exact": 32,
+    "byte_exact": 23
+  },
+  "full_corpus": {
+    "baseline": {
+      "count": 4631,
+      "avg_match": 76.77,
+      "avg_source_match": 89.8,
+      "linked_exact": 2100,
+      "byte_exact": 964,
+      "skipped": 0,
+      "original_functions": 4524,
+      "compared_unique": 4281,
+      "missing_wrong_type": 0,
+      "missing_absent": 243
+    },
+    "final": {
+      "count": 4631,
+      "avg_match": 76.85,
+      "avg_source_match": 89.86,
+      "linked_exact": 2105,
+      "byte_exact": 968,
+      "skipped": 0,
+      "original_functions": 4524,
+      "compared_unique": 4281,
+      "missing_wrong_type": 0,
+      "missing_absent": 243
+    }
+  },
+  "exact_pair_retention": {
+    "linked": {
+      "baseline": 2100,
+      "final": 2105,
+      "lost": [],
+      "gained": [
+        [
+          "game\\ship\\TargetFollowCamera",
+          "_ZN18TargetFollowCamera11setPositionERKN11AbyssEngine6AEMath6VectorE"
+        ],
+        [
+          "game\\ship\\TargetFollowCamera",
+          "_ZN18TargetFollowCamera14isInLookAtModeEv"
+        ],
+        [
+          "game\\ship\\TargetFollowCamera",
+          "_ZN18TargetFollowCamera18setFastForwardModeEb"
+        ],
+        [
+          "game\\ship\\TargetFollowCamera",
+          "_ZN18TargetFollowCamera19isInFastForwardModeEv"
+        ],
+        [
+          "game\\ship\\TargetFollowCamera",
+          "_ZN18TargetFollowCamera25hideShipForFirstPersonCamEv"
+        ]
+      ]
+    },
+    "byte": {
+      "baseline": 964,
+      "final": 968,
+      "lost": [],
+      "gained": [
+        [
+          "game\\ship\\TargetFollowCamera",
+          "_ZN18TargetFollowCamera11setPositionERKN11AbyssEngine6AEMath6VectorE"
+        ],
+        [
+          "game\\ship\\TargetFollowCamera",
+          "_ZN18TargetFollowCamera14isInLookAtModeEv"
+        ],
+        [
+          "game\\ship\\TargetFollowCamera",
+          "_ZN18TargetFollowCamera19isInFastForwardModeEv"
+        ],
+        [
+          "game\\ship\\TargetFollowCamera",
+          "_ZN18TargetFollowCamera25hideShipForFirstPersonCamEv"
+        ]
+      ]
+    }
+  },
+  "gate_passed": true,
+  "input_sha256": {
+    "registry": "ea7f7206625bbe582e3997b1ed6ca2022ed5c476bb3805f99d3a12b98d19d3ae",
+    "baseline": "c5b9d5d2badf00fb854e4842d1f1fbf8faaea289110f887b218d84881b922ad5",
+    "final": "df85050242a2508abfa875e2fec32dee63585a73fbd63d554008f87328708e7a",
+    "full_baseline": "7d5952a5735b54ee32a27ca356473fd27b7ca0baaa55405475c7dbb920c3db51",
+    "full_final": "a7f73cc0978c313d51289cc086c47adc205010f6a43cb5749af1bb7e4f66f761"
+  }
+}

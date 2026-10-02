@@ -3,6 +3,7 @@
 #include "engine/math/AEMath.h"
 #include "engine/render/AEGeometry.h"
 #include "engine/render/PaintCanvas.h"
+#include "game/core/Globals.h"
 
 #include <cstdint>
 #include <cstring>
@@ -17,48 +18,57 @@ static inline float bitsToFloat(uint32_t u) {
     return f;
 }
 
-static inline int tfcRandom(int bound) {
-    if (bound <= 0)
-        return 0;
-    return AERandom::gRandom ? AERandom::gRandom->nextInt(bound) : 0;
+static inline float tfcDampingFactor(const double coeffs[5], int dt) {
+    const uint32_t t = static_cast<uint32_t>(dt);
+    const int32_t t2 = static_cast<int32_t>(t * t);
+    const int32_t t3 = static_cast<int32_t>(static_cast<uint32_t>(t2) * t);
+    const int32_t t4 = static_cast<int32_t>(static_cast<uint32_t>(t3) * t);
+    // ARM 0x15af16 evaluates c0*t^4 + c1*t^3 + c2*t^2
+    // + c3*t + c4. ARM multiplies by a float reciprocal of dt;
+    // its integer powers wrap at 32 bits before conversion to double.
+    return static_cast<float>((coeffs[0] * t4 + coeffs[1] * t3 +
+                               coeffs[2] * t2 + coeffs[3] * dt + coeffs[4]) *
+                              (1.0f / static_cast<float>(dt)));
 }
 
-static inline float tfcDampingFactor(const double coeffs[5], int dt) {
-    const double t = static_cast<double>(dt);
-    const double t2 = t * t;
-    const double t3 = t2 * t;
-    const double t4 = t3 * t;
-    // ARM 0x15b128 / 0x15b1e8 evaluates c0*t^4 + c1*t^3 + c2*t^2
-    // + c3*t + c4, then divides by dt before Vector::operator*=.
-    return static_cast<float>((coeffs[0] * t4 + coeffs[1] * t3 +
-                               coeffs[2] * t2 + coeffs[3] * t + coeffs[4]) /
-                              static_cast<float>(dt));
+static inline void tfcIdentity(Matrix &m) {
+    // Native update initializes local orientation and scale fields directly;
+    // m[10], m[12..14] are all 1 (unlike the current shared Matrix ctor).
+    m.m[0] = 1.0f;
+    m.m[1] = m.m[2] = m.m[3] = m.m[4] = 0.0f;
+    m.m[5] = 1.0f;
+    m.m[6] = m.m[7] = m.m[8] = m.m[9] = 0.0f;
+    m.m[10] = 1.0f;
+    m.m[11] = 0.0f;
+    m.m[12] = m.m[13] = m.m[14] = 1.0f;
 }
 
 TargetFollowCamera::TargetFollowCamera(unsigned id, AEGeometry *target,
-                                       Vector camOffset, Vector targetOffset) {
+                                       Vector targetOffset, Vector camOffset)
+    : posX(0), posY(0), posZ(0), targetX(0), targetY(0), targetZ(0),
+      upX(0), upY(0), upZ(0), targetOffsetX(0), targetOffsetY(0), targetOffsetZ(0),
+      camOffsetX(0), camOffsetY(0), camOffsetZ(0), rotX(0), rotY(0), rotZ(0),
+      fpOffsetX(0), fpOffsetY(0), fpOffsetZ(0) {
     this->id = id;
     this->target = target;
 
-    this->firstPersonMatrix = AbyssEngine::AEMath::Matrix();
-    this->fpOffsetX = this->fpOffsetY = this->fpOffsetZ = 0;
-    this->localMatrix = AbyssEngine::AEMath::Matrix();
+    *getTargetOffset() = targetOffset;
+    *getCamOffset() = camOffset;
 
-    *getTargetOffset() = camOffset;
-    *getCamOffset() = targetOffset;
-
-    Vector zero = {0.0f, 0.0f, 0.0f};
-    *getPosition() = zero;
-    *getTargetPos() = zero;
+    *getPosition() = Vector{0.0f, 0.0f, 0.0f};
+    *getTargetPos() = Vector{0.0f, 0.0f, 0.0f};
 
     Matrix m = target->getMatrix();
-    *getTargetPos() = MatrixGetPosition(m);
-    *getPosition() = MatrixGetPosition(m);
+    *getTargetPos() = MatrixTransformVector(m, targetOffset);
+    *getPosition() = MatrixTransformVector(m, camOffset);
 
     Vector up = {0.0f, 1.0f, 0.0f};
     *getUp() = up;
 
     this->locked = 0;
+    this->lookAtCam = 0;
+    this->active = 1;
+    this->rumbleActive = 0;
     this->rumbleTimer = 0;
     this->rotateAroundTargetEnabled = 0;
     this->firstPerson = 0;
@@ -67,10 +77,12 @@ TargetFollowCamera::TargetFollowCamera(unsigned id, AEGeometry *target,
     this->shakeAmount = 0.0f;
     this->shakeFrequency = 5;
 
-    float zoom = VectorLength(targetOffset);
+    float zoom = VectorLength(camOffset);
 
     this->handlingDampingA = 0.005f;
     this->handlingDampingB = 0.006f;
+    this->rollAngle = 0.0f;
+    this->shipHandling = 1.0f;
     this->zoom = zoom;
     this->fixed = 0;
 
@@ -105,9 +117,9 @@ void TargetFollowCamera::setFixed(bool e) { this->fixed = e; }
 void TargetFollowCamera::setRotationAroundTarget(bool e) { this->rotateAroundTargetEnabled = e; }
 void TargetFollowCamera::useTargetsUpVector(bool e) { this->useTargetsUpVec = e; }
 
-bool TargetFollowCamera::isInLookAtMode() { return this->lookAtCam != 0; }
-bool TargetFollowCamera::isInFastForwardMode() { return this->fastForward != 0; }
-bool TargetFollowCamera::hideShipForFirstPersonCam() { return this->hideShip != 0; }
+uint8_t TargetFollowCamera::isInLookAtMode() { return this->lookAtCam; }
+uint8_t TargetFollowCamera::isInFastForwardMode() { return this->fastForward; }
+uint8_t TargetFollowCamera::hideShipForFirstPersonCam() { return this->hideShip; }
 
 void TargetFollowCamera::setFirstPersonMatrix(Matrix &m) { this->firstPersonMatrix = m; }
 
@@ -121,9 +133,11 @@ void TargetFollowCamera::setTargetOffset(const Vector &offset) {
 }
 
 void TargetFollowCamera::setPosition(const Vector &position) {
-    this->posX = position.x;
-    this->posY = position.y;
-    this->posZ = position.z;
+    uint64_t xy;
+    memcpy(&xy, &position, sizeof(xy));
+    const float z = position.z;
+    memcpy(&this->posX, &xy, sizeof(xy));
+    this->posZ = z;
 }
 
 void TargetFollowCamera::setPosition(float x, float y, float z) {
@@ -197,7 +211,12 @@ void TargetFollowCamera::translateNoUpdate(float dx, float dy, float dz) {
 }
 
 void TargetFollowCamera::translate(float dx, float dy, float dz) {
-    translateNoUpdate(dx, dy, dz);
+    this->posX += dx;
+    this->posY += dy;
+    this->posZ += dz;
+    this->targetX += dx;
+    this->targetY += dy;
+    this->targetZ += dz;
     update(1000);
 }
 
@@ -228,12 +247,10 @@ void TargetFollowCamera::calculateCoefficents(float t) {
 }
 
 void TargetFollowCamera::setFastForwardMode(bool enabled) {
-    if (enabled == (this->fastForward != 0)) return;
-    {
-        float s = this->shipHandling * 0.01f;
-        this->handlingDampingA = 0.003f + (1.0f - s) * 0.015f;
-        this->handlingDampingB = 0.001f + s * 0.011f;
-    }
+    if (enabled) {
+        if (this->fastForward) return;
+    } else if (!this->fastForward) return;
+    setShipHandling(this->shipHandling);
     aproximateCooefficientsForAproximationOfDampingFunktion(
         this->handlingDampingA,
         dampCoeffA[0], dampCoeffA[1], dampCoeffA[2], dampCoeffA[3], dampCoeffA[4]);
@@ -300,11 +317,18 @@ void TargetFollowCamera::aproximateCooefficientsForAproximationOfDampingFunktion
 // IDA 0x15aa48: _ZN18TargetFollowCamera6updateEi
 void TargetFollowCamera::update(int dt) {
     if (this->fixed != 0) {
-        *getPosition() = MatrixGetPosition(this->localMatrix);
-        PaintCanvas::gCanvas->CameraSetLocal(this->id, this->localMatrix);
+        Vector position = MatrixGetPosition(this->localMatrix);
+        this->posX = position.x;
+        this->posY = position.y;
+        this->posZ = position.z;
+        *getPosition() = position;
+        Globals::Canvas->CameraSetLocal(this->id, this->localMatrix);
         if (this->target != 0) {
             Matrix m = this->target->getMatrix();
-            *getUp() = MatrixGetUp(m);
+            Matrix upMatrix = m;
+            if (this->useTargetsUpVec == 0)
+                tfcIdentity(upMatrix);
+            *getUp() = MatrixGetUp(upMatrix);
             *getTargetPos() = MatrixGetPosition(m);
         }
         return;
@@ -317,31 +341,43 @@ void TargetFollowCamera::update(int dt) {
     if (this->lookAtCam == 0) {
         if (this->locked == 0) {
             if (this->firstPerson == 0) {
-                Vector savedPos = *getPosition();
                 Vector savedTarget = *getTargetPos();
+                Vector savedPos = *getPosition();
                 *getUp() = MatrixGetUp(m);
 
                 if (this->rotateAroundTargetEnabled != 0) {
-                    Matrix rot;
+                    Matrix rot = m;
+                    tfcIdentity(rot);
                     MatrixSetRotation(rot, this->rotX, this->rotY, this->rotZ,
                                       AbyssEngine::AEMath::ROTATION_ORDER_YXZ);
                     m *= rot;
                     float curLen = VectorLength(*getCamOffset());
-                    if (curLen != 0.0f && curLen != this->zoom)
+                    if (curLen != this->zoom)
                         *getCamOffset() *= (this->zoom / curLen);
                 }
 
-                Vector desiredPos = MatrixTransformVector(m, *getCamOffset());
-                Vector desiredTarget = MatrixTransformVector(m, *getTargetOffset());
+                *getPosition() = MatrixTransformVector(m, *getCamOffset());
+                *getTargetPos() = MatrixTransformVector(m, *getTargetOffset());
 
-                Vector diff = desiredTarget - savedTarget;
-                float kA = tfcDampingFactor(dampCoeffA, dt);
+                Vector diff = *getTargetPos() - savedTarget;
+                // ARM 0x15b128: signed 64-bit powers and shared conversions
+                // for both coefficient banks, unlike first-person 0x15af16.
+                const int64_t t2 = static_cast<int64_t>(dt) * dt;
+                const int64_t t3 = static_cast<int64_t>(static_cast<uint64_t>(t2) * static_cast<uint64_t>(dt));
+                const int64_t t4 = static_cast<int64_t>(static_cast<uint64_t>(t3) * static_cast<uint64_t>(dt));
+                const double d2 = static_cast<double>(t2);
+                const double d3 = static_cast<double>(t3);
+                const double d4 = static_cast<double>(t4);
+                const double d1 = static_cast<double>(dt);
+                const double inverseDt = 1.0f / static_cast<float>(dt);
+                float kA = static_cast<float>((dampCoeffA[0] * d4 + dampCoeffA[1] * d3 +
+                    dampCoeffA[2] * d2 + dampCoeffA[3] * d1 + dampCoeffA[4]) * inverseDt);
                 diff *= kA;
-                diff += savedTarget;
-                *getTargetPos() = diff;
+                *getTargetPos() = savedTarget + diff;
 
-                Vector diff2 = desiredPos - savedPos;
-                float kB = tfcDampingFactor(dampCoeffB, dt);
+                Vector diff2 = *getPosition() - savedPos;
+                float kB = static_cast<float>((dampCoeffB[0] * d4 + dampCoeffB[1] * d3 +
+                    dampCoeffB[2] * d2 + dampCoeffB[3] * d1 + dampCoeffB[4]) * inverseDt);
                 diff2 *= kB;
 
                 if (this->hideShip != 0) {
@@ -350,12 +386,14 @@ void TargetFollowCamera::update(int dt) {
                     this->hideShip = (l < g_TFC_hiddenShipDistance) ? 1 : 0;
                 }
 
-                diff2 += savedPos;
-                *getPosition() = diff2;
+                *getPosition() = savedPos + diff2;
             } else {
+                m = MatrixIdentity(m);
+                MatrixSetRotation(m, 0.0f, 3.1416f, 0.0f);
+                m = this->firstPersonMatrix * m;
                 Vector cur = *getPosition();
                 *getPosition() = MatrixTransformVector(
-                    this->firstPersonMatrix,
+                    m,
                     *reinterpret_cast<Vector *>(&this->fpOffsetX));
 
                 if (this->shakeReference == 0.0f ||
@@ -368,13 +406,15 @@ void TargetFollowCamera::update(int dt) {
                     d *= k;
                     float l = VectorLength(d) + this->shakeAccum;
                     this->shakeAccum = l;
-                    this->hideShip = (l >= this->shakeReference * 0.75f) ? 1 : 0;
-                    cur += d;
-                    *getPosition() = cur;
+                    this->hideShip = (l > this->shakeReference * 0.75f) ? 1 : 0;
+                    *getPosition() = cur + d;
                 }
 
-                *getUp() = MatrixGetUp(this->firstPersonMatrix);
-                *getTargetPos() = MatrixGetPosition(this->firstPersonMatrix);
+                m.e3 = this->posX;
+                m.e7 = this->posY;
+                m.e11 = this->posZ;
+                *getUp() = MatrixGetUp(m);
+                *getTargetPos() = MatrixTransformVector(m, MatrixGetDir(m));
             }
         } else {
             this->hideShip = 0;
@@ -386,19 +426,16 @@ void TargetFollowCamera::update(int dt) {
     } else {
         Matrix fp = m;
         if (this->useTargetsUpVec == 0)
-            fp = AbyssEngine::AEMath::Matrix();
+            tfcIdentity(fp);
         *getUp() = MatrixGetUp(fp);
-        *getTargetPos() = MatrixGetPosition(fp);
+        *getTargetPos() = MatrixGetPosition(m);
         this->hideShip = 0;
     }
 
     if (this->firstPerson != 0) {
-        Matrix fpm = this->firstPersonMatrix;
-        *getPosition() = MatrixGetPosition(fpm);
-        *getUp() = MatrixGetUp(fpm);
-        Vector dir = MatrixGetDir(fpm);
-        dir -= *getPosition();
-        *getTargetPos() = dir;
+        *getPosition() = MatrixGetPosition(m);
+        *getUp() = MatrixGetUp(m);
+        *getTargetPos() = *getPosition() - MatrixGetDir(m);
     }
 
     if (this->rumbleActive != 0) {
@@ -407,9 +444,11 @@ void TargetFollowCamera::update(int dt) {
             this->rumbleActive = 0;
         float scale = (this->firstPerson == 0) ? 1.0f : g_TFC_firstPersonRumbleScale;
         int amt = this->rumbleStrength;
-        this->posX += scale * (float) (tfcRandom(amt << 1) - amt);
-        this->posY += scale * (float) (tfcRandom(amt << 1) - amt);
-        this->posZ += scale * (float) (tfcRandom(amt << 1) - amt);
+        this->posX += scale * (float) (static_cast<AERandom *>(Globals::rnd)->nextInt(amt << 1) - amt);
+        amt = this->rumbleStrength;
+        this->posY += scale * (float) (static_cast<AERandom *>(Globals::rnd)->nextInt(amt << 1) - amt);
+        amt = this->rumbleStrength;
+        this->posZ += scale * (float) (static_cast<AERandom *>(Globals::rnd)->nextInt(amt << 1) - amt);
     }
 
     float shake = this->shakeAmount;
@@ -417,15 +456,18 @@ void TargetFollowCamera::update(int dt) {
         int freq = this->shakeFrequency;
         float scale = (this->firstPerson == 0) ? 1.0f : g_TFC_firstPersonShakeScale;
         int b = freq << 1;
-        this->targetX += scale * shake * (float) (tfcRandom(b) - freq);
-        this->targetY += scale * shake * (float) (tfcRandom(b) - freq);
-        this->targetZ += scale * shake * (float) (tfcRandom(b) - freq);
+        this->targetX += scale * (shake * (float) (static_cast<AERandom *>(Globals::rnd)->nextInt(b) - freq));
+        shake = this->shakeAmount;
+        this->targetY += scale * (shake * (float) (static_cast<AERandom *>(Globals::rnd)->nextInt(b) - freq));
+        shake = this->shakeAmount;
+        this->targetZ += scale * (shake * (float) (static_cast<AERandom *>(Globals::rnd)->nextInt(b) - freq));
     }
 
-    Matrix look = AbyssEngine::AEMath::MatrixGetLookAt(*getPosition(), *getTargetPos(), *getUp());
-    Matrix rollMat;
+    m = AbyssEngine::AEMath::MatrixGetLookAt(*getPosition(), *getTargetPos(), *getUp());
+    Matrix rollMat = m;
+    tfcIdentity(rollMat);
     MatrixSetRotation(rollMat, 0.0f, 0.0f, this->rollAngle);
-    look *= rollMat;
-    PaintCanvas::gCanvas->CameraSetLocal(this->id, look);
-    this->localMatrix = look;
+    m *= rollMat;
+    Globals::Canvas->CameraSetLocal(this->id, m);
+    this->localMatrix = m;
 }

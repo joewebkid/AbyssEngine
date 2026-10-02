@@ -1,0 +1,334 @@
+{
+  "base_commit": "f60694dd0ca578831cec832e7026b32644642d97",
+  "weights": {
+    "_ZN18TargetFollowCamera6updateEi": 655,
+    "_ZN18TargetFollowCamera8hitSmallEv": 11,
+    "_ZN18TargetFollowCamera3hitEv": 12,
+    "_ZN18TargetFollowCameraC1EjP10AEGeometryN11AbyssEngine6AEMath6VectorES4_": 134,
+    "_ZN18TargetFollowCameraC2EjP10AEGeometryN11AbyssEngine6AEMath6VectorES4_": 134,
+    "_ZN18TargetFollowCamera10zoomTargetEf": 2,
+    "_ZN18TargetFollowCamera11getPositionEv": 2,
+    "_ZN18TargetFollowCamera11setPositionERKN11AbyssEngine6AEMath6VectorE": 5,
+    "_ZN18TargetFollowCamera11setPositionEfff": 3,
+    "_ZN18TargetFollowCamera12getCamOffsetEv": 2,
+    "_ZN18TargetFollowCamera12setCamOffsetERKN11AbyssEngine6AEMath6VectorE": 10,
+    "_ZN18TargetFollowCamera12setLookAtCamEb": 2,
+    "_ZN18TargetFollowCamera14isInLookAtModeEv": 2,
+    "_ZN18TargetFollowCamera15getTargetOffsetEv": 2,
+    "_ZN18TargetFollowCamera15setShipHandlingEf": 16,
+    "_ZN18TargetFollowCamera15setTargetOffsetERKN11AbyssEngine6AEMath6VectorE": 2,
+    "_ZN18TargetFollowCamera17resetShipHandlingEv": 5,
+    "_ZN18TargetFollowCamera17translateNoUpdateEfff": 22,
+    "_ZN18TargetFollowCamera18rotateAroundTargetEfff": 17,
+    "_ZN18TargetFollowCamera18setBoostPercentageEfi": 8,
+    "_ZN18TargetFollowCamera18setFastForwardModeEb": 32,
+    "_ZN18TargetFollowCamera18useTargetsUpVectorEb": 2,
+    "_ZN18TargetFollowCamera19isInFastForwardModeEv": 2,
+    "_ZN18TargetFollowCamera19setRumblePercentageEfi": 2,
+    "_ZN18TargetFollowCamera20calculateCoefficentsEf": 29,
+    "_ZN18TargetFollowCamera20enableFirstPersonCamEb": 29,
+    "_ZN18TargetFollowCamera20setFirstPersonMatrixERN11AbyssEngine6AEMath6MatrixE": 2,
+    "_ZN18TargetFollowCamera23setRotationAroundTargetEb": 2,
+    "_ZN18TargetFollowCamera25hideShipForFirstPersonCamEv": 2,
+    "_ZN18TargetFollowCamera4rollEf": 5,
+    "_ZN18TargetFollowCamera55aproximateCooefficientsForAproximationOfDampingFunktionEfRdS0_S0_S0_S0_": 110,
+    "_ZN18TargetFollowCamera7setRollEf": 2,
+    "_ZN18TargetFollowCamera8getLocalEv": 6,
+    "_ZN18TargetFollowCamera8setFixedEb": 2,
+    "_ZN18TargetFollowCamera8setLocalEN11AbyssEngine6AEMath6MatrixE": 40,
+    "_ZN18TargetFollowCamera9getTargetEv": 2,
+    "_ZN18TargetFollowCamera9setActiveEb": 2,
+    "_ZN18TargetFollowCamera9setLockedEb": 46,
+    "_ZN18TargetFollowCamera9setTargetEP10AEGeometry": 2,
+    "_ZN18TargetFollowCamera9translateEfff": 23,
+    "_ZN18TargetFollowCameraD1Ev": 1,
+    "_ZN18TargetFollowCameraD2Ev": 1
+  },
+  "bodies": [
+    {
+      "address": "0x15a4c8",
+      "symbols": [
+        "_ZN18TargetFollowCameraC1EjP10AEGeometryN11AbyssEngine6AEMath6VectorES4_",
+        "_ZN18TargetFollowCameraC2EjP10AEGeometryN11AbyssEngine6AEMath6VectorES4_"
+      ],
+      "instructions": 134
+    },
+    {
+      "address": "0x15a688",
+      "symbols": [
+        "_ZN18TargetFollowCamera55aproximateCooefficientsForAproximationOfDampingFunktionEfRdS0_S0_S0_S0_"
+      ],
+      "instructions": 110
+    },
+    {
+      "address": "0x15a998",
+      "symbols": [
+        "_ZN18TargetFollowCameraD1Ev",
+        "_ZN18TargetFollowCameraD2Ev"
+      ],
+      "instructions": 1
+    },
+    {
+      "address": "0x15a99a",
+      "symbols": [
+        "_ZN18TargetFollowCamera9setActiveEb"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15a9a0",
+      "symbols": [
+        "_ZN18TargetFollowCamera9setTargetEP10AEGeometry"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15a9a4",
+      "symbols": [
+        "_ZN18TargetFollowCamera9getTargetEv"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15a9a8",
+      "symbols": [
+        "_ZN18TargetFollowCamera15setTargetOffsetERKN11AbyssEngine6AEMath6VectorE"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15a9ae",
+      "symbols": [
+        "_ZN18TargetFollowCamera15getTargetOffsetEv"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15a9b2",
+      "symbols": [
+        "_ZN18TargetFollowCamera12setCamOffsetERKN11AbyssEngine6AEMath6VectorE"
+      ],
+      "instructions": 10
+    },
+    {
+      "address": "0x15a9cc",
+      "symbols": [
+        "_ZN18TargetFollowCamera12getCamOffsetEv"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15a9d0",
+      "symbols": [
+        "_ZN18TargetFollowCamera11setPositionEfff"
+      ],
+      "instructions": 3
+    },
+    {
+      "address": "0x15a9d6",
+      "symbols": [
+        "_ZN18TargetFollowCamera11setPositionERKN11AbyssEngine6AEMath6VectorE"
+      ],
+      "instructions": 5
+    },
+    {
+      "address": "0x15a9e4",
+      "symbols": [
+        "_ZN18TargetFollowCamera11getPositionEv"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15a9e8",
+      "symbols": [
+        "_ZN18TargetFollowCamera9translateEfff"
+      ],
+      "instructions": 23
+    },
+    {
+      "address": "0x15aa48",
+      "symbols": [
+        "_ZN18TargetFollowCamera6updateEi"
+      ],
+      "instructions": 655
+    },
+    {
+      "address": "0x15b280",
+      "symbols": [
+        "_ZN18TargetFollowCamera17translateNoUpdateEfff"
+      ],
+      "instructions": 22
+    },
+    {
+      "address": "0x15b2d8",
+      "symbols": [
+        "_ZN18TargetFollowCamera20enableFirstPersonCamEb"
+      ],
+      "instructions": 29
+    },
+    {
+      "address": "0x15b32c",
+      "symbols": [
+        "_ZN18TargetFollowCamera25hideShipForFirstPersonCamEv"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15b332",
+      "symbols": [
+        "_ZN18TargetFollowCamera20setFirstPersonMatrixERN11AbyssEngine6AEMath6MatrixE"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15b338",
+      "symbols": [
+        "_ZN18TargetFollowCamera18setBoostPercentageEfi"
+      ],
+      "instructions": 8
+    },
+    {
+      "address": "0x15b34a",
+      "symbols": [
+        "_ZN18TargetFollowCamera19setRumblePercentageEfi"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15b350",
+      "symbols": [
+        "_ZN18TargetFollowCamera8setFixedEb"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15b358",
+      "symbols": [
+        "_ZN18TargetFollowCamera8setLocalEN11AbyssEngine6AEMath6MatrixE"
+      ],
+      "instructions": 40
+    },
+    {
+      "address": "0x15b3d4",
+      "symbols": [
+        "_ZN18TargetFollowCamera8getLocalEv"
+      ],
+      "instructions": 6
+    },
+    {
+      "address": "0x15b3e4",
+      "symbols": [
+        "_ZN18TargetFollowCamera9setLockedEb"
+      ],
+      "instructions": 46
+    },
+    {
+      "address": "0x15b464",
+      "symbols": [
+        "_ZN18TargetFollowCamera23setRotationAroundTargetEb"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15b46c",
+      "symbols": [
+        "_ZN18TargetFollowCamera18rotateAroundTargetEfff"
+      ],
+      "instructions": 17
+    },
+    {
+      "address": "0x15b498",
+      "symbols": [
+        "_ZN18TargetFollowCamera10zoomTargetEf"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15b49e",
+      "symbols": [
+        "_ZN18TargetFollowCamera12setLookAtCamEb"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15b4a4",
+      "symbols": [
+        "_ZN18TargetFollowCamera20calculateCoefficentsEf"
+      ],
+      "instructions": 29
+    },
+    {
+      "address": "0x15b50a",
+      "symbols": [
+        "_ZN18TargetFollowCamera18setFastForwardModeEb"
+      ],
+      "instructions": 32
+    },
+    {
+      "address": "0x15b574",
+      "symbols": [
+        "_ZN18TargetFollowCamera15setShipHandlingEf"
+      ],
+      "instructions": 16
+    },
+    {
+      "address": "0x15b5c8",
+      "symbols": [
+        "_ZN18TargetFollowCamera19isInFastForwardModeEv"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15b5ce",
+      "symbols": [
+        "_ZN18TargetFollowCamera14isInLookAtModeEv"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15b5d4",
+      "symbols": [
+        "_ZN18TargetFollowCamera17resetShipHandlingEv"
+      ],
+      "instructions": 5
+    },
+    {
+      "address": "0x15b5ec",
+      "symbols": [
+        "_ZN18TargetFollowCamera3hitEv"
+      ],
+      "instructions": 12
+    },
+    {
+      "address": "0x15b60e",
+      "symbols": [
+        "_ZN18TargetFollowCamera8hitSmallEv"
+      ],
+      "instructions": 11
+    },
+    {
+      "address": "0x15b62c",
+      "symbols": [
+        "_ZN18TargetFollowCamera18useTargetsUpVectorEb"
+      ],
+      "instructions": 2
+    },
+    {
+      "address": "0x15b632",
+      "symbols": [
+        "_ZN18TargetFollowCamera4rollEf"
+      ],
+      "instructions": 5
+    },
+    {
+      "address": "0x15b644",
+      "symbols": [
+        "_ZN18TargetFollowCamera7setRollEf"
+      ],
+      "instructions": 2
+    }
+  ],
+  "weight_definition": "Fixed executable instructions in original normalized bodies; exclude literal data directives; aliases share one address/body.",
+  "original_binary_sha256": "6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58",
+  "match_flags_sha256": "4e05f06d6853e58c3eb1251c5f2ad55ff4c5150abf036304de8e920cb8ae5801"
+}

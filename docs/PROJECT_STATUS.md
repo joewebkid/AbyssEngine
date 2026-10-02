@@ -1,6 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-09-24 (ARM, TextureCreate, and StarMap recovery)
+Last reviewed: 2026-10-02 (TargetFollowCamera; older snapshots retain their dates)
+
+## TargetFollowCamera 99% Gate (2026-10-02)
+
+The unchanged 40-body / 42-symbol family now passes both means: **99.965%
+unweighted and 99.269% weighted by original executable instructions** across
+unique bodies (99.967% / 99.340% with aliases). Native `gof2`, all 204 ARM TUs,
+the 4,631-pair full corpus and zero wrong-type gate pass. No baseline exact
+pair is lost; focused counts rise from 27/19 to 32 linked-exact / 23 byte-exact.
+The result uses a tested correction for proven NEON literal pools and COMDAT
+aliases, applied equally to baseline and final. `update` is 98.6% source /
+39.9% strict, not exact; no ARM32 runtime is claimed. See
+[the evidence and trial ledger](TARGETFOLLOWCAMERA_ARM_SOURCE_SHAPE_2026-10-02.md).
 
 ## ARM and TextureCreate Recovery (2026-09-24)
 
