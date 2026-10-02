@@ -14,10 +14,10 @@
   "current": {
     "bodies": 26,
     "original_instructions": 2393,
-    "source_unweighted": 99.66153846153846,
-    "source_weighted": 98.34500626828249,
-    "strict_unweighted": 94.30000000000001,
-    "strict_weighted": 73.5483911408274,
+    "source_unweighted": 99.66538461538462,
+    "source_weighted": 98.37187630589219,
+    "strict_unweighted": 94.63846153846154,
+    "strict_weighted": 75.91295445048057,
     "linked_exact": 19,
     "byte_exact": 13
   },
@@ -108,41 +108,6 @@
       "unique_original_body": true
     },
     {
-      "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
-      "match": 61.7,
-      "bytes_equal": false,
-      "linked_equal": false,
-      "n_target": 643,
-      "n_base": 644,
-      "source_match": 98.4,
-      "instruction_inventory_match": 96.7,
-      "opcode_inventory_match": 98.3,
-      "control_flow_match": 96.9,
-      "ordered_control_flow_match": 87.0,
-      "control_inventory_match": 96.9,
-      "call_count_match": 100.0,
-      "size_match": 100.0,
-      "unit": "game/weapons/Gun",
-      "baseline": {
-        "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
-        "match": 0.0,
-        "bytes_equal": false,
-        "linked_equal": false,
-        "n_target": 643,
-        "n_base": 6,
-        "source_match": 0.6,
-        "instruction_inventory_match": 0.3,
-        "opcode_inventory_match": 1.6,
-        "control_flow_match": 0.0,
-        "ordered_control_flow_match": 0.0,
-        "control_inventory_match": 0.0,
-        "call_count_match": 0.0,
-        "size_match": 0.9,
-        "unit": "game/weapons/Gun"
-      },
-      "unique_original_body": true
-    },
-    {
       "symbol": "_ZN3Gun9setOffsetEii",
       "match": 64.3,
       "bytes_equal": false,
@@ -173,6 +138,41 @@
         "control_inventory_match": 0.0,
         "call_count_match": 0.0,
         "size_match": 2.4,
+        "unit": "game/weapons/Gun"
+      },
+      "unique_original_body": true
+    },
+    {
+      "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
+      "match": 70.5,
+      "bytes_equal": false,
+      "linked_equal": false,
+      "n_target": 643,
+      "n_base": 642,
+      "source_match": 98.5,
+      "instruction_inventory_match": 96.6,
+      "opcode_inventory_match": 98.2,
+      "control_flow_match": 97.7,
+      "ordered_control_flow_match": 90.1,
+      "control_inventory_match": 97.7,
+      "call_count_match": 100.0,
+      "size_match": 99.8,
+      "unit": "game/weapons/Gun",
+      "baseline": {
+        "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
+        "match": 0.0,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 643,
+        "n_base": 6,
+        "source_match": 0.6,
+        "instruction_inventory_match": 0.3,
+        "opcode_inventory_match": 1.6,
+        "control_flow_match": 0.0,
+        "ordered_control_flow_match": 0.0,
+        "control_inventory_match": 0.0,
+        "call_count_match": 0.0,
+        "size_match": 0.9,
         "unit": "game/weapons/Gun"
       },
       "unique_original_body": true
@@ -1445,9 +1445,9 @@
     "object_newer_than_source_and_header": true
   },
   "input_sha256": {
-    "src\\game\\weapons\\Gun.cpp": "414bfe4b7bf006ea0985170cc4f6b0a12d6794586a4b74361a982bde39e56194",
+    "src\\game\\weapons\\Gun.cpp": "09eaeb98fd1d85da53f881de69a367b30b2ab5f67e1493639664bb2f9a088000",
     "src\\game\\weapons\\Gun.h": "400097d0e265812992483f4556cf6cfa63302d60978129c9211aae9bdd904f2c",
-    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "7ab99e137a936f6df36a8a8454e883d4e49cfb28cadba23a2410a9df49b8a6b3",
+    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "9f91e0d662bc4b9fc499a26aa0e5ff54dca8bfce5e996f2681951ab38bf9bd0c",
     "_work\\gun-current\\verify\\.flags": "b7741d9045ccee7cadcb1e3f3027e57029d127537931305e306e50bc830d174c"
   }
 }

@@ -491,30 +491,31 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         }
         int selected = fireIndex;
         lifetimes[0] = initialLifetime;
-        if (selected <= -1) {
-            homingDirection = level->getPlayer()->geometry->getDirection();
-            Vector pos = level->getPlayer()->getPosition();
-            Vector dir = level->getPlayer()->geometry->getDirection();
-            positionArray[0] = pos + 30000.0f * dir;
-            directionArray[0] = level->getPlayer()->geometry->getDirection();
-            field_0x8c = 30000;
-        } else {
+        if (selected > -1) {
             Player *enemy = (*enemies)[fireIndex];
             Vector difference = enemy->getPosition() - level->getPlayer()->getPosition();
             homingDirection = VectorNormalize(difference);
             positionArray[0] = (*enemies)[fireIndex]->getPosition();
             directionArray[0] = level->getPlayer()->geometry->getDirection();
             field_0x8c = nearest;
+        } else {
+            homingDirection = level->getPlayer()->geometry->getDirection();
+            Vector pos = level->getPlayer()->getPosition();
+            Vector dir = level->getPlayer()->geometry->getDirection();
+            positionArray[0] = pos + 30000.0f * dir;
+            directionArray[0] = level->getPlayer()->geometry->getDirection();
+            field_0x8c = 30000;
         }
         return true;
     }
     Vector &mountDirection = targetDir;
     bool fired = false;
     for (unsigned i = 0; i < count; ++i) {
+        int remaining = lifetimes[i];
         int threshold = 0;
         if (weaponType == ITEM_SORT_ROCKET || weaponType == ITEM_SORT_MISSILE ||
             weaponType == ITEM_SORT_CLUSTER_MISSILE) threshold = -2000;
-        if (lifetimes[i] > threshold ||
+        if (remaining > threshold ||
             (weaponType == ITEM_SORT_SENTRY_GUN && level->field_6c > 2)) continue;
         timer = 0;
         delayTimer = 0;

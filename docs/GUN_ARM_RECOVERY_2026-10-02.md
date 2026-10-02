@@ -2,14 +2,14 @@
 
 ## Status: partial; the requested target is not achieved
 
-Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.6615% unweighted / 98.3450% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
+Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.6654% unweighted / 98.3719% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
 
 | Metric | Clean base | This checkpoint |
 |---|---:|---:|
-| Source-shape, unweighted | 73.5923% | 99.6615% |
-| Source-shape, original-instruction-weighted | 26.9159% | 98.3450% |
-| Strict instruction shape, unweighted | 66.8038% | 94.3000% |
-| Strict instruction shape, weighted | 15.4981% | 73.5484% |
+| Source-shape, unweighted | 73.5923% | 99.6654% |
+| Source-shape, original-instruction-weighted | 26.9159% | 98.3719% |
+| Strict instruction shape, unweighted | 66.8038% | 94.6385% |
+| Strict instruction shape, weighted | 15.4981% | 75.9130% |
 | Linked-exact unique bodies | 14 | 19 |
 | Byte-exact unique bodies | 13 | 13 |
 
@@ -82,6 +82,10 @@ Follow-up enum spellings in ignite (NUKE first, reverse order, a cached ItemSort
 Mount operand follow-up: ARM 0x1524e2/0x152502 stores the address of offset (Gun+0x7c) at sp+16. If both mount mode bytes at 0xa5/0xa4 are zero, 0x152596 branches to 0x1528c8, which passes that saved offset address directly as the MatrixRotateVector operand and rejoins the rotation call. Mirrored paths instead assign offset to targetDir, toggle the x/y sign and pass targetDir (Gun+0xd8). The previous C++ copied offset to targetDir even for the plain path, changing its side effects and operand identity. A local const Vector pointer now chooses offset directly for plain mounts and targetDir for mirrored mounts. ShootAt source improves 98.3% to 98.4%, strict decreases 61.8% to 61.7%, and parsed size becomes 644 versus original 643 instructions. This is an ARM-supported behavioral correction, not instruction padding. Capturing the wobble Array pointer around allocation emitted no further gain and was not integrated.
 
 The host smoke now extracts the actual mount block from shootAt and binds its member references to a real Gun. An operand-recording MatrixRotateVector test double checks plain operand identity and preservation of targetDir, x/y mirror state transitions, shock-blast suppression and zero-offset suppression. Real Vector assignment/addition/comparison bodies are compiled with it. This test fails on the prior 130bc075 source (exit 1, plain-mount assertion) and passes the corrected source (exit 0). It is explicitly a mount-block contract check, not execution of the full shootAt, its ammo/homing paths, actual matrix rotation or an ARM game executable.
+
+ShootAt branch-order follow-up: ARM 0x152510..0x152514 reads the slot lifetime before evaluating the weapon threshold; ARM 0x152982..0x152988 branches to the no-target homing fallback when the sampled signed fireIndex is <= -1, leaving the targeted path first. The C++ now samples the slot lifetime before threshold classification and places the targeted branch first with the complementary `selected > -1` predicate. There are no calls, writes or volatile accesses between the reordered lifetime/type reads. Both changes preserve the existing sampling of fireIndex before the lifetime write, and the later enemy/index reloads. Together they raise shootAt source from 98.4% to 98.5% and strict from 61.7% to 70.5%; parsed size is 642 versus original 643. These are evidence-supported equivalent source forms, not recovered original C++ text.
+
+Private controls: targeted branch first alone leaves source at 98.4% (strict 62.0%); early lifetime alone lowers source to 98.2% (strict 70.2%). Restoring the unsigned-range threshold in the combined variant lowers source to 97.9% (strict 66.8%). None of those alternatives was integrated. This measured interaction is recorded rather than claiming an independent gain from each edit. Native build, all 204 ARM TUs and host lifetime/mount checks pass; the latter do not exercise the full homing path.
 
 ## Checks and limits
 
