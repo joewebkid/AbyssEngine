@@ -1,0 +1,220 @@
+# Mesh loader: fixed three-body ARM audit, 2026-10-02
+
+Status: **partial; the required two >=99.0% means are NOT achieved**.
+There is no demonstrated objective compiler ceiling. This report supersedes
+the unconditional completeness/ceiling claims in the 2026-09-24 loader report.
+
+## Isolation and denominator
+
+Base: `f60694dd0ca578831cec832e7026b32644642d97`. This was the requested clean
+integrated starting point; newer visible tips were separate Gun, StarMap and
+camera work, not a verified replacement integration baseline. Worktree:
+`A:/gof2-mesh-loader-99-20261002`, branch `codex/mesh-loader-arm-99-20261002`.
+The dirty main checkout and other worktrees were not edited.
+
+Before source edits, the symbol table and clean objects fixed these three
+unique original bodies. No clone constructors, PLT veneers, aliases, small
+helpers or additional functions enter either mean.
+
+| Original body | Android VA | Original instruction weight |
+|---|---:|---:|
+| `_ZN11AbyssEngine18MeshCreateFromFileEPNS_6EngineEPKcPPNS_4MeshEPNS_8MaterialE` | `0x6d074` | 291 |
+| `_ZN11AbyssEngine12MeshReadDataEPNS_6EngineERKjjPPNS_4MeshEPNS_8MaterialE` | `0x6c608` | 873 |
+| `_ZN11AbyssEngine4Mesh24ReadEnhancedDataFromFileEjj` | `0x6bbec` | 636 |
+
+The weight is the verifier's fixed original `n_target`, total 1,800. Its
+normalized instruction lists, including its established pool/table handling,
+are used unchanged. Weighted mean = sum(score * n_target) / 1800.
+
+## Evidence reviewed
+
+Read the workspace AGENTS, CONTEXT_INDEX, PROJECT_MAP, CURRENT_STATUS,
+TASK_QUEUE and reverse-engineering context pack; native AGENTS, README,
+CONTRIBUTING, PROJECT_STATUS, VALIDATION, AEM_AEI_NATIVE_LOADER_SPEC,
+MESH_LOADER_SOURCE_SHAPE_ARM_2026-09-24 and
+MESH_READ_ENHANCED_SEMANTICS_ARM_2026-09-24. Inspected both target source
+files, Mesh/Transform/Vector/Array/AEFile headers, Vector operation declarations,
+loader callers, canonical match flags and verifier/delinker implementation.
+
+Primary: Android ARMv7 **2.0.16** `libgof2hdaa.so`, SHA-256
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`.
+The three exact named bodies were disassembled directly, independently of
+`analysis/gof2_libgof2hdaa_full_ida.c`. The decompiler is a control-flow lead,
+not arithmetic authority: its enhanced timing output omits the conditional
+comparison of current time, and its normal expressions obscure float division.
+
+Cross-check: iOS **1.1.4**, verified from the app's Info.plist, executable hash
+`74ece5bedf561eed4e71b8d0b875e201c47858a2649a59d65af57390a0554958`.
+`analysis/gof2_ios_ida_full_dump.c` counterparts are `sub_31FB64` (enhanced),
+`sub_3212E8` (read) and `sub_322EA8` (create). They corroborate positive-minimum
+timing, type dispatch, channels and version signatures. iOS's `Transform`
+allocation is `0x17c`, versus Android `0x180`; its decompiled expressions are
+not used to override Android scalar precision or ABI.
+
+PC cross-check: installed `D:/Program Files/Galaxy on Fire 2/GOF2.exe`, PE32 x86,
+COFF timestamp `1345017951`, hash
+`277c03f92d16a5841feea147fa239652ffbb9833afc3f8df493006ffc59b9371`.
+No file/product version is advertised, so a numbered PC version is **unknown**;
+the timestamp and hash identify the precise build instead. Independently
+disassembled the magic-string consumer around `0x4faf40..0x4fb32e`, its reader
+callee `0x4f9f90`, and enhanced callee `0x4f9090`. Their descriptive identities
+are inferred from the call chain and contents, not recovered PC symbols.
+Five signature addresses are `0x54e9f8/0x54ea00/0x54ea0c/0x54ea18/0x54ea24`.
+PC corroborates masks 4/1/2/8/16, top-level multi-mesh handling, axis remap
+and the positive-minimum time comparison (`0x4f924a..0x4f9273`). PC allocates
+Mesh `0x84`, not Android `0x88`, and its reader tests enhanced mask `0x18`
+at `0x4f9fcb/0x4fadcb`, versus Android `0x1a`; those differences are retained
+as version differences. PC `ship_005_terran.aem` has header
+`563441454d657368001f0100` and hash
+`ca57352cc52f6084663587928e674319085106f47195942001f853262bbff353`.
+This asset corroborates the V4 stream header, not Android behavior by itself.
+
+## Accepted source changes
+
+- `MeshCreateFromFile`: reload `(*out)->animation` after `CollectAnimationData`,
+  matching the original final call's receiver read. No changes to ImageCreate,
+  TextureCreate, constructor/header definitions or other engine bodies.
+- `MeshReadData`: restore per-stream vertex-count reads around allocations and
+  file calls, position-buffer reads in integer conversion, and the normal
+  output pointer read after `sqrtf`. Refresh the captured tangent vertex count
+  at its native point. The index allocation stores through the captured Mesh.
+- Restore free Vector subtraction for the diagonal and free multiply/subtract
+  for tangent orthogonalization, with direct initialization of returned Vectors.
+  ARM calls `AEMath::operator-` at `0x6c8b0/0x6ce20` and `operator*` at `0x6ce12`;
+  the old compounds and later assignments were different call operands/ABIs.
+- Restore normal clamp ordering: lower bounds use converted double values;
+  upper bounds compare the original float quotients. ARM explicitly shows
+  this at `0x6cb2a..0x6cba8`. The previous consecutive clamps lowered to NEON
+  vmax; the accepted source form restores the scalar conditional operations.
+  Neither normals nor square-root computation is changed to double division.
+- Integer position axis selection uses quotient/remainder arithmetic matching
+  the original uidiv route. It is equivalent for the bounded unsigned index;
+  it introduces no register binding, volatile object or invented branch.
+- Enhanced loader uses ordinary signed-index switches for three-axis sections
+  and a switch for V5 channels, rather than a precomputed channel array.
+  Channel mapping and float rotation conversion remain unchanged. Extra-section
+  counts are signed shorts; the final key-frame count check is signed as in ARM.
+  The preceding minimum-positive-time and unknown-section corrections are kept.
+
+These are source-backed operation/read-order repairs, not a claim that every
+malformed file, ownership path or runtime effect has been recovered completely.
+
+## Fixed-body results
+
+| Body | Baseline source | Final source | Baseline strict fuzzy | Final strict fuzzy | Final compiled instructions | Linked / raw exact |
+|---|---:|---:|---:|---:|---:|---|
+| MeshCreateFromFile | 95.8% | 95.8% | 57.1% | 58.9% | 283 | no / no |
+| MeshReadData | 91.8% | 96.2% | 38.2% | 46.3% | 859 | no / no |
+| ReadEnhancedDataFromFile | 94.5% | 97.3% | 22.4% | 64.3% | 639 | no / no |
+| Unweighted mean | 94.03% | **96.43%** | 39.23% | 56.50% | | |
+| Original-instruction-weighted mean | 93.40% | **96.52%** | 35.67% | 54.70% | | |
+
+Means are computed from the unchanged verifier's recorded per-function scores,
+which are rounded to one decimal place; displayed hundredths are aggregate
+arithmetic precision, not extra precision in the underlying measurement.
+
+Final source-score components (inventory / opcodes / control / calls / size):
+create `92.1 / 97.1 / 96.8 / 95.8 / 97.2`; read
+`89.8 / 96.0 / 96.8 / 100.0 / 98.6`; enhanced
+`95.1 / 96.4 / 95.3 / 100.0 / 99.8`. They show where the remaining deficit
+is measured instead of attributing all of it to a compiler without proof.
+
+## Trials and remaining differences
+
+| Focused trial | Read source / strict | Enhanced source / strict | Decision |
+|---|---|---|---|
+| Clean baseline | 91.8 / 38.2 | 94.5 / 22.4 | fixed reference |
+| Signed axes with modulo 3 | unchanged | 94.7 / 66.2 | rejected: three extra uidivmod calls |
+| Shared buffers plus modulo switches | unchanged | 93.3 / 62.0 | rejected |
+| Plain signed three-axis switches | unchanged | 95.7 / 23.5 | retained as part of final |
+| V5 switch added | unchanged | 97.3 / 64.4 | retained |
+| Explicit signed V5/count check | unchanged | 97.3 / 64.3 | retained for native types |
+| Shared buffers with plain switches | unchanged | 96.0 / 24.3 | rejected |
+| Per-stream count refresh | 94.3 / 38.8 | unchanged | retained |
+| Asymmetric normal clamp/pointer refresh | 94.7 / 41.5 | unchanged | retained |
+| Free Vector operations | 95.5 / 42.7 | unchanged | retained |
+| Position reads/quotient and captured tangent count | 96.2 / 46.3 | unchanged | retained |
+| Value-initialized Vector accumulator array | 96.2 / 44.5 | unchanged | rejected: no source gain, strict regression |
+
+MeshCreate's two single-mesh call sites still merge into one in the compiled
+source. Enhanced has remaining branch-form, frame/spill and typed-load differences.
+ReadData still differs in memory operands, arithmetic operand order and branch
+inventory. The source metric also distinguishes printed `[register]` from
+`[register, #0]` in some instruction forms; the metric and its normalization
+were **not modified** to suppress those differences. These observations do not
+prove that further legitimate C++ forms cannot improve the result. No volatile,
+dead branch, inline assembler, register binding or changed compiler flag was used.
+
+## Validation and limitations
+
+Canonical NDK r18b Clang 7.0.2, `-Oz`, Thumb ARMv7, NEON softfp, strong stack
+protector, API 21, and the unchanged `tools/verify/match_flags.sh`. Initial MSYS
+wrapper execution hit host memory/process overhead. Local uncommitted helper
+`_work/run_local.py` reads the canonical one-argument-per-line flag output and
+launches the existing NDK executables directly; it imports the repository's
+unchanged verifier/asmdiff and calls the unchanged delinker with explicit nm/as
+executables. This changes process transport only, not comparison rules or flags.
+Final ARM build recompiles every source translation unit, not just target bodies.
+
+Native UCRT64 `gof2` static-library build passes. `tools/mesh_loader_smoke.cpp`
+compiles actual production Mesh.cpp with mocked file and Transform boundaries.
+It passes axis/channel/remap, positive-minimum timing, unsupported types,
+signed extra counts, range setup and every byte-prefix truncation of a V5
+fixture (failure must destroy the temporary Transform). Clone-only mock
+dependencies abort if unexpectedly exercised. This is an executable parser
+test, not a native game executable or original ARM ABI/runtime test.
+
+All 204 source-mapped final objects were also compared byte-for-byte with the
+baseline objects: only AbyssEngine.o and Mesh.o differ; the other 202 are
+identical. Both final changed objects equal the respective objects used for
+the focused final measurements. Textual function-boundary assertions confirm
+that replacing the three modified bodies with the baseline bodies reproduces
+both entire baseline source files exactly.
+
+Full corpus: baseline and final both compile **204/204** translation units and
+compare **4,619** symbol rows, **4,274/4,524** unique/original functions, with
+**zero skipped units**, **250** missing (7 wrong-type / 243 absent), **2,079**
+linked-exact and **959** byte-exact pairs. Full strict average changes
+75.97 -> 75.98%; full source average rounds to 88.99% in both. This is not
+the fixed-three mean. The final corpus reproduces all three focused rows above.
+
+Compared sets of `(normalized object path, exact mangled symbol)`, not only
+their cardinalities: **linked lost [] / gained []; raw lost [] / gained []**.
+Hashes of sorted `unit + TAB + symbol` lines joined with newline, no trailing
+newline, are identical before/after:
+
+- linked: `e042db4e31668f82a912c68c30d8093d736eefefc118bcdece4c598f0440bfaa`
+- raw: `2e265c1384068f8255883ffad307bad8cf7a1209866b892557fd5c74fe78055e`
+
+Local uncommitted evidence: `_work/baseline_full.json` (SHA-256
+`ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`),
+`_work/final_full.json` (SHA-256
+`f01c639c49d90b804ff1b9823ba8a538fa615ea4257e9abc45190af119f07494`),
+`_work/fixed_three_final.json`, focused trial JSONs, ARM/native build logs,
+and direct Android/PC assembly excerpts. They are not included in the commit.
+
+Reproduction on this host (PowerShell; set the MSYS UCRT64 runtime on PATH):
+
+```powershell
+$env:PATH = 'C:\msys64\ucrt64\bin;C:\msys64\usr\bin;' + $env:PATH
+$env:GOF2_VERIFY_LOCAL_NDK = '1'
+$env:GOF2_NDK_ROOT = 'A:/Galaxy on Fire new version/gof2hd-decomp-master/.cache/ndk/android-ndk-r18b'
+# Existing verifier; --no-build reuses the fully rebuilt final objects.
+& 'C:\msys64\ucrt64\bin\python.exe' tools/verify/verify.py --no-build --build-dir _work/final-verify --report _work/recheck_full.json
+# Actual production Mesh parser, executable boundary smoke.
+& 'C:\msys64\ucrt64\bin\g++.exe' -std=c++14 -Isrc -Ithird_party/gl -ffunction-sections -fdata-sections tools/mesh_loader_smoke.cpp src/engine/render/Mesh.cpp '-Wl,--gc-sections' -o _work/mesh_loader_smoke_recheck.exe
+& .\_work\mesh_loader_smoke_recheck.exe
+```
+
+To rebuild rather than reuse objects, use the canonical build_objs.sh with
+the same environment, or the local direct-launch helper described above.
+Keep baseline and final build directories separate, and run only one verifier
+operation per translation unit/target directory at a time.
+
+Remaining risks: parser reads accept any nonzero return, rather than independently
+checking requested byte counts; enhanced returns -1 on failure but MeshReadData
+tests zero, following the original nonzero-success branch; failed child reads
+and existing release/ownership behavior are not comprehensively runtime-tested.
+Float-to-integer conversion of malformed nonfinite/out-of-range times remains
+a native-versus-portable-C++ boundary. No Android device/ARM executable was run.
+The 99.0% criterion remains unmet; **partial is not readiness**.

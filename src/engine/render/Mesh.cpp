@@ -110,7 +110,7 @@ namespace AbyssEngine {
                     anim->InsertKeyFrame(vec, 7, (int) key);
                 }
             } else if (type == 0) {
-                for (unsigned int axis = 0; axis < 3; ++axis) {
+                for (int axis = 0; axis < 3; ++axis) {
                     unsigned short count;
                     if (AEFile::Read(2, &count, file) == 0) goto fail;
                     for (unsigned int j = 0; j < count; ++j) {
@@ -119,13 +119,17 @@ namespace AbyssEngine {
                         updateTimeBetweenFrames(value);
                         float key;
                         if (AEFile::Read(4, &key, file) == 0) goto fail;
-                        if (axis == 2) {
-                            anim->InsertKeyFrame(&key, 2, (int) value);
-                        } else if (axis == 1) {
-                            key = -key;
-                            anim->InsertKeyFrame(&key, 4, (int) value);
-                        } else {
-                            anim->InsertKeyFrame(&key, 1, (int) value);
+                        switch (axis) {
+                            case 2:
+                                anim->InsertKeyFrame(&key, 2, (int) value);
+                                break;
+                            case 1:
+                                key = -key;
+                                anim->InsertKeyFrame(&key, 4, (int) value);
+                                break;
+                            case 0:
+                                anim->InsertKeyFrame(&key, 1, (int) value);
+                                break;
                         }
                     }
                 }
@@ -144,7 +148,7 @@ namespace AbyssEngine {
                     anim->InsertKeyFrame(vec, 0x1c0, (int) key);
                 }
             } else if (type == 0) {
-                for (unsigned int axis = 0; axis < 3; ++axis) {
+                for (int axis = 0; axis < 3; ++axis) {
                     unsigned short count;
                     if (AEFile::Read(2, &count, file) == 0) goto fail;
                     for (unsigned int j = 0; j < count; ++j) {
@@ -153,12 +157,16 @@ namespace AbyssEngine {
                         updateTimeBetweenFrames(value);
                         float key;
                         if (AEFile::Read(4, &key, file) == 0) goto fail;
-                        if (axis == 2) {
-                            anim->InsertKeyFrame(&key, 0x100, (int) value);
-                        } else if (axis == 1) {
-                            anim->InsertKeyFrame(&key, 0x80, (int) value);
-                        } else {
-                            anim->InsertKeyFrame(&key, 0x40, (int) value);
+                        switch (axis) {
+                            case 2:
+                                anim->InsertKeyFrame(&key, 0x100, (int) value);
+                                break;
+                            case 1:
+                                anim->InsertKeyFrame(&key, 0x80, (int) value);
+                                break;
+                            case 0:
+                                anim->InsertKeyFrame(&key, 0x40, (int) value);
+                                break;
                         }
                     }
                 }
@@ -177,7 +185,7 @@ namespace AbyssEngine {
                     anim->InsertKeyFrame(vec, 0x38, (int) key);
                 }
             } else if (type == 0) {
-                for (unsigned int axis = 0; axis < 3; ++axis) {
+                for (int axis = 0; axis < 3; ++axis) {
                     unsigned short count;
                     if (AEFile::Read(2, &count, file) == 0) goto fail;
                     for (unsigned int j = 0; j < count; ++j) {
@@ -186,12 +194,16 @@ namespace AbyssEngine {
                         updateTimeBetweenFrames(value);
                         float key;
                         if (AEFile::Read(4, &key, file) == 0) goto fail;
-                        if (axis == 2) {
-                            anim->InsertKeyFrame(&key, 0x20, (int) value);
-                        } else if (axis == 1) {
-                            anim->InsertKeyFrame(&key, 0x10, (int) value);
-                        } else {
-                            anim->InsertKeyFrame(&key, 8, (int) value);
+                        switch (axis) {
+                            case 2:
+                                anim->InsertKeyFrame(&key, 0x20, (int) value);
+                                break;
+                            case 1:
+                                anim->InsertKeyFrame(&key, 0x10, (int) value);
+                                break;
+                            case 0:
+                                anim->InsertKeyFrame(&key, 8, (int) value);
+                                break;
                         }
                     }
                 }
@@ -217,22 +229,29 @@ namespace AbyssEngine {
                 unsigned short present;
                 if (AEFile::Read(2, &present, file) == 0) goto fail;
                 if (present != 0) {
-                    static const unsigned int kChannels[7] = {
-                        0x400, 0x800, 0x2000, 0x4000, 0, 0, 0x40000
-                    };
-                    for (unsigned int c = 0; c < 7; ++c) {
-                        unsigned short count;
+                    for (int c = 0; c < 7; ++c) {
+                        short count;
                         if (AEFile::Read(2, &count, file) == 0) goto fail;
-                        for (int j = 0; j < (short) count; ++j) {
+                        for (int j = 0; j < count; ++j) {
                             float value;
                             if (AEFile::Read(4, &value, file) == 0) goto fail;
                             updateTimeBetweenFrames(value);
                             float key;
                             if (AEFile::Read(4, &key, file) == 0) goto fail;
                             key = key / 100.0f;
-                            if (c == 6)
-                                key = (key * 6.2832f) / 360.0f;
-                            anim->InsertKeyFrame(&key, kChannels[c], (int) value);
+                            unsigned int channel;
+                            switch (c) {
+                                case 0: channel = 0x400; break;
+                                case 1: channel = 0x800; break;
+                                case 2: channel = 0x2000; break;
+                                case 3: channel = 0x4000; break;
+                                case 6:
+                                    channel = 0x40000;
+                                    key = (key * 6.2832f) / 360.0f;
+                                    break;
+                                default: channel = 0; break;
+                            }
+                            anim->InsertKeyFrame(&key, channel, (int) value);
                             self->hasAnimation = 1;
                         }
                     }
@@ -240,7 +259,7 @@ namespace AbyssEngine {
             }
         }
 
-        if (anim->keyFrames.size() < 1) {
+        if ((int) anim->keyFrames.size() < 1) {
             if (anim) {
                 anim->~Transform();
                 ::operator delete((void *) anim);

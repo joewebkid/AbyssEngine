@@ -799,7 +799,7 @@ namespace AbyssEngine {
             if (AEFile::Read((uint32_t)(2), &m->indexCount, handleRef) == 0)
                 return -1;
             void *idx = ::operator new[]((unsigned int) m->indexCount << 1);
-            (*slot)->indices = idx;
+            m->indices = idx;
             if (AEFile::Read((uint32_t)((unsigned int) (*slot)->indexCount << 1), (*slot)->indices, handleRef) == 0)
                 return -1;
             m = *slot;
@@ -816,48 +816,48 @@ namespace AbyssEngine {
             float maxv[3] = {-10000000.0f, -10000000.0f, -10000000.0f};
 
             if ((flags & 4) != 0) {
-                void *raw = ::operator new[](vcount * 6);
-                if (AEFile::Read((uint32_t)(vcount * 6), raw, handleRef) == 0) {
+                void *raw = ::operator new[]((*slot)->vertexCount * 6);
+                if (AEFile::Read((uint32_t)((*slot)->vertexCount * 6), raw, handleRef) == 0) {
                     ::operator delete[](raw);
                     return -1;
                 }
                 m = *slot;
-                void *pos = ::operator new[](vcount * 0xc);
+                void *pos = ::operator new[]((*slot)->vertexCount * 0xc);
                 m->positions = pos;
                 m = *slot;
                 short *rawShorts = (short *) raw;
-                float *posFloats = (float *) m->positions;
+                vcount = m->vertexCount;
                 for (unsigned int i = 0; i < vcount * 3; ++i) {
                     float v = (float) rawShorts[i];
-                    posFloats[i] = v;
-                    int axis = i % 3;
+                    ((float *) m->positions)[i] = v;
+                    unsigned int axis = i - 3 * (i / 3);
                     if (v < minv[axis]) minv[axis] = v;
                     if (v > maxv[axis]) maxv[axis] = v;
                 }
                 ::operator delete[](raw);
             } else if ((flags << 0x1e) != 0) {
-                void *raw = ::operator new[](vcount * 0xc);
-                if (AEFile::Read((uint32_t)(vcount * 0xc), raw, handleRef) == 0) {
+                void *raw = ::operator new[]((*slot)->vertexCount * 0xc);
+                if (AEFile::Read((uint32_t)((*slot)->vertexCount * 0xc), raw, handleRef) == 0) {
                     ::operator delete[](raw);
                     return -1;
                 }
                 m = *slot;
-                void *pos = ::operator new[](vcount * 0xc);
+                void *pos = ::operator new[]((*slot)->vertexCount * 0xc);
                 m->positions = pos;
                 m = *slot;
                 int *rawInts = (int *) raw;
-                float *posFloats = (float *) m->positions;
+                vcount = m->vertexCount;
                 for (unsigned int i = 0; i < vcount * 3; ++i) {
                     float v = (float) rawInts[i];
-                    posFloats[i] = v;
-                    int axis = i % 3;
+                    ((float *) m->positions)[i] = v;
+                    unsigned int axis = i - 3 * (i / 3);
                     if (v < minv[axis]) minv[axis] = v;
                     if (v > maxv[axis]) maxv[axis] = v;
                 }
                 ::operator delete[](raw);
             } else if ((flags & 0x18) != 0) {
                 m = *slot;
-                void *pos = ::operator new[](vcount * 0xc);
+                void *pos = ::operator new[]((*slot)->vertexCount * 0xc);
                 m->positions = pos;
                 if (AEFile::Read((uint32_t)((*slot)->vertexCount * 0xc), (*slot)->positions, handleRef) == 0)
                     return -1;
@@ -869,26 +869,27 @@ namespace AbyssEngine {
             center[2] = (maxv[2] + minv[2]) * 0.5f;
             *(Vector *) &(*slot)->boundsCenterX = *(const Vector *) center;
             float halfDiag[3] = {minv[0], minv[1], minv[2]};
-            *(Vector *) center -= *(const Vector *) halfDiag;
-            (*slot)->boundsRadius = AEMath::VectorLength(*(const Vector *) center);
+            Vector diagonal = *(const Vector *) center - *(const Vector *) halfDiag;
+            (*slot)->boundsRadius = AEMath::VectorLength(diagonal);
         }
 
         m = *slot;
 
         if (m->vertexFormat & 2) {
             if (compressedData != 0) {
-                void *raw = ::operator new[](vcount << 2);
-                if (AEFile::Read((uint32_t)(vcount << 2), raw, handleRef) == 0) {
+                void *raw = ::operator new[]((*slot)->vertexCount << 2);
+                if (AEFile::Read((uint32_t)((*slot)->vertexCount << 2), raw, handleRef) == 0) {
                     ::operator delete[](raw);
                     return -1;
                 }
                 m = *slot;
-                void *uv = ::operator new[](vcount << 3);
+                void *uv = ::operator new[]((*slot)->vertexCount << 3);
                 m->texCoords = uv;
                 m = *slot;
                 const bool flip = Engine::enableShader != 0;
                 short *rawShorts = (short *) raw;
                 float *uvFloats = (float *) m->texCoords;
+                vcount = m->vertexCount;
                 const double scale = 1.0 / 4096.0;
                 for (unsigned int i = 0; i < (vcount << 1); i += 2) {
                     double u = (double) rawShorts[i] * scale;
@@ -900,13 +901,14 @@ namespace AbyssEngine {
                 }
                 ::operator delete[](raw);
             } else if ((flags & 0x18) != 0) {
-                void *uv = ::operator new[](vcount << 3);
+                void *uv = ::operator new[]((*slot)->vertexCount << 3);
                 m->texCoords = uv;
                 if (AEFile::Read((uint32_t)((*slot)->vertexCount << 3), (*slot)->texCoords, handleRef) == 0)
                     return -1;
                 if (Engine::enableShader != 0) {
                     m = *slot;
                     float *uvFloats = (float *) m->texCoords;
+                    vcount = m->vertexCount;
                     for (unsigned int i = 0; i < (unsigned int) (m->vertexCount << 1); i += 2) {
                         float *p = uvFloats + (i + 1);
                         *p = 1.0f - *p;
@@ -919,19 +921,20 @@ namespace AbyssEngine {
 
         if (m->vertexFormat & 4) {
             if (compressedData != 0) {
-                void *raw = ::operator new[](vcount * 6);
-                if (AEFile::Read((uint32_t)(vcount * 6), raw, handleRef) == 0) {
+                void *raw = ::operator new[]((*slot)->vertexCount * 6);
+                if (AEFile::Read((uint32_t)((*slot)->vertexCount * 6), raw, handleRef) == 0) {
                     ::operator delete[](raw);
                     return -1;
                 }
                 m = *slot;
-                void *nrm = ::operator new[](vcount * 0xc);
+                void *nrm = ::operator new[]((*slot)->vertexCount * 0xc);
                 m->normals = nrm;
                 m = *slot;
                 const double scale = 1.0 / 32768.0;
                 short *s = (short *) raw;
                 Vector *normals = (Vector *) m->normals;
-                for (unsigned int i = 0; i < vcount; ++i) {
+                vcount = m->vertexCount;
+                for (unsigned int i = 0; i < (*slot)->vertexCount; ++i) {
                     float nx = (float) ((double) s[0] * scale);
                     float ny = (float) ((double) s[1] * scale);
                     float nz = (float) ((double) s[2] * scale);
@@ -942,22 +945,21 @@ namespace AbyssEngine {
                         float dyf = ny / len;
                         float dzf = nz / len;
 
-                        double dx = (double)dxf;
-                        if (dx < -1.0) dx = -1.0;
-                        if (dx > 1.0) dx = 1.0;
-
-                        double dy = (double)dyf;
-                        if (dy < -1.0) dy = -1.0;
-                        if (dy > 1.0) dy = 1.0;
-
-                        double dz = (double)dzf;
-                        if (dz < -1.0) dz = -1.0;
-                        if (dz > 1.0) dz = 1.0;
-
-                        normals[i].x = (float)dx;
-                        normals[i].y = (float)dy;
-                        normals[i].z = (float)dz;
+                        double dx = dxf < -1.0 ? -1.0 : (double) dxf;
+                        double dy = dyf < -1.0 ? -1.0 : (double) dyf;
+                        double dz = dzf < -1.0 ? -1.0 : (double) dzf;
+                        float x = (float) dx;
+                        float y = (float) dy;
+                        float z = (float) dz;
+                        if (dxf > 1.0f) x = 1.0f;
+                        if (dyf > 1.0f) y = 1.0f;
+                        if (dzf > 1.0f) z = 1.0f;
+                        normals = (Vector *) (*slot)->normals;
+                        normals[i].x = x;
+                        normals[i].y = y;
+                        normals[i].z = z;
                     } else {
+                        normals = (Vector *) (*slot)->normals;
                         normals[i].x = 0.0f;
                         normals[i].y = 1.0f;
                         normals[i].z = 0.0f;
@@ -966,7 +968,7 @@ namespace AbyssEngine {
                 }
                 ::operator delete[](raw);
             } else if ((flags & 0x18) != 0) {
-                void *nrm = ::operator new[](vcount * 0xc);
+                void *nrm = ::operator new[]((*slot)->vertexCount * 0xc);
                 m->normals = nrm;
                 if (AEFile::Read((uint32_t)((*slot)->vertexCount * 0xc), (*slot)->normals, handleRef) == 0)
                     return -1;
@@ -974,12 +976,13 @@ namespace AbyssEngine {
 
             if (Engine::enableShader != 0) {
                 m = *slot;
-                void *tan = ::operator new[](vcount * 0xc);
+                void *tan = ::operator new[]((*slot)->vertexCount * 0xc);
                 m->tangents = tan;
                 m = *slot;
-                void *bin = ::operator new[](vcount * 0xc);
+                void *bin = ::operator new[]((*slot)->vertexCount * 0xc);
                 m->binormals = bin;
                 m = *slot;
+                vcount = m->vertexCount;
 
                 unsigned int triCount = (unsigned int) ((unsigned) (unsigned short) m->indexCount / (unsigned) 3);
                 float *accum = (float *) ::operator new[](vcount * 0xc);
@@ -1030,21 +1033,18 @@ namespace AbyssEngine {
                     tg[1] = accum[v * 3 + 1];
                     tg[2] = accum[v * 3 + 2];
                     float d = AEMath::VectorDot(*(const Vector *) nrm, *(const Vector *) tg);
-                    float scaled[3] = {nrm[0], nrm[1], nrm[2]};
-                    *(Vector *) scaled *= d;
-                    *(Vector *) tg -= *(const Vector *) scaled;
-                    float tanOut[3];
-                    *(Vector *) tanOut = AEMath::VectorNormalize(*(const Vector *) tg);
+                    Vector scaled = *(const Vector *) nrm * d;
+                    Vector orthogonal = *(const Vector *) tg - scaled;
+                    Vector tanOut = AEMath::VectorNormalize(orthogonal);
                     float *tb = (float *) (*slot)->tangents + v * 3;
-                    tb[0] = tanOut[0];
-                    tb[1] = tanOut[1];
-                    tb[2] = tanOut[2];
-                    float binOut[3];
-                    *(Vector *) binOut = AEMath::VectorCross(*(const Vector *) nrm, *(const Vector *) tanOut);
+                    tb[0] = tanOut.x;
+                    tb[1] = tanOut.y;
+                    tb[2] = tanOut.z;
+                    Vector binOut = AEMath::VectorCross(*(const Vector *) nrm, tanOut);
                     float *bb = (float *) (*slot)->binormals + v * 3;
-                    bb[0] = binOut[0];
-                    bb[1] = binOut[1];
-                    bb[2] = binOut[2];
+                    bb[0] = binOut.x;
+                    bb[1] = binOut.y;
+                    bb[2] = binOut.z;
                 }
                 ::operator delete[](accum);
             }
@@ -1054,24 +1054,25 @@ namespace AbyssEngine {
 
         if (m->vertexFormat & 8) {
             if (compressedData != 0) {
-                void *raw = ::operator new[](vcount << 2);
-                if (AEFile::Read((uint32_t)(vcount << 2), raw, handleRef) == 0) {
+                void *raw = ::operator new[]((*slot)->vertexCount << 2);
+                if (AEFile::Read((uint32_t)((*slot)->vertexCount << 2), raw, handleRef) == 0) {
                     ::operator delete[](raw);
                     return -1;
                 }
                 m = *slot;
-                void *col = ::operator new[](vcount << 4);
+                void *col = ::operator new[]((*slot)->vertexCount << 4);
                 m->colors = col;
                 m = *slot;
                 const float inv = 255.0f;
                 unsigned char *rawBytes = (unsigned char *) raw;
                 float *colorFloats = (float *) m->colors;
-                for (unsigned int i = 0; i < (vcount << 2); ++i) {
+                vcount = m->vertexCount;
+                for (unsigned int i = 0; i < ((*slot)->vertexCount << 2); ++i) {
                     colorFloats[i] = (float) rawBytes[i] / inv;
                 }
                 ::operator delete[](raw);
             } else if ((flags & 0x18) != 0) {
-                void *col = ::operator new[](vcount << 4);
+                void *col = ::operator new[]((*slot)->vertexCount << 4);
                 m->colors = col;
                 if (AEFile::Read((uint32_t)((*slot)->vertexCount << 4), (*slot)->colors, handleRef) == 0)
                     return -1;
@@ -2696,7 +2697,7 @@ namespace AbyssEngine {
         Transform *xf = (*out)->animation;
         if (xf != 0) {
             xf->CollectAnimationData();
-            xf->SetAnimationRangeInTime((long long) timeBetweenFrames, 10000000LL);
+            (*out)->animation->SetAnimationRangeInTime((long long) timeBetweenFrames, 10000000LL);
         }
         return 1;
         }
