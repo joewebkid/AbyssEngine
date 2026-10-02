@@ -1032,23 +1032,20 @@ namespace AbyssEngine {
                 for (unsigned int v = 0; v < vcount; ++v) {
                     m = *slot;
                     float *nrmBase = (float *) m->normals;
-                    float nrm[3];
-                    nrm[0] = nrmBase[v * 3 + 0];
-                    nrm[1] = nrmBase[v * 3 + 1];
-                    nrm[2] = nrmBase[v * 3 + 2];
+                    Vector nrm = *(const Vector *) (nrmBase + v * 3);
                     float tg[3];
                     tg[0] = accum[v * 3 + 0];
                     tg[1] = accum[v * 3 + 1];
                     tg[2] = accum[v * 3 + 2];
-                    float d = AEMath::VectorDot(*(const Vector *) nrm, *(const Vector *) tg);
-                    Vector scaled = *(const Vector *) nrm * d;
+                    float d = AEMath::VectorDot(nrm, *(const Vector *) tg);
+                    Vector scaled = nrm * d;
                     Vector orthogonal = *(const Vector *) tg - scaled;
                     Vector tanOut = AEMath::VectorNormalize(orthogonal);
                     float *tb = (float *) (*slot)->tangents + v * 3;
                     tb[0] = tanOut.x;
                     tb[1] = tanOut.y;
                     tb[2] = tanOut.z;
-                    Vector binOut = AEMath::VectorCross(*(const Vector *) nrm, tanOut);
+                    Vector binOut = AEMath::VectorCross(nrm, tanOut);
                     float *bb = (float *) (*slot)->binormals + v * 3;
                     bb[0] = binOut.x;
                     bb[1] = binOut.y;

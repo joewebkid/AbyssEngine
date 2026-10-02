@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **97.93% unweighted / 97.79% weighted**.
+Latest validated continuation: source **97.97% unweighted / 97.84% weighted**.
 Latest semantic correction: original full bounds diagonal; earlier half-diagonal
 radius assertions are superseded by the verified operand/ABI evidence below.
 The result tables below preserve earlier measurements. Chronological continuation
@@ -1435,3 +1435,63 @@ bounds/reader/parser/caller validation remains applicable. Actual exact pair
 sets stay 2,079 linked / 959 raw without losses or additions. Scores remain
 98.4 / 97.5 / 97.9, means **97.93% unweighted / 97.79% weighted**.
 Both >=99.0% gates remain unmet; no compiler ceiling is demonstrated.
+
+## Continuation: verify tangent operands and copy the normal Vector
+
+Direct original ARM caller/helper inspection confirms the final tangent sequence:
+normal is copied to sp+96 (fp), accumulated tangent to sp+80 (r8), and
+VectorDot at 0x6ce04 receives r0=normal and r1=tangent. Multiply at 0x6ce12
+receives normal and dot, with its hidden result at sp+44. Subtraction at
+0x6ce20 receives tangent minus scaled normal; Normalize at 0x6ce2a receives
+that result. Cross at 0x6ce46 receives normal and normalized tangent, with
+its hidden result at sp+56. The original delinked VectorCross body independently
+confirms lhs cross rhs and its hidden-result ABI. Therefore current
+dot(N,T), normalize(T-N*dot), cross(N,Tnormal) operands match the original.
+No sign or operand reversal was introduced.
+
+Four input-copy forms were tested on the current full-diagonal reader state:
+
+| Input source form | Read source / strict | Compiled instructions |
+|---|---|---:|
+| Copy normal as Vector, retain scalar tangent copy | **97.6 / 55.7** | 867 |
+| Copy accumulated tangent as Vector | 97.5 / 56.3 | 870 |
+| Copy both as Vector | 97.5 / 56.1 | 868 |
+| Aggregate-initialize both Vector inputs | 97.5 / 55.6 | 869 |
+
+Only the first form is retained. It copies the same three normal components
+into a local Vector and uses it in the existing dot, multiply and cross calls.
+This is a compiler-shape choice supported by the original input-copy behavior;
+exact original C++ syntax is not claimed recovered. Helpers, arguments, math
+ordering, reads and other bodies remain unchanged. Earlier input-copy trials
+used a different reader state and do not substitute for this interaction check.
+
+UCRT64 gof2 static-library build, verbatim reader with actual selected vector
+math, caller with actual Mesh.cpp enhanced parser, and separate actual Mesh.cpp
+parser smoke pass. Existing three indexed triangle fixtures verify tangent and
+binormal components for XY and XZ planes, including mixed UVs; bounds and
+truncation checks also pass. No redundant fixture was added for this copy-only
+change. File/unused Transform boundaries remain mocked. These checks do not
+prove a whole native executable's ABI or game/device runtime readiness.
+
+Fresh full ARM rebuild covers 204 translation units in `_work/normalinput-full`.
+There are 4,619 comparisons, zero skipped, 4,274/4,524 originals compared,
+missing 250 (7 wrong type, 243 absent), extra 130. Actual normalized
+`(unit, symbol)` sets equal the clean baseline: linked-exact 2,079, byte-exact
+959; lost [] and gained [] for both. The other 202 objects are byte-identical
+to baseline; Core equals the focused normal-copy winner and Mesh equals
+fullbounds-full. Body/signature comparison confirms source edits stay inside
+the three authorized bodies.
+
+Full strict/source averages: 75.98/88.99. Full report SHA-256: `78db07999425a2ba550dd5f26c1deb273e4a0657f72fc34b6c1bb073bb9508f7`.
+Evidence: `_work/read_tangent_fullbounds_inputs.py`, four
+`_work/readtangentfullbounds-*.json` reports, `_work/normalinput_full.json`,
+`_work/normalinput_three.json`, `_work/normalinput_full_build.log`,
+`_work/normalinput_full_verify.log`, `_work/normalinput_native.log`,
+`_work/normalinput_read_smoke.log`, `_work/normalinput-read-smoke/`,
+`_work/normalinput_smoke.exe`, original_mesh.asm and original delinked
+AEMath target object.
+
+Fixed scores are Create 98.4, Read 97.6, Enhanced 97.9. Original instruction
+weights remain 291/873/636, total 1,800. Means **97.966667% unweighted /
+97.835333% weighted** (97.97/97.84 displayed) remain below both >=99.0%
+requirements. The goal stays active; this does not establish a compiler ceiling.
