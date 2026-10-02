@@ -1493,7 +1493,10 @@ campaign_targets:
         }
         Globals::Canvas->DrawString((unsigned int) (long) (Globals::font), this->systems->data()[index]->getName(), (int)drawX, drawY,
                                                       false);
-        int objectAlpha = (this->selectedSystem == index || this->selectedSystem < 0) ? this->alpha : (this->alpha < 64 ? this->alpha : 64);
+        int selectedForAlpha = this->selectedSystem;
+        int objectAlpha = this->alpha < 64 ? this->alpha : 64;
+        if (selectedForAlpha == index) objectAlpha = this->alpha;
+        if (selectedForAlpha < 0) objectAlpha = this->alpha;
         Globals::Canvas->SetColor(255, 255, 255, (unsigned char)objectAlpha);
         if (this->systems->data()[index]->hasNoOwner() == 0) {
             int race = this->systems->data()[index]->getRace();
