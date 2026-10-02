@@ -16,6 +16,11 @@
 #include "engine/render/Engine.h"
 #include "engine/core/ApplicationManager.h"
 #include <new>
+#include "engine/math/AEMath.h"
+#include <algorithm>
+#if defined(__ARM_NEON)
+#include <arm_neon.h>
+#endif
 
 namespace AbyssEngine {
     namespace AEMath {
@@ -27,14 +32,30 @@ namespace AbyssEngine {
     }
 }
 
-static int *g_cws_items = nullptr;
-static int *g_cws_sound = nullptr;
-static int *g_cws_sound2 = nullptr;
-static int *g_cws_sound3 = nullptr;
-static int **g_damage_text = nullptr;
-static unsigned int g_shoot_mask = 0;
-static void **g_update_sound = nullptr;
-static float **g_update_speed = nullptr;
+// Android 2.0.16 rodata: item sound IDs @ 0x1fbb50, ship-group IDs @ 0x1fbf00.
+static const int kItemSoundIds[] = {
+    52, 53, 54, 56, 55, 57, 58, 59, 60, 50, 49, 50,
+    78, 75, 79, 77, 72, 73, 74, 76, 80, 81, 66, 67,
+    63, 64, 68, 65, 69, 70, 71, 82, 83, 84, 85, 86,
+    87, 88, 89, 90, 91, 6, 7, 8, 9, 10, 11, 92,
+    93, 94, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    1098, 1100, 1099, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, 1111, 1113, 1112, 1117,
+    1095, 1096, 1097, 1101, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, 1118, -1, -1, -1, 2254, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, 2271, 2272, -1, -1, 2263, 2263, 2263, 2265, 2265,
+    2265, -1, -1, -1, -1, 2254, 2267, 2268, 2252, -1, 2269, -1,
+    2275, 2276, 2278, 2277, 2280,
+};
+static const int kGroupSoundIds[] = {52, 55, 54, 53, 61, 61, 61, 61, 61, 62, 2276};
 
 // Wingman/slave link record referenced by KIPlayer::field_0x10: a small
 // linkage struct whose +4 slot holds the linked Player.
@@ -46,33 +67,8 @@ struct SlaveLink {
 static_assert(__builtin_offsetof(SlaveLink, player) == 4, "SlaveLink.player must be at +4");
 #endif
 
-// Overlay view of the global audio-state object (the engine / application
-// manager) whose byte at +0xf gates positional 3D sound updates.
-struct AudioStateView {
-    char pad_0[0xf];
-    char soundEnabledFlag;  // +0xf
-};
-#if __SIZEOF_POINTER__ == 4
-static_assert(__builtin_offsetof(AudioStateView, soundEnabledFlag) == 0xf,
-              "AudioStateView.soundEnabledFlag must be at +0xf");
-#endif
-
 void MatrixGetPosition(void *out, float *matrix);
-
-static int gStopSoundIds[256];
-static void *gFModSound = nullptr;
-static void *gFModSoundAlt = nullptr;
-static void **gFModSoundPtr = nullptr;
-
 void Gun_setEnemies(void *gun);
-
-static int gShootSoundsByType[256];
-static int gShootSoundsByIndex[256];
-static void *gAppManagerA = nullptr;
-static void *gAppManagerB = nullptr;
-static void *gAppManagerC = nullptr;
-
-void FloatVectorMax(void *out, float a, float b, int c, int d);
 
 void Player::pitchAllPrimaryGuns(float pitch) {
     if (this->guns != 0) {
@@ -121,8 +117,7 @@ int Player::getShieldDamageRate() {
     return this->shieldDamageRate;
 }
 
-int Player::replaceGuns(int a, int b, int c, int d, int e, bool f) {
-    return a;
+void Player::replaceGuns(int, int, int, int, int, bool) {
 }
 
 int Player::getShieldHP() {
@@ -131,7 +126,7 @@ int Player::getShieldHP() {
 
 void Player::removeAllGuns() {
     if (this->guns != 0) {
-        ArrayReleaseClasses(*this->guns); ArrayRemoveAll(*(this->guns));
+        ArrayReleaseClasses(*this->guns);
         delete this->guns;
     }
     this->guns = 0;
@@ -450,11 +445,10 @@ void Player::heal(float amount) {
     float f = this->healAccumulator + amount;
     this->healAccumulator = f;
     if (f > 1.0f) {
-        int count = (int) f;
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < (int) f; i++) {
             ((Player *) (this))->regenerateHull();
         }
-        this->healAccumulator = this->healAccumulator - (float) count;
+        this->healAccumulator = this->healAccumulator - (float) (int) f;
     }
 }
 
@@ -497,10 +491,9 @@ void Player::addEnemies(Array<Player *> *enemies) {
     delete tmp;
 }
 
-Player::Player(int radius, int hitpoints, int numPrimary, int numSecondary, int numTertiary) {
+Player::Player(int radius, int hitpoints, int numPrimary, int numSecondary, int numTertiary) : transformMatrix() {
     Player * self = this;
 
-    *reinterpret_cast<AbyssEngine::AEMath::Matrix *>(self->transform) = AbyssEngine::AEMath::Matrix();
     self->shieldHP = 0.0f;
     self->armorHP = 0;
     self->maxArmorHP = 0;
@@ -592,18 +585,17 @@ Vector Player::getPosition() {
     return out;
 }
 
-float Player::damageGamma(float amount) {
+void Player::damageGamma(float amount) {
     if (this->vulnerable) {
         if (this->active) {
-            amount = this->gammaHP - amount;
+            float remaining = this->gammaHP - amount;
             this->gammaHit = 1;
-            this->gammaHP = amount;
-            if (!(amount > 0.0f)) {
+            this->gammaHP = remaining;
+            if (remaining <= 0.0f) {
                 this->gammaHP = 0;
             }
         }
     }
-    return amount;
 }
 
 void Player::damageEmp(int amount, bool flag) {
@@ -645,7 +637,7 @@ void Player::damageEmp(int amount, bool flag) {
                 self->field_dc = prev + amount;
                 if (self->maxEmpPoints / 3 < prev + amount) {
                     self->turnedEnemyFlag = 1;
-                    ((Level *) (self->kiPlayer->level))->friendTurnedEnemy(0);
+                    ((Level *) (self->kiPlayer->level))->friendTurnedEnemy(self->kiPlayer->shipGroup);
                 }
             }
         }
@@ -714,7 +706,7 @@ lab_3164:
     float f = (float) self->empData;
     self->empDisabled = 1;
     self->empPoints = 0;
-    (self->pad_e8[0]) = 0;
+    self->empElapsed = 0;
     self->empForce = f;
     self->updateDamageRate();
     return;
@@ -796,16 +788,13 @@ void Player::stopShootSound(int index, int channel) {
         return;
     }
     if (((1 << channel) & 0x10c) != 0) {
-        void *sound;
-        int id;
         if (this->kiPlayer != 0 && this->kiPlayer->shipGroup == 9) {
-            id = 0x3e;
-            sound = gFModSoundAlt;
+            Globals::sound->stop(0x3e);
+            return;
         } else {
-            id = gStopSoundIds[index];
-            sound = gFModSound;
+            Globals::sound->stop(kItemSoundIds[index]);
+            return;
         }
-        ((FModSound *) sound)->stop(id);
     }
 }
 
@@ -821,20 +810,21 @@ void Player::reset() {
     ((Player *) (self))->updateDamageRate();
     self->vulnerable = 1;
     self->active = 1;
+    self->damaged = 0;
     self->field_54 = 0;
-    self->destroyed = 0;
+    self->destroyedByte = 0;
     self->damageDoneByPlayer = 0;
     self->field_5e = 0;
     self->damageTimer = 0;
-    self->empDisabled = 0;
+    self->empDisabledByte = 0;
     self->shieldHit = 0;
     self->armorHit = 0;
     self->hullHit = 0;
     self->gammaHit = 0;
     self->bombForce = 0;
     self->empForce = 0;
-    (self->pad_dd[0]) = 0;
-    (((uint8_t *) &self->empForce)[1]) = 0;
+    self->field_dc = 0;
+    self->turnedEnemyFlag = 0;
 }
 
 void Player::addGun(Gun *gun, int slot) {
@@ -865,12 +855,11 @@ void Player::calcWeaponSounds(int count) {
 
         bool sorted = true;
         int i = 1;
-        Array<Item *> **itemTablePtr = reinterpret_cast<Array<Item *> **>(g_cws_items);
         do {
             for (; i < (int) n; i++) {
-                Item **dataArr = (*itemTablePtr)->data_;
+                Item **dataArr = static_cast<Array<Item *> *>(Globals::items)->data_;
                 int a = dataArr[order[i - 1]]->getSinglePrice();
-                dataArr = (*itemTablePtr)->data_;
+                dataArr = static_cast<Array<Item *> *>(Globals::items)->data_;
                 int b = dataArr[order[i]]->getSinglePrice();
                 if (a < b) {
                     sorted = false;
@@ -885,8 +874,8 @@ void Player::calcWeaponSounds(int count) {
             if (!again) break;
         } while (true);
 
-        for (unsigned int x = 0; x < n; x++) {
-            for (unsigned int y = 0; y != n; y++) {
+        for (int x = 0; x < (int) n; x++) {
+            for (int y = 0; y != (int) n; y++) {
                 if (x != y && order[x] == order[y]) {
                     order[y] = -1;
                 }
@@ -894,12 +883,13 @@ void Player::calcWeaponSounds(int count) {
         }
 
         int idx = 0;
-        int *sound = g_cws_sound;
         do {
             if ((int) n <= idx) break;
             if (order[idx] >= 0) {
-                this->guns->data()[0]->data()[idx]->field_0x89 = 1;
-                Globals::gGlobals->addSoundResourceToList(*sound);
+                Gun *selected = this->guns->data()[0]->data()[idx];
+                int itemIndex = selected->itemIndex;
+                selected->field_0x89 = 1;
+                Globals::gGlobals->addSoundResourceToList(kItemSoundIds[itemIndex]);
                 count--;
             }
             idx++;
@@ -914,10 +904,9 @@ void Player::calcWeaponSounds(int count) {
         if (slot2 != 0 && slot2->size() != 0) {
             Gun *g = slot2->data()[0];
             if (g != 0) {
-                int sid = g_cws_sound3[g->itemIndex];
+                int sid = kItemSoundIds[g->itemIndex];
                 g->field_0x89 = 1;
-                (void) sid;
-                Globals::gGlobals->addSoundResourceToList(*g_cws_sound2);
+                Globals::gGlobals->addSoundResourceToList(sid);
                 return;
             }
         }
@@ -957,40 +946,40 @@ void Player::setEnemies(Array<Player *> *enemies) {
 void Player::playShootSound(int type, int channel, Vector *pos, float volume) {
     int soundId;
     if (this->kiPlayer == 0) {
-        soundId = gShootSoundsByIndex[type];
+        soundId = kItemSoundIds[type];
     } else {
         unsigned int kind = static_cast<unsigned int>(this->kiPlayer->shipGroup);
         if (kind < 0xb) {
-            soundId = gShootSoundsByType[kind];
+            soundId = kGroupSoundIds[kind];
         } else {
             soundId = 0x3d;
         }
     }
 
-    FModSound *sound = reinterpret_cast<FModSound *>(gFModSoundPtr[0]);
+    FModSound *sound = reinterpret_cast<FModSound *>(Globals::sound);
     if (static_cast<unsigned int>(channel) < 9 && ((1 << (channel & 0xff)) & 0x10c) != 0) {
         if (sound->isPlaying(soundId) != 0) {
-            if (reinterpret_cast<AudioStateView *>(gAppManagerA)->soundEnabledFlag != 0) {
+            if (Globals::options[0x0f] != 0) {
                 sound->updateEvent3DAttributes(soundId, pos, 0, false);
             }
             return;
         }
-        if (reinterpret_cast<AudioStateView *>(gAppManagerB)->soundEnabledFlag == 0) {
+        if (Globals::options[0x0f] == 0) {
             pos = 0;
         }
-    } else if (reinterpret_cast<AudioStateView *>(gAppManagerC)->soundEnabledFlag == 0) {
+    } else if (Globals::options[0x0f] == 0) {
         pos = 0;
     }
     sound->play(soundId, pos, 0, volume);
 }
 
-static const float k_shootAt_inc = 0.0f;
+static const float k_shootAt_inc = 0.008f;
 
-static const float k_damage_full = 0.0f;
-static const float k_damage_hc = 0.0f;
-static const float k_damage_full2 = 0.0f;
-static const float k_damage_hc2 = 0.0f;
-static const float k_damage_regen = 0.0f;
+static const float k_damage_full = 0.33f;
+static const float k_damage_hc = 0.1f;
+static const float k_damage_full2 = 0.66f;
+static const float k_damage_hc2 = 0.4f;
+static const float k_damage_regen = 0.065f;
 
 void Player::damage(int amount, bool flag, int missionId) {
     Player * self = this;
@@ -1003,7 +992,7 @@ void Player::damage(int amount, bool flag, int missionId) {
         if (self->alwaysEnemy == 0 &&
             (unsigned int) (ki->shipGroup - 9) > 1 &&
             Status::gStatus->getSystem() != 0 &&
-            ((self->enemyFlags == 0) || (self->turnedEnemyFlag != 0))) {
+            ((self->enemyFlagsLo == 0) || (self->turnedEnemyFlag != 0))) {
             ki = self->kiPlayer;
             if (ki->field_0x42 != 0) {
                 if (amount > 0) {
@@ -1019,7 +1008,7 @@ void Player::damage(int amount, bool flag, int missionId) {
         if (ki != 0 && self->alwaysEnemy == 0 &&
             (unsigned int) (ki->shipGroup - 9) > 1 &&
             self->kiPlayer->isWingMan() == 0 && Status::gStatus->getSystem() != 0 &&
-            ((self->enemyFlags == 0) || (self->turnedEnemyFlag != 0))) {
+            ((self->enemyFlagsLo == 0) || (self->turnedEnemyFlag != 0))) {
             int race = self->kiPlayer->shipGroup;
             Status::gStatus->getSystem();
             bool sameRace = (race == ((SolarSystem *) (intptr_t) Status::gStatus->getSystem())->getRace());
@@ -1039,7 +1028,7 @@ void Player::damage(int amount, bool flag, int missionId) {
             float thr3 = (hc != 0) ? k_damage_hc2 : k_damage_full2;
 
             if (f1 < dmgF) {
-                ((Level *) (self->kiPlayer->level))->friendTurnedEnemy(0);
+                ((Level *) (self->kiPlayer->level))->friendTurnedEnemy(self->kiPlayer->shipGroup);
                 void *ship = (void *) Status::gStatus->getShip();
                 void *standing = (void *) (long) Status::gStatus->getStanding();
                 if (((Ship *) (ship))->getSignatureRace() >= 0) {
@@ -1109,7 +1098,9 @@ LAB_342a: {
                         }
                     }
                 }
-                Status::gStatus->field_110 = 0x100;
+                // Android damage body writes both wanted-state bytes at Status +0x110.
+                uint16_t wantedState = 0x100;
+                std::memcpy(&Status::gStatus->field_110, &wantedState, sizeof(wantedState));
             }
         }
     }
@@ -1151,7 +1142,7 @@ LAB_3488: {
         if (hp < 1) {
             self->hitpoints = 0;
             if (flag != 0) {
-                self->destroyed = 1;
+                self->destroyedByte = 1;
             } else {
                 KIPlayer *ki2 = self->kiPlayer;
                 if (ki2 != 0 && ki2->stealFlag == 0 && ki2->countsAsEnemyExcludeFlag == 0 &&
@@ -1164,14 +1155,14 @@ LAB_3488: {
                     int mission = Status::gStatus->getCampaignMission();
                     KIPlayer *ki3 = self->kiPlayer;
 
-                    void *txt = ((GameText *) (*g_damage_text[0]))->getText(missionId);
+                    void *txt = Globals::gameText->getText(1664);
                     int cmp = (&ki3->name)->Compare_str((String *) txt);
                     if (missionId == 0xb3 && cmp == 0) {
                         ((Mission *) (intptr_t) mission)->setStatusValue(
                             ((Mission *) (intptr_t) mission)->getStatusValue() + 1);
                     }
                     if (self->kiPlayer->field_0x42 != 0) {
-                        ((Level *) (self->kiPlayer->level))->killWanted(0);
+                        ((Level *) (self->kiPlayer->level))->killWanted(self->kiPlayer->field_0x48);
                     }
                 }
             }
@@ -1257,131 +1248,92 @@ void Player::setMaxArmorHP(int value) {
     this->updateDamageRate();
 }
 
-static const float k_shoot_inc = 0.0f;
+static const float k_shoot_inc = 0.008f;
 
-static void (**g_update_transform)(void *, void *, int) = nullptr;
-
-static const float k_update_a = 0.0f;
-static const float k_update_b = 0.0f;
-static const float k_update_c = 0.0f;
-
-Vector *Player::update(int dt, bool doSound) {
-    Player * self = this;
-
-    int b4 = self->damageTimer + dt;
-    self->damageTimer = b4;
-    if (b4 > 3000) {
-        self->damaged = 0;
-        self->damageTimer = 0;
+// Android 0xa4110: +0xe4 duration, +0xe8 elapsed; options +0x0f gates 3D audio.
+void Player::update(int dt, bool doSound) {
+    damageTimer += dt;
+    if (damageTimer > 3000) {
+        damaged = 0;
+        damageTimer = 0;
     }
-
-    Vector *result = 0;
-
-    if (self->empDisabled != 0) {
-        int e = self->empData + dt;
-        float ef = (float) self->empData;
-        float ef2 = (float) e;
-        int maxEmp = self->maxEmpPoints;
-        float mf = (float) maxEmp;
-        float v = (ef2 / ef) * mf;
-        self->empData = e;
-        self->empPoints = (int) v;
-        if (maxEmp < (int) v) {
-            self->empDisabled = 0;
-            self->empPoints = maxEmp;
-            Status::gStatus->field_134 = Status::gStatus->field_134 - 1;
-            self->empData = 0;
+    if (empDisabledByte) {
+        int elapsed = empElapsed + dt;
+        float points = (static_cast<float>(elapsed) / static_cast<float>(empData)) * static_cast<float>(maxEmpPoints);
+        empElapsed = elapsed;
+        empPoints = static_cast<int>(points);
+        if (maxEmpPoints < static_cast<int>(points)) {
+            empDisabledByte = 0;
+            empPoints = maxEmpPoints;
+            --Globals::status->field_134;
+            empElapsed = 0;
         }
-        ((Player *) (self))->updateDamageRate();
+        updateDamageRate();
     }
-
-    AudioStateView *flagObj = reinterpret_cast<AudioStateView *>(gEngine);
-    if (flagObj->soundEnabledFlag == 0 || doSound == 0 || self->enginePositionVec == (void *) (__INTPTR_TYPE__) -1) {
-        if (self->engineSoundPlaying != 0) {
-            self->StopEngineSound();
-        }
-    } else {
-        float *transform = self->transform;
-        void (*fn)(void *, void *, int) = *g_update_transform;
-        float local[3];
-        float spd = (float) (**g_update_speed);
-        fn(*g_update_speed, local, (int) (long) transform);
-        float tmpA[3], tmpB[3], tmpC[3];
-        float d = (*(Vector *) tmpA = *(const Vector *) self->position - *(const Vector *) local,
-                   AbyssEngine::AEMath::VectorLength(*(const Vector *) tmpA));
-        *(Vector *) tmpB = d * *(const Vector *) tmpA;
-        *(Vector *) tmpC = *(const Vector *) tmpB;
-        *(Vector *) tmpC /= (float) dt;
-        (void) spd;
-        fn(tmpB, local, (int) (long) transform);
-        FMOD::Event *ev = ((FModSound *) (*g_update_sound))->updateEvent3DAttributes(
-            self->engineEvent, 0, (Vector *) tmpB, (Vector *) tmpC, false);
-        self->engineEvent = ev;
-        self->engineSoundPlaying = 1;
-        fn(tmpA, local, (int) (long) transform);
-        *(Vector *) self->position = *(Vector *) tmpA;
+    if (Globals::options[0x0f] && doSound && enginePositionVec != reinterpret_cast<void *>(static_cast<intptr_t>(-1))) {
+        float audioSpeed = static_cast<float>(Player::velocity);
+        Vector current = AbyssEngine::AEMath::MatrixGetPosition(transformMatrix);
+        Vector delta = current - *reinterpret_cast<Vector *>(position);
+        Vector scaled = audioSpeed * delta;
+        Vector velocity = scaled / static_cast<float>(dt);
+        Vector eventPosition = AbyssEngine::AEMath::MatrixGetPosition(transformMatrix);
+        engineEvent = Globals::sound->updateEvent3DAttributes(engineEvent, static_cast<int>(reinterpret_cast<intptr_t>(enginePositionVec)), &eventPosition, &velocity, false);
+        engineSoundPlaying = 1;
+        *reinterpret_cast<Vector *>(position) = AbyssEngine::AEMath::MatrixGetPosition(transformMatrix);
+    } else if (engineSoundPlaying) {
+        StopEngineSound();
     }
-
-    float speed = (float) dt;
-    float nf = self->flShake + speed * k_update_a * k_update_b;
-    self->flShake = nf;
-    FloatVectorMax(&result, nf, k_update_c, 2, 0x20);
-
-    return result;
+    float shake = flShake + static_cast<float>(dt) * -0.001f * 0.025f;
+#if defined(__ARM_NEON)
+    flShake = vget_lane_f32(vmax_f32(vdup_n_f32(shake), vdup_n_f32(0.0f)), 0);
+#else
+    flShake = std::max(shake, 0.0f);
+#endif
 }
 
 void Player::shoot(int a, int b, long long pos, bool flag) {
-    Matrix mat;
-    float *src = this->transform;
-    for (int k = 0; k < 15; ++k) mat.m[k] = src[k];
-    mat.m[15] = 1.0f;
-    this->shoot(a, b, pos, flag, mat);
+    this->shoot(a, b, pos, flag, this->transformMatrix);
 }
 
 void Player::shoot(int a, int b, long long pos, bool flag, Matrix mat) {
     Player * self = this;
-    unsigned int mask = g_shoot_mask;
+    unsigned int mask = 0x10000003;
 
     Array<Array<Gun *> *> *guns = self->guns;
-    if (guns != 0 && self->shootingEnabled != 0 && b >= 0 &&
-        (unsigned int) b < guns->size()) {
-        Array<Gun *> *arr = guns->data()[b];
+    if (guns != 0 && self->shootingEnabled != 0 && a >= 0 &&
+        (unsigned int) a < guns->size()) {
+        Array<Gun *> *arr = guns->data()[a];
         if (arr != 0) {
             for (unsigned int i = 0; i < arr->size(); i++) {
-                Gun *g = self->guns->data()[b]->data()[i];
+                Gun *g = self->guns->data()[a]->data()[i];
                 unsigned int sortIdx = g->weaponType - 6;
                 if (sortIdx < 0x1d && ((1u << (sortIdx & 0xff)) & mask) != 0 &&
                     *(int *) g->lifetimes >= 0) {
                     ((Gun *) (g))->ignite();
-                } else if (g->itemIndex == (int) pos && g->fireDelay < g->timer) {
+                } else if (g->itemIndex == b && g->fireDelay < g->timer) {
                     if (sortIdx < 0x1d && ((1u << (sortIdx & 0xff)) & mask) != 0) {
                         ((Level *) (intptr_t) g->level)->field_69 = 1;
                     }
-                    ((Gun *) (g))->shoot(mat, flag, false);
+                    ((Gun *) (g))->shoot(mat, (int) pos, flag);
                     self->flShake = self->flShake + k_shoot_inc;
                     if (self->playShootSoundFlag != 0) {
-                        float tmp[3];
-                        MatrixGetPosition(tmp, self->transform);
-                        Gun *g2 = self->guns->data()[b]->data()[i];
+                        Vector shotPosition = AbyssEngine::AEMath::MatrixGetPosition(mat);
+                        Gun *g2 = self->guns->data()[a]->data()[i];
                         self->playShootSound(g2->itemIndex, g2->weaponType,
-                                             reinterpret_cast<Vector *>(tmp),
+                                             &shotPosition,
                                              g2->field_0xb0);
                     }
                     g->timer = 0;
                     break;
                 }
+                arr = self->guns->data()[a];
             }
         }
     }
-    (void) a;
 }
 
 void Player::shoot(int a, long long pos, bool flag) {
-    Matrix mat;
-    float *src = this->transform;
-    for (int k = 0; k < 15; ++k) mat.m[k] = src[k];
-    mat.m[15] = 1.0f;
-    this->shoot(a, pos, flag, mat);
+    this->shoot(a, pos, flag, this->transformMatrix);
 }
 
 void Player::shoot(int a, long long pos, bool flag, Matrix mat) {
@@ -1400,11 +1352,10 @@ void Player::shoot(int a, long long pos, bool flag, Matrix mat) {
                     Gun *g2 = self->guns->data()[a]->data()[i];
                     g2->timer = 0;
                     if (self->playShootSoundFlag != 0 && g2->field_0x89 != 0) {
-                        float tmp[3];
-                        MatrixGetPosition(tmp, self->transform);
+                        Vector shotPosition = AbyssEngine::AEMath::MatrixGetPosition(mat);
                         Gun *g3 = self->guns->data()[a]->data()[i];
                         self->playShootSound(g3->itemIndex, g3->weaponType,
-                                             reinterpret_cast<Vector *>(tmp),
+                                             &shotPosition,
                                              g3->field_0xb0);
                     }
                 }
@@ -1435,12 +1386,10 @@ void Player::stopShooting(int slot) {
     }
 }
 
-float *Player::setHitVector(float x, float y, float z) {
-    float *p = this->hitVector;
-    *p++ = x;
-    *p++ = y;
-    *p++ = z;
-    return p;
+void Player::setHitVector(float x, float y, float z) {
+    this->hitVector[0] = x;
+    this->hitVector[1] = y;
+    this->hitVector[2] = z;
 }
 
 void Player::resetGunDelay(int slot) {
@@ -1469,12 +1418,11 @@ Array<Player *> *Player::getEnemies() {
 
 void Player::PlayEngineSound(int unused, Vector *vec) {
     (void) unused;
-    this->enginePositionVec = vec;
-    if (reinterpret_cast<AudioStateView *>(ApplicationManager::gAppManager)->soundEnabledFlag != 0) {
-        float pos[12];
-        MatrixGetPosition(pos, this->transform);
-        FMOD::Event *ev = ((FModSound *) gFModSoundPtr[0])->updateEvent3DAttributes(
-            this->engineEvent, 0, (Vector *) this->enginePositionVec, (Vector *) pos, false);
+    this->enginePositionVec = reinterpret_cast<void *>(static_cast<intptr_t>(unused));
+    if (Globals::options[0x0f] != 0) {
+        Vector pos = AbyssEngine::AEMath::MatrixGetPosition(this->transformMatrix);
+        FMOD::Event *ev = ((FModSound *) Globals::sound)->updateEvent3DAttributes(
+            this->engineEvent, static_cast<int>(reinterpret_cast<intptr_t>(this->enginePositionVec)), &pos, nullptr, true);
         this->engineEvent = ev;
         this->engineSoundPlaying = 1;
     }
@@ -1483,21 +1431,21 @@ void Player::PlayEngineSound(int unused, Vector *vec) {
 void Player::PauseEngineSound() {
     FMOD::Event *event = this->engineEvent;
     if (event != 0) {
-        this->enginePaused = ((FModSound *) gFModSound)->pause(event);
+        this->enginePaused = ((FModSound *) Globals::sound)->pause(event);
     }
 }
 
 void Player::ResumeEngineSound(bool force) {
     FMOD::Event *event = this->engineEvent;
     if (event != 0 && (this->enginePaused != 0 || force)) {
-        this->enginePaused = ((FModSound *) gFModSound)->resume(event) ^ 1;
+        this->enginePaused = ((FModSound *) Globals::sound)->resume(event) ^ 1;
     }
 }
 
 void Player::StopEngineSound() {
     FMOD::Event *event = this->engineEvent;
     if (event != 0) {
-        ((FModSound *) gFModSound)->stop(event);
+        ((FModSound *) Globals::sound)->stop(event);
         this->engineSoundPlaying = 0;
         this->engineEvent = 0;
     }
