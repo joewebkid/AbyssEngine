@@ -1,4 +1,4 @@
-// Focused host test: actual Player::update with audio boundary doubles.
+// Focused host test: actual recovered Player bodies with game/audio boundary doubles.
 // This does not validate the full native game or ARM ABI/runtime.
 #include "game/ship/Player.h"
 #include "game/core/Globals.h"
@@ -9,13 +9,42 @@
 #include <cmath>
 #include <cstdio>
 #include <limits>
+#include <cstring>
+#include <new>
 
 unsigned char Globals::options[100] = {};
 FModSound *Globals::sound = nullptr;
 Status *Globals::status = nullptr;
+static FModSound *replacementSound;
+static FModSound *usedSound;
+static Vector *usedPosition;
+static unsigned alreadyPlaying;
+static int soundId, played, updated;
+FModSound::FModSound() {}
+FModSound::~FModSound() {}
+unsigned FModSound::isPlaying(int index) {
+    soundId = index;
+    Globals::sound = replacementSound;
+    return alreadyPlaying;
+}
+void FModSound::play(int index, Vector *position, Vector *velocity, float) {
+    assert(velocity == nullptr);
+    soundId = index;
+    usedSound = this;
+    usedPosition = position;
+    ++played;
+}
+void FModSound::updateEvent3DAttributes(int index, Vector *position, Vector *velocity, bool restart) {
+    assert(velocity == nullptr && !restart && index == soundId);
+    usedSound = this;
+    usedPosition = position;
+    ++updated;
+}
 FMOD::Event *FModSound::updateEvent3DAttributes(FMOD::Event *event, int, Vector *, Vector *, bool) { return event; }
 FModSound *FModSound::stop(FMOD::Event *) { return nullptr; }
-Gun::~Gun() noexcept(false) {} // All gun slots are empty in this test.
+Gun::~Gun() noexcept(false) {}
+Gun::Gun(int, int, int, int, int, int, float, Vector, Vector) : enemies(nullptr) {}
+void Gun::setEnemies(Array<Player *> *value) { enemies = value; } // Gun boundary double.
 
 // Constructor boundary: production Matrix assignment/math come from AEMath.cpp.
 AbyssEngine::AEMath::Matrix::Matrix() {
@@ -27,7 +56,51 @@ void MatrixGetPosition(void *out, float *matrix) {
 }
 
 int main() {
+    alignas(Player) unsigned char storage[sizeof(Player)];
+    std::memset(storage, 0xa5, sizeof(storage));
+    Player *constructed = new (storage) Player(10, 100, 0, 0, 0);
+    assert(constructed->active == 1 && constructed->damaged == 0);
+    constructed->~Player();
     Player player(10, 100, 0, 0, 0);
+    assert(!player.gunAvailable(-1));
+    assert(!player.gunAvailable(4));
+    Gun *gun = new Gun(0, 0, 0, 0, 0, 0, 0, Vector{}, Vector{});
+    Array<Gun *> *slot = new Array<Gun *>();
+    ArrayAdd(gun, *slot);
+    player.guns->data()[0] = slot;
+    assert(player.gunAvailable(0));
+    Array<Player *> incoming;
+    ArrayAdd(&player, incoming);
+    player.setEnemies(&incoming);
+    assert(player.enemies != &incoming && player.enemies->data() != incoming.data());
+    assert(gun->enemies == player.enemies && player.enemies->data()[0] == &player);
+    incoming.data()[0] = nullptr;
+    assert(player.enemies->data()[0] == &player);
+    player.addEnemy(nullptr);
+    assert(player.enemies->size() == 2 && player.enemies->data()[0] == &player);
+    assert(player.enemies->data()[1] == nullptr && gun->enemies == player.enemies);
+    player.setEnemies(nullptr);
+    assert(player.enemies == nullptr && gun->enemies == nullptr);
+    player.addEnemy(&player); // Empty-list path calls setEnemy.
+    assert(player.enemies->size() == 1 && gun->enemies == player.enemies);
+    FModSound firstSound, nextSound;
+    replacementSound = &nextSound;
+    Vector shotPosition{};
+    Globals::options[0x0f] = 1;
+    Globals::sound = &firstSound;
+    alreadyPlaying = 0;
+    player.playShootSound(0, 2, &shotPosition, 1);
+    assert(played == 1 && usedSound == &nextSound && usedPosition == &shotPosition);
+    Globals::sound = &firstSound;
+    alreadyPlaying = 1;
+    player.playShootSound(0, 2, &shotPosition, 1);
+    assert(updated == 1 && usedSound == &nextSound && usedPosition == &shotPosition);
+    Globals::options[0x0f] = 0;
+    player.playShootSound(0, 2, &shotPosition, 1);
+    assert(played == 1 && updated == 1); // Playing loop stays untouched with 3D disabled.
+    player.playShootSound(0, -1, &shotPosition, 1);
+    assert(played == 2 && usedPosition == nullptr); // Out-of-mask channel plays unconditionally.
+    Globals::sound = nullptr;
     player.maxArmorHP = player.maxShieldHP = player.maxEmpPoints = 100;
     player.empDisabledByte = 1;
     player.empData = 1000;
@@ -67,5 +140,5 @@ int main() {
     player.gammaHP = std::numeric_limits<float>::quiet_NaN();
     player.damageGamma(1);
     assert(std::isnan(player.gammaHP)); // ARM's <= comparison preserves NaN.
-    std::puts("Player EMP/shake update smoke: OK");
+    std::puts("Player recovery host smoke: OK");
 }

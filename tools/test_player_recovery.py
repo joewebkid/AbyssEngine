@@ -13,7 +13,8 @@ import subprocess
 root = Path(__file__).resolve().parents[1]
 source = (root / 'src/game/ship/Player.cpp').read_text()
 names = ['Player', '~Player', 'updateDamageRate', 'update', 'setHitVector', 'StopEngineSound',
-         'reset', 'resetDamageDoneByPlayer', 'damageGamma']
+         'reset', 'resetDamageDoneByPlayer', 'damageGamma', 'setEnemies', 'setEnemy',
+         'addEnemy', 'gunAvailable', 'playShootSound']
 parts = [source[:source.index('void Player::pitchAllPrimaryGuns')]]
 for name in names:
     match = re.search(r'^.*Player::' + re.escape(name) + r'\([^\n]*\) \{', source, re.M)
