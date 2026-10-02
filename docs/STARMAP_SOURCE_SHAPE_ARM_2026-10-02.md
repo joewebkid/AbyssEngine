@@ -1658,6 +1658,49 @@ remain 89.06% / 76.16%. Gate evidence: _work/thirtyninth-gate.json,
 thirtyninth-previous-gate.json and thirtyninth-target-gate.log.
 Full JSON SHA-256: a97c5982f5b6aa1901449fa1e84dc4c4aa7602e8fbb9af2ae46d05633af1f442.
 
+## Investigation after checkpoint 0db68768
+
+Two narrow OnTouchEnd source forms were tested and removed; neither changes
+the entire focused JSON or complete ARM object bytes.
+
+- Close flag snapshot: move the suppressNextClose read before choiceVisible
+  is cleared, using one uint8_t local. Native caece reads field 484 before
+  caed4 clears field 169. Disassembly then showed that accepted code already
+  does the same: 1ff4 reads field 484 and 1ff8 clears field 169. The source
+  spelling had obscured an already-correct generated order. No extra read,
+  call, register barrier or volatile operation was introduced. Package:
+  _work/close-snapshot-fortieth.json/log; backup before-close-snapshot-fortieth.cpp.
+- Choice result switch: express the existing result 1, result 0 and default
+  paths with a switch. Native caec4/caec6 checks result 1 first, then
+  caec8/caeca checks result 0; result 1 clears choiceVisible and
+  alienJumpPending at cafb8/cafbc. Accepted code checks 0 at 1e9c/1e9e then
+  uses conditional clears after the 1eA2 comparison. The switch preserves all
+  actions but compiles to the identical accepted object. Package:
+  _work/choice-switch-fortieth.json/log; backup before-choice-switch-fortieth.cpp.
+
+A further read-only warning-105 control-flow check rules out adding a second
+runtime dialog call to emulate a static-site count. Failed hasEquipment at
+cb4e2 takes cb4e8 to cb7fe. That block obtains text 3217 at cb80c, calls
+ChoiceWindow::set once at cb814, sets suppressNextClose at cb818 and branches
+cb81c to cb890. It then sets choiceVisible and enters inertia at cb896.
+The mission-139/142 checks at cb4ec..cb5d2 are bypassed on this path.
+The retained warningText chain likewise skips later warning checks once 3217
+is selected and enters common visibility/inertia processing after one set.
+This proves this path's static CFG correspondence, not runtime execution or
+complete warning-handler equivalence. No new production edit follows from it.
+Evidence: _work/end-original-direct.asm and touch-android.c.
+
+Both trial object hashes and both fresh restored-source object hashes match
+3c172c7234c4ee9b0097f05a76bd5fd09e5bd15042b461d4102eb0f8c64720e7.
+Fresh restored packages: _work/fortieth-restored-focused.json/log and
+fortieth-switch-restored-focused.json/log. Each passed 204/204 ARM TUs,
+zero failures and 22 comparisons with zero skips. OnTouchEnd remains
+97.5% source / 76.4% strict, 1037/1003 instructions. Production source is
+unchanged; no new native-library or full-corpus result is claimed. Those
+remain the accepted 0db68768 validations. Means stay 99.165% / 98.45998%
+source and 87.185% / 81.46895% strict; weighted 99% remains unmet.
+These negative results do not prove a compiler ceiling or runtime equivalence.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
