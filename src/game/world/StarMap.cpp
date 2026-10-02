@@ -738,10 +738,10 @@ void StarMap::update(int dt) {
             this->velocityX = vx;
             this->velocityY = vy;
             if (absf_update(vx) > 0.5f) {
-                this->panX = (int) ((float) this->panX + vx);
+                this->panX = (int) (vx + (float) this->panX);
             }
             if (absf_update(vy) > 0.5f) {
-                this->panY = (int) ((float) this->panY + vy);
+                this->panY = (int) (vy + (float) this->panY);
             }
         }
         int combinedX = (int)(this->cameraBaseX + (float)this->panX);
@@ -794,16 +794,39 @@ void StarMap::update(int dt) {
 
     {
         if (this->stationCenterAnim != 0) {
-            int target = 0x8000 - ((int *) this->stationAngles)[this->selectedStation];
-            int diff = (int) this->yaw - target;
-            this->yaw += (float) (diff < 0 ? -diff : diff) * (diff < 0 ? 0.25f : -0.25f);
-            if (abs(diff) <= 10) {
-                this->stationCenterAnim = 0;
+            int selectedStation = this->selectedStation;
+            float oldPitch = this->pitch;
+            float oldYaw = this->yaw;
+            int target = 0x8000 - this->stationAngles[selectedStation];
+            int yaw = (int)oldYaw;
+            int pitch = (int)oldPitch;
+            int yawDistance = yaw - target;
+            if (yawDistance < 0) yawDistance = -yawDistance;
+            int pitchDistance = -3096 - pitch;
+            if (pitch > -3096) pitchDistance = pitch + 3096;
+            float yawFactor;
+            int yawStep;
+            if (target <= yaw) {
+                yawFactor = -0.25f;
+                yawStep = yaw - target;
+            } else {
+                yawFactor = 0.25f;
+                yawStep = target - yaw;
             }
-            int pitchDiff = (int)this->pitch + 3096;
-            this->pitch += (float)(pitchDiff < 0 ? -pitchDiff : pitchDiff) * (pitchDiff < 0 ? 0.25f : -0.25f);
-            if (abs(diff) <= 4 * dt && abs(pitchDiff) <= 4 * dt) {
-                this->lastSelectedStation = this->selectedStation;
+            this->yaw = oldYaw + (float)yawStep * yawFactor;
+            if (yawDistance <= 10) this->stationCenterAnim = 0;
+            float pitchFactor;
+            int pitchStep;
+            if (pitch > -3097) {
+                pitchFactor = -0.25f;
+                pitchStep = pitch + 3096;
+            } else {
+                pitchFactor = 0.25f;
+                pitchStep = -3096 - pitch;
+            }
+            this->pitch = oldPitch + (float)pitchStep * pitchFactor;
+            if (yawDistance <= 4 * dt && abs(pitchDistance) <= 4 * dt) {
+                this->lastSelectedStation = selectedStation;
                 this->stationCenterAnim = 0;
             }
         } else if (this->dragging == 0) {
@@ -812,10 +835,10 @@ void StarMap::update(int dt) {
             this->velocityX = vx;
             this->velocityY = vy;
             if (absf_update(vx) > 0.5f) {
-                this->yaw += vx;
+                this->yaw = vx + this->yaw;
             }
             if (absf_update(vy) > 0.5f) {
-                this->pitch += vy;
+                this->pitch = vy + this->pitch;
             }
         }
         float magnitude = absf_update(this->velocityX + this->velocityY) * 0.01f;

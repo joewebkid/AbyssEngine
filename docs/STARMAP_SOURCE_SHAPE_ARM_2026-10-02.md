@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **98.910% unweighted / 97.89768% original-instruction
+implementation bodies measure **98.940% unweighted / 97.97972% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**85.625% / 77.92259%**, respectively. Source-shape is an inventory/control-flow
+**85.610% / 77.88157%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -462,6 +462,30 @@ PC cardinalities and routes were not used to overwrite the Android map.
   executable test. No renderer, camera, touch or mission runtime was exercised.
   A successful static-library build does not prove native ABI/runtime behavior.
 
+## Follow-up after checkpoint 7b76861c
+
+This continuation changes StarMap.cpp only. Android ARM instructions at
+0xca1d8..0xca224 and the station-centering block at 0xca50c onward preserve
+the selected station and old pitch/yaw, then choose the quarter-step direction
+by comparing current and target angles. The implementation now follows those
+reads, direct comparisons and +/-0.25f branches. Inertial additions also follow
+the native operand order. These branches are evidenced by Android 2.0.16;
+no iOS/PC formula is substituted.
+
+Update source-shape: 97.7% -> 98.3%; strict ordered match: 82.3% -> 82.0%;
+original/current instructions: 971/953 -> 971/961. Fixed-body means change
+from 98.910% / 97.89768% to 98.940% / 97.97972%. Strict matching declines
+slightly to 85.610% / 77.88157%; this is explicitly not an exact-match claim.
+
+Two OnTouchEnd experiments were rejected and restored before the accepted
+build: a sequential warning chain measured 97.4%, and an explicit common
+confirmation exit measured 97.3%, against 97.5% in the retained implementation.
+The compiler already merges the confirmation calls. Neither experiment showed
+a separate behavior correction, so neither remains in production code.
+
+Evidence extracts and trial reports are retained under _work. The existing
+fixed 20-body gate, original weights and alias checks remain unchanged.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -499,18 +523,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/ninth-corpus.log`; focused log:
-`_work/station-seventh-trial.log` (copied report: seventh-focused.json); native log: `_work/native-seventh.log`.
+Latest full log: `_work/tenth-corpus.log`; focused log:
+`_work/update-center-tenth.log` (copied report: tenth-focused.json); native log: `_work/native-tenth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92 and 52079d64, with no new gains or losses since
-7fc7701c. The latest comparison against 52079d64 preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64 and 7b76861c, with no new gains or losses since
+7fc7701c. The latest comparison against 7b76861c preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/ninth-gate.json, ninth-previous-gate.json and
-ninth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/tenth-gate.json, tenth-previous-gate.json and
+tenth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `c7c5b50ce98bb5329acaa9fc8952e3e0a5e32103d7ed62b065efbd8461d648d2`.
+final full JSON SHA-256: `2fddeb0840b39c9345d5b92a5bb7dded34acd4b9458ffb5f0dbdaaa3ade48008`.
 
 
 ### Reproduction
@@ -541,7 +565,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 |---|---:|---:|---:|---:|---|
 | `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1221 | 78.9% | 97.9% | 64.9% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
-| `_ZN7StarMap6updateEi` | 971/953 | 76.6% | 97.7% | 82.3% | - |
+| `_ZN7StarMap6updateEi` | 971/961 | 76.6% | 98.3% | 82.0% | - |
 | `_ZN7StarMap4drawEv` | 916/909 | 49.7% | 98.3% | 87.6% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/737 | 72.9% | 98.0% | 76.1% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/680 | 80.9% | 96.3% | 81.7% | - |
