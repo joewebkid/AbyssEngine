@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **98.965% unweighted / 98.04343% original-instruction
+implementation bodies measure **99.000% unweighted / 98.12905% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**85.665% / 78.01672%**, respectively. Source-shape is an inventory/control-flow
+**85.760% / 78.24778%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -714,6 +714,51 @@ Both baseline and previous-checkpoint exact-pair gates pass with zero losses
 (2083 linked / 960 byte); the default 99% gate fails with the expected threshold
 message. No native executable/runtime test is claimed.
 
+## Follow-up after checkpoint 613af2c6
+
+The unweighted unique-body source mean reaches 99.000%, but the weighted mean
+is still 98.12905%; the objective requires both, so this remains PARTIAL.
+Only four integer comparison expressions change in StarMap.cpp. No body, weight,
+compiler flag or metric is changed.
+
+- draw: three visibility-size tests now express size <= index / size > index,
+  instead of index >= size / index < size. Android c91f8/c91fa, c925e/c9260 and
+  c9392/c9394 compare count first and skip with BLS. The new object emits the
+  corresponding CMP/BLS pairs at 308/30a, 36e/370 and 4b8/4ba. Unsigned truth
+  tables and read/call ordering are preserved. This follows verified machine
+  comparison direction; it does not prove the original C++ spelling. Source
+  98.5% -> 99.0%, strict 87.8% -> 89.1%, instructions 916/909 -> 916/907.
+  Focused package: _work/draw-count-seventeenth.json/log.
+- init: the key-width maximum test now expresses width > keyBoxWidth. Android
+  c732e/c7330 compares the returned width first and conditionally stores under
+  GT (c7332/c7336). The retained code used keyBoxWidth < width. Signed truth
+  tables and calls are unchanged. Source 98.1% -> 98.3%, strict 76.4% -> 77.0%,
+  instruction counts remain 750/736. Focused accepted package:
+  _work/init-width-seventeenth.json/log.
+- Rejected supplementary trial: OnTouchMove yaw and spin additions were written
+  delta + yaw / speed + spin following cac70/cadaa. All focused rows stayed
+  identical to the draw-only package. The spelling change was removed rather
+  than treating it as another gain. Package: _work/move-add-order-seventeenth.json/log.
+
+Fixed source means: 99.000% / 98.12905%; strict means: 85.760% / 78.24778%.
+All other focused function rows are unchanged. Original/current disassembly:
+_work/draw-original-direct.asm, init-original-direct.asm, move-original-direct.asm
+and seventeenth-current.asm. Accepted StarMap.o SHA-256:
+e0d96b374ca3d8da7c933c01a2b091d7c6674f48a319dcc04b95d25ee504591a.
+Previous focused/full inputs: _work/checkpoint16-focused.json/corpus.json.
+The signed weighted deficit to 99 is 0.87094775 percentage points, using the
+unchanged original weights. Largest positive terms (99 - body source) * weight
+/ 7101: initStarSystem 0.26996198, OnTouchEnd 0.21905365, drawOnScreenInfo
+0.18697367, init 0.07393325, update 0.06837065, C1 0.04689480. Bodies above
+99 contribute negative terms. This ranks further investigation; it neither
+changes scoring nor proves that any particular source repair can close a term.
+
+Validation: all 204 ARM TUs compiled, zero failures; native gof2 static-library
+build passed; complete full corpus has 4619 comparisons, zero skips. Exact-pair
+gates against clean baseline and 613af2c6 pass with zero losses: 2083 linked /
+960 byte. Default 99% gate remains FAIL because the weighted mean is below 99,
+with the expected threshold message. No native executable/runtime test claimed.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -751,18 +796,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/sixteenth-corpus.log`; focused log:
-`_work/init-drag-bits-sixteenth.log`; native log: `_work/native-sixteenth.log`.
+Latest full log: `_work/seventeenth-corpus.log`; focused log:
+`_work/init-width-seventeenth.log`; native log: `_work/native-seventeenth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28 and f10955b3, with no new gains or losses since
-7fc7701c. The latest comparison against f10955b3 (production unchanged from 2f20db28) preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3 and 613af2c6, with no new gains or losses since
+7fc7701c. The latest comparison against 613af2c6 preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/sixteenth-gate.json, sixteenth-previous-gate.json and
-sixteenth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/seventeenth-gate.json, seventeenth-previous-gate.json and
+seventeenth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `85d4103f9068ebdafb92d5a2a463319e7e27c6daf9c8a9e78d9c8b0ff44ab77a`.
+final full JSON SHA-256: `35944b8d25ea163e754ac8f0eaca03a24dd25ba544269a81ecb2b470930898e5`.
 
 
 ### Reproduction
@@ -796,8 +841,8 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1221 | 78.9% | 97.9% | 65.1% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.5% | 82.1% | - |
-| `_ZN7StarMap4drawEv` | 916/909 | 49.7% | 98.5% | 87.8% | - |
-| `_ZN7StarMap4initEbP7Missionbi` | 750/736 | 72.9% | 98.1% | 76.4% | - |
+| `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.0% | 89.1% | - |
+| `_ZN7StarMap4initEbP7Missionbi` | 750/736 | 72.9% | 98.3% | 77.0% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/680 | 80.9% | 96.3% | 82.0% | - |
 | `_ZN7StarMapC1EbP7Missionbi` | 333/332 | 85.1% | 98.0% | 84.2% | - |
 | `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 99.3% | 97.4% | - |

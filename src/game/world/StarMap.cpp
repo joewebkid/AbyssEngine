@@ -152,7 +152,7 @@ void StarMap::draw() {
         Array<bool> *visibility;
         for (uint32_t i = 0; i < this->systemGeoms->size(); i++) {
             visibility = Globals::status->getSystemVisibilities();
-            if (visibility == nullptr || i >= visibility->size() || visibility->data()[i] == 0 ||
+            if (visibility == nullptr || visibility->size() <= i || visibility->data()[i] == 0 ||
                 (this->autoMode != 0 && this->pulseSystem == (int)i && this->autoTimer < 4000)) {
                 continue;
             }
@@ -161,7 +161,7 @@ void StarMap::draw() {
                 this->scratchVector = Vector(*this->systemPositions->data()[i]);
                 for (uint32_t j = 0; j < routes->size(); j++) {
                     uint32_t to = (uint32_t) routes->data()[j];
-                    if (to < visibility->size() && visibility->data()[to] != 0 && to < this->systemPositions->size() &&
+                    if (visibility->size() > to && visibility->data()[to] != 0 && to < this->systemPositions->size() &&
                         (this->autoMode == 0 || this->pulseSystem != (int)to || this->autoTimer >= 4000)) {
                         this->scratchVector2 = Vector(*this->systemPositions->data()[to]);
                         if (!(this->scratchVector.z < 0.0f && this->scratchVector2.z < 0.0f)) {
@@ -177,7 +177,7 @@ void StarMap::draw() {
         Array<int> *currentRoutes = reinterpret_cast<Array<int> *>(Globals::status->getSystem()->getRoutes());
         for (uint32_t i = 0; i < this->systems->size(); i++) {
             visibility = Globals::status->getSystemVisibilities();
-            if (visibility != nullptr && i < this->systemPositions->size() && i < visibility->size() && visibility->data()[i]) {
+            if (visibility != nullptr && i < this->systemPositions->size() && visibility->size() > i && visibility->data()[i]) {
                 this->scratchVector2 = Vector(*this->systemPositions->data()[i]);
                 if (currentRoutes && !(this->scratchVector.z < 0.0f && this->scratchVector2.z < 0.0f) && !this->jumpMapModeB) {
                     for (uint32_t j = 0; j < currentRoutes->size(); ++j) {
@@ -1735,7 +1735,7 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
         int width = keyCanvas->GetTextWidth(keyFont,
                                                                     *((GameText *) (Globals::gameText))->getText(
                                                                         keyTextIds[i]));
-        if (this->keyBoxWidth < width) {
+        if (width > this->keyBoxWidth) {
             this->keyBoxWidth = width;
         }
     }
