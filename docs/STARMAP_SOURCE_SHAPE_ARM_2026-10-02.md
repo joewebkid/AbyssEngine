@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.130% unweighted / 98.36899% original-instruction
+implementation bodies measure **99.150% unweighted / 98.40898% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**86.915% / 80.62750%**, respectively. Source-shape is an inventory/control-flow
+**86.965% / 80.72749%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -968,6 +968,47 @@ corpus: 4619 comparisons, zero skips. Baseline and checkpoint 7e7528b7
 preservation gates pass with zero losses (2083 linked / 960 byte). The default
 99% gate fails with its expected threshold message. Runtime remains untested.
 
+## Follow-up after checkpoint 43f3e1c2
+
+initStarSystem now searches for an unused orbital-angle slot with a completion
+flag. Each failed random selection retries; only an unused slot is marked,
+converted to stationAngle and completes the loop. A local angleFlags pointer
+captures the member after nextInt, matching original c775c. The completed
+integer angle is assigned to stationAngles and converted to radians afterward.
+
+This is an ordinary search loop with an actual failure/retry path, not an added
+one-iteration loop around the prior do/while. There are no dead padding calls,
+forced registers or compiler flags. It preserves one random call per candidate,
+marks exactly the accepted slot and uses the same unsigned division, product
+and float constants. Original method assumes at least one unused slot; this
+change does not invent a new behavior when that native precondition fails.
+
+Direct Android ARM c7764/c7766 retries occupied slots, c7768..c7776 sets the
+completion flag, stores occupancy and calculates the angle; c7778/c777a
+checks the completion flag before converting/storing angle at c777c..c778a.
+New object: 2b5a/2b5c retries, 2b5e..2b6c accepts/calculates, and 2b6e/2b70
+uses the same LSLS #31/BEQ completion test. No exact C++ source spelling or
+whole-function equality is claimed. The earlier local-pointer-only hypothesis
+in the preceding report omitted this control structure and was rejected;
+it is not reused as an independent metric workaround.
+
+Focused package: _work/angle-search-twentythird.json/log/asm. Station source
+96.9% -> 97.3%, strict 83.7% -> 84.7%, original/current instructions
+710/679 -> 710/683. Ordered control-flow 94.1% -> 94.8%, control inventory
+96.2% -> 96.9%; call count stays 99.0%. All other focused rows are unchanged.
+The corpus and original instruction weights remain fixed. Weighted target
+remains unmet. Current StarMap.o SHA-256: e650943d8de8560afae62079ab176de5b80264992479581ade08d5278c49e0ae.
+Evidence: _work/station-original-direct.asm, station-android.c (IDA crosscheck),
+angle-search-twentythird.asm. Previous inputs:
+_work/checkpoint23-before-focused.json/corpus.json.
+
+Fixed means: 99.150% / 98.40898%; strict: 86.965% / 80.72749%. The
+weighted shortfall remains 0.59101535 percentage points. Native static-library
+build and all 204 ARM translation units passed. Full corpus: 4619 comparisons,
+zero skips. Baseline and checkpoint 43f3e1c2 preservation gates pass with zero
+losses (2083 linked / 960 byte). The default 99% gate exits 1 with the expected
+threshold message. Runtime remains untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -1005,18 +1046,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/twentysecond-corpus.log`; focused log:
-`_work/info-bounds-twentysecond.log`; native log: `_work/native-twentysecond.log`.
+Latest full log: `_work/twentythird-corpus.log`; focused log:
+`_work/angle-search-twentythird.log`; native log: `_work/native-twentythird.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e and 7e7528b7, with no new gains or losses since
-7fc7701c. The latest comparison against 7e7528b7 preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7 and 43f3e1c2, with no new gains or losses since
+7fc7701c. The latest comparison against 43f3e1c2 preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/twentysecond-gate.json, twentysecond-previous-gate.json and
-twentysecond-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/twentythird-gate.json, twentythird-previous-gate.json and
+twentythird-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `f3c8cc7c492209885ee0fd5dbc621cb41c1759f52b9e92197280e3aac776440c`.
+final full JSON SHA-256: `fc4e129d97d6c724da025c95a4faba6cf0fcd8d84abf2fc8a3cf15a7ea3cf89d`.
 
 
 ### Reproduction
@@ -1052,7 +1093,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.5% | 82.1% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.0% | 89.1% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/736 | 72.9% | 98.3% | 77.0% | - |
-| `_ZN7StarMap14initStarSystemEv` | 710/679 | 80.9% | 96.9% | 83.7% | - |
+| `_ZN7StarMap14initStarSystemEv` | 710/683 | 80.9% | 97.3% | 84.7% | - |
 | `_ZN7StarMapC1EbP7Missionbi` | 333/333 | 85.1% | 99.3% | 95.8% | - |
 | `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 99.3% | 97.4% | - |
 | `_ZN7StarMap11OnTouchMoveEii` | 265/255 | 81.3% | 98.4% | 79.2% | - |

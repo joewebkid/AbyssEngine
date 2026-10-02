@@ -1196,13 +1196,19 @@ void StarMap::initStarSystem() {
             Matrix rotation;
             rotation.m[10] = 1.0f;
             rotation.m[13] = 1.0f;
-            uint32_t angleSlot;
-            do {
-                angleSlot = static_cast<AERandom *>(Globals::rnd)->nextInt(this->usedFlags->size());
-            } while (this->usedFlags->data()[angleSlot] != 0);
-            this->usedFlags->data()[angleSlot] = 1;
-            this->stationAngles[stationIndex] = (int)(angleSlot * (0x10000u / this->usedFlags->size()));
-            float angle = (float)this->stationAngles[stationIndex] * 0.000015259f * 6.2832f;
+            int stationAngle = 0;
+            bool assigned = false;
+            while (!assigned) {
+                uint32_t angleSlot = static_cast<AERandom *>(Globals::rnd)->nextInt(this->usedFlags->size());
+                Array<uint8_t> *angleFlags = this->usedFlags;
+                if (angleFlags->data()[angleSlot] == 0) {
+                    angleFlags->data()[angleSlot] = 1;
+                    stationAngle = (int)(angleSlot * (0x10000u / angleFlags->size()));
+                    assigned = true;
+                }
+            }
+            this->stationAngles[stationIndex] = stationAngle;
+            float angle = (float)stationAngle * 0.000015259f * 6.2832f;
             AbyssEngine::AEMath::MatrixSetRotation(rotation, 0.0f, angle, 0.0f);
             int dist = (i == 1) ? 0x1900 : this->stationDistances[i - 2];
             dist += static_cast<AERandom *>(Globals::rnd)->nextInt(0x15e0) + 0x640;
