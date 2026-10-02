@@ -1258,9 +1258,10 @@ void StarMap::initStarSystem() {
     Globals::Canvas->Image2DCreate(systemNameImages[this->systems->data()[this->selectedSystem]->getRace()], this->systemNameImage);
 
     if (this->stationPositions != 0) {
-        ArrayReleaseClasses(*this->stationPositions); delete this->stationPositions;
-        this->stationPositions = 0;
+        ArrayReleaseClasses(*this->stationPositions);
+        delete this->stationPositions;
     }
+    this->stationPositions = 0;
     Array<Vector *> *stationPositions = new Array<Vector *>();
     this->stationPositions = stationPositions;
     ArraySetLength(this->stations->size(), *stationPositions);
@@ -1499,8 +1500,9 @@ campaign_targets:
             Globals::Canvas->DrawImage2D(this->image_0x134, drawX,
                 (int)((float)drawY + (float)Globals::layout->field_0x2c_rowHeight * 0.5f), 0x11, 0x12);
         }
+        int selectedSystem = this->selectedSystem;
         Globals::Canvas->SetColor(255, 255, 255, (unsigned char)this->alpha);
-        if (this->selectedSystem == index) {
+        if (selectedSystem == index) {
             Globals::Canvas->DrawImage2D(this->selectIcon, (int)this->scratchVector.x, (int)this->scratchVector.y, 0x11, 0x44);
             int securityLine = Globals::layout->field_0x4;
             if (!this->systems->data()[index]->hasNoOwner()) {

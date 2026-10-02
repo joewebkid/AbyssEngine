@@ -6,7 +6,7 @@
 implementation bodies measure **98.940% unweighted / 97.97972% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**85.610% / 77.88157%**, respectively. Source-shape is an inventory/control-flow
+**85.635% / 77.94556%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -486,6 +486,42 @@ a separate behavior correction, so neither remains in production code.
 Evidence extracts and trial reports are retained under _work. The existing
 fixed 20-body gate, original weights and alias checks remain unchanged.
 
+## Follow-up after checkpoint 72045054
+
+Two source-order corrections are retained in StarMap.cpp:
+
+- initStarSystem: Android 0xc7ad2..0xc7af0 releases stationPositions, reloads
+  the pointer before deletion, and unconditionally clears the member before
+  allocating its replacement. The zero assignment now sits after the release
+  branch. Source-shape remains 96.3%; strict match changes 81.7% -> 82.0%.
+- drawOnScreenInfo: Android 0xc8e60 loads selectedSystem before SetColor at
+  0xc8e68 and compares that saved value at 0xc8e70. The selected marker branch
+  now preserves that read across the canvas call. Source-shape remains 97.9%;
+  strict match changes 64.9% -> 65.1%.
+
+The fixed source-shape means remain 98.940% / 97.97972%. No source-shape gain
+is claimed for this package. An alternate clamp-first alpha expression was
+rejected and restored: it reduced drawOnScreenInfo to 97.8% without improving
+strict match beyond 65.1%.
+
+Call-site inspection identifies the initStarSystem count difference: Android
+has inline matrix initialization, while this TU calls the shared Matrix C1
+constructor and then fixes its two local native identity fields. Current-only
+constructor call and the already documented Array<uint8_t>/Array<bool>
+symbol differences are distinct. Shared Matrix code and verifier settings
+remain outside scope; no raw-storage alias, ODR override or fabricated call
+is used to conceal those differences.
+
+Evidence: _work/station-original-direct.asm, info-original-direct.asm,
+eleventh-current.asm; station-eleventh.json, info-eleventh.json and the rejected
+info-alpha-eleventh.json. Final accepted inputs use eleventh-focused.json.
+A first post-restore focused report was discarded: restoring a backup retained
+an older source timestamp, so the incremental ARM build reused the rejected
+alpha object. The associated full comparison was explicitly stopped before
+acceptance. The source timestamp was refreshed and the focused build rerun
+before starting the accepted full comparison; no stale-object result is used
+as final evidence.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -523,18 +559,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/tenth-corpus.log`; focused log:
-`_work/update-center-tenth.log` (copied report: tenth-focused.json); native log: `_work/native-tenth.log`.
+Latest full log: `_work/eleventh-corpus.log`; focused log:
+`_work/eleventh-focused.log`; native log: `_work/native-eleventh.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64 and 7b76861c, with no new gains or losses since
-7fc7701c. The latest comparison against 7b76861c preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c and 72045054, with no new gains or losses since
+7fc7701c. The latest comparison against 72045054 preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/tenth-gate.json, tenth-previous-gate.json and
-tenth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/eleventh-gate.json, eleventh-previous-gate.json and
+eleventh-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `2fddeb0840b39c9345d5b92a5bb7dded34acd4b9458ffb5f0dbdaaa3ade48008`.
+final full JSON SHA-256: `d4db27043c04d3e317334ebad7458c8a1a1161cc15aff302375841319d7e620e`.
 
 
 ### Reproduction
@@ -563,12 +599,12 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
-| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1221 | 78.9% | 97.9% | 64.9% | - |
+| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1221 | 78.9% | 97.9% | 65.1% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
 | `_ZN7StarMap6updateEi` | 971/961 | 76.6% | 98.3% | 82.0% | - |
 | `_ZN7StarMap4drawEv` | 916/909 | 49.7% | 98.3% | 87.6% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/737 | 72.9% | 98.0% | 76.1% | - |
-| `_ZN7StarMap14initStarSystemEv` | 710/680 | 80.9% | 96.3% | 81.7% | - |
+| `_ZN7StarMap14initStarSystemEv` | 710/680 | 80.9% | 96.3% | 82.0% | - |
 | `_ZN7StarMapC1EbP7Missionbi` | 333/332 | 85.1% | 98.0% | 84.2% | - |
 | `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 99.3% | 97.4% | - |
 | `_ZN7StarMap11OnTouchMoveEii` | 265/255 | 81.3% | 98.4% | 79.2% | - |

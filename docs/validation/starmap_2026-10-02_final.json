@@ -1,5 +1,5 @@
 {
-  "avg_match": 85.97,
+  "avg_match": 86.0,
   "avg_source_match": 98.92,
   "count": 22,
   "fuzzy_perfect": 6,
@@ -26,7 +26,7 @@
     },
     {
       "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
-      "match": 64.9,
+      "match": 65.1,
       "bytes_equal": false,
       "linked_equal": false,
       "n_target": 1207,
@@ -111,13 +111,13 @@
     },
     {
       "symbol": "_ZN7StarMap14initStarSystemEv",
-      "match": 81.7,
+      "match": 82.0,
       "bytes_equal": false,
       "linked_equal": false,
       "n_target": 710,
       "n_base": 680,
       "source_match": 96.3,
-      "instruction_inventory_match": 95.2,
+      "instruction_inventory_match": 95.0,
       "opcode_inventory_match": 96.2,
       "control_flow_match": 95.5,
       "ordered_control_flow_match": 92.7,
