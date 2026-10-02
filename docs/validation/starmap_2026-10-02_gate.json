@@ -1,0 +1,69 @@
+{
+  "body_count": 20,
+  "original_instructions": 7101,
+  "aliases": {
+    "_ZN7StarMapC2EbP7Missionbi": "_ZN7StarMapC1EbP7Missionbi",
+    "_ZN7StarMapD2Ev": "_ZN7StarMapD1Ev"
+  },
+  "baseline": {
+    "source_match": {
+      "unweighted": 83.81,
+      "weighted": 73.61763131953246
+    },
+    "match": {
+      "unweighted": 48.29,
+      "weighted": 28.050161949021266
+    },
+    "linked_exact": 2,
+    "byte_exact": 2
+  },
+  "final": {
+    "source_match": {
+      "unweighted": 95.65,
+      "weighted": 91.29538093226306
+    },
+    "match": {
+      "unweighted": 69.74,
+      "weighted": 45.21660329531051
+    },
+    "linked_exact": 6,
+    "byte_exact": 3
+  },
+  "exact_pairs": {
+    "linked_equal": {
+      "baseline": 2079,
+      "final": 2083,
+      "lost": [],
+      "gained": [
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap10initLightsEv"
+        ],
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap14missionChangedEv"
+        ],
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap24askForJumpIntoAlienWorldEv"
+        ],
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap8setStartEii"
+        ]
+      ]
+    },
+    "bytes_equal": {
+      "baseline": 959,
+      "final": 960,
+      "lost": [],
+      "gained": [
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap14missionChangedEv"
+        ]
+      ]
+    }
+  },
+  "target_met": false
+}

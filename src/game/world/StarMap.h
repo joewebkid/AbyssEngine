@@ -34,12 +34,15 @@ public:
     int32_t field_0x10;
     int32_t field_0x14;
     int32_t lastDt;
+    uint32_t field_0x1c;
     uint32_t keyImageRetreat;
     uint32_t keyImageWanted;
     uint32_t keyImageMission;
     uint32_t keyImageCurrent;
     uint32_t keyImageDiscovered;
     uint32_t systemNameImage;
+    uint32_t field_0x38;
+    uint32_t field_0x3c;
     uint32_t selectIcon;
     uint32_t cursorIcon;
     uint32_t currentMarkerIcon;
@@ -66,15 +69,19 @@ public:
     uint8_t choiceVisible;
     uint8_t jumpMapModeA;
     uint8_t jumpMapModeB;
-    AbyssEngine::Vector field_0xac;
-    AbyssEngine::Vector field_0xbc;
-    AbyssEngine::Vector field_0xcc;
+    AbyssEngine::EaseInOut field_0xac;
+    AbyssEngine::EaseInOut field_0xbc;
+    AbyssEngine::EaseInOut field_0xcc;
     uint8_t missionChangedFlag;
+    int32_t field_0xe0;
+    int32_t field_0xe4;
     int32_t field_0xe8;
-    int32_t field_0xec;
+    float field_0xec;
+    int32_t field_0xf0;
     uint8_t isGalaxyMode;
     AEGeometry *markerGeom;
     int *iconBuffer;
+    // Android uses Array<bool>; byte storage has the same 0/1 layout here.
     Array<uint8_t> *usedFlags;
     int32_t targetSystem;
     uint8_t showKey;
@@ -136,8 +143,6 @@ public:
     int32_t routeStart;
     int32_t routeTarget;
     uint8_t suppressNextClose;
-    // Android constructor writes through +0x1e4; tail fields are not typed yet.
-    uint8_t _unrecovered_tail[0x24];
 
     StarMap(bool jumpMapMode, Mission *mission, bool param3, int param4);
 
@@ -180,6 +185,15 @@ public:
     uint8_t missionChanged();
 };
 #if __SIZEOF_POINTER__ == 4
+static_assert(__builtin_offsetof(StarMap, systems) == 0x54, "StarMap systems offset");
+static_assert(__builtin_offsetof(StarMap, scratchVector) == 0x78, "StarMap scratch offset");
+static_assert(__builtin_offsetof(StarMap, stationGeoms) == 0x90, "StarMap station geometry offset");
+static_assert(__builtin_offsetof(StarMap, alpha) == 0x1a4, "StarMap alpha offset");
+static_assert(__builtin_offsetof(StarMap, jumpCost) == 0x1d0, "StarMap jump cost offset");
+static_assert(__builtin_offsetof(StarMap, field_0xbc) == 0xbc, "StarMap inline easing offset");
+static_assert(__builtin_offsetof(StarMap, missionChangedFlag) == 0xdc, "StarMap mission flag offset");
+static_assert(__builtin_offsetof(StarMap, easeZ) == 0x184, "StarMap camera easing offset");
+static_assert(__builtin_offsetof(StarMap, suppressNextClose) == 0x1e4, "StarMap final flag offset");
 static_assert(sizeof(StarMap) == 0x1e8, "StarMap native allocation size");
 #endif
 #endif
