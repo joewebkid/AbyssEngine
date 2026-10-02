@@ -522,6 +522,47 @@ acceptance. The source timestamp was refreshed and the focused build rerun
 before starting the accepted full comparison; no stale-object result is used
 as final evidence.
 
+## Investigation after checkpoint eeebc3e6
+
+No production source change is retained from this investigation. Four focused
+variants were tested, then restored with a fresh source timestamp:
+
+| Variant | Method source-shape | Strict | Decision |
+|---|---:|---:|---|
+| Capture ChoiceWindow in each warning branch | OnTouchEnd 97.5% | 76.4% | Identical metrics; restore simpler retained source |
+| Integer 0/1 campaign-target flag | drawOnScreenInfo 97.9% | 65.0% | Worse strict/control agreement; reject heuristic type |
+| Read X/Y/Z before coordinate scaling | constructor C1 98.0% | 84.2% | Compiler already schedules this form; restore |
+| Select final position pointer in separate mode branches | drawOnScreenInfo 97.9% | 65.1% | Identical metrics; restore |
+
+The integer flag type is a heuristic; it is not established from the native
+register value. The retained bool expression remains valid. No barriers,
+profile changes or duplicate calls were introduced.
+
+Instruction-inventory inspection identifies 25 original-only loads of the
+shape ldr g0,[g1,#0] versus 24 current-only ldr g0,[g0,#0] in drawOnScreenInfo.
+These include a destination/base register alias difference that the existing
+metric deliberately preserves. This observation does not prove every such
+load is semantically equivalent; it is a lead for further disassembly mapping,
+not a justification to change the gate or add register-forcing source code.
+OnTouchEnd raw call-site counts also differ from normalized call tokens; direct
+relocation counts alone must not be used to infer an extra gameplay call.
+
+Original ELF .comment and the installed NDK r18b compiler both identify
+Android build 4751641, Clang 7.0.2 based on r328903, Clang revision
+003100370607242ddd5815e4a043907ea9004281 and LLVM revision
+1d739ffb0366421d383e04ff80ec2ee591315116. The ELF also lists GCC 4.9.x for
+linked objects; .comment alone does not assign a producer to StarMap. No
+compiler/profile switch follows from this evidence.
+
+Evidence: _work/twelfth-inventory.txt, warning-window-twelfth.json,
+info-flag-twelfth.json, ctor-coordinates-twelfth.json, info-position-twelfth.json,
+ctor-original-direct.asm and twelfth-restored-focused.json/log.
+The final restored ARM StarMap.o SHA-256 is
+c46cec559bddc6dd914101672568036aaa423954c321917c9b30ed8549c9de57,
+identical to the accepted checkpoint eeebc3e6 object. Production source is
+unchanged relative to that commit. Its native build and full-corpus evidence
+remain the current final validation; no trial report replaces those snapshots.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
