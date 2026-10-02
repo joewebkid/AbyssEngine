@@ -137,6 +137,13 @@ int main() {
     player.gammaHP = 1;
     player.damageGamma(2);
     assert(player.gammaHP == 0 && player.gammaHit == 1);
+    assert(!std::signbit(player.gammaHP));
+    player.gammaHP = -0.0f;
+    player.damageGamma(0);
+    assert(player.gammaHP == 0 && !std::signbit(player.gammaHP));
+    player.gammaHP = 1;
+    player.damageGamma(std::numeric_limits<float>::infinity());
+    assert(player.gammaHP == 0 && !std::signbit(player.gammaHP));
     player.gammaHP = std::numeric_limits<float>::quiet_NaN();
     player.damageGamma(1);
     assert(std::isnan(player.gammaHP)); // ARM's <= comparison preserves NaN.

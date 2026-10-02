@@ -18,6 +18,7 @@
 #include <new>
 #include "engine/math/AEMath.h"
 #include <algorithm>
+#include <cstring>
 #if defined(__ARM_NEON)
 #include <arm_neon.h>
 #endif
@@ -590,7 +591,7 @@ void Player::damageGamma(float amount) {
             this->gammaHit = 1;
             this->gammaHP = remaining;
             if (remaining <= 0.0f) {
-                this->gammaHP = 0;
+                std::memset(&this->gammaHP, 0, sizeof(this->gammaHP));
             }
         }
     }
@@ -780,10 +781,7 @@ void Player::setGammaHP(int value) {
 }
 
 void Player::stopShootSound(int index, int channel) {
-    if ((unsigned int) channel > 8) {
-        return;
-    }
-    if (((1 << channel) & 0x10c) != 0) {
+    if ((unsigned int) channel <= 8 && ((1u << channel) & 0x10c) != 0) {
         if (this->kiPlayer != 0 && this->kiPlayer->shipGroup == 9) {
             Globals::sound->stop(0x3e);
             return;
@@ -950,19 +948,18 @@ void Player::playShootSound(int type, int channel, Vector *pos, float volume) {
         }
     }
 
-    if (static_cast<unsigned int>(channel) > 8 || ((1u << channel) & 0x10c) == 0) {
+    if (static_cast<unsigned int>(channel) <= 8 && ((1u << channel) & 0x10c) != 0) {
+        if (Globals::sound->isPlaying(soundId)) {
+            if (Globals::options[0x0f]) {
+                Globals::sound->updateEvent3DAttributes(soundId, pos, nullptr, false);
+            }
+            return;
+        }
         if (!Globals::options[0x0f]) pos = nullptr;
-        Globals::sound->play(soundId, pos, nullptr, volume);
-        return;
+    } else if (!Globals::options[0x0f]) {
+        pos = nullptr;
     }
-    if (!Globals::sound->isPlaying(soundId)) {
-        if (!Globals::options[0x0f]) pos = nullptr;
-        Globals::sound->play(soundId, pos, nullptr, volume);
-        return;
-    }
-    if (Globals::options[0x0f]) {
-        Globals::sound->updateEvent3DAttributes(soundId, pos, nullptr, false);
-    }
+    Globals::sound->play(soundId, pos, nullptr, volume);
 }
 
 static const float k_shootAt_inc = 0.008f;
@@ -979,7 +976,9 @@ void Player::damage(int amount, bool flag, int missionId) {
     if (self->active == 0) return;
     if (self->hitpoints < 1) return;
 
-    if (flag == 0 && self->kiPlayer != 0) {
+    // Android a31f4 skips reputation/black-market effects for this damage flag.
+    if (flag) goto LAB_3488;
+    if (self->kiPlayer != 0) {
         KIPlayer *ki = self->kiPlayer;
         if (self->alwaysEnemy == 0 &&
             (unsigned int) (ki->shipGroup - 9) > 1 &&
@@ -1005,8 +1004,8 @@ void Player::damage(int amount, bool flag, int missionId) {
             bool sameRace = (race == ((SolarSystem *) (intptr_t) Status::gStatus->getSystem())->getRace());
             if (!sameRace) {
                 int race2 = self->kiPlayer->shipGroup;
-                void *sys = (void *) (long) Status::gStatus->getSystem();
-                if (race2 != ((SolarSystem *) (sys))->getAttackRace()) {
+                SolarSystem *sys = Status::gStatus->getSystem();
+                if (race2 != sys->getAttackRace()) {
                     goto LAB_342a;
                 }
             }
@@ -1118,7 +1117,7 @@ LAB_3488: {
     {
         int hp;
         KIPlayer *ki = self->kiPlayer;
-        if (ki != 0 && ki->stealFlag == 0 && ki->countsAsEnemyExcludeFlag == 0 &&
+        if (ki != 0 && static_cast<uint8_t>(ki->stealFlag) == 0 && ki->countsAsEnemyExcludeFlag == 0 &&
 
             ki->field_0x42 != 0) {
             hp = self->hitpoints;
@@ -1136,7 +1135,7 @@ LAB_3488: {
                 self->destroyedByte = 1;
             } else {
                 KIPlayer *ki2 = self->kiPlayer;
-                if (ki2 != 0 && ki2->stealFlag == 0 && ki2->countsAsEnemyExcludeFlag == 0 &&
+                if (ki2 != 0 && static_cast<uint8_t>(ki2->stealFlag) == 0 && ki2->countsAsEnemyExcludeFlag == 0 &&
 
                     Status::gStatus->inBlackMarketSystem() == 0) {
                     if (self->kiPlayer->field_0x42 == 0) {
@@ -1295,11 +1294,11 @@ void Player::shoot(int a, int b, long long pos, bool flag, Matrix mat) {
             for (unsigned int i = 0; i < arr->size(); i++) {
                 Gun *g = self->guns->data()[a]->data()[i];
                 unsigned int sortIdx = g->weaponType - 6;
-                if (sortIdx < 0x1d && ((1u << (sortIdx & 0xff)) & mask) != 0 &&
+                if (sortIdx < 0x1d && ((1u << sortIdx) & mask) != 0 &&
                     *(int *) g->lifetimes >= 0) {
                     ((Gun *) (g))->ignite();
-                } else if (g->itemIndex == b && g->fireDelay < g->timer) {
-                    if (sortIdx < 0x1d && ((1u << (sortIdx & 0xff)) & mask) != 0) {
+                } else if (g->itemIndex == b && g->timer > g->fireDelay) {
+                    if (sortIdx < 0x1d && ((1u << sortIdx) & mask) != 0) {
                         ((Level *) (intptr_t) g->level)->field_69 = 1;
                     }
                     ((Gun *) (g))->shoot(mat, (int) pos, flag);
@@ -1334,7 +1333,7 @@ void Player::shoot(int a, long long pos, bool flag, Matrix mat) {
         if (arr != 0) {
             for (unsigned int i = 0; i < arr->size(); i++) {
                 Gun *g = self->guns->data()[a]->data()[i];
-                if (g->fireDelay < g->timer) {
+                if (g->timer > g->fireDelay) {
                     ((Gun *) (g))->shootAt(mat, (int) pos, self, flag);
                     self->flShake = self->flShake + k_shootAt_inc;
                     Gun *g2 = self->guns->data()[a]->data()[i];

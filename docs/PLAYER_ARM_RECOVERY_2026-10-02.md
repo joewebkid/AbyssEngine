@@ -28,16 +28,16 @@ Total fixed weight: 2534.
 
 | Metric, 99 unique bodies | Baseline | Final |
 |---|---:|---:|
-| Source-shape, unweighted | 95.029293% | 99.119192% |
-| Source-shape, instruction-weighted | 87.325020% | 97.741279% |
-| Strict fuzzy, unweighted | 86.264646% | 94.315152% |
-| Strict fuzzy, instruction-weighted | 63.474665% | 77.238319% |
-| Linked-exact unique bodies | 47 | 57 |
-| Byte-exact unique bodies | 43 | 49 |
+| Source-shape, unweighted | 95.029293% | 99.290909% |
+| Source-shape, instruction-weighted | 87.325020% | 98.066575% |
+| Strict fuzzy, unweighted | 86.264646% | 94.732323% |
+| Strict fuzzy, instruction-weighted | 63.474665% | 78.378216% |
+| Linked-exact unique bodies | 47 | 58 |
+| Byte-exact unique bodies | 43 | 50 |
 
 Historical-style symbol figures (101, aliases included): source 95.07% ->
-99.10%, strict 86.42% -> 94.37%,
-linked-exact 48 -> 58, byte-exact 43 -> 49.
+99.27%, strict 86.42% -> 94.78%,
+linked-exact 48 -> 59, byte-exact 43 -> 50.
 They are supplemental, not the gate denominator.
 
 ## Accepted changes
@@ -85,6 +85,25 @@ They are supplemental, not the gate denominator.
   `_work/player_resume_add_enemy.json`, `_work/player_resume_byte_bounds.json`,
   `_work/player_resume_stop_guard.json`.
 
+## Continuation after 2dfe6132
+
+- damageGamma writes positive zero bytes with memset, matching original conditional integer STR;
+  the <= predicate still preserves NaN. New focused result is source/linked/byte exact.
+  Smoke now covers negative zero and infinite damage as well as finite/NaN cases.
+- stopShootSound uses one short-circuit channel/mask guard; no shift runs outside the 0..8 bound.
+  It reaches 100% source-shape while preserving the original dispatch branches.
+- Original damage branch a31f4 -> a3488 skips reputation and black-market effects for flag=true.
+  Restored that missing branch. Two asteroid predicates now read only the low byte, and the
+  getAttackRace path keeps the existing typed SolarSystem pointer without narrowing it through long.
+- playShootSound shares the final play path while reloading Globals::sound after isPlaying.
+  Existing callback-replacement regression tests pass for stopped and playing branches.
+- shoot compares timer > fireDelay in original load order; shootAt source-shape rises 95.9 -> 97.6.
+  Removed redundant shift-index byte masks: both shifts are already guarded by sortIdx<29.
+  The Gun success-return blocker remains; no success result was fabricated.
+- Evidence stages `_work/player_next_gamma.json`, `_work/player_next_stop_sound.json`,
+  `_work/player_next_damage.json`, `_work/player_next_sound_flow.json`,
+  `_work/player_next_timer_order.json`, `_work/player_next_shift.json`.
+
 ## Trials and unresolved dependencies
 
 - Initial package: source shape 98.268687% unique / 95.862076% weighted, no exact loss.
@@ -96,11 +115,14 @@ They are supplemental, not the gate denominator.
   There is also a real compiler prologue/shrink-wrap difference. Common verifier normalization
   was not changed, and neither reported mean is recalculated to hide that limitation. No volatile, dead branch,
   register binding, compiler-flag change or alias inflation was used.
-- damageGamma's semantic/return fix changes shape 91.6 -> 90.3%; accepted for the proven NaN
-  predicate and removal of an unsupported return, not for metric improvement. No exact was lost.
+- damageGamma's earlier semantic/return fix initially changed shape 91.6 -> 90.3%;
+  the latest original-style zero-byte write reaches 100% and exact equality without losing NaN behavior.
 - A typed Hud* local trial was rejected: PlayerEgo::getHUD is still int in this checkpoint.
   Restoring that foreign API is outside Player ownership. Existing 64-bit pointer truncation
-  through getHUD/getCampaignMission and the legacy getPosition MatrixGetPosition shim remain risks. The setEnemies shim was removed.
+  through getHUD/getCampaignMission and the legacy getPosition MatrixGetPosition shim remain risks. Native Player object still imports
+  _Z17MatrixGetPositionPvPf alongside the real namespaced method; original SDK confirms
+  getPosition calls the namespaced method. Relocation-masked linked_equal cannot prove
+  external callee identity; actual getPosition API replacement is the next own-scope trial. The setEnemies shim was removed.
 - **Gun blocker:** original Player at 0xa3e8a tests R0 after Gun::shoot; shootAt likewise returns
   success at 0xa3b20. The checkpoint Gun headers/bodies declare void. Player still cannot
   reproduce the original success/failure-dependent sound, timer, shake and return flow safely.
@@ -121,7 +143,7 @@ They are supplemental, not the gate denominator.
 - Native UCRT64 `gof2`: clean worktree configure, complete build, and final rebuild all succeed;
   output `cmake-build-ucrt/libgof2.a`. Pre-existing warnings in other units remain.
 - All **204/204** ARM translation units recompiled using the canonical NDK r18b clang flags:
-  `_work/all_arm_resume.log`, failed []. ARM header static assertions passed.
+  `_work/all_arm_next.log`, failed []. ARM header static assertions passed.
 - `python tools/test_player_recovery.py --so _work/bins/android_2.0.16_libgof2hdaa.so` passes.
   It compiles actual focused Player bodies extracted from the current source, with explicit audio,
   Matrix-constructor and Gun constructor/destructor/setEnemies boundary doubles. Tests EMP duration/elapsed separation,
@@ -139,36 +161,35 @@ Full corpus, exact **(unit, symbol)** pair-set comparison, not just counts:
 |---|---:|---:|
 | Comparisons | 4619 | 4621 |
 | Source-shape mean | 88.99% | 89.09% |
-| Strict fuzzy mean | 75.97% | 76.15% |
-| Linked-exact | 2079 | 2091 |
-| Byte-exact | 959 | 965 |
+| Strict fuzzy mean | 75.97% | 76.16% |
+| Linked-exact | 2079 | 2092 |
+| Byte-exact | 959 | 966 |
 | Skipped | 0 | 0 |
 | Wrong signatures | 7 | 7 |
 | Missing | 250 | 250 |
 
-The continuation adds two comparison rows in the Player unit: the naturally emitted
+The earlier 2dfe6132 continuation added two comparison rows in the Player unit: the naturally emitted
 ArrayAdd<Player*> bulk-copy helpers (pointer/count and array overloads), both linked-exact.
 Their original addresses were already represented elsewhere: compared_unique remains 4274.
 They are not Player member bodies and are excluded from the fixed 99-body gate.
-Existing non-Player member/helper comparison metrics are unchanged against c5874214.
+The earlier 2dfe6132 continuation left existing non-Player member/helper metrics unchanged against c5874214.
 
 Lost linked-exact pairs: 0. Lost byte-exact pairs: 0.
-Also zero linked/byte exact-pair losses against c5874214. Continuation gains:
-6 linked and
-3 byte pairs.
-Gained linked pairs: 12; gained byte pairs:
-6. Existing missing/wrong-signature gaps are
+Also zero linked/byte exact-pair losses against 2dfe6132. Continuation gains:
+1 linked and
+1 byte pairs.
+Gained linked pairs: 13; gained byte pairs:
+7. Existing missing/wrong-signature gaps are
 checkpoint limitations and were not repaired by touching foreign families.
 Reports `_work/full_baseline.json`, `_work/full_final.json` (previous commit), and
-`_work/full_resume.json` (continuation) remain generated local evidence.
+`_work/full_resume.json` (2dfe6132), and `_work/full_next.json` (latest continuation)
+remain generated local evidence.
 
 ## Remaining weighted gap
 
-The fixed weighted score is 97.741279%, leaving
-1.258721 percentage points to the 99.0% threshold.
-The largest contributions to loss from 100% are primary Matrix shoot (0.604104 points),
-damage (0.281768), secondary Matrix shoot (0.241081), constructor (0.210971),
-heal (0.132755), update (0.131965), and playShootSound (0.128966).
+The fixed weighted score is 98.066575%, leaving
+0.933425 percentage points to the 99.0% threshold.
+The largest remaining weighted deficits are listed by the fixed body table below.
 This ranks the remaining work; it does not assign every mismatch to a semantic error.
 Constructor comparison immediates and scheduling, Pause/StopEngineSound shrink-wrapped
 prologues, and update stack/vector register allocation remain compiler-shape differences.
@@ -244,10 +265,10 @@ Addresses and aliases were frozen before edits. A changed metric alone is not a 
 | 0x000a2ec6 | `_ZN6Player10damageHullEi` | 22 | 100.0 -> 100.0 | 100.0 -> 100.0 | 0 -> 0 | 0 -> 0 | unchanged |
 | 0x000a2f04 | `_ZN6Player10damageShipEi` | 5 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 1 -> 1 | unchanged |
 | 0x000a2f10 | `_ZN6Player12damageShieldEi` | 26 | 100.0 -> 100.0 | 100.0 -> 100.0 | 0 -> 0 | 0 -> 0 | unchanged |
-| 0x000a2f62 | `_ZN6Player11damageGammaEf` | 16 | 91.6 -> 90.3 | 54.5 -> 66.7 | 0 -> 0 | 0 -> 0 | accepted |
+| 0x000a2f62 | `_ZN6Player11damageGammaEf` | 16 | 91.6 -> 100.0 | 54.5 -> 100.0 | 0 -> 1 | 0 -> 1 | accepted |
 | 0x000a2f96 | `_ZN6Player23resetDamageDoneByPlayerEv` | 5 | 92.0 -> 100.0 | 80.0 -> 100.0 | 0 -> 1 | 0 -> 1 | accepted |
 | 0x000a2fa4 | `_ZN6Player9damageEmpEib` | 194 | 94.6 -> 98.7 | 90.3 -> 95.4 | 0 -> 0 | 0 -> 0 | accepted |
-| 0x000a31c0 | `_ZN6Player6damageEibi` | 420 | 95.6 -> 98.3 | 39.3 -> 38.9 | 0 -> 0 | 0 -> 0 | accepted |
+| 0x000a31c0 | `_ZN6Player6damageEibi` | 420 | 95.6 -> 98.9 | 39.3 -> 44.1 | 0 -> 0 | 0 -> 0 | accepted |
 | 0x000a3694 | `_ZN6Player6damageEi` | 3 | 100.0 -> 100.0 | 100.0 -> 100.0 | 0 -> 0 | 0 -> 0 | unchanged |
 | 0x000a369e | `_ZN6Player11turnedEnemyEv` | 2 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 1 -> 1 | unchanged |
 | 0x000a36a4 | `_ZN6Player9turnEnemyEv` | 3 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 1 -> 1 | unchanged |
@@ -263,12 +284,12 @@ Addresses and aliases were frozen before edits. A changed metric alone is not a 
 | 0x000a39a6 | `_ZN6Player11getGunSlotsEv` | 2 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 1 -> 1 | unchanged |
 | 0x000a39aa | `_ZN6Player13resetGunDelayEi` | 21 | 100.0 -> 100.0 | 90.5 -> 90.5 | 0 -> 0 | 0 -> 0 | unchanged |
 | 0x000a39dc | `_ZN6Player14refillGunDelayEi` | 22 | 100.0 -> 100.0 | 90.9 -> 90.9 | 0 -> 0 | 0 -> 0 | unchanged |
-| 0x000a3a14 | `_ZN6Player14stopShootSoundEii` | 30 | 72.0 -> 95.3 | 45.8 -> 93.3 | 0 -> 0 | 0 -> 0 | accepted |
-| 0x000a3a64 | `_ZN6Player14playShootSoundEiiPN11AbyssEngine6AEMath6VectorEf` | 76 | 71.3 -> 95.7 | 32.0 -> 68.8 | 0 -> 0 | 0 -> 0 | accepted |
-| 0x000a3b20 | `_ZN6Player5shootEixbN11AbyssEngine6AEMath6MatrixE` | 149 | 86.6 -> 95.9 | 42.5 -> 56.4 | 0 -> 0 | 0 -> 0 | accepted partial; Gun return unresolved |
+| 0x000a3a14 | `_ZN6Player14stopShootSoundEii` | 30 | 72.0 -> 100.0 | 45.8 -> 96.7 | 0 -> 0 | 0 -> 0 | accepted |
+| 0x000a3a64 | `_ZN6Player14playShootSoundEiiPN11AbyssEngine6AEMath6VectorEf` | 76 | 71.3 -> 96.0 | 32.0 -> 66.7 | 0 -> 0 | 0 -> 0 | accepted |
+| 0x000a3b20 | `_ZN6Player5shootEixbN11AbyssEngine6AEMath6MatrixE` | 149 | 86.6 -> 97.6 | 42.5 -> 57.7 | 0 -> 0 | 0 -> 0 | accepted partial; Gun return unresolved |
 | 0x000a3cbc | `_ZN6Player12stopShootingEi` | 31 | 98.7 -> 100.0 | 87.1 -> 90.3 | 0 -> 0 | 0 -> 0 | unchanged |
 | 0x000a3d08 | `_ZN6Player12stopShootingEii` | 34 | 93.0 -> 100.0 | 70.4 -> 91.2 | 0 -> 0 | 0 -> 0 | accepted |
-| 0x000a3d5c | `_ZN6Player5shootEiixbN11AbyssEngine6AEMath6MatrixE` | 178 | 71.5 -> 91.4 | 38.2 -> 34.3 | 0 -> 0 | 0 -> 0 | accepted partial; Gun return unresolved |
+| 0x000a3d5c | `_ZN6Player5shootEiixbN11AbyssEngine6AEMath6MatrixE` | 178 | 71.5 -> 91.4 | 38.2 -> 34.5 | 0 -> 0 | 0 -> 0 | accepted partial; Gun return unresolved |
 | 0x000a3f30 | `_ZN6Player5shootEixb` | 39 | 46.5 -> 96.9 | 5.7 -> 93.5 | 0 -> 0 | 0 -> 0 | accepted |
 | 0x000a3f9e | `_ZN6Player5shootEiixb` | 39 | 46.9 -> 100.0 | 9.3 -> 100.0 | 0 -> 1 | 0 -> 0 | accepted |
 | 0x000a4014 | `_ZN6Player15PlayEngineSoundEiPN11AbyssEngine6AEMath6VectorE` | 43 | 95.2 -> 100.0 | 46.3 -> 100.0 | 0 -> 1 | 0 -> 0 | accepted |
