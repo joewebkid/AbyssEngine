@@ -1390,6 +1390,31 @@ no new full-corpus or native-library run is claimed. Both 99% source gates
 must pass before completion; the weighted target remains unmet and native
 runtime remains untested.
 
+## Investigation after checkpoint 0d0ad086
+
+An init legend-width trial explicitly retained the last maximum in keyWidth,
+while still reloading keyBoxWidth after each GetTextWidth callback. The final
+padding addition used that local maximum. Original c7324..c7336 calls width,
+reloads the field and conditionally updates both field and register; c7346
+adds padding using the register. The source trial produced an identical
+focused JSON and identical complete StarMap.o SHA-256. It was removed.
+
+Inspection of the accepted disassembly confirms that it already implements
+this sequence at 4c3a..4c4c and 4c5c. The suspected final field reload is absent;
+this is not a remaining source-shape defect. No exact original C++ spelling
+is claimed. Init remains source 98.3%, strict 77.0%, 750/736 instructions.
+Evidence: _work/init-original-direct.asm,
+_work/station-textx-twentyeighth.asm, _work/key-width-thirtythird.json/log and
+_work/before-key-width-thirtythird.cpp.
+
+A fresh restored-source focused build compiled 204/204 TUs with zero failures,
+compared 22 symbols with zero skips, and reproduced the entire accepted JSON
+and object hash 1a12eaa4a0002c78e01fccc2a8a8b2a7aee04366607cd84e6fe97bfdace9879d.
+Logs/reports: _work/thirtythird-restored-focused.json/log. Production source
+is unchanged; source means remain 99.160% / 98.44298%. No new full-corpus or
+native-library result is claimed; those validations remain the accepted
+364ddd7d results. Weighted 99% is still unmet, and runtime remains untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
