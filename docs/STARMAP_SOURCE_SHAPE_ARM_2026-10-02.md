@@ -639,6 +639,42 @@ skips. Baseline and checkpoint e07a1f16 exact-pair gates pass with zero losses
 (2083 linked / 960 byte). Default 99% gate remains FAIL with the expected
 threshold message, not a missing-unit error.
 
+## Investigation after checkpoint 2f20db28
+
+Three isolated source-shape hypotheses were tested and rejected. Production
+source is restored to 2f20db28; no new production changes are retained.
+
+- initStarSystem distance addition: original c77ca adds the previous distance
+  before c77d0 adds 1600. An explicit random + previous + 1600 expression gave
+  identical focused rows to the retained previous += random + 1600 form.
+  Package: _work/station-distance-fifteenth.json/log. This expression spelling
+  does not explain the remaining gap and is not claimed as recovered C++.
+- drawOnScreenInfo target-result type: replacing only local targetMatch bool
+  with int reduced source 97.9% -> 97.7%, strict 65.1% -> 64.9%, instructions
+  1221 -> 1220. The inferred type is not proven by the ARM integer registers.
+  Package: _work/info-target-result-fifteenth.json/log. Rejected and restored;
+  the earlier missionTarget type trial was a different local variable.
+- drawKey box captures: explicitly saving keyBoxHeight, Layout and top inset
+  before constructing the empty temporary String gave identical focused rows.
+  Package: _work/key-box-captures-fifteenth.json/log. Accepted-object disassembly
+  _work/fourteenth-current.asm already loads boxHeight at 1a5a and top inset
+  at 1a60 before the String constructor at 1a6c, corresponding to original
+  c813a/c8140 before c814e. No missing pre-constructor read was established.
+
+Direct checks also confirm the retained 32-bit-slot image tables produce LDRH
+with index shifted by two for both Image2DCreate and TextureCreate, as original
+c7ac8 and c7b84. Changing these table representations has no evidence basis.
+
+After restoration, _work/fifteenth-restored-focused.json is fully identical to
+_work/final-focused.json, not merely equal in rounded means. The regenerated
+StarMap ARM object SHA-256 remains
+ a5d385c6e8385bcd581713e528a815432c9f502c284b42f62fac14e4b543bc3b.
+204/204 ARM TUs compiled without failures. Source remains unchanged from the
+validated checkpoint; its complete fourteenth-corpus full comparison and native
+static-library build remain the applicable final evidence. No new full-corpus
+or native-runtime run is claimed. The next investigation must address another
+actual call/control/data-flow discrepancy, rather than retry these spellings.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
