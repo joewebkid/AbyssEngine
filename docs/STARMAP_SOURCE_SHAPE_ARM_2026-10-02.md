@@ -1462,6 +1462,46 @@ thirtyfourth-target-gate.log (exits 0, 0, 1). Full report/log:
 _work/thirtyfourth-corpus.json/log. Accepted StarMap.o SHA-256:
 7bf78a18dd1e94481cc71f880ebe406dd9ddfa380f69cebe697d95293b75bb05.
 
+## Investigation after checkpoint 84fab485
+
+The galaxy camera-bound calculation already matches primary Android
+ca194..ca1cc at accepted 37b8..37f0: both integer pan conversions, float sums,
+integer coordinate conversions and the upper-X comparison are the same.
+No source reordering was justified by this block. The final station pitch
+clamp also loads pitch before yaw conversion in the accepted object despite
+the source statement order; original ca60a..ca61a and accepted 3c26..3c2a
+confirm the loads. Original four pitch comparisons versus accepted two are
+not permission to add redundant comparisons solely for instruction padding.
+
+A separate station-centering trial moved the existing pitchFactor/pitchStep
+selection before the yaw assignment and yawDistance <= 10 completion store.
+Yaw and pitch formulas, signed integer differences, quarter-step factors,
+completion thresholds and the final store order were preserved. There are no
+callbacks between these local calculations. Original ca1e0..ca216 prepares
+pitch/yaw integer distances before the angle writes; the source trial tested
+whether earlier step preparation would improve compilation. Exact original
+C++ spelling was not recovered.
+
+The trial adds one instruction (971/966 -> 971/967 original/current), lowers
+instruction inventory 96.7% -> 96.5% and opcode inventory 98.2% -> 98.1%,
+and improves size score 99.6% -> 99.7%. Update source 98.5% and strict 82.1%
+remain unchanged, as do every other focused row. Overall source and strict
+means remain unchanged. This offers no benefit toward the requested target,
+so the trial was removed.
+
+Evidence: _work/update-original-direct.asm, accepted
+_work/object-alpha-thirtyfourth.asm, _work/center-steps-thirtyfifth.json/log
+and _work/before-center-steps-thirtyfifth.cpp.
+
+Fresh restored-source focused run: 204/204 ARM TUs, zero failures, 22
+comparisons, zero skips; entire report and accepted object hash are identical.
+Object SHA-256: 7bf78a18dd1e94481cc71f880ebe406dd9ddfa380f69cebe697d95293b75bb05.
+Fresh evidence: _work/thirtyfifth-restored-focused.json/log. Production source
+is unchanged. Source means remain 99.160% / 98.44298%, strict 87.135% /
+81.30541%; weighted 99% remains unmet. No new full-corpus/native-library run
+is claimed; those results remain the accepted 84fab485 validations. Native
+runtime remains untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
