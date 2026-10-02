@@ -1,5 +1,5 @@
-// Exercise the verbatim production MeshReadData body and short color reads.
-// Build/run through run_mesh_read_color_smoke.py; other math/engine paths abort.
+// Exercise verbatim production MeshReadData: colors, bounds and tangent bases.
+// Build/run through run_mesh_read_color_smoke.py; vector math is production code.
 #include "engine/core/AbyssEngine.h"
 #include "engine/render/Mesh.h"
 #include "engine/math/Transform.h"
@@ -30,22 +30,12 @@ uint32_t AEFile::Read(uint32_t bytes, void *out, uint32_t) {
 namespace AbyssEngine {
 int MeshReadData(Engine *, const unsigned int &, unsigned int, Mesh **, Material *);
 unsigned char Engine::enableShader;
-// These enhanced/child boundaries must stay unused by this color-only test.
+// Enhanced/child boundaries must stay unused by these reader tests.
 int Mesh::ReadEnhancedDataFromFile(unsigned int, unsigned int) { std::abort(); }
 void AEMath::BSphere::Merge(const AEMath::BSphere &) { std::abort(); }
-namespace AEMath {
-Vector &Vector::operator+=(const Vector &) { std::abort(); }
-Vector operator-(const Vector &a, const Vector &b) {
-    return {a.x-b.x, a.y-b.y, a.z-b.z};
-}
-float VectorLength(const Vector &v) { return std::sqrt(v.x*v.x+v.y*v.y+v.z*v.z); }
-float VectorDot(const Vector &, const Vector &) { std::abort(); }
-Vector operator*(const Vector &, float) { std::abort(); }
-Vector VectorNormalize(const Vector &) { std::abort(); }
-Vector VectorCross(const Vector &, const Vector &) { std::abort(); }
-}
 }
 
+#include "mesh_read_math_under_test.inc"
 #include "mesh_read_under_test.inc"
 
 int main() {
@@ -97,4 +87,48 @@ int main() {
     assert(empty.positions == nullptr && empty.colors == nullptr);
     ::operator delete[](empty.positions);
     ::operator delete[](empty.colors);
+
+    Engine::enableShader = 1;
+    for (int fixture = 0; fixture < 3; ++fixture) {
+        input.clear();
+        put<unsigned short>(3);
+        for (unsigned short index = 0; index < 3; ++index) put(index);
+        put<unsigned short>(3);
+        const int vertices[3][9] = {{0,0,0, 1,0,0, 0,1,0}, {0,0,0, 3,3,0, 2,1,0},
+                                    {0,0,0, 3,0,3, 2,0,1}};
+        for (int coordinate : vertices[fixture]) put(coordinate);
+        const short uv[3][6] = {{0,0, 4096,0, 0,4096}, {0,0, 4096,4096, 0,4096},
+                                {0,0, 4096,4096, 0,4096}};
+        for (short coordinate : uv[fixture]) put(coordinate);
+        for (int vertex = 0; vertex < 3; ++vertex) {
+            put<short>(0);
+            put<short>(fixture == 2 ? 32767 : 0);
+            put<short>(fixture == 2 ? 0 : 32767);
+        }
+        cursor = 0; limit = input.size();
+        Mesh triangle;
+        triangle.vertexFormat = 0x16;
+        slot = &triangle;
+        assert(MeshReadData(nullptr, handle, 1, &slot, nullptr) == 1);
+        assert(cursor == input.size());
+        const float tx = fixture == 0 ? 1.0f : 1.0f / std::sqrt(5.0f);
+        const float ty = fixture == 1 ? 2.0f / std::sqrt(5.0f) : 0.0f;
+        const float tz = fixture == 2 ? 2.0f / std::sqrt(5.0f) : 0.0f;
+        const auto *tangent = static_cast<const float *>(triangle.tangents);
+        const auto *binormal = static_cast<const float *>(triangle.binormals);
+        for (int vertex = 0; vertex < 3; ++vertex) {
+            assert(std::fabs(tangent[vertex*3] - tx) < 0.000001f);
+            assert(std::fabs(tangent[vertex*3+1] - ty) < 0.000001f);
+            assert(std::fabs(tangent[vertex*3+2] - tz) < 0.000001f);
+            assert(std::fabs(binormal[vertex*3] - (fixture == 2 ? tz : -ty)) < 0.000001f);
+            assert(std::fabs(binormal[vertex*3+1] - (fixture == 2 ? 0 : tx)) < 0.000001f);
+            assert(std::fabs(binormal[vertex*3+2] - (fixture == 2 ? -tx : 0)) < 0.000001f);
+        }
+        ::operator delete[](triangle.indices);
+        ::operator delete[](triangle.positions);
+        ::operator delete[](triangle.texCoords);
+        ::operator delete[](triangle.normals);
+        ::operator delete[](triangle.tangents);
+        ::operator delete[](triangle.binormals);
+    }
 }

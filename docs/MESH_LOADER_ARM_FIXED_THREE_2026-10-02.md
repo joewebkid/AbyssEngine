@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **97.10% unweighted / 97.30% weighted**.
+Latest validated continuation: source **97.13% unweighted / 97.35% weighted**.
 The result tables below preserve earlier measurements. Chronological continuation
 sections record later per-body results, corpus evidence and rejected trials.
 
@@ -762,3 +762,56 @@ library/parser/body validation remains applicable. Fixed scores stay Create
 96.2 / Read 97.3 / Enhanced 97.8; means **97.10% unweighted / 97.30% weighted**.
 Exact pair sets stay 2,079 linked / 959 raw with no losses. The >=99.0% gate
 remains unmet; these trials do not demonstrate a compiler ceiling.
+
+## Continuation: triangle tangent numerator scheduling
+
+Five isolated trials from `5453d9a4` used unchanged canonical flags and matcher:
+
+| Trial | Read source / strict | Compiled instructions |
+|---|---|---:|
+| Preload the origin vertex components | 97.3 / 52.3 | 871 |
+| Compute all three numerators before products | **97.4 / 55.4** | 871 |
+| Preload origin and compute numerators first | 97.4 / 55.4 | 871 |
+| Express odd UV index with bitwise OR | 97.3 / 51.9 | 871 |
+| Explicit origin UV pointer | 97.2 / 51.2 | 869 |
+
+Only the numerator scheduling change is retained. The origin-preload variant
+produces a byte-identical focused object, so its extra locals were not retained.
+It uses named Y/X/Z float
+numerators, then multiplies each by the existing reciprocal. All formulas,
+operand order within each expression, stores, allocations and failure paths
+are preserved. Original Android `0x6cd78..0x6cd8c` computes the three
+numerators before the three products at `0x6cd90..0x6cd98`, followed by the
+Y/X/Z scratch stores at `0x6cd9c..0x6cda4`. This is direct instruction-order
+evidence, not a claim to have recovered exact C++ local names or spelling.
+Read source rises 97.3 -> 97.4 and strict 51.9 -> 55.4. Components:
+inventory 92.5, opcodes 96.8, control 98.1, calls 100.0, size 99.8.
+
+The bounded reader test now exercises three indexed triangles: a unit XY
+triangle, mixed UV/vertex coordinates giving tangent (1,2,0)/sqrt(5), and an
+XZ-plane triangle giving tangent (1,0,2)/sqrt(5). It checks all vertex tangent
+and binormal components after compressed UV/normal parsing, accumulation,
+orthogonalization, normalization and cross product. Its math mocks are replaced
+with seven functions extracted verbatim from production AEMath.cpp plus the
+compiled production Vector.cpp. The reader definition is still extracted
+verbatim; AEFile and unexercised enhanced/child boundaries remain mocked.
+This validates bounded body behavior, not whole-TU executable linkage or ABI.
+Earlier color/bounds/truncated-prefix checks continue to pass.
+
+Fresh native UCRT64 `gof2` library build, enhanced parser smoke and expanded
+reader/vector-math smoke passed. All 204 ARM translation units rebuilt in
+`_work/trinumer-full`. Full corpus: 4,619 comparisons, zero skipped,
+4,274/4,524 originals compared, missing 250 (7 wrong type, 243 absent), extra
+130. Actual `(unit, symbol)` sets equal baseline: linked-exact 2,079,
+byte-exact 959, lost [] and gained [] for each. The other 202 objects remain
+byte-identical to baseline; Core equals the focused successful variant and
+Mesh equals the preceding validated full object.
+
+Full strict/source means: 75.98/88.99. SHA-256: `a5e8fbb01d39a4ffce14b3017b70ad84484bac1e2414f20ab5e77ea332f4b9d7`.
+Evidence: `_work/trinumer_full.json`, `_work/trinumer_three.json`,
+`_work/trinumer_full_build.log`, `_work/trinumer_full_verify.log`,
+`_work/trinumer_native.log`, `_work/trinumer-read-smoke/`.
+
+Fixed source scores: Create 96.2, Read 97.4, Enhanced 97.8, unchanged weights
+291/873/636, total 1,800. Means: **97.133333% unweighted / 97.347333% weighted** (97.13/97.35 displayed). The >=99.0% gate remains unmet.
+No objective compiler ceiling or native game/device runtime readiness is proven.

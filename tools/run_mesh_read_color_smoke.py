@@ -1,7 +1,7 @@
-"""Compile the current MeshReadData body verbatim with bounded test boundaries.
+"""Compile current MeshReadData and selected vector math bodies verbatim.
 
 The Windows linker retains unrelated dependencies of AbyssEngine.cpp, so this
-test extracts only its exact function text. This is a reader-body smoke test,
+test extracts their exact function text. This is a reader-body smoke test,
 not a whole-TU linkage or native ABI test. The native library build is separate.
 """
 import argparse
@@ -14,27 +14,43 @@ parser.add_argument('--compiler', default='g++')
 parser.add_argument('--output-dir', type=Path, required=True)
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
+def extract(source, pattern):
+    matches = list(re.finditer(pattern, source))
+    assert len(matches) == 1, 'Expected exactly one production definition'
+    match = matches[0]
+    depth, end = 1, match.end()
+    while depth:
+        assert end < len(source), 'Unclosed function body'
+        depth += (source[end] == '{') - (source[end] == '}')
+        end += 1
+    return source[match.start():end]
+
 source = (root / 'src/engine/core/AbyssEngine.cpp').read_text()
 pattern = r'    int MeshReadData\(Engine \*engine, const unsigned int &handleRef, unsigned int flags, Mesh \*\*slot,\s+Material \*mat\) \{'
-matches = list(re.finditer(pattern, source))
-assert len(matches) == 1, 'Expected exactly one production definition'
-match = matches[0]
-depth = 1
-end = match.end()
-while depth:
-    assert end < len(source), 'Unclosed function body'
-    depth += (source[end] == '{') - (source[end] == '}')
-    end += 1
-body = source[match.start():end]
+body = extract(source, pattern)
 output = args.output_dir.resolve()
 output.mkdir(parents=True, exist_ok=True)
 include = output / 'mesh_read_under_test.inc'
 include.write_text('namespace AbyssEngine {\n' + body + '\n}\n')
 assert body in include.read_text(), 'Extracted function must remain verbatim'
+math_source = (root / 'src/engine/math/AEMath.cpp').read_text()
+signatures = [
+    'Vector &Vector::operator+=(const Vector &other)',
+    'Vector operator-(const Vector &lhs, const Vector &rhs)',
+    'Vector operator*(const Vector &lhs, float rhs)',
+    'float VectorDot(const Vector &lhs, const Vector &rhs)',
+    'Vector VectorCross(const Vector &lhs, const Vector &rhs)',
+    'Vector VectorNormalize(const Vector &value)',
+    'float VectorLength(const Vector &value)',
+]
+math_bodies = [extract(math_source, re.escape(signature) + r' \{') for signature in signatures]
+math_include = output / 'mesh_read_math_under_test.inc'
+math_include.write_text('namespace AbyssEngine { namespace AEMath {\n' + '\n'.join(math_bodies) + '\n}}\n')
+assert all(part in math_include.read_text() for part in math_bodies)
 exe = output / 'mesh_read_color_smoke.exe'
 subprocess.run([args.compiler, '-std=c++14', '-I' + str(root / 'src'),
                 '-I' + str(root / 'third_party/gl'), '-I' + str(output),
                 str(root / 'tools/mesh_read_color_smoke.cpp'),
                 str(root / 'src/engine/math/Vector.cpp'), '-o', str(exe)], check=True)
 subprocess.run([str(exe)], check=True)
-print('MeshReadData color/position/truncation smoke passed')
+print('MeshReadData color/position/tangent/truncation smoke passed')

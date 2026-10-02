@@ -1013,10 +1013,13 @@ namespace AbyssEngine {
                     float denom = (uvBase[i1 * 2] - uv0u) * dv1 -
                                   (uvBase[i2 * 2] - uv0u) * dv2;
                     float r = 1.0f / denom;
+                    float ty = (p1[1] - p0[1]) * dv1 - (p2[1] - p0[1]) * dv2;
+                    float tx = (p1[0] - p0[0]) * dv1 - (p2[0] - p0[0]) * dv2;
+                    float tz = (p1[2] - p0[2]) * dv1 - (p2[2] - p0[2]) * dv2;
                     float tng[3];
-                    tng[1] = ((p1[1] - p0[1]) * dv1 - (p2[1] - p0[1]) * dv2) * r;
-                    tng[0] = ((p1[0] - p0[0]) * dv1 - (p2[0] - p0[0]) * dv2) * r;
-                    tng[2] = ((p1[2] - p0[2]) * dv1 - (p2[2] - p0[2]) * dv2) * r;
+                    tng[1] = ty * r;
+                    tng[0] = tx * r;
+                    tng[2] = tz * r;
                     float *a = accum + i0 * 3;
                     *(Vector *) a += *(const Vector *) tng;
                     a = accum + i1 * 3;
