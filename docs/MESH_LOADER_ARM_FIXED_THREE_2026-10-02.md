@@ -686,3 +686,44 @@ The fixed three source scores are Create 96.2, Read 97.3, Enhanced 97.8;
 original weights stay 291/873/636, total 1,800. Means: **97.100000% unweighted / 97.298833% weighted** (97.10/97.30 displayed).
 The >=99.0% goal remains unmet. No compiler ceiling is proven, and no native
 game executable/Android device runtime test was performed.
+
+## Continuation: bounds storage, UV scheduling and timing predicates
+
+Fifteen isolated source trials start from `64fe4558`. No source-score gain was
+found; all production source changes were restored. Canonical flags, helper
+definitions and the verifier remain unchanged.
+
+| Trial | Body source / strict | Compiled instructions |
+|---|---|---:|
+| Initialize maximum before minimum | Read 97.3 / 51.9 | 871 |
+| Separate ascending component assignments | Read 97.3 / 51.9 | 871 |
+| Paired min/max component assignments | Read 97.3 / 51.9 | 871 |
+| Three-axis initialization loop | Read 96.6 / 47.8 | 862 |
+| UV division by 4096 instead of reciprocal multiplication | Read 97.3 / 51.9 | 871 |
+| Preload both raw UV components | Read 97.2 / 51.1 | 870 |
+| Load UV destination after computing both components | Read 97.2 / 51.1 | 870 |
+| One six-component array, minimum first | Read 96.5 / 48.4 | 868 |
+| One six-component array, maximum first | Read 96.6 / 49.1 | 868 |
+| Local bounds struct, minimum first | Read 96.6 / 48.4 | 868 |
+| Local bounds struct, maximum first | Read 96.6 / 49.1 | 868 |
+| Inline the positive minimum update with nested tests | Enhanced 97.8 / 64.9 | 637 |
+| Inline the update with a conjunction | Enhanced 97.8 / 64.9 | 637 |
+| Compare the global minimum before checking positive time | Enhanced 96.2 / 61.1 | 637 |
+| Reverse operands of both timing comparisons | Enhanced 94.2 / 59.0 | 645 |
+
+The six-component array/struct trials followed the adjacent original stack
+storage at `0x6c6a0..0x6c6ac`; they do not establish that the original C++ used
+such an object. Their regressions rule out retaining these particular layouts.
+The current separate arrays and chained scalar initialization remain better.
+UV scheduling similarly produces no source gain, and replacing the timing
+helper's calls with the same nested predicate produces no improvement. Timing
+comparison reorderings were rejected; no altered floating-point comparison
+ordering remains in the implementation.
+
+Tracked status was clean after the sweeps and before this report addition.
+The production sources are unchanged from the validated commit, so its fresh
+204-TU ARM corpus, native library and bounded reader/parser tests remain the
+applicable evidence; no repeat full build was required for this report-only
+change. Means remain **97.10% unweighted / 97.30% weighted**, exact sets remain
+2,079 linked / 959 raw with no losses. The >=99.0% goal remains unmet. These
+negative trials do not demonstrate an objective compiler ceiling.
