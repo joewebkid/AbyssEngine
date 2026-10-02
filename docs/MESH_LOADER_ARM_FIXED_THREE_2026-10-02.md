@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **97.03% unweighted / 97.20% weighted**.
+Latest validated continuation: source **97.10% unweighted / 97.30% weighted**.
 The result tables below preserve earlier measurements. Chronological continuation
 sections record later per-body results, corpus evidence and rejected trials.
 
@@ -629,3 +629,60 @@ Fixed three source scores: Create **96.2**, Read **97.1**, Enhanced **97.8**.
 Weights stay 291/873/636, total 1,800. Means are **97.033333% unweighted /
 97.201833% weighted** (97.03/97.20 displayed). The >=99.0% goal remains unmet.
 No objective compiler ceiling or native game/device runtime readiness is proven.
+
+## Continuation: format width and explicit bounds initialization
+
+Thirteen focused trials from the validated color-owner version used unchanged
+canonical flags and matching rules. Only explicit bounds initialization was
+retained; all other source forms were restored.
+
+| Trial | Body source / strict | Compiled instructions |
+|---|---|---:|
+| Create unsigned byte format | Create 94.7 / 69.4 | 280 |
+| Create unsigned short format | Create 94.7 / 69.4 | 280 |
+| Create signed byte format | Create 95.5 / 57.1 | 280 |
+| Prefetch V2/V3 signature characters | Create 96.2 / 61.6 | 280 |
+| Signature format updates as conditional expressions | Create 96.2 / 61.6 | 280 |
+| Postincrement signature index | Create 96.2 / 61.6 | 280 |
+| Captured raw owner only for short positions | Read 96.5 / 52.6 | 879 |
+| Captured raw owner only for normals | Read 97.1 / 52.3 | 876 |
+| Reverse min/max declarations | Read 97.1 / 52.2 | 877 |
+| Unsigned short vertex counter | Read 97.1 / 52.2 | 877 |
+| Unsigned byte enhanced-mask local | Read 97.1 / 52.2 | 877 |
+| Explicit chained assignments of min/max components | **Read 97.3 / 51.9** | 871 |
+| Minimum copied before center calculation | Read 96.9 / 52.2 | 879 |
+
+The accepted source replaces two three-element array initializers with two
+chained scalar assignments after their declarations. Every minimum is still
+10000000.0f and every maximum is still -10000000.0f before any position use.
+Original Android `0x6c69c..0x6c6ac` loads and stores these constants into the
+six scratch components. The C++ initialization form is an equivalent source
+hypothesis, not an exact recovered spelling. No math, stream sizes, comparison
+order, error paths, flags or helper/matcher rules changed.
+
+Read source improves 97.1 -> 97.3 while strict falls 52.2 -> 51.9. Components:
+inventory 92.0, opcodes 96.7, control 98.1, calls 100.0, size 99.8. Compiled
+instructions 871 versus original 873. The strict regression is not hidden.
+
+Native UCRT64 `gof2` library build passed, and both parser/body smoke tests
+passed. The reader smoke now also checks center (2,1,6) and radius sqrt(24)
+for its known two vertices. It still compiles a verbatim extracted reader
+body with bounded mocks, not the whole AbyssEngine.cpp TU or native ABI.
+
+Fresh full ARM validation rebuilt all 204 translation units in
+`_work/boundsinit-full`. Full corpus: 4,619 comparisons, zero skipped,
+4,274/4,524 originals compared, missing 250 (7 wrong type, 243 absent), extra
+130. Actual `(unit, symbol)` sets equal the clean baseline: linked-exact 2,079
+and byte-exact 959, lost [] and gained [] for each. The other 202 ARM objects
+are byte-identical to baseline; Core equals the focused successful variant,
+and Mesh equals the preceding validated full object.
+
+Full strict/source means: 75.98/88.99. Report SHA-256: `7faa4604f268b2f2e462792c5ae69cfd163011ada54437b7a24b7ff0abf5f625`.
+Evidence: `_work/boundsinit_full.json`, `_work/boundsinit_three.json`,
+`_work/boundsinit_full_build.log`, `_work/boundsinit_full_verify.log`,
+`_work/boundsinit_native.log`, `_work/boundsinit-read-smoke/`.
+
+The fixed three source scores are Create 96.2, Read 97.3, Enhanced 97.8;
+original weights stay 291/873/636, total 1,800. Means: **97.100000% unweighted / 97.298833% weighted** (97.10/97.30 displayed).
+The >=99.0% goal remains unmet. No compiler ceiling is proven, and no native
+game executable/Android device runtime test was performed.

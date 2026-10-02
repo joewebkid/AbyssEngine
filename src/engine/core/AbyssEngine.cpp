@@ -812,8 +812,10 @@ namespace AbyssEngine {
         unsigned int vcount = (*slot)->vertexCount;
 
         {
-            float minv[3] = {10000000.0f, 10000000.0f, 10000000.0f};
-            float maxv[3] = {-10000000.0f, -10000000.0f, -10000000.0f};
+            float minv[3];
+            float maxv[3];
+            minv[0] = minv[1] = minv[2] = 10000000.0f;
+            maxv[0] = maxv[1] = maxv[2] = -10000000.0f;
 
             if ((flags & 4) != 0) {
                 void *raw = ::operator new[]((*slot)->vertexCount * 6);

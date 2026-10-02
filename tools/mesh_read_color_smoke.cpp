@@ -70,6 +70,8 @@ int main() {
         assert(std::fabs(colors[i] - static_cast<float>(rgba[i]) / 255.0f) < 0.000001f);
     const auto *converted = static_cast<const float *>(mesh.positions);
     for (size_t i = 0; i < 6; ++i) assert(converted[i] == positions[i]);
+    assert(mesh.boundsCenterX == 2 && mesh.boundsCenterY == 1 && mesh.boundsCenterZ == 6);
+    assert(std::fabs(mesh.boundsRadius - std::sqrt(24.0f)) < 0.000001f);
     ::operator delete[](mesh.positions);
     ::operator delete[](mesh.colors);
 
