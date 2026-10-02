@@ -1119,3 +1119,53 @@ unweighted / 97.74% weighted**. Even Read=100 alone would give only 98.766667%
 unweighted with the other two unchanged; at least one other body must also
 improve. This is a conditional arithmetic bound, not a compiler ceiling.
 Both >=99.0% requirements remain unmet and the goal stays active.
+
+## Continuation: normal clamp forms and quotient scheduling
+
+Seven valid isolated reader trials start from `1dd46450`. They retain float
+quotients, double lower selection and float upper comparisons as numerical
+operations; none improves source match. All source changes were restored.
+
+| Trial | Read source / strict | Compiled instructions |
+|---|---|---:|
+| Explicit promoted doubles, then lower-bound if statements | 96.5 / 54.5 | 856 |
+| Upper-bound ternaries | 97.4 / 55.4 | 871 |
+| Complete lower/cast/upper clamp per component | 97.4 / 55.4 | 871 |
+| Common Z output after normal/zero branches | 97.4 / 55.4 | 871 |
+| Interleave Y/X quotients, lower Y, Z quotient, lower X/Z | 97.4 / 55.4 | 871 |
+| Same quotient staging plus Y/X cast and upper-clamp order | 97.4 / 55.2 | 871 |
+| Interleave each promoted double with its lower-bound if | 96.5 / 54.5 | 856 |
+
+The common-Z trial is a targeted interaction recheck following the accepted
+triangle-numerator scheduling and current 97.4 reader state; it does not
+assume the earlier 97.0 common-Z result applies unchanged. The quotient
+interleaving tests follow the original sequence at `0x6cb2a..0x6cb58`: Y/X
+float divides, lower-Y double comparison, Z divide and remaining double
+lower comparisons. Upper comparisons remain on original float quotients,
+as confirmed at `0x6cb6a..0x6cb92`. This sequence is instruction evidence,
+not a recovered exact C++ declaration order.
+
+Whole Core objects from upper ternaries, component clamps, common-Z output
+and staged Y/X/Z quotients are byte-identical to createstatus-full. The
+Y-cast/upper-order variant differs but only regresses strict match. Direct
+allocation-shape inventory inspection of the explicit-double/if variant
+shows three NEON vmax.f32 operations and the loss of the original three
+double compares, three vmovmi.f64 selections and their conversions. Thus
+its shorter 856-instruction result is not the requested source-shape gain.
+The equivalent source form allowed different optimizer lowering; no matcher
+or normalization was altered to compensate.
+
+Evidence: `_work/read_clamp_form_sweep.py`, its four
+`_work/readclampform-*.json` reports, `_work/read_clamp_schedule_sweep.py`,
+its three `_work/readclampschedule-*.json` reports, and the inventory diagnostic
+from `_work/inventory_gap.py` against the explicit-double/if object. Every
+trial compiled with the existing canonical ARM flags and focused unit gate.
+Tracked source status is clean after the sweeps; the baseline boundary check
+again passes for both source files. This continuation changes only this
+report and requires no new runtime validation of unchanged production code.
+The preceding 204-TU ARM/native and caller/reader/parser validation remains
+applicable, with actual linked-exact 2,079 / byte-exact 959 pair sets intact.
+
+Fixed source scores remain 98.4 / 97.4 / 97.9 and means **97.90% unweighted /
+97.74% weighted**. The >=99.0% goal stays active. These negative compiler-form
+results establish neither a compiler ceiling nor native game/ABI readiness.
