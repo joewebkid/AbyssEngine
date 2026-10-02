@@ -2,14 +2,14 @@
 
 ## Status: partial; the requested target is not achieved
 
-Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.6308% unweighted / 98.2300% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
+Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.6577% unweighted / 98.3181% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
 
 | Metric | Clean base | This checkpoint |
 |---|---:|---:|
-| Source-shape, unweighted | 73.5923% | 99.6308% |
-| Source-shape, original-instruction-weighted | 26.9159% | 98.2300% |
-| Strict instruction shape, unweighted | 66.8038% | 94.2038% |
-| Strict instruction shape, weighted | 15.4981% | 73.2375% |
+| Source-shape, unweighted | 73.5923% | 99.6577% |
+| Source-shape, original-instruction-weighted | 26.9159% | 98.3181% |
+| Strict instruction shape, unweighted | 66.8038% | 94.3038% |
+| Strict instruction shape, weighted | 15.4981% | 73.5753% |
 | Linked-exact unique bodies | 14 | 19 |
 | Byte-exact unique bodies | 13 | 13 |
 
@@ -70,6 +70,14 @@ Weapon-threshold follow-up: update and shootAt now explicitly enumerate ROCKET, 
 Correction to the earlier update hypothesis: the existing scalar fade clamp already compiles to the original VMAX operation at 0x153876. The rejected NEON wrappers were unnecessary; no wrapper is retained. Independent collision trials with explicit radial assignments, reordered classification and a long-lived radius reference yielded no source-shape improvement. The radial-assignment trial improved strict shape to 55.0% but reduced source-shape to 95.8%; it was rejected. Only the two threshold predicates changed in this checkpoint.
 
 Further collision equivalence audit at checkpoint 91221246: eight private canonical-compiler trials covered explicit radial IDs 6/7, explicit particle IDs 4/5 (including medal classification), both combined, bool versus int local predicates, and unsigned cached differences for mine/scatter separately and combined. All eight parsed ARM collision bodies are identical to the committed body: 629 instructions versus original 647, 96.6% source-shape and 50.6% strict. Merely changing the predicate syntax or scalar type cannot repair the observed rematerialization in these trials. None was integrated; live Gun source, canonical object and shared verifier remain unchanged. The evidence, body-identity checks and input hashes are recorded in validation/gun_collision_equivalent_forms_2026-10-02.json. This is a bounded negative result, not proof that no other source form can reach the target.
+
+Constructor byte-allocation follow-up: original ARM 0x15202a performs `orr count, count, asr #31` immediately before the byte-array operator new[] call. Its allocation operand is count for nonnegative inputs and UINT32_MAX for negative signed inputs. The constructor now explicitly saturates negative count to size_t(-1) for hitFlags, preserving that ARM contract without changing positive counts. Under the canonical compiler this raises constructor source-shape from 98.3% to 98.5% and strict shape from 92.1% to 92.7%; its parsed instruction count remains 177. Original pseudocode and the raw ARM were both inspected. This is not a claim that negative projectile counts are supported or that host allocation-failure behavior is identical to Android. Existing 0/1/3-slot smoke checks and native build pass.
+
+Rejected collision control trials: explicitly separating the native KIPlayer eligibility/outerCollide gate yields the identical collision body (96.6% / 50.6%). Replacing the scatter falloff block with a conditional-expression clamp lowers source-shape to 96.1% and strict shape to 49.0%, whether used alone or with the gate rewrite; neither was retained.
+
+Ignite classification follow-up: the native bit mask 0x80800001 after subtracting 11 selects IDs 11, 34 and 42; ID 7 is tested separately. ItemSort.h confirms MINE=11, IONIZING_MISSILE=34, SHOCK_BLAST=42 and NUKE=7. Explicitly enumerating these four types is equivalent to the mask test for every fixed-int ItemSort value, including invalid/sentinel values. Under the same canonical compiler, ignite improves from 98.4% source / 94.4% strict to 98.9% / 96.4%, with 350 versus original 351 instructions and unchanged calls. A separate named bit-test predicate lowered source to 98.0% and was rejected. The enum spelling is an accepted equivalent source form, not a claim to have recovered original C++ text. The incomplete constructor-only full comparison was deliberately stopped before integration of this additional change; it is superseded by the completed combined checkpoint comparison.
+
+Follow-up enum spellings in ignite (NUKE first, reverse order, a cached ItemSort and a four-case switch) all reproduce the same 98.9% source / 96.4% strict result. They add no recovery gain and were not integrated. The canonical combined build explicitly reports 204 TUs compiled, zero failures; the host smoke still covers constructor/ownership contracts rather than ignite gameplay.
 
 ## Checks and limits
 

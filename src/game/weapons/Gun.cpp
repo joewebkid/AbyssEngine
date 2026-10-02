@@ -215,8 +215,8 @@ void Gun::ignite() {
                         if (force < 0.0f) scale = 0.0f;
                     }
                     int emp = (*static_cast<Array<Item *> *>(Globals::items))[itemIndex]->getAttribute(10);
-                    unsigned kind = static_cast<unsigned>(weaponType) - 11u;
-                    if ((kind <= 31 && ((1u << kind) & 0x80800001u)) || weaponType == ITEM_SORT_NUKE) {
+                    if (weaponType == ITEM_SORT_MINE || weaponType == ITEM_SORT_IONIZING_MISSILE ||
+                        weaponType == ITEM_SORT_SHOCK_BLAST || weaponType == ITEM_SORT_NUKE) {
                         if (emp != -979797979) target->setEmpForce(scale * emp);
                         target->setBombForce(scale);
                         if (target->isAsteroid()) scale *= 0.6f;
@@ -339,7 +339,8 @@ Gun::Gun(int kind, int p2, int count, int p4, int p5, int p6, float p7, Vector d
     this->ammoCount = p4;
     this->field_0x78 = p4 << 1;
     this->lifetimes = new int[static_cast<unsigned>(count)];
-    this->hitFlags = new uint8_t[count];
+    // ARM @0x15202a saturates a negative signed count to SIZE_MAX before new[].
+    this->hitFlags = new uint8_t[count < 0 ? static_cast<size_t>(-1) : static_cast<size_t>(count)];
     Array<Vector *> *arr = new Array<Vector *>();
     this->wobbleOffsets = arr;
     ArraySetLength(count, this->positionArray);
