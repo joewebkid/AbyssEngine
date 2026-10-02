@@ -1288,42 +1288,47 @@ void StarMap::drawOnScreenInfo(int index, bool stationMode) {
     Mission *freelance = Globals::status->getFreelanceMission();
     if (Globals::status->getCurrentCampaignMission() == 52 &&
         (stationMode ? this->stations->data()[index]->getIndex() == 74 :
-                       this->systems->data()[index]->getStationEnumIndex(74) >= 0)) {
+                       static_cast<int32_t>(this->systems->data()[index]->getStationEnumIndex(74)) >= 0)) {
         this->iconBuffer[1] = this->keyImageWanted;
     }
     if (Globals::status->getCurrentCampaignMission() == 116 && stationMode &&
         this->stations->data()[index]->getIndex() >= 90 && this->stations->data()[index]->getIndex() <= 94) {
         int statusValue = reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()))->getStatusValue();
         if (!(statusValue & (1 << (this->stations->data()[index]->getIndex() - 90))))
-            this->iconBuffer[1] = this->keyImageWanted;
+            goto special_campaign_marker;
     }
     if (Globals::status->getCurrentCampaignMission() == 120 &&
         (stationMode ? this->stations->data()[index]->getIndex() == 93 :
-                       this->systems->data()[index]->getStationEnumIndex(93) >= 0)) {
-        this->iconBuffer[1] = this->keyImageWanted;
-    }
-    bool freighterMarker = false;
+                       static_cast<int32_t>(this->systems->data()[index]->getStationEnumIndex(93)) >= 0))
+        goto special_campaign_marker;
     if (Globals::status->getCurrentCampaignMission() == 125 && stationMode &&
         Globals::status->isFreighterMissionStation(this->stations->data()[index]->getIndex())) {
         int statusValue = reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()))->getStatusValue();
         if (!(statusValue & (1 << Globals::status->getFreighterMissionStationBit(this->stations->data()[index]->getIndex()))))
-            freighterMarker = true;
+            goto special_campaign_marker;
     }
-    if (!freighterMarker && Globals::status->getCurrentCampaignMission() == 125 && !stationMode &&
+    if (Globals::status->getCurrentCampaignMission() == 125 && !stationMode &&
         Globals::status->isFreighterMissionStation(this->systems->data()[index]->getWarpGateIndex())) {
         int statusValue = reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()))->getStatusValue();
         if (!(statusValue & (1 << Globals::status->getFreighterMissionStationBit(this->systems->data()[index]->getWarpGateIndex()))))
-            freighterMarker = true;
+            goto special_campaign_marker;
     }
-    if (freighterMarker) this->iconBuffer[1] = this->keyImageWanted;
+    goto campaign_targets;
+special_campaign_marker:
+    this->iconBuffer[1] = this->keyImageWanted;
+campaign_targets:
     if (campaign) {
         bool missionTarget = false;
-        if (campaign->getType() == 163 && Globals::status->field_90) {
-            for (uint32_t i = 0; i < Globals::status->field_90->size(); ++i) {
-                if (stationMode ? Globals::status->field_90->data()[i] == this->stations->data()[index]->getIndex() :
-                    this->systems->data()[index]->getStationEnumIndex(Globals::status->field_90->data()[i]) >= 0) {
-                    missionTarget = true;
-                    break;
+        if (campaign->getType() == 163) {
+            Array<int> *targets = Globals::status->field_90;
+            if (targets) {
+                for (uint32_t i = 0; i < targets->size(); ++i) {
+                    if (stationMode ? targets->data()[i] == this->stations->data()[index]->getIndex() :
+                        static_cast<int32_t>(this->systems->data()[index]->getStationEnumIndex(targets->data()[i])) >= 0) {
+                        missionTarget = true;
+                        break;
+                    }
+                    targets = Globals::status->field_90;
                 }
             }
         }
@@ -1341,11 +1346,11 @@ void StarMap::drawOnScreenInfo(int index, bool stationMode) {
                     targetMatch = (stationId == campaign->getTargetStation()) | missionTarget;
                 } else {
                     SolarSystem *system = this->systems->data()[index];
-                    targetMatch = (system->getStationEnumIndex(campaign->getTargetStation()) >= 0) | missionTarget;
+                    targetMatch = (static_cast<int32_t>(system->getStationEnumIndex(campaign->getTargetStation())) >= 0) | missionTarget;
                 }
                 if (targetMatch || (Globals::status->getCurrentCampaignMission() >= 33 &&
                     (stationMode ? this->stations->data()[index]->getIndex() == Globals::status->field_80 :
-                        this->systems->data()[index]->getStationEnumIndex(Globals::status->field_80) >= 0) &&
+                        static_cast<int32_t>(this->systems->data()[index]->getStationEnumIndex(Globals::status->field_80)) >= 0) &&
                     campaign->getTargetStation() == -1)) this->iconBuffer[1] = this->keyImageWanted;
             }
         }
@@ -1359,7 +1364,7 @@ void StarMap::drawOnScreenInfo(int index, bool stationMode) {
             SolarSystem *system = this->systems->data()[index];
             int target = freelance->getType() == 14 && Globals::status->getShip()->hasCargo(115, 1) ?
                 freelance->getAgent()->getStation() : freelance->getTargetStation();
-            if (system->getStationEnumIndex(target) >= 0) this->iconBuffer[2] = this->keyImageMission;
+            if (static_cast<int32_t>(system->getStationEnumIndex(target)) >= 0) this->iconBuffer[2] = this->keyImageMission;
         }
     }
     if (stationMode && this->selectedSystem >= 0) {
@@ -1371,59 +1376,61 @@ void StarMap::drawOnScreenInfo(int index, bool stationMode) {
         for (uint32_t i = 0; i < pendingProducts->size(); ++i) {
             PendingProduct *product = pendingProducts->data()[i];
             if (product && (stationMode ? product->stationIndex == this->stations->data()[index]->getIndex() :
-                           this->systems->data()[index]->getStationEnumIndex(product->stationIndex) >= 0)) {
+                           static_cast<int32_t>(this->systems->data()[index]->getStationEnumIndex(product->stationIndex)) >= 0)) {
                 this->iconBuffer[4] = this->keyImageRetreat;
                 break;
             }
         }
     }
-    x = this->scratchVector.x;
-    y = this->scratchVector.y;
+    float textX = this->scratchVector.x;
+    int drawY = (int)(this->scratchVector.y + (float)(this->iconWidth >> 1) - 3.0f);
     if (stationMode) {
         int textW = Globals::Canvas->GetTextWidth(Globals::font, this->stations->data()[index]->getName());
-        int drawX = (int) (x - (float) (textW / 2));
-        int drawY = (int) (y + (float) (this->iconWidth >> 1) - 3.0f);
+        float drawX = textX - (float)(textW / 2);
         int current = Globals::status->getStation()->getIndex();
         if (current == this->stations->data()[index]->getIndex()) {
-            int pulse = (int)(((Layout *) Globals::layout)->getPulseValue(0.005f) * (255 - this->alpha));
-            Globals::Canvas->SetColor(0xff, 0xff, 0xff, pulse);
-            Globals::Canvas->DrawImage2D(this->currentMarkerIcon, (int)x, (int)y, 0x11, 0x44);
+            int alpha = this->alpha;
+            PaintCanvas *canvas = Globals::Canvas;
+            unsigned int pulse = (unsigned int)(Globals::layout->getPulseValue(0.005f) * (float)(255 - alpha));
+            canvas->SetColor(0xff, 0xff, 0xff, (unsigned char)pulse);
+            Globals::Canvas->DrawImage2D(this->currentMarkerIcon, (int)this->scratchVector.x, (int)this->scratchVector.y, 0x11, 0x44);
         }
         if (this->selectedStation == index) {
             Globals::Canvas->SetColor(0xff, 0x80, 0, (unsigned char)~this->alpha);
-            Globals::Canvas->DrawString((unsigned int) (long) (Globals::font), this->stations->data()[index]->getName(), drawX,
+            Globals::Canvas->DrawString((unsigned int) (long) (Globals::font), this->stations->data()[index]->getName(), (int)drawX,
                                                           drawY, false);
             Globals::Canvas->SetColor((unsigned char) (0xff), (unsigned char) (0xff),
                                                         (unsigned char) (0xff), (unsigned char)~this->alpha);
             if (this->stations->data()[index]->getTecLevel() > 0) {
-                String line = *Globals::gameText->getText(133) + String(": ", false) +
-                              String(String(this->stations->data()[index]->getTecLevel()), false);
-                Globals::Canvas->DrawString((unsigned int) (long) (Globals::font), line, drawX,
+                Globals::Canvas->DrawString(Globals::font,
+                    *Globals::gameText->getText(133) + String(": ", false) +
+                    String(String(this->stations->data()[index]->getTecLevel()), false), (int)drawX,
                                                               drawY + ((Layout *) Globals::layout)->field_0x4,
                                                               false);
             }
-            Globals::Canvas->DrawImage2D((unsigned int) (this->selectIcon), (int) x, (int) y, 0x11, 0x44);
+            Globals::Canvas->DrawImage2D((unsigned int) (this->selectIcon), (int)this->scratchVector.x, (int)this->scratchVector.y, 0x11, 0x44);
         } else {
             Globals::Canvas->SetColor((unsigned char) (0xff), (unsigned char) (0xff),
                                                         (unsigned char) (0xff), (unsigned char)~this->alpha);
-            Globals::Canvas->DrawImage2D((unsigned int) (this->cursorIcon), (int) x, (int) y, 0x11, 0x44);
+            Globals::Canvas->DrawImage2D((unsigned int) (this->cursorIcon), (int)this->scratchVector.x, (int)this->scratchVector.y, 0x11, 0x44);
             if (this->selectedStation >= 0) {
                 int objectAlpha = 255 - this->alpha;
                 Globals::Canvas->SetColor(255, 255, 255, (unsigned char)(objectAlpha < 64 ? objectAlpha : 64));
             }
-            Globals::Canvas->DrawString((unsigned int) (long) (Globals::font), this->stations->data()[index]->getName(), drawX,
+            Globals::Canvas->DrawString((unsigned int) (long) (Globals::font), this->stations->data()[index]->getName(), (int)drawX,
                                                           drawY, false);
         }
     } else {
         int textW = Globals::Canvas->GetTextWidth(Globals::font, this->systems->data()[index]->getName());
-        int drawX = (int) (x - (float) (textW / 2));
-        int drawY = (int) (y + (float) (this->iconWidth >> 1) - 3.0f);
+        int drawX = (int)(textX - (float)(textW / 2));
         if (this->pad_0xa8_a) this->systems->data()[index]->getIndex();
         int currentSystem = Globals::status->getSystem()->getIndex();
         if (currentSystem == this->systems->data()[index]->getIndex()) {
-            int pulse = (int)(((Layout *) Globals::layout)->getPulseValue(0.005f) * this->alpha);
-            Globals::Canvas->SetColor(0xff, 0xff, 0xff, pulse);
-            Globals::Canvas->DrawImage2D(this->currentMarkerIcon, (int)x, (int)y, 0x11, 0x44);
+            float alpha = (float)this->alpha;
+            PaintCanvas *canvas = Globals::Canvas;
+            unsigned int pulse = (unsigned int)(Globals::layout->getPulseValue(0.005f) * alpha);
+            canvas->SetColor(0xff, 0xff, 0xff, (unsigned char)pulse);
+            Globals::Canvas->DrawImage2D(this->currentMarkerIcon, (int)this->scratchVector.x, (int)this->scratchVector.y, 0x11, 0x44);
         }
         Globals::Canvas->SetColor(255, 255, 255, (unsigned char)this->alpha);
         if (this->selectedSystem == index) {
@@ -1432,21 +1439,23 @@ void StarMap::drawOnScreenInfo(int index, bool stationMode) {
         } else if (this->selectedSystem >= 0) {
             Globals::Canvas->SetColor(255, 255, 255, (unsigned char)(this->alpha < 64 ? this->alpha : 64));
         }
-        Globals::Canvas->DrawString((unsigned int) (long) (Globals::font), this->systems->data()[index]->getName(), drawX, drawY,
+        Globals::Canvas->DrawString((unsigned int) (long) (Globals::font), this->systems->data()[index]->getName(), (int)drawX, drawY,
                                                       false);
         int objectAlpha = (this->selectedSystem == index || this->selectedSystem < 0) ? this->alpha : (this->alpha < 64 ? this->alpha : 64);
         Globals::Canvas->SetColor(255, 255, 255, (unsigned char)objectAlpha);
         if (this->systems->data()[index]->hasNoOwner() == 0) {
-            uint32_t image = this->raceImageDefault;
             int race = this->systems->data()[index]->getRace();
+            uint32_t *image;
             if (race == 2) {
-                image = this->raceImageB;
+                image = &this->raceImageB;
             } else if (race == 1) {
-                image = this->raceImageA;
+                image = &this->raceImageA;
             } else if (race == 0) {
-                image = this->raceImageNeutral;
+                image = &this->raceImageNeutral;
+            } else {
+                image = &this->raceImageDefault;
             }
-            Globals::Canvas->DrawImage2D((unsigned int) (image), drawX, drawY - 3, 0x11, 0x12);
+            Globals::Canvas->DrawImage2D(*image, drawX, drawY - 3, 0x11, 0x12);
         }
         if (index == 26 && Globals::status->field_114 == 3) {
             Globals::Canvas->DrawImage2D(this->image_0x134, drawX,
@@ -1478,11 +1487,11 @@ void StarMap::drawOnScreenInfo(int index, bool stationMode) {
         }
     }
 
-    float iconY = (float) (int) ((this->scratchVector.y - (float) (this->iconWidth >> 1)) + 10.0f);
-    float iconX = (float) (int) (this->scratchVector.x + (float) (this->iconWidth >> 1) - 7.0f);
-    int iconRow = this->missionIconWidth;
+    int halfWidth = this->iconWidth >> 1;
+    int iconX = (int)(this->scratchVector.x + (float)halfWidth - 7.0f);
+    int iconY = (int)(this->scratchVector.y - (float)halfWidth + 10.0f);
     for (int i = 0; i != 5; i++) {
-        int image = icons[i];
+        int image = this->iconBuffer[i];
         if (image != -1) {
             if (i == 0) {
                 int dx = Globals::iPadHD != 0 ? 12 : 18;
@@ -1491,7 +1500,7 @@ void StarMap::drawOnScreenInfo(int index, bool stationMode) {
                                     (int) iconY + this->iconWidth - dy);
             } else {
                 Globals::Canvas->DrawImage2D((unsigned int) ((uint32_t) image), (int) iconX, (int) iconY);
-                iconY += iconRow;
+                iconY += this->missionIconWidth;
             }
         }
     }

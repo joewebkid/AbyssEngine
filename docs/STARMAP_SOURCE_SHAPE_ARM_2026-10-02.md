@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **98.265% unweighted / 97.10873% original-instruction
+implementation bodies measure **98.33% unweighted / 97.32970% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**81.535% / 70.30769%**, respectively. Source-shape is an inventory/control-flow
+**82.335% / 73.02731%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -175,6 +175,55 @@ The first fifth-corpus run was deliberately stopped after new double-precision
 evidence required a source revision. Final full run: fifth-double-corpus.
 The 99% target remains unmet; residual inventories require further evidence.
 
+## Follow-up after checkpoint d4e3330a
+
+Checkpoint d4e3330a measured 98.265% / 97.10873%. This continuation changes
+StarMap.cpp only, with report/snapshots. drawOnScreenInfo improves **96.6% ->
+97.9%**, strict **48.9% -> 64.9%**, original/current instructions: 1207/1221.
+
+- The decisive remaining call discrepancy was a real signedness error:
+  SolarSystem.h declares getStationEnumIndex as uint32_t and its method returns
+  0xffffffff when absent. All seven >=0 comparisons in this StarMap body were
+  therefore constant true, eliminating the galaxy fallback call and incorrectly
+  marking absent station targets. Android's signed comparisons at 0xc849e,
+  0xc8544, 0xc8660, 0xc876c, 0xc87c6, 0xc884e and 0xc88e4 prove the caller must
+  interpret that sentinel as -1. Explicit int32_t casts restore those checks
+  without changing SolarSystem.h/cpp or other production files.
+- Direct vcvt.u32.f32 at 0xc89d4 and 0xc8ab4 proves pulse alpha's unsigned
+  conversion. Alpha and Canvas are captured before getPulseValue, as Android
+  does; marker image coordinates reload scratchVector after calls.
+- The station technology label is now a direct DrawString concatenation
+  expression, preserving every temporary until the draw call ends. Name
+  getters already return temporary Strings and DrawString/GetTextWidth accept
+  const references, so no extra name-copy workaround was added.
+- Station text X remains float until each draw, text Y is computed before
+  GetTextWidth and station lookup. Icon row X/Y stay int, iconBuffer and
+  missionIconWidth reload in the loop. This removes unnecessary int/float
+  round trips and restores the original integer row accumulation.
+- Mission 116/120/125 success goes to the shared special-marker write and skips
+  the remaining special checks. A structured nested trial and the explicit
+  shared-exit form produced identical ARM measurements before signed casts;
+  the latter exposes Android's common exit without fabricated helper calls.
+- Mission-163 targets keep the local array pointer, refreshed after an unmatched
+  iteration. Race image address is selected after getRace then loaded for draw;
+  neither image nor target array is held across a call beyond the original scope.
+
+Packages: info-sixth-trial, info-sixth-flow, info-sixth-shared,
+info-sixth-signed and info-sixth-loads (accepted sixth-focused). Native static
+library build: _work/native-sixth.log. Direct instruction evidence:
+_work/info-original-direct.asm; original body: _work/info-android.c.
+The original String integer constructor uses C2, current C1 is its ABI alias;
+that spelling is not another implementation body or a metric denominator.
+
+A further IDA-only OnTouchEnd candidate was rejected: its X comparison renders
+!(less || equal), suggesting different NaN handling, but direct ARM uses gt
+for both axes (0xcb0ec/0xcb0fa and 0xcb8d8/0xcb8e2). No speculative source
+change was made; _work/end-original-direct.asm and touch-next-evidence.txt
+record the counter-evidence.
+
+These are source/ABI-shape and branch-contract corrections. No game executable
+or renderer runtime was exercised. The requested 99% target remains unmet.
+
 ## Evidence and version boundaries
 
 Primary reference is **Android ARMv7 GOF2 HD 2.0.16**,
@@ -308,17 +357,17 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/fifth-double-corpus.log`; focused log:
-`_work/update-fifth-double.log` (copied report: fifth-focused.json); native log: `_work/native-fifth-double.log`.
+Latest full log: `_work/sixth-corpus.log`; focused log:
+`_work/info-sixth-loads.log` (copied report: sixth-focused.json); native log: `_work/native-sixth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79 and b5010fdb, with no new gains or losses since 7fc7701c.
-The latest comparison against b5010fdb preserves all 2083 linked-exact and
+50e10b79, b5010fdb and d4e3330a, with no new gains or losses since 7fc7701c.
+The latest comparison against d4e3330a preserves all 2083 linked-exact and
 960 byte-exact pairs. Latest preservation gate and 99% gate logs are
-_work/fifth-gate.json, fifth-previous-gate.json and fifth-target-gate.log (exit 0, 0 and 1 respectively).
+_work/sixth-gate.json, sixth-previous-gate.json and sixth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `f51819b3e75b6904e2d3e536101dae78a051056c84488a5ed77f9e55b364c2a4`.
+final full JSON SHA-256: `b2f42c5a8214759dabbdd90e493a865f6942d0b20ce69cc07a36d5e48b730109`.
 
 
 ### Reproduction
@@ -347,7 +396,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
-| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1223 | 78.9% | 96.6% | 48.9% | - |
+| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1221 | 78.9% | 97.9% | 64.9% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1008 | 66.6% | 96.8% | 68.4% | - |
 | `_ZN7StarMap6updateEi` | 971/953 | 76.6% | 97.7% | 82.3% | - |
 | `_ZN7StarMap4drawEv` | 916/906 | 49.7% | 98.0% | 83.2% | - |
