@@ -20,6 +20,8 @@ static FModSound *usedSound;
 static Vector *usedPosition;
 static unsigned alreadyPlaying;
 static int soundId, played, updated;
+static Vector enginePosition, engineVelocity;
+static int engineIndex;
 FModSound::FModSound() {}
 FModSound::~FModSound() {}
 unsigned FModSound::isPlaying(int index) {
@@ -40,7 +42,13 @@ void FModSound::updateEvent3DAttributes(int index, Vector *position, Vector *vel
     usedPosition = position;
     ++updated;
 }
-FMOD::Event *FModSound::updateEvent3DAttributes(FMOD::Event *event, int, Vector *, Vector *, bool) { return event; }
+FMOD::Event *FModSound::updateEvent3DAttributes(FMOD::Event *event, int index, Vector *position, Vector *velocity, bool restart) {
+    assert(position != nullptr && velocity != nullptr && !restart);
+    engineIndex = index;
+    enginePosition = *position;
+    engineVelocity = *velocity;
+    return event;
+}
 FModSound *FModSound::stop(FMOD::Event *) { return nullptr; }
 Gun::~Gun() noexcept(false) {}
 Gun::Gun(int, int, int, int, int, int, float, Vector, Vector) : enemies(nullptr) {}
@@ -51,10 +59,6 @@ AbyssEngine::AEMath::Matrix::Matrix() {
     for (float &f : m) f = 0.0f;
     m[0] = m[5] = m[10] = 1.0f;
 }
-void MatrixGetPosition(void *out, float *matrix) {
-    *static_cast<Vector *>(out) = AbyssEngine::AEMath::MatrixGetPosition(*reinterpret_cast<Matrix *>(matrix));
-}
-
 int main() {
     alignas(Player) unsigned char storage[sizeof(Player)];
     std::memset(storage, 0xa5, sizeof(storage));
@@ -62,6 +66,11 @@ int main() {
     assert(constructed->active == 1 && constructed->damaged == 0);
     constructed->~Player();
     Player player(10, 100, 0, 0, 0);
+    player.transformMatrix.m[3] = 1.25f;
+    player.transformMatrix.m[7] = -2.5f;
+    player.transformMatrix.m[11] = 3.75f;
+    Vector position = player.getPosition();
+    assert(position.x == 1.25f && position.y == -2.5f && position.z == 3.75f);
     assert(!player.gunAvailable(-1));
     assert(!player.gunAvailable(4));
     Gun *gun = new Gun(0, 0, 0, 0, 0, 0, 0, Vector{}, Vector{});
@@ -100,6 +109,21 @@ int main() {
     assert(played == 1 && updated == 1); // Playing loop stays untouched with 3D disabled.
     player.playShootSound(0, -1, &shotPosition, 1);
     assert(played == 2 && usedPosition == nullptr); // Out-of-mask channel plays unconditionally.
+    Globals::options[0x0f] = 1;
+    player.enginePositionVec = reinterpret_cast<void *>(12);
+    player.update(100, true);
+    assert(engineIndex == 12 && enginePosition.x == 1.25f && enginePosition.y == -2.5f && enginePosition.z == 3.75f);
+    assert(engineVelocity.x == 1.25f && engineVelocity.y == -2.5f && engineVelocity.z == 3.75f);
+    player.transformMatrix.m[3] = 2.25f;
+    player.transformMatrix.m[7] = -4.5f;
+    player.transformMatrix.m[11] = 6.75f;
+    player.update(50, true);
+    assert(engineVelocity.x == 2 && engineVelocity.y == -4 && engineVelocity.z == 6);
+    assert(player.position[0] == 2.25f && player.position[1] == -4.5f && player.position[2] == 6.75f);
+    Globals::options[0x0f] = 0;
+    player.enginePositionVec = reinterpret_cast<void *>(static_cast<intptr_t>(-1));
+    player.engineSoundPlaying = 0;
+    player.damageTimer = 0;
     Globals::sound = nullptr;
     player.maxArmorHP = player.maxShieldHP = player.maxEmpPoints = 100;
     player.empDisabledByte = 1;

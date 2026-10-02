@@ -104,6 +104,19 @@ They are supplemental, not the gate denominator.
   `_work/player_next_damage.json`, `_work/player_next_sound_flow.json`,
   `_work/player_next_timer_order.json`, `_work/player_next_shift.json`.
 
+## Continuation after 50884ca8
+
+- getPosition now directly returns AEMath::MatrixGetPosition(transformMatrix), as in original SDK.
+  Source-shape and linked-exact remain 100%; no old exact is lost in the focused report.
+  Native Player object imports only the namespaced MatrixGetPosition symbol; the incorrect
+  _Z17MatrixGetPositionPvPf import disappears. This is semantic/callee verification beyond
+  relocation-masked linked equality, not a claim that the metric proves correct callees.
+- Removed the global math shim declaration and its test double. Host test compiles the actual
+  getPosition body and checks nonzero mixed-sign matrix position against real AEMath.cpp.
+  update smoke also verifies audio index, velocities over two different intervals, and prior-position refresh.
+- Evidence `_work/player_position_api.json`, `_work/player_position_smoke.log`,
+  `_work/native_position.log`, `_work/all_arm_position.log`, `_work/full_position.json`.
+
 ## Trials and unresolved dependencies
 
 - Initial package: source shape 98.268687% unique / 95.862076% weighted, no exact loss.
@@ -119,10 +132,9 @@ They are supplemental, not the gate denominator.
   the latest original-style zero-byte write reaches 100% and exact equality without losing NaN behavior.
 - A typed Hud* local trial was rejected: PlayerEgo::getHUD is still int in this checkpoint.
   Restoring that foreign API is outside Player ownership. Existing 64-bit pointer truncation
-  through getHUD/getCampaignMission and the legacy getPosition MatrixGetPosition shim remain risks. Native Player object still imports
-  _Z17MatrixGetPositionPvPf alongside the real namespaced method; original SDK confirms
-  getPosition calls the namespaced method. Relocation-masked linked_equal cannot prove
-  external callee identity; actual getPosition API replacement is the next own-scope trial. The setEnemies shim was removed.
+  through getHUD/getCampaignMission remain risks; restoring those foreign APIs is outside ownership.
+  getPosition's global MatrixGetPosition shim was removed in the latest continuation.
+  Relocation-masked linked_equal alone cannot prove external callee identity.
 - **Gun blocker:** original Player at 0xa3e8a tests R0 after Gun::shoot; shootAt likewise returns
   success at 0xa3b20. The checkpoint Gun headers/bodies declare void. Player still cannot
   reproduce the original success/failure-dependent sound, timer, shake and return flow safely.
@@ -143,12 +155,12 @@ They are supplemental, not the gate denominator.
 - Native UCRT64 `gof2`: clean worktree configure, complete build, and final rebuild all succeed;
   output `cmake-build-ucrt/libgof2.a`. Pre-existing warnings in other units remain.
 - All **204/204** ARM translation units recompiled using the canonical NDK r18b clang flags:
-  `_work/all_arm_next.log`, failed []. ARM header static assertions passed.
+  `_work/all_arm_position.log`, failed []. ARM header static assertions passed.
 - `python tools/test_player_recovery.py --so _work/bins/android_2.0.16_libgof2hdaa.so` passes.
   It compiles actual focused Player bodies extracted from the current source, with explicit audio,
   Matrix-constructor and Gun constructor/destructor/setEnemies boundary doubles. Tests EMP duration/elapsed separation,
   equality boundary, finite shake clamp, timer clear, full EMP damage reset, spawnedFlag preservation,
-  gamma zero/NaN handling, hit-vector writes, poisoned-memory constructor initialization,
+  gamma zero/negative-zero/NaN/infinite-damage handling, matrix position, hit-vector writes, poisoned-memory constructor initialization,
   negative/out-of-range gun slot, independent enemy-list copies and propagation to Gun,
   addEnemy for empty/populated lists, and audio-object reload after isPlaying (playing and stopped branches). Both sound tables match the original bytes.
   This is a focused host regression test, not full native executable gameplay or ARM runtime proof.
@@ -175,14 +187,15 @@ They are not Player member bodies and are excluded from the fixed 99-body gate.
 The earlier 2dfe6132 continuation left existing non-Player member/helper metrics unchanged against c5874214.
 
 Lost linked-exact pairs: 0. Lost byte-exact pairs: 0.
-Also zero linked/byte exact-pair losses against 2dfe6132. Continuation gains:
-1 linked and
-1 byte pairs.
+Also zero linked/byte exact-pair losses against 50884ca8. Continuation gains:
+0 linked and
+0 byte pairs.
 Gained linked pairs: 13; gained byte pairs:
 7. Existing missing/wrong-signature gaps are
 checkpoint limitations and were not repaired by touching foreign families.
 Reports `_work/full_baseline.json`, `_work/full_final.json` (previous commit), and
-`_work/full_resume.json` (2dfe6132), and `_work/full_next.json` (latest continuation)
+`_work/full_resume.json` (2dfe6132), `_work/full_next.json` (50884ca8),
+and `_work/full_position.json` (latest continuation)
 remain generated local evidence.
 
 ## Remaining weighted gap
@@ -204,7 +217,7 @@ Addresses and aliases were frozen before edits. A changed metric alone is not a 
 |---|---|---:|---:|---:|---|---|---|
 | 0x000a2570 | `_ZN6PlayerC1Eiiiii`, `_ZN6PlayerC2Eiiiii` | 162 | 94.0 -> 96.7 | 88.1 -> 94.4 | 0 -> 0 | 0 -> 0 | accepted |
 | 0x000a2730 | `_ZN6Player16updateDamageRateEv` | 34 | 100.0 -> 100.0 | 100.0 -> 100.0 | 0 -> 0 | 0 -> 0 | unchanged |
-| 0x000a2858 | `_ZN6Player11getPositionEv` | 5 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 0 -> 0 | unchanged |
+| 0x000a2858 | `_ZN6Player11getPositionEv` | 5 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 0 -> 0 | accepted |
 | 0x000a2864 | `_ZN6PlayerD1Ev`, `_ZN6PlayerD2Ev` | 50 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 0 -> 0 | unchanged |
 | 0x000a29c6 | `_ZN6Player18setShootingEnabledEb` | 2 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 1 -> 1 | unchanged |
 | 0x000a29cc | `_ZN6Player10isAsteroidEv` | 9 | 95.6 -> 100.0 | 88.9 -> 100.0 | 0 -> 1 | 0 -> 1 | accepted |

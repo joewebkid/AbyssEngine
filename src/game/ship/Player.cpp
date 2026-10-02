@@ -68,8 +68,6 @@ struct SlaveLink {
 static_assert(__builtin_offsetof(SlaveLink, player) == 4, "SlaveLink.player must be at +4");
 #endif
 
-void MatrixGetPosition(void *out, float *matrix);
-
 void Player::pitchAllPrimaryGuns(float pitch) {
     if (this->guns != 0) {
         Array<Gun *> *prim = this->guns->data()[0];
@@ -579,9 +577,7 @@ Player::Player(int radius, int hitpoints, int numPrimary, int numSecondary, int 
 }
 
 Vector Player::getPosition() {
-    Vector out;
-    MatrixGetPosition(&out, this->transform);
-    return out;
+    return AbyssEngine::AEMath::MatrixGetPosition(this->transformMatrix);
 }
 
 void Player::damageGamma(float amount) {
