@@ -727,3 +727,38 @@ applicable evidence; no repeat full build was required for this report-only
 change. Means remain **97.10% unweighted / 97.30% weighted**, exact sets remain
 2,079 linked / 959 raw with no losses. The >=99.0% goal remains unmet. These
 negative trials do not demonstrate an objective compiler ceiling.
+
+## Continuation: tangent Vector copies and loop induction variables
+
+Eleven isolated MeshReadData trials from `06dd8dc2` produce no improvement in
+the requested recorded source score. Every source trial was restored, with
+tracked status clean before this report-only addition. Flags, matcher and
+fixed-body denominator are unchanged.
+
+| Trial | Read source / strict | Compiled instructions |
+|---|---|---:|
+| memcpy of normalized tangent output | 97.2 / 51.8 | 869 |
+| memcpy of binormal output | 97.2 / 52.1 | 869 |
+| memcpy of both outputs | 97.1 / 52.0 | 867 |
+| memcpy of the normal/accumulator inputs | 97.2 / 52.4 | 870 |
+| memcpy of inputs and both outputs | 97.0 / 53.4 | 866 |
+| Remaining-vertex counter in final tangent loop | 96.6 / 53.5 | 858 |
+| Remaining-vertex counter in zeroing loop | 96.7 / 52.7 | 858 |
+| Remaining-vertex counters in both loops | 97.3 / 51.9 | 872 |
+| Remaining-triangle counter | 96.8 / 50.5 | 869 |
+| Independent triangle index offset | 97.3 / 51.9 | 871 |
+| Independent final vertex component offset | 97.3 / 51.9 | 871 |
+
+Original Android copies the tangent result with word loads/stores at
+`0x6ce2e..0x6ce40`; this motivated testing small memcpy forms, not asserting
+the original source called memcpy. It decrements the final vertex counter at
+`0x6ce54` and tests it at `0x6ce66`, motivating the remaining-counter trials.
+Matching these particular source forms does not improve recorded source-shape;
+their strict-score gains alone do not meet the requested objective. The
+existing component stores and vertex loops are retained.
+
+No implementation or test changed, so the preceding 204-TU ARM corpus/native
+library/parser/body validation remains applicable. Fixed scores stay Create
+96.2 / Read 97.3 / Enhanced 97.8; means **97.10% unweighted / 97.30% weighted**.
+Exact pair sets stay 2,079 linked / 959 raw with no losses. The >=99.0% gate
+remains unmet; these trials do not demonstrate a compiler ceiling.
