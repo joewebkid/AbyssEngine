@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **96.93% unweighted / 97.08% weighted**.
+Latest validated continuation: source **97.00% unweighted / 97.15% weighted**.
 The result tables below preserve earlier measurements. Chronological continuation
 sections record later per-body results, corpus evidence and rejected trials.
 
@@ -501,3 +501,56 @@ change remains, so the prior full ARM/native/parser gate and its exact sets
 remain authoritative; no repeat full build was necessary. Current means remain
 **96.93% unweighted / 97.08% weighted**. The >=99.0% gate is unmet, and these
 specific negative results do not establish an objective compiler ceiling.
+
+## Continuation: enhanced loop forms and positive attachment branch
+
+Five isolated, ordinary C++ source trials used the unchanged canonical ARM
+flags and matcher. Only the positive attachment branch improved source-shape
+and was retained. The other four forms were restored.
+
+| Trial | Enhanced source / strict | Compiled instructions |
+|---|---|---:|
+| Unsigned axis index with <= 2 | 97.6 / 64.9 | 637 |
+| Signed axis index with <= 2 | 97.6 / 64.9 | 637 |
+| Signed indices for unsigned-short key counts | 97.6 / 64.9 | 637 |
+| Attach when signed key count >= 1, release otherwise | **97.8 / 64.9** | 637 |
+| Explicit signed count == 0 or < 0 | 97.6 / 64.9 | 637 |
+
+The retained `Mesh.cpp` change swaps the final if/else arms and inverts the
+signed predicate. It preserves attachment, range setup and cleanup behavior,
+including a negative signed count. Original Android instructions at
+`0x6c18a..0x6c190` load the key count, compare against 1 and branch with signed
+BLT to release. This supports the semantics, not a claim that the exact
+original C++ was recovered. No timing formula or section/channel behavior
+changed. No helper, flags or verifier changes enter the score.
+
+Fresh validation:
+
+- Native UCRT64 `gof2` static library build passed.
+- Production `Mesh.cpp` parser smoke passed, including populated/empty key
+  paths, unknown sections, signed V5 counts and every truncated V5 byte prefix.
+- All 204 ARM translation units rebuilt in `_work/attach-full`.
+- Full corpus: 4,619 comparisons; 4,274/4,524 original functions compared;
+  zero skipped, 250 missing (7 wrong type, 243 absent), 130 extra symbols.
+- Actual normalized `(unit, symbol)` sets equal the clean baseline:
+  linked-exact 2,079 and byte-exact 959; lost **[]**, gained **[]** for both.
+- 202 unaffected ARM objects are byte-identical to the clean baseline.
+  `AbyssEngine.o` equals the previous validated continuation; `Mesh.o` equals
+  the successful focused trial. Only those two objects differ from baseline.
+- Full mean strict 75.98%, source 88.99%; full report SHA-256
+  `7a82d5aea1a404e354419add0fc74025db662dcf538c33fffc5b115118268e86`.
+  Evidence: `_work/attach_full.json`, `_work/attach_three.json`,
+  `_work/attach_full_build.log`, `_work/attach_full_verify.log`,
+  `_work/attach_native.log`, `_work/attach_smoke.exe`.
+
+| Fixed unique body | Source-shape | Strict | Original instructions |
+|---|---:|---:|---:|
+| MeshCreateFromFile | 96.2% | 61.6% | 291 |
+| MeshReadData | 97.0% | 52.6% | 873 |
+| ReadEnhancedDataFromFile | 97.8% | 64.9% | 636 |
+
+Exactly these three bodies give **97.00% unweighted / 97.153333% weighted**
+(97.15% displayed), versus the preceding 96.93% / 97.08%. The >=99.0% gate
+remains unmet. No objective compiler ceiling is demonstrated. This validates
+the native library and bounded parser behavior; no native game executable or
+Android device runtime test was performed, and source-shape is not ABI proof.

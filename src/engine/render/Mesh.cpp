@@ -274,17 +274,17 @@ namespace AbyssEngine {
             }
         }
 
-        if ((int) anim->keyFrames.size() < 1) {
-            if (anim) {
-                anim->~Transform();
-                ::operator delete((void *) anim);
-            }
-        } else {
+        if ((int) anim->keyFrames.size() >= 1) {
             self->animation = anim;
             float rate = timeBetweenFrames;
             anim->animationStart = (int) rate;
             // Android uses a fixed upper bound and lets Transform clamp it to animationLength.
             anim->SetAnimationRangeInTime((long long) rate, 10000000LL);
+        } else {
+            if (anim) {
+                anim->~Transform();
+                ::operator delete((void *) anim);
+            }
         }
         return 1;
 
