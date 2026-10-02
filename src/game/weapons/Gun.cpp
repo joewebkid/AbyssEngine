@@ -189,10 +189,14 @@ void Gun::ignite() {
             if (weaponType == ITEM_SORT_EMP_BOMB && target->isAsteroid()) continue;
             if (!target->isActive()) continue;
             for (unsigned i = 0; i < count; ++i) {
-                Vector difference = positionArray[i];
-                basePos = difference;
-                Vector targetPosition = target->getPosition();
-                targetDir = targetPosition;
+                {
+                    Vector projectilePosition = positionArray[i];
+                    basePos = projectilePosition;
+                }
+                {
+                    Vector targetPosition = target->getPosition();
+                    targetDir = targetPosition;
+                }
                 targetDir -= basePos;
                 int distance = static_cast<int>(VectorLength(targetDir));
                 if (magnitude > distance) {
@@ -241,13 +245,19 @@ void Gun::ignite() {
                     } else {
                         target->damageEmp(static_cast<int>(scale * emp), friendGun);
                     }
-                    Vector normalized = VectorNormalize(targetDir);
-                    targetDir = normalized;
+                    {
+                        Vector normalized = VectorNormalize(targetDir);
+                        targetDir = normalized;
+                    }
                     target->setHitVector(targetDir.x, targetDir.y, targetDir.z);
-                    Vector projectileSpeed = directionArray[i];
-                    targetDir = projectileSpeed;
-                    Vector normalizedSpeed = VectorNormalize(targetDir);
-                    targetDir = normalizedSpeed;
+                    {
+                        Vector projectileSpeed = directionArray[i];
+                        targetDir = projectileSpeed;
+                    }
+                    {
+                        Vector normalizedSpeed = VectorNormalize(targetDir);
+                        targetDir = normalizedSpeed;
+                    }
                     lastHitKIPlayer = static_cast<int>(reinterpret_cast<intptr_t>(target->getKIPlayer()));
                     lifetimes[i] = -1;
                 }
@@ -612,8 +622,7 @@ void Gun::calcCharacterCollision() {
             int radius = useCustomRadius ? customRadius : enemy->radius;
             if (mine) radius *= 5;
             else if (scatter) {
-                Vector difference = center - level->getPlayer()->getPosition();
-                int distance = static_cast<int>(VectorLength(difference));
+                int distance = static_cast<int>(VectorLength(center - level->getPlayer()->getPosition()));
                 float factor;
                 if (enemy->getKIPlayer() && enemy->getKIPlayer()->_pad_0x71)
                     factor = radius * 0.5f;
@@ -688,9 +697,11 @@ collided:
                         }
                     }
                 }
-                Vector difference = center - position;
-                Vector normalized = VectorNormalize(difference);
-                directionArray[i] = normalized;
+                {
+                    Vector difference = center - position;
+                    Vector normalized = VectorNormalize(difference);
+                    directionArray[i] = normalized;
+                }
                 Vector movement = directionArray[i] * pitchRate;
                 Vector scaledMovement = movement * 100.0f;
                 positionArray[i] += scaledMovement;

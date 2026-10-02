@@ -14,10 +14,10 @@
   "current": {
     "bodies": 26,
     "original_instructions": 2393,
-    "source_unweighted": 99.48461538461538,
-    "source_weighted": 97.7898035938153,
-    "strict_unweighted": 93.49615384615385,
-    "strict_weighted": 70.82966987045549,
+    "source_unweighted": 99.53076923076924,
+    "source_weighted": 97.96581696615128,
+    "strict_unweighted": 94.13461538461539,
+    "strict_weighted": 73.30162975344756,
     "linked_exact": 19,
     "byte_exact": 13
   },
@@ -74,7 +74,7 @@
     },
     {
       "symbol": "_ZN3Gun22calcCharacterCollisionEv",
-      "match": 50.3,
+      "match": 50.6,
       "bytes_equal": false,
       "linked_equal": false,
       "n_target": 647,
@@ -173,41 +173,6 @@
         "control_inventory_match": 0.0,
         "call_count_match": 0.0,
         "size_match": 2.4,
-        "unit": "game/weapons/Gun"
-      },
-      "unique_original_body": true
-    },
-    {
-      "symbol": "_ZN3Gun6igniteEv",
-      "match": 78.1,
-      "bytes_equal": false,
-      "linked_equal": false,
-      "n_target": 351,
-      "n_base": 358,
-      "source_match": 97.2,
-      "instruction_inventory_match": 94.4,
-      "opcode_inventory_match": 95.6,
-      "control_flow_match": 97.8,
-      "ordered_control_flow_match": 93.3,
-      "control_inventory_match": 97.8,
-      "call_count_match": 100.0,
-      "size_match": 98.0,
-      "unit": "game/weapons/Gun",
-      "baseline": {
-        "symbol": "_ZN3Gun6igniteEv",
-        "match": 18.7,
-        "bytes_equal": false,
-        "linked_equal": false,
-        "n_target": 351,
-        "n_base": 109,
-        "source_match": 37.8,
-        "instruction_inventory_match": 41.0,
-        "opcode_inventory_match": 46.3,
-        "control_flow_match": 43.7,
-        "ordered_control_flow_match": 43.7,
-        "control_inventory_match": 43.7,
-        "call_count_match": 27.3,
-        "size_match": 30.8,
         "unit": "game/weapons/Gun"
       },
       "unique_original_body": true
@@ -316,6 +281,41 @@
         "unit": "game/weapons/Gun"
       },
       "unique_original_body": false
+    },
+    {
+      "symbol": "_ZN3Gun6igniteEv",
+      "match": 94.4,
+      "bytes_equal": false,
+      "linked_equal": false,
+      "n_target": 351,
+      "n_base": 350,
+      "source_match": 98.4,
+      "instruction_inventory_match": 97.3,
+      "opcode_inventory_match": 97.3,
+      "control_flow_match": 97.8,
+      "ordered_control_flow_match": 93.3,
+      "control_inventory_match": 97.8,
+      "call_count_match": 100.0,
+      "size_match": 99.7,
+      "unit": "game/weapons/Gun",
+      "baseline": {
+        "symbol": "_ZN3Gun6igniteEv",
+        "match": 18.7,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 351,
+        "n_base": 109,
+        "source_match": 37.8,
+        "instruction_inventory_match": 41.0,
+        "opcode_inventory_match": 46.3,
+        "control_flow_match": 43.7,
+        "ordered_control_flow_match": 43.7,
+        "control_inventory_match": 43.7,
+        "call_count_match": 27.3,
+        "size_match": 30.8,
+        "unit": "game/weapons/Gun"
+      },
+      "unique_original_body": true
     },
     {
       "symbol": "_ZN3Gun10getEnemiesEv",
@@ -1225,7 +1225,7 @@
       ]
     },
     "current": {
-      "avg_match": 76.14,
+      "avg_match": 76.15,
       "avg_source_match": 89.15,
       "count": 4625,
       "fuzzy_perfect": 2208,
@@ -1443,9 +1443,9 @@
     "object_newer_than_source_and_header": true
   },
   "input_sha256": {
-    "src\\game\\weapons\\Gun.cpp": "27b96d7863f7fb81c42aa861a879fcab93ded42f80d382d5d4ea67a7ee042ab2",
+    "src\\game\\weapons\\Gun.cpp": "7baed0aba176e5dac2ef36f72ea15ea439a51beaa5babc0351f4364494467efc",
     "src\\game\\weapons\\Gun.h": "400097d0e265812992483f4556cf6cfa63302d60978129c9211aae9bdd904f2c",
-    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "aa2fddd67bd12c3e740f7be749f65cf850d4e2f6169f12baf1598b91bd816d76",
+    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "2113f33a272afdaa28b1d0a70473c11fd1db37fec8149fc729a1ed93be208cd6",
     "_work\\gun-current\\verify\\.flags": "b7741d9045ccee7cadcb1e3f3027e57029d127537931305e306e50bc830d174c"
   }
 }
