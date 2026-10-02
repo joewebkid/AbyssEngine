@@ -29,17 +29,17 @@ SolarSystem::SolarSystem(int unk0, String displayName, int security,
 
 SolarSystem::~SolarSystem() {
     if (this->stationIds != nullptr) {
-        ArrayRemoveAll(*(this->stationIds));
+        ArrayRelease(*(this->stationIds));
         delete this->stationIds;
     }
     this->stationIds = nullptr;
     if (this->forbiddenGoods != nullptr) {
-        ArrayRemoveAll(*(this->forbiddenGoods));
+        ArrayRelease(*(this->forbiddenGoods));
         delete this->forbiddenGoods;
     }
     this->forbiddenGoods = nullptr;
     if (this->linkedSystemIds != nullptr) {
-        ArrayRemoveAll(*(this->linkedSystemIds));
+        ArrayRelease(*(this->linkedSystemIds));
         delete this->linkedSystemIds;
     }
     this->linkedSystemIds = nullptr;
