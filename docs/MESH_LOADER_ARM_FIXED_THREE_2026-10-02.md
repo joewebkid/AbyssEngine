@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **97.13% unweighted / 97.35% weighted**.
+Latest validated continuation: source **97.17% unweighted / 97.38% weighted**.
 The result tables below preserve earlier measurements. Chronological continuation
 sections record later per-body results, corpus evidence and rejected trials.
 
@@ -884,3 +884,60 @@ corpus/native library and reader/parser validation remains applicable. Exact
 sets remain 2,079 linked / 959 raw with no losses. Fixed means stay **97.13%
 unweighted / 97.35% weighted**. The >=99.0% goal remains unmet; these negative
 results do not prove a compiler ceiling or establish game/ABI readiness.
+
+## Continuation: optional enhanced count and presence storage
+
+Four valid isolated source trials from `68d4fc10` distinguish the final optional
+unsigned count/presence pair from the earlier rejected all-section count sharing.
+Canonical flags and matcher remain unchanged.
+
+| Trial | Enhanced source / strict | Compiled instructions |
+|---|---|---:|
+| Move optional count into enclosing block | 97.9 / 67.0 | 636 |
+| Move V5 presence into function scope | 97.0 / 59.6 | 639 |
+| Move signed V5 count outside channel loop | 97.7 / 66.9 | 638 |
+| Share only optional unsigned count and V5 presence | **97.9 / 67.5** | 636 |
+
+An initial scripted sharing trial accidentally redirected the signed V5 count
+read as well, leaving its own loop bound unwritten. That invalid trial's
+90.7/50.3/553 result is excluded from valid comparisons and was never retained.
+It was restored and replaced by a bounded substitution that explicitly asserts
+the signed V5 count/read remain intact. The corrected sharing trial is the
+last row above and is the only accepted change.
+
+Original Android optional-count read sets r1 = sp+28 at `0x6c0d2`, and its V5
+presence read sets the same address at `0x6c1c4`. The decompiler also identifies
+unsigned v66 at sp+0x1c and a separate signed V5 v64 at sp+0x16. The accepted
+source reuses one unsigned short for just those two reads; it preserves the
+separate signed channel count and all read-before-use/failure paths. This is
+source-backed storage reuse, not recovered exact C++ variable names.
+Enhanced source rises 97.8 -> 97.9, strict 64.9 -> 67.5; reported instructions
+636/636. Components: inventory 96.0, opcodes 97.5, control 96.3, calls 100.0,
+size 99.7. Equal reported instruction counts do not imply identical code.
+
+Native UCRT64 `gof2` library build passed, as did both enhanced and expanded
+reader/vector-math smoke tests. Enhanced smoke now checks two optional keys
+with V4 and with absent V5 presence, verifying the presence read overwrites the
+preceding count and skips the V5 channels. Existing signed counts and all
+truncated V5 byte prefixes still pass. No native game/device runtime was run.
+
+Fresh full ARM validation rebuilt all 204 translation units in
+`_work/optional-full`. Full corpus: 4,619 comparisons, zero skipped,
+4,274/4,524 originals compared, missing 250 (7 wrong type, 243 absent), extra
+130. Actual `(unit, symbol)` sets equal the clean baseline: linked-exact 2,079,
+byte-exact 959, lost [] and gained [] for each. Other 202 objects remain
+byte-identical to baseline; Core equals the preceding validated full object,
+and Mesh equals the corrected focused trial.
+Function-boundary comparison against the clean Git baseline also confirms both
+files and signatures are identical outside the three allowed bodies.
+
+Full strict/source means: 75.98/88.99. SHA-256: `fb73e36e062d4eb352d2c41f3f8526daa8ece1a265468f52803c1eaab585dc97`.
+Evidence: `_work/optional_full.json`, `_work/optional_three.json`,
+`_work/optional_full_build.log`, `_work/optional_full_verify.log`,
+`_work/optional_native.log`, `_work/optional_smoke.exe`,
+`_work/optional-read-smoke/`.
+
+Fixed source scores: Create 96.2, Read 97.4, Enhanced 97.9. The original
+291/873/636 weights still total 1,800. Means: **97.166667% unweighted / 97.382667% weighted** (97.17/97.38 displayed).
+The >=99.0% gate remains unmet; no objective compiler ceiling or game/ABI
+readiness is proven.

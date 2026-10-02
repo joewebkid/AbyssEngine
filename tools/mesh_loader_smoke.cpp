@@ -123,4 +123,18 @@ int main() {
     reset(stream.size()); Mesh signedCount;
     assert(signedCount.ReadEnhancedDataFromFile(1, 0x10) == 1);
     assert(keys.empty() && destroyed == 1 && cursor == stream.size());
+
+    // A populated optional group must not make an absent V5 block look present.
+    for (unsigned int flags : {0x8u, 0x10u}) {
+        header(); unknownGroups(); put<short>(2); put<unsigned short>(2);
+        put(8.0f); put(5.0f); put(2.0f); put(7.0f);
+        if (flags & 0x10) put<unsigned short>(0);
+        reset(stream.size()); Mesh optionalOnly;
+        assert(optionalOnly.ReadEnhancedDataFromFile(1, flags) == 1);
+        assert(keys.size() == 2 && cursor == stream.size());
+        assert(keys[0].channel == 0x200 && keys[0].time == 8 && keys[0].value == 5);
+        assert(keys[1].channel == 0x200 && keys[1].time == 2 && keys[1].value == 7);
+        assert(optionalOnly.hasAnimation == 0 && timeBetweenFrames == 2);
+        dispose(optionalOnly);
+    }
 }

@@ -224,12 +224,12 @@ namespace AbyssEngine {
                 }
             }
 
+            unsigned short optionalCount;
             if ((format & 0x18) != 0) {
                 if (AEFile::Read(2, &type, file) == 0) goto fail;
                 if (type == 2) {
-                    unsigned short count;
-                    if (AEFile::Read(2, &count, file) == 0) goto fail;
-                    for (unsigned int i = 0; i < count; ++i) {
+                    if (AEFile::Read(2, &optionalCount, file) == 0) goto fail;
+                    for (unsigned int i = 0; i < optionalCount; ++i) {
                         float value;
                         if (AEFile::Read(4, &value, file) == 0) goto fail;
                         updateTimeBetweenFrames(value);
@@ -241,9 +241,8 @@ namespace AbyssEngine {
             }
 
             if ((format & 0x10) != 0) {
-                unsigned short present;
-                if (AEFile::Read(2, &present, file) == 0) goto fail;
-                if (present != 0) {
+                if (AEFile::Read(2, &optionalCount, file) == 0) goto fail;
+                if (optionalCount != 0) {
                     for (int c = 0; c < 7; ++c) {
                         short count;
                         if (AEFile::Read(2, &count, file) == 0) goto fail;
