@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.030% unweighted / 98.18904% original-instruction
+implementation bodies measure **99.075% unweighted / 98.23125% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**85.845% / 78.41776%**, respectively. Source-shape is an inventory/control-flow
+**86.365% / 78.90546%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -799,6 +799,45 @@ Default 99% gate fails with the expected threshold message because the weighted
 mean is below 99. Its remaining deficit is 0.81095620 percentage points. No
 native executable/runtime test is claimed.
 
+## Follow-up after checkpoint 80ea89b1
+
+Constructor C1/C2 now spells the texture-15 campaign scale selection as direct
+setScaling calls, capturing campaign and then the corresponding system geometry
+before the second threshold choice. Android c6956 reads campaign, c695c..c6964
+loads geometry around the compare, then c6968..c696c selects scaling constants
+and c6980 performs the common scaling call. The retained code computed a local
+float default/ternary before reloading geometry for the final call.
+
+The new source retains texture/mission thresholds, repeated campaign getter calls
+and the fresh geometry read after that getter. Scale values remain
+0.012 default / 0.018 through mission 105 / 0.025 through mission 157.
+This matches verified data-flow shape; no original C++ spelling is claimed.
+The final compiler merges the direct source call branches into a common call,
+so no synthetic duplicate runtime calls were introduced.
+
+Focused package: _work/ctor-scale-nineteenth.json/log. C1 source 98.0% -> 98.9%,
+strict 84.2% -> 94.6%, original/current instructions 333/332 -> 333/333.
+Call count, ordered control-flow and control inventory each measure 100%.
+C2 agrees with C1 and remains excluded from both fixed means. All other focused
+rows are unchanged. Means: 99.075% / 98.23125%; strict: 86.365% / 78.90546%.
+The weighted target remains unmet.
+
+Original evidence: _work/ctor-original-direct.asm, ctor-android.c (IDA crosscheck).
+Current object: _work/nineteenth-current.asm. It reads campaign at 42e6 and
+geometry at 42ec..42f4 before loading selected constants. It still chooses
+CMP #106/ITE LT/LDRLT/LDRGE at 42f0..42fc, versus original CMP #105/ITE GT/
+LDRGT/LDRLE at c6960..c696c; these are equivalent signed integer predicates,
+not exact instruction equality. No full-ABI/runtime equivalence is claimed.
+Accepted StarMap.o SHA-256:
+c4889f58700542a9d753be6f4fd13ed53d4b4c15774c4a90cd9e5bb5b6448427.
+Previous inputs: _work/checkpoint18-focused.json/corpus.json.
+
+Native static-library build and all 204 ARM translation units passed. Complete
+full corpus: 4619 comparisons, zero skips. Baseline and checkpoint 80ea89b1
+preservation gates pass with zero exact-pair losses (2083 linked / 960 byte).
+The default target gate exits 1 with its expected threshold failure; the
+weighted deficit is 0.76875088 percentage points. Runtime remains untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -836,18 +875,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/eighteenth-corpus.log`; focused log:
-`_work/station-scale-order-eighteenth.log`; native log: `_work/native-eighteenth.log`.
+Latest full log: `_work/nineteenth-corpus.log`; focused log:
+`_work/ctor-scale-nineteenth.log`; native log: `_work/native-nineteenth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6 and f9e870cf, with no new gains or losses since
-7fc7701c. The latest comparison against f9e870cf preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf and 80ea89b1, with no new gains or losses since
+7fc7701c. The latest comparison against 80ea89b1 preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/eighteenth-gate.json, eighteenth-previous-gate.json and
-eighteenth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/nineteenth-gate.json, nineteenth-previous-gate.json and
+nineteenth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `d764429d2c6b0e74de8202f62eb3962e9c6c64722fefd82f3fc7a35fb3b41244`.
+final full JSON SHA-256: `a62937f0028cbcaa402098dd077fca36aa30f3cf1b4ec28291b25c31db7a5042`.
 
 
 ### Reproduction
@@ -884,7 +923,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.0% | 89.1% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/736 | 72.9% | 98.3% | 77.0% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/679 | 80.9% | 96.9% | 83.7% | - |
-| `_ZN7StarMapC1EbP7Missionbi` | 333/332 | 85.1% | 98.0% | 84.2% | - |
+| `_ZN7StarMapC1EbP7Missionbi` | 333/333 | 85.1% | 98.9% | 94.6% | - |
 | `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 99.3% | 97.4% | - |
 | `_ZN7StarMap11OnTouchMoveEii` | 265/255 | 81.3% | 98.4% | 79.2% | - |
 | `_ZN7StarMap7drawKeyEv` | 246/243 | 59.5% | 97.8% | 34.8% | - |

@@ -917,11 +917,14 @@ StarMap::StarMap(bool jumpMapMode, Mission *mission, bool param3, int param4)
         if (i != 0x1b) image = (uint16_t)(tex + 0x4696);
         AEGeometry *geom = new AEGeometry(image, Globals::Canvas, false);
         this->systemGeoms->data()[i] = geom;
-        float scale = 0.012f;
         if (this->systems->data()[i]->getTextureIndex() == 15 && Globals::status->getCurrentCampaignMission() <= 157) {
-            scale = Globals::status->getCurrentCampaignMission() <= 105 ? 0.018f : 0.025f;
+            int campaign = Globals::status->getCurrentCampaignMission();
+            AEGeometry *scaleGeom = this->systemGeoms->data()[i];
+            if (campaign > 105) scaleGeom->setScaling(0.025f, 0.025f, 0.025f);
+            else scaleGeom->setScaling(0.018f, 0.018f, 0.018f);
+        } else {
+            this->systemGeoms->data()[i]->setScaling(0.012f, 0.012f, 0.012f);
         }
-        this->systemGeoms->data()[i]->setScaling(scale, scale, scale);
         AEGeometry *positionGeom = this->systemGeoms->data()[i];
         float px = (float) ((int) (((100 - this->systems->data()[i]->getX()) / 100.0f) * 14000.0f) - 10000);
         float py = (float) ((int) (((100 - this->systems->data()[i]->getY()) / 100.0f) * 13000.0f) - 9000);
