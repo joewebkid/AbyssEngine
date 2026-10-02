@@ -1024,7 +1024,7 @@ uint32_t StarMap::OnTouchBegin(int x, int y) {
     return 0;
 }
 
-void StarMap::OnTouchMove(int x, int y) {
+int StarMap::OnTouchMove(int x, int y) {
     if (this->choiceVisible) {
         this->choiceWindow->OnTouchMove(x, y);
     } else if (!this->transitionIn && !this->transitionOut) {
@@ -1090,6 +1090,7 @@ void StarMap::OnTouchMove(int x, int y) {
             }
         }
     }
+    return 0;
 }
 
 void StarMap::drawKey() {
@@ -1167,6 +1168,8 @@ void StarMap::initStarSystem() {
             AEGeometry *geom = new AEGeometry((uint16_t)(this->stations->data()[stationIndex]->getTextureIndex() + 0x4704), Globals::Canvas, false);
             this->stationGeoms->data()[i] = geom;
             Matrix rotation;
+            rotation.m[10] = 1.0f;
+            rotation.m[13] = 1.0f;
             uint32_t angleSlot;
             do {
                 angleSlot = static_cast<AERandom *>(Globals::rnd)->nextInt(this->usedFlags->size());
@@ -1185,10 +1188,11 @@ void StarMap::initStarSystem() {
             int tex = this->stations->data()[stationIndex]->getTextureIndex();
             float scale = (float)(16 * stationScale[tex]) * 0.000015259f;
             this->stationGeoms->data()[i]->setScaling(scale, scale, scale);
-            this->scratchVector = AbyssEngine::AEMath::VectorNormalize(this->stationGeoms->data()[i]->getPosition());
+            Vector position = this->stationGeoms->data()[i]->getPosition();
+            position = AbyssEngine::AEMath::VectorNormalize(position);
             this->starSystemRoot->addChild(this->stationGeoms->data()[i]->transform);
             // Android ARM 0xc7580 + 0x3e8 literal is 0x00210200 (not a function pointer).
-            if ((tex <= 21 && (0x00210200u & (1u << tex))) ||
+            if ((static_cast<uint32_t>(tex) <= 21 && (0x00210200u & (1u << tex))) ||
                 Globals::status->orbitHasPlanetRing(this->stations->data()[stationIndex]->getIndex())) {
                 unsigned int ringTransform = 0xffffffffu;
                 Globals::Canvas->TransformCreate(ringTransform);
@@ -1392,9 +1396,11 @@ campaign_targets:
         }
     }
     float textX = this->scratchVector.x;
+    unsigned int textFont = Globals::font;
+    PaintCanvas *textCanvas = Globals::Canvas;
     int drawY = (int)(this->scratchVector.y + (float)(this->iconWidth >> 1) - 3.0f);
     if (stationMode) {
-        int textW = Globals::Canvas->GetTextWidth(Globals::font, this->stations->data()[index]->getName());
+        int textW = textCanvas->GetTextWidth(textFont, this->stations->data()[index]->getName());
         float drawX = textX - (float)(textW / 2);
         int current = Globals::status->getStation()->getIndex();
         if (current == this->stations->data()[index]->getIndex()) {
@@ -1430,7 +1436,7 @@ campaign_targets:
                                                           drawY, false);
         }
     } else {
-        int textW = Globals::Canvas->GetTextWidth(Globals::font, this->systems->data()[index]->getName());
+        int textW = textCanvas->GetTextWidth(textFont, this->systems->data()[index]->getName());
         int drawX = (int)(textX - (float)(textW / 2));
         if (this->pad_0xa8_a) this->systems->data()[index]->getIndex();
         int currentSystem = Globals::status->getSystem()->getIndex();
@@ -1516,7 +1522,6 @@ campaign_targets:
 }
 
 int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
-    Matrix matrix;
 
     Globals::Canvas->FogEnable(0, AbyssEngine::FogMode_dummy);
     this->autoMode = (uint8_t) param3;
@@ -1568,6 +1573,9 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     this->prevCamera = (uint32_t)Globals::Canvas->CameraGetCurrent();
     Globals::Canvas->CameraCreate(this->camera);
     Globals::Canvas->CameraSetPerspective(this->camera, 1.1504f, 200.0f, 64000.0f);
+    Matrix matrix;
+    matrix.m[10] = 1.0f;
+    matrix.m[13] = 1.0f;
     AbyssEngine::AEMath::MatrixSetTranslation(matrix, 0.0f, 0.0f, -2500.0f);
     AbyssEngine::AEMath::MatrixSetRotation(matrix, 0.0f, 3.1416f, 0.0f);
     AbyssEngine::AEMath::MatrixSetTranslation(matrix, (float)(20 * (int)this->cameraBaseX),
@@ -1634,12 +1642,12 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     this->jumpMapModeA = 0;
     this->jumpMapModeB = 0;
     this->exitRequested = 0;
-    String *back = (String *) ((GameText *) (Globals::gameText))->getText(0x190);
     this->backButton = new TouchButton(
-        *back, 0, Globals::w - ((Layout *) Globals::layout)->field_0x2c_rowHeight,
+        *Globals::gameText->getText(0x190), 0, Globals::w - ((Layout *) Globals::layout)->field_0x2c_rowHeight,
         Globals::h - ((Layout *) Globals::layout)->field_0x2c_rowHeight, 0x22);
+    ChoiceWindow *choice = new ChoiceWindow();
     this->systemPath = (Array<int> *) 0;
-    this->choiceWindow = new ChoiceWindow();
+    this->choiceWindow = choice;
     this->pathFinder = new SystemPathFinder();
 
     if (jumpMapMode && this->mode == 0) {

@@ -168,7 +168,7 @@ public:
 
     uint32_t OnTouchBegin(int x, int y);
 
-    void OnTouchMove(int x, int y);
+    int OnTouchMove(int x, int y);
 
     int OnTouchEnd(int x, int y);
 

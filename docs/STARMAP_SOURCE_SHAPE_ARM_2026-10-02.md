@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **98.655% unweighted / 97.67433% original-instruction
+implementation bodies measure **98.910% unweighted / 97.89768% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**84.915% / 76.70867%**, respectively. Source-shape is an inventory/control-flow
+**85.625% / 77.92259%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -316,6 +316,56 @@ instruction denominator and alias exclusions are unchanged. The 99% objective
 remains active and unmet; source-shape 100% for depart does not mean exact code
 or validated gameplay.
 
+## Follow-up after checkpoint 52079d64
+
+Checkpoint 52079d64 measured 98.655% / 97.67433%. This continuation edits
+StarMap.cpp/h, report and snapshots only. OnTouchMove improves
+**93.8% -> 98.4%**, strict **75.6% -> 79.2%**, instructions: 265/255.
+initStarSystem improves **96.1% -> 96.3%**, strict **74.6% -> 81.7%**,
+instructions: 710/680. init improves **97.7% -> 98.0%**, strict
+**72.6% -> 76.1%**, instructions: 750/737.
+
+- Correct OnTouchMove result from void to int and return zero on every path.
+  Original common exit 0xcab52 explicitly moves zero into r0. Original
+  ChoiceWindow::OnTouchMove and AEGeometry::setRotation are ordinary calls
+  followed by the common exit. The incorrect void prototype allowed tail
+  calls with duplicated guard checks and a different return register value.
+  This restores the observed native result without barriers or flag changes.
+- initStarSystem normalization writes a local position, not scratchVector:
+  getPosition at 0xc785c writes sp44, VectorNormalize at 0xc7866 writes sp32,
+  and Vector assignment at 0xc786e writes sp44. Remove the unintended member
+  mutation. Ring texture bound is unsigned, as cmp/bhi at 0xc7886/0xc788a
+  proves; negative signed indices no longer enter the shift expression.
+- Local Matrix initialization: initStarSystem's matrix base is sp128
+  (0xc76b2); init's matrix base is sp160 (0xc6dba). Each loads four float
+  words at matrix offset40 from Android ELF literals 0xc7d48/0xc7468:
+  bytes 0000803f000000000000803f0000803f, values [1,0,1,1]. Combined with
+  explicit word0/5/14 stores this proves identity with all three scale fields
+  equal1. The shared constructor currently sets m10 and m13 to zero. Repair
+  only those two differing fields in StarMap's local matrices. No shared
+  Matrix implementation or MatrixIdentity call is changed; no redundant
+  copies of already-correct identity words are added as instruction padding.
+  init constructs its matrix after CameraSetPerspective, matching Android.
+- init allocates TouchButton before querying its text through the direct new
+  expression, and constructs ChoiceWindow before resetting systemPath and
+  storing choiceWindow. Both restore original native callback/read order.
+- drawOnScreenInfo captures shared font/Canvas before branching for text width,
+  as original 0xc8920..0xc8958 does. The source form changed but generated
+  focused metrics are identical; no numerical gain is claimed for that edit.
+
+Packages: move-ninth-trial, station-ninth-trial, info-ninth-trial,
+matrix-ninth-trial, init-order-ninth-trial (accepted as ninth-focused).
+Evidence: _work/move-original-direct.asm, station-original-direct.asm,
+init-original-direct.asm, info-original-direct.asm, matrix-ninth-evidence.txt.
+Matrix.h/cpp and AEMath.cpp were inspected read-only to compare fields and
+setter contracts. A proposed Matrix-copy-width discrepancy was rejected:
+Matrix is already60 bytes, confirmed by its sizeof assertion. No size repair
+or source change was made for that rejected candidate.
+
+No native executable/runtime test is claimed. Source-shape and ABI-source
+repairs require runtime validation; remaining emitted inventories are not a
+proved compiler ceiling. Both requested 99% means remain below threshold.
+
 ## Evidence and version boundaries
 
 Primary reference is **Android ARMv7 GOF2 HD 2.0.16**,
@@ -429,7 +479,7 @@ for this checkpoint.
 
 Full corpus: **4619 comparisons, zero skips** in both clean baseline and final.
 Overall source-shape 88.99% -> 89.06%; ordered fuzzy
-75.97% -> 76.14% (including all corpus entries).
+75.97% -> 76.15% (including all corpus entries).
 Coverage remains 4274/4524 original functions, 250 missing (7 wrong-type / 243
 absent). Final extra symbols: 129, baseline: 130. Existing coverage gaps were
 not removed from reporting.
@@ -449,18 +499,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/eighth-corpus.log`; focused log:
+Latest full log: `_work/ninth-corpus.log`; focused log:
 `_work/station-seventh-trial.log` (copied report: seventh-focused.json); native log: `_work/native-seventh.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c and 42331c92, with no new gains or losses since
-7fc7701c. The latest comparison against 42331c92 preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92 and 52079d64, with no new gains or losses since
+7fc7701c. The latest comparison against 52079d64 preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/eighth-gate.json, eighth-previous-gate.json and
-eighth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/ninth-gate.json, ninth-previous-gate.json and
+ninth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `abe67bf3808e770f9b5f91e32bbe1a898ab6707bd3d2b2013740814312ab9575`.
+final full JSON SHA-256: `c7c5b50ce98bb5329acaa9fc8952e3e0a5e32103d7ed62b065efbd8461d648d2`.
 
 
 ### Reproduction
@@ -492,14 +542,14 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1221 | 78.9% | 97.9% | 64.9% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
 | `_ZN7StarMap6updateEi` | 971/953 | 76.6% | 97.7% | 82.3% | - |
-| `_ZN7StarMap4drawEv` | 916/906 | 49.7% | 98.0% | 83.2% | - |
-| `_ZN7StarMap4initEbP7Missionbi` | 750/740 | 72.9% | 97.3% | 67.0% | - |
-| `_ZN7StarMap14initStarSystemEv` | 710/673 | 80.9% | 96.1% | 74.6% | - |
+| `_ZN7StarMap4drawEv` | 916/909 | 49.7% | 98.3% | 87.6% | - |
+| `_ZN7StarMap4initEbP7Missionbi` | 750/737 | 72.9% | 98.0% | 76.1% | - |
+| `_ZN7StarMap14initStarSystemEv` | 710/680 | 80.9% | 96.3% | 81.7% | - |
 | `_ZN7StarMapC1EbP7Missionbi` | 333/332 | 85.1% | 98.0% | 84.2% | - |
 | `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 99.3% | 97.4% | - |
-| `_ZN7StarMap11OnTouchMoveEii` | 265/272 | 81.3% | 93.8% | 75.6% | - |
+| `_ZN7StarMap11OnTouchMoveEii` | 265/255 | 81.3% | 98.4% | 79.2% | - |
 | `_ZN7StarMap7drawKeyEv` | 246/243 | 59.5% | 97.8% | 34.8% | - |
-| `_ZN7StarMap6departEb` | 205/204 | 94.9% | 95.1% | 60.1% | - |
+| `_ZN7StarMap6departEb` | 205/205 | 94.9% | 100.0% | 88.3% | - |
 | `_ZN7StarMapD1Ev` | 69/70 | 92.0% | 99.4% | 95.0% | - |
 | `_ZN7StarMap6renderEv` | 47/47 | 95.7% | 99.6% | 97.9% | - |
 | `_ZN7StarMap10initLightsEv` | 21/21 | 87.8% | 100.0% | 100.0% | linked |
