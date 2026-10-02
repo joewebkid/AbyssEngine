@@ -1304,6 +1304,57 @@ remain unchanged. Full-corpus and native static-library results below remain
 those of 364ddd7d; no new full/native run is claimed. Weighted 99% remains
 unmet; native runtime remains untested.
 
+## Investigation after checkpoint 5bf36633
+
+No production source changes or new compiler experiments were made. A concrete
+normalization issue in the existing OnTouchEnd measurement was traced by
+read-only inspection of the unchanged verifier and original/accepted objects.
+This extends the previously noted raw-call/token discrepancy with addresses.
+
+Original raw machine code has 136 direct call sites and 19 indirect sites;
+current code has 134 direct and 19 indirect sites. A primary-ELF PLT-callee
+counter and current-object relocation counter agree that the only raw direct
+callee-count difference is the separate GameText::getText/ChoiceWindow::set
+pair for original text 3217. This counts static sites, not calls per execution;
+it does not prove an extra or missing gameplay action.
+
+Existing normalized tokens instead report 133 original direct calls versus
+134 current. Three real original call instructions are treated as pool data:
+
+| Original call | Callee | Range converted to data | Spurious pool-reference origin |
+|---|---|---|---|
+| cb6e0 | SolarSystem::getIndex | cb6e0..cb6e4 | cb37c |
+| cb6e8 | SolarSystem::systemIsInSystemRoutes | cb6e8..cb6ec | cb364 |
+| cb712 | StarMap::initStarSystem | cb710..cb718 | cb374 |
+
+cb364/cb374/cb37c are pool words referenced by real code at cb2b4/cb2fe/cb308.
+Stripped-target disassembly decodes the words themselves as PC-relative LDRs.
+The current literal normalizer scans those apparent LDRs and follows their
+spurious references into executable code. Its exact-boundary range test does
+not distinguish these apparent pool instructions from real references. The
+three calls above are then converted to .word tokens. The apparent reference
+from cb36c to cb4e0 overlaps hasEquipment at cb4e2, but that candidate range
+fails the exact-boundary proof and is not among the three removed calls.
+
+This explains why restoring a separate static warning pair cannot be evaluated
+by assuming the normalized call-count signal will approach its native raw
+count. It does not prove a maximum achievable score, remove the fixed 99%
+requirement, or justify extra calls, padding or register-forcing source edits.
+The verifier, literal normalization and original weights remain unchanged.
+
+Evidence: _work/end-original-direct.asm, accepted
+_work/station-textx-twentyeighth.asm, read-only target object
+cmake-build-match/verify/target/game/world/StarMap.o, and compact tracked
+snapshot docs/validation/starmap_2026-10-02_call_normalization.json.
+Detailed range data also remains in _work/thirtyfirst-normalized-calls.json.
+
+Accepted object SHA-256 was rechecked unchanged:
+1a12eaa4a0002c78e01fccc2a8a8b2a7aee04366607cd84e6fe97bfdace9879d.
+No new build/full-corpus result is claimed. Source means remain 99.160% /
+98.44298%, strict 86.985% / 80.79548%; existing full preservation and native
+static-library results remain valid for the unchanged production source.
+The weighted target is unmet, and native runtime remains untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
