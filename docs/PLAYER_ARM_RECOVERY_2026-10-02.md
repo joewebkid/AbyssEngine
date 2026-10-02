@@ -1,12 +1,12 @@
 # Player ARM recovery — 2026-10-02
 
-Status: **partial; unweighted source-shape passes 99.0%, instruction-weighted source-shape remains below 99.0%. The joint gate is NOT met.**
+Status: **complete for the requested Player source-shape gate: both fixed-denominator scores exceed 99.0%, with no lost linked-exact or byte-exact pairs. Native runtime gameplay remains unverified.**
 
 ## Isolation and evidence
 
 Branch `codex/player-arm-99-20261002`, worktree `A:/gof2-player-arm-99-20261002`.
 Base `f60694dd0ca578831cec832e7026b32644642d97`; main's dirty source was neither copied nor edited.
-This is the requested common clean checkpoint; later independent Gun/PlayerTurret/TargetFollowCamera/StarMap branch commits were not integrated.
+This is the requested common clean checkpoint; PlayerTurret/TargetFollowCamera/StarMap branch commits were not integrated. The only dependency import is Gun.cpp/Gun.h from pinned commit `5981e68f35a5abef8c83de9ee5eb0cc037a25c57`, explicitly authorized by the user on 2026-10-02 ("Да доделай все ок"). Files were copied from those Git blobs; no branch merge was performed.
 The 2026-09-27 Player report and its 96.80% figure describe uncommitted changes absent from this checkpoint.
 Fresh checkpoint results, not that historic snapshot, are the baseline here.
 
@@ -28,16 +28,16 @@ Total fixed weight: 2534.
 
 | Metric, 99 unique bodies | Baseline | Final |
 |---|---:|---:|
-| Source-shape, unweighted | 95.029293% | 99.431313% |
-| Source-shape, instruction-weighted | 87.325020% | 98.592028% |
-| Strict fuzzy, unweighted | 86.264646% | 95.135354% |
-| Strict fuzzy, instruction-weighted | 63.474665% | 79.532557% |
-| Linked-exact unique bodies | 47 | 58 |
+| Source-shape, unweighted | 95.029293% | 99.520202% |
+| Source-shape, instruction-weighted | 87.325020% | 99.127861% |
+| Strict fuzzy, unweighted | 86.264646% | 95.614141% |
+| Strict fuzzy, instruction-weighted | 63.474665% | 82.347040% |
+| Linked-exact unique bodies | 47 | 59 |
 | Byte-exact unique bodies | 43 | 50 |
 
 Historical-style symbol figures (101, aliases included): source 95.07% ->
-99.44%, strict 86.42% -> 95.21%,
-linked-exact 48 -> 59, byte-exact 43 -> 50.
+99.53%, strict 86.42% -> 95.68%,
+linked-exact 48 -> 60, byte-exact 43 -> 50.
 They are supplemental, not the gate denominator.
 
 ## Accepted changes
@@ -168,22 +168,22 @@ They are supplemental, not the gate denominator.
   identical metrics; discarded. Neither was applied to production.
 - Separate reports `_work/player_trial_emp_compares.json`, `_work/player_trial_emp_shared.json`,
   `_work/player_trial_damage_order.json`, `_work/player_trial_damage_hp_compare.json`,
-  `_work/player_trial_calc_loop.json`. Current report `_work/player_emp_damage_compare.json`;
+  `_work/player_trial_calc_loop.json`. Report at that checkpoint `_work/player_emp_damage_compare.json`;
   native `_work/native_emp_damage_compare.log`, smoke `_work/player_emp_damage_compare_smoke.log`,
   all-ARM `_work/all_arm_emp_damage_compare.log`, full `_work/full_emp_damage_compare.json`.
   Existing focused host tests pass; no new end-to-end damageEmp/medal/reputation runtime proof
   is claimed. Branch/field/call fidelity is supported by Android disassembly and focused comparison.
 
-## Read-only dependency discovery
+## Dependency discovery and authorized integration
 
 - codex/gun-arm-99-20261002 now declares bool Gun::shoot and bool Gun::shootAt.
   Its own report verifies success return against Android shootAt 0x152428 and the wrapper.
   The branch's overall weighted gate is still partial; that does not invalidate the separately
-  evidenced return contract. It has not been integrated into this Player worktree.
+  evidenced return contract. The pinned Gun.cpp/Gun.h were subsequently imported with explicit user authorization.
 - Audio flat-default, combined-guard, and positive-ID-branch trials gave no source improvement
   (96.0, 95.6, 93.8 respectively versus current 96.0); all were discarded.
-- Current Gun.h still declares void and remains outside ownership. A read-only combined
-  contract preview is the next action; it is not canonical completion evidence.
+- The initial checkpoint declared void. An isolated preview proved the Player flow before
+  authorization; final figures now come from canonical sources with the approved dependency.
 
 ## Trials and unresolved dependencies
 
@@ -203,14 +203,15 @@ They are supplemental, not the gate denominator.
   through getHUD/getCampaignMission remain risks; restoring those foreign APIs is outside ownership.
   getPosition's global MatrixGetPosition shim was removed in the latest continuation.
   Relocation-masked linked_equal alone cannot prove external callee identity.
-- **Gun blocker:** original Player at 0xa3e8a tests R0 after Gun::shoot; shootAt likewise returns
-  success at 0xa3b20. The checkpoint Gun headers/bodies declare void. Player still cannot
-  reproduce the original success/failure-dependent sound, timer, shake and return flow safely.
-  No fabricated bool-return ABI alias was introduced. The baseline unconditional post-shot
-  path still exists and is explicitly incomplete, including newly restored constants; it must
-  not be interpreted as validated success behavior. Gun owner must
-  provide a separately verified return contract, then Player bodies/callers can be completed.
-  Player's public shoot return remains void pending this cross-family contract.
+- **Gun return dependency resolved:** imported the owner's verified bool Gun::shoot/Gun::shootAt
+  contract and its implementations from the pinned commit. Gun's overall family gate is outside
+  this task; that owner report still records a partial weighted score. Player's four shoot overloads
+  now return bool according to original ARM flow: primary wrapper forwards the result;
+  secondary wrapper returns true. Secondary Matrix applies shake/timer/audio only after success.
+  Primary Matrix preserves a sticky false result for failed matching-ready empty-ammo shots,
+  lets a later successful shot return true, and applies effects only after success.
+  Slot arrays are reloaded after callbacks/iterations. Mine tests remain separate original-flow
+  expressions; no synthetic bool ABI aliases or compiler padding were introduced.
 - Reset/damage health-rate math can still divide by zero with zero maximum armor/shield/EMP;
   original behavior was preserved. Audio/world gameplay was not executed end to end.
   Engine index +0xf4 retains the legacy pointer-shaped field name/type for compatibility;
@@ -223,14 +224,14 @@ They are supplemental, not the gate denominator.
 - Native UCRT64 `gof2`: clean worktree configure, complete build, and final rebuild all succeed;
   output `cmake-build-ucrt/libgof2.a`. Pre-existing warnings in other units remain.
 - All **204/204** ARM translation units recompiled using the canonical NDK r18b clang flags:
-  `_work/all_arm_emp_damage_compare.log`, failed []. ARM header static assertions passed.
+  `_work/all_arm_final_contract.log`, failed []. ARM header static assertions passed.
 - `python tools/test_player_recovery.py --so _work/bins/android_2.0.16_libgof2hdaa.so` passes.
   It compiles actual focused Player bodies extracted from the current source, with explicit audio,
-  Matrix-constructor and Gun constructor/destructor/setEnemies boundary doubles. Tests EMP duration/elapsed separation,
+  Matrix-constructor and Gun constructor/destructor/setEnemies/shoot/shootAt boundary doubles. Tests EMP duration/elapsed separation,
   equality boundary, finite shake clamp, timer clear, full EMP damage reset, spawnedFlag preservation,
   gamma zero/negative-zero/NaN/infinite-damage handling, matrix position, hit-vector writes, poisoned-memory constructor initialization,
   negative/out-of-range gun slot, independent enemy-list copies and propagation to Gun,
-  addEnemy for empty/populated lists, and audio-object reload after isPlaying (playing and stopped branches). Both sound tables match the original bytes.
+  addEnemy for empty/populated lists, and audio-object reload after isPlaying (playing and stopped branches). Failed empty-ammo shots, failed nonempty-ammo shots, later successful guns, secondary effects and primary wrapper results also pass. Both sound tables match the original bytes. The Gun firing test doubles do not prove actual Gun runtime behavior.
   This is a focused host regression test, not full native executable gameplay or ARM runtime proof.
 - MSYS fork failures were bypassed by uncommitted worktree-local scripts invoking the same installed
   NDK executables directly; common tools/configs were not modified. Report formulas were unchanged.
@@ -239,10 +240,10 @@ Full corpus, exact **(unit, symbol)** pair-set comparison, not just counts:
 
 | Metric | Baseline | Final |
 |---|---:|---:|
-| Comparisons | 4619 | 4621 |
-| Source-shape mean | 88.99% | 89.09% |
-| Strict fuzzy mean | 75.97% | 76.17% |
-| Linked-exact | 2079 | 2092 |
+| Comparisons | 4619 | 4627 |
+| Source-shape mean | 88.99% | 89.26% |
+| Strict fuzzy mean | 75.97% | 76.36% |
+| Linked-exact | 2079 | 2102 |
 | Byte-exact | 959 | 966 |
 | Skipped | 0 | 0 |
 | Wrong signatures | 7 | 7 |
@@ -252,24 +253,26 @@ The earlier 2dfe6132 continuation added two comparison rows in the Player unit: 
 ArrayAdd<Player*> bulk-copy helpers (pointer/count and array overloads), both linked-exact.
 Their original addresses were already represented elsewhere: compared_unique remains 4274.
 They are not Player member bodies and are excluded from the fixed 99-body gate.
+The final Gun dependency emits six additional helper comparison pairs; original unique
+coverage stays 4274, and these helper rows do not enter the Player denominator.
 The earlier 2dfe6132 continuation left existing non-Player member/helper metrics unchanged against c5874214.
 
 Lost linked-exact pairs: 0. Lost byte-exact pairs: 0.
-Also zero linked/byte exact-pair losses against 71b3e4a3. Continuation gains:
-0 linked and
+Also zero linked/byte exact-pair losses against every saved full-corpus checkpoint listed below, including the immediately preceding 4ffa7c50 corpus. Continuation gains:
+10 linked and
 0 byte pairs.
-Gained linked pairs: 13; gained byte pairs:
+Gained linked pairs: 23; gained byte pairs:
 7. Existing missing/wrong-signature gaps are
-checkpoint limitations and were not repaired by touching foreign families.
+remaining corpus limitations; only the explicitly approved Gun dependency was imported.
 Reports `_work/full_baseline.json`, `_work/full_final.json` (previous commit), and
 `_work/full_resume.json` (2dfe6132), `_work/full_next.json` (50884ca8),
 `_work/full_position.json` (20c31541), and `_work/full_expression_gamma.json` (ffe73a11), and `_work/full_ctor_calc_status.json` (71b3e4a3), and `_work/full_emp_damage_compare.json` (latest continuation)
 remain generated local evidence.
 
-## Remaining weighted gap
+## Remaining compiler differences
 
-The fixed weighted score is 98.592028%, leaving
-0.407972 percentage points to the 99.0% threshold.
+The fixed weighted score is 99.127861%, exceeding the 99.0% threshold by
+0.127861 percentage points.
 The largest remaining weighted deficits are listed by the fixed body table below.
 This ranks the remaining work; it does not assign every mismatch to a semantic error.
 Constructor store scheduling (strict only), Pause/StopEngineSound shrink-wrapped
@@ -367,11 +370,11 @@ Addresses and aliases were frozen before edits. A changed metric alone is not a 
 | 0x000a39dc | `_ZN6Player14refillGunDelayEi` | 22 | 100.0 -> 100.0 | 90.9 -> 90.9 | 0 -> 0 | 0 -> 0 | unchanged |
 | 0x000a3a14 | `_ZN6Player14stopShootSoundEii` | 30 | 72.0 -> 100.0 | 45.8 -> 96.7 | 0 -> 0 | 0 -> 0 | accepted |
 | 0x000a3a64 | `_ZN6Player14playShootSoundEiiPN11AbyssEngine6AEMath6VectorEf` | 76 | 71.3 -> 96.0 | 32.0 -> 66.7 | 0 -> 0 | 0 -> 0 | accepted |
-| 0x000a3b20 | `_ZN6Player5shootEixbN11AbyssEngine6AEMath6MatrixE` | 149 | 86.6 -> 97.6 | 42.5 -> 57.7 | 0 -> 0 | 0 -> 0 | accepted partial; Gun return unresolved |
+| 0x000a3b20 | `_ZN6Player5shootEixbN11AbyssEngine6AEMath6MatrixE` | 149 | 86.6 -> 100.0 | 42.5 -> 96.0 | 0 -> 0 | 0 -> 0 | accepted; verified Gun bool contract |
 | 0x000a3cbc | `_ZN6Player12stopShootingEi` | 31 | 98.7 -> 100.0 | 87.1 -> 90.3 | 0 -> 0 | 0 -> 0 | unchanged |
 | 0x000a3d08 | `_ZN6Player12stopShootingEii` | 34 | 93.0 -> 100.0 | 70.4 -> 91.2 | 0 -> 0 | 0 -> 0 | accepted |
-| 0x000a3d5c | `_ZN6Player5shootEiixbN11AbyssEngine6AEMath6MatrixE` | 178 | 71.5 -> 91.4 | 38.2 -> 34.5 | 0 -> 0 | 0 -> 0 | accepted partial; Gun return unresolved |
-| 0x000a3f30 | `_ZN6Player5shootEixb` | 39 | 46.5 -> 96.9 | 5.7 -> 93.5 | 0 -> 0 | 0 -> 0 | accepted |
+| 0x000a3d5c | `_ZN6Player5shootEiixbN11AbyssEngine6AEMath6MatrixE` | 178 | 71.5 -> 96.8 | 38.2 -> 42.2 | 0 -> 0 | 0 -> 0 | accepted; verified Gun bool contract |
+| 0x000a3f30 | `_ZN6Player5shootEixb` | 39 | 46.5 -> 97.9 | 5.7 -> 94.9 | 0 -> 1 | 0 -> 0 | accepted |
 | 0x000a3f9e | `_ZN6Player5shootEiixb` | 39 | 46.9 -> 100.0 | 9.3 -> 100.0 | 0 -> 1 | 0 -> 0 | accepted |
 | 0x000a4014 | `_ZN6Player15PlayEngineSoundEiPN11AbyssEngine6AEMath6VectorE` | 43 | 95.2 -> 100.0 | 46.3 -> 100.0 | 0 -> 1 | 0 -> 0 | accepted |
 | 0x000a4088 | `_ZN6Player16PauseEngineSoundEv` | 13 | 75.7 -> 90.1 | 43.5 -> 74.1 | 0 -> 0 | 0 -> 0 | accepted |
@@ -382,3 +385,12 @@ Addresses and aliases were frozen before edits. A changed metric alone is not a 
 | 0x000a42dc | `_ZN6Player4healEf` | 29 | 88.4 -> 88.4 | 73.3 -> 73.3 | 0 -> 0 | 0 -> 0 | no-gain trial; semantics unchanged |
 | 0x000a433a | `_ZN6Player19pitchAllPrimaryGunsEf` | 16 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 1 -> 1 | unchanged |
 | 0x000a4360 | `_ZN6Player11replaceGunsEiiiiib` | 1 | 76.7 -> 100.0 | 66.7 -> 100.0 | 0 -> 1 | 0 -> 1 | accepted |
+
+## Final integrated validation
+
+Canonical source evidence: `_work/player_final_contract.json` and `_work/full_final_contract.json`.
+Native build: `_work/native_final_contract.log`; all ARM units: `_work/all_arm_final_contract.log`.
+Full corpus: `_work/full_final_contract.log`. All are local generated evidence.
+The tests compile all four real Player shoot bodies and use explicit Gun success/failure doubles.
+The native deliverable checked here is a static library, not an executable game session.
+No push, PR, branch merge or edits to the main checkout were performed.

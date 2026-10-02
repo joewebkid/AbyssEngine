@@ -14,17 +14,19 @@ root = Path(__file__).resolve().parents[1]
 source = (root / 'src/game/ship/Player.cpp').read_text()
 names = ['Player', '~Player', 'updateDamageRate', 'update', 'setHitVector', 'StopEngineSound',
          'reset', 'resetDamageDoneByPlayer', 'damageGamma', 'setEnemies', 'setEnemy',
-         'addEnemy', 'gunAvailable', 'playShootSound', 'getPosition', 'setGammaHP']
+         'addEnemy', 'gunAvailable', 'playShootSound', 'getPosition', 'setGammaHP', 'shoot']
 parts = [source[:source.index('void Player::pitchAllPrimaryGuns')]]
+parts += re.findall(r'^static const float k_shoot(?:At)?_inc[^\n]*;', source, re.M)
 for name in names:
-    match = re.search(r'^.*Player::' + re.escape(name) + r'\([^\n]*\) \{', source, re.M)
-    assert match, name
-    depth = 1
-    end = match.end()
-    while depth:
-        depth += (source[end] == '{') - (source[end] == '}')
-        end += 1
-    parts.append(source[match.start():end])
+    matches = list(re.finditer(r'^.*Player::' + re.escape(name) + r'\([^\n]*\) \{', source, re.M))
+    assert matches, name
+    for match in matches:
+        depth = 1
+        end = match.end()
+        while depth:
+            depth += (source[end] == '{') - (source[end] == '}')
+            end += 1
+        parts.append(source[match.start():end])
 parts.append('int Player::velocity = 100;')
 work = root / '_work/player-smoke'
 work.mkdir(parents=True, exist_ok=True)

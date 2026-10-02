@@ -52,8 +52,15 @@ FMOD::Event *FModSound::updateEvent3DAttributes(FMOD::Event *event, int index, V
 }
 FModSound *FModSound::stop(FMOD::Event *) { return nullptr; }
 Gun::~Gun() noexcept(false) {}
-Gun::Gun(int, int, int, int, int, int, float, Vector, Vector) : enemies(nullptr) {}
+Gun::Gun(int, int, int, int, int, int, float, Vector, Vector) : positionArray(), directionArray(), upArray(), hitArray(), enemies(nullptr) {}
 void Gun::setEnemies(Array<Player *> *value) { enemies = value; } // Gun boundary double.
+
+static Gun *failureGun;
+static bool allFail;
+static int shotCalls;
+void Gun::ignite() { assert(false); }
+bool Gun::shoot(Matrix, int, bool) { ++shotCalls; return !allFail && this != failureGun; }
+bool Gun::shootAt(Matrix, int, Player *, bool) { ++shotCalls; return !allFail && this != failureGun; }
 
 // Constructor boundary: production Matrix assignment/math come from AEMath.cpp.
 AbyssEngine::AEMath::Matrix::Matrix() {
@@ -185,6 +192,45 @@ int main() {
         float expected = static_cast<float>(value);
         if (value > 100 && value != 9999999) expected = 100.0f;
         assert(player.gammaHP == expected);
+    }
+    {
+        Player shooter(10, 100, 0, 0, 0);
+        shooter.playShootSoundFlag = 0;
+        Array<Gun *> *slot = new Array<Gun *>();
+        Gun *first = new Gun(0, 0, 0, 0, 0, 0, 0, Vector{}, Vector{});
+        Gun *second = new Gun(0, 0, 0, 0, 0, 0, 0, Vector{}, Vector{});
+        for (Gun *g : {first, second}) {
+            g->weaponType = static_cast<ItemSort>(1);
+            g->itemIndex = 99;
+            g->timer = 10;
+            g->fireDelay = 1;
+            g->ammoCount = 0;
+            g->field_0x89 = 0;
+        }
+        ArrayAdd(first, *slot);
+        shooter.guns->data()[0] = slot;
+        allFail = true;
+        assert(!shooter.shoot(0, 99, 42LL, false));
+        assert(first->timer == 10 && shooter.flShake == 0 && shotCalls == 1);
+        first->ammoCount = 1;
+        assert(shooter.shoot(0, 99, 42LL, false));
+        assert(first->timer == 10 && shooter.flShake == 0);
+        first->ammoCount = 0;
+        ArrayAdd(second, *slot);
+        failureGun = first;
+        allFail = false;
+        assert(shooter.shoot(0, 99, 42LL, false));
+        assert(first->timer == 10 && second->timer == 0);
+        assert(std::fabs(shooter.flShake - 0.008f) < 0.000001f);
+        second->timer = 10;
+        shooter.flShake = 0;
+        allFail = true;
+        assert(shooter.shoot(0, 42LL, false));
+        assert(first->timer == 10 && second->timer == 10 && shooter.flShake == 0);
+        allFail = false;
+        assert(shooter.shoot(0, 42LL, false));
+        assert(first->timer == 10 && second->timer == 0);
+        assert(std::fabs(shooter.flShake - 0.008f) < 0.000001f);
     }
     std::puts("Player recovery host smoke: OK");
 }
