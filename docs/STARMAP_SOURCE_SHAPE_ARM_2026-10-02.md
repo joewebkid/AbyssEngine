@@ -6,7 +6,7 @@
 implementation bodies measure **99.165% unweighted / 98.45998% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.185% / 81.46895%**, respectively. Source-shape is an inventory/control-flow
+**87.155% / 81.38690%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -1701,6 +1701,47 @@ remain the accepted 0db68768 validations. Means stay 99.165% / 98.45998%
 source and 87.185% / 81.46895% strict; weighted 99% remains unmet.
 These negative results do not prove a compiler ceiling or runtime equivalence.
 
+## Follow-up after checkpoint 5176204a
+
+The station-projection phase of update now assigns MatrixGetPosition to
+this->scratchVector2 and passes that member to GetScreenPosition, replacing
+its previously used local tmp. The local tmp remains for transition easing.
+
+Primary Android c9c4c creates this+132 (0x84) in r6. MatrixGetPosition at
+c9c8a produces a temporary, Vector::operator= at c9c92 writes to r6, and
+c9ca4/c9ca6 passes the same member to GetScreenPosition. Accepted-before
+code instead assigns a temporary to sp+48 at 32a8..32ac and passes that
+stack address at 32be/32c0. New object creates this+132 at 3268, assigns
+through it at 32aa..32ae and passes it at 32c0/32c2. This repairs the native
+member write and argument identity; no runtime execution or complete ABI
+equivalence is claimed. The generated member address proves offset 0x84;
+existing layout assertions check the surrounding scratchVector (0x78) and
+stationGeoms (0x90) offsets and total size. Shared headers and verifier were
+not edited.
+
+Focused update source remains 98.5%; instruction inventory improves
+96.7% -> 96.8%, while strict decreases 82.1% -> 81.5%. Instructions remain
+971/966. Every other focused row is unchanged. The correction is retained
+for its proven member write even though it is not a source-score gain and
+strict scheduling changes unfavorably. Fixed source means remain 99.165% /
+98.45998%; strict means become 87.155% / 81.38690%. Weighted 99% remains unmet.
+
+204/204 ARM TUs compiled, zero failures; 22 focused comparisons, zero skips,
+six unique linked-exact and three unique byte-exact bodies. Native UCRT gof2
+static-library build passed. Native runtime remains untested. Evidence:
+_work/station-scratch-fortyfirst.json/log/asm, native-fortyfirst.log,
+update-original-direct.asm, init-fog-thirtyninth.asm and
+before-station-scratch-fortyfirst.cpp. Previous accepted reports are
+_work/checkpoint41-before-focused.json/corpus.json. New StarMap.o SHA-256:
+c191e84a4ae6496aaa22d842ee8d425e9b5bffef0aaf22a52a360a1cefe91a0f.
+
+Full corpus: 4619 comparisons, zero skips; 2083 linked-exact / 960 byte-exact.
+Baseline and previous accepted checkpoint 5176204a preservation gates passed
+with zero lost pairs (exit 0 each). Default 99% gate failed as expected
+(exit 1, StarMap >=99.0% target NOT reached). Corpus source/fuzzy means: 89.06% / 76.16%.
+Gate evidence: _work/fortyfirst-gate.json, fortyfirst-previous-gate.json,
+fortyfirst-target-gate.log. Full JSON SHA-256: b713428bfecf82526cc126615015d4d028638d0d1117e8653219ebe5ed9d53ce.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -1738,18 +1779,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/thirtyninth-corpus.log`; focused log:
-`_work/init-fog-thirtyninth.log`; native log: `_work/native-thirtyninth.log`.
+Latest full log: `_work/fortyfirst-corpus.log`; focused log:
+`_work/station-scratch-fortyfirst.log`; native log: `_work/native-fortyfirst.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
 50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against 9bd67af9 preserves all 2083
+7fc7701c. The latest comparison against 5176204a preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/thirtyninth-gate.json, thirtyninth-previous-gate.json and
-thirtyninth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/fortyfirst-gate.json, fortyfirst-previous-gate.json and
+fortyfirst-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `a97c5982f5b6aa1901449fa1e84dc4c4aa7602e8fbb9af2ae46d05633af1f442`.
+final full JSON SHA-256: `b713428bfecf82526cc126615015d4d028638d0d1117e8653219ebe5ed9d53ce`.
 
 
 ### Reproduction
@@ -1782,7 +1823,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 |---|---:|---:|---:|---:|---|
 | `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1196 | 78.9% | 98.9% | 79.2% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
-| `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.5% | 82.1% | - |
+| `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.5% | 81.5% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.0% | 89.1% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/736 | 72.9% | 98.3% | 77.1% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/683 | 80.9% | 97.3% | 84.7% | - |

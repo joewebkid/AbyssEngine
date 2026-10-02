@@ -1,5 +1,5 @@
 {
-  "avg_match": 87.93,
+  "avg_match": 87.9,
   "avg_source_match": 99.18,
   "count": 22,
   "fuzzy_perfect": 6,
@@ -111,13 +111,13 @@
     },
     {
       "symbol": "_ZN7StarMap6updateEi",
-      "match": 82.1,
+      "match": 81.5,
       "bytes_equal": false,
       "linked_equal": false,
       "n_target": 971,
       "n_base": 966,
       "source_match": 98.5,
-      "instruction_inventory_match": 96.7,
+      "instruction_inventory_match": 96.8,
       "opcode_inventory_match": 98.2,
       "control_flow_match": 98.0,
       "ordered_control_flow_match": 94.7,

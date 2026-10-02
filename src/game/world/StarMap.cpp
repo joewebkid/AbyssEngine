@@ -632,8 +632,8 @@ void StarMap::update(int dt) {
     }
     if (this->mode == 3 || this->transitionIn != 0 || this->transitionOut != 0) {
         for (uint32_t i = 0; i < this->stationPositions->size(); i++) {
-            tmp = AbyssEngine::AEMath::MatrixGetPosition(this->starSystemRoot->getMatrix() * this->stationGeoms->data()[i + 1]->getMatrix());
-            int visible = Globals::Canvas->GetScreenPosition(tmp, *this->stationPositions->data()[i]);
+            this->scratchVector2 = AbyssEngine::AEMath::MatrixGetPosition(this->starSystemRoot->getMatrix() * this->stationGeoms->data()[i + 1]->getMatrix());
+            int visible = Globals::Canvas->GetScreenPosition(this->scratchVector2, *this->stationPositions->data()[i]);
             this->stationPositions->data()[i]->z = visible != 0 ? 1.0f : -1.0f;
         }
     }
