@@ -28,15 +28,15 @@ Total fixed weight: 2534.
 
 | Metric, 99 unique bodies | Baseline | Final |
 |---|---:|---:|
-| Source-shape, unweighted | 95.029293% | 99.415152% |
-| Source-shape, instruction-weighted | 87.325020% | 98.442778% |
-| Strict fuzzy, unweighted | 86.264646% | 95.104040% |
-| Strict fuzzy, instruction-weighted | 63.474665% | 79.295225% |
+| Source-shape, unweighted | 95.029293% | 99.431313% |
+| Source-shape, instruction-weighted | 87.325020% | 98.592028% |
+| Strict fuzzy, unweighted | 86.264646% | 95.135354% |
+| Strict fuzzy, instruction-weighted | 63.474665% | 79.532557% |
 | Linked-exact unique bodies | 47 | 58 |
 | Byte-exact unique bodies | 43 | 50 |
 
 Historical-style symbol figures (101, aliases included): source 95.07% ->
-99.43%, strict 86.42% -> 95.18%,
+99.44%, strict 86.42% -> 95.21%,
 linked-exact 48 -> 59, byte-exact 43 -> 50.
 They are supplemental, not the gate denominator.
 
@@ -155,6 +155,36 @@ They are supplemental, not the gate denominator.
   native `_work/native_ctor_calc_status.log`, smoke `_work/player_ctor_calc_status_smoke.log`,
   all-ARM `_work/all_arm_ctor_calc_status.log`, full corpus `_work/full_ctor_calc_status.json`.
 
+## Continuation after 71b3e4a3
+
+- damageEmp uses accumulated-damage>maxEMP/3 and medal-count>=getValue in the original
+  operand order. Its positive EMP remainder branches to the shared final updateDamageRate,
+  matching original a308c -> a317e, while nonpositive EMP still executes all disable/medal logic.
+  The common update is real control flow, not a dead branch. Source-shape reaches 100%, strict
+  98.5%; remaining move scheduling prevents linked/raw equality. Target/body count both 194.
+- damage tests hp<maxHitpoints/3 in original operand order; source-shape 98.9 -> 99.2.
+- Explicit hardcore float-default ordering trial gave no source improvement beyond the HP
+  comparison and slightly worsened strict match; discarded. Canonical bubble-loop trial had
+  identical metrics; discarded. Neither was applied to production.
+- Separate reports `_work/player_trial_emp_compares.json`, `_work/player_trial_emp_shared.json`,
+  `_work/player_trial_damage_order.json`, `_work/player_trial_damage_hp_compare.json`,
+  `_work/player_trial_calc_loop.json`. Current report `_work/player_emp_damage_compare.json`;
+  native `_work/native_emp_damage_compare.log`, smoke `_work/player_emp_damage_compare_smoke.log`,
+  all-ARM `_work/all_arm_emp_damage_compare.log`, full `_work/full_emp_damage_compare.json`.
+  Existing focused host tests pass; no new end-to-end damageEmp/medal/reputation runtime proof
+  is claimed. Branch/field/call fidelity is supported by Android disassembly and focused comparison.
+
+## Read-only dependency discovery
+
+- codex/gun-arm-99-20261002 now declares bool Gun::shoot and bool Gun::shootAt.
+  Its own report verifies success return against Android shootAt 0x152428 and the wrapper.
+  The branch's overall weighted gate is still partial; that does not invalidate the separately
+  evidenced return contract. It has not been integrated into this Player worktree.
+- Audio flat-default, combined-guard, and positive-ID-branch trials gave no source improvement
+  (96.0, 95.6, 93.8 respectively versus current 96.0); all were discarded.
+- Current Gun.h still declares void and remains outside ownership. A read-only combined
+  contract preview is the next action; it is not canonical completion evidence.
+
 ## Trials and unresolved dependencies
 
 - Initial package: source shape 98.268687% unique / 95.862076% weighted, no exact loss.
@@ -193,7 +223,7 @@ They are supplemental, not the gate denominator.
 - Native UCRT64 `gof2`: clean worktree configure, complete build, and final rebuild all succeed;
   output `cmake-build-ucrt/libgof2.a`. Pre-existing warnings in other units remain.
 - All **204/204** ARM translation units recompiled using the canonical NDK r18b clang flags:
-  `_work/all_arm_ctor_calc_status.log`, failed []. ARM header static assertions passed.
+  `_work/all_arm_emp_damage_compare.log`, failed []. ARM header static assertions passed.
 - `python tools/test_player_recovery.py --so _work/bins/android_2.0.16_libgof2hdaa.so` passes.
   It compiles actual focused Player bodies extracted from the current source, with explicit audio,
   Matrix-constructor and Gun constructor/destructor/setEnemies boundary doubles. Tests EMP duration/elapsed separation,
@@ -225,7 +255,7 @@ They are not Player member bodies and are excluded from the fixed 99-body gate.
 The earlier 2dfe6132 continuation left existing non-Player member/helper metrics unchanged against c5874214.
 
 Lost linked-exact pairs: 0. Lost byte-exact pairs: 0.
-Also zero linked/byte exact-pair losses against ffe73a11. Continuation gains:
+Also zero linked/byte exact-pair losses against 71b3e4a3. Continuation gains:
 0 linked and
 0 byte pairs.
 Gained linked pairs: 13; gained byte pairs:
@@ -233,13 +263,13 @@ Gained linked pairs: 13; gained byte pairs:
 checkpoint limitations and were not repaired by touching foreign families.
 Reports `_work/full_baseline.json`, `_work/full_final.json` (previous commit), and
 `_work/full_resume.json` (2dfe6132), `_work/full_next.json` (50884ca8),
-`_work/full_position.json` (20c31541), and `_work/full_expression_gamma.json` (ffe73a11), and `_work/full_ctor_calc_status.json` (latest continuation)
+`_work/full_position.json` (20c31541), and `_work/full_expression_gamma.json` (ffe73a11), and `_work/full_ctor_calc_status.json` (71b3e4a3), and `_work/full_emp_damage_compare.json` (latest continuation)
 remain generated local evidence.
 
 ## Remaining weighted gap
 
-The fixed weighted score is 98.442778%, leaving
-0.557222 percentage points to the 99.0% threshold.
+The fixed weighted score is 98.592028%, leaving
+0.407972 percentage points to the 99.0% threshold.
 The largest remaining weighted deficits are listed by the fixed body table below.
 This ranks the remaining work; it does not assign every mismatch to a semantic error.
 Constructor store scheduling (strict only), Pause/StopEngineSound shrink-wrapped
@@ -318,8 +348,8 @@ Addresses and aliases were frozen before edits. A changed metric alone is not a 
 | 0x000a2f10 | `_ZN6Player12damageShieldEi` | 26 | 100.0 -> 100.0 | 100.0 -> 100.0 | 0 -> 0 | 0 -> 0 | unchanged |
 | 0x000a2f62 | `_ZN6Player11damageGammaEf` | 16 | 91.6 -> 100.0 | 54.5 -> 100.0 | 0 -> 1 | 0 -> 1 | accepted |
 | 0x000a2f96 | `_ZN6Player23resetDamageDoneByPlayerEv` | 5 | 92.0 -> 100.0 | 80.0 -> 100.0 | 0 -> 1 | 0 -> 1 | accepted |
-| 0x000a2fa4 | `_ZN6Player9damageEmpEib` | 194 | 94.6 -> 98.7 | 90.3 -> 95.4 | 0 -> 0 | 0 -> 0 | accepted |
-| 0x000a31c0 | `_ZN6Player6damageEibi` | 420 | 95.6 -> 98.9 | 39.3 -> 44.1 | 0 -> 0 | 0 -> 0 | accepted |
+| 0x000a2fa4 | `_ZN6Player9damageEmpEib` | 194 | 94.6 -> 100.0 | 90.3 -> 98.5 | 0 -> 0 | 0 -> 0 | accepted |
+| 0x000a31c0 | `_ZN6Player6damageEibi` | 420 | 95.6 -> 99.2 | 39.3 -> 44.1 | 0 -> 0 | 0 -> 0 | accepted |
 | 0x000a3694 | `_ZN6Player6damageEi` | 3 | 100.0 -> 100.0 | 100.0 -> 100.0 | 0 -> 0 | 0 -> 0 | unchanged |
 | 0x000a369e | `_ZN6Player11turnedEnemyEv` | 2 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 1 -> 1 | unchanged |
 | 0x000a36a4 | `_ZN6Player9turnEnemyEv` | 3 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 1 -> 1 | unchanged |

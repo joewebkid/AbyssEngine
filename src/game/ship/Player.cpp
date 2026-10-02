@@ -629,7 +629,7 @@ void Player::damageEmp(int amount, bool flag) {
             if (race == ((SolarSystem *) (intptr_t) Globals::status->getSystem())->getRace()) {
                 int prev = self->field_dc;
                 self->field_dc = prev + amount;
-                if (self->maxEmpPoints / 3 < prev + amount) {
+                if (prev + amount > self->maxEmpPoints / 3) {
                     self->turnedEnemyFlag = 1;
                     ((Level *) (self->kiPlayer->level))->friendTurnedEnemy(self->kiPlayer->shipGroup);
                 }
@@ -640,10 +640,7 @@ void Player::damageEmp(int amount, bool flag) {
     {
         int ep = self->empPoints - amount;
         self->empPoints = ep;
-        if (ep > 0) {
-            self->updateDamageRate();
-            return;
-        }
+        if (ep > 0) goto lab_317e;
     }
     if (!flag && self->kiPlayer != 0) {
         if (self->alwaysEnemy == 0 &&
@@ -684,7 +681,7 @@ void Player::damageEmp(int amount, bool flag) {
             if (Achievements::gAchievements->hasMedal(0x2a, 1) == 0) {
                 int cnt = Globals::status->field_134 + 1;
                 Globals::status->field_134 = cnt;
-                if (Achievements::gAchievements->getValue(0x2a, 1) <= cnt) {
+                if (cnt >= Achievements::gAchievements->getValue(0x2a, 1)) {
                     void *ego = (void *) (__INTPTR_TYPE__) ((Level *) (self->kiPlayer->level))->getPlayer();
                     void *hud = (void *) (__INTPTR_TYPE__) ((PlayerEgo *) (ego))->getHUD();
                     ((Hud *) (hud))->hudEventMedal(0x2a, 100);
@@ -696,11 +693,14 @@ void Player::damageEmp(int amount, bool flag) {
 
 lab_3164:
 
-    float f = (float) self->empData;
-    self->empDisabledByte = 1;
-    self->empPoints = 0;
-    self->empElapsed = 0;
-    self->empForce = f;
+    {
+        float f = (float) self->empData;
+        self->empDisabledByte = 1;
+        self->empPoints = 0;
+        self->empElapsed = 0;
+        self->empForce = f;
+    }
+lab_317e:
     self->updateDamageRate();
     return;
 }
@@ -1110,7 +1110,7 @@ LAB_3488: {
 
             ki->field_0x42 != 0) {
             hp = self->hitpoints;
-            if (self->maxHitpoints / 3 > hp) {
+            if (hp < self->maxHitpoints / 3) {
                 ((Level *) (ki->level))->almostKillWanted(ki->field_0x48);
             } else {
                 goto LAB_34f8_hp;
