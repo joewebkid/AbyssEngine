@@ -98,114 +98,129 @@ namespace AbyssEngine {
             short type;
 
             if (AEFile::Read(2, &type, file) == 0) goto fail;
-            if (type == 1) {
-                unsigned short count;
-                if (AEFile::Read(2, &count, file) == 0) goto fail;
-                for (unsigned int i = 0; i < count; ++i) {
-                    float key;
-                    if (AEFile::Read(4, &key, file) == 0) goto fail;
-                    updateTimeBetweenFrames(key);
-                    float vec[3];
-                    if (AEFile::Read(0xc, vec, file) == 0) goto fail;
-                    anim->InsertKeyFrame(vec, 7, (int) key);
-                }
-            } else if (type == 0) {
-                for (int axis = 0; axis < 3; ++axis) {
+            switch (type) {
+                case 1: {
                     unsigned short count;
                     if (AEFile::Read(2, &count, file) == 0) goto fail;
-                    for (unsigned int j = 0; j < count; ++j) {
-                        float value;
-                        if (AEFile::Read(4, &value, file) == 0) goto fail;
-                        updateTimeBetweenFrames(value);
+                    for (unsigned int i = 0; i < count; ++i) {
                         float key;
                         if (AEFile::Read(4, &key, file) == 0) goto fail;
-                        switch (axis) {
-                            case 2:
-                                anim->InsertKeyFrame(&key, 2, (int) value);
-                                break;
-                            case 1:
-                                key = -key;
-                                anim->InsertKeyFrame(&key, 4, (int) value);
-                                break;
-                            case 0:
-                                anim->InsertKeyFrame(&key, 1, (int) value);
-                                break;
+                        updateTimeBetweenFrames(key);
+                        float vec[3];
+                        if (AEFile::Read(0xc, vec, file) == 0) goto fail;
+                        anim->InsertKeyFrame(vec, 7, (int) key);
+                    }
+                    break;
+                }
+                case 0: {
+                    for (int axis = 0; axis < 3; ++axis) {
+                        unsigned short count;
+                        if (AEFile::Read(2, &count, file) == 0) goto fail;
+                        for (unsigned int j = 0; j < count; ++j) {
+                            float value;
+                            if (AEFile::Read(4, &value, file) == 0) goto fail;
+                            updateTimeBetweenFrames(value);
+                            float key;
+                            if (AEFile::Read(4, &key, file) == 0) goto fail;
+                            switch (axis) {
+                                case 2:
+                                    anim->InsertKeyFrame(&key, 2, (int) value);
+                                    break;
+                                case 1:
+                                    key = -key;
+                                    anim->InsertKeyFrame(&key, 4, (int) value);
+                                    break;
+                                case 0:
+                                    anim->InsertKeyFrame(&key, 1, (int) value);
+                                    break;
+                            }
                         }
                     }
+                    break;
                 }
             }
 
             if (AEFile::Read(2, &type, file) == 0) goto fail;
-            if (type == 1) {
-                unsigned short count;
-                if (AEFile::Read(2, &count, file) == 0) goto fail;
-                for (unsigned int i = 0; i < count; ++i) {
-                    float key;
-                    if (AEFile::Read(4, &key, file) == 0) goto fail;
-                    updateTimeBetweenFrames(key);
-                    float vec[3];
-                    if (AEFile::Read(0xc, vec, file) == 0) goto fail;
-                    anim->InsertKeyFrame(vec, 0x1c0, (int) key);
-                }
-            } else if (type == 0) {
-                for (int axis = 0; axis < 3; ++axis) {
+            switch (type) {
+                case 1: {
                     unsigned short count;
                     if (AEFile::Read(2, &count, file) == 0) goto fail;
-                    for (unsigned int j = 0; j < count; ++j) {
-                        float value;
-                        if (AEFile::Read(4, &value, file) == 0) goto fail;
-                        updateTimeBetweenFrames(value);
+                    for (unsigned int i = 0; i < count; ++i) {
                         float key;
                         if (AEFile::Read(4, &key, file) == 0) goto fail;
-                        switch (axis) {
-                            case 2:
-                                anim->InsertKeyFrame(&key, 0x100, (int) value);
-                                break;
-                            case 1:
-                                anim->InsertKeyFrame(&key, 0x80, (int) value);
-                                break;
-                            case 0:
-                                anim->InsertKeyFrame(&key, 0x40, (int) value);
-                                break;
+                        updateTimeBetweenFrames(key);
+                        float vec[3];
+                        if (AEFile::Read(0xc, vec, file) == 0) goto fail;
+                        anim->InsertKeyFrame(vec, 0x1c0, (int) key);
+                    }
+                    break;
+                }
+                case 0: {
+                    for (int axis = 0; axis < 3; ++axis) {
+                        unsigned short count;
+                        if (AEFile::Read(2, &count, file) == 0) goto fail;
+                        for (unsigned int j = 0; j < count; ++j) {
+                            float value;
+                            if (AEFile::Read(4, &value, file) == 0) goto fail;
+                            updateTimeBetweenFrames(value);
+                            float key;
+                            if (AEFile::Read(4, &key, file) == 0) goto fail;
+                            switch (axis) {
+                                case 2:
+                                    anim->InsertKeyFrame(&key, 0x100, (int) value);
+                                    break;
+                                case 1:
+                                    anim->InsertKeyFrame(&key, 0x80, (int) value);
+                                    break;
+                                case 0:
+                                    anim->InsertKeyFrame(&key, 0x40, (int) value);
+                                    break;
+                            }
                         }
                     }
+                    break;
                 }
             }
 
             if (AEFile::Read(2, &type, file) == 0) goto fail;
-            if (type == 1) {
-                unsigned short count;
-                if (AEFile::Read(2, &count, file) == 0) goto fail;
-                for (unsigned int i = 0; i < count; ++i) {
-                    float key;
-                    if (AEFile::Read(4, &key, file) == 0) goto fail;
-                    updateTimeBetweenFrames(key);
-                    float vec[3];
-                    if (AEFile::Read(0xc, vec, file) == 0) goto fail;
-                    anim->InsertKeyFrame(vec, 0x38, (int) key);
-                }
-            } else if (type == 0) {
-                for (int axis = 0; axis < 3; ++axis) {
+            switch (type) {
+                case 1: {
                     unsigned short count;
                     if (AEFile::Read(2, &count, file) == 0) goto fail;
-                    for (unsigned int j = 0; j < count; ++j) {
-                        float value;
-                        if (AEFile::Read(4, &value, file) == 0) goto fail;
-                        updateTimeBetweenFrames(value);
+                    for (unsigned int i = 0; i < count; ++i) {
                         float key;
                         if (AEFile::Read(4, &key, file) == 0) goto fail;
-                        switch (axis) {
-                            case 2:
-                                anim->InsertKeyFrame(&key, 0x20, (int) value);
-                                break;
-                            case 1:
-                                anim->InsertKeyFrame(&key, 0x10, (int) value);
-                                break;
-                            case 0:
-                                anim->InsertKeyFrame(&key, 8, (int) value);
-                                break;
+                        updateTimeBetweenFrames(key);
+                        float vec[3];
+                        if (AEFile::Read(0xc, vec, file) == 0) goto fail;
+                        anim->InsertKeyFrame(vec, 0x38, (int) key);
+                    }
+                    break;
+                }
+                case 0: {
+                    for (int axis = 0; axis < 3; ++axis) {
+                        unsigned short count;
+                        if (AEFile::Read(2, &count, file) == 0) goto fail;
+                        for (unsigned int j = 0; j < count; ++j) {
+                            float value;
+                            if (AEFile::Read(4, &value, file) == 0) goto fail;
+                            updateTimeBetweenFrames(value);
+                            float key;
+                            if (AEFile::Read(4, &key, file) == 0) goto fail;
+                            switch (axis) {
+                                case 2:
+                                    anim->InsertKeyFrame(&key, 0x20, (int) value);
+                                    break;
+                                case 1:
+                                    anim->InsertKeyFrame(&key, 0x10, (int) value);
+                                    break;
+                                case 0:
+                                    anim->InsertKeyFrame(&key, 8, (int) value);
+                                    break;
+                            }
                         }
                     }
+                    break;
                 }
             }
 

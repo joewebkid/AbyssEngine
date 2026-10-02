@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **96.87% unweighted / 97.01% weighted**.
+Latest validated continuation: source **96.93% unweighted / 97.08% weighted**.
 The result tables below preserve earlier measurements; the final continuation
 contains the current per-body results and full-corpus evidence.
 
@@ -367,3 +367,37 @@ remain 75.98% / 88.99%. Evidence: `_work/scope_full.json` SHA-256
 `12b4cdd9f5ae28554c9bae4272fc86c5266508915a5a606be13d125f9f744656`;
 scope_three.json, scope_full_build.log, scope_full_verify.log, scope_native.log.
 The >=99.0% objective remains unmet. No push, PR or merge was performed.
+
+## Continuation: enhanced section type dispatch
+
+Express the three position/scale/rotation type choices as ordinary switches
+with scoped cases 1 and 0. Unknown types continue to the next section, as in
+the previous source and primary ARM. Keep each case's count/key/vector objects
+local; a shared key or vector buffer regresses measured shape. The two case
+orders generate the same focused result. No extra condition or call is added.
+
+Enhanced source 97.4 -> **97.6**, strict 64.4 -> **64.9**, compiled instructions
+remain 637 versus original 636. Components: inventory 95.8, opcodes 97.1,
+control 95.3, calls 100.0, size 99.8. This source representation is consistent
+with the original type dispatch, not recovered original C++ syntax.
+
+Rejected trials: scoped-locals plus flat Create failure flow (96.2 / 62.0;
+no source improvement), removal of enhanced anim null guards (unchanged),
+signed-char format (unchanged), common key lifetime (97.0 / 57.8), common
+three-vector lifetime (97.1 / 36.3). All rejected changes were restored.
+
+Native static-library build and the production parser smoke pass, including
+unknown-type fallthrough and every byte-prefix truncation of the V5 fixture.
+Full fresh ARM corpus validation passes: 204/204 TUs, 4,619 comparisons,
+zero skips. Both exact sets equal the clean baseline: linked 2,079 / raw 959;
+lost [] and gained [] for each. Other 202 objects remain byte-identical to
+baseline. Mesh.o equals the focused object; AbyssEngine.o equals the preceding
+validated revision.
+
+Current scores: Create 96.2 / Read 97.0 / Enhanced 97.6 source. Means are
+**96.93% unweighted / 97.08% weighted**. Full strict/source averages remain
+75.98% / 88.99%. Evidence: `_work/dispatch_full.json` SHA-256
+`be8b095d1fbb215d6d8e359790225580f932766e4d5eda457e4a84971a7365cc`;
+dispatch_three.json, dispatch_full_build.log, dispatch_full_verify.log,
+dispatch_native.log and dispatch_smoke.exe. The >=99.0% gate remains unmet.
+No push, PR or merge was performed.
