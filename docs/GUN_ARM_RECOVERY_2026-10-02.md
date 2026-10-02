@@ -2,14 +2,14 @@
 
 ## Status: partial; the requested target is not achieved
 
-Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.6577% unweighted / 98.3181% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
+Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.6615% unweighted / 98.3450% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
 
 | Metric | Clean base | This checkpoint |
 |---|---:|---:|
-| Source-shape, unweighted | 73.5923% | 99.6577% |
-| Source-shape, original-instruction-weighted | 26.9159% | 98.3181% |
-| Strict instruction shape, unweighted | 66.8038% | 94.3038% |
-| Strict instruction shape, weighted | 15.4981% | 73.5753% |
+| Source-shape, unweighted | 73.5923% | 99.6615% |
+| Source-shape, original-instruction-weighted | 26.9159% | 98.3450% |
+| Strict instruction shape, unweighted | 66.8038% | 94.3000% |
+| Strict instruction shape, weighted | 15.4981% | 73.5484% |
 | Linked-exact unique bodies | 14 | 19 |
 | Byte-exact unique bodies | 13 | 13 |
 
@@ -79,13 +79,17 @@ Ignite classification follow-up: the native bit mask 0x80800001 after subtractin
 
 Follow-up enum spellings in ignite (NUKE first, reverse order, a cached ItemSort and a four-case switch) all reproduce the same 98.9% source / 96.4% strict result. They add no recovery gain and were not integrated. The canonical combined build explicitly reports 204 TUs compiled, zero failures; the host smoke still covers constructor/ownership contracts rather than ignite gameplay.
 
+Mount operand follow-up: ARM 0x1524e2/0x152502 stores the address of offset (Gun+0x7c) at sp+16. If both mount mode bytes at 0xa5/0xa4 are zero, 0x152596 branches to 0x1528c8, which passes that saved offset address directly as the MatrixRotateVector operand and rejoins the rotation call. Mirrored paths instead assign offset to targetDir, toggle the x/y sign and pass targetDir (Gun+0xd8). The previous C++ copied offset to targetDir even for the plain path, changing its side effects and operand identity. A local const Vector pointer now chooses offset directly for plain mounts and targetDir for mirrored mounts. ShootAt source improves 98.3% to 98.4%, strict decreases 61.8% to 61.7%, and parsed size becomes 644 versus original 643 instructions. This is an ARM-supported behavioral correction, not instruction padding. Capturing the wobble Array pointer around allocation emitted no further gain and was not integrated.
+
+The host smoke now extracts the actual mount block from shootAt and binds its member references to a real Gun. An operand-recording MatrixRotateVector test double checks plain operand identity and preservation of targetDir, x/y mirror state transitions, shock-blast suppression and zero-offset suppression. Real Vector assignment/addition/comparison bodies are compiled with it. This test fails on the prior 130bc075 source (exit 1, plain-mount assertion) and passes the corrected source (exit 0). It is explicitly a mount-block contract check, not execution of the full shootAt, its ammo/homing paths, actual matrix rotation or an ARM game executable.
+
 ## Checks and limits
 
 - Native CMake `gof2` static-library build: passed.
 - Canonical full ARM build: **204 translation units, 0 failures**. Gun ARM layout assertions passed.
 - Focused verifier: all 28 symbols compared; 19 linked-exact / 13 byte-exact. The original baseline Gun exact pairs are retained.
 - `python tools/gun_contract_smoke.py`: passed construction/destruction with 0/1/3 projectile slots, array dimensions, initial values, owned wobble pointers, both offset overloads, replacement enemy-container ownership, detach behavior and full-width Level pointer preservation.
-- The host smoke compiles actual selected source bodies against the real header; it is deliberately isolated from the unrelated host executable link backlog. It does not execute firing, damage, collision, renderer or an ARM native game executable.
+- The host smoke compiles actual selected source bodies and an extracted mount block against the real header; it is deliberately isolated from the unrelated host executable link backlog. It does not execute full firing, damage, collision, renderer or an ARM native game executable.
 - `git diff --check`: passed.
 - Full corpus: **4625 comparisons**, 4274/4524 original functions, 250 missing (7 wrong-type, 243 absent), 130 extras, 2088 linked-exact and 959 byte-exact. Baseline linked/byte exact-pair losses across the entire corpus: **zero / zero**. Six additional comparison rows arise from template emission; original coverage and the fixed Gun denominator did not change.
 - Snapshot: `validation/gun_family_2026-10-02.json` contains all 28 Gun rows, baseline rows, unique-body/alias labels, both means, full-corpus totals and exact-pair loss sets.

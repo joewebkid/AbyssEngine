@@ -4,7 +4,9 @@
 #include <initializer_list>
 
 // Focused host lifetime check, not an ARM executable certification.
+int checkGunMountContracts();
 int main() {
+    if (checkGunMountContracts()) return 1;
     for (int slots : {0, 1, 3}) {
         Gun gun(2, 40, slots, 5, 1000, 100, 2.0f,
                 Vector{1, 2, 3}, Vector{0, 0, 4});

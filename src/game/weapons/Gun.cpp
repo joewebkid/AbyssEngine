@@ -526,12 +526,14 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         if (offset != zero) {
             if (weaponType != ITEM_SORT_SHOCK_BLAST) {
                 if (!field_0xa5 || field_0xa4_b0) {
-                    mountDirection = offset;
+                    const Vector *mountOffset = &offset;
                     if (field_0xa4_b0) {
+                        mountDirection = offset;
                         if (field_0xa6) mountDirection.x = -mountDirection.x;
                         field_0xa6 ^= 1;
+                        mountOffset = &mountDirection;
                     }
-                    Vector displacement = MatrixRotateVector(m, mountDirection);
+                    Vector displacement = MatrixRotateVector(m, *mountOffset);
                     positionArray[i] += displacement;
                 }
                 if (field_0xa5 && field_0xa6) {
