@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **97.505% unweighted / 96.19283% original-instruction
+implementation bodies measure **98.115% unweighted / 96.69851% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**76.655% / 63.94298%**, respectively. Source-shape is an inventory/control-flow
+**80.315% / 66.97120%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -96,6 +96,41 @@ The target remains unmet. Further direct evidence identifies another extra
 CameraGetCurrent call in OnTouchMove and residual instruction/control inventories
 in the large bodies. This is incomplete source recovery, not a claimed compiler
 ceiling or runtime validation.
+
+## Follow-up after checkpoint 50e10b79
+
+Checkpoint 50e10b79 measured 97.505% / 96.19283%. This continuation modifies
+StarMap.cpp only and the report/snapshots.
+
+- OnTouchBegin: 94.8% -> **99.3%**, strict 63.5% -> **97.4%**. Direct Android
+  body 0xca7e0 confirms positive-test absolute-value selection, refreshed
+  Layout/Sound services and a second Status::getSystem/getIndex pair when
+  jump distance is zero. Restore those reads and station-position reloads.
+- OnTouchMove: 90.7% -> 93.8%, strict 60.4% -> 75.6%. Removed the third
+  CameraGetCurrent call and unused matrix construction, restored the nested
+  dialog/transition/control/drag flow and nonzero-mode branch before galaxy
+  mode. Pitch clamps preserve Android's negative-bound/NaN path; speed uses
+  the original less-than-ten choice. No volatile/register barriers or branch
+  profile hints were used to force instruction selection.
+- Constructor C1: 93.4% -> **98.0%**, strict 60.3% -> **84.2%**. Initializer
+  list zeroes both scratch vectors before automatic inline easing construction.
+  Previous scratchVector2.x, lastTouchX/Y and dragging initialization gaps are
+  corrected. Uses canonical Galaxy/Random services, repeated system/member
+  accesses, the three-float setPosition overload and direct marker position
+  temporary. C2 remains a checked alias, excluded from aggregates.
+- update: source remains 94.7%, strict 57.7% -> 57.9%. Direct ARM call at
+  0xc9e0c proves scalar-left Vector multiplication. Correct overload restored.
+- The expanded pitch form suggested by IDA was trialled but rejected because
+  it retained redundant checks. Simple equivalent bounds were kept rather
+  than retaining redundant source for metric shaping.
+
+Packages: move-abi-trial, begin-reloads-trial, ctor-abi-trial,
+touch-shape-trial (rejected expanded pitch), touch-simple-trial,
+move-flow-trial (accepted final focused input). Fresh original extracts:
+_work/begin-android.c and ctor-android.c. Inventory differences were inspected
+through the unchanged asmdiff reader and recorded in _work/move-inventory.txt.
+The 99% goal is still unmet; OnTouchMove predication and the large-body
+instruction/control inventories remain work, not a claimed compiler ceiling.
 
 ## Evidence and version boundaries
 
@@ -209,8 +244,8 @@ integrity or exact-pair preservation. The default 99% gate must remain red
 for this checkpoint.
 
 Full corpus: **4619 comparisons, zero skips** in both clean baseline and final.
-Overall source-shape 88.99% -> 89.05%; ordered fuzzy
-75.97% -> 76.10% (including all corpus entries).
+Overall source-shape 88.99% -> 89.06%; ordered fuzzy
+75.97% -> 76.12% (including all corpus entries).
 Coverage remains 4274/4524 original functions, 250 missing (7 wrong-type / 243
 absent). Final extra symbols: 129, baseline: 130. Existing coverage gaps were
 not removed from reporting.
@@ -230,16 +265,17 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/third-corpus.log`; focused log:
-`_work/third-focused.log`; native log: `_work/native-third.log`.
-Exact-pair preservation also passed against checkpoints 7fc7701c and dca65361,
-with no new gains or losses since 7fc7701c. Latest preservation gate and
-99% gate logs are _work/third-gate.json, third-previous-gate.json and
-third-target-gate.log (exit 0, 0 and 1 respectively).
+Latest full log: `_work/fourth-corpus.log`; focused log:
+`_work/move-flow-trial.log` (copied report: fourth-focused.json); native log: `_work/native-fourth.log`.
+Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361
+and 50e10b79, with no new gains or losses since 7fc7701c. The latest comparison
+against 50e10b79 preserves all 2083 linked-exact and 960 byte-exact pairs.
+Latest preservation gate and 99% gate logs are _work/fourth-gate.json,
+fourth-previous-gate.json and fourth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `5af5cfaa1484b6cf1bdf73213184582d5568012d2c96071ef336d7845c19e879`.
+final full JSON SHA-256: `6f7bd555f7c5d057b494f2476ad2b33624bebec4f4fc6094145f7d1b58867bcc`.
 
 
 ### Reproduction
@@ -270,13 +306,13 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 |---|---:|---:|---:|---:|---|
 | `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1223 | 78.9% | 96.6% | 48.9% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1008 | 66.6% | 96.8% | 68.4% | - |
-| `_ZN7StarMap6updateEi` | 971/970 | 76.6% | 94.7% | 57.7% | - |
+| `_ZN7StarMap6updateEi` | 971/970 | 76.6% | 94.7% | 57.9% | - |
 | `_ZN7StarMap4drawEv` | 916/906 | 49.7% | 98.0% | 83.2% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/740 | 72.9% | 97.3% | 67.0% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/672 | 80.9% | 95.9% | 69.2% | - |
-| `_ZN7StarMapC1EbP7Missionbi` | 333/330 | 85.1% | 93.4% | 60.3% | - |
-| `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 94.8% | 63.5% | - |
-| `_ZN7StarMap11OnTouchMoveEii` | 265/255 | 81.3% | 90.7% | 60.4% | - |
+| `_ZN7StarMapC1EbP7Missionbi` | 333/332 | 85.1% | 98.0% | 84.2% | - |
+| `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 99.3% | 97.4% | - |
+| `_ZN7StarMap11OnTouchMoveEii` | 265/272 | 81.3% | 93.8% | 75.6% | - |
 | `_ZN7StarMap7drawKeyEv` | 246/243 | 59.5% | 97.8% | 34.8% | - |
 | `_ZN7StarMap6departEb` | 205/204 | 94.9% | 95.1% | 60.1% | - |
 | `_ZN7StarMapD1Ev` | 69/70 | 92.0% | 99.4% | 95.0% | - |

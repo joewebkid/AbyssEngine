@@ -651,7 +651,7 @@ void StarMap::update(int dt) {
             Vector start = this->systemGeoms->data()[Globals::status->field_7c]->getPosition();
             tmp = AbyssEngine::AEMath::MatrixGetPosition(this->starSystemRoot->getMatrix() *
                                                       this->stationGeoms->data()[this->centeredStation]->getMatrix());
-            this->markerGeom->setPosition(start + (tmp - start) * t);
+            this->markerGeom->setPosition(start + t * (tmp - start));
         }
         PaintCanvas *canvas = Globals::Canvas;
         tmp = AbyssEngine::AEMath::MatrixGetPosition(*static_cast<Matrix *>(
@@ -839,17 +839,16 @@ void StarMap::update(int dt) {
     }
 }
 
-StarMap::StarMap(bool jumpMapMode, Mission *mission, bool param3, int param4) {
-    Vector zero = {0.0f, 0.0f, 0.0f};
-    this->scratchVector = zero;
-    this->scratchVector2.y = 0.0f;
-    this->scratchVector2.z = 0.0f;
+StarMap::StarMap(bool jumpMapMode, Mission *mission, bool param3, int param4)
+    : scratchVector{0.0f, 0.0f, 0.0f}, scratchVector2{0.0f, 0.0f, 0.0f} {
     this->touchDeltaX = 0.0f;
     this->touchDeltaY = 0.0f;
     this->field_0x158 = 0.0f;
     this->touchStartX = 0.0f;
     this->touchStartY = 0.0f;
     this->field_0x14c = 0.0f;
+    this->lastTouchX = 0.0f;
+    this->lastTouchY = 0.0f;
     this->field_0x164 = 0;
     this->yaw = 0.0f;
     this->pitch = 0.0f;
@@ -871,9 +870,10 @@ StarMap::StarMap(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     this->momentumFactor = 0.0f;
     this->velocityX = 0.0f;
     this->velocityY = 0.0f;
+    this->dragging = 0;
 
     this->iconBuffer = new int[5];
-    this->systems = (Array<SolarSystem *> *) Galaxy::gGalaxy->getSystems();
+    this->systems = (Array<SolarSystem *> *) static_cast<Galaxy *>(Globals::galaxy)->getSystems();
     this->field_0x10 = 500;
     this->field_0x14 = 500;
 
@@ -887,49 +887,46 @@ StarMap::StarMap(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     ArraySetLength(0x22, *systemsGeom);
     ArraySetLength(0x22, *systemPositions);
 
-    for (uint32_t i = 0; i < systemsGeom->size(); i++) {
-        SolarSystem *sys = this->systems->data()[i];
-        int tex = sys->getTextureIndex();
+    for (uint32_t i = 0; i < this->systemGeoms->size(); i++) {
+        int tex = this->systems->data()[i]->getTextureIndex();
         uint16_t image = (uint16_t)(tex + 0x4696);
         if (Globals::status->getCurrentCampaignMission() > 0x9d) image = 0x469b;
         if (i != 0x1b) image = (uint16_t)(tex + 0x4696);
         AEGeometry *geom = new AEGeometry(image, Globals::Canvas, false);
         this->systemGeoms->data()[i] = geom;
         float scale = 0.012f;
-        if (sys->getTextureIndex() == 15 && Globals::status->getCurrentCampaignMission() <= 157) {
+        if (this->systems->data()[i]->getTextureIndex() == 15 && Globals::status->getCurrentCampaignMission() <= 157) {
             scale = Globals::status->getCurrentCampaignMission() <= 105 ? 0.018f : 0.025f;
         }
         this->systemGeoms->data()[i]->setScaling(scale, scale, scale);
-        float px = (float) ((int) (((100 - sys->getX()) / 100.0f) * 14000.0f) - 10000);
-        float py = (float) ((int) (((100 - sys->getY()) / 100.0f) * 13000.0f) - 9000);
-        float pz = (float) ((int) (((100 - sys->getZ()) / 100.0f) * 6000.0f) + 1000);
-        Vector posVec = {px, py, pz};
-        this->systemGeoms->data()[i]->setPosition(posVec);
+        AEGeometry *positionGeom = this->systemGeoms->data()[i];
+        float px = (float) ((int) (((100 - this->systems->data()[i]->getX()) / 100.0f) * 14000.0f) - 10000);
+        float py = (float) ((int) (((100 - this->systems->data()[i]->getY()) / 100.0f) * 13000.0f) - 9000);
+        float pz = (float) ((int) (((100 - this->systems->data()[i]->getZ()) / 100.0f) * 6000.0f) + 1000);
+        positionGeom->setPosition(px, py, pz);
         this->systemRoot->addChild(this->systemGeoms->data()[i]->transform);
-        Vector *pos = new Vector(zero);
+        Vector *pos = new Vector{0.0f, 0.0f, 0.0f};
         this->systemPositions->data()[i] = pos;
     }
 
-    AERandom::gRandom->reset();
+    static_cast<AERandom *>(Globals::rnd)->reset();
     this->markerGeom = (AEGeometry *) 0;
     this->choiceVisible = 0;
     if (Globals::status->getCurrentCampaignMission() > 0x1f &&
         Globals::status->field_7c >= 0) {
         AEGeometry *marker = new AEGeometry((uint16_t) 0x4262, Globals::Canvas, false);
         this->markerGeom = marker;
-        Vector p;
-        p = this->systemGeoms->data()[Globals::status->field_7c]->getPosition();
-        marker->setPosition(p);
-        ((AbyssEngine::Transform *) (Globals::Canvas->TransformGetTransform(marker->transform)))->SetAnimationState(
+        this->markerGeom->setPosition(this->systemGeoms->data()[Globals::status->field_7c]->getPosition());
+        ((AbyssEngine::Transform *) (Globals::Canvas->TransformGetTransform(this->markerGeom->transform)))->SetAnimationState(
             (AbyssEngine::AnimationMode) 2, 0);
-        marker->setRotation(0.0f, 3.1416f, 0.0f);
+        this->markerGeom->setRotation(0.0f, 3.1416f, 0.0f);
     }
 
     init(jumpMapMode, mission, param3, param4);
 }
 
 static inline float absf_local(float v) {
-    return v < 0.0f ? -v : v;
+    return v > 0.0f ? v : -v;
 }
 
 uint32_t StarMap::OnTouchBegin(int x, int y) {
@@ -941,14 +938,13 @@ uint32_t StarMap::OnTouchBegin(int x, int y) {
         return 0;
     }
 
-    void *layout = Globals::layout;
-    ((Layout *) (layout))->OnTouchBegin(x, y);
+    Globals::layout->OnTouchBegin(x, y);
     if ((this->pad_0xa8_a != 0 && this->pathAnim != 0) ||
         this->stationCenterAnim != 0) {
         return 0;
     }
     this->backButton->OnTouchBegin(x, y);
-    if (((Layout *) layout)->field_0xc_leftMargin >= y || y >= Globals::h - ((Layout *) layout)->
+    if (Globals::layout->field_0xc_leftMargin >= y || y >= Globals::h - Globals::layout->
         field_0x10_rightMargin) {
         return 0;
     }
@@ -956,9 +952,8 @@ uint32_t StarMap::OnTouchBegin(int x, int y) {
         return 0;
     }
 
-    void *sound = Globals::sound;
-    ((FModSound *) (sound))->stop(0x66);
-    ((FModSound *) (sound))->play(0x66, 0, 0, 0.0f);
+    Globals::sound->stop(0x66);
+    Globals::sound->play(0x66, 0, 0, 0.0f);
 
     float fx = (float) x;
     float fy = (float) y;
@@ -994,15 +989,17 @@ uint32_t StarMap::OnTouchBegin(int x, int y) {
                             ((FileRead *) (reader))->loadStationsBinary(this->systems->data()[this->selectedSystem]);
                     delete reader;
                     if (oldSystem != this->selectedSystem) {
-                        ((FModSound *) (sound))->play(0x67, 0, 0, 0.0f);
+                        Globals::sound->play(0x67, 0, 0, 0.0f);
                     }
                     int current = Globals::status->getSystem()->getIndex();
                     int dist = this->pathFinder->getJumpDistance(this->systems, current, this->selectedSystem);
                     this->jumpCost = dist;
-                    if (dist == 0 && current != this->selectedSystem) {
-                        this->jumpCost = 4;
-                        if (this->systems->data()[i]->getRoutes() == 0) {
-                            this->noRoute = 1;
+                    if (dist == 0) {
+                        int currentIndex = Globals::status->getSystem()->getIndex();
+                        int selected = this->selectedSystem;
+                        if (currentIndex != selected) {
+                            this->jumpCost = 4;
+                            if (!this->systems->data()[selected]->getRoutes()) this->noRoute = 1;
                         }
                     }
                     if (Globals::status->hardCoreMode() != 0) {
@@ -1013,14 +1010,13 @@ uint32_t StarMap::OnTouchBegin(int x, int y) {
             }
         }
     } else if (this->mode == 3) {
-        Array<Vector *> *positions = this->stationPositions;
-        for (uint32_t i = 0; i < positions->size(); i++) {
-            this->scratchVector = *positions->data()[i];
+        for (uint32_t i = 0; i < this->stationPositions->size(); i++) {
+            this->scratchVector = *this->stationPositions->data()[i];
             if (this->scratchVector.z > 0.0f &&
                 absf_local(this->scratchVector.x - fx) < (float) this->hitRadius &&
                 absf_local(this->scratchVector.y - fy) < (float) this->hitRadius) {
                 this->selectedStation = (int) i;
-                ((FModSound *) (sound))->play(0x68, 0, 0, 0.0f);
+                Globals::sound->play(0x68, 0, 0, 0.0f);
                 return 0;
             }
         }
@@ -1029,86 +1025,71 @@ uint32_t StarMap::OnTouchBegin(int x, int y) {
 }
 
 void StarMap::OnTouchMove(int x, int y) {
-    Matrix matrix;
-
-    if (this->choiceVisible != 0) {
+    if (this->choiceVisible) {
         this->choiceWindow->OnTouchMove(x, y);
-        return;
-    }
-    if (this->transitionIn != 0 || this->transitionOut != 0) {
-        return;
-    }
-    void *layout = Globals::layout;
-    ((Layout *) (layout))->OnTouchMove(x, y);
-    if ((this->pad_0xa8_a != 0 && this->pathAnim != 0) ||
-        this->stationCenterAnim != 0) {
-        return;
-    }
-    this->backButton->OnTouchMove(x, y);
-    if (this->dragging == 0) {
-        return;
-    }
+    } else if (!this->transitionIn && !this->transitionOut) {
+        Globals::layout->OnTouchMove(x, y);
+        if ((!this->pad_0xa8_a || !this->pathAnim) && !this->stationCenterAnim) {
+            this->backButton->OnTouchMove(x, y);
+            if (this->dragging) {
+                float fx = (float) x;
+                float fy = (float) y;
+                float lastX = this->lastTouchX;
+                float lastY = this->lastTouchY;
+                this->momentumFactor = 1.0f;
+                this->lastTouchX = fx;
+                this->lastTouchY = fy;
+                float dx = (fx - lastX) * this->dragScale;
+                float dy = this->dragScale * (fy - lastY);
+                this->touchDeltaX = dx;
+                this->touchDeltaY = dy;
+                if (this->mode) {
+                    if (absf_local(this->touchStartX - fx) > 3.0f ||
+                        absf_local(this->touchStartY - fy) > 3.0f) {
+                        this->lastSelectedStation = -1;
+                        this->selectedStation = -1;
+                    }
 
-    float fx = (float) x;
-    float fy = (float) y;
-    float lastX = this->lastTouchX;
-    float lastY = this->lastTouchY;
-    this->momentumFactor = 1.0f;
-    this->lastTouchX = fx;
-    this->lastTouchY = fy;
-    float dx = (fx - lastX) * this->dragScale;
-    float dy = this->dragScale * (fy - lastY);
-    this->touchDeltaX = dx;
-    this->touchDeltaY = dy;
-
-    if (this->mode == 0) {
-        float speed = absf_local(dx + dy);
-        if (speed > 10.0f) {
-            speed = 10.0f;
+                    float rotZ = dx * 50.0f;
+                    float rotX = dy * -50.0f;
+                    float nextPitch = rotX + this->pitch;
+                    float pitch = nextPitch > -8192.0f ? nextPitch : -8192.0f;
+                    if (nextPitch > 8192.0f) pitch = 8192.0f;
+                    float yaw = (float) ((int) (this->yaw + rotZ) % 0x10000);
+                    float absZ = absf_local(rotZ);
+                    float absX = absf_local(rotX);
+                    this->touchDeltaX = rotZ;
+                    this->touchDeltaY = rotX;
+                    this->velocityX = absZ > 150.0f ? rotZ : 0.0f;
+                    this->velocityY = absX > 150.0f ? rotX : 0.0f;
+                    this->yaw = yaw;
+                    this->pitch = pitch;
+                    this->starSystemRoot->setRotation(pitch * 0.000015259f * 6.2832f, yaw * 0.000015259f * 6.2832f, -0.098175f);
+                } else {
+                    float magnitude = absf_local(dx + dy);
+                    float speed = 10.0f;
+                    if (magnitude < 10.0f) speed = magnitude;
+                    float targetX = (float) this->panX;
+                    float targetY = (float) this->panY;
+                    this->panX = (int) (dx + targetX);
+                    this->panY = (int) (dy + targetY);
+                    this->spin = this->spin + speed;
+                    if (this->spin > 100.0f) this->spin = 0.0f;
+                    if (absf_local(this->touchStartX - fx) > 3.0f ||
+                        absf_local(this->touchStartY - fy) > 3.0f) {
+                        this->lastSelectedSystem = -1;
+                        this->selectedSystem = -1;
+                        this->jumpCost = 0;
+                    }
+                    PaintCanvas *canvas = Globals::Canvas;
+                    Matrix matrix = *static_cast<Matrix *>(canvas->CameraGetLocal(canvas->CameraGetCurrent()));
+                    canvas = Globals::Canvas;
+                    unsigned int camera = canvas->CameraGetCurrent();
+                    canvas->CameraSetLocal(camera, matrix);
+                }
+            }
         }
-        float targetX = (float) this->panX;
-        float targetY = (float) this->panY;
-        this->panX = (int) (dx + targetX);
-        this->panY = (int) (dy + targetY);
-        this->spin = this->spin + speed;
-        if (this->spin > 100.0f) this->spin = 0.0f;
-        if (absf_local(this->touchStartX - fx) > 3.0f ||
-            absf_local(this->touchStartY - fy) > 3.0f) {
-            this->lastSelectedSystem = -1;
-            this->selectedSystem = -1;
-            this->jumpCost = 0;
-        }
-        Globals::Canvas->CameraGetCurrent();
-        __builtin_memcpy(&matrix, Globals::Canvas->CameraGetLocal(Globals::Canvas->CameraGetCurrent()), 0x3c);
-        Globals::Canvas->CameraSetLocal(Globals::Canvas->CameraGetCurrent(), *(const AbyssEngine::AEMath::Matrix *) (&matrix));
-        return;
     }
-
-    if (absf_local(this->touchStartX - fx) > 3.0f ||
-        absf_local(this->touchStartY - fy) > 3.0f) {
-        this->lastSelectedStation = -1;
-        this->selectedStation = -1;
-    }
-
-    float rotZ = dx * 50.0f;
-    float rotX = dy * -50.0f;
-    float pitch = this->pitch + rotX;
-    if (pitch < -8192.0f) {
-        pitch = -8192.0f;
-    }
-    if (pitch > 8192.0f) {
-        pitch = 8192.0f;
-    }
-    float yaw = (float) ((int) (this->yaw + rotZ) % 0x10000);
-    float absZ = absf_local(rotZ);
-    float absX = absf_local(rotX);
-    this->touchDeltaX = rotZ;
-    this->touchDeltaY = rotX;
-    this->velocityX = absZ > 150.0f ? rotZ : 0.0f;
-    this->velocityY = absX > 150.0f ? rotX : 0.0f;
-    this->yaw = yaw;
-    this->pitch = pitch;
-    this->starSystemRoot->setRotation(pitch * 0.000015259f * 6.2832f, yaw * 0.000015259f * 6.2832f, -0.098175f);
 }
 
 void StarMap::drawKey() {
