@@ -1,5 +1,9 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
+Latest validated continuation: source **96.87% unweighted / 97.01% weighted**.
+The result tables below preserve earlier measurements; the final continuation
+contains the current per-body results and full-corpus evidence.
+
 Status: **partial; the required two >=99.0% means are NOT achieved**.
 There is no demonstrated objective compiler ceiling. This report supersedes
 the unconditional completeness/ceiling claims in the 2026-09-24 loader report.
@@ -323,3 +327,43 @@ Means are **96.73% unweighted / 96.95% weighted**. Full strict/source remain
 `e782a10c04758934c206d532ae5ca6b4010de4430fe25d29e4d3bb9628dc8f60`;
 uv_three.json, uv_full_build.log, uv_full_verify.log and uv_native.log.
 The >=99.0% gate is not achieved. No push, PR or merge was performed.
+
+## Continuation: MeshCreate local storage lifetimes
+
+Move magic, subCount and childPtr declarations to the function's main scope.
+Initialize the magic bytes with strcpy at the same successful-open point as
+before. Assign each childPtr immediately after allocation, before use. The
+original ARM/decompiler local stack layout motivates examining this scope;
+the exact original C++ declaration order is not recovered. Complete magic
+initialization, error exits, branch predicates, calls and ownership are unchanged.
+
+| Scope trial | Create source / strict | Instructions |
+|---|---|---:|
+| Only magic plus strcpy | 95.6 / 59.6 | 283 |
+| Only subCount | 96.0 / 57.8 | 280 |
+| Only childPtr | 95.6 / 58.2 | 283 |
+| Magic and subCount | 96.2 / 56.4 | 280 |
+| Magic and childPtr | 95.6 / 55.4 | 283 |
+| subCount and childPtr | 96.0 / 53.6 | 280 |
+| All three, magic/count/child/handle declaration order | 96.2 / 61.6 | 280 |
+
+Seven distinct all-three declaration orders were measured; all score either
+96.0 or 96.2 source, with strict 57.4..61.6. Retain the 96.2 / 61.6 ordinary
+C++ form. No register bindings, volatile objects, invented conditions, extra
+calls or changed compiler settings were introduced. One single-mesh call is
+still merged, so Create call-count match remains 95.8. Create component scores
+are inventory 94.1, opcodes 97.3, control 97.9, calls 95.8, size 96.1. This is
+measured source progress, not proof of an objective compiler ceiling.
+
+Native static-library build passes. Mesh.cpp and the parser smoke are unchanged
+since their preceding passing run. Full fresh ARM gate passes: 204/204 TUs, 4,619 comparisons, zero skips.
+Both exact sets equal baseline: linked 2,079 / raw 959; lost [] and gained []
+for each. Other 202 objects remain byte-identical to baseline. The focused
+and fully rebuilt AbyssEngine objects are identical.
+
+Current fixed-three source scores: **Create 96.2 / Read 97.0 / Enhanced 97.4**.
+Means: **96.87% unweighted / 97.01% weighted**. Full strict/source averages
+remain 75.98% / 88.99%. Evidence: `_work/scope_full.json` SHA-256
+`12b4cdd9f5ae28554c9bae4272fc86c5266508915a5a606be13d125f9f744656`;
+scope_three.json, scope_full_build.log, scope_full_verify.log, scope_native.log.
+The >=99.0% objective remains unmet. No push, PR or merge was performed.

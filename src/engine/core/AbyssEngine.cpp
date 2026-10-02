@@ -2631,9 +2631,12 @@ namespace AbyssEngine {
         *out = m;
         m->material = mat;
 
+        char magic[8];
+        unsigned short subCount;
+        Mesh *childPtr;
         unsigned int handle = 0;
         if (AEFile::OpenRead(path, &handle)) {
-            char magic[8] = "*******";
+            strcpy(magic, "*******");
             if (AEFile::Read((uint32_t)(7), magic, handle)) {
                 static const char sigMesh[7] = {'A', 'E', 'M', 'e', 's', 'h', 0};
                 static const char sigV2[7] = {'V', '2', 'A', 'E', 'M', 'e', 's'};
@@ -2657,12 +2660,12 @@ namespace AbyssEngine {
                         (*out)->vertexFormat) {
 
                         if ((fmt & 0x1a) != 0) {
-                            unsigned short subCount;
+
                             if (AEFile::Read((uint32_t)(2), &subCount, handle)) {
                                 if (subCount >= 2) {
                                     (*out)->animation = new Transform();
                                     for (unsigned int s = 0; s < subCount; ++s) {
-                                        Mesh *childPtr = new Mesh();
+                                        childPtr = new Mesh();
                                         childPtr->vboEligible = 1;
                                         childPtr->vertexFormat = (*out)->vertexFormat;
                                         childPtr->material = mat;
