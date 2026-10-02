@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **98.33% unweighted / 97.32970% original-instruction
+implementation bodies measure **98.375% unweighted / 97.45192% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**82.335% / 73.02731%**, respectively. Source-shape is an inventory/control-flow
+**83.005% / 74.73552%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -224,6 +224,53 @@ record the counter-evidence.
 These are source/ABI-shape and branch-contract corrections. No game executable
 or renderer runtime was exercised. The requested 99% target remains unmet.
 
+## Follow-up after checkpoint bc98481c
+
+Checkpoint bc98481c measured 98.33% / 97.32970%. This continuation edits
+StarMap.cpp, report and snapshots only. OnTouchEnd improves **96.8% -> 97.5%**,
+strict **68.4% -> 76.4%**, original/current instructions: 1037/1003.
+initStarSystem improves **95.9% -> 96.1%**, strict **69.2% -> 74.6%**,
+original/current instructions: 710/673.
+
+- Direct ARM at 0xcb71e/0xcb720 loads StarMap fields +104/+96, then gets
+  systemGeoms[selectedSystem]'s position. The previous planetGeom position
+  was an incorrect receiver inferred from IDA's incomplete sret call. The
+  transition now starts at the selected system marker as Android does.
+- Direct scratchVector/scratchVector2 assignments retain Android's two Vector
+  assignments at 0xcb734/0xcb76e; remove the extra two assignments through a
+  local p. Original transition setup returns after clearing momentum/velocity,
+  so the corrected path returns before Help rather than falling through.
+- Normal input precedes the dialog-confirmation tail; station mode precedes
+  galaxy mode. Explicit branch-local ChoiceWindow allocation and jump-mode
+  snapshot match the original lifetime/read order. Reordering produced the
+  same ARM code, so no metric gain is claimed for those source-only changes.
+- A separate warning-3217 shared-exit trial was rejected: it increased generated
+  calls and lowered source-shape to 97.4%. The existing warning selection gives
+  the same native warning and proceeds through choice visibility/inertia/Help.
+  No duplicate allocations or artificial calls were added to inflate metrics.
+- initStarSystem seed: 0xc7638 is 32-bit mul and 0xc763e sign-extends that result
+  for setSeed. Replace premature 64-bit multiplication with unsigned 32-bit
+  multiplication followed by int32_t conversion/sign extension; this preserves
+  the ARM wrap without C++ signed multiplication overflow.
+- Used-flag zeroing snapshots pointer/size and uses != as Android's loop does;
+  ring and station-position bounds reload member arrays. Position allocation
+  captures the destination array before operator new and stores into that
+  captured array, matching original call ordering.
+
+Packages: end-seventh-trial, end-seventh-flow, end-seventh-warning (rejected),
+end-seventh-final, station-seventh-trial (accepted seventh-focused).
+Direct evidence: _work/end-original-direct.asm, station-original-direct.asm;
+original bodies: touch-android.c, station-android.c. Native log:
+_work/native-seventh.log. Raw named-call inventories based only on relocation
+lines omit indirect GOT/register calls: before this repair Vector assignment
+was loaded once and called four times through r5. Those inventories alone must
+not be described as complete named-call equality; unchanged verifier call
+counts include those actual indirect call instructions.
+
+No native executable/runtime test is claimed. Remaining instruction/control
+inventories are incomplete recovery, not a proved compiler ceiling. The 99%
+objective remains active and unmet.
+
 ## Evidence and version boundaries
 
 Primary reference is **Android ARMv7 GOF2 HD 2.0.16**,
@@ -357,17 +404,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/sixth-corpus.log`; focused log:
-`_work/info-sixth-loads.log` (copied report: sixth-focused.json); native log: `_work/native-sixth.log`.
+Latest full log: `_work/seventh-corpus.log`; focused log:
+`_work/station-seventh-trial.log` (copied report: seventh-focused.json); native log: `_work/native-seventh.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb and d4e3330a, with no new gains or losses since 7fc7701c.
-The latest comparison against d4e3330a preserves all 2083 linked-exact and
-960 byte-exact pairs. Latest preservation gate and 99% gate logs are
-_work/sixth-gate.json, sixth-previous-gate.json and sixth-target-gate.log (exit 0, 0 and 1 respectively).
+50e10b79, b5010fdb, d4e3330a and bc98481c, with no new gains or losses since
+7fc7701c. The latest comparison against bc98481c preserves all 2083
+linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
+gate logs are _work/seventh-gate.json, seventh-previous-gate.json and
+seventh-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `b2f42c5a8214759dabbdd90e493a865f6942d0b20ce69cc07a36d5e48b730109`.
+final full JSON SHA-256: `e0c80d7e71330a763da925f902a36a763c68daa7837354365b2b512a058b7976`.
 
 
 ### Reproduction
@@ -397,11 +445,11 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
 | `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1221 | 78.9% | 97.9% | 64.9% | - |
-| `_ZN7StarMap10OnTouchEndEii` | 1037/1008 | 66.6% | 96.8% | 68.4% | - |
+| `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
 | `_ZN7StarMap6updateEi` | 971/953 | 76.6% | 97.7% | 82.3% | - |
 | `_ZN7StarMap4drawEv` | 916/906 | 49.7% | 98.0% | 83.2% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/740 | 72.9% | 97.3% | 67.0% | - |
-| `_ZN7StarMap14initStarSystemEv` | 710/672 | 80.9% | 95.9% | 69.2% | - |
+| `_ZN7StarMap14initStarSystemEv` | 710/673 | 80.9% | 96.1% | 74.6% | - |
 | `_ZN7StarMapC1EbP7Missionbi` | 333/332 | 85.1% | 98.0% | 84.2% | - |
 | `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 99.3% | 97.4% | - |
 | `_ZN7StarMap11OnTouchMoveEii` | 265/272 | 81.3% | 93.8% | 75.6% | - |
