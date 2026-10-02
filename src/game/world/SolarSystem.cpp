@@ -46,11 +46,9 @@ SolarSystem::~SolarSystem() {
     this->linkedSystemIds = nullptr;
 }
 
-static Status ** gStatusOrbit = nullptr;
-
 bool SolarSystem::currentOrbitHasWarpGate() {
     int orbit = this->jumpgateStationId;
-    Station *st = (*gStatusOrbit)->getStation();
+    Station *st = Globals::status->getStation();
     return orbit == st->getIndex();
 }
 
@@ -159,16 +157,13 @@ int SolarSystem::getWarpGateEnumIndex() {
     return (int) getStationEnumIndex(this->jumpgateStationId);
 }
 
-static Galaxy ** gGalaxyDiscover = nullptr;
-
 int SolarSystem::isFullyDiscovered() {
     Array<int> *arr = this->stationIds;
     uint32_t i = 0;
-    Galaxy *gal = *gGalaxyDiscover;
     while (true) {
         if (i >= arr->size())
             return 1;
-        char *visited = (char *) gal->getVisited();
+        char *visited = (char *) static_cast<Galaxy *>(Globals::galaxy)->getVisited();
         arr = this->stationIds;
         uint32_t flagIdx = (*arr)[i];
         i++;
