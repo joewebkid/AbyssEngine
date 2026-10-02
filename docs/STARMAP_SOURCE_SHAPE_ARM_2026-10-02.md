@@ -1541,6 +1541,35 @@ remain 99.160% / 98.44298%, strict 87.135% / 81.30541%; latest validations
 remain those of 84fab485 and the restored focused run after its investigation.
 Weighted 99% remains unmet; native runtime remains untested.
 
+## Investigation after checkpoint 578ceaa4
+
+A read-only update instruction-inventory comparison located the native integer
+yaw-distance conditional negation among remaining differences. Original
+ca210..ca216 uses SUBS followed by IT MI/NEGMI, while accepted 385e..3862
+uses a zero comparison, BPL and NEGS. The source already computes the same
+integer absolute distance; no new gameplay formula was inferred.
+
+A trial replaced the two-line subtraction/negative test with
+abs(yaw - target). This standard-library spelling preserves the existing
+integer expression and its thresholds and adds no calls, barriers or forced
+registers. The entire focused JSON and complete ARM object were identical to
+the accepted state: update source 98.5%, strict 82.1%, 971/966 instructions.
+Thus the compiler already recognizes the manual absolute-value expression;
+this spelling does not repair the conditional-instruction difference. The
+trial was removed. This does not establish a compiler ceiling or relax 99%.
+
+Evidence: _work/yaw-abs-thirtyseventh.json/log,
+_work/before-yaw-abs-thirtyseventh.cpp, _work/update-original-direct.asm and
+_work/object-alpha-thirtyfourth.asm. A fresh restored-source run compiled
+204/204 ARM TUs with zero failures, compared 22 symbols with zero skips,
+and reproduced the entire accepted JSON and object SHA-256:
+7bf78a18dd1e94481cc71f880ebe406dd9ddfa380f69cebe697d95293b75bb05.
+Fresh evidence: _work/thirtyseventh-restored-focused.json/log.
+Production source remains unchanged; source means stay 99.160% / 98.44298%,
+strict 87.135% / 81.30541%. No new full-corpus or native-library result is
+claimed; those validations remain 84fab485. Weighted 99% remains unmet;
+native runtime remains untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
