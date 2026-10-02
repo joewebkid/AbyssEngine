@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.160% unweighted / 98.44298% original-instruction
+implementation bodies measure **99.165% unweighted / 98.45998% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.135% / 81.30541%**, respectively. Source-shape is an inventory/control-flow
+**87.180% / 81.45839%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -1570,6 +1570,58 @@ strict 87.135% / 81.30541%. No new full-corpus or native-library result is
 claimed; those validations remain 84fab485. Weighted 99% remains unmet;
 native runtime remains untested.
 
+## Follow-up after checkpoint e2f1fb0c
+
+The freelance mission marker in drawOnScreenInfo now computes a local
+freelanceTarget in its station/system branch and writes iconBuffer[2] once
+afterward. The station branch still obtains stationId before getType; the
+system branch still captures its SolarSystem before getType, conditionally
+checks cargo 115/1, and selects agent station versus target station. The signed
+station-enumeration test, all calls and their conditional paths are preserved.
+No calls, barriers, forced registers or template symbols were added.
+
+Primary Android system success at c8850 branches to the common marker write
+c885e..c8866; station equality at c885a/c885c reaches that same write. The
+subsequent mode check c8868/c886c skips station-only warp-gate processing.
+Accepted-before code instead wrote at 113a..1142 in the system path and again
+in the station path. New object system success 1134 and station equality
+113e/1140 converge at 1142..114a, followed by mode check 114c/1150. This recovers
+the local machine control structure; exact original C++ spelling and runtime
+equivalence are not claimed.
+
+Info source improves 98.8% -> 98.9%, strict 78.3% -> 79.2%, original/current
+instructions 1207/1198 -> 1207/1196. Instruction inventory 97.5% -> 97.8%,
+opcode inventory 98.7% -> 98.9%, control inventory 98.3% -> 98.7%, ordered
+control 89.1% -> 90.2%. Size score decreases 99.4% -> 99.1%; direct-call score
+remains 100%. Every other focused row is unchanged. Fixed source means rise
+99.160% / 98.44298% -> 99.165% / 98.45998%; strict means rise 87.135% /
+81.30541% -> 87.180% / 81.45839%. Weighted 99% remains unmet.
+
+Focused build: 204/204 ARM TUs, zero failures; 22 comparisons, zero skips,
+six unique linked-exact and three unique byte-exact bodies. Native UCRT gof2
+static-library build passed. Native runtime remains untested. Evidence:
+_work/freelance-store-thirtyeighth.json/log/asm,
+_work/native-thirtyeighth.log, _work/info-original-direct.asm,
+_work/object-alpha-thirtyfourth.asm and
+_work/before-freelance-store-thirtyeighth.cpp. Accepted-before reports were
+preserved as _work/checkpoint38-before-focused.json/corpus.json.
+
+Read-only coordinate checks also excluded unsupported changes: original
+c8e1c..c8e4c and accepted-before 16fa..172a agree on single-precision half-row
+multiply/add and signed conversion for the special index-26 image. Original
+c904c..c906c and accepted-before 1926..1946 agree on first-legend-icon offsets,
+one iPadHD load, width addition, conditional negative Y and X subtraction.
+No coordinate changes were made based on the pseudocode alone.
+
+Full corpus: 4619 comparisons, zero skips; 2083 linked-exact / 960 byte-exact.
+Baseline and previous accepted checkpoint e2f1fb0c preservation gates passed
+with zero lost pairs (exit 0 each). The default 99% gate failed as expected
+(exit 1, StarMap >=99.0% target NOT reached). Overall source/fuzzy means: 89.06% / 76.16%.
+Latest gate evidence: _work/thirtyeighth-gate.json,
+thirtyeighth-previous-gate.json, thirtyeighth-target-gate.log.
+Accepted StarMap.o SHA-256: 163fba948b78575f9bc6f412f6fda356951c0e3e6b8d798db88e9031180662e0.
+Full JSON SHA-256: e2de9697df72f7768b131b42eac198cc97c8503f0d23349f89ceeb69b0bfdfa7.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -1607,18 +1659,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/thirtyfourth-corpus.log`; focused log:
-`_work/object-alpha-thirtyfourth.log`; native log: `_work/native-thirtyfourth.log`.
+Latest full log: `_work/thirtyeighth-corpus.log`; focused log:
+`_work/freelance-store-thirtyeighth.log`; native log: `_work/native-thirtyeighth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
 50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against de7b2d56 preserves all 2083
+7fc7701c. The latest comparison against e2f1fb0c preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/thirtyfourth-gate.json, thirtyfourth-previous-gate.json and
-thirtyfourth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/thirtyeighth-gate.json, thirtyeighth-previous-gate.json and
+thirtyeighth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `014376cafaf46ea3bee2dd52a24da1a8b1db51227c31a691f232b302e99d923f`.
+final full JSON SHA-256: `e2de9697df72f7768b131b42eac198cc97c8503f0d23349f89ceeb69b0bfdfa7`.
 
 
 ### Reproduction
@@ -1649,7 +1701,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
-| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1198 | 78.9% | 98.8% | 78.3% | - |
+| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1196 | 78.9% | 98.9% | 79.2% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.5% | 82.1% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.0% | 89.1% | - |

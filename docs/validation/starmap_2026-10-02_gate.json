@@ -19,12 +19,12 @@
   },
   "final": {
     "source_match": {
-      "unweighted": 99.16,
-      "weighted": 98.44297986199126
+      "unweighted": 99.16499999999999,
+      "weighted": 98.45997746796226
     },
     "match": {
-      "unweighted": 87.135,
-      "weighted": 81.30540768905787
+      "unweighted": 87.17999999999999,
+      "weighted": 81.45838614279678
     },
     "linked_exact": 6,
     "byte_exact": 3

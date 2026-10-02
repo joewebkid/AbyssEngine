@@ -1406,16 +1406,18 @@ campaign_targets:
         }
     }
     if (freelance && !freelance->isEmpty()) {
+        bool freelanceTarget;
         if (stationMode) {
             int stationId = this->stations->data()[index]->getIndex();
             int target = freelance->getType() == 14 ? freelance->getAgent()->getStation() : freelance->getTargetStation();
-            if (stationId == target) this->iconBuffer[2] = this->keyImageMission;
+            freelanceTarget = stationId == target;
         } else {
             SolarSystem *system = this->systems->data()[index];
             int target = freelance->getType() == 14 && Globals::status->getShip()->hasCargo(115, 1) ?
                 freelance->getAgent()->getStation() : freelance->getTargetStation();
-            if (static_cast<int32_t>(system->getStationEnumIndex(target)) >= 0) this->iconBuffer[2] = this->keyImageMission;
+            freelanceTarget = static_cast<int32_t>(system->getStationEnumIndex(target)) >= 0;
         }
+        if (freelanceTarget) this->iconBuffer[2] = this->keyImageMission;
     }
     if (stationMode && this->selectedSystem >= 0) {
         int warpGate = this->systems->data()[this->selectedSystem]->getWarpGateIndex();
