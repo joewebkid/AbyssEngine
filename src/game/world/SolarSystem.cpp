@@ -2,6 +2,7 @@
 #include "game/world/Galaxy.h"
 #include "game/world/Station.h"
 #include "game/mission/Status.h"
+#include "game/core/Globals.h"
 #include "game/core/String.h"
 
 SolarSystem::SolarSystem(int unk0, String displayName, int security,
@@ -111,23 +112,18 @@ String SolarSystem::getName() {
     return String(this->name, false);
 }
 
-static const int kPirateBaseStations[4] = {0, 0, 0, 0};
-
-static void * gPirateBaseRoot = nullptr;
+static const int kPirateBaseStations[4] = {1, 33, 47, 86};
 
 int SolarSystem::hasPirateBase() {
-    char *base = *(char **) gPirateBaseRoot;
+    Status *status = Globals::status;
     for (uint32_t i = 0; i <= 3; i++) {
-        if (stationIsInSystem(kPirateBaseStations[i]) != 0) {
-            char *flags = *(char **) (*(char **) (base + 0x4c) + 4);
-            if (flags[i] == 0)
-                return 1;
-        }
+        if (stationIsInSystem(kPirateBaseStations[i]) != 0 && !(*status->field_4c)[i])
+            return 1;
     }
     return 0;
 }
 
-static const int kAttackRaceTable[4] = {0, 0, 0, 0};
+static const int kAttackRaceTable[4] = {1, 0, 3, 2};
 
 int SolarSystem::getAttackRace() {
     uint32_t r = this->faction;
@@ -143,18 +139,13 @@ uint32_t SolarSystem::hasNoOwner() {
     return 0;
 }
 
-static const int kBlueprintStations[5] = {0, 0, 0, 0, 0};
-
-static void * gBlueprintRoot = nullptr;
+static const int kBlueprintStations[5] = {132, 133, 134, 129, 123};
 
 int SolarSystem::hasHiddenBlueprint() {
-    char *base = *(char **) gBlueprintRoot;
+    Status *status = Globals::status;
     for (uint32_t i = 0; i <= 4; i++) {
-        if (stationIsInSystem(kBlueprintStations[i]) != 0) {
-            char *flags = *(char **) (*(char **) (base + 0x58) + 4);
-            if (flags[i] == 0)
-                return 1;
-        }
+        if (stationIsInSystem(kBlueprintStations[i]) != 0 && !(*status->field_58)[i])
+            return 1;
     }
     return 0;
 }
