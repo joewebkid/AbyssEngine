@@ -28,15 +28,15 @@ Total fixed weight: 2534.
 
 | Metric, 99 unique bodies | Baseline | Final |
 |---|---:|---:|
-| Source-shape, unweighted | 95.029293% | 99.371717% |
-| Source-shape, instruction-weighted | 87.325020% | 98.173402% |
-| Strict fuzzy, unweighted | 86.264646% | 95.053535% |
-| Strict fuzzy, instruction-weighted | 63.474665% | 78.982755% |
+| Source-shape, unweighted | 95.029293% | 99.415152% |
+| Source-shape, instruction-weighted | 87.325020% | 98.442778% |
+| Strict fuzzy, unweighted | 86.264646% | 95.104040% |
+| Strict fuzzy, instruction-weighted | 63.474665% | 79.295225% |
 | Linked-exact unique bodies | 47 | 58 |
 | Byte-exact unique bodies | 43 | 50 |
 
 Historical-style symbol figures (101, aliases included): source 95.07% ->
-99.35%, strict 86.42% -> 95.10%,
+99.43%, strict 86.42% -> 95.18%,
 linked-exact 48 -> 59, byte-exact 43 -> 50.
 They are supplemental, not the gate denominator.
 
@@ -136,6 +136,25 @@ They are supplemental, not the gate denominator.
   `_work/native_expression_gamma.log`, all-ARM `_work/all_arm_expression_gamma.log`, full corpus
   `_work/full_expression_gamma.json`.
 
+## Continuation after ffe73a11
+
+- Constructor puts the positive-count allocation first and the nonpositive null slot second.
+  Original signed >=1 check is preserved; emitted compare/branch shape now matches Android.
+  Source-shape reaches 100%, strict 98.1%; reordered independent stores still prevent exact bytes.
+  Smoke covers empty/poisoned construction and mixed positive/negative gun-slot counts.
+- calcWeaponSounds checks idx>=n in the original operand order, preserving its early exit and
+  sound-selection loop; source-shape 98.4 -> 99.4.
+- Replaced all 27 Status::gStatus references in Player with original Globals::status.
+  Original ELF exports B _ZN7Globals6statusE at 0x2181b0; the extracted Player SDK uses this global.
+  Native repository has separate Status::gStatus storage, copied at Globals startup; it is not
+  a C++ reference alias. Current native Player object imports only the original Globals status
+  symbol. This fixes global identity despite identical relocation-masked scores.
+  Foreign Status methods can still internally use the compatibility pointer; those were not edited.
+- Separate trials `_work/player_trial_calc_compare.json`, `_work/player_trial_ctor_positive.json`,
+  `_work/player_trial_status_global.json`; current focused `_work/player_ctor_calc_status.json`,
+  native `_work/native_ctor_calc_status.log`, smoke `_work/player_ctor_calc_status_smoke.log`,
+  all-ARM `_work/all_arm_ctor_calc_status.log`, full corpus `_work/full_ctor_calc_status.json`.
+
 ## Trials and unresolved dependencies
 
 - Initial package: source shape 98.268687% unique / 95.862076% weighted, no exact loss.
@@ -174,7 +193,7 @@ They are supplemental, not the gate denominator.
 - Native UCRT64 `gof2`: clean worktree configure, complete build, and final rebuild all succeed;
   output `cmake-build-ucrt/libgof2.a`. Pre-existing warnings in other units remain.
 - All **204/204** ARM translation units recompiled using the canonical NDK r18b clang flags:
-  `_work/all_arm_expression_gamma.log`, failed []. ARM header static assertions passed.
+  `_work/all_arm_ctor_calc_status.log`, failed []. ARM header static assertions passed.
 - `python tools/test_player_recovery.py --so _work/bins/android_2.0.16_libgof2hdaa.so` passes.
   It compiles actual focused Player bodies extracted from the current source, with explicit audio,
   Matrix-constructor and Gun constructor/destructor/setEnemies boundary doubles. Tests EMP duration/elapsed separation,
@@ -206,7 +225,7 @@ They are not Player member bodies and are excluded from the fixed 99-body gate.
 The earlier 2dfe6132 continuation left existing non-Player member/helper metrics unchanged against c5874214.
 
 Lost linked-exact pairs: 0. Lost byte-exact pairs: 0.
-Also zero linked/byte exact-pair losses against 20c31541. Continuation gains:
+Also zero linked/byte exact-pair losses against ffe73a11. Continuation gains:
 0 linked and
 0 byte pairs.
 Gained linked pairs: 13; gained byte pairs:
@@ -214,16 +233,16 @@ Gained linked pairs: 13; gained byte pairs:
 checkpoint limitations and were not repaired by touching foreign families.
 Reports `_work/full_baseline.json`, `_work/full_final.json` (previous commit), and
 `_work/full_resume.json` (2dfe6132), `_work/full_next.json` (50884ca8),
-`_work/full_position.json` (20c31541), and `_work/full_expression_gamma.json` (latest continuation)
+`_work/full_position.json` (20c31541), and `_work/full_expression_gamma.json` (ffe73a11), and `_work/full_ctor_calc_status.json` (latest continuation)
 remain generated local evidence.
 
 ## Remaining weighted gap
 
-The fixed weighted score is 98.173402%, leaving
-0.826598 percentage points to the 99.0% threshold.
+The fixed weighted score is 98.442778%, leaving
+0.557222 percentage points to the 99.0% threshold.
 The largest remaining weighted deficits are listed by the fixed body table below.
 This ranks the remaining work; it does not assign every mismatch to a semantic error.
-Constructor comparison immediates and scheduling, Pause/StopEngineSound shrink-wrapped
+Constructor store scheduling (strict only), Pause/StopEngineSound shrink-wrapped
 prologues, and update stack/vector register allocation remain compiler-shape differences.
 No volatile padding, dead branches, register bindings, or alias/denominator inflation was added.
 
@@ -234,7 +253,7 @@ Addresses and aliases were frozen before edits. A changed metric alone is not a 
 
 | Android address | Symbol (aliases share row) | Original instructions | Source baseline -> final | Strict baseline -> final | L | B | Outcome |
 |---|---|---:|---:|---:|---|---|---|
-| 0x000a2570 | `_ZN6PlayerC1Eiiiii`, `_ZN6PlayerC2Eiiiii` | 162 | 94.0 -> 96.7 | 88.1 -> 94.4 | 0 -> 0 | 0 -> 0 | accepted |
+| 0x000a2570 | `_ZN6PlayerC1Eiiiii`, `_ZN6PlayerC2Eiiiii` | 162 | 94.0 -> 100.0 | 88.1 -> 98.1 | 0 -> 0 | 0 -> 0 | accepted |
 | 0x000a2730 | `_ZN6Player16updateDamageRateEv` | 34 | 100.0 -> 100.0 | 100.0 -> 100.0 | 0 -> 0 | 0 -> 0 | unchanged |
 | 0x000a2858 | `_ZN6Player11getPositionEv` | 5 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 0 -> 0 | accepted |
 | 0x000a2864 | `_ZN6PlayerD1Ev`, `_ZN6PlayerD2Ev` | 50 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 0 -> 0 | unchanged |
@@ -310,7 +329,7 @@ Addresses and aliases were frozen before edits. A changed metric alone is not a 
 | 0x000a36e0 | `_ZN6Player9setActiveEb` | 2 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 1 -> 1 | unchanged |
 | 0x000a36e6 | `_ZN6Player8isActiveEv` | 2 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 1 -> 1 | unchanged |
 | 0x000a36ec | `_ZN6Player6addGunEP3Guni` | 36 | 100.0 -> 100.0 | 91.7 -> 91.7 | 0 -> 0 | 0 -> 0 | unchanged |
-| 0x000a3774 | `_ZN6Player16calcWeaponSoundsEi` | 148 | 72.1 -> 98.4 | 52.4 -> 87.2 | 0 -> 0 | 0 -> 0 | accepted |
+| 0x000a3774 | `_ZN6Player16calcWeaponSoundsEi` | 148 | 72.1 -> 99.4 | 52.4 -> 88.5 | 0 -> 0 | 0 -> 0 | accepted |
 | 0x000a3910 | `_ZN6Player6addGunEP5ArrayIP3GunEi` | 43 | 100.0 -> 100.0 | 93.0 -> 93.0 | 0 -> 0 | 0 -> 0 | unchanged |
 | 0x000a3986 | `_ZN6Player13removeAllGunsEv` | 13 | 87.7 -> 100.0 | 92.9 -> 100.0 | 0 -> 1 | 0 -> 0 | accepted |
 | 0x000a39a6 | `_ZN6Player11getGunSlotsEv` | 2 | 100.0 -> 100.0 | 100.0 -> 100.0 | 1 -> 1 | 1 -> 1 | unchanged |

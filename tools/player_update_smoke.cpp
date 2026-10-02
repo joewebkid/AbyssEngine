@@ -66,6 +66,13 @@ int main() {
     Player *constructed = new (storage) Player(10, 100, 0, 0, 0);
     assert(constructed->active == 1 && constructed->damaged == 0);
     constructed->~Player();
+    {
+        Player slots(10, 100, 2, -1, 1);
+        assert(slots.guns->data()[0]->size() == 2 && slots.guns->data()[1] == nullptr);
+        assert(slots.guns->data()[2]->size() == 1);
+        assert(slots.guns->data()[0]->data()[0] == nullptr && slots.guns->data()[0]->data()[1] == nullptr);
+        assert(slots.guns->data()[2]->data()[0] == nullptr);
+    }
     Player player(10, 100, 0, 0, 0);
     player.transformMatrix.m[3] = 1.25f;
     player.transformMatrix.m[7] = -2.5f;
