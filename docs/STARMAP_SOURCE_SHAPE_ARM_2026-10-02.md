@@ -6,7 +6,7 @@
 implementation bodies measure **99.165% unweighted / 98.45998% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.180% / 81.45839%**, respectively. Source-shape is an inventory/control-flow
+**87.185% / 81.46895%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -1622,6 +1622,42 @@ thirtyeighth-previous-gate.json, thirtyeighth-target-gate.log.
 Accepted StarMap.o SHA-256: 163fba948b78575f9bc6f412f6fda356951c0e3e6b8d798db88e9031180662e0.
 Full JSON SHA-256: e2de9697df72f7768b131b42eac198cc97c8503f0d23349f89ceeb69b0bfdfa7.
 
+## Follow-up after checkpoint 9bd67af9
+
+StarMap::init now passes FogMode_1 instead of FogMode_dummy to FogEnable.
+Primary Android c6c08 loads r2 = 1, c6c1e loads r1 = 0, and c6c20 calls
+PaintCanvas::FogEnable(bool, FogMode). Accepted-before current code loaded
+r2 = 0 at 4514; the new object loads r2 = 1 at the same address and calls at
+452c. This is a proven call-argument correction, not an inferred fog formula.
+The IDA excerpt omits the arguments; ARM machine instructions are authoritative.
+The shared RenderEnums.h already defines FogMode_1 = 1 and was not edited.
+
+Read-only PaintCanvas.cpp inspection shows that its current implementation
+stores the second argument in fogEnableFlag and enters its GL-enable/disable
+branch only for zero. No claim about correct complete native fog rendering or
+runtime ABI follows from this local argument repair. Shared code was not changed.
+
+Focused results: init source remains 98.3%, strict 77.0% -> 77.1%; instruction
+inventory 97.8% -> 97.9%, all other init scores and instruction count unchanged.
+Every other focused row is unchanged. Fixed source means remain 99.165% /
+98.45998%; strict means become 87.185% / 81.46895%. Weighted 99% remains unmet.
+ARM compilation passed 204/204 TUs, zero failures; 22 focused comparisons,
+zero skips, six unique linked-exact and three unique byte-exact bodies.
+Native UCRT gof2 static-library build passed; native runtime remains untested.
+Evidence: _work/init-fog-thirtyninth.json/log/asm, native-thirtyninth.log,
+init-original-direct.asm and before-init-fog-thirtyninth.cpp.
+Previous accepted reports: _work/checkpoint39-before-focused.json/corpus.json.
+New StarMap.o SHA-256:
+3c172c7234c4ee9b0097f05a76bd5fd09e5bd15042b461d4102eb0f8c64720e7.
+
+Full corpus: 4619 comparisons, zero skips, 2083 linked-exact / 960 byte-exact.
+Baseline and previous checkpoint 9bd67af9 preservation gates both passed
+with zero lost pairs (exit 0 each). Default 99% gate failed as expected
+(exit 1, StarMap >=99.0% target NOT reached). Source/fuzzy corpus means
+remain 89.06% / 76.16%. Gate evidence: _work/thirtyninth-gate.json,
+thirtyninth-previous-gate.json and thirtyninth-target-gate.log.
+Full JSON SHA-256: a97c5982f5b6aa1901449fa1e84dc4c4aa7602e8fbb9af2ae46d05633af1f442.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -1659,18 +1695,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/thirtyeighth-corpus.log`; focused log:
-`_work/freelance-store-thirtyeighth.log`; native log: `_work/native-thirtyeighth.log`.
+Latest full log: `_work/thirtyninth-corpus.log`; focused log:
+`_work/init-fog-thirtyninth.log`; native log: `_work/native-thirtyninth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
 50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against e2f1fb0c preserves all 2083
+7fc7701c. The latest comparison against 9bd67af9 preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/thirtyeighth-gate.json, thirtyeighth-previous-gate.json and
-thirtyeighth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/thirtyninth-gate.json, thirtyninth-previous-gate.json and
+thirtyninth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `e2de9697df72f7768b131b42eac198cc97c8503f0d23349f89ceeb69b0bfdfa7`.
+final full JSON SHA-256: `a97c5982f5b6aa1901449fa1e84dc4c4aa7602e8fbb9af2ae46d05633af1f442`.
 
 
 ### Reproduction
@@ -1705,7 +1741,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.5% | 82.1% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.0% | 89.1% | - |
-| `_ZN7StarMap4initEbP7Missionbi` | 750/736 | 72.9% | 98.3% | 77.0% | - |
+| `_ZN7StarMap4initEbP7Missionbi` | 750/736 | 72.9% | 98.3% | 77.1% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/683 | 80.9% | 97.3% | 84.7% | - |
 | `_ZN7StarMapC1EbP7Missionbi` | 333/333 | 85.1% | 99.3% | 95.8% | - |
 | `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 99.3% | 97.4% | - |

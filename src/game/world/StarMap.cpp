@@ -1567,7 +1567,7 @@ campaign_targets:
 
 int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
 
-    Globals::Canvas->FogEnable(0, AbyssEngine::FogMode_dummy);
+    Globals::Canvas->FogEnable(0, AbyssEngine::FogMode_1);
     this->autoMode = (uint8_t) param3;
     this->pad_0xa8_a = (uint8_t) jumpMapMode;
     this->pulseSystem = param4;
