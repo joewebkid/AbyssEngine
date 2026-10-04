@@ -429,7 +429,7 @@ public:
 
     int isBlueprintUnlocked(int index);
 
-    int getAgents();
+    Array<Agent *> *getAgents();
 
     void incPlayingTime(int64_t delta);
 

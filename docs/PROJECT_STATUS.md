@@ -3,6 +3,18 @@
 Last reviewed: 2026-10-04 (Achievements, ChoiceWindow and NDK runtime; older
 subsystem snapshots retain their dates)
 
+## Status agent pointer-width ABI (2026-10-04, local branch)
+
+`Status::getAgents()` now returns its `Array<Agent *> *` field directly;
+the sole `Generator::createAgents` caller no longer routes the address through
+Windows 32-bit `int` and `long`. Android ARM's getter remains byte-exact and
+the caller's focused source-shape/strict scores remain 93.6%/40.6%. Native
+`gof2` and all 206 ARM units build. The full corpus is unchanged at
+4,322/4,524 originals, 4,675 rows, 90.09% mean source-shape, 77.22%
+strict, 2,164 linked-exact and 977 byte-exact; exact pair sets have no losses
+or gains. Other pointer-width risks and integrated runtime remain unverified.
+See [`STATUS_GETAGENTS_POINTER_ABI_2026-10-04.md`](STATUS_GETAGENTS_POINTER_ABI_2026-10-04.md).
+
 ## Achievement constructor flags fixed (2026-10-04, local branch)
 
 The Android constructor clears all three achievement-completion flags. The

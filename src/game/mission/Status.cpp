@@ -380,7 +380,7 @@ int Status::missionFailed(bool docked, int64_t time) {
 
 Array<BluePrint *> *Status::getBluePrints() { return bluePrints; }
 
-int Status::getAgents() { return (int) (intptr_t) agents; }
+Array<Agent *> *Status::getAgents() { return agents; }
 
 uint32_t Status::inPlanetRingOrbit() {
     if (inAlienOrbit() == 0) {
