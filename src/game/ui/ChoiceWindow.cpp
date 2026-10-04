@@ -127,51 +127,44 @@ void ChoiceWindow::setHeight(int height) {
                         this->y + this->height - this->padding, 0x21);
 }
 
-static GameText **g_ChoiceWindow_gameText_146e8c = nullptr;
-static uint32_t g_ChoiceWindow_medalImagesLow_146e8c[64];
-static uint32_t g_ChoiceWindow_medalImagesHigh_146e8c[64];
-static uint32_t g_ChoiceWindow_medalImages_146e8c[64];
+// Android 2.0.16 .rodata: 0x1fb898, 0x1fb888, and 0x202784.
+static const uint32_t g_ChoiceWindow_medalImagesLow_146e8c[4] = {
+    0x970, 0x96e, 0x96f, 0x96d,
+};
+static const uint32_t g_ChoiceWindow_medalImagesHigh_146e8c[4] = {
+    0x1f6d, 0x1f63, 0x96f, 0x96d,
+};
+static const uint32_t g_ChoiceWindow_medalImages_146e8c[45] = {
+    0x948, 0x949, 0x94a, 0x94b, 0x94c, 0x94d, 0x94e, 0x94f, 0x950,
+    0x951, 0x952, 0x953, 0x954, 0x955, 0x956, 0x957, 0x958, 0x959,
+    0x95a, 0x95b, 0x95c, 0x95d, 0x95e, 0x95f, 0x960, 0x961, 0x962,
+    0x963, 0x964, 0x965, 0x966, 0x967, 0x968, 0x969, 0x96a, 0x96b,
+    0x1f64, 0x1f65, 0x1f66, 0x1f67, 0x1f68, 0x1f69, 0x1f6a, 0x1f6b,
+    0x1f6c,
+};
 
 void ChoiceWindow::setMedal(int medal, int count) {
-    GameText *gameText = *g_ChoiceWindow_gameText_146e8c;
+    GameText *gameText = Globals::gameText;
     this->medalText = *gameText->getText(medal + 0x5e3);
 
-    String pattern = *gameText->getText(medal + 0x610);
-    int value = Achievements::gAchievements->getValue(medal, count);
-    String number;
-    {
-        int v = value;
-        char buf[16];
-        int n = 0;
-        bool neg = v < 0;
-        unsigned uv = neg ? (unsigned) (-v) : (unsigned) v;
-        do {
-            buf[n++] = char('0' + uv % 10);
-            uv /= 10;
-        } while (uv);
-        if (neg) buf[n++] = '-';
-        while (n--) { int _nl = number.length + 1; unsigned short *_nd = new unsigned short[_nl + 1]; for (int _i = 0; _i < number.length; _i++) _nd[_i] = number.data[_i]; _nd[number.length] = (unsigned short) ((char16_t) (unsigned char) buf[n]); _nd[_nl] = 0; if (number.data) delete[] number.data; number.data = _nd; number.length = _nl; }
-    }
-
-    String finalText = Status::gStatus->replaceHash(pattern, number);
+    String finalText = String("\n\n\n\n\n\n") +
+        Globals::status->replaceHash(
+            String(*gameText->getText(medal + 0x610), false),
+            String(String(static_cast<Achievements *>(Globals::achievements)->getValue(medal, count)), false)) +
+        String("\n\n");
 
     set(*gameText->getText(0x161), finalText, false);
     this->scrollWindow->setTextCentered(true);
 
-    PaintCanvas *canvas = PaintCanvas::gCanvas;
-    unsigned int medalImageHandle;
-    if (count < 0x24) {
-        canvas->Image2DCreate((unsigned short) g_ChoiceWindow_medalImagesLow_146e8c[count],
-                              medalImageHandle);
+    if (count >= 0x24) {
+        Globals::Canvas->Image2DCreate((unsigned short) g_ChoiceWindow_medalImagesHigh_146e8c[count],
+                                       this->medalImage);
     } else {
-        canvas->Image2DCreate((unsigned short) g_ChoiceWindow_medalImagesHigh_146e8c[count],
-                              medalImageHandle);
+        Globals::Canvas->Image2DCreate((unsigned short) g_ChoiceWindow_medalImagesLow_146e8c[count],
+                                       this->medalImage);
     }
-    this->medalImage = medalImageHandle;
-    unsigned int medalBgImageHandle;
-    canvas->Image2DCreate((unsigned short) g_ChoiceWindow_medalImages_146e8c[medal],
-                          medalBgImageHandle);
-    this->medalBgImage = medalBgImageHandle;
+    Globals::Canvas->Image2DCreate((unsigned short) g_ChoiceWindow_medalImages_146e8c[medal],
+                                   this->medalBgImage);
 
     this->count = count;
     this->medal = medal;

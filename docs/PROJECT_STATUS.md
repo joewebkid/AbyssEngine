@@ -3,6 +3,19 @@
 Last reviewed: 2026-10-04 (ChoiceWindow and NDK runtime; older subsystem
 snapshots retain their dates)
 
+## ChoiceWindow medal message and image IDs (2026-10-04, local branch)
+
+Android ARM evidence restores the `setMedal` number conversion, surrounding
+newlines, four native global routes, 53 resource-ID table entries and direct
+image-handle output fields. Focused source-shape rises from 83.9% to 99.2%,
+strict fuzzy from 25.1% to 96.3%; the method is not exact. The full corpus
+compares 4,322/4,524 unique originals across 4,675 rows at 90.07% mean
+source-shape / 77.21% strict, with 2,162 linked-exact and 977 byte-exact
+rows and no exact-set losses. Native and 206/206 ARM builds pass. The
+zero-filled `Achievements::getValue` table and unresolved `ChoiceWindow::draw`
+remain separate work; no complete-game runtime claim is made. See
+[`CHOICEWINDOW_SETMEDAL_ARM_2026-10-04.md`](CHOICEWINDOW_SETMEDAL_ARM_2026-10-04.md).
+
 ## ChoiceWindow modal set bindings (2026-10-04, local branch)
 
 All five `ChoiceWindow::set` overloads now use the Android-confirmed global
