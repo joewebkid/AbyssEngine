@@ -1544,3 +1544,34 @@ Fixed source scores remain Create 98.4, Read 97.6, Enhanced 97.9, with original
 instruction weights 291/873/636. Means **97.966667% unweighted / 97.835333%
 weighted** remain below both >=99.0% requirements. This semantic correction
 does not complete the goal or prove an objective compiler ceiling.
+
+## Continuation: output-copy interactions after the accepted normal copy
+
+The previous goal turn made authoritative progress: normal-copy source match
+rose to 97.6, its full-corpus validation and commit b1ea59c1 completed, and
+direct ELF evidence exposed the rounded V5 rotation literal. The angle-full
+verification was live when interrupted. Current-state inspection found that
+process terminal/missing and a completed full JSON/log, rather than restarting
+the job. The completed report and all object/set assertions above passed;
+the exact-literal correction is committed as 7a248f48.
+
+Four local copy-form trials were then measured against the accepted normal-copy
+and full-diagonal reader state. Earlier output-copy trials used a different
+reader, so this checks interaction with the newly changed local Vector:
+
+| Trial | Read source / strict | Compiled instructions | Call-count match |
+|---|---|---:|---:|
+| memcpy normalized tangent output | 97.4 / 55.6 | 865 | 100.0 |
+| memcpy binormal output | 97.4 / 55.9 | 865 | 100.0 |
+| memcpy both outputs | 97.3 / 55.8 | 863 | 100.0 |
+| Aggregate-initialize only the normal Vector | 97.5 / 55.6 | 869 | 100.0 |
+
+None beats the retained reader's 97.6 source match, and no trial is retained.
+The original scalar output stores at 0x6ce2e..0x6ce64 motivate checking
+equivalent local copy forms, not a claim that original C++ used memcpy.
+The experiment's finally block restores the accepted source, checked against
+the committed state. No helpers, flags, matcher, denominator or other bodies
+were changed. No new full rebuild is needed for these rejected temporary edits.
+Evidence: `_work/read_normalcopy_output_sweep.py`, four
+`_work/readnormalcopyoutputs-*.json` reports and their saved source snapshots.
+The validated means stay 97.966667/97.835333; the goal remains active below 99.
