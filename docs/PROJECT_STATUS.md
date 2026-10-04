@@ -3,6 +3,19 @@
 Last reviewed: 2026-10-04 (Achievements, ChoiceWindow and NDK runtime; older
 subsystem snapshots retain their dates)
 
+## ModStation medal-array source ABI (2026-10-04, local branch)
+
+Android `ModStation+0xbc` holds an `Array<int *> *`, not an `int *` needing
+pointer-to-pointer casts. The field is now typed directly, with its ARM32
+offset asserted. The campaign-mission `addAchievement` call now uses the
+real station object rather than constructing an invalid C++ receiver from
+integer `1`; the ARM call sequence and linked-exact callee remain unchanged.
+Native `gof2` and 206/206 ARM units build. Full comparison stays at
+4,322/4,524 originals, 4,675 rows, 90.09% mean source-shape, 77.24%
+strict, 2,165 linked-exact and 977 byte-exact, with zero exact-set losses.
+Array ownership and in-game runtime are still unverified; see
+[`MODSTATION_MEDAL_ARRAY_ABI_ARM_2026-10-04.md`](MODSTATION_MEDAL_ARRAY_ABI_ARM_2026-10-04.md).
+
 ## ModStation medal reward and notification bindings (2026-10-04, local branch)
 
 The Android-confirmed four-value credit table now drives both award paths

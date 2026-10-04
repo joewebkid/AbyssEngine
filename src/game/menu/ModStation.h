@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include "../../engine/core/AEString.h"
+#include "engine/core/Array.h"
 #include "engine/math/EaseInOutMatrix.h"
 #include "game/core/CutScene.h"
 #include "game/ui/DialogueWindow.h"
@@ -103,7 +104,7 @@ public:
     FlagWord cameraFlags;     // 0xb0  bytes [0]=camActive [1]=? [3]=camArmed
     int field_0xb4;           // 0xb4
     int field_0xb8;           // 0xb8
-    int *medalArray;          // 0xbc  Array<int*>*
+    Array<int *> *medalArray; // 0xbc
     int medalIndex;           // 0xc0
     int medalCount;           // 0xc4
     int field_0xc8;           // 0xc8
@@ -218,6 +219,8 @@ public:
 #if __SIZEOF_POINTER__ == 4
 static_assert(offsetof(ModStation, closeHangarAfterCredits) == 0x18,
               "ModStation::closeHangarAfterCredits @ 0x18");
+static_assert(offsetof(ModStation, medalArray) == 0xbc,
+              "ModStation::medalArray @ 0xbc");
 #endif
 
 #endif

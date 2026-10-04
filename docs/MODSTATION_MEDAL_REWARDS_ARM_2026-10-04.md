@@ -57,7 +57,9 @@ ignored directory.
 ## Limits and next priority
 
 Neither achievement notifications nor credit changes were exercised in an
-integrated game session. `ModStation::medalArray` is still typed as `int *`
-with casts to `Array<int *> *`; the observed 32-bit layout supports a typed
-field, but native 64-bit ABI and ownership should be audited separately.
-The unusual `addAchievement` receiver noted above is part of that review.
+integrated game session. At this checkpoint, `ModStation::medalArray` was
+still typed as `int *` with casts to `Array<int *> *`, and the unusual
+`addAchievement` receiver remained in the C++ source. Both source-level
+issues were addressed in the subsequent
+[`medal-array ABI pass`](MODSTATION_MEDAL_ARRAY_ABI_ARM_2026-10-04.md);
+array ownership and integrated runtime remain unverified.

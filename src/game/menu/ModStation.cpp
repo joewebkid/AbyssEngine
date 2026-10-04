@@ -547,7 +547,7 @@ void ModStation::checkMedals() {
             this->modalFlags.bytes[2] = 0;
             return;
         }
-        Array<int *> *medalArr = *(Array<int *> **)&this->medalArray;
+        Array<int *> *medalArr = this->medalArray;
         int *medal = (*medalArr)[idx];
         ((ChoiceWindow *) (this->medalChoiceWindow))->setMedal(medal[0], medal[1]);
         int delta = g_ModStation_medalCredits[medal[1]];
@@ -559,8 +559,8 @@ void ModStation::checkMedals() {
     }
 
     if (Globals::status->getCurrentCampaignMission() == 1)
-        ((ModStation *) ((ModStation *) 1))->addAchievement(0, 1);
-    this->medalArray = 0;
+        this->addAchievement(0, 1);
+    this->medalArray = nullptr;
     int *medals = static_cast<Achievements *>(Globals::achievements)->getNewMedals();
     int count = 0;
     this->medalCount = 0;
@@ -574,7 +574,7 @@ void ModStation::checkMedals() {
         return;
 
     Array<int *> *arr = new Array<int *>();
-    *(Array<int *> **)&this->medalArray = arr;
+    this->medalArray = arr;
     ArraySetLength(this->medalCount, *arr);
     int j = 0;
     this->medalCount = 0;
