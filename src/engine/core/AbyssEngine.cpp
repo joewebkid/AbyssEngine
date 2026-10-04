@@ -1070,10 +1070,9 @@ namespace AbyssEngine {
                 m = *slot;
                 const float inv = 255.0f;
                 unsigned char *rawBytes = (unsigned char *) raw;
-                float *colorFloats = (float *) m->colors;
                 vcount = m->vertexCount;
                 for (unsigned int i = 0; i < ((*slot)->vertexCount << 2); ++i) {
-                    colorFloats[i] = (float) rawBytes[i] / inv;
+                    ((float *) m->colors)[i] = (float) rawBytes[i] / inv;
                 }
                 ::operator delete[](raw);
             } else if ((flags & 0x18) != 0) {

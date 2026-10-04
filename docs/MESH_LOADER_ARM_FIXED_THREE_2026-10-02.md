@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **98.07% unweighted / 97.98% weighted**.
+Latest validated continuation: source **98.10% unweighted / 98.03% weighted**.
 Latest semantic correction: original full bounds diagonal; earlier half-diagonal
 radius assertions are superseded by the verified operand/ABI evidence below.
 The result tables below preserve earlier measurements. Chronological continuation
@@ -2069,3 +2069,99 @@ requires a full rebuild. Exact pair sets remain 2079 linked / 959 byte,
 with means 98.066667 / 97.980833. Both 99.0 gates remain unmet. The next search
 should exclude these concrete bound-copy/count/scratch/completion forms;
 these measurements do not establish an objective compiler ceiling.
+
+
+## Continuation: compressed color destination field reload
+
+Start state is clean tracked 4084c6af. Original Android 0x6ced0 reads
+colors from the captured mesh at offset 12 for every converted component;
+0x6ced2..0x6ceda adds the separate byte offset and stores the normalized value.
+Retained source replaces the once-captured colorFloats pointer with
+((float *) m->colors)[i] inside the compressed color loop. The unused pointer
+declaration is removed. Allocation, file-read order, unsigned byte conversion,
+division by 255.0f, loop condition and raw-buffer release are unchanged.
+The original operands support field reload timing, not recovered C++ spelling.
+
+The focused new object has ldr r3, [r0, #12] inside the component loop,
+followed by address addition and vstr. This is the actual field-reload change;
+the original is not a simple persistent destination pointer increment.
+The count-load placement still differs. No fake effects, barriers, volatile,
+assembly, flags, helpers or layout changes are introduced.
+
+Eighteen measured variants:
+
+| Trial | Source / strict | Instructions | Call match | Whole object equals previous |
+|---|---|---:|---:|---|
+| readchildguardlife-child_before_count | 97.8 / 55.7 | 868 | 100.0 | no |
+| readchildguardlife-child_function_scope | 97.8 / 55.7 | 868 | 100.0 | no |
+| readchildguardlife-child_inside_nonempty_guard | 97.9 / 55.6 | 863 | 100.0 | no |
+| readchildguardlife-short_child_counter | 97.9 / 55.9 | 865 | 100.0 | no |
+| readchildguardlife-signed_child_counter | 97.9 / 56.0 | 864 | 100.0 | yes |
+| readcolorfunnel-bool_funnel | 96.9 / 54.2 | 862 | 98.2 | no |
+| readcolorfunnel-local_combined_guard | 97.9 / 55.6 | 862 | 100.0 | no |
+| readcolorfunnel-read_count_funnel | 97.0 / 52.1 | 869 | 98.2 | no |
+| readcolorfunnel-signed_status_funnel | 96.9 / 50.9 | 856 | 98.2 | no |
+| enhsectiondispatch-all_three_if | 97.7 / 67.0 | 636 | 100.0 | no |
+| enhsectiondispatch-position_if | 97.8 / 53.5 | 636 | 100.0 | no |
+| enhsectiondispatch-rotation_if | 97.8 / 67.3 | 636 | 100.0 | no |
+| enhsectiondispatch-scale_if | 97.8 / 67.3 | 636 | 100.0 | no |
+| readcolorstore-byte_offset_field | 97.9 / 56.6 | 873 | 100.0 | no |
+| readcolorstore-copy_field_byte_offset | 97.8 / 56.4 | 873 | 100.0 | no |
+| readcolorstore-copy_field_captured_count | 97.8 / 56.5 | 873 | 100.0 | no |
+| readcolorstore-copy_field_dynamic_count | 97.9 / 56.1 | 874 | 100.0 | no |
+| readcolorstore-field_each_store | 98.0 / 55.9 | 867 | 100.0 | no |
+
+Only field_each_store improves source match, from Reader 97.9 / 56.0 /
+864 instructions to 98.0 / 55.9 / 867. Its slight strict-score decrease is
+reported; the objective is source-shape. The guarded child-loop variants are
+retested on the accepted guarded-do state; earlier declaration experiments
+used a for loop. Signed counter is byte-identical; unsigned-short count and
+pointer lifetime variants are not. All preserve the initial zero-count guard.
+
+The color funnel variants preserve read success/failure and prevent enhanced
+reads after failed color input. Their common returns merge one static call
+site and lower call/source match, so they are rejected. The local combined
+guard also fails to improve. Section-dispatch if/else variants preserve
+0/1 dispatch and unknown-type fallthrough, but regress Enhanced. Separate
+byte-offset and memcpy color-store forms preserve conversion and component
+ordering but do not improve source match. None of these is retained.
+
+Fresh validation of the retained source:
+
+- Native UCRT64 gof2 static-library build passes.
+- Reader color/position/tangent/truncation smoke passes, including eight
+  unsigned RGBA components for two vertices and incomplete file prefixes.
+- Caller lifecycle, animated completion, children/bounds/early-failure smoke
+  with actual Mesh.cpp parser, selected AEMath bodies and Vector code passes.
+- Separate actual Mesh.cpp enhanced-parser smoke passes.
+- Baseline comparison confirms no changes outside the three allowed bodies
+  or their signatures.
+- All 204 ARM translation units rebuilt; full verifier compares 4619 rows,
+  4274/4524 originals, skips zero, missing 250 (7 wrong type, 243 absent),
+  extra 130. Actual normalized pair sets equal the clean baseline: linked
+  2079 and byte 959, lost [] and gained [] for each.
+- The other 202 objects are byte-identical to baseline. Core equals the
+  successful focused field-reload object; Mesh equals angle-full.
+
+Full strict/source averages: 75.98 / 88.99. Full report
+SHA-256: `250d29bf804fdea50d7012de57eb17cf6f2bddee3fc7e0004ebc6a52a413eb50`.
+
+Evidence: _work/read_guarded_child_lifetime_sweep.py,
+_work/read_color_completion_funnel_sweep.py, _work/enh_section_dispatch_sweep.py,
+_work/read_color_store_sweep.py; eighteen focused reports and snapshots;
+_work/colorfield_trial_identities.json; _work/colorfield_full.json and
+_work/colorfield_three.json; _work/colorfield_full_build.log and
+_work/colorfield_full_verify.log; _work/colorfield_native.log,
+_work/colorfield_read_smoke.log, _work/colorfield_enhanced_smoke.log.
+
+| Fixed unique body | Source-shape | Strict | Original weight |
+|---|---:|---:|---:|
+| MeshCreateFromFile | 98.4% | 60.7% | 291 |
+| MeshReadData | 98.0% | 55.9% | 873 |
+| ReadEnhancedDataFromFile | 97.9% | 67.5% | 636 |
+
+Exactly these three bodies give **98.100000% unweighted / 98.029333% weighted**.
+Both >=99.0 gates remain unmet; the goal stays active. There is no demonstrated
+compiler ceiling. Native library and bounded body tests do not establish full
+executable ABI correctness or an Android-device runtime result. No push, PR
+or merge is performed.
