@@ -2529,3 +2529,47 @@ including actual exact-pair equality to baseline: 2079 linked / 959 byte,
 with no losses. Means remain 98.133333 / 98.064667. Both >=99.0 requirements
 remain unmet; no objective compiler ceiling is established. The goal stays
 active, with these common-call/frame forms excluded from future search.
+
+
+## Continuation: UV and accumulator interactions
+
+Eleven isolated reader trials were tested against the accepted channel-zero
+implementation. Original compressed UV conversion reads the destination field
+at 0x6c92c and selects unchanged versus inverted V at 0x6c954-0x6c956. Original
+float UV conversion rereads texCoords at 0x6ca14 and retains its doubled count
+from 0x6c9e2-0x6c9e4. The owner-reload form previously regressed on an older
+reader; this experiment checks its interaction with the current implementation.
+The triangle count is computed before the vertex-count load at 0x6cc66-0x6cc6c.
+Accumulator clearing appears at 0x6cc7c-0x6cc94; its original C++ form remains
+unproven. These are source-form experiments, not recovered source claims.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core object equals accepted |
+|---|---|---:|---:|---|
+| compressed_if | 98.0 / 55.9 | 867 | 100.0 | yes |
+| compressed_reverse_condition | 98.0 / 55.9 | 867 | 100.0 | yes |
+| compressed_store_branches | 98.0 / 55.9 | 867 | 100.0 | yes |
+| float_owner_reload | 97.8 / 56.5 | 870 | 98.2 | no |
+| float_component_one | 97.8 / 56.3 | 870 | 98.2 | no |
+| float_byte_offset | 97.8 / 56.5 | 870 | 98.2 | no |
+| count_after_triangles | 98.0 / 55.9 | 867 | 100.0 | yes |
+| chained_zero | 98.0 / 55.9 | 867 | 100.0 | yes |
+| pointer_zero | 98.0 / 55.9 | 867 | 100.0 | yes |
+| vertex_memset | 98.0 / 55.8 | 866 | 100.0 | no |
+| component_loop | 96.9 / 56.5 | 854 | 98.2 | no |
+
+No variant improves the required source score. All edits were restored. The
+three compressed-V branching forms, triangle/vertex count order, chained zero
+stores and per-vertex pointer stores produce byte-identical whole Core objects.
+The float owner-reload and byte-offset forms also equal each other, but differ
+from accepted. Equal scores alone were not used to infer object identity.
+
+Local evidence: `_work/uvinteraction-*.json`,
+`_work/accuminteraction-*.json`, `_work/uv_interaction_identities.json` and
+`_work/accum_interaction_identities.json`, with saved trial source snapshots.
+Only the reader body was varied; helper/header/compiler/matcher inputs were
+unchanged. The tracked production sources are restored and the baseline
+outside-body/signature check passes. No native or full-corpus rerun is claimed
+for rejected variants. Accepted full-corpus/native evidence remains
+`_work/channelzero-full` and its associated reports/logs. Fixed-three means
+remain **98.13% unweighted / 98.06% instruction-weighted**, below both 99.0%
+requirements. No push, PR or merge was performed.
