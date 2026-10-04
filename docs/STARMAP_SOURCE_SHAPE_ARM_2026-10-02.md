@@ -1875,6 +1875,40 @@ fortyfourth-gate.json, fortyfourth-previous-gate.json and
 fortyfourth-target-gate.log. Full JSON SHA-256:
 0fd05a776b12126fd16340c3d7aa99afb8aecb0372e4164917686656ebcd1e11.
 
+## Investigation after checkpoint 1d9a4c65
+
+A first-route depth source trial materialized bool bothBehind, initially false,
+assigned only when scratchVector.z < 0.0f from scratchVector2.z < 0.0f, then
+used !bothBehind to draw. It preserved short-circuit evaluation and the existing
+unordered predicate behavior. Primary Android c93c8..c93dc materializes a
+zero/one result with IT MI, whereas accepted 3c2..3d0 branches directly on the
+second comparison. The trial was a source-form hypothesis, not recovered syntax.
+
+The entire focused trial report _work/depth-bool-fortyfifth.json is identical
+to the accepted report, and the complete StarMap.o SHA-256 also remains
+b074aa464b492d3eba51e14b69f2f85b2bed927ebdd56b0a34cb9f9460b8e7ec.
+All 204 ARM TUs compiled with zero failures; 22 rows compared with zero skips.
+The trial was removed. Backup/evidence: before-depth-bool-fortyfifth.cpp,
+depth-bool-fortyfifth.log, draw-original-direct.asm and
+route-alpha-fortyfourth.asm in _work. No extra checks or synthetic materialization
+were inserted to force the compiler's instruction count.
+
+Read-only review also confirms update's matrix order already matches: original
+c9c62..c9c92 obtains the root matrix first, then the station matrix, multiplies,
+extracts position and assigns scratchVector2. Accepted 3282..32b2 has the same
+calls and member destination. OnTouchEnd's galaxy selection guard already reads
+selectedSystem, autoMode, pad_0xa8_a and lastSelectedSystem in the original
+cb254..cb26e order at accepted 21c0..21de; no condition reorder is justified
+by this inspection.
+
+Fresh restored-source verification _work/fortyfifth-restored-focused.json/log
+again compiled 204/204 TUs with zero failures, compared 22 rows with zero skips
+and reproduced the entire accepted report and object hash. Production code and
+canonical gate inputs remain those of 1d9a4c65. Means remain source
+99.180% / 98.50022532037741%, strict 87.230% / 81.58969159273342%.
+No new native/full-corpus run is claimed; the accepted fortyfourth validations
+below remain authoritative. Weighted 99% is unmet and native runtime untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
