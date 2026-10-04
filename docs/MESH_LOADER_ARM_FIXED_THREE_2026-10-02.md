@@ -2165,3 +2165,63 @@ Both >=99.0 gates remain unmet; the goal stays active. There is no demonstrated
 compiler ceiling. Native library and bounded body tests do not establish full
 executable ABI correctness or an Android-device runtime result. No push, PR
 or merge is performed.
+
+
+## Continuation: color bound, position predicates and enhanced entry locals
+
+Start state is clean tracked 64082f6c with validated means 98.100000 /
+98.029333 and the per-component colors-field load retained. Thirteen trials
+keep canonical flags, helpers, signatures and the fixed three-body denominator.
+None improves source score; all changes are restored.
+
+| Trial | Source / strict | Instructions | Whole object equals colorfield-full |
+|---|---|---:|---|
+| readcolorbound-captured_component_count | 97.9 / 56.9 | 873 | no |
+| readcolorbound-captured_vertex_count | 97.9 / 56.9 | 873 | no |
+| readcolorbound-signed_component_count | 97.9 / 56.9 | 873 | no |
+| readcolorbound-slot_component_count | 97.9 / 56.9 | 873 | no |
+| readpositionpredicate-direct_shift_negative | 97.7 / 55.9 | 873 | no |
+| readpositionpredicate-shared_shift_negative | 97.7 / 55.9 | 873 | no |
+| readpositionpredicate-signed_compressed_local | 97.7 / 55.9 | 873 | no |
+| readpositionarms-integer_float_before_short | 98.0 / 55.9 | 867 | yes |
+| readpositionarms-integer_float_before_short_signed | 97.7 / 55.9 | 872 | no |
+| enhentrylife-both_after_allocation | 97.9 / 67.5 | 636 | yes |
+| enhentrylife-format_after_allocation | 97.9 / 67.5 | 636 | yes |
+| enhentrylife-self_after_allocation | 97.9 / 67.5 | 636 | yes |
+| enhentrylife-signed_format_current | 97.9 / 67.5 | 636 | yes |
+
+All thirteen have call-count match 100.0. Original 0x6cebe..0x6cec2 captures
+four times the vertex count before the compressed-color loop. Four ordinary
+forms use the captured vertex count or an unsigned/signed component count,
+loaded through m or slot at the existing pre-loop point. Each keeps the
+per-component colors-field load and component division, but gives 97.9,
+below accepted 98.0. Signed counters stay within [0,262140], so no overflow
+or negative loop limit is introduced. Equal scores do not imply byte identity;
+the identity column is based on actual whole-object comparisons.
+
+Original 0x6c6a8 shifts flags by 29, and 0x6c6ba branches with BMI for
+short position data. Direct or shared signed tests of flags << 29 select exactly
+bit 4 on the supported two-complement ARM/native compilers. The existing
+unsigned shift prevents signed left-shift overflow. All three give 97.7.
+Inverting the top bit-test and placing integer/float decoding before the short
+else arm preserves bit-4 precedence, all reads and extrema updates. The
+ordinary bit-test variant remains 98.0; using the signed shared shift gives
+97.7. No branch order is claimed as recovered C++.
+
+Enhanced entry trials place the format cast, the this alias, or both after
+new Transform, preserving the allocation/constructor and first-read order.
+A signed-byte format is also retested on the accepted current body; only
+bits 0x18/0x10 are observed, so its sign does not change these predicates.
+All four retain Enhanced 97.9 / 67.5 and 636 instructions. Allocation size,
+exception cleanup and helper bodies are untouched.
+
+Evidence: _work/read_color_captured_bound_sweep.py,
+_work/read_position_predicate_sweep.py, _work/read_position_arm_order_sweep.py,
+_work/enh_entry_local_lifetime_sweep.py; thirteen focused reports/snapshots;
+_work/color_bound_position_entry_identities.json. Finally blocks restore
+accepted code. Outside-body/signature checks pass and tracked production
+source diff is empty. Full colorfield-full validation and native tests remain
+authoritative because no production change is retained. Exact pair sets remain
+2079 linked / 959 byte with no losses; means stay 98.100000 / 98.029333.
+Both >=99.0 gates remain unmet, and no objective compiler ceiling is shown.
+The goal stays active; future search should exclude these measured forms.
