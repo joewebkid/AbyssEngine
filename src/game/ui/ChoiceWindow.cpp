@@ -28,27 +28,21 @@ void ChoiceWindow::setWidth(int width) {
     this->x = Globals::w / 2 - width / 2;
 }
 
-static GameText **g_ChoiceWindow_gameText_146954 = nullptr;
-
 void ChoiceWindow::set(String const &a, String const &b) {
-    GameText *gameText = *g_ChoiceWindow_gameText_146954;
+    GameText *gameText = Globals::gameText;
     String *title = gameText->getText(0x186);
     String *left = gameText->getText(0x86);
     String *center = gameText->getText(0x87);
     set(*title, a, false, *left, *center, b, -1, -1);
 }
 
-static GameText **g_ChoiceWindow_gameText_146d5c = nullptr;
-
 void ChoiceWindow::set(String const &text, bool flag) {
-    String *title = (*g_ChoiceWindow_gameText_146d5c)->getText(0x186);
+    String *title = Globals::gameText->getText(0x186);
     set(*title, text, flag);
 }
 
-static GameText **g_ChoiceWindow_gameText_1468f4 = nullptr;
-
 void ChoiceWindow::set(String const &title, String const &message, bool flag) {
-    GameText *gameText = *g_ChoiceWindow_gameText_1468f4;
+    GameText *gameText = Globals::gameText;
     String *left = gameText->getText(0x86);
     String *center = gameText->getText(0x87);
     String *right = gameText->getText(0x20c);
@@ -68,10 +62,8 @@ int ChoiceWindow::OnTouchEnd(int x, int y) {
     return -1;
 }
 
-static GameText **g_ChoiceWindow_gameText_1468c8 = nullptr;
-
 void ChoiceWindow::set(String const &text) {
-    String *title = (*g_ChoiceWindow_gameText_1468c8)->getText(0x186);
+    String *title = Globals::gameText->getText(0x186);
     set(*title, text, false);
 }
 
@@ -206,32 +198,24 @@ ChoiceWindow::ChoiceWindow() {
     this->x = screenWidth / 2 - width / 2;
 }
 
-static GameText **g_ChoiceWindow_gameText_1469b0 = nullptr;
-static Layout **g_ChoiceWindow_defaultConfig_1469b0 = nullptr;
-static int *g_ChoiceWindow_screenWidth_1469b0 = nullptr;
-static FModSound **g_ChoiceWindow_sound_1469b0 = nullptr;
-static Layout **g_ChoiceWindow_layout_1469b0 = nullptr;
-static void **g_ChoiceWindow_lineFont_1469b0 = nullptr;
-static int *g_ChoiceWindow_screenHeight_1469b0 = nullptr;
-
 void ChoiceWindow::set(String const &title, String const &message, bool hasButtons,
                        String const &left, String const &right, String const &single,
                        int y, int width) {
     this->hasButtons = hasButtons;
 
-    GameText *gameText = *g_ChoiceWindow_gameText_1469b0;
+    GameText *gameText = Globals::gameText;
     bool defaultButtons = false;
     if (gameText->getText(0x86)->Compare_str((String *) &left) == 0)
         defaultButtons = gameText->getText(0x87)->Compare_str((String *) &right) == 0;
 
     if (width == -1)
-        width = (*g_ChoiceWindow_defaultConfig_1469b0)->field_0x264;
+        width = Globals::layout->field_0x264;
     if (!defaultButtons)
         width = (int) ((float) width * 0.85f);
 
     this->width = width;
-    this->x = *g_ChoiceWindow_screenWidth_1469b0 / 2 - width / 2;
-    (*g_ChoiceWindow_sound_1469b0)->play(0x7e, nullptr, nullptr, 0.0f);
+    this->x = Globals::w / 2 - width / 2;
+    Globals::sound->play(0x7e, nullptr, nullptr, 0.0f);
     this->title = title;
 
     delete this->scrollWindow;
@@ -239,9 +223,9 @@ void ChoiceWindow::set(String const &title, String const &message, bool hasButto
 
     Array<String *> *lines = new Array<String *>();
 
-    Layout *layout = *g_ChoiceWindow_layout_1469b0;
-    Globals::gGlobals->getLineArray(
-        static_cast<unsigned int>(reinterpret_cast<std::size_t>(*g_ChoiceWindow_lineFont_1469b0)),
+    Layout *layout = Globals::layout;
+    static_cast<Globals *>(Globals::globals)->getLineArray(
+        Globals::font,
         message,
         (this->width - layout->field_0x4c * 2) - layout->field_0x48,
         lines);
@@ -255,7 +239,7 @@ void ChoiceWindow::set(String const &title, String const &message, bool hasButto
     this->height = maxHeight;
 
     if (y == -1)
-        y = *g_ChoiceWindow_screenHeight_1469b0 / 2 - maxHeight / 2;
+        y = Globals::h / 2 - maxHeight / 2;
     this->y = y;
 
     this->scrollWindow = new ScrollTouchWindow(

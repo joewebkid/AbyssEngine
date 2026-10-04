@@ -3,6 +3,18 @@
 Last reviewed: 2026-10-04 (ChoiceWindow and NDK runtime; older subsystem
 snapshots retain their dates)
 
+## ChoiceWindow modal set bindings (2026-10-04, local branch)
+
+All five `ChoiceWindow::set` overloads now use the Android-confirmed global
+text, layout, dimensions, sound, font and `Globals` objects. Their focused
+mean source-shape rises from 65.8% to 97.8%; the primary modal body rises
+from 30.7% to 96.1%, but none is exact or runtime-certified. The full report
+compares 4,322/4,524 unique originals across 4,675 rows: 2,162 linked-exact,
+977 byte-exact, 90.07% mean source-shape and 77.20% strict fuzzy, with no
+exact-set losses. The two extra exact rows are duplicate `Array<String*>`
+comparisons, not new unique coverage. Native and 206/206 ARM builds pass.
+See [`CHOICEWINDOW_SET_GLOBALS_ARM_2026-10-04.md`](CHOICEWINDOW_SET_GLOBALS_ARM_2026-10-04.md).
+
 ## ChoiceWindow constructor/width/misc layout (2026-10-04, local branch)
 
 Android-confirmed `Globals::layout`, `Globals::w`, and `Globals::h` bindings
