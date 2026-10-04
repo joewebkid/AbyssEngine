@@ -132,8 +132,8 @@ public:
         float scrollFlagsf;   //       float@0x118 hangar-light intensity
     };
     union { int scrollTarget; float scrollTargetf; }; // 0x11c (hangar-light target)
-    int field_0x120;          // 0x120
-    int field_0x124;          // 0x124
+    float field_0x120;        // 0x120, light-direction component
+    float field_0x124;        // 0x124, light-direction component
     void *activeTouch;        // 0x128
     FlagWord field_0x12c;     // 0x12c
     float camKeyX;            // 0x130, Android ModStation camera key X
@@ -221,6 +221,12 @@ static_assert(offsetof(ModStation, closeHangarAfterCredits) == 0x18,
               "ModStation::closeHangarAfterCredits @ 0x18");
 static_assert(offsetof(ModStation, medalArray) == 0xbc,
               "ModStation::medalArray @ 0xbc");
+static_assert(offsetof(ModStation, scrollTarget) == 0x11c,
+              "ModStation::light direction @ 0x11c");
+static_assert(offsetof(ModStation, field_0x120) == 0x120,
+              "ModStation::light direction @ 0x120");
+static_assert(offsetof(ModStation, field_0x124) == 0x124,
+              "ModStation::light direction @ 0x124");
 #endif
 
 #endif

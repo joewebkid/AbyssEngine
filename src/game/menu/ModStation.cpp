@@ -695,47 +695,49 @@ void ModStation::OnRender3D() {
 }
 
 
-static int **g_rl_engineHolder = 0;
-
-static int g_rl_lightFlag = 0;
-
-int ApplicationManager_GetEngine_rl();
-
-int Status_getSystem_rl();
-
-int SolarSystem_getRace_rl();
-
-int rl_engineFromHolder(int holder);
-
-void Engine_resetStationLight(int engine, int race);
-
-void Engine_LightEnable_rl(int engine, int flag);
-
 void ModStation::resetLight() {
-    int holder = *(int *) g_rl_engineHolder;
-    rl_engineFromHolder(holder);
-    rl_engineFromHolder(holder);
-    rl_engineFromHolder(holder);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(
+        Globals::appManager)->GetEngine())->LightSetMaterialColorAmbient(
+        0.7f, 0.7f, 0.7f);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(
+        Globals::appManager)->GetEngine())->LightSetLightDirection(
+        -this->scrollTargetf, -this->field_0x120, -this->field_0x124, 0x4000);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(
+        Globals::appManager)->GetEngine())->LightSetLightColorDiffuse(
+        1.0f, 1.0f, 1.0f, 0x4000);
 
-    Status_getSystem_rl();
-    int race = SolarSystem_getRace_rl();
-    int engine;
-    switch (race) {
+    switch (Globals::status->getSystem()->getRace()) {
         case 1:
+            static_cast<Engine *>(static_cast<ApplicationManager *>(
+                Globals::appManager)->GetEngine())->LightSetLightColorAmbient(
+                    0.25f, 0.55f, 0.25f, 0x4000);
+            break;
         case 2:
+            static_cast<Engine *>(static_cast<ApplicationManager *>(
+                Globals::appManager)->GetEngine())->LightSetLightColorAmbient(
+                    0.15f, 0.15f, 0.35f, 0x4000);
+            break;
         case 3:
+            static_cast<Engine *>(static_cast<ApplicationManager *>(
+                Globals::appManager)->GetEngine())->LightSetLightColorAmbient(
+                    0.45f, 0.25f, 0.25f, 0x4000);
+            break;
         case 8:
-            engine = ApplicationManager_GetEngine_rl();
+            static_cast<Engine *>(static_cast<ApplicationManager *>(
+                Globals::appManager)->GetEngine())->LightSetLightColorAmbient(
+                    0.83f, 0.28f, 0.12f, 0x4000);
             break;
         default:
-            engine = ApplicationManager_GetEngine_rl();
+            static_cast<Engine *>(static_cast<ApplicationManager *>(
+                Globals::appManager)->GetEngine())->LightSetLightColorAmbient(
+                    0.25f, 0.25f, 0.25f, 0x4000);
             break;
     }
-    Engine_resetStationLight(engine, race);
-    engine = ApplicationManager_GetEngine_rl();
-
-    engine = ApplicationManager_GetEngine_rl();
-    Engine_LightEnable_rl(engine, g_rl_lightFlag);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(
+        Globals::appManager)->GetEngine())->LightSetLightColorSpecular(
+        0.5f, 0.5f, 0.5f, 0x4000);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(
+        Globals::appManager)->GetEngine())->LightSetMaterialColorShininess(96.0f);
 }
 
 

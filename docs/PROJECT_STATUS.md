@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-04 (Achievements, ChoiceWindow and NDK runtime; older
+Last reviewed: 2026-10-05 (ModStation light and departure; older
 subsystem snapshots retain their dates)
+
+## ModStation station lighting (2026-10-05, local branch)
+
+`ModStation::resetLight` now uses the Android-confirmed engine calls,
+negated direction fields, race-dependent ambient colors, and material
+shininess instead of null fragment helpers. Its 108-instruction focused
+comparison is 100% source-shape and strict fuzzy (from 28.9%/15.2%),
+but is not linked-exact or byte-exact. Native `gof2` and all 206 ARM units
+build. The full corpus compares 4,322/4,524 originals across 4,675 rows
+at 90.13% mean source-shape / 77.27% strict, with 2,165 linked-exact and
+977 byte-exact; exact pair sets have zero losses. In-game rendering is
+unverified. The next source-recovery priority is `ModStation::enterStation`;
+see [`MODSTATION_RESET_LIGHT_ARM_2026-10-05.md`](MODSTATION_RESET_LIGHT_ARM_2026-10-05.md).
 
 ## ModStation departure and campaign pointer ABI (2026-10-04, local branch)
 
