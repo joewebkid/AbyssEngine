@@ -2050,8 +2050,9 @@ These variants change stack lifetime/layout but do not improve score.
 | Common release, result selected before cleanup | 96.9 / 68.6 | 638 | 96.2 |
 | Common release with successful fallthrough | 96.9 / 68.6 | 638 | 96.2 |
 
-The first completion form produces the whole Mesh object identical to
-readchilddo-full. Both common-release forms preserve one destructor/delete
+The first completion form keeps the same scores and instruction count, but
+its whole Mesh object differs from readchilddo-full. Both common-release forms
+preserve one destructor/delete
 pair per empty or failed parse and attach only populated successful animation;
 they merge static cleanup call sites and lower source match. No shared-cleanup
 rewrite is retained, and no native runtime equivalence beyond the inspected
