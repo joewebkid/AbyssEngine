@@ -35,43 +35,7 @@
     "linked_equal": [],
     "bytes_equal": []
   },
-  "status": "partial: instruction-weighted source-shape remains below 99.0%",
   "rows": [
-    {
-      "symbol": "_ZN3GunD2Ev",
-      "match": 14.3,
-      "bytes_equal": false,
-      "linked_equal": false,
-      "n_target": 41,
-      "n_base": 15,
-      "source_match": 26.2,
-      "instruction_inventory_match": 25.0,
-      "opcode_inventory_match": 42.9,
-      "control_flow_match": 12.5,
-      "ordered_control_flow_match": 12.5,
-      "control_inventory_match": 12.5,
-      "call_count_match": 14.3,
-      "size_match": 36.6,
-      "unit": "game/weapons/Gun",
-      "baseline": {
-        "symbol": "_ZN3GunD2Ev",
-        "match": 13.9,
-        "bytes_equal": false,
-        "linked_equal": false,
-        "n_target": 41,
-        "n_base": 31,
-        "source_match": 47.6,
-        "instruction_inventory_match": 30.6,
-        "opcode_inventory_match": 55.6,
-        "control_flow_match": 33.3,
-        "ordered_control_flow_match": 33.3,
-        "control_inventory_match": 33.3,
-        "call_count_match": 42.9,
-        "size_match": 75.6,
-        "unit": "game/weapons/Gun"
-      },
-      "unique_original_body": false
-    },
     {
       "symbol": "_ZN3Gun22calcCharacterCollisionEv",
       "match": 50.6,
@@ -1016,80 +980,59 @@
         "unit": "game/weapons/Gun"
       },
       "unique_original_body": true
+    },
+    {
+      "symbol": "_ZN3GunD2Ev",
+      "match": 100.0,
+      "bytes_equal": false,
+      "linked_equal": true,
+      "n_target": 41,
+      "n_base": 41,
+      "source_match": 100.0,
+      "instruction_inventory_match": 100.0,
+      "opcode_inventory_match": 100.0,
+      "control_flow_match": 100.0,
+      "ordered_control_flow_match": 100.0,
+      "control_inventory_match": 100.0,
+      "call_count_match": 100.0,
+      "size_match": 100.0,
+      "unit": "game/weapons/Gun",
+      "baseline": {
+        "symbol": "_ZN3GunD2Ev",
+        "match": 13.9,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 41,
+        "n_base": 31,
+        "source_match": 47.6,
+        "instruction_inventory_match": 30.6,
+        "opcode_inventory_match": 55.6,
+        "control_flow_match": 33.3,
+        "ordered_control_flow_match": 33.3,
+        "control_inventory_match": 33.3,
+        "call_count_match": 42.9,
+        "size_match": 75.6,
+        "unit": "game/weapons/Gun"
+      },
+      "unique_original_body": false
     }
   ],
+  "status": "partial: instruction-weighted source-shape remains below 99.0%",
   "full_corpus": {
     "baseline": {
-      "avg_match": 75.97,
-      "avg_source_match": 88.99,
-      "count": 4619,
-      "fuzzy_perfect": 2199,
-      "byte_exact": 959,
-      "linked_exact": 2079,
+      "avg_match": 76.74,
+      "avg_source_match": 89.78,
+      "count": 4631,
+      "fuzzy_perfect": 2220,
+      "byte_exact": 964,
+      "linked_exact": 2100,
       "skipped": 0,
       "original_functions": 4524,
-      "compared_unique": 4274,
-      "missing": 250,
-      "missing_wrong_type": 7,
+      "compared_unique": 4281,
+      "missing": 243,
+      "missing_wrong_type": 0,
       "missing_absent": 243,
-      "wrong_type": [
-        {
-          "symbol": "_ZN5ArrayIPN11AbyssEngine7KeyCodeEEC2Ev",
-          "demangled": "Array<AbyssEngine::KeyCode*>::Array()",
-          "qualified": "Array<AbyssEngine::KeyCode*>::Array",
-          "ours": [
-            "Array<AbyssEngine::KeyCode*>::Array()"
-          ]
-        },
-        {
-          "symbol": "_ZN5ArrayIPN11AbyssEngine7KeyCodeEED2Ev",
-          "demangled": "Array<AbyssEngine::KeyCode*>::~Array()",
-          "qualified": "Array<AbyssEngine::KeyCode*>::~Array",
-          "ours": [
-            "Array<AbyssEngine::KeyCode*>::~Array()"
-          ]
-        },
-        {
-          "symbol": "_ZN5ArrayIPS_IP9ImagePartEEC2Ev",
-          "demangled": "Array<Array<ImagePart*>*>::Array()",
-          "qualified": "Array<Array<ImagePart*>*>::Array",
-          "ours": [
-            "Array<Array<ImagePart*>*>::Array()"
-          ]
-        },
-        {
-          "symbol": "_ZN5ArrayIP9BluePrintEC2Ev",
-          "demangled": "Array<BluePrint*>::Array()",
-          "qualified": "Array<BluePrint*>::Array",
-          "ours": [
-            "Array<BluePrint*>::Array()"
-          ]
-        },
-        {
-          "symbol": "_ZN5ArrayIP9BluePrintED2Ev",
-          "demangled": "Array<BluePrint*>::~Array()",
-          "qualified": "Array<BluePrint*>::~Array",
-          "ours": [
-            "Array<BluePrint*>::~Array()"
-          ]
-        },
-        {
-          "symbol": "_ZN5ArrayIP14PendingProductED2Ev",
-          "demangled": "Array<PendingProduct*>::~Array()",
-          "qualified": "Array<PendingProduct*>::~Array",
-          "ours": [
-            "Array<PendingProduct*>::~Array()"
-          ]
-        },
-        {
-          "symbol": "_ZN5ArrayIbED2Ev",
-          "demangled": "Array<bool>::~Array()",
-          "qualified": "Array<bool>::~Array",
-          "ours": [
-            "Array<bool>::~Array()"
-          ]
-        }
-      ],
+      "wrong_type": [],
       "extra_symbols": 130,
       "extra": [
         "_Z14ArrayRemoveAllIP10AEGeometryEvR5ArrayIT_E",
@@ -1225,76 +1168,19 @@
       ]
     },
     "current": {
-      "avg_match": 76.15,
-      "avg_source_match": 89.16,
-      "count": 4625,
-      "fuzzy_perfect": 2208,
-      "byte_exact": 959,
-      "linked_exact": 2088,
+      "avg_match": 76.92,
+      "avg_source_match": 89.95,
+      "count": 4637,
+      "fuzzy_perfect": 2229,
+      "byte_exact": 964,
+      "linked_exact": 2109,
       "skipped": 0,
       "original_functions": 4524,
-      "compared_unique": 4274,
-      "missing": 250,
-      "missing_wrong_type": 7,
+      "compared_unique": 4281,
+      "missing": 243,
+      "missing_wrong_type": 0,
       "missing_absent": 243,
-      "wrong_type": [
-        {
-          "symbol": "_ZN5ArrayIPN11AbyssEngine7KeyCodeEEC2Ev",
-          "demangled": "Array<AbyssEngine::KeyCode*>::Array()",
-          "qualified": "Array<AbyssEngine::KeyCode*>::Array",
-          "ours": [
-            "Array<AbyssEngine::KeyCode*>::Array()"
-          ]
-        },
-        {
-          "symbol": "_ZN5ArrayIPN11AbyssEngine7KeyCodeEED2Ev",
-          "demangled": "Array<AbyssEngine::KeyCode*>::~Array()",
-          "qualified": "Array<AbyssEngine::KeyCode*>::~Array",
-          "ours": [
-            "Array<AbyssEngine::KeyCode*>::~Array()"
-          ]
-        },
-        {
-          "symbol": "_ZN5ArrayIPS_IP9ImagePartEEC2Ev",
-          "demangled": "Array<Array<ImagePart*>*>::Array()",
-          "qualified": "Array<Array<ImagePart*>*>::Array",
-          "ours": [
-            "Array<Array<ImagePart*>*>::Array()"
-          ]
-        },
-        {
-          "symbol": "_ZN5ArrayIP9BluePrintEC2Ev",
-          "demangled": "Array<BluePrint*>::Array()",
-          "qualified": "Array<BluePrint*>::Array",
-          "ours": [
-            "Array<BluePrint*>::Array()"
-          ]
-        },
-        {
-          "symbol": "_ZN5ArrayIP9BluePrintED2Ev",
-          "demangled": "Array<BluePrint*>::~Array()",
-          "qualified": "Array<BluePrint*>::~Array",
-          "ours": [
-            "Array<BluePrint*>::~Array()"
-          ]
-        },
-        {
-          "symbol": "_ZN5ArrayIP14PendingProductED2Ev",
-          "demangled": "Array<PendingProduct*>::~Array()",
-          "qualified": "Array<PendingProduct*>::~Array",
-          "ours": [
-            "Array<PendingProduct*>::~Array()"
-          ]
-        },
-        {
-          "symbol": "_ZN5ArrayIbED2Ev",
-          "demangled": "Array<bool>::~Array()",
-          "qualified": "Array<bool>::~Array",
-          "ours": [
-            "Array<bool>::~Array()"
-          ]
-        }
-      ],
+      "wrong_type": [],
       "extra_symbols": 130,
       "extra": [
         "_Z14ArrayRemoveAllIP10AEGeometryEvR5ArrayIT_E",
@@ -1430,6 +1316,10 @@
       ]
     }
   },
+  "legacy_parser_baseline_corpus_exact_losses": {
+    "linked_equal": [],
+    "bytes_equal": []
+  },
   "checks": {
     "native_gof2_static_library": "passed",
     "arm_translation_units": {
@@ -1440,14 +1330,17 @@
     "mount_regression_before_fix_exit": 1,
     "mount_regression_after_fix_exit": 0,
     "diff_check": "passed",
-    "full_corpus_wrong_type_gate_exit": 1,
-    "wrong_type_unchanged": true,
-    "object_newer_than_source_and_header": true
+    "full_corpus_wrong_type_gate_exit": 0,
+    "object_newer_than_source_and_header": true,
+    "baseline_full_corpus_wrong_type_gate_exit": 0,
+    "section_local_alias_regressions": "passed: distinct equal-address sections and seven real ARM aliases"
   },
   "input_sha256": {
     "src\\game\\weapons\\Gun.cpp": "09eaeb98fd1d85da53f881de69a367b30b2ab5f67e1493639664bb2f9a088000",
     "src\\game\\weapons\\Gun.h": "400097d0e265812992483f4556cf6cfa63302d60978129c9211aae9bdd904f2c",
     "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "9f91e0d662bc4b9fc499a26aa0e5ff54dca8bfce5e996f2681951ab38bf9bd0c",
-    "_work\\gun-current\\verify\\.flags": "b7741d9045ccee7cadcb1e3f3027e57029d127537931305e306e50bc830d174c"
+    "_work\\gun-current\\verify\\.flags": "b7741d9045ccee7cadcb1e3f3027e57029d127537931305e306e50bc830d174c",
+    "tools/verify/asmdiff.py": "ab7cde77854f395ea9c317618085375e1723de580defb8548be4bee94b0c3a5a",
+    "tools/verify/test_asmdiff_aliases.py": "d1b55aae56f2caaf79c6feb6604127742e3a9a271e4e6b126a2773c8db14e239"
   }
 }

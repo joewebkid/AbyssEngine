@@ -900,5 +900,56 @@
   "corrected_parser_baseline_exact_losses": {
     "linked_equal": [],
     "bytes_equal": []
+  },
+  "applied_shared_parser": {
+    "human_authorized": "2026-10-04: \u0414\u0430 \u0440\u0430\u0437\u0440\u0435\u0448\u0430\u044e",
+    "current_full_corpus": {
+      "avg_match": 76.92,
+      "avg_source_match": 89.95,
+      "count": 4637,
+      "fuzzy_perfect": 2229,
+      "byte_exact": 964,
+      "linked_exact": 2109,
+      "skipped": 0,
+      "original_functions": 4524,
+      "compared_unique": 4281,
+      "missing": 243,
+      "missing_wrong_type": 0,
+      "missing_absent": 243,
+      "wrong_type": [],
+      "extra_symbols": 130
+    },
+    "baseline_full_corpus": {
+      "avg_match": 76.74,
+      "avg_source_match": 89.78,
+      "count": 4631,
+      "fuzzy_perfect": 2220,
+      "byte_exact": 964,
+      "linked_exact": 2100,
+      "skipped": 0,
+      "original_functions": 4524,
+      "compared_unique": 4281,
+      "missing": 243,
+      "missing_wrong_type": 0,
+      "missing_absent": 243,
+      "wrong_type": [],
+      "extra_symbols": 130
+    },
+    "current_gate_exit": 0,
+    "baseline_gate_exit": 0,
+    "corrected_baseline_exact_losses": {
+      "linked_equal": [],
+      "bytes_equal": []
+    },
+    "legacy_baseline_exact_losses": {
+      "linked_equal": [],
+      "bytes_equal": []
+    },
+    "unique_gun_metrics_unchanged": true,
+    "regression_tests": "tools/verify/test_asmdiff_aliases.py: 2 passed with real object",
+    "input_sha256": {
+      "tools/verify/asmdiff.py": "ab7cde77854f395ea9c317618085375e1723de580defb8548be4bee94b0c3a5a",
+      "tools/verify/test_asmdiff_aliases.py": "d1b55aae56f2caaf79c6feb6604127742e3a9a271e4e6b126a2773c8db14e239"
+    }
   }
 }
