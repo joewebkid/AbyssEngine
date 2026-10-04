@@ -2421,3 +2421,61 @@ The required two >=99.0 means are still unmet; the goal remains active.
 No objective compiler ceiling is established. Native library and bounded
 body tests do not prove full native executable ABI correctness or an Android
 runtime test. No push, PR or merge is performed.
+
+
+## Continuation: zero-channel lifetime, types and V5 key-loop interaction
+
+Current tracked start is clean aee9d0c4 with the validated default channel
+initializer. Twelve focused variants preserve the same masks, data reads,
+angular conversion, helper calls and hasAnimation store. None improves source
+98.0; all production changes are restored.
+
+| Trial | Enhanced source / strict | Instructions | Whole Mesh object equals channelzero-full |
+|---|---|---:|---|
+| enhchannelzerolife-channel_before_key_read | 98.0 / 66.6 | 638 | yes |
+| enhchannelzerolife-channel_outside_key_loop | 97.6 / 66.3 | 631 | no |
+| enhchannelzerolife-no_explicit_default | 98.0 / 66.6 | 638 | yes |
+| enhchannelzerolife-rotation_separate | 96.8 / 64.8 | 632 | no |
+| enhchannelzerotypes-rotation_case_first | 98.0 / 66.6 | 638 | yes |
+| enhchannelzerotypes-scalar_cases_reverse_order | 98.0 / 66.6 | 638 | yes |
+| enhchannelzerotypes-signed_channel_zero | 98.0 / 66.6 | 638 | yes |
+| enhchannelzerotypes-wide_signed_channel_zero | 98.0 / 66.6 | 638 | yes |
+| enhchannelzerotypes-wide_unsigned_channel_zero | 98.0 / 66.6 | 638 | yes |
+| enhchannelzerokeyloop-positive_guard_do | 97.8 / 66.7 | 639 | no |
+| enhchannelzerokeyloop-positive_guard_for | 97.8 / 66.4 | 641 | no |
+| enhchannelzerokeyloop-short_key_counter | 98.0 / 66.7 | 639 | no |
+
+All twelve retain call match 100.0. Removing the explicit default label still
+leaves initial channel 0 for positions 4/5. Separating c==6 processing from
+the switch preserves rotation/mask results but lowers the source score.
+Moving initialization before key reads changes no externally visible state.
+Moving it outside the key loop preserves zero defaults because c is invariant
+within that loop and every other case assigns its constant each iteration;
+it also lowers source match. No hoisted-channel form is retained.
+
+Signed int and signed/unsigned long long types are retested with the new
+initializer, not assumed equivalent in code generation from the previous
+uninitialized declaration. All masks are nonnegative and fit these types,
+and the longlong callee channel arguments remain identical. Rotation-case
+and scalar-case source reordering likewise preserve exclusive dispatch and
+all values; none improves source score.
+
+The V5 key-loop forms check count >0 before for/do, or use an unsigned-short
+key index. Signed input count remains short; integer promotion makes the
+short-index comparison signed on both supported ARM/native compilers. With
+count <=32767, the loop reaches at most index 32767 before termination and
+cannot wrap the unsigned-short counter. Zero/negative counts still skip all
+keys, and count is still retested after each iteration. These interactions
+are measured on the new zero-initializer state; the older guarded-do trial
+used assignment in the default case. Both positive guards lower source
+score, and the narrow counter only changes strict score/count.
+
+Evidence: _work/enh_zero_channel_lifetime_sweep.py,
+_work/enh_zero_channel_type_order_sweep.py,
+_work/enh_zero_channel_key_loop_sweep.py; twelve focused reports/snapshots;
+_work/channelzero_lifetime_type_loop_identities.json. Finally blocks restore
+accepted source. Baseline outside-body/signature checks pass, and production
+source diff is empty. Full channelzero-full ARM/native validation remains
+authoritative, with actual pair sets 2079 linked / 959 byte unchanged and
+means 98.133333 / 98.064667. Both >=99.0 gates remain unmet; no objective
+compiler ceiling is demonstrated. The goal remains active.
