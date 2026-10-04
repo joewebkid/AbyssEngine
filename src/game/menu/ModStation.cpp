@@ -530,7 +530,72 @@ ModStation::~ModStation() {
 }
 
 void ModStation::leaveStation() {
-    leaveStation();
+    int noticeTextId;
+    bool checkCargo;
+
+    if (Globals::status->getShip()->getCurrentLoad() >
+        Globals::status->getShip()->getMaxLoad()) {
+        noticeTextId = 0xcc;
+        goto showNotice;
+    }
+
+    checkCargo = Globals::status->getCurrentCampaignMission() == 6;
+    if (!checkCargo && Globals::status->getCurrentCampaignMission() == 7) {
+        // The getter returns the float's raw bits in r0 on Android ARM.
+        union { int bits; float value; } firePower = {
+            Globals::status->getShip()->getFirePower()
+        };
+        checkCargo = firePower.value == 0.0f ||
+            Globals::status->getShip()->getCombinedHP() ==
+            Globals::status->getShip()->getBaseHP();
+    }
+    if (checkCargo) {
+        if (Globals::status->getShip()->hasCargoType(0) ||
+            Globals::status->getShip()->hasCargoType(3))
+            noticeTextId = 0x212;
+        else
+            noticeTextId = 0x211;
+        goto showNotice;
+    }
+
+    if (Globals::status->getCurrentCampaignMission() == 20 &&
+        Globals::status->getStation()->getIndex() ==
+        reinterpret_cast<Mission *>(Globals::status->getCampaignMission())->getTargetStation()) {
+        noticeTextId = 0x213;
+        goto showNotice;
+    }
+
+    if (Globals::status->getCurrentCampaignMission() == 21 &&
+        Globals::status->getStation()->getIndex() ==
+        reinterpret_cast<Mission *>(Globals::status->getCampaignMission())->getTargetStation()) {
+        if (!Globals::status->getShip()->hasEquipment(41, 1) &&
+            !Globals::status->getShip()->hasEquipment(42, 1) &&
+            !Globals::status->getShip()->hasEquipment(43, 1)) {
+            noticeTextId = 0x213;
+            goto showNotice;
+        }
+    } else if (Globals::status->getCurrentCampaignMission() == 77 &&
+               Globals::status->getShip()->getIndex() != 37) {
+        noticeTextId = 0x146;
+        goto showNotice;
+    }
+
+    if (this->m_nStarMapWindowOpen.bytes[3] != 0 ||
+        this->modalFlags.bytes[1] != 0 ||
+        this->modalFlags.bytes[2] != 0)
+        return;
+
+    static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+        *Globals::gameText->getText(0x18d), true);
+    static_cast<ChoiceWindow *>(this->choiceWindow)->left();
+    this->cameraFlags.bytes[2] = 1;
+    this->m_nStarMapWindowOpen.bytes[3] = 1;
+    return;
+
+showNotice:
+    static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+        *Globals::gameText->getText(noticeTextId));
+    this->m_nStarMapWindowOpen.bytes[3] = 1;
 }
 
 

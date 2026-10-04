@@ -273,8 +273,8 @@ void Status::incKills() {
 
 int Status::getStationsVisited() { return stationsVisited; }
 
-int Status::getCampaignMission() {
-    return (int) (intptr_t)(*missions)[0];
+intptr_t Status::getCampaignMission() {
+    return reinterpret_cast<intptr_t>((*missions)[0]);
 }
 
 void Status::setJumpgateUsed(int v) { jumpgatesUsed = v; }

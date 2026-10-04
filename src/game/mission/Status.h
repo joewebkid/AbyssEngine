@@ -1,6 +1,7 @@
 #ifndef GOF2_STATUS_H
 #define GOF2_STATUS_H
 #include <cstddef>
+#include <cstdint>
 #include "BluePrint.h"
 #include "engine/core/Array.h"
 #include "../../engine/core/AEString.h"
@@ -281,7 +282,7 @@ public:
 
     int getCurrentCampaignMission();
 
-    int getCampaignMission();
+    intptr_t getCampaignMission();
 
     Mission *getMission();
 

@@ -1161,7 +1161,7 @@ LAB_3488: {
                         void *st = (void *) (long) Status::gStatus->getStanding();
                         ((Standing *) (st))->applyKill(self->kiPlayer->shipGroup);
                     }
-                    int mission = Status::gStatus->getCampaignMission();
+                    intptr_t mission = Status::gStatus->getCampaignMission();
                     KIPlayer *ki3 = self->kiPlayer;
 
                     void *txt = ((GameText *) (*g_damage_text[0]))->getText(missionId);

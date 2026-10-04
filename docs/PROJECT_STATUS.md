@@ -3,6 +3,21 @@
 Last reviewed: 2026-10-04 (Achievements, ChoiceWindow and NDK runtime; older
 subsystem snapshots retain their dates)
 
+## ModStation departure and campaign pointer ABI (2026-10-04, local branch)
+
+The recursive `ModStation::leaveStation` stub now follows the Android ARM
+cargo, campaign, equipment, ship-index and modal checks before displaying
+departure confirmation. Focused source-shape rises from 0.1% to 91.8%
+(strict 0.0% to 71.5%), without an exact claim. The related
+`Status::getCampaignMission` return and one `Player::damage` local now retain
+the mission pointer width on 64-bit native hosts; the ARM getter remains
+byte-exact. Native `gof2` and 206/206 ARM units build. The full corpus
+compares 4,322/4,524 originals across 4,675 rows at 90.11% mean
+source-shape / 77.25% strict, with 2,165 linked-exact and 977 byte-exact;
+exact pair sets have zero losses. Integrated departure/runtime behavior is
+still unverified; see
+[`MODSTATION_LEAVE_STATION_ARM_2026-10-04.md`](MODSTATION_LEAVE_STATION_ARM_2026-10-04.md).
+
 ## ModStation medal-array source ABI (2026-10-04, local branch)
 
 Android `ModStation+0xbc` holds an `Array<int *> *`, not an `int *` needing
