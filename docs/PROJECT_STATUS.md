@@ -3,6 +3,21 @@
 Last reviewed: 2026-10-04 (Achievements, ChoiceWindow and NDK runtime; older
 subsystem snapshots retain their dates)
 
+## Achievement detection recovered from ARM (2026-10-04, local branch)
+
+`Achievements::checkForNewMedal` now evaluates all 44 Android-confirmed
+dispatch cases and reads the existing 45-by-3 value table, rather than a
+zero-filled duplicate. Its prerequisite equipment check now uses the native
+`Globals::status` binding instead of a null local pointer. Focused
+source-shape rises from 6.9% to 73.7% for the check (strict 2.3% to 20.8%);
+neither body is exact or in-game runtime-certified. Native `gof2` and all
+206 ARM translation units build. The complete corpus compares 4,322/4,524
+originals across 4,675 rows at 90.09% mean source-shape / 77.22% strict,
+with 2,162 linked-exact and 977 byte-exact rows. Both exact pair sets have
+zero losses. The next priority is runtime validation of representative medal
+states and the remaining shape divergence, preserving the ARM-observed
+conditions. See [`ACHIEVEMENTS_CHECK_ARM_2026-10-04.md`](ACHIEVEMENTS_CHECK_ARM_2026-10-04.md).
+
 ## Achievement values restored (2026-10-04, local branch)
 
 The 135-word `Achievements::getValue` table now matches Android `.rodata`
@@ -11,9 +26,9 @@ method was already 100% linked-exact with a zero-filled table, demonstrating
 that instruction exactness alone does not validate referenced data. Native
 and 206/206 ARM builds pass. The complete corpus remains 4,322/4,524
 unique originals, 90.07% source-shape, 77.21% strict, 2,162 linked-exact
-and 977 byte-exact rows, with no exact-set losses. Achievement detection in
-`checkForNewMedal` remains mostly unrecovered (17/414 instructions) and is
-the next priority. See
+and 977 byte-exact rows, with no exact-set losses. At this historical
+checkpoint, achievement detection in `checkForNewMedal` was still a
+17/414-instruction stub; the newer section above supersedes it. See
 [`ACHIEVEMENTS_VALUE_TABLE_ARM_2026-10-04.md`](ACHIEVEMENTS_VALUE_TABLE_ARM_2026-10-04.md).
 
 ## ChoiceWindow medal message and image IDs (2026-10-04, local branch)
