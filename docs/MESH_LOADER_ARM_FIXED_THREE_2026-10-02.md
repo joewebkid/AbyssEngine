@@ -1844,3 +1844,44 @@ and full/native validation remain readchilddo-full, with exact pair sets
 2,079 linked / 959 byte unchanged. Means remain 98.066667/97.980833, below
 both 99.0 gates. The next search should follow remaining caller operand
 load/store relationships rather than repeat these width/mask forms.
+
+## Continuation: signature operand scheduling and per-byte masks
+
+Previous turn produced width/mask interaction evidence on the separated caller
+paths; this turn starts from clean tracked state at 28412010. Original
+0x6d164..0x6d176 loads plain/V2/V3 signature bytes before the plain comparison
+at 0x6d178. V4 is loaded at 0x6d180, V2 compared at 0x6d184, V5 loaded at
+0x6d186; V3/V4/V5 comparisons follow at 0x6d190/0x6d198/0x6d1a0.
+These primary operands motivate an interleaved-source trial, without claiming
+the original compiler scheduling proves an exact C++ declaration order.
+
+| Signature source form | Create source / strict | Instructions | Call match |
+|---|---|---:|---:|
+| Preloads interleaved as suggested by original operands | 98.4 / 60.7 | 289 | 100.0 |
+| Preload first three signature bytes | 98.4 / 60.7 | 289 | 100.0 |
+| Preload all five signature bytes | 98.4 / 60.7 | 289 | 100.0 |
+| Reverse five comparison statements | 98.4 / 60.7 | 289 | 100.0 |
+| Compare version signatures before plain signature | 98.4 / 60.7 | 289 | 100.0 |
+| Accumulate mismatch bits, then clear format bits once per byte | 97.5 / 57.5 | 290 | 100.0 |
+| Accumulate keep-mask, then intersect format once per byte | 97.5 / 57.0 | 291 | 100.0 |
+
+Comparisons read immutable seven-element signature arrays and the same local
+input byte; distinct bit-clears commute, so changing their order preserves
+all resulting format values. The mismatch form clears the union of precisely
+those mismatching bits; the keep form intersects their complement within 0x1f,
+the invariant format domain. This changes actual data flow without adding
+calls, artificial side effects or a new denominator. Neither improves score.
+
+The first three whole Core objects equal accepted readchilddo-full byte for
+byte. Reverse/version-first comparison objects differ from that object despite
+equal scores; their equality is not asserted. All finally blocks restore the
+accepted source, and tracked source diff is empty. Baseline outside-body and
+signature comparison passes, so accepted full/native evidence and exact pair
+sets remain the previously verified readchilddo-full state.
+
+Evidence: `_work/create_signature_operand_sweep.py`,
+`_work/create_signature_byte_mask_sweep.py`, seven focused JSON reports,
+snapshots and object comparisons. These results rule out the measured signature
+preload/order/byte-mask forms on this state, not every possible caller rewrite
+or an objective compiler ceiling. Means remain 98.066667/97.980833, below
+both >=99.0 requirements; the goal stays active.
