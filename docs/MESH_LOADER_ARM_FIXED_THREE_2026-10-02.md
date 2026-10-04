@@ -2573,3 +2573,60 @@ for rejected variants. Accepted full-corpus/native evidence remains
 `_work/channelzero-full` and its associated reports/logs. Fixed-three means
 remain **98.13% unweighted / 98.06% instruction-weighted**, below both 99.0%
 requirements. No push, PR or merge was performed.
+
+
+## Continuation: triangle operands and output copy interactions
+
+Twelve isolated reader trials were compiled with unchanged canonical inputs
+against the accepted channel-zero state. Original position operand loads occur
+at 0x6cd26-0x6cd58, followed by differences at 0x6cd5c-0x6cd74 and products at
+0x6cd78-0x6cd98. Trial locals make those loads/differences explicit without
+changing expression operand order, reciprocal, accumulation order or math
+helpers. Unsigned-short index locals preserve the range of each on-disk index.
+Original tangent result copies use word loads/stores at 0x6ce32-0x6ce40;
+binormal copies start at 0x6ce4c. The second family tests separate four-byte
+memcpy calls or one twelve-byte copy for these existing result writes, without
+adding helper calls or changing headers. These are compiler source-form
+hypotheses; no exact original C++ syntax is claimed.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core object equals accepted |
+|---|---|---:|---:|---|
+| origin_zyx | 98.0 / 55.9 | 867 | 100.0 | yes |
+| all_position_loads | 98.0 / 55.9 | 867 | 100.0 | yes |
+| deltas_before_reciprocal | 98.0 / 55.9 | 867 | 100.0 | yes |
+| deltas_after_reciprocal | 98.0 / 55.9 | 867 | 100.0 | yes |
+| deltas_before_denominator | 98.0 / 56.0 | 867 | 100.0 | no |
+| short_indices | 98.0 / 55.9 | 867 | 100.0 | yes |
+| component_copy_tangent | 98.0 / 55.9 | 867 | 100.0 | yes |
+| component_copy_binormal | 98.0 / 55.9 | 867 | 100.0 | yes |
+| component_copy_both | 98.0 / 55.9 | 867 | 100.0 | yes |
+| whole_copy_tangent | 97.8 / 55.7 | 865 | 100.0 | no |
+| whole_copy_binormal | 97.8 / 56.0 | 865 | 100.0 | no |
+| whole_copy_both | 97.6 / 55.9 | 863 | 100.0 | no |
+
+None improves the requested source score. Eight produce the byte-identical
+whole Core object. Computing position differences before the denominator
+changes the object and improves strict score by 0.1, but source remains 98.0;
+that change is not retained. Whole-vector result copies regress source. All
+trial production edits were restored. Actual object bytes were compared,
+not inferred from equal scores.
+
+Fresh allocation-inventory diagnostic against `_work/channelzero-full` still
+shows five missing `ldrh g0,[g1,#2]` forms versus six additional
+`ldrh g0,[g0,#2]`, ten missing frame-slot loads, and paired multiply/divide
+operand-role differences. These counts are diagnostic categories, not proof
+of ten missing semantic loads: allocation-role normalization and address
+spelling affect them. No normalizer or matcher was changed. The next search
+should target counter/load/loop lowering rather than repeat equivalent
+coordinate locals or output-copy spellings.
+
+Local evidence: `_work/triangleoperands-*.json`,
+`_work/outputcopyinteraction-*.json`, `_work/triangle_operand_identities.json`,
+`_work/output_copy_interaction_identities.json`, saved trial snapshots and
+fresh `_work/MeshReadData_normalized_{target,base}.txt`. The baseline check
+confirms unchanged signatures and all content outside the three allowed
+bodies; tracked production diff is empty. No native/full-corpus rerun is
+claimed for these rejected trials. Authoritative accepted native/full-corpus
+evidence remains the channel-zero validation. Means remain **98.13%
+unweighted / 98.06% instruction-weighted**, so both 99.0% gates remain unmet.
+No push, PR or merge was performed.
