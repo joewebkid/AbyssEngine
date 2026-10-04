@@ -184,7 +184,8 @@ void StarMap::draw() {
                         if (currentRoutes->data()[j] == (int)i) {
                             float phase = (float)(101 - (Globals::status->getPlayingTime() / 10) % 99) / 100.0f;
                             int routeAlpha = (int)(phase * 255.0f);
-                            Globals::Canvas->SetColor(255, 255, 255, (unsigned char)(routeAlpha < this->alpha ? routeAlpha : this->alpha));
+                            if (this->alpha < routeAlpha) routeAlpha = this->alpha;
+                            Globals::Canvas->SetColor(255, 255, 255, (unsigned char)routeAlpha);
                             Globals::Canvas->DrawLine((int)this->scratchVector2.x, (int)this->scratchVector2.y,
                                 (int)(this->scratchVector.x + phase * (this->scratchVector2.x - this->scratchVector.x)),
                                 (int)(this->scratchVector.y + phase * (this->scratchVector2.y - this->scratchVector.y)));

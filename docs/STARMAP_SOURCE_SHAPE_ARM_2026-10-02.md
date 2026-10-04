@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.175% unweighted / 98.48733% original-instruction
+implementation bodies measure **99.180% unweighted / 98.50023% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.215% / 81.55099%**, respectively. Source-shape is an inventory/control-flow
+**87.230% / 81.58969%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -1822,6 +1822,59 @@ strict means remain 87.215% / 81.55099281791297%. Full-corpus/native validations
 below remain those of 2ac358b9; no new full/native run is claimed. The weighted
 99% target remains unmet and native executable/runtime validation is untested.
 
+## Follow-up after checkpoint 5256c4fa
+
+Only draw's current-route alpha clamp changes. Android c945c..c946a converts
+the computed route alpha into R2, compares the StarMap alpha in R1 against it,
+and uses IT LT / MOVLT R2,R1 before UXTB. Accepted pre-trial 55c..568 used
+IT GT / MOVGT R1,R2 and UXTB on R1. The new in-place source clamp,
+if (this->alpha < routeAlpha) routeAlpha = this->alpha, emits CMP / IT LT /
+MOVLT / UXTB at 560..566 matching the primary branch and destination selection.
+This is a source-form hypothesis grounded in machine behavior, not recovered
+original C++ syntax. Integer values, field reads and runtime calls are unchanged;
+no barriers, flags, extra calls or padding were introduced.
+
+Draw source-shape improves 99.0% -> 99.1%, strict 89.1% -> 89.4%; counts remain
+916/907. Instruction inventory improves 98.6% -> 98.9% and opcode inventory
+98.9% -> 99.1%; control and call-count metrics are unchanged. Every other one
+of the 22 focused rows is unchanged. Fixed unique-body source means become
+99.180% / 98.50022532037741%, strict 87.230% / 81.58969159273342%.
+The weighted shortfall remains 0.49977467962259 percentage points.
+
+Before this trial, a fresh read-only inventory was generated from the accepted
+2ac358b9 object and reproduced all 22 reported source metrics. The diagnostic
+snapshot docs/validation/starmap_2026-10-02_remaining_inventory.json is explicitly
+labelled as pre-trial evidence, with object SHA-256. It preserves all rows and
+unmodified normalization and does not replace or filter the gate. Read-only
+init checks found matching callback ordering for the TouchButton arguments
+(c7102..c7128 vs 4978..499e) and path-finder/system pointer capture before
+Status/getIndex (c723c..c7252 vs 4bc0..4bd6); no production change follows
+from those checks. The station-mode spin clamp in update also already matches
+ca56c..ca5da vs 3b80..3be8, including MI selection of the 10.0f cap.
+
+Primary evidence: _work/draw-original-direct.asm; current disassembly:
+_work/route-alpha-fortyfourth.asm; focused report/log:
+_work/route-alpha-fortyfourth.json/log; backup before-route-alpha-fortyfourth.cpp.
+Prior focused/full inputs are checkpoint44-before-focused.json and
+checkpoint44-before-corpus.json. Trial/accepted object SHA-256:
+b074aa464b492d3eba51e14b69f2f85b2bed927ebdd56b0a34cb9f9460b8e7ec.
+
+Focused ARM build compiles all 204 TUs with zero failures, comparing 22
+symbols with zero skips. Native UCRT Debug gof2 static-library build passes;
+no executable/runtime test is claimed. Full comparison has 4619 entries,
+zero skips, source 89.06% and strict fuzzy 76.16%, with unchanged 4274/4524
+coverage, 250 missing (7 wrong-type / 243 absent), and 129 extra symbols.
+All 22 StarMap full/focused rows agree for source/strict scores, counts and
+linked/byte exact flags.
+
+Baseline and previous accepted 5256c4fa preservation gates both pass, with
+no lost exact (unit, symbol) pairs; 2083 linked and 960 byte exact pairs remain.
+Default 99% gate exits 1 only with the expected weighted-target failure.
+Evidence: _work/native-fortyfourth.log, fortyfourth-corpus.json/log,
+fortyfourth-gate.json, fortyfourth-previous-gate.json and
+fortyfourth-target-gate.log. Full JSON SHA-256:
+0fd05a776b12126fd16340c3d7aa99afb8aecb0372e4164917686656ebcd1e11.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -1859,18 +1912,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/fortysecond-corpus.log`; focused log:
-`_work/system-canvas-fortysecond.log`; native log: `_work/native-fortysecond.log`.
+Latest full log: `_work/fortyfourth-corpus.log`; focused log:
+`_work/route-alpha-fortyfourth.log`; native log: `_work/native-fortyfourth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
 50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against 274a33ed preserves all 2083
+7fc7701c. The latest comparison against 5256c4fa preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/fortysecond-gate.json, fortysecond-previous-gate.json and
-fortysecond-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/fortyfourth-gate.json, fortyfourth-previous-gate.json and
+fortyfourth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `327cf9df7ccfa5a7b7785b17dbe7acf73519fc18f84b2dd6a23713a642f0a8dc`.
+final full JSON SHA-256: `0fd05a776b12126fd16340c3d7aa99afb8aecb0372e4164917686656ebcd1e11`.
 
 
 ### Reproduction
@@ -1904,7 +1957,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1196 | 78.9% | 98.9% | 79.2% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.7% | 82.7% | - |
-| `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.0% | 89.1% | - |
+| `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.1% | 89.4% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/736 | 72.9% | 98.3% | 77.1% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/683 | 80.9% | 97.3% | 84.7% | - |
 | `_ZN7StarMapC1EbP7Missionbi` | 333/333 | 85.1% | 99.3% | 95.8% | - |
