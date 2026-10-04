@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-04 (ChoiceWindow and NDK runtime; older subsystem
-snapshots retain their dates)
+Last reviewed: 2026-10-04 (Achievements, ChoiceWindow and NDK runtime; older
+subsystem snapshots retain their dates)
+
+## Achievement values restored (2026-10-04, local branch)
+
+The 135-word `Achievements::getValue` table now matches Android `.rodata`
+word-for-word; its rebuilt ARM object also matches all 540 table bytes. The
+method was already 100% linked-exact with a zero-filled table, demonstrating
+that instruction exactness alone does not validate referenced data. Native
+and 206/206 ARM builds pass. The complete corpus remains 4,322/4,524
+unique originals, 90.07% source-shape, 77.21% strict, 2,162 linked-exact
+and 977 byte-exact rows, with no exact-set losses. Achievement detection in
+`checkForNewMedal` remains mostly unrecovered (17/414 instructions) and is
+the next priority. See
+[`ACHIEVEMENTS_VALUE_TABLE_ARM_2026-10-04.md`](ACHIEVEMENTS_VALUE_TABLE_ARM_2026-10-04.md).
 
 ## ChoiceWindow medal message and image IDs (2026-10-04, local branch)
 
