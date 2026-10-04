@@ -3,6 +3,17 @@
 Last reviewed: 2026-10-04 (ChoiceWindow and NDK runtime; older subsystem
 snapshots retain their dates)
 
+## ChoiceWindow constructor/width/misc layout (2026-10-04, local branch)
+
+Android-confirmed `Globals::layout`, `Globals::w`, and `Globals::h` bindings
+restore the `ChoiceWindow` constructor, `setWidth`, and `setMiscButton` from
+null local pointers. Constructor C1/C2 and `setWidth` are linked-exact;
+`setMiscButton` reaches 97.6% source-shape but is not exact. The complete ARM
+report compares 4,322/4,524 unique originals across 4,673 rows: 2,160
+linked-exact, 977 raw-byte-exact, 90.03% mean source-shape and 77.15% strict
+fuzzy, with zero exact-set losses. Native and 206/206 ARM builds pass. See
+[`CHOICEWINDOW_LAYOUT_GLOBALS_ARM_2026-10-04.md`](CHOICEWINDOW_LAYOUT_GLOBALS_ARM_2026-10-04.md).
+
 ## ChoiceWindow setHeight ARM binding (2026-10-04, local branch)
 
 The Android-confirmed `Globals::layout` and `Globals::h` bindings replace

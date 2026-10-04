@@ -23,11 +23,9 @@ uint8_t ChoiceWindow::hasChoice() {
     return this->hasButtons;
 }
 
-static int *g_ChoiceWindow_screenWidth = nullptr;
-
 void ChoiceWindow::setWidth(int width) {
     this->width = width;
-    this->x = *g_ChoiceWindow_screenWidth / 2 - width / 2;
+    this->x = Globals::w / 2 - width / 2;
 }
 
 static GameText **g_ChoiceWindow_gameText_146954 = nullptr;
@@ -188,11 +186,8 @@ void ChoiceWindow::setMedal(int medal, int count) {
     this->buttonsVisible = 1;
 }
 
-static Layout **g_ChoiceWindow_config_1467ec = nullptr;
-static int *g_ChoiceWindow_screenWidth_1467ec = nullptr;
-
 ChoiceWindow::ChoiceWindow() {
-    Layout *config = *g_ChoiceWindow_config_1467ec;
+    Layout *config = Globals::layout;
     int width = config->field_0x264;
     this->width = width;
     this->padding = config->field_0x268;
@@ -200,7 +195,7 @@ ChoiceWindow::ChoiceWindow() {
     this->padding3 = config->field_0x270;
     this->padding4 = config->field_0x274;
 
-    int screenWidth = *g_ChoiceWindow_screenWidth_1467ec;
+    int screenWidth = Globals::w;
     this->leftButton = nullptr;
     this->rightButton = nullptr;
     this->miscButton = nullptr;
@@ -305,23 +300,18 @@ void ChoiceWindow::set(String const &title, String const &message, bool hasButto
     this->buttonsVisible = 1;
 }
 
-static Layout **g_ChoiceWindow_layout_147068_a = nullptr;
-static Layout **g_ChoiceWindow_layout_147068_b = nullptr;
-static Layout **g_ChoiceWindow_layout_147068_c = nullptr;
-static int *g_ChoiceWindow_screenHeight_147068 = nullptr;
-
 void ChoiceWindow::setMiscButton(String const &text) {
     Layout *layout;
     int padding = this->padding;
     int buttonWidth;
 
     if (this->leftButton == nullptr || this->rightButton == nullptr) {
-        layout = *g_ChoiceWindow_layout_147068_b;
+        layout = Globals::layout;
         buttonWidth = padding + layout->field_0x40 * 2;
     } else {
         int leftWidth = this->leftButton->getWidth();
         int rightWidth = this->rightButton->getWidth();
-        layout = *g_ChoiceWindow_layout_147068_a;
+        layout = Globals::layout;
         buttonWidth = leftWidth + rightWidth + padding;
     }
 
@@ -329,19 +319,19 @@ void ChoiceWindow::setMiscButton(String const &text) {
                                        this->x + this->width / 2 - layout->field_0x4c / 2,
                                        this->y + this->height - padding, buttonWidth, 0x22, 4);
 
-    layout = *g_ChoiceWindow_layout_147068_c;
+    layout = Globals::layout;
     setHeight((this->height - layout->field_0x8) + this->padding * 2 + layout->field_0x30);
 
     this->miscButton->setPosition(this->x + this->width / 2,
                                   this->y + this->height - this->padding, 0x24);
 
-    layout = *g_ChoiceWindow_layout_147068_c;
-    int delta = -(layout->field_0x30 + this->padding);
-    if (this->leftButton != nullptr) this->leftButton->translate(0, delta);
-    if (this->rightButton != nullptr) this->rightButton->translate(0, delta);
+    if (this->leftButton != nullptr)
+        this->leftButton->translate(0, -(Globals::layout->field_0x30 + this->padding));
+    if (this->rightButton != nullptr)
+        this->rightButton->translate(0, -(Globals::layout->field_0x30 + this->padding));
 
     this->scrollWindow->setYPosition(
-        *g_ChoiceWindow_screenHeight_147068 / 2 - this->height / 2 + layout->field_0x8);
+        Globals::h / 2 - this->height / 2 + Globals::layout->field_0x8);
 }
 
 static Layout **g_ChoiceWindow_layout_1471bc = nullptr;
