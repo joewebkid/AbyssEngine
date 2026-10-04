@@ -2791,3 +2791,56 @@ Both required >=99.0 means are still unmet; goal remains active. No compiler
 ceiling is established. Native library/body tests use file/Transform mocks
 and do not prove whole native executable ABI or Android device/runtime
 correctness. No Godot check is used as native evidence. No push, PR or merge.
+
+
+## Continuation: inner key widths and byte-axis exits
+
+Fourteen focused enhanced-parser variants start from f8607229, preserving its
+three accepted byte axis counters. Nine forms use unsigned-short inner key
+indices separately for vector/axis/optional/V5 groups, all unsigned-count
+groups, all groups, or one axis-key section. Unsigned count bound is at most
+65535: the last iteration is index 65534, then index 65535 fails the condition
+without another increment, so no wrap. V5 signed-short count remains unchanged;
+integer promotion of a short unsigned index preserves negative-count skipping
+and the maximum positive bound 32767. No byte inner index is used.
+
+Five outer-axis forms test !=3, <=2, one shared unsigned-char axis variable,
+and do/while with <3 or !=3. Each still visits 0/1/2 in order. Shared axis is
+assigned zero at each for initializer; no uninitialized value is read. Outer
+do needs no nonzero-count guard because axis section always contains three
+count records even when all inner counts are zero. No read, key formula,
+channel mapping, helper call or cleanup effect changes. These remain compiler
+source-form hypotheses, not recovered exact types or loop syntax.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| vectors | 98.1 / 53.4 | 644 | 100.0 | no |
+| axes | 98.0 / 67.1 | 645 | 100.0 | no |
+| optional | 98.2 / 66.8 | 642 | 100.0 | no |
+| v5 | 98.2 / 67.0 | 642 | 100.0 | no |
+| all_unsigned_counts | 97.8 / 53.1 | 649 | 100.0 | no |
+| all_key_indices | 97.7 / 52.9 | 650 | 100.0 | no |
+| position_axis | 98.2 / 66.8 | 642 | 100.0 | no |
+| scale_axis | 98.2 / 66.8 | 642 | 100.0 | no |
+| rotation_axis | 98.2 / 67.2 | 643 | 100.0 | no |
+| not_equal_three | 97.6 / 66.4 | 641 | 100.0 | no |
+| at_most_two | 98.3 / 66.9 | 641 | 100.0 | yes |
+| shared_axis | 98.3 / 66.9 | 641 | 100.0 | yes |
+| do_less_three | 97.2 / 65.9 | 644 | 100.0 | no |
+| do_not_equal_three | 97.2 / 65.9 | 644 | 100.0 | no |
+
+No trial improves accepted 98.3 source. The <=2 spelling and shared outer
+axis variable produce byte-identical whole Mesh objects. All remaining
+objects differ from accepted; matching source scores are not treated as
+identity. The two do forms also differ from each other despite equal scores.
+All production edits were restored. The accepted inner widths and for loops
+are retained, so no native/full corpus rerun is claimed for rejected variants.
+
+Evidence: `_work/enhkeyshort-*.json`, `_work/enhaxisexit-*.json`, saved source
+snapshots, `_work/enh_key_short_identities.json` and
+`_work/enh_axis_exit_identities.json`. Baseline outside-body/signature check
+passes and tracked production diff is empty. Accepted authoritative evidence
+remains `_work/axisbyte_full.json` and its native/full build/check logs.
+Fixed-three means remain **98.23% unweighted / 98.17% weighted**; exact pairs
+remain 2079 linked / 959 byte with no losses in the accepted full validation.
+Both >=99.0 requirements remain unmet; the goal is active. No push/PR/merge.
