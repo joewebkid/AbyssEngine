@@ -8,11 +8,11 @@ retain their dates)
 Two ARM-only wrappers compile the matching NDK r18b exception and type-info
 runtime sources without vendoring them. The current full ARM report compares
 4,322/4,524 unique original functions across 4,673 rows, with 202 absent,
-zero wrong-signature and zero skipped; mean source-shape is 89.92%, strict
-fuzzy 77.03%, linked-exact 2,153 and raw-byte-exact 977. Native `gof2` and
+zero wrong-signature and zero skipped; mean source-shape is 89.97%, strict
+fuzzy 77.07%, linked-exact 2,156 and raw-byte-exact 977. Native `gof2` and
 206/206 ARM translation units build. This is not an integrated `main` result
-or a percentage of semantically completed game logic. One runtime comparison
-has a suspected delinker symbol-boundary error; see
+or a percentage of semantically completed game logic. ELF-declared symbol
+sizes fixed three false non-exact results without exact-set losses; see
 [`NDK_LIBCXXABI_RUNTIME_ARM_2026-10-04.md`](NDK_LIBCXXABI_RUNTIME_ARM_2026-10-04.md).
 
 ## ARM and TextureCreate Recovery (2026-09-24)

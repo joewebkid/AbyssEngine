@@ -78,6 +78,35 @@ def find_text_section(so_path):
     raise RuntimeError(".text section not found")
 
 
+def elf_function_sizes(data):
+    """Declared nonzero ELF32 FUNC sizes, keyed by even Thumb/ARM address."""
+    assert data[:4] == b"\x7fELF" and data[4] == 1, "expected ELF32"
+    shoff = struct.unpack_from("<I", data, 0x20)[0]
+    shentsize = struct.unpack_from("<H", data, 0x2E)[0]
+    shnum = struct.unpack_from("<H", data, 0x30)[0]
+    sizes = {}
+    for i in range(shnum):
+        sh = shoff + i * shentsize
+        section_type = struct.unpack_from("<I", data, sh + 4)[0]
+        if section_type not in (2, 11):  # SYMTAB, DYNSYM
+            continue
+        offset, length = struct.unpack_from("<II", data, sh + 16)
+        entry_size = struct.unpack_from("<I", data, sh + 36)[0]
+        if entry_size < 16:
+            continue
+        for entry in range(offset, offset + length, entry_size):
+            _, value, size, info, _, _ = struct.unpack_from("<IIIBBH", data, entry)
+            if (info & 15) == 2 and size:  # STT_FUNC
+                addr = value & ~1
+                sizes[addr] = max(size, sizes.get(addr, 0))
+    return sizes
+
+
+def function_end(addr, next_addr, sizes):
+    size = sizes.get(addr)
+    return min(next_addr, addr + size) if size else next_addr
+
+
 def load_symbols(path):
     """addr2names: {int addr -> [mangled,...]}, sorted unique addr list."""
     addr2names = {}
@@ -134,6 +163,7 @@ def main():
     text_addr, text_off, text_size = find_text_section(args.so)
     text_end = text_addr + text_size
     so = open(args.so, "rb").read()
+    function_sizes = elf_function_sizes(so)
 
     if args.names:
         want = [n for n in args.names.split(",") if n]
@@ -155,13 +185,15 @@ def main():
         if a in seen_addr:
             continue
         seen_addr.add(a)
-        # size = gap to next distinct symbol address (clamp to .text end)
+        # Trust the ELF function size when present; the next-symbol gap may
+        # include unrelated code or padding after the actual function.
         idx = addrs.index(a)
         nxt = text_end
         for j in range(idx + 1, len(addrs)):
             if addrs[j] > a:
                 nxt = min(addrs[j], text_end)
                 break
+        nxt = function_end(a, nxt, function_sizes)
         foff = text_off + (a - text_addr)
         raw = bytearray(so[foff:foff + (nxt - a)])
         # Drop trailing inter-function padding, but only whole 16-bit zero
