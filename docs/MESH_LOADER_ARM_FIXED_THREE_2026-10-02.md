@@ -2895,3 +2895,57 @@ and native tests remain authoritative. Fixed-three means stay **98.23%
 unweighted / 98.17% weighted** and actual accepted pair sets stay 2079 linked /
 959 byte, with no losses. Both >=99.0 means remain unmet; goal remains active.
 No push, PR or merge was performed.
+
+
+## Continuation: caller counter types and reader axis widths
+
+Fourteen additional focused Core trials start from fdb95ee1. Eight caller
+forms vary signed/unsigned-long format, signed/unsigned-long child index,
+initial nullptr child pointer, and byte/short/unsigned signature index. Format
+remains in 0..31 after its masks. Child index never exceeds the unsigned-short
+subCount (maximum 65535), so signed int cannot overflow; signature index visits
+exactly 0..6. No child count storage or read is widened. Pointer default is
+assigned before first use on every actual child iteration. All three reader
+call sites, guards, file order and failure cleanup remain present. Original
+caller shared child test reloads count at 0x6d2e2-0x6d2e8; no captured replacement
+bound or unguarded do/while is introduced. Source-type variants are hypotheses,
+not recovered source declarations.
+
+Six reader forms vary the local coordinate-axis remainder type for both
+short/integer position paths or only one. i - 3*(i/3) is in 0..2 for every
+unsigned component index, so all tested signed/unsigned byte/short/int types
+preserve the index. Original quotient-derived formula and input/output/extrema
+order stay unchanged. No counter is narrowed in this family.
+
+| Group / trial | Source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| Create: signed_format | 98.4 / 60.7 | 289 | 100.0 | yes |
+| Create: long_format | 98.4 / 60.7 | 289 | 100.0 | yes |
+| Create: signed_child_index | 98.4 / 60.7 | 289 | 100.0 | yes |
+| Create: long_child_index | 98.4 / 60.7 | 289 | 100.0 | yes |
+| Create: child_pointer_default | 98.3 / 60.7 | 289 | 100.0 | no |
+| Create: byte_signature_index | 98.4 / 60.7 | 289 | 100.0 | yes |
+| Create: short_signature_index | 98.4 / 60.7 | 289 | 100.0 | yes |
+| Create: unsigned_signature_index | 98.4 / 60.7 | 289 | 100.0 | yes |
+| Read: both_unsigned_char | 98.0 / 55.3 | 867 | 100.0 | no |
+| Read: both_unsigned_short | 98.0 / 55.3 | 867 | 100.0 | no |
+| Read: both_int | 98.0 / 55.9 | 867 | 100.0 | yes |
+| Read: both_signed_char | 98.0 / 55.9 | 867 | 100.0 | yes |
+| Read: short_position_byte | 98.0 / 55.5 | 867 | 100.0 | no |
+| Read: int_position_byte | 98.0 / 55.6 | 867 | 100.0 | no |
+
+No requested source-score gain occurs. Seven caller forms and two reader
+forms produce byte-identical accepted whole Core objects. Initial child
+nullptr produces a different object and caller source 98.3 versus accepted
+98.4; it is rejected. Both unsigned reader axis widths equal each other but
+differ from accepted, with source unchanged and strict reduced. Equal source
+scores are not evidence of identity. All production edits were restored.
+
+Evidence: `_work/createcountertypes-*.json`, `_work/readaxiswidth-*.json`,
+saved source snapshots, `_work/create_counter_type_identities.json` and
+`_work/read_axis_width_identities.json`. Baseline outside-body/signature check
+passes, tracked production diff is empty. No native/full-corpus rerun is
+claimed for rejected forms. Accepted `_work/axisbyte_full.json` and its native
+and full ARM logs remain authoritative: **98.23% unweighted / 98.17% weighted**,
+2079 linked-exact / 959 byte-exact pairs equal baseline with no losses.
+Both >=99.0 requirements remain unmet; goal stays active. No push/PR/merge.
