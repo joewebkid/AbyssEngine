@@ -2630,3 +2630,64 @@ claimed for these rejected trials. Authoritative accepted native/full-corpus
 evidence remains the channel-zero validation. Means remain **98.13%
 unweighted / 98.06% instruction-weighted**, so both 99.0% gates remain unmet.
 No push, PR or merge was performed.
+
+
+## Continuation: final counters and zeroing interactions
+
+Fourteen isolated reader variants test the final normal/tangent loop's counter
+and its interaction with preceding accumulator initialization. Original final
+loop decrements its remaining vertex count at 0x6ce54 and tests at 0x6ce66;
+triangle index offset and count advance at 0x6cdba-0x6cdc6. Zeroing is guarded
+at 0x6cc7c-0x6cc80 and lowered into clearing at 0x6cc94. Guarded do/while
+variants explicitly preserve the zero-count skip. Original unsigned-short
+vertex count is at most 65535 and triangle count at most 21845: unsigned-short
+forward indices cannot wrap before their exit checks. The trial named
+`final_short_remaining` narrows only the initial bound, retaining unsigned-int
+remaining/index variables; it is not a short remaining counter. All forms
+preserve component addresses and math-helper/store order. They are source
+hypotheses, not recovered original C++.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core object equals accepted |
+|---|---|---:|---:|---|
+| final_remaining_for | 97.0 / 55.9 | 859 | 98.2 | no |
+| final_remaining_do | 96.6 / 59.4 | 864 | 98.2 | no |
+| final_remaining_while | 97.0 / 55.9 | 859 | 98.2 | no |
+| final_short_index | 98.0 / 55.9 | 867 | 100.0 | yes |
+| final_component_offset | 98.0 / 55.9 | 867 | 100.0 | yes |
+| triangle_short_index | 98.0 / 54.2 | 865 | 100.0 | no |
+| both_short_indices | 98.0 / 54.2 | 865 | 100.0 | no |
+| final_short_remaining | 97.0 / 55.9 | 859 | 98.2 | no |
+| final_do_vertex_memset | 96.6 / 59.4 | 864 | 98.2 | no |
+| final_do_guarded_do | 96.6 / 53.3 | 854 | 100.0 | no |
+| final_do_remaining_zero | 96.7 / 59.6 | 869 | 98.2 | no |
+| final_for_vertex_memset | 97.0 / 55.9 | 859 | 98.2 | no |
+| zero_guarded_do | 97.1 / 55.2 | 851 | 100.0 | no |
+| zero_remaining | 96.8 / 56.4 | 857 | 98.2 | no |
+
+No required source-score gain occurs. All edits were restored. Final short
+index and independent component offset equal the accepted whole Core object.
+For/while remaining forms and narrowed initial bound equal each other; both
+short indices equal triangle short index. Equal scores alone were not treated
+as identity. Guarded final do/while reaches strict 59.4 but source 96.6, and
+combining with remaining zeroing gives strict 59.6/source 96.7; neither can
+meet the requested objective through strict gains alone.
+
+Direct relocation/call inspection, saved in
+`_work/final_remaining_do_calls.json`, counts 61 call instructions in accepted
+versus 60 in the final remaining do trial. The static-symbol multiset loses
+one `_ZdaPv` call. Three register-indirect calls use r4 instead of r5. This is
+not evidence that an executed deallocation is missing; it is a static control
+layout difference. It also corrects the tentative zeroing-call explanation:
+the missing static call is delete[], not a clearing/division helper. The
+combined guarded zero/final loops recover call-count score 100.0 but still
+regress source to 96.6. No cleanup operation was added to manipulate the score.
+
+Evidence: `_work/readcounterinteraction-*.json`,
+`_work/counterzerointeraction-*.json`,
+`_work/read_counter_interaction_identities.json`,
+`_work/counter_zero_interaction_identities.json` and saved trial snapshots.
+Baseline signatures/outside-body check passes and tracked production diff is
+empty. Rejected variants have no claimed native/full-corpus validation;
+accepted channel-zero native/full-corpus evidence remains authoritative.
+Fixed-three means remain **98.13% unweighted / 98.06% instruction-weighted**,
+below both 99.0% gates. No push, PR or merge was performed.
