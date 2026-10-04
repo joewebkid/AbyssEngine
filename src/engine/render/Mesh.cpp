@@ -253,7 +253,7 @@ namespace AbyssEngine {
                             float key;
                             if (AEFile::Read(4, &key, file) == 0) goto fail;
                             key = key / 100.0f;
-                            unsigned int channel;
+                            unsigned int channel = 0;
                             switch (c) {
                                 case 0: channel = 0x400; break;
                                 case 1: channel = 0x800; break;
@@ -263,7 +263,7 @@ namespace AbyssEngine {
                                     channel = 0x40000;
                                     key = (key * 6.283185307179586f) / 360.0f;
                                     break;
-                                default: channel = 0; break;
+                                default: break;
                             }
                             anim->InsertKeyFrame(&key, channel, (int) value);
                             self->hasAnimation = 1;

@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **98.10% unweighted / 98.03% weighted**.
+Latest validated continuation: source **98.13% unweighted / 98.06% weighted**.
 Latest semantic correction: original full bounds diagonal; earlier half-diagonal
 radius assertions are superseded by the verified operand/ABI evidence below.
 The result tables below preserve earlier measurements. Chronological continuation
@@ -2348,3 +2348,76 @@ checks pass. Existing full colorfield-full ARM/native validation remains
 applicable: exact pair sets 2079 linked / 959 byte unchanged, and means
 98.100000 / 98.029333. Both >=99.0 gates remain unmet; no objective compiler
 ceiling is demonstrated. The goal remains active.
+
+
+## Continuation: zero default V5 channel value
+
+Start state is clean tracked ffe95b59. Five focused V5 channel-value forms
+retain the same masks, file reads, InsertKeyFrame call and hasAnimation store.
+The zero-initialized channel form improves Enhanced from source 97.9 / strict
+67.5 / 636 raw instructions to source 98.0 / strict 66.6 / 638. The strict
+score decrease is explicit; the requested objective is source-shape.
+
+Retained source sets unsigned int channel = 0 before the switch and leaves
+that value in the default case. Cases 0/1/2/3/6 still assign their masks and
+case 6 still applies the exact recovered float literal's angular conversion.
+The loop index can only be 0..6; positions 4/5 therefore still pass channel 0,
+as in the original seven-entry table. This is ordinary default-value source
+construction, not an added artificial effect or recovered C++ spelling.
+Other cases replace the initial value with their existing constants. Read,
+conversion, failure cleanup and animation attachment behavior are unchanged.
+
+| V5 channel form | Source / strict | Instructions | Call match |
+|---|---|---:|---:|
+| Initial zero, default leaves it unchanged | 98.0 / 66.6 | 638 | 100.0 |
+| Signed int channel | 97.9 / 67.5 | 636 | 100.0 |
+| Unsigned long long channel | 97.9 / 67.5 | 636 | 100.0 |
+| Signed long long channel | 97.9 / 67.5 | 636 | 100.0 |
+| Rotation calculation before channel assignment | 97.9 / 67.5 | 636 | 100.0 |
+
+The four rejected forms produce whole Mesh objects byte-identical to the
+preceding colorfield-full object. The retained object's measured components
+are instruction inventory 96.0, opcode inventory 97.5, control inventory 96.6,
+ordered control 75.2, call count 100.0, normalized size 100.0. The unchanged
+matcher normalizes dual-word operations before source scoring; raw instruction
+counts alone do not determine its normalized-size component. No flags, helpers,
+ABI layouts, denominator, assembly, volatile or barriers are changed.
+
+Fresh validation of the retained source:
+
+- Native UCRT64 gof2 static-library build passes.
+- Actual Mesh.cpp enhanced-parser smoke passes: all seven V5 channel masks,
+  both zero defaults, exact angular literal/value, signed counts, optional
+  sections, empty/populated animation and truncated V5 prefixes are covered.
+- Verbatim reader with actual selected AEMath/Vector code passes color,
+  position, tangent and truncation fixtures. Caller with actual Mesh.cpp
+  parser and selected bounds code passes lifecycle, animated completion,
+  child bounds and early-failure fixtures.
+- Baseline outside-body/signature checks pass.
+- All 204 ARM translation units rebuilt. Full corpus has 4619 comparisons,
+  4274/4524 original bodies compared, zero skipped, 250 missing (7 wrong type,
+  243 absent), and 130 extra symbols.
+- Actual normalized pair sets equal clean baseline: linked 2079 / byte 959,
+  lost [] and gained [] for each. The other 202 objects are byte-identical
+  to baseline; Core equals colorfield-full, Mesh equals the focused winner.
+
+Full strict/source averages 75.98 / 88.99. Report SHA-256:
+`ad5544a59714c3ffa0f3b22cfba5e2b58779176523d9351f1bd704f6aebfef19`.
+
+Evidence: _work/enh_channel_value_sweep.py, five focused JSON reports/snapshots,
+_work/channelzero_trial_identities.json; _work/channelzero_full.json,
+_work/channelzero_three.json, _work/channelzero_full_build.log,
+_work/channelzero_full_verify.log; _work/channelzero_native.log,
+_work/channelzero_read_smoke.log, _work/channelzero_enhanced_smoke.log.
+
+| Fixed unique body | Source | Strict | Original weight |
+|---|---:|---:|---:|
+| MeshCreateFromFile | 98.4% | 60.7% | 291 |
+| MeshReadData | 98.0% | 55.9% | 873 |
+| ReadEnhancedDataFromFile | 98.0% | 66.6% | 636 |
+
+Exactly these three bodies give **98.133333% unweighted / 98.064667% weighted**.
+The required two >=99.0 means are still unmet; the goal remains active.
+No objective compiler ceiling is established. Native library and bounded
+body tests do not prove full native executable ABI correctness or an Android
+runtime test. No push, PR or merge is performed.
