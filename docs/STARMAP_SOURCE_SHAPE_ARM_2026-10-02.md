@@ -1783,6 +1783,45 @@ StarMap >=99.0% target NOT reached). Corpus source/fuzzy means: 89.06% / 76.16%.
 Gate evidence: _work/fortysecond-gate.json, fortysecond-previous-gate.json,
 fortysecond-target-gate.log. Full JSON SHA-256: 327cf9df7ccfa5a7b7785b17dbe7acf73519fc18f84b2dd6a23713a642f0a8dc.
 
+## Investigation after checkpoint 2ac358b9
+
+Read-only signature review retained int StarMap::init(bool, Mission *, bool,
+int). The Android normal epilogue at c7416..c7426 subtracts the stack guard
+values in R0; every successful exit therefore leaves R0 = 0. Absence of a
+separate MOV zero does not prove void. Constructor c6b24 calls init and c6b28
+immediately replaces R0 while checking its own guard, so this caller does not
+use the init result. Ordinary C++ mangling does not establish this return type;
+the IDA int declaration is also not proof of the original source signature.
+Changing to void solely to remove a generated MOV zero would be unjustified.
+No signature or production change was made for this finding.
+
+Inspected StarMap.h/.cpp, src creation sites (MGame.cpp, MissionsWindow.cpp and
+WantedWindow.cpp), _work/ctor-original-direct.asm and
+_work/init-original-direct.asm. Station vector transform/normalization and
+Canvas capture before getRace were also checked read-only: c77f8..c7802,
+c785c..c786e and c7aba..c7ace correspond to accepted 2bda..2be4,
+2c3e..2c50 and 2ea4..2eb8. No additional correction was warranted there.
+
+A focused source trial replaced the initial drawOnScreenInfo pointer ternary
+with an explicit if/else. Android c8378..c837e conditionally loads the two
+pointer fields; accepted c66..c70 selects an offset and then loads one pointer.
+The alternative was a source-shape hypothesis, not recovered C++ syntax.
+_work/position-select-fortythird.json is identical to the entire accepted
+focused report; 204/204 TUs compiled, zero failures, 22 comparisons, zero skips.
+Trial StarMap.o SHA-256 is also identical to 2ac358b9:
+1384d74b71ee1da0f7da2daad528e398ce992ee3798e14ba1a8f2aae2503cc80.
+The trial was removed. Evidence: _work/position-select-fortythird.log,
+_work/info-original-direct.asm, _work/system-canvas-fortysecond.asm and
+_work/before-position-select-fortythird.cpp.
+
+Fresh restored-source focused verification also compiled 204/204 TUs, zero
+failures, compared 22 rows with zero skips and reproduced the entire accepted
+JSON and object hash. Package: _work/fortythird-restored-focused.json/log.
+Production source is unchanged. Source means remain 99.175% / 98.4873257287706%;
+strict means remain 87.215% / 81.55099281791297%. Full-corpus/native validations
+below remain those of 2ac358b9; no new full/native run is claimed. The weighted
+99% target remains unmet and native executable/runtime validation is untested.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
