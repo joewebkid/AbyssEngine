@@ -1885,3 +1885,56 @@ snapshots and object comparisons. These results rule out the measured signature
 preload/order/byte-mask forms on this state, not every possible caller rewrite
 or an objective compiler ceiling. Means remain 98.066667/97.980833, below
 both >=99.0 requirements; the goal stays active.
+
+
+## Continuation: caller completion operands and animated lifecycle fixture
+
+Original 0x6d31a closes the file before CollectAnimationData at 0x6d326.
+The timeBetweenFrames load at 0x6d32a follows Collect, the mesh load at
+0x6d32c precedes float-to-longlong conversion at 0x6d32e, and the animation
+load at 0x6d334 follows it. These operands motivate local-lifetime trials;
+they do not prove the exact original C++ spelling.
+
+| Caller source form | Source / strict | Instructions |
+|---|---|---:|
+| Explicit float rate after Collect | 98.4 / 60.7 | 289 |
+| Mesh local before conversion | 98.4 / 60.7 | 289 |
+| Explicit longlong start after Collect | 98.3 / 60.3 | 289 |
+| Reuse mesh local after Collect | 98.4 / 60.7 | 289 |
+| Ignored two-byte header word near file handle | 98.2 / 60.3 | 289 |
+| Ignored header word inside format guard | 97.9 / 60.8 | 288 |
+| Two-byte header array inside format guard | 97.9 / 60.8 | 288 |
+
+All seven retain call match 100.0. Explicit-float, mesh-before-conversion and
+reuse-mesh whole Core objects equal accepted readchilddo-full byte for byte.
+The last two differ despite equal scores. Original Read at 0x6d1d0 stores
+two bytes into the former signature buffer; their semantic meaning is not
+established. The storage trials preserve the read size and ignored value.
+No trial improves score; accepted production bodies were restored.
+
+The native caller fixture now exercises a V4 single mesh with nonempty
+animation through actual Create, Read and enhanced-parser bodies. Transform
+boundary mocks record Collect and both range calls. Collect asserts Close
+has already occurred, then changes timeBetweenFrames to 3.75f. The final
+caller range must target the loaded mesh animation with start 3 and end
+10000000. Thus the fixture checks load timing and truncation, not merely
+whether the range function was called. Full file consumption and successful
+Close/no-release lifecycle are also asserted.
+
+Positive native Reader and caller smoke runs pass. A temporary negative
+mutation in the extracted caller body hoists the time load before Collect;
+it fails the lastRangeStart assertion with exit 3. The accepted include was
+restored and regenerated, and the positive run passes again. Windows abort
+reporting is suppressed in this fixture to keep intentional assertion failures
+noninteractive. The Transform operations remain boundary mocks: this does not
+prove their native implementation, the full executable ABI or a device run.
+
+Evidence: _work/create_loaded_operand_sweep.py,
+_work/create_version_storage_sweep.py, seven focused JSON reports and source
+snapshots; tools/mesh_create_smoke.cpp; _work/create_loaded_smoke.log;
+_work/check_loaded_time_fixture.py and _work/premature_loaded_time.log.
+Outside-body/signature checks pass and production source diff is empty.
+The authoritative full-corpus state remains readchilddo-full: 204 units,
+4619 comparisons, linked-exact 2079 and byte-exact 959 pairs unchanged.
+Means remain 98.066667 / 97.980833, below both 99.0 gates. Only the stronger
+native fixture and this evidence are retained; the goal remains active.

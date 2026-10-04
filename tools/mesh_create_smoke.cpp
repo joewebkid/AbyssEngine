@@ -16,6 +16,10 @@ std::vector<unsigned char> input;
 size_t cursor, limit;
 int opened, closed, released;
 bool openSucceeds;
+bool changeTimeOnCollect;
+int collected, rangeCalls;
+AbyssEngine::Transform *rangeReceiver;
+longlong lastRangeStart, lastRangeEnd;
 std::vector<size_t> childStarts;
 AbyssEngine::Mesh *failedChild;
 
@@ -26,6 +30,7 @@ template<class T> void put(T value) {
 void reset(size_t bytes) {
     cursor = 0; limit = bytes; opened = closed = released = 0; openSucceeds = true;
     failedChild = nullptr;
+    changeTimeOnCollect = false; collected = rangeCalls = 0; rangeReceiver = nullptr;
 }
 void dispose(AbyssEngine::Mesh *mesh) {
     if (mesh->animation) {
@@ -129,8 +134,14 @@ Quaternion::~Quaternion() {}
 Transform::Transform() : boundingCenter{0, 0, 0}, boundingRadius(0), boundingRadius2(0) {}
 Transform::~Transform() {}
 void Transform::InsertKeyFrame(const float *, longlong, int) { ArrayAdd<KeyFrame *>(nullptr, keyFrames); }
-void Transform::CollectAnimationData() { std::abort(); }
-void Transform::SetAnimationRangeInTime(longlong, longlong) {}
+void Transform::CollectAnimationData() {
+    ++collected;
+    assert(closed == 1);
+    if (changeTimeOnCollect) timeBetweenFrames = 3.75f;
+}
+void Transform::SetAnimationRangeInTime(longlong first, longlong last) {
+    ++rangeCalls; rangeReceiver = this; lastRangeStart = first; lastRangeEnd = last;
+}
 }
 
 #include "mesh_read_math_under_test.inc"
@@ -139,6 +150,9 @@ void Transform::SetAnimationRangeInTime(longlong, longlong) {}
 #include "mesh_create_under_test.inc"
 
 int main() {
+#ifdef _WIN32
+    _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+#endif
     using namespace AbyssEngine;
     // Engine is an opaque nonnull boundary token; these paths never dereference it.
     Engine *engine = reinterpret_cast<Engine *>(uintptr_t(1));
@@ -187,6 +201,18 @@ int main() {
         dispose(slot); slot = nullptr;
     }
     Engine::enableShader = 0;
+    // Exercise caller completion with nonempty animation. The boundary changes
+    // time during Collect, so a premature time load fails the final assertion.
+    input.clear();
+    for (char ch : {'V', '4', 'A', 'E', 'M', 'e', 's'}) put(ch);
+    put<unsigned short>(0); put<unsigned char>(1); put<unsigned short>(0);
+    childNode(1.0f, 4.0f, true, 0);
+    reset(input.size()); changeTimeOnCollect = true;
+    assert(MeshCreateFromFile(engine, "fixture", &slot, nullptr) == 1);
+    assert(slot->animation != nullptr && collected == 1 && rangeCalls == 2);
+    assert(rangeReceiver == slot->animation && lastRangeStart == 3 && lastRangeEnd == 10000000);
+    assert(cursor == input.size() && opened == 1 && closed == 1 && released == 0);
+    dispose(slot); slot = nullptr;
     const unsigned int handle = 1;
     auto *material = reinterpret_cast<Material *>(uintptr_t(0x1234));
     for (unsigned short count : {0, 1, 2}) {
