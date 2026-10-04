@@ -1795,3 +1795,52 @@ outside-body/signature check passes. Native and full-corpus evidence therefore
 remain the unchanged readchilddo-full state. Means stay 98.066667/97.980833,
 below both >=99.0 gates; the goal stays active. Further search should inspect
 caller operands/value storage rather than repeat these loop/return spellings.
+
+## Continuation: caller format widths with three separated read paths
+
+Previous turn yielded ten caller-loop measurements and distinguished strict
+improvement from the required source objective. This turn starts from clean
+tracked state at 492e1cb0. The earlier width trials preceded the separated
+single-mesh read paths (280 compiled Create instructions then versus 289 now),
+so their outcomes do not substitute for an interaction check on current code.
+Original 0x6d1bc/0x6d1f8 tests masks 0x1b/0x1a; format starts at 0x1f and
+only clears bits during the seven-byte signature loop, so its value stays
+within 0..31. All three narrow types represent every reachable value exactly.
+This justifies testing widths without claiming recovered original C++ types.
+
+| Format/value-lifetime form | Create source / strict | Instructions | Call match |
+|---|---|---:|---:|
+| unsigned char format | 96.3 / 68.3 | 289 | 100.0 |
+| unsigned short format | 96.3 / 68.3 | 289 | 100.0 |
+| signed char format | 97.1 / 56.2 | 289 | 100.0 |
+| Preserve header-word predicate as bool | 98.4 / 60.7 | 289 | 100.0 |
+| Preserve enhanced predicate as bool | 98.2 / 60.7 | 289 | 100.0 |
+| Preserve both predicates as bool | 98.2 / 60.7 | 289 | 100.0 |
+| Preserve both masks as unsigned values | 98.2 / 60.7 | 289 | 100.0 |
+
+The saved predicates/masks are computed inside the successful format guard,
+before the subsequent header/vertex-format reads. Format is not modified after
+signature comparison; AEFile reads never receive its address. Thus predicates
+keep the same values, calls, arguments and short-circuit conditions. None
+improves source match, and none is retained. The header-bool whole Core object
+equals readchilddo-full byte for byte. The three enhanced-mask variants equal
+one another. The unsigned-byte and unsigned-short objects differ despite
+identical rounded scores and instruction counts; no byte identity is inferred
+from those figures. Narrow types still preserve call-count match 100.0, unlike
+the earlier merged-path caller state, but this does not make them winners.
+
+A suspected field-offset lead was checked directly before editing layout:
+original 0x6c654/0x6c668 uses indexCount offset 40, and 0x6c670/0x6c67a uses
+indices offset 44, matching current 32-bit Mesh fields and compiled operands.
+No layout correction is supported by that lead. Mesh.h's default constructor
+is user-provided; allocation spelling is not evidence that constructor fields
+should be reordered or manually copied. No header/helper change was made.
+
+Evidence: `_work/create_width_separate_calls_sweep.py`,
+`_work/create_format_mask_lifetime_sweep.py`, seven focused reports, snapshots,
+object comparisons and original_mesh.asm. Finally restorations leave tracked
+source diff empty; baseline outside-body/signature checks pass. Accepted code
+and full/native validation remain readchilddo-full, with exact pair sets
+2,079 linked / 959 byte unchanged. Means remain 98.066667/97.980833, below
+both 99.0 gates. The next search should follow remaining caller operand
+load/store relationships rather than repeat these width/mask forms.
