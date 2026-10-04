@@ -219,22 +219,19 @@ void ModStation::enterStation() {
 }
 
 
-static int *g_ModStation_ach_a = 0;
-
-static int *g_ModStation_ach_b = 0;
-
-static int *g_ModStation_ach_c = 0;
+extern int g_android_current_achievements[3];
 
 void ModStation::addAchievement(int medalId, int kind) {
-    if (Achievements::gAchievements->isEliteMedal(medalId) != 0)
+    if (static_cast<Achievements *>(Globals::achievements)->isEliteMedal(medalId) != 0)
         return;
     if ((unsigned) (kind - 1) < 2) {
-        if (Achievements::gAchievements->getValue(medalId, 3) != -1)
-            *g_ModStation_ach_a = medalId * 3;
-        if (kind == 1 && Achievements::gAchievements->getValue(medalId, 2) != -1)
-            g_ModStation_ach_b[1] = medalId * 3 + 1;
+        if (static_cast<Achievements *>(Globals::achievements)->getValue(medalId, 3) != -1)
+            g_android_current_achievements[0] = medalId * 3;
+        if (kind == 1 &&
+            static_cast<Achievements *>(Globals::achievements)->getValue(medalId, 2) != -1)
+            g_android_current_achievements[1] = medalId * 3 + 1;
     }
-    g_ModStation_ach_c[2] = (medalId * 3 + 3) - kind;
+    g_android_current_achievements[2] = (medalId * 3 + 3) - kind;
 }
 
 void ModStation::showMapWindow() {
@@ -537,11 +534,8 @@ void ModStation::leaveStation() {
 }
 
 
-static int *g_ModStation_cm_credit1 = 0;
-
-static int *g_ModStation_cm_credit2 = 0;
-
-static void **g_ModStation_cm_lead = 0;
+// Android 2.0.16 .rodata 0x1fb848, shared with ChoiceWindow's credit label.
+static const int g_ModStation_medalCredits[4] = {0, 5000, 2500, 1000};
 
 void ModStation::checkMedals() {
     Globals::gGlobals->reportLeaderboards();
@@ -556,19 +550,18 @@ void ModStation::checkMedals() {
         Array<int *> *medalArr = *(Array<int *> **)&this->medalArray;
         int *medal = (*medalArr)[idx];
         ((ChoiceWindow *) (this->medalChoiceWindow))->setMedal(medal[0], medal[1]);
-        int delta = *g_ModStation_cm_credit2;
-        if (Status::gStatus->hardCoreMode() == 0)
-            Status::gStatus->changeCredits(delta);
+        int delta = g_ModStation_medalCredits[medal[1]];
+        if (Globals::status->hardCoreMode() == 0)
+            Globals::status->changeCredits(delta);
         int *p = (*medalArr)[this->medalIndex];
         this->addAchievement(p[0], p[1]);
         return;
     }
 
-    int delta = *g_ModStation_cm_credit1;
-    if (Status::gStatus->getCurrentCampaignMission() == 1)
+    if (Globals::status->getCurrentCampaignMission() == 1)
         ((ModStation *) ((ModStation *) 1))->addAchievement(0, 1);
     this->medalArray = 0;
-    int *medals = Achievements::gAchievements->getNewMedals();
+    int *medals = static_cast<Achievements *>(Globals::achievements)->getNewMedals();
     int count = 0;
     this->medalCount = 0;
     for (int i = 0; i != 0x2d; i++) {
@@ -601,8 +594,8 @@ void ModStation::checkMedals() {
     this->medalChoiceWindow = cw;
     int *medal = (*arr)[0];
     cw->setMedal(medal[0], medal[1]);
-    if (Status::gStatus->hardCoreMode() == 0)
-        Status::gStatus->changeCredits(delta);
+    if (Globals::status->hardCoreMode() == 0)
+        Globals::status->changeCredits(g_ModStation_medalCredits[medal[1]]);
     int *p = (*arr)[0];
     this->addAchievement(p[0], p[1]);
 }

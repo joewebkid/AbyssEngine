@@ -3,6 +3,20 @@
 Last reviewed: 2026-10-04 (Achievements, ChoiceWindow and NDK runtime; older
 subsystem snapshots retain their dates)
 
+## ModStation medal reward and notification bindings (2026-10-04, local branch)
+
+The Android-confirmed four-value credit table now drives both award paths
+in `ModStation::checkMedals`, replacing null pointers. `addAchievement`
+now updates the existing `g_android_current_achievements[3]` array through
+the original global route and is linked-exact; `checkMedals` rises from
+92.5% to 94.5% source-shape but is not exact. Native `gof2` and all 206 ARM
+units build. The full corpus compares 4,322/4,524 originals across 4,675
+rows at 90.09% mean source-shape / 77.24% strict, with 2,165 linked-exact
+and 977 byte-exact. Exact sets have one linked gain and zero losses.
+Integrated medal/credit runtime, `medalArray` typing and an unusual native
+call receiver remain unverified; see
+[`MODSTATION_MEDAL_REWARDS_ARM_2026-10-04.md`](MODSTATION_MEDAL_REWARDS_ARM_2026-10-04.md).
+
 ## ChoiceWindow draw bindings and medal display (2026-10-04, local branch)
 
 `ChoiceWindow::draw` now uses the Android-confirmed `Globals` bindings,
