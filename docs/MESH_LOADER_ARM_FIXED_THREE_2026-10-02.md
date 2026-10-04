@@ -2282,3 +2282,69 @@ set comparisons and native tests remain authoritative. Means remain
 98.100000 / 98.029333, pairs 2079 linked / 959 byte with no losses. Both
 >=99.0 gates are unmet; the goal remains active. These concrete exclusions do
 not establish an objective compiler ceiling.
+
+
+## Continuation: caller header guards, initialization and count dispatch
+
+Current tracked start is clean fbd4b187. Fifteen ordinary caller source forms
+use canonical flags, unchanged helpers and signatures, and all three reader
+call sites. No variant improves accepted Create source 98.4; production
+source is restored after each sweep.
+
+| Trial | Source / strict | Instructions | Whole Core object equals colorfield-full |
+|---|---|---:|---|
+| createheaderguards-direct_mesh_read_address | 98.4 / 60.7 | 289 | yes |
+| createheaderguards-header_combined_failure_guard | 98.4 / 60.7 | 289 | yes |
+| createheaderguards-header_first_read_failure_guard | 98.4 / 60.7 | 289 | yes |
+| createheaderguards-header_separate_failure_guards | 98.4 / 60.7 | 289 | yes |
+| createinitbounds-both_list_initialization | 98.4 / 60.7 | 289 | yes |
+| createinitbounds-child_bound_argument_first | 98.4 / 60.7 | 289 | yes |
+| createinitbounds-child_list_initialization | 98.4 / 60.7 | 289 | yes |
+| createinitbounds-material_before_output_store | 98.4 / 61.0 | 289 | no |
+| createinitbounds-parent_bound_argument_first | 98.4 / 60.7 | 289 | yes |
+| createinitbounds-top_list_initialization | 98.4 / 60.7 | 289 | yes |
+| createopenfailure-typed_delete_guarded | 98.4 / 60.7 | 289 | yes |
+| createopenfailure-typed_delete_implicit_null_guard | 98.4 / 60.7 | 289 | yes |
+| createcountdispatch-single_then_multi_else | 97.0 / 56.8 | 290 | no |
+| createcountdispatch-single_then_multi_failure_guard | 97.1 / 57.1 | 290 | no |
+| createcountdispatch-strict_greater_count | 98.4 / 60.7 | 289 | yes |
+
+All fifteen retain call match 100.0. Header forms pass the same offset-zero
+vertexFormat destination as a Mesh pointer, split the short-circuit condition
+into individual failure guards, combine the failures, or separate only the
+ignored two-byte read. The exact read order, mask 0x1b condition, global-time
+reset and all failure release/Close behavior remain intact. No field offset,
+header meaning or original C++ syntax is inferred from these spellings.
+
+Initialization forms use list initialization for the top mesh, child, or both.
+Mesh.h was inspected: its default constructor is user-provided and its data
+members are scalar/union fields, so these forms call the same constructor,
+without an added aggregate zero-fill. Another form places material assignment
+before the output-slot store; both writes finish before OpenRead, and fresh
+allocated Mesh storage is disjoint from a valid caller output slot. This form
+only changes strict match and is not retained. Named child/parent bounds
+addresses in either evaluation order preserve the same Merge arguments and
+its position after the child reader and before ArrayAdd.
+
+Open-failure forms use typed delete with explicit or implicit null guard.
+Mesh has an implicit trivial destructor; no owning destructor/helper is
+introduced. Both preserve deletion before clearing the output, and no file
+Close is added on failed OpenRead. No such deallocation rewrite is retained.
+
+Count dispatch tests subCount >1 in place of >=2, or places the <2 single
+reader branch before the multi branch with else/failure-guard structure.
+All preserve the initial child-loop test, the separate enhanced ==1 and plain
+!=-1 success predicates, and failure cleanup. The reordered forms reduce
+source match despite preserving three static reader call sites. They are
+heuristic source alternatives, not claimed recovered original C++.
+
+Evidence: _work/create_header_guard_sweep.py,
+_work/create_initialization_bounds_sweep.py,
+_work/create_open_failure_delete_sweep.py, _work/create_count_dispatch_sweep.py;
+fifteen focused reports/snapshots and
+_work/create_header_initialization_dispatch_identities.json. Finally restorations
+leave tracked production diff empty, and baseline outside-body/signature
+checks pass. Existing full colorfield-full ARM/native validation remains
+applicable: exact pair sets 2079 linked / 959 byte unchanged, and means
+98.100000 / 98.029333. Both >=99.0 gates remain unmet; no objective compiler
+ceiling is demonstrated. The goal remains active.
