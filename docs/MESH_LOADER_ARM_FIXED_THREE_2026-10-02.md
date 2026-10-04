@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **98.13% unweighted / 98.06% weighted**.
+Latest validated continuation: source **98.23% unweighted / 98.17% weighted**.
 Latest semantic correction: original full bounds diagonal; earlier half-diagonal
 radius assertions are superseded by the verified operand/ABI evidence below.
 The result tables below preserve earlier measurements. Chronological continuation
@@ -2691,3 +2691,103 @@ empty. Rejected variants have no claimed native/full-corpus validation;
 accepted channel-zero native/full-corpus evidence remains authoritative.
 Fixed-three means remain **98.13% unweighted / 98.06% instruction-weighted**,
 below both 99.0% gates. No push, PR or merge was performed.
+
+
+## Continuation: byte axis counters in enhanced parsing
+
+Start state is clean tracked 50aac106. Twenty focused trials examine bounds
+remap/copy/read guards, axis and V5-channel counter types, and the individual
+axis sections. Retain only unsigned char for the three per-axis outer counters.
+Each starts at zero, iterates exactly 0/1/2 and exits at 3, so no wrap or signed
+comparison difference is possible. Inner counts, signed V5 counts, masks,
+negation, file read sizes/order, InsertKeyFrame timing, failures and helper
+calls stay unchanged. No header/layout, extra condition, table or effect is
+introduced. This is a bounded source-type hypothesis, not recovered C++ type
+information or proof that original used byte counters. Original V5 loop uses
+an unsigned <=6 branch at 0x6c2d0-0x6c2d4; that independent spelling is also
+tested and produces the accepted pre-change whole Mesh object.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals prior accepted |
+|---|---|---:|---:|---|
+| z_word_copy | 98.0 / 66.6 | 638 | 100.0 | yes |
+| both_word_copy | 98.0 / 66.6 | 638 | 100.0 | yes |
+| negative_before_y_store | 98.0 / 66.6 | 638 | 100.0 | yes |
+| z_store_first | 98.0 / 66.6 | 638 | 100.0 | no |
+| shared_read_failure_guard | 98.0 / 66.6 | 638 | 100.0 | yes |
+| v5_unsigned_int | 98.0 / 66.6 | 638 | 100.0 | yes |
+| v5_unsigned_short | 97.9 / 66.3 | 640 | 100.0 | no |
+| v5_unsigned_char | 97.9 / 66.7 | 639 | 100.0 | no |
+| v5_signed_char | 98.0 / 66.6 | 638 | 100.0 | yes |
+| axes_unsigned_short | 97.6 / 66.2 | 644 | 100.0 | no |
+| axes_unsigned_char | 98.3 / 66.9 | 641 | 100.0 | no |
+| axes_signed_char | 98.0 / 66.6 | 638 | 100.0 | yes |
+| v5_unsigned_limit_six | 98.0 / 66.6 | 638 | 100.0 | yes |
+| position | 98.1 / 66.7 | 639 | 100.0 | no |
+| scale | 98.1 / 66.7 | 639 | 100.0 | no |
+| rotation | 98.1 / 66.7 | 639 | 100.0 | no |
+| position_scale | 98.2 / 66.8 | 640 | 100.0 | no |
+| position_rotation | 98.2 / 66.8 | 640 | 100.0 | no |
+| scale_rotation | 98.2 / 66.8 | 640 | 100.0 | no |
+| all_axes_v5_byte | 98.1 / 67.0 | 642 | 100.0 | no |
+
+Retained Enhanced rises 98.0 -> 98.3 source and 66.6 -> 66.9 strict, with 641 raw instructions versus original 636. Its unchanged matcher components:
+- instruction_inventory_match: 95.8
+- opcode_inventory_match: 97.4
+- control_inventory_match: 98.7
+- ordered_control_flow_match: 75.2
+- call_count_match: 100.0
+- size_match: 99.5
+
+The gain is specifically control-inventory improvement 96.6 -> 98.7; ordered
+control stays 75.2. Instruction/opcode inventory slightly regress 96.0 ->95.8
+and 97.5 ->97.4, and normalized size 100.0 ->99.5. These tradeoffs are explicit;
+the required unchanged aggregate source metric rises despite them. No claim
+is made that every instruction category or literal C++ source improves.
+
+Fresh validation of the retained source:
+
+- Native UCRT64 gof2 static-library build passes.
+- Actual Mesh.cpp enhanced parser passes existing empty/populated animation,
+  position-axis/vector, signed V5 count, all seven V5 masks including zero
+  defaults, exact angular literal/value, optional and truncated-prefix fixtures.
+- New fixture covers two keys on every one of the nine position/scale/rotation
+  axes. It checks insertion order, channel, value, frame, minimum time and
+  attached range. Every truncated prefix fails through cleanup; empty counts
+  traverse all nine axes and attach no animation. Separate intentionally wrong
+  scale/rotation channel mutations both fail with exit 3 at the new assertion.
+  No negative mutation touches production source.
+- Verbatim reader/actual selected math and Vector smoke passes; caller with
+  actual Mesh.cpp and selected BSphere implementation passes lifecycle,
+  animated Collect time/range, child bounds and early-failure fixtures.
+- Baseline outside-body/signature check passes; tracked source change is only
+  the three axis counter declarations in ReadEnhancedDataFromFile.
+- All 204 ARM translation units rebuilt. Full corpus: 4619 comparisons,
+  4274/4524 originals compared, zero skipped, missing 250 (7 wrong type,
+  243 absent), extra 130.
+- Actual normalized pair sets equal clean baseline: linked 2079 / byte 959,
+  lost [] and gained [] for each. Other 202 whole objects equal baseline.
+  Core equals prior accepted channelzero-full; Mesh equals the focused winner.
+  Canonical flags digest is unchanged.
+
+Full strict/source averages 75.98 / 89.0. Full JSON SHA-256:
+`daff54ce138a01065492dea9b27e4fad03271d21ab6aa51b24336572e54d7fc8`.
+
+Evidence: `_work/enhboundscopy-*.json`, `_work/enhlooptypes-*.json`,
+`_work/enhaxisbyte-*.json` and the three corresponding identity ledgers;
+`_work/axisbyte_full.json`, `_work/axisbyte_three.json`,
+`_work/axisbyte_full_build.log`, `_work/axisbyte_full_verify.log`,
+`_work/axisbyte_native.log`, `_work/axisbyte_read_smoke.log`,
+`_work/axisbyte_enhanced_build.log`, `_work/axisbyte_enhanced_smoke.log`,
+`_work/axisbyte_negative_fixture_results.json` and wrong-channel logs.
+
+| Fixed unique body | Source | Strict | Original weight |
+|---|---:|---:|---:|
+| MeshCreateFromFile | 98.4% | 60.7% | 291 |
+| MeshReadData | 98.0% | 55.9% | 873 |
+| ReadEnhancedDataFromFile | 98.3% | 66.9% | 636 |
+
+Exactly these three unique bodies give **98.233333% unweighted / 98.170667% weighted**.
+Both required >=99.0 means are still unmet; goal remains active. No compiler
+ceiling is established. Native library/body tests use file/Transform mocks
+and do not prove whole native executable ABI or Android device/runtime
+correctness. No Godot check is used as native evidence. No push, PR or merge.

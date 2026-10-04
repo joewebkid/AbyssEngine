@@ -95,6 +95,54 @@ int main() {
     assert(rangeStart == 4 && rangeEnd == 10000000);
     dispose(axes);
 
+    // Exercise every axis in all three changed loops, including repeated keys.
+    header();
+    for (int group = 0; group < 3; ++group) {
+        put<short>(0);
+        for (int axis = 0; axis < 3; ++axis) {
+            put<unsigned short>(2);
+            for (int key = 0; key < 2; ++key) {
+                put(float(20 - group * 6 - axis * 2 - key));
+                put(float(group * 10 + axis * 2 + key + 1));
+            }
+        }
+    }
+    const auto allAxesInput = stream;
+    reset(stream.size()); Mesh allAxes;
+    assert(allAxes.ReadEnhancedDataFromFile(1, 0) == 1);
+    assert(keys.size() == 18 && cursor == stream.size());
+    const longlong axisChannels[] = {1, 4, 2, 0x40, 0x80, 0x100, 8, 0x10, 0x20};
+    for (int group = 0; group < 3; ++group) {
+        for (int axis = 0; axis < 3; ++axis) {
+            for (int key = 0; key < 2; ++key) {
+                const auto &actual = keys[(group * 3 + axis) * 2 + key];
+                float expected = float(group * 10 + axis * 2 + key + 1);
+                if (group == 0 && axis == 1) expected = -expected;
+                assert(actual.channel == axisChannels[group * 3 + axis]);
+                assert(actual.time == 20 - group * 6 - axis * 2 - key);
+                assert(actual.value == expected);
+            }
+        }
+    }
+    assert(timeBetweenFrames == 3 && allAxes.animation->animationStart == 3);
+    assert(rangeStart == 3 && rangeEnd == 10000000);
+    dispose(allAxes);
+    for (size_t cut = 0; cut < allAxesInput.size(); ++cut) {
+        stream = allAxesInput; reset(cut); Mesh truncatedAxes;
+        assert(truncatedAxes.ReadEnhancedDataFromFile(1, 0) == -1);
+        assert(truncatedAxes.animation == nullptr && destroyed == 1);
+    }
+    // Empty per-axis counts still advance all three outer loops and attach nothing.
+    header();
+    for (int group = 0; group < 3; ++group) {
+        put<short>(0);
+        for (int axis = 0; axis < 3; ++axis) put<unsigned short>(0);
+    }
+    reset(stream.size()); Mesh emptyAxes;
+    assert(emptyAxes.ReadEnhancedDataFromFile(1, 0) == 1);
+    assert(keys.empty() && emptyAxes.animation == nullptr && destroyed == 1);
+    assert(cursor == stream.size());
+
     header(); unknownGroups();
     put<short>(2); put<unsigned short>(1); put(2.0f); put(4.0f);
     put<unsigned short>(1);

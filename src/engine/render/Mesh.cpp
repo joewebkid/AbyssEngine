@@ -113,7 +113,7 @@ namespace AbyssEngine {
                     break;
                 }
                 case 0: {
-                    for (int axis = 0; axis < 3; ++axis) {
+                    for (unsigned char axis = 0; axis < 3; ++axis) {
                         unsigned short count;
                         if (AEFile::Read(2, &count, file) == 0) goto fail;
                         for (unsigned int j = 0; j < count; ++j) {
@@ -156,7 +156,7 @@ namespace AbyssEngine {
                     break;
                 }
                 case 0: {
-                    for (int axis = 0; axis < 3; ++axis) {
+                    for (unsigned char axis = 0; axis < 3; ++axis) {
                         unsigned short count;
                         if (AEFile::Read(2, &count, file) == 0) goto fail;
                         for (unsigned int j = 0; j < count; ++j) {
@@ -198,7 +198,7 @@ namespace AbyssEngine {
                     break;
                 }
                 case 0: {
-                    for (int axis = 0; axis < 3; ++axis) {
+                    for (unsigned char axis = 0; axis < 3; ++axis) {
                         unsigned short count;
                         if (AEFile::Read(2, &count, file) == 0) goto fail;
                         for (unsigned int j = 0; j < count; ++j) {
