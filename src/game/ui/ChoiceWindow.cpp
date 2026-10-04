@@ -311,60 +311,58 @@ void ChoiceWindow::setMiscButton(String const &text) {
         Globals::h / 2 - this->height / 2 + Globals::layout->field_0x8);
 }
 
-static Layout **g_ChoiceWindow_layout_1471bc = nullptr;
-static int g_ChoiceWindow_medalColorsLow_1471bc[64];
-static int g_ChoiceWindow_medalColorsHigh_1471bc[64];
-static int g_ChoiceWindow_creditValues_1471bc[64];
-static void **g_ChoiceWindow_font_1471bc_a = nullptr;
-static void **g_ChoiceWindow_font_1471bc_b = nullptr;
-static void *g_ChoiceWindow_posTargetA_1471bc = nullptr;
-static void *g_ChoiceWindow_posTargetB_1471bc = nullptr;
-static void *g_ChoiceWindow_posTargetC_1471bc = nullptr;
-static void *g_ChoiceWindow_posTargetD_1471bc = nullptr;
-static int *g_ChoiceWindow_dirtyFlag_1471bc = nullptr;
+// Android 2.0.16 .rodata: 0x1fb8b8, 0x1fb8a8, and 0x1fb848.
+static const unsigned int g_ChoiceWindow_medalColorsLow_1471bc[4] = {
+    0x2198ff2f, 0xfad10eff, 0xffffffff, 0xce8258ff,
+};
+static const unsigned int g_ChoiceWindow_medalColorsHigh_1471bc[4] = {
+    0xfa792160, 0xfa7921ff, 0xffffffff, 0xce8258ff,
+};
+static const int g_ChoiceWindow_creditValues_1471bc[4] = {
+    0, 5000, 2500, 1000,
+};
 
 void ChoiceWindow::draw() {
-    Vector pos;
-
-    Layout *layout = *g_ChoiceWindow_layout_1471bc;
+    Layout *layout = Globals::layout;
     layout->drawMask();
 
-    layout->drawBox(7, this->x, this->y, this->width, this->height, this->title, 1u);
+    layout->drawBox(7, this->x, this->y, this->width, this->height, this->title);
 
-    PaintCanvas *canvas = PaintCanvas::gCanvas;
-    canvas->SetColor(0xffffffff);
+    Globals::Canvas->SetColor(0xffffffff);
 
     if (this->medalImage != -1) {
-        canvas->DrawImage2D(this->medalImage,
+        Globals::Canvas->DrawImage2D(this->medalImage,
                             this->x + (this->width >> 1),
-                            this->y + this->padding2 + 1, (unsigned char) 0x11);
-        int color;
-        if (this->count < 0x24)
+                            this->y + this->padding2 + 1, (unsigned char) 0x11,
+                            (unsigned char) 0x44);
+        unsigned int color;
+        if (this->medal < 0x24)
             color = g_ChoiceWindow_medalColorsLow_1471bc[this->count];
         else
             color = g_ChoiceWindow_medalColorsHigh_1471bc[this->count];
-        canvas->SetColor(color);
-        canvas->DrawImage2D(this->medalBgImage,
+        Globals::Canvas->SetColor(color);
+        Globals::Canvas->DrawImage2D(this->medalBgImage,
                             this->x + (this->width >> 1),
-                            this->y + this->padding2, (unsigned char) 0x11);
+                            this->y + this->padding2, (unsigned char) 0x11,
+                            (unsigned char) 0x44);
 
-        if (Status::gStatus->hardCoreMode() == 0 &&
-            Achievements::gAchievements->isEliteMedal(this->medal) == 0) {
-            String creditsText = Globals::layout->formatCredits(
+        if (Globals::status->hardCoreMode() == 0 &&
+            static_cast<Achievements *>(Globals::achievements)->isEliteMedal(this->medal) == 0) {
+            String creditsText = String("+ ") + Globals::layout->formatCredits(
                 g_ChoiceWindow_creditValues_1471bc[this->count]);
 
-            void *font = *g_ChoiceWindow_font_1471bc_a;
-            int textWidth = canvas->GetTextWidth((unsigned int) (unsigned long) font, creditsText);
-            canvas->DrawString((unsigned int) (unsigned long) font, creditsText,
+            unsigned int font = Globals::font;
+            int textWidth = Globals::Canvas->GetTextWidth(font, creditsText);
+            Globals::Canvas->DrawString(font, creditsText,
                                this->x + (this->width >> 1) - textWidth / 2,
                                this->y + this->height - this->padding3,
                                false);
         }
 
-        canvas->SetColor(0xffffffff);
-        void *font = *g_ChoiceWindow_font_1471bc_b;
-        int textWidth = canvas->GetTextWidth((unsigned int) (unsigned long) font, this->medalText);
-        canvas->DrawString((unsigned int) (unsigned long) font, this->medalText,
+        Globals::Canvas->SetColor(0xffffffff);
+        unsigned int font = Globals::font;
+        int textWidth = Globals::Canvas->GetTextWidth(font, this->medalText);
+        Globals::Canvas->DrawString(font, this->medalText,
                            this->x + (this->width >> 1) - textWidth / 2,
                            this->y + this->padding4, false);
     }
@@ -376,27 +374,21 @@ void ChoiceWindow::draw() {
 
         if (this->rightButton != nullptr) {
             this->rightButton->draw();
-            pos = this->rightButton->getPosition();
-            ((ChoiceWindowButtonPosCache *) g_ChoiceWindow_posTargetA_1471bc)->rightButtonPosX = (int) pos[0];
-            pos = this->rightButton->getPosition();
-            ((ChoiceWindowButtonPosCache *) g_ChoiceWindow_posTargetB_1471bc)->rightButtonPosY = (int) pos[1];
+            Globals::other_buttons_x[2] = (int) this->rightButton->getPosition().x;
+            Globals::other_buttons_y[2] = (int) this->rightButton->getPosition().y;
         }
 
         if (this->leftButton != nullptr) {
-            pos = this->leftButton->getPosition();
-            ((ChoiceWindowButtonPosCache *) g_ChoiceWindow_posTargetC_1471bc)->leftButtonPosX = (int) pos[0];
-            pos = this->leftButton->getPosition();
-            ((ChoiceWindowButtonPosCache *) g_ChoiceWindow_posTargetD_1471bc)->leftButtonPosY = (int) pos[1];
+            Globals::other_buttons_x[3] = (int) this->leftButton->getPosition().x;
+            Globals::other_buttons_y[3] = (int) this->leftButton->getPosition().y;
 
             if (this->rightButton == nullptr) {
-                pos = this->leftButton->getPosition();
-                ((ChoiceWindowButtonPosCache *) g_ChoiceWindow_posTargetC_1471bc)->singleButtonPosX = (int) pos[0];
-                pos = this->leftButton->getPosition();
-                ((ChoiceWindowButtonPosCache *) g_ChoiceWindow_posTargetD_1471bc)->singleButtonPosY = (int) pos[1];
+                Globals::other_buttons_x[2] = (int) this->leftButton->getPosition().x;
+                Globals::other_buttons_y[2] = (int) this->leftButton->getPosition().y;
             }
         }
 
-        *g_ChoiceWindow_dirtyFlag_1471bc = 1;
+        Globals::is_choice_window_visible = 1;
         if (this->miscButton != nullptr) this->miscButton->draw();
     }
 }

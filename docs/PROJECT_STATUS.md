@@ -3,6 +3,19 @@
 Last reviewed: 2026-10-04 (Achievements, ChoiceWindow and NDK runtime; older
 subsystem snapshots retain their dates)
 
+## ChoiceWindow draw bindings and medal display (2026-10-04, local branch)
+
+`ChoiceWindow::draw` now uses the Android-confirmed `Globals` bindings,
+medal-color and credit tables, the `"+ "` credit prefix, original image/box
+overloads, and button-position/visibility stores instead of null local
+placeholders. Its focused source-shape rises from 79.3% to 95.8% and strict
+fuzzy from 32.4% to 74.4%; it is not exact or runtime-certified. Native
+`gof2` and all 206 ARM units build. The full corpus still compares
+4,322/4,524 originals across 4,675 rows, with 90.09% mean source-shape,
+77.23% strict, 2,164 linked-exact and 977 byte-exact; exact-set comparison
+has zero losses. Medal reward accounting in `ModStation` is the next related
+behavior gap. See [`CHOICEWINDOW_DRAW_ARM_2026-10-04.md`](CHOICEWINDOW_DRAW_ARM_2026-10-04.md).
+
 ## Status agent pointer-width ABI (2026-10-04, local branch)
 
 `Status::getAgents()` now returns its `Array<Agent *> *` field directly;
