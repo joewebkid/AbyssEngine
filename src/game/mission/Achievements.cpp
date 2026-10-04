@@ -68,6 +68,7 @@ Achievements::Achievements() {
     this->medals = new int[45];
     this->newMedals = new int[45];
     this->gotAllSupernovaMedals_ = 0;
+    this->gotAllGoldMedals_ = 0;
     this->gotAllMedals_ = 0;
 }
 

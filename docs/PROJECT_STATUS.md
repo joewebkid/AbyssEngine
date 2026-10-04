@@ -3,6 +3,19 @@
 Last reviewed: 2026-10-04 (Achievements, ChoiceWindow and NDK runtime; older
 subsystem snapshots retain their dates)
 
+## Achievement constructor flags fixed (2026-10-04, local branch)
+
+The Android constructor clears all three achievement-completion flags. The
+local constructor omitted `gotAllGoldMedals_`, allowing an uninitialized
+value before `countMedals()` runs; that flag is read by mission generation and
+the missions window. The added zero makes both C1/C2 constructor aliases
+100% linked-exact (one unique body). Native `gof2` and 206/206 ARM units
+build. The full corpus remains 4,322/4,524 unique originals over 4,675 rows,
+with 90.09% mean source-shape, 77.22% strict fuzzy, **2,164 linked-exact**
+and **977 byte-exact**. Exact-set comparison finds two gained linked rows and
+zero losses of either kind. No in-game runtime claim is made; see
+[`ACHIEVEMENTS_CTOR_FLAGS_ARM_2026-10-04.md`](ACHIEVEMENTS_CTOR_FLAGS_ARM_2026-10-04.md).
+
 ## Achievement detection recovered from ARM (2026-10-04, local branch)
 
 `Achievements::checkForNewMedal` now evaluates all 44 Android-confirmed
@@ -13,10 +26,11 @@ source-shape rises from 6.9% to 73.7% for the check (strict 2.3% to 20.8%);
 neither body is exact or in-game runtime-certified. Native `gof2` and all
 206 ARM translation units build. The complete corpus compares 4,322/4,524
 originals across 4,675 rows at 90.09% mean source-shape / 77.22% strict,
-with 2,162 linked-exact and 977 byte-exact rows. Both exact pair sets have
-zero losses. The next priority is runtime validation of representative medal
-states and the remaining shape divergence, preserving the ARM-observed
-conditions. See [`ACHIEVEMENTS_CHECK_ARM_2026-10-04.md`](ACHIEVEMENTS_CHECK_ARM_2026-10-04.md).
+with 2,162 linked-exact and 977 byte-exact rows at that checkpoint. Both
+exact pair sets had zero losses. The next priority is runtime validation of
+representative medal states and the remaining shape divergence, preserving
+the ARM-observed conditions. See
+[`ACHIEVEMENTS_CHECK_ARM_2026-10-04.md`](ACHIEVEMENTS_CHECK_ARM_2026-10-04.md).
 
 ## Achievement values restored (2026-10-04, local branch)
 

@@ -59,8 +59,8 @@ reports are `_work/blueprint-isunlocked/achievements_check_before.json`,
 No in-game runtime or save-file fixture has exercised the 45 medal paths.
 The counter-offset labels, 22-byte array bound and signed duration division
 are direct ARM readings; object lifetime and state initialization outside
-these two bodies remain separate risks. A full corpus exact-set check is
-required before accepting the package. Next, inspect the largest remaining
+these two bodies remain separate risks. The full corpus exact-set check above
+passed for this package. Next, inspect the largest remaining
 code-shape divergences in this function without changing observed conditions
 for a metric, then add a focused runtime check when the required game-state
 fixtures can be linked.
