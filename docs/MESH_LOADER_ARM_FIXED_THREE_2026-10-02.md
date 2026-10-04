@@ -1621,3 +1621,51 @@ code is exactly the previously validated state. The next useful search should
 inspect remaining control-flow/operand differences rather than repeat these
 measured local declaration forms. Means remain 97.966667/97.835333, both
 below 99.0; this evidence neither completes the goal nor proves a compiler ceiling.
+
+## Continuation: reader product and vertex-format predicate identity
+
+Previous turn yielded measured progress by eliminating twelve specific enhanced
+local-lifetime forms and proving four object identities. This continuation starts
+from clean tracked state at 5fff8b2e. It re-reads the authoritative angle-full
+fixed-three rows rather than relying on the displayed means alone:
+
+| Body | Source | Instruction inventory | Opcode inventory | Control inventory | Calls | Size |
+|---|---:|---:|---:|---:|---:|---:|
+| Create | 98.4 | 94.7 | 97.9 | 100.0 | 100.0 | 99.3 |
+| Read | 97.6 | 93.3 | 97.3 | 98.1 | 100.0 | 99.3 |
+| Enhanced | 97.9 | 96.0 | 97.5 | 96.3 | 100.0 | 99.7 |
+
+Read's largest remaining component deficit is instruction inventory. Original
+0x6cd90..0x6cd98 computes three tangent products Y/X/Z before the scalar
+stores at 0x6cd9c..0x6cda4. Three equivalent C++ forms were checked against
+the accepted normal-copy reader: compound assignments before the stores,
+named scaled products before the stores, and compound assignments at the
+stores. Operand order remains numerator times reciprocal, and float arithmetic
+and Y/X/Z scheduling remain unchanged. All score 97.6 / strict 55.7 with 867
+instructions, and all three entire Core.o files equal the accepted angle-full
+object byte for byte. The tested product-local spelling does not alter code.
+
+Five further forms test original-style sign predicates for vertex-format bits:
+individual index/UV/normal/color conditions, plus all four together. Each uses
+an unsigned shift followed by a signed-negative comparison at shifts 27/30/29/28,
+corresponding to bits 4/1/2/3 on the project's 32-bit native/ARM targets. This
+is an equivalent target-specific condition, not recovered original source or
+a general portability claim about unsigned-to-signed casts. All five again
+score 97.6 / 55.7 with 867 instructions, and all entire Core.o files equal
+angle-full byte for byte. No alternative predicate is retained.
+
+Evidence: `_work/read_tangent_product_sweep.py`,
+`_work/read_stream_predicate_sweep.py`, their eight focused JSON reports,
+saved source snapshots and object comparisons with angle-full. The diagnostic
+`_work/inventory_gap.py` comparison also identifies frame loads, zero-offset
+address spellings and reused floating-register operands among residual shapes.
+Those diagnostic normalizations are unchanged and are not a completion gate
+or proof that a specific original C++ form can attain the objective.
+
+After both finally restorations, tracked source diff is empty and the baseline
+outside-body/signature check passes. Accepted production code, native validation
+and full actual linked/byte-exact sets therefore remain the angle-full state.
+Next search should follow concrete memory loads and value lifetimes rather
+than repeat these product/predicate spellings. The fixed denominator remains
+three unique bodies and 1,800 original instructions. Means 97.966667/97.835333
+remain below both 99.0 requirements; the goal stays active.
