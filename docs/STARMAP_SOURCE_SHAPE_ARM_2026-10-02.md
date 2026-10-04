@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.165% unweighted / 98.45998% original-instruction
+implementation bodies measure **99.175% unweighted / 98.48733% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.155% / 81.38690%**, respectively. Source-shape is an inventory/control-flow
+**87.215% / 81.55099%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -1742,6 +1742,47 @@ with zero lost pairs (exit 0 each). Default 99% gate failed as expected
 Gate evidence: _work/fortyfirst-gate.json, fortyfirst-previous-gate.json,
 fortyfirst-target-gate.log. Full JSON SHA-256: b713428bfecf82526cc126615015d4d028638d0d1117e8653219ebe5ed9d53ce.
 
+## Follow-up after checkpoint 274a33ed
+
+The system-projection loop in update now captures PaintCanvas* before
+AEGeometry::getPosition, once per iteration, and uses that saved receiver
+for GetScreenPosition. It still reloads the destination systemPositions
+member after getPosition and after GetScreenPosition. The station-projection
+phase and its newly repaired scratchVector2 write remain unchanged.
+
+Primary Android c9be4 captures Canvas in r5 before getPosition c9bf0 and
+passes r5 at c9c00/c9c02. Accepted-before 3208 called getPosition before
+3212 loaded Canvas. New object 3204 captures Canvas in r5 before getPosition
+3210 and passes it at 3220/3222. No calls, loops, volatile barriers, forced
+registers or shared-header/compiler changes were added. This repairs native
+call-observable pointer-read order; runtime execution remains untested.
+
+Update source improves 98.5% -> 98.7%, strict 81.5% -> 82.7%, instruction
+inventory 96.8% -> 97.0%, control inventory 98.0% -> 98.7% and ordered
+control 94.7% -> 95.4%. Instructions remain 971/966; every other focused
+row is unchanged. Fixed source means improve 99.165% / 98.45998% ->
+99.175% / 98.48733%; strict means improve 87.155% / 81.38690% ->
+87.215% / 81.55099%. Weighted 99% remains unmet.
+
+ARM focused build passed 204/204 TUs, zero failures; 22 comparisons, zero
+skips, six unique linked-exact and three unique byte-exact bodies. Native
+UCRT gof2 static-library build passed; no native runtime/ABI equivalence is
+claimed. Evidence: _work/system-canvas-fortysecond.json/log/asm,
+native-fortysecond.log, update-original-direct.asm,
+station-scratch-fortyfirst.asm and before-system-canvas-fortysecond.cpp.
+Previous inputs: _work/checkpoint42-before-focused.json/corpus.json.
+New StarMap.o SHA-256:
+1384d74b71ee1da0f7da2daad528e398ce992ee3798e14ba1a8f2aae2503cc80.
+
+Full corpus completed after the interrupted observation: 4619 comparisons,
+zero skips; all 22 StarMap rows agree with the focused report for both
+scores, instruction counts and exact flags. Baseline and checkpoint 274a33ed
+gates passed with zero lost pairs (exit 0 each), preserving 2083 linked-exact
+and 960 byte-exact pairs. Default 99% gate failed as expected (exit 1,
+StarMap >=99.0% target NOT reached). Corpus source/fuzzy means: 89.06% / 76.16%.
+Gate evidence: _work/fortysecond-gate.json, fortysecond-previous-gate.json,
+fortysecond-target-gate.log. Full JSON SHA-256: 327cf9df7ccfa5a7b7785b17dbe7acf73519fc18f84b2dd6a23713a642f0a8dc.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -1779,18 +1820,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/fortyfirst-corpus.log`; focused log:
-`_work/station-scratch-fortyfirst.log`; native log: `_work/native-fortyfirst.log`.
+Latest full log: `_work/fortysecond-corpus.log`; focused log:
+`_work/system-canvas-fortysecond.log`; native log: `_work/native-fortysecond.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
 50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against 5176204a preserves all 2083
+7fc7701c. The latest comparison against 274a33ed preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/fortyfirst-gate.json, fortyfirst-previous-gate.json and
-fortyfirst-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/fortysecond-gate.json, fortysecond-previous-gate.json and
+fortysecond-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `b713428bfecf82526cc126615015d4d028638d0d1117e8653219ebe5ed9d53ce`.
+final full JSON SHA-256: `327cf9df7ccfa5a7b7785b17dbe7acf73519fc18f84b2dd6a23713a642f0a8dc`.
 
 
 ### Reproduction
@@ -1823,7 +1864,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 |---|---:|---:|---:|---:|---|
 | `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1196 | 78.9% | 98.9% | 79.2% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
-| `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.5% | 81.5% | - |
+| `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.7% | 82.7% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.0% | 89.1% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/736 | 72.9% | 98.3% | 77.1% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/683 | 80.9% | 97.3% | 84.7% | - |

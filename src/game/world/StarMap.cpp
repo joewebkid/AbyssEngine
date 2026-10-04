@@ -625,8 +625,9 @@ void StarMap::update(int dt) {
     this->lastDt = dt;
     if (this->mode == 0 || this->transitionIn != 0 || this->transitionOut != 0) {
         for (uint32_t i = 0; i < this->systemPositions->size(); i++) {
+            PaintCanvas *projectionCanvas = Globals::Canvas;
             Vector position = this->systemGeoms->data()[i]->getPosition();
-            int visible = Globals::Canvas->GetScreenPosition(position, *this->systemPositions->data()[i]);
+            int visible = projectionCanvas->GetScreenPosition(position, *this->systemPositions->data()[i]);
             this->systemPositions->data()[i]->z = visible != 0 ? 1.0f : -1.0f;
         }
     }
