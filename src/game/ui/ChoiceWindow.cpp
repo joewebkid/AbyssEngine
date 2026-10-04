@@ -109,16 +109,13 @@ ChoiceWindow::~ChoiceWindow() {
     this->scrollWindow = nullptr;
 }
 
-static Layout **g_ChoiceWindow_layout_146dc4 = nullptr;
-static int *g_ChoiceWindow_screenHeight_146dc4 = nullptr;
-
 void ChoiceWindow::setHeight(int height) {
-    Layout *layout = *g_ChoiceWindow_layout_146dc4;
+    Layout *layout = Globals::layout;
     int top = layout->field_0x8;
     this->height = top + height;
 
     TouchButton *button = this->leftButton;
-    int yBase = *g_ChoiceWindow_screenHeight_146dc4 / 2 - height / 2;
+    int yBase = Globals::h / 2 - height / 2;
     this->y = yBase - top;
 
     if (this->hasButtons == 0) {
@@ -135,7 +132,7 @@ void ChoiceWindow::setHeight(int height) {
     button = this->rightButton;
     if (button == nullptr) return;
 
-    layout = *g_ChoiceWindow_layout_146dc4;
+    layout = Globals::layout;
     button->setPosition(this->x + this->width / 2 + layout->field_0x4c / 2,
                         this->y + this->height - this->padding, 0x21);
 }

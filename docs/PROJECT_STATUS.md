@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-04 (NDK libc++abi runtime; older subsystem snapshots
-retain their dates)
+Last reviewed: 2026-10-04 (ChoiceWindow and NDK runtime; older subsystem
+snapshots retain their dates)
+
+## ChoiceWindow setHeight ARM binding (2026-10-04, local branch)
+
+The Android-confirmed `Globals::layout` and `Globals::h` bindings replace
+permanently null local pointers in `ChoiceWindow::setHeight`. The method rises
+from 0.3% to 100% source-shape and becomes linked-exact. Full ARM verification
+compares 4,322/4,524 originals across 4,673 rows, with 2,157 linked-exact,
+977 byte-exact, 89.99% mean source-shape and 77.09% strict fuzzy; no exact
+unit/symbol pair is lost. Native and 206/206 ARM builds pass. Other
+`ChoiceWindow` bodies remain unverified; see
+[`CHOICEWINDOW_SETHEIGHT_GLOBALS_ARM_2026-10-04.md`](CHOICEWINDOW_SETHEIGHT_GLOBALS_ARM_2026-10-04.md).
 
 ## NDK libc++abi runtime coverage (2026-10-04, local branch)
 
