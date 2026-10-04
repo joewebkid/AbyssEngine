@@ -2844,3 +2844,54 @@ remains `_work/axisbyte_full.json` and its native/full build/check logs.
 Fixed-three means remain **98.23% unweighted / 98.17% weighted**; exact pairs
 remain 2079 linked / 959 byte with no losses in the accepted full validation.
 Both >=99.0 requirements remain unmet; the goal is active. No push/PR/merge.
+
+
+## Continuation: section type storage and typed vector keys
+
+Eleven focused Enhanced trials start from clean c2d64ae1 and retain byte axis
+counters. Seven split the section-type storage: one or all three distinct
+signed-short locals, one or all lexical scopes, separate signed/unsigned
+optional type, and all scoped locals plus unsigned optional type. First three
+original dispatches use signed loads (position at 0x6bc88); optional ==2 can
+use either signed or unsigned short without changing accepted values. Each
+read still transfers two bytes and each switch/unknown fallthrough remains
+unchanged. These are lifetime/source-type trials, not recovered C++ scopes.
+
+Four further forms replace float[3] vector-key locals with existing Vector in
+position, scale, rotation or all three groups. Read still transfers 12 bytes
+to the local, and InsertKeyFrame receives &vec.x. Existing Vector has three
+float fields and a checked size of 12; no constructor/assignment/conversion
+helper call is added. Original vector-key read is at 0x6bdb6 and insertion at
+0x6bdd4. No formula, frame conversion, allocation or failure cleanup changes.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| type: position_local | 97.3 / 48.9 | 641 | 100.0 | no |
+| type: all_locals | 97.5 / 57.0 | 641 | 100.0 | no |
+| type: position_scope | 97.9 / 50.3 | 641 | 100.0 | no |
+| type: all_scopes | 97.5 / 60.9 | 641 | 100.0 | no |
+| type: optional_short | 98.2 / 66.5 | 643 | 100.0 | no |
+| type: optional_unsigned_short | 98.2 / 66.5 | 643 | 100.0 | no |
+| type: all_scopes_optional_unsigned | 98.2 / 44.6 | 643 | 100.0 | no |
+| vector: position | 98.3 / 66.9 | 641 | 100.0 | yes |
+| vector: scale | 98.3 / 66.9 | 641 | 100.0 | yes |
+| vector: rotation | 98.3 / 66.9 | 641 | 100.0 | yes |
+| vector: all_vectors | 98.0 / 55.9 | 641 | 100.0 | no |
+
+No trial exceeds retained 98.3 source. Each individual Vector substitution
+produces the accepted byte-identical whole Mesh object, while substituting all
+three together produces a different object with source 98.0/strict 55.9. Thus
+individual identity cannot be extrapolated to a combined source change. The
+separate optional signed/unsigned type variants equal each other but differ
+from accepted; all other type forms differ too. Actual object bytes, not equal
+scores, establish these identities. Every production edit was restored.
+
+Evidence: `_work/enhsectiontypes-*.json`, `_work/enhvectorlocal-*.json`,
+source snapshots, `_work/enh_section_type_identities.json` and
+`_work/enh_vector_local_identities.json`. Baseline outside-body/signature check
+passes and tracked production diff is empty. Native/full-corpus reruns are
+not claimed for rejected temporary variants; accepted axisbyte-full reports
+and native tests remain authoritative. Fixed-three means stay **98.23%
+unweighted / 98.17% weighted** and actual accepted pair sets stay 2079 linked /
+959 byte, with no losses. Both >=99.0 means remain unmet; goal remains active.
+No push, PR or merge was performed.
