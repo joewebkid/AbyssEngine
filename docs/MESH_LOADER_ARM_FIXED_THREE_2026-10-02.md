@@ -1575,3 +1575,49 @@ were changed. No new full rebuild is needed for these rejected temporary edits.
 Evidence: `_work/read_normalcopy_output_sweep.py`, four
 `_work/readnormalcopyoutputs-*.json` reports and their saved source snapshots.
 The validated means stay 97.966667/97.835333; the goal remains active below 99.
+
+## Continuation: enhanced local lifetime and per-group count evidence
+
+The previous turn made progress by validating and committing the exact V5
+literal and rejecting measured output-copy interactions. This turn starts from
+clean tracked state at 7314f5f9 and uses the completed angle-full objects.
+Direct original inspection confirms signed type loads at 0x6bc88 and the
+corresponding scale/rotation dispatches, while optional type==2 is compared
+with an unsigned load. Changing all section types to unsigned is therefore
+not supported as a recovery claim. Prefix counts and optional count/presence
+are repeatedly loaded from sp+28; V5 per-channel count is signed at r7-82.
+The shared physical slot motivates count-lifetime experiments, not recovered
+original C++ lexical scopes. Helpers and compiler/matcher settings stay fixed.
+
+| Local lifetime trial | Enhanced source / strict | Compiled instructions |
+|---|---|---:|
+| V5 value/key outside inner key loop, inside channel | 97.4 / 64.1 | 641 |
+| V5 value/key outside channel loop | 97.7 / 67.3 | 636 |
+| V5 count outside channel, value/key inside channel | 97.7 / 67.3 | 636 |
+| Optional-section value/key outside key loop | 97.9 / 67.1 | 639 |
+| Position group shares one unsigned count between type cases | 97.9 / 53.8 | 635 |
+| Scale group shares one unsigned count between type cases | 97.7 / 52.0 | 636 |
+| Rotation group shares one unsigned count between type cases | 97.8 / 66.9 | 644 |
+| All three separately scoped groups share their own count | 97.5 / 52.2 | 632 |
+| Position vector declared before the timestamp read | 97.9 / 67.5 | 636 |
+| Scale vector declared before the timestamp read | 97.9 / 67.5 | 636 |
+| Rotation vector declared before the timestamp read | 97.9 / 67.5 | 636 |
+| All three vectors declared before the timestamp read | 97.9 / 67.5 | 636 |
+
+No form improves the requested source score. The last four whole Mesh.o files
+are byte-identical to angle-full, a stronger finding than equal rounded scores:
+these declaration-order-only forms do not change the compiled object here.
+None is retained. Accepted source is restored after each sweep and its tracked
+diff is empty; body/signature comparison remains valid outside the three bodies.
+The initial group-count experiment's pattern assertion detected the optional
+fourth read before any source write; anchoring it to exact 12-space indentation
+limits the subsequent sweep to the three intended prefix groups.
+
+Evidence: `_work/enh_optional_value_lifetime_sweep.py`,
+`_work/enh_group_count_sweep.py`, `_work/enh_vector_declaration_sweep.py`,
+their twelve focused JSON reports and saved source snapshots. Native/full
+corpus reruns are unnecessary for these restored rejected edits; accepted
+code is exactly the previously validated state. The next useful search should
+inspect remaining control-flow/operand differences rather than repeat these
+measured local declaration forms. Means remain 97.966667/97.835333, both
+below 99.0; this evidence neither completes the goal nor proves a compiler ceiling.
