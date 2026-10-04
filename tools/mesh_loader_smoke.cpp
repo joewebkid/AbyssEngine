@@ -107,7 +107,12 @@ int main() {
     assert(v5.ReadEnhancedDataFromFile(1, 0x10) == 1 && keys.size() == 8);
     const longlong channels[] = {0x200, 0x400, 0x800, 0x2000, 0x4000, 0, 0, 0x40000};
     for (size_t i = 0; i < keys.size(); ++i) assert(keys[i].channel == channels[i]);
-    assert(std::fabs(keys.back().value - 6.2832f / 360.0f) < 0.000001f);
+    // Original ARM literal at 0x6c2f8, not the rounded decompiler spelling.
+    const unsigned int tauBits = 0x40c90fdb;
+    static_assert(sizeof(tauBits) == sizeof(float), "32-bit ARM float literal");
+    float originalTau;
+    std::memcpy(&originalTau, &tauBits, sizeof(originalTau));
+    assert(keys.back().value == originalTau / 360.0f);
     assert(v5.hasAnimation == 1 && timeBetweenFrames == 2 && cursor == stream.size());
     dispose(v5);
     // Every truncated input must take the real parser's cleanup path.

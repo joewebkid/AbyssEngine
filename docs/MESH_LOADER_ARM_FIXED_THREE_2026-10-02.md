@@ -1495,3 +1495,52 @@ Fixed scores are Create 98.4, Read 97.6, Enhanced 97.9. Original instruction
 weights remain 291/873/636, total 1,800. Means **97.966667% unweighted /
 97.835333% weighted** (97.97/97.84 displayed) remain below both >=99.0%
 requirements. The goal stays active; this does not establish a compiler ceiling.
+
+## Continuation: use the exact original V5 rotation literal
+
+The earlier parser and loose smoke assertion used the rounded decompiler
+spelling 6.2832f. Direct ELF PT_LOAD mapping of the original Android 2.0.16
+binary proves a different float word: VA 0x6c2f8 contains bytes db 0f c9 40,
+word 0x40c90fdb, value 6.2831854820251465. Neighboring literals at 0x6c2f4
+and 0x6c2fc are exactly 100.0f and 360.0f. The original binary SHA-256 is
+6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58.
+Original instructions 0x6c25c, 0x6c296 and 0x6c2a0 divide the loaded key by
+100 in float, multiply channel 6 by this float literal, and divide by 360
+in float. Thus the instruction operands and precision are established from
+the binary, independently of the decompiler's approximate decimal display.
+
+The production literal becomes 6.283185307179586f, which rounds to exactly
+0x40c90fdb. No operation ordering or other channel behavior changes. The
+test constructs its expected float from the original uint32 word using memcpy
+and checks exact numerical equality for the fixture's rotation result. The old
+parser fails this assertion with exit 3; the corrected parser passes. The
+previous absolute tolerance of 0.000001 had hidden the approximation error.
+This corrects original-value fidelity, without adding runtime calls or effects.
+The focused Mesh.o has the same 5,056-byte size as fullbounds-full and differs
+at exactly one byte: file offset 0x868 changes 0xf9 to 0xdb in this literal.
+All instruction and other object bytes are unchanged by the constant correction.
+
+UCRT64 gof2 library build, actual Mesh.cpp parser smoke with all existing
+truncated V5 prefixes, verbatim reader/actual vector math, and caller with
+actual enhanced parser pass. Boundaries remain mocked and whole-game/device
+runtime and native executable ABI remain unverified.
+
+Fresh all-204-TU ARM rebuild is `_work/angle-full`. Full corpus has 4,619
+comparisons, zero skipped, 4,274/4,524 originals compared, missing 250
+(7 wrong type, 243 absent), extra 130. Actual normalized `(unit, symbol)`
+linked-exact and byte-exact sets equal baseline: 2,079 and 959, lost [] and
+gained [] for both. The other 202 objects are byte-identical to baseline;
+Core equals normalinput-full and Mesh equals the focused angle-literal object.
+Source body/signature boundaries remain unchanged outside the three bodies.
+
+Full strict/source averages: 75.98/88.99. Full JSON SHA-256: `78db07999425a2ba550dd5f26c1deb273e4a0657f72fc34b6c1bb073bb9508f7`.
+Evidence: `_work/probe_enhanced_angle.py`, `_work/angle_literal.json`,
+`_work/angle_full.json`, `_work/angle_three.json`, `_work/angle_full_build.log`,
+`_work/angle_full_verify.log`, `_work/angle_old_regression.log`,
+`_work/angle_native.log`, `_work/angle_read_smoke.log`,
+`_work/angle-read-smoke/`, `_work/angle_smoke.exe` and original_mesh.asm.
+
+Fixed source scores remain Create 98.4, Read 97.6, Enhanced 97.9, with original
+instruction weights 291/873/636. Means **97.966667% unweighted / 97.835333%
+weighted** remain below both >=99.0% requirements. This semantic correction
+does not complete the goal or prove an objective compiler ceiling.

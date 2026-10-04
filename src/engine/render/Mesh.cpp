@@ -261,7 +261,7 @@ namespace AbyssEngine {
                                 case 3: channel = 0x4000; break;
                                 case 6:
                                     channel = 0x40000;
-                                    key = (key * 6.2832f) / 360.0f;
+                                    key = (key * 6.283185307179586f) / 360.0f;
                                     break;
                                 default: channel = 0; break;
                             }
