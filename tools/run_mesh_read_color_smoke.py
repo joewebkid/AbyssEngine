@@ -60,6 +60,14 @@ if args.create_smoke:
     create_include = output / 'mesh_create_under_test.inc'
     create_include.write_text('namespace AbyssEngine {\n' + create_body + '\n}\n')
     assert create_body in create_include.read_text()
+    bounds_source = (root / 'src/engine/math/BSphere.cpp').read_text()
+    bounds_bodies = [extract(bounds_source, re.escape(signature) + r' \{') for signature in (
+        '        BSphere &BSphere::operator=(const BSphere &other)',
+        '        void BSphere::Merge(const BSphere &other)',
+    )]
+    bounds_include = output / 'mesh_read_bounds_under_test.inc'
+    bounds_include.write_text('namespace AbyssEngine { namespace AEMath {\n' + '\n'.join(bounds_bodies) + '\n}}\n')
+    assert all(part in bounds_include.read_text() for part in bounds_bodies)
     create_exe = output / 'mesh_create_smoke.exe'
     subprocess.run([args.compiler, '-std=c++14', '-ffunction-sections', '-fdata-sections',
                     '-I' + str(root / 'src'), '-I' + str(root / 'third_party/gl'), '-I' + str(output),
@@ -67,4 +75,4 @@ if args.create_smoke:
                     str(root / 'src/engine/render/Mesh.cpp'), str(root / 'src/engine/math/Vector.cpp'),
                     '-Wl,--gc-sections', '-o', str(create_exe)], check=True)
     subprocess.run([str(create_exe)], check=True)
-    print('MeshCreateFromFile plain/enhanced success, reader failure and file lifecycle smoke passed')
+    print('MeshCreateFromFile lifecycle and MeshReadData children/bounds/early-failure smoke passed')

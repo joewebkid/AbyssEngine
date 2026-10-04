@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **97.97% unweighted / 97.84% weighted**.
+Latest validated continuation: source **98.07% unweighted / 97.98% weighted**.
 Latest semantic correction: original full bounds diagonal; earlier half-diagonal
 radius assertions are superseded by the verified operand/ABI evidence below.
 The result tables below preserve earlier measurements. Chronological continuation
@@ -1669,3 +1669,75 @@ Next search should follow concrete memory loads and value lifetimes rather
 than repeat these product/predicate spellings. The fixed denominator remains
 three unique bodies and 1,800 original instructions. Means 97.966667/97.835333
 remain below both 99.0 requirements; the goal stays active.
+
+## Continuation: guarded child loop and verified recursive-reader paths
+
+Previous turn yielded object-identity evidence excluding eight product/predicate
+spellings; accepted state starts at 72e0c954. Original reader operands at
+0x6cf42 and 0x6cf52 reject zero read results. Child count uses unsigned 16-bit
+loads at 0x6cf68 and 0x6d02a; the original has an initial zero guard before
+allocation and a comparison at 0x6d030..0x6d034. Format/material setup at
+0x6cfea..0x6cff4 uses one captured parent pointer. Recursive read rejects -1
+at 0x6d004..0x6d006, then merges bounds and appends the child. The count is
+loaded again after each completed child; no fixed captured count is inferred.
+
+Seven focused forms were measured with unchanged flags and matcher:
+
+| Child source form | Read source / strict | Compiled instructions |
+|---|---|---:|
+| childPtr declared just before loop | 97.5 / 55.7 | 866 |
+| childPtr declared before child-count read | 97.5 / 55.7 | 866 |
+| Capture parent for format/material | 97.6 / 55.7 | 867 |
+| Pre-loop childPtr plus captured parent | 97.5 / 55.7 | 866 |
+| Explicit bound, reloaded after each child | 97.6 / 56.1 | 869 |
+| First-count guard, then do/while | **97.9 / 56.0** | 864 |
+| Same guard/do with reloaded intermediate bound | 97.9 / 56.0 | 864 |
+
+Retain the shorter guarded do/while. For unsigned childCount, the first
+`childCount != 0` condition equals the old initial `0 < childCount`; increment
+and subsequent count comparison occur after the same successful child work.
+The first-entry guard is necessary and preserved, unlike an unguarded do/while.
+Calls, arguments, reads, merges, append ordering and failure returns are unchanged.
+This is a measured compiler-shape choice consistent with original behavior,
+not recovered original C++ syntax. The parent-only trial equals the accepted
+Core object byte for byte. Hoisted-pointer trials change the object and regress
+source score; they are not retained. The accepted Read components become
+inventory 93.9, opcodes 98.0, control inventory 98.8, calls 100.0, size 98.8.
+
+The native function-body smoke now executes 0/1/2 children using the current
+reader, actual enhanced parser and verbatim BSphere::operator=/Merge bodies.
+It checks complete input consumption, child order/positions, inherited format
+and material, vboEligible, merged bounds, and failure at the first or second
+child pivot. Existing caller, UV, tangent/binormal and truncation checks pass.
+The fixture's Transform key/range construction and file/release boundaries
+remain mocks; no native executable ABI or game/device runtime is proved.
+Whole BSphere.cpp initially retained an unused Transform-overload dependency
+on two matrix helpers under the Windows linker; selecting the exact two
+exercised production bodies removes that unrelated dependency without changing
+their text or substituting a mathematical mock. Native gof2 library build passes.
+
+Existing reader failure leaves an unattached child allocated. The test captures
+its failing pivot destination, derives its owner with offsetof(Mesh,pivotX),
+and explicitly frees it after assertions. This is test cleanup, not a production
+leak fix. The first-child failure attaches zero children; the second-child
+failure preserves one completed child. Parser -1-versus-zero handling and the
+original cleanup behavior remain as previously documented.
+
+Fresh full ARM rebuild: 204 translation units, `_work/readchilddo-full`.
+Full corpus: 4,619 comparisons, zero skipped, 4,274/4,524 originals compared,
+missing 250 (7 wrong type, 243 absent), extra 130. Actual normalized
+`(unit,symbol)` linked-exact/byte-exact sets equal clean baseline: 2,079/959,
+lost [] and gained [] for each. Other 202 objects are byte-identical to baseline;
+Core equals the focused guarded-do winner, Mesh equals angle-full. Baseline
+outside-body/signature check confirms edits remain within the three bodies.
+
+Full strict/source averages: 75.98/88.99. Full report SHA-256: `6105fefa5c92ed4835b9f2f1dad60a03e5b7ec2d68fd961e35237d36b079fce5`.
+Evidence: `_work/read_child_lifetime_sweep.py`, `_work/read_child_bound_sweep.py`,
+seven focused reports, `_work/readchilddo_full.json`, `_work/readchilddo_three.json`,
+build/verify logs, `_work/readchilddo_native.log`, `_work/readchilddo_read_smoke.log`
+and `_work/readchilddo-read-smoke/`.
+
+Fixed scores: Create 98.4, Read 97.9, Enhanced 97.9. Original weights remain
+291/873/636, total 1,800, exactly three unique bodies. Means **98.066667%
+unweighted / 97.980833% weighted** (98.07/97.98 displayed) remain below both
+99.0 requirements. The goal stays active; no compiler ceiling is established.

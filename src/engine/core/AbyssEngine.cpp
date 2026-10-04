@@ -1093,16 +1093,20 @@ namespace AbyssEngine {
             Transform *xf = (*slot)->animation;
             if (xf != 0)
                 ((AEMath::BSphere *) &(*slot)->boundsCenterX)->Merge(xf->bounds());
-            for (unsigned int c = 0; c < childCount; ++c) {
-                Mesh *childPtr = new Mesh();
-                childPtr->vboEligible = 1;
-                childPtr->vertexFormat = (*slot)->vertexFormat;
-                childPtr->material = (*slot)->material;
-                if (MeshReadData(engine, handleRef, flags, &childPtr, mat) == -1)
-                    return -1;
-                ((AEMath::BSphere *) &(*slot)->boundsCenterX)->Merge(
-                    *(const AEMath::BSphere *) &childPtr->boundsCenterX);
-                ArrayAdd<Mesh *>(childPtr, (*slot)->animation->meshes);
+            unsigned int c = 0;
+            if (childCount != 0) {
+                do {
+                    Mesh *childPtr = new Mesh();
+                    childPtr->vboEligible = 1;
+                    childPtr->vertexFormat = (*slot)->vertexFormat;
+                    childPtr->material = (*slot)->material;
+                    if (MeshReadData(engine, handleRef, flags, &childPtr, mat) == -1)
+                        return -1;
+                    ((AEMath::BSphere *) &(*slot)->boundsCenterX)->Merge(
+                        *(const AEMath::BSphere *) &childPtr->boundsCenterX);
+                    ArrayAdd<Mesh *>(childPtr, (*slot)->animation->meshes);
+                    ++c;
+                } while (c < childCount);
             }
         }
 
