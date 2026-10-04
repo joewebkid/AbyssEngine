@@ -1741,3 +1741,57 @@ Fixed scores: Create 98.4, Read 97.9, Enhanced 97.9. Original weights remain
 291/873/636, total 1,800, exactly three unique bodies. Means **98.066667%
 unweighted / 97.980833% weighted** (98.07/97.98 displayed) remain below both
 99.0 requirements. The goal stays active; no compiler ceiling is established.
+
+## Continuation: caller child-loop forms after the reader loop gain
+
+Previous turn made authoritative progress: reader source 97.6 -> 97.9,
+recursive-child native fixtures and full exact-set validation, committed at
+0c8a681d. This turn starts from its clean tracked state. A perfect Read score
+alone with current Create 98.4 and Enhanced 97.9 would yield only 98.766667
+unweighted, so improving another body is also necessary at these fixed scores.
+
+Original Create at 0x6d236..0x6d238 initializes the counter and jumps to the
+shared comparison at 0x6d2e2..0x6d2e8 before any child allocation. The same
+comparison reads subCount after each child. This justifies keeping a first
+guard; it does not justify applying an unguarded do/while from the earlier
+excluded trials. Ten valid caller forms were measured on the current reader
+state with unchanged flags, matcher, calls and three-body denominator:
+
+| Caller child-loop form | Create source / strict | Instructions | Call match |
+|---|---|---:|---:|
+| Guarded do/while | 97.3 / 75.7 | 293 | 100.0 |
+| Guarded do/while with common result return | 97.3 / 76.4 | 293 | 100.0 |
+| Explicit while with separate counter declaration | 98.4 / 60.7 | 289 | 100.0 |
+| For with bound reloaded after each child | 98.4 / 60.7 | 289 | 100.0 |
+| Guarded do, counter declared inside guard | 97.3 / 75.7 | 293 | 100.0 |
+| Guarded do with reloaded intermediate bound | 97.3 / 75.7 | 293 | 100.0 |
+| Guarded do with unsigned-short counter | 97.1 / 75.6 | 294 | 100.0 |
+| For with unsigned-short counter | 98.4 / 60.6 | 290 | 100.0 |
+| Explicit shared entry/back-edge comparison labels | 98.4 / 60.7 | 289 | 100.0 |
+| Shared comparison with common result return | 98.4 / 61.0 | 289 | 100.0 |
+
+All preserve initial count checking and repeated bound reads; none is retained.
+The unsigned-short counter cannot wrap on an executed increment: the previous
+comparison requires its value below a 16-bit subCount, hence at most 65,534
+before increment. This is an equivalent bounded experiment, not a recovered
+original counter type. The explicit shared-test labels model the visible ARM
+control flow without introducing extra calls or effects.
+
+Higher strict scores of the guarded caller forms do not satisfy the requested
+source objective: the main guarded form has inventory 94.9, opcodes 97.0,
+control inventory 94.7, calls 100.0 and size 99.6, versus the accepted caller's
+100.0 control inventory. It adds a distinct zero guard to the compiled loop.
+The source improvement found in Read therefore does not transfer to Create.
+Explicit while and reloaded-bound-for whole Core objects equal readchilddo-full
+byte for byte. Counter-inside-guard and guarded-bound objects equal the guarded
+do object. Shared-test labels have the same rounded scores as accepted Create
+but a different whole Core object; equal scores are not asserted as byte identity.
+
+Evidence: `_work/create_guarded_child_sweep.py`,
+`_work/create_guard_counter_sweep.py`, `_work/create_shared_loop_test_sweep.py`,
+their ten focused reports, snapshots and object comparisons. All finally blocks
+restore accepted source; tracked source diff is empty and the baseline
+outside-body/signature check passes. Native and full-corpus evidence therefore
+remain the unchanged readchilddo-full state. Means stay 98.066667/97.980833,
+below both >=99.0 gates; the goal stays active. Further search should inspect
+caller operands/value storage rather than repeat these loop/return spellings.
