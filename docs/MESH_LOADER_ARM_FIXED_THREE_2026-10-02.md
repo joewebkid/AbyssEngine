@@ -1938,3 +1938,66 @@ The authoritative full-corpus state remains readchilddo-full: 204 units,
 4619 comparisons, linked-exact 2079 and byte-exact 959 pairs unchanged.
 Means remain 98.066667 / 97.980833, below both 99.0 gates. Only the stronger
 native fixture and this evidence are retained; the goal remains active.
+
+
+## Continuation: enhanced field addresses/key loops and current caller guards
+
+Twenty-four additional bounded trials start from a278ce9d. They preserve read
+order, failure returns, allocation sizes, helper calls, all three caller reader
+sites and the fixed denominator. No production source change is retained.
+
+Seven enhanced local-lifetime forms declare Y/Z pointers or references either
+before the bounds reads or at their respective read sites, or declare vector,
+axis-key or V5 channel counters separately from the for header. All seven
+produce the whole Mesh object byte-identical to readchilddo-full, with Enhanced
+97.9 / 67.5 and 636 instructions. No pointer cast/layout change is needed.
+Original 0x6bc26..0x6bc80 keeps Y/Z field addresses across bounds reads and uses
+them for the Y/Z remap; this motivates the ordinary source trials without
+claiming recovered C++ declarations.
+
+| Enhanced key-loop group/form | Source / strict | Instructions | Whole object identical |
+|---|---|---:|---|
+| Vector keys: while | 97.9 / 67.5 | 636 | yes |
+| Vector keys: guarded do | 97.1 / 69.0 | 637 | no |
+| Axis keys: while | 97.9 / 67.1 | 636 | no |
+| Axis keys: guarded do | 96.7 / 62.3 | 642 | no |
+| Optional keys: while | 97.9 / 67.5 | 636 | yes |
+| Optional keys: guarded do | 97.7 / 66.9 | 637 | no |
+| V5 signed keys: while | 97.9 / 67.5 | 636 | yes |
+| V5 signed keys: guarded do | 97.7 / 67.4 | 637 | no |
+
+Each guarded do checks the initial positive count before its first iteration;
+unsigned zero and signed V5 negative counts remain empty. The same count is
+retested after each increment, and unknown-section handling is unchanged.
+Original axis-key entry jumps to the shared count comparison at 0x6bcb8 /
+0x6bd4a..0x6bd50; separate guarded-do source is a heuristic alternative, not
+an exact recovery of that original control flow. These four do forms reduce
+source score. An increase in strict score for vector keys does not satisfy
+the source-shape objective and is not accepted.
+
+Five caller forms revisit early input guards on the current separated-call
+state: combined early return; engine then path; path then engine; combined
+return with enhanced failure guard; combined return with plain failure guard.
+All yield Create 98.4 / 60.7, 289 instructions, and whole Core objects identical
+to readchilddo-full. The invalid-input -4 return and valid-path lifecycle remain
+unchanged. This rules out these interactions on the current body, not only on
+the older merged-call implementation where an early-return trial was measured.
+
+Four reader forms use a Vector-typed accumulator with component zero stores,
+a Vector numerator output with the existing Y/X/Z write order, unsigned-short
+triangle indices, or both accumulator/output forms. Allocation remains
+vcount*12 with operator new[], and the three Vector += calls and math order
+remain unchanged. Original 0x6cd9c..0x6cda4 writes the computed Y/X/Z values
+into the temporary vector storage before the first += call. All four whole
+Core objects equal readchilddo-full byte for byte: Reader 97.9 / 56.0,
+864 instructions. The typed spelling does not produce an ARM improvement.
+
+All 24 trials have call-count match 100.0. Evidence:
+_work/enhanced_operand_lifetime_sweep.py (final corrected declarations),
+_work/enhanced_key_loop_sweep.py, _work/create_early_guard_current_sweep.py,
+_work/read_typed_accumulator_sweep.py, focused reports and source snapshots,
+and _work/current_operand_trial_identities.json. Finally blocks restore accepted
+sources; baseline outside-body/signature checks pass. Existing full validation
+remains authoritative because production source is unchanged. Exact pair sets
+remain 2079 linked / 959 byte, and means remain 98.066667 / 97.980833. Both
+99.0 gates are unmet. No compiler ceiling is established; the goal stays active.
