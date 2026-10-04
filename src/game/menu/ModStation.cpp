@@ -183,39 +183,19 @@ void ModStation::autosave() {
 }
 
 
-static Ship *(*g_ModStation_es_getShip)(Status *) = 0;
-
 void ModStation::enterStation() {
-    {
-        void(Status:: * depart)(Station *) =
-                reinterpret_cast<void (Status::*)(Station *)>(&Status::departStation);
-        (Status::gStatus->*depart)(Status::gStatus->getStation());
-    }
-    ((Station *) (Status::gStatus->getStation()))->visit();
-    Achievements::gAchievements->applyNewMedals();
+    Status *status = Globals::status;
+    status->departStation(status->getStation());
+    Globals::status->getStation()->visit();
+    static_cast<Achievements *>(Globals::achievements)->applyNewMedals();
 
-    Ship * (*getShip)(Status *) = g_ModStation_es_getShip;
-    Item *e10 = ((Ship *) (getShip(Status::gStatus)))->getFirstEquipmentOfSort(10);
-    Item *e9 = ((Ship *) (getShip(Status::gStatus)))->getFirstEquipmentOfSort(9);
-    int shipIdx = ((Ship *) (getShip(Status::gStatus)))->getIndex();
-    Status::gStatus->field_150 = shipIdx;
-
-    int v;
-    if (e10 == 0) {
-        v = -1;
-    } else {
-        v = ((Item *) (e10))->getIndex();
-    }
-    Status::gStatus->field_154 = v;
-
-    if (e9 == 0) {
-        v = -1;
-    } else {
-        v = ((Item *) (e9))->getIndex();
-    }
-    Status::gStatus->field_158 = v;
-    Status::gStatus->field_124 = 0;
-    Status::gStatus->field_11c = 0;
+    Item *e10 = Globals::status->getShip()->getFirstEquipmentOfSort(10);
+    Item *e9 = Globals::status->getShip()->getFirstEquipmentOfSort(9);
+    Globals::status->field_150 = Globals::status->getShip()->getIndex();
+    Globals::status->field_154 = e10 ? e10->getIndex() : -1;
+    Globals::status->field_158 = e9 ? e9->getIndex() : -1;
+    Globals::status->field_124 = 0;
+    Globals::status->field_11c = 0;
 }
 
 

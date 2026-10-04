@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-05 (ModStation light and departure; older
+Last reviewed: 2026-10-05 (ModStation entry, light and departure; older
 subsystem snapshots retain their dates)
+
+## ModStation entry snapshot (2026-10-05, local branch)
+
+`ModStation::enterStation` now calls the Android-confirmed station, medal,
+ship and equipment paths directly instead of a null `getShip` callback.
+Focused source-shape and strict fuzzy rise from 46.1%/38.6% to 100%/100%,
+and the function is newly linked-exact (not raw byte-exact). Native `gof2`
+and 206/206 ARM units build. The full corpus remains at 4,322/4,524
+originals across 4,675 rows, with 90.14% mean source-shape, 77.28%
+strict, 2,166 linked-exact and 977 byte-exact. Exact pair sets have one
+linked gain and zero losses. Integrated game runtime remains unverified;
+the next source-recovery priority is `ModStation::checkPendingProducts`.
+See [`MODSTATION_ENTER_STATION_ARM_2026-10-05.md`](MODSTATION_ENTER_STATION_ARM_2026-10-05.md).
 
 ## ModStation station lighting (2026-10-05, local branch)
 
@@ -13,7 +26,7 @@ but is not linked-exact or byte-exact. Native `gof2` and all 206 ARM units
 build. The full corpus compares 4,322/4,524 originals across 4,675 rows
 at 90.13% mean source-shape / 77.27% strict, with 2,165 linked-exact and
 977 byte-exact; exact pair sets have zero losses. In-game rendering is
-unverified. The next source-recovery priority is `ModStation::enterStation`;
+unverified. The subsequent `enterStation` recovery is recorded above;
 see [`MODSTATION_RESET_LIGHT_ARM_2026-10-05.md`](MODSTATION_RESET_LIGHT_ARM_2026-10-05.md).
 
 ## ModStation departure and campaign pointer ABI (2026-10-04, local branch)
