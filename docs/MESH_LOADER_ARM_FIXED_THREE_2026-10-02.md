@@ -2949,3 +2949,54 @@ claimed for rejected forms. Accepted `_work/axisbyte_full.json` and its native
 and full ARM logs remain authoritative: **98.23% unweighted / 98.17% weighted**,
 2079 linked-exact / 959 byte-exact pairs equal baseline with no losses.
 Both >=99.0 requirements remain unmet; goal stays active. No push/PR/merge.
+
+
+## Continuation: indexed stream owner reload and scopes
+
+Eight reader trials start from clean e2318429. Direct original inspection:
+0x6c648 loads the Mesh for the index-format test; 0x6c654 addresses indexCount;
+0x6c664 reloads *slot after its read, 0x6c668 reads indexCount from that owner,
+0x6c66c allocates, and 0x6c670 stores indices through the captured owner.
+0x6c672 reloads *slot for the buffer read; 0x6c688 reloads after that read,
+then vertexCount is addressed at 0x6c68e. The current source captures m before
+the first indexCount read. This is an unresolved operand-read-order difference;
+earlier 'captured index owner' descriptions do not establish the exact original
+capture point. Assembly reread alone does not prove an in-game behavioral bug
+with the existing AEFile boundary, and fixtures do not model mutation of *slot
+by the indexCount read. No exact source/ownership recovery is claimed.
+
+First family reloads m before allocation, uses a separate fresh index owner,
+reloads both allocation/read owners, changes allocation count to *slot directly,
+or removes the temporary allocation result. Second family scopes a fresh owner
+inside the indexed branch, declares common m before or after vertexCount read,
+or combines scope with direct allocation assignment. They preserve byte counts,
+file sequence, three reader call sites in the caller, allocation size and
+failure conditions. The original reload forms remain experimental because they
+regress the required source-shape score; no trial is retained.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| reload_before_allocation | 97.6 / 55.9 | 870 | 100.0 | no |
+| separate_allocation_owner | 97.6 / 55.9 | 870 | 100.0 | no |
+| reload_read_owner | 97.6 / 55.9 | 870 | 100.0 | no |
+| direct_count_allocation | 98.0 / 55.7 | 867 | 100.0 | no |
+| reload_direct_assignment | 97.6 / 55.9 | 870 | 100.0 | no |
+| fresh_scoped_owner | 97.6 / 55.9 | 870 | 100.0 | no |
+| vertex_owner_after_read | 97.6 / 55.9 | 870 | 100.0 | no |
+| fresh_scoped_direct_assignment | 97.6 / 55.9 | 870 | 100.0 | no |
+
+Seven fresh-capture/scope variants produce byte-identical whole Core objects
+to each other, with source 97.6 versus accepted 98.0. The direct allocation
+count form differs from both them and accepted and preserves source 98.0 while
+strict falls 55.9 ->55.7. Object identity was checked from actual bytes. All
+production trial edits were restored.
+
+Evidence: `_work/readindexowner-*.json`, `_work/readindexscope-*.json`,
+saved source snapshots, `_work/read_index_owner_identities.json` and
+`_work/read_index_scope_identities.json`, plus original_mesh.asm cited above.
+Baseline outside-body/signature check passes and tracked production diff is
+empty. No native/full-corpus validation is claimed for these rejected forms;
+accepted axisbyte-full/native evidence remains authoritative. Fixed means
+remain **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked /
+959 byte with no losses. Both >=99.0 requirements remain unmet; goal stays
+active. No push, PR or merge.
