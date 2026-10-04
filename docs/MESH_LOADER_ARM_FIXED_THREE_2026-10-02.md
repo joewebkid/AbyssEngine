@@ -2001,3 +2001,70 @@ sources; baseline outside-body/signature checks pass. Existing full validation
 remains authoritative because production source is unchanged. Exact pair sets
 remain 2079 linked / 959 byte, and means remain 98.066667 / 97.980833. Both
 99.0 gates are unmet. No compiler ceiling is established; the goal stays active.
+
+
+## Continuation: reader bound copies, stream counts and shared scratch
+
+Current tracked state starts clean at 7a15daf4. Sixteen ordinary source trials
+use the same canonical ARM flags, helpers, verifier and three-body denominator.
+All production source is restored; no trial improves the requested metric.
+
+| Reader form | Source / strict | Instructions |
+|---|---|---:|
+| Copy maximum as whole Vector | 97.7 / 55.4 | 866 |
+| Copy minimum as whole Vector | 97.8 / 55.1 | 865 |
+| Copy both bound vectors | 97.7 / 55.7 | 867 |
+| Subtract direct bound-array views | 97.6 / 56.5 | 858 |
+| Pass temporary diagonal directly to Length | 97.9 / 56.0 | 864 |
+| Independent per-stream uint counts | 97.9 / 56.0 | 864 |
+| Independent per-stream ushort counts | 97.9 / 56.0 | 864 |
+| Independent per-stream const uint counts | 97.9 / 56.0 | 864 |
+| Tangent-only ushort count | 97.9 / 56.0 | 864 |
+| Shared center/triangle float scratch | 97.8 / 55.8 | 869 |
+| Shared center/final tangent float scratch | 97.8 / 56.7 | 869 |
+| Shared center/triangle/final tangent scratch | 97.8 / 56.6 | 869 |
+| Keep min/max arrays in function scope | 97.8 / 56.5 | 863 |
+
+Whole-vector copies preserve the extrema values and full max-minus-min
+diagonal. Direct views remove copies without changing the verified read-only
+math helper semantics. All five retain the required assignment, subtraction
+and Length calls, and all thirteen reader trials retain call match 100.0.
+Only the temporary-diagonal form and the four count forms give whole Core
+objects identical to readchilddo-full. Equal scores alone are not used as
+identity proof.
+
+The count variants keep each useful vertexCount load at its existing point.
+The compressed-normal loop still reloads the slot count in its condition;
+its unused captured count is removed in the per-stream forms. Every field is
+unsigned short, so the narrower local holds the complete value, and all
+allocation lengths remain unchanged. The shared scratch variants retain the
+center, triangle and final tangent writes and their helper calls in order.
+The actual helpers consume these vectors synchronously. Original temporary
+storage at 0x6cd9c..0x6cda4 and normal copy at 0x6cde2..0x6cdf0 motivates
+examining phase reuse, without establishing a shared original C++ declaration.
+These variants change stack lifetime/layout but do not improve score.
+
+| Enhanced completion/cleanup form | Source / strict | Instructions | Call match |
+|---|---|---:|---:|
+| Failure block before labeled successful finish | 97.9 / 67.5 | 636 | 100.0 |
+| Common release, result selected before cleanup | 96.9 / 68.6 | 638 | 96.2 |
+| Common release with successful fallthrough | 96.9 / 68.6 | 638 | 96.2 |
+
+The first completion form produces the whole Mesh object identical to
+readchilddo-full. Both common-release forms preserve one destructor/delete
+pair per empty or failed parse and attach only populated successful animation;
+they merge static cleanup call sites and lower source match. No shared-cleanup
+rewrite is retained, and no native runtime equivalence beyond the inspected
+control paths is claimed for these rejected candidates.
+
+Evidence: _work/read_bounds_copy_sweep.py,
+_work/read_stream_count_lifetime_sweep.py, _work/read_scratch_lifetime_sweep.py,
+_work/enh_completion_layout_sweep.py, sixteen focused JSON reports/snapshots,
+and _work/bounds_count_completion_trial_identities.json. All finally blocks
+restore accepted source. Outside-body/signature checks pass and tracked
+production source diff is empty. The preceding readchilddo-full 204-unit
+validation and native tests remain authoritative; no new implementation
+requires a full rebuild. Exact pair sets remain 2079 linked / 959 byte,
+with means 98.066667 / 97.980833. Both 99.0 gates remain unmet. The next search
+should exclude these concrete bound-copy/count/scratch/completion forms;
+these measurements do not establish an objective compiler ceiling.
