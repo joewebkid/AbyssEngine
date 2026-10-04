@@ -2479,3 +2479,53 @@ source diff is empty. Full channelzero-full ARM/native validation remains
 authoritative, with actual pair sets 2079 linked / 959 byte unchanged and
 means 98.133333 / 98.064667. Both >=99.0 gates remain unmet; no objective
 compiler ceiling is demonstrated. The goal remains active.
+
+
+## Continuation: common axis insertion and frame conversion
+
+Start state is clean tracked 4da9f346. Nine focused Enhanced trials preserve
+position/scale/rotation channel maps, the position Y sign change, file reads,
+positive-minimum updates and key insertion order. No form improves accepted
+source 98.0, and all production edits are restored.
+
+| Trial | Enhanced source / strict | Instructions | Whole Mesh object equals channelzero-full |
+|---|---|---:|---|
+| enhaxiscommon-all_common_call | 96.7 / 64.1 | 625 | no |
+| enhaxiscommon-all_zero_channel_guard | 96.7 / 64.1 | 625 | no |
+| enhaxiscommon-position_common_call | 97.6 / 65.1 | 633 | no |
+| enhaxiscommon-rotation_common_call | 97.6 / 66.1 | 634 | no |
+| enhaxiscommon-scale_common_call | 97.6 / 66.0 | 634 | no |
+| enhaxisframe-all_axis_frames | 97.8 / 64.0 | 643 | no |
+| enhaxisframe-position_frame | 98.0 / 65.4 | 639 | no |
+| enhaxisframe-rotation_frame | 98.0 / 66.0 | 640 | no |
+| enhaxisframe-scale_frame | 98.0 / 66.0 | 640 | no |
+
+All nine preserve compiled call-count match 100.0. Original position-axis
+instructions at 0x6bcf8..0x6bd42 choose masks 1/4/2 and converge on a shared
+InsertKeyFrame call; the Y path negates the key before calling. The first
+four source forms select a channel in switch(axis), retain that sign change,
+and call once after the switch. A default continue preserves the original
+unknown-axis skip; valid loop indices remain 0..2. Three individual groups
+and all three together are measured. Another all-group form initializes
+channel 0 and calls only for nonzero masks, also preserving unknown skips.
+Both common-all forms lower source score, despite retaining runtime insertion
+behavior and compiled call counts. They are heuristic source construction,
+not an exact recovery of original C++.
+
+The remaining four forms compute an int frame from value after the key read
+and before the axis switch, passing that same frame in each existing case.
+Each valid loop index uses one of the original three case calls. The input
+float-to-int conversion, mask arguments and key sign are unchanged for valid
+data. No file or global-time operation moves. Individual groups keep the
+rounded source score while changing strict score and instruction count;
+all three together reduce source match. None is retained.
+
+Evidence: _work/enh_axis_common_call_sweep.py,
+_work/enh_axis_frame_value_sweep.py, nine focused JSON reports/snapshots and
+_work/axis_call_frame_identities.json. Finally blocks restore accepted code;
+baseline outside-body/signature checks pass and production diff is empty.
+The full channelzero-full ARM/native validation remains authoritative,
+including actual exact-pair equality to baseline: 2079 linked / 959 byte,
+with no losses. Means remain 98.133333 / 98.064667. Both >=99.0 requirements
+remain unmet; no objective compiler ceiling is established. The goal stays
+active, with these common-call/frame forms excluded from future search.
