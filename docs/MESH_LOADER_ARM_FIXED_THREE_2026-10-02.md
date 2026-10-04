@@ -2225,3 +2225,60 @@ authoritative because no production change is retained. Exact pair sets remain
 2079 linked / 959 byte with no losses; means stay 98.100000 / 98.029333.
 Both >=99.0 gates remain unmet, and no objective compiler ceiling is shown.
 The goal stays active; future search should exclude these measured forms.
+
+
+## Continuation: extrema comparisons, coordinate counters and normal fallback
+
+Start state is clean tracked 9180f22c. Eleven focused reader trials use the
+same canonical flags, helpers, signatures and fixed denominator. None improves
+accepted source 98.0, and no production source change remains.
+
+| Trial | Source / strict | Instructions | Whole Core object equals colorfield-full |
+|---|---|---:|---|
+| readextremapred-maximum_update_first | 98.0 / 54.9 | 867 | no |
+| readextremapred-reverse_and_maximum_first | 98.0 / 54.9 | 867 | no |
+| readextremapred-reverse_comparison_operands | 98.0 / 55.9 | 867 | yes |
+| readposcountercurrent-both_remaining | 98.0 / 55.6 | 867 | no |
+| readposcountercurrent-integer_remaining | 98.0 / 55.6 | 867 | no |
+| readposcountercurrent-integer_signed_index | 98.0 / 55.9 | 867 | yes |
+| readposcountercurrent-short_remaining | 98.0 / 55.9 | 867 | yes |
+| readposcountercurrent-short_signed_index | 98.0 / 55.9 | 867 | yes |
+| readnormalfallback-common_xyz_output | 98.0 / 55.9 | 867 | no |
+| readnormalfallback-local_fallback_copy | 98.0 / 52.9 | 874 | no |
+| readnormalfallback-static_fallback_copy | 98.0 / 52.9 | 874 | no |
+
+All call-count matches remain 100.0. The first three forms reverse the
+comparison operands, update maximum before minimum, or combine these changes
+in both coordinate-conversion loops. Ordered comparisons preserve the same
+NaN-false behavior; min/max arrays are disjoint and the updates commute.
+Original 0x6c74c..0x6c76c compares current extrema against the converted
+component. This motivates testing predicate spelling, without claiming exact
+original C++. No arithmetic, limits or bounds-diagonal behavior is changed.
+
+Original integer coordinates decrement the remaining component count at
+0x6c724 and test it at 0x6c778; the short path also uses a remaining count.
+The five counter trials independently test short/integer remaining loops,
+both together, or signed indices in each loop. Every count is at most
+3*65535 = 196605, so signed index and bound casts cannot overflow. Source
+still indexes the same component and uses the same quotient-derived axis.
+This revisits the earlier both-loop remaining-counter form on a materially
+different accepted reader containing the guarded child loop, full diagonal,
+normal copy and per-component color field load. No new divisor/helper is added.
+
+The fallback forms copy the fixed positive-zero/one/zero triplet from a local
+or static const float array, or select XYZ locals in the length branch and
+write all three at one common exit. They preserve sqrtf, lower/upper clamps,
+normal-field reload and component store order. Two copy forms increase the
+instruction count without improving source match; the common-output form
+also fails to improve. No alternative is retained.
+
+Evidence: _work/read_extrema_predicate_sweep.py,
+_work/read_position_counter_current_sweep.py, _work/read_normal_fallback_sweep.py;
+eleven focused JSON reports and snapshots;
+_work/extrema_position_fallback_identities.json. Finally blocks restore the
+accepted source; baseline outside-body/signature checks pass and tracked
+production diff is empty. The full colorfield-full rebuild, actual exact-pair
+set comparisons and native tests remain authoritative. Means remain
+98.100000 / 98.029333, pairs 2079 linked / 959 byte with no losses. Both
+>=99.0 gates are unmet; the goal remains active. These concrete exclusions do
+not establish an objective compiler ceiling.
