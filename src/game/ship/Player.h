@@ -88,12 +88,17 @@ public:
     KIPlayer *kiPlayer;
     float bombForce;
     float empForce;
-    uint8_t field_dc;
-    uint8_t pad_dd[3];
+    union {
+        int32_t field_dc; // Android cumulative EMP damage @ +0xdc.
+        struct { uint8_t empDamageByte; uint8_t pad_dd[3]; };
+    };
     uint8_t turnedEnemyFlag;
     uint8_t pad_e1[3];
     int32_t empData;
-    uint8_t pad_e8[4];
+    union {
+        uint8_t pad_e8[4];
+        int32_t empElapsed; // Android elapsed EMP recovery time @ +0xe8.
+    };
     uint8_t alwaysEnemy;
     uint8_t alwaysFriend;
     uint8_t neverAttack;
@@ -200,7 +205,7 @@ public:
 
     void setEmpForce(float value);
 
-    float *setHitVector(float x, float y, float z);
+    void setHitVector(float x, float y, float z);
 
     void setHitpoints(int value);
 
@@ -226,19 +231,19 @@ public:
 
     void setVulnerable(bool value);
 
-    void shoot(int a, int b, long long pos, bool flag);
+    bool shoot(int a, int b, long long pos, bool flag);
 
-    void shoot(int a, int b, long long pos, bool flag, Matrix mat);
+    bool shoot(int a, int b, long long pos, bool flag, Matrix mat);
 
-    void shoot(int a, long long pos, bool flag);
+    bool shoot(int a, long long pos, bool flag);
 
-    void shoot(int a, long long pos, bool flag, Matrix mat);
+    bool shoot(int a, long long pos, bool flag, Matrix mat);
 
     void turnEnemy();
 
     unsigned char turnedEnemy();
 
-    Vector *update(int dt, bool doSound);
+    void update(int dt, bool doSound);
 
     void updateDamageRate();
 
@@ -248,7 +253,7 @@ public:
 
     void damageShield(int damage);
 
-    float damageGamma(float amount);
+    void damageGamma(float amount);
 
     Array<Player *> *getEnemies();
 
@@ -256,7 +261,7 @@ public:
 
     Vector getHitVector();
 
-    int replaceGuns(int a, int b, int c, int d, int e, bool f);
+    void replaceGuns(int a, int b, int c, int d, int e, bool f);
 
     bool isAsteroid();
 
@@ -309,5 +314,13 @@ public:
     // Static data members present in the original binary (defined for symbol parity).
     static int velocity;
 };
+
+#if __SIZEOF_POINTER__ == 4
+static_assert(__builtin_offsetof(Player, field_dc) == 0xdc, "Player EMP damage offset");
+static_assert(__builtin_offsetof(Player, empData) == 0xe4, "Player EMP duration offset");
+static_assert(__builtin_offsetof(Player, empElapsed) == 0xe8, "Player EMP elapsed offset");
+static_assert(__builtin_offsetof(Player, enginePositionVec) == 0xf4, "Player engine sound id offset");
+static_assert(sizeof(Player) == 0x114, "Player Android ARMv7 size");
+#endif
 
 #endif

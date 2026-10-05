@@ -22,19 +22,41 @@ class Gun {
 public:
     int lastHitKIPlayer;
     Player *owner;
-    unsigned count;
-    char *positions;
-    int positionsCapacity;
-    int directionCount;
-    char *velocities;
-    int velocitiesCapacity;
-    int field_0x20;
-    char *upVectors;
-    int upVectorsCapacity;
-    int field_0x2c;
-    char *hitPositions;
-    int hitPositionsCapacity;
-    int level;
+    // Android inline Array<Vector> at 0x08/0x14/0x20/0x2c.
+    // Legacy field aliases preserve existing consumers; Array sets host alignment.
+    union {
+        Array<Vector> positionArray;
+        struct {
+            unsigned count;
+            char *positions;
+            int positionsCapacity;
+        };
+    };
+    union {
+        Array<Vector> directionArray;
+        struct {
+            int directionCount;
+            char *velocities;
+            int velocitiesCapacity;
+        };
+    };
+    union {
+        Array<Vector> upArray;
+        struct {
+            int field_0x20;
+            char *upVectors;
+            int upVectorsCapacity;
+        };
+    };
+    union {
+        Array<Vector> hitArray;
+        struct {
+            int field_0x2c;
+            char *hitPositions;
+            int hitPositionsCapacity;
+        };
+    };
+    Level *level;
     int *lifetimes;
     uint8_t *hitFlags;
     int initialLifetime;
@@ -62,9 +84,14 @@ public:
     uint8_t ignited;
     char field_0x89;
     int32_t field_0x8c;
-    int field_0x90;
-    int field_0x94;
-    int field_0x98;
+    union {
+        Vector homingDirection;
+        struct {
+            int field_0x90;
+            int field_0x94;
+            int field_0x98;
+        };
+    };
     int fireIndex;
     uint8_t _pad_0xa0[4];
 
@@ -80,7 +107,7 @@ public:
 
     uint8_t field_0xa8;
     uint8_t delayActive;
-    Array<int> *wobbleOffsets;
+    Array<Vector *> *wobbleOffsets;
     float field_0xb0;
     Array<Player *> *enemies;
     Sparks *impact;
@@ -94,7 +121,7 @@ public:
     uint8_t playerGun;
     int slotIndex;
     uint8_t levelCollision;
-    uint8_t friendGun;
+    bool friendGun;
     float errorMagnitudePercentage;
     int magnitude;
     int customRadius;
@@ -146,9 +173,9 @@ public:
 
     void setPlayerGun(bool v);
 
-    void shoot(Matrix m, int n, bool b);
+    bool shoot(Matrix m, int n, bool b);
 
-    void shootAt(Matrix m, int n, Player *p, bool b);
+    bool shootAt(Matrix m, int n, Player *p, bool b);
 
     void translate(const Vector &v);
 
@@ -156,9 +183,15 @@ public:
 };
 
 #if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(Gun) == 0x114, "Gun Android size");
+static_assert(offsetof(Gun, positionArray) == 0x08, "Gun::positionArray offset");
+static_assert(offsetof(Gun, directionArray) == 0x14, "Gun::directionArray offset");
+static_assert(offsetof(Gun, wobbleOffsets) == 0xac, "Gun::wobbleOffsets offset");
+static_assert(offsetof(Gun, geometries) == 0x10c, "Gun::geometries offset");
 static_assert(offsetof(Gun, field_0x20) == 0x20, "Gun::field_0x20 offset");
 static_assert(offsetof(Gun, field_0x2c) == 0x2c, "Gun::field_0x2c offset");
 static_assert(offsetof(Gun, level) == 0x38, "Gun::level offset");
+static_assert(offsetof(Gun, homingDirection) == 0x90, "Gun::homingDirection offset");
 static_assert(offsetof(Gun, lifetimes) == 0x3c, "Gun::lifetimes offset");
 static_assert(offsetof(Gun, hitFlags) == 0x40, "Gun::hitFlags offset");
 static_assert(offsetof(Gun, fireDelay) == 0x48, "Gun::fireDelay offset");
