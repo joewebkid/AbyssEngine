@@ -1,0 +1,91 @@
+{
+  "previous_report_commit": "5ce4b318",
+  "previous_production": "3aebb2c0",
+  "decision": "accepted: info race source order 0/1/2 produces native 2/1/0 machine comparisons and native conditional neutral image pointer selection",
+  "original_source_recovered": false,
+  "primary_fragment": "c8d38..c8df2: compares 2,1,0; conditional +304/default or +292/neutral; separate +300/B and +296/A paths; common image load",
+  "new_fragment": "16a6..16c6: same comparison order and field selection sequence",
+  "mapping": {
+    "0": 292,
+    "1": 296,
+    "2": 300,
+    "other": 304
+  },
+  "behavior": "Same single getRace call, same field per race/default, same Canvas image call/arguments. No new calls/checks/padding/barriers; C++ predicate order is a hypothesis, not recovered syntax.",
+  "before": {
+    "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+    "match": 79.9,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1207,
+    "n_base": 1195,
+    "source_match": 99.0,
+    "instruction_inventory_match": 98.1,
+    "opcode_inventory_match": 99.0,
+    "control_flow_match": 98.7,
+    "ordered_control_flow_match": 90.2,
+    "control_inventory_match": 98.7,
+    "call_count_match": 100.0,
+    "size_match": 99.0,
+    "unit": "game/world/StarMap"
+  },
+  "after": {
+    "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+    "match": 80.2,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1207,
+    "n_base": 1196,
+    "source_match": 99.1,
+    "instruction_inventory_match": 98.4,
+    "opcode_inventory_match": 99.1,
+    "control_flow_match": 99.1,
+    "ordered_control_flow_match": 90.6,
+    "control_inventory_match": 99.1,
+    "call_count_match": 100.0,
+    "size_match": 99.1,
+    "unit": "game/world/StarMap"
+  },
+  "other_21_rows_identical": true,
+  "focused_full_rows_equal": true,
+  "focused": {
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0
+  },
+  "native_static_library": "PASS; exit 0, StarMap compiled and libgof2.a linked",
+  "full": {
+    "count": 4619,
+    "skipped": 0,
+    "linked_exact": 2083,
+    "byte_exact": 960,
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "compared_unique": 4274,
+    "original_functions": 4524,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "full_exit": 0,
+  "baseline_previous_exact_pairs_lost": 0,
+  "default_99_gate_exit": 1,
+  "target_met": false,
+  "native_runtime": "not tested",
+  "final_means": {
+    "source_match": {
+      "unweighted": 99.225,
+      "weighted": 98.5818194620476
+    },
+    "match": {
+      "unweighted": 87.455,
+      "weighted": 82.2808618504436
+    },
+    "linked_exact": 6,
+    "byte_exact": 3
+  },
+  "object_sha256": "f5ebf2ce9c0f3b03c50a8a87fb106a406a1488a71210bb0dbc0c61f3a4df9cc5",
+  "full_json_sha256": "a36bf65219055df2dcf7fade9c0b089fecaa45d415da3614951eca2094ce7314"
+}

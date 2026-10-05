@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.220% unweighted / 98.56482% original-instruction
+implementation bodies measure **99.225% unweighted / 98.58182% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.440% / 82.22987%**, respectively. Source-shape is an inventory/control-flow
+**87.455% / 82.28086%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -2720,6 +2720,49 @@ Evidence: _work/before-end-mode-order-seventieth.cpp,
 end-mode-order-seventieth.json/log/o and seventieth-restored-focused.json/log.
 Compact snapshot: docs/validation/starmap_2026-10-05_end_mode_order_trial.json.
 
+## Seventy-first inventory refresh / seventy-second accepted race selection
+
+Recomputed unchanged asmdiff source submetrics and allocation-normalized token
+inventories for all fixed 20 bodies against the accepted sixty-sixth object.
+Every metric reproduced canonical input. The denominator remains 7101 and
+aliases remain checked separately. Raw inventories in
+_work/all-body-inventories-seventyfirst.json; compact evidence in
+docs/validation/starmap_2026-10-05_inventory_refresh.json. Multiset differences
+are not missing C++ statements or a proven compiler ceiling. This diagnostic
+identified a concrete info race-selection conditional-field-role mismatch.
+
+Changed only info's if/else predicate order from race 2/1/0 to 0/1/2. The same
+single getRace call, field mapping (0:+292, 1:+296, 2:+300, other:+304), and image
+call/arguments remain. No additional check/call, padding, volatile or barrier.
+This C++ form is a hypothesis, not recovered syntax. Its new ARM 16a6..16c6
+compares 2/1/0 and conditionally selects +304/+292, with separate +300/+296
+paths and common image load, matching primary c8d38..c8df2.
+
+Info source 99.0% -> 99.1%, strict 79.9% -> 80.2%, instruction inventory
+98.1% -> 98.4%, opcode 99.0% -> 99.1%, control inventory 98.7% -> 99.1%,
+ordered control 90.2% -> 90.6%, calls 100% unchanged, size 99.0% -> 99.1%,
+1207/1195 -> 1207/1196 instructions. Other 21 focused rows identical.
+Source means now 99.225% / 98.5818194620476%; strict 87.455% /
+82.2808618504436%. Weighted 99% remains unmet.
+
+Focused ARM: 204/204 TUs, zero failures, 22 comparisons, zero skips. Native
+UCRT static-library build exits 0, compiling StarMap and linking libgof2.a.
+Full run exits 0: 4619 comparisons, zero skips, 2083 linked-exact, 960 byte-exact,
+coverage/missing/extra unchanged. All focused/full rows agree after unit
+separator normalization. Baseline and previous 5ce4b318 (production 3aebb2c0)
+gates pass with zero lost exact pairs. Default 99% gate remains red, exit 1.
+Native runtime has not been tested. No verifier/shared/config/other production
+files were edited.
+
+Evidence: _work/before-race-zero-first-seventysecond.cpp,
+race-zero-first-seventysecond.json/log/asm, native-seventysecond.log,
+seventysecond-corpus.json/log, seventysecond-baseline-gate.json/log,
+seventysecond-previous-gate.json/log, seventysecond-target-gate.json/log.
+Previous inputs checkpoint72-before-focused/corpus.json.
+Object SHA-256: f5ebf2ce9c0f3b03c50a8a87fb106a406a1488a71210bb0dbc0c61f3a4df9cc5.
+Full JSON SHA-256: a36bf65219055df2dcf7fade9c0b089fecaa45d415da3614951eca2094ce7314.
+Compact snapshot: docs/validation/starmap_2026-10-05_race_zero_first.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -2757,18 +2800,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/sixtysixth-corpus.log`; focused log:
-`_work/choice-zero-first-sixtysixth.log`; native log: `_work/native-sixtysixth.log`.
+Latest full log: `_work/seventysecond-corpus.log`; focused log:
+`_work/race-zero-first-seventysecond.log`; native log: `_work/native-seventysecond.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
 50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against 67200c06 preserves all 2083
+7fc7701c. The latest comparison against 5ce4b318 (production 3aebb2c0) preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/sixtysixth-baseline-gate.json, sixtysixth-previous-gate.json and
-sixtysixth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/seventysecond-baseline-gate.json, seventysecond-previous-gate.json and
+seventysecond-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `f38c856b0ea96dfbe81dc4fc1f99577cec275b9802fdcf32bedaa9e285d8d590`.
+final full JSON SHA-256: `a36bf65219055df2dcf7fade9c0b089fecaa45d415da3614951eca2094ce7314`.
 
 
 ### Reproduction
@@ -2799,7 +2842,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
-| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1195 | 78.9% | 99.0% | 79.9% | - |
+| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1196 | 78.9% | 99.1% | 80.2% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1004 | 66.6% | 97.7% | 80.0% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.7% | 82.7% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.1% | 89.4% | - |

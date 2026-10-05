@@ -1517,12 +1517,12 @@ campaign_targets:
         if (this->systems->data()[index]->hasNoOwner() == 0) {
             int race = this->systems->data()[index]->getRace();
             uint32_t *image;
-            if (race == 2) {
-                image = &this->raceImageB;
+            if (race == 0) {
+                image = &this->raceImageNeutral;
             } else if (race == 1) {
                 image = &this->raceImageA;
-            } else if (race == 0) {
-                image = &this->raceImageNeutral;
+            } else if (race == 2) {
+                image = &this->raceImageB;
             } else {
                 image = &this->raceImageDefault;
             }
