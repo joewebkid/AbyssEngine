@@ -3000,3 +3000,171 @@ accepted axisbyte-full/native evidence remains authoritative. Fixed means
 remain **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked /
 959 byte with no losses. Both >=99.0 requirements remain unmet; goal stays
 active. No push, PR or merge.
+
+
+## Continuation: position buffer lifetimes and typed arrays
+
+Eighteen focused reader variants start from clean e32d34a4. Six position-buffer
+forms use typed short/int input arrays separately or together, one raw pointer
+shared across the mutually exclusive position branches, direct position stores,
+or shared raw plus direct stores. Twelve further forms use typed compressed
+UV/normal/color arrays separately/together, typed output position/UV/normal/
+color/tangent/index arrays separately/together, or all typed inputs/outputs.
+New primitive arrays have no value initializer: no zero fill or element
+constructor/destructor is introduced. Existing explicit operator delete[]
+cleanup calls remain in source at success and failure sites.
+
+Bounds/count expressions still use the same owner at each allocation/read.
+Short inputs use 3*vertexCount elements, int positions also 3*vertexCount,
+UV 2*vertexCount shorts, color 4*vertexCount bytes. Float outputs have their
+existing 2/3/4 component counts and indices use indexCount shorts. Counts are
+unsigned-short-derived (maximum 65535) and multiplied sizes fit 32-bit size_t.
+Original raw allocation/free and conversions motivate these representation
+trials, not a claim that original declared any particular C++ array type.
+Math/field read/store order and caller reader sites are unchanged in source.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| position: short_typed | 98.0 / 56.3 | 865 | 100.0 | no |
+| position: int_typed | 98.0 / 56.3 | 865 | 100.0 | no |
+| position: both_typed | 98.0 / 56.6 | 865 | 100.0 | no |
+| position: shared_raw | 98.0 / 55.9 | 867 | 100.0 | yes |
+| position: direct_position_store | 98.0 / 55.9 | 867 | 100.0 | yes |
+| position: shared_raw_direct_store | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: raw_uv | 98.0 / 55.8 | 876 | 100.0 | no |
+| arrays: raw_normal | 98.0 / 55.9 | 866 | 100.0 | no |
+| arrays: raw_color | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: raw_all | 97.6 / 56.6 | 863 | 98.2 | no |
+| arrays: output_position | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: output_uv | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: output_normal | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: output_color | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: output_tangent | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: output_index | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: output_all | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: all_raw_and_outputs | 97.6 / 56.6 | 863 | 98.2 | no |
+
+No variant improves required source score. Typed position inputs improve only
+strict score (up to 56.6 versus accepted 55.9). Shared raw/direct destination
+forms equal accepted; all seven typed-output variants also equal accepted as
+whole Core objects. Typed color input equals accepted. Combining every typed
+input regresses source to 97.6; typed outputs do not change that combined
+object. Actual byte comparisons establish identity, not score equality.
+
+Relocation/call inspection `_work/typed_array_all_calls.json` finds 61 static
+call instructions in accepted versus 60 in all typed inputs, with exactly one
+fewer `_ZdaPv` static call and no additional static symbol call. This is code
+layout/call-site evidence, not proof of missing executed cleanup. No extra
+cleanup or condition is added to force a count. All experiments are rejected
+and all production edits restored.
+
+Evidence: `_work/readposbuffer-*.json`, `_work/readtypedarrays-*.json`, saved
+source snapshots, `_work/read_position_buffer_identities.json`,
+`_work/read_typed_array_identities.json` and call inspection above. Baseline
+outside-body/signature check passes; tracked production diff is empty.
+No native/full-corpus validation is claimed for rejected forms. Accepted
+axisbyte-full/native evidence remains authoritative: **98.23% unweighted /
+98.17% weighted**, 2079 linked /959 byte pairs equal baseline with no losses.
+Both >=99.0 gates remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: zero-normal branches and stream flow
+
+Nine reader trials start from clean 6e71b62a. Five vary the zero-length branch:
+fallback first, zero/nonzero continue, named nonzero predicate, or one normal
+field read after sqrtf but before the branch. Original sqrt/sqrtf sequence is
+at 0x6caee-0x6cb04; comparison to zero at 0x6cb08, BNE to normalization at
+0x6cb10, fallback at 0x6cb12-0x6cb28. Equality/inequality inversions preserve
+NaN routing as well as signed zero; no >0 or finite-value assumption is added.
+Continue forms preserve the for increment and stream cleanup after the loop.
+The owner-before-branch trial moves only an existing field read past no call,
+keeping it after sqrtf; it does not hoist across a potential library boundary.
+
+Original normal-format/shader exits occur at 0x6ca38 and 0x6cc3a. Four further
+forms put plain normal input first, use an early exit for absent normals, use
+an early exit for disabled shader after normal parsing, or combine both.
+The label is on the existing m=*slot continuation before colors, outside
+normal/tangent local scopes. No dummy statement or effect is added. Flags,
+reads, allocations, math and deallocations stay in their prior source order
+on each executed path. These are source-flow hypotheses, not recovered C++.
+Prior five vertex-format sign-shift experiments were reviewed and not rerun;
+they had produced identical objects, so no repeated predicate sweep is claimed.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| zero branch: fallback_first | 98.0 / 55.9 | 867 | 100.0 | yes |
+| zero branch: zero_continue | 98.0 / 55.9 | 867 | 100.0 | yes |
+| zero branch: nonzero_continue | 98.0 / 55.9 | 867 | 100.0 | yes |
+| zero branch: named_nonzero | 98.0 / 55.9 | 867 | 100.0 | yes |
+| zero branch: owner_before_branch | 98.0 / 55.9 | 867 | 100.0 | no |
+| stream flow: plain_stream_first | 98.0 / 55.9 | 867 | 100.0 | no |
+| stream flow: outer_early_exit | 98.0 / 55.9 | 867 | 100.0 | yes |
+| stream flow: shader_early_exit | 98.0 / 55.9 | 867 | 100.0 | yes |
+| stream flow: both_early_exits | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+No trial improves source or strict. Seven whole Core objects equal accepted;
+owner-before-branch and plain-stream-first each differ despite equal scores.
+All production edits were restored. Source-score equality was not used to
+infer binary identity. No native/full-corpus rerun is claimed for rejected
+forms; authoritative validation remains axisbyte-full/native evidence.
+
+Evidence: `_work/readnormalbranch-*.json`, `_work/readnormalflow-*.json`,
+source snapshots, `_work/read_normal_branch_identities.json` and
+`_work/read_normal_flow_identities.json`, plus original_mesh.asm. Baseline
+outside-body/signature check passes and tracked production diff is empty.
+Fixed-three means remain **98.23% unweighted /98.17% weighted**; accepted
+exact pair sets remain 2079 linked /959 byte equal baseline without losses.
+Both >=99.0 requirements remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: color component traversal forms
+
+Ten isolated reader variants start from clean 88341db1 and retain the accepted
+per-component colors-field load. Original byte load/increment occurs at
+0x6cec4-0x6cec6, colors reload/offset advance at 0x6ced0-0x6ced4, divide/store
+at 0x6ced6-0x6ceda and unsigned back-edge test at 0x6cede-0x6cee0. Six linear
+forms test signed index, independent byte offset with the existing dynamic
+bound, advancing input pointer, postincrement store, named conversion before
+index increment, or guarded do/while. Every count is <=4*65535=262140; signed
+int index and byte offset cannot overflow. Guarded do preserves zero-count
+skipping. The byte-offset form differs from earlier captured-bound trials by
+retaining the current per-iteration count read.
+
+Four further forms traverse vertices and their four color components with
+nested unsigned counters, a byte inner counter, a short vertex counter, or
+four explicit stores. Bounds remain ushort-derived, output values preserve
+byte/255.0f (no reciprocal substitution), and each vertex's component order is
+0/1/2/3. Nested loops reload vertex count per vertex instead of per component;
+these are alternative source forms for valid separately allocated buffers,
+not claims of exact original load order or recovered original loops. Colors
+field remains the store owner read in each source assignment. File operations,
+allocation sizes and failure cleanup are unchanged.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| linear: signed_index | 98.0 / 55.9 | 867 | 100.0 | yes |
+| linear: dynamic_byte_offset | 98.0 / 56.0 | 867 | 100.0 | no |
+| linear: input_pointer | 98.0 / 55.9 | 867 | 100.0 | yes |
+| linear: postincrement_store | 98.0 / 55.9 | 867 | 100.0 | yes |
+| linear: value_then_increment | 98.0 / 55.9 | 867 | 100.0 | yes |
+| linear: guarded_do | 98.0 / 55.5 | 868 | 100.0 | no |
+| vertex: nested_uint | 97.6 / 54.6 | 880 | 100.0 | no |
+| vertex: nested_byte_component | 97.6 / 54.6 | 880 | 100.0 | no |
+| vertex: nested_short_vertex | 97.6 / 54.6 | 880 | 100.0 | no |
+| vertex: four_explicit_components | 96.8 / 56.0 | 901 | 100.0 | no |
+
+No source improvement occurs. Four linear forms equal the accepted whole Core
+object. Dynamic byte offset differs despite unchanged source and improves
+only strict by 0.1, so is rejected. Guarded do regresses strict. All three
+nested forms produce the same whole object to each other but regress source
+to 97.6; explicit four-store form regresses to 96.8. Object identities were
+verified from bytes. All production edits were restored.
+
+Evidence: `_work/readcolorloop-*.json`, `_work/readcolorvertex-*.json`, saved
+source snapshots, `_work/read_color_loop_identities.json` and
+`_work/read_color_vertex_identities.json`. Baseline outside-body/signature
+check passes and tracked production diff is empty. No native/full-corpus
+validation is claimed for rejected forms. Accepted axisbyte-full/native
+validation remains authoritative: **98.23% unweighted /98.17% weighted**,
+2079 linked /959 byte exact pairs equal baseline without losses. Both >=99.0
+requirements remain unmet; goal active. No push, PR or merge.
