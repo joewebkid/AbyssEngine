@@ -42,7 +42,11 @@ Disassembly of section .data:
         self.assertNotIn("data", functions)
         self.assertNotIn("absent", functions)
 
-    @unittest.skipUnless(len(sys.argv) > 1, "pass a real ArrayInstantiations.o")
+    @unittest.skipUnless(
+        len(sys.argv) > 1 and Path(sys.argv[1]).is_file() and
+        Path(sys.argv[1]).suffix == ".o",
+        "pass a real ArrayInstantiations.o",
+    )
     def test_seven_real_array_abi_aliases(self):
         functions = asmdiff.disassemble(sys.argv[1])
         root = Path(__file__).resolve().parents[2]

@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-05 (ModStation and TargetFollowCamera; older snapshots
-retain their dates)
+Last reviewed: 2026-10-05 (integrated recovery branches; older subsystem
+snapshots retain their dates)
+
+## Integrated recovery branches (2026-10-05, local integration branch)
+
+The LevelScript/Level, TargetFollowCamera, PlayerTurret, particle control,
+Player/Gun, StarMap, Mesh loader, and Blueprint/ModStation recovery branches
+are combined in `codex/integrate-decomp-20261005`. This does not include the
+uncommitted changes in the separate `main` checkout and is not yet merged into
+`main`. Native `gof2`, 206/206 ARM units, verifier unit tests, and focused
+Player, particle, Mesh and PlayerTurret checks pass. The integrated ARM corpus
+compares **4,322/4,524** originals across 4,683 rows, with 202 absent,
+zero wrong-type misses and zero skipped units. Mean source-shape is **90.63%**
+and strict fuzzy **78.15%**; **2,199 linked-exact** and **989 byte-exact**
+pairs remain. Relative to the latest standalone ModStation snapshot, exact
+sets have zero losses and gain 33 linked / 12 byte pairs. Saved focused exact
+sets for TargetFollowCamera, PlayerTurret and StarMap also remain present.
+These are code-generation comparisons, not a percentage of playable or
+semantically verified game behavior; integrated gameplay runtime is untested.
+The local full report is `_work/integrated_full_20261005.json`.
 
 ## TargetFollowCamera 99% Gate (2026-10-02)
 
