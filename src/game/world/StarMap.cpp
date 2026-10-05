@@ -1017,8 +1017,10 @@ uint32_t StarMap::OnTouchBegin(int x, int y) {
                     if (oldSystem != this->selectedSystem) {
                         Globals::sound->play(0x67, 0, 0, 0.0f);
                     }
+                    SystemPathFinder *distanceFinder = this->pathFinder;
+                    Array<SolarSystem *> *distanceSystems = this->systems;
                     int current = Globals::status->getSystem()->getIndex();
-                    int dist = this->pathFinder->getJumpDistance(this->systems, current, this->selectedSystem);
+                    int dist = distanceFinder->getJumpDistance(distanceSystems, current, this->selectedSystem);
                     this->jumpCost = dist;
                     if (dist == 0) {
                         int currentIndex = Globals::status->getSystem()->getIndex();

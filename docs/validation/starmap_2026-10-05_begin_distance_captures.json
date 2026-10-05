@@ -1,0 +1,201 @@
+{
+  "previous_report_commit": "095fae50",
+  "previous_production": "fb5748ae",
+  "decision": "accepted: capture pathFinder and systems before getSystem/getIndex in OnTouchBegin",
+  "original_source_recovered": false,
+  "primary_fragment": "caa86..caa9c: LDRD receiver/systems +80/+84, Status getSystem/getIndex, fresh selectedSystem +96, argument moves, getJumpDistance",
+  "previous_fragment": "4086..4098: getSystem/getIndex before LDRD +80/+84, fresh selectedSystem and call",
+  "new_fragment": "4086..409c: same ordering/registers/offsets as primary, expected linked call relocations differ",
+  "behavior": "Captures receiver and systems across existing getter calls, retains fresh selectedSystem read after them. No added or removed calls/checks, no barriers/padding. Native load order proven; original C++ syntax and runtime equivalence not proven.",
+  "before": {
+    "symbol": "_ZN7StarMap12OnTouchBeginEii",
+    "match": 97.4,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 275,
+    "n_base": 273,
+    "source_match": 99.3,
+    "instruction_inventory_match": 99.3,
+    "opcode_inventory_match": 99.3,
+    "control_flow_match": 98.5,
+    "ordered_control_flow_match": 98.5,
+    "control_inventory_match": 98.5,
+    "call_count_match": 100.0,
+    "size_match": 99.3,
+    "unit": "game/world/StarMap"
+  },
+  "after": {
+    "symbol": "_ZN7StarMap12OnTouchBeginEii",
+    "match": 98.5,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 275,
+    "n_base": 275,
+    "source_match": 99.6,
+    "instruction_inventory_match": 99.6,
+    "opcode_inventory_match": 99.6,
+    "control_flow_match": 98.5,
+    "ordered_control_flow_match": 98.5,
+    "control_inventory_match": 98.5,
+    "call_count_match": 100.0,
+    "size_match": 100.0,
+    "unit": "game/world/StarMap"
+  },
+  "other_21_rows_equal": true,
+  "focused": {
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "exit": 0
+  },
+  "native_static_library": {
+    "exit": 0,
+    "result": "StarMap compiled and libgof2.a linked"
+  },
+  "object_sha256": "041c36b7c1189d035a71cc89265c3c46b8ae3c082263260c4135abe11d7d92d4",
+  "full": {
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "count": 4619,
+    "fuzzy_perfect": 2203,
+    "byte_exact": 960,
+    "linked_exact": 2083,
+    "skipped": 0,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "native_runtime_equivalence": "unverified",
+  "focused_full_rows_equal": true,
+  "gate": {
+    "body_count": 20,
+    "original_instructions": 7101,
+    "aliases": {
+      "_ZN7StarMapC2EbP7Missionbi": "_ZN7StarMapC1EbP7Missionbi",
+      "_ZN7StarMapD2Ev": "_ZN7StarMapD1Ev"
+    },
+    "baseline": {
+      "source_match": {
+        "unweighted": 83.81,
+        "weighted": 73.61763131953246
+      },
+      "match": {
+        "unweighted": 48.29,
+        "weighted": 28.050161949021266
+      },
+      "linked_exact": 2,
+      "byte_exact": 2
+    },
+    "final": {
+      "source_match": {
+        "unweighted": 99.25,
+        "weighted": 98.60281650471764
+      },
+      "match": {
+        "unweighted": 87.625,
+        "weighted": 82.4676946908886
+      },
+      "linked_exact": 6,
+      "byte_exact": 3
+    },
+    "exact_pairs": {
+      "linked_equal": {
+        "baseline": 2079,
+        "final": 2083,
+        "lost": [],
+        "gained": [
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap10initLightsEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap14missionChangedEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap24askForJumpIntoAlienWorldEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap8setStartEii"
+          ]
+        ]
+      },
+      "bytes_equal": {
+        "baseline": 959,
+        "final": 960,
+        "lost": [],
+        "gained": [
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap14missionChangedEv"
+          ]
+        ]
+      }
+    },
+    "target_met": false
+  },
+  "previous_gate": {
+    "body_count": 20,
+    "original_instructions": 7101,
+    "aliases": {
+      "_ZN7StarMapC2EbP7Missionbi": "_ZN7StarMapC1EbP7Missionbi",
+      "_ZN7StarMapD2Ev": "_ZN7StarMapD1Ev"
+    },
+    "baseline": {
+      "source_match": {
+        "unweighted": 99.235,
+        "weighted": 98.59119842275736
+      },
+      "match": {
+        "unweighted": 87.57000000000001,
+        "weighted": 82.42509505703421
+      },
+      "linked_exact": 6,
+      "byte_exact": 3
+    },
+    "final": {
+      "source_match": {
+        "unweighted": 99.25,
+        "weighted": 98.60281650471764
+      },
+      "match": {
+        "unweighted": 87.625,
+        "weighted": 82.4676946908886
+      },
+      "linked_exact": 6,
+      "byte_exact": 3
+    },
+    "exact_pairs": {
+      "linked_equal": {
+        "baseline": 2083,
+        "final": 2083,
+        "lost": [],
+        "gained": []
+      },
+      "bytes_equal": {
+        "baseline": 960,
+        "final": 960,
+        "lost": [],
+        "gained": []
+      }
+    },
+    "target_met": false
+  },
+  "gate_exits": {
+    "baseline_preservation": 0,
+    "previous_preservation": 0,
+    "weighted99_target": 1
+  },
+  "full_sha256": "2fffeff58c1e4ef4f3af19647d2585a98a84df0b423f5e72838809b1ec490301",
+  "remaining_begin_difference": {
+    "primary": "ca97e..ca980: compare size,index / BLS skip",
+    "current": "3f7e..3f80: compare index,size / BCS skip",
+    "interpretation": "Equivalent unsigned bounds check with reversed operands; not a missing bounds check."
+  }
+}
