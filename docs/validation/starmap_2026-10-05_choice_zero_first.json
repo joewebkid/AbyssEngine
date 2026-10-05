@@ -1,0 +1,88 @@
+{
+  "previous_accepted_commit": "67200c06",
+  "decision": "accepted: confirmation result 0 before close result 1 improves source shape and ordered matching without changing either branch actions",
+  "original_source_recovered": false,
+  "hypothesis": "Reorder the two existing result predicates: result==0 holds the existing confirmation tail; else if result==1 clears choiceVisible and alienJumpPending; common return 0 handles fallthrough and all other results. Same two static comparisons, no added callback/check.",
+  "primary_reference": "Primary Android checks result 1 then 0. The new C++ predicate order is a source-form hypothesis, not a claim to recover the original syntax.",
+  "behavior_review": "Result 0 clears choiceVisible and executes the same confirmation checks, calls and early returns; result 1 clears the same two flags and returns 0; other results perform no writes/calls and return 0. OnTouchEnd callback still runs once before either predicate.",
+  "before": {
+    "symbol": "_ZN7StarMap10OnTouchEndEii",
+    "match": 76.9,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1037,
+    "n_base": 1004,
+    "source_match": 97.5,
+    "instruction_inventory_match": 96.6,
+    "opcode_inventory_match": 97.1,
+    "control_flow_match": 98.1,
+    "ordered_control_flow_match": 83.6,
+    "control_inventory_match": 98.1,
+    "call_count_match": 99.3,
+    "size_match": 96.6,
+    "unit": "game/world/StarMap"
+  },
+  "after": {
+    "symbol": "_ZN7StarMap10OnTouchEndEii",
+    "match": 80.0,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1037,
+    "n_base": 1004,
+    "source_match": 97.7,
+    "instruction_inventory_match": 96.8,
+    "opcode_inventory_match": 97.4,
+    "control_flow_match": 98.1,
+    "ordered_control_flow_match": 84.1,
+    "control_inventory_match": 98.1,
+    "call_count_match": 99.3,
+    "size_match": 96.7,
+    "unit": "game/world/StarMap"
+  },
+  "other_21_focused_rows_identical": true,
+  "focused_full_rows_equal": true,
+  "focused": {
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0
+  },
+  "native_static_library": "PASS; original log shows StarMap compilation/libgof2.a link, subsequent incremental confirmation exited 0",
+  "full": {
+    "count": 4619,
+    "skipped": 0,
+    "linked_exact": 2083,
+    "byte_exact": 960,
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "compared_unique": 4274,
+    "original_functions": 4524,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "interrupted_observation": "Initial tool observation interrupted; processes were later absent and completed full report/log verified. Original wrapper exit not captured; no full run restarted.",
+  "native_runtime": "not tested",
+  "baseline_and_previous_exact_pairs_lost": 0,
+  "default_99_gate_exit": 1,
+  "target_met": false,
+  "final_means": {
+    "source_match": {
+      "unweighted": 99.22,
+      "weighted": 98.56482185607662
+    },
+    "match": {
+      "unweighted": 87.44,
+      "weighted": 82.22986903253063
+    },
+    "linked_exact": 6,
+    "byte_exact": 3
+  },
+  "object_sha256": "06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34",
+  "full_json_sha256": "f38c856b0ea96dfbe81dc4fc1f99577cec275b9802fdcf32bedaa9e285d8d590",
+  "readonly_excluded_candidates": {
+    "ring_transform": "Primary c78b6..c78ce and previous 2cb6..2cce have matching member/Canvas/handle loads before getMatrix and TransformSetLocal; no edit.",
+    "confirmation_camera": "Primary cb33e..cb34c and previous 2302..2310 already load prevCamera before exitRequested store and then Canvas; no edit."
+  }
+}

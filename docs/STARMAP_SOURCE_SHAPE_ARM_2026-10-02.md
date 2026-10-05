@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.210% unweighted / 98.53561% original-instruction
+implementation bodies measure **99.220% unweighted / 98.56482% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.285% / 81.77716%**, respectively. Source-shape is an inventory/control-flow
+**87.440% / 82.22987%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -2569,6 +2569,53 @@ Full JSON SHA-256: 9b4234e32adfb8cc149365e86664e6406b6ce72182c588906bba89f80a9d5
 Compact committed snapshot:
 docs/validation/starmap_2026-10-05_confirm_station_read.json.
 
+## Sixty-sixth accepted source form: choice confirmation first
+
+Inspected StarMap.cpp, primary touch-android.c and bounded raw ARM, accepted
+sixty-fifth assembly and focused/full outputs. Reordered the two existing
+result predicates: result 0 holds the entire existing confirmation tail;
+else if result 1 clears choiceVisible and alienJumpPending; common return 0
+handles fallthrough and other results. The window callback still runs once
+before either test. Result 0 retains every field change, predicate, call and
+early return; result 1 retains its two clears and return 0; other results have
+no writes/calls and return 0. No new comparison, callback, barrier, volatile,
+register forcing or padding was introduced. This source-form hypothesis is
+not recovered original C++ syntax: primary Android tests result 1 before 0.
+
+OnTouchEnd source 97.5% -> 97.7%, strict 76.9% -> 80.0%; instruction inventory
+96.6% -> 96.8%, opcode inventory 97.1% -> 97.4%, ordered control 83.6% ->
+84.1%, size 96.6% -> 96.7%. Control inventory 98.1% and calls 99.3% unchanged;
+1037/1004 instructions remain. Other 21 focused rows are identical.
+Fixed-body source means improve to 99.220% / 98.56482185607662%; strict means
+to 87.440% / 82.22986903253063%. Weighted 99% remains unmet.
+
+Two candidate rewrites were excluded read-only: station TransformSetLocal
+primary c78b6..c78ce matches previous 2cb6..2cce including receiver/handle
+capture before getMatrix; confirmation camera primary cb33e..cb34c matches
+previous 2302..2310, including prevCamera read before exitRequested store.
+No source edit was made for either already-matching fragment.
+
+Focused ARM: 204/204 TUs, zero failures, 22 comparisons, zero skips. Native
+UCRT build log shows StarMap compilation and libgof2.a link; a subsequent
+incremental confirmation exited 0. Initial full/native tool observation was
+interrupted; existing processes were later absent and completed reports/logs
+were verified. Original wrapper exit was not captured; no full run restarted.
+Full corpus has 4619 comparisons, zero skips, 2083 linked-exact and 960
+byte-exact. Coverage/missing/extra unchanged. All focused/full rows agree
+after unit separator normalization. Baseline and previous 67200c06 gates pass
+with zero lost exact pairs. Default 99% gate fails, exit 1. Native runtime
+has not been tested. Verifier, shared headers/configs and other production
+files were not changed.
+
+Evidence: _work/before-choice-zero-first-sixtysixth.cpp,
+choice-zero-first-sixtysixth.json/log, native-sixtysixth.log,
+native-sixtysixth-confirmed.log, sixtysixth-corpus.json/log,
+sixtysixth-baseline-gate.json/log, sixtysixth-previous-gate.json/log and
+sixtysixth-target-gate.json/log. Previous inputs checkpoint66-before-focused/
+corpus.json. Object SHA-256: 06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34.
+Full JSON SHA-256: f38c856b0ea96dfbe81dc4fc1f99577cec275b9802fdcf32bedaa9e285d8d590.
+Compact committed snapshot: docs/validation/starmap_2026-10-05_choice_zero_first.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -2606,18 +2653,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/sixtyfifth-corpus.log`; focused log:
-`_work/confirm-station-read-sixtyfifth.log`; native log: `_work/native-sixtyfifth.log`.
+Latest full log: `_work/sixtysixth-corpus.log`; focused log:
+`_work/choice-zero-first-sixtysixth.log`; native log: `_work/native-sixtysixth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
 50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against 0a4d9116 (production 6c5707e7) preserves all 2083
+7fc7701c. The latest comparison against 67200c06 preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/sixtyfifth-baseline-gate.json, sixtyfifth-previous-gate.json and
-sixtyfifth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/sixtysixth-baseline-gate.json, sixtysixth-previous-gate.json and
+sixtysixth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `9b4234e32adfb8cc149365e86664e6406b6ce72182c588906bba89f80a9d5565`.
+final full JSON SHA-256: `f38c856b0ea96dfbe81dc4fc1f99577cec275b9802fdcf32bedaa9e285d8d590`.
 
 
 ### Reproduction
@@ -2649,7 +2696,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
 | `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1195 | 78.9% | 99.0% | 79.9% | - |
-| `_ZN7StarMap10OnTouchEndEii` | 1037/1004 | 66.6% | 97.5% | 76.9% | - |
+| `_ZN7StarMap10OnTouchEndEii` | 1037/1004 | 66.6% | 97.7% | 80.0% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.7% | 82.7% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.1% | 89.4% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/736 | 72.9% | 98.3% | 77.1% | - |

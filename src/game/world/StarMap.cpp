@@ -551,60 +551,57 @@ int StarMap::OnTouchEnd(int x, int y) {
     }
 
     int result = this->choiceWindow->OnTouchEnd(x, y);
-    if (result == 1) {
+    if (result == 0) {
         this->choiceVisible = 0;
-        this->alienJumpPending = 0;
-        return 0;
-    }
-    if (result != 0) {
-        return 0;
-    }
-    this->choiceVisible = 0;
-    if (this->suppressNextClose != 0) {
-        this->suppressNextClose = 0;
-        return 0;
-    }
-    if (this->mode == 3) {
-        Station *station = this->stations->data()[this->selectedStation];
-        if (station->getIndex() == Globals::status->getStation()->getIndex()) {
+        if (this->suppressNextClose != 0) {
             this->suppressNextClose = 0;
             return 0;
         }
-    }
-    if (this->alienJumpPending && this->mode == 0 && !this->pad_0xa8_a && !this->autoMode) {
-        Level::programmedStation = Globals::status->playerStation;
-        this->alienJumpPending = 0;
-        this->exitRequested = 1;
-        Level::doInstantJump = 1;
-        Level::energyCellsForNextJump = this->jumpCost;
-        Globals::Canvas->CameraSetCurrent(this->prevCamera);
-        return 1;
-    }
-    if (!this->pad_0xa8_a && this->mode == 3) {
-        uint8_t jumpMapMode = this->jumpMapModeB;
-        if (jumpMapMode && this->cargoAmount < this->jumpCost) {
-            if (this->jumpCost != 1) return 0;
-            if (!this->jumpMapModeA) {
-                depart(false);
+        if (this->mode == 3) {
+            Station *station = this->stations->data()[this->selectedStation];
+            if (station->getIndex() == Globals::status->getStation()->getIndex()) {
+                this->suppressNextClose = 0;
                 return 0;
             }
-            Level::doInstantJump = 0;
-            Level::programmedStation = this->stations->data()[this->selectedStation];
-        } else {
-            if (!this->jumpMapModeA) {
-                depart(true);
-                return 0;
-            }
-            Level::programmedStation = this->stations->data()[this->selectedStation];
-            if (jumpMapMode) {
-                int difference = this->stations->data()[this->selectedStation]->getSystem() - Globals::status->getSystem()->getIndex();
-                Level::doInstantJump = difference != 0;
-                if (difference) Level::energyCellsForNextJump = this->jumpCost;
-            } else Level::doInstantJump = 0;
         }
-        this->exitRequested = 1;
-        Globals::Canvas->CameraSetCurrent(this->prevCamera);
-        return 1;
+        if (this->alienJumpPending && this->mode == 0 && !this->pad_0xa8_a && !this->autoMode) {
+            Level::programmedStation = Globals::status->playerStation;
+            this->alienJumpPending = 0;
+            this->exitRequested = 1;
+            Level::doInstantJump = 1;
+            Level::energyCellsForNextJump = this->jumpCost;
+            Globals::Canvas->CameraSetCurrent(this->prevCamera);
+            return 1;
+        }
+        if (!this->pad_0xa8_a && this->mode == 3) {
+            uint8_t jumpMapMode = this->jumpMapModeB;
+            if (jumpMapMode && this->cargoAmount < this->jumpCost) {
+                if (this->jumpCost != 1) return 0;
+                if (!this->jumpMapModeA) {
+                    depart(false);
+                    return 0;
+                }
+                Level::doInstantJump = 0;
+                Level::programmedStation = this->stations->data()[this->selectedStation];
+            } else {
+                if (!this->jumpMapModeA) {
+                    depart(true);
+                    return 0;
+                }
+                Level::programmedStation = this->stations->data()[this->selectedStation];
+                if (jumpMapMode) {
+                    int difference = this->stations->data()[this->selectedStation]->getSystem() - Globals::status->getSystem()->getIndex();
+                    Level::doInstantJump = difference != 0;
+                    if (difference) Level::energyCellsForNextJump = this->jumpCost;
+                } else Level::doInstantJump = 0;
+            }
+            this->exitRequested = 1;
+            Globals::Canvas->CameraSetCurrent(this->prevCamera);
+            return 1;
+        }
+    } else if (result == 1) {
+        this->choiceVisible = 0;
+        this->alienJumpPending = 0;
     }
     return 0;
 }
