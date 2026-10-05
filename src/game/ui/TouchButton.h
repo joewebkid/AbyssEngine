@@ -106,7 +106,7 @@ public:
     int init(String const &text, unsigned int kind, int achId, int achStage, int width, int d_unused, int x, int y,
              unsigned char flags0, unsigned char flags1);
 
-    uint8_t isTouched();
+    int isTouched();
 
     uint8_t isVisible();
 

@@ -41,6 +41,15 @@ blueprint item `+0x84`, buy mode `+0x88`, blueprint count `+0x94`, scroll
 offset `+0xb4`, touch Y values `+0xb8/+0xcc`, dragging `+0xd0`, paid/free
 credit flags `+0xae/+0xb0`, and auto-equip state `+0xf8/+0xfc`.
 
+## 2026-09-25 Revalidation
+
+The later full-family recovery pass supersedes the original 27.2% focused
+result below. `HangarWindow::OnTouchBegin` now measures **98.1% source-shape**
+and **90.5% strict/fuzzy similarity**. The signed list length, blueprint
+price recurrence and scoped String lifetimes are now represented directly in
+the C++ body. See `HANGARWINDOW_ARM_SOURCE_SHAPE_2026-09-25.md` for the current
+family result and accepted/rejected forms.
+
 ## Intentional Local Boundary
 
 Android relies on its touch-coordinate invariant and only tests the computed

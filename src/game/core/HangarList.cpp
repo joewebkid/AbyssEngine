@@ -39,9 +39,9 @@ Array<Array<ListItem *> *> *HangarList::getItems() {
     return this->tabs;
 }
 
-uint32_t HangarList::getCurrentLength() {
+int HangarList::getCurrentLength() {
     Array<ListItem *> *items = (*this->tabs)[this->currentTab];
-    return items != nullptr ? items->size() : 0;
+    return items != nullptr ? static_cast<int>(items->size()) : 0;
 }
 
 Array<ListItem *> *HangarList::getCurrentTabItems() {

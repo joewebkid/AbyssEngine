@@ -252,7 +252,12 @@ public:
         int listItemIconSpriteHeight;
     };
     int field_0x2cc;
-    uint8_t _pad_0x2d0[4];
+    union {
+        int field_0x2d0;
+        // Added to HangarWindow's copied row-icon Y when drawing the
+        // installed/unavailable marker beside an item row.
+        int hangarRowMarkerOffsetY;
+    };
     int field_0x2d4;
     int field_0x2d8;
     int windowX;

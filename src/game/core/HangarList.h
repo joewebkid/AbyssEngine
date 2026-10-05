@@ -42,7 +42,7 @@ public:
 
     Array<Array<ListItem *> *> *getItems();
 
-    uint32_t getCurrentLength();
+    int getCurrentLength();
 
     Array<ListItem *> *getCurrentTabItems();
 

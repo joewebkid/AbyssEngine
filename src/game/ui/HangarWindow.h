@@ -115,7 +115,7 @@ public:
     int rowActionOffsetY;
     int iconOffsetY;
     uint8_t replaceEquipPending;
-    uint8_t upgradeMode;
+    bool upgradeMode;
     uint8_t localBluePrint;
     uint8_t listModeFlag;
     int buttonWidth;

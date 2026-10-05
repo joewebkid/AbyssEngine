@@ -64,7 +64,7 @@ void TouchButton::setPressProgress(float value) {
     this->pressProgress = value;
 }
 
-uint8_t TouchButton::isTouched() {
+int TouchButton::isTouched() {
     return this->touched;
 }
 
