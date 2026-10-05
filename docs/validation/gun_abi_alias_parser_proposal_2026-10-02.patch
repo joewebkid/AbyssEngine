@@ -1,0 +1,42 @@
+--- a/tools/verify/asmdiff.py
++++ b/tools/verify/asmdiff.py
+@@ -310,8 +310,14 @@
+     lines = out.splitlines()
+     sizes = _symbol_sizes(lines)
+     funcs, cur, start, limit = {}, None, 0, None
+-    addr2label = {}   # text address -> the one name objdump put on the `<name>:` header
++    addr2label = {}   # (section, address) -> disassembly label
++    section = None
+     for line in lines:
++        sm = re.match(r"^Disassembly of section (.+):$", line)
++        if sm:
++            section = sm.group(1)
++            cur = None
++            continue
+         m = re.match(r"^([0-9a-f]+) <(.+)>:$", line)
+         if m:
+             start = int(m.group(1), 16)
+@@ -319,7 +325,7 @@
+             limit = start + sz if sz else None
+             cur = {"insns": [], "widths": [], "entries": [], "bytes": "", "reloc": set()}
+             funcs[m.group(2)] = cur
+-            addr2label[start] = m.group(2)
++            addr2label[(section, start)] = m.group(2)
+             continue
+         if cur is None:
+             continue
+@@ -377,11 +383,11 @@
+     # function names at each text address and point every sibling at the labelled entry, so a match
+     # under one variant name credits all of them.
+     for line in lines:
+-        m = re.match(r"^([0-9a-f]+)\s.{6,}\bF\s+\.text\s+[0-9a-f]+\s+(\S+)\s*$", line)
++        m = re.match(r"^([0-9a-f]+)\s.{6,}\bF\s+(\.text(?:\.\S+)?)\s+[0-9a-f]+\s+(\S+)\s*$", line)
+         if not m:
+             continue
+-        addr, name = int(m.group(1), 16), m.group(2)
+-        label = addr2label.get(addr)
++        addr, section, name = int(m.group(1), 16), m.group(2), m.group(3)
++        label = addr2label.get((section, addr))
+         if label and name not in funcs and label in funcs:
+             funcs[name] = funcs[label]
+     return funcs
