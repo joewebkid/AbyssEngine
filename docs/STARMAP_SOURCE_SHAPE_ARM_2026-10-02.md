@@ -2616,6 +2616,41 @@ corpus.json. Object SHA-256: 06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e
 Full JSON SHA-256: f38c856b0ea96dfbe81dc4fc1f99577cec275b9802fdcf32bedaa9e285d8d590.
 Compact committed snapshot: docs/validation/starmap_2026-10-05_choice_zero_first.json.
 
+## Sixty-seventh trial: warning combination on new confirmation form (removed)
+
+Inspected StarMap.cpp, primary touch/draw extracts, bounded original ARM and
+accepted assembly. Retested fifty-seventh's separate warning 3217 plus common
+goto-selected warning delivery on accepted sixty-sixth. Only the warning
+region was transplanted; confirmation-zero-first and post-programmedStation
+station reread both remained. Runtime predicate/getter ordering, selected text,
+choiceVisible, suppressNextClose and subsequent inertia/Help were preserved.
+No original C++ syntax recovery is claimed.
+
+OnTouchEnd source 97.7% -> 97.6%, strict 80.0% -> 81.3%; instruction inventory
+96.8% -> 97.0%, opcode 97.4% -> 97.5%, control inventory 98.1% -> 97.8%,
+ordered control 84.1% -> 84.5%, normalized calls 99.3% -> 97.8%, size 96.7%
+-> 97.9%, 1037/1004 -> 1037/1016 instructions. Other 21 rows unchanged.
+Rejected because it lowers the requested source metric. Trial object SHA-256:
+bd5b7f07db16204bcea8d5734219ffd96edecfaaedb3885b086862e0fa47834b.
+
+Trial and fresh restoration each compile 204/204 ARM TUs with zero failures,
+22 comparisons and zero skips. Restored entire focused JSON equals canonical
+accepted sixty-sixth, object SHA-256
+06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34.
+Production remains 3aebb2c0; source means 99.220% / 98.56482185607662%.
+Weighted 99% remains unmet. No new native/full/runtime run is claimed;
+accepted sixty-sixth validation remains authoritative.
+
+Read-only draw audit excluded two suspected differences: native c9166..c91a4
+and accepted 276..2b4 already retain the same transitionIn byte through alpha
+store and mode comparison. Primary path-phase VCMPE c952c / BLE c9534 skips
+increment when not greater, including unordered flags; current phase>field_0xec
+has that behavior. No transition snapshot or unordered-comparison edit made.
+
+Evidence: _work/before-warning-combined-sixtyseventh.cpp,
+warning-combined-sixtyseventh.json/log, sixtyseventh-restored-focused.json/log.
+Compact snapshot: docs/validation/starmap_2026-10-05_warning_combined_trial.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
