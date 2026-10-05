@@ -2362,7 +2362,8 @@ Retained source sets unsigned int channel = 0 before the switch and leaves
 that value in the default case. Cases 0/1/2/3/6 still assign their masks and
 case 6 still applies the exact recovered float literal's angular conversion.
 The loop index can only be 0..6; positions 4/5 therefore still pass channel 0,
-as in the original seven-entry table. This is ordinary default-value source
+as in the original V5 switch branches selected by a TBB jump table.
+This is not an original mask-value array. This is ordinary default-value source
 construction, not an added artificial effect or recovered C++ spelling.
 Other cases replace the initial value with their existing constants. Read,
 conversion, failure cleanup and animation attachment behavior are unchanged.
@@ -3168,3 +3169,110 @@ validation is claimed for rejected forms. Accepted axisbyte-full/native
 validation remains authoritative: **98.23% unweighted /98.17% weighted**,
 2079 linked /959 byte exact pairs equal baseline without losses. Both >=99.0
 requirements remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: optional presence flow and V5 mask representation
+
+Fourteen focused Enhanced variants start from 1bded230. Eight preserve the
+optional/V5 nested predicates as early exits to existing continuation points,
+named bool presence, or unsigned optionalCount >0. Read failure still reaches
+fail; zero presence still skips all seven V5 counts. Optional type!=2 exits
+to the following V5 flag/read check. Labels sit on existing statements outside
+skipped local scopes; no dummy operation is introduced. All file order, signed
+key counts, masks, angular conversion and attachment/cleanup remain unchanged.
+
+Primary V5 dispatch is clarified here: 0x6c26c is TBB [pc,r0], with seven jump
+offsets at 0x6c270 (1c/04/08/0c/10/10/13). Immediate-mask branches include
+0x400 before TBB, 0x800 at 0x6c27a, 0x2000 at 0x6c282, 0x4000 at 0x6c28a,
+zero at 0x6c290, and rotation/0x40000 at 0x6c296-0x6c2a4. This is a table of
+control-flow offsets, not a memory array of channel values. The earlier
+'seven-entry table' phrase is corrected above to avoid implying data recovery.
+
+Six hypothetical equivalent representations use an actual seven-value static
+mask array (unsigned int/int/long long), before or after rotation handling.
+The fixed loop c=0..6 keeps lookup within bounds; cases 4/5 still give zero.
+These are newly authored alternative C++ forms, explicitly not recovered mask
+arrays from the original binary. No compiler/matcher input or helper changes.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| presence: v5_presence_early | 98.3 / 66.9 | 641 | 100.0 | yes |
+| presence: v5_format_early | 98.3 / 66.9 | 641 | 100.0 | yes |
+| presence: v5_both_early | 98.3 / 66.9 | 641 | 100.0 | yes |
+| presence: v5_named_presence | 98.3 / 66.9 | 641 | 100.0 | yes |
+| presence: v5_positive_presence | 98.3 / 66.9 | 641 | 100.0 | yes |
+| presence: optional_type_early | 98.3 / 66.9 | 641 | 100.0 | yes |
+| presence: optional_format_early | 98.3 / 66.9 | 641 | 100.0 | yes |
+| presence: optional_both_early | 98.3 / 66.9 | 641 | 100.0 | yes |
+| mask array: unsigned_int_lookup_first | 96.4 / 23.1 | 621 | 100.0 | no |
+| mask array: unsigned_int_rotation_first | 96.3 / 23.7 | 620 | 100.0 | no |
+| mask array: int_lookup_first | 96.4 / 23.1 | 621 | 100.0 | no |
+| mask array: int_rotation_first | 96.3 / 23.7 | 620 | 100.0 | no |
+| mask array: long_long_lookup_first | 96.4 / 23.0 | 623 | 100.0 | no |
+| mask array: long_long_rotation_first | 96.3 / 23.7 | 622 | 100.0 | no |
+
+All eight presence-flow variants equal the accepted whole Mesh object. Every
+mask-array variant differs and materially regresses source (96.3-96.4 versus
+98.3), consistent with replacing original branch dispatch by data lookup.
+Even signed/unsigned int forms differ as whole objects despite equal scores;
+identity is established only by byte comparison. All production edits were
+restored. The accepted switch/guards are retained.
+
+Evidence: `_work/enhpresenceflow-*.json`, `_work/enhmasklookup-*.json`, source
+snapshots, `_work/enh_presence_flow_identities.json`,
+`_work/enh_mask_lookup_identities.json` and original_mesh.asm. Baseline
+outside-body/signature check passes; tracked production diff is empty.
+No native/full-corpus validation is claimed for rejected variants. Accepted
+axisbyte-full/native evidence remains authoritative: **98.23% unweighted /
+98.17% weighted**, 2079 linked /959 byte exact pairs equal baseline without
+losses. Both >=99.0 gates remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: explicit zero V5 cases and combinations
+
+Ten focused Enhanced variants start from clean 6a4e8b37. Five expose zero
+channels 4/5 explicitly, assign their default zero, omit initializer when every
+switch path assigns channel, place zero labels first, or use unsigned dispatch.
+Original TBB routes both 4/5 offsets to 0x6c290-0x6c294, assigning both channel
+words zero; cases 0/1/2/3/6 keep their masks and rotation. The no-initializer
+form still assigns channel on every case/default path before insertion; it
+cannot read an uninitialized channel. Fixed c=0..6 means unsigned dispatch
+selects the same cases. No predicate, dummy instruction or effect is added.
+
+Five combinations start from the explicit-zero-assignment variant: signed
+32-bit, unsigned/signed 64-bit channel, angular arithmetic before its mask
+assignment, or rotation before the switch. All stored masks fit their tested
+integer representations. Arithmetic still uses the exact float literal and
+preserves /100, *tau, /360 order. The last variant moves the existing c==6
+rotation handling outside dispatch; it does not convert other channels.
+These remain source-form hypotheses, not recovered original C++ labels/types.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| zero cases: explicit_zero_labels | 98.3 / 66.9 | 641 | 100.0 | yes |
+| zero cases: explicit_zero_assignment | 98.3 / 67.8 | 639 | 100.0 | no |
+| zero cases: zero_labels_no_initializer | 98.3 / 67.8 | 639 | 100.0 | no |
+| zero cases: zero_group_first | 98.3 / 66.9 | 641 | 100.0 | yes |
+| zero cases: unsigned_dispatch | 98.3 / 66.9 | 641 | 100.0 | yes |
+| combination: int | 98.3 / 67.8 | 639 | 100.0 | no |
+| combination: unsigned_long_long | 98.3 / 67.8 | 639 | 100.0 | no |
+| combination: long_long | 98.3 / 67.8 | 639 | 100.0 | no |
+| combination: arithmetic_before_mask | 98.3 / 67.8 | 639 | 100.0 | no |
+| combination: rotation_before_switch | 98.0 / 65.1 | 642 | 100.0 | no |
+
+No variant improves requested source. Explicit zero assignment (with or without
+initializer) and its four channel/order combinations all yield the same whole
+Mesh object to each other: strict rises 66.9 ->67.8 and raw count falls 641 ->639,
+but source stays 98.3. These strict-only gains are not retained. Three remaining
+zero-case forms equal accepted; rotation-before-switch differs and regresses
+source to 98.0. Actual byte comparisons establish object identity; source score
+equality is not taken as identity. All production edits were restored.
+
+Evidence: `_work/enhzerocases-*.json`, `_work/enhzerocasecombo-*.json`, source
+snapshots, `_work/enh_zero_case_identities.json` and
+`_work/enh_zero_case_combo_identities.json`. Baseline outside-body/signature
+check passes; tracked production diff is empty. No native/full-corpus run is
+claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, 2079 linked /959 byte
+exact pairs equal baseline without losses. Both >=99.0 requirements remain
+unmet; goal active. No push, PR or merge.
