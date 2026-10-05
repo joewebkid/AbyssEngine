@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.205% unweighted / 98.51862% original-instruction
+implementation bodies measure **99.210% unweighted / 98.53561% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.225% / 81.58516%**, respectively. Source-shape is an inventory/control-flow
+**87.260% / 81.70414%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -2427,6 +2427,50 @@ before-info-alpha-byte-sixtyfirst.cpp, info-alpha-byte-sixtyfirst.json/log and
 sixtyfirst-restored-focused.json/log; compact committed evidence:
 docs/validation/starmap_2026-10-05_info_byte_trial.json.
 
+
+## Accepted position-copy restoration after checkpoint 9cd4cf43
+
+drawOnScreenInfo now performs the station/system scratchVector copy in explicit
+branches, instead of choosing an Array pointer before the copy. Each runtime
+path still reads only its selected array, copies the same indexed Vector to
+scratchVector, and reaches the unchanged bounds/marker/text logic. Vector is a
+three-float 12-byte struct, with a trivial implicit copy construction; its
+assignment copies x/y/z. No extra runtime call, predicate, bounds change,
+compiler hint, shared-code edit or padding was introduced.
+
+Primary c8376..c8398 uses ITE EQ, LDREQ from this+404, LDRNE from this+408,
+then a common data/index load and one Vector assignment. New c66..c88 now
+reproduces this selection and single-copy sequence. The compiler merges the
+two source copies. This is a source-form hypothesis supported by resulting
+machine evidence, not recovered original C++ syntax. It differs from the old
+explicit Array-pointer if/else trial, which left offset selection unchanged.
+
+Only info changes: source 98.9% -> 99.0%, strict 79.2% -> 79.9%, instructions
+1207/1196 -> 1207/1195, inventory 97.8% -> 98.1%, opcode 98.9% -> 99.0%, size
+99.1% -> 99.0%. Control/call metrics and other 21 rows are unchanged. Fixed
+means become source 99.210% / 98.53561470215463%, strict 87.260% /
+81.70414026193494%. Weighted shortfall remains 0.46438529784537 percentage
+points. Both means must pass 99%; the goal remains unmet.
+
+Focused ARM compiled 204/204 TUs, zero failures, 22 rows, zero skips. UCRT
+gof2 static-library build passed. Full corpus: 4619 comparisons, zero skips,
+2083 linked-exact and 960 byte-exact, avg source 89.06%, fuzzy 76.16%, 2203
+fuzzy-perfect entries. Coverage 4274/4524, missing 250 (7 wrong-type/243 absent),
+extra 129, unchanged. Every focused/full StarMap metric/count/exact flag except
+unit-path spelling was checked for exact agreement. Baseline and previous
+9cd4cf43 (production 9a96e2e5) preservation gates exit 0, zero exact-pair losses;
+default 99% gate exits 1 with the expected threshold failure. Runtime remains
+untested; a static build/source metric does not prove executable equivalence.
+
+Evidence: _work/before-info-position-copy-sixtysecond.cpp,
+info-position-copy-sixtysecond.json/log/asm, native-sixtysecond.log,
+sixtysecond-corpus.json/log, sixtysecond-gate.json,
+sixtysecond-previous-gate.json and sixtysecond-target-gate.log. Previous canonical
+inputs are checkpoint62-before-focused.json/corpus.json. Object SHA-256:
+156da3b108337cf6b83438749665458002e66fb24536600aa795dc86469e25a3.
+Full JSON SHA-256: f413437473ee7152d6301ffa143a7f6d2ba664133562d6362f0b0784f0dc5e39.
+Compact snapshot: docs/validation/starmap_2026-10-05_info_position_copy.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -2464,18 +2508,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/fiftyfirst-corpus.log`; focused log:
-`_work/key-text-captures-fiftyfirst.log`; native log: `_work/native-fiftyfirst.log`.
+Latest full log: `_work/sixtysecond-corpus.log`; focused log:
+`_work/info-position-copy-sixtysecond.log`; native log: `_work/native-sixtysecond.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
 50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against 28456390 (production e43de497) preserves all 2083
+7fc7701c. The latest comparison against 9cd4cf43 (production 9a96e2e5) preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/fiftyfirst-gate.json, fiftyfirst-previous-gate.json and
-fiftyfirst-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/sixtysecond-gate.json, sixtysecond-previous-gate.json and
+sixtysecond-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `139bf7836f3b47c901eca38b8f33d6fe3599298e2988114372eb8daa3b0176d0`.
+final full JSON SHA-256: `f413437473ee7152d6301ffa143a7f6d2ba664133562d6362f0b0784f0dc5e39`.
 
 
 ### Reproduction
@@ -2506,7 +2550,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
-| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1196 | 78.9% | 98.9% | 79.2% | - |
+| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1195 | 78.9% | 99.0% | 79.9% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.7% | 82.7% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.1% | 89.4% | - |

@@ -1337,8 +1337,11 @@ void StarMap::initStarSystem() {
 }
 
 void StarMap::drawOnScreenInfo(int index, bool stationMode) {
-    Array<Vector *> *positions = stationMode ? this->stationPositions : this->systemPositions;
-    this->scratchVector = Vector(*positions->data()[index]);
+    if (stationMode) {
+        this->scratchVector = Vector(*this->stationPositions->data()[index]);
+    } else {
+        this->scratchVector = Vector(*this->systemPositions->data()[index]);
+    }
     float x = this->scratchVector.x;
     if (x < -50.0f || x > (float)(Globals::w + 50)) return;
     float y = this->scratchVector.y;
