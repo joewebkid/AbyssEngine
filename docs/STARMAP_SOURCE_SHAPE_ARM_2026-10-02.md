@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.180% unweighted / 98.50023% original-instruction
+implementation bodies measure **99.200% unweighted / 98.51515% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.230% / 81.58969%**, respectively. Source-shape is an inventory/control-flow
+**87.210% / 81.57476%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -2033,6 +2033,54 @@ native/full-corpus run is claimed. Source means remain 99.180% /
 The next search must examine a different discrepancy; source block placement
 alone did not change this compiler output in either new trial.
 
+## Accepted pitch-bound restoration after checkpoint eeca8928
+
+OnTouchMove now snapshots the two ordered pitch predicates, selects pitchBound
+from the lower predicate, selects the candidate result, then uses that same
+bound when the upper predicate is true. Primary cac56/cac74..caca2 initializes
+and selects an intermediate bound before selecting the final pitch. The trial
+uses each source predicate once rather than inserting the original's four
+compiled comparisons or forcing redundant instructions. This is a source-form
+hypothesis supported by the intermediate-value data flow, not an exact recovery
+of C++ syntax.
+
+The transformation preserves the pitch result: below/equal -8192 and unordered
+NaN select -8192; values inside the interval, including signed zero, are retained;
+equal +8192 retains +8192; above +8192, including +infinity, selects +8192.
+The existing yaw computation, drag velocities, member writes, callback/camera
+calls and return remain unchanged. No register forcing, barrier, padding,
+compiler flag or shared code change was used.
+
+The first focused trial was temporarily restored for isolation before its new
+metrics were inspected, then reapplied and independently confirmed. Trial and
+confirmation have identical entire JSON and object bytes; the intermediate fresh
+restore reproduced accepted fortyfourth source/JSON/object. No rejected variant
+was left in production. Evidence: _work/before-pitch-bound-fortyninth.cpp,
+pitch-bound-fortyninth.json/log, fortyninth-restored-focused.json/log,
+pitch-bound-fortyninth-confirmed.json/log and pitch-bound-fortyninth.asm.
+
+Only OnTouchMove's row changes: source 98.4% -> 98.8%, strict 79.2% -> 78.8%,
+current instructions 255 -> 258 (original 265), inventory 97.7% -> 98.3%, opcode
+98.1% -> 98.6%, size 96.2% -> 97.3%. Control/call metrics remain 100%; the other
+21 focused rows are identical. The new 4ef8/4f00 comparisons feed three bound/result
+moves at 4f06, 4f10 and 4f42. The compiler still uses two comparisons; no four-
+comparison claim is made.
+
+Fixed means become source 99.200% / 98.51515279538093%, strict 87.210% /
+81.5747641177299%. The weighted shortfall is 0.48484720461907 percentage points.
+All 204 ARM TUs compiled with zero failures, focused has 22 rows with zero skips,
+and every focused/full StarMap metric/count/exact flag was checked for agreement.
+Confirmed object SHA-256:
+91b513f97dbc427e3a32a977dd2417dfa7d22c8edc85585f7b1401032476f86d.
+Native UCRT gof2 static-library build passed (native-fortyninth.log).
+Full corpus has 4619 comparisons, zero skips, 2083 linked-exact and 960 byte-exact;
+coverage remains 4274/4524, missing 250 (7 wrong-type / 243 absent), extra 129.
+Baseline and previous accepted fortyfourth preservation gates both exit 0 with
+zero exact-pair losses. Default 99% gate exits 1 with the expected threshold
+failure; native runtime remains untested. Full evidence: fortyninth-corpus.json/log,
+fortyninth-gate.json, fortyninth-previous-gate.json and fortyninth-target-gate.log.
+Full JSON SHA-256: b7bfd34e1730f566cc064c66b3978520bffcea2773c8c07ce20aaeb6b5145805.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -2070,18 +2118,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/fortyfourth-corpus.log`; focused log:
-`_work/route-alpha-fortyfourth.log`; native log: `_work/native-fortyfourth.log`.
+Latest full log: `_work/fortyninth-corpus.log`; focused log:
+`_work/pitch-bound-fortyninth-confirmed.log`; native log: `_work/native-fortyninth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
 50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against 5256c4fa preserves all 2083
+7fc7701c. The latest comparison against eeca8928 (production 1d9a4c65) preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/fortyfourth-gate.json, fortyfourth-previous-gate.json and
-fortyfourth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/fortyninth-gate.json, fortyninth-previous-gate.json and
+fortyninth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `0fd05a776b12126fd16340c3d7aa99afb8aecb0372e4164917686656ebcd1e11`.
+final full JSON SHA-256: `b7bfd34e1730f566cc064c66b3978520bffcea2773c8c07ce20aaeb6b5145805`.
 
 
 ### Reproduction
@@ -2120,7 +2168,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap14initStarSystemEv` | 710/683 | 80.9% | 97.3% | 84.7% | - |
 | `_ZN7StarMapC1EbP7Missionbi` | 333/333 | 85.1% | 99.3% | 95.8% | - |
 | `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 99.3% | 97.4% | - |
-| `_ZN7StarMap11OnTouchMoveEii` | 265/255 | 81.3% | 98.4% | 79.2% | - |
+| `_ZN7StarMap11OnTouchMoveEii` | 265/258 | 81.3% | 98.8% | 78.8% | - |
 | `_ZN7StarMap7drawKeyEv` | 246/243 | 59.5% | 97.8% | 34.8% | - |
 | `_ZN7StarMap6departEb` | 205/205 | 94.9% | 100.0% | 88.3% | - |
 | `_ZN7StarMapD1Ev` | 69/70 | 92.0% | 99.4% | 95.0% | - |

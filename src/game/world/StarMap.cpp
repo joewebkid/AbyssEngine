@@ -1081,8 +1081,11 @@ int StarMap::OnTouchMove(int x, int y) {
                     float rotZ = dx * 50.0f;
                     float rotX = dy * -50.0f;
                     float nextPitch = rotX + this->pitch;
-                    float pitch = nextPitch > -8192.0f ? nextPitch : -8192.0f;
-                    if (nextPitch > 8192.0f) pitch = 8192.0f;
+                    bool aboveLowerPitch = nextPitch > -8192.0f;
+                    bool aboveUpperPitch = nextPitch > 8192.0f;
+                    float pitchBound = aboveLowerPitch ? 8192.0f : -8192.0f;
+                    float pitch = aboveLowerPitch ? nextPitch : pitchBound;
+                    if (aboveUpperPitch) pitch = pitchBound;
                     float yaw = (float) ((int) (this->yaw + rotZ) % 0x10000);
                     float absZ = absf_local(rotZ);
                     float absX = absf_local(rotX);
