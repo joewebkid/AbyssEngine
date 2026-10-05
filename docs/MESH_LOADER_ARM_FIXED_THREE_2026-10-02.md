@@ -3066,3 +3066,52 @@ No native/full-corpus validation is claimed for rejected forms. Accepted
 axisbyte-full/native evidence remains authoritative: **98.23% unweighted /
 98.17% weighted**, 2079 linked /959 byte pairs equal baseline with no losses.
 Both >=99.0 gates remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: zero-normal branches and stream flow
+
+Nine reader trials start from clean 6e71b62a. Five vary the zero-length branch:
+fallback first, zero/nonzero continue, named nonzero predicate, or one normal
+field read after sqrtf but before the branch. Original sqrt/sqrtf sequence is
+at 0x6caee-0x6cb04; comparison to zero at 0x6cb08, BNE to normalization at
+0x6cb10, fallback at 0x6cb12-0x6cb28. Equality/inequality inversions preserve
+NaN routing as well as signed zero; no >0 or finite-value assumption is added.
+Continue forms preserve the for increment and stream cleanup after the loop.
+The owner-before-branch trial moves only an existing field read past no call,
+keeping it after sqrtf; it does not hoist across a potential library boundary.
+
+Original normal-format/shader exits occur at 0x6ca38 and 0x6cc3a. Four further
+forms put plain normal input first, use an early exit for absent normals, use
+an early exit for disabled shader after normal parsing, or combine both.
+The label is on the existing m=*slot continuation before colors, outside
+normal/tangent local scopes. No dummy statement or effect is added. Flags,
+reads, allocations, math and deallocations stay in their prior source order
+on each executed path. These are source-flow hypotheses, not recovered C++.
+Prior five vertex-format sign-shift experiments were reviewed and not rerun;
+they had produced identical objects, so no repeated predicate sweep is claimed.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| zero branch: fallback_first | 98.0 / 55.9 | 867 | 100.0 | yes |
+| zero branch: zero_continue | 98.0 / 55.9 | 867 | 100.0 | yes |
+| zero branch: nonzero_continue | 98.0 / 55.9 | 867 | 100.0 | yes |
+| zero branch: named_nonzero | 98.0 / 55.9 | 867 | 100.0 | yes |
+| zero branch: owner_before_branch | 98.0 / 55.9 | 867 | 100.0 | no |
+| stream flow: plain_stream_first | 98.0 / 55.9 | 867 | 100.0 | no |
+| stream flow: outer_early_exit | 98.0 / 55.9 | 867 | 100.0 | yes |
+| stream flow: shader_early_exit | 98.0 / 55.9 | 867 | 100.0 | yes |
+| stream flow: both_early_exits | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+No trial improves source or strict. Seven whole Core objects equal accepted;
+owner-before-branch and plain-stream-first each differ despite equal scores.
+All production edits were restored. Source-score equality was not used to
+infer binary identity. No native/full-corpus rerun is claimed for rejected
+forms; authoritative validation remains axisbyte-full/native evidence.
+
+Evidence: `_work/readnormalbranch-*.json`, `_work/readnormalflow-*.json`,
+source snapshots, `_work/read_normal_branch_identities.json` and
+`_work/read_normal_flow_identities.json`, plus original_mesh.asm. Baseline
+outside-body/signature check passes and tracked production diff is empty.
+Fixed-three means remain **98.23% unweighted /98.17% weighted**; accepted
+exact pair sets remain 2079 linked /959 byte equal baseline without losses.
+Both >=99.0 requirements remain unmet; goal active. No push, PR or merge.
