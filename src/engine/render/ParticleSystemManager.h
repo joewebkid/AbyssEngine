@@ -98,10 +98,10 @@ public:
     unsigned int addMeshSystem(AbyssEngine::AEMath::Matrix const *matrix,
                                Array<ParticleSettings::ParticleSet> const &sets, bool flag);
 
-    unsigned long long emitManual(int handle, AbyssEngine::AEMath::Vector const &pos, int ret, float p4);
+    void emitManual(int handle, AbyssEngine::AEMath::Vector const &pos, int particleSet, float lifetime);
 
-    unsigned long long emitManual(int handle, AbyssEngine::AEMath::Vector const &pos, int ret,
-                                  AbyssEngine::AEMath::Vector const &velocity, float p5);
+    void emitManual(int handle, AbyssEngine::AEMath::Vector const &pos, int particleSet,
+                    AbyssEngine::AEMath::Vector const &velocity, float lifetime);
 
     void renderSprites();
 

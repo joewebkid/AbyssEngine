@@ -13,8 +13,6 @@
 
 void _psm_constructAfterCamera(void *self);
 
-void _ips_enableUpdate(void *sys, bool enable);
-
 int _psm_firstUpdate(void *self, int a, int b, int c);
 
 void _ips_reset(void *sys);
@@ -155,43 +153,29 @@ void ParticleSystemManager::render3d() {
 }
 
 void ParticleSystemManager::setParticleSetByIndex(int handle, unsigned char setIndex) {
-    IParticleSystem *sys;
-    if (handle == -1) {
-        sys = nullptr;
+    if (handle == -1)
+        return;
+
+    IParticleSystem *system;
+    if ((handle & 0x4000) != 0) {
+        system = reinterpret_cast<IParticleSystem **>(this->meshSystems)[handle & 0x3fffbfff];
     } else {
-        IParticleSystem **arr;
-        int idx;
-        if (handle << 0x11 < 0) {
-            arr = reinterpret_cast<IParticleSystem **>(this->meshSystems);
-            idx = handle & 0x3fffffff;
-        } else {
-            arr = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_);
-            idx = handle;
-        }
-        sys = arr[idx];
+        system = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_)[handle];
     }
-    if (sys != nullptr)
-        sys->setParticleSetIndex(setIndex);
+    system->setParticleSetIndex(setIndex);
 }
 
 void ParticleSystemManager::enableSystemRender(int handle, bool enable) {
-    IParticleSystem *sys;
-    if (handle == -1) {
-        sys = nullptr;
+    if (handle == -1)
+        return;
+
+    IParticleSystem *system;
+    if ((handle & 0x4000) != 0) {
+        system = reinterpret_cast<IParticleSystem **>(this->meshSystems)[handle & 0x3fffbfff];
     } else {
-        IParticleSystem **arr;
-        int idx;
-        if (handle << 0x11 < 0) {
-            arr = reinterpret_cast<IParticleSystem **>(this->meshSystems);
-            idx = handle & 0x3fffffff;
-        } else {
-            arr = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_);
-            idx = handle;
-        }
-        sys = arr[idx];
+        system = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_)[handle];
     }
-    if (sys != nullptr)
-        sys->enableRender(enable);
+    system->enableRender(enable);
 }
 
 void ParticleSystemManager::release() {
@@ -220,53 +204,33 @@ unsigned int ParticleSystemManager::addMeshSystem(AbyssEngine::AEMath::Matrix co
     return (this->meshSystemCount - 1) | 0x4000;
 }
 
-unsigned long long ParticleSystemManager::emitManual(int handle, AbyssEngine::AEMath::Vector const &pos,
-                                                     int ret, float p4) {
-    IParticleSystem *sys;
-    if (handle == -1) {
-        sys = nullptr;
-    } else {
-        IParticleSystem **arr;
-        int idx;
-        if (handle << 0x11 < 0) {
-            arr = reinterpret_cast<IParticleSystem **>(this->meshSystems);
-            idx = handle & 0x3fffffff;
-        } else {
-            arr = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_);
-            idx = handle;
-        }
-        sys = arr[idx];
-    }
-    if (sys == nullptr)
-        return ((unsigned long long) 0xffffffffu << 32) | (unsigned int) (unsigned long) this;
+void ParticleSystemManager::emitManual(int handle, AbyssEngine::AEMath::Vector const &pos,
+                                      int particleSet, float lifetime) {
+    if (handle == -1)
+        return;
 
-    sys->emitManual(pos, ret, nullptr, p4);
-    return (unsigned int) ret;
+    IParticleSystem *system;
+    if ((handle & 0x4000) != 0) {
+        system = reinterpret_cast<IParticleSystem **>(this->meshSystems)[handle & 0x3fffbfff];
+    } else {
+        system = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_)[handle];
+    }
+    system->emitManual(pos, particleSet, nullptr, lifetime);
 }
 
-unsigned long long ParticleSystemManager::emitManual(int handle, AbyssEngine::AEMath::Vector const &pos,
-                                                     int ret, AbyssEngine::AEMath::Vector const &velocity,
-                                                     float p5) {
-    IParticleSystem *sys;
-    if (handle == -1) {
-        sys = nullptr;
-    } else {
-        IParticleSystem **arr;
-        int idx;
-        if (handle << 0x11 < 0) {
-            arr = reinterpret_cast<IParticleSystem **>(this->meshSystems);
-            idx = handle & 0x3fffffff;
-        } else {
-            arr = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_);
-            idx = handle;
-        }
-        sys = arr[idx];
-    }
-    if (sys == nullptr)
-        return ((unsigned long long) 0xffffffffu << 32) | (unsigned int) (unsigned long) this;
+void ParticleSystemManager::emitManual(int handle, AbyssEngine::AEMath::Vector const &pos,
+                                      int particleSet, AbyssEngine::AEMath::Vector const &velocity,
+                                      float lifetime) {
+    if (handle == -1)
+        return;
 
-    sys->emitManual(pos, ret, &velocity, p5);
-    return (unsigned int) ret;
+    IParticleSystem *system;
+    if ((handle & 0x4000) != 0) {
+        system = reinterpret_cast<IParticleSystem **>(this->meshSystems)[handle & 0x3fffbfff];
+    } else {
+        system = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_)[handle];
+    }
+    system->emitManual(pos, particleSet, &velocity, lifetime);
 }
 
 void ParticleSystemManager::renderSprites() {
@@ -318,23 +282,16 @@ void ParticleSystemManager::setParticleSetBySet(int handle, ParticleSettings::Pa
 }
 
 void ParticleSystemManager::enableSystemUpdate(int handle, bool enable) {
-    IParticleSystem *sys;
-    if (handle == -1) {
-        sys = nullptr;
+    if (handle == -1)
+        return;
+
+    IParticleSystem *system;
+    if ((handle & 0x4000) != 0) {
+        system = reinterpret_cast<IParticleSystem **>(this->meshSystems)[handle & 0x3fffbfff];
     } else {
-        IParticleSystem **arr;
-        int idx;
-        if (handle << 0x11 < 0) {
-            arr = reinterpret_cast<IParticleSystem **>(this->meshSystems);
-            idx = handle & 0x3fffffff;
-        } else {
-            arr = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_);
-            idx = handle;
-        }
-        sys = arr[idx];
+        system = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_)[handle];
     }
-    if (sys != nullptr)
-        _ips_enableUpdate(sys, enable);
+    system->enableUpdate(enable);
 }
 
 void ParticleSystemManager::initSprites() {
@@ -419,23 +376,16 @@ void ParticleSystemManager::initMesh() {
 }
 
 void ParticleSystemManager::enableSystemEmit(int handle, bool enable) {
-    IParticleSystem *sys;
-    if (handle == -1) {
-        sys = nullptr;
+    if (handle == -1)
+        return;
+
+    IParticleSystem *system;
+    if ((handle & 0x4000) != 0) {
+        system = reinterpret_cast<IParticleSystem **>(this->meshSystems)[handle & 0x3fffbfff];
     } else {
-        IParticleSystem **arr;
-        int idx;
-        if (handle << 0x11 < 0) {
-            arr = reinterpret_cast<IParticleSystem **>(this->meshSystems);
-            idx = handle & 0x3fffffff;
-        } else {
-            arr = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_);
-            idx = handle;
-        }
-        sys = arr[idx];
+        system = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_)[handle];
     }
-    if (sys != nullptr)
-        sys->enableEmit(enable);
+    system->enableEmit(enable);
 }
 
 int ParticleSystemManager::addSystem(AbyssEngine::AEMath::Matrix const *matrix,
@@ -468,23 +418,16 @@ int ParticleSystemManager::init() {
 }
 
 void ParticleSystemManager::resetSystem(int handle) {
-    IParticleSystem *sys;
-    if (handle == -1) {
-        sys = nullptr;
+    if (handle == -1)
+        return;
+
+    IParticleSystem *system;
+    if ((handle & 0x4000) != 0) {
+        system = reinterpret_cast<IParticleSystem **>(this->meshSystems)[handle & 0x3fffbfff];
     } else {
-        IParticleSystem **arr;
-        int idx;
-        if (handle << 0x11 < 0) {
-            arr = reinterpret_cast<IParticleSystem **>(this->meshSystems);
-            idx = handle & 0x3fffffff;
-        } else {
-            arr = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_);
-            idx = handle;
-        }
-        sys = arr[idx];
+        system = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_)[handle];
     }
-    if (sys != nullptr)
-        _ips_reset(sys);
+    system->reset();
 }
 
 void ParticleSystemManager::renderMeshes() {

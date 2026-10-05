@@ -479,116 +479,122 @@ void IParticleSystem::calcEmitterVelocity(int delta) {
 
 void IParticleSystem::emitManual(Vector position, int particleSet, Vector const *velocity, float lifetime) {
     if (particleSet != -1) {
-        int current = this->currentParticle;
         int set = this->particleSets[particleSet];
-        this->particleSetIds[current] = (int8_t) set;
-        char *def = particleSetDefinition(static_cast<ParticleSettings::ParticleSet>(set));
-        this->particleAges[current] = 0;
+        this->particleSetIds[this->currentParticle] = (int8_t) set;
+        const ParticleSettings::SetDefinition *def = &ParticleSettingsRef::cur.sets[set];
+        this->particleAges[this->currentParticle] = 0;
 
-        uint32_t uv[4];
-        uint32_t rotated[4];
-        uv[0] = *(uint32_t *) (def + 0x88);
-        uv[1] = *(uint32_t *) (def + 0x90);
-        uv[2] = *(uint32_t *) (def + 0x8c);
-        uv[3] = *(uint32_t *) (def + 0x94);
-        uint32_t *uvp = uv;
-        if (((this->flags >> 24) & 0x80) != 0) {
-            uvp = (uint32_t *) rotateUVs((float *) uv, current, (float *) rotated);
+        float uv[4];
+        float rotated[4];
+        uv[0] = def->uvU0;
+        uv[1] = def->uvU1;
+        uv[2] = def->uvV0;
+        uv[3] = def->uvV1;
+        float *uvp = uv;
+        // Android 2.0.16 emitManual @ 0x182790: byte +0x37, bit 1.
+        if ((this->flags & 0x02000000u) != 0) {
+            uvp = rotateUVs(uv, this->currentParticle, rotated);
         }
 
-        char randomVelocity[12];
-        int spread = *(int *) (def + 0x50);
+        Vector randomVelocity;
+        int spread = def->velSpread;
         if (spread == 0) {
-            *(uint32_t *) (randomVelocity + 0) = 0;
-            *(uint32_t *) (randomVelocity + 4) = 0;
-            *(uint32_t *) (randomVelocity + 8) = 0;
+            std::memset(&randomVelocity, 0, sizeof(randomVelocity));
         } else {
             int range = spread << 1;
-            ((float *) randomVelocity)[0] = (float) (this->random.nextInt(range) - spread);
-            ((float *) randomVelocity)[1] = *(float *) (def + 0x5c) +
-                                            (float) (this->random.nextInt(range) - spread);
-            ((float *) randomVelocity)[2] = (float) (this->random.nextInt(range) - spread);
+            int x = this->random.nextInt(range) - spread;
+            float y = (float) (this->random.nextInt(range) - spread);
+            float baseY = def->velBaseY;
+            float floatX = (float) x;
+            float z = (float) (this->random.nextInt(range) - spread);
+            randomVelocity.x = floatX;
+            randomVelocity.y = baseY + y;
+            randomVelocity.z = z;
         }
 
-        Vector &slot = this->particleVelocities[current];
-        slot = *(Vector *) (randomVelocity);
+        this->particleVelocities[this->currentParticle] = randomVelocity;
 
         if (velocity != 0) {
-            float drag = *(float *) (def + 0x64);
+            float drag = def->drag;
             if (drag != 0.0f) {
-                char tmp[12];
-                *(Vector *) tmp = *(const Vector *) velocity * drag;
-                slot -= *(Vector *) (tmp);
+                this->particleVelocities[this->currentParticle] -= *velocity * drag;
             }
         }
 
-        int posSpread = *(int *) (def + 0x48);
+        int posSpread = def->posSpread;
         if (posSpread != 0) {
-            char randomPosition[12];
-            ((float *) randomPosition)[0] =
-                    (float) (this->random.nextInt(posSpread << 1) - posSpread);
-            ((float *) randomPosition)[1] = 0.0f;
-            ((float *) randomPosition)[2] =
-                    (float) (this->random.nextInt(posSpread << 1) - posSpread);
-            *(Vector *) (&position) += *(Vector *) (randomPosition);
+            randomVelocity.y = 0.0f;
+            float x = (float) (this->random.nextInt(posSpread << 1) - posSpread);
+            float z = (float) (this->random.nextInt(posSpread << 1) - posSpread);
+            randomVelocity.x = x;
+            randomVelocity.z = z;
+            position += randomVelocity;
         }
 
-        int ySpread = *(int *) (def + 0x4c);
+        int ySpread = def->ySpread;
         if (ySpread != 0) {
-            position.y += (float) (this->random.nextInt(ySpread << 1) - ySpread);
+            position.y += (float) (this->random.nextInt(ySpread << 1) - def->ySpread);
         }
 
-        if (lifetime < 0.0f) {
-            lifetime = *(float *) (def + 0x14);
+        const float *dragValue = &def->drag;
+        // ARM VFP LT also takes the unordered (NaN) fallback.
+        if (!(lifetime >= 0.0f)) {
+            lifetime = def->lifeBase;
         }
 
-        char emitVelocity[12];
-        int randomLife = *(int *) (def + 0x18);
-        if (randomLife == 0) {
-            float velocityScale = *(float *) (def + 0x24);
-            if (velocityScale == 0.0f) {
-                *(uint32_t *) (emitVelocity + 0) = 0;
-                *(uint32_t *) (emitVelocity + 4) = 0;
-                *(uint32_t *) (emitVelocity + 8) = 0;
+        int randomLife = def->lifeRandom;
+        if (randomLife != 0) {
+            int lifeDelta = this->random.nextInt(randomLife);
+            uint32_t color = def->color0;
+            int fade = def->fadeFrames;
+            float u0 = uvp[0];
+            float u1 = uvp[1];
+            float v0 = uvp[2];
+            float v1 = uvp[3];
+            float baseSize0 = def->startSize;
+            int sizeDelta0 = this->random.nextInt(def->lifeRandom);
+            float baseSize1 = def->endSize;
+            float life = lifetime + (float) lifeDelta;
+            float size0 = baseSize0 + (float) sizeDelta0;
+            float size1 = baseSize1 + (float) this->random.nextInt(def->lifeRandom);
+            float velocityScale = def->velocityFromSlot;
+            Vector emitVelocity;
+            if (velocityScale != 0.0f) {
+                new (&emitVelocity) Vector(velocityScale * this->particleVelocities[this->currentParticle]);
             } else {
-                *(Vector *) emitVelocity = velocityScale * slot;
+                std::memset(&emitVelocity, 0, sizeof(emitVelocity));
             }
 
-            this->setParticle(position, lifetime, *(uint32_t *) (def + 0x34),
-                              bits_float(uvp[0]), bits_float(uvp[2]), bits_float(uvp[1]),
-                              bits_float(uvp[3]), *(int *) (def + 0x3c) > 0,
-                              *(float *) (def + 0x1c), *(float *) (def + 0x20),
-                              *(const Vector *) emitVelocity);
+            this->setParticle(position, life, color, u0, v0, u1, v1,
+                              fade > 0, size0, size1, emitVelocity);
         } else {
-            float life = lifetime + (float) this->random.nextInt(randomLife);
-            float size0 = *(float *) (def + 0x1c) + (float) this->random.nextInt(randomLife);
-            float size1 = *(float *) (def + 0x20) + (float) this->random.nextInt(randomLife);
-            float velocityScale = *(float *) (def + 0x24);
-            if (velocityScale == 0.0f) {
-                *(uint32_t *) (emitVelocity + 0) = 0;
-                *(uint32_t *) (emitVelocity + 4) = 0;
-                *(uint32_t *) (emitVelocity + 8) = 0;
+            float velocityScale = def->velocityFromSlot;
+            float size0 = def->startSize;
+            float size1 = def->endSize;
+            int fade = def->fadeFrames;
+            uint32_t color = def->color0;
+            float u0 = uvp[0];
+            float u1 = uvp[1];
+            float v0 = uvp[2];
+            float v1 = uvp[3];
+            Vector emitVelocity;
+            if (velocityScale != 0.0f) {
+                new (&emitVelocity) Vector(velocityScale * this->particleVelocities[this->currentParticle]);
             } else {
-                *(Vector *) emitVelocity = velocityScale * slot;
+                std::memset(&emitVelocity, 0, sizeof(emitVelocity));
             }
 
-            this->setParticle(position, life, *(uint32_t *) (def + 0x34),
-                              bits_float(uvp[0]), bits_float(uvp[2]), bits_float(uvp[1]),
-                              bits_float(uvp[3]), *(int *) (def + 0x3c) > 0,
-                              size0, size1, *(const Vector *) emitVelocity);
+            this->setParticle(position, lifetime, color, u0, v0, u1, v1,
+                              fade > 0, size0, size1, emitVelocity);
         }
 
-        float drag = *(float *) (def + 0x64);
+        float drag = *dragValue;
         if (drag != 0.0f) {
-            char tmp[12];
-            char tmp2[12];
-            *(Vector *) tmp = this->emitterVelocity * drag;
-            *(Vector *) tmp2 = *(const Vector *) tmp * 2.0f;
-            slot += *(Vector *) (tmp2);
+            this->particleVelocities[this->currentParticle] += (this->emitterVelocity * drag) * 2.0f;
         }
 
-        current = this->currentParticle + 1;
-        if (this->maxParticles <= current) {
+        int current = this->currentParticle + 1;
+        if (current >= this->maxParticles) {
             current = 0;
         }
         this->currentParticle = current;
