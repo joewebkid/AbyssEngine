@@ -3377,3 +3377,57 @@ claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, 2079 linked /959 byte
 exact pairs equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: tangent temporary lifetimes and output pointers
+
+Ten Read trials start from clean dbc7139d with accepted byte-axis Enhanced.
+Six change the final tangent expression by inlining Dot, the multiplication,
+the subtraction into Normalize, or all three; const-qualifying the two named
+Vector temporaries; or copying the tangent input as a Vector instead of three
+scalar floats. Dot -> multiplication -> subtraction -> Normalize -> Cross
+order and output field loads after their corresponding math calls are retained.
+Temporary lifetime/source expressions are hypotheses, not recovered C++.
+The Vector input copy uses the existing trivial copy constructor; no new
+Vector assignment call or helper change is introduced.
+
+Four further trials reuse the tangent output pointer for binormals, qualify
+both pointer variables const, address individual Vector output members, or
+share a computed unsigned output offset. They preserve output load/store and
+math call order; no field load is hoisted across a call, and no whole-Vector
+assignment replaces the three component stores.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| temporaries: inline_dot | 98.0 / 55.9 | 867 | 100.0 | yes |
+| temporaries: inline_product | 96.5 / 55.8 | 857 | 98.2 | no |
+| temporaries: inline_normalize_argument | 98.0 / 55.9 | 867 | 100.0 | no |
+| temporaries: inline_all | 98.0 / 55.9 | 867 | 100.0 | no |
+| temporaries: const_temporaries | 98.0 / 55.9 | 867 | 100.0 | yes |
+| temporaries: vector_tangent_input | 97.9 / 56.2 | 868 | 100.0 | no |
+| output: reuse_pointer | 98.0 / 55.9 | 867 | 100.0 | yes |
+| output: const_pointers | 98.0 / 55.9 | 867 | 100.0 | yes |
+| output: vector_members | 98.0 / 55.9 | 867 | 100.0 | yes |
+| output: shared_offset | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+No required source gain occurs. Inline Dot and const temporaries produce the
+accepted byte-identical whole Core object. Inline Normalize argument and
+inline-all have the same scores but different whole objects from accepted
+and each other. Vector tangent input raises strict only and regresses source.
+All four output-pointer forms are byte-identical to accepted; equality is
+established from actual object bytes, not inferred from scores.
+
+Inline product regresses source and call count. Relocation-aware inspection
+finds 61 call instructions in accepted versus 60 in this trial: one fewer
+static `_ZdaPv` call site, plus three indirect BLX operands changing r5 to fp.
+This is static emitted call-site evidence, not proof of missing executed
+cleanup or a behavior regression. The six indirect calls are outside the
+matcher's direct-call comparison. Evidence: `_work/tangent_inline_product_calls.json`.
+
+All source variants were restored. Evidence: `_work/readtangentlife-*.json`,
+`_work/readtangentoutput-*.json`, source snapshots and both identity ledgers.
+Outside-body/signature baseline check passes and production tracked diff is
+empty. Native/full-corpus runs are not claimed for these rejected variants;
+accepted axisbyte-full/native evidence remains authoritative: **98.23%
+unweighted /98.17% weighted**, 2079 linked /959 byte exact pairs equal baseline
+without losses. Both >=99.0 gates remain unmet; goal active. No push, PR or merge.
