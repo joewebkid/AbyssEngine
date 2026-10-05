@@ -107,6 +107,28 @@ def function_end(addr, next_addr, sizes):
     return min(next_addr, addr + size) if size else next_addr
 
 
+def trim_zero_padding(raw, is_thumb, address=0):
+    """Trim padding without discarding a PC-referenced final float literal."""
+    floor = 0
+    literals = set()
+    if is_thumb:
+        for off in range(0, len(raw) - 3, 2):
+            first = int.from_bytes(raw[off:off + 2], "little")
+            if first & 0xffbf != 0xed9f:  # positive VLDR from PC
+                continue
+            second = int.from_bytes(raw[off + 2:off + 4], "little")
+            if second & 0x0f00 != 0x0a00:  # only 32-bit float literals
+                continue
+            literal = ((address + off + 4) & ~3) - address + (second & 0xff) * 4
+            if literal + 4 <= len(raw) and raw[literal:literal + 4] == b"\0" * 4:
+                floor = max(floor, literal + 4)
+                literals.add(literal)
+    while len(raw) - 2 >= floor and raw[-2:] == b"\0\0":
+        del raw[-2:]
+    pool = len(raw) - 4 if len(raw) - 4 in literals else None
+    return raw, pool
+
+
 def load_symbols(path):
     """addr2names: {int addr -> [mangled,...]}, sorted unique addr list."""
     addr2names = {}
@@ -172,7 +194,7 @@ def main():
 
     # Resolve to unique target addresses present in the .so .text.
     seen_addr = set()
-    funcs = []  # (addr, [names], bytes, is_thumb)
+    funcs = []  # (addr, [names], bytes, is_thumb, final_zero_pool_offset)
     missing = []
     for name in want:
         a = name2addr.get(name)
@@ -196,19 +218,16 @@ def main():
         nxt = function_end(a, nxt, function_sizes)
         foff = text_off + (a - text_addr)
         raw = bytearray(so[foff:foff + (nxt - a)])
-        # Drop trailing inter-function padding, but only whole 16-bit zero
-        # halfwords — trimming an odd number of bytes would desync Thumb decode.
-        while len(raw) >= 2 and raw[-1] == 0 and raw[-2] == 0:
-            del raw[-2:]
+        is_thumb = thumb.get(name, True)  # default thumb (4501/4524)
+        raw, pool = trim_zero_padding(raw, is_thumb, a)
         if not raw:
             continue
-        is_thumb = thumb.get(name, True)  # default thumb (4501/4524)
-        funcs.append((a, addr2names[a], raw, is_thumb))
+        funcs.append((a, addr2names[a], raw, is_thumb, pool))
 
     funcs.sort()
 
     lines = [".syntax unified", ".section .text", ""]
-    for idx, (a, names, raw, is_thumb) in enumerate(funcs):
+    for idx, (a, names, raw, is_thumb, pool) in enumerate(funcs):
         primary = names[0]
         # Force per-function alignment so a preceding function's length can never
         # desync this one's Thumb/ARM decode.
@@ -223,8 +242,11 @@ def main():
         # ARM mapping symbol ($t/$a) so objdump/objdiff disassemble raw bytes in the
         # right mode — .thumb_func alone does not emit one for a .byte payload.
         lines.append(f"${'t' if is_thumb else 'a'}.{idx}:")
-        body = ",".join(f"0x{b:02x}" for b in raw)
+        body = ",".join(f"0x{b:02x}" for b in (raw[:pool] if pool is not None else raw))
         lines.append(f".byte {body}")
+        if pool is not None:
+            lines.append(f"$d.{idx}:")
+            lines.append(".word 0")
         lines.append(f".size {primary}, .-{primary}")
         lines.append("")
 

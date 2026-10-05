@@ -79,6 +79,21 @@ C:\msys64\ucrt64\bin\cmake.exe --build cmake-build-ucrt `
 
 Expected output: `ParticleSettingsRef ABI/runtime smoke: OK`.
 
+## Focused ABI/Lifetime Smoke
+
+```powershell
+C:\msys64\ucrt64\bin\cmake.exe -S . -B cmake-build-ucrt -G Ninja `
+  -DGOF2_BUILD_ABI_RUNTIME_SMOKE=ON
+C:\msys64\ucrt64\bin\cmake.exe --build cmake-build-ucrt `
+  --target gof2_abi_runtime_smoke
+.\cmake-build-ucrt\gof2_abi_runtime_smoke.exe
+```
+
+Expected output: `GOF2 native ABI/lifetime smoke: OK`. This exercises real
+String/Array paths and probe-module vtable dispatch on the host. It is not
+an ARM32 runtime pass; see [the ABI gate](ABI_RUNTIME_GATE_2026-09-27.md)
+for the original vtable relocations and remaining ownership risks.
+
 Windows note: the wrapper names are still `orbcc`, `orbnm`, `orbas`, and
 `orbobjdump`, but they now also support a local NDK r18b fallback. Set
 `GOF2_VERIFY_LOCAL_NDK=1` and keep the NDK at `.cache/ndk/android-ndk-r18b`, or
@@ -151,7 +166,9 @@ report -> cmake-build-match/verify/report.json
 - **`coverage` / `missing`** is the progress metric: how many of the original's
   `.text` functions we compared at all. *Missing* = original functions with no
   counterpart in our build — either not decompiled/compiled yet, or whose signature
-  mangles differently (the `Array`-vs-`std::vector` gap accounts for a few hundred).
+  mangles differently. The original also contains statically linked C++ runtime,
+  zip, compression and crypto functions; their missing names are not necessarily
+  missing game code.
   The full list is written to `cmake-build-match/verify/missing.txt`.
 - **`wrong type` (`missing_wrong_type`)** splits that *missing* pile into the two cases that
   look identical to an exact-name match but need very different fixes. We demangle every missing
@@ -160,8 +177,10 @@ report -> cmake-build-match/verify/report.json
   reported as *implemented under a different signature* — the body exists, only a parameter or
   qualifier type is off (`String` by-value vs `String&`, a global enum that should be nested,
   `void*` vs `char const*`), so the mangled name differs and the exact-name match skipped it.
-  These are the cheap wins: retype our params to match the original and the function starts
-  comparing (and usually matching). The rest are *genuinely absent* (never written). Both sides'
+  Inspect these before retyping: constructor/destructor C1/C2 and D1/D2 aliases
+  can live in separate `.text.*` COMDAT sections. The verifier keys aliases by
+  section and address. The rest are absent from the current object set, not
+  necessarily absent game implementations. Both sides'
   full signatures, grouped by name, are written to
   `cmake-build-match/verify/missing_wrong_type.txt`; `report.json` carries the counts
   (`missing_wrong_type`, `missing_absent`) and the structured `wrong_type` list. Demangling uses

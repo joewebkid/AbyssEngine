@@ -18,6 +18,7 @@ Scope decisions (see plan):
   * IN SCOPE: every other mangled C++ symbol (global ns + AbyssEngine), the JNI bridge
     (Java_*, JNI_OnLoad) and its C side (ndk23_*, ndk_*, loadAPK*, and the named util shims below).
 """
+import argparse
 import json
 import os
 import re
@@ -60,8 +61,9 @@ INSCOPE_UN_EXACT = {
 }
 
 
-SYMS_TSV = "/Users/fionera/Downloads/GalaxyOnFire2/_work/symbols/android_2.0.16.symbols.tsv"
+SYMS_TSV = os.path.join(REPO, "_work", "symbols", "android_2.0.16.symbols.tsv")
 _CTORDTOR = re.compile(r"^(_ZN.*?)([CD][0-3])(E.*)$")
+_RUNTIME_ALLOCATOR = re.compile(r"^_Z(?:nw|na|dl|da)(?:j|m|Pv(?:j|m)?)$")
 # The generic Array<T> container: BOTH its member functions (Array<T>::resize/clear/push_back/...,
 # mangled _ZN5ArrayI...) AND the free helper templates (ArrayAdd/Remove/Release/ReleaseClasses/
 # SetLength/RemoveAll/Set/AddCached<T>, mangled _Z<len>Array...I...) are defined in Array.h and
@@ -75,10 +77,11 @@ def _binary_names():
     """All symbol names the original .so exports (any section), for alias-collapse."""
     names = set()
     try:
-        for line in open(SYMS_TSV):
-            p = line.rstrip("\n").split("\t")
-            if len(p) >= 2:
-                names.add(p[1])
+        with open(SYMS_TSV, encoding="utf-8") as symbols:
+            for line in symbols:
+                p = line.rstrip("\n").split("\t")
+                if len(p) >= 2:
+                    names.add(p[1])
     except OSError:
         pass
     return names
@@ -110,6 +113,8 @@ def _demangle_many(names):
 
 def classify(sym, demangled):
     """Return 'glue' | 'in_scope' | 'review'. `demangled` may equal `sym` for C names."""
+    if _RUNTIME_ALLOCATOR.match(sym):
+        return "glue"
     if sym.startswith("_Z"):
         # mangled C++: glue iff it lives in std / __gnu_cxx / __cxxabiv1 (covers funcs, vtables,
         # typeinfo — 'vtable for std::...', 'typeinfo for std::...').
@@ -125,8 +130,21 @@ def classify(sym, demangled):
 
 
 def main():
-    missing = [l.strip() for l in open(os.path.join(VDIR, "missing.txt")) if l.strip()]
-    report = json.load(open(os.path.join(VDIR, "report.json")))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--report", default=os.path.join(VDIR, "report.json"),
+                        help="full verify report (defaults to verify/report.json)")
+    args = parser.parse_args()
+    with open(args.report, encoding="utf-8") as report_file:
+        report = json.load(report_file)
+    if "original_functions" not in report:
+        raise SystemExit("scope_filter requires a full verify report; rerun verify.py without --unit/--only")
+    with open(os.path.join(VDIR, "missing.txt"), encoding="utf-8") as missing_file:
+        missing = [line.strip() for line in missing_file if line.strip()]
+    if len(missing) != report["missing"]:
+        raise SystemExit("missing.txt does not match the selected verify report")
+    with open(os.path.join(VDIR, "extra.txt"), encoding="utf-8") as extra_file:
+        if sum(1 for _ in extra_file) != report["extra_symbols"]:
+            raise SystemExit("extra.txt does not match the selected verify report")
     wrong = report.get("wrong_type", [])
     extra = report.get("extra", [])
     wrong_syms = [w["symbol"] for w in wrong]

@@ -30,13 +30,13 @@ if(GOF2_MATCH)
     return()  # native library/host targets below are not part of the matching build
 endif()
 
-# Single source tree for the native (macOS, 64-bit) port of Galaxy on Fire 2, recovered by
+# Single source tree for native GOF2 recovery and future platform ports, based on
 # decompilation of the Android libgof2hdaa.so. This replaces the original byte-matching ARM decomp
 # (which lived under src/recovered, work/, tools/ and was driven by a Makefile + NDK toolchain) —
 # that work is preserved in git history. Layout:
 #   src/           one .cpp + its co-located .h per class; shared foundation (common.h/math.h/
 #                  externs.h, platform/) at the tree root. Include paths are relative to src/.
-#   host/          macOS entry point + platform layer (Milestone 2)
+#   host/          future platform entry points and runtime services (not implemented yet)
 #   tools/         transformation/build helpers (rewrite_body.py, reconcile.py, build.sh, ...)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -66,6 +66,22 @@ if(GOF2_BUILD_PARTICLE_SETTINGS_SMOKE)
         src/engine/render/ParticleSettingsRef.cpp)
     target_include_directories(gof2_particle_settings_smoke PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/src")
+endif()
+
+option(GOF2_BUILD_ABI_RUNTIME_SMOKE
+       "Build the focused native ABI/lifetime smoke test" OFF)
+if(GOF2_BUILD_ABI_RUNTIME_SMOKE)
+    add_executable(gof2_abi_runtime_smoke
+        tools/abi_runtime_smoke.cpp
+        src/game/core/String.cpp
+        src/engine/core/IApplicationModule.cpp
+        src/game/weapons/AbstractGun.cpp)
+    target_include_directories(gof2_abi_runtime_smoke PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        target_compile_options(gof2_abi_runtime_smoke PRIVATE -ffunction-sections -fdata-sections)
+        target_link_options(gof2_abi_runtime_smoke PRIVATE -Wl,--gc-sections)
+    endif()
 endif()
 
 # JNI
