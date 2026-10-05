@@ -2651,6 +2651,41 @@ Evidence: _work/before-warning-combined-sixtyseventh.cpp,
 warning-combined-sixtyseventh.json/log, sixtyseventh-restored-focused.json/log.
 Compact snapshot: docs/validation/starmap_2026-10-05_warning_combined_trial.json.
 
+## Sixty-eighth / sixty-ninth trials: mode ordering (removed)
+
+Inspected StarMap.cpp OnTouchBegin/update and primary Android update extract.
+Tested mode 3 before mode 0 separately in each method. OnTouchBegin retains
+its oldSystem snapshot and complete bodies; update retains the common prefix,
+selects mode after setParamValue, preserves every callback/store and mode-0
+return, and leaves unsupported modes without actions. These are source-form
+hypotheses, not recovered C++: the primary update extract tests mode != 3 first.
+No additional predicate/call, volatile, barrier, padding or flags were added.
+
+Sixty-eighth OnTouchBegin: entire focused report and whole object equal accepted
+sixty-sixth, 99.3% source / 97.4% strict / 275/273 instructions. Removed as neutral.
+Object SHA-256 06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34.
+
+Sixty-ninth update: source 98.7% -> 98.0%, strict 82.7% -> 79.6%, instruction
+inventory 97.0% -> 96.2%, opcode 98.2% -> 97.5%, control inventory 98.7% ->
+97.0%, ordered control 95.4% -> 92.4%, calls 100% unchanged, size 99.6% ->
+99.5%, 971/966 -> 971/965 instructions. Other 21 rows identical. Removed as a
+source/control regression. Trial SHA-256
+5ad6c16d9111b0b7695c10b6da719e73acaf4a4515a4c7f02f4c846dd8c13f79.
+
+Each trial and each fresh restoration compile 204/204 ARM TUs with zero failures,
+22 comparisons and zero skips. Both restored entire focused reports equal
+canonical accepted input; final restored object SHA-256
+06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34.
+Production remains 3aebb2c0; source means 99.220% / 98.56482185607662%.
+Weighted 99% remains unmet. No new native/full/runtime run is claimed;
+accepted sixty-sixth remains authoritative.
+
+Evidence: _work/before-touch-mode-order-sixtyeighth.cpp,
+touch-mode-order-sixtyeighth.json/log, sixtyeighth-restored-focused.json/log,
+before-update-mode-order-sixtyninth.cpp, update-mode-order-sixtyninth.json/log,
+sixtyninth-restored-focused.json/log. Compact snapshot:
+docs/validation/starmap_2026-10-05_mode_order_trials.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
