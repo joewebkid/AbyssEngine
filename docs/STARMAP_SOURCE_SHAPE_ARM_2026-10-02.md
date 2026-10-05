@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.250% unweighted / 98.60282% original-instruction
+implementation bodies measure **99.270% unweighted / 98.61831% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.625% / 82.46769%**, respectively. Source-shape is an inventory/control-flow
+**87.665% / 82.49868%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -3012,18 +3012,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/eightythird-corpus.log`; focused log:
-`_work/begin-distance-captures-eightythird.log`; native log: `_work/native-eightythird.log`.
+Latest full log: `_work/eightyfourth-corpus.log`; focused log:
+`_work/begin-visibility-bound-eightyfourth.log`; native log: `_work/native-eightyfourth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
 50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against 095fae50 (production fb5748ae) preserves all 2083
+7fc7701c. The latest comparison against 090af981 preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/eightythird-baseline-gate.json, eightythird-previous-gate.json and
-eightythird-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/eightyfourth-baseline-gate.json, eightyfourth-previous-gate.json and
+eightyfourth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `2fffeff58c1e4ef4f3af19647d2585a98a84df0b423f5e72838809b1ec490301`.
+final full JSON SHA-256: `a0d737dc5fc2260032c0849d162a72a74ec3f0986865a503be9a7ca81ed422ac`.
 
 
 ### Reproduction
@@ -3061,7 +3061,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap4initEbP7Missionbi` | 750/735 | 72.9% | 98.3% | 77.3% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/683 | 80.9% | 97.3% | 84.7% | - |
 | `_ZN7StarMapC1EbP7Missionbi` | 333/331 | 85.1% | 99.5% | 97.6% | - |
-| `_ZN7StarMap12OnTouchBeginEii` | 275/275 | 91.6% | 99.6% | 98.5% | - |
+| `_ZN7StarMap12OnTouchBeginEii` | 275/275 | 91.6% | 100.0% | 99.3% | - |
 | `_ZN7StarMap11OnTouchMoveEii` | 265/258 | 81.3% | 98.8% | 78.8% | - |
 | `_ZN7StarMap7drawKeyEv` | 246/244 | 59.5% | 97.9% | 35.1% | - |
 | `_ZN7StarMap6departEb` | 205/205 | 94.9% | 100.0% | 88.3% | - |
@@ -3229,3 +3229,46 @@ begin-distance-captures-eightythird.json/log/asm, native-eightythird.log,
 eightythird-corpus.json/log, eightythird-baseline/previous/target-gate.json/log,
 checkpoint83-before-focused/corpus.json. Compact committed evidence:
 `docs/validation/starmap_2026-10-05_begin_distance_captures.json`.
+
+
+## Eighty-fourth accepted Begin visibility-bound operand order
+
+Previous accepted production/report: `090af981`. Inspected current source and
+accepted83 object, primary Begin ca97c..ca980 and current3f7c..3f80. The primary
+uses load size R1, CMP R1,SL and BLS skip; accepted83 used CMP SL,R1 and BCS skip.
+Change the source condition `i < vis->size()` to `vis->size() > i`. Both operands
+are unsigned and the size accessor is inline: bounds, non-null guard,
+short-circuit and visibility-byte read are preserved. New3f7c..3f80 matches the
+primary registers and opcodes. No extra check/call, compiler flag, barrier or
+padding. Original C++ syntax and runtime equivalence remain unproven.
+
+Begin source **99.6 ->100.0**, strict **98.5 ->99.3**, count275/275 unchanged.
+Instruction/opcode inventory99.6->100, control/ordered/control inventory
+98.5->100, call count and size100 unchanged. Other21 focused rows identical.
+Read-only disassembly through unchanged asmdiff independently reproduces all
+eight source metrics at100. Strict sequence still moves two independent
+instructions (selectedSystem store and scratchVector address calculation).
+Thus source100 is metric evidence, not linked/byte exact or proven behavior.
+
+Fixed20/7101 means **99.270 /98.6183072806647** source and
+**87.665 /82.49867624278271** strict; C2/D2 checked/excluded. Focused build
+exited0: compiled204/failed0,22 comparisons/zero skips. Native UCRT gof2 static
+library exited0: StarMap compiled and libgof2.a linked. Full session98257/PID8704
+was observed live and returned terminal exit0, without restart; source and ARM
+objects stayed frozen. Full4619/skip0,2083 linked/960 byte exact,source89.06 /
+strict76.16,perfect2203,coverage4274/4524,missing250(7wrong/243absent),extra129.
+All22 focused/full rows agree. Baseline and previous exact-pair gates exited0,
+no losses. Default99 gate exits1: weighted shortfall **0.3816927193353pp**.
+Goal active; native executable runtime equivalence remains untested.
+
+ARM object SHA-256:
+`2836b8f80e9bce8c17dd7458b789291c80f037eaeef2ad972cbc21e20f3a6863`.
+Full JSON SHA-256:
+`a0d737dc5fc2260032c0849d162a72a74ec3f0986865a503be9a7ca81ed422ac`.
+Evidence under _work: before-begin-visibility-bound-eightyfourth.cpp,
+begin-visibility-bound-eightyfourth.json/log/asm,
+begin-shape-check-eightyfourth.json, native-eightyfourth.log,
+eightyfourth-corpus.json/log, eightyfourth-baseline/previous/target-gate.json/log,
+checkpoint84-before-focused/corpus.json. Primary anchors use
+begin-original-eightythird.asm. Compact committed evidence:
+`docs/validation/starmap_2026-10-05_begin_visibility_bound.json`.

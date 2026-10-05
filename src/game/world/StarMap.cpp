@@ -998,7 +998,7 @@ uint32_t StarMap::OnTouchBegin(int x, int y) {
         this->selectedSystem = -1;
         for (uint32_t i = 0; i < this->systemGeoms->size(); i++) {
             Array<uint8_t> *vis = (Array<uint8_t> *) Globals::status->getSystemVisibilities();
-            if (vis != 0 && i < vis->size() && vis->data()[i] != 0) {
+            if (vis != 0 && vis->size() > i && vis->data()[i] != 0) {
                 this->scratchVector = *this->systemPositions->data()[i];
                 if (this->scratchVector.z > 0.0f &&
                     absf_local(this->scratchVector.x - fx) < (float) this->hitRadius &&
