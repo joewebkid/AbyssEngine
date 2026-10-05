@@ -2303,6 +2303,50 @@ canonical inputs remain 9a96e2e5, source means 99.205% / 98.51861709618363%.
 Weighted 99% remains unmet. Diagnostic: _work/remaining-inventories-fiftysixth.json;
 committed snapshot: docs/validation/starmap_2026-10-05_remaining_inventories.json.
 
+
+## Investigation after checkpoint 32e39bbe
+
+Two further source hypotheses were compiled separately and rejected:
+
+- OnTouchEnd combined primary Android's separate 3217 getter/set/suppression
+  branch with a common station_warning_selected jump for the other warning IDs.
+  All existing short-circuit predicates/getter sequences remain; warning jumps
+  skip later predicates, ordinary dialogs skip the warning block, and every path
+  still reaches choiceVisible, inertia and Help. The warningText read can only
+  follow an assignment. This combination was distinct from the earlier separate
+  3217 trial with sentinel guards and from the common-goto trial without a separate
+  3217 site. It does not add a call to a runtime path, duplicate a check or force
+  register allocation. Primary has this separate static delivery site; original
+  C++ syntax is not recovered.
+- update computed pitchDistance before yawDistance, following primary v63/v64.
+  Expressions, oldPitch/oldYaw/selectedStation snapshots, conditional selections,
+  stores, thresholds and calls remain unchanged. No extra computation was added.
+
+Only OnTouchEnd changes in the first trial: source 97.5% -> 97.4%, strict 76.4%
+-> 77.8%, instructions 1037/1003 -> 1037/1015; inventory 96.4% -> 96.6%, opcode
+97.0% -> 97.2%, control 98.1% -> 97.8%, ordered control 83.6% -> 84.1%, call
+count 99.3% -> 97.8%, size 96.5% -> 97.7%. Other 21 rows are identical by symbol,
+not zipped report position (sorting changes). Its measurements reproduce the
+old separate-warning result; combining common jumps gives no additional gain.
+The frozen normalizer's previously documented three missed primary calls remain
+unmodified. Trial object SHA-256:
+1eae2e51e9befa8d14643e53faf291d819a23e099d0ef8d8b1d19dc6eb8eeb12.
+
+The distance-order trial produces the entire accepted focused report and whole
+accepted object unchanged. Both trials and both fresh-source restorations compile
+204/204 ARM TUs with zero failures, compare 22 symbols with zero skips. Both
+restored entire reports equal accepted fifty-first. Final restored object hash:
+3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+Production/canonical inputs remain 9a96e2e5; means remain source 99.205% /
+98.51861709618363%. Weighted 99% remains unmet. No new native/full/runtime result
+is claimed; accepted fifty-first validations remain authoritative.
+
+Evidence: _work/before-warning-combination-fiftyseventh.cpp,
+warning-combination-fiftyseventh.cpp/json/log, fiftyseventh-restored-focused.json/log,
+before-center-distance-order-fiftyeighth.cpp, center-distance-order-fiftyeighth.json/log
+and fiftyeighth-restored-focused.json/log. Compact committed evidence:
+docs/validation/starmap_2026-10-05_warning_distance_trials.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;

@@ -1,0 +1,68 @@
+{
+  "accepted_production": "9a96e2e5",
+  "source_means": {
+    "unweighted": 99.205,
+    "weighted": 98.51861709618363
+  },
+  "target_met": false,
+  "warning_combination": {
+    "decision": "rejected: source lower",
+    "primary": "Separate 3217 delivery plus shared warning-label delivery for other warnings; existing predicates and common inertia/Help tail retained. Source-form hypothesis, not exact C++ recovery.",
+    "changed_rows": {
+      "_ZN7StarMap10OnTouchEndEii": {
+        "accepted": {
+          "symbol": "_ZN7StarMap10OnTouchEndEii",
+          "match": 76.4,
+          "bytes_equal": false,
+          "linked_equal": false,
+          "n_target": 1037,
+          "n_base": 1003,
+          "source_match": 97.5,
+          "instruction_inventory_match": 96.4,
+          "opcode_inventory_match": 97.0,
+          "control_flow_match": 98.1,
+          "ordered_control_flow_match": 83.6,
+          "control_inventory_match": 98.1,
+          "call_count_match": 99.3,
+          "size_match": 96.5,
+          "unit": "game/world/StarMap"
+        },
+        "trial": {
+          "symbol": "_ZN7StarMap10OnTouchEndEii",
+          "match": 77.8,
+          "bytes_equal": false,
+          "linked_equal": false,
+          "n_target": 1037,
+          "n_base": 1015,
+          "source_match": 97.4,
+          "instruction_inventory_match": 96.6,
+          "opcode_inventory_match": 97.2,
+          "control_flow_match": 97.8,
+          "ordered_control_flow_match": 84.1,
+          "control_inventory_match": 97.8,
+          "call_count_match": 97.8,
+          "size_match": 97.7,
+          "unit": "game/world/StarMap"
+        }
+      }
+    },
+    "other_21_rows_identical": true,
+    "trial_sha256": "1eae2e51e9befa8d14643e53faf291d819a23e099d0ef8d8b1d19dc6eb8eeb12",
+    "restored_entire_report_identical": true
+  },
+  "center_distance_order": {
+    "decision": "rejected: no generated-code change",
+    "primary": "IDA v63 computes pitchDistance before v64 yawDistance, retaining expressions, snapshots, predicates and writes.",
+    "trial_entire_report_identical": true,
+    "trial_sha256": "3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d",
+    "restored_entire_report_identical": true
+  },
+  "all_four_builds": {
+    "compiled": 204,
+    "failed": 0,
+    "compared": 22,
+    "skipped": 0
+  },
+  "final_restored_object_sha256": "3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d",
+  "validation_limits": "No new native/full/runtime run. Accepted fifty-first native/full validations remain authoritative."
+}
