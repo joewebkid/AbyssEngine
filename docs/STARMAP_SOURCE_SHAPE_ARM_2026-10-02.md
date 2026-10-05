@@ -3131,3 +3131,48 @@ object are unchanged. The accepted seventy-ninth native library, 204-TU
 focused check, zero-skip 4619-comparison corpus and no-exact-loss gates remain
 the authoritative validations. Weighted99 gate remains red. Native executable
 runtime equivalence remains untested. Goal remains active.
+
+
+## Eighty-first/eighty-second trials: branch-local warning receivers (removed)
+
+Accepted production is `fb5748ae`; preceding report checkpoint is `f1f0f794`.
+Raw primary warning branches read ChoiceWindow this+92 separately before the
+shared GameText getText: cb7ae/3214, cb7ba/532, cb7c6/3216, cb7f8/3213,
+cb804/3217, cb852/3215, cb876/3218. Earlier common-goto warning trials did not
+explicitly capture that receiver in each branch. This justifies testing the
+source form, not claiming that the original C++ syntax was recovered.
+
+Trial81 kept the accepted sentinel dispatch and captured the fresh member
+receiver in each successful warning branch, using that receiver at common
+warning delivery. All calls, predicates and order were retained. Focused ARM
+build/comparison exited0: 204 TUs compiled, zero failures, 22 comparisons,
+zero skips. **Entire focused JSON and ARM object were identical to accepted79**
+(hash a775a751fc3520acc5f684ccd1d9560acd4da2664cbf01f471fd2c4055f7498f).
+LLVM consolidated the branch-local receiver reads. No metric gain.
+
+Trial82 combined those receiver captures with the previous separate3217 /
+common-goto warning delivery form. This is distinct from57/67 at source level.
+Focused build/comparison again exited0, compiled204/failed0, compared22/skip0.
+End source-shape **97.7 ->97.6**, strict **80.0 ->81.3**, instruction inventory
+96.8->97.0, opcode97.4->97.5, control98.1->97.8, call count99.3->97.8,
+size96.7->97.9, current instructions1004->1016. Other21 rows were unchanged.
+The End row equals rejected67 across every field. ARM object changed to
+ca424edf938c226586cedf8ef91ef79c0cd9fe6afe2045a888a4eef4b9abde1a;
+no full-corpus exact-pair preservation is claimed for this rejected object.
+
+Both source forms were removed. Wrote the accepted source backup with a fresh
+mtime and ran another focused build to terminal exit0: compiled204/failed0,
+22 comparisons/zero skips. Normalized source, **entire focused JSON and entire
+ARM object** match accepted79. Tracked production has no difference. The
+accepted79 native static library, full4619 zero-skip report and baseline/previous
+no-exact-loss gates remain authoritative; no redundant native/full run was
+started. Means remain **99.235 /98.59120**; weighted99 remains red. Native
+runtime equivalence remains unverified.
+
+Evidence: before-warning-receivers-eightyfirst.cpp,
+warning-receivers-eightyfirst.json/log,
+warning-receivers-combined-eightysecond.cpp/json/log/o,
+eightysecond-restored-focused.json/log under _work. Compact evidence:
+`docs/validation/starmap_2026-10-05_warning_receiver_trials.json`.
+Receiver captures alone are now excluded as a warning-dispatch improvement;
+this is not proof that the remaining source-shape target is impossible.
