@@ -2347,6 +2347,50 @@ before-center-distance-order-fiftyeighth.cpp, center-distance-order-fiftyeighth.
 and fiftyeighth-restored-focused.json/log. Compact committed evidence:
 docs/validation/starmap_2026-10-05_warning_distance_trials.json.
 
+
+## Investigation after checkpoint bab9cd7f
+
+A primary machine precision audit found no new mismatch in station spin/rotation:
+ca596 uses VMUL.F32 for magnitude * 0.01, ca5ac uses VADD.F32 for spin, and
+ca5da uses VMUL.F32 for dt * 0.0002. Existing float arithmetic agrees; IDA's
+unsuffixed decimals do not justify changing these expressions to double.
+
+Two separate update pitch-selection hypotheses were tested:
+
+- Sequential lower then upper: retain the lower-bound ternary and apply the
+  upper comparison to its result instead of nextPitch. Source 98.7% -> 98.6%,
+  strict 82.7% -> 81.1%, instructions 971/966 -> 971/963, inventory 97.0% -> 96.8%,
+  opcode 98.2% -> 98.1%, size 99.6% -> 99.3%.
+- Upper then lower: upperPitch = nextPitch > 8192 ? 8192 : nextPitch, followed
+  by pitch = upperPitch > -8192 ? upperPitch : -8192. Source 98.7% -> 98.5%,
+  strict 82.7% -> 81.0%, instructions 971/966 -> 971/963, inventory 97.0% -> 96.7%,
+  opcode 98.2% -> 98.1%, size 99.6% -> 99.3%.
+
+Both retain two predicates and the same final pitch for below/at lower bound,
+interior values including signed zero, at/above upper bound, infinities and NaN
+(the latter selects -8192). These are equivalent output-selection hypotheses,
+not recovered source syntax or a claim about native runtime equivalence. No
+extra check/call, forced register, padding, compiler flag or shared change was
+introduced. Neither improved the requested source metric, so both were removed.
+All control metrics and call count remain unchanged; other 21 rows identical
+by symbol for each trial. Trial hashes, respectively:
+91a9aed2b0e232fb092cc3c190ddeaafe3ff4991e6ced48d50ff4c73203c11d0 and
+5d1b4bb731b2d553b5116a66d080cdefe81eac664039a9b3e8ef9c43a4f73d90.
+
+Each trial and each fresh restoration compiles 204/204 ARM TUs with zero failures,
+22 comparisons and zero skips. Both restored entire reports equal accepted
+fifty-first, and final object hash is
+3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+Production/canonical inputs remain 9a96e2e5; fixed means remain source 99.205% /
+98.51861709618363%. Weighted 99% remains unmet. No new native/full/runtime run
+is claimed; accepted fifty-first validations remain authoritative.
+
+Evidence: _work/before-update-sequential-clamp-fiftyninth.cpp,
+update-sequential-clamp-fiftyninth.json/log, fiftyninth-restored-focused.json/log,
+before-update-upper-first-sixtieth.cpp, update-upper-first-sixtieth.json/log and
+sixtieth-restored-focused.json/log. Compact committed snapshot:
+docs/validation/starmap_2026-10-05_update_clamp_trials.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
