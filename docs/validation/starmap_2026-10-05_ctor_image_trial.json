@@ -1,0 +1,27 @@
+{
+  "accepted_production": "6c5707e7",
+  "hypothesis": "Ctor image selection compound campaign>157 && i==27 condition with explicit else; campaign getter always evaluated first once per iteration, same texture getter and uint16 conversion.",
+  "original_source_recovered": false,
+  "decision": "removed: no generated-code or metric change",
+  "trial_entire_report_equals_accepted": true,
+  "restored_entire_report_equals_accepted": true,
+  "trial_restored_object_sha256": "156da3b108337cf6b83438749665458002e66fb24536600aa795dc86469e25a3",
+  "trial_and_restore_builds": {
+    "each_compiled": 204,
+    "each_failed": 0,
+    "each_compared": 22,
+    "each_skipped": 0
+  },
+  "discovery_read_audit": {
+    "declarations": "Station returns uint8_t; SolarSystem returns int.",
+    "primary": "c8434/c8444 calls join CBZ R0 at c8448 and icon store.",
+    "accepted": "d24/d34 calls join CBZ R0 at d38 and icon store.",
+    "finding": "No caller-side masking/conversion instruction to remove; no discovery source edit made."
+  },
+  "source_means": {
+    "unweighted": 99.21,
+    "weighted": 98.53561470215463
+  },
+  "target_met": false,
+  "native_full_validation": "No new native/full/runtime run; accepted sixty-second authoritative."
+}

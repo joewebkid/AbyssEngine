@@ -2471,6 +2471,39 @@ inputs are checkpoint62-before-focused.json/corpus.json. Object SHA-256:
 Full JSON SHA-256: f413437473ee7152d6301ffa143a7f6d2ba664133562d6362f0b0784f0dc5e39.
 Compact snapshot: docs/validation/starmap_2026-10-05_info_position_copy.json.
 
+
+## Investigation after checkpoint 6c5707e7
+
+The accepted branch-local info copy was checked for analogous paired-field
+selection opportunities; no equivalent case justified copying that change
+elsewhere blindly. A constructor image hypothesis combined the two image
+choices into campaign >157 && i==27 with a base-texture else. The campaign
+getter remains the first operand and still executes once on every iteration;
+texture getter order, 16-bit conversion and final selected IDs are unchanged.
+The primary v15/v16 select/restore logic proves the final values, not this
+compound source syntax. No getter is cached or extra check/call introduced.
+
+The trial's entire focused report and whole object equal accepted sixty-second.
+It was removed because it gives no generated-code/source progress. Trial and
+fresh restoration each compile 204/204 ARM TUs, zero failures, 22 comparisons
+and zero skips; restored entire JSON equals canonical accepted input. Both
+trial/restored object SHA-256:
+156da3b108337cf6b83438749665458002e66fb24536600aa795dc86469e25a3.
+C1/C2 remain source 99.3%, strict 95.8%, 333/333 instructions.
+
+Read-only discovery typing review found Station::isDiscovered returns uint8_t
+and SolarSystem::isFullyDiscovered returns int. Accepted d24/d34 calls converge
+at CBZ R0 d38 and icon store, matching primary c8434/c8444/c8448. There is no
+caller masking/conversion instruction to remove, so no bool/int rewrite is
+justified by this suspected discrepancy. Shared headers were only inspected.
+
+Production/canonical inputs remain 6c5707e7, means source 99.210% /
+98.53561470215463%. Weighted 99% remains unmet. Accepted sixty-second native/full
+validation remains authoritative; no new native/full/runtime run is claimed.
+Evidence: _work/before-ctor-image-selection-sixtythird.cpp,
+ctor-image-selection-sixtythird.json/log and sixtythird-restored-focused.json/log;
+compact committed snapshot: docs/validation/starmap_2026-10-05_ctor_image_trial.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
