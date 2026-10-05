@@ -1,0 +1,23 @@
+{
+  "primary": "Android ARMv7 GOF2 HD 2.0.16",
+  "accepted_production_checkpoint": "9a96e2e5",
+  "trial_retained": false,
+  "absent_warning_value_trial": 0,
+  "absent_warning_value_accepted": -1,
+  "warning_ids": [
+    532,
+    3213,
+    3214,
+    3215,
+    3216,
+    3217,
+    3218
+  ],
+  "compiled_tus_per_run": 204,
+  "failed_tus_per_run": 0,
+  "comparisons_per_run": 22,
+  "skipped_per_run": 0,
+  "trial_and_restored_reports_equal_accepted": true,
+  "trial_and_restored_object_sha256": "3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d",
+  "new_native_or_full_run": false
+}

@@ -2188,6 +2188,28 @@ before-info-race-switch-fiftysecond.cpp, info-race-switch-fiftysecond.json/log
 and fiftysecond-switch-restored-focused.json/log. Compact committed evidence:
 docs/validation/starmap_2026-10-05_info_capture_race_trials.json.
 
+## Investigation after checkpoint 9692dc9b
+
+OnTouchEnd's internal no-warning sentinel was tested as zero instead of -1.
+The two warningText<0 guards became ==0 and the final >=0 test became !=0.
+All seven assigned text IDs are positive (532,3213..3218), so the same paths
+skip later warning predicates, select the same getter/set calls and reach the
+same suppression/choice-visible/inertia/Help tail. Zero was a source-form
+hypothesis, not a sentinel value recovered from the primary Android binary.
+No source padding, extra check/call or compiler setting was introduced.
+
+The trial's entire 22-row focused report and whole object equal accepted source.
+It was removed because it gives no source-shape progress. Trial and fresh restore
+each compile 204/204 ARM TUs, zero failures, 22 comparisons and zero skips.
+Restored entire JSON again equals accepted; both object SHA-256 values are
+3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+Production and canonical inputs remain 9a96e2e5. Source means stay 99.205% /
+98.51861709618363%; weighted 99% remains unmet. Accepted fifty-first native/full
+validations remain authoritative; no new native/full/runtime result is claimed.
+Evidence: _work/before-warning-zero-fiftythird.cpp, warning-zero-fiftythird.json/log
+and fiftythird-restored-focused.json/log; committed compact snapshot:
+docs/validation/starmap_2026-10-05_warning_zero_trial.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
