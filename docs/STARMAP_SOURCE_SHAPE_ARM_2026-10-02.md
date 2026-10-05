@@ -6,7 +6,7 @@
 implementation bodies measure **99.225% unweighted / 98.58182% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.465% / 82.30199%**, respectively. Source-shape is an inventory/control-flow
+**87.480% / 82.34068%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -2832,6 +2832,45 @@ Compact snapshot: docs/validation/starmap_2026-10-05_init_target_data.json.
 Object SHA-256: 04cee56d72e89477232ebb4e08ec1f935ec094ed496b80efec143c01159c9e43.
 Full JSON SHA-256: adc1704841a6f2832a7ef19df54c12747d9e961d9028af5a0bb756930970c97c.
 
+## Seventy-fifth accepted draw current-system data read ordering
+
+In draw's current-system position copy, capture systemPositions Array before
+Status::getSystem and SolarSystem::getIndex, then access the Array data after
+both callbacks. Primary c9326..c933c loads Status, the Array at +404, calls
+both getters, then loads data at +4 and the indexed element. New 436..44c
+has the same operation, field and call order; the stack temporary register
+still differs. Previously the data pointer was loaded before the callbacks.
+Same getter counts, selected index, Vector copy/assignment and separate
+current-route getter calls. No additional call/check, barrier or padding.
+Original C++ syntax and native runtime equivalence have not been proven.
+
+Draw strict 89.4% -> 89.7%; source 99.1%, every source submetric, instruction
+count and other 21 rows unchanged. Source means remain 99.225% /
+98.5818194620476%; strict means 87.48% / 82.34068441064638%. Weighted 99%
+remains unmet.
+
+Focused ARM 204/204, zero failures, 22 comparisons, zero skips. Native static
+library build and full comparison exit 0; full 4619, zero skips. All focused
+rows agree with full rows. Baseline and previous bf375eeb gates pass with zero
+exact-pair loss (2083 linked / 960 byte); default 99% gate exits 1. Native
+runtime has not been tested. Shared files, verifier and configuration unchanged.
+
+Read-only audits exclude three rewrites without new evidence: station angle
+assignment c774c..c778a matches 2b36..2b74, including retries, fresh flag reads,
+division, multiplication and assigned-flag test; centeredStation comparison
+c78dc..c7908 matches the current field/callback order at 2ce4..2d10; mission
+139 ship-class/equipment checks cb81e..cb848 match current 278a..27b4 getter
+and condition order. These findings do not establish whole-body equivalence
+or a compiler ceiling. No production edit was made for those audited blocks.
+
+Evidence: _work/before-draw-current-data-seventyfifth.cpp,
+draw-current-data-seventyfifth.json/log/asm, native-seventyfifth.log,
+seventyfifth-corpus.json/log, seventyfifth-baseline/previous/target-gate.json/log,
+checkpoint75-before-focused/corpus.json, station-read-audit-seventyfifth.json.
+Compact snapshot: docs/validation/starmap_2026-10-05_draw_current_data.json.
+Object SHA-256: 1ab6e994ad315ab15146f82a3905f6838557d3e819c6f01f24f79b8c33d972a9.
+Full JSON SHA-256: 8dbb63f8358823a852b116ef0d4bda527002f994a8adf600333914be733c2b40.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -2869,18 +2908,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/seventyfourth-corpus.log`; focused log:
-`_work/init-target-data-seventyfourth.log`; native log: `_work/native-seventyfourth.log`.
+Latest full log: `_work/seventyfifth-corpus.log`; focused log:
+`_work/draw-current-data-seventyfifth.log`; native log: `_work/native-seventyfifth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
 50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against baf37291 preserves all 2083
+7fc7701c. The latest comparison against bf375eeb preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/seventyfourth-baseline-gate.json, seventyfourth-previous-gate.json and
-seventyfourth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/seventyfifth-baseline-gate.json, seventyfifth-previous-gate.json and
+seventyfifth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `adc1704841a6f2832a7ef19df54c12747d9e961d9028af5a0bb756930970c97c`.
+final full JSON SHA-256: `8dbb63f8358823a852b116ef0d4bda527002f994a8adf600333914be733c2b40`.
 
 
 ### Reproduction
@@ -2914,7 +2953,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1196 | 78.9% | 99.1% | 80.2% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1004 | 66.6% | 97.7% | 80.0% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.7% | 82.7% | - |
-| `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.1% | 89.4% | - |
+| `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.1% | 89.7% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/735 | 72.9% | 98.3% | 77.3% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/683 | 80.9% | 97.3% | 84.7% | - |
 | `_ZN7StarMapC1EbP7Missionbi` | 333/333 | 85.1% | 99.3% | 95.8% | - |

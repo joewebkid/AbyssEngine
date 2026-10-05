@@ -173,7 +173,9 @@ void StarMap::draw() {
             }
         }
         Globals::Canvas->SetColor(255, 255, 255, (unsigned char)this->alpha);
-        this->scratchVector = Vector(*this->systemPositions->data()[Globals::status->getSystem()->getIndex()]);
+        Array<Vector *> *currentPositions = this->systemPositions;
+        int currentSystemIndex = Globals::status->getSystem()->getIndex();
+        this->scratchVector = Vector(*currentPositions->data()[currentSystemIndex]);
         Array<int> *currentRoutes = reinterpret_cast<Array<int> *>(Globals::status->getSystem()->getRoutes());
         for (uint32_t i = 0; i < this->systems->size(); i++) {
             visibility = Globals::status->getSystemVisibilities();

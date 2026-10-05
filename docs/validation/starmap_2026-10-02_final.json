@@ -1,5 +1,5 @@
 {
-  "avg_match": 88.19,
+  "avg_match": 88.2,
   "avg_source_match": 99.24,
   "count": 22,
   "fuzzy_perfect": 6,
@@ -162,7 +162,7 @@
     },
     {
       "symbol": "_ZN7StarMap4drawEv",
-      "match": 89.4,
+      "match": 89.7,
       "bytes_equal": false,
       "linked_equal": false,
       "n_target": 916,
