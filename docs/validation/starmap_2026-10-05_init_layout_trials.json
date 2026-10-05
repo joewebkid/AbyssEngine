@@ -1,0 +1,47 @@
+{
+  "primary": "Android ARMv7 GOF2 HD 2.0.16",
+  "accepted_production_checkpoint": "1d9a4c65",
+  "source_trials_retained": false,
+  "trial_focus_object_sha256": "b074aa464b492d3eba51e14b69f2f85b2bed927ebdd56b0a34cb9f9460b8e7ec",
+  "trial_search_object_sha256": "b074aa464b492d3eba51e14b69f2f85b2bed927ebdd56b0a34cb9f9460b8e7ec",
+  "restored_object_sha256": "b074aa464b492d3eba51e14b69f2f85b2bed927ebdd56b0a34cb9f9460b8e7ec",
+  "checks": [
+    {
+      "report": "init-focus-fortyeighth.json",
+      "compiled_tus": 204,
+      "failed_tus": 0,
+      "comparisons": 22,
+      "skipped": 0,
+      "entire_report_equal": true
+    },
+    {
+      "report": "fortyeighth-restored-focused.json",
+      "compiled_tus": 204,
+      "failed_tus": 0,
+      "comparisons": 22,
+      "skipped": 0,
+      "entire_report_equal": true
+    },
+    {
+      "report": "init-search-fortyeighth.json",
+      "compiled_tus": 204,
+      "failed_tus": 0,
+      "comparisons": 22,
+      "skipped": 0,
+      "entire_report_equal": true
+    },
+    {
+      "report": "fortyeighth-search-restored-focused.json",
+      "compiled_tus": 204,
+      "failed_tus": 0,
+      "comparisons": 22,
+      "skipped": 0,
+      "entire_report_equal": true
+    }
+  ],
+  "source_means": [
+    99.18,
+    98.50022532037741
+  ],
+  "new_native_or_full_validation_run": false
+}

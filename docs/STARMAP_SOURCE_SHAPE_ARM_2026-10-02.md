@@ -1946,6 +1946,93 @@ warning-goto-fortysixth.json/log/o, fortysixth-restored-focused.json/log and
 fortysixth-object-delta.json. Compact section-difference evidence is committed at
 docs/validation/starmap_2026-10-05_warning_goto_trial.json.
 
+## Investigation after checkpoint 78765e07
+
+A fresh read-only allocation-shape alignment of the accepted initStarSystem
+object reproduces source 97.3%, instruction inventory 96.7%, opcode inventory
+97.4%, control 96.9%, ordered control 94.8%, call count 99.0% and size 96.3%.
+The diagnostic does not replace or filter the fixed-corpus gate. Full local
+alignment groups are retained in _work/station-local-differences-fortyseventh.json.
+
+Raw primary Android calls were compared against current ARM relocations inside
+verified function bounds, excluding initLights. Original has 100 direct and eight
+indirect calls; accepted has 101 direct and eight indirect calls. After accounting
+for the existing Array<bool>/Array<uint8_t> constructor and ArraySetLength
+spellings, the only extra direct call is the shared Matrix C1. No missing lighting,
+ring, station or vector-normalization call is exposed by this count comparison.
+This is a static-site inventory, not a claim of path-by-path runtime equivalence.
+Committed evidence: docs/validation/starmap_2026-10-05_station_calls.json.
+
+Primary c77c6..c77e0 and accepted 2ba8..2bc2 already add the random result to the
+previous distance, then add 1600, before converting/storing. Primary c7c1a..c7c32
+and accepted 3004..301c already capture the planet member after the second
+campaign getter and select the <=157 / >157 constants before one scaling call.
+The successful angle-slot retry and flag write also agree at original
+c774c..c7778 versus accepted 2b2e..2b5c. These are not candidates for another
+arithmetic or branch-order rewrite.
+
+Sequence alignment alone misleadingly presents a second planetGeom reset:
+raw accepted 2f52 writes member444 once, then 2f56 writes member376; original
+c7b68 writes member376 and c7b6c writes member444. Both reset once before the
+texture-index getter. Their reordered pure stores do not establish an extra
+runtime operation. No code change is justified by this apparent alignment gap.
+
+The Matrix initialization region remains genuinely different (inline primary
+NEON initialization versus the shared constructor and two required field fixes),
+while ring-check block placement and literal-pool decoding also affect alignment.
+No raw-storage, shared-constructor, verifier or compile-flag workaround was added.
+Production and canonical reports are unchanged; accepted fortyfourth validations
+remain authoritative. No new build/runtime result is claimed. Means stay
+99.180% / 98.50022532037741%; weighted 99% remains unmet. The next investigation
+returns to init/OnTouchEnd rather than repeating the now-confirmed station
+arithmetic and scale branches.
+
+## Investigation after checkpoint 67bf0b1b
+
+Fresh allocation-shape alignment of init reproduces source 98.3%, instruction
+inventory/opcode inventory 97.9%, control 98.8%, ordered control 80.1%, call count
+99.0% and size 97.7%. The low ordered-control score includes displaced source
+blocks and does not by itself prove missing runtime branches. Diagnostic groups
+are saved in _work/init-local-differences-fortyeighth.json without altering any
+canonical gate input or corpus weight.
+
+Two new source-form hypotheses were compiled separately and rejected:
+
+- Initial camera focus: primary c6eba/c6ee8 bypass the target-station branch to
+  common camera setup at c6f8e. The trial gave auto/current-system position paths
+  explicit jumps to camera_focus_ready and left the target-station branch as a
+  separate fall-through scope. Target getters, ownership test/deletion and the
+  common CameraGetCurrent/GetLocal sequence were retained. The entire focused
+  report and whole object were identical to accepted source.
+- Mission target search: primary c7176..c725a contains the principal scan/path
+  branch before the fallback scan at c725c..c72dc. The trial used the unchanged
+  initial short-circuit predicate to jump to search_without_routes, placed the
+  principal branch first, then jumped to mission_search_ready. Both scans kept
+  repeated mission/system/station getters, index updates and the same common
+  pathAnim/momentum/selectedSystem tail. Again the entire focused report and
+  whole object were identical to accepted source.
+
+These trials hypothesized source layout, not recovered C++ syntax. Neither
+forced registers, inserted a call/check, changed flags or used a barrier. Both
+were removed: they added labels without improving source shape or generated
+bytes. Backups/logs/reports are before-init-focus-fortyeighth.cpp,
+init-focus-fortyeighth.json/log, before-init-search-fortyeighth.cpp and
+init-search-fortyeighth.json/log in _work.
+
+Each trial and each fresh-source restoration compiled all 204 ARM TUs with zero
+failures and compared 22 rows with zero skips. Both trial object hashes and the
+final restored object hash are
+b074aa464b492d3eba51e14b69f2f85b2bed927ebdd56b0a34cb9f9460b8e7ec.
+Restoration reports are fortyeighth-restored-focused.json/log and
+fortyeighth-search-restored-focused.json/log. Compact committed evidence is
+in docs/validation/starmap_2026-10-05_init_layout_trials.json.
+Production code and canonical reports remain those of 1d9a4c65; accepted
+fortyfourth native/full-corpus validations remain authoritative. No new
+native/full-corpus run is claimed. Source means remain 99.180% /
+98.50022532037741%, weighted 99% remains unmet and native runtime untested.
+The next search must examine a different discrepancy; source block placement
+alone did not change this compiler output in either new trial.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
