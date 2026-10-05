@@ -1654,7 +1654,9 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     } else {
         Station *target = reinterpret_cast<Station *>(static_cast<intptr_t>(static_cast<Galaxy *>(Globals::galaxy)->getStation(mission->getTargetStation())));
         if (target && target->getSystem() >= 0) {
-            this->scratchVector = this->systemGeoms->data()[target->getSystem()]->getPosition();
+            Array<AEGeometry *> *targetGeoms = this->systemGeoms;
+            int targetSystem = target->getSystem();
+            this->scratchVector = targetGeoms->data()[targetSystem]->getPosition();
         } else if (Globals::status->field_7c >= 0) {
             this->scratchVector = this->systemGeoms->data()[Globals::status->field_7c]->getPosition();
         }
