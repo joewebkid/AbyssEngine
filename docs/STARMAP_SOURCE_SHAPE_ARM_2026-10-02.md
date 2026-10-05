@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.225% unweighted / 98.58182% original-instruction
+implementation bodies measure **99.235% unweighted / 98.59120% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.480% / 82.34068%**, respectively. Source-shape is an inventory/control-flow
+**87.570% / 82.42510%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -2939,6 +2939,42 @@ Restored object SHA-256:
 1ab6e994ad315ab15146f82a3905f6838557d3e819c6f01f24f79b8c33d972a9.
 Compact snapshot: docs/validation/starmap_2026-10-05_low_cargo_trial.json.
 
+## Seventy-ninth accepted constructor Array length argument reads
+
+Constructor now passes *this->systemGeoms and *this->systemPositions to the
+two existing ArraySetLength(34,...) calls instead of cached allocation locals.
+Primary c68b2..c68c6 rereads +104 after the position Array constructor and
++404 after the geometry ArraySetLength callback. New 4216..422a reproduces
+those fields, registers, size34 and call order, apart from linker call
+relocations. Allocations, constructors and member stores are retained. No
+extra call/check, padding, barrier or shared-file/configuration change. These
+are native member-read observations; original C++ syntax and native runtime
+equivalence have not been proven.
+
+C1/C2 source 99.3% -> 99.5%, strict 95.8% -> 97.6%; instruction and opcode
+inventory 98.2% -> 99.1%, instructions 333/333 -> 333/331, size 100% -> 99.4%.
+All control/call metrics remain 100%; other 20 rows unchanged. Aliases remain
+checked and excluded from means. The denominator stays 20 bodies / 7101.
+Source means now 99.235% / 98.59119842275736%; strict 87.57% /
+82.42509505703421%. Weighted 99% remains unmet by 0.40880157724264 pp.
+Unchanged analyzer reproduces all submetrics and confirms the +104/+404
+surpluses are gone. Remaining inventories are not missing C++ statements or
+a proven compiler ceiling. Raw diagnostic: _work/ctor-inventory-seventyninth.json.
+
+Focused ARM 204/204, zero failures, 22 comparisons, zero skips. Native static
+library build and full comparison exit 0; full 4619, zero skips. All focused
+rows agree with full rows. Baseline and previous 657504fb (production ee4e8b03)
+gates pass with zero exact-pair loss (2083 linked / 960 byte). Default 99%
+gate exits 1. Native runtime has not been tested.
+
+Evidence: _work/before-ctor-array-reads-seventyninth.cpp,
+ctor-array-reads-seventyninth.json/log/asm, native-seventyninth.log,
+seventyninth-corpus.json/log, seventyninth-baseline/previous/target-gate.json/log,
+checkpoint79-before-focused/corpus.json.
+Compact snapshot: docs/validation/starmap_2026-10-05_ctor_array_reads.json.
+Object SHA-256: a775a751fc3520acc5f684ccd1d9560acd4da2664cbf01f471fd2c4055f7498f.
+Full JSON SHA-256: a4461ba66b3ad1c7fd4b6e3aa0b468c80eef2472da8eb13aa2435164d9c50f84.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
@@ -2976,18 +3012,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/seventyfifth-corpus.log`; focused log:
-`_work/draw-current-data-seventyfifth.log`; native log: `_work/native-seventyfifth.log`.
+Latest full log: `_work/seventyninth-corpus.log`; focused log:
+`_work/ctor-array-reads-seventyninth.log`; native log: `_work/native-seventyninth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
 50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against bf375eeb preserves all 2083
+7fc7701c. The latest comparison against 657504fb (production ee4e8b03) preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/seventyfifth-baseline-gate.json, seventyfifth-previous-gate.json and
-seventyfifth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/seventyninth-baseline-gate.json, seventyninth-previous-gate.json and
+seventyninth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `8dbb63f8358823a852b116ef0d4bda527002f994a8adf600333914be733c2b40`.
+final full JSON SHA-256: `a4461ba66b3ad1c7fd4b6e3aa0b468c80eef2472da8eb13aa2435164d9c50f84`.
 
 
 ### Reproduction
@@ -3024,7 +3060,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.1% | 89.7% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/735 | 72.9% | 98.3% | 77.3% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/683 | 80.9% | 97.3% | 84.7% | - |
-| `_ZN7StarMapC1EbP7Missionbi` | 333/333 | 85.1% | 99.3% | 95.8% | - |
+| `_ZN7StarMapC1EbP7Missionbi` | 333/331 | 85.1% | 99.5% | 97.6% | - |
 | `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 99.3% | 97.4% | - |
 | `_ZN7StarMap11OnTouchMoveEii` | 265/258 | 81.3% | 98.8% | 78.8% | - |
 | `_ZN7StarMap7drawKeyEv` | 246/244 | 59.5% | 97.9% | 35.1% | - |

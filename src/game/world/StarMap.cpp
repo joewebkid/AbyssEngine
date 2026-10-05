@@ -907,8 +907,8 @@ StarMap::StarMap(bool jumpMapMode, Mission *mission, bool param3, int param4)
     this->systemGeoms = systemsGeom;
     Array<Vector *> *systemPositions = new Array<Vector *>();
     this->systemPositions = systemPositions;
-    ArraySetLength(0x22, *systemsGeom);
-    ArraySetLength(0x22, *systemPositions);
+    ArraySetLength(0x22, *this->systemGeoms);
+    ArraySetLength(0x22, *this->systemPositions);
 
     for (uint32_t i = 0; i < this->systemGeoms->size(); i++) {
         int tex = this->systems->data()[i]->getTextureIndex();
