@@ -2686,6 +2686,40 @@ before-update-mode-order-sixtyninth.cpp, update-mode-order-sixtyninth.json/log,
 sixtyninth-restored-focused.json/log. Compact snapshot:
 docs/validation/starmap_2026-10-05_mode_order_trials.json.
 
+## Seventieth trial: touch-end galaxy branch first (removed)
+
+Inspected StarMap.cpp, primary/accepted update ARM and focused reports. Reordered
+OnTouchEnd's dragging branches: mode==0 enters the complete galaxy body; else
+enters the complete station body, including every other nonzero mode. Previously
+mode!=0 selected the station body first. Predicates, getters, warning handling,
+inertia, Help and the accepted confirmation tail were preserved. This is a
+source-form hypothesis, not recovered C++ syntax. No new check/call or padding.
+
+The entire trial focused report equals accepted sixty-sixth: OnTouchEnd remains
+97.7% source / 80.0% strict / 1037/1004 instructions, all 22 rows unchanged.
+Whole object differs, SHA-256
+33585af7b6c3082b8e01cdb56e2ffbb1c53aec2f2a8d48db101f00cc346bd493.
+The object difference was not classified; report equality does not prove object
+identity or full-corpus preservation for the rejected trial. Rejected because
+there is no improvement to the requested source metric.
+
+Trial and fresh restoration each compile 204/204 ARM TUs, zero failures,
+22 comparisons and zero skips. Restored entire report equals canonical accepted
+input and whole object SHA-256 is
+06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34.
+Production remains 3aebb2c0, source means 99.220% / 98.56482185607662%.
+Weighted 99% remains unmet. No new native/full/runtime run is claimed;
+accepted sixty-sixth remains authoritative.
+
+Camera-bound audit excluded a declaration-order rewrite: primary ca194..ca1cc
+and accepted 37b0..37e8 already load panX/panY, then baseX/baseZ, convert Y then
+X, add Y then X, convert Y then X, move Y/X to R0/R1 and compare X to 120 in
+matching order. No camera-coordinate source change was made.
+
+Evidence: _work/before-end-mode-order-seventieth.cpp,
+end-mode-order-seventieth.json/log/o and seventieth-restored-focused.json/log.
+Compact snapshot: docs/validation/starmap_2026-10-05_end_mode_order_trial.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
