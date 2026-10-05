@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-05 (integrated recovery branches; older subsystem
+Last reviewed: 2026-10-05 (main working-tree reconciliation; older subsystem
 snapshots retain their dates)
+
+## Main working-tree reconciliation (2026-10-05, local integration branch)
+
+The non-overlapping AbyssEngine, HangarWindow, Radar, ParticleSettings and
+ABI changes from the dirty `main` checkout are now collected on
+`codex/integrate-main-working-20261005`; newer Player/StarMap source forms
+remain in place. Native `gof2`, 206/206 ARM units and focused runtime smokes
+build or pass. The full corpus compares **4,323/4,524** originals across
+4,688 rows at **91.75%** mean source-shape / **79.62%** strict, with **2,300
+linked-exact** and **997 byte-exact** pairs. Against the preceding integrated
+snapshot there are zero exact-set losses and 101 linked / eight byte gains.
+This is not a playable-game or semantic-completion percentage; integrated
+gameplay runtime remains unverified. The original dirty `main` checkout is
+unchanged; see [the reconciliation note](MAIN_WORKTREE_RECONCILIATION_2026-10-05.md).
 
 ## Integrated recovery branches (2026-10-05, local integration branch)
 

@@ -3,6 +3,11 @@
 Work-in-progress C++ reconstruction of the Android ARMv7 build of *Galaxy on
 Fire 2 HD* and its proprietary Abyss Engine runtime.
 
+This is a standalone native recovery project with two downstream uses: future
+GOF2 builds on other platforms and native modding, plus verified behavior and
+data for the separate Godot remake. The Godot port is not the completion gate
+for this repository.
+
 This is independent reverse-engineering research. It is not an official
 Fishlabs product, not a playable game, and does not redistribute game binaries,
 assets, APKs, IPAs, OBB files, or JARs.
@@ -12,6 +17,9 @@ assets, APKs, IPAs, OBB files, or JARs.
 The tree contains 204 C++ translation units and 234 headers. The native static
 library builds on Windows/MSYS2 UCRT64 and is used as a compile regression gate.
 ARM validation is a separate function-by-function comparison workflow.
+Neither the static library nor a Godot playtest proves that the recovered game
+runs natively. A platform host, runtime services, and an executable station to
+flight test remain separate milestones.
 
 The checked-in `report.json` snapshot records 4,507 compared symbols out of
 4,522 original functions, with 1,697 linked-exact and 948 raw-byte-exact

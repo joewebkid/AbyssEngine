@@ -3,8 +3,12 @@
 ## Purpose
 
 This repository reconstructs the Android ARMv7 version of *Galaxy on Fire 2
-HD* and its Abyss Engine runtime. Treat it as reverse-engineering research, not
-as a greenfield rewrite.
+HD* and its Abyss Engine runtime. It is an independent native project for
+cross-platform ports and modding as well as an evidence source for the separate
+Godot remake. Treat it as reverse-engineering research, not a greenfield rewrite.
+
+Keep native runtime/ABI gates separate from Godot integration gates. A Godot
+vertical slice does not demonstrate that the recovered C++ game can execute.
 
 ## Read First
 
