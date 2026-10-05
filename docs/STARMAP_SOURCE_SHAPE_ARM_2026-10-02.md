@@ -2391,6 +2391,42 @@ before-update-upper-first-sixtieth.cpp, update-upper-first-sixtieth.json/log and
 sixtieth-restored-focused.json/log. Compact committed snapshot:
 docs/validation/starmap_2026-10-05_update_clamp_trials.json.
 
+
+## Investigation after checkpoint 8c1c4487
+
+Fresh info allocation-shape diagnostics reproduce source 98.9%, inventory 97.8%,
+opcode 98.9%, control 98.7%, ordered control 90.2%, calls 100% and size 99.1%.
+The 42 sequence-difference groups are diagnostic alignment, not 42 source bugs.
+Primary c8ecc..c8ee8 and accepted 17a2..17be already capture Canvas, GameText and
+font before getRace, then call getText and DrawString in the same order. No
+new capture change is justified by this selected-system race row.
+
+Primary IDA v75/v114 uses an address into alpha for repeated low-byte draws.
+The diagnostics show target add-address/byte-load tokens where current code
+uses direct field loads/casts. A separate source trial captured a const
+unsigned-char pointer to alpha before the system-label color operations and
+used fresh byte reads for their alpha arguments. Full-int comparisons/clamps,
+station inverse-alpha paths, pulse conversion and callbacks were retained.
+It neither cached alpha across a callback nor changed calls. On the primary
+little-endian ARM and current Windows targets, byte zero gives the same low
+byte as the previous casts. This was a legal object-representation/source-form
+hypothesis, not exact recovered syntax; no raw Matrix storage, compiler hint
+or barrier was introduced.
+
+The entire trial focused report and whole object equal accepted source.
+It was removed because it gives no generated-code/source-shape progress.
+Trial and fresh restore each compile 204/204 ARM TUs, zero failures, 22
+comparisons and zero skips. Restored entire report equals accepted fifty-first;
+trial and restored object SHA-256:
+3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+Production/canonical inputs remain 9a96e2e5; source means stay 99.205% /
+98.51861709618363%, weighted 99% remains unmet. No new native/full/runtime run
+is claimed; accepted fifty-first validation remains authoritative.
+Evidence: _work/info-local-differences-sixtyfirst.json,
+before-info-alpha-byte-sixtyfirst.cpp, info-alpha-byte-sixtyfirst.json/log and
+sixtyfirst-restored-focused.json/log; compact committed evidence:
+docs/validation/starmap_2026-10-05_info_byte_trial.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;

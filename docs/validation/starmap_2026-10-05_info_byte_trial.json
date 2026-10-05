@@ -1,0 +1,74 @@
+{
+  "diagnostic_only": true,
+  "accepted_production": "9a96e2e5",
+  "object_sha256": "3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d",
+  "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+  "metrics": {
+    "source_match": 98.9,
+    "instruction_inventory_match": 97.8,
+    "opcode_inventory_match": 98.9,
+    "control_flow_match": 98.7,
+    "ordered_control_flow_match": 90.2,
+    "control_inventory_match": 98.7,
+    "call_count_match": 100.0,
+    "size_match": 99.1
+  },
+  "target_surplus": {
+    "cmp g0, #0": 3,
+    "ldr g0, [g1, #0]": 2,
+    "str g0, [frame, #slot]": 2,
+    "ite eq": 1,
+    "ldreq g0, [g1, #404]": 1,
+    "ldrne g0, [g1, #408]": 1,
+    "movs g0, #0": 1,
+    "b <t>": 1,
+    "beq <t>": 2,
+    "ldr g0, [frame, #slot]": 4,
+    "bge <t>": 1,
+    "ldr g0, [g1]": 2,
+    "it gt": 1,
+    "movgt g0, #1": 1,
+    "orrs g0, g1, g2": 1,
+    "add g0, g1, #420": 3,
+    "ldrb g0, [g1, #0]": 1,
+    "addeq g0, g1, #292": 1,
+    "add g0, g1, #300": 1,
+    "ldrb g0, [g1]": 2
+  },
+  "current_surplus": {
+    "ldr g0, [g0, #0]": 1,
+    "mov g0, #404": 1,
+    "it ne": 1,
+    "movne g0, #408": 1,
+    "ldr g0, [g1, g0]": 1,
+    "bgt <t>": 1,
+    "cbz <t>": 2,
+    "movs g0, #1": 1,
+    "orrs g0, g1": 1,
+    "eor g0, g1, g0, lsr #31": 1,
+    "ldr g0, [g1, #420]": 3,
+    "uxtb g0, g0": 2,
+    "ldrb g0, [g1, #420]": 3,
+    "addeq g0, g1, #300": 1,
+    "add g0, g1, #292": 1
+  },
+  "receiver_crosscheck": {
+    "primary": "c8ecc..c8ee8",
+    "accepted": "17a2..17be",
+    "finding": "Canvas receiver, GameText receiver, font captured before getRace; fresh text getter then drawString. Existing instructions agree except frame offsets."
+  },
+  "alpha_byte_trial": {
+    "hypothesis": "Capture const unsigned-char address of alpha; fresh system-branch low-byte read for drawing, full-int alpha clamps unchanged. C++ object-representation access hypothesis, not recovered syntax.",
+    "decision": "removed: no report/object change",
+    "trial_entire_report_equals_accepted": true,
+    "restore_entire_report_equals_accepted": true,
+    "trial_and_restore_sha256": "3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d",
+    "builds": {
+      "each_compiled": 204,
+      "each_failed": 0,
+      "each_compared": 22,
+      "each_skipped": 0
+    }
+  },
+  "limits": "Diagnostic alignment does not prove semantic completeness or a source-shape ceiling. No new native/full/runtime run; accepted fifty-first remains authoritative."
+}
