@@ -1138,19 +1138,29 @@ void StarMap::drawKey() {
     int textX = imageWidth + lineHeight + imageX;
     int y = height - lineHeight - rightPad - lineGap;
     Globals::Canvas->DrawImage2D(this->keyImageRetreat, imageX, y);
-    Globals::Canvas->DrawString(Globals::font, *Globals::gameText->getText(274), textX, y, false);
+    PaintCanvas *textCanvas = Globals::Canvas;
+    unsigned int textFont = Globals::font;
+    textCanvas->DrawString(textFont, *Globals::gameText->getText(274), textX, y, false);
     y -= Globals::layout->field_0x4;
     Globals::Canvas->DrawImage2D(this->keyImageDiscovered, imageX, y);
-    Globals::Canvas->DrawString(Globals::font, *Globals::gameText->getText(401), textX, y, false);
+    textFont = Globals::font;
+    textCanvas = Globals::Canvas;
+    textCanvas->DrawString(textFont, *Globals::gameText->getText(401), textX, y, false);
     y -= Globals::layout->field_0x4;
     Globals::Canvas->DrawImage2D(this->keyImageCurrent, imageX, y);
-    Globals::Canvas->DrawString(Globals::font, *Globals::gameText->getText(547), textX, y, false);
+    textCanvas = Globals::Canvas;
+    textFont = Globals::font;
+    textCanvas->DrawString(textFont, *Globals::gameText->getText(547), textX, y, false);
     y -= Globals::layout->field_0x4;
     Globals::Canvas->DrawImage2D(this->keyImageMission, imageX, y);
-    Globals::Canvas->DrawString(Globals::font, *Globals::gameText->getText(556), textX, y, false);
+    textFont = Globals::font;
+    textCanvas = Globals::Canvas;
+    textCanvas->DrawString(textFont, *Globals::gameText->getText(556), textX, y, false);
     y -= Globals::layout->field_0x4;
     Globals::Canvas->DrawImage2D(this->keyImageWanted, imageX, y);
-    Globals::Canvas->DrawString(Globals::font, *Globals::gameText->getText(555), textX, y, false);
+    textCanvas = Globals::Canvas;
+    textFont = Globals::font;
+    textCanvas->DrawString(textFont, *Globals::gameText->getText(555), textX, y, false);
 }
 
 void StarMap::initStarSystem() {
