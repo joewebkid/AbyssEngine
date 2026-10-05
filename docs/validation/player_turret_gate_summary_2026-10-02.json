@@ -1,0 +1,123 @@
+{
+  "status": "passed",
+  "clean_base": "f60694dd",
+  "branch": "codex/player-turret-99-20261002",
+  "original_sha256": "6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58",
+  "native_build": "gof2 UCRT64 Debug passed",
+  "arm_units": 204,
+  "arm_failures": 0,
+  "family_unique_bodies": 19,
+  "family_symbols": 21,
+  "family_baseline_metrics": {
+    "source_match": 96.72631578947369,
+    "source_match_n_target": 89.22967032967033,
+    "source_match_target_instruction_count": 89.23001876172607,
+    "match": 88.78947368421052,
+    "match_n_target": 61.91474358974359,
+    "match_target_instruction_count": 62.029362101313325
+  },
+  "family_final_metrics": {
+    "source_match": 99.8,
+    "source_match_n_target": 99.20274725274724,
+    "source_match_target_instruction_count": 99.20666041275797,
+    "match": 96.96842105263158,
+    "match_n_target": 92.68736263736263,
+    "match_target_instruction_count": 92.73377110694183
+  },
+  "original_parser_baseline": {
+    "count": 4619,
+    "linked_exact": 2079,
+    "byte_exact": 959,
+    "missing_wrong_type": 7,
+    "skipped": 0
+  },
+  "full_baseline": {
+    "count": 4631,
+    "avg_match": 76.74,
+    "avg_source_match": 89.78,
+    "linked_exact": 2100,
+    "byte_exact": 964,
+    "compared_unique": 4281,
+    "original_functions": 4524,
+    "missing_wrong_type": 0,
+    "missing_absent": 243,
+    "skipped": 0,
+    "extra_symbols": 130
+  },
+  "full_final": {
+    "count": 4631,
+    "avg_match": 76.77,
+    "avg_source_match": 89.8,
+    "linked_exact": 2101,
+    "byte_exact": 964,
+    "compared_unique": 4281,
+    "original_functions": 4524,
+    "missing_wrong_type": 0,
+    "missing_absent": 243,
+    "skipped": 0,
+    "extra_symbols": 130
+  },
+  "full_changed_rows": [
+    {
+      "unit": "game\\ship\\PlayerTurret",
+      "symbol": "_ZN12PlayerTurret14handleRotationEiP10AEGeometryS1_"
+    },
+    {
+      "unit": "game\\ship\\PlayerTurret",
+      "symbol": "_ZN12PlayerTurret6reviveEv"
+    },
+    {
+      "unit": "game\\ship\\PlayerTurret",
+      "symbol": "_ZN12PlayerTurret6updateEi"
+    },
+    {
+      "unit": "game\\ship\\PlayerTurret",
+      "symbol": "_ZN12PlayerTurret8setLevelEP5Level"
+    },
+    {
+      "unit": "game\\ship\\PlayerTurret",
+      "symbol": "_ZN12PlayerTurret9pickEnemyEv"
+    },
+    {
+      "unit": "game\\ship\\PlayerTurret",
+      "symbol": "_ZN12PlayerTurretC1EiP6PlayerP10AEGeometryfff"
+    },
+    {
+      "unit": "game\\ship\\PlayerTurret",
+      "symbol": "_ZN12PlayerTurretC2EiP6PlayerP10AEGeometryfff"
+    }
+  ],
+  "source_sha256": {
+    "src/game/ship/PlayerTurret.cpp": "e7ca4d9dd4a0673888dfcb18468272a3fa7bd05513dd01d7c918da8074b92965",
+    "src/game/ship/PlayerTurret.h": "a9ad558e7585e7cae77785e92a63675497ce076a2060d33deb332babbf4cfb71",
+    "tools/verify/asmdiff.py": "f614a9f1cd6bfaa94ecf29dc5b8bc12d3b028d3d0e24a9e04c5a2a25acf778d1",
+    "tools/test_player_turret_gate.py": "54956f3751f4a616cba502ab6927e19be7db7fb1c868b7969bce2158593ad286"
+  },
+  "full_report_sha256": {
+    "full_arm_baseline": "ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0",
+    "full_arm_baseline_parser_fixed": "143e8fd098e4c3eba8ee9be5a0e1a910d74f60ef97391d8927d7e8b22af52b99",
+    "full_arm_final_parser_fixed": "ab34f2ca4e336907853e9c82d5b5f758e3399d926775440bef1fe25cbf3e825d"
+  },
+  "tests": [
+    "ARM layout static assertions",
+    "COMDAT aliases regression fixture",
+    "fixed-body/alias and weighted negative self-checks",
+    "native gof2 build",
+    "204 ARM unit compile",
+    "focused verify",
+    "two full ARM corpus runs with --fail-on-wrong-type",
+    "exact pair subset comparison against both parser baselines"
+  ],
+  "arm32_runtime_executed": false,
+  "linked_equal_losses_from_fixed_baseline": [],
+  "linked_equal_losses_from_original_baseline": [],
+  "linked_equal_gains_from_fixed_baseline": [
+    [
+      "game\\ship\\PlayerTurret",
+      "_ZN12PlayerTurret8setLevelEP5Level"
+    ]
+  ],
+  "bytes_equal_losses_from_fixed_baseline": [],
+  "bytes_equal_losses_from_original_baseline": [],
+  "bytes_equal_gains_from_fixed_baseline": []
+}

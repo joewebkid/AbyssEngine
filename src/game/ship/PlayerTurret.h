@@ -19,13 +19,14 @@ class PlayerTurret : public KIPlayer {
 public:
 
 
-    bool turretEnabled;
-    bool isSentryGun;
-    Vector &cachedPosition() { return reinterpret_cast<Vector &>(this->posX); }
-    Vector &hostWorldOffset() { return reinterpret_cast<Vector &>(this->field_0x90); }
+    int lastFrameDelta; // Android update stores delta at +0x124.
+    uint8_t &turretEnabled() { return this->field_0x25; }
+    char &isSentryGun() { return this->field_0x3f_b; }
+    Vector &cachedPosition() { return this->position; }
+    Vector &hostWorldOffset() { return this->targetPos; }
     Vector &aimPoint() { return reinterpret_cast<Vector &>(this->field_0x9c); }
-    int &reviveFlag() { return reinterpret_cast<int &>(this->rotationSpeed); }
-    int &frameDelta() { return reinterpret_cast<int &>(this->type); }
+    int &reviveFlag() { return this->field_0xd8; }
+    int &frameDelta() { return this->lastFrameDelta; }
 
     int spawnInvulnTimer;
     int explosionTimer;
@@ -62,11 +63,11 @@ public:
 
     void revive() override;
 
-    void setPosition(const Vector &position);
+    void setPosition(const Vector &position) override;
 
     void reset();
 
-    void setLevel(Level *level);
+    void setLevel(Level *level) override;
 
     KIPlayer *getHost();
 
@@ -80,16 +81,31 @@ public:
 };
 
 #if __SIZEOF_POINTER__ == 4
-static_assert(__builtin_offsetof(PlayerTurret, isSentryGun) == 0x125,
-              "PlayerTurret::isSentryGun offset");
+static_assert(__builtin_offsetof(PlayerTurret, field_0x25) == 0x25, "PlayerTurret enabled byte");
+static_assert(__builtin_offsetof(PlayerTurret, field_0x3f_b) == 0x3f, "PlayerTurret sentry byte");
+static_assert(__builtin_offsetof(PlayerTurret, lastFrameDelta) == 0x124, "PlayerTurret frame delta");
+static_assert(__builtin_offsetof(PlayerTurret, position) == 0x2c, "PlayerTurret cached position");
+static_assert(__builtin_offsetof(PlayerTurret, targetPos) == 0x90, "PlayerTurret host world offset");
+static_assert(__builtin_offsetof(PlayerTurret, field_0x9c) == 0x9c, "PlayerTurret aim point");
+static_assert(__builtin_offsetof(PlayerTurret, field_0xd8) == 0xd8, "PlayerTurret revive flag");
 static_assert(__builtin_offsetof(PlayerTurret, spawnInvulnTimer) == 0x128,
               "PlayerTurret::spawnInvulnTimer offset");
 static_assert(__builtin_offsetof(PlayerTurret, explosion) == 0x13c,
               "PlayerTurret::explosion offset");
+static_assert(__builtin_offsetof(PlayerTurret, explosionTimer) == 0x12c, "PlayerTurret explosion timer");
+static_assert(__builtin_offsetof(PlayerTurret, pickEnemyTimer) == 0x130, "PlayerTurret pick timer");
+static_assert(__builtin_offsetof(PlayerTurret, rotationAccum) == 0x134, "PlayerTurret pitch accumulation");
+static_assert(__builtin_offsetof(PlayerTurret, particleSystemId) == 0x138, "PlayerTurret particle system");
+static_assert(__builtin_offsetof(PlayerTurret, baseGeometry) == 0x140, "PlayerTurret base geometry");
+static_assert(__builtin_offsetof(PlayerTurret, turretGeometry) == 0x144, "PlayerTurret turret geometry");
+static_assert(__builtin_offsetof(PlayerTurret, helperGeometry) == 0x148, "PlayerTurret helper geometry");
+static_assert(__builtin_offsetof(PlayerTurret, currentEnemy) == 0x14c, "PlayerTurret current enemy");
+static_assert(__builtin_offsetof(PlayerTurret, previousEnemy) == 0x150, "PlayerTurret previous enemy");
 static_assert(__builtin_offsetof(PlayerTurret, turretHost) == 0x154,
               "PlayerTurret::turretHost offset");
 static_assert(__builtin_offsetof(PlayerTurret, turretRange) == 0x164,
               "PlayerTurret::turretRange offset");
+static_assert(__builtin_offsetof(PlayerTurret, hostOffset) == 0x158, "PlayerTurret local host offset");
 static_assert(sizeof(PlayerTurret) == 0x168, "PlayerTurret size");
 #endif
 

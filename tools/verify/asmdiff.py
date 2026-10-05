@@ -355,7 +355,7 @@ def disassemble(obj, objdump=DEFAULT_OBJDUMP):
     lines = out.splitlines()
     sizes = _symbol_sizes(lines)
     funcs, cur, start, limit = {}, None, 0, None
-    addr2label = {}   # (section, address) -> objdump's function label
+    addr2label = {}   # (section, address) -> objdump's labelled function
     section = None
     for line in lines:
         section_header = re.match(r"^Disassembly of section (\S+):$", line)
