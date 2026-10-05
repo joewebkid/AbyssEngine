@@ -3276,3 +3276,158 @@ claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, 2079 linked /959 byte
 exact pairs equal baseline without losses. Both >=99.0 requirements remain
 unmet; goal active. No push, PR or merge.
+
+
+## Continuation: bounds scratch ordering and extrema locals
+
+Eleven focused reader trials start from clean af6792c4. Seven reorder min/max
+array declarations or initialization, use aggregate initializers separately
+or together, or put maximum aggregate first. Initial values remain +10000000
+for minima and -10000000 for maxima. Original constant stores at
+0x6c69c-0x6c6ac motivate local-storage tests; no original C++ declaration order
+is asserted. The verified complete max-minus-min radius is unchanged. No
+padding, extra values, fake condition or helper is introduced.
+
+Four further variants use a local minimum value, sequential minimum/maximum
+locals, both extrema loaded before the first comparison, or component
+references. Conditional stores remain min then max with the same predicates;
+no unconditional write is added. Original minimum load/comparison/conditional
+store is 0x6c74c-0x6c75a and maximum follows at 0x6c75e-0x6c76c. The preloaded
+variant is an equivalent alternative for distinct scratch arrays, not a
+claim that it preserves the original operand-load schedule. Stream reads,
+position stores, axis computation and math helpers remain unchanged.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| scratch: maximum_declared_first | 98.0 / 55.9 | 867 | 100.0 | no |
+| scratch: maximum_initialized_first | 98.0 / 55.9 | 867 | 100.0 | no |
+| scratch: maximum_declared_initialized_first | 98.0 / 55.9 | 867 | 100.0 | no |
+| scratch: minimum_aggregate | 98.0 / 55.8 | 871 | 100.0 | no |
+| scratch: maximum_aggregate | 98.0 / 56.2 | 871 | 100.0 | no |
+| scratch: both_aggregates | 98.0 / 56.1 | 874 | 100.0 | no |
+| scratch: maximum_aggregate_first | 98.0 / 56.1 | 874 | 100.0 | no |
+| extrema: minimum_local | 98.0 / 55.9 | 867 | 100.0 | yes |
+| extrema: sequential_locals | 98.0 / 55.9 | 867 | 100.0 | yes |
+| extrema: both_preloaded | 98.0 / 54.9 | 867 | 100.0 | no |
+| extrema: component_references | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+Every trial keeps source 98.0; none improves the requested means. Scratch
+ordering/init variants all differ as whole objects despite many equal scores.
+Maximum aggregate raises strict to 56.2 only and is not retained. Minimum
+local, sequential locals and references equal accepted byte for byte; both
+preloaded extrema differ and regress strict to 54.9. Actual bytes determine
+identity. All production edits were restored.
+
+Evidence: `_work/readboundsorder-*.json`, `_work/readextremalocals-*.json`,
+source snapshots, `_work/read_bounds_order_identities.json` and
+`_work/read_extrema_local_identities.json`. Baseline outside-body/signature
+check passes; tracked production diff is empty. No native/full-corpus run is
+claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, 2079 linked /959 byte
+exact pairs equal baseline with no losses. Both >=99.0 requirements remain
+unmet; goal active. No push, PR or merge.
+
+
+## Continuation: section signedness and case order on byte-axis state
+
+Ten Enhanced trials start from clean 997070f1. Six keep the original two-byte
+section field but vary shared unsigned storage, signed dispatch from unsigned
+storage, unsigned optional comparison, or one unsigned position/scale/rotation
+dispatch. Types 0/1 select the same cases; every other raw 16-bit representation
+falls through either way, while optional compares only with 2. Signed V5 key
+counts are untouched. On the tested ARM/native two's-complement targets, the
+signed cast form restores the original signed interpretation at the three
+switches. It is not a cross-platform implementation-defined-cast guarantee.
+Original signed loads (position at 0x6bc88) remain source evidence; unsigned
+alternatives are equivalent-dispatch hypotheses, not recovered declarations.
+
+Four further variants place case 0 before case 1 individually for position,
+scale, rotation or all three. Each retains its braces, inner reads/loops,
+channel mappings, break and unknown fallthrough. Earlier combined case-order
+trial predated the retained byte axes; these trials explicitly measure the
+current state and isolate individual section effects. No helper/ABI/matcher
+or compiler input changes.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| signedness: unsigned_shared_type | 98.1 / 66.4 | 641 | 100.0 | no |
+| signedness: unsigned_storage_signed_dispatch | 98.3 / 66.9 | 641 | 100.0 | yes |
+| signedness: unsigned_optional_comparison | 98.3 / 66.9 | 641 | 100.0 | yes |
+| signedness: position_unsigned_dispatch | 98.2 / 52.8 | 641 | 100.0 | no |
+| signedness: scale_unsigned_dispatch | 98.2 / 66.7 | 641 | 100.0 | no |
+| signedness: rotation_unsigned_dispatch | 98.2 / 66.7 | 641 | 100.0 | no |
+| case order: position | 98.3 / 66.9 | 641 | 100.0 | yes |
+| case order: scale | 98.3 / 66.9 | 641 | 100.0 | yes |
+| case order: rotation | 98.3 / 66.9 | 641 | 100.0 | yes |
+| case order: all_sections | 98.3 / 66.9 | 641 | 100.0 | yes |
+
+No required source gain occurs. Unsigned shared type and individual unsigned
+dispatches differ and regress source; signed dispatch from unsigned storage
+and unsigned optional equality equal accepted. All four case orders produce
+the accepted byte-identical whole Mesh object. Actual bytes establish identity;
+score equality is not used instead. All production edits were restored.
+The initial case-span script stopped before any production write; its brace
+parser was corrected, then all four completed compile/check trials ran.
+
+Evidence: `_work/enhtypesign-*.json`, `_work/enhcaseorder-*.json`, source
+snapshots, `_work/enh_type_sign_identities.json` and
+`_work/enh_case_order_identities.json`. Baseline outside-body/signature check
+passes; tracked production diff is empty. No native/full-corpus validation is
+claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, 2079 linked /959 byte
+exact pairs equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: tangent temporary lifetimes and output pointers
+
+Ten Read trials start from clean dbc7139d with accepted byte-axis Enhanced.
+Six change the final tangent expression by inlining Dot, the multiplication,
+the subtraction into Normalize, or all three; const-qualifying the two named
+Vector temporaries; or copying the tangent input as a Vector instead of three
+scalar floats. Dot -> multiplication -> subtraction -> Normalize -> Cross
+order and output field loads after their corresponding math calls are retained.
+Temporary lifetime/source expressions are hypotheses, not recovered C++.
+The Vector input copy uses the existing trivial copy constructor; no new
+Vector assignment call or helper change is introduced.
+
+Four further trials reuse the tangent output pointer for binormals, qualify
+both pointer variables const, address individual Vector output members, or
+share a computed unsigned output offset. They preserve output load/store and
+math call order; no field load is hoisted across a call, and no whole-Vector
+assignment replaces the three component stores.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| temporaries: inline_dot | 98.0 / 55.9 | 867 | 100.0 | yes |
+| temporaries: inline_product | 96.5 / 55.8 | 857 | 98.2 | no |
+| temporaries: inline_normalize_argument | 98.0 / 55.9 | 867 | 100.0 | no |
+| temporaries: inline_all | 98.0 / 55.9 | 867 | 100.0 | no |
+| temporaries: const_temporaries | 98.0 / 55.9 | 867 | 100.0 | yes |
+| temporaries: vector_tangent_input | 97.9 / 56.2 | 868 | 100.0 | no |
+| output: reuse_pointer | 98.0 / 55.9 | 867 | 100.0 | yes |
+| output: const_pointers | 98.0 / 55.9 | 867 | 100.0 | yes |
+| output: vector_members | 98.0 / 55.9 | 867 | 100.0 | yes |
+| output: shared_offset | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+No required source gain occurs. Inline Dot and const temporaries produce the
+accepted byte-identical whole Core object. Inline Normalize argument and
+inline-all have the same scores but different whole objects from accepted
+and each other. Vector tangent input raises strict only and regresses source.
+All four output-pointer forms are byte-identical to accepted; equality is
+established from actual object bytes, not inferred from scores.
+
+Inline product regresses source and call count. Relocation-aware inspection
+finds 61 call instructions in accepted versus 60 in this trial: one fewer
+static `_ZdaPv` call site, plus three indirect BLX operands changing r5 to fp.
+This is static emitted call-site evidence, not proof of missing executed
+cleanup or a behavior regression. The six indirect calls are outside the
+matcher's direct-call comparison. Evidence: `_work/tangent_inline_product_calls.json`.
+
+All source variants were restored. Evidence: `_work/readtangentlife-*.json`,
+`_work/readtangentoutput-*.json`, source snapshots and both identity ledgers.
+Outside-body/signature baseline check passes and production tracked diff is
+empty. Native/full-corpus runs are not claimed for these rejected variants;
+accepted axisbyte-full/native evidence remains authoritative: **98.23%
+unweighted /98.17% weighted**, 2079 linked /959 byte exact pairs equal baseline
+without losses. Both >=99.0 gates remain unmet; goal active. No push, PR or merge.
