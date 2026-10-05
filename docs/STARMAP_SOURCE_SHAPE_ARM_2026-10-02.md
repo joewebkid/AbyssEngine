@@ -2153,6 +2153,41 @@ fiftyfirst-gate.json, fiftyfirst-previous-gate.json and fiftyfirst-target-gate.l
 Object SHA-256: 3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
 Full JSON SHA-256: 139bf7836f3b47c901eca38b8f33d6fe3599298e2988114372eb8daa3b0176d0.
 
+## Investigation after checkpoint 9a96e2e5
+
+Two separate drawOnScreenInfo source hypotheses were tested against the primary
+Android IDA body and _work/info-original-direct.asm:
+
+- Explicitly refresh the existing textCanvas/textFont locals before all six
+  DrawString sites (selected/unselected station names, station tech text, system
+  name, selected-system race and security). Primary v77/v78, v79/v117, v89/v90,
+  v82/v83, v93/v95 and v99/v100 capture receiver/font before their getters or
+  temporary-string construction. The trial did not reuse values across rows,
+  change temporary lifetimes or add calls. Unlike the accepted drawKey change,
+  it produced identical entire focused JSON and whole object bytes here.
+- Express the four-way race-image choice as switch with cases 2/1/0/default,
+  retaining the same member-address selections. This was distinct from the
+  previous race 0/default branch swap. It also produced identical entire focused
+  JSON and whole object bytes; no branch-order recovery is claimed from it.
+
+Both hypotheses were removed because neither improved generated source shape.
+Each trial and each fresh-source restoration compiled 204/204 ARM TUs with zero
+failures and compared 22 rows with zero skips. Every report equals the complete
+accepted fifty-first report. Both trial object hashes and the final restored
+object hash are
+3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+The unchanged info row remains 98.9% source, 79.2% strict and 1207/1196 instructions.
+Production and canonical gate inputs remain 9a96e2e5; source means 99.205% /
+98.51861709618363%, strict 87.225% / 81.585157020138%. Weighted 99% remains unmet.
+Accepted fifty-first native/full-corpus validations remain authoritative; no new
+native/full/runtime run is claimed for these rejected source-only trials.
+
+Evidence in _work: before-info-text-captures-fiftysecond.cpp,
+info-text-captures-fiftysecond.json/log, fiftysecond-restored-focused.json/log,
+before-info-race-switch-fiftysecond.cpp, info-race-switch-fiftysecond.json/log
+and fiftysecond-switch-restored-focused.json/log. Compact committed evidence:
+docs/validation/starmap_2026-10-05_info_capture_race_trials.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;

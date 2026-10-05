@@ -1,0 +1,19 @@
+{
+  "primary": "Android ARMv7 GOF2 HD 2.0.16",
+  "accepted_checkpoint": "9a96e2e5",
+  "trials_retained": false,
+  "reports": [
+    "info-text-captures-fiftysecond",
+    "fiftysecond-restored-focused",
+    "info-race-switch-fiftysecond",
+    "fiftysecond-switch-restored-focused"
+  ],
+  "each_compiled_tus": 204,
+  "each_failed_tus": 0,
+  "each_comparisons": 22,
+  "each_skipped": 0,
+  "all_reports_equal_to_accepted": true,
+  "both_trial_objects_sha256": "3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d",
+  "restored_object_sha256": "3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d",
+  "new_native_or_full_run": false
+}
