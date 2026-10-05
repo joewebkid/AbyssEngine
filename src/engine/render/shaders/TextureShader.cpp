@@ -11,7 +11,8 @@ namespace AbyssEngine {
 
     TextureShader::TextureShader() {
         TextureShader::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"TextureShader";
+        String shaderName("TextureShader");
+        this->name = shaderName;
     }
 
     void TextureShader::Init(Engine *) {

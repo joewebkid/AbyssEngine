@@ -17,7 +17,8 @@ namespace AbyssEngine {
 
     BumpShaderRefract::BumpShaderRefract() {
         ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"BumpShaderRefract";
+        String shaderName("BumpShaderRefract");
+        this->name = shaderName;
     }
 
     void BumpShaderRefract::Init(::Engine *engine) {

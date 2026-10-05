@@ -8,9 +8,8 @@ namespace AbyssEngine {
 
     CubeNormalMapping::CubeNormalMapping() {
         CubeNormalMapping::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        String tmp;
-        tmp = u"CubeNormalMapping";
-        this->name = tmp;
+        String shaderName("CubeNormalMapping");
+        this->name = shaderName;
     }
 
     void CubeNormalMapping::Init(Engine *) {

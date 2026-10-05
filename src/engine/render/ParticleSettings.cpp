@@ -2,17 +2,31 @@
 #include "engine/render/ParticleSettingsRef.h"
 #include <cstring>
 
+#if __SIZEOF_POINTER__ == 4
+ParticleSettings::SetDefinition &ParticleSettings::SetDefinition::operator=(
+    const SetDefinition &other) {
+    name = other.name;
+    std::memcpy(&flags, &other.flags, 0x94);
+    return *this;
+}
+#endif
+
 ParticleSettings::ParticleSettings() {
-    // Names are opaque Android String storage in this host-side ABI view. The
-    // runtime consumes the scalar slots only.
+#if __SIZEOF_POINTER__ != 4
     std::memset(this->sets, 0, sizeof(this->sets));
+#endif
 }
 
 ParticleSettings::~ParticleSettings() {
 }
 
 static void ParticleSettings_initSub(void *dst, void *parent) {
+#if __SIZEOF_POINTER__ == 4
+    *static_cast<ParticleSettings::SetDefinition *>(dst) =
+        *static_cast<const ParticleSettings::SetDefinition *>(parent);
+#else
     std::memcpy(dst, parent, sizeof(ParticleSettings::SetDefinition));
+#endif
 }
 
 static inline float &asFloat(float &slot) { return slot; }

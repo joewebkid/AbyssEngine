@@ -12,7 +12,8 @@ namespace AbyssEngine {
 
     DNSShader::DNSShader() {
         DNSShader::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"DNSShader";
+        String shaderName("DNSShader");
+        this->name = shaderName;
     }
 
     void DNSShader::Init(Engine *) {

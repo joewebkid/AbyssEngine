@@ -27,6 +27,45 @@ bool AbyssEngine::PostEffectFlag;
 #include "engine/render/Material.h"
 #include "engine/render/PaintCanvas.h"
 #include "engine/render/ShaderBaseStruct.h"
+#include "engine/render/shaders/TextureShader.h"
+#include "engine/render/shaders/SimpleShader.h"
+#include "engine/render/shaders/TextureVtxColorShader.h"
+#include "engine/render/shaders/NoTexShader.h"
+#include "engine/render/shaders/NoTexVtxColorShader.h"
+#include "engine/render/shaders/TextureAlphaTestShader.h"
+#include "engine/render/shaders/CubeMapping.h"
+#include "engine/render/shaders/CubeNormalMapping.h"
+#include "engine/render/shaders/BumpMapping.h"
+#include "engine/render/shaders/SandboxShader.h"
+#include "engine/render/shaders/GenericShader.h"
+#include "engine/render/shaders/GenericShader1.h"
+#include "engine/render/shaders/GenericShader2.h"
+#include "engine/render/shaders/TexOnlyShader.h"
+#include "game/core/BumpShaderV2.h"
+#include "game/core/BumpShaderV3.h"
+#include "engine/render/shaders/VertexColorShader.h"
+#include "engine/render/shaders/VertexColorAlphaTextureShader.h"
+#include "engine/render/shaders/PulseShader.h"
+#include "engine/render/shaders/BumpShader.h"
+#include "game/core/BumpShaderV4.h"
+#include "engine/render/shaders/BloomShader.h"
+#include "engine/render/shaders/BlurShader.h"
+#include "engine/render/shaders/PostBWShader.h"
+#include "engine/render/shaders/TextureLightShader.h"
+#include "engine/render/shaders/BumpRimCubeShader.h"
+#include "game/core/BumpShaderCloak.h"
+#include "engine/render/shaders/SpecCubeMapping.h"
+#include "engine/render/shaders/SpecCubeAlphaMapping.h"
+#include "engine/render/shaders/EnergyShield.h"
+#include "engine/render/shaders/SimpleRefractionShader.h"
+#include "engine/render/shaders/GlowShader.h"
+#include "engine/render/shaders/GlowPPShader.h"
+#include "engine/render/shaders/DrawFBOShader.h"
+#include "engine/render/shaders/ColorMixAdd.h"
+#include "game/core/BumpShaderParticle.h"
+#include "engine/render/shaders/DNSShader.h"
+#include "game/core/BumpShaderRefract.h"
+#include "game/core/BumpRimCubeShader_new.h"
 #include <arm_neon.h>
 #include <cstdarg>
 #include <cstring>
@@ -43,16 +82,6 @@ void FBOContainer_DeactivateRender2Texture(AbyssEngine::FBOContainer * self);
 void ShaderUpdateRimColor();
 
 void ShaderUpdateMaterialColor();
-
-void ShaderCtor_0(void *);
-
-void ShaderCtor_1(void *);
-
-void ShaderCtor_2(void *);
-
-void ShaderCtor_3(void *);
-
-void ShaderCtor_4(void *);
 
 static String *g_Engine_vendorString = nullptr;
 static String *g_Engine_rendererString = nullptr;
@@ -728,33 +757,61 @@ void Engine::SetTextureSlot(uint32_t textureIndex, uint32_t slot) {
 }
 
 void Engine::AEClientState(unsigned int state, bool enable) {
-    uint32_t bits = this->clientStateFlagsAE;
-    uint32_t mask = 0;
-    switch (state) {
-        case 0x8074: mask = 2;
-            break;
-        case 0x8075: mask = 1;
-            break;
-        case 0x8076: mask = 8;
-            break;
-        case 0x8078: mask = 4;
-            break;
-        default: return;
-    }
     if (enable) {
-        if ((bits & mask) != 0) {
-            return;
+        switch (state) {
+            case 0x8074:
+                if ((static_cast<uint8_t>(clientStateFlagsAE) & 2) == 0) {
+                    glEnableClientState(state);
+                    clientStateFlagsAE |= 2;
+                }
+                break;
+            case 0x8075:
+                if ((static_cast<uint8_t>(clientStateFlagsAE) & 1) == 0) {
+                    glEnableClientState(state);
+                    clientStateFlagsAE |= 1;
+                }
+                break;
+            case 0x8076:
+                if ((static_cast<uint8_t>(clientStateFlagsAE) & 8) == 0) {
+                    glEnableClientState(state);
+                    clientStateFlagsAE |= 8;
+                }
+                break;
+            case 0x8078:
+                if ((static_cast<uint8_t>(clientStateFlagsAE) & 4) == 0) {
+                    glEnableClientState(state);
+                    clientStateFlagsAE |= 4;
+                }
+                break;
         }
-        glEnableClientState(state);
-        bits |= mask;
     } else {
-        if ((bits & mask) == 0) {
-            return;
+        switch (state) {
+            case 0x8074:
+                if ((static_cast<uint8_t>(clientStateFlagsAE) & 2) != 0) {
+                    glDisableClientState(state);
+                    clientStateFlagsAE &= ~2u;
+                }
+                break;
+            case 0x8075:
+                if ((static_cast<uint8_t>(clientStateFlagsAE) & 1) != 0) {
+                    glDisableClientState(state);
+                    clientStateFlagsAE &= ~1u;
+                }
+                break;
+            case 0x8076:
+                if ((static_cast<uint8_t>(clientStateFlagsAE) & 8) != 0) {
+                    glDisableClientState(state);
+                    clientStateFlagsAE &= ~8u;
+                }
+                break;
+            case 0x8078:
+                if ((static_cast<uint8_t>(clientStateFlagsAE) & 4) != 0) {
+                    glDisableClientState(state);
+                    clientStateFlagsAE &= ~4u;
+                }
+                break;
         }
-        glDisableClientState(state);
-        bits &= ~mask;
     }
-    this->clientStateFlagsAE = bits;
 }
 
 void Engine::GlowBeginGlow(int depthFunc) {
@@ -1226,36 +1283,56 @@ void Engine::SetTextures(uint32_t first, uint32_t second) {
     }
 }
 
-typedef void ShaderCtor(void *);
-
 uint32_t Engine::ShaderInit() {
-    static const uint32_t sizes[] = {
-        0x8c, 0x2c, 0x94, 0x2c, 0x30, 0x74, 0x5c, 0x68, 0x44, 0x50,
-        0x64, 0x58, 0x58, 0x30, 0x60, 0x84, 0x5c, 0x5c, 0x5c, 0x84,
-        0x5c, 0xa0, 0x64, 0x34, 0x70, 0x98, 0x98, 0x5c, 0x5c, 0x60,
-        0x58, 0x34, 0xa8, 0x60, 0x40, 0x6c, 0x64, 0x4c, 0x98,
-    };
-    ShaderCtor *ctors[] = {ShaderCtor_0, ShaderCtor_1, ShaderCtor_2, ShaderCtor_3, ShaderCtor_4};
-    for (uint32_t i = 0; i < sizeof(sizes) / sizeof(sizes[0]); i += 1) {
-        void *shader = operator new(sizes[i]);
-        ctors[i % 5](shader);
-        this->ShaderRegister((ShaderBaseStruct *) shader);
-    }
+    this->ShaderRegister(new TextureShader());
+    this->ShaderRegister(new SimpleShader());
+    this->ShaderRegister(new TextureVtxColorShader());
+    this->ShaderRegister(new NoTexShader());
+    this->ShaderRegister(new NoTexVtxColorShader());
+    this->ShaderRegister(new TextureAlphaTestShader());
+    this->ShaderRegister(new CubeMapping());
+    this->ShaderRegister(new CubeNormalMapping());
+    this->ShaderRegister(new BumpMapping());
+    this->ShaderRegister(new SandboxShader());
+    this->ShaderRegister(new GenericShader());
+    this->ShaderRegister(new GenericShader1());
+    this->ShaderRegister(new GenericShader2());
+    this->ShaderRegister(new TexOnlyShader());
+    this->ShaderRegister(new BumpShaderV2());
+    this->ShaderRegister(new BumpShaderV3());
+    this->ShaderRegister(new VertexColorShader());
+    this->ShaderRegister(new VertexColorAlphaTextureShader());
+    this->ShaderRegister(new PulseShader());
+    this->ShaderRegister(new BumpShader());
+    this->ShaderRegister(new BumpShaderV4());
+    this->ShaderRegister(new BloomShader());
+    this->ShaderRegister(new BlurShader());
+    this->ShaderRegister(new PostBWShader());
+    this->ShaderRegister(new TextureLightShader());
+    this->ShaderRegister(new BumpRimCubeShader());
+    this->ShaderRegister(new BumpShaderCloak());
+    this->ShaderRegister(new SpecCubeMapping());
+    this->ShaderRegister(new SpecCubeAlphaMapping());
+    this->ShaderRegister(new EnergyShield());
+    this->ShaderRegister(new SimpleRefractionShader());
+    this->ShaderRegister(new GlowShader());
+    this->ShaderRegister(new GlowPPShader());
+    this->ShaderRegister(new DrawFBOShader());
+    this->ShaderRegister(new ColorMixAdd());
+    this->ShaderRegister(new BumpShaderParticle());
+    this->ShaderRegister(new DNSShader());
+    this->ShaderRegister(new BumpShaderRefract());
+    this->ShaderRegister(new BumpRimCubeShader_new());
     glGetError();
     return 1;
 }
 
 uint64_t Engine::SetEyePosition(float x, float y, float z) {
-    this->eyePosition.x = x;
-    this->eyePosition.y = y;
-    this->eyePosition.z = z;
-    union {
-        float f;
-        uint32_t u;
-    } cx, cy;
-    cx.f = x;
-    cy.f = y;
-    return (uint64_t) cx.u | ((uint64_t) cy.u << 32);
+    Vector position{x, y, z};
+    this->eyePosition = position;
+    uint64_t result;
+    __builtin_memcpy(&result, &position, sizeof(result));
+    return result;
 }
 
 void Engine::SetModelMatrix(const Matrix &matrix) {
@@ -1500,10 +1577,23 @@ void Engine::GlEnable(unsigned int cap, bool enable) {
     this->glEnableFlags = flags;
 }
 
-void _ZN11AbyssEngine6Engine11LightEnableEb(Engine *self, bool enabled);
-
 void Engine::LightEnable(bool enabled) {
-    _ZN11AbyssEngine6Engine11LightEnableEb(this, enabled);
+    if (this->lightingEnabled == enabled) {
+        return;
+    }
+    this->lightingEnabled = enabled;
+    if (!enabled) {
+        LightSetMaterialColorAlpha(1.0f);
+    }
+    if (!enableShader) {
+        if (enabled) {
+            glEnable(0xb50);
+            glEnable(0x4000);
+        } else {
+            glDisable(0x4000);
+            glDisable(0xb50);
+        }
+    }
 }
 
 void Engine::LightSetMaterialColorAmbient(float red, float green, float blue) {

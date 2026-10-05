@@ -21,7 +21,8 @@ namespace AbyssEngine {
 
     PostBWShader::PostBWShader() {
         PostBWShader::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"PostBWShader";
+        String shaderName("PostBWShader");
+        this->name = shaderName;
     }
 
     PostBWShader::~PostBWShader() {

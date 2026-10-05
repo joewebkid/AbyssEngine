@@ -3,9 +3,6 @@
 #include "engine/render/Mesh.h"
 #include <GLES2/gl2.h>
 
-static void *GenericShader_registerSrc = nullptr;
-static void **GenericShader_registerDst = nullptr;
-
 namespace AbyssEngine {
     int GenericShader::ShaderIndex;
 
@@ -116,7 +113,7 @@ namespace AbyssEngine {
 
     GenericShader::GenericShader() {
         GenericShader::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        *GenericShader_registerDst = GenericShader_registerSrc;
-        this->name = u"GenericShader";
+        String shaderName("GenericShader");
+        this->name = shaderName;
     }
 }

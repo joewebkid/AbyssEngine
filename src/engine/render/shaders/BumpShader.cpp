@@ -15,7 +15,8 @@ namespace AbyssEngine {
 
     BumpShader::BumpShader() {
         BumpShader::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"BumpShader";
+        String shaderName("BumpShader");
+        this->name = shaderName;
     }
 
     void BumpShader::SetInActive() {

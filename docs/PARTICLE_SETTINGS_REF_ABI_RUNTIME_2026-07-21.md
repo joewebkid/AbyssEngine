@@ -28,7 +28,7 @@ The checked-in code and this document contain no original game binary.
 
 | Offset | Field |
 | --- | --- |
-| `0x00` | opaque Android `String` storage (`12` bytes) |
+| `0x00` | Android `String` (`12` bytes); opaque only in the 64-bit host adapter |
 | `0x0c` | flags |
 | `0x10` | particle count |
 | `0x34` | first packed color |
@@ -56,13 +56,27 @@ table retained for scaling and interpolation. Both are real static
 - The zero-filled 392 KB name-string placeholder was removed. It never wrote
   names into the recovered slots and only introduced rodata bloat.
 
+## ARM String Ownership Pass (2026-09-27)
+
+The Android constructor at `0x183fe8` constructs one `String` per `0xa0`-byte
+slot; its destructor releases those strings. The slot assignment at `0xa06ce`
+assigns the `String` before copying the remaining `0x94` bytes. The 32-bit
+build now uses a typed `String` member and this exact assignment sequence.
+The named local slot type exports the original anonymous-type ABI symbol via
+an explicit assembly name; this is backed by the verified body, not a stub.
+Focused ARM verification reports linked-exact constructor C1/C2, destructor
+D2, and slot assignment (all 100% source-shape). The ARM build compiled all
+204 translation units with no failures. The UCRT64 library and particle smoke
+test still pass. Full-corpus result is recorded in
+`MISSING_SYMBOLS_ABI_AUDIT_2026-09-27.md`.
+
 ## Host Adaptation Boundary
 
-The first `0x0c` bytes of a slot are preserved as opaque storage. Android has
-a 32-bit `String` there, but the host `String` has a different pointer width.
-No current particle renderer consumer reads the name. This is a deliberate ABI
-adapter, not a claim that original particle names or their string table are
-recovered.
+Only the 64-bit host keeps the first `0x0c` bytes opaque: its `String` has a
+wider pointer and cannot fit the ARM slot stride. No current host particle
+renderer consumer reads the name. ARM now owns and copies a real `String`;
+neither platform has recovered the original particle-name payload. The host
+adapter is not evidence of name-level or full-renderer runtime parity.
 
 The full particle renderer still carries unrelated shim symbols and cannot yet
 link as a complete host executable. This audit verifies the independent

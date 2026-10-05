@@ -12,6 +12,13 @@
 #include "game/ui/ListItem.h"
 #include "game/ship/Player.h"
 
+#if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(Array<bool>) == 0x0c, "Array ARM size");
+static_assert(__builtin_offsetof(Array<bool>, size_) == 0x00, "Array ARM size offset");
+static_assert(__builtin_offsetof(Array<bool>, data_) == 0x04, "Array ARM data offset");
+static_assert(__builtin_offsetof(Array<bool>, capacity_) == 0x08, "Array ARM capacity offset");
+#endif
+
 template void ArrayReleaseArrays<signed char *>(Array<signed char *> &);
 
 template void ArrayRemove<Node *>(Node *, Array<Node *> &);

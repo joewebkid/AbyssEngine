@@ -83,6 +83,7 @@ namespace AbyssEngine {
     SandboxShader::SandboxShader() {
         SandboxShader::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
         *SandboxShader_registerDst = SandboxShader_registerSrc;
-        this->name = u"SandboxShader";
+        String shaderName("SandboxShader");
+        this->name = shaderName;
     }
 }

@@ -8,7 +8,8 @@ namespace AbyssEngine {
 
     BumpMapping::BumpMapping() {
         ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"BumpMapping";
+        String shaderName("BumpMapping");
+        this->name = shaderName;
     }
 
     void BumpMapping::Init(Engine *) {

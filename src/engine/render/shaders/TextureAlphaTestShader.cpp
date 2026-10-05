@@ -11,7 +11,8 @@ namespace AbyssEngine {
 
     TextureAlphaTestShader::TextureAlphaTestShader() {
         ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"TextureAlphaTestShader";
+        String shaderName("TextureAlphaTestShader");
+        this->name = shaderName;
     }
 
     void TextureAlphaTestShader::Init(Engine *) {

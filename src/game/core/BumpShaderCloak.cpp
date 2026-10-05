@@ -8,7 +8,8 @@ namespace AbyssEngine {
 
     BumpShaderCloak::BumpShaderCloak() {
         BumpShaderCloak::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"BumpShaderCloak";
+        String shaderName("BumpShaderCloak");
+        this->name = shaderName;
     }
 
     void BumpShaderCloak::Init(Engine *engine) {

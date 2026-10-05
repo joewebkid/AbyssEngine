@@ -12,7 +12,8 @@ namespace AbyssEngine {
     VertexColorAlphaTextureShader::VertexColorAlphaTextureShader() {
         VertexColorAlphaTextureShader::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
         g_shaderIndexDst = g_shaderIndexSrc;
-        this->name = u"VCATShader";
+        String shaderName("VertexColorAlphaTextureShader");
+        this->name = shaderName;
     }
 
     void VertexColorAlphaTextureShader::Init(Engine *) {

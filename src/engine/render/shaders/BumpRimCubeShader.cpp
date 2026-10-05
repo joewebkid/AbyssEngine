@@ -12,7 +12,8 @@ namespace AbyssEngine {
 
     BumpRimCubeShader::BumpRimCubeShader() {
         ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"BumpRimCubeShader";
+        String shaderName("BumpRimCubeShader");
+        this->name = shaderName;
     }
 
     void BumpRimCubeShader::Init(Engine *) {

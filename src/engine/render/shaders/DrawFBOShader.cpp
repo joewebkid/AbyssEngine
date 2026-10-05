@@ -22,7 +22,6 @@ namespace AbyssEngine {
     int DrawFBOShader::ShaderIndex;
 
     DrawFBOShader::DrawFBOShader() {
-        this->name = u"DrawFBOShader";
         ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
     }
 

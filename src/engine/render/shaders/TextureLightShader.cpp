@@ -8,7 +8,8 @@ namespace AbyssEngine {
 
     TextureLightShader::TextureLightShader() {
         TextureLightShader::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"TextureLightShader";
+        String shaderName("TextureLightShader");
+        this->name = shaderName;
     }
 
     void TextureLightShader::Init(Engine *) {

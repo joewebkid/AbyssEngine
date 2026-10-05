@@ -9,7 +9,8 @@ namespace AbyssEngine {
 
     MaskShader::MaskShader() {
         ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"MaskShader";
+        String shaderName("MaskShader");
+        this->name = shaderName;
     }
 
     void MaskShader::Init(::Engine *) {

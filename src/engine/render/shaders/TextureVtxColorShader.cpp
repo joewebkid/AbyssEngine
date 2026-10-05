@@ -9,7 +9,8 @@ namespace AbyssEngine {
     int TextureVtxColorShader::ShaderIndex;
 
     TextureVtxColorShader::TextureVtxColorShader() {
-        this->name = u"TextureVtxColorShader";
+        String shaderName("TextureVtxColorShader");
+        this->name = shaderName;
         TextureVtxColorShader::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
     }
 

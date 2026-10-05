@@ -35,7 +35,7 @@ namespace AbyssEngine {
             return bits.f;
         }
 
-        Vector &Vector::operator=(const Vector &other) {
+        __attribute__((noinline)) Vector &Vector::operator=(const Vector &other) {
             x = other.x;
             y = other.y;
             z = other.z;
@@ -228,23 +228,35 @@ namespace AbyssEngine {
         }
 
         Matrix &Matrix::operator=(const Matrix &other) {
-            for (int i = 0; i < 16; ++i) {
-                m[i] = other.m[i];
-            }
+            __builtin_memcpy(m, other.m, 4 * sizeof(float));
+            __builtin_memcpy(m + 4, other.m + 4, 4 * sizeof(float));
+            __builtin_memcpy(m + 8, other.m + 8, 4 * sizeof(float));
+            *reinterpret_cast<Vector *>(&m[12]) =
+                *reinterpret_cast<const Vector *>(&other.m[12]);
             return *this;
         }
 
         bool operator==(const Matrix &lhs, const Matrix &rhs) {
-            for (int i = 0; i < 12; ++i) {
-                if (lhs.m[i] != rhs.m[i]) {
-                    return false;
-                }
+            if (lhs.m[0] != rhs.m[0] || lhs.m[1] != rhs.m[1] ||
+                lhs.m[2] != rhs.m[2] || lhs.m[3] != rhs.m[3] ||
+                lhs.m[4] != rhs.m[4] || lhs.m[5] != rhs.m[5] ||
+                lhs.m[6] != rhs.m[6] || lhs.m[7] != rhs.m[7] ||
+                lhs.m[8] != rhs.m[8] || lhs.m[9] != rhs.m[9]) {
+                return false;
             }
-            return true;
+            if (lhs.m[10] == rhs.m[10]) {
+                return lhs.m[11] == rhs.m[11];
+            }
+            return false;
         }
 
         bool operator!=(const Matrix &lhs, const Matrix &rhs) {
-            return !(lhs == rhs);
+            return lhs.m[0] != rhs.m[0] || lhs.m[1] != rhs.m[1] ||
+                   lhs.m[2] != rhs.m[2] || lhs.m[3] != rhs.m[3] ||
+                   lhs.m[4] != rhs.m[4] || lhs.m[5] != rhs.m[5] ||
+                   lhs.m[6] != rhs.m[6] || lhs.m[7] != rhs.m[7] ||
+                   lhs.m[8] != rhs.m[8] || lhs.m[9] != rhs.m[9] ||
+                   lhs.m[10] != rhs.m[10] || lhs.m[11] != rhs.m[11];
         }
 
         Matrix operator*(const Matrix &lhs, const Matrix &rhs) {
@@ -282,7 +294,26 @@ namespace AbyssEngine {
         }
 
         Matrix &Matrix::operator*=(const Matrix &other) {
-            *this = *this * other;
+            const float a0 = m[0], a1 = m[1], a2 = m[2];
+            m[0] = (a1 * other.m[4] + a0 * other.m[0]) + a2 * other.m[8];
+            m[1] = (a1 * other.m[5] + a0 * other.m[1]) + a2 * other.m[9];
+            m[2] = (a1 * other.m[6] + a0 * other.m[2]) + a2 * other.m[10];
+            m[3] += (a1 * other.m[7] + a0 * other.m[3]) + a2 * other.m[11];
+
+            const float b0 = m[4], b1 = m[5], b2 = m[6];
+            m[4] = (b0 * other.m[0] + b1 * other.m[4]) + b2 * other.m[8];
+            m[5] = (b0 * other.m[1] + b1 * other.m[5]) + b2 * other.m[9];
+            m[6] = (b0 * other.m[2] + b1 * other.m[6]) + b2 * other.m[10];
+            m[7] += (b0 * other.m[3] + b1 * other.m[7]) + b2 * other.m[11];
+
+            const float c0 = m[8], c1 = m[9], c2 = m[10];
+            m[8] = (c1 * other.m[4] + c0 * other.m[0]) + c2 * other.m[8];
+            m[9] = (c1 * other.m[5] + c0 * other.m[1]) + c2 * other.m[9];
+            m[10] = (c1 * other.m[6] + c0 * other.m[2]) + c2 * other.m[10];
+            m[11] += (c1 * other.m[7] + c0 * other.m[3]) + c2 * other.m[11];
+
+            *reinterpret_cast<Vector *>(&m[12]) *=
+                *reinterpret_cast<const Vector *>(&other.m[12]);
             return *this;
         }
 
@@ -291,15 +322,14 @@ namespace AbyssEngine {
         }
 
         Matrix MatrixIdentity(Matrix &matrix) {
-            for (int i = 0; i < 16; ++i) {
-                matrix.m[i] = 0.0f;
-            }
             matrix.m[0] = 1.0f;
+            __builtin_memset(matrix.m + 1, 0, 4 * sizeof(float));
             matrix.m[5] = 1.0f;
+            __builtin_memset(matrix.m + 6, 0, 4 * sizeof(float));
             matrix.m[10] = 1.0f;
-            matrix.m[12] = 1.0f;
-            matrix.m[13] = 1.0f;
-            matrix.m[14] = 1.0f;
+            matrix.m[11] = 0.0f;
+            const Vector scale = {1.0f, 1.0f, 1.0f};
+            *reinterpret_cast<Vector *>(&matrix.m[12]) = scale;
             return matrix;
         }
 

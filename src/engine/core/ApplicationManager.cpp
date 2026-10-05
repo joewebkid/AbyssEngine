@@ -1,4 +1,5 @@
 #include "engine/core/ApplicationManager.h"
+#include "engine/core/AbyssEngine.h"
 ApplicationManager *ApplicationManager::gAppManager = nullptr;
 #include "engine/audio/AESoundRessource.h"
 #include "engine/core/IApplicationModule.h"
@@ -16,7 +17,7 @@ namespace {
     struct ModuleVTable {
         void (*slot0)();                                                    // 0x00
         void (*destroy)(void *self);                                        // 0x04 idx1
-        int (*showLoading)(void *self);                                     // 0x08 idx2
+        int (*initialize)(void *self);                                      // 0x08 idx2
         void (*release)(void *self);                                        // 0x0c idx3
         void (*onKeyPress)(void *self, void *self2, unsigned int, unsigned int,
                            unsigned int, unsigned int);                     // 0x10 idx4
@@ -28,11 +29,12 @@ namespace {
         void (*onTouchBegin3)(void *self, int x, int y, void *data);       // 0x24 idx9
         void (*onTouchMove3)(void *self, int x, int y, void *data);        // 0x28 idx10
         void (*onTouchEnd3)(void *self, int x, int y, void *data);         // 0x2c idx11
-        void (*onRender3D)(void *self);                                     // 0x30 idx12
-        void (*onRender2D)(void *self);                                     // 0x34 idx13
-        void (*onUpdate)(void *self);                                       // 0x38 idx14
+        void (*onUpdate)(void *self);                                       // 0x30 idx12
+        void (*onRender3D)(void *self);                                     // 0x34 idx13
+        void (*onRender2D)(void *self);                                     // 0x38 idx14
         void (*onSuspend)(void *self);                                      // 0x3c idx15
         void (*onResume)(void *self);                                       // 0x40 idx16
+        int (*showLoading)(void *self);                                     // 0x44 idx17
     };
 
     inline ModuleVTable *module_vtable(void *module) {
@@ -72,17 +74,19 @@ namespace {
 
 #if __SIZEOF_POINTER__ == 4
 static_assert(offsetof(ModuleVTable, destroy) == 0x04, "vtable destroy slot");
-static_assert(offsetof(ModuleVTable, showLoading) == 0x08, "vtable showLoading slot");
+static_assert(offsetof(ModuleVTable, initialize) == 0x08, "vtable initialize slot");
 static_assert(offsetof(ModuleVTable, release) == 0x0c, "vtable release slot");
 static_assert(offsetof(ModuleVTable, onKeyPress) == 0x10, "vtable onKeyPress slot");
 static_assert(offsetof(ModuleVTable, onKeyRelease) == 0x14, "vtable onKeyRelease slot");
 static_assert(offsetof(ModuleVTable, onTouchBegin2) == 0x18, "vtable onTouchBegin2 slot");
 static_assert(offsetof(ModuleVTable, onTouchEnd2) == 0x20, "vtable onTouchEnd2 slot");
 static_assert(offsetof(ModuleVTable, onTouchBegin3) == 0x24, "vtable onTouchBegin3 slot");
-static_assert(offsetof(ModuleVTable, onRender3D) == 0x30, "vtable onRender3D slot");
-static_assert(offsetof(ModuleVTable, onUpdate) == 0x38, "vtable onUpdate slot");
+static_assert(offsetof(ModuleVTable, onUpdate) == 0x30, "vtable onUpdate slot");
+static_assert(offsetof(ModuleVTable, onRender3D) == 0x34, "vtable onRender3D slot");
+static_assert(offsetof(ModuleVTable, onRender2D) == 0x38, "vtable onRender2D slot");
 static_assert(offsetof(ModuleVTable, onSuspend) == 0x3c, "vtable onSuspend slot");
 static_assert(offsetof(ModuleVTable, onResume) == 0x40, "vtable onResume slot");
+static_assert(offsetof(ModuleVTable, showLoading) == 0x44, "vtable showLoading slot");
 static_assert(sizeof(AbyssEngine::KeyCode) == 0x10, "KeyCode entry size");
 static_assert(offsetof(AbyssEngine::KeyCode, name) == 0x04, "KeyCode name offset");
 static_assert(sizeof(KeyMappingHeader) == 0x08, "key mapping header size");
@@ -90,12 +94,6 @@ static_assert(sizeof(ActionEntry) == 0x10, "action entry size");
 #endif
 
 namespace {
-    // Trial/performance-test counters (SetCurrentApplicationModule)
-    int g_perfPending;
-    uint64_t g_perfCounter;
-    uint64_t g_perfLimit;
-    int g_perfExpired;
-
     // Debug touch-corner state machine (OnTouchStart)
     int g_touchMode;
     int g_touchToggle;
@@ -110,14 +108,6 @@ namespace {
     int g_orientationUpsideDown;
     int g_orientationInactive;
 
-    // Performance-test accumulators (EnablePerformanceTest)
-    int64_t g_perfElapsed;
-    int64_t g_perfActionCount;
-    int64_t g_perfLimitValue;
-    int64_t g_perfTotal;
-    int64_t g_perfFrame;
-    int g_perfEnabled;
-    int g_perfPendingFlag;
 }
 
 ApplicationManager::ApplicationManager(Engine *engine) {
@@ -218,12 +208,12 @@ void ApplicationManager::SetApplicationModule(IApplicationModule *module) {
 }
 
 void ApplicationManager::SetCurrentApplicationModule(unsigned int id) {
-    if (g_perfPending != 0) {
-        uint64_t value = g_perfCounter + 1;
-        g_perfCounter = value;
-        if ((long long) (value - g_perfLimit) >= 0) {
-            *(volatile char *) &g_perfExpired = 1;
-            *(volatile char *) &g_perfPending = 0;
+    if (AbyssEngine::performanceTest) {
+        ++AbyssEngine::performanceModulSwitches;
+        if (AbyssEngine::performanceModulSwitches >=
+            AbyssEngine::performanceOverallModulSwitches) {
+            AbyssEngine::performanceTestEnded = 1;
+            AbyssEngine::performanceTest = 0;
         }
     }
 
@@ -310,7 +300,7 @@ void ApplicationManager::OnUpdate(long long now) {
                 this->currentModule = next;
             }
             if (module != 0) {
-                int loading = module_vtable(module)->showLoading(module);
+                int loading = module_vtable(module)->initialize(module);
                 LoadingCallback_t *callback = this->loadingCallback;
                 if (callback != 0) {
                     callback(this->paintCanvas, loading, this->loadingCallbackData);
@@ -927,13 +917,13 @@ void ApplicationManager::ConfigRegisterTokenReadFunction(String name, ConfigToke
 }
 
 void ApplicationManager::EnablePerformanceTest(int count) {
-    g_perfElapsed = 0;
-    g_perfActionCount = (long long) count;
-    g_perfLimitValue = 0;
-    g_perfTotal = 0;
-    g_perfFrame = 0;
-    g_perfEnabled = 1;
-    g_perfPendingFlag = 0;
+    AbyssEngine::performanceModulSwitches = 0;
+    AbyssEngine::performanceOverallModulSwitches = count;
+    AbyssEngine::performanceFrameCounter = 0;
+    AbyssEngine::performanceTime = 0;
+    AbyssEngine::triDrawn = 0;
+    AbyssEngine::performanceTest = 1;
+    AbyssEngine::performanceTestEnded = 0;
 }
 
 void ApplicationManager::SoundSet(const AESoundInfo *info, int count) {

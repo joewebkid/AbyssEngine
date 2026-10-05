@@ -258,7 +258,8 @@ namespace AbyssEngine {
 
     GlowPPShader::GlowPPShader() {
         GlowPPShader::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"GlowPPShader";
+        String shaderName("GlowPPShader");
+        this->name = shaderName;
     }
 
     GlowPPShader::~GlowPPShader() {

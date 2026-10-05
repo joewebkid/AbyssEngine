@@ -309,7 +309,48 @@ namespace AbyssEngine {
     }
 
     void Transform::Update(longlong time, bool updateBounds) {
-        InternUpdate(time, updateBounds);
+        if (this->animating && this->animationLength >= 1) {
+            this->currentTime += static_cast<longlong>(this->animationSpeed * static_cast<float>(time));
+            if (this->currentTime > this->rangeEnd) {
+                if (this->renderMode == 2) {
+                    this->currentTime = this->rangeStart +
+                                        (this->rangeEnd != 0 ? this->currentTime % this->rangeEnd : 0);
+                } else {
+                    this->animating = false;
+                    this->currentTime = this->rangeEnd;
+                }
+            }
+            InternUpdate(this->currentTime, updateBounds);
+        }
+
+        if (updateBounds) {
+            AEMath::BSphere sphere = {{0.0f, 0.0f, 0.0f}, 0.0f, 1.0f};
+            this->bounds() = sphere;
+            for (uint i = 0; i < this->meshes.size(); ++i) {
+                Mesh *mesh = this->meshes[i];
+                if (mesh == nullptr) {
+                    continue;
+                }
+                if (mesh->animation != nullptr) {
+                    mesh->animation->Update(time, false);
+                }
+                AEMath::BSphere meshSphere = {
+                    {mesh->boundsCenterX, mesh->boundsCenterY, mesh->boundsCenterZ},
+                    mesh->boundsRadius, mesh->boundsRadiusSq};
+                if (mesh->animation != nullptr) {
+                    meshSphere.center = AEMath::MatrixTransformVector(
+                        mesh->animation->rotationMatrix, meshSphere.center);
+                }
+                this->bounds().Merge(meshSphere);
+            }
+            for (uint i = 0; i < this->children.size(); ++i) {
+                Transform *child = this->children[i];
+                child->Update(time, false);
+                AEMath::BSphere childSphere = child->bounds();
+                childSphere.center = AEMath::MatrixTransformVector(child->rotationMatrix, childSphere.center);
+                this->bounds().Merge(childSphere);
+            }
+        }
     }
 
     int Transform::DebugOut(int value) {
@@ -364,7 +405,16 @@ namespace AbyssEngine {
         }
     }
 
-    void Transform::SetAnimationState(AnimationMode, void *) {
+    void Transform::SetAnimationState(AnimationMode mode, void *) {
+        if (mode == 3) {
+            this->animating = true;
+            this->currentTime = this->rangeStart;
+            return;
+        }
+        if (mode == 0) {
+            this->animating = false;
+        }
+        this->renderMode = mode;
     }
 
     Transform::Transform() {

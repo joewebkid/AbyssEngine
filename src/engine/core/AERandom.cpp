@@ -4,7 +4,9 @@ AbyssEngine::AERandom *AERandom::gRandom = nullptr;
 
 namespace AbyssEngine {
     AERandom::AERandom() {
-        reset();
+        long long now = time(0);
+        seedLow = 0xdeece66dU ^ static_cast<uint32_t>(now);
+        seedHigh = (static_cast<uint32_t>(now >> 31) & 0xffffU) ^ 5U;
     }
 
     AERandom::AERandom(long long seed) {
@@ -38,20 +40,33 @@ namespace AbyssEngine {
     }
 
     int AERandom::nextInt() {
-        return static_cast<int>(next(31));
+        uint64_t seed = (static_cast<uint64_t>(seedHigh) << 32) | seedLow;
+        seed = seed * 0x5deece66dULL + 0xbULL;
+        seedLow = static_cast<uint32_t>(seed);
+        seedHigh = static_cast<uint32_t>(seed >> 32) & 0xffffU;
+        return static_cast<int>((seedLow >> 16) | (seedHigh << 16));
     }
 
     int AERandom::nextInt(int bound) {
         if ((bound & -bound) == bound) {
-            return static_cast<int>((static_cast<int64_t>(bound) * next(31)) >> 31);
+            uint64_t seed = (static_cast<uint64_t>(seedHigh) << 32) | seedLow;
+            seed = seed * 0x5deece66dULL + 0xbULL;
+            seedLow = static_cast<uint32_t>(seed);
+            seedHigh = static_cast<uint32_t>(seed >> 32) & 0xffffU;
+            int bits = static_cast<int>((seedLow >> 17) | (seedHigh << 15));
+            return static_cast<int>((static_cast<int64_t>(bound) * bits) >> 31);
         }
 
+        uint64_t seed = (static_cast<uint64_t>(seedHigh) << 32) | seedLow;
         int bits;
         int value;
         do {
-            bits = static_cast<int>(next(31));
+            seed = (seed * 0x5deece66dULL + 0xbULL) & 0xffffffffffffULL;
+            bits = static_cast<int>(seed >> 17);
             value = bits % bound;
         } while (bits - value + (bound - 1) < 0);
+        seedLow = static_cast<uint32_t>(seed);
+        seedHigh = static_cast<uint32_t>(seed >> 32);
         return value;
     }
 }

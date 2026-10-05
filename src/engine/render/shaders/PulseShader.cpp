@@ -17,7 +17,8 @@ namespace AbyssEngine {
 
     PulseShader::PulseShader() {
         PulseShader::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"PulseShader";
+        String shaderName("PulseShader");
+        this->name = shaderName;
     }
 
     void PulseShader::SetInActive() {

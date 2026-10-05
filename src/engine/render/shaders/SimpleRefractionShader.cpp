@@ -9,7 +9,8 @@ namespace AbyssEngine {
 
     SimpleRefractionShader::SimpleRefractionShader() {
         SimpleRefractionShader::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"SimpleRefractionShader";
+        String shaderName("SimpleRefractionShader");
+        this->name = shaderName;
     }
 
     void SimpleRefractionShader::Init(::Engine *engine) {

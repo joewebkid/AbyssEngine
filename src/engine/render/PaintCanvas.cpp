@@ -2,6 +2,7 @@
 #include <GLES/gl.h>
 #include "engine/core/AbyssEngine.h"
 #include "engine/render/Material.h"
+#include "engine/render/Mesh.h"
 #include "engine/core/Array.h"
 #include "engine/core/Node.h"
 #include "engine/math/Transform.h"
@@ -1387,11 +1388,11 @@ void PaintCanvas::SpriteSystemSetAllSize(unsigned int index, short size) {
 }
 
 void PaintCanvas::RemoveAllMatsForGlow() {
-    PCArrayRemoveAll(&this->glowMeshes_count);
-    PCArrayRemoveAll(&this->glowMatA_count);
-    PCArrayRemoveAll(&this->glowMatB_count);
-    PCArrayRemoveAll(&this->glowUints_count);
-    return PCArrayRemoveAll(&this->glowMatC_count);
+    ArrayRemoveAll(*reinterpret_cast<Array<Mesh *> *>(&this->glowMeshes_count));
+    ArrayRemoveAll(*reinterpret_cast<Array<AEMath::Matrix> *>(&this->glowMatA_count));
+    ArrayRemoveAll(*reinterpret_cast<Array<AEMath::Matrix> *>(&this->glowMatB_count));
+    ArrayRemoveAll(*reinterpret_cast<Array<unsigned int> *>(&this->glowUints_count));
+    ArrayRemoveAll(*reinterpret_cast<Array<AEMath::Matrix> *>(&this->glowMatC_count));
 }
 
 void PaintCanvas::MaterialChange(unsigned int index,
@@ -1875,13 +1876,10 @@ void PaintCanvas::MeshTranslatePoint(unsigned int index, unsigned short sub,
     }
 }
 
-static char paintcanvas_g_refract1 = 0;
-static char paintcanvas_g_refract2 = 0;
-
 void PaintCanvas::CheckNUseRefractFBO(bool) {
-    if (paintcanvas_g_refract1 != 0 && paintcanvas_g_refract2 != 0 &&
-        paintcanvas_ext_is_posteffect(this->engine) == 0) {
-        return paintcanvas_ext_use_refract(this->engine);
+    if (Engine::enableShader && Engine::EnableRefract &&
+        !this->engine->IsPostEffectActivated()) {
+        this->engine->ActivateRender2FracFBO();
     }
 }
 
@@ -2195,20 +2193,18 @@ int PaintCanvas::GetHeight() {
     return paintcanvas_ext_get_height(this->engine);
 }
 
-static char paintcanvas_g_cube_enabled = 0;
-static int paintcanvas_g_cube_slot = 0;
-
 void PaintCanvas::ChangeCubeTexture(unsigned int idx) {
-    if (paintcanvas_g_cube_enabled != 0 && idx < this->cubeTextures.count) {
+    if (Engine::enableShader && idx < this->cubeTextures.count) {
         PCCubeTexView *tex = (PCCubeTexView *) (this->cubeTextures.data_)[idx];
         if (tex->restoreFlag == 0) {
-            return paintcanvas_ext_cube_tail(paintcanvas_ext_cube_restore(tex->pathField));
+            char *path = reinterpret_cast<String *>(tex->pathField)->GetAEChar();
+            delete[] path;
+            return;
         }
-        paintcanvas_g_cube_slot = idx;
-        paintcanvas_ext_gl_a(0x84c7);
-        PCCubeTexView *tex2 = (PCCubeTexView *) (this->cubeTextures.data_)[idx];
-        paintcanvas_ext_gl_bind(0x8513, (unsigned int) tex2->glTexId);
-        return paintcanvas_ext_gl_c(0x84c0);
+        AbyssEngine::CubeMapSetIndex = idx;
+        glActiveTexture(0x84c7);
+        glBindTexture(0x8513, (unsigned int) tex->glTexId);
+        glActiveTexture(0x84c0);
     }
 }
 
@@ -2812,14 +2808,24 @@ void PaintCanvas::Begin3d() {
     return paintcanvas_ext_gl_done();
 }
 
-void paintcanvas_ext_transform_addmesh(AbyssEngine::PaintCanvas *, void *,
-                                                  unsigned short, bool);
-
 void PaintCanvas::TransformAddMesh(unsigned int transformIndex,
                                    unsigned short meshId, bool b) {
     if (transformIndex < this->transformCount) {
-        void *t = (this->transforms)[transformIndex];
-        return paintcanvas_ext_transform_addmesh(this, t, meshId, b);
+        unsigned int meshIndex = 0xffffffff;
+        this->MeshCreate(meshId, meshIndex, b);
+        if (meshIndex != 0xffffffff) {
+            Transform *transform = reinterpret_cast<Transform *>(this->transforms[transformIndex]);
+            Mesh *mesh = reinterpret_cast<Mesh *>(this->meshes[meshIndex]);
+            ArrayAdd(mesh, transform->meshes);
+            transform->bounds().Merge(*reinterpret_cast<AEMath::BSphere *>(&mesh->boundsCenterX));
+            if (mesh->animation != nullptr) {
+                if (transform->animationLength < mesh->animation->animationLength) {
+                    transform->SetAnimationLength(mesh->animation->animationLength);
+                }
+                transform->SetAnimationState(static_cast<AnimationMode>(2), nullptr);
+            }
+            transform->CollectAnimationData();
+        }
     }
 }
 
@@ -4350,12 +4356,15 @@ void PaintCanvas::SetMatForGlow(AbyssEngine::Material *glowSource) {
         ArrayAdd<AbyssEngine::Mesh *>(glowSource->meshes.data_[i],
                                       *reinterpret_cast<::Array<AbyssEngine::Mesh *> *>(&this->glowMeshes_count));
 
-        paintcanvas_ext_smfg_pushmat(glowSource->arr_2c.data_[i], &this->glowMatA_count);
-        paintcanvas_ext_smfg_pushmat(glowSource->arr_38.data_[i], &this->glowMatB_count);
+        ArrayAdd(glowSource->arr_2c.data_[i],
+                 *reinterpret_cast<Array<AEMath::Matrix> *>(&this->glowMatA_count));
+        ArrayAdd(glowSource->arr_38.data_[i],
+                 *reinterpret_cast<Array<AEMath::Matrix> *>(&this->glowMatB_count));
 
         PCArrayAdd<unsigned int>(glowSource->arr_50.data_[i], &this->glowUints_count);
 
-        paintcanvas_ext_smfg_pushmat(glowSource->arr_5c.data_[i], &this->glowMatC_count);
+        ArrayAdd(glowSource->arr_5c.data_[i],
+                 *reinterpret_cast<Array<AEMath::Matrix> *>(&this->glowMatC_count));
     }
 }
 

@@ -8,7 +8,8 @@ namespace AbyssEngine {
 
     GenericShader1::GenericShader1() {
         GenericShader1::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"GenericShader1";
+        String shaderName("GenericShader1");
+        this->name = shaderName;
     }
 
     void GenericShader1::Init(Engine *) {

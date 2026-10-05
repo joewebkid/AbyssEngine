@@ -18,7 +18,8 @@ namespace AbyssEngine {
 
     BlurShader::BlurShader() {
         BlurShader::ShaderIndex = ShaderBaseStruct::shaderIndexIntern;
-        this->name = u"BlurShader";
+        String shaderName("BlurShader");
+        this->name = shaderName;
         this->strength = -4.051786824441422e-28f;
         this->blurScale = 2.0f;
     }

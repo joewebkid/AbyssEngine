@@ -2,6 +2,9 @@
 #define GOF2_PARTICLESETTINGS_H
 #include <cstddef>
 #include <cstdint>
+#if __SIZEOF_POINTER__ == 4
+#include "engine/core/AEString.h"
+#endif
 
 class ParticleSettings {
 public:
@@ -17,11 +20,14 @@ public:
 
     enum CameraSet { CameraSet_dummy = 0, CameraSet_1 = 1 };
 
-    // Android ARMv7 storage contract used by ParticleSettingsRef. The original
-    // String occupies 0x0c bytes; host String cannot appear here because its
-    // pointer is wider. The opaque name bytes are not consumed at runtime.
+    // ARM stores a live String at the start of every slot. The 64-bit host
+    // retains opaque storage so the native slot stride remains 0xa0.
     struct SetDefinition {
+#if __SIZEOF_POINTER__ == 4
+        AbyssEngine::String name;
+#else
         uint8_t name[0x0c];
+#endif
         uint32_t flags;
         int32_t count;
         float lifeBase;
@@ -59,6 +65,10 @@ public:
         float uvV1;
         int32_t speedThreshold;
         int32_t frames;
+#if __SIZEOF_POINTER__ == 4
+        SetDefinition &operator=(const SetDefinition &other)
+            __asm__("_ZN16ParticleSettingsUt_aSERKS0_");
+#endif
     } sets[48];
 
     static_assert(sizeof(SetDefinition) == 0xa0,

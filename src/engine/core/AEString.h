@@ -170,6 +170,12 @@ namespace AbyssEngine {
     String operator+(const int &a, const String &b);
 }
 
+#if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(AbyssEngine::String) == 0x0c, "String ARM object size");
+static_assert(__builtin_offsetof(AbyssEngine::String, data) == 0x04, "String ARM data offset");
+static_assert(__builtin_offsetof(AbyssEngine::String, length) == 0x08, "String ARM length offset");
+#endif
+
 using AbyssEngine::String;
 
 int GetStringLength(AbyssEngine::String str);
