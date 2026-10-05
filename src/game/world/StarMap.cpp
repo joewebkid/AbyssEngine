@@ -1739,8 +1739,8 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
                         if (stationIndex == reinterpret_cast<Array<int> *>(this->systems->data()[i]->getStations())->data()[j]) {
                             this->targetSystem = (int)i;
                             if (this->mode == 3) {
-                                this->lastSelectedStation = (int)j;
                                 this->selectedStation = (int)j;
+                                this->lastSelectedStation = (int)j;
                                 this->stationCenterAnim = 1;
                             }
                             break;
