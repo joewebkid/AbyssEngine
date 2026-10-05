@@ -1,0 +1,249 @@
+{
+  "diagnostic_only": true,
+  "accepted_production": "9a96e2e5",
+  "object_sha256": "3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d",
+  "bodies": {
+    "_ZN7StarMap4initEbP7Missionbi": {
+      "metrics": {
+        "source_match": 98.3,
+        "instruction_inventory_match": 97.9,
+        "opcode_inventory_match": 97.9,
+        "control_flow_match": 98.8,
+        "ordered_control_flow_match": 80.1,
+        "control_inventory_match": 98.8,
+        "call_count_match": 99.0,
+        "size_match": 97.7
+      },
+      "target_surplus": {
+        "movs g0, g0": 5,
+        "vst1.#esize {dv0-dv1}, [g0]": 3,
+        "subs g0, #128": 3,
+        "nop": 2,
+        "str g0, [frame, #slot]": 1,
+        "addw g0, pc, #1716": 1,
+        "vmov.i32 qv0, #0": 1,
+        "vld1.#esize {dv0-dv1}, [g0]": 1,
+        "orr g0, g1, #4": 1,
+        "add g0, g1, #24": 1,
+        "add g0, g1, #40": 1,
+        "cmpne g0, #0": 1,
+        "it ne": 1,
+        "cbnz <t>": 1,
+        "ittt eq": 1
+      },
+      "current_surplus": {
+        "cbz <t>": 2,
+        "mov g0, g1": 1,
+        "call <t>": 1,
+        "ldr g0, [g1, g2, lsl #2]": 1,
+        "itttt eq": 1,
+        "moveq g0, #0": 1
+      }
+    },
+    "_ZN7StarMap10OnTouchEndEii": {
+      "metrics": {
+        "source_match": 97.5,
+        "instruction_inventory_match": 96.4,
+        "opcode_inventory_match": 97.0,
+        "control_flow_match": 98.1,
+        "ordered_control_flow_match": 83.6,
+        "control_inventory_match": 98.1,
+        "call_count_match": 99.3,
+        "size_match": 96.5
+      },
+      "target_surplus": {
+        ".word #x": 16,
+        "ldr g0, [pc]": 7,
+        "add g0, pc": 7,
+        "ldr g0, [g1, #92]": 6,
+        "cbnz <t>": 2,
+        "ldr g0, [g1, #0]": 2,
+        "ldr g0, [g0, #0]": 2,
+        "ldr g0, [g1, g2, lsl #2]": 2,
+        "beq <t>": 1,
+        "strb g0, [g1, #169]": 1,
+        "strb g0, [g1, #484]": 1,
+        "movs g0, #1": 1,
+        "strb g0, [g1, #288]": 1,
+        "strb g0, [g1, #0]": 1,
+        "ldr g0, [g1, #116]": 1,
+        "cmp g0, #9": 1,
+        "ble <t>": 1
+      },
+      "current_surplus": {
+        "cbz <t>": 2,
+        "bne <t>": 2,
+        "ldr g0, [g1]": 1,
+        "call <t>": 1,
+        "ittt eq": 1,
+        "moveq g0, #0": 1,
+        "strbeq g0, [g1, #288]": 1,
+        "strbeq g0, [g1, #169]": 1,
+        "ldr g0, [g1, #100]": 1,
+        "blt <t>": 1,
+        "cmp g0, g1": 1,
+        "ldr g0, [g1, #88]": 1,
+        "ldr g0, [g0, g1, lsl #2]": 1,
+        "ldr g0, [g1, #84]": 1,
+        "cmp g0, #10": 1,
+        "cmp g0, #142": 1
+      }
+    },
+    "_ZN7StarMap14initStarSystemEv": {
+      "metrics": {
+        "source_match": 97.3,
+        "instruction_inventory_match": 96.7,
+        "opcode_inventory_match": 97.4,
+        "control_flow_match": 96.9,
+        "ordered_control_flow_match": 94.8,
+        "control_inventory_match": 96.9,
+        "call_count_match": 99.0,
+        "size_match": 96.3
+      },
+      "target_surplus": {
+        "str g0, [frame, #slot]": 5,
+        "movs g0, g0": 5,
+        "ldr g0, [frame, #slot]": 3,
+        "vst1.#esize {dv0-dv1}, [g0]": 3,
+        "subs g0, #128": 3,
+        "mov g0, g1": 2,
+        "movs g0, #0": 2,
+        "ldr g0, [g1, #4]": 1,
+        "b <t>": 1,
+        "add g0, g1, #40": 1,
+        "add g0, g1, #24": 1,
+        "orr g0, g1, #4": 1,
+        "addw g0, pc, #1660": 1,
+        "vmov.i32 qv0, #0": 1,
+        "vld1.#esize {dv0-dv1}, [g0]": 1,
+        "bcs <t>": 1,
+        "cbnz <t>": 1,
+        "beq <t>": 1,
+        "bvc <t>": 1,
+        "subs g0, #35": 1
+      },
+      "current_surplus": {
+        "mov g0, #0": 2,
+        "add g0, frame, #slot": 1,
+        "ldr g0, [g0, #4]": 1,
+        "call <t>": 1,
+        "bne <t>": 1,
+        "cbz <t>": 1,
+        "str g0, [sp]": 1,
+        "bcc <t>": 1,
+        ".word #x": 1
+      }
+    },
+    "_ZN7StarMap6updateEi": {
+      "metrics": {
+        "source_match": 98.7,
+        "instruction_inventory_match": 97.0,
+        "opcode_inventory_match": 98.2,
+        "control_flow_match": 98.7,
+        "ordered_control_flow_match": 95.4,
+        "control_inventory_match": 98.7,
+        "call_count_match": 100.0,
+        "size_match": 99.6
+      },
+      "target_surplus": {
+        "vcmpe.f32 sv0, sv1": 3,
+        "it ne": 2,
+        "vmovne.f32 sv0, sv1": 2,
+        "bgt <t>": 2,
+        "vcvt.f32.s32 sv0, sv1": 2,
+        "mov g0, g1": 1,
+        "b <t>": 1,
+        "vmov.f32 sv0, sv1": 1,
+        "ldr g0, [g1, #0]": 1,
+        "vmov sv0, g0": 1,
+        ".word #x": 1,
+        "strd g0, g1, [frame, #slot]": 1,
+        "vmrs APSR_nzcv, fpscr": 1,
+        "asrs g0, g0, #1": 1,
+        "vcvt.s32.f32 sv0, sv0": 1,
+        "rsb g0, g1, #32768": 1,
+        "subs lr, g0, g1": 1,
+        "mov g0, lr": 1,
+        "negmi g0, g1": 1,
+        "subs g0, g1, g0": 1,
+        "vmov.f32 sv0, #80": 1,
+        "vmov.f32 sv0, #208": 1,
+        "vmov sv0, lr": 1,
+        "it pl": 1,
+        "vldrpl sv0, [pc]": 1
+      },
+      "current_surplus": {
+        "str g0, [frame, #slot]": 2,
+        "it eq": 2,
+        "vmoveq.f32 sv0, sv1": 2,
+        "vcvt.f32.s32 sv0, sv0": 2,
+        "it gt": 2,
+        "vmov.f32 sv0, #190": 2,
+        "vcmp.f32 sv0, sv1": 2,
+        "ldr g0, [g0, #0]": 1,
+        "cmp g0, #0": 1,
+        "vsub.f32 sv0, sv1, sv2": 1,
+        "vdiv.f32 sv0, sv1, sv2": 1,
+        "asrs g0, g1, #1": 1,
+        "vcvt.s32.f32 sv0, sv1": 1,
+        "rsb g0, g0, #32768": 1,
+        "subs g0, g1, g2": 1,
+        "subgt g0, g1, g2": 1,
+        "bpl <t>": 1,
+        "negs g0, g0": 1,
+        "movgt g0, g1": 1,
+        "vmovmi.f32 sv0, sv1": 1
+      }
+    },
+    "_ZN7StarMap7drawKeyEv": {
+      "metrics": {
+        "source_match": 97.9,
+        "instruction_inventory_match": 94.0,
+        "opcode_inventory_match": 96.1,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 99.6
+      },
+      "target_surplus": {
+        "mov g0, g1": 4,
+        "ldr g0, [g1, #0]": 2,
+        "sub g0, g0, g1": 2,
+        "strd g0, g1, [frame, #slot]": 2,
+        "str g0, [sp]": 1,
+        "add g0, g1": 1,
+        "ldr g0, [g1, #32]": 1,
+        "ldr g0, [g1]": 1,
+        "ldr g0, [g0, #4]": 1
+      },
+      "current_surplus": {
+        "str g0, [frame, #slot]": 6,
+        "subs g0, g0, g1": 2,
+        "ldr g0, [g0, #0]": 1,
+        "ldr g0, [frame, #slot]": 1,
+        "ldr g0, [g0, #32]": 1,
+        "adds g0, g1, g2": 1,
+        "ldrd g0, g0, [g0, #0]": 1,
+        "ldr g0, [g0]": 1
+      }
+    }
+  },
+  "init_machine_crosschecks": [
+    {
+      "primary": "c7238..c7256",
+      "accepted": "4bbc..4bda",
+      "finding": "Status receiver read, paired pathFinder/systems capture, getSystem/getIndex, fresh targetSystem read and path call agree."
+    },
+    {
+      "primary": "c6fce..c6fec",
+      "finding": "Two VDIV.F32 by 20.0; source /20.0f already agrees. Reciprocal multiply is not justified."
+    },
+    {
+      "accepted": "4c8a..4d20",
+      "primary_ida": "v71/v72/v73 background setup",
+      "finding": "Each allocation/constructor result directly feeds first setRotation; each setPosition refreshes member after callback, already matching primary."
+    }
+  ],
+  "limits": "Counter surplus is diagnostic only. It does not prove missing behavior, identify every token source or establish a ceiling. No source, compiler or verifier changes; no new build/full/runtime run."
+}

@@ -2270,6 +2270,39 @@ Evidence: _work/before-key-sum-fiftyfifth.cpp, key-sum-fiftyfifth.json/log,
 fiftyfifth-restored-focused.json/log and complete primary key disassembly;
 committed compact snapshot: docs/validation/starmap_2026-10-05_key_sum_trial.json.
 
+
+## Read-only investigation after checkpoint f28e5433
+
+Current tracked production state is clean. Fresh disassembly of the current
+and delinked target objects, through unchanged asmdiff functions, reproduces
+every source submetric for init, OnTouchEnd, initStarSystem, update and drawKey.
+Allocation-normalized multiset surplus counts (target/current) are respectively
+24/7, 53/18, 36/10, 31/27 and 15/14. These are diagnostic token differences,
+not a count of missing source statements or behavior. The current object hash
+is 3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+
+Three init hypotheses were eliminated by machine evidence before editing:
+
+- Path-finder capture: primary c7238..c7256 and accepted 4bbc..4bda both read
+  Status, capture pathFinder/systems together, call getSystem/getIndex, then
+  freshly read targetSystem for the path call. No receiver reload is missing.
+- Camera coordinates: primary c6fce..c6fec uses two VDIV.F32 by 20.0. Existing
+  /20.0f agrees; replacing division with multiplication is not justified.
+- Background geometry: accepted 4c8a..4d20 already directly passes each fresh
+  allocation/constructor pointer into the first setRotation, while reloading
+  the member for setPosition after that callback, as primary v71/v72/v73 show.
+
+The init surplus includes the previously documented Matrix inline construction,
+conditional null/deletion and epilogue differences, plus decoded pool tokens.
+No Matrix workaround, padding, duplicate call or verifier change was made.
+This inventory does not establish a compiler ceiling or attribute every surplus
+token to an artifact. The five-body comparison is not a new full-corpus gate.
+No new build/native/full/runtime result is claimed; accepted fifty-first and
+fresh fifty-fifth restoration evidence remain authoritative. Production and
+canonical inputs remain 9a96e2e5, source means 99.205% / 98.51861709618363%.
+Weighted 99% remains unmet. Diagnostic: _work/remaining-inventories-fiftysixth.json;
+committed snapshot: docs/validation/starmap_2026-10-05_remaining_inventories.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
