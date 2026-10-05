@@ -1131,7 +1131,7 @@ LAB_3488: {
                         void *st = (void *) (long) Globals::status->getStanding();
                         ((Standing *) (st))->applyKill(self->kiPlayer->shipGroup);
                     }
-                    int mission = Globals::status->getCampaignMission();
+                    intptr_t mission = Globals::status->getCampaignMission();
                     KIPlayer *ki3 = self->kiPlayer;
 
                     void *txt = Globals::gameText->getText(1664);

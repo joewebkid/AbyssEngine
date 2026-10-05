@@ -183,58 +183,35 @@ void ModStation::autosave() {
 }
 
 
-static Ship *(*g_ModStation_es_getShip)(Status *) = 0;
-
 void ModStation::enterStation() {
-    {
-        void(Status:: * depart)(Station *) =
-                reinterpret_cast<void (Status::*)(Station *)>(&Status::departStation);
-        (Status::gStatus->*depart)(Status::gStatus->getStation());
-    }
-    ((Station *) (Status::gStatus->getStation()))->visit();
-    Achievements::gAchievements->applyNewMedals();
+    Status *status = Globals::status;
+    status->departStation(status->getStation());
+    Globals::status->getStation()->visit();
+    static_cast<Achievements *>(Globals::achievements)->applyNewMedals();
 
-    Ship * (*getShip)(Status *) = g_ModStation_es_getShip;
-    Item *e10 = ((Ship *) (getShip(Status::gStatus)))->getFirstEquipmentOfSort(10);
-    Item *e9 = ((Ship *) (getShip(Status::gStatus)))->getFirstEquipmentOfSort(9);
-    int shipIdx = ((Ship *) (getShip(Status::gStatus)))->getIndex();
-    Status::gStatus->field_150 = shipIdx;
-
-    int v;
-    if (e10 == 0) {
-        v = -1;
-    } else {
-        v = ((Item *) (e10))->getIndex();
-    }
-    Status::gStatus->field_154 = v;
-
-    if (e9 == 0) {
-        v = -1;
-    } else {
-        v = ((Item *) (e9))->getIndex();
-    }
-    Status::gStatus->field_158 = v;
-    Status::gStatus->field_124 = 0;
-    Status::gStatus->field_11c = 0;
+    Item *e10 = Globals::status->getShip()->getFirstEquipmentOfSort(10);
+    Item *e9 = Globals::status->getShip()->getFirstEquipmentOfSort(9);
+    Globals::status->field_150 = Globals::status->getShip()->getIndex();
+    Globals::status->field_154 = e10 ? e10->getIndex() : -1;
+    Globals::status->field_158 = e9 ? e9->getIndex() : -1;
+    Globals::status->field_124 = 0;
+    Globals::status->field_11c = 0;
 }
 
 
-static int *g_ModStation_ach_a = 0;
-
-static int *g_ModStation_ach_b = 0;
-
-static int *g_ModStation_ach_c = 0;
+extern int g_android_current_achievements[3];
 
 void ModStation::addAchievement(int medalId, int kind) {
-    if (Achievements::gAchievements->isEliteMedal(medalId) != 0)
+    if (static_cast<Achievements *>(Globals::achievements)->isEliteMedal(medalId) != 0)
         return;
     if ((unsigned) (kind - 1) < 2) {
-        if (Achievements::gAchievements->getValue(medalId, 3) != -1)
-            *g_ModStation_ach_a = medalId * 3;
-        if (kind == 1 && Achievements::gAchievements->getValue(medalId, 2) != -1)
-            g_ModStation_ach_b[1] = medalId * 3 + 1;
+        if (static_cast<Achievements *>(Globals::achievements)->getValue(medalId, 3) != -1)
+            g_android_current_achievements[0] = medalId * 3;
+        if (kind == 1 &&
+            static_cast<Achievements *>(Globals::achievements)->getValue(medalId, 2) != -1)
+            g_android_current_achievements[1] = medalId * 3 + 1;
     }
-    g_ModStation_ach_c[2] = (medalId * 3 + 3) - kind;
+    g_android_current_achievements[2] = (medalId * 3 + 3) - kind;
 }
 
 void ModStation::showMapWindow() {
@@ -275,82 +252,47 @@ void ModStation::OnResume() {
 }
 
 
-static int *g_cpp_stack = 0;
-
-static int **g_cpp_status = 0;
-
-static int *g_cpp_textId = 0;
-
-static int **g_cpp_itemTable = 0;
-
-int Status_getCurrentCampaignMission_cpp();
-
-int GameText_getText_cpp(int id);
-
-int Status_getPendingProducts_cpp(int status);
-
-int Status_getStation_cpp();
-
-int Station_getIndex_cpp(Station * s);
-
-int Status_getShip_cpp();
-
-int Item_makeItem_cpp(int itemDesc);
-
-void Ship_addCargo_cpp(int ship, Item *it);
-
-int Item_getAmount_cpp();
-
-int Item_getIndex_cpp(Item * it);
-void *PendingProduct_dtor_cpp(PendingProduct * p);
-
-void operator_delete_cpp(void *p);
-
-void ChoiceWindow_setNotice_cpp(void *cw);
-
-int GameText_getText_cppline(int id);
-
 void ModStation::checkPendingProducts() {
-    int camp = Status_getCurrentCampaignMission_cpp();
-    int textId = *(int *) g_cpp_textId;
-    GameText_getText_cpp(textId);
+    int campaignStep = Globals::status->getCurrentCampaignMission();
+    String *header = Globals::gameText->getText(0xd5);
+    String message = *header + String("\n", false);
+    Array<PendingProduct *> *products = Globals::status->getPendingProducts();
+    if (products) {
+        for (unsigned i = 0; i < products->size(); ++i) {
+            PendingProduct *product = (*products)[i];
+            if (!product || product->stationIndex !=
+                Globals::status->getStation()->getIndex())
+                continue;
 
-    Array<PendingProduct *> *products =
-        (Array<PendingProduct *> *) (intptr_t) Status_getPendingProducts_cpp(*(int *) g_cpp_status);
-    if (products != 0) {
-        Array<int> *itemTable = (Array<int> *) (intptr_t) **g_cpp_itemTable;
-        for (unsigned i = 0; i < products->size(); i = i + 1) {
-            PendingProduct *pp = (*products)[i];
-            if (pp != 0) {
-                int dstStation = pp->stationIndex;
-                Station *here = (Station *) Status_getStation_cpp();
-                if (dstStation == Station_getIndex_cpp(here)) {
-                    if (camp == 0x92 && pp->blueprintIndex == 0xd2) {
-                        PendingProduct *o = (*products)[i];
-                        if (o != 0)
-                            operator_delete_cpp(PendingProduct_dtor_cpp(o));
-                        (*products)[i] = 0;
-                        goto done;
-                    }
-                    Item *it = (Item *) Item_makeItem_cpp(
-                        (*itemTable)[pp->blueprintIndex]);
-                    Ship_addCargo_cpp(Status_getShip_cpp(), it);
-                    (void) Item_getAmount_cpp();
-                    GameText_getText_cppline(Item_getIndex_cpp(it));
-
-                    PendingProduct *o = (*products)[i];
-                    if (o != 0)
-                        operator_delete_cpp(PendingProduct_dtor_cpp(o));
-                    (*products)[i] = 0;
-                    this->m_nStarMapWindowOpen.bytes[3] = 1;
-                }
+            if (campaignStep == 0x92 && product->blueprintIndex == 0xd2) {
+                delete (*products)[i];
+                (*products)[i] = nullptr;
+                return;
             }
+
+            Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
+            Item *item = (*items)[product->blueprintIndex]->makeItem(product->quantity);
+            Globals::status->getShip()->addCargo(item);
+            {
+                String newline("\n", false);
+                String withNewline = message + newline;
+                String amount(item->getAmount());
+                String withAmount = withNewline + amount;
+                String marker("x ", false);
+                String withMarker = withAmount + marker;
+                String withName = withMarker +
+                    *Globals::gameText->getText(item->getIndex() + 0x4fa);
+                message = withName;
+            }
+
+            delete (*products)[i];
+            (*products)[i] = nullptr;
+            this->m_nStarMapWindowOpen.bytes[3] = 1;
         }
     }
 
-    if (this->m_nStarMapWindowOpen.bytes[3] != 0)
-        ChoiceWindow_setNotice_cpp(this->choiceWindow);
-done:;
+    if (this->m_nStarMapWindowOpen.bytes[3])
+        static_cast<ChoiceWindow *>(this->choiceWindow)->set(message);
 }
 
 
@@ -533,15 +475,77 @@ ModStation::~ModStation() {
 }
 
 void ModStation::leaveStation() {
-    leaveStation();
+    int noticeTextId;
+    bool checkCargo;
+
+    if (Globals::status->getShip()->getCurrentLoad() >
+        Globals::status->getShip()->getMaxLoad()) {
+        noticeTextId = 0xcc;
+        goto showNotice;
+    }
+
+    checkCargo = Globals::status->getCurrentCampaignMission() == 6;
+    if (!checkCargo && Globals::status->getCurrentCampaignMission() == 7) {
+        // The getter returns the float's raw bits in r0 on Android ARM.
+        union { int bits; float value; } firePower = {
+            Globals::status->getShip()->getFirePower()
+        };
+        checkCargo = firePower.value == 0.0f ||
+            Globals::status->getShip()->getCombinedHP() ==
+            Globals::status->getShip()->getBaseHP();
+    }
+    if (checkCargo) {
+        if (Globals::status->getShip()->hasCargoType(0) ||
+            Globals::status->getShip()->hasCargoType(3))
+            noticeTextId = 0x212;
+        else
+            noticeTextId = 0x211;
+        goto showNotice;
+    }
+
+    if (Globals::status->getCurrentCampaignMission() == 20 &&
+        Globals::status->getStation()->getIndex() ==
+        reinterpret_cast<Mission *>(Globals::status->getCampaignMission())->getTargetStation()) {
+        noticeTextId = 0x213;
+        goto showNotice;
+    }
+
+    if (Globals::status->getCurrentCampaignMission() == 21 &&
+        Globals::status->getStation()->getIndex() ==
+        reinterpret_cast<Mission *>(Globals::status->getCampaignMission())->getTargetStation()) {
+        if (!Globals::status->getShip()->hasEquipment(41, 1) &&
+            !Globals::status->getShip()->hasEquipment(42, 1) &&
+            !Globals::status->getShip()->hasEquipment(43, 1)) {
+            noticeTextId = 0x213;
+            goto showNotice;
+        }
+    } else if (Globals::status->getCurrentCampaignMission() == 77 &&
+               Globals::status->getShip()->getIndex() != 37) {
+        noticeTextId = 0x146;
+        goto showNotice;
+    }
+
+    if (this->m_nStarMapWindowOpen.bytes[3] != 0 ||
+        this->modalFlags.bytes[1] != 0 ||
+        this->modalFlags.bytes[2] != 0)
+        return;
+
+    static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+        *Globals::gameText->getText(0x18d), true);
+    static_cast<ChoiceWindow *>(this->choiceWindow)->left();
+    this->cameraFlags.bytes[2] = 1;
+    this->m_nStarMapWindowOpen.bytes[3] = 1;
+    return;
+
+showNotice:
+    static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+        *Globals::gameText->getText(noticeTextId));
+    this->m_nStarMapWindowOpen.bytes[3] = 1;
 }
 
 
-static int *g_ModStation_cm_credit1 = 0;
-
-static int *g_ModStation_cm_credit2 = 0;
-
-static void **g_ModStation_cm_lead = 0;
+// Android 2.0.16 .rodata 0x1fb848, shared with ChoiceWindow's credit label.
+static const int g_ModStation_medalCredits[4] = {0, 5000, 2500, 1000};
 
 void ModStation::checkMedals() {
     Globals::gGlobals->reportLeaderboards();
@@ -553,22 +557,21 @@ void ModStation::checkMedals() {
             this->modalFlags.bytes[2] = 0;
             return;
         }
-        Array<int *> *medalArr = *(Array<int *> **)&this->medalArray;
+        Array<int *> *medalArr = this->medalArray;
         int *medal = (*medalArr)[idx];
         ((ChoiceWindow *) (this->medalChoiceWindow))->setMedal(medal[0], medal[1]);
-        int delta = *g_ModStation_cm_credit2;
-        if (Status::gStatus->hardCoreMode() == 0)
-            Status::gStatus->changeCredits(delta);
+        int delta = g_ModStation_medalCredits[medal[1]];
+        if (Globals::status->hardCoreMode() == 0)
+            Globals::status->changeCredits(delta);
         int *p = (*medalArr)[this->medalIndex];
         this->addAchievement(p[0], p[1]);
         return;
     }
 
-    int delta = *g_ModStation_cm_credit1;
-    if (Status::gStatus->getCurrentCampaignMission() == 1)
-        ((ModStation *) ((ModStation *) 1))->addAchievement(0, 1);
-    this->medalArray = 0;
-    int *medals = Achievements::gAchievements->getNewMedals();
+    if (Globals::status->getCurrentCampaignMission() == 1)
+        this->addAchievement(0, 1);
+    this->medalArray = nullptr;
+    int *medals = static_cast<Achievements *>(Globals::achievements)->getNewMedals();
     int count = 0;
     this->medalCount = 0;
     for (int i = 0; i != 0x2d; i++) {
@@ -581,7 +584,7 @@ void ModStation::checkMedals() {
         return;
 
     Array<int *> *arr = new Array<int *>();
-    *(Array<int *> **)&this->medalArray = arr;
+    this->medalArray = arr;
     ArraySetLength(this->medalCount, *arr);
     int j = 0;
     this->medalCount = 0;
@@ -601,8 +604,8 @@ void ModStation::checkMedals() {
     this->medalChoiceWindow = cw;
     int *medal = (*arr)[0];
     cw->setMedal(medal[0], medal[1]);
-    if (Status::gStatus->hardCoreMode() == 0)
-        Status::gStatus->changeCredits(delta);
+    if (Globals::status->hardCoreMode() == 0)
+        Globals::status->changeCredits(g_ModStation_medalCredits[medal[1]]);
     int *p = (*arr)[0];
     this->addAchievement(p[0], p[1]);
 }
@@ -637,47 +640,49 @@ void ModStation::OnRender3D() {
 }
 
 
-static int **g_rl_engineHolder = 0;
-
-static int g_rl_lightFlag = 0;
-
-int ApplicationManager_GetEngine_rl();
-
-int Status_getSystem_rl();
-
-int SolarSystem_getRace_rl();
-
-int rl_engineFromHolder(int holder);
-
-void Engine_resetStationLight(int engine, int race);
-
-void Engine_LightEnable_rl(int engine, int flag);
-
 void ModStation::resetLight() {
-    int holder = *(int *) g_rl_engineHolder;
-    rl_engineFromHolder(holder);
-    rl_engineFromHolder(holder);
-    rl_engineFromHolder(holder);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(
+        Globals::appManager)->GetEngine())->LightSetMaterialColorAmbient(
+        0.7f, 0.7f, 0.7f);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(
+        Globals::appManager)->GetEngine())->LightSetLightDirection(
+        -this->scrollTargetf, -this->field_0x120, -this->field_0x124, 0x4000);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(
+        Globals::appManager)->GetEngine())->LightSetLightColorDiffuse(
+        1.0f, 1.0f, 1.0f, 0x4000);
 
-    Status_getSystem_rl();
-    int race = SolarSystem_getRace_rl();
-    int engine;
-    switch (race) {
+    switch (Globals::status->getSystem()->getRace()) {
         case 1:
+            static_cast<Engine *>(static_cast<ApplicationManager *>(
+                Globals::appManager)->GetEngine())->LightSetLightColorAmbient(
+                    0.25f, 0.55f, 0.25f, 0x4000);
+            break;
         case 2:
+            static_cast<Engine *>(static_cast<ApplicationManager *>(
+                Globals::appManager)->GetEngine())->LightSetLightColorAmbient(
+                    0.15f, 0.15f, 0.35f, 0x4000);
+            break;
         case 3:
+            static_cast<Engine *>(static_cast<ApplicationManager *>(
+                Globals::appManager)->GetEngine())->LightSetLightColorAmbient(
+                    0.45f, 0.25f, 0.25f, 0x4000);
+            break;
         case 8:
-            engine = ApplicationManager_GetEngine_rl();
+            static_cast<Engine *>(static_cast<ApplicationManager *>(
+                Globals::appManager)->GetEngine())->LightSetLightColorAmbient(
+                    0.83f, 0.28f, 0.12f, 0x4000);
             break;
         default:
-            engine = ApplicationManager_GetEngine_rl();
+            static_cast<Engine *>(static_cast<ApplicationManager *>(
+                Globals::appManager)->GetEngine())->LightSetLightColorAmbient(
+                    0.25f, 0.25f, 0.25f, 0x4000);
             break;
     }
-    Engine_resetStationLight(engine, race);
-    engine = ApplicationManager_GetEngine_rl();
-
-    engine = ApplicationManager_GetEngine_rl();
-    Engine_LightEnable_rl(engine, g_rl_lightFlag);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(
+        Globals::appManager)->GetEngine())->LightSetLightColorSpecular(
+        0.5f, 0.5f, 0.5f, 0x4000);
+    static_cast<Engine *>(static_cast<ApplicationManager *>(
+        Globals::appManager)->GetEngine())->LightSetMaterialColorShininess(96.0f);
 }
 
 

@@ -1,6 +1,7 @@
 # Project Status
 
-Last reviewed: 2026-10-02 (TargetFollowCamera; older snapshots retain their dates)
+Last reviewed: 2026-10-05 (ModStation and TargetFollowCamera; older snapshots
+retain their dates)
 
 ## TargetFollowCamera 99% Gate (2026-10-02)
 
@@ -14,6 +15,213 @@ aliases, applied equally to baseline and final. `update` is 98.6% source /
 39.9% strict, not exact; no ARM32 runtime is claimed. See
 [the evidence and trial ledger](TARGETFOLLOWCAMERA_ARM_SOURCE_SHAPE_2026-10-02.md).
 
+## ModStation pending-product delivery (2026-10-05, local branch)
+
+`ModStation::checkPendingProducts` now follows the Android-confirmed cargo,
+message and special-product paths instead of null fragment placeholders.
+Focused source-shape rises from 43.3% to 99.7%, strict fuzzy from 23.1% to
+86.8%; it is not exact. `Status::getPendingProducts` now preserves pointer
+width on native hosts and remains ARM byte-exact. Native `gof2` and 206/206
+ARM units build. The full corpus compares 4,322/4,524 originals across
+4,675 rows, at 90.15% mean source-shape / 77.30% strict, with 2,166
+linked-exact and 977 byte-exact pairs and zero exact-set losses. Integrated
+runtime remains unverified. The next recovery priority is
+`ModStation::showDlcMenu`; see
+[`MODSTATION_PENDING_PRODUCTS_ARM_2026-10-05.md`](MODSTATION_PENDING_PRODUCTS_ARM_2026-10-05.md).
+
+## ModStation entry snapshot (2026-10-05, local branch)
+
+`ModStation::enterStation` now calls the Android-confirmed station, medal,
+ship and equipment paths directly instead of a null `getShip` callback.
+Focused source-shape and strict fuzzy rise from 46.1%/38.6% to 100%/100%,
+and the function is newly linked-exact (not raw byte-exact). Native `gof2`
+and 206/206 ARM units build. The full corpus remains at 4,322/4,524
+originals across 4,675 rows, with 90.14% mean source-shape, 77.28%
+strict, 2,166 linked-exact and 977 byte-exact. Exact pair sets have one
+linked gain and zero losses. Integrated game runtime remains unverified;
+the next source-recovery priority is `ModStation::checkPendingProducts`.
+See [`MODSTATION_ENTER_STATION_ARM_2026-10-05.md`](MODSTATION_ENTER_STATION_ARM_2026-10-05.md).
+
+## ModStation station lighting (2026-10-05, local branch)
+
+`ModStation::resetLight` now uses the Android-confirmed engine calls,
+negated direction fields, race-dependent ambient colors, and material
+shininess instead of null fragment helpers. Its 108-instruction focused
+comparison is 100% source-shape and strict fuzzy (from 28.9%/15.2%),
+but is not linked-exact or byte-exact. Native `gof2` and all 206 ARM units
+build. The full corpus compares 4,322/4,524 originals across 4,675 rows
+at 90.13% mean source-shape / 77.27% strict, with 2,165 linked-exact and
+977 byte-exact; exact pair sets have zero losses. In-game rendering is
+unverified. The subsequent `enterStation` recovery is recorded above;
+see [`MODSTATION_RESET_LIGHT_ARM_2026-10-05.md`](MODSTATION_RESET_LIGHT_ARM_2026-10-05.md).
+
+## ModStation departure and campaign pointer ABI (2026-10-04, local branch)
+
+The recursive `ModStation::leaveStation` stub now follows the Android ARM
+cargo, campaign, equipment, ship-index and modal checks before displaying
+departure confirmation. Focused source-shape rises from 0.1% to 91.8%
+(strict 0.0% to 71.5%), without an exact claim. The related
+`Status::getCampaignMission` return and one `Player::damage` local now retain
+the mission pointer width on 64-bit native hosts; the ARM getter remains
+byte-exact. Native `gof2` and 206/206 ARM units build. The full corpus
+compares 4,322/4,524 originals across 4,675 rows at 90.11% mean
+source-shape / 77.25% strict, with 2,165 linked-exact and 977 byte-exact;
+exact pair sets have zero losses. Integrated departure/runtime behavior is
+still unverified; see
+[`MODSTATION_LEAVE_STATION_ARM_2026-10-04.md`](MODSTATION_LEAVE_STATION_ARM_2026-10-04.md).
+
+## ModStation medal-array source ABI (2026-10-04, local branch)
+
+Android `ModStation+0xbc` holds an `Array<int *> *`, not an `int *` needing
+pointer-to-pointer casts. The field is now typed directly, with its ARM32
+offset asserted. The campaign-mission `addAchievement` call now uses the
+real station object rather than constructing an invalid C++ receiver from
+integer `1`; the ARM call sequence and linked-exact callee remain unchanged.
+Native `gof2` and 206/206 ARM units build. Full comparison stays at
+4,322/4,524 originals, 4,675 rows, 90.09% mean source-shape, 77.24%
+strict, 2,165 linked-exact and 977 byte-exact, with zero exact-set losses.
+Array ownership and in-game runtime are still unverified; see
+[`MODSTATION_MEDAL_ARRAY_ABI_ARM_2026-10-04.md`](MODSTATION_MEDAL_ARRAY_ABI_ARM_2026-10-04.md).
+
+## ModStation medal reward and notification bindings (2026-10-04, local branch)
+
+The Android-confirmed four-value credit table now drives both award paths
+in `ModStation::checkMedals`, replacing null pointers. `addAchievement`
+now updates the existing `g_android_current_achievements[3]` array through
+the original global route and is linked-exact; `checkMedals` rises from
+92.5% to 94.5% source-shape but is not exact. Native `gof2` and all 206 ARM
+units build. The full corpus compares 4,322/4,524 originals across 4,675
+rows at 90.09% mean source-shape / 77.24% strict, with 2,165 linked-exact
+and 977 byte-exact. Exact sets have one linked gain and zero losses.
+Integrated medal/credit runtime, `medalArray` typing and an unusual native
+call receiver remain unverified; see
+[`MODSTATION_MEDAL_REWARDS_ARM_2026-10-04.md`](MODSTATION_MEDAL_REWARDS_ARM_2026-10-04.md).
+
+## ChoiceWindow draw bindings and medal display (2026-10-04, local branch)
+
+`ChoiceWindow::draw` now uses the Android-confirmed `Globals` bindings,
+medal-color and credit tables, the `"+ "` credit prefix, original image/box
+overloads, and button-position/visibility stores instead of null local
+placeholders. Its focused source-shape rises from 79.3% to 95.8% and strict
+fuzzy from 32.4% to 74.4%; it is not exact or runtime-certified. Native
+`gof2` and all 206 ARM units build. The full corpus still compares
+4,322/4,524 originals across 4,675 rows, with 90.09% mean source-shape,
+77.23% strict, 2,164 linked-exact and 977 byte-exact; exact-set comparison
+has zero losses. Medal reward accounting in `ModStation` is the next related
+behavior gap. See [`CHOICEWINDOW_DRAW_ARM_2026-10-04.md`](CHOICEWINDOW_DRAW_ARM_2026-10-04.md).
+
+## Status agent pointer-width ABI (2026-10-04, local branch)
+
+`Status::getAgents()` now returns its `Array<Agent *> *` field directly;
+the sole `Generator::createAgents` caller no longer routes the address through
+Windows 32-bit `int` and `long`. Android ARM's getter remains byte-exact and
+the caller's focused source-shape/strict scores remain 93.6%/40.6%. Native
+`gof2` and all 206 ARM units build. The full corpus is unchanged at
+4,322/4,524 originals, 4,675 rows, 90.09% mean source-shape, 77.22%
+strict, 2,164 linked-exact and 977 byte-exact; exact pair sets have no losses
+or gains. Other pointer-width risks and integrated runtime remain unverified.
+See [`STATUS_GETAGENTS_POINTER_ABI_2026-10-04.md`](STATUS_GETAGENTS_POINTER_ABI_2026-10-04.md).
+
+## Achievement constructor flags fixed (2026-10-04, local branch)
+
+The Android constructor clears all three achievement-completion flags. The
+local constructor omitted `gotAllGoldMedals_`, allowing an uninitialized
+value before `countMedals()` runs; that flag is read by mission generation and
+the missions window. The added zero makes both C1/C2 constructor aliases
+100% linked-exact (one unique body). Native `gof2` and 206/206 ARM units
+build. The full corpus remains 4,322/4,524 unique originals over 4,675 rows,
+with 90.09% mean source-shape, 77.22% strict fuzzy, **2,164 linked-exact**
+and **977 byte-exact**. Exact-set comparison finds two gained linked rows and
+zero losses of either kind. No in-game runtime claim is made; see
+[`ACHIEVEMENTS_CTOR_FLAGS_ARM_2026-10-04.md`](ACHIEVEMENTS_CTOR_FLAGS_ARM_2026-10-04.md).
+
+## Achievement detection recovered from ARM (2026-10-04, local branch)
+
+`Achievements::checkForNewMedal` now evaluates all 44 Android-confirmed
+dispatch cases and reads the existing 45-by-3 value table, rather than a
+zero-filled duplicate. Its prerequisite equipment check now uses the native
+`Globals::status` binding instead of a null local pointer. Focused
+source-shape rises from 6.9% to 73.7% for the check (strict 2.3% to 20.8%);
+neither body is exact or in-game runtime-certified. Native `gof2` and all
+206 ARM translation units build. The complete corpus compares 4,322/4,524
+originals across 4,675 rows at 90.09% mean source-shape / 77.22% strict,
+with 2,162 linked-exact and 977 byte-exact rows at that checkpoint. Both
+exact pair sets had zero losses. The next priority is runtime validation of
+representative medal states and the remaining shape divergence, preserving
+the ARM-observed conditions. See
+[`ACHIEVEMENTS_CHECK_ARM_2026-10-04.md`](ACHIEVEMENTS_CHECK_ARM_2026-10-04.md).
+
+## Achievement values restored (2026-10-04, local branch)
+
+The 135-word `Achievements::getValue` table now matches Android `.rodata`
+word-for-word; its rebuilt ARM object also matches all 540 table bytes. The
+method was already 100% linked-exact with a zero-filled table, demonstrating
+that instruction exactness alone does not validate referenced data. Native
+and 206/206 ARM builds pass. The complete corpus remains 4,322/4,524
+unique originals, 90.07% source-shape, 77.21% strict, 2,162 linked-exact
+and 977 byte-exact rows, with no exact-set losses. At this historical
+checkpoint, achievement detection in `checkForNewMedal` was still a
+17/414-instruction stub; the newer section above supersedes it. See
+[`ACHIEVEMENTS_VALUE_TABLE_ARM_2026-10-04.md`](ACHIEVEMENTS_VALUE_TABLE_ARM_2026-10-04.md).
+
+## ChoiceWindow medal message and image IDs (2026-10-04, local branch)
+
+Android ARM evidence restores the `setMedal` number conversion, surrounding
+newlines, four native global routes, 53 resource-ID table entries and direct
+image-handle output fields. Focused source-shape rises from 83.9% to 99.2%,
+strict fuzzy from 25.1% to 96.3%; the method is not exact. The full corpus
+compares 4,322/4,524 unique originals across 4,675 rows at 90.07% mean
+source-shape / 77.21% strict, with 2,162 linked-exact and 977 byte-exact
+rows and no exact-set losses. Native and 206/206 ARM builds pass. The
+zero-filled `Achievements::getValue` table and unresolved `ChoiceWindow::draw`
+remain separate work; no complete-game runtime claim is made. See
+[`CHOICEWINDOW_SETMEDAL_ARM_2026-10-04.md`](CHOICEWINDOW_SETMEDAL_ARM_2026-10-04.md).
+
+## ChoiceWindow modal set bindings (2026-10-04, local branch)
+
+All five `ChoiceWindow::set` overloads now use the Android-confirmed global
+text, layout, dimensions, sound, font and `Globals` objects. Their focused
+mean source-shape rises from 65.8% to 97.8%; the primary modal body rises
+from 30.7% to 96.1%, but none is exact or runtime-certified. The full report
+compares 4,322/4,524 unique originals across 4,675 rows: 2,162 linked-exact,
+977 byte-exact, 90.07% mean source-shape and 77.20% strict fuzzy, with no
+exact-set losses. The two extra exact rows are duplicate `Array<String*>`
+comparisons, not new unique coverage. Native and 206/206 ARM builds pass.
+See [`CHOICEWINDOW_SET_GLOBALS_ARM_2026-10-04.md`](CHOICEWINDOW_SET_GLOBALS_ARM_2026-10-04.md).
+
+## ChoiceWindow constructor/width/misc layout (2026-10-04, local branch)
+
+Android-confirmed `Globals::layout`, `Globals::w`, and `Globals::h` bindings
+restore the `ChoiceWindow` constructor, `setWidth`, and `setMiscButton` from
+null local pointers. Constructor C1/C2 and `setWidth` are linked-exact;
+`setMiscButton` reaches 97.6% source-shape but is not exact. The complete ARM
+report compares 4,322/4,524 unique originals across 4,673 rows: 2,160
+linked-exact, 977 raw-byte-exact, 90.03% mean source-shape and 77.15% strict
+fuzzy, with zero exact-set losses. Native and 206/206 ARM builds pass. See
+[`CHOICEWINDOW_LAYOUT_GLOBALS_ARM_2026-10-04.md`](CHOICEWINDOW_LAYOUT_GLOBALS_ARM_2026-10-04.md).
+
+## ChoiceWindow setHeight ARM binding (2026-10-04, local branch)
+
+The Android-confirmed `Globals::layout` and `Globals::h` bindings replace
+permanently null local pointers in `ChoiceWindow::setHeight`. The method rises
+from 0.3% to 100% source-shape and becomes linked-exact. Full ARM verification
+compares 4,322/4,524 originals across 4,673 rows, with 2,157 linked-exact,
+977 byte-exact, 89.99% mean source-shape and 77.09% strict fuzzy; no exact
+unit/symbol pair is lost. Native and 206/206 ARM builds pass. Other
+`ChoiceWindow` bodies remain unverified; see
+[`CHOICEWINDOW_SETHEIGHT_GLOBALS_ARM_2026-10-04.md`](CHOICEWINDOW_SETHEIGHT_GLOBALS_ARM_2026-10-04.md).
+
+## NDK libc++abi runtime coverage (2026-10-04, local branch)
+
+Two ARM-only wrappers compile the matching NDK r18b exception and type-info
+runtime sources without vendoring them. The current full ARM report compares
+4,322/4,524 unique original functions across 4,673 rows, with 202 absent,
+zero wrong-signature and zero skipped; mean source-shape is 89.97%, strict
+fuzzy 77.07%, linked-exact 2,156 and raw-byte-exact 977. Native `gof2` and
+206/206 ARM translation units build. This is not an integrated `main` result
+or a percentage of semantically completed game logic. ELF-declared symbol
+sizes fixed three false non-exact results without exact-set losses; see
+[`NDK_LIBCXXABI_RUNTIME_ARM_2026-10-04.md`](NDK_LIBCXXABI_RUNTIME_ARM_2026-10-04.md).
 ## ARM and TextureCreate Recovery (2026-09-24)
 
 The verified source tree compiled all **204/204** ARM translation units at

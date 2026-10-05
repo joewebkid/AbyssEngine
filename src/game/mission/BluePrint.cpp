@@ -26,11 +26,14 @@ bool BluePrint::isEmpty() {
 }
 
 String BluePrint::getStationName() {
-    return stationName;
+    return String(stationName, false);
 }
 
 BluePrint::~BluePrint() {
-    delete ingredientCounters;
+    if (ingredientCounters) {
+        ArrayRelease(*ingredientCounters);
+        delete ingredientCounters;
+    }
     ingredientCounters = nullptr;
 }
 
@@ -56,7 +59,7 @@ int BluePrint::getStationIndex() { return stationIndex; }
 
 int BluePrint::getQuantity() { return remainingBatch; }
 
-bool BluePrint::isUnlocked() { return locked != 0; }
+int BluePrint::isUnlocked() { return locked; }
 
 void BluePrint::unlock() {
     locked = 1;
@@ -148,7 +151,7 @@ void BluePrint::addItem(Item *item, int amount, int station) {
             stationIndex = station;
             Station *current = Status::gStatus->getStation();
             if (current->getIndex() == station) {
-                stationName = current->getName();
+                stationName = Status::gStatus->getStation()->getName();
             } else {
                 Station *st = (Station *) (intptr_t) Galaxy::gGalaxy->getStation(station);
                 stationName = st->getName();

@@ -178,7 +178,7 @@ bool Status::inPirateLootOrbit() {
 
 void Status::setPlayingTime(int64_t v) { playingTime = v; }
 
-int Status::getPendingProducts() { return (int) (intptr_t) pendingProducts; }
+Array<PendingProduct *> *Status::getPendingProducts() { return pendingProducts; }
 
 Array<bool> *Status::getSystemVisibilities() { return systemVisibilities; }
 
@@ -273,8 +273,8 @@ void Status::incKills() {
 
 int Status::getStationsVisited() { return stationsVisited; }
 
-int Status::getCampaignMission() {
-    return (int) (intptr_t)(*missions)[0];
+intptr_t Status::getCampaignMission() {
+    return reinterpret_cast<intptr_t>((*missions)[0]);
 }
 
 void Status::setJumpgateUsed(int v) { jumpgatesUsed = v; }
@@ -380,7 +380,7 @@ int Status::missionFailed(bool docked, int64_t time) {
 
 Array<BluePrint *> *Status::getBluePrints() { return bluePrints; }
 
-int Status::getAgents() { return (int) (intptr_t) agents; }
+Array<Agent *> *Status::getAgents() { return agents; }
 
 uint32_t Status::inPlanetRingOrbit() {
     if (inAlienOrbit() == 0) {

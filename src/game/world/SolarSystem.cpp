@@ -2,6 +2,7 @@
 #include "game/world/Galaxy.h"
 #include "game/world/Station.h"
 #include "game/mission/Status.h"
+#include "game/core/Globals.h"
 #include "game/core/String.h"
 
 SolarSystem::SolarSystem(int unk0, String displayName, int security,
@@ -9,8 +10,8 @@ SolarSystem::SolarSystem(int unk0, String displayName, int security,
                          int jumpgateId, int texture, int *starRGB,
                          Array<int> *stations, Array<int> *linkedSystems,
                          Array<int> *forbidden) {
-    this->name = displayName;
     this->systemId = unk0;
+    this->name = String(displayName, false);
     this->visible = isVisible;
     this->securityLevel = security;
     this->faction = factionId;
@@ -29,27 +30,25 @@ SolarSystem::SolarSystem(int unk0, String displayName, int security,
 
 SolarSystem::~SolarSystem() {
     if (this->stationIds != nullptr) {
-        ArrayRemoveAll(*(this->stationIds));
+        ArrayRelease(*(this->stationIds));
         delete this->stationIds;
     }
     this->stationIds = nullptr;
     if (this->forbiddenGoods != nullptr) {
-        ArrayRemoveAll(*(this->forbiddenGoods));
+        ArrayRelease(*(this->forbiddenGoods));
         delete this->forbiddenGoods;
     }
     this->forbiddenGoods = nullptr;
     if (this->linkedSystemIds != nullptr) {
-        ArrayRemoveAll(*(this->linkedSystemIds));
+        ArrayRelease(*(this->linkedSystemIds));
         delete this->linkedSystemIds;
     }
     this->linkedSystemIds = nullptr;
 }
 
-static Status ** gStatusOrbit = nullptr;
-
 bool SolarSystem::currentOrbitHasWarpGate() {
     int orbit = this->jumpgateStationId;
-    Station *st = (*gStatusOrbit)->getStation();
+    Station *st = Globals::status->getStation();
     return orbit == st->getIndex();
 }
 
@@ -108,26 +107,21 @@ uint32_t SolarSystem::getStationEnumIndex(int idx) {
 }
 
 String SolarSystem::getName() {
-    return this->name;
+    return String(this->name, false);
 }
 
-static const int kPirateBaseStations[4] = {0, 0, 0, 0};
-
-static void * gPirateBaseRoot = nullptr;
+static const int kPirateBaseStations[4] = {1, 33, 47, 86};
 
 int SolarSystem::hasPirateBase() {
-    char *base = *(char **) gPirateBaseRoot;
+    Status *status = Globals::status;
     for (uint32_t i = 0; i <= 3; i++) {
-        if (stationIsInSystem(kPirateBaseStations[i]) != 0) {
-            char *flags = *(char **) (*(char **) (base + 0x4c) + 4);
-            if (flags[i] == 0)
-                return 1;
-        }
+        if (stationIsInSystem(kPirateBaseStations[i]) != 0 && !(*status->field_4c)[i])
+            return 1;
     }
     return 0;
 }
 
-static const int kAttackRaceTable[4] = {0, 0, 0, 0};
+static const int kAttackRaceTable[4] = {1, 0, 3, 2};
 
 int SolarSystem::getAttackRace() {
     uint32_t r = this->faction;
@@ -143,18 +137,13 @@ uint32_t SolarSystem::hasNoOwner() {
     return 0;
 }
 
-static const int kBlueprintStations[5] = {0, 0, 0, 0, 0};
-
-static void * gBlueprintRoot = nullptr;
+static const int kBlueprintStations[5] = {132, 133, 134, 129, 123};
 
 int SolarSystem::hasHiddenBlueprint() {
-    char *base = *(char **) gBlueprintRoot;
+    Status *status = Globals::status;
     for (uint32_t i = 0; i <= 4; i++) {
-        if (stationIsInSystem(kBlueprintStations[i]) != 0) {
-            char *flags = *(char **) (*(char **) (base + 0x58) + 4);
-            if (flags[i] == 0)
-                return 1;
-        }
+        if (stationIsInSystem(kBlueprintStations[i]) != 0 && !(*status->field_58)[i])
+            return 1;
     }
     return 0;
 }
@@ -168,16 +157,13 @@ int SolarSystem::getWarpGateEnumIndex() {
     return (int) getStationEnumIndex(this->jumpgateStationId);
 }
 
-static Galaxy ** gGalaxyDiscover = nullptr;
-
 int SolarSystem::isFullyDiscovered() {
     Array<int> *arr = this->stationIds;
     uint32_t i = 0;
-    Galaxy *gal = *gGalaxyDiscover;
     while (true) {
         if (i >= arr->size())
             return 1;
-        char *visited = (char *) gal->getVisited();
+        char *visited = (char *) static_cast<Galaxy *>(Globals::galaxy)->getVisited();
         arr = this->stationIds;
         uint32_t flagIdx = (*arr)[i];
         i++;

@@ -47,7 +47,7 @@ public:
 
     void setMoneySpent(int value);
 
-    bool isUnlocked();
+    int isUnlocked();
 
     int getIngredientsValue();
 

@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include "../../engine/core/AEString.h"
+#include "engine/core/Array.h"
 #include "engine/math/EaseInOutMatrix.h"
 #include "game/core/CutScene.h"
 #include "game/ui/DialogueWindow.h"
@@ -103,7 +104,7 @@ public:
     FlagWord cameraFlags;     // 0xb0  bytes [0]=camActive [1]=? [3]=camArmed
     int field_0xb4;           // 0xb4
     int field_0xb8;           // 0xb8
-    int *medalArray;          // 0xbc  Array<int*>*
+    Array<int *> *medalArray; // 0xbc
     int medalIndex;           // 0xc0
     int medalCount;           // 0xc4
     int field_0xc8;           // 0xc8
@@ -131,8 +132,8 @@ public:
         float scrollFlagsf;   //       float@0x118 hangar-light intensity
     };
     union { int scrollTarget; float scrollTargetf; }; // 0x11c (hangar-light target)
-    int field_0x120;          // 0x120
-    int field_0x124;          // 0x124
+    float field_0x120;        // 0x120, light-direction component
+    float field_0x124;        // 0x124, light-direction component
     void *activeTouch;        // 0x128
     FlagWord field_0x12c;     // 0x12c
     float camKeyX;            // 0x130, Android ModStation camera key X
@@ -218,6 +219,14 @@ public:
 #if __SIZEOF_POINTER__ == 4
 static_assert(offsetof(ModStation, closeHangarAfterCredits) == 0x18,
               "ModStation::closeHangarAfterCredits @ 0x18");
+static_assert(offsetof(ModStation, medalArray) == 0xbc,
+              "ModStation::medalArray @ 0xbc");
+static_assert(offsetof(ModStation, scrollTarget) == 0x11c,
+              "ModStation::light direction @ 0x11c");
+static_assert(offsetof(ModStation, field_0x120) == 0x120,
+              "ModStation::light direction @ 0x120");
+static_assert(offsetof(ModStation, field_0x124) == 0x124,
+              "ModStation::light direction @ 0x124");
 #endif
 
 #endif

@@ -139,7 +139,7 @@ Array<Agent *> *Generator::createAgents(Station *station) {
 
     Array<Agent *> *result = nullptr;
     if (status->inSupernovaSystem() == 0) {
-        Array<Agent *> *existing = (Array<Agent *> *) (long) status->getAgents();
+        Array<Agent *> *existing = status->getAgents();
         int mission = status->getCurrentCampaignMission();
         bool keepExisting = mission > 0x10;
         if (!status->dlc1Won()) {

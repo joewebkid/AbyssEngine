@@ -1,6 +1,7 @@
 #ifndef GOF2_STATUS_H
 #define GOF2_STATUS_H
 #include <cstddef>
+#include <cstdint>
 #include "BluePrint.h"
 #include "engine/core/Array.h"
 #include "../../engine/core/AEString.h"
@@ -249,7 +250,7 @@ public:
 
     void addPendingProduct(BluePrint *product);
 
-    int getPendingProducts();
+    Array<PendingProduct *> *getPendingProducts();
 
     Array<bool> *getSystemVisibilities();
 
@@ -281,7 +282,7 @@ public:
 
     int getCurrentCampaignMission();
 
-    int getCampaignMission();
+    intptr_t getCampaignMission();
 
     Mission *getMission();
 
@@ -429,7 +430,7 @@ public:
 
     int isBlueprintUnlocked(int index);
 
-    int getAgents();
+    Array<Agent *> *getAgents();
 
     void incPlayingTime(int64_t delta);
 
