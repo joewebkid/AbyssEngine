@@ -14,12 +14,13 @@ Player, particle, Mesh and PlayerTurret checks pass. The integrated ARM corpus
 compares **4,322/4,524** originals across 4,683 rows, with 202 absent,
 zero wrong-type misses and zero skipped units. Mean source-shape is **90.63%**
 and strict fuzzy **78.15%**; **2,199 linked-exact** and **989 byte-exact**
-pairs remain. Relative to the latest standalone ModStation snapshot, exact
+pairs remain after the later Gun collision-control update. Relative to the
+latest standalone ModStation snapshot, exact
 sets have zero losses and gain 33 linked / 12 byte pairs. Saved focused exact
 sets for TargetFollowCamera, PlayerTurret and StarMap also remain present.
 These are code-generation comparisons, not a percentage of playable or
 semantically verified game behavior; integrated gameplay runtime is untested.
-The local full report is `_work/integrated_full_20261005.json`.
+The local full report is `_work/integrated_full_gun_20261005.json`.
 
 ## TargetFollowCamera 99% Gate (2026-10-02)
 
