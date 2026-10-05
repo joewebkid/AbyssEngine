@@ -2210,6 +2210,30 @@ Evidence: _work/before-warning-zero-fiftythird.cpp, warning-zero-fiftythird.json
 and fiftythird-restored-focused.json/log; committed compact snapshot:
 docs/validation/starmap_2026-10-05_warning_zero_trial.json.
 
+
+## Investigation after checkpoint be2ce265
+
+Three draw header rows were tested with fresh explicit Canvas/font snapshots:
+Canvas then font for the system name, font then Canvas for race and security.
+Primary Android IDA v53/v54, v55/v56 and v61/v62 support this capture-order
+hypothesis; exact C++ syntax is not recovered. Getters, temporary lifetimes,
+coordinates, colors and footer remain unchanged. No capture spans multiple
+rows and no drawing call is added.
+
+Only draw strict match changes: 89.4% -> 88.8%; source stays 99.1%, all other
+metrics and all other 21 rows stay unchanged. The trial was rejected. Trial
+object SHA-256: 2e6966cc4aadd1fef4fa8e8a11846552134cc21fb087d430adccbdcce8440de3.
+Trial and fresh restore each compile 204/204 ARM TUs with zero failures and
+compare 22 symbols with zero skips. Restored entire JSON equals accepted;
+whole restored object SHA-256:
+3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+Production/canonical inputs remain 9a96e2e5. Source means remain 99.205% /
+98.51861709618363%; weighted 99% remains unmet. Accepted fifty-first native/full
+validations remain authoritative; no new native/full/runtime run is claimed.
+Evidence: _work/before-draw-header-captures-fiftyfourth.cpp,
+draw-header-captures-fiftyfourth.cpp/json/log, fiftyfourth-restored-focused.json/log;
+compact committed snapshot: docs/validation/starmap_2026-10-05_draw_header_trial.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
