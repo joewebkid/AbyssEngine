@@ -3226,3 +3226,53 @@ No native/full-corpus validation is claimed for rejected variants. Accepted
 axisbyte-full/native evidence remains authoritative: **98.23% unweighted /
 98.17% weighted**, 2079 linked /959 byte exact pairs equal baseline without
 losses. Both >=99.0 gates remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: explicit zero V5 cases and combinations
+
+Ten focused Enhanced variants start from clean 6a4e8b37. Five expose zero
+channels 4/5 explicitly, assign their default zero, omit initializer when every
+switch path assigns channel, place zero labels first, or use unsigned dispatch.
+Original TBB routes both 4/5 offsets to 0x6c290-0x6c294, assigning both channel
+words zero; cases 0/1/2/3/6 keep their masks and rotation. The no-initializer
+form still assigns channel on every case/default path before insertion; it
+cannot read an uninitialized channel. Fixed c=0..6 means unsigned dispatch
+selects the same cases. No predicate, dummy instruction or effect is added.
+
+Five combinations start from the explicit-zero-assignment variant: signed
+32-bit, unsigned/signed 64-bit channel, angular arithmetic before its mask
+assignment, or rotation before the switch. All stored masks fit their tested
+integer representations. Arithmetic still uses the exact float literal and
+preserves /100, *tau, /360 order. The last variant moves the existing c==6
+rotation handling outside dispatch; it does not convert other channels.
+These remain source-form hypotheses, not recovered original C++ labels/types.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| zero cases: explicit_zero_labels | 98.3 / 66.9 | 641 | 100.0 | yes |
+| zero cases: explicit_zero_assignment | 98.3 / 67.8 | 639 | 100.0 | no |
+| zero cases: zero_labels_no_initializer | 98.3 / 67.8 | 639 | 100.0 | no |
+| zero cases: zero_group_first | 98.3 / 66.9 | 641 | 100.0 | yes |
+| zero cases: unsigned_dispatch | 98.3 / 66.9 | 641 | 100.0 | yes |
+| combination: int | 98.3 / 67.8 | 639 | 100.0 | no |
+| combination: unsigned_long_long | 98.3 / 67.8 | 639 | 100.0 | no |
+| combination: long_long | 98.3 / 67.8 | 639 | 100.0 | no |
+| combination: arithmetic_before_mask | 98.3 / 67.8 | 639 | 100.0 | no |
+| combination: rotation_before_switch | 98.0 / 65.1 | 642 | 100.0 | no |
+
+No variant improves requested source. Explicit zero assignment (with or without
+initializer) and its four channel/order combinations all yield the same whole
+Mesh object to each other: strict rises 66.9 ->67.8 and raw count falls 641 ->639,
+but source stays 98.3. These strict-only gains are not retained. Three remaining
+zero-case forms equal accepted; rotation-before-switch differs and regresses
+source to 98.0. Actual byte comparisons establish object identity; source score
+equality is not taken as identity. All production edits were restored.
+
+Evidence: `_work/enhzerocases-*.json`, `_work/enhzerocasecombo-*.json`, source
+snapshots, `_work/enh_zero_case_identities.json` and
+`_work/enh_zero_case_combo_identities.json`. Baseline outside-body/signature
+check passes; tracked production diff is empty. No native/full-corpus run is
+claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, 2079 linked /959 byte
+exact pairs equal baseline without losses. Both >=99.0 requirements remain
+unmet; goal active. No push, PR or merge.
