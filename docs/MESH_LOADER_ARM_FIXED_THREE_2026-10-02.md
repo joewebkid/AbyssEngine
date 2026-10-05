@@ -3276,3 +3276,53 @@ claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, 2079 linked /959 byte
 exact pairs equal baseline without losses. Both >=99.0 requirements remain
 unmet; goal active. No push, PR or merge.
+
+
+## Continuation: bounds scratch ordering and extrema locals
+
+Eleven focused reader trials start from clean af6792c4. Seven reorder min/max
+array declarations or initialization, use aggregate initializers separately
+or together, or put maximum aggregate first. Initial values remain +10000000
+for minima and -10000000 for maxima. Original constant stores at
+0x6c69c-0x6c6ac motivate local-storage tests; no original C++ declaration order
+is asserted. The verified complete max-minus-min radius is unchanged. No
+padding, extra values, fake condition or helper is introduced.
+
+Four further variants use a local minimum value, sequential minimum/maximum
+locals, both extrema loaded before the first comparison, or component
+references. Conditional stores remain min then max with the same predicates;
+no unconditional write is added. Original minimum load/comparison/conditional
+store is 0x6c74c-0x6c75a and maximum follows at 0x6c75e-0x6c76c. The preloaded
+variant is an equivalent alternative for distinct scratch arrays, not a
+claim that it preserves the original operand-load schedule. Stream reads,
+position stores, axis computation and math helpers remain unchanged.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| scratch: maximum_declared_first | 98.0 / 55.9 | 867 | 100.0 | no |
+| scratch: maximum_initialized_first | 98.0 / 55.9 | 867 | 100.0 | no |
+| scratch: maximum_declared_initialized_first | 98.0 / 55.9 | 867 | 100.0 | no |
+| scratch: minimum_aggregate | 98.0 / 55.8 | 871 | 100.0 | no |
+| scratch: maximum_aggregate | 98.0 / 56.2 | 871 | 100.0 | no |
+| scratch: both_aggregates | 98.0 / 56.1 | 874 | 100.0 | no |
+| scratch: maximum_aggregate_first | 98.0 / 56.1 | 874 | 100.0 | no |
+| extrema: minimum_local | 98.0 / 55.9 | 867 | 100.0 | yes |
+| extrema: sequential_locals | 98.0 / 55.9 | 867 | 100.0 | yes |
+| extrema: both_preloaded | 98.0 / 54.9 | 867 | 100.0 | no |
+| extrema: component_references | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+Every trial keeps source 98.0; none improves the requested means. Scratch
+ordering/init variants all differ as whole objects despite many equal scores.
+Maximum aggregate raises strict to 56.2 only and is not retained. Minimum
+local, sequential locals and references equal accepted byte for byte; both
+preloaded extrema differ and regress strict to 54.9. Actual bytes determine
+identity. All production edits were restored.
+
+Evidence: `_work/readboundsorder-*.json`, `_work/readextremalocals-*.json`,
+source snapshots, `_work/read_bounds_order_identities.json` and
+`_work/read_extrema_local_identities.json`. Baseline outside-body/signature
+check passes; tracked production diff is empty. No native/full-corpus run is
+claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, 2079 linked /959 byte
+exact pairs equal baseline with no losses. Both >=99.0 requirements remain
+unmet; goal active. No push, PR or merge.
