@@ -2906,6 +2906,39 @@ Trial/restored object SHA-256:
 1ab6e994ad315ab15146f82a3905f6838557d3e819c6f01f24f79b8c33d972a9.
 Compact snapshot: docs/validation/starmap_2026-10-05_move_transition_trials.json.
 
+## Seventy-eighth low-cargo confirmation station read trial (removed)
+
+Primary low-cargo confirmation with jumpCost==1 and jumpMapModeA reads the
+selected Station element at cb05e before doInstantJump=0 at cb064, then stores
+programmedStation at cb066. Accepted75 instead stores the byte at 2094 before
+its selected-element read at 20a2 and programmedStation store at 20a6.
+Tested a local Station pointer read before the byte store, retaining the same
+single indexed read, two stores, callbacks, predicates and all other branches.
+Trial 209e/20a4/20a6 reproduces the primary read-before-store relationship.
+This is an evidenced ARM ordering, not recovered C++ syntax or a runtime test.
+No extra call/check, padding, barrier or shared-file edit.
+
+The entire focused report is identical to accepted75: no source, strict,
+inventory, count or control gain. Whole trial object differs, SHA-256
+706fc5f802c2db029d34f908de311f453ef2d1ecf59e38a4599179ffb671b7c2.
+It was removed because it gives no progress toward the requested metric.
+The trial object is retained in _work/low-cargo-station-seventyeighth.o for
+future evidence. No full exact-pair preservation is claimed for this trial.
+
+Trial and fresh-mtime restore each compile 204/204 ARM TUs, zero failures,
+22 comparisons, zero skips, exit 0. Restored complete focused report and whole
+ARM object equal accepted75; restored source is identical after newline
+decoding. Source means remain 99.225% / 98.5818194620476%, strict 87.48% /
+82.34068441064638%. No new native/full/runtime run; accepted75 full/native
+results remain authoritative. Weighted 99% remains unmet.
+
+Evidence: _work/before-low-cargo-station-seventyeighth.cpp,
+low-cargo-station-seventyeighth.json/log/asm/o,
+seventyeighth-restored-focused.json/log.
+Restored object SHA-256:
+1ab6e994ad315ab15146f82a3905f6838557d3e819c6f01f24f79b8c33d972a9.
+Compact snapshot: docs/validation/starmap_2026-10-05_low_cargo_trial.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
