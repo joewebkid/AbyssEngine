@@ -14,10 +14,10 @@
   "current": {
     "bodies": 26,
     "original_instructions": 2393,
-    "source_unweighted": 99.66538461538462,
-    "source_weighted": 98.37187630589219,
-    "strict_unweighted": 94.63846153846154,
-    "strict_weighted": 75.91295445048057,
+    "source_unweighted": 99.67692307692307,
+    "source_weighted": 98.45298788132052,
+    "strict_unweighted": 94.66538461538462,
+    "strict_weighted": 76.10221479314669,
     "linked_exact": 19,
     "byte_exact": 13
   },
@@ -38,19 +38,19 @@
   "rows": [
     {
       "symbol": "_ZN3Gun22calcCharacterCollisionEv",
-      "match": 50.6,
+      "match": 51.3,
       "bytes_equal": false,
       "linked_equal": false,
       "n_target": 647,
-      "n_base": 629,
-      "source_match": 96.6,
-      "instruction_inventory_match": 94.5,
-      "opcode_inventory_match": 95.4,
+      "n_base": 632,
+      "source_match": 96.9,
+      "instruction_inventory_match": 94.9,
+      "opcode_inventory_match": 95.8,
       "control_flow_match": 95.5,
-      "ordered_control_flow_match": 76.8,
+      "ordered_control_flow_match": 77.5,
       "control_inventory_match": 95.5,
       "call_count_match": 100.0,
-      "size_match": 97.6,
+      "size_match": 98.1,
       "unit": "game/weapons/Gun",
       "baseline": {
         "symbol": "_ZN3Gun22calcCharacterCollisionEv",
@@ -1320,6 +1320,10 @@
     "linked_equal": [],
     "bytes_equal": []
   },
+  "previous_checkpoint_corpus_exact_losses": {
+    "linked_equal": [],
+    "bytes_equal": []
+  },
   "checks": {
     "native_gof2_static_library": "passed",
     "arm_translation_units": {
@@ -1336,11 +1340,11 @@
     "section_local_alias_regressions": "passed: distinct equal-address sections and seven real ARM aliases"
   },
   "input_sha256": {
-    "src\\game\\weapons\\Gun.cpp": "09eaeb98fd1d85da53f881de69a367b30b2ab5f67e1493639664bb2f9a088000",
+    "src\\game\\weapons\\Gun.cpp": "0e88fc17e723559a7c10bd89e4621c7ea81f73d7850dee6cbc3a18755169c26e",
     "src\\game\\weapons\\Gun.h": "400097d0e265812992483f4556cf6cfa63302d60978129c9211aae9bdd904f2c",
-    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "9f91e0d662bc4b9fc499a26aa0e5ff54dca8bfce5e996f2681951ab38bf9bd0c",
+    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "0618cb061611f68173a9b651a041f33f9a362b745e29c3ad0cadb6009ae4072a",
     "_work\\gun-current\\verify\\.flags": "b7741d9045ccee7cadcb1e3f3027e57029d127537931305e306e50bc830d174c",
-    "tools/verify/asmdiff.py": "ab7cde77854f395ea9c317618085375e1723de580defb8548be4bee94b0c3a5a",
-    "tools/verify/test_asmdiff_aliases.py": "d1b55aae56f2caaf79c6feb6604127742e3a9a271e4e6b126a2773c8db14e239"
+    "tools\\verify\\asmdiff.py": "ab7cde77854f395ea9c317618085375e1723de580defb8548be4bee94b0c3a5a",
+    "tools\\verify\\test_asmdiff_aliases.py": "d1b55aae56f2caaf79c6feb6604127742e3a9a271e4e6b126a2773c8db14e239"
   }
 }

@@ -630,10 +630,11 @@ void Gun::calcCharacterCollision() {
                 float factor;
                 if (enemy->getKIPlayer() && enemy->getKIPlayer()->_pad_0x71)
                     factor = radius * 0.5f;
-                else if (distance < 20001) {
+                else if (distance >= 20001) factor = static_cast<float>(radius * 3);
+                else {
                     factor = radius * 1.5f;
                     if (distance > 10000) factor = static_cast<float>(radius * 2);
-                } else factor = static_cast<float>(radius * 3);
+                }
                 radius = static_cast<int>(factor);
             }
             KIPlayer *ki = enemy->getKIPlayer();
@@ -714,16 +715,22 @@ collided:
             if (detonate) { ignite(); return; }
             if (empDamage != -979797979) enemy->damageEmp(empDamage, friendGun);
             int amount;
+            float scaledAmount;
             if (owner && !owner->enemyFlagsLo) {
-                if (reinterpret_cast<unsigned char *>(&enemy->empDisabled)[1]) amount = static_cast<int>(damage * 0.2f);
-                else amount = damage;
-            } else {
-                if (reinterpret_cast<unsigned char *>(&enemy->empDisabled)[1] &&
-                    level->getPlayer() &&
-                    level->getPlayer()->isDockedToDockingPoint())
-                    amount = static_cast<int>((damage * 3.0f) * 0.25f);
-                else amount = damage;
+                if (reinterpret_cast<unsigned char *>(&enemy->empDisabled)[1]) {
+                    scaledAmount = damage * 0.2f;
+                    goto scaledDamage;
+                }
+            } else if (reinterpret_cast<unsigned char *>(&enemy->empDisabled)[1] &&
+                       level->getPlayer() && level->getPlayer()->isDockedToDockingPoint()) {
+                scaledAmount = (damage * 3.0f) * 0.25f;
+                goto scaledDamage;
             }
+            amount = damage;
+            goto directDamage;
+scaledDamage:
+            amount = static_cast<int>(scaledAmount);
+directDamage:
             enemy->damage(amount, friendGun, itemIndex);
             reinterpret_cast<unsigned char *>(&enemy->field_54)[0] = 1;
             if (playerGun) reinterpret_cast<unsigned char *>(&level->field_30)[0] = 1;

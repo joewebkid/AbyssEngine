@@ -2,14 +2,14 @@
 
 ## Status: partial; the requested target is not achieved
 
-Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.6654% unweighted / 98.3719% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
+Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.6769% unweighted / 98.4530% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
 
 | Metric | Clean base | This checkpoint |
 |---|---:|---:|
-| Source-shape, unweighted | 73.5923% | 99.6654% |
-| Source-shape, original-instruction-weighted | 26.9159% | 98.3719% |
-| Strict instruction shape, unweighted | 66.8038% | 94.6385% |
-| Strict instruction shape, weighted | 15.4981% | 75.9130% |
+| Source-shape, unweighted | 73.5923% | 99.6769% |
+| Source-shape, original-instruction-weighted | 26.9159% | 98.4530% |
+| Strict instruction shape, unweighted | 66.8038% | 94.6654% |
+| Strict instruction shape, weighted | 15.4981% | 76.1022% |
 | Linked-exact unique bodies | 14 | 19 |
 | Byte-exact unique bodies | 13 | 13 |
 
@@ -92,6 +92,8 @@ Outer collision reload audit at 5a37d98f: an explicit cached enemies pointer ref
 Applied alias parser correction (2026-10-04): after explicit user approval, the saved proposal was applied to tools/verify/asmdiff.py. Function aliases are keyed by (section, address), and .text.<symbol> sections are accepted alongside .text. The correction changes neither compiler flags nor score formulas, normalizations or gate thresholds. tools/verify/test_asmdiff_aliases.py passes both the equal-address/distinct-section fixture and all seven aliases in the real ArrayInstantiations.o. Source/header/ARM-object/flag hashes still match the previous verified Gun checkpoint.
 
 Further private collision controls: merging only the two scaled-damage branches through one float-to-int conversion preserves behavior and raises strict shape from 50.6% to 51.5%, but leaves source-shape at 96.6%. It was not integrated. Two equivalent positive-upper-bound falloff forms reproduce the entire canonical parsed body; testing the lower bound first reduces source-shape to 96.4%. None was retained. These trials do not satisfy the weighted objective.
+
+Collision branch-order follow-up (2026-10-05): ARM 0x153118..0x153156 branches to the near path only when the converted distance is <20001; the far path comes first. Reversing the equivalent C++ branch raises collision source-shape from 96.6% to 96.8%. Original scaled-damage branches at 0x1532b8..0x1532f0 share the conversion at 0x1532e8. Joining those two branches through a named float and common conversion, while retaining the unscaled integer path, raises the combined result to 96.9% source / 51.3% strict, 632 versus original 647 instructions. The previous standalone damage-merge trial did not improve source; its interaction with branch order does. These are equivalent source forms supported by raw ARM, not original C++ text. Existing host smoke does not execute collision or damage. Native build, all 204 ARM TUs and the full strict gate pass; baseline and previous-checkpoint exact-pair losses are zero. See validation/gun_collision_branch_order_2026-10-05.json for the accepted and rejected controls.
 
 ## Checks and limits
 
