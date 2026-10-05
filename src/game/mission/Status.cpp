@@ -178,7 +178,7 @@ bool Status::inPirateLootOrbit() {
 
 void Status::setPlayingTime(int64_t v) { playingTime = v; }
 
-int Status::getPendingProducts() { return (int) (intptr_t) pendingProducts; }
+Array<PendingProduct *> *Status::getPendingProducts() { return pendingProducts; }
 
 Array<bool> *Status::getSystemVisibilities() { return systemVisibilities; }
 

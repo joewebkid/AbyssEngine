@@ -250,7 +250,7 @@ public:
 
     void addPendingProduct(BluePrint *product);
 
-    int getPendingProducts();
+    Array<PendingProduct *> *getPendingProducts();
 
     Array<bool> *getSystemVisibilities();
 

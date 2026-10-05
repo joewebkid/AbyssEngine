@@ -252,82 +252,47 @@ void ModStation::OnResume() {
 }
 
 
-static int *g_cpp_stack = 0;
-
-static int **g_cpp_status = 0;
-
-static int *g_cpp_textId = 0;
-
-static int **g_cpp_itemTable = 0;
-
-int Status_getCurrentCampaignMission_cpp();
-
-int GameText_getText_cpp(int id);
-
-int Status_getPendingProducts_cpp(int status);
-
-int Status_getStation_cpp();
-
-int Station_getIndex_cpp(Station * s);
-
-int Status_getShip_cpp();
-
-int Item_makeItem_cpp(int itemDesc);
-
-void Ship_addCargo_cpp(int ship, Item *it);
-
-int Item_getAmount_cpp();
-
-int Item_getIndex_cpp(Item * it);
-void *PendingProduct_dtor_cpp(PendingProduct * p);
-
-void operator_delete_cpp(void *p);
-
-void ChoiceWindow_setNotice_cpp(void *cw);
-
-int GameText_getText_cppline(int id);
-
 void ModStation::checkPendingProducts() {
-    int camp = Status_getCurrentCampaignMission_cpp();
-    int textId = *(int *) g_cpp_textId;
-    GameText_getText_cpp(textId);
+    int campaignStep = Globals::status->getCurrentCampaignMission();
+    String *header = Globals::gameText->getText(0xd5);
+    String message = *header + String("\n", false);
+    Array<PendingProduct *> *products = Globals::status->getPendingProducts();
+    if (products) {
+        for (unsigned i = 0; i < products->size(); ++i) {
+            PendingProduct *product = (*products)[i];
+            if (!product || product->stationIndex !=
+                Globals::status->getStation()->getIndex())
+                continue;
 
-    Array<PendingProduct *> *products =
-        (Array<PendingProduct *> *) (intptr_t) Status_getPendingProducts_cpp(*(int *) g_cpp_status);
-    if (products != 0) {
-        Array<int> *itemTable = (Array<int> *) (intptr_t) **g_cpp_itemTable;
-        for (unsigned i = 0; i < products->size(); i = i + 1) {
-            PendingProduct *pp = (*products)[i];
-            if (pp != 0) {
-                int dstStation = pp->stationIndex;
-                Station *here = (Station *) Status_getStation_cpp();
-                if (dstStation == Station_getIndex_cpp(here)) {
-                    if (camp == 0x92 && pp->blueprintIndex == 0xd2) {
-                        PendingProduct *o = (*products)[i];
-                        if (o != 0)
-                            operator_delete_cpp(PendingProduct_dtor_cpp(o));
-                        (*products)[i] = 0;
-                        goto done;
-                    }
-                    Item *it = (Item *) Item_makeItem_cpp(
-                        (*itemTable)[pp->blueprintIndex]);
-                    Ship_addCargo_cpp(Status_getShip_cpp(), it);
-                    (void) Item_getAmount_cpp();
-                    GameText_getText_cppline(Item_getIndex_cpp(it));
-
-                    PendingProduct *o = (*products)[i];
-                    if (o != 0)
-                        operator_delete_cpp(PendingProduct_dtor_cpp(o));
-                    (*products)[i] = 0;
-                    this->m_nStarMapWindowOpen.bytes[3] = 1;
-                }
+            if (campaignStep == 0x92 && product->blueprintIndex == 0xd2) {
+                delete (*products)[i];
+                (*products)[i] = nullptr;
+                return;
             }
+
+            Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
+            Item *item = (*items)[product->blueprintIndex]->makeItem(product->quantity);
+            Globals::status->getShip()->addCargo(item);
+            {
+                String newline("\n", false);
+                String withNewline = message + newline;
+                String amount(item->getAmount());
+                String withAmount = withNewline + amount;
+                String marker("x ", false);
+                String withMarker = withAmount + marker;
+                String withName = withMarker +
+                    *Globals::gameText->getText(item->getIndex() + 0x4fa);
+                message = withName;
+            }
+
+            delete (*products)[i];
+            (*products)[i] = nullptr;
+            this->m_nStarMapWindowOpen.bytes[3] = 1;
         }
     }
 
-    if (this->m_nStarMapWindowOpen.bytes[3] != 0)
-        ChoiceWindow_setNotice_cpp(this->choiceWindow);
-done:;
+    if (this->m_nStarMapWindowOpen.bytes[3])
+        static_cast<ChoiceWindow *>(this->choiceWindow)->set(message);
 }
 
 

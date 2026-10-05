@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-05 (ModStation entry, light and departure; older
+Last reviewed: 2026-10-05 (ModStation pending products, entry and light; older
 subsystem snapshots retain their dates)
+
+## ModStation pending-product delivery (2026-10-05, local branch)
+
+`ModStation::checkPendingProducts` now follows the Android-confirmed cargo,
+message and special-product paths instead of null fragment placeholders.
+Focused source-shape rises from 43.3% to 99.7%, strict fuzzy from 23.1% to
+86.8%; it is not exact. `Status::getPendingProducts` now preserves pointer
+width on native hosts and remains ARM byte-exact. Native `gof2` and 206/206
+ARM units build. The full corpus compares 4,322/4,524 originals across
+4,675 rows, at 90.15% mean source-shape / 77.30% strict, with 2,166
+linked-exact and 977 byte-exact pairs and zero exact-set losses. Integrated
+runtime remains unverified. The next recovery priority is
+`ModStation::showDlcMenu`; see
+[`MODSTATION_PENDING_PRODUCTS_ARM_2026-10-05.md`](MODSTATION_PENDING_PRODUCTS_ARM_2026-10-05.md).
 
 ## ModStation entry snapshot (2026-10-05, local branch)
 
