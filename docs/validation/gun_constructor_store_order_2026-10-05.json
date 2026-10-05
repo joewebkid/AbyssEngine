@@ -1,0 +1,333 @@
+{
+  "date": "2026-10-05",
+  "parent_commit": "bcc82c5f",
+  "accepted": "field_0xb0 initialized last in independent final constructor store block",
+  "native_evidence": "Original ARM 0x1520b0 and 0x1520cc stores separate zero words at Gun+0xb4 and Gun+0xb0.",
+  "inspected_canonical_store_operands": [
+    "str.w r0, [r4, #180]",
+    "str.w r0, [r4, #176]"
+  ],
+  "fidelity_limit": "Equivalent initialization order; not recovered original C++ order. No calls or throwing operations between reordered nonoverlapping writes.",
+  "previous": {
+    "bodies": 26,
+    "original_instructions": 2393,
+    "source_unweighted": 99.67692307692307,
+    "source_weighted": 98.45298788132052,
+    "strict_unweighted": 94.66538461538462,
+    "strict_weighted": 76.10221479314669,
+    "linked_exact": 19,
+    "byte_exact": 13
+  },
+  "current": {
+    "bodies": 26,
+    "original_instructions": 2393,
+    "source_unweighted": 99.69615384615385,
+    "source_weighted": 98.48997074801504,
+    "strict_unweighted": 94.67692307692307,
+    "strict_weighted": 76.1244045131634,
+    "linked_exact": 19,
+    "byte_exact": 13
+  },
+  "trials": {
+    "shoot_ammo": {
+      "captured-tail": {
+        "match": 70.4,
+        "n_target": 643,
+        "n_base": 639,
+        "source_match": 98.1,
+        "identical_to_canonical": false
+      },
+      "bitwise-tail": {
+        "match": 70.4,
+        "n_target": 643,
+        "n_base": 639,
+        "source_match": 98.1,
+        "identical_to_canonical": false
+      },
+      "complement-ammo": {
+        "match": 70.3,
+        "n_target": 643,
+        "n_base": 643,
+        "source_match": 98.2,
+        "identical_to_canonical": false
+      },
+      "logical-ammo": {
+        "match": 70.4,
+        "n_target": 643,
+        "n_base": 641,
+        "source_match": 98.2,
+        "identical_to_canonical": false
+      },
+      "bool-keep": {
+        "match": 70.5,
+        "n_target": 643,
+        "n_base": 642,
+        "source_match": 98.5,
+        "identical_to_canonical": true
+      },
+      "int-keep": {
+        "match": 70.5,
+        "n_target": 643,
+        "n_base": 642,
+        "source_match": 98.5,
+        "identical_to_canonical": true
+      },
+      "complement-ammo-tail": {
+        "match": 70.1,
+        "n_target": 643,
+        "n_base": 640,
+        "source_match": 98.1,
+        "identical_to_canonical": false
+      },
+      "logical-ammo-tail": {
+        "match": 70.3,
+        "n_target": 643,
+        "n_base": 638,
+        "source_match": 98.0,
+        "identical_to_canonical": false
+      },
+      "bool-keep-tail": {
+        "match": 70.4,
+        "n_target": 643,
+        "n_base": 639,
+        "source_match": 98.1,
+        "identical_to_canonical": false
+      },
+      "int-keep-tail": {
+        "match": 70.4,
+        "n_target": 643,
+        "n_base": 639,
+        "source_match": 98.1,
+        "identical_to_canonical": false
+      }
+    },
+    "collision_dependencies": {
+      "sum": {
+        "match": 50.5,
+        "n_target": 647,
+        "n_base": 637,
+        "source_match": 96.5,
+        "identical_to_canonical": false
+      },
+      "select-radial": {
+        "match": 51.3,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 96.9,
+        "identical_to_canonical": true
+      },
+      "select-mine": {
+        "match": 51.3,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 96.9,
+        "identical_to_canonical": true
+      },
+      "logical": {
+        "match": 51.3,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 96.9,
+        "identical_to_canonical": true
+      },
+      "inline-or": {
+        "match": 51.3,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 96.9,
+        "identical_to_canonical": true
+      },
+      "inline-sum": {
+        "match": 50.5,
+        "n_target": 647,
+        "n_base": 637,
+        "source_match": 96.5,
+        "identical_to_canonical": false
+      },
+      "particle-sum": {
+        "match": 55.6,
+        "n_target": 647,
+        "n_base": 619,
+        "source_match": 95.4,
+        "identical_to_canonical": false
+      }
+    },
+    "collision_mixed": {
+      "bitwise-pair": {
+        "match": 51.7,
+        "n_target": 647,
+        "n_base": 633,
+        "source_match": 96.3,
+        "identical_to_canonical": false
+      },
+      "bitwise-range42": {
+        "match": 58.1,
+        "n_target": 647,
+        "n_base": 620,
+        "source_match": 95.9,
+        "identical_to_canonical": false
+      },
+      "bitwise-range34": {
+        "match": 58.1,
+        "n_target": 647,
+        "n_base": 620,
+        "source_match": 95.9,
+        "identical_to_canonical": false
+      },
+      "negative-pair": {
+        "match": 51.7,
+        "n_target": 647,
+        "n_base": 633,
+        "source_match": 96.3,
+        "identical_to_canonical": false
+      },
+      "negative-all": {
+        "match": 58.1,
+        "n_target": 647,
+        "n_base": 620,
+        "source_match": 95.9,
+        "identical_to_canonical": false
+      },
+      "order-1": {
+        "match": 51.3,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 96.9,
+        "identical_to_canonical": true
+      },
+      "order-2": {
+        "match": 51.3,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 96.9,
+        "identical_to_canonical": true
+      },
+      "order-3": {
+        "match": 51.7,
+        "n_target": 647,
+        "n_base": 633,
+        "source_match": 96.3,
+        "identical_to_canonical": false
+      },
+      "order-4": {
+        "match": 51.3,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 96.9,
+        "identical_to_canonical": true
+      },
+      "order-5": {
+        "match": 51.7,
+        "n_target": 647,
+        "n_base": 633,
+        "source_match": 96.3,
+        "identical_to_canonical": false
+      }
+    },
+    "ignite_division": {
+      "reverse": {
+        "match": 96.4,
+        "n_target": 351,
+        "n_base": 350,
+        "source_match": 98.9,
+        "identical_to_canonical": true
+      },
+      "ternary": {
+        "match": 96.4,
+        "n_target": 351,
+        "n_base": 350,
+        "source_match": 98.9,
+        "identical_to_canonical": true
+      },
+      "goto": {
+        "match": 96.4,
+        "n_target": 351,
+        "n_base": 350,
+        "source_match": 98.9,
+        "identical_to_canonical": true
+      },
+      "lambda": {
+        "match": 96.4,
+        "n_target": 351,
+        "n_base": 350,
+        "source_match": 98.9,
+        "identical_to_canonical": true
+      },
+      "switch": {
+        "match": 96.4,
+        "n_target": 351,
+        "n_base": 350,
+        "source_match": 98.9,
+        "identical_to_canonical": true
+      }
+    },
+    "constructor_store_order": {
+      "b0-first": {
+        "match": 92.7,
+        "n_target": 177,
+        "n_base": 177,
+        "source_match": 98.5,
+        "identical_to_canonical": false
+      },
+      "b0-after-enemies": {
+        "match": 92.7,
+        "n_target": 177,
+        "n_base": 177,
+        "source_match": 98.5,
+        "identical_to_canonical": false
+      },
+      "b0-last": {
+        "match": 93.0,
+        "n_target": 177,
+        "n_base": 178,
+        "source_match": 99.0,
+        "identical_to_canonical": false
+      },
+      "b0-before-owner": {
+        "match": 92.7,
+        "n_target": 177,
+        "n_base": 177,
+        "source_match": 98.5,
+        "identical_to_canonical": false
+      },
+      "float-zero": {
+        "match": 92.7,
+        "n_target": 177,
+        "n_base": 177,
+        "source_match": 98.5,
+        "identical_to_canonical": true
+      }
+    }
+  },
+  "input_sha256": {
+    "src\\game\\weapons\\Gun.cpp": "87dac99883197ffc8afdeefe66b0cb0f2978264d69b9e2dcc010b551f581de9d",
+    "src\\game\\weapons\\Gun.h": "400097d0e265812992483f4556cf6cfa63302d60978129c9211aae9bdd904f2c",
+    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "90a98e1d434bdb516f43e235ea6c818eac944b0f1fd38fbfb6906f5bcb3723ae",
+    "_work\\gun-current\\verify\\.flags": "b7741d9045ccee7cadcb1e3f3027e57029d127537931305e306e50bc830d174c",
+    "tools\\verify\\asmdiff.py": "ab7cde77854f395ea9c317618085375e1723de580defb8548be4bee94b0c3a5a",
+    "tools\\verify\\test_asmdiff_aliases.py": "d1b55aae56f2caaf79c6feb6604127742e3a9a271e4e6b126a2773c8db14e239"
+  },
+  "checks": {
+    "native_gof2_static_library": "passed",
+    "arm_translation_units": {
+      "compiled": 204,
+      "failed": 0
+    },
+    "host_selected_source_contract_smoke": "passed; includes extracted mount block operand/side effects; not full shootAt or ARM execution",
+    "mount_regression_before_fix_exit": 1,
+    "mount_regression_after_fix_exit": 0,
+    "diff_check": "passed",
+    "full_corpus_wrong_type_gate_exit": 0,
+    "object_newer_than_source_and_header": true,
+    "baseline_full_corpus_wrong_type_gate_exit": 0,
+    "section_local_alias_regressions": "passed: distinct equal-address sections and seven real ARM aliases"
+  },
+  "baseline_exact_losses": {
+    "linked_equal": [],
+    "bytes_equal": []
+  },
+  "previous_checkpoint_exact_losses": {
+    "linked_equal": [],
+    "bytes_equal": []
+  }
+}

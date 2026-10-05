@@ -367,9 +367,9 @@ Gun::Gun(int kind, int p2, int count, int p4, int p5, int p6, float p7, Vector d
     this->errorMagnitudePercentage = 0;
     this->field_0x89 = 0;
     this->owner = 0;
-    this->field_0xb0 = 0;
     this->empDamage = 0;
     this->field_0xa4 = 0;
+    this->field_0xb0 = 0;
 }
 
 bool Gun::shoot(Matrix m, int n, bool b) {
