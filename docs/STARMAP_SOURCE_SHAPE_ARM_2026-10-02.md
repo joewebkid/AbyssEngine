@@ -2504,6 +2504,30 @@ Evidence: _work/before-ctor-image-selection-sixtythird.cpp,
 ctor-image-selection-sixtythird.json/log and sixtythird-restored-focused.json/log;
 compact committed snapshot: docs/validation/starmap_2026-10-05_ctor_image_trial.json.
 
+## Sixty-fourth trial: confirmation inside choice result case (removed)
+
+Inspected StarMap.cpp OnTouchEnd, the primary Android touch-end extract,
+and focused ARM outputs. The entire original confirmation tail was placed
+inside switch case 0; case 1 retained its two flag clears and early return,
+and default retained return 0. All calls, predicates and exit paths were
+preserved. This source-form hypothesis is distinct from fortieth's case 0
+break with the confirmation tail outside the switch. It does not establish
+recovered original C++ syntax.
+
+Trial and fresh restoration each compile 204/204 ARM TUs with zero failures,
+22 comparisons and zero skips. Both entire focused reports equal accepted
+sixty-second. Both whole objects have SHA-256
+156da3b108337cf6b83438749665458002e66fb24536600aa795dc86469e25a3.
+The trial was removed because it provides no generated-code or metric gain.
+Production remains 6c5707e7; source means remain 99.210% / 98.53561470215463%.
+Weighted 99% remains unmet. Accepted sixty-second native/full validation
+remains authoritative; no new native/full/runtime run is claimed.
+
+Evidence: _work/before-choice-case-body-sixtyfourth.cpp,
+choice-case-body-sixtyfourth.json/log and sixtyfourth-restored-focused.json/log.
+Compact committed snapshot:
+docs/validation/starmap_2026-10-05_choice_case_body_trial.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;

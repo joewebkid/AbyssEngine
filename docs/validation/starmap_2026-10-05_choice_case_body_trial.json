@@ -1,0 +1,21 @@
+{
+  "accepted_production": "6c5707e7",
+  "hypothesis": "OnTouchEnd choice result switch with the entire confirmation tail scoped inside case 0; case 1 clears the same flags, default returns 0. All calls, predicates and early returns preserved.",
+  "original_source_recovered": false,
+  "decision": "removed: no generated-code or metric change",
+  "trial_entire_report_equals_accepted": true,
+  "restored_entire_report_equals_accepted": true,
+  "trial_restored_object_sha256": "156da3b108337cf6b83438749665458002e66fb24536600aa795dc86469e25a3",
+  "trial_and_restore_builds": {
+    "each_compiled": 204,
+    "each_failed": 0,
+    "each_compared": 22,
+    "each_skipped": 0
+  },
+  "source_means": {
+    "unweighted": 99.21,
+    "weighted": 98.53561470215463
+  },
+  "target_met": false,
+  "native_full_validation": "No new native/full/runtime run; accepted sixty-second authoritative."
+}
