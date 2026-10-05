@@ -3272,3 +3272,42 @@ eightyfourth-corpus.json/log, eightyfourth-baseline/previous/target-gate.json/lo
 checkpoint84-before-focused/corpus.json. Primary anchors use
 begin-original-eightythird.asm. Compact committed evidence:
 `docs/validation/starmap_2026-10-05_begin_visibility_bound.json`.
+
+
+## Eighty-fifth trial: projection depth stores in branches (removed)
+
+Accepted production/report: `1cf057a4`. Inspected live source and object plus
+primary update. In both loops, native depth selection uses default-1 and
+IT NE/select+1 (c9c0a..c9c12, c9cae..c9cb6); accepted84 uses default+1 and
+IT EQ/select-1 (3232..323a,32d6..32de). Both implement zero->-1 and every
+nonzero->+1. Previous30 tested a separate local depth default; this distinct
+trial placed the fresh Array read and z store directly inside each if/else
+branch, preserving exactly one read/store on every path. No extra runtime
+call/check or compiler flag, barrier or padding.
+
+Focused trial reached terminal exit0: compiled204/failed0,comparisons22/skips0.
+**Entire focused JSON and entire ARM object are identical to accepted84**,
+SHA2836b8f80e9bce8c17dd7458b789291c80f037eaeef2ad972cbc21e20f3a6863.
+The compiler consolidated both stores to its existing IT EQ selection; no
+metric gain. This result excludes this source form on the current baseline,
+not proof of a compiler ceiling or recovery of original C++ syntax.
+
+Removed the trial, wrote source backup with fresh mtime, and rebuilt focused
+ARM to terminal exit0: compiled204/failed0,22 comparisons/skip0. Normalized
+source, entire focused JSON and ARM object match accepted84. No production
+difference remains. Native/full builds were not repeated: accepted84 native
+static library/full4619 zero-skip/exact-pair gates remain authoritative.
+Means stay99.270/98.61831 source and87.665/82.49868 strict; weighted99 still
+fails. Goal active; native executable runtime equivalence unverified.
+
+Additional read-only checks: system projection c9be0..c9c22 /3208..324a already
+holds Canvas before getPosition and rereads systemPositions after both
+getPosition and GetScreenPosition. Projection mode dispatch c9bac..c9c2c /
+31d4..3254 already reads mode before lastDt store, keeps the value on bypass
+and rereads after callbacks. Neither fragment justifies a new snapshot edit.
+
+Evidence: _work/current-eightyfifth.asm,
+before-projection-depth-store-eightyfifth.cpp,
+projection-depth-store-eightyfifth.json/log,
+eightyfifth-restored-focused.json/log. Compact committed snapshot:
+`docs/validation/starmap_2026-10-05_projection_depth_trial.json`.

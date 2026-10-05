@@ -1,0 +1,53 @@
+{
+  "previous_accepted_commit": "1cf057a4",
+  "decision": "removed: branch-local projection depth stores are neutral on accepted84",
+  "original_source_recovered": false,
+  "trial_form": "Each system/station loop writes z=+1 directly if visible!=0, else z=-1, rather than a shared ternary store. Exactly one branch reads fresh Array and writes one component.",
+  "motivation": "Primary c9c0a..c9c12 and c9cae..c9cb6 use default-1 then IT NE select+1; accepted84/current 3232..323a and32d6..32de use default+1 then IT EQ select-1. Both map zero to-1 and every nonzero value to+1.",
+  "read_only_audits": [
+    {
+      "area": "system projection callback reads",
+      "primary": "c9be0..c9c22",
+      "current": "3208..324a",
+      "finding": "Canvas receiver held across getPosition, systemPositions read after getPosition and reread after GetScreenPosition; existing source order already matches."
+    },
+    {
+      "area": "projection mode dispatch",
+      "primary": "c9bac..c9c2c",
+      "current": "31d4..3254",
+      "finding": "Mode read before lastDt store, kept on bypass path and reread after system projection callbacks; no explicit mode-cache edit justified."
+    }
+  ],
+  "trial": {
+    "focused_terminal_exit": 0,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "entire_json_equal_accepted": true,
+    "entire_object_equal_accepted": true,
+    "object_sha256": "2836b8f80e9bce8c17dd7458b789291c80f037eaeef2ad972cbc21e20f3a6863"
+  },
+  "restoration": {
+    "fresh_source_write": true,
+    "normalized_source_equal_accepted": true,
+    "focused_terminal_exit": 0,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "entire_json_equal_accepted": true,
+    "entire_object_equal_accepted": true,
+    "object_sha256": "2836b8f80e9bce8c17dd7458b789291c80f037eaeef2ad972cbc21e20f3a6863"
+  },
+  "latest_authoritative_validation": "Accepted84 native static library/full4619 zero skips and baseline/previous no-exact-loss gates. No new native/full run because accepted source/entire ARM object restored.",
+  "means": {
+    "source_unweighted": 99.27,
+    "source_weighted": 98.6183072806647,
+    "strict_unweighted": 87.665,
+    "strict_weighted": 82.49867624278271
+  },
+  "weighted99_target_met": false,
+  "native_runtime_equivalence": "unverified",
+  "conclusion": "This separate-store form also consolidates to identical predication; no gain and no compiler ceiling proven."
+}
