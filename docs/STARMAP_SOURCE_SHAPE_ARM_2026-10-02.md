@@ -2871,6 +2871,41 @@ Compact snapshot: docs/validation/starmap_2026-10-05_draw_current_data.json.
 Object SHA-256: 1ab6e994ad315ab15146f82a3905f6838557d3e819c6f01f24f79b8c33d972a9.
 Full JSON SHA-256: 8dbb63f8358823a852b116ef0d4bda527002f994a8adf600333914be733c2b40.
 
+## Seventy-sixth / seventy-seventh neutral source-form trials
+
+Two independent hypotheses were compiled and removed. OnTouchMove put the
+complete galaxy body under mode==0 first and the complete station body under
+else, retaining all nonzero modes and the accepted pitch predicates. Draw's
+initial transition guard used a uint8_t local initialized with transitionIn,
+replaced by transitionOut only when zero, then tested nonzero. This preserved
+short-circuit reads, nonzero-byte behavior and later callback-visible reads.
+Neither added calls/checks, barriers, padding or compiler/configuration changes.
+Both entire focused reports and whole ARM objects were identical to accepted
+75. Neither source form is claimed as recovered original C++ syntax.
+
+Each trial and fresh-mtime restore compiles 204/204 ARM TUs, zero failures,
+22 comparisons, zero skips, exit 0. Both complete restored reports and the
+final whole ARM object equal accepted75. Production source restored identically after newline decoding. Source means remain 99.225% / 98.5818194620476%;
+strict 87.48% / 82.34068441064638%. No new native/full/runtime run; accepted75
+full/native evidence remains authoritative. Weighted 99% remains unmet.
+
+Read-only review: OnTouchEnd entry caeb2..caee0 and accepted1e8a..1ebc already
+have choice callback before ordinary input, same result1/result0 tests and
+suppressNextClose read before choiceVisible store; no outer dispatch edit made.
+Draw initial guard c9120..c912c has ITT EQ / conditional byte load +313 /
+conditional comparison; accepted22e..23c uses explicit BNE then load/compare.
+The byte fallback did not alter that compiler decision. No forced predication
+or proven compiler ceiling is inferred from these trials.
+
+Evidence: _work/before-move-mode-order-seventysixth.cpp,
+move-mode-order-seventysixth.json/log, seventysixth-restored-focused.json/log,
+before-draw-transition-byte-seventyseventh.cpp,
+draw-transition-byte-seventyseventh.json/log,
+seventyseventh-restored-focused.json/log.
+Trial/restored object SHA-256:
+1ab6e994ad315ab15146f82a3905f6838557d3e819c6f01f24f79b8c33d972a9.
+Compact snapshot: docs/validation/starmap_2026-10-05_move_transition_trials.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
