@@ -3115,3 +3115,56 @@ outside-body/signature check passes and tracked production diff is empty.
 Fixed-three means remain **98.23% unweighted /98.17% weighted**; accepted
 exact pair sets remain 2079 linked /959 byte equal baseline without losses.
 Both >=99.0 requirements remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: color component traversal forms
+
+Ten isolated reader variants start from clean 88341db1 and retain the accepted
+per-component colors-field load. Original byte load/increment occurs at
+0x6cec4-0x6cec6, colors reload/offset advance at 0x6ced0-0x6ced4, divide/store
+at 0x6ced6-0x6ceda and unsigned back-edge test at 0x6cede-0x6cee0. Six linear
+forms test signed index, independent byte offset with the existing dynamic
+bound, advancing input pointer, postincrement store, named conversion before
+index increment, or guarded do/while. Every count is <=4*65535=262140; signed
+int index and byte offset cannot overflow. Guarded do preserves zero-count
+skipping. The byte-offset form differs from earlier captured-bound trials by
+retaining the current per-iteration count read.
+
+Four further forms traverse vertices and their four color components with
+nested unsigned counters, a byte inner counter, a short vertex counter, or
+four explicit stores. Bounds remain ushort-derived, output values preserve
+byte/255.0f (no reciprocal substitution), and each vertex's component order is
+0/1/2/3. Nested loops reload vertex count per vertex instead of per component;
+these are alternative source forms for valid separately allocated buffers,
+not claims of exact original load order or recovered original loops. Colors
+field remains the store owner read in each source assignment. File operations,
+allocation sizes and failure cleanup are unchanged.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| linear: signed_index | 98.0 / 55.9 | 867 | 100.0 | yes |
+| linear: dynamic_byte_offset | 98.0 / 56.0 | 867 | 100.0 | no |
+| linear: input_pointer | 98.0 / 55.9 | 867 | 100.0 | yes |
+| linear: postincrement_store | 98.0 / 55.9 | 867 | 100.0 | yes |
+| linear: value_then_increment | 98.0 / 55.9 | 867 | 100.0 | yes |
+| linear: guarded_do | 98.0 / 55.5 | 868 | 100.0 | no |
+| vertex: nested_uint | 97.6 / 54.6 | 880 | 100.0 | no |
+| vertex: nested_byte_component | 97.6 / 54.6 | 880 | 100.0 | no |
+| vertex: nested_short_vertex | 97.6 / 54.6 | 880 | 100.0 | no |
+| vertex: four_explicit_components | 96.8 / 56.0 | 901 | 100.0 | no |
+
+No source improvement occurs. Four linear forms equal the accepted whole Core
+object. Dynamic byte offset differs despite unchanged source and improves
+only strict by 0.1, so is rejected. Guarded do regresses strict. All three
+nested forms produce the same whole object to each other but regress source
+to 97.6; explicit four-store form regresses to 96.8. Object identities were
+verified from bytes. All production edits were restored.
+
+Evidence: `_work/readcolorloop-*.json`, `_work/readcolorvertex-*.json`, saved
+source snapshots, `_work/read_color_loop_identities.json` and
+`_work/read_color_vertex_identities.json`. Baseline outside-body/signature
+check passes and tracked production diff is empty. No native/full-corpus
+validation is claimed for rejected forms. Accepted axisbyte-full/native
+validation remains authoritative: **98.23% unweighted /98.17% weighted**,
+2079 linked /959 byte exact pairs equal baseline without losses. Both >=99.0
+requirements remain unmet; goal active. No push, PR or merge.
