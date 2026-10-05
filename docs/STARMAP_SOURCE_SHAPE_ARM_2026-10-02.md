@@ -2234,6 +2234,42 @@ Evidence: _work/before-draw-header-captures-fiftyfourth.cpp,
 draw-header-captures-fiftyfourth.cpp/json/log, fiftyfourth-restored-focused.json/log;
 compact committed snapshot: docs/validation/starmap_2026-10-05_draw_header_trial.json.
 
+
+## Investigation after checkpoint c5ad343b
+
+Read-only station review confirmed the existing Array<uint8_t> constructor
+pair is linked-exact in the StarMap translation unit. Changing to the primary
+Array<bool> spelling would lose that pair, as the earlier trial documented.
+No alias, duplicate instantiation or shared Matrix workaround was introduced.
+Station statements still match the reviewed primary call/capture ordering;
+this review does not claim all instruction differences are compiler artifacts.
+
+A drawKey coordinate hypothesis flattened textX into
+imageWidth + lineHeight + x + lineHeight, matching the printed IDA sum.
+Only drawKey changes: source 97.9% -> 97.8%, strict 35.1% -> 43.0%, instructions
+246/244 -> 246/242, inventory 94.0% -> 93.8%, opcode 96.1% -> 96.7%, size
+99.6% -> 98.3%. All control/call metrics remain 100%; other 21 rows identical.
+It was rejected because the requested source metric decreases.
+
+A complete bounded primary disassembly now covers c80e8..c8354 in
+_work/drawkey-original-full-fiftyfifth.asm (the older addresses extract is partial).
+It clarifies the arithmetic: c817e creates imageX=x+lineHeight, c8182 creates
+imageWidth+lineHeight, c8186 adds the two. The accepted grouping already agrees;
+the IDA flattened sum does not prove the original source parenthesization.
+No literal C++ source recovery is claimed.
+
+Trial and fresh restoration each compile 204/204 ARM TUs, zero failures, and
+compare 22 symbols, zero skips. Restored entire JSON equals accepted fifty-first.
+Trial object SHA-256: 880d684cfe5c169afd29c8b60824c749127097c064cde51cb798b80b9182a837.
+Restored object SHA-256:
+3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+Production/canonical inputs remain 9a96e2e5, source means 99.205% /
+98.51861709618363%. Weighted 99% remains unmet. Accepted fifty-first native/full
+validations remain authoritative; no new native/full/runtime result is claimed.
+Evidence: _work/before-key-sum-fiftyfifth.cpp, key-sum-fiftyfifth.json/log,
+fiftyfifth-restored-focused.json/log and complete primary key disassembly;
+committed compact snapshot: docs/validation/starmap_2026-10-05_key_sum_trial.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
