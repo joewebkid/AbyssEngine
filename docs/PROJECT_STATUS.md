@@ -16,6 +16,10 @@ snapshot there are zero exact-set losses and 101 linked / eight byte gains.
 This is not a playable-game or semantic-completion percentage; integrated
 gameplay runtime remains unverified. The original dirty `main` checkout is
 unchanged; see [the reconciliation note](MAIN_WORKTREE_RECONCILIATION_2026-10-05.md).
+The later Gun, StarMap and Mesh-documentation branch tips have also been
+merged; their focused source-shape improvements leave these rounded full-corpus
+totals and all exact-pair sets unchanged. The final local report is
+`_work/integrated_main_working_latest_20261005.json`.
 
 ## Integrated recovery branches (2026-10-05, local integration branch)
 

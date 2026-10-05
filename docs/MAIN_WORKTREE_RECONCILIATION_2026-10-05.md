@@ -36,3 +36,17 @@ the preceding integrated snapshot. Reports are local, uncommitted files at
 
 These are comparison and compile results, not an integrated native gameplay
 runtime pass. The dirty `main` checkout and GitHub remote remain untouched.
+
+## Latest branch-tip sweep
+
+The later Gun (`38347263`), StarMap (`e43de497`) and Mesh documentation
+(`2006e1f0`) branch tips were also merged into this integration branch. All
+ten known recovery-branch tips are ancestors of the resulting snapshot.
+The Gun constructor C1/C2 source-shape rows rose from 98.5% to 99.0%, and
+StarMap::OnTouchMove rose from 98.4% to 98.8%. The full rerun still compares
+4,323/4,524 originals across 4,688 rows, at 91.75% mean source-shape and
+79.62% strict, with 2,300 linked-exact and 997 byte-exact pairs. Relative to
+the immediately preceding integration report, there are zero lost or gained
+exact pairs. All 206 ARM units, the UCRT64 native build, 36 verifier tests
+(one optional skip), four scope-filter tests and the Gun host smoke pass.
+The final local report is `_work/integrated_main_working_latest_20261005.json`.
