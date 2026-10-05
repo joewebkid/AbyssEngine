@@ -1909,6 +1909,43 @@ canonical gate inputs remain those of 1d9a4c65. Means remain source
 No new native/full-corpus run is claimed; the accepted fortyfourth validations
 below remain authoritative. Weighted 99% is unmet and native runtime untested.
 
+## Investigation after checkpoint 27cf2441
+
+OnTouchEnd's primary warning paths converge at cb7fe..cb818, then continue at
+cb890. A source-form trial replaced the negative warningText sentinel and its
+guards with explicit jumps to one common warning block. Each warning assignment
+jumped past later warning predicates and the ordinary confirmation dialog; normal
+dialog paths jumped past the warning block to the common choice-visible tail.
+It retained one getText/set call site and the existing inertia/Help continuation.
+This was a control-flow hypothesis, not recovered C++ syntax. It was distinct
+from the previously rejected separate-3217 call-site trial.
+
+All 204 ARM TUs compiled with zero failures. The entire 22-row, zero-skip focused
+report warning-goto-fortysixth.json equals the accepted report, including every
+reported metric, count and exact flag. However, whole-object bytes differ:
+accepted SHA-256 b074aa464b492d3eba51e14b69f2f85b2bed927ebdd56b0a34cb9f9460b8e7ec;
+trial SHA-256 e8aaa6fee52010224a707c505b5fe5bcb7bbb0d77f36cb780d2f72eefd0ff8c9.
+ELF section payload comparison finds only .text (four changed bytes) and .rel.text
+(six changed bytes), with unchanged section sizes. Relocations at text offsets
+0x2960/0x2964 exchange shipClasses (type 3) and Globals::gameText (type 96).
+The corresponding pool words and two references change. Thus identical focused
+metrics do not mean byte-identical objects; no new full-corpus exact preservation
+claim is made for this rejected trial.
+
+The trial was removed because it added jumps without metric progress. Fresh
+restored-source verification fortysixth-restored-focused.json/log compiled all
+204 TUs, failed zero and compared 22 rows with zero skips. Its entire JSON and
+whole-object SHA-256 equal the accepted fortyfourth checkpoint. Production code
+and canonical gate inputs remain unchanged. Source means remain 99.180% /
+98.50022532037741%, strict means 87.230% / 81.58969159273342%. Weighted 99% remains
+unmet. Accepted fortyfourth native/full-corpus validations remain authoritative;
+no new native/full-corpus run or native runtime test is claimed.
+
+Evidence in _work: before-warning-goto-fortysixth.cpp,
+warning-goto-fortysixth.json/log/o, fortysixth-restored-focused.json/log and
+fortysixth-object-delta.json. Compact section-difference evidence is committed at
+docs/validation/starmap_2026-10-05_warning_goto_trial.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
