@@ -3076,3 +3076,58 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap8renderBGEv` | 1/1 | 100.0% | 100.0% | 100.0% | byte |
 
 Aliases: `_ZN7StarMapC2EbP7Missionbi` = C1; `_ZN7StarMapD2Ev` = D1.
+
+
+## Eightieth continuation: current-object remainder audit (2026-10-05)
+
+Previous production/checkpoint: `fb5748ae`. No production edit or compiler
+experiment was made in this continuation. The live ARM object SHA-256 is
+`a775a751fc3520acc5f684ccd1d9560acd4da2664cbf01f471fd2c4055f7498f`,
+matching the fully validated seventy-ninth acceptance. Tracked production was
+clean before this audit.
+
+Re-disassembled current and target StarMap objects with the existing NDK
+objdump. Read-only use of the unchanged asmdiff reproduced **all eight source
+submetrics for all 20 fixed bodies**, then the gate's fixed corpus calculation
+reproduced **99.235 / 98.59119842275736 source-shape** and
+**87.570 / 82.42509505703421 strict**. C2/D2 remain excluded from means; no
+metric, original instruction weight or corpus change. Token multiset surplus
+is diagnostic evidence, not a count of missing C++ statements or proof of a
+compiler ceiling.
+
+New raw-fragment checks exclude unsupported edits:
+
+- End initial inertia: primary `cb0a2..cb112`, current `1f1a..1f8a` already
+  have the same signed-absolute selections, strict `>3` comparisons, mode
+  read, momentum/dragging/velocity stores. Inverting the float predicates or
+  reordering source stores is not justified by this fragment.
+- init campaign/mode: `c6e6e..c6e82` versus `4762..4776` already have the
+  same compare15, conditional galaxy flag, default mode3/conditional mode0
+  and member stores. Only the saved Status slot differs.
+- Station initial ArraySetLength receivers: `c75b8..c75be`,
+  `c7650..c765a`, `c7688..c7694` use the cached freshly constructed receivers.
+  The constructor's accepted fresh-member reads must not be copied blindly
+  into these calls.
+- Station position allocation loop: `c7b08..c7b2e` versus `2efa..2f20`
+  already holds the Array receiver across Vector allocation, zeros three
+  components and stores the element through its data+4 field.
+- System name table: primary `c7ac8` and current `2eba` both use LDRH with
+  index shift2. Existing uint32 table slots preserve the native stride;
+  changing the table to uint16 would alter it.
+
+The remaining positive contributions to the weighted deficit relative to99
+are End **0.18985pp**, station initialization **0.16998pp**, init **0.07393pp**,
+update **0.04102pp**, key **0.03811pp**, Move **0.00746pp**. Other bodies offset
+part of that deficit; these numbers are diagnostic contributions, not separate
+required per-body thresholds. Prioritize unresolved warning dispatch and
+station initialization operations rather than the five verified fragments.
+Previously rejected warning and Matrix/Array ABI workarounds remain rejected.
+No source-equivalence or ceiling claim follows from the inventory.
+
+Evidence: `docs/validation/starmap_2026-10-05_remaining_audit.json` contains
+all inventories, metrics, fixed weights, object hash and raw audit anchors.
+No new native/full build was needed because production and the entire ARM
+object are unchanged. The accepted seventy-ninth native library, 204-TU
+focused check, zero-skip 4619-comparison corpus and no-exact-loss gates remain
+the authoritative validations. Weighted99 gate remains red. Native executable
+runtime equivalence remains untested. Goal remains active.
