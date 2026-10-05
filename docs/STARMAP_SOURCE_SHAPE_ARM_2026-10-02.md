@@ -1946,6 +1946,47 @@ warning-goto-fortysixth.json/log/o, fortysixth-restored-focused.json/log and
 fortysixth-object-delta.json. Compact section-difference evidence is committed at
 docs/validation/starmap_2026-10-05_warning_goto_trial.json.
 
+## Investigation after checkpoint 78765e07
+
+A fresh read-only allocation-shape alignment of the accepted initStarSystem
+object reproduces source 97.3%, instruction inventory 96.7%, opcode inventory
+97.4%, control 96.9%, ordered control 94.8%, call count 99.0% and size 96.3%.
+The diagnostic does not replace or filter the fixed-corpus gate. Full local
+alignment groups are retained in _work/station-local-differences-fortyseventh.json.
+
+Raw primary Android calls were compared against current ARM relocations inside
+verified function bounds, excluding initLights. Original has 100 direct and eight
+indirect calls; accepted has 101 direct and eight indirect calls. After accounting
+for the existing Array<bool>/Array<uint8_t> constructor and ArraySetLength
+spellings, the only extra direct call is the shared Matrix C1. No missing lighting,
+ring, station or vector-normalization call is exposed by this count comparison.
+This is a static-site inventory, not a claim of path-by-path runtime equivalence.
+Committed evidence: docs/validation/starmap_2026-10-05_station_calls.json.
+
+Primary c77c6..c77e0 and accepted 2ba8..2bc2 already add the random result to the
+previous distance, then add 1600, before converting/storing. Primary c7c1a..c7c32
+and accepted 3004..301c already capture the planet member after the second
+campaign getter and select the <=157 / >157 constants before one scaling call.
+The successful angle-slot retry and flag write also agree at original
+c774c..c7778 versus accepted 2b2e..2b5c. These are not candidates for another
+arithmetic or branch-order rewrite.
+
+Sequence alignment alone misleadingly presents a second planetGeom reset:
+raw accepted 2f52 writes member444 once, then 2f56 writes member376; original
+c7b68 writes member376 and c7b6c writes member444. Both reset once before the
+texture-index getter. Their reordered pure stores do not establish an extra
+runtime operation. No code change is justified by this apparent alignment gap.
+
+The Matrix initialization region remains genuinely different (inline primary
+NEON initialization versus the shared constructor and two required field fixes),
+while ring-check block placement and literal-pool decoding also affect alignment.
+No raw-storage, shared-constructor, verifier or compile-flag workaround was added.
+Production and canonical reports are unchanged; accepted fortyfourth validations
+remain authoritative. No new build/runtime result is claimed. Means stay
+99.180% / 98.50022532037741%; weighted 99% remains unmet. The next investigation
+returns to init/OnTouchEnd rather than repeating the now-confirmed station
+arithmetic and scale branches.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
