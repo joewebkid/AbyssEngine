@@ -3326,3 +3326,54 @@ claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, 2079 linked /959 byte
 exact pairs equal baseline with no losses. Both >=99.0 requirements remain
 unmet; goal active. No push, PR or merge.
+
+
+## Continuation: section signedness and case order on byte-axis state
+
+Ten Enhanced trials start from clean 997070f1. Six keep the original two-byte
+section field but vary shared unsigned storage, signed dispatch from unsigned
+storage, unsigned optional comparison, or one unsigned position/scale/rotation
+dispatch. Types 0/1 select the same cases; every other raw 16-bit representation
+falls through either way, while optional compares only with 2. Signed V5 key
+counts are untouched. On the tested ARM/native two's-complement targets, the
+signed cast form restores the original signed interpretation at the three
+switches. It is not a cross-platform implementation-defined-cast guarantee.
+Original signed loads (position at 0x6bc88) remain source evidence; unsigned
+alternatives are equivalent-dispatch hypotheses, not recovered declarations.
+
+Four further variants place case 0 before case 1 individually for position,
+scale, rotation or all three. Each retains its braces, inner reads/loops,
+channel mappings, break and unknown fallthrough. Earlier combined case-order
+trial predated the retained byte axes; these trials explicitly measure the
+current state and isolate individual section effects. No helper/ABI/matcher
+or compiler input changes.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| signedness: unsigned_shared_type | 98.1 / 66.4 | 641 | 100.0 | no |
+| signedness: unsigned_storage_signed_dispatch | 98.3 / 66.9 | 641 | 100.0 | yes |
+| signedness: unsigned_optional_comparison | 98.3 / 66.9 | 641 | 100.0 | yes |
+| signedness: position_unsigned_dispatch | 98.2 / 52.8 | 641 | 100.0 | no |
+| signedness: scale_unsigned_dispatch | 98.2 / 66.7 | 641 | 100.0 | no |
+| signedness: rotation_unsigned_dispatch | 98.2 / 66.7 | 641 | 100.0 | no |
+| case order: position | 98.3 / 66.9 | 641 | 100.0 | yes |
+| case order: scale | 98.3 / 66.9 | 641 | 100.0 | yes |
+| case order: rotation | 98.3 / 66.9 | 641 | 100.0 | yes |
+| case order: all_sections | 98.3 / 66.9 | 641 | 100.0 | yes |
+
+No required source gain occurs. Unsigned shared type and individual unsigned
+dispatches differ and regress source; signed dispatch from unsigned storage
+and unsigned optional equality equal accepted. All four case orders produce
+the accepted byte-identical whole Mesh object. Actual bytes establish identity;
+score equality is not used instead. All production edits were restored.
+The initial case-span script stopped before any production write; its brace
+parser was corrected, then all four completed compile/check trials ran.
+
+Evidence: `_work/enhtypesign-*.json`, `_work/enhcaseorder-*.json`, source
+snapshots, `_work/enh_type_sign_identities.json` and
+`_work/enh_case_order_identities.json`. Baseline outside-body/signature check
+passes; tracked production diff is empty. No native/full-corpus validation is
+claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, 2079 linked /959 byte
+exact pairs equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
