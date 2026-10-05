@@ -1,0 +1,573 @@
+{
+  "base_sha256": "1384d74b71ee1da0f7da2daad528e398ce992ee3798e14ba1a8f2aae2503cc80",
+  "target_sha256": "4dc170dbe267b14a85d285ed3a650c8ee1e3a07f2e84dd8efed017897cbf4ea4",
+  "functions": {
+    "_ZN7StarMap7drawKeyEv": {
+      "metrics": {
+        "source_match": 97.8,
+        "instruction_inventory_match": 93.8,
+        "opcode_inventory_match": 95.9,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 99.2
+      },
+      "original_only": {
+        "mov g0, g1": 4,
+        "ldr g0, [g0, #0]": 2,
+        "sub g0, g0, g1": 1,
+        "str g0, [sp]": 1,
+        "ldr g0, [frame, #slot]": 3,
+        "strd g0, g1, [frame, #slot]": 2,
+        "add g0, g1": 1,
+        "ldr g0, [g1, #32]": 1,
+        "ldr g0, [g1]": 1
+      },
+      "current_only": {
+        "ldr g0, [g1, #0]": 2,
+        "str g0, [frame, #slot]": 6,
+        "subs g0, g0, g1": 1,
+        "ldr g0, [g0, #32]": 1,
+        "adds g0, g1, g2": 1,
+        "ldrd g0, g1, [frame, #slot]": 2,
+        "ldr g0, [g0]": 1
+      }
+    },
+    "_ZN7StarMap14setJumpMapModeEbb": {
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "original_only": {},
+      "current_only": {}
+    },
+    "_ZN7StarMap10OnTouchEndEii": {
+      "metrics": {
+        "source_match": 97.5,
+        "instruction_inventory_match": 96.4,
+        "opcode_inventory_match": 97.0,
+        "control_flow_match": 98.1,
+        "ordered_control_flow_match": 83.6,
+        "control_inventory_match": 98.1,
+        "call_count_match": 99.3,
+        "size_match": 96.5
+      },
+      "original_only": {
+        "ldr g0, [pc]": 7,
+        "add g0, pc": 7,
+        "ldr g0, [g1, #92]": 6,
+        "beq <t>": 1,
+        "cbnz <t>": 2,
+        "strb g0, [g1, #169]": 1,
+        "strb g0, [g1, #484]": 1,
+        "movs g0, #1": 1,
+        "ldr g0, [g1, #0]": 2,
+        "ldr g0, [g0, #0]": 2,
+        "strb g0, [g1, #288]": 1,
+        "strb g0, [g1, #0]": 1,
+        "ldr g0, [g1, #116]": 1,
+        "ldr g0, [g1, g2, lsl #2]": 2,
+        ".word #x": 16,
+        "cmp g0, #9": 1,
+        "ble <t>": 1
+      },
+      "current_only": {
+        "ldr g0, [g1]": 1,
+        "cbz <t>": 2,
+        "call <t>": 1,
+        "ittt eq": 1,
+        "moveq g0, #0": 1,
+        "strbeq g0, [g1, #288]": 1,
+        "strbeq g0, [g1, #169]": 1,
+        "ldr g0, [g1, #100]": 1,
+        "blt <t>": 1,
+        "cmp g0, g1": 1,
+        "bne <t>": 2,
+        "ldr g0, [g1, #88]": 1,
+        "ldr g0, [g0, g1, lsl #2]": 1,
+        "ldr g0, [g1, #84]": 1,
+        "cmp g0, #10": 1,
+        "cmp g0, #142": 1
+      }
+    },
+    "_ZN7StarMap4initEbP7Missionbi": {
+      "metrics": {
+        "source_match": 98.3,
+        "instruction_inventory_match": 97.9,
+        "opcode_inventory_match": 97.9,
+        "control_flow_match": 98.8,
+        "ordered_control_flow_match": 80.1,
+        "control_inventory_match": 98.8,
+        "call_count_match": 99.0,
+        "size_match": 97.7
+      },
+      "original_only": {
+        "str g0, [frame, #slot]": 1,
+        "addw g0, pc, #1716": 1,
+        "vmov.i32 qv0, #0": 1,
+        "vld1.#esize {dv0-dv1}, [g0]": 1,
+        "orr g0, g1, #4": 1,
+        "vst1.#esize {dv0-dv1}, [g0]": 3,
+        "add g0, g1, #24": 1,
+        "add g0, g1, #40": 1,
+        "cmpne g0, #0": 1,
+        "it ne": 1,
+        "cbnz <t>": 1,
+        "ittt eq": 1,
+        "nop": 2,
+        "movs g0, g0": 5,
+        "subs g0, #128": 3
+      },
+      "current_only": {
+        "mov g0, g1": 1,
+        "call <t>": 1,
+        "cbz <t>": 2,
+        "ldr g0, [g1, g2, lsl #2]": 1,
+        "itttt eq": 1,
+        "moveq g0, #0": 1
+      }
+    },
+    "_ZN7StarMap11OnTouchMoveEii": {
+      "metrics": {
+        "source_match": 98.4,
+        "instruction_inventory_match": 97.7,
+        "opcode_inventory_match": 98.1,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 96.2
+      },
+      "original_only": {
+        "vmrs APSR_nzcv, fpscr": 2,
+        "it gt": 2,
+        "vmovgt.f32 sv0, sv1": 2,
+        "vcmpe.f32 sv0, sv1": 2,
+        "vmov.f32 sv0, sv1": 2,
+        "vmul.f32 sv0, sv0, sv1": 1
+      },
+      "current_only": {
+        "vmul.f32 sv0, sv1, sv2": 1
+      }
+    },
+    "_ZN7StarMap16drawOnScreenInfoEib": {
+      "metrics": {
+        "source_match": 98.9,
+        "instruction_inventory_match": 97.8,
+        "opcode_inventory_match": 98.9,
+        "control_flow_match": 98.7,
+        "ordered_control_flow_match": 90.2,
+        "control_inventory_match": 98.7,
+        "call_count_match": 100.0,
+        "size_match": 99.1
+      },
+      "original_only": {
+        "cmp g0, #0": 3,
+        "ldr g0, [g1, #0]": 2,
+        "str g0, [frame, #slot]": 2,
+        "ite eq": 1,
+        "ldreq g0, [g1, #404]": 1,
+        "ldrne g0, [g1, #408]": 1,
+        "movs g0, #0": 1,
+        "b <t>": 1,
+        "beq <t>": 2,
+        "ldr g0, [frame, #slot]": 4,
+        "bge <t>": 1,
+        "ldr g0, [g1]": 2,
+        "it gt": 1,
+        "movgt g0, #1": 1,
+        "orrs g0, g1, g2": 1,
+        "add g0, g1, #420": 3,
+        "ldrb g0, [g1, #0]": 1,
+        "addeq g0, g1, #292": 1,
+        "add g0, g1, #300": 1,
+        "ldrb g0, [g1]": 2
+      },
+      "current_only": {
+        "ldr g0, [g0, #0]": 1,
+        "mov g0, #404": 1,
+        "it ne": 1,
+        "movne g0, #408": 1,
+        "ldr g0, [g1, g0]": 1,
+        "bgt <t>": 1,
+        "cbz <t>": 2,
+        "movs g0, #1": 1,
+        "orrs g0, g1": 1,
+        "eor g0, g1, g0, lsr #31": 1,
+        "ldr g0, [g1, #420]": 3,
+        "uxtb g0, g0": 2,
+        "ldrb g0, [g1, #420]": 3,
+        "addeq g0, g1, #300": 1,
+        "add g0, g1, #292": 1
+      }
+    },
+    "_ZN7StarMap6updateEi": {
+      "metrics": {
+        "source_match": 98.7,
+        "instruction_inventory_match": 97.0,
+        "opcode_inventory_match": 98.2,
+        "control_flow_match": 98.7,
+        "ordered_control_flow_match": 95.4,
+        "control_inventory_match": 98.7,
+        "call_count_match": 100.0,
+        "size_match": 99.6
+      },
+      "original_only": {
+        "mov g0, g1": 1,
+        "b <t>": 1,
+        "vmov.f32 sv0, sv1": 1,
+        "it ne": 2,
+        "vmovne.f32 sv0, sv1": 2,
+        "ldr g0, [g1, #0]": 1,
+        "vmov sv0, g0": 1,
+        ".word #x": 1,
+        "strd g0, g1, [frame, #slot]": 1,
+        "vmrs APSR_nzcv, fpscr": 1,
+        "vcmpe.f32 sv0, sv1": 3,
+        "asrs g0, g0, #1": 1,
+        "vcvt.s32.f32 sv0, sv0": 1,
+        "rsb g0, g1, #32768": 1,
+        "subs lr, g0, g1": 1,
+        "mov g0, lr": 1,
+        "negmi g0, g1": 1,
+        "subs g0, g1, g0": 1,
+        "vmov.f32 sv0, #80": 1,
+        "bgt <t>": 2,
+        "vcvt.f32.s32 sv0, sv1": 2,
+        "vmov.f32 sv0, #208": 1,
+        "vmov sv0, lr": 1,
+        "it pl": 1,
+        "vldrpl sv0, [pc]": 1
+      },
+      "current_only": {
+        "ldr g0, [g0, #0]": 1,
+        "str g0, [frame, #slot]": 2,
+        "cmp g0, #0": 1,
+        "it eq": 2,
+        "vmoveq.f32 sv0, sv1": 2,
+        "vsub.f32 sv0, sv1, sv2": 1,
+        "vdiv.f32 sv0, sv1, sv2": 1,
+        "vcvt.f32.s32 sv0, sv0": 2,
+        "it gt": 2,
+        "asrs g0, g1, #1": 1,
+        "vcvt.s32.f32 sv0, sv1": 1,
+        "rsb g0, g0, #32768": 1,
+        "subs g0, g1, g2": 1,
+        "subgt g0, g1, g2": 1,
+        "bpl <t>": 1,
+        "negs g0, g0": 1,
+        "movgt g0, g1": 1,
+        "vmovmi.f32 sv0, sv1": 1,
+        "vmov.f32 sv0, #190": 2,
+        "vcmp.f32 sv0, sv1": 2
+      }
+    },
+    "_ZN7StarMap14initStarSystemEv": {
+      "metrics": {
+        "source_match": 97.3,
+        "instruction_inventory_match": 96.7,
+        "opcode_inventory_match": 97.4,
+        "control_flow_match": 96.9,
+        "ordered_control_flow_match": 94.8,
+        "control_inventory_match": 96.9,
+        "call_count_match": 99.0,
+        "size_match": 96.3
+      },
+      "original_only": {
+        "mov g0, g1": 2,
+        "str g0, [frame, #slot]": 5,
+        "ldr g0, [g1, #4]": 1,
+        "movs g0, #0": 2,
+        "b <t>": 1,
+        "add g0, g1, #40": 1,
+        "add g0, g1, #24": 1,
+        "orr g0, g1, #4": 1,
+        "addw g0, pc, #1660": 1,
+        "vmov.i32 qv0, #0": 1,
+        "vld1.#esize {dv0-dv1}, [g0]": 1,
+        "bcs <t>": 1,
+        "ldr g0, [frame, #slot]": 3,
+        "vst1.#esize {dv0-dv1}, [g0]": 3,
+        "cbnz <t>": 1,
+        "beq <t>": 1,
+        "movs g0, g0": 5,
+        "subs g0, #128": 3,
+        "bvc <t>": 1,
+        "subs g0, #35": 1
+      },
+      "current_only": {
+        "add g0, frame, #slot": 1,
+        "ldr g0, [g0, #4]": 1,
+        "call <t>": 1,
+        "bne <t>": 1,
+        "mov g0, #0": 2,
+        "cbz <t>": 1,
+        "str g0, [sp]": 1,
+        "bcc <t>": 1,
+        ".word #x": 1
+      }
+    },
+    "_ZN7StarMap6departEb": {
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 89.1,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "original_only": {},
+      "current_only": {}
+    },
+    "_ZN7StarMap4drawEv": {
+      "metrics": {
+        "source_match": 99.0,
+        "instruction_inventory_match": 98.6,
+        "opcode_inventory_match": 98.9,
+        "control_flow_match": 98.6,
+        "ordered_control_flow_match": 97.5,
+        "control_inventory_match": 98.6,
+        "call_count_match": 100.0,
+        "size_match": 99.0
+      },
+      "original_only": {
+        "mov g0, g1": 3,
+        "movs g0, #0": 2,
+        "ldr g0, [g1, #0]": 1,
+        "itt eq": 1,
+        "ldrbeq g0, [g1, #313]": 1,
+        "cmpeq g0, #0": 1,
+        "beq <t>": 1,
+        "mov g0, #0": 1,
+        "it mi": 1,
+        "movmi g0, #1": 1,
+        "cbnz <t>": 1,
+        "it lt": 1,
+        "movlt g0, g1": 1,
+        "uxtb g0, g1": 1
+      },
+      "current_only": {
+        "bne <t>": 1,
+        "ldrb g0, [g1, #313]": 1,
+        "cbz <t>": 1,
+        "uxtb g0, g0": 1,
+        "ldr g0, [frame, #slot]": 1,
+        "bmi <t>": 1,
+        "it gt": 1,
+        "movgt g0, g1": 1
+      }
+    },
+    "_ZN7StarMapD1Ev": {
+      "metrics": {
+        "source_match": 99.4,
+        "instruction_inventory_match": 99.3,
+        "opcode_inventory_match": 99.3,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 98.6
+      },
+      "original_only": {},
+      "current_only": {
+        "movs g0, #0": 1
+      }
+    },
+    "_ZN7StarMapD2Ev": {
+      "metrics": {
+        "source_match": 99.4,
+        "instruction_inventory_match": 99.3,
+        "opcode_inventory_match": 99.3,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 98.6
+      },
+      "original_only": {},
+      "current_only": {
+        "movs g0, #0": 1
+      }
+    },
+    "_ZN7StarMapC1EbP7Missionbi": {
+      "metrics": {
+        "source_match": 99.3,
+        "instruction_inventory_match": 98.2,
+        "opcode_inventory_match": 98.2,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "original_only": {
+        "ldr g0, [g1, #104]": 1,
+        "ldr g0, [g1, #404]": 1,
+        "ldmia g0!, {g1, g2, g3, g4, g5}": 1,
+        "subs g0, #204": 1,
+        "strb g0, [g1, #18]": 1,
+        "subs g0, #147": 1
+      },
+      "current_only": {
+        "mov g0, g1": 4,
+        ".word #x": 2
+      }
+    },
+    "_ZN7StarMapC2EbP7Missionbi": {
+      "metrics": {
+        "source_match": 99.3,
+        "instruction_inventory_match": 98.2,
+        "opcode_inventory_match": 98.2,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "original_only": {
+        "ldr g0, [g1, #104]": 1,
+        "ldr g0, [g1, #404]": 1,
+        "ldmia g0!, {g1, g2, g3, g4, g5}": 1,
+        "subs g0, #204": 1,
+        "strb g0, [g1, #18]": 1,
+        "subs g0, #147": 1
+      },
+      "current_only": {
+        "mov g0, g1": 4,
+        ".word #x": 2
+      }
+    },
+    "_ZN7StarMap12OnTouchBeginEii": {
+      "metrics": {
+        "source_match": 99.3,
+        "instruction_inventory_match": 99.3,
+        "opcode_inventory_match": 99.3,
+        "control_flow_match": 98.5,
+        "ordered_control_flow_match": 98.5,
+        "control_inventory_match": 98.5,
+        "call_count_match": 100.0,
+        "size_match": 99.3
+      },
+      "original_only": {
+        "mov g0, g1": 2,
+        "bls <t>": 1
+      },
+      "current_only": {
+        "bcs <t>": 1
+      }
+    },
+    "_ZN7StarMap6renderEv": {
+      "metrics": {
+        "source_match": 99.6,
+        "instruction_inventory_match": 97.9,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "original_only": {
+        "movs g0, #2": 1
+      },
+      "current_only": {
+        "movs g0, #0": 1
+      }
+    },
+    "_ZN7StarMap10initLightsEv": {
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "original_only": {},
+      "current_only": {}
+    },
+    "_ZN7StarMap14isInPlanetModeEv": {
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "original_only": {},
+      "current_only": {}
+    },
+    "_ZN7StarMap14missionChangedEv": {
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "original_only": {},
+      "current_only": {}
+    },
+    "_ZN7StarMap24askForJumpIntoAlienWorldEv": {
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "original_only": {},
+      "current_only": {}
+    },
+    "_ZN7StarMap8renderBGEv": {
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "original_only": {},
+      "current_only": {}
+    },
+    "_ZN7StarMap8setStartEii": {
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "original_only": {},
+      "current_only": {}
+    }
+  },
+  "scope": "Read-only remaining inventory at accepted production checkpoint 2ac358b9 (before route-alpha trial). This is diagnostic evidence, not a replacement gate or filtered corpus.",
+  "accepted_report": "_work/final-focused.json"
+}

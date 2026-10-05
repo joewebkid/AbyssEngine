@@ -1,0 +1,40 @@
+{
+  "raw_original_direct_calls": 136,
+  "raw_current_direct_calls": 134,
+  "normalized_original_direct_calls": 133,
+  "normalized_current_direct_calls": 134,
+  "original_indirect_calls": 19,
+  "current_indirect_calls": 19,
+  "calls_removed_by_literal_normalization": [
+    {
+      "original_call": "0xcb6e0",
+      "target_object_call": "0x510c",
+      "normalized_data_range_original": [
+        "0xcb6e0",
+        "0xcb6e4"
+      ]
+    },
+    {
+      "original_call": "0xcb6e8",
+      "target_object_call": "0x5114",
+      "normalized_data_range_original": [
+        "0xcb6e8",
+        "0xcb6ec"
+      ]
+    },
+    {
+      "original_call": "0xcb712",
+      "target_object_call": "0x513e",
+      "normalized_data_range_original": [
+        "0xcb710",
+        "0xcb718"
+      ]
+    }
+  ],
+  "primary_build": "Android ARMv7 GOF2 HD 2.0.16",
+  "accepted_source_checkpoint": "364ddd7d",
+  "current_source_checkpoint": "5bf36633",
+  "verifier_changed": false,
+  "fixed_body_count": 20,
+  "original_instruction_weight": 7101
+}
