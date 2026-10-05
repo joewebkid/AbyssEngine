@@ -151,9 +151,14 @@ public:
     uint8_t alarmRequested;
     uint8_t field_18a;
     uint8_t pad_18b;
-    int field_18c;
-    int field_190;
-    int field_194;
+    union {
+        struct {
+            int field_18c;
+            int field_190;
+            int field_194;
+        };
+        Vector missionSpawnPosition; // Android campaign stores a position at +0x18c.
+    };
     int field_198;
     int field_19c;
     int field_1a0;
@@ -235,7 +240,7 @@ public:
 
     Gun *createGun(int idx, int owner, int kind, int hp, int dmg, int rate, int cool, int color);
 
-    int createStaticObject(Waypoint *wp, int type, bool jitter);
+    intptr_t createStaticObject(Waypoint *wp, int type, bool jitter);
 
     PlayerFixedObject *createShip(int race, int shipClass, int type, Waypoint *wp, bool hostile, bool group);
 
@@ -243,7 +248,7 @@ public:
 
     void setPlayerRoute(Route *route);
 
-    void createRadioMessages(int set);
+    Array<RadioMessage *> *createRadioMessages(int set);
 
     void *getBoundingVolume(int param, AEGeometry *kind);
 
@@ -396,6 +401,7 @@ static_assert(__builtin_offsetof(Level, manualSecondaryActive) == 0x69,
 static_assert(__builtin_offsetof(Level, field_188) == 0x188, "Level::field_188 offset");
 static_assert(__builtin_offsetof(Level, alarmRequested) == 0x189, "Level::alarmRequested offset");
 static_assert(__builtin_offsetof(Level, field_18a) == 0x18a, "Level::field_18a offset");
+static_assert(__builtin_offsetof(Level, missionSpawnPosition) == 0x18c, "Level::missionSpawnPosition offset");
 static_assert(__builtin_offsetof(Level, skyMatrix) == 0x1d0, "Level::skyMatrix offset");
 static_assert(__builtin_offsetof(Level, cloudMatrix) == 0x20c, "Level::cloudMatrix offset");
 static_assert(__builtin_offsetof(Level, reversalMatrix) == 0x248, "Level::reversalMatrix offset");

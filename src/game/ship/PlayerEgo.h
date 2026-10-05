@@ -94,7 +94,10 @@ public:
     uint8_t switchToStandardCam;
     uint8_t field_0xb2;
     int engineSoundId;
-    int speed;
+    union {
+        int speed; // Legacy bit view used by unreconstructed methods.
+        float speedValue;
+    };
     float thrust;
     uint8_t freeLookMode;
     int boostSpeed;
@@ -108,7 +111,7 @@ public:
     float waypointX;
     float waypointY;
     void *gunBaseGeo;
-    int route;
+    Route *route;
     int pitchAccumDir;
     int yawAccumDir;
     int currentSecondaryWeaponIndex;
@@ -356,11 +359,11 @@ public:
 
     int getRocketBanking();
 
-    int getRoute();
+    Route *getRoute();
 
     int getShieldDamageRate();
 
-    int getSpeed();
+    float getSpeed();
 
     int getTargetFollowCamera();
 

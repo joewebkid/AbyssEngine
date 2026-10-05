@@ -145,6 +145,49 @@ def _normalize_literal_pools(entries):
     function_start = entries[0]["address"]
     function_end = entries[-1]["address"] + entries[-1]["width"]
     referenced_words = set()
+    # Clang also materializes a local NEON constant address with ADR/ADD pc,
+    # then reads it with VLD1. Recognize only a straight-line, unmodified
+    # address register followed by an exact-width vector load.
+    for index, entry in enumerate(entries):
+        base = entry["mnemonic"].split(".", 1)[0].lower()
+        if base not in ("add", "addw", "adr", "adrw"):
+            continue
+        match = re.fullmatch(r"(r\d+|ip|sl|fp),\s*pc,\s*#(\d+)", entry["operands"], re.I)
+        if not match:
+            continue
+        register, displacement = match.groups()
+        target = ((entry["address"] + 4) & ~3) + int(displacement)
+        for consumer in entries[index + 1:index + 9]:
+            if (_BRANCH.match(consumer["mnemonic"])
+                    or consumer["mnemonic"].lower().split('.', 1)[0]
+                    in ("it", "itt", "ite", "ittt", "itte", "itet", "itee", "pop", "ldm", "ldmia", "tbb", "tbh")):
+                break
+            load = re.fullmatch(
+                rf"\{{d(\d+)-d(\d+)\}},\s*\[{register}(?::\d+)?\]",
+                consumer["operands"], re.I)
+            if consumer["mnemonic"].lower().startswith("vld1.") and load:
+                first, last = map(int, load.groups())
+                width = (last - first + 1) * 8
+                if (0 <= first <= last <= 31 and width in (8, 16, 24, 32)
+                        and target >= function_start and target + width <= function_end
+                        and target % 4 == 0):
+                    incoming = False
+                    for branch in entries:
+                        if target <= branch["address"] < target + width:
+                            continue  # the stripped pool may decode as fake branches
+                        if _BRANCH.match(branch["mnemonic"]):
+                            destination = re.match(r"^([0-9a-f]+)(?:\s|$)", branch["operands"], re.I)
+                            if destination and target <= int(destination.group(1), 16) < target + width:
+                                incoming = True
+                                break
+                    if not incoming:
+                        referenced_words.update(range(target, target + width, 4))
+                break
+            # Stores don't redefine their first operand. All other writes to
+            # this GPR terminate the proof; unknown control flow does too.
+            if (not consumer["mnemonic"].lower().startswith(("str", "vst"))
+                    and re.match(rf"{register}(?:\s*,|$)", consumer["operands"], re.I)):
+                break
     for entry in entries:
         base = entry["mnemonic"].split(".", 1)[0].lower()
         if base not in ("ldr", "ldrd", "vldr"):
@@ -259,6 +302,8 @@ def normalize(mnem, ops):
     if base in ("movw", "movt"):
         ops = re.sub(r"#\S+", "#i", ops)
     ops = _PCREL.sub("[pc]", ops)
+    if base in ("add", "addw", "adr", "adrw") and re.search(r",\s*pc,\s*#", ops):
+        ops = re.sub(r"#\d+$", "#pool", ops)
     ops = _HEXNUM.sub("#x", ops)
     return f"{mnem} {ops}".strip()
 
@@ -310,8 +355,14 @@ def disassemble(obj, objdump=DEFAULT_OBJDUMP):
     lines = out.splitlines()
     sizes = _symbol_sizes(lines)
     funcs, cur, start, limit = {}, None, 0, None
-    addr2label = {}   # text address -> the one name objdump put on the `<name>:` header
+    addr2label = {}   # (section, address) -> objdump's function label
+    section = None
     for line in lines:
+        section_header = re.match(r"^Disassembly of section (\S+):$", line)
+        if section_header:
+            section = section_header.group(1)
+            cur = None
+            continue
         m = re.match(r"^([0-9a-f]+) <(.+)>:$", line)
         if m:
             start = int(m.group(1), 16)
@@ -319,7 +370,7 @@ def disassemble(obj, objdump=DEFAULT_OBJDUMP):
             limit = start + sz if sz else None
             cur = {"insns": [], "widths": [], "entries": [], "bytes": "", "reloc": set()}
             funcs[m.group(2)] = cur
-            addr2label[start] = m.group(2)
+            addr2label[(section, start)] = m.group(2)
             continue
         if cur is None:
             continue
@@ -377,11 +428,11 @@ def disassemble(obj, objdump=DEFAULT_OBJDUMP):
     # function names at each text address and point every sibling at the labelled entry, so a match
     # under one variant name credits all of them.
     for line in lines:
-        m = re.match(r"^([0-9a-f]+)\s.{6,}\bF\s+\.text\s+[0-9a-f]+\s+(\S+)\s*$", line)
+        m = re.match(r"^([0-9a-f]+)\s.{6,}\bF\s+(\.text(?:\.\S+)?)\s+[0-9a-f]+\s+(\S+)\s*$", line)
         if not m:
             continue
-        addr, name = int(m.group(1), 16), m.group(2)
-        label = addr2label.get(addr)
+        addr, section, name = int(m.group(1), 16), m.group(2), m.group(3)
+        label = addr2label.get((section, addr))
         if label and name not in funcs and label in funcs:
             funcs[name] = funcs[label]
     return funcs

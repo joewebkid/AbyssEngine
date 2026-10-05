@@ -650,10 +650,6 @@ void PlayerFixedObject::render() {
 }
 
 
-static const int g_pfo_stationIdx[4] = {0, 0, 0, 0};
-
-static const int g_pfo_lootParams[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-
 PlayerFixedObject::PlayerFixedObject(int kind, int param2, Player *player, AEGeometry *geom,
                                      float x, float y, float z)
     : KIPlayer(kind, -1, player, geom, x, y, z, false) {
@@ -700,14 +696,14 @@ PlayerFixedObject::PlayerFixedObject(int kind, int param2, Player *player, AEGeo
         self->name = tmp;
     }
 
-    void *mission = Status::gStatus->getMission();
+    void *mission = Globals::status->getMission();
     int campaign = ((Mission *) (mission))->isCampaignMission();
     bool special = false;
     if (campaign != 0) {
-        int cm = Status::gStatus->getCurrentCampaignMission();
+        int cm = Globals::status->getCurrentCampaignMission();
         if (cm == 0x28) special = true;
         else {
-            cm = Status::gStatus->getCurrentCampaignMission();
+            cm = Globals::status->getCurrentCampaignMission();
             if (cm == 0x29) special = true;
         }
     }
@@ -721,11 +717,14 @@ PlayerFixedObject::PlayerFixedObject(int kind, int param2, Player *player, AEGeo
         Generator *gen = new Generator();
         if (kind == 0x37a3) {
             self->field_0x41 = 1;
-            void *station = Status::gStatus->getStation();
+            void *station = Globals::status->getStation();
             int sidx = ((Station *) station)->getIndex();
+            // Android rodata 0x1fb7e8 and 0x1fdcd4.
+            static const int pirateStations[] = {1, 33, 47, 86};
+            static const int pirateLoot[] = {45, 5, 28, 1, 4, 1, 17, 1};
             for (uint32_t i = 0; i < 4; i++) {
-                if (g_pfo_stationIdx[i] == sidx) {
-                    self->lootList = gen->getLootList(g_pfo_lootParams[i * 2 + 1], 0);
+                if (pirateStations[i] == sidx) {
+                    self->lootList = gen->getLootList(pirateLoot[i * 2], pirateLoot[i * 2 + 1]);
                 }
             }
         } else {
@@ -736,14 +735,14 @@ PlayerFixedObject::PlayerFixedObject(int kind, int param2, Player *player, AEGeo
                 if (kind != 0x498e && kind != second) {
                     for (int idx = 1; (uint32_t)(idx - 1) < self->lootList->size(); idx += 2) {
                         if (kind == 0xe) {
-                            int r = AERandom::gRandom->nextInt();
+                            int r = static_cast<AERandom *>(Globals::rnd)->nextInt(8);
                             int &cell = (*self->lootList)[idx];
                             cell = cell * (r + 5);
                         } else {
-                            int r = AERandom::gRandom->nextInt();
+                            int r = static_cast<AERandom *>(Globals::rnd)->nextInt(4);
                             int &base = (*self->lootList)[idx];
                             base = base * (r + 2);
-                            int r2 = AERandom::gRandom->nextInt();
+                            int r2 = static_cast<AERandom *>(Globals::rnd)->nextInt(5);
                             int &cell = (*self->lootList)[idx];
                             if (cell < r2 + 8) cell = r2 + 8;
                         }
@@ -777,9 +776,7 @@ void PlayerFixedObject::setPosition(float x, float y, float z) {
     void *m = (void *) &((AEGeometry *) (this->geometry))->getMatrix();
     *(Matrix *) ((Player *) this->player)->transform = *(const Matrix *) (m);
 
-    char buf[12];
-    ((AEGeometry *) ((Vector *) buf))->getPosition();
-    this->position = *(const Vector *) ((Vector *) buf);
+    this->position = this->geometry->getPosition();
 
     Array<BoundingVolume *> *bv = this->boundingVolumes;
     if (bv != 0) {

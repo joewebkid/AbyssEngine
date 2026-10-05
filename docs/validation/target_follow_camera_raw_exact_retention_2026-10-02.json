@@ -1,0 +1,16 @@
+{
+  "linked_equal": {
+    "baseline_pairs": 2079,
+    "final_pairs": 2105,
+    "lost_pairs": []
+  },
+  "bytes_equal": {
+    "baseline_pairs": 959,
+    "final_pairs": 968,
+    "lost_pairs": []
+  },
+  "input_sha256": {
+    "full_baseline": "ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0",
+    "full_final": "a7f73cc0978c313d51289cc086c47adc205010f6a43cb5749af1bb7e4f66f761"
+  }
+}

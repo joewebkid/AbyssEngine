@@ -10,6 +10,7 @@ class AEGeometry;
 
 class PlayerJunk : public KIPlayer {
 public:
+    int elapsedTime; // Android update stores elapsed at +0x124; allocation is 0x128.
     PlayerJunk(int type, Player *player, AEGeometry *geometry, float x, float y, float z);
 
     ~PlayerJunk();
@@ -24,4 +25,7 @@ public:
 
     int outerCollide(float x, float y, float z) override;
 };
+#if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(PlayerJunk) == 0x128, "PlayerJunk ARM size");
+#endif
 #endif

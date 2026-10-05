@@ -2666,8 +2666,7 @@ void Hud::initHudMenu(int menuType, Level *lvl) {
                 }
 
                 if (lvl->getPlayer()->getRoute()) {
-                    Route *route = reinterpret_cast<Route *>(
-                            static_cast<intptr_t>(lvl->getPlayer()->getRoute()));
+                    Route *route = lvl->getPlayer()->getRoute();
                     if ((route->getLastWaypoint()->state & 0xff) == 0) {
                         hud_add_menu_text_button(this, menuSlot, 573, y, 0x2000000);
                         y += hud_layout_i32(0x30) + buttonHeight;

@@ -67,7 +67,7 @@ public:
     AbyssEngine::Matrix localMatrix;
 
     TargetFollowCamera(unsigned id, AEGeometry *target,
-                       AbyssEngine::Vector camOffset, AbyssEngine::Vector targetOffset);
+                       AbyssEngine::Vector targetOffset, AbyssEngine::Vector camOffset);
 
     ~TargetFollowCamera();
 
@@ -146,11 +146,11 @@ public:
 
     void translateNoUpdate(float dx, float dy, float dz);
 
-    bool isInLookAtMode();
+    uint8_t isInLookAtMode();
 
-    bool isInFastForwardMode();
+    uint8_t isInFastForwardMode();
 
-    bool hideShipForFirstPersonCam();
+    uint8_t hideShipForFirstPersonCam();
 
     void update(int dt);
 };

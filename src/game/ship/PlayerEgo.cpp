@@ -795,9 +795,8 @@ bool PlayerEgo::isInRocketControl() {
     return this->rocketControlGun != 0;
 }
 
-int PlayerEgo::getSpeed() {
-    PlayerEgo *self = this;
-    return this->speed;
+float PlayerEgo::getSpeed() {
+    return this->speedValue;
 }
 
 float PlayerEgo::getVolatileForce() {
@@ -844,7 +843,7 @@ void PlayerEgo::removeRoute() {
 
 void PlayerEgo::setRoute(Route *v) {
     PlayerEgo *self = this;
-    this->route = (int) (intptr_t) v;
+    this->route = v;
 }
 
 unsigned char PlayerEgo::boosting() {
@@ -930,7 +929,7 @@ int PlayerEgo::getHUD() {
     return this->hud;
 }
 
-int PlayerEgo::getRoute() {
+Route *PlayerEgo::getRoute() {
     PlayerEgo *self = this;
     return this->route;
 }

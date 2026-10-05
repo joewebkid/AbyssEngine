@@ -13,6 +13,9 @@ class Route {
 public:
     int32_t currentIndex;
     uint8_t loop;
+    // Android constructors leave +0x08 untouched; all three array pointers
+    // are at +0x0c/+0x10/+0x14, and callers allocate 0x18 bytes.
+    int32_t field_08;
     Array<Waypoint *> *waypoints;
     Array<KIPlayer *> *dockingTargets;
     Array<int> *dockingTimes;
@@ -61,5 +64,12 @@ public:
 
     bool waypointDefined();
 };
+
+#if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(Route) == 0x18, "Route ARM allocation size");
+static_assert(__builtin_offsetof(Route, waypoints) == 0x0c, "Route::waypoints offset");
+static_assert(__builtin_offsetof(Route, dockingTargets) == 0x10, "Route::dockingTargets offset");
+static_assert(__builtin_offsetof(Route, dockingTimes) == 0x14, "Route::dockingTimes offset");
+#endif
 
 #endif

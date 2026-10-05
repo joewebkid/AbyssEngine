@@ -275,6 +275,15 @@ unit; parallel operations for the same `.o` can race while rewriting `verify/tar
 
 ## Selective fionera transfer snapshot (2026-09-20)
 
+Latest TargetFollowCamera override (2026-10-02): the fixed 40 unique bodies
+meet **99.965% unweighted / 99.269% instruction-weighted** source-shape;
+42 symbols including aliases meet 99.967% / 99.340%. Focused exact counts
+are 32 linked / 23 byte. Both bases were remeasured with tested NEON literal
+and COMDAT alias corrections; the original 27/19 and every full-corpus exact
+pair are preserved. Full ARM wrong-type, 204 TUs, native build and focused host
+smoke pass. This does not claim an ARM32 runtime. See
+[the complete gate report](TARGETFOLLOWCAMERA_ARM_SOURCE_SHAPE_2026-10-02.md).
+
 After rebuilding current ARM objects with NDK r18b, focused reports measured:
 
 - `PlayerTurret`: 21 symbols, 95.5% source-shape, 12 linked-exact, four byte-exact.
