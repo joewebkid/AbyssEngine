@@ -1085,7 +1085,7 @@ planetMarkerDone:
                                                  this->screenY, 0x11u, 0x44u);
 
                     target->field_0x73 = 0;
-                    Vector crosshair = PlayerEgo::crosshairPos;
+                    const Vector &crosshair = PlayerEgo::crosshairPos;
                     Vector screen = {static_cast<float>(this->screenX), static_cast<float>(this->screenY),
                                      0.0f};
                     if (AbyssEngine::AEMath::VectorLength(crosshair - screen) < 60000.0f) {
@@ -1585,25 +1585,20 @@ gasMarkerDone:
         int lockThreshold = self->field_0x1b8 - 200;
         self->asteroidLockTimer += elapsed;
         if (self->asteroidLockTimer > lockThreshold) {
-            PlayerEgo *eventPlayer;
-            int eventId;
             if (candidateDeadCargo) {
                 if (self->field_0x1ad != 0) {
                     self->field_0x1c = *candidateSlot;
                     goto asteroidLockResolved;
                 } else {
-                    eventPlayer = radar_level_player(self);
-                    eventId = 9;
+                    hud->hudEvent(9, radar_level_player(self), 0);
                 }
             } else if (self->field_0x1ac == 0) {
-                eventPlayer = radar_level_player(self);
-                eventId = 20;
+                hud->hudEvent(20, radar_level_player(self), 0);
             } else {
                 radar_play_lock_cue(self);
                 self->lockedAsteroid = *candidateSlot;
                 goto asteroidLockResolved;
             }
-            hud->hudEvent(eventId, eventPlayer, 0);
         }
 
     asteroidLockResolved:
@@ -1678,6 +1673,7 @@ asteroidMarkerDone:
             Globals::sound->play(0x93, nullptr, nullptr, 0.0f);
             goto resetThreatCounter;
         }
+        int ambientTrack;
         if (Globals::status->inSupernovaSystem()) {
             if (Globals::status->getMission() == nullptr || Globals::status->getMission()->isEmpty() ||
                 Globals::status->getMission()->getTargetStation() !=
@@ -1685,13 +1681,15 @@ asteroidMarkerDone:
                 Globals::sound->play(0x94, nullptr, nullptr, 0.0f);
                 goto resetThreatCounter;
             }
-            int track = Globals::status->getCurrentCampaignMission() < 106 ? 2241 : 2242;
-            Globals::sound->play(track, nullptr, nullptr, 0.0f);
-        } else if (Globals::status->inDeepScienceOrbit()) {
-            Globals::sound->play(0x98, nullptr, nullptr, 0.0f);
+            ambientTrack = Globals::status->getCurrentCampaignMission() < 106 ? 2241 : 2242;
         } else {
-            Globals::sound->play(radar_race_space_ambient_track(race), nullptr, nullptr, 0.0f);
+            if (Globals::status->inDeepScienceOrbit()) {
+                Globals::sound->play(0x98, nullptr, nullptr, 0.0f);
+                goto resetThreatCounter;
+            }
+            ambientTrack = radar_race_space_ambient_track(race);
         }
+        Globals::sound->play(ambientTrack, nullptr, nullptr, 0.0f);
     } else {
         this->field_0x54 = 1;
         if (radar_is_combat_ambient_keep_event(currentEvent, alwaysEnemyThreat)) {
@@ -1815,16 +1813,13 @@ void Radar::drawCurrentLock(Hud *) {
                     Globals::Canvas->DrawString(radar_font(), line, textX,
                                                 this->lockPanelY + layout_i32(Globals::layout, 0xc4), false);
                 } else {
-                    bool normalLabel =
-                        target->name.size() == 0 ||
+                    int textX;
+                    if (target->name.size() == 0 ||
                         (target->name.Compare(*static_cast<GameText *>(Globals::gameText)->getText(1611)) !=
                              0 &&
                          target->name.Compare(*static_cast<GameText *>(Globals::gameText)->getText(1663)) !=
                              0 &&
-                         raw_u8(target, 0x42) == 0);
-
-                    int textX;
-                    if (normalLabel) {
+                         raw_u8(target, 0x42) == 0)) {
                         const String *lineSource;
                         if (target != stationLock && target->name.size() == 0) {
                             lineSource =
@@ -1885,14 +1880,8 @@ void Radar::drawCurrentLock(Hud *) {
                         Globals::Canvas->SetColor(0xffffffffu);
                     }
 
-                    bool suppressRaceIcon = target == stationLock;
-                    int raceFrame;
-                    if (target != stationLock) {
-                        raceFrame = target->shipGroup;
-                        suppressRaceIcon = raceFrame == 10;
-                    }
-                    if (!suppressRaceIcon) {
-                        this->raceSprite->setFrame(raceFrame);
+                    if (target != stationLock && target->shipGroup != 10) {
+                        this->raceSprite->setFrame(target->shipGroup);
                         Sprite *raceSprite = this->raceSprite;
                         int margin = layout_i32(Globals::layout, 0x2c);
                         int frameWidth = raceSprite->getFrameWidth();
@@ -1910,12 +1899,12 @@ void Radar::drawCurrentLock(Hud *) {
 }
 
 String Radar::calcDistance(float x, float y, float z, float originX, float originY, float originZ) {
-    float diffX = x * 0.5f - originX * 0.5f;
-    float diffY = y * 0.5f - originY * 0.5f;
-    float diffZ = z * 0.5f - originZ * 0.5f;
-    long long total = static_cast<long long>(diffY) * static_cast<long long>(diffY) +
-                      static_cast<long long>(diffX) * static_cast<long long>(diffX) +
-                      static_cast<long long>(diffZ) * static_cast<long long>(diffZ);
+    long long total = static_cast<long long>(y * 0.5f - originY * 0.5f) *
+                          static_cast<long long>(y * 0.5f - originY * 0.5f) +
+                      static_cast<long long>(x * 0.5f - originX * 0.5f) *
+                          static_cast<long long>(x * 0.5f - originX * 0.5f) +
+                      static_cast<long long>(z * 0.5f - originZ * 0.5f) *
+                          static_cast<long long>(z * 0.5f - originZ * 0.5f);
     int distance = static_cast<int>(
         static_cast<Globals *>(Globals::globals)->sqrt(static_cast<float>(total) * 0.000244140625f));
     int meters = 8 * distance;
