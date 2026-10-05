@@ -2081,6 +2081,42 @@ failure; native runtime remains untested. Full evidence: fortyninth-corpus.json/
 fortyninth-gate.json, fortyninth-previous-gate.json and fortyninth-target-gate.log.
 Full JSON SHA-256: b7bfd34e1730f566cc064c66b3978520bffcea2773c8c07ce20aaeb6b5145805.
 
+## Investigation after checkpoint e43de497
+
+The accepted OnTouchMove bound-selection form was evaluated separately in update,
+where primary ca60a..ca678 has its own intermediate pitch-bound selection and
+four compiled comparisons. The first trial used two snapshot predicates and
+three bound/result selections, keeping the existing yaw assignment before the
+pitch clamp. The second put yaw in a local after the lower-pitch result and wrote
+yaw/pitch together afterward, corresponding to the primary ca688/ca690 member
+writes and the decompiled intermediate yaw value. Both retain the negative-bound
+NaN result, signed-zero behavior, existing calls and member destinations.
+Neither inserts repeated source checks to force four compiled comparisons.
+
+Unlike OnTouchMove, neither trial improves update: source stays 98.7%, strict
+82.7% -> 81.6%, current instructions 966 -> 969 (original 971), instruction
+inventory 97.0% -> 96.9%, opcode stays 98.2%, size 99.6% -> 99.9%. Control,
+ordered control and calls stay 98.7%, 95.4% and 100%. The other 21 focused rows
+are unchanged. The two trial reports and whole objects are identical to each
+other, with SHA-256
+9500ff5f2b38aab0e5074eb99f6577aacc9fb8266650fe445ac072f854e2bc4c.
+The source hypotheses were removed rather than retaining extra variables with
+no source-shape gain and weaker strict/inventory evidence.
+
+Both trials and the fresh restoration compile all 204 ARM TUs with zero failures
+and compare 22 rows with zero skips. Restored focused JSON equals the entire
+accepted forty-ninth report, and restored object SHA-256 equals
+91b513f97dbc427e3a32a977dd2417dfa7d22c8edc85585f7b1401032476f86d.
+Production and canonical reports remain checkpoint e43de497. Means remain
+99.200% / 98.51515279538093% source and 87.210% / 81.5747641177299% strict;
+weighted 99% is unmet. Accepted forty-ninth native/full validations remain
+authoritative; no new native/full/runtime run is claimed for these rejected trials.
+
+Evidence: _work/before-update-bound-fiftieth.cpp, update-bound-fiftieth.cpp,
+update-bound-fiftieth.json/log/asm, update-bound-yaw-fiftieth.json/log and
+fiftieth-restored-focused.json/log. Compact committed snapshot:
+docs/validation/starmap_2026-10-05_update_pitch_trials.json.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
