@@ -3000,3 +3000,69 @@ accepted axisbyte-full/native evidence remains authoritative. Fixed means
 remain **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked /
 959 byte with no losses. Both >=99.0 requirements remain unmet; goal stays
 active. No push, PR or merge.
+
+
+## Continuation: position buffer lifetimes and typed arrays
+
+Eighteen focused reader variants start from clean e32d34a4. Six position-buffer
+forms use typed short/int input arrays separately or together, one raw pointer
+shared across the mutually exclusive position branches, direct position stores,
+or shared raw plus direct stores. Twelve further forms use typed compressed
+UV/normal/color arrays separately/together, typed output position/UV/normal/
+color/tangent/index arrays separately/together, or all typed inputs/outputs.
+New primitive arrays have no value initializer: no zero fill or element
+constructor/destructor is introduced. Existing explicit operator delete[]
+cleanup calls remain in source at success and failure sites.
+
+Bounds/count expressions still use the same owner at each allocation/read.
+Short inputs use 3*vertexCount elements, int positions also 3*vertexCount,
+UV 2*vertexCount shorts, color 4*vertexCount bytes. Float outputs have their
+existing 2/3/4 component counts and indices use indexCount shorts. Counts are
+unsigned-short-derived (maximum 65535) and multiplied sizes fit 32-bit size_t.
+Original raw allocation/free and conversions motivate these representation
+trials, not a claim that original declared any particular C++ array type.
+Math/field read/store order and caller reader sites are unchanged in source.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| position: short_typed | 98.0 / 56.3 | 865 | 100.0 | no |
+| position: int_typed | 98.0 / 56.3 | 865 | 100.0 | no |
+| position: both_typed | 98.0 / 56.6 | 865 | 100.0 | no |
+| position: shared_raw | 98.0 / 55.9 | 867 | 100.0 | yes |
+| position: direct_position_store | 98.0 / 55.9 | 867 | 100.0 | yes |
+| position: shared_raw_direct_store | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: raw_uv | 98.0 / 55.8 | 876 | 100.0 | no |
+| arrays: raw_normal | 98.0 / 55.9 | 866 | 100.0 | no |
+| arrays: raw_color | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: raw_all | 97.6 / 56.6 | 863 | 98.2 | no |
+| arrays: output_position | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: output_uv | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: output_normal | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: output_color | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: output_tangent | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: output_index | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: output_all | 98.0 / 55.9 | 867 | 100.0 | yes |
+| arrays: all_raw_and_outputs | 97.6 / 56.6 | 863 | 98.2 | no |
+
+No variant improves required source score. Typed position inputs improve only
+strict score (up to 56.6 versus accepted 55.9). Shared raw/direct destination
+forms equal accepted; all seven typed-output variants also equal accepted as
+whole Core objects. Typed color input equals accepted. Combining every typed
+input regresses source to 97.6; typed outputs do not change that combined
+object. Actual byte comparisons establish identity, not score equality.
+
+Relocation/call inspection `_work/typed_array_all_calls.json` finds 61 static
+call instructions in accepted versus 60 in all typed inputs, with exactly one
+fewer `_ZdaPv` static call and no additional static symbol call. This is code
+layout/call-site evidence, not proof of missing executed cleanup. No extra
+cleanup or condition is added to force a count. All experiments are rejected
+and all production edits restored.
+
+Evidence: `_work/readposbuffer-*.json`, `_work/readtypedarrays-*.json`, saved
+source snapshots, `_work/read_position_buffer_identities.json`,
+`_work/read_typed_array_identities.json` and call inspection above. Baseline
+outside-body/signature check passes; tracked production diff is empty.
+No native/full-corpus validation is claimed for rejected forms. Accepted
+axisbyte-full/native evidence remains authoritative: **98.23% unweighted /
+98.17% weighted**, 2079 linked /959 byte pairs equal baseline with no losses.
+Both >=99.0 gates remain unmet; goal active. No push, PR or merge.
