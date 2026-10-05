@@ -595,10 +595,9 @@ int StarMap::OnTouchEnd(int x, int y) {
                 depart(true);
                 return 0;
             }
-            Station *station = this->stations->data()[this->selectedStation];
-            Level::programmedStation = station;
+            Level::programmedStation = this->stations->data()[this->selectedStation];
             if (jumpMapMode) {
-                int difference = station->getSystem() - Globals::status->getSystem()->getIndex();
+                int difference = this->stations->data()[this->selectedStation]->getSystem() - Globals::status->getSystem()->getIndex();
                 Level::doInstantJump = difference != 0;
                 if (difference) Level::energyCellsForNextJump = this->jumpCost;
             } else Level::doInstantJump = 0;
