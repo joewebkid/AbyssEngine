@@ -3884,3 +3884,34 @@ Evidence: docs/validation/starmap_2026-10-06_transition_zero_trial.json and
 _work/before-transition-zero-goto-ninetyeighth.cpp,
 transition-zero-goto-ninetyeighth.json/log,ninetyeighth-restored-focused.json/log.
 Goal remains active.
+
+## Ninety-ninth follow-up: refreshed remaining inventory (read-only)
+
+Tracked checkpoint322d99e8 is clean. Recomputed all20 current source metrics
+and allocation-normalized inventory surpluses using unchanged asmdiff and
+current delinked target/accepted96 ARM object. Every metric agrees with the
+canonical focused report. Fixed20/7101, C2/D2 excluded; means99.32/98.7082523588227,
+weighted shortfall0.2917476411773pp. Deficits relative to99 by body: End0.17524pp,
+Station0.16998pp, init0.07393pp, update0.04102pp, Key0.03811pp, Move0.00746pp.
+Bodies above99 offset some of this deficit. These are aggregate token counts,
+not source statements to add and not a compiler ceiling. Prior80 inventory
+was stale for several later changes; refreshed evidence uses accepted96.
+
+Checked End transition-in easing range calls: primarycb772..cb79c and
+current274e..2778 both retain one SetRange address across three indirect
+calls, loading fresh ease receiver and scratch components per axis. No
+function-pointer snapshot repair is warranted. Matrix residuals still
+include native inline initialization versus current C1 calls at46e6/2b3c.
+Read Matrix.h/Matrix.cpp only: default ctor is the sole declared ctor.
+Actual native tail literal c7468 contains [1,0,1,1] at matrix offset40,
+confirming existing m10/m13 fixes rather than a new constant mismatch.
+Shared header/code, raw-storage, shadow-constructor or compiler changes
+remain outside this task; token counts do not authorize them.
+
+No production edit or compiler trial; source/object hashes remain accepted96.
+Accepted96 native/full and restored98 focused validations remain canonical;
+no new runtime proof. Updated ranking prioritizes real End branch/receiver
+discrepancies; do not repeat rejected warning receivers,3217 grouping,
+passenger bounds or transition guard forms merely because tokens remain.
+Evidence: docs/validation/starmap_2026-10-06_remaining_inventory.json; raw
+_work/all-body-inventories-ninetyninth.json. Goal remains active.
