@@ -5871,3 +5871,32 @@ No push, PR or merge.
 
 Evidence: `_work/read_typed_pair_output_identities.json`, nine focused reports
 and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: common failure exits on paired-raw source
+
+Two focused Read trials start from c71ec4e1. They repeat shared return -1
+labels for final enhanced/child failures or all failures on the newly accepted
+paired-array source. Existing explicit/typed cleanup remains before each exit;
+no condition, read, cleanup operation or successful return is added. All-label
+uses an inner scope so jumps leave declarations rather than skip initializers.
+No helper, header, ABI, compilation flag or matcher change. These branch forms
+are source hypotheses, not recovered original control flow.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| tail_label | 98.5 / 57.4 | 874 | 100.0 | yes |
+| all_label | 98.5 / 57.4 | 874 | 100.0 | yes |
+
+Both complete Core objects equal accepted byte-for-byte; none retained. This
+excludes the tested interaction with paired new[]/delete[] without inferring a
+compiler ceiling. Sources/fixtures match ecc30f25; outside-body checks pass.
+Read-only binding rechecks existing typedpair full evidence: 204 objects/202
+unaffected objects, actual linked 2079/byte 959 exact pair sets equal baseline
+without lost/gained pairs, canonical arguments unchanged and directly recomputed
+fixed-three rows. No new native/full-corpus run claimed for rejected forms.
+Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet;
+goal active. No push, PR or merge.
+
+Evidence: `_work/read_typed_pair_common_failure_identities.json`, two focused
+reports/source snapshots, rechecked `_work/typedpair_validation_audit.json`.
