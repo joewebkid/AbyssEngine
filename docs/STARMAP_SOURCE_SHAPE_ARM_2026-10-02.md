@@ -3356,3 +3356,40 @@ native-eightysixth.log, eightysixth-corpus.json/log,
 eightysixth-baseline/previous/target-gate.json/log,
 checkpoint86-before-focused/corpus.json. Compact committed evidence:
 `docs/validation/starmap_2026-10-06_system_target_flag.json`.
+
+
+## Eighty-seventh passenger continuation repeat (removed)
+
+Accepted production/report437b3b7f. Inspected live StarMap.cpp/object and
+primary cb464/cb466 vs current242c/242e: signed CMP9/BLE vs CMP10/BLT,
+mathematically equivalent including negative counts. Repeated a count>9
+continuation to the fresh mission94 test; preserves all callbacks and warning
+fallthrough without extra checks/calls or arithmetic. The initial brief
+mistakenly described this form as new: the full trial21 report at lines880ff
+already records the same high-capacity continuation. This is a repeated
+experiment on accepted86, not a new source-recovery hypothesis.
+
+Trial session34199 terminal exit0: compiled204/failed0,22 comparisons/skip0.
+Entire focused JSON and whole ARM object equal accepted86. Removed the label
+and nesting; wrote accepted backup with fresh source mtime and rebuilt in
+session49844 to terminal exit0,204/0,22/0. Normalized source equals HEAD,
+entire focused JSON and whole object equal accepted86. Object SHA-256:
+`c64021892af31b2758afac98c6c90b82b72b7ced6168b83f630da3cb0494293c`.
+No production difference remains. Accepted86 native/full4619 zero-skip and
+no-exact-loss gates remain authoritative; no redundant native/full run.
+Source99.270/98.61831, strict87.675/82.53267 unchanged. Weighted99 unmet;
+goal active, native executable behavior untested. No compiler ceiling proved.
+
+Additional read-only raw audit: transition completion XYZ c9f68..ca040 /
+358c..3664 already matches repeated GetMaxValue calls, member snapshots,
+subtractions, positive-test negate/select, VCMPE/VMRS and BHI exit sequence.
+Allocation-normalized FP difference alignment points to path-animation and
+pitch-clamp scheduling, not missing completion predicates. That alignment is
+not evidence of missing C++ statements or permission to add redundant checks.
+Read full prior pitch/path trial descriptions before another experiment.
+
+Evidence: _work/before-passenger-positive-fallback-eightyseventh.cpp,
+passenger-positive-fallback-eightyseventh.json/log,
+eightyseventh-restored-focused.json/log, update-fp-audit-eightyseventh.json.
+Compact committed snapshot:
+`docs/validation/starmap_2026-10-06_passenger_repeat.json`.
