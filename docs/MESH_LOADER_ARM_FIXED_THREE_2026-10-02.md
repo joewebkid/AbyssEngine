@@ -3623,3 +3623,53 @@ is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: byte-axis count lifetime and V5 zero interactions
+
+Nine Enhanced trials start from clean a443c3d9. Seven revisit count lifetimes
+on the materially changed accepted byte-axis state, rather than assume the
+older int-axis measurements predict these combinations. Three share the existing
+optional unsigned-short count with vector cases, axis cases or all prefix cases.
+Four instead use one unsigned-short count inside a new per-group scope for
+position, scale, rotation or all three separately. Each count is populated by
+the same two-byte Read before use; the signed-short V5 per-channel count remains
+separate. All file operations, case selection and loop bounds retain their
+order and meaning. Shared physical original stack storage at sp+28 motivates
+this check but does not prove recovered lexical scopes or declarations.
+
+The position-group form keeps required source score 98.3 while changing strict
+and object bytes. Two additional forms combine it with the previously measured
+explicit V5 cases 4/5/default assigning channel zero, with or without an initial
+zero assignment. Valid channel dispatch, rotation arithmetic, key insertion
+and hasAnimation effects are unchanged. This explicitly tests an interaction
+of two source-neutral forms; equal standalone scores do not establish their
+combined output. No helpers, ABI, flags, matcher or denominator changes.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| byte-axis counts: vector_counts | 97.4 / 62.6 | 641 | 100.0 | no |
+| byte-axis counts: axis_counts | 97.7 / 50.1 | 646 | 100.0 | no |
+| byte-axis counts: all_prefix_counts | 97.9 / 65.8 | 635 | 100.0 | no |
+| byte-axis counts: position_group | 98.3 / 53.3 | 640 | 100.0 | no |
+| byte-axis counts: scale_group | 97.8 / 51.5 | 642 | 100.0 | no |
+| byte-axis counts: rotation_group | 98.1 / 66.6 | 649 | 100.0 | no |
+| byte-axis counts: all_scoped_groups | 98.1 / 51.7 | 637 | 100.0 | no |
+| position count + V5 zero: explicit_zero_assignment | 98.3 / 54.0 | 638 | 100.0 | no |
+| position count + V5 zero: zero_labels_no_initializer | 98.3 / 54.0 | 638 | 100.0 | no |
+
+No required source gain occurs. Position-group count alone retains rounded
+source but regresses strict; all other count forms regress source. The two
+V5 combinations retain source 98.3 and improve strict from the isolated
+position-group 53.3 to 54.0, still below accepted 66.9. Their whole objects
+are byte-identical to one another and different from accepted. Seven count
+objects differ from accepted and each other. Actual bytes establish identity,
+not score equality. No trial is retained; production files restored.
+
+Evidence: `_work/enhbyteaxiscounts-*.json`, `_work/enhpositionzero-*.json`,
+source snapshots and both identity ledgers. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
