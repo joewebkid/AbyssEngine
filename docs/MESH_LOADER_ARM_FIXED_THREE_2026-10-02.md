@@ -5980,3 +5980,34 @@ goal active. No push, PR or merge.
 
 Evidence: `_work/read_typed_pair_normal_view_identities.json`, twelve focused
 reports/source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: normal decoded/length aggregate values
+
+Two focused Read trials start from 9a8caeca. One groups squared length/length
+into a local two-float record; the other groups decoded X/Y/Z, squared length
+and length into a five-float record. Aggregate clauses are sequenced in the
+existing evaluation order; later clauses reference already initialized members.
+Every member replaces a used existing value. There is no uninitialized-member
+read, value-zero initialization, unused field, explicit padding, constructor,
+destructor or added helper. Double input scaling/casts, Y-square plus X-square
+plus Z-square, sqrtf, division/clamp/fallback and output order stay unchanged.
+These are source-representation hypotheses, not recovered original records.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| length_record | 98.5 / 57.4 | 874 | 100.0 | yes |
+| decoded_length_record | 98.5 / 57.4 | 874 | 100.0 | yes |
+
+Both complete Core objects equal accepted byte-for-byte; none retained. Source
+and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline without
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, helper,
+header/ABI, flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_length_identities.json`, two focused reports
+and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
