@@ -4847,3 +4847,50 @@ unrelated body, ABI layout, push, PR or merge change.
 
 Evidence: `_work/enh_frame_capture_current_identities.json`, its six focused
 verifier reports/source snapshots and rechecked normalcenter validation audit.
+
+
+## Continuation: local caller parse-state aggregates
+
+Four Create trials start from clean 6dfb2d75. A new local trivial ParseState
+groups the actual eight-byte magic buffer and unsigned-short child count, with
+both member orders tested. Two further forms also group the existing uint
+file handle, with handle-first or handle-last order. Every member is used by
+the existing parser; no padding member, explicit alignment/packing directive,
+unused field, zero-fill or dummy operation is introduced. Natural compiler
+alignment is left untouched. The type is local to the allowed function body,
+not a header, on-disk structure or native ABI layout change.
+
+Magic initialization still uses the existing strcpy only after OpenRead succeeds.
+Handle still receives its existing zero initialization before OpenRead. SubCount
+still receives the existing two-byte read immediately before dispatch, preserving
+its full unsigned-short range. Reads still target separate members with identical
+sizes and order; no whole-record read or new capture across calls is substituted.
+Signature tables, format decisions, allocations, recursive reader calls, bounds,
+array insertion, Close and cleanup expressions are unchanged. No original C++
+aggregate declaration/member order is claimed recovered; this is a local storage
+hypothesis after instruction-gap inspection.
+
+| Trial | Create source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| magic_count | 98.1 / 62.7 | 290 | 100.0 | no |
+| count_magic | 98.3 / 50.5 | 291 | 100.0 | no |
+| handle_magic_count | 98.2 / 54.2 | 292 | 100.0 | no |
+| magic_count_handle | 97.8 / 63.8 | 295 | 100.0 | no |
+
+All four objects differ from accepted and each other. Two forms improve strict
+over accepted 60.7 but all regress required source from 98.4; none retained.
+The count-first form has the original raw 291 instructions but still lower
+source 98.3, so raw-size coincidence is not success. Production source restored.
+
+Full source/relevant fixture comparison to bf0243e8 and baseline outside-body/
+signature check pass. Read-only binding recheck verifies existing full JSON,
+actual 2079 linked/959 byte pair sets equal baseline without lost/gained pairs,
+204 objects/202 unaffected objects, winner identity, canonical flag digest and
+arguments, and fixed-three matcher rows from actual target/base instruction
+lists. No new native/full-corpus run claimed for rejected variants. Accepted
+**98.37% unweighted /98.36% weighted**; both >=99.0 gates remain unmet, goal
+active. No matcher, denominator, original weights, unrelated body or ABI change.
+No push, PR or merge.
+
+Evidence: `_work/create_local_parse_state_identities.json`, per-trial focused
+reports/source snapshots and rechecked normalcenter validation audit.
