@@ -177,10 +177,13 @@ void Gun::setOffset(int a, int b) {
 // Android 2.0.16 @0x152b7c: radial EMP/damage and hit-vector contract.
 void Gun::ignite() {
     using namespace AbyssEngine::AEMath;
-    if (weaponType == ITEM_SORT_NUKE)
-        ++*reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::status) + 0xc8);
-    if (weaponType == ITEM_SORT_EMP_BOMB || weaponType == ITEM_SORT_NUKE)
+    int initialKind = weaponType;
+    if (initialKind == ITEM_SORT_EMP_BOMB) {
         level->manualSecondaryActive = 0;
+    } else if (initialKind == ITEM_SORT_NUKE) {
+        ++*reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::status) + 0xc8);
+        level->manualSecondaryActive = 0;
+    }
     ignited = 1;
     if (enemies) {
         lastHitKIPlayer = 0;
@@ -205,10 +208,9 @@ void Gun::ignite() {
                     int range = magnitude;
                     float numerator = static_cast<float>(range - distance);
                     float denominator = static_cast<float>(range);
-                    float force;
+                    float force = numerator / denominator;
                     if (weaponType == ITEM_SORT_MINE)
                         force = static_cast<float>(10000 - distance) / 10000.0f;
-                    else force = numerator / denominator;
                     float scale = 1.0f;
                     if (!(force > 1.0f)) {
                         scale = force;
@@ -266,7 +268,7 @@ void Gun::ignite() {
         }
         if (weaponType == ITEM_SORT_EMP_BOMB) lifetimes[0] = -1;
     }
-    if (impact) impact->explode(basePos);
+    if (impact) impact->explode(positionArray[0]);
 }
 
 // Android 2.0.16 Gun::render @0x15395c: camera-facing animation transforms.
@@ -587,7 +589,10 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         delayActive = 1;
         if (playerGun && hitSmall)
             reinterpret_cast<TargetFollowCamera *>(static_cast<intptr_t>(level->getPlayer()->getTargetFollowCamera()))->hitSmall();
-        if (!((weaponType == ITEM_SORT_CLUSTER_MISSILE) | keepAmmo)) {
+        // Equivalent zero-test for the native CLZ/LSR flag; source form is inferred.
+        unsigned clusterDifference = static_cast<unsigned>(weaponType) - 40u;
+        unsigned cluster = 1u ^ ((clusterDifference | (0u - clusterDifference)) >> 31);
+        if (!(cluster | keepAmmo)) {
             --ammoCount;
             goto spendAmmo;
         }

@@ -2,14 +2,14 @@
 
 ## Status: partial; the requested target is not achieved
 
-Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.7192% unweighted / 98.6517% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
+Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.7654% unweighted / 98.8399% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
 
 | Metric | Clean base | This checkpoint |
 |---|---:|---:|
-| Source-shape, unweighted | 73.5923% | 99.7192% |
-| Source-shape, original-instruction-weighted | 26.9159% | 98.6517% |
-| Strict instruction shape, unweighted | 66.8038% | 94.4077% |
-| Strict instruction shape, weighted | 15.4981% | 74.2298% |
+| Source-shape, unweighted | 73.5923% | 99.7654% |
+| Source-shape, original-instruction-weighted | 26.9159% | 98.8399% |
+| Strict instruction shape, unweighted | 66.8038% | 94.5423% |
+| Strict instruction shape, weighted | 15.4981% | 74.7310% |
 | Linked-exact unique bodies | 14 | 19 |
 | Byte-exact unique bodies | 13 | 13 |
 
@@ -124,6 +124,8 @@ Collision layout hint (2026-10-06): native 0x15318c..0x1531b0 keeps the asteroid
 ShootAt ammo layout hint (2026-10-06): ten individual hint controls and sixteen follow-ups retain the fixed flags/scoring. The single expected-true hint around the existing ammo eligibility predicate gives source-shape 98.8 (from 98.6) and strict 71.7 (from 67.8), with unchanged 637 instructions versus original 643. It preserves every short-circuit read/call and keepAmmo/status effect from native 0x15289a..0x1528c6; the hint is an inferred code-generation choice, not recovered syntax or measured runtime frequency. Other hints/combinations and six additional collision guard controls provide no further source gain and were rejected. Fixed source means are now 99.7115% unweighted / 98.5976% weighted; the weighted 99% requirement is still unmet. All other 27 Gun diagnostic rows are unchanged. Fresh native static-library build, all 204 ARM TUs, selected constructor/mount smokes and full strict corpus pass; no exact-pair losses against either baseline or the preceding checkpoint. No game-runtime test is claimed. Evidence: validation/gun_shoot_ammo_layout_hint_2026-10-06.json.
 
 Collision scatter zero-test (2026-10-07): the retained unsigned word form is exactly equivalent to kind==25 for every 32-bit input and implements the native CLZ/LSR zero-normalization contract. For unsigned d, d|(0-d) has its high bit set iff d is nonzero; shifting then XOR 1 yields the zero flag with defined modular arithmetic. This is inferred source syntax. Guarded explicit CLZ controls produced byte-identical bodies; other flag forms and combinations did not exceed the minimal scatter-only form. Twenty-four damage-layout controls gave no source improvement. Collision source-shape rises 97.0 -> 97.2, strict shape falls 44.9 -> 43.1, and instruction count rises 637 -> 642 versus original 647. The requested source means are now 99.7192% unweighted / 98.6517% weighted; strict means are 94.4077% / 74.2298%. The weighted 99% target remains unmet. Other 27 Gun rows are unchanged. Fresh static-library build, all 204 ARM TUs, selected constructor/mount smokes and full strict corpus pass with zero exact-pair losses against both baselines and the preceding ammo checkpoint. No full collision or native game runtime test is claimed. Evidence: validation/gun_collision_scatter_zero_test_2026-10-07.json.
+
+Ignite operand/falloff repair (2026-10-07): the native final Sparks::explode reference is loaded from Gun+12, the first positionArray element, rather than cached basePos at Gun+192. The prior source could explode at a stale or last-processed position. The actual extracted tail now uses positionArray[0]; its host operand regression fails the old source and passes the corrected source, without claiming full radial-damage/runtime coverage. The initial type is sampled once: EMP6 clears Level+105, while NUKE7 increments status+200 before clearing it. Computing general falloff then replacing it for MINE11 preserves two selected division paths in canonical ARM; inspection confirms only the selected division executes. Ignite now has 351 instructions and the same normalized instruction sequence as the original: source and strict shape reach 100.0%, while linked/byte identity remain false. C++ syntax remains inferred. ShootAt uses an equivalent defined unsigned zero-test for the native type-40 CLZ/LSR ammo flag, increasing source 98.8 -> 98.9 while strict falls 71.7 -> 71.6 (639 instructions versus original 643). Other 26 diagnostic rows are unchanged. All 41 controls retain fixed flags/scoring/membership; non-improving combinations, Vector copy/argument forms and twelve follow-up collision layout forms were rejected. Fresh static-library build, all 204 ARM TUs, selected smokes and full strict corpus pass; exact-pair losses are zero against both baselines and the prior scatter checkpoint. Fixed source means are now 99.7654% unweighted / 98.8399% weighted, with strict means 94.5423% / 74.7310%. Weighted 99% remains unmet. Evidence: validation/gun_ignite_operand_and_falloff_2026-10-07.json.
 
 ## Checks and limits
 

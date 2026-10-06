@@ -4,6 +4,7 @@ Usage: python tools/gun_contract_smoke.py [Gun.cpp]
 This isolates source bodies, not stubs. It verifies host construction, array
 ownership and both offset overloads; it does not test ARM gameplay execution.
 Also extracts the actual shootAt mount block for an operand/side-effect check.
+The ignite tail check verifies its Sparks operand, not the full radial-damage body.
 """
 from pathlib import Path
 import subprocess
@@ -55,6 +56,11 @@ def main():
     selected += 'Vector &mountDirection = targetDir;\n'
     shoot = body(source, 'bool Gun::shootAt(')
     selected += body(shoot, 'if (offset != zero)') + '}\n'
+    ignite = body(source, 'void Gun::ignite()')
+    selected += 'void exerciseGunIgniteImpact(Gun &gun) {\n'
+    for member in ('impact', 'basePos', 'positionArray'):
+        selected += f'auto &{member} = gun.{member};\n'
+    selected += ignite[ignite.rindex('    if (impact)'):ignite.rindex('}')] + '}\n'
     work = ROOT / "_work/gun-smoke"
     work.mkdir(parents=True, exist_ok=True)
     isolated = work / "selected.cpp"
@@ -62,7 +68,8 @@ def main():
     compiler = "C:/msys64/ucrt64/bin/g++.exe"
     executable = work / "gun_contract_smoke.exe"
     subprocess.run([compiler, "-std=c++14", "-fpermissive", "-Isrc",
-                    "tools/gun_contract_smoke.cpp", "tools/gun_mount_contract_smoke.cpp", str(isolated),
+                    "tools/gun_contract_smoke.cpp", "tools/gun_mount_contract_smoke.cpp",
+                    "tools/gun_ignite_contract_smoke.cpp", str(isolated),
                     "-o", str(executable)],
                    cwd=ROOT, check=True)
     subprocess.run([str(executable)], cwd=ROOT, check=True)
