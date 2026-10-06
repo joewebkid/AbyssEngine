@@ -4994,3 +4994,59 @@ PR or merge change.
 
 Evidence: `_work/read_center_color_loop_identities.json`, focused per-trial
 reports/source snapshots and rechecked normalcenter validation audit.
+
+
+## Continuation: local tangent input and intermediate records
+
+Eight Read trials start from clean a2e60390. Local input records group actual
+normal Vector and accumulated tangent float[3], with both member orders.
+Local math records group actual scaled/orthogonal/normalized vectors, optionally
+also the dot result. Input-only, math-only and combined forms are tested. All
+fields hold used existing intermediates; no padding field, explicit alignment,
+packing, unused member, helper, zero initialization or dummy operation.
+
+Vector has a custom assignment operator, so fields are initialized directly
+by braced aggregate initialization rather than default declaration followed
+by Vector assignment. Intermediate initializers access preceding already
+initialized fields in declaration order, preserving Dot/product/subtraction/
+Normalize dependency order. No field is used before initialization. Cross and
+its fresh binormal field load remain after the existing tangent output writes.
+Normal-first input initialization retains original scalar load order; reversed
+input member order reverses the independent normal/accumulator input loads
+before any helper. It does not move a file read or helper. This ordering
+distinction is explicit; no original C++ aggregate declaration is claimed.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| inputs_normal_first | 97.6 / 53.1 | 878 | 98.2 | no |
+| inputs_tangent_first | 97.2 / 53.4 | 892 | 100.0 | no |
+| math_vectors | 98.1 / 54.0 | 879 | 100.0 | no |
+| both_vectors_normal_first | 97.2 / 56.1 | 898 | 100.0 | no |
+| both_vectors_tangent_first | 98.1 / 56.0 | 880 | 100.0 | no |
+| math_dot_vectors | 98.2 / 57.0 | 885 | 100.0 | no |
+| both_dot_vectors_normal_first | 96.8 / 56.9 | 882 | 98.2 | no |
+| both_dot_vectors_tangent_first | 97.4 / 56.1 | 877 | 98.2 | no |
+
+All eight whole Core objects differ from accepted and each other; every source
+score regresses from 98.4. None retained; production source restored. Static
+BL/BLX and relocation call differences are recorded independently for all eight
+forms, including register-selected indirect calls. A reduced static site count
+is not evidence that an executed cleanup is missing. No native execution or
+ABI correctness is claimed for rejected aggregate forms.
+
+The three 98.2-call-score forms have 60 sites versus accepted 61, with exactly
+one fewer static `_ZdaPv` site. Direct mathematical/helper call inventories do
+not change; indirect register differences are r5 ->sl/r6 at three sites.
+
+Full production/relevant fixture text equals bf0243e8; baseline outside-body/
+signature checks pass. Read-only recheck verifies existing full artifact,
+actual 2079 linked/959 byte pair sets equal baseline without lost/gained pairs,
+204 objects/202 unaffected objects, winner identity, canonical flag digest/
+arguments and fixed-three matcher rows from actual target/base instructions.
+No new native/full-corpus run claimed. Accepted **98.37% unweighted /98.36%
+weighted**, both >=99.0 gates unmet; goal active. No header/ABI, unrelated body,
+matcher, denominator or original weight change. No push, PR or merge.
+
+Evidence: `_work/read_tangent_local_records_identities.json`, eight focused
+reports/source snapshots, `_work/tangent_local_record_call_differences.json`
+and rechecked normalcenter validation audit.
