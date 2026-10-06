@@ -5102,3 +5102,50 @@ denominator, original weights, unrelated body or ABI change. No push, PR or merg
 Evidence: `_work/read_current_bounds_records_identities.json`, per-trial focused
 reports/source snapshots, `_work/current_bounds_record_call_differences.json`
 and rechecked normalcenter validation audit.
+
+
+## Continuation: normal intermediate arrays and records
+
+Ten Read trials start from clean 2ee1f3ed. Each of four existing scalar triples
+is grouped into a local array[3] or trivial three-field record: decoded floats,
+normalized float quotients, lower-bounded doubles, and output floats. Each stage
+is tested separately, then all four stages together for both representations.
+Every field/component replaces a used existing value; no unused field, padding,
+alignment directive, initialization to zero, helper, constructor/destructor or
+dummy operation. Initializer clauses retain X/Y/Z evaluation order. Existing
+double input multiplication, Y-square plus X-square plus Z-square order, sqrt,
+division order, double lower comparison/selection, float casts and upper tests
+are unchanged. Output triple remains mutable for the original upper tests.
+Fresh owner loads, accepted middle-component destination and fallback stay at
+their existing source points. No file read or failure behavior is altered.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| array_decoded | 98.4 / 56.8 | 877 | 100.0 | yes |
+| array_quotients | 98.4 / 56.8 | 877 | 100.0 | yes |
+| array_bounded | 98.4 / 56.8 | 877 | 100.0 | yes |
+| array_output | 98.4 / 56.8 | 877 | 100.0 | yes |
+| array_all | 98.4 / 56.8 | 877 | 100.0 | yes |
+| record_decoded | 98.4 / 56.8 | 877 | 100.0 | yes |
+| record_quotients | 98.4 / 56.8 | 877 | 100.0 | yes |
+| record_bounded | 98.4 / 56.8 | 877 | 100.0 | yes |
+| record_output | 98.4 / 56.8 | 877 | 100.0 | yes |
+| record_all | 98.4 / 56.8 | 877 | 100.0 | yes |
+
+All ten complete Core objects equal the accepted object byte-for-byte, not
+merely by score or size. None retained: these representations add no required
+gain. This closes the tested local grouping family on this source/compiler;
+it is not proof of a general compiler ceiling or a recovered original type.
+Production source restored; full source/fixture comparison to bf0243e8 and
+baseline outside-body/signature check pass.
+
+Read-only recheck binds existing full JSON, actual linked 2079/byte 959 pair
+sets equal baseline without lost/gained pairs, 204 objects/202 unaffected
+objects, winner identity, canonical flag digest/argument list, and fixed-three
+matcher rows from target/base instructions. No new native/full-corpus run
+claimed for nonretained forms. Accepted **98.37% unweighted /98.36% weighted**,
+both >=99.0 gates remain unmet; goal active. No unrelated body, header/ABI,
+matcher, denominator, original weights, push, PR or merge change.
+
+Evidence: `_work/read_normal_value_records_identities.json`, ten per-trial
+focused reports/source snapshots and rechecked normalcenter validation audit.
