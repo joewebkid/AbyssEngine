@@ -3820,3 +3820,33 @@ gates exit0 with no lost pairs; default99 gate exits1 for the unmet weighted
 threshold. Canonical focused/full/gate updated only after these validations.
 Full JSON SHA256:ac36671ad80d872e4cd8053180fea46d76c6924b13ef1ae919d43048d9c95d08.
 Goal remains active.
+
+## Ninety-seventh follow-up: read-only receiver/branch checks (2026-10-06)
+
+No production edit or compiler trial. Inspected StarMap.cpp, accepted96
+current-route-depth-bool-ninetysixth.asm, primary argument-audit-primary-
+eightyninth.asm, and prior38's freelance-store report before considering
+changes. Freelance system capture precedes getType (native c8816/c881c,
+current1108/110e); cargo115/1 and signed enumeration branch agree. Prior38
+already merged the marker store. Actual executable ELF bytes for station
+equality, shared marker store and following mode guard agree for20bytes:
+native c885a..c886c/current114c..115e. This local block equality is not
+whole Info linked/byte equality and is not a new score gain.
+
+Init saves Canvas before CameraGetCurrent and uses the same receiver for
+CameraGetLocal (native c6f8e/c6f94/c6f9c; current47fa/4800/4808). It reads
+fresh Canvas after MatrixSetTranslation (c6fc6/current4832). Station-mode
+init likewise saves Canvas before the two camera getters (c702e/c7034/c703c,
+current489a/48a0/48a8), then reads fresh Canvas before CameraSetLocal
+(c7054/current48c0). Both matrix copies use60bytes. Route visibility bounds
+also already agree on operand and short-circuit order: nativec925e/c9260
+vs36e/370, and nativec938a/c938c,c9392/c9394 vs49a/49c,4a2/4a4.
+No candidate mismatch was established in these inspected blocks.
+
+Source and ARM object SHA256 still equal accepted96. Report-only work reuses
+its focused/native/full validations; no new build/corpus run is claimed.
+Metrics remain source99.32/98.7082523588227; weighted99 remains unmet.
+This excludes these particular edits, not all unknown call effects, runtime
+ABI issues, alternative source forms or future score improvements.
+Evidence: docs/validation/starmap_2026-10-06_receiver_flow_audit.json.
+Goal remains active.

@@ -1,0 +1,41 @@
+{
+  "decision": "read-only follow-up; no production change or compiler trial",
+  "checkpoint": "b67a5300",
+  "source_sha256": "cf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3",
+  "object_sha256": "39cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a",
+  "primary_sha256": "6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58",
+  "checks": [
+    {
+      "area": "freelance mission icon",
+      "native": "c8816 system capture before c881c getType; c882e cargo115/1 conditional; c884e/c8850 signed enumeration; c885a..c886c common icon store and mode guard",
+      "current": "1108 system capture before110e getType;1120 cargo115/1 conditional;1140/1142 signed enumeration;114c..115e common icon store and mode guard",
+      "finding": "Already matches inspected receiver lifetime and branch structure; prior38 repaired shared icon store. No source edit justified.",
+      "exact_local_block": {
+        "native_start": "0xc885a",
+        "current_start": "0x114c",
+        "size_bytes": 20,
+        "bytes_hex": "854207d1d9f8fc10d9f828008860bbf1000f19d0",
+        "scope": "Station equality, shared marker write and following mode guard only; not whole Info equality."
+      }
+    },
+    {
+      "area": "init camera receiver lifetimes",
+      "native": "c6f8e capture before c6f94 CameraGetCurrent, same receiver c6f9c CameraGetLocal; fresh Canvas c6fc6 after c6fbc MatrixSetTranslation; c702e capture before c7034/c703c, fresh Canvas c7054 before c705c",
+      "current": "47fa capture before4800 CameraGetCurrent, same receiver4808 CameraGetLocal; fresh Canvas4832 after4828 MatrixSetTranslation;489a capture before48a0/48a8, fresh Canvas48c0 before48c8",
+      "finding": "Already matches inspected saved/fresh receiver lifetimes; matrix copy remains60 bytes. No source edit justified."
+    },
+    {
+      "area": "first and current route visibility guards",
+      "native": "c925e/c9260 visibility size>destination; c938a/c938c destination<position size, c9392/c9394 visibility size>index",
+      "current": "36e/370 visibility size>destination;49a/49c index<position size,4a2/4a4 visibility size>index",
+      "finding": "Bounds operands and short-circuit order already agree in inspected route guards."
+    }
+  ],
+  "validation": "Source and object hashes unchanged. Reuses accepted96 focused/native/full validations; no build or new corpus comparison was needed for report-only work.",
+  "source_means": {
+    "unweighted": 99.32,
+    "weighted": 98.7082523588227
+  },
+  "target_met": false,
+  "limitations": "Local read-only evidence excludes these specific candidate edits only. Does not prove all call effects, native executable/runtime ABI, original C++ spelling, whole-function exactness or a score ceiling."
+}
