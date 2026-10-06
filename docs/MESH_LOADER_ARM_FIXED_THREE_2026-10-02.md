@@ -5408,3 +5408,61 @@ active. No push, PR or merge.
 Evidence: `_work/enh_axis_count_state_identities.json`, eight
 `_work/enhaxiscountstate-*.json` focused reports/source snapshots, and rechecked
 `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: position pointer offsets and advancing traversal
+
+Fifteen focused Read trials start from a9f7de3a. Nine derive per-iteration input,
+output or both pointers one element past the accessed position, independently
+for short/int branches or both. Access remains [-1] at the original component;
+pointers are formed only in executing iterations and reach at most one-past
+the full 3*vertexCount allocation. Existing field loads remain at their source
+points. No out-of-allocation pointer is formed.
+
+Six further trials increment input pointers, or both input/output pointers,
+after each component. Index i remains for the same bounds-axis computation.
+The output pointer is captured before the loop for both-advance forms: the
+loop contains no calls or writes to the mesh position-pointer field, and the
+output allocation is separate from the mesh/input. This capture is an explicit
+source hypothesis, not a claim about original owner-load timing. Raw allocation
+owner remains unchanged for deletion, including failure paths. Float conversion,
+extrema operations, reads, counts and cleanup source order remain unchanged.
+No dummy operation, helper, header, ABI, flag or matcher change.
+
+| Family / trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| one-past / input_short | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / input_int | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / input_both_branches | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / output_short | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / output_int | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / output_both_branches | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / both_short | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / both_int | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / both_both_branches | 98.4 / 56.8 | 877 | 100.0 | yes |
+| advance / input_advance_short | 98.4 / 56.8 | 877 | 100.0 | yes |
+| advance / input_advance_int | 98.4 / 56.8 | 877 | 100.0 | yes |
+| advance / input_advance_both_branches | 98.4 / 56.8 | 877 | 100.0 | yes |
+| advance / both_advance_short | 97.6 / 55.9 | 883 | 98.2 | no |
+| advance / both_advance_int | 98.4 / 52.1 | 874 | 100.0 | no |
+| advance / both_advance_both_branches | 98.2 / 55.9 | 875 | 100.0 | no |
+
+All nine one-past forms and three input-only advancing forms equal accepted
+complete Core byte-for-byte. Three both-advance objects differ, with no required
+source gain: short and combined branches regress, int ties the rounded source
+score but regresses strict. None retained. Static relocation inspection of the
+short both-advance trial finds 62 calls versus accepted 61, with exactly one
+extra _ZdaPv site and no lost call target. This is static layout evidence, not
+proof of extra cleanup on an executed path. No operation added to match counts.
+
+Production source/fixtures match bf0243e8; outside-body/signature checks pass.
+Read-only full-evidence binding rechecks 204 objects/202 unaffected objects,
+actual linked 2079/byte 959 exact pair sets equal baseline without lost/gained
+pairs, unchanged canonical arguments, and directly recomputed fixed-three rows.
+No new native/full-corpus run claimed for rejected forms. Accepted means remain
+**98.37% unweighted /98.36% original-instruction-weighted**; both >=99.0 gates
+remain unmet; goal active. No general ceiling, push, PR or merge claim.
+
+Evidence: `_work/read_position_one_past_identities.json`,
+`_work/read_position_advance_identities.json`, fifteen focused reports/snapshots,
+`_work/position_advance_short_call_difference.json`, rechecked validation audit.
