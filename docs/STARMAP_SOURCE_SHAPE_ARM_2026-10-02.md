@@ -3995,3 +3995,20 @@ object hashes remain accepted96; canonical focused/native-static/full results
 are unchanged. Means99.32/98.7082523588227 on20/7101; weighted99 remains unmet.
 No executable/runtime or compiler-ceiling claim. Evidence:
 docs/validation/starmap_2026-10-06_clamp_viewport_help_audit.json.
+
+
+## Hundred-and-third follow-up: reverse transition and spin audit
+
+End reverse-transition caf40..caf9e/current20ec..214a already preserves saved
+axis receivers, fresh minimum receivers and reuse of the three indirect getter/
+setter addresses. The 52 ELF bytes caf6c/current2118 (Y/Z receiver and argument
+sequence) match exactly; this excludes GOT setup and is not whole End proof.
+Update galaxy spin ca3a8..ca3fa/current3a48..3a9a and station spin
+ca56c..ca5c6/current3ba0..3bfa agree in GT absolute selection, MI speed<10,
+addition and GT spin>100 zero selection; station multiplication precedes cap.
+Unordered speed selects10 and unordered spin remains unordered in both.
+No new receiver or min/max spelling trial justified for these blocks.
+No production/verifier edits or new compile. Source/object equal accepted96;
+canonical checks preserved, means99.32/98.7082523588227 unchanged, weighted99
+unmet. Native executable/runtime not validated; no compiler ceiling proved.
+Evidence: docs/validation/starmap_2026-10-06_transition_spin_audit.json.

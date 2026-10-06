@@ -1,0 +1,40 @@
+{
+  "decision": "Read-only audit; no source change or compiler trial",
+  "production": "b67a5300",
+  "source_sha256": "cf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3",
+  "object_sha256": "39cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a",
+  "checks": [
+    {
+      "area": "End transition-out ranges",
+      "native": "caf40..caf9e",
+      "current": "20ec..214a",
+      "finding": "Each axis saves its EaseInOut receiver before GetMaxValue, refreshes the member receiver for GetMinValue, and passes the saved receiver to SetRange. All three indirect function addresses are reused across axes in both bodies. No additional capture or refresh justified.",
+      "exact_local_block": {
+        "native_start": "0xcaf6c",
+        "current_start": "0x2118",
+        "size_bytes": 52,
+        "bytes_hex": "d4f88061ddf808803046c0470190d4f88001d847019902463046d047d4f884613046c0478046d4f88401d847024630464146d047",
+        "scope": "Y and Z receiver loads, getter calls through reused registers, and SetRange argument movement. Does not include function pointer GOT resolution or prove whole End equality."
+      }
+    },
+    {
+      "area": "Update galaxy-mode spin cap",
+      "native": "ca3a8..ca3fa",
+      "current": "3a48..3a9a",
+      "finding": "Matching sum, GT absolute-value selector, MI speed<10 selector, spin addition, GT spin>100 zero selector and member store. Unordered speed uses10; unordered spin stays unordered."
+    },
+    {
+      "area": "Update station-mode spin cap",
+      "native": "ca56c..ca5c6",
+      "current": "3ba0..3bfa",
+      "finding": "Matching sequence with 0.01 multiplication before MI speed<10 selection, then spin addition and GT spin>100 zero selector. Existing immediate and literal audits cover constants; no new constant claim."
+    }
+  ],
+  "next_action": "Do not retry receiver snapshots or min/max spelling changes for these already matching blocks; remaining differences require a different source-backed hypothesis.",
+  "official_means": {
+    "unweighted": 99.32,
+    "weighted": 98.7082523588227
+  },
+  "validation": "Source and entire ARM object match accepted96. No new build/full rerun; existing canonical validation preserved. No native executable/runtime validation.",
+  "goal": "Active; weighted99 remains unmet; no ceiling proved."
+}
