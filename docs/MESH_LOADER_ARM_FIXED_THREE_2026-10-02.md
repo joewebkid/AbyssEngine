@@ -6084,3 +6084,37 @@ gates unmet; goal active. No push, PR or merge.
 
 Evidence: `_work/create_signature_pointer_identities.json`, five focused reports
 and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: typed bounds center on paired-raw source
+
+Four focused Read trials start from 3fc9433d. They construct the existing
+computed center as an aggregate Vector instead of float[3] followed by a
+const-Vector cast, with const/nonconst local and normal/nested scope variants.
+The same three sums and 0.5f multiplications execute X/Y/Z in order, followed
+by the existing Vector assignment to boundsCenterX. Maximum/minimum vectors,
+full diagonal and VectorLength remain unchanged. No additional constructor,
+destructor, copy assignment, helper, read, zero fill or operation. Header,
+public ABI, flags and matcher remain unchanged. Representation/lifetime changes
+are source hypotheses, not recovered original declarations.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| vector | 98.5 / 57.4 | 874 | 100.0 | yes |
+| vector_scoped | 98.5 / 57.4 | 874 | 100.0 | no |
+| const_vector | 98.5 / 57.4 | 874 | 100.0 | yes |
+| const_vector_scoped | 98.5 / 57.4 | 874 | 100.0 | no |
+
+Normal-scope const/nonconst objects equal accepted complete Core byte-for-byte.
+Nested-scope objects equal each other but differ from accepted, despite identical
+scores/counts. No form improves requested source; none retained. No general
+compiler ceiling inferred. Production sources/fixtures match ecc30f25 and
+outside-body/signature checks pass. Read-only binding rechecks existing typedpair
+full proof: 204 objects/202 unaffected objects, actual linked 2079/byte 959 exact
+pair sets equal baseline without lost/gained pairs, canonical arguments unchanged,
+fixed-three rows directly recomputed. No new native/full-corpus run claimed for
+rejected forms. Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0
+gates unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/read_typed_pair_center_identities.json`, four focused reports
+and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
