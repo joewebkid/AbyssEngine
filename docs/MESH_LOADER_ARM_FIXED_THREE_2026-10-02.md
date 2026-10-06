@@ -6787,3 +6787,47 @@ ceiling, header/ABI, flag/matcher, push, PR or merge change.
 Evidence: `_work/read_typed_pair_color_loop_identities.json`,
 `_work/read_typed_pair_uv_counter_identities.json`, fifteen focused reports/
 source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: per-stream extrema comparison and update order after paired raw arrays
+
+Nine focused Read trials start from ebc9778c. Three forms reverse the comparison
+operands, update maximum before minimum, or combine these changes, independently
+for short positions, int positions and both. The earlier family tested only
+both streams before accepted paired raw arrays; this tests their interaction
+and separate streams on current source. Strict comparisons remain strict,
+including NaN/zero behavior; min/max arrays are disjoint local objects and the
+two updates have no intervening call or effect on the input value/axis. Thus
+maximum-first changes independent local update ordering without combining
+conditions (both updates still execute when both predicates hold, as required
+for the initial inverted extrema sentinels). Input conversion/position stores
+remain before the extrema updates; center and full-diagonal calculations stay
+after all positions. These are hypotheses, not recovered original update order.
+No extra arithmetic, unconditional self-store, helper, dead local or padding.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| reverse_operands_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| reverse_operands_integer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| reverse_operands_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+| maximum_first_short | 98.5 / 56.9 | 874 | 100.0 | no |
+| maximum_first_integer | 98.5 / 56.9 | 874 | 100.0 | no |
+| maximum_first_both | 98.5 / 56.4 | 874 | 100.0 | no |
+| reverse_maximum_first_short | 98.5 / 56.9 | 874 | 100.0 | no |
+| reverse_maximum_first_integer | 98.5 / 56.9 | 874 | 100.0 | no |
+| reverse_maximum_first_both | 98.5 / 56.4 | 874 | 100.0 | no |
+
+All three operand-only forms equal the complete accepted Core object byte-for-
+byte. Maximum-first forms tie source and reduce strict; adding operand reversal
+produces the same corresponding objects. None retained; neither gate improves.
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_extrema_order_identities.json`, nine focused
+reports/source snapshots and rechecked typedpair validation audit.
