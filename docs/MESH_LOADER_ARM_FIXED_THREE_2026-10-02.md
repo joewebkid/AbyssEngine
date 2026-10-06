@@ -5466,3 +5466,53 @@ remain unmet; goal active. No general ceiling, push, PR or merge claim.
 Evidence: `_work/read_position_one_past_identities.json`,
 `_work/read_position_advance_identities.json`, fifteen focused reports/snapshots,
 `_work/position_advance_short_call_difference.json`, rechecked validation audit.
+
+
+## Continuation: recursive reader child-state records
+
+Twelve focused Read trials start from 41d4682f. They group actual childCount,
+unsigned counter c and childPtr into local records: each two-member pair in
+both orders, then all six orders of the three members. Every member replaces
+an existing used value. No unused field, zero fill, explicit padding/alignment,
+helper, header or ABI change. Count read stays after enhanced parsing and uses
+two bytes; counter initialization stays after existing animation bounds Merge;
+child assignment/new occurs inside the same iteration. Recursive call receives
+the actual used child member address. Its scope extends to this child section,
+with no RAII effect for primitive pointer. Dynamic count comparison, parent
+reloads before Merge/ArrayAdd, failure exits and cleanup remain in source order.
+These local layouts are hypotheses, not recovered declarations.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| pair_childCount_c | 97.2 / 54.5 | 875 | 98.2 | no |
+| pair_c_childCount | 97.2 / 54.4 | 876 | 98.2 | no |
+| pair_childCount_childPtr | 97.9 / 55.9 | 881 | 100.0 | no |
+| pair_childPtr_childCount | 98.2 / 56.8 | 878 | 100.0 | no |
+| pair_c_childPtr | 97.1 / 54.4 | 877 | 98.2 | no |
+| pair_childPtr_c | 97.2 / 54.4 | 876 | 98.2 | no |
+| all_childCount_c_childPtr | 97.1 / 54.4 | 877 | 98.2 | no |
+| all_childCount_childPtr_c | 97.1 / 54.4 | 877 | 98.2 | no |
+| all_c_childCount_childPtr | 97.1 / 54.4 | 877 | 98.2 | no |
+| all_c_childPtr_childCount | 97.1 / 54.4 | 877 | 98.2 | no |
+| all_childPtr_childCount_c | 97.1 / 54.4 | 877 | 98.2 | no |
+| all_childPtr_c_childCount | 97.1 / 54.4 | 877 | 98.2 | no |
+
+All twelve complete Core objects differ from accepted and each other, and
+regress source-shape. None retained. Ten counter-containing forms have 60
+static calls versus accepted 61: exactly one fewer _ZdaPv site, and the three
+indirect call registers change r5 to r6. Both count/child-pointer pairs preserve
+all 61 call-site targets. This is static allocation/layout evidence, not proof
+of missing cleanup on an executed path. No cleanup operation added for scoring.
+No general compiler ceiling is inferred.
+
+Source/fixtures match bf0243e8; outside-body/signature checks pass. Read-only
+full evidence binding verifies 204 objects/202 unaffected objects, actual linked
+2079/byte 959 exact pair sets equal baseline without lost/gained pairs, canonical
+arguments unchanged and fixed-three rows recomputed directly. No new native/full
+corpus run claimed for rejected forms. Accepted means remain **98.37% unweighted
+/98.36% original-instruction-weighted**; both >=99.0 gates unmet; goal active.
+No push, PR or merge.
+
+Evidence: `_work/read_child_state_identities.json`, twelve focused reports and
+snapshots, `_work/read_child_state_call_differences.json`, rechecked validation
+audit.
