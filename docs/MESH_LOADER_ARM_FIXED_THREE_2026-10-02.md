@@ -3523,3 +3523,55 @@ is claimed for rejected variants. Accepted axisbyte-full/native evidence stays
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: interval aliases and byte-axis common calls
+
+Nine Enhanced trials start from clean 483575e7. Four explicitly bind a const
+pointer or reference to timeBetweenFrames at entry or inside the section block,
+and expand each existing update into the same nested positive-value and
+smaller-global-value tests through that alias. All eight update sites keep
+their location and fresh value load; no global value is captured or hoisted.
+The helper definition remains unchanged outside the three bodies. Entry versus
+section address lifetime is a source hypothesis motivated by original reuse
+of the global address (e.g. r5 at 0x6bcde..0x6bcea), not recovered C++.
+
+Five common-call variants revisit the earlier pre-byte-axis family on the
+materially different accepted counter types. Each selects the same channel
+inside switch(axis), keeps position Y negation, and uses a shared subsequent
+InsertKeyFrame call. The default continues the inner loop. Three individual
+sections and all three together are tested, plus all sections with zero-mask
+initialization/nonzero guard. All valid axes remain 0/1/2; frame conversion,
+read/update order and channel values remain unchanged. The earlier exclusion
+was based on int-axis state; this measured interaction excludes the family
+on the currently accepted byte-axis state as well. No helper/ABI/flag/matcher
+changes, new call effects or metric padding.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| interval alias: pointer_entry | 98.3 / 66.9 | 641 | 100.0 | yes |
+| interval alias: pointer_sections | 98.3 / 66.9 | 641 | 100.0 | yes |
+| interval alias: reference_entry | 98.3 / 66.9 | 641 | 100.0 | yes |
+| interval alias: reference_sections | 98.3 / 66.9 | 641 | 100.0 | yes |
+| byte-axis common call: position_common_call | 98.0 / 65.3 | 636 | 100.0 | no |
+| byte-axis common call: scale_common_call | 98.1 / 66.1 | 637 | 100.0 | no |
+| byte-axis common call: rotation_common_call | 98.1 / 66.3 | 637 | 100.0 | no |
+| byte-axis common call: all_common_call | 97.2 / 63.9 | 628 | 100.0 | no |
+| byte-axis common call: all_zero_channel_guard | 97.2 / 63.9 | 628 | 100.0 | no |
+
+All four interval forms are byte-identical to accepted Mesh. All common-call
+forms regress source. The all-common/default-continue and all-zero-guard
+objects equal each other but differ from accepted. Individual common-call
+objects differ from accepted and each other; equal scores are not substituted
+for actual byte comparison. No variant is retained; production source restored.
+The initial common-call measurement script stopped after first verification
+because its hash import was missing; finally restored source. The import was
+corrected and all five trials then completed successfully.
+
+Evidence: `_work/enhintervalalias-*.json`, `_work/enhbyteaxiscommon-*.json`,
+source snapshots and both identity ledgers. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
