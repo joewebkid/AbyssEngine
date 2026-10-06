@@ -4511,3 +4511,39 @@ Source means99.38/98.88256583579778, strict88.04/83.12933389663428, fixed20/7101
 Weighted99 unmet; native runtime/whole ABI unverified. Do not repeat these
 measured forms as new recovery candidates.
 Evidence: docs/validation/starmap_2026-10-06_update_completion_y_or_trials.json.
+
+## Hundred-and-twenty-first follow-up: dialog topology/call audit (removed)
+
+Revalidated120 (2efe1998) and production119. Previous turn is progress:
+completion/Y forms were measured and restoration proved across204 objects.
+
+A: explicit419 current-station exit to existing visibility tail instead of
+else wrapper. Entire focus/object identical119; neutral, removed. B: share419/
+579 set delivery with assigned text ID and captured receiver, as primary
+LABEL48 presents. No extra runtime calls; other dialogs skip common delivery.
+Only End worsens source98.9->98.8, strict80->79.6, raw1028->1027; removed.
+
+Fresh GNU callsite audit excludes known cb360..cb388 data island and separates
+register-indirect calls. Primary136 named direct/19 indirect; accepted119 has
+134/19. Named differences are one GameText::getText and one one-argument
+ChoiceWindow::set static site. This does not prove omitted runtime actions.
+
+C: put3217's set, suppression AND visibility locally, jumping past common
+stores. Distinct from115B's local suppression only. Direct callee multiset now
+equals primary136/19 exactly. End strict80->80.5, inventory98.4->98.5,
+opcode98.8->98.9, size98.9->99.7 improve; control99.1->98.7 and normalized
+call score99.3->97.8 worsen. Source98.9->98.7, raw1028->1036; rejected under
+the unchanged objective. All21 other focused rows identical in B/C.
+
+Fresh normalized CALL counts are primary133/accepted134, while actual named
+direct counts above are136/134. This agrees with prior100's three primary
+calls filtered around the literal island. No verifier edit, extra call/padding
+or claim of native runtime equivalence. C++ source spelling remains heuristic.
+
+Every trial ARM204/0. Final restoration ARM204/0 reproduces the entire canonical
+focus report, source bytes and ALL204 object hashes; native STATIC exit0.
+Accepted119 full4619/0, linked2084/byte960 and preservation gates remain valid
+for identical objects; no new full run/canonical change. Source means remain
+99.38/98.88256583579778, strict88.04/83.12933389663428, fixed20/7101.
+Weighted99 unmet; native executable/runtime and whole ABI unverified.
+Evidence: docs/validation/starmap_2026-10-06_dialog_topology_call_audit.json.

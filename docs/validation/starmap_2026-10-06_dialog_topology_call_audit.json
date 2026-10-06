@@ -1,0 +1,156 @@
+{
+  "previous_production": "2efe1998",
+  "previous_goal_turn_classification": "Progress:120 eliminated two measured update forms and proved all204-object restoration.",
+  "decision": "Three bounded dialog topology trials removed; production119 retained.",
+  "current_station_exit": "Explicit419 goto station_choice_ready replaces else wrapper. Entire focus report and StarMap object equal119; neutral.",
+  "trials": [
+    {
+      "name": "standard-dialog",
+      "source_form": "Shared419/579 delivery with window captured before getText; successful branches assign both locals and jump to delivery; other dialogs skip it.",
+      "object_sha256": "55e5e651de01dbf25242d194ca327152a2c2c664ba9f37a2a7fc413112d95e01",
+      "changed_End_fields": {
+        "match": [
+          80.0,
+          79.6
+        ],
+        "n_base": [
+          1028,
+          1027
+        ],
+        "source_match": [
+          98.9,
+          98.8
+        ],
+        "instruction_inventory_match": [
+          98.4,
+          98.3
+        ],
+        "opcode_inventory_match": [
+          98.8,
+          98.7
+        ],
+        "size_match": [
+          98.9,
+          98.8
+        ]
+      },
+      "arm_compiled": 204,
+      "arm_failed": 0,
+      "decision": "Source regression; removed"
+    },
+    {
+      "name": "3217-complete-tail",
+      "source_form": "Separate3217 getText/set/suppression/visibility then jump past common stores. Unlike115B, BOTH stores are local.",
+      "object_sha256": "c08387dcf8cb1d7da6afc1cb1d49e5def3e2c9214bd3e6922b79a2e1910985a0",
+      "changed_End_fields": {
+        "match": [
+          80.0,
+          80.5
+        ],
+        "n_base": [
+          1028,
+          1036
+        ],
+        "source_match": [
+          98.9,
+          98.7
+        ],
+        "instruction_inventory_match": [
+          98.4,
+          98.5
+        ],
+        "opcode_inventory_match": [
+          98.8,
+          98.9
+        ],
+        "control_flow_match": [
+          99.1,
+          98.7
+        ],
+        "ordered_control_flow_match": [
+          88.3,
+          88.7
+        ],
+        "control_inventory_match": [
+          99.1,
+          98.7
+        ],
+        "call_count_match": [
+          99.3,
+          97.8
+        ],
+        "size_match": [
+          98.9,
+          99.7
+        ]
+      },
+      "arm_compiled": 204,
+      "arm_failed": 0,
+      "decision": "Source regression; removed"
+    }
+  ],
+  "accepted_direct_call_audit": {
+    "scope": "Named direct callsites from fresh GNU disassembly; register-indirect calls counted separately. Primary known cb360..cb388 data island excluded. Diagnostic counts are not the verifier metric or whole-function execution proof.",
+    "primary_named_direct_count": 136,
+    "current_relocated_direct_count": 134,
+    "primary_register_indirect_count": 19,
+    "current_register_indirect_count": 19,
+    "primary_only": {
+      "_ZN8GameText7getTextEi": 1,
+      "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringE": 1
+    },
+    "current_only": {}
+  },
+  "separate3217_direct_call_audit": {
+    "scope": "Named direct callsites from fresh GNU disassembly; register-indirect calls counted separately. Primary known cb360..cb388 data island excluded. Diagnostic counts are not the verifier metric or whole-function execution proof.",
+    "primary_named_direct_count": 136,
+    "current_relocated_direct_count": 136,
+    "primary_register_indirect_count": 19,
+    "current_register_indirect_count": 19,
+    "primary_only": {},
+    "current_only": {}
+  },
+  "fresh_normalized_call_tokens": {
+    "target": 133,
+    "accepted_base": 134
+  },
+  "call_audit_interpretation": "Separate3217 reproduces the entire named direct-callee multiset and19 indirect sites, but source score regresses. Static site counts do not prove missing runtime actions. The unchanged verifier excludes three primary named sites from normalized CALL count, consistent with prior100 literal-island audit.",
+  "source_sha256": "75bca641737a801e8ee8e6ec4142c4b0eba7e57cfbc2e7e7ea870729b0ce96e6",
+  "object_sha256": "bfa461b6d65f4a78ecae3230c2e07fcb7d93b3ed0f28a11132f836529e55bf30",
+  "restored_all204_objects_equal": true,
+  "restored_entire_focus_report_equal": true,
+  "native_static_exit": 0,
+  "focused": {
+    "source_match": {
+      "unweighted": 99.38,
+      "weighted": 98.88256583579778
+    },
+    "match": {
+      "unweighted": 88.03999999999999,
+      "weighted": 83.12933389663428
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "full_validation": "Accepted119 full4619/0 and exact-pair gates remain valid for identical204 object bytes. No new full run claimed.",
+  "canonical_reports_changed": false,
+  "objective_reached": false,
+  "limits": "C++ spellings are hypotheses; no native executable/runtime or whole ABI proof. No verifier change or synthetic padding.",
+  "evidence": [
+    "_work/current-station-exit-121.json",
+    "_work/current-station-exit-121.log",
+    "_work/standard-dialog-121.json",
+    "_work/standard-dialog-121.log",
+    "_work/3217-complete-tail-121.json",
+    "_work/3217-complete-tail-121.log",
+    "_work/end-primary-calls-121.asm",
+    "_work/end-current-calls-121.asm",
+    "_work/end-callees-121.json",
+    "_work/3217-current-calls-121.asm",
+    "_work/3217-callees-121.json",
+    "_work/before121-object-hashes.json",
+    "_work/dialog-final-restored-121.json",
+    "_work/dialog-final-restored-121.log",
+    "_work/native-dialog-final-restored-121.log"
+  ]
+}
