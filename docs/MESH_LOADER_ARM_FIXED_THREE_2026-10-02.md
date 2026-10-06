@@ -4217,3 +4217,62 @@ is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: current validation binding and shared vertex-count types
+
+Start state is clean b316a437. A fresh read-only audit binds present production
+and fixtures to accepted f8607229, rather than relying on intervening negative
+trial summaries. Whole source text equals that commit for both production
+translation units, three native smoke fixtures and the reader/caller extraction
+runner. Canonical flag digest and exact transported argument list still match.
+The preserved full axisbyte report's actual normalized pair sets equal baseline:
+2079 linked and 959 byte pairs, lost/gained empty. Its 204 objects contain only
+the two allowed changed units; all other 202 equal baseline byte for byte.
+No new full compilation or native execution is claimed by this audit; unchanged
+source/fixtures and immutable report/object evidence establish the binding to
+the completed accepted validation. Evidence: `_work/current_axisbyte_binding_audit.json`.
+
+The fixed three-body source mean is 98.233333 and weighted mean 98.170667,
+with original weights 873/291/636, sum 1800. Both gates are contradicted by
+current evidence: total three-body source sum is 294.7, requiring 2.3 additional
+summed score points for 297.0, while weighted mean needs 0.829333 points.
+These are separate requirements, not a redefinition of success. Component audit:
+
+| Body | Instruction inventory | Opcode inventory | Control inventory | Calls | Size | Source |
+|---|---:|---:|---:|---:|---:|---:|
+| Read | 93.9 | 98.1 | 98.8 | 100.0 | 99.2 | 98.0 |
+| Create | 94.7 | 97.9 | 100.0 | 100.0 | 99.3 | 98.4 |
+| Enhanced | 95.8 | 97.4 | 98.7 | 100.0 | 99.5 | 98.3 |
+
+Unchanged metric recomputation for each row passes. Instruction inventory is
+the largest component deficit; Read has greatest weight. Fresh Read inventory
+inspection shows count-load/register-role, memory-spelling, arithmetic operand
+alias and branch differences. Original tangent products at 0x6cd90..0x6cd98
+are numerator times reciprocal, so no reverse multiplication is introduced
+merely to target an inventory pattern. Zero-offset and fp/frame-role artifacts
+are diagnostics, not grounds to edit the matcher or force registers/padding.
+This audit does not establish a compiler ceiling or prove all residual gaps
+are artifacts.
+
+Two focused trials then change the shared reader vcount local to unsigned
+short or int. Every assignment is from the unsigned-short vertexCount field,
+so 0..65535 is representable. Component bounds <=196605 and allocation lengths
+<=786420 remain within int/uint range; no signed overflow or count truncation
+occurs. All field capture points, loop predicates, formulas and calls remain
+unchanged. This differs from older per-stream scoped-count forms and directly
+tests the shared declaration on current source. No other body/helper/ABI/
+flag/matcher change; types are hypotheses, not recovered C++.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| unsigned_short | 98.0 / 55.9 | 867 | 100.0 | yes |
+| signed_int | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+Both whole Core objects equal accepted byte for byte. No source gain occurs;
+actual bytes establish identity, not equal scores. Source restored; no trial
+retained. Additional evidence: `_work/readsharedvcount-*.json`, snapshots and
+`_work/read_shared_vertex_count_identities.json`. Outside-body/signature check
+passes and production tracked diff is empty. Accepted axisbyte-full/native
+evidence remains authoritative: **98.23% unweighted /98.17% weighted**. Both
+>=99.0 gates remain unmet; goal active. No push, PR or merge.
