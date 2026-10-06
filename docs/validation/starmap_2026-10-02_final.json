@@ -43,7 +43,7 @@
     },
     {
       "symbol": "_ZN7StarMap4initEbP7Missionbi",
-      "match": 77.3,
+      "match": 77.4,
       "bytes_equal": false,
       "linked_equal": false,
       "n_target": 750,

@@ -6,7 +6,7 @@
 implementation bodies measure **99.32% unweighted / 98.70825% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.83% / 82.64457%**, respectively. Source-shape is an inventory/control-flow
+**87.835% / 82.65513%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -4012,3 +4012,36 @@ No production/verifier edits or new compile. Source/object equal accepted96;
 canonical checks preserved, means99.32/98.7082523588227 unchanged, weighted99
 unmet. Native executable/runtime not validated; no compiler ceiling proved.
 Evidence: docs/validation/starmap_2026-10-06_transition_spin_audit.json.
+
+
+## Hundred-and-fourth follow-up: automatic selection store order
+
+Inspected init station cleanup and native c70c8..c70d6. Cleanup already agrees:
+initial stations receiver held for ArrayReleaseClasses, fresh member read for
+destruction, null store before new allocation. No cleanup edit justified.
+The following param3 conditional block instead had selectedSystem written
+before lastSelectedSystem in current496c/4970, opposite nativec70d2/c70d6.
+Reverse these independent source statements. Emitted18-byte block4962..4970
+now matches nativec70c8..c70d6 exactly. There is no intervening call; values and
+conditions are unchanged. This is emitted-order restoration, not proof of
+original C++ spelling or whole-function/runtime equivalence.
+
+Compared7017 old .text assembly entries with actual new ELF bytes: only the
+four-byte stores at496c and4970 changed (swapped cbf86000/cbf89c01). The other
+7015 entries are unchanged. Focus exit0(session29188),204 compiled/0 failed,
+22 comparisons/0 skips: init strict77.3->77.4, source98.3 unchanged; all other
+21 rows identical. Source means99.32/98.7082523588227 unchanged; strict means
+87.835/82.65513307984791 (fixed20/7101). Source/object hashes in compact evidence.
+
+Native STATIC gof2 exit0, StarMap compiled and libgof2.a linked. Full exit0
+(session64351,PID11176):4619 comparisons/0 skips,2084 linked/960 byte exact,
+2204 fuzzy perfect,4274/4524 coverage,250 missing(7 wrong type/243 absent),
+129 extras. All22 focus/full metrics agree. Baseline and previous accepted96
+preservation gates exit0 with no lost pairs. Threshold gate exit1 solely
+because weighted99 remains unmet. Canonical reports refreshed. No native
+executable/runtime validation; no compiler ceiling claim. Goal remains active.
+Evidence: docs/validation/starmap_2026-10-06_auto_selection_stores.json.
+Raw _work/before-auto-selection-stores-hundredfourth.cpp,
+auto-selection-stores-hundredfourth.json/log/asm,
+auto-selection-byte-diff-hundredfourth.json,native-hundredfourth.log,
+hundredfourth-corpus.json/log,hundredfourth-{baseline,previous,target}-gate.json/log.

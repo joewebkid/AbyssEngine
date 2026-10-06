@@ -1702,8 +1702,8 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
         delete reader;
     }
     if (param3 != 0) {
-        this->lastSelectedSystem = -1;
         this->selectedSystem = -1;
+        this->lastSelectedSystem = -1;
     }
 
     this->showKey = 0;

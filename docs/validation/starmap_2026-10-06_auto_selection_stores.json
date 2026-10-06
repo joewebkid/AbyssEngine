@@ -1,0 +1,87 @@
+{
+  "decision": "Accepted source-order change restoring native conditional store order; source metric unchanged, strict init improves",
+  "previous_checkpoint": "24d33765",
+  "previous_production": "b67a5300",
+  "source_sha256": "ddc4e5cd912fdf561661f01949f5686e51c366fdf69b2d84d571616101138c3c",
+  "object_sha256": "54a78574bcc14daefc8678850bb6a4e8bf3bed2caa2fa3b5139ef72c9e30484b",
+  "source_change": "Reverse the two independent param3!=0 stores in C++ so emitted ARM writes lastSelectedSystem before selectedSystem. No call or observer occurs between them; does not claim recovered original C++ spelling.",
+  "native_block": "c70c8..c70d6",
+  "current_block": "4962..4970",
+  "exact_block": {
+    "size_bytes": 18,
+    "bytes_hex": "b9f1000f1ebf4ff0ff30cbf89c01cbf86000",
+    "scope": "Whole inspected conditional store block only; not whole init equality."
+  },
+  "byte_diff": {
+    "checked_asm_entries": 7017,
+    "changed_entries": [
+      [
+        "0x496c",
+        "cbf86000",
+        "cbf89c01"
+      ],
+      [
+        "0x4970",
+        "cbf89c01",
+        "cbf86000"
+      ]
+    ]
+  },
+  "focused": {
+    "exit": 0,
+    "compiled": 204,
+    "compile_failures": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "changed_rows": {
+      "_ZN7StarMap4initEbP7Missionbi": {
+        "strict_before": 77.3,
+        "strict_after": 77.4,
+        "source_before": 98.3,
+        "source_after": 98.3
+      }
+    },
+    "other21_rows_identical": true,
+    "means": {
+      "source_match": {
+        "unweighted": 99.32000000000001,
+        "weighted": 98.7082523588227
+      },
+      "match": {
+        "unweighted": 87.83500000000001,
+        "weighted": 82.6551330798479
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    }
+  },
+  "native": {
+    "exit": 0,
+    "target": "gof2 STATIC library",
+    "log": "_work/native-hundredfourth.log",
+    "limitation": "Not native executable/runtime validation"
+  },
+  "full": {
+    "count": 4619,
+    "skipped": 0,
+    "linked_exact": 2084,
+    "byte_exact": 960,
+    "fuzzy_perfect": 2204,
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243
+  },
+  "all22_focused_full_metrics_agree": true,
+  "gates": {
+    "baseline_preservation": 0,
+    "previous_preservation": 0,
+    "threshold": 1,
+    "threshold_reason": "Weighted source mean <99.0 only",
+    "lost_exact_pairs": []
+  },
+  "goal": "Active; weighted source99 unmet; no ceiling claimed."
+}
