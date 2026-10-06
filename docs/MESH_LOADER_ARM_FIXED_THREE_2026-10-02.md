@@ -3484,3 +3484,42 @@ not claimed for rejected variants; accepted axisbyte-full/native evidence
 remains authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets
 2079 linked /959 byte equal baseline without losses. Both >=99.0 gates remain
 unmet; goal active. No push, PR or merge.
+
+
+## Continuation: compressed stream cleanup branch placement
+
+Six Read trials start from clean d74725dc. The five compressed streams (short
+positions, integer positions, UVs, normals and colors) currently check failed
+Read, delete raw temporary and return -1, then process success and delete raw
+at the end. Each trial instead places the existing successful conversion and
+its final delete inside Read != 0, with the existing failure delete/return in
+else. Five trials isolate one stream; the sixth combines all five.
+
+The allocation and Read remain at their existing points. A successful Read
+executes the same conversion/field stores and one raw delete; a failed Read
+executes only its existing raw delete and -1 return. No additional null guard,
+cleanup call, status variable or allocation is added. This is branch placement
+of existing effects, not a recovered original spelling. All other bodies,
+helpers, ABI declarations, flags and matcher remain unchanged.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| short_position | 98.0 / 55.9 | 867 | 100.0 | yes |
+| integer_position | 98.0 / 55.9 | 867 | 100.0 | yes |
+| uv | 98.0 / 55.9 | 867 | 100.0 | yes |
+| normal | 98.0 / 55.9 | 867 | 100.0 | yes |
+| color | 98.0 / 55.9 | 867 | 100.0 | yes |
+| all_streams | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+All six whole Core objects are byte-identical to accepted axisbyte-full;
+actual object comparison proves this, not equal score alone. Therefore this
+particular success/else rewrite offers no source-shape improvement, individually
+or in combination. No variant is retained and production source is restored.
+
+Evidence: `_work/readcleanupbranch-*.json`, source snapshots and
+`_work/read_cleanup_branch_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence stays
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
