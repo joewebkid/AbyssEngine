@@ -4045,3 +4045,31 @@ Raw _work/before-auto-selection-stores-hundredfourth.cpp,
 auto-selection-stores-hundredfourth.json/log/asm,
 auto-selection-byte-diff-hundredfourth.json,native-hundredfourth.log,
 hundredfourth-corpus.json/log,hundredfourth-{baseline,previous,target}-gate.json/log.
+
+
+## Hundred-and-fifth follow-up: centering delta/read-order trials (removed)
+
+Update camera-boundary integer predicates already agree. Native centering
+ca444..ca47c reads height, then Y/X and width conversion, computes Y/X deltas
+before X comparison. Proved globals using actual ELF PC literals plus dynamic
+relocations: ca7c4=145e34+ca44c=210280(Globals::h),
+ca7c8=145e2a+ca44e=210278(Globals::w). Width/height meanings are correct;
+the discrepancy is ordering, not an axis swap.
+
+TrialA reorders these source reads and preserves deltaY/deltaX locals before
+X branching, using locals for divisions only; later overshoot member reads
+are unchanged. This is a delta-only experiment, distinct from prior35's early
+step-selection and91's Y step selector. Exit0(session61743),204/0,22/0;
+update source98.7->98.5, strict82.7->79.8, raw966->961, control98.7->98.0,
+ordered95.4->91.4,size99.6->99.1; other21 rows identical. Rejected.
+TrialB changes read order only. Exit0(session84128),204/0,22/0; entire report
+and whole ARM object equal accepted104. Neutral and removed.
+Fresh restore exit0(session28003),204/0,22/0; source and whole object hashes
+and entire focused report equal accepted104. Canonical native-static/full
+checks preserved; no redundant rerun or executable/runtime claim.
+Source99.32/98.7082523588227 unchanged; weighted99 unmet. No ceiling proved.
+Evidence: docs/validation/starmap_2026-10-06_centering_delta_trials.json.
+Raw _work/before-centering-deltas-hundredfifth.cpp,
+centering-deltas-hundredfifth.cpp/json/log,
+centering-read-order-hundredfifth.cpp/json/log,
+hundredfifth-restored-focused.json/log. Goal remains active.
