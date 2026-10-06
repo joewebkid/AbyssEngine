@@ -7413,3 +7413,70 @@ push, PR or merge change.
 Evidence: `_work/read_index_reload_uv_flip_identities.json`,
 `_work/read_index_reload_uv_pair_identities.json`, fourteen focused reports/
 source snapshots and rechecked typedpair validation audit.
+
+
+## Main working-checkout intake: loader bodies and compiled dependencies
+
+User requested loading changes from the main working branch to test whether
+these improve the fixed-three score. Inspected main checkout
+`A:/Galaxy on Fire new version/gof2hd-decomp-master`, branch main at
+e473d5454d89404051c9731ac93ad52897699020, against own branch dd925f81.
+Main is an ancestor of the owned branch; there are no new committed loader
+changes. Both incoming loader source files have no uncommitted diff from main
+HEAD. The main working checkout is dirty in many unrelated files; it was
+read only and remains untouched. Snapshots include the dirty working files,
+not just committed main content.
+
+Dependency files from the accepted ARM build identify every project header
+compiled into Core and Mesh. Exactly two differ in the main working checkout:
+Array.h (ArrayRemove snapshots size) and AEString.h (ARM layout static asserts).
+Mesh/Engine/Vector layouts and other actual compiled dependencies match.
+Main math/Transform implementation changes reside in separate translation
+units; no LTO is enabled and they cannot change the caller instruction shape.
+They were inspected as runtime changes, not imported into this three-body task.
+The main checkout also changes verifier files: no verifier, matching flags,
+compiler, denominator, helper body or ABI/header update was retained.
+
+Copied only the three incoming body spans into own local trial sources, keeping
+all surrounding code. Tested six combinations, including independent body
+replacement and current bodies with both changed dependency headers. These
+are exact incoming source trials, not newly recovered declarations.
+
+| Trial | Create source | Read source | Enhanced source | Mean | Original-instruction weighted mean |
+|---|---:|---:|---:|---:|---:|
+| current_bodies_main_headers | 98.4 | 98.5 | 98.3 | 98.400000 | 98.413167 |
+| main_bodies_current_headers | 95.8 | 91.8 | 94.5 | 94.033333 | 93.400667 |
+| main_bodies_main_headers | 95.8 | 91.8 | 94.5 | 94.033333 | 93.400667 |
+| main_only_MeshReadData | 98.4 | 91.8 | 98.3 | 96.166667 | 95.163667 |
+| main_only_MeshCreateFromFile | 95.8 | 98.5 | 98.3 | 97.533333 | 97.992833 |
+| main_only_ReadEnhancedDataFromFile | 98.4 | 98.5 | 94.5 | 97.133333 | 97.070500 |
+
+Main bodies regress individually and together. Main bodies with current versus
+main headers produce identical corresponding full objects. Current bodies
+with main headers produce exact accepted Core and Mesh objects:
+Core ec6b0774edb1cfec44ec92f6d54e0b8148c0003f829b4fc1a7c9a2c1a82d39c3;
+Mesh 71f33c2bf51d3f356a2ad3d5df4450736badfe2da89301d93c1c121432736a73.
+Thus header intake cannot improve this score. Old main bodies also restore
+the previously rejected half-diagonal radius and inexact 6.2832f rotation
+constant, so retaining them would discard validated behavior fixes.
+
+All six trials compile and focused ARM verification exits zero. Each fixed-three
+row was recomputed directly from its disassembly with unchanged source metrics;
+original counts remain 291/873/636, total 1800. Source metrics average the
+matcher-produced per-body values. No improvement; no incoming implementation
+change retained. Restored all four local source/header texts to dd925f81 and
+verified the main snapshots did not change during the experiment. Source
+signatures and code outside the three bodies remain baseline-identical.
+
+Read-only binding audit of existing accepted full/native evidence passes:
+204 translation units, 4619 comparisons, zero skipped, 202 unaffected whole
+objects unchanged, exact linked-pair set 2079 and byte-pair set 959 with no
+loss or gain. Existing full report SHA256
+69141f6eaafd32d61ce63ae1257ac889bc0cfcc7765c514a630391e0df481af8.
+No fresh full-corpus or native-runtime run is claimed for these rejected forms.
+Accepted score remains **98.40% /98.41%**; both >=99.0 gates unmet, goal active.
+No push/PR/merge; main checkout untouched.
+
+Private evidence: `_work/main_intake_snapshot.json`,
+`_work/main_intake_results.json`, incoming source/header snapshots,
+body diffs, six Core/Mesh focused report pairs and compiled objects.
