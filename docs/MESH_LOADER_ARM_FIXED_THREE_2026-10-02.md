@@ -7177,3 +7177,68 @@ No general compiler ceiling, header/ABI, flag/matcher, push, PR or merge change.
 Evidence: `_work/enh_unsigned_section_dispatch_identities.json`, fifteen focused
 reports/source snapshots, prior unsigned-shared-type object comparison and
 rechecked typedpair validation audit.
+
+
+## Continuation: normal length/section guards with indexed owner interaction
+
+Nineteen focused Read measurements start from 8a97f67e: nine forms with accepted
+indexed owner, the same nine with a fresh owner after indexCount read and one
+reload-only control. This tests earlier normalcenter-era length/section families
+on current paired raw arrays, including their fresh-owner interactions.
+
+Five length forms place fallback first, continue after zero/nonzero branches,
+name the nonzero predicate, or load the normals output field before the length
+branch. They retain len==0 versus len!=0 semantics, including NaN taking the
+nonzero path, all divisions/clamp/fallback values and output component order.
+The early field-load form moves only a used output address across local
+arithmetic/comparisons, not across a file/allocation call. It is an experimental
+load-scheduling hypothesis, not a recovered original load site.
+
+Four section forms split shader handling from stream handling, flatten or
+separate compressed/plain stream guards, or use a common section-exit label.
+The captured normalEnabled value replaces the original outer vertex-format
+test and is used by every corresponding stream/shader guard. Compressed and
+plain selections remain mutually exclusive, and enableShader is checked after
+the stream. Existing read/allocation/failure/cleanup effects and math order
+remain in their original execution paths. No helper, unused field, padding,
+assembly, fixed register, flag or matcher change. Fresh indexed-owner timing
+has original ARM support but no native proof for hypothetical slot-mutating
+file callbacks; such universal equivalence is not claimed.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted | Equals reload-only |
+|---|---|---:|---:|---|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| length_fallback_first_accepted_owner | 98.3 / 59.6 | 874 | 100.0 | no | no |
+| length_fallback_first_fresh_owner | 98.3 / 60.1 | 874 | 100.0 | no | no |
+| length_zero_continue_accepted_owner | 98.3 / 59.6 | 874 | 100.0 | no | no |
+| length_zero_continue_fresh_owner | 98.3 / 60.1 | 874 | 100.0 | no | no |
+| length_nonzero_continue_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| length_nonzero_continue_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| length_named_nonzero_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| length_named_nonzero_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| length_owner_before_branch_accepted_owner | 98.2 / 58.6 | 871 | 100.0 | no | no |
+| length_owner_before_branch_fresh_owner | 98.1 / 59.4 | 871 | 100.0 | no | no |
+| section_split_shader_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| section_split_shader_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| section_flat_shader_accepted_owner | 97.5 / 55.0 | 891 | 100.0 | no | no |
+| section_flat_shader_fresh_owner | 97.5 / 55.4 | 892 | 100.0 | no | no |
+| section_independent_shader_accepted_owner | 97.3 / 56.1 | 884 | 98.2 | no | no |
+| section_independent_shader_fresh_owner | 97.3 / 56.6 | 884 | 98.2 | no | no |
+| section_common_section_exit_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| section_common_section_exit_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+
+No form improves source beyond 98.5. Four forms per owner produce their entire
+reference object byte-for-byte; reload control reproduces reload-only. Zero-
+continue equals fallback-first for each owner. Other forms regress source;
+strict-only gains up to 60.1 do not move either requested gate. None retained;
+code restored. Source and fixtures match ecc30f25; outside-body/signature checks
+pass. Read-only binding rechecks existing typedpair full evidence: 204 objects/
+202 unaffected objects, actual linked 2079/byte 959 exact pair sets equal
+baseline without lost/gained pairs, unchanged canonical arguments and fixed-
+three rows directly recomputed with the unchanged matcher. No new native/full-
+corpus run claimed for rejected forms. Accepted means **98.40% unweighted /
+98.41% weighted**; both >=99.0 gates unmet; goal active. No general compiler
+ceiling, header/ABI, flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_index_reload_normal_guards_identities.json`, nineteen
+focused reports/source snapshots and rechecked typedpair validation audit.
