@@ -3774,3 +3774,45 @@ corpus run is claimed for rejected variants. Accepted axisbyte-full/native
 evidence remains authoritative: **98.23% unweighted /98.17% weighted**, exact
 pair sets 2079 linked /959 byte equal baseline without losses. Both >=99.0
 gates remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: triangle count and index type combinations
+
+Seven Read trials start from clean d344822f. The triangle count is the unsigned
+16-bit indexCount divided by three, so its range is 0..21845. Six forms change
+only this count to int, unsigned short or short, alone or together with the
+loop index of the same type. A seventh changes only the loop index to int.
+Unsigned division and indexCount cast, allocation timing, triangle index loads,
+coordinate formulas, helper calls and accumulation order remain unchanged.
+All tested count/index types represent the complete range. The last executing
+index is at most 21844; its increment reaches at most 21845, within signed
+short as well as unsigned short, so no narrow counter overflow occurs.
+These are source type hypotheses, not recovered declarations. No helper,
+ABI, flags, matcher, denominator or extra effects change.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| count_int | 98.0 / 55.9 | 867 | 100.0 | yes |
+| count_and_index_int | 98.0 / 55.9 | 867 | 100.0 | yes |
+| count_unsigned_short | 98.0 / 54.2 | 865 | 100.0 | no |
+| count_and_index_unsigned_short | 98.0 / 54.2 | 865 | 100.0 | no |
+| count_short | 98.0 / 54.2 | 865 | 100.0 | no |
+| count_and_index_short | 97.5 / 52.2 | 863 | 100.0 | no |
+| signed_index | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+Int count, int count/index and int index alone are byte-identical to accepted
+Core. Unsigned-short count, unsigned-short count/index and signed-short count
+alone are byte-identical to each other, SHA-256
+7959a2360ebbb34ef2545d1cd3a08287973844c832e39cf0313f191c4cb9e414,
+but differ from accepted and lower strict while retaining rounded source.
+Signed-short count/index differs from both groups and regresses source.
+Identity is measured from whole-object bytes, not equal scores. No required
+source gain occurs; all production edits restored and no trial retained.
+
+Evidence: `_work/readtricounttypes-*.json`, source snapshots and
+`_work/read_triangle_count_type_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
