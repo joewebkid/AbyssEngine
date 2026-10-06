@@ -6234,3 +6234,42 @@ gates unmet; goal active. No push, PR or merge.
 Evidence: `_work/enh_current_preload_identities.json`, four focused reports/
 snapshots, prior `_work/enhzerocases-explicit_zero_assignment` object, rechecked
 `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: tangent expression lifetimes after paired raw arrays
+
+Six focused Read trials start from cdb691e6. They repeat the prior tangent
+temporary family on the now accepted paired short/int raw allocations, testing
+interaction with the changed allocation code. Dot, multiplication, subtraction,
+Normalize and Cross remain in their existing mathematical order; tangent stores
+remain before Cross. The Vector input variant replaces the existing used
+three-float input with a trivial Vector copy. No helper, unused field, padding,
+extra effect, fixed register, assembly or compiler-option change is introduced.
+These temporary-lifetime forms are hypotheses, not recovered original source.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| inline_dot | 98.5 / 57.4 | 874 | 100.0 | yes |
+| inline_product | 97.2 / 58.7 | 868 | 98.2 | no |
+| inline_normalize_argument | 98.5 / 57.4 | 874 | 100.0 | no |
+| inline_all | 98.5 / 57.4 | 874 | 100.0 | no |
+| const_temporaries | 98.5 / 57.4 | 874 | 100.0 | yes |
+| vector_tangent_input | 98.4 / 57.7 | 875 | 100.0 | no |
+
+No source-shape gain; none retained. inline_dot and const_temporaries equal the
+accepted whole Core object byte-for-byte. The other two tied forms produce
+different objects without improving the gate. inline_product reduces static
+call-count agreement and source shape; vector_tangent_input also regresses
+source shape despite slightly higher strict agreement.
+
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_tangent_lifetime_identities.json`, six focused
+reports and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
