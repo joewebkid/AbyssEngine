@@ -7480,3 +7480,89 @@ No push/PR/merge; main checkout untouched.
 Private evidence: `_work/main_intake_snapshot.json`,
 `_work/main_intake_results.json`, incoming source/header snapshots,
 body diffs, six Core/Mesh focused report pairs and compiled objects.
+
+
+## Continuation: indexed owner with color/UV inputs and signed animation dispatch
+
+Thirty-one focused measurements start from fd39d9dc. Sixteen Read forms add
+fresh m=*slot after successful indexCount read, before index allocation:
+reload-only control, nine color loop/store forms and six compressed UV input
+copies. Color forms preserve dynamic vertexCount and fresh m->colors access,
+byte-to-float conversion and division by 255. Signed index is bounded by the
+ushort vertex count (maximum 262140 components); byte offsets are bounded by
+1048560. Guarded do retains the zero-count guard. Shifted source/destination
+views advance by one then address [-1], including safe one-past final views.
+No persistent output pointer replaces the existing per-component field load.
+UV copies use short/int scalars, two-element arrays or u/v records before
+double scaling and the existing double flip subtraction. Only independent
+input-load scheduling changes, with no precision or sign change. These source
+forms are hypotheses, not recovered original declarations. The fresh index
+owner has primary ARM support but no fixture proof for slot-mutating callbacks.
+
+| Read trial | Source / strict | Instructions | Calls | Whole Core equals reload-only |
+|---|---|---:|---:|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| color_signed_index | 98.5 / 57.8 | 874 | 100.0 | yes |
+| color_dynamic_byte_offset | 98.5 / 57.9 | 874 | 100.0 | no |
+| color_input_pointer | 98.5 / 57.8 | 874 | 100.0 | yes |
+| color_postincrement_store | 98.5 / 57.8 | 874 | 100.0 | yes |
+| color_value_then_increment | 98.5 / 57.8 | 874 | 100.0 | yes |
+| color_guarded_do | 98.5 / 57.3 | 875 | 100.0 | no |
+| color_output_end | 98.5 / 57.8 | 874 | 100.0 | yes |
+| color_input_end | 98.5 / 57.8 | 874 | 100.0 | yes |
+| color_both_end | 98.5 / 57.8 | 874 | 100.0 | yes |
+| uv_short_scalars | 98.4 / 57.9 | 876 | 100.0 | no |
+| uv_short_array | 98.4 / 57.9 | 876 | 100.0 | no |
+| uv_short_record | 98.4 / 57.9 | 876 | 100.0 | no |
+| uv_int_scalars | 98.4 / 57.9 | 876 | 100.0 | no |
+| uv_int_array | 98.4 / 57.9 | 876 | 100.0 | no |
+| uv_int_record | 98.4 / 57.9 | 876 | 100.0 | no |
+
+Seven color variants plus control equal the entire reload-only Core object.
+Byte-offset and guarded-do forms tie source 98.5 with different objects.
+All six UV copy forms equal each other and regress to 98.4. None retained.
+
+Fifteen Enhanced measurements keep the original signed short type and replace
+selected switch(type) sections with equivalent if/else type==0/type==1 tests.
+All seven nonempty subsets of position/scale/rotation sections are tested with
+one-first and zero-first order, plus unchanged control. Invalid types skip the
+same section, per-axis switches remain unchanged, count widths/key math/read
+order and V5 signed counts/zero-channel behavior remain unchanged. No speculative
+mask table or helper is introduced. Source order is a hypothesis.
+
+| Enhanced trial | Source / strict | Instructions | Calls | Accepted whole Mesh |
+|---|---|---:|---:|---|
+| signed_type_control | 98.3 / 66.9 | 641 | 100.0 | yes |
+| one_first_0 | 98.2 / 52.8 | 641 | 100.0 | no |
+| one_first_1 | 98.2 / 66.7 | 641 | 100.0 | no |
+| one_first_2 | 98.2 / 66.7 | 641 | 100.0 | no |
+| one_first_0_1 | 98.1 / 38.8 | 641 | 100.0 | no |
+| one_first_0_2 | 98.1 / 52.6 | 641 | 100.0 | no |
+| one_first_1_2 | 98.1 / 66.6 | 641 | 100.0 | no |
+| one_first_0_1_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_0 | 98.2 / 52.8 | 641 | 100.0 | no |
+| zero_first_1 | 98.2 / 66.7 | 641 | 100.0 | no |
+| zero_first_2 | 98.2 / 66.7 | 641 | 100.0 | no |
+| zero_first_0_1 | 98.1 / 38.8 | 641 | 100.0 | no |
+| zero_first_0_2 | 98.1 / 52.6 | 641 | 100.0 | no |
+| zero_first_1_2 | 98.1 / 66.6 | 641 | 100.0 | no |
+| zero_first_0_1_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+
+Corresponding zero-first/one-first forms are byte-identical full Mesh objects.
+Each single section regresses to 98.2, pairs and all-three to 98.1. Control
+matches accepted Mesh. No gain; none retained. All thirty-one compile/focused
+verify calls exit zero; source/call metrics independently recomputed directly
+from target/base instructions with the unchanged matcher. No new native/full
+run is claimed for rejected forms.
+
+Code and fixtures restored to ecc30f25. Read-only binding audit of accepted
+full/native evidence passes: 204 TUs, 4619 comparisons, zero skipped, 202
+unaffected objects, actual linked 2079/byte 959 exact-pair sets unchanged with
+no lost/gained pairs; canonical flags and outside-body/signature boundaries
+unchanged. Accepted means **98.40% /98.41%**, both >=99.0 gates unmet, goal active.
+No compiler ceiling established; no header/helper/ABI, flag/matcher, push,
+PR or merge change. Main checkout remains untouched.
+
+Evidence: `_work/read_index_reload_color_uv_input_identities.json`,
+`_work/enh_signed_section_dispatch_identities.json`, thirty-one focused
+reports/source snapshots/objects and rechecked typedpair validation audit.
