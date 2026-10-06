@@ -1,0 +1,314 @@
+{
+  "decision": "accepted: common confirmation clear/return; source and control shape improve, strict decreases",
+  "previous_report_commit": "d1d0ccfe",
+  "previous_production_commit": "d1d0ccfe",
+  "primary": "GOF2 HD2.0.16 Android ARMv7",
+  "original_cpp_source_recovered": false,
+  "production_files": [
+    "src/game/world/StarMap.cpp"
+  ],
+  "source_change": "Merge two suppress/current-station early clear/return blocks into one short-circuit OR guard. Same predicates, reads, getter order, one clear per taken path; eliminate redundant local Station pointer.",
+  "native_basis": "Primary caedc/caee0 clear+return; same-station equality at cafec jumps to caedc. Current1ec0/1ec4 and203c now share that exit.",
+  "behavior": "Original short-circuit side-effect ordering retained. Explicit guard topology reconstructs native CFG; no additional condition, callback, barrier, flag, raw storage or shared/verifier change.",
+  "before": {
+    "symbol": "_ZN7StarMap10OnTouchEndEii",
+    "match": 80.0,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1037,
+    "n_base": 1004,
+    "source_match": 97.7,
+    "instruction_inventory_match": 96.8,
+    "opcode_inventory_match": 97.4,
+    "control_flow_match": 98.1,
+    "ordered_control_flow_match": 84.1,
+    "control_inventory_match": 98.1,
+    "call_count_match": 99.3,
+    "size_match": 96.7,
+    "unit": "game/world/StarMap"
+  },
+  "after": {
+    "symbol": "_ZN7StarMap10OnTouchEndEii",
+    "match": 77.7,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1037,
+    "n_base": 1004,
+    "source_match": 97.8,
+    "instruction_inventory_match": 97.0,
+    "opcode_inventory_match": 97.5,
+    "control_flow_match": 98.7,
+    "ordered_control_flow_match": 87.9,
+    "control_inventory_match": 98.7,
+    "call_count_match": 99.3,
+    "size_match": 96.5,
+    "unit": "game/world/StarMap"
+  },
+  "other21_rows_equal": true,
+  "independent_proof": {
+    "read_only_unchanged_asmdiff": true,
+    "metrics": {
+      "source_match": 97.8,
+      "instruction_inventory_match": 97.0,
+      "opcode_inventory_match": 97.5,
+      "control_flow_match": 98.7,
+      "ordered_control_flow_match": 87.9,
+      "control_inventory_match": 98.7,
+      "call_count_match": 99.3,
+      "size_match": 96.5
+    },
+    "target_instructions": 1037,
+    "current_instructions": 1004,
+    "linked": false,
+    "native_common_clear": "caedc store suppress=0, caee0 return branch; same-station equality at cafec jumps there",
+    "current_common_clear": "1ec0 store suppress=0,1ec4 return branch; same-station equality uses that clear",
+    "limits": "CFG/local argument identities verified; no runtime or full-function ABI equivalence claim.",
+    "station_lookup_header": {
+      "primary_address": "0xcafc4",
+      "current_address": "0x2014",
+      "length": 16,
+      "primary_bytes": "6068032812d1a06d616e406850f82100",
+      "current_bytes": "6068032812d1a06d616e406850f82100",
+      "equal": true
+    }
+  },
+  "known_argument_audit": {
+    "counts": {
+      "aligned_calls": 699,
+      "known_stack_pairs": 33,
+      "known_register_pairs": 222
+    },
+    "differences": [
+      {
+        "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+        "kind": "registers",
+        "key": "r3",
+        "primary": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0xc8b48",
+          "registers": {
+            "r1": 255,
+            "r2": 128,
+            "r3": 0
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0x1556",
+          "registers": {
+            "r1": 255,
+            "r2": 255,
+            "r3": 255
+          },
+          "stack": {}
+        }
+      },
+      {
+        "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+        "kind": "registers",
+        "key": "r2",
+        "primary": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0xc8b48",
+          "registers": {
+            "r1": 255,
+            "r2": 128,
+            "r3": 0
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0x1556",
+          "registers": {
+            "r1": 255,
+            "r2": 255,
+            "r3": 255
+          },
+          "stack": {}
+        }
+      }
+    ],
+    "interpretation": "Only same two reviewed repeated-SetColor alignment artifacts; no new known argument mismatch. Not exhaustive ABI proof."
+  },
+  "focused": {
+    "exit": 0,
+    "session": 66186,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0
+  },
+  "native_static_library": {
+    "exit": 0,
+    "result": "StarMap compiled and libgof2.a built",
+    "log": "_work/native-ninetyfourth.log"
+  },
+  "full": {
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "count": 4619,
+    "fuzzy_perfect": 2204,
+    "byte_exact": 960,
+    "linked_exact": 2084,
+    "skipped": 0,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "full_validation": {
+    "exit": 0,
+    "session": 64815,
+    "live_pid_observed": 33372,
+    "source_and_arm_objects_frozen": true,
+    "all22_focused_full_rows_agree_after_separator_normalization": true,
+    "report_sha256": "83248e1a06667fbe6569fdc55185f0596ef6ba7ce31467360d90d1317d5ea666"
+  },
+  "means": {
+    "source_match": {
+      "unweighted": 99.30499999999999,
+      "weighted": 98.66955358400226
+    },
+    "match": {
+      "unweighted": 87.675,
+      "weighted": 82.24468384734544
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "baseline_gate": {
+    "body_count": 20,
+    "original_instructions": 7101,
+    "aliases": {
+      "_ZN7StarMapC2EbP7Missionbi": "_ZN7StarMapC1EbP7Missionbi",
+      "_ZN7StarMapD2Ev": "_ZN7StarMapD1Ev"
+    },
+    "baseline": {
+      "source_match": {
+        "unweighted": 83.81,
+        "weighted": 73.61763131953246
+      },
+      "match": {
+        "unweighted": 48.29,
+        "weighted": 28.050161949021266
+      },
+      "linked_exact": 2,
+      "byte_exact": 2
+    },
+    "final": {
+      "source_match": {
+        "unweighted": 99.30499999999999,
+        "weighted": 98.66955358400226
+      },
+      "match": {
+        "unweighted": 87.675,
+        "weighted": 82.24468384734544
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "exact_pairs": {
+      "linked_equal": {
+        "baseline": 2079,
+        "final": 2084,
+        "lost": [],
+        "gained": [
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap10initLightsEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap14missionChangedEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap24askForJumpIntoAlienWorldEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap6renderEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap8setStartEii"
+          ]
+        ]
+      },
+      "bytes_equal": {
+        "baseline": 959,
+        "final": 960,
+        "lost": [],
+        "gained": [
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap14missionChangedEv"
+          ]
+        ]
+      }
+    },
+    "target_met": false
+  },
+  "previous_gate": {
+    "body_count": 20,
+    "original_instructions": 7101,
+    "aliases": {
+      "_ZN7StarMapC2EbP7Missionbi": "_ZN7StarMapC1EbP7Missionbi",
+      "_ZN7StarMapD2Ev": "_ZN7StarMapD1Ev"
+    },
+    "baseline": {
+      "source_match": {
+        "unweighted": 99.3,
+        "weighted": 98.65495000704126
+      },
+      "match": {
+        "unweighted": 87.78999999999999,
+        "weighted": 82.58056611744824
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "final": {
+      "source_match": {
+        "unweighted": 99.30499999999999,
+        "weighted": 98.66955358400226
+      },
+      "match": {
+        "unweighted": 87.675,
+        "weighted": 82.24468384734544
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "exact_pairs": {
+      "linked_equal": {
+        "baseline": 2084,
+        "final": 2084,
+        "lost": [],
+        "gained": []
+      },
+      "bytes_equal": {
+        "baseline": 960,
+        "final": 960,
+        "lost": [],
+        "gained": []
+      }
+    },
+    "target_met": false
+  },
+  "gate_exits": {
+    "baseline": 0,
+    "previous": 0,
+    "default99": 1
+  },
+  "weighted99_target_met": false,
+  "weighted_shortfall_pp": 0.3304464159977414,
+  "source_sha256": "6bd55273e01d6866104d648ed446531b6748d3783024871b63008a106584f1ef",
+  "object_sha256": "2e91d58070c32a49baf16e9baaa179219178ed2da974a1ebe06860eabe64876b",
+  "runtime": "Native executable/runtime untested. Local byte/CFG evidence does not prove whole-function ABI/runtime equivalence.",
+  "tradeoff": "End strict80.0 ->77.7, size96.7 ->96.5 worsen. Source97.7 ->97.8, inventory96.8 ->97.0, opcodes97.4 ->97.5, control98.1 ->98.7 and ordered control84.1 ->87.9 improve. No exact pair losses."
+}

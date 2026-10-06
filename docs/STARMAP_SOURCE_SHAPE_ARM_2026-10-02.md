@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.300% unweighted / 98.65495% original-instruction
+implementation bodies measure **99.305% unweighted / 98.66955% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.790% / 82.58057%**, respectively. Source-shape is an inventory/control-flow
+**87.675% / 82.24468%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -3012,18 +3012,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/ninetythird-corpus.log`; focused log:
-`_work/target-icon-branches-ninetythird.log`; native log:
-`_work/native-ninetythird.log`.
+Latest full log: `_work/ninetyfourth-corpus.log`; focused log:
+`_work/confirm-clear-ninetyfourth.log`; native log:
+`_work/native-ninetyfourth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, without losses. Render adds one linked-exact pair in the latest checkpoint. The latest comparison against 84e0f3d1 (production b848db14) preserves all 2084
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, without losses. Render adds one linked-exact pair in the latest checkpoint. The latest comparison against d1d0ccfe preserves all 2084
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/ninetythird-baseline-gate.json, ninetythird-previous-gate.json and
-ninetythird-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/ninetyfourth-baseline-gate.json, ninetyfourth-previous-gate.json and
+ninetyfourth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `80581c6f944c2965ad667f28475fe9ad5d507682a217528fae7fcf47a4e15aed`.
+final full JSON SHA-256: `83248e1a06667fbe6569fdc55185f0596ef6ba7ce31467360d90d1317d5ea666`.
 
 
 ### Reproduction
@@ -3055,7 +3055,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
 | `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1198 | 78.9% | 99.3% | 80.6% | - |
-| `_ZN7StarMap10OnTouchEndEii` | 1037/1004 | 66.6% | 97.7% | 80.0% | - |
+| `_ZN7StarMap10OnTouchEndEii` | 1037/1004 | 66.6% | 97.8% | 77.7% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.7% | 82.7% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.1% | 89.7% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/735 | 72.9% | 98.3% | 77.3% | - |
@@ -3654,3 +3654,58 @@ one BGE-versus-BGT difference at mission120 (primary c8544/c8546 versus current
 e30/e34); the prior twenty-fourth negative-enum goto trial was neutral, so it
 was not repeated. Other token surpluses remain diagnostic, not permission for
 extra reads/checks or proof of a compiler ceiling. Goal remains active.
+
+## Ninety-fourth follow-up: common confirmation close exit (2026-10-06)
+
+Only the result0 confirmation guard in OnTouchEnd changes. Previously two
+separate early-return blocks cleared suppressNextClose for an already-set
+flag and for a selected station equal to Status's current station. They now
+use one short-circuit OR guard and one clear/return block. Same conditions,
+member reads and getter order; no extra callback or predicate. The local
+Station pointer was eliminated without changing its lookup argument.
+
+Primary cAEdc clears field484 then cAEe0 returns; station equality at cAFec
+jumps to that same clear. Candidate1ec0/1ec4 and203c now share the equivalent
+exit. Native cAFc4 versus current2014 has identical first16 bytes of the
+station-lookup header. Raw getIndex ->Status::getStation ->getIndex ordering
+and captured first result in R6 match; same-station equality jumps to clear.
+This is local instruction/CFG evidence, not whole-function runtime equivalence.
+The fortieth flag-read-timing trial was reviewed; this edits guard topology,
+not that already-correct load/store order.
+
+Source97.7 ->97.8 improves; strict80.0 ->77.7 worsens and is explicitly retained
+as a tradeoff for source/CFG alignment. Count1037/1004 unchanged. Inventory96.8
+->97.0, opcodes97.4 ->97.5, control/ inventory98.1 ->98.7, ordered control84.1
+->87.9; calls99.3 unchanged. Normalized size96.7 ->96.5 worsens despite unchanged
+reported raw counts (the unchanged metric applies its own normalization).
+All other21 focused rows are identical. Independent unchanged asmdiff reproduces
+all8 source submetrics. Complete End remains non-linked/non-byte-exact.
+
+Fixed20/7101 source99.305 /98.6695535840; strict87.675 /82.2446838473.
+Aliases C2/D2 remain checked/excluded. Weighted99 shortfall0.330446416pp.
+The known-argument audit still aligns699 direct calls,33 stack pairs and222
+register pairs, with only the two previously reviewed SetColor alignment
+artifacts; no new known argument discrepancy. This conservative diagnostic
+does not recover all values or prove ABI/runtime equivalence.
+
+Focused session66186 terminated exit0,204 ARM TUs/zero failures,22 comparisons/
+zero skips. Native gof2 static-library build terminated exit0. Full session64815,
+observed live PID33372, terminated exit0 with source and ARM objects frozen.
+All4619 comparisons, zero skips; all22 focused/full rows agree after separator
+normalization. Baseline and previous d1d0ccfe gates preserve all2084 linked and
+960 byte exact pairs, zero losses, exit0. Default99 gate remains red, exit1.
+The original20 bodies/7101 instructions, aliases and compiler profile are
+unchanged. No runtime/native executable test; goal remains active.
+
+ARM object SHA256: 2e91d58070c32a49baf16e9baaa179219178ed2da974a1ebe06860eabe64876b.
+Full JSON SHA256: 83248e1a06667fbe6569fdc55185f0596ef6ba7ce31467360d90d1317d5ea666.
+Source SHA256: 6bd55273e01d6866104d648ed446531b6748d3783024871b63008a106584f1ef.
+
+Compact evidence: docs/validation/starmap_2026-10-06_confirm_close.json.
+Raw under _work: before-confirm-clear-ninetyfourth.cpp,
+confirm-clear-ninetyfourth.json/log/asm,confirm-clear-proof-ninetyfourth.json,
+confirm-clear-argument-audit-ninetyfourth.json/log,native-ninetyfourth.log,
+ninetyfourth-corpus.json/log,ninetyfourth-baseline/previous/target-gate.json/log,
+checkpoint94-before-focused/corpus.json. The source/CFG improvement is kept
+with strict and normalized-size regressions stated, without calling these
+metrics behavior equivalence or declaring a compiler ceiling.

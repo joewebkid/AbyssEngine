@@ -555,16 +555,11 @@ int StarMap::OnTouchEnd(int x, int y) {
     int result = this->choiceWindow->OnTouchEnd(x, y);
     if (result == 0) {
         this->choiceVisible = 0;
-        if (this->suppressNextClose != 0) {
+        if (this->suppressNextClose != 0 ||
+            (this->mode == 3 && this->stations->data()[this->selectedStation]->getIndex() ==
+                Globals::status->getStation()->getIndex())) {
             this->suppressNextClose = 0;
             return 0;
-        }
-        if (this->mode == 3) {
-            Station *station = this->stations->data()[this->selectedStation];
-            if (station->getIndex() == Globals::status->getStation()->getIndex()) {
-                this->suppressNextClose = 0;
-                return 0;
-            }
         }
         if (this->alienJumpPending && this->mode == 0 && !this->pad_0xa8_a && !this->autoMode) {
             Level::programmedStation = Globals::status->playerStation;
