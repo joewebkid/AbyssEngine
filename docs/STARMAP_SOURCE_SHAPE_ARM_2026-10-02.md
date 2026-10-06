@@ -3437,3 +3437,49 @@ render-shape-check-eightyeighth.json,native-eightyeighth.log,
 eightyeighth-corpus.json/log,eightyeighth-baseline/previous/target-gate.json/log,
 checkpoint88-before-focused/corpus.json. Compact committed evidence:
 `docs/validation/starmap_2026-10-06_render_blend.json`.
+
+
+## Eighty-ninth read-only register-constant argument audit (2026-10-06)
+
+Accepted production/report a4a3633f. Previous goal turn made a verified native
+argument correction and render became linked-exact. Current tracked production
+is clean and the entire ARM object still hashes to accepted88:
+`a6cd529383016bc46bcd25d1c94198ffce6674237a2807b96a320dd9a8046ca8`.
+No source experiment or production edit in this continuation.
+
+Inspected StarMap.cpp, fresh primary c67a4..cba2c raw disassembly, accepted88
+current object disassembly, drawkey-original-full-fiftyfifth.asm and full
+trial32 history. DrawKey text IDs/layout reads match; its temporary lifetime
+form already had a neutral trial and was not repeated. Init keyTextIds uses
+32-bit LDR/index*4 in primary c730c, matching the current int table; no
+16-bit table change justified.
+
+A conservative read-only diagnostic parses all20 fixed body headers and
+aligns direct call names. It tracks immediate/register moves in straight-line
+regions, clears state on branches/IT, invalidates overwritten registers and
+clobbers caller registers after calls. It aligns699 direct calls and finds231
+pairs with constants known on both sides. It excludes stack/float arguments
+and does not recover indirect callees. These counts are diagnostic coverage,
+not an exhaustive ABI or behavior proof; repeated callee alignment can drift.
+No verifier/tool/config modification or arithmetic/padding was introduced.
+
+Two candidate differences are both at one misaligned SetColor site: primary
+c8b48 has R1=255,R2=128,R3=0, while aligned current1552 is white on the
+unselected-station path. Raw primary c8b38/BNEc8b3c and current1304/BNE1308
+select selectedStation==index; matching current1314 passes255/128/0 and
+continues to Station::getName, as primary. Thus both R2/R3 differences are
+repeated-callee alignment artifacts. No confirmed unresolved immediate
+argument mismatch remains from this diagnostic, and no color edit is justified.
+Do not treat this narrow pass as proof of all call arguments.
+
+Authoritative accepted88 ARM204/native static/full4619 zero skips and
+baseline/previous exact-pair gates remain applicable: no source/object change.
+Source99.290/98.62095 and strict87.780/82.54657 remain unchanged. Weighted99
+still fails; goal active and native executable/runtime equivalence unverified.
+Next argument inspection requires stack or floating-point evidence; this
+straight-line integer-register diagnostic supplies no further edit candidate.
+
+Evidence under _work: argument-audit-primary-eightyninth.asm,
+call-argument-audit-eightyninth.json, render-blend-eightyeighth.asm.
+Compact committed evidence:
+`docs/validation/starmap_2026-10-06_argument_audit.json`.
