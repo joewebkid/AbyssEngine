@@ -3868,3 +3868,44 @@ is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: attached animation receiver and range-start locals
+
+Six Enhanced trials start from clean a1444a21. After the unchanged populated
+key-count test, self->animation is assigned the existing anim pointer. Three
+forms use that just-assigned field as receiver for animationStart, range setup,
+or both. A fourth names the just-assigned pointer as attached before loading
+the existing rate. Two forms name the existing float-to-long-long conversion
+as rangeStart after the animationStart store, with local or field receiver.
+
+No intervening call separates pointer attachment from the rate load/start
+store; the range start retains direct float-to-long-long conversion and is
+not routed through the potentially narrower animationStart int. Original
+0x6c194 attaches fp, 0x6c19e loads rate, 0x6c1aa stores int animationStart,
+0x6c1ae converts float to long long, and 0x6c1be calls range setup. This order
+is retained. Receiver/local spelling is a source hypothesis, not recovered
+original C++. Empty/failure cleanup, helpers, ABI, compiler flags, matcher,
+denominator and all other bodies remain unchanged.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| field_start_receiver | 98.3 / 66.9 | 641 | 100.0 | yes |
+| field_range_receiver | 98.3 / 66.9 | 641 | 100.0 | yes |
+| both_field_receivers | 98.3 / 66.9 | 641 | 100.0 | yes |
+| named_attached_receiver | 98.3 / 66.9 | 641 | 100.0 | yes |
+| explicit_range_start | 98.3 / 66.9 | 641 | 100.0 | yes |
+| field_receiver_explicit_start | 98.3 / 66.9 | 641 | 100.0 | yes |
+
+All six whole Mesh objects are byte-identical to accepted axisbyte-full.
+Actual bytes establish identity, not equal scores. These receiver reload and
+conversion-local forms do not affect canonical ARM output and offer no
+required source gain. No trial retained; production source restored.
+
+Evidence: `_work/enhfinishreceiver-*.json`, source snapshots and
+`_work/enh_finish_receiver_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
