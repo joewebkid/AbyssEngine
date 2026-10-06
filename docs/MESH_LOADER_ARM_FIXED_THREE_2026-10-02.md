@@ -6118,3 +6118,44 @@ gates unmet; goal active. No push, PR or merge.
 
 Evidence: `_work/read_typed_pair_center_identities.json`, four focused reports
 and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: triangle/final counter widths on paired-raw source
+
+Seven focused Read trials start from 220c2f64. Triangle t is changed to short,
+unsigned short or int, separately and with unsigned-short final vertex v;
+final v alone is also tested. Triangle bound is derived from unsigned-short
+indexCount/3 (maximum 21845), so signed/unsigned-short counters do not overflow:
+last executed t is 21844, next value 21845 fails the condition. Final v bound
+is unsigned-short-derived vertexCount, maximum 65535; last executed 65534,
+next 65535 fails before another increment. Accumulator-zeroing v remains uint.
+No index/view address, body evaluation, helper/call, file read, field load,
+math/store order or cleanup changes. Counter types are source hypotheses, not
+recovered declarations. Header/ABI, flags and matcher remain unchanged.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| triangle_short | 98.0 / 53.7 | 875 | 100.0 | no |
+| triangle_short_final_short | 98.0 / 53.7 | 875 | 100.0 | no |
+| triangle_unsigned_short | 98.5 / 55.7 | 872 | 100.0 | no |
+| triangle_unsigned_short_final_short | 98.5 / 55.7 | 872 | 100.0 | no |
+| triangle_int | 98.5 / 57.4 | 874 | 100.0 | yes |
+| triangle_int_final_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| final_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+
+Int triangle, its combination and final v alone equal accepted complete Core
+byte-for-byte. Narrow final v has no effect within either short triangle pair;
+both respective pairs equal each other. Unsigned-short triangle reduces raw
+length to 872 but does not improve required source and lowers strict; signed
+short regresses source. None retained; no general ceiling inferred. Sources/
+fixtures match ecc30f25 and outside-body/signature checks pass.
+
+Read-only binding rechecks existing typedpair full evidence: 204 objects/202
+unaffected objects, actual linked 2079/byte 959 exact pair sets equal baseline
+without lost/gained pairs, canonical arguments unchanged, fixed-three rows
+directly recomputed. No new native/full-corpus run claimed for rejected forms.
+Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet;
+goal active. No push, PR or merge.
+
+Evidence: `_work/read_typed_pair_counter_identities.json`, seven focused reports
+and snapshots, rechecked `_work/typedpair_validation_audit.json`.
