@@ -14,10 +14,10 @@
   "current": {
     "bodies": 26,
     "original_instructions": 2393,
-    "source_unweighted": 99.69999999999999,
-    "source_weighted": 98.51684078562474,
-    "strict_unweighted": 94.57307692307693,
-    "strict_weighted": 75.39891349770163,
+    "source_unweighted": 99.70384615384616,
+    "source_weighted": 98.54387797743418,
+    "strict_unweighted": 94.32692307692308,
+    "strict_weighted": 73.66853322189719,
     "linked_exact": 19,
     "byte_exact": 13
   },
@@ -38,19 +38,19 @@
   "rows": [
     {
       "symbol": "_ZN3Gun22calcCharacterCollisionEv",
-      "match": 51.3,
+      "match": 44.9,
       "bytes_equal": false,
       "linked_equal": false,
       "n_target": 647,
-      "n_base": 632,
-      "source_match": 96.9,
-      "instruction_inventory_match": 94.9,
-      "opcode_inventory_match": 95.8,
+      "n_base": 637,
+      "source_match": 97.0,
+      "instruction_inventory_match": 95.1,
+      "opcode_inventory_match": 96.1,
       "control_flow_match": 95.5,
-      "ordered_control_flow_match": 77.5,
+      "ordered_control_flow_match": 71.3,
       "control_inventory_match": 95.5,
       "call_count_match": 100.0,
-      "size_match": 98.1,
+      "size_match": 98.3,
       "unit": "game/weapons/Gun",
       "baseline": {
         "symbol": "_ZN3Gun22calcCharacterCollisionEv",
@@ -1338,13 +1338,13 @@
     "object_newer_than_source_and_header": true,
     "baseline_full_corpus_wrong_type_gate_exit": 0,
     "section_local_alias_regressions": "passed: distinct equal-address sections and seven real ARM aliases",
-    "full_corpus_reused_identical_object": "shoot-rotate-corpus.json; Gun.o byte-identical; all other objects predate completed report; parser/flags unchanged",
-    "native_archive_path": "C:\\Users\\Dima\\.codex\\gun-arm-99-scratch-2026-10-06\\native-output\\libgof2.a"
+    "native_archive_path": "C:\\Users\\Dima\\.codex\\gun-arm-99-scratch-2026-10-06\\native-output\\libgof2.a",
+    "full_corpus_fresh_run": "asteroid-layout-corpus.json: all comparisons, strict wrong-type gate exit 0"
   },
   "input_sha256": {
-    "src\\game\\weapons\\Gun.cpp": "5ac9d820f9796546085e04f4aa13b343daa38ed3f706a05c1f1ab407cbab7982",
+    "src\\game\\weapons\\Gun.cpp": "d65d63654eac029b77e3801cba2600800fa0ac8c13dfdbae1a997ca88d331c68",
     "src\\game\\weapons\\Gun.h": "400097d0e265812992483f4556cf6cfa63302d60978129c9211aae9bdd904f2c",
-    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "8f98e997b831364add1349edbf910e31f16ef355ad52f1c02d5541b5a3f68ea4",
+    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "269eeb97af85841c7a3a89b7ba5b5a814eedd6cca152a3939b22b560d75e935c",
     "_work\\gun-current\\verify\\.flags": "b7741d9045ccee7cadcb1e3f3027e57029d127537931305e306e50bc830d174c",
     "tools\\verify\\asmdiff.py": "ab7cde77854f395ea9c317618085375e1723de580defb8548be4bee94b0c3a5a",
     "tools\\verify\\test_asmdiff_aliases.py": "d1b55aae56f2caaf79c6feb6604127742e3a9a271e4e6b126a2773c8db14e239"

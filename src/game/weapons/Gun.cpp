@@ -658,7 +658,9 @@ void Gun::calcCharacterCollision() {
                 if (rejectBox | !(z < extent) | !(z > negativeExtent)) continue;
             }
 collided:
-            if (enemy->isAsteroid()) {
+            // Layout hint follows the native asteroid fall-through at 0x15318c;
+            // it does not claim a measured runtime branch frequency.
+            if (__builtin_expect(enemy->isAsteroid(), 1)) {
                 if (mine) continue;
                 enemy->setBombForce(0.0f);
                 if (particle) {
