@@ -4319,3 +4319,50 @@ corpus run is claimed for rejected variants. Accepted axisbyte-full/native
 evidence remains authoritative: **98.23% unweighted /98.17% weighted**, exact
 pair sets 2079 linked /959 byte equal baseline without losses. Both >=99.0
 gates remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: parent owner loads at animation and child inheritance
+
+Five Read trials start from clean ab788f46. Fresh original inspection confirms
+0x6cf58 loads parent once, 0x6cf5c reads its animation, and 0x6cf60..0x6cf64
+forms parent/animation bound addresses and calls Merge. Transform.h:75 bounds()
+is an inline reference to its existing sphere, with no intervening callback.
+Original 0x6cfea..0x6cff4 likewise loads parent once for inherited vertex format
+and material. These observations motivate explicit source owner locals.
+
+After recursive read, original 0x6d00c loads parent for child-bounds Merge at
+0x6d018, then 0x6d01c reloads parent before animation/ArrayAdd at 0x6d026.
+These are two distinct loads across Merge, not one captured parent for both
+operations. The trials retain both current post-read loads; no receiver or
+animation load is hoisted across that call. The earlier report's captured
+parent wording at 0x6cfea..0x6cff4 refers only to field inheritance.
+
+Four forms capture parent for initial animation/bounds setup or child field
+inheritance, using a new local or reusing existing m. A fifth combines both
+new-local forms. Each capture is at the original first slot-read point, before
+its field reads and without an intervening call. Fresh child allocation is
+already complete before inheritance capture. Bounds Merge, recursive read,
+ArrayAdd and error order stay unchanged. No helper, header/layout, flags,
+matcher, denominator or other body changes. Locals are source hypotheses,
+not recovered original C++ declarations or native ABI proof.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| animation_local | 98.0 / 55.9 | 867 | 100.0 | yes |
+| inheritance_local | 98.0 / 55.9 | 867 | 100.0 | yes |
+| animation_reuse_m | 98.0 / 55.9 | 867 | 100.0 | yes |
+| inheritance_reuse_m | 98.0 / 55.9 | 867 | 100.0 | yes |
+| both_local | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+All five whole Core objects equal accepted axisbyte-full byte for byte.
+Actual bytes establish identity, not equal scores. These explicit owner-load
+forms do not alter canonical ARM output or improve required source. No trial
+retained; production source restored.
+
+Evidence: `_work/readparentowner-*.json`, source snapshots and
+`_work/read_parent_owner_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
