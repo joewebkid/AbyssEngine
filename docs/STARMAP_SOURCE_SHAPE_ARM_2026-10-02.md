@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.270% unweighted / 98.61831% original-instruction
+implementation bodies measure **99.290% unweighted / 98.62095% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.675% / 82.53267%**, respectively. Source-shape is an inventory/control-flow
+**87.780% / 82.54657%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -2978,7 +2978,7 @@ Full JSON SHA-256: a4461ba66b3ad1c7fd4b6e3aa0b468c80eef2472da8eb13aa2435164d9c50
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
-22 symbols compare, zero skipped, six unique linked-exact bodies and three
+22 symbols compare, zero skipped, seven unique linked-exact bodies and three
 unique byte-exact bodies. Clean baseline has two of each.
 
 Native UCRT Debug `gof2` static-library build passed. Existing compiler warnings
@@ -2998,8 +2998,8 @@ absent). Final extra symbols: 129, baseline: 130. Existing coverage gaps were
 not removed from reporting.
 
 Exact pair preservation gate: **PASS**, zero lost (unit, symbol) pairs.
-Linked-exact **2079 -> 2083**; byte-exact **959 -> 960**. Gains are confined to
-StarMap: initLights, missionChanged, askForJumpIntoAlienWorld and setStart;
+Linked-exact **2079 -> 2084**; byte-exact **959 -> 960**. Gains are confined to
+StarMap: initLights, missionChanged, askForJumpIntoAlienWorld, setStart and render;
 missionChanged also becomes byte-exact.
 
 Default >=99.0% gate: **FAIL**, exit 1, `StarMap >=99.0% target NOT reached`.
@@ -3012,18 +3012,17 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/eightysixth-corpus.log`; focused log:
-`_work/system-target-flag-eightysixth.log`; native log: `_work/native-eightysixth.log`.
+Latest full log: `_work/eightyeighth-corpus.log`; focused log:
+`_work/render-blend-eightyeighth.log`; native log: `_work/native-eightyeighth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against 2d0b6d29 (production 1cf057a4) preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, without losses. Render adds one linked-exact pair in the latest checkpoint. The latest comparison against 28e181da (production 437b3b7f) preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/eightysixth-baseline-gate.json, eightysixth-previous-gate.json and
-eightysixth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/eightyeighth-baseline-gate.json, eightyeighth-previous-gate.json and
+eightyeighth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `4ab44c08b7761e492db7c1914cc7aaf5fe72901a687158c50ed6f01e666a10fa`.
+final full JSON SHA-256: `4b6070d6d0bb3f16b4c587147717dcf887f1ad331214ec0d49cfd9d12294ccd8`.
 
 
 ### Reproduction
@@ -3066,7 +3065,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap7drawKeyEv` | 246/244 | 59.5% | 97.9% | 35.1% | - |
 | `_ZN7StarMap6departEb` | 205/205 | 94.9% | 100.0% | 88.3% | - |
 | `_ZN7StarMapD1Ev` | 69/70 | 92.0% | 99.4% | 95.0% | - |
-| `_ZN7StarMap6renderEv` | 47/47 | 95.7% | 99.6% | 97.9% | - |
+| `_ZN7StarMap6renderEv` | 47/47 | 95.7% | 100.0% | 100.0% | linked |
 | `_ZN7StarMap10initLightsEv` | 21/21 | 87.8% | 100.0% | 100.0% | linked |
 | `_ZN7StarMap24askForJumpIntoAlienWorldEv` | 21/21 | 97.1% | 100.0% | 100.0% | linked |
 | `_ZN7StarMap8setStartEii` | 17/17 | 88.9% | 100.0% | 100.0% | linked |
@@ -3393,3 +3392,48 @@ passenger-positive-fallback-eightyseventh.json/log,
 eightyseventh-restored-focused.json/log, update-fp-audit-eightyseventh.json.
 Compact committed snapshot:
 `docs/validation/starmap_2026-10-06_passenger_repeat.json`.
+
+
+## Eighty-eighth accepted render blend argument repair (2026-10-06)
+
+Previous report28e181da, production437b3b7f. Inspected current StarMap.cpp,
+RenderEnums.h (read only), accepted86 object and a fresh primary render
+extract from verified Android HD2.0.16 ARMv7 library c8058..c80e8. Primary
+c80ae loads Canvas, c80b0 MOVS R1,#2, c80b2 calls SetBlendMode, then planetGeom
+and starSystemRoot render. Current60 loaded0. Change the single StarMap.cpp
+argument BlendMode_dummy to existing BlendMode_2, whose shared enum value is2.
+No shared file modified. Numeric argument2 is recovered from raw primary;
+original C++ spelling/enum name and meaning of mode2 are not claimed recovered.
+This fixes a wrong native argument, not an allocation/scheduling hypothesis.
+Same callbacks/order. No artificial calls, flags, barriers, padding or aliases.
+
+Render source **99.6->100**, strict **97.9->100**, count47/47 unchanged,
+becomes **linked-exact**, still not byte-exact. Unchanged asmdiff independently
+reproduces all eight source metrics100, equal normalized47-instruction
+sequence and linked_equal=True, bytes_equal=False. Other21 focused rows
+identical. Fixed20/7101 source **99.290 /98.62095479509928**, strict
+**87.780 /82.54657090550626**. C2/D2 checked/excluded. Weighted99 shortfall
+**0.37904520490072pp**, still incomplete. Runtime visual effect unverified.
+
+Focused session42117 terminal exit0:204 compiled/0 failed,22 comparisons/skip0.
+Native UCRT gof2 static-library build terminal exit0: StarMap compiled and
+libgof2.a linked. Full session91239/PID30172 observed live and terminal exit0,
+without restart; source/ARM object stayed frozen. Full4619/skip0,2084 linked/
+960 byte exact, perfect2204, source89.06/strict76.16,coverage4274/4524,
+missing250(7wrong/243absent),extra129. All22 focused/full metric rows agree
+(normalize unit path separators only). Baseline/previous preservation gates
+exit0 with no lost exact pairs. New linked pair game/world/StarMap render:
+baseline2079->2084, previous2083->2084. Byte pairs959->960 baseline and
+960->960 previous. Default99 gate exits1 as required. Goal active; no native
+executable/runtime test or Godot equivalence claim.
+
+ARM object SHA-256:
+`a6cd529383016bc46bcd25d1c94198ffce6674237a2807b96a320dd9a8046ca8`.
+Full JSON SHA-256:
+`4b6070d6d0bb3f16b4c587147717dcf887f1ad331214ec0d49cfd9d12294ccd8`.
+Evidence under _work: render-original-eightyeighth.asm,
+before-render-blend-eightyeighth.cpp,render-blend-eightyeighth.json/log/asm,
+render-shape-check-eightyeighth.json,native-eightyeighth.log,
+eightyeighth-corpus.json/log,eightyeighth-baseline/previous/target-gate.json/log,
+checkpoint88-before-focused/corpus.json. Compact committed evidence:
+`docs/validation/starmap_2026-10-06_render_blend.json`.

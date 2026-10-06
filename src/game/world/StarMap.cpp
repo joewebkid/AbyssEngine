@@ -50,7 +50,7 @@ void StarMap::render() {
     Globals::Canvas->Begin3d();
     if (this->starSystemRoot != 0) {
         Globals::Canvas->SetTexture((unsigned int) (this->planetTexture), (unsigned int) (0xffffffffu));
-        Globals::Canvas->SetBlendMode(AbyssEngine::BlendMode_dummy);
+        Globals::Canvas->SetBlendMode(AbyssEngine::BlendMode_2);
         this->planetGeom->render();
         this->starSystemRoot->render();
     }

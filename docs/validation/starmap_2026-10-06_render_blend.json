@@ -1,0 +1,244 @@
+{
+  "previous_report_commit": "28e181da",
+  "previous_production_commit": "437b3b7f",
+  "decision": "accepted: restore primary render blend argument2; render linked-exact",
+  "primary_android_version": "GOF2 HD2.0.16 ARMv7",
+  "original_source_recovered": false,
+  "primary_fragment": "c80ae load Canvas; c80b0 MOVS R1,#2; c80b2 SetBlendMode, then planetGeom render and starSystemRoot render",
+  "previous_fragment": "5e load Canvas; 60 MOVS R1,#0; 62 SetBlendMode",
+  "new_fragment": "60 MOVS R1,#2; same native argument and callback order",
+  "source_change": "StarMap::render SetBlendMode(BlendMode_dummy) -> SetBlendMode(BlendMode_2). Existing shared enum confirms numeric value2; shared enum/header/implementation unchanged.",
+  "argument_recovered_from_primary": true,
+  "behavior": "Restore proven native numeric blend mode before planet/root rendering. Meaning of mode2 and runtime visual equivalence not established by this edit. Same calls and ordering; no barriers/flags/padding or artificial instantiations.",
+  "before": {
+    "symbol": "_ZN7StarMap6renderEv",
+    "match": 97.9,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 47,
+    "n_base": 47,
+    "source_match": 99.6,
+    "instruction_inventory_match": 97.9,
+    "opcode_inventory_match": 100.0,
+    "control_flow_match": 100.0,
+    "ordered_control_flow_match": 100.0,
+    "control_inventory_match": 100.0,
+    "call_count_match": 100.0,
+    "size_match": 100.0,
+    "unit": "game/world/StarMap"
+  },
+  "after": {
+    "symbol": "_ZN7StarMap6renderEv",
+    "match": 100.0,
+    "bytes_equal": false,
+    "linked_equal": true,
+    "n_target": 47,
+    "n_base": 47,
+    "source_match": 100.0,
+    "instruction_inventory_match": 100.0,
+    "opcode_inventory_match": 100.0,
+    "control_flow_match": 100.0,
+    "ordered_control_flow_match": 100.0,
+    "control_inventory_match": 100.0,
+    "call_count_match": 100.0,
+    "size_match": 100.0,
+    "unit": "game/world/StarMap"
+  },
+  "other_21_rows_equal": true,
+  "independent_read_only_check": {
+    "source_metrics": {
+      "source_match": 100.0,
+      "instruction_inventory_match": 100.0,
+      "opcode_inventory_match": 100.0,
+      "control_flow_match": 100.0,
+      "ordered_control_flow_match": 100.0,
+      "control_inventory_match": 100.0,
+      "call_count_match": 100.0,
+      "size_match": 100.0
+    },
+    "strict_normalized_instructions_equal": true,
+    "linked_equal": true,
+    "bytes_equal": false,
+    "target_instructions": 47,
+    "current_instructions": 47
+  },
+  "focused": {
+    "terminal_exit": 0,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "session_id": 42117
+  },
+  "native_static_library": {
+    "terminal_exit": 0,
+    "result": "StarMap compiled and libgof2.a linked"
+  },
+  "means": {
+    "source_match": {
+      "unweighted": 99.28999999999999,
+      "weighted": 98.62095479509928
+    },
+    "match": {
+      "unweighted": 87.78,
+      "weighted": 82.54657090550626
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "object_sha256": "a6cd529383016bc46bcd25d1c94198ffce6674237a2807b96a320dd9a8046ca8",
+  "primary_library_sha256": "6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58",
+  "weighted99_target_met": false,
+  "native_runtime_equivalence": "unverified",
+  "full": {
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "count": 4619,
+    "fuzzy_perfect": 2204,
+    "byte_exact": 960,
+    "linked_exact": 2084,
+    "skipped": 0,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129,
+    "terminal_exit": 0,
+    "session_id": 91239,
+    "pid_observed_live": 30172,
+    "focused_rows_agree_after_unit_separator_normalization": true,
+    "source_and_object_frozen": true,
+    "sha256": "4b6070d6d0bb3f16b4c587147717dcf887f1ad331214ec0d49cfd9d12294ccd8"
+  },
+  "baseline_gate": {
+    "body_count": 20,
+    "original_instructions": 7101,
+    "aliases": {
+      "_ZN7StarMapC2EbP7Missionbi": "_ZN7StarMapC1EbP7Missionbi",
+      "_ZN7StarMapD2Ev": "_ZN7StarMapD1Ev"
+    },
+    "baseline": {
+      "source_match": {
+        "unweighted": 83.81,
+        "weighted": 73.61763131953246
+      },
+      "match": {
+        "unweighted": 48.29,
+        "weighted": 28.050161949021266
+      },
+      "linked_exact": 2,
+      "byte_exact": 2
+    },
+    "final": {
+      "source_match": {
+        "unweighted": 99.28999999999999,
+        "weighted": 98.62095479509928
+      },
+      "match": {
+        "unweighted": 87.78,
+        "weighted": 82.54657090550626
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "exact_pairs": {
+      "linked_equal": {
+        "baseline": 2079,
+        "final": 2084,
+        "lost": [],
+        "gained": [
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap10initLightsEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap14missionChangedEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap24askForJumpIntoAlienWorldEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap6renderEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap8setStartEii"
+          ]
+        ]
+      },
+      "bytes_equal": {
+        "baseline": 959,
+        "final": 960,
+        "lost": [],
+        "gained": [
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap14missionChangedEv"
+          ]
+        ]
+      }
+    },
+    "target_met": false
+  },
+  "previous_gate": {
+    "body_count": 20,
+    "original_instructions": 7101,
+    "aliases": {
+      "_ZN7StarMapC2EbP7Missionbi": "_ZN7StarMapC1EbP7Missionbi",
+      "_ZN7StarMapD2Ev": "_ZN7StarMapD1Ev"
+    },
+    "baseline": {
+      "source_match": {
+        "unweighted": 99.27000000000001,
+        "weighted": 98.6183072806647
+      },
+      "match": {
+        "unweighted": 87.675,
+        "weighted": 82.53267145472469
+      },
+      "linked_exact": 6,
+      "byte_exact": 3
+    },
+    "final": {
+      "source_match": {
+        "unweighted": 99.28999999999999,
+        "weighted": 98.62095479509928
+      },
+      "match": {
+        "unweighted": 87.78,
+        "weighted": 82.54657090550626
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "exact_pairs": {
+      "linked_equal": {
+        "baseline": 2083,
+        "final": 2084,
+        "lost": [],
+        "gained": [
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap6renderEv"
+          ]
+        ]
+      },
+      "bytes_equal": {
+        "baseline": 960,
+        "final": 960,
+        "lost": [],
+        "gained": []
+      }
+    },
+    "target_met": false
+  },
+  "gate_exit_codes": {
+    "baseline": 0,
+    "previous": 0,
+    "target99": 1
+  }
+}
