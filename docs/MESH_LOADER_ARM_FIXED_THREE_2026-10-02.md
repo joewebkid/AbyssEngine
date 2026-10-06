@@ -5149,3 +5149,49 @@ matcher, denominator, original weights, push, PR or merge change.
 
 Evidence: `_work/read_normal_value_records_identities.json`, ten per-trial
 focused reports/source snapshots and rechecked normalcenter validation audit.
+
+
+## Continuation: common failure exits and current normal branches
+
+Seven focused Read trials start from dc74484a and the accepted middle-component
+normal destination. Two common-return forms replace existing return -1 paths
+with a shared label: final enhanced/child failures only, then all failures.
+The latter uses an inner body scope so jumps leave existing declarations.
+Existing reads, conditions, explicit cleanup and successful return remain;
+no new cleanup or initialized operation is introduced.
+
+Five normal-branch forms revisit fallback-first, zero/nonzero continue,
+named nonzero condition and owner-load-before-branch on the current accepted
+source. Continue reaches the same loop increment; nothing follows the branch
+in the loop. The owner-before-branch trial moves the existing normals field
+load before the length test and clamp calculations, with no intervening helper.
+This load-order variation is a source-shape hypothesis, not a recovered original
+capture point. No header, ABI, helper or compilation flag is changed.
+
+| Family / trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| common failure / tail_label | 98.4 / 56.8 | 877 | 100.0 | yes |
+| common failure / all_label | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal branch / fallback_first | 98.2 / 59.1 | 877 | 100.0 | no |
+| normal branch / zero_continue | 98.2 / 59.1 | 877 | 100.0 | no |
+| normal branch / nonzero_continue | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal branch / named_nonzero | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal branch / owner_before_branch | 98.1 / 57.8 | 874 | 100.0 | no |
+
+Four objects equal the accepted complete Core object byte-for-byte. The three
+other forms regress source-shape; fallback_first and zero_continue also equal
+each other byte-for-byte. Their strict-score increases do not satisfy the
+requested source-shape gate. None retained; production sources and fixtures
+match bf0243e8, and outside-body/signature comparisons pass.
+
+Read-only recheck binds the existing full-corpus report to restored source:
+204 objects, 202 unaffected objects equal baseline, actual linked-exact 2079
+and byte-exact 959 pair sets unchanged with no lost/gained pairs, canonical
+flags unchanged, and fixed-three rows recomputed with the unchanged matcher.
+No new native/full-corpus run is claimed for rejected forms. Accepted means
+remain **98.37% unweighted /98.36% original-instruction-weighted**. Both >=99.0
+requirements remain unmet; this is not evidence of a ceiling. No push, PR or merge.
+
+Evidence: `_work/read_common_failure_identities.json`,
+`_work/read_current_normal_branch_identities.json`, seven focused reports and
+source snapshots, and rechecked `_work/normalcenter_validation_audit.json`.
