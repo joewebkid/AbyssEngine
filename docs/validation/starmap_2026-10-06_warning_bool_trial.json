@@ -1,0 +1,47 @@
+{
+  "decision": "Rejected neutral explicit warning bool; no progress toward weighted99. Removed before acceptance.",
+  "prior_goal_turn_classification": "Progress: approved Matrix experiments produced full regression evidence and were restored.",
+  "production": "683216b5",
+  "report_checkpoint": "1cd522c8",
+  "files_inspected": [
+    "src/game/world/StarMap.cpp",
+    "src/game/ship/Ship.h",
+    "_work/touch-android.c",
+    "_work/station-android.c",
+    "docs/STARMAP_SOURCE_SHAPE_ARM_2026-10-02.md"
+  ],
+  "trial": "Seven successful warning selections set a separate bool; both later mission142 guards and final delivery test use bool instead of the numeric negative sentinel. Same ordered predicates/getters/text IDs; no pointer-null behavior assumption or added calls.",
+  "source_spelling": "Heuristic ordinary C++ representation; original spelling not recovered.",
+  "trial_arm_compiled": 204,
+  "trial_arm_failed": 0,
+  "trial_compared": 22,
+  "trial_skipped": 0,
+  "trial_focused_report_identical": true,
+  "trial_object_sha256": "54a78574bcc14daefc8678850bb6a4e8bf3bed2caa2fa3b5139ef72c9e30484b",
+  "trial_source_sha256": "7516426ecff2e2a70fde56c0f51bc1e01f21250087cb06c4bcb7ef8806ce081e",
+  "weighted_source": 98.7082523588227,
+  "unweighted_source": 99.32,
+  "objective_reached": false,
+  "no_repeat_findings": [
+    "Native End inertia uses ordered IT GT for both3.0 thresholds; pseudocode !(less||equal) is misleading. Already audited before this turn; no float predicate edit.",
+    "Primary ring distance converts int to float then back to int before doubling; existing source preserves it. No simplified integer radius edit.",
+    "Low-cargo selected-station read-before-store variant was already neutral trial78; not repeated."
+  ],
+  "evidence": [
+    "_work/warning-bool-111.json",
+    "_work/warning-bool-111.log",
+    "_work/before-warning-bool-111.cpp"
+  ],
+  "restoration": {
+    "arm_compiled": 204,
+    "arm_failed": 0,
+    "focus_report_equals_canonical": true,
+    "all204_objects_byte_identical_to_full_validated_110_set": true,
+    "native_static_exit": 0,
+    "source_sha256": "ddc4e5cd912fdf561661f01949f5686e51c366fdf69b2d84d571616101138c3c",
+    "full_report_still_valid": "_work/matrix-inline-restored-corpus.json",
+    "native_log": "_work/native-warning-bool-restored-111.log",
+    "restored_log": "_work/warning-bool-restored-111.log",
+    "restored_report": "_work/warning-bool-restored-111.json"
+  }
+}

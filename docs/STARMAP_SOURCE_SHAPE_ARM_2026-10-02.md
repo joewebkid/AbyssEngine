@@ -4189,3 +4189,34 @@ The authorized experiment is finished and rejected. Production stays104,
 unique StarMap bodies. The overall99 objective remains unmet; this is not a
 proof that99 is impossible. Evidence:
 docs/validation/starmap_2026-10-06_matrix_inline_trial.json.
+
+## Hundred-and-eleventh follow-up: explicit warning state (neutral, removed)
+
+Revalidated committed110 restoration before investigating OnTouchEnd. Previous
+goal turn is progress: the authorized Matrix experiment supplied full-corpus
+regression evidence and eliminated a concrete shared-header route. No running
+job was assumed from old logs. Production remains104.
+
+Tested a separate bool for seven successful warning selections, retaining the
+ordered mission/Station/Ship predicates, numeric text IDs and single common
+delivery. The two remaining mission142 guards and final delivery test used
+the bool instead of signed warningText sentinel comparisons. This differs
+from prior53's zero sentinel and81's captured receivers; it does not predicate
+warning delivery on a potentially null pointer. It is a source-form heuristic,
+not recovered C++ spelling. No calls, barriers, shared edits or flags added.
+
+ARM204 compiled/0 failed,22 compared/0 skipped. ENTIRE focused report and
+whole ARM object equal accepted104, SHA256
+54a78574bcc14daefc8678850bb6a4e8bf3bed2caa2fa3b5139ef72c9e30484b.
+Compiler output does not distinguish this explicit state from the sentinel.
+Removed the neutral change. Fresh-mtime restoration reproduces ALL204 objects
+from the fully validated110 restoration, canonical focused report and original
+source hash; native STATIC rebuild exit0. The full110 report remains valid for
+every byte-identical object; no unchanged full rerun or runtime claim.
+
+Existing inertia IT GT predicates, ring float/int conversion and prior78
+low-cargo read-order trial were checked to avoid repeating unsupported or
+already neutral variants. No such edits made. Source99.32/98.7082523588227,
+strict87.835/82.6551330798479,7 linked/3 byte unique bodies; weighted99 remains
+unmet. Goal retains the full99 objective. Evidence:
+docs/validation/starmap_2026-10-06_warning_bool_trial.json.
