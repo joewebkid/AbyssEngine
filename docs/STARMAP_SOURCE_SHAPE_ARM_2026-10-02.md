@@ -4073,3 +4073,23 @@ Raw _work/before-centering-deltas-hundredfifth.cpp,
 centering-deltas-hundredfifth.cpp/json/log,
 centering-read-order-hundredfifth.cpp/json/log,
 hundredfifth-restored-focused.json/log. Goal remains active.
+
+
+## Hundred-and-sixth follow-up: Key temporary scheduling review
+
+Read StarMap.cpp, Layout.h, AEString.h and native/current drawKey bodies.
+Nativec8178 drawBox, c817c..c8192 saved-coordinate arithmetic, c8196 StringD1;
+current1a6a drawBox,1a70 StringD1, then coordinate arithmetic before first
+DrawImage2D. All relevant values were captured before String construction.
+Remaining difference here is pure arithmetic scheduling across destruction;
+normal UI-coordinate formulas agree, not a whole-function/overflow proof.
+Do not repeat prior32 neutral comma-expression extension or prior55 worsened
+flat textX spelling. Named-string lifetime proposal is also unsuitable:
+Layout takes String by value; declared copy constructor calls Set(other.data),
+virtual destruction adds a lifetime, and no move constructor exists. That
+would add copying beyond the original single temporary. No such edit/trial.
+No forced scheduling/barrier/padding/shared header change. Source and whole
+ARM object equal104; canonical validation preserved. Current96 drawKey dump
+still valid after104 (only496c/4970 changed);105 restored exact104 object.
+Source99.32/98.7082523588227 unchanged, weighted99 unmet. No runtime or compiler
+ceiling proof. Evidence: docs/validation/starmap_2026-10-06_key_temporary_audit.json.
