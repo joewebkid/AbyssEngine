@@ -627,7 +627,6 @@ static inline float absf_update(float v) {
 }
 
 void StarMap::update(int dt) {
-    Vector tmp;
 
     this->lastDt = dt;
     if (this->mode == 0 || this->transitionIn != 0 || this->transitionOut != 0) {
@@ -680,9 +679,10 @@ void StarMap::update(int dt) {
         this->easeX->Increase(step);
         this->easeY->Increase(step);
         this->easeZ->Increase(step);
-        tmp.x = this->easeX->GetValue();
-        tmp.y = this->easeY->GetValue();
-        tmp.z = this->easeZ->GetValue();
+        float valueX = this->easeX->GetValue();
+        float valueY = this->easeY->GetValue();
+        float valueZ = this->easeZ->GetValue();
+        Vector tmp{valueX, valueY, valueZ};
         this->scratchVector = tmp;
         PaintCanvas *canvas = Globals::Canvas;
         Matrix matrix = *static_cast<Matrix *>(canvas->CameraGetLocal(canvas->CameraGetCurrent()));

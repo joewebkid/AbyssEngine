@@ -1,0 +1,165 @@
+{
+  "previous_production": "477275ea",
+  "previous_goal_turn_classification": "Progress: accepted constructor store ordering improved strict comparison and passed full/native/exact-pair preservation.",
+  "decision": "Accepted ordered easing-value captures after native/ARM/full and baseline/previous gates. Weighted99 remains unmet.",
+  "source_form": "GetValue X then Y then Z into float locals; aggregate local Vector only after third getter; same existing Vector assignment into scratchVector. Remove earlier unused-scope tmp declaration.",
+  "primary_evidence": "c9efe/c9f06/c9f0e GetValue calls keep X/Y in r4/r5; c9f10 STRD writes X/Y after all3 calls; c9f16 stores Z; c9f1c Vector assignment. Candidate matches this instruction sequence with different stack offsets.",
+  "source_spelling": "The load/store sequence is primary evidence; local C++ variable names/spelling are a reconstruction hypothesis.",
+  "arm_compiled": 204,
+  "arm_failed": 0,
+  "native_static_exit": 0,
+  "focused_before": {
+    "source_match": {
+      "unweighted": 99.375,
+      "weighted": 98.86889170539361
+    },
+    "match": {
+      "unweighted": 88.01,
+      "weighted": 83.04728911420928
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "focused_after": {
+    "source_match": {
+      "unweighted": 99.38,
+      "weighted": 98.88256583579778
+    },
+    "match": {
+      "unweighted": 88.03999999999999,
+      "weighted": 83.12933389663428
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "changed_rows": [
+    {
+      "symbol": "_ZN7StarMap6updateEi",
+      "changes": {
+        "match": [
+          82.7,
+          83.3
+        ],
+        "n_base": [
+          966,
+          967
+        ],
+        "source_match": [
+          98.7,
+          98.8
+        ],
+        "instruction_inventory_match": [
+          97.0,
+          97.1
+        ],
+        "opcode_inventory_match": [
+          98.2,
+          98.5
+        ],
+        "size_match": [
+          99.6,
+          99.7
+        ]
+      }
+    }
+  ],
+  "full": {
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "count": 4619,
+    "fuzzy_perfect": 2204,
+    "byte_exact": 960,
+    "linked_exact": 2084,
+    "skipped": 0,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "all22_focus_full_rows_agree": true,
+  "only_starmap_object_changed": true,
+  "baseline_gate_exit": 0,
+  "previous_gate_exit": 0,
+  "default99_gate_exit": 1,
+  "source_sha256": "75bca641737a801e8ee8e6ec4142c4b0eba7e57cfbc2e7e7ea870729b0ce96e6",
+  "object_sha256": "bfa461b6d65f4a78ecae3230c2e07fcb7d93b3ed0f28a11132f836529e55bf30",
+  "objective_reached": false,
+  "limits": "No native executable/runtime or whole ABI proof. No shared files, flags or verifier changes.",
+  "remaining_update_inventory": {
+    "symbol": "_ZN7StarMap6updateEi",
+    "primary_only_opcodes": {
+      "vmov.f32": 1,
+      "b": 1,
+      "vmovne.f32": 2,
+      "vmov": 2,
+      ".word": 1,
+      "vcmpe.f32": 3,
+      "vmrs": 1,
+      "subs": 1,
+      "negmi": 1,
+      "bgt": 2,
+      "vldrpl": 1
+    },
+    "candidate_only_opcodes": {
+      "cmp": 1,
+      "it": 1,
+      "vmoveq.f32": 2,
+      "vsub.f32": 1,
+      "vdiv.f32": 1,
+      "subgt": 1,
+      "bpl": 1,
+      "negs": 1,
+      "movgt": 1,
+      "vmovmi.f32": 1,
+      "vcmp.f32": 2
+    },
+    "primary_control": {
+      "beq": 4,
+      "cbnz": 7,
+      "cbz": 19,
+      "b": 13,
+      "call": 74,
+      "bcc": 3,
+      "blt": 5,
+      "blx": 6,
+      "bhi": 5,
+      "bge": 2,
+      "ble": 4,
+      "bgt": 4,
+      "bls": 1,
+      "bpl": 6
+    },
+    "candidate_control": {
+      "beq": 4,
+      "cbnz": 7,
+      "cbz": 19,
+      "b": 12,
+      "call": 74,
+      "bcc": 3,
+      "blt": 5,
+      "blx": 6,
+      "bhi": 5,
+      "bge": 2,
+      "ble": 4,
+      "bpl": 7,
+      "bgt": 2,
+      "bls": 1
+    },
+    "scope": "Diagnostic inventory only; does not justify adding operations solely for score."
+  },
+  "evidence": [
+    "_work/update-diff-119.txt",
+    "_work/ease-values-diff-119.txt",
+    "_work/ease-values-primary-119.asm",
+    "_work/ease-values-119.json",
+    "_work/ease-values-119.log",
+    "_work/ease-values-corpus-119.json",
+    "_work/ease-values-corpus-119.log",
+    "_work/native-ease-values-119.log",
+    "_work/ease-values-baseline-gate-119.json",
+    "_work/ease-values-previous-gate-119.json",
+    "_work/ease-values-threshold-119.log"
+  ]
+}

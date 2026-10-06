@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.375% unweighted / 98.86889% original-instruction
+implementation bodies measure **99.380% unweighted / 98.88257% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**88.010% / 83.04729%**, respectively. Source-shape is an inventory/control-flow
+**88.040% / 83.12933%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -4449,3 +4449,38 @@ losses. Default99 gate exits1 for the weighted threshold. Source means stay
 99.375/98.86889170539361 on fixed20/7101. Canonical reports updated only after
 full validation. Native runtime/whole ABI remain unverified; goal incomplete.
 Evidence: docs/validation/starmap_2026-10-06_constructor_store_order.json.
+
+## Hundred-and-nineteenth accepted easing-value captures
+
+Revalidated118 (477275ea) and current primary/update diff. Previous turn is
+progress: constructor ordering correction passed full/native and preservation
+gates. Avoided prior30/85 neutral projection-depth selection forms.
+
+During camera transition, primary c9efe/c9f06/c9f0e calls GetValue X/Y/Z,
+retaining first2 returns in r4/r5. Only then c9f10 STRD writes X/Y and c9f16
+writes Z, before c9f1c Vector assignment. Previous source stored each value
+into tmp between getters. Capture three float locals in the same order and
+aggregate local tmp after the third call. Keep existing scratchVector assignment;
+remove the earlier function-scope tmp. Candidate now matches this sequence
+with different stack offsets. Source spelling remains a hypothesis.
+
+Only update changes: source98.7->98.8, strict82.7->83.3, raw966->967,
+instruction inventory97->97.1, opcode98.2->98.5, size99.6->99.7. Other21
+focused rows including aliases are identical. No new calls/checks, padding,
+barriers, shared edits, flags or verifier changes. Float precision, getter
+order and member assignment remain unchanged.
+
+Diagnostic normalized inventories show74 calls and6 indirect BLX in both
+bodies. Remaining control differences are primary/candidate B13/12, BGT4/2,
+BPL6/7; other branch counts agree. Floating comparison/select differences
+remain. This points to the next native control-flow audit; it does not justify
+adding redundant comparisons or arithmetic merely to fill inventories.
+
+ARM204 compiled/0 failed; native STATIC exit0. Full4619/0, linked2084/byte960,
+coverage4274/4524, missing250 (7 wrong type/243 absent), extras129. All22
+focus/full rows agree. Baseline/previous gates exit0 with zero exact-pair
+losses; default99 gate exits1 for the weighted threshold. Fixed20/7101
+canonical reports updated after validation; exact scores and hashes in the
+compact evidence snapshot. Weighted99 remains unmet. Native executable/runtime
+and whole ABI remain unverified.
+Evidence: docs/validation/starmap_2026-10-06_easing_value_captures.json.
