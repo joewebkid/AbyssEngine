@@ -5322,3 +5322,46 @@ requirements remain unmet and goal remains active. No push, PR or merge.
 Evidence: `_work/enh_parser_state_identities.json`, six
 `_work/enhparserstate-*.json` focused reports and source snapshots, diagnostic
 normalized instruction lists, and rechecked normalcenter validation audit.
+
+
+## Continuation: caller argument and handle/output records
+
+Fresh unchanged-matcher inventory inspection identifies remaining Create
+pointer-load/local-save differences. Seven focused trials start from fa0a5bf9:
+records hold output/material, engine/material, engine/output, all four arguments
+in forward/reverse order, or handle/output in two member orders. Every member
+replaces a used existing value; no unused field, explicit padding/alignment,
+helper, header or ABI change. Local captures are pure argument copies. Handle
+zero initialization moves to entry in the last two forms, before the existing
+engine/path guard, without new calls or observable operations. OpenRead receives
+the actual used handle member address; reads, child handling, ownership cleanup
+and loaded completion preserve their existing order. These are source-shape
+hypotheses, not recovered original state declarations.
+
+| Trial | Create source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| out_material | 98.4 / 60.7 | 289 | 100.0 | yes |
+| engine_material | 98.4 / 60.7 | 289 | 100.0 | yes |
+| engine_output | 98.4 / 60.7 | 289 | 100.0 | yes |
+| all_arguments | 98.4 / 60.7 | 289 | 100.0 | yes |
+| arguments_reverse | 98.4 / 60.7 | 289 | 100.0 | yes |
+| handle_output | 96.9 / 61.7 | 296 | 100.0 | no |
+| output_handle | 96.6 / 58.5 | 297 | 100.0 | no |
+
+Five argument-only objects equal accepted complete Core byte-for-byte. Both
+handle/output records differ from accepted and each other, regressing source
+to 96.9/96.6. The first increases strict score only, which does not meet the
+requested source-shape gate. None retained; source/fixtures match bf0243e8 and
+outside-body/signature checks pass. No general compiler ceiling is inferred.
+
+Read-only recheck binds existing full evidence to restored production source:
+204 objects, 202 unaffected objects byte-identical to baseline, actual linked
+2079 and byte 959 exact pair sets unchanged without lost/gained pairs, canonical
+arguments unchanged, and fixed-three matcher rows recomputed directly. No new
+native/full-corpus run claimed for rejected forms. Accepted means remain
+**98.37% unweighted /98.36% original-instruction-weighted**; both >=99.0 gates
+remain unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/create_call_state_identities.json`, seven
+`_work/createcallstate-*.json` focused reports and source snapshots, current
+normalized instruction inventory, rechecked normalcenter validation audit.
