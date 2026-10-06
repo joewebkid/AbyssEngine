@@ -4112,3 +4112,22 @@ Source/object still accepted104;99.32/98.7082523588227, weighted99 unmet.
 No runtime/ceiling claim. Goal active; waiting for shared-scope decision.
 Evidence/proposal: docs/validation/starmap_2026-10-06_matrix_inline_proposal.json
 and .patch. No shared production files modified.
+
+
+## Hundred-and-eighth follow-up: shared constructor footprint (unapplied)
+
+Previous turn prepared a concrete shared Matrix proposal; no human scope
+approval has arrived. Automated goal continuation is not that approval.
+Read-only ARM nm -A -u scan of204 current base objects finds MatrixC1 references
+in33 units, including Level,Gun,PlayerTurret,TargetFollowCamera. Every one of
+those units has linked-exact rows;31 have byte-exact rows (552 linked/235 byte
+rows across those units, not distinct function/call-site proof). Unit paths
+normalized for repeated separators only for this comparison. A reference in
+an object plus exact rows in the same unit is a potential preservation surface,
+not evidence those exact functions call Matrix or that the proposal regresses.
+Full corpus preservation remains mandatory; no prediction of improved score.
+StarMap source/object and both shared Matrix files still match107 recorded
+hashes. No production change, build, test rerun or native runtime claim.
+Goal active, weighted98.7082523588227 <99. Awaiting explicit shared-scope decision;
+proposal remains unapplied. Evidence:
+docs/validation/starmap_2026-10-06_matrix_ctor_footprint.json.
