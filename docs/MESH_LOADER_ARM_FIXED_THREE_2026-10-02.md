@@ -4798,3 +4798,52 @@ No push, PR or merge.
 Evidence: `_work/read_center_position_flag_identities.json`,
 `_work/enh_shared_key_storage_identities.json`, their per-trial reports and
 source snapshots, rechecked `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: explicit frame capture after successful key reads
+
+Six Enhanced trials start from clean 878ea831. They name the already required
+time conversion as const int frameTime after the last successful read of each
+key record, separately for vectors, axes, optional, V5, optional+V5, or all
+eight loops. InsertKeyFrame's actual declaration is (const float*, longlong
+flags, int time); the existing int conversion is retained exactly, with no
+different-width time type. Conversion is not moved before the final file read,
+so truncation failure does not acquire a new float-to-int operation. It also
+stays after the existing updateTimeBetweenFrames. No precision change or claim
+about valid NaN/out-of-range conversion is introduced; the original conversion
+itself has not been removed or newly guarded.
+
+Axis grouping moves one conversion before its bounded axis dispatch; this
+rechecks an older hypothesis with the currently accepted unsigned-char axes.
+Optional/vector declarations are immediately before their insertion calls.
+V5 captures time before key division/rotation and channel dispatch, with all
+read, time-update, channel, value conversion and insertion ordering preserved.
+There is no helper between capture and use. No additional read/operation,
+padding, header/layout or helper change is introduced. These declarations
+are source hypotheses, not recovered original C++ locals.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| vectors | 98.3 / 66.9 | 641 | 100.0 | yes |
+| axes | 97.5 / 64.0 | 643 | 100.0 | no |
+| optional | 98.3 / 66.9 | 641 | 100.0 | yes |
+| v5 | 98.1 / 65.6 | 648 | 100.0 | no |
+| optional_v5 | 98.1 / 65.6 | 648 | 100.0 | no |
+| all | 97.3 / 62.5 | 650 | 100.0 | no |
+
+Vector and optional forms yield the accepted whole Mesh object. V5 and
+optional+V5 yield the same nonaccepted object. All four nonidentical forms
+regress required source. None retained; production source restored and full
+source/fixture comparison to bf0243e8 passes. Baseline outside-body/signatures
+pass. No new native or full-corpus run is claimed for rejected forms.
+
+Existing full evidence is rebound by read-only checks of the JSON hash,
+actual linked 2079/byte 959 pair sets equal baseline without lost/gained pairs,
+204 objects/202 unaffected objects, winner identities, canonical flag digest
+and argument list, and all fixed-three metric components directly from target
+and base instruction lists. Accepted **98.37% unweighted /98.36% weighted**;
+both >=99.0 gates remain unmet, goal active. No matcher, denominator, weights,
+unrelated body, ABI layout, push, PR or merge change.
+
+Evidence: `_work/enh_frame_capture_current_identities.json`, its six focused
+verifier reports/source snapshots and rechecked normalcenter validation audit.
