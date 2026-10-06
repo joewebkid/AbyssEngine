@@ -4044,3 +4044,47 @@ claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: cached uncompressed UV odd-component traversal
+
+Five Read trials start from clean e6ecefb5. They change only the successful
+uncompressed UV shader-flip loop, preserving the accepted uvFloats pointer
+and captured vertex count. Two traverse odd component indices directly from
+1 with stride 2 using int or unsigned int. Another traverses vertices and
+addresses component 2*i+1. Two use a pointer advancing by two floats per vertex,
+with signed or unsigned vertex index, changing only p[1] by 1.0f-p[1]. Earlier
+odd-component measurement combined it with per-iteration owner-field reload;
+these forms isolate traversal with the accepted cached pointer.
+
+vertexCount is at most 65535, so component bound is at most 131070, fitting
+all tested int/uint indices. Zero vertices execute no store or pointer offset.
+Pointer forms begin at uvFloats and advance after each store, reaching only
+the allocated array's one-past end after the final iteration. No pointer+1 is
+formed outside a nonempty iteration. File reads, allocation and field/count
+capture points, float subtraction and affected components remain unchanged.
+No helpers, ABI, flags, matcher, denominator or other bodies change. These are
+source traversal hypotheses, not recovered original loop declarations.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| odd_component_unsigned_int | 98.0 / 55.7 | 867 | 100.0 | no |
+| odd_component_int | 98.0 / 55.7 | 867 | 100.0 | no |
+| vertex_index | 97.7 / 55.2 | 865 | 100.0 | no |
+| pointer_unsigned_int | 97.7 / 55.2 | 865 | 100.0 | no |
+| pointer_int | 97.7 / 55.2 | 865 | 100.0 | no |
+
+The two odd-component index objects are byte-identical to each other, retaining
+rounded source but lowering strict. Vertex-index and both advancing-pointer
+objects equal one another and regress source to 97.7. The two groups differ
+from accepted and each other. Actual whole-object bytes establish identities,
+not equal scores. No required source gain occurs; no trial retained and
+production source restored.
+
+Evidence: `_work/readfloatuvindex-*.json`, source snapshots and
+`_work/read_float_uv_index_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
