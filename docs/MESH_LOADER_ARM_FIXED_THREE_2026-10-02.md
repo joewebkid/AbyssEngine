@@ -4742,3 +4742,59 @@ Evidence: `_work/read_tangent_center_identities.json`,
 `_work/read_center_counter_interaction_identities.json`, per-trial reports and
 source snapshots; `_work/center_remaining_for_calls.json`,
 `_work/center_remaining_do_calls.json`, rechecked normalcenter validation audit.
+
+
+## Continuation: position flag interaction and shared enhanced key storage
+
+Ten trials start from clean 1a8a6079. A fresh accepted Read instruction-inventory
+gap still contains the original signed position selection. Original 0x6c6a8
+is MOVS flags LSL#29, with BMI at 0x6c6ba; current source checks flags&4.
+Five equivalent flag forms are tested on the materially changed normal-center
+body. Four signed/high-bit variants produce the same nonaccepted whole Core
+object, regressing Read 98.4 ->97.7; unsigned shift-by-31 yields the accepted
+object. Signed conversions rely on the selected 32-bit two's-complement target
+toolchain interpretation; no general portable-C++ implementation claim is made.
+The shifted value remains nonzero precisely for the same low-three-bit flags.
+No extra guard/operation, read ordering or flags meaning is introduced.
+
+Five new Enhanced forms share only actually used local storage between sections:
+vector buffer across the first three groups; key/value scalar buffers across
+those groups; both; scalar buffers also through optional/V5; or all storage.
+Every use is preceded by the same successful existing read. No initialization,
+padding, field, helper, constructor/destructor or redundant operation is added.
+Read sizes/order, minimum-time updates, masks, signed V5 count, position-Y
+negation, angular conversion and attachment/cleanup stay unchanged. These are
+source lifetime hypotheses under the parser's synchronous Read/key-copy use,
+not recovered C++ declarations or proof about hypothetical retained caller
+buffers. No native claim is made for rejected storage variants.
+
+| Family/trial | Body source / strict | Instructions | Calls | Whole unit equals accepted |
+|---|---|---:|---:|---|
+| Read flag/direct_signed_shift | 97.7 / 56.8 | 885 | 100.0 | no |
+| Read flag/shared_signed_shift | 97.7 / 56.8 | 885 | 100.0 | no |
+| Read flag/shared_unsigned_high | 97.7 / 56.8 | 885 | 100.0 | no |
+| Read flag/shared_shifted_bit | 98.4 / 56.8 | 877 | 100.0 | yes |
+| Read flag/signed_shift_storage | 97.7 / 56.8 | 885 | 100.0 | no |
+| Enhanced storage/vectors | 97.6 / 50.9 | 641 | 100.0 | no |
+| Enhanced storage/prefix_scalars | 98.0 / 59.5 | 642 | 100.0 | no |
+| Enhanced storage/prefix_all | 98.0 / 58.1 | 642 | 100.0 | no |
+| Enhanced storage/all_scalars | 98.1 / 52.9 | 642 | 100.0 | no |
+| Enhanced storage/all_storage | 98.1 / 38.6 | 637 | 100.0 | no |
+
+All storage variants produce distinct Mesh objects and regress required source;
+equal rounded score/size of prefix scalar/all forms is not identity. None of
+the ten trials retained. Production and relevant test source restored and
+compared in full to bf0243e8. Baseline outside-body/signature check passes.
+
+Read-only binding recheck verifies existing full artifact hash, actual linked
+2079/byte 959 pair sets equal baseline with lost [] and gained [], all 204
+objects/202 unaffected objects, winner identities, canonical flags and fixed
+three metric components directly from target/base instructions. No new native
+or full-corpus run claimed for rejected variants. Accepted means **98.37%
+unweighted /98.36% weighted**; both >=99.0 gates remain unmet, goal active.
+No matcher, original weights, denominator, header/ABI or unrelated body change.
+No push, PR or merge.
+
+Evidence: `_work/read_center_position_flag_identities.json`,
+`_work/enh_shared_key_storage_identities.json`, their per-trial reports and
+source snapshots, rechecked `_work/normalcenter_validation_audit.json`.
