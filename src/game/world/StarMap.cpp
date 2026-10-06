@@ -1217,9 +1217,10 @@ void StarMap::initStarSystem() {
             uint32_t stationIndex = i - 1;
             AEGeometry *geom = new AEGeometry((uint16_t)(this->stations->data()[stationIndex]->getTextureIndex() + 0x4704), Globals::Canvas, false);
             this->stationGeoms->data()[i] = geom;
-            Matrix rotation;
-            rotation.m[10] = 1.0f;
-            rotation.m[13] = 1.0f;
+            Matrix rotation(1.0f, 0.0f, 0.0f, 0.0f,
+                          0.0f, 1.0f, 0.0f, 0.0f,
+                          0.0f, 0.0f, 1.0f, 0.0f,
+                          1.0f, 1.0f, 1.0f);
             int stationAngle = 0;
             bool assigned = false;
             while (!assigned) {
@@ -1651,9 +1652,10 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     this->prevCamera = (uint32_t)Globals::Canvas->CameraGetCurrent();
     Globals::Canvas->CameraCreate(this->camera);
     Globals::Canvas->CameraSetPerspective(this->camera, 1.1504f, 200.0f, 64000.0f);
-    Matrix matrix;
-    matrix.m[10] = 1.0f;
-    matrix.m[13] = 1.0f;
+    Matrix matrix(1.0f, 0.0f, 0.0f, 0.0f,
+                  0.0f, 1.0f, 0.0f, 0.0f,
+                  0.0f, 0.0f, 1.0f, 0.0f,
+                  1.0f, 1.0f, 1.0f);
     AbyssEngine::AEMath::MatrixSetTranslation(matrix, 0.0f, 0.0f, -2500.0f);
     AbyssEngine::AEMath::MatrixSetRotation(matrix, 0.0f, 3.1415927f, 0.0f);
     AbyssEngine::AEMath::MatrixSetTranslation(matrix, (float)(20 * (int)this->cameraBaseX),

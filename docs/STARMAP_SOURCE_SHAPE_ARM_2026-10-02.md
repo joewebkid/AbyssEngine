@@ -2,17 +2,18 @@
 
 ## Status and scope
 
-**PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.380% unweighted / 98.88257% original-instruction
+**ACHIEVED: both requested 99.0% source-shape thresholds and preservation gates pass.** The fixed 20 distinct
+implementation bodies measure **99.485% unweighted / 99.09704% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**88.040% / 83.12933%**, respectively. Source-shape is an inventory/control-flow
+**88.495% / 84.04597%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
 - Isolated branch: `codex/starmap-arm-99-20261002`.
 - Isolated checkout: `A:/gof2-starmap-99-20261002`.
-- Changed production files: `src/game/world/StarMap.cpp`, `StarMap.h` only.
+- Changed production files: `src/game/world/StarMap.cpp`, `StarMap.h` and
+  `src/engine/math/Matrix.h` (new value constructor; default constructor unchanged).
 - Added validation: `tests/check_starmap_source_shape.py`, this report and its
   compact evidence snapshots. No verifier, shared configuration, Level, Gun,
   PlayerTurret, TargetFollowCamera or Godot files were changed.
@@ -4577,3 +4578,37 @@ objects. No new full run or canonical change. Means99.38/98.88256583579778
 source,88.04/83.12933389663428 strict, fixed20/7101. Weighted99 remains unmet;
 native executable/runtime and whole ABI unverified.
 Evidence: docs/validation/starmap_2026-10-06_info_word_flags.json.
+
+## Hundred-and-twenty-third accepted explicit Matrix values: threshold passed
+
+Revalidated122 (4d0afb1b) and production119. Added a real constexpr15-float value
+constructor to Matrix and used it at the two StarMap basis-initialization sites.
+The values1,0,0,0/0,1,0,0/0,0,1,0/1,1,1 equal previous default construction
+plus the existing m10/m13 corrections. Native data/store evidence is in110/113;
+new API/source spelling is a reconstruction technique, not recovered original
+C++. No raw-storage cast, default-constructor replacement, fake ABI alias,
+forced-inline attribute, compiler flag or verifier change. Existing Matrix size
+0x3c/offset assertions pass. BOTH ordinary default-constructor bodies untouched.
+
+New constructor naturally inlines at both uses; no Matrix constructor symbol
+emitted in StarMap.o. ALL203 other ARM objects remain byte-identical, unlike
+the rejected110 shared default-constructor move. Only two of22 focused rows
+change: init source98.3->99.1, strict77.4->78.6, raw735->748; station init
+source97.3->98.6, strict84.7->92.6, raw683->704. Both call-count scores reach100.
+Other20 focused rows including aliases are unchanged;7 linked/3 byte unique
+StarMap bodies retained. Fixed20/7101 means99.485/99.09704267004646 source,
+88.495/84.04596535699197 strict. Both source thresholds pass.
+
+ARM204 compiled/0 failed; native Windows STATIC targetgof2 exit0. Full4619/0,
+linked2084/byte960, coverage4274/4524, missing250 (7 wrong type/243 absent),
+extras129. ALL22 focus/full rows agree. Non-partial baseline AND previous gates
+exit0, both threshold and exact-pair preservation pass with zero losses.
+Default99 gate now exits0. Source/object remain frozen through full validation;
+hashes and gate inputs recorded in the compact evidence snapshot. Canonical
+reports updated after all gates. Commit only the two production files, report
+and three evidence snapshots; no push or PR.
+
+The requested source-shape/static-validation objective is achieved. Native
+executable/runtime and whole ABI correctness remain unverified; this is not
+completion of the independent native engine/game restoration deliverable.
+Evidence: docs/validation/starmap_2026-10-06_matrix_value_constructor.json.
