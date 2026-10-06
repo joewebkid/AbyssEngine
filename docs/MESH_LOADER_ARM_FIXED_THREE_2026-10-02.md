@@ -7566,3 +7566,111 @@ PR or merge change. Main checkout remains untouched.
 Evidence: `_work/read_index_reload_color_uv_input_identities.json`,
 `_work/enh_signed_section_dispatch_identities.json`, thirty-one focused
 reports/source snapshots/objects and rechecked typedpair validation audit.
+
+
+## Continuation: fresh indexed owner with extrema and child-state lifetimes
+
+Forty successful focused measurements start from d2683890. Every form adds
+fresh m=*slot after successful indexCount read, before index allocation.
+Reviewed the unchanged matcher's instruction-inventory differences to choose
+loads, local lifetimes and comparisons as the next hypotheses. Inventory gaps
+alone do not prove the original declarations or establish a compiler ceiling.
+
+Twenty-two extrema forms combine reload-only control with four local/reference
+forms and three comparison-order forms, each in short-position, integer-position
+or both decoders. Minimum/sequential locals and component references preserve
+accesses; both-preloaded form loads independent min/max components before the
+first update. Minimum and maximum arrays are distinct and indices stay 0..2.
+Comparison reversal preserves NaN behavior; swapping independent min/max
+updates preserves assignments. No new arithmetic, allocation or stream read.
+
+| Extrema form | Source / strict | Instructions | Calls | Whole Core equals reload-only |
+|---|---|---:|---:|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_minimum_local_short | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_minimum_local_integer | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_minimum_local_both | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_sequential_locals_short | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_sequential_locals_integer | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_sequential_locals_both | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_both_preloaded_short | 98.5 / 57.4 | 874 | 100.0 | no |
+| locals_both_preloaded_integer | 98.5 / 57.4 | 874 | 100.0 | no |
+| locals_both_preloaded_both | 98.5 / 56.9 | 874 | 100.0 | no |
+| locals_component_references_short | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_component_references_integer | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_component_references_both | 98.5 / 57.8 | 874 | 100.0 | yes |
+| order_reverse_operands_short | 98.5 / 57.8 | 874 | 100.0 | yes |
+| order_reverse_operands_integer | 98.5 / 57.8 | 874 | 100.0 | yes |
+| order_reverse_operands_both | 98.5 / 57.8 | 874 | 100.0 | yes |
+| order_maximum_first_short | 98.5 / 57.4 | 874 | 100.0 | no |
+| order_maximum_first_integer | 98.5 / 57.4 | 874 | 100.0 | no |
+| order_maximum_first_both | 98.5 / 56.9 | 874 | 100.0 | no |
+| order_reverse_maximum_first_short | 98.5 / 57.4 | 874 | 100.0 | no |
+| order_reverse_maximum_first_integer | 98.5 / 57.4 | 874 | 100.0 | no |
+| order_reverse_maximum_first_both | 98.5 / 56.9 | 874 | 100.0 | no |
+
+All extrema forms tie source 98.5; thirteen equal the entire reload-only Core
+object. Nine preloaded/maximum-first forms change code without improvement.
+Corresponding reversed and unreversed maximum-first objects are identical.
+
+Eighteen child forms combine control with five lifetime/counter variants and
+twelve records: six ordered pairs and six permutations of childCount/c/childPtr.
+Each record contains only the live original locals, not unused padding fields.
+Signed/ushort child counters are bounded by ushort childCount; the last legal
+iteration advances to count and exits without ushort overflow. The guarded-do
+zero-count behavior, failed-unattached-child lifetime, recursive read predicate,
+sphere merge and fresh parent load before ArrayAdd stay unchanged. Moving the
+child pointer declaration changes stack lifetime, not allocation timing.
+
+| Child form | Source / strict | Instructions | Calls | Whole Core equals reload-only |
+|---|---|---:|---:|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| lifetime_signed_child_counter | 98.5 / 57.8 | 874 | 100.0 | yes |
+| lifetime_short_child_counter | 98.5 / 57.8 | 875 | 100.0 | no |
+| lifetime_child_before_count | 98.4 / 57.8 | 874 | 100.0 | no |
+| lifetime_child_inside_nonempty_guard | 98.5 / 57.5 | 873 | 100.0 | no |
+| lifetime_child_function_scope | 98.4 / 57.8 | 874 | 100.0 | no |
+| state_pair_childCount_c | 97.4 / 55.4 | 874 | 98.2 | no |
+| state_pair_c_childCount | 97.3 / 55.4 | 875 | 98.2 | no |
+| state_pair_childCount_childPtr | 98.1 / 56.8 | 880 | 100.0 | no |
+| state_pair_childPtr_childCount | 98.4 / 57.8 | 875 | 100.0 | no |
+| state_pair_c_childPtr | 97.3 / 55.3 | 876 | 98.2 | no |
+| state_pair_childPtr_c | 97.3 / 55.4 | 875 | 98.2 | no |
+| state_all_childCount_c_childPtr | 97.3 / 55.3 | 876 | 98.2 | no |
+| state_all_childCount_childPtr_c | 97.3 / 55.3 | 876 | 98.2 | no |
+| state_all_c_childCount_childPtr | 97.3 / 55.3 | 876 | 98.2 | no |
+| state_all_c_childPtr_childCount | 97.3 / 55.3 | 876 | 98.2 | no |
+| state_all_childPtr_childCount_c | 97.3 / 55.3 | 876 | 98.2 | no |
+| state_all_childPtr_c_childCount | 97.3 / 55.3 | 876 | 98.2 | no |
+
+Control and signed child counter equal reload-only Core. Other lifetime forms
+tie or regress. All record forms regress; ten have call-count match 98.2.
+No source-level extra call or artificial effect was inserted. None retained.
+Fresh indexed-owner timing has ARM support but lacks fixture proof for a
+hypothetical slot-mutating callback. Source forms remain hypotheses.
+
+First child sweep terminated during verification of
+state_all_childCount_c_childPtr with "No comparable functions found" when A:
+had only 69632 bytes free. Its finally block restored the source. That failed
+measurement was not accepted. Freed space by deleting only 408 untracked target
+objects under owned _work/normalcenter-full/target and normalinput-full/target,
+after checking each SHA256 against its retained canonical typedpair-full/target
+counterpart. No source, report, base object, main checkout file or baseline/
+accepted validation evidence was removed. Manifest records each path, checksum,
+size and retained replacement. Then reran the entire eighteen-form sweep:
+all compile/focused verify calls exited zero, complete ledger written. Current
+forty rows independently recomputed from target/base instructions with the
+unchanged matcher. No new native/full-corpus run claimed for rejected forms.
+
+Code/fixtures restored to ecc30f25. Read-only accepted full/native binding audit
+passes: 204 TUs/4619 comparisons/zero skipped, 202 unaffected objects, actual
+linked 2079/byte 959 exact-pair sets equal baseline with no lost/gained pairs,
+canonical flags and outside-body/signature boundaries unchanged. Accepted
+means **98.40% /98.41%**; both >=99.0 gates unmet, goal active. No header/helper/
+ABI, compiler/flag/matcher, push, PR or merge change. Main checkout untouched.
+
+Evidence: `_work/read_index_reload_extrema_identities.json`,
+`_work/read_index_reload_child_forms_identities.json`, forty focused reports/
+source snapshots/objects, `_work/duplicate_target_cleanup_20261006.json` and
+rechecked typedpair validation audit. Older duplicate target paths in the
+cleanup manifest now resolve through their explicitly recorded retained copies.
