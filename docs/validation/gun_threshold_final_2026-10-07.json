@@ -1,0 +1,2377 @@
+{
+  "date": "2026-10-07",
+  "parent_commit": "251de369",
+  "accepted": "Direct assignment of allocated wobble array and defined nonzero 64-bit sentinel input for native scatter CLZ zero-normalization.",
+  "native_contract": "Constructor allocates/constructs Array<Vector*> then stores its pointer at Gun+0xac before the same five ArraySetLength calls. Removing the intermediate non-owning local preserves allocation, exception cleanup and effects. Collision native sub #25 / CLZ / LSR #5 returns a zero flag. Let d=uint32(kind)-25 and w=(uint64(d)<<32)|0x80000000. w is always nonzero. If d==0, clz64(w)=32; otherwise clz64(w) is 0..31. Right shift 5 therefore equals kind==25 for every 32-bit kind, with defined unsigned arithmetic and no clz(0).",
+  "not_recovered_source": true,
+  "original_scatter_zero_test": [
+    "sub.w r1, r2, #25",
+    "clz r1, r1",
+    "lsrs r1, r1, #5",
+    "str r1, [sp, #32]"
+  ],
+  "intermediate_ctor_corpus_exact_losses": {
+    "linked_equal": [],
+    "bytes_equal": []
+  },
+  "inference_limit": "Exact C++ syntax remains inferred. Sentinel is a defined implementation of the native word zero-test, not evidence the original used 64-bit arithmetic. Canonical ARM emits native CLZ with boolean-use masking, without extra function symbols/calls; scratch frame is 216 versus original 208. Source-shape thresholds are not linked/byte or game-runtime identity.",
+  "improvement": "constructor source 99.0 -> 100.0, strict 93.0 -> 94.9 and 178 -> 177 instructions equals original 177. Collision source 97.2 -> 97.7, strict 43.1 -> 43.6, stays 642 instructions versus original 647. Other 25 diagnostic rows unchanged. Fixed means exceed 99.0 without changing weights, membership, flags or scoring.",
+  "previous": {
+    "bodies": 26,
+    "original_instructions": 2393,
+    "source_unweighted": 99.76538461538462,
+    "source_weighted": 98.83990806519013,
+    "strict_unweighted": 94.54230769230769,
+    "strict_weighted": 74.73096531550354,
+    "linked_exact": 19,
+    "byte_exact": 13
+  },
+  "current": {
+    "bodies": 26,
+    "original_instructions": 2393,
+    "source_unweighted": 99.82307692307693,
+    "source_weighted": 99.04905975762641,
+    "strict_unweighted": 94.63461538461539,
+    "strict_weighted": 75.00668616798997,
+    "linked_exact": 19,
+    "byte_exact": 13
+  },
+  "target_met": true,
+  "input_sha256": {
+    "src\\game\\weapons\\Gun.cpp": "d836f6794e98b77922e0a3f45055b949e305cde791a4a63e4f70c27a9beba101",
+    "src\\game\\weapons\\Gun.h": "400097d0e265812992483f4556cf6cfa63302d60978129c9211aae9bdd904f2c",
+    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "fa35fdf75cba9e879e6768755df35b8f382351a70275a911c9287074aeef191f",
+    "_work\\gun-current\\verify\\.flags": "b7741d9045ccee7cadcb1e3f3027e57029d127537931305e306e50bc830d174c",
+    "tools\\verify\\asmdiff.py": "ab7cde77854f395ea9c317618085375e1723de580defb8548be4bee94b0c3a5a",
+    "tools\\verify\\test_asmdiff_aliases.py": "d1b55aae56f2caaf79c6feb6604127742e3a9a271e4e6b126a2773c8db14e239",
+    "tools\\gun_contract_smoke.py": "c39ef7a6783976411212ad102f6f4b325f82d37b4f6d67f71e243635d137922d",
+    "tools\\gun_contract_smoke.cpp": "69d015740775589a29f12b041e707449a5b0d4e6035004656552155b0bf4829c",
+    "tools\\gun_ignite_contract_smoke.cpp": "d38e2b8a096a2d2600d921922aeed27f8cdbd23ff888a296f83c0475ac9b972a",
+    "tools\\gun_scatter_flag_smoke.cpp": "0ccb50a6ed6b8105b5cd1eed3e180680999b8e273448e29d340cbda9e1ec1c4f"
+  },
+  "checks": {
+    "native_gof2_static_library": "passed",
+    "arm_translation_units": {
+      "compiled": 204,
+      "failed": 0
+    },
+    "host_selected_source_contract_smoke": "passed; includes extracted mount block operand/side effects; not full shootAt or ARM execution",
+    "mount_regression_before_fix_exit": 1,
+    "mount_regression_after_fix_exit": 0,
+    "diff_check": "passed",
+    "full_corpus_wrong_type_gate_exit": 0,
+    "object_newer_than_source_and_header": true,
+    "baseline_full_corpus_wrong_type_gate_exit": 0,
+    "section_local_alias_regressions": "passed: distinct equal-address sections and seven real ARM aliases",
+    "native_archive_path": "C:\\Users\\Dima\\.codex\\gun-arm-99-scratch-2026-10-06\\native-output\\libgof2.a",
+    "full_corpus_fresh_run": "threshold-final-corpus.json: all comparisons, strict wrong-type gate exit 0",
+    "ignite_impact_operand_smoke": "Actual extracted ignite tail: old basePos operand fails; first position operand passes. Does not execute full radial damage body.",
+    "scatter_classifier_smoke": "Actual extracted flag expression: all leading-zero partition boundaries and 100000 deterministic random 32-bit words agree with native kind==25; mathematical proof covers all uint32 differences. No full collision execution."
+  },
+  "baseline_exact_losses": {
+    "linked_equal": [],
+    "bytes_equal": []
+  },
+  "legacy_exact_losses": {
+    "linked_equal": [],
+    "bytes_equal": []
+  },
+  "previous_checkpoint_exact_losses": {
+    "linked_equal": [],
+    "bytes_equal": []
+  },
+  "native_archive": "C:\\Users\\Dima\\.codex\\gun-arm-99-scratch-2026-10-06\\native-output\\libgof2.a",
+  "native_archive_sha256": "2df91bedf2e1d59018abe1f35818d5bd50ded88044fd8c971c0fee11bd807786",
+  "full_report": "_work\\gun-current\\threshold-final-corpus.json",
+  "full_report_sha256": "3edfcb8961fb9e41489991ceb7456c58183e5768eeda12deb66d5cef28dec685",
+  "fixed_manifest_sha256": "3ad4f342b4176d1cf01aa831c1ca25fee20ab1bed5c2c63f352c22446dc650d9",
+  "private_controls": {
+    "constructor_forms": {
+      "direct-array": {
+        "symbol": "_ZN3GunC1EiiiiiifN11AbyssEngine6AEMath6VectorES2_",
+        "match": 94.9,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 177,
+        "n_base": 177,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "49ca7e6abf2b07e26f3900359ca472e4cbcad333a2631102fbc3f6e7f8609148",
+        "object_sha256": "b032b8a95bdf5e9da2d85e1c79865ad313b98b82dd8919d1998708b2a7e26a2f"
+      },
+      "byte-mask": {
+        "symbol": "_ZN3GunC1EiiiiiifN11AbyssEngine6AEMath6VectorES2_",
+        "match": 93.0,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 177,
+        "n_base": 178,
+        "source_match": 99.0,
+        "instruction_inventory_match": 97.7,
+        "opcode_inventory_match": 98.9,
+        "control_flow_match": 98.3,
+        "ordered_control_flow_match": 98.3,
+        "control_inventory_match": 98.3,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "body_identical_to_canonical": true,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "ed43a066fbce00cebab0a7d53b9e629b5bccb70e881a9f07dc7712d110215203",
+        "object_sha256": "3dc39af5a9eea9e17fef53b1875d20170d38711f7e5aa41ed479d9098807b280"
+      },
+      "unsigned-loop": {
+        "symbol": "_ZN3GunC1EiiiiiifN11AbyssEngine6AEMath6VectorES2_",
+        "match": 91.3,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 177,
+        "n_base": 180,
+        "source_match": 97.3,
+        "instruction_inventory_match": 96.6,
+        "opcode_inventory_match": 97.8,
+        "control_flow_match": 93.3,
+        "ordered_control_flow_match": 93.3,
+        "control_inventory_match": 93.3,
+        "call_count_match": 100.0,
+        "size_match": 98.9,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "328cc525bfe7026bbb0a5406a4c32589fa9b199e4ac44c01aa8eb02ea6975ddf",
+        "object_sha256": "db35053121819ccbfffc088287d1a3ac0700a02109a6dda1bb879adeeda237ed"
+      },
+      "signed-loop-precheck": {
+        "symbol": "_ZN3GunC1EiiiiiifN11AbyssEngine6AEMath6VectorES2_",
+        "match": 53.1,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 177,
+        "n_base": 181,
+        "source_match": 97.4,
+        "instruction_inventory_match": 95.2,
+        "opcode_inventory_match": 96.9,
+        "control_flow_match": 96.7,
+        "ordered_control_flow_match": 93.3,
+        "control_inventory_match": 96.7,
+        "call_count_match": 100.0,
+        "size_match": 98.3,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "2f72adf1d9fe06a04ca92b9cff87a9fe12ef368bd8dcb55c5a607b3ddbe1f383",
+        "object_sha256": "eb054d2ee43437e4c32f150575c0d4b1041cb812ef10a5abf91ab3bdaabe37fc"
+      }
+    },
+    "shoot_vector_stride": {
+      "all-arrays": {
+        "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
+        "match": 71.6,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 643,
+        "n_base": 639,
+        "source_match": 98.9,
+        "instruction_inventory_match": 98.1,
+        "opcode_inventory_match": 98.7,
+        "control_flow_match": 98.5,
+        "ordered_control_flow_match": 93.9,
+        "control_inventory_match": 98.5,
+        "call_count_match": 100.0,
+        "size_match": 99.4,
+        "body_identical_to_canonical": true,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "a56b1f96e0cdefdc6e0f452e744fc861fd0e18adb2781f5067a5f4d6ca6891fa",
+        "object_sha256": "dc3d7a27a96247a6fe7b51cfb15b7002f307c51ced0abd2e0999df1d581d19c5"
+      },
+      "position-only": {
+        "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
+        "match": 71.6,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 643,
+        "n_base": 639,
+        "source_match": 98.9,
+        "instruction_inventory_match": 98.1,
+        "opcode_inventory_match": 98.7,
+        "control_flow_match": 98.5,
+        "ordered_control_flow_match": 93.9,
+        "control_inventory_match": 98.5,
+        "call_count_match": 100.0,
+        "size_match": 99.4,
+        "body_identical_to_canonical": true,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "3ac4cd05b5d7410f0daaf1b8e2f68ef0fb83864f17b8de31a5b66999659dbc80",
+        "object_sha256": "97aa72dd1030a8d1a869595be49e4639109a49c4df94a257baf7e68e4c2d1446"
+      },
+      "direction-up": {
+        "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
+        "match": 71.6,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 643,
+        "n_base": 631,
+        "source_match": 98.3,
+        "instruction_inventory_match": 97.0,
+        "opcode_inventory_match": 98.1,
+        "control_flow_match": 98.5,
+        "ordered_control_flow_match": 93.9,
+        "control_inventory_match": 98.5,
+        "call_count_match": 100.0,
+        "size_match": 98.1,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "7cb516d13ab631ae38b1f6ecf39927eb5334edab5085706b7e1322049b6dad32",
+        "object_sha256": "97820ce445782c03fe698641bbdd138739ba9323b68558682ee9f1480522bc60"
+      },
+      "size-t-stride": {
+        "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
+        "match": 71.6,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 643,
+        "n_base": 639,
+        "source_match": 98.9,
+        "instruction_inventory_match": 98.1,
+        "opcode_inventory_match": 98.7,
+        "control_flow_match": 98.5,
+        "ordered_control_flow_match": 93.9,
+        "control_inventory_match": 98.5,
+        "call_count_match": 100.0,
+        "size_match": 99.4,
+        "body_identical_to_canonical": true,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "94c08df763ce1a7ba8e74f06447aceceb1cdbad4d382d9a8c72d3655a3096961",
+        "object_sha256": "045ff9511e7054fc6bd964cb1b6f4af63a6dd69de22dabfade5e4b5016f93ec3"
+      }
+    },
+    "shoot_word_scopes": {
+      "zero": {
+        "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
+        "match": 71.9,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 643,
+        "n_base": 633,
+        "source_match": 98.2,
+        "instruction_inventory_match": 97.2,
+        "opcode_inventory_match": 97.8,
+        "control_flow_match": 97.7,
+        "ordered_control_flow_match": 92.4,
+        "control_inventory_match": 97.7,
+        "call_count_match": 100.0,
+        "size_match": 98.4,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "dd8356be90eef83965c8ebcf085dc59de41c74251fe58395f3d4a8ef851b1f15",
+        "object_sha256": "2893c946e4acab8a293eddab2a968cc8c0120b2a8709a7c097b0f0cddd6020bc",
+        "frame_prefix": [
+          "push {r4, r5, r6, r7, lr}",
+          "add r7, sp, #12",
+          "stmdb sp!, {r7, r8, r9, sl, fp}",
+          "vpush {d8-d11}",
+          "sub sp, #136"
+        ]
+      },
+      "launch": {
+        "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
+        "match": 70.3,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 643,
+        "n_base": 640,
+        "source_match": 98.9,
+        "instruction_inventory_match": 98.0,
+        "opcode_inventory_match": 98.7,
+        "control_flow_match": 98.5,
+        "ordered_control_flow_match": 93.9,
+        "control_inventory_match": 98.5,
+        "call_count_match": 100.0,
+        "size_match": 99.5,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "97a35774da354572195e6f95edb3be7551102632b8fd163b553f6f0bbbb8692e",
+        "object_sha256": "9a02ce67f0554add3b126ea02009aa5437946f6825b459b0ad014a87831ab201",
+        "frame_prefix": [
+          "push {r4, r5, r6, r7, lr}",
+          "add r7, sp, #12",
+          "stmdb sp!, {r7, r8, r9, sl, fp}",
+          "vpush {d8-d11}",
+          "sub sp, #144"
+        ]
+      },
+      "normalized": {
+        "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
+        "match": 71.6,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 643,
+        "n_base": 639,
+        "source_match": 98.9,
+        "instruction_inventory_match": 98.1,
+        "opcode_inventory_match": 98.7,
+        "control_flow_match": 98.5,
+        "ordered_control_flow_match": 93.9,
+        "control_inventory_match": 98.5,
+        "call_count_match": 100.0,
+        "size_match": 99.4,
+        "body_identical_to_canonical": true,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "de45d41bc4ca9ce065666c2b1b9d46291af5a7482ce0368cdef253445e8aef0d",
+        "object_sha256": "1eca956334956e39d88f9518d175d00531638f78f2d4be8cc3b4086ef7c856e1",
+        "frame_prefix": [
+          "push {r4, r5, r6, r7, lr}",
+          "add r7, sp, #12",
+          "stmdb sp!, {r7, r8, r9, sl, fp}",
+          "vpush {d8-d11}",
+          "sub sp, #144"
+        ]
+      },
+      "zero-launch": {
+        "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
+        "match": 71.9,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 643,
+        "n_base": 633,
+        "source_match": 98.6,
+        "instruction_inventory_match": 97.6,
+        "opcode_inventory_match": 98.3,
+        "control_flow_match": 98.5,
+        "ordered_control_flow_match": 93.9,
+        "control_inventory_match": 98.5,
+        "call_count_match": 100.0,
+        "size_match": 98.6,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "2c1c20c70b442df9727298be52198d35ae11bc11fd1123501bc335f10594fbb3",
+        "object_sha256": "b8639f7ea432d9a25ebd4079c5fb5f894bd02b6134d5583a640f5d8b11ca1727",
+        "frame_prefix": [
+          "push {r4, r5, r6, r7, lr}",
+          "add r7, sp, #12",
+          "stmdb sp!, {r7, r8, r9, sl, fp}",
+          "vpush {d8-d11}",
+          "sub sp, #136"
+        ]
+      },
+      "launch-normalized": {
+        "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
+        "match": 70.3,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 643,
+        "n_base": 640,
+        "source_match": 98.9,
+        "instruction_inventory_match": 98.0,
+        "opcode_inventory_match": 98.7,
+        "control_flow_match": 98.5,
+        "ordered_control_flow_match": 93.9,
+        "control_inventory_match": 98.5,
+        "call_count_match": 100.0,
+        "size_match": 99.5,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "cad39d83e1ba03adb71c9e58c1a90efb03d83b71902343df3ff6425a0b4b5c83",
+        "object_sha256": "8196848bb43577643804aeeecc988d96b8efd43ef820225834f4c6838510b28d",
+        "frame_prefix": [
+          "push {r4, r5, r6, r7, lr}",
+          "add r7, sp, #12",
+          "stmdb sp!, {r7, r8, r9, sl, fp}",
+          "vpush {d8-d11}",
+          "sub sp, #144"
+        ]
+      },
+      "zero-normalized": {
+        "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
+        "match": 71.9,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 643,
+        "n_base": 633,
+        "source_match": 98.2,
+        "instruction_inventory_match": 97.2,
+        "opcode_inventory_match": 97.8,
+        "control_flow_match": 97.7,
+        "ordered_control_flow_match": 92.4,
+        "control_inventory_match": 97.7,
+        "call_count_match": 100.0,
+        "size_match": 98.4,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "d1084a1354ec7e5fe22f05004a17836a0f379f75336f77d01dbb460c63c5bd28",
+        "object_sha256": "d114f3027935c23e2556f025afe8234d25d1da80e291e7c6f22c514b40f25508",
+        "frame_prefix": [
+          "push {r4, r5, r6, r7, lr}",
+          "add r7, sp, #12",
+          "stmdb sp!, {r7, r8, r9, sl, fp}",
+          "vpush {d8-d11}",
+          "sub sp, #136"
+        ]
+      },
+      "all": {
+        "symbol": "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb",
+        "match": 71.9,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 643,
+        "n_base": 633,
+        "source_match": 98.6,
+        "instruction_inventory_match": 97.6,
+        "opcode_inventory_match": 98.3,
+        "control_flow_match": 98.5,
+        "ordered_control_flow_match": 93.9,
+        "control_inventory_match": 98.5,
+        "call_count_match": 100.0,
+        "size_match": 98.6,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "c9bed4882c86af5b24cb9b604b552ba38cf8f564cfd18c5bf59b784d50750d7b",
+        "object_sha256": "e95d2e8f32dc71a332aa5572923da5daaeaaab798cb4562111f64d509980582d",
+        "frame_prefix": [
+          "push {r4, r5, r6, r7, lr}",
+          "add r7, sp, #12",
+          "stmdb sp!, {r7, r8, r9, sl, fp}",
+          "vpush {d8-d11}",
+          "sub sp, #136"
+        ]
+      }
+    },
+    "collision_reject_word": {
+      "reject-unsigned": {
+        "symbol": "_ZN3Gun22calcCharacterCollisionEv",
+        "match": 43.1,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 647,
+        "n_base": 642,
+        "source_match": 97.2,
+        "instruction_inventory_match": 95.4,
+        "opcode_inventory_match": 96.2,
+        "control_flow_match": 95.5,
+        "ordered_control_flow_match": 71.3,
+        "control_inventory_match": 95.5,
+        "call_count_match": 100.0,
+        "size_match": 99.0,
+        "body_identical_to_canonical": true,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "e4f425ec266501f875a7d73ca52c9b3b34d2cab817e4cd179b4bca888f49b48d",
+        "object_sha256": "0a21e420b142e9805207226519becb340b5c392266efbe556ca3cd707b12afa0"
+      },
+      "reject-int": {
+        "symbol": "_ZN3Gun22calcCharacterCollisionEv",
+        "match": 43.1,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 647,
+        "n_base": 642,
+        "source_match": 97.2,
+        "instruction_inventory_match": 95.4,
+        "opcode_inventory_match": 96.2,
+        "control_flow_match": 95.5,
+        "ordered_control_flow_match": 71.3,
+        "control_inventory_match": 95.5,
+        "call_count_match": 100.0,
+        "size_match": 99.0,
+        "body_identical_to_canonical": true,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "78d09d5fae85f59eb406c5886af45fdacbb8a43d881c6f427085c5d693fe23b2",
+        "object_sha256": "6fafb00d329959bea92309dce48a6c56a677ada70ac633453b37e4d79209c8b1"
+      },
+      "z-words": {
+        "symbol": "_ZN3Gun22calcCharacterCollisionEv",
+        "match": 43.1,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 647,
+        "n_base": 642,
+        "source_match": 97.2,
+        "instruction_inventory_match": 95.4,
+        "opcode_inventory_match": 96.2,
+        "control_flow_match": 95.5,
+        "ordered_control_flow_match": 71.3,
+        "control_inventory_match": 95.5,
+        "call_count_match": 100.0,
+        "size_match": 99.0,
+        "body_identical_to_canonical": true,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "10518df4a1e27263f5dbb1ee60f5ba90115596ba62425daccc56d2138f2aa625",
+        "object_sha256": "0ada03c30a869ce2a3117ffa3acfd28ebbe1822ab9883fa7eff4bbb7510c6827"
+      },
+      "z-xor": {
+        "symbol": "_ZN3Gun22calcCharacterCollisionEv",
+        "match": 43.1,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 647,
+        "n_base": 642,
+        "source_match": 97.2,
+        "instruction_inventory_match": 95.4,
+        "opcode_inventory_match": 96.2,
+        "control_flow_match": 95.5,
+        "ordered_control_flow_match": 71.3,
+        "control_inventory_match": 95.5,
+        "call_count_match": 100.0,
+        "size_match": 99.0,
+        "body_identical_to_canonical": true,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "0d0391360d5d3b172bc094ccd61129bd9289c4c3633af6abea313c37d05869ea",
+        "object_sha256": "51aba90b306db3498b6ea0cc10e83a77c62fe04902be4bcb5d06205a97c62641"
+      },
+      "reject-z-words": {
+        "symbol": "_ZN3Gun22calcCharacterCollisionEv",
+        "match": 43.1,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 647,
+        "n_base": 642,
+        "source_match": 97.2,
+        "instruction_inventory_match": 95.4,
+        "opcode_inventory_match": 96.2,
+        "control_flow_match": 95.5,
+        "ordered_control_flow_match": 71.3,
+        "control_inventory_match": 95.5,
+        "call_count_match": 100.0,
+        "size_match": 99.0,
+        "body_identical_to_canonical": true,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "103c0a11fc7a45061ba69f7a3e235235c92ae84d1c04f0c64e72ddcb4b27adc1",
+        "object_sha256": "d296fde879f86fe383983dace5e26d875e9c637d994f2198cc102b9237d4c632"
+      },
+      "reject-z-xor": {
+        "symbol": "_ZN3Gun22calcCharacterCollisionEv",
+        "match": 43.1,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 647,
+        "n_base": 642,
+        "source_match": 97.2,
+        "instruction_inventory_match": 95.4,
+        "opcode_inventory_match": 96.2,
+        "control_flow_match": 95.5,
+        "ordered_control_flow_match": 71.3,
+        "control_inventory_match": 95.5,
+        "call_count_match": 100.0,
+        "size_match": 99.0,
+        "body_identical_to_canonical": true,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "f26808cfd1d586f59433b1467d57f4941e08acb4897fad262e6677222d2710e8",
+        "object_sha256": "8e0d23f5581d7d729ad07fbcb177c333082b0898f1c1971362f837dc65819f2b"
+      }
+    },
+    "collision_clz64": {
+      "sentinel-top-mine": {
+        "symbol": "_ZN3Gun22calcCharacterCollisionEv",
+        "match": 43.4,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 647,
+        "n_base": 642,
+        "source_match": 97.0,
+        "instruction_inventory_match": 94.8,
+        "opcode_inventory_match": 95.6,
+        "control_flow_match": 96.2,
+        "ordered_control_flow_match": 72.2,
+        "control_inventory_match": 96.2,
+        "call_count_match": 100.0,
+        "size_match": 98.6,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "ccdd1f1ad7223c5502f8a2d164e04376c859943e0e6f4748923e1ce5393c08c7",
+        "object_sha256": "c13151bafe1ad92ddf7c4c9a48cbcad2e0d13353abbea33527dfa945bcd6c25c"
+      },
+      "sentinel-top-scatter": {
+        "symbol": "_ZN3Gun22calcCharacterCollisionEv",
+        "match": 43.6,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 647,
+        "n_base": 642,
+        "source_match": 97.7,
+        "instruction_inventory_match": 95.8,
+        "opcode_inventory_match": 96.8,
+        "control_flow_match": 96.9,
+        "ordered_control_flow_match": 72.7,
+        "control_inventory_match": 96.9,
+        "call_count_match": 100.0,
+        "size_match": 98.7,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "be8932d5e5752d6282c3b2a4a9ac3035662ef39c08ad944025a1997d837a0ca7",
+        "object_sha256": "70379afedd81a587fa4dfa6053593233aefd22cb02782e3afb7229216a169ab6"
+      },
+      "sentinel-top-both": {
+        "symbol": "_ZN3Gun22calcCharacterCollisionEv",
+        "match": 46.1,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 95.8,
+        "instruction_inventory_match": 88.2,
+        "opcode_inventory_match": 96.1,
+        "control_flow_match": 97.9,
+        "ordered_control_flow_match": 73.8,
+        "control_inventory_match": 97.9,
+        "call_count_match": 100.0,
+        "size_match": 96.8,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "33a955eba0e5df0e658c9638f27df9ef42307cf16aed6c21693318ba10289467",
+        "object_sha256": "a2a16117d5cc6308ab487dda3d27b02630f0676be87edbe5544f16a373c5d477"
+      },
+      "sentinel-one-mine": {
+        "symbol": "_ZN3Gun22calcCharacterCollisionEv",
+        "match": 43.5,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 647,
+        "n_base": 639,
+        "source_match": 96.9,
+        "instruction_inventory_match": 94.3,
+        "opcode_inventory_match": 95.4,
+        "control_flow_match": 96.6,
+        "ordered_control_flow_match": 72.4,
+        "control_inventory_match": 96.6,
+        "call_count_match": 100.0,
+        "size_match": 98.3,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "343893c37b4b6a8d841e1453acf6e7ac14332be63a93df9d20dca80309e90c58",
+        "object_sha256": "84c624eeaa4ce0bb1b96314e48fbb1898e2b2863a5ae0e330fbda13bc3574fc0"
+      },
+      "sentinel-one-scatter": {
+        "symbol": "_ZN3Gun22calcCharacterCollisionEv",
+        "match": 44.5,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 647,
+        "n_base": 644,
+        "source_match": 97.6,
+        "instruction_inventory_match": 95.4,
+        "opcode_inventory_match": 96.7,
+        "control_flow_match": 96.9,
+        "ordered_control_flow_match": 72.7,
+        "control_inventory_match": 96.9,
+        "call_count_match": 100.0,
+        "size_match": 99.0,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "4d7b328b442e8ee6ea00720a843e27a26cdfdc2bcfdb4c583fc619ce821b47d8",
+        "object_sha256": "4cc814bc48038fa8a08512b6c4315b8fcebdd4738278d29a9a98936c834f3115"
+      },
+      "sentinel-one-both": {
+        "symbol": "_ZN3Gun22calcCharacterCollisionEv",
+        "match": 46.7,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 647,
+        "n_base": 637,
+        "source_match": 95.8,
+        "instruction_inventory_match": 87.4,
+        "opcode_inventory_match": 95.9,
+        "control_flow_match": 97.9,
+        "ordered_control_flow_match": 73.8,
+        "control_inventory_match": 97.9,
+        "call_count_match": 100.0,
+        "size_match": 97.6,
+        "body_identical_to_canonical": false,
+        "other_changed_bodies": [],
+        "extra_function_symbols": [],
+        "source_sha256": "95487951ce109e8ed55c615a8badee803cf3df1b5dcad8eb14bc775d45a9dde6",
+        "object_sha256": "a61bd98c94ec05d8345394c167c849a256e9bf0ee6bf59d9bf1d5a0665f92b3d"
+      }
+    },
+    "named_sentinel_proof": {
+      "body_identical_to_top_sentinel": true,
+      "source_sha256": "48fee4de2a8d9ca59a5095435cf3dc69b2af1126a7dd4d3a80ec4b092ed50c7e",
+      "object_sha256": "1d8156f5b72d673f34d597700037962e976486dfeff9ee09a9602e2f55dfc5ee"
+    }
+  },
+  "external_call_contracts": {
+    "_ZN3Gun22calcCharacterCollisionEv": {
+      "original_start": 1388432,
+      "original_end": 1390416,
+      "native_calls": [
+        {
+          "address": 1388588,
+          "destination": 415824,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1388596,
+          "destination": 415824,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1388612,
+          "destination": 401172,
+          "symbol": "_ZN6Player8isActiveEv"
+        },
+        {
+          "address": 1388624,
+          "destination": 402672,
+          "symbol": "_ZN6Player12getHitpointsEv"
+        },
+        {
+          "address": 1388702,
+          "destination": 389484,
+          "symbol": "_ZN11AbyssEngine6AEMath17MatrixGetPositionERKNS0_6MatrixE"
+        },
+        {
+          "address": 1388750,
+          "destination": 401460,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 1388760,
+          "destination": 403020,
+          "symbol": "_ZN9PlayerEgo11getPositionEv"
+        },
+        {
+          "address": 1388772,
+          "destination": 388152,
+          "symbol": "_ZN11AbyssEngine6AEMathmiERKNS0_6VectorES3_"
+        },
+        {
+          "address": 1388778,
+          "destination": 388164,
+          "symbol": "_ZN11AbyssEngine6AEMath12VectorLengthERKNS0_6VectorE"
+        },
+        {
+          "address": 1388792,
+          "destination": 415824,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1388800,
+          "destination": 415824,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1388898,
+          "destination": 415824,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1388942,
+          "destination": 422664,
+          "symbol": "_ZN6Player10isAsteroidEv"
+        },
+        {
+          "address": 1388966,
+          "destination": 404136,
+          "symbol": "_ZN6Player12setBombForceEf"
+        },
+        {
+          "address": 1389190,
+          "destination": 422832,
+          "symbol": "_ZN6Player9damageEmpEib"
+        },
+        {
+          "address": 1389220,
+          "destination": 401460,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 1389230,
+          "destination": 401460,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 1389234,
+          "destination": 416040,
+          "symbol": "_ZN9PlayerEgo22isDockedToDockingPointEv"
+        },
+        {
+          "address": 1389330,
+          "destination": 405396,
+          "symbol": "_ZN6Player6damageEibi"
+        },
+        {
+          "address": 1389372,
+          "destination": 404124,
+          "symbol": "_ZN6Player12setHitVectorEfff"
+        },
+        {
+          "address": 1389388,
+          "destination": 415824,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1389420,
+          "destination": 404016,
+          "symbol": "_ZN21ParticleSystemManager10emitManualEiRKN11AbyssEngine6AEMath6VectorEiS4_f"
+        },
+        {
+          "address": 1389452,
+          "destination": 401544,
+          "symbol": "_ZN11AbyssEngine11PaintCanvas21TransformGetTransformEj"
+        },
+        {
+          "address": 1389460,
+          "destination": 392472,
+          "symbol": "_ZN11AbyssEngine9Transform17SetAnimationStateENS_13AnimationModeEPv"
+        },
+        {
+          "address": 1389478,
+          "destination": 401544,
+          "symbol": "_ZN11AbyssEngine11PaintCanvas21TransformGetTransformEj"
+        },
+        {
+          "address": 1389486,
+          "destination": 392472,
+          "symbol": "_ZN11AbyssEngine9Transform17SetAnimationStateENS_13AnimationModeEPv"
+        },
+        {
+          "address": 1389496,
+          "destination": 399348,
+          "symbol": "_ZN11AbyssEngine11PaintCanvas16CameraGetCurrentEv"
+        },
+        {
+          "address": 1389508,
+          "destination": 392988,
+          "symbol": "_ZN11AbyssEngine11PaintCanvas14CameraGetLocalEj"
+        },
+        {
+          "address": 1389520,
+          "destination": 389604,
+          "symbol": "__aeabi_memcpy"
+        },
+        {
+          "address": 1389540,
+          "destination": 391200,
+          "symbol": "_ZN11AbyssEngine6AEMath20MatrixSetTranslationERNS0_6MatrixEfff"
+        },
+        {
+          "address": 1389564,
+          "destination": 401856,
+          "symbol": "_ZN11AbyssEngine11PaintCanvas17TransformSetLocalEjRKNS_6AEMath6MatrixE"
+        },
+        {
+          "address": 1389574,
+          "destination": 422856,
+          "symbol": "_ZN6Sparks8isRocketEv"
+        },
+        {
+          "address": 1389594,
+          "destination": 422844,
+          "symbol": "_ZN6Sparks7explodeERKN11AbyssEngine6AEMath6VectorE"
+        },
+        {
+          "address": 1389626,
+          "destination": 387900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 1389646,
+          "destination": 403812,
+          "symbol": "_ZN6Player11getPositionEv"
+        },
+        {
+          "address": 1389654,
+          "destination": 387900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 1389662,
+          "destination": 403092,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectormIERKS1_"
+        },
+        {
+          "address": 1389668,
+          "destination": 388164,
+          "symbol": "_ZN11AbyssEngine6AEMath12VectorLengthERKNS0_6VectorE"
+        },
+        {
+          "address": 1389776,
+          "destination": 405396,
+          "symbol": "_ZN6Player6damageEibi"
+        },
+        {
+          "address": 1389814,
+          "destination": 422832,
+          "symbol": "_ZN6Player9damageEmpEib"
+        },
+        {
+          "address": 1389996,
+          "destination": 405468,
+          "symbol": "_ZN3Gun6igniteEv"
+        },
+        {
+          "address": 1390068,
+          "destination": 388152,
+          "symbol": "_ZN11AbyssEngine6AEMathmiERKNS0_6VectorES3_"
+        },
+        {
+          "address": 1390078,
+          "destination": 388224,
+          "symbol": "_ZN11AbyssEngine6AEMath15VectorNormalizeERKNS0_6VectorE"
+        },
+        {
+          "address": 1390092,
+          "destination": 387900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 1390114,
+          "destination": 388212,
+          "symbol": "_ZN11AbyssEngine6AEMathmlERKNS0_6VectorEf"
+        },
+        {
+          "address": 1390126,
+          "destination": 388212,
+          "symbol": "_ZN11AbyssEngine6AEMathmlERKNS0_6VectorEf"
+        },
+        {
+          "address": 1390140,
+          "destination": 406836,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectorpLERKS1_"
+        },
+        {
+          "address": 1390170,
+          "destination": 387108,
+          "symbol": "__stack_chk_fail"
+        },
+        {
+          "address": 1390186,
+          "destination": 405396,
+          "symbol": "_ZN6Player6damageEibi"
+        },
+        {
+          "address": 1390202,
+          "destination": 405240,
+          "symbol": "_ZN12Achievements8hasMedalEii"
+        },
+        {
+          "address": 1390222,
+          "destination": 405240,
+          "symbol": "_ZN12Achievements8hasMedalEii"
+        },
+        {
+          "address": 1390260,
+          "destination": 405252,
+          "symbol": "_ZN12Achievements8getValueEii"
+        },
+        {
+          "address": 1390272,
+          "destination": 401460,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 1390276,
+          "destination": 405264,
+          "symbol": "_ZN9PlayerEgo6getHUDEv"
+        },
+        {
+          "address": 1390284,
+          "destination": 405276,
+          "symbol": "_ZN3Hud13hudEventMedalEii"
+        },
+        {
+          "address": 1390360,
+          "destination": 405252,
+          "symbol": "_ZN12Achievements8getValueEii"
+        },
+        {
+          "address": 1390372,
+          "destination": 401460,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 1390376,
+          "destination": 405264,
+          "symbol": "_ZN9PlayerEgo6getHUDEv"
+        },
+        {
+          "address": 1390384,
+          "destination": 405276,
+          "symbol": "_ZN3Hud13hudEventMedalEii"
+        }
+      ],
+      "rebuilt_calls": [
+        {
+          "address": 5126,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 5134,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 5150,
+          "symbol": "_ZN6Player8isActiveEv"
+        },
+        {
+          "address": 5162,
+          "symbol": "_ZN6Player12getHitpointsEv"
+        },
+        {
+          "address": 5240,
+          "symbol": "_ZN11AbyssEngine6AEMath17MatrixGetPositionERKNS0_6MatrixE"
+        },
+        {
+          "address": 5286,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 5296,
+          "symbol": "_ZN9PlayerEgo11getPositionEv"
+        },
+        {
+          "address": 5312,
+          "symbol": "_ZN11AbyssEngine6AEMathmiERKNS0_6VectorES3_"
+        },
+        {
+          "address": 5318,
+          "symbol": "_ZN11AbyssEngine6AEMath12VectorLengthERKNS0_6VectorE"
+        },
+        {
+          "address": 5332,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 5340,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 5450,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 5502,
+          "symbol": "_ZN6Player10isAsteroidEv"
+        },
+        {
+          "address": 5524,
+          "symbol": "_ZN6Player12setBombForceEf"
+        },
+        {
+          "address": 5574,
+          "symbol": "_ZN6Player9damageEmpEib"
+        },
+        {
+          "address": 5600,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 5610,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 5614,
+          "symbol": "_ZN9PlayerEgo22isDockedToDockingPointEv"
+        },
+        {
+          "address": 5862,
+          "symbol": "_ZN6Player6damageEibi"
+        },
+        {
+          "address": 5902,
+          "symbol": "_ZN6Player12setHitVectorEfff"
+        },
+        {
+          "address": 5916,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 5952,
+          "symbol": "_ZN21ParticleSystemManager10emitManualEiRKN11AbyssEngine6AEMath6VectorEiS4_f"
+        },
+        {
+          "address": 5962,
+          "symbol": "_ZN6Sparks8isRocketEv"
+        },
+        {
+          "address": 5982,
+          "symbol": "_ZN6Sparks7explodeERKN11AbyssEngine6AEMath6VectorE"
+        },
+        {
+          "address": 6008,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 6028,
+          "symbol": "_ZN6Player11getPositionEv"
+        },
+        {
+          "address": 6036,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 6044,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectormIERKS1_"
+        },
+        {
+          "address": 6050,
+          "symbol": "_ZN11AbyssEngine6AEMath12VectorLengthERKNS0_6VectorE"
+        },
+        {
+          "address": 6156,
+          "symbol": "_ZN6Player6damageEibi"
+        },
+        {
+          "address": 6192,
+          "symbol": "_ZN6Player9damageEmpEib"
+        },
+        {
+          "address": 6244,
+          "symbol": "_ZN11AbyssEngine11PaintCanvas21TransformGetTransformEj"
+        },
+        {
+          "address": 6252,
+          "symbol": "_ZN11AbyssEngine9Transform17SetAnimationStateENS_13AnimationModeEPv"
+        },
+        {
+          "address": 6268,
+          "symbol": "_ZN11AbyssEngine11PaintCanvas21TransformGetTransformEj"
+        },
+        {
+          "address": 6276,
+          "symbol": "_ZN11AbyssEngine9Transform17SetAnimationStateENS_13AnimationModeEPv"
+        },
+        {
+          "address": 6286,
+          "symbol": "_ZN11AbyssEngine11PaintCanvas16CameraGetCurrentEv"
+        },
+        {
+          "address": 6294,
+          "symbol": "_ZN11AbyssEngine11PaintCanvas14CameraGetLocalEj"
+        },
+        {
+          "address": 6310,
+          "symbol": "__aeabi_memcpy"
+        },
+        {
+          "address": 6330,
+          "symbol": "_ZN11AbyssEngine6AEMath20MatrixSetTranslationERNS0_6MatrixEfff"
+        },
+        {
+          "address": 6350,
+          "symbol": "_ZN11AbyssEngine11PaintCanvas17TransformSetLocalEjRKNS_6AEMath6MatrixE"
+        },
+        {
+          "address": 6394,
+          "symbol": "_ZN6Player6damageEibi"
+        },
+        {
+          "address": 6410,
+          "symbol": "_ZN12Achievements8hasMedalEii"
+        },
+        {
+          "address": 6430,
+          "symbol": "_ZN12Achievements8hasMedalEii"
+        },
+        {
+          "address": 6470,
+          "symbol": "_ZN12Achievements8getValueEii"
+        },
+        {
+          "address": 6482,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 6486,
+          "symbol": "_ZN9PlayerEgo6getHUDEv"
+        },
+        {
+          "address": 6494,
+          "symbol": "_ZN3Hud13hudEventMedalEii"
+        },
+        {
+          "address": 6554,
+          "symbol": "_ZN12Achievements8getValueEii"
+        },
+        {
+          "address": 6564,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 6568,
+          "symbol": "_ZN9PlayerEgo6getHUDEv"
+        },
+        {
+          "address": 6576,
+          "symbol": "_ZN3Hud13hudEventMedalEii"
+        },
+        {
+          "address": 6736,
+          "symbol": "_ZN3Gun6igniteEv"
+        },
+        {
+          "address": 6766,
+          "symbol": "__stack_chk_fail"
+        },
+        {
+          "address": 6780,
+          "symbol": "_ZN11AbyssEngine6AEMathmiERKNS0_6VectorES3_"
+        },
+        {
+          "address": 6790,
+          "symbol": "_ZN11AbyssEngine6AEMath15VectorNormalizeERKNS0_6VectorE"
+        },
+        {
+          "address": 6802,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 6820,
+          "symbol": "_ZN11AbyssEngine6AEMathmlERKNS0_6VectorEf"
+        },
+        {
+          "address": 6832,
+          "symbol": "_ZN11AbyssEngine6AEMathmlERKNS0_6VectorEf"
+        },
+        {
+          "address": 6844,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectorpLERKS1_"
+        }
+      ],
+      "native_indirect_calls": [
+        {
+          "address": 1388936,
+          "register": "r2"
+        }
+      ],
+      "rebuilt_indirect_calls": [
+        {
+          "address": 5494,
+          "register": "r2"
+        }
+      ],
+      "native_only": {},
+      "rebuilt_only": {},
+      "same_symbol_sequence": false
+    },
+    "_ZN3Gun7shootAtEN11AbyssEngine6AEMath6MatrixEiP6Playerb": {
+      "original_start": 1385512,
+      "original_end": 1387300,
+      "native_calls": [
+        {
+          "address": 1385654,
+          "destination": 399960,
+          "symbol": "_ZN6Status7getShipEv"
+        },
+        {
+          "address": 1385658,
+          "destination": 406332,
+          "symbol": "_ZN4Ship12getEquipmentEv"
+        },
+        {
+          "address": 1385676,
+          "destination": 399420,
+          "symbol": "_ZN4Item9getAmountEv"
+        },
+        {
+          "address": 1385808,
+          "destination": 389484,
+          "symbol": "_ZN11AbyssEngine6AEMath17MatrixGetPositionERKNS0_6MatrixE"
+        },
+        {
+          "address": 1385820,
+          "destination": 387900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 1385836,
+          "destination": 404112,
+          "symbol": "_ZN11AbyssEngine6AEMathneERKNS0_6VectorES3_"
+        },
+        {
+          "address": 1385886,
+          "destination": 387900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 1385922,
+          "destination": 390804,
+          "symbol": "_ZN11AbyssEngine6AEMath18MatrixRotateVectorERKNS0_6MatrixERKNS0_6VectorE"
+        },
+        {
+          "address": 1385934,
+          "destination": 406836,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectorpLERKS1_"
+        },
+        {
+          "address": 1385954,
+          "destination": 387900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 1385990,
+          "destination": 390804,
+          "symbol": "_ZN11AbyssEngine6AEMath18MatrixRotateVectorERKNS0_6MatrixERKNS0_6VectorE"
+        },
+        {
+          "address": 1386002,
+          "destination": 406836,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectorpLERKS1_"
+        },
+        {
+          "address": 1386032,
+          "destination": 390336,
+          "symbol": "_ZN11AbyssEngine6AEMath12MatrixGetDirERKNS0_6MatrixE"
+        },
+        {
+          "address": 1386044,
+          "destination": 390360,
+          "symbol": "_ZN11AbyssEngine6AEMath11MatrixGetUpERKNS0_6MatrixE"
+        },
+        {
+          "address": 1386060,
+          "destination": 389580,
+          "symbol": "_ZN11AbyssEngine6AEMathplERKNS0_6VectorES3_"
+        },
+        {
+          "address": 1386068,
+          "destination": 387900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 1386086,
+          "destination": 387876,
+          "symbol": "_Znwj"
+        },
+        {
+          "address": 1386234,
+          "destination": 390336,
+          "symbol": "_ZN11AbyssEngine6AEMath12MatrixGetDirERKNS0_6MatrixE"
+        },
+        {
+          "address": 1386242,
+          "destination": 387900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 1386254,
+          "destination": 390804,
+          "symbol": "_ZN11AbyssEngine6AEMath18MatrixRotateVectorERKNS0_6MatrixERKNS0_6VectorE"
+        },
+        {
+          "address": 1386262,
+          "destination": 406836,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectorpLERKS1_"
+        },
+        {
+          "address": 1386278,
+          "destination": 387900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 1386286,
+          "destination": 390360,
+          "symbol": "_ZN11AbyssEngine6AEMath11MatrixGetUpERKNS0_6MatrixE"
+        },
+        {
+          "address": 1386298,
+          "destination": 387900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 1386524,
+          "destination": 388224,
+          "symbol": "_ZN11AbyssEngine6AEMath15VectorNormalizeERKNS0_6VectorE"
+        },
+        {
+          "address": 1386536,
+          "destination": 387900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 1386548,
+          "destination": 402984,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectormLEf"
+        },
+        {
+          "address": 1386596,
+          "destination": 401460,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 1386600,
+          "destination": 415884,
+          "symbol": "_ZN9PlayerEgo21getTargetFollowCameraEv"
+        },
+        {
+          "address": 1386604,
+          "destination": 422784,
+          "symbol": "_ZN18TargetFollowCamera8hitSmallEv"
+        },
+        {
+          "address": 1386666,
+          "destination": 399612,
+          "symbol": "_ZN4Item7getTypeEv"
+        },
+        {
+          "address": 1386766,
+          "destination": 415824,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1386774,
+          "destination": 415824,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1386786,
+          "destination": 401172,
+          "symbol": "_ZN6Player8isActiveEv"
+        },
+        {
+          "address": 1386794,
+          "destination": 415800,
+          "symbol": "_ZN6Player6isDeadEv"
+        },
+        {
+          "address": 1386804,
+          "destination": 403812,
+          "symbol": "_ZN6Player11getPositionEv"
+        },
+        {
+          "address": 1386810,
+          "destination": 401460,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 1386818,
+          "destination": 403020,
+          "symbol": "_ZN9PlayerEgo11getPositionEv"
+        },
+        {
+          "address": 1386828,
+          "destination": 388152,
+          "symbol": "_ZN11AbyssEngine6AEMathmiERKNS0_6VectorES3_"
+        },
+        {
+          "address": 1386834,
+          "destination": 388164,
+          "symbol": "_ZN11AbyssEngine6AEMath12VectorLengthERKNS0_6VectorE"
+        },
+        {
+          "address": 1386906,
+          "destination": 403812,
+          "symbol": "_ZN6Player11getPositionEv"
+        },
+        {
+          "address": 1386912,
+          "destination": 401460,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 1386922,
+          "destination": 403020,
+          "symbol": "_ZN9PlayerEgo11getPositionEv"
+        },
+        {
+          "address": 1386934,
+          "destination": 388152,
+          "symbol": "_ZN11AbyssEngine6AEMathmiERKNS0_6VectorES3_"
+        },
+        {
+          "address": 1386946,
+          "destination": 388224,
+          "symbol": "_ZN11AbyssEngine6AEMath15VectorNormalizeERKNS0_6VectorE"
+        },
+        {
+          "address": 1386982,
+          "destination": 403812,
+          "symbol": "_ZN6Player11getPositionEv"
+        },
+        {
+          "address": 1386994,
+          "destination": 401460,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 1387004,
+          "destination": 402804,
+          "symbol": "_ZN10AEGeometry12getDirectionEv"
+        },
+        {
+          "address": 1387114,
+          "destination": 403020,
+          "symbol": "_ZN9PlayerEgo11getPositionEv"
+        },
+        {
+          "address": 1387140,
+          "destination": 403032,
+          "symbol": "_ZN11AbyssEngine6AEMathmlEfRKNS0_6VectorE"
+        },
+        {
+          "address": 1387152,
+          "destination": 389580,
+          "symbol": "_ZN11AbyssEngine6AEMathplERKNS0_6VectorES3_"
+        },
+        {
+          "address": 1387204,
+          "destination": 399444,
+          "symbol": "_ZN4Item12changeAmountEi"
+        },
+        {
+          "address": 1387220,
+          "destination": 399960,
+          "symbol": "_ZN6Status7getShipEv"
+        },
+        {
+          "address": 1387226,
+          "destination": 422448,
+          "symbol": "_ZN4Ship8freeSlotEP4Item"
+        },
+        {
+          "address": 1387258,
+          "destination": 387108,
+          "symbol": "__stack_chk_fail"
+        }
+      ],
+      "rebuilt_calls": [
+        {
+          "address": 2660,
+          "symbol": "_ZN6Status7getShipEv"
+        },
+        {
+          "address": 2664,
+          "symbol": "_ZN4Ship12getEquipmentEv"
+        },
+        {
+          "address": 2686,
+          "symbol": "_ZN4Item9getAmountEv"
+        },
+        {
+          "address": 2822,
+          "symbol": "_ZN11AbyssEngine6AEMath17MatrixGetPositionERKNS0_6MatrixE"
+        },
+        {
+          "address": 2834,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 2852,
+          "symbol": "_ZN11AbyssEngine6AEMathneERKNS0_6VectorES3_"
+        },
+        {
+          "address": 2900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 2940,
+          "symbol": "_ZN11AbyssEngine6AEMath18MatrixRotateVectorERKNS0_6MatrixERKNS0_6VectorE"
+        },
+        {
+          "address": 2954,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectorpLERKS1_"
+        },
+        {
+          "address": 2974,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 3012,
+          "symbol": "_ZN11AbyssEngine6AEMath18MatrixRotateVectorERKNS0_6MatrixERKNS0_6VectorE"
+        },
+        {
+          "address": 3024,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectorpLERKS1_"
+        },
+        {
+          "address": 3048,
+          "symbol": "_ZN11AbyssEngine6AEMath12MatrixGetDirERKNS0_6MatrixE"
+        },
+        {
+          "address": 3060,
+          "symbol": "_ZN11AbyssEngine6AEMath11MatrixGetUpERKNS0_6MatrixE"
+        },
+        {
+          "address": 3072,
+          "symbol": "_ZN11AbyssEngine6AEMathplERKNS0_6VectorES3_"
+        },
+        {
+          "address": 3080,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 3098,
+          "symbol": "_Znwj"
+        },
+        {
+          "address": 3280,
+          "symbol": "_ZN11AbyssEngine6AEMath12MatrixGetDirERKNS0_6MatrixE"
+        },
+        {
+          "address": 3292,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 3302,
+          "symbol": "_ZN11AbyssEngine6AEMath18MatrixRotateVectorERKNS0_6MatrixERKNS0_6VectorE"
+        },
+        {
+          "address": 3310,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectorpLERKS1_"
+        },
+        {
+          "address": 3322,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 3330,
+          "symbol": "_ZN11AbyssEngine6AEMath11MatrixGetUpERKNS0_6MatrixE"
+        },
+        {
+          "address": 3342,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 3528,
+          "symbol": "_ZN11AbyssEngine6AEMath15VectorNormalizeERKNS0_6VectorE"
+        },
+        {
+          "address": 3540,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 3552,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectormLEf"
+        },
+        {
+          "address": 3598,
+          "symbol": "_ZN4Item7getTypeEv"
+        },
+        {
+          "address": 3646,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 3650,
+          "symbol": "_ZN9PlayerEgo21getTargetFollowCameraEv"
+        },
+        {
+          "address": 3654,
+          "symbol": "_ZN18TargetFollowCamera8hitSmallEv"
+        },
+        {
+          "address": 3766,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 3774,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 3786,
+          "symbol": "_ZN6Player8isActiveEv"
+        },
+        {
+          "address": 3794,
+          "symbol": "_ZN6Player6isDeadEv"
+        },
+        {
+          "address": 3804,
+          "symbol": "_ZN6Player11getPositionEv"
+        },
+        {
+          "address": 3810,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 3818,
+          "symbol": "_ZN9PlayerEgo11getPositionEv"
+        },
+        {
+          "address": 3828,
+          "symbol": "_ZN11AbyssEngine6AEMathmiERKNS0_6VectorES3_"
+        },
+        {
+          "address": 3834,
+          "symbol": "_ZN11AbyssEngine6AEMath12VectorLengthERKNS0_6VectorE"
+        },
+        {
+          "address": 3906,
+          "symbol": "_ZN6Player11getPositionEv"
+        },
+        {
+          "address": 3912,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 3922,
+          "symbol": "_ZN9PlayerEgo11getPositionEv"
+        },
+        {
+          "address": 3936,
+          "symbol": "_ZN11AbyssEngine6AEMathmiERKNS0_6VectorES3_"
+        },
+        {
+          "address": 3946,
+          "symbol": "_ZN11AbyssEngine6AEMath15VectorNormalizeERKNS0_6VectorE"
+        },
+        {
+          "address": 3982,
+          "symbol": "_ZN6Player11getPositionEv"
+        },
+        {
+          "address": 3994,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 4004,
+          "symbol": "_ZN10AEGeometry12getDirectionEv"
+        },
+        {
+          "address": 4114,
+          "symbol": "_ZN9PlayerEgo11getPositionEv"
+        },
+        {
+          "address": 4140,
+          "symbol": "_ZN11AbyssEngine6AEMathmlEfRKNS0_6VectorE"
+        },
+        {
+          "address": 4152,
+          "symbol": "_ZN11AbyssEngine6AEMathplERKNS0_6VectorES3_"
+        },
+        {
+          "address": 4202,
+          "symbol": "_ZN4Item12changeAmountEi"
+        },
+        {
+          "address": 4218,
+          "symbol": "_ZN6Status7getShipEv"
+        },
+        {
+          "address": 4224,
+          "symbol": "_ZN4Ship8freeSlotEP4Item"
+        },
+        {
+          "address": 4256,
+          "symbol": "__stack_chk_fail"
+        }
+      ],
+      "native_indirect_calls": [
+        {
+          "address": 1386120,
+          "register": "r5"
+        },
+        {
+          "address": 1386154,
+          "register": "r5"
+        },
+        {
+          "address": 1386188,
+          "register": "r5"
+        },
+        {
+          "address": 1386338,
+          "register": "r6"
+        },
+        {
+          "address": 1386390,
+          "register": "r6"
+        },
+        {
+          "address": 1386438,
+          "register": "r6"
+        },
+        {
+          "address": 1386962,
+          "register": "r6"
+        },
+        {
+          "address": 1386990,
+          "register": "r6"
+        },
+        {
+          "address": 1387012,
+          "register": "r6"
+        },
+        {
+          "address": 1387068,
+          "register": "r5"
+        },
+        {
+          "address": 1387084,
+          "register": "sl"
+        },
+        {
+          "address": 1387100,
+          "register": "fp"
+        },
+        {
+          "address": 1387104,
+          "register": "r5"
+        },
+        {
+          "address": 1387120,
+          "register": "r5"
+        },
+        {
+          "address": 1387128,
+          "register": "sl"
+        },
+        {
+          "address": 1387160,
+          "register": "fp"
+        },
+        {
+          "address": 1387164,
+          "register": "r5"
+        },
+        {
+          "address": 1387172,
+          "register": "sl"
+        },
+        {
+          "address": 1387178,
+          "register": "fp"
+        }
+      ],
+      "rebuilt_indirect_calls": [
+        {
+          "address": 3132,
+          "register": "r5"
+        },
+        {
+          "address": 3166,
+          "register": "r5"
+        },
+        {
+          "address": 3200,
+          "register": "r5"
+        },
+        {
+          "address": 3382,
+          "register": "r6"
+        },
+        {
+          "address": 3434,
+          "register": "r6"
+        },
+        {
+          "address": 3488,
+          "register": "r6"
+        },
+        {
+          "address": 3962,
+          "register": "r5"
+        },
+        {
+          "address": 3990,
+          "register": "r5"
+        },
+        {
+          "address": 4012,
+          "register": "r5"
+        },
+        {
+          "address": 4068,
+          "register": "r5"
+        },
+        {
+          "address": 4084,
+          "register": "sl"
+        },
+        {
+          "address": 4100,
+          "register": "fp"
+        },
+        {
+          "address": 4104,
+          "register": "r5"
+        },
+        {
+          "address": 4120,
+          "register": "r5"
+        },
+        {
+          "address": 4128,
+          "register": "sl"
+        },
+        {
+          "address": 4160,
+          "register": "fp"
+        },
+        {
+          "address": 4164,
+          "register": "r5"
+        },
+        {
+          "address": 4172,
+          "register": "sl"
+        },
+        {
+          "address": 4178,
+          "register": "fp"
+        }
+      ],
+      "native_only": {},
+      "rebuilt_only": {},
+      "same_symbol_sequence": false
+    },
+    "_ZN3Gun6igniteEv": {
+      "original_start": 1387388,
+      "original_end": 1388432,
+      "native_calls": [
+        {
+          "address": 1387518,
+          "destination": 422664,
+          "symbol": "_ZN6Player10isAsteroidEv"
+        },
+        {
+          "address": 1387532,
+          "destination": 401172,
+          "symbol": "_ZN6Player8isActiveEv"
+        },
+        {
+          "address": 1387572,
+          "destination": 387900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 1387582,
+          "destination": 403812,
+          "symbol": "_ZN6Player11getPositionEv"
+        },
+        {
+          "address": 1387590,
+          "destination": 387900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 1387598,
+          "destination": 403092,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectormIERKS1_"
+        },
+        {
+          "address": 1387604,
+          "destination": 388164,
+          "symbol": "_ZN11AbyssEngine6AEMath12VectorLengthERKNS0_6VectorE"
+        },
+        {
+          "address": 1387644,
+          "destination": 387900,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 1387750,
+          "destination": 399588,
+          "symbol": "_ZN4Item12getAttributeEi"
+        },
+        {
+          "address": 1387810,
+          "destination": 422796,
+          "symbol": "_ZN6Player11setEmpForceEf"
+        },
+        {
+          "address": 1387822,
+          "destination": 404136,
+          "symbol": "_ZN6Player12setBombForceEf"
+        },
+        {
+          "address": 1387834,
+          "destination": 422664,
+          "symbol": "_ZN6Player10isAsteroidEv"
+        },
+        {
+          "address": 1387882,
+          "destination": 405396,
+          "symbol": "_ZN6Player6damageEibi"
+        },
+        {
+          "address": 1387890,
+          "destination": 422808,
+          "symbol": "_ZN6Player10isGasCloudEv"
+        },
+        {
+          "address": 1387906,
+          "destination": 415824,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1387942,
+          "destination": 422820,
+          "symbol": "_ZN14PlayerGasCloud7explodeEiN11AbyssEngine6AEMath6VectorEf"
+        },
+        {
+          "address": 1387956,
+          "destination": 422664,
+          "symbol": "_ZN6Player10isAsteroidEv"
+        },
+        {
+          "address": 1387974,
+          "destination": 402672,
+          "symbol": "_ZN6Player12getHitpointsEv"
+        },
+        {
+          "address": 1388014,
+          "destination": 405240,
+          "symbol": "_ZN12Achievements8hasMedalEii"
+        },
+        {
+          "address": 1388050,
+          "destination": 405252,
+          "symbol": "_ZN12Achievements8getValueEii"
+        },
+        {
+          "address": 1388062,
+          "destination": 401460,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 1388066,
+          "destination": 405264,
+          "symbol": "_ZN9PlayerEgo6getHUDEv"
+        },
+        {
+          "address": 1388074,
+          "destination": 405276,
+          "symbol": "_ZN3Hud13hudEventMedalEii"
+        },
+        {
+          "address": 1388120,
+          "destination": 422832,
+          "symbol": "_ZN6Player9damageEmpEib"
+        },
+        {
+          "address": 1388134,
+          "destination": 415824,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1388144,
+          "destination": 415824,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1388200,
+          "destination": 422832,
+          "symbol": "_ZN6Player9damageEmpEib"
+        },
+        {
+          "address": 1388208,
+          "destination": 388224,
+          "symbol": "_ZN11AbyssEngine6AEMath15VectorNormalizeERKNS0_6VectorE"
+        },
+        {
+          "address": 1388234,
+          "destination": 404124,
+          "symbol": "_ZN6Player12setHitVectorEfff"
+        },
+        {
+          "address": 1388264,
+          "destination": 388224,
+          "symbol": "_ZN11AbyssEngine6AEMath15VectorNormalizeERKNS0_6VectorE"
+        },
+        {
+          "address": 1388278,
+          "destination": 415824,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1388366,
+          "destination": 422844,
+          "symbol": "_ZN6Sparks7explodeERKN11AbyssEngine6AEMath6VectorE"
+        },
+        {
+          "address": 1388390,
+          "destination": 387108,
+          "symbol": "__stack_chk_fail"
+        }
+      ],
+      "rebuilt_calls": [
+        {
+          "address": 738,
+          "symbol": "_ZN6Player10isAsteroidEv"
+        },
+        {
+          "address": 752,
+          "symbol": "_ZN6Player8isActiveEv"
+        },
+        {
+          "address": 792,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 802,
+          "symbol": "_ZN6Player11getPositionEv"
+        },
+        {
+          "address": 810,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 818,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectormIERKS1_"
+        },
+        {
+          "address": 824,
+          "symbol": "_ZN11AbyssEngine6AEMath12VectorLengthERKNS0_6VectorE"
+        },
+        {
+          "address": 864,
+          "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_"
+        },
+        {
+          "address": 970,
+          "symbol": "_ZN4Item12getAttributeEi"
+        },
+        {
+          "address": 1030,
+          "symbol": "_ZN6Player11setEmpForceEf"
+        },
+        {
+          "address": 1042,
+          "symbol": "_ZN6Player12setBombForceEf"
+        },
+        {
+          "address": 1054,
+          "symbol": "_ZN6Player10isAsteroidEv"
+        },
+        {
+          "address": 1102,
+          "symbol": "_ZN6Player6damageEibi"
+        },
+        {
+          "address": 1110,
+          "symbol": "_ZN6Player10isGasCloudEv"
+        },
+        {
+          "address": 1126,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1162,
+          "symbol": "_ZN14PlayerGasCloud7explodeEiN11AbyssEngine6AEMath6VectorEf"
+        },
+        {
+          "address": 1176,
+          "symbol": "_ZN6Player10isAsteroidEv"
+        },
+        {
+          "address": 1194,
+          "symbol": "_ZN6Player12getHitpointsEv"
+        },
+        {
+          "address": 1234,
+          "symbol": "_ZN12Achievements8hasMedalEii"
+        },
+        {
+          "address": 1270,
+          "symbol": "_ZN12Achievements8getValueEii"
+        },
+        {
+          "address": 1282,
+          "symbol": "_ZN5Level9getPlayerEv"
+        },
+        {
+          "address": 1286,
+          "symbol": "_ZN9PlayerEgo6getHUDEv"
+        },
+        {
+          "address": 1294,
+          "symbol": "_ZN3Hud13hudEventMedalEii"
+        },
+        {
+          "address": 1340,
+          "symbol": "_ZN6Player9damageEmpEib"
+        },
+        {
+          "address": 1354,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1364,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1420,
+          "symbol": "_ZN6Player9damageEmpEib"
+        },
+        {
+          "address": 1428,
+          "symbol": "_ZN11AbyssEngine6AEMath15VectorNormalizeERKNS0_6VectorE"
+        },
+        {
+          "address": 1454,
+          "symbol": "_ZN6Player12setHitVectorEfff"
+        },
+        {
+          "address": 1484,
+          "symbol": "_ZN11AbyssEngine6AEMath15VectorNormalizeERKNS0_6VectorE"
+        },
+        {
+          "address": 1498,
+          "symbol": "_ZN6Player11getKIPlayerEv"
+        },
+        {
+          "address": 1586,
+          "symbol": "_ZN6Sparks7explodeERKN11AbyssEngine6AEMath6VectorE"
+        },
+        {
+          "address": 1610,
+          "symbol": "__stack_chk_fail"
+        }
+      ],
+      "native_indirect_calls": [
+        {
+          "address": 1388158,
+          "register": "r3"
+        },
+        {
+          "address": 1388222,
+          "register": "r6"
+        },
+        {
+          "address": 1388258,
+          "register": "r6"
+        },
+        {
+          "address": 1388272,
+          "register": "r6"
+        }
+      ],
+      "rebuilt_indirect_calls": [
+        {
+          "address": 1378,
+          "register": "r3"
+        },
+        {
+          "address": 1442,
+          "register": "r6"
+        },
+        {
+          "address": 1478,
+          "register": "r6"
+        },
+        {
+          "address": 1492,
+          "register": "r6"
+        }
+      ],
+      "native_only": {},
+      "rebuilt_only": {},
+      "same_symbol_sequence": true
+    }
+  },
+  "original_binary_sha256": "6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58",
+  "unchanged_validation_and_build_sources": {
+    "tools/gun_family_metrics.py": "229e12aa53cea0cc3c7f25ec6cb449551a9160cd4d8f59f2e6d626338da361e9",
+    "tools/verify/verify.py": "f3ec8724cafc396adfc59154e1a8e36d707169ce37e379d194672e5989d55b3b",
+    "tools/verify/build_objs.sh": "378ce538029dd10d1d902bf07b2deeac812bcea7b0fc311f05df14f3b451b37a",
+    "tools/verify/match_flags.sh": "4e05f06d6853e58c3eb1251c5f2ad55ff4c5150abf036304de8e920cb8ae5801",
+    "CMakeLists.txt": "f1538c725a4e19a7be40f59612b5073aa4b4b73cca1a2d92b15e063d4bb19624"
+  },
+  "completion_audit": {
+    "isolated_worktree": {
+      "result": "pass",
+      "path": "A:/gof2-gun-arm-99",
+      "branch": "codex/gun-arm-99-20261002"
+    },
+    "fixed_source_thresholds": {
+      "result": "pass",
+      "source_unweighted": 99.82307692307693,
+      "source_weighted": 99.04905975762641,
+      "bodies": 26,
+      "original_instructions": 2393
+    },
+    "all_baseline_exact_pairs": {
+      "result": "pass",
+      "corrected_parser": {
+        "linked_equal": [],
+        "bytes_equal": []
+      },
+      "legacy": {
+        "linked_equal": [],
+        "bytes_equal": []
+      },
+      "previous": {
+        "linked_equal": [],
+        "bytes_equal": []
+      },
+      "intermediate": {
+        "linked_equal": [],
+        "bytes_equal": []
+      }
+    },
+    "fresh_checks": {
+      "native": {
+        "result": "pass",
+        "exit": 0,
+        "log": "_work\\gun-current\\threshold-final-native.log",
+        "log_sha256": "6d963afa61f65d019617eabaaa4fe3331ff808130275466500a6791f9b0ce3c8"
+      },
+      "arm": {
+        "result": "pass",
+        "exit": 0,
+        "log": "_work\\gun-current\\threshold-final-arm.log",
+        "log_sha256": "49a233d48e7cf33687f8599fd6e66af6b65f1ed792c789170676577061f6bea3"
+      },
+      "smoke": {
+        "result": "pass",
+        "exit": 0,
+        "log": "_work\\gun-current\\threshold-final-smoke.log",
+        "log_sha256": "8c14a2768a89b52776d487b98b2aeb9747f340a1d161e31630fbaacb76a6d11f"
+      },
+      "family": {
+        "result": "pass",
+        "exit": 0,
+        "log": "_work\\gun-current\\threshold-final-family.log",
+        "log_sha256": "726ea3a66fd28cb79793fd7892b8ca464ab5a73b252517482732846a9033b4aa"
+      },
+      "corpus": {
+        "result": "pass",
+        "exit": 0,
+        "log": "_work\\gun-current\\threshold-final-corpus.log",
+        "log_sha256": "eada39e73a03e1a7027eb6dd50ea87bfd0cbc6663e52cfc15fcadca0817ea5a6"
+      }
+    },
+    "no_verifier_or_weight_change": {
+      "result": "pass",
+      "evidence": "Unchanged old input hashes for parser/regression, flags and Gun.h; unchanged fixed-body manifest hash and metric-tool membership assertions."
+    },
+    "local_commit_and_report": {
+      "result": "pass",
+      "source_commit": "ac4f87b3e2df873c6c04ef93dbeb7e2b77f30f3a",
+      "code_files_match_commit": [
+        "src/game/weapons/Gun.cpp",
+        "tools/gun_contract_smoke.py",
+        "tools/gun_contract_smoke.cpp",
+        "tools/gun_scatter_flag_smoke.cpp"
+      ],
+      "report": "docs/GUN_ARM_RECOVERY_2026-10-02.md",
+      "report_commit": "Containing Git commit of this audit; checked after committing before goal completion."
+    },
+    "publication": {
+      "result": "pass",
+      "evidence": "Local isolated branch only; no push/PR/merge operation performed."
+    }
+  },
+  "runtime_limits": "Static native library build and selected host constructor/mount/ignite-tail/scatter-classifier smoke; no full ignite/shootAt/collision execution or native game executable runtime proof."
+}

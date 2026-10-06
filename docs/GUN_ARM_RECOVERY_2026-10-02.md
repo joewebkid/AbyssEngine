@@ -1,15 +1,15 @@
 # Gun ARM recovery — 2026-10-02
 
-## Status: partial; the requested target is not achieved
+## Status: requested fixed-metric and validation target achieved
 
-Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.7654% unweighted / 98.8399% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
+Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.8231% unweighted / 99.0491% instruction-weighted**. Both requested means exceed 99.0%. Native build, all ARM TUs and the full strict corpus pass with zero baseline exact-pair losses. This certifies the requested fixed-metric/build objective; native game runtime correctness remains unverified.
 
 | Metric | Clean base | This checkpoint |
 |---|---:|---:|
-| Source-shape, unweighted | 73.5923% | 99.7654% |
-| Source-shape, original-instruction-weighted | 26.9159% | 98.8399% |
-| Strict instruction shape, unweighted | 66.8038% | 94.5423% |
-| Strict instruction shape, weighted | 15.4981% | 74.7310% |
+| Source-shape, unweighted | 73.5923% | 99.8231% |
+| Source-shape, original-instruction-weighted | 26.9159% | 99.0491% |
+| Strict instruction shape, unweighted | 66.8038% | 94.6346% |
+| Strict instruction shape, weighted | 15.4981% | 75.0067% |
 | Linked-exact unique bodies | 14 | 19 |
 | Byte-exact unique bodies | 13 | 13 |
 
@@ -126,6 +126,10 @@ ShootAt ammo layout hint (2026-10-06): ten individual hint controls and sixteen 
 Collision scatter zero-test (2026-10-07): the retained unsigned word form is exactly equivalent to kind==25 for every 32-bit input and implements the native CLZ/LSR zero-normalization contract. For unsigned d, d|(0-d) has its high bit set iff d is nonzero; shifting then XOR 1 yields the zero flag with defined modular arithmetic. This is inferred source syntax. Guarded explicit CLZ controls produced byte-identical bodies; other flag forms and combinations did not exceed the minimal scatter-only form. Twenty-four damage-layout controls gave no source improvement. Collision source-shape rises 97.0 -> 97.2, strict shape falls 44.9 -> 43.1, and instruction count rises 637 -> 642 versus original 647. The requested source means are now 99.7192% unweighted / 98.6517% weighted; strict means are 94.4077% / 74.2298%. The weighted 99% target remains unmet. Other 27 Gun rows are unchanged. Fresh static-library build, all 204 ARM TUs, selected constructor/mount smokes and full strict corpus pass with zero exact-pair losses against both baselines and the preceding ammo checkpoint. No full collision or native game runtime test is claimed. Evidence: validation/gun_collision_scatter_zero_test_2026-10-07.json.
 
 Ignite operand/falloff repair (2026-10-07): the native final Sparks::explode reference is loaded from Gun+12, the first positionArray element, rather than cached basePos at Gun+192. The prior source could explode at a stale or last-processed position. The actual extracted tail now uses positionArray[0]; its host operand regression fails the old source and passes the corrected source, without claiming full radial-damage/runtime coverage. The initial type is sampled once: EMP6 clears Level+105, while NUKE7 increments status+200 before clearing it. Computing general falloff then replacing it for MINE11 preserves two selected division paths in canonical ARM; inspection confirms only the selected division executes. Ignite now has 351 instructions and the same normalized instruction sequence as the original: source and strict shape reach 100.0%, while linked/byte identity remain false. C++ syntax remains inferred. ShootAt uses an equivalent defined unsigned zero-test for the native type-40 CLZ/LSR ammo flag, increasing source 98.8 -> 98.9 while strict falls 71.7 -> 71.6 (639 instructions versus original 643). Other 26 diagnostic rows are unchanged. All 41 controls retain fixed flags/scoring/membership; non-improving combinations, Vector copy/argument forms and twelve follow-up collision layout forms were rejected. Fresh static-library build, all 204 ARM TUs, selected smokes and full strict corpus pass; exact-pair losses are zero against both baselines and the prior scatter checkpoint. Fixed source means are now 99.7654% unweighted / 98.8399% weighted, with strict means 94.5423% / 74.7310%. Weighted 99% remains unmet. Evidence: validation/gun_ignite_operand_and_falloff_2026-10-07.json.
+
+Final threshold checkpoint (2026-10-07): direct wobble-array assignment removes a redundant local and brings constructor source-shape to 100.0% (strict 94.9%, 177 instructions equals original). The collision scatter flag uses a nonzero sentinel word w=(uint64(uint32(kind)-25)<<32)|0x80000000: CLZ64(w) is 32 iff kind==25 and otherwise 0..31, so shifting five bits implements the verified native zero-test without undefined CLZ(0). Exact C++ syntax is inferred; original 64-bit arithmetic is not claimed. Canonical ARM uses CLZ and boolean-use masking without added helpers/calls, with frame 216 versus original 208. Collision source rises 97.2 -> 97.7, strict 43.1 -> 43.6, with 642 instructions versus original 647. All other 25 diagnostic rows remain unchanged. Twenty-seven controls plus a named-sentinel identity proof reject all non-improving alternatives; the extracted production classifier passes every leading-zero partition boundary and 100000 deterministic random words. Fixed source means are 99.8231% unweighted / 99.0491% weighted; strict means are 94.6346% / 75.0067%. All 26 unique original bodies and 2393 instruction weights are retained; flags/scoring/parser and original binary are unchanged. Fresh native static-library build, all 204 ARM TUs, selected host smokes and full strict corpus pass, with zero exact-pair losses against the corrected-parser baseline, legacy baseline, previous ignite checkpoint and intermediate constructor checkpoint. No full native game/runtime test is claimed. Evidence and completion audit: validation/gun_threshold_final_2026-10-07.json.
+
+Final implementation commit: ac4f87b3e2df873c6c04ef93dbeb7e2b77f30f3a. The completion audit and refreshed metric snapshot are recorded in the following local documentation commit. No push, PR or merge was performed.
 
 ## Checks and limits
 

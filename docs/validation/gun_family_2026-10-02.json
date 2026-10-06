@@ -14,10 +14,10 @@
   "current": {
     "bodies": 26,
     "original_instructions": 2393,
-    "source_unweighted": 99.76538461538462,
-    "source_weighted": 98.83990806519013,
-    "strict_unweighted": 94.54230769230769,
-    "strict_weighted": 74.73096531550354,
+    "source_unweighted": 99.82307692307693,
+    "source_weighted": 99.04905975762641,
+    "strict_unweighted": 94.63461538461539,
+    "strict_weighted": 75.00668616798997,
     "linked_exact": 19,
     "byte_exact": 13
   },
@@ -30,7 +30,7 @@
     "linked_equal": [],
     "bytes_equal": []
   },
-  "target_met": false,
+  "target_met": true,
   "corpus_exact_losses": {
     "linked_equal": [],
     "bytes_equal": []
@@ -38,19 +38,19 @@
   "rows": [
     {
       "symbol": "_ZN3Gun22calcCharacterCollisionEv",
-      "match": 43.1,
+      "match": 43.6,
       "bytes_equal": false,
       "linked_equal": false,
       "n_target": 647,
       "n_base": 642,
-      "source_match": 97.2,
-      "instruction_inventory_match": 95.4,
-      "opcode_inventory_match": 96.2,
-      "control_flow_match": 95.5,
-      "ordered_control_flow_match": 71.3,
-      "control_inventory_match": 95.5,
+      "source_match": 97.7,
+      "instruction_inventory_match": 95.8,
+      "opcode_inventory_match": 96.8,
+      "control_flow_match": 96.9,
+      "ordered_control_flow_match": 72.7,
+      "control_inventory_match": 96.9,
       "call_count_match": 100.0,
-      "size_match": 99.0,
+      "size_match": 98.7,
       "unit": "game/weapons/Gun",
       "baseline": {
         "symbol": "_ZN3Gun22calcCharacterCollisionEv",
@@ -178,17 +178,17 @@
     },
     {
       "symbol": "_ZN3GunC1EiiiiiifN11AbyssEngine6AEMath6VectorES2_",
-      "match": 93.0,
+      "match": 94.9,
       "bytes_equal": false,
       "linked_equal": false,
       "n_target": 177,
-      "n_base": 178,
-      "source_match": 99.0,
-      "instruction_inventory_match": 97.7,
-      "opcode_inventory_match": 98.9,
-      "control_flow_match": 98.3,
-      "ordered_control_flow_match": 98.3,
-      "control_inventory_match": 98.3,
+      "n_base": 177,
+      "source_match": 100.0,
+      "instruction_inventory_match": 100.0,
+      "opcode_inventory_match": 100.0,
+      "control_flow_match": 100.0,
+      "ordered_control_flow_match": 100.0,
+      "control_inventory_match": 100.0,
       "call_count_match": 100.0,
       "size_match": 100.0,
       "unit": "game/weapons/Gun",
@@ -213,17 +213,17 @@
     },
     {
       "symbol": "_ZN3GunC2EiiiiiifN11AbyssEngine6AEMath6VectorES2_",
-      "match": 93.0,
+      "match": 94.9,
       "bytes_equal": false,
       "linked_equal": false,
       "n_target": 177,
-      "n_base": 178,
-      "source_match": 99.0,
-      "instruction_inventory_match": 97.7,
-      "opcode_inventory_match": 98.9,
-      "control_flow_match": 98.3,
-      "ordered_control_flow_match": 98.3,
-      "control_inventory_match": 98.3,
+      "n_base": 177,
+      "source_match": 100.0,
+      "instruction_inventory_match": 100.0,
+      "opcode_inventory_match": 100.0,
+      "control_flow_match": 100.0,
+      "ordered_control_flow_match": 100.0,
+      "control_inventory_match": 100.0,
       "call_count_match": 100.0,
       "size_match": 100.0,
       "unit": "game/weapons/Gun",
@@ -1017,7 +1017,7 @@
       "unique_original_body": false
     }
   ],
-  "status": "partial: instruction-weighted source-shape remains below 99.0%",
+  "status": "Achieved: fixed source-shape means >=99 and requested build/corpus gates verified; no game-runtime certification.",
   "full_corpus": {
     "baseline": {
       "avg_match": 76.74,
@@ -1339,18 +1339,20 @@
     "baseline_full_corpus_wrong_type_gate_exit": 0,
     "section_local_alias_regressions": "passed: distinct equal-address sections and seven real ARM aliases",
     "native_archive_path": "C:\\Users\\Dima\\.codex\\gun-arm-99-scratch-2026-10-06\\native-output\\libgof2.a",
-    "full_corpus_fresh_run": "ignite-contract-corpus.json: all comparisons, strict wrong-type gate exit 0",
-    "ignite_impact_operand_smoke": "Actual extracted ignite tail: old basePos operand fails; first position operand passes. Does not execute full radial damage body."
+    "full_corpus_fresh_run": "threshold-final-corpus.json: all comparisons, strict wrong-type gate exit 0",
+    "ignite_impact_operand_smoke": "Actual extracted ignite tail: old basePos operand fails; first position operand passes. Does not execute full radial damage body.",
+    "scatter_classifier_smoke": "Actual extracted flag expression: all leading-zero partition boundaries and 100000 deterministic random 32-bit words agree with native kind==25; mathematical proof covers all uint32 differences. No full collision execution."
   },
   "input_sha256": {
-    "src\\game\\weapons\\Gun.cpp": "ea909ed7e9087542f9f6d64afe75f2a14aef1bec7a8e6455bd14bf1ad7312606",
+    "src\\game\\weapons\\Gun.cpp": "d836f6794e98b77922e0a3f45055b949e305cde791a4a63e4f70c27a9beba101",
     "src\\game\\weapons\\Gun.h": "400097d0e265812992483f4556cf6cfa63302d60978129c9211aae9bdd904f2c",
-    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "7d616257e80327145fa5453fceaf47f591521b858af8a61514f0eec31135648b",
+    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "fa35fdf75cba9e879e6768755df35b8f382351a70275a911c9287074aeef191f",
     "_work\\gun-current\\verify\\.flags": "b7741d9045ccee7cadcb1e3f3027e57029d127537931305e306e50bc830d174c",
     "tools\\verify\\asmdiff.py": "ab7cde77854f395ea9c317618085375e1723de580defb8548be4bee94b0c3a5a",
     "tools\\verify\\test_asmdiff_aliases.py": "d1b55aae56f2caaf79c6feb6604127742e3a9a271e4e6b126a2773c8db14e239",
-    "tools\\gun_contract_smoke.py": "49a86b50ed9d65d1494e3dd8baac456830282f1e8143035b62000bb60cb5ae61",
-    "tools\\gun_contract_smoke.cpp": "43ec1a7b5c4d78b6b854be4a740b5123ce7bcc40f4e72c4355d9c2552baf1ce4",
-    "tools\\gun_ignite_contract_smoke.cpp": "d38e2b8a096a2d2600d921922aeed27f8cdbd23ff888a296f83c0475ac9b972a"
+    "tools\\gun_contract_smoke.py": "c39ef7a6783976411212ad102f6f4b325f82d37b4f6d67f71e243635d137922d",
+    "tools\\gun_contract_smoke.cpp": "69d015740775589a29f12b041e707449a5b0d4e6035004656552155b0bf4829c",
+    "tools\\gun_ignite_contract_smoke.cpp": "d38e2b8a096a2d2600d921922aeed27f8cdbd23ff888a296f83c0475ac9b972a",
+    "tools\\gun_scatter_flag_smoke.cpp": "0ccb50a6ed6b8105b5cd1eed3e180680999b8e273448e29d340cbda9e1ec1c4f"
   }
 }
