@@ -6892,3 +6892,70 @@ flag/matcher, push, PR or merge change.
 Evidence: `_work/read_typed_pair_index_owner_identities.json`, sixteen focused
 reports/source snapshots, primary original_mesh.asm and rechecked typedpair
 validation audit.
+
+
+## Continuation: fresh indexed owner interactions with normals and tangent counters
+
+Twenty-one focused Read measurements start from f10e76ca: nineteen interaction
+forms and two repeated reload-only controls. Each adds m=*slot after successful
+indexCount read, immediately before index allocation, as supported by primary
+ARM 0x6c664. This candidate now ties source and improves strict, unlike the old
+axisbyte-era exclusion, so its interactions are measured separately.
+
+Twelve normal-view forms change destination center to 0/2/3 or combine input
+center 1/2/3 with destination center 1/2/3, compensating every subscript. Each
+pointer is within its own three-component record or one-past on the final
+record; actual accesses remain original elements. Double decoding, normalized
+float quotients, lower/upper clamp semantics, fallback outputs, dynamic slot
+vertex-count condition and output-field loads stay intact.
+
+Seven counter forms use short/ushort/int triangle counters, optionally ushort
+final tangent counters, plus final ushort alone. Triangle count indexCount/3
+is <=21845, fitting signed short. Final vertices are <=65535: final ushort
+increment reaches 65535 then exits, without overflow. Clear loop remains uint;
+Dot/multiply/subtract/Normalize/stores/Cross order and count captures remain.
+No helper, dead effect, padding, assembly, fixed register or metric change.
+View/counter spellings are hypotheses. Fresh-owner timing has original ARM
+support, but existing native fixtures do not prove equivalent behavior for
+a hypothetical AEFile callback mutating *slot; no such broad proof is claimed.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals reload-only |
+|---|---|---:|---:|---|
+| normal: index_reload_only | 98.5 / 57.8 | 874 | 100.0 | yes |
+| normal: destination_0 | 98.1 / 56.3 | 869 | 100.0 | no |
+| normal: destination_2 | 98.4 / 56.7 | 870 | 100.0 | no |
+| normal: destination_3 | 98.0 / 57.5 | 864 | 100.0 | no |
+| normal: source_1_destination_1 | 98.5 / 57.4 | 874 | 100.0 | no |
+| normal: source_1_destination_2 | 98.4 / 56.2 | 870 | 100.0 | no |
+| normal: source_1_destination_3 | 98.0 / 55.1 | 865 | 100.0 | no |
+| normal: source_2_destination_1 | 98.5 / 57.8 | 874 | 100.0 | yes |
+| normal: source_2_destination_2 | 98.4 / 56.7 | 870 | 100.0 | no |
+| normal: source_2_destination_3 | 98.0 / 55.5 | 865 | 100.0 | no |
+| normal: source_3_destination_1 | 98.5 / 57.8 | 874 | 100.0 | yes |
+| normal: source_3_destination_2 | 98.4 / 56.7 | 870 | 100.0 | no |
+| normal: source_3_destination_3 | 98.0 / 55.1 | 865 | 100.0 | no |
+| counter: index_reload_only | 98.5 / 57.8 | 874 | 100.0 | yes |
+| counter: triangle_short | 98.0 / 54.2 | 877 | 100.0 | no |
+| counter: triangle_short_final_short | 98.0 / 54.2 | 877 | 100.0 | no |
+| counter: triangle_unsigned_short | 98.5 / 56.2 | 872 | 100.0 | no |
+| counter: triangle_unsigned_short_final_short | 98.5 / 56.2 | 872 | 100.0 | no |
+| counter: triangle_int | 98.5 / 57.8 | 874 | 100.0 | yes |
+| counter: triangle_int_final_short | 98.5 / 57.8 | 874 | 100.0 | yes |
+| counter: final_short | 98.5 / 57.8 | 874 | 100.0 | yes |
+
+No interaction improves source beyond 98.5. Five interaction forms equal the
+entire reload-only object; two controls independently reproduce that object.
+The other forms tie or regress source, without a better gate result. None
+retained. Reload-only remains a candidate for other interactions, not a retained
+gain. Source and fixtures match ecc30f25; outside-body/signature checks pass.
+Read-only binding rechecks existing typedpair full evidence: 204 objects/202
+unaffected objects, actual linked 2079/byte 959 exact pair sets equal baseline
+with no lost/gained pairs, unchanged canonical arguments and fixed-three rows
+directly recomputed with the unchanged matcher. No new native/full-corpus run
+claimed for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_index_reload_normal_views_identities.json`,
+`_work/read_index_reload_counter_identities.json`, twenty-one focused reports/
+source snapshots and rechecked typedpair validation audit.
