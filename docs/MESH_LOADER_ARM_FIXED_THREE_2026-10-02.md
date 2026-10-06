@@ -5900,3 +5900,35 @@ goal active. No push, PR or merge.
 
 Evidence: `_work/read_typed_pair_common_failure_identities.json`, two focused
 reports/source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: success/else cleanup on paired raw arrays
+
+Four focused Read trials start from e07b38ad. They move existing successful
+conversion/final deletion inside Read !=0, with the same failure deletion and
+return -1 in else, for short positions, int positions, normals and all three.
+The original raw allocation and read remain at their source points. Each
+success/failure path retains exactly one matching typed array deletion; no
+allocation, condition, null guard or cleanup operation added. Read sizes,
+conversions, bounds, normal clamps and owner reloads remain unchanged. This is
+a branch-form interaction with accepted paired arrays, not recovered C++.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| short_position | 98.5 / 57.4 | 874 | 100.0 | yes |
+| integer_position | 98.5 / 57.4 | 874 | 100.0 | yes |
+| normal | 98.5 / 57.4 | 874 | 100.0 | yes |
+| all_three | 98.5 / 57.4 | 874 | 100.0 | yes |
+
+All four complete Core objects equal accepted byte-for-byte; none retained.
+Sources/fixtures match ecc30f25 and outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full proof: 204 objects/202 unaffected
+objects, linked 2079/byte 959 exact pair sets equal baseline without lost/gained
+pairs, canonical arguments unchanged and fixed-three matcher rows recomputed
+directly. No new native/full-corpus run claimed for rejected forms. Accepted
+means **98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet; goal active.
+No general compiler ceiling, header/ABI, helper, flag, matcher, push, PR or merge
+change.
+
+Evidence: `_work/read_typed_pair_cleanup_identities.json`, four focused reports
+and snapshots, rechecked `_work/typedpair_validation_audit.json`.
