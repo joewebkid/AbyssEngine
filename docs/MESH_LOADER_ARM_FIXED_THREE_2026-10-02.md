@@ -5282,3 +5282,43 @@ remain unmet; goal active. No push, PR or merge.
 Evidence: `_work/read_normal_input_copy_identities.json`,
 `_work/read_uv_input_copy_identities.json`, twelve focused reports and snapshots,
 and rechecked `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: Enhanced parser state records
+
+Fresh unchanged-matcher inventory inspection of accepted Enhanced shows remaining
+local load/store differences. Six focused trials from 0582caaa group real used
+parser state into a local record: mesh/animation pointers, file/format,
+file/animation, mesh/file, then all four values in two member orders. No unused
+field, explicit padding/alignment, dummy operation, added helper, header or ABI
+change. Record members replace existing variable uses directly. Initialization
+stays before the first read; new Transform retains its order relative to calls,
+and only pure argument/self/format captures change order. No file read, time
+update, key insertion, cleanup or attachment changes. Member representation is
+a source-shape hypothesis, not an original-source recovery.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| self_anim | 98.3 / 66.9 | 641 | 100.0 | yes |
+| file_format | 98.3 / 66.9 | 641 | 100.0 | yes |
+| file_anim | 98.3 / 66.9 | 641 | 100.0 | yes |
+| self_file | 98.3 / 66.9 | 641 | 100.0 | yes |
+| all_source_order | 98.3 / 66.9 | 641 | 100.0 | yes |
+| all_file_first | 98.3 / 66.9 | 641 | 100.0 | yes |
+
+All six complete Mesh objects equal accepted byte-for-byte; none retained.
+These local record forms do not change the residual inventory or the required
+score on the current compiler/source. This does not establish a general ceiling.
+Production sources/fixtures match bf0243e8; outside-body/signature checks pass.
+
+Read-only recheck binds existing full evidence to restored source: 204 objects,
+202 unaffected objects byte-identical to baseline, actual linked-exact 2079 and
+byte-exact 959 pair sets equal baseline without lost/gained pairs, unchanged
+canonical arguments, fixed-three rows recomputed with the unchanged matcher.
+No new native/full-corpus run claimed for nonretained forms. Accepted means
+remain **98.37% unweighted /98.36% original-instruction-weighted**; both >=99.0
+requirements remain unmet and goal remains active. No push, PR or merge.
+
+Evidence: `_work/enh_parser_state_identities.json`, six
+`_work/enhparserstate-*.json` focused reports and source snapshots, diagnostic
+normalized instruction lists, and rechecked normalcenter validation audit.
