@@ -4220,3 +4220,35 @@ already neutral variants. No such edits made. Source99.32/98.7082523588227,
 strict87.835/82.6551330798479,7 linked/3 byte unique bodies; weighted99 remains
 unmet. Goal retains the full99 objective. Evidence:
 docs/validation/starmap_2026-10-06_warning_bool_trial.json.
+
+## Hundred-and-twelfth follow-up: primary playing-time ABI/division audit
+
+Revalidated committed111 and unchanged production104. Previous goal turn is
+progress: explicit warning-state compilation ruled out a new source form.
+No live build/wait assumed. Read StarMap.cpp, Status.h/cpp, AERandom.h and
+primary/current ARM fragments. No production edit or new build.
+
+Final station seed transfers BOTH getPlayingTime return words into setSeed's
+64-bit argument. Native c7cf8..c7cfd and current3102..3107 have EXACT6 bytes
+024620460b46: r2=r0, r0=saved AERandom receiver r4, r3=r1. No narrowing or
+extra sign extension. This was already noted in older source review; fresh
+ELF bytes revalidate it, rather than treating it as a newly found bug.
+
+New evidence addresses draw's stripped division destination. Native pulse
+calls c9426/c942e and c9504/c950c target19ae54. The nearest-symbol label
+__cxa_demangle+0x6e24 does not identify that helper's behavior. Directly
+disassembled19ae54..19ae97: nonzero divisor path calls imported
+__gnu_ldivmod_helper at19ae7c via69420 PLT; returned remainder is loaded into
+r2/r3. Dynamic symbols contain this signed helper, without a matching
+__gnu_uldivmod_helper import. Caller passes10/0 then99/0, uses64-bit
+101-minus-remainder and signed __aeabi_l2f, as current __aeabi_ldivmod callers
+already do. Keep signed int64_t playingTime arithmetic; an unsigned source
+rewrite based on a stripped/misleading symbol label is unsupported.
+
+Source and whole ARM object equal104. ALL204 base object hashes equal the
+full-validated110 restored set; canonical4619/0 full report and111 native
+STATIC evidence remain valid. No redundant tests rerun, runtime/source-
+spelling/whole ABI claim or metric change. Source99.32/98.7082523588227,
+weighted99 remains unmet; full objective retained. Evidence:
+docs/validation/starmap_2026-10-06_playing_time_abi_audit.json;
+raw _work/playing-time-division-wrapper-112.asm.

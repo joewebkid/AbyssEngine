@@ -1,0 +1,44 @@
+{
+  "decision": "No signedness/narrowing edit justified. Existing seed and phase arithmetic match the inspected primary ABI/data flow. Weighted99 remains unmet.",
+  "previous_goal_turn_classification": "Progress: a novel explicit warning-state trial was verified neutral and removed; evidence rules that form out.",
+  "checkpoint": "1bc72d84",
+  "production": "683216b5",
+  "new_evidence": "Primary private division wrapper at0x19ae54 is inspected directly rather than inferred from objdump nearest-symbol label __cxa_demangle+offset. It calls imported __gnu_ldivmod_helper via0x69420 PLT at0x19ae7c and returns remainder through r2/r3. Only signed helper is imported in dynamic nm output.",
+  "seed": {
+    "native_call": "getPlayingTime at0xc7cf4; setSeed at0xc7cfe",
+    "current_call": "getPlayingTime relocation0x30fe; setSeed relocation0x3108",
+    "register_moves": "r2=r0; r0=saved AERandom receiver r4; r3=r1",
+    "native_range": "0xc7cf8..0xc7cfd",
+    "current_range": "0x3102..0x3107",
+    "exact_bytes": "024620460b46",
+    "finding": "Both returned words retained; no extra sign extension, zero extension or truncation. This seed fact was already noted in older report; fresh bytes revalidate it."
+  },
+  "phase": {
+    "first_native_division_calls": [
+      "0xc9426",
+      "0xc942e"
+    ],
+    "second_native_division_calls": [
+      "0xc9504",
+      "0xc950c"
+    ],
+    "destination": "0x19ae54",
+    "arguments": "r2/r3=10/0, then99/0; quotient r0/r1 feeds second call, remainder r2/r3 feeds64-bit101-minus-remainder, then signed __aeabi_l2f.",
+    "current": "Signed __aeabi_ldivmod relocations at0x536/0x53e and0x60c/0x614; matching64-bit101-minus-remainder and signed __aeabi_l2f.",
+    "finding": "Keep int64_t playingTime and signed division/remainder; an unsigned source rewrite is contradicted by primary wrapper/callee evidence.",
+    "limits": "Callee import/ABI and caller data flow evidence; not original C++ spelling, executable runtime or all arithmetic-path validation."
+  },
+  "unchanged": {
+    "source_sha256": "ddc4e5cd912fdf561661f01949f5686e51c366fdf69b2d84d571616101138c3c",
+    "object_sha256": "54a78574bcc14daefc8678850bb6a4e8bf3bed2caa2fa3b5139ef72c9e30484b",
+    "all204_objects_equal_full_validated_restoration": true,
+    "full_report": "_work/matrix-inline-restored-corpus.json",
+    "latest_native_static_log": "_work/native-warning-bool-restored-111.log",
+    "new_builds": "None; production/source and all204 ARM objects unchanged; existing full/native results remain valid.",
+    "source_means": {
+      "unweighted": 99.32,
+      "weighted": 98.7082523588227
+    },
+    "objective_reached": false
+  }
+}
