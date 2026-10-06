@@ -5932,3 +5932,51 @@ change.
 
 Evidence: `_work/read_typed_pair_cleanup_identities.json`, four focused reports
 and snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: normal pointer views on paired-raw source
+
+Twelve focused Read trials start from 8fbd9246. They revisit compressed-normal
+input/output pointer views on accepted paired raw arrays: output offset 0/2/3
+separately, then input offsets 1/2/3 combined with output offsets 1/2/3.
+Offsets are in elements; accesses remain the same X/Y/Z addresses and evaluation
+order. Pointer declarations are inside executing triples, at most one-past the
+allocation (offset 3 in final triple); zero count forms none. Owner/count field
+loads, sqrt/clamps and fallback stores keep their existing source points/order.
+No before-array pointer, additional read/call, arithmetic reassociation, header,
+ABI, helper, flag or matcher change. These are address-expression hypotheses,
+not recovered original local declarations.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| destination_0 | 98.1 / 55.5 | 869 | 100.0 | no |
+| destination_2 | 98.4 / 55.9 | 870 | 100.0 | no |
+| destination_3 | 98.0 / 56.6 | 864 | 100.0 | no |
+| source_1_destination_1 | 98.5 / 56.9 | 874 | 100.0 | no |
+| source_1_destination_2 | 98.4 / 55.4 | 870 | 100.0 | no |
+| source_1_destination_3 | 98.0 / 54.7 | 865 | 100.0 | no |
+| source_2_destination_1 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| source_2_destination_2 | 98.4 / 55.9 | 870 | 100.0 | no |
+| source_2_destination_3 | 98.0 / 55.0 | 865 | 100.0 | no |
+| source_3_destination_1 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| source_3_destination_2 | 98.4 / 55.9 | 870 | 100.0 | no |
+| source_3_destination_3 | 98.0 / 54.7 | 865 | 100.0 | no |
+
+Input offsets 2/3 with accepted output offset 1 equal the accepted complete
+Core object byte-for-byte. Input offset 1/output 1 ties required source but
+lowers strict. Every other form regresses source; none retained. Several views
+canonicalize to identical objects across input offsets, verified by actual SHA
+and byte comparisons rather than inferred from equal scores. Accepted output
+middle-component view remains best among these measured combinations; no general
+compiler ceiling inferred. Sources/fixtures match ecc30f25; outside-body checks
+pass.
+
+Read-only binding rechecks existing typedpair full proof: 204 objects/202
+unaffected objects, actual linked 2079/byte 959 exact pair sets equal baseline
+without lost/gained pairs, unchanged canonical arguments, directly recomputed
+fixed-three rows. No new native/full-corpus run claimed for rejected forms.
+Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet;
+goal active. No push, PR or merge.
+
+Evidence: `_work/read_typed_pair_normal_view_identities.json`, twelve focused
+reports/source snapshots, rechecked `_work/typedpair_validation_audit.json`.
