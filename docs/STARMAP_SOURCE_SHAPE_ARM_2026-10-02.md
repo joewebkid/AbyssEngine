@@ -4547,3 +4547,33 @@ for identical objects; no new full run/canonical change. Source means remain
 99.38/98.88256583579778, strict88.04/83.12933389663428, fixed20/7101.
 Weighted99 unmet; native executable/runtime and whole ABI unverified.
 Evidence: docs/validation/starmap_2026-10-06_dialog_topology_call_audit.json.
+
+## Hundred-and-twenty-second follow-up: info word flags (removed)
+
+Revalidated121 (b7c3777e), current production119 and fresh info diff. Prior turn
+is progress: dialog experiments/call audit supplied measured exclusions and
+proved restoration. Investigated campaign marker local flag representations.
+
+A changes missionTarget and targetMatch from bool to int0/1, preserving ordered
+getters, conditions and stores. Native word registers do not establish the
+original C++ flag type; this is a hypothesis. ARM204/0; only info changes:
+source99.3->98.7, strict80.6->79.6, raw1198->1194, inventory98.7->98.0,
+opcode99.3->98.7, control99.1->98.0, ordered90.6->89.1, size99.2->98.8.
+Other21 rows identical. Rejected. B keeps missionTarget bool and makes only
+targetMatch int0/1. ARM204/0; entire focus and whole object identical119.
+Neutral; removed. No extra runtime calls/checks or padding.
+
+Read-only pulse review: the extra current UXTB does not justify changing the
+shared SetColor declaration. Primary dynamic symbol at7c938 is
+_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh, matching existing four unsigned
+char parameters. Layout::getPulseValue reads playing time/Sinf twice and
+selects b/-b from a's sign; no caller-wide range proof or narrowing rewrite
+was applied. No shared ABI, flags or verifier changes.
+
+Fresh restoration ARM204/0 reproduces the entire canonical focused report,
+source bytes and ALL204 object hashes; native STATIC exit0. Accepted119
+full4619/0,2084 linked/960 byte and preservation gates stay valid for identical
+objects. No new full run or canonical change. Means99.38/98.88256583579778
+source,88.04/83.12933389663428 strict, fixed20/7101. Weighted99 remains unmet;
+native executable/runtime and whole ABI unverified.
+Evidence: docs/validation/starmap_2026-10-06_info_word_flags.json.
