@@ -5563,3 +5563,58 @@ requirements remain unmet; goal active. No push, PR or merge.
 
 Evidence: `_work/enh_current_key_loop_identities.json`, twelve focused reports
 and source snapshots, rechecked `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: remaining-record key counters
+
+Thirteen focused Enhanced trials start from 2a5254f1. They replace unused
+ascending inner indices with remaining-record counters initialized from the
+parsed unsigned-short bound, testing unsigned int/int/unsigned short for vector,
+axis and optional groups, three individual axis sections, and all groups with
+unsigned int. The original i/j has no body use, verified before replacement.
+Each key is still read/inserted in stream order; count zero executes no body,
+maximum 65535 fits all types and the condition tests zero before another decrement,
+so neither overflow nor underflow is introduced. Outer axis and signed V5-key
+loops stay unchanged. No dummy index, helper, header, ABI, flag or matcher change.
+
+The remaining bound is captured before the loop instead of rereading the
+existing count each test. This is an explicit stability assumption about normal
+file-parser operation, not recovered original load timing or arbitrary callback
+equivalence. Inspected current AEFile.cpp, AENormalFile.cpp and AEPakFile.cpp
+Read methods forward the supplied buffer, and FileInterfaceAndroid.cpp writes
+that buffer through zip_fread/fread/JNI region copying; they do not retain the
+previous count pointer for later key reads. No local count assignment occurs
+in key-loop bodies. These are current implementation observations, not native
+runtime or original ABI proof.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| vector_unsigned_int | 98.0 / 52.5 | 641 | 100.0 | no |
+| vector_int | 98.0 / 52.5 | 641 | 100.0 | no |
+| vector_unsigned_short | 97.5 / 52.4 | 638 | 100.0 | no |
+| axis_unsigned_int | 97.9 / 66.1 | 641 | 100.0 | no |
+| axis_int | 97.9 / 66.1 | 641 | 100.0 | no |
+| axis_unsigned_short | 97.3 / 66.2 | 638 | 100.0 | no |
+| optional_unsigned_int | 98.3 / 66.4 | 641 | 100.0 | no |
+| optional_int | 98.3 / 66.4 | 641 | 100.0 | no |
+| optional_unsigned_short | 98.1 / 66.5 | 640 | 100.0 | no |
+| axis_individual_0 | 98.2 / 66.7 | 641 | 100.0 | no |
+| axis_individual_1 | 98.2 / 66.7 | 641 | 100.0 | no |
+| axis_individual_2 | 98.2 / 66.7 | 641 | 100.0 | no |
+| all_unsigned_int | 96.7 / 51.5 | 641 | 100.0 | no |
+
+All objects differ from accepted; int/unsigned-int objects equal each other
+within each vector/axis/optional group. Required source score does not improve;
+optional wide forms tie the rounded source score while lowering strict. None
+retained. These results exclude the tested traversal forms, not a general ceiling.
+Source/fixtures match bf0243e8, and outside-body/signature checks pass.
+
+Read-only full-evidence binding verifies 204 objects/202 unaffected objects,
+actual linked 2079/byte 959 exact pair sets equal baseline without lost/gained
+pairs, unchanged canonical arguments, directly recomputed fixed-three rows.
+No new native/full-corpus run claimed for rejected forms. Accepted means remain
+**98.37% unweighted /98.36% original-instruction-weighted**; both >=99.0 gates
+unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/enh_key_remaining_identities.json`, thirteen focused reports
+and snapshots, rechecked `_work/normalcenter_validation_audit.json`.
