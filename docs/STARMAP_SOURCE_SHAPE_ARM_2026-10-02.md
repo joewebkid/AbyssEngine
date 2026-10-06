@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.36% unweighted / 98.82508% original-instruction
+implementation bodies measure **99.37% unweighted / 98.85429% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.965% / 83.03483%**, respectively. Source-shape is an inventory/control-flow
+**87.94% / 82.96181%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -4323,3 +4323,39 @@ so its full report remains valid. This is source-shape progress, not native
 runtime/whole ABI proof or completion of99. Source/object hashes and raw gate
 inputs are recorded in the compact evidence snapshot.
 Evidence: docs/validation/starmap_2026-10-06_warning_branch_delivery.json.
+
+## Hundred-and-fifteenth accepted warning suppression tail
+
+Revalidated114 (dde477ce) source/object and committed evidence. Previous goal
+turn is progress:114 improved source shape and passed full/native/baseline and
+previous preservation gates. This continuation keeps the direct warning
+deliveries and tests the placement of their suppression store.
+
+Variant A: all seven successful deliveries jump to one suppression store,
+followed by existing choice visibility/inertia/Help. Both ordinary station
+dialogs jump past that store; warning predicates/getters/text IDs and runtime
+actions remain unchanged. No new calls/checks, padding, shared edits, flags or
+verifier changes. Primary stores suppression after set and before visibility;
+this shared-tail source form is heuristic, not recovered original spelling.
+
+Variant B keeps3217's suppression store local and shares the store for six
+other warnings, reflecting primary's special3217 block. ARM204/0; entire
+focused report AND object equal114 (cd625a949c83d404b31b81b8b9e33d4a1e3e97fd768c47bbadd11b78dc961e82),
+so B was removed. This is distinct from older shared-getText/separate3217
+trials because all seven source deliveries remain branch-local.
+
+A improves End source98.6->98.8, control98.3->98.7 and calls97.8->99.3; strict
+80.3->79.8, instruction inventory98.3->98.2, opcode98.8->98.7 and size99.7->98.9
+decrease honestly. Raw1036->1028; other21 focused rows unchanged. Fixed20
+means99.37/98.85428812843263 source,87.94/82.96180819602874 strict,7 linked/3 byte
+unique bodies. Weighted99 remains unmet; strict improvement is not claimed.
+
+Restored A after B and reproduced its entire report/object with fresh ARM204/0;
+native STATIC exit0. Full4619/0, linked2084/byte960, coverage4274/4524, missing250
+(7 wrong type/243 absent), extras129. ALL22 focus/full rows agree; baseline and
+previous gates exit0 with zero exact-pair losses. Default99 gate exit1 solely
+for weighted threshold. Canonical final reports updated after validation.
+Source SHA256ac000659c5ae6147d7dc447d23ad4958e7d6626e24fb003d443a1925f208067c;
+object0856e8255c8ddc4c590d88f2c08a08a452ce38db895419c0260ab251c983e7e4.
+No native runtime/whole ABI or source-spelling claim. Evidence:
+docs/validation/starmap_2026-10-06_warning_suppression_tail.json.

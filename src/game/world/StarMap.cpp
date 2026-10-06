@@ -440,15 +440,13 @@ int StarMap::OnTouchEnd(int x, int y) {
                                     (!Globals::status->getShip()->getFirstEquipmentOfSort(13) ||
                                      !Globals::status->getShip()->getFirstEquipmentOfSort(17))) {
                                     this->choiceWindow->set(*Globals::gameText->getText(532));
-                                    this->suppressNextClose = 1;
-                                    goto station_choice_ready;
+                                    goto station_warning_delivered;
                                 } else if (Globals::status->getCurrentCampaignMission() == 135 &&
                                     this->stations->data()[this->selectedStation]->getIndex() ==
                                         reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()))->getTargetStation() &&
                                     !Globals::status->getShip()->getFirstEquipmentOfSort(19)) {
                                     this->choiceWindow->set(*Globals::gameText->getText(3213));
-                                    this->suppressNextClose = 1;
-                                    goto station_choice_ready;
+                                    goto station_warning_delivered;
                                 } else if ((Globals::status->getCurrentCampaignMission() == 91 &&
                                     this->stations->data()[this->selectedStation]->getIndex() ==
                                         reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()))->getTargetStation() &&
@@ -458,15 +456,13 @@ int StarMap::OnTouchEnd(int x, int y) {
                                         reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()))->getTargetStation() &&
                                     !Globals::status->getShip()->getMaxPassengers())) {
                                     this->choiceWindow->set(*Globals::gameText->getText(3214));
-                                    this->suppressNextClose = 1;
-                                    goto station_choice_ready;
+                                    goto station_warning_delivered;
                                 } else if (Globals::status->getCurrentCampaignMission() == 105 &&
                                     this->stations->data()[this->selectedStation]->getIndex() ==
                                         reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()))->getTargetStation() &&
                                     !Globals::status->getShip()->hasEquipment(206, 1)) {
                                     this->choiceWindow->set(*Globals::gameText->getText(3217));
-                                    this->suppressNextClose = 1;
-                                    goto station_choice_ready;
+                                    goto station_warning_delivered;
                                 } else if (Globals::status->getCurrentCampaignMission() == 139 &&
                                     this->stations->data()[this->selectedStation]->getIndex() ==
                                         reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()))->getTargetStation() &&
@@ -476,8 +472,7 @@ int StarMap::OnTouchEnd(int x, int y) {
                                     if (shipClasses[Globals::status->getShip()->getIndex()] != 1 ||
                                         !Globals::status->getShip()->hasEquipment(190, 1)) {
                                         this->choiceWindow->set(*Globals::gameText->getText(3215));
-                                        this->suppressNextClose = 1;
-                                        goto station_choice_ready;
+                                        goto station_warning_delivered;
                                     }
                                 }
                                 if (Globals::status->getCurrentCampaignMission() == 142 &&
@@ -487,16 +482,14 @@ int StarMap::OnTouchEnd(int x, int y) {
                                      !Globals::status->getShip()->hasEquipment(197, 15) ||
                                      !Globals::status->getShip()->getFirstEquipmentOfSort(35))) {
                                     this->choiceWindow->set(*Globals::gameText->getText(3216));
-                                    this->suppressNextClose = 1;
-                                    goto station_choice_ready;
+                                    goto station_warning_delivered;
                                 }
                                 if (Globals::status->getCurrentCampaignMission() == 142 &&
                                     this->stations->data()[this->selectedStation]->getIndex() ==
                                         reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()))->getTargetStation() &&
                                     !Globals::status->getShip()->getFreeSpace()) {
                                     this->choiceWindow->set(*Globals::gameText->getText(3218));
-                                    this->suppressNextClose = 1;
-                                    goto station_choice_ready;
+                                    goto station_warning_delivered;
                                 }
                                 if (this->jumpMapModeB && this->cargoAmount < this->jumpCost &&
                                            !Globals::status->getShip()->hasVolatileGoods()) {
@@ -512,6 +505,9 @@ int StarMap::OnTouchEnd(int x, int y) {
                                         *Globals::gameText->getText(421), true);
                                 }
                             }
+                            goto station_choice_ready;
+                        station_warning_delivered:
+                            this->suppressNextClose = 1;
                         station_choice_ready:
                             this->choiceVisible = 1;
                         }
