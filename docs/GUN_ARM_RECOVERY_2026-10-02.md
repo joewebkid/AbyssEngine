@@ -115,6 +115,8 @@ Collision argument controls (2026-10-06): six private variants checked native ge
 
 Mine pipeline controls (2026-10-06): native 0x1535ea..0x15363c confirms sequential subtract/normalize and multiply/multiply result pairs with array reloads. Five further controls express normalization, movement or both as full expressions, and express radius products 5/3/2 as unsigned word multiplication before conversion back to signed. Every variant retains 96.9 collision source-shape and 51.3 strict; unsigned radius products alone preserve the complete canonical body, while expression forms change allocation/bytes without a metric gain. None were integrated. Canonical input hashes remain unchanged; evidence is appended to validation/gun_collision_argument_controls_2026-10-06.json.
 
+External-call contract audit (2026-10-06): original binary ranges and canonical object calls were compared by destination name, independently of the source-shape call-count score. Collision/shootAt/ignite have matching direct call multisets of 59/55/33 and matching indirect call counts of 1/19/4. Ignite also has the same direct-call sequence in address order. Collision and shootAt have different block layout; native 0x152848 -> 0x15289a -> 0x152850 confirms getType executes before camera calls despite its later address. Three explicit out-of-line/staged ammo-check forms generate identical complete shootAt bodies and were rejected. Direct multisets and indirect counts alone do not prove arbitrary-path call order, indirect targets or runtime correctness. Source/object/flags/parser and original binary hashes are unchanged; evidence: validation/gun_external_call_contract_2026-10-06.json.
+
 ## Checks and limits
 
 - Native CMake `gof2` static-library build: passed.
