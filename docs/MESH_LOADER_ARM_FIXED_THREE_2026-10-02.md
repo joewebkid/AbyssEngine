@@ -5235,3 +5235,50 @@ both >=99.0 gates remain unmet and goal remains active. No push, PR or merge.
 Evidence: `_work/read_current_clamp_identities.json`, six
 `_work/readcurrentclamp-*.json` focused reports, corresponding source snapshots,
 and rechecked `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: compressed normal and UV input value copies
+
+Twelve focused Read trials start from 4dc42858. Each copies the actual normal
+X/Y/Z or UV U/V input components into local const scalars, an array, or a trivial
+record, using short or value-preserving signed int. Every member is used; no
+padding, reinterpretation of the input allocation as a record, extra helper,
+unused field, header or ABI change. Initializer clauses preserve component order.
+Normal copies move the three loads before their independent conversions. UV
+copies move the second input load before the first output store: the raw input
+and output are separately allocated, with no intervening call. Double scaling,
+float casts, flip decision and stores remain in their existing order. These
+representations are source hypotheses, not recovered original declarations.
+
+| Family / trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| normal / short_scalars | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal / short_array | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal / short_record | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal / int_scalars | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal / int_array | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal / int_record | 98.4 / 56.8 | 877 | 100.0 | yes |
+| UV / short_scalars | 98.3 / 55.8 | 876 | 100.0 | no |
+| UV / short_array | 98.3 / 55.8 | 876 | 100.0 | no |
+| UV / short_record | 98.3 / 55.8 | 876 | 100.0 | no |
+| UV / int_scalars | 98.3 / 55.8 | 876 | 100.0 | no |
+| UV / int_array | 98.3 / 55.8 | 876 | 100.0 | no |
+| UV / int_record | 98.3 / 55.8 | 876 | 100.0 | no |
+
+All six normal objects equal the accepted complete Core object byte-for-byte.
+All six UV objects equal each other byte-for-byte and regress source-shape from
+98.4 to 98.3. None retained; production source/fixtures match bf0243e8, and
+outside-body/signature comparisons pass. This eliminates these tested value-copy
+forms on the current source/compiler without claiming a general ceiling.
+
+Read-only recheck binds existing full evidence to restored production source:
+204 objects, 202 unaffected objects byte-identical to baseline, actual linked
+2079/byte 959 exact pair sets unchanged with no lost/gained pairs, unchanged
+canonical flags and fixed-three matcher rows recomputed from instruction lists.
+No new native/full-corpus run claimed for rejected trials. Accepted means remain
+**98.37% unweighted /98.36% original-instruction-weighted**. Both >=99.0 gates
+remain unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/read_normal_input_copy_identities.json`,
+`_work/read_uv_input_copy_identities.json`, twelve focused reports and snapshots,
+and rechecked `_work/normalcenter_validation_audit.json`.
