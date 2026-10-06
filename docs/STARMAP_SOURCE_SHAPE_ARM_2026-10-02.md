@@ -3547,3 +3547,38 @@ ninetieth-baseline/previous/target-gate.json/log,
 checkpoint90-before-focused/corpus.json. The earlier literal-pool summary
 survives in angular-literals-ninetieth.log; its same-named JSON was overwritten
 by the focused report, so no separate pre-edit pool JSON is claimed.
+
+## Ninety-first follow-up: VFP audit and rejected Y-only step form (2026-10-06)
+
+Read-only audit of all20 fixed bodies compares actual VFP PC-relative literal
+loads in primary Android ARM and accepted b848db14. Every per-body multiset
+of literal width, bits and occurrence count agrees (42 loads each).
+This strengthens the angular-constant evidence without claiming equivalence
+for computed arithmetic, immediate VMOV/scalar LDR values or native runtime.
+Raw audit: _work/vfp-literal-audit-ninetyfirst.json.
+
+A narrow trial changes only path-centering Y selection: compute yStep before
+conditions, initialize sy=0, assign step on greater-than or else less-than.
+X remains untouched. Native basis: ca6da division, ca6de compare, ca6e6 BGT,
+ca6e8/ca6ea ITPL zero. Same result for finite inputs and unordered comparison;
+this does not establish whole-function float-to-int/NaN safety. The previous
+thirteenth merged and nested X/Y trials were reviewed; this is Y-only.
+
+Focused session76642 terminated exit0:204 TUs built, zero failures,22 symbols,
+zero skipped. Update source98.7 ->98.6; strict82.7 ->72.7; current instructions
+966 ->958 (original971). Inventory97.0 ->97.5 and opcodes98.2 ->98.3 improve,
+but control98.7 ->98.3, ordered control95.4 ->89.8 and size99.6 ->98.7 worsen.
+Other21 focused rows are identical. Rejected; no production change retained.
+
+Restored by fresh UTF8 source write and rebuilt in session23360, terminal exit0,
+204/0/22/0. Entire focused JSON and entire ARM object match accepted90; source
+matches b848db14. SHA256 remains
+7d9424ca64863cded41ccad7c4560a4c0fce34bf48c53135cd169ef303e33617.
+No redundant native/full rerun: accepted90 validations remain canonical.
+Metrics remain99.290% /98.6209547951%; default99 gate remains red. No compiler
+ceiling is proved and the goal remains active.
+
+Compact evidence: docs/validation/starmap_2026-10-06_path_y_trial.json.
+Raw evidence under _work: before-path-y-selection-ninetyfirst.cpp,
+path-y-selection-ninetyfirst.json/log/asm,
+ninetyfirst-restored-focused.json/log,vfp-literal-audit-ninetyfirst.json.
