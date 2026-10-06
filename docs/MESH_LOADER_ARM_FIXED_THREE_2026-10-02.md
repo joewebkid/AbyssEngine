@@ -3816,3 +3816,55 @@ is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: recursive child count storage on current reader
+
+Six Read trials start from clean 16b21ecb. Signed int and unsigned-short child
+counter forms revisit the accepted guarded-do loop after the retained color
+field-store change, rather than assume the older 97.9 reader measurements
+apply. childCount spans 0..65535; the guard prevents entry for zero and final
+increment reaches at most 65535, so unsigned short does not wrap. Signed int
+holds the whole range. Child allocation/read/Merge/ArrayAdd order is retained.
+
+Four forms read the same two bytes into a serialized unsigned-short local,
+then copy to int or unsigned int childCount after successful Read. Unsigned
+count is additionally combined with signed int or unsigned-short loop index.
+Only the bound storage changes; Read size, failure branch, initial guard and
+recursive work order remain unchanged. These count-capture hypotheses assume
+the ordinary synchronous Read buffer contract, not a custom implementation
+retaining and mutating this stack address later. AEFile.cpp:184 forwards to
+the low-level virtual Read; this inspection alone is not universal proof for
+all possible implementations. No broader native runtime equivalence is claimed
+for these rejected forms. No helper/ABI/flag/matcher/denominator changes.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| signed_counter | 98.0 / 55.9 | 867 | 100.0 | yes |
+| short_counter | 98.0 / 55.7 | 868 | 100.0 | no |
+| count_int | 96.9 / 53.6 | 862 | 98.2 | no |
+| count_unsigned_int | 96.9 / 53.6 | 862 | 98.2 | no |
+| wide_count_signed_counter | 96.9 / 53.6 | 862 | 98.2 | no |
+| wide_count_short_counter | 96.9 / 53.6 | 863 | 98.2 | no |
+
+Signed counter equals accepted Core byte for byte. Short counter retains
+rounded source but worsens strict and differs from accepted. Int/uint count
+copies and uint count plus signed index produce the same whole object as one
+another, while uint count plus short index differs; all regress required source
+to 96.9. Actual bytes establish identity, not equal scores. No trial retained;
+production source restored.
+
+Relocation-aware count-copy call inspection finds 61 emitted call instructions
+in accepted versus 60 in uint-count trial: one fewer static `_ZdaPv` site and
+three indirect BLX operands changing r5 to r6. The six indirect calls do not
+enter direct-call matcher comparison. This is static call-site evidence, not
+proof of a missing executed release. No synthetic cleanup effect is added.
+Evidence: `_work/child_wide_count_calls.json`.
+
+Additional evidence: `_work/readchildcounttypes-*.json`, source snapshots and
+`_work/read_child_count_type_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
