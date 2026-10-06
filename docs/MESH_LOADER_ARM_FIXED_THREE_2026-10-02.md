@@ -4620,3 +4620,63 @@ Evidence: `_work/read_normal_center_interaction_identities.json`,
 and source snapshots, rechecked `_work/normalcenter_validation_audit.json`.
 No helper, header, ABI layout, unrelated body, flags, matcher, denominator or
 weight change. No push, PR or merge.
+
+
+## Continuation: normal record-end and compressed UV pair pointers
+
+Thirteen Read source trials start from clean d3900758. Seven complete normal
+pointer exploration with a record-end pointer, using offsets -3/-2/-1. Input
+end is computed per executing record or advanced by three at the beginning of
+the iteration, starting from the allocation base. It reaches one-past after
+the final record, never beyond it. Output end is formed after the same branch
+field reload and uses the same X/Y/Z stores in order. Zero-count loops perform
+none of these calculations. Combined input middle/end and output-end forms
+are also checked; no helper, read/count timing, arithmetic precision/order,
+clamp, allocation, destructor or failure path changes.
+
+Normal per-record input-end form yields the accepted whole Core object.
+Output-end alone yields the exact pre-improvement axisbyte-full Core object,
+not merely its equal rounded score/length. Advancing input-end yields exactly
+the preceding advancing base-pointer trial object. These byte identities
+show which address spellings the compiler canonicalizes; no source recovery
+or general compiler ceiling follows from them.
+
+Six UV trials address a pair by its second component or end, separately for
+input, output, or both. Pointer computations stay inside executing iterations.
+Original compressed UV output field/load and stores are at 0x6c92c-0x6c93c
+and 0x6c95e: pointer refers to the first component, followed by +4 store. The
+alternate UV source spellings are hypotheses, not original recovered C++.
+Both input/output components, double scale, double flip subtraction, float
+conversion, per-iteration field load and stores retain existing order. All
+six UV forms produce the accepted entire Core object byte-for-byte.
+
+| Family/trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| normal/input_end_per_record | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal/input_end_advancing | 98.0 / 55.7 | 873 | 100.0 | no |
+| normal/output_end | 98.0 / 55.9 | 867 | 100.0 | no |
+| normal/input_center_1_output_end | 98.0 / 54.1 | 868 | 100.0 | no |
+| normal/input_center_2_output_end | 98.0 / 54.5 | 868 | 100.0 | no |
+| normal/input_center_3_output_end | 98.0 / 54.1 | 868 | 100.0 | no |
+| normal/both_end_advancing_input | 97.9 / 55.7 | 866 | 100.0 | no |
+| UV/destination_1 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| UV/source_1 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| UV/both_1 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| UV/destination_2 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| UV/source_2 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| UV/both_2 | 98.4 / 56.8 | 877 | 100.0 | yes |
+
+No trial increases source; none retained. Production and relevant test source
+restored and compared in full to bf0243e8. Baseline outside-body/signature check
+passes. The existing normalcenter-full artifact hash, actual pair sets, all
+204 objects/202 unaffected objects, winner identity, canonical flag digest and
+arguments, and three matcher component rows are rechecked directly. No new
+native/full-corpus execution is claimed for rejected forms. Accepted source
+remains **98.37% unweighted /98.36% weighted**, linked 2079/byte 959 exact pair
+sets equal baseline, lost [] and gained []. Both >=99.0 gates remain unmet;
+goal active. No matcher, denominator, original weights, header, ABI layout or
+unrelated body change. No push, PR or merge.
+
+Evidence: `_work/read_normal_end_pointer_identities.json`,
+`_work/read_uv_pair_center_identities.json`, their per-trial reports/snapshots
+and rechecked `_work/normalcenter_validation_audit.json`.
