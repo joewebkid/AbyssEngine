@@ -6391,3 +6391,54 @@ Evidence: `_work/read_typed_pair_products_identities.json`,
 `_work/read_typed_pair_accum_pointer_identities.json`,
 `_work/read_typed_pair_triangle_views_identities.json`, fifteen focused reports
 and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: per-vector time and coordinates records
+
+Fourteen focused Enhanced trials start from 2bdbee77. They group the already
+used float key time and three-float coordinate array in a local record, with
+time-first or coordinates-first member order, for each of the seven nonempty
+subsets of position/scale/rotation vector-key sections. This differs from the
+previous separate typed Vector buffers and shared storage across sections.
+Each record remains local to its original key iteration. Reads remain separate
+4-byte time and 12-byte coordinate reads, with updateTimeBetweenFrames between
+them, and insertion follows the second successful read. Every member replaces
+an existing used value; no zero fill, uninitialized use, padding, helper,
+constructor, destructor, merged read or changed conversion is introduced.
+This record layout is a source hypothesis, not recovered original structure.
+
+The private generator initially selected a scalar-key declaration before a
+later vector section, causing a compile error. Source restoration ran in
+finally. After anchoring each span at its vector declaration, the entire
+fourteen-form series was rebuilt and verified. Only that corrected complete
+ledger is used below; the failed generation is not a successful trial.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| time_first_0 | 97.2 / 37.2 | 644 | 100.0 | no |
+| time_first_1 | 97.9 / 56.9 | 641 | 100.0 | no |
+| time_first_2 | 97.9 / 56.9 | 641 | 100.0 | no |
+| time_first_0_1 | 97.2 / 44.5 | 644 | 100.0 | no |
+| time_first_0_2 | 97.2 / 37.0 | 644 | 100.0 | no |
+| time_first_1_2 | 97.9 / 56.9 | 641 | 100.0 | no |
+| time_first_0_1_2 | 97.2 / 49.5 | 644 | 100.0 | no |
+| vector_first_0 | 97.9 / 57.2 | 641 | 100.0 | no |
+| vector_first_1 | 97.9 / 57.2 | 641 | 100.0 | no |
+| vector_first_2 | 97.9 / 57.2 | 641 | 100.0 | no |
+| vector_first_0_1 | 97.9 / 57.5 | 641 | 100.0 | no |
+| vector_first_0_2 | 97.9 / 57.5 | 641 | 100.0 | no |
+| vector_first_1_2 | 97.9 / 57.5 | 641 | 100.0 | no |
+| vector_first_0_1_2 | 97.8 / 57.8 | 641 | 100.0 | no |
+
+All fourteen forms regress source shape (97.2–97.9 versus 98.3); none retained.
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/enh_vector_key_record_identities.json`, corrected fourteen
+focused reports and source snapshots, rechecked typedpair validation audit.
