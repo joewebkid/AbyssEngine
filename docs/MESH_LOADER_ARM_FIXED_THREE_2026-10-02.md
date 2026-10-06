@@ -5516,3 +5516,50 @@ No push, PR or merge.
 Evidence: `_work/read_child_state_identities.json`, twelve focused reports and
 snapshots, `_work/read_child_state_call_differences.json`, rechecked validation
 audit.
+
+
+## Continuation: inner key-loop forms on accepted byte-axis code
+
+Twelve focused Enhanced trials start from 0547d0d8. The older inner-key family
+was measured before accepted byte-axis counters. This series retests while and
+guarded-do for all vector keys, all axis keys and optional keys, then guarded-do
+individually for each of three vector sections and three axis sections. Initial
+count >0 guards skip zero unsigned counts; every loop still retests the same
+count after increment. Counters remain unsigned int with maximum bound 65535,
+so no increment overflow. All reads, timing update, channel selection, key
+conversion/insertion, cleanup and outer byte-axis loops retain their order.
+No helper, header, ABI, flag, matcher or denominator change. Alternative loop
+syntax is a source hypothesis, not a recovered original control flow.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| vector_while | 98.3 / 66.9 | 641 | 100.0 | yes |
+| vector_guarded_do | 97.3 / 68.5 | 642 | 100.0 | no |
+| vector_guarded_do_0 | 97.9 / 69.3 | 640 | 100.0 | no |
+| vector_guarded_do_1 | 98.0 / 53.8 | 642 | 100.0 | no |
+| vector_guarded_do_2 | 98.0 / 66.7 | 642 | 100.0 | no |
+| axis_key_while | 98.3 / 66.6 | 641 | 100.0 | no |
+| axis_key_guarded_do | 96.9 / 61.7 | 647 | 100.0 | no |
+| axis_key_guarded_do_0 | 98.1 / 52.4 | 642 | 100.0 | no |
+| axis_key_guarded_do_1 | 98.0 / 66.4 | 642 | 100.0 | no |
+| axis_key_guarded_do_2 | 98.0 / 66.3 | 643 | 100.0 | no |
+| optional_while | 98.3 / 66.9 | 641 | 100.0 | yes |
+| optional_guarded_do | 98.0 / 66.7 | 642 | 100.0 | no |
+
+Vector/optional while forms equal the accepted complete Mesh byte-for-byte.
+Axis-key while differs, tying rounded source but lowering strict score; all
+nine guarded-do forms regress required source score. None retained. Higher
+strict in vector guarded-do variants does not satisfy the source-shape gate.
+These results exclude the tested interaction on current byte-axis code, not a
+general compiler ceiling. Production sources/fixtures match bf0243e8 and
+outside-body/signature checks pass.
+
+Read-only binding rechecks existing full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline without
+lost/gained pairs, unchanged canonical arguments, directly recomputed fixed-three
+rows. No new native/full-corpus run claimed for rejected forms. Accepted means
+remain **98.37% unweighted /98.36% original-instruction-weighted**; both >=99.0
+requirements remain unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/enh_current_key_loop_identities.json`, twelve focused reports
+and source snapshots, rechecked `_work/normalcenter_validation_audit.json`.
