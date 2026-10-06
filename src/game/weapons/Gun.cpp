@@ -558,8 +558,10 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         } else {
             launch = MatrixGetDir(m);
         }
-        Vector rotatedLaunch = MatrixRotateVector(m, velocity);
-        launch += rotatedLaunch;
+        {
+            Vector rotatedLaunch = MatrixRotateVector(m, velocity);
+            launch += rotatedLaunch;
+        }
         directionArray[i] = launch;
         upArray[i] = MatrixGetUp(m);
         float error = errorMagnitudePercentage;

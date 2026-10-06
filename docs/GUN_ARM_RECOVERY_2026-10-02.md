@@ -2,14 +2,14 @@
 
 ## Status: partial; the requested target is not achieved
 
-Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.6962% unweighted / 98.4900% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
+Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.7000% unweighted / 98.5168% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
 
 | Metric | Clean base | This checkpoint |
 |---|---:|---:|
-| Source-shape, unweighted | 73.5923% | 99.6962% |
-| Source-shape, original-instruction-weighted | 26.9159% | 98.4900% |
-| Strict instruction shape, unweighted | 66.8038% | 94.6769% |
-| Strict instruction shape, weighted | 15.4981% | 76.1244% |
+| Source-shape, unweighted | 73.5923% | 99.7000% |
+| Source-shape, original-instruction-weighted | 26.9159% | 98.5168% |
+| Strict instruction shape, unweighted | 66.8038% | 94.5731% |
+| Strict instruction shape, weighted | 15.4981% | 75.3989% |
 | Linked-exact unique bodies | 14 | 19 |
 | Byte-exact unique bodies | 13 | 13 |
 
@@ -98,6 +98,12 @@ Collision branch-order follow-up (2026-10-05): ARM 0x153118..0x153156 branches t
 Constructor final-store follow-up (2026-10-05): moving the existing field_0xb0 zero initialization after empDamage/field_0xa4 lets the compiler emit separate word stores for Gun+0xb0 and Gun+0xb4, as in original ARM 0x1520b0/0x1520cc. All these writes are to independent fields and there are no calls or throwing operations between them. Final values and ABI remain unchanged. The accepted source form changes initialization order; it is not recovered original C++ ordering, and adds no redundant operation, volatile access or padding. Constructor source rises from 98.5% to 99.0%, strict from 92.7% to 93.0%, with 178 versus original 177 instructions. Both C1/C2 diagnostics reflect the change, but only C1 remains in the fixed mean. Native build, all 204 ARM TUs, existing constructor/ownership/mount smoke and full strict gate pass; baseline and previous-checkpoint exact pairs are preserved. The remaining 26 diagnostic rows are unchanged.
 
 Rejected controls in the same audit: ten ammo-tail variants in shootAt; seven collision detonation dependencies; ten mixed/reordered radial predicates; five ignite division branch forms; and four other final constructor-store forms. The five ignite forms all emit the full identical parsed body. No unsuccessful form was integrated. See validation/gun_constructor_store_order_2026-10-05.json for measurements and identity checks.
+
+ShootAt rotated-result lifetime follow-up (2026-10-06): original ARM 0x152706..0x15272e stores MatrixRotateVector's result at sp+48, consumes it with Vector::operator+=, then reuses that buffer for MatrixGetUp. AEMath.cpp confirms neither MatrixRotateVector nor Vector::operator+= retains the input reference. The existing rotatedLaunch local now ends immediately after adding to launch. Its construction/call operands, arithmetic and effects are unchanged. Under the canonical flags shootAt source rises from 98.5% to 98.6%, while strict shape drops from 70.5% to 67.8%; size changes from 642 to 637 versus original 643 instructions. The source-shape objective improves; this is not a strict-instruction or frame-size recovery claim. Frame size remains 144 bytes versus original 136. All other 27 Gun diagnostic rows are unchanged; baseline and previous-checkpoint exact pairs are preserved. Native build, all 204 ARM TUs, existing mount/constructor smoke and full strict gate pass. Those smoke checks do not execute the full firing or homing paths. See validation/gun_shoot_rotate_lifetime_2026-10-06.json.
+
+Private controls: seven scatter-lifetime/scalar forms reproduce the entire collision body. Four slot-predicate forms reproduce shootAt; a separate named available flag lowers source to 98.4%. Shortening zero/launch/all Vector scopes yields 98.3%/98.5%/98.3%; homing-only scopes remain 98.5%, and combinations with the accepted rotated-result scope remain 98.6%. None of these controls was integrated.
+
+Scratch storage: A: filled during private trials. Only regenerable private variant .o files were removed. Twenty inactive corpus JSON/log files were archived under C:/Users/Dima/.codex/gun-arm-99-scratch-2026-10-06; every archived file was verified by SHA256 before removal from A:. The exact archive path, checksum and manifest are recorded in the lifetime audit. Canonical ARM objects, current/baseline corpus inputs, native build, original binary and trial source/results were retained.
 
 ## Checks and limits
 
