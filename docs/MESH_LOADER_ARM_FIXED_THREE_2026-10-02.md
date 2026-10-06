@@ -6159,3 +6159,42 @@ goal active. No push, PR or merge.
 
 Evidence: `_work/read_typed_pair_counter_identities.json`, seven focused reports
 and snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: mixed signed-char axis dispatch
+
+Six focused Enhanced trials start from 15ef84d4. They retain all unsigned-char
+outer axis counters but cast one/two switch expressions to signed char in each
+combination. All actual axis values are 0/1/2, representable in both types;
+reads, key conversion, channels, position Y negation and insertion order stay
+unchanged. Existing all-three cast and mixed int-counter measurements do not
+alone prove individual mixed-expression output; these six combinations measure
+it directly. No helper, header/ABI, flag, matcher or denominator change. This
+is an expression-type hypothesis, not recovered original declaration evidence.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted | Equals prior corresponding int-counter object |
+|---|---|---:|---:|---|---|
+| signed_axes_0 | 98.2 / 66.8 | 640 | 100.0 | no | yes |
+| signed_axes_1 | 98.2 / 66.8 | 640 | 100.0 | no | yes |
+| signed_axes_2 | 98.2 / 66.8 | 640 | 100.0 | no | yes |
+| signed_axes_0_1 | 98.1 / 66.7 | 639 | 100.0 | no | yes |
+| signed_axes_0_2 | 98.1 / 66.7 | 639 | 100.0 | no | yes |
+| signed_axes_1_2 | 98.1 / 66.7 | 639 | 100.0 | no | yes |
+
+All six complete Mesh objects differ from accepted and regress source. Each
+is byte-identical to its corresponding prior mixed-int-counter object, despite
+keeping byte counter declarations here. Thus switch-expression type reproduces
+that prior compiler output on these measured combinations. This is actual byte
+comparison, not inferred equality from score or a general optimizer ceiling.
+None retained. Sources/fixtures match ecc30f25; outside-body checks pass.
+
+Read-only binding rechecks existing typedpair full proof: 204 objects/202
+unaffected objects, actual linked 2079/byte 959 exact pair sets equal baseline
+without lost/gained pairs, unchanged canonical arguments and directly recomputed
+fixed-three matcher rows. No new native/full-corpus run claimed for rejected
+forms. Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates
+unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/enh_mixed_dispatch_identities.json`, six focused reports and
+source snapshots, corresponding `_work/enhmixedaxis-*` objects, rechecked
+`_work/typedpair_validation_audit.json`.
