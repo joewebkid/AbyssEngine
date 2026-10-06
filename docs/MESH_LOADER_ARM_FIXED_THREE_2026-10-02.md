@@ -6730,3 +6730,60 @@ flag/matcher, push, PR or merge change.
 Evidence: `_work/read_typed_pair_axis_width_identities.json`,
 `_work/read_typed_pair_position_branch_identities.json`, seventeen focused
 reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: UV counters and color loop views after paired raw arrays
+
+Fifteen focused Read trials start from ad149b3f. Nine color forms repeat earlier
+normalcenter-era loop views on current paired raw allocation source: signed
+index, dynamic byte offset, input pointer advancement, postincrement store,
+value then increment, guarded do and input/output/both one-past views. Dynamic
+slot vertex-count condition remains fresh each iteration, and captured m's
+colors field remains freshly loaded for each output component. Bounds are at
+most 4*65535 components, fitting int; one-past pointers are legal and each
+actual access compensates to its original element. Division by 255 remains
+float division; no multiplication/precision change or captured output pointer.
+
+Six UV forms test signed component indices and ushort vertex counters,
+independently in compressed, floating and both loops. Signed index retains
+the captured vcount<<1 bound, stride 2 and component indices. Vertex form has
+0..vcount-1 vertices and a used uint component offset 2*vertex. At maximum count
+65535, last vertex 65534 advances to 65535 and exits without ushort overflow;
+zero count does no work. Compressed double scaling/flip, floating float flip,
+input/output access timing, count capture and shader checks remain unchanged.
+These are source-representation hypotheses, not recovered original syntax.
+No helper, dead effect, padding, new initialization or unrelated change.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| color: signed_index | 98.5 / 57.4 | 874 | 100.0 | yes |
+| color: dynamic_byte_offset | 98.5 / 57.5 | 874 | 100.0 | no |
+| color: input_pointer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| color: postincrement_store | 98.5 / 57.4 | 874 | 100.0 | yes |
+| color: value_then_increment | 98.5 / 57.4 | 874 | 100.0 | yes |
+| color: guarded_do | 98.5 / 56.9 | 875 | 100.0 | no |
+| color: output_end | 98.5 / 57.4 | 874 | 100.0 | yes |
+| color: input_end | 98.5 / 57.4 | 874 | 100.0 | yes |
+| color: both_end | 98.5 / 57.4 | 874 | 100.0 | yes |
+| UV: signed_component_compressed | 98.5 / 57.4 | 874 | 100.0 | yes |
+| UV: signed_component_floating | 98.5 / 57.4 | 874 | 100.0 | yes |
+| UV: signed_component_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+| UV: ushort_vertex_compressed | 98.2 / 58.0 | 874 | 100.0 | no |
+| UV: ushort_vertex_floating | 98.2 / 57.8 | 873 | 100.0 | no |
+| UV: ushort_vertex_both | 97.9 / 57.5 | 871 | 100.0 | no |
+
+Seven color views and all three signed UV indices equal accepted whole Core
+byte-for-byte. Color offset/guarded-do forms tie source without improving either
+gate; three ushort UV forms regress source despite slightly higher strict.
+None retained. Source and fixtures match ecc30f25; outside-body/signature checks
+pass. Read-only binding rechecks existing typedpair full evidence: 204 objects/
+202 unaffected objects, actual linked 2079/byte 959 exact pair sets equal
+baseline with no lost/gained pairs, unchanged canonical arguments and fixed-
+three rows directly recomputed with the unchanged matcher. No new native/full-
+corpus run claimed for rejected forms. Accepted means **98.40% unweighted /
+98.41% weighted**; both >=99.0 gates unmet; goal active. No general compiler
+ceiling, header/ABI, flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_color_loop_identities.json`,
+`_work/read_typed_pair_uv_counter_identities.json`, fifteen focused reports/
+source snapshots and rechecked typedpair validation audit.
