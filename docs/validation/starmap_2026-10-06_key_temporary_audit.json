@@ -13,7 +13,7 @@
     "_work/current-route-depth-bool-ninetysixth.asm"
   ],
   "assembly_provenance": "Current96 assembly remains valid for drawKey after104: full text comparison proved only496c/4970 changed.105 trials were removed and whole object verified equal104.",
-  "native": "c8178 drawBox; c817c..c8192 computes imageX/textX/y from saved values; c8196 StringD1; c81b0 first DrawImage2D",
+  "native": "c8178 drawBox; c817c..c8192 computes imageX/textX/y from saved values; c8196 StringD1; c81b2 first DrawImage2D (c81b0 saves the indirect function address)",
   "current": "1a6a drawBox;1a70 StringD1; subsequent coordinate arithmetic from saved values precedes first DrawImage2D",
   "finding": "The remaining difference is scheduling of pure integer arithmetic across the String destructor. Snapshot values already precede String construction. Normal UI-coordinate formulas agree. No whole-function equivalence or out-of-range signed-overflow proof claimed.",
   "candidate_review": {
