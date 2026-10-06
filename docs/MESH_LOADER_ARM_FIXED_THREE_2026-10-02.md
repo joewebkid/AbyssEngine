@@ -4562,3 +4562,61 @@ Evidence: `_work/readnormalcentered-*.json`, source snapshots,
 `_work/normalcenter_validation_audit.json`, full build/verify logs,
 `_work/normalcenter_native.log`, `_work/normalcenter_read_smoke.log`,
 enhanced build/run logs and `_work/normalcenter_negative_fixture_results.json`.
+
+
+## Continuation: normal-center traversal and common-Z interactions
+
+Eleven Read trials start from clean bf0243e8, the newly validated centered
+normal destination source. Eight test input record pointer/traversal and logical
+vertex-counter interactions while keeping that output addressing. Record source
+pointer is formed inside each iteration, or advances by three from raw's base.
+The advancing base pointer ends at one-past the final triple; no interior
+pointer is advanced beyond one-past. Logical vertex counters use unsigned int,
+int or unsigned short, compare the same freshly read vertexCount at each
+condition, and compute i=vertex*3 inside the executing body. The maximum index
+is 196602; terminal vertex index 65535 fits every tested type without wrap.
+Zero-count loops form no per-triple pointer. Count read timing and all actual
+operations, precision, failure paths and owner field reads remain unchanged.
+
+Three more trials test sharing final Z store after the len branch and/or
+spelling fallback Y before X. Original normal path stores at 0x6cbac/0x6cbb0
+and joins final Z at 0x6cbbe; fallback stores Y then X at 0x6cb20/0x6cb24 before
+joining. Shared form initializes destination and Z in both branches and retains
+existing branch-local field loads and all output addresses. There is no helper
+or observer between these ordinary distinct-component writes. No original C++
+declaration or source spelling is claimed recovered. These are interactions
+with the new accepted destination form, not repeats of pre-improvement bodies.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| source_record | 98.4 / 56.8 | 877 | 100.0 | yes |
+| advancing_source | 98.0 / 55.7 | 873 | 100.0 | no |
+| vertex_index_unsigned_int | 98.2 / 56.1 | 876 | 100.0 | no |
+| vertex_advancing_unsigned_int | 98.0 / 55.7 | 876 | 100.0 | no |
+| vertex_index_int | 98.2 / 56.1 | 876 | 100.0 | no |
+| vertex_advancing_int | 98.0 / 55.7 | 876 | 100.0 | no |
+| vertex_index_unsigned_short | 98.2 / 56.1 | 876 | 100.0 | no |
+| vertex_advancing_unsigned_short | 98.0 / 55.7 | 876 | 100.0 | no |
+| shared_z_and_destination | 98.4 / 56.8 | 877 | 100.0 | yes |
+| fallback_y_before_x | 98.4 / 56.8 | 877 | 100.0 | yes |
+| shared_z_fallback_y_before_x | 98.4 / 56.8 | 877 | 100.0 | yes |
+
+Four forms yield the exact accepted whole Core object. The three logical index
+types yield identical objects to one another for each traversal family, and
+all seven nonidentical forms regress source. None retained; production source
+restored. Full source and six relevant source/fixture files compare exactly to
+accepted bf0243e8. Baseline outside-body/signature check passes.
+
+Read-only binding recheck revalidates the existing normalcenter-full JSON hash,
+actual 2079 linked/959 byte pair sets against baseline, 204 objects/202 unaffected
+objects, winner identity, canonical flag digest/argument list, and all fixed
+three matcher components directly from the target/base instruction lists.
+No native or full-corpus rerun is claimed for rejected forms. Accepted native
+and full ARM evidence remains bound to restored source: **98.37% unweighted
+/98.36% weighted**. Both >=99.0 gates remain unmet; goal active.
+
+Evidence: `_work/read_normal_center_interaction_identities.json`,
+`_work/read_normal_common_z_center_identities.json`, per-trial verifier JSON
+and source snapshots, rechecked `_work/normalcenter_validation_audit.json`.
+No helper, header, ABI layout, unrelated body, flags, matcher, denominator or
+weight change. No push, PR or merge.
