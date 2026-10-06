@@ -3956,3 +3956,53 @@ claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: loaded child pointer captures in reader and caller
+
+Eight trials start from clean 56f6a86d. Four forms are tested independently in
+Read and Create child loops after successful recursive MeshReadData: copy the
+resulting childPtr for bounds Merge only, copy immediately before ArrayAdd
+for that operation only, copy before Merge and use for both, or alias childPtr
+through a reference for both. Each preserves allocation, field inheritance,
+recursive read, failure branch, Merge then ArrayAdd, and loop order. No capture
+precedes the reader, which can replace childPtr through its pointer argument.
+
+Inspected Array.h:95 shows ArrayAdd takes the mesh pointer by value. No child
+pointer mutation is added, and reference forms keep aliasing the same local.
+The two-operation snapshot assumes the existing bounds Merge behavior rather
+than an unrelated custom helper mutating the escaped childPtr stack slot.
+No broader arbitrary-callback equivalence is claimed. These are source lifetime
+hypotheses, not recovered original declarations. Each trial changes only its
+one allowed body; other bodies, helpers, ABI, flags and matcher stay unchanged.
+
+| Trial | Focus body source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| read_merge_copy | 98.0 / 55.9 | 867 | 100.0 | yes |
+| read_add_copy | 98.0 / 55.9 | 867 | 100.0 | yes |
+| read_both_copy | 96.9 / 53.1 | 863 | 98.2 | no |
+| read_both_reference | 98.0 / 55.9 | 867 | 100.0 | yes |
+| create_merge_copy | 98.4 / 60.7 | 289 | 100.0 | yes |
+| create_add_copy | 98.4 / 60.7 | 289 | 100.0 | yes |
+| create_both_copy | 98.0 / 59.3 | 289 | 100.0 | no |
+| create_both_reference | 98.4 / 60.7 | 289 | 100.0 | yes |
+
+Six isolated-use/reference forms yield the accepted byte-identical whole Core
+object. Copy used for both operations regresses source in Read and Create;
+the two resulting objects differ from accepted and each other. Actual bytes
+establish identity, not equal scores. No required source gain occurs; all
+production edits restored and no trial retained.
+
+Read both-copy relocation-aware inspection finds 61 emitted calls in accepted
+versus 60 in trial: one fewer static `_ZdaPv` site and three indirect BLX
+operands changing r5 to r6. The six indirect calls are outside direct-call
+matcher comparison. This is static-site evidence, not proof of missing
+executed cleanup. Evidence: `_work/child_pointer_both_copy_calls.json`.
+
+Additional evidence: `_work/childpointercapture-*.json`, source snapshots and
+`_work/child_pointer_capture_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
