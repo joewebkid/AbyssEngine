@@ -4408,3 +4408,60 @@ is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: individual key counters and scalar key records
+
+Seventeen Enhanced trials start from clean da09ecd3. The first nine change
+one key-loop counter at a time: signed int for each vector or axis group,
+and unsigned short for each vector group. This complements earlier grouped
+counter tests rather than repeating their source snapshots. Counts remain
+unsigned short, the axis counter remains unsigned char, and all operations,
+read order, masks, conversions and failure paths remain unchanged. An unsigned
+short loop index can reach the terminal count 65535 without wrapping; signed
+int can represent all unsigned-short counts. No byte index for unbounded
+key counts is introduced. Six signed forms produce the entire accepted Mesh
+object byte-for-byte; the three short vector counters regress source to 98.2.
+
+Eight further trials group a scalar key's existing time and value into a local
+trivial two-float record. Both field orders are tested for the three axis loops,
+optional loop, V5 loop, or all five loops. Both fields are used; no artificial
+member, padding/alignment directive, extra operation, helper, destructor or
+ABI-visible type is added. Each read is still separately four bytes, with the
+time-between-frames update between time and value reads. Position Y negation,
+V5 division and rotation conversion, and InsertKeyFrame pointer/time operands
+remain in their existing order. This is a source grouping hypothesis, not a
+claim of a recovered original C++ record declaration. All eight change object
+bytes; none increases the required source score. Equal rounded 98.3 for the
+value-first optional form is not a gain, and its strict score also decreases.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| vector_position_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| vector_scale_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| vector_rotation_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| vector_position_unsigned_short | 98.2 / 66.8 | 642 | 100.0 | no |
+| vector_scale_unsigned_short | 98.2 / 53.8 | 642 | 100.0 | no |
+| vector_rotation_unsigned_short | 98.2 / 66.8 | 642 | 100.0 | no |
+| axis_position_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| axis_scale_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| axis_rotation_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time_first_axes | 97.5 / 23.1 | 646 | 100.0 | no |
+| time_first_optional | 98.2 / 66.8 | 642 | 100.0 | no |
+| time_first_v5 | 98.2 / 45.9 | 642 | 100.0 | no |
+| time_first_all | 97.4 / 44.9 | 648 | 100.0 | no |
+| value_first_axes | 98.2 / 21.9 | 649 | 100.0 | no |
+| value_first_optional | 98.3 / 66.8 | 642 | 100.0 | no |
+| value_first_v5 | 98.1 / 47.7 | 642 | 100.0 | no |
+| value_first_all | 98.1 / 22.2 | 650 | 100.0 | no |
+
+All seventeen forms rejected; production source restored and compared as full
+text against f8607229 for both source files. Baseline outside-body/signature
+check passes. No flags, matcher, fixed-three weights or denominator change.
+Evidence: `_work/enh_individual_key_counter_identities.json`,
+`_work/enh_scalar_key_record_identities.json`, their per-trial verifier reports
+and source snapshots. Whole-object identity comes from actual byte comparison.
+No new native/full-corpus run is claimed for rejected forms. Accepted full/native
+evidence remains bound to unchanged source: **98.23% unweighted /98.17% weighted**,
+2079 linked-exact /959 byte-exact pairs equal baseline without losses. Both
+>=99.0 gates remain unmet; goal active. No push, PR or merge.
