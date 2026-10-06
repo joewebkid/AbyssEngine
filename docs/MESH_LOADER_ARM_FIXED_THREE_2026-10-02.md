@@ -5665,3 +5665,48 @@ unmet; goal active. No push, PR or merge.
 Evidence: `_work/read_stream_guard_identities.json`, nine focused reports and
 source snapshots, `_work/read_stream_guard_call_differences.json`, rechecked
 validation audit.
+
+
+## Continuation: normal stream and shader section guards
+
+Four focused Read trials start from 52bef9c0. The normal-format decision remains
+at the original entry point. Split-shader stores that decision in a used bool,
+keeps normal input processing behind it, then moves shader/tangent processing
+to a separate guarded block. Flat/independent forms additionally flatten the
+compressed/plain normal guards, preserving the same captured format decision.
+Engine::enableShader is still read after normal processing, so callbacks are
+not bypassed by an early shader capture. Independent plain guard requires
+compressedData ==0, preventing execution after compressed input. Common-section
+exit instead leaves early when normal format or later shader enable is zero;
+all skipped declarations lie inside the exited primitive local scopes.
+
+No read, allocation, cleanup, helper, tangent arithmetic or output-store order
+is changed. In particular Dot/Normalize/Cross sequence and tangent stores before
+Cross remain. No header, ABI, flag, matcher or denominator change. These are
+branch-structure hypotheses, not recovered original flow.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| split_shader | 98.4 / 56.8 | 877 | 100.0 | yes |
+| flat_shader | 97.3 / 54.5 | 893 | 100.0 | no |
+| independent_shader | 97.0 / 55.5 | 888 | 98.2 | no |
+| common_section_exit | 98.4 / 56.8 | 877 | 100.0 | yes |
+
+Split-shader and common-section exit equal accepted complete Core byte-for-byte.
+Both flattened forms regress source; none retained. Flat-shader preserves all
+61 static call-site targets. Independent-shader has 60 vs accepted 61 calls,
+exactly one fewer _ZdaPv site and three indirect calls changing r5 to r8. This
+is static layout evidence, not proof of missing executed cleanup. No operation
+added for scoring and no general compiler ceiling inferred.
+
+Sources/fixtures match bf0243e8, outside-body/signature checks pass. Read-only
+full evidence binding verifies 204 objects/202 unaffected objects, actual linked
+2079/byte 959 exact pair sets equal baseline without lost/gained pairs, canonical
+arguments unchanged and directly recomputed fixed-three rows. No new native/full
+corpus run claimed for rejected forms. Accepted means remain **98.37% unweighted
+/98.36% original-instruction-weighted**; both >=99.0 gates unmet; goal active.
+No push, PR or merge.
+
+Evidence: `_work/read_normal_guard_identities.json`, four focused reports and
+snapshots, `_work/read_normal_guard_call_differences.json`, rechecked validation
+audit.
