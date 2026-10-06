@@ -4252,3 +4252,37 @@ spelling/whole ABI claim or metric change. Source99.32/98.7082523588227,
 weighted99 remains unmet; full objective retained. Evidence:
 docs/validation/starmap_2026-10-06_playing_time_abi_audit.json;
 raw _work/playing-time-division-wrapper-112.asm.
+
+## Hundred-and-thirteenth follow-up: station Matrix basis/copy trial removed
+
+Revalidated112 before inspecting station initialization. Previous goal turn
+is progress: direct inspection of the hidden signed division wrapper excludes
+an unsupported unsigned playing-time rewrite. Original used-flag clearing
+c7698..c76ad and accepted2ad0..2ae5 already cache Array pointer/length and use
+the same data load, byte store, increment and != loop; no clearing-loop edit.
+The earlier Array<bool> trial lost an existing byte-array constructor exact
+pair, so it was not repeated or concealed with a dummy instantiation.
+
+Native station Matrix literals are loaded before iteration and stored into
+each local rotation. Tested a normal C++ invariant Matrix basis with the SAME
+15 defaults and existing m10/m13 repairs; each station created rotation by
+ordinary implicit Matrix copy. No raw storage, shadow constructor, shared
+edit, forced scheduling, flag/verifier change or invented field value. This
+is a source-form hypothesis, not recovered original C++ spelling.
+
+ARM204 compiled/0 failed,22 compared/0 skipped. Only Station changed:
+source97.3->96.9, strict84.7->75.7, raw683->685, instruction inventory96.7->95.8,
+opcode97.4->97.3, control96.9->96.6, call99->98, size96.3->96.6. Trial relocation
+2b4e is an added __aeabi_memcpy; MatrixC1 is at2aec. The implicit copy does not
+reproduce primary inline field initialization. Fixed20-body means fall to
+99.3/98.66825799183215 source and87.385/81.7552598225602 strict. Rejected at
+focus; no full/native validation is claimed for this rejected trial.
+
+Restored the exact source backup and rebuilt. Restoration reproduces ALL204
+full-validated object hashes and canonical focused report; native STATIC
+rebuild completed with exit0. Fresh ELF extraction also proves EXACT22 clearing
+loop bytes: d4f8000100220023016802e04668f25401339942fad1. The unchanged full
+report remains valid; no redundant full rerun or runtime claim. Accepted production
+remains104,99.32/98.7082523588227 source,87.835/82.6551330798479 strict. Overall
+weighted99 remains unmet. Evidence:
+docs/validation/starmap_2026-10-06_station_matrix_copy_trial.json.
