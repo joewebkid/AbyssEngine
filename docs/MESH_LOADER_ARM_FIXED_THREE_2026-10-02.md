@@ -7305,3 +7305,55 @@ flag/matcher, push, PR or merge change.
 
 Evidence: `_work/read_index_reload_position_forms_identities.json`, nineteen
 focused reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: fresh indexed owner with bounds copies and lifetimes
+
+Eleven focused Read measurements start from aa0a96a6: ten bounds copy/lifetime
+interactions and one reload-only control. Each reloads m=*slot after successful
+indexCount read, before allocation, matching original memory timing at 0x6c664.
+Five forms copy max/min/both through Vector views, subtract direct views or
+pass the temporary full diagonal directly to Length. Five scope center as a
+float array or Vector, initialize minimum before maximum, initialize extrema
+vectors before center assignment or before center computation. Local values
+remain independent of the Mesh bounds assignment; no intervening file/allocation
+call changes extrema. Trivial copies introduce no additional math call.
+
+Every form retains max-minus-min full diagonal, center max-plus-min times 0.5,
+the bounds assignment/subtraction/Length call order, and extrema initialization/
+input conversion semantics. No half-diagonal, reassociation, zero fill, dead
+field, added helper, padding, assembly, fixed register or flag/matcher change.
+These local representation/lifetime choices are hypotheses, not recovered
+original syntax. Fresh indexed load has original ARM support but existing
+fixtures do not establish equivalence for hypothetical slot-mutating file
+callbacks; no broader native runtime proof is claimed.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals reload-only |
+|---|---|---:|---:|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| copy_maximum_copy | 98.3 / 57.3 | 876 | 100.0 | no |
+| copy_minimum_copy | 98.4 / 57.0 | 875 | 100.0 | no |
+| copy_both_copies | 98.2 / 57.6 | 877 | 100.0 | no |
+| copy_direct_views | 98.2 / 58.3 | 870 | 100.0 | no |
+| copy_temporary_diagonal | 98.5 / 57.8 | 874 | 100.0 | yes |
+| lifetime_scoped_float_center | 98.5 / 57.8 | 874 | 100.0 | no |
+| lifetime_scoped_vector_center | 98.5 / 57.8 | 874 | 100.0 | no |
+| lifetime_minimum_first | 98.5 / 57.8 | 874 | 100.0 | no |
+| lifetime_extents_before_assignment | 98.5 / 57.0 | 874 | 100.0 | no |
+| lifetime_extents_before_center | 97.1 / 40.8 | 885 | 98.2 | no |
+
+No form improves source beyond 98.5. Control and temporary diagonal equal the
+entire reload-only Core object byte-for-byte. Scoped float/Vector center forms
+equal one another but differ from reload-only, without score improvement.
+Other forms tie or regress source; none retained. Production code restored.
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline without
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_index_reload_bounds_values_identities.json`, eleven focused
+reports/source snapshots and rechecked typedpair validation audit.
