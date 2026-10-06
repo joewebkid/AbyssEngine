@@ -4088,3 +4088,48 @@ is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: compressed UV flip storage and outer branch
+
+Seven Read trials start from clean af28b2c5. Engine.h:581 declares enableShader
+unsigned char. Five change its existing compressed-UV snapshot from explicit
+nonzero bool to raw unsigned char, unsigned int, int or unsigned short, or
+implicit bool conversion. All represent the full 0..255 raw range and the
+existing ternary uses the same nonzero truth value. The shader flag load stays
+after raw Read and output allocation at its accepted point, not before calls
+that could change it. Double UV scaling/subtraction and final float stores
+retain their order and formulas. No layout or helper change is introduced.
+
+Two further forms move the conditional choice outside that loop, selecting
+a complete flipped or unflipped traversal, with either branch written first.
+Each performs the same per-vertex U conversion followed by V conversion and
+optional 1.0-v double subtraction, using the unchanged captured flag/count/
+base pointers. Empty count executes no coordinate operations. No additional
+load, file call or storage effect is added. The source duplicates the two
+legitimate traversal branches; it is not dummy score padding or claimed
+recovered C++. Other bodies, ABI, flags, matcher and denominator stay unchanged.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| flip storage: raw_unsigned_char | 98.0 / 55.9 | 867 | 100.0 | yes |
+| flip storage: raw_unsigned_int | 98.0 / 55.9 | 867 | 100.0 | yes |
+| flip storage: raw_int | 98.0 / 55.9 | 867 | 100.0 | yes |
+| flip storage: raw_unsigned_short | 98.0 / 55.9 | 867 | 100.0 | yes |
+| flip storage: implicit_bool | 98.0 / 55.9 | 867 | 100.0 | yes |
+| outer flip branch: flipped_first | 96.8 / 55.1 | 892 | 100.0 | no |
+| outer flip branch: plain_first | 96.8 / 55.1 | 892 | 100.0 | no |
+
+All five storage forms yield accepted byte-identical Core. Both outer-branch
+forms yield the same whole object as each other but differ from accepted,
+raise raw instruction count from 867 to 892 and regress source to 96.8.
+Actual bytes establish identity, not equal scores. No required source gain;
+no trial retained and production source restored.
+
+Evidence: `_work/readuvfliptypes-*.json`, `_work/readuvouterflip-*.json`, source
+snapshots and both identity ledgers. Baseline outside-body/signature check
+passes and production tracked diff is empty. No native/full-corpus run is
+claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
