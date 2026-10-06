@@ -4396,3 +4396,31 @@ Source SHA2560ba76574f515702be1871c8762d806136892580610cf216dab0329d70a54fe53;
 object3fa0a66974b3f8a5eda66c16e3ac1cf3e2063c37f029c4fe45c1855382a7a60f.
 Native executable/runtime and whole ABI correctness remain unverified.
 Evidence: docs/validation/starmap_2026-10-06_passenger_branch_split.json.
+
+## Hundred-and-seventeenth follow-up: warning topology trials (neutral, removed)
+
+Revalidated116 (6e6b6ecd) and its current canonical reports. Previous goal turn
+is progress: passenger branch split changed the emitted CMP/BLE comparison,
+improved the score and passed native/ARM/full/preservation gates.
+
+Three bounded source-form trials preserve ordered getters and runtime actions:
+(1) one mission142/station prefix with separate33/197/35 equipment failures
+delivering3216; (2) jumpCost==1 with swapped582/579 delivery bodies; (3) an
+independent139 if after105's successful delivery/goto, as presented by primary
+decompilation. These are source-spelling hypotheses, not recovered C++.
+
+Each ARM build compiled204/failed0. ALL22 StarMap rows and the whole StarMap
+object are identical to116 in every trial; mission142 scoped report additionally
+compares14 unchanged helper rows. Removed all neutral edits. Fresh restoration
+ARM204/0 reproduces the ENTIRE canonical focus report and ALL204 object hashes.
+Source/object hashes match116; native STATIC rebuild exits0.
+
+Accepted116 full4619/0, linked2084/byte960 and prior preservation evidence stay
+valid for this exact same204-object set. No new full run or changed canonical
+report is claimed. Means remain99.375/98.86889170539361 source and
+87.95/82.9910153499507 strict, fixed20/7101. Weighted99 is unmet; native
+executable/runtime and whole ABI remain unverified. These branch spellings
+are now measured as neutral; further work must examine remaining instruction/
+call inventory differences instead of repeating them.
+
+Evidence: docs/validation/starmap_2026-10-06_warning_topology_trials.json.

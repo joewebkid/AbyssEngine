@@ -1,0 +1,65 @@
+{
+  "previous_production": "6e6b6ecd",
+  "previous_goal_turn_classification": "Progress: accepted passenger split changed ARM comparison, increased source score and passed full/native/preservation gates.",
+  "decision": "All three measured source forms neutral and removed; production116 retained.",
+  "trials": [
+    {
+      "name": "mission142",
+      "source_form": "Single mission/station prefix; three separate ordered33/197/35 equipment branches directly deliver3216 and join existing suppression tail. Following142 free-space check unchanged.",
+      "arm_compiled": 204,
+      "arm_failed": 0,
+      "all22_rows_equal": true,
+      "decision": "Neutral; removed",
+      "report": "_work/mission142-branches-117.json",
+      "log": "_work/mission142-branches-117.log"
+    },
+    {
+      "name": "fuel_choice",
+      "source_form": "Invert jumpCost!=1 branch to jumpCost==1 and swap579/582 bodies. Predicate/getter order and delivery signatures unchanged.",
+      "arm_compiled": 204,
+      "arm_failed": 0,
+      "all22_rows_equal": true,
+      "decision": "Neutral; removed",
+      "report": "_work/fuel-choice-117.json",
+      "log": "_work/fuel-choice-117.log"
+    },
+    {
+      "name": "mission139",
+      "source_form": "Independent if139 after warning105 delivery/goto. Same ordered getters; successful105 exits before139. Primary decompilation also presents independent139.",
+      "arm_compiled": 204,
+      "arm_failed": 0,
+      "all22_rows_equal": true,
+      "decision": "Neutral; removed",
+      "report": "_work/mission139-independent-117.json",
+      "log": "_work/mission139-independent-117.log"
+    }
+  ],
+  "source_sha256": "0ba76574f515702be1871c8762d806136892580610cf216dab0329d70a54fe53",
+  "object_sha256": "3fa0a66974b3f8a5eda66c16e3ac1cf3e2063c37f029c4fe45c1855382a7a60f",
+  "restored_all204_objects_equal": true,
+  "restored_entire_focus_report_equal": true,
+  "native_static_exit": 0,
+  "focused": {
+    "source_match": {
+      "unweighted": 99.375,
+      "weighted": 98.86889170539361
+    },
+    "match": {
+      "unweighted": 87.95,
+      "weighted": 82.9910153499507
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "full_validation": "The accepted116 full corpus is valid for the exact same set of204 object bytes. No new full run claimed.",
+  "canonical_reports_changed": false,
+  "objective_reached": false,
+  "limits": "Source-form experiments are hypotheses, not recovered C++ spelling. No native executable/runtime or whole ABI proof.",
+  "next_action": "These predicate-branch spellings do not change compiler output. Investigate remaining mismatched instruction/call inventories rather than repeating them.",
+  "restoration_evidence": [
+    "_work/before117-object-hashes.json",
+    "_work/station-warning-restored-117.json",
+    "_work/station-warning-restored-117.log",
+    "_work/native-station-warning-restored-117.log"
+  ]
+}
