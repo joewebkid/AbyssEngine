@@ -4366,3 +4366,45 @@ is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: local parsed section type/count aggregates
+
+Four Enhanced trials start from clean 30d00ee6. A local trivial aggregate groups
+the signed-short section type and unsigned-short key count, with both member
+orders tested. The count is shared across the first three vector/axis groups
+only, or those groups plus optional count/presence. Each member is used by
+actual existing reads and dispatch/loop logic; no unused member, explicit
+padding, alignment attribute, packing directive or synthetic operation is
+introduced. The aggregate is declared inside the allowed body and produces
+no constructor/destructor/helper implementation change.
+
+Reads remain exactly two bytes to their appropriate short field; type retains
+signed interpretation, unsigned counts retain full 0..65535, and signed V5
+per-channel count stays a separate unchanged local. No contiguous structure
+read is substituted for separate reads. Field order changes only local layout,
+not an on-disk/native ABI structure. The preceding original shared stack-slot
+observations motivate this source grouping but do not prove recovered C++
+aggregate declarations. All key/value conversions, channels, helper order and
+failures remain unchanged. No flags, matcher, denominator or other body change.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| type_first_prefix | 97.1 / 61.5 | 643 | 100.0 | no |
+| type_first_all_unsigned | 97.0 / 48.5 | 646 | 100.0 | no |
+| count_first_prefix | 97.9 / 52.9 | 638 | 100.0 | no |
+| count_first_all_unsigned | 97.9 / 53.2 | 638 | 100.0 | no |
+
+All four forms regress required source and produce distinct whole Mesh objects
+from accepted and each other. Count-first variants have equal rounded source
+and raw instruction counts but differ in strict and bytes. Actual byte
+comparison establishes nonidentity; equal size/source is not used as proof.
+No trial retained; production source restored.
+
+Evidence: `_work/enhsectionaggregate-*.json`, source snapshots and
+`_work/enh_section_aggregate_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
