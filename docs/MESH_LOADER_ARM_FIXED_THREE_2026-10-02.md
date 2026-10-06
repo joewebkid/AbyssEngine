@@ -7674,3 +7674,127 @@ Evidence: `_work/read_index_reload_extrema_identities.json`,
 source snapshots/objects, `_work/duplicate_target_cleanup_20261006.json` and
 rechecked typedpair validation audit. Older duplicate target paths in the
 cleanup manifest now resolve through their explicitly recorded retained copies.
+
+
+## Continuation: accumulator initialization, indexed owner and tangent counters
+
+Thirty-seven focused Read measurements start from 71f29f4a. Sixteen test five
+accumulator count/zero forms with both accepted and fresh indexed owner, five
+accumulation-pointer forms with fresh indexed owner, and reload-only control.
+Fresh owner m=*slot is loaded after successful indexCount read, before index
+allocation. Its timing has primary ARM support but no fixture proof for a
+hypothetical slot-mutating callback; this limitation still applies.
+
+Count scheduling swaps independent triCount and vcount loads. Zero forms use
+chained assignments, a local entry pointer, per-vertex memset of exactly three
+floats, or a flat component loop. Float positive zero is all-zero bits on the
+fixed ARM/native targets. All zero forms visit exactly 3*vcount components,
+including zero components when vcount=0. The original accumulator allocation,
+triangle updates and matching cleanup remain. Pointer forms directly name
+original Vector accumulation targets or the input reference without changing
+the original sequential calls or triangle arithmetic.
+
+The per-vertex memset form ties source 98.5 while reducing Read from 874 to
+873 instructions. Thirteen subsequent forms pair that zero form with fresh
+indexed owner and six final-loop temporary forms/six triangle product forms.
+Only source temporary lifetimes/views change: dot-product, scaling, subtraction,
+normalization and cross-product order/operand direction stay unchanged. All
+triangle components still multiply numerator by reciprocal; no precision
+change or arithmetic reassociation is introduced. Then eight forms pair the
+same zero/reload form with triangle-counter widths and optional final ushort
+counter, including control. Triangle count <=65535/3 bounds signed short to
+21845; final ushort reaches vertexCount <=65535 and exits without overflow.
+These declarations are hypotheses, not recovered original source.
+
+Accumulator zero / pointer:
+
+| Form | Source / strict | Instructions | Calls | Accepted Core | Reload-only Core |
+|---|---|---:|---:|---|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| zero_count_after_triangles_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| zero_count_after_triangles_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| zero_chained_zero_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| zero_chained_zero_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| zero_pointer_zero_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| zero_pointer_zero_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| zero_vertex_memset_accepted_owner | 98.5 / 57.4 | 873 | 100.0 | no | no |
+| zero_vertex_memset_fresh_owner | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| zero_component_loop_accepted_owner | 97.5 / 57.8 | 866 | 98.2 | no | no |
+| zero_component_loop_fresh_owner | 97.6 / 58.2 | 868 | 98.2 | no | no |
+| pointer_direct_expressions_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| pointer_vector_pointer_reuse_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| pointer_sequential_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| pointer_before_calls_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| pointer_named_input_reference_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+
+Vertex memset / tangent lifetimes:
+
+| Form | Source / strict | Instructions | Calls | Accepted Core | Reload-only Core |
+|---|---|---:|---:|---|---|
+| reload_control | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| final_inline_dot | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| final_inline_product | 97.3 / 59.1 | 870 | 98.2 | no | no |
+| final_inline_normalize_argument | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| final_inline_all | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| final_const_temporaries | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| final_vector_tangent_input | 98.5 / 58.1 | 875 | 100.0 | no | no |
+| product_compound_before_stores | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| product_named_products_before_stores | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| product_compound_at_stores | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| product_vector_product_members | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| product_named_products_vector | 98.5 / 58.0 | 873 | 100.0 | no | no |
+| product_products_yxz_record | 98.5 / 58.0 | 873 | 100.0 | no | no |
+
+Vertex memset / counters:
+
+| Form | Source / strict | Instructions | Calls | Accepted Core | Reload-only Core |
+|---|---|---:|---:|---|---|
+| index_reload_only | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| triangle_short | 98.1 / 53.9 | 875 | 100.0 | no | no |
+| triangle_short_final_short | 98.1 / 53.9 | 875 | 100.0 | no | no |
+| triangle_unsigned_short | 98.4 / 56.2 | 871 | 100.0 | no | no |
+| triangle_unsigned_short_final_short | 98.4 / 56.2 | 871 | 100.0 | no | no |
+| triangle_int | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| triangle_int_final_short | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| final_short | 98.5 / 57.8 | 873 | 100.0 | no | no |
+
+The first series has three exact accepted-Core forms and nine exact reload-only
+forms; per-vertex memset ties source, while component-loop zeroing regresses to
+97.5/97.6 and call-count match 98.2. No artificial call/store was added to the
+source. In the second series control, inline-dot, const temporaries and four
+product forms equal the entire memset/reload control Core object. Inline
+product regresses to 97.3/calls98.2. Vector tangent input improves its earlier
+reload-only trial from 98.4 to 98.5, but only ties accepted source and is not
+retained. Two named product-record forms are byte-identical. In the third
+series signed short triangle counters regress to 98.1, ushort to 98.4; signed
+int/final ushort/control tie 98.5 and equal memset/reload control. No gate gain.
+
+All thirty-seven compile/focused verify calls completed successfully. Source
+and call metrics recomputed directly from original/base instruction arrays,
+object hashes checked. The sixteen/thirteen ledgers and source restoration
+were revalidated after interruption before the eight-counter series. To avoid
+new full-source snapshot floods, thirteen/eight series retain their deterministic
+source generators, object hashes and reports; source snapshots are saved only
+for a gate candidate, and there was none. Their generators reconstruct each
+form from the accepted ecc30f25 source, not from later mutated input.
+
+Before starting the sixteen-form series, removed 408 untracked duplicate target
+objects under owned angle-full/target and trinumer-full/target only after each
+matched SHA256 of retained typedpair-full/target replacement. No source, base
+object, report, baseline/current accepted evidence or main checkout file was
+removed. The manifest records all deleted paths and retained copies, with
+replacement hashes rechecked. No disk failure in these thirty-seven trials.
+
+All forms rejected/restored. Code and fixtures remain ecc30f25-equivalent;
+outside-body/signature boundaries and canonical arguments unchanged. Read-only
+binding audit of existing accepted full/native evidence passes: 204 TUs, 4619
+comparisons, zero skipped, 202 unaffected objects, actual linked 2079/byte 959
+exact-pair sets equal baseline with no lost/gained pairs. No fresh native/full
+run claimed for rejected forms. Accepted means **98.40% /98.41%**; both >=99.0
+gates unmet, goal active. No header/helper/ABI, matcher/compiler/flag, push,
+PR or merge change. No general compiler ceiling established.
+
+Evidence: `_work/read_index_reload_accum_forms_identities.json`,
+`_work/read_index_reload_memzero_tangent_lifetime_identities.json`,
+`_work/read_index_reload_memzero_counter_identities.json`, focused reports/
+objects/source generators and `_work/duplicate_target_cleanup_accum_20261006.json`.
