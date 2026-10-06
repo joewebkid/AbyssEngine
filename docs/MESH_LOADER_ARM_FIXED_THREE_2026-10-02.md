@@ -6547,3 +6547,66 @@ flag/matcher, push, PR or merge change.
 Evidence: `_work/create_signature_state_split_identities.json`, eight focused
 reports/source snapshots, Create inventory diagnostics and rechecked typedpair
 validation audit.
+
+
+## Continuation: bounds records and per-stream extrema locals after paired raw arrays
+
+Twenty focused Read trials start from 2d21aa8c. Eight repeat the earlier
+min/max/center record-layout family on materially changed paired typed raw
+allocations. Two-member orders are tested through array references and direct
+members; four three-member orders include the used center array. Records have
+only existing used three-float arrays, with no initialization, added padding,
+constructor or unused field. Existing extrema initialization, component
+comparisons/stores, center assignment, full max-minus-min diagonal and Length
+remain in order. No half-diagonal/radius or input-coordinate change.
+
+Twelve extrema forms name the minimum, name both values sequentially, preload
+both or bind component references, independently for short/int position streams
+and both together. Older tests covered both streams before the paired raw
+allocation gain; this measures current interaction and individual streams.
+Min/max arrays are disjoint, so preloading the upper component before the
+conditional lower-component store preserves its value. No call intervenes,
+and strict comparisons retain their NaN and signed-zero behavior. Every local
+is used; no helper or added effect. These source forms are hypotheses, not
+recovered original local record layouts or declarations.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| bounds: min_max_refs | 97.9 / 55.3 | 876 | 100.0 | no |
+| bounds: max_min_refs | 97.9 / 55.5 | 876 | 100.0 | no |
+| bounds: min_max_direct | 97.9 / 55.3 | 876 | 100.0 | no |
+| bounds: max_min_direct | 97.9 / 55.5 | 876 | 100.0 | no |
+| bounds: min_max_center | 96.6 / 52.8 | 888 | 98.2 | no |
+| bounds: center_min_max | 97.6 / 54.5 | 877 | 100.0 | no |
+| bounds: max_min_center | 96.6 / 53.3 | 888 | 98.2 | no |
+| bounds: max_center_min | 97.8 / 55.0 | 875 | 100.0 | no |
+| extrema: minimum_local_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: minimum_local_integer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: minimum_local_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: sequential_locals_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: sequential_locals_integer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: sequential_locals_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: both_preloaded_short | 98.5 / 56.9 | 874 | 100.0 | no |
+| extrema: both_preloaded_integer | 98.5 / 56.9 | 874 | 100.0 | no |
+| extrema: both_preloaded_both | 98.5 / 56.4 | 874 | 100.0 | no |
+| extrema: component_references_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: component_references_integer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: component_references_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+
+All eight record forms regress source. Nine extrema forms equal the complete
+accepted Core object byte-for-byte; the three preloaded forms tie source but
+reduce strict agreement. None retained. The reference/direct two-member forms
+equal each other for each matching member order, verified by object hashes.
+
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_bounds_records_identities.json`,
+`_work/read_typed_pair_extrema_local_identities.json`, twenty focused reports
+and source snapshots, rechecked typedpair validation audit.
