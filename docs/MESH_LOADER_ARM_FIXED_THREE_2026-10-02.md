@@ -6011,3 +6011,43 @@ header/ABI, flag/matcher, push, PR or merge change.
 
 Evidence: `_work/read_typed_pair_length_identities.json`, two focused reports
 and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: combined signature storage in Create
+
+Six focused Create trials start from 2c97ac88. They represent the same five
+seven-byte immutable signatures as rows, rows reversed, columns, columns
+reversed, local column records, or one flat row-major array. All 35 bytes,
+including plain signature's final zero, are preserved; original comparisons
+and five format-bit clear operations remain in their existing order. Reverse
+storage maps each comparison to its corresponding actual signature; no bit
+association changes. Every table entry/member is used by the seven iterations.
+No new read/call, speculative data, unused field, explicit padding, constructor,
+helper, header or public ABI change. Combined local const storage is a source
+hypothesis, not recovered original table layout.
+
+| Trial | Create source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| rows_original | 95.2 / 51.2 | 268 | 100.0 | no |
+| rows_reverse | 95.2 / 51.2 | 268 | 100.0 | no |
+| columns_original | 94.8 / 49.8 | 267 | 100.0 | no |
+| columns_reverse | 94.0 / 49.7 | 268 | 100.0 | no |
+| column_records | 94.8 / 49.8 | 267 | 100.0 | no |
+| flat_rows | 95.2 / 51.2 | 268 | 100.0 | no |
+
+All six regress required source and differ from accepted. Row-major/flat objects
+equal each other byte-for-byte; column-major/column-record objects also equal.
+Reverse-row ties score but differs in bytes; reverse-column differs and further
+regresses source. Fewer instructions are not a substitute for requested source
+shape. None retained; sources/fixtures match ecc30f25, outside-body/signature
+checks pass. No general compiler ceiling inferred.
+
+Read-only binding rechecks existing typedpair full proof: 204 objects/202
+unaffected objects, actual linked 2079/byte 959 exact pair sets equal baseline
+without lost/gained pairs, canonical arguments unchanged and directly recomputed
+fixed-three rows. No new native/full-corpus run claimed for rejected tables.
+Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet;
+goal active. No push, PR or merge.
+
+Evidence: `_work/create_signature_table_identities.json`, six focused reports
+and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
