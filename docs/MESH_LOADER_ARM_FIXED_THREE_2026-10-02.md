@@ -5710,3 +5710,48 @@ No push, PR or merge.
 Evidence: `_work/read_normal_guard_identities.json`, four focused reports and
 snapshots, `_work/read_normal_guard_call_differences.json`, rechecked validation
 audit.
+
+
+## Continuation: paired typed raw-array allocation and deletion
+
+Six focused Read trials start from 3ab6e32d. Earlier typed-allocation trials
+kept explicit operator delete[]. This series pairs array new expressions with
+matching typed delete[] expressions, individually for short/int positions,
+UV, normal, color, then all five. Types are short/int/short/short/unsigned char;
+element counts are 3v/3v/2v/3v/4v, preserving existing byte sizes on the target.
+No value initialization or element constructor/destructor added. The temporary
+remains held as void*, then converted back to its actual allocated element type
+for deletion at each existing success/failure site. No direct array-delete
+expression is applied to memory allocated only through operator new[] calls:
+matching new[] expressions are changed as well. No extra cleanup operation,
+header, ABI, helper, flag or matcher change. This is a source representation
+hypothesis, not recovered original allocation syntax.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| short_position | 98.4 / 57.1 | 875 | 100.0 | no |
+| integer_position | 98.4 / 57.1 | 875 | 100.0 | no |
+| uv | 97.9 / 55.9 | 878 | 98.2 | no |
+| normal | 98.4 / 56.8 | 876 | 100.0 | no |
+| color | 98.4 / 56.8 | 877 | 100.0 | yes |
+| all_streams | 98.1 / 57.1 | 876 | 98.2 | no |
+
+Color equals the accepted complete Core byte-for-byte. Other objects differ;
+position pairs improve strict only while tying required source, normal ties
+source/strict, and UV/all regress source. None retained. UV and all-streams
+have 60 static calls vs accepted 61, with exactly one fewer _ZdaPv site and no
+other call-target difference. This is static layout evidence, not proof of
+missing executed cleanup. No operation added for scoring or general ceiling
+inferred.
+
+Sources/fixtures match bf0243e8 and outside-body/signature checks pass. Read-only
+full-evidence binding rechecks 204 objects/202 unaffected objects, actual linked
+2079/byte 959 exact pair sets equal baseline without lost/gained pairs, canonical
+arguments unchanged, fixed-three matcher rows recomputed directly. No new native
+or full-corpus run claimed for rejected forms. Accepted means remain **98.37%
+unweighted /98.36% original-instruction-weighted**; both >=99.0 gates unmet;
+goal active. No push, PR or merge.
+
+Evidence: `_work/read_typed_pairs_identities.json`, six focused reports and
+snapshots, `_work/read_typed_pairs_call_differences.json`, rechecked validation
+audit.
