@@ -6051,3 +6051,36 @@ goal active. No push, PR or merge.
 
 Evidence: `_work/create_signature_table_identities.json`, six focused reports
 and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: views of separate signature arrays
+
+Five focused Create trials start from c374c3cc. They preserve the original five
+immutable seven-byte arrays and access them through static const pointer table,
+local const pointer table, local mutable-pointer table, reverse static table,
+or five scalar const-char pointer aliases. Every pointer is used in the existing
+comparison; reverse storage preserves signature-to-format-bit mapping. No
+signature data, comparison/read order, bit clearing, header guard or file input
+changes. No unused element, explicit padding, helper, public ABI, flag or matcher
+change. These views are source hypotheses, not recovered original pointer tables.
+
+| Trial | Create source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| static_const_pointers | 98.4 / 60.7 | 289 | 100.0 | yes |
+| local_const_pointers | 98.4 / 60.7 | 289 | 100.0 | yes |
+| local_mutable_pointers | 98.4 / 60.7 | 289 | 100.0 | yes |
+| static_reverse_pointers | 98.4 / 60.7 | 289 | 100.0 | yes |
+| local_scalar_pointers | 98.4 / 60.7 | 289 | 100.0 | yes |
+
+All five complete Core objects equal accepted byte-for-byte; none retained.
+The measured compiler canonicalizes these views to separate-array output;
+no general compiler ceiling inferred. Source/fixtures match ecc30f25 and
+outside-body/signature checks pass. Read-only binding rechecks existing typedpair
+full proof: 204 objects/202 unaffected objects, actual linked 2079/byte 959 exact
+pair sets equal baseline without lost/gained pairs, canonical arguments unchanged,
+fixed-three rows directly recomputed. No new native/full-corpus run claimed for
+rejected forms. Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0
+gates unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/create_signature_pointer_identities.json`, five focused reports
+and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
