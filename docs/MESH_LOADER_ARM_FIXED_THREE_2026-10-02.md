@@ -3673,3 +3673,47 @@ is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: caller reader-status local storage
+
+Six Create trials start from clean 3ad835a9. Original child reader call at
+0x6d30e is followed by ADDS result,#1 and BEQ failure at 0x6d312..0x6d314.
+Accepted source compares the full int result with -1 directly. Four variants
+store all three reader-call results in int, unsigned int, short or signed char
+locals before the existing predicates. Two further forms store only the child
+result in unsigned short or unsigned char, comparing against the same type's
+cast of -1 (not uncast -1 after integral promotion).
+
+Current MeshReadData returns exactly 1 or -1 on all explicit return paths;
+these values remain distinct in each tested type. This bounded contract is
+necessary for the narrowed forms: they are not general int-result equivalent
+and are not recovered original declarations. Int and unsigned int preserve
+the predicates for every int result under the target's conventional int/uint
+width. Enhanced single still tests 1, plain single still excludes -1, and
+child still rejects -1. Call order, failure cleanup and successful bounds/
+ArrayAdd/loaded paths remain unchanged. No helper/ABI/flag/matcher changes.
+
+| Trial | Create source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| all_int | 98.4 / 60.7 | 289 | 100.0 | yes |
+| all_unsigned_int | 98.4 / 60.7 | 289 | 100.0 | yes |
+| all_short | 96.6 / 59.1 | 294 | 100.0 | no |
+| all_signed_char | 96.8 / 59.3 | 292 | 100.0 | no |
+| child_unsigned_short | 98.2 / 60.1 | 291 | 100.0 | no |
+| child_unsigned_char | 98.2 / 60.2 | 290 | 100.0 | no |
+
+Int and unsigned-int result locals yield the accepted byte-identical whole
+Core object. All narrower forms regress source and differ from accepted and
+each other. Child unsigned-short reaches the original raw instruction count
+291 but lowers source from 98.4 to 98.2; matching size alone does not meet the
+source-shape objective. Actual object bytes establish identities. All trials
+are rejected and production source restored.
+
+Evidence: `_work/createreadstatus-*.json`, source snapshots and
+`_work/create_read_status_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
