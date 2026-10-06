@@ -6198,3 +6198,39 @@ unmet; goal active. No push, PR or merge.
 Evidence: `_work/enh_mixed_dispatch_identities.json`, six focused reports and
 source snapshots, corresponding `_work/enhmixedaxis-*` objects, rechecked
 `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: V5 mask preload on byte-axis code
+
+Four focused Enhanced trials start from 2c292de9. Older 0x400 initialization
+was tested before byte-axis acceptance. These forms initialize channel to
+0x400, leave case 0 intact, retain all other nonzero masks/rotation and assign
+zero in default. Further forms add explicit 4/5 zero labels, put 4/5 zero
+assignment first, or use unsigned long long channel with explicit zero labels.
+Every dispatch path initializes channel; 4/5 still insert keys with mask zero.
+All masks fit tested types, so conversion to existing 64-bit flags is unchanged.
+Reads, time update, /100 then exact tau multiply then /360, hasAnimation and
+insertion order remain. No extra key call, helper, header/ABI, flag or matcher
+change. Initialization/label syntax is a source hypothesis, not recovered C++.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Equals accepted | Equals prior explicit-zero object |
+|---|---|---:|---:|---|---|
+| preload_400_default_zero | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| preload_400_explicit_zero | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| preload_400_zero_first | 98.3 / 67.3 | 639 | 100.0 | no | no |
+| preload_400_u64 | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+
+All tie required source and differ from accepted. Default/explicit/u64 objects
+are byte-identical to each other and the prior explicit-zero-assignment object;
+zero-first differs. Strict-only improvement is not the requested gate; none
+retained. No general compiler ceiling inferred. Sources/fixtures match ecc30f25
+and outside-body checks pass. Read-only binding rechecks existing typedpair full
+proof: 204 objects/202 unaffected objects, actual linked 2079/byte 959 exact pair
+sets equal baseline without lost/gained pairs, canonical arguments unchanged,
+fixed-three rows directly recomputed. No new native/full-corpus run claimed for
+rejected forms. Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0
+gates unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/enh_current_preload_identities.json`, four focused reports/
+snapshots, prior `_work/enhzerocases-explicit_zero_assignment` object, rechecked
+`_work/typedpair_validation_audit.json`.
