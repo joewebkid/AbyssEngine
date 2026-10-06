@@ -6500,3 +6500,50 @@ flag/matcher, push, PR or merge change.
 Evidence: `_work/enh_time_guard_groups_identities.json`,
 `_work/enh_current_delete_identities.json`, eighteen focused reports/source
 snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: split signature candidate state
+
+Eight focused Create trials start from e75fd5e2. Read-only inventory diagnostics
+of accepted Create show residual load/store and conditional-instruction
+differences; they do not prove any particular source declaration. Five trials
+separate one signature's candidate state into a bool initialized true, clear it
+on each corresponding byte mismatch, and clear its original format bit after
+the seven iterations. The other four bits remain in the original format word.
+Three trials separate all five candidates using bool, unsigned char or unsigned
+int, then construct the original mask from their final states. Each candidate
+remains true exactly when all seven corresponding comparisons match, so the
+final mask has the same interpretation. All 35 comparisons retain their order,
+and no read/update/call is placed between state construction and the fmt guard.
+
+The separate values all replace used candidate bits; no dead value, unused
+record field, metric padding, helper, volatile/assembly, fixed register or
+unrelated change is introduced. Signature byte tables and all later format
+predicates remain unchanged. These forms are source hypotheses, not recovered
+original booleans. The original bitwise state remains the accepted source.
+
+| Trial | Create source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| separate_sigMesh | 96.6 / 64.3 | 291 | 100.0 | no |
+| separate_sigV2 | 96.6 / 63.9 | 291 | 100.0 | no |
+| separate_sigV3 | 96.6 / 63.9 | 291 | 100.0 | no |
+| separate_sigV4 | 96.6 / 63.9 | 291 | 100.0 | no |
+| separate_sigV5 | 96.6 / 63.9 | 291 | 100.0 | no |
+| all_bool | 91.7 / 51.7 | 313 | 100.0 | no |
+| all_unsigned_char | 92.4 / 50.6 | 318 | 100.0 | no |
+| all_unsigned_int | 92.6 / 52.6 | 317 | 100.0 | no |
+
+All eight forms reduce source shape; none retained. The five single-candidate
+forms increase strict agreement but do not move either requested gate.
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/create_signature_state_split_identities.json`, eight focused
+reports/source snapshots, Create inventory diagnostics and rechecked typedpair
+validation audit.
