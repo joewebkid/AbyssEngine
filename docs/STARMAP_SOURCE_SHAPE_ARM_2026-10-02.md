@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.32% unweighted / 98.70825% original-instruction
+implementation bodies measure **99.36% unweighted / 98.82508% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.835% / 82.65513%**, respectively. Source-shape is an inventory/control-flow
+**87.965% / 83.03483%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -4286,3 +4286,40 @@ report remains valid; no redundant full rerun or runtime claim. Accepted product
 remains104,99.32/98.7082523588227 source,87.835/82.6551330798479 strict. Overall
 weighted99 remains unmet. Evidence:
 docs/validation/starmap_2026-10-06_station_matrix_copy_trial.json.
+
+## Hundred-and-fourteenth accepted branch-local warning delivery
+
+Revalidated113 before changing OnTouchEnd. Previous turn is progress: ordinary
+Matrix-copy trial was rejected with fresh compilation evidence and restoration;
+the used-flag loop is now proven exact22 bytes. Reviewed46's common-goto and
+57/67/82's separate3217 forms before selecting a distinct source representation.
+
+Seven successful warning branches now deliver their existing warning directly,
+set suppressNextClose and jump to the unchanged choice-visible/inertia/Help
+continuation. Removed numeric sentinel and both later sentinel guards. Runtime
+still executes ONE delivery after the same ordered predicates/getters, with
+the same IDs532/3213/3214/3217/3215/3216/3218. Normal dialog and confirmation
+paths are unchanged. No pointer-null control assumption, extra runtime call,
+barrier, template padding, shared edit, flag or verifier change. Branch-local
+source calls are legitimate alternatives, not proof of original C++ spelling.
+
+ARM204 compiled/0 failed,22 compared/0 skipped. Only End row changes:
+source97.8->98.6, strict77.7->80.3, raw1004->1036, instruction inventory97->98.3,
+opcode97.5->98.8, size96.5->99.7. Control98.7->98.3 and call count99.3->97.8
+worsen; source-shape and strict totals improve. Other21 rows including aliases
+are identical. Fixed20 means99.36/98.82508097451064 source and
+87.965/83.0348260808337 strict;7 linked/3 byte unique bodies unchanged.
+
+Native STATIC exit0. Full4619 compared/0 skipped, linked2084/byte960, coverage
+4274/4524, missing250 (7 wrong type/243 absent), extras129. ALL22 full/focus
+rows agree. Baseline AND previous exact-pair gates exit0; zero losses in both
+linked and byte pairs. Default99 gate exit1 solely because weighted98.82508
+remains below99. Canonical final reports updated after those checks.
+
+Formatted branch bodies and removed the experiment suffix from the continuation
+label before committing. Fresh ARM204/0 and native STATIC exit0; the entire
+focused report and ALL204 object hashes match the fully validated candidate,
+so its full report remains valid. This is source-shape progress, not native
+runtime/whole ABI proof or completion of99. Source/object hashes and raw gate
+inputs are recorded in the compact evidence snapshot.
+Evidence: docs/validation/starmap_2026-10-06_warning_branch_delivery.json.
