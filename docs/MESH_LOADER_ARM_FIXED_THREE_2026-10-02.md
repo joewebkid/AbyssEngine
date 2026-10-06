@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **98.37% unweighted / 98.36% weighted**.
+Latest validated continuation: source **98.40% unweighted / 98.41% weighted**.
 Latest semantic correction: original full bounds diagonal; earlier half-diagonal
 radius assertions are superseded by the verified operand/ABI evidence below.
 The result tables below preserve earlier measurements. Chronological continuation
@@ -5755,3 +5755,77 @@ goal active. No push, PR or merge.
 Evidence: `_work/read_typed_pairs_identities.json`, six focused reports and
 snapshots, `_work/read_typed_pairs_call_differences.json`, rechecked validation
 audit.
+
+
+## Continuation: retain paired position/normal raw arrays
+
+Four interaction trials start from 33c7ef2c, combining the three previous
+nonregressing raw-array forms: short positions, int positions and compressed
+normals. All four raise Read from 98.4 to 98.5. Retain all three pairs, which
+also gives the highest strict score 57.4 and 874 instructions (original 873).
+The production diff has exactly nine substituted statements inside Read:
+three allocations and their six existing success/failure deletions. Primitive
+new short[3*vertexCount]/new int[3*vertexCount] preserve 6v/12v byte sizes on
+the target; no value initialization, zero fill, element constructor/destructor,
+additional null guard or cleanup site. Void* raw ownership remains, and delete[]
+casts back to the actual allocated primitive element type. This is a source
+hypothesis, not recovered original allocation/deletion syntax. Counts, read
+sizes/field loads, numeric operations, stores and failure outcomes stay unchanged.
+No header, ABI, helper, compilation flag, matcher or denominator change.
+
+| Interaction trial | Read source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| short_position_integer_position | 98.5 / 57.3 | 875 | 100.0 |
+| short_position_normal | 98.5 / 57.1 | 874 | 100.0 |
+| integer_position_normal | 98.5 / 57.1 | 874 | 100.0 |
+| short_position_integer_position_normal | 98.5 / 57.4 | 874 | 100.0 |
+
+All four complete Core objects differ from each other and the previous accepted
+object. Rounded single-form scores did not predict this positive interaction.
+Fresh frozen-source validation:
+
+- Native UCRT64 gof2 static-library build passes.
+- Verbatim actual Read and caller/actual Mesh/selected math/BSphere fixtures
+  pass position/normal/color/tangent, bounds, children and early/truncated input.
+- Actual Enhanced parser fixture builds and exits zero.
+- Existing fixture sources/runner and Mesh.cpp match bf0243e8; no fixture change.
+  This allocation representation introduces no new numeric/parser behavior
+  requiring an added fixture. Earlier normal negative controls remain evidence
+  of existing fixture sensitivity, not newly run negative controls here.
+- Outside-body/signature checks pass. All 204 ARM units rebuilt and full corpus
+  verified, with 4619 comparisons and zero skipped. Actual linked-exact 2079
+  /byte-exact 959 pair sets equal baseline, lost [] and gained [] for each.
+  Other 202 whole objects equal baseline. Core equals focused triple winner;
+  Mesh equals accepted axisbyte-full. Canonical digest and argument list unchanged.
+- All fixed-three matcher components recomputed directly from fresh target/base
+  instruction lists by the unchanged matcher. Already rounded component averages
+  are not substituted for the actual source metric.
+
+Read component changes (previous -> retained):
+
+- instruction_inventory_match: 95.0 -> 95.8
+- opcode_inventory_match: 98.3 -> 98.1
+- control_inventory_match: 98.8 -> 98.8
+- ordered_control_flow_match: 91.8 -> 91.8
+- call_count_match: 100.0 -> 100.0
+- size_match: 99.6 -> 100.0
+
+| Fixed unique body | Source | Strict | Original weight |
+|---|---:|---:|---:|
+| MeshCreateFromFile | 98.4% | 60.7% | 291 |
+| MeshReadData | 98.5% | 57.4% | 873 |
+| ReadEnhancedDataFromFile | 98.3% | 66.9% | 636 |
+
+Fixed three means: **98.400000% unweighted /98.413167% weighted**. Original weights remain 291+873+636=1800, exactly three unique bodies.
+
+Full strict/source averages: 75.98 /89.0. Full JSON SHA-256: `69141f6eaafd32d61ce63ae1257ac889bc0cfcc7765c514a630391e0df481af8`.
+
+Both >=99.0 gates remain unmet; goal active. Native body tests mock file/selected
+boundaries and library build is not a whole-game executable ABI or Android
+runtime/device test. No Godot proof or compiler ceiling claim. No push, PR, merge.
+
+Evidence: `_work/read_typed_pair_interaction_identities.json`, focused reports
+and source snapshots, `_work/typedpair_full.json`, `_work/typedpair_three.json`,
+`_work/typedpair_validation_audit.json`, `_work/typedpair_full_build.log`,
+`_work/typedpair_full_verify.log`, `_work/typedpair_native.log`,
+`_work/typedpair_read_smoke.log`, enhanced build/smoke logs.

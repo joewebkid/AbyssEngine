@@ -818,9 +818,9 @@ namespace AbyssEngine {
             maxv[0] = maxv[1] = maxv[2] = -10000000.0f;
 
             if ((flags & 4) != 0) {
-                void *raw = ::operator new[]((*slot)->vertexCount * 6);
+                void *raw = new short[(*slot)->vertexCount * 3];
                 if (AEFile::Read((uint32_t)((*slot)->vertexCount * 6), raw, handleRef) == 0) {
-                    ::operator delete[](raw);
+                    delete[] static_cast<short *>(raw);
                     return -1;
                 }
                 m = *slot;
@@ -836,11 +836,11 @@ namespace AbyssEngine {
                     if (v < minv[axis]) minv[axis] = v;
                     if (v > maxv[axis]) maxv[axis] = v;
                 }
-                ::operator delete[](raw);
+                delete[] static_cast<short *>(raw);
             } else if ((flags << 0x1e) != 0) {
-                void *raw = ::operator new[]((*slot)->vertexCount * 0xc);
+                void *raw = new int[(*slot)->vertexCount * 3];
                 if (AEFile::Read((uint32_t)((*slot)->vertexCount * 0xc), raw, handleRef) == 0) {
-                    ::operator delete[](raw);
+                    delete[] static_cast<int *>(raw);
                     return -1;
                 }
                 m = *slot;
@@ -856,7 +856,7 @@ namespace AbyssEngine {
                     if (v < minv[axis]) minv[axis] = v;
                     if (v > maxv[axis]) maxv[axis] = v;
                 }
-                ::operator delete[](raw);
+                delete[] static_cast<int *>(raw);
             } else if ((flags & 0x18) != 0) {
                 m = *slot;
                 void *pos = ::operator new[]((*slot)->vertexCount * 0xc);
@@ -924,9 +924,9 @@ namespace AbyssEngine {
 
         if (m->vertexFormat & 4) {
             if (compressedData != 0) {
-                void *raw = ::operator new[]((*slot)->vertexCount * 6);
+                void *raw = new short[(*slot)->vertexCount * 3];
                 if (AEFile::Read((uint32_t)((*slot)->vertexCount * 6), raw, handleRef) == 0) {
-                    ::operator delete[](raw);
+                    delete[] static_cast<short *>(raw);
                     return -1;
                 }
                 m = *slot;
@@ -970,7 +970,7 @@ namespace AbyssEngine {
                         destination[1] = 0.0f;
                     }
                 }
-                ::operator delete[](raw);
+                delete[] static_cast<short *>(raw);
             } else if ((flags & 0x18) != 0) {
                 void *nrm = ::operator new[]((*slot)->vertexCount * 0xc);
                 m->normals = nrm;
