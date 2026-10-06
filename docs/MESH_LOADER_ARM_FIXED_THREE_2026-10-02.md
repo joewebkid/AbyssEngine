@@ -5829,3 +5829,45 @@ and source snapshots, `_work/typedpair_full.json`, `_work/typedpair_three.json`,
 `_work/typedpair_validation_audit.json`, `_work/typedpair_full_build.log`,
 `_work/typedpair_full_verify.log`, `_work/typedpair_native.log`,
 `_work/typedpair_read_smoke.log`, enhanced build/smoke logs.
+
+
+## Continuation: output arrays and accumulator on paired-raw source
+
+Nine focused Read trials start from ecc30f25. Seven repeat the typed-output
+family on the materially changed accepted paired-raw source, for positions,
+UVs, normals, colors, tangents/binormals/accumulator, indices, and all outputs.
+Primitive new float/unsigned-short arrays preserve existing element/byte counts,
+with no value initializer, zero fill or element constructor/destructor. Existing
+owned-output field stores and downstream release logic stay unchanged. Two
+further forms pair new float[3*vcount] with delete[] accum, separately and with
+all outputs; the deallocation operand comes from that matching new[] expression.
+No new cleanup, input read, arithmetic, header, ABI, helper or compiler flag.
+These representations are hypotheses, not recovered original array syntax.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| output_position | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output_uv | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output_normal | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output_color | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output_tangent | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output_index | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output_all | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accum_pair | 98.5 / 57.4 | 874 | 100.0 | yes |
+| all_outputs_accum_pair | 98.5 / 57.4 | 874 | 100.0 | yes |
+
+All nine complete Core objects equal accepted byte-for-byte. No variant retained:
+these typed outputs/accumulator add no required gain on paired-raw source. This
+resolves the tested interaction, not a general compiler ceiling. Production
+sources and fixtures match ecc30f25; outside-body/signature checks pass.
+
+Read-only binding rechecks existing typedpair full proof: 204 objects/202
+unaffected objects, actual linked 2079/byte 959 exact pair sets equal baseline
+without lost/gained pairs, canonical arguments unchanged, and all fixed-three
+rows recomputed directly with the unchanged matcher. No new native/full-corpus
+run claimed for rejected variants. Accepted means remain **98.40% unweighted
+/98.41% original-instruction-weighted**; both >=99.0 gates unmet; goal active.
+No push, PR or merge.
+
+Evidence: `_work/read_typed_pair_output_identities.json`, nine focused reports
+and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
