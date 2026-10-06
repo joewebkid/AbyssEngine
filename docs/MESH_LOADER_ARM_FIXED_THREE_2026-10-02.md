@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **98.23% unweighted / 98.17% weighted**.
+Latest validated continuation: source **98.37% unweighted / 98.36% weighted**.
 Latest semantic correction: original full bounds diagonal; earlier half-diagonal
 radius assertions are superseded by the verified operand/ABI evidence below.
 The result tables below preserve earlier measurements. Chronological continuation
@@ -4465,3 +4465,100 @@ No new native/full-corpus run is claimed for rejected forms. Accepted full/nativ
 evidence remains bound to unchanged source: **98.23% unweighted /98.17% weighted**,
 2079 linked-exact /959 byte-exact pairs equal baseline without losses. Both
 >=99.0 gates remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: centered compressed-normal destination pointer
+
+Start state is clean tracked 26fe9f19. Six focused Read trials test an interior
+pointer to input/output normal triples. Original compressed-normal output uses
+r4 initialized to 4 at 0x6ca92, destination base+r4 at 0x6cba2, negative-four
+store at 0x6cbac, zero-offset store at 0x6cbb0 and positive-four store at
+0x6cbbe. Fallback similarly stores at 0x6cb20/0x6cb24 before joining the last
+store. These are actual instruction observations, not recovered variable names
+or original C++ pointer declarations. The source hypothesis retains only
+`float *destination = normals + i + 1` inside each existing branch and uses
+destination[-1], [0], [1] for the same X/Y/Z writes in the same order.
+
+Both branches retain the existing fresh slot/normal field read at the same
+source point. No owner/count capture, virtual read, helper, clamp, precision,
+floating arithmetic order, allocation, failure path or destructor is changed.
+Each pointer is formed inside an executing valid triple; zero-count loops form
+none. No one-before-array or outside-array pointer is introduced. Reads of
+input components and dynamic loop count stay unchanged. No header, ABI layout,
+unrelated body, flags, matcher or denominator change.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals prior accepted |
+|---|---|---:|---:|---|
+| source_center_1 | 98.0 / 54.1 | 868 | 100.0 | no |
+| source_center_2 | 98.0 / 54.5 | 868 | 100.0 | no |
+| destination_center_1 | 98.4 / 56.8 | 877 | 100.0 | no |
+| destination_center_2 | 98.3 / 55.1 | 873 | 100.0 | no |
+| source_center_1_destination_center_1 | 98.4 / 56.3 | 877 | 100.0 | no |
+| source_center_2_destination_center_1 | 98.4 / 56.8 | 877 | 100.0 | no |
+
+Retain the minimal destination_center_1 variant. Combining source_center_2
+produces its identical whole Core object and adds no value. Read improves
+98.0 ->98.4 source and 55.9 ->56.8 strict, although raw instruction count grows
+867 ->877 (original 873). Exact original raw length is not the objective;
+destination_center_2 has 873 instructions but only 98.3 source. Whole-object
+identity/nonidentity is checked on actual bytes, not inferred from scores.
+
+Fresh validation of frozen retained source:
+
+- UCRT64 native gof2 static-library build passes.
+- Verbatim current reader with actual selected math/Vector passes colors,
+  positions, tangent bases, bounds and existing truncation cases. A new fixture
+  checks four distinct adjacent normal records: zero fallback and three records
+  with all components nonzero and differing signs/magnitudes. Expected values
+  use independent double normalization with 1e-6 tolerance, checking all twelve
+  component outputs. Every shorter normal-data prefix fails before attaching
+  normals. Shader disabled isolates this parsing path.
+- The new fixture also passes against the previous accepted reader body.
+  Separate private mutations replacing normalized X by Y and zero-fallback X
+  by one each fail with exit 3. Production source is never mutated for these
+  negative tests; they alter only extracted private include files.
+- Caller/actual Mesh/selected BSphere fixtures and actual enhanced parser pass.
+- Baseline outside-body/signature check passes. Production diff is only two
+  interior pointer declarations and their equivalent stores in the allowed
+  reader body; the targeted reader fixture is the only test-source change.
+- All 204 ARM translation units rebuilt; full corpus has 4619 comparisons,
+  zero skipped. Actual linked-exact 2079 / byte-exact 959 pair sets equal clean
+  baseline, lost [] and gained [] for each. Other 202 whole objects equal
+  baseline. Full Core equals focused winner; Mesh equals accepted axisbyte-full.
+  Canonical match flag digest and actual argument list remain unchanged.
+
+Unchanged matcher components for Read (previous -> current):
+
+- instruction_inventory_match: 93.9 -> 95.0
+- opcode_inventory_match: 98.1 -> 98.3
+- control_inventory_match: 98.8 -> 98.8
+- ordered_control_flow_match: 91.1 -> 91.8
+- call_count_match: 100.0 -> 100.0
+- size_match: 99.2 -> 99.6
+
+All fixed-three component scores and source scores are recomputed directly
+from the fresh target/base instruction lists by the unchanged matcher. Averaging
+already rounded component rows can differ by 0.1 from the matcher, which averages
+unrounded component ratios before rounding source; it is not used as proof.
+
+Full strict/source averages 75.98 / 89.0. Full JSON SHA-256:
+`8544da04f3fea9f6a7c3b2a60660e6ef8f8c6fad79238d4a15f5ec20154db90c`.
+
+| Fixed unique body | Source | Strict | Original instruction weight |
+|---|---:|---:|---:|
+| MeshCreateFromFile | 98.4% | 60.7% | 291 |
+| MeshReadData | 98.4% | 56.8% | 873 |
+| ReadEnhancedDataFromFile | 98.3% | 66.9% | 636 |
+
+Fixed three means: **98.366667% unweighted / 98.364667% weighted**.
+Both >=99.0 gates remain unmet; goal active. Native body tests use mocked
+file boundaries and selected exact math bodies; neither those nor the library
+build proves whole-game executable ABI or Android runtime/device correctness.
+No Godot evidence or compiler ceiling claim. No push, PR or merge.
+
+Evidence: `_work/readnormalcentered-*.json`, source snapshots,
+`_work/read_normal_centered_pointer_identities.json`,
+`_work/normalcenter_full.json`, `_work/normalcenter_three.json`,
+`_work/normalcenter_validation_audit.json`, full build/verify logs,
+`_work/normalcenter_native.log`, `_work/normalcenter_read_smoke.log`,
+enhanced build/run logs and `_work/normalcenter_negative_fixture_results.json`.

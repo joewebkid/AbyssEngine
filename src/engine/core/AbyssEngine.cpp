@@ -958,14 +958,16 @@ namespace AbyssEngine {
                         if (dyf > 1.0f) y = 1.0f;
                         if (dzf > 1.0f) z = 1.0f;
                         normals = (float *) (*slot)->normals;
-                        normals[i] = x;
-                        normals[i + 1] = y;
-                        normals[i + 2] = z;
+                        float *destination = normals + i + 1;
+                        destination[-1] = x;
+                        destination[0] = y;
+                        destination[1] = z;
                     } else {
                         normals = (float *) (*slot)->normals;
-                        normals[i] = 0.0f;
-                        normals[i + 1] = 1.0f;
-                        normals[i + 2] = 0.0f;
+                        float *destination = normals + i + 1;
+                        destination[-1] = 0.0f;
+                        destination[0] = 1.0f;
+                        destination[1] = 0.0f;
                     }
                 }
                 ::operator delete[](raw);
