@@ -4944,3 +4944,53 @@ change. No push, PR or merge.
 
 Evidence: `_work/create_child_parse_state_identities.json`, eight focused
 reports/source snapshots and rechecked normalcenter validation audit.
+
+
+## Continuation: color loop forms on accepted normal-center source
+
+Nine Read trials start from clean 5e09dfc0. Six revisit previously tested color
+loop forms on the materially changed accepted normal-center body: signed index,
+separate byte offset, advancing input pointer, postincrement destination index,
+explicit value/increment, and guarded do. Three new forms point immediately
+after the input/output scalar or both, using [-1]. The per-component color
+field read remains inside each iteration; no owner/count capture across a
+helper is introduced. Loop bound remains the existing freshly read vertexCount
+times four at the condition, component traversal and scalar division by 255
+are preserved. No extra array operation, clamp, initialization or dummy effect.
+
+Maximum component bound is 4*65535=262140, and maximum byte offset is 1048556,
+so signed int index and uint byte offset remain in range. Advancing input ends
+at one-past and per-element end pointers are formed only inside executing
+iterations; zero count forms none. A byte/ushort flattened component counter
+is not used because it could overflow the valid range. No source pointer
+declaration is claimed recovered from original C++.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| signed_index | 98.4 / 56.8 | 877 | 100.0 | yes |
+| dynamic_byte_offset | 98.4 / 56.9 | 877 | 100.0 | no |
+| input_pointer | 98.4 / 56.8 | 877 | 100.0 | yes |
+| postincrement_store | 98.4 / 56.8 | 877 | 100.0 | yes |
+| value_then_increment | 98.4 / 56.8 | 877 | 100.0 | yes |
+| guarded_do | 98.3 / 56.3 | 878 | 100.0 | no |
+| output_end | 98.4 / 56.8 | 877 | 100.0 | yes |
+| input_end | 98.4 / 56.8 | 877 | 100.0 | yes |
+| both_end | 98.4 / 56.8 | 877 | 100.0 | yes |
+
+Seven forms produce the exact accepted whole Core object. Separate byte offset
+has unchanged rounded source and 0.1 strict gain but different bytes; it adds
+no required score gain and is not retained. Guarded do regresses source.
+All rejected; production and relevant test source restored and compared in
+full to bf0243e8. Baseline outside-body/signature check passes.
+
+Existing normalcenter-full evidence is rebound by read-only checks: full JSON,
+actual linked 2079/byte 959 pair sets equal baseline without lost/gained pairs,
+204 objects/202 unaffected objects, winner identity, canonical flag digest/
+argument list and fixed-three matcher components from actual instruction lists.
+No new native or full-corpus execution claimed for rejected forms. Accepted
+**98.37% unweighted /98.36% weighted**; both >=99.0 gates remain unmet, goal
+active. No other body, header/ABI, matcher, denominator, original weights, push,
+PR or merge change.
+
+Evidence: `_work/read_center_color_loop_identities.json`, focused per-trial
+reports/source snapshots and rechecked normalcenter validation audit.
