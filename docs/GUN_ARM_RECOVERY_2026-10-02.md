@@ -111,6 +111,8 @@ Native archive storage: rebuilding libgof2.a on A: failed while ar copied its ar
 
 Scope controls (2026-10-06, after active-count checkpoint): nine additional private variants were compiled with canonical flags and compared as complete function bodies. Collision center scope, separate center assignment and their combination lower source-shape to 96.2/95.8/96.1; staged mine bounds are byte-identical to canonical. Short mine direction/up scope, an explicit sum temporary and their combination also preserve the entire shootAt body; explicit homing-search operands lower source-shape to 98.0. All variants were rejected and all other symbols remain unchanged. Production source/object/parser/flags and fixed manifest hashes were revalidated; no new full corpus or native build is claimed. The weighted score remains 98.5168407856%, below the requested 99%. Details and reproducibility hashes: validation/gun_scope_controls_2026-10-06.json.
 
+Collision argument controls (2026-10-06): six private variants checked native geometry/camera reloads at 0x15337a..0x1533fc and scaled-damage argument ordering at 0x15328a..0x153310. Explicit canvas-cell reloads, named camera-local result, actual owner false branch first and named damage arguments before float conversion all optimize to identical collision bodies. Moving position reads ahead of camera calls yields 637 instructions instead of 632, with unchanged 96.9 source-shape and lower strict score (50.5 versus 51.3); its combined canvas variant is equivalent. All controls were rejected; no production inputs changed or broad checks rerun. Reproducibility hashes and complete rows: validation/gun_collision_argument_controls_2026-10-06.json.
+
 ## Checks and limits
 
 - Native CMake `gof2` static-library build: passed.
