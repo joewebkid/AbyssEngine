@@ -6959,3 +6959,65 @@ flag/matcher, push, PR or merge change.
 Evidence: `_work/read_index_reload_normal_views_identities.json`,
 `_work/read_index_reload_counter_identities.json`, twenty-one focused reports/
 source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: indexed owner interaction with triangle UV and coordinate scheduling
+
+Seventeen focused Read measurements start from b5c5881f: eight source forms
+with accepted owner, the same eight with fresh indexed allocation owner, and
+one repeated fresh-owner control. Fresh m=*slot follows the successful
+indexCount read as supported by primary ARM 0x6c664. It remains an experimental
+candidate with strict 57.8 and tied source 98.5, not a retained source gain.
+
+Five forms delay origin U until after V differences, name the two U differences,
+combine those forms, delay reciprocal until after the three numerators or name
+the two denominator products. Formulas, floating widths, grouping and operand
+direction remain unchanged. Delayed reciprocal changes scheduling of independent
+local arithmetic, not reassociation: each numerator is still multiplied by
+1/denom. Three other forms preload origin position components Z/Y/X, X/Y/Z or
+Y/X/Z after p1 address computation and substitute the used values in their
+existing numerator expressions. No intervening mutation/call changes those
+coordinates. Numerators/products remain Y/X/Z, then original i0/i1/i2 += calls;
+final Dot/multiply/subtract/Normalize/stores/Cross sequence is untouched.
+No helper, unused local, padding, extra arithmetic, volatile, assembly, fixed
+register or metric change. Source spellings/scheduling are hypotheses, not
+recovered original declarations. Fresh owner timing has ARM support, but
+native fixtures do not establish equivalence for hypothetical slot-mutating
+file callbacks, and no such broader claim is made.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted | Equals reload-only |
+|---|---|---:|---:|---|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| late_origin_u_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| late_origin_u_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| explicit_u_differences_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| explicit_u_differences_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| late_u_and_differences_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| late_u_and_differences_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| late_reciprocal_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| late_reciprocal_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| separate_denom_products_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| separate_denom_products_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| origin_preload_zyx_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| origin_preload_zyx_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| origin_preload_xyz_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| origin_preload_xyz_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| origin_preload_yxz_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| origin_preload_yxz_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+
+All eight accepted-owner forms equal the complete accepted Core object byte-
+for-byte. All eight fresh-owner forms and the control equal the complete
+reload-only object. This proves these particular scheduling forms have no
+object-level interaction gain; equal scores alone are not used as identity
+proof. None retained; code restored. Source and fixtures match ecc30f25;
+outside-body/signature checks pass. Read-only binding rechecks existing
+typedpair full evidence: 204 objects/202 unaffected objects, actual linked
+2079/byte 959 exact pair sets equal baseline without lost/gained pairs,
+unchanged canonical arguments and fixed-three rows directly recomputed with
+the unchanged matcher. No new native/full-corpus run claimed for rejected
+forms. Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates
+unmet; goal active. No general compiler ceiling, header/ABI, flag/matcher,
+push, PR or merge change.
+
+Evidence: `_work/read_index_reload_triangle_schedule_identities.json`, seventeen
+focused reports/source snapshots and rechecked typedpair validation audit.
