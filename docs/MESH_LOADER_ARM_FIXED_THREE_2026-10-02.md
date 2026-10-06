@@ -4276,3 +4276,46 @@ retained. Additional evidence: `_work/readsharedvcount-*.json`, snapshots and
 passes and production tracked diff is empty. Accepted axisbyte-full/native
 evidence remains authoritative: **98.23% unweighted /98.17% weighted**. Both
 >=99.0 gates remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: compressed normal source address lifetimes
+
+Three Read trials start from clean ae9348de. They change only compressed-normal
+source access: derive a const short record pointer s+i inside each iteration;
+advance a const short source pointer by three shorts with the existing i+=3;
+or preload the same three signed shorts into scalar locals. X/Y/Z load and
+conversion order, double scaling, length calculation, clamp semantics and
+output stores remain unchanged. The pointer-advance form keeps the dynamic
+slot vertexCount condition and output component index; it does not replace
+that condition with a captured count or alter file/field capture points.
+
+Each pointer addresses the same three shorts per defined iteration. A zero
+count performs no pointer arithmetic; advancement after the final valid record
+forms only the buffer's one-past pointer. No guard, helper call, padding or
+external effect is added. Pointer/scalar declaration forms are source hypotheses,
+not recovered original declarations. Helpers, ABI, flags, matcher, denominator
+and other bodies remain unchanged.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| record_pointer | 98.0 / 54.1 | 868 | 100.0 | no |
+| advancing_record_pointer | 97.9 / 55.7 | 866 | 100.0 | no |
+| scalar_source_values | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+Scalar source locals yield accepted byte-identical Core. Record-pointer form
+differs and retains source 98.0, but instruction inventory remains 93.9:
+opcode inventory regresses 98.1->98.0 while size improves 99.2->99.3, balancing
+aggregate score. Strict regresses 55.9->54.1. Advancing pointer differs from
+both accepted and record-pointer form; instruction inventory drops to 93.5,
+opcode to 98.0 and size to 99.1, with source 97.9. Both keep control inventory
+98.8, ordered control 91.1 and call match 100.0. Thus no concealed improvement
+to the prioritized inventory component is found. Actual bytes establish
+identity, not equal scores. No trial retained; production source restored.
+
+Evidence: `_work/readnormalsourcelife-*.json`, source snapshots and
+`_work/read_normal_source_lifetime_identities.json`. Baseline outside-body/
+signature check passes and production tracked diff is empty. No native/full-
+corpus run is claimed for rejected variants. Accepted axisbyte-full/native
+evidence remains authoritative: **98.23% unweighted /98.17% weighted**, exact
+pair sets 2079 linked /959 byte equal baseline without losses. Both >=99.0
+gates remain unmet; goal active. No push, PR or merge.
