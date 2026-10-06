@@ -5195,3 +5195,43 @@ requirements remain unmet; this is not evidence of a ceiling. No push, PR or mer
 Evidence: `_work/read_common_failure_identities.json`,
 `_work/read_current_normal_branch_identities.json`, seven focused reports and
 source snapshots, and rechecked `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: clamp scheduling with centered normal destinations
+
+Six focused Read trials start from 837a7f30. They retest the old clamp-form
+and quotient-scheduling family with the accepted middle-component output
+pointer: explicit lower-double if statements, upper ternaries, complete
+component clamp staging, Y/X/lower-Y/Z quotient staging, Y-first casts/upper
+tests, and interleaved promotion/lower-if. Float quotients, double lower
+selection, float casts and upper comparisons on the original float quotients
+remain. No arithmetic is reassociated, no helper added, no file read or field
+load moved. Independent component evaluation order is varied explicitly in
+the scheduling forms. These are source hypotheses, not recovered declarations.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| explicit_lower_double | 97.6 / 54.1 | 862 | 100.0 | no |
+| upper_ternary | 98.4 / 56.8 | 877 | 100.0 | yes |
+| component_clamps | 98.4 / 56.8 | 877 | 100.0 | yes |
+| staged_y_x_z | 98.4 / 56.8 | 877 | 100.0 | yes |
+| staged_y_clamps | 98.4 / 56.8 | 877 | 100.0 | yes |
+| interleaved_lower_if | 97.6 / 54.1 | 862 | 100.0 | no |
+
+Four complete Core objects equal the accepted object byte-for-byte. Both
+explicit lower-if forms equal each other and regress source-shape to 97.6;
+none retained. This resolves the tested interaction with centered destinations
+without claiming a general compiler ceiling. Production source/fixtures match
+bf0243e8 and outside-body/signature comparisons pass.
+
+Read-only recheck binds the existing full evidence to restored source and
+recomputes the fixed-three matcher rows: 204 objects, 202 unaffected objects
+byte-identical to baseline, actual linked-exact 2079 and byte-exact 959 pair sets
+unchanged without lost/gained pairs, canonical compilation arguments unchanged.
+No new native/full-corpus run is claimed for rejected/restored trials. Accepted
+means remain **98.37% unweighted /98.36% original-instruction-weighted**;
+both >=99.0 gates remain unmet and goal remains active. No push, PR or merge.
+
+Evidence: `_work/read_current_clamp_identities.json`, six
+`_work/readcurrentclamp-*.json` focused reports, corresponding source snapshots,
+and rechecked `_work/normalcenter_validation_audit.json`.
