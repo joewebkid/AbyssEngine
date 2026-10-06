@@ -7021,3 +7021,55 @@ push, PR or merge change.
 
 Evidence: `_work/read_index_reload_triangle_schedule_identities.json`, seventeen
 focused reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: unsigned raw allocation pairs with both indexed owner forms
+
+Fourteen focused Read measurements start from 9e63aa84. All seven nonempty
+subsets of short positions/int positions/compressed normals replace the paired
+primitive allocation/deletion element type with corresponding unsigned short/
+unsigned int, on accepted indexed owner and fresh owner after indexCount read.
+Matching delete[] casts change together with each new[] expression. Raw short/
+int views used by conversion remain signed, so negative input samples retain
+their existing interpretation; unsigned allocation is not an unsigned decode.
+Corresponding signed/unsigned integer access is permitted aliasing, and ARM/
+UCRT element sizes remain 2/4 bytes. Counts are unchanged vertexCount*3 and fit
+the bounded allocation arithmetic. No value initializer, zero fill, constructor,
+element destructor, extra cleanup, unused field or helper is added. These are
+allocation representation hypotheses, not recovered original element types.
+
+Fresh indexed owner keeps the previously inspected ARM load timing, but is
+experimental: native fixtures do not establish equivalence for a hypothetical
+slot-mutating file callback. No such broader runtime proof is claimed.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted | Equals reload-only |
+|---|---|---:|---:|---|---|
+| short_positions_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| short_positions_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| integer_positions_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| integer_positions_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| normals_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| normals_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| short_positions_integer_positions_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| short_positions_integer_positions_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| short_positions_normals_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| short_positions_normals_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| integer_positions_normals_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| integer_positions_normals_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| short_positions_integer_positions_normals_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| short_positions_integer_positions_normals_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+
+Every complete object equals its corresponding signed-allocation reference
+byte-for-byte: seven accepted-owner forms equal accepted Core and seven fresh-
+owner forms equal reload-only Core. No source/object interaction gain; none
+retained. Code restored. Source and fixtures match ecc30f25; outside-body/
+signature checks pass. Read-only binding rechecks existing typedpair full
+evidence: 204 objects/202 unaffected objects, actual linked 2079/byte 959 exact
+pair sets equal baseline without lost/gained pairs, unchanged canonical
+arguments and fixed-three rows directly recomputed with the unchanged matcher.
+No new native/full-corpus run claimed for rejected forms. Accepted means
+**98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet; goal active.
+No general compiler ceiling, header/ABI, flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_unsigned_raw_pairs_identities.json`, fourteen focused
+reports/source snapshots and rechecked typedpair validation audit.
