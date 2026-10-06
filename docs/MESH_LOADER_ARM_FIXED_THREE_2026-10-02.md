@@ -6831,3 +6831,64 @@ flag/matcher, push, PR or merge change.
 
 Evidence: `_work/read_typed_pair_extrema_order_identities.json`, nine focused
 reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: indexed owner and typed allocation interaction after paired raw arrays
+
+Sixteen focused Read trials start from 13c61435. They repeat eight earlier
+indexed owner/scope forms on current paired raw arrays, each with original
+byte allocation and primitive new unsigned short[count]. Typed arrays have no
+initializer/zero fill; native and ARM ushort are two bytes, and counts are
+ushort, so sizes are unchanged. These index buffers escape into the existing
+Mesh ownership path; no new local deletion or failure cleanup is introduced.
+
+Primary ARM reloads *slot after indexCount read at 0x6c664, reads indexCount
+at 0x6c668, allocates at 0x6c66c and stores indices through that owner at
+0x6c670. Current accepted source captures m before the count read. Seven forms
+use a fresh owner there, through reload/local scope/direct assignment, optionally
+also reloading the buffer-read or vertex-read owner. One changes just the
+allocation count expression to fresh *slot and keeps the captured store owner.
+Original observations prove memory-load timing, not exact C++ spelling, a
+runtime bug or mutation of *slot by the existing file boundary. Trials with
+fresh owners should not be claimed universally equivalent for a hypothetical
+slot-mutating file callback; current native fixtures do not model that callback.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| owner_reload_before_allocation_byte_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| owner_reload_before_allocation_typed_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| owner_separate_allocation_owner_byte_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| owner_separate_allocation_owner_typed_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| owner_reload_read_owner_byte_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| owner_reload_read_owner_typed_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| owner_direct_count_allocation_byte_allocation | 98.5 / 57.2 | 874 | 100.0 | no |
+| owner_direct_count_allocation_typed_allocation | 98.5 / 57.2 | 874 | 100.0 | no |
+| owner_reload_direct_assignment_byte_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| owner_reload_direct_assignment_typed_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| scope_fresh_scoped_owner_byte_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| scope_fresh_scoped_owner_typed_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| scope_vertex_owner_after_read_byte_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| scope_vertex_owner_after_read_typed_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| scope_fresh_scoped_direct_assignment_byte_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| scope_fresh_scoped_direct_assignment_typed_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+
+All byte/typed pairs produce identical complete objects. Fourteen fresh-owner
+forms equal one another, tie source at 98.5 and improve strict 57.4 ->57.8.
+The two count-only forms equal one another, tie source and regress strict to
+57.2. This changes the old exclusion: fresh-owner forms formerly regressed
+source on axisbyte-era code but no longer do so after paired raw arrays.
+They are useful candidates for subsequent interaction trials, though neither
+requested gate improves by this change alone. None retained in production.
+
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_index_owner_identities.json`, sixteen focused
+reports/source snapshots, primary original_mesh.asm and rechecked typedpair
+validation audit.
