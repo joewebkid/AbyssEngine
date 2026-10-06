@@ -132,7 +132,7 @@ void Gun::setIndex(int index) {
     this->empDamage = (*static_cast<Array<Item *> *>(Globals::items))[index]->getAttribute(10);
     int g = gunAnimationResources[index];
     if (g >= 0) {
-        unsigned count = this->count;
+        unsigned count = positionArray.size();
         this->geometries = new int[count];
         this->randomFlags = new uint8_t[count];
         for (unsigned i = 0; i < count; i = i + 1) {
@@ -143,7 +143,7 @@ void Gun::setIndex(int index) {
             auto *tf = static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(this->geometries[i]));
             tf->SetAnimationState(AbyssEngine::AnimationMode_0, nullptr);
             delete geom;
-            count = this->count;
+            count = positionArray.size();
         }
     }
 }
@@ -188,7 +188,7 @@ void Gun::ignite() {
             target = (*enemies)[enemyIndex];
             if (weaponType == ITEM_SORT_EMP_BOMB && target->isAsteroid()) continue;
             if (!target->isActive()) continue;
-            for (unsigned i = 0; i < count; ++i) {
+            for (unsigned i = 0; i < positionArray.size(); ++i) {
                 {
                     Vector projectilePosition = positionArray[i];
                     basePos = projectilePosition;
@@ -273,7 +273,7 @@ void Gun::ignite() {
 void Gun::render() {
     if (impact) impact->render();
     if (geometries) {
-        for (unsigned i = 0; i < count; ++i) {
+        for (unsigned i = 0; i < positionArray.size(); ++i) {
             auto *transform = static_cast<AbyssEngine::Transform *>(
                 Globals::Canvas->TransformGetTransform(geometries[i]));
             if (transform->animating) {
@@ -405,7 +405,7 @@ void Gun::update(int dt) {
     }
     if (impact) impact->update(dt);
     if (geometries) {
-        for (unsigned i = 0; i < count; ++i) {
+        for (unsigned i = 0; i < positionArray.size(); ++i) {
             auto *transform = static_cast<AbyssEngine::Transform *>(
                 Globals::Canvas->TransformGetTransform(geometries[i]));
             transform->Update(dt, false);
@@ -414,7 +414,7 @@ void Gun::update(int dt) {
     if (active && weaponType != ITEM_SORT_SENTRY_GUN) {
         calcCharacterCollision();
         float fdt = static_cast<float>(dt);
-        for (unsigned i = 0; i < count; ++i) {
+        for (unsigned i = 0; i < positionArray.size(); ++i) {
             int remaining = lifetimes[i];
             int threshold = 0;
             if (weaponType == ITEM_SORT_ROCKET || weaponType == ITEM_SORT_MISSILE ||
@@ -455,7 +455,7 @@ void Gun::update(int dt) {
 }
 
 void Gun::translate(const Vector &v) {
-    for (unsigned i = 0; i < this->count; i = i + 1) {
+    for (unsigned i = 0; i < positionArray.size(); i = i + 1) {
         positionArray[i] += v;
     }
 }
@@ -510,7 +510,7 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
     }
     Vector &mountDirection = targetDir;
     bool fired = false;
-    for (unsigned i = 0; i < count; ++i) {
+    for (unsigned i = 0; i < positionArray.size(); ++i) {
         int remaining = lifetimes[i];
         int threshold = 0;
         if (weaponType == ITEM_SORT_ROCKET || weaponType == ITEM_SORT_MISSILE ||
@@ -621,7 +621,7 @@ void Gun::calcCharacterCollision() {
         if (mine && (!enemy->enemyFlagsLo ||
             (enemy->getKIPlayer() && enemy->getKIPlayer()->field_0x41))) continue;
         if (!enemy->isActive() || enemy->getHitpoints() < 1) continue;
-        for (unsigned i = 0; i < count; ++i) {
+        for (unsigned i = 0; i < positionArray.size(); ++i) {
             Vector position = positionArray[i];
             Vector speed = directionArray[i];
             Vector center = MatrixGetPosition(enemy->transformMatrix);

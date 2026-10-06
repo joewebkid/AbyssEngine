@@ -1337,10 +1337,12 @@
     "full_corpus_wrong_type_gate_exit": 0,
     "object_newer_than_source_and_header": true,
     "baseline_full_corpus_wrong_type_gate_exit": 0,
-    "section_local_alias_regressions": "passed: distinct equal-address sections and seven real ARM aliases"
+    "section_local_alias_regressions": "passed: distinct equal-address sections and seven real ARM aliases",
+    "full_corpus_reused_identical_object": "shoot-rotate-corpus.json; Gun.o byte-identical; all other objects predate completed report; parser/flags unchanged",
+    "native_archive_path": "C:\\Users\\Dima\\.codex\\gun-arm-99-scratch-2026-10-06\\native-output\\libgof2.a"
   },
   "input_sha256": {
-    "src\\game\\weapons\\Gun.cpp": "d067f89660918d61fa09aa730081662c772c454cb497f23e3366cf0b260091c5",
+    "src\\game\\weapons\\Gun.cpp": "5ac9d820f9796546085e04f4aa13b343daa38ed3f706a05c1f1ab407cbab7982",
     "src\\game\\weapons\\Gun.h": "400097d0e265812992483f4556cf6cfa63302d60978129c9211aae9bdd904f2c",
     "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "8f98e997b831364add1349edbf910e31f16ef355ad52f1c02d5541b5a3f68ea4",
     "_work\\gun-current\\verify\\.flags": "b7741d9045ccee7cadcb1e3f3027e57029d127537931305e306e50bc830d174c",
