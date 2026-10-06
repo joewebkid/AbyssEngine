@@ -1,0 +1,93 @@
+{
+  "previous_production": "d3cb1c65",
+  "previous_goal_turn_classification": "Progress: three native/ARM-measured neutral warning forms eliminated and production restored with all204 object bytes verified.",
+  "decision": "Accepted strict-order improvement, no source-score regression. Weighted99 remains unmet.",
+  "source_form": "Capture Layout+0x88 hit radius before mode initialization; put choiceVisible zero assignment before markerGeom zero assignment. No additional calls or changed values.",
+  "source_spelling": "Heuristic source form informed by primary load/store ordering, not recovered original C++.",
+  "arm_compiled": 204,
+  "arm_failed": 0,
+  "native_static_exit": 0,
+  "focused_before": {
+    "source_match": {
+      "unweighted": 99.375,
+      "weighted": 98.86889170539361
+    },
+    "match": {
+      "unweighted": 87.95,
+      "weighted": 82.9910153499507
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "focused_after": {
+    "source_match": {
+      "unweighted": 99.375,
+      "weighted": 98.86889170539361
+    },
+    "match": {
+      "unweighted": 88.01,
+      "weighted": 83.04728911420928
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "changed_rows": [
+    {
+      "symbol": "_ZN7StarMapC1EbP7Missionbi",
+      "changes": {
+        "match": [
+          97.6,
+          98.8
+        ]
+      }
+    },
+    {
+      "symbol": "_ZN7StarMapC2EbP7Missionbi",
+      "changes": {
+        "match": [
+          97.6,
+          98.8
+        ]
+      }
+    }
+  ],
+  "full": {
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "count": 4619,
+    "fuzzy_perfect": 2204,
+    "byte_exact": 960,
+    "linked_exact": 2084,
+    "skipped": 0,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "all22_focus_full_rows_agree": true,
+  "only_starmap_object_changed": true,
+  "baseline_gate_exit": 0,
+  "previous_gate_exit": 0,
+  "default99_gate_exit": 1,
+  "source_sha256": "5c26c7fb8b07940870639d4a7b6c3d13e09e1480b3f5a8fd3c9da71cfe8886bc",
+  "object_sha256": "a98ec045ff6c877b840e0622eff499c5247fb714b206ed69a2f85dfc53b6e359",
+  "objective_reached": false,
+  "literal_pool_evidence": "Primary c696a LDRGT r1,[PC,#508] loads c6b68..6b: cdcccc3c = float0.025; c696c LDRLE loads c6b6c..6f: bc74933c = float0.018. Diff decodes these8 literal bytes as4 instructions versus2 word entries. No verifier or literal padding changes.",
+  "limits": "STATIC validation only; native executable/runtime and whole ABI remain unverified.",
+  "evidence": [
+    "_work/ctor-diff-118.txt",
+    "_work/ctor-order-diff-118.txt",
+    "_work/ctor-literal-primary-118.asm",
+    "_work/ctor-code-primary-118.asm",
+    "_work/ctor-order-118.json",
+    "_work/ctor-order-118.log",
+    "_work/ctor-order-corpus-118.json",
+    "_work/ctor-order-corpus-118.log",
+    "_work/native-ctor-order-118.log",
+    "_work/ctor-order-baseline-gate-118.json",
+    "_work/ctor-order-previous-gate-118.json",
+    "_work/ctor-order-threshold-118.log"
+  ]
+}

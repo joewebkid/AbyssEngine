@@ -1,5 +1,5 @@
 {
-  "avg_match": 88.71,
+  "avg_match": 88.82,
   "avg_source_match": 99.38,
   "count": 22,
   "fuzzy_perfect": 7,
@@ -213,7 +213,7 @@
     },
     {
       "symbol": "_ZN7StarMapC1EbP7Missionbi",
-      "match": 97.6,
+      "match": 98.8,
       "bytes_equal": false,
       "linked_equal": false,
       "n_target": 333,
@@ -230,7 +230,7 @@
     },
     {
       "symbol": "_ZN7StarMapC2EbP7Missionbi",
-      "match": 97.6,
+      "match": 98.8,
       "bytes_equal": false,
       "linked_equal": false,
       "n_target": 333,

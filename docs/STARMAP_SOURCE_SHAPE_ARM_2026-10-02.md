@@ -6,7 +6,7 @@
 implementation bodies measure **99.375% unweighted / 98.86889% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.95% / 82.99102%**, respectively. Source-shape is an inventory/control-flow
+**88.010% / 83.04729%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -4424,3 +4424,28 @@ are now measured as neutral; further work must examine remaining instruction/
 call inventory differences instead of repeating them.
 
 Evidence: docs/validation/starmap_2026-10-06_warning_topology_trials.json.
+
+## Hundred-and-eighteenth accepted constructor store order
+
+Fresh current drawKey diff and prior32/55/106 evidence confirm coordinate
+grouping already agrees; no repeated coordinate/lifetime edit was applied.
+Investigated constructor load/store ordering against the primary instead.
+Capture Layout+0x88 before assigning mode, then set hitRadius from the value.
+Swap the source order of the choiceVisible and markerGeom zero assignments.
+These preserve values and calls; source spelling is heuristic, not recovered.
+
+Only constructor C1/C2 strict score changes97.6->98.8; all source submetrics
+and other20 rows stay identical. Primary marker zero before choice-visible
+zero now agrees in the emitted code. Hit-radius region is closer but mode
+store still differs in ordering. No whole-function byte equality is claimed.
+Primary tail c6b68..6f contains float0.025/0.018 literal bytes, decoded by the
+diff as four instructions versus two word entries. This is data, not missing
+gameplay. No padding, verifier change, forced register or shared edit.
+
+ARM204 compiled/0 failed; native STATIC exit0. Full4619/0, linked2084/byte960,
+coverage4274/4524, missing250 (7 wrong type/243 absent), extras129. All22
+focus/full rows agree; baseline/previous preservation gates exit0 with zero
+losses. Default99 gate exits1 for the weighted threshold. Source means stay
+99.375/98.86889170539361 on fixed20/7101. Canonical reports updated only after
+full validation. Native runtime/whole ABI remain unverified; goal incomplete.
+Evidence: docs/validation/starmap_2026-10-06_constructor_store_order.json.

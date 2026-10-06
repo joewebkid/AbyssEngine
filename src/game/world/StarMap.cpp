@@ -885,8 +885,9 @@ StarMap::StarMap(bool jumpMapMode, Mission *mission, bool param3, int param4)
     this->pitch = 0.0f;
     this->field_0x190 = 0;
 
+    int hitRadius = *reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::layout) + 0x88);
     this->mode = 0;
-    this->hitRadius = *reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::layout) + 0x88);
+    this->hitRadius = hitRadius;
     this->selectedSystem = -1;
     this->starSystemRoot = (AEGeometry *) 0;
     this->stations = (Array<Station *> *) 0;
@@ -944,8 +945,8 @@ StarMap::StarMap(bool jumpMapMode, Mission *mission, bool param3, int param4)
     }
 
     static_cast<AERandom *>(Globals::rnd)->reset();
-    this->markerGeom = (AEGeometry *) 0;
     this->choiceVisible = 0;
+    this->markerGeom = (AEGeometry *) 0;
     if (Globals::status->getCurrentCampaignMission() > 0x1f &&
         Globals::status->field_7c >= 0) {
         AEGeometry *marker = new AEGeometry((uint16_t) 0x4262, Globals::Canvas, false);
