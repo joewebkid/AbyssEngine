@@ -3012,13 +3012,14 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/eightyeighth-corpus.log`; focused log:
-`_work/render-blend-eightyeighth.log`; native log: `_work/native-eightyeighth.log`.
+Latest full log: `_work/ninetieth-corpus.log`; focused log:
+`_work/angular-literals-ninetieth-build.log`; native log:
+`_work/native-ninetieth-retry.log` (successful retry after disk-space failure).
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, without losses. Render adds one linked-exact pair in the latest checkpoint. The latest comparison against 28e181da (production 437b3b7f) preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, without losses. Render adds one linked-exact pair in the latest checkpoint. The latest comparison against 78038081 (production a4a3633f) preserves all 2084
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/eightyeighth-baseline-gate.json, eightyeighth-previous-gate.json and
-eightyeighth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/ninetieth-baseline-gate.json, ninetieth-previous-gate.json and
+ninetieth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
@@ -3483,3 +3484,66 @@ Evidence under _work: argument-audit-primary-eightyninth.asm,
 call-argument-audit-eightyninth.json, render-blend-eightyeighth.asm.
 Compact committed evidence:
 `docs/validation/starmap_2026-10-06_argument_audit.json`.
+
+## Ninetieth follow-up: native float32 angular parameters (2026-10-06)
+
+Primary Android GOF2 HD2.0.16 ARMv7 evidence, with PC-relative literal reads
+from ELF executable sections, exposes eight genuine constant-argument
+mismatches that the prior register-immediate audit could not see. Only
+StarMap.cpp numeric literals change; arithmetic and callback order remain.
+
+| Rounded value before | Replacement literal | Primary float32 bits | Source uses |
+| --- | --- | --- | --- |
+| 3.1416f | 3.1415927f | 0x40490fdb | 5 |
+| 6.2832f | 6.2831855f | 0x40c90fdb | 5 |
+| 0.000015259f | 0.0000152587890625f | 0x37800000 | 7 |
+| +/-0.3927f | +/-0.3926991f | 0x3ec90fdb / 0xbec90fdb | 2 |
+| -0.098175f | -0.098174773f | 0xbdc90fdb | 3 |
+
+Verified native call sites include MatrixSetRotation at c6dfe; background
+rotations at c739c/c73d0/c7404; constructor marker rotation at c6b14; and
+station root rotation at c7aa4. Negative root Z rotation in update/Move is
+loaded at ca626/cac62 from literal words ca7bc/cae7c: both 0xbdc90fdb.
+These numeric float32 parameters are recovered from primary machine code;
+the original C++ spelling and exact-source formula recovery are not claimed.
+
+The conservative stack/float diagnostic aligns 699 direct calls, compares
+33 known stack pairs and 222 known register pairs. Before: eight genuine
+float argument differences plus two repeated-SetColor alignment artifacts.
+After: only the same two false alignments remain. Actual orange/white paths
+were reviewed in the eighty-ninth audit. The diagnostic does not resolve all
+arithmetic, conditional paths, indirect callees or stack offsets above 8;
+it is not exhaustive ABI proof.
+
+Focused validation: terminal exit0, all204 ARM TUs built, zero failures,
+22 comparisons/zero skips. The entire focused JSON equals a4a3633f despite
+the changed object, because these literal changes do not change the reported
+normalized metrics. Source-shape remains 99.290% /98.6209547951%; strict
+87.780% /82.5465709055%. This corrects parameters without claiming score gain.
+
+Native StarMap compiled, but the first archive operation failed because A:
+ran out of space. NTFS compression of this checkout's own _work preserved
+file contents and freed about200MB. The same native build then successfully
+created libgof2.a (terminal exit0); no production rollback was needed.
+
+Full verifier session6891, live PID31632, terminated exit0 with source and ARM
+objects frozen. All4619 comparisons, zero skips; all22 StarMap metric rows
+agree with focused after separator normalization. Full JSON is identical to
+accepted88: linked2084/byte960, no exact-pair loss against clean baseline or
+previous a4a3633f. Baseline/previous preservation gates exit0; default99 gate
+exit1. The 99% objective remains unmet; no native executable/runtime test.
+
+ARM object SHA256: 7d9424ca64863cded41ccad7c4560a4c0fce34bf48c53135cd169ef303e33617.
+Full JSON SHA256: 4b6070d6d0bb3f16b4c587147717dcf887f1ad331214ec0d49cfd9d12294ccd8.
+
+Compact committed evidence: docs/validation/starmap_2026-10-06_angular_constants.json.
+Raw evidence under _work: before-angular-literals-ninetieth.cpp,
+stack-float-argument-audit-ninetieth-before/after.json,
+rotation-r3-proof-ninetieth.json, current-ninetieth.asm,
+argument-audit-primary-eightyninth.asm, angular-literals-ninetieth.json,
+angular-literals-ninetieth-build.log, native-ninetieth.log,
+native-ninetieth-retry.log, ninetieth-corpus.json/log,
+ninetieth-baseline/previous/target-gate.json/log,
+checkpoint90-before-focused/corpus.json. The earlier literal-pool summary
+survives in angular-literals-ninetieth.log; its same-named JSON was overwritten
+by the focused report, so no separate pre-edit pool JSON is claimed.

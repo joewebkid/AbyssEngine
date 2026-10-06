@@ -857,8 +857,8 @@ void StarMap::update(int dt) {
         float pitch = nextPitch > -8192.0f ? nextPitch : -8192.0f;
         if (nextPitch > 8192.0f) pitch = 8192.0f;
         this->pitch = pitch;
-        this->starSystemRoot->setRotation(this->pitch * 0.000015259f * 6.2832f,
-                                         this->yaw * 0.000015259f * 6.2832f, -0.098175f);
+        this->starSystemRoot->setRotation(this->pitch * 0.0000152587890625f * 6.2831855f,
+                                         this->yaw * 0.0000152587890625f * 6.2831855f, -0.098174773f);
     }
 }
 
@@ -945,7 +945,7 @@ StarMap::StarMap(bool jumpMapMode, Mission *mission, bool param3, int param4)
         this->markerGeom->setPosition(this->systemGeoms->data()[Globals::status->field_7c]->getPosition());
         ((AbyssEngine::Transform *) (Globals::Canvas->TransformGetTransform(this->markerGeom->transform)))->SetAnimationState(
             (AbyssEngine::AnimationMode) 2, 0);
-        this->markerGeom->setRotation(0.0f, 3.1416f, 0.0f);
+        this->markerGeom->setRotation(0.0f, 3.1415927f, 0.0f);
     }
 
     init(jumpMapMode, mission, param3, param4);
@@ -1095,7 +1095,7 @@ int StarMap::OnTouchMove(int x, int y) {
                     this->velocityY = absX > 150.0f ? rotX : 0.0f;
                     this->yaw = yaw;
                     this->pitch = pitch;
-                    this->starSystemRoot->setRotation(pitch * 0.000015259f * 6.2832f, yaw * 0.000015259f * 6.2832f, -0.098175f);
+                    this->starSystemRoot->setRotation(pitch * 0.0000152587890625f * 6.2831855f, yaw * 0.0000152587890625f * 6.2831855f, -0.098174773f);
                 } else {
                     float magnitude = absf_local(dx + dy);
                     float speed = 10.0f;
@@ -1223,7 +1223,7 @@ void StarMap::initStarSystem() {
                 }
             }
             this->stationAngles[stationIndex] = stationAngle;
-            float angle = (float)stationAngle * 0.000015259f * 6.2832f;
+            float angle = (float)stationAngle * 0.0000152587890625f * 6.2831855f;
             AbyssEngine::AEMath::MatrixSetRotation(rotation, 0.0f, angle, 0.0f);
             int dist = (i == 1) ? 0x1900 : this->stationDistances[i - 2];
             dist += static_cast<AERandom *>(Globals::rnd)->nextInt(0x15e0) + 0x640;
@@ -1233,7 +1233,7 @@ void StarMap::initStarSystem() {
             translated = AbyssEngine::AEMath::MatrixTransformVector(rotation, radial);
             this->stationGeoms->data()[i]->translate(translated);
             int tex = this->stations->data()[stationIndex]->getTextureIndex();
-            float scale = (float)(16 * stationScale[tex]) * 0.000015259f;
+            float scale = (float)(16 * stationScale[tex]) * 0.0000152587890625f;
             this->stationGeoms->data()[i]->setScaling(scale, scale, scale);
             Vector position = this->stationGeoms->data()[i]->getPosition();
             position = AbyssEngine::AEMath::VectorNormalize(position);
@@ -1267,7 +1267,7 @@ void StarMap::initStarSystem() {
         AEGeometry *ringGeom = this->ringGeoms->data()[i];
         float distance = (float)this->stationDistances[i];
         ringGeom->setRotation(0.0f, (float)static_cast<AERandom *>(Globals::rnd)->nextInt(0x0c45) / 1000.0f, 0.0f);
-        float scale = (float)(2 * (int)distance) * 0.000015259f;
+        float scale = (float)(2 * (int)distance) * 0.0000152587890625f;
         this->ringGeoms->data()[i]->setScaling(scale, scale, scale);
     }
 
@@ -1277,7 +1277,7 @@ void StarMap::initStarSystem() {
     AEGeometry *systemRoot = this->starSystemRoot;
     this->yaw = 4096.0f;
     this->pitch = -4096.0f;
-    systemRoot->setRotation(-0.3927f, 0.3927f, -0.098175f);
+    systemRoot->setRotation(-0.3926991f, 0.3926991f, -0.098174773f);
     this->selectedStation = -1;
     Globals::Canvas->Image2DCreate(systemNameImages[this->systems->data()[this->selectedSystem]->getRace()], this->systemNameImage);
 
@@ -1642,7 +1642,7 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     matrix.m[10] = 1.0f;
     matrix.m[13] = 1.0f;
     AbyssEngine::AEMath::MatrixSetTranslation(matrix, 0.0f, 0.0f, -2500.0f);
-    AbyssEngine::AEMath::MatrixSetRotation(matrix, 0.0f, 3.1416f, 0.0f);
+    AbyssEngine::AEMath::MatrixSetRotation(matrix, 0.0f, 3.1415927f, 0.0f);
     AbyssEngine::AEMath::MatrixSetTranslation(matrix, (float)(20 * (int)this->cameraBaseX),
                                             (float)(20 * (int)this->cameraBaseZ), 0.0f);
     Globals::Canvas->CameraSetLocal(this->camera, matrix);
@@ -1789,13 +1789,13 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     this->cargoAmount = cargo != 0 ? ((Item *) (cargo))->getAmount() : 0;
 
     this->bgLayer0 = new AEGeometry((uint16_t) 0x41d2, Globals::Canvas, false);
-    this->bgLayer0->setRotation(0.0f, 3.1416f, 0.0f);
+    this->bgLayer0->setRotation(0.0f, 3.1415927f, 0.0f);
     this->bgLayer0->setPosition(-3000.0f, -2500.0f, 0.0f);
     this->bgLayer1 = new AEGeometry((uint16_t) 0x41d3, Globals::Canvas, false);
-    this->bgLayer1->setRotation(0.0f, 3.1416f, 0.0f);
+    this->bgLayer1->setRotation(0.0f, 3.1415927f, 0.0f);
     this->bgLayer1->setPosition(-3000.0f, -2500.0f, 0.0f);
     this->bgLayer2 = new AEGeometry((uint16_t) 0x41d4, Globals::Canvas, false);
-    this->bgLayer2->setRotation(0.0f, 3.1416f, 0.0f);
+    this->bgLayer2->setRotation(0.0f, 3.1415927f, 0.0f);
     this->bgLayer2->setPosition(-3000.0f, -2500.0f, 0.0f);
     return 0;
 }

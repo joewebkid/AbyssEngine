@@ -1,0 +1,571 @@
+{
+  "decision": "accepted: restore primary float32 angular constants; no source-shape gain",
+  "previous_report_commit": "78038081",
+  "previous_production_commit": "a4a3633f",
+  "primary": "GOF2 HD2.0.16 Android ARMv7",
+  "original_cpp_source_recovered": false,
+  "source_change": "Only numeric literals in StarMap.cpp; arithmetic and call order preserved. No verifier/shared-header/config edits. Compact decimals compile to native float32 bits.",
+  "constants": [
+    {
+      "before": "3.1416f",
+      "after": "3.1415927f",
+      "native_float32_bits": "40490fdb",
+      "occurrences": 5
+    },
+    {
+      "before": "6.2832f",
+      "after": "6.2831855f",
+      "native_float32_bits": "40c90fdb",
+      "occurrences": 5
+    },
+    {
+      "before": "0.000015259f",
+      "after": "0.0000152587890625f",
+      "native_float32_bits": "37800000",
+      "occurrences": 7
+    },
+    {
+      "before": "0.3927f",
+      "after": "0.3926991f",
+      "native_float32_bits": "3ec90fdb",
+      "occurrences": 2
+    },
+    {
+      "before": "-0.098175f",
+      "after": "-0.098174773f",
+      "native_float32_bits": "bdc90fdb",
+      "occurrences": 3
+    }
+  ],
+  "before_audit": {
+    "diagnostic_only": true,
+    "accepted_production": "a4a3633f",
+    "counts": {
+      "aligned_calls": 699,
+      "known_stack_pairs": 33,
+      "known_register_pairs": 222
+    },
+    "primary_body_headers": 20,
+    "current_body_headers": 20,
+    "differences": [
+      {
+        "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+        "kind": "registers",
+        "key": "r2",
+        "primary": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0xc8b48",
+          "registers": {
+            "r1": 255,
+            "r2": 128,
+            "r3": 0
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0x1552",
+          "registers": {
+            "r1": 255,
+            "r2": 255,
+            "r3": 255
+          },
+          "stack": {}
+        }
+      },
+      {
+        "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+        "kind": "registers",
+        "key": "r3",
+        "primary": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0xc8b48",
+          "registers": {
+            "r1": 255,
+            "r2": 128,
+            "r3": 0
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0x1552",
+          "registers": {
+            "r1": 255,
+            "r2": 255,
+            "r3": 255
+          },
+          "stack": {}
+        }
+      },
+      {
+        "symbol": "_ZN7StarMap4initEbP7Missionbi",
+        "kind": "registers",
+        "key": "r3",
+        "primary": {
+          "callee": "_ZN11AbyssEngine6AEMath17MatrixSetRotationERNS0_6MatrixEfff",
+          "address": "0xc6dfe",
+          "registers": {
+            "r2": 0,
+            "r3": 1078530011
+          },
+          "stack": {
+            "0": {
+              "bits": 0,
+              "width": 4
+            }
+          }
+        },
+        "current": {
+          "callee": "_ZN11AbyssEngine6AEMath17MatrixSetRotationERNS0_6MatrixEfff",
+          "address": "0x46f6",
+          "registers": {
+            "r2": 0,
+            "r3": 1078530041
+          },
+          "stack": {
+            "0": {
+              "bits": 0,
+              "width": 4
+            }
+          }
+        }
+      },
+      {
+        "symbol": "_ZN7StarMap4initEbP7Missionbi",
+        "kind": "registers",
+        "key": "r2",
+        "primary": {
+          "callee": "_ZN10AEGeometry11setRotationEfff",
+          "address": "0xc739c",
+          "registers": {
+            "r1": 0,
+            "r2": 1078530011,
+            "r3": 0
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN10AEGeometry11setRotationEfff",
+          "address": "0x4cb2",
+          "registers": {
+            "r1": 0,
+            "r2": 1078530041,
+            "r3": 0
+          },
+          "stack": {}
+        }
+      },
+      {
+        "symbol": "_ZN7StarMap4initEbP7Missionbi",
+        "kind": "registers",
+        "key": "r2",
+        "primary": {
+          "callee": "_ZN10AEGeometry11setRotationEfff",
+          "address": "0xc73d0",
+          "registers": {
+            "r1": 0,
+            "r2": 1078530011,
+            "r3": 0
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN10AEGeometry11setRotationEfff",
+          "address": "0x4ce6",
+          "registers": {
+            "r1": 0,
+            "r2": 1078530041,
+            "r3": 0
+          },
+          "stack": {}
+        }
+      },
+      {
+        "symbol": "_ZN7StarMap4initEbP7Missionbi",
+        "kind": "registers",
+        "key": "r2",
+        "primary": {
+          "callee": "_ZN10AEGeometry11setRotationEfff",
+          "address": "0xc7404",
+          "registers": {
+            "r1": 0,
+            "r2": 1078530011,
+            "r3": 0
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN10AEGeometry11setRotationEfff",
+          "address": "0x4d1a",
+          "registers": {
+            "r1": 0,
+            "r2": 1078530041,
+            "r3": 0
+          },
+          "stack": {}
+        }
+      },
+      {
+        "symbol": "_ZN7StarMap14initStarSystemEv",
+        "kind": "registers",
+        "key": "r1",
+        "primary": {
+          "callee": "_ZN10AEGeometry11setRotationEfff",
+          "address": "0xc7aa4",
+          "registers": {
+            "r1": 3200847835,
+            "r2": 1053364187,
+            "r3": 3184070619
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN10AEGeometry11setRotationEfff",
+          "address": "0x2e9a",
+          "registers": {
+            "r1": 3200847865,
+            "r2": 1053364217,
+            "r3": 3184070649
+          },
+          "stack": {}
+        }
+      },
+      {
+        "symbol": "_ZN7StarMap14initStarSystemEv",
+        "kind": "registers",
+        "key": "r2",
+        "primary": {
+          "callee": "_ZN10AEGeometry11setRotationEfff",
+          "address": "0xc7aa4",
+          "registers": {
+            "r1": 3200847835,
+            "r2": 1053364187,
+            "r3": 3184070619
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN10AEGeometry11setRotationEfff",
+          "address": "0x2e9a",
+          "registers": {
+            "r1": 3200847865,
+            "r2": 1053364217,
+            "r3": 3184070649
+          },
+          "stack": {}
+        }
+      },
+      {
+        "symbol": "_ZN7StarMap14initStarSystemEv",
+        "kind": "registers",
+        "key": "r3",
+        "primary": {
+          "callee": "_ZN10AEGeometry11setRotationEfff",
+          "address": "0xc7aa4",
+          "registers": {
+            "r1": 3200847835,
+            "r2": 1053364187,
+            "r3": 3184070619
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN10AEGeometry11setRotationEfff",
+          "address": "0x2e9a",
+          "registers": {
+            "r1": 3200847865,
+            "r2": 1053364217,
+            "r3": 3184070649
+          },
+          "stack": {}
+        }
+      },
+      {
+        "symbol": "_ZN7StarMapC1EbP7Missionbi",
+        "kind": "registers",
+        "key": "r2",
+        "primary": {
+          "callee": "_ZN10AEGeometry11setRotationEfff",
+          "address": "0xc6b14",
+          "registers": {
+            "r1": 0,
+            "r2": 1078530011,
+            "r3": 0
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN10AEGeometry11setRotationEfff",
+          "address": "0x447c",
+          "registers": {
+            "r1": 0,
+            "r2": 1078530041,
+            "r3": 0
+          },
+          "stack": {}
+        }
+      }
+    ],
+    "limits": "Conservative straight-line values; no general arithmetic, stack offsets above8, conditional flows, float computations or indirect-callee resolution. ELF executable sections supply PC literal bits. Repeated callee ordering can misalign paths; raw review required. Unresolved pointer/address literals may differ without semantic error. Not exhaustive ABI/runtime proof."
+  },
+  "after_audit": {
+    "diagnostic_only": true,
+    "accepted_production": "a4a3633f",
+    "counts": {
+      "aligned_calls": 699,
+      "known_stack_pairs": 33,
+      "known_register_pairs": 222
+    },
+    "primary_body_headers": 20,
+    "current_body_headers": 20,
+    "differences": [
+      {
+        "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+        "kind": "registers",
+        "key": "r2",
+        "primary": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0xc8b48",
+          "registers": {
+            "r1": 255,
+            "r2": 128,
+            "r3": 0
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0x1552",
+          "registers": {
+            "r1": 255,
+            "r2": 255,
+            "r3": 255
+          },
+          "stack": {}
+        }
+      },
+      {
+        "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+        "kind": "registers",
+        "key": "r3",
+        "primary": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0xc8b48",
+          "registers": {
+            "r1": 255,
+            "r2": 128,
+            "r3": 0
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0x1552",
+          "registers": {
+            "r1": 255,
+            "r2": 255,
+            "r3": 255
+          },
+          "stack": {}
+        }
+      }
+    ],
+    "limits": "Conservative straight-line values; no general arithmetic, stack offsets above8, conditional flows, float computations or indirect-callee resolution. ELF executable sections supply PC literal bits. Repeated callee ordering can misalign paths; raw review required. Unresolved pointer/address literals may differ without semantic error. Not exhaustive ABI/runtime proof."
+  },
+  "resolved_float_argument_mismatches": 8,
+  "remaining_two_audit_differences": "Repeated SetColor callee alignment false positives; matching orange and white branches verified in raw ASM (89 audit).",
+  "rotation_r3_proof": [
+    {
+      "site": "update r3",
+      "load": "0xca626",
+      "literal": "0xca7bc",
+      "bits": "0xbdc90fdb",
+      "float": -0.09817477315664291
+    },
+    {
+      "site": "move r3",
+      "load": "0xcac62",
+      "literal": "0xcae7c",
+      "bits": "0xbdc90fdb",
+      "float": -0.09817477315664291
+    }
+  ],
+  "focused": {
+    "exit": 0,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "session": 91536,
+    "entire_report_identical_to_previous": true
+  },
+  "native": {
+    "first_exit": 1,
+    "first_failure": "No space left on device while ar copied libgof2.a; StarMap compiled",
+    "recovery": "NTFS-compress own _work without content changes, freeing about200MB; rerun link",
+    "retry_exit": 0,
+    "retry_log": "_work/native-ninetieth-retry.log",
+    "result": "libgof2.a built"
+  },
+  "full": {
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "count": 4619,
+    "fuzzy_perfect": 2204,
+    "byte_exact": 960,
+    "linked_exact": 2084,
+    "skipped": 0,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "full_session": 6891,
+  "full_pid_observed_live": 31632,
+  "full_terminal_exit": 0,
+  "all22_focused_full_rows_agree": true,
+  "source_and_arm_object_frozen_during_full": true,
+  "object_sha256": "7d9424ca64863cded41ccad7c4560a4c0fce34bf48c53135cd169ef303e33617",
+  "full_report_sha256": "4b6070d6d0bb3f16b4c587147717dcf887f1ad331214ec0d49cfd9d12294ccd8",
+  "means": {
+    "source_match": {
+      "unweighted": 99.28999999999999,
+      "weighted": 98.62095479509928
+    },
+    "match": {
+      "unweighted": 87.78,
+      "weighted": 82.54657090550626
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "baseline_gate": {
+    "body_count": 20,
+    "original_instructions": 7101,
+    "aliases": {
+      "_ZN7StarMapC2EbP7Missionbi": "_ZN7StarMapC1EbP7Missionbi",
+      "_ZN7StarMapD2Ev": "_ZN7StarMapD1Ev"
+    },
+    "baseline": {
+      "source_match": {
+        "unweighted": 83.81,
+        "weighted": 73.61763131953246
+      },
+      "match": {
+        "unweighted": 48.29,
+        "weighted": 28.050161949021266
+      },
+      "linked_exact": 2,
+      "byte_exact": 2
+    },
+    "final": {
+      "source_match": {
+        "unweighted": 99.28999999999999,
+        "weighted": 98.62095479509928
+      },
+      "match": {
+        "unweighted": 87.78,
+        "weighted": 82.54657090550626
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "exact_pairs": {
+      "linked_equal": {
+        "baseline": 2079,
+        "final": 2084,
+        "lost": [],
+        "gained": [
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap10initLightsEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap14missionChangedEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap24askForJumpIntoAlienWorldEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap6renderEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap8setStartEii"
+          ]
+        ]
+      },
+      "bytes_equal": {
+        "baseline": 959,
+        "final": 960,
+        "lost": [],
+        "gained": [
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap14missionChangedEv"
+          ]
+        ]
+      }
+    },
+    "target_met": false
+  },
+  "previous_gate": {
+    "body_count": 20,
+    "original_instructions": 7101,
+    "aliases": {
+      "_ZN7StarMapC2EbP7Missionbi": "_ZN7StarMapC1EbP7Missionbi",
+      "_ZN7StarMapD2Ev": "_ZN7StarMapD1Ev"
+    },
+    "baseline": {
+      "source_match": {
+        "unweighted": 99.28999999999999,
+        "weighted": 98.62095479509928
+      },
+      "match": {
+        "unweighted": 87.78,
+        "weighted": 82.54657090550626
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "final": {
+      "source_match": {
+        "unweighted": 99.28999999999999,
+        "weighted": 98.62095479509928
+      },
+      "match": {
+        "unweighted": 87.78,
+        "weighted": 82.54657090550626
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "exact_pairs": {
+      "linked_equal": {
+        "baseline": 2084,
+        "final": 2084,
+        "lost": [],
+        "gained": []
+      },
+      "bytes_equal": {
+        "baseline": 960,
+        "final": 960,
+        "lost": [],
+        "gained": []
+      }
+    },
+    "target_met": false
+  },
+  "gate_exits": {
+    "baseline": 0,
+    "previous": 0,
+    "default99": 1
+  },
+  "native_executable_runtime": "untested; float parameters restored, no ABI/runtime equivalence claim"
+}
