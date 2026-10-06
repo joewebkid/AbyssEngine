@@ -5365,3 +5365,46 @@ remain unmet; goal active. No push, PR or merge.
 Evidence: `_work/create_call_state_identities.json`, seven
 `_work/createcallstate-*.json` focused reports and source snapshots, current
 normalized instruction inventory, rechecked normalcenter validation audit.
+
+
+## Continuation: Enhanced addressed axis/count state
+
+Eight focused Enhanced trials start from dc1dc973. They group actual used
+unsigned-char axis and unsigned-short count into one trivial local record,
+in both member orders, for position, scale, rotation or all three sections.
+Each count read still writes exactly two bytes to the existing logical count;
+axis initialization/increment retain byte type and closed 0/1/2 domain.
+Count is used only after successful input, and frame/key reads, timing update,
+channel selection, negation, insertion and cleanup preserve existing order.
+No record zero initialization, unused member, explicit padding/alignment,
+helper, header or ABI change. Member grouping is a source-shape hypothesis.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| axis_count_0 | 97.2 / 51.9 | 647 | 100.0 | no |
+| axis_count_1 | 97.2 / 40.7 | 647 | 100.0 | no |
+| axis_count_2 | 97.3 / 21.7 | 647 | 100.0 | no |
+| axis_count_all | 94.6 / 43.9 | 658 | 100.0 | no |
+| count_axis_0 | 97.3 / 55.8 | 644 | 100.0 | no |
+| count_axis_1 | 97.3 / 43.6 | 644 | 100.0 | no |
+| count_axis_2 | 97.5 / 23.3 | 645 | 100.0 | no |
+| count_axis_all | 95.0 / 39.8 | 650 | 100.0 | no |
+
+All eight complete Mesh objects differ from accepted and each other, with
+source regression and increased instruction counts. None retained. Passing
+an addressed subobject of this record changes the compiler's alias context;
+this is a plausible explanation of extra local loads, not proof of recovered
+original layout or a general optimizer ceiling. Production sources/fixtures
+match bf0243e8; outside-body/signature checks pass.
+
+Read-only recheck binds existing full evidence to restored source: 204 objects,
+202 unaffected objects byte-identical to baseline, actual linked 2079/byte 959
+exact pair sets equal baseline without lost/gained pairs, unchanged canonical
+arguments and fixed-three matcher rows recomputed directly. No new native/full
+corpus run claimed for rejected forms. Accepted means remain **98.37% unweighted
+/98.36% original-instruction-weighted**; both >=99.0 requirements unmet; goal
+active. No push, PR or merge.
+
+Evidence: `_work/enh_axis_count_state_identities.json`, eight
+`_work/enhaxiscountstate-*.json` focused reports/source snapshots, and rechecked
+`_work/normalcenter_validation_audit.json`.
