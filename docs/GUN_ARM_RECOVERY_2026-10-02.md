@@ -2,14 +2,14 @@
 
 ## Status: partial; the requested target is not achieved
 
-Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.7038% unweighted / 98.5439% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
+Fixed Android ARMv7 corpus: 26 unique original bodies, 2 constructor/destructor aliases, 2393 original instructions. Source-shape is **99.7115% unweighted / 98.5976% instruction-weighted**. Both must reach 99.0%; the weighted requirement remains unmet. This is not a completion certificate or proof of native runtime correctness.
 
 | Metric | Clean base | This checkpoint |
 |---|---:|---:|
-| Source-shape, unweighted | 73.5923% | 99.7038% |
-| Source-shape, original-instruction-weighted | 26.9159% | 98.5439% |
-| Strict instruction shape, unweighted | 66.8038% | 94.3269% |
-| Strict instruction shape, weighted | 15.4981% | 73.6685% |
+| Source-shape, unweighted | 73.5923% | 99.7115% |
+| Source-shape, original-instruction-weighted | 26.9159% | 98.5976% |
+| Strict instruction shape, unweighted | 66.8038% | 94.4769% |
+| Strict instruction shape, weighted | 15.4981% | 74.7165% |
 | Linked-exact unique bodies | 14 | 19 |
 | Byte-exact unique bodies | 13 | 13 |
 
@@ -120,6 +120,8 @@ External-call contract audit (2026-10-06): original binary ranges and canonical 
 Indirect-call contract audit (2026-10-06): manually traced PC-relative words resolve 22 original register calls through exact ELF dynamic GOT relocations: six AERandom::nextInt(int), nine Vector assignments, four Level::getPlayer and three AEGeometry::getDirection calls. Every destination symbol is present in the canonical object. The remaining original calls use KIPlayer vptr+0x40 (outerCollide Vector) and vptr+0x2c (initPush); the canonical ARM slot loads match. GOT symbol resolution and slot offsets do not replace linked-vtable/runtime tests. Initial ignite 0x152b94..0x152bb4 reads type once and selects EMP then NUKE; three controls checked this form. Cached type yields 350 instructions instead of 351 with unchanged 98.9 source-shape; native ordered branches yield 98.7. None were accepted. Canonical input hashes remain unchanged; evidence: validation/gun_indirect_call_contract_2026-10-06.json.
 
 Collision layout hint (2026-10-06): native 0x15318c..0x1531b0 keeps the asteroid path as fall-through, with the false branch going to 0x153260. A single __builtin_expect on the existing isAsteroid predicate guides canonical compiler layout; it evaluates the same predicate once and changes no gameplay condition. This annotation is inferred from layout, not recovered original syntax or measured branch frequency. Of fourteen individual hint controls and seven combinations, this alone raises collision source-shape 96.9 -> 97.0; combinations give no further gain. Collision strict score falls 51.3 -> 44.9, while size changes 632 -> 637 versus original 647. The fixed primary objective rises to 99.7038% unweighted / 98.5439% weighted; it remains below the required weighted 99%. All other 27 Gun diagnostic rows remain unchanged. Fresh native static-library build, all 204 ARM TUs, selected host/mount smokes and fresh full strict corpus pass with zero exact-pair losses against both baselines and the prior checkpoint. These are not game-runtime tests. Evidence: validation/gun_collision_layout_hint_2026-10-06.json.
+
+ShootAt ammo layout hint (2026-10-06): ten individual hint controls and sixteen follow-ups retain the fixed flags/scoring. The single expected-true hint around the existing ammo eligibility predicate gives source-shape 98.8 (from 98.6) and strict 71.7 (from 67.8), with unchanged 637 instructions versus original 643. It preserves every short-circuit read/call and keepAmmo/status effect from native 0x15289a..0x1528c6; the hint is an inferred code-generation choice, not recovered syntax or measured runtime frequency. Other hints/combinations and six additional collision guard controls provide no further source gain and were rejected. Fixed source means are now 99.7115% unweighted / 98.5976% weighted; the weighted 99% requirement is still unmet. All other 27 Gun diagnostic rows are unchanged. Fresh native static-library build, all 204 ARM TUs, selected constructor/mount smokes and full strict corpus pass; no exact-pair losses against either baseline or the preceding checkpoint. No game-runtime test is claimed. Evidence: validation/gun_shoot_ammo_layout_hint_2026-10-06.json.
 
 ## Checks and limits
 

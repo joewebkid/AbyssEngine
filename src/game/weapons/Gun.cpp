@@ -577,7 +577,9 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         directionArray[i] *= pitchRate;
         lifetimes[i] = weaponType == ITEM_SORT_SENTRY_GUN ? 0 : initialLifetime;
         unsigned keepAmmo = 1;
-        if (!friendGun && equipment && ammoCount >= 1 && equipment->getType() == 1) {
+        // Guide layout of the native ammo check (0x15289a..0x1528c6),
+        // preserving short-circuit reads/calls; runtime frequency is unmeasured.
+        if (__builtin_expect(!friendGun && equipment && ammoCount >= 1 && equipment->getType() == 1, 1)) {
             keepAmmo = false;
             if (itemIndex == 179)
                 *reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::status) + 0x144) = 0;
