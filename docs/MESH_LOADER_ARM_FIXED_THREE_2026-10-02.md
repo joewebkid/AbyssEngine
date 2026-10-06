@@ -7073,3 +7073,56 @@ No general compiler ceiling, header/ABI, flag/matcher, push, PR or merge change.
 
 Evidence: `_work/read_unsigned_raw_pairs_identities.json`, fourteen focused
 reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: fresh indexed owner with tangent temporary and product forms
+
+Thirteen focused Read measurements start from 9c7c0cd0: twelve interactions
+and one reload-only control. Six final-loop forms inline Dot/product/Normalize
+argument/all expressions, qualify temporaries const or use a trivial Vector
+tangent-input copy. Six triangle-product forms use compound/named products,
+Vector members, a named-products Vector or a Y/X/Z product record. These
+families were previously measured on accepted paired arrays without the fresh
+indexed owner. Every form now adds m=*slot after successful indexCount read,
+before allocation, matching the inspected original load timing at 0x6c664.
+
+Dot/multiply/subtract/Normalize remain ordered, tangent stores precede Cross,
+and output field loads remain after their corresponding math calls. Triangle
+numerators/products retain Y/X/Z and numerator-times-reciprocal operands;
+accumulation remains i0/i1/i2. Used temporaries replace used values, with no
+extra operations, zero fill, dead member, padding, helper or flags change.
+These source representations are hypotheses. Fresh indexed load timing has
+ARM support, but fixtures do not establish equivalence for hypothetical slot-
+mutating file callbacks; no broader native equivalence claim is made.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals reload-only |
+|---|---|---:|---:|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| final_inline_dot | 98.5 / 57.8 | 874 | 100.0 | yes |
+| final_inline_product | 97.3 / 59.1 | 870 | 98.2 | no |
+| final_inline_normalize_argument | 98.5 / 57.8 | 874 | 100.0 | no |
+| final_inline_all | 98.5 / 57.8 | 874 | 100.0 | no |
+| final_const_temporaries | 98.5 / 57.8 | 874 | 100.0 | yes |
+| final_vector_tangent_input | 98.4 / 58.1 | 875 | 100.0 | no |
+| product_compound_before_stores | 98.5 / 57.8 | 874 | 100.0 | yes |
+| product_named_products_before_stores | 98.5 / 57.8 | 874 | 100.0 | yes |
+| product_compound_at_stores | 98.5 / 57.8 | 874 | 100.0 | yes |
+| product_vector_product_members | 98.5 / 57.8 | 874 | 100.0 | yes |
+| product_named_products_vector | 98.5 / 57.9 | 874 | 100.0 | no |
+| product_products_yxz_record | 98.5 / 57.9 | 874 | 100.0 | no |
+
+No interaction improves source above 98.5. Six interactions and the control
+equal the complete reload-only object byte-for-byte. The two aggregate product
+forms equal each other and improve strict alone to 57.9. Other forms tie or
+regress source; none retained. Production source restored. Source and fixtures
+match ecc30f25; outside-body/signature checks pass. Read-only binding rechecks
+existing typedpair full evidence: 204 objects/202 unaffected objects, actual
+linked 2079/byte 959 exact pair sets equal baseline without lost/gained pairs,
+unchanged canonical arguments and fixed-three rows directly recomputed with
+the unchanged matcher. No new native/full-corpus run claimed for rejected forms.
+Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet;
+goal active. No general compiler ceiling, header/ABI, flag/matcher, push, PR
+or merge change.
+
+Evidence: `_work/read_index_reload_tangent_lifetime_identities.json`, thirteen
+focused reports/source snapshots and rechecked typedpair validation audit.
