@@ -3915,3 +3915,61 @@ discrepancies; do not repeat rejected warning receivers,3217 grouping,
 passenger bounds or transition guard forms merely because tokens remain.
 Evidence: docs/validation/starmap_2026-10-06_remaining_inventory.json; raw
 _work/all-body-inventories-ninetyninth.json. Goal remains active.
+
+## Hundredth follow-up: proven data classification sensitivity (read-only)
+
+No verifier or production change. Actual ELF matrix tails c7468/c7d48 are
+16bytes each,0000803f000000000000803f0000803f, floats[1,0,1,1]. Primary
+c6db2 ADDW -> c6dbc VLD1.64 and c76c8 ADDW -> c76d0 VLD1.64 prove these
+are constant data. Stripped target entries decode each tail as5 MOVS/3 SUBS;
+these match the entire such surplus in both init and Station inventories.
+Do not add eight corresponding C++ operations to chase these data tokens.
+
+Targeted in-memory diagnostic reclassifies only these two16-byte tails and
+End's40-byte literal island cb360..cb388, then uses unchanged normalizer and
+metric functions. Every End word has a real incoming PC load outside the
+island; discard cb204's apparent reference because cb204 is itself data.
+Prior31 already proved false origins cb364/cb374/cb37c can erase real calls.
+This diagnostic restores those call tokens by excluding data as origins.
+It is neither a general normalizer repair nor an official score change.
+
+Diagnostic End97.8->97.7 (tokens1037->1041), init98.3->98.5 (750->745),
+Station97.3->97.5 (710->706). Using fixed weights7101 gives diagnostic
+99.335/98.73476975073933, still below weighted99. Thus even this data-only
+classification adjustment is insufficient. Official20/7101 remains
+99.32/98.7082523588227; official reports/gates untouched. Not a compiler
+ceiling, permission for verifier edits, padding, or completion evidence.
+Evidence: docs/validation/starmap_2026-10-06_proven_data_sensitivity.json;
+raw _work/proven-data-sensitivity-hundredth.json and
+end-real-pool-references-hundredth.json.
+
+## Hundred-and-first follow-up: modular yaw arithmetic trials (removed)
+
+Inspected End confirmation/no-confirmation paths and update's integer
+yaw-distance sequence. End alien-jump guards and cached jump-map byte already
+agree (caff0..cb01c/current204c..2078); no new End edit. Native update
+ca1f6 RSB,ca210 SUBS,ca214/ca216 MI conditional NEG operate on32-bit values.
+TrialA uses uint32 subtraction/negation plus int32 conversion for yawDistance;
+trialB also applies this to target=0x8000-stationAngle and both yawStep
+subtractions. No extra branch/call/barrier, forced register, padding, flags,
+shared header or verifier edit. Distinct from prior37's abs(yaw-target).
+
+Both exit0(A session78049,B79536),204 compiled/0 failed,22 comparisons/0
+skips. Entire focused JSON and whole ARM object remain equal to accepted96.
+Removed both forms: ordinary yaw[-65535,65535]/stationAngle[0,65535] implies
+target[-32767,32768] and difference[-98303,98302], so old signed arithmetic
+already fits in that range. Unsigned-to-int32 conversion is implementation-
+defined C++14, supported by intended two-complement targets; neither trial
+proves float-to-int, pitch/dt overflow or whole-function runtime safety.
+No normal-range gameplay fix or recovered original C++ spelling is claimed.
+
+Fresh source restore exit0(session46965),204/0,22/0; entire focused report and
+whole object equal accepted96. Source hashcf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3,
+object39cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a.
+Accepted96 native/full remains canonical; no redundant rerun or new runtime
+claim. Source means99.32/98.7082523588227 unchanged; weighted99 unmet.
+Evidence: docs/validation/starmap_2026-10-06_yaw_wrap_trials.json; raw
+_work/before-yaw-wrap-hundredfirst.cpp,yaw-distance-wrap-hundredfirst.cpp,
+yaw-full-wrap-hundredfirst.cpp,yaw-wrap-hundredfirst.json/log,
+yaw-full-wrap-hundredfirst.json/log,hundredfirst-restored-focused.json/log.
+No compiler ceiling proved. Goal remains active.

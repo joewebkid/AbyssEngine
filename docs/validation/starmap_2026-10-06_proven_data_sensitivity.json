@@ -1,0 +1,215 @@
+{
+  "diagnostic_only": true,
+  "production_or_verifier_modified": false,
+  "manual_reclassification_not_official_metric": true,
+  "scope": "Only proven 16-byte NEON matrix tails and the 40-byte End literal island. This is a targeted sensitivity audit, not a general normalizer fix, full corpus validation or alternate completion gate.",
+  "results": {
+    "_ZN7StarMap10OnTouchEndEii": {
+      "classified_data": [
+        {
+          "primary_start": "0xcb360",
+          "target_start": "0x4d8c",
+          "size": 40,
+          "raw_decoded_mnemonics": [
+            "ldr",
+            "movs",
+            "ldr",
+            "movs",
+            "ldr",
+            "movs",
+            "ldr",
+            "movs",
+            "ldr",
+            "movs",
+            "ldr",
+            "movs",
+            "ldr",
+            "movs",
+            "ldr",
+            "movs",
+            "ldr",
+            "movs",
+            "ldr",
+            "movs"
+          ]
+        }
+      ],
+      "official_metrics": {
+        "source_match": 97.8,
+        "instruction_inventory_match": 97.0,
+        "opcode_inventory_match": 97.5,
+        "control_flow_match": 98.7,
+        "ordered_control_flow_match": 87.9,
+        "control_inventory_match": 98.7,
+        "call_count_match": 99.3,
+        "size_match": 96.5
+      },
+      "diagnostic_metrics": {
+        "source_match": 97.7,
+        "instruction_inventory_match": 97.4,
+        "opcode_inventory_match": 97.6,
+        "control_flow_match": 98.7,
+        "ordered_control_flow_match": 88.8,
+        "control_inventory_match": 98.7,
+        "call_count_match": 98.5,
+        "size_match": 96.1
+      },
+      "official_target_tokens": 1037,
+      "diagnostic_target_tokens": 1041
+    },
+    "_ZN7StarMap4initEbP7Missionbi": {
+      "classified_data": [
+        {
+          "primary_start": "0xc7468",
+          "target_start": "0xeac",
+          "size": 16,
+          "raw_decoded_mnemonics": [
+            "movs",
+            "subs",
+            "movs",
+            "movs",
+            "movs",
+            "subs",
+            "movs",
+            "subs"
+          ]
+        }
+      ],
+      "official_metrics": {
+        "source_match": 98.3,
+        "instruction_inventory_match": 98.0,
+        "opcode_inventory_match": 98.0,
+        "control_flow_match": 98.8,
+        "ordered_control_flow_match": 80.1,
+        "control_inventory_match": 98.8,
+        "call_count_match": 99.0,
+        "size_match": 97.6
+      },
+      "diagnostic_metrics": {
+        "source_match": 98.5,
+        "instruction_inventory_match": 98.3,
+        "opcode_inventory_match": 98.3,
+        "control_flow_match": 98.8,
+        "ordered_control_flow_match": 80.1,
+        "control_inventory_match": 98.8,
+        "call_count_match": 99.0,
+        "size_match": 98.2
+      },
+      "official_target_tokens": 750,
+      "diagnostic_target_tokens": 745
+    },
+    "_ZN7StarMap14initStarSystemEv": {
+      "classified_data": [
+        {
+          "primary_start": "0xc7d48",
+          "target_start": "0x1788",
+          "size": 16,
+          "raw_decoded_mnemonics": [
+            "movs",
+            "subs",
+            "movs",
+            "movs",
+            "movs",
+            "subs",
+            "movs",
+            "subs"
+          ]
+        }
+      ],
+      "official_metrics": {
+        "source_match": 97.3,
+        "instruction_inventory_match": 96.7,
+        "opcode_inventory_match": 97.4,
+        "control_flow_match": 96.9,
+        "ordered_control_flow_match": 94.8,
+        "control_inventory_match": 96.9,
+        "call_count_match": 99.0,
+        "size_match": 96.3
+      },
+      "diagnostic_metrics": {
+        "source_match": 97.5,
+        "instruction_inventory_match": 97.1,
+        "opcode_inventory_match": 97.8,
+        "control_flow_match": 96.9,
+        "ordered_control_flow_match": 94.8,
+        "control_inventory_match": 96.9,
+        "call_count_match": 99.0,
+        "size_match": 96.9
+      },
+      "official_target_tokens": 710,
+      "diagnostic_target_tokens": 706
+    }
+  },
+  "fixed_weights_7101_diagnostic_means": {
+    "unweighted": 99.33500000000001,
+    "weighted": 98.73476975073933
+  },
+  "official_source_means": {
+    "unweighted": 99.32,
+    "weighted": 98.7082523588227
+  },
+  "official_target99_met": false,
+  "primary_evidence": {
+    "matrix_tails": {
+      "addresses": [
+        "0xc7468",
+        "0xc7d48"
+      ],
+      "size_each": 16,
+      "bytes_hex": "0000803f000000000000803f0000803f",
+      "float32_values": [
+        1,
+        0,
+        1,
+        1
+      ],
+      "real_address_and_vector_reads": [
+        "c6db2 ADDW r1,pc,1716 -> c6dbc VLD1.64 {d18-d19},[r1]",
+        "c76c8 ADDW r0,pc,1660 -> c76d0 VLD1.64 {d10-d11},[r0]"
+      ],
+      "raw_surplus_per_body": "5 MOVS + 3 SUBS represent these data, not eight missing C++ instructions."
+    },
+    "end_literal_island": {
+      "start": "0xcb360",
+      "end_exclusive": "0xcb388",
+      "size": 40,
+      "incoming_real_pc_references": {
+        "0xcb360": [
+          "0xcb27a"
+        ],
+        "0xcb364": [
+          "0xcb2b4"
+        ],
+        "0xcb368": [
+          "0xcb2d0"
+        ],
+        "0xcb36c": [
+          "0xcb2f8"
+        ],
+        "0xcb370": [
+          "0xcb2fa"
+        ],
+        "0xcb374": [
+          "0xcb2fe"
+        ],
+        "0xcb378": [
+          "0xcb300"
+        ],
+        "0xcb37c": [
+          "0xcb308"
+        ],
+        "0xcb380": [
+          "0xcb334"
+        ],
+        "0xcb384": [
+          "0xcb33e"
+        ]
+      },
+      "excluded_spurious_reference": "cb204 is itself data; its apparent reference to cb370 is not real code.",
+      "relation_to_prior31": "Known false origins cb364/cb374/cb37c were already traced in31. This audit reclassifies the full40-byte island before running unchanged normalization in memory; three real calls are restored in the diagnostic stream."
+    }
+  },
+  "accepted_source_sha256": "cf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3",
+  "accepted_object_sha256": "39cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a",
+  "conclusion": "Data classification alone in this targeted diagnostic is insufficient for99. It is not authorization to modify verifier or insert pseudo-instruction padding. Official weights, reports, gates and source remain unchanged."
+}
