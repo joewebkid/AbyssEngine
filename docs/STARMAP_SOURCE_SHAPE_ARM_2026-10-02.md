@@ -4484,3 +4484,30 @@ canonical reports updated after validation; exact scores and hashes in the
 compact evidence snapshot. Weighted99 remains unmet. Native executable/runtime
 and whole ABI remain unverified.
 Evidence: docs/validation/starmap_2026-10-06_easing_value_captures.json.
+
+## Hundred-and-twentieth follow-up: completion/Y OR forms (removed)
+
+Revalidated119 (2b04e4f2) current source/object/report. Previous turn is progress:
+easing captures improved source shape and passed full/native/preservation.
+
+Trial A replaces abs(pitchDistance) in the short-circuit completion test with
+an explicit sign conversion and nested pitch-bound test AFTER the yaw bound,
+following the primary decompilation's topology. ARM204/0. Entire focused JSON
+and whole StarMap object equal119; neutral and removed.
+
+Trial B initializes path-centering sy0, computes the division only inside
+currentY>targetY OR currentY<targetY. This preserves zero for equal/unordered
+comparisons but does not prove floating-status/runtime equivalence. Unlike91,
+it has a shared conditional division rather than precomputed step/two assigns.
+ARM204/0; only update regresses: source98.8->98.5, strict83.3->80.6, raw967->963,
+inventory97.1->96.9, opcode98.5->98.3, control98.7->98.0, ordered95.4->91.4,
+size99.7->99.3. Other21 rows unchanged; rejected.
+
+Fresh restoration ARM204/0 reproduces the entire canonical report and ALL204
+object hashes; source bytes equal the119 backup. Native STATIC rebuild exit0.
+Accepted119 full4619/0,2084 linked/960 byte and preservation evidence remain
+valid for this identical204-object set. No new full run or canonical change.
+Source means99.38/98.88256583579778, strict88.04/83.12933389663428, fixed20/7101.
+Weighted99 unmet; native runtime/whole ABI unverified. Do not repeat these
+measured forms as new recovery candidates.
+Evidence: docs/validation/starmap_2026-10-06_update_completion_y_or_trials.json.
