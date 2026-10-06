@@ -4133,3 +4133,48 @@ claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: normal upper predicates and destination load lifetimes
+
+Six Read trials start from clean e569fc13. Three capture upper-bound float
+comparisons in bool locals before all lower selections, after all lower
+selections, or per component, and select 1.0f or the existing cast lower result.
+They retain all original float quotients, double lower comparisons/selections,
+float upper predicates and numeric output values, including unordered predicate
+fallthrough. No scalar lower-double operation is replaced with a NEON clamp
+or helper. This is predicate scheduling, not recovered original C++.
+
+Three additional forms move the existing nonzero-normal destination field
+load before the quotients, before lower selection, or after lower selection.
+All remain after sqrtf and inside the existing len!=0 branch; no owner/field
+load is moved across sqrtf or another call. The intervening divisions,
+comparisons and local selections do not mutate the mesh. The zero-normal
+branch and all output stores keep their existing order and position. Original
+pointer timing remains authoritative; these are same-value source lifetime
+hypotheses rather than exact recovery. Helpers, ABI, flags, matcher, denominator,
+file operations and other bodies stay unchanged.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| upper predicate storage: upper_predicates_before_lower | 98.0 / 55.9 | 867 | 100.0 | yes |
+| upper predicate storage: upper_predicates_after_lower | 98.0 / 55.9 | 867 | 100.0 | yes |
+| upper predicate storage: component_upper_predicates | 98.0 / 55.9 | 867 | 100.0 | yes |
+| normal destination lifetime: before_quotients | 98.0 / 55.9 | 867 | 100.0 | no |
+| normal destination lifetime: before_lower | 98.0 / 55.3 | 869 | 100.0 | no |
+| normal destination lifetime: after_lower | 98.0 / 55.3 | 869 | 100.0 | no |
+
+All three upper-predicate forms yield accepted byte-identical Core. Moving
+destination before quotients retains scores but differs from accepted; before
+and after lower selections yield the same whole object as one another, differ
+from accepted and the quotient form, and regress strict. None improves required
+source. Actual whole-object bytes establish identities, not score equality.
+All production edits restored; no trial retained.
+
+Evidence: `_work/readclampupperpred-*.json`, `_work/readnormaldestlife-*.json`,
+source snapshots and both identity ledgers. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
