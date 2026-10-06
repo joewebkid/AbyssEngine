@@ -6610,3 +6610,61 @@ flag/matcher, push, PR or merge change.
 Evidence: `_work/read_typed_pair_bounds_records_identities.json`,
 `_work/read_typed_pair_extrema_local_identities.json`, twenty focused reports
 and source snapshots, rechecked typedpair validation audit.
+
+
+## Continuation: cyclic position component selection
+
+Twelve focused Read trials start from 9199ae3f. They replace quotient-derived
+axis selection with a used cyclic axis local: start at zero, select the same
+component for this iteration, then either select 0 after 2 or increment and
+reset at 3. Both unsigned int and unsigned char are tested in short positions,
+int positions and both streams. By induction axis == i modulo 3 at every loop
+body; even the byte increment reaches only 3 before resetting, so it does not
+overflow. Zero vertices execute no updates. The original component counter,
+input conversion, position store, minimum then maximum comparisons/stores,
+allocation/read/failure/cleanup order are preserved. All new local operations
+maintain the used component selector; no dead effect or metric padding.
+
+Primary ARM supports the retained quotient/remainder computation, not a cyclic
+counter. These trials are compiler/source-shape hypotheses, not recovered
+source declarations. Every variant regresses source, so none retained.
+
+| Trial | Read source / strict | Instructions | Call count metric | Static calls |
+|---|---|---:|---:|---:|
+| unsigned_int_conditional_short | 97.3 / 54.4 | 878 | 100.0 | 61 |
+| unsigned_int_conditional_integer | 97.5 / 55.9 | 879 | 98.2 | 62 |
+| unsigned_int_conditional_both | 95.8 / 53.3 | 867 | 94.5 | 58 |
+| unsigned_int_increment_reset_short | 97.3 / 54.3 | 879 | 100.0 | 61 |
+| unsigned_int_increment_reset_integer | 97.4 / 55.9 | 881 | 98.2 | 62 |
+| unsigned_int_increment_reset_both | 95.8 / 53.3 | 868 | 94.5 | 58 |
+| unsigned_char_conditional_short | 97.3 / 54.4 | 878 | 100.0 | 61 |
+| unsigned_char_conditional_integer | 97.5 / 55.9 | 879 | 98.2 | 62 |
+| unsigned_char_conditional_both | 95.8 / 53.3 | 867 | 94.5 | 58 |
+| unsigned_char_increment_reset_short | 97.5 / 55.0 | 882 | 100.0 | 61 |
+| unsigned_char_increment_reset_integer | 97.4 / 49.9 | 879 | 100.0 | 61 |
+| unsigned_char_increment_reset_both | 96.2 / 51.7 | 872 | 96.4 | 59 |
+
+Relocation inspection distinguishes call identities from the unchanged
+matcher's count component: each changed stream removes one __aeabi_uidiv site.
+The five 61-call forms replace that one division site with one additional
+_ZdaPv site. Three integer-only forms have 62 calls: one fewer division and
+two more delete[] sites. Three both-stream forms have 58 calls: two fewer
+division sites and one fewer delete[] site. The remaining byte increment/reset
+integer form has 61 calls, and its both-stream form has 59 calls, removing
+both divisions without changing delete[] site count. Thus a 100.0 call-count
+component here does not mean the same callee inventory. Source inspection
+confirms no cleanup operation was added/removed; static-site splitting/merging
+is not an executed-cleanup count or runtime equivalence proof.
+
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_position_cyclic_axis_identities.json`,
+`_work/read_position_cyclic_axis_call_differences.json`, twelve focused reports
+and source snapshots, rechecked typedpair validation audit.
