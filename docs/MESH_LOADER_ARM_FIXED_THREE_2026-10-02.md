@@ -6442,3 +6442,61 @@ flag/matcher, push, PR or merge change.
 
 Evidence: `_work/enh_vector_key_record_identities.json`, corrected fourteen
 focused reports and source snapshots, rechecked typedpair validation audit.
+
+
+## Continuation: grouped time guards and current Transform delete expressions
+
+Eighteen focused Enhanced trials start from 4ffb2050. Twelve replace the same
+time update with named comparison results, empty false branches, or a single
+guarded do/while(false) block. Each form is tested for vector keys, axis keys,
+optional+V5 keys and all eight sites. Positive-value comparison remains first;
+the global comparison/load remains conditional on positivity. Both strict >
+comparisons and the conditional store remain unchanged, including NaN and
+signed-zero behavior. No unconditional same-value store or early global load
+is introduced. The helper definition outside the body is unchanged.
+
+Six cleanup trials replace explicit Transform destructor/global delete pairs
+with delete anim, independently for empty animation, failure and both. Each is
+tested with an explicit null guard and delete's own null check. Allocation is
+already a matching new Transform expression; Transform's destructor is
+nonvirtual and its declaration has no class-specific operator delete. This
+rechecks the old combined-delete family with current uchar axis loops and
+adds the separate cleanup-site forms. No cleanup calls are merged and no
+successful populated animation is deleted. These spellings are hypotheses,
+not recovered original C++.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| time: named_comparisons_vectors | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: named_comparisons_axes | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: named_comparisons_optional_v5 | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: named_comparisons_all | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: false_branches_vectors | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: false_branches_axes | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: false_branches_optional_v5 | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: false_branches_all | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: guarded_block_vectors | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: guarded_block_axes | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: guarded_block_optional_v5 | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: guarded_block_all | 98.3 / 66.9 | 641 | 100.0 | yes |
+| delete: guarded_empty | 98.3 / 66.9 | 641 | 100.0 | yes |
+| delete: guarded_fail | 98.3 / 66.9 | 641 | 100.0 | yes |
+| delete: guarded_both | 98.3 / 66.9 | 641 | 100.0 | yes |
+| delete: implicit_null_empty | 98.3 / 66.9 | 641 | 100.0 | yes |
+| delete: implicit_null_fail | 98.3 / 66.9 | 641 | 100.0 | yes |
+| delete: implicit_null_both | 98.3 / 66.9 | 641 | 100.0 | yes |
+
+Every complete Mesh object equals the accepted object byte-for-byte. None
+retained; these specific forms do not improve either requested gate.
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/enh_time_guard_groups_identities.json`,
+`_work/enh_current_delete_identities.json`, eighteen focused reports/source
+snapshots and rechecked typedpair validation audit.
