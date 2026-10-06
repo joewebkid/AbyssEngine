@@ -6668,3 +6668,65 @@ flag/matcher, push, PR or merge change.
 Evidence: `_work/read_position_cyclic_axis_identities.json`,
 `_work/read_position_cyclic_axis_call_differences.json`, twelve focused reports
 and source snapshots, rechecked typedpair validation audit.
+
+
+## Continuation: quotient-axis widths and position branches after paired raw arrays
+
+Seventeen focused Read trials start from e4e86ac3. Fifteen retain the original
+i - 3 * (i / 3) axis formula and change only its result local type to unsigned
+char, unsigned short, int, signed char or short, independently for short/int
+position streams and both. Result is always 0..2, representable by every tested
+type; division still uses unsigned component i. Component count is at most
+3*65535, with no unsigned overflow. No coordinate conversion, stores, extrema
+order, dynamic count loads or allocation/cleanup change. Six earlier width
+forms were measured before paired raw arrays; this checks current interaction
+and adds the other individual-stream/type combinations.
+
+Two branch forms revisit int/float-before-short placement on current paired
+raw arrays. One uses the direct inverted flags&4 condition; the other tests
+(int)compressedData >=0 with compressedData==flags<<29. The latter is a
+two's-complement ARM/UCRT representation hypothesis, not a new portable C++
+cast guarantee: shifted bit 2 becomes sign bit. Both select the same data
+branches on those targets. The integer and floating predicates, branch-local
+reads/allocations/stores/extrema/failure effects remain intact. No unused value,
+helper, padding, assembly, fixed register or flag change.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| width: unsigned_char_short | 98.5 / 57.0 | 874 | 100.0 | no |
+| width: unsigned_char_integer | 98.5 / 57.1 | 874 | 100.0 | no |
+| width: unsigned_char_both | 98.5 / 56.8 | 874 | 100.0 | no |
+| width: unsigned_short_short | 98.5 / 57.0 | 874 | 100.0 | no |
+| width: unsigned_short_integer | 98.5 / 57.1 | 874 | 100.0 | no |
+| width: unsigned_short_both | 98.5 / 56.8 | 874 | 100.0 | no |
+| width: int_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: int_integer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: int_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: signed_char_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: signed_char_integer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: signed_char_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: short_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: short_integer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: short_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+| branch: integer_float_before_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| branch: integer_float_before_short_signed | 97.9 / 57.8 | 873 | 98.2 | no |
+
+Nine signed-type width forms equal the entire accepted Core object. The six
+unsigned narrow forms tie source, regress strict, and equal each other for
+each matching stream selection (uchar versus ushort). Direct branch inversion
+equals accepted; the signed-condition form regresses source/call count despite
+slightly higher strict and original-sized instruction count. None retained.
+These spellings are source hypotheses, not recovered original declarations.
+
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_axis_width_identities.json`,
+`_work/read_typed_pair_position_branch_identities.json`, seventeen focused
+reports/source snapshots and rechecked typedpair validation audit.
