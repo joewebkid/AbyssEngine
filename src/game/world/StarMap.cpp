@@ -447,14 +447,16 @@ int StarMap::OnTouchEnd(int x, int y) {
                                     !Globals::status->getShip()->getFirstEquipmentOfSort(19)) {
                                     this->choiceWindow->set(*Globals::gameText->getText(3213));
                                     goto station_warning_delivered;
-                                } else if ((Globals::status->getCurrentCampaignMission() == 91 &&
+                                } else if (Globals::status->getCurrentCampaignMission() == 91 &&
                                     this->stations->data()[this->selectedStation]->getIndex() ==
                                         reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()))->getTargetStation() &&
-                                    Globals::status->getShip()->getMaxPassengers() <= 9) ||
-                                    (Globals::status->getCurrentCampaignMission() == 94 &&
+                                    Globals::status->getShip()->getMaxPassengers() <= 9) {
+                                    this->choiceWindow->set(*Globals::gameText->getText(3214));
+                                    goto station_warning_delivered;
+                                } else if (Globals::status->getCurrentCampaignMission() == 94 &&
                                     this->stations->data()[this->selectedStation]->getIndex() ==
                                         reinterpret_cast<Mission *>(intptr_t(Globals::status->getCampaignMission()))->getTargetStation() &&
-                                    !Globals::status->getShip()->getMaxPassengers())) {
+                                    !Globals::status->getShip()->getMaxPassengers()) {
                                     this->choiceWindow->set(*Globals::gameText->getText(3214));
                                     goto station_warning_delivered;
                                 } else if (Globals::status->getCurrentCampaignMission() == 105 &&

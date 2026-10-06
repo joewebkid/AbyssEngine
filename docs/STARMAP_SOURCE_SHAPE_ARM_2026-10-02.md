@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.37% unweighted / 98.85429% original-instruction
+implementation bodies measure **99.375% unweighted / 98.86889% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.94% / 82.96181%**, respectively. Source-shape is an inventory/control-flow
+**87.95% / 82.99102%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -4359,3 +4359,40 @@ Source SHA256ac000659c5ae6147d7dc447d23ad4958e7d6626e24fb003d443a1925f208067c;
 object0856e8255c8ddc4c590d88f2c08a08a452ce38db895419c0260ab251c983e7e4.
 No native runtime/whole ABI or source-spelling claim. Evidence:
 docs/validation/starmap_2026-10-06_warning_suppression_tail.json.
+
+## Hundred-and-sixteenth accepted passenger branch split
+
+Starting from47a245be, split the combined mission91/94 passenger warning OR
+into two adjacent else-if branches. Both retain the ordered mission/station/
+ship getters, deliver existing warning3214 and join the shared suppression
+tail. No additional runtime calls or repeated prefix checks. This source form
+is a hypothesis, not recovered original C++ spelling; unlike older21/87
+high-capacity continuation trials, it actually changes the emitted comparison.
+
+Fresh ARM disassembly confirms primary cb464 CMP r0,#9 / cb466 BLE.W and
+candidate2440 CMP r0,#9 /2442 BLE.W. Candidate mission94 compares to zero
+at247e and branches BEQ.W at2480; both warnings join2784. This establishes
+the comparison shape, not byte equality of the entire function. No padding,
+barriers, forced registers, shared files, flags or verifier changes.
+
+A secondary trial split equipment13/17 checks after one campaign/station
+prefix, retaining independent mission135 fallback. Its entire focused report
+and ARM object were identical to the passenger candidate; removed as neutral.
+Restoring the passenger-only candidate reproduced its report/object exactly.
+
+Only OnTouchEnd changes: source98.8->98.9, strict79.8->80.0, instruction
+inventory98.2->98.4, opcode98.7->98.8, control98.7->99.1, ordered control
+87.9->88.3. Size98.9 and call99.3 remain unchanged. Other21 focused rows,
+including aliases, are identical. Fixed20/7101 means99.375/98.86889170539361
+source and87.95/82.9910153499507 strict;7 linked/3 byte unique bodies.
+
+ARM204 compiled/0 failed; native STATIC exit0. Full4619 compared/0 skipped,
+linked2084/byte960, coverage4274/4524, missing250 (7 wrong type/243 absent),
+extras129. All22 focus/full rows agree. Baseline and previous preservation
+gates exit0 with zero exact-pair losses. Default99 gate exits1 solely because
+weighted98.86889 remains below99. Canonical reports updated after validation.
+
+Source SHA2560ba76574f515702be1871c8762d806136892580610cf216dab0329d70a54fe53;
+object3fa0a66974b3f8a5eda66c16e3ac1cf3e2063c37f029c4fe45c1855382a7a60f.
+Native executable/runtime and whole ABI correctness remain unverified.
+Evidence: docs/validation/starmap_2026-10-06_passenger_branch_split.json.
