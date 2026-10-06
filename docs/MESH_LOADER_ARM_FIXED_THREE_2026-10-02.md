@@ -7242,3 +7242,66 @@ ceiling, header/ABI, flag/matcher, push, PR or merge change.
 
 Evidence: `_work/read_index_reload_normal_guards_identities.json`, nineteen
 focused reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: position predicates/output storage with fresh indexed owner
+
+Nineteen focused Read measurements start from fe468346: nine source forms with
+accepted indexed owner, the same nine with fresh owner after indexCount read,
+and one reload control. Three short-position predicates test signed direct
+flags<<29, signed compressedData or a signed compressedData local. Shift occurs
+on unsigned flags before conversion. On the two's-complement ARM/UCRT targets,
+bit 2 becomes sign bit and tests the same short-position condition; this is
+not a new portable C++ conversion guarantee. Other compressedData nonzero tests
+preserve the shifted value's zero/nonzero status. Predicate spellings are
+hypotheses, not recovered exact source.
+
+Four forms eliminate the intermediate position allocation pointer independently
+for short/int/floating streams and all streams. Two share a void raw pointer
+only across mutually exclusive short/int branches, alone or together with
+direct position allocation stores. Every typed raw allocation keeps its matching
+typed delete[] at the same success/failure locations. There is no double cleanup,
+new zero initialization or read of raw before its branch allocation. Captured
+owner stores, fresh field/count loads, conversion/extrema calculations and
+file-read/cleanup order stay unchanged. No helper, dead field, padding, assembly,
+fixed register or matcher/flag change. Fresh indexed-owner timing has ARM
+support, but fixtures do not prove equivalence for hypothetical slot-mutating
+file callbacks; no broader native runtime proof is claimed.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted | Equals reload-only |
+|---|---|---:|---:|---|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| predicate_direct_shift_negative_accepted_owner | 97.9 / 57.9 | 872 | 98.2 | no | no |
+| predicate_direct_shift_negative_fresh_owner | 97.6 / 57.8 | 878 | 98.2 | no | no |
+| predicate_shared_shift_negative_accepted_owner | 97.9 / 57.9 | 872 | 98.2 | no | no |
+| predicate_shared_shift_negative_fresh_owner | 97.6 / 57.8 | 878 | 98.2 | no | no |
+| predicate_signed_compressed_local_accepted_owner | 97.9 / 57.9 | 872 | 98.2 | no | no |
+| predicate_signed_compressed_local_fresh_owner | 97.6 / 57.8 | 878 | 98.2 | no | no |
+| direct_output_short_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| direct_output_short_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| direct_output_integer_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| direct_output_integer_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| direct_output_floating_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| direct_output_floating_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| direct_output_all_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| direct_output_all_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| shared_raw_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| shared_raw_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| shared_raw_direct_outputs_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| shared_raw_direct_outputs_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+
+Six storage forms per owner equal their entire reference Core object byte-for-
+byte; control reproduces reload-only. All three signed-predicate forms equal
+each other for each owner but regress source to 97.9/97.6 and call-count
+agreement. No form improves source beyond 98.5; none retained. Code restored.
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline without
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_index_reload_position_forms_identities.json`, nineteen
+focused reports/source snapshots and rechecked typedpair validation audit.
