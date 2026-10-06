@@ -4131,3 +4131,61 @@ hashes. No production change, build, test rerun or native runtime claim.
 Goal active, weighted98.7082523588227 <99. Awaiting explicit shared-scope decision;
 proposal remains unapplied. Evidence:
 docs/validation/starmap_2026-10-06_matrix_ctor_footprint.json.
+
+## Hundred-and-tenth follow-up: authorized shared Matrix trials rejected
+
+Human authorization on2026-10-06: "доделывай разрешаю". Tested the concrete
+shared-constructor proposal in engine/math/Matrix.h and both engine/math and
+game/core Matrix.cpp implementations. The first ARM/native attempt exposed
+the second out-of-line definition in game/core/Matrix.cpp (203 compiled/1
+failed; native exit1). Removed that identical duplicate for the trial, then
+ARM compiled204/failed0 and native STATIC linked successfully. Verifier exit0
+alone was not treated as a clean compile. No StarMap/field-value/layout/flag/
+normalizer change or forced inlining was used.
+
+Ordinary in-class assignment initialization improved init source98.3->98.9
+and initStarSystem97.3->98.3; the other20 focused rows stayed unchanged.
+Fixed20-body means became99.4 unweighted/98.87160963244614 weighted source,
+87.75/82.4868469229686 strict. Weighted99 still failed. Full4618/0 compared
+rows retained4274/4524 unique coverage and960 byte-exact pairs, but lost TWO
+previously linked-exact pairs: AEMath::MatrixGetInverse and CameraC2. Linked
+count2084->2082;40 existing rows regressed in source shape. Baseline exact-
+preservation gate exit1. Two duplicate MatrixC2 comparison rows disappeared;
+a read-only scan of204 base objects still found one weak MatrixC2 definition
+in Level, so the unique constructor coverage did not disappear. The proposal
+was rejected, rather than accepting a StarMap gain with wider regressions.
+
+Restored all three shared files byte-for-byte and rebuilt: ARM204/0 and
+native STATIC exit0. Focused report and ALL4619 full function rows equal the
+previous accepted104 reports, skipped0, linked2084/byte960, coverage4274/4524,
+missing250 (7 wrong type/243 absent), extras129. Both baseline and previous
+preservation gates exit0 with --allow-partial; that option does not relax
+exact-pair preservation. Canonical final reports remain accepted104.
+
+Also tested an ordinary array member initializer with the SAME15 values,
+removing both out-of-line definitions. ARM204/0; source means remained
+99.32/98.7082523588227, strict fell to87.755/82.49402900999858. Rejected at
+the focused gate because it supplies no source improvement. No full or native
+build was claimed for this rejected alternate. Restored/rebuilt once more;
+ALL final204 ARM object hashes equal the fully validated restored set. Final
+focused report equals accepted104; native STATIC rebuilt with exit0. The full
+report therefore still describes every underlying byte-identical object;
+unchanged full comparisons were not rerun. Default99 threshold gate exit1,
+weighted threshold only; both preservation gates remain green.
+
+New read-only primary evidence distinguishes the standalone constructor from
+previous local StarMap-tail evidence. Dynamic weak MatrixC2 at0x6e8d8, size0x40:
+ADR0x6e8d8 addresses0x6e908, VLD1 loads16 bytes, ADD at0x6e8fa selects offset40,
+VST1 at0x6e8fe stores to m10..m13. Literal bytes
+0000803f000000000000803f0000803f prove those four values are1,0,1,1. Thus the
+original standalone constructor also has m10=1/m13=1, whereas current shared
+defaults are0/0. The approved unchanged-value experiment did not apply a
+shared behavior fix; existing local StarMap repairs already set both to1.
+This recovers data/store behavior, not original C++ spelling. Native STATIC
+checks do not prove runtime or whole ABI correctness.
+
+The authorized experiment is finished and rejected. Production stays104,
+99.32/98.7082523588227 source,87.835/82.6551330798479 strict,7 linked/3 byte
+unique StarMap bodies. The overall99 objective remains unmet; this is not a
+proof that99 is impossible. Evidence:
+docs/validation/starmap_2026-10-06_matrix_inline_trial.json.

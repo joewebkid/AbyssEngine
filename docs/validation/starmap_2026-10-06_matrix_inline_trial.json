@@ -1,0 +1,503 @@
+{
+  "authorization": "Human: доделывай разрешаю; resumed shared Matrix experiment on 2026-10-06.",
+  "production_before": "683216b5",
+  "files_tested": [
+    "src/engine/math/Matrix.h",
+    "src/engine/math/Matrix.cpp",
+    "src/game/core/Matrix.cpp"
+  ],
+  "change": "Move unchanged default constructor into class; remove both duplicate out-of-line definitions. No StarMap, compiler flag, verifier or field-value change.",
+  "first_build": "Rejected diagnostic: ARM compiled203/failed1, native exit1 due duplicate game/core/Matrix.cpp constructor. Corrected by removing that duplicate.",
+  "corrected_build": {
+    "arm_compiled": 204,
+    "arm_failed": 0,
+    "native_static_exit": 0
+  },
+  "focused_before": {
+    "source_match": {
+      "unweighted": 99.32000000000001,
+      "weighted": 98.7082523588227
+    },
+    "match": {
+      "unweighted": 87.83500000000001,
+      "weighted": 82.6551330798479
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "focused_trial": {
+    "source_match": {
+      "unweighted": 99.4,
+      "weighted": 98.87160963244614
+    },
+    "match": {
+      "unweighted": 87.75,
+      "weighted": 82.4868469229686
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "full_before": {
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "count": 4619,
+    "fuzzy_perfect": 2204,
+    "byte_exact": 960,
+    "linked_exact": 2084,
+    "skipped": 0,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "full_trial": {
+    "avg_match": 76.1,
+    "avg_source_match": 89.03,
+    "count": 4618,
+    "fuzzy_perfect": 2202,
+    "byte_exact": 960,
+    "linked_exact": 2082,
+    "skipped": 0,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 128
+  },
+  "previous_exact_pairs": {
+    "linked_equal": {
+      "before": 2084,
+      "after": 2082,
+      "lost": [
+        [
+          "engine/math/AEMath",
+          "_ZN11AbyssEngine6AEMath16MatrixGetInverseERKNS0_6MatrixE"
+        ],
+        [
+          "engine/render/Camera",
+          "_ZN11AbyssEngine6CameraC2Efffff"
+        ]
+      ],
+      "gained": []
+    },
+    "bytes_equal": {
+      "before": 960,
+      "after": 960,
+      "lost": [],
+      "gained": []
+    }
+  },
+  "removed_comparison_rows": [
+    [
+      "engine/math/Matrix",
+      "_ZN11AbyssEngine6AEMath6MatrixC2Ev"
+    ],
+    [
+      "game/core/Matrix",
+      "_ZN11AbyssEngine6AEMath6MatrixC2Ev"
+    ]
+  ],
+  "source_regressions": [
+    {
+      "unit": "engine/core/AbyssEngine",
+      "symbol": "_ZN11AbyssEngine16SpriteSystemDrawEPNS_6EngineERKNS_6AEMath6MatrixES5_PNS_12SpriteSystemE",
+      "before": 73.8,
+      "trial": 73.4
+    },
+    {
+      "unit": "engine/core/AbyssEngine",
+      "symbol": "_ZN11AbyssEngine26CameraIsPointinViewFrustumERKNS_6AEMath6VectorEPNS0_6MatrixEPNS_6CameraE",
+      "before": 81.1,
+      "trial": 80.1
+    },
+    {
+      "unit": "engine/core/AbyssEngine",
+      "symbol": "_ZN11AbyssEngine27CameraIsSphereinViewFrustumERKNS_6AEMath6VectorEfPNS0_6MatrixEPNS_6CameraE",
+      "before": 82.5,
+      "trial": 81.8
+    },
+    {
+      "unit": "engine/math/AEMath",
+      "symbol": "_ZN11AbyssEngine6AEMath15MatrixGetLookAtERKNS0_6VectorES3_S3_",
+      "before": 71.2,
+      "trial": 66.5
+    },
+    {
+      "unit": "engine/math/AEMath",
+      "symbol": "_ZN11AbyssEngine6AEMath16MatrixGetInverseERKNS0_6MatrixE",
+      "before": 100.0,
+      "trial": 56.2
+    },
+    {
+      "unit": "engine/math/AEMath",
+      "symbol": "_ZN11AbyssEngine6AEMathmlERKNS0_6MatrixES3_",
+      "before": 48.6,
+      "trial": 31.3
+    },
+    {
+      "unit": "engine/math/EaseInOutMatrix",
+      "symbol": "_ZN11AbyssEngine15EaseInOutMatrixC1ENS_6AEMath6MatrixES2_i",
+      "before": 78.2,
+      "trial": 76.6
+    },
+    {
+      "unit": "engine/math/EaseInOutMatrix",
+      "symbol": "_ZN11AbyssEngine15EaseInOutMatrixC2ENS_6AEMath6MatrixES2_i",
+      "before": 78.2,
+      "trial": 76.6
+    },
+    {
+      "unit": "engine/math/Transform",
+      "symbol": "_ZN11AbyssEngine9TransformC1EPS0_",
+      "before": 90.6,
+      "trial": 85.8
+    },
+    {
+      "unit": "engine/math/Transform",
+      "symbol": "_ZN11AbyssEngine9TransformC1Ev",
+      "before": 86.4,
+      "trial": 85.5
+    },
+    {
+      "unit": "engine/math/Transform",
+      "symbol": "_ZN11AbyssEngine9TransformC2EPS0_",
+      "before": 90.6,
+      "trial": 85.8
+    },
+    {
+      "unit": "engine/math/Transform",
+      "symbol": "_ZN11AbyssEngine9TransformC2Ev",
+      "before": 86.4,
+      "trial": 85.5
+    },
+    {
+      "unit": "engine/render/AEGeometry",
+      "symbol": "_ZN10AEGeometryC1EtPN11AbyssEngine11PaintCanvasEb",
+      "before": 68.8,
+      "trial": 67.6
+    },
+    {
+      "unit": "engine/render/AEGeometry",
+      "symbol": "_ZN10AEGeometryC2EtPN11AbyssEngine11PaintCanvasEb",
+      "before": 68.8,
+      "trial": 67.6
+    },
+    {
+      "unit": "engine/render/Camera",
+      "symbol": "_ZN11AbyssEngine6CameraC2Efffff",
+      "before": 100.0,
+      "trial": 64.6
+    },
+    {
+      "unit": "engine/render/LodMeshMerger",
+      "symbol": "_ZN13LodMeshMergerC1EiiPN11AbyssEngine11PaintCanvasEt",
+      "before": 89.7,
+      "trial": 85.4
+    },
+    {
+      "unit": "engine/render/LodMeshMerger",
+      "symbol": "_ZN13LodMeshMergerC2EiiPN11AbyssEngine11PaintCanvasEt",
+      "before": 89.7,
+      "trial": 85.4
+    },
+    {
+      "unit": "engine/render/Material",
+      "symbol": "_ZN5ArrayIN11AbyssEngine6AEMath6MatrixEEC2Ev",
+      "before": 79.0,
+      "trial": 66.5
+    },
+    {
+      "unit": "engine/render/MeshMerger",
+      "symbol": "_ZN10MeshMergerC1EiiPN11AbyssEngine11PaintCanvasEt",
+      "before": 81.8,
+      "trial": 81.2
+    },
+    {
+      "unit": "engine/render/MeshMerger",
+      "symbol": "_ZN10MeshMergerC2EiiPN11AbyssEngine11PaintCanvasEt",
+      "before": 81.8,
+      "trial": 81.2
+    },
+    {
+      "unit": "engine/render/PaintCanvas",
+      "symbol": "_ZN11AbyssEngine11PaintCanvasC1EPNS_6EngineE",
+      "before": 79.5,
+      "trial": 74.0
+    },
+    {
+      "unit": "engine/render/PaintCanvas",
+      "symbol": "_ZN11AbyssEngine11PaintCanvasC2EPNS_6EngineE",
+      "before": 79.5,
+      "trial": 74.0
+    },
+    {
+      "unit": "engine/render/Sparks",
+      "symbol": "_ZN6Sparks6renderEv",
+      "before": 89.1,
+      "trial": 88.0
+    },
+    {
+      "unit": "game/menu/SpaceLounge",
+      "symbol": "_ZN11SpaceLoungeC1Ev",
+      "before": 70.0,
+      "trial": 69.1
+    },
+    {
+      "unit": "game/menu/SpaceLounge",
+      "symbol": "_ZN11SpaceLoungeC2Ev",
+      "before": 70.0,
+      "trial": 69.1
+    },
+    {
+      "unit": "game/mission/Explosion",
+      "symbol": "_ZN9Explosion6renderEv",
+      "before": 91.5,
+      "trial": 89.2
+    },
+    {
+      "unit": "game/ship/Player",
+      "symbol": "_ZN6PlayerC1Eiiiii",
+      "before": 94.0,
+      "trial": 92.4
+    },
+    {
+      "unit": "game/ship/Player",
+      "symbol": "_ZN6PlayerC2Eiiiii",
+      "before": 94.0,
+      "trial": 92.4
+    },
+    {
+      "unit": "game/ship/PlayerAsteroid",
+      "symbol": "_ZN14PlayerAsteroid4pushEi",
+      "before": 82.5,
+      "trial": 81.9
+    },
+    {
+      "unit": "game/ship/PlayerCreature",
+      "symbol": "_ZN14PlayerCreature5resetEv",
+      "before": 78.5,
+      "trial": 78.1
+    },
+    {
+      "unit": "game/ship/PlayerEgo",
+      "symbol": "_ZN9PlayerEgo5shootEii",
+      "before": 83.7,
+      "trial": 83.1
+    },
+    {
+      "unit": "game/ui/ListItemWindow",
+      "symbol": "_ZN14ListItemWindowC1Ev",
+      "before": 93.9,
+      "trial": 75.8
+    },
+    {
+      "unit": "game/ui/ListItemWindow",
+      "symbol": "_ZN14ListItemWindowC2Ev",
+      "before": 93.9,
+      "trial": 75.8
+    },
+    {
+      "unit": "game/weapons/BeamGun",
+      "symbol": "_ZN7BeamGun6updateEi",
+      "before": 87.5,
+      "trial": 86.5
+    },
+    {
+      "unit": "game/weapons/Gun",
+      "symbol": "_ZN3Gun6renderEv",
+      "before": 85.7,
+      "trial": 84.0
+    },
+    {
+      "unit": "game/weapons/ObjectGun",
+      "symbol": "_ZN9ObjectGun6updateEi",
+      "before": 83.3,
+      "trial": 83.0
+    },
+    {
+      "unit": "game/weapons/Radar",
+      "symbol": "_ZN5RadarC1EP5Level",
+      "before": 98.9,
+      "trial": 98.6
+    },
+    {
+      "unit": "game/weapons/Radar",
+      "symbol": "_ZN5RadarC2EP5Level",
+      "before": 98.9,
+      "trial": 98.6
+    },
+    {
+      "unit": "game/weapons/RocketGun",
+      "symbol": "_ZN5ArrayIN11AbyssEngine6AEMath6MatrixEEC2Ev",
+      "before": 79.0,
+      "trial": 66.5
+    },
+    {
+      "unit": "game/weapons/RocketGun",
+      "symbol": "_ZN9RocketGun6updateEi",
+      "before": 91.8,
+      "trial": 91.3
+    }
+  ],
+  "trial_hashes": {
+    "src/engine/math/Matrix.h": "c7f15b22b8174e059ab3fe96616e61b909cb281f728442cc3c5d1c294084ebc9",
+    "src/engine/math/Matrix.cpp": "93baa655e8875dd167cf10186948572a9b6eb70de687bc8fc00a8943cab7d69e",
+    "src/game/core/Matrix.cpp": "adcca5103e28cbc319fabbb10c883fd3e036cdba5b9da80dd8c2879b88e72b57",
+    "src/game/world/StarMap.cpp": "ddc4e5cd912fdf561661f01949f5686e51c366fdf69b2d84d571616101138c3c",
+    "cmake-build-match/verify/base/game/world/StarMap.o": "e0d4a63115c4a765742ff48660f1557d6b83f3bdf4c3c87289359b591045cc7b"
+  },
+  "native_constructor_proof": {
+    "binary": "_work/bins/android_2.0.16_libgof2hdaa.so",
+    "symbol": "_ZN11AbyssEngine6AEMath6MatrixC2Ev",
+    "dynamic_binding": "weak",
+    "address": "0x6e8d8",
+    "size": "0x40",
+    "data": "0x6e908..0x6e917: 0000803f000000000000803f0000803f (1,0,1,1)",
+    "pointer_proof": "ADR at0x6e8d8 addresses0x6e908; VLD1 at0x6e8de loads16 bytes; ADD r1,r0,#40 at0x6e8fa and VST1 at0x6e8fe store to m10..m13.",
+    "finding": "Original standalone ctor has m10=1 and m13=1; current shared ctor defaults both to0. Trial deliberately preserved defaults, as approved proposal specifies. Local StarMap repairs already set both to1. No behavior fix applied.",
+    "limits": "Does not recover original C++ spelling. STATIC build is not executable/runtime or whole ABI validation.",
+    "binary_sha256": "6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58",
+    "disassembly": "_work/matrix-native-default-constructor.asm"
+  },
+  "decision": "Both authorized shared Matrix forms rejected and removed. Final production/source and all204 ARM objects restored. Full corpus and baseline/previous gates preserved. Overall weighted99 objective NOT achieved.",
+  "constructor_emission_trial": "Read-only nm -A --defined-only across204 base objects finds exactly one weak MatrixC2 definition, in game/world/Level. None in engine/math/Matrix, game/core/Matrix or StarMap. Unique coverage stays4274; constructor not globally absent.",
+  "baseline_preservation_trial_gate_exit": 1,
+  "restoration": {
+    "arm_compiled": 204,
+    "arm_failed": 0,
+    "native_static_exit": 0,
+    "focused_report_identical_to_previous": true,
+    "all_full_function_rows_identical_to_previous": true,
+    "full": {
+      "avg_match": 76.16,
+      "avg_source_match": 89.06,
+      "count": 4619,
+      "fuzzy_perfect": 2204,
+      "byte_exact": 960,
+      "linked_exact": 2084,
+      "skipped": 0,
+      "original_functions": 4524,
+      "compared_unique": 4274,
+      "missing": 250,
+      "missing_wrong_type": 7,
+      "missing_absent": 243,
+      "extra_symbols": 129
+    },
+    "source_sha256": "ddc4e5cd912fdf561661f01949f5686e51c366fdf69b2d84d571616101138c3c",
+    "arm_object_sha256": "54a78574bcc14daefc8678850bb6a4e8bf3bed2caa2fa3b5139ef72c9e30484b",
+    "shared_files_restored_byte_for_byte": {
+      "src/engine/math/Matrix.h": "177bf4acdad5bfa1f95365e85961fb53e378be8735e2f7efde98a14adff95e93",
+      "src/engine/math/Matrix.cpp": "da9d78b66619abcd1286790e291da1513e2c5b1abb8a98c5f728057e90645b6b",
+      "src/game/core/Matrix.cpp": "37967bcaed6d046f82cb6cf14e5a2e6e7962a2a40235ff85d6069424fb2e2ef2"
+    },
+    "baseline_preservation_gate_exit": 0,
+    "previous_preservation_gate_exit": 0
+  },
+  "logs_and_reports": [
+    "_work/matrix-inline-corrected.json",
+    "_work/matrix-inline-corrected.log",
+    "_work/matrix-inline-corrected-corpus.json",
+    "_work/matrix-inline-corrected-corpus.log",
+    "_work/native-matrix-inline-corrected.log",
+    "_work/matrix-inline-baseline-gate.log",
+    "_work/matrix-inline-restored.json",
+    "_work/matrix-inline-restored.log",
+    "_work/matrix-inline-restored-corpus.json",
+    "_work/matrix-inline-restored-corpus.log",
+    "_work/native-matrix-inline-restored.log",
+    "_work/matrix-native-default-constructor.asm",
+    "_work/matrix-inline-defined-constructors.txt"
+  ],
+  "array_member_initializer_trial": {
+    "decision": "Rejected: unchanged source shape, lower strict match. No full/native trial needed because focus supplies no source improvement. Same15 values, ordinary array member initializer, no constexpr/attributes/flags.",
+    "arm_compiled": 204,
+    "arm_failed": 0,
+    "focused": {
+      "source_match": {
+        "unweighted": 99.32000000000001,
+        "weighted": 98.7082523588227
+      },
+      "match": {
+        "unweighted": 87.755,
+        "weighted": 82.49402900999858
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "changed_rows": [
+      {
+        "symbol": "_ZN7StarMap4initEbP7Missionbi",
+        "changes": {
+          "match": {
+            "before": 77.4,
+            "trial": 77.2
+          },
+          "n_base": {
+            "before": 735,
+            "trial": 739
+          },
+          "instruction_inventory_match": {
+            "before": 98.0,
+            "trial": 97.7
+          },
+          "size_match": {
+            "before": 97.6,
+            "trial": 98.1
+          }
+        }
+      },
+      {
+        "symbol": "_ZN7StarMap14initStarSystemEv",
+        "changes": {
+          "match": {
+            "before": 84.7,
+            "trial": 83.3
+          },
+          "n_base": {
+            "before": 683,
+            "trial": 687
+          },
+          "instruction_inventory_match": {
+            "before": 96.7,
+            "trial": 96.3
+          },
+          "opcode_inventory_match": {
+            "before": 97.4,
+            "trial": 97.6
+          },
+          "size_match": {
+            "before": 96.3,
+            "trial": 96.9
+          }
+        }
+      }
+    ],
+    "hashes": {
+      "src\\engine\\math\\Matrix.h": "650fc55ad8b0eaa46cca8e784b15a122af947ab12e481fbf600fe8e631d899b1",
+      "src\\engine\\math\\Matrix.cpp": "93baa655e8875dd167cf10186948572a9b6eb70de687bc8fc00a8943cab7d69e",
+      "src\\game\\core\\Matrix.cpp": "adcca5103e28cbc319fabbb10c883fd3e036cdba5b9da80dd8c2879b88e72b57",
+      "cmake-build-match\\verify\\base\\game\\world\\StarMap.o": "d781c6b00fddc5c5cc03b9459d462cce8abec81a00b023aead5aca197bc44b3d"
+    },
+    "report": "_work/matrix-array-init.json",
+    "log": "_work/matrix-array-init.log"
+  },
+  "final_after_alternate_restoration": {
+    "arm_compiled": 204,
+    "arm_failed": 0,
+    "native_static_exit": 0,
+    "all204_objects_byte_identical_to_full_validated_restoration": true,
+    "focused_report_identical_to_previous": true,
+    "object_hash_list": "_work/matrix-restored-all-object-hashes.json",
+    "object_set_sha256": "56578427a663e0a4901fd7b5f968a3660000435db61e418a85e427b1fd67a734",
+    "focus_report": "_work/matrix-array-restored.json",
+    "focus_log": "_work/matrix-array-restored.log",
+    "native_log": "_work/native-matrix-array-restored.log",
+    "full_report": "_work/matrix-inline-restored-corpus.json",
+    "full_report_validity": "Every underlying ARM object is byte-identical; no need to repeat unchanged full comparisons.",
+    "default99_threshold_gate_exit": 1,
+    "default99_threshold_failure": "Weighted source98.7082523588227 remains below99. Exact preservation passes."
+  }
+}
