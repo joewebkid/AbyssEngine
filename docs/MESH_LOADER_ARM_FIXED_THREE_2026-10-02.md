@@ -4894,3 +4894,53 @@ No push, PR or merge.
 
 Evidence: `_work/create_local_parse_state_identities.json`, per-trial focused
 reports/source snapshots and rechecked normalcenter validation audit.
+
+
+## Continuation: caller parse-state aggregates including the child slot
+
+Eight Create trials start from clean 3c54ff97. Unlike preceding parse-state
+trials, the local aggregate includes the childPtr whose address is passed to
+MeshReadData. It is grouped with handle or count in both orders, with both in
+two orders, or with all three other existing locals in two orders. Every field
+is used by the original operations; no padding field, attribute, packing,
+extra initialization, dummy effect or helper is introduced. Natural compiler
+alignment is not changed. The type is function-local, not an on-disk/header or
+native ABI structure, and is not claimed recovered from original C++.
+
+Child pointer is assigned by the same new Mesh immediately before its existing
+fields and reader call. Its address still denotes that live pointer slot;
+post-read bounds and array insertion use that slot at the same source points.
+No child value is captured before a reader/helper or retained across an extra
+call. Handle's sole existing zero initialization, magic strcpy after OpenRead,
+separate read sizes/order, unsigned-short count range and all dispatch/cleanup/
+Close expressions remain unchanged. This checks alias/storage interaction of
+the actually addressed child slot, not a reinterpretation of disk data.
+
+| Trial | Create source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| handle_child | 98.0 / 59.5 | 291 | 100.0 | no |
+| child_handle | 97.8 / 60.9 | 294 | 100.0 | no |
+| count_child | 98.0 / 61.9 | 291 | 100.0 | no |
+| child_count | 98.2 / 56.8 | 290 | 100.0 | no |
+| handle_count_child | 97.8 / 54.5 | 292 | 100.0 | no |
+| child_count_handle | 97.8 / 61.1 | 295 | 100.0 | no |
+| all_handle_first | 97.8 / 49.1 | 296 | 100.0 | no |
+| all_child_first | 97.8 / 57.1 | 294 | 100.0 | no |
+
+Every object differs from accepted and each other, and every required source
+score regresses from 98.4. Some strict gains do not justify retention. Two
+forms have original raw 291 instructions but only 98.0 source. No trial kept;
+production source restored. Full source/fixture comparison to bf0243e8 and
+baseline outside-body/signature checks pass.
+
+Read-only recheck binds existing normalcenter-full evidence: full artifact,
+actual 2079 linked/959 byte pair sets equal baseline without lost/gained pairs,
+204 objects/202 unaffected objects, winner identity, canonical flag digest/
+argument list and fixed-three matcher rows from actual instruction lists.
+No new native/full-corpus run claimed for rejected forms. Accepted means
+**98.37% unweighted /98.36% weighted**; both >=99.0 gates remain unmet, goal
+active. No matcher, denominator, original weights, unrelated body or ABI layout
+change. No push, PR or merge.
+
+Evidence: `_work/create_child_parse_state_identities.json`, eight focused
+reports/source snapshots and rechecked normalcenter validation audit.
