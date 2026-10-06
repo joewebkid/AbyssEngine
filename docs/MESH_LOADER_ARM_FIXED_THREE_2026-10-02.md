@@ -5618,3 +5618,50 @@ unmet; goal active. No push, PR or merge.
 
 Evidence: `_work/enh_key_remaining_identities.json`, thirteen focused reports
 and snapshots, rechecked `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: combined UV/color stream guards
+
+Nine focused Read trials start from 73a6056a. For UV/color separately or together,
+three source forms flatten the outer vertexFormat guard and inner compressed/plain
+branch: a combined if/else-if chain, the same chain with a local bool for the
+format condition, or two independent combined guards testing compressedData
+first. Independent plain guard also requires compressedData ==0, so it cannot
+execute after compressed conversion and avoids a new format load on that path.
+Repeated format tests in flat chains have no intervening call/write. Buffers,
+reads, conversions, failure cleanup and body store order remain unchanged.
+No shared state is captured across a callback for these decisions. No helper,
+header, ABI, flag, matcher or denominator change. These branch structures are
+source hypotheses, not recovered original guards.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| flat_uv | 97.6 / 51.3 | 879 | 98.2 | no |
+| flat_color | 97.7 / 55.2 | 885 | 100.0 | no |
+| flat_both | 97.2 / 49.0 | 882 | 98.2 | no |
+| predicate_uv | 97.6 / 51.3 | 879 | 98.2 | no |
+| predicate_color | 97.7 / 55.2 | 885 | 100.0 | no |
+| predicate_both | 97.2 / 49.0 | 882 | 98.2 | no |
+| independent_uv | 97.8 / 53.6 | 881 | 98.2 | no |
+| independent_color | 97.6 / 55.1 | 886 | 100.0 | no |
+| independent_both | 97.0 / 49.5 | 901 | 100.0 | no |
+
+All nine complete Core objects differ from accepted and regress source-shape.
+Flat/predicate variants equal each other byte-for-byte for each scope; none
+retained. Five variants with call-count score 98.2 have 60 static calls versus
+accepted 61, with exactly one fewer _ZdaPv site. Four others preserve all 61
+call-site targets; no indirect register difference appears in this inspection.
+This is static control/layout evidence, not proof of missing executed cleanup.
+No operation added for scoring and no general compiler ceiling inferred.
+
+Source/fixtures match bf0243e8; outside-body/signature checks pass. Read-only
+full evidence binding verifies 204 objects/202 unaffected objects, actual linked
+2079/byte 959 exact pair sets equal baseline without lost/gained pairs, canonical
+arguments unchanged and directly recomputed fixed-three matcher rows. No new
+native/full-corpus run claimed for rejected forms. Accepted means remain
+**98.37% unweighted /98.36% original-instruction-weighted**; both >=99.0 gates
+unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/read_stream_guard_identities.json`, nine focused reports and
+source snapshots, `_work/read_stream_guard_call_differences.json`, rechecked
+validation audit.
