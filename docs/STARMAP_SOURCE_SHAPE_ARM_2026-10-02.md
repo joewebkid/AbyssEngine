@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.305% unweighted / 98.66955% original-instruction
+implementation bodies measure **99.32% unweighted / 98.70825% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.675% / 82.24468%**, respectively. Source-shape is an inventory/control-flow
+**87.83% / 82.64457%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -3012,18 +3012,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/ninetyfourth-corpus.log`; focused log:
-`_work/confirm-clear-ninetyfourth.log`; native log:
-`_work/native-ninetyfourth.log`.
+Latest full log: `_work/ninetysixth-corpus.log`; focused log:
+`_work/current-route-depth-bool-ninetysixth.log`; native log:
+`_work/native-ninetysixth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, without losses. Render adds one linked-exact pair in the latest checkpoint. The latest comparison against d1d0ccfe preserves all 2084
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, without losses. The earlier accepted88 Render repair adds one linked-exact pair; this checkpoint preserves it. The latest comparison against a4fc71cd preserves all 2084
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/ninetyfourth-baseline-gate.json, ninetyfourth-previous-gate.json and
-ninetyfourth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/ninetysixth-baseline-gate.json, ninetysixth-previous-gate.json and
+ninetysixth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `83248e1a06667fbe6569fdc55185f0596ef6ba7ce31467360d90d1317d5ea666`.
+final full JSON SHA-256: `ac36671ad80d872e4cd8053180fea46d76c6924b13ef1ae919d43048d9c95d08`.
 
 
 ### Reproduction
@@ -3057,7 +3057,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1198 | 78.9% | 99.3% | 80.6% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1004 | 66.6% | 97.8% | 77.7% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.7% | 82.7% | - |
-| `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.1% | 89.7% | - |
+| `_ZN7StarMap4drawEv` | 916/913 | 49.7% | 99.4% | 92.8% | - |
 | `_ZN7StarMap4initEbP7Missionbi` | 750/735 | 72.9% | 98.3% | 77.3% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/683 | 80.9% | 97.3% | 84.7% | - |
 | `_ZN7StarMapC1EbP7Missionbi` | 333/331 | 85.1% | 99.5% | 97.6% | - |
@@ -3747,3 +3747,76 @@ Prior27/35/91 branch/step trials cover those differences; no new trial or
 production change. General-register constants/scalar loads/derived values
 and runtime ABI are outside this audit, and no score ceiling follows.
 Evidence: `docs/validation/starmap_2026-10-06_float_immediates.json`.
+
+## Ninety-sixth follow-up: native current-route depth snapshot (2026-10-06)
+
+Only draw's second route loop changes. Primary c93bc..c93dc computes a
+zero/one both-behind result immediately after scratchVector2 assignment,
+before the currentRoutes-null test at c93f6 and the flag test at c93fa.
+Accepted94 instead tests currentRoutes at4e2/4e4 before depth at4e6..500.
+The new source computes bool bothBehind=false, assigns the second ordered
+negative-depth predicate only when the first depth is ordered negative, then
+uses the existing currentRoutes && !bothBehind && !jumpMapModeB guard.
+Same depth predicates, short circuit between depth reads, routes and jump-map
+conditions, calls and stores. Depth evaluation now precedes the route-pointer
+test, as primary. No additional condition, callback, padding, register forcing,
+barrier, volatile, shared header, compiler flag or verifier change.
+Native pointer/depth ordering and actual intermediate are reconstructed;
+original C++ spelling and whole-function FP exception/ABI/runtime equivalence
+are not claimed. Unordered less-than remains false; this does not prove
+end-to-end float-to-int/NaN safety.
+
+A first direct operand reorder was rejected: draw source99.1->99.0, strict
+89.7->90.0, raw916/907->910. The compiler duplicates a route-null guard and
+moves one before the second depth compare. Focus204/0,22/0 exited0
+(session2379). Object235b2e55c706ad160714f58e8ec0191ed30b34a3ca61af5700f147b8398ad76e.
+Replaced with the depth snapshot, not retained alongside it.
+
+Snapshot focus204/0,22/0 exited0(session83026). Draw source99.1->99.4,
+strict89.7->92.8, raw916/907->913. Inventory98.9->99.2, opcode99.1->99.3,
+control98.6->98.9, ordered97.5->98.9, size99.0->99.6; calls100 unchanged.
+All other21 rows identical. Read-only unchanged asmdiff independently agrees.
+Draw remains non-linked/non-byte-exact. Fixed20/7101, aliases checked but
+excluded; means source99.32/98.7082523588227, strict87.83/82.64457118715673.
+Seven unique linked/three byte preserved; weighted99 remains0.2917476411773
+percentage points short. No compiler ceiling claim.
+
+Actual ELF executable bytes c93bc..c93dc and4cc..4ec match for34bytes:
+94ed200ab5eec00af1ee10fa14d594ed230a0020b5eec00af1ee10fa48bf01200be0.
+This is the complete local depth flag block including BPL/ITMI selection,
+not whole draw equality. Conservative call-argument audit:699 aligned calls,
+33 known stack pairs,222 register pairs; no new known mismatch. The two
+already reviewed Info SetColor false path alignments remain; full Info row
+unchanged. Unresolved arithmetic/conditional/indirect calls are not proved.
+Native UCRT gof2 compiled StarMap.cpp and linked the static library, exit0;
+no native executable/runtime test.
+
+Scope correction for prior45: its report describes a neutral first-route bool
+experiment but cites c93c8..c93dc, which actually belongs to the current-route
+second loop. Only its pretrial source/report/hash were saved, not the temporary
+trial source. Do not infer which loop that removed trial modified from the
+mislabelled address. Current96 source and independent raw block proof are
+complete and authoritative for this retained second-loop change.
+
+Source SHA256:cf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3.
+ARM object SHA256:39cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a.
+
+Evidence: docs/validation/starmap_2026-10-06_current_route_depth.json.
+Raw _work:before-current-route-depth-first-ninetysixth.cpp,
+current-route-depth-first-ninetysixth.json/log/asm,
+current-route-depth-bool-ninetysixth.json/log/asm,
+current-route-depth-proof-ninetysixth.json,
+current-route-argument-audit-ninetysixth.json/log,
+native-ninetysixth.log,ninetysixth-corpus.json/log,
+ninetysixth-baseline/previous/target-gate.json/log,
+checkpoint96-before-focused/corpus.json.
+
+Full4619/0 exited0(session5341); all22 focused/full rows agree after
+separator normalization for comparison only. Full2084 linked/960byte,
+perfect2204,source89.06/strict76.16; coverage4274/4524,missing250
+(7wrong-type/243absent),extras129 unchanged. Source and ARM-object hashes
+remained frozen through comparison. Baseline and previous94 preservation
+gates exit0 with no lost pairs; default99 gate exits1 for the unmet weighted
+threshold. Canonical focused/full/gate updated only after these validations.
+Full JSON SHA256:ac36671ad80d872e4cd8053180fea46d76c6924b13ef1ae919d43048d9c95d08.
+Goal remains active.

@@ -1,0 +1,245 @@
+{
+  "decision": "accepted after focused/native/full and exact-pair preservation: current-route depth snapshot before currentRoutes guard",
+  "previous_production": "a4fc71cd",
+  "previous_report": "d4ddc7d0",
+  "production_files": [
+    "src/game/world/StarMap.cpp"
+  ],
+  "primary": "GOF2 HD2.0.16 Android ARMv7",
+  "original_cpp_recovered": false,
+  "source_change": "Compute bothBehind=false; if scratchVector.z<0, assign scratchVector2.z<0; then original currentRoutes && !bothBehind && !jumpMapModeB guard. Only current-route second loop changed.",
+  "native_basis": "c93bc..c93dc materializes depth flag before c93f6 routes-null test and c93fa flag test. Current4cc..4ec materializes flag before506 routes-null test and50a flag test. Previous94 first tested routes-null at4e2/4e4 before depth at4e6..500.",
+  "behavior": "Same projected depth predicates, short circuit between first and second Z, unordered false for each ordered-less comparison, route/jump-map conditions, callbacks and member writes. Restore depth evaluation before route-pointer test; does not assert complete FP exception or float-to-int safety.",
+  "before": {
+    "symbol": "_ZN7StarMap4drawEv",
+    "match": 89.7,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 916,
+    "n_base": 907,
+    "source_match": 99.1,
+    "instruction_inventory_match": 98.9,
+    "opcode_inventory_match": 99.1,
+    "control_flow_match": 98.6,
+    "ordered_control_flow_match": 97.5,
+    "control_inventory_match": 98.6,
+    "call_count_match": 100.0,
+    "size_match": 99.0,
+    "unit": "game/world/StarMap"
+  },
+  "after": {
+    "symbol": "_ZN7StarMap4drawEv",
+    "match": 92.8,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 916,
+    "n_base": 913,
+    "source_match": 99.4,
+    "instruction_inventory_match": 99.2,
+    "opcode_inventory_match": 99.3,
+    "control_flow_match": 98.9,
+    "ordered_control_flow_match": 98.9,
+    "control_inventory_match": 98.9,
+    "call_count_match": 100.0,
+    "size_match": 99.6,
+    "unit": "game/world/StarMap"
+  },
+  "other21_rows_equal": true,
+  "before_means": {
+    "source_match": {
+      "unweighted": 99.30499999999999,
+      "weighted": 98.66955358400226
+    },
+    "match": {
+      "unweighted": 87.675,
+      "weighted": 82.24468384734544
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "after_means": {
+    "source_match": {
+      "unweighted": 99.32000000000001,
+      "weighted": 98.7082523588227
+    },
+    "match": {
+      "unweighted": 87.83,
+      "weighted": 82.64457118715673
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "block_proof": {
+    "primary_range": "c93bc..c93dc (34 bytes, ending before c93de)",
+    "current_range": "4cc..4ec (34 bytes, ending before4ee)",
+    "bytes_equal": true,
+    "bytes_hex": "94ed200ab5eec00af1ee10fa14d594ed230a0020b5eec00af1ee10fa48bf01200be0",
+    "source_sha256": "cf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3",
+    "object_sha256": "39cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a",
+    "scope": "Only depth predicate/zero-one materialization block, not complete draw byte or linked equality or ABI/runtime equivalence."
+  },
+  "focused": {
+    "session": 83026,
+    "terminal_exit": 0,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0
+  },
+  "native": {
+    "terminal_exit": 0,
+    "log": "_work/native-ninetysixth.log",
+    "built": "StarMap.cpp and gof2 static lib; no executable/runtime test"
+  },
+  "rejected_direct_reorder": {
+    "session": 2379,
+    "terminal_exit": 0,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "after_draw": {
+      "symbol": "_ZN7StarMap4drawEv",
+      "match": 90.0,
+      "bytes_equal": false,
+      "linked_equal": false,
+      "n_target": 916,
+      "n_base": 910,
+      "source_match": 99.0,
+      "instruction_inventory_match": 98.8,
+      "opcode_inventory_match": 98.9,
+      "control_flow_match": 98.1,
+      "ordered_control_flow_match": 98.1,
+      "control_inventory_match": 98.1,
+      "call_count_match": 100.0,
+      "size_match": 99.2,
+      "unit": "game/world/StarMap"
+    },
+    "object_sha256": "235b2e55c706ad160714f58e8ec0191ed30b34a3ca61af5700f147b8398ad76e",
+    "decision": "Rejected source99.1->99.0; strict89.7->90.0. Compiler duplicates null guard and moves it before second depth compare."
+  },
+  "prior45_scope_note": "Earlier45 report describes a neutral first-route local-bool experiment, but its cited c93c8..c93dc address is actually current-route second loop. Saved pretrial source/report/hash do not preserve the temporary trial source; do not infer which branch was modified from that address. Current96 source and raw current/native bytes independently prove this actual second-loop change.",
+  "no_forcing": "No extra condition/callback, dummy flag solely for padding, register/barrier/volatile, compiler/verifier/shared change. Local boolean is real native intermediate consumed by original guard.",
+  "full_validation": {
+    "session": 5341,
+    "terminal_exit": 0,
+    "source_arm_objects_frozen": true,
+    "all22_focus_full_rows_agree": true,
+    "unit_separator_normalization_for_comparison_only": true,
+    "counts": {
+      "count": 4619,
+      "skipped": 0,
+      "avg_match": 76.16,
+      "avg_source_match": 89.06,
+      "linked_exact": 2084,
+      "byte_exact": 960,
+      "fuzzy_perfect": 2204,
+      "original_functions": 4524,
+      "compared_unique": 4274,
+      "missing": 250,
+      "missing_wrong_type": 7,
+      "missing_absent": 243,
+      "extra_symbols": 129
+    },
+    "source_sha256_after": "cf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3",
+    "object_sha256_after": "39cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a",
+    "full_sha256": "ac36671ad80d872e4cd8053180fea46d76c6924b13ef1ae919d43048d9c95d08",
+    "gates": {
+      "baseline": {
+        "exit": 0,
+        "exact_pairs": {
+          "linked_equal": {
+            "baseline": 2079,
+            "final": 2084,
+            "lost": [],
+            "gained": [
+              [
+                "game/world/StarMap",
+                "_ZN7StarMap10initLightsEv"
+              ],
+              [
+                "game/world/StarMap",
+                "_ZN7StarMap14missionChangedEv"
+              ],
+              [
+                "game/world/StarMap",
+                "_ZN7StarMap24askForJumpIntoAlienWorldEv"
+              ],
+              [
+                "game/world/StarMap",
+                "_ZN7StarMap6renderEv"
+              ],
+              [
+                "game/world/StarMap",
+                "_ZN7StarMap8setStartEii"
+              ]
+            ]
+          },
+          "bytes_equal": {
+            "baseline": 959,
+            "final": 960,
+            "lost": [],
+            "gained": [
+              [
+                "game/world/StarMap",
+                "_ZN7StarMap14missionChangedEv"
+              ]
+            ]
+          }
+        }
+      },
+      "previous_a4fc71cd": {
+        "exit": 0,
+        "exact_pairs": {
+          "linked_equal": {
+            "baseline": 2084,
+            "final": 2084,
+            "lost": [],
+            "gained": []
+          },
+          "bytes_equal": {
+            "baseline": 960,
+            "final": 960,
+            "lost": [],
+            "gained": []
+          }
+        }
+      },
+      "target99": {
+        "exit": 1,
+        "target_met": false,
+        "reason": "StarMap >=99.0% target NOT reached"
+      }
+    }
+  },
+  "target99_met": false,
+  "source_sha256": "cf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3",
+  "object_sha256": "39cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a",
+  "independent_metrics": {
+    "read_only_unchanged_asmdiff": true,
+    "metrics": {
+      "source_match": 99.4,
+      "instruction_inventory_match": 99.2,
+      "opcode_inventory_match": 99.3,
+      "control_flow_match": 98.9,
+      "ordered_control_flow_match": 98.9,
+      "control_inventory_match": 98.9,
+      "call_count_match": 100.0,
+      "size_match": 99.6
+    },
+    "target_instructions": 916,
+    "current_instructions": 913,
+    "linked_equal": false,
+    "bytes_equal": false
+  },
+  "argument_audit": {
+    "counts": {
+      "aligned_calls": 699,
+      "known_stack_pairs": 33,
+      "known_register_pairs": 222
+    },
+    "raw_alignment_differences": 2,
+    "new_known_argument_differences": 0,
+    "review": "Same two Info SetColor false path alignments already reviewed89/90/94: nativec8b48 orange matched current1562 white, while actual selected-station orange call remains earlier in Info. Info full focused row unchanged; no new known mismatch. Conservative audit is not exhaustive ABI/runtime equivalence."
+  }
+}

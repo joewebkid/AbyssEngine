@@ -181,7 +181,9 @@ void StarMap::draw() {
             visibility = Globals::status->getSystemVisibilities();
             if (visibility != nullptr && i < this->systemPositions->size() && visibility->size() > i && visibility->data()[i]) {
                 this->scratchVector2 = Vector(*this->systemPositions->data()[i]);
-                if (currentRoutes && !(this->scratchVector.z < 0.0f && this->scratchVector2.z < 0.0f) && !this->jumpMapModeB) {
+                bool bothBehind = false;
+                if (this->scratchVector.z < 0.0f) bothBehind = this->scratchVector2.z < 0.0f;
+                if (currentRoutes && !bothBehind && !this->jumpMapModeB) {
                     for (uint32_t j = 0; j < currentRoutes->size(); ++j) {
                         if (currentRoutes->data()[j] == (int)i) {
                             float phase = (float)(101 - (Globals::status->getPlayingTime() / 10) % 99) / 100.0f;
