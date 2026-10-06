@@ -5050,3 +5050,53 @@ matcher, denominator or original weight change. No push, PR or merge.
 Evidence: `_work/read_tangent_local_records_identities.json`, eight focused
 reports/source snapshots, `_work/tangent_local_record_call_differences.json`
 and rechecked normalcenter validation audit.
+
+
+## Continuation: bounds records on accepted normal-center source
+
+Eight Read trials start from clean 6b20a4b0. Two-array local records group
+the existing min/max float[3] arrays in both orders, accessed through array
+references or directly by members. Four further member orders include the
+existing center float[3]. Every array and component is used by the original
+bounds computation; no dummy member, explicit padding/alignment/packing,
+constructor, helper or extra initialization is introduced. Center storage may
+begin its lifetime earlier but receives no new initialization or operation
+before its existing assignments. All original min then max sentinel stores,
+file reads, per-component bounds updates, center calculations, Vector copy,
+maximum-minus-minimum subtraction and full-diagonal Length call remain in
+their existing order. No half-diagonal radius is substituted.
+
+Two reference/direct pairs yield byte-identical whole Core objects, proving
+those aliases add no code differences for each field order. Including center
+is a new grouping, not an original recovered structure declaration. The other
+two-array forms revisit pre-normal-improvement hypotheses on the materially
+changed current function. The type remains local, not a native ABI/header change.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| min_max_refs | 97.7 / 54.8 | 880 | 100.0 | no |
+| max_min_refs | 97.7 / 54.9 | 880 | 100.0 | no |
+| min_max_direct | 97.7 / 54.8 | 880 | 100.0 | no |
+| max_min_direct | 97.7 / 54.9 | 880 | 100.0 | no |
+| min_max_center | 96.3 / 52.2 | 893 | 98.2 | no |
+| center_min_max | 97.4 / 53.9 | 881 | 100.0 | no |
+| max_min_center | 96.3 / 52.7 | 893 | 98.2 | no |
+| max_center_min | 97.7 / 54.5 | 878 | 100.0 | no |
+
+Every trial regresses source from 98.4; none retained. Two call-score regressions
+are independently inspected as static BL/BLX+relocation inventories; no missing
+executed cleanup or native correctness claim follows from static site counts.
+Production source restored, full source/fixture comparison to bf0243e8 and
+baseline outside-body/signature checks pass.
+
+Read-only recheck binds existing full artifact, actual linked 2079/byte 959
+pair sets equal baseline without lost/gained pairs, 204 objects/202 unaffected
+objects, winner identity, canonical flag digest/argument list and fixed-three
+matcher components from actual target/base instruction lists. No new native
+or full-corpus run claimed for rejected forms. Accepted **98.37% unweighted
+/98.36% weighted**; both >=99.0 gates remain unmet, goal active. No matcher,
+denominator, original weights, unrelated body or ABI change. No push, PR or merge.
+
+Evidence: `_work/read_current_bounds_records_identities.json`, per-trial focused
+reports/source snapshots, `_work/current_bounds_record_call_differences.json`
+and rechecked normalcenter validation audit.
