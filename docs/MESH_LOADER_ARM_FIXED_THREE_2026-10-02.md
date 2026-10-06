@@ -6273,3 +6273,65 @@ flag/matcher, push, PR or merge change.
 
 Evidence: `_work/read_typed_pair_tangent_lifetime_identities.json`, six focused
 reports and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: tangent output views and local records after paired raw arrays
+
+Twenty-one focused Read trials start from 4259dd21 and repeat earlier output
+view/local-record families on the accepted paired raw allocation source.
+Four output forms reuse a pointer, qualify pointers const, access Vector
+members or share the output offset. Nine centered output forms shift tangent,
+binormal or both pointers by 1/2/3 floats and compensate every subscript.
+Each pointer stays within its allocated array or at one-past on the final
+record; every actual store still addresses its original element. Corresponding
+field loads remain after Normalize/Cross and tangent stores remain before Cross.
+
+Eight local-record forms group used normal/tangent inputs and/or dot/scaled/
+orthogonal/normalized values. Aggregate clauses initialize each referenced
+member before use; there are no unused members, value-zero initialization,
+extra helpers, padding or constructors. Tangent-first input forms sequence
+the independent accumulator reads before the normal copy; no intervening
+call/store is introduced. Math, tangent stores and Cross keep their order.
+These record/view forms are representation hypotheses, not recovered source.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| output: reuse_pointer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output: const_pointers | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output: vector_members | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output: shared_offset | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: tangent_1 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: binormal_1 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: both_1 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: tangent_2 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: binormal_2 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: both_2 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: tangent_3 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: binormal_3 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: both_3 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| record: inputs_normal_first | 97.8 / 53.7 | 875 | 98.2 | no |
+| record: inputs_tangent_first | 97.4 / 54.1 | 880 | 98.2 | no |
+| record: math_vectors | 98.3 / 54.5 | 876 | 100.0 | no |
+| record: both_vectors_normal_first | 97.6 / 58.3 | 882 | 98.2 | no |
+| record: both_vectors_tangent_first | 98.3 / 56.8 | 877 | 100.0 | no |
+| record: math_dot_vectors | 98.4 / 57.5 | 882 | 100.0 | no |
+| record: both_dot_vectors_normal_first | 97.0 / 57.6 | 879 | 98.2 | no |
+| record: both_dot_vectors_tangent_first | 97.5 / 56.7 | 874 | 98.2 | no |
+
+All thirteen output-view forms equal the complete accepted Core object
+byte-for-byte. All eight local-record forms reduce source shape (97.0–98.4
+versus 98.5); five also reduce static call-count agreement. None retained.
+
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_tangent_output_identities.json`,
+`_work/read_typed_pair_tangent_center_identities.json`,
+`_work/read_typed_pair_tangent_local_records_identities.json`, twenty-one
+focused reports/source snapshots and rechecked typedpair validation audit.
