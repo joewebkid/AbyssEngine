@@ -3709,3 +3709,41 @@ ninetyfourth-corpus.json/log,ninetyfourth-baseline/previous/target-gate.json/log
 checkpoint94-before-focused/corpus.json. The source/CFG improvement is kept
 with strict and normalized-size regressions stated, without calling these
 metrics behavior equivalence or declaring a compiler ceiling.
+
+## Ninety-fifth follow-up: rejected station-array lifetime form (2026-10-06)
+
+Primary `c76e0..c76e8` loads stationGeoms for the loop bound. The zero
+iteration branches at c76f0 directly to c7914; nonzero processing refreshes
+the Array at c790c after all callbacks. Tested the same lifetime in source:
+capture during each bound, refresh after nonzero processing, then access
+data/element for addChild. The failed-bound Array was also used for the exit
+setVisible; accepted94 already performs that exit reuse, so it is not a
+new recovery. This differs from prior29's neutral top-break loop spelling.
+
+Focused204/0,22/0 exited0 (session87604). Entire report and complete ARM
+object equal accepted94. Compiler canonicalizes both pointer lifetime forms.
+Rejected; restored by fresh UTF8 write and focused204/0,22/0 exited0
+(session87661). Entire restored report/object equal accepted94, source
+SHA256 `6bd55273e01d6866104d648ed446531b6748d3783024871b63008a106584f1ef`,
+object SHA256 `2e91d58070c32a49baf16e9baaa179219178ed2da974a1ebe06860eabe64876b`.
+Source means remain99.305/98.66955358400226; strict87.675/82.24468384734544.
+No production retained; accepted94 native/full remain canonical, no redundant
+rerun after identical restoration. Fixed20/7101,7 linked/3byte unchanged;
+weighted99 still unmet, no ceiling or runtime-equivalence claim.
+
+Evidence: `docs/validation/starmap_2026-10-06_station_array_trial.json`.
+Raw: `_work/before-station-loop-array-ninetyfifth.cpp`,
+`station-loop-array-ninetyfifth.json/log`, `ninetyfifth-restored-focused.json/log`.
+
+A separate read-only VFP immediate audit complements91's PC-relative-load
+audit. Actual ELF halfwords were decoded to immediate8 and expanded to
+float32 sign/exponent/fraction; disassembler values were independently
+checked against those bits. All20 per-body unique bit sets match: native
+29 versus current29 VMOV.f32 immediate sites. Only update
+has different multiplicities: native repeats +/-0.25 on station-centering
+branches while current shares them; current repeats -30 on path selection
+while native shares it. This is not a newly recovered numeric correction.
+Prior27/35/91 branch/step trials cover those differences; no new trial or
+production change. General-register constants/scalar loads/derived values
+and runtime ABI are outside this audit, and no score ceiling follows.
+Evidence: `docs/validation/starmap_2026-10-06_float_immediates.json`.

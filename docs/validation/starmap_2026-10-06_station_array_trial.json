@@ -1,0 +1,31 @@
+{
+  "previous_production": "a4fc71cd",
+  "decision": "Rejected: focused report and complete ARM object identical to accepted94.",
+  "trial_source": "Capture stationGeoms in each main-loop bound; keep that snapshot on zero iteration, refresh after nonzero callbacks; use failed-bound snapshot for exit setVisible.",
+  "primary": "c76e0..c76e8 bound loads Array; c76f0 zero path branches c7914; nonzero c790c refreshes Array after callbacks; c7914..c7922 data/element/null/transform/addChild; c7974..c797a exit uses failed-bound Array.",
+  "accepted94": "2d3e..2d46 bound snapshot; 2d20 fresh Array before every addChild; 2d4a..2d4e exit already uses failed-bound Array. Exit was already correct.",
+  "not_repeated": "Prior29 top-break loop spelling was neutral. This trial concerned the pointer lifetime on zero versus nonzero paths.",
+  "trial": {
+    "session": 87604,
+    "terminal_exit": 0,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "entire_json_equal_previous": true,
+    "complete_object_equal_previous": true,
+    "object_sha256": "2e91d58070c32a49baf16e9baaa179219178ed2da974a1ebe06860eabe64876b"
+  },
+  "restoration": {
+    "session": 87661,
+    "terminal_exit": 0,
+    "fresh_utf8_write": true,
+    "entire_json_equal_previous": true,
+    "complete_object_equal_previous": true,
+    "object_sha256": "2e91d58070c32a49baf16e9baaa179219178ed2da974a1ebe06860eabe64876b",
+    "source_sha256": "6bd55273e01d6866104d648ed446531b6748d3783024871b63008a106584f1ef"
+  },
+  "production_retained": false,
+  "native_full": "Accepted94 remains canonical; identical restored source/report/object, no redundant native/full rerun.",
+  "target99_met": false
+}
