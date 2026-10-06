@@ -109,6 +109,8 @@ Active count access (2026-10-06): inspected Gun.h, Array.h and every count read 
 
 Native archive storage: rebuilding libgof2.a on A: failed while ar copied its archive, despite successful compilation. The generated native CMake cache now sends archive output to C:/Users/Dima/.codex/gun-arm-99-scratch-2026-10-06/native-output/libgof2.a; the same gof2 target then builds successfully. Native compiler/flags, ARM flags, project CMakeLists.txt and source scope are unchanged. The audit records the resulting archive path and hash.
 
+Scope controls (2026-10-06, after active-count checkpoint): nine additional private variants were compiled with canonical flags and compared as complete function bodies. Collision center scope, separate center assignment and their combination lower source-shape to 96.2/95.8/96.1; staged mine bounds are byte-identical to canonical. Short mine direction/up scope, an explicit sum temporary and their combination also preserve the entire shootAt body; explicit homing-search operands lower source-shape to 98.0. All variants were rejected and all other symbols remain unchanged. Production source/object/parser/flags and fixed manifest hashes were revalidated; no new full corpus or native build is claimed. The weighted score remains 98.5168407856%, below the requested 99%. Details and reproducibility hashes: validation/gun_scope_controls_2026-10-06.json.
+
 ## Checks and limits
 
 - Native CMake `gof2` static-library build: passed.
