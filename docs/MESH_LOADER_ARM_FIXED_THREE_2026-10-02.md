@@ -3909,3 +3909,50 @@ is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: section flag lifetimes and explicit zero dispatch interaction
+
+Seven Enhanced trials start from clean 0c5b4331. Five replace the byte format
+alias with two explicit optional/V5 predicates as const bools or unsigned int
+masks at entry or immediately before optional sections, plus bools immediately
+after Transform allocation. Only flags bits 0x18 and 0x10 matter; masking the
+original unsigned flags or its low byte selects the same sections for every
+32-bit input. Flags are a by-value parameter, so predicate evaluation may move
+without a field/file/global load moving. All bounds and section reads, Insert
+calls and failure behavior remain in order. Earlier full-format alias trials
+did not test these split lifetimes on the byte-axis state.
+
+The immediately-before-optional form preserves source 98.3 with strict 67.2.
+Two further trials combine it with explicit V5 cases 4/5/default assigning
+channel zero, with or without its initializer. These retain masks, rotation
+arithmetic, key insertion and hasAnimation effects. This is an interaction
+measurement of two individually source-neutral changes; it is not inferred
+from their standalone scores. No helpers, ABI, flags, matcher, denominator or
+synthetic effects change. Local declarations are hypotheses, not recovered C++.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| section flag lifetime: bool_entry | 98.2 / 67.2 | 641 | 100.0 | no |
+| section flag lifetime: bool_optional | 98.3 / 67.2 | 641 | 100.0 | no |
+| section flag lifetime: mask_entry | 98.2 / 67.2 | 641 | 100.0 | no |
+| section flag lifetime: mask_optional | 98.3 / 67.2 | 641 | 100.0 | no |
+| section flag lifetime: bool_after_allocation | 98.2 / 67.2 | 641 | 100.0 | no |
+| optional flags + V5 zero: explicit_zero_assignment | 98.3 / 67.9 | 639 | 100.0 | no |
+| optional flags + V5 zero: zero_labels_no_initializer | 98.3 / 67.9 | 639 | 100.0 | no |
+
+Entry bool/mask and post-allocation bool forms are byte-identical to each other
+and lower required source to 98.2. Optional bool/mask forms equal each other
+but differ from entry forms and accepted. The two explicit-zero combinations
+equal one another and differ from both flag-lifetime groups and accepted;
+they improve strict to 67.9 but retain source 98.3. Actual whole-object bytes
+establish identities; score equality is not treated as identity. No required
+source gain occurs, so no trial is retained; production source restored.
+
+Evidence: `_work/enhsectionflaglife-*.json`, `_work/enhflagzero-*.json`, source
+snapshots and both identity ledgers. Baseline outside-body/signature check
+passes and production tracked diff is empty. No native/full-corpus run is
+claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
