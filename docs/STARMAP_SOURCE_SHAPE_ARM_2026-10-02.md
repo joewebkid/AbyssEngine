@@ -3973,3 +3973,25 @@ _work/before-yaw-wrap-hundredfirst.cpp,yaw-distance-wrap-hundredfirst.cpp,
 yaw-full-wrap-hundredfirst.cpp,yaw-wrap-hundredfirst.json/log,
 yaw-full-wrap-hundredfirst.json/log,hundredfirst-restored-focused.json/log.
 No compiler ceiling proved. Goal remains active.
+
+
+## Hundred-and-second follow-up: clamp, viewport and help audit
+
+Read StarMap.cpp plus accepted96/current and primary ARM assembly. Move pitch
+clamp retains two ordered comparisons/three selectors versus native four
+comparisons/three selectors (cac74..cacd4/current4f18..4f62). Inspected selected
+values agree, including unordered input selecting -8192; no redundant predicate
+added for score. This does not prove equal floating-point exception counts.
+
+Info viewport c839c..c83f8/currentc98..cf4 already reads X before width and Y
+only after X acceptance, with matching ordered BMI/BGT lower/upper tests.
+Prior22 repaired this ordering. End help cb902/current28a6 already captures
+Layout before GameText and String calls and uses that saved receiver afterward.
+Actual ELF bytes cb90c/current28b0 match for six bytes of IT EQ/conditional
+text628 selection; local proof only, not whole End equality.
+
+No production edit, compiler trial or verifier change. Source and whole ARM
+object hashes remain accepted96; canonical focused/native-static/full results
+are unchanged. Means99.32/98.7082523588227 on20/7101; weighted99 remains unmet.
+No executable/runtime or compiler-ceiling claim. Evidence:
+docs/validation/starmap_2026-10-06_clamp_viewport_help_audit.json.
