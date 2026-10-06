@@ -6335,3 +6335,59 @@ Evidence: `_work/read_typed_pair_tangent_output_identities.json`,
 `_work/read_typed_pair_tangent_center_identities.json`,
 `_work/read_typed_pair_tangent_local_records_identities.json`, twenty-one
 focused reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: triangle products, accumulation and position views after paired raw arrays
+
+Fifteen focused Read trials start from 946ab1b8 on accepted paired raw arrays.
+Six product forms use compound assignments, named scalar products, Vector
+members, a named-products Vector aggregate or a Y/X/Z product record followed
+by an X/Y/Z array. All preserve numerator-times-reciprocal operand direction
+and Y/X/Z multiplication order, then accumulate vertices i0/i1/i2. No unused
+record field, zero fill, padding, helper or additional arithmetic is introduced.
+
+Five accumulation forms express the same three += calls with direct addresses,
+typed pointer reuse, separate sequential pointers, three precomputed pointers
+or a const input reference. Precomputation uses immutable local indices and
+the local accumulator base; call order and operands remain unchanged.
+Four position/index views use Vector pointers, a Vector base, Vector references
+or signed int copies of ushort indices. Values 0..65535 fit int, and all
+index-times-three offsets fit int. Triangle input field loads, formulas and
+component order remain unchanged. These are source representation hypotheses,
+not recovered original source declarations.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| product: compound_before_stores | 98.5 / 57.4 | 874 | 100.0 | yes |
+| product: named_products_before_stores | 98.5 / 57.4 | 874 | 100.0 | yes |
+| product: compound_at_stores | 98.5 / 57.4 | 874 | 100.0 | yes |
+| product: vector_product_members | 98.5 / 57.4 | 874 | 100.0 | yes |
+| product: named_products_vector | 98.5 / 57.5 | 874 | 100.0 | no |
+| product: products_yxz_record | 98.5 / 57.5 | 874 | 100.0 | no |
+| accum: direct_expressions | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accum: vector_pointer_reuse | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accum: sequential | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accum: before_calls | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accum: named_input_reference | 98.5 / 57.4 | 874 | 100.0 | yes |
+| view: vector_pointers | 98.5 / 57.4 | 874 | 100.0 | yes |
+| view: vector_base | 98.5 / 57.4 | 874 | 100.0 | yes |
+| view: vector_references | 98.5 / 57.4 | 874 | 100.0 | yes |
+| view: signed_indices | 98.5 / 57.4 | 874 | 100.0 | yes |
+
+Thirteen forms equal the complete accepted Core object byte-for-byte. The two
+aggregate product forms equal each other and increase strict agreement by 0.1
+without any source-shape increase. None retained: neither requested gate moves.
+
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_products_identities.json`,
+`_work/read_typed_pair_accum_pointer_identities.json`,
+`_work/read_typed_pair_triangle_views_identities.json`, fifteen focused reports
+and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
