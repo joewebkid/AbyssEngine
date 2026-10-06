@@ -4680,3 +4680,65 @@ unrelated body change. No push, PR or merge.
 Evidence: `_work/read_normal_end_pointer_identities.json`,
 `_work/read_uv_pair_center_identities.json`, their per-trial reports/snapshots
 and rechecked `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: tangent output centers and current counter interactions
+
+Fifteen Read trials start from clean c374bd9c. Nine address tangent or binormal
+output triples by the middle, final component, or end, separately or together.
+All field loads remain after their respective Normalize/Cross helper call;
+no pointer capture is moved across a helper. X/Y/Z store order and addresses
+are unchanged. The end pointer can be one-past the last triple, never beyond,
+and none is formed by a zero-iteration loop. These source-addressing hypotheses
+do not claim original recovered C++ pointer declarations. All nine produce
+the entire accepted Core object byte-for-byte.
+
+Six final/triangle loop trials examine interaction with the recently accepted
+centered normal output source. Five repeat previously negative or identity
+forms on this materially changed body: remaining for/guarded do, short final
+counter, explicit component offset and short triangle counter. One adds signed
+int final index. Count assignments remain from unsigned-short fields; all
+counter limits fit their selected types. Count captures, helper order,
+precision, stores, errors and cleanup expressions are unchanged. Guarded do
+has no first iteration when count is zero. No cast creates an out-of-range
+component index; explicit component stride is still three per vertex.
+
+| Family/trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| output/tangent_1 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/binormal_1 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/both_1 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/tangent_2 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/binormal_2 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/both_2 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/tangent_3 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/binormal_3 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/both_3 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| counter/final_remaining_for | 97.7 / 56.7 | 874 | 98.2 | no |
+| counter/final_remaining_do | 97.4 / 58.2 | 879 | 98.2 | no |
+| counter/final_short_index | 98.4 / 56.8 | 877 | 100.0 | yes |
+| counter/final_component_offset | 98.4 / 56.8 | 877 | 100.0 | yes |
+| counter/triangle_short_index | 98.4 / 55.1 | 875 | 100.0 | no |
+| counter/final_signed_index | 98.4 / 56.8 | 877 | 100.0 | yes |
+
+Remaining forms regress source and call-count agreement; short triangle form
+retains rounded 98.4 source but worsens strict. Others yield the accepted object.
+None retained. Static BL/BLX plus relocation inspection of both remaining forms
+is saved separately; a reduced static cleanup site count is not evidence of a
+missing executed cleanup. No native correctness claim is made for rejected
+forms. No dummy operation or compiler/matcher workaround is introduced.
+
+All production and relevant test source restored and compared exactly to
+bf0243e8. Read-only recheck verifies existing full JSON, actual linked 2079/byte
+959 pair sets equal baseline with lost [] and gained [], 204 objects/202
+unaffected objects, winner identity, canonical flags and all fixed-three metric
+components from original/base instruction lists. Baseline outside-body and
+signature check passes. No new native/full-corpus run claimed for rejected
+forms. Accepted means **98.37% unweighted /98.36% weighted**; both >=99.0 gates
+remain unmet, goal active. No other body/header/ABI, matcher, denominator or
+weight change. No push, PR or merge.
+
+Evidence: `_work/read_tangent_center_identities.json`,
+`_work/read_center_counter_interaction_identities.json`, per-trial reports and
+source snapshots; `_work/center_remaining_for_calls.json`,
+`_work/center_remaining_do_calls.json`, rechecked normalcenter validation audit.
