@@ -3431,3 +3431,56 @@ empty. Native/full-corpus runs are not claimed for these rejected variants;
 accepted axisbyte-full/native evidence remains authoritative: **98.23%
 unweighted /98.17% weighted**, 2079 linked /959 byte exact pairs equal baseline
 without losses. Both >=99.0 gates remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: mixed axis widths and remaining-axis traversal
+
+Ten Enhanced trials start from clean 2006e1f0. Fresh inventory inspection
+against axisbyte-full shows the original axis dispatch clears bit 31 with BIC
+at 0x6bcf8, 0x6be6c and 0x6bfe2. Accepted byte counters instead emit three
+ANDS #127 and three UXTB operations. This is concrete instruction evidence,
+not proof of original C++ counter declarations. The previously accepted
+all-byte form wins aggregate source score despite those inventory differences.
+
+Six forms change one or two axis counters back to int independently, keeping
+the remaining accepted byte counters. They preserve exactly axis 0/1/2, file
+read and channel order, all inner unsigned key counters and failure paths.
+The prior all-int and all-byte comparison does not establish mixed results;
+these six combinations explicitly measure them. No helper, ABI, compiler or
+matcher input changes.
+
+Four further forms count remaining axes 3 -> 2 -> 1 and derive axis as
+3 - remaining inside the existing loop. Int and unsigned-char counters are
+tested with for and unconditional do forms: exactly three axes always exist
+in a type-0 section, so both visit axis 0/1/2 and exit at remaining zero with
+no underflow or wrap. This is a genuine alternate traversal representation,
+not a dummy operation or recovered original loop. Inner reads and stores keep
+their existing sequence.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| mixed width: signed_axes_0 | 98.2 / 66.8 | 640 | 100.0 | no |
+| mixed width: signed_axes_1 | 98.2 / 66.8 | 640 | 100.0 | no |
+| mixed width: signed_axes_2 | 98.2 / 66.8 | 640 | 100.0 | no |
+| mixed width: signed_axes_0_1 | 98.1 / 66.7 | 639 | 100.0 | no |
+| mixed width: signed_axes_0_2 | 98.1 / 66.7 | 639 | 100.0 | no |
+| mixed width: signed_axes_1_2 | 98.1 / 66.7 | 639 | 100.0 | no |
+| remaining axes: int_for | 96.8 / 65.0 | 650 | 100.0 | no |
+| remaining axes: int_do | 95.9 / 39.1 | 649 | 100.0 | no |
+| remaining axes: unsigned_char_for | 96.8 / 65.0 | 650 | 100.0 | no |
+| remaining axes: unsigned_char_do | 95.9 / 39.1 | 649 | 100.0 | no |
+
+All ten regress required source score. Each mixed-width whole object differs
+from accepted and from the other mixed combinations, even where scores match.
+Remaining-axis int/byte for forms are byte-identical to each other; int/byte
+do forms are byte-identical to each other. The two groups differ from one
+another and accepted. Object identity is measured from bytes, not score equality.
+No variant is retained; production files restored.
+
+Evidence: `_work/enhmixedaxis-*.json`, `_work/enhaxisremaining-*.json`, source
+snapshots and their two identity ledgers. Baseline outside-body/signature check
+passes and production tracked diff is empty. Native/full-corpus validation is
+not claimed for rejected variants; accepted axisbyte-full/native evidence
+remains authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets
+2079 linked /959 byte equal baseline without losses. Both >=99.0 gates remain
+unmet; goal active. No push, PR or merge.
