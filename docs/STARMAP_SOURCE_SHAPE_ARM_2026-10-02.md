@@ -4093,3 +4093,22 @@ ARM object equal104; canonical validation preserved. Current96 drawKey dump
 still valid after104 (only496c/4970 changed);105 restored exact104 object.
 Source99.32/98.7082523588227 unchanged, weighted99 unmet. No runtime or compiler
 ceiling proof. Evidence: docs/validation/starmap_2026-10-06_key_temporary_audit.json.
+
+
+## Hundred-and-seventh follow-up: concrete shared Matrix proposal (not applied)
+
+Remaining Matrix difference is inline native initialization versus accepted
+StarMap calling the shared constructor. Prepared a reversible patch moving
+its unchanged body from Matrix.cpp to Matrix.h; no field/layout/StarMap-local
+fix or verifier/flag change. Shared files remain untouched. No compile or
+predicted improvement claimed. This exceeds agreed task scope, so requested
+explicit permission before applying. Pending question is not authorization.
+MatrixC2 itself is not exact in either baseline/current report (both duplicated
+unit entries73.5 source/43.2 strict). This does not prove callers preserve
+exactness or exported symbols survive. Proposed acceptance requires focus,
+native STATIC/full corpus, baseline/previous exact-pair preservation and
+symbol/coverage inspection, with rejection on loss or metric regression.
+Source/object still accepted104;99.32/98.7082523588227, weighted99 unmet.
+No runtime/ceiling claim. Goal active; waiting for shared-scope decision.
+Evidence/proposal: docs/validation/starmap_2026-10-06_matrix_inline_proposal.json
+and .patch. No shared production files modified.
