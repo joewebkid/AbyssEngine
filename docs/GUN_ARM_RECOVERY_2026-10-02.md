@@ -113,6 +113,8 @@ Scope controls (2026-10-06, after active-count checkpoint): nine additional priv
 
 Collision argument controls (2026-10-06): six private variants checked native geometry/camera reloads at 0x15337a..0x1533fc and scaled-damage argument ordering at 0x15328a..0x153310. Explicit canvas-cell reloads, named camera-local result, actual owner false branch first and named damage arguments before float conversion all optimize to identical collision bodies. Moving position reads ahead of camera calls yields 637 instructions instead of 632, with unchanged 96.9 source-shape and lower strict score (50.5 versus 51.3); its combined canvas variant is equivalent. All controls were rejected; no production inputs changed or broad checks rerun. Reproducibility hashes and complete rows: validation/gun_collision_argument_controls_2026-10-06.json.
 
+Mine pipeline controls (2026-10-06): native 0x1535ea..0x15363c confirms sequential subtract/normalize and multiply/multiply result pairs with array reloads. Five further controls express normalization, movement or both as full expressions, and express radius products 5/3/2 as unsigned word multiplication before conversion back to signed. Every variant retains 96.9 collision source-shape and 51.3 strict; unsigned radius products alone preserve the complete canonical body, while expression forms change allocation/bytes without a metric gain. None were integrated. Canonical input hashes remain unchanged; evidence is appended to validation/gun_collision_argument_controls_2026-10-06.json.
+
 ## Checks and limits
 
 - Native CMake `gof2` static-library build: passed.
