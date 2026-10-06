@@ -4178,3 +4178,42 @@ is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: reader enhanced-mask local storage
+
+Six Read trials start from clean 909f7417. subBit is flags&0x1a, used only for
+nonzero entry-pivot and final enhanced/child-section tests. Four forms store
+that same mask as unsigned char, unsigned short, int or const unsigned int;
+one stores its nonzero value as const bool; another removes the local and
+checks the unchanged by-value flags directly at both sites. The masked value
+is at most 26, fitting every tested type, and bool preserves the two nonzero
+predicates for all 32-bit flags. No scalar flag or mask is read from mutable
+mesh/global memory, and no field/file operation moves.
+
+Both section tests, ReadEnhanced's existing ==0 result check, child-count read,
+recursive work, failures and all other stream operations retain their order.
+No helper, ABI, flags, matcher, denominator, padding operation or other body
+changes. This is a local-storage hypothesis, not recovered original C++.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| unsigned_char | 98.0 / 55.9 | 867 | 100.0 | yes |
+| unsigned_short | 98.0 / 55.9 | 867 | 100.0 | yes |
+| int | 98.0 / 55.9 | 867 | 100.0 | yes |
+| const_unsigned_int | 98.0 / 55.9 | 867 | 100.0 | yes |
+| bool | 98.0 / 55.9 | 867 | 100.0 | yes |
+| direct_flags | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+All six whole Core objects equal accepted axisbyte-full byte for byte. Actual
+bytes establish identity, not equal scores. These enhanced-mask storage and
+direct-flag forms do not affect canonical ARM output and yield no source gain.
+No trial retained; production source restored.
+
+Evidence: `_work/readenhflagtypes-*.json`, source snapshots and
+`_work/read_enhanced_flag_type_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
