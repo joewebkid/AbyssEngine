@@ -1,0 +1,223 @@
+{
+  "previous_report_commit": "2d0b6d29",
+  "previous_production_commit": "1cf057a4",
+  "decision": "accepted: primary target-match flag instructions restored; source metric unchanged",
+  "original_source_recovered": false,
+  "primary_fragment": "c876c..c877a: MOVS R1,0; CMP R0,-1; IT GT; MOVGT R1,1; ORRS.W R0,R5,R1; BEQ fallback",
+  "new_fragment": "1050..105e: same opcodes, registers, immediate and order as primary; fallback relocation differs",
+  "behavior": "Signed targetIndex captured after same getters; targetMatch starts with missionTarget and is set true if index>=0. Preserves all calls, order, signed sentinel, boolean mapping and fallback. No added runtime checks or calls, compiler flags, barriers or padding. Original C++ spelling and runtime equivalence unproven.",
+  "before": {
+    "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+    "match": 80.2,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1207,
+    "n_base": 1196,
+    "source_match": 99.1,
+    "instruction_inventory_match": 98.4,
+    "opcode_inventory_match": 99.1,
+    "control_flow_match": 99.1,
+    "ordered_control_flow_match": 90.6,
+    "control_inventory_match": 99.1,
+    "call_count_match": 100.0,
+    "size_match": 99.1,
+    "unit": "game/world/StarMap"
+  },
+  "after": {
+    "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+    "match": 80.4,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1207,
+    "n_base": 1196,
+    "source_match": 99.1,
+    "instruction_inventory_match": 98.5,
+    "opcode_inventory_match": 99.2,
+    "control_flow_match": 98.9,
+    "ordered_control_flow_match": 90.4,
+    "control_inventory_match": 98.9,
+    "call_count_match": 100.0,
+    "size_match": 99.1,
+    "unit": "game/world/StarMap"
+  },
+  "other_21_rows_equal": true,
+  "read_only_shape_check": {
+    "source_metrics": {
+      "source_match": 99.1,
+      "instruction_inventory_match": 98.5,
+      "opcode_inventory_match": 99.2,
+      "control_flow_match": 98.9,
+      "ordered_control_flow_match": 90.4,
+      "control_inventory_match": 98.9,
+      "call_count_match": 100.0,
+      "size_match": 99.1
+    }
+  },
+  "focused": {
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "terminal_exit": 0
+  },
+  "native_static_library": {
+    "terminal_exit": 0,
+    "result": "StarMap compiled and libgof2.a linked"
+  },
+  "object_sha256": "c64021892af31b2758afac98c6c90b82b72b7ced6168b83f630da3cb0494293c",
+  "fixed_body_means": {
+    "source_match": {
+      "unweighted": 99.27000000000001,
+      "weighted": 98.6183072806647
+    },
+    "match": {
+      "unweighted": 87.675,
+      "weighted": 82.53267145472469
+    },
+    "linked_exact": 6,
+    "byte_exact": 3
+  },
+  "weighted99_target_met": false,
+  "native_runtime_equivalence": "unverified",
+  "full": {
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "count": 4619,
+    "fuzzy_perfect": 2203,
+    "byte_exact": 960,
+    "linked_exact": 2083,
+    "skipped": 0,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129,
+    "terminal_exit": 0,
+    "session_id": 15764,
+    "pid_observed_live": 32936,
+    "focused_rows_agree_after_unit_separator_normalization": true,
+    "sha256": "4ab44c08b7761e492db7c1914cc7aaf5fe72901a687158c50ed6f01e666a10fa"
+  },
+  "baseline_gate": {
+    "body_count": 20,
+    "original_instructions": 7101,
+    "aliases": {
+      "_ZN7StarMapC2EbP7Missionbi": "_ZN7StarMapC1EbP7Missionbi",
+      "_ZN7StarMapD2Ev": "_ZN7StarMapD1Ev"
+    },
+    "baseline": {
+      "source_match": {
+        "unweighted": 83.81,
+        "weighted": 73.61763131953246
+      },
+      "match": {
+        "unweighted": 48.29,
+        "weighted": 28.050161949021266
+      },
+      "linked_exact": 2,
+      "byte_exact": 2
+    },
+    "final": {
+      "source_match": {
+        "unweighted": 99.27000000000001,
+        "weighted": 98.6183072806647
+      },
+      "match": {
+        "unweighted": 87.675,
+        "weighted": 82.53267145472469
+      },
+      "linked_exact": 6,
+      "byte_exact": 3
+    },
+    "exact_pairs": {
+      "linked_equal": {
+        "baseline": 2079,
+        "final": 2083,
+        "lost": [],
+        "gained": [
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap10initLightsEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap14missionChangedEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap24askForJumpIntoAlienWorldEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap8setStartEii"
+          ]
+        ]
+      },
+      "bytes_equal": {
+        "baseline": 959,
+        "final": 960,
+        "lost": [],
+        "gained": [
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap14missionChangedEv"
+          ]
+        ]
+      }
+    },
+    "target_met": false
+  },
+  "previous_gate": {
+    "body_count": 20,
+    "original_instructions": 7101,
+    "aliases": {
+      "_ZN7StarMapC2EbP7Missionbi": "_ZN7StarMapC1EbP7Missionbi",
+      "_ZN7StarMapD2Ev": "_ZN7StarMapD1Ev"
+    },
+    "baseline": {
+      "source_match": {
+        "unweighted": 99.27000000000001,
+        "weighted": 98.6183072806647
+      },
+      "match": {
+        "unweighted": 87.66499999999999,
+        "weighted": 82.49867624278271
+      },
+      "linked_exact": 6,
+      "byte_exact": 3
+    },
+    "final": {
+      "source_match": {
+        "unweighted": 99.27000000000001,
+        "weighted": 98.6183072806647
+      },
+      "match": {
+        "unweighted": 87.675,
+        "weighted": 82.53267145472469
+      },
+      "linked_exact": 6,
+      "byte_exact": 3
+    },
+    "exact_pairs": {
+      "linked_equal": {
+        "baseline": 2083,
+        "final": 2083,
+        "lost": [],
+        "gained": []
+      },
+      "bytes_equal": {
+        "baseline": 960,
+        "final": 960,
+        "lost": [],
+        "gained": []
+      }
+    },
+    "target_met": false
+  },
+  "gate_exit_codes": {
+    "baseline": 0,
+    "previous": 0,
+    "target99": 1
+  }
+}

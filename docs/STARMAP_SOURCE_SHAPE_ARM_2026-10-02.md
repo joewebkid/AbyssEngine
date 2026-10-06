@@ -6,7 +6,7 @@
 implementation bodies measure **99.270% unweighted / 98.61831% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.665% / 82.49868%**, respectively. Source-shape is an inventory/control-flow
+**87.675% / 82.53267%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -3012,18 +3012,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/eightyfourth-corpus.log`; focused log:
-`_work/begin-visibility-bound-eightyfourth.log`; native log: `_work/native-eightyfourth.log`.
+Latest full log: `_work/eightysixth-corpus.log`; focused log:
+`_work/system-target-flag-eightysixth.log`; native log: `_work/native-eightysixth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
 50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against 090af981 preserves all 2083
+7fc7701c. The latest comparison against 2d0b6d29 (production 1cf057a4) preserves all 2083
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/eightyfourth-baseline-gate.json, eightyfourth-previous-gate.json and
-eightyfourth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/eightysixth-baseline-gate.json, eightysixth-previous-gate.json and
+eightysixth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `a0d737dc5fc2260032c0849d162a72a74ec3f0986865a503be9a7ca81ed422ac`.
+final full JSON SHA-256: `4ab44c08b7761e492db7c1914cc7aaf5fe72901a687158c50ed6f01e666a10fa`.
 
 
 ### Reproduction
@@ -3054,7 +3054,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
-| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1196 | 78.9% | 99.1% | 80.2% | - |
+| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1196 | 78.9% | 99.1% | 80.4% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1004 | 66.6% | 97.7% | 80.0% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.7% | 82.7% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.1% | 89.7% | - |
@@ -3311,3 +3311,48 @@ before-projection-depth-store-eightyfifth.cpp,
 projection-depth-store-eightyfifth.json/log,
 eightyfifth-restored-focused.json/log. Compact committed snapshot:
 `docs/validation/starmap_2026-10-05_projection_depth_trial.json`.
+
+
+## Eighty-sixth accepted system target flag materialization (2026-10-06)
+
+Previous report 2d0b6d29, production 1cf057a4. The previous interrupted turn
+only read source; no trial was applied. Inspected StarMap.cpp,
+info-original-direct.asm c876c..c877a, live current-eightyfifth.asm and the
+new focused object. Primary uses MOVS R1,0; CMP R0,-1; IT GT; MOVGT R1,1;
+ORRS.W R0,R5,R1; BEQ fallback. Previous current used a sign-bit EOR and
+ORRS R0,R5. Capture signed targetIndex after the same getters, start
+bool targetMatch with missionTarget, then set it true for targetIndex>=0.
+New1050..105e reproduces primary opcodes, registers, immediate and order.
+Fallback addresses differ. No extra runtime calls/checks, barriers, padding,
+flags or shared declarations. Same negative sentinel, boolean mapping and
+callback order. Original C++ spelling and native runtime equivalence unproven.
+
+Info strict **80.2 ->80.4**, source **99.1 unchanged**, count1207/1196 unchanged.
+Instruction inventory98.4->98.5 and opcode99.1->99.2 improve, while control
+inventory/flow99.1->98.9 and ordered control90.6->90.4 decrease. This is a
+restored native fragment, not a source-score increase or exact whole body.
+Unchanged asmdiff independently reproduced all eight new source metrics.
+Other21 focused rows are identical. Fixed20/7101 means source remain
+**99.270 /98.6183072806647**, strict **87.675 /82.53267145472469**.
+C2/D2 checked/excluded. Weighted99 shortfall remains0.3816927193353pp.
+
+Focused terminal exit0: compiled204/failed0,22 comparisons/skip0. Native
+UCRT static gof2 build terminal exit0: StarMap compiled/libgof2.a linked.
+Full session15764/PID32936 was observed live and returned terminal exit0,
+without restart; source and ARM object stayed frozen. Full4619/skip0,
+2083 linked/960 byte exact, source89.06/strict76.16, perfect2203,
+coverage4274/4524, missing250(7wrong/243absent), extra129. All22 focused/full
+metric rows agree; unit path separators are normalized only for this check.
+Baseline and previous exact-pair gates exit0 with zero losses. Default99 gate
+exits1 as required. Goal active; native executable behavior untested.
+
+ARM object SHA-256:
+`c64021892af31b2758afac98c6c90b82b72b7ced6168b83f630da3cb0494293c`.
+Full JSON SHA-256:
+`4ab44c08b7761e492db7c1914cc7aaf5fe72901a687158c50ed6f01e666a10fa`.
+Evidence under _work: before-system-target-flag-eightysixth.cpp,
+system-target-flag-eightysixth.json/log/asm, info-shape-check-eightysixth.json,
+native-eightysixth.log, eightysixth-corpus.json/log,
+eightysixth-baseline/previous/target-gate.json/log,
+checkpoint86-before-focused/corpus.json. Compact committed evidence:
+`docs/validation/starmap_2026-10-06_system_target_flag.json`.

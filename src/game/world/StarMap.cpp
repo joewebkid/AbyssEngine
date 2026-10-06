@@ -1414,7 +1414,9 @@ campaign_targets:
                     targetMatch = (stationId == campaign->getTargetStation()) | missionTarget;
                 } else {
                     SolarSystem *system = this->systems->data()[index];
-                    targetMatch = (static_cast<int32_t>(system->getStationEnumIndex(campaign->getTargetStation())) >= 0) | missionTarget;
+                    int32_t targetIndex = static_cast<int32_t>(system->getStationEnumIndex(campaign->getTargetStation()));
+                    targetMatch = missionTarget;
+                    if (targetIndex >= 0) targetMatch = true;
                 }
                 if (targetMatch || (Globals::status->getCurrentCampaignMission() >= 33 &&
                     (stationMode ? this->stations->data()[index]->getIndex() == Globals::status->field_80 :
