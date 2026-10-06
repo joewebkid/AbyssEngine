@@ -3,10 +3,10 @@
 ## Status and scope
 
 **PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.290% unweighted / 98.62095% original-instruction
+implementation bodies measure **99.300% unweighted / 98.65495% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.780% / 82.54657%**, respectively. Source-shape is an inventory/control-flow
+**87.790% / 82.58057%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
@@ -3012,18 +3012,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/ninetieth-corpus.log`; focused log:
-`_work/angular-literals-ninetieth-build.log`; native log:
-`_work/native-ninetieth-retry.log` (successful retry after disk-space failure).
+Latest full log: `_work/ninetythird-corpus.log`; focused log:
+`_work/target-icon-branches-ninetythird.log`; native log:
+`_work/native-ninetythird.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, without losses. Render adds one linked-exact pair in the latest checkpoint. The latest comparison against 78038081 (production a4a3633f) preserves all 2084
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, without losses. Render adds one linked-exact pair in the latest checkpoint. The latest comparison against 84e0f3d1 (production b848db14) preserves all 2084
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/ninetieth-baseline-gate.json, ninetieth-previous-gate.json and
-ninetieth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/ninetythird-baseline-gate.json, ninetythird-previous-gate.json and
+ninetythird-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `4b6070d6d0bb3f16b4c587147717dcf887f1ad331214ec0d49cfd9d12294ccd8`.
+final full JSON SHA-256: `80581c6f944c2965ad667f28475fe9ad5d507682a217528fae7fcf47a4e15aed`.
 
 
 ### Reproduction
@@ -3054,7 +3054,7 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
-| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1196 | 78.9% | 99.1% | 80.4% | - |
+| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1198 | 78.9% | 99.3% | 80.6% | - |
 | `_ZN7StarMap10OnTouchEndEii` | 1037/1004 | 66.6% | 97.7% | 80.0% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.7% | 82.7% | - |
 | `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.1% | 89.7% | - |
@@ -3582,3 +3582,75 @@ Compact evidence: docs/validation/starmap_2026-10-06_path_y_trial.json.
 Raw evidence under _work: before-path-y-selection-ninetyfirst.cpp,
 path-y-selection-ninetyfirst.json/log/asm,
 ninetyfirst-restored-focused.json/log,vfp-literal-audit-ninetyfirst.json.
+
+## Ninety-second follow-up: rejected target-owner flag (2026-10-06)
+
+The target-station ownership condition in init was written as an explicit
+Boolean: compare with borrowed playerStation, clear the flag for nullptr,
+then delete only when owned. Native c6f7c..c6f82 compares the borrowed pointer
+before the conditional null test. Unlike the twenty-seventh bitwise-AND
+trial, this uses sequential flag stores, with the same two predicates/calls.
+
+Session91670 terminated exit0:204 TUs, zero failures,22 comparisons/zero skips.
+Entire focused JSON and complete trial object equal accepted90, SHA256
+7d9424ca64863cded41ccad7c4560a4c0fce34bf48c53135cd169ef303e33617.
+The compiler still chooses null-first tests. No edit retained. Fresh UTF8
+restore and session37169 rebuild terminated exit0 (204/0/22/0), with complete
+focused JSON restored. Source matches b848db14 (checked through the next
+trial's pre-edit backup against Git). No separately sampled post-restore object
+hash is claimed; the neutral trial object had already matched accepted90.
+The next production candidate's native/full validations are independently run.
+
+Compact evidence: docs/validation/starmap_2026-10-06_target_owner_trial.json.
+Raw: _work/before-target-owner-flag-ninetysecond.cpp,
+target-owner-flag-ninetysecond.json/log,ninetysecond-restored-focused.json/log.
+
+## Ninety-third follow-up: separate native campaign-target branches (2026-10-06)
+
+The station/system campaign target branches previously merged into one Boolean
+OR/branch after the station-or-system calculation. Primary Android ARM has
+separate station ORRS/BNE/fallback-B at c8736..c873a and a system flag/ORRS/BEQ
+at c876c..c877a, both entering the same wanted-icon store. Source now branches
+to the single icon store independently, then evaluates the same fallback
+campaign/field80/target-minus1 conditions only when neither branch matched.
+Only StarMap.cpp changes. Same predicates, getters, their ordering and icon
+store; no additional callbacks, redundant conditions, padding, flags or ABI
+workarounds. C++ labels/spelling are a reconstruction, not recovered source.
+
+Independent read-only checks with unchanged asmdiff reproduce all8 source
+submetrics. Two complete16-byte machine fragments equal primary bytes:
+station c872c versus current1014 (SUB/CLZ/LSRS/ORRS/BNE/B), and system c876c
+versus current1054 (materialized flag/CMP/IT/ORRS/BEQ). This is local fragment
+byte equality; the entire Info body remains non-linked/non-byte-exact.
+
+Info source99.1 ->99.3, strict80.4 ->80.6; count1207/1196 ->1207/1198.
+Inventory98.5 ->98.7, opcodes99.2 ->99.3, control/ inventory98.9 ->99.1,
+ordered control90.4 ->90.6, size99.1 ->99.2; calls100 unchanged.
+All other21 focused rows are identical. Fixed20/7101 source99.300 /98.6549500070,
+strict87.790 /82.5805661174; aliases C2/D2 checked and excluded from means.
+Weighted99 shortfall0.345049993pp remains. No compiler ceiling is proved.
+
+Focused session22126 terminal exit0: all204 ARM TUs compiled, zero failures,
+22 comparisons/zero skips. Native static-library build terminates exit0.
+Full session58824, observed live PID29992, terminates exit0 with source and
+ARM objects frozen. All4619 comparisons, zero skips; all22 focused/full rows
+agree after unit-separator normalization. Linked2084/byte960 pairs preserved
+without losses against clean baseline and previous b848db14. Existing coverage
+remains4274/4524,250 missing (7 wrong type/243 absent),129 extras. Baseline and
+previous preservation gates exit0, default99 gate exit1. Runtime untested.
+
+Object SHA256: d114978a2da759daf551e4c0c541c0798cb5e19ee2e928b7b42c90ccad3446a7.
+Full JSON SHA256: 80581c6f944c2965ad667f28475fe9ad5d507682a217528fae7fcf47a4e15aed.
+Source SHA256: 644d2cb0e955cb3ee4aa3c8ec26df5f3c38f425e37da9af9fcdd83e7cbebd372.
+
+Compact evidence: docs/validation/starmap_2026-10-06_target_icon_branches.json.
+Raw under _work: before-target-icon-branches-ninetythird.cpp,
+target-icon-branches-ninetythird.json/log/asm,target-icon-proof-ninetythird.json,
+target-icon-argument-audit-ninetythird.json/log,info-inventory-ninetythird.json,
+native-ninetythird.log,ninetythird-corpus.json/log,
+ninetythird-baseline/previous/target-gate.json/log,
+checkpoint93-before-focused/corpus.json. The fresh Info inventory still has
+one BGE-versus-BGT difference at mission120 (primary c8544/c8546 versus current
+e30/e34); the prior twenty-fourth negative-enum goto trial was neutral, so it
+was not repeated. Other token surpluses remain diagnostic, not permission for
+extra reads/checks or proof of a compiler ceiling. Goal remains active.

@@ -1408,20 +1408,24 @@ campaign_targets:
                 (stationMode ? this->stations->data()[index]->getIndex() == 101 :
                                this->systems->data()[index]->getIndex() == 23);
             if (!suppressed) {
-                bool targetMatch;
                 if (stationMode) {
                     int stationId = this->stations->data()[index]->getIndex();
-                    targetMatch = (stationId == campaign->getTargetStation()) | missionTarget;
+                    if ((stationId == campaign->getTargetStation()) | missionTarget) goto campaign_target_icon;
                 } else {
                     SolarSystem *system = this->systems->data()[index];
                     int32_t targetIndex = static_cast<int32_t>(system->getStationEnumIndex(campaign->getTargetStation()));
-                    targetMatch = missionTarget;
+                    bool targetMatch = missionTarget;
                     if (targetIndex >= 0) targetMatch = true;
+                    if (targetMatch) goto campaign_target_icon;
                 }
-                if (targetMatch || (Globals::status->getCurrentCampaignMission() >= 33 &&
+                if (Globals::status->getCurrentCampaignMission() >= 33 &&
                     (stationMode ? this->stations->data()[index]->getIndex() == Globals::status->field_80 :
                         static_cast<int32_t>(this->systems->data()[index]->getStationEnumIndex(Globals::status->field_80)) >= 0) &&
-                    campaign->getTargetStation() == -1)) this->iconBuffer[1] = this->keyImageWanted;
+                    campaign->getTargetStation() == -1) goto campaign_target_icon;
+                goto campaign_target_done;
+            campaign_target_icon:
+                this->iconBuffer[1] = this->keyImageWanted;
+            campaign_target_done:;
             }
         }
     }

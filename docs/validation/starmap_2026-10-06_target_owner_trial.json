@@ -1,0 +1,33 @@
+{
+  "previous_production": "b848db14",
+  "previous_report": "84e0f3d1",
+  "decision": "Rejected owner bool materialization: complete focused JSON and complete trial ARM object identical to accepted90.",
+  "trial_source": "ownedTarget=target!=Globals::status->playerStation; if target==nullptr ownedTarget=false; if ownedTarget delete target. Same two conditions, no extra callback.",
+  "primary": "c6f7c CMP borrowed playerStation; c6f7e ITNE; c6f80 CMPNE null; c6f82 BEQ skipdelete. Current compiler retains null-first tests despite explicit flag.",
+  "trial": {
+    "terminal_exit": 0,
+    "session": 91670,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "entire_json_equals_accepted90": true,
+    "complete_object_equals_accepted90": true,
+    "object_sha256": "7d9424ca64863cded41ccad7c4560a4c0fce34bf48c53135cd169ef303e33617"
+  },
+  "restoration": {
+    "fresh_utf8_source_write": true,
+    "terminal_exit": 0,
+    "session": 37169,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "entire_json_equals_accepted90": true,
+    "source_verified_via_next_trial_backup_against_git_head": true,
+    "object_hash_not_resampled_after_restore": "The complete trial object had already matched accepted90; no separate restored hash captured before93 rebuild. No restored-object hash claim."
+  },
+  "production_retained": false,
+  "canonical_native_full": "accepted90 remains canonical until93 full completes",
+  "target99_met": false
+}
