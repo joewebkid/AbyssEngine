@@ -3717,3 +3717,60 @@ is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: axis dispatch types and bounded default selection
+
+Eleven Enhanced trials start from clean 190cc622. Six keep all accepted byte
+counters and cast the three switch expressions explicitly to unsigned int,
+signed char or int, or cast one unsigned group independently. Actual axes
+are 0/1/2 and remain representable in all types; selection/key conversion and
+InsertKeyFrame effects do not change. Original BIC #0x80000000 and accepted
+ANDS #127/UXTB differences motivate expression-type inspection, not recovered
+source declarations. Explicit int/uint casts are hypotheses, not matcher edits.
+
+The signed-char dispatch whole Mesh object equals the previously validated
+pre-byte-axis channelzero-full object byte for byte, SHA-256
+ad36d491cbfdd267469ef7f5603777bfbfb1a020cfecac32a08c8b1ce49b5a05.
+The counter declarations remain byte-sized in this trial, so the expression
+cast alone reproduces that older output. A fresh inventory diagnostic shows
+BIC differences disappear, while branch-shape differences remain. This does
+not imply a general optimizer equivalence beyond the measured complete object.
+
+Five further forms select the axis-0 case through default, for position,
+scale, rotation or all three, plus all with signed-char dispatch. Because these
+closed internal loops execute exactly 0/1/2, default selects axis 0 after the
+other two cases; all file reads, Y sign, masks, calls and inner counters retain
+their valid-loop behavior. This is bounded-loop equivalence only: a hypothetical
+out-of-domain axis would call the axis-0 case instead of skipping. No external
+axis value enters these loops, and no extra operation is added for scoring.
+No helper/ABI/flag/matcher or denominator changes.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| dispatch type: all_unsigned_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| dispatch type: all_signed_char | 98.0 / 66.6 | 638 | 100.0 | no |
+| dispatch type: all_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| dispatch type: unsigned_group_0 | 98.3 / 66.9 | 641 | 100.0 | yes |
+| dispatch type: unsigned_group_1 | 98.3 / 66.9 | 641 | 100.0 | yes |
+| dispatch type: unsigned_group_2 | 98.3 / 66.9 | 641 | 100.0 | yes |
+| default axis 0: position | 97.4 / 24.3 | 639 | 100.0 | no |
+| default axis 0: scale | 97.9 / 66.5 | 637 | 100.0 | no |
+| default axis 0: rotation | 98.0 / 66.9 | 638 | 100.0 | no |
+| default axis 0: all | 96.7 / 24.0 | 633 | 100.0 | no |
+| default axis 0: all_signed_dispatch | 96.9 / 24.0 | 630 | 100.0 | no |
+
+Five int/unsigned dispatch forms are byte-identical to accepted. Signed-char
+regresses source to 98.0 and matches the old object as verified above. Every
+default-axis form regresses source and differs from accepted and each other.
+Actual bytes establish identity; equal scores are not treated as identity.
+All production edits restored; no trial retained.
+
+Evidence: `_work/enhaxisdispatch-*.json`, `_work/enhaxisdefaultzero-*.json`,
+source snapshots, identity ledgers and
+`_work/axis_dispatch_signed_char_old_identity.json`. Baseline outside-body/
+signature check passes and production tracked diff is empty. No native/full-
+corpus run is claimed for rejected variants. Accepted axisbyte-full/native
+evidence remains authoritative: **98.23% unweighted /98.17% weighted**, exact
+pair sets 2079 linked /959 byte equal baseline without losses. Both >=99.0
+gates remain unmet; goal active. No push, PR or merge.
