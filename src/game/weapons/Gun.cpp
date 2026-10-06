@@ -343,8 +343,7 @@ Gun::Gun(int kind, int p2, int count, int p4, int p5, int p6, float p7, Vector d
     this->lifetimes = new int[static_cast<unsigned>(count)];
     // ARM @0x15202a saturates a negative signed count to SIZE_MAX before new[].
     this->hitFlags = new uint8_t[count < 0 ? static_cast<size_t>(-1) : static_cast<size_t>(count)];
-    Array<Vector *> *arr = new Array<Vector *>();
-    this->wobbleOffsets = arr;
+    this->wobbleOffsets = new Array<Vector *>();
     ArraySetLength(count, this->positionArray);
     ArraySetLength(count, this->directionArray);
     ArraySetLength(count, this->upArray);
@@ -619,9 +618,10 @@ void Gun::calcCharacterCollision() {
     int kind = weaponType;
     unsigned radial = (static_cast<unsigned>(kind) - 6u) < 2 || kind == 42 || kind == 34;
     unsigned mine = kind == 11;
-    // Equivalent word zero-test for the native scatter flag; source form is inferred.
+    // The low sentinel defines CLZ for zero difference; native zero-test syntax is inferred.
     unsigned scatterDifference = static_cast<unsigned>(kind) - 25u;
-    unsigned scatter = 1u ^ ((scatterDifference | (0u - scatterDifference)) >> 31);
+    unsigned long long scatterWord = (static_cast<unsigned long long>(scatterDifference) << 32) | 0x80000000ULL;
+    unsigned scatter = static_cast<unsigned>(__builtin_clzll(scatterWord)) >> 5;
     unsigned particle = radial || (static_cast<unsigned>(kind) - 4u) < 2 || kind == 40;
     unsigned detonate = radial | mine;
     lastHitKIPlayer = 0;

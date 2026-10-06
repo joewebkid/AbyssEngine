@@ -5,6 +5,7 @@ This isolates source bodies, not stubs. It verifies host construction, array
 ownership and both offset overloads; it does not test ARM gameplay execution.
 Also extracts the actual shootAt mount block for an operand/side-effect check.
 The ignite tail check verifies its Sparks operand, not the full radial-damage body.
+The extracted scatter classifier is checked against the native type-25 predicate.
 """
 from pathlib import Path
 import subprocess
@@ -61,6 +62,11 @@ def main():
     for member in ('impact', 'basePos', 'positionArray'):
         selected += f'auto &{member} = gun.{member};\n'
     selected += ignite[ignite.rindex('    if (impact)'):ignite.rindex('}')] + '}\n'
+    collision = body(source, 'void Gun::calcCharacterCollision()')
+    start = collision.index('    unsigned scatterDifference')
+    end = collision.index('    unsigned particle', start)
+    selected += 'unsigned classifyGunScatter(int kind) {\n'
+    selected += collision[start:end] + 'return scatter;\n}\n'
     work = ROOT / "_work/gun-smoke"
     work.mkdir(parents=True, exist_ok=True)
     isolated = work / "selected.cpp"
@@ -69,7 +75,7 @@ def main():
     executable = work / "gun_contract_smoke.exe"
     subprocess.run([compiler, "-std=c++14", "-fpermissive", "-Isrc",
                     "tools/gun_contract_smoke.cpp", "tools/gun_mount_contract_smoke.cpp",
-                    "tools/gun_ignite_contract_smoke.cpp", str(isolated),
+                    "tools/gun_ignite_contract_smoke.cpp", "tools/gun_scatter_flag_smoke.cpp", str(isolated),
                     "-o", str(executable)],
                    cwd=ROOT, check=True)
     subprocess.run([str(executable)], cwd=ROOT, check=True)
