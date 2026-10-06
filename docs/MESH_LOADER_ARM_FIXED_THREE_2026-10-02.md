@@ -7357,3 +7357,59 @@ flag/matcher, push, PR or merge change.
 
 Evidence: `_work/read_index_reload_bounds_values_identities.json`, eleven focused
 reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: fresh indexed owner with UV flip and pair views
+
+Fourteen focused Read measurements start from 0d6e33ac: five flip-storage forms,
+two outer flip-dispatch forms, six pair views and a reload-only control. Each
+adds a fresh m=*slot after successful indexCount read, before allocation.
+Flip storage uses raw uchar/uint/int/ushort enableShader or implicit bool;
+Engine.h declares enableShader unsigned char, so each integer type preserves
+its full value/nonzero interpretation. Snapshot timing remains unchanged.
+Outer-dispatch forms branch on the existing immutable flip snapshot, with
+flipped or plain loop first. Only the selected loop executes, and compressed
+double u/v scaling and conditional double 1-v subtraction retain their precision.
+
+Pair views shift source/destination/both pointers by 1 or 2 and compensate
+every subscript. The final shift by 2 is one-past the corresponding input/output
+array; every access still addresses its original element. Fresh m->texCoords
+field loads stay at their original position inside each compressed iteration.
+No type is changed in decode, no float subtraction substitutes for double,
+and no allocation/read/count/cleanup change. Source forms are hypotheses, not
+recovered original declarations. No helper, dead effect, padding, assembly,
+fixed register or flag/matcher change. Fresh indexed-owner memory timing has
+ARM support but no fixture proof for hypothetical slot-mutating file callbacks.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals reload-only |
+|---|---|---:|---:|---|
+| flip: reload_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| flip: storage_raw_unsigned_char | 98.5 / 57.8 | 874 | 100.0 | yes |
+| flip: storage_raw_unsigned_int | 98.5 / 57.8 | 874 | 100.0 | yes |
+| flip: storage_raw_int | 98.5 / 57.8 | 874 | 100.0 | yes |
+| flip: storage_raw_unsigned_short | 98.5 / 57.8 | 874 | 100.0 | yes |
+| flip: storage_implicit_bool | 98.5 / 57.8 | 874 | 100.0 | yes |
+| flip: outer_flipped_first | 96.3 / 56.4 | 914 | 100.0 | no |
+| flip: outer_plain_first | 96.3 / 56.4 | 914 | 100.0 | no |
+| pair: destination_1 | 98.5 / 57.8 | 874 | 100.0 | yes |
+| pair: source_1 | 98.5 / 57.8 | 874 | 100.0 | yes |
+| pair: both_1 | 98.5 / 57.8 | 874 | 100.0 | yes |
+| pair: destination_2 | 98.5 / 57.8 | 874 | 100.0 | yes |
+| pair: source_2 | 98.5 / 57.8 | 874 | 100.0 | yes |
+| pair: both_2 | 98.5 / 57.8 | 874 | 100.0 | yes |
+
+Five storage forms, six pair views and control equal the entire reload-only
+Core object byte-for-byte. Both outer-dispatch forms equal one another and
+regress source to 96.3. No gain; none retained. Code restored. Source and
+fixtures match ecc30f25; outside-body/signature checks pass. Read-only binding
+rechecks existing typedpair full evidence: 204 objects/202 unaffected objects,
+actual linked 2079/byte 959 exact pair sets equal baseline without lost/gained
+pairs, unchanged canonical arguments and fixed-three rows directly recomputed
+with the unchanged matcher. No new native/full-corpus run claimed for rejected
+forms. Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates
+unmet; goal active. No general compiler ceiling, header/ABI, flag/matcher,
+push, PR or merge change.
+
+Evidence: `_work/read_index_reload_uv_flip_identities.json`,
+`_work/read_index_reload_uv_pair_identities.json`, fourteen focused reports/
+source snapshots and rechecked typedpair validation audit.
