@@ -614,7 +614,9 @@ void Gun::calcCharacterCollision() {
     int kind = weaponType;
     unsigned radial = (static_cast<unsigned>(kind) - 6u) < 2 || kind == 42 || kind == 34;
     unsigned mine = kind == 11;
-    unsigned scatter = kind == 25;
+    // Equivalent word zero-test for the native scatter flag; source form is inferred.
+    unsigned scatterDifference = static_cast<unsigned>(kind) - 25u;
+    unsigned scatter = 1u ^ ((scatterDifference | (0u - scatterDifference)) >> 31);
     unsigned particle = radial || (static_cast<unsigned>(kind) - 4u) < 2 || kind == 40;
     unsigned detonate = radial | mine;
     lastHitKIPlayer = 0;
