@@ -3575,3 +3575,51 @@ is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: triangle coordinate views and accumulator pointers
+
+Nine Read trials start from clean c3244d95. Four retain the current tangent
+formulas, index load order and Y/X/Z numerator/product order, changing only
+coordinate access through three const Vector pointers, a const Vector base
+with three derived pointers, or three const Vector references; another uses
+signed int locals for the three unsigned-short indices. Every 16-bit index
+fits int and scaling remains <=196605. No whole-Vector copy or custom operator
+assignment is added. Existing coordinate member accesses address the same
+floats. These are source access/type hypotheses, not recovered declarations.
+
+Five accumulator-pointer forms use direct cast expressions, reuse one typed
+Vector pointer, declare three pointers sequentially at each call, declare all
+three before the calls, or name the existing tangent input as a const reference.
+Each retains the same three Vector::operator+= calls in i0 -> i1 -> i2 order.
+No arithmetic reassociation or scalar accumulation replaces the existing helper.
+The precomputed-pointer form retains the same accumulation buffer and indices
+already established before the calls. Original calls at 0x6cdaa..0x6cdb8
+support inspection of address setup, not the exact source declaration form.
+Math helper definitions and all other bodies remain unchanged.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| coordinate views: vector_pointers | 98.0 / 55.9 | 867 | 100.0 | yes |
+| coordinate views: vector_base | 98.0 / 55.9 | 867 | 100.0 | yes |
+| coordinate views: vector_references | 98.0 / 55.9 | 867 | 100.0 | yes |
+| coordinate views: signed_indices | 98.0 / 55.9 | 867 | 100.0 | yes |
+| accumulator pointers: direct_expressions | 98.0 / 55.9 | 867 | 100.0 | yes |
+| accumulator pointers: vector_pointer_reuse | 98.0 / 55.9 | 867 | 100.0 | yes |
+| accumulator pointers: sequential | 98.0 / 55.9 | 867 | 100.0 | yes |
+| accumulator pointers: before_calls | 98.0 / 55.9 | 867 | 100.0 | yes |
+| accumulator pointers: named_input_reference | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+All nine whole Core objects are byte-identical to accepted axisbyte-full.
+Identity is established from actual bytes, not inferred from equal scores.
+These coordinate and accumulator access forms do not change ARM output under
+the canonical flags, and no trial improves the required source score.
+Production source was restored; none is retained.
+
+Evidence: `_work/readtriangleviews-*.json`, `_work/readaccumpointers-*.json`,
+source snapshots and both identity ledgers. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
