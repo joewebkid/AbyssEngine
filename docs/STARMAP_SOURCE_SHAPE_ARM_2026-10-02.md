@@ -3850,3 +3850,37 @@ This excludes these particular edits, not all unknown call effects, runtime
 ABI issues, alternative source forms or future score improvements.
 Evidence: docs/validation/starmap_2026-10-06_receiver_flow_audit.json.
 Goal remains active.
+
+## Ninety-eighth follow-up: transition zero-guard trial (removed)
+
+Current tracked checkpoint bdbcab1d was clean before the trial; production
+remains accepted96 b67a5300. Inspected StarMap.cpp draw and primary/current
+ARM plus prior67/77/97 evidence. Draw's phase comparison c952c/c9534 already
+agrees with current634/63c, including unordered skip; completed-edge loop
+bounds also agree (c9a08..c9a18/currentb14..b24). No edits to those blocks.
+
+Initial transition guard differs in form: primary c9120..c912c uses ITT EQ
+with conditional transitionOut load/compare; accepted96 22e..23c uses BNE
+then load/compare. Trial used transitionIn==0 && transitionOut==0 goto
+draw_alpha_ready, followed by the original transition body in its own scope.
+Preserved short-circuit reads, alpha stores, callback paths and later fresh
+reads. No new callback, condition, padding, register/barrier/volatile forcing,
+flag, shared header or verifier changes. This direct zero-guard continuation
+is distinct from prior77's uint8_t fallback form; both compile neutrally.
+
+Trial exit0(session19609):204 compiled/0 failed,22 comparisons/0 skips.
+Entire focused JSON and whole ARM object equal accepted96. Trial source hash
+2090faeee195eb1d56871b99ddf207a5f44db746f0028e247a54ff4b9d5644c4.
+Removed trial with fresh UTF8 write; focused restore exit0(session4217),
+204/0,22/0. Entire JSON and whole object again identical to accepted96;
+source SHA256cf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3;
+object SHA25639cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a.
+
+No production change retained. Accepted96 native/full validations remain
+authoritative; no redundant rerun or new native runtime test is claimed.
+Fixed20/7101 source99.32/98.7082523588227 remains unchanged, seven unique
+linked/three byte preserved; weighted99 unmet. No compiler ceiling proved.
+Evidence: docs/validation/starmap_2026-10-06_transition_zero_trial.json and
+_work/before-transition-zero-goto-ninetyeighth.cpp,
+transition-zero-goto-ninetyeighth.json/log,ninetyeighth-restored-focused.json/log.
+Goal remains active.

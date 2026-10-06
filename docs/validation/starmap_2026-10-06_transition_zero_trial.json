@@ -1,0 +1,44 @@
+{
+  "decision": "Rejected neutral transition-zero guard goto trial; production restored",
+  "previous_report": "bdbcab1d",
+  "production": "b67a5300",
+  "trial_source": "Draw initial transitionIn==0 && transitionOut==0 jumps to common draw_alpha_ready continuation; transition body remains in its own scope. Same short-circuit reads and callback-visible later reads.",
+  "native_basis": "c9120..c912c uses ITT EQ/conditional transitionOut load and comparison; accepted96 22e..23c uses BNE then load/compare. Direct zero-guard continuation is distinct from prior77 uint8_t fallback spelling but compiles identically too.",
+  "trial": {
+    "session": 19609,
+    "terminal_exit": 0,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "entire_focused_json_equal_canonical": true,
+    "whole_object_equal_canonical": true,
+    "source_sha256": "2090faeee195eb1d56871b99ddf207a5f44db746f0028e247a54ff4b9d5644c4"
+  },
+  "restoration": {
+    "session": 4217,
+    "terminal_exit": 0,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "fresh_utf8_write": true,
+    "entire_focused_json_equal_canonical": true,
+    "whole_object_equal_canonical": true,
+    "source_sha256": "cf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3"
+  },
+  "object_sha256_trial_and_restored": "39cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a",
+  "production_retained": false,
+  "source_means": {
+    "unweighted": 99.32,
+    "weighted": 98.7082523588227
+  },
+  "native_full": "Accepted96 remains canonical. Identical restored source/report/object; no redundant native/full rerun and no new native runtime claim.",
+  "raw_evidence": [
+    "before-transition-zero-goto-ninetyeighth.cpp",
+    "transition-zero-goto-ninetyeighth.json/log",
+    "ninetyeighth-restored-focused.json/log"
+  ],
+  "target99_met": false,
+  "compiler_ceiling_proved": false
+}
