@@ -4006,3 +4006,41 @@ is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
 authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
 /959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
 goal active. No push, PR or merge.
+
+
+## Continuation: seven-channel V5 outer loop forms
+
+Six Enhanced trials start from clean aa05ddfc. The V5 outer channel loop runs
+exactly seven times after the existing presence check. Forms use for c!=7,
+explicit while c<7, unconditional do with ++c<7, ++c<=6 or ++c!=7, or a remaining
+count 7->1 deriving channel c=7-remaining. Each visits channels 0..6 in order;
+all channel count reads, signed-short inner key bounds, key/update operations,
+mask selection, rotation arithmetic and hasAnimation effects stay unchanged.
+No guard is fabricated: this existing fixed-size channel loop always has seven
+iterations when entered. All counters remain within 0..7 without overflow.
+These loop spelling hypotheses are not recovered original C++. They test
+outer channel traversal, not the previously measured signed inner-key loops.
+Helpers, ABI, flags, matcher, denominator and other bodies stay unchanged.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| for_not_equal | 98.0 / 66.7 | 641 | 100.0 | no |
+| while | 98.3 / 66.9 | 641 | 100.0 | yes |
+| do_less | 98.0 / 66.8 | 640 | 100.0 | no |
+| do_at_most | 98.0 / 66.8 | 640 | 100.0 | no |
+| do_not_equal | 98.0 / 66.8 | 640 | 100.0 | no |
+| remaining | 98.2 / 66.3 | 643 | 100.0 | no |
+
+While form yields accepted byte-identical Mesh. All other forms regress required
+source. Do <7 and <=6 objects equal each other; do !=7 differs from them despite
+matching rounded scores and instruction count. Remaining-count and for !=7
+objects differ from accepted, all do forms and one another. Actual whole-object
+bytes establish identities, not scores. No trial retained; production restored.
+
+Evidence: `_work/enhv5outerloop-*.json`, source snapshots and
+`_work/enh_v5_outer_loop_identities.json`. Baseline outside-body/signature check
+passes and production tracked diff is empty. No native/full-corpus run is
+claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
