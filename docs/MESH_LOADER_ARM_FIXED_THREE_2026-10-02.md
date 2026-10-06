@@ -5086,6 +5086,8 @@ changed current function. The type remains local, not a native ABI/header change
 Every trial regresses source from 98.4; none retained. Two call-score regressions
 are independently inspected as static BL/BLX+relocation inventories; no missing
 executed cleanup or native correctness claim follows from static site counts.
+Both have 62 static call sites versus accepted 61: exactly one additional
+`_ZdaPv` site, with direct mathematical/helper call inventories unchanged.
 Production source restored, full source/fixture comparison to bf0243e8 and
 baseline outside-body/signature checks pass.
 
