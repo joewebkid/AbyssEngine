@@ -7126,3 +7126,54 @@ or merge change.
 
 Evidence: `_work/read_index_reload_tangent_lifetime_identities.json`, thirteen
 focused reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: unsigned section type with both if-dispatch orders
+
+Fifteen focused Enhanced measurements start from 1585f816: shared unsigned-short
+section type control and fourteen combinations of if-dispatch. Both type==1
+before type==0 and type==0 before type==1 are tested for all seven nonempty
+subsets of position/scale/rotation sections. This combines previously separate
+signedness and dispatch families and adds mixed-section/order combinations.
+Every type read remains two bytes at its original point. Bit patterns other
+than 0/1 skip the same sections, while optional type 2 remains recognized.
+Sign reinterpretation does not make any other bit pattern equal 0/1/2.
+V5 short count stays signed, as required for negative-count skipping. All
+branch-local reads, updates, inserts, axis masks, position Y negation and
+failure paths remain in their sections. No new operations, helper, table,
+dead local, padding, compiler option or ABI change. These forms are hypotheses,
+not recovered original type declarations or if-dispatch syntax.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| unsigned_type_control | 98.1 / 66.4 | 641 | 100.0 | no |
+| one_first_0 | 98.1 / 66.4 | 641 | 100.0 | no |
+| one_first_1 | 98.1 / 66.4 | 641 | 100.0 | no |
+| one_first_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| one_first_0_1 | 98.1 / 66.4 | 641 | 100.0 | no |
+| one_first_0_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| one_first_1_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| one_first_0_1_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_0 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_1 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_0_1 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_0_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_1_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_0_1_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+
+All fifteen complete Mesh objects are byte-identical to one another and to
+the earlier unsigned-shared-type object. Thus the new if-dispatch combinations
+do not change that object's source regression, regardless of section/order.
+None retained; code restored. Source and fixtures match ecc30f25; outside-body/
+signature checks pass. Read-only binding rechecks existing typedpair full
+evidence: 204 objects/202 unaffected objects, actual linked 2079/byte 959 exact
+pair sets equal baseline without lost/gained pairs, unchanged canonical
+arguments and fixed-three rows directly recomputed with the unchanged matcher.
+No new native/full-corpus run claimed for rejected forms. Accepted means
+**98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet; goal active.
+No general compiler ceiling, header/ABI, flag/matcher, push, PR or merge change.
+
+Evidence: `_work/enh_unsigned_section_dispatch_identities.json`, fifteen focused
+reports/source snapshots, prior unsigned-shared-type object comparison and
+rechecked typedpair validation audit.
