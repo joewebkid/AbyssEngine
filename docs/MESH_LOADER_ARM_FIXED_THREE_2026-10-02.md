@@ -9996,3 +9996,93 @@ Main checkout untouched; report-only commit; no push/PR/merge.
 Evidence: `_work/analyze_three_inventory_deficits_20261007.py`,
 `_work/three_inventory_deficits_20261007.json`, retained typedpair-full objects
 and rechecked typedpair validation audit.
+
+
+## Continuation: Enhanced wide addressed axis/count state
+
+Thirty focused measurements start from 9a2521d8. The preceding deficit map
+found three missing original bic #2147483648 axis-dispatch forms, alongside
+three accepted ands #127/uxtb pairs. Prior addressed AxisState used byte axis.
+This bounded hypothesis tests int/unsigned-int active axis beside addressed
+unsigned-short count, axis first, all seven nonempty section subsets, with
+accepted/preloaded V5 channel variants and two controls.
+
+Each selected section uses local struct AxisState { int/unsigned int axis;
+unsigned short count; }; state.axis initialized to zero for its loop, count
+left uninitialized until original two-byte Read. Both fields used by original
+increment/bound/dispatch and count Read/key loop. Actual axis values 0..2,
+termination at 3; no signed overflow. Same payload/time/key calls, masks,
+NaN behavior, section ordering, 4/5 zero channel insertions, attachment and
+cleanup. Relies on bounded actual Read, not arbitrary writes past count.
+Natural type-layout padding only; no invented field, dummy mask/instruction,
+forced register, volatile/assembly, helper/header/ABI/signature/compiler flag/
+matcher/denominator change. No original local state type claimed recovered.
+
+| Trial | Enhanced source / strict | Instructions | Calls | bic sign | ands127 | uxtb |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 | 1 | 3 | 3 |
+| accepted_int_axes_1 | 97.1 / 52.0 | 646 | 100.0 | 1 | 2 | 2 |
+| accepted_int_axes_2 | 97.1 / 40.6 | 646 | 100.0 | 1 | 2 | 2 |
+| accepted_int_axes_3 | 95.2 / 51.0 | 653 | 100.0 | 1 | 1 | 1 |
+| accepted_int_axes_4 | 97.2 / 21.5 | 646 | 100.0 | 1 | 2 | 2 |
+| accepted_int_axes_5 | 95.8 / 33.7 | 651 | 100.0 | 1 | 1 | 1 |
+| accepted_int_axes_6 | 95.8 / 28.4 | 651 | 100.0 | 1 | 1 | 1 |
+| accepted_int_axes_7 | 94.4 / 44.5 | 655 | 100.0 | 1 | 0 | 0 |
+| accepted_unsigned_int_axes_1 | 97.3 / 52.1 | 646 | 100.0 | 1 | 2 | 2 |
+| accepted_unsigned_int_axes_2 | 97.3 / 40.7 | 646 | 100.0 | 1 | 2 | 2 |
+| accepted_unsigned_int_axes_3 | 95.6 / 51.4 | 653 | 100.0 | 1 | 1 | 1 |
+| accepted_unsigned_int_axes_4 | 97.4 / 21.7 | 646 | 100.0 | 1 | 2 | 2 |
+| accepted_unsigned_int_axes_5 | 96.2 / 33.9 | 651 | 100.0 | 1 | 1 | 1 |
+| accepted_unsigned_int_axes_6 | 96.2 / 28.7 | 651 | 100.0 | 1 | 1 | 1 |
+| accepted_unsigned_int_axes_7 | 95.0 / 44.2 | 655 | 100.0 | 1 | 0 | 0 |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | 1 | 3 | 3 |
+| preload_int_axes_1 | 97.1 / 52.7 | 644 | 100.0 | 1 | 2 | 2 |
+| preload_int_axes_2 | 97.1 / 41.2 | 644 | 100.0 | 1 | 2 | 2 |
+| preload_int_axes_3 | 95.2 / 51.7 | 651 | 100.0 | 1 | 1 | 1 |
+| preload_int_axes_4 | 97.2 / 22.2 | 644 | 100.0 | 1 | 2 | 2 |
+| preload_int_axes_5 | 95.8 / 34.4 | 649 | 100.0 | 1 | 1 | 1 |
+| preload_int_axes_6 | 95.8 / 29.3 | 649 | 100.0 | 1 | 1 | 1 |
+| preload_int_axes_7 | 94.3 / 45.0 | 653 | 100.0 | 1 | 0 | 0 |
+| preload_unsigned_int_axes_1 | 97.3 / 52.8 | 644 | 100.0 | 1 | 2 | 2 |
+| preload_unsigned_int_axes_2 | 97.3 / 41.4 | 644 | 100.0 | 1 | 2 | 2 |
+| preload_unsigned_int_axes_3 | 95.6 / 52.1 | 651 | 100.0 | 1 | 1 | 1 |
+| preload_unsigned_int_axes_4 | 97.4 / 22.3 | 644 | 100.0 | 1 | 2 | 2 |
+| preload_unsigned_int_axes_5 | 96.2 / 34.6 | 649 | 100.0 | 1 | 1 | 1 |
+| preload_unsigned_int_axes_6 | 96.2 / 29.6 | 649 | 100.0 | 1 | 1 | 1 |
+| preload_unsigned_int_axes_7 | 94.9 / 44.7 | 653 | 100.0 | 1 | 0 | 0 |
+
+All twenty-eight new forms regress: 94.3..97.4.
+Widening removes exactly one ands127/uxtb pair per selected section, but
+adds no sign-clearing bic: all thirty retain one (V5), original has four.
+Thus eliminating narrow-counter operations alone does not recreate original
+dispatch; addressed wide state also adds loads/instruction differences.
+Controls reproduce their whole accepted/preload objects. None retained.
+The predicted opcode mechanism is contradicted, so do not expand equivalent
+wide-state layouts or add artificial masks merely to fill the deficit.
+No compiler ceiling inferred.
+
+Sweep exited zero; thirty compile/focused verify calls pass. Source and
+call-count metrics recomputed from original/compiled instruction arrays;
+counts, object hashes and targeted bic/ands/uxtb counts checked independently.
+Code/fixtures restore to ecc30f25. Existing accepted full/native binding audit
+passes: 204 TUs, 4619 comparisons, no skips, 202 unaffected objects; actual
+linked 2079 / byte 959 pair sets identical baseline with no loss/gain;
+canonical flags and body/signature boundaries preserved. No fresh native/
+full-corpus evidence for rejected source forms claimed.
+
+Disk preparation removed 54 generated original Core target duplicates from
+three explicit recent families (20 UV pairs,16 primitive triples,18 entry/scope).
+Resolved targets within own _work, untracked, single expected unit; hashes
+equal retained canonical typedpair-full/target. Manifest/system-temp backup
+written before literal-path removal; target/reference hashes rechecked before
+each deletion. No recursive deletion; base objects, sources, reports, accepted/
+baseline evidence, main and Git archive retained. Reclaimed 1,426,248 logical
+bytes; old target paths map through
+`_work/duplicate_last_core_target_cleanup_20261007.json`, all 54 mappings
+independently rebound. Script `_work/cleanup_last_core_target_duplicates_20261007.ps1`.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/enh_wide_axis_count_sweep.py`,
+`_work/enh_wide_axis_count_identities.json`, thirty focused objects/reports
+and rechecked typedpair binding audit.
