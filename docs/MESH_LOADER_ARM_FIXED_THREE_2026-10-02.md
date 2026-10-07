@@ -8711,3 +8711,88 @@ push, PR or merge; main checkout untouched.
 Evidence: `_work/create_scope_shared_result_identities.json`, sixteen focused
 reports/objects, `_work/create_scope_shared_result_sweep.py`, typedpair audit
 and `_work/duplicate_target_cleanup_channelzero_20261007.json`.
+
+
+## Continuation: Create shared result with root pointer and loaded operands
+
+Eighteen focused Create measurements start from d757ca3a. Both previously
+measured shared-int-result forms are controls: original child-pointer scope
+and child pointer declared inside its iteration. Each receives four root-
+pointer/initialization forms or four loaded-animation operand forms. No
+recovered declaration/layout claimed; all predicates remain original.
+
+Root variants assign new Mesh directly to output then set its material, use
+the output as material receiver after original m assignment, store material
+before output, or name a reference to the same new Mesh and use its address.
+All perform one unchanged construction, one output store and one material
+store. Only the material-before-output form reorders the two disjoint stores;
+no call intervenes. Reference lifetime does not destroy the heap object at
+scope exit. No allocation/constructor replacement or manufactured field.
+
+Loaded variants retain Close then animation lookup/nonzero check then
+CollectAnimationData. They capture the same rate float, optionally capture
+the mesh before float-to-long-long conversion, name an explicit start value,
+or reuse m after a fresh output lookup. Same rate conversion and end time,
+same Collect/SetAnimationRangeInTime calls; no cached pointer moved before a
+call which could change it. Shared result keeps child ==-1, enhanced-single
+==1 and plain-single !=-1 predicates, valid returns 1/-1 and invalid guard -4.
+No narrower arbitrary-int result assumption.
+
+No helper/header/ABI, flags/compiler, matcher/denominator, dummy effect or
+padding change. Scope/body/signature boundaries remain fixed.
+
+| Trial | Create source / strict | Instructions | Calls | Accepted Core | Shared-result Core |
+|---|---|---:|---:|---|---|
+| shared_control | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_root_direct_output | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_root_output_material_receiver | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_root_material_before_output | 98.4 / 61.4 | 289 | 100.0 | no | no |
+| shared_root_root_reference | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_finish_explicit_float_rate | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| shared_finish_mesh_before_conversion | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| shared_finish_explicit_start | 98.3 / 60.3 | 289 | 100.0 | no | no |
+| shared_finish_reuse_mesh_local | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_child_scope_control | 98.4 / 55.9 | 289 | 100.0 | no | no |
+| shared_child_scope_root_direct_output | 98.4 / 55.9 | 289 | 100.0 | no | no |
+| shared_child_scope_root_output_material_receiver | 98.4 / 55.9 | 289 | 100.0 | no | no |
+| shared_child_scope_root_material_before_output | 98.4 / 56.2 | 289 | 100.0 | no | no |
+| shared_child_scope_root_root_reference | 98.4 / 55.9 | 289 | 100.0 | no | no |
+| shared_child_scope_finish_explicit_float_rate | 98.4 / 55.5 | 289 | 100.0 | no | no |
+| shared_child_scope_finish_mesh_before_conversion | 98.4 / 55.5 | 289 | 100.0 | no | no |
+| shared_child_scope_finish_explicit_start | 98.3 / 55.2 | 289 | 100.0 | no | no |
+| shared_child_scope_finish_reuse_mesh_local | 98.4 / 55.9 | 289 | 100.0 | no | no |
+
+Both controls reproduce their reference objects. Sixteen source values tie
+98.4; explicit-start forms regress to 98.3. Five entire objects equal shared
+control and five equal scoped-child shared control; two equal accepted Core
+after explicit float capture in the unscoped-child form. Material-first
+strict increases do not raise either goal gate. All eighteen have 289
+instructions and 100.0 call-count shape. None retained; no general compiler
+ceiling inferred.
+
+Sweep explicitly exited zero. All eighteen compile/focused verify calls pass;
+source/call metrics recomputed directly from target/base instructions, whole
+object hashes and instruction counts checked. Deterministic generator and
+focused objects/reports retained, without separate source snapshots for
+non-improving forms. Code/fixtures match ecc30f25 after restoration. Read-only
+binding audit of prior accepted native/full proof passes: 204 TUs, 4619
+comparisons, zero skipped, 202 unaffected objects; actual linked 2079 / byte
+959 pair sets equal baseline with no lost/gained pairs, canonical arguments
+and body/signature boundaries unchanged. No fresh native/full-corpus runtime
+proof claimed for rejected variants.
+
+Before this sweep, 204 more untracked generated original target duplicates
+from createstatus-full/target were removed individually after absolute-path
+workspace containment and matching SHA256 to retained typedpair-full/target
+checks. Manifest plus separate host-temp backup precede removal; hashes
+rechecked before each deletion. No recursive delete or source/base/report/
+baseline/accepted-proof removal. Reclaimed logical bytes: 1,726,868. Canonical
+replacement paths/hashes independently rechecked here; old createstatus-full
+target references now use that manifest's retained copy.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge.
+
+Evidence: `_work/create_shared_scope_root_finish_identities.json`, eighteen
+focused reports/objects, `_work/create_shared_scope_root_finish_sweep.py`,
+typedpair audit and `_work/duplicate_target_cleanup_createstatus_20261007.json`.
