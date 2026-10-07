@@ -8379,3 +8379,80 @@ interactions add no useful gate gain.
 Evidence: `_work/enh_preload_entry_lifetime_identities.json`,
 `_work/enh_preload_axis_presence_identities.json`, twenty-five focused reports,
 objects/source snapshots, generators and rechecked typedpair validation audit.
+
+
+## Continuation: Read extrema with fresh index owner and per-vertex accumulator memset
+
+Twenty-two focused Read measurements start from a88f1d33: twelve extrema
+local/reference captures and nine extrema predicate/order forms, plus control.
+All combine the previously measured fresh index owner after indexCount Read
+with accumulator memset of twelve bytes per vertex. Original ARM has the
+per-vertex twelve-byte call/decrement sequence. This interaction had not been
+measured by the earlier reload-only extrema or memset+tangent-lifetime sweeps.
+No recovered local declarations claimed.
+
+Extrema forms apply to short-position, integer-position or both decode loops.
+They capture minimum alone, minimum/maximum in their original order, preload
+both, or refer to their active array elements. Ordered forms reverse operands
+of the same comparison, test maximum first, or combine both. Converted source
+values are signed short/int finite floats; min/max arrays have disjoint
+components and no intervening call. Same extrema stores and comparisons, no
+extra clamp, half-radius, center math or decode/normal precision change.
+
+Accumulator remains allocated at vcount*12; memset clears exactly three floats
+per existing vertex iteration. No manufactured call padding or extra touched
+bytes. Fresh index owner is reloaded after the original field read, as in the
+already measured standalone form. It is not a universal aliasing guarantee for
+arbitrary external callbacks that mutate slot. Native reader mocks do not
+establish such callback behavior. None of these trial changes is retained.
+
+No helper/header/ABI, compiler/flag, matcher/denominator or body-boundary change.
+
+| Trial | Read source / strict | Instructions | Calls | Memset+reload control object |
+|---|---|---:|---:|---|
+| reload_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_minimum_local_short | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_minimum_local_integer | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_minimum_local_both | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_sequential_locals_short | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_sequential_locals_integer | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_sequential_locals_both | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_both_preloaded_short | 98.5 / 57.4 | 873 | 100.0 | no |
+| locals_both_preloaded_integer | 98.5 / 57.4 | 873 | 100.0 | no |
+| locals_both_preloaded_both | 98.5 / 56.9 | 873 | 100.0 | no |
+| locals_component_references_short | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_component_references_integer | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_component_references_both | 98.5 / 57.8 | 873 | 100.0 | yes |
+| order_reverse_operands_short | 98.5 / 57.8 | 873 | 100.0 | yes |
+| order_reverse_operands_integer | 98.5 / 57.8 | 873 | 100.0 | yes |
+| order_reverse_operands_both | 98.5 / 57.8 | 873 | 100.0 | yes |
+| order_maximum_first_short | 98.5 / 57.4 | 873 | 100.0 | no |
+| order_maximum_first_integer | 98.5 / 57.4 | 873 | 100.0 | no |
+| order_maximum_first_both | 98.5 / 56.9 | 873 | 100.0 | no |
+| order_reverse_maximum_first_short | 98.5 / 57.4 | 873 | 100.0 | no |
+| order_reverse_maximum_first_integer | 98.5 / 57.4 | 873 | 100.0 | no |
+| order_reverse_maximum_first_both | 98.5 / 56.9 | 873 | 100.0 | no |
+
+All twenty-two tie source 98.5, with 873 instructions and 100.0 call-count
+shape. Thirteen entire objects equal memset+reload control. Nine preload/max-
+first forms differ but do not raise either goal gate. Source restored; none
+retained. No general compiler ceiling inferred.
+
+Completed ledger contains all expected twenty-two rows, each appended only
+after successful compile and focused verify subprocesses with check=True.
+Source/call metrics independently recomputed from instruction arrays; object
+hashes and instruction counts checked. Deterministic source generators and
+objects/reports retained; no separate source snapshot for non-improving forms.
+Code/fixtures match ecc30f25 after restoration. Read-only audit rebinds prior
+accepted native/full evidence: 204 TUs, 4619 comparisons, zero skipped, 202
+unaffected objects; actual linked 2079 / byte 959 pair sets equal baseline
+with no lost/gained pairs, canonical arguments and outside-body/signature
+boundaries unchanged. No fresh native/full-corpus run for rejected forms.
+
+Accepted means remain **98.40% / 98.41%**; both >=99.0 gates unmet, goal active.
+No push, PR or merge; main checkout untouched. These extrema+memset interactions
+do not justify further tests of equivalent predicate spellings.
+
+Evidence: `_work/read_reload_memzero_extrema_identities.json`, twenty-two
+focused reports/objects, `_work/prepare_reload_memzero_extrema.py`, generated
+sweep and rechecked typedpair validation audit.
