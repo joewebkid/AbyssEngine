@@ -9872,3 +9872,127 @@ Main checkout untouched; report-only commit; no push/PR/merge.
 Evidence: `_work/create_early_scope_status_sweep.py`,
 `_work/create_early_scope_status_identities.json`, eighteen focused reports/
 objects and rechecked typedpair binding audit.
+
+
+## Continuation: Fixed-three instruction inventory deficit map
+
+Read-only diagnosis starts from 2ecf5bae. Current source and accepted
+full-corpus proof are rebound; all three original/accepted functions are
+disassembled from retained typedpair-full target/base objects. Exact existing
+normalization pipeline (dual-word accesses, zero comparisons and allocation
+shapes) is applied without editing matcher, inputs, flags or denominators.
+Counters subtract duplicate-preserving instruction-shape/opcode inventories.
+This produces concrete remaining deficits for choosing next source hypotheses
+after recent allocation/entry permutations failed, rather than another blind
+equivalent spelling sweep.
+
+| Body | Source | Missing / extra shapes | Normalized original / accepted count | Zero-displacement candidate pairs |
+|---|---:|---:|---:|---:|
+| MeshReadData | 98.5 | 36 / 36 | 852 / 852 | 3 |
+| MeshCreateFromFile | 98.4 | 16 / 14 | 284 / 282 | 6 |
+| ReadEnhancedDataFromFile | 98.3 | 24 / 27 | 601 / 604 | 7 |
+
+Candidate pairing only groups shapes differing solely by [register] versus
+[register,#0]. It does not establish aligned instruction identity, prove a
+source equivalence, adjust an official score or claim an attainable gain.
+Raw opcode and shape deficits are preserved in the evidence JSON. All
+reported source metrics still equal the accepted official matcher rows.
+
+MeshReadData opcode deficits:
+
+| Opcode | Missing original forms | Extra accepted forms |
+|---|---:|---:|
+| ldr | 6 | 0 |
+| add | 3 | 0 |
+| cmp | 2 | 0 |
+| sub | 1 | 0 |
+| lsls | 1 | 0 |
+| bmi | 1 | 0 |
+| nop | 1 | 0 |
+| movne | 1 | 0 |
+| adds | 0 | 5 |
+| str | 0 | 2 |
+| mov | 0 | 1 |
+| movs | 0 | 1 |
+| ldrh | 0 | 1 |
+| tst | 0 | 1 |
+| strd | 0 | 1 |
+| b | 0 | 1 |
+| cbnz | 0 | 1 |
+| ldrd | 0 | 1 |
+| moveq | 0 | 1 |
+
+MeshCreateFromFile opcode deficits:
+
+| Opcode | Missing original forms | Extra accepted forms |
+|---|---:|---:|
+| ldr | 3 | 0 |
+| str | 1 | 0 |
+| it | 1 | 0 |
+| adds | 1 | 0 |
+| ldrd | 1 | 0 |
+| mov | 0 | 2 |
+| cmp | 0 | 1 |
+| itt | 0 | 1 |
+| movne | 0 | 1 |
+
+ReadEnhancedDataFromFile opcode deficits:
+
+| Opcode | Missing original forms | Extra accepted forms |
+|---|---:|---:|
+| mov | 6 | 0 |
+| bic | 3 | 0 |
+| cbnz | 2 | 0 |
+| add | 1 | 0 |
+| str | 1 | 0 |
+| cmp | 1 | 0 |
+| uxtb | 0 | 3 |
+| strd | 0 | 3 |
+| movs | 0 | 2 |
+| ands | 0 | 2 |
+| ldrd | 0 | 2 |
+| sub | 0 | 1 |
+| bne | 0 | 1 |
+| adds | 0 | 1 |
+| lsls | 0 | 1 |
+| bmi | 0 | 1 |
+
+Create: control inventory and calls already 100.0; remaining losses are
+primarily shape/opcode inventory. Six extra bare-pointer loads oppose four
+missing zero-displacement cross-register loads, but original also has three
+frame loads, two self-register loads, stack-argument stores and dual-word
+load differences. The prior early-entry/scoping family reproduced existing
+whole objects, so it does not address these allocation/operand discrepancies.
+
+Read: largest missing shape is seven frame loads; other losses include two
+multiply operand-alias patterns and branch/compare/load/add differences.
+Frame classification in the unchanged matcher can include a register called
+fp even when original code uses it as a general-purpose pointer. A counter
+deficit alone must not be treated as proof of seven genuinely missing stack
+loads. Original nop appears in opcode deficit; do not add nop/padding merely
+to fill the inventory. Native semantics and allowed source scope remain gates.
+
+Enhanced: three original bic #2147483648 axis-dispatch forms oppose three
+ands #127 plus three uxtb, alongside seven reversed zero-displacement load
+forms and several frame/object operand differences. Direct original assembly
+locates bic after scalar-axis Read in each of the three transform sections;
+the fourth bic in V5 is already present and therefore not a deficit. Existing
+plain int/byte counter and signed-dispatch trials did not improve the primary
+gate. Prior addressed AxisState records tested unsigned-char axis with
+unsigned-short count, not a wider active axis field. A bounded next candidate
+is to test the width of that genuinely used local field with its addressed
+count, measuring actual bic/uxtb inventory effects and rejecting regressions.
+Do not introduce dummy masks, forced registers or artificial instructions.
+
+Source/fixtures unchanged. Accepted full/native evidence revalidated in this
+turn by read-only binding audit: 204 TUs, 4619 comparisons, no skips, 202
+unaffected objects; actual linked 2079 / byte 959 pair sets identical baseline
+with no lost/gained pairs; canonical flags and body/signature boundaries
+preserved. No fresh compile or native runtime test claimed for this diagnostic.
+No source change or compiler ceiling established.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/analyze_three_inventory_deficits_20261007.py`,
+`_work/three_inventory_deficits_20261007.json`, retained typedpair-full objects
+and rechecked typedpair validation audit.
