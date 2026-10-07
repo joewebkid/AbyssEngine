@@ -9041,3 +9041,98 @@ checkout untouched; no push, PR or merge.
 Evidence: `_work/enh_addressed_parser_state_identities.json`, eighteen focused
 reports/objects/source snapshots, `_work/prepare_addressed_parser_state.py`,
 generated sweep and rechecked typedpair audit.
+
+
+## Continuation: Enhanced axis enums with accepted and preloaded V5 dispatch
+
+Forty-four focused Enhanced measurements start from 005f3622: three local Axis
+enum representations, all seven nonempty position/scale/rotation axis-loop
+subsets, each with accepted and preloaded V5 dispatch, plus both controls.
+Prior numeric type/exit-loop tests did not include this enum family.
+
+Local enum forms are unscoped with implementation-selected underlying type,
+scoped unsigned-char and scoped int. All define X=0, Y=1, Z=2 and End=3, all
+actively used. Each selected loop begins at X, tests !=End and increments via
+unsigned-int addition and conversion back to Axis. Its switch uses the same
+ordinal cases X/Y/Z, same channel/key operations and same order. The loop
+visits exactly 0,1,2 and stops at 3; casts stay in that range without overflow
+or an out-of-range enum value. No extra field/padding, fixed register, exported
+ABI/header/helper, source signature or compiler/flag/matcher change.
+
+Bounds/count/key reads, signed counts, failed-read exits, timer updates and
+floating math stay in their original places. Vector sections and optional/V5
+key loops are untouched except previously measured V5 mask preload in preload
+forms. Preload retains zero-channel insertion for cases 4/5. This is a source
+hypothesis, not a recovered original enum declaration.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Accepted Mesh | Preload-only Mesh |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| unscoped_0_accepted | 98.0 / 66.6 | 640 | 100.0 | no | no |
+| unscoped_0_preload | 98.0 / 67.5 | 638 | 100.0 | no | no |
+| unscoped_1_accepted | 98.0 / 66.6 | 640 | 100.0 | no | no |
+| unscoped_1_preload | 98.0 / 67.5 | 638 | 100.0 | no | no |
+| unscoped_2_accepted | 98.0 / 66.6 | 640 | 100.0 | no | no |
+| unscoped_2_preload | 98.0 / 67.5 | 638 | 100.0 | no | no |
+| unscoped_0_1_accepted | 97.7 / 66.4 | 639 | 100.0 | no | no |
+| unscoped_0_1_preload | 97.6 / 67.2 | 637 | 100.0 | no | no |
+| unscoped_0_2_accepted | 97.7 / 66.4 | 639 | 100.0 | no | no |
+| unscoped_0_2_preload | 97.6 / 67.2 | 637 | 100.0 | no | no |
+| unscoped_1_2_accepted | 97.7 / 66.4 | 639 | 100.0 | no | no |
+| unscoped_1_2_preload | 97.6 / 67.2 | 637 | 100.0 | no | no |
+| unscoped_0_1_2_accepted | 97.3 / 66.1 | 638 | 100.0 | no | no |
+| unscoped_0_1_2_preload | 97.2 / 67.0 | 636 | 100.0 | no | no |
+| byte_0_accepted | 98.0 / 66.7 | 641 | 100.0 | no | no |
+| byte_0_preload | 98.0 / 67.6 | 639 | 100.0 | no | no |
+| byte_1_accepted | 98.0 / 66.7 | 641 | 100.0 | no | no |
+| byte_1_preload | 98.0 / 67.6 | 639 | 100.0 | no | no |
+| byte_2_accepted | 98.0 / 66.7 | 641 | 100.0 | no | no |
+| byte_2_preload | 98.0 / 67.6 | 639 | 100.0 | no | no |
+| byte_0_1_accepted | 97.8 / 66.6 | 641 | 100.0 | no | no |
+| byte_0_1_preload | 97.8 / 67.5 | 639 | 100.0 | no | no |
+| byte_0_2_accepted | 97.8 / 66.6 | 641 | 100.0 | no | no |
+| byte_0_2_preload | 97.8 / 67.5 | 639 | 100.0 | no | no |
+| byte_1_2_accepted | 97.8 / 66.6 | 641 | 100.0 | no | no |
+| byte_1_2_preload | 97.8 / 67.5 | 639 | 100.0 | no | no |
+| byte_0_1_2_accepted | 97.6 / 66.4 | 641 | 100.0 | no | no |
+| byte_0_1_2_preload | 97.6 / 67.3 | 639 | 100.0 | no | no |
+| int_0_accepted | 98.0 / 66.6 | 640 | 100.0 | no | no |
+| int_0_preload | 98.0 / 67.5 | 638 | 100.0 | no | no |
+| int_1_accepted | 98.0 / 66.6 | 640 | 100.0 | no | no |
+| int_1_preload | 98.0 / 67.5 | 638 | 100.0 | no | no |
+| int_2_accepted | 98.0 / 66.6 | 640 | 100.0 | no | no |
+| int_2_preload | 98.0 / 67.5 | 638 | 100.0 | no | no |
+| int_0_1_accepted | 97.7 / 66.4 | 639 | 100.0 | no | no |
+| int_0_1_preload | 97.6 / 67.2 | 637 | 100.0 | no | no |
+| int_0_2_accepted | 97.7 / 66.4 | 639 | 100.0 | no | no |
+| int_0_2_preload | 97.6 / 67.2 | 637 | 100.0 | no | no |
+| int_1_2_accepted | 97.7 / 66.4 | 639 | 100.0 | no | no |
+| int_1_2_preload | 97.6 / 67.2 | 637 | 100.0 | no | no |
+| int_0_1_2_accepted | 97.3 / 66.1 | 638 | 100.0 | no | no |
+| int_0_1_2_preload | 97.2 / 67.0 | 636 | 100.0 | no | no |
+
+Only both controls reproduce reference whole objects. All forty-two enum
+variants regress to 97.2..98.0; calls stay 100.0. Fourteen unscoped/scoped-int
+pairs produce identical entire Mesh objects and row metrics. Scoped byte also
+regresses. All-axis wide enum with preload reaches original 636 instructions
+but source is 97.2: instruction count alone does not meet either gate. No trial
+retained; no general compiler/source-shape ceiling inferred.
+
+Sweep explicitly exited zero; all forty-four compile/focused verify calls pass.
+Source/call metrics recomputed independently from instruction arrays; whole
+object hashes/counts and all source snapshot paths checked. Fourteen enum
+representation pairs independently compared. Code/fixtures match ecc30f25
+after restoration. Read-only accepted native/full binding audit passes: 204
+TUs, 4619 comparisons, zero skipped, 202 unaffected objects; actual linked
+2079 / byte 959 pair sets equal baseline with no lost/gained pairs, canonical
+arguments and body/signature boundaries unchanged. No fresh native/full-corpus
+runtime proof for rejected forms.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge. The tested enum substitutions are
+not a useful route to retaining a gate gain.
+
+Evidence: `_work/enh_enum_axis_identities.json`, forty-four focused reports/
+objects/source snapshots, `_work/prepare_enum_axis.py`, generated sweep and
+rechecked typedpair audit.
