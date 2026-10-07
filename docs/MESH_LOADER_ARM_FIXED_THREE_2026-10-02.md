@@ -9356,3 +9356,73 @@ Main checkout untouched; report-only commit, no push/PR/merge.
 Evidence: `_work/create_addressed_magic_arguments_sweep.py`,
 `_work/create_addressed_magic_arguments_identities.json`, eighteen focused
 objects/reports and rechecked typedpair binding audit.
+
+
+## Continuation: Read normal clamp schedules with owner/memzero interaction
+
+Twenty focused measurements start from d68168bf. Nine existing normal-clamp
+source forms are combined with per-vertex tangent-accumulator memset under
+accepted and fresh-index-owner variants, with two controls. Previous clamp
+trials preceded accepted typed-pair allocation; these combinations were
+not covered by earlier owner/memzero normal view, counter and branch trials.
+Original normal path has vsqrt, floating comparisons, quotient division and
+component clamp work; this is a register-pressure/schedule hypothesis.
+
+Six schedules: lower promoted-double explicit if, upper ternary, per-component
+lower/cast/upper, staged y/x/z quotients, staged y-first clamps, interleaved
+lower if. Three upper predicate lifetimes: before lower, after lower,
+per-component. Float quotients, double lower comparison, float upper predicate,
+NaN unordered behavior and output stores preserve their respective original
+operations. No reciprocal/fast-math/conversion/reassociation introduced.
+Independent scalar operation scheduling differs; no callbacks occur inside
+these arithmetic stages. Fresh owner reload uses the actual slot after its
+indexCount Read, as in the previously measured variant; bounded Read contract
+is assumed, not arbitrary callback mutation. Per-vertex memset writes the
+same three float zeros on the supported target. No changed count or allocation.
+
+No helper/header/ABI/signature/compiler flag/matcher/denominator, volatile,
+assembly, fixed register or padding change. Forms touch only MeshReadData.
+
+| Trial | Read source / strict | Instructions | Calls | Owner/memzero control object |
+|---|---|---:|---:|---|
+| accepted_control | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_clamp_explicit_lower_double | 97.6 / 54.7 | 858 | 100.0 | no |
+| accepted_clamp_upper_ternary | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_clamp_component_clamps | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_clamp_staged_y_x_z | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_clamp_staged_y_clamps | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_clamp_interleaved_lower_if | 97.6 / 54.7 | 858 | 100.0 | no |
+| accepted_predicate_upper_predicates_before_lower | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_predicate_upper_predicates_after_lower | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_predicate_component_upper_predicates | 98.5 / 57.4 | 873 | 100.0 | yes |
+| fresh_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_clamp_explicit_lower_double | 97.5 / 55.1 | 858 | 100.0 | no |
+| fresh_clamp_upper_ternary | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_clamp_component_clamps | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_clamp_staged_y_x_z | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_clamp_staged_y_clamps | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_clamp_interleaved_lower_if | 97.5 / 55.1 | 858 | 100.0 | no |
+| fresh_predicate_upper_predicates_before_lower | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_predicate_upper_predicates_after_lower | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_predicate_component_upper_predicates | 98.5 / 57.8 | 873 | 100.0 | yes |
+
+Source range 97.5..98.5;
+16 whole objects equal their respective
+owner/memzero controls. None improves 98.5. Controls reproduce historical
+accepted/fresh memset digests; no source retained. This closes these clamp
+schedule interactions as a useful next step; no compiler ceiling inferred.
+
+Sweep exited zero. Twenty compile/focused verify calls passed. Source metrics
+recomputed directly from original/compiled instruction arrays, counts and
+whole-object hashes independently checked. Source and fixture restoration
+matches ecc30f25. Existing accepted full/native binding audit revalidated:
+204 TUs, 4619 comparisons, no skips, 202 unaffected objects, actual linked
+2079 and byte 959 pair sets identical baseline with no loss/gain; canonical
+flags and allowed body/signature boundaries unchanged. No fresh full-corpus
+or native runtime proof for rejected source forms is claimed.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/read_clamp_owner_memzero_interaction_sweep.py`,
+`_work/read_clamp_owner_memzero_interaction_identities.json`, twenty focused
+reports/objects and rechecked typedpair binding audit.
