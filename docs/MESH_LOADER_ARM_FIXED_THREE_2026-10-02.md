@@ -8091,3 +8091,68 @@ flag, push, PR or merge change. Main checkout untouched.
 Evidence: `_work/create_call_state_int_status_identities.json`,
 `_work/create_call_state_result_reuse_identities.json`, focused reports/objects,
 source generators and rechecked typedpair validation audit.
+
+
+## Continuation: shared Create result with counter widths and format masks
+
+Thirteen focused Create measurements start from d0e06b19. Controls are accepted
+source and the shared-result form without CallState. Seven counter/format type
+variants and four cached-mask variants combine with shared result. Each
+MeshReadData result is assigned once to the existing int result and tested
+with the unchanged child ==-1, enhanced-single ==1 or plain-single !=-1
+predicate. Full int result range is preserved. Invalid engine/path still has
+initial result -4 and performs no read; valid paths keep explicit -1/1 returns.
+No new variable, call, zero initialization or side effect is added for status.
+
+Type forms use signed int/unsigned long fmt, signed int/unsigned long child
+counter, or unsigned char/unsigned short/unsigned int signature index. Format
+stays in 0..31, child counter <=ushort subCount, signature index exits at 7,
+so no overflow or wraparound. Only these original local declarations change;
+wire widths, signature arrays/comparison order, stream reads, bounds and child
+behavior remain. Omitted the old default-null child pointer form to avoid
+unneeded initialization that is overwritten before use.
+
+Mask forms capture headerWord or enhanced booleans, both booleans, or both
+unsigned bit masks inside if(fmt), before the original timer reset. Masks use
+exact original &0x1b/&0x1a expressions, replacing corresponding predicates.
+fmt is not changed thereafter; timer store cannot change this local, and
+signature/read/failure routing stays unchanged. These declarations/captures
+are source hypotheses, not recovered original C++. No helper/header/ABI,
+assembly, fixed register, padding, compiler option or verifier change.
+
+| Trial | Create source / strict | Instructions | Calls | Accepted Core | Shared-result Core |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| shared_result_control | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| counter_signed_format | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| counter_long_format | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| counter_signed_child_index | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| counter_long_child_index | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| counter_byte_signature_index | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| counter_short_signature_index | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| counter_unsigned_signature_index | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| mask_header_bool | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| mask_enhanced_bool | 98.2 / 60.7 | 289 | 100.0 | no | no |
+| mask_both_bools | 98.2 / 60.7 | 289 | 100.0 | no | no |
+| mask_both_masks | 98.2 / 60.7 | 289 | 100.0 | no | no |
+
+Accepted control, byte/ushort signature-index forms and header bool equal the
+entire accepted Core. Shared-result control and five remaining type forms
+equal the entire shared-result Core b54382dab09a73fe6de9038bf9083513dc24316a1aaaf0b6773d77bc8e134c05;
+strict stays 61.0 but source remains 98.4. Enhanced bool/both bools/both masks
+regress to 98.2 and equal each other byte-for-byte. All calls 100.0 and Create
+289 instructions. No gate gain; no form retained. No compiler ceiling inferred.
+
+All thirteen compile/focused verify calls exit zero. Source/call metrics
+independently recomputed directly from target/base instructions, full object
+hashes checked. Deterministic generator retained; full-source snapshots saved
+only for a better candidate, and none occurred. Source/fixtures restored to
+ecc30f25. Read-only accepted full/native binding recheck passes: 204 TUs, 4619
+comparisons, zero skipped, 202 unaffected whole objects, actual linked 2079/
+byte 959 exact-pair sets equal baseline with no lost/gained pairs, canonical
+arguments and outside-body/signature boundaries unchanged. No new native/full
+run claimed for rejected forms. Accepted means **98.40% /98.41%**; both >=99.0
+gates unmet, goal active. No push, PR or merge; main checkout untouched.
+
+Evidence: `_work/create_shared_result_counter_mask_identities.json`, thirteen
+focused reports/objects, source generator and rechecked typedpair validation audit.
