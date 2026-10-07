@@ -8634,3 +8634,80 @@ Evidence: `_work/read_reload_memzero_position_identities.json`,
 `_work/read_reload_memzero_bounds_values_identities.json`, twenty-one focused
 reports/objects, source generators, typedpair audit and
 `_work/duplicate_target_cleanup_zero_uv_20261007.json`.
+
+
+## Continuation: Create scoped magic/count/child locals with shared read result
+
+Sixteen focused Create measurements start from c07cf921. Two controls and all
+seven nonempty combinations of narrower local scopes are measured against both
+accepted direct predicates and previously measured shared int result. This
+uses current accepted bodies rather than the old create_scope_sweep baseline.
+No recovered local/source layout claimed.
+
+Scope bit 1 moves char magic[8] into successful OpenRead block; its strcpy,
+seven-byte signature Read and subsequent two-byte header Read remain there in
+the same order. Bit 2 moves unsigned short subCount into the enhanced-format
+guard before its original Read. Bit 4 moves Mesh *childPtr into each child loop
+iteration, initialized by its same new Mesh. No read, allocation, ownership,
+merge, ArrayAdd, cleanup or Close moves across any executed call. Labels remain
+outside exiting trivial local scopes, without skipped initialization or new
+destructors. Count and child pointer types are unchanged; no storage overlay,
+padding, fabricated field, helper/header/ABI or signature/denominator change.
+
+Shared-result variant reuses existing int result for the three original
+MeshReadData returns. Child failure still tests ==-1, enhanced-single success
+==1, plain-single success !=-1. Result retains -4 only outside the original
+engine/path guard; valid paths explicitly return 1 or -1. No narrowed status
+domain assumed; arbitrary int statuses still use their original predicates.
+
+| Trial | Create source / strict | Instructions | Calls | Accepted Core | Shared-result Core |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| shared_control | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| accepted_scope_1 | 98.2 / 52.8 | 289 | 100.0 | no | no |
+| accepted_scope_2 | 97.7 / 54.8 | 289 | 100.0 | no | no |
+| accepted_scope_3 | 97.7 / 57.2 | 289 | 100.0 | no | no |
+| accepted_scope_4 | 98.4 / 55.5 | 289 | 100.0 | no | no |
+| accepted_scope_5 | 98.2 / 56.9 | 289 | 100.0 | no | no |
+| accepted_scope_6 | 97.7 / 58.6 | 289 | 100.0 | no | no |
+| accepted_scope_7 | 98.0 / 57.9 | 289 | 100.0 | no | no |
+| shared_scope_1 | 98.2 / 53.1 | 289 | 100.0 | no | no |
+| shared_scope_2 | 97.7 / 55.2 | 289 | 100.0 | no | no |
+| shared_scope_3 | 97.7 / 57.6 | 289 | 100.0 | no | no |
+| shared_scope_4 | 98.4 / 55.9 | 289 | 100.0 | no | no |
+| shared_scope_5 | 98.2 / 57.2 | 289 | 100.0 | no | no |
+| shared_scope_6 | 97.7 / 59.0 | 289 | 100.0 | no | no |
+| shared_scope_7 | 98.0 / 58.3 | 289 | 100.0 | no | no |
+
+Both controls reproduce their entire reference object. Scoped child alone
+ties 98.4 but differs from both control objects. All other scoped forms regress
+to 97.7..98.2. Each accepted/shared scope pair has identical source score;
+strict-order differences do not raise the requested gates. All sixteen have
+289 instructions and 100.0 call-count shape. No trial retained and no general
+compiler ceiling inferred.
+
+Sweep explicitly exited zero. All sixteen compile/focused verify calls pass;
+source/call metrics independently recomputed from instruction arrays and full
+object hashes/counts checked. Deterministic generator and focused objects/
+reports retained; no separate source snapshots for non-improving forms.
+Code/fixtures match ecc30f25 after restoration. Read-only accepted full/native
+binding audit passes: 204 TUs, 4619 comparisons, zero skipped, 202 unaffected
+objects; actual linked 2079 / byte 959 pair sets equal baseline with no lost/
+gained pairs, canonical arguments and body/signature boundaries unchanged.
+No fresh native/full-corpus run claimed for rejected variants.
+
+Before this sweep, another 204 generated original target-object duplicates
+from channelzero-full/target were removed individually, after absolute-path
+workspace containment, untracked status and matching SHA256 to retained
+typedpair-full/target checks. Manifest and separate host-temp backup precede
+removal; hashes checked again before deletion. No recursive delete and no
+source/base/report/baseline/accepted-proof deletion. Reclaimed logical bytes:
+1,726,868. Canonical replacement paths/hashes independently rechecked here;
+old channelzero-full target references now use that manifest's retained copy.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. No
+push, PR or merge; main checkout untouched.
+
+Evidence: `_work/create_scope_shared_result_identities.json`, sixteen focused
+reports/objects, `_work/create_scope_shared_result_sweep.py`, typedpair audit
+and `_work/duplicate_target_cleanup_channelzero_20261007.json`.
