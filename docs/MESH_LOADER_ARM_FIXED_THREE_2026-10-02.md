@@ -9492,3 +9492,103 @@ Main checkout untouched; report-only commit; no push/PR/merge.
 Evidence: `_work/enh_optional_common_guard_sweep.py`,
 `_work/enh_optional_common_guard_identities.json`, ten focused reports/objects
 and rechecked typedpair binding audit.
+
+
+## Continuation: Read typed normal triples and traversal interactions
+
+Thirty-two focused measurements start from 7641e4e1. Prior temporary value
+records scalar-replaced to identical objects before current typed-pair raw
+allocation; these are actual typed normal input arrays instead. Local
+NormalInput is three short fields or short component[3], with compile-time
+sizeof==6. New array allocates vertexCount elements, default-initialized
+without zero-fill or constructors; paired typed delete runs on original
+success/failure paths. Read still requests vertexCount*6 original bytes.
+No cookie/destructor effect for these trivial element types; bounds/count
+range is unsigned short, so both allocation sizes are the same on ARM/native.
+
+First twenty rows: component-counter loop reads raw+i/3 via pointer or
+reference, with field/array storage, across accepted/fresh index owners and
+original three-zero-stores/per-vertex memset. Four controls. Original i+=3
+and dynamic 3*slot vertexCount bound retained; the aggregate changes actual
+input addressing and allocation type, not intermediate arithmetic spelling.
+
+Adaptive twelve rows: four repeated controls plus two traversals in each
+owner/clearing group, using field storage because all four first-family
+representations are identical. Cursor advances one actual NormalInput per
+iteration alongside i+=3. Vertex-index traversal tests vertex<slot vertexCount,
+derives i=vertex*3 for original output addressing, and indexes input by vertex.
+Unsigned-short vertexCount makes multiplication non-overflowing; no mutable
+slot/count callback occurs in arithmetic under the actual sqrt/math contract.
+Reads, float/double conversions, length/clamps including unordered behavior,
+centered output/fallback, call order and cleanup remain unchanged.
+
+Fresh index owner/per-vertex memset are previously studied hypotheses, not
+accepted improvements; fresh owner models actual slot re-read after Read.
+No added allocation or side effect, unused field/padding, helper/header/ABI,
+signature/compiler flag/matcher/denominator, volatile/assembly/fixed register.
+No original NormalInput source type is claimed recovered.
+
+Evidence ledger: `_work/read_normal_typed_triples_identities.json`
+
+| Trial | Read source / strict | Instructions | Calls | Group control object |
+|---|---|---:|---:|---|
+| accepted_stores_control | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_stores_fields_pointer | 98.5 / 56.9 | 874 | 100.0 | no |
+| accepted_stores_fields_reference | 98.5 / 56.9 | 874 | 100.0 | no |
+| accepted_stores_components_pointer | 98.5 / 56.9 | 874 | 100.0 | no |
+| accepted_stores_components_reference | 98.5 / 56.9 | 874 | 100.0 | no |
+| accepted_memzero_control | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_memzero_fields_pointer | 98.5 / 56.9 | 873 | 100.0 | no |
+| accepted_memzero_fields_reference | 98.5 / 56.9 | 873 | 100.0 | no |
+| accepted_memzero_components_pointer | 98.5 / 56.9 | 873 | 100.0 | no |
+| accepted_memzero_components_reference | 98.5 / 56.9 | 873 | 100.0 | no |
+| fresh_stores_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_stores_fields_pointer | 98.5 / 57.4 | 874 | 100.0 | no |
+| fresh_stores_fields_reference | 98.5 / 57.4 | 874 | 100.0 | no |
+| fresh_stores_components_pointer | 98.5 / 57.4 | 874 | 100.0 | no |
+| fresh_stores_components_reference | 98.5 / 57.4 | 874 | 100.0 | no |
+| fresh_memzero_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_memzero_fields_pointer | 98.5 / 57.4 | 873 | 100.0 | no |
+| fresh_memzero_fields_reference | 98.5 / 57.4 | 873 | 100.0 | no |
+| fresh_memzero_components_pointer | 98.5 / 57.4 | 873 | 100.0 | no |
+| fresh_memzero_components_reference | 98.5 / 57.4 | 873 | 100.0 | no |
+
+Evidence ledger: `_work/read_normal_triple_cursor_identities.json`
+
+| Trial | Read source / strict | Instructions | Calls | Group control object |
+|---|---|---:|---:|---|
+| accepted_stores_control | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_stores_cursor | 98.0 / 56.2 | 870 | 100.0 | no |
+| accepted_stores_vertex_index | 98.3 / 56.7 | 873 | 100.0 | no |
+| accepted_memzero_control | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_memzero_cursor | 98.0 / 56.4 | 869 | 100.0 | no |
+| accepted_memzero_vertex_index | 98.3 / 56.6 | 872 | 100.0 | no |
+| fresh_stores_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_stores_cursor | 98.0 / 56.7 | 870 | 100.0 | no |
+| fresh_stores_vertex_index | 98.3 / 57.2 | 873 | 100.0 | no |
+| fresh_memzero_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_memzero_cursor | 97.9 / 56.8 | 869 | 100.0 | no |
+| fresh_memzero_vertex_index | 98.2 / 57.1 | 872 | 100.0 | no |
+
+First-family sixteen new forms tie 98.5 and each four-representation group
+has identical whole Core object, distinct from its control. All four
+controls reproduce their reference digests. Cursor/vertex forms regress;
+repeated controls reproduce their whole objects. No gain retained. Typed
+triple layout and traversal therefore do not support additional equivalent
+representation permutations as a useful next action; no compiler ceiling
+inferred from these trials.
+
+Both sweeps exited zero, all thirty-two compile/focused verify calls passed.
+Source scores independently recomputed from instruction arrays; counts and
+whole-object hashes checked. Sources/fixtures restore to ecc30f25. Existing
+accepted native/full binding audit revalidated: 204 TUs, 4619 comparisons,
+no skips, 202 unaffected objects, actual linked 2079 / byte 959 pair sets
+identical baseline with no lost/gained pairs; canonical flags and allowed
+body/signature boundaries preserved. No fresh native/full-corpus evidence
+for rejected forms claimed.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit, no push/PR/merge.
+Evidence generators: `_work/read_normal_typed_triples_sweep.py`,
+`_work/read_normal_triple_cursor_sweep.py`, thirty-two focused reports/objects
+and rechecked typedpair validation audit.
