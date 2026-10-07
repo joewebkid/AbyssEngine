@@ -7878,3 +7878,74 @@ push, PR or merge change. No general compiler ceiling established.
 Evidence: `_work/enh_preload_count_frame_identities.json`,
 `_work/enh_preload_parser_state_identities.json`, nineteen focused reports/
 source snapshots/objects and rechecked typedpair validation audit.
+
+
+## Continuation: V5 preload with axis count records and key counters
+
+Twenty-two focused Enhanced measurements start from 3e8aafc6. All combine the
+previously tied V5 channel preload (0x400, case 0 break, default mask zero)
+with local count/axis changes, including control. The original masks, signed
+V5 count and exact /100 then tau multiply then /360 remain. Cases 4/5 still
+insert with zero mask. This initializer is a source hypothesis, not recovered
+C++; strict-only improvement was not accepted as the requested source gate.
+
+Eight forms group byte axis and ushort count into a two-member local AxisState,
+with axis/count or count/axis member order, in one of three mandatory sections
+or all three. The record contains only live original locals, no unused fields
+or manufactured padding. Axis remains 0..2; count is still read before each
+axis loop. Four forms share one ushort count between mutually exclusive
+vector/axis modes within a scoped mandatory section, individually or all three.
+The shared local is uninitialized until its original read; no read/count/failure
+routing changes. These lifetime/layout alternatives are source hypotheses.
+
+Nine forms change one mandatory key-loop counter: vector counter int or ushort,
+axis key counter int, for position/scale/rotation independently. Ushort counter
+is bounded by ushort count <=65535; it reaches count then exits without
+wraparound. Signed int fits all counts. V5 signed loops are unaffected. All
+stream calls, key conversion, timer updates, math and insertion order remain.
+No helper, header, ABI, flag or verifier change is introduced.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals preload-only |
+|---|---|---:|---:|---|
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axis_record_axis_count_0 | 97.2 / 52.8 | 645 | 100.0 | no |
+| axis_record_axis_count_1 | 97.2 / 41.4 | 645 | 100.0 | no |
+| axis_record_axis_count_2 | 97.3 / 22.3 | 645 | 100.0 | no |
+| axis_record_axis_count_all | 94.6 / 44.6 | 656 | 100.0 | no |
+| axis_record_count_axis_0 | 97.3 / 56.7 | 642 | 100.0 | no |
+| axis_record_count_axis_1 | 97.3 / 44.3 | 642 | 100.0 | no |
+| axis_record_count_axis_2 | 97.5 / 23.9 | 643 | 100.0 | no |
+| axis_record_count_axis_all | 95.0 / 40.3 | 648 | 100.0 | no |
+| group_count_position_group | 98.3 / 54.0 | 638 | 100.0 | no |
+| group_count_scale_group | 97.8 / 52.2 | 640 | 100.0 | no |
+| group_count_rotation_group | 98.0 / 67.2 | 647 | 100.0 | no |
+| group_count_all_scoped_groups | 98.0 / 52.4 | 635 | 100.0 | no |
+| counter_vector_position_int | 98.3 / 67.8 | 639 | 100.0 | yes |
+| counter_vector_scale_int | 98.3 / 67.8 | 639 | 100.0 | yes |
+| counter_vector_rotation_int | 98.3 / 67.8 | 639 | 100.0 | yes |
+| counter_vector_position_unsigned_short | 98.2 / 67.6 | 640 | 100.0 | no |
+| counter_vector_scale_unsigned_short | 98.2 / 54.5 | 640 | 100.0 | no |
+| counter_vector_rotation_unsigned_short | 98.2 / 67.6 | 640 | 100.0 | no |
+| counter_axis_position_int | 98.3 / 67.8 | 639 | 100.0 | yes |
+| counter_axis_scale_int | 98.3 / 67.8 | 639 | 100.0 | yes |
+| counter_axis_rotation_int | 98.3 / 67.8 | 639 | 100.0 | yes |
+
+All eight record forms regress (94.6-97.5). Shared position count ties 98.3
+with a different 638-instruction object; scale/rotation/all regress. Six signed
+int key-loop forms and control equal the entire preload-only Mesh object:
+0bca14f7cadf2178ab305d3fcc9a0f21d0241a68e43f35527193829f0c6a7a14.
+Three ushort vector counters regress to 98.2. Calls stay 100.0 for all forms.
+No gain; none retained. No general compiler ceiling established.
+
+All twenty-two compile/focused verify calls exit zero. Source/call metrics
+independently recomputed directly from target/base instructions, whole object
+hashes checked, source snapshots retained. Code/fixtures restored to ecc30f25.
+Read-only binding recheck of existing accepted full/native evidence passes:
+204 TUs/4619 comparisons/zero skipped, 202 unaffected whole objects, actual
+linked 2079/byte 959 exact-pair sets equal baseline with no lost/gained pairs,
+canonical arguments and outside-body/signature boundaries unchanged. No fresh
+native/full-corpus run claimed for rejected forms. Accepted means
+**98.40% /98.41%**; both >=99.0 gates unmet, goal active. No push, PR or merge.
+
+Evidence: `_work/enh_preload_axis_count_identities.json`, twenty-two focused
+reports/source snapshots/objects and rechecked typedpair validation audit.
