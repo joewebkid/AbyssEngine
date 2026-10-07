@@ -8229,3 +8229,74 @@ main checkout untouched.
 
 Evidence: `_work/enh_preload_bounds_views_identities.json`, twenty-four focused
 reports/source snapshots/objects and rechecked typedpair validation audit.
+
+
+## Continuation: V5 preload with completion receivers, count capture and cleanup layout
+
+Fourteen focused measurements start from 56579c34: ten completion receiver/
+count forms including control, then four completion-layout forms including
+control. All use the previously measured V5 channel=0x400/case0-break/default-
+zero dispatch. Cases 4/5 still insert zero-channel keys; all other masks,
+signed counts, key math and bounds conversion remain unchanged.
+
+Original ARM loads the key-frame size at 0x11c and compares it signed against
+one. Transform.h records and asserts the same offset. Original fp here is
+the animation pointer; the completion instruction sequence stores it into
+the mesh and uses it as receiver. Register differences do not establish an
+ABI/layout defect. These are source-form hypotheses, not recovered declarations.
+
+Six receiver forms use the attached field for start/range access, a named
+attached pointer, an explicit range-start local, or their combinations. Three
+count forms capture the signed size in int, const int or bool at completion.
+The first attempted count declaration was in function scope and failed to
+compile because earlier goto fail bypassed its initialization. The generator
+now wraps completion in a nested scope. The entire ten-form sweep was rerun
+successfully, including the previously completed receiver/control forms.
+
+The second sweep puts failure cleanup before a finish label, or shares the
+empty-success and failure release paths with a result local and two equivalent
+label orders. No destructor/delete is added to any executed path; positive
+key counts still attach animation, empty success returns 1 and read failure
+returns -1. Result initialization precedes every failure jump. No new helper,
+header, ABI, matcher, flag, denominator, dummy effect or padding change.
+
+| Family / trial | Enhanced source / strict | Instructions | Calls | Preload-only Mesh |
+|---|---|---:|---:|---|
+| finishstate / preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / receiver_field_start_receiver | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / receiver_field_range_receiver | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / receiver_both_field_receivers | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / receiver_named_attached_receiver | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / receiver_explicit_range_start | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / receiver_field_receiver_explicit_start | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / count_local | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / count_const | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / count_bool | 98.3 / 67.8 | 639 | 100.0 | yes |
+| completionlayout / preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| completionlayout / failure_before_finish | 98.3 / 67.8 | 639 | 100.0 | no |
+| completionlayout / common_release_result | 97.2 / 68.9 | 641 | 96.2 | no |
+| completionlayout / common_release_fallthrough | 97.2 / 68.9 | 641 | 96.2 | no |
+
+All ten receiver/count forms produce the entire preload-only object byte for
+byte. Failure-before-finish changes the object but ties source 98.3. The two
+shared-release forms produce the same object and regress source to 97.2;
+call-count shape is 96.2 despite preserved path-level cleanup behavior. Their
+strict-order increase is not either goal gate. None retained; no general
+compiler ceiling inferred.
+
+All fourteen final compile/focused verifier calls exited zero. Source/call
+metrics independently recomputed from instruction arrays; object hashes,
+instruction counts and source snapshot presence checked. Code/fixtures match
+ecc30f25 after restoration. Read-only binding audit of existing accepted
+full/native evidence passes: 204 TUs, 4619 comparisons, zero skipped, 202
+unaffected objects, actual linked 2079 / byte 959 pair sets equal baseline,
+no lost or gained pairs; canonical arguments and body/signature boundaries
+unchanged. This is no fresh native/full-corpus run for rejected variants and
+does not prove whole-native-game runtime/device behavior.
+
+Accepted means remain **98.40% / 98.41%**. Both >=99.0 gates unmet; goal active.
+Main checkout untouched; no push, PR or merge.
+
+Evidence: `_work/enh_preload_finish_state_identities.json`,
+`_work/enh_preload_completion_layout_identities.json`, fourteen focused reports,
+objects/source snapshots, corrected generators and typedpair validation audit.
