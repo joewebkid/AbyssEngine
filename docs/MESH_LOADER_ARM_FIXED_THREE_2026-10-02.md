@@ -8456,3 +8456,93 @@ do not justify further tests of equivalent predicate spellings.
 Evidence: `_work/read_reload_memzero_extrema_identities.json`, twenty-two
 focused reports/objects, `_work/prepare_reload_memzero_extrema.py`, generated
 sweep and rechecked typedpair validation audit.
+
+
+## Continuation: Read normal views and guards with per-vertex memset and fresh index owner
+
+Thirty-one focused Read measurements start from cfe33832: twenty-one normal
+source/destination view and counter forms including control, followed by ten
+normal length/section guard forms including control. Both families combine
+the previously measured fresh index owner and twelve-byte per-vertex memset.
+These combinations had not been covered by reload-only normal sweeps. Source
+forms are hypotheses, not recovered declarations.
+
+Twelve pointer-view forms express equivalent normal input/output addresses
+around centers zero, one, two or three. Center-three pointers are at most
+one-past the allocated array; actual loads/stores use negative offsets inside
+the same three-component tuple. Eight source/counter forms name an uncentered
+input pointer, advance that pointer, use vertex counters of unsigned int/int/
+unsigned short, or combine counter and pointer progression. No extra input
+read, output store, clamp, floating reassociation or changed precision.
+Counts are 16-bit; counters visit 0..count-1 without wrap for valid input.
+
+Length forms reverse the zero/nonzero branch, use continue for either completed
+case, name the same predicate, or preload the destination owner before it.
+Zero length still writes (0,1,0); other values execute original normalization/
+clamping. Section forms split shader processing, flatten compressed/plain
+dispatch, express independent predicates or share an early section exit.
+Shader processing still requires normal-enabled and shader-enabled flags;
+failed reads retain original cleanup/return paths. No helper/header/ABI,
+compiler/flag, matcher/denominator, dummy effect or padding change.
+
+The already documented fresh-owner callback limitation remains: this is not
+a universal claim for arbitrary external callbacks that mutate slot. No trial
+source is retained, nor runtime proof asserted for these rejected forms.
+
+| Family / trial | Read source / strict | Instructions | Calls | Memset+reload control object |
+|---|---|---:|---:|---|
+| views / reload_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| views / view_destination_0 | 98.1 / 56.2 | 868 | 100.0 | no |
+| views / view_destination_2 | 98.3 / 56.7 | 869 | 100.0 | no |
+| views / view_destination_3 | 98.0 / 57.4 | 863 | 100.0 | no |
+| views / view_source_1_destination_1 | 98.5 / 57.4 | 873 | 100.0 | no |
+| views / view_source_1_destination_2 | 98.3 / 56.3 | 869 | 100.0 | no |
+| views / view_source_1_destination_3 | 97.9 / 55.0 | 864 | 100.0 | no |
+| views / view_source_2_destination_1 | 98.5 / 57.8 | 873 | 100.0 | yes |
+| views / view_source_2_destination_2 | 98.3 / 56.7 | 869 | 100.0 | no |
+| views / view_source_2_destination_3 | 97.9 / 55.4 | 864 | 100.0 | no |
+| views / view_source_3_destination_1 | 98.5 / 57.8 | 873 | 100.0 | yes |
+| views / view_source_3_destination_2 | 98.3 / 56.7 | 869 | 100.0 | no |
+| views / view_source_3_destination_3 | 97.9 / 55.0 | 864 | 100.0 | no |
+| views / counter_source_record | 98.5 / 57.8 | 873 | 100.0 | yes |
+| views / counter_advancing_source | 97.9 / 56.8 | 869 | 100.0 | no |
+| views / counter_vertex_index_unsigned_int | 98.2 / 57.1 | 872 | 100.0 | no |
+| views / counter_vertex_advancing_unsigned_int | 98.1 / 56.8 | 872 | 100.0 | no |
+| views / counter_vertex_index_int | 98.2 / 57.1 | 872 | 100.0 | no |
+| views / counter_vertex_advancing_int | 98.1 / 56.8 | 872 | 100.0 | no |
+| views / counter_vertex_index_unsigned_short | 98.2 / 57.1 | 872 | 100.0 | no |
+| views / counter_vertex_advancing_unsigned_short | 98.1 / 56.8 | 872 | 100.0 | no |
+| guards / reload_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| guards / length_fallback_first | 98.3 / 60.1 | 873 | 100.0 | no |
+| guards / length_zero_continue | 98.3 / 60.1 | 873 | 100.0 | no |
+| guards / length_nonzero_continue | 98.5 / 57.8 | 873 | 100.0 | yes |
+| guards / length_named_nonzero | 98.5 / 57.8 | 873 | 100.0 | yes |
+| guards / length_owner_before_branch | 98.1 / 59.3 | 870 | 100.0 | no |
+| guards / section_split_shader | 98.5 / 57.8 | 873 | 100.0 | yes |
+| guards / section_flat_shader | 97.5 / 55.4 | 891 | 100.0 | no |
+| guards / section_independent_shader | 97.3 / 56.6 | 884 | 98.2 | no |
+| guards / section_common_section_exit | 98.5 / 57.8 | 873 | 100.0 | yes |
+
+Nine entire objects equal memset+reload control. Source ranges 97.9..98.5 for
+views/counters and 97.3..98.5 for guards. Independent section predicates lower
+call-count shape to 98.2; others retain 100.0. No goal gate gain. Source restored;
+none retained. No general compiler ceiling inferred.
+
+Both completed ledgers contain all expected rows, each appended after compile
+and focused verify with check=True; final guards sweep explicitly exited zero.
+Source/call metrics independently recomputed from instruction arrays; whole-
+object hashes and instruction counts checked. Deterministic source generators,
+objects and reports retained; no separate source snapshots for non-improving
+forms. Code/fixtures match ecc30f25 after restoration. Read-only audit rebinds
+prior accepted native/full evidence: 204 TUs, 4619 comparisons, zero skipped,
+202 unaffected objects; actual linked 2079 / byte 959 pair sets equal baseline
+with no lost/gained pairs, canonical arguments and body/signature boundaries
+unchanged. No fresh native/full-corpus run for rejected variants.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge. These normal forms combined with
+per-vertex memset do not justify keeping or repeating any tested variant.
+
+Evidence: `_work/read_reload_memzero_normal_views_identities.json`,
+`_work/read_reload_memzero_normal_guards_identities.json`, thirty-one focused
+reports/objects, deterministic preparation/sweep scripts and typedpair audit.
