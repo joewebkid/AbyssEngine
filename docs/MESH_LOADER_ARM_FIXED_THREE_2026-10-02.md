@@ -9136,3 +9136,73 @@ not a useful route to retaining a gate gain.
 Evidence: `_work/enh_enum_axis_identities.json`, forty-four focused reports/
 objects/source snapshots, `_work/prepare_enum_axis.py`, generated sweep and
 rechecked typedpair audit.
+
+
+## Continuation: Read Vector accumulator allocation and clearing interactions
+
+Twelve focused Read measurements start from cea69851: three accumulator
+representations, each with accepted/fresh index owner and field/per-vertex
+memset clearing. Representations are original float pointer over byte-sized
+operator new[], Vector pointer over the same allocation, and direct new
+Vector[vcount] with paired delete[]. Earlier typed float output/accumulator
+pairs were already known whole-object ties; direct paired Vector[] plus these
+owner/clearing combinations were unmeasured.
+
+Vector.h has exactly float x/y/z and no constructor/destructor declaration;
+sizeof Vector=12 and component offsets are asserted. Direct new Vector[vcount]
+uses default initialization without value-initializing parentheses; it adds
+no field-zeroing constructor. Original vcount*12 byte allocation and typed
+Vector count describe the same requested storage for the 16-bit vertex count.
+Typed form uses paired delete[]; raw form retains original operator delete[].
+
+Vector views clear/read the same x/y/z fields instead of float offsets; pointer
+steps are one Vector rather than three floats. Vector += calls remain in original
+i0, i1, i2 order, including repeated-index behavior. Final tangent stages read
+the same accumulated components; no added assignment operator/helper calls,
+math reassociation, precision change or changed lifetime across an executed
+call. Memset clears exactly three floats per existing vertex iteration. Fresh
+index owner retains the previously documented callback limitation, not a
+universal external-alias guarantee. No ABI/header/layout, compiler/flag, matcher/
+denominator or signature/body-boundary change. Source forms are hypotheses,
+not recovered original types.
+
+| Trial | Read source / strict | Instructions | Calls | Accepted Core | Fresh+memset Core |
+|---|---|---:|---:|---|---|
+| float_control_accepted_fields | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| float_control_accepted_memset | 98.5 / 57.4 | 873 | 100.0 | no | no |
+| float_control_fresh_fields | 98.5 / 57.8 | 874 | 100.0 | no | no |
+| float_control_fresh_memset | 98.5 / 57.8 | 873 | 100.0 | no | yes |
+| vector_raw_accepted_fields | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| vector_raw_accepted_memset | 98.5 / 57.4 | 873 | 100.0 | no | no |
+| vector_raw_fresh_fields | 98.5 / 57.8 | 874 | 100.0 | no | no |
+| vector_raw_fresh_memset | 98.5 / 57.8 | 873 | 100.0 | no | yes |
+| vector_typed_accepted_fields | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| vector_typed_accepted_memset | 98.5 / 57.4 | 873 | 100.0 | no | no |
+| vector_typed_fresh_fields | 98.5 / 57.8 | 874 | 100.0 | no | no |
+| vector_typed_fresh_memset | 98.5 / 57.8 | 873 | 100.0 | no | yes |
+
+All twelve source values tie 98.5, calls 100.0. For each of the four owner/
+clearing combinations, all three representations produce identical entire
+Core objects and row metrics. Three equal accepted Core and three fresh+
+memset Core. There is no source gate gain; none retained. These tested
+allocation/view substitutions are byte-level equivalences under the canonical
+ARM build, not evidence of a general compiler or attainable-score ceiling.
+
+Sweep explicitly exited zero; all twelve compile/focused verify calls pass.
+Metrics recomputed independently from target/base instruction arrays; whole
+object hashes and instruction counts checked. Representation groups checked
+against corresponding control hashes/metrics. Deterministic generator and
+focused objects/reports retained, without separate non-improving snapshots.
+Code/fixtures match ecc30f25 after restoration. Read-only accepted native/full
+binding audit passes: 204 TUs, 4619 comparisons, zero skipped, 202 unaffected
+objects; actual linked 2079 / byte 959 pair sets equal baseline with no lost/
+gained pairs, canonical arguments and body/signature boundaries unchanged.
+No fresh native/full-corpus runtime proof for rejected source representations.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge. Further equivalent accumulator
+allocation type spellings have no supporting evidence for a gain.
+
+Evidence: `_work/read_vector_accumulator_interaction_identities.json`, twelve
+focused reports/objects, `_work/read_vector_accumulator_interaction_sweep.py`
+and rechecked typedpair audit.
