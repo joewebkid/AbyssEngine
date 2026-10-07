@@ -9653,3 +9653,80 @@ Main checkout untouched; report-only commit; no push/PR/merge.
 Evidence: `_work/create_magic_extent_initialization_sweep.py`,
 `_work/create_magic_extent_initialization_identities.json`, fourteen focused
 objects/reports and rechecked typedpair validation audit.
+
+
+## Continuation: Read typed UV pairs and traversal interactions
+
+Twenty focused measurements start from da8db033: four UVInput allocation/
+traversal forms across accepted/fresh index owner and original zero stores/
+per-vertex memset, plus four controls. Prior UVInput tests only copied
+temporary scalar values; typed primitive UV arrays had different allocation
+forms. This family uses actual local trivial UVInput[vertexCount], either two
+short fields or short component[2], sizeof==4 statically asserted. No constructor,
+destructor, cookie or value-initialization effect; paired typed deletion at
+the original success/failure sites. Same vertexCount*4 byte allocation/Read.
+
+Field/array references use raw[i/2] with original i+=2 loop; field cursor
+advances one UVInput per iteration; vertex-index loop uses vertex<vcount,
+i=vertex*2 and raw+vertex. Captured unsigned-short vertexCount means i arithmetic
+does not overflow. Same double scaling by 1/4096, captured shader flip,
+double subtract, float conversions, U-store before V-load/store, output
+pointer updates and call/cleanup order. No new helper/header/ABI/signature,
+compiler flags/matcher/denominator, padding/unused field, volatile/assembly/
+fixed register change. These are source hypotheses, not recovered UV types.
+
+| Trial | Read source / strict | Instructions | Calls | Group control object |
+|---|---|---:|---:|---|
+| accepted_stores_control | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_stores_fields_reference | 98.1 / 57.1 | 876 | 98.2 | no |
+| accepted_stores_cursor | 98.1 / 57.1 | 876 | 98.2 | no |
+| accepted_stores_vertex_index | 97.7 / 56.6 | 876 | 98.2 | no |
+| accepted_stores_components_reference | 98.1 / 57.1 | 876 | 98.2 | no |
+| accepted_memzero_control | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_memzero_fields_reference | 98.1 / 57.1 | 875 | 98.2 | no |
+| accepted_memzero_cursor | 98.1 / 57.1 | 875 | 98.2 | no |
+| accepted_memzero_vertex_index | 97.7 / 56.6 | 875 | 98.2 | no |
+| accepted_memzero_components_reference | 98.1 / 57.1 | 875 | 98.2 | no |
+| fresh_stores_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_stores_fields_reference | 97.8 / 56.5 | 882 | 98.2 | no |
+| fresh_stores_cursor | 97.8 / 56.5 | 882 | 98.2 | no |
+| fresh_stores_vertex_index | 97.5 / 56.1 | 880 | 98.2 | no |
+| fresh_stores_components_reference | 97.8 / 56.5 | 882 | 98.2 | no |
+| fresh_memzero_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_memzero_fields_reference | 97.7 / 56.6 | 881 | 98.2 | no |
+| fresh_memzero_cursor | 97.7 / 56.6 | 881 | 98.2 | no |
+| fresh_memzero_vertex_index | 97.4 / 56.2 | 879 | 98.2 | no |
+| fresh_memzero_components_reference | 97.7 / 56.6 | 881 | 98.2 | no |
+
+All sixteen new forms regress: source 97.4..98.1;
+call-count shape 98.2..98.2.
+Four controls reproduce their respective whole reference objects. No variant
+retained. This does not support more equivalent typed-pair representation
+permutations as a useful next action; no compiler ceiling inferred.
+
+Sweep exited zero; twenty compile/focused verify calls passed. Source scores
+and call-count shape directly recomputed from instruction arrays, counts and
+whole-object hashes independently checked. Code/fixtures restore to ecc30f25.
+Existing accepted native/full binding audit revalidated: 204 TUs, 4619
+comparisons, no skips, 202 unaffected objects, actual linked 2079 / byte 959
+pair sets identical baseline with no lost/gained pairs; canonical flags and
+allowed body/signature boundaries preserved. No fresh native/full-corpus
+proof for rejected source variants claimed.
+
+Disk preparation removed 106 generated original Core target duplicates from
+six explicit recent focused families (22+18+14+20+20+12). Each resolved target
+is within own _work, untracked, the single expected Core unit, SHA256 equal
+retained typedpair-full/target counterpart. Manifest and system-temp backup
+written before literal-path deletion; target/reference digests rechecked
+immediately before each removal. No recursive deletion. Compiled base objects,
+sources, reports, accepted/baseline proof, main checkout and Git archive retained.
+Reclaimed 2,799,672 logical bytes. Old report target paths map via
+`_work/duplicate_recent_core_target_cleanup_20261007.json`; all 106 mappings
+independently rebound after deletion. Script:
+`_work/cleanup_recent_core_target_duplicates_20261007.ps1`.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/read_uv_typed_pairs_sweep.py`,
+`_work/read_uv_typed_pairs_identities.json`, twenty focused reports/objects
+and rechecked typedpair binding audit.
