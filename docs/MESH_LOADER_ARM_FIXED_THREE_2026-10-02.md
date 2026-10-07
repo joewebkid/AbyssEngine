@@ -9426,3 +9426,69 @@ Main checkout untouched; report-only commit; no push/PR/merge.
 Evidence: `_work/read_clamp_owner_memzero_interaction_sweep.py`,
 `_work/read_clamp_owner_memzero_interaction_identities.json`, twenty focused
 reports/objects and rechecked typedpair binding audit.
+
+
+## Continuation: Enhanced common optional-section entry guard
+
+Ten focused measurements start from e6fe9608: four common-entry guard forms
+for optional and V5 sections under accepted/preloaded-channel variants, with
+both controls. Prior presence-flow tests handled separate optional and V5
+guards. This family uses the bit implication (format&0x10)!=0 =>
+(format&0x18)!=0 to move V5 under the common optional guard. This changes
+control-flow topology rather than the source spelling of separate checks.
+
+Forms: nested positive guard, common early exit to parser completion,
+switch with zero break/default body, and single-iteration do/break.
+When optional mask is zero, neither section reads anything; otherwise the
+original optional section runs followed by the original V5 guard/content.
+Read order, signed/unsigned counts, channel masks including zero insertions
+for channels 4/5, key conversions, time updates, animation attachment and
+success/failure cleanup stay unchanged. No helper/header/ABI/signature/flags/
+matcher/denominator, padding, volatile, assembler or fixed register changes.
+Forms are source hypotheses, not recovered original branching.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Accepted Mesh | Preload Mesh |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| accepted_nested | 98.0 / 65.9 | 644 | 100.0 | no | no |
+| accepted_early_common | 98.0 / 65.9 | 644 | 100.0 | no | no |
+| accepted_switch_common | 98.0 / 65.9 | 644 | 100.0 | no | no |
+| accepted_once_common | 98.0 / 65.9 | 644 | 100.0 | no | no |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| preload_nested | 98.0 / 66.8 | 642 | 100.0 | no | no |
+| preload_early_common | 98.0 / 66.8 | 642 | 100.0 | no | no |
+| preload_switch_common | 98.0 / 66.8 | 642 | 100.0 | no | no |
+| preload_once_common | 98.0 / 66.8 | 642 | 100.0 | no | no |
+
+All eight new forms regress to 98.0. Each four-form group produces the same
+whole Mesh object; common entry adds three instructions to its control.
+Both controls reproduce their whole reference objects. No variant retained;
+this evidence does not support further spelling permutations of the common
+optional entry as the next action, and does not establish a compiler ceiling.
+
+Ten compile/focused-verification calls and sweep pass. Source scores recomputed
+from instruction arrays; instruction counts and object hashes independently
+checked. Code/fixtures restore to ecc30f25. Existing accepted native/full
+binding audit passes: 204 TUs, 4619 comparisons, no skips, 202 unaffected
+objects, linked 2079 / byte 959 actual pair sets identical baseline with no
+lost/gained pairs, canonical flags and body/signature boundaries preserved.
+No fresh native/full-corpus validation of rejected forms is claimed.
+
+Disk preparation removed 816 generated original-target duplicates from
+axisbyte-full, optional-full, readchilddo-full and scope-full (204 each).
+All resolved paths lie within own _work; targets untracked and each SHA256
+equals its retained typedpair-full/target counterpart. Manifest written in
+_work and a separate system-temp backup before removal; target/reference
+hashes rechecked immediately before each literal-path deletion. No recursive
+deletion; source/base objects, accepted proof, reports, baseline, main and Git
+archive retained. Reclaimed 6,907,472 logical bytes. Old report target paths
+map to retained canonical counterparts via
+`_work/duplicate_target_cleanup_batch4_20261007.json`; all 816 mappings
+independently rebound after cleanup. Script:
+`_work/cleanup_duplicate_targets_batch4_20261007.ps1`.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/enh_optional_common_guard_sweep.py`,
+`_work/enh_optional_common_guard_identities.json`, ten focused reports/objects
+and rechecked typedpair binding audit.
