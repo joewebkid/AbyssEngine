@@ -8546,3 +8546,91 @@ per-vertex memset do not justify keeping or repeating any tested variant.
 Evidence: `_work/read_reload_memzero_normal_views_identities.json`,
 `_work/read_reload_memzero_normal_guards_identities.json`, thirty-one focused
 reports/objects, deterministic preparation/sweep scripts and typedpair audit.
+
+
+## Continuation: Read position predicates and bounds values with per-vertex memset
+
+Twenty-one focused Read measurements start from 26ec624a. Ten combine fresh
+index owner and twelve-byte per-vertex accumulator memset with three position
+compression predicates, four direct output assignments, two shared raw-buffer
+lifetime forms and control. Eleven combine them with five bounds Vector copy/
+diagonal expressions, five center/extrema lifetime/order forms and control.
+These interactions were absent from earlier reload-only sweeps.
+
+Original ARM has movs of shifted flags and bmi at the position compression
+choice, while accepted source checks flags&4. Sign-test forms express this
+through (int)(flags<<29), shared compressedData, or signed compressedData.
+This predicate tests the same bit on this ARM ABI. Later nonzero compressed-
+data tests retain their predicates. Direct outputs assign allocation result
+directly into m->positions; shared raw-buffer locals are reused only across
+mutually exclusive branches. Typed raw allocations and paired deletes remain.
+
+Bounds forms copy all three existing extrema components into Vector values
+or use direct typed views, keep a temporary/subexpression diagonal, scope the
+same center computation in float array or Vector, reorder disjoint extrema
+copies, or construct extrema before existing center/assignment. They retain
+the same max-minus-min diagonal and full VectorLength radius, and identical
+center additions/half multiplies. No changed floating precision/reassociation,
+extra output store or replaced geometry formula. Local spellings are source
+hypotheses, not recovered declarations.
+
+Fresh-owner callback limitation remains as previously documented. No helper,
+header/ABI, compiler/flag, matcher/denominator, dummy effect or padding change.
+
+| Family / trial | Read source / strict | Instructions | Calls | Memset+reload control object |
+|---|---|---:|---:|---|
+| position / reload_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| position / predicate_direct_shift_negative | 97.7 / 57.8 | 877 | 98.2 | no |
+| position / predicate_shared_shift_negative | 97.7 / 57.8 | 877 | 98.2 | no |
+| position / predicate_signed_compressed_local | 97.7 / 57.8 | 877 | 98.2 | no |
+| position / direct_output_short | 98.5 / 57.8 | 873 | 100.0 | yes |
+| position / direct_output_integer | 98.5 / 57.8 | 873 | 100.0 | yes |
+| position / direct_output_floating | 98.5 / 57.8 | 873 | 100.0 | yes |
+| position / direct_output_all | 98.5 / 57.8 | 873 | 100.0 | yes |
+| position / shared_raw | 98.5 / 57.8 | 873 | 100.0 | yes |
+| position / shared_raw_direct_outputs | 98.5 / 57.8 | 873 | 100.0 | yes |
+| boundsvalues / reload_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| boundsvalues / copy_maximum_copy | 98.4 / 57.3 | 875 | 100.0 | no |
+| boundsvalues / copy_minimum_copy | 98.4 / 57.0 | 874 | 100.0 | no |
+| boundsvalues / copy_both_copies | 98.2 / 57.6 | 876 | 100.0 | no |
+| boundsvalues / copy_direct_views | 98.2 / 58.3 | 869 | 100.0 | no |
+| boundsvalues / copy_temporary_diagonal | 98.5 / 57.8 | 873 | 100.0 | yes |
+| boundsvalues / lifetime_scoped_float_center | 98.5 / 57.8 | 873 | 100.0 | no |
+| boundsvalues / lifetime_scoped_vector_center | 98.5 / 57.8 | 873 | 100.0 | no |
+| boundsvalues / lifetime_minimum_first | 98.5 / 57.8 | 873 | 100.0 | no |
+| boundsvalues / lifetime_extents_before_assignment | 98.5 / 57.0 | 873 | 100.0 | no |
+| boundsvalues / lifetime_extents_before_center | 97.2 / 40.9 | 884 | 98.2 | no |
+
+Nine entire objects equal memset+reload control. All three sign predicates
+produce one object, regressing source to 97.7 and call-count shape to 98.2.
+Bounds copies/views range 98.2..98.5; extents-before-center regresses to 97.2
+and call shape 98.2. Remaining lifetimes tie 98.5. No gate gain; all trial
+changes restored. No general compiler ceiling inferred.
+
+Both sweeps explicitly exited zero; all twenty-one compile/focused verify calls
+completed. Metrics independently recomputed from target/base instructions;
+whole-object hashes and instruction counts checked. Source generators, objects
+and reports retained, without separate snapshots for non-improving forms.
+Code/fixtures restored to ecc30f25. Read-only binding audit of prior accepted
+native/full proof passes: 204 TUs, 4619 comparisons, zero skipped, 202 unaffected
+objects; actual linked 2079 / byte 959 pair sets equal baseline, no lost/gained
+pairs; canonical arguments and body/signature boundaries unchanged. No fresh
+native/full-corpus runtime test for rejected forms.
+
+Before these sweeps, disk space was reclaimed by deleting exactly 408 untracked
+generated original target-object duplicates in zero-full/target and uv-full/
+target. Every absolute path was verified under this worktree's _work; each
+SHA256 was matched against retained typedpair-full/target, before manifest
+write and again immediately before individual Remove-Item -LiteralPath.
+No recursive deletion, source/base/report/baseline deletion or main change.
+Manifest has a separate host temporary-directory backup; canonical replacement
+paths and hashes rechecked here. Logical bytes reclaimed: 3,453,736. Old report
+target references in these two folders now use the manifest's canonical copy.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. No
+push, PR or merge; main checkout untouched.
+
+Evidence: `_work/read_reload_memzero_position_identities.json`,
+`_work/read_reload_memzero_bounds_values_identities.json`, twenty-one focused
+reports/objects, source generators, typedpair audit and
+`_work/duplicate_target_cleanup_zero_uv_20261007.json`.
