@@ -8968,3 +8968,76 @@ same record/array layouts have no supporting evidence for a gain.
 Evidence: `_work/enh_preload_vector_storage_identities.json`,
 `_work/enh_preload_vector_array_identities.json`, thirty-seven focused reports/
 objects/source snapshots, deterministic generators and typedpair audit.
+
+
+## Continuation: Enhanced parser records containing the addressed type field
+
+Eighteen focused Enhanced measurements start from cc3e1d11: eight local parser
+record layouts with accepted and preloaded V5 dispatch, plus both controls.
+Earlier parser records combined only non-addressed source fields and compiled
+to identical objects; this family also contains the short type field passed
+by address to the original Read calls. It tests memory coupling rather than
+another spelling of the earlier scalar-replaced records.
+
+Each record contains the by-value unsigned file handle and signed short type,
+ordered either way, optionally with the active format byte, animation pointer
+or mesh pointer. All fields are used, no artificial padding or unused member.
+ReadHeader declaration is inside the same function; no exported ABI/layout,
+helper or fixed register. Non-type fields receive the same initial values
+before the first Read; type remains uninitialized until its original two-byte
+Read. No invented initialization or field effect. Original Transform allocation
+still precedes all reads, constructor/destructor/delete calls unchanged.
+
+Read argument sizes/order and pointed-to bounds/type/count/key buffers retain
+their source operations; file arguments use the copied handle field. Pointer
+receivers and masks use their corresponding record members. This relies on
+the actual bounded Read contract rather than a claim about arbitrary external
+callbacks writing beyond a supplied field. No new runtime proof is asserted
+for these rejected forms. All flags, signed counts, key insertions and floating
+math remain; preloaded variants still insert zero-channel keys for masks 4/5.
+No compiler/flag, matcher/denominator, body signature or boundary change.
+These are source hypotheses, not recovered parser records.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Accepted Mesh | Preload-only Mesh |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| file_type_accepted | 95.6 / 52.9 | 646 | 100.0 | no | no |
+| file_type_preload | 95.6 / 53.6 | 644 | 100.0 | no | no |
+| type_file_accepted | 95.7 / 48.7 | 642 | 100.0 | no | no |
+| type_file_preload | 95.7 / 62.4 | 640 | 100.0 | no | no |
+| file_type_format_accepted | 95.5 / 30.4 | 647 | 100.0 | no | no |
+| file_type_format_preload | 95.5 / 43.9 | 645 | 100.0 | no | no |
+| type_format_file_accepted | 95.9 / 51.3 | 634 | 100.0 | no | no |
+| type_format_file_preload | 95.8 / 65.5 | 632 | 100.0 | no | no |
+| anim_file_type_accepted | 94.0 / 30.4 | 649 | 100.0 | no | no |
+| anim_file_type_preload | 94.0 / 31.0 | 647 | 100.0 | no | no |
+| file_type_anim_accepted | 93.9 / 30.3 | 650 | 100.0 | no | no |
+| file_type_anim_preload | 93.9 / 31.0 | 648 | 100.0 | no | no |
+| self_file_type_accepted | 95.7 / 40.6 | 650 | 100.0 | no | no |
+| self_file_type_preload | 95.6 / 41.1 | 648 | 100.0 | no | no |
+| file_type_self_accepted | 95.7 / 40.4 | 651 | 100.0 | no | no |
+| file_type_self_preload | 95.6 / 41.2 | 649 | 100.0 | no | no |
+
+Both controls reproduce their whole reference objects. All sixteen addressed
+record variants change the object and regress source to 93.9..95.9; call-count
+shape remains 100.0. Lower instruction count in one layout does not compensate
+for other changed source signals. No gate gain; all trial code restored. These
+results reject the tested addressed-record coupling as a useful route, without
+establishing a general compiler or source-shape ceiling.
+
+Sweep explicitly exited zero; all eighteen compile/focused verify calls pass.
+Source/call metrics independently recomputed from instruction arrays; object
+hashes/counts and all source snapshot paths checked. Code/fixtures match
+ecc30f25 after restoration. Read-only accepted native/full binding audit passes:
+204 TUs, 4619 comparisons, zero skipped, 202 unaffected objects; actual linked
+2079 / byte 959 pair sets equal baseline with no lost/gained pairs, canonical
+arguments and outside-body/signature boundaries unchanged. No fresh native/
+full-corpus runtime proof for rejected variants.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge.
+
+Evidence: `_work/enh_addressed_parser_state_identities.json`, eighteen focused
+reports/objects/source snapshots, `_work/prepare_addressed_parser_state.py`,
+generated sweep and rechecked typedpair audit.
