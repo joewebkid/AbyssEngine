@@ -8011,3 +8011,83 @@ change; no general compiler ceiling established. Main checkout untouched.
 Evidence: `_work/create_child_parse_status_identities.json`, seventeen focused
 reports/objects, `_work/create_child_parse_status_sweep.py` and rechecked
 typedpair validation audit.
+
+
+## Continuation: Create call records with shared int result and result reuse
+
+Twenty-two focused Create measurements start from 08ac4a8d. Fifteen are an
+accepted control plus seven local CallState forms crossed with per-call or
+function-scope shared int readStatus. Seven follow-up measurements reuse the
+existing result instead of adding readStatus. CallState holds out/material,
+engine/material, engine/out, all arguments, reversed arguments, handle/out or
+out/handle. It contains only the original live values; handle is zeroed once,
+all other members are copied scalar arguments. No unused field or manufactured
+padding, helper/header/ABI or file/call order change. These source-state
+arrangements are hypotheses, not recovered declarations.
+
+All three MeshReadData calls occur once at their original positions. Result
+storage remains int, preserving its entire range; child ==-1,
+enhanced-single ==1 and plain-single !=-1 tests are unchanged. Per-call locals
+live in their existing child/enhanced/plain scopes. Shared readStatus is not
+pre-zeroed and each comparison immediately follows assignment. Reuse forms
+remove that declaration and assign the original result instead. Invalid
+engine/path paths perform no read and still return the original initial -4;
+valid paths retain explicit -1 or 1 returns, so last-reader result cannot leak
+into the function's return value. No reliance on narrowing or a restricted
+mocked-reader result domain is needed here.
+
+CallState/int result:
+
+| Trial | Create source / strict | Instructions | Calls | Accepted whole Core |
+|---|---|---:|---:|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes |
+| out_material_per_call | 98.4 / 60.7 | 289 | 100.0 | yes |
+| out_material_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| engine_material_per_call | 98.4 / 60.7 | 289 | 100.0 | yes |
+| engine_material_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| engine_output_per_call | 98.4 / 60.7 | 289 | 100.0 | yes |
+| engine_output_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| all_arguments_per_call | 98.4 / 60.7 | 289 | 100.0 | yes |
+| all_arguments_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| arguments_reverse_per_call | 98.4 / 60.7 | 289 | 100.0 | yes |
+| arguments_reverse_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| handle_output_per_call | 96.9 / 61.7 | 296 | 100.0 | no |
+| handle_output_shared | 96.9 / 62.0 | 296 | 100.0 | no |
+| output_handle_per_call | 96.6 / 58.5 | 297 | 100.0 | no |
+| output_handle_shared | 96.6 / 58.8 | 297 | 100.0 | no |
+
+Original result reuse:
+
+| Trial | Create source / strict | Instructions | Calls | Accepted whole Core |
+|---|---|---:|---:|---|
+| out_material_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| engine_material_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| engine_output_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| all_arguments_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| arguments_reverse_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| handle_output_shared | 96.9 / 62.0 | 296 | 100.0 | no |
+| output_handle_shared | 96.6 / 58.8 | 297 | 100.0 | no |
+
+Five per-call argument-only forms equal the entire accepted Core, as does
+control. Corresponding five shared-result forms equal each other:
+b54382dab09a73fe6de9038bf9083513dc24316a1aaaf0b6773d77bc8e134c05;
+strict improves 60.7 to 61.0 but required source stays 98.4. Handle/out forms
+regress to 96.9/96.6. All seven result-reuse objects equal their corresponding
+shared-readStatus objects byte-for-byte. Calls stay 100.0. No gate gain; none
+retained. No compiler ceiling inferred.
+
+All twenty-two compile/focused verify calls exit zero; source/call metrics
+independently recomputed directly from target/base instructions and whole
+object hashes checked. Deterministic source generators retained, full-source
+snapshots saved only for a better candidate, and none occurred. Source/fixtures
+restored to ecc30f25. Read-only binding recheck of accepted full/native evidence
+passes: 204 TUs/4619 comparisons/zero skipped, 202 unaffected objects, actual
+linked 2079/byte 959 exact-pair sets equal baseline with no lost/gained pairs,
+canonical arguments and outside-body/signature boundaries unchanged. No fresh
+native/full-corpus run claimed for rejected forms. Accepted means
+**98.40% /98.41%**; both >=99.0 gates unmet, goal active. No matcher/compiler/
+flag, push, PR or merge change. Main checkout untouched.
+
+Evidence: `_work/create_call_state_int_status_identities.json`,
+`_work/create_call_state_result_reuse_identities.json`, focused reports/objects,
+source generators and rechecked typedpair validation audit.
