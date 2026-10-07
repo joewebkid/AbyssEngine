@@ -7949,3 +7949,65 @@ native/full-corpus run claimed for rejected forms. Accepted means
 
 Evidence: `_work/enh_preload_axis_count_identities.json`, twenty-two focused
 reports/source snapshots/objects and rechecked typedpair validation audit.
+
+
+## Continuation: Create child parse records with narrow read status
+
+Seventeen focused Create measurements start from 2d707930: accepted control
+and eight local child ParseState forms crossed with unsigned short/unsigned
+char representation of the child MeshReadData result. Parse records group
+handle/childPtr, childPtr/handle, subCount/childPtr, childPtr/subCount,
+handle/subCount/childPtr, childPtr/subCount/handle, or all four live parsing
+locals with handle-first or child-first order. No unused field, fabricated
+padding or new initialization is added. Only original handle zeroing occurs;
+magic/subCount/childPtr remain read/assignment-owned. File read order and child
+allocation, merge, append, failure cleanup and success paths stay unchanged.
+
+The child call result is explicitly converted once and compared against the
+same type's converted -1. This is equivalent for the actual accepted Read,
+whose parsed function body has exactly return expressions -1 and 1. That
+range was asserted before constructing trials. The enhanced-single ==1 and
+plain-single !=-1 predicates are untouched. No additional reader invocation
+occurs. Narrow comparisons are not claimed equivalent for an arbitrary mocked
+reader returning other integers, nor recovered original declarations. This is
+a scoped source/codegen hypothesis, not a new error-handling contract or ABI.
+
+| Trial | Create source / strict | Instructions | Calls | Accepted whole Core |
+|---|---|---:|---:|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes |
+| handle_child_unsigned_short | 97.6 / 58.9 | 293 | 100.0 | no |
+| handle_child_unsigned_char | 97.8 / 59.0 | 292 | 100.0 | no |
+| child_handle_unsigned_short | 97.4 / 56.6 | 296 | 100.0 | no |
+| child_handle_unsigned_char | 97.6 / 56.7 | 295 | 100.0 | no |
+| count_child_unsigned_short | 97.5 / 61.3 | 293 | 100.0 | no |
+| count_child_unsigned_char | 97.7 / 61.4 | 292 | 100.0 | no |
+| child_count_unsigned_short | 97.9 / 52.5 | 292 | 100.0 | no |
+| child_count_unsigned_char | 98.0 / 52.6 | 291 | 100.0 | no |
+| handle_count_child_unsigned_short | 97.4 / 54.4 | 294 | 100.0 | no |
+| handle_count_child_unsigned_char | 97.5 / 54.5 | 293 | 100.0 | no |
+| child_count_handle_unsigned_short | 97.4 / 56.5 | 297 | 100.0 | no |
+| child_count_handle_unsigned_char | 97.6 / 56.6 | 296 | 100.0 | no |
+| all_handle_first_unsigned_short | 97.4 / 48.9 | 298 | 100.0 | no |
+| all_handle_first_unsigned_char | 97.5 / 49.0 | 297 | 100.0 | no |
+| all_child_first_unsigned_short | 97.3 / 56.6 | 296 | 100.0 | no |
+| all_child_first_unsigned_char | 97.5 / 56.7 | 295 | 100.0 | no |
+
+All sixteen record/narrow-status interactions regress to 97.3-98.0 with calls
+100.0. Accepted control is exact accepted Core. No gain; none retained. All
+seventeen compile/focused verify calls exit zero; source/call metrics recomputed
+directly from target/base instructions and full object hashes checked. Source
+generator retains deterministic forms; full-source snapshots are written only
+for a better candidate, and none occurred. No new native/full-corpus run is
+claimed for rejected forms, nor runtime proof for hypothetical callback behavior.
+
+Source/fixtures restored to ecc30f25. Read-only binding recheck of accepted
+full/native evidence passes: 204 TUs/4619 comparisons/zero skipped, 202
+unaffected objects, actual linked 2079/byte 959 exact-pair sets equal baseline
+with no lost/gained pairs, canonical arguments and outside-body/signature
+boundaries unchanged. Accepted means **98.40% /98.41%**, both >=99.0 gates unmet,
+goal active. No header/helper/ABI, flag/matcher/compiler, push, PR or merge
+change; no general compiler ceiling established. Main checkout untouched.
+
+Evidence: `_work/create_child_parse_status_identities.json`, seventeen focused
+reports/objects, `_work/create_child_parse_status_sweep.py` and rechecked
+typedpair validation audit.
