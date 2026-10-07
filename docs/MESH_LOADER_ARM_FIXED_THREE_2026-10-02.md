@@ -7798,3 +7798,83 @@ Evidence: `_work/read_index_reload_accum_forms_identities.json`,
 `_work/read_index_reload_memzero_tangent_lifetime_identities.json`,
 `_work/read_index_reload_memzero_counter_identities.json`, focused reports/
 objects/source generators and `_work/duplicate_target_cleanup_accum_20261006.json`.
+
+
+## Continuation: preloaded V5 channel with count, frame and parser state
+
+Nineteen focused Enhanced measurements (including two identical controls)
+start from 87b826c2. Control initializes V5 channel to 0x400, leaves case 0
+unchanged, keeps all other nonzero masks and exact rotation math, and assigns
+zero in default; 4/5 still insert keys with mask zero. This is the previously
+tied 98.3/67.8/639 form, not a retained implementation or recovered declaration.
+All dispatch paths initialize channel. Signed V5 counts and /100 then exact tau
+multiply then /360 stay unchanged. No invented lookup table or effect is added.
+
+Twelve measurements combine this preload with three shared-prefix-count forms,
+six frame-time captures, V5 count moved outside its channel loop, and shared
+prefix/V5 outer count combination. Vector/axis/all mandatory counts reuse the
+existing optionalCount storage only across nonoverlapping stream sections.
+Every count is read before use; sizes, signedness, bounds, failure routes and
+read order remain. Frame conversion is captured only after its last successful
+read, before the existing dispatch, with the same key/value expression and
+integer conversion. V5 channel count remains signed short outside the loop;
+its declaration changes lifetime, not read timing or zero initialization.
+
+Seven measurements pair preload with six ParseState forms plus control. Local
+records hold self/anim, file/format, file/anim, self/file or all four live locals
+in original/file-first member order. No unused field, fabricated padding or
+new initialization is introduced. Construction and stream calls stay in their
+original order. This local grouping tests register/stack effects, not an ABI
+change. The control and forms are source hypotheses, not recovered C++.
+
+Count/frame lifetime:
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals preload-only |
+|---|---|---:|---:|---|
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| count_vector_counts | 97.4 / 63.4 | 639 | 100.0 | no |
+| count_axis_counts | 97.7 / 50.9 | 644 | 100.0 | no |
+| count_all_prefix_counts | 97.8 / 66.5 | 633 | 100.0 | no |
+| frame_vectors | 98.3 / 67.8 | 639 | 100.0 | yes |
+| frame_axes | 97.5 / 64.7 | 641 | 100.0 | no |
+| frame_optional | 98.3 / 67.8 | 639 | 100.0 | yes |
+| frame_v5 | 98.1 / 66.3 | 646 | 100.0 | no |
+| frame_optional_v5 | 98.1 / 66.3 | 646 | 100.0 | no |
+| frame_all | 97.3 / 63.4 | 648 | 100.0 | no |
+| v5_count_outer | 98.0 / 67.6 | 639 | 100.0 | no |
+| count_all_and_v5_outer | 97.5 / 66.4 | 633 | 100.0 | no |
+
+Parser local records:
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals preload-only |
+|---|---|---:|---:|---|
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| parser_self_anim | 98.3 / 67.8 | 639 | 100.0 | yes |
+| parser_file_format | 98.3 / 67.8 | 639 | 100.0 | yes |
+| parser_file_anim | 98.3 / 67.8 | 639 | 100.0 | yes |
+| parser_self_file | 98.3 / 67.8 | 639 | 100.0 | yes |
+| parser_all_source_order | 98.3 / 67.8 | 639 | 100.0 | yes |
+| parser_all_file_first | 98.3 / 67.8 | 639 | 100.0 | yes |
+
+Three count/frame forms equal preload-only Mesh: control, vector frame capture
+and optional frame capture. Count forms regress to 97.4/97.7/97.8; V5 count
+outer scope gives 98.0, all shared counts plus V5 scope 97.5. Remaining frame
+forms regress to 97.3-98.1. All seven parser-state/control whole Mesh objects
+are byte-identical to preload-only:
+0bca14f7cadf2178ab305d3fcc9a0f21d0241a68e43f35527193829f0c6a7a14.
+All call-count matches stay 100.0. No gain; no form retained.
+
+Nineteen compile/focused verify calls exit zero; per-body source/call metrics
+independently recomputed directly from target/base instructions and full object
+hashes checked. Each source snapshot retained. Source/fixtures restored to
+accepted ecc30f25. Read-only binding recheck of existing accepted full/native
+evidence passes: 204 TUs/4619 comparisons/zero skipped, 202 unaffected objects,
+actual linked 2079/byte 959 pair sets equal baseline with no lost/gained pairs,
+canonical flags and outside-body/signature boundaries unchanged. No new native/
+full-corpus run claimed for rejected forms. Accepted means **98.40% /98.41%**,
+both >=99.0 gates unmet; goal active. No helper/header/ABI, matcher/compiler/flag,
+push, PR or merge change. No general compiler ceiling established.
+
+Evidence: `_work/enh_preload_count_frame_identities.json`,
+`_work/enh_preload_parser_state_identities.json`, nineteen focused reports/
+source snapshots/objects and rechecked typedpair validation audit.
