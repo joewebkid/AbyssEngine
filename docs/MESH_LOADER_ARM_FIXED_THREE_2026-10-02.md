@@ -9730,3 +9730,67 @@ Main checkout untouched; report-only commit; no push/PR/merge.
 Evidence: `_work/read_uv_typed_pairs_sweep.py`,
 `_work/read_uv_typed_pairs_identities.json`, twenty focused reports/objects
 and rechecked typedpair binding audit.
+
+
+## Continuation: Read primitive triple-array allocation/addressing
+
+Sixteen focused measurements start from 6f246393: all seven nonempty
+combinations of short-position, integer-position and compressed-normal
+primitive triple arrays, under accepted/fresh index owner, plus controls.
+Prior normal records used local structs; this family uses C++ primitive
+inner arrays: short (*raw)[3]=new short[vertexCount][3] and int equivalents,
+with paired delete[] raw at original success/failure cleanup sites.
+
+Unsigned-short count makes outer count*6/count*12 sizes equal their original
+scalar arrays without overflow; primitive elements are default-initialized
+without zero filling, constructors/destructors or array cookie effects.
+Original Read sizes/count reloads/allocation order remain. Scalar position
+loop accesses raw[i/3][i%3] (0..2), keeping original i increment/bound and
+min/max axis arithmetic. Normal i+=3 loop accesses raw[i/3][0/1/2]. No
+flattened pointer traversal across inner-array boundaries. Same values,
+conversion/scaling/sqrt/clamps, centered stores/fallback, tangent and cleanup
+work. Fresh index owner remains the prior actual-slot reload hypothesis.
+
+No helper/header/ABI/signature/compiler flag/matcher/denominator change,
+manufactured padding/unused field, volatile/assembly/fixed register or added
+effect. Source hypotheses, not recovered original declarations.
+
+| Trial | Read source / strict | Instructions | Calls | Owner control object |
+|---|---|---:|---:|---|
+| accepted_control | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_short_position | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_integer_position | 98.5 / 57.6 | 873 | 100.0 | no |
+| accepted_short_position_integer_position | 98.5 / 57.6 | 873 | 100.0 | no |
+| accepted_normal | 98.5 / 56.9 | 874 | 100.0 | no |
+| accepted_short_position_normal | 98.5 / 56.9 | 874 | 100.0 | no |
+| accepted_integer_position_normal | 98.5 / 57.2 | 873 | 100.0 | no |
+| accepted_short_position_integer_position_normal | 98.5 / 57.2 | 873 | 100.0 | no |
+| fresh_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_short_position | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_integer_position | 98.4 / 58.0 | 875 | 100.0 | no |
+| fresh_short_position_integer_position | 98.4 / 58.0 | 875 | 100.0 | no |
+| fresh_normal | 98.5 / 57.4 | 874 | 100.0 | no |
+| fresh_short_position_normal | 98.5 / 57.4 | 874 | 100.0 | no |
+| fresh_integer_position_normal | 98.4 / 57.6 | 875 | 100.0 | no |
+| fresh_short_position_integer_position_normal | 98.4 / 57.6 | 875 | 100.0 | no |
+
+New forms source range 98.4..98.5;
+4 whole objects equal their respective
+owner control. No primary gain; none retained. Further equivalent primitive
+triple array spelling/subset permutations are not supported as a useful next
+action; this evidence does not establish a compiler ceiling.
+
+Sweep exited zero; sixteen compile/focused verify calls passed. Source and
+call-count metrics directly recomputed from instruction arrays; counts and
+whole-object hashes checked independently. Code/fixtures restored to
+ecc30f25. Existing accepted native/full binding audit revalidated: 204 TUs,
+4619 comparisons, no skips, 202 unaffected objects; actual linked 2079 / byte
+959 pair sets identical baseline with no lost/gained pairs; canonical flags
+and allowed body/signature boundaries preserved. No fresh native runtime/
+full-corpus validation of rejected variants claimed.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/read_primitive_triple_arrays_sweep.py`,
+`_work/read_primitive_triple_arrays_identities.json`, sixteen focused reports/
+objects and rechecked typedpair validation audit.
