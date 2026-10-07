@@ -8796,3 +8796,85 @@ checkout untouched; no push, PR or merge.
 Evidence: `_work/create_shared_scope_root_finish_identities.json`, eighteen
 focused reports/objects, `_work/create_shared_scope_root_finish_sweep.py`,
 typedpair audit and `_work/duplicate_target_cleanup_createstatus_20261007.json`.
+
+
+## Continuation: Enhanced optional value lifetimes and timer guards with V5 preload
+
+Seventeen focused Enhanced measurements start from 20abca80: four optional/V5
+value-lifetime forms, twelve timer guard/group forms and preload-only control.
+All use previously measured channel=0x400/case0-break/default-zero dispatch,
+retaining zero-channel insertion in cases 4/5. Earlier standalone timer/value
+sweeps did not measure these combinations with V5 preload.
+
+Lifetime forms move value/key declarations outside their V5 key loop, outside
+the channel loop, count outside the channel loop with per-channel values, or
+optional value/key outside its loop. Variables remain assigned by the same
+successful reads before every use. Signed V5 counts, optional counts, original
+read order and first-read-failure exit remain; no initialization skipped by
+failure labels, new allocation, insertion, precision or rotation change.
+
+Timer variants name the same positive-time and smaller-time predicates, express
+negative branches followed by an update, or use one guarded do/while(false)
+block. Each applies to vector sections, axis sections, optional/V5 sections or
+all eight sites. Conditions preserve >0 and current interval > input semantics,
+including zero/negative/NaN behavior. No extra call/store when original update
+is false, no changed global value read order, helper/header/ABI, flags/compiler,
+matcher/denominator, dummy effect or padding change. These are source hypotheses,
+not recovered declarations.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Preload-only Mesh |
+|---|---|---:|---:|---|
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| lifetime_v5_channel_values | 97.5 / 64.4 | 644 | 100.0 | no |
+| lifetime_v5_outer_values | 98.0 / 67.6 | 639 | 100.0 | no |
+| lifetime_v5_outer_count_channel_values | 98.0 / 67.6 | 639 | 100.0 | no |
+| lifetime_optional_outer_values | 98.1 / 67.4 | 642 | 100.0 | no |
+| time_named_comparisons_vectors | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_named_comparisons_axes | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_named_comparisons_optional_v5 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_named_comparisons_all | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_false_branches_vectors | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_false_branches_axes | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_false_branches_optional_v5 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_false_branches_all | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_guarded_block_vectors | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_guarded_block_axes | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_guarded_block_optional_v5 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_guarded_block_all | 98.3 / 67.8 | 639 | 100.0 | yes |
+
+All twelve timer forms and control produce the entire preload-only object.
+Value lifetimes regress source to 97.5, 98.0, 98.0 and 98.1; outer values and
+outer count/per-channel values produce the same object. Call-count shape stays
+100.0 throughout. No goal gate gain; all changes restored. No general compiler
+ceiling inferred.
+
+Sweep explicitly exited zero; all seventeen compile/focused verify calls pass.
+Source/call metrics independently recomputed from target/base instructions;
+object hashes, instruction counts and all source snapshot paths checked.
+Code/fixtures match ecc30f25 after restoration. Read-only accepted full/native
+binding audit passes: 204 TUs, 4619 comparisons, zero skipped, 202 unaffected
+objects; actual linked 2079 / byte 959 pair sets equal baseline with no lost/
+gained pairs, canonical arguments and body/signature boundaries unchanged.
+No fresh native/full-corpus runtime proof for rejected variants.
+
+To restore room after the previous commit's automatic Git maintenance failed
+with out-of-diskspace, only 1,632 untracked generated original target duplicates
+were removed from eight old focused-full build target folders: attach-full,
+boundsinit-full, colorfield-full, colorowner-full, component-full, dispatch-full,
+floatuvbound-full and fullbounds-full. Absolute paths were checked under this
+worktree's _work, SHA256 matched retained typedpair-full/target before manifest
+write and again before individual Remove-Item -LiteralPath. No recursive delete,
+Git archive operation or source/base/report/baseline/accepted-proof deletion.
+Manifest has a separate host-temp backup. Canonical replacements rechecked
+here; old target-folder references use manifest paths. Logical bytes reclaimed:
+13,814,944. Previous 20abca80 report was already verified readable and equal
+to its working file after maintenance failure. Subsequent report commit uses
+per-command maintenance.auto=false/gc.auto=0, leaving persistent Git settings
+and object archive untouched by a manual maintenance action.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge.
+
+Evidence: `_work/enh_preload_optional_time_identities.json`, seventeen focused
+reports/objects/source snapshots, generators, typedpair validation audit and
+`_work/duplicate_target_cleanup_batch8_20261007.json`.
