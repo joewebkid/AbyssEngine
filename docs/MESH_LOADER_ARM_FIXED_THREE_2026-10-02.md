@@ -8300,3 +8300,82 @@ Main checkout untouched; no push, PR or merge.
 Evidence: `_work/enh_preload_finish_state_identities.json`,
 `_work/enh_preload_completion_layout_identities.json`, fourteen focused reports,
 objects/source snapshots, corrected generators and typedpair validation audit.
+
+
+## Continuation: V5 preload with entry/flag lifetimes, mixed axes and presence flow
+
+Twenty-five focused measurements start from 81c18185. First ten combine V5
+preloaded dispatch with entry/section-flag lifetime forms and control. Second
+fifteen combine it with mixed signed/byte axis counters, optional-section
+presence/format/type flow forms and control. These interactions had not been
+measured by their earlier standalone sweeps. No recovered declarations claimed.
+
+Entry forms move self, format or both after the same Transform allocation,
+or use signed char for format. Only masks 0x18/0x10 inspect format, so signed
+promotion does not change either predicate. Section-flag forms capture these
+two masks as bool or unsigned int at entry or inside the optional block;
+another captures bools just after allocation. Flags are by value and unchanged.
+No read, allocation, cleanup or insertion is moved across an executed call.
+
+Mixed-axis forms replace one or two of the three unsigned-char 0..2 loops
+with int 0..2 loops. Bounds, iteration order and channel/key math remain.
+Presence-flow forms express absent optional-count, format or type guards as
+early jumps to their original section exit, or name the nonzero predicate,
+or use unsigned-count >0. They retain read order and do not bypass required
+failure cleanup, initialization or successful animation attachment.
+
+Every form retains preloaded channel=0x400/case0-break/default-zero, including
+zero-channel insertion for cases 4/5. No helper/header/ABI change, extra effect,
+padding, compiler/flag or verifier change, nor denominator change.
+
+| Family / trial | Enhanced source / strict | Instructions | Calls | Preload-only Mesh |
+|---|---|---:|---:|---|
+| entrylife / preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| entrylife / entry_format_after_allocation | 98.3 / 67.8 | 639 | 100.0 | yes |
+| entrylife / entry_self_after_allocation | 98.3 / 67.8 | 639 | 100.0 | yes |
+| entrylife / entry_both_after_allocation | 98.3 / 67.8 | 639 | 100.0 | yes |
+| entrylife / entry_signed_format_current | 98.3 / 67.8 | 639 | 100.0 | yes |
+| entrylife / flags_bool_entry | 98.2 / 67.9 | 639 | 100.0 | no |
+| entrylife / flags_bool_optional | 98.3 / 67.9 | 639 | 100.0 | no |
+| entrylife / flags_mask_entry | 98.2 / 67.9 | 639 | 100.0 | no |
+| entrylife / flags_mask_optional | 98.3 / 67.9 | 639 | 100.0 | no |
+| entrylife / flags_bool_after_allocation | 98.2 / 67.9 | 639 | 100.0 | no |
+| axpresence / preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / mixed_axis_signed_axes_0 | 98.2 / 67.7 | 638 | 100.0 | no |
+| axpresence / mixed_axis_signed_axes_1 | 98.2 / 67.7 | 638 | 100.0 | no |
+| axpresence / mixed_axis_signed_axes_2 | 98.2 / 67.7 | 638 | 100.0 | no |
+| axpresence / mixed_axis_signed_axes_0_1 | 98.1 / 67.6 | 637 | 100.0 | no |
+| axpresence / mixed_axis_signed_axes_0_2 | 98.1 / 67.6 | 637 | 100.0 | no |
+| axpresence / mixed_axis_signed_axes_1_2 | 98.1 / 67.6 | 637 | 100.0 | no |
+| axpresence / presence_flow_v5_presence_early | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / presence_flow_v5_format_early | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / presence_flow_v5_both_early | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / presence_flow_v5_named_presence | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / presence_flow_v5_positive_presence | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / presence_flow_optional_type_early | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / presence_flow_optional_format_early | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / presence_flow_optional_both_early | 98.3 / 67.8 | 639 | 100.0 | yes |
+
+Fourteen entire objects equal preload-only control: five entry/control and
+nine presence/control. Three entry bool/mask captures share one object and
+regress source to 98.2; two delayed captures share another object and tie
+98.3. One signed axis regresses to 98.2, two signed axes to 98.1. No gate
+gain; none retained. No general compiler ceiling inferred.
+
+All twenty-five compile/focused verifier calls exited zero. Source/call
+metrics independently recomputed from instruction arrays, whole-object hashes
+and instruction counts checked; all source snapshots present. Restored code
+and fixtures match ecc30f25. Read-only audit rebinds existing accepted native/
+full-corpus evidence: 204 TUs, 4619 comparisons, zero skipped, 202 unaffected
+objects; actual linked 2079 / byte 959 pair sets equal baseline with no lost
+or gained pairs, canonical arguments and outside-body/signature boundaries
+unchanged. Rejected forms received no fresh native/full-corpus runtime proof.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. No
+push, PR or merge; main checkout untouched. Next investigation must address
+other residual instruction differences, since these tested lifetime/presence
+interactions add no useful gate gain.
+
+Evidence: `_work/enh_preload_entry_lifetime_identities.json`,
+`_work/enh_preload_axis_presence_identities.json`, twenty-five focused reports,
+objects/source snapshots, generators and rechecked typedpair validation audit.
