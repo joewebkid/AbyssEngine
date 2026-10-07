@@ -9284,3 +9284,75 @@ do not support further equivalent layout/spelling trials as a route to a gain.
 Evidence: `_work/create_addressed_handle_arguments_identities.json`, twenty-two
 focused reports/objects, `_work/create_addressed_handle_arguments_sweep.py`
 and rechecked typedpair validation audit.
+
+
+## Continuation: Create addressed header buffer with live arguments
+
+Eighteen focused measurements start from e25b0e3d: eight local HeaderState
+layouts under accepted direct-status and shared-int-result forms, plus both
+controls. Earlier parser records lacked engine/material pointers; addressed
+handle/argument layouts did not include the addressed header buffer. This
+family tests whether header-buffer aliasing and stack placement can improve
+the remaining original/accepted load/store differences. It is a source
+hypothesis, not a recovered original structure.
+
+Layouts pair magic with engine/material in both orders; combine engine,
+magic and handle in both orders; and combine engine/material, magic,
+subCount and handle in two orders. All fields serve original operations.
+The eight-byte buffer and count remain uninitialized until their original
+writers. Pointer copies and handle-zero initialization occur at entry; no
+call/allocation/file operation is reordered. Original seven-byte header
+read, eight-byte strcpy including terminator and two-byte secondary read
+remain within the buffer. Original count read stays two bytes. This relies
+on the actual bounded file API contract, not arbitrary out-of-bounds writes.
+
+No unused field, manufactured padding, volatile, assembler, fixed register,
+helper/header/exported layout/signature/compiler flags/matcher/denominator
+change. Child ==-1, enhanced-single ==1, plain-single !=-1 and returns
+1/-1/-4 preserve their original int-status behavior. Cleanup and animation
+completion unchanged. Only local copies and local field references differ.
+
+| Trial | Create source / strict | Instructions | Calls | Accepted Core | Shared Core |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| accepted_engine_magic | 97.4 / 63.8 | 289 | 100.0 | no | no |
+| accepted_magic_engine | 97.5 / 64.7 | 287 | 100.0 | no | no |
+| accepted_mat_magic | 98.3 / 66.2 | 292 | 100.0 | no | no |
+| accepted_magic_mat | 98.1 / 65.4 | 290 | 100.0 | no | no |
+| accepted_engine_magic_handle | 96.4 / 60.1 | 291 | 100.0 | no | no |
+| accepted_handle_magic_engine | 96.5 / 56.8 | 290 | 100.0 | no | no |
+| accepted_engine_magic_subCount_handle_mat | 96.3 / 55.6 | 292 | 100.0 | no | no |
+| accepted_mat_handle_subCount_magic_engine | 96.3 / 52.8 | 292 | 100.0 | no | no |
+| shared_control | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_engine_magic | 97.4 / 64.1 | 289 | 100.0 | no | no |
+| shared_magic_engine | 97.5 / 65.1 | 287 | 100.0 | no | no |
+| shared_mat_magic | 98.3 / 66.9 | 292 | 100.0 | no | no |
+| shared_magic_mat | 98.1 / 66.1 | 290 | 100.0 | no | no |
+| shared_engine_magic_handle | 96.4 / 60.5 | 291 | 100.0 | no | no |
+| shared_handle_magic_engine | 96.5 / 57.1 | 290 | 100.0 | no | no |
+| shared_engine_magic_subCount_handle_mat | 96.3 / 55.9 | 292 | 100.0 | no | no |
+| shared_mat_handle_subCount_magic_engine | 96.3 / 53.2 | 292 | 100.0 | no | no |
+
+All sixteen new layouts fail to improve the primary gate: source range
+96.3..98.3, instruction counts
+287..292. Both controls
+reproduce their whole reference objects. No trial retained; these observations
+do not establish a compiler ceiling. Further addressed-header argument
+layout permutations are not supported by this evidence as the next action.
+
+Sweep exited zero; eighteen compile/focused-verification calls passed.
+Source scores independently recomputed from disassembled instruction arrays;
+instruction counts and object hashes checked. Deterministic generator and
+focused objects/reports retained; separate source snapshots only for gains.
+Restored source and fixtures equal ecc30f25. Read-only accepted full/native
+binding audit passes: 204 TUs, 4619 comparisons, zero skips, 202 unaffected
+objects, linked 2079 / byte 959 actual pair sets identical baseline with no
+lost/gained pairs; canonical flags and body/signature boundaries preserved.
+This revalidates existing accepted native/full evidence, not a fresh native
+runtime or full-corpus test of rejected variants.
+
+Accepted means remain **98.40% / 98.41%**; both >=99.0 gates unmet; goal active.
+Main checkout untouched; report-only commit, no push/PR/merge.
+Evidence: `_work/create_addressed_magic_arguments_sweep.py`,
+`_work/create_addressed_magic_arguments_identities.json`, eighteen focused
+objects/reports and rechecked typedpair binding audit.
