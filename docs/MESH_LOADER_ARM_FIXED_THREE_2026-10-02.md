@@ -9206,3 +9206,81 @@ allocation type spellings have no supporting evidence for a gain.
 Evidence: `_work/read_vector_accumulator_interaction_identities.json`, twelve
 focused reports/objects, `_work/read_vector_accumulator_interaction_sweep.py`
 and rechecked typedpair audit.
+
+
+## Continuation: Create addressed handle grouped with engine/material arguments
+
+Twenty-two focused Create measurements start from 9d597131: ten local ReadState
+layouts with accepted direct and shared-int-result predicates, plus both
+controls. Prior addressed call records grouped handle with output only;
+earlier non-addressed argument records scalar-replaced many fields. This family
+combines addressed handle with engine/material and optionally output/path.
+Remaining original/accepted load/store shape differences motivated this test;
+no original ReadState type is recovered or claimed.
+
+Ten layouts are engine/handle and reverse, material/handle and reverse,
+engine/handle/material and reverse, engine/handle/output and reverse, and
+all five active arguments in two orders. Every record field is used; no
+padding member, unused field, fixed register, header/exported ABI or helper.
+Pointer fields copy original parameters; handle retains original zero value.
+These local copies occur before original engine/path guard, without moving
+any allocation, OpenRead, Read, MeshReadData, merge/ArrayAdd, cleanup or Close.
+
+OpenRead receives the record's handle address; subsequent file arguments and
+const handle-reference arguments use that same field. This relies on actual
+bounded output-parameter/Read contracts, not an assertion for arbitrary
+callbacks writing beyond a supplied object or casting away unrelated state.
+Status predicates remain child ==-1, enhanced-single ==1 and plain-single
+!=-1 for arbitrary int results. Shared variant reuses existing result; valid
+returns stay 1/-1 and invalid engine/path guard -4. Same header masks, bounds
+and animation completion. No added effect, compiler/flag/matcher/denominator
+change, altered signature or outside-body edit. Forms are source hypotheses.
+
+| Trial | Create source / strict | Instructions | Calls | Accepted Core | Shared-result Core |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| accepted_engine_handle | 96.4 / 60.3 | 289 | 100.0 | no | no |
+| accepted_handle_engine | 97.3 / 64.9 | 288 | 100.0 | no | no |
+| accepted_mat_handle | 97.8 / 63.1 | 292 | 100.0 | no | no |
+| accepted_handle_mat | 97.9 / 64.3 | 291 | 100.0 | no | no |
+| accepted_engine_handle_mat | 96.6 / 62.0 | 290 | 100.0 | no | no |
+| accepted_mat_handle_engine | 96.6 / 62.3 | 290 | 100.0 | no | no |
+| accepted_engine_handle_out | 96.4 / 60.4 | 295 | 100.0 | no | no |
+| accepted_out_handle_engine | 96.4 / 60.8 | 295 | 100.0 | no | no |
+| accepted_engine_path_out_mat_handle | 96.2 / 65.1 | 299 | 100.0 | no | no |
+| accepted_handle_mat_out_path_engine | 96.1 / 54.2 | 299 | 100.0 | no | no |
+| shared_control | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_engine_handle | 96.4 / 60.7 | 289 | 100.0 | no | no |
+| shared_handle_engine | 97.3 / 65.3 | 288 | 100.0 | no | no |
+| shared_mat_handle | 97.8 / 63.8 | 292 | 100.0 | no | no |
+| shared_handle_mat | 97.9 / 64.9 | 291 | 100.0 | no | no |
+| shared_engine_handle_mat | 96.6 / 62.3 | 290 | 100.0 | no | no |
+| shared_mat_handle_engine | 96.6 / 62.7 | 290 | 100.0 | no | no |
+| shared_engine_handle_out | 96.4 / 60.8 | 295 | 100.0 | no | no |
+| shared_out_handle_engine | 96.4 / 61.1 | 295 | 100.0 | no | no |
+| shared_engine_path_out_mat_handle | 96.2 / 65.8 | 299 | 100.0 | no | no |
+| shared_handle_mat_out_path_engine | 96.1 / 54.6 | 299 | 100.0 | no | no |
+
+Only controls equal their reference whole objects. All twenty new layouts
+regress source to 96.1..97.9; each direct/shared pair has the same source score,
+instruction count and call-count shape. Some strict scores increase (up to
+65.8), but neither requested source-shape gate improves. Calls remain 100.0;
+counts range 288..299. None retained; no general compiler ceiling inferred.
+
+Sweep explicitly exited zero. All twenty-two compile/focused verify calls pass.
+Metrics independently recomputed from instruction arrays; whole-object hashes
+and instruction counts checked. Deterministic generator and focused objects/
+reports retained without separate non-improving snapshots. Code/fixtures
+match ecc30f25 after restoration. Read-only accepted native/full binding audit
+passes: 204 TUs, 4619 comparisons, zero skipped, 202 unaffected objects; actual
+linked 2079 / byte 959 pair sets equal baseline with no lost/gained pairs,
+canonical arguments and body/signature boundaries unchanged. No fresh native/
+full-corpus runtime proof for rejected variants.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge. Tested addressed argument records
+do not support further equivalent layout/spelling trials as a route to a gain.
+
+Evidence: `_work/create_addressed_handle_arguments_identities.json`, twenty-two
+focused reports/objects, `_work/create_addressed_handle_arguments_sweep.py`
+and rechecked typedpair validation audit.
