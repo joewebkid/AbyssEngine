@@ -8878,3 +8878,93 @@ checkout untouched; no push, PR or merge.
 Evidence: `_work/enh_preload_optional_time_identities.json`, seventeen focused
 reports/objects/source snapshots, generators, typedpair validation audit and
 `_work/duplicate_target_cleanup_batch8_20261007.json`.
+
+
+## Continuation: Enhanced V5 preload with vector key records, arrays and declaration order
+
+Thirty-seven focused measurements start from f9ab2c53. First twenty-two include
+fourteen vector-key record forms, seven nonempty early-vector-declaration
+subsets and control. Second fifteen include fourteen equivalent four-float
+array forms and control. Both families use already measured V5 preloaded mask
+dispatch; cases 4/5 still insert zero-channel keys. No recovered declaration
+or original buffer layout claimed.
+
+Record forms use exactly one float time and three float coordinates, with time
+first or coordinates first, for any nonempty subset of position/scale/rotation
+vector sections. Every field is active. Array forms use exactly four floats,
+time at index 0 with coordinates at 1..3, or time at index 3 with coordinates
+at 0..2, in the same section subsets. The same four-byte time Read still
+precedes timer update and the same twelve-byte coordinate Read; Insert receives
+the same coordinate pointer/channel and same signed conversion of time.
+No padding/unused storage, extra input, new output store, floating reassociation
+or precision/rotation math change. Failed reads still go to original cleanup.
+
+Early declarations place the existing float vec[3] before the time Read in any
+nonempty subset, retaining its coordinate Read and all operations at their
+original sites. No helper/header/ABI, compiler/flag, matcher/denominator,
+manufactured effect or signature/body boundary change.
+
+| Family / trial | Enhanced source / strict | Instructions | Calls | Preload-only Mesh |
+|---|---|---:|---:|---|
+| storage / preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| storage / record_time_first_0 | 97.2 / 37.9 | 642 | 100.0 | no |
+| storage / record_time_first_1 | 97.9 / 57.7 | 639 | 100.0 | no |
+| storage / record_time_first_2 | 97.9 / 57.7 | 639 | 100.0 | no |
+| storage / record_time_first_0_1 | 97.2 / 45.4 | 642 | 100.0 | no |
+| storage / record_time_first_0_2 | 97.2 / 37.9 | 642 | 100.0 | no |
+| storage / record_time_first_1_2 | 97.9 / 57.7 | 639 | 100.0 | no |
+| storage / record_time_first_0_1_2 | 97.2 / 50.1 | 642 | 100.0 | no |
+| storage / record_vector_first_0 | 97.9 / 58.0 | 639 | 100.0 | no |
+| storage / record_vector_first_1 | 97.9 / 58.0 | 639 | 100.0 | no |
+| storage / record_vector_first_2 | 97.9 / 58.0 | 639 | 100.0 | no |
+| storage / record_vector_first_0_1 | 97.9 / 58.4 | 639 | 100.0 | no |
+| storage / record_vector_first_0_2 | 97.9 / 58.4 | 639 | 100.0 | no |
+| storage / record_vector_first_1_2 | 97.9 / 58.4 | 639 | 100.0 | no |
+| storage / record_vector_first_0_1_2 | 97.8 / 58.7 | 639 | 100.0 | no |
+| storage / early_0 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| storage / early_1 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| storage / early_2 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| storage / early_0_1 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| storage / early_0_2 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| storage / early_1_2 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| storage / early_0_1_2 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| array / preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| array / time_first_0 | 97.2 / 37.9 | 642 | 100.0 | no |
+| array / time_first_1 | 97.9 / 57.7 | 639 | 100.0 | no |
+| array / time_first_2 | 97.9 / 57.7 | 639 | 100.0 | no |
+| array / time_first_0_1 | 97.2 / 45.4 | 642 | 100.0 | no |
+| array / time_first_0_2 | 97.2 / 37.9 | 642 | 100.0 | no |
+| array / time_first_1_2 | 97.9 / 57.7 | 639 | 100.0 | no |
+| array / time_first_0_1_2 | 97.2 / 50.1 | 642 | 100.0 | no |
+| array / vector_first_0 | 97.9 / 58.0 | 639 | 100.0 | no |
+| array / vector_first_1 | 97.9 / 58.0 | 639 | 100.0 | no |
+| array / vector_first_2 | 97.9 / 58.0 | 639 | 100.0 | no |
+| array / vector_first_0_1 | 97.9 / 58.4 | 639 | 100.0 | no |
+| array / vector_first_0_2 | 97.9 / 58.4 | 639 | 100.0 | no |
+| array / vector_first_1_2 | 97.9 / 58.4 | 639 | 100.0 | no |
+| array / vector_first_0_1_2 | 97.8 / 58.7 | 639 | 100.0 | no |
+
+Seven early declarations and both controls equal entire preload-only object,
+source 98.3. All record/array variants regress to 97.2..97.9. Every one of the
+fourteen array forms equals its corresponding entire record object, rather
+than merely tying metrics; this representation substitution adds no gate
+gain. All call-count shape values remain 100.0. No trial retained and no general
+compiler ceiling inferred.
+
+Both sweeps explicitly exited zero. All thirty-seven compile/focused verify
+calls pass; metrics independently recomputed from instruction arrays, object
+hashes/counts and source snapshot presence checked. Corresponding record/array
+whole hashes and row metrics independently compared. Code/fixtures match
+ecc30f25 after restoration. Read-only accepted native/full binding audit passes:
+204 TUs, 4619 comparisons, zero skipped, 202 unaffected objects; actual linked
+2079 / byte 959 pair sets equal baseline with no lost/gained pairs, canonical
+arguments and body/signature boundaries unchanged. No fresh native/full-corpus
+runtime proof for rejected variants.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge. Further spelling variants of these
+same record/array layouts have no supporting evidence for a gain.
+
+Evidence: `_work/enh_preload_vector_storage_identities.json`,
+`_work/enh_preload_vector_array_identities.json`, thirty-seven focused reports/
+objects/source snapshots, deterministic generators and typedpair audit.
