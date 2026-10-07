@@ -9794,3 +9794,81 @@ Main checkout untouched; report-only commit; no push/PR/merge.
 Evidence: `_work/read_primitive_triple_arrays_sweep.py`,
 `_work/read_primitive_triple_arrays_identities.json`, sixteen focused reports/
 objects and rechecked typedpair validation audit.
+
+
+## Continuation: Create early-entry guard with scope/status interaction
+
+Eighteen focused measurements start from 181065e6: early combined invalid
+engine/path return with all seven combinations of narrowed magic/count/child
+scope under accepted direct and shared-int-result forms, plus four entry
+controls (original/early under each result form). Original guard-layout
+differences motivated testing this interaction; existing scope/status tests
+retained the outer valid-input block, and earlier early-entry trials did not
+combine these current scope/result forms.
+
+Invalid inputs still return -4 before any allocation/file operation. Valid
+inputs execute original work after early guard. Shared int result is declared
+without redundant initialization and assigned before every original status
+comparison; its value is never read uninitialized. Predicate distinctions
+remain child ==-1, enhanced-single ==1, plain-single !=-1, success/failure
+returns 1/-1. Original close/release and animation operations unchanged.
+Scope bits 1/2/4 respectively place magic in successful OpenRead, subCount in
+enhanced-format block, childPtr in child iteration; initialization/write
+locations and lifetimes relative to actual calls remain as before.
+
+No helper/header/ABI/signature/flags/matcher/denominator change, invented
+padding/unused field, volatile/assembly/fixed register or added effect.
+Forms are source hypotheses, not recovered original entry flow.
+
+| Trial | Create source / strict | Instructions | Calls | Same prior scoped Core |
+|---|---|---:|---:|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes |
+| shared_control | 98.4 / 61.0 | 289 | 100.0 | yes |
+| early_accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes |
+| early_shared_control | 98.4 / 61.0 | 289 | 100.0 | yes |
+| early_accepted_scope_1 | 98.2 / 52.8 | 289 | 100.0 | yes |
+| early_accepted_scope_2 | 97.7 / 54.8 | 289 | 100.0 | yes |
+| early_accepted_scope_3 | 97.7 / 57.2 | 289 | 100.0 | yes |
+| early_accepted_scope_4 | 98.4 / 55.5 | 289 | 100.0 | yes |
+| early_accepted_scope_5 | 98.2 / 56.9 | 289 | 100.0 | yes |
+| early_accepted_scope_6 | 97.7 / 58.6 | 289 | 100.0 | yes |
+| early_accepted_scope_7 | 98.0 / 57.9 | 289 | 100.0 | yes |
+| early_shared_scope_1 | 98.2 / 53.1 | 289 | 100.0 | yes |
+| early_shared_scope_2 | 97.7 / 55.2 | 289 | 100.0 | yes |
+| early_shared_scope_3 | 97.7 / 57.6 | 289 | 100.0 | yes |
+| early_shared_scope_4 | 98.4 / 55.9 | 289 | 100.0 | yes |
+| early_shared_scope_5 | 98.2 / 57.2 | 289 | 100.0 | yes |
+| early_shared_scope_6 | 97.7 / 59.0 | 289 | 100.0 | yes |
+| early_shared_scope_7 | 98.0 / 58.3 | 289 | 100.0 | yes |
+
+No primary gain. 18 of eighteen whole
+objects equal their corresponding prior scoped/result form. Explicit early
+entry does not provide a new improvement through these scope combinations;
+no compiler ceiling inferred. No source retained.
+
+Sweep exited zero; eighteen compile/focused verify calls pass. Source and
+call-count scores directly recomputed from instruction arrays; counts,
+object digests and prior whole-object identities independently checked.
+Code/fixtures restore to ecc30f25. Existing accepted native/full binding
+audit passes: 204 TUs, 4619 comparisons, no skips, 202 unaffected objects;
+actual linked 2079 / byte 959 pair sets identical baseline with no lost/gained
+pairs, canonical flags and body/signature boundaries unchanged. No fresh
+native/full-corpus evidence for rejected source variants claimed.
+
+Disk preparation removed 86 generated original Core target duplicates in
+six explicitly bounded recent normal/accumulator families (21+10+10+11+22+12).
+Targets resolved within own _work, untracked, single expected unit, each hash
+equal retained typedpair-full/target counterpart. Manifest and system-temp
+backup saved before literal-path deletion; target/reference digests rechecked
+immediately before removal. No recursive deletion; compiled base objects,
+sources/reports, accepted/baseline proof, main and Git archive retained.
+Reclaimed 2,271,432 logical bytes. Old target paths map to canonical copies
+via `_work/duplicate_normal_core_target_cleanup_20261007.json`; all 86
+mappings independently rebound after deletion. Script:
+`_work/cleanup_normal_core_target_duplicates_20261007.ps1`.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/create_early_scope_status_sweep.py`,
+`_work/create_early_scope_status_identities.json`, eighteen focused reports/
+objects and rechecked typedpair binding audit.
