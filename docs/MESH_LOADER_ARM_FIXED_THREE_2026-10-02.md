@@ -9592,3 +9592,64 @@ Main checkout untouched; report-only commit, no push/PR/merge.
 Evidence generators: `_work/read_normal_typed_triples_sweep.py`,
 `_work/read_normal_triple_cursor_sweep.py`, thirty-two focused reports/objects
 and rechecked typedpair validation audit.
+
+
+## Continuation: Create header-buffer extent and initialization
+
+Fourteen focused measurements start from 5885b432: six buffer/initialization
+forms with accepted direct and shared-int-result predicates, plus controls.
+Original target writes two words for header initialization; accepted source
+uses strcpy of seven stars plus zero into magic[8]. All header comparisons
+access indices 0..6, first Read writes seven bytes, secondary Read writes two.
+Prior scope/addressed record tests kept original buffer size and strcpy.
+
+Eight-byte forms: memcpy eight bytes, memset seven stars plus magic[7]=0,
+seven-store loop plus magic[7]=0. Seven-byte forms: memcpy seven, memset seven,
+seven-store loop. All perform initialization only after successful OpenRead;
+read destinations, sizes, signature comparisons and original masks unchanged.
+Seven-byte forms remove the unused terminator storage/write; no string API
+consumes this buffer afterward. This equivalence relies on actual bounded
+Read requests, including partial-read contents initialized to the same stars;
+it does not assume safety for arbitrary API writes beyond requested count.
+Eight-byte forms preserve all original initialized bytes. No new effect,
+manufactured padding/unused field, helper/header/ABI/signature/compiler flag/
+matcher/denominator, volatile/assembler/fixed register change. These are
+source hypotheses, not recovered original buffer declarations.
+
+| Trial | Create source / strict | Instructions | Calls | Accepted Core | Shared Core |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| accepted_eight_copy | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| accepted_eight_fill_zero | 98.2 / 59.4 | 288 | 100.0 | no | no |
+| accepted_eight_loop_zero | 97.1 / 62.5 | 291 | 100.0 | no | no |
+| accepted_seven_copy | 96.5 / 55.7 | 291 | 96.0 | no | no |
+| accepted_seven_fill | 97.8 / 55.8 | 290 | 100.0 | no | no |
+| accepted_seven_loop | 96.6 / 62.8 | 289 | 100.0 | no | no |
+| shared_control | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_eight_copy | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_eight_fill_zero | 98.2 / 59.8 | 288 | 100.0 | no | no |
+| shared_eight_loop_zero | 97.1 / 62.5 | 291 | 100.0 | no | no |
+| shared_seven_copy | 96.5 / 56.0 | 291 | 96.0 | no | no |
+| shared_seven_fill | 97.8 / 56.1 | 290 | 100.0 | no | no |
+| shared_seven_loop | 96.6 / 62.8 | 289 | 100.0 | no | no |
+
+Eight-byte memcpy reproduces the respective whole control object; other
+forms regress. Seven-byte memcpy changes call-count shape (96.0 versus
+100.0); no arbitrary call-count normalization is applied. No variant retained.
+This evidence rules out equivalent buffer extent/fill permutations as a
+useful next action; no compiler ceiling is inferred.
+
+Sweep exited zero; fourteen compile/focused verify calls pass. Source scores
+and call-count shape independently recomputed from instruction arrays;
+instruction counts and object hashes checked. Source/fixtures restore to
+ecc30f25. Existing accepted native/full binding audit revalidated: 204 TUs,
+4619 comparisons, no skips, 202 unaffected objects, linked 2079 / byte 959
+actual pair sets identical baseline with no lost/gained pairs; canonical
+flags and allowed body/signature boundaries preserved. No fresh native
+runtime/full-corpus evidence claimed for rejected forms.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/create_magic_extent_initialization_sweep.py`,
+`_work/create_magic_extent_initialization_identities.json`, fourteen focused
+objects/reports and rechecked typedpair validation audit.
