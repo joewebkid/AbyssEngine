@@ -10086,3 +10086,82 @@ Main checkout untouched; report-only commit; no push/PR/merge.
 Evidence: `_work/enh_wide_axis_count_sweep.py`,
 `_work/enh_wide_axis_count_identities.json`, thirty focused objects/reports
 and rechecked typedpair binding audit.
+
+
+## Continuation: Read addressed child slot grouped with recursive arguments
+
+Eighteen focused measurements start from a179f2df. Prior Read child records
+grouped count/counter/child pointer, not engine/material/root slot parameters.
+Remaining frame and pointer-load inventory differences motivated this family:
+local ChildCallState within each actual child iteration, with childPtr paired
+with engine/slot/material in both orders, or all six active recursive arguments
+in two orders, under accepted/fresh index owner, plus two controls.
+
+Child pointer is initialized by original new Mesh in aggregate initialization,
+without an added null write. Other fields copy original by-value parameters;
+handleRef is a const unsigned-int reference member bound to the original
+handle reference, preserving every actual later handle reload rather than
+snapshotting its value. Recursive Read receives &state.childPtr at original
+call point; actual Mesh** contract may replace that pointer, not neighboring
+arguments. Subsequent bound merge/ArrayAdd use the resulting child pointer.
+Root slot pointer copy still follows actual root object mutations. No changed
+allocation/file call order; initialization field copies have no external effect.
+Counter/count guard and dynamic bound unchanged. Actual recursive slot/Read
+contracts assumed; not arbitrary writes past a supplied pointer object.
+
+Same child VBO flag, vertex format/material copy, recursive status ==-1,
+parent bounds and animation insertion. No unused field/artificial padding,
+dummy instruction/volatile/assembly/fixed register, helper/header/exported
+ABI/signature/compiler flag/matcher/denominator change. Only allowed body;
+these are source hypotheses, not recovered original state types.
+
+| Trial | Read source / strict | Instructions | Calls | Owner control object |
+|---|---|---:|---:|---|
+| accepted_control | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_childPtr_engine | 98.5 / 56.2 | 875 | 100.0 | no |
+| accepted_engine_childPtr | 98.2 / 57.5 | 879 | 100.0 | no |
+| accepted_childPtr_slot | 98.5 / 55.9 | 874 | 100.0 | no |
+| accepted_slot_childPtr | 98.1 / 57.5 | 878 | 100.0 | no |
+| accepted_childPtr_mat | 98.4 / 56.3 | 876 | 100.0 | no |
+| accepted_mat_childPtr | 98.2 / 57.7 | 878 | 100.0 | no |
+| accepted_engine_handleRef_flags_childPtr_slot_mat | 98.2 / 55.6 | 881 | 100.0 | no |
+| accepted_mat_slot_childPtr_flags_handleRef_engine | 98.2 / 54.6 | 879 | 100.0 | no |
+| fresh_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_childPtr_engine | 98.5 / 56.6 | 875 | 100.0 | no |
+| fresh_engine_childPtr | 98.2 / 57.9 | 881 | 100.0 | no |
+| fresh_childPtr_slot | 98.5 / 56.3 | 874 | 100.0 | no |
+| fresh_slot_childPtr | 98.1 / 57.8 | 880 | 100.0 | no |
+| fresh_childPtr_mat | 98.3 / 56.7 | 878 | 100.0 | no |
+| fresh_mat_childPtr | 98.2 / 58.1 | 880 | 100.0 | no |
+| fresh_engine_handleRef_flags_childPtr_slot_mat | 98.2 / 56.1 | 881 | 100.0 | no |
+| fresh_mat_slot_childPtr_flags_handleRef_engine | 98.2 / 55.0 | 879 | 100.0 | no |
+
+Sixteen new forms source range 98.1..98.5;
+no score exceeds 98.5. Controls reproduce their whole reference objects.
+No variant retained. Addressed child/argument grouping does not support
+further equivalent layout permutations as the next action. No compiler
+ceiling inferred.
+
+Sweep exited zero; eighteen compile/focused verify calls pass. Source and
+call-count metrics directly recomputed from instruction arrays; counts and
+whole-object digests checked. Source/fixtures restore to ecc30f25. Existing
+accepted full/native binding audit revalidated: 204 TUs, 4619 comparisons,
+no skips, 202 unaffected objects; actual linked 2079 / byte 959 pair sets
+identical baseline with no loss/gain; canonical flags and body/signature
+boundaries preserved. No fresh native/full-corpus proof for rejected forms.
+
+Disk preparation removed 66 generated original Core target duplicates in six
+explicit earlier Create state/status families (16+13+18+4+8+7). Targets
+resolved within own _work, untracked, single expected unit, hashes equal
+canonical typedpair-full/target. Manifest/system-temp backup written before
+literal-path removal, both hashes rechecked before each deletion. No recursive
+deletion; base objects, source/report/accepted/baseline proof, main and Git
+archive retained. Reclaimed 1,743,192 logical bytes; old target paths map via
+`_work/duplicate_child_core_target_cleanup_20261007.json`, all 66 mappings
+independently rebound. Script `_work/cleanup_child_core_target_duplicates_20261007.ps1`.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/read_addressed_child_arguments_sweep.py`,
+`_work/read_addressed_child_arguments_identities.json`, eighteen focused
+objects/reports and rechecked typedpair binding audit.
