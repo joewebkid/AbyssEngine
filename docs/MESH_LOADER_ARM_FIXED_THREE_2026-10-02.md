@@ -8156,3 +8156,76 @@ gates unmet, goal active. No push, PR or merge; main checkout untouched.
 
 Evidence: `_work/create_shared_result_counter_mask_identities.json`, thirteen
 focused reports/objects, source generator and rechecked typedpair validation audit.
+
+
+## Continuation: Enhanced center views with V5 channel preload
+
+Twenty-four focused Enhanced measurements start from ba12d32c: eleven center/
+bounds-read forms with accepted and preloaded V5 dispatch, plus both controls.
+The existing Y=oldZ, Z=-oldY remap occurs after four successful original
+bounds reads. No X or radius store, floating operation beyond the existing
+negation, decode precision or timer/key change is introduced. New scalar,
+two-member record and two-element array views capture Y/Z in either order,
+then write Y followed by Z. Each record/array member is used; no unused field
+or manufactured padding is included. Independent field loads occur without
+intervening calls. These local declarations are source hypotheses.
+
+Earlier word-copy forms memcpy the original Z value or both incoming values
+at float width, retaining negation and two output stores. Negative-before-store
+form negates the saved Y earlier; Z-store-first captures both values then swaps
+the two output-store positions. No call intervenes between those stores. Shared
+read-failure guard uses left-to-right short-circuit OR for the four original
+Read(...)=0 predicates, preserving sizes/order and stopping at the same failed
+read. Coordinate remap still waits for all four successes.
+
+Preloaded forms use the already measured channel=0x400/case0-break/default-zero
+V5 switch. Masks 4/5 still insert zero-channel keys; all other masks, signed
+count and exact /100 then tau multiply then /360 math remain. No helper/header/
+ABI, compiler/flag or verifier change. No recovered source declaration claimed.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Accepted Mesh | Preload-only Mesh |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| z_word_copy_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| z_word_copy_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| both_word_copy_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| both_word_copy_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| negative_before_y_store_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| negative_before_y_store_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| z_store_first_accepted | 98.3 / 66.9 | 641 | 100.0 | no | no |
+| z_store_first_preload | 98.3 / 67.8 | 639 | 100.0 | no | no |
+| shared_read_failure_guard_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| shared_read_failure_guard_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| scalar_yz_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| scalar_yz_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| pair_yz_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| pair_yz_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| array_yz_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| array_yz_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| scalar_zy_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| scalar_zy_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| pair_zy_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| pair_zy_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| array_zy_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| array_zy_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+
+All twenty-four source values tie 98.3 and calls stay 100.0. Eleven equal the
+entire accepted Mesh and eleven the entire preload-only Mesh. Only two
+Z-store-first objects differ from their corresponding controls, retaining
+same metrics/instruction counts. No gate gain; none retained. No general
+compiler ceiling inferred.
+
+All twenty-four compile/focused verify calls exit zero. Source/call metrics
+independently recomputed directly from target/base instruction arrays and full
+object hashes checked. Every source snapshot retained. Code/fixtures restored
+to ecc30f25. Read-only binding recheck of existing accepted full/native evidence
+passes: 204 TUs/4619 comparisons/zero skipped, 202 unaffected objects, actual
+linked 2079/byte 959 exact-pair sets equal baseline with no lost/gained pairs,
+canonical arguments and outside-body/signature boundaries unchanged. No fresh
+native/full-corpus run claimed for rejected forms. Accepted means
+**98.40% /98.41%**; both >=99.0 gates unmet, goal active. No push, PR or merge;
+main checkout untouched.
+
+Evidence: `_work/enh_preload_bounds_views_identities.json`, twenty-four focused
+reports/source snapshots/objects and rechecked typedpair validation audit.
