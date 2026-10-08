@@ -11382,3 +11382,53 @@ manifest before literal removal/immediate rehash. Manifest copied after space
 available;all30 mappings audited,792,360 logical bytes. No compiled bases,
 source,reports,native,main or Git archive removed. Evidence:
 `_work/duplicate_child_bounds_read30_target_cleanup_20261008.json`.
+
+
+## Continuation: Shared-result magic/engine success-guard interaction
+
+Nine focused cases2026-10-08 afterc591c83a. Complete missing shared-result
+context ofcf0b7eb6 addressed-magic/engine success-guard subset sweep. Accepted
+control,shared-result record control,all seven nonempty subsets of header/
+enhanced-root/plain-root tests rewritten as equivalent failure guards. Reader
+result is still assigned once to existing result;enhanced success exactly1,
+plain success any non--1,child failure exactly--1 unchanged. Header short-
+circuit sequence/skipped word/vertex-format behavior preserved. No file call,
+allocation,cleanup or time bounds changed,no helper/header/ABI/signature/
+flags/matcher/denominator/dummy effects. Compiler hypothesis,not recovery.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| shared_record_control | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_1 | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_2 | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_3 | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_4 | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_5 | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_6 | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_7 | 97.8 / 60.9 | 94.6 | 97.4 | 99.0 | 98.3 | 297 |
+
+Every corresponding row has identical primary score/inventory/opcode/control/
+calls/size/instruction count to previous direct-result subset family. Six
+subsets reproduce whole shared record-control object;all-three differs,97.8,
+control99.0,297 instructions. Strict changes+0.4 versus direct contexts,not
+primary improvement. Three whole hashes in this family;no gain,none retained.
+Do not expand this direct/shared success-guard interaction further;no compiler
+ceiling claim. Sweep completed exit0;all shape metrics/counts/hashes directly
+rebound to canonical original. Source restored;accepted existing full/native
+proof binding passes204 TUs/4619 comparisons/202 unaffected objects,actual
+linked2079/byte959 pair sets unchanged with no loss/gain,body/signature/flags
+intact. No fresh full/native/game/device/Android execution. Means98.40/98.41,
+both99.0 gates unmet,goal active. Main untouched,report-only commit,no push/
+PR/merge.
+
+Preparation removed40 verified generated original Core target duplicates
+from sorted explicit read family,single-object targets,paths resolved inside
+own _work,untracked,canonical SHA match,exact40 guard,manifest/system-temp
+backup before literal removal/immediate reference+target rehash.1,056,480
+logical bytes;all40 mappings independently checked. Bases/source/reports/
+native/accepted/baseline/main/Git archive untouched,no recursive removal.
+Manifest:`_work/duplicate_shared_success40_core_target_cleanup_20261008.json`.
+Evidence:`_work/create_magic_engine_shared_success_guard_sweep.py`,
+`_work/create_magic_engine_shared_success_guard_identities.json`,nine focused
+objects/reports and previous direct-family ledger.
