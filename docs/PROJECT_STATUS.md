@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-05 (main working-tree reconciliation; older subsystem
+Last reviewed: 2026-10-08 (latest branch-tip integration; older subsystem
 snapshots retain their dates)
+
+## Latest local integration (2026-10-08)
+
+The latest Gun, Mesh loader and StarMap branch tips are merged into
+`codex/integrate-main-working-20261005`. Native `gof2`, 206/206 ARM translation
+units, verifier tests and focused Gun/Mesh smokes pass. The full ARM corpus
+compares **4,323/4,524** original functions across 4,688 rows, with zero
+wrong-type misses and zero skipped units. Mean source-shape is **91.76%** and
+strict fuzzy **79.63%**; **2,301 linked-exact** and **997 byte-exact** pairs
+remain. Relative to the prior integrated snapshot there are zero exact-pair
+losses and one linked-exact gain (`StarMap::render`). These are comparison
+figures, not a playable-game completion percentage. The original `main`
+checkout and GitHub remote have not been changed.
 
 ## Main working-tree reconciliation (2026-10-05, local integration branch)
 

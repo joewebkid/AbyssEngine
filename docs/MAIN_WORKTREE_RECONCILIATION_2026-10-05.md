@@ -50,3 +50,22 @@ the immediately preceding integration report, there are zero lost or gained
 exact pairs. All 206 ARM units, the UCRT64 native build, 36 verifier tests
 (one optional skip), four scope-filter tests and the Gun host smoke pass.
 The final local report is `_work/integrated_main_working_latest_20261005.json`.
+
+## 2026-10-08 branch-tip integration
+
+Gun (`c6c939b2`), Mesh loader (`7928a223`) and StarMap (`796e66e8`) advanced
+again and are merged here. Native `gof2`, all 206 ARM units, 36 verifier tests
+(one optional skip), Gun host smokes and the Mesh read/create smokes pass.
+The full corpus still compares 4,323/4,524 originals across 4,688 rows,
+with 201 absent, zero wrong-type misses and zero skipped units. Source-shape
+is 91.76%, strict fuzzy 79.63%, linked-exact 2,301 and byte-exact 997.
+Compared by (unit, symbol) with the previous integrated report, there are
+zero linked/byte losses and one linked gain: `StarMap::render`.
+
+The verifier build and reports were placed on `C:` because `A:` was nearly
+full. Prior generated JSON reports were preserved at
+`C:/Users/Dima/Documents/Galaxy on Fire new version/verification-reports-20261005/`;
+the new full report is `integrated_latest_20261008.json` there. The native
+static library build artifact was also preserved there. No source or original
+binary was moved. The independent `main` working tree and remote remain
+untouched. Native gameplay/runtime integration remains untested.
