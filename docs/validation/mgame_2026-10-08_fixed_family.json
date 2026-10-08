@@ -1,0 +1,356 @@
+{
+  "baseline_commit": "473310054460d0eef759db67b1a59064a06f2fb1",
+  "rule": "All MGame original unique-address bodies with >4 original verifier instructions. Constructor/destructor aliases once. No-op callback shells excluded a priori. Weights frozen to baseline n_target.",
+  "bodies": [
+    {
+      "address": "00177b30",
+      "symbol": "_ZN5MGameC1Ev",
+      "aliases": [
+        "_ZN5MGameC2Ev"
+      ],
+      "weight": 61,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 83.6
+    },
+    {
+      "address": "00177c08",
+      "symbol": "_ZN5MGameD1Ev",
+      "aliases": [
+        "_ZN5MGameD2Ev"
+      ],
+      "weight": 20,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "00177c40",
+      "symbol": "_ZN5MGameD0Ev",
+      "aliases": [],
+      "weight": 5,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "00177c50",
+      "symbol": "_ZN5MGame12OnInitializeEv",
+      "aliases": [],
+      "weight": 749,
+      "baseline_source_match": 99.7,
+      "baseline_strict": 96.6
+    },
+    {
+      "address": "00178470",
+      "symbol": "_ZN5MGame5resetEv",
+      "aliases": [],
+      "weight": 211,
+      "baseline_source_match": 98.8,
+      "baseline_strict": 89.8
+    },
+    {
+      "address": "00178714",
+      "symbol": "_ZN5MGame19handleAccelerometerEv",
+      "aliases": [],
+      "weight": 168,
+      "baseline_source_match": 99.5,
+      "baseline_strict": 91.1
+    },
+    {
+      "address": "00178948",
+      "symbol": "_ZN5MGame18maneuverTouchBeginEiiPv",
+      "aliases": [],
+      "weight": 6,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "0017895c",
+      "symbol": "_ZN5MGame17maneuverTouchMoveEiiPv",
+      "aliases": [],
+      "weight": 27,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "001789b4",
+      "symbol": "_ZN5MGame16maneuverTouchEndEiiPv",
+      "aliases": [],
+      "weight": 39,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "00178a28",
+      "symbol": "_ZN5MGame17freeCamTouchBeginEiiPv",
+      "aliases": [],
+      "weight": 63,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 92.1
+    },
+    {
+      "address": "00178af8",
+      "symbol": "_ZN5MGame16freeCamTouchMoveEiiPv",
+      "aliases": [],
+      "weight": 177,
+      "baseline_source_match": 97.8,
+      "baseline_strict": 72.2
+    },
+    {
+      "address": "00178d30",
+      "symbol": "_ZN5MGame15freeCamTouchEndEiiPv",
+      "aliases": [],
+      "weight": 53,
+      "baseline_source_match": 94.0,
+      "baseline_strict": 80.8
+    },
+    {
+      "address": "00178ddc",
+      "symbol": "_ZN5MGame11pauseSoundsEv",
+      "aliases": [],
+      "weight": 27,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 96.3
+    },
+    {
+      "address": "00178e24",
+      "symbol": "_ZN5MGame12resumeSoundsEv",
+      "aliases": [],
+      "weight": 25,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 96.0
+    },
+    {
+      "address": "00178e64",
+      "symbol": "_ZN5MGame12OnTouchBeginEiiPv",
+      "aliases": [],
+      "weight": 1001,
+      "baseline_source_match": 98.0,
+      "baseline_strict": 77.0
+    },
+    {
+      "address": "001799dc",
+      "symbol": "_ZN5MGame11OnTouchMoveEiiPv",
+      "aliases": [],
+      "weight": 184,
+      "baseline_source_match": 99.8,
+      "baseline_strict": 98.1
+    },
+    {
+      "address": "00179bfc",
+      "symbol": "_ZN5MGame8useCloakEv",
+      "aliases": [],
+      "weight": 134,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 79.1
+    },
+    {
+      "address": "00179d5c",
+      "symbol": "_ZN5MGame14UseKhadorDriveEv",
+      "aliases": [],
+      "weight": 210,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 99.0
+    },
+    {
+      "address": "00179fb0",
+      "symbol": "_ZN5MGame22startChargingJumpDriveEv",
+      "aliases": [],
+      "weight": 147,
+      "baseline_source_match": 97.7,
+      "baseline_strict": 86.4
+    },
+    {
+      "address": "0017a144",
+      "symbol": "_ZN5MGame10OnTouchEndEiiPv",
+      "aliases": [],
+      "weight": 2769,
+      "baseline_source_match": 94.9,
+      "baseline_strict": 38.3
+    },
+    {
+      "address": "0017c0d4",
+      "symbol": "_ZN5MGame14startJumpSceneEv",
+      "aliases": [],
+      "weight": 304,
+      "baseline_source_match": 96.3,
+      "baseline_strict": 79.9
+    },
+    {
+      "address": "0017c454",
+      "symbol": "_ZN5MGame16setCinematicModeEb",
+      "aliases": [],
+      "weight": 51,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "0017c4e8",
+      "symbol": "_ZN5MGame12switchCameraEi",
+      "aliases": [],
+      "weight": 118,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "0017c624",
+      "symbol": "_ZN5MGame9nextCamIdEi",
+      "aliases": [],
+      "weight": 63,
+      "baseline_source_match": 95.5,
+      "baseline_strict": 81.6
+    },
+    {
+      "address": "0017c6bc",
+      "symbol": "_ZN5MGame9OnReleaseEv",
+      "aliases": [],
+      "weight": 173,
+      "baseline_source_match": 99.8,
+      "baseline_strict": 97.7
+    },
+    {
+      "address": "0017c8d8",
+      "symbol": "_ZN5MGame8OnUpdateEv",
+      "aliases": [],
+      "weight": 3856,
+      "baseline_source_match": 96.8,
+      "baseline_strict": 58.5
+    },
+    {
+      "address": "0017f588",
+      "symbol": "_ZN5MGame15updateJumpSceneEv",
+      "aliases": [],
+      "weight": 335,
+      "baseline_source_match": 98.3,
+      "baseline_strict": 93.8
+    },
+    {
+      "address": "0017f920",
+      "symbol": "_ZN5MGame9dockEventEii",
+      "aliases": [],
+      "weight": 477,
+      "baseline_source_match": 96.3,
+      "baseline_strict": 72.6
+    },
+    {
+      "address": "0017fe34",
+      "symbol": "_ZN5MGame13dialogueEventEv",
+      "aliases": [],
+      "weight": 103,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "0017ff58",
+      "symbol": "_ZN5MGame12successCheckEv",
+      "aliases": [],
+      "weight": 515,
+      "baseline_source_match": 98.5,
+      "baseline_strict": 90.0
+    },
+    {
+      "address": "00180514",
+      "symbol": "_ZN5MGame13gameOverCheckEv",
+      "aliases": [],
+      "weight": 251,
+      "baseline_source_match": 99.5,
+      "baseline_strict": 99.0
+    },
+    {
+      "address": "001807cc",
+      "symbol": "_ZN5MGame8OnResumeEv",
+      "aliases": [],
+      "weight": 20,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "00180800",
+      "symbol": "_ZN5MGame9OnSuspendEv",
+      "aliases": [],
+      "weight": 67,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 95.5
+    },
+    {
+      "address": "001808c0",
+      "symbol": "_ZN5MGame10OnRender2DEv",
+      "aliases": [],
+      "weight": 439,
+      "baseline_source_match": 97.4,
+      "baseline_strict": 76.4
+    },
+    {
+      "address": "00180dcc",
+      "symbol": "_ZN5MGame10OnRender3DEv",
+      "aliases": [],
+      "weight": 85,
+      "baseline_source_match": 98.4,
+      "baseline_strict": 82.1
+    }
+  ],
+  "excluded_noop_bodies": [
+    {
+      "address": "0017c8d4",
+      "symbol": "_ZN5MGame10OnKeyPressExx",
+      "aliases": [],
+      "weight": 1,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "00180ebc",
+      "symbol": "_ZN5MGame5pauseEv",
+      "aliases": [],
+      "weight": 1,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "00180ebe",
+      "symbol": "_ZN5MGame14showLiteScreenEv",
+      "aliases": [],
+      "weight": 1,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "00180ec0",
+      "symbol": "_ZN5MGame12OnKeyReleaseExx",
+      "aliases": [],
+      "weight": 1,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "00180ec2",
+      "symbol": "_ZN5MGame12OnTouchBeginEii",
+      "aliases": [],
+      "weight": 1,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "00180ec4",
+      "symbol": "_ZN5MGame11OnTouchMoveEii",
+      "aliases": [],
+      "weight": 1,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "00180ec6",
+      "symbol": "_ZN5MGame10OnTouchEndEii",
+      "aliases": [],
+      "weight": 1,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    },
+    {
+      "address": "00180ec8",
+      "symbol": "_ZN5MGame17ShowLoadingScreenEv",
+      "aliases": [],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "baseline_strict": 100.0
+    }
+  ]
+}

@@ -100,14 +100,17 @@ static __attribute__((always_inline)) inline void
 mgame_show_choice(MGame *self, int textId, bool replaceKeys = false) {
     self->pauseOpen = 1;
     self->pauseSounds();
-    if (self->choiceWindow == 0)
-        self->choiceWindow = new ChoiceWindow();
+    ChoiceWindow *choice = self->choiceWindow;
+    if (choice == 0) {
+        choice = new ChoiceWindow();
+        self->choiceWindow = choice;
+    }
     if (replaceKeys) {
         String text = static_cast<Globals *>(Globals::globals)->replaceKeyBindingTokens(
             *GameText::gGameText->getText(textId));
         self->choiceWindow->set(text);
     } else {
-        self->choiceWindow->set(*GameText::gGameText->getText(textId));
+        choice->set(*GameText::gGameText->getText(textId));
     }
     self->needsRedraw = 1;
     self->choiceWindowOpen = 1;
@@ -131,7 +134,10 @@ mgame_show_ambient_dialogue(MGame *self, int textId, int agentTextId,
                             int *portraitParts, int soundId) {
     self->pauseOpen = 1;
     self->pauseSounds();
-    delete self->dialogueWindow;
+    if (self->dialogueWindow != nullptr) {
+        delete self->dialogueWindow;
+        self->dialogueWindow = nullptr;
+    }
     self->dialogueWindow = new DialogueWindow(
         GameText::gGameText->getText(textId),
         GameText::gGameText->getText(agentTextId), portraitParts);
@@ -1341,25 +1347,27 @@ keyboard_done:
     }
     int64_t previousScriptTime = this->levelScript->scriptTime;
     this->levelScript->scriptTime += this->deltaTime;
-    if (previousScriptTime <= 5000 && this->levelScript->scriptTime >= 5001 &&
+    if (static_cast<int>(previousScriptTime) <= 5000 && this->levelScript->scriptTime >= 5001 &&
         this->player->hasVolatileGoods())
         this->hud->hudEvent(45, this->player, 0);
     if (this->jumpActive == 0) {
         *reinterpret_cast<int64_t *>(&this->elapsedTime) += this->deltaTime;
-        float wheel = static_cast<AbyssEngine::Engine *>(
-            this->applicationManager->GetEngine())->inputWheel;
         if (this->cameraMode != 3 && !this->player->isDockingToAsteroid() &&
-            !this->player->isDockedToAsteroid() && (wheel >= 1.0f || wheel <= -1.0f)) {
-            this->boostTouchDuration += wheel;
-            static_cast<AbyssEngine::Engine *>(
-                this->applicationManager->GetEngine())->field_0x360 = 0;
-            if (this->boostTouchDuration > 100.0f)
-                this->boostTouchDuration = 100.0f;
-            else if (this->boostTouchDuration < 0.0f)
-                this->boostTouchDuration = 0.0f;
-            this->player->setThrust(this->boostTouchDuration / 100.0f);
-            this->boostTouchThrust = 1.0f - this->boostTouchDuration / 100.0f;
-            this->player->throttleChanged();
+            !this->player->isDockedToAsteroid()) {
+            float wheel = static_cast<AbyssEngine::Engine *>(
+                this->applicationManager->GetEngine())->inputWheel;
+            if (wheel >= 1.0f || wheel <= -1.0f) {
+                this->boostTouchDuration += wheel;
+                static_cast<AbyssEngine::Engine *>(
+                    this->applicationManager->GetEngine())->field_0x360 = 0;
+                if (this->boostTouchDuration > 100.0f)
+                    this->boostTouchDuration = 100.0f;
+                else if (this->boostTouchDuration < 0.0f)
+                    this->boostTouchDuration = 0.0f;
+                this->player->setThrust(this->boostTouchDuration / 100.0f);
+                this->boostTouchThrust = 1.0f - this->boostTouchDuration / 100.0f;
+                this->player->throttleChanged();
+            }
         }
         if ((this->player->isDockingToAsteroid() || this->player->isDockedToAsteroid()) &&
             this->player->getThrust() < 1.0f) {
@@ -1421,9 +1429,9 @@ keyboard_done:
     }
 
     if (mgame_full_effects_enabled()) {
-        unsigned cameraId = PaintCanvas::gCanvas->CameraGetCurrent();
-        Matrix cameraLocal = *static_cast<Matrix *>(
-            PaintCanvas::gCanvas->CameraGetLocal(cameraId));
+        PaintCanvas *canvas = this->paintCanvas;
+        unsigned cameraId = canvas->CameraGetCurrent();
+        Matrix cameraLocal = *static_cast<Matrix *>(canvas->CameraGetLocal(cameraId));
         Vector listenerVelocityOrigin =
             AbyssEngine::AEMath::MatrixGetPosition(cameraLocal);
         Vector listenerVelocity =
@@ -1440,14 +1448,15 @@ keyboard_done:
     }
     }
 
-    if (this->jumpActive != 0 || this->player->getHitpoints() < 1)
+    // Android OnUpdate (0x17c8d8) tests +0x60 (game over), not the script flag +0x5f.
+    if (this->gameOverActive != 0 || this->player->getHitpoints() < 1)
         goto core_update;
 
     if (this->pauseOpen != 0) {
         if (this->menuWindow != 0 && this->hudMenuOpen == 0 &&
             this->cutsceneActive == 0 && this->orbitMenuOpen == 0 &&
             this->autopilotMenuOpen == 0 && this->field_0xc6 == 0 &&
-            this->choiceWindowOpen == 0 && this->touchesStream == 0) {
+            this->choiceWindowOpen == 0 && this->cargoConversionChoiceOpen == 0) {
             this->menuWindow->update(this->deltaTime);
             if (this->freeCamMode != 0) {
                 this->camera->setRumblePercentage(0.0f, 0);
@@ -1459,13 +1468,12 @@ keyboard_done:
                         this->flShakeX += this->flShakePhaseX;
                     this->flShakePhaseY = this->flShakeAmpY * this->flShakePhaseY;
                     if ((this->flShakePhaseY < 0.0f ? -this->flShakePhaseY
-                                                    : this->flShakePhaseY) > 1.0f) {
+                                                    : this->flShakePhaseY) > 1.0f)
                         this->flShakeY += this->flShakePhaseY;
-                        if (this->flShakeY > 200.0f)
-                            this->flShakeY = 200.0f;
-                        else if (this->flShakeY < -200.0f)
-                            this->flShakeY = -200.0f;
-                    }
+                    if (this->flShakeY > 200.0f)
+                        this->flShakeY = 200.0f;
+                    else if (this->flShakeY < -200.0f)
+                        this->flShakeY = -200.0f;
                 }
                 this->camera->rotateAroundTarget(this->flShakeY * -0.005f,
                                                  this->flShakeX * -0.005f, 0.0f);
@@ -1539,14 +1547,14 @@ keyboard_done:
         switchCamera(0);
     if (this->player->shouldSwitchToFreeLookCam()) {
         switchCamera(3);
-        this->flShakeX = -0.175f;
-        this->flShakeY = 0.49f;
-        this->flCameraRoll = 15000.0f;
+        this->flShakeX = -98.0f;
+        this->flShakeY = 35.0f;
+        this->flCameraRoll = 3800.0f;
         this->camera->rotateAroundTarget(-0.175f, 0.49f, 0.0f);
         this->camera->zoomTarget(this->flCameraRoll);
     }
 
-    if (this->jumpActive != 0) {
+    if (this->jumpDriveActive != 0) {
         if (updateJumpScene())
             return;
     } else if (this->player->isChargingDrive() && this->player->driveReady()) {
@@ -1562,35 +1570,52 @@ keyboard_done:
     if (!processEvents)
         return;
 
-    if (this->elapsedTime < 5001)
+    if (*reinterpret_cast<int64_t *>(&this->elapsedTime) < 5001)
         goto core_update;
 
     if (this->levelScript->scriptTime >= 5001 &&
         this->jumpDriveActive == 0 && this->cutsceneActive == 0) {
 
-    int64_t &lastAmbient = *reinterpret_cast<int64_t *>(
-        &Status::gStatus->field_0x100);
-
     if (Status::gStatus->getCurrentCampaignMission() == 23 &&
         !this->player->isMining() && Status::gStatus->getMission()->isEmpty() &&
-        Status::gStatus->getPlayingTime() - lastAmbient > 3600000) {
+        Status::gStatus->getPlayingTime() - *reinterpret_cast<int64_t *>(&Status::gStatus->field_0x100) > 3600000) {
+        this->pauseOpen = 1;
+        pauseSounds();
+        if (this->dialogueWindow != nullptr) {
+            delete this->dialogueWindow;
+            this->dialogueWindow = nullptr;
+        }
         int variant = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
-        mgame_show_ambient_dialogue(this, variant ? 534 : 533, 1602,
-                                    mgame_dialogue_face_1602, variant ? 465 : 464);
+        this->dialogueWindow = new DialogueWindow(
+            GameText::gGameText->getText(variant ? 534 : 533),
+            GameText::gGameText->getText(1602), mgame_dialogue_face_1602);
+        Globals::sound->play(variant ? 465 : 464, 0, 0, 0.0f);
+        this->needsRedraw = 1;
+        this->cutsceneActive = 1;
         goto ambient_message_complete;
     }
     if (Status::gStatus->getCurrentCampaignMission() == 24 &&
         !this->player->isMining() && Status::gStatus->getMission()->isEmpty() &&
-        Status::gStatus->getPlayingTime() - lastAmbient > 3600000) {
+        Status::gStatus->getPlayingTime() - *reinterpret_cast<int64_t *>(&Status::gStatus->field_0x100) > 3600000) {
+        this->pauseOpen = 1;
+        pauseSounds();
+        if (this->dialogueWindow != nullptr) {
+            delete this->dialogueWindow;
+            this->dialogueWindow = nullptr;
+        }
         int variant = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
-        mgame_show_ambient_dialogue(this, variant ? 536 : 535, 1603,
-                                    mgame_dialogue_face_1603, variant ? 468 : 467);
+        this->dialogueWindow = new DialogueWindow(
+            GameText::gGameText->getText(variant ? 536 : 535),
+            GameText::gGameText->getText(1603), mgame_dialogue_face_1603);
+        Globals::sound->play(variant ? 468 : 467, 0, 0, 0.0f);
+        this->needsRedraw = 1;
+        this->cutsceneActive = 1;
         goto ambient_message_complete;
     }
     if (Status::gStatus->getCurrentCampaignMission() >= 122 &&
         Status::gStatus->getCurrentCampaignMission() <= 124 &&
         !this->player->isMining() && Status::gStatus->getMission()->isEmpty() &&
-        Status::gStatus->getPlayingTime() - lastAmbient > 3600000 &&
+        Status::gStatus->getPlayingTime() - *reinterpret_cast<int64_t *>(&Status::gStatus->field_0x100) > 3600000 &&
         this->jumpDriveActive == 0 && this->usingJumpDrive == 0) {
         int variant = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
         int text = Status::gStatus->getCurrentCampaignMission() == 122 ? 3164 : 3166;
@@ -1598,8 +1623,8 @@ keyboard_done:
         goto ambient_message_complete;
     }
 
-    if (!Status::gStatus->inAlienOrbit() && Status::gStatus->field_0x17c != 0 &&
-        Status::gStatus->getPlayingTime() - lastAmbient >= 12001 &&
+    if (!Status::gStatus->inAlienOrbit() && reinterpret_cast<uint8_t *>(&Status::gStatus->field_0x17c)[0] != 0 &&
+        Status::gStatus->getPlayingTime() - *reinterpret_cast<int64_t *>(&Status::gStatus->field_0x100) >= 12001 &&
         this->jumpDriveActive == 0 &&
         this->usingJumpDrive == 0) {
         int thresholdIndex = 0;
@@ -1611,14 +1636,15 @@ keyboard_done:
             ++thresholdIndex;
         }
         if (messageIndex < 3) {
-            Status::gStatus->field_0x17c = 0;
+            reinterpret_cast<uint8_t *>(&Status::gStatus->field_0x17c)[0] = 0;
             this->level->createRadioMessage(27, messageIndex);
         }
     }
     goto ambient_dispatch_complete;
 
 ambient_message_complete:
-    lastAmbient = Status::gStatus->getPlayingTime();
+    *reinterpret_cast<int64_t *>(&Status::gStatus->field_0x100) =
+        Status::gStatus->getPlayingTime();
 
 ambient_dispatch_complete:
 
@@ -1678,9 +1704,9 @@ ambient_dispatch_complete:
         mgame_hint_wingman = 1;
         return;
     }
-    Standing *standing = reinterpret_cast<Standing *>(static_cast<intptr_t>(
-        Status::gStatus->getStanding()));
-    if (!mgame_hint_standing && standing->isEnemyWithAnyone()) {
+    if (!mgame_hint_standing &&
+        reinterpret_cast<Standing *>(static_cast<intptr_t>(
+            Status::gStatus->getStanding()))->isEnemyWithAnyone()) {
         mgame_show_choice(this, 648);
         mgame_hint_standing = 1;
         return;
@@ -1690,12 +1716,11 @@ ambient_dispatch_complete:
         this->field_0x1e6 = 1;
         return;
     }
-    if (!this->campaignDamageHintShown && !this->player->isMining() &&
-        Status::gStatus->getCurrentCampaignMission() == 2) {
-        Player *playerShip = static_cast<Player *>(this->player->player);
-        if (playerShip->getHitpoints() < playerShip->getMaxHitpoints() ||
+    if (!mgame_hint_mining_intro && !this->player->isMining() &&
+        !this->campaignDamageHintShown && Status::gStatus->getCurrentCampaignMission() == 2) {
+        if (static_cast<Player *>(this->player->player)->getHitpoints() <
+            static_cast<Player *>(this->player->player)->getMaxHitpoints() ||
             this->levelScript->scriptTime >= 40001) {
-            this->campaignDamageHintShown = 1;
             this->pauseOpen = 1;
             pauseSounds();
             if (this->choiceWindow == 0)
@@ -1705,6 +1730,7 @@ ambient_dispatch_complete:
             this->choiceWindow->set(message);
             this->needsRedraw = 1;
             this->choiceWindowOpen = 1;
+            this->campaignDamageHintShown = 1;
             return;
         }
     }
@@ -1752,8 +1778,8 @@ ambient_dispatch_complete:
         Status::gStatus->getShip()->getFirstEquipmentOfSort(13) != 0 &&
         !this->player->isMining() && Status::gStatus->getMission()->isEmpty() &&
         Status::gStatus->getCurrentCampaignMission() == 24) {
-        mgame_hint_scanner = 1;
         mgame_show_ambient_dialogue(this, 1912, 1603, mgame_dialogue_face_1603, 0x1cf);
+        mgame_hint_scanner = 1;
         __asm__ volatile("" ::: "memory");
         return;
     }
@@ -1794,8 +1820,8 @@ ambient_dispatch_complete:
         Status::gStatus->getCurrentCampaignMission() == 91 &&
         Status::gStatus->getStation()->getIndex() == 110 &&
         static_cast<RadioMessage *>((*this->level->getMessages())[4])->isOver()) {
-        mgame_hint_campaign91_a = 1;
         mgame_show_choice(this, 603, true);
+        mgame_hint_campaign91_a = 1;
         return;
     }
     if (!mgame_hint_campaign91_b &&
@@ -1804,8 +1830,8 @@ ambient_dispatch_complete:
         this->player->isDockedToDockingPoint() &&
         Status::gStatus->missionPassengerCount == 10 &&
         static_cast<RadioMessage *>((*this->level->getMessages())[6])->isOver()) {
-        mgame_hint_campaign91_b = 1;
         mgame_show_choice(this, 606, true);
+        mgame_hint_campaign91_b = 1;
         return;
     }
     if (!mgame_hint_campaign92 &&
@@ -1813,8 +1839,8 @@ ambient_dispatch_complete:
         Status::gStatus->getStation()->getIndex() == 113 &&
         this->player->isDockedToDockingPoint() &&
         Status::gStatus->missionPassengerCount == 0) {
-        mgame_hint_campaign92 = 1;
         mgame_show_choice(this, 609, true);
+        mgame_hint_campaign92 = 1;
         return;
     }
 
@@ -1824,7 +1850,10 @@ ambient_dispatch_complete:
         mgame_hint_game_won = 1;
         this->pauseOpen = 1;
         pauseSounds();
-        delete this->dialogueWindow;
+        if (this->dialogueWindow != nullptr) {
+            delete this->dialogueWindow;
+            this->dialogueWindow = nullptr;
+        }
         this->dialogueWindow = new DialogueWindow();
         Mission *ending = new Mission(160, 0, -1);
         this->dialogueWindow->set(ending, 1, 46);
@@ -1841,7 +1870,10 @@ ambient_dispatch_complete:
         mgame_hint_dlc1_won = 1;
         this->pauseOpen = 1;
         pauseSounds();
-        delete this->dialogueWindow;
+        if (this->dialogueWindow != nullptr) {
+            delete this->dialogueWindow;
+            this->dialogueWindow = nullptr;
+        }
         this->dialogueWindow = new DialogueWindow();
         Mission *ending = new Mission(160, 0, -1);
         this->dialogueWindow->set(ending, 1, 85);
@@ -1901,7 +1933,7 @@ ambient_dispatch_complete:
     }
 
 mission_event_check:
-    if (this->elapsedTime >= 5001 && this->cutsceneActive == 0) {
+    if (*reinterpret_cast<int64_t *>(&this->elapsedTime) >= 5001 && this->cutsceneActive == 0) {
         if (!Status::gStatus->getMission()->hasFailed() &&
             !Status::gStatus->getMission()->hasWon())
             dialogueEvent();
@@ -1939,7 +1971,7 @@ core_update:
     }
 
     if (this->gameOverActive != 0) {
-        if (this->elapsedTime >= 3001)
+        if (*reinterpret_cast<int64_t *>(&this->elapsedTime) >= 3001)
             this->loadingTime += this->deltaTime;
     } else {
         if (!this->player->isDead() && !Status::gStatus->getMission()->hasFailed()) {
@@ -2908,10 +2940,9 @@ static void mgame_open_pause_menu(MGame *self) {
     self->hud->releaseAllKeys();
 }
 
-static void mgame_dispatch_combat_touch_actions(MGame *self, unsigned int actions) {
-    Player *playerBody = static_cast<Player *>(self->player->player);
-    if ((actions & kHudActionFire) != 0 &&
-        playerBody->gunAvailable(1) && !self->player->isMining() &&
+static void mgame_dispatch_combat_touch_actions(MGame *self) {
+    if ((self->hudTouchFlags & kHudActionFire) != 0 &&
+        static_cast<Player *>(self->player->player)->gunAvailable(1) && !self->player->isMining() &&
         !self->player->isInTurretMode() && !self->player->isDockedToDockingPoint() &&
         !self->player->isLandingOrTakingOff()) {
         self->player->shoot(self->deltaTime, 1);
@@ -2919,7 +2950,7 @@ static void mgame_dispatch_combat_touch_actions(MGame *self, unsigned int action
     }
 
     if (self->player->isHacking()) {
-        if ((actions & kHudActionOpenWeaponMenu) != 0)
+        if ((self->hudTouchFlags & kHudActionOpenWeaponMenu) != 0)
             self->player->PlayerEgo::hackingRotateLCW();
         if ((self->hudTouchFlags & kHudActionOpenWingmanMenu) != 0)
             self->player->PlayerEgo::hackingRotateRCW();
@@ -3016,14 +3047,14 @@ static void mgame_handle_menu_touch_end(MGame *self, int x, int y, void *touchId
 
     if (self->freeCamMode != 0) {
         MGameAppData *applicationData =
-            static_cast<MGameAppData *>(self->applicationManager->GetApplicationData());
+            static_cast<MGameAppData *>(static_cast<ApplicationManager *>(Globals::appManager)->GetApplicationData());
         if (applicationData->modalActive != 0 || applicationData->transitionActive != 0)
             return;
-        if (menuWindow->isShowingMessage() == 0 && !menuWindow->isMakingScreenshot())
+        if (self->menuWindow->isShowingMessage() == 0 && !self->menuWindow->isMakingScreenshot())
             self->freeCamTouchEnd(x, y, touchId);
     }
 
-    if (menuWindow->OnTouchEnd(x, y, touchId) != 0) {
+    if (self->menuWindow->OnTouchEnd(x, y, touchId) != 0) {
         self->pauseSnapshot = 0;
         self->pauseOpen = 0;
         self->resumeSounds();
@@ -3065,8 +3096,8 @@ static void mgame_handle_menu_touch_end(MGame *self, int x, int y, void *touchId
         const float particleQuality = mgame_options()->particleQuality;
         self->level->enableParticleEffects(particleQuality > 0.0f, particleQuality > 0.7f);
 
-        if (menuWindow->skipCutsceneRequested != 0) {
-            menuWindow->skipCutsceneRequested = 0;
+        if (self->menuWindow->skipCutsceneRequested != 0) {
+            self->menuWindow->skipCutsceneRequested = 0;
             const int campaignMission = Status::gStatus->getCurrentCampaignMission();
             const unsigned int skipIndex = static_cast<unsigned int>(campaignMission - 154);
             if (skipIndex < 5 && ((1u << skipIndex) & 0x19u) != 0) {
@@ -3089,14 +3120,14 @@ static void mgame_handle_menu_touch_end(MGame *self, int x, int y, void *touchId
         self->freeCamMode = 0;
     }
 
-    if (menuWindow->inCinematicMode()) {
+    if (self->menuWindow->inCinematicMode()) {
         self->setCinematicMode(true);
         self->hudTouchFlags = 0;
         StarSystem *starSystem = self->level->getStarSystem();
         if (starSystem != nullptr)
             starSystem->initLight();
     }
-    if (!menuWindow->inCinematicMode()) {
+    if (!self->menuWindow->inCinematicMode()) {
         if (self->freeCamMode != 0) {
             self->setCinematicMode(false);
             self->hudTouchFlags = 0;
@@ -3126,12 +3157,12 @@ static __attribute__((always_inline)) inline Station *mgame_get_galaxy_station(i
 }
 
 static __attribute__((always_inline)) inline void
-mgame_store_player_vitals(MGame *self, Status *status) {
-    Player *player = reinterpret_cast<Player *>(self->player->player);
-    status->field_64 = player->getHitpoints();
-    status->field_5c = player->getShieldHP();
-    status->field_60 = player->getArmorHP();
-    status->field_68 = player->getGammaHP();
+mgame_store_player_vitals(MGame *self) {
+    // Android 0x17a144 reloads both receivers between each vitals getter.
+    Status::gStatus->field_64 = static_cast<Player *>(self->player->player)->getHitpoints();
+    Status::gStatus->field_5c = static_cast<Player *>(self->player->player)->getShieldHP();
+    Status::gStatus->field_60 = static_cast<Player *>(self->player->player)->getArmorHP();
+    Status::gStatus->field_68 = static_cast<Player *>(self->player->player)->getGammaHP();
 }
 
 static __attribute__((always_inline)) inline void
@@ -3196,14 +3227,14 @@ static bool mgame_handle_completed_mission(MGame *self) {
         Status::gStatus->getCurrentCampaignMission() == 15) {
         Status::gStatus->setStation(mgame_load_station(98));
         Globals::switch_to_target_setting = 0;
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         mgame_switch_module(self, 5);
         return false;
     }
     if (completedMission->isCampaignMission() &&
         Status::gStatus->getCurrentCampaignMission() == 22) {
         Globals::switch_to_target_setting = 0;
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         mgame_switch_module(self, 5);
         return false;
     }
@@ -3211,7 +3242,7 @@ static bool mgame_handle_completed_mission(MGame *self) {
         Status::gStatus->getCurrentCampaignMission() == 43) {
         Status::gStatus->setStation(mgame_load_station(10));
         Globals::switch_to_target_setting = 0;
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         mgame_switch_module(self, 5);
         return false;
     }
@@ -3224,7 +3255,7 @@ static bool mgame_handle_completed_mission(MGame *self) {
     } else if (completedMission->isCampaignMission() &&
                Status::gStatus->getCurrentCampaignMission() == 65) {
         Globals::switch_to_target_setting = 1;
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         Level::initStreamOutPosition = 1;
         Status::gStatus->departStation(mgame_load_station(100));
         mgame_switch_module(self, 2);
@@ -3232,7 +3263,7 @@ static bool mgame_handle_completed_mission(MGame *self) {
     } else if (completedMission->isCampaignMission() &&
                Status::gStatus->getCurrentCampaignMission() == 81) {
         Globals::switch_to_target_setting = 1;
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         Level::initStreamOutPosition = 1;
         Status::gStatus->setStation(Status::gStatus->playerStation);
         Status::gStatus->departStation(Status::gStatus->playerStation);
@@ -3243,13 +3274,13 @@ static bool mgame_handle_completed_mission(MGame *self) {
         Status::gStatus->setStation(mgame_load_station(100));
         Globals::sound->stopAll();
         Globals::switch_to_target_setting = 0;
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         mgame_switch_module(self, 5);
         return false;
     } else if (completedMission->isCampaignMission() &&
                Status::gStatus->getCurrentCampaignMission() == 95) {
         Globals::switch_to_target_setting = 1;
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         Level::initStreamOutPosition = 1;
         Status::gStatus->departStation(mgame_get_galaxy_station(10));
         mgame_switch_module(self, 2);
@@ -3257,14 +3288,14 @@ static bool mgame_handle_completed_mission(MGame *self) {
     } else if (completedMission->isCampaignMission() &&
                Status::gStatus->getCurrentCampaignMission() == 96) {
         Globals::switch_to_target_setting = 1;
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         Level::initStreamOutPosition = 1;
         Status::gStatus->departStation(mgame_get_galaxy_station(98));
         mgame_switch_module(self, 2);
         return false;
     } else if (completedMission->isCampaignMission() &&
                Status::gStatus->getCurrentCampaignMission() == 100) {
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         Globals::switch_to_target_setting = 0;
         Level::initStreamOutPosition = 0;
         Status::gStatus->departStation(mgame_get_galaxy_station(120));
@@ -3273,7 +3304,7 @@ static bool mgame_handle_completed_mission(MGame *self) {
         return false;
     } else if (completedMission->isCampaignMission() &&
                Status::gStatus->getCurrentCampaignMission() == 110) {
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         Globals::switch_to_target_setting = 0;
         Level::initStreamOutPosition = 0;
         Status::gStatus->departStation(mgame_get_galaxy_station(10));
@@ -3284,7 +3315,7 @@ static bool mgame_handle_completed_mission(MGame *self) {
     } else if (completedMission->isCampaignMission() &&
                Status::gStatus->getCurrentCampaignMission() == 120) {
         Globals::switch_to_target_setting = 1;
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         Level::initStreamOutPosition = 0;
         Status::gStatus->departStation(mgame_get_galaxy_station(126));
         mgame_switch_module(self, 5);
@@ -3292,7 +3323,7 @@ static bool mgame_handle_completed_mission(MGame *self) {
     } else if (completedMission->isCampaignMission() &&
                Status::gStatus->getCurrentCampaignMission() == 126) {
         Globals::switch_to_target_setting = 1;
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         Level::initStreamOutPosition = 0;
         Status::gStatus->departStation(mgame_get_galaxy_station(120));
         mgame_switch_module(self, 2);
@@ -3300,7 +3331,7 @@ static bool mgame_handle_completed_mission(MGame *self) {
     } else if (completedMission->isCampaignMission() &&
                Status::gStatus->getCurrentCampaignMission() == 127) {
         Globals::switch_to_target_setting = 1;
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         Level::initStreamOutPosition = 1;
         Status::gStatus->departStation(mgame_get_galaxy_station(98));
         mgame_switch_module(self, 2);
@@ -3308,7 +3339,7 @@ static bool mgame_handle_completed_mission(MGame *self) {
     } else if (completedMission->isCampaignMission() &&
                Status::gStatus->getCurrentCampaignMission() == 134) {
         Globals::switch_to_target_setting = 0;
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         Level::initStreamOutPosition = 0;
         Status::gStatus->departStation(mgame_get_galaxy_station(112));
         mgame_switch_module(self, 5);
@@ -3316,7 +3347,7 @@ static bool mgame_handle_completed_mission(MGame *self) {
     } else if (completedMission->isCampaignMission() &&
                Status::gStatus->getCurrentCampaignMission() == 144) {
         Globals::switch_to_target_setting = 1;
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         Level::initStreamOutPosition = 0;
         Status::gStatus->departStation(mgame_get_galaxy_station(112));
         mgame_switch_module(self, 2);
@@ -3331,7 +3362,7 @@ static bool mgame_handle_completed_mission(MGame *self) {
         return false;
     } else if (completedMission->isCampaignMission() &&
                Status::gStatus->getCurrentCampaignMission() == 161) {
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         Globals::switch_to_target_setting = 0;
         Level::initStreamOutPosition = 0;
         Status::gStatus->departStation(mgame_get_galaxy_station(93));
@@ -3339,7 +3370,7 @@ static bool mgame_handle_completed_mission(MGame *self) {
         return false;
     } else if (completedMission->isCampaignMission() &&
                Status::gStatus->getCurrentCampaignMission() == 162) {
-        mgame_store_player_vitals(self, Status::gStatus);
+        mgame_store_player_vitals(self);
         Globals::switch_to_target_setting = 0;
         Level::initStreamOutPosition = 0;
         Status::gStatus->departStation(mgame_get_galaxy_station(93));
@@ -3358,30 +3389,31 @@ static bool mgame_handle_completed_mission(MGame *self) {
     return true;
 }
 
-static void mgame_clear_failed_freelance_mission(MGame *self, Mission *mission) {
+static void mgame_clear_failed_freelance_mission(MGame *self) {
+    const int type = Status::gStatus->getMission()->getType();
     Status *status = Status::gStatus;
-    if (mission->getType() == 12) {
+    Mission *mission = Status::gStatus->getMission();
+    if (type == 12) {
         status->changeCredits(-mission->getReward());
-    } else if (mission->getType() == 3 || mission->getType() == 5 || mission->getType() == 11) {
-        Ship *ship = status->getShip();
-        Array<Item *> *cargo = ship != nullptr ? ship->getCargo() : nullptr;
+    } else if (mission->getType() == 3 ||
+               Status::gStatus->getMission()->getType() == 5 ||
+               Status::gStatus->getMission()->getType() == 11) {
+        Array<Item *> *cargo = Status::gStatus->getShip()->getCargo();
         if (cargo != nullptr) {
             for (unsigned int i = 0; i < cargo->size(); ++i) {
-                Item *item = (*cargo)[i];
-                if (item != nullptr && item->isUnsaleable() &&
-                    (item->getIndex() == 116 || item->getIndex() == 117)) {
-                    ship->removeCargo(item);
+                if ((*cargo)[i]->isUnsaleable() &&
+                    ((*cargo)[i]->getIndex() == 116 || (*cargo)[i]->getIndex() == 117)) {
+                    Status::gStatus->getShip()->removeCargo((*cargo)[i]);
                     break;
                 }
             }
         }
     }
 
-    Mission *emptyMission = reinterpret_cast<Mission *>(Mission::empty);
-    status->setFreelanceMission(emptyMission);
+    Status::gStatus->setFreelanceMission(reinterpret_cast<Mission *>(Mission::empty));
     self->level->removeObjectives();
     self->levelScript->m_nTimeLimit = 0;
-    status->setMission(emptyMission);
+    Status::gStatus->setMission(reinterpret_cast<Mission *>(Mission::empty));
     self->player->setRoute(nullptr);
     if (self->player->goingToWaypoint())
         self->player->setAutoPilot(nullptr);
@@ -3455,8 +3487,8 @@ static int mgame_handle_terminal_choice(MGame *self, int x, int y) {
     return 1;
 }
 
-static void mgame_handle_boost_touch(MGame *self, unsigned int actions) {
-    if ((actions & kHudActionBoost) == 0 || !self->player->isBoostRefreshed() ||
+static void mgame_handle_boost_touch(MGame *self) {
+    if ((self->hudTouchFlags & kHudActionBoost) == 0 || !self->player->isBoostRefreshed() ||
         self->player->boosting() || self->player->isMining() ||
         self->player->isDockedToDockingPoint()) {
         return;
@@ -3485,22 +3517,21 @@ static int mgame_handle_dialogue_touch_end(MGame *self, int x, int y) {
     self->resumeSounds();
     self->cutsceneActive = 0;
 
-    Status *status = Status::gStatus;
-    Mission *mission = status->getMission();
+    Mission *mission = Status::gStatus->getMission();
     const int hasFailed = mission->hasFailed();
-    Mission *currentMission = status->getMission();
+    Mission *currentMission = Status::gStatus->getMission();
     if (hasFailed) {
-        if (currentMission->isCampaignMission() || status->getCurrentCampaignMission() == 42) {
+        if (currentMission->isCampaignMission() || Status::gStatus->getCurrentCampaignMission() == 42) {
             return 1;
         } else {
-            mgame_clear_failed_freelance_mission(self, currentMission);
+            mgame_clear_failed_freelance_mission(self);
         }
         return 2;
     }
 
     if (!currentMission->hasWon()) {
         Mission *campaignMission = reinterpret_cast<Mission *>(
-            static_cast<intptr_t>(status->getCampaignMission()));
+            static_cast<intptr_t>(Status::gStatus->getCampaignMission()));
         if (!campaignMission->hasWon()) {
             self->levelScript->resetStartSequenceOver();
             return 2;
@@ -3510,73 +3541,66 @@ static int mgame_handle_dialogue_touch_end(MGame *self, int x, int y) {
     return mgame_handle_completed_mission(self) ? 2 : 0;
 }
 
-static void mgame_dispatch_orbit_menu(MGame *self, unsigned int actions) {
-    PlayerEgo *player = self->player;
-    Level *level = self->level;
-    Hud *hud = self->hud;
-
-    if ((actions & kHudActionProgrammedStation) != 0)
+static void mgame_dispatch_orbit_menu(MGame *self) {
+    if ((self->hudTouchFlags & kHudActionProgrammedStation) != 0)
         self->levelScript->setAutoPilotToProgrammedStation();
 
-    if ((actions & kHudActionJumpGate) != 0) {
-        player->setAutoPilot((*level->getLandmarks())[1]);
-        hud->hudEvent(12, player, 0);
+    if ((self->hudTouchFlags & kHudActionJumpGate) != 0) {
+        self->player->setAutoPilot((*self->level->getLandmarks())[1]);
+        self->hud->hudEvent(12, self->player, 0);
     }
-    if ((actions & kHudActionStation) != 0) {
-        player->setAutoPilot((*level->getLandmarks())[0]);
-        hud->hudEvent(10, player, 0);
+    if ((self->hudTouchFlags & kHudActionStation) != 0) {
+        self->player->setAutoPilot((*self->level->getLandmarks())[0]);
+        self->hud->hudEvent(10, self->player, 0);
     }
-    if ((actions & kHudActionAsteroidWaypoint) != 0) {
-        player->setAutoPilot(level->getAsteroidWaypoint());
-        hud->hudEvent(14, player, 0);
+    if ((self->hudTouchFlags & kHudActionAsteroidWaypoint) != 0) {
+        self->player->setAutoPilot(self->level->getAsteroidWaypoint());
+        self->hud->hudEvent(14, self->player, 0);
     }
-    if ((actions & kHudActionRouteWaypoint) != 0) {
-        if (level->getPlayerRoute() != nullptr) {
-            player->setAutoPilot(level->getPlayerRoute()->getWaypoint());
-            hud->hudEvent(13, player, 0);
+    if ((self->hudTouchFlags & kHudActionRouteWaypoint) != 0) {
+        if (self->level->getPlayerRoute() != nullptr) {
+            self->player->setAutoPilot(self->level->getPlayerRoute()->getWaypoint());
+            self->hud->hudEvent(13, self->player, 0);
         }
     }
 
     // The action-mask layout reserves bits 26..31 for docking targets.
-    for (int i = 0; i < level->getNumDockingTargets(); ++i) {
+    for (int i = 0; i < self->level->getNumDockingTargets(); ++i) {
         const unsigned int action = kHudActionDockingTarget0 << i;
-        if ((actions & action) == 0 || level->getDockingTarget(i) == 0)
+        if ((self->hudTouchFlags & action) == 0 || self->level->getDockingTarget(i) == 0)
             continue;
 
         // Android MGame::OnTouchEnd writes this target to Radar+0x04 before
         // starting docking, then clears the three adjacent transient slots.
         self->radar->dockTargetPtr = reinterpret_cast<KIPlayer *>(
-                static_cast<intptr_t>(level->getDockingTarget(i)));
-        hud->hudEvent(34, player, 0);
-        player->dockToDockingPoint(reinterpret_cast<KIPlayer *>(
-                static_cast<intptr_t>(level->getDockingTarget(i))), self->radar);
+                static_cast<intptr_t>(self->level->getDockingTarget(i)));
+        self->hud->hudEvent(34, self->player, 0);
+        self->player->dockToDockingPoint(reinterpret_cast<KIPlayer *>(
+                static_cast<intptr_t>(self->level->getDockingTarget(i))), self->radar);
         self->radar->dockNavPtr = nullptr;
         self->radar->lockedAsteroid = nullptr;
         self->radar->candidateAsteroid = nullptr;
-        hud->releaseAllKeys();
+        self->hud->releaseAllKeys();
     }
 
     mgame_close_hud_menu(self, true);
 }
 
 static void mgame_try_open_orbit_menu(MGame *self) {
-    PlayerEgo *player = self->player;
-    Status *status = Status::gStatus;
-
-    if (player == nullptr || status == nullptr)
+    if (self->player == nullptr || Status::gStatus == nullptr)
         return;
 
-    if (status->inAlienOrbit() && player->isDockingToAsteroid())
-        player->dockToAsteroid(nullptr, self->radar);
+    if (Status::gStatus->inAlienOrbit() && self->player->isDockingToAsteroid())
+        self->player->dockToAsteroid(nullptr, self->radar);
 
-    if ((status->inAlienOrbit() &&
-         (!status->inAlienOrbit() ||
-          status->getCurrentCampaignMission() != 154 ||
+    if ((Status::gStatus->inAlienOrbit() &&
+         (!Status::gStatus->inAlienOrbit() ||
+          Status::gStatus->getCurrentCampaignMission() != 154 ||
           self->level->getNumDockingTargets() < 1)) ||
-        status->getCurrentCampaignMission() < 2 ||
-        status->getCurrentCampaignMission() == 48 ||
-        player->isDockedToDockingPoint() ||
-        player->isLandingOrTakingOff()) {
+        Status::gStatus->getCurrentCampaignMission() < 2 ||
+        Status::gStatus->getCurrentCampaignMission() == 48 ||
+        self->player->isDockedToDockingPoint() ||
+        self->player->isLandingOrTakingOff()) {
         return;
     }
 
@@ -3585,43 +3609,43 @@ static void mgame_try_open_orbit_menu(MGame *self) {
         return;
     }
 
-    if (player->isMining())
+    if (self->player->isMining())
         return;
 
-    if (player->isAutoPilot()) {
-        player->setAutoPilot(nullptr);
-        self->hud->hudEvent(6, player, 0);
-        return;
-    }
-
-    if (player->isDockingToAsteroid()) {
-        player->dockToAsteroid(self->radar->getLockedAsteroid(), self->radar);
-        self->hud->hudEvent(6, player, 0);
+    if (self->player->isAutoPilot()) {
+        self->player->setAutoPilot(nullptr);
+        self->hud->hudEvent(6, self->player, 0);
         return;
     }
 
-    if (player->isDockingToDockingPoint()) {
+    if (self->player->isDockingToAsteroid()) {
+        self->player->dockToAsteroid(self->radar->getLockedAsteroid(), self->radar);
+        self->hud->hudEvent(6, self->player, 0);
+        return;
+    }
+
+    if (self->player->isDockingToDockingPoint()) {
         self->radar->dockTargetPtr = nullptr;
-        player->dockToDockingPoint(nullptr, self->radar);
-        self->hud->hudEvent(6, player, 0);
+        self->player->dockToDockingPoint(nullptr, self->radar);
+        self->hud->hudEvent(6, self->player, 0);
         return;
     }
 
-    if (player->isDockingToStream()) {
+    if (self->player->isDockingToStream()) {
         // The ARM body routes this through Radar+0x24 before the common
         // docking HUD event. The local Radar slot is source-labelled
         // `lockedStation` but its exact stream-target semantics still need
         // a dedicated Radar/PlayerEgo audit.
-        player->dockToAsteroid(self->radar->lockedStation, self->radar);
-        self->hud->hudEvent(6, player, 0);
+        self->player->dockToAsteroid(self->radar->lockedStation, self->radar);
+        self->hud->hudEvent(6, self->player, 0);
         return;
     }
 
-    if (!status->inAlienOrbit() ||
-        (status->inAlienOrbit() &&
-         status->getCurrentCampaignMission() == 154)) {
-        if (status->getMission() == nullptr ||
-            status->getMission()->getType() != 183) {
+    if (!Status::gStatus->inAlienOrbit() ||
+        (Status::gStatus->inAlienOrbit() &&
+         Status::gStatus->getCurrentCampaignMission() == 154)) {
+        if (Status::gStatus->getMission() == nullptr ||
+            Status::gStatus->getMission()->getType() != 183) {
             mgame_open_hud_menu(self, 3);
             self->orbitMenuOpen = 1;
             return;
@@ -3629,29 +3653,29 @@ static void mgame_try_open_orbit_menu(MGame *self) {
     }
 }
 
-static void mgame_dispatch_hud_menu(MGame *self, unsigned int actions) {
+static void mgame_dispatch_hud_menu(MGame *self) {
     if (self->hudMenuOpen == 0)
         return;
 
-    if ((actions & kHudActionOpenWeaponMenu) != 0) {
+    if ((self->hudTouchFlags & kHudActionOpenWeaponMenu) != 0) {
         self->hud->initHudMenu(1, self->level);
         return;
     }
-    if ((actions & kHudActionCloak) != 0) {
+    if ((self->hudTouchFlags & kHudActionCloak) != 0) {
         mgame_close_hud_menu(self, false);
         self->useCloak();
         return;
     }
-    if ((actions & kHudActionOpenWingmanMenu) != 0) {
+    if ((self->hudTouchFlags & kHudActionOpenWingmanMenu) != 0) {
         self->hud->initHudMenu(2, self->level);
         return;
     }
 
     int secondaryIndex = -1;
-    if ((actions & kHudActionSecondary0) != 0) secondaryIndex = 0;
-    else if ((actions & kHudActionSecondary1) != 0) secondaryIndex = 1;
-    else if ((actions & kHudActionSecondary2) != 0) secondaryIndex = 2;
-    else if ((actions & kHudActionSecondary3) != 0) secondaryIndex = 3;
+    if ((self->hudTouchFlags & kHudActionSecondary0) != 0) secondaryIndex = 0;
+    else if ((self->hudTouchFlags & kHudActionSecondary1) != 0) secondaryIndex = 1;
+    else if ((self->hudTouchFlags & kHudActionSecondary2) != 0) secondaryIndex = 2;
+    else if ((self->hudTouchFlags & kHudActionSecondary3) != 0) secondaryIndex = 3;
     if (secondaryIndex >= 0) {
         Ship *ship = Status::gStatus->getShip();
         Array<Item *> *equipment = ship != nullptr ? ship->getEquipment(1) : nullptr;
@@ -3670,10 +3694,10 @@ static void mgame_dispatch_hud_menu(MGame *self, unsigned int actions) {
     }
 
     int wingmanCommand = -1;
-    if ((actions & kHudActionWingmenAttack) != 0) wingmanCommand = 1;
-    else if ((actions & kHudActionWingmenDefend) != 0) wingmanCommand = 3;
-    else if ((actions & kHudActionWingmenFollow) != 0) wingmanCommand = 2;
-    else if ((actions & kHudActionWingmenToggle) != 0) {
+    if ((self->hudTouchFlags & kHudActionWingmenAttack) != 0) wingmanCommand = 1;
+    else if ((self->hudTouchFlags & kHudActionWingmenDefend) != 0) wingmanCommand = 3;
+    else if ((self->hudTouchFlags & kHudActionWingmenFollow) != 0) wingmanCommand = 2;
+    else if ((self->hudTouchFlags & kHudActionWingmenToggle) != 0) {
         wingmanCommand = 0;
         reinterpret_cast<uint8_t *>(&Status::gStatus->field_f8)[0] ^= 1;
     }
@@ -3692,7 +3716,7 @@ static void mgame_dispatch_hud_menu(MGame *self, unsigned int actions) {
         return;
     }
 
-    if ((actions & kHudActionJumpDrive) != 0) {
+    if ((self->hudTouchFlags & kHudActionJumpDrive) != 0) {
         self->UseKhadorDrive();
         return;
     }
@@ -3766,18 +3790,18 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
         // ChoiceWindow family in this order: +0xcf, +0xca, then +0x1e4.
         if (this->field_0xcf != 0) {
             const int selection = this->choiceWindow->OnTouchEnd(p1, p2);
-            Status *status = Status::gStatus;
 
             if (selection == 1) {
                 Array<KIPlayer *> *enemies = this->level->getEnemies();
                 if (enemies != nullptr) {
-                    for (unsigned int i = 0; i < enemies->size(); ++i) {
+                    const unsigned int count = enemies->size();
+                    for (unsigned int i = 0; i != count; ++i) {
                         KIPlayer *enemy = (*enemies)[i];
                         if (enemy->shipGroup == 8)
                             enemy->field_0x25 = 1;
                     }
                 }
-                status->field_0x111 = 1;
+                Status::gStatus->field_0x111 = 1;
                 this->level->createRadioMessage(11, 8);
                 this->pauseOpen = 0;
                 this->choiceWindowFlags = 0;
@@ -3785,8 +3809,8 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
                 goto hud_action_path;
             }
             if (selection == 0) {
-                if (status->getCredits() < this->choiceItemCount) {
-                    this->choiceWindow->set(status->replaceHash(
+                if (Status::gStatus->getCredits() < this->choiceItemCount) {
+                    this->choiceWindow->set(Status::gStatus->replaceHash(
                         String(*GameText::gGameText->getText(203), false),
                         String(Globals::layout->formatCredits(this->choiceItemCount), false),
                         String("#C", false)), false);
@@ -3795,27 +3819,29 @@ void MGame::OnTouchEnd(int p1, int p2, void *touchId) {
                     this->level->createRadioMessage(11, 8);
                     Array<KIPlayer *> *enemies = this->level->getEnemies();
                     if (enemies != nullptr) {
-                        for (unsigned int i = 0; i < enemies->size(); ++i) {
+                        const unsigned int count = enemies->size();
+                        for (unsigned int i = 0; i != count; ++i) {
                             KIPlayer *enemy = (*enemies)[i];
                             if (enemy->shipGroup == 8)
                                 enemy->field_0x25 = 1;
                         }
                     }
-                    status->field_0x111 = 1;
+                    Status::gStatus->field_0x111 = 1;
                     return;
                 }
 
                 Array<KIPlayer *> *enemies = this->level->getEnemies();
                 if (enemies != nullptr) {
-                    for (unsigned int i = 0; i < enemies->size(); ++i) {
+                    const unsigned int count = enemies->size();
+                    for (unsigned int i = 0; i != count; ++i) {
                         KIPlayer *enemy = (*enemies)[i];
                         if (enemy->shipGroup == 8)
                             enemy->field_0x25 = 0;
                     }
                 }
-                status->changeCredits(-this->choiceItemCount);
+                Status::gStatus->changeCredits(-this->choiceItemCount);
                 this->level->createRadioMessage(10, 8);
-                status->field_110 = 1;
+                Status::gStatus->field_110 = 1;
                 this->pauseOpen = 0;
                 this->choiceWindowFlags = 0;
                 this->resumeSounds();
@@ -3855,7 +3881,7 @@ hud_action_path:
         this->touch1Id = 0;
     }
 
-    if ((actions & kHudActionPause) != 0) {
+    if ((this->hudTouchFlags & kHudActionPause) != 0) {
         mgame_open_pause_menu(this);
         return;
     }
@@ -3867,24 +3893,24 @@ hud_action_path:
     if (this->jumpActive != 0 || this->jumpDriveActive != 0)
         return;
 
-    mgame_handle_boost_touch(this, actions);
-    mgame_dispatch_combat_touch_actions(this, actions);
+    mgame_handle_boost_touch(this);
+    mgame_dispatch_combat_touch_actions(this);
     if (this->player->isInRocketControl())
         return;
-    if (this->player->hasAutoTurret() && (actions & kHudActionAutoTurret) != 0) {
+    if (this->player->hasAutoTurret() && (this->hudTouchFlags & kHudActionAutoTurret) != 0) {
         this->player->setAutoTurret(this->player->autoTurretIsEnabled() != 1);
         this->hud->hudEvent(this->player->autoTurretIsEnabled() ? 0x20 : 0x21,
                             this->player, 0);
     }
 
-    if ((actions & kHudActionOrbit) == 0 && this->orbitMenuOpen != 0) {
-        mgame_dispatch_orbit_menu(this, actions);
+    if ((this->hudTouchFlags & kHudActionOrbit) == 0 && this->orbitMenuOpen != 0) {
+        mgame_dispatch_orbit_menu(this);
     }
 
-    if ((actions & kHudActionOrbit) != 0)
+    if ((this->hudTouchFlags & kHudActionOrbit) != 0)
         mgame_try_open_orbit_menu(this);
 
-    if ((actions & kHudActionQuickMenu) != 0 && !this->player->isMining()) {
+    if ((this->hudTouchFlags & kHudActionQuickMenu) != 0 && !this->player->isMining()) {
         const bool menuWasOpen = this->hudMenuOpen != 0;
         this->hudMenuOpen ^= 1;
         this->pauseOpen ^= 1;
@@ -3894,7 +3920,7 @@ hud_action_path:
         }
     }
 
-    if ((actions & kHudActionCamera) != 0 && !this->player->isMining())
+    if ((this->hudTouchFlags & kHudActionCamera) != 0 && !this->player->isMining())
         this->switchCamera(this->cameraMode + 1);
 
     if (this->hudMenuOpen == 0) {
@@ -3908,7 +3934,7 @@ hud_action_path:
         return;
     }
 
-    mgame_dispatch_hud_menu(this, actions);
+    mgame_dispatch_hud_menu(this);
     mgame_finish_autopilot_transition(this, wasAutoPilot);
 }
 
