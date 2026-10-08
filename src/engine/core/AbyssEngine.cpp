@@ -2641,7 +2641,8 @@ namespace AbyssEngine {
 
         char magic[8];
         unsigned short subCount;
-        Mesh *childPtr;
+        struct ChildState { Mesh *childPtr; unsigned int index; };
+        ChildState state;
         unsigned int handle = 0;
         if (AEFile::OpenRead(path, &handle)) {
             strcpy(magic, "*******");
@@ -2672,17 +2673,17 @@ namespace AbyssEngine {
                             if (AEFile::Read((uint32_t)(2), &subCount, handle)) {
                                 if (subCount >= 2) {
                                     (*out)->animation = new Transform();
-                                    for (unsigned int s = 0; s < subCount; ++s) {
-                                        childPtr = new Mesh();
-                                        childPtr->vboEligible = 1;
-                                        childPtr->vertexFormat = (*out)->vertexFormat;
-                                        childPtr->material = mat;
-                                        if (MeshReadData(engine, handle, fmt, &childPtr, mat) == -1) {
+                                    for (state.index = 0; state.index < subCount; ++state.index) {
+                                        state.childPtr = new Mesh();
+                                        state.childPtr->vboEligible = 1;
+                                        state.childPtr->vertexFormat = (*out)->vertexFormat;
+                                        state.childPtr->material = mat;
+                                        if (MeshReadData(engine, handle, fmt, &state.childPtr, mat) == -1) {
                                             goto failed;
                                         }
                                         ((AEMath::BSphere *) &(*out)->boundsCenterX)->Merge(
-                                            *(const AEMath::BSphere *) &childPtr->boundsCenterX);
-                                        ArrayAdd<Mesh *>(childPtr, (*out)->animation->meshes);
+                                            *(const AEMath::BSphere *) &state.childPtr->boundsCenterX);
+                                        ArrayAdd<Mesh *>(state.childPtr, (*out)->animation->meshes);
                                     }
                                     goto loaded;
                                 }

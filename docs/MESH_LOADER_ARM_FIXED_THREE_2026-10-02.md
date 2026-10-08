@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **98.40% unweighted / 98.41% weighted**.
+Latest validated continuation: source **98.47% unweighted / 98.45% weighted**.
 Latest semantic correction: original full bounds diagonal; earlier half-diagonal
 radius assertions are superseded by the verified operand/ABI evidence below.
 The result tables below preserve earlier measurements. Chronological continuation
@@ -11861,3 +11861,41 @@ Accepted full/native proof-binding audit rechecked204 TUs/4619 comparisons,202 u
 Disk housekeeping before compilation:20 verified untracked duplicate original Core targets removed,528240 bytes. Resolved paths within own_work, canonical hash and single-object targets checked; workspace manifest and system-temp backup written before literal deletion; independently checked all target absence/reference hashes/sizes afterward. Compiled bases, source snapshots, reports, native fixtures, canonical targets, main and Git storage preserved. Manifest `_work/duplicate_create_ref20_core_target_cleanup_20261008.json`. Inherited console label40/Mesh is inaccurate; guarded and audited count20/Core is authoritative.
 
 Evidence: `_work/create_reference_handle_sweep_20261008.py`, `_work/create_reference_handle_20261008.json`, seven focused base objects. Report-only commit; no push/PR/merge.
+
+## Continuation: Retain addressed child pointer and loop index
+
+Continuation after c710195a. Previous turn produced verified negative parameter-reference evidence; inspect child parse state/status, scope and shared-loop generators. New hypothesis pairs the existing child output pointer with the live child-loop index, not the previously tested subCount field. Five fresh focused compiles: accepted control plus both field orders at entry or immediately before the multi-child loop.
+
+Retain entry child-first form: replace standalone Mesh*childPtr with local struct ChildState { Mesh*childPtr; unsigned index; }, leave the record uninitialized, assign index0 in existing loop initializer and assign childPtr from existing new Mesh before every use. All two fields are used; no dummy field, zero initialization or extra allocation/read/call. Existing MeshReadData receives &state.childPtr; actual implementation updates only that pointer slot, leaving index intact. Loop still visits every unsigned-short-bounded child in order and skips on0; count>=2 guard unchanged. Existing failure returns, partial attachment, bounds merge, materials and completion remain. No helper/header/exported layout/ABI/signature/flags/matcher/denominator/volatile/asm/fixed-register/artificial padding changes. This is a measured source representation, not recovered original declaration.
+
+| Form | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| accepted_control | 98.4 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| entry_child_first | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| entry_index_first | 98.4 | 94.4 | 98.2 | 100.0 | 99.3 | 293 |
+| loop_child_first | 98.3 | 94.2 | 97.7 | 100.0 | 99.6 | 292 |
+| loop_index_first | 97.9 | 92.8 | 97.7 | 100.0 | 99.0 | 294 |
+
+All five rows independently rechecked against canonical original, including every component, instruction count and whole-object hash. Five hashes distinct and calls100 throughout. Only entry_child_first improves primary98.4->98.6: opcode97.9->98.2, size99.3->100, inventory94.7/control100 unchanged. Restore baseline after sweep, then freeze winning source for fresh validation.
+
+Fresh validation for retained production source: all204 ARM TUs rebuilt, full corpus4619 comparisons/zero skipped, actual linked-exact2079 and byte-exact959 pair sets equal baseline with no lost/gained pairs,202 unaffected whole objects byte-identical to baseline. Fresh Core equals focused winner; fresh Mesh equals prior accepted. Three unique rows and original weights291/873/636,total1800 unchanged; all source metrics independently recomputed from fresh canonical target/base disassemblies. Outside-body/signature and canonical flags/argument-list checks pass. Existing smoke fixtures unchanged.
+
+Native UCRT64 CMake gof2 static library builds. Verbatim actual Read/Create with actual Mesh/selected math/BSphere fixtures passes color/position/tangent/truncation, lifecycle, multi-child bounds/order and early failure at both child indices. Actual enhanced parser fixture compiles and executes successfully. No whole-game executable, native ABI/platform-port, Android device or Godot runtime proof claimed.
+
+Validation storage lives on C because A has little free space. First full verifier attempt terminated with no comparisons: unchanged delink.py raises cross-drive os.path.relpath ValueError in its diagnostic print after generating each target. Manual Core extraction exposes exact error. Reuse freshly rebuilt204 objects through own `_work/childindex-full` directory junction to C build; rerun only unchanged verifier, no source/matcher edit or unnecessary rebuild. Native stages already completed exit0. Source hashes persisted on recovery and equality to winning snapshot/fresh Core independently checked; do not claim the failed all-stages driver exited0. The first junction comparison completed all4619 rows and saved full.json, then also failed diagnostic printing of cross-drive report path. A final unchanged verifier run uses both build and report paths through the worktree junction; final verifier and independent audit completed successfully.
+
+| Fixed unique body | Source | Strict | Original weight |
+|---|---:|---:|---:|
+| MeshCreateFromFile | 98.6 | 60.8 | 291 |
+| MeshReadData | 98.5 | 57.4 | 873 |
+| ReadEnhancedDataFromFile | 98.3 | 66.9 | 636 |
+
+Verified means **98.47% unweighted / 98.45% weighted**; exact unrounded means 98.46666666666665 / 98.4455. Both99 gates remain unmet, goal active. Full JSON SHA256 `159a2ec755e03e37f96b275c4bdb04e56ef0a7d2621db1847e11e1569e6f9da5`.
+
+Authoritative evidence: `C:/Users/Dima/AppData/Local/Temp/gof2-child-index-validation-20261008/{audit.json,three.json,frozen_sources.json,arm_build.log,arm_verify_junction.log,arm_verify_final.log,native_build.log,read_create_smoke.log,enhanced_build.log,enhanced_smoke.log}`; full204 target/base objects via `_work/childindex-full`. Older `_work/typedpair_full.json` remains historical98.40/98.41 evidence; its old source-binding audit must not be used to validate this new source. New `_work/audit_child_index_full_final_20261008.py` is current binding audit; final full JSON is `_work/childindex-full/full.json` (C validation arm/full.json), not first parent full.json.
+
+Disk housekeeping before focused compiles:20 checked untracked duplicate original Core targets removed528240 bytes, canonical reference/path/single-object guards, workspace manifest+system-temp backup before literal deletion; all absence/hash/size independently audited. Compiled bases, snapshots, reports, native fixtures, canonical targets, main and Git storage preserved. Manifest `_work/duplicate_child_index20_core_target_cleanup_20261008.json`; inherited console40/Mesh label incorrect, guarded manifest20/Core is authoritative.
+
+Evidence also `_work/create_child_index_record_sweep_20261008.py`, matching ledger, winning source snapshot and5 focused objects; `_work/validate_child_index_20261008.py`. Commit only winning source and report, main untouched, no push/PR/merge.
+
+Additional binding checks confirm native extracted Create/Read bodies equal current retained source, not only success log strings. Shape delta diagnosis (`_work/child_index_shape_delta_20261008.json`) independently measures normalized counts original284/previous282/winner284: one missing frame load is restored (3->2) and one extra frame store appears (1->2), explaining why rounded inventory remains94.7 while opcode/size improve. Final verifier exits0 and authoritative full JSON is `C:/Users/Dima/AppData/Local/Temp/gof2-child-index-validation-20261008/arm/full.json`.
