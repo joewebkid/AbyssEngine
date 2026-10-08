@@ -1,0 +1,79 @@
+{
+  "decision": "Accepted local branch delivery after green ARM/native STATIC/full corpus and baseline/previous preservation gates. Weighted99 still unmet.",
+  "previous_goal_turn_classification": "Progress: ordinary station Matrix copy supplied new negative compilation evidence and exact22-byte clearing-loop proof; restored.",
+  "previous_production": "683216b5",
+  "previous_report": "d8132fdd",
+  "files_inspected": [
+    "src/game/world/StarMap.cpp",
+    "docs/STARMAP_SOURCE_SHAPE_ARM_2026-10-02.md",
+    "_work/warning-combination-fiftyseventh.cpp"
+  ],
+  "production_change": "Seven successful warning branches deliver their existing text, set existing suppression flag and join the unchanged choice-visible/inertia/Help tail. Numeric sentinel and two guards removed. Existing runtime short-circuit predicates/getters/text IDs retained.",
+  "basis": "Primary warning paths select these same IDs and continue through common visibility/inertia/Help; new source form is heuristic, not recovered C++ spelling. Unlike46, each branch has direct delivery; unlike57/67/82, not only3217 is separated; unlike111, no warning-state phi.",
+  "focused_before": {
+    "source_match": {
+      "unweighted": 99.32000000000001,
+      "weighted": 98.7082523588227
+    },
+    "match": {
+      "unweighted": 87.83500000000001,
+      "weighted": 82.6551330798479
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "focused_after": {
+    "source_match": {
+      "unweighted": 99.36,
+      "weighted": 98.82508097451064
+    },
+    "match": {
+      "unweighted": 87.965,
+      "weighted": 83.0348260808337
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "changed_focus_rows": [
+    "_ZN7StarMap10OnTouchEndEii"
+  ],
+  "arm_compiled": 204,
+  "arm_failed": 0,
+  "native_static_exit": 0,
+  "final_formatting": "Readable branch bodies and descriptive continuation label; ARM204/0, final native STATIC exit0; all204 objects byte-identical to full-validated candidate and complete focus report identical.",
+  "formatted_native_log": "_work/native-warning-delivery-formatted-114.log",
+  "full": {
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "count": 4619,
+    "fuzzy_perfect": 2204,
+    "byte_exact": 960,
+    "linked_exact": 2084,
+    "skipped": 0,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "all22_focused_full_rows_agree": true,
+  "baseline_preservation_gate_exit": 0,
+  "previous_preservation_gate_exit": 0,
+  "default99_threshold_gate_exit": 1,
+  "objective_reached": false,
+  "source_sha256": "06c9b96d0ad52d291604b73ab828fdc6b95fb4bc337b281aa90aec4e626033ce",
+  "object_sha256": "cd625a949c83d404b31b81b8b9e33d4a1e3e97fd768c47bbadd11b78dc961e82",
+  "limits": "Source-shape improves; static call count metric worsens99.3->97.8 and control98.7->98.3. No runtime/whole ABI equivalence claim; STATIC build does not replace executable test.",
+  "evidence": [
+    "_work/warning-branch-delivery-114.json",
+    "_work/warning-branch-delivery-114.log",
+    "_work/warning-branch-delivery-corpus-114.json",
+    "_work/warning-branch-delivery-corpus-114.log",
+    "_work/native-warning-branch-delivery-114.log",
+    "_work/warning-branch-delivery-baseline-gate-114.json",
+    "_work/warning-branch-delivery-previous-gate-114.json",
+    "_work/warning-branch-delivery-threshold-114.log",
+    "_work/before-warning-branch-delivery-114.cpp"
+  ]
+}

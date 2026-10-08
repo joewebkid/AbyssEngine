@@ -1,0 +1,250 @@
+{
+  "previous_production": "4d0afb1b",
+  "previous_goal_turn_classification": "Progress:122 excluded two info flag forms, verified SetColor mangling and restored204 objects.",
+  "decision": "Accepted explicit Matrix values after native/ARM/full and non-partial baseline/previous threshold+preservation gates.",
+  "source_form": "Add a constexpr15-float value constructor to Matrix; use it for init camera matrix and initStarSystem rotation. Same15 values as default construction plus existing m10/m13 corrections; ordinary constructor definitions unchanged.",
+  "values": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    1
+  ],
+  "data_evidence": "Existing primary Matrix literal/store audits prove m10/m13=1; this construction retains all previous pre-transform values. The new overload/spelling is a reconstruction technique, not recovered original C++ API.",
+  "abi_evidence": "Matrix15 floats/0x3c and existing offsets retained; original default constructor bodies unchanged. New value constructor inlines at both uses; no Matrix constructor symbol emitted in StarMap.o. ALL203 other ARM object bytes unchanged.",
+  "arm_compiled": 204,
+  "arm_failed": 0,
+  "native_static_exit": 0,
+  "focused_before": {
+    "source_match": {
+      "unweighted": 99.38,
+      "weighted": 98.88256583579778
+    },
+    "match": {
+      "unweighted": 88.03999999999999,
+      "weighted": 83.12933389663428
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "focused_after": {
+    "source_match": {
+      "unweighted": 99.485,
+      "weighted": 99.09704267004646
+    },
+    "match": {
+      "unweighted": 88.49499999999999,
+      "weighted": 84.04596535699197
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "changed_rows": [
+    {
+      "symbol": "_ZN7StarMap4initEbP7Missionbi",
+      "changes": {
+        "match": [
+          77.4,
+          78.6
+        ],
+        "n_base": [
+          735,
+          748
+        ],
+        "source_match": [
+          98.3,
+          99.1
+        ],
+        "instruction_inventory_match": [
+          98.0,
+          98.5
+        ],
+        "opcode_inventory_match": [
+          98.0,
+          98.6
+        ],
+        "control_flow_match": [
+          98.8,
+          99.1
+        ],
+        "ordered_control_flow_match": [
+          80.1,
+          80.4
+        ],
+        "control_inventory_match": [
+          98.8,
+          99.1
+        ],
+        "call_count_match": [
+          99.0,
+          100.0
+        ],
+        "size_match": [
+          97.6,
+          99.3
+        ]
+      }
+    },
+    {
+      "symbol": "_ZN7StarMap14initStarSystemEv",
+      "changes": {
+        "match": [
+          84.7,
+          92.6
+        ],
+        "n_base": [
+          683,
+          704
+        ],
+        "source_match": [
+          97.3,
+          98.6
+        ],
+        "instruction_inventory_match": [
+          96.7,
+          98.2
+        ],
+        "opcode_inventory_match": [
+          97.4,
+          98.4
+        ],
+        "control_flow_match": [
+          96.9,
+          97.2
+        ],
+        "ordered_control_flow_match": [
+          94.8,
+          95.2
+        ],
+        "control_inventory_match": [
+          96.9,
+          97.2
+        ],
+        "call_count_match": [
+          99.0,
+          100.0
+        ],
+        "size_match": [
+          96.3,
+          99.3
+        ]
+      }
+    }
+  ],
+  "full": {
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "count": 4619,
+    "fuzzy_perfect": 2204,
+    "byte_exact": 960,
+    "linked_exact": 2084,
+    "skipped": 0,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "all22_focus_full_rows_agree": true,
+  "only_starmap_object_changed": true,
+  "baseline_gate_exit": 0,
+  "previous_gate_exit": 0,
+  "default99_gate_exit": 0,
+  "baseline_exact_pairs": {
+    "linked_equal": {
+      "baseline": 2079,
+      "final": 2084,
+      "lost": [],
+      "gained": [
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap10initLightsEv"
+        ],
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap14missionChangedEv"
+        ],
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap24askForJumpIntoAlienWorldEv"
+        ],
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap6renderEv"
+        ],
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap8setStartEii"
+        ]
+      ]
+    },
+    "bytes_equal": {
+      "baseline": 959,
+      "final": 960,
+      "lost": [],
+      "gained": [
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap14missionChangedEv"
+        ]
+      ]
+    }
+  },
+  "previous_exact_pairs": {
+    "linked_equal": {
+      "baseline": 2084,
+      "final": 2084,
+      "lost": [],
+      "gained": []
+    },
+    "bytes_equal": {
+      "baseline": 960,
+      "final": 960,
+      "lost": [],
+      "gained": []
+    }
+  },
+  "source_and_object_sha256": {
+    "src/game/world/StarMap.cpp": "2a1823a6496cf05091799182f8e01027f5164345319342901cf5c5ec6b10facc",
+    "src/engine/math/Matrix.h": "f651ccb874c51757dc294051475a433c04367da00a48293efbec8a04745f2d12",
+    "src/engine/math/Matrix.cpp": "da9d78b66619abcd1286790e291da1513e2c5b1abb8a98c5f728057e90645b6b",
+    "src/game/core/Matrix.cpp": "37967bcaed6d046f82cb6cf14e5a2e6e7962a2a40235ff85d6069424fb2e2ef2",
+    "cmake-build-match/verify/base/game/world/StarMap.o": "a28ea52b6ddb41a77de9e85327f6625a3fb83451e3dbde8525c7bee41cfe578a"
+  },
+  "objective_threshold_met": true,
+  "completion_audit": {
+    "fixed_unique_bodies": 20,
+    "original_instruction_weight": 7101,
+    "aliases_checked": true,
+    "both_thresholds_pass": true,
+    "baseline_and_previous_exact_losses": 0,
+    "arm_and_native_static_green": true,
+    "full_corpus_zero_skips": true,
+    "evidence_report_saved": true,
+    "local_commit": "Verify final Git HEAD after committing these production/evidence files."
+  },
+  "limits": "No native executable/runtime or whole ABI proof; this completes the source-shape/static-validation objective, not the independent native restoration deliverable. No verifier, compiler flag, forced-inline attribute, template padding or synthetic call.",
+  "evidence": [
+    "_work/matrix-values-123.json",
+    "_work/matrix-values-123.log",
+    "_work/matrix-values-corpus-123.json",
+    "_work/matrix-values-corpus-123.log",
+    "_work/native-matrix-values-123.log",
+    "_work/matrix-values-baseline-gate-123.json",
+    "_work/matrix-values-previous-gate-123.json",
+    "_work/matrix-values-threshold-123.log",
+    "_work/before123-object-hashes.json",
+    "_work/matrix-values-frozen-123.json"
+  ]
+}

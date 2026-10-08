@@ -1,0 +1,48 @@
+{
+  "decision": "Both yaw wrap source forms rejected as neutral; source restored",
+  "previous_checkpoint": "519302e3",
+  "production": "b67a5300",
+  "primary_basis": "ca1f6 RSB32 target; ca210 SUBS yaw-target; ca214/ca216 MI conditional NEG; ca218 signed target/yaw compare; ca21e target-yaw and ca50c conversion.",
+  "not_original_cpp_recovery": true,
+  "trial_A": "Only yawDistance subtraction and conditional negation use uint32 modular arithmetic with int32 conversion.",
+  "trial_B": "Additionally wrap 0x8000-stationAngle and both yawStep subtractions. Other pitch/float arithmetic untouched.",
+  "behavior_limit": "Unsigned-to-int32 conversion is implementation-defined in C++14; intended ARM/UCRT two-complement targets support it. This does not prove float-to-int, pitch, dt overflow or whole-function runtime safety. For yaw[-65535,65535], stationAngle[0,65535], target[-32767,32768], distance[-98303,98302], old signed arithmetic already fits. No normal-range gameplay fix is claimed.",
+  "trials": [
+    {
+      "name": "A",
+      "session": 78049,
+      "terminal_exit": 0,
+      "source_sha256": "08f2cb1d741110d71ee497d1051c42d4f24713dc541e91147e5a583f4bd846bb"
+    },
+    {
+      "name": "B",
+      "session": 79536,
+      "terminal_exit": 0,
+      "source_sha256": "e6b075e537dd46a994e98942a46f61012ab9ebd6615fd088c700508b0e468c98"
+    }
+  ],
+  "each_trial": {
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "whole_focused_json_equal_canonical": true,
+    "whole_ARM_object_equal_canonical": true
+  },
+  "restore": {
+    "session": 46965,
+    "terminal_exit": 0,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "fresh_utf8_write": true,
+    "whole_focused_json_equal_canonical": true,
+    "source_sha256": "cf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3",
+    "object_sha256": "39cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a"
+  },
+  "production_retained": false,
+  "native_full": "Accepted96 native/full remains canonical; identical restored source/object/report, no redundant rerun. Native runtime remains untested.",
+  "target99_met": false,
+  "compiler_ceiling_proved": false
+}

@@ -1,0 +1,24 @@
+{
+  "accepted_production": "3aebb2c0",
+  "hypothesis": "OnTouchEnd dragging body tests mode==0 for the galaxy body, otherwise the unchanged station body; previously mode!=0 station first. Every nonzero mode still enters station handling, and common inertia/Help and confirmation tail unchanged.",
+  "original_source_recovered": false,
+  "decision": "removed: no focused metric gain",
+  "entire_trial_report_equals_accepted": true,
+  "entire_restored_report_equals_accepted": true,
+  "trial_object_sha256": "33585af7b6c3082b8e01cdb56e2ffbb1c53aec2f2a8d48db101f00cc346bd493",
+  "restored_object_sha256": "06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34",
+  "trial_and_restore_builds": {
+    "each_compiled": 204,
+    "each_failed": 0,
+    "each_comparisons": 22,
+    "each_skipped": 0
+  },
+  "object_difference_attribution": "Not classified; entire report equality is not a claim of whole-object equality or full-corpus preservation for the rejected trial. Only restored accepted object is authoritative.",
+  "camera_bound_readonly_audit": "Primary ca194..ca1cc and accepted 37b0..37e8 load panX/panY, load baseX/baseZ, convert Y then X, add Y then X, convert Y then X, move Y/X to R0/R1 and compare X to120 in matching order. No declaration-order edit justified.",
+  "source_means": {
+    "unweighted": 99.22,
+    "weighted": 98.56482185607662
+  },
+  "target_met": false,
+  "native_full_validation": "No new native/full/runtime run; accepted sixty-sixth remains authoritative."
+}

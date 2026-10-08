@@ -19,20 +19,20 @@
   },
   "final": {
     "source_match": {
-      "unweighted": 99.2,
-      "weighted": 98.51515279538093
+      "unweighted": 99.485,
+      "weighted": 99.09704267004646
     },
     "match": {
-      "unweighted": 87.21000000000001,
-      "weighted": 81.5747641177299
+      "unweighted": 88.49499999999999,
+      "weighted": 84.04596535699197
     },
-    "linked_exact": 6,
+    "linked_exact": 7,
     "byte_exact": 3
   },
   "exact_pairs": {
     "linked_equal": {
       "baseline": 2079,
-      "final": 2083,
+      "final": 2084,
       "lost": [],
       "gained": [
         [
@@ -46,6 +46,10 @@
         [
           "game/world/StarMap",
           "_ZN7StarMap24askForJumpIntoAlienWorldEv"
+        ],
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap6renderEv"
         ],
         [
           "game/world/StarMap",
@@ -65,5 +69,5 @@
       ]
     }
   },
-  "target_met": false
+  "target_met": true
 }

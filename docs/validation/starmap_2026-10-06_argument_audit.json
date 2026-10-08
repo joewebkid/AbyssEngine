@@ -1,0 +1,117 @@
+{
+  "diagnostic_only": true,
+  "accepted_production": "a4a3633f",
+  "bodies": 20,
+  "aligned_direct_calls": 699,
+  "both_known_register_constants": 231,
+  "differences": [
+    {
+      "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+      "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+      "register": "r3",
+      "primary": {
+        "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+        "address": "c8b48",
+        "known_register_constants": {
+          "r1": 255,
+          "r2": 128,
+          "r3": 0
+        }
+      },
+      "current": {
+        "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+        "address": "1552",
+        "known_register_constants": {
+          "r1": 255,
+          "r2": 255,
+          "r3": 255
+        }
+      }
+    },
+    {
+      "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+      "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+      "register": "r2",
+      "primary": {
+        "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+        "address": "c8b48",
+        "known_register_constants": {
+          "r1": 255,
+          "r2": 128,
+          "r3": 0
+        }
+      },
+      "current": {
+        "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+        "address": "1552",
+        "known_register_constants": {
+          "r1": 255,
+          "r2": 255,
+          "r3": 255
+        }
+      }
+    }
+  ],
+  "limitations": "Straight-line conservative register constants only; clear on control flow/IT, clobber caller registers after calls. No stack/float arguments or indirect-callee recovery. Repeated-callee alignment can be ambiguous; every difference requires raw primary/callsite review. Not exhaustive ABI/runtime verification.",
+  "primary_parsed_fixed_bodies": [
+    "_ZN7StarMap10OnTouchEndEii",
+    "_ZN7StarMap10initLightsEv",
+    "_ZN7StarMap11OnTouchMoveEii",
+    "_ZN7StarMap12OnTouchBeginEii",
+    "_ZN7StarMap14initStarSystemEv",
+    "_ZN7StarMap14isInPlanetModeEv",
+    "_ZN7StarMap14missionChangedEv",
+    "_ZN7StarMap14setJumpMapModeEbb",
+    "_ZN7StarMap16drawOnScreenInfoEib",
+    "_ZN7StarMap24askForJumpIntoAlienWorldEv",
+    "_ZN7StarMap4drawEv",
+    "_ZN7StarMap4initEbP7Missionbi",
+    "_ZN7StarMap6departEb",
+    "_ZN7StarMap6renderEv",
+    "_ZN7StarMap6updateEi",
+    "_ZN7StarMap7drawKeyEv",
+    "_ZN7StarMap8renderBGEv",
+    "_ZN7StarMap8setStartEii",
+    "_ZN7StarMapC1EbP7Missionbi",
+    "_ZN7StarMapD1Ev"
+  ],
+  "primary_missing_fixed_body_headers": [],
+  "current_parsed_fixed_bodies": [
+    "_ZN7StarMap10OnTouchEndEii",
+    "_ZN7StarMap10initLightsEv",
+    "_ZN7StarMap11OnTouchMoveEii",
+    "_ZN7StarMap12OnTouchBeginEii",
+    "_ZN7StarMap14initStarSystemEv",
+    "_ZN7StarMap14isInPlanetModeEv",
+    "_ZN7StarMap14missionChangedEv",
+    "_ZN7StarMap14setJumpMapModeEbb",
+    "_ZN7StarMap16drawOnScreenInfoEib",
+    "_ZN7StarMap24askForJumpIntoAlienWorldEv",
+    "_ZN7StarMap4drawEv",
+    "_ZN7StarMap4initEbP7Missionbi",
+    "_ZN7StarMap6departEb",
+    "_ZN7StarMap6renderEv",
+    "_ZN7StarMap6updateEi",
+    "_ZN7StarMap7drawKeyEv",
+    "_ZN7StarMap8renderBGEv",
+    "_ZN7StarMap8setStartEii",
+    "_ZN7StarMapC1EbP7Missionbi",
+    "_ZN7StarMapD1Ev"
+  ],
+  "current_missing_fixed_body_headers": [],
+  "differences_reviewed": [
+    {
+      "candidate_primary": "c8b48 SetColor R1=255,R2=128,R3=0",
+      "incorrect_aligned_current": "1552 white SetColor on unselected-station branch",
+      "matching_current": "1314 SetColor R1=255,R2=128,R3=0 on selectedStation==index branch; preceding compare1304/BNE1308 matches primary c8b38/BNEc8b3c; subsequent Station::getName confirms same semantic callsite",
+      "decision": "both r2/r3 candidates are repeated-callee alignment artifacts; no production correction justified"
+    }
+  ],
+  "confirmed_unresolved_mismatches": 0,
+  "object_sha256": "a6cd529383016bc46bcd25d1c94198ffce6674237a2807b96a320dd9a8046ca8",
+  "primary_library_sha256": "6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58",
+  "production_modified": false,
+  "full_validation_reused": "Accepted88 ARM204/native static/full4619 zero skips and baseline/previous gates; source and object unchanged.",
+  "weighted99_target_met": false,
+  "native_runtime_equivalence": "unverified"
+}

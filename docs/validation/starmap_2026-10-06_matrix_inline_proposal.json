@@ -1,0 +1,28 @@
+{
+  "decision": "Concrete proposal prepared; shared production files not modified. Awaiting explicit scope decision.",
+  "checkpoint": "369782ce",
+  "production": "683216b5",
+  "source_sha256": "ddc4e5cd912fdf561661f01949f5686e51c366fdf69b2d84d571616101138c3c",
+  "object_sha256": "54a78574bcc14daefc8678850bb6a4e8bf3bed2caa2fa3b5139ef72c9e30484b",
+  "shared_files": {
+    "src/engine/math/Matrix.h": "177bf4acdad5bfa1f95365e85961fb53e378be8735e2f7efde98a14adff95e93",
+    "src/engine/math/Matrix.cpp": "da9d78b66619abcd1286790e291da1513e2c5b1abb8a98c5f728057e90645b6b"
+  },
+  "proposal": "Move the unchanged default Matrix constructor body from Matrix.cpp into Matrix.h. Keep field values, type layout, local StarMap m10/m13 repairs, verifier and compiler flags unchanged.",
+  "patch": "docs/validation/starmap_2026-10-06_matrix_inline_proposal.patch",
+  "basis": "Primary init/initStarSystem use inline initialization; accepted StarMap calls the shared constructor. Prior95/100 prove native matrix tail constants. This proposal tests availability of constructor body for ordinary compiler inlining. Original source spelling/inlining decision not recovered.",
+  "scope_requirement": "Shared Matrix headers/implementation were excluded from agreed StarMap task. User must authorize this experiment before application.",
+  "current_constructor_report": "Both baseline/current have MatrixC2 entries under engine/math/Matrix and game/core/Matrix: source73.5 strict43.2, linked_equal=false, bytes_equal=false. This does not rule out losses in callers or disappearance of required symbols.",
+  "acceptance": "After authorization, apply reversibly; ARM focus, native STATIC build, full corpus plus baseline/previous exact-pair preservation gates. Reject any exact-pair loss, compile failure, missing coverage regression, or source metric regression. Confirm exports/constructor availability; do not claim native runtime correctness from STATIC checks.",
+  "validation": "No experiment compiled; metrics not predicted. Current source/object verified unchanged, accepted104 validations remain canonical.",
+  "means": {
+    "source_unweighted": 99.32,
+    "source_weighted": 98.7082523588227
+  },
+  "goal": "Active; weighted99 unmet. Pending permission is not approval and is not evidence of a score ceiling.",
+  "patch_application_check": {
+    "command": "git apply --check --unidiff-zero --ignore-space-change docs/validation/starmap_2026-10-06_matrix_inline_proposal.patch",
+    "exit": 0,
+    "finding": "Zero-context proposal avoids blank-context whitespace; CRLF worktree requires whitespace-insensitive dry run. No patch applied."
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "decision": "Both source trials removed; accepted104 restored and verified",
+  "checkpoint": "683216b5",
+  "source_sha256": "ddc4e5cd912fdf561661f01949f5686e51c366fdf69b2d84d571616101138c3c",
+  "object_sha256": "54a78574bcc14daefc8678850bb6a4e8bf3bed2caa2fa3b5139ef72c9e30484b",
+  "native_evidence": {
+    "height": "ca444 loads literalca7c4=0x145e34; ca448 ADDpc(ca44c) resolves GOT0x210280; ELF dynamic relocation is Globals::h",
+    "width": "ca446 loads literalca7c8=0x145e2a; ca44a ADDpc(ca44e) resolves GOT0x210278; ELF dynamic relocation is Globals::w",
+    "read_and_arithmetic_order": "ca450/ca452 height read/shift; ca458 height conversion;ca45c width read;ca45e Y load;ca462 X load;ca466/ca46c width shift/conversion;ca474 Y delta;ca478 X delta;ca47c X comparison"
+  },
+  "trialA": {
+    "source": "Reorder height/currentY/currentX/width reads; preserve deltaY and deltaX locals before X branch; use them for division only, keep later overshoot member reads",
+    "exit": 0,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "update_metrics": {
+      "match": {
+        "before": 82.7,
+        "after": 79.8
+      },
+      "source_match": {
+        "before": 98.7,
+        "after": 98.5
+      },
+      "n_base": {
+        "before": 966,
+        "after": 961
+      },
+      "instruction_inventory_match": {
+        "before": 97.0,
+        "after": 97.0
+      },
+      "opcode_inventory_match": {
+        "before": 98.2,
+        "after": 98.2
+      },
+      "control_flow_match": {
+        "before": 98.7,
+        "after": 98.0
+      },
+      "ordered_control_flow_match": {
+        "before": 95.4,
+        "after": 91.4
+      },
+      "control_inventory_match": {
+        "before": 98.7,
+        "after": 98.0
+      },
+      "size_match": {
+        "before": 99.6,
+        "after": 99.1
+      }
+    },
+    "other21_rows_identical": true,
+    "object_sha256": "10bd223aff33173911c23b37996679742972a21e1b5cb85321d6c44a374b4985",
+    "decision": "Rejected; source98.7->98.5 and strict82.7->79.8"
+  },
+  "trialB": {
+    "source": "Read order only; original arithmetic preserved",
+    "exit": 0,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "entire_report_equal_to104": true,
+    "whole_object_equal_to104": true,
+    "decision": "Neutral; removed"
+  },
+  "restore": {
+    "exit": 0,
+    "session": 28003,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "entire_report_equal_to104": true,
+    "whole_object_equal_to104": true
+  },
+  "canonical": "Accepted104 native-static/full corpus remains canonical. No redundant native/full rerun because source, entire ARM object and full focused report are restored exactly. No executable/runtime proof.",
+  "means": {
+    "source_unweighted": 99.32,
+    "source_weighted": 98.7082523588227
+  },
+  "goal": "Active; weighted99 unmet. No compiler ceiling proved."
+}

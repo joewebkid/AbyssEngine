@@ -1,0 +1,108 @@
+{
+  "decision": "Rejected: lower focused source/strict metrics; removed. No trial full/native check claimed.",
+  "production": "683216b5",
+  "checkpoint": "837bf325",
+  "previous_goal_turn_classification": "Progress: primary hidden signed-division wrapper evidence ruled out unsigned playing-time rewrite. Seed fact was a revalidation, not a new bug.",
+  "trial": "Prepare one Matrix basis with unchanged default constructor and explicit m10/m13=1, then ordinary implicit Matrix copy for each station iteration. Source-form heuristic based on native invariant literal loads before loop, not recovered C++ spelling.",
+  "files_inspected": [
+    "src/game/world/StarMap.cpp",
+    "src/game/world/StarMap.h",
+    "src/engine/core/Array.h",
+    "_work/station-android.c",
+    "docs/STARMAP_SOURCE_SHAPE_ARM_2026-10-02.md"
+  ],
+  "arm_compiled": 204,
+  "arm_failed": 0,
+  "focused": {
+    "source_match": {
+      "unweighted": 99.3,
+      "weighted": 98.66825799183215
+    },
+    "match": {
+      "unweighted": 87.385,
+      "weighted": 81.7552598225602
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "changed_rows": [
+    {
+      "symbol": "_ZN7StarMap14initStarSystemEv",
+      "changes": {
+        "match": {
+          "before": 84.7,
+          "trial": 75.7
+        },
+        "n_base": {
+          "before": 683,
+          "trial": 685
+        },
+        "source_match": {
+          "before": 97.3,
+          "trial": 96.9
+        },
+        "instruction_inventory_match": {
+          "before": 96.7,
+          "trial": 95.8
+        },
+        "opcode_inventory_match": {
+          "before": 97.4,
+          "trial": 97.3
+        },
+        "control_flow_match": {
+          "before": 96.9,
+          "trial": 96.6
+        },
+        "ordered_control_flow_match": {
+          "before": 94.8,
+          "trial": 94.5
+        },
+        "control_inventory_match": {
+          "before": 96.9,
+          "trial": 96.6
+        },
+        "call_count_match": {
+          "before": 99.0,
+          "trial": 98.0
+        },
+        "size_match": {
+          "before": 96.3,
+          "trial": 96.6
+        }
+      }
+    }
+  ],
+  "trial_source_sha256": "339f152835045e57d75e19bb428a7b7dece3d96486311616c028f8447193aca9",
+  "trial_object_sha256": "965c76e2e31e8daada1130ff98bdb5b8512ed9e2183529b63b6d23ed45dcb03a",
+  "array_type_constraint": "Prior bool-array trial removed an existing byte-array constructor exact pair. Not repeated; no synthetic instantiation or retained extra call manufactured.",
+  "objective_reached": false,
+  "evidence": [
+    "_work/station-matrix-copy-113.json",
+    "_work/station-matrix-copy-113.log",
+    "_work/before-station-matrix-copy-113.cpp"
+  ],
+  "added_call_proof": {
+    "function_range": "0x29b8..0x3197",
+    "MatrixC1_relocation": "0x2aec",
+    "new_copy_relocation": "0x2b4e __aeabi_memcpy",
+    "source": "GNU objdump -r current trial object"
+  },
+  "zeroing_loop_proof": {
+    "native": "0xc7698..0xc76ad",
+    "restored_current": "0x2ad0..0x2ae5",
+    "exact22_bytes": "d4f8000100220023016802e04668f25401339942fad1",
+    "finding": "Pointer/length snapshots and all loop operations already exactly match; no repair needed."
+  },
+  "restoration": {
+    "source_sha256": "ddc4e5cd912fdf561661f01949f5686e51c366fdf69b2d84d571616101138c3c",
+    "arm_compiled": 204,
+    "arm_failed": 0,
+    "focused_report_equals_canonical": true,
+    "all204_objects_equal_full_validated_set": true,
+    "native_static_exit": 0,
+    "full_report_still_valid": "_work/matrix-inline-restored-corpus.json",
+    "native_log": "_work/native-station-matrix-copy-restored-113.log",
+    "focus_log": "_work/station-matrix-copy-restored-113.log",
+    "focus_report": "_work/station-matrix-copy-restored-113.json"
+  }
+}

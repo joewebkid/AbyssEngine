@@ -1,0 +1,105 @@
+{
+  "accepted_production": "3aebb2c0",
+  "trials": [
+    {
+      "trial": 68,
+      "hypothesis": "Evaluate mode 3 before mode 0; preserve both complete bodies and unsupported-mode behavior. OnTouchBegin retains oldSystem snapshot and all calls; update retains common prefix and selects mode after setParamValue, with the same returns/actions.",
+      "original_source_recovered": false,
+      "decision": "removed: entire report and whole object identical",
+      "before": {
+        "symbol": "_ZN7StarMap12OnTouchBeginEii",
+        "match": 97.4,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 275,
+        "n_base": 273,
+        "source_match": 99.3,
+        "instruction_inventory_match": 99.3,
+        "opcode_inventory_match": 99.3,
+        "control_flow_match": 98.5,
+        "ordered_control_flow_match": 98.5,
+        "control_inventory_match": 98.5,
+        "call_count_match": 100.0,
+        "size_match": 99.3,
+        "unit": "game/world/StarMap"
+      },
+      "after": {
+        "symbol": "_ZN7StarMap12OnTouchBeginEii",
+        "match": 97.4,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 275,
+        "n_base": 273,
+        "source_match": 99.3,
+        "instruction_inventory_match": 99.3,
+        "opcode_inventory_match": 99.3,
+        "control_flow_match": 98.5,
+        "ordered_control_flow_match": 98.5,
+        "control_inventory_match": 98.5,
+        "call_count_match": 100.0,
+        "size_match": 99.3,
+        "unit": "game/world/StarMap"
+      },
+      "other_21_rows_identical": true,
+      "entire_report_equals_accepted": true,
+      "trial_object_sha256": "06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34"
+    },
+    {
+      "trial": 69,
+      "hypothesis": "Evaluate mode 3 before mode 0; preserve both complete bodies and unsupported-mode behavior. OnTouchBegin retains oldSystem snapshot and all calls; update retains common prefix and selects mode after setParamValue, with the same returns/actions.",
+      "original_source_recovered": false,
+      "decision": "removed: source 98.7 -> 98.0, control inventory 98.7 -> 97.0",
+      "before": {
+        "symbol": "_ZN7StarMap6updateEi",
+        "match": 82.7,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 971,
+        "n_base": 966,
+        "source_match": 98.7,
+        "instruction_inventory_match": 97.0,
+        "opcode_inventory_match": 98.2,
+        "control_flow_match": 98.7,
+        "ordered_control_flow_match": 95.4,
+        "control_inventory_match": 98.7,
+        "call_count_match": 100.0,
+        "size_match": 99.6,
+        "unit": "game/world/StarMap"
+      },
+      "after": {
+        "symbol": "_ZN7StarMap6updateEi",
+        "match": 79.6,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 971,
+        "n_base": 965,
+        "source_match": 98.0,
+        "instruction_inventory_match": 96.2,
+        "opcode_inventory_match": 97.5,
+        "control_flow_match": 97.0,
+        "ordered_control_flow_match": 92.4,
+        "control_inventory_match": 97.0,
+        "call_count_match": 100.0,
+        "size_match": 99.5,
+        "unit": "game/world/StarMap"
+      },
+      "other_21_rows_identical": true,
+      "entire_report_equals_accepted": false,
+      "trial_object_sha256": "5ad6c16d9111b0b7695c10b6da719e73acaf4a4515a4c7f02f4c846dd8c13f79"
+    }
+  ],
+  "trial_and_each_fresh_restore_builds": {
+    "each_compiled": 204,
+    "each_failed": 0,
+    "each_comparisons": 22,
+    "each_skipped": 0
+  },
+  "both_restored_entire_reports_equal_accepted": true,
+  "restored_object_sha256": "06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34",
+  "source_means": {
+    "unweighted": 99.22,
+    "weighted": 98.56482185607662
+  },
+  "target_met": false,
+  "native_full_validation": "No new native/full/runtime run; accepted sixty-sixth authoritative."
+}

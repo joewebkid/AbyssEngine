@@ -1,0 +1,329 @@
+{
+  "diagnostic_only": true,
+  "accepted_production": "3aebb2c0",
+  "current_object_sha256": "06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34",
+  "method": "Unchanged asmdiff normalizations; every source submetric reproduced canonical accepted sixty-sixth across fixed 20 bodies; counts are token multiset differences, not missing C++ statements or a proven ceiling.",
+  "bodies": {
+    "_ZN7StarMap16drawOnScreenInfoEib": {
+      "weight": 1207,
+      "metrics": {
+        "source_match": 99.0,
+        "instruction_inventory_match": 98.1,
+        "opcode_inventory_match": 99.0,
+        "control_flow_match": 98.7,
+        "ordered_control_flow_match": 90.2,
+        "control_inventory_match": 98.7,
+        "call_count_match": 100.0,
+        "size_match": 99.0
+      },
+      "target_surplus_count": 28,
+      "current_surplus_count": 16,
+      "weighted_deficit_to_99": 0.0
+    },
+    "_ZN7StarMap10OnTouchEndEii": {
+      "weight": 1037,
+      "metrics": {
+        "source_match": 97.7,
+        "instruction_inventory_match": 96.8,
+        "opcode_inventory_match": 97.4,
+        "control_flow_match": 98.1,
+        "ordered_control_flow_match": 84.1,
+        "control_inventory_match": 98.1,
+        "call_count_match": 99.3,
+        "size_match": 96.7
+      },
+      "target_surplus_count": 48,
+      "current_surplus_count": 15,
+      "weighted_deficit_to_99": 0.1898465004928879
+    },
+    "_ZN7StarMap6updateEi": {
+      "weight": 971,
+      "metrics": {
+        "source_match": 98.7,
+        "instruction_inventory_match": 97.0,
+        "opcode_inventory_match": 98.2,
+        "control_flow_match": 98.7,
+        "ordered_control_flow_match": 95.4,
+        "control_inventory_match": 98.7,
+        "call_count_match": 100.0,
+        "size_match": 99.6
+      },
+      "target_surplus_count": 31,
+      "current_surplus_count": 27,
+      "weighted_deficit_to_99": 0.04102239121250489
+    },
+    "_ZN7StarMap4drawEv": {
+      "weight": 916,
+      "metrics": {
+        "source_match": 99.1,
+        "instruction_inventory_match": 98.9,
+        "opcode_inventory_match": 99.1,
+        "control_flow_match": 98.6,
+        "ordered_control_flow_match": 97.5,
+        "control_inventory_match": 98.6,
+        "call_count_match": 100.0,
+        "size_match": 99.0
+      },
+      "target_surplus_count": 14,
+      "current_surplus_count": 5,
+      "weighted_deficit_to_99": 0.0
+    },
+    "_ZN7StarMap4initEbP7Missionbi": {
+      "weight": 750,
+      "metrics": {
+        "source_match": 98.3,
+        "instruction_inventory_match": 97.9,
+        "opcode_inventory_match": 97.9,
+        "control_flow_match": 98.8,
+        "ordered_control_flow_match": 80.1,
+        "control_inventory_match": 98.8,
+        "call_count_match": 99.0,
+        "size_match": 97.7
+      },
+      "target_surplus_count": 24,
+      "current_surplus_count": 7,
+      "weighted_deficit_to_99": 0.0739332488381921
+    },
+    "_ZN7StarMap14initStarSystemEv": {
+      "weight": 710,
+      "metrics": {
+        "source_match": 97.3,
+        "instruction_inventory_match": 96.7,
+        "opcode_inventory_match": 97.4,
+        "control_flow_match": 96.9,
+        "ordered_control_flow_match": 94.8,
+        "control_inventory_match": 96.9,
+        "call_count_match": 99.0,
+        "size_match": 96.3
+      },
+      "target_surplus_count": 36,
+      "current_surplus_count": 10,
+      "weighted_deficit_to_99": 0.1699760597099003
+    },
+    "_ZN7StarMapC1EbP7Missionbi": {
+      "weight": 333,
+      "metrics": {
+        "source_match": 99.3,
+        "instruction_inventory_match": 98.2,
+        "opcode_inventory_match": 98.2,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "target_surplus_count": 6,
+      "current_surplus_count": 6,
+      "weighted_deficit_to_99": 0.0
+    },
+    "_ZN7StarMap12OnTouchBeginEii": {
+      "weight": 275,
+      "metrics": {
+        "source_match": 99.3,
+        "instruction_inventory_match": 99.3,
+        "opcode_inventory_match": 99.3,
+        "control_flow_match": 98.5,
+        "ordered_control_flow_match": 98.5,
+        "control_inventory_match": 98.5,
+        "call_count_match": 100.0,
+        "size_match": 99.3
+      },
+      "target_surplus_count": 3,
+      "current_surplus_count": 1,
+      "weighted_deficit_to_99": 0.0
+    },
+    "_ZN7StarMap11OnTouchMoveEii": {
+      "weight": 265,
+      "metrics": {
+        "source_match": 98.8,
+        "instruction_inventory_match": 98.3,
+        "opcode_inventory_match": 98.6,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 97.3
+      },
+      "target_surplus_count": 8,
+      "current_surplus_count": 1,
+      "weighted_deficit_to_99": 0.007463737501760421
+    },
+    "_ZN7StarMap7drawKeyEv": {
+      "weight": 246,
+      "metrics": {
+        "source_match": 97.9,
+        "instruction_inventory_match": 94.0,
+        "opcode_inventory_match": 96.1,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 99.6
+      },
+      "target_surplus_count": 15,
+      "current_surplus_count": 14,
+      "weighted_deficit_to_99": 0.038107308829742094
+    },
+    "_ZN7StarMap6departEb": {
+      "weight": 205,
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 89.1,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "target_surplus_count": 0,
+      "current_surplus_count": 0,
+      "weighted_deficit_to_99": 0.0
+    },
+    "_ZN7StarMapD1Ev": {
+      "weight": 69,
+      "metrics": {
+        "source_match": 99.4,
+        "instruction_inventory_match": 99.3,
+        "opcode_inventory_match": 99.3,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 98.6
+      },
+      "target_surplus_count": 0,
+      "current_surplus_count": 1,
+      "weighted_deficit_to_99": 0.0
+    },
+    "_ZN7StarMap6renderEv": {
+      "weight": 47,
+      "metrics": {
+        "source_match": 99.6,
+        "instruction_inventory_match": 97.9,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "target_surplus_count": 1,
+      "current_surplus_count": 1,
+      "weighted_deficit_to_99": 0.0
+    },
+    "_ZN7StarMap10initLightsEv": {
+      "weight": 21,
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "target_surplus_count": 0,
+      "current_surplus_count": 0,
+      "weighted_deficit_to_99": 0.0
+    },
+    "_ZN7StarMap24askForJumpIntoAlienWorldEv": {
+      "weight": 21,
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "target_surplus_count": 0,
+      "current_surplus_count": 0,
+      "weighted_deficit_to_99": 0.0
+    },
+    "_ZN7StarMap8setStartEii": {
+      "weight": 17,
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "target_surplus_count": 0,
+      "current_surplus_count": 0,
+      "weighted_deficit_to_99": 0.0
+    },
+    "_ZN7StarMap14isInPlanetModeEv": {
+      "weight": 5,
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "target_surplus_count": 0,
+      "current_surplus_count": 0,
+      "weighted_deficit_to_99": 0.0
+    },
+    "_ZN7StarMap14setJumpMapModeEbb": {
+      "weight": 3,
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "target_surplus_count": 0,
+      "current_surplus_count": 0,
+      "weighted_deficit_to_99": 0.0
+    },
+    "_ZN7StarMap14missionChangedEv": {
+      "weight": 2,
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "target_surplus_count": 0,
+      "current_surplus_count": 0,
+      "weighted_deficit_to_99": 0.0
+    },
+    "_ZN7StarMap8renderBGEv": {
+      "weight": 1,
+      "metrics": {
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0
+      },
+      "target_surplus_count": 0,
+      "current_surplus_count": 0,
+      "weighted_deficit_to_99": 0.0
+    }
+  },
+  "next_action": "Primary/accepted race image selection conditional field role mismatch +292 vs +300 identified in info; separate source-order trial seventy-second. No verifier modifications."
+}

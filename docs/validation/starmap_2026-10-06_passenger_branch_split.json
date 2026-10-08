@@ -1,0 +1,134 @@
+{
+  "decision": "Accepted passenger branch split after native/ARM/full and baseline/previous preservation. Weighted99 still unmet.",
+  "previous_production": "47a245be",
+  "previous_goal_turn_classification": "Progress:115 improved End source and passed full/native/preservation gates.",
+  "variant": "Two adjacent else-if branches for missions91/94, each directly delivering existing3214 and joining the shared suppression tail. Same ordered getters/conditions. No high-capacity continuation label, unlike21/87.",
+  "arm_compiled": 204,
+  "arm_failed": 0,
+  "focused": {
+    "source_match": {
+      "unweighted": 99.375,
+      "weighted": 98.86889170539361
+    },
+    "match": {
+      "unweighted": 87.95,
+      "weighted": 82.9910153499507
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "changed_rows": [
+    {
+      "symbol": "_ZN7StarMap10OnTouchEndEii",
+      "changes": {
+        "match": [
+          79.8,
+          80.0
+        ],
+        "source_match": [
+          98.8,
+          98.9
+        ],
+        "instruction_inventory_match": [
+          98.2,
+          98.4
+        ],
+        "opcode_inventory_match": [
+          98.7,
+          98.8
+        ],
+        "control_flow_match": [
+          98.7,
+          99.1
+        ],
+        "ordered_control_flow_match": [
+          87.9,
+          88.3
+        ],
+        "control_inventory_match": [
+          98.7,
+          99.1
+        ]
+      }
+    }
+  ],
+  "source_sha256": "0ba76574f515702be1871c8762d806136892580610cf216dab0329d70a54fe53",
+  "object_sha256": "3fa0a66974b3f8a5eda66c16e3ac1cf3e2063c37f029c4fe45c1855382a7a60f",
+  "objective_reached": false,
+  "neutral_equipment_trial": {
+    "variant": "Equipment13/17 split after one unchanged mission24/station prefix, independent135 fallback; same ordered callbacks, direct532 warning, shared suppression.",
+    "arm_compiled": 204,
+    "arm_failed": 0,
+    "focused": {
+      "source_match": {
+        "unweighted": 99.375,
+        "weighted": 98.86889170539361
+      },
+      "match": {
+        "unweighted": 87.95,
+        "weighted": 82.9910153499507
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "changed_rows": [],
+    "source_sha256": "bb0fb234cd7806904ffef773c533bac0a70a4490bd523a977f85cf9af82da341",
+    "object_sha256": "3fa0a66974b3f8a5eda66c16e3ac1cf3e2063c37f029c4fe45c1855382a7a60f"
+  },
+  "neutral_equipment_decision": "Removed: split13/17 after one prefix with independent135 fallback produces same entire focus report and object as passenger A. No gain; original source spelling not recovered.",
+  "focused_before": {
+    "source_match": {
+      "unweighted": 99.37,
+      "weighted": 98.85428812843263
+    },
+    "match": {
+      "unweighted": 87.94,
+      "weighted": 82.96180819602874
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "final_full": {
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "count": 4619,
+    "fuzzy_perfect": 2204,
+    "byte_exact": 960,
+    "linked_exact": 2084,
+    "skipped": 0,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "all22_full_focus_rows_agree": true,
+  "native_static_exit": 0,
+  "baseline_gate_exit": 0,
+  "previous_gate_exit": 0,
+  "default99_gate_exit": 1,
+  "limits": "Source-form hypothesis from ordered primary91/94 checks, not recovered C++ spelling. No runtime/whole ABI proof; STATIC validation only.",
+  "evidence": [
+    "_work/passenger-branches-116.json",
+    "_work/passenger-branches-116.log",
+    "_work/passenger-branches-restored-116.json",
+    "_work/passenger-branches-restored-116.log",
+    "_work/equipment-branches-116.json",
+    "_work/equipment-branches-116.log",
+    "_work/passenger-branches-corpus-116.json",
+    "_work/passenger-branches-corpus-116.log",
+    "_work/native-passenger-branches-116.log",
+    "_work/passenger-branches-baseline-gate-116.json",
+    "_work/passenger-branches-previous-gate-116.json",
+    "_work/passenger-branches-threshold-116.log",
+    "_work/passenger-comparison-primary-116.asm",
+    "_work/passenger-comparisons-current-116.asm"
+  ],
+  "primary_comparison_evidence": {
+    "primary": "cb464 CMP r0,#9; cb466 BLE.W cb7a8",
+    "candidate": "2440 CMP r0,#9; 2442 BLE.W 2784",
+    "candidate_mission94": "247e CMP r0,#0; 2480 BEQ.W 2784",
+    "scope": "Instruction/predicate shape only, not whole-function byte equality or recovered source spelling."
+  }
+}

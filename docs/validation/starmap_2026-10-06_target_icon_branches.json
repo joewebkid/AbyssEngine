@@ -1,0 +1,323 @@
+{
+  "decision": "accepted: separate native station/system target branches into one wanted-icon store",
+  "previous_report_commit": "84e0f3d1",
+  "previous_production_commit": "b848db14",
+  "primary": "GOF2 HD2.0.16 Android ARMv7",
+  "original_cpp_source_recovered": false,
+  "production_files": [
+    "src/game/world/StarMap.cpp"
+  ],
+  "source_change": "Replace common targetMatch merge with separate station/system branches to one campaign_target_icon label. Same fallback campaign>=33, field80 and mission target==-1 conditions; evaluate them only after neither explicit target matched.",
+  "native_basis": "c872c..c873a station SUB/CLZ/LSRS/ORRS/BNE/B; c876c..c877a system flag CMP/IT/ORRS/BEQ. Before station branched to shared system ORRS; after both match native local fragments.",
+  "behavior": "Same getters, order, predicate values and single icon write per path. Explicit labels reconstruct control flow; no added callbacks/conditions, register forcing, raw storage or verifier changes.",
+  "before": {
+    "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+    "match": 80.4,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1207,
+    "n_base": 1196,
+    "source_match": 99.1,
+    "instruction_inventory_match": 98.5,
+    "opcode_inventory_match": 99.2,
+    "control_flow_match": 98.9,
+    "ordered_control_flow_match": 90.4,
+    "control_inventory_match": 98.9,
+    "call_count_match": 100.0,
+    "size_match": 99.1,
+    "unit": "game/world/StarMap"
+  },
+  "after": {
+    "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+    "match": 80.6,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1207,
+    "n_base": 1198,
+    "source_match": 99.3,
+    "instruction_inventory_match": 98.7,
+    "opcode_inventory_match": 99.3,
+    "control_flow_match": 99.1,
+    "ordered_control_flow_match": 90.6,
+    "control_inventory_match": 99.1,
+    "call_count_match": 100.0,
+    "size_match": 99.2,
+    "unit": "game/world/StarMap"
+  },
+  "other21_rows_equal": true,
+  "independent_proof": {
+    "read_only_unchanged_verifier": true,
+    "source_metrics": {
+      "source_match": 99.3,
+      "instruction_inventory_match": 98.7,
+      "opcode_inventory_match": 99.3,
+      "control_flow_match": 99.1,
+      "ordered_control_flow_match": 90.6,
+      "control_inventory_match": 99.1,
+      "call_count_match": 100.0,
+      "size_match": 99.2
+    },
+    "strict_linked_equal": false,
+    "target_instructions": 1207,
+    "current_instructions": 1198,
+    "partial_native_instruction_fragments": [
+      {
+        "label": "station SUB/CLZ/LSRS/ORRS/BNE/B",
+        "primary": "0xc872c",
+        "current": "0x1014",
+        "length": 16,
+        "primary_bytes": "a8eb0000b0fa80f04009284320d125e0",
+        "current_bytes": "a8eb0000b0fa80f04009284320d125e0",
+        "equal": true
+      },
+      {
+        "label": "system materialized flag CMP/IT/ORRS/BEQ",
+        "primary": "0xc876c",
+        "current": "0x1054",
+        "length": 16,
+        "primary_bytes": "0021b0f1ff3fc8bf012155ea010005d0",
+        "current_bytes": "0021b0f1ff3fc8bf012155ea010005d0",
+        "equal": true
+      }
+    ],
+    "limits": "Local fragment byte equality, not whole-function byte/linked equality or runtime equivalence."
+  },
+  "known_argument_audit": {
+    "counts": {
+      "aligned_calls": 699,
+      "known_stack_pairs": 33,
+      "known_register_pairs": 222
+    },
+    "differences": [
+      {
+        "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+        "kind": "registers",
+        "key": "r3",
+        "primary": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0xc8b48",
+          "registers": {
+            "r1": 255,
+            "r2": 128,
+            "r3": 0
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0x1556",
+          "registers": {
+            "r1": 255,
+            "r2": 255,
+            "r3": 255
+          },
+          "stack": {}
+        }
+      },
+      {
+        "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+        "kind": "registers",
+        "key": "r2",
+        "primary": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0xc8b48",
+          "registers": {
+            "r1": 255,
+            "r2": 128,
+            "r3": 0
+          },
+          "stack": {}
+        },
+        "current": {
+          "callee": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh",
+          "address": "0x1556",
+          "registers": {
+            "r1": 255,
+            "r2": 255,
+            "r3": 255
+          },
+          "stack": {}
+        }
+      }
+    ],
+    "interpretation": "Only two previously reviewed repeated-SetColor alignment artifacts remain; no new known constant/stack argument mismatch. Conservative audit is not exhaustive ABI proof."
+  },
+  "focused": {
+    "exit": 0,
+    "session": 22126,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0
+  },
+  "native_static_library": {
+    "exit": 0,
+    "result": "StarMap compiled and libgof2.a built",
+    "log": "_work/native-ninetythird.log"
+  },
+  "full": {
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "count": 4619,
+    "fuzzy_perfect": 2204,
+    "byte_exact": 960,
+    "linked_exact": 2084,
+    "skipped": 0,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "full_validation": {
+    "exit": 0,
+    "session": 58824,
+    "live_pid_observed": 29992,
+    "source_and_arm_objects_frozen": true,
+    "all22_focused_full_rows_agree_after_separator_normalization": true,
+    "report_sha256": "80581c6f944c2965ad667f28475fe9ad5d507682a217528fae7fcf47a4e15aed"
+  },
+  "means": {
+    "source_match": {
+      "unweighted": 99.3,
+      "weighted": 98.65495000704126
+    },
+    "match": {
+      "unweighted": 87.78999999999999,
+      "weighted": 82.58056611744824
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "baseline_gate": {
+    "body_count": 20,
+    "original_instructions": 7101,
+    "aliases": {
+      "_ZN7StarMapC2EbP7Missionbi": "_ZN7StarMapC1EbP7Missionbi",
+      "_ZN7StarMapD2Ev": "_ZN7StarMapD1Ev"
+    },
+    "baseline": {
+      "source_match": {
+        "unweighted": 83.81,
+        "weighted": 73.61763131953246
+      },
+      "match": {
+        "unweighted": 48.29,
+        "weighted": 28.050161949021266
+      },
+      "linked_exact": 2,
+      "byte_exact": 2
+    },
+    "final": {
+      "source_match": {
+        "unweighted": 99.3,
+        "weighted": 98.65495000704126
+      },
+      "match": {
+        "unweighted": 87.78999999999999,
+        "weighted": 82.58056611744824
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "exact_pairs": {
+      "linked_equal": {
+        "baseline": 2079,
+        "final": 2084,
+        "lost": [],
+        "gained": [
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap10initLightsEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap14missionChangedEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap24askForJumpIntoAlienWorldEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap6renderEv"
+          ],
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap8setStartEii"
+          ]
+        ]
+      },
+      "bytes_equal": {
+        "baseline": 959,
+        "final": 960,
+        "lost": [],
+        "gained": [
+          [
+            "game/world/StarMap",
+            "_ZN7StarMap14missionChangedEv"
+          ]
+        ]
+      }
+    },
+    "target_met": false
+  },
+  "previous_gate": {
+    "body_count": 20,
+    "original_instructions": 7101,
+    "aliases": {
+      "_ZN7StarMapC2EbP7Missionbi": "_ZN7StarMapC1EbP7Missionbi",
+      "_ZN7StarMapD2Ev": "_ZN7StarMapD1Ev"
+    },
+    "baseline": {
+      "source_match": {
+        "unweighted": 99.28999999999999,
+        "weighted": 98.62095479509928
+      },
+      "match": {
+        "unweighted": 87.78,
+        "weighted": 82.54657090550626
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "final": {
+      "source_match": {
+        "unweighted": 99.3,
+        "weighted": 98.65495000704126
+      },
+      "match": {
+        "unweighted": 87.78999999999999,
+        "weighted": 82.58056611744824
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "exact_pairs": {
+      "linked_equal": {
+        "baseline": 2084,
+        "final": 2084,
+        "lost": [],
+        "gained": []
+      },
+      "bytes_equal": {
+        "baseline": 960,
+        "final": 960,
+        "lost": [],
+        "gained": []
+      }
+    },
+    "target_met": false
+  },
+  "gate_exits": {
+    "baseline": 0,
+    "previous": 0,
+    "default99": 1
+  },
+  "weighted99_target_met": false,
+  "weighted_shortfall_pp": 0.3450499929587352,
+  "source_sha256": "644d2cb0e955cb3ee4aa3c8ec26df5f3c38f425e37da9af9fcdd83e7cbebd372",
+  "object_sha256": "d114978a2da759daf551e4c0c541c0798cb5e19ee2e928b7b42c90ccad3446a7",
+  "runtime": "Native executable/runtime untested. Local fragment equality is not whole-function ABI/behavior equivalence."
+}

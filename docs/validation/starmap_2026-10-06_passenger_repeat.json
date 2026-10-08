@@ -1,0 +1,45 @@
+{
+  "accepted_production_commit": "437b3b7f",
+  "decision": "removed: passenger high-capacity continuation remains neutral on accepted86",
+  "original_source_recovered": false,
+  "history_correction": "Report at lines880ff proves trial21 also used explicit high-capacity continuation to mission94. This was mistakenly described as a new form before reading that full history. Trial87 repeats the form against accepted86; identical object excludes it on this checkpoint.",
+  "motivation": "Primary cb464/cb466 CMP9 BLE; current242c/242e CMP10 BLT. Equivalent signed conditions, including negative passenger count. Explicit count>9 goto mission94 preserves callbacks and warning fallthrough. No redundant checks or synthetic arithmetic.",
+  "trial": {
+    "terminal_exit": 0,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "entire_focused_json_equal": true,
+    "entire_object_equal": true
+  },
+  "restoration": {
+    "fresh_source_write": true,
+    "normalized_source_equal_HEAD": true,
+    "terminal_exit": 0,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "entire_focused_json_equal": true,
+    "entire_object_equal": true
+  },
+  "object_sha256": "c64021892af31b2758afac98c6c90b82b72b7ced6168b83f630da3cb0494293c",
+  "read_only_audits": [
+    {
+      "area": "transition completion XYZ",
+      "primary": "c9f68..ca040",
+      "current": "358c..3664",
+      "finding": "All repeated GetMaxValue calls, member snapshots, subtractions, positive-test negation/select, VCMPE/VMRS and BHI exit sequence already match raw primary; no transition predicate rewrite justified."
+    },
+    {
+      "area": "FP inventory location",
+      "finding": "Allocation-normalized SequenceMatcher differences point to path-animation and pitch-clamp scheduling rather than completion XYZ. It is a diagnostic alignment, not proof of missing source checks. Prior pitch and path trials must be read in full before any new experiment."
+    }
+  ],
+  "latest_authoritative_validation": "Accepted86 native static library and full4619 zero skips, baseline/previous exact-pair gates. No redundant native/full run after exact source and object restoration.",
+  "weighted99_target_met": false,
+  "source_unweighted": 99.27,
+  "source_weighted": 98.6183072806647,
+  "native_runtime_equivalence": "unverified"
+}

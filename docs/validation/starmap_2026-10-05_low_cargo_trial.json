@@ -1,0 +1,30 @@
+{
+  "accepted_production": "ee4e8b03",
+  "previous_report_commit": "38009d2a",
+  "original_source_recovered": false,
+  "hypothesis": "In low-cargo confirmation branch with jumpCost==1 and jumpMapModeA, read chosen Station element into local before doInstantJump=0, then store programmedStation. Other confirmation paths and saved jump mode unchanged.",
+  "decision": "removed: no metric gain despite corrected native ordering of the indexed read relative to byte store",
+  "primary_fragment": "cb05e indexed Station read; cb064 doInstantJump byte store; cb066 programmedStation pointer store",
+  "trial_fragment": "209e indexed Station read;20a4 doInstantJump byte store;20a6 programmedStation pointer store",
+  "accepted_fragment": "2094 doInstantJump byte store;20a2 indexed Station read;20a6 programmedStation pointer store",
+  "trial_entire_focused_report_equals_accepted": true,
+  "restored_entire_focused_report_equals_accepted": true,
+  "each_trial_and_restore": {
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "exit": 0
+  },
+  "trial_object_sha256": "706fc5f802c2db029d34f908de311f453ef2d1ecf59e38a4599179ffb671b7c2",
+  "restored_accepted_object_sha256": "1ab6e994ad315ab15146f82a3905f6838557d3e819c6f01f24f79b8c33d972a9",
+  "trial_object_equals_accepted": false,
+  "full_exact_preservation_for_trial": "not tested; do not infer from focused-report equality",
+  "native_full_validation": "No new native/full/runtime run. Restored entire ARM object and focused report equal accepted75; accepted75 full/native evidence remains authoritative.",
+  "source_means": {
+    "unweighted": 99.225,
+    "weighted": 98.5818194620476
+  },
+  "target_met": false,
+  "behavior_note": "Same single element read and two global stores, with no intervening callback. The read order was evidenced by ARM; original C++ and runtime equivalence unproven. No added call/check, barrier, padding or shared-file edit."
+}

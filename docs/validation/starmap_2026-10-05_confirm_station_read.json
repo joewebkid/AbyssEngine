@@ -1,0 +1,84 @@
+{
+  "previous_report_commit": "0a4d9116",
+  "previous_production_commit": "6c5707e7",
+  "decision": "accepted: restores native post-programmedStation-store element reread and improves instruction/opcode inventories and ordered matching; rounded source score unchanged",
+  "original_source_recovered": false,
+  "primary_android_evidence": "cb19e indexed station load, cb1a2 programmedStation store, cb1a4 conditional branch, cb1a8 indexed station reread, cb1ac Station::getSystem",
+  "new_arm_evidence": "217c indexed station load, 2180 programmedStation store, 2182 conditional branch, 2186 indexed station reread, 218a Station::getSystem",
+  "unchanged_behavior": "Same array/index, store, predicates, calls and exit paths; no added call/check. Global store no longer followed by a cached station element. Original C++ syntax and native runtime equivalence are not claimed.",
+  "before": {
+    "symbol": "_ZN7StarMap10OnTouchEndEii",
+    "match": 76.4,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1037,
+    "n_base": 1003,
+    "source_match": 97.5,
+    "instruction_inventory_match": 96.4,
+    "opcode_inventory_match": 97.0,
+    "control_flow_match": 98.1,
+    "ordered_control_flow_match": 83.6,
+    "control_inventory_match": 98.1,
+    "call_count_match": 99.3,
+    "size_match": 96.5,
+    "unit": "game/world/StarMap"
+  },
+  "after": {
+    "symbol": "_ZN7StarMap10OnTouchEndEii",
+    "match": 76.9,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1037,
+    "n_base": 1004,
+    "source_match": 97.5,
+    "instruction_inventory_match": 96.6,
+    "opcode_inventory_match": 97.1,
+    "control_flow_match": 98.1,
+    "ordered_control_flow_match": 83.6,
+    "control_inventory_match": 98.1,
+    "call_count_match": 99.3,
+    "size_match": 96.6,
+    "unit": "game/world/StarMap"
+  },
+  "other_21_focused_rows_identical": true,
+  "focused_full_rows_equal": true,
+  "focused": {
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0
+  },
+  "native_static_library": "PASS; StarMap compiled and libgof2.a linked",
+  "native_runtime": "not tested",
+  "full": {
+    "count": 4619,
+    "skipped": 0,
+    "linked_exact": 2083,
+    "byte_exact": 960,
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "compared_unique": 4274,
+    "original_functions": 4524,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "baseline_and_previous_exact_pairs_lost": 0,
+  "default_99_gate_exit": 1,
+  "target_met": false,
+  "final_means": {
+    "source_match": {
+      "unweighted": 99.21000000000001,
+      "weighted": 98.53561470215463
+    },
+    "match": {
+      "unweighted": 87.285,
+      "weighted": 81.7771581467399
+    },
+    "linked_exact": 6,
+    "byte_exact": 3
+  },
+  "object_sha256": "fdab4e38098779300af2fbef8ca8c4b2abb3aeb556e5a1e576f59c3c7844cb41",
+  "full_json_sha256": "9b4234e32adfb8cc149365e86664e6406b6ce72182c588906bba89f80a9d5565"
+}

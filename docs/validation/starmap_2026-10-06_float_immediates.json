@@ -1,0 +1,883 @@
+{
+  "accepted_production": "a4fc71cd",
+  "scope": "20 fixed distinct bodies, 7101 primary instructions; only Thumb VFP vmov.f32 immediate instructions, including IT-conditioned mnemonics. Aliases excluded.",
+  "method": "Read both actual ELF halfwords; reconstruct immediate8 from encoding and expand its sign/exponent/fraction to float32 bits; verify disassembler immediate/comment against encoding. Counts are diagnostic, no scoring changes.",
+  "native_total": 29,
+  "current_total": 29,
+  "all_20_per_body_unique_bit_sets_equal": true,
+  "count_difference_interpretation": "Only update differs: primary repeats +/-0.25 on centering branches while current shares them; current repeats -30 on path selection arms while primary shares it. Not a wrong numeric constant; prior27/35/91 branch/step trials already evaluated and rejected.",
+  "source_sha256": "6bd55273e01d6866104d648ed446531b6748d3783024871b63008a106584f1ef",
+  "object_sha256": "2e91d58070c32a49baf16e9baaa179219178ed2da974a1ebe06860eabe64876b",
+  "rows": [
+    {
+      "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {
+        "0xc0400000": 1,
+        "0x3f000000": 1,
+        "0x41200000": 1,
+        "0xc0e00000": 1
+      },
+      "current_counts": {
+        "0xc0400000": 1,
+        "0x3f000000": 1,
+        "0x41200000": 1,
+        "0xc0e00000": 1
+      },
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap10OnTouchEndEii",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {
+        "0x40400000": 1
+      },
+      "current_counts": {
+        "0x40400000": 1
+      },
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap6updateEi",
+      "unique_bits_equal": true,
+      "counts_equal": false,
+      "native_counts": {
+        "0xbf800000": 2,
+        "0x3f800000": 4,
+        "0x3f000000": 4,
+        "0x3e800000": 2,
+        "0x41a00000": 1,
+        "0x41200000": 2,
+        "0xc1f00000": 1,
+        "0xbe800000": 2,
+        "0x40000000": 1
+      },
+      "current_counts": {
+        "0x3f800000": 4,
+        "0xbf800000": 2,
+        "0x3f000000": 4,
+        "0xbe800000": 1,
+        "0x3e800000": 1,
+        "0x41a00000": 1,
+        "0x41200000": 2,
+        "0xc1f00000": 3,
+        "0x40000000": 1
+      },
+      "native_only_counts": {
+        "0x3e800000": 1,
+        "0xbe800000": 1
+      },
+      "current_only_counts": {
+        "0xc1f00000": 2
+      }
+    },
+    {
+      "symbol": "_ZN7StarMap4drawEv",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {
+        "0x3f800000": 1
+      },
+      "current_counts": {
+        "0x3f800000": 1
+      },
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap4initEbP7Missionbi",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {
+        "0x41a00000": 1
+      },
+      "current_counts": {
+        "0x41a00000": 1
+      },
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap14initStarSystemEv",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {},
+      "current_counts": {},
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMapC1EbP7Missionbi",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {},
+      "current_counts": {},
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap12OnTouchBeginEii",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {},
+      "current_counts": {},
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap11OnTouchMoveEii",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {
+        "0x40400000": 2,
+        "0x41200000": 1
+      },
+      "current_counts": {
+        "0x40400000": 2,
+        "0x41200000": 1
+      },
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap7drawKeyEv",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {},
+      "current_counts": {},
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap6departEb",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {},
+      "current_counts": {},
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMapD1Ev",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {},
+      "current_counts": {},
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap6renderEv",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {},
+      "current_counts": {},
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap10initLightsEv",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {},
+      "current_counts": {},
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap24askForJumpIntoAlienWorldEv",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {},
+      "current_counts": {},
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap8setStartEii",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {},
+      "current_counts": {},
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap14isInPlanetModeEv",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {},
+      "current_counts": {},
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap14setJumpMapModeEbb",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {},
+      "current_counts": {},
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap14missionChangedEv",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {},
+      "current_counts": {},
+      "native_only_counts": {},
+      "current_only_counts": {}
+    },
+    {
+      "symbol": "_ZN7StarMap8renderBGEv",
+      "unique_bits_equal": true,
+      "counts_equal": true,
+      "native_counts": {},
+      "current_counts": {},
+      "native_only_counts": {},
+      "current_only_counts": {}
+    }
+  ],
+  "primary_loads": {
+    "_ZN7StarMap16drawOnScreenInfoEib": [
+      {
+        "address": "0xc8900",
+        "encoding_words": [
+          "0xeeb8",
+          "0x2a08"
+        ],
+        "immediate8": 136,
+        "float32_bits": "0xc0400000",
+        "float32_value": -3.0
+      },
+      {
+        "address": "0xc8e1c",
+        "encoding_words": [
+          "0xeeb6",
+          "0x1a00"
+        ],
+        "immediate8": 96,
+        "float32_bits": "0x3f000000",
+        "float32_value": 0.5
+      },
+      {
+        "address": "0xc8fe4",
+        "encoding_words": [
+          "0xeeb2",
+          "0x3a04"
+        ],
+        "immediate8": 36,
+        "float32_bits": "0x41200000",
+        "float32_value": 10.0
+      },
+      {
+        "address": "0xc8fe8",
+        "encoding_words": [
+          "0xeeb9",
+          "0x4a0c"
+        ],
+        "immediate8": 156,
+        "float32_bits": "0xc0e00000",
+        "float32_value": -7.0
+      }
+    ],
+    "_ZN7StarMap10OnTouchEndEii": [
+      {
+        "address": "0xcb0a6",
+        "encoding_words": [
+          "0xeeb0",
+          "0x4a08"
+        ],
+        "immediate8": 8,
+        "float32_bits": "0x40400000",
+        "float32_value": 3.0
+      }
+    ],
+    "_ZN7StarMap6updateEi": [
+      {
+        "address": "0xc9bca",
+        "encoding_words": [
+          "0xeebf",
+          "0x8a00"
+        ],
+        "immediate8": 240,
+        "float32_bits": "0xbf800000",
+        "float32_value": -1.0
+      },
+      {
+        "address": "0xc9bd0",
+        "encoding_words": [
+          "0xeeb7",
+          "0x9a00"
+        ],
+        "immediate8": 112,
+        "float32_bits": "0x3f800000",
+        "float32_value": 1.0
+      },
+      {
+        "address": "0xc9c42",
+        "encoding_words": [
+          "0xeebf",
+          "0x8a00"
+        ],
+        "immediate8": 240,
+        "float32_bits": "0xbf800000",
+        "float32_value": -1.0
+      },
+      {
+        "address": "0xc9c48",
+        "encoding_words": [
+          "0xeeb7",
+          "0x9a00"
+        ],
+        "immediate8": 112,
+        "float32_bits": "0x3f800000",
+        "float32_value": 1.0
+      },
+      {
+        "address": "0xc9d26",
+        "encoding_words": [
+          "0xeeb7",
+          "0xa00"
+        ],
+        "immediate8": 112,
+        "float32_bits": "0x3f800000",
+        "float32_value": 1.0
+      },
+      {
+        "address": "0xc9e76",
+        "encoding_words": [
+          "0xeeb6",
+          "0xa00"
+        ],
+        "immediate8": 96,
+        "float32_bits": "0x3f000000",
+        "float32_value": 0.5
+      },
+      {
+        "address": "0xc9f92",
+        "encoding_words": [
+          "0xeeb7",
+          "0x8a00"
+        ],
+        "immediate8": 112,
+        "float32_bits": "0x3f800000",
+        "float32_value": 1.0
+      },
+      {
+        "address": "0xca128",
+        "encoding_words": [
+          "0xeeb6",
+          "0x1a00"
+        ],
+        "immediate8": 96,
+        "float32_bits": "0x3f000000",
+        "float32_value": 0.5
+      },
+      {
+        "address": "0xca220",
+        "encoding_words": [
+          "0xeeb5",
+          "0x2a00"
+        ],
+        "immediate8": 80,
+        "float32_bits": "0x3e800000",
+        "float32_value": 0.25
+      },
+      {
+        "address": "0xca35a",
+        "encoding_words": [
+          "0xeeb3",
+          "0x4a04"
+        ],
+        "immediate8": 52,
+        "float32_bits": "0x41a00000",
+        "float32_value": 20.0
+      },
+      {
+        "address": "0xca3ac",
+        "encoding_words": [
+          "0xeeb2",
+          "0x3a04"
+        ],
+        "immediate8": 36,
+        "float32_bits": "0x41200000",
+        "float32_value": 10.0
+      },
+      {
+        "address": "0xca470",
+        "encoding_words": [
+          "0xeebb",
+          "0xa0e"
+        ],
+        "immediate8": 190,
+        "float32_bits": "0xc1f00000",
+        "float32_value": -30.0
+      },
+      {
+        "address": "0xca4ae",
+        "encoding_words": [
+          "0xeeb6",
+          "0x1a00"
+        ],
+        "immediate8": 96,
+        "float32_bits": "0x3f000000",
+        "float32_value": 0.5
+      },
+      {
+        "address": "0xca50c",
+        "encoding_words": [
+          "0xeebd",
+          "0x2a00"
+        ],
+        "immediate8": 208,
+        "float32_bits": "0xbe800000",
+        "float32_value": -0.25
+      },
+      {
+        "address": "0xca530",
+        "encoding_words": [
+          "0xeeb5",
+          "0x1a00"
+        ],
+        "immediate8": 80,
+        "float32_bits": "0x3e800000",
+        "float32_value": 0.25
+      },
+      {
+        "address": "0xca53a",
+        "encoding_words": [
+          "0xeebd",
+          "0x1a00"
+        ],
+        "immediate8": 208,
+        "float32_bits": "0xbe800000",
+        "float32_value": -0.25
+      },
+      {
+        "address": "0xca570",
+        "encoding_words": [
+          "0xeeb2",
+          "0x3a04"
+        ],
+        "immediate8": 36,
+        "float32_bits": "0x41200000",
+        "float32_value": 10.0
+      },
+      {
+        "address": "0xca6f6",
+        "encoding_words": [
+          "0xeeb6",
+          "0x2a00"
+        ],
+        "immediate8": 96,
+        "float32_bits": "0x3f000000",
+        "float32_value": 0.5
+      },
+      {
+        "address": "0xca74e",
+        "encoding_words": [
+          "0xeeb0",
+          "0x2a00"
+        ],
+        "immediate8": 0,
+        "float32_bits": "0x40000000",
+        "float32_value": 2.0
+      }
+    ],
+    "_ZN7StarMap4drawEv": [
+      {
+        "address": "0xc9178",
+        "encoding_words": [
+          "0xeeb7",
+          "0x1a00"
+        ],
+        "immediate8": 112,
+        "float32_bits": "0x3f800000",
+        "float32_value": 1.0
+      }
+    ],
+    "_ZN7StarMap4initEbP7Missionbi": [
+      {
+        "address": "0xc6fce",
+        "encoding_words": [
+          "0xeeb3",
+          "0xa04"
+        ],
+        "immediate8": 52,
+        "float32_bits": "0x41a00000",
+        "float32_value": 20.0
+      }
+    ],
+    "_ZN7StarMap14initStarSystemEv": [],
+    "_ZN7StarMapC1EbP7Missionbi": [],
+    "_ZN7StarMap12OnTouchBeginEii": [],
+    "_ZN7StarMap11OnTouchMoveEii": [
+      {
+        "address": "0xcabec",
+        "encoding_words": [
+          "0xeeb0",
+          "0x3a08"
+        ],
+        "immediate8": 8,
+        "float32_bits": "0x40400000",
+        "float32_value": 3.0
+      },
+      {
+        "address": "0xcad5a",
+        "encoding_words": [
+          "0xeeb2",
+          "0x6a04"
+        ],
+        "immediate8": 36,
+        "float32_bits": "0x41200000",
+        "float32_value": 10.0
+      },
+      {
+        "address": "0xcadb6",
+        "encoding_words": [
+          "0xeeb0",
+          "0xa08"
+        ],
+        "immediate8": 8,
+        "float32_bits": "0x40400000",
+        "float32_value": 3.0
+      }
+    ],
+    "_ZN7StarMap7drawKeyEv": [],
+    "_ZN7StarMap6departEb": [],
+    "_ZN7StarMapD1Ev": [],
+    "_ZN7StarMap6renderEv": [],
+    "_ZN7StarMap10initLightsEv": [],
+    "_ZN7StarMap24askForJumpIntoAlienWorldEv": [],
+    "_ZN7StarMap8setStartEii": [],
+    "_ZN7StarMap14isInPlanetModeEv": [],
+    "_ZN7StarMap14setJumpMapModeEbb": [],
+    "_ZN7StarMap14missionChangedEv": [],
+    "_ZN7StarMap8renderBGEv": []
+  },
+  "current_loads": {
+    "_ZN7StarMap16drawOnScreenInfoEib": [
+      {
+        "address": "0x11e6",
+        "encoding_words": [
+          "0xeeb8",
+          "0x2a08"
+        ],
+        "immediate8": 136,
+        "float32_bits": "0xc0400000",
+        "float32_value": -3.0
+      },
+      {
+        "address": "0x16f8",
+        "encoding_words": [
+          "0xeeb6",
+          "0x1a00"
+        ],
+        "immediate8": 96,
+        "float32_bits": "0x3f000000",
+        "float32_value": 0.5
+      },
+      {
+        "address": "0x18bc",
+        "encoding_words": [
+          "0xeeb2",
+          "0x3a04"
+        ],
+        "immediate8": 36,
+        "float32_bits": "0x41200000",
+        "float32_value": 10.0
+      },
+      {
+        "address": "0x18c0",
+        "encoding_words": [
+          "0xeeb9",
+          "0x4a0c"
+        ],
+        "immediate8": 156,
+        "float32_bits": "0xc0e00000",
+        "float32_value": -7.0
+      }
+    ],
+    "_ZN7StarMap10OnTouchEndEii": [
+      {
+        "address": "0x1f26",
+        "encoding_words": [
+          "0xeeb0",
+          "0x4a08"
+        ],
+        "immediate8": 8,
+        "float32_bits": "0x40400000",
+        "float32_value": 3.0
+      }
+    ],
+    "_ZN7StarMap6updateEi": [
+      {
+        "address": "0x31fa",
+        "encoding_words": [
+          "0xeeb7",
+          "0x8a00"
+        ],
+        "immediate8": 112,
+        "float32_bits": "0x3f800000",
+        "float32_value": 1.0
+      },
+      {
+        "address": "0x3200",
+        "encoding_words": [
+          "0xeebf",
+          "0x9a00"
+        ],
+        "immediate8": 240,
+        "float32_bits": "0xbf800000",
+        "float32_value": -1.0
+      },
+      {
+        "address": "0x3272",
+        "encoding_words": [
+          "0xeeb7",
+          "0x8a00"
+        ],
+        "immediate8": 112,
+        "float32_bits": "0x3f800000",
+        "float32_value": 1.0
+      },
+      {
+        "address": "0x3278",
+        "encoding_words": [
+          "0xeebf",
+          "0x9a00"
+        ],
+        "immediate8": 240,
+        "float32_bits": "0xbf800000",
+        "float32_value": -1.0
+      },
+      {
+        "address": "0x3356",
+        "encoding_words": [
+          "0xeeb7",
+          "0xa00"
+        ],
+        "immediate8": 112,
+        "float32_bits": "0x3f800000",
+        "float32_value": 1.0
+      },
+      {
+        "address": "0x34a6",
+        "encoding_words": [
+          "0xeeb6",
+          "0xa00"
+        ],
+        "immediate8": 96,
+        "float32_bits": "0x3f000000",
+        "float32_value": 0.5
+      },
+      {
+        "address": "0x35be",
+        "encoding_words": [
+          "0xeeb7",
+          "0x8a00"
+        ],
+        "immediate8": 112,
+        "float32_bits": "0x3f800000",
+        "float32_value": 1.0
+      },
+      {
+        "address": "0x3754",
+        "encoding_words": [
+          "0xeeb6",
+          "0x1a00"
+        ],
+        "immediate8": 96,
+        "float32_bits": "0x3f000000",
+        "float32_value": 0.5
+      },
+      {
+        "address": "0x3808",
+        "encoding_words": [
+          "0xeebd",
+          "0xa00"
+        ],
+        "immediate8": 208,
+        "float32_bits": "0xbe800000",
+        "float32_value": -0.25
+      },
+      {
+        "address": "0x3810",
+        "encoding_words": [
+          "0xeeb5",
+          "0x2a00"
+        ],
+        "immediate8": 80,
+        "float32_bits": "0x3e800000",
+        "float32_value": 0.25
+      },
+      {
+        "address": "0x39ea",
+        "encoding_words": [
+          "0xeeb3",
+          "0x4a04"
+        ],
+        "immediate8": 52,
+        "float32_bits": "0x41a00000",
+        "float32_value": 20.0
+      },
+      {
+        "address": "0x3a3c",
+        "encoding_words": [
+          "0xeeb2",
+          "0x3a04"
+        ],
+        "immediate8": 36,
+        "float32_bits": "0x41200000",
+        "float32_value": 10.0
+      },
+      {
+        "address": "0x3b0c",
+        "encoding_words": [
+          "0xeebb",
+          "0x4a0e"
+        ],
+        "immediate8": 190,
+        "float32_bits": "0xc1f00000",
+        "float32_value": -30.0
+      },
+      {
+        "address": "0x3b34",
+        "encoding_words": [
+          "0xeeb6",
+          "0x1a00"
+        ],
+        "immediate8": 96,
+        "float32_bits": "0x3f000000",
+        "float32_value": 0.5
+      },
+      {
+        "address": "0x3b94",
+        "encoding_words": [
+          "0xeeb2",
+          "0x3a04"
+        ],
+        "immediate8": 36,
+        "float32_bits": "0x41200000",
+        "float32_value": 10.0
+      },
+      {
+        "address": "0x3ccc",
+        "encoding_words": [
+          "0xeebb",
+          "0xa0e"
+        ],
+        "immediate8": 190,
+        "float32_bits": "0xc1f00000",
+        "float32_value": -30.0
+      },
+      {
+        "address": "0x3ce4",
+        "encoding_words": [
+          "0xeebb",
+          "0x3a0e"
+        ],
+        "immediate8": 190,
+        "float32_bits": "0xc1f00000",
+        "float32_value": -30.0
+      },
+      {
+        "address": "0x3d06",
+        "encoding_words": [
+          "0xeeb6",
+          "0x3a00"
+        ],
+        "immediate8": 96,
+        "float32_bits": "0x3f000000",
+        "float32_value": 0.5
+      },
+      {
+        "address": "0x3d6c",
+        "encoding_words": [
+          "0xeeb0",
+          "0x2a00"
+        ],
+        "immediate8": 0,
+        "float32_bits": "0x40000000",
+        "float32_value": 2.0
+      }
+    ],
+    "_ZN7StarMap4drawEv": [
+      {
+        "address": "0x288",
+        "encoding_words": [
+          "0xeeb7",
+          "0x1a00"
+        ],
+        "immediate8": 112,
+        "float32_bits": "0x3f800000",
+        "float32_value": 1.0
+      }
+    ],
+    "_ZN7StarMap4initEbP7Missionbi": [
+      {
+        "address": "0x482a",
+        "encoding_words": [
+          "0xeeb3",
+          "0xa04"
+        ],
+        "immediate8": 52,
+        "float32_bits": "0x41a00000",
+        "float32_value": 20.0
+      }
+    ],
+    "_ZN7StarMap14initStarSystemEv": [],
+    "_ZN7StarMapC1EbP7Missionbi": [],
+    "_ZN7StarMap12OnTouchBeginEii": [],
+    "_ZN7StarMap11OnTouchMoveEii": [
+      {
+        "address": "0x4e80",
+        "encoding_words": [
+          "0xeeb0",
+          "0x3a08"
+        ],
+        "immediate8": 8,
+        "float32_bits": "0x40400000",
+        "float32_value": 3.0
+      },
+      {
+        "address": "0x4fd4",
+        "encoding_words": [
+          "0xeeb2",
+          "0x6a04"
+        ],
+        "immediate8": 36,
+        "float32_bits": "0x41200000",
+        "float32_value": 10.0
+      },
+      {
+        "address": "0x5030",
+        "encoding_words": [
+          "0xeeb0",
+          "0xa08"
+        ],
+        "immediate8": 8,
+        "float32_bits": "0x40400000",
+        "float32_value": 3.0
+      }
+    ],
+    "_ZN7StarMap7drawKeyEv": [],
+    "_ZN7StarMap6departEb": [],
+    "_ZN7StarMapD1Ev": [],
+    "_ZN7StarMap6renderEv": [],
+    "_ZN7StarMap10initLightsEv": [],
+    "_ZN7StarMap24askForJumpIntoAlienWorldEv": [],
+    "_ZN7StarMap8setStartEii": [],
+    "_ZN7StarMap14isInPlanetModeEv": [],
+    "_ZN7StarMap14setJumpMapModeEbb": [],
+    "_ZN7StarMap14missionChangedEv": [],
+    "_ZN7StarMap8renderBGEv": []
+  },
+  "limits": "Does not inspect general-register immediate constants, scalar PC loads, derived computations, prove full formulas, native ABI/runtime equivalence, or a source-score ceiling. Previous91 separately audited VFP PC-relative loads."
+}

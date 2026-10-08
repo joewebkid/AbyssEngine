@@ -1,0 +1,106 @@
+{
+  "accepted_production": "9a96e2e5",
+  "hypothesis_limits": "Equivalent final pitch selection hypotheses; exact original C++ not recovered. No additional predicates, padding, calls, flags or shared changes.",
+  "precision_audit": "Primary ca596 VMUL.F32, ca5ac VADD.F32 and ca5da VMUL.F32 match current speed/rotation precision.",
+  "trials": {
+    "update-sequential-clamp-fiftyninth": {
+      "decision": "rejected: source and strict match lower",
+      "accepted_row": {
+        "symbol": "_ZN7StarMap6updateEi",
+        "match": 82.7,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 971,
+        "n_base": 966,
+        "source_match": 98.7,
+        "instruction_inventory_match": 97.0,
+        "opcode_inventory_match": 98.2,
+        "control_flow_match": 98.7,
+        "ordered_control_flow_match": 95.4,
+        "control_inventory_match": 98.7,
+        "call_count_match": 100.0,
+        "size_match": 99.6,
+        "unit": "game/world/StarMap"
+      },
+      "trial_row": {
+        "symbol": "_ZN7StarMap6updateEi",
+        "match": 81.1,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 971,
+        "n_base": 963,
+        "source_match": 98.6,
+        "instruction_inventory_match": 96.8,
+        "opcode_inventory_match": 98.1,
+        "control_flow_match": 98.7,
+        "ordered_control_flow_match": 95.4,
+        "control_inventory_match": 98.7,
+        "call_count_match": 100.0,
+        "size_match": 99.3,
+        "unit": "game/world/StarMap"
+      },
+      "other_21_rows_identical": true,
+      "trial_sha256": "91a9aed2b0e232fb092cc3c190ddeaafe3ff4991e6ced48d50ff4c73203c11d0",
+      "restored_entire_report_equal_accepted": true,
+      "builds": {
+        "each_compiled": 204,
+        "each_failed": 0,
+        "each_compared": 22,
+        "each_skipped": 0
+      }
+    },
+    "update-upper-first-sixtieth": {
+      "decision": "rejected: source and strict match lower",
+      "accepted_row": {
+        "symbol": "_ZN7StarMap6updateEi",
+        "match": 82.7,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 971,
+        "n_base": 966,
+        "source_match": 98.7,
+        "instruction_inventory_match": 97.0,
+        "opcode_inventory_match": 98.2,
+        "control_flow_match": 98.7,
+        "ordered_control_flow_match": 95.4,
+        "control_inventory_match": 98.7,
+        "call_count_match": 100.0,
+        "size_match": 99.6,
+        "unit": "game/world/StarMap"
+      },
+      "trial_row": {
+        "symbol": "_ZN7StarMap6updateEi",
+        "match": 81.0,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 971,
+        "n_base": 963,
+        "source_match": 98.5,
+        "instruction_inventory_match": 96.7,
+        "opcode_inventory_match": 98.1,
+        "control_flow_match": 98.7,
+        "ordered_control_flow_match": 95.4,
+        "control_inventory_match": 98.7,
+        "call_count_match": 100.0,
+        "size_match": 99.3,
+        "unit": "game/world/StarMap"
+      },
+      "other_21_rows_identical": true,
+      "trial_sha256": "5d1b4bb731b2d553b5116a66d080cdefe81eac664039a9b3e8ef9c43a4f73d90",
+      "restored_entire_report_equal_accepted": true,
+      "builds": {
+        "each_compiled": 204,
+        "each_failed": 0,
+        "each_compared": 22,
+        "each_skipped": 0
+      }
+    }
+  },
+  "restored_object_sha256": "3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d",
+  "source_means": {
+    "unweighted": 99.205,
+    "weighted": 98.51861709618363
+  },
+  "target_met": false,
+  "validation_limits": "No new native/full/runtime run. Accepted fifty-first native/full validation authoritative."
+}

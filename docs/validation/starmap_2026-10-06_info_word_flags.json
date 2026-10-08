@@ -1,0 +1,94 @@
+{
+  "previous_production": "b7c3777e",
+  "previous_goal_turn_classification": "Progress:121 eliminated three measured dialog forms, audited actual/native normalized calls and proved204-object restoration.",
+  "decision": "Two bounded info flag trials removed; production119 retained.",
+  "both_word_flags": {
+    "source_form": "int missionTarget0/1 and int targetMatch0/1 replace local bool flags. Same ordered getters/branches and marker effects. Native word-register flag does not prove original C++ type.",
+    "changed_info_fields": {
+      "match": [
+        80.6,
+        79.6
+      ],
+      "n_base": [
+        1198,
+        1194
+      ],
+      "source_match": [
+        99.3,
+        98.7
+      ],
+      "instruction_inventory_match": [
+        98.7,
+        98.0
+      ],
+      "opcode_inventory_match": [
+        99.3,
+        98.7
+      ],
+      "control_flow_match": [
+        99.1,
+        98.0
+      ],
+      "ordered_control_flow_match": [
+        90.6,
+        89.1
+      ],
+      "control_inventory_match": [
+        99.1,
+        98.0
+      ],
+      "size_match": [
+        99.2,
+        98.8
+      ]
+    },
+    "object_sha256": "2c31e23ba4c14ea66c3a96a56c6c1813bad820620794ebaa3dce87a7f5b29bd9",
+    "arm_compiled": 204,
+    "arm_failed": 0,
+    "decision": "Source and strict regression; removed"
+  },
+  "target_word_only": {
+    "source_form": "Keep bool missionTarget; only targetMatch uses int0/1.",
+    "result": "Entire focus report and whole StarMap object equal119. Neutral; removed.",
+    "arm_compiled": 204,
+    "arm_failed": 0
+  },
+  "pulse_abi_review": {
+    "source": "src/engine/render/PaintCanvas.h: SetColor(unsigned char,unsigned char,unsigned char,unsigned char).",
+    "primary_dynamic_symbol": "_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh at0x7c938",
+    "conclusion": "Existing four-byte parameter declaration matches primary mangling. Extra current pulse UXTB does not justify changing shared ABI or inventing value-range assumptions. No shared change.",
+    "reviewed_pulse_body": "Layout::getPulseValue calls getPlayingTime/Sinf twice and selects b or-b based on a. No caller-wide range proof claimed."
+  },
+  "source_sha256": "75bca641737a801e8ee8e6ec4142c4b0eba7e57cfbc2e7e7ea870729b0ce96e6",
+  "object_sha256": "bfa461b6d65f4a78ecae3230c2e07fcb7d93b3ed0f28a11132f836529e55bf30",
+  "restored_all204_objects_equal": true,
+  "restored_entire_focus_report_equal": true,
+  "native_static_exit": 0,
+  "focused": {
+    "source_match": {
+      "unweighted": 99.38,
+      "weighted": 98.88256583579778
+    },
+    "match": {
+      "unweighted": 88.03999999999999,
+      "weighted": 83.12933389663428
+    },
+    "linked_exact": 7,
+    "byte_exact": 3
+  },
+  "full_validation": "Accepted119 full4619/0 and preservation gates remain valid for identical204-object set; no new full run claimed.",
+  "canonical_reports_changed": false,
+  "objective_reached": false,
+  "limits": "C++ type/spelling hypotheses, not recovered source. No native executable/runtime or whole ABI proof.",
+  "evidence": [
+    "_work/info-diff-122.txt",
+    "_work/campaign-word-flags-122.json",
+    "_work/campaign-word-flags-122.log",
+    "_work/target-word-only-122.json",
+    "_work/target-word-only-122.log",
+    "_work/before122-object-hashes.json",
+    "_work/info-word-restored-122.json",
+    "_work/info-word-restored-122.log",
+    "_work/native-info-word-restored-122.log"
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "accepted_production": "3aebb2c0",
+  "hypothesis": "Retest original separate warning 3217 plus common goto-selected warnings on accepted confirmation-zero-first and station-reread baseline. This combination preserves both latest accepted changes.",
+  "original_source_recovered": false,
+  "decision": "removed: OnTouchEnd source 97.7 -> 97.6 despite ordered matching 80.0 -> 81.3",
+  "before": {
+    "symbol": "_ZN7StarMap10OnTouchEndEii",
+    "match": 80.0,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1037,
+    "n_base": 1004,
+    "source_match": 97.7,
+    "instruction_inventory_match": 96.8,
+    "opcode_inventory_match": 97.4,
+    "control_flow_match": 98.1,
+    "ordered_control_flow_match": 84.1,
+    "control_inventory_match": 98.1,
+    "call_count_match": 99.3,
+    "size_match": 96.7,
+    "unit": "game/world/StarMap"
+  },
+  "trial": {
+    "symbol": "_ZN7StarMap10OnTouchEndEii",
+    "match": 81.3,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1037,
+    "n_base": 1016,
+    "source_match": 97.6,
+    "instruction_inventory_match": 97.0,
+    "opcode_inventory_match": 97.5,
+    "control_flow_match": 97.8,
+    "ordered_control_flow_match": 84.5,
+    "control_inventory_match": 97.8,
+    "call_count_match": 97.8,
+    "size_match": 97.9,
+    "unit": "game/world/StarMap"
+  },
+  "other_21_rows_identical": true,
+  "trial_object_sha256": "bd5b7f07db16204bcea8d5734219ffd96edecfaaedb3885b086862e0fa47834b",
+  "restored_object_sha256": "06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34",
+  "restored_entire_report_equals_accepted": true,
+  "trial_and_restore_builds": {
+    "each_compiled": 204,
+    "each_failed": 0,
+    "each_comparisons": 22,
+    "each_skipped": 0
+  },
+  "source_means": {
+    "unweighted": 99.22,
+    "weighted": 98.56482185607662
+  },
+  "target_met": false,
+  "native_full": "No new native/full/runtime validation; accepted sixty-sixth remains authoritative.",
+  "draw_readonly_audit": {
+    "transition_snapshot": "Primary c9166..c91a4 and accepted 276..2b4 retain the same transitionIn byte through alpha store and mode comparison; no missing reload/capture.",
+    "phase_update": "Primary c952c VCMPE and c9534 BLE skip increment when not greater, including unordered flags; current phase>field_0xec preserves that branch behavior. No inverted unordered predicate introduced."
+  }
+}

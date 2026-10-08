@@ -1,0 +1,131 @@
+{
+  "accepted_previous_production": "9a96e2e5",
+  "hypothesis": "Branch-local Vector copy for station/system position selection; compiler merges a single assignment call.",
+  "primary_machine": "c8376..c8398 ITE EQ, LDREQ field404, LDRNE field408, common data/index load and Vector assignment.",
+  "current_machine": "c66..c88 repeats that conditional field-load/common-copy structure.",
+  "original_cpp_recovered": false,
+  "before": {
+    "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+    "match": 79.2,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1207,
+    "n_base": 1196,
+    "source_match": 98.9,
+    "instruction_inventory_match": 97.8,
+    "opcode_inventory_match": 98.9,
+    "control_flow_match": 98.7,
+    "ordered_control_flow_match": 90.2,
+    "control_inventory_match": 98.7,
+    "call_count_match": 100.0,
+    "size_match": 99.1,
+    "unit": "game/world/StarMap"
+  },
+  "after": {
+    "symbol": "_ZN7StarMap16drawOnScreenInfoEib",
+    "match": 79.9,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 1207,
+    "n_base": 1195,
+    "source_match": 99.0,
+    "instruction_inventory_match": 98.1,
+    "opcode_inventory_match": 99.0,
+    "control_flow_match": 98.7,
+    "ordered_control_flow_match": 90.2,
+    "control_inventory_match": 98.7,
+    "call_count_match": 100.0,
+    "size_match": 99.0,
+    "unit": "game/world/StarMap"
+  },
+  "means": {
+    "source_match": {
+      "unweighted": 99.21000000000001,
+      "weighted": 98.53561470215463
+    },
+    "match": {
+      "unweighted": 87.26,
+      "weighted": 81.70414026193494
+    },
+    "linked_exact": 6,
+    "byte_exact": 3
+  },
+  "full_statistics": {
+    "count": 4619,
+    "skipped": 0,
+    "linked_exact": 2083,
+    "byte_exact": 960,
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "fuzzy_perfect": 2203,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "baseline_preservation": {
+    "linked_equal": {
+      "baseline": 2079,
+      "final": 2083,
+      "lost": [],
+      "gained": [
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap10initLightsEv"
+        ],
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap14missionChangedEv"
+        ],
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap24askForJumpIntoAlienWorldEv"
+        ],
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap8setStartEii"
+        ]
+      ]
+    },
+    "bytes_equal": {
+      "baseline": 959,
+      "final": 960,
+      "lost": [],
+      "gained": [
+        [
+          "game/world/StarMap",
+          "_ZN7StarMap14missionChangedEv"
+        ]
+      ]
+    }
+  },
+  "previous_preservation": {
+    "linked_equal": {
+      "baseline": 2083,
+      "final": 2083,
+      "lost": [],
+      "gained": []
+    },
+    "bytes_equal": {
+      "baseline": 960,
+      "final": 960,
+      "lost": [],
+      "gained": []
+    }
+  },
+  "object_sha256": "156da3b108337cf6b83438749665458002e66fb24536600aa795dc86469e25a3",
+  "full_sha256": "f413437473ee7152d6301ffa143a7f6d2ba664133562d6362f0b0784f0dc5e39",
+  "validation": {
+    "arm_compiled": 204,
+    "arm_failed": 0,
+    "focused_compared": 22,
+    "focused_skipped": 0,
+    "native_static_build": "passed",
+    "baseline_gate_exit": 0,
+    "previous_gate_exit": 0,
+    "default99_gate_exit": 1,
+    "native_runtime": "untested"
+  }
+}

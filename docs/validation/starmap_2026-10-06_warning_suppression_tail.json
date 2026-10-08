@@ -1,0 +1,130 @@
+{
+  "decision": "Accept A: all seven branch-local warning deliveries share suppression store after delivery. Green preservation gates; weighted99 remains unmet.",
+  "previous_goal_turn_classification": "Progress:114 improved source shape and passed full/native/baseline/previous preservation.",
+  "previous_production": "dde477ce",
+  "basis": "Primary warnings store suppression after ChoiceWindow::set and before choice visibility. This shared-tail C++ form preserves runtime actions; original source spelling not recovered.",
+  "change": "Direct warning deliveries jump to common suppression store; ordinary dialogs jump past it to visibility. Same predicates/getters/text IDs, one runtime delivery/store per warning, no extra calls/checks, flags or verifier changes.",
+  "trial_A": {
+    "name": "all-seven common suppression store",
+    "focused": {
+      "source_match": {
+        "unweighted": 99.37,
+        "weighted": 98.85428812843263
+      },
+      "match": {
+        "unweighted": 87.94,
+        "weighted": 82.96180819602874
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "arm_compiled": 204,
+    "arm_failed": 0,
+    "changed_rows": [
+      {
+        "symbol": "_ZN7StarMap10OnTouchEndEii",
+        "changes": {
+          "match": [
+            80.3,
+            79.8
+          ],
+          "n_base": [
+            1036,
+            1028
+          ],
+          "source_match": [
+            98.6,
+            98.8
+          ],
+          "instruction_inventory_match": [
+            98.3,
+            98.2
+          ],
+          "opcode_inventory_match": [
+            98.8,
+            98.7
+          ],
+          "control_flow_match": [
+            98.3,
+            98.7
+          ],
+          "ordered_control_flow_match": [
+            88.4,
+            87.9
+          ],
+          "control_inventory_match": [
+            98.3,
+            98.7
+          ],
+          "call_count_match": [
+            97.8,
+            99.3
+          ],
+          "size_match": [
+            99.7,
+            98.9
+          ]
+        }
+      }
+    ],
+    "source_sha256": "ac000659c5ae6147d7dc447d23ad4958e7d6626e24fb003d443a1925f208067c",
+    "object_sha256": "0856e8255c8ddc4c590d88f2c08a08a452ce38db895419c0260ab251c983e7e4"
+  },
+  "trial_B": {
+    "name": "six common suppression stores with3217 local store",
+    "focused": {
+      "source_match": {
+        "unweighted": 99.36,
+        "weighted": 98.82508097451064
+      },
+      "match": {
+        "unweighted": 87.965,
+        "weighted": 83.0348260808337
+      },
+      "linked_exact": 7,
+      "byte_exact": 3
+    },
+    "arm_compiled": 204,
+    "arm_failed": 0,
+    "changed_rows": [],
+    "source_sha256": "d9254ad8e2d77405033eab7f01a513a003c237655da0798fdfa44817a73f617b",
+    "object_sha256": "cd625a949c83d404b31b81b8b9e33d4a1e3e97fd768c47bbadd11b78dc961e82"
+  },
+  "B_decision": "Removed: six-shared/3217-local form has full focus report and entire ARM object equal114, so no source gain. Current direct-seven form is distinct from older separate3217/shared-getText trials.",
+  "final_full": {
+    "avg_match": 76.16,
+    "avg_source_match": 89.06,
+    "count": 4619,
+    "fuzzy_perfect": 2204,
+    "byte_exact": 960,
+    "linked_exact": 2084,
+    "skipped": 0,
+    "original_functions": 4524,
+    "compared_unique": 4274,
+    "missing": 250,
+    "missing_wrong_type": 7,
+    "missing_absent": 243,
+    "extra_symbols": 129
+  },
+  "all22_full_focus_agree": true,
+  "native_static_exit": 0,
+  "baseline_gate_exit": 0,
+  "previous_gate_exit": 0,
+  "default99_gate_exit": 1,
+  "objective_reached": false,
+  "tradeoff": "End source98.6->98.8; strict80.3->79.8, instruction inventory98.3->98.2, opcode98.8->98.7, size99.7->98.9; control98.3->98.7, call97.8->99.3. No overall strict-gain or runtime/whole ABI claim.",
+  "evidence": [
+    "_work/warning-shared-suppression-115.json",
+    "_work/warning-shared-suppression-115.log",
+    "_work/warning-shared-suppression-restored-A-115.json",
+    "_work/warning-shared-suppression-restored-A-115.log",
+    "_work/warning-six-shared-suppression-115.json",
+    "_work/warning-six-shared-suppression-115.log",
+    "_work/warning-shared-suppression-corpus-115.json",
+    "_work/warning-shared-suppression-corpus-115.log",
+    "_work/native-warning-shared-suppression-115.log",
+    "_work/warning-shared-suppression-baseline-gate-115.json",
+    "_work/warning-shared-suppression-previous-gate-115.json",
+    "_work/warning-shared-suppression-threshold-115.log"
+  ]
+}

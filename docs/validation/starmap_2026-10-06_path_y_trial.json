@@ -1,0 +1,72 @@
+{
+  "production_commit": "b848db14",
+  "decision": "Rejected Y-only step selection; restored source and complete ARM object to accepted90. No production change retained.",
+  "trial_source": "Precompute yStep=(currentY-targetY)/-30, initialize sy=0, if greater assign step, else if less assign step. X untouched. Distinct from13 merged X/Y and combined nested-step trials.",
+  "primary_basis": "ca6da division; ca6de comparison; ca6e6 BGT; ca6e8/ca6ea ITPL zero override. Results preserved for finite input and unordered comparison; whole-function NaN/float-conversion safety not claimed.",
+  "before": {
+    "symbol": "_ZN7StarMap6updateEi",
+    "match": 82.7,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 971,
+    "n_base": 966,
+    "source_match": 98.7,
+    "instruction_inventory_match": 97.0,
+    "opcode_inventory_match": 98.2,
+    "control_flow_match": 98.7,
+    "ordered_control_flow_match": 95.4,
+    "control_inventory_match": 98.7,
+    "call_count_match": 100.0,
+    "size_match": 99.6,
+    "unit": "game/world/StarMap"
+  },
+  "trial": {
+    "symbol": "_ZN7StarMap6updateEi",
+    "match": 72.7,
+    "bytes_equal": false,
+    "linked_equal": false,
+    "n_target": 971,
+    "n_base": 958,
+    "source_match": 98.6,
+    "instruction_inventory_match": 97.5,
+    "opcode_inventory_match": 98.3,
+    "control_flow_match": 98.3,
+    "ordered_control_flow_match": 89.8,
+    "control_inventory_match": 98.3,
+    "call_count_match": 100.0,
+    "size_match": 98.7,
+    "unit": "game/world/StarMap"
+  },
+  "other21_rows_equal": true,
+  "trial_validation": {
+    "terminal_exit": 0,
+    "session": 76642,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0
+  },
+  "restored_validation": {
+    "terminal_exit": 0,
+    "session": 23360,
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "entire_focused_report_equal_to_accepted90": true,
+    "complete_arm_object_equal_to_accepted90": true,
+    "sha256": "7d9424ca64863cded41ccad7c4560a4c0fce34bf48c53135cd169ef303e33617",
+    "source_equal_to_commit": true
+  },
+  "native_and_full_not_repeated": "No production change retained; source and whole ARM object match validated90. Existing native/full90 evidence remains canonical.",
+  "vfp_literal_audit": {
+    "method": "Read raw VFP PC-relative literal loads from ELF executable sections in 20 fixed bodies; occurrence differences do not prove wrong numeric values. Excludes immediate VMOV, scalar LDR and derived computations.",
+    "body_count": 20,
+    "primary_loads": 42,
+    "current_loads": 42,
+    "per_body_value_size_count_differences": {},
+    "limit": "Direct VFP PC-relative loads only; no general computed-arithmetic, immediate, scalar-load or runtime equivalence claim."
+  },
+  "target99_met": false,
+  "next_work": "Review remaining source/data capture and native control-flow evidence without repeating rejected X/Y forms or adding redundant checks for metrics."
+}

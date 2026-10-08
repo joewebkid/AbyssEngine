@@ -1,0 +1,31 @@
+{
+  "decision": "Read-only review; no compiler trial or production edit",
+  "checkpoint": "be5725ab",
+  "production": "683216b5",
+  "source_sha256": "ddc4e5cd912fdf561661f01949f5686e51c366fdf69b2d84d571616101138c3c",
+  "object_sha256": "54a78574bcc14daefc8678850bb6a4e8bf3bed2caa2fa3b5139ef72c9e30484b",
+  "inspected": [
+    "src/game/world/StarMap.cpp",
+    "src/game/ui/Layout.h",
+    "src/engine/core/AEString.h",
+    "_work/drawkey-android.c",
+    "_work/argument-audit-primary-eightyninth.asm",
+    "_work/current-route-depth-bool-ninetysixth.asm"
+  ],
+  "assembly_provenance": "Current96 assembly remains valid for drawKey after104: full text comparison proved only496c/4970 changed.105 trials were removed and whole object verified equal104.",
+  "native": "c8178 drawBox; c817c..c8192 computes imageX/textX/y from saved values; c8196 StringD1; c81b2 first DrawImage2D (c81b0 saves the indirect function address)",
+  "current": "1a6a drawBox;1a70 StringD1; subsequent coordinate arithmetic from saved values precedes first DrawImage2D",
+  "finding": "The remaining difference is scheduling of pure integer arithmetic across the String destructor. Snapshot values already precede String construction. Normal UI-coordinate formulas agree. No whole-function equivalence or out-of-range signed-overflow proof claimed.",
+  "candidate_review": {
+    "single_full_expression": "Prior32 comma-expression lifetime extension already compiler-neutral; no repeat justified.",
+    "flat_textX": "Prior55 already worsened source shape; no repeat justified.",
+    "named_String": "Layout takes String by value. AEString.h defines a copy constructor calling Set(other.data), with a virtual destructor. Passing a named lvalue would introduce copying and an additional lifetime versus the inspected single temporary. No move constructor is declared; do not fabricate one locally.",
+    "forcing_schedule": "No volatile/register barriers, dummy operations, shared header edits or padding introduced."
+  },
+  "validation": "Unchanged source and whole ARM object equal104. Existing canonical ARM/native-static/full-corpus validations preserved; no redundant rerun, no native executable/runtime claim.",
+  "source_means": {
+    "unweighted": 99.32,
+    "weighted": 98.7082523588227
+  },
+  "goal": "Active; weighted99 remains unmet. This audit does not prove a compiler ceiling."
+}

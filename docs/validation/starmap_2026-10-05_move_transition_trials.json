@@ -1,0 +1,33 @@
+{
+  "accepted_production": "ee4e8b03",
+  "original_source_recovered": false,
+  "decision": "both trials removed: no metric or generated-code change",
+  "trials": [
+    {
+      "number": 76,
+      "hypothesis": "OnTouchMove mode==0 galaxy body first, else all nonzero modes station body; both bodies preserved, including accepted captured pitch predicates."
+    },
+    {
+      "number": 77,
+      "hypothesis": "draw initial transition guard via uint8_t transitionIn value, conditionally replaced by transitionOut only when zero, then tested nonzero; subsequent callback-visible transition reads retained."
+    }
+  ],
+  "each_trial_and_fresh_restore": {
+    "compiled": 204,
+    "failed": 0,
+    "comparisons": 22,
+    "skipped": 0,
+    "entire_report_equals_accepted": true
+  },
+  "trial_and_restored_object_sha256": "1ab6e994ad315ab15146f82a3905f6838557d3e819c6f01f24f79b8c33d972a9",
+  "native_full_validation": "No new native/full/runtime run. Restored entire ARM object and focused report equal accepted75; accepted75 full/native evidence remains authoritative.",
+  "source_means": {
+    "unweighted": 99.225,
+    "weighted": 98.5818194620476
+  },
+  "target_met": false,
+  "read_only_audits": {
+    "end_entry": "Primary caeb2..caee0 and accepted1e8a..1ebc already have choiceVisible guard, choice callback before ordinary-input block, same result1/result0 checks, suppressNextClose load before choiceVisible store. No outer dispatch edit made.",
+    "draw_initial_guard": "Primary c9120..c912c uses ITT EQ / LDRBEQ +313 / CMPEQ; accepted22e..23c uses explicit BNE then LDRB/CMP. Byte fallback did not change this compiler decision; no forced IT or barrier introduced."
+  }
+}

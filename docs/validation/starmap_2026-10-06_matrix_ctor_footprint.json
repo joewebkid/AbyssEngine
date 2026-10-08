@@ -1,0 +1,255 @@
+{
+  "decision": "Read-only scope footprint; proposed Matrix patch remains unapplied; awaiting permission",
+  "checkpoint": "76e40d19",
+  "production": "683216b5",
+  "object_scan": {
+    "objects": 204,
+    "tool": "ARM nm -A -u",
+    "exit": 0,
+    "units_with_undefined_Matrix_ctor": 33
+  },
+  "units": {
+    "engine/core/AbyssEngine": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 15,
+      "byte_exact_rows": 8
+    },
+    "engine/file/FileRead": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 17,
+      "byte_exact_rows": 3
+    },
+    "engine/math/AEMath": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 34,
+      "byte_exact_rows": 22
+    },
+    "engine/math/EaseInOutMatrix": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 5,
+      "byte_exact_rows": 1
+    },
+    "engine/math/Transform": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 17,
+      "byte_exact_rows": 4
+    },
+    "engine/render/AEGeometry": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 23,
+      "byte_exact_rows": 8
+    },
+    "engine/render/Camera": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 1,
+      "byte_exact_rows": 0
+    },
+    "engine/render/LodMeshMerger": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 6,
+      "byte_exact_rows": 2
+    },
+    "engine/render/Material": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 4,
+      "byte_exact_rows": 0
+    },
+    "engine/render/MeshMerger": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 5,
+      "byte_exact_rows": 2
+    },
+    "engine/render/PaintCanvas": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 86,
+      "byte_exact_rows": 23
+    },
+    "engine/render/ParticleSystemSprite": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 6,
+      "byte_exact_rows": 2
+    },
+    "engine/render/Sparks": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 4,
+      "byte_exact_rows": 1
+    },
+    "game/menu/ModStation": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 7,
+      "byte_exact_rows": 3
+    },
+    "game/menu/SpaceLounge": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 7,
+      "byte_exact_rows": 2
+    },
+    "game/mission/Explosion": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 6,
+      "byte_exact_rows": 3
+    },
+    "game/ship/Player": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 56,
+      "byte_exact_rows": 43
+    },
+    "game/ship/PlayerAsteroid": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 8,
+      "byte_exact_rows": 3
+    },
+    "game/ship/PlayerCreature": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 5,
+      "byte_exact_rows": 2
+    },
+    "game/ship/PlayerEgo": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 19,
+      "byte_exact_rows": 3
+    },
+    "game/ship/PlayerFighter": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 7,
+      "byte_exact_rows": 1
+    },
+    "game/ship/PlayerTurret": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 13,
+      "byte_exact_rows": 4
+    },
+    "game/ship/TargetFollowCamera": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 27,
+      "byte_exact_rows": 19
+    },
+    "game/ui/ListItemWindow": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 6,
+      "byte_exact_rows": 1
+    },
+    "game/weapons/BeamGun": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 8,
+      "byte_exact_rows": 2
+    },
+    "game/weapons/Gun": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 17,
+      "byte_exact_rows": 13
+    },
+    "game/weapons/ObjectGun": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 7,
+      "byte_exact_rows": 3
+    },
+    "game/weapons/Radar": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 16,
+      "byte_exact_rows": 8
+    },
+    "game/weapons/RocketGun": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 10,
+      "byte_exact_rows": 2
+    },
+    "game/world/Level": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 69,
+      "byte_exact_rows": 34
+    },
+    "game/world/LevelScript": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 9,
+      "byte_exact_rows": 4
+    },
+    "game/world/StarMap": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 18,
+      "byte_exact_rows": 3
+    },
+    "game/world/StarSystem": {
+      "constructor_references": [
+        "_ZN11AbyssEngine6AEMath6MatrixC1Ev"
+      ],
+      "linked_exact_rows": 14,
+      "byte_exact_rows": 6
+    }
+  },
+  "interpretation": "Undefined constructor reference is an object-level footprint, not a per-function proof. Exact rows in the same unit are potential preservation checks, not demonstrated regressions or proof that those exact functions call the constructor. Absence of a reference does not prove an inline shared header change has no effect. Full corpus gate remains mandatory.",
+  "unchanged": {
+    "source_sha256": "ddc4e5cd912fdf561661f01949f5686e51c366fdf69b2d84d571616101138c3c",
+    "StarMap_object_sha256": "54a78574bcc14daefc8678850bb6a4e8bf3bed2caa2fa3b5139ef72c9e30484b",
+    "shared_files": {
+      "src/engine/math/Matrix.h": "177bf4acdad5bfa1f95365e85961fb53e378be8735e2f7efde98a14adff95e93",
+      "src/engine/math/Matrix.cpp": "da9d78b66619abcd1286790e291da1513e2c5b1abb8a98c5f728057e90645b6b"
+    }
+  },
+  "authorization": "No human approval has arrived. Automated goal continuation does not override the shared-file exclusion. Do not apply the dependent proposal.",
+  "goal": "Active; weighted98.7082523588227 <99.0; awaiting scope decision, no ceiling proof."
+}

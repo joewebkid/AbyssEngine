@@ -1,0 +1,47 @@
+{
+  "decision": "Read-only follow-up; no production edit or compiler trial",
+  "checkpoint": "b67a5300",
+  "source_sha256": "cf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3",
+  "object_sha256": "39cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a",
+  "primary_sha256": "6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58",
+  "inspected": [
+    "src/game/world/StarMap.cpp",
+    "_work/argument-audit-primary-eightyninth.asm",
+    "_work/current-route-depth-bool-ninetysixth.asm"
+  ],
+  "checks": [
+    {
+      "area": "OnTouchMove pitch clamp",
+      "native": "cac74..cacd4: four ordered VCMPE/VMRS comparisons and three conditional selectors",
+      "current": "4f18..4f62: two ordered comparisons and three selectors",
+      "finding": "Accepted49 preserves the inspected selection, including unordered input selecting -8192. Native repeated comparisons remain; no redundant predicates added merely for score. This is not a proof about floating-point exception counts."
+    },
+    {
+      "area": "Info viewport clipping",
+      "native": "c839c..c83f8: X before width, lower BMI then upper BGT; Y loaded only after X accepted, same lower/upper branch types",
+      "current": "c98..cf4: same read order and ordered lower/upper predicates",
+      "finding": "No newly established discrepancy. Prior22 already repaired X-before-Y evaluation. Unordered comparisons do not reject at these branches."
+    },
+    {
+      "area": "End help window",
+      "native": "cb902 Layout capture before cb912 getText and cb91e String constructor; cb926 uses saved receiver",
+      "current": "28a6 capture before28b6 getText and28c2 String constructor;28ca uses saved receiver",
+      "finding": "Receiver lifetime already agrees. Text identifier selection also matches locally.",
+      "exact_local_block": {
+        "native_start": "0xcb90c",
+        "current_start": "0x28b0",
+        "size_bytes": 6,
+        "bytes_hex": "08bf4ff41d71",
+        "scope": "IT EQ and conditional selection of text628 only; not whole End equality."
+      }
+    }
+  ],
+  "validation": "No new build required: unchanged source and whole ARM object hashes equal accepted96. Existing accepted96 focused/native-static/full-corpus validation remains canonical. No executable/runtime validation performed.",
+  "official_source_means": {
+    "unweighted": 99.32,
+    "weighted": 98.7082523588227,
+    "fixed_bodies": 20,
+    "original_instruction_weight": 7101
+  },
+  "completion": "Weighted99 still unmet. No compiler ceiling established; goal remains active."
+}

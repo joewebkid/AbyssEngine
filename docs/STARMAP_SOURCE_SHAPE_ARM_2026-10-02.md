@@ -2,17 +2,18 @@
 
 ## Status and scope
 
-**PARTIAL: the requested 99.0% target is not reached.** The fixed 20 distinct
-implementation bodies measure **99.200% unweighted / 98.51515% original-instruction
+**ACHIEVED: both requested 99.0% source-shape thresholds and preservation gates pass.** The fixed 20 distinct
+implementation bodies measure **99.485% unweighted / 99.09704% original-instruction
 weighted source-shape**. The clean baseline measures **83.81% / 73.61763%**.
 Strict ordered fuzzy matching improves from **48.29% / 28.05016%** to
-**87.210% / 81.57476%**, respectively. Source-shape is an inventory/control-flow
+**88.495% / 84.04597%**, respectively. Source-shape is an inventory/control-flow
 metric, not executable equivalence or a percentage of proven behavior.
 
 - Clean baseline: `f60694dd0ca578831cec832e7026b32644642d97`.
 - Isolated branch: `codex/starmap-arm-99-20261002`.
 - Isolated checkout: `A:/gof2-starmap-99-20261002`.
-- Changed production files: `src/game/world/StarMap.cpp`, `StarMap.h` only.
+- Changed production files: `src/game/world/StarMap.cpp`, `StarMap.h` and
+  `src/engine/math/Matrix.h` (new value constructor; default constructor unchanged).
 - Added validation: `tests/check_starmap_source_shape.py`, this report and its
   compact evidence snapshots. No verifier, shared configuration, Level, Gun,
   PlayerTurret, TargetFollowCamera or Godot files were changed.
@@ -2081,10 +2082,904 @@ failure; native runtime remains untested. Full evidence: fortyninth-corpus.json/
 fortyninth-gate.json, fortyninth-previous-gate.json and fortyninth-target-gate.log.
 Full JSON SHA-256: b7bfd34e1730f566cc064c66b3978520bffcea2773c8c07ce20aaeb6b5145805.
 
+## Investigation after checkpoint e43de497
+
+The accepted OnTouchMove bound-selection form was evaluated separately in update,
+where primary ca60a..ca678 has its own intermediate pitch-bound selection and
+four compiled comparisons. The first trial used two snapshot predicates and
+three bound/result selections, keeping the existing yaw assignment before the
+pitch clamp. The second put yaw in a local after the lower-pitch result and wrote
+yaw/pitch together afterward, corresponding to the primary ca688/ca690 member
+writes and the decompiled intermediate yaw value. Both retain the negative-bound
+NaN result, signed-zero behavior, existing calls and member destinations.
+Neither inserts repeated source checks to force four compiled comparisons.
+
+Unlike OnTouchMove, neither trial improves update: source stays 98.7%, strict
+82.7% -> 81.6%, current instructions 966 -> 969 (original 971), instruction
+inventory 97.0% -> 96.9%, opcode stays 98.2%, size 99.6% -> 99.9%. Control,
+ordered control and calls stay 98.7%, 95.4% and 100%. The other 21 focused rows
+are unchanged. The two trial reports and whole objects are identical to each
+other, with SHA-256
+9500ff5f2b38aab0e5074eb99f6577aacc9fb8266650fe445ac072f854e2bc4c.
+The source hypotheses were removed rather than retaining extra variables with
+no source-shape gain and weaker strict/inventory evidence.
+
+Both trials and the fresh restoration compile all 204 ARM TUs with zero failures
+and compare 22 rows with zero skips. Restored focused JSON equals the entire
+accepted forty-ninth report, and restored object SHA-256 equals
+91b513f97dbc427e3a32a977dd2417dfa7d22c8edc85585f7b1401032476f86d.
+Production and canonical reports remain checkpoint e43de497. Means remain
+99.200% / 98.51515279538093% source and 87.210% / 81.5747641177299% strict;
+weighted 99% is unmet. Accepted forty-ninth native/full validations remain
+authoritative; no new native/full/runtime run is claimed for these rejected trials.
+
+Evidence: _work/before-update-bound-fiftieth.cpp, update-bound-fiftieth.cpp,
+update-bound-fiftieth.json/log/asm, update-bound-yaw-fiftieth.json/log and
+fiftieth-restored-focused.json/log. Compact committed snapshot:
+docs/validation/starmap_2026-10-05_update_pitch_trials.json.
+
+## Accepted drawKey captures after checkpoint 28456390
+
+drawKey now explicitly snapshots Canvas and font anew before each GameText getter,
+using the primary per-row order: Canvas/font for text 274, font/Canvas for 401,
+Canvas/font for 547, font/Canvas for 556 and Canvas/font for 555. No snapshot is
+reused across a drawing callback; the two local variables are refreshed for every
+row. Primary Android drawKey at c80e8..c8354 and its IDA body show these receiver/
+font captures. Existing image coordinates, fresh Layout line-gap reads, five
+image/text call pairs and temporary String lifetime remain unchanged. This is a
+source-form hypothesis supported by the observed capture order, not recovered
+C++ syntax. It does not cache global values across rows or add a drawing call.
+
+Only drawKey changes: source 97.8% -> 97.9%, strict 34.8% -> 35.1%, current
+instructions 243 -> 244 (original 246), inventory 93.8% -> 94.0%, opcode
+95.9% -> 96.1%, size 99.2% -> 99.6%. All control/call metrics remain 100%; the
+other 21 focused rows are identical. Fixed means become source 99.205% /
+98.51861709618363%, strict 87.225% / 81.585157020138%. The weighted shortfall
+remains 0.48138290381637 percentage points. No flags, shared code, barriers,
+register forcing, padding or verifier settings were changed.
+
+Focused build compiled all 204 ARM TUs with zero failures and compared 22 rows
+with zero skips. Every focused/full StarMap field except unit-path spelling was
+checked for exact agreement. UCRT native gof2 static-library build passed.
+Full corpus: 4619 comparisons, zero skips, 2083 linked-exact and 960 byte-exact;
+coverage 4274/4524, missing 250 (7 wrong-type / 243 absent), extra 129, unchanged.
+Baseline and previous accepted e43de497/28456390 preservation gates exit 0 with
+zero exact-pair losses; default 99% gate exits 1 with the expected threshold failure.
+Native runtime remains untested. The weighted goal remains unmet.
+
+Evidence in _work: before-key-text-captures-fiftyfirst.cpp,
+key-text-captures-fiftyfirst.json/log/asm, drawkey-android.c,
+key original-address disassembly, native-fiftyfirst.log, fiftyfirst-corpus.json/log,
+fiftyfirst-gate.json, fiftyfirst-previous-gate.json and fiftyfirst-target-gate.log.
+Object SHA-256: 3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+Full JSON SHA-256: 139bf7836f3b47c901eca38b8f33d6fe3599298e2988114372eb8daa3b0176d0.
+
+## Investigation after checkpoint 9a96e2e5
+
+Two separate drawOnScreenInfo source hypotheses were tested against the primary
+Android IDA body and _work/info-original-direct.asm:
+
+- Explicitly refresh the existing textCanvas/textFont locals before all six
+  DrawString sites (selected/unselected station names, station tech text, system
+  name, selected-system race and security). Primary v77/v78, v79/v117, v89/v90,
+  v82/v83, v93/v95 and v99/v100 capture receiver/font before their getters or
+  temporary-string construction. The trial did not reuse values across rows,
+  change temporary lifetimes or add calls. Unlike the accepted drawKey change,
+  it produced identical entire focused JSON and whole object bytes here.
+- Express the four-way race-image choice as switch with cases 2/1/0/default,
+  retaining the same member-address selections. This was distinct from the
+  previous race 0/default branch swap. It also produced identical entire focused
+  JSON and whole object bytes; no branch-order recovery is claimed from it.
+
+Both hypotheses were removed because neither improved generated source shape.
+Each trial and each fresh-source restoration compiled 204/204 ARM TUs with zero
+failures and compared 22 rows with zero skips. Every report equals the complete
+accepted fifty-first report. Both trial object hashes and the final restored
+object hash are
+3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+The unchanged info row remains 98.9% source, 79.2% strict and 1207/1196 instructions.
+Production and canonical gate inputs remain 9a96e2e5; source means 99.205% /
+98.51861709618363%, strict 87.225% / 81.585157020138%. Weighted 99% remains unmet.
+Accepted fifty-first native/full-corpus validations remain authoritative; no new
+native/full/runtime run is claimed for these rejected source-only trials.
+
+Evidence in _work: before-info-text-captures-fiftysecond.cpp,
+info-text-captures-fiftysecond.json/log, fiftysecond-restored-focused.json/log,
+before-info-race-switch-fiftysecond.cpp, info-race-switch-fiftysecond.json/log
+and fiftysecond-switch-restored-focused.json/log. Compact committed evidence:
+docs/validation/starmap_2026-10-05_info_capture_race_trials.json.
+
+## Investigation after checkpoint 9692dc9b
+
+OnTouchEnd's internal no-warning sentinel was tested as zero instead of -1.
+The two warningText<0 guards became ==0 and the final >=0 test became !=0.
+All seven assigned text IDs are positive (532,3213..3218), so the same paths
+skip later warning predicates, select the same getter/set calls and reach the
+same suppression/choice-visible/inertia/Help tail. Zero was a source-form
+hypothesis, not a sentinel value recovered from the primary Android binary.
+No source padding, extra check/call or compiler setting was introduced.
+
+The trial's entire 22-row focused report and whole object equal accepted source.
+It was removed because it gives no source-shape progress. Trial and fresh restore
+each compile 204/204 ARM TUs, zero failures, 22 comparisons and zero skips.
+Restored entire JSON again equals accepted; both object SHA-256 values are
+3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+Production and canonical inputs remain 9a96e2e5. Source means stay 99.205% /
+98.51861709618363%; weighted 99% remains unmet. Accepted fifty-first native/full
+validations remain authoritative; no new native/full/runtime result is claimed.
+Evidence: _work/before-warning-zero-fiftythird.cpp, warning-zero-fiftythird.json/log
+and fiftythird-restored-focused.json/log; committed compact snapshot:
+docs/validation/starmap_2026-10-05_warning_zero_trial.json.
+
+
+## Investigation after checkpoint be2ce265
+
+Three draw header rows were tested with fresh explicit Canvas/font snapshots:
+Canvas then font for the system name, font then Canvas for race and security.
+Primary Android IDA v53/v54, v55/v56 and v61/v62 support this capture-order
+hypothesis; exact C++ syntax is not recovered. Getters, temporary lifetimes,
+coordinates, colors and footer remain unchanged. No capture spans multiple
+rows and no drawing call is added.
+
+Only draw strict match changes: 89.4% -> 88.8%; source stays 99.1%, all other
+metrics and all other 21 rows stay unchanged. The trial was rejected. Trial
+object SHA-256: 2e6966cc4aadd1fef4fa8e8a11846552134cc21fb087d430adccbdcce8440de3.
+Trial and fresh restore each compile 204/204 ARM TUs with zero failures and
+compare 22 symbols with zero skips. Restored entire JSON equals accepted;
+whole restored object SHA-256:
+3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+Production/canonical inputs remain 9a96e2e5. Source means remain 99.205% /
+98.51861709618363%; weighted 99% remains unmet. Accepted fifty-first native/full
+validations remain authoritative; no new native/full/runtime run is claimed.
+Evidence: _work/before-draw-header-captures-fiftyfourth.cpp,
+draw-header-captures-fiftyfourth.cpp/json/log, fiftyfourth-restored-focused.json/log;
+compact committed snapshot: docs/validation/starmap_2026-10-05_draw_header_trial.json.
+
+
+## Investigation after checkpoint c5ad343b
+
+Read-only station review confirmed the existing Array<uint8_t> constructor
+pair is linked-exact in the StarMap translation unit. Changing to the primary
+Array<bool> spelling would lose that pair, as the earlier trial documented.
+No alias, duplicate instantiation or shared Matrix workaround was introduced.
+Station statements still match the reviewed primary call/capture ordering;
+this review does not claim all instruction differences are compiler artifacts.
+
+A drawKey coordinate hypothesis flattened textX into
+imageWidth + lineHeight + x + lineHeight, matching the printed IDA sum.
+Only drawKey changes: source 97.9% -> 97.8%, strict 35.1% -> 43.0%, instructions
+246/244 -> 246/242, inventory 94.0% -> 93.8%, opcode 96.1% -> 96.7%, size
+99.6% -> 98.3%. All control/call metrics remain 100%; other 21 rows identical.
+It was rejected because the requested source metric decreases.
+
+A complete bounded primary disassembly now covers c80e8..c8354 in
+_work/drawkey-original-full-fiftyfifth.asm (the older addresses extract is partial).
+It clarifies the arithmetic: c817e creates imageX=x+lineHeight, c8182 creates
+imageWidth+lineHeight, c8186 adds the two. The accepted grouping already agrees;
+the IDA flattened sum does not prove the original source parenthesization.
+No literal C++ source recovery is claimed.
+
+Trial and fresh restoration each compile 204/204 ARM TUs, zero failures, and
+compare 22 symbols, zero skips. Restored entire JSON equals accepted fifty-first.
+Trial object SHA-256: 880d684cfe5c169afd29c8b60824c749127097c064cde51cb798b80b9182a837.
+Restored object SHA-256:
+3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+Production/canonical inputs remain 9a96e2e5, source means 99.205% /
+98.51861709618363%. Weighted 99% remains unmet. Accepted fifty-first native/full
+validations remain authoritative; no new native/full/runtime result is claimed.
+Evidence: _work/before-key-sum-fiftyfifth.cpp, key-sum-fiftyfifth.json/log,
+fiftyfifth-restored-focused.json/log and complete primary key disassembly;
+committed compact snapshot: docs/validation/starmap_2026-10-05_key_sum_trial.json.
+
+
+## Read-only investigation after checkpoint f28e5433
+
+Current tracked production state is clean. Fresh disassembly of the current
+and delinked target objects, through unchanged asmdiff functions, reproduces
+every source submetric for init, OnTouchEnd, initStarSystem, update and drawKey.
+Allocation-normalized multiset surplus counts (target/current) are respectively
+24/7, 53/18, 36/10, 31/27 and 15/14. These are diagnostic token differences,
+not a count of missing source statements or behavior. The current object hash
+is 3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+
+Three init hypotheses were eliminated by machine evidence before editing:
+
+- Path-finder capture: primary c7238..c7256 and accepted 4bbc..4bda both read
+  Status, capture pathFinder/systems together, call getSystem/getIndex, then
+  freshly read targetSystem for the path call. No receiver reload is missing.
+- Camera coordinates: primary c6fce..c6fec uses two VDIV.F32 by 20.0. Existing
+  /20.0f agrees; replacing division with multiplication is not justified.
+- Background geometry: accepted 4c8a..4d20 already directly passes each fresh
+  allocation/constructor pointer into the first setRotation, while reloading
+  the member for setPosition after that callback, as primary v71/v72/v73 show.
+
+The init surplus includes the previously documented Matrix inline construction,
+conditional null/deletion and epilogue differences, plus decoded pool tokens.
+No Matrix workaround, padding, duplicate call or verifier change was made.
+This inventory does not establish a compiler ceiling or attribute every surplus
+token to an artifact. The five-body comparison is not a new full-corpus gate.
+No new build/native/full/runtime result is claimed; accepted fifty-first and
+fresh fifty-fifth restoration evidence remain authoritative. Production and
+canonical inputs remain 9a96e2e5, source means 99.205% / 98.51861709618363%.
+Weighted 99% remains unmet. Diagnostic: _work/remaining-inventories-fiftysixth.json;
+committed snapshot: docs/validation/starmap_2026-10-05_remaining_inventories.json.
+
+
+## Investigation after checkpoint 32e39bbe
+
+Two further source hypotheses were compiled separately and rejected:
+
+- OnTouchEnd combined primary Android's separate 3217 getter/set/suppression
+  branch with a common station_warning_selected jump for the other warning IDs.
+  All existing short-circuit predicates/getter sequences remain; warning jumps
+  skip later predicates, ordinary dialogs skip the warning block, and every path
+  still reaches choiceVisible, inertia and Help. The warningText read can only
+  follow an assignment. This combination was distinct from the earlier separate
+  3217 trial with sentinel guards and from the common-goto trial without a separate
+  3217 site. It does not add a call to a runtime path, duplicate a check or force
+  register allocation. Primary has this separate static delivery site; original
+  C++ syntax is not recovered.
+- update computed pitchDistance before yawDistance, following primary v63/v64.
+  Expressions, oldPitch/oldYaw/selectedStation snapshots, conditional selections,
+  stores, thresholds and calls remain unchanged. No extra computation was added.
+
+Only OnTouchEnd changes in the first trial: source 97.5% -> 97.4%, strict 76.4%
+-> 77.8%, instructions 1037/1003 -> 1037/1015; inventory 96.4% -> 96.6%, opcode
+97.0% -> 97.2%, control 98.1% -> 97.8%, ordered control 83.6% -> 84.1%, call
+count 99.3% -> 97.8%, size 96.5% -> 97.7%. Other 21 rows are identical by symbol,
+not zipped report position (sorting changes). Its measurements reproduce the
+old separate-warning result; combining common jumps gives no additional gain.
+The frozen normalizer's previously documented three missed primary calls remain
+unmodified. Trial object SHA-256:
+1eae2e51e9befa8d14643e53faf291d819a23e099d0ef8d8b1d19dc6eb8eeb12.
+
+The distance-order trial produces the entire accepted focused report and whole
+accepted object unchanged. Both trials and both fresh-source restorations compile
+204/204 ARM TUs with zero failures, compare 22 symbols with zero skips. Both
+restored entire reports equal accepted fifty-first. Final restored object hash:
+3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+Production/canonical inputs remain 9a96e2e5; means remain source 99.205% /
+98.51861709618363%. Weighted 99% remains unmet. No new native/full/runtime result
+is claimed; accepted fifty-first validations remain authoritative.
+
+Evidence: _work/before-warning-combination-fiftyseventh.cpp,
+warning-combination-fiftyseventh.cpp/json/log, fiftyseventh-restored-focused.json/log,
+before-center-distance-order-fiftyeighth.cpp, center-distance-order-fiftyeighth.json/log
+and fiftyeighth-restored-focused.json/log. Compact committed evidence:
+docs/validation/starmap_2026-10-05_warning_distance_trials.json.
+
+
+## Investigation after checkpoint bab9cd7f
+
+A primary machine precision audit found no new mismatch in station spin/rotation:
+ca596 uses VMUL.F32 for magnitude * 0.01, ca5ac uses VADD.F32 for spin, and
+ca5da uses VMUL.F32 for dt * 0.0002. Existing float arithmetic agrees; IDA's
+unsuffixed decimals do not justify changing these expressions to double.
+
+Two separate update pitch-selection hypotheses were tested:
+
+- Sequential lower then upper: retain the lower-bound ternary and apply the
+  upper comparison to its result instead of nextPitch. Source 98.7% -> 98.6%,
+  strict 82.7% -> 81.1%, instructions 971/966 -> 971/963, inventory 97.0% -> 96.8%,
+  opcode 98.2% -> 98.1%, size 99.6% -> 99.3%.
+- Upper then lower: upperPitch = nextPitch > 8192 ? 8192 : nextPitch, followed
+  by pitch = upperPitch > -8192 ? upperPitch : -8192. Source 98.7% -> 98.5%,
+  strict 82.7% -> 81.0%, instructions 971/966 -> 971/963, inventory 97.0% -> 96.7%,
+  opcode 98.2% -> 98.1%, size 99.6% -> 99.3%.
+
+Both retain two predicates and the same final pitch for below/at lower bound,
+interior values including signed zero, at/above upper bound, infinities and NaN
+(the latter selects -8192). These are equivalent output-selection hypotheses,
+not recovered source syntax or a claim about native runtime equivalence. No
+extra check/call, forced register, padding, compiler flag or shared change was
+introduced. Neither improved the requested source metric, so both were removed.
+All control metrics and call count remain unchanged; other 21 rows identical
+by symbol for each trial. Trial hashes, respectively:
+91a9aed2b0e232fb092cc3c190ddeaafe3ff4991e6ced48d50ff4c73203c11d0 and
+5d1b4bb731b2d553b5116a66d080cdefe81eac664039a9b3e8ef9c43a4f73d90.
+
+Each trial and each fresh restoration compiles 204/204 ARM TUs with zero failures,
+22 comparisons and zero skips. Both restored entire reports equal accepted
+fifty-first, and final object hash is
+3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+Production/canonical inputs remain 9a96e2e5; fixed means remain source 99.205% /
+98.51861709618363%. Weighted 99% remains unmet. No new native/full/runtime run
+is claimed; accepted fifty-first validations remain authoritative.
+
+Evidence: _work/before-update-sequential-clamp-fiftyninth.cpp,
+update-sequential-clamp-fiftyninth.json/log, fiftyninth-restored-focused.json/log,
+before-update-upper-first-sixtieth.cpp, update-upper-first-sixtieth.json/log and
+sixtieth-restored-focused.json/log. Compact committed snapshot:
+docs/validation/starmap_2026-10-05_update_clamp_trials.json.
+
+
+## Investigation after checkpoint 8c1c4487
+
+Fresh info allocation-shape diagnostics reproduce source 98.9%, inventory 97.8%,
+opcode 98.9%, control 98.7%, ordered control 90.2%, calls 100% and size 99.1%.
+The 42 sequence-difference groups are diagnostic alignment, not 42 source bugs.
+Primary c8ecc..c8ee8 and accepted 17a2..17be already capture Canvas, GameText and
+font before getRace, then call getText and DrawString in the same order. No
+new capture change is justified by this selected-system race row.
+
+Primary IDA v75/v114 uses an address into alpha for repeated low-byte draws.
+The diagnostics show target add-address/byte-load tokens where current code
+uses direct field loads/casts. A separate source trial captured a const
+unsigned-char pointer to alpha before the system-label color operations and
+used fresh byte reads for their alpha arguments. Full-int comparisons/clamps,
+station inverse-alpha paths, pulse conversion and callbacks were retained.
+It neither cached alpha across a callback nor changed calls. On the primary
+little-endian ARM and current Windows targets, byte zero gives the same low
+byte as the previous casts. This was a legal object-representation/source-form
+hypothesis, not exact recovered syntax; no raw Matrix storage, compiler hint
+or barrier was introduced.
+
+The entire trial focused report and whole object equal accepted source.
+It was removed because it gives no generated-code/source-shape progress.
+Trial and fresh restore each compile 204/204 ARM TUs, zero failures, 22
+comparisons and zero skips. Restored entire report equals accepted fifty-first;
+trial and restored object SHA-256:
+3435be8567c5d64ae5a6d703439be96ba129f9cf76432aab9d81e2781163c20d.
+Production/canonical inputs remain 9a96e2e5; source means stay 99.205% /
+98.51861709618363%, weighted 99% remains unmet. No new native/full/runtime run
+is claimed; accepted fifty-first validation remains authoritative.
+Evidence: _work/info-local-differences-sixtyfirst.json,
+before-info-alpha-byte-sixtyfirst.cpp, info-alpha-byte-sixtyfirst.json/log and
+sixtyfirst-restored-focused.json/log; compact committed evidence:
+docs/validation/starmap_2026-10-05_info_byte_trial.json.
+
+
+## Accepted position-copy restoration after checkpoint 9cd4cf43
+
+drawOnScreenInfo now performs the station/system scratchVector copy in explicit
+branches, instead of choosing an Array pointer before the copy. Each runtime
+path still reads only its selected array, copies the same indexed Vector to
+scratchVector, and reaches the unchanged bounds/marker/text logic. Vector is a
+three-float 12-byte struct, with a trivial implicit copy construction; its
+assignment copies x/y/z. No extra runtime call, predicate, bounds change,
+compiler hint, shared-code edit or padding was introduced.
+
+Primary c8376..c8398 uses ITE EQ, LDREQ from this+404, LDRNE from this+408,
+then a common data/index load and one Vector assignment. New c66..c88 now
+reproduces this selection and single-copy sequence. The compiler merges the
+two source copies. This is a source-form hypothesis supported by resulting
+machine evidence, not recovered original C++ syntax. It differs from the old
+explicit Array-pointer if/else trial, which left offset selection unchanged.
+
+Only info changes: source 98.9% -> 99.0%, strict 79.2% -> 79.9%, instructions
+1207/1196 -> 1207/1195, inventory 97.8% -> 98.1%, opcode 98.9% -> 99.0%, size
+99.1% -> 99.0%. Control/call metrics and other 21 rows are unchanged. Fixed
+means become source 99.210% / 98.53561470215463%, strict 87.260% /
+81.70414026193494%. Weighted shortfall remains 0.46438529784537 percentage
+points. Both means must pass 99%; the goal remains unmet.
+
+Focused ARM compiled 204/204 TUs, zero failures, 22 rows, zero skips. UCRT
+gof2 static-library build passed. Full corpus: 4619 comparisons, zero skips,
+2083 linked-exact and 960 byte-exact, avg source 89.06%, fuzzy 76.16%, 2203
+fuzzy-perfect entries. Coverage 4274/4524, missing 250 (7 wrong-type/243 absent),
+extra 129, unchanged. Every focused/full StarMap metric/count/exact flag except
+unit-path spelling was checked for exact agreement. Baseline and previous
+9cd4cf43 (production 9a96e2e5) preservation gates exit 0, zero exact-pair losses;
+default 99% gate exits 1 with the expected threshold failure. Runtime remains
+untested; a static build/source metric does not prove executable equivalence.
+
+Evidence: _work/before-info-position-copy-sixtysecond.cpp,
+info-position-copy-sixtysecond.json/log/asm, native-sixtysecond.log,
+sixtysecond-corpus.json/log, sixtysecond-gate.json,
+sixtysecond-previous-gate.json and sixtysecond-target-gate.log. Previous canonical
+inputs are checkpoint62-before-focused.json/corpus.json. Object SHA-256:
+156da3b108337cf6b83438749665458002e66fb24536600aa795dc86469e25a3.
+Full JSON SHA-256: f413437473ee7152d6301ffa143a7f6d2ba664133562d6362f0b0784f0dc5e39.
+Compact snapshot: docs/validation/starmap_2026-10-05_info_position_copy.json.
+
+
+## Investigation after checkpoint 6c5707e7
+
+The accepted branch-local info copy was checked for analogous paired-field
+selection opportunities; no equivalent case justified copying that change
+elsewhere blindly. A constructor image hypothesis combined the two image
+choices into campaign >157 && i==27 with a base-texture else. The campaign
+getter remains the first operand and still executes once on every iteration;
+texture getter order, 16-bit conversion and final selected IDs are unchanged.
+The primary v15/v16 select/restore logic proves the final values, not this
+compound source syntax. No getter is cached or extra check/call introduced.
+
+The trial's entire focused report and whole object equal accepted sixty-second.
+It was removed because it gives no generated-code/source progress. Trial and
+fresh restoration each compile 204/204 ARM TUs, zero failures, 22 comparisons
+and zero skips; restored entire JSON equals canonical accepted input. Both
+trial/restored object SHA-256:
+156da3b108337cf6b83438749665458002e66fb24536600aa795dc86469e25a3.
+C1/C2 remain source 99.3%, strict 95.8%, 333/333 instructions.
+
+Read-only discovery typing review found Station::isDiscovered returns uint8_t
+and SolarSystem::isFullyDiscovered returns int. Accepted d24/d34 calls converge
+at CBZ R0 d38 and icon store, matching primary c8434/c8444/c8448. There is no
+caller masking/conversion instruction to remove, so no bool/int rewrite is
+justified by this suspected discrepancy. Shared headers were only inspected.
+
+Production/canonical inputs remain 6c5707e7, means source 99.210% /
+98.53561470215463%. Weighted 99% remains unmet. Accepted sixty-second native/full
+validation remains authoritative; no new native/full/runtime run is claimed.
+Evidence: _work/before-ctor-image-selection-sixtythird.cpp,
+ctor-image-selection-sixtythird.json/log and sixtythird-restored-focused.json/log;
+compact committed snapshot: docs/validation/starmap_2026-10-05_ctor_image_trial.json.
+
+## Sixty-fourth trial: confirmation inside choice result case (removed)
+
+Inspected StarMap.cpp OnTouchEnd, the primary Android touch-end extract,
+and focused ARM outputs. The entire original confirmation tail was placed
+inside switch case 0; case 1 retained its two flag clears and early return,
+and default retained return 0. All calls, predicates and exit paths were
+preserved. This source-form hypothesis is distinct from fortieth's case 0
+break with the confirmation tail outside the switch. It does not establish
+recovered original C++ syntax.
+
+Trial and fresh restoration each compile 204/204 ARM TUs with zero failures,
+22 comparisons and zero skips. Both entire focused reports equal accepted
+sixty-second. Both whole objects have SHA-256
+156da3b108337cf6b83438749665458002e66fb24536600aa795dc86469e25a3.
+The trial was removed because it provides no generated-code or metric gain.
+Production remains 6c5707e7; source means remain 99.210% / 98.53561470215463%.
+Weighted 99% remains unmet. Accepted sixty-second native/full validation
+remains authoritative; no new native/full/runtime run is claimed.
+
+Evidence: _work/before-choice-case-body-sixtyfourth.cpp,
+choice-case-body-sixtyfourth.json/log and sixtyfourth-restored-focused.json/log.
+Compact committed snapshot:
+docs/validation/starmap_2026-10-05_choice_case_body_trial.json.
+
+## Sixty-fifth accepted correction: confirmation station reread
+
+Inspected StarMap.cpp OnTouchEnd, primary touch-android.c and bounded raw
+Android ARM, accepted sixty-second ARM, and the new focused/full outputs.
+Primary cb19e reads the selected station element, cb1a2 stores it in
+Level::programmedStation, cb1a4 branches on the saved jump mode, cb1a8 rereads
+the element, and cb1ac calls Station::getSystem. Accepted sixty-second reused
+the local pointer after the store, omitting that indexed reread. Removed the
+local Station pointer and used the member expression again for getSystem.
+The new 217c/2180/2182/2186/218a sequence matches this access order.
+
+This is grounded in actual ARM loads, not recovered original C++ syntax.
+Same array/index, global store, predicates, calls and exits are retained;
+no additional call/check, volatile, barrier, forced register or padding is
+introduced. Shared/Level files and verifier remain untouched.
+
+OnTouchEnd source remains 97.5%, strict 76.4% -> 76.9%; instruction inventory
+96.4% -> 96.6%, opcode inventory 97.0% -> 97.1%, size 96.5% -> 96.6%,
+1037/1003 -> 1037/1004 instructions. Control 98.1%, ordered control 83.6%,
+and calls 99.3% remain unchanged. Other 21 focused rows are identical.
+Fixed-body source means remain 99.210% / 98.53561470215463%; strict means
+improve to 87.285% / 81.7771581467399%. Weighted 99% remains unmet.
+
+Focused ARM: 204/204 TUs, zero failures, 22 comparisons, zero skips. Native
+UCRT static-library build compiles StarMap and links libgof2.a successfully.
+Full corpus: 4619 comparisons, zero skips, 2083 linked-exact and 960 byte-exact;
+coverage/missing/extra counts unchanged. Every focused/full row agrees after
+normalizing unit separator spelling. Baseline and previous accepted 0a4d9116
+(production 6c5707e7) preservation gates pass with zero lost exact pairs.
+Default 99% gate remains red, exit 1. Native runtime has not been tested.
+
+Evidence: _work/before-confirm-station-read-sixtyfifth.cpp,
+confirm-station-read-sixtyfifth.json/log/asm, native-sixtyfifth.log,
+sixtyfifth-corpus.json/log, sixtyfifth-baseline-gate.json/log,
+sixtyfifth-previous-gate.json/log and sixtyfifth-target-gate.json/log.
+Previous accepted inputs frozen in checkpoint65-before-focused/corpus.json.
+Object SHA-256: fdab4e38098779300af2fbef8ca8c4b2abb3aeb556e5a1e576f59c3c7844cb41.
+Full JSON SHA-256: 9b4234e32adfb8cc149365e86664e6406b6ce72182c588906bba89f80a9d5565.
+Compact committed snapshot:
+docs/validation/starmap_2026-10-05_confirm_station_read.json.
+
+## Sixty-sixth accepted source form: choice confirmation first
+
+Inspected StarMap.cpp, primary touch-android.c and bounded raw ARM, accepted
+sixty-fifth assembly and focused/full outputs. Reordered the two existing
+result predicates: result 0 holds the entire existing confirmation tail;
+else if result 1 clears choiceVisible and alienJumpPending; common return 0
+handles fallthrough and other results. The window callback still runs once
+before either test. Result 0 retains every field change, predicate, call and
+early return; result 1 retains its two clears and return 0; other results have
+no writes/calls and return 0. No new comparison, callback, barrier, volatile,
+register forcing or padding was introduced. This source-form hypothesis is
+not recovered original C++ syntax: primary Android tests result 1 before 0.
+
+OnTouchEnd source 97.5% -> 97.7%, strict 76.9% -> 80.0%; instruction inventory
+96.6% -> 96.8%, opcode inventory 97.1% -> 97.4%, ordered control 83.6% ->
+84.1%, size 96.6% -> 96.7%. Control inventory 98.1% and calls 99.3% unchanged;
+1037/1004 instructions remain. Other 21 focused rows are identical.
+Fixed-body source means improve to 99.220% / 98.56482185607662%; strict means
+to 87.440% / 82.22986903253063%. Weighted 99% remains unmet.
+
+Two candidate rewrites were excluded read-only: station TransformSetLocal
+primary c78b6..c78ce matches previous 2cb6..2cce including receiver/handle
+capture before getMatrix; confirmation camera primary cb33e..cb34c matches
+previous 2302..2310, including prevCamera read before exitRequested store.
+No source edit was made for either already-matching fragment.
+
+Focused ARM: 204/204 TUs, zero failures, 22 comparisons, zero skips. Native
+UCRT build log shows StarMap compilation and libgof2.a link; a subsequent
+incremental confirmation exited 0. Initial full/native tool observation was
+interrupted; existing processes were later absent and completed reports/logs
+were verified. Original wrapper exit was not captured; no full run restarted.
+Full corpus has 4619 comparisons, zero skips, 2083 linked-exact and 960
+byte-exact. Coverage/missing/extra unchanged. All focused/full rows agree
+after unit separator normalization. Baseline and previous 67200c06 gates pass
+with zero lost exact pairs. Default 99% gate fails, exit 1. Native runtime
+has not been tested. Verifier, shared headers/configs and other production
+files were not changed.
+
+Evidence: _work/before-choice-zero-first-sixtysixth.cpp,
+choice-zero-first-sixtysixth.json/log, native-sixtysixth.log,
+native-sixtysixth-confirmed.log, sixtysixth-corpus.json/log,
+sixtysixth-baseline-gate.json/log, sixtysixth-previous-gate.json/log and
+sixtysixth-target-gate.json/log. Previous inputs checkpoint66-before-focused/
+corpus.json. Object SHA-256: 06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34.
+Full JSON SHA-256: f38c856b0ea96dfbe81dc4fc1f99577cec275b9802fdcf32bedaa9e285d8d590.
+Compact committed snapshot: docs/validation/starmap_2026-10-05_choice_zero_first.json.
+
+## Sixty-seventh trial: warning combination on new confirmation form (removed)
+
+Inspected StarMap.cpp, primary touch/draw extracts, bounded original ARM and
+accepted assembly. Retested fifty-seventh's separate warning 3217 plus common
+goto-selected warning delivery on accepted sixty-sixth. Only the warning
+region was transplanted; confirmation-zero-first and post-programmedStation
+station reread both remained. Runtime predicate/getter ordering, selected text,
+choiceVisible, suppressNextClose and subsequent inertia/Help were preserved.
+No original C++ syntax recovery is claimed.
+
+OnTouchEnd source 97.7% -> 97.6%, strict 80.0% -> 81.3%; instruction inventory
+96.8% -> 97.0%, opcode 97.4% -> 97.5%, control inventory 98.1% -> 97.8%,
+ordered control 84.1% -> 84.5%, normalized calls 99.3% -> 97.8%, size 96.7%
+-> 97.9%, 1037/1004 -> 1037/1016 instructions. Other 21 rows unchanged.
+Rejected because it lowers the requested source metric. Trial object SHA-256:
+bd5b7f07db16204bcea8d5734219ffd96edecfaaedb3885b086862e0fa47834b.
+
+Trial and fresh restoration each compile 204/204 ARM TUs with zero failures,
+22 comparisons and zero skips. Restored entire focused JSON equals canonical
+accepted sixty-sixth, object SHA-256
+06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34.
+Production remains 3aebb2c0; source means 99.220% / 98.56482185607662%.
+Weighted 99% remains unmet. No new native/full/runtime run is claimed;
+accepted sixty-sixth validation remains authoritative.
+
+Read-only draw audit excluded two suspected differences: native c9166..c91a4
+and accepted 276..2b4 already retain the same transitionIn byte through alpha
+store and mode comparison. Primary path-phase VCMPE c952c / BLE c9534 skips
+increment when not greater, including unordered flags; current phase>field_0xec
+has that behavior. No transition snapshot or unordered-comparison edit made.
+
+Evidence: _work/before-warning-combined-sixtyseventh.cpp,
+warning-combined-sixtyseventh.json/log, sixtyseventh-restored-focused.json/log.
+Compact snapshot: docs/validation/starmap_2026-10-05_warning_combined_trial.json.
+
+## Sixty-eighth / sixty-ninth trials: mode ordering (removed)
+
+Inspected StarMap.cpp OnTouchBegin/update and primary Android update extract.
+Tested mode 3 before mode 0 separately in each method. OnTouchBegin retains
+its oldSystem snapshot and complete bodies; update retains the common prefix,
+selects mode after setParamValue, preserves every callback/store and mode-0
+return, and leaves unsupported modes without actions. These are source-form
+hypotheses, not recovered C++: the primary update extract tests mode != 3 first.
+No additional predicate/call, volatile, barrier, padding or flags were added.
+
+Sixty-eighth OnTouchBegin: entire focused report and whole object equal accepted
+sixty-sixth, 99.3% source / 97.4% strict / 275/273 instructions. Removed as neutral.
+Object SHA-256 06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34.
+
+Sixty-ninth update: source 98.7% -> 98.0%, strict 82.7% -> 79.6%, instruction
+inventory 97.0% -> 96.2%, opcode 98.2% -> 97.5%, control inventory 98.7% ->
+97.0%, ordered control 95.4% -> 92.4%, calls 100% unchanged, size 99.6% ->
+99.5%, 971/966 -> 971/965 instructions. Other 21 rows identical. Removed as a
+source/control regression. Trial SHA-256
+5ad6c16d9111b0b7695c10b6da719e73acaf4a4515a4c7f02f4c846dd8c13f79.
+
+Each trial and each fresh restoration compile 204/204 ARM TUs with zero failures,
+22 comparisons and zero skips. Both restored entire focused reports equal
+canonical accepted input; final restored object SHA-256
+06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34.
+Production remains 3aebb2c0; source means 99.220% / 98.56482185607662%.
+Weighted 99% remains unmet. No new native/full/runtime run is claimed;
+accepted sixty-sixth remains authoritative.
+
+Evidence: _work/before-touch-mode-order-sixtyeighth.cpp,
+touch-mode-order-sixtyeighth.json/log, sixtyeighth-restored-focused.json/log,
+before-update-mode-order-sixtyninth.cpp, update-mode-order-sixtyninth.json/log,
+sixtyninth-restored-focused.json/log. Compact snapshot:
+docs/validation/starmap_2026-10-05_mode_order_trials.json.
+
+## Seventieth trial: touch-end galaxy branch first (removed)
+
+Inspected StarMap.cpp, primary/accepted update ARM and focused reports. Reordered
+OnTouchEnd's dragging branches: mode==0 enters the complete galaxy body; else
+enters the complete station body, including every other nonzero mode. Previously
+mode!=0 selected the station body first. Predicates, getters, warning handling,
+inertia, Help and the accepted confirmation tail were preserved. This is a
+source-form hypothesis, not recovered C++ syntax. No new check/call or padding.
+
+The entire trial focused report equals accepted sixty-sixth: OnTouchEnd remains
+97.7% source / 80.0% strict / 1037/1004 instructions, all 22 rows unchanged.
+Whole object differs, SHA-256
+33585af7b6c3082b8e01cdb56e2ffbb1c53aec2f2a8d48db101f00cc346bd493.
+The object difference was not classified; report equality does not prove object
+identity or full-corpus preservation for the rejected trial. Rejected because
+there is no improvement to the requested source metric.
+
+Trial and fresh restoration each compile 204/204 ARM TUs, zero failures,
+22 comparisons and zero skips. Restored entire report equals canonical accepted
+input and whole object SHA-256 is
+06be7829eb5212aa1cd23cb50dc8771fbdad2a3165605af307e7d4ff296f1d34.
+Production remains 3aebb2c0, source means 99.220% / 98.56482185607662%.
+Weighted 99% remains unmet. No new native/full/runtime run is claimed;
+accepted sixty-sixth remains authoritative.
+
+Camera-bound audit excluded a declaration-order rewrite: primary ca194..ca1cc
+and accepted 37b0..37e8 already load panX/panY, then baseX/baseZ, convert Y then
+X, add Y then X, convert Y then X, move Y/X to R0/R1 and compare X to 120 in
+matching order. No camera-coordinate source change was made.
+
+Evidence: _work/before-end-mode-order-seventieth.cpp,
+end-mode-order-seventieth.json/log/o and seventieth-restored-focused.json/log.
+Compact snapshot: docs/validation/starmap_2026-10-05_end_mode_order_trial.json.
+
+## Seventy-first inventory refresh / seventy-second accepted race selection
+
+Recomputed unchanged asmdiff source submetrics and allocation-normalized token
+inventories for all fixed 20 bodies against the accepted sixty-sixth object.
+Every metric reproduced canonical input. The denominator remains 7101 and
+aliases remain checked separately. Raw inventories in
+_work/all-body-inventories-seventyfirst.json; compact evidence in
+docs/validation/starmap_2026-10-05_inventory_refresh.json. Multiset differences
+are not missing C++ statements or a proven compiler ceiling. This diagnostic
+identified a concrete info race-selection conditional-field-role mismatch.
+
+Changed only info's if/else predicate order from race 2/1/0 to 0/1/2. The same
+single getRace call, field mapping (0:+292, 1:+296, 2:+300, other:+304), and image
+call/arguments remain. No additional check/call, padding, volatile or barrier.
+This C++ form is a hypothesis, not recovered syntax. Its new ARM 16a6..16c6
+compares 2/1/0 and conditionally selects +304/+292, with separate +300/+296
+paths and common image load, matching primary c8d38..c8df2.
+
+Info source 99.0% -> 99.1%, strict 79.9% -> 80.2%, instruction inventory
+98.1% -> 98.4%, opcode 99.0% -> 99.1%, control inventory 98.7% -> 99.1%,
+ordered control 90.2% -> 90.6%, calls 100% unchanged, size 99.0% -> 99.1%,
+1207/1195 -> 1207/1196 instructions. Other 21 focused rows identical.
+Source means now 99.225% / 98.5818194620476%; strict 87.455% /
+82.2808618504436%. Weighted 99% remains unmet.
+
+Focused ARM: 204/204 TUs, zero failures, 22 comparisons, zero skips. Native
+UCRT static-library build exits 0, compiling StarMap and linking libgof2.a.
+Full run exits 0: 4619 comparisons, zero skips, 2083 linked-exact, 960 byte-exact,
+coverage/missing/extra unchanged. All focused/full rows agree after unit
+separator normalization. Baseline and previous 5ce4b318 (production 3aebb2c0)
+gates pass with zero lost exact pairs. Default 99% gate remains red, exit 1.
+Native runtime has not been tested. No verifier/shared/config/other production
+files were edited.
+
+Evidence: _work/before-race-zero-first-seventysecond.cpp,
+race-zero-first-seventysecond.json/log/asm, native-seventysecond.log,
+seventysecond-corpus.json/log, seventysecond-baseline-gate.json/log,
+seventysecond-previous-gate.json/log, seventysecond-target-gate.json/log.
+Previous inputs checkpoint72-before-focused/corpus.json.
+Object SHA-256: f5ebf2ce9c0f3b03c50a8a87fb106a406a1488a71210bb0dbc0c61f3a4df9cc5.
+Full JSON SHA-256: a36bf65219055df2dcf7fade9c0b089fecaa45d415da3614951eca2094ce7314.
+Compact snapshot: docs/validation/starmap_2026-10-05_race_zero_first.json.
+
+## Seventy-third accepted station selection store order
+
+Changed only init's two independent assignments after a station match. The
+C++ order selectedStation then lastSelectedStation now generates ARM stores
+lastSelectedStation (+416) then selectedStation (+100), matching the primary
+c7202/c7206. The complete eight-instruction fragment c71f6..c720c matches new
+4b82..4b98, including registers, guards and offsets, apart from addresses.
+No intervening callback, additional call/check, barrier or padding. This is a
+source-form hypothesis, not recovered original C++ syntax.
+
+Init strict 77.1% -> 77.3%; all source submetrics and other 21 rows unchanged.
+Source means remain 99.225% / 98.5818194620476%. Strict means are
+87.465% / 82.30198563582594%. The weighted 99% goal remains unmet.
+Focused ARM 204/204, zero failures, 22 comparisons, zero skips. Native static
+library build and full comparison exit 0; full 4619, zero skips. All focused
+rows agree with full rows. Baseline and previous 9a2d1046 gates pass with zero
+exact-pair loss (2083 linked / 960 byte); default 99% gate exits 1. Native
+runtime has not been tested.
+
+Read-only next-candidate audit: primary c6f10 loads the systemGeoms Array
+before the second Station::getSystem at c6f14, then c6f18 loads its data.
+Current 4aae/4ab2 loads both Array and data before the call at 4ab6. A captured
+Array with its data accessed after the callback is a distinct candidate;
+no such production edit is part of this checkpoint.
+
+Evidence: _work/before-init-station-stores-seventythird.cpp,
+init-station-stores-seventythird.json/log/asm, native-seventythird.log,
+seventythird-corpus.json/log, seventythird-baseline/previous/target-gate.json/log,
+checkpoint73-before-focused/corpus.json,
+init-target-data-read-audit-seventythird.json.
+Compact snapshot: docs/validation/starmap_2026-10-05_init_station_stores.json.
+Object SHA-256: e37a65088022af392d978ada394e7fd01803e04ed1e8745ad9576fe445920f58.
+Full JSON SHA-256: 5f547fa3aa49c5cb1be385e1ff9e5fa99f5de066b9b00037779b00fad976e2e4.
+
+## Seventy-fourth accepted target geometry data read ordering
+
+In init's mission-target focus path, capture the systemGeoms Array before the
+second Station::getSystem, then access its data after the callback. Primary
+c6f0e..c6f1c loads the Array at +104, calls getSystem, loads data at +4 and
+branches to common position retrieval. New 4aae..4abc has the same operations
+and registers apart from relocated calls/branches. Previously data was loaded
+before getSystem and element indexing was separate. Both getter calls,
+predicates, chosen index, position retrieval, assignment and deletion remain.
+No additional call/check, barrier or padding. This source form implements an
+observed native read order; original C++ syntax and runtime equivalence have
+not been proven.
+
+Init instruction/opcode inventories 97.9% -> 98.0%; instructions 750/736 ->
+750/735, size 97.7% -> 97.6%. Source 98.3%, strict 77.3% and control/call
+metrics unchanged; other 21 rows unchanged. Source means remain 99.225% /
+98.5818194620476%; strict 87.465% / 82.30198563582594%. The weighted 99% goal
+remains unmet. Unchanged analyzer reproduced all source submetrics; current
+surplus no longer includes the separate indexed-element load. Inventories are
+diagnostics, not counts of missing C++ statements or a proven compiler ceiling.
+
+Focused ARM 204/204, zero failures, 22 comparisons, zero skips. Native static
+library build and full comparison exit 0; full 4619, zero skips. All focused
+rows agree with full rows. Baseline and previous baf37291 gates pass with zero
+exact-pair loss (2083 linked / 960 byte); default 99% gate exits 1. Native
+runtime has not been tested. Shared files, verifier and configuration unchanged.
+
+Evidence: _work/before-init-target-data-seventyfourth.cpp,
+init-target-data-seventyfourth.json/log/asm, native-seventyfourth.log,
+seventyfourth-corpus.json/log, seventyfourth-baseline/previous/target-gate.json/log,
+checkpoint74-before-focused/corpus.json, init-inventory-seventyfourth.json.
+Compact snapshot: docs/validation/starmap_2026-10-05_init_target_data.json.
+Object SHA-256: 04cee56d72e89477232ebb4e08ec1f935ec094ed496b80efec143c01159c9e43.
+Full JSON SHA-256: adc1704841a6f2832a7ef19df54c12747d9e961d9028af5a0bb756930970c97c.
+
+## Seventy-fifth accepted draw current-system data read ordering
+
+In draw's current-system position copy, capture systemPositions Array before
+Status::getSystem and SolarSystem::getIndex, then access the Array data after
+both callbacks. Primary c9326..c933c loads Status, the Array at +404, calls
+both getters, then loads data at +4 and the indexed element. New 436..44c
+has the same operation, field and call order; the stack temporary register
+still differs. Previously the data pointer was loaded before the callbacks.
+Same getter counts, selected index, Vector copy/assignment and separate
+current-route getter calls. No additional call/check, barrier or padding.
+Original C++ syntax and native runtime equivalence have not been proven.
+
+Draw strict 89.4% -> 89.7%; source 99.1%, every source submetric, instruction
+count and other 21 rows unchanged. Source means remain 99.225% /
+98.5818194620476%; strict means 87.48% / 82.34068441064638%. Weighted 99%
+remains unmet.
+
+Focused ARM 204/204, zero failures, 22 comparisons, zero skips. Native static
+library build and full comparison exit 0; full 4619, zero skips. All focused
+rows agree with full rows. Baseline and previous bf375eeb gates pass with zero
+exact-pair loss (2083 linked / 960 byte); default 99% gate exits 1. Native
+runtime has not been tested. Shared files, verifier and configuration unchanged.
+
+Read-only audits exclude three rewrites without new evidence: station angle
+assignment c774c..c778a matches 2b36..2b74, including retries, fresh flag reads,
+division, multiplication and assigned-flag test; centeredStation comparison
+c78dc..c7908 matches the current field/callback order at 2ce4..2d10; mission
+139 ship-class/equipment checks cb81e..cb848 match current 278a..27b4 getter
+and condition order. These findings do not establish whole-body equivalence
+or a compiler ceiling. No production edit was made for those audited blocks.
+
+Evidence: _work/before-draw-current-data-seventyfifth.cpp,
+draw-current-data-seventyfifth.json/log/asm, native-seventyfifth.log,
+seventyfifth-corpus.json/log, seventyfifth-baseline/previous/target-gate.json/log,
+checkpoint75-before-focused/corpus.json, station-read-audit-seventyfifth.json.
+Compact snapshot: docs/validation/starmap_2026-10-05_draw_current_data.json.
+Object SHA-256: 1ab6e994ad315ab15146f82a3905f6838557d3e819c6f01f24f79b8c33d972a9.
+Full JSON SHA-256: 8dbb63f8358823a852b116ef0d4bda527002f994a8adf600333914be733c2b40.
+
+## Seventy-sixth / seventy-seventh neutral source-form trials
+
+Two independent hypotheses were compiled and removed. OnTouchMove put the
+complete galaxy body under mode==0 first and the complete station body under
+else, retaining all nonzero modes and the accepted pitch predicates. Draw's
+initial transition guard used a uint8_t local initialized with transitionIn,
+replaced by transitionOut only when zero, then tested nonzero. This preserved
+short-circuit reads, nonzero-byte behavior and later callback-visible reads.
+Neither added calls/checks, barriers, padding or compiler/configuration changes.
+Both entire focused reports and whole ARM objects were identical to accepted
+75. Neither source form is claimed as recovered original C++ syntax.
+
+Each trial and fresh-mtime restore compiles 204/204 ARM TUs, zero failures,
+22 comparisons, zero skips, exit 0. Both complete restored reports and the
+final whole ARM object equal accepted75. Production source restored identically after newline decoding. Source means remain 99.225% / 98.5818194620476%;
+strict 87.48% / 82.34068441064638%. No new native/full/runtime run; accepted75
+full/native evidence remains authoritative. Weighted 99% remains unmet.
+
+Read-only review: OnTouchEnd entry caeb2..caee0 and accepted1e8a..1ebc already
+have choice callback before ordinary input, same result1/result0 tests and
+suppressNextClose read before choiceVisible store; no outer dispatch edit made.
+Draw initial guard c9120..c912c has ITT EQ / conditional byte load +313 /
+conditional comparison; accepted22e..23c uses explicit BNE then load/compare.
+The byte fallback did not alter that compiler decision. No forced predication
+or proven compiler ceiling is inferred from these trials.
+
+Evidence: _work/before-move-mode-order-seventysixth.cpp,
+move-mode-order-seventysixth.json/log, seventysixth-restored-focused.json/log,
+before-draw-transition-byte-seventyseventh.cpp,
+draw-transition-byte-seventyseventh.json/log,
+seventyseventh-restored-focused.json/log.
+Trial/restored object SHA-256:
+1ab6e994ad315ab15146f82a3905f6838557d3e819c6f01f24f79b8c33d972a9.
+Compact snapshot: docs/validation/starmap_2026-10-05_move_transition_trials.json.
+
+## Seventy-eighth low-cargo confirmation station read trial (removed)
+
+Primary low-cargo confirmation with jumpCost==1 and jumpMapModeA reads the
+selected Station element at cb05e before doInstantJump=0 at cb064, then stores
+programmedStation at cb066. Accepted75 instead stores the byte at 2094 before
+its selected-element read at 20a2 and programmedStation store at 20a6.
+Tested a local Station pointer read before the byte store, retaining the same
+single indexed read, two stores, callbacks, predicates and all other branches.
+Trial 209e/20a4/20a6 reproduces the primary read-before-store relationship.
+This is an evidenced ARM ordering, not recovered C++ syntax or a runtime test.
+No extra call/check, padding, barrier or shared-file edit.
+
+The entire focused report is identical to accepted75: no source, strict,
+inventory, count or control gain. Whole trial object differs, SHA-256
+706fc5f802c2db029d34f908de311f453ef2d1ecf59e38a4599179ffb671b7c2.
+It was removed because it gives no progress toward the requested metric.
+The trial object is retained in _work/low-cargo-station-seventyeighth.o for
+future evidence. No full exact-pair preservation is claimed for this trial.
+
+Trial and fresh-mtime restore each compile 204/204 ARM TUs, zero failures,
+22 comparisons, zero skips, exit 0. Restored complete focused report and whole
+ARM object equal accepted75; restored source is identical after newline
+decoding. Source means remain 99.225% / 98.5818194620476%, strict 87.48% /
+82.34068441064638%. No new native/full/runtime run; accepted75 full/native
+results remain authoritative. Weighted 99% remains unmet.
+
+Evidence: _work/before-low-cargo-station-seventyeighth.cpp,
+low-cargo-station-seventyeighth.json/log/asm/o,
+seventyeighth-restored-focused.json/log.
+Restored object SHA-256:
+1ab6e994ad315ab15146f82a3905f6838557d3e819c6f01f24f79b8c33d972a9.
+Compact snapshot: docs/validation/starmap_2026-10-05_low_cargo_trial.json.
+
+## Seventy-ninth accepted constructor Array length argument reads
+
+Constructor now passes *this->systemGeoms and *this->systemPositions to the
+two existing ArraySetLength(34,...) calls instead of cached allocation locals.
+Primary c68b2..c68c6 rereads +104 after the position Array constructor and
++404 after the geometry ArraySetLength callback. New 4216..422a reproduces
+those fields, registers, size34 and call order, apart from linker call
+relocations. Allocations, constructors and member stores are retained. No
+extra call/check, padding, barrier or shared-file/configuration change. These
+are native member-read observations; original C++ syntax and native runtime
+equivalence have not been proven.
+
+C1/C2 source 99.3% -> 99.5%, strict 95.8% -> 97.6%; instruction and opcode
+inventory 98.2% -> 99.1%, instructions 333/333 -> 333/331, size 100% -> 99.4%.
+All control/call metrics remain 100%; other 20 rows unchanged. Aliases remain
+checked and excluded from means. The denominator stays 20 bodies / 7101.
+Source means now 99.235% / 98.59119842275736%; strict 87.57% /
+82.42509505703421%. Weighted 99% remains unmet by 0.40880157724264 pp.
+Unchanged analyzer reproduces all submetrics and confirms the +104/+404
+surpluses are gone. Remaining inventories are not missing C++ statements or
+a proven compiler ceiling. Raw diagnostic: _work/ctor-inventory-seventyninth.json.
+
+Focused ARM 204/204, zero failures, 22 comparisons, zero skips. Native static
+library build and full comparison exit 0; full 4619, zero skips. All focused
+rows agree with full rows. Baseline and previous 657504fb (production ee4e8b03)
+gates pass with zero exact-pair loss (2083 linked / 960 byte). Default 99%
+gate exits 1. Native runtime has not been tested.
+
+Evidence: _work/before-ctor-array-reads-seventyninth.cpp,
+ctor-array-reads-seventyninth.json/log/asm, native-seventyninth.log,
+seventyninth-corpus.json/log, seventyninth-baseline/previous/target-gate.json/log,
+checkpoint79-before-focused/corpus.json.
+Compact snapshot: docs/validation/starmap_2026-10-05_ctor_array_reads.json.
+Object SHA-256: a775a751fc3520acc5f684ccd1d9560acd4da2664cbf01f471fd2c4055f7498f.
+Full JSON SHA-256: a4461ba66b3ad1c7fd4b6e3aa0b468c80eef2472da8eb13aa2435164d9c50f84.
+
 ## Validation
 
 Final focused ARM build compiles **204/204 translation units, zero failures**;
-22 symbols compare, zero skipped, six unique linked-exact bodies and three
+22 symbols compare, zero skipped, seven unique linked-exact bodies and three
 unique byte-exact bodies. Clean baseline has two of each.
 
 Native UCRT Debug `gof2` static-library build passed. Existing compiler warnings
@@ -2104,8 +2999,8 @@ absent). Final extra symbols: 129, baseline: 130. Existing coverage gaps were
 not removed from reporting.
 
 Exact pair preservation gate: **PASS**, zero lost (unit, symbol) pairs.
-Linked-exact **2079 -> 2083**; byte-exact **959 -> 960**. Gains are confined to
-StarMap: initLights, missionChanged, askForJumpIntoAlienWorld and setStart;
+Linked-exact **2079 -> 2084**; byte-exact **959 -> 960**. Gains are confined to
+StarMap: initLights, missionChanged, askForJumpIntoAlienWorld, setStart and render;
 missionChanged also becomes byte-exact.
 
 Default >=99.0% gate: **FAIL**, exit 1, `StarMap >=99.0% target NOT reached`.
@@ -2118,18 +3013,18 @@ Committed evidence: `docs/validation/starmap_2026-10-02_baseline.json`,
 `starmap_2026-10-02_final.json` (focused inputs) and
 `starmap_2026-10-02_gate.json` (full exact-pair difference and both means).
 Full raw reports and logs remain in this worktree's _work directory.
-Latest full log: `_work/fortyninth-corpus.log`; focused log:
-`_work/pitch-bound-fortyninth-confirmed.log`; native log: `_work/native-fortyninth.log`.
+Latest full log: `_work/ninetysixth-corpus.log`; focused log:
+`_work/current-route-depth-bool-ninetysixth.log`; native log:
+`_work/native-ninetysixth.log`.
 Exact-pair preservation also passed against checkpoints 7fc7701c, dca65361,
-50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, with no new gains or losses since
-7fc7701c. The latest comparison against eeca8928 (production 1d9a4c65) preserves all 2083
+50e10b79, b5010fdb, d4e3330a, bc98481c, 42331c92, 52079d64, 7b76861c, 72045054, eeebc3e6, 644c59e5, e07a1f16, 2f20db28, f10955b3, 613af2c6, f9e870cf, 80ea89b1, c8b7e875, cf030a4e, 7e7528b7, 43f3e1c2, fcb1741b, f7cbbae0, 0fe3756d, 03aa0342 and 72465845, without losses. The earlier accepted88 Render repair adds one linked-exact pair; this checkpoint preserves it. The latest comparison against a4fc71cd preserves all 2084
 linked-exact and 960 byte-exact pairs. Latest preservation gate and 99%
-gate logs are _work/fortyninth-gate.json, fortyninth-previous-gate.json and
-fortyninth-target-gate.log (exit 0, 0 and 1 respectively).
+gate logs are _work/ninetysixth-baseline-gate.json, ninetysixth-previous-gate.json and
+ninetysixth-target-gate.log (exit 0, 0 and 1 respectively).
 
 baseline full JSON SHA-256: `ceb8ddf50e03dbadd2278413942c6e1a8e59b1f6d4060d7628de66593632a6d0`.
 
-final full JSON SHA-256: `b7bfd34e1730f566cc064c66b3978520bffcea2773c8c07ce20aaeb6b5145805`.
+final full JSON SHA-256: `ac36671ad80d872e4cd8053180fea46d76c6924b13ef1ae919d43048d9c95d08`.
 
 
 ### Reproduction
@@ -2160,19 +3055,19 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 
 | Android symbol | Original/current instructions | Baseline source | Final source | Final strict | Final exact |
 |---|---:|---:|---:|---:|---|
-| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1196 | 78.9% | 98.9% | 79.2% | - |
-| `_ZN7StarMap10OnTouchEndEii` | 1037/1003 | 66.6% | 97.5% | 76.4% | - |
+| `_ZN7StarMap16drawOnScreenInfoEib` | 1207/1198 | 78.9% | 99.3% | 80.6% | - |
+| `_ZN7StarMap10OnTouchEndEii` | 1037/1004 | 66.6% | 97.8% | 77.7% | - |
 | `_ZN7StarMap6updateEi` | 971/966 | 76.6% | 98.7% | 82.7% | - |
-| `_ZN7StarMap4drawEv` | 916/907 | 49.7% | 99.1% | 89.4% | - |
-| `_ZN7StarMap4initEbP7Missionbi` | 750/736 | 72.9% | 98.3% | 77.1% | - |
+| `_ZN7StarMap4drawEv` | 916/913 | 49.7% | 99.4% | 92.8% | - |
+| `_ZN7StarMap4initEbP7Missionbi` | 750/735 | 72.9% | 98.3% | 77.3% | - |
 | `_ZN7StarMap14initStarSystemEv` | 710/683 | 80.9% | 97.3% | 84.7% | - |
-| `_ZN7StarMapC1EbP7Missionbi` | 333/333 | 85.1% | 99.3% | 95.8% | - |
-| `_ZN7StarMap12OnTouchBeginEii` | 275/273 | 91.6% | 99.3% | 97.4% | - |
+| `_ZN7StarMapC1EbP7Missionbi` | 333/331 | 85.1% | 99.5% | 97.6% | - |
+| `_ZN7StarMap12OnTouchBeginEii` | 275/275 | 91.6% | 100.0% | 99.3% | - |
 | `_ZN7StarMap11OnTouchMoveEii` | 265/258 | 81.3% | 98.8% | 78.8% | - |
-| `_ZN7StarMap7drawKeyEv` | 246/243 | 59.5% | 97.8% | 34.8% | - |
+| `_ZN7StarMap7drawKeyEv` | 246/244 | 59.5% | 97.9% | 35.1% | - |
 | `_ZN7StarMap6departEb` | 205/205 | 94.9% | 100.0% | 88.3% | - |
 | `_ZN7StarMapD1Ev` | 69/70 | 92.0% | 99.4% | 95.0% | - |
-| `_ZN7StarMap6renderEv` | 47/47 | 95.7% | 99.6% | 97.9% | - |
+| `_ZN7StarMap6renderEv` | 47/47 | 95.7% | 100.0% | 100.0% | linked |
 | `_ZN7StarMap10initLightsEv` | 21/21 | 87.8% | 100.0% | 100.0% | linked |
 | `_ZN7StarMap24askForJumpIntoAlienWorldEv` | 21/21 | 97.1% | 100.0% | 100.0% | linked |
 | `_ZN7StarMap8setStartEii` | 17/17 | 88.9% | 100.0% | 100.0% | linked |
@@ -2182,3 +3077,1538 @@ Percentages are the unchanged verifier output. C2/D2 aliases are excluded.
 | `_ZN7StarMap8renderBGEv` | 1/1 | 100.0% | 100.0% | 100.0% | byte |
 
 Aliases: `_ZN7StarMapC2EbP7Missionbi` = C1; `_ZN7StarMapD2Ev` = D1.
+
+
+## Eightieth continuation: current-object remainder audit (2026-10-05)
+
+Previous production/checkpoint: `fb5748ae`. No production edit or compiler
+experiment was made in this continuation. The live ARM object SHA-256 is
+`a775a751fc3520acc5f684ccd1d9560acd4da2664cbf01f471fd2c4055f7498f`,
+matching the fully validated seventy-ninth acceptance. Tracked production was
+clean before this audit.
+
+Re-disassembled current and target StarMap objects with the existing NDK
+objdump. Read-only use of the unchanged asmdiff reproduced **all eight source
+submetrics for all 20 fixed bodies**, then the gate's fixed corpus calculation
+reproduced **99.235 / 98.59119842275736 source-shape** and
+**87.570 / 82.42509505703421 strict**. C2/D2 remain excluded from means; no
+metric, original instruction weight or corpus change. Token multiset surplus
+is diagnostic evidence, not a count of missing C++ statements or proof of a
+compiler ceiling.
+
+New raw-fragment checks exclude unsupported edits:
+
+- End initial inertia: primary `cb0a2..cb112`, current `1f1a..1f8a` already
+  have the same signed-absolute selections, strict `>3` comparisons, mode
+  read, momentum/dragging/velocity stores. Inverting the float predicates or
+  reordering source stores is not justified by this fragment.
+- init campaign/mode: `c6e6e..c6e82` versus `4762..4776` already have the
+  same compare15, conditional galaxy flag, default mode3/conditional mode0
+  and member stores. Only the saved Status slot differs.
+- Station initial ArraySetLength receivers: `c75b8..c75be`,
+  `c7650..c765a`, `c7688..c7694` use the cached freshly constructed receivers.
+  The constructor's accepted fresh-member reads must not be copied blindly
+  into these calls.
+- Station position allocation loop: `c7b08..c7b2e` versus `2efa..2f20`
+  already holds the Array receiver across Vector allocation, zeros three
+  components and stores the element through its data+4 field.
+- System name table: primary `c7ac8` and current `2eba` both use LDRH with
+  index shift2. Existing uint32 table slots preserve the native stride;
+  changing the table to uint16 would alter it.
+
+The remaining positive contributions to the weighted deficit relative to99
+are End **0.18985pp**, station initialization **0.16998pp**, init **0.07393pp**,
+update **0.04102pp**, key **0.03811pp**, Move **0.00746pp**. Other bodies offset
+part of that deficit; these numbers are diagnostic contributions, not separate
+required per-body thresholds. Prioritize unresolved warning dispatch and
+station initialization operations rather than the five verified fragments.
+Previously rejected warning and Matrix/Array ABI workarounds remain rejected.
+No source-equivalence or ceiling claim follows from the inventory.
+
+Evidence: `docs/validation/starmap_2026-10-05_remaining_audit.json` contains
+all inventories, metrics, fixed weights, object hash and raw audit anchors.
+No new native/full build was needed because production and the entire ARM
+object are unchanged. The accepted seventy-ninth native library, 204-TU
+focused check, zero-skip 4619-comparison corpus and no-exact-loss gates remain
+the authoritative validations. Weighted99 gate remains red. Native executable
+runtime equivalence remains untested. Goal remains active.
+
+
+## Eighty-first/eighty-second trials: branch-local warning receivers (removed)
+
+Accepted production is `fb5748ae`; preceding report checkpoint is `f1f0f794`.
+Raw primary warning branches read ChoiceWindow this+92 separately before the
+shared GameText getText: cb7ae/3214, cb7ba/532, cb7c6/3216, cb7f8/3213,
+cb804/3217, cb852/3215, cb876/3218. Earlier common-goto warning trials did not
+explicitly capture that receiver in each branch. This justifies testing the
+source form, not claiming that the original C++ syntax was recovered.
+
+Trial81 kept the accepted sentinel dispatch and captured the fresh member
+receiver in each successful warning branch, using that receiver at common
+warning delivery. All calls, predicates and order were retained. Focused ARM
+build/comparison exited0: 204 TUs compiled, zero failures, 22 comparisons,
+zero skips. **Entire focused JSON and ARM object were identical to accepted79**
+(hash a775a751fc3520acc5f684ccd1d9560acd4da2664cbf01f471fd2c4055f7498f).
+LLVM consolidated the branch-local receiver reads. No metric gain.
+
+Trial82 combined those receiver captures with the previous separate3217 /
+common-goto warning delivery form. This is distinct from57/67 at source level.
+Focused build/comparison again exited0, compiled204/failed0, compared22/skip0.
+End source-shape **97.7 ->97.6**, strict **80.0 ->81.3**, instruction inventory
+96.8->97.0, opcode97.4->97.5, control98.1->97.8, call count99.3->97.8,
+size96.7->97.9, current instructions1004->1016. Other21 rows were unchanged.
+The End row equals rejected67 across every field. ARM object changed to
+ca424edf938c226586cedf8ef91ef79c0cd9fe6afe2045a888a4eef4b9abde1a;
+no full-corpus exact-pair preservation is claimed for this rejected object.
+
+Both source forms were removed. Wrote the accepted source backup with a fresh
+mtime and ran another focused build to terminal exit0: compiled204/failed0,
+22 comparisons/zero skips. Normalized source, **entire focused JSON and entire
+ARM object** match accepted79. Tracked production has no difference. The
+accepted79 native static library, full4619 zero-skip report and baseline/previous
+no-exact-loss gates remain authoritative; no redundant native/full run was
+started. Means remain **99.235 /98.59120**; weighted99 remains red. Native
+runtime equivalence remains unverified.
+
+Evidence: before-warning-receivers-eightyfirst.cpp,
+warning-receivers-eightyfirst.json/log,
+warning-receivers-combined-eightysecond.cpp/json/log/o,
+eightysecond-restored-focused.json/log under _work. Compact evidence:
+`docs/validation/starmap_2026-10-05_warning_receiver_trials.json`.
+Receiver captures alone are now excluded as a warning-dispatch improvement;
+this is not proof that the remaining source-shape target is impossible.
+
+
+## Eighty-third accepted Begin jump-distance receiver captures
+
+Previous report checkpoint: `095fae50`; previous production: `fb5748ae`.
+Inspected the live StarMap source/object, full primary Begin assembly and init
+station-search assembly. Init fallback search c7296..c72cc already matches
+4a42..4a78, including the post-element increment before comparison; no search
+loop edit was justified.
+
+A separate Begin fragment had a real load-order difference: primary
+caa86..caa9c loads pathFinder+80 and systems+84 before Status getSystem/getIndex,
+then reads selectedSystem+96 after the getters. Previous 4086..4098 called the
+getters before reading the two pointer members. Now two source locals capture
+those pointers before the getters, while selectedSystem remains fresh after
+them. New 4086..409c matches the primary fragment's operations, registers,
+field offsets and order; linked PLT/relocation addresses differ as expected.
+No call/check was added or removed, no barrier/padding or compiler flag change.
+Native load order is proven; original C++ spelling and runtime equivalence
+are not claimed as recovered.
+
+Begin source **99.3 ->99.6**, strict **97.4 ->98.5**, original/current
+instructions275/273->275/275, inventory99.3->99.6, opcode99.3->99.6,
+size99.3->100. Control98.5, ordered/control inventory98.5 and call count100
+remain unchanged. Other21 focused rows are identical. Its remaining unsigned
+visibility bound compares size,index / BLS in primary ca97e..ca980 and
+index,size / BCS in new3f7e..3f80: equivalent conditions with reversed operands,
+not a missing bounds check.
+
+Fixed20/7101 source means **99.250 /98.60281650471764**; strict
+**87.625 /82.4676946908886**. C2/D2 aliases checked and excluded. Focused ARM
+build exited0: compiled204/failed0, compared22/skipped0. Native UCRT gof2
+static library exited0: StarMap compiled and libgof2.a linked.
+
+Full comparison session69269/process35420 was observed live and subsequently
+returned terminal exit0; no restart. Frozen source/ARM objects were used.
+Full4619 comparisons/zero skips, linked2083/byte960, source89.06/strict76.16,
+fuzzy-perfect2203. Coverage unchanged:4274/4524, missing250(7wrong/243absent),
+extra129. All22 focused/full rows agree. Baseline and previous accepted
+exact-pair gates exited0, zero losses; default weighted99 gate exits1 as
+required. Goal remains active, shortfall0.39718349528236pp weighted. Native
+executable runtime equivalence remains untested.
+
+ARM object SHA-256:
+`041c36b7c1189d035a71cc89265c3c46b8ae3c082263260c4135abe11d7d92d4`.
+Full JSON SHA-256:
+`2fffeff58c1e4ef4f3af19647d2585a98a84df0b423f5e72838809b1ec490301`.
+Evidence: _work/begin-original-eightythird.asm, current-eightythird.asm,
+before-begin-distance-captures-eightythird.cpp,
+begin-distance-captures-eightythird.json/log/asm, native-eightythird.log,
+eightythird-corpus.json/log, eightythird-baseline/previous/target-gate.json/log,
+checkpoint83-before-focused/corpus.json. Compact committed evidence:
+`docs/validation/starmap_2026-10-05_begin_distance_captures.json`.
+
+
+## Eighty-fourth accepted Begin visibility-bound operand order
+
+Previous accepted production/report: `090af981`. Inspected current source and
+accepted83 object, primary Begin ca97c..ca980 and current3f7c..3f80. The primary
+uses load size R1, CMP R1,SL and BLS skip; accepted83 used CMP SL,R1 and BCS skip.
+Change the source condition `i < vis->size()` to `vis->size() > i`. Both operands
+are unsigned and the size accessor is inline: bounds, non-null guard,
+short-circuit and visibility-byte read are preserved. New3f7c..3f80 matches the
+primary registers and opcodes. No extra check/call, compiler flag, barrier or
+padding. Original C++ syntax and runtime equivalence remain unproven.
+
+Begin source **99.6 ->100.0**, strict **98.5 ->99.3**, count275/275 unchanged.
+Instruction/opcode inventory99.6->100, control/ordered/control inventory
+98.5->100, call count and size100 unchanged. Other21 focused rows identical.
+Read-only disassembly through unchanged asmdiff independently reproduces all
+eight source metrics at100. Strict sequence still moves two independent
+instructions (selectedSystem store and scratchVector address calculation).
+Thus source100 is metric evidence, not linked/byte exact or proven behavior.
+
+Fixed20/7101 means **99.270 /98.6183072806647** source and
+**87.665 /82.49867624278271** strict; C2/D2 checked/excluded. Focused build
+exited0: compiled204/failed0,22 comparisons/zero skips. Native UCRT gof2 static
+library exited0: StarMap compiled and libgof2.a linked. Full session98257/PID8704
+was observed live and returned terminal exit0, without restart; source and ARM
+objects stayed frozen. Full4619/skip0,2083 linked/960 byte exact,source89.06 /
+strict76.16,perfect2203,coverage4274/4524,missing250(7wrong/243absent),extra129.
+All22 focused/full rows agree. Baseline and previous exact-pair gates exited0,
+no losses. Default99 gate exits1: weighted shortfall **0.3816927193353pp**.
+Goal active; native executable runtime equivalence remains untested.
+
+ARM object SHA-256:
+`2836b8f80e9bce8c17dd7458b789291c80f037eaeef2ad972cbc21e20f3a6863`.
+Full JSON SHA-256:
+`a0d737dc5fc2260032c0849d162a72a74ec3f0986865a503be9a7ca81ed422ac`.
+Evidence under _work: before-begin-visibility-bound-eightyfourth.cpp,
+begin-visibility-bound-eightyfourth.json/log/asm,
+begin-shape-check-eightyfourth.json, native-eightyfourth.log,
+eightyfourth-corpus.json/log, eightyfourth-baseline/previous/target-gate.json/log,
+checkpoint84-before-focused/corpus.json. Primary anchors use
+begin-original-eightythird.asm. Compact committed evidence:
+`docs/validation/starmap_2026-10-05_begin_visibility_bound.json`.
+
+
+## Eighty-fifth trial: projection depth stores in branches (removed)
+
+Accepted production/report: `1cf057a4`. Inspected live source and object plus
+primary update. In both loops, native depth selection uses default-1 and
+IT NE/select+1 (c9c0a..c9c12, c9cae..c9cb6); accepted84 uses default+1 and
+IT EQ/select-1 (3232..323a,32d6..32de). Both implement zero->-1 and every
+nonzero->+1. Previous30 tested a separate local depth default; this distinct
+trial placed the fresh Array read and z store directly inside each if/else
+branch, preserving exactly one read/store on every path. No extra runtime
+call/check or compiler flag, barrier or padding.
+
+Focused trial reached terminal exit0: compiled204/failed0,comparisons22/skips0.
+**Entire focused JSON and entire ARM object are identical to accepted84**,
+SHA2836b8f80e9bce8c17dd7458b789291c80f037eaeef2ad972cbc21e20f3a6863.
+The compiler consolidated both stores to its existing IT EQ selection; no
+metric gain. This result excludes this source form on the current baseline,
+not proof of a compiler ceiling or recovery of original C++ syntax.
+
+Removed the trial, wrote source backup with fresh mtime, and rebuilt focused
+ARM to terminal exit0: compiled204/failed0,22 comparisons/skip0. Normalized
+source, entire focused JSON and ARM object match accepted84. No production
+difference remains. Native/full builds were not repeated: accepted84 native
+static library/full4619 zero-skip/exact-pair gates remain authoritative.
+Means stay99.270/98.61831 source and87.665/82.49868 strict; weighted99 still
+fails. Goal active; native executable runtime equivalence unverified.
+
+Additional read-only checks: system projection c9be0..c9c22 /3208..324a already
+holds Canvas before getPosition and rereads systemPositions after both
+getPosition and GetScreenPosition. Projection mode dispatch c9bac..c9c2c /
+31d4..3254 already reads mode before lastDt store, keeps the value on bypass
+and rereads after callbacks. Neither fragment justifies a new snapshot edit.
+
+Evidence: _work/current-eightyfifth.asm,
+before-projection-depth-store-eightyfifth.cpp,
+projection-depth-store-eightyfifth.json/log,
+eightyfifth-restored-focused.json/log. Compact committed snapshot:
+`docs/validation/starmap_2026-10-05_projection_depth_trial.json`.
+
+
+## Eighty-sixth accepted system target flag materialization (2026-10-06)
+
+Previous report 2d0b6d29, production 1cf057a4. The previous interrupted turn
+only read source; no trial was applied. Inspected StarMap.cpp,
+info-original-direct.asm c876c..c877a, live current-eightyfifth.asm and the
+new focused object. Primary uses MOVS R1,0; CMP R0,-1; IT GT; MOVGT R1,1;
+ORRS.W R0,R5,R1; BEQ fallback. Previous current used a sign-bit EOR and
+ORRS R0,R5. Capture signed targetIndex after the same getters, start
+bool targetMatch with missionTarget, then set it true for targetIndex>=0.
+New1050..105e reproduces primary opcodes, registers, immediate and order.
+Fallback addresses differ. No extra runtime calls/checks, barriers, padding,
+flags or shared declarations. Same negative sentinel, boolean mapping and
+callback order. Original C++ spelling and native runtime equivalence unproven.
+
+Info strict **80.2 ->80.4**, source **99.1 unchanged**, count1207/1196 unchanged.
+Instruction inventory98.4->98.5 and opcode99.1->99.2 improve, while control
+inventory/flow99.1->98.9 and ordered control90.6->90.4 decrease. This is a
+restored native fragment, not a source-score increase or exact whole body.
+Unchanged asmdiff independently reproduced all eight new source metrics.
+Other21 focused rows are identical. Fixed20/7101 means source remain
+**99.270 /98.6183072806647**, strict **87.675 /82.53267145472469**.
+C2/D2 checked/excluded. Weighted99 shortfall remains0.3816927193353pp.
+
+Focused terminal exit0: compiled204/failed0,22 comparisons/skip0. Native
+UCRT static gof2 build terminal exit0: StarMap compiled/libgof2.a linked.
+Full session15764/PID32936 was observed live and returned terminal exit0,
+without restart; source and ARM object stayed frozen. Full4619/skip0,
+2083 linked/960 byte exact, source89.06/strict76.16, perfect2203,
+coverage4274/4524, missing250(7wrong/243absent), extra129. All22 focused/full
+metric rows agree; unit path separators are normalized only for this check.
+Baseline and previous exact-pair gates exit0 with zero losses. Default99 gate
+exits1 as required. Goal active; native executable behavior untested.
+
+ARM object SHA-256:
+`c64021892af31b2758afac98c6c90b82b72b7ced6168b83f630da3cb0494293c`.
+Full JSON SHA-256:
+`4ab44c08b7761e492db7c1914cc7aaf5fe72901a687158c50ed6f01e666a10fa`.
+Evidence under _work: before-system-target-flag-eightysixth.cpp,
+system-target-flag-eightysixth.json/log/asm, info-shape-check-eightysixth.json,
+native-eightysixth.log, eightysixth-corpus.json/log,
+eightysixth-baseline/previous/target-gate.json/log,
+checkpoint86-before-focused/corpus.json. Compact committed evidence:
+`docs/validation/starmap_2026-10-06_system_target_flag.json`.
+
+
+## Eighty-seventh passenger continuation repeat (removed)
+
+Accepted production/report437b3b7f. Inspected live StarMap.cpp/object and
+primary cb464/cb466 vs current242c/242e: signed CMP9/BLE vs CMP10/BLT,
+mathematically equivalent including negative counts. Repeated a count>9
+continuation to the fresh mission94 test; preserves all callbacks and warning
+fallthrough without extra checks/calls or arithmetic. The initial brief
+mistakenly described this form as new: the full trial21 report at lines880ff
+already records the same high-capacity continuation. This is a repeated
+experiment on accepted86, not a new source-recovery hypothesis.
+
+Trial session34199 terminal exit0: compiled204/failed0,22 comparisons/skip0.
+Entire focused JSON and whole ARM object equal accepted86. Removed the label
+and nesting; wrote accepted backup with fresh source mtime and rebuilt in
+session49844 to terminal exit0,204/0,22/0. Normalized source equals HEAD,
+entire focused JSON and whole object equal accepted86. Object SHA-256:
+`c64021892af31b2758afac98c6c90b82b72b7ced6168b83f630da3cb0494293c`.
+No production difference remains. Accepted86 native/full4619 zero-skip and
+no-exact-loss gates remain authoritative; no redundant native/full run.
+Source99.270/98.61831, strict87.675/82.53267 unchanged. Weighted99 unmet;
+goal active, native executable behavior untested. No compiler ceiling proved.
+
+Additional read-only raw audit: transition completion XYZ c9f68..ca040 /
+358c..3664 already matches repeated GetMaxValue calls, member snapshots,
+subtractions, positive-test negate/select, VCMPE/VMRS and BHI exit sequence.
+Allocation-normalized FP difference alignment points to path-animation and
+pitch-clamp scheduling, not missing completion predicates. That alignment is
+not evidence of missing C++ statements or permission to add redundant checks.
+Read full prior pitch/path trial descriptions before another experiment.
+
+Evidence: _work/before-passenger-positive-fallback-eightyseventh.cpp,
+passenger-positive-fallback-eightyseventh.json/log,
+eightyseventh-restored-focused.json/log, update-fp-audit-eightyseventh.json.
+Compact committed snapshot:
+`docs/validation/starmap_2026-10-06_passenger_repeat.json`.
+
+
+## Eighty-eighth accepted render blend argument repair (2026-10-06)
+
+Previous report28e181da, production437b3b7f. Inspected current StarMap.cpp,
+RenderEnums.h (read only), accepted86 object and a fresh primary render
+extract from verified Android HD2.0.16 ARMv7 library c8058..c80e8. Primary
+c80ae loads Canvas, c80b0 MOVS R1,#2, c80b2 calls SetBlendMode, then planetGeom
+and starSystemRoot render. Current60 loaded0. Change the single StarMap.cpp
+argument BlendMode_dummy to existing BlendMode_2, whose shared enum value is2.
+No shared file modified. Numeric argument2 is recovered from raw primary;
+original C++ spelling/enum name and meaning of mode2 are not claimed recovered.
+This fixes a wrong native argument, not an allocation/scheduling hypothesis.
+Same callbacks/order. No artificial calls, flags, barriers, padding or aliases.
+
+Render source **99.6->100**, strict **97.9->100**, count47/47 unchanged,
+becomes **linked-exact**, still not byte-exact. Unchanged asmdiff independently
+reproduces all eight source metrics100, equal normalized47-instruction
+sequence and linked_equal=True, bytes_equal=False. Other21 focused rows
+identical. Fixed20/7101 source **99.290 /98.62095479509928**, strict
+**87.780 /82.54657090550626**. C2/D2 checked/excluded. Weighted99 shortfall
+**0.37904520490072pp**, still incomplete. Runtime visual effect unverified.
+
+Focused session42117 terminal exit0:204 compiled/0 failed,22 comparisons/skip0.
+Native UCRT gof2 static-library build terminal exit0: StarMap compiled and
+libgof2.a linked. Full session91239/PID30172 observed live and terminal exit0,
+without restart; source/ARM object stayed frozen. Full4619/skip0,2084 linked/
+960 byte exact, perfect2204, source89.06/strict76.16,coverage4274/4524,
+missing250(7wrong/243absent),extra129. All22 focused/full metric rows agree
+(normalize unit path separators only). Baseline/previous preservation gates
+exit0 with no lost exact pairs. New linked pair game/world/StarMap render:
+baseline2079->2084, previous2083->2084. Byte pairs959->960 baseline and
+960->960 previous. Default99 gate exits1 as required. Goal active; no native
+executable/runtime test or Godot equivalence claim.
+
+ARM object SHA-256:
+`a6cd529383016bc46bcd25d1c94198ffce6674237a2807b96a320dd9a8046ca8`.
+Full JSON SHA-256:
+`4b6070d6d0bb3f16b4c587147717dcf887f1ad331214ec0d49cfd9d12294ccd8`.
+Evidence under _work: render-original-eightyeighth.asm,
+before-render-blend-eightyeighth.cpp,render-blend-eightyeighth.json/log/asm,
+render-shape-check-eightyeighth.json,native-eightyeighth.log,
+eightyeighth-corpus.json/log,eightyeighth-baseline/previous/target-gate.json/log,
+checkpoint88-before-focused/corpus.json. Compact committed evidence:
+`docs/validation/starmap_2026-10-06_render_blend.json`.
+
+
+## Eighty-ninth read-only register-constant argument audit (2026-10-06)
+
+Accepted production/report a4a3633f. Previous goal turn made a verified native
+argument correction and render became linked-exact. Current tracked production
+is clean and the entire ARM object still hashes to accepted88:
+`a6cd529383016bc46bcd25d1c94198ffce6674237a2807b96a320dd9a8046ca8`.
+No source experiment or production edit in this continuation.
+
+Inspected StarMap.cpp, fresh primary c67a4..cba2c raw disassembly, accepted88
+current object disassembly, drawkey-original-full-fiftyfifth.asm and full
+trial32 history. DrawKey text IDs/layout reads match; its temporary lifetime
+form already had a neutral trial and was not repeated. Init keyTextIds uses
+32-bit LDR/index*4 in primary c730c, matching the current int table; no
+16-bit table change justified.
+
+A conservative read-only diagnostic parses all20 fixed body headers and
+aligns direct call names. It tracks immediate/register moves in straight-line
+regions, clears state on branches/IT, invalidates overwritten registers and
+clobbers caller registers after calls. It aligns699 direct calls and finds231
+pairs with constants known on both sides. It excludes stack/float arguments
+and does not recover indirect callees. These counts are diagnostic coverage,
+not an exhaustive ABI or behavior proof; repeated callee alignment can drift.
+No verifier/tool/config modification or arithmetic/padding was introduced.
+
+Two candidate differences are both at one misaligned SetColor site: primary
+c8b48 has R1=255,R2=128,R3=0, while aligned current1552 is white on the
+unselected-station path. Raw primary c8b38/BNEc8b3c and current1304/BNE1308
+select selectedStation==index; matching current1314 passes255/128/0 and
+continues to Station::getName, as primary. Thus both R2/R3 differences are
+repeated-callee alignment artifacts. No confirmed unresolved immediate
+argument mismatch remains from this diagnostic, and no color edit is justified.
+Do not treat this narrow pass as proof of all call arguments.
+
+Authoritative accepted88 ARM204/native static/full4619 zero skips and
+baseline/previous exact-pair gates remain applicable: no source/object change.
+Source99.290/98.62095 and strict87.780/82.54657 remain unchanged. Weighted99
+still fails; goal active and native executable/runtime equivalence unverified.
+Next argument inspection requires stack or floating-point evidence; this
+straight-line integer-register diagnostic supplies no further edit candidate.
+
+Evidence under _work: argument-audit-primary-eightyninth.asm,
+call-argument-audit-eightyninth.json, render-blend-eightyeighth.asm.
+Compact committed evidence:
+`docs/validation/starmap_2026-10-06_argument_audit.json`.
+
+## Ninetieth follow-up: native float32 angular parameters (2026-10-06)
+
+Primary Android GOF2 HD2.0.16 ARMv7 evidence, with PC-relative literal reads
+from ELF executable sections, exposes eight genuine constant-argument
+mismatches that the prior register-immediate audit could not see. Only
+StarMap.cpp numeric literals change; arithmetic and callback order remain.
+
+| Rounded value before | Replacement literal | Primary float32 bits | Source uses |
+| --- | --- | --- | --- |
+| 3.1416f | 3.1415927f | 0x40490fdb | 5 |
+| 6.2832f | 6.2831855f | 0x40c90fdb | 5 |
+| 0.000015259f | 0.0000152587890625f | 0x37800000 | 7 |
+| +/-0.3927f | +/-0.3926991f | 0x3ec90fdb / 0xbec90fdb | 2 |
+| -0.098175f | -0.098174773f | 0xbdc90fdb | 3 |
+
+Verified native call sites include MatrixSetRotation at c6dfe; background
+rotations at c739c/c73d0/c7404; constructor marker rotation at c6b14; and
+station root rotation at c7aa4. Negative root Z rotation in update/Move is
+loaded at ca626/cac62 from literal words ca7bc/cae7c: both 0xbdc90fdb.
+These numeric float32 parameters are recovered from primary machine code;
+the original C++ spelling and exact-source formula recovery are not claimed.
+
+The conservative stack/float diagnostic aligns 699 direct calls, compares
+33 known stack pairs and 222 known register pairs. Before: eight genuine
+float argument differences plus two repeated-SetColor alignment artifacts.
+After: only the same two false alignments remain. Actual orange/white paths
+were reviewed in the eighty-ninth audit. The diagnostic does not resolve all
+arithmetic, conditional paths, indirect callees or stack offsets above 8;
+it is not exhaustive ABI proof.
+
+Focused validation: terminal exit0, all204 ARM TUs built, zero failures,
+22 comparisons/zero skips. The entire focused JSON equals a4a3633f despite
+the changed object, because these literal changes do not change the reported
+normalized metrics. Source-shape remains 99.290% /98.6209547951%; strict
+87.780% /82.5465709055%. This corrects parameters without claiming score gain.
+
+Native StarMap compiled, but the first archive operation failed because A:
+ran out of space. NTFS compression of this checkout's own _work preserved
+file contents and freed about200MB. The same native build then successfully
+created libgof2.a (terminal exit0); no production rollback was needed.
+
+Full verifier session6891, live PID31632, terminated exit0 with source and ARM
+objects frozen. All4619 comparisons, zero skips; all22 StarMap metric rows
+agree with focused after separator normalization. Full JSON is identical to
+accepted88: linked2084/byte960, no exact-pair loss against clean baseline or
+previous a4a3633f. Baseline/previous preservation gates exit0; default99 gate
+exit1. The 99% objective remains unmet; no native executable/runtime test.
+
+ARM object SHA256: 7d9424ca64863cded41ccad7c4560a4c0fce34bf48c53135cd169ef303e33617.
+Full JSON SHA256: 4b6070d6d0bb3f16b4c587147717dcf887f1ad331214ec0d49cfd9d12294ccd8.
+
+Compact committed evidence: docs/validation/starmap_2026-10-06_angular_constants.json.
+Raw evidence under _work: before-angular-literals-ninetieth.cpp,
+stack-float-argument-audit-ninetieth-before/after.json,
+rotation-r3-proof-ninetieth.json, current-ninetieth.asm,
+argument-audit-primary-eightyninth.asm, angular-literals-ninetieth.json,
+angular-literals-ninetieth-build.log, native-ninetieth.log,
+native-ninetieth-retry.log, ninetieth-corpus.json/log,
+ninetieth-baseline/previous/target-gate.json/log,
+checkpoint90-before-focused/corpus.json. The earlier literal-pool summary
+survives in angular-literals-ninetieth.log; its same-named JSON was overwritten
+by the focused report, so no separate pre-edit pool JSON is claimed.
+
+## Ninety-first follow-up: VFP audit and rejected Y-only step form (2026-10-06)
+
+Read-only audit of all20 fixed bodies compares actual VFP PC-relative literal
+loads in primary Android ARM and accepted b848db14. Every per-body multiset
+of literal width, bits and occurrence count agrees (42 loads each).
+This strengthens the angular-constant evidence without claiming equivalence
+for computed arithmetic, immediate VMOV/scalar LDR values or native runtime.
+Raw audit: _work/vfp-literal-audit-ninetyfirst.json.
+
+A narrow trial changes only path-centering Y selection: compute yStep before
+conditions, initialize sy=0, assign step on greater-than or else less-than.
+X remains untouched. Native basis: ca6da division, ca6de compare, ca6e6 BGT,
+ca6e8/ca6ea ITPL zero. Same result for finite inputs and unordered comparison;
+this does not establish whole-function float-to-int/NaN safety. The previous
+thirteenth merged and nested X/Y trials were reviewed; this is Y-only.
+
+Focused session76642 terminated exit0:204 TUs built, zero failures,22 symbols,
+zero skipped. Update source98.7 ->98.6; strict82.7 ->72.7; current instructions
+966 ->958 (original971). Inventory97.0 ->97.5 and opcodes98.2 ->98.3 improve,
+but control98.7 ->98.3, ordered control95.4 ->89.8 and size99.6 ->98.7 worsen.
+Other21 focused rows are identical. Rejected; no production change retained.
+
+Restored by fresh UTF8 source write and rebuilt in session23360, terminal exit0,
+204/0/22/0. Entire focused JSON and entire ARM object match accepted90; source
+matches b848db14. SHA256 remains
+7d9424ca64863cded41ccad7c4560a4c0fce34bf48c53135cd169ef303e33617.
+No redundant native/full rerun: accepted90 validations remain canonical.
+Metrics remain99.290% /98.6209547951%; default99 gate remains red. No compiler
+ceiling is proved and the goal remains active.
+
+Compact evidence: docs/validation/starmap_2026-10-06_path_y_trial.json.
+Raw evidence under _work: before-path-y-selection-ninetyfirst.cpp,
+path-y-selection-ninetyfirst.json/log/asm,
+ninetyfirst-restored-focused.json/log,vfp-literal-audit-ninetyfirst.json.
+
+## Ninety-second follow-up: rejected target-owner flag (2026-10-06)
+
+The target-station ownership condition in init was written as an explicit
+Boolean: compare with borrowed playerStation, clear the flag for nullptr,
+then delete only when owned. Native c6f7c..c6f82 compares the borrowed pointer
+before the conditional null test. Unlike the twenty-seventh bitwise-AND
+trial, this uses sequential flag stores, with the same two predicates/calls.
+
+Session91670 terminated exit0:204 TUs, zero failures,22 comparisons/zero skips.
+Entire focused JSON and complete trial object equal accepted90, SHA256
+7d9424ca64863cded41ccad7c4560a4c0fce34bf48c53135cd169ef303e33617.
+The compiler still chooses null-first tests. No edit retained. Fresh UTF8
+restore and session37169 rebuild terminated exit0 (204/0/22/0), with complete
+focused JSON restored. Source matches b848db14 (checked through the next
+trial's pre-edit backup against Git). No separately sampled post-restore object
+hash is claimed; the neutral trial object had already matched accepted90.
+The next production candidate's native/full validations are independently run.
+
+Compact evidence: docs/validation/starmap_2026-10-06_target_owner_trial.json.
+Raw: _work/before-target-owner-flag-ninetysecond.cpp,
+target-owner-flag-ninetysecond.json/log,ninetysecond-restored-focused.json/log.
+
+## Ninety-third follow-up: separate native campaign-target branches (2026-10-06)
+
+The station/system campaign target branches previously merged into one Boolean
+OR/branch after the station-or-system calculation. Primary Android ARM has
+separate station ORRS/BNE/fallback-B at c8736..c873a and a system flag/ORRS/BEQ
+at c876c..c877a, both entering the same wanted-icon store. Source now branches
+to the single icon store independently, then evaluates the same fallback
+campaign/field80/target-minus1 conditions only when neither branch matched.
+Only StarMap.cpp changes. Same predicates, getters, their ordering and icon
+store; no additional callbacks, redundant conditions, padding, flags or ABI
+workarounds. C++ labels/spelling are a reconstruction, not recovered source.
+
+Independent read-only checks with unchanged asmdiff reproduce all8 source
+submetrics. Two complete16-byte machine fragments equal primary bytes:
+station c872c versus current1014 (SUB/CLZ/LSRS/ORRS/BNE/B), and system c876c
+versus current1054 (materialized flag/CMP/IT/ORRS/BEQ). This is local fragment
+byte equality; the entire Info body remains non-linked/non-byte-exact.
+
+Info source99.1 ->99.3, strict80.4 ->80.6; count1207/1196 ->1207/1198.
+Inventory98.5 ->98.7, opcodes99.2 ->99.3, control/ inventory98.9 ->99.1,
+ordered control90.4 ->90.6, size99.1 ->99.2; calls100 unchanged.
+All other21 focused rows are identical. Fixed20/7101 source99.300 /98.6549500070,
+strict87.790 /82.5805661174; aliases C2/D2 checked and excluded from means.
+Weighted99 shortfall0.345049993pp remains. No compiler ceiling is proved.
+
+Focused session22126 terminal exit0: all204 ARM TUs compiled, zero failures,
+22 comparisons/zero skips. Native static-library build terminates exit0.
+Full session58824, observed live PID29992, terminates exit0 with source and
+ARM objects frozen. All4619 comparisons, zero skips; all22 focused/full rows
+agree after unit-separator normalization. Linked2084/byte960 pairs preserved
+without losses against clean baseline and previous b848db14. Existing coverage
+remains4274/4524,250 missing (7 wrong type/243 absent),129 extras. Baseline and
+previous preservation gates exit0, default99 gate exit1. Runtime untested.
+
+Object SHA256: d114978a2da759daf551e4c0c541c0798cb5e19ee2e928b7b42c90ccad3446a7.
+Full JSON SHA256: 80581c6f944c2965ad667f28475fe9ad5d507682a217528fae7fcf47a4e15aed.
+Source SHA256: 644d2cb0e955cb3ee4aa3c8ec26df5f3c38f425e37da9af9fcdd83e7cbebd372.
+
+Compact evidence: docs/validation/starmap_2026-10-06_target_icon_branches.json.
+Raw under _work: before-target-icon-branches-ninetythird.cpp,
+target-icon-branches-ninetythird.json/log/asm,target-icon-proof-ninetythird.json,
+target-icon-argument-audit-ninetythird.json/log,info-inventory-ninetythird.json,
+native-ninetythird.log,ninetythird-corpus.json/log,
+ninetythird-baseline/previous/target-gate.json/log,
+checkpoint93-before-focused/corpus.json. The fresh Info inventory still has
+one BGE-versus-BGT difference at mission120 (primary c8544/c8546 versus current
+e30/e34); the prior twenty-fourth negative-enum goto trial was neutral, so it
+was not repeated. Other token surpluses remain diagnostic, not permission for
+extra reads/checks or proof of a compiler ceiling. Goal remains active.
+
+## Ninety-fourth follow-up: common confirmation close exit (2026-10-06)
+
+Only the result0 confirmation guard in OnTouchEnd changes. Previously two
+separate early-return blocks cleared suppressNextClose for an already-set
+flag and for a selected station equal to Status's current station. They now
+use one short-circuit OR guard and one clear/return block. Same conditions,
+member reads and getter order; no extra callback or predicate. The local
+Station pointer was eliminated without changing its lookup argument.
+
+Primary cAEdc clears field484 then cAEe0 returns; station equality at cAFec
+jumps to that same clear. Candidate1ec0/1ec4 and203c now share the equivalent
+exit. Native cAFc4 versus current2014 has identical first16 bytes of the
+station-lookup header. Raw getIndex ->Status::getStation ->getIndex ordering
+and captured first result in R6 match; same-station equality jumps to clear.
+This is local instruction/CFG evidence, not whole-function runtime equivalence.
+The fortieth flag-read-timing trial was reviewed; this edits guard topology,
+not that already-correct load/store order.
+
+Source97.7 ->97.8 improves; strict80.0 ->77.7 worsens and is explicitly retained
+as a tradeoff for source/CFG alignment. Count1037/1004 unchanged. Inventory96.8
+->97.0, opcodes97.4 ->97.5, control/ inventory98.1 ->98.7, ordered control84.1
+->87.9; calls99.3 unchanged. Normalized size96.7 ->96.5 worsens despite unchanged
+reported raw counts (the unchanged metric applies its own normalization).
+All other21 focused rows are identical. Independent unchanged asmdiff reproduces
+all8 source submetrics. Complete End remains non-linked/non-byte-exact.
+
+Fixed20/7101 source99.305 /98.6695535840; strict87.675 /82.2446838473.
+Aliases C2/D2 remain checked/excluded. Weighted99 shortfall0.330446416pp.
+The known-argument audit still aligns699 direct calls,33 stack pairs and222
+register pairs, with only the two previously reviewed SetColor alignment
+artifacts; no new known argument discrepancy. This conservative diagnostic
+does not recover all values or prove ABI/runtime equivalence.
+
+Focused session66186 terminated exit0,204 ARM TUs/zero failures,22 comparisons/
+zero skips. Native gof2 static-library build terminated exit0. Full session64815,
+observed live PID33372, terminated exit0 with source and ARM objects frozen.
+All4619 comparisons, zero skips; all22 focused/full rows agree after separator
+normalization. Baseline and previous d1d0ccfe gates preserve all2084 linked and
+960 byte exact pairs, zero losses, exit0. Default99 gate remains red, exit1.
+The original20 bodies/7101 instructions, aliases and compiler profile are
+unchanged. No runtime/native executable test; goal remains active.
+
+ARM object SHA256: 2e91d58070c32a49baf16e9baaa179219178ed2da974a1ebe06860eabe64876b.
+Full JSON SHA256: 83248e1a06667fbe6569fdc55185f0596ef6ba7ce31467360d90d1317d5ea666.
+Source SHA256: 6bd55273e01d6866104d648ed446531b6748d3783024871b63008a106584f1ef.
+
+Compact evidence: docs/validation/starmap_2026-10-06_confirm_close.json.
+Raw under _work: before-confirm-clear-ninetyfourth.cpp,
+confirm-clear-ninetyfourth.json/log/asm,confirm-clear-proof-ninetyfourth.json,
+confirm-clear-argument-audit-ninetyfourth.json/log,native-ninetyfourth.log,
+ninetyfourth-corpus.json/log,ninetyfourth-baseline/previous/target-gate.json/log,
+checkpoint94-before-focused/corpus.json. The source/CFG improvement is kept
+with strict and normalized-size regressions stated, without calling these
+metrics behavior equivalence or declaring a compiler ceiling.
+
+## Ninety-fifth follow-up: rejected station-array lifetime form (2026-10-06)
+
+Primary `c76e0..c76e8` loads stationGeoms for the loop bound. The zero
+iteration branches at c76f0 directly to c7914; nonzero processing refreshes
+the Array at c790c after all callbacks. Tested the same lifetime in source:
+capture during each bound, refresh after nonzero processing, then access
+data/element for addChild. The failed-bound Array was also used for the exit
+setVisible; accepted94 already performs that exit reuse, so it is not a
+new recovery. This differs from prior29's neutral top-break loop spelling.
+
+Focused204/0,22/0 exited0 (session87604). Entire report and complete ARM
+object equal accepted94. Compiler canonicalizes both pointer lifetime forms.
+Rejected; restored by fresh UTF8 write and focused204/0,22/0 exited0
+(session87661). Entire restored report/object equal accepted94, source
+SHA256 `6bd55273e01d6866104d648ed446531b6748d3783024871b63008a106584f1ef`,
+object SHA256 `2e91d58070c32a49baf16e9baaa179219178ed2da974a1ebe06860eabe64876b`.
+Source means remain99.305/98.66955358400226; strict87.675/82.24468384734544.
+No production retained; accepted94 native/full remain canonical, no redundant
+rerun after identical restoration. Fixed20/7101,7 linked/3byte unchanged;
+weighted99 still unmet, no ceiling or runtime-equivalence claim.
+
+Evidence: `docs/validation/starmap_2026-10-06_station_array_trial.json`.
+Raw: `_work/before-station-loop-array-ninetyfifth.cpp`,
+`station-loop-array-ninetyfifth.json/log`, `ninetyfifth-restored-focused.json/log`.
+
+A separate read-only VFP immediate audit complements91's PC-relative-load
+audit. Actual ELF halfwords were decoded to immediate8 and expanded to
+float32 sign/exponent/fraction; disassembler values were independently
+checked against those bits. All20 per-body unique bit sets match: native
+29 versus current29 VMOV.f32 immediate sites. Only update
+has different multiplicities: native repeats +/-0.25 on station-centering
+branches while current shares them; current repeats -30 on path selection
+while native shares it. This is not a newly recovered numeric correction.
+Prior27/35/91 branch/step trials cover those differences; no new trial or
+production change. General-register constants/scalar loads/derived values
+and runtime ABI are outside this audit, and no score ceiling follows.
+Evidence: `docs/validation/starmap_2026-10-06_float_immediates.json`.
+
+## Ninety-sixth follow-up: native current-route depth snapshot (2026-10-06)
+
+Only draw's second route loop changes. Primary c93bc..c93dc computes a
+zero/one both-behind result immediately after scratchVector2 assignment,
+before the currentRoutes-null test at c93f6 and the flag test at c93fa.
+Accepted94 instead tests currentRoutes at4e2/4e4 before depth at4e6..500.
+The new source computes bool bothBehind=false, assigns the second ordered
+negative-depth predicate only when the first depth is ordered negative, then
+uses the existing currentRoutes && !bothBehind && !jumpMapModeB guard.
+Same depth predicates, short circuit between depth reads, routes and jump-map
+conditions, calls and stores. Depth evaluation now precedes the route-pointer
+test, as primary. No additional condition, callback, padding, register forcing,
+barrier, volatile, shared header, compiler flag or verifier change.
+Native pointer/depth ordering and actual intermediate are reconstructed;
+original C++ spelling and whole-function FP exception/ABI/runtime equivalence
+are not claimed. Unordered less-than remains false; this does not prove
+end-to-end float-to-int/NaN safety.
+
+A first direct operand reorder was rejected: draw source99.1->99.0, strict
+89.7->90.0, raw916/907->910. The compiler duplicates a route-null guard and
+moves one before the second depth compare. Focus204/0,22/0 exited0
+(session2379). Object235b2e55c706ad160714f58e8ec0191ed30b34a3ca61af5700f147b8398ad76e.
+Replaced with the depth snapshot, not retained alongside it.
+
+Snapshot focus204/0,22/0 exited0(session83026). Draw source99.1->99.4,
+strict89.7->92.8, raw916/907->913. Inventory98.9->99.2, opcode99.1->99.3,
+control98.6->98.9, ordered97.5->98.9, size99.0->99.6; calls100 unchanged.
+All other21 rows identical. Read-only unchanged asmdiff independently agrees.
+Draw remains non-linked/non-byte-exact. Fixed20/7101, aliases checked but
+excluded; means source99.32/98.7082523588227, strict87.83/82.64457118715673.
+Seven unique linked/three byte preserved; weighted99 remains0.2917476411773
+percentage points short. No compiler ceiling claim.
+
+Actual ELF executable bytes c93bc..c93dc and4cc..4ec match for34bytes:
+94ed200ab5eec00af1ee10fa14d594ed230a0020b5eec00af1ee10fa48bf01200be0.
+This is the complete local depth flag block including BPL/ITMI selection,
+not whole draw equality. Conservative call-argument audit:699 aligned calls,
+33 known stack pairs,222 register pairs; no new known mismatch. The two
+already reviewed Info SetColor false path alignments remain; full Info row
+unchanged. Unresolved arithmetic/conditional/indirect calls are not proved.
+Native UCRT gof2 compiled StarMap.cpp and linked the static library, exit0;
+no native executable/runtime test.
+
+Scope correction for prior45: its report describes a neutral first-route bool
+experiment but cites c93c8..c93dc, which actually belongs to the current-route
+second loop. Only its pretrial source/report/hash were saved, not the temporary
+trial source. Do not infer which loop that removed trial modified from the
+mislabelled address. Current96 source and independent raw block proof are
+complete and authoritative for this retained second-loop change.
+
+Source SHA256:cf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3.
+ARM object SHA256:39cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a.
+
+Evidence: docs/validation/starmap_2026-10-06_current_route_depth.json.
+Raw _work:before-current-route-depth-first-ninetysixth.cpp,
+current-route-depth-first-ninetysixth.json/log/asm,
+current-route-depth-bool-ninetysixth.json/log/asm,
+current-route-depth-proof-ninetysixth.json,
+current-route-argument-audit-ninetysixth.json/log,
+native-ninetysixth.log,ninetysixth-corpus.json/log,
+ninetysixth-baseline/previous/target-gate.json/log,
+checkpoint96-before-focused/corpus.json.
+
+Full4619/0 exited0(session5341); all22 focused/full rows agree after
+separator normalization for comparison only. Full2084 linked/960byte,
+perfect2204,source89.06/strict76.16; coverage4274/4524,missing250
+(7wrong-type/243absent),extras129 unchanged. Source and ARM-object hashes
+remained frozen through comparison. Baseline and previous94 preservation
+gates exit0 with no lost pairs; default99 gate exits1 for the unmet weighted
+threshold. Canonical focused/full/gate updated only after these validations.
+Full JSON SHA256:ac36671ad80d872e4cd8053180fea46d76c6924b13ef1ae919d43048d9c95d08.
+Goal remains active.
+
+## Ninety-seventh follow-up: read-only receiver/branch checks (2026-10-06)
+
+No production edit or compiler trial. Inspected StarMap.cpp, accepted96
+current-route-depth-bool-ninetysixth.asm, primary argument-audit-primary-
+eightyninth.asm, and prior38's freelance-store report before considering
+changes. Freelance system capture precedes getType (native c8816/c881c,
+current1108/110e); cargo115/1 and signed enumeration branch agree. Prior38
+already merged the marker store. Actual executable ELF bytes for station
+equality, shared marker store and following mode guard agree for20bytes:
+native c885a..c886c/current114c..115e. This local block equality is not
+whole Info linked/byte equality and is not a new score gain.
+
+Init saves Canvas before CameraGetCurrent and uses the same receiver for
+CameraGetLocal (native c6f8e/c6f94/c6f9c; current47fa/4800/4808). It reads
+fresh Canvas after MatrixSetTranslation (c6fc6/current4832). Station-mode
+init likewise saves Canvas before the two camera getters (c702e/c7034/c703c,
+current489a/48a0/48a8), then reads fresh Canvas before CameraSetLocal
+(c7054/current48c0). Both matrix copies use60bytes. Route visibility bounds
+also already agree on operand and short-circuit order: nativec925e/c9260
+vs36e/370, and nativec938a/c938c,c9392/c9394 vs49a/49c,4a2/4a4.
+No candidate mismatch was established in these inspected blocks.
+
+Source and ARM object SHA256 still equal accepted96. Report-only work reuses
+its focused/native/full validations; no new build/corpus run is claimed.
+Metrics remain source99.32/98.7082523588227; weighted99 remains unmet.
+This excludes these particular edits, not all unknown call effects, runtime
+ABI issues, alternative source forms or future score improvements.
+Evidence: docs/validation/starmap_2026-10-06_receiver_flow_audit.json.
+Goal remains active.
+
+## Ninety-eighth follow-up: transition zero-guard trial (removed)
+
+Current tracked checkpoint bdbcab1d was clean before the trial; production
+remains accepted96 b67a5300. Inspected StarMap.cpp draw and primary/current
+ARM plus prior67/77/97 evidence. Draw's phase comparison c952c/c9534 already
+agrees with current634/63c, including unordered skip; completed-edge loop
+bounds also agree (c9a08..c9a18/currentb14..b24). No edits to those blocks.
+
+Initial transition guard differs in form: primary c9120..c912c uses ITT EQ
+with conditional transitionOut load/compare; accepted96 22e..23c uses BNE
+then load/compare. Trial used transitionIn==0 && transitionOut==0 goto
+draw_alpha_ready, followed by the original transition body in its own scope.
+Preserved short-circuit reads, alpha stores, callback paths and later fresh
+reads. No new callback, condition, padding, register/barrier/volatile forcing,
+flag, shared header or verifier changes. This direct zero-guard continuation
+is distinct from prior77's uint8_t fallback form; both compile neutrally.
+
+Trial exit0(session19609):204 compiled/0 failed,22 comparisons/0 skips.
+Entire focused JSON and whole ARM object equal accepted96. Trial source hash
+2090faeee195eb1d56871b99ddf207a5f44db746f0028e247a54ff4b9d5644c4.
+Removed trial with fresh UTF8 write; focused restore exit0(session4217),
+204/0,22/0. Entire JSON and whole object again identical to accepted96;
+source SHA256cf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3;
+object SHA25639cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a.
+
+No production change retained. Accepted96 native/full validations remain
+authoritative; no redundant rerun or new native runtime test is claimed.
+Fixed20/7101 source99.32/98.7082523588227 remains unchanged, seven unique
+linked/three byte preserved; weighted99 unmet. No compiler ceiling proved.
+Evidence: docs/validation/starmap_2026-10-06_transition_zero_trial.json and
+_work/before-transition-zero-goto-ninetyeighth.cpp,
+transition-zero-goto-ninetyeighth.json/log,ninetyeighth-restored-focused.json/log.
+Goal remains active.
+
+## Ninety-ninth follow-up: refreshed remaining inventory (read-only)
+
+Tracked checkpoint322d99e8 is clean. Recomputed all20 current source metrics
+and allocation-normalized inventory surpluses using unchanged asmdiff and
+current delinked target/accepted96 ARM object. Every metric agrees with the
+canonical focused report. Fixed20/7101, C2/D2 excluded; means99.32/98.7082523588227,
+weighted shortfall0.2917476411773pp. Deficits relative to99 by body: End0.17524pp,
+Station0.16998pp, init0.07393pp, update0.04102pp, Key0.03811pp, Move0.00746pp.
+Bodies above99 offset some of this deficit. These are aggregate token counts,
+not source statements to add and not a compiler ceiling. Prior80 inventory
+was stale for several later changes; refreshed evidence uses accepted96.
+
+Checked End transition-in easing range calls: primarycb772..cb79c and
+current274e..2778 both retain one SetRange address across three indirect
+calls, loading fresh ease receiver and scratch components per axis. No
+function-pointer snapshot repair is warranted. Matrix residuals still
+include native inline initialization versus current C1 calls at46e6/2b3c.
+Read Matrix.h/Matrix.cpp only: default ctor is the sole declared ctor.
+Actual native tail literal c7468 contains [1,0,1,1] at matrix offset40,
+confirming existing m10/m13 fixes rather than a new constant mismatch.
+Shared header/code, raw-storage, shadow-constructor or compiler changes
+remain outside this task; token counts do not authorize them.
+
+No production edit or compiler trial; source/object hashes remain accepted96.
+Accepted96 native/full and restored98 focused validations remain canonical;
+no new runtime proof. Updated ranking prioritizes real End branch/receiver
+discrepancies; do not repeat rejected warning receivers,3217 grouping,
+passenger bounds or transition guard forms merely because tokens remain.
+Evidence: docs/validation/starmap_2026-10-06_remaining_inventory.json; raw
+_work/all-body-inventories-ninetyninth.json. Goal remains active.
+
+## Hundredth follow-up: proven data classification sensitivity (read-only)
+
+No verifier or production change. Actual ELF matrix tails c7468/c7d48 are
+16bytes each,0000803f000000000000803f0000803f, floats[1,0,1,1]. Primary
+c6db2 ADDW -> c6dbc VLD1.64 and c76c8 ADDW -> c76d0 VLD1.64 prove these
+are constant data. Stripped target entries decode each tail as5 MOVS/3 SUBS;
+these match the entire such surplus in both init and Station inventories.
+Do not add eight corresponding C++ operations to chase these data tokens.
+
+Targeted in-memory diagnostic reclassifies only these two16-byte tails and
+End's40-byte literal island cb360..cb388, then uses unchanged normalizer and
+metric functions. Every End word has a real incoming PC load outside the
+island; discard cb204's apparent reference because cb204 is itself data.
+Prior31 already proved false origins cb364/cb374/cb37c can erase real calls.
+This diagnostic restores those call tokens by excluding data as origins.
+It is neither a general normalizer repair nor an official score change.
+
+Diagnostic End97.8->97.7 (tokens1037->1041), init98.3->98.5 (750->745),
+Station97.3->97.5 (710->706). Using fixed weights7101 gives diagnostic
+99.335/98.73476975073933, still below weighted99. Thus even this data-only
+classification adjustment is insufficient. Official20/7101 remains
+99.32/98.7082523588227; official reports/gates untouched. Not a compiler
+ceiling, permission for verifier edits, padding, or completion evidence.
+Evidence: docs/validation/starmap_2026-10-06_proven_data_sensitivity.json;
+raw _work/proven-data-sensitivity-hundredth.json and
+end-real-pool-references-hundredth.json.
+
+## Hundred-and-first follow-up: modular yaw arithmetic trials (removed)
+
+Inspected End confirmation/no-confirmation paths and update's integer
+yaw-distance sequence. End alien-jump guards and cached jump-map byte already
+agree (caff0..cb01c/current204c..2078); no new End edit. Native update
+ca1f6 RSB,ca210 SUBS,ca214/ca216 MI conditional NEG operate on32-bit values.
+TrialA uses uint32 subtraction/negation plus int32 conversion for yawDistance;
+trialB also applies this to target=0x8000-stationAngle and both yawStep
+subtractions. No extra branch/call/barrier, forced register, padding, flags,
+shared header or verifier edit. Distinct from prior37's abs(yaw-target).
+
+Both exit0(A session78049,B79536),204 compiled/0 failed,22 comparisons/0
+skips. Entire focused JSON and whole ARM object remain equal to accepted96.
+Removed both forms: ordinary yaw[-65535,65535]/stationAngle[0,65535] implies
+target[-32767,32768] and difference[-98303,98302], so old signed arithmetic
+already fits in that range. Unsigned-to-int32 conversion is implementation-
+defined C++14, supported by intended two-complement targets; neither trial
+proves float-to-int, pitch/dt overflow or whole-function runtime safety.
+No normal-range gameplay fix or recovered original C++ spelling is claimed.
+
+Fresh source restore exit0(session46965),204/0,22/0; entire focused report and
+whole object equal accepted96. Source hashcf1300c403b2e61ed58faa7e1e9e1b207dde1c84861477b0dc29862ad1e7b3a3,
+object39cdb475d869112b63837bd97ac2b6d260d312c988705c9b6cf9c4b69e92735a.
+Accepted96 native/full remains canonical; no redundant rerun or new runtime
+claim. Source means99.32/98.7082523588227 unchanged; weighted99 unmet.
+Evidence: docs/validation/starmap_2026-10-06_yaw_wrap_trials.json; raw
+_work/before-yaw-wrap-hundredfirst.cpp,yaw-distance-wrap-hundredfirst.cpp,
+yaw-full-wrap-hundredfirst.cpp,yaw-wrap-hundredfirst.json/log,
+yaw-full-wrap-hundredfirst.json/log,hundredfirst-restored-focused.json/log.
+No compiler ceiling proved. Goal remains active.
+
+
+## Hundred-and-second follow-up: clamp, viewport and help audit
+
+Read StarMap.cpp plus accepted96/current and primary ARM assembly. Move pitch
+clamp retains two ordered comparisons/three selectors versus native four
+comparisons/three selectors (cac74..cacd4/current4f18..4f62). Inspected selected
+values agree, including unordered input selecting -8192; no redundant predicate
+added for score. This does not prove equal floating-point exception counts.
+
+Info viewport c839c..c83f8/currentc98..cf4 already reads X before width and Y
+only after X acceptance, with matching ordered BMI/BGT lower/upper tests.
+Prior22 repaired this ordering. End help cb902/current28a6 already captures
+Layout before GameText and String calls and uses that saved receiver afterward.
+Actual ELF bytes cb90c/current28b0 match for six bytes of IT EQ/conditional
+text628 selection; local proof only, not whole End equality.
+
+No production edit, compiler trial or verifier change. Source and whole ARM
+object hashes remain accepted96; canonical focused/native-static/full results
+are unchanged. Means99.32/98.7082523588227 on20/7101; weighted99 remains unmet.
+No executable/runtime or compiler-ceiling claim. Evidence:
+docs/validation/starmap_2026-10-06_clamp_viewport_help_audit.json.
+
+
+## Hundred-and-third follow-up: reverse transition and spin audit
+
+End reverse-transition caf40..caf9e/current20ec..214a already preserves saved
+axis receivers, fresh minimum receivers and reuse of the three indirect getter/
+setter addresses. The 52 ELF bytes caf6c/current2118 (Y/Z receiver and argument
+sequence) match exactly; this excludes GOT setup and is not whole End proof.
+Update galaxy spin ca3a8..ca3fa/current3a48..3a9a and station spin
+ca56c..ca5c6/current3ba0..3bfa agree in GT absolute selection, MI speed<10,
+addition and GT spin>100 zero selection; station multiplication precedes cap.
+Unordered speed selects10 and unordered spin remains unordered in both.
+No new receiver or min/max spelling trial justified for these blocks.
+No production/verifier edits or new compile. Source/object equal accepted96;
+canonical checks preserved, means99.32/98.7082523588227 unchanged, weighted99
+unmet. Native executable/runtime not validated; no compiler ceiling proved.
+Evidence: docs/validation/starmap_2026-10-06_transition_spin_audit.json.
+
+
+## Hundred-and-fourth follow-up: automatic selection store order
+
+Inspected init station cleanup and native c70c8..c70d6. Cleanup already agrees:
+initial stations receiver held for ArrayReleaseClasses, fresh member read for
+destruction, null store before new allocation. No cleanup edit justified.
+The following param3 conditional block instead had selectedSystem written
+before lastSelectedSystem in current496c/4970, opposite nativec70d2/c70d6.
+Reverse these independent source statements. Emitted18-byte block4962..4970
+now matches nativec70c8..c70d6 exactly. There is no intervening call; values and
+conditions are unchanged. This is emitted-order restoration, not proof of
+original C++ spelling or whole-function/runtime equivalence.
+
+Compared7017 old .text assembly entries with actual new ELF bytes: only the
+four-byte stores at496c and4970 changed (swapped cbf86000/cbf89c01). The other
+7015 entries are unchanged. Focus exit0(session29188),204 compiled/0 failed,
+22 comparisons/0 skips: init strict77.3->77.4, source98.3 unchanged; all other
+21 rows identical. Source means99.32/98.7082523588227 unchanged; strict means
+87.835/82.65513307984791 (fixed20/7101). Source/object hashes in compact evidence.
+
+Native STATIC gof2 exit0, StarMap compiled and libgof2.a linked. Full exit0
+(session64351,PID11176):4619 comparisons/0 skips,2084 linked/960 byte exact,
+2204 fuzzy perfect,4274/4524 coverage,250 missing(7 wrong type/243 absent),
+129 extras. All22 focus/full metrics agree. Baseline and previous accepted96
+preservation gates exit0 with no lost pairs. Threshold gate exit1 solely
+because weighted99 remains unmet. Canonical reports refreshed. No native
+executable/runtime validation; no compiler ceiling claim. Goal remains active.
+Evidence: docs/validation/starmap_2026-10-06_auto_selection_stores.json.
+Raw _work/before-auto-selection-stores-hundredfourth.cpp,
+auto-selection-stores-hundredfourth.json/log/asm,
+auto-selection-byte-diff-hundredfourth.json,native-hundredfourth.log,
+hundredfourth-corpus.json/log,hundredfourth-{baseline,previous,target}-gate.json/log.
+
+
+## Hundred-and-fifth follow-up: centering delta/read-order trials (removed)
+
+Update camera-boundary integer predicates already agree. Native centering
+ca444..ca47c reads height, then Y/X and width conversion, computes Y/X deltas
+before X comparison. Proved globals using actual ELF PC literals plus dynamic
+relocations: ca7c4=145e34+ca44c=210280(Globals::h),
+ca7c8=145e2a+ca44e=210278(Globals::w). Width/height meanings are correct;
+the discrepancy is ordering, not an axis swap.
+
+TrialA reorders these source reads and preserves deltaY/deltaX locals before
+X branching, using locals for divisions only; later overshoot member reads
+are unchanged. This is a delta-only experiment, distinct from prior35's early
+step-selection and91's Y step selector. Exit0(session61743),204/0,22/0;
+update source98.7->98.5, strict82.7->79.8, raw966->961, control98.7->98.0,
+ordered95.4->91.4,size99.6->99.1; other21 rows identical. Rejected.
+TrialB changes read order only. Exit0(session84128),204/0,22/0; entire report
+and whole ARM object equal accepted104. Neutral and removed.
+Fresh restore exit0(session28003),204/0,22/0; source and whole object hashes
+and entire focused report equal accepted104. Canonical native-static/full
+checks preserved; no redundant rerun or executable/runtime claim.
+Source99.32/98.7082523588227 unchanged; weighted99 unmet. No ceiling proved.
+Evidence: docs/validation/starmap_2026-10-06_centering_delta_trials.json.
+Raw _work/before-centering-deltas-hundredfifth.cpp,
+centering-deltas-hundredfifth.cpp/json/log,
+centering-read-order-hundredfifth.cpp/json/log,
+hundredfifth-restored-focused.json/log. Goal remains active.
+
+
+## Hundred-and-sixth follow-up: Key temporary scheduling review
+
+Read StarMap.cpp, Layout.h, AEString.h and native/current drawKey bodies.
+Nativec8178 drawBox, c817c..c8192 saved-coordinate arithmetic, c8196 StringD1;
+current1a6a drawBox,1a70 StringD1, then coordinate arithmetic before first
+DrawImage2D. All relevant values were captured before String construction.
+Remaining difference here is pure arithmetic scheduling across destruction;
+normal UI-coordinate formulas agree, not a whole-function/overflow proof.
+Do not repeat prior32 neutral comma-expression extension or prior55 worsened
+flat textX spelling. Named-string lifetime proposal is also unsuitable:
+Layout takes String by value; declared copy constructor calls Set(other.data),
+virtual destruction adds a lifetime, and no move constructor exists. That
+would add copying beyond the original single temporary. No such edit/trial.
+No forced scheduling/barrier/padding/shared header change. Source and whole
+ARM object equal104; canonical validation preserved. Current96 drawKey dump
+still valid after104 (only496c/4970 changed);105 restored exact104 object.
+Source99.32/98.7082523588227 unchanged, weighted99 unmet. No runtime or compiler
+ceiling proof. Evidence: docs/validation/starmap_2026-10-06_key_temporary_audit.json.
+
+
+## Hundred-and-seventh follow-up: concrete shared Matrix proposal (not applied)
+
+Remaining Matrix difference is inline native initialization versus accepted
+StarMap calling the shared constructor. Prepared a reversible patch moving
+its unchanged body from Matrix.cpp to Matrix.h; no field/layout/StarMap-local
+fix or verifier/flag change. Shared files remain untouched. No compile or
+predicted improvement claimed. This exceeds agreed task scope, so requested
+explicit permission before applying. Pending question is not authorization.
+MatrixC2 itself is not exact in either baseline/current report (both duplicated
+unit entries73.5 source/43.2 strict). This does not prove callers preserve
+exactness or exported symbols survive. Proposed acceptance requires focus,
+native STATIC/full corpus, baseline/previous exact-pair preservation and
+symbol/coverage inspection, with rejection on loss or metric regression.
+Source/object still accepted104;99.32/98.7082523588227, weighted99 unmet.
+No runtime/ceiling claim. Goal active; waiting for shared-scope decision.
+Evidence/proposal: docs/validation/starmap_2026-10-06_matrix_inline_proposal.json
+and .patch. No shared production files modified.
+
+
+## Hundred-and-eighth follow-up: shared constructor footprint (unapplied)
+
+Previous turn prepared a concrete shared Matrix proposal; no human scope
+approval has arrived. Automated goal continuation is not that approval.
+Read-only ARM nm -A -u scan of204 current base objects finds MatrixC1 references
+in33 units, including Level,Gun,PlayerTurret,TargetFollowCamera. Every one of
+those units has linked-exact rows;31 have byte-exact rows (552 linked/235 byte
+rows across those units, not distinct function/call-site proof). Unit paths
+normalized for repeated separators only for this comparison. A reference in
+an object plus exact rows in the same unit is a potential preservation surface,
+not evidence those exact functions call Matrix or that the proposal regresses.
+Full corpus preservation remains mandatory; no prediction of improved score.
+StarMap source/object and both shared Matrix files still match107 recorded
+hashes. No production change, build, test rerun or native runtime claim.
+Goal active, weighted98.7082523588227 <99. Awaiting explicit shared-scope decision;
+proposal remains unapplied. Evidence:
+docs/validation/starmap_2026-10-06_matrix_ctor_footprint.json.
+
+## Hundred-and-tenth follow-up: authorized shared Matrix trials rejected
+
+Human authorization on2026-10-06: "доделывай разрешаю". Tested the concrete
+shared-constructor proposal in engine/math/Matrix.h and both engine/math and
+game/core Matrix.cpp implementations. The first ARM/native attempt exposed
+the second out-of-line definition in game/core/Matrix.cpp (203 compiled/1
+failed; native exit1). Removed that identical duplicate for the trial, then
+ARM compiled204/failed0 and native STATIC linked successfully. Verifier exit0
+alone was not treated as a clean compile. No StarMap/field-value/layout/flag/
+normalizer change or forced inlining was used.
+
+Ordinary in-class assignment initialization improved init source98.3->98.9
+and initStarSystem97.3->98.3; the other20 focused rows stayed unchanged.
+Fixed20-body means became99.4 unweighted/98.87160963244614 weighted source,
+87.75/82.4868469229686 strict. Weighted99 still failed. Full4618/0 compared
+rows retained4274/4524 unique coverage and960 byte-exact pairs, but lost TWO
+previously linked-exact pairs: AEMath::MatrixGetInverse and CameraC2. Linked
+count2084->2082;40 existing rows regressed in source shape. Baseline exact-
+preservation gate exit1. Two duplicate MatrixC2 comparison rows disappeared;
+a read-only scan of204 base objects still found one weak MatrixC2 definition
+in Level, so the unique constructor coverage did not disappear. The proposal
+was rejected, rather than accepting a StarMap gain with wider regressions.
+
+Restored all three shared files byte-for-byte and rebuilt: ARM204/0 and
+native STATIC exit0. Focused report and ALL4619 full function rows equal the
+previous accepted104 reports, skipped0, linked2084/byte960, coverage4274/4524,
+missing250 (7 wrong type/243 absent), extras129. Both baseline and previous
+preservation gates exit0 with --allow-partial; that option does not relax
+exact-pair preservation. Canonical final reports remain accepted104.
+
+Also tested an ordinary array member initializer with the SAME15 values,
+removing both out-of-line definitions. ARM204/0; source means remained
+99.32/98.7082523588227, strict fell to87.755/82.49402900999858. Rejected at
+the focused gate because it supplies no source improvement. No full or native
+build was claimed for this rejected alternate. Restored/rebuilt once more;
+ALL final204 ARM object hashes equal the fully validated restored set. Final
+focused report equals accepted104; native STATIC rebuilt with exit0. The full
+report therefore still describes every underlying byte-identical object;
+unchanged full comparisons were not rerun. Default99 threshold gate exit1,
+weighted threshold only; both preservation gates remain green.
+
+New read-only primary evidence distinguishes the standalone constructor from
+previous local StarMap-tail evidence. Dynamic weak MatrixC2 at0x6e8d8, size0x40:
+ADR0x6e8d8 addresses0x6e908, VLD1 loads16 bytes, ADD at0x6e8fa selects offset40,
+VST1 at0x6e8fe stores to m10..m13. Literal bytes
+0000803f000000000000803f0000803f prove those four values are1,0,1,1. Thus the
+original standalone constructor also has m10=1/m13=1, whereas current shared
+defaults are0/0. The approved unchanged-value experiment did not apply a
+shared behavior fix; existing local StarMap repairs already set both to1.
+This recovers data/store behavior, not original C++ spelling. Native STATIC
+checks do not prove runtime or whole ABI correctness.
+
+The authorized experiment is finished and rejected. Production stays104,
+99.32/98.7082523588227 source,87.835/82.6551330798479 strict,7 linked/3 byte
+unique StarMap bodies. The overall99 objective remains unmet; this is not a
+proof that99 is impossible. Evidence:
+docs/validation/starmap_2026-10-06_matrix_inline_trial.json.
+
+## Hundred-and-eleventh follow-up: explicit warning state (neutral, removed)
+
+Revalidated committed110 restoration before investigating OnTouchEnd. Previous
+goal turn is progress: the authorized Matrix experiment supplied full-corpus
+regression evidence and eliminated a concrete shared-header route. No running
+job was assumed from old logs. Production remains104.
+
+Tested a separate bool for seven successful warning selections, retaining the
+ordered mission/Station/Ship predicates, numeric text IDs and single common
+delivery. The two remaining mission142 guards and final delivery test used
+the bool instead of signed warningText sentinel comparisons. This differs
+from prior53's zero sentinel and81's captured receivers; it does not predicate
+warning delivery on a potentially null pointer. It is a source-form heuristic,
+not recovered C++ spelling. No calls, barriers, shared edits or flags added.
+
+ARM204 compiled/0 failed,22 compared/0 skipped. ENTIRE focused report and
+whole ARM object equal accepted104, SHA256
+54a78574bcc14daefc8678850bb6a4e8bf3bed2caa2fa3b5139ef72c9e30484b.
+Compiler output does not distinguish this explicit state from the sentinel.
+Removed the neutral change. Fresh-mtime restoration reproduces ALL204 objects
+from the fully validated110 restoration, canonical focused report and original
+source hash; native STATIC rebuild exit0. The full110 report remains valid for
+every byte-identical object; no unchanged full rerun or runtime claim.
+
+Existing inertia IT GT predicates, ring float/int conversion and prior78
+low-cargo read-order trial were checked to avoid repeating unsupported or
+already neutral variants. No such edits made. Source99.32/98.7082523588227,
+strict87.835/82.6551330798479,7 linked/3 byte unique bodies; weighted99 remains
+unmet. Goal retains the full99 objective. Evidence:
+docs/validation/starmap_2026-10-06_warning_bool_trial.json.
+
+## Hundred-and-twelfth follow-up: primary playing-time ABI/division audit
+
+Revalidated committed111 and unchanged production104. Previous goal turn is
+progress: explicit warning-state compilation ruled out a new source form.
+No live build/wait assumed. Read StarMap.cpp, Status.h/cpp, AERandom.h and
+primary/current ARM fragments. No production edit or new build.
+
+Final station seed transfers BOTH getPlayingTime return words into setSeed's
+64-bit argument. Native c7cf8..c7cfd and current3102..3107 have EXACT6 bytes
+024620460b46: r2=r0, r0=saved AERandom receiver r4, r3=r1. No narrowing or
+extra sign extension. This was already noted in older source review; fresh
+ELF bytes revalidate it, rather than treating it as a newly found bug.
+
+New evidence addresses draw's stripped division destination. Native pulse
+calls c9426/c942e and c9504/c950c target19ae54. The nearest-symbol label
+__cxa_demangle+0x6e24 does not identify that helper's behavior. Directly
+disassembled19ae54..19ae97: nonzero divisor path calls imported
+__gnu_ldivmod_helper at19ae7c via69420 PLT; returned remainder is loaded into
+r2/r3. Dynamic symbols contain this signed helper, without a matching
+__gnu_uldivmod_helper import. Caller passes10/0 then99/0, uses64-bit
+101-minus-remainder and signed __aeabi_l2f, as current __aeabi_ldivmod callers
+already do. Keep signed int64_t playingTime arithmetic; an unsigned source
+rewrite based on a stripped/misleading symbol label is unsupported.
+
+Source and whole ARM object equal104. ALL204 base object hashes equal the
+full-validated110 restored set; canonical4619/0 full report and111 native
+STATIC evidence remain valid. No redundant tests rerun, runtime/source-
+spelling/whole ABI claim or metric change. Source99.32/98.7082523588227,
+weighted99 remains unmet; full objective retained. Evidence:
+docs/validation/starmap_2026-10-06_playing_time_abi_audit.json;
+raw _work/playing-time-division-wrapper-112.asm.
+
+## Hundred-and-thirteenth follow-up: station Matrix basis/copy trial removed
+
+Revalidated112 before inspecting station initialization. Previous goal turn
+is progress: direct inspection of the hidden signed division wrapper excludes
+an unsupported unsigned playing-time rewrite. Original used-flag clearing
+c7698..c76ad and accepted2ad0..2ae5 already cache Array pointer/length and use
+the same data load, byte store, increment and != loop; no clearing-loop edit.
+The earlier Array<bool> trial lost an existing byte-array constructor exact
+pair, so it was not repeated or concealed with a dummy instantiation.
+
+Native station Matrix literals are loaded before iteration and stored into
+each local rotation. Tested a normal C++ invariant Matrix basis with the SAME
+15 defaults and existing m10/m13 repairs; each station created rotation by
+ordinary implicit Matrix copy. No raw storage, shadow constructor, shared
+edit, forced scheduling, flag/verifier change or invented field value. This
+is a source-form hypothesis, not recovered original C++ spelling.
+
+ARM204 compiled/0 failed,22 compared/0 skipped. Only Station changed:
+source97.3->96.9, strict84.7->75.7, raw683->685, instruction inventory96.7->95.8,
+opcode97.4->97.3, control96.9->96.6, call99->98, size96.3->96.6. Trial relocation
+2b4e is an added __aeabi_memcpy; MatrixC1 is at2aec. The implicit copy does not
+reproduce primary inline field initialization. Fixed20-body means fall to
+99.3/98.66825799183215 source and87.385/81.7552598225602 strict. Rejected at
+focus; no full/native validation is claimed for this rejected trial.
+
+Restored the exact source backup and rebuilt. Restoration reproduces ALL204
+full-validated object hashes and canonical focused report; native STATIC
+rebuild completed with exit0. Fresh ELF extraction also proves EXACT22 clearing
+loop bytes: d4f8000100220023016802e04668f25401339942fad1. The unchanged full
+report remains valid; no redundant full rerun or runtime claim. Accepted production
+remains104,99.32/98.7082523588227 source,87.835/82.6551330798479 strict. Overall
+weighted99 remains unmet. Evidence:
+docs/validation/starmap_2026-10-06_station_matrix_copy_trial.json.
+
+## Hundred-and-fourteenth accepted branch-local warning delivery
+
+Revalidated113 before changing OnTouchEnd. Previous turn is progress: ordinary
+Matrix-copy trial was rejected with fresh compilation evidence and restoration;
+the used-flag loop is now proven exact22 bytes. Reviewed46's common-goto and
+57/67/82's separate3217 forms before selecting a distinct source representation.
+
+Seven successful warning branches now deliver their existing warning directly,
+set suppressNextClose and jump to the unchanged choice-visible/inertia/Help
+continuation. Removed numeric sentinel and both later sentinel guards. Runtime
+still executes ONE delivery after the same ordered predicates/getters, with
+the same IDs532/3213/3214/3217/3215/3216/3218. Normal dialog and confirmation
+paths are unchanged. No pointer-null control assumption, extra runtime call,
+barrier, template padding, shared edit, flag or verifier change. Branch-local
+source calls are legitimate alternatives, not proof of original C++ spelling.
+
+ARM204 compiled/0 failed,22 compared/0 skipped. Only End row changes:
+source97.8->98.6, strict77.7->80.3, raw1004->1036, instruction inventory97->98.3,
+opcode97.5->98.8, size96.5->99.7. Control98.7->98.3 and call count99.3->97.8
+worsen; source-shape and strict totals improve. Other21 rows including aliases
+are identical. Fixed20 means99.36/98.82508097451064 source and
+87.965/83.0348260808337 strict;7 linked/3 byte unique bodies unchanged.
+
+Native STATIC exit0. Full4619 compared/0 skipped, linked2084/byte960, coverage
+4274/4524, missing250 (7 wrong type/243 absent), extras129. ALL22 full/focus
+rows agree. Baseline AND previous exact-pair gates exit0; zero losses in both
+linked and byte pairs. Default99 gate exit1 solely because weighted98.82508
+remains below99. Canonical final reports updated after those checks.
+
+Formatted branch bodies and removed the experiment suffix from the continuation
+label before committing. Fresh ARM204/0 and native STATIC exit0; the entire
+focused report and ALL204 object hashes match the fully validated candidate,
+so its full report remains valid. This is source-shape progress, not native
+runtime/whole ABI proof or completion of99. Source/object hashes and raw gate
+inputs are recorded in the compact evidence snapshot.
+Evidence: docs/validation/starmap_2026-10-06_warning_branch_delivery.json.
+
+## Hundred-and-fifteenth accepted warning suppression tail
+
+Revalidated114 (dde477ce) source/object and committed evidence. Previous goal
+turn is progress:114 improved source shape and passed full/native/baseline and
+previous preservation gates. This continuation keeps the direct warning
+deliveries and tests the placement of their suppression store.
+
+Variant A: all seven successful deliveries jump to one suppression store,
+followed by existing choice visibility/inertia/Help. Both ordinary station
+dialogs jump past that store; warning predicates/getters/text IDs and runtime
+actions remain unchanged. No new calls/checks, padding, shared edits, flags or
+verifier changes. Primary stores suppression after set and before visibility;
+this shared-tail source form is heuristic, not recovered original spelling.
+
+Variant B keeps3217's suppression store local and shares the store for six
+other warnings, reflecting primary's special3217 block. ARM204/0; entire
+focused report AND object equal114 (cd625a949c83d404b31b81b8b9e33d4a1e3e97fd768c47bbadd11b78dc961e82),
+so B was removed. This is distinct from older shared-getText/separate3217
+trials because all seven source deliveries remain branch-local.
+
+A improves End source98.6->98.8, control98.3->98.7 and calls97.8->99.3; strict
+80.3->79.8, instruction inventory98.3->98.2, opcode98.8->98.7 and size99.7->98.9
+decrease honestly. Raw1036->1028; other21 focused rows unchanged. Fixed20
+means99.37/98.85428812843263 source,87.94/82.96180819602874 strict,7 linked/3 byte
+unique bodies. Weighted99 remains unmet; strict improvement is not claimed.
+
+Restored A after B and reproduced its entire report/object with fresh ARM204/0;
+native STATIC exit0. Full4619/0, linked2084/byte960, coverage4274/4524, missing250
+(7 wrong type/243 absent), extras129. ALL22 focus/full rows agree; baseline and
+previous gates exit0 with zero exact-pair losses. Default99 gate exit1 solely
+for weighted threshold. Canonical final reports updated after validation.
+Source SHA256ac000659c5ae6147d7dc447d23ad4958e7d6626e24fb003d443a1925f208067c;
+object0856e8255c8ddc4c590d88f2c08a08a452ce38db895419c0260ab251c983e7e4.
+No native runtime/whole ABI or source-spelling claim. Evidence:
+docs/validation/starmap_2026-10-06_warning_suppression_tail.json.
+
+## Hundred-and-sixteenth accepted passenger branch split
+
+Starting from47a245be, split the combined mission91/94 passenger warning OR
+into two adjacent else-if branches. Both retain the ordered mission/station/
+ship getters, deliver existing warning3214 and join the shared suppression
+tail. No additional runtime calls or repeated prefix checks. This source form
+is a hypothesis, not recovered original C++ spelling; unlike older21/87
+high-capacity continuation trials, it actually changes the emitted comparison.
+
+Fresh ARM disassembly confirms primary cb464 CMP r0,#9 / cb466 BLE.W and
+candidate2440 CMP r0,#9 /2442 BLE.W. Candidate mission94 compares to zero
+at247e and branches BEQ.W at2480; both warnings join2784. This establishes
+the comparison shape, not byte equality of the entire function. No padding,
+barriers, forced registers, shared files, flags or verifier changes.
+
+A secondary trial split equipment13/17 checks after one campaign/station
+prefix, retaining independent mission135 fallback. Its entire focused report
+and ARM object were identical to the passenger candidate; removed as neutral.
+Restoring the passenger-only candidate reproduced its report/object exactly.
+
+Only OnTouchEnd changes: source98.8->98.9, strict79.8->80.0, instruction
+inventory98.2->98.4, opcode98.7->98.8, control98.7->99.1, ordered control
+87.9->88.3. Size98.9 and call99.3 remain unchanged. Other21 focused rows,
+including aliases, are identical. Fixed20/7101 means99.375/98.86889170539361
+source and87.95/82.9910153499507 strict;7 linked/3 byte unique bodies.
+
+ARM204 compiled/0 failed; native STATIC exit0. Full4619 compared/0 skipped,
+linked2084/byte960, coverage4274/4524, missing250 (7 wrong type/243 absent),
+extras129. All22 focus/full rows agree. Baseline and previous preservation
+gates exit0 with zero exact-pair losses. Default99 gate exits1 solely because
+weighted98.86889 remains below99. Canonical reports updated after validation.
+
+Source SHA2560ba76574f515702be1871c8762d806136892580610cf216dab0329d70a54fe53;
+object3fa0a66974b3f8a5eda66c16e3ac1cf3e2063c37f029c4fe45c1855382a7a60f.
+Native executable/runtime and whole ABI correctness remain unverified.
+Evidence: docs/validation/starmap_2026-10-06_passenger_branch_split.json.
+
+## Hundred-and-seventeenth follow-up: warning topology trials (neutral, removed)
+
+Revalidated116 (6e6b6ecd) and its current canonical reports. Previous goal turn
+is progress: passenger branch split changed the emitted CMP/BLE comparison,
+improved the score and passed native/ARM/full/preservation gates.
+
+Three bounded source-form trials preserve ordered getters and runtime actions:
+(1) one mission142/station prefix with separate33/197/35 equipment failures
+delivering3216; (2) jumpCost==1 with swapped582/579 delivery bodies; (3) an
+independent139 if after105's successful delivery/goto, as presented by primary
+decompilation. These are source-spelling hypotheses, not recovered C++.
+
+Each ARM build compiled204/failed0. ALL22 StarMap rows and the whole StarMap
+object are identical to116 in every trial; mission142 scoped report additionally
+compares14 unchanged helper rows. Removed all neutral edits. Fresh restoration
+ARM204/0 reproduces the ENTIRE canonical focus report and ALL204 object hashes.
+Source/object hashes match116; native STATIC rebuild exits0.
+
+Accepted116 full4619/0, linked2084/byte960 and prior preservation evidence stay
+valid for this exact same204-object set. No new full run or changed canonical
+report is claimed. Means remain99.375/98.86889170539361 source and
+87.95/82.9910153499507 strict, fixed20/7101. Weighted99 is unmet; native
+executable/runtime and whole ABI remain unverified. These branch spellings
+are now measured as neutral; further work must examine remaining instruction/
+call inventory differences instead of repeating them.
+
+Evidence: docs/validation/starmap_2026-10-06_warning_topology_trials.json.
+
+## Hundred-and-eighteenth accepted constructor store order
+
+Fresh current drawKey diff and prior32/55/106 evidence confirm coordinate
+grouping already agrees; no repeated coordinate/lifetime edit was applied.
+Investigated constructor load/store ordering against the primary instead.
+Capture Layout+0x88 before assigning mode, then set hitRadius from the value.
+Swap the source order of the choiceVisible and markerGeom zero assignments.
+These preserve values and calls; source spelling is heuristic, not recovered.
+
+Only constructor C1/C2 strict score changes97.6->98.8; all source submetrics
+and other20 rows stay identical. Primary marker zero before choice-visible
+zero now agrees in the emitted code. Hit-radius region is closer but mode
+store still differs in ordering. No whole-function byte equality is claimed.
+Primary tail c6b68..6f contains float0.025/0.018 literal bytes, decoded by the
+diff as four instructions versus two word entries. This is data, not missing
+gameplay. No padding, verifier change, forced register or shared edit.
+
+ARM204 compiled/0 failed; native STATIC exit0. Full4619/0, linked2084/byte960,
+coverage4274/4524, missing250 (7 wrong type/243 absent), extras129. All22
+focus/full rows agree; baseline/previous preservation gates exit0 with zero
+losses. Default99 gate exits1 for the weighted threshold. Source means stay
+99.375/98.86889170539361 on fixed20/7101. Canonical reports updated only after
+full validation. Native runtime/whole ABI remain unverified; goal incomplete.
+Evidence: docs/validation/starmap_2026-10-06_constructor_store_order.json.
+
+## Hundred-and-nineteenth accepted easing-value captures
+
+Revalidated118 (477275ea) and current primary/update diff. Previous turn is
+progress: constructor ordering correction passed full/native and preservation
+gates. Avoided prior30/85 neutral projection-depth selection forms.
+
+During camera transition, primary c9efe/c9f06/c9f0e calls GetValue X/Y/Z,
+retaining first2 returns in r4/r5. Only then c9f10 STRD writes X/Y and c9f16
+writes Z, before c9f1c Vector assignment. Previous source stored each value
+into tmp between getters. Capture three float locals in the same order and
+aggregate local tmp after the third call. Keep existing scratchVector assignment;
+remove the earlier function-scope tmp. Candidate now matches this sequence
+with different stack offsets. Source spelling remains a hypothesis.
+
+Only update changes: source98.7->98.8, strict82.7->83.3, raw966->967,
+instruction inventory97->97.1, opcode98.2->98.5, size99.6->99.7. Other21
+focused rows including aliases are identical. No new calls/checks, padding,
+barriers, shared edits, flags or verifier changes. Float precision, getter
+order and member assignment remain unchanged.
+
+Diagnostic normalized inventories show74 calls and6 indirect BLX in both
+bodies. Remaining control differences are primary/candidate B13/12, BGT4/2,
+BPL6/7; other branch counts agree. Floating comparison/select differences
+remain. This points to the next native control-flow audit; it does not justify
+adding redundant comparisons or arithmetic merely to fill inventories.
+
+ARM204 compiled/0 failed; native STATIC exit0. Full4619/0, linked2084/byte960,
+coverage4274/4524, missing250 (7 wrong type/243 absent), extras129. All22
+focus/full rows agree. Baseline/previous gates exit0 with zero exact-pair
+losses; default99 gate exits1 for the weighted threshold. Fixed20/7101
+canonical reports updated after validation; exact scores and hashes in the
+compact evidence snapshot. Weighted99 remains unmet. Native executable/runtime
+and whole ABI remain unverified.
+Evidence: docs/validation/starmap_2026-10-06_easing_value_captures.json.
+
+## Hundred-and-twentieth follow-up: completion/Y OR forms (removed)
+
+Revalidated119 (2b04e4f2) current source/object/report. Previous turn is progress:
+easing captures improved source shape and passed full/native/preservation.
+
+Trial A replaces abs(pitchDistance) in the short-circuit completion test with
+an explicit sign conversion and nested pitch-bound test AFTER the yaw bound,
+following the primary decompilation's topology. ARM204/0. Entire focused JSON
+and whole StarMap object equal119; neutral and removed.
+
+Trial B initializes path-centering sy0, computes the division only inside
+currentY>targetY OR currentY<targetY. This preserves zero for equal/unordered
+comparisons but does not prove floating-status/runtime equivalence. Unlike91,
+it has a shared conditional division rather than precomputed step/two assigns.
+ARM204/0; only update regresses: source98.8->98.5, strict83.3->80.6, raw967->963,
+inventory97.1->96.9, opcode98.5->98.3, control98.7->98.0, ordered95.4->91.4,
+size99.7->99.3. Other21 rows unchanged; rejected.
+
+Fresh restoration ARM204/0 reproduces the entire canonical report and ALL204
+object hashes; source bytes equal the119 backup. Native STATIC rebuild exit0.
+Accepted119 full4619/0,2084 linked/960 byte and preservation evidence remain
+valid for this identical204-object set. No new full run or canonical change.
+Source means99.38/98.88256583579778, strict88.04/83.12933389663428, fixed20/7101.
+Weighted99 unmet; native runtime/whole ABI unverified. Do not repeat these
+measured forms as new recovery candidates.
+Evidence: docs/validation/starmap_2026-10-06_update_completion_y_or_trials.json.
+
+## Hundred-and-twenty-first follow-up: dialog topology/call audit (removed)
+
+Revalidated120 (2efe1998) and production119. Previous turn is progress:
+completion/Y forms were measured and restoration proved across204 objects.
+
+A: explicit419 current-station exit to existing visibility tail instead of
+else wrapper. Entire focus/object identical119; neutral, removed. B: share419/
+579 set delivery with assigned text ID and captured receiver, as primary
+LABEL48 presents. No extra runtime calls; other dialogs skip common delivery.
+Only End worsens source98.9->98.8, strict80->79.6, raw1028->1027; removed.
+
+Fresh GNU callsite audit excludes known cb360..cb388 data island and separates
+register-indirect calls. Primary136 named direct/19 indirect; accepted119 has
+134/19. Named differences are one GameText::getText and one one-argument
+ChoiceWindow::set static site. This does not prove omitted runtime actions.
+
+C: put3217's set, suppression AND visibility locally, jumping past common
+stores. Distinct from115B's local suppression only. Direct callee multiset now
+equals primary136/19 exactly. End strict80->80.5, inventory98.4->98.5,
+opcode98.8->98.9, size98.9->99.7 improve; control99.1->98.7 and normalized
+call score99.3->97.8 worsen. Source98.9->98.7, raw1028->1036; rejected under
+the unchanged objective. All21 other focused rows identical in B/C.
+
+Fresh normalized CALL counts are primary133/accepted134, while actual named
+direct counts above are136/134. This agrees with prior100's three primary
+calls filtered around the literal island. No verifier edit, extra call/padding
+or claim of native runtime equivalence. C++ source spelling remains heuristic.
+
+Every trial ARM204/0. Final restoration ARM204/0 reproduces the entire canonical
+focus report, source bytes and ALL204 object hashes; native STATIC exit0.
+Accepted119 full4619/0, linked2084/byte960 and preservation gates remain valid
+for identical objects; no new full run/canonical change. Source means remain
+99.38/98.88256583579778, strict88.04/83.12933389663428, fixed20/7101.
+Weighted99 unmet; native executable/runtime and whole ABI unverified.
+Evidence: docs/validation/starmap_2026-10-06_dialog_topology_call_audit.json.
+
+## Hundred-and-twenty-second follow-up: info word flags (removed)
+
+Revalidated121 (b7c3777e), current production119 and fresh info diff. Prior turn
+is progress: dialog experiments/call audit supplied measured exclusions and
+proved restoration. Investigated campaign marker local flag representations.
+
+A changes missionTarget and targetMatch from bool to int0/1, preserving ordered
+getters, conditions and stores. Native word registers do not establish the
+original C++ flag type; this is a hypothesis. ARM204/0; only info changes:
+source99.3->98.7, strict80.6->79.6, raw1198->1194, inventory98.7->98.0,
+opcode99.3->98.7, control99.1->98.0, ordered90.6->89.1, size99.2->98.8.
+Other21 rows identical. Rejected. B keeps missionTarget bool and makes only
+targetMatch int0/1. ARM204/0; entire focus and whole object identical119.
+Neutral; removed. No extra runtime calls/checks or padding.
+
+Read-only pulse review: the extra current UXTB does not justify changing the
+shared SetColor declaration. Primary dynamic symbol at7c938 is
+_ZN11AbyssEngine11PaintCanvas8SetColorEhhhh, matching existing four unsigned
+char parameters. Layout::getPulseValue reads playing time/Sinf twice and
+selects b/-b from a's sign; no caller-wide range proof or narrowing rewrite
+was applied. No shared ABI, flags or verifier changes.
+
+Fresh restoration ARM204/0 reproduces the entire canonical focused report,
+source bytes and ALL204 object hashes; native STATIC exit0. Accepted119
+full4619/0,2084 linked/960 byte and preservation gates stay valid for identical
+objects. No new full run or canonical change. Means99.38/98.88256583579778
+source,88.04/83.12933389663428 strict, fixed20/7101. Weighted99 remains unmet;
+native executable/runtime and whole ABI unverified.
+Evidence: docs/validation/starmap_2026-10-06_info_word_flags.json.
+
+## Hundred-and-twenty-third accepted explicit Matrix values: threshold passed
+
+Revalidated122 (4d0afb1b) and production119. Added a real constexpr15-float value
+constructor to Matrix and used it at the two StarMap basis-initialization sites.
+The values1,0,0,0/0,1,0,0/0,0,1,0/1,1,1 equal previous default construction
+plus the existing m10/m13 corrections. Native data/store evidence is in110/113;
+new API/source spelling is a reconstruction technique, not recovered original
+C++. No raw-storage cast, default-constructor replacement, fake ABI alias,
+forced-inline attribute, compiler flag or verifier change. Existing Matrix size
+0x3c/offset assertions pass. BOTH ordinary default-constructor bodies untouched.
+
+New constructor naturally inlines at both uses; no Matrix constructor symbol
+emitted in StarMap.o. ALL203 other ARM objects remain byte-identical, unlike
+the rejected110 shared default-constructor move. Only two of22 focused rows
+change: init source98.3->99.1, strict77.4->78.6, raw735->748; station init
+source97.3->98.6, strict84.7->92.6, raw683->704. Both call-count scores reach100.
+Other20 focused rows including aliases are unchanged;7 linked/3 byte unique
+StarMap bodies retained. Fixed20/7101 means99.485/99.09704267004646 source,
+88.495/84.04596535699197 strict. Both source thresholds pass.
+
+ARM204 compiled/0 failed; native Windows STATIC targetgof2 exit0. Full4619/0,
+linked2084/byte960, coverage4274/4524, missing250 (7 wrong type/243 absent),
+extras129. ALL22 focus/full rows agree. Non-partial baseline AND previous gates
+exit0, both threshold and exact-pair preservation pass with zero losses.
+Default99 gate now exits0. Source/object remain frozen through full validation;
+hashes and gate inputs recorded in the compact evidence snapshot. Canonical
+reports updated after all gates. Commit only the two production files, report
+and three evidence snapshots; no push or PR.
+
+The requested source-shape/static-validation objective is achieved. Native
+executable/runtime and whole ABI correctness remain unverified; this is not
+completion of the independent native engine/game restoration deliverable.
+Evidence: docs/validation/starmap_2026-10-06_matrix_value_constructor.json.
