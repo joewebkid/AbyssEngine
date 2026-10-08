@@ -10559,3 +10559,73 @@ Accepted means remain **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
 Evidence: `_work/create_signature_shared_result_interaction_sweep.py`,
 `_work/create_signature_shared_result_interaction_identities.json`, sixteen
 focused bases/reports and rechecked accepted binding audit.
+
+
+## Continuation: Read typed color quadruples
+
+Ten focused measurements on 2026-10-08 start from 816f84dc. Actual compressed
+color scratch storage is four unsigned bytes per vertex. Test primitive
+unsigned-char[4] array and struct containing unsigned-char component[4],
+sizeof==4 assertions, new ColorInput[vertexCount], paired delete[] raw on
+both existing failure/success paths. Each type tested with existing byte
+representation view or indexed raw[i/4][i%4]/raw[i/4].component[i%4], under
+accepted/fresh index owner plus controls. All loop bounds still reload slot
+vertexCount; read extents, allocation bytes, byte order, normalization by
+255.0f, output stores and lifetimes preserved. Character byte-view access
+is valid object-representation access. No initialization, union, extra data,
+padding, helper/header/ABI/signature/flags/matcher/denominator changes.
+Typed scratch shape is a hypothesis, not recovered source.
+
+| Trial | Read source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| accepted_control | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_primitive_byte_view | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_primitive_indexed_components | 97.9 / 57.2 | 879 | 98.2 |
+| accepted_record_byte_view | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_record_indexed_components | 97.9 / 57.2 | 879 | 98.2 |
+| fresh_control | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_primitive_byte_view | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_primitive_indexed_components | 97.7 / 57.5 | 884 | 98.2 |
+| fresh_record_byte_view | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_record_indexed_components | 97.7 / 57.5 | 884 | 98.2 |
+
+No gain. All four typed byte-view variants reproduce their corresponding
+whole control Core object. Primitive/record indexed forms match each other
+under each owner, regress to accepted 97.9 / fresh 97.7 and call metric98.2.
+Relocation counters independently extracted from the exact function body:
+controls/byte views have55 direct call relocations; indexed forms54. Only
+missing static call target is one _ZdaPv (operator delete[]); no new target.
+This does not establish a missing runtime free: source retains both paths
+and static call sites can be merged. Do not add dummy calls to match counts.
+Initial diagnosis probes used unsupported objdump function-disassembly and
+absent function section options; read-only errors, then corrected to full
+disassembly with exact symbol boundary extraction. Successful diagnostic
+stored in `_work/read_color_typed_quads_call_relocations.json`.
+No expansion of equivalent primitive/record color type syntax justified
+here; none retained. No compiler ceiling inferred.
+
+Sweep exited zero; ten compile/focused verify calls pass. All source/call
+metrics, instruction counts, object hashes and call relocation differences
+checked independently. Accepted source/native fixtures restored to ecc30f25.
+Existing accepted full/native binding audit passes:204 TUs,4619 comparisons,
+no skips;202 unaffected objects;actual linked-exact2079 / byte-exact959 pair
+sets identical baseline with no lost/gained pairs. Canonical flags and
+three-body/signature boundaries preserved. No fresh full rebuild/native
+execution/device/Android/game runtime claim for rejected forms.
+
+Preparation removed57 verified original Core targets from six explicit
+families:current normal value records22,signature pointers5,tables6,split
+states8,bounds records8,tangent local records8. Reclaimed1,505,484 logical
+bytes. Resolved paths within own _work, untracked single expected unit,
+hash equal canonical retained target. Manifest/system-temp backup before
+literal-path removal; immediate target/reference rehash per deletion.
+All57 mappings independently rebound. No recursive deletion; bases,reports,
+sources,accepted/baseline/main/Git archive retained. Evidence:
+`_work/duplicate_layout_core_target_cleanup_20261008.json`, script
+`_work/cleanup_layout_core_target_duplicates_20261008.ps1`.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Evidence:`_work/read_color_typed_quads_sweep.py`,
+`_work/read_color_typed_quads_identities.json`, ten focused objects/reports,
+call relocation diagnostic and rechecked binding audit. Main untouched;
+report-only commit;no push/PR/merge.
