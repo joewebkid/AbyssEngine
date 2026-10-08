@@ -11570,3 +11570,38 @@ no recursive removal. Evidence:
 `_work/read_triangle_vector_records_sweep.py`,
 `_work/read_triangle_vector_records_identities.json`,
 `_work/read_triangle_vector_records_call_relocations.json`.
+
+
+## Continuation: Read typed-stream raw/output pointer records
+
+Nine focused cases2026-10-08 after9688031b: accepted plus pair pointer records
+raw/output under compressed short positions,int positions,short normals,
+each raw-first/output-first,individual and all-three blocks. BufferPointers
+has two existing void pointers,default uninitialized then original allocations
+at same points and types;no array zero initialization or new allocation.
+All uses including typed delete[] redirected to actual members,output mesh
+field assignments unchanged,failure paths preserve deletes/return. No snapshot
+of mesh counts,no new ownership semantics,helper/header/ABI/signature/flags/
+matcher/denominator/dummy effects. Compiler lifetime hypothesis,not recovery.
+
+All nine entire Core objects equal accepted byte-for-byte;each98.5/57.4,n874,
+inventory95.8/opcode98.1/control98.8/calls100/size100. All pointer field orders
+and three-block combination have no compiled lifetime/spill effect here.
+No primary gain,none retained;do not expand equivalent pair-pointer records
+here,no compiler ceiling inferred. Sweep completed exit0;actual object bytes/
+hashes checked,canonical shape metrics/counts directly rebound and equality
+binds all nine. Source restored;accepted existing full/native proof binding
+passes204 TUs/4619 comparisons/202 unaffected objects,actual linked2079/
+byte959 pair sets unchanged,no loss/gain,body/signature/flags intact. No fresh
+full/native/game/device/Android execution. Means98.40/98.41,both99 gates unmet,
+goal active. Main untouched,report-only commit,no push/PR/merge.
+
+Preparation removed60 exact generated original Core targets from sorted read
+family,single-object targets,paths resolved inside own_work,untracked,canonical
+SHA match,exact60 guard,manifest/system-temp backup before literal removal/
+immediate reference+target rehash.1,584,720 logical bytes;all60 mappings checked.
+Bases/source/reports/native/accepted/baseline/main/Git archive retained,no
+recursive removal. Evidence:
+`_work/duplicate_buffer_ptr60_core_target_cleanup_20261008.json`,
+`_work/read_buffer_pointer_records_sweep.py`,
+`_work/read_buffer_pointer_records_identities.json`,nine focused objects/reports.
