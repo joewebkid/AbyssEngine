@@ -10406,3 +10406,87 @@ Evidence: `_work/enh_scalar_pair_layout_interaction_sweep.py`,
 `_work/enh_scalar_pair_layout_interaction_identities.json`, twenty-six
 focused objects/reports and rechecked accepted binding audit.
 Report-only commit; no push/PR/merge.
+
+
+## Continuation: Current Read per-stream count scope
+
+Ten focused measurements on 2026-10-08 start from c124e559. Hypothesis:
+shared vcount live across streams may influence frame/register allocation.
+Remove initial unused count capture; declare per-stream uint/ushort/const
+uint counts at original assignments for two position branches, two UV
+branches and tangent section. Normal/color assignments do not supply their
+loop bounds and are removed as dead reads; those loops still re-read slot
+vertexCount exactly as accepted. Fourth form narrows only tangent count to
+ushort. All captured counts originate from ushort vertexCount, so narrowing
+preserves their range; loop counter widths, bounds expressions, reloads,
+allocation extents, read order and floating arithmetic unchanged.
+Each form measured under accepted and fresh index owner plus controls.
+No helper/header/ABI/flags/matcher/denominator changes or dummy effects.
+
+| Trial | Read source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| accepted_control | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_per_stream_uint | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_per_stream_ushort | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_per_stream_const_uint | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_tangent_short_count | 98.5 / 57.4 | 874 | 100.0 |
+| fresh_control | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_per_stream_uint | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_per_stream_ushort | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_per_stream_const_uint | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_tangent_short_count | 98.5 / 57.8 | 874 | 100.0 |
+
+All ten whole Core objects equal their corresponding accepted/fresh owner
+controls. All eight new forms tie 98.5; count declaration scope/width does
+not change machine code in these contexts. None retained. Do not expand
+equivalent count declarations for this hypothesis; no compiler ceiling
+inferred. All ten metrics, instruction counts and hashes independently
+checked against original instruction arrays after source restoration.
+
+Initial process completed eight rows, then verification exited 1 with
+"No comparable functions found" for fresh_per_stream_const_uint. Its base
+object existed, original target object was missing and disk free was 94,208
+bytes. Disk pressure is the suspected cause, not an observed assembler
+diagnostic. Finally restored source and wrote eight-row ledger. After
+verified duplicate cleanup, resumed only the two unfinished forms: both
+compile/verify pass, resumed process exited zero. No failed row accepted.
+
+Removed 34 generated original targets: 26 previous scalar-pair Mesh copies
+and eight completed stream-count Core copies, 286,592 logical bytes. Exact
+family counts/units, resolved paths inside own _work, untracked status and
+SHA-256 equality to canonical typedpair-full targets checked before removal.
+Manifest plus system-temp backup preceded literal-path removal; each target
+and reference hash rechecked immediately. Failed ninth missing target was
+explicitly excluded; compiled bases and reports retained. No recursive
+deletion, main/Git archive/baseline/accepted untouched. All 34 mappings
+independently rebound via `_work/duplicate_scalar_stream_target_cleanup_20261008.json`;
+script `_work/cleanup_scalar_stream_target_duplicates_20261008.ps1`.
+Earlier focused reports with deleted targets now map to canonical originals.
+
+Accepted source/native fixtures restored to ecc30f25. Existing evidence
+binding audit passes: 204 TUs, 4619 comparisons, no skips, 202 unaffected
+objects; actual linked-exact 2079 / byte-exact 959 pair sets identical to
+baseline with no loss/gain. Canonical flags and three-body/signature
+boundaries preserved. No fresh native runtime/full-corpus rebuild or
+Android/device/game check claimed for rejected forms.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet; goal active.
+Evidence: `_work/read_current_stream_count_scope_sweep.py`,
+`_work/read_current_stream_count_scope_identities.json`, ten focused bases/
+reports and rechecked accepted binding audit. Report-only commit, no push/
+PR/merge. Disk remains tight; future builds need verified space preparation.
+
+
+Count-scope report staging initially failed: Git reported index.lock write
+error, out of disk space (zero bytes free). No lock/archive manually modified.
+Removed remaining 107 verified original Core target copies from previously
+enumerated 207 readindexreload builds, skipping the first 100 already cleaned.
+Same resolved-path/unit/untracked/hash checks; 2,826,084 logical bytes reclaimed.
+Because A had zero free bytes, cleanup script and both primary manifest and
+backup were saved in system temp before removals, then copied into own _work
+after space was available. Target/reference digests rechecked before each
+literal-path deletion; all 107 mappings independently rebound. Compiled bases,
+sources, reports, baseline/accepted/main/Git archive retained. Evidence:
+`_work/duplicate_index_remaining_core_target_cleanup_20261008.json` and
+`_work/cleanup_index_remaining_core_target_duplicates_20261008.ps1`.
+This supplements the 34-copy cleanup above; no additional code changes.
