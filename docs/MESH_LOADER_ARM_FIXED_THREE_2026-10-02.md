@@ -11432,3 +11432,44 @@ Manifest:`_work/duplicate_shared_success40_core_target_cleanup_20261008.json`.
 Evidence:`_work/create_magic_engine_shared_success_guard_sweep.py`,
 `_work/create_magic_engine_shared_success_guard_identities.json`,nine focused
 objects/reports and previous direct-family ledger.
+
+
+## Continuation: Read tangent multiplication operand alias groups
+
+Eight focused cases2026-10-08 after4f4ca2a5: accepted control plus seven
+nonempty subsets reversing multiplication operands in tangent determinant
+(two products),XYZ tangent numerators(six),final reciprocal scaling(three).
+Subtraction operand order,division,operation grouping and payload stores
+unchanged. Finite/signed-zero multiplication is commutative;NaN payload
+selection not assumed equivalent from C++ spelling. No variant retained.
+No helper/header/ABI/signature/flags/matcher/denominator/dummy effects.
+
+Original and accepted both contain11 VMUL.F32 instructions. Earlier missing
+shape2 `vmul.f32 sv0,sv0,sv1` versus extra2 `vmul.f32 sv0,sv1,sv0` is result/
+operand register aliasing,not two missing arithmetic operations. Original
+triangle numerator instructions617/618 alias result with first operand;
+accepted605/606 alias result with second. Instruction indices are canonical
+raw token indices,not source lines or semantic alignment proof. Diagnostic
+captures every VMUL.F32 token/index/shape. Source operand reversal hypothesis
+rejected:all seven subsets produce entire accepted Core object,not merely
+same score. All eight98.5/57.4,n874,inventory95.8,opcode98.1,control98.8,
+calls100,size100. Whole hashes checked and accepted shape metrics directly
+rebound;because objects identical,this also binds all eight. Do not expand
+these equivalent operand-subset orders here;no compiler ceiling inferred.
+
+Sweep completed exit0,source restored;accepted existing full/native proof
+binding passes204 TUs/4619 comparisons/202 unaffected objects,actual linked
+2079/byte959 sets unchanged with no loss/gain,body/signature/flags intact.
+No fresh full/native/game/device/Android execution. Means98.40/98.41,both99.0
+gates unmet,goal active. Main untouched,report-only commit,no push/PR/merge.
+
+Preparation removed40 exact generated original Core targets from sorted
+explicit read family,single-object targets,paths resolved within own_work,
+untracked,canonical SHA match,exact40 guard,manifest/system-temp backup before
+literal removal/immediate reference+target rehash.1,056,480 logical bytes;
+all40 mappings independently checked. Bases/source/reports/native/accepted/
+baseline/main/Git archive untouched,no recursive removal. Evidence:
+`_work/duplicate_tangent_operands40_core_target_cleanup_20261008.json`,
+`_work/read_tangent_operand_groups_sweep.py`,
+`_work/read_tangent_operand_groups_identities.json`,
+`_work/read_tangent_multiply_shape_diagnostic_20261008.json`.
