@@ -1,0 +1,29 @@
+{
+  "symbol": "_ZN5Route6updateEfff",
+  "original_length": 260,
+  "local_length": 260,
+  "masked_relocation_byte_offsets": [
+    160,
+    161,
+    162,
+    163,
+    174,
+    175,
+    176,
+    177,
+    210,
+    211,
+    212,
+    213,
+    246,
+    247,
+    248,
+    249
+  ],
+  "unmasked_differing_byte_offsets": [],
+  "original_float_literals_hex": "0000fa440000fac4",
+  "local_float_literals_hex": "0000fa440000fac4",
+  "raw_elf_linked_equal": true,
+  "canonical_verifier_linked_equal": false,
+  "interpretation": "Independent raw ELF check only; canonical verifier remains unchanged and reports false because literal data are printed as Thumb halfwords in target versus full .word in base."
+}

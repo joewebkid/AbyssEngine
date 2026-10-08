@@ -5,12 +5,6 @@
 #include "game/weapons/AbstractGun.h"
 #include "engine/core/Array.h"
 
-typedef void (*GetPosFn)(void *out);
-
-static inline void getPos(void *kip, void *out) {
-    (*(*(GetPosFn **) kip + 0xa))(out);
-}
-
 bool Route::waypointDefined() {
     return this->waypoints != nullptr;
 }
@@ -64,18 +58,15 @@ int Route::getDockingTime(int index) {
 }
 
 Waypoint *Route::getWaypoint(int index) {
-    char pos[12];
     Waypoint *wp = nullptr;
     if ((int) this->waypoints->size() > index &&
         (wp = (*this->waypoints)[index]) != nullptr) {
-        void *k = (void *) (*this->dockingTargets)[index];
+        KIPlayer *k = (*this->dockingTargets)[index];
         if (k != nullptr) {
-            getPos(k, pos);
-            wp->x = (int) *(float *) (pos + 0);
-            getPos((void *) (*this->dockingTargets)[index], pos);
-            wp->y = (int) *(float *) (pos + 4);
-            getPos((void *) (*this->dockingTargets)[index], pos);
-            wp->z = (int) *(float *) (pos + 8);
+            // Android 0x11be34 calls vtable +0x28 separately for each axis.
+            wp->x = (int) k->getPosition().x;
+            wp->y = (int) (*this->dockingTargets)[index]->getPosition().y;
+            wp->z = (int) (*this->dockingTargets)[index]->getPosition().z;
         }
     }
     return wp;
@@ -162,23 +153,23 @@ Route *Route::clone() {
     return r;
 }
 
-float Route::update(float x, float y, float z) {
+void Route::update(float x, float y, float z) {
     int idx = this->currentIndex;
     Array<Waypoint *> *wps = this->waypoints;
     if (idx >= (int) wps->size())
-        return x;
+        return;
     if ((*this->dockingTargets)[idx] != nullptr)
-        return x;
+        return;
     Waypoint *wp = (*wps)[idx];
     float dx = x - (float) wp->x;
     if (!(dx < 2000.0f) || !(dx > -2000.0f))
-        return x;
+        return;
     float dy = y - (float) wp->y;
     if (!(dy < 2000.0f) || !(dy > -2000.0f))
-        return x;
+        return;
     float dz = z - (float) wp->z;
     if (!(dz < 2000.0f) || !(dz > -2000.0f))
-        return x;
+        return;
 
     wp->setActive(false);
     (*this->waypoints)[this->currentIndex]->reached();
@@ -187,7 +178,7 @@ float Route::update(float x, float y, float z) {
     int next = cur + 1;
     this->currentIndex = next;
     uint32_t len = w->size();
-    if (this->loop != 0 && (int) (len - 1) <= cur) {
+    if (this->loop != 0 && cur >= (int) (len - 1)) {
         this->currentIndex = 0;
         for (uint32_t i = 0; i < len; i++) {
             (*w)[i]->reset();
@@ -198,9 +189,7 @@ float Route::update(float x, float y, float z) {
     }
     if (next < (int) len) {
         (*w)[next]->setActive(true);
-        return 0.0f;
     }
-    return x;
 }
 
 int Route::getDockingTime() {

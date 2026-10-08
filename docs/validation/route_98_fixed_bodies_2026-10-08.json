@@ -1,0 +1,564 @@
+{
+  "revision": "7314772c68cb2ac0f0fbdd0e11127ba9d4b15fec",
+  "original_so_sha256": "6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58",
+  "symbol_count": 25,
+  "unique_body_count": 22,
+  "original_instructions": 601,
+  "baseline_unweighted": 98.68181818181819,
+  "baseline_weighted": 96.49267886855242,
+  "bodies": [
+    {
+      "address": "0x11c0b6",
+      "end": "0x11c1f6",
+      "original_weight": 127,
+      "aliases": [
+        "_ZN5Route5cloneEv"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route5cloneEv",
+        "match": 54.1,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 127,
+        "n_base": 128,
+        "source_match": 94.9,
+        "instruction_inventory_match": 90.1,
+        "opcode_inventory_match": 93.3,
+        "control_flow_match": 92.0,
+        "ordered_control_flow_match": 80.0,
+        "control_inventory_match": 92.0,
+        "call_count_match": 100.0,
+        "size_match": 99.2,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11c1f6",
+      "end": "0x11c254",
+      "original_weight": 28,
+      "aliases": [
+        "_ZN5Route9translateERKN11AbyssEngine6AEMath6VectorE"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route9translateERKN11AbyssEngine6AEMath6VectorE",
+        "match": 60.7,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 28,
+        "n_base": 28,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11be34",
+      "end": "0x11bed8",
+      "original_weight": 61,
+      "aliases": [
+        "_ZN5Route11getWaypointEi"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route11getWaypointEi",
+        "match": 65.6,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 61,
+        "n_base": 61,
+        "source_match": 95.4,
+        "instruction_inventory_match": 82.0,
+        "opcode_inventory_match": 95.1,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bf70",
+      "end": "0x11c074",
+      "original_weight": 88,
+      "aliases": [
+        "_ZN5Route6updateEfff"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route6updateEfff",
+        "match": 66.3,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 88,
+        "n_base": 90,
+        "source_match": 90.1,
+        "instruction_inventory_match": 93.3,
+        "opcode_inventory_match": 93.3,
+        "control_flow_match": 91.4,
+        "ordered_control_flow_match": 91.4,
+        "control_inventory_match": 91.4,
+        "call_count_match": 75.0,
+        "size_match": 97.8,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bc56",
+      "end": "0x11bcf0",
+      "original_weight": 58,
+      "aliases": [
+        "_ZN5RouteC1EPiP5ArrayIP8KIPlayerES0_i",
+        "_ZN5RouteC2EPiP5ArrayIP8KIPlayerES0_i"
+      ],
+      "baseline": {
+        "symbol": "_ZN5RouteC1EPiP5ArrayIP8KIPlayerES0_i",
+        "match": 81.4,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 58,
+        "n_base": 60,
+        "source_match": 98.0,
+        "instruction_inventory_match": 94.9,
+        "opcode_inventory_match": 98.3,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 96.7,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11c074",
+      "end": "0x11c0b6",
+      "original_weight": 26,
+      "aliases": [
+        "_ZN5Route13getExactCloneEv"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route13getExactCloneEv",
+        "match": 96.2,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 26,
+        "n_base": 26,
+        "source_match": 98.5,
+        "instruction_inventory_match": 96.2,
+        "opcode_inventory_match": 96.2,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bcf0",
+      "end": "0x11bd34",
+      "original_weight": 26,
+      "aliases": [
+        "_ZN5RouteD1Ev",
+        "_ZN5RouteD2Ev"
+      ],
+      "baseline": {
+        "symbol": "_ZN5RouteD1Ev",
+        "match": 96.3,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 26,
+        "n_base": 28,
+        "source_match": 94.1,
+        "instruction_inventory_match": 96.3,
+        "opcode_inventory_match": 96.3,
+        "control_flow_match": 96.0,
+        "ordered_control_flow_match": 96.0,
+        "control_inventory_match": 96.0,
+        "call_count_match": 88.9,
+        "size_match": 92.9,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bb74",
+      "end": "0x11bc16",
+      "original_weight": 61,
+      "aliases": [
+        "_ZN5RouteC1EPii",
+        "_ZN5RouteC2EPii"
+      ],
+      "baseline": {
+        "symbol": "_ZN5RouteC1EPii",
+        "match": 96.7,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 61,
+        "n_base": 61,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bef2",
+      "end": "0x11bef6",
+      "original_weight": 2,
+      "aliases": [
+        "_ZN5Route10getCurrentEv"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route10getCurrentEv",
+        "match": 100.0,
+        "bytes_equal": true,
+        "linked_equal": true,
+        "n_target": 2,
+        "n_base": 2,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bed8",
+      "end": "0x11bede",
+      "original_weight": 2,
+      "aliases": [
+        "_ZN5Route11getWaypointEv"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route11getWaypointEv",
+        "match": 100.0,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 2,
+        "n_base": 2,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bdb8",
+      "end": "0x11bde4",
+      "original_weight": 13,
+      "aliases": [
+        "_ZN5Route12setNewCoordsEN11AbyssEngine6AEMath6VectorE"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route12setNewCoordsEN11AbyssEngine6AEMath6VectorE",
+        "match": 100.0,
+        "bytes_equal": true,
+        "linked_equal": true,
+        "n_target": 13,
+        "n_base": 13,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bef6",
+      "end": "0x11bf5c",
+      "original_weight": 41,
+      "aliases": [
+        "_ZN5Route13reachWaypointEi"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route13reachWaypointEi",
+        "match": 100.0,
+        "bytes_equal": false,
+        "linked_equal": true,
+        "n_target": 41,
+        "n_base": 41,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11be1c",
+      "end": "0x11be34",
+      "original_weight": 11,
+      "aliases": [
+        "_ZN5Route14getDockingTimeEi"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route14getDockingTimeEi",
+        "match": 100.0,
+        "bytes_equal": true,
+        "linked_equal": true,
+        "n_target": 11,
+        "n_base": 11,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11be16",
+      "end": "0x11be1c",
+      "original_weight": 2,
+      "aliases": [
+        "_ZN5Route14getDockingTimeEv"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route14getDockingTimeEv",
+        "match": 100.0,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 2,
+        "n_base": 2,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bede",
+      "end": "0x11bee8",
+      "original_weight": 4,
+      "aliases": [
+        "_ZN5Route15getLastWaypointEv"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route15getLastWaypointEv",
+        "match": 100.0,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 4,
+        "n_base": 4,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bee8",
+      "end": "0x11bef2",
+      "original_weight": 5,
+      "aliases": [
+        "_ZN5Route15waypointDefinedEv"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route15waypointDefinedEv",
+        "match": 100.0,
+        "bytes_equal": true,
+        "linked_equal": true,
+        "n_target": 5,
+        "n_base": 5,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11be00",
+      "end": "0x11be16",
+      "original_weight": 10,
+      "aliases": [
+        "_ZN5Route16getDockingTargetEi"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route16getDockingTargetEi",
+        "match": 100.0,
+        "bytes_equal": true,
+        "linked_equal": true,
+        "n_target": 10,
+        "n_base": 10,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bde8",
+      "end": "0x11be00",
+      "original_weight": 11,
+      "aliases": [
+        "_ZN5Route16getDockingTargetEv"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route16getDockingTargetEv",
+        "match": 100.0,
+        "bytes_equal": true,
+        "linked_equal": true,
+        "n_target": 11,
+        "n_base": 11,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bd94",
+      "end": "0x11bdb8",
+      "original_weight": 16,
+      "aliases": [
+        "_ZN5Route5resetEv"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route5resetEv",
+        "match": 100.0,
+        "bytes_equal": false,
+        "linked_equal": true,
+        "n_target": 16,
+        "n_base": 16,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bf5c",
+      "end": "0x11bf62",
+      "original_weight": 3,
+      "aliases": [
+        "_ZN5Route6lengthEv"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route6lengthEv",
+        "match": 100.0,
+        "bytes_equal": true,
+        "linked_equal": true,
+        "n_target": 3,
+        "n_base": 3,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bf62",
+      "end": "0x11bf6e",
+      "original_weight": 4,
+      "aliases": [
+        "_ZN5Route6updateERKN11AbyssEngine6AEMath6VectorE"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route6updateERKN11AbyssEngine6AEMath6VectorE",
+        "match": 100.0,
+        "bytes_equal": false,
+        "linked_equal": false,
+        "n_target": 4,
+        "n_base": 4,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    },
+    {
+      "address": "0x11bde4",
+      "end": "0x11bde8",
+      "original_weight": 2,
+      "aliases": [
+        "_ZN5Route7setLoopEb"
+      ],
+      "baseline": {
+        "symbol": "_ZN5Route7setLoopEb",
+        "match": 100.0,
+        "bytes_equal": true,
+        "linked_equal": true,
+        "n_target": 2,
+        "n_base": 2,
+        "source_match": 100.0,
+        "instruction_inventory_match": 100.0,
+        "opcode_inventory_match": 100.0,
+        "control_flow_match": 100.0,
+        "ordered_control_flow_match": 100.0,
+        "control_inventory_match": 100.0,
+        "call_count_match": 100.0,
+        "size_match": 100.0,
+        "unit": "game/world/Route"
+      }
+    }
+  ]
+}
