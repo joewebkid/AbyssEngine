@@ -92,6 +92,41 @@ int main() {
     ::operator delete[](empty.positions);
     ::operator delete[](empty.colors);
 
+    // Distinct adjacent records exercise all output offsets and the zero fallback.
+    Engine::enableShader = 0;
+    input.clear(); put<unsigned short>(4);
+    for (int coordinate = 0; coordinate < 12; ++coordinate) put<int>(coordinate);
+    const short normalRecords[4][3] = {{0,0,0}, {-16384,8192,24576},
+                                      {32767,-32768,4096}, {1024,2048,-8192}};
+    const size_t normalStart = input.size();
+    for (const auto &record : normalRecords)
+        for (short component : record) put(component);
+    const auto normalInput = input;
+    cursor = 0; limit = input.size();
+    Mesh normalMesh; normalMesh.vertexFormat = 4; slot = &normalMesh;
+    assert(MeshReadData(nullptr, handle, 1, &slot, nullptr) == 1);
+    assert(cursor == input.size() && slot == &normalMesh);
+    const float *decodedNormals = static_cast<const float *>(normalMesh.normals);
+    for (int vertex = 0; vertex < 4; ++vertex) {
+        double squared = 0;
+        for (short component : normalRecords[vertex])
+            squared += static_cast<double>(component) * component;
+        for (int axis = 0; axis < 3; ++axis) {
+            const double expected = squared == 0 ? (axis == 1 ? 1.0 : 0.0) :
+                normalRecords[vertex][axis] / std::sqrt(squared);
+            assert(std::fabs(decodedNormals[vertex * 3 + axis] - expected) < 0.000001);
+        }
+    }
+    ::operator delete[](normalMesh.positions);
+    ::operator delete[](normalMesh.normals);
+    for (size_t cut = normalStart; cut < normalInput.size(); ++cut) {
+        input = normalInput; cursor = 0; limit = cut;
+        Mesh truncated; truncated.vertexFormat = 4; slot = &truncated;
+        assert(MeshReadData(nullptr, handle, 1, &slot, nullptr) == -1);
+        assert(truncated.normals == nullptr);
+        ::operator delete[](truncated.positions);
+    }
+
     Engine::enableShader = 1;
     for (int fixture = 0; fixture < 3; ++fixture) {
         input.clear();

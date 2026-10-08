@@ -1,6 +1,6 @@
 # Mesh loader: fixed three-body ARM audit, 2026-10-02
 
-Latest validated continuation: source **98.23% unweighted / 98.17% weighted**.
+Latest validated continuation: source **98.47% unweighted / 98.45% weighted**.
 Latest semantic correction: original full bounds diagonal; earlier half-diagonal
 radius assertions are superseded by the verified operand/ABI evidence below.
 The result tables below preserve earlier measurements. Chronological continuation
@@ -3431,3 +3431,8590 @@ empty. Native/full-corpus runs are not claimed for these rejected variants;
 accepted axisbyte-full/native evidence remains authoritative: **98.23%
 unweighted /98.17% weighted**, 2079 linked /959 byte exact pairs equal baseline
 without losses. Both >=99.0 gates remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: mixed axis widths and remaining-axis traversal
+
+Ten Enhanced trials start from clean 2006e1f0. Fresh inventory inspection
+against axisbyte-full shows the original axis dispatch clears bit 31 with BIC
+at 0x6bcf8, 0x6be6c and 0x6bfe2. Accepted byte counters instead emit three
+ANDS #127 and three UXTB operations. This is concrete instruction evidence,
+not proof of original C++ counter declarations. The previously accepted
+all-byte form wins aggregate source score despite those inventory differences.
+
+Six forms change one or two axis counters back to int independently, keeping
+the remaining accepted byte counters. They preserve exactly axis 0/1/2, file
+read and channel order, all inner unsigned key counters and failure paths.
+The prior all-int and all-byte comparison does not establish mixed results;
+these six combinations explicitly measure them. No helper, ABI, compiler or
+matcher input changes.
+
+Four further forms count remaining axes 3 -> 2 -> 1 and derive axis as
+3 - remaining inside the existing loop. Int and unsigned-char counters are
+tested with for and unconditional do forms: exactly three axes always exist
+in a type-0 section, so both visit axis 0/1/2 and exit at remaining zero with
+no underflow or wrap. This is a genuine alternate traversal representation,
+not a dummy operation or recovered original loop. Inner reads and stores keep
+their existing sequence.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| mixed width: signed_axes_0 | 98.2 / 66.8 | 640 | 100.0 | no |
+| mixed width: signed_axes_1 | 98.2 / 66.8 | 640 | 100.0 | no |
+| mixed width: signed_axes_2 | 98.2 / 66.8 | 640 | 100.0 | no |
+| mixed width: signed_axes_0_1 | 98.1 / 66.7 | 639 | 100.0 | no |
+| mixed width: signed_axes_0_2 | 98.1 / 66.7 | 639 | 100.0 | no |
+| mixed width: signed_axes_1_2 | 98.1 / 66.7 | 639 | 100.0 | no |
+| remaining axes: int_for | 96.8 / 65.0 | 650 | 100.0 | no |
+| remaining axes: int_do | 95.9 / 39.1 | 649 | 100.0 | no |
+| remaining axes: unsigned_char_for | 96.8 / 65.0 | 650 | 100.0 | no |
+| remaining axes: unsigned_char_do | 95.9 / 39.1 | 649 | 100.0 | no |
+
+All ten regress required source score. Each mixed-width whole object differs
+from accepted and from the other mixed combinations, even where scores match.
+Remaining-axis int/byte for forms are byte-identical to each other; int/byte
+do forms are byte-identical to each other. The two groups differ from one
+another and accepted. Object identity is measured from bytes, not score equality.
+No variant is retained; production files restored.
+
+Evidence: `_work/enhmixedaxis-*.json`, `_work/enhaxisremaining-*.json`, source
+snapshots and their two identity ledgers. Baseline outside-body/signature check
+passes and production tracked diff is empty. Native/full-corpus validation is
+not claimed for rejected variants; accepted axisbyte-full/native evidence
+remains authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets
+2079 linked /959 byte equal baseline without losses. Both >=99.0 gates remain
+unmet; goal active. No push, PR or merge.
+
+
+## Continuation: compressed stream cleanup branch placement
+
+Six Read trials start from clean d74725dc. The five compressed streams (short
+positions, integer positions, UVs, normals and colors) currently check failed
+Read, delete raw temporary and return -1, then process success and delete raw
+at the end. Each trial instead places the existing successful conversion and
+its final delete inside Read != 0, with the existing failure delete/return in
+else. Five trials isolate one stream; the sixth combines all five.
+
+The allocation and Read remain at their existing points. A successful Read
+executes the same conversion/field stores and one raw delete; a failed Read
+executes only its existing raw delete and -1 return. No additional null guard,
+cleanup call, status variable or allocation is added. This is branch placement
+of existing effects, not a recovered original spelling. All other bodies,
+helpers, ABI declarations, flags and matcher remain unchanged.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| short_position | 98.0 / 55.9 | 867 | 100.0 | yes |
+| integer_position | 98.0 / 55.9 | 867 | 100.0 | yes |
+| uv | 98.0 / 55.9 | 867 | 100.0 | yes |
+| normal | 98.0 / 55.9 | 867 | 100.0 | yes |
+| color | 98.0 / 55.9 | 867 | 100.0 | yes |
+| all_streams | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+All six whole Core objects are byte-identical to accepted axisbyte-full;
+actual object comparison proves this, not equal score alone. Therefore this
+particular success/else rewrite offers no source-shape improvement, individually
+or in combination. No variant is retained and production source is restored.
+
+Evidence: `_work/readcleanupbranch-*.json`, source snapshots and
+`_work/read_cleanup_branch_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence stays
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: interval aliases and byte-axis common calls
+
+Nine Enhanced trials start from clean 483575e7. Four explicitly bind a const
+pointer or reference to timeBetweenFrames at entry or inside the section block,
+and expand each existing update into the same nested positive-value and
+smaller-global-value tests through that alias. All eight update sites keep
+their location and fresh value load; no global value is captured or hoisted.
+The helper definition remains unchanged outside the three bodies. Entry versus
+section address lifetime is a source hypothesis motivated by original reuse
+of the global address (e.g. r5 at 0x6bcde..0x6bcea), not recovered C++.
+
+Five common-call variants revisit the earlier pre-byte-axis family on the
+materially different accepted counter types. Each selects the same channel
+inside switch(axis), keeps position Y negation, and uses a shared subsequent
+InsertKeyFrame call. The default continues the inner loop. Three individual
+sections and all three together are tested, plus all sections with zero-mask
+initialization/nonzero guard. All valid axes remain 0/1/2; frame conversion,
+read/update order and channel values remain unchanged. The earlier exclusion
+was based on int-axis state; this measured interaction excludes the family
+on the currently accepted byte-axis state as well. No helper/ABI/flag/matcher
+changes, new call effects or metric padding.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| interval alias: pointer_entry | 98.3 / 66.9 | 641 | 100.0 | yes |
+| interval alias: pointer_sections | 98.3 / 66.9 | 641 | 100.0 | yes |
+| interval alias: reference_entry | 98.3 / 66.9 | 641 | 100.0 | yes |
+| interval alias: reference_sections | 98.3 / 66.9 | 641 | 100.0 | yes |
+| byte-axis common call: position_common_call | 98.0 / 65.3 | 636 | 100.0 | no |
+| byte-axis common call: scale_common_call | 98.1 / 66.1 | 637 | 100.0 | no |
+| byte-axis common call: rotation_common_call | 98.1 / 66.3 | 637 | 100.0 | no |
+| byte-axis common call: all_common_call | 97.2 / 63.9 | 628 | 100.0 | no |
+| byte-axis common call: all_zero_channel_guard | 97.2 / 63.9 | 628 | 100.0 | no |
+
+All four interval forms are byte-identical to accepted Mesh. All common-call
+forms regress source. The all-common/default-continue and all-zero-guard
+objects equal each other but differ from accepted. Individual common-call
+objects differ from accepted and each other; equal scores are not substituted
+for actual byte comparison. No variant is retained; production source restored.
+The initial common-call measurement script stopped after first verification
+because its hash import was missing; finally restored source. The import was
+corrected and all five trials then completed successfully.
+
+Evidence: `_work/enhintervalalias-*.json`, `_work/enhbyteaxiscommon-*.json`,
+source snapshots and both identity ledgers. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: triangle coordinate views and accumulator pointers
+
+Nine Read trials start from clean c3244d95. Four retain the current tangent
+formulas, index load order and Y/X/Z numerator/product order, changing only
+coordinate access through three const Vector pointers, a const Vector base
+with three derived pointers, or three const Vector references; another uses
+signed int locals for the three unsigned-short indices. Every 16-bit index
+fits int and scaling remains <=196605. No whole-Vector copy or custom operator
+assignment is added. Existing coordinate member accesses address the same
+floats. These are source access/type hypotheses, not recovered declarations.
+
+Five accumulator-pointer forms use direct cast expressions, reuse one typed
+Vector pointer, declare three pointers sequentially at each call, declare all
+three before the calls, or name the existing tangent input as a const reference.
+Each retains the same three Vector::operator+= calls in i0 -> i1 -> i2 order.
+No arithmetic reassociation or scalar accumulation replaces the existing helper.
+The precomputed-pointer form retains the same accumulation buffer and indices
+already established before the calls. Original calls at 0x6cdaa..0x6cdb8
+support inspection of address setup, not the exact source declaration form.
+Math helper definitions and all other bodies remain unchanged.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| coordinate views: vector_pointers | 98.0 / 55.9 | 867 | 100.0 | yes |
+| coordinate views: vector_base | 98.0 / 55.9 | 867 | 100.0 | yes |
+| coordinate views: vector_references | 98.0 / 55.9 | 867 | 100.0 | yes |
+| coordinate views: signed_indices | 98.0 / 55.9 | 867 | 100.0 | yes |
+| accumulator pointers: direct_expressions | 98.0 / 55.9 | 867 | 100.0 | yes |
+| accumulator pointers: vector_pointer_reuse | 98.0 / 55.9 | 867 | 100.0 | yes |
+| accumulator pointers: sequential | 98.0 / 55.9 | 867 | 100.0 | yes |
+| accumulator pointers: before_calls | 98.0 / 55.9 | 867 | 100.0 | yes |
+| accumulator pointers: named_input_reference | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+All nine whole Core objects are byte-identical to accepted axisbyte-full.
+Identity is established from actual bytes, not inferred from equal scores.
+These coordinate and accumulator access forms do not change ARM output under
+the canonical flags, and no trial improves the required source score.
+Production source was restored; none is retained.
+
+Evidence: `_work/readtriangleviews-*.json`, `_work/readaccumpointers-*.json`,
+source snapshots and both identity ledgers. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: byte-axis count lifetime and V5 zero interactions
+
+Nine Enhanced trials start from clean a443c3d9. Seven revisit count lifetimes
+on the materially changed accepted byte-axis state, rather than assume the
+older int-axis measurements predict these combinations. Three share the existing
+optional unsigned-short count with vector cases, axis cases or all prefix cases.
+Four instead use one unsigned-short count inside a new per-group scope for
+position, scale, rotation or all three separately. Each count is populated by
+the same two-byte Read before use; the signed-short V5 per-channel count remains
+separate. All file operations, case selection and loop bounds retain their
+order and meaning. Shared physical original stack storage at sp+28 motivates
+this check but does not prove recovered lexical scopes or declarations.
+
+The position-group form keeps required source score 98.3 while changing strict
+and object bytes. Two additional forms combine it with the previously measured
+explicit V5 cases 4/5/default assigning channel zero, with or without an initial
+zero assignment. Valid channel dispatch, rotation arithmetic, key insertion
+and hasAnimation effects are unchanged. This explicitly tests an interaction
+of two source-neutral forms; equal standalone scores do not establish their
+combined output. No helpers, ABI, flags, matcher or denominator changes.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| byte-axis counts: vector_counts | 97.4 / 62.6 | 641 | 100.0 | no |
+| byte-axis counts: axis_counts | 97.7 / 50.1 | 646 | 100.0 | no |
+| byte-axis counts: all_prefix_counts | 97.9 / 65.8 | 635 | 100.0 | no |
+| byte-axis counts: position_group | 98.3 / 53.3 | 640 | 100.0 | no |
+| byte-axis counts: scale_group | 97.8 / 51.5 | 642 | 100.0 | no |
+| byte-axis counts: rotation_group | 98.1 / 66.6 | 649 | 100.0 | no |
+| byte-axis counts: all_scoped_groups | 98.1 / 51.7 | 637 | 100.0 | no |
+| position count + V5 zero: explicit_zero_assignment | 98.3 / 54.0 | 638 | 100.0 | no |
+| position count + V5 zero: zero_labels_no_initializer | 98.3 / 54.0 | 638 | 100.0 | no |
+
+No required source gain occurs. Position-group count alone retains rounded
+source but regresses strict; all other count forms regress source. The two
+V5 combinations retain source 98.3 and improve strict from the isolated
+position-group 53.3 to 54.0, still below accepted 66.9. Their whole objects
+are byte-identical to one another and different from accepted. Seven count
+objects differ from accepted and each other. Actual bytes establish identity,
+not score equality. No trial is retained; production files restored.
+
+Evidence: `_work/enhbyteaxiscounts-*.json`, `_work/enhpositionzero-*.json`,
+source snapshots and both identity ledgers. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: caller reader-status local storage
+
+Six Create trials start from clean 3ad835a9. Original child reader call at
+0x6d30e is followed by ADDS result,#1 and BEQ failure at 0x6d312..0x6d314.
+Accepted source compares the full int result with -1 directly. Four variants
+store all three reader-call results in int, unsigned int, short or signed char
+locals before the existing predicates. Two further forms store only the child
+result in unsigned short or unsigned char, comparing against the same type's
+cast of -1 (not uncast -1 after integral promotion).
+
+Current MeshReadData returns exactly 1 or -1 on all explicit return paths;
+these values remain distinct in each tested type. This bounded contract is
+necessary for the narrowed forms: they are not general int-result equivalent
+and are not recovered original declarations. Int and unsigned int preserve
+the predicates for every int result under the target's conventional int/uint
+width. Enhanced single still tests 1, plain single still excludes -1, and
+child still rejects -1. Call order, failure cleanup and successful bounds/
+ArrayAdd/loaded paths remain unchanged. No helper/ABI/flag/matcher changes.
+
+| Trial | Create source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| all_int | 98.4 / 60.7 | 289 | 100.0 | yes |
+| all_unsigned_int | 98.4 / 60.7 | 289 | 100.0 | yes |
+| all_short | 96.6 / 59.1 | 294 | 100.0 | no |
+| all_signed_char | 96.8 / 59.3 | 292 | 100.0 | no |
+| child_unsigned_short | 98.2 / 60.1 | 291 | 100.0 | no |
+| child_unsigned_char | 98.2 / 60.2 | 290 | 100.0 | no |
+
+Int and unsigned-int result locals yield the accepted byte-identical whole
+Core object. All narrower forms regress source and differ from accepted and
+each other. Child unsigned-short reaches the original raw instruction count
+291 but lowers source from 98.4 to 98.2; matching size alone does not meet the
+source-shape objective. Actual object bytes establish identities. All trials
+are rejected and production source restored.
+
+Evidence: `_work/createreadstatus-*.json`, source snapshots and
+`_work/create_read_status_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: axis dispatch types and bounded default selection
+
+Eleven Enhanced trials start from clean 190cc622. Six keep all accepted byte
+counters and cast the three switch expressions explicitly to unsigned int,
+signed char or int, or cast one unsigned group independently. Actual axes
+are 0/1/2 and remain representable in all types; selection/key conversion and
+InsertKeyFrame effects do not change. Original BIC #0x80000000 and accepted
+ANDS #127/UXTB differences motivate expression-type inspection, not recovered
+source declarations. Explicit int/uint casts are hypotheses, not matcher edits.
+
+The signed-char dispatch whole Mesh object equals the previously validated
+pre-byte-axis channelzero-full object byte for byte, SHA-256
+ad36d491cbfdd267469ef7f5603777bfbfb1a020cfecac32a08c8b1ce49b5a05.
+The counter declarations remain byte-sized in this trial, so the expression
+cast alone reproduces that older output. A fresh inventory diagnostic shows
+BIC differences disappear, while branch-shape differences remain. This does
+not imply a general optimizer equivalence beyond the measured complete object.
+
+Five further forms select the axis-0 case through default, for position,
+scale, rotation or all three, plus all with signed-char dispatch. Because these
+closed internal loops execute exactly 0/1/2, default selects axis 0 after the
+other two cases; all file reads, Y sign, masks, calls and inner counters retain
+their valid-loop behavior. This is bounded-loop equivalence only: a hypothetical
+out-of-domain axis would call the axis-0 case instead of skipping. No external
+axis value enters these loops, and no extra operation is added for scoring.
+No helper/ABI/flag/matcher or denominator changes.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| dispatch type: all_unsigned_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| dispatch type: all_signed_char | 98.0 / 66.6 | 638 | 100.0 | no |
+| dispatch type: all_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| dispatch type: unsigned_group_0 | 98.3 / 66.9 | 641 | 100.0 | yes |
+| dispatch type: unsigned_group_1 | 98.3 / 66.9 | 641 | 100.0 | yes |
+| dispatch type: unsigned_group_2 | 98.3 / 66.9 | 641 | 100.0 | yes |
+| default axis 0: position | 97.4 / 24.3 | 639 | 100.0 | no |
+| default axis 0: scale | 97.9 / 66.5 | 637 | 100.0 | no |
+| default axis 0: rotation | 98.0 / 66.9 | 638 | 100.0 | no |
+| default axis 0: all | 96.7 / 24.0 | 633 | 100.0 | no |
+| default axis 0: all_signed_dispatch | 96.9 / 24.0 | 630 | 100.0 | no |
+
+Five int/unsigned dispatch forms are byte-identical to accepted. Signed-char
+regresses source to 98.0 and matches the old object as verified above. Every
+default-axis form regresses source and differs from accepted and each other.
+Actual bytes establish identity; equal scores are not treated as identity.
+All production edits restored; no trial retained.
+
+Evidence: `_work/enhaxisdispatch-*.json`, `_work/enhaxisdefaultzero-*.json`,
+source snapshots, identity ledgers and
+`_work/axis_dispatch_signed_char_old_identity.json`. Baseline outside-body/
+signature check passes and production tracked diff is empty. No native/full-
+corpus run is claimed for rejected variants. Accepted axisbyte-full/native
+evidence remains authoritative: **98.23% unweighted /98.17% weighted**, exact
+pair sets 2079 linked /959 byte equal baseline without losses. Both >=99.0
+gates remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: triangle count and index type combinations
+
+Seven Read trials start from clean d344822f. The triangle count is the unsigned
+16-bit indexCount divided by three, so its range is 0..21845. Six forms change
+only this count to int, unsigned short or short, alone or together with the
+loop index of the same type. A seventh changes only the loop index to int.
+Unsigned division and indexCount cast, allocation timing, triangle index loads,
+coordinate formulas, helper calls and accumulation order remain unchanged.
+All tested count/index types represent the complete range. The last executing
+index is at most 21844; its increment reaches at most 21845, within signed
+short as well as unsigned short, so no narrow counter overflow occurs.
+These are source type hypotheses, not recovered declarations. No helper,
+ABI, flags, matcher, denominator or extra effects change.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| count_int | 98.0 / 55.9 | 867 | 100.0 | yes |
+| count_and_index_int | 98.0 / 55.9 | 867 | 100.0 | yes |
+| count_unsigned_short | 98.0 / 54.2 | 865 | 100.0 | no |
+| count_and_index_unsigned_short | 98.0 / 54.2 | 865 | 100.0 | no |
+| count_short | 98.0 / 54.2 | 865 | 100.0 | no |
+| count_and_index_short | 97.5 / 52.2 | 863 | 100.0 | no |
+| signed_index | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+Int count, int count/index and int index alone are byte-identical to accepted
+Core. Unsigned-short count, unsigned-short count/index and signed-short count
+alone are byte-identical to each other, SHA-256
+7959a2360ebbb34ef2545d1cd3a08287973844c832e39cf0313f191c4cb9e414,
+but differ from accepted and lower strict while retaining rounded source.
+Signed-short count/index differs from both groups and regresses source.
+Identity is measured from whole-object bytes, not equal scores. No required
+source gain occurs; all production edits restored and no trial retained.
+
+Evidence: `_work/readtricounttypes-*.json`, source snapshots and
+`_work/read_triangle_count_type_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: recursive child count storage on current reader
+
+Six Read trials start from clean 16b21ecb. Signed int and unsigned-short child
+counter forms revisit the accepted guarded-do loop after the retained color
+field-store change, rather than assume the older 97.9 reader measurements
+apply. childCount spans 0..65535; the guard prevents entry for zero and final
+increment reaches at most 65535, so unsigned short does not wrap. Signed int
+holds the whole range. Child allocation/read/Merge/ArrayAdd order is retained.
+
+Four forms read the same two bytes into a serialized unsigned-short local,
+then copy to int or unsigned int childCount after successful Read. Unsigned
+count is additionally combined with signed int or unsigned-short loop index.
+Only the bound storage changes; Read size, failure branch, initial guard and
+recursive work order remain unchanged. These count-capture hypotheses assume
+the ordinary synchronous Read buffer contract, not a custom implementation
+retaining and mutating this stack address later. AEFile.cpp:184 forwards to
+the low-level virtual Read; this inspection alone is not universal proof for
+all possible implementations. No broader native runtime equivalence is claimed
+for these rejected forms. No helper/ABI/flag/matcher/denominator changes.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| signed_counter | 98.0 / 55.9 | 867 | 100.0 | yes |
+| short_counter | 98.0 / 55.7 | 868 | 100.0 | no |
+| count_int | 96.9 / 53.6 | 862 | 98.2 | no |
+| count_unsigned_int | 96.9 / 53.6 | 862 | 98.2 | no |
+| wide_count_signed_counter | 96.9 / 53.6 | 862 | 98.2 | no |
+| wide_count_short_counter | 96.9 / 53.6 | 863 | 98.2 | no |
+
+Signed counter equals accepted Core byte for byte. Short counter retains
+rounded source but worsens strict and differs from accepted. Int/uint count
+copies and uint count plus signed index produce the same whole object as one
+another, while uint count plus short index differs; all regress required source
+to 96.9. Actual bytes establish identity, not equal scores. No trial retained;
+production source restored.
+
+Relocation-aware count-copy call inspection finds 61 emitted call instructions
+in accepted versus 60 in uint-count trial: one fewer static `_ZdaPv` site and
+three indirect BLX operands changing r5 to r6. The six indirect calls do not
+enter direct-call matcher comparison. This is static call-site evidence, not
+proof of a missing executed release. No synthetic cleanup effect is added.
+Evidence: `_work/child_wide_count_calls.json`.
+
+Additional evidence: `_work/readchildcounttypes-*.json`, source snapshots and
+`_work/read_child_count_type_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: attached animation receiver and range-start locals
+
+Six Enhanced trials start from clean a1444a21. After the unchanged populated
+key-count test, self->animation is assigned the existing anim pointer. Three
+forms use that just-assigned field as receiver for animationStart, range setup,
+or both. A fourth names the just-assigned pointer as attached before loading
+the existing rate. Two forms name the existing float-to-long-long conversion
+as rangeStart after the animationStart store, with local or field receiver.
+
+No intervening call separates pointer attachment from the rate load/start
+store; the range start retains direct float-to-long-long conversion and is
+not routed through the potentially narrower animationStart int. Original
+0x6c194 attaches fp, 0x6c19e loads rate, 0x6c1aa stores int animationStart,
+0x6c1ae converts float to long long, and 0x6c1be calls range setup. This order
+is retained. Receiver/local spelling is a source hypothesis, not recovered
+original C++. Empty/failure cleanup, helpers, ABI, compiler flags, matcher,
+denominator and all other bodies remain unchanged.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| field_start_receiver | 98.3 / 66.9 | 641 | 100.0 | yes |
+| field_range_receiver | 98.3 / 66.9 | 641 | 100.0 | yes |
+| both_field_receivers | 98.3 / 66.9 | 641 | 100.0 | yes |
+| named_attached_receiver | 98.3 / 66.9 | 641 | 100.0 | yes |
+| explicit_range_start | 98.3 / 66.9 | 641 | 100.0 | yes |
+| field_receiver_explicit_start | 98.3 / 66.9 | 641 | 100.0 | yes |
+
+All six whole Mesh objects are byte-identical to accepted axisbyte-full.
+Actual bytes establish identity, not equal scores. These receiver reload and
+conversion-local forms do not affect canonical ARM output and offer no
+required source gain. No trial retained; production source restored.
+
+Evidence: `_work/enhfinishreceiver-*.json`, source snapshots and
+`_work/enh_finish_receiver_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: section flag lifetimes and explicit zero dispatch interaction
+
+Seven Enhanced trials start from clean 0c5b4331. Five replace the byte format
+alias with two explicit optional/V5 predicates as const bools or unsigned int
+masks at entry or immediately before optional sections, plus bools immediately
+after Transform allocation. Only flags bits 0x18 and 0x10 matter; masking the
+original unsigned flags or its low byte selects the same sections for every
+32-bit input. Flags are a by-value parameter, so predicate evaluation may move
+without a field/file/global load moving. All bounds and section reads, Insert
+calls and failure behavior remain in order. Earlier full-format alias trials
+did not test these split lifetimes on the byte-axis state.
+
+The immediately-before-optional form preserves source 98.3 with strict 67.2.
+Two further trials combine it with explicit V5 cases 4/5/default assigning
+channel zero, with or without its initializer. These retain masks, rotation
+arithmetic, key insertion and hasAnimation effects. This is an interaction
+measurement of two individually source-neutral changes; it is not inferred
+from their standalone scores. No helpers, ABI, flags, matcher, denominator or
+synthetic effects change. Local declarations are hypotheses, not recovered C++.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| section flag lifetime: bool_entry | 98.2 / 67.2 | 641 | 100.0 | no |
+| section flag lifetime: bool_optional | 98.3 / 67.2 | 641 | 100.0 | no |
+| section flag lifetime: mask_entry | 98.2 / 67.2 | 641 | 100.0 | no |
+| section flag lifetime: mask_optional | 98.3 / 67.2 | 641 | 100.0 | no |
+| section flag lifetime: bool_after_allocation | 98.2 / 67.2 | 641 | 100.0 | no |
+| optional flags + V5 zero: explicit_zero_assignment | 98.3 / 67.9 | 639 | 100.0 | no |
+| optional flags + V5 zero: zero_labels_no_initializer | 98.3 / 67.9 | 639 | 100.0 | no |
+
+Entry bool/mask and post-allocation bool forms are byte-identical to each other
+and lower required source to 98.2. Optional bool/mask forms equal each other
+but differ from entry forms and accepted. The two explicit-zero combinations
+equal one another and differ from both flag-lifetime groups and accepted;
+they improve strict to 67.9 but retain source 98.3. Actual whole-object bytes
+establish identities; score equality is not treated as identity. No required
+source gain occurs, so no trial is retained; production source restored.
+
+Evidence: `_work/enhsectionflaglife-*.json`, `_work/enhflagzero-*.json`, source
+snapshots and both identity ledgers. Baseline outside-body/signature check
+passes and production tracked diff is empty. No native/full-corpus run is
+claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: loaded child pointer captures in reader and caller
+
+Eight trials start from clean 56f6a86d. Four forms are tested independently in
+Read and Create child loops after successful recursive MeshReadData: copy the
+resulting childPtr for bounds Merge only, copy immediately before ArrayAdd
+for that operation only, copy before Merge and use for both, or alias childPtr
+through a reference for both. Each preserves allocation, field inheritance,
+recursive read, failure branch, Merge then ArrayAdd, and loop order. No capture
+precedes the reader, which can replace childPtr through its pointer argument.
+
+Inspected Array.h:95 shows ArrayAdd takes the mesh pointer by value. No child
+pointer mutation is added, and reference forms keep aliasing the same local.
+The two-operation snapshot assumes the existing bounds Merge behavior rather
+than an unrelated custom helper mutating the escaped childPtr stack slot.
+No broader arbitrary-callback equivalence is claimed. These are source lifetime
+hypotheses, not recovered original declarations. Each trial changes only its
+one allowed body; other bodies, helpers, ABI, flags and matcher stay unchanged.
+
+| Trial | Focus body source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| read_merge_copy | 98.0 / 55.9 | 867 | 100.0 | yes |
+| read_add_copy | 98.0 / 55.9 | 867 | 100.0 | yes |
+| read_both_copy | 96.9 / 53.1 | 863 | 98.2 | no |
+| read_both_reference | 98.0 / 55.9 | 867 | 100.0 | yes |
+| create_merge_copy | 98.4 / 60.7 | 289 | 100.0 | yes |
+| create_add_copy | 98.4 / 60.7 | 289 | 100.0 | yes |
+| create_both_copy | 98.0 / 59.3 | 289 | 100.0 | no |
+| create_both_reference | 98.4 / 60.7 | 289 | 100.0 | yes |
+
+Six isolated-use/reference forms yield the accepted byte-identical whole Core
+object. Copy used for both operations regresses source in Read and Create;
+the two resulting objects differ from accepted and each other. Actual bytes
+establish identity, not equal scores. No required source gain occurs; all
+production edits restored and no trial retained.
+
+Read both-copy relocation-aware inspection finds 61 emitted calls in accepted
+versus 60 in trial: one fewer static `_ZdaPv` site and three indirect BLX
+operands changing r5 to r6. The six indirect calls are outside direct-call
+matcher comparison. This is static-site evidence, not proof of missing
+executed cleanup. Evidence: `_work/child_pointer_both_copy_calls.json`.
+
+Additional evidence: `_work/childpointercapture-*.json`, source snapshots and
+`_work/child_pointer_capture_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: seven-channel V5 outer loop forms
+
+Six Enhanced trials start from clean aa05ddfc. The V5 outer channel loop runs
+exactly seven times after the existing presence check. Forms use for c!=7,
+explicit while c<7, unconditional do with ++c<7, ++c<=6 or ++c!=7, or a remaining
+count 7->1 deriving channel c=7-remaining. Each visits channels 0..6 in order;
+all channel count reads, signed-short inner key bounds, key/update operations,
+mask selection, rotation arithmetic and hasAnimation effects stay unchanged.
+No guard is fabricated: this existing fixed-size channel loop always has seven
+iterations when entered. All counters remain within 0..7 without overflow.
+These loop spelling hypotheses are not recovered original C++. They test
+outer channel traversal, not the previously measured signed inner-key loops.
+Helpers, ABI, flags, matcher, denominator and other bodies stay unchanged.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| for_not_equal | 98.0 / 66.7 | 641 | 100.0 | no |
+| while | 98.3 / 66.9 | 641 | 100.0 | yes |
+| do_less | 98.0 / 66.8 | 640 | 100.0 | no |
+| do_at_most | 98.0 / 66.8 | 640 | 100.0 | no |
+| do_not_equal | 98.0 / 66.8 | 640 | 100.0 | no |
+| remaining | 98.2 / 66.3 | 643 | 100.0 | no |
+
+While form yields accepted byte-identical Mesh. All other forms regress required
+source. Do <7 and <=6 objects equal each other; do !=7 differs from them despite
+matching rounded scores and instruction count. Remaining-count and for !=7
+objects differ from accepted, all do forms and one another. Actual whole-object
+bytes establish identities, not scores. No trial retained; production restored.
+
+Evidence: `_work/enhv5outerloop-*.json`, source snapshots and
+`_work/enh_v5_outer_loop_identities.json`. Baseline outside-body/signature check
+passes and production tracked diff is empty. No native/full-corpus run is
+claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: cached uncompressed UV odd-component traversal
+
+Five Read trials start from clean e6ecefb5. They change only the successful
+uncompressed UV shader-flip loop, preserving the accepted uvFloats pointer
+and captured vertex count. Two traverse odd component indices directly from
+1 with stride 2 using int or unsigned int. Another traverses vertices and
+addresses component 2*i+1. Two use a pointer advancing by two floats per vertex,
+with signed or unsigned vertex index, changing only p[1] by 1.0f-p[1]. Earlier
+odd-component measurement combined it with per-iteration owner-field reload;
+these forms isolate traversal with the accepted cached pointer.
+
+vertexCount is at most 65535, so component bound is at most 131070, fitting
+all tested int/uint indices. Zero vertices execute no store or pointer offset.
+Pointer forms begin at uvFloats and advance after each store, reaching only
+the allocated array's one-past end after the final iteration. No pointer+1 is
+formed outside a nonempty iteration. File reads, allocation and field/count
+capture points, float subtraction and affected components remain unchanged.
+No helpers, ABI, flags, matcher, denominator or other bodies change. These are
+source traversal hypotheses, not recovered original loop declarations.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| odd_component_unsigned_int | 98.0 / 55.7 | 867 | 100.0 | no |
+| odd_component_int | 98.0 / 55.7 | 867 | 100.0 | no |
+| vertex_index | 97.7 / 55.2 | 865 | 100.0 | no |
+| pointer_unsigned_int | 97.7 / 55.2 | 865 | 100.0 | no |
+| pointer_int | 97.7 / 55.2 | 865 | 100.0 | no |
+
+The two odd-component index objects are byte-identical to each other, retaining
+rounded source but lowering strict. Vertex-index and both advancing-pointer
+objects equal one another and regress source to 97.7. The two groups differ
+from accepted and each other. Actual whole-object bytes establish identities,
+not equal scores. No required source gain occurs; no trial retained and
+production source restored.
+
+Evidence: `_work/readfloatuvindex-*.json`, source snapshots and
+`_work/read_float_uv_index_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: compressed UV flip storage and outer branch
+
+Seven Read trials start from clean af28b2c5. Engine.h:581 declares enableShader
+unsigned char. Five change its existing compressed-UV snapshot from explicit
+nonzero bool to raw unsigned char, unsigned int, int or unsigned short, or
+implicit bool conversion. All represent the full 0..255 raw range and the
+existing ternary uses the same nonzero truth value. The shader flag load stays
+after raw Read and output allocation at its accepted point, not before calls
+that could change it. Double UV scaling/subtraction and final float stores
+retain their order and formulas. No layout or helper change is introduced.
+
+Two further forms move the conditional choice outside that loop, selecting
+a complete flipped or unflipped traversal, with either branch written first.
+Each performs the same per-vertex U conversion followed by V conversion and
+optional 1.0-v double subtraction, using the unchanged captured flag/count/
+base pointers. Empty count executes no coordinate operations. No additional
+load, file call or storage effect is added. The source duplicates the two
+legitimate traversal branches; it is not dummy score padding or claimed
+recovered C++. Other bodies, ABI, flags, matcher and denominator stay unchanged.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| flip storage: raw_unsigned_char | 98.0 / 55.9 | 867 | 100.0 | yes |
+| flip storage: raw_unsigned_int | 98.0 / 55.9 | 867 | 100.0 | yes |
+| flip storage: raw_int | 98.0 / 55.9 | 867 | 100.0 | yes |
+| flip storage: raw_unsigned_short | 98.0 / 55.9 | 867 | 100.0 | yes |
+| flip storage: implicit_bool | 98.0 / 55.9 | 867 | 100.0 | yes |
+| outer flip branch: flipped_first | 96.8 / 55.1 | 892 | 100.0 | no |
+| outer flip branch: plain_first | 96.8 / 55.1 | 892 | 100.0 | no |
+
+All five storage forms yield accepted byte-identical Core. Both outer-branch
+forms yield the same whole object as each other but differ from accepted,
+raise raw instruction count from 867 to 892 and regress source to 96.8.
+Actual bytes establish identity, not equal scores. No required source gain;
+no trial retained and production source restored.
+
+Evidence: `_work/readuvfliptypes-*.json`, `_work/readuvouterflip-*.json`, source
+snapshots and both identity ledgers. Baseline outside-body/signature check
+passes and production tracked diff is empty. No native/full-corpus run is
+claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: normal upper predicates and destination load lifetimes
+
+Six Read trials start from clean e569fc13. Three capture upper-bound float
+comparisons in bool locals before all lower selections, after all lower
+selections, or per component, and select 1.0f or the existing cast lower result.
+They retain all original float quotients, double lower comparisons/selections,
+float upper predicates and numeric output values, including unordered predicate
+fallthrough. No scalar lower-double operation is replaced with a NEON clamp
+or helper. This is predicate scheduling, not recovered original C++.
+
+Three additional forms move the existing nonzero-normal destination field
+load before the quotients, before lower selection, or after lower selection.
+All remain after sqrtf and inside the existing len!=0 branch; no owner/field
+load is moved across sqrtf or another call. The intervening divisions,
+comparisons and local selections do not mutate the mesh. The zero-normal
+branch and all output stores keep their existing order and position. Original
+pointer timing remains authoritative; these are same-value source lifetime
+hypotheses rather than exact recovery. Helpers, ABI, flags, matcher, denominator,
+file operations and other bodies stay unchanged.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| upper predicate storage: upper_predicates_before_lower | 98.0 / 55.9 | 867 | 100.0 | yes |
+| upper predicate storage: upper_predicates_after_lower | 98.0 / 55.9 | 867 | 100.0 | yes |
+| upper predicate storage: component_upper_predicates | 98.0 / 55.9 | 867 | 100.0 | yes |
+| normal destination lifetime: before_quotients | 98.0 / 55.9 | 867 | 100.0 | no |
+| normal destination lifetime: before_lower | 98.0 / 55.3 | 869 | 100.0 | no |
+| normal destination lifetime: after_lower | 98.0 / 55.3 | 869 | 100.0 | no |
+
+All three upper-predicate forms yield accepted byte-identical Core. Moving
+destination before quotients retains scores but differs from accepted; before
+and after lower selections yield the same whole object as one another, differ
+from accepted and the quotient form, and regress strict. None improves required
+source. Actual whole-object bytes establish identities, not score equality.
+All production edits restored; no trial retained.
+
+Evidence: `_work/readclampupperpred-*.json`, `_work/readnormaldestlife-*.json`,
+source snapshots and both identity ledgers. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: reader enhanced-mask local storage
+
+Six Read trials start from clean 909f7417. subBit is flags&0x1a, used only for
+nonzero entry-pivot and final enhanced/child-section tests. Four forms store
+that same mask as unsigned char, unsigned short, int or const unsigned int;
+one stores its nonzero value as const bool; another removes the local and
+checks the unchanged by-value flags directly at both sites. The masked value
+is at most 26, fitting every tested type, and bool preserves the two nonzero
+predicates for all 32-bit flags. No scalar flag or mask is read from mutable
+mesh/global memory, and no field/file operation moves.
+
+Both section tests, ReadEnhanced's existing ==0 result check, child-count read,
+recursive work, failures and all other stream operations retain their order.
+No helper, ABI, flags, matcher, denominator, padding operation or other body
+changes. This is a local-storage hypothesis, not recovered original C++.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| unsigned_char | 98.0 / 55.9 | 867 | 100.0 | yes |
+| unsigned_short | 98.0 / 55.9 | 867 | 100.0 | yes |
+| int | 98.0 / 55.9 | 867 | 100.0 | yes |
+| const_unsigned_int | 98.0 / 55.9 | 867 | 100.0 | yes |
+| bool | 98.0 / 55.9 | 867 | 100.0 | yes |
+| direct_flags | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+All six whole Core objects equal accepted axisbyte-full byte for byte. Actual
+bytes establish identity, not equal scores. These enhanced-mask storage and
+direct-flag forms do not affect canonical ARM output and yield no source gain.
+No trial retained; production source restored.
+
+Evidence: `_work/readenhflagtypes-*.json`, source snapshots and
+`_work/read_enhanced_flag_type_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: current validation binding and shared vertex-count types
+
+Start state is clean b316a437. A fresh read-only audit binds present production
+and fixtures to accepted f8607229, rather than relying on intervening negative
+trial summaries. Whole source text equals that commit for both production
+translation units, three native smoke fixtures and the reader/caller extraction
+runner. Canonical flag digest and exact transported argument list still match.
+The preserved full axisbyte report's actual normalized pair sets equal baseline:
+2079 linked and 959 byte pairs, lost/gained empty. Its 204 objects contain only
+the two allowed changed units; all other 202 equal baseline byte for byte.
+No new full compilation or native execution is claimed by this audit; unchanged
+source/fixtures and immutable report/object evidence establish the binding to
+the completed accepted validation. Evidence: `_work/current_axisbyte_binding_audit.json`.
+
+The fixed three-body source mean is 98.233333 and weighted mean 98.170667,
+with original weights 873/291/636, sum 1800. Both gates are contradicted by
+current evidence: total three-body source sum is 294.7, requiring 2.3 additional
+summed score points for 297.0, while weighted mean needs 0.829333 points.
+These are separate requirements, not a redefinition of success. Component audit:
+
+| Body | Instruction inventory | Opcode inventory | Control inventory | Calls | Size | Source |
+|---|---:|---:|---:|---:|---:|---:|
+| Read | 93.9 | 98.1 | 98.8 | 100.0 | 99.2 | 98.0 |
+| Create | 94.7 | 97.9 | 100.0 | 100.0 | 99.3 | 98.4 |
+| Enhanced | 95.8 | 97.4 | 98.7 | 100.0 | 99.5 | 98.3 |
+
+Unchanged metric recomputation for each row passes. Instruction inventory is
+the largest component deficit; Read has greatest weight. Fresh Read inventory
+inspection shows count-load/register-role, memory-spelling, arithmetic operand
+alias and branch differences. Original tangent products at 0x6cd90..0x6cd98
+are numerator times reciprocal, so no reverse multiplication is introduced
+merely to target an inventory pattern. Zero-offset and fp/frame-role artifacts
+are diagnostics, not grounds to edit the matcher or force registers/padding.
+This audit does not establish a compiler ceiling or prove all residual gaps
+are artifacts.
+
+Two focused trials then change the shared reader vcount local to unsigned
+short or int. Every assignment is from the unsigned-short vertexCount field,
+so 0..65535 is representable. Component bounds <=196605 and allocation lengths
+<=786420 remain within int/uint range; no signed overflow or count truncation
+occurs. All field capture points, loop predicates, formulas and calls remain
+unchanged. This differs from older per-stream scoped-count forms and directly
+tests the shared declaration on current source. No other body/helper/ABI/
+flag/matcher change; types are hypotheses, not recovered C++.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| unsigned_short | 98.0 / 55.9 | 867 | 100.0 | yes |
+| signed_int | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+Both whole Core objects equal accepted byte for byte. No source gain occurs;
+actual bytes establish identity, not equal scores. Source restored; no trial
+retained. Additional evidence: `_work/readsharedvcount-*.json`, snapshots and
+`_work/read_shared_vertex_count_identities.json`. Outside-body/signature check
+passes and production tracked diff is empty. Accepted axisbyte-full/native
+evidence remains authoritative: **98.23% unweighted /98.17% weighted**. Both
+>=99.0 gates remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: compressed normal source address lifetimes
+
+Three Read trials start from clean ae9348de. They change only compressed-normal
+source access: derive a const short record pointer s+i inside each iteration;
+advance a const short source pointer by three shorts with the existing i+=3;
+or preload the same three signed shorts into scalar locals. X/Y/Z load and
+conversion order, double scaling, length calculation, clamp semantics and
+output stores remain unchanged. The pointer-advance form keeps the dynamic
+slot vertexCount condition and output component index; it does not replace
+that condition with a captured count or alter file/field capture points.
+
+Each pointer addresses the same three shorts per defined iteration. A zero
+count performs no pointer arithmetic; advancement after the final valid record
+forms only the buffer's one-past pointer. No guard, helper call, padding or
+external effect is added. Pointer/scalar declaration forms are source hypotheses,
+not recovered original declarations. Helpers, ABI, flags, matcher, denominator
+and other bodies remain unchanged.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| record_pointer | 98.0 / 54.1 | 868 | 100.0 | no |
+| advancing_record_pointer | 97.9 / 55.7 | 866 | 100.0 | no |
+| scalar_source_values | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+Scalar source locals yield accepted byte-identical Core. Record-pointer form
+differs and retains source 98.0, but instruction inventory remains 93.9:
+opcode inventory regresses 98.1->98.0 while size improves 99.2->99.3, balancing
+aggregate score. Strict regresses 55.9->54.1. Advancing pointer differs from
+both accepted and record-pointer form; instruction inventory drops to 93.5,
+opcode to 98.0 and size to 99.1, with source 97.9. Both keep control inventory
+98.8, ordered control 91.1 and call match 100.0. Thus no concealed improvement
+to the prioritized inventory component is found. Actual bytes establish
+identity, not equal scores. No trial retained; production source restored.
+
+Evidence: `_work/readnormalsourcelife-*.json`, source snapshots and
+`_work/read_normal_source_lifetime_identities.json`. Baseline outside-body/
+signature check passes and production tracked diff is empty. No native/full-
+corpus run is claimed for rejected variants. Accepted axisbyte-full/native
+evidence remains authoritative: **98.23% unweighted /98.17% weighted**, exact
+pair sets 2079 linked /959 byte equal baseline without losses. Both >=99.0
+gates remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: parent owner loads at animation and child inheritance
+
+Five Read trials start from clean ab788f46. Fresh original inspection confirms
+0x6cf58 loads parent once, 0x6cf5c reads its animation, and 0x6cf60..0x6cf64
+forms parent/animation bound addresses and calls Merge. Transform.h:75 bounds()
+is an inline reference to its existing sphere, with no intervening callback.
+Original 0x6cfea..0x6cff4 likewise loads parent once for inherited vertex format
+and material. These observations motivate explicit source owner locals.
+
+After recursive read, original 0x6d00c loads parent for child-bounds Merge at
+0x6d018, then 0x6d01c reloads parent before animation/ArrayAdd at 0x6d026.
+These are two distinct loads across Merge, not one captured parent for both
+operations. The trials retain both current post-read loads; no receiver or
+animation load is hoisted across that call. The earlier report's captured
+parent wording at 0x6cfea..0x6cff4 refers only to field inheritance.
+
+Four forms capture parent for initial animation/bounds setup or child field
+inheritance, using a new local or reusing existing m. A fifth combines both
+new-local forms. Each capture is at the original first slot-read point, before
+its field reads and without an intervening call. Fresh child allocation is
+already complete before inheritance capture. Bounds Merge, recursive read,
+ArrayAdd and error order stay unchanged. No helper, header/layout, flags,
+matcher, denominator or other body changes. Locals are source hypotheses,
+not recovered original C++ declarations or native ABI proof.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals axisbyte-full |
+|---|---|---:|---:|---|
+| animation_local | 98.0 / 55.9 | 867 | 100.0 | yes |
+| inheritance_local | 98.0 / 55.9 | 867 | 100.0 | yes |
+| animation_reuse_m | 98.0 / 55.9 | 867 | 100.0 | yes |
+| inheritance_reuse_m | 98.0 / 55.9 | 867 | 100.0 | yes |
+| both_local | 98.0 / 55.9 | 867 | 100.0 | yes |
+
+All five whole Core objects equal accepted axisbyte-full byte for byte.
+Actual bytes establish identity, not equal scores. These explicit owner-load
+forms do not alter canonical ARM output or improve required source. No trial
+retained; production source restored.
+
+Evidence: `_work/readparentowner-*.json`, source snapshots and
+`_work/read_parent_owner_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: local parsed section type/count aggregates
+
+Four Enhanced trials start from clean 30d00ee6. A local trivial aggregate groups
+the signed-short section type and unsigned-short key count, with both member
+orders tested. The count is shared across the first three vector/axis groups
+only, or those groups plus optional count/presence. Each member is used by
+actual existing reads and dispatch/loop logic; no unused member, explicit
+padding, alignment attribute, packing directive or synthetic operation is
+introduced. The aggregate is declared inside the allowed body and produces
+no constructor/destructor/helper implementation change.
+
+Reads remain exactly two bytes to their appropriate short field; type retains
+signed interpretation, unsigned counts retain full 0..65535, and signed V5
+per-channel count stays a separate unchanged local. No contiguous structure
+read is substituted for separate reads. Field order changes only local layout,
+not an on-disk/native ABI structure. The preceding original shared stack-slot
+observations motivate this source grouping but do not prove recovered C++
+aggregate declarations. All key/value conversions, channels, helper order and
+failures remain unchanged. No flags, matcher, denominator or other body change.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals axisbyte-full |
+|---|---|---:|---:|---|
+| type_first_prefix | 97.1 / 61.5 | 643 | 100.0 | no |
+| type_first_all_unsigned | 97.0 / 48.5 | 646 | 100.0 | no |
+| count_first_prefix | 97.9 / 52.9 | 638 | 100.0 | no |
+| count_first_all_unsigned | 97.9 / 53.2 | 638 | 100.0 | no |
+
+All four forms regress required source and produce distinct whole Mesh objects
+from accepted and each other. Count-first variants have equal rounded source
+and raw instruction counts but differ in strict and bytes. Actual byte
+comparison establishes nonidentity; equal size/source is not used as proof.
+No trial retained; production source restored.
+
+Evidence: `_work/enhsectionaggregate-*.json`, source snapshots and
+`_work/enh_section_aggregate_identities.json`. Baseline outside-body/signature
+check passes and production tracked diff is empty. No native/full-corpus run
+is claimed for rejected variants. Accepted axisbyte-full/native evidence remains
+authoritative: **98.23% unweighted /98.17% weighted**, exact pair sets 2079 linked
+/959 byte equal baseline without losses. Both >=99.0 gates remain unmet;
+goal active. No push, PR or merge.
+
+
+## Continuation: individual key counters and scalar key records
+
+Seventeen Enhanced trials start from clean da09ecd3. The first nine change
+one key-loop counter at a time: signed int for each vector or axis group,
+and unsigned short for each vector group. This complements earlier grouped
+counter tests rather than repeating their source snapshots. Counts remain
+unsigned short, the axis counter remains unsigned char, and all operations,
+read order, masks, conversions and failure paths remain unchanged. An unsigned
+short loop index can reach the terminal count 65535 without wrapping; signed
+int can represent all unsigned-short counts. No byte index for unbounded
+key counts is introduced. Six signed forms produce the entire accepted Mesh
+object byte-for-byte; the three short vector counters regress source to 98.2.
+
+Eight further trials group a scalar key's existing time and value into a local
+trivial two-float record. Both field orders are tested for the three axis loops,
+optional loop, V5 loop, or all five loops. Both fields are used; no artificial
+member, padding/alignment directive, extra operation, helper, destructor or
+ABI-visible type is added. Each read is still separately four bytes, with the
+time-between-frames update between time and value reads. Position Y negation,
+V5 division and rotation conversion, and InsertKeyFrame pointer/time operands
+remain in their existing order. This is a source grouping hypothesis, not a
+claim of a recovered original C++ record declaration. All eight change object
+bytes; none increases the required source score. Equal rounded 98.3 for the
+value-first optional form is not a gain, and its strict score also decreases.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| vector_position_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| vector_scale_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| vector_rotation_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| vector_position_unsigned_short | 98.2 / 66.8 | 642 | 100.0 | no |
+| vector_scale_unsigned_short | 98.2 / 53.8 | 642 | 100.0 | no |
+| vector_rotation_unsigned_short | 98.2 / 66.8 | 642 | 100.0 | no |
+| axis_position_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| axis_scale_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| axis_rotation_int | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time_first_axes | 97.5 / 23.1 | 646 | 100.0 | no |
+| time_first_optional | 98.2 / 66.8 | 642 | 100.0 | no |
+| time_first_v5 | 98.2 / 45.9 | 642 | 100.0 | no |
+| time_first_all | 97.4 / 44.9 | 648 | 100.0 | no |
+| value_first_axes | 98.2 / 21.9 | 649 | 100.0 | no |
+| value_first_optional | 98.3 / 66.8 | 642 | 100.0 | no |
+| value_first_v5 | 98.1 / 47.7 | 642 | 100.0 | no |
+| value_first_all | 98.1 / 22.2 | 650 | 100.0 | no |
+
+All seventeen forms rejected; production source restored and compared as full
+text against f8607229 for both source files. Baseline outside-body/signature
+check passes. No flags, matcher, fixed-three weights or denominator change.
+Evidence: `_work/enh_individual_key_counter_identities.json`,
+`_work/enh_scalar_key_record_identities.json`, their per-trial verifier reports
+and source snapshots. Whole-object identity comes from actual byte comparison.
+No new native/full-corpus run is claimed for rejected forms. Accepted full/native
+evidence remains bound to unchanged source: **98.23% unweighted /98.17% weighted**,
+2079 linked-exact /959 byte-exact pairs equal baseline without losses. Both
+>=99.0 gates remain unmet; goal active. No push, PR or merge.
+
+
+## Continuation: centered compressed-normal destination pointer
+
+Start state is clean tracked 26fe9f19. Six focused Read trials test an interior
+pointer to input/output normal triples. Original compressed-normal output uses
+r4 initialized to 4 at 0x6ca92, destination base+r4 at 0x6cba2, negative-four
+store at 0x6cbac, zero-offset store at 0x6cbb0 and positive-four store at
+0x6cbbe. Fallback similarly stores at 0x6cb20/0x6cb24 before joining the last
+store. These are actual instruction observations, not recovered variable names
+or original C++ pointer declarations. The source hypothesis retains only
+`float *destination = normals + i + 1` inside each existing branch and uses
+destination[-1], [0], [1] for the same X/Y/Z writes in the same order.
+
+Both branches retain the existing fresh slot/normal field read at the same
+source point. No owner/count capture, virtual read, helper, clamp, precision,
+floating arithmetic order, allocation, failure path or destructor is changed.
+Each pointer is formed inside an executing valid triple; zero-count loops form
+none. No one-before-array or outside-array pointer is introduced. Reads of
+input components and dynamic loop count stay unchanged. No header, ABI layout,
+unrelated body, flags, matcher or denominator change.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals prior accepted |
+|---|---|---:|---:|---|
+| source_center_1 | 98.0 / 54.1 | 868 | 100.0 | no |
+| source_center_2 | 98.0 / 54.5 | 868 | 100.0 | no |
+| destination_center_1 | 98.4 / 56.8 | 877 | 100.0 | no |
+| destination_center_2 | 98.3 / 55.1 | 873 | 100.0 | no |
+| source_center_1_destination_center_1 | 98.4 / 56.3 | 877 | 100.0 | no |
+| source_center_2_destination_center_1 | 98.4 / 56.8 | 877 | 100.0 | no |
+
+Retain the minimal destination_center_1 variant. Combining source_center_2
+produces its identical whole Core object and adds no value. Read improves
+98.0 ->98.4 source and 55.9 ->56.8 strict, although raw instruction count grows
+867 ->877 (original 873). Exact original raw length is not the objective;
+destination_center_2 has 873 instructions but only 98.3 source. Whole-object
+identity/nonidentity is checked on actual bytes, not inferred from scores.
+
+Fresh validation of frozen retained source:
+
+- UCRT64 native gof2 static-library build passes.
+- Verbatim current reader with actual selected math/Vector passes colors,
+  positions, tangent bases, bounds and existing truncation cases. A new fixture
+  checks four distinct adjacent normal records: zero fallback and three records
+  with all components nonzero and differing signs/magnitudes. Expected values
+  use independent double normalization with 1e-6 tolerance, checking all twelve
+  component outputs. Every shorter normal-data prefix fails before attaching
+  normals. Shader disabled isolates this parsing path.
+- The new fixture also passes against the previous accepted reader body.
+  Separate private mutations replacing normalized X by Y and zero-fallback X
+  by one each fail with exit 3. Production source is never mutated for these
+  negative tests; they alter only extracted private include files.
+- Caller/actual Mesh/selected BSphere fixtures and actual enhanced parser pass.
+- Baseline outside-body/signature check passes. Production diff is only two
+  interior pointer declarations and their equivalent stores in the allowed
+  reader body; the targeted reader fixture is the only test-source change.
+- All 204 ARM translation units rebuilt; full corpus has 4619 comparisons,
+  zero skipped. Actual linked-exact 2079 / byte-exact 959 pair sets equal clean
+  baseline, lost [] and gained [] for each. Other 202 whole objects equal
+  baseline. Full Core equals focused winner; Mesh equals accepted axisbyte-full.
+  Canonical match flag digest and actual argument list remain unchanged.
+
+Unchanged matcher components for Read (previous -> current):
+
+- instruction_inventory_match: 93.9 -> 95.0
+- opcode_inventory_match: 98.1 -> 98.3
+- control_inventory_match: 98.8 -> 98.8
+- ordered_control_flow_match: 91.1 -> 91.8
+- call_count_match: 100.0 -> 100.0
+- size_match: 99.2 -> 99.6
+
+All fixed-three component scores and source scores are recomputed directly
+from the fresh target/base instruction lists by the unchanged matcher. Averaging
+already rounded component rows can differ by 0.1 from the matcher, which averages
+unrounded component ratios before rounding source; it is not used as proof.
+
+Full strict/source averages 75.98 / 89.0. Full JSON SHA-256:
+`8544da04f3fea9f6a7c3b2a60660e6ef8f8c6fad79238d4a15f5ec20154db90c`.
+
+| Fixed unique body | Source | Strict | Original instruction weight |
+|---|---:|---:|---:|
+| MeshCreateFromFile | 98.4% | 60.7% | 291 |
+| MeshReadData | 98.4% | 56.8% | 873 |
+| ReadEnhancedDataFromFile | 98.3% | 66.9% | 636 |
+
+Fixed three means: **98.366667% unweighted / 98.364667% weighted**.
+Both >=99.0 gates remain unmet; goal active. Native body tests use mocked
+file boundaries and selected exact math bodies; neither those nor the library
+build proves whole-game executable ABI or Android runtime/device correctness.
+No Godot evidence or compiler ceiling claim. No push, PR or merge.
+
+Evidence: `_work/readnormalcentered-*.json`, source snapshots,
+`_work/read_normal_centered_pointer_identities.json`,
+`_work/normalcenter_full.json`, `_work/normalcenter_three.json`,
+`_work/normalcenter_validation_audit.json`, full build/verify logs,
+`_work/normalcenter_native.log`, `_work/normalcenter_read_smoke.log`,
+enhanced build/run logs and `_work/normalcenter_negative_fixture_results.json`.
+
+
+## Continuation: normal-center traversal and common-Z interactions
+
+Eleven Read trials start from clean bf0243e8, the newly validated centered
+normal destination source. Eight test input record pointer/traversal and logical
+vertex-counter interactions while keeping that output addressing. Record source
+pointer is formed inside each iteration, or advances by three from raw's base.
+The advancing base pointer ends at one-past the final triple; no interior
+pointer is advanced beyond one-past. Logical vertex counters use unsigned int,
+int or unsigned short, compare the same freshly read vertexCount at each
+condition, and compute i=vertex*3 inside the executing body. The maximum index
+is 196602; terminal vertex index 65535 fits every tested type without wrap.
+Zero-count loops form no per-triple pointer. Count read timing and all actual
+operations, precision, failure paths and owner field reads remain unchanged.
+
+Three more trials test sharing final Z store after the len branch and/or
+spelling fallback Y before X. Original normal path stores at 0x6cbac/0x6cbb0
+and joins final Z at 0x6cbbe; fallback stores Y then X at 0x6cb20/0x6cb24 before
+joining. Shared form initializes destination and Z in both branches and retains
+existing branch-local field loads and all output addresses. There is no helper
+or observer between these ordinary distinct-component writes. No original C++
+declaration or source spelling is claimed recovered. These are interactions
+with the new accepted destination form, not repeats of pre-improvement bodies.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| source_record | 98.4 / 56.8 | 877 | 100.0 | yes |
+| advancing_source | 98.0 / 55.7 | 873 | 100.0 | no |
+| vertex_index_unsigned_int | 98.2 / 56.1 | 876 | 100.0 | no |
+| vertex_advancing_unsigned_int | 98.0 / 55.7 | 876 | 100.0 | no |
+| vertex_index_int | 98.2 / 56.1 | 876 | 100.0 | no |
+| vertex_advancing_int | 98.0 / 55.7 | 876 | 100.0 | no |
+| vertex_index_unsigned_short | 98.2 / 56.1 | 876 | 100.0 | no |
+| vertex_advancing_unsigned_short | 98.0 / 55.7 | 876 | 100.0 | no |
+| shared_z_and_destination | 98.4 / 56.8 | 877 | 100.0 | yes |
+| fallback_y_before_x | 98.4 / 56.8 | 877 | 100.0 | yes |
+| shared_z_fallback_y_before_x | 98.4 / 56.8 | 877 | 100.0 | yes |
+
+Four forms yield the exact accepted whole Core object. The three logical index
+types yield identical objects to one another for each traversal family, and
+all seven nonidentical forms regress source. None retained; production source
+restored. Full source and six relevant source/fixture files compare exactly to
+accepted bf0243e8. Baseline outside-body/signature check passes.
+
+Read-only binding recheck revalidates the existing normalcenter-full JSON hash,
+actual 2079 linked/959 byte pair sets against baseline, 204 objects/202 unaffected
+objects, winner identity, canonical flag digest/argument list, and all fixed
+three matcher components directly from the target/base instruction lists.
+No native or full-corpus rerun is claimed for rejected forms. Accepted native
+and full ARM evidence remains bound to restored source: **98.37% unweighted
+/98.36% weighted**. Both >=99.0 gates remain unmet; goal active.
+
+Evidence: `_work/read_normal_center_interaction_identities.json`,
+`_work/read_normal_common_z_center_identities.json`, per-trial verifier JSON
+and source snapshots, rechecked `_work/normalcenter_validation_audit.json`.
+No helper, header, ABI layout, unrelated body, flags, matcher, denominator or
+weight change. No push, PR or merge.
+
+
+## Continuation: normal record-end and compressed UV pair pointers
+
+Thirteen Read source trials start from clean d3900758. Seven complete normal
+pointer exploration with a record-end pointer, using offsets -3/-2/-1. Input
+end is computed per executing record or advanced by three at the beginning of
+the iteration, starting from the allocation base. It reaches one-past after
+the final record, never beyond it. Output end is formed after the same branch
+field reload and uses the same X/Y/Z stores in order. Zero-count loops perform
+none of these calculations. Combined input middle/end and output-end forms
+are also checked; no helper, read/count timing, arithmetic precision/order,
+clamp, allocation, destructor or failure path changes.
+
+Normal per-record input-end form yields the accepted whole Core object.
+Output-end alone yields the exact pre-improvement axisbyte-full Core object,
+not merely its equal rounded score/length. Advancing input-end yields exactly
+the preceding advancing base-pointer trial object. These byte identities
+show which address spellings the compiler canonicalizes; no source recovery
+or general compiler ceiling follows from them.
+
+Six UV trials address a pair by its second component or end, separately for
+input, output, or both. Pointer computations stay inside executing iterations.
+Original compressed UV output field/load and stores are at 0x6c92c-0x6c93c
+and 0x6c95e: pointer refers to the first component, followed by +4 store. The
+alternate UV source spellings are hypotheses, not original recovered C++.
+Both input/output components, double scale, double flip subtraction, float
+conversion, per-iteration field load and stores retain existing order. All
+six UV forms produce the accepted entire Core object byte-for-byte.
+
+| Family/trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| normal/input_end_per_record | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal/input_end_advancing | 98.0 / 55.7 | 873 | 100.0 | no |
+| normal/output_end | 98.0 / 55.9 | 867 | 100.0 | no |
+| normal/input_center_1_output_end | 98.0 / 54.1 | 868 | 100.0 | no |
+| normal/input_center_2_output_end | 98.0 / 54.5 | 868 | 100.0 | no |
+| normal/input_center_3_output_end | 98.0 / 54.1 | 868 | 100.0 | no |
+| normal/both_end_advancing_input | 97.9 / 55.7 | 866 | 100.0 | no |
+| UV/destination_1 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| UV/source_1 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| UV/both_1 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| UV/destination_2 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| UV/source_2 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| UV/both_2 | 98.4 / 56.8 | 877 | 100.0 | yes |
+
+No trial increases source; none retained. Production and relevant test source
+restored and compared in full to bf0243e8. Baseline outside-body/signature check
+passes. The existing normalcenter-full artifact hash, actual pair sets, all
+204 objects/202 unaffected objects, winner identity, canonical flag digest and
+arguments, and three matcher component rows are rechecked directly. No new
+native/full-corpus execution is claimed for rejected forms. Accepted source
+remains **98.37% unweighted /98.36% weighted**, linked 2079/byte 959 exact pair
+sets equal baseline, lost [] and gained []. Both >=99.0 gates remain unmet;
+goal active. No matcher, denominator, original weights, header, ABI layout or
+unrelated body change. No push, PR or merge.
+
+Evidence: `_work/read_normal_end_pointer_identities.json`,
+`_work/read_uv_pair_center_identities.json`, their per-trial reports/snapshots
+and rechecked `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: tangent output centers and current counter interactions
+
+Fifteen Read trials start from clean c374bd9c. Nine address tangent or binormal
+output triples by the middle, final component, or end, separately or together.
+All field loads remain after their respective Normalize/Cross helper call;
+no pointer capture is moved across a helper. X/Y/Z store order and addresses
+are unchanged. The end pointer can be one-past the last triple, never beyond,
+and none is formed by a zero-iteration loop. These source-addressing hypotheses
+do not claim original recovered C++ pointer declarations. All nine produce
+the entire accepted Core object byte-for-byte.
+
+Six final/triangle loop trials examine interaction with the recently accepted
+centered normal output source. Five repeat previously negative or identity
+forms on this materially changed body: remaining for/guarded do, short final
+counter, explicit component offset and short triangle counter. One adds signed
+int final index. Count assignments remain from unsigned-short fields; all
+counter limits fit their selected types. Count captures, helper order,
+precision, stores, errors and cleanup expressions are unchanged. Guarded do
+has no first iteration when count is zero. No cast creates an out-of-range
+component index; explicit component stride is still three per vertex.
+
+| Family/trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| output/tangent_1 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/binormal_1 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/both_1 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/tangent_2 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/binormal_2 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/both_2 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/tangent_3 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/binormal_3 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| output/both_3 | 98.4 / 56.8 | 877 | 100.0 | yes |
+| counter/final_remaining_for | 97.7 / 56.7 | 874 | 98.2 | no |
+| counter/final_remaining_do | 97.4 / 58.2 | 879 | 98.2 | no |
+| counter/final_short_index | 98.4 / 56.8 | 877 | 100.0 | yes |
+| counter/final_component_offset | 98.4 / 56.8 | 877 | 100.0 | yes |
+| counter/triangle_short_index | 98.4 / 55.1 | 875 | 100.0 | no |
+| counter/final_signed_index | 98.4 / 56.8 | 877 | 100.0 | yes |
+
+Remaining forms regress source and call-count agreement; short triangle form
+retains rounded 98.4 source but worsens strict. Others yield the accepted object.
+None retained. Static BL/BLX plus relocation inspection of both remaining forms
+is saved separately; a reduced static cleanup site count is not evidence of a
+missing executed cleanup. No native correctness claim is made for rejected
+forms. No dummy operation or compiler/matcher workaround is introduced.
+
+All production and relevant test source restored and compared exactly to
+bf0243e8. Read-only recheck verifies existing full JSON, actual linked 2079/byte
+959 pair sets equal baseline with lost [] and gained [], 204 objects/202
+unaffected objects, winner identity, canonical flags and all fixed-three metric
+components from original/base instruction lists. Baseline outside-body and
+signature check passes. No new native/full-corpus run claimed for rejected
+forms. Accepted means **98.37% unweighted /98.36% weighted**; both >=99.0 gates
+remain unmet, goal active. No other body/header/ABI, matcher, denominator or
+weight change. No push, PR or merge.
+
+Evidence: `_work/read_tangent_center_identities.json`,
+`_work/read_center_counter_interaction_identities.json`, per-trial reports and
+source snapshots; `_work/center_remaining_for_calls.json`,
+`_work/center_remaining_do_calls.json`, rechecked normalcenter validation audit.
+
+
+## Continuation: position flag interaction and shared enhanced key storage
+
+Ten trials start from clean 1a8a6079. A fresh accepted Read instruction-inventory
+gap still contains the original signed position selection. Original 0x6c6a8
+is MOVS flags LSL#29, with BMI at 0x6c6ba; current source checks flags&4.
+Five equivalent flag forms are tested on the materially changed normal-center
+body. Four signed/high-bit variants produce the same nonaccepted whole Core
+object, regressing Read 98.4 ->97.7; unsigned shift-by-31 yields the accepted
+object. Signed conversions rely on the selected 32-bit two's-complement target
+toolchain interpretation; no general portable-C++ implementation claim is made.
+The shifted value remains nonzero precisely for the same low-three-bit flags.
+No extra guard/operation, read ordering or flags meaning is introduced.
+
+Five new Enhanced forms share only actually used local storage between sections:
+vector buffer across the first three groups; key/value scalar buffers across
+those groups; both; scalar buffers also through optional/V5; or all storage.
+Every use is preceded by the same successful existing read. No initialization,
+padding, field, helper, constructor/destructor or redundant operation is added.
+Read sizes/order, minimum-time updates, masks, signed V5 count, position-Y
+negation, angular conversion and attachment/cleanup stay unchanged. These are
+source lifetime hypotheses under the parser's synchronous Read/key-copy use,
+not recovered C++ declarations or proof about hypothetical retained caller
+buffers. No native claim is made for rejected storage variants.
+
+| Family/trial | Body source / strict | Instructions | Calls | Whole unit equals accepted |
+|---|---|---:|---:|---|
+| Read flag/direct_signed_shift | 97.7 / 56.8 | 885 | 100.0 | no |
+| Read flag/shared_signed_shift | 97.7 / 56.8 | 885 | 100.0 | no |
+| Read flag/shared_unsigned_high | 97.7 / 56.8 | 885 | 100.0 | no |
+| Read flag/shared_shifted_bit | 98.4 / 56.8 | 877 | 100.0 | yes |
+| Read flag/signed_shift_storage | 97.7 / 56.8 | 885 | 100.0 | no |
+| Enhanced storage/vectors | 97.6 / 50.9 | 641 | 100.0 | no |
+| Enhanced storage/prefix_scalars | 98.0 / 59.5 | 642 | 100.0 | no |
+| Enhanced storage/prefix_all | 98.0 / 58.1 | 642 | 100.0 | no |
+| Enhanced storage/all_scalars | 98.1 / 52.9 | 642 | 100.0 | no |
+| Enhanced storage/all_storage | 98.1 / 38.6 | 637 | 100.0 | no |
+
+All storage variants produce distinct Mesh objects and regress required source;
+equal rounded score/size of prefix scalar/all forms is not identity. None of
+the ten trials retained. Production and relevant test source restored and
+compared in full to bf0243e8. Baseline outside-body/signature check passes.
+
+Read-only binding recheck verifies existing full artifact hash, actual linked
+2079/byte 959 pair sets equal baseline with lost [] and gained [], all 204
+objects/202 unaffected objects, winner identities, canonical flags and fixed
+three metric components directly from target/base instructions. No new native
+or full-corpus run claimed for rejected variants. Accepted means **98.37%
+unweighted /98.36% weighted**; both >=99.0 gates remain unmet, goal active.
+No matcher, original weights, denominator, header/ABI or unrelated body change.
+No push, PR or merge.
+
+Evidence: `_work/read_center_position_flag_identities.json`,
+`_work/enh_shared_key_storage_identities.json`, their per-trial reports and
+source snapshots, rechecked `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: explicit frame capture after successful key reads
+
+Six Enhanced trials start from clean 878ea831. They name the already required
+time conversion as const int frameTime after the last successful read of each
+key record, separately for vectors, axes, optional, V5, optional+V5, or all
+eight loops. InsertKeyFrame's actual declaration is (const float*, longlong
+flags, int time); the existing int conversion is retained exactly, with no
+different-width time type. Conversion is not moved before the final file read,
+so truncation failure does not acquire a new float-to-int operation. It also
+stays after the existing updateTimeBetweenFrames. No precision change or claim
+about valid NaN/out-of-range conversion is introduced; the original conversion
+itself has not been removed or newly guarded.
+
+Axis grouping moves one conversion before its bounded axis dispatch; this
+rechecks an older hypothesis with the currently accepted unsigned-char axes.
+Optional/vector declarations are immediately before their insertion calls.
+V5 captures time before key division/rotation and channel dispatch, with all
+read, time-update, channel, value conversion and insertion ordering preserved.
+There is no helper between capture and use. No additional read/operation,
+padding, header/layout or helper change is introduced. These declarations
+are source hypotheses, not recovered original C++ locals.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| vectors | 98.3 / 66.9 | 641 | 100.0 | yes |
+| axes | 97.5 / 64.0 | 643 | 100.0 | no |
+| optional | 98.3 / 66.9 | 641 | 100.0 | yes |
+| v5 | 98.1 / 65.6 | 648 | 100.0 | no |
+| optional_v5 | 98.1 / 65.6 | 648 | 100.0 | no |
+| all | 97.3 / 62.5 | 650 | 100.0 | no |
+
+Vector and optional forms yield the accepted whole Mesh object. V5 and
+optional+V5 yield the same nonaccepted object. All four nonidentical forms
+regress required source. None retained; production source restored and full
+source/fixture comparison to bf0243e8 passes. Baseline outside-body/signatures
+pass. No new native or full-corpus run is claimed for rejected forms.
+
+Existing full evidence is rebound by read-only checks of the JSON hash,
+actual linked 2079/byte 959 pair sets equal baseline without lost/gained pairs,
+204 objects/202 unaffected objects, winner identities, canonical flag digest
+and argument list, and all fixed-three metric components directly from target
+and base instruction lists. Accepted **98.37% unweighted /98.36% weighted**;
+both >=99.0 gates remain unmet, goal active. No matcher, denominator, weights,
+unrelated body, ABI layout, push, PR or merge change.
+
+Evidence: `_work/enh_frame_capture_current_identities.json`, its six focused
+verifier reports/source snapshots and rechecked normalcenter validation audit.
+
+
+## Continuation: local caller parse-state aggregates
+
+Four Create trials start from clean 6dfb2d75. A new local trivial ParseState
+groups the actual eight-byte magic buffer and unsigned-short child count, with
+both member orders tested. Two further forms also group the existing uint
+file handle, with handle-first or handle-last order. Every member is used by
+the existing parser; no padding member, explicit alignment/packing directive,
+unused field, zero-fill or dummy operation is introduced. Natural compiler
+alignment is left untouched. The type is local to the allowed function body,
+not a header, on-disk structure or native ABI layout change.
+
+Magic initialization still uses the existing strcpy only after OpenRead succeeds.
+Handle still receives its existing zero initialization before OpenRead. SubCount
+still receives the existing two-byte read immediately before dispatch, preserving
+its full unsigned-short range. Reads still target separate members with identical
+sizes and order; no whole-record read or new capture across calls is substituted.
+Signature tables, format decisions, allocations, recursive reader calls, bounds,
+array insertion, Close and cleanup expressions are unchanged. No original C++
+aggregate declaration/member order is claimed recovered; this is a local storage
+hypothesis after instruction-gap inspection.
+
+| Trial | Create source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| magic_count | 98.1 / 62.7 | 290 | 100.0 | no |
+| count_magic | 98.3 / 50.5 | 291 | 100.0 | no |
+| handle_magic_count | 98.2 / 54.2 | 292 | 100.0 | no |
+| magic_count_handle | 97.8 / 63.8 | 295 | 100.0 | no |
+
+All four objects differ from accepted and each other. Two forms improve strict
+over accepted 60.7 but all regress required source from 98.4; none retained.
+The count-first form has the original raw 291 instructions but still lower
+source 98.3, so raw-size coincidence is not success. Production source restored.
+
+Full source/relevant fixture comparison to bf0243e8 and baseline outside-body/
+signature check pass. Read-only binding recheck verifies existing full JSON,
+actual 2079 linked/959 byte pair sets equal baseline without lost/gained pairs,
+204 objects/202 unaffected objects, winner identity, canonical flag digest and
+arguments, and fixed-three matcher rows from actual target/base instruction
+lists. No new native/full-corpus run claimed for rejected variants. Accepted
+**98.37% unweighted /98.36% weighted**; both >=99.0 gates remain unmet, goal
+active. No matcher, denominator, original weights, unrelated body or ABI change.
+No push, PR or merge.
+
+Evidence: `_work/create_local_parse_state_identities.json`, per-trial focused
+reports/source snapshots and rechecked normalcenter validation audit.
+
+
+## Continuation: caller parse-state aggregates including the child slot
+
+Eight Create trials start from clean 3c54ff97. Unlike preceding parse-state
+trials, the local aggregate includes the childPtr whose address is passed to
+MeshReadData. It is grouped with handle or count in both orders, with both in
+two orders, or with all three other existing locals in two orders. Every field
+is used by the original operations; no padding field, attribute, packing,
+extra initialization, dummy effect or helper is introduced. Natural compiler
+alignment is not changed. The type is function-local, not an on-disk/header or
+native ABI structure, and is not claimed recovered from original C++.
+
+Child pointer is assigned by the same new Mesh immediately before its existing
+fields and reader call. Its address still denotes that live pointer slot;
+post-read bounds and array insertion use that slot at the same source points.
+No child value is captured before a reader/helper or retained across an extra
+call. Handle's sole existing zero initialization, magic strcpy after OpenRead,
+separate read sizes/order, unsigned-short count range and all dispatch/cleanup/
+Close expressions remain unchanged. This checks alias/storage interaction of
+the actually addressed child slot, not a reinterpretation of disk data.
+
+| Trial | Create source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| handle_child | 98.0 / 59.5 | 291 | 100.0 | no |
+| child_handle | 97.8 / 60.9 | 294 | 100.0 | no |
+| count_child | 98.0 / 61.9 | 291 | 100.0 | no |
+| child_count | 98.2 / 56.8 | 290 | 100.0 | no |
+| handle_count_child | 97.8 / 54.5 | 292 | 100.0 | no |
+| child_count_handle | 97.8 / 61.1 | 295 | 100.0 | no |
+| all_handle_first | 97.8 / 49.1 | 296 | 100.0 | no |
+| all_child_first | 97.8 / 57.1 | 294 | 100.0 | no |
+
+Every object differs from accepted and each other, and every required source
+score regresses from 98.4. Some strict gains do not justify retention. Two
+forms have original raw 291 instructions but only 98.0 source. No trial kept;
+production source restored. Full source/fixture comparison to bf0243e8 and
+baseline outside-body/signature checks pass.
+
+Read-only recheck binds existing normalcenter-full evidence: full artifact,
+actual 2079 linked/959 byte pair sets equal baseline without lost/gained pairs,
+204 objects/202 unaffected objects, winner identity, canonical flag digest/
+argument list and fixed-three matcher rows from actual instruction lists.
+No new native/full-corpus run claimed for rejected forms. Accepted means
+**98.37% unweighted /98.36% weighted**; both >=99.0 gates remain unmet, goal
+active. No matcher, denominator, original weights, unrelated body or ABI layout
+change. No push, PR or merge.
+
+Evidence: `_work/create_child_parse_state_identities.json`, eight focused
+reports/source snapshots and rechecked normalcenter validation audit.
+
+
+## Continuation: color loop forms on accepted normal-center source
+
+Nine Read trials start from clean 5e09dfc0. Six revisit previously tested color
+loop forms on the materially changed accepted normal-center body: signed index,
+separate byte offset, advancing input pointer, postincrement destination index,
+explicit value/increment, and guarded do. Three new forms point immediately
+after the input/output scalar or both, using [-1]. The per-component color
+field read remains inside each iteration; no owner/count capture across a
+helper is introduced. Loop bound remains the existing freshly read vertexCount
+times four at the condition, component traversal and scalar division by 255
+are preserved. No extra array operation, clamp, initialization or dummy effect.
+
+Maximum component bound is 4*65535=262140, and maximum byte offset is 1048556,
+so signed int index and uint byte offset remain in range. Advancing input ends
+at one-past and per-element end pointers are formed only inside executing
+iterations; zero count forms none. A byte/ushort flattened component counter
+is not used because it could overflow the valid range. No source pointer
+declaration is claimed recovered from original C++.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| signed_index | 98.4 / 56.8 | 877 | 100.0 | yes |
+| dynamic_byte_offset | 98.4 / 56.9 | 877 | 100.0 | no |
+| input_pointer | 98.4 / 56.8 | 877 | 100.0 | yes |
+| postincrement_store | 98.4 / 56.8 | 877 | 100.0 | yes |
+| value_then_increment | 98.4 / 56.8 | 877 | 100.0 | yes |
+| guarded_do | 98.3 / 56.3 | 878 | 100.0 | no |
+| output_end | 98.4 / 56.8 | 877 | 100.0 | yes |
+| input_end | 98.4 / 56.8 | 877 | 100.0 | yes |
+| both_end | 98.4 / 56.8 | 877 | 100.0 | yes |
+
+Seven forms produce the exact accepted whole Core object. Separate byte offset
+has unchanged rounded source and 0.1 strict gain but different bytes; it adds
+no required score gain and is not retained. Guarded do regresses source.
+All rejected; production and relevant test source restored and compared in
+full to bf0243e8. Baseline outside-body/signature check passes.
+
+Existing normalcenter-full evidence is rebound by read-only checks: full JSON,
+actual linked 2079/byte 959 pair sets equal baseline without lost/gained pairs,
+204 objects/202 unaffected objects, winner identity, canonical flag digest/
+argument list and fixed-three matcher components from actual instruction lists.
+No new native or full-corpus execution claimed for rejected forms. Accepted
+**98.37% unweighted /98.36% weighted**; both >=99.0 gates remain unmet, goal
+active. No other body, header/ABI, matcher, denominator, original weights, push,
+PR or merge change.
+
+Evidence: `_work/read_center_color_loop_identities.json`, focused per-trial
+reports/source snapshots and rechecked normalcenter validation audit.
+
+
+## Continuation: local tangent input and intermediate records
+
+Eight Read trials start from clean a2e60390. Local input records group actual
+normal Vector and accumulated tangent float[3], with both member orders.
+Local math records group actual scaled/orthogonal/normalized vectors, optionally
+also the dot result. Input-only, math-only and combined forms are tested. All
+fields hold used existing intermediates; no padding field, explicit alignment,
+packing, unused member, helper, zero initialization or dummy operation.
+
+Vector has a custom assignment operator, so fields are initialized directly
+by braced aggregate initialization rather than default declaration followed
+by Vector assignment. Intermediate initializers access preceding already
+initialized fields in declaration order, preserving Dot/product/subtraction/
+Normalize dependency order. No field is used before initialization. Cross and
+its fresh binormal field load remain after the existing tangent output writes.
+Normal-first input initialization retains original scalar load order; reversed
+input member order reverses the independent normal/accumulator input loads
+before any helper. It does not move a file read or helper. This ordering
+distinction is explicit; no original C++ aggregate declaration is claimed.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| inputs_normal_first | 97.6 / 53.1 | 878 | 98.2 | no |
+| inputs_tangent_first | 97.2 / 53.4 | 892 | 100.0 | no |
+| math_vectors | 98.1 / 54.0 | 879 | 100.0 | no |
+| both_vectors_normal_first | 97.2 / 56.1 | 898 | 100.0 | no |
+| both_vectors_tangent_first | 98.1 / 56.0 | 880 | 100.0 | no |
+| math_dot_vectors | 98.2 / 57.0 | 885 | 100.0 | no |
+| both_dot_vectors_normal_first | 96.8 / 56.9 | 882 | 98.2 | no |
+| both_dot_vectors_tangent_first | 97.4 / 56.1 | 877 | 98.2 | no |
+
+All eight whole Core objects differ from accepted and each other; every source
+score regresses from 98.4. None retained; production source restored. Static
+BL/BLX and relocation call differences are recorded independently for all eight
+forms, including register-selected indirect calls. A reduced static site count
+is not evidence that an executed cleanup is missing. No native execution or
+ABI correctness is claimed for rejected aggregate forms.
+
+The three 98.2-call-score forms have 60 sites versus accepted 61, with exactly
+one fewer static `_ZdaPv` site. Direct mathematical/helper call inventories do
+not change; indirect register differences are r5 ->sl/r6 at three sites.
+
+Full production/relevant fixture text equals bf0243e8; baseline outside-body/
+signature checks pass. Read-only recheck verifies existing full artifact,
+actual 2079 linked/959 byte pair sets equal baseline without lost/gained pairs,
+204 objects/202 unaffected objects, winner identity, canonical flag digest/
+arguments and fixed-three matcher rows from actual target/base instructions.
+No new native/full-corpus run claimed. Accepted **98.37% unweighted /98.36%
+weighted**, both >=99.0 gates unmet; goal active. No header/ABI, unrelated body,
+matcher, denominator or original weight change. No push, PR or merge.
+
+Evidence: `_work/read_tangent_local_records_identities.json`, eight focused
+reports/source snapshots, `_work/tangent_local_record_call_differences.json`
+and rechecked normalcenter validation audit.
+
+
+## Continuation: bounds records on accepted normal-center source
+
+Eight Read trials start from clean 6b20a4b0. Two-array local records group
+the existing min/max float[3] arrays in both orders, accessed through array
+references or directly by members. Four further member orders include the
+existing center float[3]. Every array and component is used by the original
+bounds computation; no dummy member, explicit padding/alignment/packing,
+constructor, helper or extra initialization is introduced. Center storage may
+begin its lifetime earlier but receives no new initialization or operation
+before its existing assignments. All original min then max sentinel stores,
+file reads, per-component bounds updates, center calculations, Vector copy,
+maximum-minus-minimum subtraction and full-diagonal Length call remain in
+their existing order. No half-diagonal radius is substituted.
+
+Two reference/direct pairs yield byte-identical whole Core objects, proving
+those aliases add no code differences for each field order. Including center
+is a new grouping, not an original recovered structure declaration. The other
+two-array forms revisit pre-normal-improvement hypotheses on the materially
+changed current function. The type remains local, not a native ABI/header change.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| min_max_refs | 97.7 / 54.8 | 880 | 100.0 | no |
+| max_min_refs | 97.7 / 54.9 | 880 | 100.0 | no |
+| min_max_direct | 97.7 / 54.8 | 880 | 100.0 | no |
+| max_min_direct | 97.7 / 54.9 | 880 | 100.0 | no |
+| min_max_center | 96.3 / 52.2 | 893 | 98.2 | no |
+| center_min_max | 97.4 / 53.9 | 881 | 100.0 | no |
+| max_min_center | 96.3 / 52.7 | 893 | 98.2 | no |
+| max_center_min | 97.7 / 54.5 | 878 | 100.0 | no |
+
+Every trial regresses source from 98.4; none retained. Two call-score regressions
+are independently inspected as static BL/BLX+relocation inventories; no missing
+executed cleanup or native correctness claim follows from static site counts.
+Both have 62 static call sites versus accepted 61: exactly one additional
+`_ZdaPv` site, with direct mathematical/helper call inventories unchanged.
+Production source restored, full source/fixture comparison to bf0243e8 and
+baseline outside-body/signature checks pass.
+
+Read-only recheck binds existing full artifact, actual linked 2079/byte 959
+pair sets equal baseline without lost/gained pairs, 204 objects/202 unaffected
+objects, winner identity, canonical flag digest/argument list and fixed-three
+matcher components from actual target/base instruction lists. No new native
+or full-corpus run claimed for rejected forms. Accepted **98.37% unweighted
+/98.36% weighted**; both >=99.0 gates remain unmet, goal active. No matcher,
+denominator, original weights, unrelated body or ABI change. No push, PR or merge.
+
+Evidence: `_work/read_current_bounds_records_identities.json`, per-trial focused
+reports/source snapshots, `_work/current_bounds_record_call_differences.json`
+and rechecked normalcenter validation audit.
+
+
+## Continuation: normal intermediate arrays and records
+
+Ten Read trials start from clean 2ee1f3ed. Each of four existing scalar triples
+is grouped into a local array[3] or trivial three-field record: decoded floats,
+normalized float quotients, lower-bounded doubles, and output floats. Each stage
+is tested separately, then all four stages together for both representations.
+Every field/component replaces a used existing value; no unused field, padding,
+alignment directive, initialization to zero, helper, constructor/destructor or
+dummy operation. Initializer clauses retain X/Y/Z evaluation order. Existing
+double input multiplication, Y-square plus X-square plus Z-square order, sqrt,
+division order, double lower comparison/selection, float casts and upper tests
+are unchanged. Output triple remains mutable for the original upper tests.
+Fresh owner loads, accepted middle-component destination and fallback stay at
+their existing source points. No file read or failure behavior is altered.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| array_decoded | 98.4 / 56.8 | 877 | 100.0 | yes |
+| array_quotients | 98.4 / 56.8 | 877 | 100.0 | yes |
+| array_bounded | 98.4 / 56.8 | 877 | 100.0 | yes |
+| array_output | 98.4 / 56.8 | 877 | 100.0 | yes |
+| array_all | 98.4 / 56.8 | 877 | 100.0 | yes |
+| record_decoded | 98.4 / 56.8 | 877 | 100.0 | yes |
+| record_quotients | 98.4 / 56.8 | 877 | 100.0 | yes |
+| record_bounded | 98.4 / 56.8 | 877 | 100.0 | yes |
+| record_output | 98.4 / 56.8 | 877 | 100.0 | yes |
+| record_all | 98.4 / 56.8 | 877 | 100.0 | yes |
+
+All ten complete Core objects equal the accepted object byte-for-byte, not
+merely by score or size. None retained: these representations add no required
+gain. This closes the tested local grouping family on this source/compiler;
+it is not proof of a general compiler ceiling or a recovered original type.
+Production source restored; full source/fixture comparison to bf0243e8 and
+baseline outside-body/signature check pass.
+
+Read-only recheck binds existing full JSON, actual linked 2079/byte 959 pair
+sets equal baseline without lost/gained pairs, 204 objects/202 unaffected
+objects, winner identity, canonical flag digest/argument list, and fixed-three
+matcher rows from target/base instructions. No new native/full-corpus run
+claimed for nonretained forms. Accepted **98.37% unweighted /98.36% weighted**,
+both >=99.0 gates remain unmet; goal active. No unrelated body, header/ABI,
+matcher, denominator, original weights, push, PR or merge change.
+
+Evidence: `_work/read_normal_value_records_identities.json`, ten per-trial
+focused reports/source snapshots and rechecked normalcenter validation audit.
+
+
+## Continuation: common failure exits and current normal branches
+
+Seven focused Read trials start from dc74484a and the accepted middle-component
+normal destination. Two common-return forms replace existing return -1 paths
+with a shared label: final enhanced/child failures only, then all failures.
+The latter uses an inner body scope so jumps leave existing declarations.
+Existing reads, conditions, explicit cleanup and successful return remain;
+no new cleanup or initialized operation is introduced.
+
+Five normal-branch forms revisit fallback-first, zero/nonzero continue,
+named nonzero condition and owner-load-before-branch on the current accepted
+source. Continue reaches the same loop increment; nothing follows the branch
+in the loop. The owner-before-branch trial moves the existing normals field
+load before the length test and clamp calculations, with no intervening helper.
+This load-order variation is a source-shape hypothesis, not a recovered original
+capture point. No header, ABI, helper or compilation flag is changed.
+
+| Family / trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| common failure / tail_label | 98.4 / 56.8 | 877 | 100.0 | yes |
+| common failure / all_label | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal branch / fallback_first | 98.2 / 59.1 | 877 | 100.0 | no |
+| normal branch / zero_continue | 98.2 / 59.1 | 877 | 100.0 | no |
+| normal branch / nonzero_continue | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal branch / named_nonzero | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal branch / owner_before_branch | 98.1 / 57.8 | 874 | 100.0 | no |
+
+Four objects equal the accepted complete Core object byte-for-byte. The three
+other forms regress source-shape; fallback_first and zero_continue also equal
+each other byte-for-byte. Their strict-score increases do not satisfy the
+requested source-shape gate. None retained; production sources and fixtures
+match bf0243e8, and outside-body/signature comparisons pass.
+
+Read-only recheck binds the existing full-corpus report to restored source:
+204 objects, 202 unaffected objects equal baseline, actual linked-exact 2079
+and byte-exact 959 pair sets unchanged with no lost/gained pairs, canonical
+flags unchanged, and fixed-three rows recomputed with the unchanged matcher.
+No new native/full-corpus run is claimed for rejected forms. Accepted means
+remain **98.37% unweighted /98.36% original-instruction-weighted**. Both >=99.0
+requirements remain unmet; this is not evidence of a ceiling. No push, PR or merge.
+
+Evidence: `_work/read_common_failure_identities.json`,
+`_work/read_current_normal_branch_identities.json`, seven focused reports and
+source snapshots, and rechecked `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: clamp scheduling with centered normal destinations
+
+Six focused Read trials start from 837a7f30. They retest the old clamp-form
+and quotient-scheduling family with the accepted middle-component output
+pointer: explicit lower-double if statements, upper ternaries, complete
+component clamp staging, Y/X/lower-Y/Z quotient staging, Y-first casts/upper
+tests, and interleaved promotion/lower-if. Float quotients, double lower
+selection, float casts and upper comparisons on the original float quotients
+remain. No arithmetic is reassociated, no helper added, no file read or field
+load moved. Independent component evaluation order is varied explicitly in
+the scheduling forms. These are source hypotheses, not recovered declarations.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| explicit_lower_double | 97.6 / 54.1 | 862 | 100.0 | no |
+| upper_ternary | 98.4 / 56.8 | 877 | 100.0 | yes |
+| component_clamps | 98.4 / 56.8 | 877 | 100.0 | yes |
+| staged_y_x_z | 98.4 / 56.8 | 877 | 100.0 | yes |
+| staged_y_clamps | 98.4 / 56.8 | 877 | 100.0 | yes |
+| interleaved_lower_if | 97.6 / 54.1 | 862 | 100.0 | no |
+
+Four complete Core objects equal the accepted object byte-for-byte. Both
+explicit lower-if forms equal each other and regress source-shape to 97.6;
+none retained. This resolves the tested interaction with centered destinations
+without claiming a general compiler ceiling. Production source/fixtures match
+bf0243e8 and outside-body/signature comparisons pass.
+
+Read-only recheck binds the existing full evidence to restored source and
+recomputes the fixed-three matcher rows: 204 objects, 202 unaffected objects
+byte-identical to baseline, actual linked-exact 2079 and byte-exact 959 pair sets
+unchanged without lost/gained pairs, canonical compilation arguments unchanged.
+No new native/full-corpus run is claimed for rejected/restored trials. Accepted
+means remain **98.37% unweighted /98.36% original-instruction-weighted**;
+both >=99.0 gates remain unmet and goal remains active. No push, PR or merge.
+
+Evidence: `_work/read_current_clamp_identities.json`, six
+`_work/readcurrentclamp-*.json` focused reports, corresponding source snapshots,
+and rechecked `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: compressed normal and UV input value copies
+
+Twelve focused Read trials start from 4dc42858. Each copies the actual normal
+X/Y/Z or UV U/V input components into local const scalars, an array, or a trivial
+record, using short or value-preserving signed int. Every member is used; no
+padding, reinterpretation of the input allocation as a record, extra helper,
+unused field, header or ABI change. Initializer clauses preserve component order.
+Normal copies move the three loads before their independent conversions. UV
+copies move the second input load before the first output store: the raw input
+and output are separately allocated, with no intervening call. Double scaling,
+float casts, flip decision and stores remain in their existing order. These
+representations are source hypotheses, not recovered original declarations.
+
+| Family / trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| normal / short_scalars | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal / short_array | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal / short_record | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal / int_scalars | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal / int_array | 98.4 / 56.8 | 877 | 100.0 | yes |
+| normal / int_record | 98.4 / 56.8 | 877 | 100.0 | yes |
+| UV / short_scalars | 98.3 / 55.8 | 876 | 100.0 | no |
+| UV / short_array | 98.3 / 55.8 | 876 | 100.0 | no |
+| UV / short_record | 98.3 / 55.8 | 876 | 100.0 | no |
+| UV / int_scalars | 98.3 / 55.8 | 876 | 100.0 | no |
+| UV / int_array | 98.3 / 55.8 | 876 | 100.0 | no |
+| UV / int_record | 98.3 / 55.8 | 876 | 100.0 | no |
+
+All six normal objects equal the accepted complete Core object byte-for-byte.
+All six UV objects equal each other byte-for-byte and regress source-shape from
+98.4 to 98.3. None retained; production source/fixtures match bf0243e8, and
+outside-body/signature comparisons pass. This eliminates these tested value-copy
+forms on the current source/compiler without claiming a general ceiling.
+
+Read-only recheck binds existing full evidence to restored production source:
+204 objects, 202 unaffected objects byte-identical to baseline, actual linked
+2079/byte 959 exact pair sets unchanged with no lost/gained pairs, unchanged
+canonical flags and fixed-three matcher rows recomputed from instruction lists.
+No new native/full-corpus run claimed for rejected trials. Accepted means remain
+**98.37% unweighted /98.36% original-instruction-weighted**. Both >=99.0 gates
+remain unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/read_normal_input_copy_identities.json`,
+`_work/read_uv_input_copy_identities.json`, twelve focused reports and snapshots,
+and rechecked `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: Enhanced parser state records
+
+Fresh unchanged-matcher inventory inspection of accepted Enhanced shows remaining
+local load/store differences. Six focused trials from 0582caaa group real used
+parser state into a local record: mesh/animation pointers, file/format,
+file/animation, mesh/file, then all four values in two member orders. No unused
+field, explicit padding/alignment, dummy operation, added helper, header or ABI
+change. Record members replace existing variable uses directly. Initialization
+stays before the first read; new Transform retains its order relative to calls,
+and only pure argument/self/format captures change order. No file read, time
+update, key insertion, cleanup or attachment changes. Member representation is
+a source-shape hypothesis, not an original-source recovery.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| self_anim | 98.3 / 66.9 | 641 | 100.0 | yes |
+| file_format | 98.3 / 66.9 | 641 | 100.0 | yes |
+| file_anim | 98.3 / 66.9 | 641 | 100.0 | yes |
+| self_file | 98.3 / 66.9 | 641 | 100.0 | yes |
+| all_source_order | 98.3 / 66.9 | 641 | 100.0 | yes |
+| all_file_first | 98.3 / 66.9 | 641 | 100.0 | yes |
+
+All six complete Mesh objects equal accepted byte-for-byte; none retained.
+These local record forms do not change the residual inventory or the required
+score on the current compiler/source. This does not establish a general ceiling.
+Production sources/fixtures match bf0243e8; outside-body/signature checks pass.
+
+Read-only recheck binds existing full evidence to restored source: 204 objects,
+202 unaffected objects byte-identical to baseline, actual linked-exact 2079 and
+byte-exact 959 pair sets equal baseline without lost/gained pairs, unchanged
+canonical arguments, fixed-three rows recomputed with the unchanged matcher.
+No new native/full-corpus run claimed for nonretained forms. Accepted means
+remain **98.37% unweighted /98.36% original-instruction-weighted**; both >=99.0
+requirements remain unmet and goal remains active. No push, PR or merge.
+
+Evidence: `_work/enh_parser_state_identities.json`, six
+`_work/enhparserstate-*.json` focused reports and source snapshots, diagnostic
+normalized instruction lists, and rechecked normalcenter validation audit.
+
+
+## Continuation: caller argument and handle/output records
+
+Fresh unchanged-matcher inventory inspection identifies remaining Create
+pointer-load/local-save differences. Seven focused trials start from fa0a5bf9:
+records hold output/material, engine/material, engine/output, all four arguments
+in forward/reverse order, or handle/output in two member orders. Every member
+replaces a used existing value; no unused field, explicit padding/alignment,
+helper, header or ABI change. Local captures are pure argument copies. Handle
+zero initialization moves to entry in the last two forms, before the existing
+engine/path guard, without new calls or observable operations. OpenRead receives
+the actual used handle member address; reads, child handling, ownership cleanup
+and loaded completion preserve their existing order. These are source-shape
+hypotheses, not recovered original state declarations.
+
+| Trial | Create source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| out_material | 98.4 / 60.7 | 289 | 100.0 | yes |
+| engine_material | 98.4 / 60.7 | 289 | 100.0 | yes |
+| engine_output | 98.4 / 60.7 | 289 | 100.0 | yes |
+| all_arguments | 98.4 / 60.7 | 289 | 100.0 | yes |
+| arguments_reverse | 98.4 / 60.7 | 289 | 100.0 | yes |
+| handle_output | 96.9 / 61.7 | 296 | 100.0 | no |
+| output_handle | 96.6 / 58.5 | 297 | 100.0 | no |
+
+Five argument-only objects equal accepted complete Core byte-for-byte. Both
+handle/output records differ from accepted and each other, regressing source
+to 96.9/96.6. The first increases strict score only, which does not meet the
+requested source-shape gate. None retained; source/fixtures match bf0243e8 and
+outside-body/signature checks pass. No general compiler ceiling is inferred.
+
+Read-only recheck binds existing full evidence to restored production source:
+204 objects, 202 unaffected objects byte-identical to baseline, actual linked
+2079 and byte 959 exact pair sets unchanged without lost/gained pairs, canonical
+arguments unchanged, and fixed-three matcher rows recomputed directly. No new
+native/full-corpus run claimed for rejected forms. Accepted means remain
+**98.37% unweighted /98.36% original-instruction-weighted**; both >=99.0 gates
+remain unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/create_call_state_identities.json`, seven
+`_work/createcallstate-*.json` focused reports and source snapshots, current
+normalized instruction inventory, rechecked normalcenter validation audit.
+
+
+## Continuation: Enhanced addressed axis/count state
+
+Eight focused Enhanced trials start from dc1dc973. They group actual used
+unsigned-char axis and unsigned-short count into one trivial local record,
+in both member orders, for position, scale, rotation or all three sections.
+Each count read still writes exactly two bytes to the existing logical count;
+axis initialization/increment retain byte type and closed 0/1/2 domain.
+Count is used only after successful input, and frame/key reads, timing update,
+channel selection, negation, insertion and cleanup preserve existing order.
+No record zero initialization, unused member, explicit padding/alignment,
+helper, header or ABI change. Member grouping is a source-shape hypothesis.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| axis_count_0 | 97.2 / 51.9 | 647 | 100.0 | no |
+| axis_count_1 | 97.2 / 40.7 | 647 | 100.0 | no |
+| axis_count_2 | 97.3 / 21.7 | 647 | 100.0 | no |
+| axis_count_all | 94.6 / 43.9 | 658 | 100.0 | no |
+| count_axis_0 | 97.3 / 55.8 | 644 | 100.0 | no |
+| count_axis_1 | 97.3 / 43.6 | 644 | 100.0 | no |
+| count_axis_2 | 97.5 / 23.3 | 645 | 100.0 | no |
+| count_axis_all | 95.0 / 39.8 | 650 | 100.0 | no |
+
+All eight complete Mesh objects differ from accepted and each other, with
+source regression and increased instruction counts. None retained. Passing
+an addressed subobject of this record changes the compiler's alias context;
+this is a plausible explanation of extra local loads, not proof of recovered
+original layout or a general optimizer ceiling. Production sources/fixtures
+match bf0243e8; outside-body/signature checks pass.
+
+Read-only recheck binds existing full evidence to restored source: 204 objects,
+202 unaffected objects byte-identical to baseline, actual linked 2079/byte 959
+exact pair sets equal baseline without lost/gained pairs, unchanged canonical
+arguments and fixed-three matcher rows recomputed directly. No new native/full
+corpus run claimed for rejected forms. Accepted means remain **98.37% unweighted
+/98.36% original-instruction-weighted**; both >=99.0 requirements unmet; goal
+active. No push, PR or merge.
+
+Evidence: `_work/enh_axis_count_state_identities.json`, eight
+`_work/enhaxiscountstate-*.json` focused reports/source snapshots, and rechecked
+`_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: position pointer offsets and advancing traversal
+
+Fifteen focused Read trials start from a9f7de3a. Nine derive per-iteration input,
+output or both pointers one element past the accessed position, independently
+for short/int branches or both. Access remains [-1] at the original component;
+pointers are formed only in executing iterations and reach at most one-past
+the full 3*vertexCount allocation. Existing field loads remain at their source
+points. No out-of-allocation pointer is formed.
+
+Six further trials increment input pointers, or both input/output pointers,
+after each component. Index i remains for the same bounds-axis computation.
+The output pointer is captured before the loop for both-advance forms: the
+loop contains no calls or writes to the mesh position-pointer field, and the
+output allocation is separate from the mesh/input. This capture is an explicit
+source hypothesis, not a claim about original owner-load timing. Raw allocation
+owner remains unchanged for deletion, including failure paths. Float conversion,
+extrema operations, reads, counts and cleanup source order remain unchanged.
+No dummy operation, helper, header, ABI, flag or matcher change.
+
+| Family / trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| one-past / input_short | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / input_int | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / input_both_branches | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / output_short | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / output_int | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / output_both_branches | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / both_short | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / both_int | 98.4 / 56.8 | 877 | 100.0 | yes |
+| one-past / both_both_branches | 98.4 / 56.8 | 877 | 100.0 | yes |
+| advance / input_advance_short | 98.4 / 56.8 | 877 | 100.0 | yes |
+| advance / input_advance_int | 98.4 / 56.8 | 877 | 100.0 | yes |
+| advance / input_advance_both_branches | 98.4 / 56.8 | 877 | 100.0 | yes |
+| advance / both_advance_short | 97.6 / 55.9 | 883 | 98.2 | no |
+| advance / both_advance_int | 98.4 / 52.1 | 874 | 100.0 | no |
+| advance / both_advance_both_branches | 98.2 / 55.9 | 875 | 100.0 | no |
+
+All nine one-past forms and three input-only advancing forms equal accepted
+complete Core byte-for-byte. Three both-advance objects differ, with no required
+source gain: short and combined branches regress, int ties the rounded source
+score but regresses strict. None retained. Static relocation inspection of the
+short both-advance trial finds 62 calls versus accepted 61, with exactly one
+extra _ZdaPv site and no lost call target. This is static layout evidence, not
+proof of extra cleanup on an executed path. No operation added to match counts.
+
+Production source/fixtures match bf0243e8; outside-body/signature checks pass.
+Read-only full-evidence binding rechecks 204 objects/202 unaffected objects,
+actual linked 2079/byte 959 exact pair sets equal baseline without lost/gained
+pairs, unchanged canonical arguments, and directly recomputed fixed-three rows.
+No new native/full-corpus run claimed for rejected forms. Accepted means remain
+**98.37% unweighted /98.36% original-instruction-weighted**; both >=99.0 gates
+remain unmet; goal active. No general ceiling, push, PR or merge claim.
+
+Evidence: `_work/read_position_one_past_identities.json`,
+`_work/read_position_advance_identities.json`, fifteen focused reports/snapshots,
+`_work/position_advance_short_call_difference.json`, rechecked validation audit.
+
+
+## Continuation: recursive reader child-state records
+
+Twelve focused Read trials start from 41d4682f. They group actual childCount,
+unsigned counter c and childPtr into local records: each two-member pair in
+both orders, then all six orders of the three members. Every member replaces
+an existing used value. No unused field, zero fill, explicit padding/alignment,
+helper, header or ABI change. Count read stays after enhanced parsing and uses
+two bytes; counter initialization stays after existing animation bounds Merge;
+child assignment/new occurs inside the same iteration. Recursive call receives
+the actual used child member address. Its scope extends to this child section,
+with no RAII effect for primitive pointer. Dynamic count comparison, parent
+reloads before Merge/ArrayAdd, failure exits and cleanup remain in source order.
+These local layouts are hypotheses, not recovered declarations.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| pair_childCount_c | 97.2 / 54.5 | 875 | 98.2 | no |
+| pair_c_childCount | 97.2 / 54.4 | 876 | 98.2 | no |
+| pair_childCount_childPtr | 97.9 / 55.9 | 881 | 100.0 | no |
+| pair_childPtr_childCount | 98.2 / 56.8 | 878 | 100.0 | no |
+| pair_c_childPtr | 97.1 / 54.4 | 877 | 98.2 | no |
+| pair_childPtr_c | 97.2 / 54.4 | 876 | 98.2 | no |
+| all_childCount_c_childPtr | 97.1 / 54.4 | 877 | 98.2 | no |
+| all_childCount_childPtr_c | 97.1 / 54.4 | 877 | 98.2 | no |
+| all_c_childCount_childPtr | 97.1 / 54.4 | 877 | 98.2 | no |
+| all_c_childPtr_childCount | 97.1 / 54.4 | 877 | 98.2 | no |
+| all_childPtr_childCount_c | 97.1 / 54.4 | 877 | 98.2 | no |
+| all_childPtr_c_childCount | 97.1 / 54.4 | 877 | 98.2 | no |
+
+All twelve complete Core objects differ from accepted and each other, and
+regress source-shape. None retained. Ten counter-containing forms have 60
+static calls versus accepted 61: exactly one fewer _ZdaPv site, and the three
+indirect call registers change r5 to r6. Both count/child-pointer pairs preserve
+all 61 call-site targets. This is static allocation/layout evidence, not proof
+of missing cleanup on an executed path. No cleanup operation added for scoring.
+No general compiler ceiling is inferred.
+
+Source/fixtures match bf0243e8; outside-body/signature checks pass. Read-only
+full evidence binding verifies 204 objects/202 unaffected objects, actual linked
+2079/byte 959 exact pair sets equal baseline without lost/gained pairs, canonical
+arguments unchanged and fixed-three rows recomputed directly. No new native/full
+corpus run claimed for rejected forms. Accepted means remain **98.37% unweighted
+/98.36% original-instruction-weighted**; both >=99.0 gates unmet; goal active.
+No push, PR or merge.
+
+Evidence: `_work/read_child_state_identities.json`, twelve focused reports and
+snapshots, `_work/read_child_state_call_differences.json`, rechecked validation
+audit.
+
+
+## Continuation: inner key-loop forms on accepted byte-axis code
+
+Twelve focused Enhanced trials start from 0547d0d8. The older inner-key family
+was measured before accepted byte-axis counters. This series retests while and
+guarded-do for all vector keys, all axis keys and optional keys, then guarded-do
+individually for each of three vector sections and three axis sections. Initial
+count >0 guards skip zero unsigned counts; every loop still retests the same
+count after increment. Counters remain unsigned int with maximum bound 65535,
+so no increment overflow. All reads, timing update, channel selection, key
+conversion/insertion, cleanup and outer byte-axis loops retain their order.
+No helper, header, ABI, flag, matcher or denominator change. Alternative loop
+syntax is a source hypothesis, not a recovered original control flow.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| vector_while | 98.3 / 66.9 | 641 | 100.0 | yes |
+| vector_guarded_do | 97.3 / 68.5 | 642 | 100.0 | no |
+| vector_guarded_do_0 | 97.9 / 69.3 | 640 | 100.0 | no |
+| vector_guarded_do_1 | 98.0 / 53.8 | 642 | 100.0 | no |
+| vector_guarded_do_2 | 98.0 / 66.7 | 642 | 100.0 | no |
+| axis_key_while | 98.3 / 66.6 | 641 | 100.0 | no |
+| axis_key_guarded_do | 96.9 / 61.7 | 647 | 100.0 | no |
+| axis_key_guarded_do_0 | 98.1 / 52.4 | 642 | 100.0 | no |
+| axis_key_guarded_do_1 | 98.0 / 66.4 | 642 | 100.0 | no |
+| axis_key_guarded_do_2 | 98.0 / 66.3 | 643 | 100.0 | no |
+| optional_while | 98.3 / 66.9 | 641 | 100.0 | yes |
+| optional_guarded_do | 98.0 / 66.7 | 642 | 100.0 | no |
+
+Vector/optional while forms equal the accepted complete Mesh byte-for-byte.
+Axis-key while differs, tying rounded source but lowering strict score; all
+nine guarded-do forms regress required source score. None retained. Higher
+strict in vector guarded-do variants does not satisfy the source-shape gate.
+These results exclude the tested interaction on current byte-axis code, not a
+general compiler ceiling. Production sources/fixtures match bf0243e8 and
+outside-body/signature checks pass.
+
+Read-only binding rechecks existing full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline without
+lost/gained pairs, unchanged canonical arguments, directly recomputed fixed-three
+rows. No new native/full-corpus run claimed for rejected forms. Accepted means
+remain **98.37% unweighted /98.36% original-instruction-weighted**; both >=99.0
+requirements remain unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/enh_current_key_loop_identities.json`, twelve focused reports
+and source snapshots, rechecked `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: remaining-record key counters
+
+Thirteen focused Enhanced trials start from 2a5254f1. They replace unused
+ascending inner indices with remaining-record counters initialized from the
+parsed unsigned-short bound, testing unsigned int/int/unsigned short for vector,
+axis and optional groups, three individual axis sections, and all groups with
+unsigned int. The original i/j has no body use, verified before replacement.
+Each key is still read/inserted in stream order; count zero executes no body,
+maximum 65535 fits all types and the condition tests zero before another decrement,
+so neither overflow nor underflow is introduced. Outer axis and signed V5-key
+loops stay unchanged. No dummy index, helper, header, ABI, flag or matcher change.
+
+The remaining bound is captured before the loop instead of rereading the
+existing count each test. This is an explicit stability assumption about normal
+file-parser operation, not recovered original load timing or arbitrary callback
+equivalence. Inspected current AEFile.cpp, AENormalFile.cpp and AEPakFile.cpp
+Read methods forward the supplied buffer, and FileInterfaceAndroid.cpp writes
+that buffer through zip_fread/fread/JNI region copying; they do not retain the
+previous count pointer for later key reads. No local count assignment occurs
+in key-loop bodies. These are current implementation observations, not native
+runtime or original ABI proof.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| vector_unsigned_int | 98.0 / 52.5 | 641 | 100.0 | no |
+| vector_int | 98.0 / 52.5 | 641 | 100.0 | no |
+| vector_unsigned_short | 97.5 / 52.4 | 638 | 100.0 | no |
+| axis_unsigned_int | 97.9 / 66.1 | 641 | 100.0 | no |
+| axis_int | 97.9 / 66.1 | 641 | 100.0 | no |
+| axis_unsigned_short | 97.3 / 66.2 | 638 | 100.0 | no |
+| optional_unsigned_int | 98.3 / 66.4 | 641 | 100.0 | no |
+| optional_int | 98.3 / 66.4 | 641 | 100.0 | no |
+| optional_unsigned_short | 98.1 / 66.5 | 640 | 100.0 | no |
+| axis_individual_0 | 98.2 / 66.7 | 641 | 100.0 | no |
+| axis_individual_1 | 98.2 / 66.7 | 641 | 100.0 | no |
+| axis_individual_2 | 98.2 / 66.7 | 641 | 100.0 | no |
+| all_unsigned_int | 96.7 / 51.5 | 641 | 100.0 | no |
+
+All objects differ from accepted; int/unsigned-int objects equal each other
+within each vector/axis/optional group. Required source score does not improve;
+optional wide forms tie the rounded source score while lowering strict. None
+retained. These results exclude the tested traversal forms, not a general ceiling.
+Source/fixtures match bf0243e8, and outside-body/signature checks pass.
+
+Read-only full-evidence binding verifies 204 objects/202 unaffected objects,
+actual linked 2079/byte 959 exact pair sets equal baseline without lost/gained
+pairs, unchanged canonical arguments, directly recomputed fixed-three rows.
+No new native/full-corpus run claimed for rejected forms. Accepted means remain
+**98.37% unweighted /98.36% original-instruction-weighted**; both >=99.0 gates
+unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/enh_key_remaining_identities.json`, thirteen focused reports
+and snapshots, rechecked `_work/normalcenter_validation_audit.json`.
+
+
+## Continuation: combined UV/color stream guards
+
+Nine focused Read trials start from 73a6056a. For UV/color separately or together,
+three source forms flatten the outer vertexFormat guard and inner compressed/plain
+branch: a combined if/else-if chain, the same chain with a local bool for the
+format condition, or two independent combined guards testing compressedData
+first. Independent plain guard also requires compressedData ==0, so it cannot
+execute after compressed conversion and avoids a new format load on that path.
+Repeated format tests in flat chains have no intervening call/write. Buffers,
+reads, conversions, failure cleanup and body store order remain unchanged.
+No shared state is captured across a callback for these decisions. No helper,
+header, ABI, flag, matcher or denominator change. These branch structures are
+source hypotheses, not recovered original guards.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| flat_uv | 97.6 / 51.3 | 879 | 98.2 | no |
+| flat_color | 97.7 / 55.2 | 885 | 100.0 | no |
+| flat_both | 97.2 / 49.0 | 882 | 98.2 | no |
+| predicate_uv | 97.6 / 51.3 | 879 | 98.2 | no |
+| predicate_color | 97.7 / 55.2 | 885 | 100.0 | no |
+| predicate_both | 97.2 / 49.0 | 882 | 98.2 | no |
+| independent_uv | 97.8 / 53.6 | 881 | 98.2 | no |
+| independent_color | 97.6 / 55.1 | 886 | 100.0 | no |
+| independent_both | 97.0 / 49.5 | 901 | 100.0 | no |
+
+All nine complete Core objects differ from accepted and regress source-shape.
+Flat/predicate variants equal each other byte-for-byte for each scope; none
+retained. Five variants with call-count score 98.2 have 60 static calls versus
+accepted 61, with exactly one fewer _ZdaPv site. Four others preserve all 61
+call-site targets; no indirect register difference appears in this inspection.
+This is static control/layout evidence, not proof of missing executed cleanup.
+No operation added for scoring and no general compiler ceiling inferred.
+
+Source/fixtures match bf0243e8; outside-body/signature checks pass. Read-only
+full evidence binding verifies 204 objects/202 unaffected objects, actual linked
+2079/byte 959 exact pair sets equal baseline without lost/gained pairs, canonical
+arguments unchanged and directly recomputed fixed-three matcher rows. No new
+native/full-corpus run claimed for rejected forms. Accepted means remain
+**98.37% unweighted /98.36% original-instruction-weighted**; both >=99.0 gates
+unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/read_stream_guard_identities.json`, nine focused reports and
+source snapshots, `_work/read_stream_guard_call_differences.json`, rechecked
+validation audit.
+
+
+## Continuation: normal stream and shader section guards
+
+Four focused Read trials start from 52bef9c0. The normal-format decision remains
+at the original entry point. Split-shader stores that decision in a used bool,
+keeps normal input processing behind it, then moves shader/tangent processing
+to a separate guarded block. Flat/independent forms additionally flatten the
+compressed/plain normal guards, preserving the same captured format decision.
+Engine::enableShader is still read after normal processing, so callbacks are
+not bypassed by an early shader capture. Independent plain guard requires
+compressedData ==0, preventing execution after compressed input. Common-section
+exit instead leaves early when normal format or later shader enable is zero;
+all skipped declarations lie inside the exited primitive local scopes.
+
+No read, allocation, cleanup, helper, tangent arithmetic or output-store order
+is changed. In particular Dot/Normalize/Cross sequence and tangent stores before
+Cross remain. No header, ABI, flag, matcher or denominator change. These are
+branch-structure hypotheses, not recovered original flow.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| split_shader | 98.4 / 56.8 | 877 | 100.0 | yes |
+| flat_shader | 97.3 / 54.5 | 893 | 100.0 | no |
+| independent_shader | 97.0 / 55.5 | 888 | 98.2 | no |
+| common_section_exit | 98.4 / 56.8 | 877 | 100.0 | yes |
+
+Split-shader and common-section exit equal accepted complete Core byte-for-byte.
+Both flattened forms regress source; none retained. Flat-shader preserves all
+61 static call-site targets. Independent-shader has 60 vs accepted 61 calls,
+exactly one fewer _ZdaPv site and three indirect calls changing r5 to r8. This
+is static layout evidence, not proof of missing executed cleanup. No operation
+added for scoring and no general compiler ceiling inferred.
+
+Sources/fixtures match bf0243e8, outside-body/signature checks pass. Read-only
+full evidence binding verifies 204 objects/202 unaffected objects, actual linked
+2079/byte 959 exact pair sets equal baseline without lost/gained pairs, canonical
+arguments unchanged and directly recomputed fixed-three rows. No new native/full
+corpus run claimed for rejected forms. Accepted means remain **98.37% unweighted
+/98.36% original-instruction-weighted**; both >=99.0 gates unmet; goal active.
+No push, PR or merge.
+
+Evidence: `_work/read_normal_guard_identities.json`, four focused reports and
+snapshots, `_work/read_normal_guard_call_differences.json`, rechecked validation
+audit.
+
+
+## Continuation: paired typed raw-array allocation and deletion
+
+Six focused Read trials start from 3ab6e32d. Earlier typed-allocation trials
+kept explicit operator delete[]. This series pairs array new expressions with
+matching typed delete[] expressions, individually for short/int positions,
+UV, normal, color, then all five. Types are short/int/short/short/unsigned char;
+element counts are 3v/3v/2v/3v/4v, preserving existing byte sizes on the target.
+No value initialization or element constructor/destructor added. The temporary
+remains held as void*, then converted back to its actual allocated element type
+for deletion at each existing success/failure site. No direct array-delete
+expression is applied to memory allocated only through operator new[] calls:
+matching new[] expressions are changed as well. No extra cleanup operation,
+header, ABI, helper, flag or matcher change. This is a source representation
+hypothesis, not recovered original allocation syntax.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| short_position | 98.4 / 57.1 | 875 | 100.0 | no |
+| integer_position | 98.4 / 57.1 | 875 | 100.0 | no |
+| uv | 97.9 / 55.9 | 878 | 98.2 | no |
+| normal | 98.4 / 56.8 | 876 | 100.0 | no |
+| color | 98.4 / 56.8 | 877 | 100.0 | yes |
+| all_streams | 98.1 / 57.1 | 876 | 98.2 | no |
+
+Color equals the accepted complete Core byte-for-byte. Other objects differ;
+position pairs improve strict only while tying required source, normal ties
+source/strict, and UV/all regress source. None retained. UV and all-streams
+have 60 static calls vs accepted 61, with exactly one fewer _ZdaPv site and no
+other call-target difference. This is static layout evidence, not proof of
+missing executed cleanup. No operation added for scoring or general ceiling
+inferred.
+
+Sources/fixtures match bf0243e8 and outside-body/signature checks pass. Read-only
+full-evidence binding rechecks 204 objects/202 unaffected objects, actual linked
+2079/byte 959 exact pair sets equal baseline without lost/gained pairs, canonical
+arguments unchanged, fixed-three matcher rows recomputed directly. No new native
+or full-corpus run claimed for rejected forms. Accepted means remain **98.37%
+unweighted /98.36% original-instruction-weighted**; both >=99.0 gates unmet;
+goal active. No push, PR or merge.
+
+Evidence: `_work/read_typed_pairs_identities.json`, six focused reports and
+snapshots, `_work/read_typed_pairs_call_differences.json`, rechecked validation
+audit.
+
+
+## Continuation: retain paired position/normal raw arrays
+
+Four interaction trials start from 33c7ef2c, combining the three previous
+nonregressing raw-array forms: short positions, int positions and compressed
+normals. All four raise Read from 98.4 to 98.5. Retain all three pairs, which
+also gives the highest strict score 57.4 and 874 instructions (original 873).
+The production diff has exactly nine substituted statements inside Read:
+three allocations and their six existing success/failure deletions. Primitive
+new short[3*vertexCount]/new int[3*vertexCount] preserve 6v/12v byte sizes on
+the target; no value initialization, zero fill, element constructor/destructor,
+additional null guard or cleanup site. Void* raw ownership remains, and delete[]
+casts back to the actual allocated primitive element type. This is a source
+hypothesis, not recovered original allocation/deletion syntax. Counts, read
+sizes/field loads, numeric operations, stores and failure outcomes stay unchanged.
+No header, ABI, helper, compilation flag, matcher or denominator change.
+
+| Interaction trial | Read source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| short_position_integer_position | 98.5 / 57.3 | 875 | 100.0 |
+| short_position_normal | 98.5 / 57.1 | 874 | 100.0 |
+| integer_position_normal | 98.5 / 57.1 | 874 | 100.0 |
+| short_position_integer_position_normal | 98.5 / 57.4 | 874 | 100.0 |
+
+All four complete Core objects differ from each other and the previous accepted
+object. Rounded single-form scores did not predict this positive interaction.
+Fresh frozen-source validation:
+
+- Native UCRT64 gof2 static-library build passes.
+- Verbatim actual Read and caller/actual Mesh/selected math/BSphere fixtures
+  pass position/normal/color/tangent, bounds, children and early/truncated input.
+- Actual Enhanced parser fixture builds and exits zero.
+- Existing fixture sources/runner and Mesh.cpp match bf0243e8; no fixture change.
+  This allocation representation introduces no new numeric/parser behavior
+  requiring an added fixture. Earlier normal negative controls remain evidence
+  of existing fixture sensitivity, not newly run negative controls here.
+- Outside-body/signature checks pass. All 204 ARM units rebuilt and full corpus
+  verified, with 4619 comparisons and zero skipped. Actual linked-exact 2079
+  /byte-exact 959 pair sets equal baseline, lost [] and gained [] for each.
+  Other 202 whole objects equal baseline. Core equals focused triple winner;
+  Mesh equals accepted axisbyte-full. Canonical digest and argument list unchanged.
+- All fixed-three matcher components recomputed directly from fresh target/base
+  instruction lists by the unchanged matcher. Already rounded component averages
+  are not substituted for the actual source metric.
+
+Read component changes (previous -> retained):
+
+- instruction_inventory_match: 95.0 -> 95.8
+- opcode_inventory_match: 98.3 -> 98.1
+- control_inventory_match: 98.8 -> 98.8
+- ordered_control_flow_match: 91.8 -> 91.8
+- call_count_match: 100.0 -> 100.0
+- size_match: 99.6 -> 100.0
+
+| Fixed unique body | Source | Strict | Original weight |
+|---|---:|---:|---:|
+| MeshCreateFromFile | 98.4% | 60.7% | 291 |
+| MeshReadData | 98.5% | 57.4% | 873 |
+| ReadEnhancedDataFromFile | 98.3% | 66.9% | 636 |
+
+Fixed three means: **98.400000% unweighted /98.413167% weighted**. Original weights remain 291+873+636=1800, exactly three unique bodies.
+
+Full strict/source averages: 75.98 /89.0. Full JSON SHA-256: `69141f6eaafd32d61ce63ae1257ac889bc0cfcc7765c514a630391e0df481af8`.
+
+Both >=99.0 gates remain unmet; goal active. Native body tests mock file/selected
+boundaries and library build is not a whole-game executable ABI or Android
+runtime/device test. No Godot proof or compiler ceiling claim. No push, PR, merge.
+
+Evidence: `_work/read_typed_pair_interaction_identities.json`, focused reports
+and source snapshots, `_work/typedpair_full.json`, `_work/typedpair_three.json`,
+`_work/typedpair_validation_audit.json`, `_work/typedpair_full_build.log`,
+`_work/typedpair_full_verify.log`, `_work/typedpair_native.log`,
+`_work/typedpair_read_smoke.log`, enhanced build/smoke logs.
+
+
+## Continuation: output arrays and accumulator on paired-raw source
+
+Nine focused Read trials start from ecc30f25. Seven repeat the typed-output
+family on the materially changed accepted paired-raw source, for positions,
+UVs, normals, colors, tangents/binormals/accumulator, indices, and all outputs.
+Primitive new float/unsigned-short arrays preserve existing element/byte counts,
+with no value initializer, zero fill or element constructor/destructor. Existing
+owned-output field stores and downstream release logic stay unchanged. Two
+further forms pair new float[3*vcount] with delete[] accum, separately and with
+all outputs; the deallocation operand comes from that matching new[] expression.
+No new cleanup, input read, arithmetic, header, ABI, helper or compiler flag.
+These representations are hypotheses, not recovered original array syntax.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| output_position | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output_uv | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output_normal | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output_color | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output_tangent | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output_index | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output_all | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accum_pair | 98.5 / 57.4 | 874 | 100.0 | yes |
+| all_outputs_accum_pair | 98.5 / 57.4 | 874 | 100.0 | yes |
+
+All nine complete Core objects equal accepted byte-for-byte. No variant retained:
+these typed outputs/accumulator add no required gain on paired-raw source. This
+resolves the tested interaction, not a general compiler ceiling. Production
+sources and fixtures match ecc30f25; outside-body/signature checks pass.
+
+Read-only binding rechecks existing typedpair full proof: 204 objects/202
+unaffected objects, actual linked 2079/byte 959 exact pair sets equal baseline
+without lost/gained pairs, canonical arguments unchanged, and all fixed-three
+rows recomputed directly with the unchanged matcher. No new native/full-corpus
+run claimed for rejected variants. Accepted means remain **98.40% unweighted
+/98.41% original-instruction-weighted**; both >=99.0 gates unmet; goal active.
+No push, PR or merge.
+
+Evidence: `_work/read_typed_pair_output_identities.json`, nine focused reports
+and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: common failure exits on paired-raw source
+
+Two focused Read trials start from c71ec4e1. They repeat shared return -1
+labels for final enhanced/child failures or all failures on the newly accepted
+paired-array source. Existing explicit/typed cleanup remains before each exit;
+no condition, read, cleanup operation or successful return is added. All-label
+uses an inner scope so jumps leave declarations rather than skip initializers.
+No helper, header, ABI, compilation flag or matcher change. These branch forms
+are source hypotheses, not recovered original control flow.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| tail_label | 98.5 / 57.4 | 874 | 100.0 | yes |
+| all_label | 98.5 / 57.4 | 874 | 100.0 | yes |
+
+Both complete Core objects equal accepted byte-for-byte; none retained. This
+excludes the tested interaction with paired new[]/delete[] without inferring a
+compiler ceiling. Sources/fixtures match ecc30f25; outside-body checks pass.
+Read-only binding rechecks existing typedpair full evidence: 204 objects/202
+unaffected objects, actual linked 2079/byte 959 exact pair sets equal baseline
+without lost/gained pairs, canonical arguments unchanged and directly recomputed
+fixed-three rows. No new native/full-corpus run claimed for rejected forms.
+Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet;
+goal active. No push, PR or merge.
+
+Evidence: `_work/read_typed_pair_common_failure_identities.json`, two focused
+reports/source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: success/else cleanup on paired raw arrays
+
+Four focused Read trials start from e07b38ad. They move existing successful
+conversion/final deletion inside Read !=0, with the same failure deletion and
+return -1 in else, for short positions, int positions, normals and all three.
+The original raw allocation and read remain at their source points. Each
+success/failure path retains exactly one matching typed array deletion; no
+allocation, condition, null guard or cleanup operation added. Read sizes,
+conversions, bounds, normal clamps and owner reloads remain unchanged. This is
+a branch-form interaction with accepted paired arrays, not recovered C++.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| short_position | 98.5 / 57.4 | 874 | 100.0 | yes |
+| integer_position | 98.5 / 57.4 | 874 | 100.0 | yes |
+| normal | 98.5 / 57.4 | 874 | 100.0 | yes |
+| all_three | 98.5 / 57.4 | 874 | 100.0 | yes |
+
+All four complete Core objects equal accepted byte-for-byte; none retained.
+Sources/fixtures match ecc30f25 and outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full proof: 204 objects/202 unaffected
+objects, linked 2079/byte 959 exact pair sets equal baseline without lost/gained
+pairs, canonical arguments unchanged and fixed-three matcher rows recomputed
+directly. No new native/full-corpus run claimed for rejected forms. Accepted
+means **98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet; goal active.
+No general compiler ceiling, header/ABI, helper, flag, matcher, push, PR or merge
+change.
+
+Evidence: `_work/read_typed_pair_cleanup_identities.json`, four focused reports
+and snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: normal pointer views on paired-raw source
+
+Twelve focused Read trials start from 8fbd9246. They revisit compressed-normal
+input/output pointer views on accepted paired raw arrays: output offset 0/2/3
+separately, then input offsets 1/2/3 combined with output offsets 1/2/3.
+Offsets are in elements; accesses remain the same X/Y/Z addresses and evaluation
+order. Pointer declarations are inside executing triples, at most one-past the
+allocation (offset 3 in final triple); zero count forms none. Owner/count field
+loads, sqrt/clamps and fallback stores keep their existing source points/order.
+No before-array pointer, additional read/call, arithmetic reassociation, header,
+ABI, helper, flag or matcher change. These are address-expression hypotheses,
+not recovered original local declarations.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| destination_0 | 98.1 / 55.5 | 869 | 100.0 | no |
+| destination_2 | 98.4 / 55.9 | 870 | 100.0 | no |
+| destination_3 | 98.0 / 56.6 | 864 | 100.0 | no |
+| source_1_destination_1 | 98.5 / 56.9 | 874 | 100.0 | no |
+| source_1_destination_2 | 98.4 / 55.4 | 870 | 100.0 | no |
+| source_1_destination_3 | 98.0 / 54.7 | 865 | 100.0 | no |
+| source_2_destination_1 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| source_2_destination_2 | 98.4 / 55.9 | 870 | 100.0 | no |
+| source_2_destination_3 | 98.0 / 55.0 | 865 | 100.0 | no |
+| source_3_destination_1 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| source_3_destination_2 | 98.4 / 55.9 | 870 | 100.0 | no |
+| source_3_destination_3 | 98.0 / 54.7 | 865 | 100.0 | no |
+
+Input offsets 2/3 with accepted output offset 1 equal the accepted complete
+Core object byte-for-byte. Input offset 1/output 1 ties required source but
+lowers strict. Every other form regresses source; none retained. Several views
+canonicalize to identical objects across input offsets, verified by actual SHA
+and byte comparisons rather than inferred from equal scores. Accepted output
+middle-component view remains best among these measured combinations; no general
+compiler ceiling inferred. Sources/fixtures match ecc30f25; outside-body checks
+pass.
+
+Read-only binding rechecks existing typedpair full proof: 204 objects/202
+unaffected objects, actual linked 2079/byte 959 exact pair sets equal baseline
+without lost/gained pairs, unchanged canonical arguments, directly recomputed
+fixed-three rows. No new native/full-corpus run claimed for rejected forms.
+Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet;
+goal active. No push, PR or merge.
+
+Evidence: `_work/read_typed_pair_normal_view_identities.json`, twelve focused
+reports/source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: normal decoded/length aggregate values
+
+Two focused Read trials start from 9a8caeca. One groups squared length/length
+into a local two-float record; the other groups decoded X/Y/Z, squared length
+and length into a five-float record. Aggregate clauses are sequenced in the
+existing evaluation order; later clauses reference already initialized members.
+Every member replaces a used existing value. There is no uninitialized-member
+read, value-zero initialization, unused field, explicit padding, constructor,
+destructor or added helper. Double input scaling/casts, Y-square plus X-square
+plus Z-square, sqrtf, division/clamp/fallback and output order stay unchanged.
+These are source-representation hypotheses, not recovered original records.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| length_record | 98.5 / 57.4 | 874 | 100.0 | yes |
+| decoded_length_record | 98.5 / 57.4 | 874 | 100.0 | yes |
+
+Both complete Core objects equal accepted byte-for-byte; none retained. Source
+and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline without
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, helper,
+header/ABI, flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_length_identities.json`, two focused reports
+and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: combined signature storage in Create
+
+Six focused Create trials start from 2c97ac88. They represent the same five
+seven-byte immutable signatures as rows, rows reversed, columns, columns
+reversed, local column records, or one flat row-major array. All 35 bytes,
+including plain signature's final zero, are preserved; original comparisons
+and five format-bit clear operations remain in their existing order. Reverse
+storage maps each comparison to its corresponding actual signature; no bit
+association changes. Every table entry/member is used by the seven iterations.
+No new read/call, speculative data, unused field, explicit padding, constructor,
+helper, header or public ABI change. Combined local const storage is a source
+hypothesis, not recovered original table layout.
+
+| Trial | Create source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| rows_original | 95.2 / 51.2 | 268 | 100.0 | no |
+| rows_reverse | 95.2 / 51.2 | 268 | 100.0 | no |
+| columns_original | 94.8 / 49.8 | 267 | 100.0 | no |
+| columns_reverse | 94.0 / 49.7 | 268 | 100.0 | no |
+| column_records | 94.8 / 49.8 | 267 | 100.0 | no |
+| flat_rows | 95.2 / 51.2 | 268 | 100.0 | no |
+
+All six regress required source and differ from accepted. Row-major/flat objects
+equal each other byte-for-byte; column-major/column-record objects also equal.
+Reverse-row ties score but differs in bytes; reverse-column differs and further
+regresses source. Fewer instructions are not a substitute for requested source
+shape. None retained; sources/fixtures match ecc30f25, outside-body/signature
+checks pass. No general compiler ceiling inferred.
+
+Read-only binding rechecks existing typedpair full proof: 204 objects/202
+unaffected objects, actual linked 2079/byte 959 exact pair sets equal baseline
+without lost/gained pairs, canonical arguments unchanged and directly recomputed
+fixed-three rows. No new native/full-corpus run claimed for rejected tables.
+Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet;
+goal active. No push, PR or merge.
+
+Evidence: `_work/create_signature_table_identities.json`, six focused reports
+and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: views of separate signature arrays
+
+Five focused Create trials start from c374c3cc. They preserve the original five
+immutable seven-byte arrays and access them through static const pointer table,
+local const pointer table, local mutable-pointer table, reverse static table,
+or five scalar const-char pointer aliases. Every pointer is used in the existing
+comparison; reverse storage preserves signature-to-format-bit mapping. No
+signature data, comparison/read order, bit clearing, header guard or file input
+changes. No unused element, explicit padding, helper, public ABI, flag or matcher
+change. These views are source hypotheses, not recovered original pointer tables.
+
+| Trial | Create source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| static_const_pointers | 98.4 / 60.7 | 289 | 100.0 | yes |
+| local_const_pointers | 98.4 / 60.7 | 289 | 100.0 | yes |
+| local_mutable_pointers | 98.4 / 60.7 | 289 | 100.0 | yes |
+| static_reverse_pointers | 98.4 / 60.7 | 289 | 100.0 | yes |
+| local_scalar_pointers | 98.4 / 60.7 | 289 | 100.0 | yes |
+
+All five complete Core objects equal accepted byte-for-byte; none retained.
+The measured compiler canonicalizes these views to separate-array output;
+no general compiler ceiling inferred. Source/fixtures match ecc30f25 and
+outside-body/signature checks pass. Read-only binding rechecks existing typedpair
+full proof: 204 objects/202 unaffected objects, actual linked 2079/byte 959 exact
+pair sets equal baseline without lost/gained pairs, canonical arguments unchanged,
+fixed-three rows directly recomputed. No new native/full-corpus run claimed for
+rejected forms. Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0
+gates unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/create_signature_pointer_identities.json`, five focused reports
+and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: typed bounds center on paired-raw source
+
+Four focused Read trials start from 3fc9433d. They construct the existing
+computed center as an aggregate Vector instead of float[3] followed by a
+const-Vector cast, with const/nonconst local and normal/nested scope variants.
+The same three sums and 0.5f multiplications execute X/Y/Z in order, followed
+by the existing Vector assignment to boundsCenterX. Maximum/minimum vectors,
+full diagonal and VectorLength remain unchanged. No additional constructor,
+destructor, copy assignment, helper, read, zero fill or operation. Header,
+public ABI, flags and matcher remain unchanged. Representation/lifetime changes
+are source hypotheses, not recovered original declarations.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| vector | 98.5 / 57.4 | 874 | 100.0 | yes |
+| vector_scoped | 98.5 / 57.4 | 874 | 100.0 | no |
+| const_vector | 98.5 / 57.4 | 874 | 100.0 | yes |
+| const_vector_scoped | 98.5 / 57.4 | 874 | 100.0 | no |
+
+Normal-scope const/nonconst objects equal accepted complete Core byte-for-byte.
+Nested-scope objects equal each other but differ from accepted, despite identical
+scores/counts. No form improves requested source; none retained. No general
+compiler ceiling inferred. Production sources/fixtures match ecc30f25 and
+outside-body/signature checks pass. Read-only binding rechecks existing typedpair
+full proof: 204 objects/202 unaffected objects, actual linked 2079/byte 959 exact
+pair sets equal baseline without lost/gained pairs, canonical arguments unchanged,
+fixed-three rows directly recomputed. No new native/full-corpus run claimed for
+rejected forms. Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0
+gates unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/read_typed_pair_center_identities.json`, four focused reports
+and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: triangle/final counter widths on paired-raw source
+
+Seven focused Read trials start from 220c2f64. Triangle t is changed to short,
+unsigned short or int, separately and with unsigned-short final vertex v;
+final v alone is also tested. Triangle bound is derived from unsigned-short
+indexCount/3 (maximum 21845), so signed/unsigned-short counters do not overflow:
+last executed t is 21844, next value 21845 fails the condition. Final v bound
+is unsigned-short-derived vertexCount, maximum 65535; last executed 65534,
+next 65535 fails before another increment. Accumulator-zeroing v remains uint.
+No index/view address, body evaluation, helper/call, file read, field load,
+math/store order or cleanup changes. Counter types are source hypotheses, not
+recovered declarations. Header/ABI, flags and matcher remain unchanged.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| triangle_short | 98.0 / 53.7 | 875 | 100.0 | no |
+| triangle_short_final_short | 98.0 / 53.7 | 875 | 100.0 | no |
+| triangle_unsigned_short | 98.5 / 55.7 | 872 | 100.0 | no |
+| triangle_unsigned_short_final_short | 98.5 / 55.7 | 872 | 100.0 | no |
+| triangle_int | 98.5 / 57.4 | 874 | 100.0 | yes |
+| triangle_int_final_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| final_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+
+Int triangle, its combination and final v alone equal accepted complete Core
+byte-for-byte. Narrow final v has no effect within either short triangle pair;
+both respective pairs equal each other. Unsigned-short triangle reduces raw
+length to 872 but does not improve required source and lowers strict; signed
+short regresses source. None retained; no general ceiling inferred. Sources/
+fixtures match ecc30f25 and outside-body/signature checks pass.
+
+Read-only binding rechecks existing typedpair full evidence: 204 objects/202
+unaffected objects, actual linked 2079/byte 959 exact pair sets equal baseline
+without lost/gained pairs, canonical arguments unchanged, fixed-three rows
+directly recomputed. No new native/full-corpus run claimed for rejected forms.
+Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet;
+goal active. No push, PR or merge.
+
+Evidence: `_work/read_typed_pair_counter_identities.json`, seven focused reports
+and snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: mixed signed-char axis dispatch
+
+Six focused Enhanced trials start from 15ef84d4. They retain all unsigned-char
+outer axis counters but cast one/two switch expressions to signed char in each
+combination. All actual axis values are 0/1/2, representable in both types;
+reads, key conversion, channels, position Y negation and insertion order stay
+unchanged. Existing all-three cast and mixed int-counter measurements do not
+alone prove individual mixed-expression output; these six combinations measure
+it directly. No helper, header/ABI, flag, matcher or denominator change. This
+is an expression-type hypothesis, not recovered original declaration evidence.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted | Equals prior corresponding int-counter object |
+|---|---|---:|---:|---|---|
+| signed_axes_0 | 98.2 / 66.8 | 640 | 100.0 | no | yes |
+| signed_axes_1 | 98.2 / 66.8 | 640 | 100.0 | no | yes |
+| signed_axes_2 | 98.2 / 66.8 | 640 | 100.0 | no | yes |
+| signed_axes_0_1 | 98.1 / 66.7 | 639 | 100.0 | no | yes |
+| signed_axes_0_2 | 98.1 / 66.7 | 639 | 100.0 | no | yes |
+| signed_axes_1_2 | 98.1 / 66.7 | 639 | 100.0 | no | yes |
+
+All six complete Mesh objects differ from accepted and regress source. Each
+is byte-identical to its corresponding prior mixed-int-counter object, despite
+keeping byte counter declarations here. Thus switch-expression type reproduces
+that prior compiler output on these measured combinations. This is actual byte
+comparison, not inferred equality from score or a general optimizer ceiling.
+None retained. Sources/fixtures match ecc30f25; outside-body checks pass.
+
+Read-only binding rechecks existing typedpair full proof: 204 objects/202
+unaffected objects, actual linked 2079/byte 959 exact pair sets equal baseline
+without lost/gained pairs, unchanged canonical arguments and directly recomputed
+fixed-three matcher rows. No new native/full-corpus run claimed for rejected
+forms. Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates
+unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/enh_mixed_dispatch_identities.json`, six focused reports and
+source snapshots, corresponding `_work/enhmixedaxis-*` objects, rechecked
+`_work/typedpair_validation_audit.json`.
+
+
+## Continuation: V5 mask preload on byte-axis code
+
+Four focused Enhanced trials start from 2c292de9. Older 0x400 initialization
+was tested before byte-axis acceptance. These forms initialize channel to
+0x400, leave case 0 intact, retain all other nonzero masks/rotation and assign
+zero in default. Further forms add explicit 4/5 zero labels, put 4/5 zero
+assignment first, or use unsigned long long channel with explicit zero labels.
+Every dispatch path initializes channel; 4/5 still insert keys with mask zero.
+All masks fit tested types, so conversion to existing 64-bit flags is unchanged.
+Reads, time update, /100 then exact tau multiply then /360, hasAnimation and
+insertion order remain. No extra key call, helper, header/ABI, flag or matcher
+change. Initialization/label syntax is a source hypothesis, not recovered C++.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Equals accepted | Equals prior explicit-zero object |
+|---|---|---:|---:|---|---|
+| preload_400_default_zero | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| preload_400_explicit_zero | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| preload_400_zero_first | 98.3 / 67.3 | 639 | 100.0 | no | no |
+| preload_400_u64 | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+
+All tie required source and differ from accepted. Default/explicit/u64 objects
+are byte-identical to each other and the prior explicit-zero-assignment object;
+zero-first differs. Strict-only improvement is not the requested gate; none
+retained. No general compiler ceiling inferred. Sources/fixtures match ecc30f25
+and outside-body checks pass. Read-only binding rechecks existing typedpair full
+proof: 204 objects/202 unaffected objects, actual linked 2079/byte 959 exact pair
+sets equal baseline without lost/gained pairs, canonical arguments unchanged,
+fixed-three rows directly recomputed. No new native/full-corpus run claimed for
+rejected forms. Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0
+gates unmet; goal active. No push, PR or merge.
+
+Evidence: `_work/enh_current_preload_identities.json`, four focused reports/
+snapshots, prior `_work/enhzerocases-explicit_zero_assignment` object, rechecked
+`_work/typedpair_validation_audit.json`.
+
+
+## Continuation: tangent expression lifetimes after paired raw arrays
+
+Six focused Read trials start from cdb691e6. They repeat the prior tangent
+temporary family on the now accepted paired short/int raw allocations, testing
+interaction with the changed allocation code. Dot, multiplication, subtraction,
+Normalize and Cross remain in their existing mathematical order; tangent stores
+remain before Cross. The Vector input variant replaces the existing used
+three-float input with a trivial Vector copy. No helper, unused field, padding,
+extra effect, fixed register, assembly or compiler-option change is introduced.
+These temporary-lifetime forms are hypotheses, not recovered original source.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| inline_dot | 98.5 / 57.4 | 874 | 100.0 | yes |
+| inline_product | 97.2 / 58.7 | 868 | 98.2 | no |
+| inline_normalize_argument | 98.5 / 57.4 | 874 | 100.0 | no |
+| inline_all | 98.5 / 57.4 | 874 | 100.0 | no |
+| const_temporaries | 98.5 / 57.4 | 874 | 100.0 | yes |
+| vector_tangent_input | 98.4 / 57.7 | 875 | 100.0 | no |
+
+No source-shape gain; none retained. inline_dot and const_temporaries equal the
+accepted whole Core object byte-for-byte. The other two tied forms produce
+different objects without improving the gate. inline_product reduces static
+call-count agreement and source shape; vector_tangent_input also regresses
+source shape despite slightly higher strict agreement.
+
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_tangent_lifetime_identities.json`, six focused
+reports and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: tangent output views and local records after paired raw arrays
+
+Twenty-one focused Read trials start from 4259dd21 and repeat earlier output
+view/local-record families on the accepted paired raw allocation source.
+Four output forms reuse a pointer, qualify pointers const, access Vector
+members or share the output offset. Nine centered output forms shift tangent,
+binormal or both pointers by 1/2/3 floats and compensate every subscript.
+Each pointer stays within its allocated array or at one-past on the final
+record; every actual store still addresses its original element. Corresponding
+field loads remain after Normalize/Cross and tangent stores remain before Cross.
+
+Eight local-record forms group used normal/tangent inputs and/or dot/scaled/
+orthogonal/normalized values. Aggregate clauses initialize each referenced
+member before use; there are no unused members, value-zero initialization,
+extra helpers, padding or constructors. Tangent-first input forms sequence
+the independent accumulator reads before the normal copy; no intervening
+call/store is introduced. Math, tangent stores and Cross keep their order.
+These record/view forms are representation hypotheses, not recovered source.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| output: reuse_pointer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output: const_pointers | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output: vector_members | 98.5 / 57.4 | 874 | 100.0 | yes |
+| output: shared_offset | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: tangent_1 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: binormal_1 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: both_1 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: tangent_2 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: binormal_2 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: both_2 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: tangent_3 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: binormal_3 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| center: both_3 | 98.5 / 57.4 | 874 | 100.0 | yes |
+| record: inputs_normal_first | 97.8 / 53.7 | 875 | 98.2 | no |
+| record: inputs_tangent_first | 97.4 / 54.1 | 880 | 98.2 | no |
+| record: math_vectors | 98.3 / 54.5 | 876 | 100.0 | no |
+| record: both_vectors_normal_first | 97.6 / 58.3 | 882 | 98.2 | no |
+| record: both_vectors_tangent_first | 98.3 / 56.8 | 877 | 100.0 | no |
+| record: math_dot_vectors | 98.4 / 57.5 | 882 | 100.0 | no |
+| record: both_dot_vectors_normal_first | 97.0 / 57.6 | 879 | 98.2 | no |
+| record: both_dot_vectors_tangent_first | 97.5 / 56.7 | 874 | 98.2 | no |
+
+All thirteen output-view forms equal the complete accepted Core object
+byte-for-byte. All eight local-record forms reduce source shape (97.0–98.4
+versus 98.5); five also reduce static call-count agreement. None retained.
+
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_tangent_output_identities.json`,
+`_work/read_typed_pair_tangent_center_identities.json`,
+`_work/read_typed_pair_tangent_local_records_identities.json`, twenty-one
+focused reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: triangle products, accumulation and position views after paired raw arrays
+
+Fifteen focused Read trials start from 946ab1b8 on accepted paired raw arrays.
+Six product forms use compound assignments, named scalar products, Vector
+members, a named-products Vector aggregate or a Y/X/Z product record followed
+by an X/Y/Z array. All preserve numerator-times-reciprocal operand direction
+and Y/X/Z multiplication order, then accumulate vertices i0/i1/i2. No unused
+record field, zero fill, padding, helper or additional arithmetic is introduced.
+
+Five accumulation forms express the same three += calls with direct addresses,
+typed pointer reuse, separate sequential pointers, three precomputed pointers
+or a const input reference. Precomputation uses immutable local indices and
+the local accumulator base; call order and operands remain unchanged.
+Four position/index views use Vector pointers, a Vector base, Vector references
+or signed int copies of ushort indices. Values 0..65535 fit int, and all
+index-times-three offsets fit int. Triangle input field loads, formulas and
+component order remain unchanged. These are source representation hypotheses,
+not recovered original source declarations.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| product: compound_before_stores | 98.5 / 57.4 | 874 | 100.0 | yes |
+| product: named_products_before_stores | 98.5 / 57.4 | 874 | 100.0 | yes |
+| product: compound_at_stores | 98.5 / 57.4 | 874 | 100.0 | yes |
+| product: vector_product_members | 98.5 / 57.4 | 874 | 100.0 | yes |
+| product: named_products_vector | 98.5 / 57.5 | 874 | 100.0 | no |
+| product: products_yxz_record | 98.5 / 57.5 | 874 | 100.0 | no |
+| accum: direct_expressions | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accum: vector_pointer_reuse | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accum: sequential | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accum: before_calls | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accum: named_input_reference | 98.5 / 57.4 | 874 | 100.0 | yes |
+| view: vector_pointers | 98.5 / 57.4 | 874 | 100.0 | yes |
+| view: vector_base | 98.5 / 57.4 | 874 | 100.0 | yes |
+| view: vector_references | 98.5 / 57.4 | 874 | 100.0 | yes |
+| view: signed_indices | 98.5 / 57.4 | 874 | 100.0 | yes |
+
+Thirteen forms equal the complete accepted Core object byte-for-byte. The two
+aggregate product forms equal each other and increase strict agreement by 0.1
+without any source-shape increase. None retained: neither requested gate moves.
+
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_products_identities.json`,
+`_work/read_typed_pair_accum_pointer_identities.json`,
+`_work/read_typed_pair_triangle_views_identities.json`, fifteen focused reports
+and source snapshots, rechecked `_work/typedpair_validation_audit.json`.
+
+
+## Continuation: per-vector time and coordinates records
+
+Fourteen focused Enhanced trials start from 2bdbee77. They group the already
+used float key time and three-float coordinate array in a local record, with
+time-first or coordinates-first member order, for each of the seven nonempty
+subsets of position/scale/rotation vector-key sections. This differs from the
+previous separate typed Vector buffers and shared storage across sections.
+Each record remains local to its original key iteration. Reads remain separate
+4-byte time and 12-byte coordinate reads, with updateTimeBetweenFrames between
+them, and insertion follows the second successful read. Every member replaces
+an existing used value; no zero fill, uninitialized use, padding, helper,
+constructor, destructor, merged read or changed conversion is introduced.
+This record layout is a source hypothesis, not recovered original structure.
+
+The private generator initially selected a scalar-key declaration before a
+later vector section, causing a compile error. Source restoration ran in
+finally. After anchoring each span at its vector declaration, the entire
+fourteen-form series was rebuilt and verified. Only that corrected complete
+ledger is used below; the failed generation is not a successful trial.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| time_first_0 | 97.2 / 37.2 | 644 | 100.0 | no |
+| time_first_1 | 97.9 / 56.9 | 641 | 100.0 | no |
+| time_first_2 | 97.9 / 56.9 | 641 | 100.0 | no |
+| time_first_0_1 | 97.2 / 44.5 | 644 | 100.0 | no |
+| time_first_0_2 | 97.2 / 37.0 | 644 | 100.0 | no |
+| time_first_1_2 | 97.9 / 56.9 | 641 | 100.0 | no |
+| time_first_0_1_2 | 97.2 / 49.5 | 644 | 100.0 | no |
+| vector_first_0 | 97.9 / 57.2 | 641 | 100.0 | no |
+| vector_first_1 | 97.9 / 57.2 | 641 | 100.0 | no |
+| vector_first_2 | 97.9 / 57.2 | 641 | 100.0 | no |
+| vector_first_0_1 | 97.9 / 57.5 | 641 | 100.0 | no |
+| vector_first_0_2 | 97.9 / 57.5 | 641 | 100.0 | no |
+| vector_first_1_2 | 97.9 / 57.5 | 641 | 100.0 | no |
+| vector_first_0_1_2 | 97.8 / 57.8 | 641 | 100.0 | no |
+
+All fourteen forms regress source shape (97.2–97.9 versus 98.3); none retained.
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/enh_vector_key_record_identities.json`, corrected fourteen
+focused reports and source snapshots, rechecked typedpair validation audit.
+
+
+## Continuation: grouped time guards and current Transform delete expressions
+
+Eighteen focused Enhanced trials start from 4ffb2050. Twelve replace the same
+time update with named comparison results, empty false branches, or a single
+guarded do/while(false) block. Each form is tested for vector keys, axis keys,
+optional+V5 keys and all eight sites. Positive-value comparison remains first;
+the global comparison/load remains conditional on positivity. Both strict >
+comparisons and the conditional store remain unchanged, including NaN and
+signed-zero behavior. No unconditional same-value store or early global load
+is introduced. The helper definition outside the body is unchanged.
+
+Six cleanup trials replace explicit Transform destructor/global delete pairs
+with delete anim, independently for empty animation, failure and both. Each is
+tested with an explicit null guard and delete's own null check. Allocation is
+already a matching new Transform expression; Transform's destructor is
+nonvirtual and its declaration has no class-specific operator delete. This
+rechecks the old combined-delete family with current uchar axis loops and
+adds the separate cleanup-site forms. No cleanup calls are merged and no
+successful populated animation is deleted. These spellings are hypotheses,
+not recovered original C++.
+
+| Group / trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| time: named_comparisons_vectors | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: named_comparisons_axes | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: named_comparisons_optional_v5 | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: named_comparisons_all | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: false_branches_vectors | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: false_branches_axes | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: false_branches_optional_v5 | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: false_branches_all | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: guarded_block_vectors | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: guarded_block_axes | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: guarded_block_optional_v5 | 98.3 / 66.9 | 641 | 100.0 | yes |
+| time: guarded_block_all | 98.3 / 66.9 | 641 | 100.0 | yes |
+| delete: guarded_empty | 98.3 / 66.9 | 641 | 100.0 | yes |
+| delete: guarded_fail | 98.3 / 66.9 | 641 | 100.0 | yes |
+| delete: guarded_both | 98.3 / 66.9 | 641 | 100.0 | yes |
+| delete: implicit_null_empty | 98.3 / 66.9 | 641 | 100.0 | yes |
+| delete: implicit_null_fail | 98.3 / 66.9 | 641 | 100.0 | yes |
+| delete: implicit_null_both | 98.3 / 66.9 | 641 | 100.0 | yes |
+
+Every complete Mesh object equals the accepted object byte-for-byte. None
+retained; these specific forms do not improve either requested gate.
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/enh_time_guard_groups_identities.json`,
+`_work/enh_current_delete_identities.json`, eighteen focused reports/source
+snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: split signature candidate state
+
+Eight focused Create trials start from e75fd5e2. Read-only inventory diagnostics
+of accepted Create show residual load/store and conditional-instruction
+differences; they do not prove any particular source declaration. Five trials
+separate one signature's candidate state into a bool initialized true, clear it
+on each corresponding byte mismatch, and clear its original format bit after
+the seven iterations. The other four bits remain in the original format word.
+Three trials separate all five candidates using bool, unsigned char or unsigned
+int, then construct the original mask from their final states. Each candidate
+remains true exactly when all seven corresponding comparisons match, so the
+final mask has the same interpretation. All 35 comparisons retain their order,
+and no read/update/call is placed between state construction and the fmt guard.
+
+The separate values all replace used candidate bits; no dead value, unused
+record field, metric padding, helper, volatile/assembly, fixed register or
+unrelated change is introduced. Signature byte tables and all later format
+predicates remain unchanged. These forms are source hypotheses, not recovered
+original booleans. The original bitwise state remains the accepted source.
+
+| Trial | Create source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| separate_sigMesh | 96.6 / 64.3 | 291 | 100.0 | no |
+| separate_sigV2 | 96.6 / 63.9 | 291 | 100.0 | no |
+| separate_sigV3 | 96.6 / 63.9 | 291 | 100.0 | no |
+| separate_sigV4 | 96.6 / 63.9 | 291 | 100.0 | no |
+| separate_sigV5 | 96.6 / 63.9 | 291 | 100.0 | no |
+| all_bool | 91.7 / 51.7 | 313 | 100.0 | no |
+| all_unsigned_char | 92.4 / 50.6 | 318 | 100.0 | no |
+| all_unsigned_int | 92.6 / 52.6 | 317 | 100.0 | no |
+
+All eight forms reduce source shape; none retained. The five single-candidate
+forms increase strict agreement but do not move either requested gate.
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/create_signature_state_split_identities.json`, eight focused
+reports/source snapshots, Create inventory diagnostics and rechecked typedpair
+validation audit.
+
+
+## Continuation: bounds records and per-stream extrema locals after paired raw arrays
+
+Twenty focused Read trials start from 2d21aa8c. Eight repeat the earlier
+min/max/center record-layout family on materially changed paired typed raw
+allocations. Two-member orders are tested through array references and direct
+members; four three-member orders include the used center array. Records have
+only existing used three-float arrays, with no initialization, added padding,
+constructor or unused field. Existing extrema initialization, component
+comparisons/stores, center assignment, full max-minus-min diagonal and Length
+remain in order. No half-diagonal/radius or input-coordinate change.
+
+Twelve extrema forms name the minimum, name both values sequentially, preload
+both or bind component references, independently for short/int position streams
+and both together. Older tests covered both streams before the paired raw
+allocation gain; this measures current interaction and individual streams.
+Min/max arrays are disjoint, so preloading the upper component before the
+conditional lower-component store preserves its value. No call intervenes,
+and strict comparisons retain their NaN and signed-zero behavior. Every local
+is used; no helper or added effect. These source forms are hypotheses, not
+recovered original local record layouts or declarations.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| bounds: min_max_refs | 97.9 / 55.3 | 876 | 100.0 | no |
+| bounds: max_min_refs | 97.9 / 55.5 | 876 | 100.0 | no |
+| bounds: min_max_direct | 97.9 / 55.3 | 876 | 100.0 | no |
+| bounds: max_min_direct | 97.9 / 55.5 | 876 | 100.0 | no |
+| bounds: min_max_center | 96.6 / 52.8 | 888 | 98.2 | no |
+| bounds: center_min_max | 97.6 / 54.5 | 877 | 100.0 | no |
+| bounds: max_min_center | 96.6 / 53.3 | 888 | 98.2 | no |
+| bounds: max_center_min | 97.8 / 55.0 | 875 | 100.0 | no |
+| extrema: minimum_local_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: minimum_local_integer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: minimum_local_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: sequential_locals_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: sequential_locals_integer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: sequential_locals_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: both_preloaded_short | 98.5 / 56.9 | 874 | 100.0 | no |
+| extrema: both_preloaded_integer | 98.5 / 56.9 | 874 | 100.0 | no |
+| extrema: both_preloaded_both | 98.5 / 56.4 | 874 | 100.0 | no |
+| extrema: component_references_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: component_references_integer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| extrema: component_references_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+
+All eight record forms regress source. Nine extrema forms equal the complete
+accepted Core object byte-for-byte; the three preloaded forms tie source but
+reduce strict agreement. None retained. The reference/direct two-member forms
+equal each other for each matching member order, verified by object hashes.
+
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_bounds_records_identities.json`,
+`_work/read_typed_pair_extrema_local_identities.json`, twenty focused reports
+and source snapshots, rechecked typedpair validation audit.
+
+
+## Continuation: cyclic position component selection
+
+Twelve focused Read trials start from 9199ae3f. They replace quotient-derived
+axis selection with a used cyclic axis local: start at zero, select the same
+component for this iteration, then either select 0 after 2 or increment and
+reset at 3. Both unsigned int and unsigned char are tested in short positions,
+int positions and both streams. By induction axis == i modulo 3 at every loop
+body; even the byte increment reaches only 3 before resetting, so it does not
+overflow. Zero vertices execute no updates. The original component counter,
+input conversion, position store, minimum then maximum comparisons/stores,
+allocation/read/failure/cleanup order are preserved. All new local operations
+maintain the used component selector; no dead effect or metric padding.
+
+Primary ARM supports the retained quotient/remainder computation, not a cyclic
+counter. These trials are compiler/source-shape hypotheses, not recovered
+source declarations. Every variant regresses source, so none retained.
+
+| Trial | Read source / strict | Instructions | Call count metric | Static calls |
+|---|---|---:|---:|---:|
+| unsigned_int_conditional_short | 97.3 / 54.4 | 878 | 100.0 | 61 |
+| unsigned_int_conditional_integer | 97.5 / 55.9 | 879 | 98.2 | 62 |
+| unsigned_int_conditional_both | 95.8 / 53.3 | 867 | 94.5 | 58 |
+| unsigned_int_increment_reset_short | 97.3 / 54.3 | 879 | 100.0 | 61 |
+| unsigned_int_increment_reset_integer | 97.4 / 55.9 | 881 | 98.2 | 62 |
+| unsigned_int_increment_reset_both | 95.8 / 53.3 | 868 | 94.5 | 58 |
+| unsigned_char_conditional_short | 97.3 / 54.4 | 878 | 100.0 | 61 |
+| unsigned_char_conditional_integer | 97.5 / 55.9 | 879 | 98.2 | 62 |
+| unsigned_char_conditional_both | 95.8 / 53.3 | 867 | 94.5 | 58 |
+| unsigned_char_increment_reset_short | 97.5 / 55.0 | 882 | 100.0 | 61 |
+| unsigned_char_increment_reset_integer | 97.4 / 49.9 | 879 | 100.0 | 61 |
+| unsigned_char_increment_reset_both | 96.2 / 51.7 | 872 | 96.4 | 59 |
+
+Relocation inspection distinguishes call identities from the unchanged
+matcher's count component: each changed stream removes one __aeabi_uidiv site.
+The five 61-call forms replace that one division site with one additional
+_ZdaPv site. Three integer-only forms have 62 calls: one fewer division and
+two more delete[] sites. Three both-stream forms have 58 calls: two fewer
+division sites and one fewer delete[] site. The remaining byte increment/reset
+integer form has 61 calls, and its both-stream form has 59 calls, removing
+both divisions without changing delete[] site count. Thus a 100.0 call-count
+component here does not mean the same callee inventory. Source inspection
+confirms no cleanup operation was added/removed; static-site splitting/merging
+is not an executed-cleanup count or runtime equivalence proof.
+
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_position_cyclic_axis_identities.json`,
+`_work/read_position_cyclic_axis_call_differences.json`, twelve focused reports
+and source snapshots, rechecked typedpair validation audit.
+
+
+## Continuation: quotient-axis widths and position branches after paired raw arrays
+
+Seventeen focused Read trials start from e4e86ac3. Fifteen retain the original
+i - 3 * (i / 3) axis formula and change only its result local type to unsigned
+char, unsigned short, int, signed char or short, independently for short/int
+position streams and both. Result is always 0..2, representable by every tested
+type; division still uses unsigned component i. Component count is at most
+3*65535, with no unsigned overflow. No coordinate conversion, stores, extrema
+order, dynamic count loads or allocation/cleanup change. Six earlier width
+forms were measured before paired raw arrays; this checks current interaction
+and adds the other individual-stream/type combinations.
+
+Two branch forms revisit int/float-before-short placement on current paired
+raw arrays. One uses the direct inverted flags&4 condition; the other tests
+(int)compressedData >=0 with compressedData==flags<<29. The latter is a
+two's-complement ARM/UCRT representation hypothesis, not a new portable C++
+cast guarantee: shifted bit 2 becomes sign bit. Both select the same data
+branches on those targets. The integer and floating predicates, branch-local
+reads/allocations/stores/extrema/failure effects remain intact. No unused value,
+helper, padding, assembly, fixed register or flag change.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| width: unsigned_char_short | 98.5 / 57.0 | 874 | 100.0 | no |
+| width: unsigned_char_integer | 98.5 / 57.1 | 874 | 100.0 | no |
+| width: unsigned_char_both | 98.5 / 56.8 | 874 | 100.0 | no |
+| width: unsigned_short_short | 98.5 / 57.0 | 874 | 100.0 | no |
+| width: unsigned_short_integer | 98.5 / 57.1 | 874 | 100.0 | no |
+| width: unsigned_short_both | 98.5 / 56.8 | 874 | 100.0 | no |
+| width: int_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: int_integer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: int_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: signed_char_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: signed_char_integer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: signed_char_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: short_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: short_integer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| width: short_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+| branch: integer_float_before_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| branch: integer_float_before_short_signed | 97.9 / 57.8 | 873 | 98.2 | no |
+
+Nine signed-type width forms equal the entire accepted Core object. The six
+unsigned narrow forms tie source, regress strict, and equal each other for
+each matching stream selection (uchar versus ushort). Direct branch inversion
+equals accepted; the signed-condition form regresses source/call count despite
+slightly higher strict and original-sized instruction count. None retained.
+These spellings are source hypotheses, not recovered original declarations.
+
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_axis_width_identities.json`,
+`_work/read_typed_pair_position_branch_identities.json`, seventeen focused
+reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: UV counters and color loop views after paired raw arrays
+
+Fifteen focused Read trials start from ad149b3f. Nine color forms repeat earlier
+normalcenter-era loop views on current paired raw allocation source: signed
+index, dynamic byte offset, input pointer advancement, postincrement store,
+value then increment, guarded do and input/output/both one-past views. Dynamic
+slot vertex-count condition remains fresh each iteration, and captured m's
+colors field remains freshly loaded for each output component. Bounds are at
+most 4*65535 components, fitting int; one-past pointers are legal and each
+actual access compensates to its original element. Division by 255 remains
+float division; no multiplication/precision change or captured output pointer.
+
+Six UV forms test signed component indices and ushort vertex counters,
+independently in compressed, floating and both loops. Signed index retains
+the captured vcount<<1 bound, stride 2 and component indices. Vertex form has
+0..vcount-1 vertices and a used uint component offset 2*vertex. At maximum count
+65535, last vertex 65534 advances to 65535 and exits without ushort overflow;
+zero count does no work. Compressed double scaling/flip, floating float flip,
+input/output access timing, count capture and shader checks remain unchanged.
+These are source-representation hypotheses, not recovered original syntax.
+No helper, dead effect, padding, new initialization or unrelated change.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| color: signed_index | 98.5 / 57.4 | 874 | 100.0 | yes |
+| color: dynamic_byte_offset | 98.5 / 57.5 | 874 | 100.0 | no |
+| color: input_pointer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| color: postincrement_store | 98.5 / 57.4 | 874 | 100.0 | yes |
+| color: value_then_increment | 98.5 / 57.4 | 874 | 100.0 | yes |
+| color: guarded_do | 98.5 / 56.9 | 875 | 100.0 | no |
+| color: output_end | 98.5 / 57.4 | 874 | 100.0 | yes |
+| color: input_end | 98.5 / 57.4 | 874 | 100.0 | yes |
+| color: both_end | 98.5 / 57.4 | 874 | 100.0 | yes |
+| UV: signed_component_compressed | 98.5 / 57.4 | 874 | 100.0 | yes |
+| UV: signed_component_floating | 98.5 / 57.4 | 874 | 100.0 | yes |
+| UV: signed_component_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+| UV: ushort_vertex_compressed | 98.2 / 58.0 | 874 | 100.0 | no |
+| UV: ushort_vertex_floating | 98.2 / 57.8 | 873 | 100.0 | no |
+| UV: ushort_vertex_both | 97.9 / 57.5 | 871 | 100.0 | no |
+
+Seven color views and all three signed UV indices equal accepted whole Core
+byte-for-byte. Color offset/guarded-do forms tie source without improving either
+gate; three ushort UV forms regress source despite slightly higher strict.
+None retained. Source and fixtures match ecc30f25; outside-body/signature checks
+pass. Read-only binding rechecks existing typedpair full evidence: 204 objects/
+202 unaffected objects, actual linked 2079/byte 959 exact pair sets equal
+baseline with no lost/gained pairs, unchanged canonical arguments and fixed-
+three rows directly recomputed with the unchanged matcher. No new native/full-
+corpus run claimed for rejected forms. Accepted means **98.40% unweighted /
+98.41% weighted**; both >=99.0 gates unmet; goal active. No general compiler
+ceiling, header/ABI, flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_color_loop_identities.json`,
+`_work/read_typed_pair_uv_counter_identities.json`, fifteen focused reports/
+source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: per-stream extrema comparison and update order after paired raw arrays
+
+Nine focused Read trials start from ebc9778c. Three forms reverse the comparison
+operands, update maximum before minimum, or combine these changes, independently
+for short positions, int positions and both. The earlier family tested only
+both streams before accepted paired raw arrays; this tests their interaction
+and separate streams on current source. Strict comparisons remain strict,
+including NaN/zero behavior; min/max arrays are disjoint local objects and the
+two updates have no intervening call or effect on the input value/axis. Thus
+maximum-first changes independent local update ordering without combining
+conditions (both updates still execute when both predicates hold, as required
+for the initial inverted extrema sentinels). Input conversion/position stores
+remain before the extrema updates; center and full-diagonal calculations stay
+after all positions. These are hypotheses, not recovered original update order.
+No extra arithmetic, unconditional self-store, helper, dead local or padding.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| reverse_operands_short | 98.5 / 57.4 | 874 | 100.0 | yes |
+| reverse_operands_integer | 98.5 / 57.4 | 874 | 100.0 | yes |
+| reverse_operands_both | 98.5 / 57.4 | 874 | 100.0 | yes |
+| maximum_first_short | 98.5 / 56.9 | 874 | 100.0 | no |
+| maximum_first_integer | 98.5 / 56.9 | 874 | 100.0 | no |
+| maximum_first_both | 98.5 / 56.4 | 874 | 100.0 | no |
+| reverse_maximum_first_short | 98.5 / 56.9 | 874 | 100.0 | no |
+| reverse_maximum_first_integer | 98.5 / 56.9 | 874 | 100.0 | no |
+| reverse_maximum_first_both | 98.5 / 56.4 | 874 | 100.0 | no |
+
+All three operand-only forms equal the complete accepted Core object byte-for-
+byte. Maximum-first forms tie source and reduce strict; adding operand reversal
+produces the same corresponding objects. None retained; neither gate improves.
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_extrema_order_identities.json`, nine focused
+reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: indexed owner and typed allocation interaction after paired raw arrays
+
+Sixteen focused Read trials start from 13c61435. They repeat eight earlier
+indexed owner/scope forms on current paired raw arrays, each with original
+byte allocation and primitive new unsigned short[count]. Typed arrays have no
+initializer/zero fill; native and ARM ushort are two bytes, and counts are
+ushort, so sizes are unchanged. These index buffers escape into the existing
+Mesh ownership path; no new local deletion or failure cleanup is introduced.
+
+Primary ARM reloads *slot after indexCount read at 0x6c664, reads indexCount
+at 0x6c668, allocates at 0x6c66c and stores indices through that owner at
+0x6c670. Current accepted source captures m before the count read. Seven forms
+use a fresh owner there, through reload/local scope/direct assignment, optionally
+also reloading the buffer-read or vertex-read owner. One changes just the
+allocation count expression to fresh *slot and keeps the captured store owner.
+Original observations prove memory-load timing, not exact C++ spelling, a
+runtime bug or mutation of *slot by the existing file boundary. Trials with
+fresh owners should not be claimed universally equivalent for a hypothetical
+slot-mutating file callback; current native fixtures do not model that callback.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted |
+|---|---|---:|---:|---|
+| owner_reload_before_allocation_byte_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| owner_reload_before_allocation_typed_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| owner_separate_allocation_owner_byte_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| owner_separate_allocation_owner_typed_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| owner_reload_read_owner_byte_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| owner_reload_read_owner_typed_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| owner_direct_count_allocation_byte_allocation | 98.5 / 57.2 | 874 | 100.0 | no |
+| owner_direct_count_allocation_typed_allocation | 98.5 / 57.2 | 874 | 100.0 | no |
+| owner_reload_direct_assignment_byte_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| owner_reload_direct_assignment_typed_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| scope_fresh_scoped_owner_byte_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| scope_fresh_scoped_owner_typed_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| scope_vertex_owner_after_read_byte_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| scope_vertex_owner_after_read_typed_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| scope_fresh_scoped_direct_assignment_byte_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+| scope_fresh_scoped_direct_assignment_typed_allocation | 98.5 / 57.8 | 874 | 100.0 | no |
+
+All byte/typed pairs produce identical complete objects. Fourteen fresh-owner
+forms equal one another, tie source at 98.5 and improve strict 57.4 ->57.8.
+The two count-only forms equal one another, tie source and regress strict to
+57.2. This changes the old exclusion: fresh-owner forms formerly regressed
+source on axisbyte-era code but no longer do so after paired raw arrays.
+They are useful candidates for subsequent interaction trials, though neither
+requested gate improves by this change alone. None retained in production.
+
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline with no
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_typed_pair_index_owner_identities.json`, sixteen focused
+reports/source snapshots, primary original_mesh.asm and rechecked typedpair
+validation audit.
+
+
+## Continuation: fresh indexed owner interactions with normals and tangent counters
+
+Twenty-one focused Read measurements start from f10e76ca: nineteen interaction
+forms and two repeated reload-only controls. Each adds m=*slot after successful
+indexCount read, immediately before index allocation, as supported by primary
+ARM 0x6c664. This candidate now ties source and improves strict, unlike the old
+axisbyte-era exclusion, so its interactions are measured separately.
+
+Twelve normal-view forms change destination center to 0/2/3 or combine input
+center 1/2/3 with destination center 1/2/3, compensating every subscript. Each
+pointer is within its own three-component record or one-past on the final
+record; actual accesses remain original elements. Double decoding, normalized
+float quotients, lower/upper clamp semantics, fallback outputs, dynamic slot
+vertex-count condition and output-field loads stay intact.
+
+Seven counter forms use short/ushort/int triangle counters, optionally ushort
+final tangent counters, plus final ushort alone. Triangle count indexCount/3
+is <=21845, fitting signed short. Final vertices are <=65535: final ushort
+increment reaches 65535 then exits, without overflow. Clear loop remains uint;
+Dot/multiply/subtract/Normalize/stores/Cross order and count captures remain.
+No helper, dead effect, padding, assembly, fixed register or metric change.
+View/counter spellings are hypotheses. Fresh-owner timing has original ARM
+support, but existing native fixtures do not prove equivalent behavior for
+a hypothetical AEFile callback mutating *slot; no such broad proof is claimed.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals reload-only |
+|---|---|---:|---:|---|
+| normal: index_reload_only | 98.5 / 57.8 | 874 | 100.0 | yes |
+| normal: destination_0 | 98.1 / 56.3 | 869 | 100.0 | no |
+| normal: destination_2 | 98.4 / 56.7 | 870 | 100.0 | no |
+| normal: destination_3 | 98.0 / 57.5 | 864 | 100.0 | no |
+| normal: source_1_destination_1 | 98.5 / 57.4 | 874 | 100.0 | no |
+| normal: source_1_destination_2 | 98.4 / 56.2 | 870 | 100.0 | no |
+| normal: source_1_destination_3 | 98.0 / 55.1 | 865 | 100.0 | no |
+| normal: source_2_destination_1 | 98.5 / 57.8 | 874 | 100.0 | yes |
+| normal: source_2_destination_2 | 98.4 / 56.7 | 870 | 100.0 | no |
+| normal: source_2_destination_3 | 98.0 / 55.5 | 865 | 100.0 | no |
+| normal: source_3_destination_1 | 98.5 / 57.8 | 874 | 100.0 | yes |
+| normal: source_3_destination_2 | 98.4 / 56.7 | 870 | 100.0 | no |
+| normal: source_3_destination_3 | 98.0 / 55.1 | 865 | 100.0 | no |
+| counter: index_reload_only | 98.5 / 57.8 | 874 | 100.0 | yes |
+| counter: triangle_short | 98.0 / 54.2 | 877 | 100.0 | no |
+| counter: triangle_short_final_short | 98.0 / 54.2 | 877 | 100.0 | no |
+| counter: triangle_unsigned_short | 98.5 / 56.2 | 872 | 100.0 | no |
+| counter: triangle_unsigned_short_final_short | 98.5 / 56.2 | 872 | 100.0 | no |
+| counter: triangle_int | 98.5 / 57.8 | 874 | 100.0 | yes |
+| counter: triangle_int_final_short | 98.5 / 57.8 | 874 | 100.0 | yes |
+| counter: final_short | 98.5 / 57.8 | 874 | 100.0 | yes |
+
+No interaction improves source beyond 98.5. Five interaction forms equal the
+entire reload-only object; two controls independently reproduce that object.
+The other forms tie or regress source, without a better gate result. None
+retained. Reload-only remains a candidate for other interactions, not a retained
+gain. Source and fixtures match ecc30f25; outside-body/signature checks pass.
+Read-only binding rechecks existing typedpair full evidence: 204 objects/202
+unaffected objects, actual linked 2079/byte 959 exact pair sets equal baseline
+with no lost/gained pairs, unchanged canonical arguments and fixed-three rows
+directly recomputed with the unchanged matcher. No new native/full-corpus run
+claimed for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_index_reload_normal_views_identities.json`,
+`_work/read_index_reload_counter_identities.json`, twenty-one focused reports/
+source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: indexed owner interaction with triangle UV and coordinate scheduling
+
+Seventeen focused Read measurements start from b5c5881f: eight source forms
+with accepted owner, the same eight with fresh indexed allocation owner, and
+one repeated fresh-owner control. Fresh m=*slot follows the successful
+indexCount read as supported by primary ARM 0x6c664. It remains an experimental
+candidate with strict 57.8 and tied source 98.5, not a retained source gain.
+
+Five forms delay origin U until after V differences, name the two U differences,
+combine those forms, delay reciprocal until after the three numerators or name
+the two denominator products. Formulas, floating widths, grouping and operand
+direction remain unchanged. Delayed reciprocal changes scheduling of independent
+local arithmetic, not reassociation: each numerator is still multiplied by
+1/denom. Three other forms preload origin position components Z/Y/X, X/Y/Z or
+Y/X/Z after p1 address computation and substitute the used values in their
+existing numerator expressions. No intervening mutation/call changes those
+coordinates. Numerators/products remain Y/X/Z, then original i0/i1/i2 += calls;
+final Dot/multiply/subtract/Normalize/stores/Cross sequence is untouched.
+No helper, unused local, padding, extra arithmetic, volatile, assembly, fixed
+register or metric change. Source spellings/scheduling are hypotheses, not
+recovered original declarations. Fresh owner timing has ARM support, but
+native fixtures do not establish equivalence for hypothetical slot-mutating
+file callbacks, and no such broader claim is made.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted | Equals reload-only |
+|---|---|---:|---:|---|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| late_origin_u_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| late_origin_u_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| explicit_u_differences_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| explicit_u_differences_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| late_u_and_differences_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| late_u_and_differences_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| late_reciprocal_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| late_reciprocal_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| separate_denom_products_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| separate_denom_products_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| origin_preload_zyx_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| origin_preload_zyx_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| origin_preload_xyz_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| origin_preload_xyz_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| origin_preload_yxz_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| origin_preload_yxz_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+
+All eight accepted-owner forms equal the complete accepted Core object byte-
+for-byte. All eight fresh-owner forms and the control equal the complete
+reload-only object. This proves these particular scheduling forms have no
+object-level interaction gain; equal scores alone are not used as identity
+proof. None retained; code restored. Source and fixtures match ecc30f25;
+outside-body/signature checks pass. Read-only binding rechecks existing
+typedpair full evidence: 204 objects/202 unaffected objects, actual linked
+2079/byte 959 exact pair sets equal baseline without lost/gained pairs,
+unchanged canonical arguments and fixed-three rows directly recomputed with
+the unchanged matcher. No new native/full-corpus run claimed for rejected
+forms. Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates
+unmet; goal active. No general compiler ceiling, header/ABI, flag/matcher,
+push, PR or merge change.
+
+Evidence: `_work/read_index_reload_triangle_schedule_identities.json`, seventeen
+focused reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: unsigned raw allocation pairs with both indexed owner forms
+
+Fourteen focused Read measurements start from 9e63aa84. All seven nonempty
+subsets of short positions/int positions/compressed normals replace the paired
+primitive allocation/deletion element type with corresponding unsigned short/
+unsigned int, on accepted indexed owner and fresh owner after indexCount read.
+Matching delete[] casts change together with each new[] expression. Raw short/
+int views used by conversion remain signed, so negative input samples retain
+their existing interpretation; unsigned allocation is not an unsigned decode.
+Corresponding signed/unsigned integer access is permitted aliasing, and ARM/
+UCRT element sizes remain 2/4 bytes. Counts are unchanged vertexCount*3 and fit
+the bounded allocation arithmetic. No value initializer, zero fill, constructor,
+element destructor, extra cleanup, unused field or helper is added. These are
+allocation representation hypotheses, not recovered original element types.
+
+Fresh indexed owner keeps the previously inspected ARM load timing, but is
+experimental: native fixtures do not establish equivalence for a hypothetical
+slot-mutating file callback. No such broader runtime proof is claimed.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted | Equals reload-only |
+|---|---|---:|---:|---|---|
+| short_positions_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| short_positions_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| integer_positions_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| integer_positions_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| normals_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| normals_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| short_positions_integer_positions_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| short_positions_integer_positions_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| short_positions_normals_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| short_positions_normals_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| integer_positions_normals_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| integer_positions_normals_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| short_positions_integer_positions_normals_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| short_positions_integer_positions_normals_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+
+Every complete object equals its corresponding signed-allocation reference
+byte-for-byte: seven accepted-owner forms equal accepted Core and seven fresh-
+owner forms equal reload-only Core. No source/object interaction gain; none
+retained. Code restored. Source and fixtures match ecc30f25; outside-body/
+signature checks pass. Read-only binding rechecks existing typedpair full
+evidence: 204 objects/202 unaffected objects, actual linked 2079/byte 959 exact
+pair sets equal baseline without lost/gained pairs, unchanged canonical
+arguments and fixed-three rows directly recomputed with the unchanged matcher.
+No new native/full-corpus run claimed for rejected forms. Accepted means
+**98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet; goal active.
+No general compiler ceiling, header/ABI, flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_unsigned_raw_pairs_identities.json`, fourteen focused
+reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: fresh indexed owner with tangent temporary and product forms
+
+Thirteen focused Read measurements start from 9c7c0cd0: twelve interactions
+and one reload-only control. Six final-loop forms inline Dot/product/Normalize
+argument/all expressions, qualify temporaries const or use a trivial Vector
+tangent-input copy. Six triangle-product forms use compound/named products,
+Vector members, a named-products Vector or a Y/X/Z product record. These
+families were previously measured on accepted paired arrays without the fresh
+indexed owner. Every form now adds m=*slot after successful indexCount read,
+before allocation, matching the inspected original load timing at 0x6c664.
+
+Dot/multiply/subtract/Normalize remain ordered, tangent stores precede Cross,
+and output field loads remain after their corresponding math calls. Triangle
+numerators/products retain Y/X/Z and numerator-times-reciprocal operands;
+accumulation remains i0/i1/i2. Used temporaries replace used values, with no
+extra operations, zero fill, dead member, padding, helper or flags change.
+These source representations are hypotheses. Fresh indexed load timing has
+ARM support, but fixtures do not establish equivalence for hypothetical slot-
+mutating file callbacks; no broader native equivalence claim is made.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals reload-only |
+|---|---|---:|---:|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| final_inline_dot | 98.5 / 57.8 | 874 | 100.0 | yes |
+| final_inline_product | 97.3 / 59.1 | 870 | 98.2 | no |
+| final_inline_normalize_argument | 98.5 / 57.8 | 874 | 100.0 | no |
+| final_inline_all | 98.5 / 57.8 | 874 | 100.0 | no |
+| final_const_temporaries | 98.5 / 57.8 | 874 | 100.0 | yes |
+| final_vector_tangent_input | 98.4 / 58.1 | 875 | 100.0 | no |
+| product_compound_before_stores | 98.5 / 57.8 | 874 | 100.0 | yes |
+| product_named_products_before_stores | 98.5 / 57.8 | 874 | 100.0 | yes |
+| product_compound_at_stores | 98.5 / 57.8 | 874 | 100.0 | yes |
+| product_vector_product_members | 98.5 / 57.8 | 874 | 100.0 | yes |
+| product_named_products_vector | 98.5 / 57.9 | 874 | 100.0 | no |
+| product_products_yxz_record | 98.5 / 57.9 | 874 | 100.0 | no |
+
+No interaction improves source above 98.5. Six interactions and the control
+equal the complete reload-only object byte-for-byte. The two aggregate product
+forms equal each other and improve strict alone to 57.9. Other forms tie or
+regress source; none retained. Production source restored. Source and fixtures
+match ecc30f25; outside-body/signature checks pass. Read-only binding rechecks
+existing typedpair full evidence: 204 objects/202 unaffected objects, actual
+linked 2079/byte 959 exact pair sets equal baseline without lost/gained pairs,
+unchanged canonical arguments and fixed-three rows directly recomputed with
+the unchanged matcher. No new native/full-corpus run claimed for rejected forms.
+Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet;
+goal active. No general compiler ceiling, header/ABI, flag/matcher, push, PR
+or merge change.
+
+Evidence: `_work/read_index_reload_tangent_lifetime_identities.json`, thirteen
+focused reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: unsigned section type with both if-dispatch orders
+
+Fifteen focused Enhanced measurements start from 1585f816: shared unsigned-short
+section type control and fourteen combinations of if-dispatch. Both type==1
+before type==0 and type==0 before type==1 are tested for all seven nonempty
+subsets of position/scale/rotation sections. This combines previously separate
+signedness and dispatch families and adds mixed-section/order combinations.
+Every type read remains two bytes at its original point. Bit patterns other
+than 0/1 skip the same sections, while optional type 2 remains recognized.
+Sign reinterpretation does not make any other bit pattern equal 0/1/2.
+V5 short count stays signed, as required for negative-count skipping. All
+branch-local reads, updates, inserts, axis masks, position Y negation and
+failure paths remain in their sections. No new operations, helper, table,
+dead local, padding, compiler option or ABI change. These forms are hypotheses,
+not recovered original type declarations or if-dispatch syntax.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals accepted |
+|---|---|---:|---:|---|
+| unsigned_type_control | 98.1 / 66.4 | 641 | 100.0 | no |
+| one_first_0 | 98.1 / 66.4 | 641 | 100.0 | no |
+| one_first_1 | 98.1 / 66.4 | 641 | 100.0 | no |
+| one_first_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| one_first_0_1 | 98.1 / 66.4 | 641 | 100.0 | no |
+| one_first_0_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| one_first_1_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| one_first_0_1_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_0 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_1 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_0_1 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_0_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_1_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_0_1_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+
+All fifteen complete Mesh objects are byte-identical to one another and to
+the earlier unsigned-shared-type object. Thus the new if-dispatch combinations
+do not change that object's source regression, regardless of section/order.
+None retained; code restored. Source and fixtures match ecc30f25; outside-body/
+signature checks pass. Read-only binding rechecks existing typedpair full
+evidence: 204 objects/202 unaffected objects, actual linked 2079/byte 959 exact
+pair sets equal baseline without lost/gained pairs, unchanged canonical
+arguments and fixed-three rows directly recomputed with the unchanged matcher.
+No new native/full-corpus run claimed for rejected forms. Accepted means
+**98.40% unweighted /98.41% weighted**; both >=99.0 gates unmet; goal active.
+No general compiler ceiling, header/ABI, flag/matcher, push, PR or merge change.
+
+Evidence: `_work/enh_unsigned_section_dispatch_identities.json`, fifteen focused
+reports/source snapshots, prior unsigned-shared-type object comparison and
+rechecked typedpair validation audit.
+
+
+## Continuation: normal length/section guards with indexed owner interaction
+
+Nineteen focused Read measurements start from 8a97f67e: nine forms with accepted
+indexed owner, the same nine with a fresh owner after indexCount read and one
+reload-only control. This tests earlier normalcenter-era length/section families
+on current paired raw arrays, including their fresh-owner interactions.
+
+Five length forms place fallback first, continue after zero/nonzero branches,
+name the nonzero predicate, or load the normals output field before the length
+branch. They retain len==0 versus len!=0 semantics, including NaN taking the
+nonzero path, all divisions/clamp/fallback values and output component order.
+The early field-load form moves only a used output address across local
+arithmetic/comparisons, not across a file/allocation call. It is an experimental
+load-scheduling hypothesis, not a recovered original load site.
+
+Four section forms split shader handling from stream handling, flatten or
+separate compressed/plain stream guards, or use a common section-exit label.
+The captured normalEnabled value replaces the original outer vertex-format
+test and is used by every corresponding stream/shader guard. Compressed and
+plain selections remain mutually exclusive, and enableShader is checked after
+the stream. Existing read/allocation/failure/cleanup effects and math order
+remain in their original execution paths. No helper, unused field, padding,
+assembly, fixed register, flag or matcher change. Fresh indexed-owner timing
+has original ARM support but no native proof for hypothetical slot-mutating
+file callbacks; such universal equivalence is not claimed.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted | Equals reload-only |
+|---|---|---:|---:|---|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| length_fallback_first_accepted_owner | 98.3 / 59.6 | 874 | 100.0 | no | no |
+| length_fallback_first_fresh_owner | 98.3 / 60.1 | 874 | 100.0 | no | no |
+| length_zero_continue_accepted_owner | 98.3 / 59.6 | 874 | 100.0 | no | no |
+| length_zero_continue_fresh_owner | 98.3 / 60.1 | 874 | 100.0 | no | no |
+| length_nonzero_continue_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| length_nonzero_continue_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| length_named_nonzero_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| length_named_nonzero_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| length_owner_before_branch_accepted_owner | 98.2 / 58.6 | 871 | 100.0 | no | no |
+| length_owner_before_branch_fresh_owner | 98.1 / 59.4 | 871 | 100.0 | no | no |
+| section_split_shader_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| section_split_shader_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| section_flat_shader_accepted_owner | 97.5 / 55.0 | 891 | 100.0 | no | no |
+| section_flat_shader_fresh_owner | 97.5 / 55.4 | 892 | 100.0 | no | no |
+| section_independent_shader_accepted_owner | 97.3 / 56.1 | 884 | 98.2 | no | no |
+| section_independent_shader_fresh_owner | 97.3 / 56.6 | 884 | 98.2 | no | no |
+| section_common_section_exit_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| section_common_section_exit_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+
+No form improves source beyond 98.5. Four forms per owner produce their entire
+reference object byte-for-byte; reload control reproduces reload-only. Zero-
+continue equals fallback-first for each owner. Other forms regress source;
+strict-only gains up to 60.1 do not move either requested gate. None retained;
+code restored. Source and fixtures match ecc30f25; outside-body/signature checks
+pass. Read-only binding rechecks existing typedpair full evidence: 204 objects/
+202 unaffected objects, actual linked 2079/byte 959 exact pair sets equal
+baseline without lost/gained pairs, unchanged canonical arguments and fixed-
+three rows directly recomputed with the unchanged matcher. No new native/full-
+corpus run claimed for rejected forms. Accepted means **98.40% unweighted /
+98.41% weighted**; both >=99.0 gates unmet; goal active. No general compiler
+ceiling, header/ABI, flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_index_reload_normal_guards_identities.json`, nineteen
+focused reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: position predicates/output storage with fresh indexed owner
+
+Nineteen focused Read measurements start from fe468346: nine source forms with
+accepted indexed owner, the same nine with fresh owner after indexCount read,
+and one reload control. Three short-position predicates test signed direct
+flags<<29, signed compressedData or a signed compressedData local. Shift occurs
+on unsigned flags before conversion. On the two's-complement ARM/UCRT targets,
+bit 2 becomes sign bit and tests the same short-position condition; this is
+not a new portable C++ conversion guarantee. Other compressedData nonzero tests
+preserve the shifted value's zero/nonzero status. Predicate spellings are
+hypotheses, not recovered exact source.
+
+Four forms eliminate the intermediate position allocation pointer independently
+for short/int/floating streams and all streams. Two share a void raw pointer
+only across mutually exclusive short/int branches, alone or together with
+direct position allocation stores. Every typed raw allocation keeps its matching
+typed delete[] at the same success/failure locations. There is no double cleanup,
+new zero initialization or read of raw before its branch allocation. Captured
+owner stores, fresh field/count loads, conversion/extrema calculations and
+file-read/cleanup order stay unchanged. No helper, dead field, padding, assembly,
+fixed register or matcher/flag change. Fresh indexed-owner timing has ARM
+support, but fixtures do not prove equivalence for hypothetical slot-mutating
+file callbacks; no broader native runtime proof is claimed.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals accepted | Equals reload-only |
+|---|---|---:|---:|---|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| predicate_direct_shift_negative_accepted_owner | 97.9 / 57.9 | 872 | 98.2 | no | no |
+| predicate_direct_shift_negative_fresh_owner | 97.6 / 57.8 | 878 | 98.2 | no | no |
+| predicate_shared_shift_negative_accepted_owner | 97.9 / 57.9 | 872 | 98.2 | no | no |
+| predicate_shared_shift_negative_fresh_owner | 97.6 / 57.8 | 878 | 98.2 | no | no |
+| predicate_signed_compressed_local_accepted_owner | 97.9 / 57.9 | 872 | 98.2 | no | no |
+| predicate_signed_compressed_local_fresh_owner | 97.6 / 57.8 | 878 | 98.2 | no | no |
+| direct_output_short_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| direct_output_short_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| direct_output_integer_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| direct_output_integer_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| direct_output_floating_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| direct_output_floating_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| direct_output_all_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| direct_output_all_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| shared_raw_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| shared_raw_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| shared_raw_direct_outputs_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| shared_raw_direct_outputs_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+
+Six storage forms per owner equal their entire reference Core object byte-for-
+byte; control reproduces reload-only. All three signed-predicate forms equal
+each other for each owner but regress source to 97.9/97.6 and call-count
+agreement. No form improves source beyond 98.5; none retained. Code restored.
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline without
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_index_reload_position_forms_identities.json`, nineteen
+focused reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: fresh indexed owner with bounds copies and lifetimes
+
+Eleven focused Read measurements start from aa0a96a6: ten bounds copy/lifetime
+interactions and one reload-only control. Each reloads m=*slot after successful
+indexCount read, before allocation, matching original memory timing at 0x6c664.
+Five forms copy max/min/both through Vector views, subtract direct views or
+pass the temporary full diagonal directly to Length. Five scope center as a
+float array or Vector, initialize minimum before maximum, initialize extrema
+vectors before center assignment or before center computation. Local values
+remain independent of the Mesh bounds assignment; no intervening file/allocation
+call changes extrema. Trivial copies introduce no additional math call.
+
+Every form retains max-minus-min full diagonal, center max-plus-min times 0.5,
+the bounds assignment/subtraction/Length call order, and extrema initialization/
+input conversion semantics. No half-diagonal, reassociation, zero fill, dead
+field, added helper, padding, assembly, fixed register or flag/matcher change.
+These local representation/lifetime choices are hypotheses, not recovered
+original syntax. Fresh indexed load has original ARM support but existing
+fixtures do not establish equivalence for hypothetical slot-mutating file
+callbacks; no broader native runtime proof is claimed.
+
+| Trial | Read source / strict | Instructions | Calls | Whole Core equals reload-only |
+|---|---|---:|---:|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| copy_maximum_copy | 98.3 / 57.3 | 876 | 100.0 | no |
+| copy_minimum_copy | 98.4 / 57.0 | 875 | 100.0 | no |
+| copy_both_copies | 98.2 / 57.6 | 877 | 100.0 | no |
+| copy_direct_views | 98.2 / 58.3 | 870 | 100.0 | no |
+| copy_temporary_diagonal | 98.5 / 57.8 | 874 | 100.0 | yes |
+| lifetime_scoped_float_center | 98.5 / 57.8 | 874 | 100.0 | no |
+| lifetime_scoped_vector_center | 98.5 / 57.8 | 874 | 100.0 | no |
+| lifetime_minimum_first | 98.5 / 57.8 | 874 | 100.0 | no |
+| lifetime_extents_before_assignment | 98.5 / 57.0 | 874 | 100.0 | no |
+| lifetime_extents_before_center | 97.1 / 40.8 | 885 | 98.2 | no |
+
+No form improves source beyond 98.5. Control and temporary diagonal equal the
+entire reload-only Core object byte-for-byte. Scoped float/Vector center forms
+equal one another but differ from reload-only, without score improvement.
+Other forms tie or regress source; none retained. Production code restored.
+Source and fixtures match ecc30f25; outside-body/signature checks pass. Read-only
+binding rechecks existing typedpair full evidence: 204 objects/202 unaffected
+objects, actual linked 2079/byte 959 exact pair sets equal baseline without
+lost/gained pairs, unchanged canonical arguments and fixed-three rows directly
+recomputed with the unchanged matcher. No new native/full-corpus run claimed
+for rejected forms. Accepted means **98.40% unweighted /98.41% weighted**;
+both >=99.0 gates unmet; goal active. No general compiler ceiling, header/ABI,
+flag/matcher, push, PR or merge change.
+
+Evidence: `_work/read_index_reload_bounds_values_identities.json`, eleven focused
+reports/source snapshots and rechecked typedpair validation audit.
+
+
+## Continuation: fresh indexed owner with UV flip and pair views
+
+Fourteen focused Read measurements start from 0d6e33ac: five flip-storage forms,
+two outer flip-dispatch forms, six pair views and a reload-only control. Each
+adds a fresh m=*slot after successful indexCount read, before allocation.
+Flip storage uses raw uchar/uint/int/ushort enableShader or implicit bool;
+Engine.h declares enableShader unsigned char, so each integer type preserves
+its full value/nonzero interpretation. Snapshot timing remains unchanged.
+Outer-dispatch forms branch on the existing immutable flip snapshot, with
+flipped or plain loop first. Only the selected loop executes, and compressed
+double u/v scaling and conditional double 1-v subtraction retain their precision.
+
+Pair views shift source/destination/both pointers by 1 or 2 and compensate
+every subscript. The final shift by 2 is one-past the corresponding input/output
+array; every access still addresses its original element. Fresh m->texCoords
+field loads stay at their original position inside each compressed iteration.
+No type is changed in decode, no float subtraction substitutes for double,
+and no allocation/read/count/cleanup change. Source forms are hypotheses, not
+recovered original declarations. No helper, dead effect, padding, assembly,
+fixed register or flag/matcher change. Fresh indexed-owner memory timing has
+ARM support but no fixture proof for hypothetical slot-mutating file callbacks.
+
+| Group / trial | Read source / strict | Instructions | Calls | Whole Core equals reload-only |
+|---|---|---:|---:|---|
+| flip: reload_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| flip: storage_raw_unsigned_char | 98.5 / 57.8 | 874 | 100.0 | yes |
+| flip: storage_raw_unsigned_int | 98.5 / 57.8 | 874 | 100.0 | yes |
+| flip: storage_raw_int | 98.5 / 57.8 | 874 | 100.0 | yes |
+| flip: storage_raw_unsigned_short | 98.5 / 57.8 | 874 | 100.0 | yes |
+| flip: storage_implicit_bool | 98.5 / 57.8 | 874 | 100.0 | yes |
+| flip: outer_flipped_first | 96.3 / 56.4 | 914 | 100.0 | no |
+| flip: outer_plain_first | 96.3 / 56.4 | 914 | 100.0 | no |
+| pair: destination_1 | 98.5 / 57.8 | 874 | 100.0 | yes |
+| pair: source_1 | 98.5 / 57.8 | 874 | 100.0 | yes |
+| pair: both_1 | 98.5 / 57.8 | 874 | 100.0 | yes |
+| pair: destination_2 | 98.5 / 57.8 | 874 | 100.0 | yes |
+| pair: source_2 | 98.5 / 57.8 | 874 | 100.0 | yes |
+| pair: both_2 | 98.5 / 57.8 | 874 | 100.0 | yes |
+
+Five storage forms, six pair views and control equal the entire reload-only
+Core object byte-for-byte. Both outer-dispatch forms equal one another and
+regress source to 96.3. No gain; none retained. Code restored. Source and
+fixtures match ecc30f25; outside-body/signature checks pass. Read-only binding
+rechecks existing typedpair full evidence: 204 objects/202 unaffected objects,
+actual linked 2079/byte 959 exact pair sets equal baseline without lost/gained
+pairs, unchanged canonical arguments and fixed-three rows directly recomputed
+with the unchanged matcher. No new native/full-corpus run claimed for rejected
+forms. Accepted means **98.40% unweighted /98.41% weighted**; both >=99.0 gates
+unmet; goal active. No general compiler ceiling, header/ABI, flag/matcher,
+push, PR or merge change.
+
+Evidence: `_work/read_index_reload_uv_flip_identities.json`,
+`_work/read_index_reload_uv_pair_identities.json`, fourteen focused reports/
+source snapshots and rechecked typedpair validation audit.
+
+
+## Main working-checkout intake: loader bodies and compiled dependencies
+
+User requested loading changes from the main working branch to test whether
+these improve the fixed-three score. Inspected main checkout
+`A:/Galaxy on Fire new version/gof2hd-decomp-master`, branch main at
+e473d5454d89404051c9731ac93ad52897699020, against own branch dd925f81.
+Main is an ancestor of the owned branch; there are no new committed loader
+changes. Both incoming loader source files have no uncommitted diff from main
+HEAD. The main working checkout is dirty in many unrelated files; it was
+read only and remains untouched. Snapshots include the dirty working files,
+not just committed main content.
+
+Dependency files from the accepted ARM build identify every project header
+compiled into Core and Mesh. Exactly two differ in the main working checkout:
+Array.h (ArrayRemove snapshots size) and AEString.h (ARM layout static asserts).
+Mesh/Engine/Vector layouts and other actual compiled dependencies match.
+Main math/Transform implementation changes reside in separate translation
+units; no LTO is enabled and they cannot change the caller instruction shape.
+They were inspected as runtime changes, not imported into this three-body task.
+The main checkout also changes verifier files: no verifier, matching flags,
+compiler, denominator, helper body or ABI/header update was retained.
+
+Copied only the three incoming body spans into own local trial sources, keeping
+all surrounding code. Tested six combinations, including independent body
+replacement and current bodies with both changed dependency headers. These
+are exact incoming source trials, not newly recovered declarations.
+
+| Trial | Create source | Read source | Enhanced source | Mean | Original-instruction weighted mean |
+|---|---:|---:|---:|---:|---:|
+| current_bodies_main_headers | 98.4 | 98.5 | 98.3 | 98.400000 | 98.413167 |
+| main_bodies_current_headers | 95.8 | 91.8 | 94.5 | 94.033333 | 93.400667 |
+| main_bodies_main_headers | 95.8 | 91.8 | 94.5 | 94.033333 | 93.400667 |
+| main_only_MeshReadData | 98.4 | 91.8 | 98.3 | 96.166667 | 95.163667 |
+| main_only_MeshCreateFromFile | 95.8 | 98.5 | 98.3 | 97.533333 | 97.992833 |
+| main_only_ReadEnhancedDataFromFile | 98.4 | 98.5 | 94.5 | 97.133333 | 97.070500 |
+
+Main bodies regress individually and together. Main bodies with current versus
+main headers produce identical corresponding full objects. Current bodies
+with main headers produce exact accepted Core and Mesh objects:
+Core ec6b0774edb1cfec44ec92f6d54e0b8148c0003f829b4fc1a7c9a2c1a82d39c3;
+Mesh 71f33c2bf51d3f356a2ad3d5df4450736badfe2da89301d93c1c121432736a73.
+Thus header intake cannot improve this score. Old main bodies also restore
+the previously rejected half-diagonal radius and inexact 6.2832f rotation
+constant, so retaining them would discard validated behavior fixes.
+
+All six trials compile and focused ARM verification exits zero. Each fixed-three
+row was recomputed directly from its disassembly with unchanged source metrics;
+original counts remain 291/873/636, total 1800. Source metrics average the
+matcher-produced per-body values. No improvement; no incoming implementation
+change retained. Restored all four local source/header texts to dd925f81 and
+verified the main snapshots did not change during the experiment. Source
+signatures and code outside the three bodies remain baseline-identical.
+
+Read-only binding audit of existing accepted full/native evidence passes:
+204 translation units, 4619 comparisons, zero skipped, 202 unaffected whole
+objects unchanged, exact linked-pair set 2079 and byte-pair set 959 with no
+loss or gain. Existing full report SHA256
+69141f6eaafd32d61ce63ae1257ac889bc0cfcc7765c514a630391e0df481af8.
+No fresh full-corpus or native-runtime run is claimed for these rejected forms.
+Accepted score remains **98.40% /98.41%**; both >=99.0 gates unmet, goal active.
+No push/PR/merge; main checkout untouched.
+
+Private evidence: `_work/main_intake_snapshot.json`,
+`_work/main_intake_results.json`, incoming source/header snapshots,
+body diffs, six Core/Mesh focused report pairs and compiled objects.
+
+
+## Continuation: indexed owner with color/UV inputs and signed animation dispatch
+
+Thirty-one focused measurements start from fd39d9dc. Sixteen Read forms add
+fresh m=*slot after successful indexCount read, before index allocation:
+reload-only control, nine color loop/store forms and six compressed UV input
+copies. Color forms preserve dynamic vertexCount and fresh m->colors access,
+byte-to-float conversion and division by 255. Signed index is bounded by the
+ushort vertex count (maximum 262140 components); byte offsets are bounded by
+1048560. Guarded do retains the zero-count guard. Shifted source/destination
+views advance by one then address [-1], including safe one-past final views.
+No persistent output pointer replaces the existing per-component field load.
+UV copies use short/int scalars, two-element arrays or u/v records before
+double scaling and the existing double flip subtraction. Only independent
+input-load scheduling changes, with no precision or sign change. These source
+forms are hypotheses, not recovered original declarations. The fresh index
+owner has primary ARM support but no fixture proof for slot-mutating callbacks.
+
+| Read trial | Source / strict | Instructions | Calls | Whole Core equals reload-only |
+|---|---|---:|---:|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| color_signed_index | 98.5 / 57.8 | 874 | 100.0 | yes |
+| color_dynamic_byte_offset | 98.5 / 57.9 | 874 | 100.0 | no |
+| color_input_pointer | 98.5 / 57.8 | 874 | 100.0 | yes |
+| color_postincrement_store | 98.5 / 57.8 | 874 | 100.0 | yes |
+| color_value_then_increment | 98.5 / 57.8 | 874 | 100.0 | yes |
+| color_guarded_do | 98.5 / 57.3 | 875 | 100.0 | no |
+| color_output_end | 98.5 / 57.8 | 874 | 100.0 | yes |
+| color_input_end | 98.5 / 57.8 | 874 | 100.0 | yes |
+| color_both_end | 98.5 / 57.8 | 874 | 100.0 | yes |
+| uv_short_scalars | 98.4 / 57.9 | 876 | 100.0 | no |
+| uv_short_array | 98.4 / 57.9 | 876 | 100.0 | no |
+| uv_short_record | 98.4 / 57.9 | 876 | 100.0 | no |
+| uv_int_scalars | 98.4 / 57.9 | 876 | 100.0 | no |
+| uv_int_array | 98.4 / 57.9 | 876 | 100.0 | no |
+| uv_int_record | 98.4 / 57.9 | 876 | 100.0 | no |
+
+Seven color variants plus control equal the entire reload-only Core object.
+Byte-offset and guarded-do forms tie source 98.5 with different objects.
+All six UV copy forms equal each other and regress to 98.4. None retained.
+
+Fifteen Enhanced measurements keep the original signed short type and replace
+selected switch(type) sections with equivalent if/else type==0/type==1 tests.
+All seven nonempty subsets of position/scale/rotation sections are tested with
+one-first and zero-first order, plus unchanged control. Invalid types skip the
+same section, per-axis switches remain unchanged, count widths/key math/read
+order and V5 signed counts/zero-channel behavior remain unchanged. No speculative
+mask table or helper is introduced. Source order is a hypothesis.
+
+| Enhanced trial | Source / strict | Instructions | Calls | Accepted whole Mesh |
+|---|---|---:|---:|---|
+| signed_type_control | 98.3 / 66.9 | 641 | 100.0 | yes |
+| one_first_0 | 98.2 / 52.8 | 641 | 100.0 | no |
+| one_first_1 | 98.2 / 66.7 | 641 | 100.0 | no |
+| one_first_2 | 98.2 / 66.7 | 641 | 100.0 | no |
+| one_first_0_1 | 98.1 / 38.8 | 641 | 100.0 | no |
+| one_first_0_2 | 98.1 / 52.6 | 641 | 100.0 | no |
+| one_first_1_2 | 98.1 / 66.6 | 641 | 100.0 | no |
+| one_first_0_1_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+| zero_first_0 | 98.2 / 52.8 | 641 | 100.0 | no |
+| zero_first_1 | 98.2 / 66.7 | 641 | 100.0 | no |
+| zero_first_2 | 98.2 / 66.7 | 641 | 100.0 | no |
+| zero_first_0_1 | 98.1 / 38.8 | 641 | 100.0 | no |
+| zero_first_0_2 | 98.1 / 52.6 | 641 | 100.0 | no |
+| zero_first_1_2 | 98.1 / 66.6 | 641 | 100.0 | no |
+| zero_first_0_1_2 | 98.1 / 66.4 | 641 | 100.0 | no |
+
+Corresponding zero-first/one-first forms are byte-identical full Mesh objects.
+Each single section regresses to 98.2, pairs and all-three to 98.1. Control
+matches accepted Mesh. No gain; none retained. All thirty-one compile/focused
+verify calls exit zero; source/call metrics independently recomputed directly
+from target/base instructions with the unchanged matcher. No new native/full
+run is claimed for rejected forms.
+
+Code and fixtures restored to ecc30f25. Read-only binding audit of accepted
+full/native evidence passes: 204 TUs, 4619 comparisons, zero skipped, 202
+unaffected objects, actual linked 2079/byte 959 exact-pair sets unchanged with
+no lost/gained pairs; canonical flags and outside-body/signature boundaries
+unchanged. Accepted means **98.40% /98.41%**, both >=99.0 gates unmet, goal active.
+No compiler ceiling established; no header/helper/ABI, flag/matcher, push,
+PR or merge change. Main checkout remains untouched.
+
+Evidence: `_work/read_index_reload_color_uv_input_identities.json`,
+`_work/enh_signed_section_dispatch_identities.json`, thirty-one focused
+reports/source snapshots/objects and rechecked typedpair validation audit.
+
+
+## Continuation: fresh indexed owner with extrema and child-state lifetimes
+
+Forty successful focused measurements start from d2683890. Every form adds
+fresh m=*slot after successful indexCount read, before index allocation.
+Reviewed the unchanged matcher's instruction-inventory differences to choose
+loads, local lifetimes and comparisons as the next hypotheses. Inventory gaps
+alone do not prove the original declarations or establish a compiler ceiling.
+
+Twenty-two extrema forms combine reload-only control with four local/reference
+forms and three comparison-order forms, each in short-position, integer-position
+or both decoders. Minimum/sequential locals and component references preserve
+accesses; both-preloaded form loads independent min/max components before the
+first update. Minimum and maximum arrays are distinct and indices stay 0..2.
+Comparison reversal preserves NaN behavior; swapping independent min/max
+updates preserves assignments. No new arithmetic, allocation or stream read.
+
+| Extrema form | Source / strict | Instructions | Calls | Whole Core equals reload-only |
+|---|---|---:|---:|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_minimum_local_short | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_minimum_local_integer | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_minimum_local_both | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_sequential_locals_short | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_sequential_locals_integer | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_sequential_locals_both | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_both_preloaded_short | 98.5 / 57.4 | 874 | 100.0 | no |
+| locals_both_preloaded_integer | 98.5 / 57.4 | 874 | 100.0 | no |
+| locals_both_preloaded_both | 98.5 / 56.9 | 874 | 100.0 | no |
+| locals_component_references_short | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_component_references_integer | 98.5 / 57.8 | 874 | 100.0 | yes |
+| locals_component_references_both | 98.5 / 57.8 | 874 | 100.0 | yes |
+| order_reverse_operands_short | 98.5 / 57.8 | 874 | 100.0 | yes |
+| order_reverse_operands_integer | 98.5 / 57.8 | 874 | 100.0 | yes |
+| order_reverse_operands_both | 98.5 / 57.8 | 874 | 100.0 | yes |
+| order_maximum_first_short | 98.5 / 57.4 | 874 | 100.0 | no |
+| order_maximum_first_integer | 98.5 / 57.4 | 874 | 100.0 | no |
+| order_maximum_first_both | 98.5 / 56.9 | 874 | 100.0 | no |
+| order_reverse_maximum_first_short | 98.5 / 57.4 | 874 | 100.0 | no |
+| order_reverse_maximum_first_integer | 98.5 / 57.4 | 874 | 100.0 | no |
+| order_reverse_maximum_first_both | 98.5 / 56.9 | 874 | 100.0 | no |
+
+All extrema forms tie source 98.5; thirteen equal the entire reload-only Core
+object. Nine preloaded/maximum-first forms change code without improvement.
+Corresponding reversed and unreversed maximum-first objects are identical.
+
+Eighteen child forms combine control with five lifetime/counter variants and
+twelve records: six ordered pairs and six permutations of childCount/c/childPtr.
+Each record contains only the live original locals, not unused padding fields.
+Signed/ushort child counters are bounded by ushort childCount; the last legal
+iteration advances to count and exits without ushort overflow. The guarded-do
+zero-count behavior, failed-unattached-child lifetime, recursive read predicate,
+sphere merge and fresh parent load before ArrayAdd stay unchanged. Moving the
+child pointer declaration changes stack lifetime, not allocation timing.
+
+| Child form | Source / strict | Instructions | Calls | Whole Core equals reload-only |
+|---|---|---:|---:|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| lifetime_signed_child_counter | 98.5 / 57.8 | 874 | 100.0 | yes |
+| lifetime_short_child_counter | 98.5 / 57.8 | 875 | 100.0 | no |
+| lifetime_child_before_count | 98.4 / 57.8 | 874 | 100.0 | no |
+| lifetime_child_inside_nonempty_guard | 98.5 / 57.5 | 873 | 100.0 | no |
+| lifetime_child_function_scope | 98.4 / 57.8 | 874 | 100.0 | no |
+| state_pair_childCount_c | 97.4 / 55.4 | 874 | 98.2 | no |
+| state_pair_c_childCount | 97.3 / 55.4 | 875 | 98.2 | no |
+| state_pair_childCount_childPtr | 98.1 / 56.8 | 880 | 100.0 | no |
+| state_pair_childPtr_childCount | 98.4 / 57.8 | 875 | 100.0 | no |
+| state_pair_c_childPtr | 97.3 / 55.3 | 876 | 98.2 | no |
+| state_pair_childPtr_c | 97.3 / 55.4 | 875 | 98.2 | no |
+| state_all_childCount_c_childPtr | 97.3 / 55.3 | 876 | 98.2 | no |
+| state_all_childCount_childPtr_c | 97.3 / 55.3 | 876 | 98.2 | no |
+| state_all_c_childCount_childPtr | 97.3 / 55.3 | 876 | 98.2 | no |
+| state_all_c_childPtr_childCount | 97.3 / 55.3 | 876 | 98.2 | no |
+| state_all_childPtr_childCount_c | 97.3 / 55.3 | 876 | 98.2 | no |
+| state_all_childPtr_c_childCount | 97.3 / 55.3 | 876 | 98.2 | no |
+
+Control and signed child counter equal reload-only Core. Other lifetime forms
+tie or regress. All record forms regress; ten have call-count match 98.2.
+No source-level extra call or artificial effect was inserted. None retained.
+Fresh indexed-owner timing has ARM support but lacks fixture proof for a
+hypothetical slot-mutating callback. Source forms remain hypotheses.
+
+First child sweep terminated during verification of
+state_all_childCount_c_childPtr with "No comparable functions found" when A:
+had only 69632 bytes free. Its finally block restored the source. That failed
+measurement was not accepted. Freed space by deleting only 408 untracked target
+objects under owned _work/normalcenter-full/target and normalinput-full/target,
+after checking each SHA256 against its retained canonical typedpair-full/target
+counterpart. No source, report, base object, main checkout file or baseline/
+accepted validation evidence was removed. Manifest records each path, checksum,
+size and retained replacement. Then reran the entire eighteen-form sweep:
+all compile/focused verify calls exited zero, complete ledger written. Current
+forty rows independently recomputed from target/base instructions with the
+unchanged matcher. No new native/full-corpus run claimed for rejected forms.
+
+Code/fixtures restored to ecc30f25. Read-only accepted full/native binding audit
+passes: 204 TUs/4619 comparisons/zero skipped, 202 unaffected objects, actual
+linked 2079/byte 959 exact-pair sets equal baseline with no lost/gained pairs,
+canonical flags and outside-body/signature boundaries unchanged. Accepted
+means **98.40% /98.41%**; both >=99.0 gates unmet, goal active. No header/helper/
+ABI, compiler/flag/matcher, push, PR or merge change. Main checkout untouched.
+
+Evidence: `_work/read_index_reload_extrema_identities.json`,
+`_work/read_index_reload_child_forms_identities.json`, forty focused reports/
+source snapshots/objects, `_work/duplicate_target_cleanup_20261006.json` and
+rechecked typedpair validation audit. Older duplicate target paths in the
+cleanup manifest now resolve through their explicitly recorded retained copies.
+
+
+## Continuation: accumulator initialization, indexed owner and tangent counters
+
+Thirty-seven focused Read measurements start from 71f29f4a. Sixteen test five
+accumulator count/zero forms with both accepted and fresh indexed owner, five
+accumulation-pointer forms with fresh indexed owner, and reload-only control.
+Fresh owner m=*slot is loaded after successful indexCount read, before index
+allocation. Its timing has primary ARM support but no fixture proof for a
+hypothetical slot-mutating callback; this limitation still applies.
+
+Count scheduling swaps independent triCount and vcount loads. Zero forms use
+chained assignments, a local entry pointer, per-vertex memset of exactly three
+floats, or a flat component loop. Float positive zero is all-zero bits on the
+fixed ARM/native targets. All zero forms visit exactly 3*vcount components,
+including zero components when vcount=0. The original accumulator allocation,
+triangle updates and matching cleanup remain. Pointer forms directly name
+original Vector accumulation targets or the input reference without changing
+the original sequential calls or triangle arithmetic.
+
+The per-vertex memset form ties source 98.5 while reducing Read from 874 to
+873 instructions. Thirteen subsequent forms pair that zero form with fresh
+indexed owner and six final-loop temporary forms/six triangle product forms.
+Only source temporary lifetimes/views change: dot-product, scaling, subtraction,
+normalization and cross-product order/operand direction stay unchanged. All
+triangle components still multiply numerator by reciprocal; no precision
+change or arithmetic reassociation is introduced. Then eight forms pair the
+same zero/reload form with triangle-counter widths and optional final ushort
+counter, including control. Triangle count <=65535/3 bounds signed short to
+21845; final ushort reaches vertexCount <=65535 and exits without overflow.
+These declarations are hypotheses, not recovered original source.
+
+Accumulator zero / pointer:
+
+| Form | Source / strict | Instructions | Calls | Accepted Core | Reload-only Core |
+|---|---|---:|---:|---|---|
+| reload_control | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| zero_count_after_triangles_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| zero_count_after_triangles_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| zero_chained_zero_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| zero_chained_zero_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| zero_pointer_zero_accepted_owner | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| zero_pointer_zero_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| zero_vertex_memset_accepted_owner | 98.5 / 57.4 | 873 | 100.0 | no | no |
+| zero_vertex_memset_fresh_owner | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| zero_component_loop_accepted_owner | 97.5 / 57.8 | 866 | 98.2 | no | no |
+| zero_component_loop_fresh_owner | 97.6 / 58.2 | 868 | 98.2 | no | no |
+| pointer_direct_expressions_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| pointer_vector_pointer_reuse_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| pointer_sequential_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| pointer_before_calls_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+| pointer_named_input_reference_fresh_owner | 98.5 / 57.8 | 874 | 100.0 | no | yes |
+
+Vertex memset / tangent lifetimes:
+
+| Form | Source / strict | Instructions | Calls | Accepted Core | Reload-only Core |
+|---|---|---:|---:|---|---|
+| reload_control | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| final_inline_dot | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| final_inline_product | 97.3 / 59.1 | 870 | 98.2 | no | no |
+| final_inline_normalize_argument | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| final_inline_all | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| final_const_temporaries | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| final_vector_tangent_input | 98.5 / 58.1 | 875 | 100.0 | no | no |
+| product_compound_before_stores | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| product_named_products_before_stores | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| product_compound_at_stores | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| product_vector_product_members | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| product_named_products_vector | 98.5 / 58.0 | 873 | 100.0 | no | no |
+| product_products_yxz_record | 98.5 / 58.0 | 873 | 100.0 | no | no |
+
+Vertex memset / counters:
+
+| Form | Source / strict | Instructions | Calls | Accepted Core | Reload-only Core |
+|---|---|---:|---:|---|---|
+| index_reload_only | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| triangle_short | 98.1 / 53.9 | 875 | 100.0 | no | no |
+| triangle_short_final_short | 98.1 / 53.9 | 875 | 100.0 | no | no |
+| triangle_unsigned_short | 98.4 / 56.2 | 871 | 100.0 | no | no |
+| triangle_unsigned_short_final_short | 98.4 / 56.2 | 871 | 100.0 | no | no |
+| triangle_int | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| triangle_int_final_short | 98.5 / 57.8 | 873 | 100.0 | no | no |
+| final_short | 98.5 / 57.8 | 873 | 100.0 | no | no |
+
+The first series has three exact accepted-Core forms and nine exact reload-only
+forms; per-vertex memset ties source, while component-loop zeroing regresses to
+97.5/97.6 and call-count match 98.2. No artificial call/store was added to the
+source. In the second series control, inline-dot, const temporaries and four
+product forms equal the entire memset/reload control Core object. Inline
+product regresses to 97.3/calls98.2. Vector tangent input improves its earlier
+reload-only trial from 98.4 to 98.5, but only ties accepted source and is not
+retained. Two named product-record forms are byte-identical. In the third
+series signed short triangle counters regress to 98.1, ushort to 98.4; signed
+int/final ushort/control tie 98.5 and equal memset/reload control. No gate gain.
+
+All thirty-seven compile/focused verify calls completed successfully. Source
+and call metrics recomputed directly from original/base instruction arrays,
+object hashes checked. The sixteen/thirteen ledgers and source restoration
+were revalidated after interruption before the eight-counter series. To avoid
+new full-source snapshot floods, thirteen/eight series retain their deterministic
+source generators, object hashes and reports; source snapshots are saved only
+for a gate candidate, and there was none. Their generators reconstruct each
+form from the accepted ecc30f25 source, not from later mutated input.
+
+Before starting the sixteen-form series, removed 408 untracked duplicate target
+objects under owned angle-full/target and trinumer-full/target only after each
+matched SHA256 of retained typedpair-full/target replacement. No source, base
+object, report, baseline/current accepted evidence or main checkout file was
+removed. The manifest records all deleted paths and retained copies, with
+replacement hashes rechecked. No disk failure in these thirty-seven trials.
+
+All forms rejected/restored. Code and fixtures remain ecc30f25-equivalent;
+outside-body/signature boundaries and canonical arguments unchanged. Read-only
+binding audit of existing accepted full/native evidence passes: 204 TUs, 4619
+comparisons, zero skipped, 202 unaffected objects, actual linked 2079/byte 959
+exact-pair sets equal baseline with no lost/gained pairs. No fresh native/full
+run claimed for rejected forms. Accepted means **98.40% /98.41%**; both >=99.0
+gates unmet, goal active. No header/helper/ABI, matcher/compiler/flag, push,
+PR or merge change. No general compiler ceiling established.
+
+Evidence: `_work/read_index_reload_accum_forms_identities.json`,
+`_work/read_index_reload_memzero_tangent_lifetime_identities.json`,
+`_work/read_index_reload_memzero_counter_identities.json`, focused reports/
+objects/source generators and `_work/duplicate_target_cleanup_accum_20261006.json`.
+
+
+## Continuation: preloaded V5 channel with count, frame and parser state
+
+Nineteen focused Enhanced measurements (including two identical controls)
+start from 87b826c2. Control initializes V5 channel to 0x400, leaves case 0
+unchanged, keeps all other nonzero masks and exact rotation math, and assigns
+zero in default; 4/5 still insert keys with mask zero. This is the previously
+tied 98.3/67.8/639 form, not a retained implementation or recovered declaration.
+All dispatch paths initialize channel. Signed V5 counts and /100 then exact tau
+multiply then /360 stay unchanged. No invented lookup table or effect is added.
+
+Twelve measurements combine this preload with three shared-prefix-count forms,
+six frame-time captures, V5 count moved outside its channel loop, and shared
+prefix/V5 outer count combination. Vector/axis/all mandatory counts reuse the
+existing optionalCount storage only across nonoverlapping stream sections.
+Every count is read before use; sizes, signedness, bounds, failure routes and
+read order remain. Frame conversion is captured only after its last successful
+read, before the existing dispatch, with the same key/value expression and
+integer conversion. V5 channel count remains signed short outside the loop;
+its declaration changes lifetime, not read timing or zero initialization.
+
+Seven measurements pair preload with six ParseState forms plus control. Local
+records hold self/anim, file/format, file/anim, self/file or all four live locals
+in original/file-first member order. No unused field, fabricated padding or
+new initialization is introduced. Construction and stream calls stay in their
+original order. This local grouping tests register/stack effects, not an ABI
+change. The control and forms are source hypotheses, not recovered C++.
+
+Count/frame lifetime:
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals preload-only |
+|---|---|---:|---:|---|
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| count_vector_counts | 97.4 / 63.4 | 639 | 100.0 | no |
+| count_axis_counts | 97.7 / 50.9 | 644 | 100.0 | no |
+| count_all_prefix_counts | 97.8 / 66.5 | 633 | 100.0 | no |
+| frame_vectors | 98.3 / 67.8 | 639 | 100.0 | yes |
+| frame_axes | 97.5 / 64.7 | 641 | 100.0 | no |
+| frame_optional | 98.3 / 67.8 | 639 | 100.0 | yes |
+| frame_v5 | 98.1 / 66.3 | 646 | 100.0 | no |
+| frame_optional_v5 | 98.1 / 66.3 | 646 | 100.0 | no |
+| frame_all | 97.3 / 63.4 | 648 | 100.0 | no |
+| v5_count_outer | 98.0 / 67.6 | 639 | 100.0 | no |
+| count_all_and_v5_outer | 97.5 / 66.4 | 633 | 100.0 | no |
+
+Parser local records:
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals preload-only |
+|---|---|---:|---:|---|
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| parser_self_anim | 98.3 / 67.8 | 639 | 100.0 | yes |
+| parser_file_format | 98.3 / 67.8 | 639 | 100.0 | yes |
+| parser_file_anim | 98.3 / 67.8 | 639 | 100.0 | yes |
+| parser_self_file | 98.3 / 67.8 | 639 | 100.0 | yes |
+| parser_all_source_order | 98.3 / 67.8 | 639 | 100.0 | yes |
+| parser_all_file_first | 98.3 / 67.8 | 639 | 100.0 | yes |
+
+Three count/frame forms equal preload-only Mesh: control, vector frame capture
+and optional frame capture. Count forms regress to 97.4/97.7/97.8; V5 count
+outer scope gives 98.0, all shared counts plus V5 scope 97.5. Remaining frame
+forms regress to 97.3-98.1. All seven parser-state/control whole Mesh objects
+are byte-identical to preload-only:
+0bca14f7cadf2178ab305d3fcc9a0f21d0241a68e43f35527193829f0c6a7a14.
+All call-count matches stay 100.0. No gain; no form retained.
+
+Nineteen compile/focused verify calls exit zero; per-body source/call metrics
+independently recomputed directly from target/base instructions and full object
+hashes checked. Each source snapshot retained. Source/fixtures restored to
+accepted ecc30f25. Read-only binding recheck of existing accepted full/native
+evidence passes: 204 TUs/4619 comparisons/zero skipped, 202 unaffected objects,
+actual linked 2079/byte 959 pair sets equal baseline with no lost/gained pairs,
+canonical flags and outside-body/signature boundaries unchanged. No new native/
+full-corpus run claimed for rejected forms. Accepted means **98.40% /98.41%**,
+both >=99.0 gates unmet; goal active. No helper/header/ABI, matcher/compiler/flag,
+push, PR or merge change. No general compiler ceiling established.
+
+Evidence: `_work/enh_preload_count_frame_identities.json`,
+`_work/enh_preload_parser_state_identities.json`, nineteen focused reports/
+source snapshots/objects and rechecked typedpair validation audit.
+
+
+## Continuation: V5 preload with axis count records and key counters
+
+Twenty-two focused Enhanced measurements start from 3e8aafc6. All combine the
+previously tied V5 channel preload (0x400, case 0 break, default mask zero)
+with local count/axis changes, including control. The original masks, signed
+V5 count and exact /100 then tau multiply then /360 remain. Cases 4/5 still
+insert with zero mask. This initializer is a source hypothesis, not recovered
+C++; strict-only improvement was not accepted as the requested source gate.
+
+Eight forms group byte axis and ushort count into a two-member local AxisState,
+with axis/count or count/axis member order, in one of three mandatory sections
+or all three. The record contains only live original locals, no unused fields
+or manufactured padding. Axis remains 0..2; count is still read before each
+axis loop. Four forms share one ushort count between mutually exclusive
+vector/axis modes within a scoped mandatory section, individually or all three.
+The shared local is uninitialized until its original read; no read/count/failure
+routing changes. These lifetime/layout alternatives are source hypotheses.
+
+Nine forms change one mandatory key-loop counter: vector counter int or ushort,
+axis key counter int, for position/scale/rotation independently. Ushort counter
+is bounded by ushort count <=65535; it reaches count then exits without
+wraparound. Signed int fits all counts. V5 signed loops are unaffected. All
+stream calls, key conversion, timer updates, math and insertion order remain.
+No helper, header, ABI, flag or verifier change is introduced.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Whole Mesh equals preload-only |
+|---|---|---:|---:|---|
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axis_record_axis_count_0 | 97.2 / 52.8 | 645 | 100.0 | no |
+| axis_record_axis_count_1 | 97.2 / 41.4 | 645 | 100.0 | no |
+| axis_record_axis_count_2 | 97.3 / 22.3 | 645 | 100.0 | no |
+| axis_record_axis_count_all | 94.6 / 44.6 | 656 | 100.0 | no |
+| axis_record_count_axis_0 | 97.3 / 56.7 | 642 | 100.0 | no |
+| axis_record_count_axis_1 | 97.3 / 44.3 | 642 | 100.0 | no |
+| axis_record_count_axis_2 | 97.5 / 23.9 | 643 | 100.0 | no |
+| axis_record_count_axis_all | 95.0 / 40.3 | 648 | 100.0 | no |
+| group_count_position_group | 98.3 / 54.0 | 638 | 100.0 | no |
+| group_count_scale_group | 97.8 / 52.2 | 640 | 100.0 | no |
+| group_count_rotation_group | 98.0 / 67.2 | 647 | 100.0 | no |
+| group_count_all_scoped_groups | 98.0 / 52.4 | 635 | 100.0 | no |
+| counter_vector_position_int | 98.3 / 67.8 | 639 | 100.0 | yes |
+| counter_vector_scale_int | 98.3 / 67.8 | 639 | 100.0 | yes |
+| counter_vector_rotation_int | 98.3 / 67.8 | 639 | 100.0 | yes |
+| counter_vector_position_unsigned_short | 98.2 / 67.6 | 640 | 100.0 | no |
+| counter_vector_scale_unsigned_short | 98.2 / 54.5 | 640 | 100.0 | no |
+| counter_vector_rotation_unsigned_short | 98.2 / 67.6 | 640 | 100.0 | no |
+| counter_axis_position_int | 98.3 / 67.8 | 639 | 100.0 | yes |
+| counter_axis_scale_int | 98.3 / 67.8 | 639 | 100.0 | yes |
+| counter_axis_rotation_int | 98.3 / 67.8 | 639 | 100.0 | yes |
+
+All eight record forms regress (94.6-97.5). Shared position count ties 98.3
+with a different 638-instruction object; scale/rotation/all regress. Six signed
+int key-loop forms and control equal the entire preload-only Mesh object:
+0bca14f7cadf2178ab305d3fcc9a0f21d0241a68e43f35527193829f0c6a7a14.
+Three ushort vector counters regress to 98.2. Calls stay 100.0 for all forms.
+No gain; none retained. No general compiler ceiling established.
+
+All twenty-two compile/focused verify calls exit zero. Source/call metrics
+independently recomputed directly from target/base instructions, whole object
+hashes checked, source snapshots retained. Code/fixtures restored to ecc30f25.
+Read-only binding recheck of existing accepted full/native evidence passes:
+204 TUs/4619 comparisons/zero skipped, 202 unaffected whole objects, actual
+linked 2079/byte 959 exact-pair sets equal baseline with no lost/gained pairs,
+canonical arguments and outside-body/signature boundaries unchanged. No fresh
+native/full-corpus run claimed for rejected forms. Accepted means
+**98.40% /98.41%**; both >=99.0 gates unmet, goal active. No push, PR or merge.
+
+Evidence: `_work/enh_preload_axis_count_identities.json`, twenty-two focused
+reports/source snapshots/objects and rechecked typedpair validation audit.
+
+
+## Continuation: Create child parse records with narrow read status
+
+Seventeen focused Create measurements start from 2d707930: accepted control
+and eight local child ParseState forms crossed with unsigned short/unsigned
+char representation of the child MeshReadData result. Parse records group
+handle/childPtr, childPtr/handle, subCount/childPtr, childPtr/subCount,
+handle/subCount/childPtr, childPtr/subCount/handle, or all four live parsing
+locals with handle-first or child-first order. No unused field, fabricated
+padding or new initialization is added. Only original handle zeroing occurs;
+magic/subCount/childPtr remain read/assignment-owned. File read order and child
+allocation, merge, append, failure cleanup and success paths stay unchanged.
+
+The child call result is explicitly converted once and compared against the
+same type's converted -1. This is equivalent for the actual accepted Read,
+whose parsed function body has exactly return expressions -1 and 1. That
+range was asserted before constructing trials. The enhanced-single ==1 and
+plain-single !=-1 predicates are untouched. No additional reader invocation
+occurs. Narrow comparisons are not claimed equivalent for an arbitrary mocked
+reader returning other integers, nor recovered original declarations. This is
+a scoped source/codegen hypothesis, not a new error-handling contract or ABI.
+
+| Trial | Create source / strict | Instructions | Calls | Accepted whole Core |
+|---|---|---:|---:|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes |
+| handle_child_unsigned_short | 97.6 / 58.9 | 293 | 100.0 | no |
+| handle_child_unsigned_char | 97.8 / 59.0 | 292 | 100.0 | no |
+| child_handle_unsigned_short | 97.4 / 56.6 | 296 | 100.0 | no |
+| child_handle_unsigned_char | 97.6 / 56.7 | 295 | 100.0 | no |
+| count_child_unsigned_short | 97.5 / 61.3 | 293 | 100.0 | no |
+| count_child_unsigned_char | 97.7 / 61.4 | 292 | 100.0 | no |
+| child_count_unsigned_short | 97.9 / 52.5 | 292 | 100.0 | no |
+| child_count_unsigned_char | 98.0 / 52.6 | 291 | 100.0 | no |
+| handle_count_child_unsigned_short | 97.4 / 54.4 | 294 | 100.0 | no |
+| handle_count_child_unsigned_char | 97.5 / 54.5 | 293 | 100.0 | no |
+| child_count_handle_unsigned_short | 97.4 / 56.5 | 297 | 100.0 | no |
+| child_count_handle_unsigned_char | 97.6 / 56.6 | 296 | 100.0 | no |
+| all_handle_first_unsigned_short | 97.4 / 48.9 | 298 | 100.0 | no |
+| all_handle_first_unsigned_char | 97.5 / 49.0 | 297 | 100.0 | no |
+| all_child_first_unsigned_short | 97.3 / 56.6 | 296 | 100.0 | no |
+| all_child_first_unsigned_char | 97.5 / 56.7 | 295 | 100.0 | no |
+
+All sixteen record/narrow-status interactions regress to 97.3-98.0 with calls
+100.0. Accepted control is exact accepted Core. No gain; none retained. All
+seventeen compile/focused verify calls exit zero; source/call metrics recomputed
+directly from target/base instructions and full object hashes checked. Source
+generator retains deterministic forms; full-source snapshots are written only
+for a better candidate, and none occurred. No new native/full-corpus run is
+claimed for rejected forms, nor runtime proof for hypothetical callback behavior.
+
+Source/fixtures restored to ecc30f25. Read-only binding recheck of accepted
+full/native evidence passes: 204 TUs/4619 comparisons/zero skipped, 202
+unaffected objects, actual linked 2079/byte 959 exact-pair sets equal baseline
+with no lost/gained pairs, canonical arguments and outside-body/signature
+boundaries unchanged. Accepted means **98.40% /98.41%**, both >=99.0 gates unmet,
+goal active. No header/helper/ABI, flag/matcher/compiler, push, PR or merge
+change; no general compiler ceiling established. Main checkout untouched.
+
+Evidence: `_work/create_child_parse_status_identities.json`, seventeen focused
+reports/objects, `_work/create_child_parse_status_sweep.py` and rechecked
+typedpair validation audit.
+
+
+## Continuation: Create call records with shared int result and result reuse
+
+Twenty-two focused Create measurements start from 08ac4a8d. Fifteen are an
+accepted control plus seven local CallState forms crossed with per-call or
+function-scope shared int readStatus. Seven follow-up measurements reuse the
+existing result instead of adding readStatus. CallState holds out/material,
+engine/material, engine/out, all arguments, reversed arguments, handle/out or
+out/handle. It contains only the original live values; handle is zeroed once,
+all other members are copied scalar arguments. No unused field or manufactured
+padding, helper/header/ABI or file/call order change. These source-state
+arrangements are hypotheses, not recovered declarations.
+
+All three MeshReadData calls occur once at their original positions. Result
+storage remains int, preserving its entire range; child ==-1,
+enhanced-single ==1 and plain-single !=-1 tests are unchanged. Per-call locals
+live in their existing child/enhanced/plain scopes. Shared readStatus is not
+pre-zeroed and each comparison immediately follows assignment. Reuse forms
+remove that declaration and assign the original result instead. Invalid
+engine/path paths perform no read and still return the original initial -4;
+valid paths retain explicit -1 or 1 returns, so last-reader result cannot leak
+into the function's return value. No reliance on narrowing or a restricted
+mocked-reader result domain is needed here.
+
+CallState/int result:
+
+| Trial | Create source / strict | Instructions | Calls | Accepted whole Core |
+|---|---|---:|---:|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes |
+| out_material_per_call | 98.4 / 60.7 | 289 | 100.0 | yes |
+| out_material_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| engine_material_per_call | 98.4 / 60.7 | 289 | 100.0 | yes |
+| engine_material_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| engine_output_per_call | 98.4 / 60.7 | 289 | 100.0 | yes |
+| engine_output_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| all_arguments_per_call | 98.4 / 60.7 | 289 | 100.0 | yes |
+| all_arguments_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| arguments_reverse_per_call | 98.4 / 60.7 | 289 | 100.0 | yes |
+| arguments_reverse_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| handle_output_per_call | 96.9 / 61.7 | 296 | 100.0 | no |
+| handle_output_shared | 96.9 / 62.0 | 296 | 100.0 | no |
+| output_handle_per_call | 96.6 / 58.5 | 297 | 100.0 | no |
+| output_handle_shared | 96.6 / 58.8 | 297 | 100.0 | no |
+
+Original result reuse:
+
+| Trial | Create source / strict | Instructions | Calls | Accepted whole Core |
+|---|---|---:|---:|---|
+| out_material_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| engine_material_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| engine_output_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| all_arguments_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| arguments_reverse_shared | 98.4 / 61.0 | 289 | 100.0 | no |
+| handle_output_shared | 96.9 / 62.0 | 296 | 100.0 | no |
+| output_handle_shared | 96.6 / 58.8 | 297 | 100.0 | no |
+
+Five per-call argument-only forms equal the entire accepted Core, as does
+control. Corresponding five shared-result forms equal each other:
+b54382dab09a73fe6de9038bf9083513dc24316a1aaaf0b6773d77bc8e134c05;
+strict improves 60.7 to 61.0 but required source stays 98.4. Handle/out forms
+regress to 96.9/96.6. All seven result-reuse objects equal their corresponding
+shared-readStatus objects byte-for-byte. Calls stay 100.0. No gate gain; none
+retained. No compiler ceiling inferred.
+
+All twenty-two compile/focused verify calls exit zero; source/call metrics
+independently recomputed directly from target/base instructions and whole
+object hashes checked. Deterministic source generators retained, full-source
+snapshots saved only for a better candidate, and none occurred. Source/fixtures
+restored to ecc30f25. Read-only binding recheck of accepted full/native evidence
+passes: 204 TUs/4619 comparisons/zero skipped, 202 unaffected objects, actual
+linked 2079/byte 959 exact-pair sets equal baseline with no lost/gained pairs,
+canonical arguments and outside-body/signature boundaries unchanged. No fresh
+native/full-corpus run claimed for rejected forms. Accepted means
+**98.40% /98.41%**; both >=99.0 gates unmet, goal active. No matcher/compiler/
+flag, push, PR or merge change. Main checkout untouched.
+
+Evidence: `_work/create_call_state_int_status_identities.json`,
+`_work/create_call_state_result_reuse_identities.json`, focused reports/objects,
+source generators and rechecked typedpair validation audit.
+
+
+## Continuation: shared Create result with counter widths and format masks
+
+Thirteen focused Create measurements start from d0e06b19. Controls are accepted
+source and the shared-result form without CallState. Seven counter/format type
+variants and four cached-mask variants combine with shared result. Each
+MeshReadData result is assigned once to the existing int result and tested
+with the unchanged child ==-1, enhanced-single ==1 or plain-single !=-1
+predicate. Full int result range is preserved. Invalid engine/path still has
+initial result -4 and performs no read; valid paths keep explicit -1/1 returns.
+No new variable, call, zero initialization or side effect is added for status.
+
+Type forms use signed int/unsigned long fmt, signed int/unsigned long child
+counter, or unsigned char/unsigned short/unsigned int signature index. Format
+stays in 0..31, child counter <=ushort subCount, signature index exits at 7,
+so no overflow or wraparound. Only these original local declarations change;
+wire widths, signature arrays/comparison order, stream reads, bounds and child
+behavior remain. Omitted the old default-null child pointer form to avoid
+unneeded initialization that is overwritten before use.
+
+Mask forms capture headerWord or enhanced booleans, both booleans, or both
+unsigned bit masks inside if(fmt), before the original timer reset. Masks use
+exact original &0x1b/&0x1a expressions, replacing corresponding predicates.
+fmt is not changed thereafter; timer store cannot change this local, and
+signature/read/failure routing stays unchanged. These declarations/captures
+are source hypotheses, not recovered original C++. No helper/header/ABI,
+assembly, fixed register, padding, compiler option or verifier change.
+
+| Trial | Create source / strict | Instructions | Calls | Accepted Core | Shared-result Core |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| shared_result_control | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| counter_signed_format | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| counter_long_format | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| counter_signed_child_index | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| counter_long_child_index | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| counter_byte_signature_index | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| counter_short_signature_index | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| counter_unsigned_signature_index | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| mask_header_bool | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| mask_enhanced_bool | 98.2 / 60.7 | 289 | 100.0 | no | no |
+| mask_both_bools | 98.2 / 60.7 | 289 | 100.0 | no | no |
+| mask_both_masks | 98.2 / 60.7 | 289 | 100.0 | no | no |
+
+Accepted control, byte/ushort signature-index forms and header bool equal the
+entire accepted Core. Shared-result control and five remaining type forms
+equal the entire shared-result Core b54382dab09a73fe6de9038bf9083513dc24316a1aaaf0b6773d77bc8e134c05;
+strict stays 61.0 but source remains 98.4. Enhanced bool/both bools/both masks
+regress to 98.2 and equal each other byte-for-byte. All calls 100.0 and Create
+289 instructions. No gate gain; no form retained. No compiler ceiling inferred.
+
+All thirteen compile/focused verify calls exit zero. Source/call metrics
+independently recomputed directly from target/base instructions, full object
+hashes checked. Deterministic generator retained; full-source snapshots saved
+only for a better candidate, and none occurred. Source/fixtures restored to
+ecc30f25. Read-only accepted full/native binding recheck passes: 204 TUs, 4619
+comparisons, zero skipped, 202 unaffected whole objects, actual linked 2079/
+byte 959 exact-pair sets equal baseline with no lost/gained pairs, canonical
+arguments and outside-body/signature boundaries unchanged. No new native/full
+run claimed for rejected forms. Accepted means **98.40% /98.41%**; both >=99.0
+gates unmet, goal active. No push, PR or merge; main checkout untouched.
+
+Evidence: `_work/create_shared_result_counter_mask_identities.json`, thirteen
+focused reports/objects, source generator and rechecked typedpair validation audit.
+
+
+## Continuation: Enhanced center views with V5 channel preload
+
+Twenty-four focused Enhanced measurements start from ba12d32c: eleven center/
+bounds-read forms with accepted and preloaded V5 dispatch, plus both controls.
+The existing Y=oldZ, Z=-oldY remap occurs after four successful original
+bounds reads. No X or radius store, floating operation beyond the existing
+negation, decode precision or timer/key change is introduced. New scalar,
+two-member record and two-element array views capture Y/Z in either order,
+then write Y followed by Z. Each record/array member is used; no unused field
+or manufactured padding is included. Independent field loads occur without
+intervening calls. These local declarations are source hypotheses.
+
+Earlier word-copy forms memcpy the original Z value or both incoming values
+at float width, retaining negation and two output stores. Negative-before-store
+form negates the saved Y earlier; Z-store-first captures both values then swaps
+the two output-store positions. No call intervenes between those stores. Shared
+read-failure guard uses left-to-right short-circuit OR for the four original
+Read(...)=0 predicates, preserving sizes/order and stopping at the same failed
+read. Coordinate remap still waits for all four successes.
+
+Preloaded forms use the already measured channel=0x400/case0-break/default-zero
+V5 switch. Masks 4/5 still insert zero-channel keys; all other masks, signed
+count and exact /100 then tau multiply then /360 math remain. No helper/header/
+ABI, compiler/flag or verifier change. No recovered source declaration claimed.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Accepted Mesh | Preload-only Mesh |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| z_word_copy_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| z_word_copy_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| both_word_copy_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| both_word_copy_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| negative_before_y_store_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| negative_before_y_store_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| z_store_first_accepted | 98.3 / 66.9 | 641 | 100.0 | no | no |
+| z_store_first_preload | 98.3 / 67.8 | 639 | 100.0 | no | no |
+| shared_read_failure_guard_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| shared_read_failure_guard_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| scalar_yz_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| scalar_yz_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| pair_yz_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| pair_yz_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| array_yz_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| array_yz_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| scalar_zy_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| scalar_zy_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| pair_zy_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| pair_zy_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| array_zy_accepted | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| array_zy_preload | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+
+All twenty-four source values tie 98.3 and calls stay 100.0. Eleven equal the
+entire accepted Mesh and eleven the entire preload-only Mesh. Only two
+Z-store-first objects differ from their corresponding controls, retaining
+same metrics/instruction counts. No gate gain; none retained. No general
+compiler ceiling inferred.
+
+All twenty-four compile/focused verify calls exit zero. Source/call metrics
+independently recomputed directly from target/base instruction arrays and full
+object hashes checked. Every source snapshot retained. Code/fixtures restored
+to ecc30f25. Read-only binding recheck of existing accepted full/native evidence
+passes: 204 TUs/4619 comparisons/zero skipped, 202 unaffected objects, actual
+linked 2079/byte 959 exact-pair sets equal baseline with no lost/gained pairs,
+canonical arguments and outside-body/signature boundaries unchanged. No fresh
+native/full-corpus run claimed for rejected forms. Accepted means
+**98.40% /98.41%**; both >=99.0 gates unmet, goal active. No push, PR or merge;
+main checkout untouched.
+
+Evidence: `_work/enh_preload_bounds_views_identities.json`, twenty-four focused
+reports/source snapshots/objects and rechecked typedpair validation audit.
+
+
+## Continuation: V5 preload with completion receivers, count capture and cleanup layout
+
+Fourteen focused measurements start from 56579c34: ten completion receiver/
+count forms including control, then four completion-layout forms including
+control. All use the previously measured V5 channel=0x400/case0-break/default-
+zero dispatch. Cases 4/5 still insert zero-channel keys; all other masks,
+signed counts, key math and bounds conversion remain unchanged.
+
+Original ARM loads the key-frame size at 0x11c and compares it signed against
+one. Transform.h records and asserts the same offset. Original fp here is
+the animation pointer; the completion instruction sequence stores it into
+the mesh and uses it as receiver. Register differences do not establish an
+ABI/layout defect. These are source-form hypotheses, not recovered declarations.
+
+Six receiver forms use the attached field for start/range access, a named
+attached pointer, an explicit range-start local, or their combinations. Three
+count forms capture the signed size in int, const int or bool at completion.
+The first attempted count declaration was in function scope and failed to
+compile because earlier goto fail bypassed its initialization. The generator
+now wraps completion in a nested scope. The entire ten-form sweep was rerun
+successfully, including the previously completed receiver/control forms.
+
+The second sweep puts failure cleanup before a finish label, or shares the
+empty-success and failure release paths with a result local and two equivalent
+label orders. No destructor/delete is added to any executed path; positive
+key counts still attach animation, empty success returns 1 and read failure
+returns -1. Result initialization precedes every failure jump. No new helper,
+header, ABI, matcher, flag, denominator, dummy effect or padding change.
+
+| Family / trial | Enhanced source / strict | Instructions | Calls | Preload-only Mesh |
+|---|---|---:|---:|---|
+| finishstate / preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / receiver_field_start_receiver | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / receiver_field_range_receiver | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / receiver_both_field_receivers | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / receiver_named_attached_receiver | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / receiver_explicit_range_start | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / receiver_field_receiver_explicit_start | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / count_local | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / count_const | 98.3 / 67.8 | 639 | 100.0 | yes |
+| finishstate / count_bool | 98.3 / 67.8 | 639 | 100.0 | yes |
+| completionlayout / preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| completionlayout / failure_before_finish | 98.3 / 67.8 | 639 | 100.0 | no |
+| completionlayout / common_release_result | 97.2 / 68.9 | 641 | 96.2 | no |
+| completionlayout / common_release_fallthrough | 97.2 / 68.9 | 641 | 96.2 | no |
+
+All ten receiver/count forms produce the entire preload-only object byte for
+byte. Failure-before-finish changes the object but ties source 98.3. The two
+shared-release forms produce the same object and regress source to 97.2;
+call-count shape is 96.2 despite preserved path-level cleanup behavior. Their
+strict-order increase is not either goal gate. None retained; no general
+compiler ceiling inferred.
+
+All fourteen final compile/focused verifier calls exited zero. Source/call
+metrics independently recomputed from instruction arrays; object hashes,
+instruction counts and source snapshot presence checked. Code/fixtures match
+ecc30f25 after restoration. Read-only binding audit of existing accepted
+full/native evidence passes: 204 TUs, 4619 comparisons, zero skipped, 202
+unaffected objects, actual linked 2079 / byte 959 pair sets equal baseline,
+no lost or gained pairs; canonical arguments and body/signature boundaries
+unchanged. This is no fresh native/full-corpus run for rejected variants and
+does not prove whole-native-game runtime/device behavior.
+
+Accepted means remain **98.40% / 98.41%**. Both >=99.0 gates unmet; goal active.
+Main checkout untouched; no push, PR or merge.
+
+Evidence: `_work/enh_preload_finish_state_identities.json`,
+`_work/enh_preload_completion_layout_identities.json`, fourteen focused reports,
+objects/source snapshots, corrected generators and typedpair validation audit.
+
+
+## Continuation: V5 preload with entry/flag lifetimes, mixed axes and presence flow
+
+Twenty-five focused measurements start from 81c18185. First ten combine V5
+preloaded dispatch with entry/section-flag lifetime forms and control. Second
+fifteen combine it with mixed signed/byte axis counters, optional-section
+presence/format/type flow forms and control. These interactions had not been
+measured by their earlier standalone sweeps. No recovered declarations claimed.
+
+Entry forms move self, format or both after the same Transform allocation,
+or use signed char for format. Only masks 0x18/0x10 inspect format, so signed
+promotion does not change either predicate. Section-flag forms capture these
+two masks as bool or unsigned int at entry or inside the optional block;
+another captures bools just after allocation. Flags are by value and unchanged.
+No read, allocation, cleanup or insertion is moved across an executed call.
+
+Mixed-axis forms replace one or two of the three unsigned-char 0..2 loops
+with int 0..2 loops. Bounds, iteration order and channel/key math remain.
+Presence-flow forms express absent optional-count, format or type guards as
+early jumps to their original section exit, or name the nonzero predicate,
+or use unsigned-count >0. They retain read order and do not bypass required
+failure cleanup, initialization or successful animation attachment.
+
+Every form retains preloaded channel=0x400/case0-break/default-zero, including
+zero-channel insertion for cases 4/5. No helper/header/ABI change, extra effect,
+padding, compiler/flag or verifier change, nor denominator change.
+
+| Family / trial | Enhanced source / strict | Instructions | Calls | Preload-only Mesh |
+|---|---|---:|---:|---|
+| entrylife / preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| entrylife / entry_format_after_allocation | 98.3 / 67.8 | 639 | 100.0 | yes |
+| entrylife / entry_self_after_allocation | 98.3 / 67.8 | 639 | 100.0 | yes |
+| entrylife / entry_both_after_allocation | 98.3 / 67.8 | 639 | 100.0 | yes |
+| entrylife / entry_signed_format_current | 98.3 / 67.8 | 639 | 100.0 | yes |
+| entrylife / flags_bool_entry | 98.2 / 67.9 | 639 | 100.0 | no |
+| entrylife / flags_bool_optional | 98.3 / 67.9 | 639 | 100.0 | no |
+| entrylife / flags_mask_entry | 98.2 / 67.9 | 639 | 100.0 | no |
+| entrylife / flags_mask_optional | 98.3 / 67.9 | 639 | 100.0 | no |
+| entrylife / flags_bool_after_allocation | 98.2 / 67.9 | 639 | 100.0 | no |
+| axpresence / preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / mixed_axis_signed_axes_0 | 98.2 / 67.7 | 638 | 100.0 | no |
+| axpresence / mixed_axis_signed_axes_1 | 98.2 / 67.7 | 638 | 100.0 | no |
+| axpresence / mixed_axis_signed_axes_2 | 98.2 / 67.7 | 638 | 100.0 | no |
+| axpresence / mixed_axis_signed_axes_0_1 | 98.1 / 67.6 | 637 | 100.0 | no |
+| axpresence / mixed_axis_signed_axes_0_2 | 98.1 / 67.6 | 637 | 100.0 | no |
+| axpresence / mixed_axis_signed_axes_1_2 | 98.1 / 67.6 | 637 | 100.0 | no |
+| axpresence / presence_flow_v5_presence_early | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / presence_flow_v5_format_early | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / presence_flow_v5_both_early | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / presence_flow_v5_named_presence | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / presence_flow_v5_positive_presence | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / presence_flow_optional_type_early | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / presence_flow_optional_format_early | 98.3 / 67.8 | 639 | 100.0 | yes |
+| axpresence / presence_flow_optional_both_early | 98.3 / 67.8 | 639 | 100.0 | yes |
+
+Fourteen entire objects equal preload-only control: five entry/control and
+nine presence/control. Three entry bool/mask captures share one object and
+regress source to 98.2; two delayed captures share another object and tie
+98.3. One signed axis regresses to 98.2, two signed axes to 98.1. No gate
+gain; none retained. No general compiler ceiling inferred.
+
+All twenty-five compile/focused verifier calls exited zero. Source/call
+metrics independently recomputed from instruction arrays, whole-object hashes
+and instruction counts checked; all source snapshots present. Restored code
+and fixtures match ecc30f25. Read-only audit rebinds existing accepted native/
+full-corpus evidence: 204 TUs, 4619 comparisons, zero skipped, 202 unaffected
+objects; actual linked 2079 / byte 959 pair sets equal baseline with no lost
+or gained pairs, canonical arguments and outside-body/signature boundaries
+unchanged. Rejected forms received no fresh native/full-corpus runtime proof.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. No
+push, PR or merge; main checkout untouched. Next investigation must address
+other residual instruction differences, since these tested lifetime/presence
+interactions add no useful gate gain.
+
+Evidence: `_work/enh_preload_entry_lifetime_identities.json`,
+`_work/enh_preload_axis_presence_identities.json`, twenty-five focused reports,
+objects/source snapshots, generators and rechecked typedpair validation audit.
+
+
+## Continuation: Read extrema with fresh index owner and per-vertex accumulator memset
+
+Twenty-two focused Read measurements start from a88f1d33: twelve extrema
+local/reference captures and nine extrema predicate/order forms, plus control.
+All combine the previously measured fresh index owner after indexCount Read
+with accumulator memset of twelve bytes per vertex. Original ARM has the
+per-vertex twelve-byte call/decrement sequence. This interaction had not been
+measured by the earlier reload-only extrema or memset+tangent-lifetime sweeps.
+No recovered local declarations claimed.
+
+Extrema forms apply to short-position, integer-position or both decode loops.
+They capture minimum alone, minimum/maximum in their original order, preload
+both, or refer to their active array elements. Ordered forms reverse operands
+of the same comparison, test maximum first, or combine both. Converted source
+values are signed short/int finite floats; min/max arrays have disjoint
+components and no intervening call. Same extrema stores and comparisons, no
+extra clamp, half-radius, center math or decode/normal precision change.
+
+Accumulator remains allocated at vcount*12; memset clears exactly three floats
+per existing vertex iteration. No manufactured call padding or extra touched
+bytes. Fresh index owner is reloaded after the original field read, as in the
+already measured standalone form. It is not a universal aliasing guarantee for
+arbitrary external callbacks that mutate slot. Native reader mocks do not
+establish such callback behavior. None of these trial changes is retained.
+
+No helper/header/ABI, compiler/flag, matcher/denominator or body-boundary change.
+
+| Trial | Read source / strict | Instructions | Calls | Memset+reload control object |
+|---|---|---:|---:|---|
+| reload_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_minimum_local_short | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_minimum_local_integer | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_minimum_local_both | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_sequential_locals_short | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_sequential_locals_integer | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_sequential_locals_both | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_both_preloaded_short | 98.5 / 57.4 | 873 | 100.0 | no |
+| locals_both_preloaded_integer | 98.5 / 57.4 | 873 | 100.0 | no |
+| locals_both_preloaded_both | 98.5 / 56.9 | 873 | 100.0 | no |
+| locals_component_references_short | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_component_references_integer | 98.5 / 57.8 | 873 | 100.0 | yes |
+| locals_component_references_both | 98.5 / 57.8 | 873 | 100.0 | yes |
+| order_reverse_operands_short | 98.5 / 57.8 | 873 | 100.0 | yes |
+| order_reverse_operands_integer | 98.5 / 57.8 | 873 | 100.0 | yes |
+| order_reverse_operands_both | 98.5 / 57.8 | 873 | 100.0 | yes |
+| order_maximum_first_short | 98.5 / 57.4 | 873 | 100.0 | no |
+| order_maximum_first_integer | 98.5 / 57.4 | 873 | 100.0 | no |
+| order_maximum_first_both | 98.5 / 56.9 | 873 | 100.0 | no |
+| order_reverse_maximum_first_short | 98.5 / 57.4 | 873 | 100.0 | no |
+| order_reverse_maximum_first_integer | 98.5 / 57.4 | 873 | 100.0 | no |
+| order_reverse_maximum_first_both | 98.5 / 56.9 | 873 | 100.0 | no |
+
+All twenty-two tie source 98.5, with 873 instructions and 100.0 call-count
+shape. Thirteen entire objects equal memset+reload control. Nine preload/max-
+first forms differ but do not raise either goal gate. Source restored; none
+retained. No general compiler ceiling inferred.
+
+Completed ledger contains all expected twenty-two rows, each appended only
+after successful compile and focused verify subprocesses with check=True.
+Source/call metrics independently recomputed from instruction arrays; object
+hashes and instruction counts checked. Deterministic source generators and
+objects/reports retained; no separate source snapshot for non-improving forms.
+Code/fixtures match ecc30f25 after restoration. Read-only audit rebinds prior
+accepted native/full evidence: 204 TUs, 4619 comparisons, zero skipped, 202
+unaffected objects; actual linked 2079 / byte 959 pair sets equal baseline
+with no lost/gained pairs, canonical arguments and outside-body/signature
+boundaries unchanged. No fresh native/full-corpus run for rejected forms.
+
+Accepted means remain **98.40% / 98.41%**; both >=99.0 gates unmet, goal active.
+No push, PR or merge; main checkout untouched. These extrema+memset interactions
+do not justify further tests of equivalent predicate spellings.
+
+Evidence: `_work/read_reload_memzero_extrema_identities.json`, twenty-two
+focused reports/objects, `_work/prepare_reload_memzero_extrema.py`, generated
+sweep and rechecked typedpair validation audit.
+
+
+## Continuation: Read normal views and guards with per-vertex memset and fresh index owner
+
+Thirty-one focused Read measurements start from cfe33832: twenty-one normal
+source/destination view and counter forms including control, followed by ten
+normal length/section guard forms including control. Both families combine
+the previously measured fresh index owner and twelve-byte per-vertex memset.
+These combinations had not been covered by reload-only normal sweeps. Source
+forms are hypotheses, not recovered declarations.
+
+Twelve pointer-view forms express equivalent normal input/output addresses
+around centers zero, one, two or three. Center-three pointers are at most
+one-past the allocated array; actual loads/stores use negative offsets inside
+the same three-component tuple. Eight source/counter forms name an uncentered
+input pointer, advance that pointer, use vertex counters of unsigned int/int/
+unsigned short, or combine counter and pointer progression. No extra input
+read, output store, clamp, floating reassociation or changed precision.
+Counts are 16-bit; counters visit 0..count-1 without wrap for valid input.
+
+Length forms reverse the zero/nonzero branch, use continue for either completed
+case, name the same predicate, or preload the destination owner before it.
+Zero length still writes (0,1,0); other values execute original normalization/
+clamping. Section forms split shader processing, flatten compressed/plain
+dispatch, express independent predicates or share an early section exit.
+Shader processing still requires normal-enabled and shader-enabled flags;
+failed reads retain original cleanup/return paths. No helper/header/ABI,
+compiler/flag, matcher/denominator, dummy effect or padding change.
+
+The already documented fresh-owner callback limitation remains: this is not
+a universal claim for arbitrary external callbacks that mutate slot. No trial
+source is retained, nor runtime proof asserted for these rejected forms.
+
+| Family / trial | Read source / strict | Instructions | Calls | Memset+reload control object |
+|---|---|---:|---:|---|
+| views / reload_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| views / view_destination_0 | 98.1 / 56.2 | 868 | 100.0 | no |
+| views / view_destination_2 | 98.3 / 56.7 | 869 | 100.0 | no |
+| views / view_destination_3 | 98.0 / 57.4 | 863 | 100.0 | no |
+| views / view_source_1_destination_1 | 98.5 / 57.4 | 873 | 100.0 | no |
+| views / view_source_1_destination_2 | 98.3 / 56.3 | 869 | 100.0 | no |
+| views / view_source_1_destination_3 | 97.9 / 55.0 | 864 | 100.0 | no |
+| views / view_source_2_destination_1 | 98.5 / 57.8 | 873 | 100.0 | yes |
+| views / view_source_2_destination_2 | 98.3 / 56.7 | 869 | 100.0 | no |
+| views / view_source_2_destination_3 | 97.9 / 55.4 | 864 | 100.0 | no |
+| views / view_source_3_destination_1 | 98.5 / 57.8 | 873 | 100.0 | yes |
+| views / view_source_3_destination_2 | 98.3 / 56.7 | 869 | 100.0 | no |
+| views / view_source_3_destination_3 | 97.9 / 55.0 | 864 | 100.0 | no |
+| views / counter_source_record | 98.5 / 57.8 | 873 | 100.0 | yes |
+| views / counter_advancing_source | 97.9 / 56.8 | 869 | 100.0 | no |
+| views / counter_vertex_index_unsigned_int | 98.2 / 57.1 | 872 | 100.0 | no |
+| views / counter_vertex_advancing_unsigned_int | 98.1 / 56.8 | 872 | 100.0 | no |
+| views / counter_vertex_index_int | 98.2 / 57.1 | 872 | 100.0 | no |
+| views / counter_vertex_advancing_int | 98.1 / 56.8 | 872 | 100.0 | no |
+| views / counter_vertex_index_unsigned_short | 98.2 / 57.1 | 872 | 100.0 | no |
+| views / counter_vertex_advancing_unsigned_short | 98.1 / 56.8 | 872 | 100.0 | no |
+| guards / reload_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| guards / length_fallback_first | 98.3 / 60.1 | 873 | 100.0 | no |
+| guards / length_zero_continue | 98.3 / 60.1 | 873 | 100.0 | no |
+| guards / length_nonzero_continue | 98.5 / 57.8 | 873 | 100.0 | yes |
+| guards / length_named_nonzero | 98.5 / 57.8 | 873 | 100.0 | yes |
+| guards / length_owner_before_branch | 98.1 / 59.3 | 870 | 100.0 | no |
+| guards / section_split_shader | 98.5 / 57.8 | 873 | 100.0 | yes |
+| guards / section_flat_shader | 97.5 / 55.4 | 891 | 100.0 | no |
+| guards / section_independent_shader | 97.3 / 56.6 | 884 | 98.2 | no |
+| guards / section_common_section_exit | 98.5 / 57.8 | 873 | 100.0 | yes |
+
+Nine entire objects equal memset+reload control. Source ranges 97.9..98.5 for
+views/counters and 97.3..98.5 for guards. Independent section predicates lower
+call-count shape to 98.2; others retain 100.0. No goal gate gain. Source restored;
+none retained. No general compiler ceiling inferred.
+
+Both completed ledgers contain all expected rows, each appended after compile
+and focused verify with check=True; final guards sweep explicitly exited zero.
+Source/call metrics independently recomputed from instruction arrays; whole-
+object hashes and instruction counts checked. Deterministic source generators,
+objects and reports retained; no separate source snapshots for non-improving
+forms. Code/fixtures match ecc30f25 after restoration. Read-only audit rebinds
+prior accepted native/full evidence: 204 TUs, 4619 comparisons, zero skipped,
+202 unaffected objects; actual linked 2079 / byte 959 pair sets equal baseline
+with no lost/gained pairs, canonical arguments and body/signature boundaries
+unchanged. No fresh native/full-corpus run for rejected variants.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge. These normal forms combined with
+per-vertex memset do not justify keeping or repeating any tested variant.
+
+Evidence: `_work/read_reload_memzero_normal_views_identities.json`,
+`_work/read_reload_memzero_normal_guards_identities.json`, thirty-one focused
+reports/objects, deterministic preparation/sweep scripts and typedpair audit.
+
+
+## Continuation: Read position predicates and bounds values with per-vertex memset
+
+Twenty-one focused Read measurements start from 26ec624a. Ten combine fresh
+index owner and twelve-byte per-vertex accumulator memset with three position
+compression predicates, four direct output assignments, two shared raw-buffer
+lifetime forms and control. Eleven combine them with five bounds Vector copy/
+diagonal expressions, five center/extrema lifetime/order forms and control.
+These interactions were absent from earlier reload-only sweeps.
+
+Original ARM has movs of shifted flags and bmi at the position compression
+choice, while accepted source checks flags&4. Sign-test forms express this
+through (int)(flags<<29), shared compressedData, or signed compressedData.
+This predicate tests the same bit on this ARM ABI. Later nonzero compressed-
+data tests retain their predicates. Direct outputs assign allocation result
+directly into m->positions; shared raw-buffer locals are reused only across
+mutually exclusive branches. Typed raw allocations and paired deletes remain.
+
+Bounds forms copy all three existing extrema components into Vector values
+or use direct typed views, keep a temporary/subexpression diagonal, scope the
+same center computation in float array or Vector, reorder disjoint extrema
+copies, or construct extrema before existing center/assignment. They retain
+the same max-minus-min diagonal and full VectorLength radius, and identical
+center additions/half multiplies. No changed floating precision/reassociation,
+extra output store or replaced geometry formula. Local spellings are source
+hypotheses, not recovered declarations.
+
+Fresh-owner callback limitation remains as previously documented. No helper,
+header/ABI, compiler/flag, matcher/denominator, dummy effect or padding change.
+
+| Family / trial | Read source / strict | Instructions | Calls | Memset+reload control object |
+|---|---|---:|---:|---|
+| position / reload_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| position / predicate_direct_shift_negative | 97.7 / 57.8 | 877 | 98.2 | no |
+| position / predicate_shared_shift_negative | 97.7 / 57.8 | 877 | 98.2 | no |
+| position / predicate_signed_compressed_local | 97.7 / 57.8 | 877 | 98.2 | no |
+| position / direct_output_short | 98.5 / 57.8 | 873 | 100.0 | yes |
+| position / direct_output_integer | 98.5 / 57.8 | 873 | 100.0 | yes |
+| position / direct_output_floating | 98.5 / 57.8 | 873 | 100.0 | yes |
+| position / direct_output_all | 98.5 / 57.8 | 873 | 100.0 | yes |
+| position / shared_raw | 98.5 / 57.8 | 873 | 100.0 | yes |
+| position / shared_raw_direct_outputs | 98.5 / 57.8 | 873 | 100.0 | yes |
+| boundsvalues / reload_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| boundsvalues / copy_maximum_copy | 98.4 / 57.3 | 875 | 100.0 | no |
+| boundsvalues / copy_minimum_copy | 98.4 / 57.0 | 874 | 100.0 | no |
+| boundsvalues / copy_both_copies | 98.2 / 57.6 | 876 | 100.0 | no |
+| boundsvalues / copy_direct_views | 98.2 / 58.3 | 869 | 100.0 | no |
+| boundsvalues / copy_temporary_diagonal | 98.5 / 57.8 | 873 | 100.0 | yes |
+| boundsvalues / lifetime_scoped_float_center | 98.5 / 57.8 | 873 | 100.0 | no |
+| boundsvalues / lifetime_scoped_vector_center | 98.5 / 57.8 | 873 | 100.0 | no |
+| boundsvalues / lifetime_minimum_first | 98.5 / 57.8 | 873 | 100.0 | no |
+| boundsvalues / lifetime_extents_before_assignment | 98.5 / 57.0 | 873 | 100.0 | no |
+| boundsvalues / lifetime_extents_before_center | 97.2 / 40.9 | 884 | 98.2 | no |
+
+Nine entire objects equal memset+reload control. All three sign predicates
+produce one object, regressing source to 97.7 and call-count shape to 98.2.
+Bounds copies/views range 98.2..98.5; extents-before-center regresses to 97.2
+and call shape 98.2. Remaining lifetimes tie 98.5. No gate gain; all trial
+changes restored. No general compiler ceiling inferred.
+
+Both sweeps explicitly exited zero; all twenty-one compile/focused verify calls
+completed. Metrics independently recomputed from target/base instructions;
+whole-object hashes and instruction counts checked. Source generators, objects
+and reports retained, without separate snapshots for non-improving forms.
+Code/fixtures restored to ecc30f25. Read-only binding audit of prior accepted
+native/full proof passes: 204 TUs, 4619 comparisons, zero skipped, 202 unaffected
+objects; actual linked 2079 / byte 959 pair sets equal baseline, no lost/gained
+pairs; canonical arguments and body/signature boundaries unchanged. No fresh
+native/full-corpus runtime test for rejected forms.
+
+Before these sweeps, disk space was reclaimed by deleting exactly 408 untracked
+generated original target-object duplicates in zero-full/target and uv-full/
+target. Every absolute path was verified under this worktree's _work; each
+SHA256 was matched against retained typedpair-full/target, before manifest
+write and again immediately before individual Remove-Item -LiteralPath.
+No recursive deletion, source/base/report/baseline deletion or main change.
+Manifest has a separate host temporary-directory backup; canonical replacement
+paths and hashes rechecked here. Logical bytes reclaimed: 3,453,736. Old report
+target references in these two folders now use the manifest's canonical copy.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. No
+push, PR or merge; main checkout untouched.
+
+Evidence: `_work/read_reload_memzero_position_identities.json`,
+`_work/read_reload_memzero_bounds_values_identities.json`, twenty-one focused
+reports/objects, source generators, typedpair audit and
+`_work/duplicate_target_cleanup_zero_uv_20261007.json`.
+
+
+## Continuation: Create scoped magic/count/child locals with shared read result
+
+Sixteen focused Create measurements start from c07cf921. Two controls and all
+seven nonempty combinations of narrower local scopes are measured against both
+accepted direct predicates and previously measured shared int result. This
+uses current accepted bodies rather than the old create_scope_sweep baseline.
+No recovered local/source layout claimed.
+
+Scope bit 1 moves char magic[8] into successful OpenRead block; its strcpy,
+seven-byte signature Read and subsequent two-byte header Read remain there in
+the same order. Bit 2 moves unsigned short subCount into the enhanced-format
+guard before its original Read. Bit 4 moves Mesh *childPtr into each child loop
+iteration, initialized by its same new Mesh. No read, allocation, ownership,
+merge, ArrayAdd, cleanup or Close moves across any executed call. Labels remain
+outside exiting trivial local scopes, without skipped initialization or new
+destructors. Count and child pointer types are unchanged; no storage overlay,
+padding, fabricated field, helper/header/ABI or signature/denominator change.
+
+Shared-result variant reuses existing int result for the three original
+MeshReadData returns. Child failure still tests ==-1, enhanced-single success
+==1, plain-single success !=-1. Result retains -4 only outside the original
+engine/path guard; valid paths explicitly return 1 or -1. No narrowed status
+domain assumed; arbitrary int statuses still use their original predicates.
+
+| Trial | Create source / strict | Instructions | Calls | Accepted Core | Shared-result Core |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| shared_control | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| accepted_scope_1 | 98.2 / 52.8 | 289 | 100.0 | no | no |
+| accepted_scope_2 | 97.7 / 54.8 | 289 | 100.0 | no | no |
+| accepted_scope_3 | 97.7 / 57.2 | 289 | 100.0 | no | no |
+| accepted_scope_4 | 98.4 / 55.5 | 289 | 100.0 | no | no |
+| accepted_scope_5 | 98.2 / 56.9 | 289 | 100.0 | no | no |
+| accepted_scope_6 | 97.7 / 58.6 | 289 | 100.0 | no | no |
+| accepted_scope_7 | 98.0 / 57.9 | 289 | 100.0 | no | no |
+| shared_scope_1 | 98.2 / 53.1 | 289 | 100.0 | no | no |
+| shared_scope_2 | 97.7 / 55.2 | 289 | 100.0 | no | no |
+| shared_scope_3 | 97.7 / 57.6 | 289 | 100.0 | no | no |
+| shared_scope_4 | 98.4 / 55.9 | 289 | 100.0 | no | no |
+| shared_scope_5 | 98.2 / 57.2 | 289 | 100.0 | no | no |
+| shared_scope_6 | 97.7 / 59.0 | 289 | 100.0 | no | no |
+| shared_scope_7 | 98.0 / 58.3 | 289 | 100.0 | no | no |
+
+Both controls reproduce their entire reference object. Scoped child alone
+ties 98.4 but differs from both control objects. All other scoped forms regress
+to 97.7..98.2. Each accepted/shared scope pair has identical source score;
+strict-order differences do not raise the requested gates. All sixteen have
+289 instructions and 100.0 call-count shape. No trial retained and no general
+compiler ceiling inferred.
+
+Sweep explicitly exited zero. All sixteen compile/focused verify calls pass;
+source/call metrics independently recomputed from instruction arrays and full
+object hashes/counts checked. Deterministic generator and focused objects/
+reports retained; no separate source snapshots for non-improving forms.
+Code/fixtures match ecc30f25 after restoration. Read-only accepted full/native
+binding audit passes: 204 TUs, 4619 comparisons, zero skipped, 202 unaffected
+objects; actual linked 2079 / byte 959 pair sets equal baseline with no lost/
+gained pairs, canonical arguments and body/signature boundaries unchanged.
+No fresh native/full-corpus run claimed for rejected variants.
+
+Before this sweep, another 204 generated original target-object duplicates
+from channelzero-full/target were removed individually, after absolute-path
+workspace containment, untracked status and matching SHA256 to retained
+typedpair-full/target checks. Manifest and separate host-temp backup precede
+removal; hashes checked again before deletion. No recursive delete and no
+source/base/report/baseline/accepted-proof deletion. Reclaimed logical bytes:
+1,726,868. Canonical replacement paths/hashes independently rechecked here;
+old channelzero-full target references now use that manifest's retained copy.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. No
+push, PR or merge; main checkout untouched.
+
+Evidence: `_work/create_scope_shared_result_identities.json`, sixteen focused
+reports/objects, `_work/create_scope_shared_result_sweep.py`, typedpair audit
+and `_work/duplicate_target_cleanup_channelzero_20261007.json`.
+
+
+## Continuation: Create shared result with root pointer and loaded operands
+
+Eighteen focused Create measurements start from d757ca3a. Both previously
+measured shared-int-result forms are controls: original child-pointer scope
+and child pointer declared inside its iteration. Each receives four root-
+pointer/initialization forms or four loaded-animation operand forms. No
+recovered declaration/layout claimed; all predicates remain original.
+
+Root variants assign new Mesh directly to output then set its material, use
+the output as material receiver after original m assignment, store material
+before output, or name a reference to the same new Mesh and use its address.
+All perform one unchanged construction, one output store and one material
+store. Only the material-before-output form reorders the two disjoint stores;
+no call intervenes. Reference lifetime does not destroy the heap object at
+scope exit. No allocation/constructor replacement or manufactured field.
+
+Loaded variants retain Close then animation lookup/nonzero check then
+CollectAnimationData. They capture the same rate float, optionally capture
+the mesh before float-to-long-long conversion, name an explicit start value,
+or reuse m after a fresh output lookup. Same rate conversion and end time,
+same Collect/SetAnimationRangeInTime calls; no cached pointer moved before a
+call which could change it. Shared result keeps child ==-1, enhanced-single
+==1 and plain-single !=-1 predicates, valid returns 1/-1 and invalid guard -4.
+No narrower arbitrary-int result assumption.
+
+No helper/header/ABI, flags/compiler, matcher/denominator, dummy effect or
+padding change. Scope/body/signature boundaries remain fixed.
+
+| Trial | Create source / strict | Instructions | Calls | Accepted Core | Shared-result Core |
+|---|---|---:|---:|---|---|
+| shared_control | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_root_direct_output | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_root_output_material_receiver | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_root_material_before_output | 98.4 / 61.4 | 289 | 100.0 | no | no |
+| shared_root_root_reference | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_finish_explicit_float_rate | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| shared_finish_mesh_before_conversion | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| shared_finish_explicit_start | 98.3 / 60.3 | 289 | 100.0 | no | no |
+| shared_finish_reuse_mesh_local | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_child_scope_control | 98.4 / 55.9 | 289 | 100.0 | no | no |
+| shared_child_scope_root_direct_output | 98.4 / 55.9 | 289 | 100.0 | no | no |
+| shared_child_scope_root_output_material_receiver | 98.4 / 55.9 | 289 | 100.0 | no | no |
+| shared_child_scope_root_material_before_output | 98.4 / 56.2 | 289 | 100.0 | no | no |
+| shared_child_scope_root_root_reference | 98.4 / 55.9 | 289 | 100.0 | no | no |
+| shared_child_scope_finish_explicit_float_rate | 98.4 / 55.5 | 289 | 100.0 | no | no |
+| shared_child_scope_finish_mesh_before_conversion | 98.4 / 55.5 | 289 | 100.0 | no | no |
+| shared_child_scope_finish_explicit_start | 98.3 / 55.2 | 289 | 100.0 | no | no |
+| shared_child_scope_finish_reuse_mesh_local | 98.4 / 55.9 | 289 | 100.0 | no | no |
+
+Both controls reproduce their reference objects. Sixteen source values tie
+98.4; explicit-start forms regress to 98.3. Five entire objects equal shared
+control and five equal scoped-child shared control; two equal accepted Core
+after explicit float capture in the unscoped-child form. Material-first
+strict increases do not raise either goal gate. All eighteen have 289
+instructions and 100.0 call-count shape. None retained; no general compiler
+ceiling inferred.
+
+Sweep explicitly exited zero. All eighteen compile/focused verify calls pass;
+source/call metrics recomputed directly from target/base instructions, whole
+object hashes and instruction counts checked. Deterministic generator and
+focused objects/reports retained, without separate source snapshots for
+non-improving forms. Code/fixtures match ecc30f25 after restoration. Read-only
+binding audit of prior accepted native/full proof passes: 204 TUs, 4619
+comparisons, zero skipped, 202 unaffected objects; actual linked 2079 / byte
+959 pair sets equal baseline with no lost/gained pairs, canonical arguments
+and body/signature boundaries unchanged. No fresh native/full-corpus runtime
+proof claimed for rejected variants.
+
+Before this sweep, 204 more untracked generated original target duplicates
+from createstatus-full/target were removed individually after absolute-path
+workspace containment and matching SHA256 to retained typedpair-full/target
+checks. Manifest plus separate host-temp backup precede removal; hashes
+rechecked before each deletion. No recursive delete or source/base/report/
+baseline/accepted-proof removal. Reclaimed logical bytes: 1,726,868. Canonical
+replacement paths/hashes independently rechecked here; old createstatus-full
+target references now use that manifest's retained copy.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge.
+
+Evidence: `_work/create_shared_scope_root_finish_identities.json`, eighteen
+focused reports/objects, `_work/create_shared_scope_root_finish_sweep.py`,
+typedpair audit and `_work/duplicate_target_cleanup_createstatus_20261007.json`.
+
+
+## Continuation: Enhanced optional value lifetimes and timer guards with V5 preload
+
+Seventeen focused Enhanced measurements start from 20abca80: four optional/V5
+value-lifetime forms, twelve timer guard/group forms and preload-only control.
+All use previously measured channel=0x400/case0-break/default-zero dispatch,
+retaining zero-channel insertion in cases 4/5. Earlier standalone timer/value
+sweeps did not measure these combinations with V5 preload.
+
+Lifetime forms move value/key declarations outside their V5 key loop, outside
+the channel loop, count outside the channel loop with per-channel values, or
+optional value/key outside its loop. Variables remain assigned by the same
+successful reads before every use. Signed V5 counts, optional counts, original
+read order and first-read-failure exit remain; no initialization skipped by
+failure labels, new allocation, insertion, precision or rotation change.
+
+Timer variants name the same positive-time and smaller-time predicates, express
+negative branches followed by an update, or use one guarded do/while(false)
+block. Each applies to vector sections, axis sections, optional/V5 sections or
+all eight sites. Conditions preserve >0 and current interval > input semantics,
+including zero/negative/NaN behavior. No extra call/store when original update
+is false, no changed global value read order, helper/header/ABI, flags/compiler,
+matcher/denominator, dummy effect or padding change. These are source hypotheses,
+not recovered declarations.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Preload-only Mesh |
+|---|---|---:|---:|---|
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| lifetime_v5_channel_values | 97.5 / 64.4 | 644 | 100.0 | no |
+| lifetime_v5_outer_values | 98.0 / 67.6 | 639 | 100.0 | no |
+| lifetime_v5_outer_count_channel_values | 98.0 / 67.6 | 639 | 100.0 | no |
+| lifetime_optional_outer_values | 98.1 / 67.4 | 642 | 100.0 | no |
+| time_named_comparisons_vectors | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_named_comparisons_axes | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_named_comparisons_optional_v5 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_named_comparisons_all | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_false_branches_vectors | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_false_branches_axes | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_false_branches_optional_v5 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_false_branches_all | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_guarded_block_vectors | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_guarded_block_axes | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_guarded_block_optional_v5 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| time_guarded_block_all | 98.3 / 67.8 | 639 | 100.0 | yes |
+
+All twelve timer forms and control produce the entire preload-only object.
+Value lifetimes regress source to 97.5, 98.0, 98.0 and 98.1; outer values and
+outer count/per-channel values produce the same object. Call-count shape stays
+100.0 throughout. No goal gate gain; all changes restored. No general compiler
+ceiling inferred.
+
+Sweep explicitly exited zero; all seventeen compile/focused verify calls pass.
+Source/call metrics independently recomputed from target/base instructions;
+object hashes, instruction counts and all source snapshot paths checked.
+Code/fixtures match ecc30f25 after restoration. Read-only accepted full/native
+binding audit passes: 204 TUs, 4619 comparisons, zero skipped, 202 unaffected
+objects; actual linked 2079 / byte 959 pair sets equal baseline with no lost/
+gained pairs, canonical arguments and body/signature boundaries unchanged.
+No fresh native/full-corpus runtime proof for rejected variants.
+
+To restore room after the previous commit's automatic Git maintenance failed
+with out-of-diskspace, only 1,632 untracked generated original target duplicates
+were removed from eight old focused-full build target folders: attach-full,
+boundsinit-full, colorfield-full, colorowner-full, component-full, dispatch-full,
+floatuvbound-full and fullbounds-full. Absolute paths were checked under this
+worktree's _work, SHA256 matched retained typedpair-full/target before manifest
+write and again before individual Remove-Item -LiteralPath. No recursive delete,
+Git archive operation or source/base/report/baseline/accepted-proof deletion.
+Manifest has a separate host-temp backup. Canonical replacements rechecked
+here; old target-folder references use manifest paths. Logical bytes reclaimed:
+13,814,944. Previous 20abca80 report was already verified readable and equal
+to its working file after maintenance failure. Subsequent report commit uses
+per-command maintenance.auto=false/gc.auto=0, leaving persistent Git settings
+and object archive untouched by a manual maintenance action.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge.
+
+Evidence: `_work/enh_preload_optional_time_identities.json`, seventeen focused
+reports/objects/source snapshots, generators, typedpair validation audit and
+`_work/duplicate_target_cleanup_batch8_20261007.json`.
+
+
+## Continuation: Enhanced V5 preload with vector key records, arrays and declaration order
+
+Thirty-seven focused measurements start from f9ab2c53. First twenty-two include
+fourteen vector-key record forms, seven nonempty early-vector-declaration
+subsets and control. Second fifteen include fourteen equivalent four-float
+array forms and control. Both families use already measured V5 preloaded mask
+dispatch; cases 4/5 still insert zero-channel keys. No recovered declaration
+or original buffer layout claimed.
+
+Record forms use exactly one float time and three float coordinates, with time
+first or coordinates first, for any nonempty subset of position/scale/rotation
+vector sections. Every field is active. Array forms use exactly four floats,
+time at index 0 with coordinates at 1..3, or time at index 3 with coordinates
+at 0..2, in the same section subsets. The same four-byte time Read still
+precedes timer update and the same twelve-byte coordinate Read; Insert receives
+the same coordinate pointer/channel and same signed conversion of time.
+No padding/unused storage, extra input, new output store, floating reassociation
+or precision/rotation math change. Failed reads still go to original cleanup.
+
+Early declarations place the existing float vec[3] before the time Read in any
+nonempty subset, retaining its coordinate Read and all operations at their
+original sites. No helper/header/ABI, compiler/flag, matcher/denominator,
+manufactured effect or signature/body boundary change.
+
+| Family / trial | Enhanced source / strict | Instructions | Calls | Preload-only Mesh |
+|---|---|---:|---:|---|
+| storage / preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| storage / record_time_first_0 | 97.2 / 37.9 | 642 | 100.0 | no |
+| storage / record_time_first_1 | 97.9 / 57.7 | 639 | 100.0 | no |
+| storage / record_time_first_2 | 97.9 / 57.7 | 639 | 100.0 | no |
+| storage / record_time_first_0_1 | 97.2 / 45.4 | 642 | 100.0 | no |
+| storage / record_time_first_0_2 | 97.2 / 37.9 | 642 | 100.0 | no |
+| storage / record_time_first_1_2 | 97.9 / 57.7 | 639 | 100.0 | no |
+| storage / record_time_first_0_1_2 | 97.2 / 50.1 | 642 | 100.0 | no |
+| storage / record_vector_first_0 | 97.9 / 58.0 | 639 | 100.0 | no |
+| storage / record_vector_first_1 | 97.9 / 58.0 | 639 | 100.0 | no |
+| storage / record_vector_first_2 | 97.9 / 58.0 | 639 | 100.0 | no |
+| storage / record_vector_first_0_1 | 97.9 / 58.4 | 639 | 100.0 | no |
+| storage / record_vector_first_0_2 | 97.9 / 58.4 | 639 | 100.0 | no |
+| storage / record_vector_first_1_2 | 97.9 / 58.4 | 639 | 100.0 | no |
+| storage / record_vector_first_0_1_2 | 97.8 / 58.7 | 639 | 100.0 | no |
+| storage / early_0 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| storage / early_1 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| storage / early_2 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| storage / early_0_1 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| storage / early_0_2 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| storage / early_1_2 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| storage / early_0_1_2 | 98.3 / 67.8 | 639 | 100.0 | yes |
+| array / preload_control | 98.3 / 67.8 | 639 | 100.0 | yes |
+| array / time_first_0 | 97.2 / 37.9 | 642 | 100.0 | no |
+| array / time_first_1 | 97.9 / 57.7 | 639 | 100.0 | no |
+| array / time_first_2 | 97.9 / 57.7 | 639 | 100.0 | no |
+| array / time_first_0_1 | 97.2 / 45.4 | 642 | 100.0 | no |
+| array / time_first_0_2 | 97.2 / 37.9 | 642 | 100.0 | no |
+| array / time_first_1_2 | 97.9 / 57.7 | 639 | 100.0 | no |
+| array / time_first_0_1_2 | 97.2 / 50.1 | 642 | 100.0 | no |
+| array / vector_first_0 | 97.9 / 58.0 | 639 | 100.0 | no |
+| array / vector_first_1 | 97.9 / 58.0 | 639 | 100.0 | no |
+| array / vector_first_2 | 97.9 / 58.0 | 639 | 100.0 | no |
+| array / vector_first_0_1 | 97.9 / 58.4 | 639 | 100.0 | no |
+| array / vector_first_0_2 | 97.9 / 58.4 | 639 | 100.0 | no |
+| array / vector_first_1_2 | 97.9 / 58.4 | 639 | 100.0 | no |
+| array / vector_first_0_1_2 | 97.8 / 58.7 | 639 | 100.0 | no |
+
+Seven early declarations and both controls equal entire preload-only object,
+source 98.3. All record/array variants regress to 97.2..97.9. Every one of the
+fourteen array forms equals its corresponding entire record object, rather
+than merely tying metrics; this representation substitution adds no gate
+gain. All call-count shape values remain 100.0. No trial retained and no general
+compiler ceiling inferred.
+
+Both sweeps explicitly exited zero. All thirty-seven compile/focused verify
+calls pass; metrics independently recomputed from instruction arrays, object
+hashes/counts and source snapshot presence checked. Corresponding record/array
+whole hashes and row metrics independently compared. Code/fixtures match
+ecc30f25 after restoration. Read-only accepted native/full binding audit passes:
+204 TUs, 4619 comparisons, zero skipped, 202 unaffected objects; actual linked
+2079 / byte 959 pair sets equal baseline with no lost/gained pairs, canonical
+arguments and body/signature boundaries unchanged. No fresh native/full-corpus
+runtime proof for rejected variants.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge. Further spelling variants of these
+same record/array layouts have no supporting evidence for a gain.
+
+Evidence: `_work/enh_preload_vector_storage_identities.json`,
+`_work/enh_preload_vector_array_identities.json`, thirty-seven focused reports/
+objects/source snapshots, deterministic generators and typedpair audit.
+
+
+## Continuation: Enhanced parser records containing the addressed type field
+
+Eighteen focused Enhanced measurements start from cc3e1d11: eight local parser
+record layouts with accepted and preloaded V5 dispatch, plus both controls.
+Earlier parser records combined only non-addressed source fields and compiled
+to identical objects; this family also contains the short type field passed
+by address to the original Read calls. It tests memory coupling rather than
+another spelling of the earlier scalar-replaced records.
+
+Each record contains the by-value unsigned file handle and signed short type,
+ordered either way, optionally with the active format byte, animation pointer
+or mesh pointer. All fields are used, no artificial padding or unused member.
+ReadHeader declaration is inside the same function; no exported ABI/layout,
+helper or fixed register. Non-type fields receive the same initial values
+before the first Read; type remains uninitialized until its original two-byte
+Read. No invented initialization or field effect. Original Transform allocation
+still precedes all reads, constructor/destructor/delete calls unchanged.
+
+Read argument sizes/order and pointed-to bounds/type/count/key buffers retain
+their source operations; file arguments use the copied handle field. Pointer
+receivers and masks use their corresponding record members. This relies on
+the actual bounded Read contract rather than a claim about arbitrary external
+callbacks writing beyond a supplied field. No new runtime proof is asserted
+for these rejected forms. All flags, signed counts, key insertions and floating
+math remain; preloaded variants still insert zero-channel keys for masks 4/5.
+No compiler/flag, matcher/denominator, body signature or boundary change.
+These are source hypotheses, not recovered parser records.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Accepted Mesh | Preload-only Mesh |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| file_type_accepted | 95.6 / 52.9 | 646 | 100.0 | no | no |
+| file_type_preload | 95.6 / 53.6 | 644 | 100.0 | no | no |
+| type_file_accepted | 95.7 / 48.7 | 642 | 100.0 | no | no |
+| type_file_preload | 95.7 / 62.4 | 640 | 100.0 | no | no |
+| file_type_format_accepted | 95.5 / 30.4 | 647 | 100.0 | no | no |
+| file_type_format_preload | 95.5 / 43.9 | 645 | 100.0 | no | no |
+| type_format_file_accepted | 95.9 / 51.3 | 634 | 100.0 | no | no |
+| type_format_file_preload | 95.8 / 65.5 | 632 | 100.0 | no | no |
+| anim_file_type_accepted | 94.0 / 30.4 | 649 | 100.0 | no | no |
+| anim_file_type_preload | 94.0 / 31.0 | 647 | 100.0 | no | no |
+| file_type_anim_accepted | 93.9 / 30.3 | 650 | 100.0 | no | no |
+| file_type_anim_preload | 93.9 / 31.0 | 648 | 100.0 | no | no |
+| self_file_type_accepted | 95.7 / 40.6 | 650 | 100.0 | no | no |
+| self_file_type_preload | 95.6 / 41.1 | 648 | 100.0 | no | no |
+| file_type_self_accepted | 95.7 / 40.4 | 651 | 100.0 | no | no |
+| file_type_self_preload | 95.6 / 41.2 | 649 | 100.0 | no | no |
+
+Both controls reproduce their whole reference objects. All sixteen addressed
+record variants change the object and regress source to 93.9..95.9; call-count
+shape remains 100.0. Lower instruction count in one layout does not compensate
+for other changed source signals. No gate gain; all trial code restored. These
+results reject the tested addressed-record coupling as a useful route, without
+establishing a general compiler or source-shape ceiling.
+
+Sweep explicitly exited zero; all eighteen compile/focused verify calls pass.
+Source/call metrics independently recomputed from instruction arrays; object
+hashes/counts and all source snapshot paths checked. Code/fixtures match
+ecc30f25 after restoration. Read-only accepted native/full binding audit passes:
+204 TUs, 4619 comparisons, zero skipped, 202 unaffected objects; actual linked
+2079 / byte 959 pair sets equal baseline with no lost/gained pairs, canonical
+arguments and outside-body/signature boundaries unchanged. No fresh native/
+full-corpus runtime proof for rejected variants.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge.
+
+Evidence: `_work/enh_addressed_parser_state_identities.json`, eighteen focused
+reports/objects/source snapshots, `_work/prepare_addressed_parser_state.py`,
+generated sweep and rechecked typedpair audit.
+
+
+## Continuation: Enhanced axis enums with accepted and preloaded V5 dispatch
+
+Forty-four focused Enhanced measurements start from 005f3622: three local Axis
+enum representations, all seven nonempty position/scale/rotation axis-loop
+subsets, each with accepted and preloaded V5 dispatch, plus both controls.
+Prior numeric type/exit-loop tests did not include this enum family.
+
+Local enum forms are unscoped with implementation-selected underlying type,
+scoped unsigned-char and scoped int. All define X=0, Y=1, Z=2 and End=3, all
+actively used. Each selected loop begins at X, tests !=End and increments via
+unsigned-int addition and conversion back to Axis. Its switch uses the same
+ordinal cases X/Y/Z, same channel/key operations and same order. The loop
+visits exactly 0,1,2 and stops at 3; casts stay in that range without overflow
+or an out-of-range enum value. No extra field/padding, fixed register, exported
+ABI/header/helper, source signature or compiler/flag/matcher change.
+
+Bounds/count/key reads, signed counts, failed-read exits, timer updates and
+floating math stay in their original places. Vector sections and optional/V5
+key loops are untouched except previously measured V5 mask preload in preload
+forms. Preload retains zero-channel insertion for cases 4/5. This is a source
+hypothesis, not a recovered original enum declaration.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Accepted Mesh | Preload-only Mesh |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| unscoped_0_accepted | 98.0 / 66.6 | 640 | 100.0 | no | no |
+| unscoped_0_preload | 98.0 / 67.5 | 638 | 100.0 | no | no |
+| unscoped_1_accepted | 98.0 / 66.6 | 640 | 100.0 | no | no |
+| unscoped_1_preload | 98.0 / 67.5 | 638 | 100.0 | no | no |
+| unscoped_2_accepted | 98.0 / 66.6 | 640 | 100.0 | no | no |
+| unscoped_2_preload | 98.0 / 67.5 | 638 | 100.0 | no | no |
+| unscoped_0_1_accepted | 97.7 / 66.4 | 639 | 100.0 | no | no |
+| unscoped_0_1_preload | 97.6 / 67.2 | 637 | 100.0 | no | no |
+| unscoped_0_2_accepted | 97.7 / 66.4 | 639 | 100.0 | no | no |
+| unscoped_0_2_preload | 97.6 / 67.2 | 637 | 100.0 | no | no |
+| unscoped_1_2_accepted | 97.7 / 66.4 | 639 | 100.0 | no | no |
+| unscoped_1_2_preload | 97.6 / 67.2 | 637 | 100.0 | no | no |
+| unscoped_0_1_2_accepted | 97.3 / 66.1 | 638 | 100.0 | no | no |
+| unscoped_0_1_2_preload | 97.2 / 67.0 | 636 | 100.0 | no | no |
+| byte_0_accepted | 98.0 / 66.7 | 641 | 100.0 | no | no |
+| byte_0_preload | 98.0 / 67.6 | 639 | 100.0 | no | no |
+| byte_1_accepted | 98.0 / 66.7 | 641 | 100.0 | no | no |
+| byte_1_preload | 98.0 / 67.6 | 639 | 100.0 | no | no |
+| byte_2_accepted | 98.0 / 66.7 | 641 | 100.0 | no | no |
+| byte_2_preload | 98.0 / 67.6 | 639 | 100.0 | no | no |
+| byte_0_1_accepted | 97.8 / 66.6 | 641 | 100.0 | no | no |
+| byte_0_1_preload | 97.8 / 67.5 | 639 | 100.0 | no | no |
+| byte_0_2_accepted | 97.8 / 66.6 | 641 | 100.0 | no | no |
+| byte_0_2_preload | 97.8 / 67.5 | 639 | 100.0 | no | no |
+| byte_1_2_accepted | 97.8 / 66.6 | 641 | 100.0 | no | no |
+| byte_1_2_preload | 97.8 / 67.5 | 639 | 100.0 | no | no |
+| byte_0_1_2_accepted | 97.6 / 66.4 | 641 | 100.0 | no | no |
+| byte_0_1_2_preload | 97.6 / 67.3 | 639 | 100.0 | no | no |
+| int_0_accepted | 98.0 / 66.6 | 640 | 100.0 | no | no |
+| int_0_preload | 98.0 / 67.5 | 638 | 100.0 | no | no |
+| int_1_accepted | 98.0 / 66.6 | 640 | 100.0 | no | no |
+| int_1_preload | 98.0 / 67.5 | 638 | 100.0 | no | no |
+| int_2_accepted | 98.0 / 66.6 | 640 | 100.0 | no | no |
+| int_2_preload | 98.0 / 67.5 | 638 | 100.0 | no | no |
+| int_0_1_accepted | 97.7 / 66.4 | 639 | 100.0 | no | no |
+| int_0_1_preload | 97.6 / 67.2 | 637 | 100.0 | no | no |
+| int_0_2_accepted | 97.7 / 66.4 | 639 | 100.0 | no | no |
+| int_0_2_preload | 97.6 / 67.2 | 637 | 100.0 | no | no |
+| int_1_2_accepted | 97.7 / 66.4 | 639 | 100.0 | no | no |
+| int_1_2_preload | 97.6 / 67.2 | 637 | 100.0 | no | no |
+| int_0_1_2_accepted | 97.3 / 66.1 | 638 | 100.0 | no | no |
+| int_0_1_2_preload | 97.2 / 67.0 | 636 | 100.0 | no | no |
+
+Only both controls reproduce reference whole objects. All forty-two enum
+variants regress to 97.2..98.0; calls stay 100.0. Fourteen unscoped/scoped-int
+pairs produce identical entire Mesh objects and row metrics. Scoped byte also
+regresses. All-axis wide enum with preload reaches original 636 instructions
+but source is 97.2: instruction count alone does not meet either gate. No trial
+retained; no general compiler/source-shape ceiling inferred.
+
+Sweep explicitly exited zero; all forty-four compile/focused verify calls pass.
+Source/call metrics recomputed independently from instruction arrays; whole
+object hashes/counts and all source snapshot paths checked. Fourteen enum
+representation pairs independently compared. Code/fixtures match ecc30f25
+after restoration. Read-only accepted native/full binding audit passes: 204
+TUs, 4619 comparisons, zero skipped, 202 unaffected objects; actual linked
+2079 / byte 959 pair sets equal baseline with no lost/gained pairs, canonical
+arguments and body/signature boundaries unchanged. No fresh native/full-corpus
+runtime proof for rejected forms.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge. The tested enum substitutions are
+not a useful route to retaining a gate gain.
+
+Evidence: `_work/enh_enum_axis_identities.json`, forty-four focused reports/
+objects/source snapshots, `_work/prepare_enum_axis.py`, generated sweep and
+rechecked typedpair audit.
+
+
+## Continuation: Read Vector accumulator allocation and clearing interactions
+
+Twelve focused Read measurements start from cea69851: three accumulator
+representations, each with accepted/fresh index owner and field/per-vertex
+memset clearing. Representations are original float pointer over byte-sized
+operator new[], Vector pointer over the same allocation, and direct new
+Vector[vcount] with paired delete[]. Earlier typed float output/accumulator
+pairs were already known whole-object ties; direct paired Vector[] plus these
+owner/clearing combinations were unmeasured.
+
+Vector.h has exactly float x/y/z and no constructor/destructor declaration;
+sizeof Vector=12 and component offsets are asserted. Direct new Vector[vcount]
+uses default initialization without value-initializing parentheses; it adds
+no field-zeroing constructor. Original vcount*12 byte allocation and typed
+Vector count describe the same requested storage for the 16-bit vertex count.
+Typed form uses paired delete[]; raw form retains original operator delete[].
+
+Vector views clear/read the same x/y/z fields instead of float offsets; pointer
+steps are one Vector rather than three floats. Vector += calls remain in original
+i0, i1, i2 order, including repeated-index behavior. Final tangent stages read
+the same accumulated components; no added assignment operator/helper calls,
+math reassociation, precision change or changed lifetime across an executed
+call. Memset clears exactly three floats per existing vertex iteration. Fresh
+index owner retains the previously documented callback limitation, not a
+universal external-alias guarantee. No ABI/header/layout, compiler/flag, matcher/
+denominator or signature/body-boundary change. Source forms are hypotheses,
+not recovered original types.
+
+| Trial | Read source / strict | Instructions | Calls | Accepted Core | Fresh+memset Core |
+|---|---|---:|---:|---|---|
+| float_control_accepted_fields | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| float_control_accepted_memset | 98.5 / 57.4 | 873 | 100.0 | no | no |
+| float_control_fresh_fields | 98.5 / 57.8 | 874 | 100.0 | no | no |
+| float_control_fresh_memset | 98.5 / 57.8 | 873 | 100.0 | no | yes |
+| vector_raw_accepted_fields | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| vector_raw_accepted_memset | 98.5 / 57.4 | 873 | 100.0 | no | no |
+| vector_raw_fresh_fields | 98.5 / 57.8 | 874 | 100.0 | no | no |
+| vector_raw_fresh_memset | 98.5 / 57.8 | 873 | 100.0 | no | yes |
+| vector_typed_accepted_fields | 98.5 / 57.4 | 874 | 100.0 | yes | no |
+| vector_typed_accepted_memset | 98.5 / 57.4 | 873 | 100.0 | no | no |
+| vector_typed_fresh_fields | 98.5 / 57.8 | 874 | 100.0 | no | no |
+| vector_typed_fresh_memset | 98.5 / 57.8 | 873 | 100.0 | no | yes |
+
+All twelve source values tie 98.5, calls 100.0. For each of the four owner/
+clearing combinations, all three representations produce identical entire
+Core objects and row metrics. Three equal accepted Core and three fresh+
+memset Core. There is no source gate gain; none retained. These tested
+allocation/view substitutions are byte-level equivalences under the canonical
+ARM build, not evidence of a general compiler or attainable-score ceiling.
+
+Sweep explicitly exited zero; all twelve compile/focused verify calls pass.
+Metrics recomputed independently from target/base instruction arrays; whole
+object hashes and instruction counts checked. Representation groups checked
+against corresponding control hashes/metrics. Deterministic generator and
+focused objects/reports retained, without separate non-improving snapshots.
+Code/fixtures match ecc30f25 after restoration. Read-only accepted native/full
+binding audit passes: 204 TUs, 4619 comparisons, zero skipped, 202 unaffected
+objects; actual linked 2079 / byte 959 pair sets equal baseline with no lost/
+gained pairs, canonical arguments and body/signature boundaries unchanged.
+No fresh native/full-corpus runtime proof for rejected source representations.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge. Further equivalent accumulator
+allocation type spellings have no supporting evidence for a gain.
+
+Evidence: `_work/read_vector_accumulator_interaction_identities.json`, twelve
+focused reports/objects, `_work/read_vector_accumulator_interaction_sweep.py`
+and rechecked typedpair audit.
+
+
+## Continuation: Create addressed handle grouped with engine/material arguments
+
+Twenty-two focused Create measurements start from 9d597131: ten local ReadState
+layouts with accepted direct and shared-int-result predicates, plus both
+controls. Prior addressed call records grouped handle with output only;
+earlier non-addressed argument records scalar-replaced many fields. This family
+combines addressed handle with engine/material and optionally output/path.
+Remaining original/accepted load/store shape differences motivated this test;
+no original ReadState type is recovered or claimed.
+
+Ten layouts are engine/handle and reverse, material/handle and reverse,
+engine/handle/material and reverse, engine/handle/output and reverse, and
+all five active arguments in two orders. Every record field is used; no
+padding member, unused field, fixed register, header/exported ABI or helper.
+Pointer fields copy original parameters; handle retains original zero value.
+These local copies occur before original engine/path guard, without moving
+any allocation, OpenRead, Read, MeshReadData, merge/ArrayAdd, cleanup or Close.
+
+OpenRead receives the record's handle address; subsequent file arguments and
+const handle-reference arguments use that same field. This relies on actual
+bounded output-parameter/Read contracts, not an assertion for arbitrary
+callbacks writing beyond a supplied object or casting away unrelated state.
+Status predicates remain child ==-1, enhanced-single ==1 and plain-single
+!=-1 for arbitrary int results. Shared variant reuses existing result; valid
+returns stay 1/-1 and invalid engine/path guard -4. Same header masks, bounds
+and animation completion. No added effect, compiler/flag/matcher/denominator
+change, altered signature or outside-body edit. Forms are source hypotheses.
+
+| Trial | Create source / strict | Instructions | Calls | Accepted Core | Shared-result Core |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| accepted_engine_handle | 96.4 / 60.3 | 289 | 100.0 | no | no |
+| accepted_handle_engine | 97.3 / 64.9 | 288 | 100.0 | no | no |
+| accepted_mat_handle | 97.8 / 63.1 | 292 | 100.0 | no | no |
+| accepted_handle_mat | 97.9 / 64.3 | 291 | 100.0 | no | no |
+| accepted_engine_handle_mat | 96.6 / 62.0 | 290 | 100.0 | no | no |
+| accepted_mat_handle_engine | 96.6 / 62.3 | 290 | 100.0 | no | no |
+| accepted_engine_handle_out | 96.4 / 60.4 | 295 | 100.0 | no | no |
+| accepted_out_handle_engine | 96.4 / 60.8 | 295 | 100.0 | no | no |
+| accepted_engine_path_out_mat_handle | 96.2 / 65.1 | 299 | 100.0 | no | no |
+| accepted_handle_mat_out_path_engine | 96.1 / 54.2 | 299 | 100.0 | no | no |
+| shared_control | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_engine_handle | 96.4 / 60.7 | 289 | 100.0 | no | no |
+| shared_handle_engine | 97.3 / 65.3 | 288 | 100.0 | no | no |
+| shared_mat_handle | 97.8 / 63.8 | 292 | 100.0 | no | no |
+| shared_handle_mat | 97.9 / 64.9 | 291 | 100.0 | no | no |
+| shared_engine_handle_mat | 96.6 / 62.3 | 290 | 100.0 | no | no |
+| shared_mat_handle_engine | 96.6 / 62.7 | 290 | 100.0 | no | no |
+| shared_engine_handle_out | 96.4 / 60.8 | 295 | 100.0 | no | no |
+| shared_out_handle_engine | 96.4 / 61.1 | 295 | 100.0 | no | no |
+| shared_engine_path_out_mat_handle | 96.2 / 65.8 | 299 | 100.0 | no | no |
+| shared_handle_mat_out_path_engine | 96.1 / 54.6 | 299 | 100.0 | no | no |
+
+Only controls equal their reference whole objects. All twenty new layouts
+regress source to 96.1..97.9; each direct/shared pair has the same source score,
+instruction count and call-count shape. Some strict scores increase (up to
+65.8), but neither requested source-shape gate improves. Calls remain 100.0;
+counts range 288..299. None retained; no general compiler ceiling inferred.
+
+Sweep explicitly exited zero. All twenty-two compile/focused verify calls pass.
+Metrics independently recomputed from instruction arrays; whole-object hashes
+and instruction counts checked. Deterministic generator and focused objects/
+reports retained without separate non-improving snapshots. Code/fixtures
+match ecc30f25 after restoration. Read-only accepted native/full binding audit
+passes: 204 TUs, 4619 comparisons, zero skipped, 202 unaffected objects; actual
+linked 2079 / byte 959 pair sets equal baseline with no lost/gained pairs,
+canonical arguments and body/signature boundaries unchanged. No fresh native/
+full-corpus runtime proof for rejected variants.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active. Main
+checkout untouched; no push, PR or merge. Tested addressed argument records
+do not support further equivalent layout/spelling trials as a route to a gain.
+
+Evidence: `_work/create_addressed_handle_arguments_identities.json`, twenty-two
+focused reports/objects, `_work/create_addressed_handle_arguments_sweep.py`
+and rechecked typedpair validation audit.
+
+
+## Continuation: Create addressed header buffer with live arguments
+
+Eighteen focused measurements start from e25b0e3d: eight local HeaderState
+layouts under accepted direct-status and shared-int-result forms, plus both
+controls. Earlier parser records lacked engine/material pointers; addressed
+handle/argument layouts did not include the addressed header buffer. This
+family tests whether header-buffer aliasing and stack placement can improve
+the remaining original/accepted load/store differences. It is a source
+hypothesis, not a recovered original structure.
+
+Layouts pair magic with engine/material in both orders; combine engine,
+magic and handle in both orders; and combine engine/material, magic,
+subCount and handle in two orders. All fields serve original operations.
+The eight-byte buffer and count remain uninitialized until their original
+writers. Pointer copies and handle-zero initialization occur at entry; no
+call/allocation/file operation is reordered. Original seven-byte header
+read, eight-byte strcpy including terminator and two-byte secondary read
+remain within the buffer. Original count read stays two bytes. This relies
+on the actual bounded file API contract, not arbitrary out-of-bounds writes.
+
+No unused field, manufactured padding, volatile, assembler, fixed register,
+helper/header/exported layout/signature/compiler flags/matcher/denominator
+change. Child ==-1, enhanced-single ==1, plain-single !=-1 and returns
+1/-1/-4 preserve their original int-status behavior. Cleanup and animation
+completion unchanged. Only local copies and local field references differ.
+
+| Trial | Create source / strict | Instructions | Calls | Accepted Core | Shared Core |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| accepted_engine_magic | 97.4 / 63.8 | 289 | 100.0 | no | no |
+| accepted_magic_engine | 97.5 / 64.7 | 287 | 100.0 | no | no |
+| accepted_mat_magic | 98.3 / 66.2 | 292 | 100.0 | no | no |
+| accepted_magic_mat | 98.1 / 65.4 | 290 | 100.0 | no | no |
+| accepted_engine_magic_handle | 96.4 / 60.1 | 291 | 100.0 | no | no |
+| accepted_handle_magic_engine | 96.5 / 56.8 | 290 | 100.0 | no | no |
+| accepted_engine_magic_subCount_handle_mat | 96.3 / 55.6 | 292 | 100.0 | no | no |
+| accepted_mat_handle_subCount_magic_engine | 96.3 / 52.8 | 292 | 100.0 | no | no |
+| shared_control | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_engine_magic | 97.4 / 64.1 | 289 | 100.0 | no | no |
+| shared_magic_engine | 97.5 / 65.1 | 287 | 100.0 | no | no |
+| shared_mat_magic | 98.3 / 66.9 | 292 | 100.0 | no | no |
+| shared_magic_mat | 98.1 / 66.1 | 290 | 100.0 | no | no |
+| shared_engine_magic_handle | 96.4 / 60.5 | 291 | 100.0 | no | no |
+| shared_handle_magic_engine | 96.5 / 57.1 | 290 | 100.0 | no | no |
+| shared_engine_magic_subCount_handle_mat | 96.3 / 55.9 | 292 | 100.0 | no | no |
+| shared_mat_handle_subCount_magic_engine | 96.3 / 53.2 | 292 | 100.0 | no | no |
+
+All sixteen new layouts fail to improve the primary gate: source range
+96.3..98.3, instruction counts
+287..292. Both controls
+reproduce their whole reference objects. No trial retained; these observations
+do not establish a compiler ceiling. Further addressed-header argument
+layout permutations are not supported by this evidence as the next action.
+
+Sweep exited zero; eighteen compile/focused-verification calls passed.
+Source scores independently recomputed from disassembled instruction arrays;
+instruction counts and object hashes checked. Deterministic generator and
+focused objects/reports retained; separate source snapshots only for gains.
+Restored source and fixtures equal ecc30f25. Read-only accepted full/native
+binding audit passes: 204 TUs, 4619 comparisons, zero skips, 202 unaffected
+objects, linked 2079 / byte 959 actual pair sets identical baseline with no
+lost/gained pairs; canonical flags and body/signature boundaries preserved.
+This revalidates existing accepted native/full evidence, not a fresh native
+runtime or full-corpus test of rejected variants.
+
+Accepted means remain **98.40% / 98.41%**; both >=99.0 gates unmet; goal active.
+Main checkout untouched; report-only commit, no push/PR/merge.
+Evidence: `_work/create_addressed_magic_arguments_sweep.py`,
+`_work/create_addressed_magic_arguments_identities.json`, eighteen focused
+objects/reports and rechecked typedpair binding audit.
+
+
+## Continuation: Read normal clamp schedules with owner/memzero interaction
+
+Twenty focused measurements start from d68168bf. Nine existing normal-clamp
+source forms are combined with per-vertex tangent-accumulator memset under
+accepted and fresh-index-owner variants, with two controls. Previous clamp
+trials preceded accepted typed-pair allocation; these combinations were
+not covered by earlier owner/memzero normal view, counter and branch trials.
+Original normal path has vsqrt, floating comparisons, quotient division and
+component clamp work; this is a register-pressure/schedule hypothesis.
+
+Six schedules: lower promoted-double explicit if, upper ternary, per-component
+lower/cast/upper, staged y/x/z quotients, staged y-first clamps, interleaved
+lower if. Three upper predicate lifetimes: before lower, after lower,
+per-component. Float quotients, double lower comparison, float upper predicate,
+NaN unordered behavior and output stores preserve their respective original
+operations. No reciprocal/fast-math/conversion/reassociation introduced.
+Independent scalar operation scheduling differs; no callbacks occur inside
+these arithmetic stages. Fresh owner reload uses the actual slot after its
+indexCount Read, as in the previously measured variant; bounded Read contract
+is assumed, not arbitrary callback mutation. Per-vertex memset writes the
+same three float zeros on the supported target. No changed count or allocation.
+
+No helper/header/ABI/signature/compiler flag/matcher/denominator, volatile,
+assembly, fixed register or padding change. Forms touch only MeshReadData.
+
+| Trial | Read source / strict | Instructions | Calls | Owner/memzero control object |
+|---|---|---:|---:|---|
+| accepted_control | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_clamp_explicit_lower_double | 97.6 / 54.7 | 858 | 100.0 | no |
+| accepted_clamp_upper_ternary | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_clamp_component_clamps | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_clamp_staged_y_x_z | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_clamp_staged_y_clamps | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_clamp_interleaved_lower_if | 97.6 / 54.7 | 858 | 100.0 | no |
+| accepted_predicate_upper_predicates_before_lower | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_predicate_upper_predicates_after_lower | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_predicate_component_upper_predicates | 98.5 / 57.4 | 873 | 100.0 | yes |
+| fresh_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_clamp_explicit_lower_double | 97.5 / 55.1 | 858 | 100.0 | no |
+| fresh_clamp_upper_ternary | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_clamp_component_clamps | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_clamp_staged_y_x_z | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_clamp_staged_y_clamps | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_clamp_interleaved_lower_if | 97.5 / 55.1 | 858 | 100.0 | no |
+| fresh_predicate_upper_predicates_before_lower | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_predicate_upper_predicates_after_lower | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_predicate_component_upper_predicates | 98.5 / 57.8 | 873 | 100.0 | yes |
+
+Source range 97.5..98.5;
+16 whole objects equal their respective
+owner/memzero controls. None improves 98.5. Controls reproduce historical
+accepted/fresh memset digests; no source retained. This closes these clamp
+schedule interactions as a useful next step; no compiler ceiling inferred.
+
+Sweep exited zero. Twenty compile/focused verify calls passed. Source metrics
+recomputed directly from original/compiled instruction arrays, counts and
+whole-object hashes independently checked. Source and fixture restoration
+matches ecc30f25. Existing accepted full/native binding audit revalidated:
+204 TUs, 4619 comparisons, no skips, 202 unaffected objects, actual linked
+2079 and byte 959 pair sets identical baseline with no loss/gain; canonical
+flags and allowed body/signature boundaries unchanged. No fresh full-corpus
+or native runtime proof for rejected source forms is claimed.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/read_clamp_owner_memzero_interaction_sweep.py`,
+`_work/read_clamp_owner_memzero_interaction_identities.json`, twenty focused
+reports/objects and rechecked typedpair binding audit.
+
+
+## Continuation: Enhanced common optional-section entry guard
+
+Ten focused measurements start from e6fe9608: four common-entry guard forms
+for optional and V5 sections under accepted/preloaded-channel variants, with
+both controls. Prior presence-flow tests handled separate optional and V5
+guards. This family uses the bit implication (format&0x10)!=0 =>
+(format&0x18)!=0 to move V5 under the common optional guard. This changes
+control-flow topology rather than the source spelling of separate checks.
+
+Forms: nested positive guard, common early exit to parser completion,
+switch with zero break/default body, and single-iteration do/break.
+When optional mask is zero, neither section reads anything; otherwise the
+original optional section runs followed by the original V5 guard/content.
+Read order, signed/unsigned counts, channel masks including zero insertions
+for channels 4/5, key conversions, time updates, animation attachment and
+success/failure cleanup stay unchanged. No helper/header/ABI/signature/flags/
+matcher/denominator, padding, volatile, assembler or fixed register changes.
+Forms are source hypotheses, not recovered original branching.
+
+| Trial | Enhanced source / strict | Instructions | Calls | Accepted Mesh | Preload Mesh |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 | yes | no |
+| accepted_nested | 98.0 / 65.9 | 644 | 100.0 | no | no |
+| accepted_early_common | 98.0 / 65.9 | 644 | 100.0 | no | no |
+| accepted_switch_common | 98.0 / 65.9 | 644 | 100.0 | no | no |
+| accepted_once_common | 98.0 / 65.9 | 644 | 100.0 | no | no |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | no | yes |
+| preload_nested | 98.0 / 66.8 | 642 | 100.0 | no | no |
+| preload_early_common | 98.0 / 66.8 | 642 | 100.0 | no | no |
+| preload_switch_common | 98.0 / 66.8 | 642 | 100.0 | no | no |
+| preload_once_common | 98.0 / 66.8 | 642 | 100.0 | no | no |
+
+All eight new forms regress to 98.0. Each four-form group produces the same
+whole Mesh object; common entry adds three instructions to its control.
+Both controls reproduce their whole reference objects. No variant retained;
+this evidence does not support further spelling permutations of the common
+optional entry as the next action, and does not establish a compiler ceiling.
+
+Ten compile/focused-verification calls and sweep pass. Source scores recomputed
+from instruction arrays; instruction counts and object hashes independently
+checked. Code/fixtures restore to ecc30f25. Existing accepted native/full
+binding audit passes: 204 TUs, 4619 comparisons, no skips, 202 unaffected
+objects, linked 2079 / byte 959 actual pair sets identical baseline with no
+lost/gained pairs, canonical flags and body/signature boundaries preserved.
+No fresh native/full-corpus validation of rejected forms is claimed.
+
+Disk preparation removed 816 generated original-target duplicates from
+axisbyte-full, optional-full, readchilddo-full and scope-full (204 each).
+All resolved paths lie within own _work; targets untracked and each SHA256
+equals its retained typedpair-full/target counterpart. Manifest written in
+_work and a separate system-temp backup before removal; target/reference
+hashes rechecked immediately before each literal-path deletion. No recursive
+deletion; source/base objects, accepted proof, reports, baseline, main and Git
+archive retained. Reclaimed 6,907,472 logical bytes. Old report target paths
+map to retained canonical counterparts via
+`_work/duplicate_target_cleanup_batch4_20261007.json`; all 816 mappings
+independently rebound after cleanup. Script:
+`_work/cleanup_duplicate_targets_batch4_20261007.ps1`.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/enh_optional_common_guard_sweep.py`,
+`_work/enh_optional_common_guard_identities.json`, ten focused reports/objects
+and rechecked typedpair binding audit.
+
+
+## Continuation: Read typed normal triples and traversal interactions
+
+Thirty-two focused measurements start from 7641e4e1. Prior temporary value
+records scalar-replaced to identical objects before current typed-pair raw
+allocation; these are actual typed normal input arrays instead. Local
+NormalInput is three short fields or short component[3], with compile-time
+sizeof==6. New array allocates vertexCount elements, default-initialized
+without zero-fill or constructors; paired typed delete runs on original
+success/failure paths. Read still requests vertexCount*6 original bytes.
+No cookie/destructor effect for these trivial element types; bounds/count
+range is unsigned short, so both allocation sizes are the same on ARM/native.
+
+First twenty rows: component-counter loop reads raw+i/3 via pointer or
+reference, with field/array storage, across accepted/fresh index owners and
+original three-zero-stores/per-vertex memset. Four controls. Original i+=3
+and dynamic 3*slot vertexCount bound retained; the aggregate changes actual
+input addressing and allocation type, not intermediate arithmetic spelling.
+
+Adaptive twelve rows: four repeated controls plus two traversals in each
+owner/clearing group, using field storage because all four first-family
+representations are identical. Cursor advances one actual NormalInput per
+iteration alongside i+=3. Vertex-index traversal tests vertex<slot vertexCount,
+derives i=vertex*3 for original output addressing, and indexes input by vertex.
+Unsigned-short vertexCount makes multiplication non-overflowing; no mutable
+slot/count callback occurs in arithmetic under the actual sqrt/math contract.
+Reads, float/double conversions, length/clamps including unordered behavior,
+centered output/fallback, call order and cleanup remain unchanged.
+
+Fresh index owner/per-vertex memset are previously studied hypotheses, not
+accepted improvements; fresh owner models actual slot re-read after Read.
+No added allocation or side effect, unused field/padding, helper/header/ABI,
+signature/compiler flag/matcher/denominator, volatile/assembly/fixed register.
+No original NormalInput source type is claimed recovered.
+
+Evidence ledger: `_work/read_normal_typed_triples_identities.json`
+
+| Trial | Read source / strict | Instructions | Calls | Group control object |
+|---|---|---:|---:|---|
+| accepted_stores_control | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_stores_fields_pointer | 98.5 / 56.9 | 874 | 100.0 | no |
+| accepted_stores_fields_reference | 98.5 / 56.9 | 874 | 100.0 | no |
+| accepted_stores_components_pointer | 98.5 / 56.9 | 874 | 100.0 | no |
+| accepted_stores_components_reference | 98.5 / 56.9 | 874 | 100.0 | no |
+| accepted_memzero_control | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_memzero_fields_pointer | 98.5 / 56.9 | 873 | 100.0 | no |
+| accepted_memzero_fields_reference | 98.5 / 56.9 | 873 | 100.0 | no |
+| accepted_memzero_components_pointer | 98.5 / 56.9 | 873 | 100.0 | no |
+| accepted_memzero_components_reference | 98.5 / 56.9 | 873 | 100.0 | no |
+| fresh_stores_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_stores_fields_pointer | 98.5 / 57.4 | 874 | 100.0 | no |
+| fresh_stores_fields_reference | 98.5 / 57.4 | 874 | 100.0 | no |
+| fresh_stores_components_pointer | 98.5 / 57.4 | 874 | 100.0 | no |
+| fresh_stores_components_reference | 98.5 / 57.4 | 874 | 100.0 | no |
+| fresh_memzero_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_memzero_fields_pointer | 98.5 / 57.4 | 873 | 100.0 | no |
+| fresh_memzero_fields_reference | 98.5 / 57.4 | 873 | 100.0 | no |
+| fresh_memzero_components_pointer | 98.5 / 57.4 | 873 | 100.0 | no |
+| fresh_memzero_components_reference | 98.5 / 57.4 | 873 | 100.0 | no |
+
+Evidence ledger: `_work/read_normal_triple_cursor_identities.json`
+
+| Trial | Read source / strict | Instructions | Calls | Group control object |
+|---|---|---:|---:|---|
+| accepted_stores_control | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_stores_cursor | 98.0 / 56.2 | 870 | 100.0 | no |
+| accepted_stores_vertex_index | 98.3 / 56.7 | 873 | 100.0 | no |
+| accepted_memzero_control | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_memzero_cursor | 98.0 / 56.4 | 869 | 100.0 | no |
+| accepted_memzero_vertex_index | 98.3 / 56.6 | 872 | 100.0 | no |
+| fresh_stores_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_stores_cursor | 98.0 / 56.7 | 870 | 100.0 | no |
+| fresh_stores_vertex_index | 98.3 / 57.2 | 873 | 100.0 | no |
+| fresh_memzero_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_memzero_cursor | 97.9 / 56.8 | 869 | 100.0 | no |
+| fresh_memzero_vertex_index | 98.2 / 57.1 | 872 | 100.0 | no |
+
+First-family sixteen new forms tie 98.5 and each four-representation group
+has identical whole Core object, distinct from its control. All four
+controls reproduce their reference digests. Cursor/vertex forms regress;
+repeated controls reproduce their whole objects. No gain retained. Typed
+triple layout and traversal therefore do not support additional equivalent
+representation permutations as a useful next action; no compiler ceiling
+inferred from these trials.
+
+Both sweeps exited zero, all thirty-two compile/focused verify calls passed.
+Source scores independently recomputed from instruction arrays; counts and
+whole-object hashes checked. Sources/fixtures restore to ecc30f25. Existing
+accepted native/full binding audit revalidated: 204 TUs, 4619 comparisons,
+no skips, 202 unaffected objects, actual linked 2079 / byte 959 pair sets
+identical baseline with no lost/gained pairs; canonical flags and allowed
+body/signature boundaries preserved. No fresh native/full-corpus evidence
+for rejected forms claimed.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit, no push/PR/merge.
+Evidence generators: `_work/read_normal_typed_triples_sweep.py`,
+`_work/read_normal_triple_cursor_sweep.py`, thirty-two focused reports/objects
+and rechecked typedpair validation audit.
+
+
+## Continuation: Create header-buffer extent and initialization
+
+Fourteen focused measurements start from 5885b432: six buffer/initialization
+forms with accepted direct and shared-int-result predicates, plus controls.
+Original target writes two words for header initialization; accepted source
+uses strcpy of seven stars plus zero into magic[8]. All header comparisons
+access indices 0..6, first Read writes seven bytes, secondary Read writes two.
+Prior scope/addressed record tests kept original buffer size and strcpy.
+
+Eight-byte forms: memcpy eight bytes, memset seven stars plus magic[7]=0,
+seven-store loop plus magic[7]=0. Seven-byte forms: memcpy seven, memset seven,
+seven-store loop. All perform initialization only after successful OpenRead;
+read destinations, sizes, signature comparisons and original masks unchanged.
+Seven-byte forms remove the unused terminator storage/write; no string API
+consumes this buffer afterward. This equivalence relies on actual bounded
+Read requests, including partial-read contents initialized to the same stars;
+it does not assume safety for arbitrary API writes beyond requested count.
+Eight-byte forms preserve all original initialized bytes. No new effect,
+manufactured padding/unused field, helper/header/ABI/signature/compiler flag/
+matcher/denominator, volatile/assembler/fixed register change. These are
+source hypotheses, not recovered original buffer declarations.
+
+| Trial | Create source / strict | Instructions | Calls | Accepted Core | Shared Core |
+|---|---|---:|---:|---|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| accepted_eight_copy | 98.4 / 60.7 | 289 | 100.0 | yes | no |
+| accepted_eight_fill_zero | 98.2 / 59.4 | 288 | 100.0 | no | no |
+| accepted_eight_loop_zero | 97.1 / 62.5 | 291 | 100.0 | no | no |
+| accepted_seven_copy | 96.5 / 55.7 | 291 | 96.0 | no | no |
+| accepted_seven_fill | 97.8 / 55.8 | 290 | 100.0 | no | no |
+| accepted_seven_loop | 96.6 / 62.8 | 289 | 100.0 | no | no |
+| shared_control | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_eight_copy | 98.4 / 61.0 | 289 | 100.0 | no | yes |
+| shared_eight_fill_zero | 98.2 / 59.8 | 288 | 100.0 | no | no |
+| shared_eight_loop_zero | 97.1 / 62.5 | 291 | 100.0 | no | no |
+| shared_seven_copy | 96.5 / 56.0 | 291 | 96.0 | no | no |
+| shared_seven_fill | 97.8 / 56.1 | 290 | 100.0 | no | no |
+| shared_seven_loop | 96.6 / 62.8 | 289 | 100.0 | no | no |
+
+Eight-byte memcpy reproduces the respective whole control object; other
+forms regress. Seven-byte memcpy changes call-count shape (96.0 versus
+100.0); no arbitrary call-count normalization is applied. No variant retained.
+This evidence rules out equivalent buffer extent/fill permutations as a
+useful next action; no compiler ceiling is inferred.
+
+Sweep exited zero; fourteen compile/focused verify calls pass. Source scores
+and call-count shape independently recomputed from instruction arrays;
+instruction counts and object hashes checked. Source/fixtures restore to
+ecc30f25. Existing accepted native/full binding audit revalidated: 204 TUs,
+4619 comparisons, no skips, 202 unaffected objects, linked 2079 / byte 959
+actual pair sets identical baseline with no lost/gained pairs; canonical
+flags and allowed body/signature boundaries preserved. No fresh native
+runtime/full-corpus evidence claimed for rejected forms.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/create_magic_extent_initialization_sweep.py`,
+`_work/create_magic_extent_initialization_identities.json`, fourteen focused
+objects/reports and rechecked typedpair validation audit.
+
+
+## Continuation: Read typed UV pairs and traversal interactions
+
+Twenty focused measurements start from da8db033: four UVInput allocation/
+traversal forms across accepted/fresh index owner and original zero stores/
+per-vertex memset, plus four controls. Prior UVInput tests only copied
+temporary scalar values; typed primitive UV arrays had different allocation
+forms. This family uses actual local trivial UVInput[vertexCount], either two
+short fields or short component[2], sizeof==4 statically asserted. No constructor,
+destructor, cookie or value-initialization effect; paired typed deletion at
+the original success/failure sites. Same vertexCount*4 byte allocation/Read.
+
+Field/array references use raw[i/2] with original i+=2 loop; field cursor
+advances one UVInput per iteration; vertex-index loop uses vertex<vcount,
+i=vertex*2 and raw+vertex. Captured unsigned-short vertexCount means i arithmetic
+does not overflow. Same double scaling by 1/4096, captured shader flip,
+double subtract, float conversions, U-store before V-load/store, output
+pointer updates and call/cleanup order. No new helper/header/ABI/signature,
+compiler flags/matcher/denominator, padding/unused field, volatile/assembly/
+fixed register change. These are source hypotheses, not recovered UV types.
+
+| Trial | Read source / strict | Instructions | Calls | Group control object |
+|---|---|---:|---:|---|
+| accepted_stores_control | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_stores_fields_reference | 98.1 / 57.1 | 876 | 98.2 | no |
+| accepted_stores_cursor | 98.1 / 57.1 | 876 | 98.2 | no |
+| accepted_stores_vertex_index | 97.7 / 56.6 | 876 | 98.2 | no |
+| accepted_stores_components_reference | 98.1 / 57.1 | 876 | 98.2 | no |
+| accepted_memzero_control | 98.5 / 57.4 | 873 | 100.0 | yes |
+| accepted_memzero_fields_reference | 98.1 / 57.1 | 875 | 98.2 | no |
+| accepted_memzero_cursor | 98.1 / 57.1 | 875 | 98.2 | no |
+| accepted_memzero_vertex_index | 97.7 / 56.6 | 875 | 98.2 | no |
+| accepted_memzero_components_reference | 98.1 / 57.1 | 875 | 98.2 | no |
+| fresh_stores_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_stores_fields_reference | 97.8 / 56.5 | 882 | 98.2 | no |
+| fresh_stores_cursor | 97.8 / 56.5 | 882 | 98.2 | no |
+| fresh_stores_vertex_index | 97.5 / 56.1 | 880 | 98.2 | no |
+| fresh_stores_components_reference | 97.8 / 56.5 | 882 | 98.2 | no |
+| fresh_memzero_control | 98.5 / 57.8 | 873 | 100.0 | yes |
+| fresh_memzero_fields_reference | 97.7 / 56.6 | 881 | 98.2 | no |
+| fresh_memzero_cursor | 97.7 / 56.6 | 881 | 98.2 | no |
+| fresh_memzero_vertex_index | 97.4 / 56.2 | 879 | 98.2 | no |
+| fresh_memzero_components_reference | 97.7 / 56.6 | 881 | 98.2 | no |
+
+All sixteen new forms regress: source 97.4..98.1;
+call-count shape 98.2..98.2.
+Four controls reproduce their respective whole reference objects. No variant
+retained. This does not support more equivalent typed-pair representation
+permutations as a useful next action; no compiler ceiling inferred.
+
+Sweep exited zero; twenty compile/focused verify calls passed. Source scores
+and call-count shape directly recomputed from instruction arrays, counts and
+whole-object hashes independently checked. Code/fixtures restore to ecc30f25.
+Existing accepted native/full binding audit revalidated: 204 TUs, 4619
+comparisons, no skips, 202 unaffected objects, actual linked 2079 / byte 959
+pair sets identical baseline with no lost/gained pairs; canonical flags and
+allowed body/signature boundaries preserved. No fresh native/full-corpus
+proof for rejected source variants claimed.
+
+Disk preparation removed 106 generated original Core target duplicates from
+six explicit recent focused families (22+18+14+20+20+12). Each resolved target
+is within own _work, untracked, the single expected Core unit, SHA256 equal
+retained typedpair-full/target counterpart. Manifest and system-temp backup
+written before literal-path deletion; target/reference digests rechecked
+immediately before each removal. No recursive deletion. Compiled base objects,
+sources, reports, accepted/baseline proof, main checkout and Git archive retained.
+Reclaimed 2,799,672 logical bytes. Old report target paths map via
+`_work/duplicate_recent_core_target_cleanup_20261007.json`; all 106 mappings
+independently rebound after deletion. Script:
+`_work/cleanup_recent_core_target_duplicates_20261007.ps1`.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/read_uv_typed_pairs_sweep.py`,
+`_work/read_uv_typed_pairs_identities.json`, twenty focused reports/objects
+and rechecked typedpair binding audit.
+
+
+## Continuation: Read primitive triple-array allocation/addressing
+
+Sixteen focused measurements start from 6f246393: all seven nonempty
+combinations of short-position, integer-position and compressed-normal
+primitive triple arrays, under accepted/fresh index owner, plus controls.
+Prior normal records used local structs; this family uses C++ primitive
+inner arrays: short (*raw)[3]=new short[vertexCount][3] and int equivalents,
+with paired delete[] raw at original success/failure cleanup sites.
+
+Unsigned-short count makes outer count*6/count*12 sizes equal their original
+scalar arrays without overflow; primitive elements are default-initialized
+without zero filling, constructors/destructors or array cookie effects.
+Original Read sizes/count reloads/allocation order remain. Scalar position
+loop accesses raw[i/3][i%3] (0..2), keeping original i increment/bound and
+min/max axis arithmetic. Normal i+=3 loop accesses raw[i/3][0/1/2]. No
+flattened pointer traversal across inner-array boundaries. Same values,
+conversion/scaling/sqrt/clamps, centered stores/fallback, tangent and cleanup
+work. Fresh index owner remains the prior actual-slot reload hypothesis.
+
+No helper/header/ABI/signature/compiler flag/matcher/denominator change,
+manufactured padding/unused field, volatile/assembly/fixed register or added
+effect. Source hypotheses, not recovered original declarations.
+
+| Trial | Read source / strict | Instructions | Calls | Owner control object |
+|---|---|---:|---:|---|
+| accepted_control | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_short_position | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_integer_position | 98.5 / 57.6 | 873 | 100.0 | no |
+| accepted_short_position_integer_position | 98.5 / 57.6 | 873 | 100.0 | no |
+| accepted_normal | 98.5 / 56.9 | 874 | 100.0 | no |
+| accepted_short_position_normal | 98.5 / 56.9 | 874 | 100.0 | no |
+| accepted_integer_position_normal | 98.5 / 57.2 | 873 | 100.0 | no |
+| accepted_short_position_integer_position_normal | 98.5 / 57.2 | 873 | 100.0 | no |
+| fresh_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_short_position | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_integer_position | 98.4 / 58.0 | 875 | 100.0 | no |
+| fresh_short_position_integer_position | 98.4 / 58.0 | 875 | 100.0 | no |
+| fresh_normal | 98.5 / 57.4 | 874 | 100.0 | no |
+| fresh_short_position_normal | 98.5 / 57.4 | 874 | 100.0 | no |
+| fresh_integer_position_normal | 98.4 / 57.6 | 875 | 100.0 | no |
+| fresh_short_position_integer_position_normal | 98.4 / 57.6 | 875 | 100.0 | no |
+
+New forms source range 98.4..98.5;
+4 whole objects equal their respective
+owner control. No primary gain; none retained. Further equivalent primitive
+triple array spelling/subset permutations are not supported as a useful next
+action; this evidence does not establish a compiler ceiling.
+
+Sweep exited zero; sixteen compile/focused verify calls passed. Source and
+call-count metrics directly recomputed from instruction arrays; counts and
+whole-object hashes checked independently. Code/fixtures restored to
+ecc30f25. Existing accepted native/full binding audit revalidated: 204 TUs,
+4619 comparisons, no skips, 202 unaffected objects; actual linked 2079 / byte
+959 pair sets identical baseline with no lost/gained pairs; canonical flags
+and allowed body/signature boundaries preserved. No fresh native runtime/
+full-corpus validation of rejected variants claimed.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/read_primitive_triple_arrays_sweep.py`,
+`_work/read_primitive_triple_arrays_identities.json`, sixteen focused reports/
+objects and rechecked typedpair validation audit.
+
+
+## Continuation: Create early-entry guard with scope/status interaction
+
+Eighteen focused measurements start from 181065e6: early combined invalid
+engine/path return with all seven combinations of narrowed magic/count/child
+scope under accepted direct and shared-int-result forms, plus four entry
+controls (original/early under each result form). Original guard-layout
+differences motivated testing this interaction; existing scope/status tests
+retained the outer valid-input block, and earlier early-entry trials did not
+combine these current scope/result forms.
+
+Invalid inputs still return -4 before any allocation/file operation. Valid
+inputs execute original work after early guard. Shared int result is declared
+without redundant initialization and assigned before every original status
+comparison; its value is never read uninitialized. Predicate distinctions
+remain child ==-1, enhanced-single ==1, plain-single !=-1, success/failure
+returns 1/-1. Original close/release and animation operations unchanged.
+Scope bits 1/2/4 respectively place magic in successful OpenRead, subCount in
+enhanced-format block, childPtr in child iteration; initialization/write
+locations and lifetimes relative to actual calls remain as before.
+
+No helper/header/ABI/signature/flags/matcher/denominator change, invented
+padding/unused field, volatile/assembly/fixed register or added effect.
+Forms are source hypotheses, not recovered original entry flow.
+
+| Trial | Create source / strict | Instructions | Calls | Same prior scoped Core |
+|---|---|---:|---:|---|
+| accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes |
+| shared_control | 98.4 / 61.0 | 289 | 100.0 | yes |
+| early_accepted_control | 98.4 / 60.7 | 289 | 100.0 | yes |
+| early_shared_control | 98.4 / 61.0 | 289 | 100.0 | yes |
+| early_accepted_scope_1 | 98.2 / 52.8 | 289 | 100.0 | yes |
+| early_accepted_scope_2 | 97.7 / 54.8 | 289 | 100.0 | yes |
+| early_accepted_scope_3 | 97.7 / 57.2 | 289 | 100.0 | yes |
+| early_accepted_scope_4 | 98.4 / 55.5 | 289 | 100.0 | yes |
+| early_accepted_scope_5 | 98.2 / 56.9 | 289 | 100.0 | yes |
+| early_accepted_scope_6 | 97.7 / 58.6 | 289 | 100.0 | yes |
+| early_accepted_scope_7 | 98.0 / 57.9 | 289 | 100.0 | yes |
+| early_shared_scope_1 | 98.2 / 53.1 | 289 | 100.0 | yes |
+| early_shared_scope_2 | 97.7 / 55.2 | 289 | 100.0 | yes |
+| early_shared_scope_3 | 97.7 / 57.6 | 289 | 100.0 | yes |
+| early_shared_scope_4 | 98.4 / 55.9 | 289 | 100.0 | yes |
+| early_shared_scope_5 | 98.2 / 57.2 | 289 | 100.0 | yes |
+| early_shared_scope_6 | 97.7 / 59.0 | 289 | 100.0 | yes |
+| early_shared_scope_7 | 98.0 / 58.3 | 289 | 100.0 | yes |
+
+No primary gain. 18 of eighteen whole
+objects equal their corresponding prior scoped/result form. Explicit early
+entry does not provide a new improvement through these scope combinations;
+no compiler ceiling inferred. No source retained.
+
+Sweep exited zero; eighteen compile/focused verify calls pass. Source and
+call-count scores directly recomputed from instruction arrays; counts,
+object digests and prior whole-object identities independently checked.
+Code/fixtures restore to ecc30f25. Existing accepted native/full binding
+audit passes: 204 TUs, 4619 comparisons, no skips, 202 unaffected objects;
+actual linked 2079 / byte 959 pair sets identical baseline with no lost/gained
+pairs, canonical flags and body/signature boundaries unchanged. No fresh
+native/full-corpus evidence for rejected source variants claimed.
+
+Disk preparation removed 86 generated original Core target duplicates in
+six explicitly bounded recent normal/accumulator families (21+10+10+11+22+12).
+Targets resolved within own _work, untracked, single expected unit, each hash
+equal retained typedpair-full/target counterpart. Manifest and system-temp
+backup saved before literal-path deletion; target/reference digests rechecked
+immediately before removal. No recursive deletion; compiled base objects,
+sources/reports, accepted/baseline proof, main and Git archive retained.
+Reclaimed 2,271,432 logical bytes. Old target paths map to canonical copies
+via `_work/duplicate_normal_core_target_cleanup_20261007.json`; all 86
+mappings independently rebound after deletion. Script:
+`_work/cleanup_normal_core_target_duplicates_20261007.ps1`.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/create_early_scope_status_sweep.py`,
+`_work/create_early_scope_status_identities.json`, eighteen focused reports/
+objects and rechecked typedpair binding audit.
+
+
+## Continuation: Fixed-three instruction inventory deficit map
+
+Read-only diagnosis starts from 2ecf5bae. Current source and accepted
+full-corpus proof are rebound; all three original/accepted functions are
+disassembled from retained typedpair-full target/base objects. Exact existing
+normalization pipeline (dual-word accesses, zero comparisons and allocation
+shapes) is applied without editing matcher, inputs, flags or denominators.
+Counters subtract duplicate-preserving instruction-shape/opcode inventories.
+This produces concrete remaining deficits for choosing next source hypotheses
+after recent allocation/entry permutations failed, rather than another blind
+equivalent spelling sweep.
+
+| Body | Source | Missing / extra shapes | Normalized original / accepted count | Zero-displacement candidate pairs |
+|---|---:|---:|---:|---:|
+| MeshReadData | 98.5 | 36 / 36 | 852 / 852 | 3 |
+| MeshCreateFromFile | 98.4 | 16 / 14 | 284 / 282 | 6 |
+| ReadEnhancedDataFromFile | 98.3 | 24 / 27 | 601 / 604 | 7 |
+
+Candidate pairing only groups shapes differing solely by [register] versus
+[register,#0]. It does not establish aligned instruction identity, prove a
+source equivalence, adjust an official score or claim an attainable gain.
+Raw opcode and shape deficits are preserved in the evidence JSON. All
+reported source metrics still equal the accepted official matcher rows.
+
+MeshReadData opcode deficits:
+
+| Opcode | Missing original forms | Extra accepted forms |
+|---|---:|---:|
+| ldr | 6 | 0 |
+| add | 3 | 0 |
+| cmp | 2 | 0 |
+| sub | 1 | 0 |
+| lsls | 1 | 0 |
+| bmi | 1 | 0 |
+| nop | 1 | 0 |
+| movne | 1 | 0 |
+| adds | 0 | 5 |
+| str | 0 | 2 |
+| mov | 0 | 1 |
+| movs | 0 | 1 |
+| ldrh | 0 | 1 |
+| tst | 0 | 1 |
+| strd | 0 | 1 |
+| b | 0 | 1 |
+| cbnz | 0 | 1 |
+| ldrd | 0 | 1 |
+| moveq | 0 | 1 |
+
+MeshCreateFromFile opcode deficits:
+
+| Opcode | Missing original forms | Extra accepted forms |
+|---|---:|---:|
+| ldr | 3 | 0 |
+| str | 1 | 0 |
+| it | 1 | 0 |
+| adds | 1 | 0 |
+| ldrd | 1 | 0 |
+| mov | 0 | 2 |
+| cmp | 0 | 1 |
+| itt | 0 | 1 |
+| movne | 0 | 1 |
+
+ReadEnhancedDataFromFile opcode deficits:
+
+| Opcode | Missing original forms | Extra accepted forms |
+|---|---:|---:|
+| mov | 6 | 0 |
+| bic | 3 | 0 |
+| cbnz | 2 | 0 |
+| add | 1 | 0 |
+| str | 1 | 0 |
+| cmp | 1 | 0 |
+| uxtb | 0 | 3 |
+| strd | 0 | 3 |
+| movs | 0 | 2 |
+| ands | 0 | 2 |
+| ldrd | 0 | 2 |
+| sub | 0 | 1 |
+| bne | 0 | 1 |
+| adds | 0 | 1 |
+| lsls | 0 | 1 |
+| bmi | 0 | 1 |
+
+Create: control inventory and calls already 100.0; remaining losses are
+primarily shape/opcode inventory. Six extra bare-pointer loads oppose four
+missing zero-displacement cross-register loads, but original also has three
+frame loads, two self-register loads, stack-argument stores and dual-word
+load differences. The prior early-entry/scoping family reproduced existing
+whole objects, so it does not address these allocation/operand discrepancies.
+
+Read: largest missing shape is seven frame loads; other losses include two
+multiply operand-alias patterns and branch/compare/load/add differences.
+Frame classification in the unchanged matcher can include a register called
+fp even when original code uses it as a general-purpose pointer. A counter
+deficit alone must not be treated as proof of seven genuinely missing stack
+loads. Original nop appears in opcode deficit; do not add nop/padding merely
+to fill the inventory. Native semantics and allowed source scope remain gates.
+
+Enhanced: three original bic #2147483648 axis-dispatch forms oppose three
+ands #127 plus three uxtb, alongside seven reversed zero-displacement load
+forms and several frame/object operand differences. Direct original assembly
+locates bic after scalar-axis Read in each of the three transform sections;
+the fourth bic in V5 is already present and therefore not a deficit. Existing
+plain int/byte counter and signed-dispatch trials did not improve the primary
+gate. Prior addressed AxisState records tested unsigned-char axis with
+unsigned-short count, not a wider active axis field. A bounded next candidate
+is to test the width of that genuinely used local field with its addressed
+count, measuring actual bic/uxtb inventory effects and rejecting regressions.
+Do not introduce dummy masks, forced registers or artificial instructions.
+
+Source/fixtures unchanged. Accepted full/native evidence revalidated in this
+turn by read-only binding audit: 204 TUs, 4619 comparisons, no skips, 202
+unaffected objects; actual linked 2079 / byte 959 pair sets identical baseline
+with no lost/gained pairs; canonical flags and body/signature boundaries
+preserved. No fresh compile or native runtime test claimed for this diagnostic.
+No source change or compiler ceiling established.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/analyze_three_inventory_deficits_20261007.py`,
+`_work/three_inventory_deficits_20261007.json`, retained typedpair-full objects
+and rechecked typedpair validation audit.
+
+
+## Continuation: Enhanced wide addressed axis/count state
+
+Thirty focused measurements start from 9a2521d8. The preceding deficit map
+found three missing original bic #2147483648 axis-dispatch forms, alongside
+three accepted ands #127/uxtb pairs. Prior addressed AxisState used byte axis.
+This bounded hypothesis tests int/unsigned-int active axis beside addressed
+unsigned-short count, axis first, all seven nonempty section subsets, with
+accepted/preloaded V5 channel variants and two controls.
+
+Each selected section uses local struct AxisState { int/unsigned int axis;
+unsigned short count; }; state.axis initialized to zero for its loop, count
+left uninitialized until original two-byte Read. Both fields used by original
+increment/bound/dispatch and count Read/key loop. Actual axis values 0..2,
+termination at 3; no signed overflow. Same payload/time/key calls, masks,
+NaN behavior, section ordering, 4/5 zero channel insertions, attachment and
+cleanup. Relies on bounded actual Read, not arbitrary writes past count.
+Natural type-layout padding only; no invented field, dummy mask/instruction,
+forced register, volatile/assembly, helper/header/ABI/signature/compiler flag/
+matcher/denominator change. No original local state type claimed recovered.
+
+| Trial | Enhanced source / strict | Instructions | Calls | bic sign | ands127 | uxtb |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 | 1 | 3 | 3 |
+| accepted_int_axes_1 | 97.1 / 52.0 | 646 | 100.0 | 1 | 2 | 2 |
+| accepted_int_axes_2 | 97.1 / 40.6 | 646 | 100.0 | 1 | 2 | 2 |
+| accepted_int_axes_3 | 95.2 / 51.0 | 653 | 100.0 | 1 | 1 | 1 |
+| accepted_int_axes_4 | 97.2 / 21.5 | 646 | 100.0 | 1 | 2 | 2 |
+| accepted_int_axes_5 | 95.8 / 33.7 | 651 | 100.0 | 1 | 1 | 1 |
+| accepted_int_axes_6 | 95.8 / 28.4 | 651 | 100.0 | 1 | 1 | 1 |
+| accepted_int_axes_7 | 94.4 / 44.5 | 655 | 100.0 | 1 | 0 | 0 |
+| accepted_unsigned_int_axes_1 | 97.3 / 52.1 | 646 | 100.0 | 1 | 2 | 2 |
+| accepted_unsigned_int_axes_2 | 97.3 / 40.7 | 646 | 100.0 | 1 | 2 | 2 |
+| accepted_unsigned_int_axes_3 | 95.6 / 51.4 | 653 | 100.0 | 1 | 1 | 1 |
+| accepted_unsigned_int_axes_4 | 97.4 / 21.7 | 646 | 100.0 | 1 | 2 | 2 |
+| accepted_unsigned_int_axes_5 | 96.2 / 33.9 | 651 | 100.0 | 1 | 1 | 1 |
+| accepted_unsigned_int_axes_6 | 96.2 / 28.7 | 651 | 100.0 | 1 | 1 | 1 |
+| accepted_unsigned_int_axes_7 | 95.0 / 44.2 | 655 | 100.0 | 1 | 0 | 0 |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 | 1 | 3 | 3 |
+| preload_int_axes_1 | 97.1 / 52.7 | 644 | 100.0 | 1 | 2 | 2 |
+| preload_int_axes_2 | 97.1 / 41.2 | 644 | 100.0 | 1 | 2 | 2 |
+| preload_int_axes_3 | 95.2 / 51.7 | 651 | 100.0 | 1 | 1 | 1 |
+| preload_int_axes_4 | 97.2 / 22.2 | 644 | 100.0 | 1 | 2 | 2 |
+| preload_int_axes_5 | 95.8 / 34.4 | 649 | 100.0 | 1 | 1 | 1 |
+| preload_int_axes_6 | 95.8 / 29.3 | 649 | 100.0 | 1 | 1 | 1 |
+| preload_int_axes_7 | 94.3 / 45.0 | 653 | 100.0 | 1 | 0 | 0 |
+| preload_unsigned_int_axes_1 | 97.3 / 52.8 | 644 | 100.0 | 1 | 2 | 2 |
+| preload_unsigned_int_axes_2 | 97.3 / 41.4 | 644 | 100.0 | 1 | 2 | 2 |
+| preload_unsigned_int_axes_3 | 95.6 / 52.1 | 651 | 100.0 | 1 | 1 | 1 |
+| preload_unsigned_int_axes_4 | 97.4 / 22.3 | 644 | 100.0 | 1 | 2 | 2 |
+| preload_unsigned_int_axes_5 | 96.2 / 34.6 | 649 | 100.0 | 1 | 1 | 1 |
+| preload_unsigned_int_axes_6 | 96.2 / 29.6 | 649 | 100.0 | 1 | 1 | 1 |
+| preload_unsigned_int_axes_7 | 94.9 / 44.7 | 653 | 100.0 | 1 | 0 | 0 |
+
+All twenty-eight new forms regress: 94.3..97.4.
+Widening removes exactly one ands127/uxtb pair per selected section, but
+adds no sign-clearing bic: all thirty retain one (V5), original has four.
+Thus eliminating narrow-counter operations alone does not recreate original
+dispatch; addressed wide state also adds loads/instruction differences.
+Controls reproduce their whole accepted/preload objects. None retained.
+The predicted opcode mechanism is contradicted, so do not expand equivalent
+wide-state layouts or add artificial masks merely to fill the deficit.
+No compiler ceiling inferred.
+
+Sweep exited zero; thirty compile/focused verify calls pass. Source and
+call-count metrics recomputed from original/compiled instruction arrays;
+counts, object hashes and targeted bic/ands/uxtb counts checked independently.
+Code/fixtures restore to ecc30f25. Existing accepted full/native binding audit
+passes: 204 TUs, 4619 comparisons, no skips, 202 unaffected objects; actual
+linked 2079 / byte 959 pair sets identical baseline with no loss/gain;
+canonical flags and body/signature boundaries preserved. No fresh native/
+full-corpus evidence for rejected source forms claimed.
+
+Disk preparation removed 54 generated original Core target duplicates from
+three explicit recent families (20 UV pairs,16 primitive triples,18 entry/scope).
+Resolved targets within own _work, untracked, single expected unit; hashes
+equal retained canonical typedpair-full/target. Manifest/system-temp backup
+written before literal-path removal; target/reference hashes rechecked before
+each deletion. No recursive deletion; base objects, sources, reports, accepted/
+baseline evidence, main and Git archive retained. Reclaimed 1,426,248 logical
+bytes; old target paths map through
+`_work/duplicate_last_core_target_cleanup_20261007.json`, all 54 mappings
+independently rebound. Script `_work/cleanup_last_core_target_duplicates_20261007.ps1`.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/enh_wide_axis_count_sweep.py`,
+`_work/enh_wide_axis_count_identities.json`, thirty focused objects/reports
+and rechecked typedpair binding audit.
+
+
+## Continuation: Read addressed child slot grouped with recursive arguments
+
+Eighteen focused measurements start from a179f2df. Prior Read child records
+grouped count/counter/child pointer, not engine/material/root slot parameters.
+Remaining frame and pointer-load inventory differences motivated this family:
+local ChildCallState within each actual child iteration, with childPtr paired
+with engine/slot/material in both orders, or all six active recursive arguments
+in two orders, under accepted/fresh index owner, plus two controls.
+
+Child pointer is initialized by original new Mesh in aggregate initialization,
+without an added null write. Other fields copy original by-value parameters;
+handleRef is a const unsigned-int reference member bound to the original
+handle reference, preserving every actual later handle reload rather than
+snapshotting its value. Recursive Read receives &state.childPtr at original
+call point; actual Mesh** contract may replace that pointer, not neighboring
+arguments. Subsequent bound merge/ArrayAdd use the resulting child pointer.
+Root slot pointer copy still follows actual root object mutations. No changed
+allocation/file call order; initialization field copies have no external effect.
+Counter/count guard and dynamic bound unchanged. Actual recursive slot/Read
+contracts assumed; not arbitrary writes past a supplied pointer object.
+
+Same child VBO flag, vertex format/material copy, recursive status ==-1,
+parent bounds and animation insertion. No unused field/artificial padding,
+dummy instruction/volatile/assembly/fixed register, helper/header/exported
+ABI/signature/compiler flag/matcher/denominator change. Only allowed body;
+these are source hypotheses, not recovered original state types.
+
+| Trial | Read source / strict | Instructions | Calls | Owner control object |
+|---|---|---:|---:|---|
+| accepted_control | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_childPtr_engine | 98.5 / 56.2 | 875 | 100.0 | no |
+| accepted_engine_childPtr | 98.2 / 57.5 | 879 | 100.0 | no |
+| accepted_childPtr_slot | 98.5 / 55.9 | 874 | 100.0 | no |
+| accepted_slot_childPtr | 98.1 / 57.5 | 878 | 100.0 | no |
+| accepted_childPtr_mat | 98.4 / 56.3 | 876 | 100.0 | no |
+| accepted_mat_childPtr | 98.2 / 57.7 | 878 | 100.0 | no |
+| accepted_engine_handleRef_flags_childPtr_slot_mat | 98.2 / 55.6 | 881 | 100.0 | no |
+| accepted_mat_slot_childPtr_flags_handleRef_engine | 98.2 / 54.6 | 879 | 100.0 | no |
+| fresh_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_childPtr_engine | 98.5 / 56.6 | 875 | 100.0 | no |
+| fresh_engine_childPtr | 98.2 / 57.9 | 881 | 100.0 | no |
+| fresh_childPtr_slot | 98.5 / 56.3 | 874 | 100.0 | no |
+| fresh_slot_childPtr | 98.1 / 57.8 | 880 | 100.0 | no |
+| fresh_childPtr_mat | 98.3 / 56.7 | 878 | 100.0 | no |
+| fresh_mat_childPtr | 98.2 / 58.1 | 880 | 100.0 | no |
+| fresh_engine_handleRef_flags_childPtr_slot_mat | 98.2 / 56.1 | 881 | 100.0 | no |
+| fresh_mat_slot_childPtr_flags_handleRef_engine | 98.2 / 55.0 | 879 | 100.0 | no |
+
+Sixteen new forms source range 98.1..98.5;
+no score exceeds 98.5. Controls reproduce their whole reference objects.
+No variant retained. Addressed child/argument grouping does not support
+further equivalent layout permutations as the next action. No compiler
+ceiling inferred.
+
+Sweep exited zero; eighteen compile/focused verify calls pass. Source and
+call-count metrics directly recomputed from instruction arrays; counts and
+whole-object digests checked. Source/fixtures restore to ecc30f25. Existing
+accepted full/native binding audit revalidated: 204 TUs, 4619 comparisons,
+no skips, 202 unaffected objects; actual linked 2079 / byte 959 pair sets
+identical baseline with no loss/gain; canonical flags and body/signature
+boundaries preserved. No fresh native/full-corpus proof for rejected forms.
+
+Disk preparation removed 66 generated original Core target duplicates in six
+explicit earlier Create state/status families (16+13+18+4+8+7). Targets
+resolved within own _work, untracked, single expected unit, hashes equal
+canonical typedpair-full/target. Manifest/system-temp backup written before
+literal-path removal, both hashes rechecked before each deletion. No recursive
+deletion; base objects, source/report/accepted/baseline proof, main and Git
+archive retained. Reclaimed 1,743,192 logical bytes; old target paths map via
+`_work/duplicate_child_core_target_cleanup_20261007.json`, all 66 mappings
+independently rebound. Script `_work/cleanup_child_core_target_duplicates_20261007.ps1`.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/read_addressed_child_arguments_sweep.py`,
+`_work/read_addressed_child_arguments_identities.json`, eighteen focused
+objects/reports and rechecked typedpair binding audit.
+
+
+## Continuation: Current normal value records with typed-pair/index-owner interaction
+
+Twenty-two focused measurements start from 007257c4. Earlier normal value
+records predated accepted typed-pair allocation. This family rebinds their
+four real value stages (decoded float components, float quotients, bounded
+doubles, float outputs) to current source as arrays/anonymous records,
+individually or all four, under accepted/fresh index owner, plus two controls.
+Remaining multiply operand-alias/load inventory differences motivated testing
+whether local representation interacts with current allocation/register pressure.
+
+Initializers preserve expressions and scalar evaluation order; all fields
+used at their original arithmetic/store points. Same float/double promotions,
+sqrt, nonzero/fallback, lower/upper predicates including unordered behavior,
+centered destination stores, allocation/Read/call/cleanup order. No address
+escapes added for these values. No helper/header/exported ABI/signature,
+compiler flags/matcher/denominator, unused field/padding, volatile/assembly/
+fixed register/dummy instruction. Source hypotheses, not recovered types.
+
+| Trial | Read source / strict | Instructions | Calls | Owner control Core |
+|---|---|---:|---:|---|
+| accepted_control | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_array_decoded | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_array_quotients | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_array_bounded | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_array_output | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_array_all | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_record_decoded | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_record_quotients | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_record_bounded | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_record_output | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_record_all | 98.5 / 57.4 | 874 | 100.0 | yes |
+| fresh_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_array_decoded | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_array_quotients | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_array_bounded | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_array_output | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_array_all | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_record_decoded | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_record_quotients | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_record_bounded | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_record_output | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_record_all | 98.5 / 57.8 | 874 | 100.0 | yes |
+
+All twenty new forms and both controls reproduce their respective entire
+Core reference objects. Local representations scalar-replace; they do not
+change the remaining operand-alias/load deficits, even with current typed
+allocations and fresh owner. No primary gain and no source retained. Do not
+expand equivalent local record/spelling variants as a next action; no compiler
+ceiling inferred.
+
+The turn was interrupted after dispatch. Resume polled the same process handle;
+it was missing, so no sweep was restarted. Complete persisted ledger contains
+all 22 unique rows and restored source/fixtures equal ecc30f25. Explicit
+terminal process exit was not observed after interruption; no exit-zero claim
+is made for that handle. Every compile/verify subprocess uses check=True before
+recording its row. All retained original/base objects and focused reports were
+independently checked: source/call metrics recomputed from instruction arrays,
+counts checked and all whole-object hashes equal their reference digests.
+Existing accepted native/full binding audit revalidated: 204 TUs, 4619
+comparisons, no skips, 202 unaffected objects, actual linked 2079 / byte 959
+pair sets identical baseline with no loss/gain, canonical flags and allowed
+body/signature boundaries unchanged. No fresh native/full-corpus runtime
+validation for rejected source spellings claimed.
+
+Disk preparation before interrupted sweep removed 102 generated original Core
+target duplicates in thirteen explicit older normal/UV/value families and the
+previous addressed-child family. Resolved targets within own _work, untracked,
+single expected unit, each SHA256 equals retained canonical typedpair-full/target.
+Manifest/system-temp backup saved before literal-path removal; both hashes
+rechecked before each deletion; no recursive deletion. Base objects, source,
+reports, accepted/baseline evidence, main and Git archive retained. Reclaimed
+2,694,024 logical bytes. Old target paths map through
+`_work/duplicate_value_core_target_cleanup_20261007.json`, all 102 mappings
+independently rebound on resume. Script `_work/cleanup_value_core_target_duplicates_20261007.ps1`.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/read_current_value_records_forms.py`,
+`_work/read_current_value_records_sweep.py`,
+`_work/read_current_value_records_identities.json`, twenty-two focused reports/
+objects and rechecked typedpair validation audit.
+
+
+## Continuation: Enhanced type/count word storage reuse
+
+Fourteen focused measurements on 2026-10-08 start from 10caddf6: six
+unsigned-short type/count storage-reuse forms under accepted and V5-preload
+sources, plus two controls. Position, scale and rotation sections individually,
+all prefix sections, optional unsigned fields, and all words including signed
+V5 count are tested. Signed type/count interpretation uses short casts on
+the supported two's-complement targets. No union, extra initialization,
+dummy effects, helper/header/ABI/flags/matcher/denominator changes.
+This is a source hypothesis for valid full reads, not recovered source.
+
+| Trial | Enhanced source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 |
+| accepted_position | 97.8 / 51.6 | 640 | 100.0 |
+| accepted_scale | 97.4 / 60.6 | 644 | 100.0 |
+| accepted_rotation | 97.4 / 46.1 | 647 | 100.0 |
+| accepted_all_prefix | 97.7 / 64.2 | 635 | 100.0 |
+| accepted_all_unsigned | 96.9 / 50.5 | 635 | 100.0 |
+| accepted_all_words | 96.8 / 45.5 | 635 | 100.0 |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 |
+| preload_position | 97.8 / 52.3 | 638 | 100.0 |
+| preload_scale | 97.4 / 61.5 | 642 | 100.0 |
+| preload_rotation | 97.3 / 47.0 | 645 | 100.0 |
+| preload_all_prefix | 97.6 / 64.9 | 633 | 100.0 |
+| preload_all_unsigned | 96.8 / 51.4 | 633 | 100.0 |
+| preload_all_words | 96.7 / 46.3 | 633 | 100.0 |
+
+All twelve new forms regress, 96.7..97.8 versus 98.3 controls. Controls
+reproduce accepted/preload whole Mesh objects. None retained. Sweep exited
+zero, all focused compilations/verifications pass; source and call metrics,
+instruction counts and object hashes independently recomputed. Initial
+generator marker-count assertion stopped before source mutation; corrected
+to account for optional fourth type Read. Source restored to accepted.
+
+Additional semantic limit: inspected AEFile.cpp, AENormalFile.cpp,
+AEPakFile.cpp and FileInterfaceAndroid.cpp. AEFile and AENormalFile forward
+Read; AEPakFile clips requests to remaining archive bytes before forwarding.
+Android file/zip adapters return success when that forwarded length is read;
+JNI adapter compares received length to the forwarded request. Consequently
+an original two-byte request near an archive boundary can succeed after
+writing one byte. Reusing prior word storage can then change the untouched
+byte. Equivalence on malformed/short successful reads is NOT established.
+Do not retain/reuse this transformation without proving that case. This
+finding describes current local implementations, not a runtime proof of the
+original binary. File interfaces were only read, never changed.
+
+Accepted full/native binding audit passes using existing evidence: 204 TUs,
+4619 comparisons, no skips, 202 unaffected objects; actual linked-exact 2079
+and byte-exact 959 pair sets unchanged with no lost/gained pairs. Canonical
+flags and three-body/signature boundaries preserved. No fresh full rebuild,
+native execution, game/device/Android runtime test claimed for rejected forms.
+
+Disk preparation removed 100 verified generated original Core target copies
+from the explicit readindexreload directory family, reclaiming 2,641,200
+logical bytes. Paths resolved within own _work, untracked; SHA-256 equals
+retained canonical typedpair-full target. Manifest and system-temp backup
+preceded literal-path removal; both hashes rechecked immediately per file.
+An initial 207-versus-100 guard stopped before manifest/deletion; fixed cap
+then completed. No recursive deletion. Bases, reports, accepted/baseline,
+main and Git archive retained. All 100 mappings independently rebound:
+`_work/duplicate_index_core_target_cleanup_20261008.json`, script
+`_work/cleanup_index_core_target_duplicates_20261008.ps1`.
+
+User-requested main intake rechecked on 2026-10-08: main HEAD e473d545;
+actual AbyssEngine.cpp, Mesh.cpp, AEString.h and Array.h hashes equal the
+previous six-case intake snapshot. No new relevant content. Existing intake
+shows current bodies plus main headers produce identical accepted objects
+and 98.40 / 98.4131667 means; main bodies regress to 94.0333333 /
+93.4006667, including with main headers. Individual body imports also
+regress. No repeated compile claimed for unchanged snapshot. Main's other
+dirty files and verifier modifications left untouched; measurement method
+preserved. No main source import retained because no measured improvement.
+
+Accepted means remain **98.40% / 98.41%**, both >=99.0 gates unmet.
+Evidence: `_work/enh_type_count_word_reuse_sweep.py`, fourteen focused
+objects/reports, `_work/enh_type_count_word_reuse_identities.json`,
+`_work/main_intake_results.json`, and rechecked accepted binding audit.
+Report-only commit; no push/PR/merge. Goal remains active.
+
+
+## Continuation: Enhanced scalar pair layout/channel interaction
+
+Twenty-six focused measurements on 2026-10-08 start from 749560da. The
+preceding word-reuse family is rejected, including its unproven short-read
+behavior. This family uses separate, nonoverlapping float elements within
+each original scalar key iteration, preserving original variable lifetimes,
+four-byte destination extents, read/call order and signed time conversion.
+No storage reuse across type/count phases. No additional initialization,
+dummy masks/effects, aliasing casts, helper/header/ABI/signature/flags/matcher/
+denominator change; no layout claimed recovered from original source.
+
+Eight array variants use float entry[2], time/value in either order, selected
+for axes, optional channel, V5, or all scalar-key loops. Each is measured
+under accepted and preloaded V5 channel sources. Eight prior two-field
+ScalarKey records are additionally measured with preloaded channel. Two
+controls reproduce whole accepted/preload objects. V5 channels 4/5 still
+insert zero-channel keys, angle arithmetic and NaN behavior unchanged.
+Generator assertions caught two replacement issues before source edits:
+V5 key renaming needs the channel fragment renamed as well, and record
+field replacements must be simultaneous to avoid nested field names.
+Both corrected; all twenty-six compile/focused verify calls pass, sweep
+exited zero and finally restored accepted source.
+
+| Trial | Enhanced source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 |
+| accepted_array_time_first_axes | 97.5 / 23.1 | 646 | 100.0 |
+| accepted_array_time_first_optional | 98.2 / 66.8 | 642 | 100.0 |
+| accepted_array_time_first_v5 | 98.2 / 45.9 | 642 | 100.0 |
+| accepted_array_time_first_all | 97.4 / 44.9 | 648 | 100.0 |
+| accepted_array_value_first_axes | 98.2 / 21.9 | 649 | 100.0 |
+| accepted_array_value_first_optional | 98.3 / 66.8 | 642 | 100.0 |
+| accepted_array_value_first_v5 | 98.1 / 47.7 | 642 | 100.0 |
+| accepted_array_value_first_all | 98.1 / 22.2 | 650 | 100.0 |
+| preload_array_time_first_axes | 97.5 / 23.8 | 644 | 100.0 |
+| preload_array_time_first_optional | 98.2 / 67.6 | 640 | 100.0 |
+| preload_array_time_first_v5 | 98.2 / 46.6 | 640 | 100.0 |
+| preload_array_time_first_all | 97.4 / 45.7 | 646 | 100.0 |
+| preload_array_value_first_axes | 98.1 / 22.6 | 647 | 100.0 |
+| preload_array_value_first_optional | 98.3 / 67.6 | 640 | 100.0 |
+| preload_array_value_first_v5 | 98.1 / 48.4 | 640 | 100.0 |
+| preload_array_value_first_all | 98.0 / 22.9 | 648 | 100.0 |
+| preload_record_time_first_axes | 97.5 / 23.8 | 644 | 100.0 |
+| preload_record_time_first_optional | 98.2 / 67.6 | 640 | 100.0 |
+| preload_record_time_first_v5 | 98.2 / 46.6 | 640 | 100.0 |
+| preload_record_time_first_all | 97.4 / 45.7 | 646 | 100.0 |
+| preload_record_value_first_axes | 98.1 / 22.6 | 647 | 100.0 |
+| preload_record_value_first_optional | 98.3 / 67.6 | 640 | 100.0 |
+| preload_record_value_first_v5 | 98.1 / 48.4 | 640 | 100.0 |
+| preload_record_value_first_all | 98.0 / 22.9 | 648 | 100.0 |
+
+No primary gain: new forms 97.4..98.3 versus 98.3 controls. All eight accepted
+arrays match their earlier corresponding record whole-object SHA-256;
+all eight preload array/record pairs also match whole-object SHA-256.
+Thus these array and record layouts are compiler-equivalent in both tested
+channel contexts. Do not expand equivalent pair syntax for this hypothesis.
+Value-first optional forms only tie source score and have lower strict
+score; none retained. No compiler ceiling or impossibility inferred.
+
+All twenty-six source and call-count metrics recomputed from actual original/
+compiled instruction arrays; object hashes and instruction counts checked
+independently. Code and native fixtures restored to ecc30f25. Existing
+accepted full/native evidence binding audit passes: 204 TUs, 4619 comparisons,
+zero skips; 202 unaffected objects unchanged; actual linked-exact 2079 /
+byte-exact 959 pair sets identical baseline with no lost/gained pairs.
+Canonical flags and three-body/signature boundaries preserved. No fresh
+native runtime/full-corpus rebuild or Android/device/game check claimed for
+rejected forms. No cleanup needed this family; main untouched.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Evidence: `_work/enh_scalar_pair_layout_interaction_sweep.py`,
+`_work/enh_scalar_pair_layout_interaction_identities.json`, twenty-six
+focused objects/reports and rechecked accepted binding audit.
+Report-only commit; no push/PR/merge.
+
+
+## Continuation: Current Read per-stream count scope
+
+Ten focused measurements on 2026-10-08 start from c124e559. Hypothesis:
+shared vcount live across streams may influence frame/register allocation.
+Remove initial unused count capture; declare per-stream uint/ushort/const
+uint counts at original assignments for two position branches, two UV
+branches and tangent section. Normal/color assignments do not supply their
+loop bounds and are removed as dead reads; those loops still re-read slot
+vertexCount exactly as accepted. Fourth form narrows only tangent count to
+ushort. All captured counts originate from ushort vertexCount, so narrowing
+preserves their range; loop counter widths, bounds expressions, reloads,
+allocation extents, read order and floating arithmetic unchanged.
+Each form measured under accepted and fresh index owner plus controls.
+No helper/header/ABI/flags/matcher/denominator changes or dummy effects.
+
+| Trial | Read source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| accepted_control | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_per_stream_uint | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_per_stream_ushort | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_per_stream_const_uint | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_tangent_short_count | 98.5 / 57.4 | 874 | 100.0 |
+| fresh_control | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_per_stream_uint | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_per_stream_ushort | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_per_stream_const_uint | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_tangent_short_count | 98.5 / 57.8 | 874 | 100.0 |
+
+All ten whole Core objects equal their corresponding accepted/fresh owner
+controls. All eight new forms tie 98.5; count declaration scope/width does
+not change machine code in these contexts. None retained. Do not expand
+equivalent count declarations for this hypothesis; no compiler ceiling
+inferred. All ten metrics, instruction counts and hashes independently
+checked against original instruction arrays after source restoration.
+
+Initial process completed eight rows, then verification exited 1 with
+"No comparable functions found" for fresh_per_stream_const_uint. Its base
+object existed, original target object was missing and disk free was 94,208
+bytes. Disk pressure is the suspected cause, not an observed assembler
+diagnostic. Finally restored source and wrote eight-row ledger. After
+verified duplicate cleanup, resumed only the two unfinished forms: both
+compile/verify pass, resumed process exited zero. No failed row accepted.
+
+Removed 34 generated original targets: 26 previous scalar-pair Mesh copies
+and eight completed stream-count Core copies, 286,592 logical bytes. Exact
+family counts/units, resolved paths inside own _work, untracked status and
+SHA-256 equality to canonical typedpair-full targets checked before removal.
+Manifest plus system-temp backup preceded literal-path removal; each target
+and reference hash rechecked immediately. Failed ninth missing target was
+explicitly excluded; compiled bases and reports retained. No recursive
+deletion, main/Git archive/baseline/accepted untouched. All 34 mappings
+independently rebound via `_work/duplicate_scalar_stream_target_cleanup_20261008.json`;
+script `_work/cleanup_scalar_stream_target_duplicates_20261008.ps1`.
+Earlier focused reports with deleted targets now map to canonical originals.
+
+Accepted source/native fixtures restored to ecc30f25. Existing evidence
+binding audit passes: 204 TUs, 4619 comparisons, no skips, 202 unaffected
+objects; actual linked-exact 2079 / byte-exact 959 pair sets identical to
+baseline with no loss/gain. Canonical flags and three-body/signature
+boundaries preserved. No fresh native runtime/full-corpus rebuild or
+Android/device/game check claimed for rejected forms.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet; goal active.
+Evidence: `_work/read_current_stream_count_scope_sweep.py`,
+`_work/read_current_stream_count_scope_identities.json`, ten focused bases/
+reports and rechecked accepted binding audit. Report-only commit, no push/
+PR/merge. Disk remains tight; future builds need verified space preparation.
+
+
+Count-scope report staging initially failed: Git reported index.lock write
+error, out of disk space (zero bytes free). No lock/archive manually modified.
+Removed remaining 107 verified original Core target copies from previously
+enumerated 207 readindexreload builds, skipping the first 100 already cleaned.
+Same resolved-path/unit/untracked/hash checks; 2,826,084 logical bytes reclaimed.
+Because A had zero free bytes, cleanup script and both primary manifest and
+backup were saved in system temp before removals, then copied into own _work
+after space was available. Target/reference digests rechecked before each
+literal-path deletion; all 107 mappings independently rebound. Compiled bases,
+sources, reports, baseline/accepted/main/Git archive retained. Evidence:
+`_work/duplicate_index_remaining_core_target_cleanup_20261008.json` and
+`_work/cleanup_index_remaining_core_target_duplicates_20261008.ps1`.
+This supplements the 34-copy cleanup above; no additional code changes.
+
+
+## Continuation: Create signature operands/shared result interaction
+
+Sixteen focused measurements on 2026-10-08 start from 6925b77d. Hypothesis:
+original interleaved signature byte loads and shared reader result may
+interact in register allocation. Five previously tested pure operand forms
+(original interleaving, first-three/all preloads, reverse comparisons,
+versions before plain) plus mismatch/keep per-byte masks measured under
+direct and shared MeshReadData result source, with controls.
+All five signature bytes are constant; comparison reordering and mask
+composition preserve surviving fmt bits over seven initialized magic bytes.
+No extra file reads/calls, initialization, padding or dummy effects. Same
+three reader success tests (-1 failure,1 success,non--1 success), magic
+initialization, payload/child/cleanup paths. No helper/header/ABI/signature/
+flags/matcher/denominator change; source hypothesis, not recovered layout.
+
+| Trial | Create source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| direct_control | 98.4 / 60.7 | 289 | 100.0 |
+| direct_original_interleaving | 98.4 / 60.7 | 289 | 100.0 |
+| direct_first_three_preloads | 98.4 / 60.7 | 289 | 100.0 |
+| direct_all_preloads | 98.4 / 60.7 | 289 | 100.0 |
+| direct_reverse_comparisons | 98.4 / 60.7 | 289 | 100.0 |
+| direct_versions_before_plain | 98.4 / 60.7 | 289 | 100.0 |
+| direct_mismatch_mask | 97.5 / 57.5 | 290 | 100.0 |
+| direct_keep_mask | 97.5 / 57.0 | 291 | 100.0 |
+| shared_control | 98.4 / 61.0 | 289 | 100.0 |
+| shared_original_interleaving | 98.4 / 60.7 | 289 | 100.0 |
+| shared_first_three_preloads | 98.4 / 60.7 | 289 | 100.0 |
+| shared_all_preloads | 98.4 / 60.7 | 289 | 100.0 |
+| shared_reverse_comparisons | 98.4 / 61.0 | 289 | 100.0 |
+| shared_versions_before_plain | 98.4 / 61.0 | 289 | 100.0 |
+| shared_mismatch_mask | 97.5 / 57.8 | 290 | 100.0 |
+| shared_keep_mask | 97.5 / 57.4 | 291 | 100.0 |
+
+All fourteen combinations tie/regress, 97.5..98.4; none retained. Direct
+interleaving/first-three/all preloads equal accepted whole Core object.
+The same three forms combined with shared result also collapse to accepted
+whole Core object, rather than shared-result control. Reverse/version-first
+comparisons keep source score without whole-object equality; mask forms
+regress to 97.5 under both result contexts. Interaction therefore offers no
+primary gain here; do not expand equivalent preloads under shared result.
+No compiler ceiling inferred.
+
+Sweep exited zero; all sixteen compile/focused verifies pass. All source/
+call metrics, instruction counts and object hashes independently checked
+against original/compiled instruction arrays. Accepted source and native
+fixtures restored to ecc30f25. Existing full/native binding audit passes:
+204 TUs,4619 comparisons,no skips;202 unaffected objects; actual linked-exact
+2079 / byte-exact 959 pair sets identical baseline, no lost/gained pairs.
+Canonical flags and three-body/signature boundaries preserved. No fresh
+full rebuild/native execution/device/Android/game runtime claim for rejected
+forms. Main untouched; report-only commit, no push/PR/merge.
+
+After measurements, removed sixteen verified generated original Core target
+copies, reclaiming 422,592 logical bytes to leave room for report staging.
+Explicit createsigsharedresult family, resolved paths inside own _work,
+untracked single expected Core unit; digests match retained canonical target.
+Manifest/system-temp backup before literal-path removal; target/reference
+hashes rechecked per deletion. All sixteen mappings independently rebound.
+Bases,reports,accepted/baseline/main/Git archive retained. Evidence:
+`_work/duplicate_signature_core_target_cleanup_20261008.json`, script
+`_work/cleanup_signature_core_target_duplicates_20261008.ps1`.
+
+Accepted means remain **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Evidence: `_work/create_signature_shared_result_interaction_sweep.py`,
+`_work/create_signature_shared_result_interaction_identities.json`, sixteen
+focused bases/reports and rechecked accepted binding audit.
+
+
+## Continuation: Read typed color quadruples
+
+Ten focused measurements on 2026-10-08 start from 816f84dc. Actual compressed
+color scratch storage is four unsigned bytes per vertex. Test primitive
+unsigned-char[4] array and struct containing unsigned-char component[4],
+sizeof==4 assertions, new ColorInput[vertexCount], paired delete[] raw on
+both existing failure/success paths. Each type tested with existing byte
+representation view or indexed raw[i/4][i%4]/raw[i/4].component[i%4], under
+accepted/fresh index owner plus controls. All loop bounds still reload slot
+vertexCount; read extents, allocation bytes, byte order, normalization by
+255.0f, output stores and lifetimes preserved. Character byte-view access
+is valid object-representation access. No initialization, union, extra data,
+padding, helper/header/ABI/signature/flags/matcher/denominator changes.
+Typed scratch shape is a hypothesis, not recovered source.
+
+| Trial | Read source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| accepted_control | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_primitive_byte_view | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_primitive_indexed_components | 97.9 / 57.2 | 879 | 98.2 |
+| accepted_record_byte_view | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_record_indexed_components | 97.9 / 57.2 | 879 | 98.2 |
+| fresh_control | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_primitive_byte_view | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_primitive_indexed_components | 97.7 / 57.5 | 884 | 98.2 |
+| fresh_record_byte_view | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_record_indexed_components | 97.7 / 57.5 | 884 | 98.2 |
+
+No gain. All four typed byte-view variants reproduce their corresponding
+whole control Core object. Primitive/record indexed forms match each other
+under each owner, regress to accepted 97.9 / fresh 97.7 and call metric98.2.
+Relocation counters independently extracted from the exact function body:
+controls/byte views have55 direct call relocations; indexed forms54. Only
+missing static call target is one _ZdaPv (operator delete[]); no new target.
+This does not establish a missing runtime free: source retains both paths
+and static call sites can be merged. Do not add dummy calls to match counts.
+Initial diagnosis probes used unsupported objdump function-disassembly and
+absent function section options; read-only errors, then corrected to full
+disassembly with exact symbol boundary extraction. Successful diagnostic
+stored in `_work/read_color_typed_quads_call_relocations.json`.
+No expansion of equivalent primitive/record color type syntax justified
+here; none retained. No compiler ceiling inferred.
+
+Sweep exited zero; ten compile/focused verify calls pass. All source/call
+metrics, instruction counts, object hashes and call relocation differences
+checked independently. Accepted source/native fixtures restored to ecc30f25.
+Existing accepted full/native binding audit passes:204 TUs,4619 comparisons,
+no skips;202 unaffected objects;actual linked-exact2079 / byte-exact959 pair
+sets identical baseline with no lost/gained pairs. Canonical flags and
+three-body/signature boundaries preserved. No fresh full rebuild/native
+execution/device/Android/game runtime claim for rejected forms.
+
+Preparation removed57 verified original Core targets from six explicit
+families:current normal value records22,signature pointers5,tables6,split
+states8,bounds records8,tangent local records8. Reclaimed1,505,484 logical
+bytes. Resolved paths within own _work, untracked single expected unit,
+hash equal canonical retained target. Manifest/system-temp backup before
+literal-path removal; immediate target/reference rehash per deletion.
+All57 mappings independently rebound. No recursive deletion; bases,reports,
+sources,accepted/baseline/main/Git archive retained. Evidence:
+`_work/duplicate_layout_core_target_cleanup_20261008.json`, script
+`_work/cleanup_layout_core_target_duplicates_20261008.ps1`.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Evidence:`_work/read_color_typed_quads_sweep.py`,
+`_work/read_color_typed_quads_identities.json`, ten focused objects/reports,
+call relocation diagnostic and rechecked binding audit. Main untouched;
+report-only commit;no push/PR/merge.
+
+
+## Continuation: Create finish argument records
+
+Twelve focused measurements on 2026-10-08 start from 3d1eae08. Previously
+tested scalar finish operands offer no gain; new hypothesis groups actual
+SetAnimationRangeInTime receiver and converted start in a local aggregate.
+Two-field records receiver/start and start/receiver; three-field records
+receiver/rate/start,rate/receiver/start,rate/start/receiver. Only valid orders
+are used: float rate precedes long-long start referencing arguments.rate;
+aggregate members initialize in declaration order. Receiver reloaded from
+(*out)->animation AFTER CollectAnimationData, not reused from prior xf.
+Same float-to-long-long conversion and 10000000LL upper bound. Actual
+fields only, no forced padding, initialization effects, helper/header/ABI/
+signature/compiler flag/matcher/denominator changes. Each form under direct/
+shared reader-result source with controls. Local shape hypothesis, not
+recovered original record. No file-read/storage-alias transformation.
+
+| Trial | Create source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| direct_control | 98.4 / 60.7 | 289 | 100.0 |
+| direct_receiver_start | 98.4 / 60.7 | 289 | 100.0 |
+| direct_start_receiver | 98.3 / 60.3 | 289 | 100.0 |
+| direct_receiver_rate_start | 98.4 / 60.7 | 289 | 100.0 |
+| direct_rate_receiver_start | 98.4 / 60.7 | 289 | 100.0 |
+| direct_rate_start_receiver | 98.3 / 60.3 | 289 | 100.0 |
+| shared_control | 98.4 / 61.0 | 289 | 100.0 |
+| shared_receiver_start | 98.4 / 60.7 | 289 | 100.0 |
+| shared_start_receiver | 98.3 / 60.3 | 289 | 100.0 |
+| shared_receiver_rate_start | 98.4 / 60.7 | 289 | 100.0 |
+| shared_rate_receiver_start | 98.4 / 60.7 | 289 | 100.0 |
+| shared_rate_start_receiver | 98.3 / 60.3 | 289 | 100.0 |
+
+All ten new forms collapse to two whole Core objects. receiver/start,
+receiver/rate/start and rate/receiver/start reproduce accepted object under
+both result contexts. start/receiver and rate/start/receiver produce the
+same alternate whole object under both contexts and regress to98.3.
+All retain289 instructions and call metric100. No primary gain; none retained.
+Do not expand equivalent finish-record permutations here. No compiler
+ceiling or impossibility inferred.
+
+Sweep exited zero; twelve focused compile/verify calls pass. Source/call
+metrics, instruction counts, object hashes and two identity classes checked
+independently against actual instruction arrays. Source/native fixtures
+restored to ecc30f25. Existing accepted full/native binding audit passes:
+204 TUs,4619 comparisons,no skips;202 unaffected objects;actual linked-exact
+2079 / byte-exact959 pair sets identical baseline with no loss/gain.
+Canonical flags and three-body/signature boundaries preserved. No fresh
+full rebuild/native execution/device/Android/game runtime claim for rejected
+forms. Main untouched; report-only commit,no push/PR/merge.
+
+Preparation removed60 verified generated original Core targets: first60
+eligible existing targets in sorted explicit readtypedpair directory family;
+already missing targets skipped. Resolved paths within own _work, untracked
+single expected Core unit, SHA-256 equal canonical retained target. Guard
+requires exactly60 verified copies before any removals. Manifest/system-temp
+backup before literal-path deletion; target/reference hashes immediately
+rechecked per file. Reclaimed1,584,720 logical bytes; all60 mappings
+independently rebound. No recursive deletion; bases,reports,sources,
+accepted/baseline/main/Git archive retained. Evidence:
+`_work/duplicate_typedpair_core_target_cleanup_20261008.json`, script
+`_work/cleanup_typedpair_core_target_duplicates_20261008.ps1`.
+
+Accepted means remain **98.40% / 98.41%**, both >=99.0 gates unmet; goal active.
+Evidence:`_work/create_finish_argument_records_sweep.py`,
+`_work/create_finish_argument_records_identities.json`, twelve focused
+objects/reports and rechecked accepted binding audit.
+
+
+## Continuation: Enhanced completion value records
+
+Fourteen focused measurements on 2026-10-08 start from104d7f95. Prior
+receiver/delete/completion layout forms already measured; no repeat of
+equivalent deletion syntax. New hypothesis groups actual time rate and
+int/long-long converted values in a local record at successful attachment.
+Two records contain rate plus one conversion; four contain all three with
+different field orders. Each field assigned only at the original computation
+phase before use: rate load, int conversion, animationStart write, long-long
+conversion, SetAnimationRangeInTime. Natural local layout only; no forced
+padding, uninitialized read, extra effect, receiver reload or file/storage
+transformation. Preserve fixed upper bound10000000LL and existing float
+conversion semantics. All six forms under accepted/V5-preload contexts plus
+controls. No helper/header/ABI/signature/flags/matcher/denominator changes.
+Hypothesis, not recovered original local type.
+
+| Trial | Enhanced source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 |
+| accepted_rate_frameStart | 98.3 / 66.9 | 641 | 100.0 |
+| accepted_rate_rangeStart | 98.3 / 66.9 | 641 | 100.0 |
+| accepted_rate_frameStart_rangeStart | 98.3 / 66.9 | 641 | 100.0 |
+| accepted_rate_rangeStart_frameStart | 98.3 / 66.9 | 641 | 100.0 |
+| accepted_frameStart_rate_rangeStart | 98.3 / 66.9 | 641 | 100.0 |
+| accepted_rangeStart_rate_frameStart | 98.3 / 66.9 | 641 | 100.0 |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 |
+| preload_rate_frameStart | 98.3 / 67.8 | 639 | 100.0 |
+| preload_rate_rangeStart | 98.3 / 67.8 | 639 | 100.0 |
+| preload_rate_frameStart_rangeStart | 98.3 / 67.8 | 639 | 100.0 |
+| preload_rate_rangeStart_frameStart | 98.3 / 67.8 | 639 | 100.0 |
+| preload_frameStart_rate_rangeStart | 98.3 / 67.8 | 639 | 100.0 |
+| preload_rangeStart_rate_frameStart | 98.3 / 67.8 | 639 | 100.0 |
+
+All fourteen whole Mesh objects equal their corresponding accepted/preload
+controls. No primary/strict/instruction-count gain. None retained; do not
+expand equivalent completion-value field syntax in these contexts. No
+compiler ceiling inferred. Sweep exited zero;14 compile/focused verifies
+pass. Metrics/counts/hashes independently checked against actual instruction
+arrays. Source/native fixtures restored to ecc30f25. Existing accepted
+full/native binding audit passes:204 TUs,4619 comparisons,no skips;202
+unaffected objects;actual linked-exact2079/byte-exact959 pair sets unchanged
+with no loss/gain;canonical flags and three-body/signature boundaries intact.
+No fresh full rebuild/native execution/device/Android/game test claimed for
+rejected forms.
+
+Preparation removed22 verified generated original Core target copies from
+two explicit families:10 color quadruples,12 Create finish records. Reclaimed
+581,064 logical bytes. Paths resolved inside own _work, untracked single
+expected unit, hash equal canonical retained target; manifest/system-temp
+backup before literal-path removal, immediate target/reference rehash per
+deletion. All22 mappings independently rebound. No recursive deletion;
+bases/reports/sources/accepted/baseline/main/Git archive retained. Evidence:
+`_work/duplicate_finish_color_core_target_cleanup_20261008.json`, script
+`_work/cleanup_finish_color_core_target_duplicates_20261008.ps1`.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet;goal active.
+Evidence:`_work/enh_completion_value_records_sweep.py`,
+`_work/enh_completion_value_records_identities.json`,14 focused objects/
+reports and rechecked binding audit. Main untouched;report-only commit;
+no push/PR/merge.
+
+
+## Continuation: Current Read flag/index-owner interaction
+
+Fourteen focused measurements on 2026-10-08 start from688c4444. Prior flag
+conditions were measured before current paired typed raw buffers. New
+bounded interaction: six equivalent format conditions under accepted/fresh
+index-owner source with controls. Shared signed shift,shared shifted high
+bit,signed compressed storage; compressed bool from flags&7,position mask
+flags&3,both masks. Unsigned32 shifts29/30 preserve exactly low3/2 bits;
+high-bit check tests original bit2. Signed conversion relies on supported
+two's-complement ARM/UCRT behavior, no signed left shift. No capture/reload,
+read/alloc size/order, arithmetic or cleanup source changes; same selected
+format for all flags. No helper/header/ABI/signature/flags/matcher/denominator
+changes. No artificial mask merely to add instructions; each condition
+implements existing format selection. No original source spelling recovered.
+
+| Trial | Read source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| accepted_control | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_shared_signed_shift | 97.9 / 57.9 | 872 | 98.2 |
+| accepted_shared_shifted_bit | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_signed_shift_storage | 97.9 / 57.9 | 872 | 98.2 |
+| accepted_compressed_bool | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_position_mask | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_both_masks | 98.5 / 57.4 | 874 | 100.0 |
+| fresh_control | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_shared_signed_shift | 97.6 / 57.8 | 878 | 98.2 |
+| fresh_shared_shifted_bit | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_signed_shift_storage | 97.6 / 57.8 | 878 | 98.2 |
+| fresh_compressed_bool | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_position_mask | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_both_masks | 98.5 / 57.8 | 874 | 100.0 |
+
+No gain. Shared shifted bit and position mask reproduce corresponding whole
+control Core objects. Compressed bool/both masks match each other under
+each owner, tie source/strict/count metrics without whole-control identity.
+Both signed forms match each other per owner, regress to97.9 accepted /
+97.6 fresh and call metric98.2. Accepted signed strict rises57.4->57.9 while
+PRIMARY source falls98.5->97.9; strict-only gain is not a goal improvement.
+None retained. Do not expand equivalent signed/masked conditions here;
+no compiler ceiling inferred.
+
+Sweep exited zero;14 compile/focused verifies pass. Source/call metrics,
+instruction counts, hashes and duplicate identity pairs independently
+checked against actual instruction arrays. Source/native fixtures restored
+to ecc30f25. Existing accepted full/native binding audit passes:204 TUs,
+4619 comparisons,no skips;202 unaffected objects;actual linked-exact2079 /
+byte-exact959 pair sets unchanged, no lost/gained pairs. Canonical flags
+and three-body/signature boundaries intact. No fresh full rebuild/native
+execution/device/Android/game check claimed for rejected forms.
+
+Preparation removed remaining71 verified generated original Core targets
+in explicit readtypedpair family, skipping previously missing targets.
+Exact71 count guard before removal; resolved paths within own _work,
+untracked single expected unit;SHA-256 equal retained canonical target.
+Manifest/system-temp backup before literal-path deletion; immediate target/
+reference rehash per file. Reclaimed1,875,252 logical bytes;all71 mappings
+independently rebound. Bases/reports/sources/accepted/baseline/main/Git
+archive retained. No recursive deletion. Evidence:
+`_work/duplicate_typedpair_remaining_core_target_cleanup_20261008.json`,
+`_work/cleanup_typedpair_remaining_core_target_duplicates_20261008.ps1`.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet;goal active.
+Evidence:`_work/read_current_flag_owner_interaction_sweep.py`,
+`_work/read_current_flag_owner_interaction_identities.json`,14 focused
+objects/reports and rechecked binding audit. Main untouched;report-only
+commit;no push/PR/merge.
+
+
+## Continuation: Historical shape component profile audit
+
+Read-only historical audit on2026-10-08 starts from f5c81ac5. No new source
+experiment or native/full rebuild. Scan201 identity ledgers,1934 score rows;
+name-derived groups:Read942 rows/107 files/302 whole hashes,max98.5;
+Create253/21/126,max98.4;Enhanced594/59/281,max98.3;other145/14/17.
+No object hash has contradictory source scores within the three named
+groups. Other group includes mixed-function scores and is not interchangeable
+with fixed-three data. These are historical ledger counts, not fresh validation
+of every old variant. No overlooked retained primary gain found in these
+ledgers; incomplete historical coverage means no impossibility/ceiling claim.
+
+Scan focused report profiles using exact named target symbol:Read1111,
+Create327,Enhanced696 rows. Instruction inventory above current95.8/94.7/
+95.8 found in0/8/107 rows respectively. These report counts include duplicate
+objects and earlier source versions, not unique functions or new denominators.
+Five selected profiles independently recomputed from current unchanged
+matcher and compiled objects against canonical original instruction arrays:
+
+| Profile | Source | Inventory | Opcode | Control | Calls | Size |
+|---|---:|---:|---:|---:|---:|---:|
+| createaddressedmagicargs-accepted_magic_engine.json | 97.5 | 95.6 | 97.7 | 95.8 | 100.0 | 98.2 |
+| enhgroupcount-rotation_group.json | 97.8 | 96.4 | 98.1 | 95.6 | 100.0 | 98.8 |
+| enhscalarkeyrecord-value_first_axes.json | 98.2 | 96.3 | 97.6 | 98.7 | 100.0 | 98.2 |
+| enhbyteaxiscounts-rotation_group.json | 98.1 | 96.2 | 98.0 | 98.0 | 100.0 | 98.0 |
+| enhaxisdispatch-all_signed_char.json | 98.0 | 96.0 | 97.5 | 96.6 | 100.0 | 100.0 |
+
+Evidence changes next action: investigate Enhanced value-first scalar-key
+axes (inventory96.3 vs95.8,opcode97.6 vs97.4,control98.7 unchanged) rather
+than expand equivalent time/finish records. Its649 vs accepted641 instructions
+lower size98.2 vs99.5, so primary98.2 is below98.3. A useful combination must
+reduce real extra operations while preserving those inventory/control gains;
+V5 preload alone already failed this combination. Rotation-group count gives
+inventory96.4/opcode98.1 but loses control95.6 and needs semantic short-read
+review before reuse. Signed-char axis dispatch has size100 but loses control;
+it is only an unretained candidate for bounded interaction with scalar record.
+Create addressed magic/engine also gains inventory but loses control, no
+current primary gain. Do not claim component gains meet either99.0 gate.
+
+Accepted binding audit passes unchanged:204 TUs,4619 comparisons,no skips;
+202 unaffected objects;actual linked-exact2079/byte-exact959 pair sets with
+no loss/gain;canonical flags and three-body/signature boundaries preserved.
+No fresh native execution/device/Android/game runtime claim. Accepted means
+remain **98.40% / 98.41%**, both>=99.0 gates unmet;goal active.
+
+Preparation removed28 verified original targets:14 recent Enhanced completion
+values and14 current Read flag/owner copies,410,312 logical bytes. Exact
+family/unit counts, resolved paths inside own _work, untracked status and
+canonical hash equality checked; manifest/system-temp backup before literal
+deletion with immediate rehash. All28 mappings independently rebound.
+Bases/reports/sources/accepted/baseline/main/Git archive retained. Evidence:
+`_work/duplicate_profile_prep_target_cleanup_20261008.json`, script
+`_work/cleanup_profile_prep_target_duplicates_20261008.ps1`.
+Diagnostic:`_work/historical_shape_profiles_20261008.json`, script
+`_work/audit_historical_shape_profiles_20261008.py`.
+Report-only commit;main untouched;no push/PR/merge.
+
+
+## Continuation: Profile-directed scalar-record/signed-axis interaction
+
+Following historical profile audit, executed its bounded next candidate:
+value-first scalar key records in all three axes plus signed-char dispatch
+cast for every seven nonempty subset of position/scale/rotation; accepted
+and record controls,9 focused measurements. Actual unsigned-char loop
+axes remain0..2 with exit3, so signed-char cast preserves dispatch values.
+No new masks, dummy effects, field/storage reuse or compiler changes.
+Same reads, key insertion, math and cleanup. No original source recovered.
+
+| Trial | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| accepted_control | 98.3 | 95.8 | 97.4 | 98.7 | 99.5 | 641 |
+| record_control | 98.2 | 96.3 | 97.6 | 98.7 | 98.2 | 649 |
+| signed_axes_1 | 98.1 | 96.4 | 97.7 | 98.0 | 98.4 | 648 |
+| signed_axes_2 | 98.1 | 96.4 | 97.7 | 98.0 | 98.4 | 648 |
+| signed_axes_3 | 98.0 | 96.4 | 97.8 | 97.3 | 98.5 | 647 |
+| signed_axes_4 | 98.1 | 96.4 | 97.7 | 98.0 | 98.4 | 648 |
+| signed_axes_5 | 98.0 | 96.4 | 97.8 | 97.3 | 98.5 | 647 |
+| signed_axes_6 | 98.0 | 96.4 | 97.8 | 97.3 | 98.5 | 647 |
+| signed_axes_7 | 97.9 | 96.5 | 97.7 | 96.6 | 98.7 | 646 |
+
+All7 new combinations regress,97.9..98.1. Each selected section removes
+exactly1 instruction from record649, improving inventory up to96.5 and
+size98.7;control falls98.7->98.0/97.3/96.6 for1/2/3 sections. Thus gains
+are not independent and do not raise source score. All calls100. No
+additional equivalent signed-axis permutations justified;none retained.
+No compiler ceiling inferred. Sweep exited zero;9 compile/focused verifies
+pass. All six component metrics/counts/hashes independently recomputed.
+Code/native fixtures restored to accepted;existing204-TU/4619-comparison
+full/native binding audit passes with202 unaffected objects and unchanged
+linked2079/byte959 pair sets,canonical flags,body/signature boundaries.
+No fresh full/native runtime/game/Android check claimed. Historical profile
+snapshot above predates these9 rows;do not rerun its fixed-count assertion
+against the expanded corpus without preserving its cutoff.
+Evidence:`_work/enh_scalar_record_signed_axis_interaction_sweep.py`,
+`_work/enh_scalar_record_signed_axis_interaction_identities.json`,9 focused
+objects/reports. Accepted means98.40/98.41,both99.0 gates unmet;goal active.
+Main untouched;report-only commit;no push/PR/merge.
+
+
+## Continuation: Scalar-record frame conversion lifetime
+
+Twelve focused measurements on2026-10-08 start from ecc95967. Continue
+profile-directed value-first scalar-key record candidate: seven nonempty
+axis-section subsets capture const int frameTime immediately after final
+successful scalar Read, before dispatch. Three actual record-field layouts
+contain float value/time and int frameTime, assigned at that same phase and
+used by all three key insertion calls. Accepted/record controls.
+Actual axes0..2 always select one existing insertion, so one conversion at
+dispatch preserves prior conversion and all failure paths. No conversion
+before Read status, no invented unused field, forced padding, dummy effect,
+file order, payload, signed-char axis or key-value arithmetic change.
+Natural local layouts; no helper/header/ABI/signature/flags/matcher/denominator
+change; hypothesis, not recovered original source.
+
+| Trial | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| accepted_control | 98.3 | 95.8 | 97.4 | 98.7 | 99.5 | 641 |
+| record_control | 98.2 | 96.3 | 97.6 | 98.7 | 98.2 | 649 |
+| scalar_frame_axes_1 | 97.2 | 94.2 | 95.8 | 98.0 | 97.9 | 650 |
+| scalar_frame_axes_2 | 97.9 | 95.7 | 97.0 | 98.7 | 98.0 | 650 |
+| scalar_frame_axes_3 | 97.1 | 94.3 | 95.9 | 98.0 | 97.4 | 653 |
+| scalar_frame_axes_4 | 97.9 | 95.7 | 97.0 | 98.7 | 98.0 | 650 |
+| scalar_frame_axes_5 | 97.3 | 94.3 | 95.6 | 98.7 | 97.9 | 651 |
+| scalar_frame_axes_6 | 97.6 | 95.1 | 96.5 | 98.7 | 97.9 | 651 |
+| scalar_frame_axes_7 | 97.4 | 94.5 | 95.8 | 98.7 | 97.9 | 651 |
+| frame_last | 97.2 | 94.3 | 96.0 | 98.7 | 96.9 | 657 |
+| frame_first | 96.1 | 92.1 | 94.4 | 97.3 | 96.6 | 657 |
+| frame_middle | 97.2 | 94.3 | 96.0 | 98.7 | 96.9 | 657 |
+
+All10 new forms regress,96.1..97.9 vs record98.2/accepted98.3. Scalar
+captures grow649->650..653 instructions; record fields grow to657, while
+inventory also falls. Capturing conversion thus fails to remove the record's
+extra operations. No equivalent frame-value layout expansion justified;
+none retained. No compiler ceiling inferred. Sweep exited zero;12 compile/
+focused verifies pass. All component metrics/counts/hashes independently
+recomputed. Code/native fixtures restored to accepted; existing204-TU/
+4619-comparison full/native evidence binding audit passes with202 unaffected
+objects and unchanged linked2079/byte959 pair sets,canonical flags and body/
+signature boundaries. No fresh native/full rebuild/device/Android/game
+runtime check claimed. Accepted means98.40/98.41,both99.0 gates unmet;
+goal active. Main untouched;report-only commit;no push/PR/merge.
+
+Space preparation removed300 generated original Mesh target duplicates from
+sorted explicit enh directory family. Only single-object focused targets
+eligible; missing/non-single targets skipped. All paths resolved inside own
+_work, untracked, canonical reference protected; digests equal retained
+typedpair-full target. Exact300 guard, manifest/system-temp backup before
+literal-path removals, immediate target/reference rehash per file. Cleanup
+process observed terminal exit0. Reclaimed868,800 logical bytes. All300
+mapping hashes independently rebound. Compiled bases,reports,sources,
+accepted/baseline/main/Git archive retained. No recursive deletion. Old
+reports' deleted original paths map via
+`_work/duplicate_enh300_target_cleanup_20261008.json`; cleanup used inline
+PowerShell tool invocation. Evidence:
+`_work/enh_scalar_record_frame_capture_sweep.py`,
+`_work/enh_scalar_record_frame_capture_identities.json`,12 focused objects/
+reports and rechecked accepted binding audit.
+
+
+## Continuation: Addressed magic/engine entry guard interaction
+
+Fourteen focused measurements on2026-10-08 start from00dfecbd. Historical
+profile selected Create HeaderState{char magic[8];Engine*engine;} for higher
+instruction inventory95.6 vs accepted94.7, but control95.8 vs100. Test six
+entry guards under direct/shared reader result plus controls:invalid/valid
+boolean chains,boolean bit-and,ternary,early combined and engine/path early
+returns. Record engine initialized from original parameter before guard;
+magic initialization/read extents unchanged. Guards preserve null input
+return-4 with no allocation or file calls. Pointer comparisons pure;no change
+in actual short-circuit effects. Early direct form removes unused result;
+shared form retains existing result used by reader calls. No helper/header/
+ABI/signature/flags/matcher/denominator changes, no dummy effects.
+Natural local record hypothesis, not recovered source.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| accepted_invalid_chain | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| accepted_valid_chain | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| accepted_boolean_and | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| accepted_ternary | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| accepted_early_combined | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| accepted_early_engine_path | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| shared_control | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| shared_invalid_chain | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| shared_valid_chain | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| shared_boolean_and | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| shared_ternary | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| shared_early_combined | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| shared_early_engine_path | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+
+All14 retain identical component metrics and collapse to two whole Core
+objects. Primary97.5 below accepted98.4;none retained. Entry-guard spelling
+does not restore control in this context. Independently extracted normalized
+control-opcode inventories from actual original/compiled arrays:both48
+tokens,including24 calls. Compiled missing1 b and1 bne,extra1 beq and1 cbz
+versus original, unchanged for every trial. Thus deficit is branch-kind
+distribution, not fewer branches; adding dummy branches/padding is unjustified.
+This multiset finding does not identify aligned source branches or prove
+the deficit's location. Do not expand equivalent entry guards here;no
+compiler ceiling inferred. Diagnostic:
+`_work/create_magic_engine_guard_control_inventory.json`.
+
+Sweep exited zero;14 compile/focused verifies pass. All component metrics,
+counts,hashes and control inventories independently recomputed. Source and
+native fixtures restored to accepted;existing204-TU/4619-comparison full/
+native binding audit passes with202 unaffected objects, unchanged actual
+linked2079/byte959 pair sets,canonical flags,three-body/signature boundaries.
+No fresh full/native runtime/game/Android/device check claimed. Accepted
+means98.40/98.41,both99.0 gates unmet;goal active. Main untouched;report-only
+commit;no push/PR/merge.
+
+Preparation removed80 verified generated original Core copies from explicit
+sorted read directory family;only existing single-object focused targets
+whose hash equals canonical target eligible. Missing/non-single/different
+hash targets skipped. Resolved paths inside own _work,untracked,reference
+protected;exact80 guard. Manifest/system-temp backup before literal-path
+deletion;immediate target/reference rehash. Cleanup exited zero,reclaimed
+2,112,960 logical bytes;all80 mappings independently rebound. Compiled
+bases,reports,sources,accepted/baseline/main/Git archive retained. No
+recursive deletion. Inline PowerShell invocation;manifest:
+`_work/duplicate_read80_core_target_cleanup_20261008.json`.
+Evidence:`_work/create_magic_engine_guard_interaction_sweep.py`,
+`_work/create_magic_engine_guard_interaction_identities.json`,14 focused
+objects/reports and rechecked accepted binding audit.
+
+
+## Continuation: Addressed magic/engine reader success guards
+
+Nine focused measurements on2026-10-08 start from5a3b8fe3. Following
+branch-kind diagnosis, test every seven nonempty subset of header-read,
+enhanced-root-reader and plain-root-reader success tests rewritten as
+equivalent failure guards/goto failed in higher-inventory magic/engine
+record. Accepted and record controls. DeMorgan header expression preserves
+short-circuit order, skipped two-byte header read and vertexFormat check.
+Enhanced root still requires exactly1;plain root still accepts non--1;
+child-reader failure semantics untouched. Same file calls/initialization,
+allocations,cleanup,upper time bound. No helper/header/ABI/signature/flags/
+matcher/denominator changes or dummy branches. No original source recovered.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| record_control | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_1 | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_2 | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_3 | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_4 | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_5 | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_6 | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_7 | 97.8 / 60.5 | 94.6 | 97.4 | 99.0 | 98.3 | 297 |
+
+First6 subsets reproduce whole record-control object. All3 together change
+code:control95.8->99.0 but instruction count287->297,inventory95.6->94.6,
+opcode97.7->97.4;primary97.8 still below accepted98.4. Component gains again
+not independent. No primary gain;none retained. Do not expand equivalent
+success/failure guard subsets here;no compiler ceiling inferred.
+Sweep exited zero;9 compile/focused verifies pass. All component metrics,
+counts/hashes independently checked. Code/native fixtures restored to
+accepted;existing204-TU/4619-comparison full/native binding audit passes:
+202 unaffected objects,actual linked2079/byte959 pair sets unchanged with
+no loss/gain,canonical flags/body/signature boundaries intact. No fresh
+full rebuild/native execution/device/Android/game test claimed. Means remain
+98.40/98.41,both99.0 gates unmet;goal active. Main untouched;report-only
+commit;no push/PR/merge.
+
+Preparation removed40 verified generated original Core targets from sorted
+explicit create directory family,only single-object focused targets with
+canonical SHA-256. Missing/non-single/different hash targets skipped.
+Resolved paths inside own _work,untracked,reference protected;exact40 guard,
+manifest/system-temp backup before literal-path removal,immediate rehash.
+Cleanup exited zero,reclaimed1,056,480 logical bytes;all40 mappings rebound.
+Bases/reports/sources/accepted/baseline/main/Git archive retained;no recursive
+deletion. Inline PowerShell invocation;manifest:
+`_work/duplicate_create40_core_target_cleanup_20261008.json`.
+Evidence:`_work/create_magic_engine_success_guard_sweep.py`,
+`_work/create_magic_engine_success_guard_identities.json`,9 focused objects/
+reports and rechecked accepted binding audit.
+
+
+## Continuation: Post-open magic/engine aggregate constness
+
+Ten focused cases on 2026-10-08: accepted and prior magic/engine record
+controls, then eight post-OpenRead aggregate states: engine-first versus
+magic-first, mutable versus const engine pointer, success versus all-three
+failure guards. State is initialized with the existing seven-star magic
+string only after OpenRead succeeds; remove the corresponding strcpy.
+Magic bytes and initialization/read order preserved, parameter engine is
+unchanged. No extra helper/constructor, ABI/header/flags/matcher changes.
+This is a compiler hypothesis, not recovered original source.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| old_record_control | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| engine_first_mutable_success | 96.6 / 62.8 | 91.3 | 97.0 | 95.8 | 98.9 | 289 |
+| engine_first_mutable_failure | 96.6 / 62.8 | 91.3 | 97.0 | 95.8 | 98.9 | 289 |
+| engine_first_const_success | 96.6 / 62.8 | 91.3 | 97.0 | 95.8 | 98.9 | 289 |
+| engine_first_const_failure | 96.6 / 62.8 | 91.3 | 97.0 | 95.8 | 98.9 | 289 |
+| magic_first_mutable_success | 96.8 / 62.6 | 92.4 | 97.7 | 95.8 | 98.2 | 287 |
+| magic_first_mutable_failure | 96.8 / 62.6 | 92.4 | 97.7 | 95.8 | 98.2 | 287 |
+| magic_first_const_success | 96.8 / 62.6 | 92.4 | 97.7 | 95.8 | 98.2 | 287 |
+| magic_first_const_failure | 96.8 / 62.6 | 92.4 | 97.7 | 95.8 | 98.2 | 287 |
+
+All four engine-first variants have identical whole objects; likewise all
+four magic-first variants. Constness and success/failure inversion change
+no compiled code within either order. New cases regress to 96.6/96.8;
+none retained. No immutability benefit in these layouts; no compiler ceiling
+claim. All ten rows independently rebound to canonical original object,
+compiled hashes and all shape components. Initial sweep exited 1 after
+seven rows; verifier said no comparable functions and disk free was 20,480
+bytes. Disk pressure suspected, not a proven explicit ENOSPC diagnostic.
+Source restored by finally. Resume skips those seven completed rows;
+remaining three compile/verifies completed exit zero. Thirty exact duplicate
+generated Core original targets removed from explicit create directories,
+excluding this new family; single-target objects only, SHA matches canonical,
+resolved within own _work, untracked, manifest/system-temp backup before
+literal removal and immediate hash checks. 792,360 logical bytes; manifest
+independently checked. No compiled bases/source/native fixtures/report/main/
+Git archive deleted. Cleanup manifest:
+`_work/duplicate_create_const30_target_cleanup_20261008.json`.
+
+Accepted full/native binding audit passes after restoration: 204 TUs,
+4619 comparisons, 202 unaffected objects, linked-exact 2079 and byte-exact
+959 actual pair sets unchanged, body/signature boundaries and flags intact.
+No fresh full rebuild/native execution/game/device/Android test. Fixed-three
+means remain 98.40/98.41, both 99.0 gates unmet; goal active. Report-only
+commit, no push/PR/merge. Evidence:
+`_work/create_magic_engine_const_sweep.py`,
+`_work/create_magic_engine_const_identities.json`, ten focused objects/reports.
+
+
+## Continuation: Read stack-load deficit role audit
+
+Read-only canonical target/accepted Core object diagnostic on 2026-10-08,
+following b288bb7c. Previous deficit seven `ldr g0, [frame, #slot]` could
+have represented fp object pointers treated as stack. Check exact normalized
+load tokens and surrounding instructions: original 41, accepted 34, every
+one uses sp, none fp. Thus that particular deficit is actual SP-immediate
+load inventory, not misclassified FP object loads. This does not change the
+matcher or prove any corresponding instructions are missing dynamically.
+
+Canonical raw immediate-displacement integer stack word loads: original
+41 single + 3 dual = 47 words; accepted 34 single + 4 dual = 42 words.
+Existing dualword normalization changes neither count in this bucket.
+Single-load semantic-role annotations inferred from entry parameter moves
+and explicit spills (not recovered original local-variable declarations):
+
+| Role | Original single loads | Accepted single loads |
+|---|---:|---:|
+| Mesh slot | 9 | 7 |
+| Handle reference | 6 | 0 |
+| Compressed flag word | 3 | 2 |
+| Stack guard pointer | 5 | 5 |
+| Flags | 2 | 0 |
+| Sub-bit | 2 | 4 |
+| Engine | 1 | 1 |
+| Unassigned locals | 13 | 15 |
+
+Zero singles for accepted handle/flags is not zero reloads: accepted restores
+these in paired LDRD instructions. Original spills slot at SP+40, handle at
+SP+24, guard pointer/flags pair at SP+16, compressed word at SP+12. Accepted
+slots are SP+48, SP+12, guard pointer SP+20, flags SP+16, compressed word
+SP+8. Slot numbers are allocation evidence only, not ABI fields or source
+requirements. Stack guard pointer singles equal five: no evidence to target
+canary changes. Next compiler hypothesis should concern parameter lifetimes
+across stream stages, not forced frame accesses or arbitrary padding. Counts
+are multisets with no aligned source identity; fp can be an object pointer
+elsewhere, which this narrow bucket audit does not deny. No dummy effects,
+fixed registers, volatile/asm, flags, helpers, ABI or denominator changes.
+
+Evidence `_work/analyze_read_frame_load_roles_20261008.py` and
+`_work/read_frame_load_roles_20261008.json` includes exact normalized tokens,
+contexts, role notes and canonical object hashes. No source edit or trial
+compiler result this continuation. Accepted binding audit reconfirmed204 TUs,
+4619 comparisons,202 unaffected objects,actual linked2079/byte959 sets with
+no loss/gain; code boundaries/flags restored and unchanged. Existing native
+proof rebound, no fresh full/native/game/device execution. Means98.40/98.41;
+both99.0 gates remain unmet and goal active. Main unchanged, report-only
+commit, no push/PR/merge.
+
+Report staging failed with explicit index.lock write error/out of diskspace;
+Git's own failed lock was not manipulated. Removed40 verified generated
+original Core targets from sorted explicit read directory family: resolved
+within own _work, untracked, single-object targets only, canonical SHA match,
+exact40 guard,system-temp manifest before literal removal/immediate rehash.
+Manifest copied to workspace after space available and40 mappings checked;
+1,056,480 logical bytes. No compiled base/source/report/native fixture/main/
+Git archive removed. Evidence:
+`_work/duplicate_read_roles40_target_cleanup_20261008.json`.
+
+
+## Continuation: Read post-count parameter reference records
+
+Ten focused cases on2026-10-08 afterd108494d: accepted/fresh-index-owner
+controls plus four reference-only local StreamArguments records per owner,
+declared immediately after vertex count capture. handleRef/slot both orders;
+engine/handleRef/flags/slot/mat and reverse orders. Actual const handle reference
+is retained; slot/engine/material are references to existing parameters,
+flags a const reference to parameter, not value snapshots. All uses after
+record declaration redirected to members. No earlier read/allocation order,
+external owner reload, failure cleanup, loop arithmetic or normal clamp
+changes; no helper/header/ABI/signature/flags/matcher/denominator changes.
+Compiler lifetime hypothesis based on diagnosed parameter stack roles,
+not recovered original source or forced frame-access padding.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 874 |
+| accepted_handleRef_slot | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 874 |
+| accepted_slot_handleRef | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 874 |
+| accepted_engine_handleRef_flags_slot_mat | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 874 |
+| accepted_mat_slot_flags_handleRef_engine | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 874 |
+| fresh_control | 98.5 / 57.8 | 95.7 | 98.1 | 98.8 | 100.0 | 874 |
+| fresh_handleRef_slot | 98.5 / 57.8 | 95.7 | 98.1 | 98.8 | 100.0 | 874 |
+| fresh_slot_handleRef | 98.5 / 57.8 | 95.7 | 98.1 | 98.8 | 100.0 | 874 |
+| fresh_engine_handleRef_flags_slot_mat | 98.5 / 57.8 | 95.7 | 98.1 | 98.8 | 100.0 | 874 |
+| fresh_mat_slot_flags_handleRef_engine | 98.5 / 57.8 | 95.7 | 98.1 | 98.8 | 100.0 | 874 |
+
+All eight reference-record variants produce entire corresponding control
+objects, not merely equal primary scores. Thus no parameter lifetime/spill
+change in these contexts; don't expand equivalent reference-only orders here.
+No primary gain, none retained; not a compiler ceiling claim. Sweep completed
+exit zero; ten compiled-object hashes/instruction counts/all shape metrics
+independently rebound to canonical original. Source restored; accepted full/
+native binding audit rechecked204 TUs/4619 comparisons/202 unaffected objects,
+actual linked2079/byte959 pair sets unchanged with no loss/gain, signatures,
+body boundaries and flags intact. No fresh full/native/game/device/Android
+execution. Means98.40/98.41; both99 gates unmet, goal active. Main untouched,
+report-only commit, no push/PR/merge.
+
+Preparation removed40 exact generated original Core target duplicates from
+sorted read directory family; single-object targets only, resolved inside own
+_work,untracked,canonical SHA match,exact40 guard,manifest/system-temp backup
+before literal removal and immediate reference/target rehash.1,056,480 logical
+bytes;all40 manifest entries independently audited. Bases/source/reports/
+native/accepted/baseline/main/Git archive retained;no recursive deletion.
+Manifest:`_work/duplicate_stream_refs40_target_cleanup_20261008.json`.
+Evidence:`_work/read_stream_reference_arguments_sweep.py`,
+`_work/read_stream_reference_arguments_identities.json`,ten focused objects/
+reports and existing accepted proof binding audit.
+
+
+## Continuation: Enhanced remaining-key counter interaction
+
+Fourteen focused cases2026-10-08 after68299771: accepted/preload controls
+and six countdown variants each. Three vector-key loops,three scalar-key
+loops,optional-key loop,V5 signed-key loop separately;all eight together in
+for and guarded do forms. Current loops increment unused i/j; new unsigned
+remaining=count for unsigned-short counts, signed int remaining=count for
+signed-short V5;remaining>0 then decrement. Zero/negative V5 still skip;
+unsigned counts bounded65535, signed32767; no overflow. Assert old index not
+referenced in any payload. Same stream read/InsertKeyFrame order and failure
+gotos;no count-word reuse,channel/data changes,float reassociation or clamping
+change. This is a compiler hypothesis,not recovered original loop source.
+No helper/header/ABI/signature/flags/matcher/denominator/dummy effects.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.3 / 66.9 | 95.8 | 97.4 | 98.7 | 99.5 | 641 |
+| accepted_vector_remaining_for | 98.0 / 52.5 | 95.2 | 96.8 | 98.0 | 100.0 | 641 |
+| accepted_scalar_remaining_for | 97.9 / 66.1 | 94.8 | 96.5 | 98.0 | 100.0 | 641 |
+| accepted_optional_remaining_for | 98.3 / 66.4 | 95.7 | 97.3 | 98.7 | 99.7 | 641 |
+| accepted_v5_remaining_for | 98.1 / 66.8 | 95.5 | 97.3 | 98.0 | 99.7 | 640 |
+| accepted_all_remaining_for | 96.4 / 51.1 | 93.1 | 94.9 | 94.6 | 99.2 | 640 |
+| accepted_all_remaining_do | 93.9 / 49.9 | 90.3 | 92.5 | 88.6 | 98.2 | 630 |
+| preload_control | 98.3 / 67.8 | 95.8 | 97.4 | 98.3 | 99.8 | 639 |
+| preload_vector_remaining_for | 97.8 / 53.3 | 95.0 | 96.7 | 97.6 | 99.7 | 639 |
+| preload_scalar_remaining_for | 97.7 / 66.8 | 94.8 | 96.5 | 97.6 | 99.7 | 639 |
+| preload_optional_remaining_for | 98.3 / 67.3 | 95.7 | 97.3 | 98.3 | 100.0 | 639 |
+| preload_v5_remaining_for | 98.1 / 67.5 | 95.5 | 97.3 | 97.6 | 100.0 | 638 |
+| preload_all_remaining_for | 96.1 / 52.0 | 92.9 | 94.7 | 94.3 | 98.8 | 638 |
+| preload_all_remaining_do | 93.7 / 50.6 | 90.2 | 92.3 | 88.2 | 97.8 | 628 |
+
+Twelve new cases93.7..98.3. Optional-only ties primary but lowers inventory/
+opcode/strict under both contexts;all changes regress control except optional.
+All-for96.4/96.1;all-do93.9/93.7,despite fewer instructions. No primary gain,
+none retained. Fourteen distinct whole objects;all shape components/counts/
+hashes independently rebound to canonical original. Sweep completed exit0;
+source restored,accepted204-TU/4619-comparison existing full/native proof
+binding passes,202 unaffected objects,actual linked2079/byte959 sets with no
+loss/gain,body/signature boundaries and flags intact. No fresh full rebuild/
+native/game/device/Android execution. Means98.40/98.41;both99.0 gates unmet,
+goal active. No compiler ceiling claim. Main untouched;report-only commit,
+no push/PR/merge.
+
+Preparation removed100 exact generated original Mesh targets from sorted
+explicit enh family,single-object targets only,paths resolved inside own
+_work,untracked,canonical SHA match,exact100 guard,manifest/system-temp backup
+before literal deletion/immediate target+reference rehash.289,600 logical
+bytes;all100 mappings independently checked. Bases/source/reports/native/
+accepted/baseline/main/Git archive untouched,no recursive removal. Manifest:
+`_work/duplicate_countdown100_mesh_target_cleanup_20261008.json`.
+Evidence:`_work/enh_key_countdown_sweep.py`,
+`_work/enh_key_countdown_identities.json`,14 focused objects/reports.
+
+
+## Continuation: Create child-sphere merge argument references
+
+Ten focused cases2026-10-08 afterce74fdf4: accepted/shared-result controls,
+then root/child sphere references in both declaration orders and local
+MergeArguments reference-member records in both orders under both contexts.
+Declare only after successful child MeshReadData,bind root through current
+*out and child through current childPtr. No sphere copy/value initialization,
+no capture before reader could change childPtr,Merge signature/receiver/input
+and following ArrayAdd unchanged. References to original sphere storage,
+not new radius/vector arithmetic. Same read/failure/cleanup/call order.
+Compiler lifetime hypothesis,not recovered source. No helper/header/ABI/
+signature/flags/matcher/denominator/dummy effects.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| accepted_root_child_references | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| accepted_child_root_references | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| accepted_root_child_record | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| accepted_child_root_record | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| shared_control | 98.4 / 61.0 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| shared_root_child_references | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| shared_child_root_references | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| shared_root_child_record | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| shared_child_root_record | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+
+All eight new variants reproduce whole accepted Core object. Shared-result
+control itself differs(strict61.0 vs60.7),but each of its four new variants
+collapses to accepted object. No primary gain;none retained. Do not expand
+these equivalent Merge-reference declaration orders here;no compiler ceiling
+claim. Sweep completed exit0;all hashes/counts/shape components independently
+rebound to canonical original. Source restored;accepted full/native proof
+binding audit passes204 TUs/4619 comparisons/202 unaffected objects,actual
+linked2079/byte959 sets unchanged,no loss/gain,body/signature boundaries and
+flags intact. No fresh full/native/game/device/Android execution. Means
+98.40/98.41,both99.0 gates unmet,goal active. Main untouched,report-only
+commit,no push/PR/merge.
+
+Preparation removed40 exact generated original Core targets from sorted
+explicit create family,single-object targets only,paths resolved within own
+_work,untracked,canonical SHA match,exact40 guard,manifest/system-temp backup
+before literal deletion/immediate reference+target rehash.1,056,480 logical
+bytes;all40 mappings independently checked. Bases/source/reports/native/
+accepted/baseline/main/Git archive untouched,no recursive removal. Manifest:
+`_work/duplicate_child_bounds40_core_target_cleanup_20261008.json`.
+Evidence:`_work/create_child_bounds_references_sweep.py`,
+`_work/create_child_bounds_references_identities.json`,ten focused objects/
+reports and accepted existing proof binding audit.
+
+Report staging failed explicitly with loose-object/index.lock disk-full errors;
+Git failed locks/archives not manipulated. Removed another30 exact generated
+original Core targets from sorted read family,only single-object targets,
+resolved own _work/untracked/canonical SHA guard,exact30 count/system-temp
+manifest before literal removal/immediate rehash. Manifest copied after space
+available;all30 mappings audited,792,360 logical bytes. No compiled bases,
+source,reports,native,main or Git archive removed. Evidence:
+`_work/duplicate_child_bounds_read30_target_cleanup_20261008.json`.
+
+
+## Continuation: Shared-result magic/engine success-guard interaction
+
+Nine focused cases2026-10-08 afterc591c83a. Complete missing shared-result
+context ofcf0b7eb6 addressed-magic/engine success-guard subset sweep. Accepted
+control,shared-result record control,all seven nonempty subsets of header/
+enhanced-root/plain-root tests rewritten as equivalent failure guards. Reader
+result is still assigned once to existing result;enhanced success exactly1,
+plain success any non--1,child failure exactly--1 unchanged. Header short-
+circuit sequence/skipped word/vertex-format behavior preserved. No file call,
+allocation,cleanup or time bounds changed,no helper/header/ABI/signature/
+flags/matcher/denominator/dummy effects. Compiler hypothesis,not recovery.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| shared_record_control | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_1 | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_2 | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_3 | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_4 | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_5 | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_6 | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_7 | 97.8 / 60.9 | 94.6 | 97.4 | 99.0 | 98.3 | 297 |
+
+Every corresponding row has identical primary score/inventory/opcode/control/
+calls/size/instruction count to previous direct-result subset family. Six
+subsets reproduce whole shared record-control object;all-three differs,97.8,
+control99.0,297 instructions. Strict changes+0.4 versus direct contexts,not
+primary improvement. Three whole hashes in this family;no gain,none retained.
+Do not expand this direct/shared success-guard interaction further;no compiler
+ceiling claim. Sweep completed exit0;all shape metrics/counts/hashes directly
+rebound to canonical original. Source restored;accepted existing full/native
+proof binding passes204 TUs/4619 comparisons/202 unaffected objects,actual
+linked2079/byte959 pair sets unchanged with no loss/gain,body/signature/flags
+intact. No fresh full/native/game/device/Android execution. Means98.40/98.41,
+both99.0 gates unmet,goal active. Main untouched,report-only commit,no push/
+PR/merge.
+
+Preparation removed40 verified generated original Core target duplicates
+from sorted explicit read family,single-object targets,paths resolved inside
+own _work,untracked,canonical SHA match,exact40 guard,manifest/system-temp
+backup before literal removal/immediate reference+target rehash.1,056,480
+logical bytes;all40 mappings independently checked. Bases/source/reports/
+native/accepted/baseline/main/Git archive untouched,no recursive removal.
+Manifest:`_work/duplicate_shared_success40_core_target_cleanup_20261008.json`.
+Evidence:`_work/create_magic_engine_shared_success_guard_sweep.py`,
+`_work/create_magic_engine_shared_success_guard_identities.json`,nine focused
+objects/reports and previous direct-family ledger.
+
+
+## Continuation: Read tangent multiplication operand alias groups
+
+Eight focused cases2026-10-08 after4f4ca2a5: accepted control plus seven
+nonempty subsets reversing multiplication operands in tangent determinant
+(two products),XYZ tangent numerators(six),final reciprocal scaling(three).
+Subtraction operand order,division,operation grouping and payload stores
+unchanged. Finite/signed-zero multiplication is commutative;NaN payload
+selection not assumed equivalent from C++ spelling. No variant retained.
+No helper/header/ABI/signature/flags/matcher/denominator/dummy effects.
+
+Original and accepted both contain11 VMUL.F32 instructions. Earlier missing
+shape2 `vmul.f32 sv0,sv0,sv1` versus extra2 `vmul.f32 sv0,sv1,sv0` is result/
+operand register aliasing,not two missing arithmetic operations. Original
+triangle numerator instructions617/618 alias result with first operand;
+accepted605/606 alias result with second. Instruction indices are canonical
+raw token indices,not source lines or semantic alignment proof. Diagnostic
+captures every VMUL.F32 token/index/shape. Source operand reversal hypothesis
+rejected:all seven subsets produce entire accepted Core object,not merely
+same score. All eight98.5/57.4,n874,inventory95.8,opcode98.1,control98.8,
+calls100,size100. Whole hashes checked and accepted shape metrics directly
+rebound;because objects identical,this also binds all eight. Do not expand
+these equivalent operand-subset orders here;no compiler ceiling inferred.
+
+Sweep completed exit0,source restored;accepted existing full/native proof
+binding passes204 TUs/4619 comparisons/202 unaffected objects,actual linked
+2079/byte959 sets unchanged with no loss/gain,body/signature/flags intact.
+No fresh full/native/game/device/Android execution. Means98.40/98.41,both99.0
+gates unmet,goal active. Main untouched,report-only commit,no push/PR/merge.
+
+Preparation removed40 exact generated original Core targets from sorted
+explicit read family,single-object targets,paths resolved within own_work,
+untracked,canonical SHA match,exact40 guard,manifest/system-temp backup before
+literal removal/immediate reference+target rehash.1,056,480 logical bytes;
+all40 mappings independently checked. Bases/source/reports/native/accepted/
+baseline/main/Git archive untouched,no recursive removal. Evidence:
+`_work/duplicate_tangent_operands40_core_target_cleanup_20261008.json`,
+`_work/read_tangent_operand_groups_sweep.py`,
+`_work/read_tangent_operand_groups_identities.json`,
+`_work/read_tangent_multiply_shape_diagnostic_20261008.json`.
+
+
+## Continuation: Read triangle math and output value records
+
+Seven focused cases2026-10-08 afterb954285d: accepted plus six actual triangle
+value records. NumeratorXYZ+tng[3],reciprocal+tng[3],all determinant/reciprocal/
+XYZ+tng[3],each forward/reverse field order. Record left uninitialized then
+existing assignment expressions in original order,avoids extra aggregate zero
+initialization. All tng uses redirected to actual array field including three
+Vector += inputs. No arithmetic/reassociation/NaN operand swap,payload/read/
+failure/cleanup changes,helper/header/ABI/signature/flags/matcher/denominator/
+dummy effects. Compiler-layout hypothesis,not recovered source.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Calls | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|---:|
+| accepted_control | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 100.0 | 874 |
+| numerators_forward | 97.5 / 51.7 | 93.4 | 97.2 | 99.2 | 98.2 | 99.6 | 877 |
+| numerators_reverse | 98.2 / 52.9 | 94.5 | 97.9 | 98.8 | 100.0 | 99.5 | 878 |
+| reciprocal_forward | 97.7 / 53.0 | 94.0 | 97.4 | 99.2 | 98.2 | 99.9 | 875 |
+| reciprocal_reverse | 98.3 / 54.3 | 95.0 | 98.0 | 98.8 | 100.0 | 99.8 | 876 |
+| all_forward | 97.5 / 51.5 | 93.7 | 97.1 | 99.2 | 98.2 | 99.4 | 879 |
+| all_reverse | 98.2 / 52.8 | 95.0 | 97.8 | 98.8 | 100.0 | 99.3 | 880 |
+
+Six new variants97.5..98.3 below accepted98.5;all seven whole objects distinct.
+Forward layouts raise control98.8->99.2 but call metric100->98.2 and regress
+inventory. Relocation counters for exactly named Read body:accepted/reverse
+55 direct call sites,forward54. Only missing static target one _ZdaPv, no
+new call target. Source keeps all cleanup;static call merging/elimination
+is not proof of a leak or dynamic missing free. Do not insert dummy calls.
+Reverse layouts retain all calls but regress inventory94.5..95.0 versus95.8.
+No gain,none retained;no compiler ceiling claim. Sweep completed exit0;
+all shape metrics/counts/hashes/call relocation differences directly checked.
+Source restored,accepted existing full/native proof binding passes204 TUs/
+4619 comparisons/202 unaffected objects,actual linked2079/byte959 sets no
+loss/gain,body/signature/flags intact. No fresh full/native/game/device/
+Android execution. Means98.40/98.41,both99 gates unmet,goal active. Main
+untouched,report-only commit,no push/PR/merge.
+
+Preparation removed40 exact generated original Core targets from sorted read
+family,single-object targets,paths resolved inside own_work,untracked,canonical
+SHA match,exact40 guard,manifest/system-temp backup before literal removal/
+immediate reference+target rehash.1,056,480 logical bytes,all40 mappings checked.
+Bases/source/reports/native/accepted/baseline/main/Git archive retained,no
+recursive deletion. Evidence:
+`_work/duplicate_triangle_math40_core_target_cleanup_20261008.json`,
+`_work/read_triangle_math_records_sweep.py`,
+`_work/read_triangle_math_records_identities.json`,
+`_work/read_triangle_math_records_call_relocations.json`.
+
+
+## Continuation: Read triangle output Vector and record interaction
+
+Eight focused cases2026-10-08 after9db19f20: accepted array control,standalone
+Vector tng and all six triangle math record forms with Vector tng field.
+Vector.h has existing size0x0c and x/y/z offsets0/4/8 assertions. Default
+construction adds no user constructor or zero initialization. Existing
+Y/X/Z assignment order/formulas retained,direct tng.y/x/z avoids operator[],
+three Vector+= calls receive actual Vector field,avoids float-pointer cast.
+No copy/helper/header/ABI/signature/flags/matcher/denominator change.
+Compiler type/alias hypothesis,not recovered original source.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Calls | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 874 |
+| vector_accepted_control | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 874 |
+| vector_numerators_forward | 97.5 / 51.7 | 93.4 | 97.2 | 99.2 | 98.2 | 877 |
+| vector_numerators_reverse | 98.2 / 52.9 | 94.5 | 97.9 | 98.8 | 100.0 | 878 |
+| vector_reciprocal_forward | 97.7 / 53.0 | 94.0 | 97.4 | 99.2 | 98.2 | 875 |
+| vector_reciprocal_reverse | 98.3 / 54.3 | 95.0 | 98.0 | 98.8 | 100.0 | 876 |
+| vector_all_forward | 97.5 / 51.5 | 93.7 | 97.1 | 99.2 | 98.2 | 879 |
+| vector_all_reverse | 98.2 / 52.8 | 95.0 | 97.8 | 98.8 | 100.0 | 880 |
+
+Each Vector variant reproduces whole corresponding prior array object;
+standalone Vector also whole accepted. Seven hashes across eight rows. No
+primary gain,none retained;type/layout substitution does not fix prior
+register-alias or static-call differences. Raw named-body relocation counters
+again:control/reverse55 direct calls,forward54;only missing one _ZdaPv,no
+new target. Source frees remain;not proof of a dynamic leak,no dummy calls.
+Do not expand equivalent array/Vector type substitutions here;no compiler
+ceiling claim. All shape metrics/counts/hashes/call differences directly
+rebound;prior-family whole-object equality independently checked. Sweep
+completed exit0,source restored;accepted existing full/native proof binding
+passes204 TUs/4619 comparisons/202 unaffected objects,actual linked2079/
+byte959 sets unchanged,no loss/gain,body/signature/flags intact. No fresh
+full/native/game/device/Android execution. Means98.40/98.41,both99.0 gates
+unmet,goal active. Main untouched,report-only commit,no push/PR/merge.
+
+Preparation removed40 exact generated original Core targets from sorted read
+family,single-object targets,paths resolved within own_work,untracked,canonical
+SHA match,exact40 guard,manifest/system-temp backup before literal removal/
+immediate reference+target rehash.1,056,480 logical bytes;all40 mappings
+checked. Bases/source/reports/native/accepted/baseline/main/Git archive retained,
+no recursive removal. Evidence:
+`_work/duplicate_triangle_vector40_core_target_cleanup_20261008.json`,
+`_work/read_triangle_vector_records_sweep.py`,
+`_work/read_triangle_vector_records_identities.json`,
+`_work/read_triangle_vector_records_call_relocations.json`.
+
+
+## Continuation: Read typed-stream raw/output pointer records
+
+Nine focused cases2026-10-08 after9688031b: accepted plus pair pointer records
+raw/output under compressed short positions,int positions,short normals,
+each raw-first/output-first,individual and all-three blocks. BufferPointers
+has two existing void pointers,default uninitialized then original allocations
+at same points and types;no array zero initialization or new allocation.
+All uses including typed delete[] redirected to actual members,output mesh
+field assignments unchanged,failure paths preserve deletes/return. No snapshot
+of mesh counts,no new ownership semantics,helper/header/ABI/signature/flags/
+matcher/denominator/dummy effects. Compiler lifetime hypothesis,not recovery.
+
+All nine entire Core objects equal accepted byte-for-byte;each98.5/57.4,n874,
+inventory95.8/opcode98.1/control98.8/calls100/size100. All pointer field orders
+and three-block combination have no compiled lifetime/spill effect here.
+No primary gain,none retained;do not expand equivalent pair-pointer records
+here,no compiler ceiling inferred. Sweep completed exit0;actual object bytes/
+hashes checked,canonical shape metrics/counts directly rebound and equality
+binds all nine. Source restored;accepted existing full/native proof binding
+passes204 TUs/4619 comparisons/202 unaffected objects,actual linked2079/
+byte959 pair sets unchanged,no loss/gain,body/signature/flags intact. No fresh
+full/native/game/device/Android execution. Means98.40/98.41,both99 gates unmet,
+goal active. Main untouched,report-only commit,no push/PR/merge.
+
+Preparation removed60 exact generated original Core targets from sorted read
+family,single-object targets,paths resolved inside own_work,untracked,canonical
+SHA match,exact60 guard,manifest/system-temp backup before literal removal/
+immediate reference+target rehash.1,584,720 logical bytes;all60 mappings checked.
+Bases/source/reports/native/accepted/baseline/main/Git archive retained,no
+recursive removal. Evidence:
+`_work/duplicate_buffer_ptr60_core_target_cleanup_20261008.json`,
+`_work/read_buffer_pointer_records_sweep.py`,
+`_work/read_buffer_pointer_records_identities.json`,nine focused objects/reports.
+
+
+## Continuation: Enhanced key sample and frame-limit pointer records
+
+Nine focused cases2026-10-08 after89c6b36f: accepted control,then actual read
+key-time sample and pointer to global timeBetweenFrames in local KeyTimeState,
+sample-first/pointer-first under vector,axis,optional+V5 groups and all-eight
+sites. Existing sample left uninitialized then4-byte AEFile read to field;
+limit pointer initialized to global address,not a copy of global float.
+Same positive-time comparison first,global limit comparison second,conditional
+global update at original point before next payload read. All subsequent
+sample/time argument uses redirected to field,helper itself untouched.
+No extra float zero init,helper/constructor/header/ABI/signature/flags/matcher/
+denominator/dummy effects. Compiler alias/lifetime hypothesis,not recovery.
+AEFile bounded destination-write contract assumed;opaque compiler aliasing
+can affect adjacent pointer field unlike standalone local. No variant kept.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.3 / 66.9 | 95.8 | 97.4 | 98.7 | 99.5 | 641 |
+| vectors_sample_first | 96.7 / 61.1 | 93.1 | 94.9 | 97.7 | 98.0 | 650 |
+| axes_sample_first | 96.8 / 64.1 | 93.4 | 94.9 | 97.7 | 98.0 | 650 |
+| optional_v5_sample_first | 97.3 / 65.3 | 94.3 | 95.8 | 98.0 | 98.5 | 647 |
+| all_sample_first | 94.2 / 57.3 | 88.7 | 90.5 | 96.1 | 95.7 | 665 |
+| vectors_pointer_first | 96.4 / 61.2 | 92.0 | 94.3 | 97.7 | 98.2 | 649 |
+| axes_pointer_first | 96.8 / 21.7 | 93.8 | 95.2 | 97.7 | 97.2 | 655 |
+| optional_v5_pointer_first | 97.2 / 64.4 | 94.2 | 95.7 | 98.0 | 98.0 | 650 |
+| all_pointer_first | 93.8 / 34.9 | 89.0 | 90.2 | 96.1 | 93.8 | 678 |
+
+All eight new cases regress93.8..97.3,n647..678 versus accepted641;all calls100.
+Nine distinct whole objects;pointer/sample co-location introduces inventory/
+opcode/control losses,no primary gain,none retained. Earlier direct inline/
+comparison spelling already tested under accepted/preload,not rerun here.
+No compiler ceiling claim. Sweep completed exit0,all shape components/counts/
+hashes rebound to canonical original. Source restored;accepted existing full/
+native proof binding passes204 TUs/4619 comparisons/202 unaffected objects,
+actual linked2079/byte959 sets unchanged,no loss/gain,body/signature/flags
+intact. No fresh full/native/game/device/Android execution. Means98.40/98.41,
+both99 gates unmet,goal active. Main untouched,report-only commit,no push/PR/
+merge.
+
+Preparation removed120 exact generated original Mesh targets from sorted enh
+family,single-object targets,paths resolved inside own_work,untracked,canonical
+SHA match,exact120 guard,manifest/system-temp backup before literal removal/
+immediate reference+target rehash.347,520 logical bytes;all120 mappings checked.
+Bases/source/reports/native/accepted/baseline/main/Git archive retained,no
+recursive removal. Evidence:
+`_work/duplicate_time_ptr120_mesh_target_cleanup_20261008.json`,
+`_work/enh_key_time_pointer_records_sweep.py`,
+`_work/enh_key_time_pointer_records_identities.json`,nine focused objects/reports.
+
+
+## Continuation: Create signature-column and magic/engine guard interaction
+
+Nine focused cases2026-10-08 after09e8e629. Accepted/record/all-failure-guard
+controls,then three signature column representations under addressed magic/
+engine record:7x5 char matrix with original/reverse signature columns,and
+SignatureColumn[7] with five char fields. Both success-style and all-three
+failure-style guards. Same35 signature bytes,seven comparisons in each of
+five candidates,fmt1f and same mismatch-cleared bits;column access indexes
+mapped to original signature order. Original scalar loop order/current
+magic byte,skipped header word,vertexFormat and reader result semantics
+preserved. No header/helper/ABI/signature/flags/matcher/denominator/dummy
+changes. Compiler static-data/layout interaction,not recovered source.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| record_control | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| record_failure_control | 97.8 / 60.5 | 94.6 | 97.4 | 99.0 | 98.3 | 297 |
+| columns_original_success | 93.0 / 54.0 | 85.4 | 93.2 | 95.8 | 90.5 | 265 |
+| columns_original_failure | 94.1 / 50.5 | 84.6 | 92.9 | 99.0 | 94.0 | 275 |
+| columns_reverse_success | 92.2 / 53.9 | 83.9 | 92.8 | 93.8 | 90.5 | 266 |
+| columns_reverse_failure | 93.4 / 50.4 | 83.1 | 92.9 | 96.9 | 94.0 | 276 |
+| column_records_success | 93.0 / 54.0 | 85.4 | 93.2 | 95.8 | 90.5 | 265 |
+| column_records_failure | 94.1 / 50.5 | 84.6 | 92.9 | 99.0 | 94.0 | 275 |
+
+Six new cases92.2..94.1,n265..276. Original-order matrix and field records
+produce whole identical objects under each guard style. Reverse signature
+column order lowers control to93.8/96.9. Original-order failure guards again
+reachcontrol99.0 but inventory84.6,far below accepted94.7. Static-data
+compression/shorter code does not imply improved original shape. Seven
+whole objects across nine cases. No gain,none retained,no compiler ceiling
+claim. Sweep completed exit0;all shape metrics/counts/hashes and matrix/
+record identity directly checked. Source restored;accepted existing full/
+native proof binding passes204 TUs/4619 comparisons/202 unaffected objects,
+actual linked2079/byte959 sets unchanged,no loss/gain,body/signature/flags
+intact. No fresh full/native/game/device/Android execution. Means98.40/98.41,
+both99 gates unmet,goal active. Main untouched,report-only commit,no push/
+PR/merge.
+
+Preparation removed40 exact generated original Core targets from sorted create
+family,single-object targets,paths resolved inside own_work,untracked,canonical
+SHA match,exact40 guard,manifest/system-temp backup before literal removal/
+immediate reference+target rehash.1,056,480 logical bytes;all40 mappings checked.
+Bases/source/reports/native/accepted/baseline/main/Git archive retained,no
+recursive removal. Evidence:
+`_work/duplicate_signature_guard40_core_target_cleanup_20261008.json`,
+`_work/create_signature_guard_records_sweep.py`,
+`_work/create_signature_guard_records_identities.json`,nine focused objects/
+reports and accepted existing proof binding audit.
+
+Initial report commit failed explicitly with index.lock write/out-of-diskspace;
+HEAD rechecked unchanged09e8e629. No Git locks/archives manipulated. Removed20
+additional exact generated original Core targets from sorted read family,
+single-object/resolved own_work/untracked/canonical SHA guard,exact20 count,
+system-temp manifest before literal removal/immediate reference+target rehash;
+manifest copied after space available. All20 mappings checked,528,240 logical
+bytes. No compiled bases/source/reports/native/main/Git archive removed.
+Evidence:`_work/duplicate_signature_commit20_core_target_cleanup_20261008.json`.
+
+
+## Continuation: Enhanced standalone axis width and BIC diagnosis
+
+Three focused compile/direct canonical-object measurements2026-10-08 after
+95088a8b. Reinspect original masks: BIC sign31 at raw token92/223/353 directly
+before axis dispatch comparisons2/1/0,and577 before V5 channel switch.
+Accepted three axis dispatches use ANDS127 at92/223/356,with U X T B at
+axis increment/exit127/254/386;V5 alone retains BIC31 at563. No inference
+of a missing input flag field or recovered axis declaration from masks.
+
+Fresh ordinary standalone int/unsigned-int axis loops replacing the three
+unsigned-char loops,keeps count variables separately addressed by AEFile
+and all switch labels unchanged. This differs from prior wide AxisState
+count record,where count read and axis shared addressed storage. Same axis
+sequence0,1,2 with exit3,reads/payloads/calls/float arithmetic/cleanup untouched.
+No explicit sign mask,fixedregister,volatile,asm,helper/header/ABI/signature/
+flags/matcher/denominator/dummy effects. Source restored in finally using
+original bytes. No native type claim,compiler evidence only.
+
+| Type | Source | Inventory | Opcode | Control | Calls | Size | Instructions | BIC31 / ANDS127 / UXTB |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| unsigned char control | 98.3 | 95.8 | 97.4 | 98.7 | 100 | 99.5 | 641 | 1 / 3 / 3 |
+| int | 98.0 | 96.0 | 97.5 | 96.6 | 100 | 100 | 638 | 4 / 0 / 0 |
+| unsigned int | 98.0 | 96.0 | 97.5 | 96.6 | 100 | 100 | 638 | 4 / 0 / 0 |
+
+Signed/unsigned wide loops produce whole identical object. Actual count3
+and all metrics measured by unchanged asmdiff against canonical target.
+Important refinement: ordinary wide axes do restore original mask phenotype;
+previous negative wide-axis/count-record results do not rule that out.
+Inventory/opcode/size improve but control loses2.1 points,primary regresses;
+none retained. Next hypothesis can isolate dispatch/control placement with
+wide standalone axes,not add artificial masks. No compiler ceiling claim.
+Historical subset snapshots read during preparation have same current body
+after hypothetical axis-width replacement;not claimed newly compiled or
+unsearched universal corpus. No change to fixed-three denominator or scoring.
+
+All three compiles/direct disassemblies completed exit0;no new focused full-
+unit verifier or strict sequence score claimed. Accepted full/native proof
+binding audit rechecked204 TUs/4619 comparisons/202 unaffected objects,actual
+linked2079/byte959 sets unchanged,no loss/gain,body/signature/flags intact.
+No fresh full/native/game/device/Android execution. Means98.40/98.41,both99
+ gates unmet,goal active. Main untouched,report-only commit,no push/PR/merge.
+No cleanup this continuation. Evidence:
+`_work/enh_plain_axis_diagnostic_20261008.py`,
+`_work/enh_plain_axis_diagnostic_20261008.json`,three compiled base objects.
+
+## Continuation: Wide standalone axis paired frame captures
+
+Five fresh focused compiles and four historical object rebindings on 2026-10-08. All nine rows independently rechecked against canonical original Mesh.o with unchanged asmdiff, including all metrics, instruction counts, BIC sign masks and whole-object hashes. Historical source bodies were checked equal to current hypothetical wide-axis/frame-capture bodies before reuse; those four objects are not newly compiled and their old build dependencies were not freshly revalidated.
+
+Capture int frame = (int)value after the existing successful value read and before axis dispatch in each selected section. Test all three pairs of position/scale/rotation sections with standalone int axes and separately addressed count variables. Single-section and all-section forms are historical controls. Preserve axis sequence, reads, calls and Insert order. No helpers, headers, ABI, flags, matcher, denominator, explicit masks, dummy effects or arithmetic changes. Source restored using original bytes in finally. This is a compiler hypothesis, not recovered original declarations.
+
+| Form | Fresh | Source | Inventory | Opcode | Control | Size | Instructions | BIC31 |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| accepted_control | True | 98.3 | 95.8 | 97.4 | 98.7 | 99.5 | 641 | 1 |
+| wide_control | True | 98.0 | 96.0 | 97.5 | 96.6 | 100.0 | 638 | 4 |
+| wide_pair_3 | True | 97.9 | 95.3 | 96.8 | 98.0 | 99.5 | 641 | 4 |
+| wide_pair_5 | True | 97.9 | 95.3 | 96.8 | 98.0 | 99.5 | 641 | 4 |
+| wide_pair_6 | True | 97.9 | 95.4 | 96.8 | 98.0 | 99.3 | 642 | 4 |
+| historical_position_frame | False | 98.0 | 95.8 | 97.3 | 97.3 | 99.8 | 639 | 4 |
+| historical_scale_frame | False | 98.0 | 95.8 | 97.3 | 97.3 | 99.7 | 640 | 4 |
+| historical_rotation_frame | False | 98.0 | 95.8 | 97.3 | 97.3 | 99.7 | 640 | 4 |
+| historical_all_axis_frames | False | 97.8 | 94.8 | 96.3 | 98.7 | 99.2 | 643 | 4 |
+
+Calls remain 100 in all rows; nine whole-object hashes are distinct. Each capture restores 0.7 control points relative to the wide-axis control; all three captures reach accepted control 98.7, but inventory/opcode regress and primary stays below accepted 98.3. Pair forms reach only 97.9. None retained. These specific wide-axis capture subsets are exhausted; no compiler ceiling inferred. No focused full-unit verifier or fresh strict sequence score claimed.
+
+Accepted proof-binding audit rechecked 204 TUs, 4619 comparisons, 202 unaffected objects, actual linked-exact 2079 and byte-exact 959 sets with no losses/gains. Source boundaries, signatures and canonical flags remain unchanged. This is a read-only binding audit of existing full/native proof, not a fresh full build or native/game/device/Android run. Fixed-three means remain 98.40 / 98.41; both 99 gates unmet.
+
+Main intake recheck: main HEAD e473d545 remains previously incorporated history; compiled dependency set and all four differing input hashes match the saved intake. Previously measured main-body imports regress, header-only import is object-identical to accepted. No main changes retained; main untouched.
+
+Disk housekeeping: independently checked 20 manifest entries, all deleted original-target copies absent, each surviving canonical reference hash/size matches. Only verified untracked duplicate original Core targets removed (528240 bytes); canonical targets, compiled bases, source snapshots, reports, native fixtures and Git storage preserved. Manifest and system-temp backup were written before deletion.
+
+Evidence: `_work/enh_wide_axis_frame_pairs_20261008.py`, matching JSON and nine compiled objects; `_work/duplicate_wide_frame20_core_target_cleanup_20261008.json`; `_work/main_intake_snapshot.json` and existing intake results. Report-only continuation; no push, PR or merge.
+
+## Continuation: Axis dispatch branch diagnosis and explicit ordered conditions
+
+Continuation after a694ed58; previous turn yielded audited negative evidence and changed the next hypothesis. Read current Mesh.cpp and prior axis dispatch, exit, frame, enum and common-call generators before selecting this experiment. Read-only direct canonical-object diagnosis followed by five fresh focused compiles.
+
+Normalized control inventories explain the standalone-wide loss: accepted CBZ34/BEQ10 become CBZ37/BEQ7; the three new zero branches sit immediately after BIC in axis dispatch. Original has CBZ34/BEQ10, CBNZ5/BNE3/no BMI; accepted and wide both have CBNZ3/BNE4/BMI1. Original compares masked axis 2 then 1 then 0; accepted and wide compare 0 then 1 then 2. All-frames capture removes the three extra CBZ but leaves the other control inventory differences. This locates the wide-versus-accepted loss; it does not attribute every original-versus-accepted control difference to these same source blocks. Static normalized tokens do not prove runtime branch counts or recovered declarations.
+
+Replace all three axis switches with explicit if(axis==2), else if(axis==1), else if(axis==0), retaining each case body and calls. Test unsigned-char and ordinary-int axis loops; separately test final else, valid because each loop visits exactly 0,1,2 with an unaddressed counter. No changes to reads, time conversion timing, arithmetic, channels, call order, helpers, headers, ABI, flags or scoring. No artificial masks, padding, dummy effects, fixed registers or volatile. Restore original source bytes in finally.
+
+| Form | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| accepted_control | 98.3 | 95.8 | 97.4 | 98.7 | 99.5 | 641 |
+| unsigned_char_guard_zero | 98.3 | 95.8 | 97.4 | 98.7 | 99.5 | 641 |
+| unsigned_char_default_zero | 96.5 | 92.9 | 94.4 | 96.2 | 99.2 | 631 |
+| int_guard_zero | 98.0 | 96.0 | 97.5 | 96.6 | 100.0 | 638 |
+| int_default_zero | 96.7 | 93.6 | 95.1 | 96.2 | 98.7 | 628 |
+
+Five rows independently rebound to canonical original and rechecked for every metric, instruction count, normalized control inventory and whole-object hash. Calls remain100. Byte guard-zero whole object equals accepted; int guard-zero equals previous wide control. Thus explicit descending condition spelling is canonicalized to the same object and cannot fix this dispatch ordering in these contexts. Final-else forms regress, with four distinct whole objects across five rows. None retained; no compiler ceiling claim.
+
+Accepted proof binding audit again checked 204 TUs/4619 comparisons, 202 unaffected whole objects, actual linked2079/byte959 pair sets without loss/gain, body boundaries/signatures/canonical flags and existing native logs. No fresh full-unit verifier, strict sequence score, full build, native smoke, game executable, device or Android runtime claimed this turn. Means98.40/98.41 and both99 gates remain unmet. Report staging failed with explicit out-of-disk-space index.lock write error; no experiment was restarted. Removed40 independently verified untracked duplicate original Mesh targets (115840 bytes), with workspace manifest and system-temp backup before literal deletion, resolved path/hash/single-object checks and post-delete reference checks. Canonical targets, compiled bases, snapshots, reports and Git storage preserved. Manifest: `_work/duplicate_axis_order40_mesh_target_cleanup_20261008.json`. Main untouched; report-only commit, no push/PR/merge.
+
+Evidence: `_work/analyze_enh_wide_axis_control_roles_20261008.py` and matching diagnostic JSON; `_work/enh_axis_ordered_if_sweep_20261008.py`, `_work/enh_axis_ordered_if_20261008.json` and five focused compiled objects.
+
+The first115840-byte cleanup was insufficient: second staging failed explicitly writing a loose object with no space. At zero free space, a system-temp manifest was saved before deletion; copied to workspace after cleanup. The same checked procedure removed18 additional duplicate original Core targets,475416 bytes; independently audited all reference hashes/sizes and absence afterward. Manifest `_work/duplicate_axis_order18_core_target_cleanup_20261008.json`. Candidate40 assertion first failed with only18 eligible entries and deleted nothing; adjusted exact count to18. No compiled objects or Git files removed.
+
+## Continuation: Nonzero branch roles and type-format local records
+
+Continuation after c0d3b3ec; previous turn produced verified compiler canonicalization evidence, so no repeat of ordered axis conditions. Inspect current source and prior flag-lifetime, flag-optional, parser-state and addressed-parser-state generators.
+
+Read-only raw branch-window diagnosis locates accepted BMI at token495: LSLS r0,r6,#27 then BMI tests format bit0x10. Original token504 uses ANDS r0,r5,#16 then BNE. This concerns V5 section entry, not axis arithmetic or animation attachment. The original three axis switches finish with CBNZ at97/228/358; accepted finish with BNE at97/228/361. Type-section comparisons at57/188/313(original) and57/188/315(accepted), plus optional type2 test441/449, have other raw BNEs. Raw windows are not normalized counts: adjacent CMP-zero/BNE pairs collapse to CBNZ in scoring, while a intervening store can prevent that adjacency. Do not assign all normalized CBNZ/BNE deficits solely to axis switches. Diagnostic windows independently rebound to direct canonical original and accepted objects.
+
+Five fresh focused compiles: accepted control plus a two-field local record containing short type and unsigned-char format, both field orders, under accepted byte axes or ordinary int axes. Existing type reads target only the short field; format assigned once from flags immediately before first type read after bounds remap. Every record field is used; no initialized dummy field or reused partial count word. Preserves allocation and read/call sequence, values, channels, time conversion, cleanup and arithmetic. No headers/helpers/ABI/signatures/flags/matcher/denominator/fixed registers/volatile/asm/artificial masks or padding changes. Source restored with original bytes in finally. Actual read implementation must stay within supplied2-byte span; malformed short successes do not overwrite neighboring format storage. These are source-form compiler hypotheses, not recovered original structures. Prior addressed state had file/type/format triples; this tests the new type/format-only pair.
+
+| Form | Source | Inventory | Opcode | Control | Size | Instructions | BMI count |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| accepted_control | 98.3 | 95.8 | 97.4 | 98.7 | 99.5 | 641 | 1 |
+| type_first_byte_axis | 96.6 | 89.5 | 94.8 | 98.7 | 100.0 | 638 | 1 |
+| type_first_wide_axis | 96.2 | 89.7 | 94.9 | 96.6 | 99.5 | 635 | 1 |
+| format_first_byte_axis | 96.0 | 89.4 | 94.2 | 98.7 | 97.9 | 651 | 1 |
+| format_first_wide_axis | 95.8 | 89.6 | 94.2 | 96.6 | 98.4 | 648 | 1 |
+
+All five rows independently rechecked for every canonical source metric, count, normalized control inventory and whole-object hash; five whole hashes distinct, calls100 throughout. Pair storage does not remove BMI; byte-axis forms preserve accepted control inventory, wide-axis forms retain three additional CBZ substitutions. Inventory worsens sharply to89.4..89.7 and all four primary scores regress. None retained. Evidence rejects this type/format placement hypothesis, not a general compiler ceiling.
+
+Accepted full/native proof binding audit rechecked204 TUs/4619 comparisons/202 unaffected objects, actual linked-exact2079 and byte-exact959 pair sets without losses/gains, body boundaries/signatures/flags and existing native logs. No fresh full-unit verifier or strict sequence score, full build, native smoke, whole-game executable, device or Android run claimed. Means98.40/98.41; both99 gates unmet and goal active.
+
+Disk housekeeping before report staging:120 verified untracked duplicate original Mesh targets removed,347520 bytes; canonical references and single-object target contents checked, resolved paths within own_work, workspace manifest and system-temp backup saved before literal deletion; independently checked all reference hashes/sizes and target absence after deletion. Compiled bases, sources/snapshots, reports, native fixtures, canonical targets, main and Git storage preserved. Manifest `_work/duplicate_type_format120_mesh_target_cleanup_20261008.json`. Console cleanup label inherited40, but exact assertion, manifest and audited count are120.
+
+Evidence: `_work/analyze_enh_nonzero_branch_roles_20261008.py`, matching branch-window JSON; `_work/enh_type_format_pair_sweep_20261008.py`, `_work/enh_type_format_pair_20261008.json`, five focused base objects. Report-only commit; no push/PR/merge.
+
+## Continuation: Create addressed handle with parameter references
+
+Continuation after87b73dd2; previous turn provided verified negative layout evidence. Inspect current Create body, saved inventory deficit and previous call-state, addressed-handle, addressed-magic, local-parse-state, loaded-operand and bounds generators. Create accepted inventory94.7 is lower than the other two selected bodies; missing stack loads and pointer loads motivate parameter-reference storage rather than previously tested pointer value copies.
+
+Seven fresh focused compiles: accepted control and six actual local ReadState records containing the existing unsigned handle plus Engine*&engine, Material*&mat, or both, in the listed field orders. Reference fields bind existing pointer parameters, not pointer snapshots; handle initialized0 before original guard and OpenRead still receives its address. Every field used. No dereference or allocation added during reference binding; original Mesh allocations, output/material stores, headers, reads, guards, child order, bounds merge, cleanup and completion calls preserved. Existing calls write only their supplied handle span, so adjacent references remain intact even for partial handle writes. No helper/header/exported layout/signature/flags/matcher/denominator/dummy effects/fixed-register/volatile/asm/padding changes. Source restored with original bytes in finally. These local layouts are compiler hypotheses, not recovered declarations.
+
+| Form | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| accepted_control | 98.4 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| engine_handle | 96.4 | 90.7 | 96.3 | 95.8 | 99.0 | 296 |
+| handle_engine | 97.5 | 94.6 | 97.4 | 95.8 | 99.6 | 294 |
+| mat_handle | 96.8 | 91.2 | 97.2 | 95.8 | 100.0 | 293 |
+| handle_mat | 97.0 | 92.1 | 97.4 | 95.8 | 99.6 | 294 |
+| engine_handle_mat | 95.5 | 89.8 | 95.3 | 95.8 | 96.3 | 303 |
+| mat_handle_engine | 95.5 | 89.8 | 95.3 | 95.8 | 96.3 | 303 |
+
+All seven rows independently rebound to canonical original Core object and rechecked for all source-shape metrics, instruction counts and whole-object hashes. Seven whole hashes distinct, calls100 throughout. Both three-field records have equal component scores but are not object-identical. Best new form handle_engine97.5 remains below accepted98.4; all new control inventories fall to95.8 and none improves inventory94.7. None retained. This rejects these exact reference records; no compiler ceiling or universal reference-form conclusion claimed.
+
+Accepted full/native proof-binding audit rechecked204 TUs/4619 comparisons,202 unaffected whole objects, actual linked-exact2079 and byte-exact959 pair sets without losses/gains, source boundaries/signatures/flags and existing native logs. No fresh full-unit verifier or strict sequence score, full build, native smoke, whole-game executable, device or Android run claimed for rejected variants. Means98.40/98.41; both99 gates remain unmet, goal active.
+
+Disk housekeeping before compilation:20 verified untracked duplicate original Core targets removed,528240 bytes. Resolved paths within own_work, canonical hash and single-object targets checked; workspace manifest and system-temp backup written before literal deletion; independently checked all target absence/reference hashes/sizes afterward. Compiled bases, source snapshots, reports, native fixtures, canonical targets, main and Git storage preserved. Manifest `_work/duplicate_create_ref20_core_target_cleanup_20261008.json`. Inherited console label40/Mesh is inaccurate; guarded and audited count20/Core is authoritative.
+
+Evidence: `_work/create_reference_handle_sweep_20261008.py`, `_work/create_reference_handle_20261008.json`, seven focused base objects. Report-only commit; no push/PR/merge.
+
+## Continuation: Retain addressed child pointer and loop index
+
+Continuation after c710195a. Previous turn produced verified negative parameter-reference evidence; inspect child parse state/status, scope and shared-loop generators. New hypothesis pairs the existing child output pointer with the live child-loop index, not the previously tested subCount field. Five fresh focused compiles: accepted control plus both field orders at entry or immediately before the multi-child loop.
+
+Retain entry child-first form: replace standalone Mesh*childPtr with local struct ChildState { Mesh*childPtr; unsigned index; }, leave the record uninitialized, assign index0 in existing loop initializer and assign childPtr from existing new Mesh before every use. All two fields are used; no dummy field, zero initialization or extra allocation/read/call. Existing MeshReadData receives &state.childPtr; actual implementation updates only that pointer slot, leaving index intact. Loop still visits every unsigned-short-bounded child in order and skips on0; count>=2 guard unchanged. Existing failure returns, partial attachment, bounds merge, materials and completion remain. No helper/header/exported layout/ABI/signature/flags/matcher/denominator/volatile/asm/fixed-register/artificial padding changes. This is a measured source representation, not recovered original declaration.
+
+| Form | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| accepted_control | 98.4 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| entry_child_first | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| entry_index_first | 98.4 | 94.4 | 98.2 | 100.0 | 99.3 | 293 |
+| loop_child_first | 98.3 | 94.2 | 97.7 | 100.0 | 99.6 | 292 |
+| loop_index_first | 97.9 | 92.8 | 97.7 | 100.0 | 99.0 | 294 |
+
+All five rows independently rechecked against canonical original, including every component, instruction count and whole-object hash. Five hashes distinct and calls100 throughout. Only entry_child_first improves primary98.4->98.6: opcode97.9->98.2, size99.3->100, inventory94.7/control100 unchanged. Restore baseline after sweep, then freeze winning source for fresh validation.
+
+Fresh validation for retained production source: all204 ARM TUs rebuilt, full corpus4619 comparisons/zero skipped, actual linked-exact2079 and byte-exact959 pair sets equal baseline with no lost/gained pairs,202 unaffected whole objects byte-identical to baseline. Fresh Core equals focused winner; fresh Mesh equals prior accepted. Three unique rows and original weights291/873/636,total1800 unchanged; all source metrics independently recomputed from fresh canonical target/base disassemblies. Outside-body/signature and canonical flags/argument-list checks pass. Existing smoke fixtures unchanged.
+
+Native UCRT64 CMake gof2 static library builds. Verbatim actual Read/Create with actual Mesh/selected math/BSphere fixtures passes color/position/tangent/truncation, lifecycle, multi-child bounds/order and early failure at both child indices. Actual enhanced parser fixture compiles and executes successfully. No whole-game executable, native ABI/platform-port, Android device or Godot runtime proof claimed.
+
+Validation storage lives on C because A has little free space. First full verifier attempt terminated with no comparisons: unchanged delink.py raises cross-drive os.path.relpath ValueError in its diagnostic print after generating each target. Manual Core extraction exposes exact error. Reuse freshly rebuilt204 objects through own `_work/childindex-full` directory junction to C build; rerun only unchanged verifier, no source/matcher edit or unnecessary rebuild. Native stages already completed exit0. Source hashes persisted on recovery and equality to winning snapshot/fresh Core independently checked; do not claim the failed all-stages driver exited0. The first junction comparison completed all4619 rows and saved full.json, then also failed diagnostic printing of cross-drive report path. A final unchanged verifier run uses both build and report paths through the worktree junction; final verifier and independent audit completed successfully.
+
+| Fixed unique body | Source | Strict | Original weight |
+|---|---:|---:|---:|
+| MeshCreateFromFile | 98.6 | 60.8 | 291 |
+| MeshReadData | 98.5 | 57.4 | 873 |
+| ReadEnhancedDataFromFile | 98.3 | 66.9 | 636 |
+
+Verified means **98.47% unweighted / 98.45% weighted**; exact unrounded means 98.46666666666665 / 98.4455. Both99 gates remain unmet, goal active. Full JSON SHA256 `159a2ec755e03e37f96b275c4bdb04e56ef0a7d2621db1847e11e1569e6f9da5`.
+
+Authoritative evidence: `C:/Users/Dima/AppData/Local/Temp/gof2-child-index-validation-20261008/{audit.json,three.json,frozen_sources.json,arm_build.log,arm_verify_junction.log,arm_verify_final.log,native_build.log,read_create_smoke.log,enhanced_build.log,enhanced_smoke.log}`; full204 target/base objects via `_work/childindex-full`. Older `_work/typedpair_full.json` remains historical98.40/98.41 evidence; its old source-binding audit must not be used to validate this new source. New `_work/audit_child_index_full_final_20261008.py` is current binding audit; final full JSON is `_work/childindex-full/full.json` (C validation arm/full.json), not first parent full.json.
+
+Disk housekeeping before focused compiles:20 checked untracked duplicate original Core targets removed528240 bytes, canonical reference/path/single-object guards, workspace manifest+system-temp backup before literal deletion; all absence/hash/size independently audited. Compiled bases, snapshots, reports, native fixtures, canonical targets, main and Git storage preserved. Manifest `_work/duplicate_child_index20_core_target_cleanup_20261008.json`; inherited console40/Mesh label incorrect, guarded manifest20/Core is authoritative.
+
+Evidence also `_work/create_child_index_record_sweep_20261008.py`, matching ledger, winning source snapshot and5 focused objects; `_work/validate_child_index_20261008.py`. Commit only winning source and report, main untouched, no push/PR/merge.
+
+Additional binding checks confirm native extracted Create/Read bodies equal current retained source, not only success log strings. Shape delta diagnosis (`_work/child_index_shape_delta_20261008.json`) independently measures normalized counts original284/previous282/winner284: one missing frame load is restored (3->2) and one extra frame store appears (1->2), explaining why rounded inventory remains94.7 while opcode/size improve. Final verifier exits0 and authoritative full JSON is `C:/Users/Dima/AppData/Local/Temp/gof2-child-index-validation-20261008/arm/full.json`.
+
+## Continuation: Child-index record count and parameter expansions
+
+Continuation after475df44a, which was verified progress: retained Create98.6 with fresh full/native proof. Rebind current retained proof and inspect actual source and previous child-state/status/scope/shared-loop generators. Two bounded expansions of the new accepted pair, not repeats of standalone child/count records.
+
+Count family: add actual unsigned-short subCount to childPtr/index local record, remove its old standalone declaration, redirect existing2-byte count read and the two existing bound tests to that field. All six field permutations, no count snapshot or word reuse. Parameter family: add actual Engine*engine or Material*mat field to existing pair in all six permutations each; initialize that scalar copy at the existing record declaration after root allocation/material assignment and original engine/path guard, redirect subsequent uses only. Current parameters are not modified; copied values preserve original values. All fields used, no read/call/float/cleanup/child order/ABI/header/helper/export/signature/flags/matcher/denominator/dummy effects/volatile/asm/fixed-register/artificial padding changes. Ordinary record alignment only. Actual Read/Open APIs write only the supplied field span. Source restored using original raw bytes in finally for both sweeps. These are measured compiler hypotheses, not recovered structures.
+
+Initial count-generator assertion expected4 replacements but found3 (read, count>=2, loop bound), before any source mutation or compile. Correct expected count3 and run seven forms once. No running process restarted. All20 compiles/direct measurements completed exit0;20 rows independently rebound to canonical original and rechecked for every metric, instruction count and whole-object hash. Calls100 throughout.
+
+| Family / form | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| count / accepted_control | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| count / childPtr_index_subCount | 98.2 | 93.5 | 97.7 | 100.0 | 99.6 | 292 |
+| count / childPtr_subCount_index | 98.2 | 93.5 | 98.1 | 100.0 | 99.6 | 292 |
+| count / index_childPtr_subCount | 98.1 | 93.3 | 97.9 | 100.0 | 99.3 | 293 |
+| count / index_subCount_childPtr | 98.1 | 93.3 | 97.9 | 100.0 | 99.3 | 293 |
+| count / subCount_childPtr_index | 98.1 | 93.3 | 97.9 | 100.0 | 99.3 | 293 |
+| count / subCount_index_childPtr | 98.1 | 93.3 | 97.9 | 100.0 | 99.3 | 293 |
+| parameter / accepted_control | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| parameter / childPtr_index_engine | 97.0 | 92.2 | 97.5 | 95.8 | 99.3 | 290 |
+| parameter / childPtr_engine_index | 97.0 | 92.2 | 97.5 | 95.8 | 99.3 | 290 |
+| parameter / index_childPtr_engine | 97.1 | 92.1 | 97.7 | 95.8 | 99.6 | 291 |
+| parameter / index_engine_childPtr | 97.0 | 92.1 | 97.4 | 95.8 | 99.6 | 291 |
+| parameter / engine_childPtr_index | 97.2 | 92.6 | 98.2 | 95.8 | 99.3 | 290 |
+| parameter / engine_index_childPtr | 97.1 | 92.6 | 97.9 | 95.8 | 99.3 | 290 |
+| parameter / childPtr_index_mat | 98.0 | 93.3 | 97.2 | 100.0 | 99.3 | 293 |
+| parameter / childPtr_mat_index | 98.0 | 93.3 | 97.2 | 100.0 | 99.3 | 293 |
+| parameter / index_childPtr_mat | 97.1 | 92.1 | 97.7 | 95.8 | 99.6 | 291 |
+| parameter / index_mat_childPtr | 97.0 | 92.1 | 97.4 | 95.8 | 99.6 | 291 |
+| parameter / mat_childPtr_index | 97.2 | 92.6 | 98.2 | 95.8 | 99.3 | 290 |
+| parameter / mat_index_childPtr | 97.1 | 92.6 | 97.9 | 95.8 | 99.3 | 290 |
+
+19 distinct whole-object hashes across20 rows; the two controls are identical to current full Core. Count additions all regress to98.1..98.2 and preserve control100. Parameter additions regress to97.0..98.0; only child-first mat forms preserve control100, all others95.8. Equal rounded rows are not treated as identity. None retained. These specific three-field expansions are exhausted; no compiler ceiling claimed.
+
+Current accepted full/native proof-binding audit passes204 TUs/4619 comparisons/202 unaffected objects, actual linked-exact2079 and byte-exact959 pair sets without loss/gain, source boundaries/signatures/flags and native body/log bindings. This continuation is a read-only rebind of475df44a proof, not another full/native/game/device/Android run. Fixed-three scores98.6/98.5/98.3, original weights291/873/636 and total1800 unchanged. Means98.47/98.45; both99 gates remain unmet, goal active.
+
+New compiled trial evidence stays on C: `C:/Users/Dima/AppData/Local/Temp/gof2-child-index-{count,parameter}-sweep-20261008/results.json` and respective focused base objects. Generators `_work/create_child_index_count_sweep_20261008.py` and `_work/create_child_index_parameter_sweep_20261008.py`.
+
+Before report staging,10 verified untracked duplicate original Core targets removed264120 bytes to provide A-space. Resolved own_work paths, single-object target, canonical hash and workspace/system-temp manifest backup checked before literal deletion; independently rechecked all deleted target absence and surviving reference hash/size. No compiled bases, source snapshots, reports, native fixtures, canonical targets, main or Git storage removed. Manifest `_work/duplicate_child_expansion10_core_target_cleanup_20261008.json`. Source unchanged; report-only commit, no push/PR/merge.
+
+## Continuation: Child-index width and guard interactions
+
+Continuation afterfb8694ed: preceding turn yielded verified negative three-field-expansion evidence; retain475df44a child/index pair and current full proof. Inspect current source, binding audit and prior early/bool guard generators before selecting width and guard interactions in this new accepted context.
+
+Width family: change the actual index member to unsigned short, int, unsigned long long or long long, each in both pointer/index field orders. Original unsigned-short subCount stays separately addressed and unchanged. For unsigned-short index, maximum count65535 visits0..65534, increments to65535 then fails bound without increment/wrap; no byte/signed-short index used. Signed32/64 and unsigned64 also contain full0..65535 range. Actual MeshReadData only updates supplied pointer field, not adjacent counter. Every field used; ordinary natural alignment of64-bit counter is not artificial padding.
+
+Guard family: new child/index pair combined with three early-return entry checks (combined or either null-check order), early combined plus reversed enhanced/plain failure guard, invalid/valid boolean chains, pure boolean bitwise-and, and ternary. Same pointer comparisons, error values and caller read success criteria; bitwise compares only non-dereferencing pointers. These spellings existed in older no-pair context, so scores are freshly measured here rather than imported from old ledgers. No allocations/reads/call order/float/cleanup/channel/helper/header/export/ABI/signature/flags/matcher/denominator/dummy effects/volatile/asm/fixed-register changes. Restore raw source bytes in finally for both sweeps. All19 focused compiles/direct measurements completed exit0. These are compiler source-form hypotheses, not recovered original syntax.
+
+| Family / form | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| width / accepted_control | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| width / unsigned_short_child_first | 98.2 | 94.2 | 97.4 | 100.0 | 99.6 | 292 |
+| width / unsigned_short_index_first | 98.0 | 93.9 | 97.4 | 100.0 | 99.0 | 294 |
+| width / int_child_first | 98.0 | 94.4 | 97.9 | 97.9 | 100.0 | 291 |
+| width / int_index_first | 97.8 | 94.0 | 97.9 | 97.9 | 99.3 | 293 |
+| width / unsigned_long_long_child_first | 96.7 | 92.0 | 97.2 | 95.8 | 98.6 | 296 |
+| width / unsigned_long_long_index_first | 96.8 | 92.3 | 97.2 | 95.8 | 98.6 | 296 |
+| width / long_long_child_first | 96.2 | 91.6 | 96.9 | 93.8 | 98.6 | 296 |
+| width / long_long_index_first | 96.2 | 92.0 | 96.9 | 93.8 | 98.6 | 296 |
+| guards / accepted_control | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / early_combined | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / early_engine_then_path | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / early_path_then_engine | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / early_enhanced_failure_guard | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / early_plain_failure_guard | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / invalid_chain | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / valid_chain | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / boolean_and | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / ternary_guard | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+
+All19 rows independently rebound to canonical original and rechecked for every metric, count and whole-object hash; 10 whole hashes distinct. Calls100 throughout. Eight width forms regress to96.2..98.2. All nine non-control guards tie accepted98.6 and every component; seven are whole-object identical to accepted. Invalid/valid chains share a second object with unchanged components and no primary gain. Equal scores are not identity. None retained. These exact pair-width and guard contexts are exhausted; no compiler ceiling claimed.
+
+Current accepted full/native proof-binding audit again checks204 TUs/4619 comparisons/202 unaffected objects, actual linked-exact2079 and byte-exact959 pair sets without losses/gains, boundaries/signatures/flags, native body snapshots and logs. No new full/native/game/device/Android runtime run or focused full-unit verifier/strict sequence score claimed for rejected forms. Source98.6/98.5/98.3, original weights291/873/636,total1800 and means98.47/98.45 unchanged; both99 gates unmet, goal active.
+
+Trial evidence on C: `C:/Users/Dima/AppData/Local/Temp/gof2-child-index-{width,guards}-sweep-20261008/results.json` and19 compiled base objects; generators `_work/create_child_index_width_sweep_20261008.py` and `_work/create_child_index_guards_sweep_20261008.py`.
+
+Disk housekeeping for report staging:10 verified untracked duplicate original Core targets removed264120 bytes; canonical hash/size, resolved own_work path/single-object guards and workspace/system-temp manifest backup precede literal deletion. All target absence/reference hashes/sizes independently audited afterward. Compiled bases, source snapshots, reports, native fixtures, canonical targets, main and Git storage preserved. Manifest `_work/duplicate_child_width10_core_target_cleanup_20261008.json`. Source unchanged; report-only commit, no push/PR/merge.
+
+Cleanup preparation initially found only2 eligible create-family originals where10 were required; exact-count guard stopped before any deletion and report writer stopped on missing manifest. Expanded search to other own_work focused original targets with baseline/canonical names and out-of-worktree resolved junctions excluded; selected10 individually hash-verified untracked single-object originals. Compilation/validation was not restarted.
+
+Additional staging/commit attempts failed explicitly writing index.lock due disk space; HEAD remainedfb8694ed. Removed10 more checked duplicate original Core targets264120 bytes, with system-temp manifest saved before deletion and workspace copy afterward; independently verified reference hashes/sizes and deleted-path absence. Manifest `_work/duplicate_child_width_commit10_core_target_cleanup_20261008.json`. No Git locks/packs or compiled artifacts removed.
+
+The264120-byte extra cleanup was insufficient for another index write. Same guarded procedure removed40 additional exact duplicate original Core targets1056480 bytes, independently audited all hashes/sizes/absence, system-temp manifest before deletion and workspace copy afterward. Manifest `_work/duplicate_child_width_commit40_core_target_cleanup_20261008.json`. Native/ARM validation was not restarted; all compiled results remain preserved.
+
+## Continuation: Child-index pair signature widths and operand orders
+
+Continuation after13325cd3: prior turn yielded verified width/guard canonicalization evidence in the new child/index context. Inspect actual source, current full/native binding audit and old signature counter/format/operand generators. No equivalent width/guard trials repeated. Selected signature changes were tested previously without retained child/index pair, so old scores are not imported into this context.
+
+Width family: three unsigned signature-index types (char, short, int) crossed with four format types (unsigned int, unsigned char, unsigned short, int), twelve new forms plus accepted control. Index visits0..6 and increments to7 before exiting, with no wrap. Format starts31 and only clears five bits, so stays0..31 in every malformed/signature mismatch case; promoted masks and call arguments preserve values. Signature byte char and all arrays/read spans remain unchanged.
+
+Operand family: accepted control plus original_interleaving, first_three_preloads, all_preloads, reverse_comparisons and versions_before_plain from old generator applied to current body. All preloaded bytes are used; independent pure const-table reads and disjoint bit clears preserve values and recognized formats. Name original_interleaving describes an earlier hypothesis, not proven recovered syntax. No changes to child record, actual allocations/reads/call order/float/cleanup/helper/header/export/ABI/signature/flags/matcher/denominator/dummy effects/volatile/asm/fixed-register/artificial padding. Raw source bytes restored in finally;19 compiles/direct measurements completed exit0.
+
+| Family / form | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| width / accepted_control | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| width / unsigned_char_index_unsigned_int_format | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| width / unsigned_char_index_unsigned_char_format | 96.6 | 91.7 | 96.7 | 94.7 | 99.6 | 291 |
+| width / unsigned_char_index_unsigned_short_format | 96.6 | 91.7 | 96.7 | 94.7 | 99.6 | 291 |
+| width / unsigned_char_index_int_format | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| width / unsigned_short_index_unsigned_int_format | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| width / unsigned_short_index_unsigned_char_format | 96.6 | 91.7 | 96.7 | 94.7 | 99.6 | 291 |
+| width / unsigned_short_index_unsigned_short_format | 96.6 | 91.7 | 96.7 | 94.7 | 99.6 | 291 |
+| width / unsigned_short_index_int_format | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| width / unsigned_int_index_unsigned_int_format | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| width / unsigned_int_index_unsigned_char_format | 96.6 | 91.7 | 96.7 | 94.7 | 99.6 | 291 |
+| width / unsigned_int_index_unsigned_short_format | 96.6 | 91.7 | 96.7 | 94.7 | 99.6 | 291 |
+| width / unsigned_int_index_int_format | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| operands / accepted_control | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| operands / original_interleaving | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| operands / first_three_preloads | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| operands / all_preloads | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| operands / reverse_comparisons | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| operands / versions_before_plain | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+
+All19 rows independently rebound to canonical original and rechecked for all components, instruction counts and whole-object hashes;5 distinct objects. Calls100 throughout. Six32-bit-format index forms plus two controls and three preload/interleave forms are whole-object identical to accepted (11 rows). Narrow char/short formats produce2 distinct regressing objects at96.6, each index type collapsing to the corresponding format object. Reversed/versions-first comparisons produce2 additional objects with identical accepted source components, not treated as byte identity. None retained. These exact signature type/preload/order contexts are exhausted; no compiler ceiling claimed.
+
+Current accepted full/native proof-binding audit again checks204 TUs/4619 comparisons/202 unaffected objects, actual linked-exact2079 and byte-exact959 pair sets without loss/gain, boundaries/signatures/flags, native body snapshots and logs. This is read-only rebind of475df44a proof, not fresh full/native/game/device/Android execution or focused full-unit verifier/strict score. Fixed-three source98.6/98.5/98.3, original weights291/873/636,total1800, means98.47/98.45 unchanged. Both99 gates unmet, goal active.
+
+Evidence: `C:/Users/Dima/AppData/Local/Temp/gof2-child-index-signature-{width,operands}-sweep-20261008/results.json` and19 base objects; `_work/create_child_index_signature_width_sweep_20261008.py`, `_work/create_child_index_signature_operands_sweep_20261008.py`. New generated artifacts are on C; no cleanup this turn. Source unchanged; report-only commit, main untouched, no push/PR/merge.

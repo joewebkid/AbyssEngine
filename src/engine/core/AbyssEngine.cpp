@@ -818,9 +818,9 @@ namespace AbyssEngine {
             maxv[0] = maxv[1] = maxv[2] = -10000000.0f;
 
             if ((flags & 4) != 0) {
-                void *raw = ::operator new[]((*slot)->vertexCount * 6);
+                void *raw = new short[(*slot)->vertexCount * 3];
                 if (AEFile::Read((uint32_t)((*slot)->vertexCount * 6), raw, handleRef) == 0) {
-                    ::operator delete[](raw);
+                    delete[] static_cast<short *>(raw);
                     return -1;
                 }
                 m = *slot;
@@ -836,11 +836,11 @@ namespace AbyssEngine {
                     if (v < minv[axis]) minv[axis] = v;
                     if (v > maxv[axis]) maxv[axis] = v;
                 }
-                ::operator delete[](raw);
+                delete[] static_cast<short *>(raw);
             } else if ((flags << 0x1e) != 0) {
-                void *raw = ::operator new[]((*slot)->vertexCount * 0xc);
+                void *raw = new int[(*slot)->vertexCount * 3];
                 if (AEFile::Read((uint32_t)((*slot)->vertexCount * 0xc), raw, handleRef) == 0) {
-                    ::operator delete[](raw);
+                    delete[] static_cast<int *>(raw);
                     return -1;
                 }
                 m = *slot;
@@ -856,7 +856,7 @@ namespace AbyssEngine {
                     if (v < minv[axis]) minv[axis] = v;
                     if (v > maxv[axis]) maxv[axis] = v;
                 }
-                ::operator delete[](raw);
+                delete[] static_cast<int *>(raw);
             } else if ((flags & 0x18) != 0) {
                 m = *slot;
                 void *pos = ::operator new[]((*slot)->vertexCount * 0xc);
@@ -924,9 +924,9 @@ namespace AbyssEngine {
 
         if (m->vertexFormat & 4) {
             if (compressedData != 0) {
-                void *raw = ::operator new[]((*slot)->vertexCount * 6);
+                void *raw = new short[(*slot)->vertexCount * 3];
                 if (AEFile::Read((uint32_t)((*slot)->vertexCount * 6), raw, handleRef) == 0) {
-                    ::operator delete[](raw);
+                    delete[] static_cast<short *>(raw);
                     return -1;
                 }
                 m = *slot;
@@ -958,17 +958,19 @@ namespace AbyssEngine {
                         if (dyf > 1.0f) y = 1.0f;
                         if (dzf > 1.0f) z = 1.0f;
                         normals = (float *) (*slot)->normals;
-                        normals[i] = x;
-                        normals[i + 1] = y;
-                        normals[i + 2] = z;
+                        float *destination = normals + i + 1;
+                        destination[-1] = x;
+                        destination[0] = y;
+                        destination[1] = z;
                     } else {
                         normals = (float *) (*slot)->normals;
-                        normals[i] = 0.0f;
-                        normals[i + 1] = 1.0f;
-                        normals[i + 2] = 0.0f;
+                        float *destination = normals + i + 1;
+                        destination[-1] = 0.0f;
+                        destination[0] = 1.0f;
+                        destination[1] = 0.0f;
                     }
                 }
-                ::operator delete[](raw);
+                delete[] static_cast<short *>(raw);
             } else if ((flags & 0x18) != 0) {
                 void *nrm = ::operator new[]((*slot)->vertexCount * 0xc);
                 m->normals = nrm;
@@ -2639,7 +2641,8 @@ namespace AbyssEngine {
 
         char magic[8];
         unsigned short subCount;
-        Mesh *childPtr;
+        struct ChildState { Mesh *childPtr; unsigned int index; };
+        ChildState state;
         unsigned int handle = 0;
         if (AEFile::OpenRead(path, &handle)) {
             strcpy(magic, "*******");
@@ -2670,17 +2673,17 @@ namespace AbyssEngine {
                             if (AEFile::Read((uint32_t)(2), &subCount, handle)) {
                                 if (subCount >= 2) {
                                     (*out)->animation = new Transform();
-                                    for (unsigned int s = 0; s < subCount; ++s) {
-                                        childPtr = new Mesh();
-                                        childPtr->vboEligible = 1;
-                                        childPtr->vertexFormat = (*out)->vertexFormat;
-                                        childPtr->material = mat;
-                                        if (MeshReadData(engine, handle, fmt, &childPtr, mat) == -1) {
+                                    for (state.index = 0; state.index < subCount; ++state.index) {
+                                        state.childPtr = new Mesh();
+                                        state.childPtr->vboEligible = 1;
+                                        state.childPtr->vertexFormat = (*out)->vertexFormat;
+                                        state.childPtr->material = mat;
+                                        if (MeshReadData(engine, handle, fmt, &state.childPtr, mat) == -1) {
                                             goto failed;
                                         }
                                         ((AEMath::BSphere *) &(*out)->boundsCenterX)->Merge(
-                                            *(const AEMath::BSphere *) &childPtr->boundsCenterX);
-                                        ArrayAdd<Mesh *>(childPtr, (*out)->animation->meshes);
+                                            *(const AEMath::BSphere *) &state.childPtr->boundsCenterX);
+                                        ArrayAdd<Mesh *>(state.childPtr, (*out)->animation->meshes);
                                     }
                                     goto loaded;
                                 }
