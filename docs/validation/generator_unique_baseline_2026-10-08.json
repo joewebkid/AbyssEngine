@@ -1,0 +1,125 @@
+{
+  "head": "20bf2679a88ada953d3b393bc42a0aa54a557264",
+  "unique_bodies": 11,
+  "symbol_count": 13,
+  "total_weight": 3329,
+  "unweighted": 92.79090909090908,
+  "weighted": 90.02328026434364,
+  "functions": [
+    {
+      "address": "0x9539c",
+      "symbol": "_ZN9GeneratorC1Ev",
+      "aliases": [
+        "_ZN9GeneratorC1Ev",
+        "_ZN9GeneratorC2Ev"
+      ],
+      "weight": 1,
+      "baseline_source_match": 100.0,
+      "raw_source_match": 100.0
+    },
+    {
+      "address": "0x9539e",
+      "symbol": "_ZN9GeneratorD1Ev",
+      "aliases": [
+        "_ZN9GeneratorD1Ev",
+        "_ZN9GeneratorD2Ev"
+      ],
+      "weight": 1,
+      "baseline_source_match": 100.0,
+      "raw_source_match": 100.0
+    },
+    {
+      "address": "0x953a0",
+      "symbol": "_ZN9Generator18computerTradeGoodsEP7Station",
+      "aliases": [
+        "_ZN9Generator18computerTradeGoodsEP7Station"
+      ],
+      "weight": 38,
+      "baseline_source_match": 94.1,
+      "raw_source_match": 94.14035087719299
+    },
+    {
+      "address": "0x95404",
+      "symbol": "_ZN9Generator18isKaamoSpecialItemEi",
+      "aliases": [
+        "_ZN9Generator18isKaamoSpecialItemEi"
+      ],
+      "weight": 15,
+      "baseline_source_match": 100.0,
+      "raw_source_match": 100.0
+    },
+    {
+      "address": "0x95428",
+      "symbol": "_ZN9Generator14getItemBuyListEP7Station",
+      "aliases": [
+        "_ZN9Generator14getItemBuyListEP7Station"
+      ],
+      "weight": 674,
+      "baseline_source_match": 91.1,
+      "raw_source_match": 91.1195817299371
+    },
+    {
+      "address": "0x95bcc",
+      "symbol": "_ZN9Generator14getShipBuyListEP7Station",
+      "aliases": [
+        "_ZN9Generator14getShipBuyListEP7Station"
+      ],
+      "weight": 760,
+      "baseline_source_match": 84.6,
+      "raw_source_match": 84.59593576522212
+    },
+    {
+      "address": "0x96504",
+      "symbol": "_ZN9Generator11getLootListEii",
+      "aliases": [
+        "_ZN9Generator11getLootListEii"
+      ],
+      "weight": 181,
+      "baseline_source_match": 89.3,
+      "raw_source_match": 89.30407127942466
+    },
+    {
+      "address": "0x9672c",
+      "symbol": "_ZN9Generator20generateStationIndexEP5ArrayIP11SolarSystemEi",
+      "aliases": [
+        "_ZN9Generator20generateStationIndexEP5ArrayIP11SolarSystemEi"
+      ],
+      "weight": 118,
+      "baseline_source_match": 83.9,
+      "raw_source_match": 83.8750532564883
+    },
+    {
+      "address": "0x96884",
+      "symbol": "_ZN9Generator12createAgentsEP7Station",
+      "aliases": [
+        "_ZN9Generator12createAgentsEP7Station"
+      ],
+      "weight": 531,
+      "baseline_source_match": 93.6,
+      "raw_source_match": 93.63484442518123
+    },
+    {
+      "address": "0x96e8c",
+      "symbol": "_ZN9Generator11createAgentEP7Station",
+      "aliases": [
+        "_ZN9Generator11createAgentEP7Station"
+      ],
+      "weight": 292,
+      "baseline_source_match": 92.1,
+      "raw_source_match": 92.07746660431206
+    },
+    {
+      "address": "0x971b8",
+      "symbol": "_ZN9Generator13createMissionEP5AgentP5ArrayIP11SolarSystemE",
+      "aliases": [
+        "_ZN9Generator13createMissionEP5AgentP5ArrayIP11SolarSystemE"
+      ],
+      "weight": 718,
+      "baseline_source_match": 92.0,
+      "raw_source_match": 91.9949855694731
+    }
+  ],
+  "phase": "baseline",
+  "raw_unweighted": 92.7947535915665,
+  "raw_weighted": 90.02861461815358
+}
