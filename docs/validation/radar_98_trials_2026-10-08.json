@@ -1,0 +1,249 @@
+{
+  "fixed_manifest": "radar_98_fixed_bodies_2026-10-08.json",
+  "reports_directory": "_work/radar98",
+  "trials": [
+    {
+      "trial": "crosshair_snapshot",
+      "draw_source": 96.9,
+      "draw_strict": 47.9,
+      "local_instructions": 3544,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "restored",
+      "draw_source": 97.0,
+      "draw_strict": 48.7,
+      "local_instructions": 3544,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "verification of restored source"
+    },
+    {
+      "trial": "typed_scratch",
+      "draw_source": 97.4,
+      "draw_strict": 50.0,
+      "local_instructions": 3511,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "accepted package"
+    },
+    {
+      "trial": "raw_turret",
+      "draw_source": 97.2,
+      "draw_strict": 52.5,
+      "local_instructions": 3495,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "typed_crosshair_prelength",
+      "draw_source": 97.0,
+      "draw_strict": 47.7,
+      "local_instructions": 3527,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "direct_scratch_fields",
+      "draw_source": 97.3,
+      "draw_strict": 49.3,
+      "local_instructions": 3516,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "direct_scratch_yz",
+      "draw_source": 97.4,
+      "draw_strict": 50.0,
+      "local_instructions": 3511,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "marker_slot_pointers",
+      "draw_source": 97.2,
+      "draw_strict": 51.8,
+      "local_instructions": 3543,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "health_slot_pointers",
+      "draw_source": 97.5,
+      "draw_strict": 50.4,
+      "local_instructions": 3519,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "partial acceptance: HP pointers retained; neutral locked overlay removed"
+    },
+    {
+      "trial": "health_native_selection",
+      "draw_source": 97.5,
+      "draw_strict": 50.4,
+      "local_instructions": 3519,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "health_only_pointers",
+      "draw_source": 97.5,
+      "draw_strict": 50.6,
+      "local_instructions": 3515,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "accepted package"
+    },
+    {
+      "trial": "far_marker_pointer",
+      "draw_source": 97.2,
+      "draw_strict": 52.2,
+      "local_instructions": 3542,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "offscreen_marker_pointer",
+      "draw_source": 97.5,
+      "draw_strict": 50.9,
+      "local_instructions": 3525,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "raw_alien_orbit",
+      "draw_source": 97.5,
+      "draw_strict": 50.6,
+      "local_instructions": 3514,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "station_label_offset",
+      "draw_source": 97.5,
+      "draw_strict": 50.6,
+      "local_instructions": 3515,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "candidate_gate_bitmask",
+      "draw_source": 97.5,
+      "draw_strict": 50.8,
+      "local_instructions": 3516,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "accumulated_threat_flag",
+      "draw_source": 97.5,
+      "draw_strict": 50.6,
+      "local_instructions": 3516,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "threat_and_candidate_flags",
+      "draw_source": 97.5,
+      "draw_strict": 50.8,
+      "local_instructions": 3517,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "raw_center_range",
+      "draw_source": 97.2,
+      "draw_strict": 49.5,
+      "local_instructions": 3536,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "spark_direct_range",
+      "draw_source": 97.5,
+      "draw_strict": 50.6,
+      "local_instructions": 3515,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "spark_bitwise_sight",
+      "draw_source": 97.5,
+      "draw_strict": 50.6,
+      "local_instructions": 3515,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "enemy_axis_single_delta",
+      "draw_source": 97.5,
+      "draw_strict": 50.6,
+      "local_instructions": 3515,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "integer_pass_flags",
+      "draw_source": 96.8,
+      "draw_strict": 45.7,
+      "local_instructions": 3550,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "mission_station_snapshots",
+      "draw_source": 97.5,
+      "draw_strict": 49.4,
+      "local_instructions": 3515,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "mission_station_reads",
+      "draw_source": 97.2,
+      "draw_strict": 46.9,
+      "local_instructions": 3531,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "typed_image_slots",
+      "draw_source": 97.5,
+      "draw_strict": 50.6,
+      "local_instructions": 3515,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    },
+    {
+      "trial": "typed_health_crosshair_snapshot",
+      "draw_source": 97.0,
+      "draw_strict": 49.1,
+      "local_instructions": 3557,
+      "linked_exact": 13,
+      "byte_exact": 8,
+      "disposition": "removed"
+    }
+  ]
+}

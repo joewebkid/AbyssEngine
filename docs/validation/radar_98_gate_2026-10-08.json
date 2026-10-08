@@ -1,0 +1,87 @@
+{
+  "base_commit": "473310054460d0eef759db67b1a59064a06f2fb1",
+  "fixed_manifest": "radar_98_fixed_bodies_2026-10-08.json",
+  "final_family": "radar_98_final_family_2026-10-08.json",
+  "baseline_report": "_work/radar98/baseline_full.json",
+  "final_report": "_work/radar98/final_full.json",
+  "baseline_report_sha256": "8830751da12c42773254fe39dc1b6a1cb4cb5541b18540d2f6c508b9c55f5f97",
+  "final_report_sha256": "097c85023d86febe1e248a83c0321c5697ca8404fc4c9e268b5e64244755c260",
+  "baseline_corpus": {
+    "count": 4688,
+    "avg_source_match": 91.76,
+    "avg_match": 79.63,
+    "original_functions": 4524,
+    "compared_unique": 4323,
+    "missing": 201,
+    "missing_wrong_type": 0,
+    "missing_absent": 201,
+    "skipped": 0,
+    "linked_exact": 2301,
+    "byte_exact": 997,
+    "extra_symbols": 121
+  },
+  "final_corpus": {
+    "count": 4688,
+    "avg_source_match": 91.76,
+    "avg_match": 79.63,
+    "original_functions": 4524,
+    "compared_unique": 4323,
+    "missing": 201,
+    "missing_wrong_type": 0,
+    "missing_absent": 201,
+    "skipped": 0,
+    "linked_exact": 2301,
+    "byte_exact": 997,
+    "extra_symbols": 121
+  },
+  "linked_exact_retention": {
+    "baseline_pairs": 2301,
+    "final_pairs": 2301,
+    "lost": [],
+    "gained": []
+  },
+  "byte_exact_retention": {
+    "baseline_pairs": 997,
+    "final_pairs": 997,
+    "lost": [],
+    "gained": []
+  },
+  "pair_inventory_lost": [],
+  "pair_inventory_gained": [],
+  "source_score_losses": [],
+  "changed_pairs": [
+    {
+      "unit": "game/weapons/Radar",
+      "symbol": "_ZN5Radar4drawEP6PlayerP3Hudi",
+      "changes": {
+        "source_match": {
+          "baseline": 97.0,
+          "final": 97.5
+        },
+        "match": {
+          "baseline": 48.7,
+          "final": 50.6
+        },
+        "n_base": {
+          "baseline": 3544,
+          "final": 3515
+        }
+      }
+    }
+  ],
+  "focused_equals_full": true,
+  "arm_translation_units": {
+    "baseline_success": 206,
+    "final_success": 206,
+    "failed": 0
+  },
+  "native_gof2_build": "passed baseline and final; UCRT64 static library",
+  "verifier_tests": {
+    "run": 36,
+    "passed": 35,
+    "skipped": 1,
+    "failures": 0
+  },
+  "unique_body_98_gate_passed": false,
+  "runtime_arm_executed": false
+}
