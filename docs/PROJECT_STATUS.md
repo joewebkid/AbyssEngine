@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-08 (HangarWindow/MGame/Radar integration; older subsystem
+Last reviewed: 2026-10-08 (ChoiceWindow/Route/Ship integration; older subsystem
 snapshots retain their dates)
+
+## ChoiceWindow, Route and Ship integration (2026-10-08)
+
+The three fixed-family branches are merged into
+`codex/integrate-main-working-20261005`. Each reaches both unique-body 98%
+source-shape means: ChoiceWindow 99.638% unweighted / 98.634% weighted,
+Route 99.341% / 98.409%, and Ship 99.299% / 98.588%. The native `gof2`
+library builds, all 206 ARM units compile, and verifier/scope tests pass.
+The full corpus compares **4,323/4,524** originals across 4,689 rows,
+with zero wrong-type misses and zero skipped units. Mean source-shape is
+**91.80%**, strict fuzzy **79.73%**, linked-exact **2,305** and byte-exact
+**997**. Compared by (unit, symbol) with the prior integrated report, no
+comparison row or exact pair is lost; four linked-exact pairs are gained.
+These are assembly-comparison results, not a playable-game completion
+percentage. Native gameplay/ARM-device runtime remains untested. See the
+[integration evidence](MAIN_WORKTREE_RECONCILIATION_2026-10-05.md) and family
+notes for [ChoiceWindow](CHOICEWINDOW_UNIQUE_ARM_98_2026-10-08.md),
+[Route](ROUTE_UNIQUE_ARM_98_2026-10-08.md) and
+[Ship](SHIP_UNIQUE_ARM_98_2026-10-08.md).
 
 ## HangarWindow, MGame and Radar integration (2026-10-08)
 

@@ -87,3 +87,20 @@ both pair sets have zero losses and zero gains relative to the previous
 integrated report. The new row is another occurrence of an existing original
 `ArrayRemove<Ship*>` symbol; unique original coverage is unchanged. No full
 native game/runtime pass was performed. `main` and GitHub remain untouched.
+
+## ChoiceWindow, Route and Ship merge (2026-10-08)
+
+Merged tips `1c4288bc`, `32cbcb2b` and `d8ab3bb3` without conflicts. All
+three fixed unique-body families pass both 98% source-shape means; their
+individual ledgers and source evidence are in the corresponding family notes.
+The integrated native `gof2` library builds, all 206 ARM translation units
+compile, and the verifier tests (36, one optional skip) plus four scope-filter
+tests pass. The full report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_choice_route_ship_20261008.json`.
+It compares 4,323/4,524 originals across 4,689 rows, with 201 absent, zero
+wrong-type misses and zero skipped units. Corpus means are 91.80%
+source-shape and 79.73% strict fuzzy. Exact pairs are 2,305 linked and 997
+byte: the (unit, symbol) comparison set and both preceding exact sets have
+zero losses; four linked-exact pairs are gained. This validates the combined
+assembly result, not playable native or ARM-device runtime. `main` and the
+GitHub remote remain untouched.
