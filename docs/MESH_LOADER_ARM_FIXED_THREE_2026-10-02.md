@@ -10329,3 +10329,80 @@ Evidence: `_work/enh_type_count_word_reuse_sweep.py`, fourteen focused
 objects/reports, `_work/enh_type_count_word_reuse_identities.json`,
 `_work/main_intake_results.json`, and rechecked accepted binding audit.
 Report-only commit; no push/PR/merge. Goal remains active.
+
+
+## Continuation: Enhanced scalar pair layout/channel interaction
+
+Twenty-six focused measurements on 2026-10-08 start from 749560da. The
+preceding word-reuse family is rejected, including its unproven short-read
+behavior. This family uses separate, nonoverlapping float elements within
+each original scalar key iteration, preserving original variable lifetimes,
+four-byte destination extents, read/call order and signed time conversion.
+No storage reuse across type/count phases. No additional initialization,
+dummy masks/effects, aliasing casts, helper/header/ABI/signature/flags/matcher/
+denominator change; no layout claimed recovered from original source.
+
+Eight array variants use float entry[2], time/value in either order, selected
+for axes, optional channel, V5, or all scalar-key loops. Each is measured
+under accepted and preloaded V5 channel sources. Eight prior two-field
+ScalarKey records are additionally measured with preloaded channel. Two
+controls reproduce whole accepted/preload objects. V5 channels 4/5 still
+insert zero-channel keys, angle arithmetic and NaN behavior unchanged.
+Generator assertions caught two replacement issues before source edits:
+V5 key renaming needs the channel fragment renamed as well, and record
+field replacements must be simultaneous to avoid nested field names.
+Both corrected; all twenty-six compile/focused verify calls pass, sweep
+exited zero and finally restored accepted source.
+
+| Trial | Enhanced source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 |
+| accepted_array_time_first_axes | 97.5 / 23.1 | 646 | 100.0 |
+| accepted_array_time_first_optional | 98.2 / 66.8 | 642 | 100.0 |
+| accepted_array_time_first_v5 | 98.2 / 45.9 | 642 | 100.0 |
+| accepted_array_time_first_all | 97.4 / 44.9 | 648 | 100.0 |
+| accepted_array_value_first_axes | 98.2 / 21.9 | 649 | 100.0 |
+| accepted_array_value_first_optional | 98.3 / 66.8 | 642 | 100.0 |
+| accepted_array_value_first_v5 | 98.1 / 47.7 | 642 | 100.0 |
+| accepted_array_value_first_all | 98.1 / 22.2 | 650 | 100.0 |
+| preload_array_time_first_axes | 97.5 / 23.8 | 644 | 100.0 |
+| preload_array_time_first_optional | 98.2 / 67.6 | 640 | 100.0 |
+| preload_array_time_first_v5 | 98.2 / 46.6 | 640 | 100.0 |
+| preload_array_time_first_all | 97.4 / 45.7 | 646 | 100.0 |
+| preload_array_value_first_axes | 98.1 / 22.6 | 647 | 100.0 |
+| preload_array_value_first_optional | 98.3 / 67.6 | 640 | 100.0 |
+| preload_array_value_first_v5 | 98.1 / 48.4 | 640 | 100.0 |
+| preload_array_value_first_all | 98.0 / 22.9 | 648 | 100.0 |
+| preload_record_time_first_axes | 97.5 / 23.8 | 644 | 100.0 |
+| preload_record_time_first_optional | 98.2 / 67.6 | 640 | 100.0 |
+| preload_record_time_first_v5 | 98.2 / 46.6 | 640 | 100.0 |
+| preload_record_time_first_all | 97.4 / 45.7 | 646 | 100.0 |
+| preload_record_value_first_axes | 98.1 / 22.6 | 647 | 100.0 |
+| preload_record_value_first_optional | 98.3 / 67.6 | 640 | 100.0 |
+| preload_record_value_first_v5 | 98.1 / 48.4 | 640 | 100.0 |
+| preload_record_value_first_all | 98.0 / 22.9 | 648 | 100.0 |
+
+No primary gain: new forms 97.4..98.3 versus 98.3 controls. All eight accepted
+arrays match their earlier corresponding record whole-object SHA-256;
+all eight preload array/record pairs also match whole-object SHA-256.
+Thus these array and record layouts are compiler-equivalent in both tested
+channel contexts. Do not expand equivalent pair syntax for this hypothesis.
+Value-first optional forms only tie source score and have lower strict
+score; none retained. No compiler ceiling or impossibility inferred.
+
+All twenty-six source and call-count metrics recomputed from actual original/
+compiled instruction arrays; object hashes and instruction counts checked
+independently. Code and native fixtures restored to ecc30f25. Existing
+accepted full/native evidence binding audit passes: 204 TUs, 4619 comparisons,
+zero skips; 202 unaffected objects unchanged; actual linked-exact 2079 /
+byte-exact 959 pair sets identical baseline with no lost/gained pairs.
+Canonical flags and three-body/signature boundaries preserved. No fresh
+native runtime/full-corpus rebuild or Android/device/game check claimed for
+rejected forms. No cleanup needed this family; main untouched.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Evidence: `_work/enh_scalar_pair_layout_interaction_sweep.py`,
+`_work/enh_scalar_pair_layout_interaction_identities.json`, twenty-six
+focused objects/reports and rechecked accepted binding audit.
+Report-only commit; no push/PR/merge.
