@@ -11789,3 +11789,27 @@ Main intake recheck: main HEAD e473d545 remains previously incorporated history;
 Disk housekeeping: independently checked 20 manifest entries, all deleted original-target copies absent, each surviving canonical reference hash/size matches. Only verified untracked duplicate original Core targets removed (528240 bytes); canonical targets, compiled bases, source snapshots, reports, native fixtures and Git storage preserved. Manifest and system-temp backup were written before deletion.
 
 Evidence: `_work/enh_wide_axis_frame_pairs_20261008.py`, matching JSON and nine compiled objects; `_work/duplicate_wide_frame20_core_target_cleanup_20261008.json`; `_work/main_intake_snapshot.json` and existing intake results. Report-only continuation; no push, PR or merge.
+
+## Continuation: Axis dispatch branch diagnosis and explicit ordered conditions
+
+Continuation after a694ed58; previous turn yielded audited negative evidence and changed the next hypothesis. Read current Mesh.cpp and prior axis dispatch, exit, frame, enum and common-call generators before selecting this experiment. Read-only direct canonical-object diagnosis followed by five fresh focused compiles.
+
+Normalized control inventories explain the standalone-wide loss: accepted CBZ34/BEQ10 become CBZ37/BEQ7; the three new zero branches sit immediately after BIC in axis dispatch. Original has CBZ34/BEQ10, CBNZ5/BNE3/no BMI; accepted and wide both have CBNZ3/BNE4/BMI1. Original compares masked axis 2 then 1 then 0; accepted and wide compare 0 then 1 then 2. All-frames capture removes the three extra CBZ but leaves the other control inventory differences. This locates the wide-versus-accepted loss; it does not attribute every original-versus-accepted control difference to these same source blocks. Static normalized tokens do not prove runtime branch counts or recovered declarations.
+
+Replace all three axis switches with explicit if(axis==2), else if(axis==1), else if(axis==0), retaining each case body and calls. Test unsigned-char and ordinary-int axis loops; separately test final else, valid because each loop visits exactly 0,1,2 with an unaddressed counter. No changes to reads, time conversion timing, arithmetic, channels, call order, helpers, headers, ABI, flags or scoring. No artificial masks, padding, dummy effects, fixed registers or volatile. Restore original source bytes in finally.
+
+| Form | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| accepted_control | 98.3 | 95.8 | 97.4 | 98.7 | 99.5 | 641 |
+| unsigned_char_guard_zero | 98.3 | 95.8 | 97.4 | 98.7 | 99.5 | 641 |
+| unsigned_char_default_zero | 96.5 | 92.9 | 94.4 | 96.2 | 99.2 | 631 |
+| int_guard_zero | 98.0 | 96.0 | 97.5 | 96.6 | 100.0 | 638 |
+| int_default_zero | 96.7 | 93.6 | 95.1 | 96.2 | 98.7 | 628 |
+
+Five rows independently rebound to canonical original and rechecked for every metric, instruction count, normalized control inventory and whole-object hash. Calls remain100. Byte guard-zero whole object equals accepted; int guard-zero equals previous wide control. Thus explicit descending condition spelling is canonicalized to the same object and cannot fix this dispatch ordering in these contexts. Final-else forms regress, with four distinct whole objects across five rows. None retained; no compiler ceiling claim.
+
+Accepted proof binding audit again checked 204 TUs/4619 comparisons, 202 unaffected whole objects, actual linked2079/byte959 pair sets without loss/gain, body boundaries/signatures/canonical flags and existing native logs. No fresh full-unit verifier, strict sequence score, full build, native smoke, game executable, device or Android runtime claimed this turn. Means98.40/98.41 and both99 gates remain unmet. Report staging failed with explicit out-of-disk-space index.lock write error; no experiment was restarted. Removed40 independently verified untracked duplicate original Mesh targets (115840 bytes), with workspace manifest and system-temp backup before literal deletion, resolved path/hash/single-object checks and post-delete reference checks. Canonical targets, compiled bases, snapshots, reports and Git storage preserved. Manifest: `_work/duplicate_axis_order40_mesh_target_cleanup_20261008.json`. Main untouched; report-only commit, no push/PR/merge.
+
+Evidence: `_work/analyze_enh_wide_axis_control_roles_20261008.py` and matching diagnostic JSON; `_work/enh_axis_ordered_if_sweep_20261008.py`, `_work/enh_axis_ordered_if_20261008.json` and five focused compiled objects.
+
+The first115840-byte cleanup was insufficient: second staging failed explicitly writing a loose object with no space. At zero free space, a system-temp manifest was saved before deletion; copied to workspace after cleanup. The same checked procedure removed18 additional duplicate original Core targets,475416 bytes; independently audited all reference hashes/sizes and absence afterward. Manifest `_work/duplicate_axis_order18_core_target_cleanup_20261008.json`. Candidate40 assertion first failed with only18 eligible entries and deleted nothing; adjusted exact count to18. No compiled objects or Git files removed.
