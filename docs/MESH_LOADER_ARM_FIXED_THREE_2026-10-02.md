@@ -10248,3 +10248,84 @@ Evidence: `_work/read_current_value_records_forms.py`,
 `_work/read_current_value_records_sweep.py`,
 `_work/read_current_value_records_identities.json`, twenty-two focused reports/
 objects and rechecked typedpair validation audit.
+
+
+## Continuation: Enhanced type/count word storage reuse
+
+Fourteen focused measurements on 2026-10-08 start from 10caddf6: six
+unsigned-short type/count storage-reuse forms under accepted and V5-preload
+sources, plus two controls. Position, scale and rotation sections individually,
+all prefix sections, optional unsigned fields, and all words including signed
+V5 count are tested. Signed type/count interpretation uses short casts on
+the supported two's-complement targets. No union, extra initialization,
+dummy effects, helper/header/ABI/flags/matcher/denominator changes.
+This is a source hypothesis for valid full reads, not recovered source.
+
+| Trial | Enhanced source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 |
+| accepted_position | 97.8 / 51.6 | 640 | 100.0 |
+| accepted_scale | 97.4 / 60.6 | 644 | 100.0 |
+| accepted_rotation | 97.4 / 46.1 | 647 | 100.0 |
+| accepted_all_prefix | 97.7 / 64.2 | 635 | 100.0 |
+| accepted_all_unsigned | 96.9 / 50.5 | 635 | 100.0 |
+| accepted_all_words | 96.8 / 45.5 | 635 | 100.0 |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 |
+| preload_position | 97.8 / 52.3 | 638 | 100.0 |
+| preload_scale | 97.4 / 61.5 | 642 | 100.0 |
+| preload_rotation | 97.3 / 47.0 | 645 | 100.0 |
+| preload_all_prefix | 97.6 / 64.9 | 633 | 100.0 |
+| preload_all_unsigned | 96.8 / 51.4 | 633 | 100.0 |
+| preload_all_words | 96.7 / 46.3 | 633 | 100.0 |
+
+All twelve new forms regress, 96.7..97.8 versus 98.3 controls. Controls
+reproduce accepted/preload whole Mesh objects. None retained. Sweep exited
+zero, all focused compilations/verifications pass; source and call metrics,
+instruction counts and object hashes independently recomputed. Initial
+generator marker-count assertion stopped before source mutation; corrected
+to account for optional fourth type Read. Source restored to accepted.
+
+Additional semantic limit: inspected AEFile.cpp, AENormalFile.cpp,
+AEPakFile.cpp and FileInterfaceAndroid.cpp. AEFile and AENormalFile forward
+Read; AEPakFile clips requests to remaining archive bytes before forwarding.
+Android file/zip adapters return success when that forwarded length is read;
+JNI adapter compares received length to the forwarded request. Consequently
+an original two-byte request near an archive boundary can succeed after
+writing one byte. Reusing prior word storage can then change the untouched
+byte. Equivalence on malformed/short successful reads is NOT established.
+Do not retain/reuse this transformation without proving that case. This
+finding describes current local implementations, not a runtime proof of the
+original binary. File interfaces were only read, never changed.
+
+Accepted full/native binding audit passes using existing evidence: 204 TUs,
+4619 comparisons, no skips, 202 unaffected objects; actual linked-exact 2079
+and byte-exact 959 pair sets unchanged with no lost/gained pairs. Canonical
+flags and three-body/signature boundaries preserved. No fresh full rebuild,
+native execution, game/device/Android runtime test claimed for rejected forms.
+
+Disk preparation removed 100 verified generated original Core target copies
+from the explicit readindexreload directory family, reclaiming 2,641,200
+logical bytes. Paths resolved within own _work, untracked; SHA-256 equals
+retained canonical typedpair-full target. Manifest and system-temp backup
+preceded literal-path removal; both hashes rechecked immediately per file.
+An initial 207-versus-100 guard stopped before manifest/deletion; fixed cap
+then completed. No recursive deletion. Bases, reports, accepted/baseline,
+main and Git archive retained. All 100 mappings independently rebound:
+`_work/duplicate_index_core_target_cleanup_20261008.json`, script
+`_work/cleanup_index_core_target_duplicates_20261008.ps1`.
+
+User-requested main intake rechecked on 2026-10-08: main HEAD e473d545;
+actual AbyssEngine.cpp, Mesh.cpp, AEString.h and Array.h hashes equal the
+previous six-case intake snapshot. No new relevant content. Existing intake
+shows current bodies plus main headers produce identical accepted objects
+and 98.40 / 98.4131667 means; main bodies regress to 94.0333333 /
+93.4006667, including with main headers. Individual body imports also
+regress. No repeated compile claimed for unchanged snapshot. Main's other
+dirty files and verifier modifications left untouched; measurement method
+preserved. No main source import retained because no measured improvement.
+
+Accepted means remain **98.40% / 98.41%**, both >=99.0 gates unmet.
+Evidence: `_work/enh_type_count_word_reuse_sweep.py`, fourteen focused
+objects/reports, `_work/enh_type_count_word_reuse_identities.json`,
+`_work/main_intake_results.json`, and rechecked accepted binding audit.
+Report-only commit; no push/PR/merge. Goal remains active.
