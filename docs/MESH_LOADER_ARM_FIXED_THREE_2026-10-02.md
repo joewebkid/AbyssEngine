@@ -10826,3 +10826,102 @@ Evidence:`_work/read_current_flag_owner_interaction_sweep.py`,
 `_work/read_current_flag_owner_interaction_identities.json`,14 focused
 objects/reports and rechecked binding audit. Main untouched;report-only
 commit;no push/PR/merge.
+
+
+## Continuation: Historical shape component profile audit
+
+Read-only historical audit on2026-10-08 starts from f5c81ac5. No new source
+experiment or native/full rebuild. Scan201 identity ledgers,1934 score rows;
+name-derived groups:Read942 rows/107 files/302 whole hashes,max98.5;
+Create253/21/126,max98.4;Enhanced594/59/281,max98.3;other145/14/17.
+No object hash has contradictory source scores within the three named
+groups. Other group includes mixed-function scores and is not interchangeable
+with fixed-three data. These are historical ledger counts, not fresh validation
+of every old variant. No overlooked retained primary gain found in these
+ledgers; incomplete historical coverage means no impossibility/ceiling claim.
+
+Scan focused report profiles using exact named target symbol:Read1111,
+Create327,Enhanced696 rows. Instruction inventory above current95.8/94.7/
+95.8 found in0/8/107 rows respectively. These report counts include duplicate
+objects and earlier source versions, not unique functions or new denominators.
+Five selected profiles independently recomputed from current unchanged
+matcher and compiled objects against canonical original instruction arrays:
+
+| Profile | Source | Inventory | Opcode | Control | Calls | Size |
+|---|---:|---:|---:|---:|---:|---:|
+| createaddressedmagicargs-accepted_magic_engine.json | 97.5 | 95.6 | 97.7 | 95.8 | 100.0 | 98.2 |
+| enhgroupcount-rotation_group.json | 97.8 | 96.4 | 98.1 | 95.6 | 100.0 | 98.8 |
+| enhscalarkeyrecord-value_first_axes.json | 98.2 | 96.3 | 97.6 | 98.7 | 100.0 | 98.2 |
+| enhbyteaxiscounts-rotation_group.json | 98.1 | 96.2 | 98.0 | 98.0 | 100.0 | 98.0 |
+| enhaxisdispatch-all_signed_char.json | 98.0 | 96.0 | 97.5 | 96.6 | 100.0 | 100.0 |
+
+Evidence changes next action: investigate Enhanced value-first scalar-key
+axes (inventory96.3 vs95.8,opcode97.6 vs97.4,control98.7 unchanged) rather
+than expand equivalent time/finish records. Its649 vs accepted641 instructions
+lower size98.2 vs99.5, so primary98.2 is below98.3. A useful combination must
+reduce real extra operations while preserving those inventory/control gains;
+V5 preload alone already failed this combination. Rotation-group count gives
+inventory96.4/opcode98.1 but loses control95.6 and needs semantic short-read
+review before reuse. Signed-char axis dispatch has size100 but loses control;
+it is only an unretained candidate for bounded interaction with scalar record.
+Create addressed magic/engine also gains inventory but loses control, no
+current primary gain. Do not claim component gains meet either99.0 gate.
+
+Accepted binding audit passes unchanged:204 TUs,4619 comparisons,no skips;
+202 unaffected objects;actual linked-exact2079/byte-exact959 pair sets with
+no loss/gain;canonical flags and three-body/signature boundaries preserved.
+No fresh native execution/device/Android/game runtime claim. Accepted means
+remain **98.40% / 98.41%**, both>=99.0 gates unmet;goal active.
+
+Preparation removed28 verified original targets:14 recent Enhanced completion
+values and14 current Read flag/owner copies,410,312 logical bytes. Exact
+family/unit counts, resolved paths inside own _work, untracked status and
+canonical hash equality checked; manifest/system-temp backup before literal
+deletion with immediate rehash. All28 mappings independently rebound.
+Bases/reports/sources/accepted/baseline/main/Git archive retained. Evidence:
+`_work/duplicate_profile_prep_target_cleanup_20261008.json`, script
+`_work/cleanup_profile_prep_target_duplicates_20261008.ps1`.
+Diagnostic:`_work/historical_shape_profiles_20261008.json`, script
+`_work/audit_historical_shape_profiles_20261008.py`.
+Report-only commit;main untouched;no push/PR/merge.
+
+
+## Continuation: Profile-directed scalar-record/signed-axis interaction
+
+Following historical profile audit, executed its bounded next candidate:
+value-first scalar key records in all three axes plus signed-char dispatch
+cast for every seven nonempty subset of position/scale/rotation; accepted
+and record controls,9 focused measurements. Actual unsigned-char loop
+axes remain0..2 with exit3, so signed-char cast preserves dispatch values.
+No new masks, dummy effects, field/storage reuse or compiler changes.
+Same reads, key insertion, math and cleanup. No original source recovered.
+
+| Trial | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| accepted_control | 98.3 | 95.8 | 97.4 | 98.7 | 99.5 | 641 |
+| record_control | 98.2 | 96.3 | 97.6 | 98.7 | 98.2 | 649 |
+| signed_axes_1 | 98.1 | 96.4 | 97.7 | 98.0 | 98.4 | 648 |
+| signed_axes_2 | 98.1 | 96.4 | 97.7 | 98.0 | 98.4 | 648 |
+| signed_axes_3 | 98.0 | 96.4 | 97.8 | 97.3 | 98.5 | 647 |
+| signed_axes_4 | 98.1 | 96.4 | 97.7 | 98.0 | 98.4 | 648 |
+| signed_axes_5 | 98.0 | 96.4 | 97.8 | 97.3 | 98.5 | 647 |
+| signed_axes_6 | 98.0 | 96.4 | 97.8 | 97.3 | 98.5 | 647 |
+| signed_axes_7 | 97.9 | 96.5 | 97.7 | 96.6 | 98.7 | 646 |
+
+All7 new combinations regress,97.9..98.1. Each selected section removes
+exactly1 instruction from record649, improving inventory up to96.5 and
+size98.7;control falls98.7->98.0/97.3/96.6 for1/2/3 sections. Thus gains
+are not independent and do not raise source score. All calls100. No
+additional equivalent signed-axis permutations justified;none retained.
+No compiler ceiling inferred. Sweep exited zero;9 compile/focused verifies
+pass. All six component metrics/counts/hashes independently recomputed.
+Code/native fixtures restored to accepted;existing204-TU/4619-comparison
+full/native binding audit passes with202 unaffected objects and unchanged
+linked2079/byte959 pair sets,canonical flags,body/signature boundaries.
+No fresh full/native runtime/game/Android check claimed. Historical profile
+snapshot above predates these9 rows;do not rerun its fixed-count assertion
+against the expanded corpus without preserving its cutoff.
+Evidence:`_work/enh_scalar_record_signed_axis_interaction_sweep.py`,
+`_work/enh_scalar_record_signed_axis_interaction_identities.json`,9 focused
+objects/reports. Accepted means98.40/98.41,both99.0 gates unmet;goal active.
+Main untouched;report-only commit;no push/PR/merge.
