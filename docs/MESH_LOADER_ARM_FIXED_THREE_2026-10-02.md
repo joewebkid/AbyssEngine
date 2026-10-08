@@ -11837,3 +11837,27 @@ Accepted full/native proof binding audit rechecked204 TUs/4619 comparisons/202 u
 Disk housekeeping before report staging:120 verified untracked duplicate original Mesh targets removed,347520 bytes; canonical references and single-object target contents checked, resolved paths within own_work, workspace manifest and system-temp backup saved before literal deletion; independently checked all reference hashes/sizes and target absence after deletion. Compiled bases, sources/snapshots, reports, native fixtures, canonical targets, main and Git storage preserved. Manifest `_work/duplicate_type_format120_mesh_target_cleanup_20261008.json`. Console cleanup label inherited40, but exact assertion, manifest and audited count are120.
 
 Evidence: `_work/analyze_enh_nonzero_branch_roles_20261008.py`, matching branch-window JSON; `_work/enh_type_format_pair_sweep_20261008.py`, `_work/enh_type_format_pair_20261008.json`, five focused base objects. Report-only commit; no push/PR/merge.
+
+## Continuation: Create addressed handle with parameter references
+
+Continuation after87b73dd2; previous turn provided verified negative layout evidence. Inspect current Create body, saved inventory deficit and previous call-state, addressed-handle, addressed-magic, local-parse-state, loaded-operand and bounds generators. Create accepted inventory94.7 is lower than the other two selected bodies; missing stack loads and pointer loads motivate parameter-reference storage rather than previously tested pointer value copies.
+
+Seven fresh focused compiles: accepted control and six actual local ReadState records containing the existing unsigned handle plus Engine*&engine, Material*&mat, or both, in the listed field orders. Reference fields bind existing pointer parameters, not pointer snapshots; handle initialized0 before original guard and OpenRead still receives its address. Every field used. No dereference or allocation added during reference binding; original Mesh allocations, output/material stores, headers, reads, guards, child order, bounds merge, cleanup and completion calls preserved. Existing calls write only their supplied handle span, so adjacent references remain intact even for partial handle writes. No helper/header/exported layout/signature/flags/matcher/denominator/dummy effects/fixed-register/volatile/asm/padding changes. Source restored with original bytes in finally. These local layouts are compiler hypotheses, not recovered declarations.
+
+| Form | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| accepted_control | 98.4 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| engine_handle | 96.4 | 90.7 | 96.3 | 95.8 | 99.0 | 296 |
+| handle_engine | 97.5 | 94.6 | 97.4 | 95.8 | 99.6 | 294 |
+| mat_handle | 96.8 | 91.2 | 97.2 | 95.8 | 100.0 | 293 |
+| handle_mat | 97.0 | 92.1 | 97.4 | 95.8 | 99.6 | 294 |
+| engine_handle_mat | 95.5 | 89.8 | 95.3 | 95.8 | 96.3 | 303 |
+| mat_handle_engine | 95.5 | 89.8 | 95.3 | 95.8 | 96.3 | 303 |
+
+All seven rows independently rebound to canonical original Core object and rechecked for all source-shape metrics, instruction counts and whole-object hashes. Seven whole hashes distinct, calls100 throughout. Both three-field records have equal component scores but are not object-identical. Best new form handle_engine97.5 remains below accepted98.4; all new control inventories fall to95.8 and none improves inventory94.7. None retained. This rejects these exact reference records; no compiler ceiling or universal reference-form conclusion claimed.
+
+Accepted full/native proof-binding audit rechecked204 TUs/4619 comparisons,202 unaffected whole objects, actual linked-exact2079 and byte-exact959 pair sets without losses/gains, source boundaries/signatures/flags and existing native logs. No fresh full-unit verifier or strict sequence score, full build, native smoke, whole-game executable, device or Android run claimed for rejected variants. Means98.40/98.41; both99 gates remain unmet, goal active.
+
+Disk housekeeping before compilation:20 verified untracked duplicate original Core targets removed,528240 bytes. Resolved paths within own_work, canonical hash and single-object targets checked; workspace manifest and system-temp backup written before literal deletion; independently checked all target absence/reference hashes/sizes afterward. Compiled bases, source snapshots, reports, native fixtures, canonical targets, main and Git storage preserved. Manifest `_work/duplicate_create_ref20_core_target_cleanup_20261008.json`. Inherited console label40/Mesh is inaccurate; guarded and audited count20/Core is authoritative.
+
+Evidence: `_work/create_reference_handle_sweep_20261008.py`, `_work/create_reference_handle_20261008.json`, seven focused base objects. Report-only commit; no push/PR/merge.
