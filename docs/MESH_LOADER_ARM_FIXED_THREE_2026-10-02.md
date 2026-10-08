@@ -11982,3 +11982,39 @@ Cleanup preparation initially found only2 eligible create-family originals where
 Additional staging/commit attempts failed explicitly writing index.lock due disk space; HEAD remainedfb8694ed. Removed10 more checked duplicate original Core targets264120 bytes, with system-temp manifest saved before deletion and workspace copy afterward; independently verified reference hashes/sizes and deleted-path absence. Manifest `_work/duplicate_child_width_commit10_core_target_cleanup_20261008.json`. No Git locks/packs or compiled artifacts removed.
 
 The264120-byte extra cleanup was insufficient for another index write. Same guarded procedure removed40 additional exact duplicate original Core targets1056480 bytes, independently audited all hashes/sizes/absence, system-temp manifest before deletion and workspace copy afterward. Manifest `_work/duplicate_child_width_commit40_core_target_cleanup_20261008.json`. Native/ARM validation was not restarted; all compiled results remain preserved.
+
+## Continuation: Child-index pair signature widths and operand orders
+
+Continuation after13325cd3: prior turn yielded verified width/guard canonicalization evidence in the new child/index context. Inspect actual source, current full/native binding audit and old signature counter/format/operand generators. No equivalent width/guard trials repeated. Selected signature changes were tested previously without retained child/index pair, so old scores are not imported into this context.
+
+Width family: three unsigned signature-index types (char, short, int) crossed with four format types (unsigned int, unsigned char, unsigned short, int), twelve new forms plus accepted control. Index visits0..6 and increments to7 before exiting, with no wrap. Format starts31 and only clears five bits, so stays0..31 in every malformed/signature mismatch case; promoted masks and call arguments preserve values. Signature byte char and all arrays/read spans remain unchanged.
+
+Operand family: accepted control plus original_interleaving, first_three_preloads, all_preloads, reverse_comparisons and versions_before_plain from old generator applied to current body. All preloaded bytes are used; independent pure const-table reads and disjoint bit clears preserve values and recognized formats. Name original_interleaving describes an earlier hypothesis, not proven recovered syntax. No changes to child record, actual allocations/reads/call order/float/cleanup/helper/header/export/ABI/signature/flags/matcher/denominator/dummy effects/volatile/asm/fixed-register/artificial padding. Raw source bytes restored in finally;19 compiles/direct measurements completed exit0.
+
+| Family / form | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| width / accepted_control | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| width / unsigned_char_index_unsigned_int_format | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| width / unsigned_char_index_unsigned_char_format | 96.6 | 91.7 | 96.7 | 94.7 | 99.6 | 291 |
+| width / unsigned_char_index_unsigned_short_format | 96.6 | 91.7 | 96.7 | 94.7 | 99.6 | 291 |
+| width / unsigned_char_index_int_format | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| width / unsigned_short_index_unsigned_int_format | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| width / unsigned_short_index_unsigned_char_format | 96.6 | 91.7 | 96.7 | 94.7 | 99.6 | 291 |
+| width / unsigned_short_index_unsigned_short_format | 96.6 | 91.7 | 96.7 | 94.7 | 99.6 | 291 |
+| width / unsigned_short_index_int_format | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| width / unsigned_int_index_unsigned_int_format | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| width / unsigned_int_index_unsigned_char_format | 96.6 | 91.7 | 96.7 | 94.7 | 99.6 | 291 |
+| width / unsigned_int_index_unsigned_short_format | 96.6 | 91.7 | 96.7 | 94.7 | 99.6 | 291 |
+| width / unsigned_int_index_int_format | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| operands / accepted_control | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| operands / original_interleaving | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| operands / first_three_preloads | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| operands / all_preloads | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| operands / reverse_comparisons | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| operands / versions_before_plain | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+
+All19 rows independently rebound to canonical original and rechecked for all components, instruction counts and whole-object hashes;5 distinct objects. Calls100 throughout. Six32-bit-format index forms plus two controls and three preload/interleave forms are whole-object identical to accepted (11 rows). Narrow char/short formats produce2 distinct regressing objects at96.6, each index type collapsing to the corresponding format object. Reversed/versions-first comparisons produce2 additional objects with identical accepted source components, not treated as byte identity. None retained. These exact signature type/preload/order contexts are exhausted; no compiler ceiling claimed.
+
+Current accepted full/native proof-binding audit again checks204 TUs/4619 comparisons/202 unaffected objects, actual linked-exact2079 and byte-exact959 pair sets without loss/gain, boundaries/signatures/flags, native body snapshots and logs. This is read-only rebind of475df44a proof, not fresh full/native/game/device/Android execution or focused full-unit verifier/strict score. Fixed-three source98.6/98.5/98.3, original weights291/873/636,total1800, means98.47/98.45 unchanged. Both99 gates unmet, goal active.
+
+Evidence: `C:/Users/Dima/AppData/Local/Temp/gof2-child-index-signature-{width,operands}-sweep-20261008/results.json` and19 base objects; `_work/create_child_index_signature_width_sweep_20261008.py`, `_work/create_child_index_signature_operands_sweep_20261008.py`. New generated artifacts are on C; no cleanup this turn. Source unchanged; report-only commit, main untouched, no push/PR/merge.
