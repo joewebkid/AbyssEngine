@@ -11813,3 +11813,27 @@ Accepted proof binding audit again checked 204 TUs/4619 comparisons, 202 unaffec
 Evidence: `_work/analyze_enh_wide_axis_control_roles_20261008.py` and matching diagnostic JSON; `_work/enh_axis_ordered_if_sweep_20261008.py`, `_work/enh_axis_ordered_if_20261008.json` and five focused compiled objects.
 
 The first115840-byte cleanup was insufficient: second staging failed explicitly writing a loose object with no space. At zero free space, a system-temp manifest was saved before deletion; copied to workspace after cleanup. The same checked procedure removed18 additional duplicate original Core targets,475416 bytes; independently audited all reference hashes/sizes and absence afterward. Manifest `_work/duplicate_axis_order18_core_target_cleanup_20261008.json`. Candidate40 assertion first failed with only18 eligible entries and deleted nothing; adjusted exact count to18. No compiled objects or Git files removed.
+
+## Continuation: Nonzero branch roles and type-format local records
+
+Continuation after c0d3b3ec; previous turn produced verified compiler canonicalization evidence, so no repeat of ordered axis conditions. Inspect current source and prior flag-lifetime, flag-optional, parser-state and addressed-parser-state generators.
+
+Read-only raw branch-window diagnosis locates accepted BMI at token495: LSLS r0,r6,#27 then BMI tests format bit0x10. Original token504 uses ANDS r0,r5,#16 then BNE. This concerns V5 section entry, not axis arithmetic or animation attachment. The original three axis switches finish with CBNZ at97/228/358; accepted finish with BNE at97/228/361. Type-section comparisons at57/188/313(original) and57/188/315(accepted), plus optional type2 test441/449, have other raw BNEs. Raw windows are not normalized counts: adjacent CMP-zero/BNE pairs collapse to CBNZ in scoring, while a intervening store can prevent that adjacency. Do not assign all normalized CBNZ/BNE deficits solely to axis switches. Diagnostic windows independently rebound to direct canonical original and accepted objects.
+
+Five fresh focused compiles: accepted control plus a two-field local record containing short type and unsigned-char format, both field orders, under accepted byte axes or ordinary int axes. Existing type reads target only the short field; format assigned once from flags immediately before first type read after bounds remap. Every record field is used; no initialized dummy field or reused partial count word. Preserves allocation and read/call sequence, values, channels, time conversion, cleanup and arithmetic. No headers/helpers/ABI/signatures/flags/matcher/denominator/fixed registers/volatile/asm/artificial masks or padding changes. Source restored with original bytes in finally. Actual read implementation must stay within supplied2-byte span; malformed short successes do not overwrite neighboring format storage. These are source-form compiler hypotheses, not recovered original structures. Prior addressed state had file/type/format triples; this tests the new type/format-only pair.
+
+| Form | Source | Inventory | Opcode | Control | Size | Instructions | BMI count |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| accepted_control | 98.3 | 95.8 | 97.4 | 98.7 | 99.5 | 641 | 1 |
+| type_first_byte_axis | 96.6 | 89.5 | 94.8 | 98.7 | 100.0 | 638 | 1 |
+| type_first_wide_axis | 96.2 | 89.7 | 94.9 | 96.6 | 99.5 | 635 | 1 |
+| format_first_byte_axis | 96.0 | 89.4 | 94.2 | 98.7 | 97.9 | 651 | 1 |
+| format_first_wide_axis | 95.8 | 89.6 | 94.2 | 96.6 | 98.4 | 648 | 1 |
+
+All five rows independently rechecked for every canonical source metric, count, normalized control inventory and whole-object hash; five whole hashes distinct, calls100 throughout. Pair storage does not remove BMI; byte-axis forms preserve accepted control inventory, wide-axis forms retain three additional CBZ substitutions. Inventory worsens sharply to89.4..89.7 and all four primary scores regress. None retained. Evidence rejects this type/format placement hypothesis, not a general compiler ceiling.
+
+Accepted full/native proof binding audit rechecked204 TUs/4619 comparisons/202 unaffected objects, actual linked-exact2079 and byte-exact959 pair sets without losses/gains, body boundaries/signatures/flags and existing native logs. No fresh full-unit verifier or strict sequence score, full build, native smoke, whole-game executable, device or Android run claimed. Means98.40/98.41; both99 gates unmet and goal active.
+
+Disk housekeeping before report staging:120 verified untracked duplicate original Mesh targets removed,347520 bytes; canonical references and single-object target contents checked, resolved paths within own_work, workspace manifest and system-temp backup saved before literal deletion; independently checked all reference hashes/sizes and target absence after deletion. Compiled bases, sources/snapshots, reports, native fixtures, canonical targets, main and Git storage preserved. Manifest `_work/duplicate_type_format120_mesh_target_cleanup_20261008.json`. Console cleanup label inherited40, but exact assertion, manifest and audited count are120.
+
+Evidence: `_work/analyze_enh_nonzero_branch_roles_20261008.py`, matching branch-window JSON; `_work/enh_type_format_pair_sweep_20261008.py`, `_work/enh_type_format_pair_20261008.json`, five focused base objects. Report-only commit; no push/PR/merge.
