@@ -1,0 +1,313 @@
+{
+  "commit": "473310054460d0eef759db67b1a59064a06f2fb1",
+  "unit": "game/ui/HangarWindow",
+  "grouping": "original even ARM address; one representative per unique body",
+  "weights": "n_target from unchanged canonical verifier",
+  "functions": [
+    {
+      "address": "0x147d20",
+      "symbol": "_ZN12HangarWindowC1Ev",
+      "aliases": [
+        "_ZN12HangarWindowC1Ev",
+        "_ZN12HangarWindowC2Ev"
+      ],
+      "weight": 38,
+      "source_match": 100.0,
+      "match": 97.4
+    },
+    {
+      "address": "0x147d9c",
+      "symbol": "_ZN12HangarWindowD1Ev",
+      "aliases": [
+        "_ZN12HangarWindowD1Ev",
+        "_ZN12HangarWindowD2Ev"
+      ],
+      "weight": 52,
+      "source_match": 100.0,
+      "match": 100.0
+    },
+    {
+      "address": "0x147e24",
+      "symbol": "_ZN12HangarWindow10initializeEv",
+      "aliases": [
+        "_ZN12HangarWindow10initializeEv"
+      ],
+      "weight": 1101,
+      "source_match": 97.2,
+      "match": 63.2
+    },
+    {
+      "address": "0x148a10",
+      "symbol": "_ZN12HangarWindow27refreshCurrentContentHeightEv",
+      "aliases": [
+        "_ZN12HangarWindow27refreshCurrentContentHeightEv"
+      ],
+      "weight": 19,
+      "source_match": 100.0,
+      "match": 100.0
+    },
+    {
+      "address": "0x148a40",
+      "symbol": "_ZN12HangarWindow13isInitializedEv",
+      "aliases": [
+        "_ZN12HangarWindow13isInitializedEv"
+      ],
+      "weight": 2,
+      "source_match": 100.0,
+      "match": 100.0
+    },
+    {
+      "address": "0x148a44",
+      "symbol": "_ZN12HangarWindow13getCurrentTabEv",
+      "aliases": [
+        "_ZN12HangarWindow13getCurrentTabEv"
+      ],
+      "weight": 2,
+      "source_match": 100.0,
+      "match": 100.0
+    },
+    {
+      "address": "0x148a4a",
+      "symbol": "_ZN12HangarWindow8listModeEv",
+      "aliases": [
+        "_ZN12HangarWindow8listModeEv"
+      ],
+      "weight": 10,
+      "source_match": 100.0,
+      "match": 100.0
+    },
+    {
+      "address": "0x148a64",
+      "symbol": "_ZN12HangarWindow15isInSpecialModeEv",
+      "aliases": [
+        "_ZN12HangarWindow15isInSpecialModeEv"
+      ],
+      "weight": 9,
+      "source_match": 100.0,
+      "match": 100.0
+    },
+    {
+      "address": "0x148a7a",
+      "symbol": "_ZN12HangarWindow14getCurrentItemEv",
+      "aliases": [
+        "_ZN12HangarWindow14getCurrentItemEv"
+      ],
+      "weight": 2,
+      "source_match": 100.0,
+      "match": 100.0
+    },
+    {
+      "address": "0x148a7e",
+      "symbol": "_ZN12HangarWindow6updateEi",
+      "aliases": [
+        "_ZN12HangarWindow6updateEi"
+      ],
+      "weight": 175,
+      "source_match": 100.0,
+      "match": 97.1
+    },
+    {
+      "address": "0x148c68",
+      "symbol": "_ZN12HangarWindow11transactionEb",
+      "aliases": [
+        "_ZN12HangarWindow11transactionEb"
+      ],
+      "weight": 332,
+      "source_match": 98.1,
+      "match": 60.8
+    },
+    {
+      "address": "0x14900c",
+      "symbol": "_ZN12HangarWindow37refreshCargoAvailabilityForBlueprintsEv",
+      "aliases": [
+        "_ZN12HangarWindow37refreshCargoAvailabilityForBlueprintsEv"
+      ],
+      "weight": 71,
+      "source_match": 100.0,
+      "match": 98.6
+    },
+    {
+      "address": "0x1490c8",
+      "symbol": "_ZN12HangarWindow8render3DEv",
+      "aliases": [
+        "_ZN12HangarWindow8render3DEv"
+      ],
+      "weight": 6,
+      "source_match": 100.0,
+      "match": 100.0
+    },
+    {
+      "address": "0x1490d8",
+      "symbol": "_ZN12HangarWindow6renderEv",
+      "aliases": [
+        "_ZN12HangarWindow6renderEv"
+      ],
+      "weight": 3616,
+      "source_match": 90.0,
+      "match": 9.1
+    },
+    {
+      "address": "0x14b6bc",
+      "symbol": "_ZN12HangarWindow25getRelativeScrollStartPosEv",
+      "aliases": [
+        "_ZN12HangarWindow25getRelativeScrollStartPosEv"
+      ],
+      "weight": 14,
+      "source_match": 100.0,
+      "match": 100.0
+    },
+    {
+      "address": "0x14b6ec",
+      "symbol": "_ZN12HangarWindow23getRelativeScrollHeightEv",
+      "aliases": [
+        "_ZN12HangarWindow23getRelativeScrollHeightEv"
+      ],
+      "weight": 27,
+      "source_match": 96.3,
+      "match": 63.0
+    },
+    {
+      "address": "0x14b740",
+      "symbol": "_ZN12HangarWindow12OnTouchBeginEii",
+      "aliases": [
+        "_ZN12HangarWindow12OnTouchBeginEii"
+      ],
+      "weight": 440,
+      "source_match": 98.1,
+      "match": 90.5
+    },
+    {
+      "address": "0x14bbec",
+      "symbol": "_ZN12HangarWindow13highlightItemEP8ListItem",
+      "aliases": [
+        "_ZN12HangarWindow13highlightItemEP8ListItem"
+      ],
+      "weight": 39,
+      "source_match": 100.0,
+      "match": 89.7
+    },
+    {
+      "address": "0x14bc50",
+      "symbol": "_ZN12HangarWindow25autoEquipSecondaryWeaponsEi",
+      "aliases": [
+        "_ZN12HangarWindow25autoEquipSecondaryWeaponsEi"
+      ],
+      "weight": 215,
+      "source_match": 99.2,
+      "match": 95.6
+    },
+    {
+      "address": "0x14be98",
+      "symbol": "_ZN12HangarWindow11OnTouchMoveEii",
+      "aliases": [
+        "_ZN12HangarWindow11OnTouchMoveEii"
+      ],
+      "weight": 138,
+      "source_match": 99.1,
+      "match": 95.7
+    },
+    {
+      "address": "0x14bff0",
+      "symbol": "_ZN12HangarWindow11setSellModeEb",
+      "aliases": [
+        "_ZN12HangarWindow11setSellModeEb"
+      ],
+      "weight": 685,
+      "source_match": 99.4,
+      "match": 86.5
+    },
+    {
+      "address": "0x14c740",
+      "symbol": "_ZN12HangarWindow10OnTouchEndEii",
+      "aliases": [
+        "_ZN12HangarWindow10OnTouchEndEii"
+      ],
+      "weight": 2070,
+      "source_match": 93.4,
+      "match": 20.2
+    },
+    {
+      "address": "0x14de04",
+      "symbol": "_ZN12HangarWindow11demountItemEP4Itemi",
+      "aliases": [
+        "_ZN12HangarWindow11demountItemEP4Itemi"
+      ],
+      "weight": 140,
+      "source_match": 100.0,
+      "match": 98.6
+    },
+    {
+      "address": "0x14df98",
+      "symbol": "_ZN12HangarWindow9mountItemEP4Item",
+      "aliases": [
+        "_ZN12HangarWindow9mountItemEP4Item"
+      ],
+      "weight": 147,
+      "source_match": 100.0,
+      "match": 80.3
+    },
+    {
+      "address": "0x14e118",
+      "symbol": "_ZN12HangarWindow20showCreditsBuyWindowEv",
+      "aliases": [
+        "_ZN12HangarWindow20showCreditsBuyWindowEv"
+      ],
+      "weight": 200,
+      "source_match": 100.0,
+      "match": 100.0
+    },
+    {
+      "address": "0x14e32c",
+      "symbol": "_ZN12HangarWindow21showFreeCreditsWindowEv",
+      "aliases": [
+        "_ZN12HangarWindow21showFreeCreditsWindowEv"
+      ],
+      "weight": 167,
+      "source_match": 99.0,
+      "match": 89.2
+    },
+    {
+      "address": "0x14e4f0",
+      "symbol": "_ZN12HangarWindow12readyToCloseEv",
+      "aliases": [
+        "_ZN12HangarWindow12readyToCloseEv"
+      ],
+      "weight": 35,
+      "source_match": 100.0,
+      "match": 100.0
+    },
+    {
+      "address": "0x14e550",
+      "symbol": "_ZN12HangarWindow24currentItemIsHighlightedEv",
+      "aliases": [
+        "_ZN12HangarWindow24currentItemIsHighlightedEv"
+      ],
+      "weight": 14,
+      "source_match": 100.0,
+      "match": 100.0
+    },
+    {
+      "address": "0x14e570",
+      "symbol": "_ZN12HangarWindow10selectItemEP8ListItem",
+      "aliases": [
+        "_ZN12HangarWindow10selectItemEP8ListItem"
+      ],
+      "weight": 676,
+      "source_match": 98.2,
+      "match": 73.1
+    },
+    {
+      "address": "0x14ecc0",
+      "symbol": "_ZN12HangarWindow11hideMessageEv",
+      "aliases": [
+        "_ZN12HangarWindow11hideMessageEv"
+      ],
+      "weight": 3,
+      "source_match": 100.0,
+      "match": 100.0
+    }
+  ],
+  "unweighted": 98.93333333333334,
+  "weight_sum": 10445,
+  "weighted": 94.584729535663
+}
