@@ -11899,3 +11899,42 @@ Disk housekeeping before focused compiles:20 checked untracked duplicate origina
 Evidence also `_work/create_child_index_record_sweep_20261008.py`, matching ledger, winning source snapshot and5 focused objects; `_work/validate_child_index_20261008.py`. Commit only winning source and report, main untouched, no push/PR/merge.
 
 Additional binding checks confirm native extracted Create/Read bodies equal current retained source, not only success log strings. Shape delta diagnosis (`_work/child_index_shape_delta_20261008.json`) independently measures normalized counts original284/previous282/winner284: one missing frame load is restored (3->2) and one extra frame store appears (1->2), explaining why rounded inventory remains94.7 while opcode/size improve. Final verifier exits0 and authoritative full JSON is `C:/Users/Dima/AppData/Local/Temp/gof2-child-index-validation-20261008/arm/full.json`.
+
+## Continuation: Child-index record count and parameter expansions
+
+Continuation after475df44a, which was verified progress: retained Create98.6 with fresh full/native proof. Rebind current retained proof and inspect actual source and previous child-state/status/scope/shared-loop generators. Two bounded expansions of the new accepted pair, not repeats of standalone child/count records.
+
+Count family: add actual unsigned-short subCount to childPtr/index local record, remove its old standalone declaration, redirect existing2-byte count read and the two existing bound tests to that field. All six field permutations, no count snapshot or word reuse. Parameter family: add actual Engine*engine or Material*mat field to existing pair in all six permutations each; initialize that scalar copy at the existing record declaration after root allocation/material assignment and original engine/path guard, redirect subsequent uses only. Current parameters are not modified; copied values preserve original values. All fields used, no read/call/float/cleanup/child order/ABI/header/helper/export/signature/flags/matcher/denominator/dummy effects/volatile/asm/fixed-register/artificial padding changes. Ordinary record alignment only. Actual Read/Open APIs write only the supplied field span. Source restored using original raw bytes in finally for both sweeps. These are measured compiler hypotheses, not recovered structures.
+
+Initial count-generator assertion expected4 replacements but found3 (read, count>=2, loop bound), before any source mutation or compile. Correct expected count3 and run seven forms once. No running process restarted. All20 compiles/direct measurements completed exit0;20 rows independently rebound to canonical original and rechecked for every metric, instruction count and whole-object hash. Calls100 throughout.
+
+| Family / form | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| count / accepted_control | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| count / childPtr_index_subCount | 98.2 | 93.5 | 97.7 | 100.0 | 99.6 | 292 |
+| count / childPtr_subCount_index | 98.2 | 93.5 | 98.1 | 100.0 | 99.6 | 292 |
+| count / index_childPtr_subCount | 98.1 | 93.3 | 97.9 | 100.0 | 99.3 | 293 |
+| count / index_subCount_childPtr | 98.1 | 93.3 | 97.9 | 100.0 | 99.3 | 293 |
+| count / subCount_childPtr_index | 98.1 | 93.3 | 97.9 | 100.0 | 99.3 | 293 |
+| count / subCount_index_childPtr | 98.1 | 93.3 | 97.9 | 100.0 | 99.3 | 293 |
+| parameter / accepted_control | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| parameter / childPtr_index_engine | 97.0 | 92.2 | 97.5 | 95.8 | 99.3 | 290 |
+| parameter / childPtr_engine_index | 97.0 | 92.2 | 97.5 | 95.8 | 99.3 | 290 |
+| parameter / index_childPtr_engine | 97.1 | 92.1 | 97.7 | 95.8 | 99.6 | 291 |
+| parameter / index_engine_childPtr | 97.0 | 92.1 | 97.4 | 95.8 | 99.6 | 291 |
+| parameter / engine_childPtr_index | 97.2 | 92.6 | 98.2 | 95.8 | 99.3 | 290 |
+| parameter / engine_index_childPtr | 97.1 | 92.6 | 97.9 | 95.8 | 99.3 | 290 |
+| parameter / childPtr_index_mat | 98.0 | 93.3 | 97.2 | 100.0 | 99.3 | 293 |
+| parameter / childPtr_mat_index | 98.0 | 93.3 | 97.2 | 100.0 | 99.3 | 293 |
+| parameter / index_childPtr_mat | 97.1 | 92.1 | 97.7 | 95.8 | 99.6 | 291 |
+| parameter / index_mat_childPtr | 97.0 | 92.1 | 97.4 | 95.8 | 99.6 | 291 |
+| parameter / mat_childPtr_index | 97.2 | 92.6 | 98.2 | 95.8 | 99.3 | 290 |
+| parameter / mat_index_childPtr | 97.1 | 92.6 | 97.9 | 95.8 | 99.3 | 290 |
+
+19 distinct whole-object hashes across20 rows; the two controls are identical to current full Core. Count additions all regress to98.1..98.2 and preserve control100. Parameter additions regress to97.0..98.0; only child-first mat forms preserve control100, all others95.8. Equal rounded rows are not treated as identity. None retained. These specific three-field expansions are exhausted; no compiler ceiling claimed.
+
+Current accepted full/native proof-binding audit passes204 TUs/4619 comparisons/202 unaffected objects, actual linked-exact2079 and byte-exact959 pair sets without loss/gain, source boundaries/signatures/flags and native body/log bindings. This continuation is a read-only rebind of475df44a proof, not another full/native/game/device/Android run. Fixed-three scores98.6/98.5/98.3, original weights291/873/636 and total1800 unchanged. Means98.47/98.45; both99 gates remain unmet, goal active.
+
+New compiled trial evidence stays on C: `C:/Users/Dima/AppData/Local/Temp/gof2-child-index-{count,parameter}-sweep-20261008/results.json` and respective focused base objects. Generators `_work/create_child_index_count_sweep_20261008.py` and `_work/create_child_index_parameter_sweep_20261008.py`.
+
+Before report staging,10 verified untracked duplicate original Core targets removed264120 bytes to provide A-space. Resolved own_work paths, single-object target, canonical hash and workspace/system-temp manifest backup checked before literal deletion; independently rechecked all deleted target absence and surviving reference hash/size. No compiled bases, source snapshots, reports, native fixtures, canonical targets, main or Git storage removed. Manifest `_work/duplicate_child_expansion10_core_target_cleanup_20261008.json`. Source unchanged; report-only commit, no push/PR/merge.
