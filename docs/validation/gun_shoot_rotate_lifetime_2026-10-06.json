@@ -1,0 +1,296 @@
+{
+  "date": "2026-10-06",
+  "parent_commit": "38347263",
+  "accepted": "rotatedLaunch lifetime ends immediately after launch += rotatedLaunch",
+  "native_evidence": "ARM 0x152706..0x15272e: MatrixRotateVector result at sp+48 is consumed by Vector::operator+= then reused by MatrixGetUp.",
+  "source_reads": [
+    "src/engine/math/AEMath.cpp: Vector::operator+=",
+    "src/engine/math/AEMath.cpp: MatrixRotateVector"
+  ],
+  "previous": {
+    "bodies": 26,
+    "original_instructions": 2393,
+    "source_unweighted": 99.69615384615385,
+    "source_weighted": 98.48997074801504,
+    "strict_unweighted": 94.67692307692307,
+    "strict_weighted": 76.1244045131634,
+    "linked_exact": 19,
+    "byte_exact": 13
+  },
+  "current": {
+    "bodies": 26,
+    "original_instructions": 2393,
+    "source_unweighted": 99.69999999999999,
+    "source_weighted": 98.51684078562474,
+    "strict_unweighted": 94.57307692307693,
+    "strict_weighted": 75.39891349770163,
+    "linked_exact": 19,
+    "byte_exact": 13
+  },
+  "trials": {
+    "collision-scatter": {
+      "scoped": {
+        "match": 51.3,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 96.9,
+        "identical_to_canonical": true
+      },
+      "expression": {
+        "match": 51.3,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 96.9,
+        "identical_to_canonical": true
+      },
+      "named-damage": {
+        "match": 51.3,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 96.9,
+        "identical_to_canonical": true
+      },
+      "named-force": {
+        "match": 51.3,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 96.9,
+        "identical_to_canonical": true
+      },
+      "scoped-damage": {
+        "match": 51.3,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 96.9,
+        "identical_to_canonical": true
+      },
+      "expression-force": {
+        "match": 51.3,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 96.9,
+        "identical_to_canonical": true
+      },
+      "all": {
+        "match": 51.3,
+        "n_target": 647,
+        "n_base": 632,
+        "source_match": 96.9,
+        "identical_to_canonical": true
+      }
+    },
+    "shoot-slot": {
+      "positive-block": {
+        "match": 70.5,
+        "n_target": 643,
+        "n_base": 642,
+        "source_match": 98.5,
+        "identical_to_canonical": true
+      },
+      "complement": {
+        "match": 70.5,
+        "n_target": 643,
+        "n_base": 642,
+        "source_match": 98.5,
+        "identical_to_canonical": true
+      },
+      "split-gate": {
+        "match": 70.5,
+        "n_target": 643,
+        "n_base": 642,
+        "source_match": 98.5,
+        "identical_to_canonical": true
+      },
+      "named-gate": {
+        "match": 69.1,
+        "n_target": 643,
+        "n_base": 645,
+        "source_match": 98.4,
+        "identical_to_canonical": false
+      },
+      "conditional-gate": {
+        "match": 70.5,
+        "n_target": 643,
+        "n_base": 642,
+        "source_match": 98.5,
+        "identical_to_canonical": true
+      }
+    },
+    "shoot-lifetime-recheck": {
+      "zero": {
+        "match": 70.0,
+        "n_target": 643,
+        "n_base": 635,
+        "source_match": 98.3,
+        "identical_to_canonical": false,
+        "frame_prefix": [
+          "push {r4, r5, r6, r7, lr}",
+          "add r7, sp, #12",
+          "stmdb sp!, {r7, r8, r9, sl, fp}",
+          "vpush {d8-d11}",
+          "sub sp, #136"
+        ]
+      },
+      "launch": {
+        "match": 68.7,
+        "n_target": 643,
+        "n_base": 643,
+        "source_match": 98.5,
+        "identical_to_canonical": false,
+        "frame_prefix": [
+          "push {r4, r5, r6, r7, lr}",
+          "add r7, sp, #12",
+          "stmdb sp!, {r7, r8, r9, sl, fp}",
+          "vpush {d8-d11}",
+          "sub sp, #144"
+        ]
+      },
+      "rotated": {
+        "match": 67.8,
+        "n_target": 643,
+        "n_base": 637,
+        "source_match": 98.6,
+        "identical_to_canonical": false,
+        "frame_prefix": [
+          "push {r4, r5, r6, r7, lr}",
+          "add r7, sp, #12",
+          "stmdb sp!, {r7, r8, r9, sl, fp}",
+          "vpush {d8-d11}",
+          "sub sp, #144"
+        ]
+      },
+      "normalized": {
+        "match": 70.5,
+        "n_target": 643,
+        "n_base": 642,
+        "source_match": 98.5,
+        "identical_to_canonical": true,
+        "frame_prefix": [
+          "push {r4, r5, r6, r7, lr}",
+          "add r7, sp, #12",
+          "stmdb sp!, {r7, r8, r9, sl, fp}",
+          "vpush {d8-d11}",
+          "sub sp, #144"
+        ]
+      },
+      "zero-launch": {
+        "match": 71.2,
+        "n_target": 643,
+        "n_base": 632,
+        "source_match": 98.3,
+        "identical_to_canonical": false,
+        "frame_prefix": [
+          "push {r4, r5, r6, r7, lr}",
+          "add r7, sp, #12",
+          "stmdb sp!, {r7, r8, r9, sl, fp}",
+          "vpush {d8-d11}",
+          "sub sp, #136"
+        ]
+      },
+      "launch-normalized": {
+        "match": 68.7,
+        "n_target": 643,
+        "n_base": 643,
+        "source_match": 98.5,
+        "identical_to_canonical": false,
+        "frame_prefix": [
+          "push {r4, r5, r6, r7, lr}",
+          "add r7, sp, #12",
+          "stmdb sp!, {r7, r8, r9, sl, fp}",
+          "vpush {d8-d11}",
+          "sub sp, #144"
+        ]
+      },
+      "all": {
+        "match": 71.2,
+        "n_target": 643,
+        "n_base": 632,
+        "source_match": 98.3,
+        "identical_to_canonical": false,
+        "frame_prefix": [
+          "push {r4, r5, r6, r7, lr}",
+          "add r7, sp, #12",
+          "stmdb sp!, {r7, r8, r9, sl, fp}",
+          "vpush {d8-d11}",
+          "sub sp, #136"
+        ]
+      }
+    },
+    "shoot-homing-lifetime": {
+      "target": {
+        "match": 70.5,
+        "n_target": 643,
+        "n_base": 642,
+        "source_match": 98.5
+      },
+      "fallback": {
+        "match": 70.5,
+        "n_target": 643,
+        "n_base": 642,
+        "source_match": 98.5
+      },
+      "both": {
+        "match": 70.5,
+        "n_target": 643,
+        "n_base": 642,
+        "source_match": 98.5
+      },
+      "rotated-target": {
+        "match": 67.8,
+        "n_target": 643,
+        "n_base": 637,
+        "source_match": 98.6
+      },
+      "rotated-fallback": {
+        "match": 67.8,
+        "n_target": 643,
+        "n_base": 637,
+        "source_match": 98.6
+      },
+      "rotated-both": {
+        "match": 67.8,
+        "n_target": 643,
+        "n_base": 637,
+        "source_match": 98.6
+      }
+    }
+  },
+  "input_sha256": {
+    "src\\game\\weapons\\Gun.cpp": "d067f89660918d61fa09aa730081662c772c454cb497f23e3366cf0b260091c5",
+    "src\\game\\weapons\\Gun.h": "400097d0e265812992483f4556cf6cfa63302d60978129c9211aae9bdd904f2c",
+    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "8f98e997b831364add1349edbf910e31f16ef355ad52f1c02d5541b5a3f68ea4",
+    "_work\\gun-current\\verify\\.flags": "b7741d9045ccee7cadcb1e3f3027e57029d127537931305e306e50bc830d174c",
+    "tools\\verify\\asmdiff.py": "ab7cde77854f395ea9c317618085375e1723de580defb8548be4bee94b0c3a5a",
+    "tools\\verify\\test_asmdiff_aliases.py": "d1b55aae56f2caaf79c6feb6604127742e3a9a271e4e6b126a2773c8db14e239"
+  },
+  "checks": {
+    "native_gof2_static_library": "passed",
+    "arm_translation_units": {
+      "compiled": 204,
+      "failed": 0
+    },
+    "host_selected_source_contract_smoke": "passed; includes extracted mount block operand/side effects; not full shootAt or ARM execution",
+    "mount_regression_before_fix_exit": 1,
+    "mount_regression_after_fix_exit": 0,
+    "diff_check": "passed",
+    "full_corpus_wrong_type_gate_exit": 0,
+    "object_newer_than_source_and_header": true,
+    "baseline_full_corpus_wrong_type_gate_exit": 0,
+    "section_local_alias_regressions": "passed: distinct equal-address sections and seven real ARM aliases"
+  },
+  "baseline_exact_losses": {
+    "linked_equal": [],
+    "bytes_equal": []
+  },
+  "previous_checkpoint_exact_losses": {
+    "linked_equal": [],
+    "bytes_equal": []
+  },
+  "scratch_archive": {
+    "archive": "C:\\Users\\Dima\\.codex\\gun-arm-99-scratch-2026-10-06\\inactive-corpus-4160ec86-44c3-4590-ab2f-41ffd0a5f011.zip",
+    "files": 20,
+    "freed_bytes": 27609784,
+    "sha256_verified": true,
+    "archive_sha256": "8f8610545140af7520f0d3bde3cbbb7109fd22bdc547f0c0c804413267ddcdb5"
+  }
+}

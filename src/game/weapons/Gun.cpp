@@ -132,7 +132,7 @@ void Gun::setIndex(int index) {
     this->empDamage = (*static_cast<Array<Item *> *>(Globals::items))[index]->getAttribute(10);
     int g = gunAnimationResources[index];
     if (g >= 0) {
-        unsigned count = this->count;
+        unsigned count = positionArray.size();
         this->geometries = new int[count];
         this->randomFlags = new uint8_t[count];
         for (unsigned i = 0; i < count; i = i + 1) {
@@ -143,7 +143,7 @@ void Gun::setIndex(int index) {
             auto *tf = static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(this->geometries[i]));
             tf->SetAnimationState(AbyssEngine::AnimationMode_0, nullptr);
             delete geom;
-            count = this->count;
+            count = positionArray.size();
         }
     }
 }
@@ -177,10 +177,13 @@ void Gun::setOffset(int a, int b) {
 // Android 2.0.16 @0x152b7c: radial EMP/damage and hit-vector contract.
 void Gun::ignite() {
     using namespace AbyssEngine::AEMath;
-    if (weaponType == ITEM_SORT_NUKE)
-        ++*reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::status) + 0xc8);
-    if (weaponType == ITEM_SORT_EMP_BOMB || weaponType == ITEM_SORT_NUKE)
+    int initialKind = weaponType;
+    if (initialKind == ITEM_SORT_EMP_BOMB) {
         level->manualSecondaryActive = 0;
+    } else if (initialKind == ITEM_SORT_NUKE) {
+        ++*reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::status) + 0xc8);
+        level->manualSecondaryActive = 0;
+    }
     ignited = 1;
     if (enemies) {
         lastHitKIPlayer = 0;
@@ -188,7 +191,7 @@ void Gun::ignite() {
             target = (*enemies)[enemyIndex];
             if (weaponType == ITEM_SORT_EMP_BOMB && target->isAsteroid()) continue;
             if (!target->isActive()) continue;
-            for (unsigned i = 0; i < count; ++i) {
+            for (unsigned i = 0; i < positionArray.size(); ++i) {
                 {
                     Vector projectilePosition = positionArray[i];
                     basePos = projectilePosition;
@@ -205,10 +208,9 @@ void Gun::ignite() {
                     int range = magnitude;
                     float numerator = static_cast<float>(range - distance);
                     float denominator = static_cast<float>(range);
-                    float force;
+                    float force = numerator / denominator;
                     if (weaponType == ITEM_SORT_MINE)
                         force = static_cast<float>(10000 - distance) / 10000.0f;
-                    else force = numerator / denominator;
                     float scale = 1.0f;
                     if (!(force > 1.0f)) {
                         scale = force;
@@ -266,14 +268,14 @@ void Gun::ignite() {
         }
         if (weaponType == ITEM_SORT_EMP_BOMB) lifetimes[0] = -1;
     }
-    if (impact) impact->explode(basePos);
+    if (impact) impact->explode(positionArray[0]);
 }
 
 // Android 2.0.16 Gun::render @0x15395c: camera-facing animation transforms.
 void Gun::render() {
     if (impact) impact->render();
     if (geometries) {
-        for (unsigned i = 0; i < count; ++i) {
+        for (unsigned i = 0; i < positionArray.size(); ++i) {
             auto *transform = static_cast<AbyssEngine::Transform *>(
                 Globals::Canvas->TransformGetTransform(geometries[i]));
             if (transform->animating) {
@@ -341,8 +343,7 @@ Gun::Gun(int kind, int p2, int count, int p4, int p5, int p6, float p7, Vector d
     this->lifetimes = new int[static_cast<unsigned>(count)];
     // ARM @0x15202a saturates a negative signed count to SIZE_MAX before new[].
     this->hitFlags = new uint8_t[count < 0 ? static_cast<size_t>(-1) : static_cast<size_t>(count)];
-    Array<Vector *> *arr = new Array<Vector *>();
-    this->wobbleOffsets = arr;
+    this->wobbleOffsets = new Array<Vector *>();
     ArraySetLength(count, this->positionArray);
     ArraySetLength(count, this->directionArray);
     ArraySetLength(count, this->upArray);
@@ -405,7 +406,7 @@ void Gun::update(int dt) {
     }
     if (impact) impact->update(dt);
     if (geometries) {
-        for (unsigned i = 0; i < count; ++i) {
+        for (unsigned i = 0; i < positionArray.size(); ++i) {
             auto *transform = static_cast<AbyssEngine::Transform *>(
                 Globals::Canvas->TransformGetTransform(geometries[i]));
             transform->Update(dt, false);
@@ -414,7 +415,7 @@ void Gun::update(int dt) {
     if (active && weaponType != ITEM_SORT_SENTRY_GUN) {
         calcCharacterCollision();
         float fdt = static_cast<float>(dt);
-        for (unsigned i = 0; i < count; ++i) {
+        for (unsigned i = 0; i < positionArray.size(); ++i) {
             int remaining = lifetimes[i];
             int threshold = 0;
             if (weaponType == ITEM_SORT_ROCKET || weaponType == ITEM_SORT_MISSILE ||
@@ -455,7 +456,7 @@ void Gun::update(int dt) {
 }
 
 void Gun::translate(const Vector &v) {
-    for (unsigned i = 0; i < this->count; i = i + 1) {
+    for (unsigned i = 0; i < positionArray.size(); i = i + 1) {
         positionArray[i] += v;
     }
 }
@@ -510,7 +511,7 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
     }
     Vector &mountDirection = targetDir;
     bool fired = false;
-    for (unsigned i = 0; i < count; ++i) {
+    for (unsigned i = 0; i < positionArray.size(); ++i) {
         int remaining = lifetimes[i];
         int threshold = 0;
         if (weaponType == ITEM_SORT_ROCKET || weaponType == ITEM_SORT_MISSILE ||
@@ -558,8 +559,10 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         } else {
             launch = MatrixGetDir(m);
         }
-        Vector rotatedLaunch = MatrixRotateVector(m, velocity);
-        launch += rotatedLaunch;
+        {
+            Vector rotatedLaunch = MatrixRotateVector(m, velocity);
+            launch += rotatedLaunch;
+        }
         directionArray[i] = launch;
         upArray[i] = MatrixGetUp(m);
         float error = errorMagnitudePercentage;
@@ -575,7 +578,9 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         directionArray[i] *= pitchRate;
         lifetimes[i] = weaponType == ITEM_SORT_SENTRY_GUN ? 0 : initialLifetime;
         unsigned keepAmmo = 1;
-        if (!friendGun && equipment && ammoCount >= 1 && equipment->getType() == 1) {
+        // Guide layout of the native ammo check (0x15289a..0x1528c6),
+        // preserving short-circuit reads/calls; runtime frequency is unmeasured.
+        if (__builtin_expect(!friendGun && equipment && ammoCount >= 1 && equipment->getType() == 1, 1)) {
             keepAmmo = false;
             if (itemIndex == 179)
                 *reinterpret_cast<int *>(reinterpret_cast<char *>(Globals::status) + 0x144) = 0;
@@ -583,7 +588,10 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         delayActive = 1;
         if (playerGun && hitSmall)
             reinterpret_cast<TargetFollowCamera *>(static_cast<intptr_t>(level->getPlayer()->getTargetFollowCamera()))->hitSmall();
-        if (!((weaponType == ITEM_SORT_CLUSTER_MISSILE) | keepAmmo)) {
+        // Equivalent zero-test for the native CLZ/LSR flag; source form is inferred.
+        unsigned clusterDifference = static_cast<unsigned>(weaponType) - 40u;
+        unsigned cluster = 1u ^ ((clusterDifference | (0u - clusterDifference)) >> 31);
+        if (!(cluster | keepAmmo)) {
             --ammoCount;
             goto spendAmmo;
         }
@@ -610,7 +618,10 @@ void Gun::calcCharacterCollision() {
     int kind = weaponType;
     unsigned radial = (static_cast<unsigned>(kind) - 6u) < 2 || kind == 42 || kind == 34;
     unsigned mine = kind == 11;
-    unsigned scatter = kind == 25;
+    // The low sentinel defines CLZ for zero difference; native zero-test syntax is inferred.
+    unsigned scatterDifference = static_cast<unsigned>(kind) - 25u;
+    unsigned long long scatterWord = (static_cast<unsigned long long>(scatterDifference) << 32) | 0x80000000ULL;
+    unsigned scatter = static_cast<unsigned>(__builtin_clzll(scatterWord)) >> 5;
     unsigned particle = radial || (static_cast<unsigned>(kind) - 4u) < 2 || kind == 40;
     unsigned detonate = radial | mine;
     lastHitKIPlayer = 0;
@@ -619,7 +630,7 @@ void Gun::calcCharacterCollision() {
         if (mine && (!enemy->enemyFlagsLo ||
             (enemy->getKIPlayer() && enemy->getKIPlayer()->field_0x41))) continue;
         if (!enemy->isActive() || enemy->getHitpoints() < 1) continue;
-        for (unsigned i = 0; i < count; ++i) {
+        for (unsigned i = 0; i < positionArray.size(); ++i) {
             Vector position = positionArray[i];
             Vector speed = directionArray[i];
             Vector center = MatrixGetPosition(enemy->transformMatrix);
@@ -656,7 +667,9 @@ void Gun::calcCharacterCollision() {
                 if (rejectBox | !(z < extent) | !(z > negativeExtent)) continue;
             }
 collided:
-            if (enemy->isAsteroid()) {
+            // Layout hint follows the native asteroid fall-through at 0x15318c;
+            // it does not claim a measured runtime branch frequency.
+            if (__builtin_expect(enemy->isAsteroid(), 1)) {
                 if (mine) continue;
                 enemy->setBombForce(0.0f);
                 if (particle) {

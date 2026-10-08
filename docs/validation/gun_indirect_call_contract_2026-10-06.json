@@ -1,0 +1,223 @@
+{
+  "date": "2026-10-06",
+  "parent_commit": "debabdb5dafec01f8db65000db14407af4bbd29a",
+  "decision": "Resolve the original 24 register-indirect calls in the three largest Gun methods into 22 GOT-mediated calls and two virtual-slot dispatches. Reject all three ignite initial-kind controls: no fixed source-shape gain.",
+  "input_sha256": {
+    "src\\game\\weapons\\Gun.cpp": "5ac9d820f9796546085e04f4aa13b343daa38ed3f706a05c1f1ab407cbab7982",
+    "src\\game\\weapons\\Gun.h": "400097d0e265812992483f4556cf6cfa63302d60978129c9211aae9bdd904f2c",
+    "_work\\gun-current\\verify\\base\\game\\weapons\\Gun.o": "8f98e997b831364add1349edbf910e31f16ef355ad52f1c02d5541b5a3f68ea4",
+    "_work\\gun-current\\verify\\.flags": "b7741d9045ccee7cadcb1e3f3027e57029d127537931305e306e50bc830d174c",
+    "tools\\verify\\asmdiff.py": "ab7cde77854f395ea9c317618085375e1723de580defb8548be4bee94b0c3a5a",
+    "tools\\verify\\test_asmdiff_aliases.py": "d1b55aae56f2caaf79c6feb6604127742e3a9a271e4e6b126a2773c8db14e239"
+  },
+  "original_binary_sha256": "6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58",
+  "reproducibility_sha256": {
+    "resolve_gun_got_calls.py": "8aff366bfee813f2b3fa9b069a75d0ab9c5d31413d92a40612a2aca2585e3b6d",
+    "gun-got-call-resolution.json": "0347cbec4ce86ed9d62c2428d6ce4153790e370639a67258cb7020f917ff84e6",
+    "ignite_initial_kind_trial.py": "d7f9078c4d60c6777e31ce5f45ac97a8c0e6f60d1479c5c8a1dca6ef34eaf95c",
+    "ignite-initial-results.json": "977dcf683d23b186e87a884325c021fd927a24952ca1b5107fdf0aee809a9dc4"
+  },
+  "resolution_method": "Each manually traced PC-relative pool word plus the Thumb ADD-PC address+4 resolves a GOT slot. The ELF32 dynamic relocation at that exact slot supplies the destination symbol. GOT symbols are present in the canonical object. Call-site register reuse is verified against native disassembly; this is a targeted trace, not general symbolic execution.",
+  "got_groups": [
+    {
+      "literal_address": 1386500,
+      "literal_word": 777178,
+      "add_pc_address": 1386110,
+      "got_slot": 2163292,
+      "relocation": {
+        "symbol": "_ZN11AbyssEngine8AERandom7nextIntEi",
+        "type": 21
+      },
+      "call_sites": [
+        1386120,
+        1386154,
+        1386188
+      ]
+    },
+    {
+      "literal_address": 1386508,
+      "literal_word": 776962,
+      "add_pc_address": 1386326,
+      "got_slot": 2163292,
+      "relocation": {
+        "symbol": "_ZN11AbyssEngine8AERandom7nextIntEi",
+        "type": 21
+      },
+      "call_sites": [
+        1386338,
+        1386390,
+        1386438
+      ]
+    },
+    {
+      "literal_address": 1387276,
+      "literal_word": 775370,
+      "add_pc_address": 1386954,
+      "got_slot": 2162328,
+      "relocation": {
+        "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_",
+        "type": 21
+      },
+      "call_sites": [
+        1386962,
+        1386990,
+        1387012
+      ]
+    },
+    {
+      "literal_address": 1387280,
+      "literal_word": 776312,
+      "add_pc_address": 1387064,
+      "got_slot": 2163380,
+      "relocation": {
+        "symbol": "_ZN5Level9getPlayerEv",
+        "type": 21
+      },
+      "call_sites": [
+        1387068,
+        1387104,
+        1387120,
+        1387164
+      ]
+    },
+    {
+      "literal_address": 1387284,
+      "literal_word": 777016,
+      "add_pc_address": 1387076,
+      "got_slot": 2164096,
+      "relocation": {
+        "symbol": "_ZN10AEGeometry12getDirectionEv",
+        "type": 21
+      },
+      "call_sites": [
+        1387084,
+        1387128,
+        1387172
+      ]
+    },
+    {
+      "literal_address": 1387288,
+      "literal_word": 775234,
+      "add_pc_address": 1387090,
+      "got_slot": 2162328,
+      "relocation": {
+        "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_",
+        "type": 21
+      },
+      "call_sites": [
+        1387100,
+        1387160,
+        1387178
+      ]
+    },
+    {
+      "literal_address": 1388428,
+      "literal_word": 774108,
+      "add_pc_address": 1388216,
+      "got_slot": 2162328,
+      "relocation": {
+        "symbol": "_ZN11AbyssEngine6AEMath6VectoraSERKS1_",
+        "type": 21
+      },
+      "call_sites": [
+        1388222,
+        1388258,
+        1388272
+      ]
+    }
+  ],
+  "virtual_slots": [
+    {
+      "original_call": "0x153188",
+      "method": "KIPlayer::outerCollide(const Vector&)",
+      "vptr_offset": 0,
+      "slot_offset": 64,
+      "canonical_call": "0x1560",
+      "canonical_slot_offset": 64,
+      "original_sequence": "0x153182 ldr r1,[r0]; 0x153184 ldr r2,[r1,#64]; 0x153188 blx r2"
+    },
+    {
+      "original_call": "0x152e7e",
+      "method": "KIPlayer::initPush(const Vector&,int)",
+      "vptr_offset": 0,
+      "slot_offset": 44,
+      "canonical_call": "0x560",
+      "canonical_slot_offset": 44,
+      "original_sequence": "0x152e74 ldr r1,[r0]; 0x152e7a ldr r3,[r1,#44]; 0x152e7e blx r3"
+    }
+  ],
+  "referenced_header_sha256": {
+    "src/game/ship/KIPlayer.h": "3012d024941f9c09c5278d9eeb8a8358fcd0a4be93b50abd829255abff4200c5",
+    "src/engine/core/AERandom.h": "3b981fb37c2041a4108855a3327b4bb69a27b1b8b096734c3934768c1e2be5e2",
+    "src/engine/math/Vector.h": "bd8c8f8e38d9ec6b333b93292a3241385571287049384d989faf8745d0c690e4",
+    "src/engine/render/AEGeometry.h": "034508f033e498c1d0f2e58fe7dd2cb5058f611b0391133d733d604f2c383339"
+  },
+  "initial_kind_evidence": "Original 0x152b94 loads Gun+0x5c once, then compares EMP=6 at 0x152b96 and NUKE=7 at 0x152b9a; NUKE increments status+0xc8 before the common level+0x69 zero store. Current two-condition source may reload kind after the counter write. This difference was measured without changing scoring.",
+  "initial_kind_controls": {
+    "cached-kind": {
+      "symbol": "_ZN3Gun6igniteEv",
+      "match": 96.4,
+      "bytes_equal": false,
+      "linked_equal": false,
+      "n_target": 351,
+      "n_base": 350,
+      "source_match": 98.9,
+      "instruction_inventory_match": 97.5,
+      "opcode_inventory_match": 97.8,
+      "control_flow_match": 99.3,
+      "ordered_control_flow_match": 96.3,
+      "control_inventory_match": 99.3,
+      "call_count_match": 100.0,
+      "size_match": 99.7,
+      "body_identical_to_canonical": false,
+      "other_changed_bodies": [],
+      "source_sha256": "62ba8425c64faff8ae2da63dd296a907c53cf5aae5d986eb45e809a47f0517a6",
+      "object_sha256": "359e9785859eff8bb89e70bfa402be3700bf78e1ef3daaa718ad0ac1150ac911"
+    },
+    "native-branches": {
+      "symbol": "_ZN3Gun6igniteEv",
+      "match": 97.0,
+      "bytes_equal": false,
+      "linked_equal": false,
+      "n_target": 351,
+      "n_base": 348,
+      "source_match": 98.7,
+      "instruction_inventory_match": 97.8,
+      "opcode_inventory_match": 97.8,
+      "control_flow_match": 98.5,
+      "ordered_control_flow_match": 98.5,
+      "control_inventory_match": 98.5,
+      "call_count_match": 100.0,
+      "size_match": 99.1,
+      "body_identical_to_canonical": false,
+      "other_changed_bodies": [],
+      "source_sha256": "37d519c0ad3964d161b6806c80253cc774c5764a72f3601cd723d75c21061f64",
+      "object_sha256": "ca82130d1c7877587713cefa69bf5a6e7247553924b91709ae57662409e1ca13"
+    },
+    "structured-branches": {
+      "symbol": "_ZN3Gun6igniteEv",
+      "match": 97.0,
+      "bytes_equal": false,
+      "linked_equal": false,
+      "n_target": 351,
+      "n_base": 348,
+      "source_match": 98.7,
+      "instruction_inventory_match": 97.8,
+      "opcode_inventory_match": 97.8,
+      "control_flow_match": 98.5,
+      "ordered_control_flow_match": 98.5,
+      "control_inventory_match": 98.5,
+      "call_count_match": 100.0,
+      "size_match": 99.1,
+      "body_identical_to_canonical": false,
+      "other_changed_bodies": [],
+      "source_sha256": "de43bbc6cc298e507629afb95150329baa8f8ce5af18c3cae830a7764f549eb8",
+      "object_sha256": "824e9d41b9a7ed90048186ec736301fc5bddabe6385f4d7c49f740dda2672ef8"
+    }
+  },
+  "limits": "GOT relocations identify referenced symbols; runtime interposition is not executed. Matching virtual slot offsets do not prove a linked concrete vtable or dynamic target. No game executable/ARM runtime test is claimed. The cached initial-kind form has no score gain; native ordered branch forms lower source-shape and were not integrated.",
+  "verification_scope": "Original ELF slots and instruction traces inspected; canonical slot load instructions and referenced object symbols inspected. All authoritative input hashes remain unchanged; no native/ARM TU batch/full-corpus rerun.",
+  "source_unweighted": 99.7,
+  "source_weighted": 98.51684078562474,
+  "goal_achieved": false
+}
