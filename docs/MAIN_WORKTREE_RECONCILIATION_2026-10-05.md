@@ -69,3 +69,21 @@ the new full report is `integrated_latest_20261008.json` there. The native
 static library build artifact was also preserved there. No source or original
 binary was moved. The independent `main` working tree and remote remain
 untouched. Native gameplay/runtime integration remains untested.
+
+## HangarWindow, MGame and Radar merge (2026-10-08)
+
+Merged tips `f3dfa9ff`, `fefcc3be` and `5c23e165` without source conflicts.
+HangarWindow and MGame pass both fixed unique-body 98% source-shape means;
+Radar remains 0.023253 percentage points below the weighted gate and is not
+reported as complete. The integrated native library builds, all 206 ARM units
+compile and the verifier suite passes (36 tests, one optional skip).
+
+The full integrated report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_three_20261008.json`.
+It compares 4,323/4,524 original functions across 4,689 rows, with 201 absent,
+zero wrong-type misses, zero skipped units and 116 extra symbols. Corpus means:
+91.76% source-shape, 79.65% strict. Exact pairs: 2,301 linked, 997 byte;
+both pair sets have zero losses and zero gains relative to the previous
+integrated report. The new row is another occurrence of an existing original
+`ArrayRemove<Ship*>` symbol; unique original coverage is unchanged. No full
+native game/runtime pass was performed. `main` and GitHub remain untouched.

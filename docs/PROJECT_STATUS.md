@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-08 (latest branch-tip integration; older subsystem
+Last reviewed: 2026-10-08 (HangarWindow/MGame/Radar integration; older subsystem
 snapshots retain their dates)
+
+## HangarWindow, MGame and Radar integration (2026-10-08)
+
+The three fixed-family branches are merged into
+`codex/integrate-main-working-20261005`. HangarWindow reaches 99.34%
+unweighted / 98.007% original-instruction-weighted source-shape on 30 unique
+bodies; MGame reaches 98.874% / 98.041% on 35 unique bodies. Radar improves
+to 99.629% / 97.977% on 17 unique bodies and **does not pass** the weighted
+98% gate. Native `gof2`, all 206 ARM units and verifier tests pass. The full
+corpus compares **4,323/4,524** originals across 4,689 rows, with zero
+wrong-type misses and zero skipped units. Its mean source-shape is **91.76%**,
+strict fuzzy **79.65%**, linked-exact **2,301** and byte-exact **997**.
+Compared by (unit, symbol) with the preceding integrated report, no exact
+pair is lost; one extra comparison row comes from a restored native
+`ArrayRemove<Ship*>` call. These are source/assembly comparisons, not a
+playable-game completion percentage. See the [integration evidence](MAIN_WORKTREE_RECONCILIATION_2026-10-05.md)
+and the family notes for [HangarWindow](HANGARWINDOW_UNIQUE_ARM_98_2026-10-08.md),
+[MGame](MGAME_ARM_SOURCE_SHAPE_2026-10-08.md) and
+[Radar](RADAR_ARM_98_UNIQUE_BODY_GATE_2026-10-08.md).
 
 ## Latest local integration (2026-10-08)
 
