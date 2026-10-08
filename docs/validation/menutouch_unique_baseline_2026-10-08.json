@@ -1,0 +1,521 @@
+{
+  "starting_commit": "20bf2679a88ada953d3b393bc42a0aa54a557264",
+  "unit": "game/ui/MenuTouchWindow",
+  "grouping": "original even ARM address; constructor/destructor aliases once",
+  "weights": "frozen original n_target before edits; unchanged canonical formula",
+  "unique_bodies": 29,
+  "symbols": 31,
+  "original_instructions": 15353,
+  "unweighted": 84.02917865454857,
+  "weighted": 59.4359999165713,
+  "unweighted_fraction": "3048012071992297062619201749569634342966197342905378849508215291690773167/36273257942017329617306973781625502976851808029357631526885654523147942",
+  "weighted_fraction": "7398654125855428561949105821259218617679802595119131584834619838448949/124481023895294417792502162807263073883618383713251375470718401174726",
+  "linked_exact": 7,
+  "byte_exact": 6,
+  "functions": [
+    {
+      "address": "0x12299c",
+      "symbol": "_ZN15MenuTouchWindowC1Ei",
+      "aliases": [
+        "_ZN15MenuTouchWindowC1Ei",
+        "_ZN15MenuTouchWindowC2Ei"
+      ],
+      "weight": 3316,
+      "source_match_report": 57.6,
+      "source_match_raw": 57.55759150093514,
+      "source_match_fraction": "1272262960/22104173",
+      "match": 11.0,
+      "n_base": 1731,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "6b320d6a583129abfb4ed8fa3592e41af9104eba98c918bab5fe5977c0a61f0d"
+    },
+    {
+      "address": "0x124f1c",
+      "symbol": "_ZN15MenuTouchWindow18loadPreviewRecordsEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow18loadPreviewRecordsEv"
+      ],
+      "weight": 61,
+      "source_match_report": 84.9,
+      "source_match_raw": 84.94849569750644,
+      "source_match_fraction": "1352465/15921",
+      "match": 60.3,
+      "n_base": 55,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "e5f28cf33664ea5512d2dcd8ba62a8e26581b8611d05a999f3a02a1f0be09924"
+    },
+    {
+      "address": "0x124fd8",
+      "symbol": "_ZN15MenuTouchWindow9addButtonEiN11AbyssEngine6StringEiP5ArrayIP11TouchButtonEi",
+      "aliases": [
+        "_ZN15MenuTouchWindow9addButtonEiN11AbyssEngine6StringEiP5ArrayIP11TouchButtonEi"
+      ],
+      "weight": 110,
+      "source_match_report": 88.1,
+      "source_match_raw": 88.1492281303602,
+      "source_match_fraction": "51391/583",
+      "match": 59.4,
+      "n_base": 102,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "1e345812f3217412ae672e42dc3ddb296319f6dffd95f1d72f223b3ecec6341d"
+    },
+    {
+      "address": "0x125170",
+      "symbol": "_ZN15MenuTouchWindowD1Ev",
+      "aliases": [
+        "_ZN15MenuTouchWindowD1Ev",
+        "_ZN15MenuTouchWindowD2Ev"
+      ],
+      "weight": 161,
+      "source_match_report": 78.5,
+      "source_match_raw": 78.47105068844199,
+      "source_match_fraction": "1806639/23023",
+      "match": 34.6,
+      "n_base": 151,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "78a85c6e8912e40b95f231b2d359a0864afe388bbc0c7260f79e37ec909f317b"
+    },
+    {
+      "address": "0x125406",
+      "symbol": "_ZN15MenuTouchWindow17isInMissionScreenEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow17isInMissionScreenEv"
+      ],
+      "weight": 5,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 5,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "original_instruction_sha256": "7e789386305095cbc14cabb091ec622e1d4e726917ed9186975c9840fde78e9e"
+    },
+    {
+      "address": "0x125414",
+      "symbol": "_ZN15MenuTouchWindow15setCutsceneModeEb",
+      "aliases": [
+        "_ZN15MenuTouchWindow15setCutsceneModeEb"
+      ],
+      "weight": 23,
+      "source_match_report": 77.1,
+      "source_match_raw": 77.0800627943485,
+      "source_match_fraction": "49100/637",
+      "match": 49.0,
+      "n_base": 26,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "fd411af2f1a129108566f31b8a4c17a238229ad38476307c5b16622d02e47493"
+    },
+    {
+      "address": "0x125454",
+      "symbol": "_ZN15MenuTouchWindow19createRecordButtonsEb",
+      "aliases": [
+        "_ZN15MenuTouchWindow19createRecordButtonsEb"
+      ],
+      "weight": 573,
+      "source_match_report": 89.5,
+      "source_match_raw": 89.51147098597198,
+      "source_match_fraction": "32684711545/365145508",
+      "match": 43.6,
+      "n_base": 555,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "f5faa383a77293a7daa64f5b16f52e642e3cd7227a6e9a1d4a0b5d0b23676135"
+    },
+    {
+      "address": "0x125b28",
+      "symbol": "_ZN15MenuTouchWindow8saveGameEi",
+      "aliases": [
+        "_ZN15MenuTouchWindow8saveGameEi"
+      ],
+      "weight": 62,
+      "source_match_report": 91.8,
+      "source_match_raw": 91.84014163347132,
+      "source_match_fraction": "3527488/38409",
+      "match": 72.9,
+      "n_base": 56,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "a0e11e81ed9ff8b056a1b460ddd3ddd8128da2d31602c992ca72534c944de705"
+    },
+    {
+      "address": "0x125be0",
+      "symbol": "_ZN15MenuTouchWindow20showSupernovaMessageEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow20showSupernovaMessageEv"
+      ],
+      "weight": 26,
+      "source_match_report": 88.3,
+      "source_match_raw": 88.26542161856254,
+      "source_match_fraction": "155965/1767",
+      "match": 91.2,
+      "n_base": 31,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "37793c10b09a15f0982a82380ea360543fe3255587494447161108a1bd3c20ff"
+    },
+    {
+      "address": "0x125c2c",
+      "symbol": "_ZN15MenuTouchWindow8loadGameEi",
+      "aliases": [
+        "_ZN15MenuTouchWindow8loadGameEi"
+      ],
+      "weight": 118,
+      "source_match_report": 90.3,
+      "source_match_raw": 90.28438460568158,
+      "source_match_fraction": "13599266/150627",
+      "match": 59.8,
+      "n_base": 106,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "9213c7b8bdb8abe26954db44b27b8ea8746a4ae3c004ef632a55b593adadb911"
+    },
+    {
+      "address": "0x125d74",
+      "symbol": "_ZN15MenuTouchWindow25getRelativeScrollStartPosEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow25getRelativeScrollStartPosEv"
+      ],
+      "weight": 14,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 14,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "original_instruction_sha256": "359a2dea14e29ff5f73803d6a2973464f25a57ccc8c5efaaadf3cdb1daaa767c"
+    },
+    {
+      "address": "0x125da4",
+      "symbol": "_ZN15MenuTouchWindow23getRelativeScrollHeightEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow23getRelativeScrollHeightEv"
+      ],
+      "weight": 27,
+      "source_match_report": 92.6,
+      "source_match_raw": 92.58445258445258,
+      "source_match_fraction": "227480/2457",
+      "match": 57.7,
+      "n_base": 25,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "7e34d7be92aa9fa8f33046c0e70decd86492be87f48befcf015e861efdd609f6"
+    },
+    {
+      "address": "0x125df8",
+      "symbol": "_ZN15MenuTouchWindow16drawLoadSaveMenuEb",
+      "aliases": [
+        "_ZN15MenuTouchWindow16drawLoadSaveMenuEb"
+      ],
+      "weight": 435,
+      "source_match_report": 76.9,
+      "source_match_raw": 76.85291930514009,
+      "source_match_fraction": "566972575/7377372",
+      "match": 24.6,
+      "n_base": 393,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "4d0d1203638cb260e539108d5c8ef8ad59423e7d2db517a66b5fe2546f0b4706"
+    },
+    {
+      "address": "0x12629c",
+      "symbol": "_ZN15MenuTouchWindow4drawEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow4drawEv"
+      ],
+      "weight": 4672,
+      "source_match_report": 20.8,
+      "source_match_raw": 20.804092942245013,
+      "source_match_fraction": "2135659577672/102655741041",
+      "match": 6.1,
+      "n_base": 614,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "560bb0419e85b6824ed7d9634a2ff3a8a025c917ae8ebeb5e6b3daf0f9bf33a4"
+    },
+    {
+      "address": "0x129598",
+      "symbol": "_ZN15MenuTouchWindow6updateEi",
+      "aliases": [
+        "_ZN15MenuTouchWindow6updateEi"
+      ],
+      "weight": 557,
+      "source_match_report": 88.9,
+      "source_match_raw": 88.85499035203208,
+      "source_match_fraction": "342030178020/3849307469",
+      "match": 56.6,
+      "n_base": 504,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "20647f13372f25cb81e8f6526a5ab714df836dbb8698b6f046979059eebd8013"
+    },
+    {
+      "address": "0x129bd4",
+      "symbol": "_ZN15MenuTouchWindow12OnTouchBeginEiiPv",
+      "aliases": [
+        "_ZN15MenuTouchWindow12OnTouchBeginEiiPv"
+      ],
+      "weight": 716,
+      "source_match_report": 94.0,
+      "source_match_raw": 94.01556893926272,
+      "source_match_fraction": "2225917405/23676051",
+      "match": 30.5,
+      "n_base": 676,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "462a2a5bb72c357a577d2a657d4425b565bfe32fc1275bb38a28dddb7b3842d4"
+    },
+    {
+      "address": "0x12a33c",
+      "symbol": "_ZN15MenuTouchWindow11OnTouchMoveEiiPv",
+      "aliases": [
+        "_ZN15MenuTouchWindow11OnTouchMoveEiiPv"
+      ],
+      "weight": 706,
+      "source_match_report": 86.1,
+      "source_match_raw": 86.11954106231389,
+      "source_match_fraction": "14359656760/166740981",
+      "match": 22.5,
+      "n_base": 565,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "698d0e90db5eb0c9a7d9d80b2a08e6cb932ba09480a5c562cd17cf4b24ebe98a"
+    },
+    {
+      "address": "0x12aabc",
+      "symbol": "_ZN15MenuTouchWindow10OnTouchEndEiiPv",
+      "aliases": [
+        "_ZN15MenuTouchWindow10OnTouchEndEiiPv"
+      ],
+      "weight": 2866,
+      "source_match_report": 88.3,
+      "source_match_raw": 88.33956967628241,
+      "source_match_fraction": "1081731661305/12245154298",
+      "match": 13.5,
+      "n_base": 2860,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "1ac3bb5d0cf5e7be671ccc9f7fd6aeb00ef4914a96a12de1c374d464752d8d2e"
+    },
+    {
+      "address": "0x12ca80",
+      "symbol": "_ZN15MenuTouchWindow13startValkyrieEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow13startValkyrieEv"
+      ],
+      "weight": 231,
+      "source_match_report": 89.0,
+      "source_match_raw": 88.99012720713878,
+      "source_match_fraction": "468711/5267",
+      "match": 53.7,
+      "n_base": 205,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "9194e9e92e9b826cd0a8875d2456037972803ac2e29d8e0d45b39b3c106778cb"
+    },
+    {
+      "address": "0x12cce4",
+      "symbol": "_ZN15MenuTouchWindow14startSupernovaEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow14startSupernovaEv"
+      ],
+      "weight": 271,
+      "source_match_report": 91.3,
+      "source_match_raw": 91.32874168905053,
+      "source_match_fraction": "112101190/1227447",
+      "match": 45.8,
+      "n_base": 240,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "080df7d1e4babc07f01bcb045c9469ee787b60a750a5f78b098355993531c8a9"
+    },
+    {
+      "address": "0x12cf84",
+      "symbol": "_ZN15MenuTouchWindow9startGOF2Ev",
+      "aliases": [
+        "_ZN15MenuTouchWindow9startGOF2Ev"
+      ],
+      "weight": 37,
+      "source_match_report": 84.2,
+      "source_match_raw": 84.18135526831179,
+      "source_match_fraction": "214915/2553",
+      "match": 58.0,
+      "n_base": 32,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "4dc8cb585fcfc8f4bf664bef55d499fb4615eca0ec624c8110cbaccbc338f535"
+    },
+    {
+      "address": "0x12cfe4",
+      "symbol": "_ZN15MenuTouchWindow8render3DEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow8render3DEv"
+      ],
+      "weight": 8,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 8,
+      "linked_equal": true,
+      "bytes_equal": false,
+      "original_instruction_sha256": "1b71cb9e944c69825fc50f4d21ed56fe3dba3bed0941801a677cf58261050592"
+    },
+    {
+      "address": "0x12cffa",
+      "symbol": "_ZN15MenuTouchWindow16isShowingMessageEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow16isShowingMessageEv"
+      ],
+      "weight": 2,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 2,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "original_instruction_sha256": "f68235de022220dfeb5123975774caf76b61dd94f9a22bf23cd370822d9d3b1d"
+    },
+    {
+      "address": "0x12d000",
+      "symbol": "_ZN15MenuTouchWindow15inCinematicModeEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow15inCinematicModeEv"
+      ],
+      "weight": 5,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 5,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "original_instruction_sha256": "6593c6e2f6dba56fd0d56138f0fefb8e4a0c36276e32ee695d9e7388c7895649"
+    },
+    {
+      "address": "0x12d00e",
+      "symbol": "_ZN15MenuTouchWindow18isMakingScreenshotEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow18isMakingScreenshotEv"
+      ],
+      "weight": 6,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 6,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "original_instruction_sha256": "b8442feda9fcfba3960356e8f0d5e7ea9015b9ace732b2a4646f1378b6bf6cda"
+    },
+    {
+      "address": "0x12d01e",
+      "symbol": "_ZN15MenuTouchWindow11hideMessageEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow11hideMessageEv"
+      ],
+      "weight": 3,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 3,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "original_instruction_sha256": "cf4c8dc02f1ad29f4b31b4d24172c0ad87909a07ed1c9e09fec98e08accdb6fb"
+    },
+    {
+      "address": "0x12d026",
+      "symbol": "_ZN15MenuTouchWindow20setSkipButtonVisibleEb",
+      "aliases": [
+        "_ZN15MenuTouchWindow20setSkipButtonVisibleEb"
+      ],
+      "weight": 25,
+      "source_match_report": 80.4,
+      "source_match_raw": 80.35351441011818,
+      "source_match_fraction": "387545/4823",
+      "match": 56.6,
+      "n_base": 28,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "4004d0743e486250a210e6c23617366fce472c7d1c390ff9d5adeff0e67d6235"
+    },
+    {
+      "address": "0x12d064",
+      "symbol": "_ZN15MenuTouchWindow11callDlcMenuEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow11callDlcMenuEv"
+      ],
+      "weight": 36,
+      "source_match_report": 97.3,
+      "source_match_raw": 97.26767863754165,
+      "source_match_fraction": "262720/2701",
+      "match": 84.9,
+      "n_base": 37,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "a0bd30d10e81ec2d8e14f3eea5985d0e6f59badb9482db5af3e2ba6278d954c5"
+    },
+    {
+      "address": "0x12d0cc",
+      "symbol": "_ZN15MenuTouchWindow23startSupernovaChallengeEv",
+      "aliases": [
+        "_ZN15MenuTouchWindow23startSupernovaChallengeEv"
+      ],
+      "weight": 281,
+      "source_match_report": 1.0,
+      "source_match_raw": 1.0457812527391617,
+      "source_match_fraction": "119309/114086",
+      "match": 0.7,
+      "n_base": 1,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "original_instruction_sha256": "e530ee1722680ef142e45ad98e2ea6454953b606046f32d3232b636437387596"
+    }
+  ],
+  "full_corpus_gate": {
+    "baseline": {
+      "count": 4689,
+      "compared_unique": 4323,
+      "original_functions": 4524,
+      "missing": 201,
+      "missing_wrong_type": 0,
+      "skipped": 0,
+      "avg_match": 79.73,
+      "avg_source_match": 91.8,
+      "linked_exact": 2305,
+      "byte_exact": 997
+    },
+    "final": {
+      "count": 4689,
+      "compared_unique": 4323,
+      "original_functions": 4524,
+      "missing": 201,
+      "missing_wrong_type": 0,
+      "skipped": 0,
+      "avg_match": 79.76,
+      "avg_source_match": 91.82,
+      "linked_exact": 2305,
+      "byte_exact": 997
+    },
+    "rows_lost": [],
+    "rows_gained": [],
+    "linked_equal_losses": [],
+    "linked_equal_gains": [],
+    "bytes_equal_losses": [],
+    "bytes_equal_gains": [],
+    "report_sha256": {
+      "baseline-full-frozen.json": "4d3e5b2a7d703547d12206ff1cb36301bbd48be15b13c34651317512a8478c77",
+      "final-full.json": "7e54ba78d85fcbb2f54deb43ed1c7c29f6c03f2c337c14c8ed9c0d8d0867162e"
+    }
+  },
+  "focused_report_sha256": "9afd641950d0b5ebcb49482bb666fca9970b9b9b9593b2a78e0b1b55d0e025de",
+  "object_sha256": "abb25a5c0367d9c1d0b55afd75dfbac32611e798cb610891da9e0ab239d8cc4b"
+}
