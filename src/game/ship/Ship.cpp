@@ -4,50 +4,18 @@
 #include "game/mission/Status.h"
 #include "game/world/SolarSystem.h"
 
-// These untyped ship-data / shop globals are referenced only from this
-// translation unit, so they are kept as file-local definitions (parity loss
-// accepted: the original linked them as shared symbols).
-static int **gShipDataRoot = nullptr;
-static int *gRaceTable      = nullptr;
-static int *gDifficultyPtr  = nullptr;
-static int *gShopRoot       = nullptr;
+#include "game/core/Globals.h"
+#include <cstring>
 
 namespace {
 
-// Named models for the untyped ship-data / shop globals. These mirror the exact
-// byte offsets observed in the original 32-bit binary (see Ship::adjustPrice /
-// Ship::priceDecline / Ship::getFirstEquipmentOfSort in the reference build).
-
-// A single ship-data record. Only the fields touched here are named; the rest of
-// the record is left as opaque storage so the offsets stay byte-faithful.
-struct ShipDataEntry {
-    int category;            // 0x00 : race/category index into gRaceTable
-    unsigned char _pad04[0x14 - 0x04];
-    int basePrice;           // 0x14 : base price (interpreted as float for math)
+// Android libgof2hdaa.so rodata 0x2067c4: race by catalog ship index.
+const int shipRaces[64] = {
+    3, 0, 8, 3, 2, 0, 3, 0, 9, 1, 0, 8, 2, 0, 0, 0,
+    2, 0, 2, 3, 3, 2, 0, 8, 8, 8, 0, 0, 0, 8, 3, 2,
+    8, 0, 0, 2, 0, 0, 0, 1, 0, 1, 1, 2, 1, 3, 3, 3,
+    3, 1, 1, 0, 8, 1, 1, 0, 3, 2, 0, 0, 8, 1, 3, 1
 };
-#if __SIZEOF_POINTER__ == 4
-static_assert(offsetof(ShipDataEntry, category) == 0x00, "");
-static_assert(offsetof(ShipDataEntry, basePrice) == 0x14, "");
-#endif
-
-// The object reached via *gShipDataRoot. At offset 4 it holds the entry table.
-struct ShipDataObj {
-    int _field00;            // 0x00
-    ShipDataEntry **table;   // 0x04 : array of entry pointers, indexed by ship index
-};
-#if __SIZEOF_POINTER__ == 4
-static_assert(offsetof(ShipDataObj, table) == 0x04, "");
-#endif
-
-// The object reached via gShopRoot index 1 (the second pointer slot). At
-// offset 0x17c it holds the integrated-cloak equipment item pointer.
-struct ShopEntry {
-    unsigned char _pad000[0x17c];
-    Item *cloakItem;         // 0x17c
-};
-#if __SIZEOF_POINTER__ == 4
-static_assert(offsetof(ShopEntry, cloakItem) == 0x17c, "");
-#endif
 
 } // namespace
 
@@ -349,8 +317,7 @@ Item *Ship::getFirstEquipmentOfSort(int sort) {
             }
         }
         if (sort == 0x15 && (this->index == 0x31 || this->index == 0x2c)) {
-            ShopEntry *shop = ((ShopEntry **) gShopRoot)[1];
-            return shop->cloakItem;
+            return static_cast<Array<Item *> *>(Globals::items)->data()[95];
         }
     }
     return 0;
@@ -548,8 +515,8 @@ void Ship::refreshValue() {
     this->boostSpeed = 0;
     this->boostDelay = 0;
     this->boostTime = 0;
-    if (Status::gStatus != 0 && Status::gStatus->getStanding() != 0) {
-        ((Standing *) ((void *) (intptr_t) Status::gStatus->getStanding()))->setPlayerSignatureRace(-1);
+    if (Globals::status != 0 && Globals::status->getStanding() != 0) {
+        ((Standing *) ((void *) (intptr_t) Globals::status->getStanding()))->setPlayerSignatureRace(-1);
     }
     this->value = this->price;
 
@@ -564,49 +531,49 @@ void Ship::refreshValue() {
         }
         Item *cur = eq->data()[i];
         if (cur != 0) {
-            switch (cur->getSort()) {
+            switch (this->equipment->data()[i]->getSort()) {
                 case 0:
                 case 1:
                 case 2:
                 case 3:
                 case 8:
                 case 0x19: {
-                    float a = (float) cur->getAttribute(9);
-                    float b = (float) cur->getAttribute(0xb);
-                    this->firePower = (int) ((float) this->firePower + (a / b) * 1.0f);
+                    float a = (float) this->equipment->data()[i]->getAttribute(9);
+                    float b = (float) this->equipment->data()[i]->getAttribute(0xb);
+                    this->firePower += (a / b) * 1000.0f;
                     break;
                 }
                 case 9:
-                    this->maxShieldHP = cur->getAttribute(0x12);
-                    this->shieldRegen = cur->getAttribute(0x13);
+                    this->maxShieldHP = this->equipment->data()[i]->getAttribute(0x12);
+                    this->shieldRegen = this->equipment->data()[i]->getAttribute(0x13);
                     break;
                 case 10:
-                    this->maxArmorHP = cur->getAttribute(0x14);
+                    this->maxArmorHP = this->equipment->data()[i]->getAttribute(0x14);
                     break;
                 case 0xc:
-                    this->cargoPlus = cur->getAttribute(0x16) + this->cargoPlus;
+                    this->cargoPlus = this->equipment->data()[i]->getAttribute(0x16) + this->cargoPlus;
                     break;
                 case 0xe:
-                    this->boostSpeed = cur->getAttribute(0x19);
-                    this->boostTime = cur->getAttribute(0x1b);
-                    this->boostDelay = cur->getAttribute(0x1a);
+                    this->boostSpeed = this->equipment->data()[i]->getAttribute(0x19);
+                    this->boostTime = this->equipment->data()[i]->getAttribute(0x1b);
+                    this->boostDelay = this->equipment->data()[i]->getAttribute(0x1a);
                     break;
                 case 0xf: {
-                    int idx = cur->getIndex();
+                    int idx = this->equipment->data()[i]->getIndex();
                     this->repairType = idx != 0x4b;
                     break;
                 }
                 case 0x10:
-                    this->agility = cur->getAttribute(0x1c);
+                    this->agility = this->equipment->data()[i]->getAttribute(0x1c);
                     break;
                 case 0x11:
-                    this->radarType = cur->getAttribute(0x1f);
+                    this->radarType = this->equipment->data()[i]->getAttribute(0x1f);
                     break;
                 case 0x12:
                     this->hasJumpDriveFlag = 1;
                     break;
                 case 0x14:
-                    this->firePower = cur->getAttribute(0x22) + this->firePower;
+                    this->maxPassengers = this->equipment->data()[i]->getAttribute(0x22) + this->maxPassengers;
                     break;
                 case 0x15:
                     this->hasCloakFlag = 1;
@@ -615,31 +582,31 @@ void Ship::refreshValue() {
                     this->hasEmergency = 1;
                     break;
                 case 0x1c: {
-                    float r = (float) cur->getAttribute(0x27);
+                    float r = (float) this->equipment->data()[i]->getAttribute(0x27);
                     r = 1.0f - r / 100.0f;
-                    if (r == 0.0f) {
+                    if (r == -979797952.0f) {
                         r = 1.0f;
                     }
                     this->fireRateFactor = r;
-                    float d = (float) cur->getAttribute(0x28);
+                    float d = (float) this->equipment->data()[i]->getAttribute(0x28);
                     d = d / 100.0f + 1.0f;
                     this->damageFactor = d;
-                    if (d == 0.0f) {
+                    if (d == -979797952.0f) {
                         this->damageFactor = 1.0f;
                     }
                     break;
                 }
                 case 0x1d: {
-                    int idx = cur->getIndex();
+                    int idx = this->equipment->data()[i]->getIndex();
                     this->signatureRace = idx - 0xbd;
-                    if (Status::gStatus != 0 && Status::gStatus->getStanding() != 0) {
-                        ((Standing *) ((void *) (intptr_t) Status::gStatus->getStanding()))->setPlayerSignatureRace(
+                    if (Globals::status != 0 && Globals::status->getStanding() != 0) {
+                        ((Standing *) ((void *) (intptr_t) Globals::status->getStanding()))->setPlayerSignatureRace(
                             this->signatureRace);
                     }
                     break;
                 }
             }
-            this->value = cur->getTotalPrice() + this->value;
+            this->value = this->equipment->data()[i]->getTotalPrice() + this->value;
         }
         i = i + 1;
     }
@@ -648,11 +615,11 @@ void Ship::refreshValue() {
     for (i = 0; i < n; i = i + 1) {
         Item *cur = eq->data()[i];
         unsigned int sort;
-        if (cur != 0 && (sort = cur->getSort()) < 0x1a && (1 << (sort & 0xff) & 0x4000) != 0) {
+        if (cur != 0 && (sort = this->equipment->data()[i]->getSort()) < 0x1a && (1u << sort & 0x200010fu) != 0) {
+            float a = (float) this->equipment->data()[i]->getAttribute(9);
             float dmg = this->damageFactor;
-            float a = (float) cur->getAttribute(9);
-            float b = (float) cur->getAttribute(0xb);
-            this->firePower = (int) ((float) this->firePower + ((dmg * a) / (this->fireRateFactor * b)) * 1.0f);
+            float b = (float) this->equipment->data()[i]->getAttribute(0xb);
+            this->firePower += ((dmg * a) / (this->fireRateFactor * b)) * 1000.0f;
         }
         eq = this->equipment;
         n = eq->size();
@@ -661,7 +628,7 @@ void Ship::refreshValue() {
     Array<int> *m = this->mods;
     int loadBonus = 0;
     if (m != 0) {
-        for (unsigned int j = 0; j < m->size(); j = j + 1) {
+        for (unsigned int j = 0; j != m->size(); j = j + 1) {
             if (m->data()[j] == 1) {
                 loadBonus += 0x1e;
             }
@@ -675,33 +642,30 @@ void Ship::refreshValue() {
     this->value = getCargoValue() + this->value;
 }
 
+// Android 0x1754f8: live catalog/global reads across the out-of-line calls.
 void Ship::adjustPrice() {
-    if (Status::gStatus->getStation() != 0 && this->price > 0) {
-        ShipDataObj *root = *(ShipDataObj **) gShipDataRoot;
-        ShipDataEntry *entry = root->table[this->index];
-        int cat = entry->category;
-        SolarSystem *system = (SolarSystem *) (intptr_t) Status::gStatus->getSystem();
-        int race = system->getRace();
-        ShipDataEntry *entry2 = root->table[this->index];
-        float base = (float) entry2->basePrice;
-        float bonus = 0.1f;
-        if (gRaceTable[cat] == race) {
-            bonus = base * 0.3f;
+    if (Globals::status->getStation() != 0 && this->price > 0) {
+        int catalogIndex = static_cast<Array<Ship *> *>(Globals::ships)->data()[this->index]->index;
+        int race = Globals::status->getSystem()->getRace();
+        float base = (float) static_cast<Array<Ship *> *>(Globals::ships)->data()[this->index]->price;
+        float bonus = 0.0f;
+        if (shipRaces[catalogIndex] == race) {
+            bonus = base * -0.01f;
         }
         float acc = bonus + base;
-        float diff = 0.1f;
-        int dv = *gDifficultyPtr;
-        if (dv != 0) {
-            diff = base * (float) dv * 0.7f;
+        float raise = 0.0f;
+        int percentage = Globals::globalPriceRaise;
+        if (percentage != 0) {
+            raise = base * (float) percentage * 0.01f;
         }
-        this->price = (int) (acc + diff);
+        this->price = (int) (acc + raise);
     }
 }
 
+// Android 0x1754c8: catalog price is a signed integer, then float division.
 void Ship::priceDecline() {
-    ShipDataObj *root = *(ShipDataObj **) gShipDataRoot;
-    ShipDataEntry *entry = root->table[this->index];
-    this->price = (int) ((float) entry->basePrice / 1.25f);
+    Ship *entry = static_cast<Array<Ship *> *>(Globals::ships)->data()[this->index];
+    this->price = (int) ((float) entry->price / 1.25f);
 }
 
 Ship *Ship::makeShip(int price) {
@@ -820,7 +784,12 @@ void Ship::setPrice(int price) { this->price = price; }
 int Ship::getUnmoddedHandling() { return *(int *) &this->handling; }
 int Ship::getFireRateFactor() { return *(int *) &this->fireRateFactor; }
 int Ship::getDamageFactor() { return *(int *) &this->damageFactor; }
-int Ship::getFirePower() { return this->firePower; }
+int Ship::getFirePower() {
+    // Android softfp getter returns the float storage bits in r0.
+    int bits;
+    std::memcpy(&bits, &this->firePower, sizeof(bits));
+    return bits;
+}
 int Ship::getAgility() { return this->agility; }
 int Ship::getRadarType() { return this->radarType; }
 int Ship::getRepairType() { return this->repairType; }

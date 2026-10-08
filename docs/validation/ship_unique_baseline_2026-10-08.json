@@ -1,0 +1,1305 @@
+{
+  "phase": "baseline",
+  "unique_bodies": 91,
+  "symbol_count": 93,
+  "total_weight": 1751,
+  "unweighted": 97.54065934065935,
+  "weighted": 93.51730439748714,
+  "raw_unweighted": 97.54206595848582,
+  "raw_weighted": 93.5117090655395,
+  "functions": [
+    {
+      "address": "0x17457c",
+      "symbol": "_ZN4ShipC1Eiiiiiiiif",
+      "aliases": [
+        "_ZN4ShipC1Eiiiiiiiif",
+        "_ZN4ShipC2Eiiiiiiiif"
+      ],
+      "weight": 47,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 97.9,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174608",
+      "symbol": "_ZN4Ship12refreshValueEv",
+      "aliases": [
+        "_ZN4Ship12refreshValueEv"
+      ],
+      "weight": 299,
+      "baseline_source_match": 88.0,
+      "source_match": 88.0,
+      "match": 59.9,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 87.96396396396396
+    },
+    {
+      "address": "0x1749a4",
+      "symbol": "_ZN4ShipD1Ev",
+      "aliases": [
+        "_ZN4ShipD1Ev",
+        "_ZN4ShipD2Ev"
+      ],
+      "weight": 37,
+      "baseline_source_match": 96.3,
+      "source_match": 96.3,
+      "match": 98.6,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 96.34008568255143
+    },
+    {
+      "address": "0x174a02",
+      "symbol": "_ZN4Ship7setRaceEi",
+      "aliases": [
+        "_ZN4Ship7setRaceEi"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174a06",
+      "symbol": "_ZN4Ship7getRaceEv",
+      "aliases": [
+        "_ZN4Ship7getRaceEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174a0a",
+      "symbol": "_ZN4Ship8getIndexEv",
+      "aliases": [
+        "_ZN4Ship8getIndexEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174a0e",
+      "symbol": "_ZN4Ship8getPriceEv",
+      "aliases": [
+        "_ZN4Ship8getPriceEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174a12",
+      "symbol": "_ZN4Ship20setCurrentWeaponSlotEi",
+      "aliases": [
+        "_ZN4Ship20setCurrentWeaponSlotEi"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174a16",
+      "symbol": "_ZN4Ship20getCurrentWeaponSlotEv",
+      "aliases": [
+        "_ZN4Ship20getCurrentWeaponSlotEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174a1c",
+      "symbol": "_ZN4Ship18getHandlingForShopEv",
+      "aliases": [
+        "_ZN4Ship18getHandlingForShopEv"
+      ],
+      "weight": 23,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174a68",
+      "symbol": "_ZN4Ship11getHandlingEv",
+      "aliases": [
+        "_ZN4Ship11getHandlingEv"
+      ],
+      "weight": 23,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174ab4",
+      "symbol": "_ZN4Ship9getBaseHPEv",
+      "aliases": [
+        "_ZN4Ship9getBaseHPEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174ab8",
+      "symbol": "_ZN4Ship13getCombinedHPEv",
+      "aliases": [
+        "_ZN4Ship13getCombinedHPEv"
+      ],
+      "weight": 26,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174afa",
+      "symbol": "_ZN4Ship13getMaxArmorHPEv",
+      "aliases": [
+        "_ZN4Ship13getMaxArmorHPEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174afe",
+      "symbol": "_ZN4Ship8getMaxHPEv",
+      "aliases": [
+        "_ZN4Ship8getMaxHPEv"
+      ],
+      "weight": 23,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174b38",
+      "symbol": "_ZN4Ship14getMaxShieldHPEv",
+      "aliases": [
+        "_ZN4Ship14getMaxShieldHPEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174b3c",
+      "symbol": "_ZN4Ship14getShieldRegenEv",
+      "aliases": [
+        "_ZN4Ship14getShieldRegenEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174b40",
+      "symbol": "_ZN4Ship8getValueEv",
+      "aliases": [
+        "_ZN4Ship8getValueEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174b44",
+      "symbol": "_ZN4Ship12getRadarTypeEv",
+      "aliases": [
+        "_ZN4Ship12getRadarTypeEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174b48",
+      "symbol": "_ZN4Ship13getBoostSpeedEv",
+      "aliases": [
+        "_ZN4Ship13getBoostSpeedEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174b4c",
+      "symbol": "_ZN4Ship12getBoostTimeEv",
+      "aliases": [
+        "_ZN4Ship12getBoostTimeEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174b50",
+      "symbol": "_ZN4Ship13getBoostDelayEv",
+      "aliases": [
+        "_ZN4Ship13getBoostDelayEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174b54",
+      "symbol": "_ZN4Ship10getAgilityEv",
+      "aliases": [
+        "_ZN4Ship10getAgilityEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174b58",
+      "symbol": "_ZN4Ship17getFireRateFactorEv",
+      "aliases": [
+        "_ZN4Ship17getFireRateFactorEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174b5c",
+      "symbol": "_ZN4Ship15getDamageFactorEv",
+      "aliases": [
+        "_ZN4Ship15getDamageFactorEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174b60",
+      "symbol": "_ZN4Ship19hasSecondaryWeaponsEv",
+      "aliases": [
+        "_ZN4Ship19hasSecondaryWeaponsEv"
+      ],
+      "weight": 27,
+      "baseline_source_match": 95.6,
+      "source_match": 95.6,
+      "match": 88.5,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 95.64672364672366
+    },
+    {
+      "address": "0x174b9a",
+      "symbol": "_ZN4Ship10hasBoosterEv",
+      "aliases": [
+        "_ZN4Ship10hasBoosterEv"
+      ],
+      "weight": 6,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174ba6",
+      "symbol": "_ZN4Ship12hasJumpDriveEv",
+      "aliases": [
+        "_ZN4Ship12hasJumpDriveEv"
+      ],
+      "weight": 15,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174bcc",
+      "symbol": "_ZN4Ship22hasJumpDriveIntegratedEv",
+      "aliases": [
+        "_ZN4Ship22hasJumpDriveIntegratedEv"
+      ],
+      "weight": 11,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174be8",
+      "symbol": "_ZN4Ship8hasCloakEv",
+      "aliases": [
+        "_ZN4Ship8hasCloakEv"
+      ],
+      "weight": 13,
+      "baseline_source_match": 96.9,
+      "source_match": 96.9,
+      "match": 84.6,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 96.92307692307693
+    },
+    {
+      "address": "0x174c0a",
+      "symbol": "_ZN4Ship18hasCloakIntegratedEv",
+      "aliases": [
+        "_ZN4Ship18hasCloakIntegratedEv"
+      ],
+      "weight": 9,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174c22",
+      "symbol": "_ZN4Ship18hasEmergencySystemEv",
+      "aliases": [
+        "_ZN4Ship18hasEmergencySystemEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174c28",
+      "symbol": "_ZN4Ship13getRepairTypeEv",
+      "aliases": [
+        "_ZN4Ship13getRepairTypeEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174c2c",
+      "symbol": "_ZN4Ship16getSignatureRaceEv",
+      "aliases": [
+        "_ZN4Ship16getSignatureRaceEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174c30",
+      "symbol": "_ZN4Ship12getFirePowerEv",
+      "aliases": [
+        "_ZN4Ship12getFirePowerEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174c34",
+      "symbol": "_ZN4Ship11getBaseLoadEv",
+      "aliases": [
+        "_ZN4Ship11getBaseLoadEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174c38",
+      "symbol": "_ZN4Ship12getCargoPlusEv",
+      "aliases": [
+        "_ZN4Ship12getCargoPlusEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174c3c",
+      "symbol": "_ZN4Ship14getCompressionEv",
+      "aliases": [
+        "_ZN4Ship14getCompressionEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174c40",
+      "symbol": "_ZN4Ship10getMaxLoadEv",
+      "aliases": [
+        "_ZN4Ship10getMaxLoadEv"
+      ],
+      "weight": 4,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174c48",
+      "symbol": "_ZN4Ship14getCurrentLoadEv",
+      "aliases": [
+        "_ZN4Ship14getCurrentLoadEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174c4c",
+      "symbol": "_ZN4Ship10changeLoadEi",
+      "aliases": [
+        "_ZN4Ship10changeLoadEi"
+      ],
+      "weight": 18,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174c7c",
+      "symbol": "_ZN4Ship12getFreeSpaceEv",
+      "aliases": [
+        "_ZN4Ship12getFreeSpaceEv"
+      ],
+      "weight": 5,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174c88",
+      "symbol": "_ZN4Ship12getEquipmentEv",
+      "aliases": [
+        "_ZN4Ship12getEquipmentEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174c8c",
+      "symbol": "_ZN4Ship8getCargoEv",
+      "aliases": [
+        "_ZN4Ship8getCargoEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174c90",
+      "symbol": "_ZN4Ship12replaceCargoEP5ArrayIP4ItemE",
+      "aliases": [
+        "_ZN4Ship12replaceCargoEP5ArrayIP4ItemE"
+      ],
+      "weight": 34,
+      "baseline_source_match": 97.2,
+      "source_match": 97.2,
+      "match": 60.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 97.17460317460316
+    },
+    {
+      "address": "0x174ce4",
+      "symbol": "_ZN4Ship23getFirstEquipmentOfSortEi",
+      "aliases": [
+        "_ZN4Ship23getFirstEquipmentOfSortEi"
+      ],
+      "weight": 41,
+      "baseline_source_match": 94.9,
+      "source_match": 94.9,
+      "match": 53.8,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 94.86363636363636
+    },
+    {
+      "address": "0x174d44",
+      "symbol": "_ZN4Ship12hasEquipmentEii",
+      "aliases": [
+        "_ZN4Ship12hasEquipmentEii"
+      ],
+      "weight": 32,
+      "baseline_source_match": 90.9,
+      "source_match": 90.9,
+      "match": 45.9,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 90.91188524590163
+    },
+    {
+      "address": "0x174d90",
+      "symbol": "_ZN4Ship16hasVolatileGoodsEv",
+      "aliases": [
+        "_ZN4Ship16hasVolatileGoodsEv"
+      ],
+      "weight": 14,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174db2",
+      "symbol": "_ZN4Ship8hasCargoEii",
+      "aliases": [
+        "_ZN4Ship8hasCargoEii"
+      ],
+      "weight": 32,
+      "baseline_source_match": 90.9,
+      "source_match": 90.9,
+      "match": 45.9,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 90.91188524590163
+    },
+    {
+      "address": "0x174dfe",
+      "symbol": "_ZN4Ship12hasCargoTypeEi",
+      "aliases": [
+        "_ZN4Ship12hasCargoTypeEi"
+      ],
+      "weight": 25,
+      "baseline_source_match": 96.7,
+      "source_match": 96.7,
+      "match": 79.2,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 96.73333333333333
+    },
+    {
+      "address": "0x174e38",
+      "symbol": "_ZN4Ship11removeCargoEP4Item",
+      "aliases": [
+        "_ZN4Ship11removeCargoEP4Item"
+      ],
+      "weight": 16,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174e64",
+      "symbol": "_ZN4Ship11removeCargoEii",
+      "aliases": [
+        "_ZN4Ship11removeCargoEii"
+      ],
+      "weight": 47,
+      "baseline_source_match": 92.9,
+      "source_match": 92.9,
+      "match": 40.9,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 92.8747162240642
+    },
+    {
+      "address": "0x174eda",
+      "symbol": "_ZN4Ship14removeAllCargoEv",
+      "aliases": [
+        "_ZN4Ship14removeAllCargoEv"
+      ],
+      "weight": 10,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174ef4",
+      "symbol": "_ZN4Ship11removeCargoEi",
+      "aliases": [
+        "_ZN4Ship11removeCargoEi"
+      ],
+      "weight": 3,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174f00",
+      "symbol": "_ZN4Ship8setCargoEP5ArrayIP4ItemE",
+      "aliases": [
+        "_ZN4Ship8setCargoEP5ArrayIP4ItemE"
+      ],
+      "weight": 37,
+      "baseline_source_match": 97.4,
+      "source_match": 97.4,
+      "match": 63.2,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 97.39541160593792
+    },
+    {
+      "address": "0x174f58",
+      "symbol": "_ZN4Ship8getCargoEi",
+      "aliases": [
+        "_ZN4Ship8getCargoEi"
+      ],
+      "weight": 26,
+      "baseline_source_match": 99.2,
+      "source_match": 99.2,
+      "match": 42.3,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 99.23076923076923
+    },
+    {
+      "address": "0x174f96",
+      "symbol": "_ZN4Ship14spaceAvailableEi",
+      "aliases": [
+        "_ZN4Ship14spaceAvailableEi"
+      ],
+      "weight": 9,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174faa",
+      "symbol": "_ZN4Ship8addCargoEP4Item",
+      "aliases": [
+        "_ZN4Ship8addCargoEP4Item"
+      ],
+      "weight": 22,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x174fe8",
+      "symbol": "_ZN4Ship8addCargoEP5ArrayIP4ItemE",
+      "aliases": [
+        "_ZN4Ship8addCargoEP5ArrayIP4ItemE"
+      ],
+      "weight": 9,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x175000",
+      "symbol": "_ZN4Ship16replaceEquipmentEP5ArrayIP4ItemE",
+      "aliases": [
+        "_ZN4Ship16replaceEquipmentEP5ArrayIP4ItemE"
+      ],
+      "weight": 20,
+      "baseline_source_match": 99.0,
+      "source_match": 99.0,
+      "match": 80.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 99.0
+    },
+    {
+      "address": "0x175034",
+      "symbol": "_ZN4Ship15removeEquipmentEP4Item",
+      "aliases": [
+        "_ZN4Ship15removeEquipmentEP4Item"
+      ],
+      "weight": 26,
+      "baseline_source_match": 99.2,
+      "source_match": 99.2,
+      "match": 42.3,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 99.23076923076923
+    },
+    {
+      "address": "0x175072",
+      "symbol": "_ZN4Ship12setEquipmentEP5ArrayIP4ItemE",
+      "aliases": [
+        "_ZN4Ship12setEquipmentEP5ArrayIP4ItemE"
+      ],
+      "weight": 17,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x17509c",
+      "symbol": "_ZN4Ship12setEquipmentEP4Item",
+      "aliases": [
+        "_ZN4Ship12setEquipmentEP4Item"
+      ],
+      "weight": 16,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x1750cc",
+      "symbol": "_ZN4Ship12getEquipmentEi",
+      "aliases": [
+        "_ZN4Ship12getEquipmentEi"
+      ],
+      "weight": 55,
+      "baseline_source_match": 99.6,
+      "source_match": 99.6,
+      "match": 92.7,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 99.63636363636364
+    },
+    {
+      "address": "0x17515a",
+      "symbol": "_ZN4Ship10getSlotPosEP4Item",
+      "aliases": [
+        "_ZN4Ship10getSlotPosEP4Item"
+      ],
+      "weight": 33,
+      "baseline_source_match": 99.4,
+      "source_match": 99.4,
+      "match": 90.9,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 99.39393939393939
+    },
+    {
+      "address": "0x1751ae",
+      "symbol": "_ZN4Ship12addEquipmentEP4Item",
+      "aliases": [
+        "_ZN4Ship12addEquipmentEP4Item"
+      ],
+      "weight": 35,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x175204",
+      "symbol": "_ZN4Ship12setEquipmentEP4Itemi",
+      "aliases": [
+        "_ZN4Ship12setEquipmentEP4Itemi"
+      ],
+      "weight": 41,
+      "baseline_source_match": 95.5,
+      "source_match": 95.5,
+      "match": 53.8,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 95.48467792370232
+    },
+    {
+      "address": "0x175270",
+      "symbol": "_ZN4Ship13getCargoValueEv",
+      "aliases": [
+        "_ZN4Ship13getCargoValueEv"
+      ],
+      "weight": 22,
+      "baseline_source_match": 94.5,
+      "source_match": 94.5,
+      "match": 72.7,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 94.54545454545453
+    },
+    {
+      "address": "0x1752a4",
+      "symbol": "_ZN4Ship17getEquipmentValueEv",
+      "aliases": [
+        "_ZN4Ship17getEquipmentValueEv"
+      ],
+      "weight": 20,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 75.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x1752d4",
+      "symbol": "_ZN4Ship16getMaxPassengersEv",
+      "aliases": [
+        "_ZN4Ship16getMaxPassengersEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x1752d8",
+      "symbol": "_ZN4Ship12freeAllSlotsEv",
+      "aliases": [
+        "_ZN4Ship12freeAllSlotsEv"
+      ],
+      "weight": 13,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x1752fa",
+      "symbol": "_ZN4Ship8freeSlotEP4Itemi",
+      "aliases": [
+        "_ZN4Ship8freeSlotEP4Itemi"
+      ],
+      "weight": 30,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 66.7,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x175344",
+      "symbol": "_ZN4Ship8freeSlotEP4Item",
+      "aliases": [
+        "_ZN4Ship8freeSlotEP4Item"
+      ],
+      "weight": 27,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x175388",
+      "symbol": "_ZN4Ship8getSlotsEi",
+      "aliases": [
+        "_ZN4Ship8getSlotsEi"
+      ],
+      "weight": 3,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x175390",
+      "symbol": "_ZN4Ship12getSlotTypesEv",
+      "aliases": [
+        "_ZN4Ship12getSlotTypesEv"
+      ],
+      "weight": 12,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x1753aa",
+      "symbol": "_ZN4Ship12getUsedSlotsEi",
+      "aliases": [
+        "_ZN4Ship12getUsedSlotsEi"
+      ],
+      "weight": 23,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 78.3,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x1753e0",
+      "symbol": "_ZN4Ship13slotAvailableEi",
+      "aliases": [
+        "_ZN4Ship13slotAvailableEi"
+      ],
+      "weight": 27,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 92.6,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x17541e",
+      "symbol": "_ZN4Ship12getFreeSlotsEi",
+      "aliases": [
+        "_ZN4Ship12getFreeSlotsEi"
+      ],
+      "weight": 7,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x175430",
+      "symbol": "_ZN4Ship8makeShipEi",
+      "aliases": [
+        "_ZN4Ship8makeShipEi"
+      ],
+      "weight": 8,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x175444",
+      "symbol": "_ZN4Ship5cloneEv",
+      "aliases": [
+        "_ZN4Ship5cloneEv"
+      ],
+      "weight": 48,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x1754c8",
+      "symbol": "_ZN4Ship12priceDeclineEv",
+      "aliases": [
+        "_ZN4Ship12priceDeclineEv"
+      ],
+      "weight": 15,
+      "baseline_source_match": 21.4,
+      "source_match": 21.4,
+      "match": 0.0,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 21.428571428571427
+    },
+    {
+      "address": "0x1754f8",
+      "symbol": "_ZN4Ship11adjustPriceEv",
+      "aliases": [
+        "_ZN4Ship11adjustPriceEv"
+      ],
+      "weight": 64,
+      "baseline_source_match": 33.7,
+      "source_match": 33.7,
+      "match": 17.7,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 33.65079365079365
+    },
+    {
+      "address": "0x1755b8",
+      "symbol": "_ZN4Ship8setPriceEi",
+      "aliases": [
+        "_ZN4Ship8setPriceEi"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x1755bc",
+      "symbol": "_ZN4Ship6addModEi",
+      "aliases": [
+        "_ZN4Ship6addModEi"
+      ],
+      "weight": 79,
+      "baseline_source_match": 97.0,
+      "source_match": 97.0,
+      "match": 96.9,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 96.98734177215191
+    },
+    {
+      "address": "0x175686",
+      "symbol": "_ZN4Ship6equalsEPS_",
+      "aliases": [
+        "_ZN4Ship6equalsEPS_"
+      ],
+      "weight": 6,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x175694",
+      "symbol": "_ZN4Ship22getNumAddedDeviceSlotsEv",
+      "aliases": [
+        "_ZN4Ship22getNumAddedDeviceSlotsEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x175698",
+      "symbol": "_ZN4Ship19getUnmoddedHandlingEv",
+      "aliases": [
+        "_ZN4Ship19getUnmoddedHandlingEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x17569c",
+      "symbol": "_ZN4Ship13getModdedLoadEv",
+      "aliases": [
+        "_ZN4Ship13getModdedLoadEv"
+      ],
+      "weight": 18,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x1756ca",
+      "symbol": "_ZN4Ship7getModsEv",
+      "aliases": [
+        "_ZN4Ship7getModsEv"
+      ],
+      "weight": 2,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x1756ce",
+      "symbol": "_ZN4Ship7setModsEP5ArrayIiE",
+      "aliases": [
+        "_ZN4Ship7setModsEP5ArrayIiE"
+      ],
+      "weight": 61,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 98.4,
+      "linked_equal": false,
+      "bytes_equal": false,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x17577c",
+      "symbol": "_ZN4Ship15hasModInstalledEi",
+      "aliases": [
+        "_ZN4Ship15hasModInstalledEi"
+      ],
+      "weight": 16,
+      "baseline_source_match": 100.0,
+      "source_match": 100.0,
+      "match": 100.0,
+      "linked_equal": true,
+      "bytes_equal": true,
+      "source_before_display_rounding": 100.0
+    }
+  ],
+  "threshold_pass": false,
+  "revision": "7314772c",
+  "unit": "game/ship/Ship",
+  "body_identity": "Android original address; C1/C2 and D1/D2 aliases counted once",
+  "weight_definition": "Original asmdiff n_target before source-shape dualword/zero-branch normalization; frozen before edits",
+  "source_hashes": {
+    "Ship.cpp": "26dc1ae7be37253178be759b1bdeadccdaf819fef35e2758a0a0ec13e6efe340",
+    "Ship.h": "d31c14566d22763c43ca8744f40d83ebddf8fd3689945b0530cfc7c8d36b8575"
+  },
+  "evidence_hashes": {
+    "original_so": "6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58",
+    "symbol_table": "47f69a1b82fee4a3c9bbdb054490c97f8ecc1a7cc11b2e6f0f09f0706318161d",
+    "match_flags.sh": "4e05f06d6853e58c3eb1251c5f2ad55ff4c5150abf036304de8e920cb8ae5801",
+    "asmdiff.py": "58129c25e519b5a230151b5466278f9679e550d780d85a3d594514f25581bac8",
+    "verify.py": "f3ec8724cafc396adfc59154e1a8e36d707169ce37e379d194672e5989d55b3b"
+  },
+  "focused_report_sha256": "1562e2f27cc7eb440c19a83972b3a46a66e6b2e6b23681eb6dbc92c2ab1ba157"
+}

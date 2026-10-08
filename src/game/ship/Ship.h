@@ -210,7 +210,7 @@ public:
     int boostTime;
     int agility;
     int maxPassengers;
-    int firePower;
+    float firePower; // 0x48: ARM refreshValue uses vldr/vmla/vstr, getter returns raw bits.
     int repairType;
     unsigned char hasJumpDriveFlag;
     unsigned char hasCloakFlag;
@@ -228,4 +228,10 @@ public:
     Array<int> *mods;
     int numAddedDeviceSlots;
 };
+#if __SIZEOF_POINTER__ == 4
+static_assert(offsetof(Ship, firePower) == 0x48, "Ship firePower ARM storage");
+static_assert(offsetof(Ship, price) == 0x14, "Ship catalog price ARM storage");
+static_assert(offsetof(Ship, equipment) == 0x6c, "Ship equipment ARM layout");
+static_assert(sizeof(Ship) == 0x80, "Ship ARM size");
+#endif
 #endif
