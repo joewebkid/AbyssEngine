@@ -11605,3 +11605,53 @@ recursive removal. Evidence:
 `_work/duplicate_buffer_ptr60_core_target_cleanup_20261008.json`,
 `_work/read_buffer_pointer_records_sweep.py`,
 `_work/read_buffer_pointer_records_identities.json`,nine focused objects/reports.
+
+
+## Continuation: Enhanced key sample and frame-limit pointer records
+
+Nine focused cases2026-10-08 after89c6b36f: accepted control,then actual read
+key-time sample and pointer to global timeBetweenFrames in local KeyTimeState,
+sample-first/pointer-first under vector,axis,optional+V5 groups and all-eight
+sites. Existing sample left uninitialized then4-byte AEFile read to field;
+limit pointer initialized to global address,not a copy of global float.
+Same positive-time comparison first,global limit comparison second,conditional
+global update at original point before next payload read. All subsequent
+sample/time argument uses redirected to field,helper itself untouched.
+No extra float zero init,helper/constructor/header/ABI/signature/flags/matcher/
+denominator/dummy effects. Compiler alias/lifetime hypothesis,not recovery.
+AEFile bounded destination-write contract assumed;opaque compiler aliasing
+can affect adjacent pointer field unlike standalone local. No variant kept.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.3 / 66.9 | 95.8 | 97.4 | 98.7 | 99.5 | 641 |
+| vectors_sample_first | 96.7 / 61.1 | 93.1 | 94.9 | 97.7 | 98.0 | 650 |
+| axes_sample_first | 96.8 / 64.1 | 93.4 | 94.9 | 97.7 | 98.0 | 650 |
+| optional_v5_sample_first | 97.3 / 65.3 | 94.3 | 95.8 | 98.0 | 98.5 | 647 |
+| all_sample_first | 94.2 / 57.3 | 88.7 | 90.5 | 96.1 | 95.7 | 665 |
+| vectors_pointer_first | 96.4 / 61.2 | 92.0 | 94.3 | 97.7 | 98.2 | 649 |
+| axes_pointer_first | 96.8 / 21.7 | 93.8 | 95.2 | 97.7 | 97.2 | 655 |
+| optional_v5_pointer_first | 97.2 / 64.4 | 94.2 | 95.7 | 98.0 | 98.0 | 650 |
+| all_pointer_first | 93.8 / 34.9 | 89.0 | 90.2 | 96.1 | 93.8 | 678 |
+
+All eight new cases regress93.8..97.3,n647..678 versus accepted641;all calls100.
+Nine distinct whole objects;pointer/sample co-location introduces inventory/
+opcode/control losses,no primary gain,none retained. Earlier direct inline/
+comparison spelling already tested under accepted/preload,not rerun here.
+No compiler ceiling claim. Sweep completed exit0,all shape components/counts/
+hashes rebound to canonical original. Source restored;accepted existing full/
+native proof binding passes204 TUs/4619 comparisons/202 unaffected objects,
+actual linked2079/byte959 sets unchanged,no loss/gain,body/signature/flags
+intact. No fresh full/native/game/device/Android execution. Means98.40/98.41,
+both99 gates unmet,goal active. Main untouched,report-only commit,no push/PR/
+merge.
+
+Preparation removed120 exact generated original Mesh targets from sorted enh
+family,single-object targets,paths resolved inside own_work,untracked,canonical
+SHA match,exact120 guard,manifest/system-temp backup before literal removal/
+immediate reference+target rehash.347,520 logical bytes;all120 mappings checked.
+Bases/source/reports/native/accepted/baseline/main/Git archive retained,no
+recursive removal. Evidence:
+`_work/duplicate_time_ptr120_mesh_target_cleanup_20261008.json`,
+`_work/enh_key_time_pointer_records_sweep.py`,
+`_work/enh_key_time_pointer_records_identities.json`,nine focused objects/reports.
