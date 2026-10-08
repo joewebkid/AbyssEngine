@@ -11715,3 +11715,49 @@ system-temp manifest before literal removal/immediate reference+target rehash;
 manifest copied after space available. All20 mappings checked,528,240 logical
 bytes. No compiled bases/source/reports/native/main/Git archive removed.
 Evidence:`_work/duplicate_signature_commit20_core_target_cleanup_20261008.json`.
+
+
+## Continuation: Enhanced standalone axis width and BIC diagnosis
+
+Three focused compile/direct canonical-object measurements2026-10-08 after
+95088a8b. Reinspect original masks: BIC sign31 at raw token92/223/353 directly
+before axis dispatch comparisons2/1/0,and577 before V5 channel switch.
+Accepted three axis dispatches use ANDS127 at92/223/356,with U X T B at
+axis increment/exit127/254/386;V5 alone retains BIC31 at563. No inference
+of a missing input flag field or recovered axis declaration from masks.
+
+Fresh ordinary standalone int/unsigned-int axis loops replacing the three
+unsigned-char loops,keeps count variables separately addressed by AEFile
+and all switch labels unchanged. This differs from prior wide AxisState
+count record,where count read and axis shared addressed storage. Same axis
+sequence0,1,2 with exit3,reads/payloads/calls/float arithmetic/cleanup untouched.
+No explicit sign mask,fixedregister,volatile,asm,helper/header/ABI/signature/
+flags/matcher/denominator/dummy effects. Source restored in finally using
+original bytes. No native type claim,compiler evidence only.
+
+| Type | Source | Inventory | Opcode | Control | Calls | Size | Instructions | BIC31 / ANDS127 / UXTB |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| unsigned char control | 98.3 | 95.8 | 97.4 | 98.7 | 100 | 99.5 | 641 | 1 / 3 / 3 |
+| int | 98.0 | 96.0 | 97.5 | 96.6 | 100 | 100 | 638 | 4 / 0 / 0 |
+| unsigned int | 98.0 | 96.0 | 97.5 | 96.6 | 100 | 100 | 638 | 4 / 0 / 0 |
+
+Signed/unsigned wide loops produce whole identical object. Actual count3
+and all metrics measured by unchanged asmdiff against canonical target.
+Important refinement: ordinary wide axes do restore original mask phenotype;
+previous negative wide-axis/count-record results do not rule that out.
+Inventory/opcode/size improve but control loses2.1 points,primary regresses;
+none retained. Next hypothesis can isolate dispatch/control placement with
+wide standalone axes,not add artificial masks. No compiler ceiling claim.
+Historical subset snapshots read during preparation have same current body
+after hypothetical axis-width replacement;not claimed newly compiled or
+unsearched universal corpus. No change to fixed-three denominator or scoring.
+
+All three compiles/direct disassemblies completed exit0;no new focused full-
+unit verifier or strict sequence score claimed. Accepted full/native proof
+binding audit rechecked204 TUs/4619 comparisons/202 unaffected objects,actual
+linked2079/byte959 sets unchanged,no loss/gain,body/signature/flags intact.
+No fresh full/native/game/device/Android execution. Means98.40/98.41,both99
+ gates unmet,goal active. Main untouched,report-only commit,no push/PR/merge.
+No cleanup this continuation. Evidence:
+`_work/enh_plain_axis_diagnostic_20261008.py`,
+`_work/enh_plain_axis_diagnostic_20261008.json`,three compiled base objects.
