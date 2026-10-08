@@ -1,0 +1,496 @@
+{
+  "baseline_commit": "473310054460d0eef759db67b1a59064a06f2fb1",
+  "unit": "game/ui/HangarWindow",
+  "frozen_baseline": "hangar_unique_baseline_2026-10-08.json",
+  "unique_body_count": 30,
+  "weight_sum": 10445,
+  "definition": "Frozen original even ARM addresses; aliases counted once; unchanged canonical source_match per body. Rollup is not rounded for pass/fail.",
+  "baseline_unweighted": 98.93333333333334,
+  "baseline_weighted": 94.584729535663,
+  "unweighted": 99.34,
+  "weighted": 98.00704643370034,
+  "weighted_numerator": "1023683.6",
+  "threshold": 98.0,
+  "threshold_pass": true,
+  "before_display_rounding_diagnostic": {
+    "unweighted": 99.34906831848708,
+    "weighted": 98.02831741991189,
+    "method": "Same source_shape_metrics arithmetic before its existing one-decimal display rounding; separate local observation, no verifier file edits."
+  },
+  "functions": [
+    {
+      "address": "0x147d20",
+      "symbol": "_ZN12HangarWindowC1Ev",
+      "aliases": [
+        "_ZN12HangarWindowC1Ev",
+        "_ZN12HangarWindowC2Ev"
+      ],
+      "weight": 38,
+      "source_match": 100.0,
+      "match": 97.4,
+      "baseline_source_match": 100.0,
+      "baseline_match": 97.4,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x147d9c",
+      "symbol": "_ZN12HangarWindowD1Ev",
+      "aliases": [
+        "_ZN12HangarWindowD1Ev",
+        "_ZN12HangarWindowD2Ev"
+      ],
+      "weight": 52,
+      "source_match": 100.0,
+      "match": 100.0,
+      "baseline_source_match": 100.0,
+      "baseline_match": 100.0,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x147e24",
+      "symbol": "_ZN12HangarWindow10initializeEv",
+      "aliases": [
+        "_ZN12HangarWindow10initializeEv"
+      ],
+      "weight": 1101,
+      "source_match": 97.7,
+      "match": 60.2,
+      "baseline_source_match": 97.2,
+      "baseline_match": 63.2,
+      "source_before_display_rounding": 97.73885593010452
+    },
+    {
+      "address": "0x148a10",
+      "symbol": "_ZN12HangarWindow27refreshCurrentContentHeightEv",
+      "aliases": [
+        "_ZN12HangarWindow27refreshCurrentContentHeightEv"
+      ],
+      "weight": 19,
+      "source_match": 100.0,
+      "match": 100.0,
+      "baseline_source_match": 100.0,
+      "baseline_match": 100.0,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x148a40",
+      "symbol": "_ZN12HangarWindow13isInitializedEv",
+      "aliases": [
+        "_ZN12HangarWindow13isInitializedEv"
+      ],
+      "weight": 2,
+      "source_match": 100.0,
+      "match": 100.0,
+      "baseline_source_match": 100.0,
+      "baseline_match": 100.0,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x148a44",
+      "symbol": "_ZN12HangarWindow13getCurrentTabEv",
+      "aliases": [
+        "_ZN12HangarWindow13getCurrentTabEv"
+      ],
+      "weight": 2,
+      "source_match": 100.0,
+      "match": 100.0,
+      "baseline_source_match": 100.0,
+      "baseline_match": 100.0,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x148a4a",
+      "symbol": "_ZN12HangarWindow8listModeEv",
+      "aliases": [
+        "_ZN12HangarWindow8listModeEv"
+      ],
+      "weight": 10,
+      "source_match": 100.0,
+      "match": 100.0,
+      "baseline_source_match": 100.0,
+      "baseline_match": 100.0,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x148a64",
+      "symbol": "_ZN12HangarWindow15isInSpecialModeEv",
+      "aliases": [
+        "_ZN12HangarWindow15isInSpecialModeEv"
+      ],
+      "weight": 9,
+      "source_match": 100.0,
+      "match": 100.0,
+      "baseline_source_match": 100.0,
+      "baseline_match": 100.0,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x148a7a",
+      "symbol": "_ZN12HangarWindow14getCurrentItemEv",
+      "aliases": [
+        "_ZN12HangarWindow14getCurrentItemEv"
+      ],
+      "weight": 2,
+      "source_match": 100.0,
+      "match": 100.0,
+      "baseline_source_match": 100.0,
+      "baseline_match": 100.0,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x148a7e",
+      "symbol": "_ZN12HangarWindow6updateEi",
+      "aliases": [
+        "_ZN12HangarWindow6updateEi"
+      ],
+      "weight": 175,
+      "source_match": 100.0,
+      "match": 97.1,
+      "baseline_source_match": 100.0,
+      "baseline_match": 97.1,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x148c68",
+      "symbol": "_ZN12HangarWindow11transactionEb",
+      "aliases": [
+        "_ZN12HangarWindow11transactionEb"
+      ],
+      "weight": 332,
+      "source_match": 98.1,
+      "match": 60.8,
+      "baseline_source_match": 98.1,
+      "baseline_match": 60.8,
+      "source_before_display_rounding": 98.0862414109194
+    },
+    {
+      "address": "0x14900c",
+      "symbol": "_ZN12HangarWindow37refreshCargoAvailabilityForBlueprintsEv",
+      "aliases": [
+        "_ZN12HangarWindow37refreshCargoAvailabilityForBlueprintsEv"
+      ],
+      "weight": 71,
+      "source_match": 100.0,
+      "match": 98.6,
+      "baseline_source_match": 100.0,
+      "baseline_match": 98.6,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x1490c8",
+      "symbol": "_ZN12HangarWindow8render3DEv",
+      "aliases": [
+        "_ZN12HangarWindow8render3DEv"
+      ],
+      "weight": 6,
+      "source_match": 100.0,
+      "match": 100.0,
+      "baseline_source_match": 100.0,
+      "baseline_match": 100.0,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x1490d8",
+      "symbol": "_ZN12HangarWindow6renderEv",
+      "aliases": [
+        "_ZN12HangarWindow6renderEv"
+      ],
+      "weight": 3616,
+      "source_match": 97.1,
+      "match": 35.8,
+      "baseline_source_match": 90.0,
+      "baseline_match": 9.1,
+      "source_before_display_rounding": 97.12885486638766
+    },
+    {
+      "address": "0x14b6bc",
+      "symbol": "_ZN12HangarWindow25getRelativeScrollStartPosEv",
+      "aliases": [
+        "_ZN12HangarWindow25getRelativeScrollStartPosEv"
+      ],
+      "weight": 14,
+      "source_match": 100.0,
+      "match": 100.0,
+      "baseline_source_match": 100.0,
+      "baseline_match": 100.0,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x14b6ec",
+      "symbol": "_ZN12HangarWindow23getRelativeScrollHeightEv",
+      "aliases": [
+        "_ZN12HangarWindow23getRelativeScrollHeightEv"
+      ],
+      "weight": 27,
+      "source_match": 96.3,
+      "match": 63.0,
+      "baseline_source_match": 96.3,
+      "baseline_match": 63.0,
+      "source_before_display_rounding": 96.2962962962963
+    },
+    {
+      "address": "0x14b740",
+      "symbol": "_ZN12HangarWindow12OnTouchBeginEii",
+      "aliases": [
+        "_ZN12HangarWindow12OnTouchBeginEii"
+      ],
+      "weight": 440,
+      "source_match": 98.1,
+      "match": 90.5,
+      "baseline_source_match": 98.1,
+      "baseline_match": 90.5,
+      "source_before_display_rounding": 98.13555300834388
+    },
+    {
+      "address": "0x14bbec",
+      "symbol": "_ZN12HangarWindow13highlightItemEP8ListItem",
+      "aliases": [
+        "_ZN12HangarWindow13highlightItemEP8ListItem"
+      ],
+      "weight": 39,
+      "source_match": 100.0,
+      "match": 89.7,
+      "baseline_source_match": 100.0,
+      "baseline_match": 89.7,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x14bc50",
+      "symbol": "_ZN12HangarWindow25autoEquipSecondaryWeaponsEi",
+      "aliases": [
+        "_ZN12HangarWindow25autoEquipSecondaryWeaponsEi"
+      ],
+      "weight": 215,
+      "source_match": 99.2,
+      "match": 95.6,
+      "baseline_source_match": 99.2,
+      "baseline_match": 95.6,
+      "source_before_display_rounding": 99.2383128414528
+    },
+    {
+      "address": "0x14be98",
+      "symbol": "_ZN12HangarWindow11OnTouchMoveEii",
+      "aliases": [
+        "_ZN12HangarWindow11OnTouchMoveEii"
+      ],
+      "weight": 138,
+      "source_match": 99.1,
+      "match": 95.7,
+      "baseline_source_match": 99.1,
+      "baseline_match": 95.7,
+      "source_before_display_rounding": 99.13874614594039
+    },
+    {
+      "address": "0x14bff0",
+      "symbol": "_ZN12HangarWindow11setSellModeEb",
+      "aliases": [
+        "_ZN12HangarWindow11setSellModeEb"
+      ],
+      "weight": 685,
+      "source_match": 99.4,
+      "match": 86.5,
+      "baseline_source_match": 99.4,
+      "baseline_match": 86.5,
+      "source_before_display_rounding": 99.43782366437233
+    },
+    {
+      "address": "0x14c740",
+      "symbol": "_ZN12HangarWindow10OnTouchEndEii",
+      "aliases": [
+        "_ZN12HangarWindow10OnTouchEndEii"
+      ],
+      "weight": 2070,
+      "source_match": 98.0,
+      "match": 70.3,
+      "baseline_source_match": 93.4,
+      "baseline_match": 20.2,
+      "source_before_display_rounding": 97.99622779771668
+    },
+    {
+      "address": "0x14de04",
+      "symbol": "_ZN12HangarWindow11demountItemEP4Itemi",
+      "aliases": [
+        "_ZN12HangarWindow11demountItemEP4Itemi"
+      ],
+      "weight": 140,
+      "source_match": 100.0,
+      "match": 98.6,
+      "baseline_source_match": 100.0,
+      "baseline_match": 98.6,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x14df98",
+      "symbol": "_ZN12HangarWindow9mountItemEP4Item",
+      "aliases": [
+        "_ZN12HangarWindow9mountItemEP4Item"
+      ],
+      "weight": 147,
+      "source_match": 100.0,
+      "match": 80.3,
+      "baseline_source_match": 100.0,
+      "baseline_match": 80.3,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x14e118",
+      "symbol": "_ZN12HangarWindow20showCreditsBuyWindowEv",
+      "aliases": [
+        "_ZN12HangarWindow20showCreditsBuyWindowEv"
+      ],
+      "weight": 200,
+      "source_match": 100.0,
+      "match": 100.0,
+      "baseline_source_match": 100.0,
+      "baseline_match": 100.0,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x14e32c",
+      "symbol": "_ZN12HangarWindow21showFreeCreditsWindowEv",
+      "aliases": [
+        "_ZN12HangarWindow21showFreeCreditsWindowEv"
+      ],
+      "weight": 167,
+      "source_match": 99.0,
+      "match": 89.2,
+      "baseline_source_match": 99.0,
+      "baseline_match": 89.2,
+      "source_before_display_rounding": 99.03614457831324
+    },
+    {
+      "address": "0x14e4f0",
+      "symbol": "_ZN12HangarWindow12readyToCloseEv",
+      "aliases": [
+        "_ZN12HangarWindow12readyToCloseEv"
+      ],
+      "weight": 35,
+      "source_match": 100.0,
+      "match": 100.0,
+      "baseline_source_match": 100.0,
+      "baseline_match": 100.0,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x14e550",
+      "symbol": "_ZN12HangarWindow24currentItemIsHighlightedEv",
+      "aliases": [
+        "_ZN12HangarWindow24currentItemIsHighlightedEv"
+      ],
+      "weight": 14,
+      "source_match": 100.0,
+      "match": 100.0,
+      "baseline_source_match": 100.0,
+      "baseline_match": 100.0,
+      "source_before_display_rounding": 100.0
+    },
+    {
+      "address": "0x14e570",
+      "symbol": "_ZN12HangarWindow10selectItemEP8ListItem",
+      "aliases": [
+        "_ZN12HangarWindow10selectItemEP8ListItem"
+      ],
+      "weight": 676,
+      "source_match": 98.2,
+      "match": 73.1,
+      "baseline_source_match": 98.2,
+      "baseline_match": 73.1,
+      "source_before_display_rounding": 98.23899301476531
+    },
+    {
+      "address": "0x14ecc0",
+      "symbol": "_ZN12HangarWindow11hideMessageEv",
+      "aliases": [
+        "_ZN12HangarWindow11hideMessageEv"
+      ],
+      "weight": 3,
+      "source_match": 100.0,
+      "match": 100.0,
+      "baseline_source_match": 100.0,
+      "baseline_match": 100.0,
+      "source_before_display_rounding": 100.0
+    }
+  ],
+  "focused_reports": {
+    "baseline-hangar.json": "c04d13a170e440b1e53607eda7289db38a5ce54e11bfd05ac44f318c38e5a457",
+    "final-hangar.json": "3a1a464ffc6291c2d0e973fbc1d1ac6c88bd29f34fe8640638d8ecb4350e1a3b"
+  },
+  "full_validation": {
+    "passed": true,
+    "native_gof2_static_library_build": true,
+    "arm_tus": 206,
+    "arm_failed": 0,
+    "verifier_tests": {
+      "discovery_run": 36,
+      "discovery_skipped": 1,
+      "discovery_failed": 0,
+      "real_ArrayInstantiations_alias_tests": 2,
+      "real_alias_skipped": 0,
+      "real_alias_failed": 0
+    },
+    "original_coverage_unchanged": true,
+    "coverage": {
+      "original_functions": 4524,
+      "compared_unique": 4323,
+      "missing": 201,
+      "missing_wrong_type": 0,
+      "missing_absent": 201,
+      "skipped": 0
+    },
+    "compared_original_symbol_names_unchanged": true,
+    "original_name_count": 4323,
+    "original_names_sha256": "1bb9a9f16ec60a5a1b41dc989d650b1a93240f54900313c2cf51b51cbe3f0615",
+    "comparison_pairs": {
+      "baseline_count": 4688,
+      "final_count": 4689,
+      "lost": [],
+      "added": [
+        [
+          "game\\ui\\HangarWindow",
+          "_Z11ArrayRemoveIP4ShipEvT_R5ArrayIS2_E"
+        ]
+      ],
+      "reason_added": "Restored native ArrayRemove<Ship*> call emits another instance of an already-compared original symbol. Excluded from frozen HangarWindow rollup."
+    },
+    "non_original_extra_symbols": {
+      "baseline": 121,
+      "final": 116,
+      "removed": [
+        "_Z14ArrayRemoveAllIP4ItemEvR5ArrayIT_E",
+        "_ZZN12HangarWindow10OnTouchEndEiiENK3$_4clEj",
+        "_ZZN12HangarWindow10OnTouchEndEiiENK3$_5clEi",
+        "_ZZN12HangarWindow10OnTouchEndEiiENK3$_6clEjjb",
+        "_ZZN12HangarWindow10OnTouchEndEiiENK3$_7clEv"
+      ],
+      "added": []
+    },
+    "exact_sets": {
+      "linked_equal": {
+        "baseline_count": 2301,
+        "final_count": 2301,
+        "lost": [],
+        "gained": [],
+        "baseline_set_sha256": "66b88e4433ab45cf93a884cb8be5f96900fb7776d43f65072942dd1cce9a8fe4",
+        "final_set_sha256": "66b88e4433ab45cf93a884cb8be5f96900fb7776d43f65072942dd1cce9a8fe4"
+      },
+      "bytes_equal": {
+        "baseline_count": 997,
+        "final_count": 997,
+        "lost": [],
+        "gained": [],
+        "baseline_set_sha256": "48ee1ceadcb8c63e8233535eb11a8b2ca05e30ce5faf05249076893ee9fcedcd",
+        "final_set_sha256": "48ee1ceadcb8c63e8233535eb11a8b2ca05e30ce5faf05249076893ee9fcedcd"
+      }
+    },
+    "scoped_full_metrics_agree": true,
+    "reports_sha256": {
+      "baseline-full.json": "8830751da12c42773254fe39dc1b6a1cb4cb5541b18540d2f6c508b9c55f5f97",
+      "final-full.json": "1f4d78f7833808cf252c1f5725810a77be3b050cfa2cefb3b1f6d2c04751c6b1"
+    },
+    "canonical_verifier_files_unchanged": true
+  },
+  "source_sha256_lf": {
+    "src/game/ui/HangarWindow.cpp": "577a7b6172fa4e7c0ef6e66221d7abdddea7639961f8011851c84deafbe49ac0",
+    "src/engine/core/NFC.h": "985fdd78c28d664e080c2906c61cf0339dff2a4a40f88ffb0cf3b724881678a6"
+  }
+}
