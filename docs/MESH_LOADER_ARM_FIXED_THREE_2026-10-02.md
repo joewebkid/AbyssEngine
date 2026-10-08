@@ -11761,3 +11761,31 @@ No fresh full/native/game/device/Android execution. Means98.40/98.41,both99
 No cleanup this continuation. Evidence:
 `_work/enh_plain_axis_diagnostic_20261008.py`,
 `_work/enh_plain_axis_diagnostic_20261008.json`,three compiled base objects.
+
+## Continuation: Wide standalone axis paired frame captures
+
+Five fresh focused compiles and four historical object rebindings on 2026-10-08. All nine rows independently rechecked against canonical original Mesh.o with unchanged asmdiff, including all metrics, instruction counts, BIC sign masks and whole-object hashes. Historical source bodies were checked equal to current hypothetical wide-axis/frame-capture bodies before reuse; those four objects are not newly compiled and their old build dependencies were not freshly revalidated.
+
+Capture int frame = (int)value after the existing successful value read and before axis dispatch in each selected section. Test all three pairs of position/scale/rotation sections with standalone int axes and separately addressed count variables. Single-section and all-section forms are historical controls. Preserve axis sequence, reads, calls and Insert order. No helpers, headers, ABI, flags, matcher, denominator, explicit masks, dummy effects or arithmetic changes. Source restored using original bytes in finally. This is a compiler hypothesis, not recovered original declarations.
+
+| Form | Fresh | Source | Inventory | Opcode | Control | Size | Instructions | BIC31 |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| accepted_control | True | 98.3 | 95.8 | 97.4 | 98.7 | 99.5 | 641 | 1 |
+| wide_control | True | 98.0 | 96.0 | 97.5 | 96.6 | 100.0 | 638 | 4 |
+| wide_pair_3 | True | 97.9 | 95.3 | 96.8 | 98.0 | 99.5 | 641 | 4 |
+| wide_pair_5 | True | 97.9 | 95.3 | 96.8 | 98.0 | 99.5 | 641 | 4 |
+| wide_pair_6 | True | 97.9 | 95.4 | 96.8 | 98.0 | 99.3 | 642 | 4 |
+| historical_position_frame | False | 98.0 | 95.8 | 97.3 | 97.3 | 99.8 | 639 | 4 |
+| historical_scale_frame | False | 98.0 | 95.8 | 97.3 | 97.3 | 99.7 | 640 | 4 |
+| historical_rotation_frame | False | 98.0 | 95.8 | 97.3 | 97.3 | 99.7 | 640 | 4 |
+| historical_all_axis_frames | False | 97.8 | 94.8 | 96.3 | 98.7 | 99.2 | 643 | 4 |
+
+Calls remain 100 in all rows; nine whole-object hashes are distinct. Each capture restores 0.7 control points relative to the wide-axis control; all three captures reach accepted control 98.7, but inventory/opcode regress and primary stays below accepted 98.3. Pair forms reach only 97.9. None retained. These specific wide-axis capture subsets are exhausted; no compiler ceiling inferred. No focused full-unit verifier or fresh strict sequence score claimed.
+
+Accepted proof-binding audit rechecked 204 TUs, 4619 comparisons, 202 unaffected objects, actual linked-exact 2079 and byte-exact 959 sets with no losses/gains. Source boundaries, signatures and canonical flags remain unchanged. This is a read-only binding audit of existing full/native proof, not a fresh full build or native/game/device/Android run. Fixed-three means remain 98.40 / 98.41; both 99 gates unmet.
+
+Main intake recheck: main HEAD e473d545 remains previously incorporated history; compiled dependency set and all four differing input hashes match the saved intake. Previously measured main-body imports regress, header-only import is object-identical to accepted. No main changes retained; main untouched.
+
+Disk housekeeping: independently checked 20 manifest entries, all deleted original-target copies absent, each surviving canonical reference hash/size matches. Only verified untracked duplicate original Core targets removed (528240 bytes); canonical targets, compiled bases, source snapshots, reports, native fixtures and Git storage preserved. Manifest and system-temp backup were written before deletion.
+
+Evidence: `_work/enh_wide_axis_frame_pairs_20261008.py`, matching JSON and nine compiled objects; `_work/duplicate_wide_frame20_core_target_cleanup_20261008.json`; `_work/main_intake_snapshot.json` and existing intake results. Report-only continuation; no push, PR or merge.
