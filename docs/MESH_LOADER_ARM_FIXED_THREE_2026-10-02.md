@@ -11938,3 +11938,47 @@ Current accepted full/native proof-binding audit passes204 TUs/4619 comparisons/
 New compiled trial evidence stays on C: `C:/Users/Dima/AppData/Local/Temp/gof2-child-index-{count,parameter}-sweep-20261008/results.json` and respective focused base objects. Generators `_work/create_child_index_count_sweep_20261008.py` and `_work/create_child_index_parameter_sweep_20261008.py`.
 
 Before report staging,10 verified untracked duplicate original Core targets removed264120 bytes to provide A-space. Resolved own_work paths, single-object target, canonical hash and workspace/system-temp manifest backup checked before literal deletion; independently rechecked all deleted target absence and surviving reference hash/size. No compiled bases, source snapshots, reports, native fixtures, canonical targets, main or Git storage removed. Manifest `_work/duplicate_child_expansion10_core_target_cleanup_20261008.json`. Source unchanged; report-only commit, no push/PR/merge.
+
+## Continuation: Child-index width and guard interactions
+
+Continuation afterfb8694ed: preceding turn yielded verified negative three-field-expansion evidence; retain475df44a child/index pair and current full proof. Inspect current source, binding audit and prior early/bool guard generators before selecting width and guard interactions in this new accepted context.
+
+Width family: change the actual index member to unsigned short, int, unsigned long long or long long, each in both pointer/index field orders. Original unsigned-short subCount stays separately addressed and unchanged. For unsigned-short index, maximum count65535 visits0..65534, increments to65535 then fails bound without increment/wrap; no byte/signed-short index used. Signed32/64 and unsigned64 also contain full0..65535 range. Actual MeshReadData only updates supplied pointer field, not adjacent counter. Every field used; ordinary natural alignment of64-bit counter is not artificial padding.
+
+Guard family: new child/index pair combined with three early-return entry checks (combined or either null-check order), early combined plus reversed enhanced/plain failure guard, invalid/valid boolean chains, pure boolean bitwise-and, and ternary. Same pointer comparisons, error values and caller read success criteria; bitwise compares only non-dereferencing pointers. These spellings existed in older no-pair context, so scores are freshly measured here rather than imported from old ledgers. No allocations/reads/call order/float/cleanup/channel/helper/header/export/ABI/signature/flags/matcher/denominator/dummy effects/volatile/asm/fixed-register changes. Restore raw source bytes in finally for both sweeps. All19 focused compiles/direct measurements completed exit0. These are compiler source-form hypotheses, not recovered original syntax.
+
+| Family / form | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| width / accepted_control | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| width / unsigned_short_child_first | 98.2 | 94.2 | 97.4 | 100.0 | 99.6 | 292 |
+| width / unsigned_short_index_first | 98.0 | 93.9 | 97.4 | 100.0 | 99.0 | 294 |
+| width / int_child_first | 98.0 | 94.4 | 97.9 | 97.9 | 100.0 | 291 |
+| width / int_index_first | 97.8 | 94.0 | 97.9 | 97.9 | 99.3 | 293 |
+| width / unsigned_long_long_child_first | 96.7 | 92.0 | 97.2 | 95.8 | 98.6 | 296 |
+| width / unsigned_long_long_index_first | 96.8 | 92.3 | 97.2 | 95.8 | 98.6 | 296 |
+| width / long_long_child_first | 96.2 | 91.6 | 96.9 | 93.8 | 98.6 | 296 |
+| width / long_long_index_first | 96.2 | 92.0 | 96.9 | 93.8 | 98.6 | 296 |
+| guards / accepted_control | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / early_combined | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / early_engine_then_path | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / early_path_then_engine | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / early_enhanced_failure_guard | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / early_plain_failure_guard | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / invalid_chain | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / valid_chain | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / boolean_and | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+| guards / ternary_guard | 98.6 | 94.7 | 98.2 | 100.0 | 100.0 | 291 |
+
+All19 rows independently rebound to canonical original and rechecked for every metric, count and whole-object hash; 10 whole hashes distinct. Calls100 throughout. Eight width forms regress to96.2..98.2. All nine non-control guards tie accepted98.6 and every component; seven are whole-object identical to accepted. Invalid/valid chains share a second object with unchanged components and no primary gain. Equal scores are not identity. None retained. These exact pair-width and guard contexts are exhausted; no compiler ceiling claimed.
+
+Current accepted full/native proof-binding audit again checks204 TUs/4619 comparisons/202 unaffected objects, actual linked-exact2079 and byte-exact959 pair sets without losses/gains, boundaries/signatures/flags, native body snapshots and logs. No new full/native/game/device/Android runtime run or focused full-unit verifier/strict sequence score claimed for rejected forms. Source98.6/98.5/98.3, original weights291/873/636,total1800 and means98.47/98.45 unchanged; both99 gates unmet, goal active.
+
+Trial evidence on C: `C:/Users/Dima/AppData/Local/Temp/gof2-child-index-{width,guards}-sweep-20261008/results.json` and19 compiled base objects; generators `_work/create_child_index_width_sweep_20261008.py` and `_work/create_child_index_guards_sweep_20261008.py`.
+
+Disk housekeeping for report staging:10 verified untracked duplicate original Core targets removed264120 bytes; canonical hash/size, resolved own_work path/single-object guards and workspace/system-temp manifest backup precede literal deletion. All target absence/reference hashes/sizes independently audited afterward. Compiled bases, source snapshots, reports, native fixtures, canonical targets, main and Git storage preserved. Manifest `_work/duplicate_child_width10_core_target_cleanup_20261008.json`. Source unchanged; report-only commit, no push/PR/merge.
+
+Cleanup preparation initially found only2 eligible create-family originals where10 were required; exact-count guard stopped before any deletion and report writer stopped on missing manifest. Expanded search to other own_work focused original targets with baseline/canonical names and out-of-worktree resolved junctions excluded; selected10 individually hash-verified untracked single-object originals. Compilation/validation was not restarted.
+
+Additional staging/commit attempts failed explicitly writing index.lock due disk space; HEAD remainedfb8694ed. Removed10 more checked duplicate original Core targets264120 bytes, with system-temp manifest saved before deletion and workspace copy afterward; independently verified reference hashes/sizes and deleted-path absence. Manifest `_work/duplicate_child_width_commit10_core_target_cleanup_20261008.json`. No Git locks/packs or compiled artifacts removed.
+
+The264120-byte extra cleanup was insufficient for another index write. Same guarded procedure removed40 additional exact duplicate original Core targets1056480 bytes, independently audited all hashes/sizes/absence, system-temp manifest before deletion and workspace copy afterward. Manifest `_work/duplicate_child_width_commit40_core_target_cleanup_20261008.json`. Native/ARM validation was not restarted; all compiled results remain preserved.
