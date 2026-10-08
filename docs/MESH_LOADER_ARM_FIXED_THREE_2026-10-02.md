@@ -11521,3 +11521,52 @@ recursive deletion. Evidence:
 `_work/read_triangle_math_records_sweep.py`,
 `_work/read_triangle_math_records_identities.json`,
 `_work/read_triangle_math_records_call_relocations.json`.
+
+
+## Continuation: Read triangle output Vector and record interaction
+
+Eight focused cases2026-10-08 after9db19f20: accepted array control,standalone
+Vector tng and all six triangle math record forms with Vector tng field.
+Vector.h has existing size0x0c and x/y/z offsets0/4/8 assertions. Default
+construction adds no user constructor or zero initialization. Existing
+Y/X/Z assignment order/formulas retained,direct tng.y/x/z avoids operator[],
+three Vector+= calls receive actual Vector field,avoids float-pointer cast.
+No copy/helper/header/ABI/signature/flags/matcher/denominator change.
+Compiler type/alias hypothesis,not recovered original source.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Calls | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 874 |
+| vector_accepted_control | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 874 |
+| vector_numerators_forward | 97.5 / 51.7 | 93.4 | 97.2 | 99.2 | 98.2 | 877 |
+| vector_numerators_reverse | 98.2 / 52.9 | 94.5 | 97.9 | 98.8 | 100.0 | 878 |
+| vector_reciprocal_forward | 97.7 / 53.0 | 94.0 | 97.4 | 99.2 | 98.2 | 875 |
+| vector_reciprocal_reverse | 98.3 / 54.3 | 95.0 | 98.0 | 98.8 | 100.0 | 876 |
+| vector_all_forward | 97.5 / 51.5 | 93.7 | 97.1 | 99.2 | 98.2 | 879 |
+| vector_all_reverse | 98.2 / 52.8 | 95.0 | 97.8 | 98.8 | 100.0 | 880 |
+
+Each Vector variant reproduces whole corresponding prior array object;
+standalone Vector also whole accepted. Seven hashes across eight rows. No
+primary gain,none retained;type/layout substitution does not fix prior
+register-alias or static-call differences. Raw named-body relocation counters
+again:control/reverse55 direct calls,forward54;only missing one _ZdaPv,no
+new target. Source frees remain;not proof of a dynamic leak,no dummy calls.
+Do not expand equivalent array/Vector type substitutions here;no compiler
+ceiling claim. All shape metrics/counts/hashes/call differences directly
+rebound;prior-family whole-object equality independently checked. Sweep
+completed exit0,source restored;accepted existing full/native proof binding
+passes204 TUs/4619 comparisons/202 unaffected objects,actual linked2079/
+byte959 sets unchanged,no loss/gain,body/signature/flags intact. No fresh
+full/native/game/device/Android execution. Means98.40/98.41,both99.0 gates
+unmet,goal active. Main untouched,report-only commit,no push/PR/merge.
+
+Preparation removed40 exact generated original Core targets from sorted read
+family,single-object targets,paths resolved within own_work,untracked,canonical
+SHA match,exact40 guard,manifest/system-temp backup before literal removal/
+immediate reference+target rehash.1,056,480 logical bytes;all40 mappings
+checked. Bases/source/reports/native/accepted/baseline/main/Git archive retained,
+no recursive removal. Evidence:
+`_work/duplicate_triangle_vector40_core_target_cleanup_20261008.json`,
+`_work/read_triangle_vector_records_sweep.py`,
+`_work/read_triangle_vector_records_identities.json`,
+`_work/read_triangle_vector_records_call_relocations.json`.
