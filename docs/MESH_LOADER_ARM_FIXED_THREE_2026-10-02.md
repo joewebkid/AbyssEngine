@@ -11053,3 +11053,56 @@ recursive deletion. Inline PowerShell invocation;manifest:
 Evidence:`_work/create_magic_engine_guard_interaction_sweep.py`,
 `_work/create_magic_engine_guard_interaction_identities.json`,14 focused
 objects/reports and rechecked accepted binding audit.
+
+
+## Continuation: Addressed magic/engine reader success guards
+
+Nine focused measurements on2026-10-08 start from5a3b8fe3. Following
+branch-kind diagnosis, test every seven nonempty subset of header-read,
+enhanced-root-reader and plain-root-reader success tests rewritten as
+equivalent failure guards/goto failed in higher-inventory magic/engine
+record. Accepted and record controls. DeMorgan header expression preserves
+short-circuit order, skipped two-byte header read and vertexFormat check.
+Enhanced root still requires exactly1;plain root still accepts non--1;
+child-reader failure semantics untouched. Same file calls/initialization,
+allocations,cleanup,upper time bound. No helper/header/ABI/signature/flags/
+matcher/denominator changes or dummy branches. No original source recovered.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| record_control | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_1 | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_2 | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_3 | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_4 | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_5 | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_6 | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| failure_guards_7 | 97.8 / 60.5 | 94.6 | 97.4 | 99.0 | 98.3 | 297 |
+
+First6 subsets reproduce whole record-control object. All3 together change
+code:control95.8->99.0 but instruction count287->297,inventory95.6->94.6,
+opcode97.7->97.4;primary97.8 still below accepted98.4. Component gains again
+not independent. No primary gain;none retained. Do not expand equivalent
+success/failure guard subsets here;no compiler ceiling inferred.
+Sweep exited zero;9 compile/focused verifies pass. All component metrics,
+counts/hashes independently checked. Code/native fixtures restored to
+accepted;existing204-TU/4619-comparison full/native binding audit passes:
+202 unaffected objects,actual linked2079/byte959 pair sets unchanged with
+no loss/gain,canonical flags/body/signature boundaries intact. No fresh
+full rebuild/native execution/device/Android/game test claimed. Means remain
+98.40/98.41,both99.0 gates unmet;goal active. Main untouched;report-only
+commit;no push/PR/merge.
+
+Preparation removed40 verified generated original Core targets from sorted
+explicit create directory family,only single-object focused targets with
+canonical SHA-256. Missing/non-single/different hash targets skipped.
+Resolved paths inside own _work,untracked,reference protected;exact40 guard,
+manifest/system-temp backup before literal-path removal,immediate rehash.
+Cleanup exited zero,reclaimed1,056,480 logical bytes;all40 mappings rebound.
+Bases/reports/sources/accepted/baseline/main/Git archive retained;no recursive
+deletion. Inline PowerShell invocation;manifest:
+`_work/duplicate_create40_core_target_cleanup_20261008.json`.
+Evidence:`_work/create_magic_engine_success_guard_sweep.py`,
+`_work/create_magic_engine_success_guard_identities.json`,9 focused objects/
+reports and rechecked accepted binding audit.
