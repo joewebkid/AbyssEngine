@@ -11106,3 +11106,55 @@ deletion. Inline PowerShell invocation;manifest:
 Evidence:`_work/create_magic_engine_success_guard_sweep.py`,
 `_work/create_magic_engine_success_guard_identities.json`,9 focused objects/
 reports and rechecked accepted binding audit.
+
+
+## Continuation: Post-open magic/engine aggregate constness
+
+Ten focused cases on 2026-10-08: accepted and prior magic/engine record
+controls, then eight post-OpenRead aggregate states: engine-first versus
+magic-first, mutable versus const engine pointer, success versus all-three
+failure guards. State is initialized with the existing seven-star magic
+string only after OpenRead succeeds; remove the corresponding strcpy.
+Magic bytes and initialization/read order preserved, parameter engine is
+unchanged. No extra helper/constructor, ABI/header/flags/matcher changes.
+This is a compiler hypothesis, not recovered original source.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| old_record_control | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| engine_first_mutable_success | 96.6 / 62.8 | 91.3 | 97.0 | 95.8 | 98.9 | 289 |
+| engine_first_mutable_failure | 96.6 / 62.8 | 91.3 | 97.0 | 95.8 | 98.9 | 289 |
+| engine_first_const_success | 96.6 / 62.8 | 91.3 | 97.0 | 95.8 | 98.9 | 289 |
+| engine_first_const_failure | 96.6 / 62.8 | 91.3 | 97.0 | 95.8 | 98.9 | 289 |
+| magic_first_mutable_success | 96.8 / 62.6 | 92.4 | 97.7 | 95.8 | 98.2 | 287 |
+| magic_first_mutable_failure | 96.8 / 62.6 | 92.4 | 97.7 | 95.8 | 98.2 | 287 |
+| magic_first_const_success | 96.8 / 62.6 | 92.4 | 97.7 | 95.8 | 98.2 | 287 |
+| magic_first_const_failure | 96.8 / 62.6 | 92.4 | 97.7 | 95.8 | 98.2 | 287 |
+
+All four engine-first variants have identical whole objects; likewise all
+four magic-first variants. Constness and success/failure inversion change
+no compiled code within either order. New cases regress to 96.6/96.8;
+none retained. No immutability benefit in these layouts; no compiler ceiling
+claim. All ten rows independently rebound to canonical original object,
+compiled hashes and all shape components. Initial sweep exited 1 after
+seven rows; verifier said no comparable functions and disk free was 20,480
+bytes. Disk pressure suspected, not a proven explicit ENOSPC diagnostic.
+Source restored by finally. Resume skips those seven completed rows;
+remaining three compile/verifies completed exit zero. Thirty exact duplicate
+generated Core original targets removed from explicit create directories,
+excluding this new family; single-target objects only, SHA matches canonical,
+resolved within own _work, untracked, manifest/system-temp backup before
+literal removal and immediate hash checks. 792,360 logical bytes; manifest
+independently checked. No compiled bases/source/native fixtures/report/main/
+Git archive deleted. Cleanup manifest:
+`_work/duplicate_create_const30_target_cleanup_20261008.json`.
+
+Accepted full/native binding audit passes after restoration: 204 TUs,
+4619 comparisons, 202 unaffected objects, linked-exact 2079 and byte-exact
+959 actual pair sets unchanged, body/signature boundaries and flags intact.
+No fresh full rebuild/native execution/game/device/Android test. Fixed-three
+means remain 98.40/98.41, both 99.0 gates unmet; goal active. Report-only
+commit, no push/PR/merge. Evidence:
+`_work/create_magic_engine_const_sweep.py`,
+`_work/create_magic_engine_const_identities.json`, ten focused objects/reports.
