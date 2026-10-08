@@ -10925,3 +10925,63 @@ Evidence:`_work/enh_scalar_record_signed_axis_interaction_sweep.py`,
 `_work/enh_scalar_record_signed_axis_interaction_identities.json`,9 focused
 objects/reports. Accepted means98.40/98.41,both99.0 gates unmet;goal active.
 Main untouched;report-only commit;no push/PR/merge.
+
+
+## Continuation: Scalar-record frame conversion lifetime
+
+Twelve focused measurements on2026-10-08 start from ecc95967. Continue
+profile-directed value-first scalar-key record candidate: seven nonempty
+axis-section subsets capture const int frameTime immediately after final
+successful scalar Read, before dispatch. Three actual record-field layouts
+contain float value/time and int frameTime, assigned at that same phase and
+used by all three key insertion calls. Accepted/record controls.
+Actual axes0..2 always select one existing insertion, so one conversion at
+dispatch preserves prior conversion and all failure paths. No conversion
+before Read status, no invented unused field, forced padding, dummy effect,
+file order, payload, signed-char axis or key-value arithmetic change.
+Natural local layouts; no helper/header/ABI/signature/flags/matcher/denominator
+change; hypothesis, not recovered original source.
+
+| Trial | Source | Inventory | Opcode | Control | Size | Instructions |
+|---|---:|---:|---:|---:|---:|---:|
+| accepted_control | 98.3 | 95.8 | 97.4 | 98.7 | 99.5 | 641 |
+| record_control | 98.2 | 96.3 | 97.6 | 98.7 | 98.2 | 649 |
+| scalar_frame_axes_1 | 97.2 | 94.2 | 95.8 | 98.0 | 97.9 | 650 |
+| scalar_frame_axes_2 | 97.9 | 95.7 | 97.0 | 98.7 | 98.0 | 650 |
+| scalar_frame_axes_3 | 97.1 | 94.3 | 95.9 | 98.0 | 97.4 | 653 |
+| scalar_frame_axes_4 | 97.9 | 95.7 | 97.0 | 98.7 | 98.0 | 650 |
+| scalar_frame_axes_5 | 97.3 | 94.3 | 95.6 | 98.7 | 97.9 | 651 |
+| scalar_frame_axes_6 | 97.6 | 95.1 | 96.5 | 98.7 | 97.9 | 651 |
+| scalar_frame_axes_7 | 97.4 | 94.5 | 95.8 | 98.7 | 97.9 | 651 |
+| frame_last | 97.2 | 94.3 | 96.0 | 98.7 | 96.9 | 657 |
+| frame_first | 96.1 | 92.1 | 94.4 | 97.3 | 96.6 | 657 |
+| frame_middle | 97.2 | 94.3 | 96.0 | 98.7 | 96.9 | 657 |
+
+All10 new forms regress,96.1..97.9 vs record98.2/accepted98.3. Scalar
+captures grow649->650..653 instructions; record fields grow to657, while
+inventory also falls. Capturing conversion thus fails to remove the record's
+extra operations. No equivalent frame-value layout expansion justified;
+none retained. No compiler ceiling inferred. Sweep exited zero;12 compile/
+focused verifies pass. All component metrics/counts/hashes independently
+recomputed. Code/native fixtures restored to accepted; existing204-TU/
+4619-comparison full/native evidence binding audit passes with202 unaffected
+objects and unchanged linked2079/byte959 pair sets,canonical flags and body/
+signature boundaries. No fresh native/full rebuild/device/Android/game
+runtime check claimed. Accepted means98.40/98.41,both99.0 gates unmet;
+goal active. Main untouched;report-only commit;no push/PR/merge.
+
+Space preparation removed300 generated original Mesh target duplicates from
+sorted explicit enh directory family. Only single-object focused targets
+eligible; missing/non-single targets skipped. All paths resolved inside own
+_work, untracked, canonical reference protected; digests equal retained
+typedpair-full target. Exact300 guard, manifest/system-temp backup before
+literal-path removals, immediate target/reference rehash per file. Cleanup
+process observed terminal exit0. Reclaimed868,800 logical bytes. All300
+mapping hashes independently rebound. Compiled bases,reports,sources,
+accepted/baseline/main/Git archive retained. No recursive deletion. Old
+reports' deleted original paths map via
+`_work/duplicate_enh300_target_cleanup_20261008.json`; cleanup used inline
+PowerShell tool invocation. Evidence:
+`_work/enh_scalar_record_frame_capture_sweep.py`,
+`_work/enh_scalar_record_frame_capture_identities.json`,12 focused objects/
+reports and rechecked accepted binding audit.
