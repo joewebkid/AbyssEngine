@@ -11323,3 +11323,62 @@ accepted/baseline/main/Git archive untouched,no recursive removal. Manifest:
 `_work/duplicate_countdown100_mesh_target_cleanup_20261008.json`.
 Evidence:`_work/enh_key_countdown_sweep.py`,
 `_work/enh_key_countdown_identities.json`,14 focused objects/reports.
+
+
+## Continuation: Create child-sphere merge argument references
+
+Ten focused cases2026-10-08 afterce74fdf4: accepted/shared-result controls,
+then root/child sphere references in both declaration orders and local
+MergeArguments reference-member records in both orders under both contexts.
+Declare only after successful child MeshReadData,bind root through current
+*out and child through current childPtr. No sphere copy/value initialization,
+no capture before reader could change childPtr,Merge signature/receiver/input
+and following ArrayAdd unchanged. References to original sphere storage,
+not new radius/vector arithmetic. Same read/failure/cleanup/call order.
+Compiler lifetime hypothesis,not recovered source. No helper/header/ABI/
+signature/flags/matcher/denominator/dummy effects.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| accepted_root_child_references | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| accepted_child_root_references | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| accepted_root_child_record | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| accepted_child_root_record | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| shared_control | 98.4 / 61.0 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| shared_root_child_references | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| shared_child_root_references | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| shared_root_child_record | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| shared_child_root_record | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+
+All eight new variants reproduce whole accepted Core object. Shared-result
+control itself differs(strict61.0 vs60.7),but each of its four new variants
+collapses to accepted object. No primary gain;none retained. Do not expand
+these equivalent Merge-reference declaration orders here;no compiler ceiling
+claim. Sweep completed exit0;all hashes/counts/shape components independently
+rebound to canonical original. Source restored;accepted full/native proof
+binding audit passes204 TUs/4619 comparisons/202 unaffected objects,actual
+linked2079/byte959 sets unchanged,no loss/gain,body/signature boundaries and
+flags intact. No fresh full/native/game/device/Android execution. Means
+98.40/98.41,both99.0 gates unmet,goal active. Main untouched,report-only
+commit,no push/PR/merge.
+
+Preparation removed40 exact generated original Core targets from sorted
+explicit create family,single-object targets only,paths resolved within own
+_work,untracked,canonical SHA match,exact40 guard,manifest/system-temp backup
+before literal deletion/immediate reference+target rehash.1,056,480 logical
+bytes;all40 mappings independently checked. Bases/source/reports/native/
+accepted/baseline/main/Git archive untouched,no recursive removal. Manifest:
+`_work/duplicate_child_bounds40_core_target_cleanup_20261008.json`.
+Evidence:`_work/create_child_bounds_references_sweep.py`,
+`_work/create_child_bounds_references_identities.json`,ten focused objects/
+reports and accepted existing proof binding audit.
+
+Report staging failed explicitly with loose-object/index.lock disk-full errors;
+Git failed locks/archives not manipulated. Removed another30 exact generated
+original Core targets from sorted read family,only single-object targets,
+resolved own _work/untracked/canonical SHA guard,exact30 count/system-temp
+manifest before literal removal/immediate rehash. Manifest copied after space
+available;all30 mappings audited,792,360 logical bytes. No compiled bases,
+source,reports,native,main or Git archive removed. Evidence:
+`_work/duplicate_child_bounds_read30_target_cleanup_20261008.json`.
