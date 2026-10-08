@@ -10490,3 +10490,72 @@ sources, reports, baseline/accepted/main/Git archive retained. Evidence:
 `_work/duplicate_index_remaining_core_target_cleanup_20261008.json` and
 `_work/cleanup_index_remaining_core_target_duplicates_20261008.ps1`.
 This supplements the 34-copy cleanup above; no additional code changes.
+
+
+## Continuation: Create signature operands/shared result interaction
+
+Sixteen focused measurements on 2026-10-08 start from 6925b77d. Hypothesis:
+original interleaved signature byte loads and shared reader result may
+interact in register allocation. Five previously tested pure operand forms
+(original interleaving, first-three/all preloads, reverse comparisons,
+versions before plain) plus mismatch/keep per-byte masks measured under
+direct and shared MeshReadData result source, with controls.
+All five signature bytes are constant; comparison reordering and mask
+composition preserve surviving fmt bits over seven initialized magic bytes.
+No extra file reads/calls, initialization, padding or dummy effects. Same
+three reader success tests (-1 failure,1 success,non--1 success), magic
+initialization, payload/child/cleanup paths. No helper/header/ABI/signature/
+flags/matcher/denominator change; source hypothesis, not recovered layout.
+
+| Trial | Create source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| direct_control | 98.4 / 60.7 | 289 | 100.0 |
+| direct_original_interleaving | 98.4 / 60.7 | 289 | 100.0 |
+| direct_first_three_preloads | 98.4 / 60.7 | 289 | 100.0 |
+| direct_all_preloads | 98.4 / 60.7 | 289 | 100.0 |
+| direct_reverse_comparisons | 98.4 / 60.7 | 289 | 100.0 |
+| direct_versions_before_plain | 98.4 / 60.7 | 289 | 100.0 |
+| direct_mismatch_mask | 97.5 / 57.5 | 290 | 100.0 |
+| direct_keep_mask | 97.5 / 57.0 | 291 | 100.0 |
+| shared_control | 98.4 / 61.0 | 289 | 100.0 |
+| shared_original_interleaving | 98.4 / 60.7 | 289 | 100.0 |
+| shared_first_three_preloads | 98.4 / 60.7 | 289 | 100.0 |
+| shared_all_preloads | 98.4 / 60.7 | 289 | 100.0 |
+| shared_reverse_comparisons | 98.4 / 61.0 | 289 | 100.0 |
+| shared_versions_before_plain | 98.4 / 61.0 | 289 | 100.0 |
+| shared_mismatch_mask | 97.5 / 57.8 | 290 | 100.0 |
+| shared_keep_mask | 97.5 / 57.4 | 291 | 100.0 |
+
+All fourteen combinations tie/regress, 97.5..98.4; none retained. Direct
+interleaving/first-three/all preloads equal accepted whole Core object.
+The same three forms combined with shared result also collapse to accepted
+whole Core object, rather than shared-result control. Reverse/version-first
+comparisons keep source score without whole-object equality; mask forms
+regress to 97.5 under both result contexts. Interaction therefore offers no
+primary gain here; do not expand equivalent preloads under shared result.
+No compiler ceiling inferred.
+
+Sweep exited zero; all sixteen compile/focused verifies pass. All source/
+call metrics, instruction counts and object hashes independently checked
+against original/compiled instruction arrays. Accepted source and native
+fixtures restored to ecc30f25. Existing full/native binding audit passes:
+204 TUs,4619 comparisons,no skips;202 unaffected objects; actual linked-exact
+2079 / byte-exact 959 pair sets identical baseline, no lost/gained pairs.
+Canonical flags and three-body/signature boundaries preserved. No fresh
+full rebuild/native execution/device/Android/game runtime claim for rejected
+forms. Main untouched; report-only commit, no push/PR/merge.
+
+After measurements, removed sixteen verified generated original Core target
+copies, reclaiming 422,592 logical bytes to leave room for report staging.
+Explicit createsigsharedresult family, resolved paths inside own _work,
+untracked single expected Core unit; digests match retained canonical target.
+Manifest/system-temp backup before literal-path removal; target/reference
+hashes rechecked per deletion. All sixteen mappings independently rebound.
+Bases,reports,accepted/baseline/main/Git archive retained. Evidence:
+`_work/duplicate_signature_core_target_cleanup_20261008.json`, script
+`_work/cleanup_signature_core_target_duplicates_20261008.ps1`.
+
+Accepted means remain **98.40% / 98.41%**, both >=99.0 gates unmet, goal active.
+Evidence: `_work/create_signature_shared_result_interaction_sweep.py`,
+`_work/create_signature_shared_result_interaction_identities.json`, sixteen
+focused bases/reports and rechecked accepted binding audit.
