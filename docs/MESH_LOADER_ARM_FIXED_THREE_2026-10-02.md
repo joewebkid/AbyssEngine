@@ -10165,3 +10165,86 @@ Main checkout untouched; report-only commit; no push/PR/merge.
 Evidence: `_work/read_addressed_child_arguments_sweep.py`,
 `_work/read_addressed_child_arguments_identities.json`, eighteen focused
 objects/reports and rechecked typedpair binding audit.
+
+
+## Continuation: Current normal value records with typed-pair/index-owner interaction
+
+Twenty-two focused measurements start from 007257c4. Earlier normal value
+records predated accepted typed-pair allocation. This family rebinds their
+four real value stages (decoded float components, float quotients, bounded
+doubles, float outputs) to current source as arrays/anonymous records,
+individually or all four, under accepted/fresh index owner, plus two controls.
+Remaining multiply operand-alias/load inventory differences motivated testing
+whether local representation interacts with current allocation/register pressure.
+
+Initializers preserve expressions and scalar evaluation order; all fields
+used at their original arithmetic/store points. Same float/double promotions,
+sqrt, nonzero/fallback, lower/upper predicates including unordered behavior,
+centered destination stores, allocation/Read/call/cleanup order. No address
+escapes added for these values. No helper/header/exported ABI/signature,
+compiler flags/matcher/denominator, unused field/padding, volatile/assembly/
+fixed register/dummy instruction. Source hypotheses, not recovered types.
+
+| Trial | Read source / strict | Instructions | Calls | Owner control Core |
+|---|---|---:|---:|---|
+| accepted_control | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_array_decoded | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_array_quotients | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_array_bounded | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_array_output | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_array_all | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_record_decoded | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_record_quotients | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_record_bounded | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_record_output | 98.5 / 57.4 | 874 | 100.0 | yes |
+| accepted_record_all | 98.5 / 57.4 | 874 | 100.0 | yes |
+| fresh_control | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_array_decoded | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_array_quotients | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_array_bounded | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_array_output | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_array_all | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_record_decoded | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_record_quotients | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_record_bounded | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_record_output | 98.5 / 57.8 | 874 | 100.0 | yes |
+| fresh_record_all | 98.5 / 57.8 | 874 | 100.0 | yes |
+
+All twenty new forms and both controls reproduce their respective entire
+Core reference objects. Local representations scalar-replace; they do not
+change the remaining operand-alias/load deficits, even with current typed
+allocations and fresh owner. No primary gain and no source retained. Do not
+expand equivalent local record/spelling variants as a next action; no compiler
+ceiling inferred.
+
+The turn was interrupted after dispatch. Resume polled the same process handle;
+it was missing, so no sweep was restarted. Complete persisted ledger contains
+all 22 unique rows and restored source/fixtures equal ecc30f25. Explicit
+terminal process exit was not observed after interruption; no exit-zero claim
+is made for that handle. Every compile/verify subprocess uses check=True before
+recording its row. All retained original/base objects and focused reports were
+independently checked: source/call metrics recomputed from instruction arrays,
+counts checked and all whole-object hashes equal their reference digests.
+Existing accepted native/full binding audit revalidated: 204 TUs, 4619
+comparisons, no skips, 202 unaffected objects, actual linked 2079 / byte 959
+pair sets identical baseline with no loss/gain, canonical flags and allowed
+body/signature boundaries unchanged. No fresh native/full-corpus runtime
+validation for rejected source spellings claimed.
+
+Disk preparation before interrupted sweep removed 102 generated original Core
+target duplicates in thirteen explicit older normal/UV/value families and the
+previous addressed-child family. Resolved targets within own _work, untracked,
+single expected unit, each SHA256 equals retained canonical typedpair-full/target.
+Manifest/system-temp backup saved before literal-path removal; both hashes
+rechecked before each deletion; no recursive deletion. Base objects, source,
+reports, accepted/baseline evidence, main and Git archive retained. Reclaimed
+2,694,024 logical bytes. Old target paths map through
+`_work/duplicate_value_core_target_cleanup_20261007.json`, all 102 mappings
+independently rebound on resume. Script `_work/cleanup_value_core_target_duplicates_20261007.ps1`.
+
+Accepted means **98.40% / 98.41%**; both >=99.0 gates unmet, goal active.
+Main checkout untouched; report-only commit; no push/PR/merge.
+Evidence: `_work/read_current_value_records_forms.py`,
+`_work/read_current_value_records_sweep.py`,
+`_work/read_current_value_records_identities.json`, twenty-two focused reports/
+objects and rechecked typedpair validation audit.
