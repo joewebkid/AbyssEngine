@@ -11158,3 +11158,63 @@ means remain 98.40/98.41, both 99.0 gates unmet; goal active. Report-only
 commit, no push/PR/merge. Evidence:
 `_work/create_magic_engine_const_sweep.py`,
 `_work/create_magic_engine_const_identities.json`, ten focused objects/reports.
+
+
+## Continuation: Read stack-load deficit role audit
+
+Read-only canonical target/accepted Core object diagnostic on 2026-10-08,
+following b288bb7c. Previous deficit seven `ldr g0, [frame, #slot]` could
+have represented fp object pointers treated as stack. Check exact normalized
+load tokens and surrounding instructions: original 41, accepted 34, every
+one uses sp, none fp. Thus that particular deficit is actual SP-immediate
+load inventory, not misclassified FP object loads. This does not change the
+matcher or prove any corresponding instructions are missing dynamically.
+
+Canonical raw immediate-displacement integer stack word loads: original
+41 single + 3 dual = 47 words; accepted 34 single + 4 dual = 42 words.
+Existing dualword normalization changes neither count in this bucket.
+Single-load semantic-role annotations inferred from entry parameter moves
+and explicit spills (not recovered original local-variable declarations):
+
+| Role | Original single loads | Accepted single loads |
+|---|---:|---:|
+| Mesh slot | 9 | 7 |
+| Handle reference | 6 | 0 |
+| Compressed flag word | 3 | 2 |
+| Stack guard pointer | 5 | 5 |
+| Flags | 2 | 0 |
+| Sub-bit | 2 | 4 |
+| Engine | 1 | 1 |
+| Unassigned locals | 13 | 15 |
+
+Zero singles for accepted handle/flags is not zero reloads: accepted restores
+these in paired LDRD instructions. Original spills slot at SP+40, handle at
+SP+24, guard pointer/flags pair at SP+16, compressed word at SP+12. Accepted
+slots are SP+48, SP+12, guard pointer SP+20, flags SP+16, compressed word
+SP+8. Slot numbers are allocation evidence only, not ABI fields or source
+requirements. Stack guard pointer singles equal five: no evidence to target
+canary changes. Next compiler hypothesis should concern parameter lifetimes
+across stream stages, not forced frame accesses or arbitrary padding. Counts
+are multisets with no aligned source identity; fp can be an object pointer
+elsewhere, which this narrow bucket audit does not deny. No dummy effects,
+fixed registers, volatile/asm, flags, helpers, ABI or denominator changes.
+
+Evidence `_work/analyze_read_frame_load_roles_20261008.py` and
+`_work/read_frame_load_roles_20261008.json` includes exact normalized tokens,
+contexts, role notes and canonical object hashes. No source edit or trial
+compiler result this continuation. Accepted binding audit reconfirmed204 TUs,
+4619 comparisons,202 unaffected objects,actual linked2079/byte959 sets with
+no loss/gain; code boundaries/flags restored and unchanged. Existing native
+proof rebound, no fresh full/native/game/device execution. Means98.40/98.41;
+both99.0 gates remain unmet and goal active. Main unchanged, report-only
+commit, no push/PR/merge.
+
+Report staging failed with explicit index.lock write error/out of diskspace;
+Git's own failed lock was not manipulated. Removed40 verified generated
+original Core targets from sorted explicit read directory family: resolved
+within own _work, untracked, single-object targets only, canonical SHA match,
+exact40 guard,system-temp manifest before literal removal/immediate rehash.
+Manifest copied to workspace after space available and40 mappings checked;
+1,056,480 logical bytes. No compiled base/source/report/native fixture/main/
+Git archive removed. Evidence:
+`_work/duplicate_read_roles40_target_cleanup_20261008.json`.
