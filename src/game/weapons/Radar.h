@@ -147,12 +147,9 @@ public:
     int field_0x160;
     int field_0x164;
     int field_0x168;
-    int field_0x16c;
-    int field_0x170;
-    int field_0x174;
-    int field_0x178;
-    int field_0x17c;
-    int field_0x180;
+    // Android draw assigns Vector returns here; each phase chooses the scratch roles.
+    AbyssEngine::AEMath::Vector positionScratchA;
+    AbyssEngine::AEMath::Vector positionScratchB;
     int field_0x184;
     Array<AbyssEngine::String *> *labelStrings;
     AbyssEngine::String lockLabel;
@@ -256,6 +253,8 @@ static_assert(offsetof(Radar, onScreen) == 0x11c, "Radar::onScreen offset");
 static_assert(offsetof(Radar, turretScopeHalfWidth) == 0x12c, "Radar::turretScopeHalfWidth offset");
 static_assert(offsetof(Radar, plasmaInRange) == 0x130, "Radar::plasmaInRange offset");
 static_assert(offsetof(Radar, radarPosX) == 0x154, "Radar::radarPosX offset");
+static_assert(offsetof(Radar, positionScratchA) == 0x16c, "Radar::positionScratchA offset");
+static_assert(offsetof(Radar, positionScratchB) == 0x178, "Radar::positionScratchB offset");
 static_assert(offsetof(Radar, labelStrings) == 0x188, "Radar::labelStrings offset");
 static_assert(offsetof(Radar, lockLabel) == 0x18c, "Radar::lockLabel offset");
 static_assert(offsetof(Radar, scannerAvailable) == 0x1ab, "Radar::scannerAvailable offset");

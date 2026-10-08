@@ -249,7 +249,7 @@ int Radar::getTurretScopeWidth() {
 
 Radar::Radar(Level *level)
     : radarPosX(0), radarPosY(0), radarPosZ(0), field_0x160(0), field_0x164(0), field_0x168(0),
-      field_0x16c(0), field_0x170(0), field_0x174(0), field_0x178(0), field_0x17c(0), field_0x180(0) {
+      positionScratchA{0.0f, 0.0f, 0.0f}, positionScratchB{0.0f, 0.0f, 0.0f} {
     this->lockedEnemy = nullptr;
     this->candidateEnemy = nullptr;
     this->lockedPlanetTarget = nullptr;
@@ -720,8 +720,8 @@ void Radar::draw(Player *player, Hud *hud, int elapsed) {
                     }
                 }
 
-                *reinterpret_cast<Vector *>(&this->field_0x16c) = player->getPosition();
-                *reinterpret_cast<Vector *>(&this->field_0x178) =
+                this->positionScratchA = player->getPosition();
+                this->positionScratchB =
                     (*this->landmarkTargets)[i]->player->getPosition();
                 if (i != 3) {
                     Globals::Canvas->DrawImage2D(radar_image_slot(this, 0x88), this->screenX, this->screenY,
@@ -995,8 +995,8 @@ planetMarkerDone:
     }
 
     if (this->scannerAvailable != 0 && this->enemyTargets != nullptr) {
-        Vector &enemyPositionScratch = *reinterpret_cast<Vector *>(&this->field_0x16c);
-        Vector &egoPositionScratch = *reinterpret_cast<Vector *>(&this->field_0x178);
+        Vector &enemyPositionScratch = this->positionScratchA;
+        Vector &egoPositionScratch = this->positionScratchB;
 
         for (unsigned i = 0; i < this->enemyTargets->size(); ++i) {
             KIPlayer *target = (*this->enemyTargets)[i];
@@ -1116,23 +1116,23 @@ planetMarkerDone:
                             this->screenY > y - this->field_0x124 && this->screenY < y + this->field_0x124;
                     }
 
-                    int healthBackground;
-                    int healthFill;
+                    int *healthBackground;
+                    int *healthFill;
                     if (target->player->enemyFlagsLo != 0) {
-                        healthBackground = 0xe0;
-                        healthFill = 0xd0;
+                        healthBackground = &radar_image_slot(this, 0xe0);
+                        healthFill = &radar_image_slot(this, 0xd0);
                     } else if (target->player->carriesFriendCargoFlag != 0) {
-                        healthBackground = 0xe4;
-                        healthFill = 0xd4;
+                        healthBackground = &radar_image_slot(this, 0xe4);
+                        healthFill = &radar_image_slot(this, 0xd4);
                     } else {
-                        healthBackground = 0xe8;
-                        healthFill = 0xd8;
+                        healthBackground = &radar_image_slot(this, 0xe8);
+                        healthFill = &radar_image_slot(this, 0xd8);
                     }
 
-                    unsigned int healthFillImage = radar_image_slot(this, healthFill);
+                    unsigned int healthFillImage = *healthFill;
                     int barX = this->screenX + 2 - this->halfScreenHeight;
                     int barY = this->screenY + this->halfScreenWidth + 2;
-                    Globals::Canvas->DrawImage2D(radar_image_slot(this, healthBackground), barX, barY);
+                    Globals::Canvas->DrawImage2D(*healthBackground, barX, barY);
 
                     int healthWidth =
                         static_cast<int>((static_cast<float>(target->player->getDamageRate()) / 100.0f) *
@@ -1336,11 +1336,11 @@ planetMarkerDone:
             if (self->onScreen != 0) {
                 KIPlayer *previousLock = self->lockedGasCloud;
                 cloud->field_0x76 = 1;
-                *reinterpret_cast<Vector *>(&self->field_0x16c) = player->getPosition();
-                *reinterpret_cast<Vector *>(&self->field_0x178) = cloud->player->getPosition();
+                self->positionScratchA = player->getPosition();
+                self->positionScratchB = cloud->player->getPosition();
                 // Android 0x12f64c..0x12f6cc observes this byte before and after drawing.
-                Vector &playerPosition = *reinterpret_cast<Vector *>(&self->field_0x16c);
-                Vector &cloudPosition = *reinterpret_cast<Vector *>(&self->field_0x178);
+                Vector &playerPosition = self->positionScratchA;
+                Vector &cloudPosition = self->positionScratchB;
                 float dx = playerPosition.x - cloudPosition.x;
                 float dy;
                 float dz;
@@ -1354,7 +1354,7 @@ planetMarkerDone:
                 cloud->field_0x73 = 0;
 
                 if (previousLock == cloud) {
-                    Vector &cloudPosition = *reinterpret_cast<Vector *>(&self->field_0x178);
+                    Vector &cloudPosition = self->positionScratchB;
                     self->lockLabel = self->calcDistance(cloudPosition.x, cloudPosition.y, cloudPosition.z,
                                                          self->cameraPosX, self->cameraPosY, self->cameraPosZ);
                     Globals::Canvas->DrawString(radar_font(), self->lockLabel,
@@ -1447,8 +1447,8 @@ gasMarkerDone:
                            self->field_0x1c != nullptr || self->lockedStation != nullptr ||
                            self->lockedPlanetTarget != nullptr;
 
-        Vector &targetPosition = *reinterpret_cast<Vector *>(&self->field_0x16c);
-        Vector &egoPosition = *reinterpret_cast<Vector *>(&self->field_0x178);
+        Vector &targetPosition = self->positionScratchA;
+        Vector &egoPosition = self->positionScratchB;
         if (radar_level_player(self)->isInDockingProcedure() || self->asteroidTargets == nullptr) {
             if (radar_level_player(self)->isDockingToAsteroid() && self->lockedAsteroid != nullptr) {
                 targetPosition = self->lockedAsteroid->getPosition();
