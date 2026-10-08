@@ -10696,3 +10696,65 @@ Accepted means remain **98.40% / 98.41%**, both >=99.0 gates unmet; goal active.
 Evidence:`_work/create_finish_argument_records_sweep.py`,
 `_work/create_finish_argument_records_identities.json`, twelve focused
 objects/reports and rechecked accepted binding audit.
+
+
+## Continuation: Enhanced completion value records
+
+Fourteen focused measurements on 2026-10-08 start from104d7f95. Prior
+receiver/delete/completion layout forms already measured; no repeat of
+equivalent deletion syntax. New hypothesis groups actual time rate and
+int/long-long converted values in a local record at successful attachment.
+Two records contain rate plus one conversion; four contain all three with
+different field orders. Each field assigned only at the original computation
+phase before use: rate load, int conversion, animationStart write, long-long
+conversion, SetAnimationRangeInTime. Natural local layout only; no forced
+padding, uninitialized read, extra effect, receiver reload or file/storage
+transformation. Preserve fixed upper bound10000000LL and existing float
+conversion semantics. All six forms under accepted/V5-preload contexts plus
+controls. No helper/header/ABI/signature/flags/matcher/denominator changes.
+Hypothesis, not recovered original local type.
+
+| Trial | Enhanced source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| accepted_control | 98.3 / 66.9 | 641 | 100.0 |
+| accepted_rate_frameStart | 98.3 / 66.9 | 641 | 100.0 |
+| accepted_rate_rangeStart | 98.3 / 66.9 | 641 | 100.0 |
+| accepted_rate_frameStart_rangeStart | 98.3 / 66.9 | 641 | 100.0 |
+| accepted_rate_rangeStart_frameStart | 98.3 / 66.9 | 641 | 100.0 |
+| accepted_frameStart_rate_rangeStart | 98.3 / 66.9 | 641 | 100.0 |
+| accepted_rangeStart_rate_frameStart | 98.3 / 66.9 | 641 | 100.0 |
+| preload_control | 98.3 / 67.8 | 639 | 100.0 |
+| preload_rate_frameStart | 98.3 / 67.8 | 639 | 100.0 |
+| preload_rate_rangeStart | 98.3 / 67.8 | 639 | 100.0 |
+| preload_rate_frameStart_rangeStart | 98.3 / 67.8 | 639 | 100.0 |
+| preload_rate_rangeStart_frameStart | 98.3 / 67.8 | 639 | 100.0 |
+| preload_frameStart_rate_rangeStart | 98.3 / 67.8 | 639 | 100.0 |
+| preload_rangeStart_rate_frameStart | 98.3 / 67.8 | 639 | 100.0 |
+
+All fourteen whole Mesh objects equal their corresponding accepted/preload
+controls. No primary/strict/instruction-count gain. None retained; do not
+expand equivalent completion-value field syntax in these contexts. No
+compiler ceiling inferred. Sweep exited zero;14 compile/focused verifies
+pass. Metrics/counts/hashes independently checked against actual instruction
+arrays. Source/native fixtures restored to ecc30f25. Existing accepted
+full/native binding audit passes:204 TUs,4619 comparisons,no skips;202
+unaffected objects;actual linked-exact2079/byte-exact959 pair sets unchanged
+with no loss/gain;canonical flags and three-body/signature boundaries intact.
+No fresh full rebuild/native execution/device/Android/game test claimed for
+rejected forms.
+
+Preparation removed22 verified generated original Core target copies from
+two explicit families:10 color quadruples,12 Create finish records. Reclaimed
+581,064 logical bytes. Paths resolved inside own _work, untracked single
+expected unit, hash equal canonical retained target; manifest/system-temp
+backup before literal-path removal, immediate target/reference rehash per
+deletion. All22 mappings independently rebound. No recursive deletion;
+bases/reports/sources/accepted/baseline/main/Git archive retained. Evidence:
+`_work/duplicate_finish_color_core_target_cleanup_20261008.json`, script
+`_work/cleanup_finish_color_core_target_duplicates_20261008.ps1`.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet;goal active.
+Evidence:`_work/enh_completion_value_records_sweep.py`,
+`_work/enh_completion_value_records_identities.json`,14 focused objects/
+reports and rechecked binding audit. Main untouched;report-only commit;
+no push/PR/merge.
