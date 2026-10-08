@@ -11655,3 +11655,63 @@ recursive removal. Evidence:
 `_work/duplicate_time_ptr120_mesh_target_cleanup_20261008.json`,
 `_work/enh_key_time_pointer_records_sweep.py`,
 `_work/enh_key_time_pointer_records_identities.json`,nine focused objects/reports.
+
+
+## Continuation: Create signature-column and magic/engine guard interaction
+
+Nine focused cases2026-10-08 after09e8e629. Accepted/record/all-failure-guard
+controls,then three signature column representations under addressed magic/
+engine record:7x5 char matrix with original/reverse signature columns,and
+SignatureColumn[7] with five char fields. Both success-style and all-three
+failure-style guards. Same35 signature bytes,seven comparisons in each of
+five candidates,fmt1f and same mismatch-cleared bits;column access indexes
+mapped to original signature order. Original scalar loop order/current
+magic byte,skipped header word,vertexFormat and reader result semantics
+preserved. No header/helper/ABI/signature/flags/matcher/denominator/dummy
+changes. Compiler static-data/layout interaction,not recovered source.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.4 / 60.7 | 94.7 | 97.9 | 100.0 | 99.3 | 289 |
+| record_control | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| record_failure_control | 97.8 / 60.5 | 94.6 | 97.4 | 99.0 | 98.3 | 297 |
+| columns_original_success | 93.0 / 54.0 | 85.4 | 93.2 | 95.8 | 90.5 | 265 |
+| columns_original_failure | 94.1 / 50.5 | 84.6 | 92.9 | 99.0 | 94.0 | 275 |
+| columns_reverse_success | 92.2 / 53.9 | 83.9 | 92.8 | 93.8 | 90.5 | 266 |
+| columns_reverse_failure | 93.4 / 50.4 | 83.1 | 92.9 | 96.9 | 94.0 | 276 |
+| column_records_success | 93.0 / 54.0 | 85.4 | 93.2 | 95.8 | 90.5 | 265 |
+| column_records_failure | 94.1 / 50.5 | 84.6 | 92.9 | 99.0 | 94.0 | 275 |
+
+Six new cases92.2..94.1,n265..276. Original-order matrix and field records
+produce whole identical objects under each guard style. Reverse signature
+column order lowers control to93.8/96.9. Original-order failure guards again
+reachcontrol99.0 but inventory84.6,far below accepted94.7. Static-data
+compression/shorter code does not imply improved original shape. Seven
+whole objects across nine cases. No gain,none retained,no compiler ceiling
+claim. Sweep completed exit0;all shape metrics/counts/hashes and matrix/
+record identity directly checked. Source restored;accepted existing full/
+native proof binding passes204 TUs/4619 comparisons/202 unaffected objects,
+actual linked2079/byte959 sets unchanged,no loss/gain,body/signature/flags
+intact. No fresh full/native/game/device/Android execution. Means98.40/98.41,
+both99 gates unmet,goal active. Main untouched,report-only commit,no push/
+PR/merge.
+
+Preparation removed40 exact generated original Core targets from sorted create
+family,single-object targets,paths resolved inside own_work,untracked,canonical
+SHA match,exact40 guard,manifest/system-temp backup before literal removal/
+immediate reference+target rehash.1,056,480 logical bytes;all40 mappings checked.
+Bases/source/reports/native/accepted/baseline/main/Git archive retained,no
+recursive removal. Evidence:
+`_work/duplicate_signature_guard40_core_target_cleanup_20261008.json`,
+`_work/create_signature_guard_records_sweep.py`,
+`_work/create_signature_guard_records_identities.json`,nine focused objects/
+reports and accepted existing proof binding audit.
+
+Initial report commit failed explicitly with index.lock write/out-of-diskspace;
+HEAD rechecked unchanged09e8e629. No Git locks/archives manipulated. Removed20
+additional exact generated original Core targets from sorted read family,
+single-object/resolved own_work/untracked/canonical SHA guard,exact20 count,
+system-temp manifest before literal removal/immediate reference+target rehash;
+manifest copied after space available. All20 mappings checked,528,240 logical
+bytes. No compiled bases/source/reports/native/main/Git archive removed.
+Evidence:`_work/duplicate_signature_commit20_core_target_cleanup_20261008.json`.
