@@ -11473,3 +11473,51 @@ baseline/main/Git archive untouched,no recursive removal. Evidence:
 `_work/read_tangent_operand_groups_sweep.py`,
 `_work/read_tangent_operand_groups_identities.json`,
 `_work/read_tangent_multiply_shape_diagnostic_20261008.json`.
+
+
+## Continuation: Read triangle math and output value records
+
+Seven focused cases2026-10-08 afterb954285d: accepted plus six actual triangle
+value records. NumeratorXYZ+tng[3],reciprocal+tng[3],all determinant/reciprocal/
+XYZ+tng[3],each forward/reverse field order. Record left uninitialized then
+existing assignment expressions in original order,avoids extra aggregate zero
+initialization. All tng uses redirected to actual array field including three
+Vector += inputs. No arithmetic/reassociation/NaN operand swap,payload/read/
+failure/cleanup changes,helper/header/ABI/signature/flags/matcher/denominator/
+dummy effects. Compiler-layout hypothesis,not recovered source.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Calls | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|---:|
+| accepted_control | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 100.0 | 874 |
+| numerators_forward | 97.5 / 51.7 | 93.4 | 97.2 | 99.2 | 98.2 | 99.6 | 877 |
+| numerators_reverse | 98.2 / 52.9 | 94.5 | 97.9 | 98.8 | 100.0 | 99.5 | 878 |
+| reciprocal_forward | 97.7 / 53.0 | 94.0 | 97.4 | 99.2 | 98.2 | 99.9 | 875 |
+| reciprocal_reverse | 98.3 / 54.3 | 95.0 | 98.0 | 98.8 | 100.0 | 99.8 | 876 |
+| all_forward | 97.5 / 51.5 | 93.7 | 97.1 | 99.2 | 98.2 | 99.4 | 879 |
+| all_reverse | 98.2 / 52.8 | 95.0 | 97.8 | 98.8 | 100.0 | 99.3 | 880 |
+
+Six new variants97.5..98.3 below accepted98.5;all seven whole objects distinct.
+Forward layouts raise control98.8->99.2 but call metric100->98.2 and regress
+inventory. Relocation counters for exactly named Read body:accepted/reverse
+55 direct call sites,forward54. Only missing static target one _ZdaPv, no
+new call target. Source keeps all cleanup;static call merging/elimination
+is not proof of a leak or dynamic missing free. Do not insert dummy calls.
+Reverse layouts retain all calls but regress inventory94.5..95.0 versus95.8.
+No gain,none retained;no compiler ceiling claim. Sweep completed exit0;
+all shape metrics/counts/hashes/call relocation differences directly checked.
+Source restored,accepted existing full/native proof binding passes204 TUs/
+4619 comparisons/202 unaffected objects,actual linked2079/byte959 sets no
+loss/gain,body/signature/flags intact. No fresh full/native/game/device/
+Android execution. Means98.40/98.41,both99 gates unmet,goal active. Main
+untouched,report-only commit,no push/PR/merge.
+
+Preparation removed40 exact generated original Core targets from sorted read
+family,single-object targets,paths resolved inside own_work,untracked,canonical
+SHA match,exact40 guard,manifest/system-temp backup before literal removal/
+immediate reference+target rehash.1,056,480 logical bytes,all40 mappings checked.
+Bases/source/reports/native/accepted/baseline/main/Git archive retained,no
+recursive deletion. Evidence:
+`_work/duplicate_triangle_math40_core_target_cleanup_20261008.json`,
+`_work/read_triangle_math_records_sweep.py`,
+`_work/read_triangle_math_records_identities.json`,
+`_work/read_triangle_math_records_call_relocations.json`.
