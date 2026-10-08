@@ -10629,3 +10629,70 @@ Evidence:`_work/read_color_typed_quads_sweep.py`,
 `_work/read_color_typed_quads_identities.json`, ten focused objects/reports,
 call relocation diagnostic and rechecked binding audit. Main untouched;
 report-only commit;no push/PR/merge.
+
+
+## Continuation: Create finish argument records
+
+Twelve focused measurements on 2026-10-08 start from 3d1eae08. Previously
+tested scalar finish operands offer no gain; new hypothesis groups actual
+SetAnimationRangeInTime receiver and converted start in a local aggregate.
+Two-field records receiver/start and start/receiver; three-field records
+receiver/rate/start,rate/receiver/start,rate/start/receiver. Only valid orders
+are used: float rate precedes long-long start referencing arguments.rate;
+aggregate members initialize in declaration order. Receiver reloaded from
+(*out)->animation AFTER CollectAnimationData, not reused from prior xf.
+Same float-to-long-long conversion and 10000000LL upper bound. Actual
+fields only, no forced padding, initialization effects, helper/header/ABI/
+signature/compiler flag/matcher/denominator changes. Each form under direct/
+shared reader-result source with controls. Local shape hypothesis, not
+recovered original record. No file-read/storage-alias transformation.
+
+| Trial | Create source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| direct_control | 98.4 / 60.7 | 289 | 100.0 |
+| direct_receiver_start | 98.4 / 60.7 | 289 | 100.0 |
+| direct_start_receiver | 98.3 / 60.3 | 289 | 100.0 |
+| direct_receiver_rate_start | 98.4 / 60.7 | 289 | 100.0 |
+| direct_rate_receiver_start | 98.4 / 60.7 | 289 | 100.0 |
+| direct_rate_start_receiver | 98.3 / 60.3 | 289 | 100.0 |
+| shared_control | 98.4 / 61.0 | 289 | 100.0 |
+| shared_receiver_start | 98.4 / 60.7 | 289 | 100.0 |
+| shared_start_receiver | 98.3 / 60.3 | 289 | 100.0 |
+| shared_receiver_rate_start | 98.4 / 60.7 | 289 | 100.0 |
+| shared_rate_receiver_start | 98.4 / 60.7 | 289 | 100.0 |
+| shared_rate_start_receiver | 98.3 / 60.3 | 289 | 100.0 |
+
+All ten new forms collapse to two whole Core objects. receiver/start,
+receiver/rate/start and rate/receiver/start reproduce accepted object under
+both result contexts. start/receiver and rate/start/receiver produce the
+same alternate whole object under both contexts and regress to98.3.
+All retain289 instructions and call metric100. No primary gain; none retained.
+Do not expand equivalent finish-record permutations here. No compiler
+ceiling or impossibility inferred.
+
+Sweep exited zero; twelve focused compile/verify calls pass. Source/call
+metrics, instruction counts, object hashes and two identity classes checked
+independently against actual instruction arrays. Source/native fixtures
+restored to ecc30f25. Existing accepted full/native binding audit passes:
+204 TUs,4619 comparisons,no skips;202 unaffected objects;actual linked-exact
+2079 / byte-exact959 pair sets identical baseline with no loss/gain.
+Canonical flags and three-body/signature boundaries preserved. No fresh
+full rebuild/native execution/device/Android/game runtime claim for rejected
+forms. Main untouched; report-only commit,no push/PR/merge.
+
+Preparation removed60 verified generated original Core targets: first60
+eligible existing targets in sorted explicit readtypedpair directory family;
+already missing targets skipped. Resolved paths within own _work, untracked
+single expected Core unit, SHA-256 equal canonical retained target. Guard
+requires exactly60 verified copies before any removals. Manifest/system-temp
+backup before literal-path deletion; target/reference hashes immediately
+rechecked per file. Reclaimed1,584,720 logical bytes; all60 mappings
+independently rebound. No recursive deletion; bases,reports,sources,
+accepted/baseline/main/Git archive retained. Evidence:
+`_work/duplicate_typedpair_core_target_cleanup_20261008.json`, script
+`_work/cleanup_typedpair_core_target_duplicates_20261008.ps1`.
+
+Accepted means remain **98.40% / 98.41%**, both >=99.0 gates unmet; goal active.
+Evidence:`_work/create_finish_argument_records_sweep.py`,
+`_work/create_finish_argument_records_identities.json`, twelve focused
+objects/reports and rechecked accepted binding audit.
