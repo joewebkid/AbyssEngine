@@ -29,10 +29,9 @@ void ChoiceWindow::setWidth(int width) {
 }
 
 void ChoiceWindow::set(String const &a, String const &b) {
-    GameText *gameText = Globals::gameText;
-    String *title = gameText->getText(0x186);
-    String *left = gameText->getText(0x86);
-    String *center = gameText->getText(0x87);
+    String *title = Globals::gameText->getText(0x186);
+    String *left = Globals::gameText->getText(0x86);
+    String *center = Globals::gameText->getText(0x87);
     set(*title, a, false, *left, *center, b, -1, -1);
 }
 
@@ -42,10 +41,9 @@ void ChoiceWindow::set(String const &text, bool flag) {
 }
 
 void ChoiceWindow::set(String const &title, String const &message, bool flag) {
-    GameText *gameText = Globals::gameText;
-    String *left = gameText->getText(0x86);
-    String *center = gameText->getText(0x87);
-    String *right = gameText->getText(0x20c);
+    String *left = Globals::gameText->getText(0x86);
+    String *center = Globals::gameText->getText(0x87);
+    String *right = Globals::gameText->getText(0x20c);
     set(title, message, flag, *left, *center, *right, -1, -1);
 }
 
@@ -196,10 +194,9 @@ void ChoiceWindow::set(String const &title, String const &message, bool hasButto
                        int y, int width) {
     this->hasButtons = hasButtons;
 
-    GameText *gameText = Globals::gameText;
     bool defaultButtons = false;
-    if (gameText->getText(0x86)->Compare_str((String *) &left) == 0)
-        defaultButtons = gameText->getText(0x87)->Compare_str((String *) &right) == 0;
+    if (Globals::gameText->getText(0x86)->Compare(left) == 0)
+        defaultButtons = Globals::gameText->getText(0x87)->Compare(right) == 0;
 
     if (width == -1)
         width = Globals::layout->field_0x264;
@@ -223,6 +220,7 @@ void ChoiceWindow::set(String const &title, String const &message, bool hasButto
         (this->width - layout->field_0x4c * 2) - layout->field_0x48,
         lines);
 
+    layout = Globals::layout;
     int contentHeight = layout->field_0x4 * (int) lines->size() + layout->field_0x8 +
                         layout->field_0x4c * 2 + this->padding * 2 +
                         layout->field_0x30;
@@ -241,7 +239,7 @@ void ChoiceWindow::set(String const &title, String const &message, bool hasButto
         layout->field_0x2bc,
         false);
 
-    this->scrollWindow->setText(title, message);
+    this->scrollWindow->setText(String(title, false), String(message, false));
 
     ArrayReleaseClasses(*lines);
     delete lines;
@@ -253,25 +251,25 @@ void ChoiceWindow::set(String const &title, String const &message, bool hasButto
     this->rightButton = nullptr;
 
     if (hasButtons) {
+        layout = Globals::layout;
         int baseWidth = layout->field_0x40;
         float scaled = (float) baseWidth * 1.5f;
         if (defaultButtons) scaled = (float) baseWidth;
-        int buttonWidth = (int) scaled;
 
         this->leftButton = new TouchButton(left, 0,
                                            this->x + this->width / 2 - layout->field_0x4c / 2,
                                            this->y + this->height - this->padding,
-                                           buttonWidth, 0x22, 4);
+                                           (int) scaled, 0x22, 4);
 
         this->rightButton = new TouchButton(right, 0,
-                                            this->x + this->width / 2 + layout->field_0x4c / 2,
+                                            this->x + this->width / 2 + Globals::layout->field_0x4c / 2,
                                             this->y + this->height - this->padding,
-                                            buttonWidth, 0x21, 4);
+                                            (int) scaled, 0x21, 4);
     } else {
         this->rightButton = new TouchButton(single, 0,
                                             this->x + this->width / 2,
                                             this->y + this->height - this->padding,
-                                            layout->field_0x40, 0x24, 4);
+                                            Globals::layout->field_0x40, 0x24, 4);
     }
 
     this->buttonsVisible = 1;
@@ -279,15 +277,17 @@ void ChoiceWindow::set(String const &title, String const &message, bool hasButto
 
 void ChoiceWindow::setMiscButton(String const &text) {
     Layout *layout;
-    int padding = this->padding;
+    int padding;
     int buttonWidth;
 
     if (this->leftButton == nullptr || this->rightButton == nullptr) {
+        padding = this->padding;
         layout = Globals::layout;
         buttonWidth = padding + layout->field_0x40 * 2;
     } else {
         int leftWidth = this->leftButton->getWidth();
         int rightWidth = this->rightButton->getWidth();
+        padding = this->padding;
         layout = Globals::layout;
         buttonWidth = leftWidth + rightWidth + padding;
     }
@@ -326,7 +326,8 @@ void ChoiceWindow::draw() {
     Layout *layout = Globals::layout;
     layout->drawMask();
 
-    layout->drawBox(7, this->x, this->y, this->width, this->height, this->title);
+    Globals::layout->drawBox(7, this->x, this->y, this->width, this->height,
+                            String(this->title, false));
 
     Globals::Canvas->SetColor(0xffffffff);
 
@@ -352,18 +353,25 @@ void ChoiceWindow::draw() {
                 g_ChoiceWindow_creditValues_1471bc[this->count]);
 
             unsigned int font = Globals::font;
-            int textWidth = Globals::Canvas->GetTextWidth(font, creditsText);
-            Globals::Canvas->DrawString(font, creditsText,
-                               this->x + (this->width >> 1) - textWidth / 2,
+            PaintCanvas *canvas = Globals::Canvas;
+            int textX = this->x;
+            int textBoxWidth = this->width;
+            int textWidth = canvas->GetTextWidth(font, creditsText);
+            canvas->DrawString(font, creditsText,
+                               textX + (textBoxWidth >> 1) - textWidth / 2,
                                this->y + this->height - this->padding3,
                                false);
         }
 
-        Globals::Canvas->SetColor(0xffffffff);
+        // Android 0x14733a loads the color literal at 0x147488.
+        Globals::Canvas->SetColor(0xff8000ff);
         unsigned int font = Globals::font;
-        int textWidth = Globals::Canvas->GetTextWidth(font, this->medalText);
-        Globals::Canvas->DrawString(font, this->medalText,
-                           this->x + (this->width >> 1) - textWidth / 2,
+        PaintCanvas *canvas = Globals::Canvas;
+        int textX = this->x;
+        int textBoxWidth = this->width;
+        int textWidth = canvas->GetTextWidth(font, this->medalText);
+        canvas->DrawString(font, this->medalText,
+                           textX + (textBoxWidth >> 1) - textWidth / 2,
                            this->y + this->padding4, false);
     }
 
@@ -374,6 +382,8 @@ void ChoiceWindow::draw() {
 
         if (this->rightButton != nullptr) {
             this->rightButton->draw();
+        }
+        if (this->rightButton != nullptr) {
             Globals::other_buttons_x[2] = (int) this->rightButton->getPosition().x;
             Globals::other_buttons_y[2] = (int) this->rightButton->getPosition().y;
         }

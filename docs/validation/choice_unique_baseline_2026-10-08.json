@@ -1,0 +1,335 @@
+{
+  "starting_commit": "7314772c",
+  "unit": "game/ui/ChoiceWindow",
+  "grouping": "original even ARM address; one representative per body; aliases once",
+  "weights": "frozen original n_target before edits; canonical normalization/formula unchanged",
+  "functions": [
+    {
+      "address": "0x1467ec",
+      "symbol": "_ZN12ChoiceWindowC1Ev",
+      "aliases": [
+        "_ZN12ChoiceWindowC1Ev",
+        "_ZN12ChoiceWindowC2Ev"
+      ],
+      "weight": 43,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 43,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x146870",
+      "symbol": "_ZN12ChoiceWindowD1Ev",
+      "aliases": [
+        "_ZN12ChoiceWindowD1Ev",
+        "_ZN12ChoiceWindowD2Ev"
+      ],
+      "weight": 31,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 31,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x1468c8",
+      "symbol": "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringE",
+      "aliases": [
+        "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringE"
+      ],
+      "weight": 17,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 17,
+      "linked_equal": false,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x1468f4",
+      "symbol": "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_b",
+      "aliases": [
+        "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_b"
+      ],
+      "weight": 38,
+      "source_match_report": 96.4,
+      "source_match_raw": 96.37029637029637,
+      "source_match_fraction": "289400/3003",
+      "match": 80.5,
+      "n_base": 39,
+      "linked_equal": false,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x146954",
+      "symbol": "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_",
+      "aliases": [
+        "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_"
+      ],
+      "weight": 37,
+      "source_match_report": 96.3,
+      "source_match_raw": 96.27368421052631,
+      "source_match_fraction": "9146/95",
+      "match": 72.0,
+      "n_base": 38,
+      "linked_equal": false,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x1469b0",
+      "symbol": "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_bS3_S3_S3_ii",
+      "aliases": [
+        "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_bS3_S3_S3_ii"
+      ],
+      "weight": 320,
+      "source_match_report": 96.1,
+      "source_match_raw": 96.11871189911118,
+      "source_match_fraction": "2065495/21489",
+      "match": 56.3,
+      "n_base": 309,
+      "linked_equal": false,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x146d5c",
+      "symbol": "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringEb",
+      "aliases": [
+        "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringEb"
+      ],
+      "weight": 20,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 20,
+      "linked_equal": false,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x146d94",
+      "symbol": "_ZN12ChoiceWindow13removeButtonsEv",
+      "aliases": [
+        "_ZN12ChoiceWindow13removeButtonsEv"
+      ],
+      "weight": 3,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 3,
+      "linked_equal": true,
+      "bytes_equal": true
+    },
+    {
+      "address": "0x146d9c",
+      "symbol": "_ZN12ChoiceWindow9hasChoiceEv",
+      "aliases": [
+        "_ZN12ChoiceWindow9hasChoiceEv"
+      ],
+      "weight": 2,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 2,
+      "linked_equal": true,
+      "bytes_equal": true
+    },
+    {
+      "address": "0x146da4",
+      "symbol": "_ZN12ChoiceWindow8setWidthEi",
+      "aliases": [
+        "_ZN12ChoiceWindow8setWidthEi"
+      ],
+      "weight": 12,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 12,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x146dc4",
+      "symbol": "_ZN12ChoiceWindow9setHeightEi",
+      "aliases": [
+        "_ZN12ChoiceWindow9setHeightEi"
+      ],
+      "weight": 69,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 69,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x146e8c",
+      "symbol": "_ZN12ChoiceWindow8setMedalEii",
+      "aliases": [
+        "_ZN12ChoiceWindow8setMedalEii"
+      ],
+      "weight": 176,
+      "source_match_report": 99.2,
+      "source_match_raw": 99.2071189641651,
+      "source_match_fraction": "6198560/62481",
+      "match": 96.3,
+      "n_base": 177,
+      "linked_equal": false,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x147068",
+      "symbol": "_ZN12ChoiceWindow13setMiscButtonERKN11AbyssEngine6StringE",
+      "aliases": [
+        "_ZN12ChoiceWindow13setMiscButtonERKN11AbyssEngine6StringE"
+      ],
+      "weight": 116,
+      "source_match_report": 97.6,
+      "source_match_raw": 97.56136124077699,
+      "source_match_fraction": "647905/6641",
+      "match": 78.6,
+      "n_base": 113,
+      "linked_equal": false,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x1471b4",
+      "symbol": "_ZN12ChoiceWindow6updateEi",
+      "aliases": [
+        "_ZN12ChoiceWindow6updateEi"
+      ],
+      "weight": 2,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 2,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x1471bc",
+      "symbol": "_ZN12ChoiceWindow4drawEv",
+      "aliases": [
+        "_ZN12ChoiceWindow4drawEv"
+      ],
+      "weight": 275,
+      "source_match_report": 95.8,
+      "source_match_raw": 95.79970723375646,
+      "source_match_fraction": "84357965/880566",
+      "match": 74.4,
+      "n_base": 265,
+      "linked_equal": false,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x1474cc",
+      "symbol": "_ZN12ChoiceWindow12OnTouchBeginEii",
+      "aliases": [
+        "_ZN12ChoiceWindow12OnTouchBeginEii"
+      ],
+      "weight": 31,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 31,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x147518",
+      "symbol": "_ZN12ChoiceWindow11OnTouchMoveEii",
+      "aliases": [
+        "_ZN12ChoiceWindow11OnTouchMoveEii"
+      ],
+      "weight": 31,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 31,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x147564",
+      "symbol": "_ZN12ChoiceWindow10OnTouchEndEii",
+      "aliases": [
+        "_ZN12ChoiceWindow10OnTouchEndEii"
+      ],
+      "weight": 40,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 40,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x1475c4",
+      "symbol": "_ZN12ChoiceWindow4leftEv",
+      "aliases": [
+        "_ZN12ChoiceWindow4leftEv"
+      ],
+      "weight": 1,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 1,
+      "linked_equal": true,
+      "bytes_equal": true
+    },
+    {
+      "address": "0x1475c6",
+      "symbol": "_ZN12ChoiceWindow5rightEv",
+      "aliases": [
+        "_ZN12ChoiceWindow5rightEv"
+      ],
+      "weight": 1,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 1,
+      "linked_equal": true,
+      "bytes_equal": true
+    },
+    {
+      "address": "0x1475c8",
+      "symbol": "_ZN12ChoiceWindow4fireEv",
+      "aliases": [
+        "_ZN12ChoiceWindow4fireEv"
+      ],
+      "weight": 2,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 2,
+      "linked_equal": true,
+      "bytes_equal": true
+    }
+  ],
+  "unique_bodies": 21,
+  "original_instructions": 1267,
+  "mean_raw": 99.11099428183964,
+  "mean_fraction": "422908159851887420861/4267015611298109670",
+  "weighted_raw": 97.55696583779205,
+  "weighted_fraction": "477192311301035952024133/4891422229084733051710",
+  "passes_98": false,
+  "report_sha256": "21a66e6d6f768efff616135831f5c53bbad3cdc0dfe1bac9c48e3c8580e609b1",
+  "base_sha256": "61188aaba7a9c7ffa7483f9da0f31fbe9d72e02f1fb9f15e10e700a40f034b6d",
+  "target_sha256": "c649372851764b4a0016e7ce79b85534034290c44355accb48444fc71167d9f1"
+}

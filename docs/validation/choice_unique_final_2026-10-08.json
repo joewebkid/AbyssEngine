@@ -1,0 +1,413 @@
+{
+  "starting_commit": "7314772c",
+  "unit": "game/ui/ChoiceWindow",
+  "grouping": "original even ARM address; one representative per body; aliases once",
+  "weights": "frozen original n_target before edits; canonical normalization/formula unchanged",
+  "functions": [
+    {
+      "address": "0x1467ec",
+      "symbol": "_ZN12ChoiceWindowC1Ev",
+      "aliases": [
+        "_ZN12ChoiceWindowC1Ev",
+        "_ZN12ChoiceWindowC2Ev"
+      ],
+      "weight": 43,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 43,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x146870",
+      "symbol": "_ZN12ChoiceWindowD1Ev",
+      "aliases": [
+        "_ZN12ChoiceWindowD1Ev",
+        "_ZN12ChoiceWindowD2Ev"
+      ],
+      "weight": 31,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 31,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x1468c8",
+      "symbol": "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringE",
+      "aliases": [
+        "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringE"
+      ],
+      "weight": 17,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 17,
+      "linked_equal": false,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x1468f4",
+      "symbol": "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_b",
+      "aliases": [
+        "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_b"
+      ],
+      "weight": 38,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 38,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x146954",
+      "symbol": "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_",
+      "aliases": [
+        "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_"
+      ],
+      "weight": 37,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 37,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x1469b0",
+      "symbol": "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_bS3_S3_S3_ii",
+      "aliases": [
+        "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_bS3_S3_S3_ii"
+      ],
+      "weight": 320,
+      "source_match_report": 97.7,
+      "source_match_raw": 97.7221261605965,
+      "source_match_fraction": "256525565/2625051",
+      "match": 69.6,
+      "n_base": 315,
+      "linked_equal": false,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x146d5c",
+      "symbol": "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringEb",
+      "aliases": [
+        "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringEb"
+      ],
+      "weight": 20,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 20,
+      "linked_equal": false,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x146d94",
+      "symbol": "_ZN12ChoiceWindow13removeButtonsEv",
+      "aliases": [
+        "_ZN12ChoiceWindow13removeButtonsEv"
+      ],
+      "weight": 3,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 3,
+      "linked_equal": true,
+      "bytes_equal": true
+    },
+    {
+      "address": "0x146d9c",
+      "symbol": "_ZN12ChoiceWindow9hasChoiceEv",
+      "aliases": [
+        "_ZN12ChoiceWindow9hasChoiceEv"
+      ],
+      "weight": 2,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 2,
+      "linked_equal": true,
+      "bytes_equal": true
+    },
+    {
+      "address": "0x146da4",
+      "symbol": "_ZN12ChoiceWindow8setWidthEi",
+      "aliases": [
+        "_ZN12ChoiceWindow8setWidthEi"
+      ],
+      "weight": 12,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 12,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x146dc4",
+      "symbol": "_ZN12ChoiceWindow9setHeightEi",
+      "aliases": [
+        "_ZN12ChoiceWindow9setHeightEi"
+      ],
+      "weight": 69,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 69,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x146e8c",
+      "symbol": "_ZN12ChoiceWindow8setMedalEii",
+      "aliases": [
+        "_ZN12ChoiceWindow8setMedalEii"
+      ],
+      "weight": 176,
+      "source_match_report": 99.2,
+      "source_match_raw": 99.2071189641651,
+      "source_match_fraction": "6198560/62481",
+      "match": 96.3,
+      "n_base": 177,
+      "linked_equal": false,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x147068",
+      "symbol": "_ZN12ChoiceWindow13setMiscButtonERKN11AbyssEngine6StringE",
+      "aliases": [
+        "_ZN12ChoiceWindow13setMiscButtonERKN11AbyssEngine6StringE"
+      ],
+      "weight": 116,
+      "source_match_report": 97.6,
+      "source_match_raw": 97.56821589205397,
+      "source_match_fraction": "65078/667",
+      "match": 79.1,
+      "n_base": 114,
+      "linked_equal": false,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x1471b4",
+      "symbol": "_ZN12ChoiceWindow6updateEi",
+      "aliases": [
+        "_ZN12ChoiceWindow6updateEi"
+      ],
+      "weight": 2,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 2,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x1471bc",
+      "symbol": "_ZN12ChoiceWindow4drawEv",
+      "aliases": [
+        "_ZN12ChoiceWindow4drawEv"
+      ],
+      "weight": 275,
+      "source_match_report": 97.9,
+      "source_match_raw": 97.89031168022764,
+      "source_match_fraction": "2201651/22491",
+      "match": 86.4,
+      "n_base": 271,
+      "linked_equal": false,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x1474cc",
+      "symbol": "_ZN12ChoiceWindow12OnTouchBeginEii",
+      "aliases": [
+        "_ZN12ChoiceWindow12OnTouchBeginEii"
+      ],
+      "weight": 31,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 31,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x147518",
+      "symbol": "_ZN12ChoiceWindow11OnTouchMoveEii",
+      "aliases": [
+        "_ZN12ChoiceWindow11OnTouchMoveEii"
+      ],
+      "weight": 31,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 31,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x147564",
+      "symbol": "_ZN12ChoiceWindow10OnTouchEndEii",
+      "aliases": [
+        "_ZN12ChoiceWindow10OnTouchEndEii"
+      ],
+      "weight": 40,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 40,
+      "linked_equal": true,
+      "bytes_equal": false
+    },
+    {
+      "address": "0x1475c4",
+      "symbol": "_ZN12ChoiceWindow4leftEv",
+      "aliases": [
+        "_ZN12ChoiceWindow4leftEv"
+      ],
+      "weight": 1,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 1,
+      "linked_equal": true,
+      "bytes_equal": true
+    },
+    {
+      "address": "0x1475c6",
+      "symbol": "_ZN12ChoiceWindow5rightEv",
+      "aliases": [
+        "_ZN12ChoiceWindow5rightEv"
+      ],
+      "weight": 1,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 1,
+      "linked_equal": true,
+      "bytes_equal": true
+    },
+    {
+      "address": "0x1475c8",
+      "symbol": "_ZN12ChoiceWindow4fireEv",
+      "aliases": [
+        "_ZN12ChoiceWindow4fireEv"
+      ],
+      "weight": 2,
+      "source_match_report": 100.0,
+      "source_match_raw": 100.0,
+      "source_match_fraction": "100",
+      "match": 100.0,
+      "n_base": 2,
+      "linked_equal": true,
+      "bytes_equal": true
+    }
+  ],
+  "unique_bodies": 21,
+  "original_instructions": 1267,
+  "mean_raw": 99.63751298557348,
+  "mean_fraction": "19725225770538450490/197969872786713027",
+  "weighted_raw": 98.63400320807008,
+  "weighted_fraction": "1178102517741934759973/11944182324798352629",
+  "passes_98": true,
+  "report_sha256": "c54263f39e4451c8fe716cbfd4bbbc6a6eeab73814585d2591a5631164a8c18b",
+  "base_sha256": "98a09d059ab149c81d2b4205b815ccad4bcfcf5c1459468287dcf19605086631",
+  "target_sha256": "c649372851764b4a0016e7ce79b85534034290c44355accb48444fc71167d9f1",
+  "full_corpus_gate": {
+    "baseline_report_sha256": "cf376e67f74f798e4b318c9c38bcb2ad59324f65b3562684ed1bf5cd0354b5e1",
+    "final_report_sha256": "c727e83c4a760946471e2e7b80325d04b3a76cfa1eafd93db8de412968843f4c",
+    "compared_pairs_before": 4689,
+    "compared_pairs_after": 4689,
+    "compared_pair_sha256": "b842686e2ce3b7369f99b61af2cc19da460e54c41666d78eb7762c43b3044964",
+    "covered_original_names_sha256": "9bfb60b19c78c85ef44aa575051560b87d407dcb11e652d931f4bab024ff86ba",
+    "original_functions": 4524,
+    "compared_unique": 4323,
+    "missing": 201,
+    "missing_wrong_type": 0,
+    "skipped_units": 0,
+    "exact_pairs": {
+      "linked_equal": {
+        "before": 2301,
+        "after": 2303,
+        "losses": [],
+        "gains": [
+          [
+            "game/ui/ChoiceWindow",
+            "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_"
+          ],
+          [
+            "game/ui/ChoiceWindow",
+            "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_b"
+          ]
+        ],
+        "before_sha256": "5167ce0b20e2b6f79492efa6c085844a45db17cf438212193e585c0ebc3c8fe3",
+        "after_sha256": "aa23f39ec78bf01e6c109277d79ddcf0aee5145d6d2b02e2c9ebbb166962eb05"
+      },
+      "bytes_equal": {
+        "before": 997,
+        "after": 997,
+        "losses": [],
+        "gains": [],
+        "before_sha256": "9adc90b93b374d886e37828963b1e9098d376aa069583fc5a92c677087b034ec",
+        "after_sha256": "9adc90b93b374d886e37828963b1e9098d376aa069583fc5a92c677087b034ec"
+      }
+    },
+    "changed_pairs": [
+      [
+        "game/ui/ChoiceWindow",
+        "_ZN12ChoiceWindow13setMiscButtonERKN11AbyssEngine6StringE"
+      ],
+      [
+        "game/ui/ChoiceWindow",
+        "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_"
+      ],
+      [
+        "game/ui/ChoiceWindow",
+        "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_b"
+      ],
+      [
+        "game/ui/ChoiceWindow",
+        "_ZN12ChoiceWindow3setERKN11AbyssEngine6StringES3_bS3_S3_S3_ii"
+      ],
+      [
+        "game/ui/ChoiceWindow",
+        "_ZN12ChoiceWindow4drawEv"
+      ]
+    ],
+    "full_mean_source_before": 91.76,
+    "full_mean_source_after": 91.76,
+    "full_mean_strict_before": 79.65,
+    "full_mean_strict_after": 79.67,
+    "focused_full_agreement": true
+  },
+  "validation": {
+    "native_gof2_build": "pass",
+    "arm_translation_units": 206,
+    "arm_failures": 0,
+    "verifier_tests_run": 36,
+    "verifier_tests_skipped": 1,
+    "verifier_tests_failures": 0,
+    "real_alias_tests_run": 2,
+    "real_alias_tests_skipped": 0,
+    "real_alias_tests_failures": 0
+  }
+}
