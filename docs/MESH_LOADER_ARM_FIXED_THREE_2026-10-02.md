@@ -11218,3 +11218,54 @@ Manifest copied to workspace after space available and40 mappings checked;
 1,056,480 logical bytes. No compiled base/source/report/native fixture/main/
 Git archive removed. Evidence:
 `_work/duplicate_read_roles40_target_cleanup_20261008.json`.
+
+
+## Continuation: Read post-count parameter reference records
+
+Ten focused cases on2026-10-08 afterd108494d: accepted/fresh-index-owner
+controls plus four reference-only local StreamArguments records per owner,
+declared immediately after vertex count capture. handleRef/slot both orders;
+engine/handleRef/flags/slot/mat and reverse orders. Actual const handle reference
+is retained; slot/engine/material are references to existing parameters,
+flags a const reference to parameter, not value snapshots. All uses after
+record declaration redirected to members. No earlier read/allocation order,
+external owner reload, failure cleanup, loop arithmetic or normal clamp
+changes; no helper/header/ABI/signature/flags/matcher/denominator changes.
+Compiler lifetime hypothesis based on diagnosed parameter stack roles,
+not recovered original source or forced frame-access padding.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 874 |
+| accepted_handleRef_slot | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 874 |
+| accepted_slot_handleRef | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 874 |
+| accepted_engine_handleRef_flags_slot_mat | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 874 |
+| accepted_mat_slot_flags_handleRef_engine | 98.5 / 57.4 | 95.8 | 98.1 | 98.8 | 100.0 | 874 |
+| fresh_control | 98.5 / 57.8 | 95.7 | 98.1 | 98.8 | 100.0 | 874 |
+| fresh_handleRef_slot | 98.5 / 57.8 | 95.7 | 98.1 | 98.8 | 100.0 | 874 |
+| fresh_slot_handleRef | 98.5 / 57.8 | 95.7 | 98.1 | 98.8 | 100.0 | 874 |
+| fresh_engine_handleRef_flags_slot_mat | 98.5 / 57.8 | 95.7 | 98.1 | 98.8 | 100.0 | 874 |
+| fresh_mat_slot_flags_handleRef_engine | 98.5 / 57.8 | 95.7 | 98.1 | 98.8 | 100.0 | 874 |
+
+All eight reference-record variants produce entire corresponding control
+objects, not merely equal primary scores. Thus no parameter lifetime/spill
+change in these contexts; don't expand equivalent reference-only orders here.
+No primary gain, none retained; not a compiler ceiling claim. Sweep completed
+exit zero; ten compiled-object hashes/instruction counts/all shape metrics
+independently rebound to canonical original. Source restored; accepted full/
+native binding audit rechecked204 TUs/4619 comparisons/202 unaffected objects,
+actual linked2079/byte959 pair sets unchanged with no loss/gain, signatures,
+body boundaries and flags intact. No fresh full/native/game/device/Android
+execution. Means98.40/98.41; both99 gates unmet, goal active. Main untouched,
+report-only commit, no push/PR/merge.
+
+Preparation removed40 exact generated original Core target duplicates from
+sorted read directory family; single-object targets only, resolved inside own
+_work,untracked,canonical SHA match,exact40 guard,manifest/system-temp backup
+before literal removal and immediate reference/target rehash.1,056,480 logical
+bytes;all40 manifest entries independently audited. Bases/source/reports/
+native/accepted/baseline/main/Git archive retained;no recursive deletion.
+Manifest:`_work/duplicate_stream_refs40_target_cleanup_20261008.json`.
+Evidence:`_work/read_stream_reference_arguments_sweep.py`,
+`_work/read_stream_reference_arguments_identities.json`,ten focused objects/
+reports and existing accepted proof binding audit.
