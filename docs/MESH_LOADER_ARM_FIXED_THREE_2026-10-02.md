@@ -10985,3 +10985,71 @@ PowerShell tool invocation. Evidence:
 `_work/enh_scalar_record_frame_capture_sweep.py`,
 `_work/enh_scalar_record_frame_capture_identities.json`,12 focused objects/
 reports and rechecked accepted binding audit.
+
+
+## Continuation: Addressed magic/engine entry guard interaction
+
+Fourteen focused measurements on2026-10-08 start from00dfecbd. Historical
+profile selected Create HeaderState{char magic[8];Engine*engine;} for higher
+instruction inventory95.6 vs accepted94.7, but control95.8 vs100. Test six
+entry guards under direct/shared reader result plus controls:invalid/valid
+boolean chains,boolean bit-and,ternary,early combined and engine/path early
+returns. Record engine initialized from original parameter before guard;
+magic initialization/read extents unchanged. Guards preserve null input
+return-4 with no allocation or file calls. Pointer comparisons pure;no change
+in actual short-circuit effects. Early direct form removes unused result;
+shared form retains existing result used by reader calls. No helper/header/
+ABI/signature/flags/matcher/denominator changes, no dummy effects.
+Natural local record hypothesis, not recovered source.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| accepted_invalid_chain | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| accepted_valid_chain | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| accepted_boolean_and | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| accepted_ternary | 97.5 / 64.7 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| accepted_early_combined | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| accepted_early_engine_path | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| shared_control | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| shared_invalid_chain | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| shared_valid_chain | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| shared_boolean_and | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| shared_ternary | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| shared_early_combined | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+| shared_early_engine_path | 97.5 / 65.1 | 95.6 | 97.7 | 95.8 | 98.2 | 287 |
+
+All14 retain identical component metrics and collapse to two whole Core
+objects. Primary97.5 below accepted98.4;none retained. Entry-guard spelling
+does not restore control in this context. Independently extracted normalized
+control-opcode inventories from actual original/compiled arrays:both48
+tokens,including24 calls. Compiled missing1 b and1 bne,extra1 beq and1 cbz
+versus original, unchanged for every trial. Thus deficit is branch-kind
+distribution, not fewer branches; adding dummy branches/padding is unjustified.
+This multiset finding does not identify aligned source branches or prove
+the deficit's location. Do not expand equivalent entry guards here;no
+compiler ceiling inferred. Diagnostic:
+`_work/create_magic_engine_guard_control_inventory.json`.
+
+Sweep exited zero;14 compile/focused verifies pass. All component metrics,
+counts,hashes and control inventories independently recomputed. Source and
+native fixtures restored to accepted;existing204-TU/4619-comparison full/
+native binding audit passes with202 unaffected objects, unchanged actual
+linked2079/byte959 pair sets,canonical flags,three-body/signature boundaries.
+No fresh full/native runtime/game/Android/device check claimed. Accepted
+means98.40/98.41,both99.0 gates unmet;goal active. Main untouched;report-only
+commit;no push/PR/merge.
+
+Preparation removed80 verified generated original Core copies from explicit
+sorted read directory family;only existing single-object focused targets
+whose hash equals canonical target eligible. Missing/non-single/different
+hash targets skipped. Resolved paths inside own _work,untracked,reference
+protected;exact80 guard. Manifest/system-temp backup before literal-path
+deletion;immediate target/reference rehash. Cleanup exited zero,reclaimed
+2,112,960 logical bytes;all80 mappings independently rebound. Compiled
+bases,reports,sources,accepted/baseline/main/Git archive retained. No
+recursive deletion. Inline PowerShell invocation;manifest:
+`_work/duplicate_read80_core_target_cleanup_20261008.json`.
+Evidence:`_work/create_magic_engine_guard_interaction_sweep.py`,
+`_work/create_magic_engine_guard_interaction_identities.json`,14 focused
+objects/reports and rechecked accepted binding audit.
