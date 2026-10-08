@@ -1,0 +1,106 @@
+{
+  "baseline_commit": "473310054460d0eef759db67b1a59064a06f2fb1",
+  "branch": "codex/mgame-arm-98-20261008",
+  "source_file": "src/game/menu/MGame.cpp",
+  "source_sha256": "0014491a0a28e1444f31f313bfa642de926a5bae446255cbe4d5288a299c8353",
+  "hash_note": "Unqualified hashes are raw working-file bytes at validation time; Git normalizes text CRLF to LF. Explicit lf_sha256 fields hash normalized LF bytes.",
+  "source_lf_sha256": "f95ac87069c1ff748ed847cc14871bb65a7cc4d308fb8fb7e567f1763358f144",
+  "family_registry_sha256": "8e5e5c8240e5d18d253bfec67ad9eb43d55e95bbbd0edbbb19bbf930ad61418b",
+  "unique_substantive_bodies": 35,
+  "frozen_weight_sum": 12933,
+  "family_registry_lf_sha256": "5ffb783c69cef6d1dabef5220346fd50396ce523a9d367da5acfdc054391b932",
+  "baseline_family": {
+    "unweighted": 98.77142857142857,
+    "frozen_n_target_weighted": 97.21178380886106
+  },
+  "final_family": {
+    "unweighted": 98.8742857142857,
+    "frozen_n_target_weighted": 98.04139024201655
+  },
+  "supplemental_precision": {
+    "raw_unweighted": 98.8742077286178,
+    "raw_frozen_weighted": 98.04722942589729,
+    "executable_weight_sum": 12478,
+    "raw_executable_weighted": 98.04924172826153,
+    "canonical_executable_weighted": 98.0433563071005
+  },
+  "baseline_full": {
+    "report": "_work/mgame_baseline_full_20261008.json",
+    "sha256": "8830751da12c42773254fe39dc1b6a1cb4cb5541b18540d2f6c508b9c55f5f97",
+    "summary": {
+      "count": 4688,
+      "avg_match": 79.63,
+      "avg_source_match": 91.76,
+      "fuzzy_perfect": 2439,
+      "byte_exact": 997,
+      "linked_exact": 2301,
+      "skipped": 0,
+      "original_functions": 4524,
+      "compared_unique": 4323,
+      "missing": 201,
+      "missing_wrong_type": 0,
+      "missing_absent": 201,
+      "extra_symbols": 121
+    }
+  },
+  "final_full": {
+    "report": "_work/mgame_final_full_20261008.json",
+    "sha256": "a958e08b84bf4de882f337291b84c58023f0763c5bdfe566e5475bbd44f8de1a",
+    "summary": {
+      "count": 4688,
+      "avg_match": 79.63,
+      "avg_source_match": 91.76,
+      "fuzzy_perfect": 2439,
+      "byte_exact": 997,
+      "linked_exact": 2301,
+      "skipped": 0,
+      "original_functions": 4524,
+      "compared_unique": 4323,
+      "missing": 201,
+      "missing_wrong_type": 0,
+      "missing_absent": 201,
+      "extra_symbols": 121
+    }
+  },
+  "exact_pair_gate": {
+    "linked_equal": {
+      "baseline_pairs": 2301,
+      "final_pairs": 2301,
+      "lost_pairs": [],
+      "gained_pairs": []
+    },
+    "bytes_equal": {
+      "baseline_pairs": 997,
+      "final_pairs": 997,
+      "lost_pairs": [],
+      "gained_pairs": []
+    }
+  },
+  "changed_non_mgame_rows": [],
+  "signatures_and_coverage_gate": "PASS: identical (unit,symbol) keys, identical extras, missing/wrong-type/skips no worse",
+  "full_vs_focused_gate": "PASS: every frozen body metric identical",
+  "full_and_focused_mgame_object_sha256": "7ccb9b30c8a882ae103ac383be718fa2b85b62780cd35bbca4f8b9fded9f643d",
+  "arm_build": {
+    "compiled": 206,
+    "failed": 0,
+    "log": "_work/mgame_final_full_20261008.log",
+    "exit_code": 0
+  },
+  "native_build": {
+    "target": "gof2",
+    "build_dir": "cmake-build-ucrt",
+    "artifact": "cmake-build-ucrt/libgof2.a",
+    "exit_code": 0,
+    "log": "_work/mgame_native_build_20261008.log",
+    "final_incremental_log": "_work/mgame_native_final_incremental_20261008.log",
+    "final_incremental_exit_code": 0,
+    "kind": "host static library; no native gameplay/runtime execution"
+  },
+  "verifier_tests": {
+    "run": 36,
+    "passed": 35,
+    "skipped": 1,
+    "exit_code": 0,
+    "log": "_work/mgame_verifier_tests_20261008.log"
+  }
+}

@@ -1,0 +1,215 @@
+{
+  "rule": "Supplemental audit on exactly the frozen family, without changing the canonical verifier or its scores. raw_source uses the same five ratios before decimal rounding. executable_weight excludes proven data directives and synthetic jump-table payload tokens from the unchanged original normalized stream. Primary frozen weights remain n_target.",
+  "functions": [
+    {
+      "symbol": "_ZN5MGameC1Ev",
+      "raw_source": 100.0,
+      "weight": 61,
+      "executable_weight": 59
+    },
+    {
+      "symbol": "_ZN5MGameD1Ev",
+      "raw_source": 100.0,
+      "weight": 20,
+      "executable_weight": 19
+    },
+    {
+      "symbol": "_ZN5MGameD0Ev",
+      "raw_source": 100.0,
+      "weight": 5,
+      "executable_weight": 5
+    },
+    {
+      "symbol": "_ZN5MGame12OnInitializeEv",
+      "raw_source": 99.67335049143952,
+      "weight": 749,
+      "executable_weight": 729
+    },
+    {
+      "symbol": "_ZN5MGame5resetEv",
+      "raw_source": 98.76507075232745,
+      "weight": 211,
+      "executable_weight": 199
+    },
+    {
+      "symbol": "_ZN5MGame19handleAccelerometerEv",
+      "raw_source": 99.52380952380952,
+      "weight": 168,
+      "executable_weight": 165
+    },
+    {
+      "symbol": "_ZN5MGame18maneuverTouchBeginEiiPv",
+      "raw_source": 100.0,
+      "weight": 6,
+      "executable_weight": 6
+    },
+    {
+      "symbol": "_ZN5MGame17maneuverTouchMoveEiiPv",
+      "raw_source": 100.0,
+      "weight": 27,
+      "executable_weight": 24
+    },
+    {
+      "symbol": "_ZN5MGame16maneuverTouchEndEiiPv",
+      "raw_source": 100.0,
+      "weight": 39,
+      "executable_weight": 36
+    },
+    {
+      "symbol": "_ZN5MGame17freeCamTouchBeginEiiPv",
+      "raw_source": 100.0,
+      "weight": 63,
+      "executable_weight": 62
+    },
+    {
+      "symbol": "_ZN5MGame16freeCamTouchMoveEiiPv",
+      "raw_source": 97.82987012987013,
+      "weight": 177,
+      "executable_weight": 173
+    },
+    {
+      "symbol": "_ZN5MGame15freeCamTouchEndEiiPv",
+      "raw_source": 93.96556273914766,
+      "weight": 53,
+      "executable_weight": 51
+    },
+    {
+      "symbol": "_ZN5MGame11pauseSoundsEv",
+      "raw_source": 100.0,
+      "weight": 27,
+      "executable_weight": 26
+    },
+    {
+      "symbol": "_ZN5MGame12resumeSoundsEv",
+      "raw_source": 100.0,
+      "weight": 25,
+      "executable_weight": 24
+    },
+    {
+      "symbol": "_ZN5MGame12OnTouchBeginEiiPv",
+      "raw_source": 98.04531520446858,
+      "weight": 1001,
+      "executable_weight": 976
+    },
+    {
+      "symbol": "_ZN5MGame11OnTouchMoveEiiPv",
+      "raw_source": 99.77496439310018,
+      "weight": 184,
+      "executable_weight": 180
+    },
+    {
+      "symbol": "_ZN5MGame8useCloakEv",
+      "raw_source": 100.0,
+      "weight": 134,
+      "executable_weight": 128
+    },
+    {
+      "symbol": "_ZN5MGame14UseKhadorDriveEv",
+      "raw_source": 100.0,
+      "weight": 210,
+      "executable_weight": 204
+    },
+    {
+      "symbol": "_ZN5MGame22startChargingJumpDriveEv",
+      "raw_source": 97.68543314682617,
+      "weight": 147,
+      "executable_weight": 140
+    },
+    {
+      "symbol": "_ZN5MGame10OnTouchEndEiiPv",
+      "raw_source": 97.84944591685084,
+      "weight": 2769,
+      "executable_weight": 2663
+    },
+    {
+      "symbol": "_ZN5MGame14startJumpSceneEv",
+      "raw_source": 96.28419098808634,
+      "weight": 304,
+      "executable_weight": 289
+    },
+    {
+      "symbol": "_ZN5MGame16setCinematicModeEb",
+      "raw_source": 100.0,
+      "weight": 51,
+      "executable_weight": 49
+    },
+    {
+      "symbol": "_ZN5MGame12switchCameraEi",
+      "raw_source": 100.0,
+      "weight": 118,
+      "executable_weight": 117
+    },
+    {
+      "symbol": "_ZN5MGame9nextCamIdEi",
+      "raw_source": 95.46185355862775,
+      "weight": 63,
+      "executable_weight": 61
+    },
+    {
+      "symbol": "_ZN5MGame9OnReleaseEv",
+      "raw_source": 99.76878612716763,
+      "weight": 173,
+      "executable_weight": 166
+    },
+    {
+      "symbol": "_ZN5MGame8OnUpdateEv",
+      "raw_source": 97.47042565777508,
+      "weight": 3856,
+      "executable_weight": 3714
+    },
+    {
+      "symbol": "_ZN5MGame15updateJumpSceneEv",
+      "raw_source": 98.33299325186661,
+      "weight": 335,
+      "executable_weight": 318
+    },
+    {
+      "symbol": "_ZN5MGame9dockEventEii",
+      "raw_source": 96.34773175119072,
+      "weight": 477,
+      "executable_weight": 464
+    },
+    {
+      "symbol": "_ZN5MGame13dialogueEventEv",
+      "raw_source": 100.0,
+      "weight": 103,
+      "executable_weight": 102
+    },
+    {
+      "symbol": "_ZN5MGame12successCheckEv",
+      "raw_source": 98.52700748931147,
+      "weight": 515,
+      "executable_weight": 503
+    },
+    {
+      "symbol": "_ZN5MGame13gameOverCheckEv",
+      "raw_source": 99.4991301322199,
+      "weight": 251,
+      "executable_weight": 239
+    },
+    {
+      "symbol": "_ZN5MGame8OnResumeEv",
+      "raw_source": 100.0,
+      "weight": 20,
+      "executable_weight": 18
+    },
+    {
+      "symbol": "_ZN5MGame9OnSuspendEv",
+      "raw_source": 100.0,
+      "weight": 67,
+      "executable_weight": 65
+    },
+    {
+      "symbol": "_ZN5MGame10OnRender2DEv",
+      "raw_source": 97.39900292068498,
+      "weight": 439,
+      "executable_weight": 420
+    },
+    {
+      "symbol": "_ZN5MGame10OnRender3DEv",
+      "raw_source": 98.39332632685235,
+      "weight": 85,
+      "executable_weight": 84
+    }
+  ]
+}
