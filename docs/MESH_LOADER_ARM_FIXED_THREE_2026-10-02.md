@@ -10758,3 +10758,71 @@ Evidence:`_work/enh_completion_value_records_sweep.py`,
 `_work/enh_completion_value_records_identities.json`,14 focused objects/
 reports and rechecked binding audit. Main untouched;report-only commit;
 no push/PR/merge.
+
+
+## Continuation: Current Read flag/index-owner interaction
+
+Fourteen focused measurements on 2026-10-08 start from688c4444. Prior flag
+conditions were measured before current paired typed raw buffers. New
+bounded interaction: six equivalent format conditions under accepted/fresh
+index-owner source with controls. Shared signed shift,shared shifted high
+bit,signed compressed storage; compressed bool from flags&7,position mask
+flags&3,both masks. Unsigned32 shifts29/30 preserve exactly low3/2 bits;
+high-bit check tests original bit2. Signed conversion relies on supported
+two's-complement ARM/UCRT behavior, no signed left shift. No capture/reload,
+read/alloc size/order, arithmetic or cleanup source changes; same selected
+format for all flags. No helper/header/ABI/signature/flags/matcher/denominator
+changes. No artificial mask merely to add instructions; each condition
+implements existing format selection. No original source spelling recovered.
+
+| Trial | Read source / strict | Instructions | Calls |
+|---|---|---:|---:|
+| accepted_control | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_shared_signed_shift | 97.9 / 57.9 | 872 | 98.2 |
+| accepted_shared_shifted_bit | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_signed_shift_storage | 97.9 / 57.9 | 872 | 98.2 |
+| accepted_compressed_bool | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_position_mask | 98.5 / 57.4 | 874 | 100.0 |
+| accepted_both_masks | 98.5 / 57.4 | 874 | 100.0 |
+| fresh_control | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_shared_signed_shift | 97.6 / 57.8 | 878 | 98.2 |
+| fresh_shared_shifted_bit | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_signed_shift_storage | 97.6 / 57.8 | 878 | 98.2 |
+| fresh_compressed_bool | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_position_mask | 98.5 / 57.8 | 874 | 100.0 |
+| fresh_both_masks | 98.5 / 57.8 | 874 | 100.0 |
+
+No gain. Shared shifted bit and position mask reproduce corresponding whole
+control Core objects. Compressed bool/both masks match each other under
+each owner, tie source/strict/count metrics without whole-control identity.
+Both signed forms match each other per owner, regress to97.9 accepted /
+97.6 fresh and call metric98.2. Accepted signed strict rises57.4->57.9 while
+PRIMARY source falls98.5->97.9; strict-only gain is not a goal improvement.
+None retained. Do not expand equivalent signed/masked conditions here;
+no compiler ceiling inferred.
+
+Sweep exited zero;14 compile/focused verifies pass. Source/call metrics,
+instruction counts, hashes and duplicate identity pairs independently
+checked against actual instruction arrays. Source/native fixtures restored
+to ecc30f25. Existing accepted full/native binding audit passes:204 TUs,
+4619 comparisons,no skips;202 unaffected objects;actual linked-exact2079 /
+byte-exact959 pair sets unchanged, no lost/gained pairs. Canonical flags
+and three-body/signature boundaries intact. No fresh full rebuild/native
+execution/device/Android/game check claimed for rejected forms.
+
+Preparation removed remaining71 verified generated original Core targets
+in explicit readtypedpair family, skipping previously missing targets.
+Exact71 count guard before removal; resolved paths within own _work,
+untracked single expected unit;SHA-256 equal retained canonical target.
+Manifest/system-temp backup before literal-path deletion; immediate target/
+reference rehash per file. Reclaimed1,875,252 logical bytes;all71 mappings
+independently rebound. Bases/reports/sources/accepted/baseline/main/Git
+archive retained. No recursive deletion. Evidence:
+`_work/duplicate_typedpair_remaining_core_target_cleanup_20261008.json`,
+`_work/cleanup_typedpair_remaining_core_target_duplicates_20261008.ps1`.
+
+Accepted means **98.40% / 98.41%**, both >=99.0 gates unmet;goal active.
+Evidence:`_work/read_current_flag_owner_interaction_sweep.py`,
+`_work/read_current_flag_owner_interaction_identities.json`,14 focused
+objects/reports and rechecked binding audit. Main untouched;report-only
+commit;no push/PR/merge.
