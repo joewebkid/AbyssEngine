@@ -11269,3 +11269,57 @@ Manifest:`_work/duplicate_stream_refs40_target_cleanup_20261008.json`.
 Evidence:`_work/read_stream_reference_arguments_sweep.py`,
 `_work/read_stream_reference_arguments_identities.json`,ten focused objects/
 reports and existing accepted proof binding audit.
+
+
+## Continuation: Enhanced remaining-key counter interaction
+
+Fourteen focused cases2026-10-08 after68299771: accepted/preload controls
+and six countdown variants each. Three vector-key loops,three scalar-key
+loops,optional-key loop,V5 signed-key loop separately;all eight together in
+for and guarded do forms. Current loops increment unused i/j; new unsigned
+remaining=count for unsigned-short counts, signed int remaining=count for
+signed-short V5;remaining>0 then decrement. Zero/negative V5 still skip;
+unsigned counts bounded65535, signed32767; no overflow. Assert old index not
+referenced in any payload. Same stream read/InsertKeyFrame order and failure
+gotos;no count-word reuse,channel/data changes,float reassociation or clamping
+change. This is a compiler hypothesis,not recovered original loop source.
+No helper/header/ABI/signature/flags/matcher/denominator/dummy effects.
+
+| Trial | Source / strict | Inventory | Opcode | Control | Size | Instructions |
+|---|---|---:|---:|---:|---:|---:|
+| accepted_control | 98.3 / 66.9 | 95.8 | 97.4 | 98.7 | 99.5 | 641 |
+| accepted_vector_remaining_for | 98.0 / 52.5 | 95.2 | 96.8 | 98.0 | 100.0 | 641 |
+| accepted_scalar_remaining_for | 97.9 / 66.1 | 94.8 | 96.5 | 98.0 | 100.0 | 641 |
+| accepted_optional_remaining_for | 98.3 / 66.4 | 95.7 | 97.3 | 98.7 | 99.7 | 641 |
+| accepted_v5_remaining_for | 98.1 / 66.8 | 95.5 | 97.3 | 98.0 | 99.7 | 640 |
+| accepted_all_remaining_for | 96.4 / 51.1 | 93.1 | 94.9 | 94.6 | 99.2 | 640 |
+| accepted_all_remaining_do | 93.9 / 49.9 | 90.3 | 92.5 | 88.6 | 98.2 | 630 |
+| preload_control | 98.3 / 67.8 | 95.8 | 97.4 | 98.3 | 99.8 | 639 |
+| preload_vector_remaining_for | 97.8 / 53.3 | 95.0 | 96.7 | 97.6 | 99.7 | 639 |
+| preload_scalar_remaining_for | 97.7 / 66.8 | 94.8 | 96.5 | 97.6 | 99.7 | 639 |
+| preload_optional_remaining_for | 98.3 / 67.3 | 95.7 | 97.3 | 98.3 | 100.0 | 639 |
+| preload_v5_remaining_for | 98.1 / 67.5 | 95.5 | 97.3 | 97.6 | 100.0 | 638 |
+| preload_all_remaining_for | 96.1 / 52.0 | 92.9 | 94.7 | 94.3 | 98.8 | 638 |
+| preload_all_remaining_do | 93.7 / 50.6 | 90.2 | 92.3 | 88.2 | 97.8 | 628 |
+
+Twelve new cases93.7..98.3. Optional-only ties primary but lowers inventory/
+opcode/strict under both contexts;all changes regress control except optional.
+All-for96.4/96.1;all-do93.9/93.7,despite fewer instructions. No primary gain,
+none retained. Fourteen distinct whole objects;all shape components/counts/
+hashes independently rebound to canonical original. Sweep completed exit0;
+source restored,accepted204-TU/4619-comparison existing full/native proof
+binding passes,202 unaffected objects,actual linked2079/byte959 sets with no
+loss/gain,body/signature boundaries and flags intact. No fresh full rebuild/
+native/game/device/Android execution. Means98.40/98.41;both99.0 gates unmet,
+goal active. No compiler ceiling claim. Main untouched;report-only commit,
+no push/PR/merge.
+
+Preparation removed100 exact generated original Mesh targets from sorted
+explicit enh family,single-object targets only,paths resolved inside own
+_work,untracked,canonical SHA match,exact100 guard,manifest/system-temp backup
+before literal deletion/immediate target+reference rehash.289,600 logical
+bytes;all100 mappings independently checked. Bases/source/reports/native/
+accepted/baseline/main/Git archive untouched,no recursive removal. Manifest:
+`_work/duplicate_countdown100_mesh_target_cleanup_20261008.json`.
+Evidence:`_work/enh_key_countdown_sweep.py`,
+`_work/enh_key_countdown_identities.json`,14 focused objects/reports.
