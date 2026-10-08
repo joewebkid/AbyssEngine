@@ -60,7 +60,8 @@ public:
 
     void update(const Vector &v);
 
-    float update(float x, float y, float z);
+    // Android 0x11bf70 has no result computation and tail-calls setActive.
+    void update(float x, float y, float z);
 
     bool waypointDefined();
 };
