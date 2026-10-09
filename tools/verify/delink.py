@@ -261,8 +261,8 @@ def main():
     if not args.keep_asm:
         os.remove(asm_path)
 
-    print(f"[delink] {os.path.relpath(args.base, REPO)}: "
-          f"{len(funcs)} funcs -> {os.path.relpath(args.out, REPO)} "
+    print(f"[delink] {args.base}: "
+          f"{len(funcs)} funcs -> {args.out} "
           f"({len(missing)} not in .so/.text)")
     return 0
 

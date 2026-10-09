@@ -367,14 +367,14 @@ def main():
     if not args.only:
         print(f"coverage: compared {report['compared_unique']}/{report['original_functions']} "
               f"original functions   missing {report['missing']} "
-              f"(-> {os.path.relpath(miss_path, REPO)})")
+              f"(-> {miss_path})")
         if report["missing_wrong_type"]:
             print(f"  of which {report['missing_wrong_type']} are implemented under a different "
                   f"signature (wrong type) "
-                  f"(-> {os.path.relpath(wt_path, REPO)}); "
+                  f"(-> {wt_path}); "
                   f"{report['missing_absent']} genuinely absent")
         print(f"extra: {report['extra_symbols']} symbols our build defines that the original "
-              f"doesn't (-> {os.path.relpath(extra_path, REPO)})")
+              f"doesn't (-> {extra_path})")
     if skips:
         units = ", ".join(u for u, _ in skips)
         print(f"skipped {len(skips)} units (couldn't delink/diff): {units}")
@@ -385,7 +385,7 @@ def main():
     out = args.report or os.path.join(args.build_dir, "report.json")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     json.dump(report, open(out, "w"), indent=2)
-    print(f"report -> {os.path.relpath(out, REPO)}")
+    print(f"report -> {out}")
 
     # Regression gate: every function we implement must mangle to the original's signature.
     # missing_wrong_type is only populated on a full run (no --only), so this is inert for
@@ -394,7 +394,7 @@ def main():
     if args.fail_on_wrong_type and report.get("missing_wrong_type", 0) > 0:
         print(f"\nERROR: {report['missing_wrong_type']} function(s) are implemented under a "
               f"different (wrong) signature than the original binary "
-              f"(-> {os.path.relpath(wt_path, REPO)}). "
+              f"(-> {wt_path}). "
               f"Fix the signature(s) so the count returns to 0.", file=sys.stderr)
         return 1
     return 0
