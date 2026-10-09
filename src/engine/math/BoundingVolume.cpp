@@ -58,29 +58,19 @@ BoundingVolume::BoundingVolume(float cx, float cy, float cz, float ex, float ey,
     extentsZ = ez;
 }
 
-void BoundingVolume::staticProjectCollisionOnSurface(const Vector &v, Array<BoundingVolume *> *vols) {
-    centerX = v.x;
-    centerY = v.y;
-    centerZ = v.z;
-
+Vector BoundingVolume::staticProjectCollisionOnSurface(const Vector &v, Array<BoundingVolume *> *vols) {
+    Vector out = v;
     if (vols != nullptr) {
         for (int pass = 0; pass != 2; pass++) {
-            for (BoundingVolume * bv
-
-
-            :
-            *vols
-            )
-            {
-                if (bv->outerCollide(centerX, centerY, centerZ) != 0) {
-                    Vector out = bv->projectCollisionOnSurface(Vector{centerX, centerY, centerZ});
-                    centerX = out.x;
-                    centerY = out.y;
-                    centerZ = out.z;
+            for (unsigned int i = 0; i < vols->size(); ++i) {
+                BoundingVolume *bv = (*vols)[i];
+                if (bv->outerCollide(out.x, out.y, out.z) != 0) {
+                    out = bv->projectCollisionOnSurface(out);
                 }
             }
         }
     }
+    return out;
 }
 
 void BoundingVolume::update(float x, float y, float z) {

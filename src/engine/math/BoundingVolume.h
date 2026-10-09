@@ -36,7 +36,8 @@ public:
 
     void setVolumes(Array<BoundingVolume *> *arr);
 
-    void staticProjectCollisionOnSurface(const AbyssEngine::AEMath::Vector &v, Array<BoundingVolume *> *vols);
+    static AbyssEngine::AEMath::Vector staticProjectCollisionOnSurface(
+        const AbyssEngine::AEMath::Vector &v, Array<BoundingVolume *> *vols);
 
     AbyssEngine::AEMath::Vector getProjectionVector(const AbyssEngine::AEMath::Vector &v);
 };

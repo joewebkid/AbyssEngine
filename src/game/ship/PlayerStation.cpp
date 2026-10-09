@@ -57,10 +57,8 @@ void PlayerStation::setPosition(const Vector &position) {
 }
 
 Vector PlayerStation::projectCollisionOnSurface(const Vector &position) {
-    Vector result;
-    reinterpret_cast<BoundingVolume *>(&result)->staticProjectCollisionOnSurface(
+    return BoundingVolume::staticProjectCollisionOnSurface(
         position, (BoundingVolumeList *) this->boundingVolumes);
-    return result;
 }
 
 void *PlayerStation::getRoot() {

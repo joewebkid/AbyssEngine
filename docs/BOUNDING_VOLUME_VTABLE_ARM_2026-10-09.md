@@ -40,7 +40,53 @@ This proves the compiled ARM virtual-slot layout, not complete collision
 behavior or native gameplay. Derived destructors have empty bodies; deletion
 through a base pointer now calls only the base destructor, matching the
 original nonvirtual ABI but remaining a C++ host-language ownership concern.
-The separate `BV_staticProjectCollisionOnSurface` return-contract mismatch
-and 64-bit pointer-width paths are not repaired here. A native game and an
-ARM-device runtime were not executed. The next ABI priority is to reconcile
-that projection contract and its callers without losing the exact-pair sets.
+At this vtable-only checkpoint, the separate projection return-contract
+mismatch and 64-bit pointer-width paths remained unrepaired. A native game
+and an ARM-device runtime were not executed. The projection follow-up below
+repairs that contract and its callers without losing the exact-pair sets.
+
+## Projection return contract follow-up (2026-10-09)
+
+Android `0x11f8b0` receives a hidden `Vector` result pointer in `r0`, the
+input vector in `r1`, and the volume array in `r2`. It copies the three input
+floats into the result, makes two passes, rereads the array size on each loop
+test, calls virtual `outerCollide` then `projectCollisionOnSurface`, and assigns
+the returned vector into the result. `PlayerStaticFar` `0x11c52e`,
+`PlayerStation` `0x12287c` and `PlayerFixedObject` `0x154e16` forward exactly
+those registers. The mangled function name does not encode C++ staticness or
+the return type, so the ARM register contract is decisive here.
+
+The old declaration was a non-static `void` method. Two callers passed a
+12-byte `Vector` as a fake `BoundingVolume*`; the method wrote fields at
+offsets `+4/+8/+12`, including one word beyond that vector. PlayerFixedObject
+called a declared but undefined compatibility function instead. The method is
+now static and returns a real `Vector`; all three callers use it directly.
+The input remains unchanged, a null volume list returns a copy of the input,
+and the two passes reread `size()` as the ARM loop does.
+
+`tools/bounding_volume_projection_smoke.cpp` executes the production method
+with a null list and a probe volume. It verifies the returned coordinates,
+unchanged input, and two collision/projection calls. The focused host build
+links the actual `BoundingVolume.cpp` and `Vector.cpp`; its only stubs satisfy
+an unrelated, non-exercised helper:
+
+```powershell
+g++ -std=c++17 -O0 -ffunction-sections -fdata-sections -Isrc tools/bounding_volume_projection_smoke.cpp src/engine/math/BoundingVolume.cpp src/engine/math/Vector.cpp '-Wl,--gc-sections' -o <C-drive-output.exe>
+```
+
+Native `gof2`, all 206 ARM units, 36 verifier tests (35 pass, one optional skip) and
+four scope-filter tests pass. The full `--fail-on-wrong-type` report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_projection_contract_20261009.json`.
+It retains 4,323/4,524 compared originals across 4,689 rows, zero wrong-type
+misses/skips, **2,313 linked-exact** and **997 byte-exact**. The comparison
+set and both exact-pair sets have zero losses or gains from the preceding ABI
+report. Corpus source-shape remains **91.87%** at two-decimal precision and
+strict fuzzy rises **79.92% → 79.93%**. The method itself improves from
+**71.2% → 96.4% source-shape** and **34.1% → 50.9% strict fuzzy**; it is not
+linked- or byte-exact. The undefined compatibility symbol is absent from
+source and from the native library's undefined-symbol list.
+
+This confirms the return and call ABI plus a narrow host behavior case, not
+complete collision runtime. ARM-device gameplay and wider ownership behavior
+remain untested. The next priority is a bounded audit of pointer-width
+contracts such as `Galaxy::getStation` before claiming a 64-bit native port.

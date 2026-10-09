@@ -141,3 +141,18 @@ source-shape, 79.92% strict fuzzy, 2,313 linked-exact and 997 byte-exact.
 Relative to the preceding integration, no comparison row or exact pair is
 lost; four linked-exact pairs are gained. The native/ARM game runtime remains
 untested; see [the ABI note](BOUNDING_VOLUME_VTABLE_ARM_2026-10-09.md).
+
+## BoundingVolume projection contract follow-up (2026-10-09)
+
+The static `Vector` return and three callers now follow the ARM hidden-result
+register contract. This replaces fake `BoundingVolume*` receiver casts and an
+undefined PlayerFixedObject compatibility call. Native `gof2`, 206/206 ARM
+units, the projection host smoke, 36 verifier tests (one optional skip), and
+four scope tests pass. The full report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_projection_contract_20261009.json`.
+It compares 4,323/4,524 originals across 4,689 rows with no wrong-type
+misses/skipped units. Corpus source-shape remains 91.87%, strict fuzzy rises
+79.92% to 79.93%, and 2,313 linked-exact / 997 byte-exact pairs remain.
+Comparison and exact-pair sets have zero losses. The recovered function's
+source-shape rises 71.2% to 96.4%; native game/ARM-device runtime remains
+untested. The original `main` checkout and GitHub remote remain untouched.

@@ -28,8 +28,6 @@ namespace AbyssEngine {
     }
 }
 
-V3 BV_staticProjectCollisionOnSurface(void *vec, void *bvArray);
-
 int PlayerFixedObject::getDockingType() {
     return this->dockingType;
 }
@@ -76,11 +74,11 @@ void PlayerFixedObject::setMoving(bool v) {
 V3 PlayerFixedObject::projectCollisionOnSurface(const Vector &vec) {
     Array<BoundingVolume *> *bv = this->wreckCollision;
     if (bv != 0 && this->state == 4) {
-        return BV_staticProjectCollisionOnSurface((void *) &vec, bv);
+        return BoundingVolume::staticProjectCollisionOnSurface(vec, bv);
     }
     Array<BoundingVolume *> *bv2 = this->boundingVolumes;
     if (bv2 != 0) {
-        return BV_staticProjectCollisionOnSurface((void *) &vec, bv2);
+        return BoundingVolume::staticProjectCollisionOnSurface(vec, bv2);
     }
     V3 z = {0.0f, 0.0f, 0.0f};
     return z;

@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-09 (BoundingVolume ABI recovery; older subsystem
+Last reviewed: 2026-10-09 (BoundingVolume projection ABI recovery; older subsystem
 snapshots retain their dates)
+
+## BoundingVolume projection return contract (2026-10-09)
+
+Android ARM proves that `staticProjectCollisionOnSurface` returns a `Vector`
+through a hidden result pointer, not through a fake `BoundingVolume` receiver.
+The method and its three game callers now use the typed static return; a
+focused host smoke passes. Native `gof2`, 206 ARM units and the full verifier
+remain green. Coverage is **4,323/4,524** across 4,689 rows; source-shape
+**91.87%**, strict fuzzy **79.93%**, linked-exact **2,313**, byte-exact **997**.
+No comparison row or exact pair is lost. The function itself rises to 96.4%
+source-shape but is not exact. Runtime collision behavior beyond the smoke is
+unverified; see the [ABI follow-up](BOUNDING_VOLUME_VTABLE_ARM_2026-10-09.md).
 
 ## BoundingVolume virtual ABI recovery (2026-10-09)
 
