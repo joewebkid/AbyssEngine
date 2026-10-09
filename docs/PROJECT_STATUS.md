@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-09 (MenuTouchWindow/PlayerFixedObject/Generator integration; older subsystem
+Last reviewed: 2026-10-09 (BoundingVolume ABI recovery; older subsystem
 snapshots retain their dates)
+
+## BoundingVolume virtual ABI recovery (2026-10-09)
+
+The Android-backed five-slot virtual order is restored for BoundingVolume,
+BoundingSphere and BoundingAAB, removing the incorrect virtual destructor
+slots. A relocation-based check matches all 15 compiled method slots to the
+original ELF. Native `gof2` and all 206 ARM units build. The full corpus
+still compares **4,323/4,524** originals across 4,689 rows with zero
+wrong-type misses and skipped units; source-shape is **91.87%**, strict fuzzy
+**79.92%**, linked-exact **2,313** and byte-exact **997**. No comparison row
+or exact pair is lost relative to the prior integration; four linked pairs
+are gained. The virtual ABI is verified, but collision gameplay and native
+runtime remain untested. See the [ABI evidence](BOUNDING_VOLUME_VTABLE_ARM_2026-10-09.md).
 
 ## MenuTouchWindow, PlayerFixedObject and Generator integration (2026-10-09)
 

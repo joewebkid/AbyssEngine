@@ -22,7 +22,7 @@ public:
 
     Vector projectCollisionOnSurface(const Vector &point) override;
 
-    Vector getCollisionNormal(const Vector &point);
+    Vector getCollisionNormal(const Vector &point) override;
 
     int collide(float x, float y, float z) override;
 

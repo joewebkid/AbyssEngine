@@ -19,17 +19,18 @@ public:
 
     BoundingVolume(float cx, float cy, float cz, float ex, float ey, float ez);
 
-    virtual ~BoundingVolume();
+    ~BoundingVolume();
+
+    // Android vtable 0x20dd8c: normal, update, collide, outerCollide, projection.
+    virtual AbyssEngine::AEMath::Vector getCollisionNormal(const AbyssEngine::AEMath::Vector &position);
+
+    virtual void update(float x, float y, float z);
 
     virtual int collide(float x, float y, float z);
 
     virtual int outerCollide(float x, float y, float z);
 
-    virtual void update(float x, float y, float z);
-
     virtual AbyssEngine::AEMath::Vector projectCollisionOnSurface(const AbyssEngine::AEMath::Vector &point) = 0;
-
-    AbyssEngine::AEMath::Vector getCollisionNormal(const AbyssEngine::AEMath::Vector &position);
 
     void setVolume(BoundingVolume *src);
 

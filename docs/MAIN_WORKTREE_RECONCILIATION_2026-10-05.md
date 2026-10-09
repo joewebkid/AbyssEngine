@@ -126,3 +126,18 @@ PlayerFixedObject. Extra symbols decrease 116 to 115. No whole-game or
 ARM-device runtime was performed; the BoundingVolume virtual-slot discrepancy
 and pointer-width issues remain. The independent dirty `main` checkout and
 GitHub remote were not changed.
+
+## BoundingVolume virtual ABI correction (2026-10-09)
+
+The original ELF vtable relocations and compiled ARM objects confirm a
+five-method virtual order for BoundingVolume, BoundingSphere and BoundingAAB.
+The incorrect virtual destructor slots were removed and `getCollisionNormal`
+was made virtual with derived overrides. The new relocation-based check
+matches all 15 slots and rejects a saved pre-fix 32-byte table. Native `gof2`
+and all 206 ARM units build. The full report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_boundingvolume_abi_20261009.json`:
+4,323/4,524 originals, 4,689 rows, zero wrong-type misses/skips, 91.87%
+source-shape, 79.92% strict fuzzy, 2,313 linked-exact and 997 byte-exact.
+Relative to the preceding integration, no comparison row or exact pair is
+lost; four linked-exact pairs are gained. The native/ARM game runtime remains
+untested; see [the ABI note](BOUNDING_VOLUME_VTABLE_ARM_2026-10-09.md).
