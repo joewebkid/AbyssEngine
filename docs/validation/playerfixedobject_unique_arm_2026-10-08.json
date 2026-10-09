@@ -1,0 +1,502 @@
+{
+  "date": "2026-10-08",
+  "baseline": "20bf2679a88ada953d3b393bc42a0aa54a557264",
+  "unit": "game/ship/PlayerFixedObject",
+  "original_sha256": "6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58",
+  "body_count": 29,
+  "original_instructions": 1841,
+  "weight_definition": "Frozen baseline verifier n_target (original normalized instruction count), unique original addresses; C1/C2 and D1/D2 aliases once.",
+  "baseline_means": {
+    "unweighted": 91.30689655172414,
+    "weighted": 85.77919608908202
+  },
+  "final_means": {
+    "unweighted": 94.07931034482759,
+    "weighted": 97.09543726235742
+  },
+  "both_98_pass": false,
+  "unchanged_exact_setMoving_unweighted_ceiling": 97.93103448275862,
+  "focused_symbol_counts": {
+    "baseline": {
+      "count": 31,
+      "linked_exact": 13,
+      "byte_exact": 10,
+      "avg_match": 76.5,
+      "avg_source_match": 91.34,
+      "skipped": 0
+    },
+    "final": {
+      "count": 31,
+      "linked_exact": 17,
+      "byte_exact": 10,
+      "avg_match": 86.61,
+      "avg_source_match": 94.02,
+      "skipped": 0
+    }
+  },
+  "full_metrics": {
+    "baseline": {
+      "count": 4689,
+      "linked_exact": 2305,
+      "byte_exact": 997,
+      "avg_match": 79.73,
+      "avg_source_match": 91.8,
+      "compared_unique": 4323,
+      "original_functions": 4524,
+      "missing": 201,
+      "missing_wrong_type": 0,
+      "missing_absent": 201,
+      "skipped": 0
+    },
+    "final": {
+      "count": 4689,
+      "linked_exact": 2309,
+      "byte_exact": 997,
+      "avg_match": 79.8,
+      "avg_source_match": 91.82,
+      "compared_unique": 4323,
+      "original_functions": 4524,
+      "missing": 201,
+      "missing_wrong_type": 0,
+      "missing_absent": 201,
+      "skipped": 0
+    }
+  },
+  "full_pair_gate": {
+    "rows": {
+      "baseline": 4689,
+      "final": 4689,
+      "lost": [],
+      "gained": []
+    },
+    "linked": {
+      "baseline": 2305,
+      "final": 2309,
+      "lost": [],
+      "gained": [
+        [
+          "game/ship/PlayerFixedObject",
+          "_ZN17PlayerFixedObject19getProjectionVectorERKN11AbyssEngine6AEMath6VectorE"
+        ],
+        [
+          "game/ship/PlayerFixedObject",
+          "_ZN17PlayerFixedObject20setDeadButSelectableEv"
+        ],
+        [
+          "game/ship/PlayerFixedObject",
+          "_ZN17PlayerFixedObject5resetEv"
+        ],
+        [
+          "game/ship/PlayerFixedObject",
+          "_ZN17PlayerFixedObject7getNameEv"
+        ]
+      ]
+    },
+    "byte": {
+      "baseline": 997,
+      "final": 997,
+      "lost": [],
+      "gained": []
+    }
+  },
+  "arm_tus": {
+    "source_mapped": 206,
+    "compiled_baseline": 206,
+    "compiled_final": 206,
+    "changed_objects": [
+      "game/ship/PlayerFixedObject.o"
+    ]
+  },
+  "pfo_vtable": {
+    "bytes": 104,
+    "method_slots": 24,
+    "baseline_final_same": true,
+    "original_final_method_slots_same": true
+  },
+  "canonical_flags_sha256": "b7741d9045ccee7cadcb1e3f3027e57029d127537931305e306e50bc830d174c",
+  "source_sha256": {
+    "src/game/ship/PlayerFixedObject.cpp": "394d58b89821554cfc6873fd23d26e447a4490155afca85e909b8f81eba66288",
+    "src/game/ship/PlayerFixedObject.h": "05786371941e2d1c3f5c9b45f73acb3b7fde853e08ab8930f78fb0f609903a79"
+  },
+  "bodies": [
+    {
+      "address": "0x153a7c",
+      "aliases": [
+        "_ZN17PlayerFixedObjectC1EiiP6PlayerP10AEGeometryfff",
+        "_ZN17PlayerFixedObjectC2EiiP6PlayerP10AEGeometryfff"
+      ],
+      "weight": 256,
+      "baseline_score": 91.6,
+      "final_score": 97.4,
+      "baseline_linked": false,
+      "final_linked": false,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x153d70",
+      "aliases": [
+        "_ZN17PlayerFixedObjectD1Ev",
+        "_ZN17PlayerFixedObjectD2Ev"
+      ],
+      "weight": 53,
+      "baseline_score": 91.9,
+      "final_score": 88.8,
+      "baseline_linked": false,
+      "final_linked": false,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x153e14",
+      "aliases": [
+        "_ZN17PlayerFixedObjectD0Ev"
+      ],
+      "weight": 5,
+      "baseline_score": 100.0,
+      "final_score": 100.0,
+      "baseline_linked": true,
+      "final_linked": true,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x153e24",
+      "aliases": [
+        "_ZN17PlayerFixedObject5resetEv"
+      ],
+      "weight": 66,
+      "baseline_score": 54.2,
+      "final_score": 100.0,
+      "baseline_linked": false,
+      "final_linked": true,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x153ee4",
+      "aliases": [
+        "_ZN17PlayerFixedObject9setMovingEb"
+      ],
+      "weight": 2,
+      "baseline_score": 40.0,
+      "final_score": 40.0,
+      "baseline_linked": true,
+      "final_linked": true,
+      "baseline_byte": true,
+      "final_byte": true
+    },
+    {
+      "address": "0x153eec",
+      "aliases": [
+        "_ZN17PlayerFixedObject11setPositionEfff"
+      ],
+      "weight": 69,
+      "baseline_score": 95.0,
+      "final_score": 99.7,
+      "baseline_linked": false,
+      "final_linked": false,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x153fb4",
+      "aliases": [
+        "_ZN17PlayerFixedObject11setPositionERKN11AbyssEngine6AEMath6VectorE"
+      ],
+      "weight": 10,
+      "baseline_score": 100.0,
+      "final_score": 100.0,
+      "baseline_linked": true,
+      "final_linked": true,
+      "baseline_byte": true,
+      "final_byte": true
+    },
+    {
+      "address": "0x153fd0",
+      "aliases": [
+        "_ZN17PlayerFixedObject9translateERKN11AbyssEngine6AEMath6VectorE"
+      ],
+      "weight": 18,
+      "baseline_score": 100.0,
+      "final_score": 100.0,
+      "baseline_linked": true,
+      "final_linked": true,
+      "baseline_byte": true,
+      "final_byte": true
+    },
+    {
+      "address": "0x154016",
+      "aliases": [
+        "_ZN17PlayerFixedObject5setBVEP5ArrayIP14BoundingVolumeE"
+      ],
+      "weight": 2,
+      "baseline_score": 100.0,
+      "final_score": 100.0,
+      "baseline_linked": true,
+      "final_linked": true,
+      "baseline_byte": true,
+      "final_byte": true
+    },
+    {
+      "address": "0x15401c",
+      "aliases": [
+        "_ZN17PlayerFixedObject5setBVEP14BoundingVolume"
+      ],
+      "weight": 20,
+      "baseline_score": 100.0,
+      "final_score": 100.0,
+      "baseline_linked": true,
+      "final_linked": true,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x154056",
+      "aliases": [
+        "_ZN17PlayerFixedObject11getPositionEv"
+      ],
+      "weight": 10,
+      "baseline_score": 100.0,
+      "final_score": 100.0,
+      "baseline_linked": false,
+      "final_linked": false,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x15407c",
+      "aliases": [
+        "_ZN17PlayerFixedObject16setWreckedMeshIdEi"
+      ],
+      "weight": 70,
+      "baseline_score": 98.9,
+      "final_score": 98.9,
+      "baseline_linked": false,
+      "final_linked": false,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x154134",
+      "aliases": [
+        "_ZN17PlayerFixedObject11moveForwardEi"
+      ],
+      "weight": 61,
+      "baseline_score": 98.4,
+      "final_score": 99.7,
+      "baseline_linked": false,
+      "final_linked": false,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x1541e0",
+      "aliases": [
+        "_ZN17PlayerFixedObject6updateEi"
+      ],
+      "weight": 926,
+      "baseline_score": 79.9,
+      "final_score": 96.7,
+      "baseline_linked": false,
+      "final_linked": false,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x154cb0",
+      "aliases": [
+        "_ZN17PlayerFixedObject17setExhaustVisibleEb"
+      ],
+      "weight": 18,
+      "baseline_score": 94.6,
+      "final_score": 100.0,
+      "baseline_linked": false,
+      "final_linked": false,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x154cdc",
+      "aliases": [
+        "_ZN17PlayerFixedObject6renderEv"
+      ],
+      "weight": 38,
+      "baseline_score": 94.1,
+      "final_score": 95.5,
+      "baseline_linked": false,
+      "final_linked": false,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x154d4a",
+      "aliases": [
+        "_ZN17PlayerFixedObject7collideEfff"
+      ],
+      "weight": 59,
+      "baseline_score": 95.8,
+      "final_score": 96.1,
+      "baseline_linked": false,
+      "final_linked": false,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x154dd6",
+      "aliases": [
+        "_ZN17PlayerFixedObject19getProjectionVectorERKN11AbyssEngine6AEMath6VectorE"
+      ],
+      "weight": 22,
+      "baseline_score": 85.3,
+      "final_score": 100.0,
+      "baseline_linked": false,
+      "final_linked": true,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x154e16",
+      "aliases": [
+        "_ZN17PlayerFixedObject25projectCollisionOnSurfaceERKN11AbyssEngine6AEMath6VectorE"
+      ],
+      "weight": 22,
+      "baseline_score": 100.0,
+      "final_score": 100.0,
+      "baseline_linked": true,
+      "final_linked": true,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x154e50",
+      "aliases": [
+        "_ZN17PlayerFixedObject12outerCollideEN11AbyssEngine6AEMath6VectorE"
+      ],
+      "weight": 3,
+      "baseline_score": 100.0,
+      "final_score": 100.0,
+      "baseline_linked": true,
+      "final_linked": true,
+      "baseline_byte": true,
+      "final_byte": true
+    },
+    {
+      "address": "0x154e5a",
+      "aliases": [
+        "_ZN17PlayerFixedObject12outerCollideEfff"
+      ],
+      "weight": 60,
+      "baseline_score": 95.8,
+      "final_score": 96.1,
+      "baseline_linked": false,
+      "final_linked": false,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x154eea",
+      "aliases": [
+        "_ZN17PlayerFixedObject14setDockingTypeEi"
+      ],
+      "weight": 2,
+      "baseline_score": 100.0,
+      "final_score": 100.0,
+      "baseline_linked": true,
+      "final_linked": true,
+      "baseline_byte": true,
+      "final_byte": true
+    },
+    {
+      "address": "0x154ef0",
+      "aliases": [
+        "_ZN17PlayerFixedObject14getDockingTypeEv"
+      ],
+      "weight": 2,
+      "baseline_score": 100.0,
+      "final_score": 100.0,
+      "baseline_linked": true,
+      "final_linked": true,
+      "baseline_byte": true,
+      "final_byte": true
+    },
+    {
+      "address": "0x154ef6",
+      "aliases": [
+        "_ZN17PlayerFixedObject14setTransportIDEi"
+      ],
+      "weight": 2,
+      "baseline_score": 100.0,
+      "final_score": 100.0,
+      "baseline_linked": true,
+      "final_linked": true,
+      "baseline_byte": true,
+      "final_byte": true
+    },
+    {
+      "address": "0x154efc",
+      "aliases": [
+        "_ZN17PlayerFixedObject14getTransportIDEv"
+      ],
+      "weight": 2,
+      "baseline_score": 100.0,
+      "final_score": 100.0,
+      "baseline_linked": true,
+      "final_linked": true,
+      "baseline_byte": true,
+      "final_byte": true
+    },
+    {
+      "address": "0x154f02",
+      "aliases": [
+        "_ZN17PlayerFixedObject7getNameEv"
+      ],
+      "weight": 6,
+      "baseline_score": 93.0,
+      "final_score": 100.0,
+      "baseline_linked": false,
+      "final_linked": true,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x154f12",
+      "aliases": [
+        "_ZN17PlayerFixedObject7setNameEN11AbyssEngine6StringE"
+      ],
+      "weight": 2,
+      "baseline_score": 40.0,
+      "final_score": 19.4,
+      "baseline_linked": false,
+      "final_linked": false,
+      "baseline_byte": false,
+      "final_byte": false
+    },
+    {
+      "address": "0x154f1a",
+      "aliases": [
+        "_ZN17PlayerFixedObject8hideShipEv"
+      ],
+      "weight": 3,
+      "baseline_score": 100.0,
+      "final_score": 100.0,
+      "baseline_linked": true,
+      "final_linked": true,
+      "baseline_byte": true,
+      "final_byte": true
+    },
+    {
+      "address": "0x154f24",
+      "aliases": [
+        "_ZN17PlayerFixedObject20setDeadButSelectableEv"
+      ],
+      "weight": 32,
+      "baseline_score": 99.4,
+      "final_score": 100.0,
+      "baseline_linked": false,
+      "final_linked": true,
+      "baseline_byte": false,
+      "final_byte": false
+    }
+  ]
+}

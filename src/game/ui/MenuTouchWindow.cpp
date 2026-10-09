@@ -20,6 +20,10 @@
 #include "game/ui/MissionsWindow.h"
 #include "game/ui/ScrollTouchWindow.h"
 #include "game/ship/ShipDefTable.h"
+#include "game/ship/Ship.h"
+#include "game/mission/Item.h"
+#include "game/world/Galaxy.h"
+#include "game/world/Station.h"
 #include "game/core/GameSettings.h"
 #include "engine/core/NFC.h"
 #include <math.h>
@@ -192,10 +196,8 @@ static constexpr unsigned short kMtwStoreImagePairs[3][2] = {
     {9502, 9503},
 };
 
-// Android stores the five purchase bits as three exported Globals bytes plus
-// two adjacent, unexported bytes. The latter names are descriptive only.
-static uint8_t g_mtwIapDlcVipBought;
-static uint8_t g_mtwIapDlcFullPackageBought;
+// Android 2.0.16: 0x21821d..0x218221 are options+0x35..0x39,
+// distinct from the exported iap_hack bytes at 0x218380..0x218382.
 
 static inline String _mtw_text_copy(int textId);
 static inline void _mtw_apply_ipad_control_coords(MenuTouchWindow *window);
@@ -529,11 +531,11 @@ static inline int _mtw_onTouchEnd_scrollState(void *self, int x, int y, int whic
 
 static inline bool _mtw_dlc_is_owned(int selection) {
     switch (selection) {
-        case 0: return Globals::iap_hack_dlc1Bought != 0;
-        case 1: return Globals::iap_hack_dlc2Bought != 0;
-        case 2: return Globals::iap_hack_dlc3Bought != 0;
-        case 3: return g_mtwIapDlcVipBought != 0;
-        case 4: return g_mtwIapDlcFullPackageBought != 0;
+        case 0: return _mtw_option_byte(0x35) != 0;
+        case 1: return _mtw_option_byte(0x36) != 0;
+        case 2: return _mtw_option_byte(0x37) != 0;
+        case 3: return _mtw_option_byte(0x38) != 0;
+        case 4: return _mtw_option_byte(0x39) != 0;
         default: return false;
     }
 }
@@ -1174,8 +1176,6 @@ void *_mtw_AppMgr_GetApplicationData();
 
 static inline void *_mtw_AppMgr_GetEngine() { return GetEngine(); }
 
-static inline void _mtw_ChoiceWindow_update(void *cw) { ((ChoiceWindow *) cw)->update(0); }
-
 static inline void _mtw_TouchButton_setYPosition(void *btn, int y) {
     ((TouchButton *) btn)->setYPosition(y);
 }
@@ -1183,12 +1183,6 @@ static inline void _mtw_TouchButton_setYPosition(void *btn, int y) {
 static inline int _mtw_TouchButton_isVisible(void *btn) {
     return ((TouchButton *) btn)->isVisible();
 }
-
-void _mtw_ScrollTouchWindow_update(void *w);
-
-void _mtw_MissionsWindow_update(void *w);
-
-void _mtw_startSupernovaChallenge_impl(void *self);
 
 void *_mtw_GetApplicationData(void *app);
 
@@ -2913,15 +2907,13 @@ void MenuTouchWindow::saveGame(int slot) {
     this->messageShowing = 1;
 }
 
-static const int g_mtw_upTextIds[16] = {};
-
 void MenuTouchWindow::update(int dt) {
     unsigned int st = this->menuState;
     if (st < 0x10 && ((1u << (st & 0xff)) & 0x8006u) != 0) {
         if (this->dragging == 0) {
             float v = *(float *) &this->inertiaDecay * this->inertiaVel;
             this->inertiaVel = v;
-            if (fabsf(v) > 1.0f) {
+            if ((v > 0.0f ? v : -v) > 1.0f) {
                 this->scrollOffset = (int) (v + (float) this->scrollOffset);
             }
         }
@@ -2942,7 +2934,7 @@ void MenuTouchWindow::update(int dt) {
         }
     }
 
-    MtwAppData *appData = (MtwAppData *) _mtw_AppMgr_GetApplicationData();
+    MtwAppData *appData = (MtwAppData *) ((AbyssEngine::ApplicationManager *) Globals::appManager)->GetApplicationData();
     unsigned char busy = this->dlcMessageShowing;
 
     if (busy != 0 || this->purchaseRestorePending != 0) {
@@ -2951,27 +2943,25 @@ void MenuTouchWindow::update(int dt) {
             void *canvas = Globals::Canvas;
             this->contentHeight = (((Globals::h - layout->field_0x10_rightMargin)
                                     - layout->field_0xc) - layout->field_0x20) - layout->field_0x24;
-            int ih = ((PaintCanvas *) canvas)->GetImage2DHeight(this->scrollbarImageId);
+            int ih = ((PaintCanvas *) canvas)->GetImage2DHeight(((unsigned int *) this->heapBufA)[0]);
             this->contentHeightCache = ih;
-            OptionsRecord *optObj = (OptionsRecord *) Globals::options;
             int rowH = layout->field_0x2c_rowHeight;
             this->menuState = 0xf;
             this->messageShowing = 0;
             this->dlcMessageShowing = 0;
             this->pageHeight = (ih + rowH) * 5;
             appData->dlcStoreReadyFlag = 0;
-            optObj->flag_0x3b = 1;
-            _mtw_RecordHandler_saveOptions(Globals::recordHandler);
+            _mtw_option_byte(0x3b) = 1;
+            ((RecordHandler *) Globals::recordHandler)->saveOptions();
             busy = this->dlcMessageShowing;
         }
-        if (busy != 0) {
+        if (busy != 0 || this->purchaseRestorePending != 0) {
             if (appData->purchaseErrorFlag != 0) {
-                void *cw = this->choiceWindow;
-                void *s = _mtw_GameText_getText(Globals::gameText, g_mtw_upTextIds[0]);
-                _mtw_ChoiceWindow_set(cw, s);
+                this->choiceWindow->set(*Globals::gameText->getText(100));
                 this->dlcErrorDialogShowing = 1;
                 this->messageShowing = 1;
                 this->dlcMessageShowing = 0;
+                this->pad_0x17b = 0;
                 appData->purchaseErrorFlag = 0;
                 this->purchaseRestorePending = 0;
             }
@@ -2979,89 +2969,80 @@ void MenuTouchWindow::update(int dt) {
     }
 
     unsigned int code = appData->purchaseCode;
-    bool handled = false;
     if (code <= 4 && appData->purchaseResultFlag != 0) {
-        void *cw = this->choiceWindow;
+        int textId;
         switch (code) {
             case 0: {
-                Globals::iap_hack_dlc1Bought = 1;
-                _mtw_Status_setSystemVisibility(Globals::status, 0x19, true);
-                _mtw_ChoiceWindow_set(cw, _mtw_GameText_getText(Globals::gameText, g_mtw_upTextIds[1]));
+                _mtw_option_byte(0x35) = 1;
+                Globals::status->setSystemVisibility(25, true);
+                textId = 92;
             }
             break;
             case 1: {
                 Globals::status->mode_0x114 = 3;
-                Globals::iap_hack_dlc2Bought = 1;
-                _mtw_ChoiceWindow_set(cw, _mtw_GameText_getText(Globals::gameText, g_mtw_upTextIds[2]));
+                _mtw_option_byte(0x36) = 1;
+                textId = 93;
             }
             break;
             case 2: {
-                Globals::iap_hack_dlc3Bought = 1;
-                _mtw_Status_setSystemVisibility(Globals::status, 0x19, true);
-                _mtw_ChoiceWindow_set(cw, _mtw_GameText_getText(Globals::gameText, g_mtw_upTextIds[3]));
+                _mtw_option_byte(0x37) = 1;
+                Globals::status->setSystemVisibility(25, true);
+                textId = 94;
             }
             break;
             case 3: {
-                g_mtwIapDlcVipBought = 1;
-                _mtw_ChoiceWindow_set(cw, _mtw_GameText_getText(Globals::gameText, g_mtw_upTextIds[4]));
+                _mtw_option_byte(0x38) = 1;
+                textId = 95;
             }
             break;
             case 4: {
-                Globals::iap_hack_dlc1Bought = 1;
-                g_mtwIapDlcFullPackageBought = 1;
-                Globals::iap_hack_dlc3Bought = 1;
-                _mtw_Status_setSystemVisibility(Globals::status, 0x19, true);
-                _mtw_ChoiceWindow_set(cw, _mtw_GameText_getText(Globals::gameText, g_mtw_upTextIds[5]));
+                _mtw_option_byte(0x35) = 1;
+                _mtw_option_byte(0x39) = 1;
+                Globals::status->setSystemVisibility(25, true);
+                _mtw_option_byte(0x37) = 1;
+                textId = 96;
             }
             break;
         }
-        _mtw_RecordHandler_saveOptions(Globals::recordHandler);
+        this->choiceWindow->set(*Globals::gameText->getText(textId));
+        ((RecordHandler *) Globals::recordHandler)->saveOptions();
         this->dlcResultDialogShowing = 1;
         this->dlcMessageShowing = 0;
         this->messageShowing = 1;
         appData->purchaseResultFlag = 0;
-        handled = true;
     } else if (this->purchaseRestorePending != 0 && appData->purchaseResultFlag != 0) {
-        _mtw_RecordHandler_saveOptions(Globals::recordHandler);
+        ((RecordHandler *) Globals::recordHandler)->saveOptions();
         if (this->purchaseRestorePending != 0) {
-            void *cw = this->choiceWindow;
-            _mtw_ChoiceWindow_set(cw, _mtw_GameText_getText(Globals::gameText, g_mtw_upTextIds[6]));
+            this->choiceWindow->set(*Globals::gameText->getText(76));
             this->purchaseRestorePending = 0;
         }
         this->dlcResultDialogShowing = 1;
         this->dlcMessageShowing = 0;
         this->messageShowing = 1;
         appData->purchaseResultFlag = 0;
-        handled = true;
     }
-    (void) handled;
 
     if (Globals::isTelekomCustomer != 0) {
-        OptionsRecord *flags = (OptionsRecord *) Globals::options;
-        if (this->messageShowing == 0 && flags->flag_0x35 == 0) {
-            void *cw = this->choiceWindow;
-            _mtw_ChoiceWindow_set(cw, _mtw_GameText_getText(Globals::gameText, g_mtw_upTextIds[7]));
+        if (this->messageShowing == 0 && _mtw_option_byte(0x35) == 0) {
+            this->choiceWindow->set(*Globals::gameText->getText(3234));
             this->supernovaPurchaseDialogShowing = 1;
             this->messageShowing = 1;
-            flags->flag_0x35 = 1;
-            _mtw_Status_setSystemVisibility(Globals::status, 0x19, true);
-            _mtw_RecordHandler_saveOptions(Globals::recordHandler);
+            _mtw_option_byte(0x35) = 1;
+            Globals::status->setSystemVisibility(25, true);
+            ((RecordHandler *) Globals::recordHandler)->saveOptions();
         }
     }
 
     int state = this->menuState;
     if (state == 0) {
         if (this->backgroundEnabled == 1) {
-            int rowGap = this->buttonRowGap;
-            Layout *layout = (Layout *) Globals::layout;
-            void **arr = (void **) this->buttons;
-            unsigned int n = *(unsigned int *) arr;
-            int total = n * layout->field_0x30_rowHeight;
-            int screenH = Globals::h;
+            Array<void *> *arr = this->buttons;
+            unsigned int n = arr->size();
+            unsigned int top = Globals::h / 2 -
+                ((Globals::layout->field_0x30_rowHeight * n + this->buttonRowGap * (n - 1)) >> 1);
             for (unsigned int i = 0; i < n; i++) {
-                _mtw_TouchButton_setYPosition(((void **) arr[1])[i],
-                                              (layout->field_0x30_rowHeight + this->buttonRowGap) * i +
-                                              (screenH / 2 - (int) ((unsigned int) (rowGap * (n - 1) + total) >> 1)));
+                ((TouchButton *) arr->data_[i])->setYPosition(
+                    top + (Globals::layout->field_0x30_rowHeight + this->buttonRowGap) * i);
                 TouchButton *b = (TouchButton *) this->buttons->data_[i];
                 if (b->field_0x0 == 0x12 && b->field_0x4 == 0 && _mtw_TouchButton_isVisible(b) != 0 &&
                     this->cutsceneMode != 0) {
@@ -3070,72 +3051,127 @@ void MenuTouchWindow::update(int dt) {
                     _mtw_TouchButton_getPosition(pos, b);
                     _mtw_TouchButton_setYPosition(b, (int) *(float *) (pos + 4));
                 }
-                arr = (void **) this->buttons;
-                n = *(unsigned int *) arr;
+                arr = this->buttons;
+                n = arr->size();
             }
         }
     } else if (state == 3) {
-        int rowGap = this->buttonRowGap;
-        Layout *layout = (Layout *) Globals::layout;
-        void **arr = (void **) this->optionsButtons;
-        unsigned int n = *(unsigned int *) arr;
-        int firstCount = *(int *) *(void **) this->buttons;
-        int total = n * layout->field_0x30_rowHeight;
-        int screenH = Globals::h;
+        Array<void *> *arr = this->optionsButtons;
+        unsigned int n = arr->size();
+        unsigned int top = Globals::h / 2 -
+            ((Globals::layout->field_0x30_rowHeight * n +
+              (this->buttons->size() - 1) * this->buttonRowGap) >> 1);
         for (unsigned int i = 0; i < n; i++) {
-            _mtw_TouchButton_setYPosition(((void **) arr[1])[i],
-                                          (layout->field_0x30_rowHeight + this->buttonRowGap) * i +
-                                          (screenH / 2 - (int) (
-                                               (unsigned int) ((firstCount - 1) * rowGap + total) >> 1)));
-            arr = (void **) this->optionsButtons;
-            n = *(unsigned int *) arr;
+            ((TouchButton *) arr->data_[i])->setYPosition(
+                top + (Globals::layout->field_0x30_rowHeight + this->buttonRowGap) * i);
+            arr = this->optionsButtons;
+            n = arr->size();
         }
     } else if (state == 4) {
-        _mtw_ScrollTouchWindow_update(this->scrollWindowA);
+        this->scrollWindowA->update(dt);
     } else if (state == 9) {
-        if (this->missionsWindow != 0) _mtw_MissionsWindow_update(this->missionsWindow);
+        if (this->missionsWindow != 0) this->missionsWindow->update(dt);
     } else if (state == 0xf) {
-        _mtw_ScrollTouchWindow_update(this->scrollWindowB);
+        this->scrollWindowB->update(dt);
     }
 
     if (this->messageShowing != 0)
-        _mtw_ChoiceWindow_update(this->choiceWindow);
+        this->choiceWindow->update(dt);
 
-    if (state == 0xd) {
-        appData = (MtwAppData *) _mtw_AppMgr_GetApplicationData();
+    if (this->menuState != 0xd) return;
+    {
+        appData = (MtwAppData *) ((AbyssEngine::ApplicationManager *) Globals::appManager)->GetApplicationData();
         if (appData->storeInitFlag != 0) {
-            Engine *eng = (Engine *) _mtw_AppMgr_GetEngine();
+            Engine *eng = (Engine *) ((AbyssEngine::ApplicationManager *) Globals::appManager)->GetEngine();
             int r = eng->field_0x100;
             if (r == 2 || r == 1) {
-                void *cw = this->choiceWindow;
-                int id = (r == 2) ? g_mtw_upTextIds[8] : g_mtw_upTextIds[9];
-                _mtw_ChoiceWindow_set(cw, _mtw_GameText_getText(Globals::gameText, id));
+                int id = (r == 2) ? 56 : 55;
+                this->choiceWindow->set(*Globals::gameText->getText(id));
                 this->storeInitDialogShowing = 0;
                 this->messageShowing = 1;
-                appData = (MtwAppData *) _mtw_AppMgr_GetApplicationData();
+                appData = (MtwAppData *) ((AbyssEngine::ApplicationManager *) Globals::appManager)->GetApplicationData();
                 appData->storeInitFlag = 0;
             }
         }
     }
 
-    appData = (MtwAppData *) _mtw_AppMgr_GetApplicationData();
+    appData = (MtwAppData *) ((AbyssEngine::ApplicationManager *) Globals::appManager)->GetApplicationData();
     if (appData->screenshotResultFlag != 0) {
-        appData = (MtwAppData *) _mtw_AppMgr_GetApplicationData();
+        appData = (MtwAppData *) ((AbyssEngine::ApplicationManager *) Globals::appManager)->GetApplicationData();
         int r = appData->storeResultCode;
         if (r == 2 || r == 1) {
-            void *cw = this->choiceWindow;
-            int id = (r == 2) ? g_mtw_upTextIds[10] : g_mtw_upTextIds[11];
-            _mtw_ChoiceWindow_set(cw, _mtw_GameText_getText(Globals::gameText, id));
+            int id = (r == 2) ? 58 : 57;
+            this->choiceWindow->set(*Globals::gameText->getText(id));
             this->screenshotState = -1;
             this->messageShowing = 1;
-            appData = (MtwAppData *) _mtw_AppMgr_GetApplicationData();
+            appData = (MtwAppData *) ((AbyssEngine::ApplicationManager *) Globals::appManager)->GetApplicationData();
             appData->screenshotResultFlag = 0;
         }
     }
 }
 
 void MenuTouchWindow::startSupernovaChallenge() {
-    _mtw_startSupernovaChallenge_impl(this);
+    // Android 2.0.16, 0x12d0cc: preserve the repeated getShip calls and
+    // both setKills writes; their apparent redundancy is original behavior.
+    Globals::status->resetGame();
+    Globals::status->setCurrentCampaignMission(152);
+    Status *status = Globals::status;
+    Ship *ship = ((Array<Ship *> *) Globals::ships)->data_[46]->makeShip(-1);
+    status->setShip(ship);
+
+    Item *item = ((Array<Item *> *) Globals::items)->data_[231]->makeItem();
+    Globals::status->getShip()->setEquipment(item, 0);
+    item = ((Array<Item *> *) Globals::items)->data_[230]->makeItem();
+    Globals::status->getShip()->setEquipment(item, 1);
+    item = ((Array<Item *> *) Globals::items)->data_[231]->makeItem();
+    Globals::status->getShip()->setEquipment(item, 2);
+    item = ((Array<Item *> *) Globals::items)->data_[73]->makeItem();
+    Globals::status->getShip()->setEquipment(item, 0);
+    item = ((Array<Item *> *) Globals::items)->data_[54]->makeItem();
+    Globals::status->getShip()->setEquipment(item, 1);
+    item = ((Array<Item *> *) Globals::items)->data_[59]->makeItem();
+    Globals::status->getShip()->setEquipment(item, 2);
+    item = ((Array<Item *> *) Globals::items)->data_[83]->makeItem();
+    Globals::status->getShip()->setEquipment(item, 3);
+    item = ((Array<Item *> *) Globals::items)->data_[206]->makeItem();
+    Globals::status->getShip()->setEquipment(item, 4);
+    item = ((Array<Item *> *) Globals::items)->data_[75]->makeItem();
+    Globals::status->getShip()->setEquipment(item, 5);
+    item = ((Array<Item *> *) Globals::items)->data_[76]->makeItem();
+    Globals::status->getShip()->setEquipment(item, 6);
+    item = ((Array<Item *> *) Globals::items)->data_[216]->makeItem(5);
+    Globals::status->getShip()->setEquipment(item, 0);
+
+    Station *station = (Station *) (intptr_t) ((Galaxy *) Globals::galaxy)->getStation(111);
+    Globals::status->setStation(station);
+    Mission *mission = new Mission(183, String("Client", false),
+                                  ((ImageFactory *) Globals::imageFactory)->createChar(true, 0),
+                                  0, 0, station->getIndex(), 1);
+    Globals::status->setMission(mission);
+    Globals::status->setFreelanceMission(mission);
+
+    // Original hints base is 0x21824c; write the proven byte ranges only.
+    Globals::hints[0x17] = 1;
+    Globals::hints[0x08] = Globals::hints[0x09] = 1;
+    Globals::hints[0x0a] = 1;
+    Globals::hints[0x1c] = 1;
+    Globals::hints[0x15] = 1;
+    Globals::hints[0x13] = 1;
+    Globals::hints[0x0d] = Globals::hints[0x0e] = 1;
+    Globals::hints[0x0f] = 1;
+    Globals::hints[0x29] = 1;
+    Globals::hints[0x22] = 1;
+    Globals::hints[0x20] = Globals::hints[0x21] = 1;
+    Globals::status->setKills(500);
+    Globals::status->setKills(220);
+    Globals::sound->stop(*(int *) Globals::sound);
+    Globals::enterSpaceLounge = 0;
+    Globals::switch_to_target_setting = -1;
+    ((Globals *) Globals::globals)->playMusicAndFadeOutCurrent(1);
+    Globals::status->field_5c = -1;
+    Globals::status->field_60 = -1;
+    Globals::status->field_64 = -1;
+    ((AbyssEngine::ApplicationManager *) Globals::appManager)->SetCurrentApplicationModule(2u);
 }
 
 void MenuTouchWindow::callDlcMenu() {

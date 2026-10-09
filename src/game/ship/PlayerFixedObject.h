@@ -57,7 +57,7 @@ public:
     PlayerFixedObject(int kind, int param2, Player *player, AEGeometry *geom,
                       float x, float y, float z);
 
-    ~PlayerFixedObject();
+    ~PlayerFixedObject() override;
 
     int collide(float x, float y, float z) override;
 
@@ -101,7 +101,7 @@ public:
 
     void setPosition(float x, float y, float z) override;
 
-    void setPosition(const Vector &v);
+    void setPosition(const Vector &v) override;
 
     void setTransportID(int v);
 
@@ -115,9 +115,14 @@ public:
 
 #if __SIZEOF_POINTER__ == 4
 static_assert(sizeof(PlayerFixedObject) == 0x1bc, "PlayerFixedObject ARM size");
+static_assert(__builtin_offsetof(PlayerFixedObject, hasCargo) == 0x4c, "PFO cargo byte storage offset");
+static_assert(__builtin_offsetof(PlayerFixedObject, field_0x8c) == 0x8c, "PFO collision gate storage offset");
 static_assert(__builtin_offsetof(PlayerFixedObject, wreckGeometry) == 0x124, "PFO wreckGeometry offset");
 static_assert(__builtin_offsetof(PlayerFixedObject, boundingVolumes) == 0x128, "PFO bounds offset");
+static_assert(__builtin_offsetof(PlayerFixedObject, wreckCollision) == 0x12c, "PFO wreck bounds offset");
 static_assert(__builtin_offsetof(PlayerFixedObject, moving) == 0x134, "PFO moving offset");
+static_assert(__builtin_offsetof(PlayerFixedObject, homingTarget) == 0x144, "PFO homing target offset");
+static_assert(__builtin_offsetof(PlayerFixedObject, homingDir) == 0x150, "PFO homing direction offset");
 static_assert(__builtin_offsetof(PlayerFixedObject, intPosX) == 0x178, "PFO intPosX offset");
 static_assert(__builtin_offsetof(PlayerFixedObject, explosion) == 0x18c, "PFO explosion offset");
 static_assert(__builtin_offsetof(PlayerFixedObject, name) == 0x1ac, "PFO name offset");
