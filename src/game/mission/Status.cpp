@@ -83,11 +83,11 @@ uint32_t Status::orbitHasPlanetRing(int index) {
     return 0;
 }
 
-SolarSystem *Status::getSystem() { return (SolarSystem *) (intptr_t) system; }
+SolarSystem *Status::getSystem() { return system; }
 
 int Status::inSupernovaSystem() {
     if (inAlienOrbit()) return 0;
-    int idx = asSystem(system)->getIndex();
+    int idx = system->getIndex();
     int result = 0;
     if (idx == 0x1b && currentCampaignMission < 0x9e) result = 1;
     return result;
@@ -166,14 +166,14 @@ Array<Mission *> *Status::getMissions() { return missions; }
 
 bool Status::inFogSkyboxOrbit() {
     if (inAlienOrbit()) return false;
-    if (asSystem(system)->getTextureIndex() == 0x11) return true;
-    return asSystem(system)->getTextureIndex() == 0x12;
+    if (system->getTextureIndex() == 0x11) return true;
+    return system->getTextureIndex() == 0x12;
 }
 
 bool Status::inPirateLootOrbit() {
     if (inAlienOrbit()) return false;
-    if (asSystem(system)->getIndex() == 0x20) return true;
-    return asSystem(system)->getIndex() == 0x21;
+    if (system->getIndex() == 0x20) return true;
+    return system->getIndex() == 0x21;
 }
 
 void Status::setPlayingTime(int64_t v) { playingTime = v; }
@@ -260,8 +260,8 @@ bool Status::inStormOrbit() {
     if (inAlienOrbit()) return false;
     if (currentCampaignMission < 0x5a) return false;
     if (inSupernovaSystem() != 0) return true;
-    if (asSystem(system)->getTextureIndex() == 0x10) return true;
-    return asSystem(system)->getTextureIndex() == 0x12;
+    if (system->getTextureIndex() == 0x10) return true;
+    return system->getTextureIndex() == 0x12;
 }
 
 int Status::getCapturedCrates() { return capturedCrates; }
@@ -287,7 +287,7 @@ void Status::setCapturedCrates(int v) { capturedCrates = v; }
 
 bool Status::inBlackMarketSystem() {
     if (inAlienOrbit()) return false;
-    return asSystem(system)->getIndex() == 0x19;
+    return system->getIndex() == 0x19;
 }
 
 void Status::incGoodsProduced(int delta) { goodsProduced = delta + goodsProduced; }
@@ -322,7 +322,7 @@ int Status::wantedBoardAccessible() {
     Status *st = Status::gStatus;
     Array<Wanted *> *w = st->wanted;
     for (unsigned i = 0; i < w->size(); i = i + 1) {
-        int race = asSystem(st->system)->getRace();
+        int race = st->system->getRace();
         int board = (*w)[i]->getBoard();
         if (race == board) {
             if (st->currentCampaignMission >= (*w)[i]->getRequiredMission() &&
@@ -534,7 +534,7 @@ void Status::calcCargoPrices() {
         rng->setSeed((long long) station->getIndex());
         bool ringWorld = false;
         if (!inAlienOrbit())
-            ringWorld = (asSystem(system)->getIndex() == 0x19);
+            ringWorld = (system->getIndex() == 0x19);
 
         for (unsigned i = 0; i < list->size(); i = i + 1) {
             Item *item = (*list)[i];
@@ -882,7 +882,7 @@ int Status::activateNewWanted() {
             lo = rem / 3 + 2;
             hi = rem / 2 + 4;
         }
-        if (asSystem(slot->system)->getRace() != cur->getBoard()) {
+        if (slot->system->getRace() != cur->getBoard()) {
             continue;
         }
         if (slot->currentCampaignMission < cur->getRequiredMission()) {
@@ -1269,7 +1269,7 @@ void Status::setStation(Station *s) {
     planetTextures = (int32_t)(intptr_t)
     texs;
     ArraySetLength(list->size(), *texs);
-    Array<Station *> *stations = (Array<Station *> *) asSystem(system)->getStations();
+    Array<Station *> *stations = (Array<Station *> *) system->getStations();
     for (unsigned i = 0; i < stations->size(); i = i + 1) {
         Station *cur = 0;
         bool found = false;

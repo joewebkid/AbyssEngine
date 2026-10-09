@@ -226,7 +226,7 @@ public:
     Array<Mission *> *missions;              // 0x198
     Station *station;                        // 0x19c (currentStation)
     Array<Station *> *stationStack;          // 0x1a0
-    int32_t system;                          // 0x1a4
+    SolarSystem *system;                     // 0x1a4
     int32_t planetNames;                     // 0x1a8
     int32_t planetTextures;                  // 0x1ac
     int32_t credits;                         // 0x1b0 (money)

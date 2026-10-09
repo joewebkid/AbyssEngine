@@ -36,6 +36,6 @@ this is an ABI/runtime correction, not a claimed shape improvement.
 The original positive `Galaxy::getStation` path allocates `FileRead` on the
 heap while the current source uses a stack object. The original
 `FileRead::loadStation` allocation/cleanup path also differs. Those lifetime
-details, native gameplay and ARM-device runtime remain unverified. Next,
-audit the separate `Galaxy::getSystem` pointer-width return contract before
-changing its callers.
+details, native gameplay and ARM-device runtime remain unverified. The
+separate `Galaxy::getSystem` contract was subsequently corrected; see
+[the system pointer evidence](GALAXY_SYSTEM_POINTER_ABI_2026-10-09.md).

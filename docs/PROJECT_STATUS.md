@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-09 (Galaxy station pointer ABI recovery; older subsystem
+Last reviewed: 2026-10-09 (Galaxy system pointer ABI recovery; older subsystem
 snapshots retain their dates)
+
+## Galaxy and Status system pointer ABI (2026-10-09)
+
+Android ARM confirms that `Galaxy::getSystem` returns a `SolarSystem *` and
+`Status::getSystem` reads that pointer from `Status + 0x1a4`. The declaration,
+stored field and callers that narrowed through Windows `long` now preserve
+the pointer on 64-bit native builds. Native `gof2` and all 206 ARM units build;
+the full corpus remains **4,323/4,524** at **91.87%** source-shape and
+**79.93%** strict fuzzy, with **2,313 linked-exact** and **997 byte-exact**
+and no exact-pair losses. The two short methods remain byte-exact. Native
+whole-game runtime and raw 64-bit `Status` layout consumers are not yet
+verified; see the [system pointer evidence](GALAXY_SYSTEM_POINTER_ABI_2026-10-09.md).
 
 ## Galaxy station pointer ABI (2026-10-09)
 

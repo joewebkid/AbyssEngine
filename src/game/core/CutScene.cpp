@@ -195,11 +195,11 @@ void CutScene::process(int /*delta*/) {
             if (Station_getIndex(st) == 100) {
                 kind = 7;
             } else {
-                kind = (unsigned int) ((SolarSystem *) (long) Status::gStatus->getSystem())->getRace() | 2;
+                kind = (unsigned int) Status::gStatus->getSystem()->getRace() | 2;
             }
         }
         this->fogTimer84 = this->frameDelta + this->fogTimer84;
-        if (((SolarSystem *) (long) Status::gStatus->getSystem())->getRace() == 1) {
+        if (Status::gStatus->getSystem()->getRace() == 1) {
             canvas->FogSetParameter(AbyssEngine::FogMode_dummy, 0, CutScene_fogColorMode17, 1.0f,
                                     CutScene_fogDensityMode17);
         } else if (kind == 2 && this->geometries != nullptr) {
@@ -265,12 +265,12 @@ void CutScene::process(int /*delta*/) {
             arr = this->level->getEnemies();
         }
 
-        int race = ((SolarSystem *) (long) Status::gStatus->getSystem())->getRace();
+        int race = Status::gStatus->getSystem()->getRace();
         if (race == 0) {
             AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
             t->Update((long long) (unsigned) this->frameDelta, (bool) (unsigned char) this->frameDelta);
         } else {
-            int race1 = ((SolarSystem *) (long) Status::gStatus->getSystem())->getRace();
+            int race1 = Status::gStatus->getSystem()->getRace();
             if (race1 == 1) {
                 canvas->FogSetParameter(AbyssEngine::FogMode_dummy, 0, CutScene_fogColorMode4, 1.0f,
                                         CutScene_fogDensityMode4);
@@ -313,7 +313,7 @@ void CutScene::process(int /*delta*/) {
                 if (this->level != nullptr) this->level->getEnemies();
                 return;
             }
-            int race3 = ((SolarSystem *) (long) Status::gStatus->getSystem())->getRace();
+            int race3 = Status::gStatus->getSystem()->getRace();
             if (race3 == 3) {
                 this->level->getEnemies();
                 this->level->getEnemies();
@@ -352,7 +352,7 @@ void CutScene::process(int /*delta*/) {
                 if (this->level != nullptr) this->level->getEnemies();
                 return;
             }
-            if (((SolarSystem *) (long) Status::gStatus->getSystem())->getRace() != 2)
+            if (Status::gStatus->getSystem()->getRace() != 2)
                 return;
             if (this->level != nullptr) this->level->getEnemies();
             if (this->level != nullptr) this->level->getEnemies();
@@ -490,20 +490,20 @@ void CutScene::initialize() {
         }
         canvas->CameraSetCurrent(this->cameraId6c);
         this->resetCamera();
-        int race = ((SolarSystem *) (long) Status::gStatus->getSystem())->getRace();
+        int race = Status::gStatus->getSystem()->getRace();
         if (race == 3) {
             this->geom2c = new AEGeometry((uint16_t) 0x36d6, canvas, false);
             AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
             t->SetAnimationState((AnimationMode) 0, nullptr);
         } else {
-            if (((SolarSystem *) (long) Status::gStatus->getSystem())->getRace() == 0) {
+            if (Status::gStatus->getSystem()->getRace() == 0) {
                 this->geom30 = new AEGeometry((uint16_t) 0x37c8, canvas, false);
                 this->geom34 = new AEGeometry((uint16_t) 0x37c7, canvas, false);
                 this->geom30->addChild(this->geom34->childTransform);
                 delete this->geom34;
                 this->geom34 = nullptr;
             } else {
-                ((SolarSystem *) (long) Status::gStatus->getSystem())->getRace();
+                Status::gStatus->getSystem()->getRace();
             }
         }
     }
@@ -529,7 +529,7 @@ void CutScene::resetCamera() {
     PaintCanvas *canvas = PaintCanvas::gCanvas;
 
     if (this->mode == 0x17) {
-        if (((SolarSystem *) (long) Status::gStatus->getSystem())->getRace() == 1) {
+        if (Status::gStatus->getSystem()->getRace() == 1) {
             canvas->FogSetParameter(AbyssEngine::FogMode_dummy, 0, CutScene_fogColor, 1.0f, CutScene_fogDensity_mode17);
             canvas->FogEnable(1, AbyssEngine::FogMode_dummy);
         }
@@ -545,7 +545,7 @@ void CutScene::resetCamera() {
     if (this->mode != 4)
         return;
 
-    if (((SolarSystem *) (long) Status::gStatus->getSystem())->getRace() == 1) {
+        if (Status::gStatus->getSystem()->getRace() == 1) {
         canvas->FogSetParameter(AbyssEngine::FogMode_dummy, 0, CutScene_fogColor, 1.0f, CutScene_fogDensity_mode4);
         canvas->FogEnable(1, AbyssEngine::FogMode_dummy);
     }

@@ -146,7 +146,7 @@ void Standing::applyKill(int kind) {
     if (status->inAlienOrbit() != 0) {
         sysRace = 9;
     } else {
-        sysRace = ((SolarSystem *) (long) status->getSystem())->getRace();
+        sysRace = status->getSystem()->getRace();
     }
     int delta;
     if (kind == 8) {

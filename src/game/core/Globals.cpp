@@ -1986,7 +1986,7 @@ void Globals::playMusicAndFadeOutCurrent(int mode) {
             ((FModSound *) (snd))->play(track, 0, 0, (float) vol);
             return;
         }
-        ((SolarSystem *) (long) Status::gStatus->getSystem())->getRace();
+        Status::gStatus->getSystem()->getRace();
         int *sndP = *(int **) gPM_snd1;
         ((FModSound *) (*sndP))->stop(0);
         if (Station_getIndex((int) (long) Status::gStatus->getStation()) == 0x6c) {
@@ -2025,7 +2025,7 @@ void Globals::playMusicAndFadeOutCurrent(int mode) {
             return;
         }
         const int *table = &gPM_table1;
-        track = table[((SolarSystem *) (long) Status::gStatus->getSystem())->getRace()];
+        track = table[Status::gStatus->getSystem()->getRace()];
         ((FModSound *) (*sndP))->play(track, 0, 0, (float) vol);
         return;
     }
@@ -2033,7 +2033,7 @@ void Globals::playMusicAndFadeOutCurrent(int mode) {
         return;
     }
 
-    int race = ((SolarSystem *) (long) Status::gStatus->getSystem())->getRace();
+    int race = Status::gStatus->getSystem()->getRace();
     int *sndP = *(int **) gPM_snd0;
     ((FModSound *) (*sndP))->stop(0);
     if (Station_getIndex((int) (long) Status::gStatus->getStation()) == 0x6c) {

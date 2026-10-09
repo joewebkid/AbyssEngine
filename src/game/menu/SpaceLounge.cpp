@@ -412,7 +412,7 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
     switch (this->mode) {
         case 0:
             if (this->introDone == 0) {
-                void *system = (void *) (long) Status::gStatus->getSystem();
+                void *system = Status::gStatus->getSystem();
                 int race = ((SolarSystem *) (system))->getRace();
                 int *v = &SpaceLounge_touch_race_vectors[race * 3];
                 MatrixSetTranslation(matrix, (float) v[2], (float) v[0], (float) v[1]);
@@ -743,7 +743,7 @@ void SpaceLounge::updateScreenPositions() {
 
         mapped->setPosition(this->silhouettePos.x, this->silhouettePos.y, this->silhouettePos.z);
 
-        if (((SolarSystem *) ((void *) (long) Status::gStatus->getSystem()))->getRace() == 0) {
+        if (Status::gStatus->getSystem()->getRace() == 0) {
             MatrixSetRotation(look, 0.0f, 0.0f, 0.0f);
             AbyssEngine::AEMath::MatrixMultiply(*(Matrix *) (camera), *(const Matrix *) (look));
         }
@@ -1046,7 +1046,7 @@ SpaceLounge::SpaceLounge() {
         this->cutScene->initialize();
     }
 
-    int race = ((SolarSystem *) ((void *) (long) Status::gStatus->getSystem()))->getRace();
+    int race = Status::gStatus->getSystem()->getRace();
     MatrixSetTranslation(from, (float) race, 0.0f, 0.0f);
     MatrixSetRotation(from, 0.0f, 0.0f, 0.0f);
     MatrixSetTranslation(to, (float) race, 0.0f, 0.0f);

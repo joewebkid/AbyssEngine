@@ -459,7 +459,7 @@ afterDlcUnsaleable:
                     (int) bluePrintArray->data_[i]->getStationIndex());
                 if (station != (Station *) 0x0) {
                     int sysIndex = Station_getSystem(station);
-                    SolarSystem *sys = (SolarSystem *) Galaxy::gGalaxy->getSystem(sysIndex);
+                    SolarSystem *sys = Galaxy::gGalaxy->getSystem(sysIndex);
                     if (sys->getRoutes() == (void *) 0x0) {
                         ((BluePrint *) bluePrintArray->data_[i])->stationIndex = 10;
                         delete station;

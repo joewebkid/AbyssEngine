@@ -57,10 +57,10 @@ void Galaxy::setVisited(bool *src, int count) {
         this->visited[i] = 0;
 }
 
-int Galaxy::getSystem(int index) {
+SolarSystem *Galaxy::getSystem(int index) {
     if (index < 0)
-        return 0;
-    return (int) (intptr_t)(*this->systems)[index];
+        return nullptr;
+    return (*this->systems)[index];
 }
 
 float Galaxy::distance(SolarSystem *a, SolarSystem *b) {

@@ -201,7 +201,7 @@ PlayerStation::PlayerStation(Station *station)
                     new AEGeometry((uint16_t)(stationIndex + 21000), canvas, false);
         }
 
-        SolarSystem *system = (SolarSystem *) (long) status->getSystem();
+        SolarSystem *system = status->getSystem();
         uint32_t race = system == nullptr ? 9u : (uint32_t) system->getRace();
         stationIndex = this->stationIndex;
         if (stationIndex == 0x65) {

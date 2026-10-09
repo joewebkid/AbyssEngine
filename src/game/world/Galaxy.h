@@ -25,7 +25,7 @@ public:
 
     void setVisited(bool *src, int count);
 
-    int getSystem(int index);
+    SolarSystem *getSystem(int index);
 
     void *getPlasmaProbabilities(Station *station);
 
