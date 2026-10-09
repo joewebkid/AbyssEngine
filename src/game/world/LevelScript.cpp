@@ -1066,7 +1066,7 @@ commonDeparture:
                 (*enemies)[i]->player->turnEnemy();
             }
         }
-        reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()))->setStanding(0, 100);
+        Globals::status->getStanding()->setStanding(0, 100);
         m_nState = 1;
     }
 

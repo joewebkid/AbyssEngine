@@ -1481,7 +1481,7 @@ void RecordHandler::recordStoreWrite(int slot) {
             AEFile_WriteBool(((Station *) cur)->hasAttackedFriends(), fd);
         }
 
-        int *standings = ((Standing *) (status->getStanding()))->getStandings();
+        int *standings = status->getStanding()->getStandings();
         AEFile_WriteInt(2, fd);
         for (unsigned i = 0; i < 2; i++) {
             AEFile_WriteInt(standings[i], fd);

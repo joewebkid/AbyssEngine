@@ -223,7 +223,7 @@ Array<Agent *> *Generator::createAgents(Station *station) {
         }
 
         if (static_cast<AERandom *>(Globals::rnd)->nextInt(100) < 0x23) {
-            Standing *standing = reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()));
+            Standing *standing = Globals::status->getStanding();
             for (uint32_t raceIndex = 0; raceIndex < 4; ++raceIndex) {
                 int race = g_Generator_enemyRaces[raceIndex];
                 if (standing->isEnemy(race)) {
@@ -472,7 +472,7 @@ Mission *Generator::createMission(Agent *agent,
 
     int bonus = 0;
     if ((type | 4) != 0xc) {
-        Standing *standing = reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()));
+        Standing *standing = Globals::status->getStanding();
         int rawBonus =
                 (int) (reward * standing->getMissionBonus(agent->getRace()));
         bonus = rawBonus + rawBonus % 50;

@@ -200,3 +200,17 @@ have zero losses or gains. The repaired function's source-shape decreases
 supports the change despite that local metric regression. Whole-game
 runtime and other paths in the function remain unverified; see
 [the lookup note](STATUS_ACTIVATE_WANTED_SYSTEM_LOOKUP_ARM_2026-10-09.md).
+
+## Status standing pointer contract follow-up (2026-10-09)
+
+The Android ARM `Status::getStanding` loads the pointer at `Status + 0x14`
+directly into `r0`. Its former `int` C++ return truncated that pointer on
+native 64-bit hosts. The getter and direct callers now use `Standing *`.
+Native `gof2`, 206/206 ARM units, the compile-time pointer-contract smoke,
+36 verifier tests (one optional skip), and four scope tests pass. The getter
+remains byte-exact. The full report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_standing_pointer_20261009.json`:
+4,323/4,524 originals, 4,689 rows, 91.87% source-shape, 79.93% strict,
+2,313 linked-exact and 997 byte-exact, with no comparison-row or exact-pair
+losses. Whole-game runtime and other pointer-width risks remain unverified;
+see [the ABI note](STATUS_STANDING_POINTER_ABI_2026-10-09.md).

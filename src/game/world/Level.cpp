@@ -1589,7 +1589,7 @@ void Level::createMission() {
         int race = Globals::status->getSystem()->getRace();
         int enemyRace;
         if (static_cast<AERandom *>(Globals::rnd)->nextInt(100) >= 75)
-            enemyRace = reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()))->getEnemyRace(race);
+            enemyRace = Globals::status->getStanding()->getEnemyRace(race);
         else enemyRace = 8;
         switch (mission->getType()) {
             case 1: {
@@ -1757,7 +1757,7 @@ void Level::createMission() {
                 int count = int(float(base) + (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * float(base));
                 enemies = new Array<KIPlayer *>();
                 ArraySetLength(count + 5, *enemies);
-                enemyRace = reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()))->getEnemyRace(mission->getClientRace());
+                enemyRace = Globals::status->getStanding()->getEnemyRace(mission->getClientRace());
                 int freighterType = 15;
                 int clientRace = 0;
                 if (mission->getClientRace() <= 3) {
@@ -1806,7 +1806,7 @@ void Level::createMission() {
                 playerRoute = new Route(coords, 6);
                 int freighters = static_cast<AERandom *>(Globals::rnd)->nextInt(2) + 2;
                 int base = int(float(Globals::status->getMission()->getDifficulty()) / 10.0f * 5.0f) + 3;
-                enemyRace = reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()))->getEnemyRace(mission->getClientRace());
+                enemyRace = Globals::status->getStanding()->getEnemyRace(mission->getClientRace());
                 if (enemyRace == 8) enemyRace = 0;
                 enemies = new Array<KIPlayer *>();
                 int count = int(float(base) + (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * float(base));
@@ -1880,7 +1880,7 @@ void Level::createMission() {
                 float difficulty = float(Globals::status->getMission()->getDifficulty()) / 10.0f;
                 int base = int(difficulty + difficulty) + 1;
                 int count = int(float(base) + (*reinterpret_cast<float *>(Globals::options + 0x2c) - 0.5f) * float(base));
-                enemyRace = reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()))->getEnemyRace(mission->getClientRace());
+                enemyRace = Globals::status->getStanding()->getEnemyRace(mission->getClientRace());
                 int clientRace = mission->getClientRace();
                 miningPlant = 1;
                 enemies = new Array<KIPlayer *>();
@@ -1931,7 +1931,7 @@ void Level::createMission() {
                 coords[6] = static_cast<AERandom *>(Globals::rnd)->nextInt(140000) - 70000; coords[7] = 0; coords[8] = 140000;
                 enemyRoute = new Route(coords, 3);
                 Globals::status->getMission()->getDifficulty();
-                reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()))->getEnemyRace(mission->getClientRace());
+                Globals::status->getStanding()->getEnemyRace(mission->getClientRace());
                 int clientRace = mission->getClientRace();
                 enemies = new Array<KIPlayer *>();
                 ArraySetLength(4, *enemies);
@@ -2067,7 +2067,7 @@ void Level::createMission() {
     int race = Globals::status->getSystem()->getRace();
     int enemyRace;
     if (static_cast<AERandom *>(Globals::rnd)->nextInt(100) >= 75)
-        enemyRace = reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()))->getEnemyRace(race);
+        enemyRace = Globals::status->getStanding()->getEnemyRace(race);
     else enemyRace = 8;
     hostileCount = attackers ? static_cast<AERandom *>(Globals::rnd)->nextInt(4) : 0;
     if (hostileCount >= 1) {

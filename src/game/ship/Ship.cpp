@@ -516,7 +516,7 @@ void Ship::refreshValue() {
     this->boostDelay = 0;
     this->boostTime = 0;
     if (Globals::status != 0 && Globals::status->getStanding() != 0) {
-        ((Standing *) ((void *) (intptr_t) Globals::status->getStanding()))->setPlayerSignatureRace(-1);
+        Globals::status->getStanding()->setPlayerSignatureRace(-1);
     }
     this->value = this->price;
 
@@ -600,7 +600,7 @@ void Ship::refreshValue() {
                     int idx = this->equipment->data()[i]->getIndex();
                     this->signatureRace = idx - 0xbd;
                     if (Globals::status != 0 && Globals::status->getStanding() != 0) {
-                        ((Standing *) ((void *) (intptr_t) Globals::status->getStanding()))->setPlayerSignatureRace(
+                        Globals::status->getStanding()->setPlayerSignatureRace(
                             this->signatureRace);
                     }
                     break;

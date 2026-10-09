@@ -250,8 +250,8 @@ void DialogueWindow::loadContent() {
         this->bodyText = *(gameText->getText(textId));
 
         if (kind == 1) {
-            int standing = Status::gStatus->getStanding();
-            ((Standing *) (intptr_t) standing)->applyMissionCompleted(mission->getClientRace());
+            Standing *standing = Status::gStatus->getStanding();
+            standing->applyMissionCompleted(mission->getClientRace());
         }
         if (mission->getTargetStation() == 0x6c && kind == 0) {
             textId = 0x1ca;

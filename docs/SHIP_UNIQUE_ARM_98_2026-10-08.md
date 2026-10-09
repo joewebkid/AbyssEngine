@@ -130,10 +130,11 @@ Reproduce with `GOF2_VERIFY_LOCAL_NDK=1`,
 
 ## Remaining limits
 
-No device/ARM executable game run was performed. Existing Status::getStanding
-still has an int pointer contract: its non-null host-x64 path can truncate a
-pointer and was not exercised; changing it requires a separate cross-caller
-ABI recovery. Existing bit-punning in other getters and unrelated incomplete
+No device/ARM executable game run was performed. At this checkpoint,
+`Status::getStanding` still had an int pointer contract; that cross-caller
+ABI risk was subsequently repaired in
+[the standing follow-up](STATUS_STANDING_POINTER_ABI_2026-10-09.md).
+Existing bit-punning in other getters and unrelated incomplete
 subsystems are outside this focused package. The unusual native sentinel and
 invalid catalog/item or zero-divisor inputs are preserved as native behavior;
 no guessed runtime guards were inserted for matching. 99% source-shape does

@@ -464,7 +464,7 @@ void KIPlayer::captureCrate(Hud *hud) {
             this->level->stealFriendCargo();
 
         if (this->stealFlag == 0)
-            ((Standing *) (intptr_t) status->getStanding())->applyStealCargo(this->shipGroup);
+            status->getStanding()->applyStealCargo(this->shipGroup);
 
         bool special = false;
         if (this->carriesMissionCrate != 0) {

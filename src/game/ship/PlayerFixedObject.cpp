@@ -115,15 +115,15 @@ void PlayerFixedObject::update(int dt) {
         reinterpret_cast<uint8_t *>(&player->enemyFlags)[0] = 1;
         enemyFlag = 0;
     } else {
-        int st = Globals::status->getStanding();
-        unsigned char e = ((Standing *) ((void *) (long) st))->isEnemy(self->faction);
+        Standing *st = Globals::status->getStanding();
+        unsigned char e = st->isEnemy(self->faction);
         player = (Player *) self->player;
         reinterpret_cast<uint8_t *>(&player->enemyFlags)[0] = e;
         if ((self->faction & 0xfffffffe) == 8) {
             enemyFlag = 0;
         } else {
-            void *st2 = (void *) (long) Globals::status->getStanding();
-            enemyFlag = ((Standing *) (st2))->isFriend(self->faction);
+            Standing *st2 = Globals::status->getStanding();
+            enemyFlag = st2->isFriend(self->faction);
             player = (Player *) self->player;
         }
     }

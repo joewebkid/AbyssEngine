@@ -662,7 +662,7 @@ void Player::damageEmp(int amount, bool flag) {
             goto lab_30f4;
         }
         {
-            void *st = (void *) (long) Globals::status->getStanding();
+            void *st = Globals::status->getStanding();
             ((Standing *) (st))->applyDisable(self->kiPlayer->shipGroup);
             ki = self->kiPlayer;
         }
@@ -1009,7 +1009,7 @@ void Player::damage(int amount, bool flag, int missionId) {
             if (f1 < dmgF) {
                 ((Level *) (self->kiPlayer->level))->friendTurnedEnemy(self->kiPlayer->shipGroup);
                 void *ship = (void *) Globals::status->getShip();
-                void *standing = (void *) (long) Globals::status->getStanding();
+                void *standing = Globals::status->getStanding();
                 if (((Ship *) (ship))->getSignatureRace() >= 0) {
                     bool match = ((unsigned int) ((Ship *) (ship))->getSignatureRace() ==
                                   (unsigned int) self->kiPlayer->shipGroup);
@@ -1018,7 +1018,7 @@ void Player::damage(int amount, bool flag, int missionId) {
                     if (match && dis == 0) {
                         Item *item = ((Ship *) (ship))->getFirstEquipmentOfSort(0x1d);
                         ((Ship *) (ship))->removeEquipment(item);
-                        void *st2 = (void *) (long) Globals::status->getStanding();
+                        void *st2 = Globals::status->getStanding();
                         ((Standing *) (st2))->applyDelict(((Ship *) (ship))->getSignatureRace(), 100);
                         ((Standing *) (standing))->setPlayerSignatureRace(-1);
                         void *ego = (void *) (__INTPTR_TYPE__) ((Level *) (self->kiPlayer->level))->getPlayer();
@@ -1033,13 +1033,13 @@ void Player::damage(int amount, bool flag, int missionId) {
             float dmgF3 = (float) self->damageDoneByPlayer;
             if (frac2 * f3 < dmgF3) {
                 void *ship = (void *) Globals::status->getShip();
-                void *standing = (void *) (long) Globals::status->getStanding();
+                void *standing = Globals::status->getStanding();
                 if (((Ship *) (ship))->getSignatureRace() >= 0 &&
                     self->kiPlayer->shipGroup < 4 &&
                     self->kiPlayer->field_0x42 == 0) {
                     Item *item = ((Ship *) (ship))->getFirstEquipmentOfSort(0x1d);
                     ((Ship *) (ship))->removeEquipment(item);
-                    void *st2 = (void *) (long) Globals::status->getStanding();
+                    void *st2 = Globals::status->getStanding();
                     ((Standing *) (st2))->applyDelict(((Ship *) (ship))->getSignatureRace(), 100);
                     ((Standing *) (standing))->setPlayerSignatureRace(-1);
                     void *ego = (void *) (__INTPTR_TYPE__) ((Level *) (self->kiPlayer->level))->getPlayer();
@@ -1128,7 +1128,7 @@ LAB_3488: {
 
                     Globals::status->inBlackMarketSystem() == 0) {
                     if (self->kiPlayer->field_0x42 == 0) {
-                        void *st = (void *) (long) Globals::status->getStanding();
+                        void *st = Globals::status->getStanding();
                         ((Standing *) (st))->applyKill(self->kiPlayer->shipGroup);
                     }
                     intptr_t mission = Globals::status->getCampaignMission();

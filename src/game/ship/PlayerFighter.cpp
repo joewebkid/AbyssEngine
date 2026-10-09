@@ -423,7 +423,7 @@ void PlayerFighter::update(int dt) {
         } else if (((KIPlayer *) (this))->isWingMan() != 0) {
             enemy = 0;
         } else {
-            enemy = (unsigned char) ((Standing *) (Status::gStatus->getStanding()))->isEnemy(this->wingmanCommand);
+            enemy = (unsigned char) Status::gStatus->getStanding()->isEnemy(this->wingmanCommand);
         }
         ((Player *) (intptr_t) this->player)->enemyFlagsLo = enemy;
     }

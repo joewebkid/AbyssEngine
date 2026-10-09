@@ -422,7 +422,7 @@ public:
 
     int getLevel();
 
-    int getStanding();
+    Standing *getStanding();
 
     Array<BluePrint *> *getBluePrints();
 

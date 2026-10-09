@@ -37,8 +37,10 @@ The numeric `Status` field names remain intentionally unresolved: ARM proves
 their offsets and comparisons, not their game-facing labels. The local
 `Status::getStanding()` signature returns a 32-bit integer representation of
 a pointer; this body reads the equivalent `standing` field directly to avoid
-truncating a native host pointer. That choice is semantically grounded in the
-current getter body but prevents an exact ARM call sequence.
+truncating a native host pointer. That choice was semantically grounded in the
+getter body at this historical checkpoint but prevented an exact ARM call
+sequence. The getter's pointer return was subsequently restored; see
+[the standing ABI follow-up](STATUS_STANDING_POINTER_ABI_2026-10-09.md).
 
 Focused ARM verification: the prior stub was 17 generated instructions
 against 414 original, 6.9% source-shape and 2.3% strict fuzzy. The recovered

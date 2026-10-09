@@ -10,3 +10,5 @@ static_assert(std::is_same_v<decltype(std::declval<Galaxy &>().getStation(0)), S
 static_assert(std::is_same_v<decltype(std::declval<Galaxy &>().getSystem(0)), SolarSystem *>);
 static_assert(std::is_same_v<decltype(std::declval<Status &>().system), SolarSystem *>);
 static_assert(std::is_same_v<decltype(std::declval<Status &>().getSystem()), SolarSystem *>);
+static_assert(std::is_same_v<decltype(std::declval<Status &>().standing), Standing *>);
+static_assert(std::is_same_v<decltype(std::declval<Status &>().getStanding()), Standing *>);

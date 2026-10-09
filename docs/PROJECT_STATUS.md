@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-09 (wanted-system lookup repair; older subsystem
+Last reviewed: 2026-10-09 (standing pointer ABI recovery; older subsystem
 snapshots retain their dates)
+
+## Status standing pointer ABI (2026-10-09)
+
+Android ARM confirms `Status::getStanding()` returns the `Standing *` stored
+at `Status + 0x14`. The getter and all direct callers now preserve that
+pointer on 64-bit native hosts; the getter remains ARM byte-exact. Native
+`gof2`, 206/206 ARM units and verifier tests pass. The full corpus remains
+**4,323/4,524** at **91.87%** source-shape and **79.93%** strict fuzzy,
+with **2,313 linked-exact** and **997 byte-exact** pairs and no exact losses.
+Whole-game runtime and other 32-bit pointer fields remain unverified; see
+the [standing pointer evidence](STATUS_STANDING_POINTER_ABI_2026-10-09.md).
 
 ## Wanted-system array lookup (2026-10-09)
 

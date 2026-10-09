@@ -513,7 +513,7 @@ void StatusWindow::draw() {
         canvas->DrawString((unsigned) (uintptr_t) font, hpStr, ((y + x0) - pad) - tw, y, false);
 
         int standingX0 = x0 + (boxW >> 2);
-        Standing *standing = (Standing *) (intptr_t) Status::gStatus->getStanding();
+        Standing *standing = Status::gStatus->getStanding();
         float rate = standing->getStandingRate(0);
         canvas->DrawImage2D(this->standingEmblemImage, standingX0, y, (unsigned char) '\x11');
         canvas->DrawRegion2D(this->standingBarImage, this->standingBarWidth, 0,
@@ -524,7 +524,7 @@ void StatusWindow::draw() {
                             y, (unsigned char) '\x11');
 
         int standingX1 = (boxW - ((boxW - pad * 2) >> 2)) + pad * 2;
-        Standing *standing2 = (Standing *) (intptr_t) Status::gStatus->getStanding();
+        Standing *standing2 = Status::gStatus->getStanding();
         float rate2 = standing2->getStandingRate(1);
         canvas->DrawImage2D(this->standingEmblemImage, standingX1, y, (unsigned char) '\x11');
         canvas->DrawRegion2D(this->standingBarImage, this->standingBarWidth, 0,

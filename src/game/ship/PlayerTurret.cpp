@@ -287,13 +287,13 @@ check_state:
         body = this->player;
         body->enemyFlagsLo = 1;
     } else {
-        auto standing = reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()));
+        auto standing = Globals::status->getStanding();
         uint8_t enemy = standing->isEnemy(this->shipGroup);
         body = this->player;
         int faction = this->shipGroup;
         body->enemyFlagsLo = enemy;
         if ((faction & 0xfffffffeU) != 8) {
-            auto currentStanding = reinterpret_cast<Standing *>(static_cast<intptr_t>(Globals::status->getStanding()));
+            auto currentStanding = Globals::status->getStanding();
             friendly = currentStanding->isFriend(this->shipGroup);
             body = this->player;
             goto set_friend;

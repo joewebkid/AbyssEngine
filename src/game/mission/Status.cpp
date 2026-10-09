@@ -138,7 +138,7 @@ bool Status::hardCoreMode() {
 
 void Status::crateCaptured(int delta) { capturedCrates = delta + capturedCrates; }
 
-int Status::getStanding() { return (int) (intptr_t) standing; }
+Standing *Status::getStanding() { return standing; }
 
 int Status::getBoughtEquipment() { return boughtEquipment; }
 

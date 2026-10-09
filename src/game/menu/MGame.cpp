@@ -1704,8 +1704,7 @@ ambient_dispatch_complete:
         return;
     }
     if (!mgame_hint_standing &&
-        reinterpret_cast<Standing *>(static_cast<intptr_t>(
-            Status::gStatus->getStanding()))->isEnemyWithAnyone()) {
+        Status::gStatus->getStanding()->isEnemyWithAnyone()) {
         mgame_show_choice(this, 648);
         mgame_hint_standing = 1;
         return;
