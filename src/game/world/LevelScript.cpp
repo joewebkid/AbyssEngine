@@ -625,8 +625,7 @@ bool LevelScript::process(int delta) {
             Globals::status->nextCampaignMission(true);
             Status *status = Globals::status;
             Globals::switch_to_target_setting = 0;
-            Station *station = reinterpret_cast<Station *>(static_cast<intptr_t>(
-                static_cast<Galaxy *>(Globals::galaxy)->getStation(100)));
+            Station *station = static_cast<Galaxy *>(Globals::galaxy)->getStation(100);
             status->departStation(station);
             Globals::status->getStation()->setAttackedFriends(false);
             Level::comingFromAlienWorld = 0;
@@ -889,8 +888,7 @@ bool LevelScript::process(int delta) {
             Globals::layout->enableFillScreen(true);
             Globals::status->nextCampaignMission(true);
             Globals::switch_to_target_setting = 0;
-            Globals::status->departStation(reinterpret_cast<Station *>(static_cast<intptr_t>(
-                static_cast<Galaxy *>(Globals::galaxy)->getStation(10))));
+            Globals::status->departStation(static_cast<Galaxy *>(Globals::galaxy)->getStation(10));
             Globals::status->getStation()->setAttackedFriends(false);
             Level::comingFromAlienWorld = 0;
             static_cast<AbyssEngine::ApplicationManager *>(Globals::appManager)->SetCurrentApplicationModule(5);
@@ -964,11 +962,9 @@ mission106Tail:
                 status->nextCampaignMission(true);
                 Globals::status->nextCampaignMission(true);
                 status = Globals::status;
-                status->setStation(reinterpret_cast<Station *>(static_cast<intptr_t>(
-                    static_cast<Galaxy *>(Globals::galaxy)->getStation(10))));
+                status->setStation(static_cast<Galaxy *>(Globals::galaxy)->getStation(10));
                 status = Globals::status;
-                status->departStation(reinterpret_cast<Station *>(static_cast<intptr_t>(
-                    static_cast<Galaxy *>(Globals::galaxy)->getStation(10))));
+                status->departStation(static_cast<Galaxy *>(Globals::galaxy)->getStation(10));
                 Globals::switch_to_target_setting = 1;
                 Level::initStreamOutPosition = 1;
                 static_cast<AbyssEngine::ApplicationManager *>(Globals::appManager)->SetCurrentApplicationModule(2);
@@ -1164,8 +1160,7 @@ commonDeparture:
                 scriptTimerA = scriptTime;
             } else if (m_nState == 4 && scriptTime >= scriptTimerA + 4000) {
                 Globals::status->nextCampaignMission(true);
-                Globals::status->departStation(reinterpret_cast<Station *>(static_cast<intptr_t>(
-                    static_cast<Galaxy *>(Globals::galaxy)->getStation(98))));
+                Globals::status->departStation(static_cast<Galaxy *>(Globals::galaxy)->getStation(98));
                 Globals::switch_to_target_setting = 0;
                 static_cast<AbyssEngine::ApplicationManager *>(Globals::appManager)->SetCurrentApplicationModule(5);
                 Level::initStreamOutPosition = 0;
@@ -1672,8 +1667,7 @@ commonDeparture:
                     Status *status = Globals::status;
                     int station = status->field_84;
                     status->field_f4 = weapon;
-                    status->setStation(reinterpret_cast<Station *>(static_cast<intptr_t>(
-                        static_cast<Galaxy *>(Globals::galaxy)->getStation(station))));
+                    status->setStation(static_cast<Galaxy *>(Globals::galaxy)->getStation(station));
                     Globals::status->departStation(Globals::status->getStation());
                     Level::initStreamOutPosition = 1;
                     Level::comingFromAlienWorld = 1;
@@ -2301,8 +2295,8 @@ commonDeparture:
                         player->setSpeed(player->getSpeed() * 1.0499999523162841796875f);
                     if (scriptTimerA >= 8001) {
                         Globals::status->nextCampaignMission(true);
-                        Globals::status->setStation(reinterpret_cast<Station *>(static_cast<intptr_t>(static_cast<Galaxy *>(Globals::galaxy)->getStation(113))));
-                        Globals::status->departStation(reinterpret_cast<Station *>(static_cast<intptr_t>(static_cast<Galaxy *>(Globals::galaxy)->getStation(113))));
+                        Globals::status->setStation(static_cast<Galaxy *>(Globals::galaxy)->getStation(113));
+                        Globals::status->departStation(static_cast<Galaxy *>(Globals::galaxy)->getStation(113));
                         Level::initStreamOutPosition = 1;
                         Globals::status->field_64 = static_cast<Player *>(player->player)->getHitpoints();
                         Globals::status->field_5c = static_cast<Player *>(player->player)->getShieldHP();
@@ -3880,8 +3874,8 @@ mission91Animation:
                 if (scriptTimerA >= 6500) {
                     ++m_nState;
                     Globals::status->nextCampaignMission(true);
-                    Globals::status->setStation(reinterpret_cast<Station *>(static_cast<intptr_t>(static_cast<Galaxy *>(Globals::galaxy)->getStation(111))));
-                    Globals::status->departStation(reinterpret_cast<Station *>(static_cast<intptr_t>(static_cast<Galaxy *>(Globals::galaxy)->getStation(111))));
+                    Globals::status->setStation(static_cast<Galaxy *>(Globals::galaxy)->getStation(111));
+                    Globals::status->departStation(static_cast<Galaxy *>(Globals::galaxy)->getStation(111));
                     Globals::status->field_64 = static_cast<Player *>(player->player)->getHitpoints();
                     Globals::status->field_5c = static_cast<Player *>(player->player)->getShieldHP();
                     Globals::status->field_60 = static_cast<Player *>(player->player)->getArmorHP();
@@ -4507,8 +4501,8 @@ mission91Animation:
                     Globals::status->field_60 = static_cast<Player *>(player->player)->getArmorHP();
                     Globals::status->field_68 = static_cast<Player *>(player->player)->getGammaHP();
                     Globals::status->nextCampaignMission(true);
-                    Globals::status->setStation(reinterpret_cast<Station *>(static_cast<intptr_t>(static_cast<Galaxy *>(Globals::galaxy)->getStation(111))));
-                    Globals::status->departStation(reinterpret_cast<Station *>(static_cast<intptr_t>(static_cast<Galaxy *>(Globals::galaxy)->getStation(111))));
+                    Globals::status->setStation(static_cast<Galaxy *>(Globals::galaxy)->getStation(111));
+                    Globals::status->departStation(static_cast<Galaxy *>(Globals::galaxy)->getStation(111));
                     Globals::switch_to_target_setting = 1;
                     Level::initStreamOutPosition = 1;
                     static_cast<AbyssEngine::ApplicationManager *>(Globals::appManager)->SetCurrentApplicationModule(2);

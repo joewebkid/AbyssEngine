@@ -447,8 +447,7 @@ Mission *Generator::createMission(Agent *agent,
     SolarSystem *from =
             systems->data()[Globals::status->getStation()->getSystem()];
     SolarSystem *to = systems->data()
-    [((Station *) (intptr_t) static_cast<Galaxy *>(Globals::galaxy)
-        ->getStation(targetStation))->getSystem()];
+    [static_cast<Galaxy *>(Globals::galaxy)->getStation(targetStation)->getSystem()];
     float distance = static_cast<Galaxy *>(Globals::galaxy)->distance(from, to);
     float reward = ((float) distance / 1200.0f + 1.0f) *
                    (float) ((int) (((float) difficulty / 10.0f) * 5500.0f) +

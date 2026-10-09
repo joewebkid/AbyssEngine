@@ -231,8 +231,8 @@ void ModMainMenu::OnInitialize() {
         Status::gStatus->resetGame();
         AERandom::gRandom->reset();
 
-        int station = Galaxy::gGalaxy->getStation(AERandom::gRandom->nextInt(100));
-        Status::gStatus->setStation((Station *) (intptr_t) station);
+        Station *station = Galaxy::gGalaxy->getStation(AERandom::gRandom->nextInt(100));
+        Status::gStatus->setStation(station);
 
         CutScene *cutscene = new CutScene(2);
         this->cutScene = cutscene;

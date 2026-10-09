@@ -241,9 +241,9 @@ void *Galaxy::getAsteroidProbabilities(Station *station) {
     return out;
 }
 
-int Galaxy::getStation(int index) {
+Station *Galaxy::getStation(int index) {
     if (index < 0)
-        return (int) (intptr_t) Status::gStatus->playerStation;
+        return Status::gStatus->playerStation;
 
     FileRead loader;
     return loader.loadStation(index);

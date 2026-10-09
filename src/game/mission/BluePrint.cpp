@@ -153,7 +153,7 @@ void BluePrint::addItem(Item *item, int amount, int station) {
             if (current->getIndex() == station) {
                 stationName = Status::gStatus->getStation()->getName();
             } else {
-                Station *st = (Station *) (intptr_t) Galaxy::gGalaxy->getStation(station);
+                Station *st = Galaxy::gGalaxy->getStation(station);
                 stationName = st->getName();
                 if (st != nullptr)
                     delete st;

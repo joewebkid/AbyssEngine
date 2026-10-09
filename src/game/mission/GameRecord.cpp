@@ -455,7 +455,7 @@ afterDlcUnsaleable:
                 (((blueprint->getIndex() == 0xdf ||
                    (bluePrintArray->data_[i]->getIndex() == 0xd2)) &&
                   (bluePrintArray->data_[i]->isEmpty() == 0)))) {
-                station = (Station *) Galaxy::gGalaxy->getStation(
+                station = Galaxy::gGalaxy->getStation(
                     (int) bluePrintArray->data_[i]->getStationIndex());
                 if (station != (Station *) 0x0) {
                     int sysIndex = Station_getSystem(station);
@@ -463,7 +463,7 @@ afterDlcUnsaleable:
                     if (sys->getRoutes() == (void *) 0x0) {
                         ((BluePrint *) bluePrintArray->data_[i])->stationIndex = 10;
                         delete station;
-                        station = (Station *) Galaxy::gGalaxy->getStation(
+                        station = Galaxy::gGalaxy->getStation(
                             (int) bluePrintArray->data_[i]->getStationIndex());
                         bluePrintArray->data_[i]->stationName =
                                 ((Station *) (station))->getName();

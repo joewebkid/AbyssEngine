@@ -828,7 +828,7 @@ void Status::resetGame() {
     this->mission = (*this->missions)[0];
     setShip(Status::gStatus->ship->makeShip(-1));
     this->ship->priceDecline();
-    setStation((Station *) (intptr_t) gal->getStation(0));
+    setStation(gal->getStation(0));
     this->ship->setCargo(0);
 
     int (*makeItemB)(int) = g_rg_makeItemB;

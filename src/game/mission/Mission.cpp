@@ -84,7 +84,7 @@ Mission *Mission::clone() {
 
 void Mission::setTargetStation(int idx) {
     this->targetStation = idx;
-    Station *st = (Station *) (long) Galaxy::gGalaxy->getStation(idx);
+    Station *st = Galaxy::gGalaxy->getStation(idx);
     this->targetStationName = st->getName();
 }
 
@@ -96,7 +96,7 @@ Mission::Mission(int id, AbyssEngine::String client, int *clientImage, int clien
     this->clientRace = clientRace;
     this->costs = costs;
     this->targetStation = station;
-    Station *st = (Station *) (long) Galaxy::gGalaxy->getStation(station);
+    Station *st = Galaxy::gGalaxy->getStation(station);
     this->targetStationName = st->getName();
     this->reward = reward;
     this->targetSystemName = String("");
@@ -129,7 +129,7 @@ Mission::Mission(int id) {
 
 void Mission::calcDistance() {
     Galaxy *g = Galaxy::gGalaxy;
-    Station *st = (Station *) (long) g->getStation(this->targetStation);
+    Station *st = g->getStation(this->targetStation);
     Array<SolarSystem *> *sys = g->getSystems();
     SolarSystem *a = (*sys)[Status::gStatus->getStation()->getSystem()];
     SolarSystem *b = (*sys)[st->getSystem()];
@@ -146,7 +146,7 @@ Mission::Mission(int id, int goods, int station) {
     if (station < 0) {
         this->targetStationName = String("");
     } else {
-        Station *st = (Station *) (long) Galaxy::gGalaxy->getStation(station);
+        Station *st = Galaxy::gGalaxy->getStation(station);
         this->targetStationName = st->getName();
     }
     this->targetSystemName = String("");

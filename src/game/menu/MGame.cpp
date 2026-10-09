@@ -1523,8 +1523,7 @@ keyboard_done:
         }
     }
     if (this->player->isDockedToPlanet()) {
-        Station *destination = reinterpret_cast<Station *>(static_cast<intptr_t>(
-            Galaxy::gGalaxy->getStation(this->radar->getPlanetDockIndex())));
+        Station *destination = Galaxy::gGalaxy->getStation(this->radar->getPlanetDockIndex());
         Status::gStatus->departStation(destination);
         Level::setInitStreamOut();
         Status::gStatus->field_64 =
@@ -2141,8 +2140,7 @@ core_update:
             if (Status::gStatus->inAlienOrbit()) {
                 if (Status::gStatus->getCurrentCampaignMission() == 42)
                     return;
-                Station *destination = reinterpret_cast<Station *>(static_cast<intptr_t>(
-                    Galaxy::gGalaxy->getStation(Status::gStatus->field_84)));
+                Station *destination = Galaxy::gGalaxy->getStation(Status::gStatus->field_84);
                 Status::gStatus->departStation(destination);
             } else {
                 Status::gStatus->setStation(Status::gStatus->playerStation);
@@ -2408,8 +2406,7 @@ void MGame::UseKhadorDrive() {
     if (Status::gStatus->inAlienOrbit()) {
         if (Status::gStatus->getCurrentCampaignMission() == 80)
             Status::gStatus->field_84 = 100;
-        Level::programmedStation = reinterpret_cast<void *>(static_cast<intptr_t>(
-                Galaxy::gGalaxy->getStation(Status::gStatus->field_84)));
+        Level::programmedStation = Galaxy::gGalaxy->getStation(Status::gStatus->field_84);
         this->usingJumpDrive = 1;
         this->startChargingJumpDrive();
         this->pauseOpen = 0;
@@ -3145,15 +3142,13 @@ mgame_reset_dialogue_input(MGame *self) {
 
 static __attribute__((always_inline)) inline Station *mgame_load_station(int stationId) {
     auto *reader = new FileRead();
-    Station *station = reinterpret_cast<Station *>(
-            static_cast<intptr_t>(reader->loadStation(stationId)));
+    Station *station = reader->loadStation(stationId);
     delete reader;
     return station;
 }
 
 static __attribute__((always_inline)) inline Station *mgame_get_galaxy_station(int stationId) {
-    return reinterpret_cast<Station *>(
-            static_cast<intptr_t>(Galaxy::gGalaxy->getStation(stationId)));
+    return Galaxy::gGalaxy->getStation(stationId);
 }
 
 static __attribute__((always_inline)) inline void

@@ -266,8 +266,7 @@ int WantedWindow::OnTouchEnd(int x, int y) {
         this->starMap = module->starMap;
         Wanted *wanted = (*this->wantedList)[this->selectedWanted];
         int lastSeen = wanted->getLastSeen();
-        int stationIndex = Galaxy::gGalaxy->getStation(lastSeen);
-        Station *station = (Station *) (long) stationIndex;
+        Station *station = Galaxy::gGalaxy->getStation(lastSeen);
         delete this->mission;
         this->mission = nullptr;
 
@@ -695,9 +694,9 @@ void WantedWindow::selectWanted(int idx) {
 
     if (wanted->isActive() != 0) {
         Galaxy *galaxy = Galaxy::gGalaxy;
-        Station *last = (Station *) (long) galaxy->getStation(wanted->getLastSeen());
-        Station *travel = (Station *) (long) galaxy->getStation(wanted->getTravelsTo());
-        Station *current = (Station *) (long) galaxy->getStation(wanted->getCurrentLocation());
+        Station *last = galaxy->getStation(wanted->getLastSeen());
+        Station *travel = galaxy->getStation(wanted->getTravelsTo());
+        Station *current = galaxy->getStation(wanted->getCurrentLocation());
 
         this->fromText = last->getName() + String("from ", false) + String(" ", false);
         this->toText = travel->getName() + String("to ", false) + String(" ", false);

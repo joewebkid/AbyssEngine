@@ -3142,7 +3142,7 @@ void MenuTouchWindow::startSupernovaChallenge() {
     item = ((Array<Item *> *) Globals::items)->data_[216]->makeItem(5);
     Globals::status->getShip()->setEquipment(item, 0);
 
-    Station *station = (Station *) (intptr_t) ((Galaxy *) Globals::galaxy)->getStation(111);
+    Station *station = ((Galaxy *) Globals::galaxy)->getStation(111);
     Globals::status->setStation(station);
     Mission *mission = new Mission(183, String("Client", false),
                                   ((ImageFactory *) Globals::imageFactory)->createChar(true, 0),

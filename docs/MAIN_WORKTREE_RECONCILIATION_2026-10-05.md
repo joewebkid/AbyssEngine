@@ -156,3 +156,17 @@ misses/skipped units. Corpus source-shape remains 91.87%, strict fuzzy rises
 Comparison and exact-pair sets have zero losses. The recovered function's
 source-shape rises 71.2% to 96.4%; native game/ARM-device runtime remains
 untested. The original `main` checkout and GitHub remote remain untouched.
+
+## Galaxy station pointer contract follow-up (2026-10-09)
+
+The Android-backed `Station *` returns from `FileRead::loadStation` and
+`Galaxy::getStation` now survive 64-bit native calls; direct callers no longer
+round-trip through 32-bit integers or Windows `long`. Native `gof2`, all 206
+ARM units, the compile-time pointer contract smoke, 36 verifier tests (one
+optional skip), and four scope tests pass. The full report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_station_pointer_20261009.json`:
+4,323/4,524 originals, 4,689 rows, 91.87% source-shape, 79.93% strict,
+2,313 linked-exact and 997 byte-exact, with no row or exact-pair losses.
+The two target source-shape scores remain unchanged. Native gameplay and
+original allocation/cleanup semantics are not yet verified; see
+[the ABI note](GALAXY_STATION_POINTER_ABI_2026-10-09.md).

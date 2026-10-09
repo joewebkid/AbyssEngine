@@ -1673,7 +1673,7 @@ int StarMap::init(bool jumpMapMode, Mission *mission, bool param3, int param4) {
     } else if (!jumpMapMode || this->isGalaxyMode == 0) {
         this->scratchVector = this->systemGeoms->data()[this->selectedSystem]->getPosition();
     } else {
-        Station *target = reinterpret_cast<Station *>(static_cast<intptr_t>(static_cast<Galaxy *>(Globals::galaxy)->getStation(mission->getTargetStation())));
+        Station *target = static_cast<Galaxy *>(Globals::galaxy)->getStation(mission->getTargetStation());
         if (target && target->getSystem() >= 0) {
             Array<AEGeometry *> *targetGeoms = this->systemGeoms;
             int targetSystem = target->getSystem();

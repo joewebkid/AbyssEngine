@@ -3484,8 +3484,7 @@ void Level::createCampaignMission() {
             break;
         case 81: {
             enemies = new Array<KIPlayer *>();
-            Station *station = reinterpret_cast<Station *>(static_cast<intptr_t>(
-                static_cast<Galaxy *>(Globals::galaxy)->getStation(101)));
+            Station *station = static_cast<Galaxy *>(Globals::galaxy)->getStation(101);
             ArrayAdd(static_cast<KIPlayer *>(new PlayerStation(station)), *enemies);
             (*enemies)[0]->name = station->getName();
             (*enemies)[0]->shipGroup = 8;
@@ -3499,8 +3498,7 @@ void Level::createCampaignMission() {
         case 80: {
             enemies = new Array<KIPlayer *>();
             Vector stationPosition = {0.0f, 0.0f, 160000.0f};
-            Station *station = reinterpret_cast<Station *>(static_cast<intptr_t>(
-                static_cast<Galaxy *>(Globals::galaxy)->getStation(101)));
+            Station *station = static_cast<Galaxy *>(Globals::galaxy)->getStation(101);
             ArrayAdd(static_cast<KIPlayer *>(new PlayerStation(station)), *enemies);
             (*enemies)[0]->name = station->getName();
             (*enemies)[0]->shipGroup = 8;
@@ -4230,8 +4228,7 @@ void Level::createCampaignMission() {
             unsigned enemyStart = count + optional;
             unsigned boss = enemyStart + count;
             unsigned stationIndex = boss + 2;
-            Station *station = reinterpret_cast<Station *>(static_cast<intptr_t>(
-                static_cast<Galaxy *>(Globals::galaxy)->getStation(101)));
+            Station *station = static_cast<Galaxy *>(Globals::galaxy)->getStation(101);
             (*enemies)[stationIndex] = new PlayerStation(station);
             (*enemies)[stationIndex]->name = station->getName();
             (*enemies)[stationIndex]->shipGroup = 3;

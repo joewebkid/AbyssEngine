@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-09 (BoundingVolume projection ABI recovery; older subsystem
+Last reviewed: 2026-10-09 (Galaxy station pointer ABI recovery; older subsystem
 snapshots retain their dates)
+
+## Galaxy station pointer ABI (2026-10-09)
+
+Android ARM dataflow confirms that `FileRead::loadStation` and
+`Galaxy::getStation` return `Station *`, not a 32-bit integer. Their native
+64-bit declarations, definitions and direct callers now preserve the full
+pointer. Native `gof2` and all 206 ARM units build; the full comparison still
+covers **4,323/4,524** originals across 4,689 rows at **91.87%** source-shape
+and **79.93%** strict fuzzy, with **2,313 linked-exact** and **997 byte-exact**
+pairs and no exact losses. This does not verify native gameplay; the allocation
+paths still differ from ARM. See the [station pointer evidence](GALAXY_STATION_POINTER_ABI_2026-10-09.md).
 
 ## BoundingVolume projection return contract (2026-10-09)
 

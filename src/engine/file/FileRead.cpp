@@ -22,11 +22,10 @@ FileRead::FileRead() {
 FileRead::~FileRead() {
 }
 
-int32_t FileRead::loadStation(int32_t id) {
+Station *FileRead::loadStation(int32_t id) {
     int16_t selected = (int16_t) id;
     Array<Station *> *stations = loadStationsBinary(&selected, 1);
-    int32_t result = (int32_t)(intptr_t)
-    stations->data()[0];
+    Station *result = stations->data()[0];
     delete stations;
     return result;
 }
