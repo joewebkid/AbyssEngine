@@ -59,8 +59,6 @@ struct SystemPathFinder {
     Array<int> *getSystemPath(Array<SolarSystem *> *systems, int from, int to);
 };
 
-static SolarSystem *asSystem(int32_t v) { return (SolarSystem *) (intptr_t) v; }
-
 int Status::getPlanetNames() { return planetNames; }
 
 int Status::getJumpgateUsed() { return jumpgatesUsed; }
@@ -926,7 +924,7 @@ int Status::activateNewWanted() {
                 if (vis != 0 && asys < vis->size()) {
                     ok = (*vis)[asys] != 0;
                 }
-                if (asSystem((int) asys)->getRoutes() != 0 && ok &&
+                if ((*systems)[asys]->getRoutes() != 0 && ok &&
                     !(asys < 0x1d && (1 << (asys & 0xff) & g_anwSysMask) != 0)) {
                     break;
                 }
@@ -943,7 +941,7 @@ int Status::activateNewWanted() {
                 if (vis != 0 && bsys < vis->size()) {
                     ok2 = (*vis)[bsys] != 0;
                 }
-                if (asSystem((int) bsys)->getRoutes() != 0 && ok2 &&
+                if ((*systems)[bsys]->getRoutes() != 0 && ok2 &&
                     !(bsys < 0x1d && (1 << (bsys & 0xff) & g_anwSysMask) != 0) && asys != bsys) {
                     break;
                 }

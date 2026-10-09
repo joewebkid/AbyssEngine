@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-09 (Galaxy system pointer ABI recovery; older subsystem
+Last reviewed: 2026-10-09 (wanted-system lookup repair; older subsystem
 snapshots retain their dates)
+
+## Wanted-system array lookup (2026-10-09)
+
+`Status::activateNewWanted` now indexes the loaded `SolarSystem *` array by
+each station's numeric system number before calling `getRoutes()`, matching
+both lookup sequences in Android ARM. Native `gof2`, all 206 ARM units and
+the verifier tests pass. The full corpus remains **4,323/4,524** at
+**91.87%** source-shape and **79.93%** strict fuzzy, with **2,313
+linked-exact** and **997 byte-exact** pairs; no comparison row or exact pair
+is lost. This function's own source-shape falls **88.7% to 88.4%** despite
+the corrected dataflow. Its remaining control flow and whole-game runtime
+are not verified; see the [ARM lookup evidence](STATUS_ACTIVATE_WANTED_SYSTEM_LOOKUP_ARM_2026-10-09.md).
 
 ## Galaxy and Status system pointer ABI (2026-10-09)
 

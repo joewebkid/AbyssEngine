@@ -30,6 +30,6 @@ not an assembly-shape improvement.
 Native whole-game runtime remains untested. Widening `Status::system` on a
 64-bit host changes its native struct layout; Android's 32-bit layout remains
 unchanged, but other native code that assumes raw 32-bit offsets has not been
-audited end to end. The next bounded priority is the index-as-pointer use in
-`Status::activateNewWanted`, which needs direct ARM control-flow confirmation
-before replacing it with a systems-array lookup.
+audited end to end. The index-as-pointer use in
+`Status::activateNewWanted` has since been replaced with the ARM-confirmed
+systems-array lookup; see [the follow-up](STATUS_ACTIVATE_WANTED_SYSTEM_LOOKUP_ARM_2026-10-09.md).

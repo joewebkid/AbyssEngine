@@ -184,3 +184,19 @@ Windows `long` round-trips at the affected callers were removed. Native
 have zero losses or gains. Both target getters remain byte-exact. The 64-bit
 whole-game runtime and raw struct-layout consumers remain unverified; see
 [the system ABI note](GALAXY_SYSTEM_POINTER_ABI_2026-10-09.md).
+
+## Wanted-system array lookup follow-up (2026-10-09)
+
+The original Android ARM function performs two indexed loads from the systems
+array before `SolarSystem::getRoutes()`. `Status::activateNewWanted` now uses
+those array lookups instead of casting station system numbers to pointers.
+Native `gof2`, all 206 ARM units, 36 verifier tests (one optional skip), and
+four scope tests pass. The full report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_activate_wanted_20261009.json`:
+4,323/4,524 originals, 4,689 rows, 91.87% source-shape, 79.93% strict,
+2,313 linked-exact and 997 byte-exact. Comparison-row and exact-pair sets
+have zero losses or gains. The repaired function's source-shape decreases
+88.7% to 88.4% and strict fuzzy 42.1% to 39.2%; the original ARM lookup
+supports the change despite that local metric regression. Whole-game
+runtime and other paths in the function remain unverified; see
+[the lookup note](STATUS_ACTIVATE_WANTED_SYSTEM_LOOKUP_ARM_2026-10-09.md).
