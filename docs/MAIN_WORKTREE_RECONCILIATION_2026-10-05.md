@@ -104,3 +104,25 @@ byte: the (unit, symbol) comparison set and both preceding exact sets have
 zero losses; four linked-exact pairs are gained. This validates the combined
 assembly result, not playable native or ARM-device runtime. `main` and the
 GitHub remote remain untouched.
+
+## MenuTouchWindow, PlayerFixedObject and Generator merge (2026-10-09)
+
+Merged tips `bf528ff9`, `b217e3a8` and `c71c7147` without conflicts.
+All three packages improve their frozen unique-body source-shape means, but
+none meets both 98% targets. The combined native `gof2` library builds, all
+206 ARM translation units compile, 36 verifier tests run (35 pass, one optional
+object-dependent skip), the two direct alias checks and four scope-filter
+tests pass, and the MenuTouchWindow update host smoke passes.
+
+The full report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_menutouch_playerfixed_generator_20261009.json`.
+It compares 4,323/4,524 original functions across 4,689 rows, with 201
+absent, zero wrong-type misses and zero skipped units. Corpus means improve
+from 91.80% to **91.85% source-shape** and from 79.73% to **79.89% strict
+fuzzy**. Linked-exact increases 2,305 to **2,309**; byte-exact remains
+**997**. Comparison-row, linked-exact and byte-exact sets each have zero
+losses by (unit, symbol). Four linked-exact gains belong to
+PlayerFixedObject. Extra symbols decrease 116 to 115. No whole-game or
+ARM-device runtime was performed; the BoundingVolume virtual-slot discrepancy
+and pointer-width issues remain. The independent dirty `main` checkout and
+GitHub remote were not changed.

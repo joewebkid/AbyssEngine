@@ -1,7 +1,29 @@
 # Project Status
 
-Last reviewed: 2026-10-08 (ChoiceWindow/Route/Ship integration; older subsystem
+Last reviewed: 2026-10-09 (MenuTouchWindow/PlayerFixedObject/Generator integration; older subsystem
 snapshots retain their dates)
+
+## MenuTouchWindow, PlayerFixedObject and Generator integration (2026-10-09)
+
+The three latest fixed-family branches are merged into
+`codex/integrate-main-working-20261005`. MenuTouchWindow improves to 87.684%
+unweighted / 61.514% original-instruction-weighted source-shape across 29
+unique bodies; PlayerFixedObject reaches 94.079% / 97.095% across 29; Generator
+reaches 98.673% / 97.460% across 11. **None passes both 98% gates.** The
+native `gof2` library builds, all 206 ARM units compile, verifier tests and
+the MenuTouchWindow update smoke pass. The full corpus compares **4,323/4,524**
+originals across 4,689 rows, with zero wrong-type misses and zero skipped
+units. Mean source-shape is **91.85%**, strict fuzzy **79.89%**,
+linked-exact **2,309**, byte-exact **997**. Relative to the preceding
+integrated report, no comparison row or exact pair is lost; four linked-exact
+pairs are gained in PlayerFixedObject. These are assembly-comparison figures,
+not a playable-game completion percentage. Whole-game/ARM-device runtime is
+untested; the pre-existing BoundingVolume virtual-slot discrepancy and
+64-bit pointer-width contracts remain risks. See the
+[integration evidence](MAIN_WORKTREE_RECONCILIATION_2026-10-05.md) and family
+notes for [MenuTouchWindow](MENUTOUCHWINDOW_UNIQUE_ARM_98_2026-10-08.md),
+[PlayerFixedObject](PLAYERFIXEDOBJECT_UNIQUE_ARM_2026-10-08.md) and
+[Generator](GENERATOR_UNIQUE_ARM_RECOVERY_2026-10-08.md).
 
 ## ChoiceWindow, Route and Ship integration (2026-10-08)
 
