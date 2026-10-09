@@ -67,7 +67,7 @@ static GOF2_ALWAYS_INLINE Mission *radar_campaign_mission(Status *status) {
 }
 
 static GOF2_ALWAYS_INLINE Array<String *> *radar_planet_names(Status *status) {
-    return reinterpret_cast<Array<String *> *>(static_cast<intptr_t>(status->getPlanetNames()));
+    return status->getPlanetNames();
 }
 
 static GOF2_ALWAYS_INLINE bool radar_crosshair_contains(Radar *self, int size) {
@@ -1750,8 +1750,7 @@ void Radar::drawCurrentLock(Hud *) {
         if (this->lockedPlanetTarget != nullptr) {
             Globals::Canvas->DrawImage2D(radar_image_slot(this, 0xcc), this->lockPanelX, this->lockPanelY);
             Status *status = Globals::status;
-            auto *planetNames =
-                reinterpret_cast<Array<String *> *>(static_cast<intptr_t>(status->getPlanetNames()));
+            auto *planetNames = status->getPlanetNames();
             String planetName(*(*planetNames)[this->planetDockIndex], false);
             PaintCanvas *drawCanvas = Globals::Canvas;
             int width = Globals::w;

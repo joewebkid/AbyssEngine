@@ -441,7 +441,7 @@ StarSystem::StarSystem(int mode) {
     SolarSystem *system = (SolarSystem *) (intptr_t) status->getSystem();
     uint32_t *stations = system->getStations();
     FileRead reader;
-    void *stationArray = (void *) (intptr_t) reader.loadStationsBinary();
+    void *stationArray = reader.loadStationsBinary(system);
 
     this->texturesArray = new Array<uint32_t>();
     ArraySetLength(flat_count(stationArray) + 1, *(this->texturesArray));

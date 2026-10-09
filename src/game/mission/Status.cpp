@@ -3,6 +3,7 @@ Status *Status::gStatus = nullptr;
 #include "game/mission/PendingProduct.h"
 #include "game/core/GameSettings.h"
 #include "engine/core/AERandom.h"
+#include "engine/file/FileRead.h"
 #include "game/world/Galaxy.h"
 #include "game/mission/Item.h"
 #include "game/mission/Achievements.h"
@@ -27,20 +28,6 @@ static void incKills_notify(void *arg) { (void) arg; }
 
 static void incPirateKills_notify(void *arg) { (void) arg; }
 
-struct FileRead {
-    FileRead();
-
-    ~FileRead();
-
-    int loadStationsBinary();
-
-    Array<SolarSystem *> *loadSystemsBinary();
-
-    Array<Wanted *> *loadWanted();
-
-    Array<Agent *> *loadAgents();
-};
-
 struct Generator {
     Generator();
 
@@ -59,7 +46,7 @@ struct SystemPathFinder {
     Array<int> *getSystemPath(Array<SolarSystem *> *systems, int from, int to);
 };
 
-int Status::getPlanetNames() { return planetNames; }
+Array<String *> *Status::getPlanetNames() { return planetNames; }
 
 int Status::getJumpgateUsed() { return jumpgatesUsed; }
 
@@ -357,7 +344,7 @@ void Status::jumpgateUsed() { jumpgatesUsed = jumpgatesUsed + 1; }
 
 Ship *Status::getShip() { return ship; }
 
-int Status::getPlanetTextures() { return planetTextures; }
+Array<int> *Status::getPlanetTextures() { return planetTextures; }
 
 int Status::getPassengers() { return passengers; }
 
@@ -1250,30 +1237,27 @@ void Status::setStation(Station *s) {
     }
     (*field_b4)[station->getSystem()] = true;
     FileRead fr;
-    Array<Station *> *list = (Array<Station *> *) (intptr_t) fr.loadStationsBinary();
+    Array<Station *> *list = fr.loadStationsBinary(system);
     if (planetNames != 0) {
-        Array<String *> *pn = (Array<String *> *) (intptr_t) planetNames;
-        ArrayReleaseClasses(*pn);
-        delete pn;
+        ArrayReleaseClasses(*planetNames);
+        delete planetNames;
     }
     Array<String *> *names = new Array<String *>();
-    planetNames = (int32_t)(intptr_t)
-    names;
+    planetNames = names;
     ArraySetLength(list->size(), *names);
     if (planetTextures != 0) {
-        delete (Array<int> *) (intptr_t) planetTextures;
+        delete planetTextures;
     }
     Array<int> *texs = new Array<int>();
-    planetTextures = (int32_t)(intptr_t)
-    texs;
+    planetTextures = texs;
     ArraySetLength(list->size(), *texs);
-    Array<Station *> *stations = (Array<Station *> *) system->getStations();
+    Array<int> *stations = (Array<int> *) system->getStations();
     for (unsigned i = 0; i < stations->size(); i = i + 1) {
         Station *cur = 0;
         bool found = false;
         for (unsigned j = 0; j < list->size(); j = j + 1) {
             cur = (*list)[j];
-            int target = (int) (intptr_t)(*stations)[i];
+            int target = (*stations)[i];
             if (target == cur->getIndex()) {
                 found = true;
                 break;

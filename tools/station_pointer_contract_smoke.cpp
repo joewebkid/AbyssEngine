@@ -12,3 +12,8 @@ static_assert(std::is_same_v<decltype(std::declval<Status &>().system), SolarSys
 static_assert(std::is_same_v<decltype(std::declval<Status &>().getSystem()), SolarSystem *>);
 static_assert(std::is_same_v<decltype(std::declval<Status &>().standing), Standing *>);
 static_assert(std::is_same_v<decltype(std::declval<Status &>().getStanding()), Standing *>);
+static_assert(std::is_same_v<decltype(std::declval<Status &>().planetNames), Array<AbyssEngine::String *> *>);
+static_assert(std::is_same_v<decltype(std::declval<Status &>().getPlanetNames()), Array<AbyssEngine::String *> *>);
+static_assert(std::is_same_v<decltype(std::declval<Status &>().planetTextures), Array<int> *>);
+static_assert(std::is_same_v<decltype(std::declval<Status &>().getPlanetTextures()), Array<int> *>);
+static_assert(std::is_same_v<decltype(std::declval<FileRead &>().loadStationsBinary(std::declval<SolarSystem *>())), Array<Station *> *>);

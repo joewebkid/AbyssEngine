@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-09 (standing pointer ABI recovery; older subsystem
+Last reviewed: 2026-10-09 (planet array and station loader recovery; older subsystem
 snapshots retain their dates)
+
+## Status planet arrays and station loader (2026-10-09)
+
+`Status` planet-name/texture arrays now keep full pointers on native hosts.
+ARM confirms both getters' offsets and the system-specific station loader
+calls in `Status::setStation` and `StarSystem`; those two callers no longer
+invoke the zero-return no-argument stub. Native `gof2`, 206/206 ARM units
+and verifier tests pass. Corpus coverage remains **4,323/4,524** at
+**91.87%** source-shape, **79.93%** strict fuzzy, **2,313 linked-exact**
+and **997 byte-exact**, with no exact-pair losses. The getter bodies remain
+byte-exact; `setStation` improves **86.5% to 86.9%** source-shape.
+Station-loader order/ownership and the whole-game display path remain
+unverified; see the [ARM call evidence](STATUS_PLANET_ARRAY_STATION_LOADER_ARM_2026-10-09.md).
 
 ## Status standing pointer ABI (2026-10-09)
 

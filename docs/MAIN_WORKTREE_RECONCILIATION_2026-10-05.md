@@ -214,3 +214,20 @@ remains byte-exact. The full report is
 2,313 linked-exact and 997 byte-exact, with no comparison-row or exact-pair
 losses. Whole-game runtime and other pointer-width risks remain unverified;
 see [the ABI note](STATUS_STANDING_POINTER_ABI_2026-10-09.md).
+
+## Status planet arrays and station loader follow-up (2026-10-09)
+
+The original ARM getter loads prove the two planet arrays at `Status +
+0x1a8/+0x1ac` are pointers. Their fields, getters, `setStation` ownership
+path and Radar consumers now preserve pointer width. Original call sites
+prove `Status::setStation` and `StarSystem` use
+`FileRead::loadStationsBinary(SolarSystem *)`, not the unrelated no-argument
+stub. Native `gof2`, 206/206 ARM units, the pointer-contract smoke, 36
+verifier tests (one optional skip) and four scope tests pass. The full report
+is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_planet_arrays_20261009.json`:
+4,323/4,524 originals, 4,689 rows, 91.87% source-shape, 79.93% strict,
+2,313 linked-exact and 997 byte-exact, with no row or exact-pair losses.
+`Status::setStation` improves 86.5% to 86.9% source-shape. Loader ordering,
+ownership and integrated runtime remain unverified; see
+[the focused note](STATUS_PLANET_ARRAY_STATION_LOADER_ARM_2026-10-09.md).

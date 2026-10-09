@@ -227,8 +227,8 @@ public:
     Station *station;                        // 0x19c (currentStation)
     Array<Station *> *stationStack;          // 0x1a0
     SolarSystem *system;                     // 0x1a4
-    int32_t planetNames;                     // 0x1a8
-    int32_t planetTextures;                  // 0x1ac
+    Array<String *> *planetNames;             // 0x1a8
+    Array<int> *planetTextures;               // 0x1ac
     int32_t credits;                         // 0x1b0 (money)
     int32_t rating;                          // 0x1b4
     int64_t playingTime;                     // 0x1b8 (0x1b8..0x1c0)
@@ -372,9 +372,9 @@ public:
 
     void visitStation();
 
-    int getPlanetNames();
+    Array<String *> *getPlanetNames();
 
-    int getPlanetTextures();
+    Array<int> *getPlanetTextures();
 
     int getCredits();
 
@@ -521,6 +521,8 @@ static_assert(offsetof(Status, missions) == 0x198, "");
 static_assert(offsetof(Status, station) == 0x19c, "currentStation");
 static_assert(offsetof(Status, stationStack) == 0x1a0, "");
 static_assert(offsetof(Status, system) == 0x1a4, "");
+static_assert(offsetof(Status, planetNames) == 0x1a8, "");
+static_assert(offsetof(Status, planetTextures) == 0x1ac, "");
 static_assert(offsetof(Status, credits) == 0x1b0, "money");
 static_assert(offsetof(Status, rating) == 0x1b4, "");
 static_assert(offsetof(Status, kills) == 0x1c0, "");
