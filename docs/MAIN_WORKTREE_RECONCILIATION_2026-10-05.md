@@ -247,3 +247,16 @@ The full report is
 The focused loader strict fuzzy rises 48.3% to 56.2% although source-shape
 falls 94.0% to 93.7%. A host fixture and real asset-order check remain;
 see [the audit note](FILE_READ_STATION_ORDER_ARM_2026-10-10.md).
+
+## Station loader synthetic host smoke (2026-10-10)
+
+The current system-specific loader body is extracted verbatim and run with
+synthetic file records. Unsorted, duplicate, missing and empty ID lists
+pass; file closes and returned-station cleanup are counted. Only test and
+documentation files changed. Native `gof2` reports no work, 36 verifier
+tests run (one optional skip), and four scope tests pass. Because engine
+source is unchanged from `c45161c0`, the last full report remains
+4,323/4,524 originals, 91.87% source-shape, 79.93% strict, 2,313
+linked-exact and 997 byte-exact; no new full corpus run was made for this
+test-only package. Real asset parsing/order and station-to-Radar runtime
+remain unverified; see [the smoke note](FILE_READ_STATION_SYNTHETIC_SMOKE_2026-10-10.md).

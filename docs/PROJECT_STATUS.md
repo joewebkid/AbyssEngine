@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-10 (station loader ordering audit; older subsystem
+Last reviewed: 2026-10-10 (station loader synthetic smoke; older subsystem
 snapshots retain their dates)
+
+## Station loader synthetic smoke (2026-10-10)
+
+A native test now runs the production system-specific loader body against
+synthetic station records. It verifies file-order output, duplicate and
+missing IDs, an empty ID list, one close per case, and released station
+instances. No engine source changed, so the last full ARM report remains
+**4,323/4,524**, **91.87%** source-shape, **79.93%** strict fuzzy,
+**2,313 linked-exact** and **997 byte-exact**. Real file decoding, asset
+order and whole-game rendering remain untested; see the
+[smoke evidence](FILE_READ_STATION_SYNTHETIC_SMOKE_2026-10-10.md).
 
 ## Station loader ordering audit (2026-10-10)
 

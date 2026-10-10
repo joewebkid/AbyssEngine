@@ -30,7 +30,9 @@ source-shape, **79.93%** strict fuzzy, **2,313 linked-exact** and
 and zero skipped units. Compared with the preceding planet-array report,
 comparison-row and both exact-pair sets have zero losses or gains.
 
-No host fixture with representative station file data or whole-game run was
-performed. In particular, whether ID lists in real assets have the order
-assumed by `StarSystem` has not been checked. That runtime fixture and the
-remaining loader instruction differences are the next bounded priorities.
+A synthetic host fixture has since exercised the loader body and its
+file-order output; see [the smoke](FILE_READ_STATION_SYNTHETIC_SMOKE_2026-10-10.md).
+It does not establish whether ID lists in real assets have the order assumed
+by `StarSystem`, nor does it validate binary decoding or whole-game behavior.
+Those and the remaining loader instruction differences are the next bounded
+priorities.
