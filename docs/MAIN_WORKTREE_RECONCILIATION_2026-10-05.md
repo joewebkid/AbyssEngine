@@ -231,3 +231,19 @@ is
 `Status::setStation` improves 86.5% to 86.9% source-shape. Loader ordering,
 ownership and integrated runtime remain unverified; see
 [the focused note](STATUS_PLANET_ARRAY_STATION_LOADER_ARM_2026-10-09.md).
+
+## System-specific station loader audit (2026-10-10)
+
+The Android ARM loader at `0x0012014c` confirms sequential file-record
+order in the returned station array, normal file-close routes, and an
+original missing-file null return that leaks the earlier array allocation.
+The only source change in this audit routes the ID lookup through
+`SolarSystem::getStations()` as the original does. Native `gof2`, 206/206
+ARM units, 36 verifier tests (one optional skip), and four scope tests pass.
+The full report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_loader_audit_20261010.json`:
+4,323/4,524 originals, 4,689 rows, 91.87% source-shape, 79.93% strict,
+2,313 linked-exact and 997 byte-exact, with no row or exact-pair losses.
+The focused loader strict fuzzy rises 48.3% to 56.2% although source-shape
+falls 94.0% to 93.7%. A host fixture and real asset-order check remain;
+see [the audit note](FILE_READ_STATION_ORDER_ARM_2026-10-10.md).

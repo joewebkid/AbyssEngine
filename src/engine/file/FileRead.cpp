@@ -514,7 +514,7 @@ Array<Station *> *FileRead::loadStationsBinary(SolarSystem *system) {
     uint32_t handle;
     AEFile::OpenRead("stations_binary.bin", &handle);
 
-    Array<int32_t> *ids = system->stationIds;
+    Array<int32_t> *ids = (Array<int32_t> *) system->getStations();
     ArraySetLength<Station *>(ids->size(), *stations);
 
     String name;

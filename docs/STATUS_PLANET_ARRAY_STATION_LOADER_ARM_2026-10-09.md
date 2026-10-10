@@ -36,5 +36,6 @@ losses or gains against the preceding standing-pointer report.
 
 The system-specific loader itself is **94.0%** source-shape, not exact. No
 host fixture or whole-game station-to-Radar run was performed. Its station
-ordering, ownership and missing-file behavior should be audited against
-the original ARM and exercised with representative lawful test data next.
+ordering, ownership and missing-file behavior have since been audited
+against the original ARM in [the loader follow-up](FILE_READ_STATION_ORDER_ARM_2026-10-10.md).
+The representative lawful-data host fixture remains to be done.

@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-09 (planet array and station loader recovery; older subsystem
+Last reviewed: 2026-10-10 (station loader ordering audit; older subsystem
 snapshots retain their dates)
+
+## Station loader ordering audit (2026-10-10)
+
+Android ARM confirms that the system-specific loader writes matching
+stations sequentially in file-record order, closes the file on normal
+returns, and calls `SolarSystem::getStations()` for the ID list. The source
+now uses that getter; native `gof2` and 206/206 ARM units build. The full
+corpus remains **4,323/4,524**, **91.87%** source-shape, **79.93%** strict,
+**2,313 linked-exact** and **997 byte-exact**, with no exact-pair losses.
+The loader's strict fuzzy rises **48.3% to 56.2%**, while source-shape falls
+**94.0% to 93.7%**. The original missing-file path leaks its preallocated
+array; a representative host fixture and real asset-order check remain
+unperformed. See the [ARM loader audit](FILE_READ_STATION_ORDER_ARM_2026-10-10.md).
 
 ## Status planet arrays and station loader (2026-10-09)
 
