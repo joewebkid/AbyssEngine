@@ -18,6 +18,7 @@
 #include "game/world/StarMap.h"
 #include "game/mission/Achievements.h"
 #include "engine/core/ApplicationManager.h"
+#include "engine/core/GameData.h"
 #include "game/ui/DialogueWindow.h"
 #include "engine/render/ImageFactory.h"
 #include "game/core/Radio.h"
@@ -84,21 +85,6 @@ struct HangarWindowHead {
     char shipChanged;         // 0x00  set when the player's ship was swapped
 };
 
-// ApplicationManager application-data block (returned as an int handle).
-struct AppData {
-    char pad00[0xd];          // 0x00
-    char hideRadio;           // 0x0d
-    char pad0e[0x41 - 0x0e];  // 0x0e
-    char purchaseReady;       // 0x41
-    char restoreNotice;       // 0x42
-    char pad43[0x48 - 0x43];  // 0x43
-    int  purchaseId;          // 0x48
-    char pad4c[0x58 - 0x4c];  // 0x4c
-    int *purchaseList;        // 0x58  (int* run; [0]=count)
-    char pad5c[0x60 - 0x5c];  // 0x5c
-    Array<String *> *iapArray; // 0x60
-};
-
 // Hint/medal record: a run of per-hint "shown" flag bytes.
 struct HintRecord {
     char flags[0x40];         // byte flags indexed by hint id (0x1a,0x1b,0x33..0x36,0x34,0x3a,...)
@@ -120,12 +106,6 @@ struct SettingsBlock {
 };
 
 #if __SIZEOF_POINTER__ == 4
-static_assert(offsetof(AppData, hideRadio) == 0x0d, "");
-static_assert(offsetof(AppData, purchaseReady) == 0x41, "");
-static_assert(offsetof(AppData, restoreNotice) == 0x42, "");
-static_assert(offsetof(AppData, purchaseId) == 0x48, "");
-static_assert(offsetof(AppData, purchaseList) == 0x58, "");
-static_assert(offsetof(AppData, iapArray) == 0x60, "");
 static_assert(offsetof(TextRootRecord, noRoutesHintShown) == 0x2ec, "");
 static_assert(offsetof(SettingsBlock, wantedActivatedShown) == 0x2b, "");
 static_assert(offsetof(SettingsBlock, gameWonShown) == 0x38, "");
@@ -708,7 +688,6 @@ static int **g_ou_module = 0;
 
 int ApplicationManager_GetElapsedTimeMillis_ou();
 
-int ApplicationManager_GetApplicationData_ou();
 
 void ApplicationManager_SetCurrentApplicationModule_ou(int module);
 
@@ -728,7 +707,6 @@ void Status_incPlayingTime_ou(long long delta);
 
 int Status_getCredits_ou();
 
-void Status_changeCredits_ou(int status);
 
 int Status_getCurrentCampaignMission_ou();
 
@@ -788,13 +766,11 @@ void StarMap_update_ou(int sm, int dt);
 
 void HangarWindow_update_ou(int w);
 
-void HangarWindow_hideMessage_ou();
 
 void StatusWindow_update_ou(int w);
 
 void MenuTouchWindow_update_ou(void *w, int dt);
 
-void MenuTouchWindow_dtor_ou(void *w);
 
 int SpaceLounge_introFinished_ou();
 
@@ -867,28 +843,30 @@ void ModStation::OnUpdate() {
     }
 
     {
-        AppData *appData = (AppData *) (intptr_t) ApplicationManager_GetApplicationData_ou();
-        if (appData->restoreNotice != 0) {
-            ChoiceWindow_setNotice_ou((int) (intptr_t) this->choiceWindow, GameText_getText_ou(**g_ou_textRoot));
+        GameData *appData = static_cast<GameData *>(
+            static_cast<AbyssEngine::ApplicationManager *>(Globals::appManager)->GetApplicationData());
+        if (appData->purchaseErrorFlag != 0) {
+            static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+                *Globals::gameText->getText(100));
             this->m_nStarMapWindowOpen.bytes[3] = 1;
-            appData->restoreNotice = 0;
+            appData->purchaseErrorFlag = 0;
         }
-        if (appData->purchaseReady != 0 && appData->purchaseList != 0 &&
-            *appData->purchaseList != 0 &&
-            (unsigned) (appData->purchaseId - 0x32) < 5) {
-            int idx = Globals::gGlobals->getInAppPurchaseArrayIndex(appData->purchaseId,
-                                                           appData->iapArray);
-            if (-1 < (intptr_t) (*appData->iapArray)[idx]) {
-                Status_changeCredits_ou(*status);
+        if (appData->purchaseResultFlag != 0 && appData->purchaseCount != nullptr &&
+            *appData->purchaseCount != 0 &&
+            (unsigned) (appData->purchaseCode - 0x32) < 5) {
+            int idx = Globals::gGlobals->getInAppPurchaseArrayIndex(appData->purchaseCode,
+                                                                     appData->productIdList);
+            if ((*appData->purchaseCreditResults)[idx] >= 0) {
+                Globals::status->changeCredits((*appData->purchaseCreditResults)[idx]);
                 this->autosave();
-                ChoiceWindow_setNotice_ou((int) (intptr_t) this->choiceWindow, GameText_getText_ou(**g_ou_textRoot));
+                static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+                    *Globals::gameText->getText(125));
                 this->m_nStarMapWindowOpen.bytes[3] = 1;
-                appData->purchaseReady = 0;
-                if ((int) (intptr_t) this->hangarWindow != 0)
-                    HangarWindow_hideMessage_ou();
-                if ((int) (intptr_t) this->dlcMenu != 0) {
-                    MenuTouchWindow_dtor_ou(this->dlcMenu);
-                    ::operator delete(this->dlcMenu);
+                appData->purchaseResultFlag = 0;
+                if (this->hangarWindow != nullptr)
+                    static_cast<HangarWindow *>(this->hangarWindow)->hideMessage();
+                if (this->dlcMenu != nullptr) {
+                    delete static_cast<MenuTouchWindow *>(this->dlcMenu);
                 }
                 this->dlcMenu = 0;
             }
@@ -1521,7 +1499,6 @@ static int **g_ote_shipTable = 0;
 
 void ApplicationManager_SetCurrentApplicationModule_ote(int module);
 
-int ApplicationManager_GetApplicationData_ote();
 
 int Status_getStation_ote();
 
@@ -2129,8 +2106,9 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                 if (this->scrollBoxFlags.bytes[0] != 0) {
                                     this->m_nStarMapWindowOpen.bytes[3] = 0;
                                     this->scrollBoxFlags.bytes[0] = 0;
-                                    AppData *appData = (AppData *) (intptr_t) ApplicationManager_GetApplicationData_ote();
-                                    appData->hideRadio = 1;
+                                    GameData *appData = static_cast<GameData *>(
+                                        static_cast<AbyssEngine::ApplicationManager *>(Globals::appManager)->GetApplicationData());
+                                    appData->radioHiddenFlag = 1;
                                     return;
                                 }
                                 if (this->screenFlags.bytes[0] == 0) {
@@ -2180,8 +2158,9 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                         if (this->scrollBoxFlags.bytes[0] != 0) {
                             this->m_nStarMapWindowOpen.bytes[3] = 0;
                             this->scrollBoxFlags.bytes[0] = 0;
-                            AppData *appData = (AppData *) (intptr_t) ApplicationManager_GetApplicationData_ote();
-                            appData->hideRadio = 1;
+                            GameData *appData = static_cast<GameData *>(
+                                static_cast<AbyssEngine::ApplicationManager *>(Globals::appManager)->GetApplicationData());
+                            appData->radioHiddenFlag = 1;
                             return;
                         }
                         if (this->screenFlags.bytes[0] == 0) {

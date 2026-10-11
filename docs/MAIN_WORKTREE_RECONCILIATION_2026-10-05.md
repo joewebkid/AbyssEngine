@@ -316,3 +316,18 @@ The full report is
 2,319 linked-exact and 997 byte-exact, with no row or exact-pair losses.
 The separate `ModStation` purchase pointers and end-to-end DLC runtime
 remain unverified; see [the ARM layout audit](GAME_DATA_APPDATA_LAYOUT_ARM_NATIVE_2026-10-11.md).
+
+## ModStation purchase-result handoff (2026-10-11)
+
+Android `OnUpdate` at `0xd9e04..0xd9e40` distinguishes product-ID list
+`GameData+0x54`, pending count pointer `+0x58`, and credit-result array
+`+0x60`; the latter's indexed value is passed to `Status::changeCredits`.
+The typed consumer and real getter/credit/notice calls now replace conflated
+arrays and truncated native handles. The ID lookup uses the confirmed Android
+product strings and no longer dereferences a null placeholder. Native `gof2`,
+206/206 ARM units and verifier tests pass. The full report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_modstation_purchase_20261011.json`:
+4,323/4,524 originals, 4,689 rows, 91.89% source-shape, 79.98% strict,
+2,319 linked-exact and 997 byte-exact, with no row or exact-pair losses.
+Purchase-data producers and end-to-end billing remain unverified; see
+[the purchase audit](MODSTATION_PURCHASE_RESULT_ARM_NATIVE_2026-10-11.md).

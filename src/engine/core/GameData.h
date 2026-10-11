@@ -34,7 +34,7 @@ public:
         uint16_t field_0x0c;
         struct {
             union { uint8_t storeInitFlag, transitionActive; };
-            uint8_t rateGameFlagA;
+            union { uint8_t rateGameFlagA, radioHiddenFlag; };
         };
     };
     union { uint8_t field_0x0e, rateGameFlagB; };
@@ -65,10 +65,10 @@ public:
     union { int32_t field_0x48; uint32_t purchaseCode; };
     union { uint8_t field_0x4c, dlcMenuAckFlag; };
     int32_t field_0x50;
-    int32_t field_0x54;
-    int32_t field_0x58;
+    Array<AbyssEngine::String *> *productIdList;
+    int32_t *purchaseCount;
     int32_t field_0x5c;
-    int32_t field_0x60;
+    Array<int32_t> *purchaseCreditResults;
     int32_t field_0x64;
     int32_t field_0x68;
     GameDataLateFlags lateFlags;
@@ -95,12 +95,16 @@ public:
 static_assert(sizeof(GameData) == 0xc8, "GameData Android ARM size");
 static_assert(offsetof(GameData, screenshotResultFlag) == 0x05, "app data +0x05");
 static_assert(offsetof(GameData, storeInitFlag) == 0x0c, "app data +0x0c");
+static_assert(offsetof(GameData, radioHiddenFlag) == 0x0d, "app data +0x0d");
 static_assert(offsetof(GameData, flag_0x15) == 0x15, "app data +0x15");
 static_assert(offsetof(GameData, dlcMenuAcceptedFlag) == 0x3c, "app data +0x3c");
 static_assert(offsetof(GameData, dlcMenuRequestFlag) == 0x3d, "app data +0x3d");
 static_assert(offsetof(GameData, dlcStoreReadyFlag) == 0x40, "app data +0x40");
 static_assert(offsetof(GameData, purchaseCode) == 0x48, "app data +0x48");
 static_assert(offsetof(GameData, dlcMenuAckFlag) == 0x4c, "app data +0x4c");
+static_assert(offsetof(GameData, productIdList) == 0x54, "app data +0x54");
+static_assert(offsetof(GameData, purchaseCount) == 0x58, "app data +0x58");
+static_assert(offsetof(GameData, purchaseCreditResults) == 0x60, "app data +0x60");
 static_assert(offsetof(GameData, lateFlags) == 0x6c, "app data +0x6c");
 static_assert(offsetof(GameData, field_0x7c) == 0x7c, "app data +0x7c");
 static_assert(offsetof(GameData, flag_0xa0) == 0xa0, "app data +0xa0");

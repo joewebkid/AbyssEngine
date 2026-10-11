@@ -50,3 +50,5 @@ several fragment getters and other application-data fields remain open.
 Next audit `ModStation::OnUpdate`'s purchase/restore view and pointer
 ownership at `GameData+0x54/+0x58/+0x60`, then build a representative
 native request-flow smoke when the getter calls are resolved.
+The purchase-result consumer has since been repaired; see the
+[follow-up audit](MODSTATION_PURCHASE_RESULT_ARM_NATIVE_2026-10-11.md).

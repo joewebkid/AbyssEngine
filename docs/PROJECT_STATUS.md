@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (GameData application-data layout; older subsystem
+Last reviewed: 2026-10-11 (ModStation purchase-result handoff; older subsystem
 snapshots retain their dates)
+
+## ModStation purchase-result handoff (2026-10-11)
+
+The station purchase path now uses distinct ARM-confirmed application-data
+fields for product IDs (`+0x54`), pending count (`+0x58`) and credit amounts
+(`+0x60`), and passes the amount to the real `Status::changeCredits` method.
+The product-ID lookup now uses ARM-confirmed strings instead of empty literals
+and a null stack-protector placeholder.
+Native `gof2`, 206/206 ARM units and verifier tests pass. The full corpus
+compares **4,323/4,524** originals at **91.89%** source-shape and **79.98%**
+strict fuzzy, with **2,319 linked-exact** and **997 byte-exact**; no exact-pair
+or row losses. The purchase data producers and end-to-end billing path remain
+unverified; see [the purchase audit](MODSTATION_PURCHASE_RESULT_ARM_NATIVE_2026-10-11.md).
 
 ## GameData application-data layout (2026-10-11)
 

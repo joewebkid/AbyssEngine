@@ -107,10 +107,10 @@ void OnCreateApplication(AbyssEngine::Engine *engine) {
     data->lateFlags.field_0x71 = 0;
     data->lateFlags.field_0x6d = 0;
     data->field_0x50 = 0;
-    data->field_0x54 = 0;
-    data->field_0x58 = 0;
+    data->productIdList = nullptr;
+    data->purchaseCount = nullptr;
     data->field_0x5c = 0;
-    data->field_0x60 = 0;
+    data->purchaseCreditResults = nullptr;
     data->field_0x64 = 0;
     data->field_0x68 = 0;
     data->lateFlags.field_0x6c = 0;
