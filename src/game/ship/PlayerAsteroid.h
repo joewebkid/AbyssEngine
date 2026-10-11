@@ -20,14 +20,16 @@ public:
     uint8_t asteroidFlag;
     int asteroidIndex;
     Explosion *explosion;
+    int field_0x130;
     int lastDelta;
     float scaling;
     uint8_t minable;
     Vector spin;
     uint8_t rotationEnabled;
     int quality;
+    int field_0x154;
     int lastHitpoints;
-    int hitFlashActive;
+    float hitFlashAmount;
     float hitFlashTimer;
     int field_0x164;
     int field_0x168;
@@ -95,4 +97,20 @@ private:
     static AbyssEngine::AEMath::Vector pos;
     static float emitTime;
 };
+
+#if __SIZEOF_POINTER__ == 4
+static_assert(offsetof(PlayerAsteroid, asteroidFlag) == 0x124, "PlayerAsteroid.asteroidFlag");
+static_assert(offsetof(PlayerAsteroid, asteroidIndex) == 0x128, "PlayerAsteroid.asteroidIndex");
+static_assert(offsetof(PlayerAsteroid, explosion) == 0x12c, "PlayerAsteroid.explosion");
+static_assert(offsetof(PlayerAsteroid, lastDelta) == 0x134, "PlayerAsteroid.lastDelta");
+static_assert(offsetof(PlayerAsteroid, scaling) == 0x138, "PlayerAsteroid.scaling");
+static_assert(offsetof(PlayerAsteroid, minable) == 0x13c, "PlayerAsteroid.minable");
+static_assert(offsetof(PlayerAsteroid, spin) == 0x140, "PlayerAsteroid.spin");
+static_assert(offsetof(PlayerAsteroid, rotationEnabled) == 0x14c, "PlayerAsteroid.rotationEnabled");
+static_assert(offsetof(PlayerAsteroid, quality) == 0x150, "PlayerAsteroid.quality");
+static_assert(offsetof(PlayerAsteroid, lastHitpoints) == 0x158, "PlayerAsteroid.lastHitpoints");
+static_assert(offsetof(PlayerAsteroid, hitFlashAmount) == 0x15c, "PlayerAsteroid.hitFlashAmount");
+static_assert(offsetof(PlayerAsteroid, hitFlashTimer) == 0x160, "PlayerAsteroid.hitFlashTimer");
+static_assert(sizeof(PlayerAsteroid) == 0x170, "PlayerAsteroid ARM size");
+#endif
 #endif

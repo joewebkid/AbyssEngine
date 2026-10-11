@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (PlayerCreature ARM layout and stats; older subsystem
+Last reviewed: 2026-10-11 (PlayerAsteroid ABI and global dependencies; older subsystem
 snapshots retain their dates)
+
+## PlayerAsteroid ABI and global dependencies (2026-10-11)
+
+The Android ARM field layout now includes the missing words at `0x130`
+and `0x154`, with assertions through class size `0x170`. Constructor
+and update paths use the real Canvas, RNG, Level, and Status objects,
+restore the ARM radius, spin, hit-flash, and force constants, and
+remove an undefined transform wrapper. Native `gof2`, 206/206 ARM
+units, and 36 verifier tests pass (one skipped). The 26-function
+family improves from 89.8%/70.1% to 93.1%/80.7% mean source-shape/
+strict fuzzy; exact counts rise from 8/3 to 13/8 linked/byte. The full
+corpus remains 4,323/4,524 compared but rises to 92.11% source-shape,
+80.33% strict fuzzy, 2,338 linked-exact, and 1,008 byte-exact, with
+no lost exact pair, skipped unit, or wrong-type symbol. Running-game
+loot, collision, and explosion behavior remain untested; next inspect
+the remaining asteroid projection/force paths. See
+[the ARM asteroid ABI audit](PLAYER_ASTEROID_ARM_ABI_AND_GLOBALS_2026-10-11.md).
 
 ## PlayerCreature ABI, stats, and runtime wiring (2026-10-11)
 
