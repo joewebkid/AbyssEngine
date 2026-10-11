@@ -52,3 +52,7 @@ the lookup index before reading the credit array, and the much larger
 purchase-result smoke has not been run. Next trace the
 producer/ownership of `GameData+0x54/+0x58/+0x60` and exercise a representative
 purchase result when that path is callable on the host.
+
+The later [Android/iOS producer cross-check](PURCHASE_APPDATA_PRODUCER_CROSS_PLATFORM_2026-10-11.md)
+found an iOS StoreKit array producer but no confirmed Android producer. The
+Android Google Play consumable JNI callback uses a separate direct credit path.

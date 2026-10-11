@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (Android consumable purchase dispatch; older subsystem
+Last reviewed: 2026-10-11 (purchase-data producer cross-check; older subsystem
 snapshots retain their dates)
+
+## Purchase application-data producer cross-check (2026-10-11)
+
+The Android Google Play consumable callback uses direct credit dispatch and
+does not fill `GameData+0x54/+0x58/+0x60`. Recovered Android C++ initializes
+those pointers to null and reads them in `ModStation`, with no recovered writer.
+An iOS StoreKit response independently confirms the product-ID list and
+indexed integer-value pattern, but has a different application-data layout.
+No Android producer or ownership contract has been confirmed, so no synthetic
+JNI allocation was added. No C++ changed; the last validated corpus remains
+**4,323/4,524**, **91.91%** source-shape, **80.00%** strict, **2,319
+linked-exact**, **997 byte-exact**. See
+[the cross-platform audit](PURCHASE_APPDATA_PRODUCER_CROSS_PLATFORM_2026-10-11.md).
 
 ## Android consumable purchase dispatch (2026-10-11)
 
