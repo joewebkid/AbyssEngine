@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (record array native ABI; older subsystem
+Last reviewed: 2026-10-11 (record station-stack and wanted ABI; older subsystem
 snapshots retain their dates)
+
+## GameRecord station-stack and wanted pointers (2026-10-11)
+
+Android ARM record reading identifies `GameRecord + 0x5c` as an
+`Array<Station *> *` and extended-record slot `+ 0x1b4` as an
+`Array<Wanted *> *`. Both now keep full-width pointers on native 64-bit
+builds while retaining their ARM offsets. The wanted-object copy into
+`Status` also uses full-width elements. Native `gof2`, 206/206 ARM
+units, and 35 verifier tests pass (one skipped). Full corpus:
+4,713 comparisons of 4,323/4,524 original functions, 92.24%
+source-shape, 80.43% strict fuzzy, 2,353 linked-exact, 1,008
+byte-exact; no lost exact pair, skipped unit, or wrong-type symbol.
+Affected function shapes are unchanged. A live save/reload round trip
+and destination wanted-array capacity remain unverified. The ship slot
+`GameRecord + 0x134` needs separate analysis because its apparent
+destination `Status + 0x8c` is also used as a counter. See
+[the ARM pointer audit](GAME_RECORD_STATION_STACK_WANTED_ABI_ARM_2026-10-11.md).
 
 ## GameRecord array pointers 0x160–0x184 (2026-10-11)
 

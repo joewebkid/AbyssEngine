@@ -2062,7 +2062,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                     if (k == stationArr->size()) rec->setStation(static_cast<Station *>(st));
                     else (*stationArr)[k] = (Station *) st;
                 }
-                *reinterpret_cast<void **>(&rec->field_0x5c) = stationArr;
+                rec->setStationStack(stationArr);
 
                 int sdN = 0;
                 AEFile_ReadInt(&sdN, fd);
@@ -2356,7 +2356,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                         }
                     }
 
-                    Array<Station *> *stArr = (Array<Station *> *) *reinterpret_cast<void **>(&rec->field_0x5c);
+                    Array<Station *> *stArr = rec->getStationStack();
                     for (unsigned k = 0; k < stArr->size() + 1; k++) {
                         void *cur = (k == stArr->size())
                                         ? rec->getStation()
@@ -2380,7 +2380,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                     AEFile_ReadInt(&wN, fd);
                     if (wN > 0) {
                         Array<Wanted *> *wArr = new Array<Wanted *>();
-                        *reinterpret_cast<void **>(&rec->field_0x1b4) = wArr;
+                        rec->setWanted(wArr);
                         ArraySetLength(wN, *wArr);
                         for (int i = 0; i < wN; i++)
                             (*wArr)[i] = (Wanted *) this->readWanted(fd);

@@ -11,6 +11,7 @@ class BluePrint;
 class PendingProduct;
 class Agent;
 class Item;
+class Wanted;
 // ARM layout is byte-faithful to the original 32-bit binary (449 bytes / 0x1c1).
 // The on-disk save record is read/written almost entirely through raw offsets:
 // GameRecord.cpp treats `this` as `uint32_t rec[]` (rec[N] == *(uint32_t*)(this
@@ -54,7 +55,11 @@ public:
     uint32_t field_0x50;         // 0x050  rec[0x14]
     uint32_t field_0x54;         // 0x054  rec[0x15]
     uint32_t field_0x58;         // 0x058  rec[0x16]
-    uint32_t field_0x5c;         // 0x05c  rec[0x17]
+#if __SIZEOF_POINTER__ == 4
+    Array<Station *> *stationStack; // 0x05c  rec[0x17]
+#else
+    uint32_t field_0x5c;
+#endif
     uint32_t field_0x60;         // 0x060  rec[0x18]
     uint32_t field_0x64;         // 0x064  rec[0x19]
     uint32_t field_0x68;         // 0x068  rec[0x1a]
@@ -215,7 +220,11 @@ public:
     uint32_t field_0x1a8;        // 0x1a8  rec[0x6a]
     uint32_t field_0x1ac;        // 0x1ac  rec[0x6b]
     uint32_t field_0x1b0;        // 0x1b0  rec[0x6c]
-    uint32_t field_0x1b4;        // 0x1b4  rec[0x6d]
+#if __SIZEOF_POINTER__ == 4
+    Array<Wanted *> *wanted;     // 0x1b4  rec[0x6d]
+#else
+    uint32_t field_0x1b4;
+#endif
     uint32_t field_0x1b8;        // 0x1b8  rec[0x6e]
     uint32_t field_0x1bc;        // 0x1bc  rec[0x6f] (kRecordExtendedTag check)
     uint8_t  field_0x1c0;        // 0x1c0  byte (load: *(rec+0x70))
@@ -243,6 +252,8 @@ public:
     Array<bool> *array17c;
     Array<Item *> *array180;
     Array<Ship *> *array184;
+    Array<Station *> *stationStack;
+    Array<Wanted *> *wanted;
 #endif
 
     AbyssEngine::String &getPreviewSystemName() { return previewSystemName; }
@@ -285,6 +296,10 @@ public:
     void setArray17c(Array<bool> *value) { array17c = value; }
     void setArray180(Array<Item *> *value) { array180 = value; }
     void setArray184(Array<Ship *> *value) { array184 = value; }
+    Array<Station *> *getStationStack() const { return stationStack; }
+    Array<Wanted *> *getWanted() const { return wanted; }
+    void setStationStack(Array<Station *> *value) { stationStack = value; }
+    void setWanted(Array<Wanted *> *value) { wanted = value; }
 
     GameRecord();
 
@@ -299,6 +314,7 @@ static_assert(sizeof(GameRecord) == 449, "GameRecord must be 449 bytes (0x1c1)")
 static_assert(offsetof(GameRecord, data) == 0x0, "");
 static_assert(offsetof(GameRecord, field_0x98) == 0x98, "");
 static_assert(offsetof(GameRecord, field_0xa8) == 0xa8, "");
+static_assert(offsetof(GameRecord, stationStack) == 0x5c, "stationStack");
 static_assert(offsetof(GameRecord, field_0xc8) == 0xc8, "");
 static_assert(offsetof(GameRecord, field_0xd4) == 0xd4, "");
 static_assert(offsetof(GameRecord, field_0xd8) == 0xd8, "");
@@ -334,7 +350,7 @@ static_assert(offsetof(GameRecord, array17c) == 0x17c, "array17c");
 static_assert(offsetof(GameRecord, array180) == 0x180, "array180");
 static_assert(offsetof(GameRecord, array184) == 0x184, "array184");
 static_assert(offsetof(GameRecord, shipId) == 0x1a0, "");
-static_assert(offsetof(GameRecord, field_0x1b4) == 0x1b4, "");
+static_assert(offsetof(GameRecord, wanted) == 0x1b4, "wanted");
 static_assert(offsetof(GameRecord, field_0x1b8) == 0x1b8, "");
 static_assert(offsetof(GameRecord, field_0x1c0) == 0x1c0, "");
 #endif // 32-bit ARM layout
@@ -363,6 +379,10 @@ static_assert(offsetof(GameRecord, array160) % alignof(Array<bool> *) == 0,
               "native record array alignment");
 static_assert(offsetof(GameRecord, array184) % alignof(Array<Ship *> *) == 0,
               "native record ship array alignment");
+static_assert(offsetof(GameRecord, stationStack) % alignof(Array<Station *> *) == 0,
+              "native record station stack alignment");
+static_assert(offsetof(GameRecord, wanted) % alignof(Array<Wanted *> *) == 0,
+              "native record wanted alignment");
 #endif
 
 #endif

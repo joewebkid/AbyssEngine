@@ -41,7 +41,7 @@ GameRecord::GameRecord() {
     this->field_0x50 = 0;
     this->field_0x54 = 0;
     this->field_0x58 = 0;
-    this->field_0x5c = 0;
+    this->setStationStack(nullptr);
     this->field_0x60 = 0;
     this->field_0x64 = 0;
     this->field_0x68 = 0;
@@ -142,7 +142,7 @@ GameRecord::GameRecord() {
     this->field_0x1ac = 0;
     this->field_0x1b0 = 0;
 
-    this->field_0x1b4 = 0;
+    this->setWanted(nullptr);
 }
 
 typedef uint32_t uint;
@@ -268,7 +268,7 @@ void GameRecord::load() {
     this->field_0x119 = 0x55 < (long) this->field_0x40;
     Status::gStatus->setFreelanceMission((Mission *) this->field_0x54);
     Status::gStatus->setCampaignMission((Mission *) this->field_0x58);
-    Status::gStatus->setStationStack((Array<Station *> *) this->field_0x5c);
+    Status::gStatus->setStationStack(this->getStationStack());
     campaignStage = this->field_0x40;
     if (campaignStage == 0x23) {
         targetStation = ((Mission *) this->field_0x58)->getTargetStation();
@@ -573,12 +573,12 @@ afterDlcUnsaleable:
         hints->flag_0x39 = this->field_0x112;
         hints->flag_0x3a = this->field_0x114;
         st->field_58 = this->getArray17c();
-        srcVec = (Array<uint32_t> *) this->field_0x1b4;
-        if ((srcVec != (Array<uint32_t> *) 0x0) && (i = srcVec->size_, i != 0)) {
+        Array<Wanted *> *recWanted = this->getWanted();
+        if ((recWanted != nullptr) && (i = recWanted->size_, i != 0)) {
             for (j = 0; j < i; j = j + 1) {
-                ((Array<uint32_t> *) Status::gStatus->wanted)->data_[j] = srcVec->data_[j];
-                srcVec = (Array<uint32_t> *) this->field_0x1b4;
-                i = srcVec->size_;
+                Status::gStatus->wanted->data_[j] = recWanted->data_[j];
+                recWanted = this->getWanted();
+                i = recWanted->size_;
             }
         }
         st = Status::gStatus;
