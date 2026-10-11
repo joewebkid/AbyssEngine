@@ -6,6 +6,8 @@
 #include "../../engine/core/AEString.h"
 class Ship;
 class Station;
+class Standing;
+class BluePrint;
 // ARM layout is byte-faithful to the original 32-bit binary (449 bytes / 0x1c1).
 // The on-disk save record is read/written almost entirely through raw offsets:
 // GameRecord.cpp treats `this` as `uint32_t rec[]` (rec[N] == *(uint32_t*)(this
@@ -144,8 +146,13 @@ public:
 #else
     uint32_t field_0x138;
 #endif
-    uint32_t field_0x13c;        // 0x13c  rec[0x4f]
-    uint32_t field_0x140;        // 0x140  rec[0x50]
+#if __SIZEOF_POINTER__ == 4
+    Standing *standing;          // 0x13c  rec[0x4f]
+    Array<BluePrint *> *bluePrints; // 0x140  rec[0x50]
+#else
+    uint32_t field_0x13c;
+    uint32_t field_0x140;
+#endif
     uint32_t field_0x144;        // 0x144  rec[0x51]
     uint32_t field_0x148;        // 0x148  rec[0x52]
     uint32_t field_0x14c;        // 0x14c  rec[0x53]
@@ -191,6 +198,8 @@ public:
     alignas(AbyssEngine::String) AbyssEngine::String previewStationName;
     Ship *ship;
     Station *station;
+    Standing *standing;
+    Array<BluePrint *> *bluePrints;
 #endif
 
     AbyssEngine::String &getPreviewSystemName() { return previewSystemName; }
@@ -201,6 +210,10 @@ public:
     Station *getStation() const { return station; }
     void setShip(Ship *value) { ship = value; }
     void setStation(Station *value) { station = value; }
+    Standing *getStanding() const { return standing; }
+    Array<BluePrint *> *getBluePrints() const { return bluePrints; }
+    void setStanding(Standing *value) { standing = value; }
+    void setBluePrints(Array<BluePrint *> *value) { bluePrints = value; }
 
     GameRecord();
 
@@ -233,6 +246,8 @@ static_assert(offsetof(GameRecord, field_0x119) == 0x119, "");
 static_assert(offsetof(GameRecord, rank) == 0x11c, "");
 static_assert(offsetof(GameRecord, ship) == 0x130, "ship");
 static_assert(offsetof(GameRecord, station) == 0x138, "station");
+static_assert(offsetof(GameRecord, standing) == 0x13c, "standing");
+static_assert(offsetof(GameRecord, bluePrints) == 0x140, "bluePrints");
 static_assert(offsetof(GameRecord, shipId) == 0x1a0, "");
 static_assert(offsetof(GameRecord, field_0x1b4) == 0x1b4, "");
 static_assert(offsetof(GameRecord, field_0x1b8) == 0x1b8, "");
@@ -247,6 +262,10 @@ static_assert(offsetof(GameRecord, previewStationName) % alignof(AbyssEngine::St
 static_assert(offsetof(GameRecord, ship) % alignof(Ship *) == 0, "native ship alignment");
 static_assert(offsetof(GameRecord, station) % alignof(Station *) == 0,
               "native station alignment");
+static_assert(offsetof(GameRecord, standing) % alignof(Standing *) == 0,
+              "native standing alignment");
+static_assert(offsetof(GameRecord, bluePrints) % alignof(Array<BluePrint *> *) == 0,
+              "native bluePrints alignment");
 #endif
 
 #endif

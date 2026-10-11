@@ -117,8 +117,8 @@ GameRecord::GameRecord() {
     this->setShip(nullptr);
     this->field_0x134 = 0;
     this->setStation(nullptr);
-    this->field_0x13c = 0;
-    this->field_0x140 = 0;
+    this->setStanding(nullptr);
+    this->setBluePrints(nullptr);
     this->field_0x144 = 0;
     this->field_0x148 = 0;
     this->field_0x14c = 0;
@@ -444,7 +444,7 @@ afterDlcUnsaleable:
             }
         }
     }
-    Array<BluePrint *> *bluePrintArray = (Array<BluePrint *> *) this->field_0x140;
+    Array<BluePrint *> *bluePrintArray = this->getBluePrints();
     if (bluePrintArray != (Array<BluePrint *> *) 0x0) {
         for (i = 0; i < bluePrintArray->size_; i = i + 1) {
             blueprint = bluePrintArray->data_[i];
@@ -470,18 +470,18 @@ afterDlcUnsaleable:
                 }
             }
         LAB_blueprintLoopTail:
-            bluePrintArray = (Array<BluePrint *> *) this->field_0x140;
+            bluePrintArray = this->getBluePrints();
         }
     }
     st = Status::gStatus;
     st->field_8c = this->field_0x134;
     st->setStation(this->getStation());
     Status::gStatus->setMission(reinterpret_cast<Mission *>(Mission::empty));
-    st->standing = (Standing *) this->field_0x13c;
+    st->standing = this->getStanding();
     {
-        Array<uint32_t> *bpVec = (Array<uint32_t> *) this->field_0x140;
+        Array<BluePrint *> *bpVec = this->getBluePrints();
         for (i = 0; i < bpVec->size_; i = i + 1) {
-            ((Array<uint32_t> *) Status::gStatus->bluePrints)->data_[i] = bpVec->data_[i];
+            Status::gStatus->bluePrints->data_[i] = bpVec->data_[i];
         }
     }
     Status::gStatus->pendingProducts = (Array<PendingProduct *> *) this->field_0x144;

@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (record preview pointers; older subsystem
+Last reviewed: 2026-10-11 (GameRecord standing/blueprint pointers; older subsystem
 snapshots retain their dates)
+
+## GameRecord standing and blueprint pointers (2026-10-11)
+
+ARM slots `0x13c` and `0x140` are `Standing *` and
+`Array<BluePrint *> *`. Reader, constructor, and load now use typed
+pointers; native 64-bit builds store them in aligned sidecars instead
+of truncating them through 32-bit slots. Blueprint transfer into
+`Status` also copies full-width pointer elements. Native `gof2`,
+206/206 ARM units, and 36 verifier tests pass (one skipped). Full
+corpus: 4,713 comparisons of 4,323/4,524 original functions,
+92.24% source-shape, 80.43% strict fuzzy, 2,353 linked-exact, 1,008
+byte-exact, no lost exact pair, skipped unit, or wrong-type symbol.
+Two extra blueprint-array comparisons add one linked-exact pair but
+do not increase unique function coverage. Save/reload remains untested;
+pointer-bearing slots from `0x144` onward need an ABI audit next. See
+[the ARM standing/blueprint audit](GAME_RECORD_STANDING_BLUEPRINT_POINTERS_ARM_2026-10-11.md).
 
 ## Record preview station and ship pointers (2026-10-11)
 

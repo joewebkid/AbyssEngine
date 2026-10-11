@@ -2069,10 +2069,10 @@ void *RecordHandler::recordStoreRead(int slot) {
                 int *standings = new int[sdN];
                 for (int i = 0; i < sdN; i++) AEFile_ReadInt(standings + i, fd);
                 Standing *standing = new Standing();
-                *reinterpret_cast<void **>(&rec->field_0x13c) = standing;
+                rec->setStanding(standing);
                 standing->setStandings(standings);
 
-                Array<void *> *bpArr = new Array<void *>();
+                Array<BluePrint *> *bpArr = new Array<BluePrint *>();
                 int bpN = 0;
                 AEFile_ReadInt(&bpN, fd);
                 ArraySetLength(bpN, *bpArr);
@@ -2094,7 +2094,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                     AEFile_ReadString(&tmp, fd, 1);
                     bp->stationName = tmp;
                 }
-                *reinterpret_cast<void **>(&rec->field_0x140) = bpArr;
+                rec->setBluePrints(bpArr);
 
                 int ppN = 0;
                 AEFile_ReadInt(&ppN, fd);
