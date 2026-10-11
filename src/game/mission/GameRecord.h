@@ -4,6 +4,8 @@
 #include <cstdint>
 #include "engine/core/Array.h"
 #include "../../engine/core/AEString.h"
+class Ship;
+class Station;
 // ARM layout is byte-faithful to the original 32-bit binary (449 bytes / 0x1c1).
 // The on-disk save record is read/written almost entirely through raw offsets:
 // GameRecord.cpp treats `this` as `uint32_t rec[]` (rec[N] == *(uint32_t*)(this
@@ -131,9 +133,17 @@ public:
     uint32_t field_0x124;        // 0x124  rec[0x49]
     uint32_t field_0x128;        // 0x128  rec[0x4a]
     uint32_t field_0x12c;        // 0x12c  rec[0x4b]
-    uint32_t field_0x130;        // 0x130  rec[0x4c]  (ctor: memset(t+0x130,0,0x58))
+#if __SIZEOF_POINTER__ == 4
+    Ship *ship;                  // 0x130  rec[0x4c]
+#else
+    uint32_t field_0x130;
+#endif
     uint32_t field_0x134;        // 0x134  rec[0x4d]
-    uint32_t field_0x138;        // 0x138  rec[0x4e]
+#if __SIZEOF_POINTER__ == 4
+    Station *station;            // 0x138  rec[0x4e]
+#else
+    uint32_t field_0x138;
+#endif
     uint32_t field_0x13c;        // 0x13c  rec[0x4f]
     uint32_t field_0x140;        // 0x140  rec[0x50]
     uint32_t field_0x144;        // 0x144  rec[0x51]
@@ -179,12 +189,18 @@ public:
     uint8_t _nativePreviewPadding[7];
     alignas(AbyssEngine::String) AbyssEngine::String previewSystemName;
     alignas(AbyssEngine::String) AbyssEngine::String previewStationName;
+    Ship *ship;
+    Station *station;
 #endif
 
     AbyssEngine::String &getPreviewSystemName() { return previewSystemName; }
     AbyssEngine::String &getPreviewStationName() { return previewStationName; }
     const AbyssEngine::String &getPreviewSystemName() const { return previewSystemName; }
     const AbyssEngine::String &getPreviewStationName() const { return previewStationName; }
+    Ship *getShip() const { return ship; }
+    Station *getStation() const { return station; }
+    void setShip(Ship *value) { ship = value; }
+    void setStation(Station *value) { station = value; }
 
     GameRecord();
 
@@ -215,7 +231,8 @@ static_assert(offsetof(GameRecord, previewSystemName) == 0x188, "previewSystemNa
 static_assert(offsetof(GameRecord, previewStationName) == 0x194, "previewStationName");
 static_assert(offsetof(GameRecord, field_0x119) == 0x119, "");
 static_assert(offsetof(GameRecord, rank) == 0x11c, "");
-static_assert(offsetof(GameRecord, field_0x130) == 0x130, "");
+static_assert(offsetof(GameRecord, ship) == 0x130, "ship");
+static_assert(offsetof(GameRecord, station) == 0x138, "station");
 static_assert(offsetof(GameRecord, shipId) == 0x1a0, "");
 static_assert(offsetof(GameRecord, field_0x1b4) == 0x1b4, "");
 static_assert(offsetof(GameRecord, field_0x1b8) == 0x1b8, "");
@@ -227,6 +244,9 @@ static_assert(offsetof(GameRecord, previewSystemName) % alignof(AbyssEngine::Str
               "native previewSystemName alignment");
 static_assert(offsetof(GameRecord, previewStationName) % alignof(AbyssEngine::String) == 0,
               "native previewStationName alignment");
+static_assert(offsetof(GameRecord, ship) % alignof(Ship *) == 0, "native ship alignment");
+static_assert(offsetof(GameRecord, station) % alignof(Station *) == 0,
+              "native station alignment");
 #endif
 
 #endif

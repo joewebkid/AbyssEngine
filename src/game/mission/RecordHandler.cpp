@@ -608,10 +608,10 @@ void RecordHandler::recordStoreWritePreview(int slot) {
     AEFile_Write_i64(Status::gStatus->getPlayingTime(), fd);
     AEFile_Write_i32(Status::gStatus->getCredits(), fd);
 
-    num = ((Station *) (&num))->getName();
+    num = Status::gStatus->getStation()->getName();
     AEFile_Write_str(&num, fd, true);
 
-    num = ((SolarSystem *) (&num))->getName();
+    num = Status::gStatus->getSystem()->getName();
     AEFile_Write_str(&num, fd, true);
 
     AEFile_Write_i32(Status::gStatus->getCurrentCampaignMission(), fd);
@@ -1271,14 +1271,14 @@ int RecordHandler::recordStoreWritePreview(GameRecord *rec, int slot) {
     AEFile_Write_i64(rec->playTime64, fd);
     AEFile_Write_i32((int) rec->field_0x08, fd);
 
-    num = ((Station *) (&num))->getName();
+    num = rec->getStation()->getName();
     AEFile_Write_str(&num, fd, true);
 
     AEFile_Write_str(&rec->getPreviewSystemName(), fd, true);
     AEFile_Write_i32((int) rec->field_0x40, fd);
     AEFile_Write_i32((int) rec->killsText, fd);
     AEFile_Write_f32(rec->rankBits, fd);
-    AEFile_Write_i32(reinterpret_cast<Ship *>((intptr_t) rec->field_0x130)->getIndex(), fd);
+    AEFile_Write_i32(rec->getShip()->getIndex(), fd);
 
     AEFile::Close(fd);
     return 1;
@@ -1937,7 +1937,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                 int shipIdx = 0;
                 AEFile_ReadInt(&shipIdx, fd);
                 void *pship = (*shipDefs)[shipIdx]->makeShip(-1);
-                *reinterpret_cast<void **>(&rec->field_0x130) = pship;
+                rec->setShip(static_cast<Ship *>(pship));
                 int race = 0;
                 AEFile_ReadInt(&race, fd);
                 ((Ship *) (pship))->setRace(race);
@@ -2059,7 +2059,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                         AEFile_Read_bool(&atk, fd, 0);
                         ((Station *) (st))->setAttackedFriends(atk);
                     }
-                    if (k == stationArr->size()) *reinterpret_cast<void **>(&rec->field_0x138) = st;
+                    if (k == stationArr->size()) rec->setStation(static_cast<Station *>(st));
                     else (*stationArr)[k] = (Station *) st;
                 }
                 *reinterpret_cast<void **>(&rec->field_0x5c) = stationArr;
@@ -2330,7 +2330,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                         Array<int> *a = new Array<int>();
                         ArraySetLength(m0, *a);
                         for (int i = 0; i < m0; i++) { AEFile_ReadInt(&(*a)[i], fd); }
-                        ((Ship *) (*reinterpret_cast<void **>(&rec->field_0x130)))->setMods(a);
+                        rec->getShip()->setMods(a);
                     }
                     int m1 = 0;
                     AEFile_ReadInt(&m1, fd);
@@ -2357,7 +2357,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                     Array<Station *> *stArr = (Array<Station *> *) *reinterpret_cast<void **>(&rec->field_0x5c);
                     for (unsigned k = 0; k < stArr->size() + 1; k++) {
                         void *cur = (k == stArr->size())
-                                        ? *reinterpret_cast<void **>(&rec->field_0x138)
+                                        ? rec->getStation()
                                         : (void *) (*stArr)[k];
                         if (cur == 0) continue;
                         int groups = 0;

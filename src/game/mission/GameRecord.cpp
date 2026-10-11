@@ -114,9 +114,9 @@ GameRecord::GameRecord() {
     this->field_0x1b8 = 0;
     this->field_0x1c0 = 0;
 
-    this->field_0x130 = 0;
+    this->setShip(nullptr);
     this->field_0x134 = 0;
-    this->field_0x138 = 0;
+    this->setStation(nullptr);
     this->field_0x13c = 0;
     this->field_0x140 = 0;
     this->field_0x144 = 0;
@@ -412,7 +412,7 @@ stationStackLoaded:
     if ((int *) this->field_0x60 != (int *) 0x0) {
         Achievements::gAchievements->setMedals((int *) this->field_0x60, this->field_0x64);
     }
-    Status::gStatus->setShip((Ship *) this->field_0x130);
+    Status::gStatus->setShip(this->getShip());
     if (Status::gStatus->dlc1Won() != 0) {
         Item *dlcItem = (Item *) Status::gStatus->getShip()->getFirstEquipmentOfSort(0x12);
         if (dlcItem == (Item *) 0x0) {
@@ -475,7 +475,7 @@ afterDlcUnsaleable:
     }
     st = Status::gStatus;
     st->field_8c = this->field_0x134;
-    st->setStation((Station *) this->field_0x138);
+    st->setStation(this->getStation());
     Status::gStatus->setMission(reinterpret_cast<Mission *>(Mission::empty));
     st->standing = (Standing *) this->field_0x13c;
     {

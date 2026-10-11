@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (GameRecord preview strings; older subsystem
+Last reviewed: 2026-10-11 (record preview pointers; older subsystem
 snapshots retain their dates)
+
+## Record preview station and ship pointers (2026-10-11)
+
+Android ARM identifies `GameRecord + 0x138` as the station pointer and
+`+ 0x130` as the ship pointer used by preview writing. Both are now typed
+on ARM and stored separately on 64-bit native builds; all known reader,
+writer, and load uses are updated. The live-status preview writer also
+calls the real station/system getters rather than treating a local string
+as those objects. Focused preview-writer source-shape rises from 85.0%
+to 88.2% (live status) and 85.9% to 86.3% (loaded record); strict fuzzy
+rises from 31.7% to 45.6% and 60.1% to 61.1%, respectively. Native
+`gof2`, 206/206 ARM units, and 36 verifier tests pass (one skipped).
+Full corpus remains 4,323/4,524 original functions, 92.24% average
+source-shape, 80.43% strict fuzzy, 2,352 linked-exact, 1,008
+byte-exact, with no lost exact pair, skipped unit, or wrong-type symbol.
+Other raw 32-bit pointer slots in `GameRecord` still make native
+save/reload unproven. See [the ARM preview-pointer audit](RECORD_PREVIEW_POINTERS_ARM_2026-10-11.md).
 
 ## GameRecord preview string lifetime (2026-10-11)
 
