@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (PlayerAsteroid motion and blast force; older subsystem
+Last reviewed: 2026-10-11 (PlayerJunk death, loot, and effect; older subsystem
 snapshots retain their dates)
+
+## PlayerJunk death, loot, and effect (2026-10-11)
+
+Android ARM confirms that reset reactivates the player, death sound and
+loot RNG use shared `Globals`, the crate contains item `99` in quantity
+`1–10`, and the death particle effect uses lifetime `-1.0`. The cargo
+flag is set again after crate creation. These paths no longer use null
+sound/RNG aliases. Native `gof2`, 206/206 ARM units, and 36 verifier tests
+pass (one skipped). The `update` source-shape/strict fuzzy improves from
+88.1%/70.4% to 93.6%/72.9%; `reset` retains its linked-exact score
+despite the corrected call target. The 12-comparison focused family
+averages 99.5% source-shape and 94.3% strict fuzzy, with 10 linked-exact
+and 2 byte-exact. The full corpus remains 4,323/4,524
+at 92.11%/80.34%, 2,338 linked-exact, and 1,008 byte-exact, with no
+lost exact pair, skipped unit, or wrong-type symbol. Running-game loot
+and effects remain untested. Next inspect `PlayerGasCloud`'s null global
+aliases and zero constants against ARM. See
+[the ARM junk audit](PLAYER_JUNK_DEATH_AND_LOOT_ARM_2026-10-11.md).
 
 ## PlayerAsteroid motion and blast force (2026-10-11)
 
