@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (GameRecord pointer runtime smoke; older subsystem
+Last reviewed: 2026-10-11 (ScrollTouchWindow global wiring; older subsystem
 snapshots retain their dates)
+
+## ScrollTouchWindow live layout/canvas wiring (2026-10-11)
+
+The draw paths and both constructors no longer dereference six null local
+placeholders. They use the live `Globals::layout` and `Globals::Canvas`
+identified in the Android ELF. The 16-function family rises from 71.96% to
+96.51% source-shape; six affected functions improve, including `drawTextBG`
+from 0.3% to 81.3%. Native `gof2`, 206/206 ARM units, and 35 verifier tests
+pass (one skipped). Full corpus: 4,713 comparisons of 4,323/4,524 original
+functions, 92.32% source-shape, 80.46% strict fuzzy, 2,353 linked-exact and
+1,008 byte-exact, with no lost exact pair, skipped unit, or wrong-type
+symbol. Visual runtime behavior remains untested because the full native
+executable still does not link. See
+[the global wiring audit](SCROLL_TOUCH_WINDOW_GLOBALS_ARM_2026-10-11.md).
 
 ## GameRecord native pointer runtime smoke (2026-10-11)
 
