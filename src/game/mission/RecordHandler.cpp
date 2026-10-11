@@ -1811,11 +1811,6 @@ void Standing_setStandingsArr(void *st, int *standings);
 void *RH_str_make(void *src);
 
 
-static void **g_RSR_itemDefs = nullptr;
-
-static void **g_RSR_shipDefs = nullptr;
-
-
 int RecordHandler::readOptionsFileAsByteArray(signed char **out) {
     String tmp;
     unsigned int fd;
@@ -1901,7 +1896,8 @@ void *RecordHandler::recordStoreRead(int slot) {
             }
 
             {
-                void **shipDefs = *(void ***) g_RSR_shipDefs;
+                auto *shipDefs = static_cast<Array<Ship *> *>(Globals::ships);
+                auto *itemDefs = static_cast<Array<Item *> *>(Globals::items);
 
                 AEFile_ReadInt(&rec->field_0x74, fd);
                 AEFile_ReadInt(&rec->field_0x78, fd);
@@ -1954,7 +1950,7 @@ void *RecordHandler::recordStoreRead(int slot) {
 
                 int shipIdx = 0;
                 AEFile_ReadInt(&shipIdx, fd);
-                void *pship = ((Ship *) ((int) (intptr_t) shipDefs[shipIdx]))->makeShip(-1);
+                void *pship = (*shipDefs)[shipIdx]->makeShip(-1);
                 *reinterpret_cast<void **>(&rec->field_0x130) = pship;
                 int race = 0;
                 AEFile_ReadInt(&race, fd);
@@ -1975,7 +1971,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                             bool uns = false;
                             AEFile_ReadInt(&amount, fd);
                             AEFile_Read_bool(&uns, fd, 0);
-                            void *def = (*(void ***) g_RSR_itemDefs)[idx];
+                            void *def = (*itemDefs)[idx];
                             ((Item *) (def))->getMaxPrice();
                             void *it = ((Item *) (def))->makeItem(amount);
                             ((Item *) (it))->setUnsaleable(uns);
@@ -2000,7 +1996,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                             AEFile_ReadInt(&amount, fd);
                             AEFile_ReadInt(&price, fd);
                             AEFile_Read_bool(&uns, fd, 0);
-                            void *def = (*(void ***) g_RSR_itemDefs)[idx];
+                            void *def = (*itemDefs)[idx];
                             ((Item *) (def))->getMaxPrice();
                             void *it = ((Item *) (def))->makeItem(amount);
                             ((Item *) (it))->setPrice(price);
@@ -2038,7 +2034,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                                     AEFile_ReadInt(&amount, fd);
                                     AEFile_ReadInt(&price, fd);
                                     AEFile_Read_bool(&uns, fd, 0);
-                                    void *def = (*(void ***) g_RSR_itemDefs)[idx];
+                                    void *def = (*itemDefs)[idx];
                                     ((Item *) (def))->getMaxPrice();
                                     void *it = ((Item *) (def))->makeItem(amount);
                                     ((Item *) (it))->setPrice(price);
@@ -2056,7 +2052,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                             for (int i = 0; i < shN; i++) {
                                 int si = 0;
                                 AEFile_ReadInt(&si, fd);
-                                void *sh = ((Ship *) ((int) (intptr_t) shipDefs[si]))->makeShip(-1);
+                                void *sh = (*shipDefs)[si]->makeShip(-1);
                                 (*ships)[i] = (Ship *) sh;
                                 int r = 0;
                                 AEFile_ReadInt(&r, fd);
@@ -2212,7 +2208,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                 if (hasWing > 0) {
                     int wi = 0;
                     AEFile_ReadInt(&wi, fd);
-                    void *wship = ((Ship *) ((int) (intptr_t) shipDefs[wi]))->makeShip(-1);
+                    void *wship = (*shipDefs)[wi]->makeShip(-1);
                     *reinterpret_cast<void **>(&rec->field_0x134) = wship;
                     int r = 0;
                     AEFile_ReadInt(&r, fd);
@@ -2232,7 +2228,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                                 bool uns = false;
                                 AEFile_ReadInt(&amount, fd);
                                 AEFile_Read_bool(&uns, fd, 0);
-                                void *def = (*(void ***) g_RSR_itemDefs)[idx];
+                                void *def = (*itemDefs)[idx];
                                 ((Item *) (def))->getMaxPrice();
                                 void *it = ((Item *) (def))->makeItem(amount);
                                 ((Item *) (it))->setUnsaleable(uns);
@@ -2257,7 +2253,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                                 AEFile_ReadInt(&amount, fd);
                                 AEFile_ReadInt(&price, fd);
                                 AEFile_Read_bool(&uns, fd, 0);
-                                void *def = (*(void ***) g_RSR_itemDefs)[idx];
+                                void *def = (*itemDefs)[idx];
                                 ((Item *) (def))->getMaxPrice();
                                 void *it = ((Item *) (def))->makeItem(amount);
                                 ((Item *) (it))->setPrice(price);
@@ -2297,7 +2293,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                             AEFile_ReadInt(&amount, fd);
                             AEFile_ReadInt(&price, fd);
                             AEFile_Read_bool(&uns, fd, 0);
-                            void *def = (*(void ***) g_RSR_itemDefs)[idx];
+                            void *def = (*itemDefs)[idx];
                             ((Item *) (def))->getMaxPrice();
                             void *it = ((Item *) (def))->makeItem(amount);
                             ((Item *) (it))->setPrice(price);
@@ -2316,7 +2312,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                     for (int i = 0; i < ssN; i++) {
                         int si = 0;
                         AEFile_ReadInt(&si, fd);
-                        void *sh = ((Ship *) ((int) (intptr_t) shipDefs[si]))->makeShip(-1);
+                        void *sh = (*shipDefs)[si]->makeShip(-1);
                         (*ships)[i] = (Ship *) sh;
                         int r = 0;
                         AEFile_ReadInt(&r, fd);

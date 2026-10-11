@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (record hint and format wiring; older subsystem
+Last reviewed: 2026-10-11 (record reader definition tables; older subsystem
 snapshots retain their dates)
+
+## Record reader item and ship definitions (2026-10-11)
+
+Android ARM confirms that `recordStoreRead` obtains ship and item
+prototypes from `Globals::ships` and `Globals::items`. All ten reader
+lookups now use these live arrays rather than null local aliases;
+ship pointers also no longer pass through a narrowing 32-bit integer
+on native builds. Its source-shape improves from 26.4% to 91.6%,
+strict fuzzy from 14.1% to 16.9%. Native `gof2`, 206/206 ARM units,
+and 36 verifier tests pass (one skipped). Full corpus: 4,323/4,524
+original functions, 92.18% source-shape, 80.37% strict fuzzy,
+2,350 linked-exact, 1,008 byte-exact, with no lost exact pair,
+skipped unit, or wrong-type symbol. Fourteen newly emitted array
+template symbols account for seven additional linked-exact
+comparisons; no older pair newly became exact. A live save/reload
+round trip remains untested. Next replace the four unresolved reader
+helper calls and test a final native link. See
+[the ARM reader audit](RECORD_READER_DEFINITION_TABLES_ARM_2026-10-11.md).
 
 ## Record hint and extended-format wiring (2026-10-11)
 
