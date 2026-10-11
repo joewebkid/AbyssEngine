@@ -189,12 +189,12 @@ Array<SpacePoint *> *FileRead::loadSpacePoints(int32_t id, int32_t group) {
 }
 
 Array<SolarSystem *> *FileRead::loadSystemsBinary() {
-    String path("systems_binary.bin");
+    String path("data/bin/systems.bin");
 
     Array<SolarSystem *> *systems = 0;
     if (AEFile::FileExist(path) != 0) {
         uint32_t handle;
-        AEFile::OpenRead("systems_binary.bin", &handle);
+        AEFile::OpenRead("data/bin/systems.bin", &handle);
 
         systems = new Array<SolarSystem *>();
         ArraySetLength<SolarSystem *>(0x22, *systems);
@@ -275,12 +275,12 @@ Array<SolarSystem *> *FileRead::loadSystemsBinary() {
 }
 
 Array<Wanted *> *FileRead::loadWanted() {
-    String path("wanted_binary.bin");
+    String path("data/bin/wanted.bin");
 
     Array<Wanted *> *wanted = 0;
     if (AEFile::FileExist(path) != 0) {
         uint32_t handle;
-        AEFile::OpenRead("wanted_binary.bin", &handle);
+        AEFile::OpenRead("data/bin/wanted.bin", &handle);
 
         wanted = new Array<Wanted *>();
         ArraySetLength<Wanted *>(0x19, *wanted);
@@ -552,12 +552,12 @@ Array<Station *> *FileRead::loadStationsBinary(SolarSystem *system) {
 }
 
 Array<Agent *> *FileRead::loadAgents() {
-    String path("agents_binary.bin");
+    String path("data/bin/agents.bin");
 
     Array<Agent *> *agents = 0;
     if (AEFile::FileExist(path) != 0) {
         uint32_t handle;
-        AEFile::OpenRead("agents_binary.bin", &handle);
+        AEFile::OpenRead("data/bin/agents.bin", &handle);
 
         agents = new Array<Agent *>();
         ArraySetLength<Agent *>(0x1b, *agents);
@@ -816,12 +816,12 @@ Array<int32_t> *FileRead::loadShipParts(int32_t id) {
 }
 
 Array<Item *> *FileRead::loadItemsBinary() {
-    String path("items_binary.bin");
+    String path("data/bin/items.bin");
 
     Array<Item *> *items = 0;
     if (AEFile::FileExist(path) != 0) {
         uint32_t handle;
-        AEFile::OpenRead("items_binary.bin", &handle);
+        AEFile::OpenRead("data/bin/items.bin", &handle);
 
         items = new Array<Item *>();
         ArraySetLength<Item *>(0xe9, *items);
@@ -876,12 +876,12 @@ Array<Item *> *FileRead::loadItemsBinary() {
 }
 
 Array<Ship *> *FileRead::loadShipsBinary() {
-    String path("ships_binary.bin");
+    String path("data/bin/ships.bin");
 
     Array<Ship *> *ships = 0;
     if (AEFile::FileExist(path) != 0) {
         uint32_t handle;
-        AEFile::OpenRead("ships_binary.bin", &handle);
+        AEFile::OpenRead("data/bin/ships.bin", &handle);
 
         ships = new Array<Ship *>();
         ArraySetLength<Ship *>(0x40, *ships);

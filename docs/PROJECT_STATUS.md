@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (station resource loader; older subsystem
+Last reviewed: 2026-10-11 (core resource paths; older subsystem
 snapshots retain their dates)
+
+## Core binary resource paths (2026-10-11)
+
+The systems, wanted, agents, items and ships loaders now probe and open
+the Android ARM `data/bin/*.bin` paths instead of five incorrect
+`*_binary.bin` filenames. Native `gof2`, 206/206 ARM units, and 36
+verifier tests pass (one skipped). The five-function focused family is
+92.7% source-shape / 59.1% strict fuzzy, with no exact matches. The
+full corpus remains 4,323/4,524 compared at 92.05% source-shape and
+80.12% strict fuzzy, with 2,325 linked-exact and 997 byte-exact; no
+exact-pair loss, skipped row or wrong-type symbol. The original assets
+have not been mounted into a running game; see
+[the ARM resource-path audit](FILE_READ_CORE_RESOURCE_PATHS_ARM_2026-10-11.md).
 
 ## Station resource loader (2026-10-11)
 
