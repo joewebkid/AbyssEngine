@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (random-name loader; older subsystem
+Last reviewed: 2026-10-11 (NewsTicker token replacement; older subsystem
 snapshots retain their dates)
+
+## NewsTicker token replacement (2026-10-11)
+
+The former `replaceTokens` identity stub now follows the Android ARM
+sequence for all **21** marker literals, including conditional news
+groups and their random draws. Focused source-shape/strict fuzzy rise
+from **0.3%/0.2%** to **91.8%/45.6%**; the function itself is not exact.
+Native `gof2`, **206/206** ARM units and 36 verifier tests pass (one
+skipped). The full corpus compares **4,323/4,524** originals at
+**92.05%** source-shape and **80.12%** strict, with **2,325
+linked-exact** (+2, both `Item` array template operations emitted by
+the Vossk branch) and **997 byte-exact** (unchanged). No exact-pair
+losses, skipped rows or wrong-type symbols occurred. The retained report
+is `C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_ticker_tokens_20261011.json`.
+News rendering and asset-dependent token paths have not been exercised
+in a running game; see [the ARM token audit](NEWS_TICKER_TOKEN_REPLACEMENT_ARM_2026-10-11.md).
 
 ## Random-name loader and composition (2026-10-11)
 
@@ -19,8 +35,8 @@ corpus remains **4,323/4,524** compared at **92.02%** source-shape,
 there are no exact-pair losses, skipped rows or wrong-type symbols.
 The report is retained at
 `C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_names_20261011.json`.
-No game-session asset read was exercised, and `NewsTicker::replaceTokens`
-still needs recovery. See [the ARM random-name audit](RANDOM_NAME_LOADER_ARM_2026-10-11.md).
+No game-session asset read was exercised. `replaceTokens` was recovered in
+the later token audit above; see [the ARM random-name audit](RANDOM_NAME_LOADER_ARM_2026-10-11.md).
 
 ## Globals random station and drinks system (2026-10-11)
 
@@ -37,8 +53,8 @@ with **2,323 linked-exact** (+1) and **997 byte-exact** (unchanged).
 No exact-pair losses, skipped rows or wrong-type symbols occurred. The
 retained report is
 `C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_globals_random_20261011.json`.
-`NewsTicker::replaceTokens` and other random-name dependencies remain
-unfinished; game-data runtime behavior is untested. See
+The later audits recovered random-name loading and `replaceTokens`;
+game-data runtime behavior is still untested. See
 [the ARM random-source audit](GLOBALS_RANDOM_SOURCES_ARM_2026-10-11.md).
 
 ## ModStation station-entry ticker construction (2026-10-11)
@@ -56,8 +72,8 @@ corpus remains **4,323/4,524** compared, **92.01%** source-shape,
 **80.09%** strict, **2,322 linked-exact**, **997 byte-exact**, with no
 lost exact pair, skipped row, or wrong-type symbol. The report is retained
 at `C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_station_ticker_final_20261011.json`.
-Station entry/exit on a running game and `NewsTicker::replaceTokens` remain
-unverified; see [the ARM station-entry audit](MODSTATION_TICKER_CONSTRUCTION_ARM_2026-10-11.md).
+Station entry/exit in a running game remains unverified; the later token
+audit above restored `replaceTokens`. See [the ARM station-entry audit](MODSTATION_TICKER_CONSTRUCTION_ARM_2026-10-11.md).
 
 ## NewsTicker global wiring and lifetime (2026-10-11)
 
@@ -70,8 +86,8 @@ source-shape rises **63.9% to 88.0%** and strict **50.7% to 71.3%**;
 `gof2`, 206 ARM units and 36 verifier tests pass (one skipped). The full
 corpus is **4,323/4,524**, **92.01%** source-shape, **80.09%** strict,
 **2,322 linked-exact**, **997 byte-exact**, with no exact-pair loss.
-Station-side construction was restored in the subsequent audit above;
-`replaceTokens` and in-game rendering remain unverified. See
+Station-side construction and token substitution were restored in the
+subsequent audits above; in-game rendering remains unverified. See
 [the ARM ticker audit](NEWSTICKER_GLOBAL_WIRING_ARM_2026-10-11.md).
 
 ## StarSystem supernova intro transform handoff (2026-10-11)

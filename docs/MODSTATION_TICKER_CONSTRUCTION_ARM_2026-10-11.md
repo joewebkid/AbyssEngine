@@ -26,6 +26,6 @@ skipped). Full-corpus metrics and the retained JSON are recorded in
 `PROJECT_STATUS.md`.
 
 This is a branch restoration, not a complete station runtime test. Other
-states of `OnInitialize` still use unresolved `*_oi` placeholders, and
-`NewsTicker::replaceTokens` remains a stub. Next priority: validate station
-entry/exit with controlled state, then recover the token substitutions.
+states of `OnInitialize` still use unresolved `*_oi` placeholders.
+`NewsTicker::replaceTokens` was restored in a subsequent audit, but station
+entry/exit still needs validation with controlled state.

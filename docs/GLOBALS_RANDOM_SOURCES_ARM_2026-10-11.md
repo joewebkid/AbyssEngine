@@ -20,7 +20,7 @@ to **100%/100% linked-exact**. `getRandomSystemForDrinks` rises from
 36 verifier tests pass (one skipped). Full-corpus results are in
 `PROJECT_STATUS.md`.
 
-This restores two dependencies of `NewsTicker::replaceTokens`, not that
-function itself. Other token dependencies, especially random-name
-generation, remain damaged; station/data-file behavior has not been
-tested inside a running game.
+This restored two dependencies of `NewsTicker::replaceTokens`, not that
+function itself at the time. Subsequent audits recovered random-name
+loading and the token function; station/data-file behavior has still not
+been tested inside a running game.

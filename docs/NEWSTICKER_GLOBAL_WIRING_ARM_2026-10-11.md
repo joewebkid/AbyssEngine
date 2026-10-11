@@ -30,4 +30,5 @@ symbols. The report is retained at
 This was not a complete ticker restoration. A subsequent audit restored
 `ModStation::OnInitialize` ticker construction and its preceding coordinate
 producer; see [the station-entry audit](MODSTATION_TICKER_CONSTRUCTION_ARM_2026-10-11.md).
-`replaceTokens`, asset decoding, and in-game rendering remain untested.
+Token substitution was restored in a subsequent audit; asset decoding and
+in-game rendering remain untested.

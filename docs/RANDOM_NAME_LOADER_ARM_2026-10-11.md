@@ -23,6 +23,6 @@ source-shape/strict fuzzy; `loadNamesBinary` rises from **80.4%/59.4%**
 to **84.3%/77.3%**. Neither is exact. Native `gof2` and 36 verifier
 tests pass (one skipped). Full-corpus results are in `PROJECT_STATUS.md`.
 
-No game session or on-device asset read was exercised. The recovered
-`NewsTicker::replaceTokens` still returns input unchanged; other token
-dependencies and their random-call order remain the next priority.
+No game session or on-device asset read was exercised. A subsequent audit
+restored `NewsTicker::replaceTokens` and its ARM random-call order; those
+asset-dependent paths still need controlled runtime checks.
