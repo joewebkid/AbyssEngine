@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (weapon-position loader; older subsystem
+Last reviewed: 2026-10-11 (dock-space point loader; older subsystem
 snapshots retain their dates)
+
+## Dock-space point loader (2026-10-11)
+
+Android ARM `FileRead::loadSpacePoints` reads nine raw floats per point
+from `data/bin/docks_hd.bin`. The recovered loader had byte-swapped
+those words; it now uses the raw float overload without changing
+coordinate conversion or group filtering. Native `gof2`, 206/206 ARM
+units and 36 verifier tests pass (one skipped). Focused source-shape/
+strict fuzzy remain 75.7%/26.3%, not exact. The full corpus remains
+4,323/4,524 compared at 92.05% source-shape and 80.12% strict fuzzy,
+with 2,325 linked-exact and 997 byte-exact; no exact-pair loss, skipped
+row or wrong-type symbol. The resource itself was unavailable locally,
+so runtime values remain unverified; see
+[the ARM dock-space audit](FILE_READ_SPACE_POINTS_RAW_FLOAT_ARM_2026-10-11.md).
 
 ## Weapon-position loader (2026-10-11)
 

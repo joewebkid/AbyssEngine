@@ -153,15 +153,15 @@ Array<SpacePoint *> *FileRead::loadSpacePoints(int32_t id, int32_t group) {
             float ignored0;
             float ignored1;
             float ignored2;
-            AEFile::ReadSwitched(reinterpret_cast<int32_t &>(a), handle);
-            AEFile::ReadSwitched(reinterpret_cast<int32_t &>(b), handle);
-            AEFile::ReadSwitched(reinterpret_cast<int32_t &>(c), handle);
-            AEFile::ReadSwitched(reinterpret_cast<int32_t &>(rx), handle);
-            AEFile::ReadSwitched(reinterpret_cast<int32_t &>(ry), handle);
-            AEFile::ReadSwitched(reinterpret_cast<int32_t &>(rz), handle);
-            AEFile::ReadSwitched(reinterpret_cast<int32_t &>(ignored0), handle);
-            AEFile::ReadSwitched(reinterpret_cast<int32_t &>(ignored1), handle);
-            AEFile::ReadSwitched(reinterpret_cast<int32_t &>(ignored2), handle);
+            AEFile::Read(a, handle);
+            AEFile::Read(b, handle);
+            AEFile::Read(c, handle);
+            AEFile::Read(rx, handle);
+            AEFile::Read(ry, handle);
+            AEFile::Read(rz, handle);
+            AEFile::Read(ignored0, handle);
+            AEFile::Read(ignored1, handle);
+            AEFile::Read(ignored2, handle);
 
             Vector position;
             position.x = a;
