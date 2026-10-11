@@ -2281,7 +2281,6 @@ String Globals::getRandomName(int kind, bool both) {
     return lastStr.size() ? firstStr + String(" ") + lastStr : firstStr;
 }
 
-static void *const gGL_canvas = nullptr;
 static const char gGL_empty[] = "";
 
 void Globals::getLine(unsigned font, String text, int maxWidth, String *out) {
@@ -2290,25 +2289,22 @@ void Globals::getLine(unsigned font, String text, int maxWidth, String *out) {
     if (((unsigned) (lang | 1)) == 0xb) width = 0xf;
     if ((unsigned) lang == 0xf) width = 0xf;
 
-    int *canvas = *(int **) gGL_canvas;
+    PaintCanvas *canvas = Globals::Canvas;
     unsigned lastSpace = 0;
     unsigned len = text.size();
 
     String tmp;
     for (unsigned i = 0; i < len;) {
         short ch = *text.index(i);
-        width += ((PaintCanvas *) (long) *canvas)->GetTextWidth(font, text, i, i + 1);
+        width += canvas->GetTextWidth(font, text, i, i + 1);
         if (ch == 0x20) {
             lastSpace = i;
         }
-        if (maxWidth <= width) {
-            if (ch == 0x0a || ch == 0x0d) {
-                tmp = text.SubString(0, i + 1);
-            } else if ((int) lastSpace < 1) {
-                tmp = text.SubString(0, i + 1);
-            } else {
+        if (maxWidth <= width || ch == 0x0a || ch == 0x0d) {
+            if (maxWidth <= width && lastSpace >= 1)
                 tmp = text.SubString(0, lastSpace + 1);
-            }
+            else
+                tmp = text.SubString(0, i + 1);
             *out = tmp;
             return;
         }

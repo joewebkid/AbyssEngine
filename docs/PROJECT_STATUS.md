@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (random planet RNG wiring; older subsystem
+Last reviewed: 2026-10-11 (Globals getLine canvas and breaks; older subsystem
 snapshots retain their dates)
+
+## Globals getLine canvas and line breaks (2026-10-11)
+
+`Globals::getLine` now measures glyph width through live `Globals::Canvas`
+instead of a null placeholder and ends a line on LF/CR even before the
+width limit, as the Android ARM branches do. On width overflow it retains
+the original last-space fallback. Native `gof2`, 206/206 ARM units, and
+36 verifier tests pass (one skipped). Focused source-shape improves from
+84.1% to 87.7%, strict fuzzy from 34.8% to 36.3%. Full corpus remains
+4,713 comparisons of 4,323/4,524 original functions, 92.33%
+source-shape, 80.47% strict fuzzy, 2,353 linked-exact and 1,008
+byte-exact, without exact-pair losses. Live wrapping/rendering is not
+yet verified. See [the text-line audit](GLOBALS_GETLINE_CANVAS_BREAKS_ARM_2026-10-11.md).
 
 ## Random planet name RNG wiring (2026-10-11)
 
