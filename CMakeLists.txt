@@ -84,6 +84,24 @@ if(GOF2_BUILD_ABI_RUNTIME_SMOKE)
     endif()
 endif()
 
+option(GOF2_BUILD_PREMIUM_IAP_SMOKE
+       "Build the Android premium purchase callback smoke test" OFF)
+if(GOF2_BUILD_PREMIUM_IAP_SMOKE)
+    add_executable(gof2_premium_iap_smoke
+        tools/premium_iap_smoke.cpp
+        src/platform/android/NdkHooks.cpp)
+    target_include_directories(gof2_premium_iap_smoke PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/src"
+        "${CMAKE_CURRENT_SOURCE_DIR}/third_party/jni"
+        "${CMAKE_CURRENT_SOURCE_DIR}/third_party/gl"
+        "${CMAKE_CURRENT_SOURCE_DIR}/third_party/fmod/inc")
+    target_compile_definitions(gof2_premium_iap_smoke PRIVATE GOF2_PREMIUM_IAP_SMOKE)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        target_compile_options(gof2_premium_iap_smoke PRIVATE -fpermissive -ffunction-sections -fdata-sections)
+        target_link_options(gof2_premium_iap_smoke PRIVATE -Wl,--gc-sections)
+    endif()
+endif()
+
 # JNI
 target_include_directories(gof2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/third_party/jni")
 

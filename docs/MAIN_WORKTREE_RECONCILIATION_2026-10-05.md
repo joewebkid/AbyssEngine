@@ -331,3 +331,16 @@ product strings and no longer dereferences a null placeholder. Native `gof2`,
 2,319 linked-exact and 997 byte-exact, with no row or exact-pair losses.
 Purchase-data producers and end-to-end billing remain unverified; see
 [the purchase audit](MODSTATION_PURCHASE_RESULT_ARM_NATIVE_2026-10-11.md).
+
+## Android premium-DLC callback (2026-10-11)
+
+The original `ndk_iapBoughtPremium` at `0x00094410` has pack-specific
+visibility/campaign effects beyond the five ownership bytes. These are now
+restored, including the extra linked ownership flags for pack 4 and the
+`bought <= 1` gate. The focused native smoke passes all five pack cases;
+native `gof2` and 206/206 ARM units build. Focused source-shape/strict fuzzy
+rises 45.7%/20.1% to 98.6%/92.0%. The full report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_premium_iap_20261011.json`:
+4,323/4,524 originals, 4,689 rows, 91.91% source-shape, 79.99% strict,
+2,319 linked-exact and 997 byte-exact, with no row or exact-pair losses. See
+[the ARM callback audit](ANDROID_PREMIUM_IAP_CALLBACK_ARM_2026-10-11.md).

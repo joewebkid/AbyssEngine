@@ -29,6 +29,7 @@ int gi_iap_buy_credit_pack5_pressed;
 
 extern "C" {
 
+#ifndef GOF2_PREMIUM_IAP_SMOKE
 int setBaughtCredits(int amount) {
     int *packFlag;
     if (amount == 10000000) {
@@ -163,22 +164,49 @@ void ndk_iapBoughtConsumable(unsigned int consumable) {
     };
     setBaughtCredits(kCreditPackValue[consumable]);
 }
+#endif
 
 void ndk_iapBoughtPremium(unsigned int pack, unsigned int bought) {
-    if (gEngine == nullptr || pack > 4)
+    if (gEngine == nullptr || pack > 4 || bought > 1)
         return;
 
-    int *pendingFlags[5] = {
-        &gi_iap_buy_dlc1_pressed, &gi_iap_buy_dlc2_pressed,
-        &gi_iap_buy_dlc3_pressed, &gi_iap_buy_dlc4_pressed,
-        &gi_iap_buy_dlc5_pressed
-    };
-    if (*pendingFlags[pack] != 0)
-        *pendingFlags[pack] = 0;
-
-    Globals::options[0x35 + pack] = (bought == 1) ? 1 : 0;
+    const unsigned char owned = bought == 1;
+    switch (pack) {
+        case 0:
+            if (gi_iap_buy_dlc1_pressed != 0)
+                gi_iap_buy_dlc1_pressed = 0;
+            Globals::options[0x35] = owned;
+            Globals::status->setSystemVisibility(25, true);
+            break;
+        case 1:
+            if (gi_iap_buy_dlc2_pressed != 0)
+                gi_iap_buy_dlc2_pressed = 0;
+            Globals::options[0x36] = owned;
+            Globals::status->field_114 = 3;
+            break;
+        case 2:
+            if (gi_iap_buy_dlc3_pressed != 0)
+                gi_iap_buy_dlc3_pressed = 0;
+            Globals::options[0x37] = owned;
+            Globals::status->setSystemVisibility(25, true);
+            break;
+        case 3:
+            if (gi_iap_buy_dlc4_pressed != 0)
+                gi_iap_buy_dlc4_pressed = 0;
+            Globals::options[0x38] = owned;
+            break;
+        case 4:
+            if (gi_iap_buy_dlc5_pressed != 0)
+                gi_iap_buy_dlc5_pressed = 0;
+            Globals::options[0x35] = owned;
+            Globals::options[0x39] = owned;
+            Globals::options[0x37] = owned;
+            Globals::status->setSystemVisibility(25, true);
+            break;
+    }
 }
 
+#ifndef GOF2_PREMIUM_IAP_SMOKE
 void ndk_setNativeItemInformationList(JNIEnv *env, jclass /*clazz*/,
                                       jobjectArray ids, jobjectArray names,
                                       jobjectArray descriptions,
@@ -231,5 +259,6 @@ void ndk_setNativeItemInformationList(JNIEnv *env, jclass /*clazz*/,
         for (int row = 0; row < 5; ++row)
             env->ReleaseStringUTFChars(elems[col][row], utf[col][row]);
 }
+#endif
 
 } // extern "C"

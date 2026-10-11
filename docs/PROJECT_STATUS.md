@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (ModStation purchase-result handoff; older subsystem
+Last reviewed: 2026-10-11 (Android premium-DLC callback; older subsystem
 snapshots retain their dates)
+
+## Android premium-DLC callback (2026-10-11)
+
+The Android JNI purchase callback now applies the ARM-confirmed per-pack DLC
+flags, system visibility and campaign effects, and rejects invalid `bought`
+values. Native smoke, native `gof2`, 206 ARM units and verifier tests pass.
+The full corpus compares **4,323/4,524** originals at **91.91%** source-shape,
+**79.99%** strict fuzzy, **2,319 linked-exact** and **997 byte-exact**, with no
+exact-pair or row losses. Focused source-shape/strict fuzzy rise to
+**98.6%/92.0%**. This callback is
+separate from the unresolved `GameData` purchase-list producer; see
+[the ARM audit](ANDROID_PREMIUM_IAP_CALLBACK_ARM_2026-10-11.md).
 
 ## ModStation purchase-result handoff (2026-10-11)
 
