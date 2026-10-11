@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (core resource paths; older subsystem
+Last reviewed: 2026-10-11 (weapon-position loader; older subsystem
 snapshots retain their dates)
+
+## Weapon-position loader (2026-10-11)
+
+Android ARM `FileRead::loadWeaponPositions` opens `data/bin/weapons_hd.bin`
+and reads position words and type-3 floats without byte swapping. The
+recovered path and seven switched reads were corrected. A read-only walk
+consumed all 7,484 reference bytes as 59 ship records, 552 positions and
+236 extra vectors. Native `gof2`, 206/206 ARM units and 36 verifier tests
+pass (one skipped). Focused source-shape/strict fuzzy remain 83.1%/36.0%,
+not exact. The full corpus remains 4,323/4,524 compared at 92.05%
+source-shape and 80.12% strict fuzzy, with 2,325 linked-exact and 997
+byte-exact; no exact-pair loss, skipped row or wrong-type symbol.
+Asset-backed runtime behavior and absent ship IDs remain unverified; see
+[the ARM weapon-position audit](FILE_READ_WEAPON_POSITIONS_ARM_2026-10-11.md).
 
 ## Core binary resource paths (2026-10-11)
 

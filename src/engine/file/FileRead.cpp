@@ -55,12 +55,12 @@ int32_t FileRead::loadStationsBinary() {
 }
 
 Array<Array<Vector *> *> *FileRead::loadWeaponPositions(int32_t id) {
-    String path("weapon_positions.bin");
+    String path("data/bin/weapons_hd.bin");
 
     Array<Array<Vector *> *> *positions = 0;
     if (AEFile::FileExist(path) != 0) {
         uint32_t handle;
-        AEFile::OpenRead("weapon_positions.bin", &handle);
+        AEFile::OpenRead("data/bin/weapons_hd.bin", &handle);
 
         positions = new Array<Array<Vector *> *>();
         ArraySetLength<Array<Vector *> *>(4, *positions);
@@ -79,18 +79,18 @@ Array<Array<Vector *> *> *FileRead::loadWeaponPositions(int32_t id) {
             AEFile::Read(ship, handle);
             AEFile::Read(count, handle);
             for (int32_t i = 0; i < count; i++) {
-                AEFile::ReadSwitched(type, handle);
-                AEFile::ReadSwitched(x, handle);
-                AEFile::ReadSwitched(y, handle);
-                AEFile::ReadSwitched(z, handle);
+                AEFile::Read(type, handle);
+                AEFile::Read(x, handle);
+                AEFile::Read(y, handle);
+                AEFile::Read(z, handle);
 
                 float extraX = 0.0f;
                 float extraY = 0.0f;
                 float extraZ = 0.0f;
                 if (type == 3) {
-                    AEFile::ReadSwitched(reinterpret_cast<int32_t &>(extraX), handle);
-                    AEFile::ReadSwitched(reinterpret_cast<int32_t &>(extraY), handle);
-                    AEFile::ReadSwitched(reinterpret_cast<int32_t &>(extraZ), handle);
+                    AEFile::Read(extraX, handle);
+                    AEFile::Read(extraY, handle);
+                    AEFile::Read(extraZ, handle);
                 }
                 if (ship == id) {
                     if (positions->data()[type] == 0) {
