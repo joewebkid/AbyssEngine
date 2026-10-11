@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (purchase-data producer cross-check; older subsystem
+Last reviewed: 2026-10-11 (StarSystem supernova scale recovery; older subsystem
 snapshots retain their dates)
+
+## StarSystem supernova scale recovery (2026-10-11)
+
+Three supernova scaling paths now use the Android ARM float words instead of
+incorrect values several orders of magnitude away. Reversal and expansion
+also use the native `Vector const&` overload. Both reach **100% focused
+source-shape / 100% strict fuzzy**; the delta-scaling path remains **96.2% /
+73.0%** but now uses the correct `0.00004f` coefficient. Native `gof2`, all
+206 ARM units and 36 verifier tests pass (one skipped). The full corpus is
+**4,323/4,524**, **91.94%** source-shape, **80.03%** strict, **2,319
+linked-exact**, **997 byte-exact**, with no exact-pair loss. Device gameplay
+and the intro transform-state calls remain unverified; see
+[the ARM scale audit](STARSYSTEM_SUPERNOVA_SCALE_ARM_2026-10-11.md).
 
 ## Purchase application-data producer cross-check (2026-10-11)
 

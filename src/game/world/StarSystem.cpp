@@ -51,7 +51,7 @@ void MatrixSetScaling(Matrix *matrix, float x, float y, float z);
 
 void StarSystem::switchSunForSupernovaExpansion() {
     AEGeometry *sun = (*this->planetsArray)[0];
-    sun->setScaling(11332.0703125f, 11332.0703125f, 11332.0703125f);
+    sun->setScaling(Vector{1.373291015625f, 1.373291015625f, 1.373291015625f});
 }
 
 void StarSystem::renderSunStreak() {
@@ -583,7 +583,7 @@ void StarSystem::updateSupernova(int dt) {
 
 void StarSystem::scaleSunDuringSupernovaIntro(int amount) {
     AEGeometry *sun = (*this->planetsArray)[0];
-    float scale = sun->getScaling().x + (float) amount * -9.769497830779909e32f;
+    float scale = sun->getScaling().x + (float) amount * 0.00004f;
     sun->setScaling(scale, scale, scale);
 }
 
@@ -598,7 +598,7 @@ void StarSystem::switchSunForSupernovaReversal() {
     PaintCanvas::gCanvas->TextureCreate((uint16_t) 0x2734,
                            (*this->texturesArray)[0], false);
     AEGeometry *sun = (*this->planetsArray)[0];
-    sun->setScaling(2.429073312463973e24f, 2.429073312463973e24f, 2.429073312463973e24f);
+    sun->setScaling(Vector{0.2288818359375f, 0.2288818359375f, 0.2288818359375f});
 }
 
 typedef void *(*GetTransformFn)(PaintCanvas *canvas, int transform_id);
