@@ -945,5 +945,5 @@ void ApplicationManager::RegisterApplicationModule(unsigned int id, IApplication
 }
 
 Engine *GetEngine() {
-    return *Engine::g_pEngine;
+    return gEngine;
 }

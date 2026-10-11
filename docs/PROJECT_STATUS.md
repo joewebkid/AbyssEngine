@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (DLC dialog call; older subsystem
+Last reviewed: 2026-10-11 (Android engine singleton; older subsystem
 snapshots retain their dates)
+
+## Android engine singleton and DLC handoff (2026-10-11)
+
+The JNI bridge, NDK hooks and `GetEngine()` now use the Android-exported
+`gEngine` pointer instead of an uninitialized `Engine::g_pEngine`
+pointer-to-pointer. ARM confirms both initialization paths, cleanup,
+pause/resume, DLC checks and the `+0x3d` to `+0x40` native request handoff.
+Native `gof2`, all 206 ARM units and verifier tests pass. The full corpus
+remains **4,323/4,524** compared and rises to **91.89% source-shape**,
+**79.96% strict fuzzy**, **2,317 linked-exact** (+3) and **997 byte-exact**,
+without exact-pair or row losses. The Java store side and 64-bit
+`GameData` byte-layout path remain unverified; see
+[the ARM singleton audit](ANDROID_ENGINE_SINGLETON_DLC_HANDOFF_ARM_2026-10-11.md).
 
 ## MenuTouchWindow DLC dialog call (2026-10-11)
 

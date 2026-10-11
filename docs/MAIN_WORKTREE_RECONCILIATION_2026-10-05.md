@@ -287,3 +287,18 @@ and strict fuzzy and becomes linked-exact. The full report is
 2,314 linked-exact and 997 byte-exact; no row or exact-pair losses.
 Platform request handling and running-game DLC dialog remain unverified;
 see [the ARM note](MENUTOUCH_CALL_DLC_MENU_ARM_2026-10-11.md).
+
+## Android engine singleton and DLC request handoff (2026-10-11)
+
+Android ARM exports `gEngine` at `0x00217b24` and uses it in both init
+variants, `GetEngine`, render, cleanup, NDK pause/resume and DLC checks.
+The source's uninitialized `Engine::g_pEngine` pointer-to-pointer is
+removed in favor of this shared global. ARM also confirms
+`ndk23_newrender` transfers the DLC request byte `+0x3d` to ready byte
+`+0x40` after `OnUpdate`. Native `gof2`, 206/206 ARM units and verifier
+tests pass. The full report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_engine_singleton_20261011.json`:
+4,323/4,524 originals, 4,689 rows, 91.89% source-shape, 79.96% strict,
+2,317 linked-exact and 997 byte-exact, with no row or exact-pair losses.
+The Java store side and 64-bit `GameData` byte layout are not runtime-tested;
+see [the ARM audit](ANDROID_ENGINE_SINGLETON_DLC_HANDOFF_ARM_2026-10-11.md).

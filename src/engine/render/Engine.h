@@ -570,8 +570,6 @@ namespace AbyssEngine {
 
         static bool fogEnabled;
 
-        static Engine **g_pEngine;
-
         // Static data members present in the original binary (defined for symbol parity).
         static unsigned char EnableGlow;
         static int ImageCount;

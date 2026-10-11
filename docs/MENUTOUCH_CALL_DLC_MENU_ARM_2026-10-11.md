@@ -31,7 +31,7 @@ byte-exact**, 201 missing, zero wrong-type misses, zero skipped units and
 112 extra symbols. Relative to the preceding DLC-menu snapshot, no row
 or exact pair is lost; this function is the sole linked-exact gain.
 
-No running-game DLC/store path or platform-side application-data consumer
-was exercised. The next bounded priority is an evidence-backed audit of
-the platform consumer of request byte `+0x3d` and acknowledgement byte
-`+0x4c`, then an integrated DLC-dialog smoke when those services can run.
+No running-game DLC/store path was exercised. The native consumer of
+request byte `+0x3d` has since been identified in `ndk23_newrender`; see
+[the Android singleton and handoff audit](ANDROID_ENGINE_SINGLETON_DLC_HANDOFF_ARM_2026-10-11.md).
+The Java store side and role of byte `+0x4c` remain unverified.

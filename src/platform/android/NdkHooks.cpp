@@ -100,7 +100,7 @@ char *pConstToNonConst(const char *s) {
 }
 
 void ndk23_sendingPauseSignal() {
-    if (*Engine::g_pEngine == nullptr)
+    if (gEngine == nullptr)
         return;
     Globals::sound->pauseAll();
 
@@ -108,7 +108,7 @@ void ndk23_sendingPauseSignal() {
 }
 
 void ndk23_sendingResumeSignal() {
-    if (*Engine::g_pEngine == nullptr)
+    if (gEngine == nullptr)
         return;
     Globals::sound->resumeAll();
 }
@@ -121,7 +121,7 @@ void ndk_autosave() {
 }
 
 int ndk_getCurrentApplicationModule() {
-    if (*Engine::g_pEngine == nullptr)
+    if (gEngine == nullptr)
         return -1;
     return static_cast<int>(ApplicationManager::gAppManager->currentModuleId);
 }
@@ -135,27 +135,27 @@ int ndk_isInMainMenu() {
 }
 
 bool ndk_getDLC_1_BOUGHT() {
-    return *Engine::g_pEngine != nullptr && Globals::options[0x35] != 0;
+    return gEngine != nullptr && Globals::options[0x35] != 0;
 }
 
 bool ndk_getDLC_2_BOUGHT() {
-    return *Engine::g_pEngine != nullptr && Globals::options[0x36] != 0;
+    return gEngine != nullptr && Globals::options[0x36] != 0;
 }
 
 bool ndk_getDLC_3_BOUGHT() {
-    return *Engine::g_pEngine != nullptr && Globals::options[0x37] != 0;
+    return gEngine != nullptr && Globals::options[0x37] != 0;
 }
 
 bool ndk_getDLC_4_BOUGHT() {
-    return *Engine::g_pEngine != nullptr && Globals::options[0x38] != 0;
+    return gEngine != nullptr && Globals::options[0x38] != 0;
 }
 
 bool ndk_getDLC_5_BOUGHT() {
-    return *Engine::g_pEngine != nullptr && Globals::options[0x39] != 0;
+    return gEngine != nullptr && Globals::options[0x39] != 0;
 }
 
 void ndk_iapBoughtConsumable(unsigned int consumable) {
-    if (consumable > 4 || *Engine::g_pEngine == nullptr)
+    if (consumable > 4 || gEngine == nullptr)
         return;
 
     static const int kCreditPackValue[5] = {
@@ -165,7 +165,7 @@ void ndk_iapBoughtConsumable(unsigned int consumable) {
 }
 
 void ndk_iapBoughtPremium(unsigned int pack, unsigned int bought) {
-    if (*Engine::g_pEngine == nullptr || pack > 4)
+    if (gEngine == nullptr || pack > 4)
         return;
 
     int *pendingFlags[5] = {
