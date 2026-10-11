@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (native link duplicate audit; older subsystem
+Last reviewed: 2026-10-11 (GameRecord pointer runtime smoke; older subsystem
 snapshots retain their dates)
+
+## GameRecord native pointer runtime smoke (2026-10-11)
+
+A focused native test constructs the real `GameRecord`, assigns 29 distinct
+64-bit pointer markers through its typed setters, and verifies all getters
+and four adjacent scalar fields. It passes; the temporary executable was
+removed. Normal native `gof2`, 206/206 ARM units, and 35 verifier tests pass
+(one skipped). Full corpus is unchanged: 4,713 comparisons of 4,323/4,524
+original functions, 92.24% source-shape, 80.43% strict fuzzy, 2,353
+linked-exact and 1,008 byte-exact, with no lost exact pair. This smoke uses
+minimal string stubs and omits `GameRecord::load` only in its test build;
+it does not prove a live save/reload or full executable link. See
+[the pointer runtime smoke report](GAME_RECORD_POINTER_NATIVE_RUNTIME_SMOKE_2026-10-11.md).
 
 ## Native executable-link duplicate audit (2026-10-11)
 

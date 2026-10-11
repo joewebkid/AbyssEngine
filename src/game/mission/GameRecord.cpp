@@ -202,6 +202,7 @@ static_assert(sizeof(Globals::options) > offsetof(MissionFlags, versionGuardFlag
 
 static const uint32_t kRecordExtendedTag = 0x6e6a78;
 
+#ifndef GOF2_RECORD_POINTER_SMOKE
 void GameRecord::load() {
     auto *hints = reinterpret_cast<HintsSaveBlock *>(Globals::hints);
     auto *missionFlags = reinterpret_cast<MissionFlags *>(Globals::options);
@@ -607,3 +608,4 @@ afterDlcUnsaleable:
         st->field_0x17c = this->field_0x1c0;
     }
 }
+#endif
