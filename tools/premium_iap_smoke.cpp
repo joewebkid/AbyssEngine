@@ -18,6 +18,14 @@ Status::~Status() {}
 static int visibilityCalls;
 static int visibilityIndex;
 static bool visibilityValue;
+static int creditedAmount;
+static int creditedCalls;
+
+extern "C" int setBaughtCredits(int amount) {
+    creditedAmount = amount;
+    ++creditedCalls;
+    return 1;
+}
 
 void Status::setSystemVisibility(int index, bool value) {
     ++visibilityCalls;
@@ -90,10 +98,24 @@ int main() {
     check(Globals::options[0x35] == 7 && *pending[0] == 1 && visibilityCalls == 0,
           "invalid arguments must not mutate state");
 
+    constexpr int creditAmounts[5] = {100000, 300000, 1000000, 3000000, 10000000};
+    for (unsigned pack = 0; pack < 5; ++pack) {
+        creditedAmount = 0;
+        creditedCalls = 0;
+        ndk_iapBoughtConsumable(pack);
+        check(creditedCalls == 1 && creditedAmount == creditAmounts[pack],
+              "consumable amount mapping");
+    }
+    creditedCalls = 0;
+    ndk_iapBoughtConsumable(5);
+    check(creditedCalls == 0, "invalid consumable must not dispatch");
+
     gEngine = nullptr;
     ndk_iapBoughtPremium(0, 1);
     check(Globals::options[0x35] == 7 && *pending[0] == 1 && visibilityCalls == 0,
           "missing engine must not mutate state");
+    ndk_iapBoughtConsumable(0);
+    check(creditedCalls == 0, "missing engine must not dispatch consumable");
 
     if (failures == 0)
         std::puts("premium IAP smoke: OK");

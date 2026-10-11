@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (Android item-information ABI; older subsystem
+Last reviewed: 2026-10-11 (Android consumable purchase dispatch; older subsystem
 snapshots retain their dates)
+
+## Android consumable purchase dispatch (2026-10-11)
+
+The JNI consumable callback goes directly through `ndk_iapBoughtConsumable`
+to `setBaughtCredits`; it does not produce the separate `GameData` station
+purchase arrays. Reconstructing the ARM `tbb` switch raises focused
+source-shape/strict fuzzy from **36.3%/39.1%** to **70.2%/83.3%** while a
+native smoke confirms all five amounts and both rejection gates. Native
+`gof2`, 206 ARM units, and verifier tests pass. The full corpus remains
+**4,323/4,524** compared at **91.91%** source-shape and **80.00%** strict,
+with **2,319 linked-exact** and **997 byte-exact** and no lost exact pair.
+End-to-end billing and any other producer of the `GameData` arrays remain
+unverified; see [the ARM audit](ANDROID_CONSUMABLE_IAP_ROUTE_ARM_2026-10-11.md).
 
 ## Android item-information reset and globals (2026-10-11)
 

@@ -165,17 +165,21 @@ bool ndk_getDLC_4_BOUGHT() {
 bool ndk_getDLC_5_BOUGHT() {
     return gEngine != nullptr && Globals::options[0x39] != 0;
 }
+#endif
 
 void ndk_iapBoughtConsumable(unsigned int consumable) {
     if (consumable > 4 || gEngine == nullptr)
         return;
 
-    static const int kCreditPackValue[5] = {
-        100000, 300000, 1000000, 3000000, 10000000
-    };
-    setBaughtCredits(kCreditPackValue[consumable]);
+    switch (consumable) {
+        case 0: setBaughtCredits(100000); break;
+        case 1: setBaughtCredits(300000); break;
+        case 2: setBaughtCredits(1000000); break;
+        case 3: setBaughtCredits(3000000); break;
+        case 4: setBaughtCredits(10000000); break;
+        default: return;
+    }
 }
-#endif
 
 void ndk_iapBoughtPremium(unsigned int pack, unsigned int bought) {
     if (gEngine == nullptr || pack > 4 || bought > 1)
