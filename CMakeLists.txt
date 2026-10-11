@@ -102,6 +102,23 @@ if(GOF2_BUILD_PREMIUM_IAP_SMOKE)
     endif()
 endif()
 
+option(GOF2_BUILD_ITEM_INFO_RESET_SMOKE
+       "Build the Android item-information reset smoke test" OFF)
+if(GOF2_BUILD_ITEM_INFO_RESET_SMOKE)
+    add_executable(gof2_item_info_reset_smoke
+        tools/item_info_reset_smoke.cpp
+        src/engine/render/LODManager.cpp)
+    target_include_directories(gof2_item_info_reset_smoke PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    target_compile_definitions(gof2_item_info_reset_smoke PRIVATE
+        GOF2_ITEM_INFO_RESET_SMOKE)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        target_compile_options(gof2_item_info_reset_smoke PRIVATE
+            -fpermissive -ffunction-sections -fdata-sections)
+        target_link_options(gof2_item_info_reset_smoke PRIVATE -Wl,--gc-sections)
+    endif()
+endif()
+
 # JNI
 target_include_directories(gof2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/third_party/jni")
 
