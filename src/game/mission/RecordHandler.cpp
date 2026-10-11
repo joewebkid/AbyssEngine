@@ -361,9 +361,13 @@ void RecordHandler::convertSDVersionSaves() {
 }
 
 
-static const unsigned char RH_ah_salt[0x19] = {};
-
-static unsigned char **RH_ah_key = nullptr;
+static const unsigned char RH_hash_salt[] = {
+    0x23, 0x2b, 0xc2, 0xa7, 0x52, 0x30, 0x4c, 0x4c,
+    0x33, 0x72, 0x28, 0x30, 0x61, 0x53, 0x74, 0x65,
+    0x72, 0x26, 0x5f, 0x25, 0x3d, 0x24, 0x2b, 0x23,
+    0x00,
+};
+static_assert(sizeof(RH_hash_salt) == 0x19, "RecordHandler hash salt size");
 
 void RecordHandler::addHash(int slot) {
     signed char *data = 0;
@@ -373,8 +377,8 @@ void RecordHandler::addHash(int slot) {
         unsigned char *c = new unsigned char[0x70];
         SHA256_Init(c);
         SHA256_Update(c, data, len);
-        SHA256_Update(c, RH_ah_salt, 0x19);
-        SHA256_Update(c, *RH_ah_key, 0x10);
+        SHA256_Update(c, RH_hash_salt, sizeof(RH_hash_salt));
+        SHA256_Update(c, g_android_origami_super_club, 0x10);
         SHA256_Final(md, c);
 
         signed char *out = new signed char[len + 0x20];
@@ -2447,10 +2451,6 @@ void *RecordHandler::recordStoreRead(int slot) {
 }
 
 
-static const unsigned char RH_ch_salt[0x19] = {};
-
-static unsigned char **RH_ch_key = nullptr;
-
 bool RecordHandler::checkHash(unsigned int fd) {
     int result = 0;
 
@@ -2469,8 +2469,8 @@ bool RecordHandler::checkHash(unsigned int fd) {
             SHA256_Init(c);
             unsigned char *data = arr->data();
             SHA256_Update(c, data, (int) len - 0x20);
-            SHA256_Update(c, RH_ch_salt, 0x19);
-            SHA256_Update(c, *RH_ch_key, 0x10);
+            SHA256_Update(c, RH_hash_salt, sizeof(RH_hash_salt));
+            SHA256_Update(c, g_android_origami_super_club, 0x10);
             SHA256_Final(md, c);
 
             result = (CRYPTO_memcmp(md, &data[(int) len - 0x20], 0x20) == 0) ? 1 : 0;
@@ -2483,10 +2483,6 @@ bool RecordHandler::checkHash(unsigned int fd) {
 }
 
 
-static const unsigned char RH_aho_salt[0x19] = {};
-
-static unsigned char **RH_aho_key = nullptr;
-
 void RecordHandler::addHashToOptions() {
     signed char *data = 0;
     int len = this->readOptionsFileAsByteArray(&data);
@@ -2497,8 +2493,8 @@ void RecordHandler::addHashToOptions() {
     unsigned char *c = new unsigned char[0x70];
     SHA256_Init(c);
     SHA256_Update(c, data, len);
-    SHA256_Update(c, RH_aho_salt, 0x19);
-    SHA256_Update(c, *RH_aho_key, 0x10);
+    SHA256_Update(c, RH_hash_salt, sizeof(RH_hash_salt));
+    SHA256_Update(c, g_android_origami_super_club, 0x10);
     SHA256_Final(md, c);
 
     signed char *out = new signed char[len + 0x20];

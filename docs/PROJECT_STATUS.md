@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (asteroid quality letters; older subsystem
+Last reviewed: 2026-10-11 (RecordHandler hash inputs; older subsystem
 snapshots retain their dates)
+
+## RecordHandler save/options hash inputs (2026-10-11)
+
+The three SHA-256 paths now use the Android ARM 25-byte salt and 16
+bytes from the JNI-owned key, replacing zero salts and null key
+aliases. The original ELF bytes and compiled ARM relocations confirm
+the inputs. Native `gof2`, 206/206 ARM units, and 36 verifier tests
+pass (one skipped). Focused source-shape/strict fuzzy rise from
+81.0%/42.5% to 82.3%/50.0%; no function becomes exact. The full
+corpus remains 4,323/4,524 compared at 92.05% source-shape, with
+strict fuzzy improving from 80.12% to 80.13%. It retains 2,325
+linked-exact and 997 byte-exact, with no lost exact pair, skipped unit,
+or wrong-type symbol. Android save/load round-trip and native-only
+key provision remain unverified; see
+[the ARM hash-input audit](RECORD_HANDLER_HASH_ARM_2026-10-11.md).
 
 ## Asteroid quality letters (2026-10-11)
 
