@@ -1519,7 +1519,7 @@ void RecordHandler::recordStoreWrite(int slot) {
             }
         }
 
-        Array<String *> *wingmen = reinterpret_cast<Array<String *> *>((intptr_t) status->wingmen);
+        Array<String *> *wingmen = status->getWingmen();
 
         if (wingmen == 0) { AEFile_WriteInt(-1, fd); } else {
             AEFile_WriteInt(wingmen->size(), fd);
@@ -1531,7 +1531,7 @@ void RecordHandler::recordStoreWrite(int slot) {
             AEFile_WriteInt(status->field_0x30, fd);
             AEFile_WriteInt(5, fd);
             // field_0x28 holds a pointer to a 5-int run.
-            int *wingmenStats = reinterpret_cast<int *>((intptr_t) status->field_0x28);
+            int *wingmenStats = status->getWingmenStats();
             for (unsigned i = 0; i < 5; i++) {
                 AEFile_WriteInt(wingmenStats[i], fd);
             }
@@ -2117,7 +2117,7 @@ void *RecordHandler::recordStoreRead(int slot) {
 
                 int wmN = 0;
                 AEFile_ReadInt(&wmN, fd);
-                if (wmN < 1) { *reinterpret_cast<void **>(&rec->field_0x14c) = 0; } else {
+                if (wmN < 1) { rec->setWingmen(nullptr); } else {
                     Array<String *> *strArr = new Array<String *>();
                     ArraySetLength(wmN, *strArr);
                     for (int i = 0; i < wmN; i++) {
@@ -2126,13 +2126,13 @@ void *RecordHandler::recordStoreRead(int slot) {
                         AEFile_ReadString(&nm, fd, 1);
                         (*strArr)[i] = new String(nm, false);
                     }
-                    *reinterpret_cast<void **>(&rec->field_0x14c) = strArr;
+                    rec->setWingmen(strArr);
                     AEFile_ReadInt(&rec->field_0x150, fd);
                     AEFile_ReadInt(&rec->field_0x154, fd);
                     int cnt = 0;
                     AEFile_ReadInt(&cnt, fd);
                     int *buf158 = new int[cnt];
-                    *reinterpret_cast<void **>(&rec->field_0x158) = buf158;
+                    rec->setWingmenStats(buf158);
                     for (int i = 0; i < cnt; i++) AEFile_ReadInt(buf158 + i, fd);
                 }
 

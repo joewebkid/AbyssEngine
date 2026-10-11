@@ -333,7 +333,7 @@ static inline void levelCloudRandomPos(Level *self, int rng, int boss, unsigned 
 
 static inline void levelPlaceWingman(Level *self, int *kiSlot, unsigned i);
 
-static inline void levelWingmanDiedOne(String *name, unsigned int *list);
+static inline void levelWingmanDiedOne(String *name, Array<String *> *list);
 
 bool Level::hasMiningPlant() {
     return miningPlant > 0;
@@ -5714,18 +5714,18 @@ void Level::createPlayer() {
 }
 
 void Level::wingmanDied(AbyssEngine::String const &name) {
-    unsigned int *list = (unsigned int *) (intptr_t) Status::gStatus->getWingmen();
+    Array<String *> *list = Status::gStatus->getWingmen();
     if (list == 0) {
         return;
     }
-    if (__builtin_expect(*list < 2, 0)) {
+    if (__builtin_expect(list->size() < 2, 0)) {
         return Status::gStatus->setWingmen((Array<String *> *) 0);
     }
     String key = name;
-    for (unsigned int i = 0; i < *list; i = i + 1) {
-        String *w = ((String **) list[1])[i];
+    for (unsigned int i = 0; i < list->size(); i = i + 1) {
+        String *w = (*list)[i];
         if (w->Compare_str(&key) == 0) {
-            levelWingmanDiedOne(((String **) list[1])[i], list);
+            levelWingmanDiedOne((*list)[i], list);
             return;
         }
     }
@@ -7169,8 +7169,8 @@ void Level::createWingmen() {
         return;
 
     Array<KIPlayer *> *arr = new Array<KIPlayer *>();
-    unsigned *wm = (unsigned *) Status::gStatus->getWingmen();
-    ArraySetLength(*wm, *arr);
+    Array<String *> *wm = Status::gStatus->getWingmen();
+    ArraySetLength(wm->size(), *arr);
 
     unsigned n = arr->size();
     for (unsigned i = 0; i < n; i = i + 1) {
@@ -7188,9 +7188,7 @@ void Level::createWingmen() {
         (*arr)[i]->player->setAlwaysFriend(1);
         (*arr)[i]->player->setHitpoints(0x258);
 
-        int wmList = Status::gStatus->getWingmen();
-        (*arr)[i]->name =
-                **(String **) (*(int *) (wmList + 4) + i * 4);
+        (*arr)[i]->name = *(*wm)[i];
         (*arr)[i]->shipGroup = Status::gStatus->field_0x30;
 
         Status::gStatus->getMission();
@@ -7523,15 +7521,15 @@ void Level::renderBG(int t) {
     ((PaintCanvas *) (long) (canvas))->EndBG();
 }
 
-static inline void levelWingmanDiedOne(String *name, unsigned int *list) {
-    unsigned int n = list[0];
-    String **data = (String **) (intptr_t) list[1];
+static inline void levelWingmanDiedOne(String *name, Array<String *> *list) {
+    unsigned int n = list->size();
+    String **data = list->data();
     unsigned int w = 0;
     for (unsigned int r = 0; r < n; ++r) {
         if (data[r] != name)
             data[w++] = data[r];
     }
-    list[0] = w;
+    list->size_ = w;
 }
 
 static inline void levelSpawnFar(Level *self, int *kiPlayer) {

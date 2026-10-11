@@ -35,7 +35,7 @@ using AbyssEngine::String;
 // lands on a >=4-byte boundary (playingTime stays 8-aligned at 0x1b8), so pack(4)
 // changes no field offset -- it only drops the tail padding.
 #pragma pack(push, 4)
-class Status {
+class alignas(__SIZEOF_POINTER__ == 4 ? 4 : alignof(void *)) Status {
 public:
     Array<Wanted *> *wanted;                 // 0x00
     int32_t collectedBounties[4];            // 0x04 (0x04..0x14)
@@ -43,9 +43,16 @@ public:
     Array<BluePrint *> *bluePrints;          // 0x18
     Array<PendingProduct *> *pendingProducts;// 0x1c
     Array<Agent *> *agents;                  // 0x20
-    int32_t wingmen;                         // 0x24
+#if __SIZEOF_POINTER__ == 4
+    Array<String *> *wingmen;               // 0x24
+#else
+    int32_t wingmenRaw;                      // 0x24
+#endif
     union {                                   // 0x28
         int32_t field_0x28;
+#if __SIZEOF_POINTER__ == 4
+        int *wingmenStats;
+#endif
         struct {
             uint8_t _byte_0x28;
             uint8_t _byte_0x29;
@@ -244,6 +251,15 @@ public:
     int32_t boughtEquipment;                 // 0x1e4
     int32_t currentCampaignMission;          // 0x1e8 (campaignStep)
 
+#if __SIZEOF_POINTER__ != 4
+    uint32_t _nativeWingmenPadding;
+    Array<String *> *wingmen;
+    int *wingmenStats;
+#endif
+
+    int *getWingmenStats() const { return wingmenStats; }
+    void setWingmenStats(int *value) { wingmenStats = value; }
+
     Status();
 
     ~Status();
@@ -434,7 +450,7 @@ public:
 
     void incPlayingTime(int64_t delta);
 
-    int getWingmen();
+    Array<String *> *getWingmen();
 
     void setWingmen(Array<String *> *list);
 
@@ -485,6 +501,7 @@ static_assert(offsetof(Status, standing) == 0x14, "");
 static_assert(offsetof(Status, bluePrints) == 0x18, "");
 static_assert(offsetof(Status, pendingProducts) == 0x1c, "");
 static_assert(offsetof(Status, agents) == 0x20, "");
+static_assert(offsetof(Status, wingmen) == 0x24, "wingmen");
 static_assert(offsetof(Status, field_0x28) == 0x28, "");
 static_assert(offsetof(Status, field_0x30) == 0x30, "");
 static_assert(offsetof(Status, passengers) == 0x34, "");
@@ -536,5 +553,12 @@ static_assert(offsetof(Status, capturedCrates) == 0x1e0, "");
 static_assert(offsetof(Status, boughtEquipment) == 0x1e4, "");
 static_assert(offsetof(Status, currentCampaignMission) == 0x1e8, "campaignStep");
 #endif // GOF2_MATCH
+
+#if __SIZEOF_POINTER__ != 4
+static_assert(offsetof(Status, wingmen) % alignof(Array<String *> *) == 0,
+              "native wingmen alignment");
+static_assert(offsetof(Status, wingmenStats) % alignof(int *) == 0,
+              "native wingmenStats alignment");
+#endif
 
 #endif

@@ -2,6 +2,7 @@
 #include "engine/render/ParticleSettingsRef.h"
 #include <arm_neon.h>
 #include <cstdint>
+#include <new>
 
 // Named models for the untyped handles that Globals.cpp touches by raw byte
 // offset. These structs reconstruct the field layout of opaque engine/game
@@ -403,8 +404,6 @@ void Mission_ctor(void *m);
 void Galaxy_ctor(void *g);
 
 void Achievements_ctor(void *a);
-
-void Status_ctor(void *s);
 
 void FileRead_ctor(void *f);
 
@@ -1824,10 +1823,10 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     Achievements_ctor(ach);
     Globals::achievements = ach;
     Achievements::gAchievements = (Achievements *) ach;
-    void *status = ::operator new(0x1f0);
-    Status_ctor(status);
-    Globals::status = (Status *) status;
-    Status::gStatus = (Status *) status;
+    void *statusStorage = ::operator new(sizeof(Status) > 0x1f0 ? sizeof(Status) : 0x1f0);
+    Status *status = new (statusStorage) Status();
+    Globals::status = status;
+    Status::gStatus = status;
     ImageFactory *imgFac = new ImageFactory();
     Globals::imageFactory = imgFac;
 

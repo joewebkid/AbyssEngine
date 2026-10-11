@@ -162,10 +162,18 @@ public:
     uint32_t field_0x144;
     uint32_t field_0x148;
 #endif
-    uint32_t field_0x14c;        // 0x14c  rec[0x53]
+#if __SIZEOF_POINTER__ == 4
+    Array<AbyssEngine::String *> *wingmen; // 0x14c  rec[0x53]
+#else
+    uint32_t field_0x14c;
+#endif
     uint32_t field_0x150;        // 0x150  rec[0x54]
     uint32_t field_0x154;        // 0x154  rec[0x55]
-    uint32_t field_0x158;        // 0x158  rec[0x56]
+#if __SIZEOF_POINTER__ == 4
+    int *wingmenStats;           // 0x158  rec[0x56], five ints
+#else
+    uint32_t field_0x158;
+#endif
     uint32_t field_0x15c;        // 0x15c  rec[0x57]
     uint32_t field_0x160;        // 0x160  rec[0x58]
     uint32_t field_0x164;        // 0x164  rec[0x59]
@@ -209,6 +217,8 @@ public:
     Array<BluePrint *> *bluePrints;
     Array<PendingProduct *> *pendingProducts;
     Array<Agent *> *agents;
+    Array<AbyssEngine::String *> *wingmen;
+    int *wingmenStats;
 #endif
 
     AbyssEngine::String &getPreviewSystemName() { return previewSystemName; }
@@ -227,6 +237,10 @@ public:
     Array<Agent *> *getAgents() const { return agents; }
     void setPendingProducts(Array<PendingProduct *> *value) { pendingProducts = value; }
     void setAgents(Array<Agent *> *value) { agents = value; }
+    Array<AbyssEngine::String *> *getWingmen() const { return wingmen; }
+    int *getWingmenStats() const { return wingmenStats; }
+    void setWingmen(Array<AbyssEngine::String *> *value) { wingmen = value; }
+    void setWingmenStats(int *value) { wingmenStats = value; }
 
     GameRecord();
 
@@ -263,6 +277,8 @@ static_assert(offsetof(GameRecord, standing) == 0x13c, "standing");
 static_assert(offsetof(GameRecord, bluePrints) == 0x140, "bluePrints");
 static_assert(offsetof(GameRecord, pendingProducts) == 0x144, "pendingProducts");
 static_assert(offsetof(GameRecord, agents) == 0x148, "agents");
+static_assert(offsetof(GameRecord, wingmen) == 0x14c, "wingmen");
+static_assert(offsetof(GameRecord, wingmenStats) == 0x158, "wingmenStats");
 static_assert(offsetof(GameRecord, shipId) == 0x1a0, "");
 static_assert(offsetof(GameRecord, field_0x1b4) == 0x1b4, "");
 static_assert(offsetof(GameRecord, field_0x1b8) == 0x1b8, "");
@@ -285,6 +301,10 @@ static_assert(offsetof(GameRecord, pendingProducts) % alignof(Array<PendingProdu
               "native pendingProducts alignment");
 static_assert(offsetof(GameRecord, agents) % alignof(Array<Agent *> *) == 0,
               "native agents alignment");
+static_assert(offsetof(GameRecord, wingmen) % alignof(Array<AbyssEngine::String *> *) == 0,
+              "native wingmen alignment");
+static_assert(offsetof(GameRecord, wingmenStats) % alignof(int *) == 0,
+              "native wingmenStats alignment");
 #endif
 
 #endif

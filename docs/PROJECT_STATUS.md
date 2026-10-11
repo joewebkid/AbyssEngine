@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (GameRecord product/agent pointers; older subsystem
+Last reviewed: 2026-10-11 (record wingmen native ABI; older subsystem
 snapshots retain their dates)
+
+## Record wingmen native ABI (2026-10-11)
+
+Android ARM confirms `GameRecord + 0x14c` and `+ 0x158` as the wingmen
+array and five-integer stats pointers transferred into `Status + 0x24`
+and `+ 0x28`. Both objects now retain full-width native pointers, and
+`Level` uses the typed array rather than 32-bit pointer arithmetic.
+`Globals::init` allocates at least the native `sizeof(Status)` and calls
+its defined constructor instead of the declared-only `Status_ctor`.
+Native `gof2`, 206/206 ARM units, and 36 verifier tests pass (one
+skipped). Full corpus: 4,713 comparisons of 4,323/4,524 original
+functions, 92.24% source-shape, 80.43% strict fuzzy, 2,353
+linked-exact, 1,008 byte-exact, no lost exact pair, skipped unit, or
+wrong-type symbol. `Status::getWingmen` remains byte-exact; the
+non-exact `setWingmen` and `Level::createWingmen` source-shapes decline
+slightly with typed access. A live save/reload round trip and full
+executable link remain untested; audit `GameRecord` slots `0x160+`
+next. See [the ARM wingmen ABI audit](RECORD_WINGMEN_NATIVE_ABI_ARM_2026-10-11.md).
 
 ## GameRecord pending-product and agent pointers (2026-10-11)
 

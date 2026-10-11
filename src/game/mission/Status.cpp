@@ -380,7 +380,7 @@ uint32_t Status::inPlanetRingOrbit() {
 
 void Status::setBoughtEquipment(int v) { boughtEquipment = v; }
 
-int Status::getWingmen() { return wingmen; }
+Array<String *> *Status::getWingmen() { return wingmen; }
 
 int Status::getGoodsProduced() { return goodsProduced; }
 
@@ -466,6 +466,7 @@ Status::Status() {
     voidStation = nullptr;
     wanted = 0;
     wingmen = 0;
+    this->setWingmenStats(nullptr);
     this->field_0x28 = 0;
     standing = 0;
     bluePrints = 0;
@@ -639,14 +640,14 @@ void Status::resetGame() {
     }
     this->voidStation = new Station();
 
-    if (this->field_0x28 != 0) {
-        delete[] (char *) (intptr_t) this->field_0x28;
-        this->field_0x28 = 0;
+    if (this->wingmenStats != nullptr) {
+        delete[] this->wingmenStats;
+        this->setWingmenStats(nullptr);
     }
-    if (this->wingmen != 0) {
-        Array<String *> *wm = (Array<String *> *) (intptr_t) this->wingmen;
-        ArrayReleaseClasses(*wm);
-        delete wm;
+    this->field_0x28 = 0;
+    if (this->wingmen != nullptr) {
+        ArrayReleaseClasses(*this->wingmen);
+        delete this->wingmen;
     }
 
     this->field_0x30 = 0;
@@ -1750,18 +1751,18 @@ void Status::moveWanted() {
 }
 
 void Status::setWingmen(Array<String *> *list) {
-    Array<String *> *cur = (Array<String *> *) (intptr_t) wingmen;
+    Array<String *> *cur = wingmen;
     if (cur != 0) {
         ArrayReleaseClasses(*cur);
     }
     if (list == 0) {
         wingmen = 0;
+        this->setWingmenStats(nullptr);
         this->field_0x28 = 0;
         this->field_0x30 = 0;
     } else {
         Array<String *> *na = new Array<String *>();
-        wingmen = (int32_t)(intptr_t)
-        na;
+        wingmen = na;
         ArraySetLength(list->size(), *na);
         for (unsigned i = 0; i < list->size(); i = i + 1) {
             String *s = new String();

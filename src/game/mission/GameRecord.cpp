@@ -121,10 +121,10 @@ GameRecord::GameRecord() {
     this->setBluePrints(nullptr);
     this->setPendingProducts(nullptr);
     this->setAgents(nullptr);
-    this->field_0x14c = 0;
+    this->setWingmen(nullptr);
     this->field_0x150 = 0;
     this->field_0x154 = 0;
-    this->field_0x158 = 0;
+    this->setWingmenStats(nullptr);
     this->field_0x15c = 0;
     this->field_0x160 = 0;
     this->field_0x164 = 0;
@@ -492,10 +492,10 @@ afterDlcUnsaleable:
         }
     }
     st = Status::gStatus;
-    st->wingmen = this->field_0x14c;
+    st->wingmen = this->getWingmen();
     st->field_0x2c = this->field_0x150;
     st->field_0x30 = this->field_0x154;
-    st->field_0x28 = this->field_0x158;
+    st->setWingmenStats(this->getWingmenStats());
     st->passengers = this->field_0x15c;
     srcByteArray2 = (Array<uint8_t> *) this->field_0x160;
     srcCount = srcByteArray2->size_;
