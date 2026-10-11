@@ -7,8 +7,8 @@
 #include "game/ship/Agent.h"
 #include "game/core/String.h"
 
-static const int kHiddenBlueprints[5] = {0, 0, 0, 0, 0};
-static const int kPirateStations[4] = {0, 0, 0, 0};
+static const int kHiddenBlueprints[5] = {132, 133, 134, 129, 123};
+static const int kPirateStations[4] = {1, 33, 47, 86};
 
 Station::Station()
     : name("Station"),

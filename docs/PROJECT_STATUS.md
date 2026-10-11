@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (agent mod-price table; older subsystem
+Last reviewed: 2026-10-11 (station blueprint/pirate tables; older subsystem
 snapshots retain their dates)
+
+## Station blueprint and pirate-base tables (2026-10-11)
+
+`Station.cpp` now uses the Android ARM station ID tables: pirate bases
+`1, 33, 47, 86` and hidden blueprints `132, 133, 134, 129, 123`,
+replacing two zero-filled arrays. The bytes match the original ELF and
+generated ARM object, and agree with existing `SolarSystem` tables.
+Native `gof2`, 206/206 ARM units and 36 verifier tests pass (one skipped).
+The four-function focused family remains 96.3% source-shape / 97.3%
+strict fuzzy, with two linked-exact index methods and no byte-exact.
+The full corpus remains 4,323/4,524 compared at 92.05% source-shape
+and 80.12% strict fuzzy, with 2,325 linked-exact and 997 byte-exact;
+no exact-pair loss, skipped row or wrong-type symbol. End-to-end
+campaign/discovery flags remain unverified; see
+[the ARM station table audit](STATION_BLUEPRINT_PIRATE_TABLES_ARM_2026-10-11.md).
 
 ## Agent mod-price table (2026-10-11)
 
