@@ -1,20 +1,7 @@
 #include "game/ui/TouchSlider.h"
+#include "game/core/Globals.h"
 #include "engine/core/AbyssEngine.h"
 #include "engine/render/PaintCanvas.h"
-#include <cstddef>
-
-// The TouchSlider constructor reads the global touch-padding configuration from
-// the application handle stored in g_TouchSlider_app. That handle is an untyped
-// pointer (no concrete engine class binds this offset), so we model only the one
-// field this code touches: an int "touchPadding" living at byte offset 0x7c.
-struct TouchSliderAppConfig {
-    char _reserved[0x7c];
-    int touchPadding;
-};
-#if __SIZEOF_POINTER__ == 4
-static_assert(offsetof(TouchSliderAppConfig, touchPadding) == 0x7c,
-              "touchPadding must sit at app offset 0x7c");
-#endif
 
 void TouchSlider::setPosition(int x, int y) {
     float trackRange = (float) (this->trackWidth - this->knobWidth);
@@ -27,9 +14,6 @@ void TouchSlider::setPosition(int x, int y) {
 
 
 static PaintCanvas **g_TouchSlider_canvas = &PaintCanvas::gCanvas;
-
-static void *g_TouchSlider_app_storage = nullptr;
-static void **g_TouchSlider_app = &g_TouchSlider_app_storage;
 
 TouchSlider::TouchSlider(int type, int x, int y, float value) {
     this->type = type;
@@ -58,7 +42,7 @@ TouchSlider::TouchSlider(int type, int x, int y, float value) {
     setPosition(x, y);
     this->numSteps = 0;
 
-    this->touchPadding = ((TouchSliderAppConfig *) *g_TouchSlider_app)->touchPadding;
+    this->touchPadding = Globals::layout->field_0x7c;
 }
 
 TouchSlider::~TouchSlider() {

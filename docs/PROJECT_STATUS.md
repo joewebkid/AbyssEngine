@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (ScrollTouchWindow global wiring; older subsystem
+Last reviewed: 2026-10-11 (TouchSlider layout wiring; older subsystem
 snapshots retain their dates)
+
+## TouchSlider layout-backed touch padding (2026-10-11)
+
+The slider constructor no longer reads its touch padding from a never-set
+null application placeholder. Android ARM loads `Globals::layout` and its
+field at `+0x7c`; native now does the same. Native `gof2`, 206/206 ARM units,
+and 35 verifier tests pass (one skipped). Full corpus remains 4,713
+comparisons of 4,323/4,524 original functions, 92.32% source-shape,
+80.46% strict fuzzy, 2,353 linked-exact and 1,008 byte-exact, with no
+lost exact pair. The constructor's focused source-shape drops 86.3% to
+85.1% while strict fuzzy rises 68.7% to 72.5%; the corrected data source
+takes precedence over that local score. Live touch behavior is untested.
+See [the slider audit](TOUCH_SLIDER_LAYOUT_ARM_2026-10-11.md).
 
 ## ScrollTouchWindow live layout/canvas wiring (2026-10-11)
 
