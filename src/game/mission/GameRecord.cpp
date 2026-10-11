@@ -126,16 +126,16 @@ GameRecord::GameRecord() {
     this->field_0x154 = 0;
     this->setWingmenStats(nullptr);
     this->field_0x15c = 0;
-    this->field_0x160 = 0;
-    this->field_0x164 = 0;
-    this->field_0x168 = 0;
-    this->field_0x16c = 0;
-    this->field_0x170 = 0;
-    this->field_0x174 = 0;
-    this->field_0x178 = 0;
-    this->field_0x17c = 0;
-    this->field_0x180 = 0;
-    this->field_0x184 = 0;
+    this->setArray160(nullptr);
+    this->setArray164(nullptr);
+    this->setArray168(nullptr);
+    this->setArray16c(nullptr);
+    this->setArray170(nullptr);
+    this->setArray174(nullptr);
+    this->setArray178(nullptr);
+    this->setArray17c(nullptr);
+    this->setArray180(nullptr);
+    this->setArray184(nullptr);
 
     this->field_0x1a4 = 0;
     this->field_0x1a8 = 0;
@@ -335,7 +335,7 @@ void GameRecord::load() {
         } else {
         LAB_checkStageRange:
             if ((0xc < campaignStage - 0x5bU) ||
-                (((Array<uint8_t> *) this->field_0x160)->data_[0x1b] != '\0'))
+                (((Array<uint8_t> *) this->getArray160())->data_[0x1b] != '\0'))
                 goto stationStackLoaded;
         }
         hints->flag_0x31 = 1;
@@ -345,8 +345,8 @@ void GameRecord::load() {
         Status::gStatus->setCampaignMission(m);
     }
 stationStackLoaded:
-    ((Station *) Status::gStatus->voidStation)->setItems((Array<Item *> *) this->field_0x180, true);
-    ((Station *) Status::gStatus->voidStation)->setShips((Array<Ship *> *) this->field_0x184, true);
+    ((Station *) Status::gStatus->voidStation)->setItems(this->getArray180(), true);
+    ((Station *) Status::gStatus->voidStation)->setShips(this->getArray184(), true);
     st = Status::gStatus;
     if (st->field_94 != (Array<bool> *) 0x0) {
         deadArray = (void *) Array_dtor(st->field_94);
@@ -497,7 +497,7 @@ afterDlcUnsaleable:
     st->field_0x30 = this->field_0x154;
     st->setWingmenStats(this->getWingmenStats());
     st->passengers = this->field_0x15c;
-    srcByteArray2 = (Array<uint8_t> *) this->field_0x160;
+    srcByteArray2 = (Array<uint8_t> *) this->getArray160();
     srcCount = srcByteArray2->size_;
     for (copyIndex = 0; srcCount != copyIndex; copyIndex = copyIndex + 1) {
         ((Array<uint8_t> *) st->systemVisibilities)->data_[copyIndex] =
@@ -508,26 +508,26 @@ afterDlcUnsaleable:
         visBuf[0x19] = 1;
     }
     visBuf[0x1a] = 1;
-    srcVec = (Array<uint32_t> *) this->field_0x164;
+    srcVec = (Array<uint32_t> *) this->getArray164();
     for (i = 0; i < srcVec->size_; i = i + 1) {
         ((Array<uint32_t> *) st->field_0x3c)->data_[i] = srcVec->data_[i];
     }
-    srcVec = (Array<uint32_t> *) this->field_0x168;
+    srcVec = (Array<uint32_t> *) this->getArray168();
     for (i = 0; i < srcVec->size_; i = i + 1) {
         ((Array<uint32_t> *) st->field_0x40)->data_[i] = srcVec->data_[i];
     }
-    srcVec = (Array<uint32_t> *) this->field_0x16c;
+    srcVec = (Array<uint32_t> *) this->getArray16c();
     for (i = 0; i < srcVec->size_; i = i + 1) {
         ((Array<uint32_t> *) st->field_0x44)->data_[i] = srcVec->data_[i];
     }
-    srcVec = (Array<uint32_t> *) this->field_0x170;
+    srcVec = (Array<uint32_t> *) this->getArray170();
     for (i = 0; i < srcVec->size_; i = i + 1) {
         ((Array<uint32_t> *) st->field_0x48)->data_[i] = srcVec->data_[i];
     }
     {
         Array<uint8_t> *dstByteVec = (Array<uint8_t> *) st->field_54;
-        st->field_4c = (Array<bool> *) this->field_0x174;
-        srcByteArray2 = (Array<uint8_t> *) this->field_0x178;
+        st->field_4c = this->getArray174();
+        srcByteArray2 = (Array<uint8_t> *) this->getArray178();
         i = srcByteArray2->size_;
         if (dstByteVec->size_ <= i) {
             for (j = 0; i != j; j = j + 1) {
@@ -572,7 +572,7 @@ afterDlcUnsaleable:
         hints->flag_0x38 = this->field_0x113;
         hints->flag_0x39 = this->field_0x112;
         hints->flag_0x3a = this->field_0x114;
-        st->field_58 = (Array<bool> *) this->field_0x17c;
+        st->field_58 = this->getArray17c();
         srcVec = (Array<uint32_t> *) this->field_0x1b4;
         if ((srcVec != (Array<uint32_t> *) 0x0) && (i = srcVec->size_, i != 0)) {
             for (j = 0; j < i; j = j + 1) {
@@ -591,7 +591,7 @@ afterDlcUnsaleable:
             Station *stStation = Status::gStatus->getStation();
             Array<Ship *> *stationShips = (Array<Ship *> *) stStation->getShips();
             if (stationShips != (Array<Ship *> *) 0x0) {
-                Array<Ship *> *recShips = (Array<Ship *> *) this->field_0x184;
+                Array<Ship *> *recShips = this->getArray184();
                 for (i = 0; i < stationShips->size(); i = i + 1) {
                     Array<int> *mods = recShips->data_[i]->getMods();
                     if (mods != (Array<int> *) 0x0) {

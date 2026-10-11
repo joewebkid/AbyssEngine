@@ -2141,7 +2141,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                 int b160 = 0;
                 AEFile_ReadInt(&b160, fd);
                 Array<bool> *arr160 = new Array<bool>();
-                *reinterpret_cast<void **>(&rec->field_0x160) = arr160;
+                rec->setArray160(arr160);
                 ArraySetLength(b160, *arr160);
                 for (unsigned i = 0; i < arr160->size(); i++) {
                     bool v = false;
@@ -2149,12 +2149,14 @@ void *RecordHandler::recordStoreRead(int slot) {
                     (*arr160)[i] = v;
                 }
 
-                const int intArrOffs[4] = {0x168, 0x164, 0x170, 0x16c};
                 for (int a = 0; a < 4; a++) {
                     int cnt = 0;
                     AEFile_ReadInt(&cnt, fd);
                     Array<int> *arr = new Array<int>();
-                    *reinterpret_cast<void **>(reinterpret_cast<char *>(rec) + intArrOffs[a]) = arr;
+                    if (a == 0) rec->setArray168(arr);
+                    else if (a == 1) rec->setArray164(arr);
+                    else if (a == 2) rec->setArray170(arr);
+                    else rec->setArray16c(arr);
                     ArraySetLength(cnt, *arr);
                     for (unsigned i = 0; i < arr->size(); i++) {
                         AEFile_ReadInt(&(*arr)[i], fd);
@@ -2164,7 +2166,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                 int b174 = 0;
                 AEFile_ReadInt(&b174, fd);
                 Array<bool> *arr174 = new Array<bool>();
-                *reinterpret_cast<void **>(&rec->field_0x174) = arr174;
+                rec->setArray174(arr174);
                 ArraySetLength(b174, *arr174);
                 for (unsigned i = 0; i < arr174->size(); i++) {
                     bool v = false;
@@ -2286,7 +2288,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                             (*items)[i] = (Item *) it;
                         }
                     }
-                    *reinterpret_cast<void **>(&rec->field_0x180) = items;
+                    rec->setArray180(items);
                 }
                 int ssN = 0;
                 AEFile_ReadInt(&ssN, fd);
@@ -2303,7 +2305,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                         AEFile_ReadInt(&r, fd);
                         ((Ship *) (sh))->setRace(r);
                     }
-                    *reinterpret_cast<void **>(&rec->field_0x184) = ships;
+                    rec->setArray184(ships);
                     recShips = ships;
                 }
 
@@ -2314,7 +2316,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                 int b178 = 0;
                 AEFile_ReadInt(&b178, fd);
                 Array<bool> *arr178 = new Array<bool>();
-                *reinterpret_cast<void **>(&rec->field_0x178) = arr178;
+                rec->setArray178(arr178);
                 ArraySetLength(b178, *arr178);
                 for (unsigned i = 0; i < arr178->size(); i++) {
                     bool v = false;
@@ -2403,7 +2405,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                     int bX = 0;
                     AEFile_ReadInt(&bX, fd);
                     Array<bool> *arr17c = new Array<bool>();
-                    *reinterpret_cast<void **>(&rec->field_0x17c) = arr17c;
+                    rec->setArray17c(arr17c);
                     ArraySetLength(bX, *arr17c);
                     for (unsigned i = 0; i < arr17c->size(); i++) {
                         bool v = false;

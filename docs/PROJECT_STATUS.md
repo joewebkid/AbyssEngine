@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (record wingmen native ABI; older subsystem
+Last reviewed: 2026-10-11 (record array native ABI; older subsystem
 snapshots retain their dates)
+
+## GameRecord array pointers 0x160–0x184 (2026-10-11)
+
+The ten adjacent record slots for visibility, four integer arrays,
+two further boolean arrays, and item/ship arrays are now typed pointers
+at their original ARM offsets. Native 64-bit builds retain full-width
+values in aligned sidecars instead of writing pointers across adjacent
+32-bit slots. The save-file read order remains unchanged. Native `gof2`,
+206/206 ARM units, and 36 verifier tests pass (one skipped). Full corpus:
+4,713 comparisons of 4,323/4,524 original functions, 92.24%
+source-shape, 80.43% strict fuzzy, 2,353 linked-exact, 1,008
+byte-exact; no lost exact pair, skipped unit, or wrong-type symbol.
+`recordStoreRead` source-shape rises 91.4% to 91.5%; other changed
+functions retain their prior shapes. A live save/reload round trip and
+full executable link remain untested. Remaining raw pointer slots such
+as `GameRecord + 0x5c`, `+ 0x134`, and `+ 0x1b4` are next to audit. See
+[the record array ABI audit](GAME_RECORD_ARRAY_POINTERS_ARM_2026-10-11.md).
 
 ## Record wingmen native ABI (2026-10-11)
 

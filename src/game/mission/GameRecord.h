@@ -10,6 +10,7 @@ class Standing;
 class BluePrint;
 class PendingProduct;
 class Agent;
+class Item;
 // ARM layout is byte-faithful to the original 32-bit binary (449 bytes / 0x1c1).
 // The on-disk save record is read/written almost entirely through raw offsets:
 // GameRecord.cpp treats `this` as `uint32_t rec[]` (rec[N] == *(uint32_t*)(this
@@ -175,16 +176,29 @@ public:
     uint32_t field_0x158;
 #endif
     uint32_t field_0x15c;        // 0x15c  rec[0x57]
-    uint32_t field_0x160;        // 0x160  rec[0x58]
-    uint32_t field_0x164;        // 0x164  rec[0x59]
-    uint32_t field_0x168;        // 0x168  rec[0x5a]
-    uint32_t field_0x16c;        // 0x16c  rec[0x5b]
-    uint32_t field_0x170;        // 0x170  rec[0x5c]
-    uint32_t field_0x174;        // 0x174  rec[0x5d]
-    uint32_t field_0x178;        // 0x178  rec[0x5e]
-    uint32_t field_0x17c;        // 0x17c  rec[0x5f]
-    uint32_t field_0x180;        // 0x180  rec[0x60]
-    uint32_t field_0x184;        // 0x184  rec[0x61]
+#if __SIZEOF_POINTER__ == 4
+    Array<bool> *array160;       // 0x160  rec[0x58]
+    Array<int> *array164;        // 0x164  rec[0x59]
+    Array<int> *array168;        // 0x168  rec[0x5a]
+    Array<int> *array16c;        // 0x16c  rec[0x5b]
+    Array<int> *array170;        // 0x170  rec[0x5c]
+    Array<bool> *array174;       // 0x174  rec[0x5d]
+    Array<bool> *array178;       // 0x178  rec[0x5e]
+    Array<bool> *array17c;       // 0x17c  rec[0x5f]
+    Array<Item *> *array180;     // 0x180  rec[0x60]
+    Array<Ship *> *array184;     // 0x184  rec[0x61]
+#else
+    uint32_t field_0x160;
+    uint32_t field_0x164;
+    uint32_t field_0x168;
+    uint32_t field_0x16c;
+    uint32_t field_0x170;
+    uint32_t field_0x174;
+    uint32_t field_0x178;
+    uint32_t field_0x17c;
+    uint32_t field_0x180;
+    uint32_t field_0x184;
+#endif
 #if __SIZEOF_POINTER__ == 4
     AbyssEngine::String previewSystemName; // 0x188, 12-byte ARM String
     AbyssEngine::String previewStationName; // 0x194, 12-byte ARM String
@@ -219,6 +233,16 @@ public:
     Array<Agent *> *agents;
     Array<AbyssEngine::String *> *wingmen;
     int *wingmenStats;
+    Array<bool> *array160;
+    Array<int> *array164;
+    Array<int> *array168;
+    Array<int> *array16c;
+    Array<int> *array170;
+    Array<bool> *array174;
+    Array<bool> *array178;
+    Array<bool> *array17c;
+    Array<Item *> *array180;
+    Array<Ship *> *array184;
 #endif
 
     AbyssEngine::String &getPreviewSystemName() { return previewSystemName; }
@@ -241,6 +265,26 @@ public:
     int *getWingmenStats() const { return wingmenStats; }
     void setWingmen(Array<AbyssEngine::String *> *value) { wingmen = value; }
     void setWingmenStats(int *value) { wingmenStats = value; }
+    Array<bool> *getArray160() const { return array160; }
+    Array<int> *getArray164() const { return array164; }
+    Array<int> *getArray168() const { return array168; }
+    Array<int> *getArray16c() const { return array16c; }
+    Array<int> *getArray170() const { return array170; }
+    Array<bool> *getArray174() const { return array174; }
+    Array<bool> *getArray178() const { return array178; }
+    Array<bool> *getArray17c() const { return array17c; }
+    Array<Item *> *getArray180() const { return array180; }
+    Array<Ship *> *getArray184() const { return array184; }
+    void setArray160(Array<bool> *value) { array160 = value; }
+    void setArray164(Array<int> *value) { array164 = value; }
+    void setArray168(Array<int> *value) { array168 = value; }
+    void setArray16c(Array<int> *value) { array16c = value; }
+    void setArray170(Array<int> *value) { array170 = value; }
+    void setArray174(Array<bool> *value) { array174 = value; }
+    void setArray178(Array<bool> *value) { array178 = value; }
+    void setArray17c(Array<bool> *value) { array17c = value; }
+    void setArray180(Array<Item *> *value) { array180 = value; }
+    void setArray184(Array<Ship *> *value) { array184 = value; }
 
     GameRecord();
 
@@ -279,6 +323,16 @@ static_assert(offsetof(GameRecord, pendingProducts) == 0x144, "pendingProducts")
 static_assert(offsetof(GameRecord, agents) == 0x148, "agents");
 static_assert(offsetof(GameRecord, wingmen) == 0x14c, "wingmen");
 static_assert(offsetof(GameRecord, wingmenStats) == 0x158, "wingmenStats");
+static_assert(offsetof(GameRecord, array160) == 0x160, "array160");
+static_assert(offsetof(GameRecord, array164) == 0x164, "array164");
+static_assert(offsetof(GameRecord, array168) == 0x168, "array168");
+static_assert(offsetof(GameRecord, array16c) == 0x16c, "array16c");
+static_assert(offsetof(GameRecord, array170) == 0x170, "array170");
+static_assert(offsetof(GameRecord, array174) == 0x174, "array174");
+static_assert(offsetof(GameRecord, array178) == 0x178, "array178");
+static_assert(offsetof(GameRecord, array17c) == 0x17c, "array17c");
+static_assert(offsetof(GameRecord, array180) == 0x180, "array180");
+static_assert(offsetof(GameRecord, array184) == 0x184, "array184");
 static_assert(offsetof(GameRecord, shipId) == 0x1a0, "");
 static_assert(offsetof(GameRecord, field_0x1b4) == 0x1b4, "");
 static_assert(offsetof(GameRecord, field_0x1b8) == 0x1b8, "");
@@ -305,6 +359,10 @@ static_assert(offsetof(GameRecord, wingmen) % alignof(Array<AbyssEngine::String 
               "native wingmen alignment");
 static_assert(offsetof(GameRecord, wingmenStats) % alignof(int *) == 0,
               "native wingmenStats alignment");
+static_assert(offsetof(GameRecord, array160) % alignof(Array<bool> *) == 0,
+              "native record array alignment");
+static_assert(offsetof(GameRecord, array184) % alignof(Array<Ship *> *) == 0,
+              "native record ship array alignment");
 #endif
 
 #endif
