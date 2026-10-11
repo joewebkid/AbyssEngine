@@ -27,6 +27,7 @@ namespace AbyssEngine {
     }
 }
 
+#if __SIZEOF_POINTER__ == 4
 namespace AbyssEngine {
     namespace AEMath {
         Matrix &Matrix::operator*=(const Matrix &p) {
@@ -67,6 +68,7 @@ namespace AbyssEngine {
         }
     }
 }
+#endif
 
 namespace AbyssEngine {
     Quaternion::~Quaternion() {

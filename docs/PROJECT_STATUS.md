@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (record core pointers and save-writer audit; older subsystem
+Last reviewed: 2026-10-11 (native link duplicate audit; older subsystem
 snapshots retain their dates)
+
+## Native executable-link duplicate audit (2026-10-11)
+
+A focused `RecordHandler::recordStoreRead` link probe exposed seven
+duplicate native definitions: six `Vector`/`Matrix` operators and
+`ApplicationManager::gAppManager`. Native builds now use the existing
+`AEMath.cpp` operator definitions and `ApplicationManager.cpp` global,
+while the 32-bit ARM units retain their prior definitions for corpus
+parity. The duplicate linker count fell from seven to zero; a small
+native math link/runtime smoke passes. A full record executable still
+does not link: thousands of unresolved call sites remain, including
+missing game helpers and FMOD binaries that are not in the repository.
+Native `gof2`, 206/206 ARM units, and 35 verifier tests pass (one
+skipped). Full corpus remains 4,713 comparisons of 4,323/4,524
+original functions, 92.24% source-shape, 80.43% strict fuzzy, 2,353
+linked-exact and 1,008 byte-exact, with no lost exact pair, skipped
+unit, or wrong-type symbol. A live save/reload remains untested. See
+[the native link audit](NATIVE_LINK_DUPLICATE_DEFINITIONS_2026-10-11.md).
 
 ## Record core pointers and save writer (2026-10-11)
 

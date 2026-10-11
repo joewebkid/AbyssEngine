@@ -1,5 +1,6 @@
 #include "engine/math/Vector.h"
 
+#if __SIZEOF_POINTER__ == 4
 namespace AbyssEngine {
     namespace AEMath {
         Vector &Vector::operator*=(const Vector &rhs) {
@@ -10,6 +11,7 @@ namespace AbyssEngine {
         }
     }
 }
+#endif
 
 namespace AbyssEngine {
     namespace AEMath {
@@ -21,6 +23,7 @@ namespace AbyssEngine {
     }
 }
 
+#if __SIZEOF_POINTER__ == 4
 namespace AbyssEngine {
     namespace AEMath {
         Vector &Vector::operator-=(const Vector &rhs) {
@@ -31,7 +34,6 @@ namespace AbyssEngine {
         }
     }
 }
-
 namespace AbyssEngine {
     namespace AEMath {
         Vector &Vector::operator/=(const Vector &rhs) {
@@ -53,3 +55,4 @@ namespace AbyssEngine {
         }
     }
 }
+#endif

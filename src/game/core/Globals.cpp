@@ -336,7 +336,9 @@ float Globals::pause_z;
 GameText *Globals::gameText;
 void *Globals::fontAlien;
 void *Globals::generator;
+#if __SIZEOF_POINTER__ == 4
 AbyssEngine::ApplicationManager *ApplicationManager::gAppManager = nullptr;
+#endif
 #include "engine/render/Mesh.h"
 #include "game/ship/Ship.h"
 #include "engine/render/PaintCanvas.h"
