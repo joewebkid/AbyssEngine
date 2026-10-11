@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (RecordHandler hash inputs; older subsystem
+Last reviewed: 2026-10-11 (PlayerCreature ARM layout and stats; older subsystem
 snapshots retain their dates)
+
+## PlayerCreature ABI, stats, and runtime wiring (2026-10-11)
+
+The Android ARM `PlayerCreature` layout now places its derived fields
+and byte flags at their original offsets, using inherited geometry
+and type instead of duplicated fields. One ELF-backed `{1, 1, 1, 0}`
+table replaces three zero tables. Constructor arguments, reset
+reactivation, RNG/sound globals, and the death-effect call were also
+restored. Native `gof2`, 206/206 ARM units, and 36 verifier tests pass
+(one skipped). The 20-function family improves from 85.5%/56.7% to
+96.1%/90.6% source-shape/strict fuzzy; exact counts rise from 5/2 to
+13/8 linked/byte. The full corpus remains 4,323/4,524 compared, but
+improves to 92.09% source-shape, 80.27% strict fuzzy, 2,333 linked-exact,
+and 1,003 byte-exact, with no lost exact pair, skipped unit, or wrong-type
+symbol. Live creature behavior remains untested; next inspect the
+`PlayerAsteroid` global dependencies. See
+[the ARM creature audit](PLAYER_CREATURE_ARM_LAYOUT_AND_STATS_2026-10-11.md).
 
 ## RecordHandler save/options hash inputs (2026-10-11)
 

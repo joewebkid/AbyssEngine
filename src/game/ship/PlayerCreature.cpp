@@ -1,22 +1,17 @@
 #include "game/ship/PlayerCreature.h"
+#include "engine/core/AERandom.h"
 #include "engine/render/AEGeometry.h"
 #include "engine/audio/FModSound.h"
+#include "game/core/Globals.h"
 #include "game/world/Level.h"
 #include "engine/render/ParticleSystemManager.h"
 #include "game/ship/KIPlayer.h"
 #include "game/ship/Player.h"
-#include "game/ship/PlayerJunk.h"
 #include "game/ship/PlayerEgo.h"
 #include "game/weapons/Radar.h"
 
 
-static int PlayerCreature_weightTable[16] = {};
-static int PlayerCreature_rageTable[16] = {};
-static int PlayerCreature_enduranceTable[16] = {};
-static int *PlayerCreature_randomMax = nullptr;
-static FModSound **PlayerCreature_sound = nullptr;
-
-void PlayerJunk_render(PlayerJunk * self);
+static const int PlayerCreature_typeValues[4] = {1, 1, 1, 0};
 
 namespace AbyssEngine {
     namespace AEMath {
@@ -26,15 +21,6 @@ namespace AbyssEngine {
     }
 }
 
-namespace AbyssEngine {
-    namespace AERandom {
-        int nextInt(int rng, int bound);
-    }
-}
-
-void *ParticleSystemManager_emitManual_v(
-    void *self, int handle, const float *pos, void *ret, const float *vel, float p5);
-
 uint8_t PlayerCreature::isHooked() {
     return this->hooked;
 }
@@ -42,6 +28,7 @@ uint8_t PlayerCreature::isHooked() {
 void PlayerCreature::calmDown() {
     this->rageTimer = 0;
     this->raging = 0;
+    this->hooked = 0;
     this->endurance = this->maxEndurance;
 }
 
@@ -49,16 +36,17 @@ void PlayerCreature::unhook() {
     this->caught = 0;
     this->rageTimer = 0;
     this->raging = 0;
+    this->hooked = 0;
     this->endurance = this->maxEndurance;
 }
 
 void PlayerCreature::render() {
-    if (this->renderGeometry != nullptr) {
-        this->renderGeometry->render();
+    if (this->crateGeometry != nullptr) {
+        this->crateGeometry->render();
     }
 
     if ((uint32_t)(this->state - 3) >= 2) {
-        PlayerJunk_render((PlayerJunk *) this);
+        KIPlayer::render();
     }
 }
 
@@ -67,7 +55,7 @@ int PlayerCreature::getEndurance() {
 }
 
 int PlayerCreature::getWeight() {
-    return PlayerCreature_weightTable[this->creatureType];
+    return PlayerCreature_typeValues[this->type];
 }
 
 uint8_t PlayerCreature::isCaught() {
@@ -76,9 +64,10 @@ uint8_t PlayerCreature::isCaught() {
 
 void PlayerCreature::rage(int amount) {
     float amountScale = (float) amount / -100.0f;
-    float typeScale = (float) PlayerCreature_rageTable[this->creatureType];
+    float typeScale = (float) PlayerCreature_typeValues[this->type];
     this->rageTimer = 0;
-    this->raging = 0x101;
+    this->raging = 1;
+    this->hooked = 1;
     this->rageScale = (amountScale + 1.0f) * (typeScale + 1.0f);
 }
 
@@ -92,7 +81,7 @@ int PlayerCreature::getItemIndex() {
 
 PlayerCreature::PlayerCreature(int kind, int itemIndex, Player *player, AEGeometry *geometry,
                                float x, float y, float z)
-    : KIPlayer(0, 0, player, geometry, x, y, z, true) {
+    : KIPlayer(kind, -1, player, geometry, x, y, z, false) {
     this->rageMatrix = AbyssEngine::AEMath::Matrix();
 
     this->caught = 0;
@@ -100,9 +89,10 @@ PlayerCreature::PlayerCreature(int kind, int itemIndex, Player *player, AEGeomet
     this->rageScale = 1.0f;
     this->rageTimer = 0;
     this->raging = 0;
+    this->hooked = 0;
 
     int hitpoints = this->player->getHitpoints();
-    int endurance = (int) (((float) PlayerCreature_enduranceTable[kind] / 10.0f) * 8000.0f) + 8000;
+    int endurance = (int) (((float) PlayerCreature_typeValues[kind] / 10.0f) * 8000.0f) + 8000;
     this->maxEndurance = endurance;
     this->endurance = endurance;
     this->lastHitpoints = hitpoints;
@@ -143,8 +133,9 @@ void PlayerCreature::update(int elapsed) {
         } else {
             int half = elapsed >> 1;
             float negativeHalf = (float) half * -0.5f;
-            int first = AbyssEngine::AERandom::nextInt(*PlayerCreature_randomMax, half);
-            int second = AbyssEngine::AERandom::nextInt(*PlayerCreature_randomMax, half);
+            auto *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
+            int first = random->nextInt(half);
+            int second = random->nextInt(half);
             float xAngle = ((negativeHalf + (float) first) * 0.000244140625f) * 2.0f * 3.1415927f;
             float zAngle = ((negativeHalf + (float) second) * 0.000244140625f) * 2.0f * 3.1415927f;
             AbyssEngine::AEMath::MatrixSetRotation(this->rageMatrix, xAngle, zAngle, 0.0f);
@@ -166,7 +157,7 @@ void PlayerCreature::update(int elapsed) {
     if (this->player->getHitpoints() < 1) {
         if ((uint32_t)(this->state - 3) >= 2) {
             this->state = 3;
-            (*PlayerCreature_sound)->play(0x16, nullptr, nullptr, 0.0f);
+            Globals::sound->play(0x16, nullptr, nullptr, 0.0f);
             this->player->setActive(false);
 
             Level *level = this->level;
@@ -187,10 +178,8 @@ void PlayerCreature::update(int elapsed) {
             position.y = this->posY;
             position.z = this->posZ;
             Level *levelObject = this->level;
-            ParticleSystemManager_emitManual_v(
-                (void *) (intptr_t) levelObject->particleSystemMgr,
-                levelObject->field_34,
-                (const float *) &position, nullptr, (const float *) &zero, 0.0f);
+            levelObject->particleSystemMgr->emitManual(
+                levelObject->field_34, position, 0, zero, -1.0f);
         }
     }
 
@@ -214,6 +203,7 @@ int PlayerCreature::outerCollide(float /*x*/, float /*y*/, float /*z*/) {
 
 void PlayerCreature::reset() {
     KIPlayer::reset();
+    this->setActive(true);
     this->state = 0;
     this->endurance = this->maxEndurance;
     this->lastHitpoints = this->player->getHitpoints();
