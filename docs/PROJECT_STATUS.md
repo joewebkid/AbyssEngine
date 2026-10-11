@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (dock-space point loader; older subsystem
+Last reviewed: 2026-10-11 (collision and part resource paths; older subsystem
 snapshots retain their dates)
+
+## Collision and part resource paths (2026-10-11)
+
+Android ARM confirms five `data/bin` resources for wreck, station and
+static collision plus station and ship parts. Ten stale path literals
+were corrected without changing record parsing. Native `gof2`, 206/206
+ARM units and 36 verifier tests pass (one skipped). The focused family
+remains 86.0% source-shape / 45.6% strict fuzzy, with no exact matches.
+The full corpus remains 4,323/4,524 compared at 92.05% source-shape and
+80.12% strict fuzzy, with 2,325 linked-exact and 997 byte-exact; no
+exact-pair loss, skipped row or wrong-type symbol. Original collision/
+part assets were not available locally, so parsing and runtime behavior
+remain unverified; see
+[the ARM resource-path audit](FILE_READ_COLLISION_PART_PATHS_ARM_2026-10-11.md).
 
 ## Dock-space point loader (2026-10-11)
 

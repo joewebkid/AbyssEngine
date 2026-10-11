@@ -609,12 +609,12 @@ Array<Agent *> *FileRead::loadAgents() {
 }
 
 Array<int32_t> *FileRead::loadWreckCollision(int32_t id) {
-    String path("wreck_collision.bin");
+    String path("data/bin/wreck_collisions.bin");
 
     Array<int32_t> *result = 0;
     if (AEFile::FileExist(path) != 0) {
         uint32_t handle;
-        AEFile::OpenRead("wreck_collision.bin", &handle);
+        AEFile::OpenRead("data/bin/wreck_collisions.bin", &handle);
 
         int32_t key = 0;
         uint32_t count = 0;
@@ -642,12 +642,12 @@ Array<int32_t> *FileRead::loadWreckCollision(int32_t id) {
 }
 
 Array<int32_t> *FileRead::loadStationCollision(int32_t id) {
-    String path("station_collision.bin");
+    String path("data/bin/collision.bin");
 
     Array<int32_t> *result = 0;
     if (AEFile::FileExist(path) != 0) {
         uint32_t handle;
-        AEFile::OpenRead("station_collision.bin", &handle);
+        AEFile::OpenRead("data/bin/collision.bin", &handle);
 
         int32_t key = 0;
         uint32_t count = 0;
@@ -675,12 +675,12 @@ Array<int32_t> *FileRead::loadStationCollision(int32_t id) {
 }
 
 Array<int32_t> *FileRead::loadStaticCollision(int32_t id) {
-    String path("static_collision.bin");
+    String path("data/bin/static_collisions.bin");
 
     Array<int32_t> *result = 0;
     if (AEFile::FileExist(path) != 0) {
         uint32_t handle;
-        AEFile::OpenRead("static_collision.bin", &handle);
+        AEFile::OpenRead("data/bin/static_collisions.bin", &handle);
 
         int32_t key = 0;
         uint32_t count = 0;
@@ -708,12 +708,12 @@ Array<int32_t> *FileRead::loadStaticCollision(int32_t id) {
 }
 
 Array<int32_t> *FileRead::loadStationParts(int32_t id, int32_t special) {
-    String path("station_parts.bin");
+    String path("data/bin/stationparts.bin");
 
     Array<int32_t> *parts = 0;
     if (AEFile::FileExist(path) != 0) {
         uint32_t handle;
-        AEFile::OpenRead("station_parts.bin", &handle);
+        AEFile::OpenRead("data/bin/stationparts.bin", &handle);
 
         int32_t wanted = id + 1;
         if (special == 1) {
@@ -766,12 +766,12 @@ Array<int32_t> *FileRead::loadStationParts(int32_t id, int32_t special) {
 }
 
 Array<int32_t> *FileRead::loadShipParts(int32_t id) {
-    String path("ship_parts.bin");
+    String path("data/bin/shipparts.bin");
 
     Array<int32_t> *parts = 0;
     if (AEFile::FileExist(path) != 0) {
         uint32_t handle;
-        AEFile::OpenRead("ship_parts.bin", &handle);
+        AEFile::OpenRead("data/bin/shipparts.bin", &handle);
 
         int32_t wanted = id + 1;
         for (uint32_t i = 0; i <= 0x40; i++) {
