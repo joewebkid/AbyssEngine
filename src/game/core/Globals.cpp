@@ -419,8 +419,6 @@ void FModSound_ctor(void *s);
 
 int FModSound_tryToStopMusicForBGMusic();
 
-int Station_getIndex(int station);
-
 static Status **g_status;
 
 static void *const gLB_dest = nullptr;
@@ -1912,111 +1910,100 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     return (int) (long) arr;
 }
 
-static void *const gPM_snd0 = nullptr;
-static void *const gPM_snd1 = nullptr;
-static void *const gPM_snd2 = nullptr;
-static void *const gPM_sndStatus = nullptr;
-static const int gPM_table0 = 0;
-static const int gPM_table1 = 0;
+static const int gPM_table0[] = {0x80, 0x7f, 0x81, 0x82};
+static const int gPM_table1[] = {0x86, 0x8b, 0x8a, 0x89};
+static_assert(sizeof(gPM_table0) == 4 * sizeof(int) &&
+              sizeof(gPM_table1) == 4 * sizeof(int), "music race tables");
 
 void Globals::playMusicAndFadeOutCurrent(int mode) {
-    int snd;
     int track;
-    int vol = 0;
-
     if (mode == 2) {
-        int *sndP = *(int **) gPM_snd2;
-        ((FModSound *) (*sndP))->stop(0);
-        snd = *sndP;
-        track = 0x91;
-        ((FModSound *) (snd))->play(track, 0, 0, (float) vol);
+        FModSound *snd = Globals::sound;
+        snd->stop(snd->currentMusicEvent);
+        snd->play(0x91, nullptr, nullptr, 0.0f);
         return;
     }
     if (mode == 1) {
-        int *statSnd = *(int **) gPM_sndStatus;
-        if (Status::gStatus->inAlienOrbit() != 0) {
-            int *sndP = *(int **) gPM_snd1;
-            ((FModSound *) (*sndP))->stop(0);
-            snd = *sndP;
+        if (Status::gStatus->inAlienOrbit()) {
+            FModSound *snd = Globals::sound;
+            snd->stop(snd->currentMusicEvent);
             track = 0x88;
-            int m = Status::gStatus->getCurrentCampaignMission();
-            if (m > 0x92 && Status::gStatus->getCurrentCampaignMission() < 0x9a) {
+            int mission = Status::gStatus->getCurrentCampaignMission();
+            if (mission > 0x92 && Status::gStatus->getCurrentCampaignMission() < 0x9a)
                 track = 0x91;
-            }
-            ((FModSound *) (snd))->play(track, 0, 0, (float) vol);
+            snd->play(track, nullptr, nullptr, 0.0f);
             return;
         }
         Status::gStatus->getSystem()->getRace();
-        int *sndP = *(int **) gPM_snd1;
-        ((FModSound *) (*sndP))->stop(0);
-        if (Station_getIndex((int) (long) Status::gStatus->getStation()) == 0x6c) {
-            ((FModSound *) (*sndP))->play(0x92, 0, 0, (float) vol);
+        FModSound *snd = Globals::sound;
+        snd->stop(snd->currentMusicEvent);
+        if (Status::gStatus->getStation()->getIndex() == 0x6c) {
+            snd->play(0x92, nullptr, nullptr, 0.0f);
             return;
         }
-        if (Station_getIndex((int) (long) Status::gStatus->getStation()) == 0x65) {
-            ((FModSound *) (*sndP))->play(0x93, 0, 0, (float) vol);
+        if (Status::gStatus->getStation()->getIndex() == 0x65) {
+            snd->play(0x93, nullptr, nullptr, 0.0f);
             return;
         }
-        if (Status::gStatus->inSupernovaSystem() != 0) {
+        if (Status::gStatus->inSupernovaSystem()) {
             if (Status::gStatus->getCurrentCampaignMission() == 0x59) {
-                ((FModSound *) (*sndP))->play(0x8be, 0, 0, (float) vol);
+                snd->play(0x8be, nullptr, nullptr, 0.0f);
                 return;
             }
-            if (Status::gStatus->getMission() != 0 && ((Mission *) (long) Status::gStatus->getMission())->isEmpty() == 0) {
-                int tgt = ((Mission *) (long) Status::gStatus->getMission())->getTargetStation();
-                if (tgt == Station_getIndex((int) (long) Status::gStatus->getStation())) {
-                    int cm = Status::gStatus->getCurrentCampaignMission();
-                    track = cm < 0x6a ? 0x8c1 : 0x8c2;
-                    ((FModSound *) (*sndP))->play(track, 0, 0, (float) vol);
+            if (Status::gStatus->getMission() && !Status::gStatus->getMission()->isEmpty()) {
+                int target = Status::gStatus->getMission()->getTargetStation();
+                if (target == Status::gStatus->getStation()->getIndex()) {
+                    int campaign = Status::gStatus->getCurrentCampaignMission();
+                    track = campaign < 0x6a ? 0x8c1 : 0x8c2;
+                    snd->play(track, nullptr, nullptr, 0.0f);
                     return;
                 }
             }
-            ((FModSound *) (*sndP))->play(0x94, 0, 0, (float) vol);
+            snd->play(0x94, nullptr, nullptr, 0.0f);
             return;
         }
-        if (Status::gStatus->inDeepScienceOrbit() != 0) {
-            ((FModSound *) (*sndP))->play(0x98, 0, 0, (float) vol);
+        if (Status::gStatus->inDeepScienceOrbit()) {
+            snd->play(0x98, nullptr, nullptr, 0.0f);
             return;
         }
-        if (Station_getIndex((int) (long) Status::gStatus->getStation()) == 0x78 &&
+        if (Status::gStatus->getStation()->getIndex() == 0x78 &&
             (Status::gStatus->getCurrentCampaignMission() == 0x7e ||
              Status::gStatus->getCurrentCampaignMission() == 0x85)) {
-            ((FModSound *) (*sndP))->play(0x8bf, 0, 0, (float) vol);
+            snd->play(0x8bf, nullptr, nullptr, 0.0f);
             return;
         }
-        const int *table = &gPM_table1;
+        const int *table = gPM_table1;
         track = table[Status::gStatus->getSystem()->getRace()];
-        ((FModSound *) (*sndP))->play(track, 0, 0, (float) vol);
+        snd->play(track, nullptr, nullptr, 0.0f);
         return;
     }
-    if (mode != 0) {
+    if (mode != 0)
         return;
-    }
 
     int race = Status::gStatus->getSystem()->getRace();
-    int *sndP = *(int **) gPM_snd0;
-    ((FModSound *) (*sndP))->stop(0);
-    if (Station_getIndex((int) (long) Status::gStatus->getStation()) == 0x6c) {
-        ((FModSound *) (*sndP))->play(0x84, 0, 0, (float) vol);
+    FModSound *snd = Globals::sound;
+    snd->stop(snd->currentMusicEvent);
+    if (Status::gStatus->getStation()->getIndex() == 0x6c) {
+        snd->play(0x84, nullptr, nullptr, 0.0f);
         return;
     }
-    if (Station_getIndex((int) (long) Status::gStatus->getStation()) == 0x65) {
-        ((FModSound *) (*sndP))->play(0x83, 0, 0, (float) vol);
+    if (Status::gStatus->getStation()->getIndex() == 0x65) {
+        snd->play(0x83, nullptr, nullptr, 0.0f);
         return;
     }
-    int idx = Station_getIndex((int) (long) Status::gStatus->getStation());
-    if (idx == 10 || Station_getIndex((int) (long) Status::gStatus->getStation()) == 100) {
-        if (Station_getIndex((int) (long) Status::gStatus->getStation()) == 10 &&
+    int index = Status::gStatus->getStation()->getIndex();
+    if (index == 10 || Status::gStatus->getStation()->getIndex() == 100) {
+        if (Status::gStatus->getStation()->getIndex() == 10 &&
             Status::gStatus->getCurrentCampaignMission() == 0x9f) {
-            ((FModSound *) (*sndP))->play(0x90, 0, 0, (float) vol);
+            snd->play(0x90, nullptr, nullptr, 0.0f);
             return;
         }
-        ((FModSound *) (*sndP))->play(0x85, 0, 0, (float) vol);
+        snd->play(0x85, nullptr, nullptr, 0.0f);
         return;
     }
-    const int *table = &gPM_table0;
+    const int *table = gPM_table0;
     track = table[race];
-    ((FModSound *) (*sndP))->play(track, 0, 0, (float) vol);
+    snd->play(track, nullptr, nullptr, 0.0f);
 }
 
 static const int gGDS_pairTable[1] = {};

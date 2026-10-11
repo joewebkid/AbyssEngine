@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (native Globals canvas pointer; older subsystem
+Last reviewed: 2026-10-11 (Globals music selection; older subsystem
 snapshots retain their dates)
+
+## Globals music selection recovery (2026-10-11)
+
+`playMusicAndFadeOutCurrent` now uses the live `Globals::sound`, calls
+`Station::getIndex()` without truncating station pointers, stops the current
+music event, and selects race tracks from the two four-entry Android ARM
+tables. The prior null sound placeholders and zero-sized effective tables
+could not run correctly. Native `gof2`, 206/206 ARM units, and 35 verifier
+tests pass (one skipped). The function improves from 86.9% to 93.1%
+source-shape and 55.9% to 70.4% strict fuzzy. Full corpus: 4,713
+comparisons of 4,323/4,524 original functions, 92.32% source-shape,
+80.47% strict fuzzy, 2,353 linked-exact and 1,008 byte-exact, with
+zero exact-pair losses. Live FMOD playback remains untested. See
+[the music recovery audit](GLOBALS_MUSIC_SELECTION_ARM_2026-10-11.md).
 
 ## Native Globals canvas pointer width (2026-10-11)
 
