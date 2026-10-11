@@ -2006,7 +2006,10 @@ void Globals::playMusicAndFadeOutCurrent(int mode) {
     snd->play(track, nullptr, nullptr, 0.0f);
 }
 
-static const int gGDS_pairTable[1] = {};
+static const int gGDS_pairTable[] = {
+#include "game/core/DialogueSoundPairs.inc"
+};
+static_assert(sizeof(gGDS_pairTable) == 3008 * sizeof(int), "dialogue sound pairs");
 
 int Globals::getDialogueSoundId(int code, Agent *agent) {
     const int *t = gGDS_pairTable;

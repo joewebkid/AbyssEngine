@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (Globals music selection; older subsystem
+Last reviewed: 2026-10-11 (dialogue sound pair table; older subsystem
 snapshots retain their dates)
+
+## Dialogue sound pair table recovery (2026-10-11)
+
+`Globals::getDialogueSoundId` now searches the full 1,504-pair Android
+mapping instead of reading far beyond a one-element placeholder. The
+12,032-byte table extracted from Android `.rodata` matches the compiled
+ARM object's table byte for byte by SHA-256, and a regression test guards
+its count, key uniqueness, and contents. Native `gof2`, 206/206 ARM units,
+and 36 verifier tests pass (one skipped). The function improves from
+96.1% to 97.2% source-shape. Full corpus remains 4,713 comparisons of
+4,323/4,524 original functions, 92.32% source-shape, 80.47% strict fuzzy,
+2,353 linked-exact and 1,008 byte-exact, with zero exact-pair losses.
+Live dialogue audio remains untested. See
+[the pair-table audit](GLOBALS_DIALOGUE_SOUND_PAIRS_ARM_2026-10-11.md).
 
 ## Globals music selection recovery (2026-10-11)
 
