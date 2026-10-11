@@ -456,7 +456,7 @@ Status::Status() {
     rating = 0;
     playingTime = 0;
     playerStation = new Station();
-    field_8c = 0;
+    setPreviousShip(nullptr);
     ship = 0;
     mission = 0;
     station = 0;
@@ -598,7 +598,7 @@ void Status::resetGame() {
     int *settings = g_rg_settings;
     GameSettings *srec = (GameSettings *) *settings;
 
-    this->field_8c = 0;
+    this->setPreviousShip(nullptr);
     this->boughtEquipment = 0;
     this->field_0x100 = 0;
     this->field_0x104 = 0;
@@ -1400,8 +1400,8 @@ void Status::departStation(Station *dest) {
                 same = dest->getIndex() == mission->getTargetStation();
             same = same || dest->getIndex() == field_80;
             if (!same) {
-                if (field_8c + 1 >= 10) {
-                    field_8c = 0;
+                if (field_88 + 1 >= 10) {
+                    field_88 = 0;
                     AbyssEngine::AERandom *rng = AERandom::gRandom;
                     int sys;
                     do {
@@ -1415,7 +1415,7 @@ void Status::departStation(Station *dest) {
                     int n = rng->nextInt(sids->size());
                     field_80 = (*sids)[n];
                 } else {
-                    field_8c = field_8c + 1;
+                    field_88 = field_88 + 1;
                 }
             }
         }

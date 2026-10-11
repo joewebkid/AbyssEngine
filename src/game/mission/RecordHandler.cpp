@@ -2196,7 +2196,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                     int wi = 0;
                     AEFile_ReadInt(&wi, fd);
                     void *wship = (*shipDefs)[wi]->makeShip(-1);
-                    *reinterpret_cast<void **>(&rec->field_0x134) = wship;
+                    rec->setPreviousShip((Ship *) wship);
                     int r = 0;
                     AEFile_ReadInt(&r, fd);
                     ((Ship *) (wship))->setRace(r);
@@ -2340,7 +2340,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                         Array<int> *a = new Array<int>();
                         ArraySetLength(m1, *a);
                         for (int i = 0; i < m1; i++) { AEFile_ReadInt(&(*a)[i], fd); }
-                        ((Ship *) (*reinterpret_cast<void **>(&rec->field_0x134)))->setMods(a);
+                        rec->getPreviousShip()->setMods(a);
                     }
 
                     int stShipGroups = 0;

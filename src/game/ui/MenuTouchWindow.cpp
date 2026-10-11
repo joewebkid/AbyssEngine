@@ -2421,7 +2421,7 @@ void MenuTouchWindow::startValkyrie() {
     OptionsRecord *opt = (OptionsRecord *) Globals::hints;
     void *ach = Globals::achievements;
     OptionsRecord *optB = (OptionsRecord *) Globals::options;
-    ((Status *) *statusHolder)->preSetField0x84 = 0x1a0a;
+    ((Status *) *statusHolder)->field_84 = 0x1a0a;
     opt->flag_word_0x8 = 0x101;
     opt->flag_word_0xd = 0x101;
     opt->flag_word_0x1c = 0x101;
@@ -3934,7 +3934,7 @@ void MenuTouchWindow::startSupernova() {
 
     OptionsRecord *opt = (OptionsRecord *) Globals::hints;
     OptionsRecord *optB = (OptionsRecord *) Globals::options;
-    ((Status *) *statusHolder)->preSetField0x84 = 0x1a0a;
+    ((Status *) *statusHolder)->field_84 = 0x1a0a;
     opt->flag_dword_0x20 = 0x1010101;
     opt->flag_0x17 = 1;
     opt->flag_0x36 = 0;

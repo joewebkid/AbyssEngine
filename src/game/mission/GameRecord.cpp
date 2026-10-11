@@ -115,7 +115,7 @@ GameRecord::GameRecord() {
     this->field_0x1c0 = 0;
 
     this->setShip(nullptr);
-    this->field_0x134 = 0;
+    this->setPreviousShip(nullptr);
     this->setStation(nullptr);
     this->setStanding(nullptr);
     this->setBluePrints(nullptr);
@@ -474,7 +474,7 @@ afterDlcUnsaleable:
         }
     }
     st = Status::gStatus;
-    st->field_8c = this->field_0x134;
+    st->setPreviousShip(this->getPreviousShip());
     st->setStation(this->getStation());
     Status::gStatus->setMission(reinterpret_cast<Mission *>(Mission::empty));
     st->standing = this->getStanding();

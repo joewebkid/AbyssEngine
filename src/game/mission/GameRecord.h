@@ -148,7 +148,11 @@ public:
 #else
     uint32_t field_0x130;
 #endif
-    uint32_t field_0x134;        // 0x134  rec[0x4d]
+#if __SIZEOF_POINTER__ == 4
+    Ship *previousShip;          // 0x134  rec[0x4d]
+#else
+    uint32_t field_0x134;
+#endif
 #if __SIZEOF_POINTER__ == 4
     Station *station;            // 0x138  rec[0x4e]
 #else
@@ -254,6 +258,7 @@ public:
     Array<Ship *> *array184;
     Array<Station *> *stationStack;
     Array<Wanted *> *wanted;
+    Ship *previousShip;
 #endif
 
     AbyssEngine::String &getPreviewSystemName() { return previewSystemName; }
@@ -300,6 +305,8 @@ public:
     Array<Wanted *> *getWanted() const { return wanted; }
     void setStationStack(Array<Station *> *value) { stationStack = value; }
     void setWanted(Array<Wanted *> *value) { wanted = value; }
+    Ship *getPreviousShip() const { return previousShip; }
+    void setPreviousShip(Ship *value) { previousShip = value; }
 
     GameRecord();
 
@@ -332,6 +339,7 @@ static_assert(offsetof(GameRecord, previewStationName) == 0x194, "previewStation
 static_assert(offsetof(GameRecord, field_0x119) == 0x119, "");
 static_assert(offsetof(GameRecord, rank) == 0x11c, "");
 static_assert(offsetof(GameRecord, ship) == 0x130, "ship");
+static_assert(offsetof(GameRecord, previousShip) == 0x134, "previousShip");
 static_assert(offsetof(GameRecord, station) == 0x138, "station");
 static_assert(offsetof(GameRecord, standing) == 0x13c, "standing");
 static_assert(offsetof(GameRecord, bluePrints) == 0x140, "bluePrints");
@@ -383,6 +391,8 @@ static_assert(offsetof(GameRecord, stationStack) % alignof(Array<Station *> *) =
               "native record station stack alignment");
 static_assert(offsetof(GameRecord, wanted) % alignof(Array<Wanted *> *) == 0,
               "native record wanted alignment");
+static_assert(offsetof(GameRecord, previousShip) % alignof(Ship *) == 0,
+              "native record previous ship alignment");
 #endif
 
 #endif

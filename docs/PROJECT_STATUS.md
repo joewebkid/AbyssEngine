@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (record station-stack and wanted ABI; older subsystem
+Last reviewed: 2026-10-11 (previous-ship and Status offset audit; older subsystem
 snapshots retain their dates)
+
+## Previous-ship record and Status offset repair (2026-10-11)
+
+Android ARM distinguishes `Status + 0x84` (menu preset), `+ 0x88`
+(reroute counter), and `+ 0x8c` (previous ship pointer). The native
+source had accidentally aliased the preset and counter to `+ 0x8c`.
+Those uses now match ARM, and `GameRecord + 0x134` transfers the ship
+pointer at full native width to `Status`. Native `gof2`, 206/206 ARM
+units, and 35 verifier tests pass (one skipped). Full corpus remains
+4,713 comparisons of 4,323/4,524 original functions, 92.24%
+source-shape, 80.43% strict fuzzy, 2,353 linked-exact and 1,008
+byte-exact, with no lost exact pair, skipped unit, or wrong-type
+symbol. `Status::departStation` source-shape rises 83.8% to 84.0%; both
+affected menu starts rise 0.1 point. A live save/reload and new-game
+runtime test remain unverified. See [the ARM offset audit](GAME_RECORD_PREVIOUS_SHIP_STATUS_OFFSETS_ARM_2026-10-11.md).
 
 ## GameRecord station-stack and wanted pointers (2026-10-11)
 

@@ -124,12 +124,12 @@ public:
     int32_t field_7c;                        // 0x7c
     int32_t field_80;                        // 0x80
     int32_t field_84;                        // 0x84
-    int32_t field_88;                        // 0x88 (binary gap)
-
-    union {                                  // 0x8c (previousShip)
-        int32_t field_8c;
-        int32_t preSetField0x84;
-    };
+    int32_t field_88;                        // 0x88 (mission reroute counter)
+#if __SIZEOF_POINTER__ == 4
+    Ship *previousShip;                      // 0x8c
+#else
+    int32_t field_8c;
+#endif
 
     Array<int> *field_90;                    // 0x90
     Array<bool> *field_94;                   // 0x94
@@ -255,10 +255,13 @@ public:
     uint32_t _nativeWingmenPadding;
     Array<String *> *wingmen;
     int *wingmenStats;
+    Ship *previousShip;
 #endif
 
     int *getWingmenStats() const { return wingmenStats; }
     void setWingmenStats(int *value) { wingmenStats = value; }
+    Ship *getPreviousShip() const { return previousShip; }
+    void setPreviousShip(Ship *value) { previousShip = value; }
 
     Status();
 
@@ -511,7 +514,9 @@ static_assert(offsetof(Status, field_60) == 0x60, "armorHp");
 static_assert(offsetof(Status, field_64) == 0x64, "hullHp");
 static_assert(offsetof(Status, field_68) == 0x68, "energy");
 static_assert(offsetof(Status, playerStation) == 0x78, "");
-static_assert(offsetof(Status, field_8c) == 0x8c, "previousShip");
+static_assert(offsetof(Status, field_84) == 0x84, "menu preset field");
+static_assert(offsetof(Status, field_88) == 0x88, "mission reroute counter");
+static_assert(offsetof(Status, previousShip) == 0x8c, "previousShip");
 static_assert(offsetof(Status, field_0xf0) == 0xf0, "");
 static_assert(offsetof(Status, field_f4) == 0xf4, "");
 static_assert(offsetof(Status, field_0x100) == 0x100, "");
@@ -559,6 +564,8 @@ static_assert(offsetof(Status, wingmen) % alignof(Array<String *> *) == 0,
               "native wingmen alignment");
 static_assert(offsetof(Status, wingmenStats) % alignof(int *) == 0,
               "native wingmenStats alignment");
+static_assert(offsetof(Status, previousShip) % alignof(Ship *) == 0,
+              "native previousShip alignment");
 #endif
 
 #endif
