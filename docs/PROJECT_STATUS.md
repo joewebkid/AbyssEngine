@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (PlayerGasCloud particle update; older subsystem
+Last reviewed: 2026-10-11 (record hint and format wiring; older subsystem
 snapshots retain their dates)
+
+## Record hint and extended-format wiring (2026-10-11)
+
+Android ARM/ELF confirms that the saved flag block is `Globals::hints`,
+the option flags are `Globals::options`, the empty mission comes from
+`Mission::empty`, and the extended save tag is `0x6e6a78`. Both writer
+and reader now use that tag, and `GameRecord::load` maps the gas-cloud
+hint `0x2d` to the same live array used by the cloud. The former
+absolute pointer slots and null writer aliases are removed for these
+paths. Focused source-shape improves from 96.9% to 97.6% for
+`GameRecord::load` and 62.0% to 90.9% for `recordStoreWrite`;
+`recordStoreRead` remains 26.4%. Native `gof2`, 206/206 ARM units,
+and 36 verifier tests pass (one skipped). The full corpus remains
+4,323/4,524 at 92.14%/80.38% source-shape/strict fuzzy, with
+2,343 linked-exact, 1,008 byte-exact, and no lost exact pair,
+skipped unit, or wrong-type symbol. A live save/reload round trip is
+not verified: `recordStoreRead` still has null item/ship-definition
+aliases. Audit those reader dependencies next. See
+[the ARM record audit](RECORD_HINT_AND_VERSION_WIRING_ARM_2026-10-11.md).
 
 ## PlayerGasCloud particle update and cargo pickup (2026-10-11)
 

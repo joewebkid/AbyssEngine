@@ -1290,11 +1290,7 @@ int RecordHandler::recordStoreWritePreview(GameRecord *rec, int slot) {
 }
 
 
-static void *g_RSW_optFlags = nullptr;
-
-static void *g_RSW_uiFlags = nullptr;
-
-static int g_RSW_modVersion = 0;
+static constexpr int kRecordExtendedTag = 0x6e6a78;
 
 // Untyped global flag blobs serialised one byte at a time by recordStoreWrite.
 // Modelled as packed byte arrays so each `flags + 0xNN` / `ui + 0xNN` access
@@ -1307,6 +1303,8 @@ struct UiFlagsBlob {
     uint8_t flag[0x38];   // bytes up to 0x37 are referenced
 };
 #pragma pack(pop)
+static_assert(sizeof(Globals::hints) >= sizeof(OptFlagsBlob), "record hint flags");
+static_assert(sizeof(Globals::options) >= sizeof(UiFlagsBlob), "record option flags");
 
 void RecordHandler::recordStoreWrite(int slot) {
     String num, path;
@@ -1345,8 +1343,8 @@ void RecordHandler::recordStoreWrite(int slot) {
 
     {
         Status *status = Status::gStatus;
-        OptFlagsBlob *flags = reinterpret_cast<OptFlagsBlob *>(g_RSW_optFlags);
-        UiFlagsBlob *ui = reinterpret_cast<UiFlagsBlob *>(g_RSW_uiFlags);
+        OptFlagsBlob *flags = reinterpret_cast<OptFlagsBlob *>(Globals::hints);
+        UiFlagsBlob *ui = reinterpret_cast<UiFlagsBlob *>(Globals::options);
 
         AEFile_WriteInt(status->field_7c, fd);
         AEFile_WriteInt(status->field_84, fd);
@@ -1694,7 +1692,7 @@ void RecordHandler::recordStoreWrite(int slot) {
             }
         }
 
-        AEFile_WriteInt(g_RSW_modVersion, fd);
+        AEFile_WriteInt(kRecordExtendedTag, fd);
         {
             Ship *mShip = ship;
             Array<int> *mods = (mShip == 0) ? 0 : ((Ship *) mShip)->getMods();
@@ -1817,7 +1815,6 @@ static void **g_RSR_itemDefs = nullptr;
 
 static void **g_RSR_shipDefs = nullptr;
 
-static int g_RSR_modVersion = 0;
 
 int RecordHandler::readOptionsFileAsByteArray(signed char **out) {
     String tmp;
@@ -2345,7 +2342,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                 }
 
                 AEFile_ReadInt(&rec->field_0x1bc, fd);
-                if (rec->field_0x1bc == g_RSR_modVersion) {
+                if (rec->field_0x1bc == kRecordExtendedTag) {
                     int m0 = 0;
                     AEFile_ReadInt(&m0, fd);
                     if (m0 > 0) {

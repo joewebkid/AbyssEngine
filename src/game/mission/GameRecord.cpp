@@ -1,4 +1,7 @@
 #include "game/mission/GameRecord.h"
+#include "game/core/Globals.h"
+
+#include <cstddef>
 
 #include "game/world/Galaxy.h"
 #include "game/mission/Item.h"
@@ -150,11 +153,9 @@ long Station_getIndex(...);
 
 long Station_getSystem(...);
 
-// The player-ego object lives behind a global pointer slot at 0x220290.
-// GameRecord::load() restores a packed block of its fields from the save record.
-// This overlay names exactly the byte offsets that load() touches (0x08..0x3a);
-// the leading 8 bytes (vtable/owner ptrs) are left as opaque padding.
-struct PlayerEgoSaveBlock {
+// The saved flag block is Globals::hints, not a PlayerEgo object.
+#pragma pack(push, 1)
+struct HintsSaveBlock {
     uint8_t  _pad_0x00[0x8];    // 0x00
     uint32_t restored_0x08;     // 0x08
     uint32_t restored_0x0c;     // 0x0c
@@ -184,17 +185,11 @@ struct PlayerEgoSaveBlock {
     uint8_t  flag_0x39;         // 0x39
     uint8_t  flag_0x3a;         // 0x3a
 };
-static PlayerEgoSaveBlock *const *const kPlayerEgoSlot =
-        (PlayerEgoSaveBlock *const *const) 0x220290;
-// A separate global slot at 0x2202bc holds a pointer to a controller object whose
-// first field is the active campaign Mission pointer (read into Status). The slot is
-// dereferenced twice: load the controller, then load its Mission* at offset 0.
-static Mission *const *const *const kCampaignMissionSlot =
-        (Mission *const *const *const) 0x2202bc;
+#pragma pack(pop)
+static_assert(sizeof(HintsSaveBlock) == sizeof(Globals::hints), "saved hint block size");
+static_assert(offsetof(HintsSaveBlock, flag_0x2d) == 0x2d, "gas cloud hint offset");
 
-// The mission-flags object behind the global slot at 0x22016c. Only three of its
-// fields are touched by load(): two read-only DLC/version flags and a writable
-// scalar; model them at their exact byte offsets so access is by name.
+// These option fields are likewise stored directly in Globals::options.
 struct MissionFlags {
     uint8_t  _pad_0x00[0x2c];   // 0x00
     uint32_t field_0x2c;        // 0x2c  (written from rec[0x47])
@@ -202,11 +197,14 @@ struct MissionFlags {
     uint8_t  dlcSkyboxFlag;     // 0x35  (read)
     uint8_t  versionGuardFlag;  // 0x36  (read)
 };
-static MissionFlags *const *const kMissionFlagsSlot = (MissionFlags *const *const) 0x22016c;
+static_assert(sizeof(Globals::options) > offsetof(MissionFlags, versionGuardFlag),
+              "saved option flag offset");
 
 static const uint32_t kRecordExtendedTag = 0x6e6a78;
 
 void GameRecord::load() {
+    auto *hints = reinterpret_cast<HintsSaveBlock *>(Globals::hints);
+    auto *missionFlags = reinterpret_cast<MissionFlags *>(Globals::options);
     bool campaignLocked;
     int campaignStage;
     void *deadArray;
@@ -303,25 +301,25 @@ void GameRecord::load() {
     }
     if (((this->versionMismatchFlag != '\0') || (this->field_0x118 != '\0')) &&
         ((this->field_0x40 == 0x56 && (targetStation = ((Mission *) this->field_0x58)->getTargetStation(), targetStation != 100)))) {
-        (*kPlayerEgoSlot)->flag_0x31 = 1;
+        hints->flag_0x31 = 1;
         Mission *m = new Mission(0xb, 0, 100);
         Status::gStatus->setCampaignMission(m);
     }
     if (((this->versionMismatchFlag != '\0') || (this->field_0x118 != '\0')) &&
         ((this->field_0x40 == 0x57 && (targetStation = ((Mission *) this->field_0x58)->getTargetStation(), targetStation != 10)))) {
-        (*kPlayerEgoSlot)->flag_0x31 = 1;
+        hints->flag_0x31 = 1;
         Mission *m = new Mission(4, 0, 10);
         Status::gStatus->setCampaignMission(m);
     }
     if ((((this->versionMismatchFlag != '\0') || (this->field_0x118 != '\0')) &&
          (this->field_0x40 == 0x58)) && (targetStation = ((Mission *) this->field_0x58)->getTargetStation(), targetStation != 10)) {
-        (*kPlayerEgoSlot)->flag_0x31 = 1;
+        hints->flag_0x31 = 1;
         Mission *m = new Mission(0xb, 0, 10);
         Status::gStatus->setCampaignMission(m);
     }
     if (((this->versionMismatchFlag != '\0') || (this->field_0x118 != '\0')) &&
         ((this->field_0x40 == 0x59 && (targetStation = ((Mission *) this->field_0x58)->getTargetStation(), targetStation != 10)))) {
-        (*kPlayerEgoSlot)->flag_0x31 = 1;
+        hints->flag_0x31 = 1;
         Status::gStatus->setCurrentCampaignMission(0x56);
         Mission *m = new Mission(0xb, 0, 100);
         Status::gStatus->setCampaignMission(m);
@@ -340,7 +338,7 @@ void GameRecord::load() {
                 (((Array<uint8_t> *) this->field_0x160)->data_[0x1b] != '\0'))
                 goto stationStackLoaded;
         }
-        (*kPlayerEgoSlot)->flag_0x31 = 1;
+        hints->flag_0x31 = 1;
         this->field_0x40 = 0x56;
         Status::gStatus->setCurrentCampaignMission(this->field_0x40);
         Mission *m = new Mission(0xb, 0, 100);
@@ -370,7 +368,6 @@ stationStackLoaded:
     st->field_90 = (Array<int> *) this->field_0x70;
     st->field_10c = this->field_0xd0;
 
-    MissionFlags *missionFlags = *kMissionFlagsSlot;
     st->field_110 = this->field_0xd4;
     st->field_0x111 = this->field_0xdc;
     if (missionFlags->versionGuardFlag == '\0') {
@@ -479,7 +476,7 @@ afterDlcUnsaleable:
     st = Status::gStatus;
     st->field_8c = this->field_0x134;
     st->setStation((Station *) this->field_0x138);
-    Status::gStatus->setMission(**kCampaignMissionSlot);
+    Status::gStatus->setMission(reinterpret_cast<Mission *>(Mission::empty));
     st->standing = (Standing *) this->field_0x13c;
     {
         Array<uint32_t> *bpVec = (Array<uint32_t> *) this->field_0x140;
@@ -539,43 +536,42 @@ afterDlcUnsaleable:
         }
     }
 
-    PlayerEgoSaveBlock *ego = *kPlayerEgoSlot;
-    // qword copies: ego 0x08..0x17 <- record 0xe4..0xf3 (rec[0x39..0x3c])
-    ego->restored_0x08 = this->field_0xe4;
-    ego->restored_0x0c = this->field_0xe8;
-    ego->restored_0x10 = this->field_0xec;
-    ego->restored_0x14 = this->field_0xf0;
+    // qword copies: hints 0x08..0x17 <- record 0xe4..0xf3 (rec[0x39..0x3c])
+    hints->restored_0x08 = this->field_0xe4;
+    hints->restored_0x0c = this->field_0xe8;
+    hints->restored_0x10 = this->field_0xec;
+    hints->restored_0x14 = this->field_0xf0;
 
     missionFlags->field_0x2c = reinterpret_cast<uint32_t &>(this->rank);
     scalar = this->field_0xcc;
     st->field_0x100 = this->field_0xc8;
     st->field_0x104 = scalar;
-    // qword copies: ego 0x18..0x27 <- record 0xf4..0x103 (rec[0x3d..0x40])
-    ego->restored_0x18 = this->field_0xf4;
-    ego->restored_0x1c = this->field_0xf8;
-    ego->restored_0x20 = this->field_0xfc;
-    ego->restored_0x24 = this->field_0x100;
+    // qword copies: hints 0x18..0x27 <- record 0xf4..0x103 (rec[0x3d..0x40])
+    hints->restored_0x18 = this->field_0xf4;
+    hints->restored_0x1c = this->field_0xf8;
+    hints->restored_0x20 = this->field_0xfc;
+    hints->restored_0x24 = this->field_0x100;
     if (this->field_0x1bc == kRecordExtendedTag) {
-        ego->flag_0x29 = this->field_0x105;
-        ego->flag_0x28 = this->field_0x104;
-        ego->flag_0x2a = this->field_0x106;
-        ego->flag_0x2b = this->field_0x107;
-        ego->flag_0x2c = this->field_0x108;
-        ego->flag_0x2d = this->field_0x109;
-        ego->flag_0x2e = this->field_0x10a;
-        ego->flag_0x2f = this->field_0x10b;
-        ego->flag_0x30 = this->field_0x10c;
+        hints->flag_0x29 = this->field_0x105;
+        hints->flag_0x28 = this->field_0x104;
+        hints->flag_0x2a = this->field_0x106;
+        hints->flag_0x2b = this->field_0x107;
+        hints->flag_0x2c = this->field_0x108;
+        hints->flag_0x2d = this->field_0x109;
+        hints->flag_0x2e = this->field_0x10a;
+        hints->flag_0x2f = this->field_0x10b;
+        hints->flag_0x30 = this->field_0x10c;
         st->field_178 = this->field_0x1b8;
-        ego->flag_0x31 = this->field_0x119;
-        ego->flag_0x32 = this->field_0x11a;
-        ego->flag_0x33 = this->field_0x10d;
-        ego->flag_0x34 = this->field_0x10e;
-        ego->flag_0x35 = this->field_0x10f;
-        ego->flag_0x36 = this->field_0x110;
-        ego->flag_0x37 = this->field_0x111;
-        ego->flag_0x38 = this->field_0x113;
-        ego->flag_0x39 = this->field_0x112;
-        ego->flag_0x3a = this->field_0x114;
+        hints->flag_0x31 = this->field_0x119;
+        hints->flag_0x32 = this->field_0x11a;
+        hints->flag_0x33 = this->field_0x10d;
+        hints->flag_0x34 = this->field_0x10e;
+        hints->flag_0x35 = this->field_0x10f;
+        hints->flag_0x36 = this->field_0x110;
+        hints->flag_0x37 = this->field_0x111;
+        hints->flag_0x38 = this->field_0x113;
+        hints->flag_0x39 = this->field_0x112;
+        hints->flag_0x3a = this->field_0x114;
         st->field_58 = (Array<bool> *) this->field_0x17c;
         srcVec = (Array<uint32_t> *) this->field_0x1b4;
         if ((srcVec != (Array<uint32_t> *) 0x0) && (i = srcVec->size_, i != 0)) {
