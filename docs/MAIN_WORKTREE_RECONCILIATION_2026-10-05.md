@@ -302,3 +302,17 @@ tests pass. The full report is
 2,317 linked-exact and 997 byte-exact, with no row or exact-pair losses.
 The Java store side and 64-bit `GameData` byte layout are not runtime-tested;
 see [the ARM audit](ANDROID_ENGINE_SINGLETON_DLC_HANDOFF_ARM_2026-10-11.md).
+
+## GameData application-data layout (2026-10-11)
+
+Android `OnCreateApplication` at `0x000d0738` allocates a 0xc8-byte
+`GameData`; the late `+0x6d..+0x7b` fields are packed. Typed aliases now
+connect the JNI, menu, hangar and `MGame` flag accesses without assuming
+ARM byte offsets on a 64-bit host. Native `gof2`, 206/206 ARM units and
+verifier tests pass. `ndk23_newrender` rises 83.9% to 98.8% source-shape.
+The full report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_game_data_20261011.json`:
+4,323/4,524 originals, 4,689 rows, 91.89% source-shape, 79.97% strict,
+2,319 linked-exact and 997 byte-exact, with no row or exact-pair losses.
+The separate `ModStation` purchase pointers and end-to-end DLC runtime
+remain unverified; see [the ARM layout audit](GAME_DATA_APPDATA_LAYOUT_ARM_NATIVE_2026-10-11.md).

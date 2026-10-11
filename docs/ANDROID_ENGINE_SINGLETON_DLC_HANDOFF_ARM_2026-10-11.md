@@ -46,3 +46,5 @@ The Java billing/store side, the role of application-data byte `+0x4c`,
 and a running-game DLC request are unverified. Next audit `GameData`'s
 application-data byte layout and ownership on 32-bit ARM versus the native
 64-bit host before attempting an integrated request-flow smoke.
+The core flag layout has since been recovered; see the
+[follow-up audit](GAME_DATA_APPDATA_LAYOUT_ARM_NATIVE_2026-10-11.md).

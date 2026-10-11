@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (Android engine singleton; older subsystem
+Last reviewed: 2026-10-11 (GameData application-data layout; older subsystem
 snapshots retain their dates)
+
+## GameData application-data layout (2026-10-11)
+
+`GameData` now preserves the Android **0xc8** layout on ARM32 while menu,
+hangar, JNI and `MGame` read its flags by typed fields on 64-bit hosts.
+This removes fixed-offset accesses that would overlap wider host `String`
+objects. Native `gof2`, 206/206 ARM units and verifier tests pass.
+The full corpus compares **4,323/4,524** originals: **91.89%** source-shape,
+**79.97%** strict fuzzy, **2,319 linked-exact** (+2) and **997 byte-exact**;
+no exact-pair or row losses. `ndk23_newrender` rises to 98.8% source-shape.
+The separate `ModStation` purchase fields and running-game DLC flow remain
+unverified; see [the layout audit](GAME_DATA_APPDATA_LAYOUT_ARM_NATIVE_2026-10-11.md).
 
 ## Android engine singleton and DLC handoff (2026-10-11)
 

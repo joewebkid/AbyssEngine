@@ -18,6 +18,7 @@
 #include "game/ship/Ship.h"
 #include "engine/core/NFC.h"
 #include "engine/core/GameText.h"
+#include "engine/core/GameData.h"
 #include "game/menu/ModStation.h"
 
 // PaintCanvas::gCanvas is declared in engine/render/PaintCanvas.h (included above).
@@ -1204,7 +1205,7 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                 self->showCreditsBuyWindow();
             }
 
-            void *appData = AppManager_GetApplicationData();
+            GameData *appData = static_cast<GameData *>(AppManager_GetApplicationData());
             RecordHandler *rh = *g_hw_recordHandler;
             for (unsigned int i = 0; i != 5; i++) {
                 if ((*self->buttons)[(i * 4 + 0x48) >> 2]->OnTouchEnd(touch, coord) != 0) {
@@ -1214,31 +1215,31 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                             ((RecordHandler *) (rh))->recordStoreWritePreview(0);
                             break;
                         case 1:
-                            (*(uint8_t *) ((char *) (appData) + (0xa0))) = 1;
+                            appData->flag_0xa0 = 1;
                             NFC().free_credits_likeGOF2OnFacebook();
                             Status_changeCredits(globals);
                             g_hw_optionFlags[0x49] = 1;
                             break;
                         case 2:
-                            (*(uint8_t *) ((char *) (appData) + (0xa1))) = 1;
+                            appData->flag_0xa1 = 1;
                             NFC().free_credits_likeFishlabsOnFacebook();
                             Status_changeCredits(globals);
                             g_hw_optionFlags[0x4a] = 1;
                             break;
                         case 3:
-                            (*(uint8_t *) ((char *) (appData) + (0xa2))) = 1;
+                            appData->flag_0xa2 = 1;
                             NFC().free_credits_subscribeToYoutubeChannel();
                             Status_changeCredits(globals);
                             g_hw_optionFlags[0x4b] = 1;
                             break;
                         case 4:
-                            (*(uint8_t *) ((char *) (appData) + (0xa3))) = 1;
+                            appData->flag_0xa3 = 1;
                             NFC().free_credits_followOnTwitter();
                             Status_changeCredits(globals);
                             g_hw_optionFlags[0x4c] = 1;
                             break;
                         case 5:
-                            (*(uint8_t *) ((char *) (appData) + (0xd))) = 1;
+                            appData->rateGameFlagA = 1;
                             NFC().free_credits_rateGame();
                             Status_changeCredits(globals);
                             g_hw_optionFlags[0x4d] = 1;
@@ -1404,8 +1405,8 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
                 if (g_hw_optionFlags[0x4a] && g_hw_optionFlags[0x49] &&
                     g_hw_optionFlags[0x4d] && g_hw_optionFlags[0x4c])
                     show = (g_hw_optionFlags[0x4b] == 0);
-                void *appData = AppManager_GetApplicationData();
-                if (show || (*(uint8_t *) ((char *) (appData) + (0x15))) == 0) {
+                GameData *appData = static_cast<GameData *>(AppManager_GetApplicationData());
+                if (show || appData->flag_0x15 == 0) {
                     for (int i = 0xc; i != 0x11; i++)
                         (*btns)[(i * 4) >> 2]->setVisible(false);
                     self->showFreeCreditsWindow();
@@ -1418,8 +1419,8 @@ void HangarWindow::OnTouchEnd(int touch, int coord) {
         for (int i = 0xc; i != 0x11; i++)
             (*self->buttons)[(i * 4) >> 2]->setVisible(false);
         (*self->buttons)[(0x44) >> 2]->setVisible(false);
-        void *appData = AppManager_GetApplicationData();
-        (*(uint8_t *) ((char *) (appData) + (0x40))) = 0;
+        GameData *appData = static_cast<GameData *>(AppManager_GetApplicationData());
+        appData->dlcStoreReadyFlag = 0;
         void *mod = AppManager_GetApplicationModule(*g_hw_modStationId);
         if (mod != 0 && (*(uint8_t *) ((char *) (mod) + (0x18))) != 0)
             (*(uint8_t *) ((char *) (mod) + (0x18))) = 0;
@@ -1559,10 +1560,10 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
                     (*this->buttons)[i]->setVisible(false);
                 }
                 (*this->buttons)[kHangarButtonCreditsMore]->setVisible(false);
-                uint8_t *appData = static_cast<uint8_t *>(
+                GameData *appData = static_cast<GameData *>(
                     static_cast<ApplicationManager *>(Globals::appManager)->GetApplicationData());
 
-                appData[64] = 0;
+                appData->dlcStoreReadyFlag = 0;
 
                 ModStation *module = static_cast<ModStation *>(
                     static_cast<ApplicationManager *>(Globals::appManager)->GetApplicationModule(5));
@@ -1603,9 +1604,9 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
                     g_hangarSocialCreditClaimed[1] != 0 && g_hangarSocialCreditClaimed[2] != 0 &&
                     g_hangarSocialCreditClaimed[3] != 0 && g_hangarSocialCreditClaimed[4] != 0 &&
                     g_hangarSocialCreditClaimed[5] != 0;
-                uint8_t *appData = static_cast<uint8_t *>(
+                GameData *appData = static_cast<GameData *>(
                     static_cast<ApplicationManager *>(Globals::appManager)->GetApplicationData());
-                if (!allSocialOffersClaimed || appData[21] == 0) {
+                if (!allSocialOffersClaimed || appData->flag_0x15 == 0) {
                     for (unsigned int i = kHangarButtonPaidCreditsFirst; i != kHangarButtonCreditsMore; ++i) {
                         (*this->buttons)[i]->setVisible(false);
                     }
@@ -1626,7 +1627,7 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
                 this->showCreditsBuyWindow();
             }
 
-            uint8_t *appData = static_cast<uint8_t *>(
+            GameData *appData = static_cast<GameData *>(
                 static_cast<ApplicationManager *>(Globals::appManager)->GetApplicationData());
             for (int offerIndex = 0; offerIndex != 5; ++offerIndex) {
                 TouchButton *button = buttonAt(kHangarButtonFreeCreditsFirst + offerIndex);
@@ -1642,25 +1643,25 @@ int HangarWindow::OnTouchEnd(int touch, int coord) {
 
                     break;
                 case 1:
-                    appData[160] = 1;
+                    appData->flag_0xa0 = 1;
                     NFC::free_credits_likeGOF2OnFacebook();
                     status->changeCredits(kHangarSocialCreditReward[offerIndex]);
                     g_hangarSocialCreditClaimed[1] = 1;
                     break;
                 case 2:
-                    appData[161] = 1;
+                    appData->flag_0xa1 = 1;
                     NFC::free_credits_likeFishlabsOnFacebook();
                     status->changeCredits(kHangarSocialCreditReward[offerIndex]);
                     g_hangarSocialCreditClaimed[2] = 1;
                     break;
                 case 3:
-                    appData[162] = 1;
+                    appData->flag_0xa2 = 1;
                     NFC::free_credits_subscribeToYoutubeChannel();
                     status->changeCredits(kHangarSocialCreditReward[offerIndex]);
                     g_hangarSocialCreditClaimed[3] = 1;
                     break;
                 case 4:
-                    appData[163] = 1;
+                    appData->flag_0xa3 = 1;
                     NFC::free_credits_followOnTwitter();
                     status->changeCredits(kHangarSocialCreditReward[offerIndex]);
                     g_hangarSocialCreditClaimed[4] = 1;
@@ -2464,8 +2465,10 @@ int HangarWindow::OnTouchBegin(int touch, int coord) {
 
 
 void HangarWindow::showCreditsBuyWindow() {
-    static_cast<uint8_t *>(static_cast<ApplicationManager *>(Globals::appManager)->GetApplicationData())[0x4c] = 0;
-    static_cast<uint8_t *>(static_cast<ApplicationManager *>(Globals::appManager)->GetApplicationData())[0x3d] = 1;
+    static_cast<GameData *>(static_cast<ApplicationManager *>(Globals::appManager)->GetApplicationData())
+        ->dlcMenuAckFlag = 0;
+    static_cast<GameData *>(static_cast<ApplicationManager *>(Globals::appManager)->GetApplicationData())
+        ->dlcMenuRequestFlag = 1;
 
     ChoiceWindow *dialog = this->dialog;
     if (this->listModeFlag != 0) {
@@ -3170,10 +3173,10 @@ void HangarWindow::autoEquipSecondaryWeapons(int row) {
 
 
 void HangarWindow::showFreeCreditsWindow() {
-    static_cast<uint8_t *>(static_cast<ApplicationManager *>(Globals::appManager)
-                               ->GetApplicationData())[0x4c] = 0;
-    static_cast<uint8_t *>(static_cast<ApplicationManager *>(Globals::appManager)
-                               ->GetApplicationData())[0x3d] = 1;
+    static_cast<GameData *>(static_cast<ApplicationManager *>(Globals::appManager)
+                                ->GetApplicationData())->dlcMenuAckFlag = 0;
+    static_cast<GameData *>(static_cast<ApplicationManager *>(Globals::appManager)
+                                ->GetApplicationData())->dlcMenuRequestFlag = 1;
 
     ChoiceWindow *dialog = this->dialog;
     {

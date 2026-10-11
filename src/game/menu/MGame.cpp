@@ -20,6 +20,7 @@
 #include "engine/math/Transform.h"
 #include "game/mission/Achievements.h"
 #include "engine/core/ApplicationManager.h"
+#include "engine/core/GameData.h"
 #include "engine/core/AERandom.h"
 #include "game/ui/DialogueWindow.h"
 #include "engine/render/Engine.h"
@@ -641,18 +642,7 @@ void MGame::gameOverCheck() {
 
 int ApplicationManager_GetApplicationData();
 
-// Application-data block returned (as int handle) by ApplicationManager_GetApplicationData();
-// bytes at +5 / +0xc gate touch input while modal/transition is active.
-struct MGameAppData {
-    uint8_t _pad0[5];
-    uint8_t modalActive;   // offset 0x05
-    uint8_t _pad6[6];
-    uint8_t transitionActive; // offset 0x0c
-};
-#if __SIZEOF_POINTER__ == 4
-static_assert(offsetof(MGameAppData, modalActive) == 5, "MGameAppData::modalActive @ 5");
-static_assert(offsetof(MGameAppData, transitionActive) == 0xc, "MGameAppData::transitionActive @ 0xc");
-#endif
+using MGameAppData = GameData;
 
 
 static Layout ***g_tbStarLayout;

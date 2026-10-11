@@ -102,10 +102,10 @@ void OnCreateApplication(AbyssEngine::Engine *engine) {
     data->field_0x48 = -1;
     data->field_0x4c = 1;
     data->field_0x08 = 0;
-    data->field_0x77 = 0;
-    data->field_0x75 = 0;
-    data->field_0x71 = 0;
-    data->field_0x6d = 0;
+    data->lateFlags.field_0x77 = 0;
+    data->lateFlags.field_0x75 = 0;
+    data->lateFlags.field_0x71 = 0;
+    data->lateFlags.field_0x6d = 0;
     data->field_0x50 = 0;
     data->field_0x54 = 0;
     data->field_0x58 = 0;
@@ -113,7 +113,7 @@ void OnCreateApplication(AbyssEngine::Engine *engine) {
     data->field_0x60 = 0;
     data->field_0x64 = 0;
     data->field_0x68 = 0;
-    data->field_0x6c = 0;
+    data->lateFlags.field_0x6c = 0;
 
     data->globals = new Globals();
 
@@ -131,8 +131,8 @@ void OnCreateApplication(AbyssEngine::Engine *engine) {
     data->field_0xb8 = AbyssEngine::String("", false);
     data->field_0xc4 = 0;
     data->field_0xb4 = 0;
-    data->field_0x78 = 0;
-    data->field_0x7a = 0;
+    data->lateFlags.field_0x78 = 0;
+    data->lateFlags.field_0x7a = 0;
     data->field_0x7c = AbyssEngine::String("", false);
     data->field_0x88 = AbyssEngine::String("", false);
     data->field_0x94 = AbyssEngine::String("", false);
@@ -452,24 +452,24 @@ extern "C" void ndk23_newrender(long long now) {
     RemoveTouches();
     gEngine->appManager->OnUpdate(now);
 
-    char *appData = static_cast<char *>(gEngine->appManager->GetApplicationData());
-    if (appData[0x3d] != 0) {
-        appData[0x40] = 1;
-        appData[0x3d] = 0;
-    } else if (appData[0x3c] != 0) {
-        appData[0x3c] = 0;
-    } else if (appData[0x3e] != 0) {
-        appData[0x3e] = 0;
-    } else if (appData[0x3f] != 0) {
-        appData[0x3f] = 0;
-    } else if (appData[0xa0] != 0) {
-        appData[0xa0] = 0;
-    } else if (appData[0xa1] != 0) {
-        appData[0xa1] = 0;
-    } else if (appData[0xa2] != 0) {
-        appData[0xa2] = 0;
-    } else if (appData[0xa3] != 0) {
-        appData[0xa3] = 0;
+    GameData *appData = static_cast<GameData *>(gEngine->appManager->GetApplicationData());
+    if (appData->dlcMenuRequestFlag != 0) {
+        appData->dlcStoreReadyFlag = 1;
+        appData->dlcMenuRequestFlag = 0;
+    } else if (appData->dlcMenuAcceptedFlag != 0) {
+        appData->dlcMenuAcceptedFlag = 0;
+    } else if (appData->flag_0x3e != 0) {
+        appData->flag_0x3e = 0;
+    } else if (appData->dlcRestoreRequestFlag != 0) {
+        appData->dlcRestoreRequestFlag = 0;
+    } else if (appData->flag_0xa0 != 0) {
+        appData->flag_0xa0 = 0;
+    } else if (appData->flag_0xa1 != 0) {
+        appData->flag_0xa1 = 0;
+    } else if (appData->flag_0xa2 != 0) {
+        appData->flag_0xa2 = 0;
+    } else if (appData->flag_0xa3 != 0) {
+        appData->flag_0xa3 = 0;
     }
 
     ndk_checkPlaytimeAndSpendOfferwallCredits();

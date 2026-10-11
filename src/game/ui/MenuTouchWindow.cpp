@@ -13,6 +13,7 @@
 #include "game/mission/RecordHandler.h"
 #include "engine/audio/FModSound.h"
 #include "engine/core/ApplicationManager.h"
+#include "engine/core/GameData.h"
 #include "engine/core/GameText.h"
 #include "engine/render/ImageFactory.h"
 #include "game/core/Globals.h"
@@ -30,44 +31,8 @@
 #include <cstddef>
 #include <cstring>
 
-// Minimal byte-faithful model of the untyped handle returned by
-// _mtw_AppMgr_GetApplicationData(). Only the fields this translation unit
-// touches are named; the rest is padding to keep offsets exact.
-struct MtwAppData {
-    uint8_t pad_0x0[5];
-    uint8_t screenshotResultFlag;   // 0x5
-    uint8_t pad_0x6[2];
-    int storeResultCode;            // 0x8
-    uint8_t storeInitFlag;          // 0xc
-    uint8_t rateGameFlagA;          // 0xd
-    uint8_t rateGameFlagB;          // 0xe
-    uint8_t pad_0xf[0x2d];
-    // Android state 15 acknowledges the DLC launch dialog through this byte.
-    uint8_t dlcMenuAcceptedFlag;    // 0x3c
-    uint8_t dlcMenuRequestFlag;     // 0x3d
-    uint8_t pad_0x3e;
-    uint8_t dlcRestoreRequestFlag;  // 0x3f
-    uint8_t dlcStoreReadyFlag;      // 0x40
-    uint8_t purchaseResultFlag;     // 0x41
-    uint8_t purchaseErrorFlag;      // 0x42
-    uint8_t pad_0x43[5];
-    unsigned int purchaseCode;      // 0x48
-    uint8_t dlcMenuAckFlag;         // 0x4c
-};
+using MtwAppData = GameData;
 #if __SIZEOF_POINTER__ == 4
-static_assert(offsetof(MtwAppData, screenshotResultFlag) == 0x5, "appdata 0x5");
-static_assert(offsetof(MtwAppData, storeResultCode) == 0x8, "appdata 0x8");
-static_assert(offsetof(MtwAppData, storeInitFlag) == 0xc, "appdata 0xc");
-static_assert(offsetof(MtwAppData, rateGameFlagA) == 0xd, "appdata 0xd");
-static_assert(offsetof(MtwAppData, rateGameFlagB) == 0xe, "appdata 0xe");
-static_assert(offsetof(MtwAppData, dlcMenuAcceptedFlag) == 0x3c, "appdata 0x3c");
-static_assert(offsetof(MtwAppData, dlcMenuRequestFlag) == 0x3d, "appdata 0x3d");
-static_assert(offsetof(MtwAppData, dlcRestoreRequestFlag) == 0x3f, "appdata 0x3f");
-static_assert(offsetof(MtwAppData, dlcStoreReadyFlag) == 0x40, "appdata 0x40");
-static_assert(offsetof(MtwAppData, purchaseResultFlag) == 0x41, "appdata 0x41");
-static_assert(offsetof(MtwAppData, purchaseErrorFlag) == 0x42, "appdata 0x42");
-static_assert(offsetof(MtwAppData, purchaseCode) == 0x48, "appdata 0x48");
-static_assert(offsetof(MtwAppData, dlcMenuAckFlag) == 0x4c, "appdata 0x4c");
 static_assert(offsetof(MenuTouchWindow, choiceWindow) == 0x104, "DLC choice window 0x104");
 static_assert(offsetof(MenuTouchWindow, messageShowing) == 0x170, "DLC message flag 0x170");
 static_assert(offsetof(MenuTouchWindow, dlcMessageShowing) == 0x17a, "DLC dialog flag 0x17a");
