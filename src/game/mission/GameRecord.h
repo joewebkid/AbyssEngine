@@ -8,6 +8,8 @@ class Ship;
 class Station;
 class Standing;
 class BluePrint;
+class PendingProduct;
+class Agent;
 // ARM layout is byte-faithful to the original 32-bit binary (449 bytes / 0x1c1).
 // The on-disk save record is read/written almost entirely through raw offsets:
 // GameRecord.cpp treats `this` as `uint32_t rec[]` (rec[N] == *(uint32_t*)(this
@@ -153,8 +155,13 @@ public:
     uint32_t field_0x13c;
     uint32_t field_0x140;
 #endif
-    uint32_t field_0x144;        // 0x144  rec[0x51]
-    uint32_t field_0x148;        // 0x148  rec[0x52]
+#if __SIZEOF_POINTER__ == 4
+    Array<PendingProduct *> *pendingProducts; // 0x144  rec[0x51]
+    Array<Agent *> *agents;                    // 0x148  rec[0x52]
+#else
+    uint32_t field_0x144;
+    uint32_t field_0x148;
+#endif
     uint32_t field_0x14c;        // 0x14c  rec[0x53]
     uint32_t field_0x150;        // 0x150  rec[0x54]
     uint32_t field_0x154;        // 0x154  rec[0x55]
@@ -200,6 +207,8 @@ public:
     Station *station;
     Standing *standing;
     Array<BluePrint *> *bluePrints;
+    Array<PendingProduct *> *pendingProducts;
+    Array<Agent *> *agents;
 #endif
 
     AbyssEngine::String &getPreviewSystemName() { return previewSystemName; }
@@ -214,6 +223,10 @@ public:
     Array<BluePrint *> *getBluePrints() const { return bluePrints; }
     void setStanding(Standing *value) { standing = value; }
     void setBluePrints(Array<BluePrint *> *value) { bluePrints = value; }
+    Array<PendingProduct *> *getPendingProducts() const { return pendingProducts; }
+    Array<Agent *> *getAgents() const { return agents; }
+    void setPendingProducts(Array<PendingProduct *> *value) { pendingProducts = value; }
+    void setAgents(Array<Agent *> *value) { agents = value; }
 
     GameRecord();
 
@@ -248,6 +261,8 @@ static_assert(offsetof(GameRecord, ship) == 0x130, "ship");
 static_assert(offsetof(GameRecord, station) == 0x138, "station");
 static_assert(offsetof(GameRecord, standing) == 0x13c, "standing");
 static_assert(offsetof(GameRecord, bluePrints) == 0x140, "bluePrints");
+static_assert(offsetof(GameRecord, pendingProducts) == 0x144, "pendingProducts");
+static_assert(offsetof(GameRecord, agents) == 0x148, "agents");
 static_assert(offsetof(GameRecord, shipId) == 0x1a0, "");
 static_assert(offsetof(GameRecord, field_0x1b4) == 0x1b4, "");
 static_assert(offsetof(GameRecord, field_0x1b8) == 0x1b8, "");
@@ -266,6 +281,10 @@ static_assert(offsetof(GameRecord, standing) % alignof(Standing *) == 0,
               "native standing alignment");
 static_assert(offsetof(GameRecord, bluePrints) % alignof(Array<BluePrint *> *) == 0,
               "native bluePrints alignment");
+static_assert(offsetof(GameRecord, pendingProducts) % alignof(Array<PendingProduct *> *) == 0,
+              "native pendingProducts alignment");
+static_assert(offsetof(GameRecord, agents) % alignof(Array<Agent *> *) == 0,
+              "native agents alignment");
 #endif
 
 #endif

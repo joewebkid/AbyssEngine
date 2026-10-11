@@ -119,8 +119,8 @@ GameRecord::GameRecord() {
     this->setStation(nullptr);
     this->setStanding(nullptr);
     this->setBluePrints(nullptr);
-    this->field_0x144 = 0;
-    this->field_0x148 = 0;
+    this->setPendingProducts(nullptr);
+    this->setAgents(nullptr);
     this->field_0x14c = 0;
     this->field_0x150 = 0;
     this->field_0x154 = 0;
@@ -484,11 +484,11 @@ afterDlcUnsaleable:
             Status::gStatus->bluePrints->data_[i] = bpVec->data_[i];
         }
     }
-    Status::gStatus->pendingProducts = (Array<PendingProduct *> *) this->field_0x144;
+    Status::gStatus->pendingProducts = this->getPendingProducts();
     {
-        Array<uint32_t> *agVec = (Array<uint32_t> *) this->field_0x148;
+        Array<Agent *> *agVec = this->getAgents();
         for (i = 0; i < agVec->size_; i = i + 1) {
-            ((Array<uint32_t> *) Status::gStatus->agents)->data_[i] = agVec->data_[i];
+            Status::gStatus->agents->data_[i] = agVec->data_[i];
         }
     }
     st = Status::gStatus;

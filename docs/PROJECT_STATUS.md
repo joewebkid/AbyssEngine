@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (GameRecord standing/blueprint pointers; older subsystem
+Last reviewed: 2026-10-11 (GameRecord product/agent pointers; older subsystem
 snapshots retain their dates)
+
+## GameRecord pending-product and agent pointers (2026-10-11)
+
+Android ARM confirms `GameRecord` slots `0x144` and `0x148` as arrays
+of `PendingProduct *` and `Agent *`. Native 64-bit builds now keep
+their pointers in aligned sidecars, and loading copies agent pointers
+at full width rather than through `uint32_t`. Native `gof2`, 206/206
+ARM units, and 36 verifier tests pass (one skipped). Focused shapes
+remain stable. Full corpus: 4,713 comparisons of 4,323/4,524 original
+functions, 92.24% source-shape, 80.43% strict fuzzy, 2,353
+linked-exact, 1,008 byte-exact, no lost exact pair, skipped unit, or
+wrong-type symbol. Runtime save/reload remains untested; audit the
+wingmen and later pointer slots with their `Status` consumers next.
+See [the ARM product/agent audit](GAME_RECORD_PRODUCT_AGENT_POINTERS_ARM_2026-10-11.md).
 
 ## GameRecord standing and blueprint pointers (2026-10-11)
 

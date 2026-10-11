@@ -2098,7 +2098,7 @@ void *RecordHandler::recordStoreRead(int slot) {
 
                 int ppN = 0;
                 AEFile_ReadInt(&ppN, fd);
-                if (ppN < 1) { *reinterpret_cast<void **>(&rec->field_0x144) = 0; } else {
+                if (ppN < 1) { rec->setPendingProducts(nullptr); } else {
                     Array<PendingProduct *> *ppArr = new Array<PendingProduct *>();
                     ArraySetLength(ppN, *ppArr);
                     for (unsigned i = 0; i < ppArr->size(); i++) {
@@ -2112,7 +2112,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                         void *pp = new PendingProduct(a, String(nm, false), d, c);
                         (*ppArr)[i] = (PendingProduct *) pp;
                     }
-                    *reinterpret_cast<void **>(&rec->field_0x144) = ppArr;
+                    rec->setPendingProducts(ppArr);
                 }
 
                 int wmN = 0;
@@ -2175,7 +2175,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                 int agN = 0;
                 AEFile_ReadInt(&agN, fd);
                 Array<Agent *> *agents = new Array<Agent *>();
-                *reinterpret_cast<void **>(&rec->field_0x148) = agents;
+                rec->setAgents(agents);
                 ArraySetLength(agN, *agents);
                 for (unsigned i = 0; i < agents->size(); i++)
                     (*agents)[i] = (Agent *) this->readAgent(fd);
