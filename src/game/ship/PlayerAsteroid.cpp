@@ -21,9 +21,9 @@ static int g_playerAsteroidRandom = 0;
 static Vector g_playerAsteroidCenter;
 static int g_playerAsteroidCenterLength = 0;
 
-static const char *g_playerAsteroidQualityNames[3] = {"", "", ""};
-static const char g_playerAsteroidQualityDefault[1] = {0};
-static const char g_playerAsteroidQualityFour[1] = {0};
+static const char *g_playerAsteroidQualityNames[3] = {"C", "B", "A"};
+static const char g_playerAsteroidQualityDefault[] = "E";
+static const char g_playerAsteroidQualityFour[] = "D";
 
 void PlayerAsteroid::setAsteroidIndex(int asteroidIndex) {
     this->asteroidIndex = asteroidIndex;

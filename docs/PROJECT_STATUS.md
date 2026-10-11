@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (station blueprint/pirate tables; older subsystem
+Last reviewed: 2026-10-11 (asteroid quality letters; older subsystem
 snapshots retain their dates)
+
+## Asteroid quality letters (2026-10-11)
+
+`PlayerAsteroid::getQualityString` now uses the Android ARM grades C/B/A
+for qualities 5/6/7, D for quality 4, and E otherwise, replacing empty
+placeholders. The ELF's pointer table and string bytes confirm the mapping.
+Native `gof2`, 206/206 ARM units, and 36 verifier tests pass (one skipped).
+Focused source-shape/strict fuzzy improve from 32.9%/9.9% to
+35.2%/18.4%, without an exact match. The full corpus remains
+4,323/4,524 compared at 92.05% source-shape and 80.12% strict fuzzy,
+with 2,325 linked-exact and 997 byte-exact; no exact-pair loss,
+skipped unit, or wrong-type symbol. Game-level display remains untested;
+see [the ARM quality-string audit](PLAYER_ASTEROID_QUALITY_STRINGS_ARM_2026-10-11.md).
 
 ## Station blueprint and pirate-base tables (2026-10-11)
 
