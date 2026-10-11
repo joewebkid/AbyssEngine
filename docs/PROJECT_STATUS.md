@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (NewsTicker token replacement; older subsystem
+Last reviewed: 2026-10-11 (ticker resource loader; older subsystem
 snapshots retain their dates)
+
+## Ticker resource loader (2026-10-11)
+
+Android ARM `FileRead::loadTicker` opens `data/bin/ticker.bin` and reads
+59 records with four raw race-flag words. The recovered loader used the
+wrong filename and switched those four words; both are corrected. The
+available reference binary is **1,652 bytes = 59 × 28**, and every record
+passed a read-only layout/flag/level-bound check. Focused source-shape
+and strict fuzzy remain **81.6%/52.1%**, not exact. Native `gof2`,
+**206/206** ARM units and 36 verifier tests pass (one skipped). The full
+corpus remains **4,323/4,524** compared at **92.05%** source-shape,
+**80.12%** strict, **2,325 linked-exact** and **997 byte-exact**;
+there are no lost exact pairs, skipped rows or wrong-type symbols.
+The report is retained at
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_ticker_loader_20261011.json`.
+The analyzed resource was not installed into a native game runtime;
+see [the ARM loader audit](FILE_READ_TICKER_RESOURCE_ARM_2026-10-11.md).
 
 ## NewsTicker token replacement (2026-10-11)
 

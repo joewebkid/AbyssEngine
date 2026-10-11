@@ -340,12 +340,12 @@ Array<Wanted *> *FileRead::loadWanted() {
 }
 
 Array<NewsItem *> *FileRead::loadTicker() {
-    String path("ticker_binary.bin");
+    String path("data/bin/ticker.bin");
 
     Array<NewsItem *> *items = 0;
     if (AEFile::FileExist(path) != 0) {
         uint32_t handle;
-        AEFile::OpenRead("ticker_binary.bin", &handle);
+        AEFile::OpenRead("data/bin/ticker.bin", &handle);
 
         items = new Array<NewsItem *>();
         ArraySetLength<NewsItem *>(0x3b, *items);
@@ -356,10 +356,10 @@ Array<NewsItem *> *FileRead::loadTicker() {
             int32_t a;
             int32_t b;
             AEFile::ReadSwitched(active, handle);
-            AEFile::ReadSwitched(flags[0], handle);
-            AEFile::ReadSwitched(flags[1], handle);
-            AEFile::ReadSwitched(flags[2], handle);
-            AEFile::ReadSwitched(flags[3], handle);
+            AEFile::Read(flags[0], handle);
+            AEFile::Read(flags[1], handle);
+            AEFile::Read(flags[2], handle);
+            AEFile::Read(flags[3], handle);
             AEFile::ReadSwitched(a, handle);
             AEFile::ReadSwitched(b, handle);
 
