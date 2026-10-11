@@ -4,19 +4,20 @@
 #include <cstdint>
 #include "engine/core/Array.h"
 #include "../../engine/core/AEString.h"
-// Layout is byte-faithful to the original 32-bit binary (449 bytes / 0x1c1).
+// ARM layout is byte-faithful to the original 32-bit binary (449 bytes / 0x1c1).
 // The on-disk save record is read/written almost entirely through raw offsets:
 // GameRecord.cpp treats `this` as `uint32_t rec[]` (rec[N] == *(uint32_t*)(this
 // + N*4)) and as a byte array, and RecordHandler.cpp casts a fresh GameRecord to
 // `char *`. So most members are `field_0xNN` slots that sit at struct offset 0xNN
-// and only exist to make later fields land at their true offsets. The three names
-// that source code actually references (data@0x0, rank@0x11c, shipId@0x1a0) are
-// kept. Filler in the byte-accessed regions (0x100..0x11b) is `uint8_t` so those
+// and only exist to make later fields land at their true offsets on ARM.
+// Named fields used by source code are kept. Filler in the byte-accessed
+// regions (0x100..0x11b) is `uint8_t` so those
 // single-byte reads/writes have a home. Locked in by the static_asserts at end.
 // pack(1): the original struct has alignment 1 (no padding); without it the float
-// and pointer members would force the size up past 0x1c1 and shift offsets.
+// and pointer members would force the ARM size up past 0x1c1 and shift offsets.
+// Native 64-bit preview strings live after the existing fields to avoid overlap.
 #pragma pack(push, 1)
-class GameRecord {
+class alignas(__SIZEOF_POINTER__ == 4 ? 1 : alignof(AbyssEngine::String)) GameRecord {
 public:
     void *data;                  // 0x000  rec[0]
     uint32_t field_0x04;         // 0x004  rec[1]
@@ -152,12 +153,17 @@ public:
     uint32_t field_0x17c;        // 0x17c  rec[0x5f]
     uint32_t field_0x180;        // 0x180  rec[0x60]
     uint32_t field_0x184;        // 0x184  rec[0x61]
-    uint32_t field_0x188;        // 0x188  rec[0x62]  (end of memset 0x130..0x188)
-    uint32_t field_0x18c;        // 0x18c  rec[0x63]
-    uint32_t field_0x190;        // 0x190  rec[0x64]
-    uint32_t pilotName;          // 0x194  rec[0x65] (String at 0x194, accessed via &)
-    uint32_t field_0x198;        // 0x198  rec[0x66]
-    uint32_t field_0x19c;        // 0x19c  rec[0x67]
+#if __SIZEOF_POINTER__ == 4
+    AbyssEngine::String previewSystemName; // 0x188, 12-byte ARM String
+    AbyssEngine::String previewStationName; // 0x194, 12-byte ARM String
+#else
+    uint32_t field_0x188;
+    uint32_t field_0x18c;
+    uint32_t field_0x190;
+    uint32_t field_0x194;
+    uint32_t field_0x198;
+    uint32_t field_0x19c;
+#endif
     uint32_t shipId;             // 0x1a0  rec[0x68] (ctor: this->shipId = 0xffffffff)
     uint32_t field_0x1a4;        // 0x1a4  rec[0x69]
     uint32_t field_0x1a8;        // 0x1a8  rec[0x6a]
@@ -167,6 +173,18 @@ public:
     uint32_t field_0x1b8;        // 0x1b8  rec[0x6e]
     uint32_t field_0x1bc;        // 0x1bc  rec[0x6f] (kRecordExtendedTag check)
     uint8_t  field_0x1c0;        // 0x1c0  byte (load: *(rec+0x70))
+
+#if __SIZEOF_POINTER__ != 4
+    // pack(1) suppresses member alignment, so pad the native strings explicitly.
+    uint8_t _nativePreviewPadding[7];
+    alignas(AbyssEngine::String) AbyssEngine::String previewSystemName;
+    alignas(AbyssEngine::String) AbyssEngine::String previewStationName;
+#endif
+
+    AbyssEngine::String &getPreviewSystemName() { return previewSystemName; }
+    AbyssEngine::String &getPreviewStationName() { return previewStationName; }
+    const AbyssEngine::String &getPreviewSystemName() const { return previewSystemName; }
+    const AbyssEngine::String &getPreviewStationName() const { return previewStationName; }
 
     GameRecord();
 
@@ -192,7 +210,9 @@ static_assert(offsetof(GameRecord, dlcRequiredFlag) == 0x115, "dlcRequiredFlag")
 static_assert(offsetof(GameRecord, versionMismatchFlag) == 0x117, "versionMismatchFlag");
 static_assert(offsetof(GameRecord, playTimeObj) == 0x10, "playTimeObj");
 static_assert(offsetof(GameRecord, killsText) == 0x20, "killsText");
-static_assert(offsetof(GameRecord, pilotName) == 0x194, "pilotName");
+static_assert(sizeof(AbyssEngine::String) == 12, "ARM String layout");
+static_assert(offsetof(GameRecord, previewSystemName) == 0x188, "previewSystemName");
+static_assert(offsetof(GameRecord, previewStationName) == 0x194, "previewStationName");
 static_assert(offsetof(GameRecord, field_0x119) == 0x119, "");
 static_assert(offsetof(GameRecord, rank) == 0x11c, "");
 static_assert(offsetof(GameRecord, field_0x130) == 0x130, "");
@@ -200,6 +220,13 @@ static_assert(offsetof(GameRecord, shipId) == 0x1a0, "");
 static_assert(offsetof(GameRecord, field_0x1b4) == 0x1b4, "");
 static_assert(offsetof(GameRecord, field_0x1b8) == 0x1b8, "");
 static_assert(offsetof(GameRecord, field_0x1c0) == 0x1c0, "");
-#endif // GOF2_MATCH
+#endif // 32-bit ARM layout
+
+#if __SIZEOF_POINTER__ != 4
+static_assert(offsetof(GameRecord, previewSystemName) % alignof(AbyssEngine::String) == 0,
+              "native previewSystemName alignment");
+static_assert(offsetof(GameRecord, previewStationName) % alignof(AbyssEngine::String) == 0,
+              "native previewStationName alignment");
+#endif
 
 #endif

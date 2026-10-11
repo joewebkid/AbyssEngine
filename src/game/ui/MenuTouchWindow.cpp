@@ -2280,7 +2280,7 @@ void MenuTouchWindow::createRecordButtons(bool inSaveMode) {
             rowData[0] = e;
 
             e = new String();
-            e->Set(((String *) &slot->pilotName)->data);
+            e->Set(slot->getPreviewStationName().data);
             rowData = ((Array<void *> *) this->recordRows->data_[i])->data_;
             rowData[1] = e;
 

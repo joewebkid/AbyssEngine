@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (record file I/O wiring; older subsystem
+Last reviewed: 2026-10-11 (GameRecord preview strings; older subsystem
 snapshots retain their dates)
+
+## GameRecord preview string lifetime (2026-10-11)
+
+Android ARM confirms two 12-byte `String` members at `0x188` (system)
+and `0x194` (station), constructed and destroyed by `GameRecord`.
+Replacing raw integer slots restores both destructor aliases to
+linked-exact and raises constructor source-shape from 58.8% to 92.2%.
+The 64-bit native preview strings are placed separately and checked for
+alignment, rather than overlapping nearby raw fields. Native `gof2`,
+206/206 ARM units, and 36 verifier tests pass (one skipped). Full corpus:
+4,323/4,524 original functions, 92.24% average source-shape, 80.43%
+strict fuzzy, 2,352 linked-exact, 1,008 byte-exact, no lost exact
+pair, skipped unit, or wrong-type symbol. A native save/reload round trip
+is not yet proven: `GameRecord::load` retains raw 32-bit assumptions and
+prevents a focused native executable link. Next audit the preview station
+lookup and close the runtime test path. See
+[the ARM preview-string audit](GAME_RECORD_PREVIEW_STRINGS_ARM_2026-10-11.md).
 
 ## Record file I/O wiring (2026-10-11)
 

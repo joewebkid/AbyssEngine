@@ -542,8 +542,8 @@ void *RecordHandler::recordStoreReadPreview(int slot) {
 
         AEFile_Read_i64(&gr->playTimeObj, fd);
         AEFile_Read_i32(&gr->field_0x08, fd);
-        AEFile_Read_bool(&gr->pilotName, fd, true);
-        AEFile_Read_bool(&gr->field_0x188, fd, true);
+        AEFile_Read_bool(&gr->getPreviewStationName(), fd, true);
+        AEFile_Read_bool(&gr->getPreviewSystemName(), fd, true);
         AEFile_Read_i32(&gr->field_0x40, fd);
         AEFile_Read_i32(&gr->killsText, fd);
         AEFile_Read_f32(&gr->rank, fd);
@@ -1274,7 +1274,7 @@ int RecordHandler::recordStoreWritePreview(GameRecord *rec, int slot) {
     num = ((Station *) (&num))->getName();
     AEFile_Write_str(&num, fd, true);
 
-    AEFile_Write_str(&rec->field_0x188, fd, true);
+    AEFile_Write_str(&rec->getPreviewSystemName(), fd, true);
     AEFile_Write_i32((int) rec->field_0x40, fd);
     AEFile_Write_i32((int) rec->killsText, fd);
     AEFile_Write_f32(rec->rankBits, fd);
