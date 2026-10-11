@@ -8,6 +8,21 @@ null. A search of the recovered Android C++ tree found no later assignment
 to them; `ModStation` remains their only recovered reader. That source search
 is not proof that the original binary has no producer.
 
+The original ARM getter at `0x82498` loads the application-data pointer from
+`ApplicationManager+0x64`; its setter at `0x82494` stores that pointer there.
+A pass over the complete Android Hex-Rays dump found **40 call-site references
+in 16 functions** to this named getter (excluding the getter definition and
+its PLT thunk). Among those call sites, the only references to the three
+product fields are the `ModStation::OnUpdate` reads. The original Thumb
+instructions at `0xd9e04`, `0xd9e1c`, and `0xd9e28` independently confirm
+loads from `+0x58`, `+0x54`, and `+0x60`. They are gated by a read of the
+purchase-result byte at `+0x41`; the visible writes to that byte through the
+named getter in `ModStation::OnUpdate` (`0xd9e6c`) and
+`MenuTouchWindow::update` clear it, not set it. This narrows the unresolved
+producer to a direct/indirect pointer access, an unrecognized call path, or
+a platform-specific path absent from this Android binary; the textual pass
+cannot rule any of those out.
+
 The Android Google Play consumable callback at `0x6b9ac` instead forwards
 an index to `ndk_iapBoughtConsumable` at `0x945d8`, which selects a fixed
 credit amount and calls `setBaughtCredits` at `0x9462c`. This route does not
@@ -34,9 +49,10 @@ selected code at `+0x3c`, whereas Android `GameData::purchaseCode` is at
 No Android producer, ownership/destruction contract, or end-to-end billing
 test is confirmed yet. Do not allocate the three pointers in JNI or invent a
 store response to satisfy `ModStation` without an Android write trace or a
-deliberately separate native-host service design. Next priority: trace ARM
-writes to the application-data fields/flags, then test the station consumer
-with controlled inputs once its surrounding calls are isolated. The last
+deliberately separate native-host service design. Next priority: search for
+direct/indirect stores to the `GameData` pointer in ARM, including any
+unrecognized alias of `ApplicationManager+0x64`; then test the station
+consumer with controlled inputs once its surrounding calls are isolated. The last
 source-changing package's full ARM report remains
 `C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_consumable_20261011.json`:
 **4,323/4,524** functions, **91.91%** source-shape, **80.00%** strict,

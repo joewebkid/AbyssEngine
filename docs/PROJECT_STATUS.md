@@ -8,6 +8,10 @@ snapshots retain their dates)
 The Android Google Play consumable callback uses direct credit dispatch and
 does not fill `GameData+0x54/+0x58/+0x60`. Recovered Android C++ initializes
 those pointers to null and reads them in `ModStation`, with no recovered writer.
+An original-binary follow-up confirmed the pointer getter at `0x82498`,
+checked its 40 named call-site references across 16 functions, and verified
+the station's three field loads in Thumb code. No producer appears on that
+named-getter path; direct/indirect aliases remain unresolved.
 An iOS StoreKit response independently confirms the product-ID list and
 indexed integer-value pattern, but has a different application-data layout.
 No Android producer or ownership contract has been confirmed, so no synthetic
