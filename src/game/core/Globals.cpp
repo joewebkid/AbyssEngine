@@ -1838,9 +1838,8 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     Globals::ships = ((FileRead *) fr)->loadShipsBinary();
     ::operator delete(FileRead_dtor(fr));
 
-    int *engineSlot = (int *) &Globals::Canvas;
-    if (*engineSlot == 0) {
-        *engineSlot = *reinterpret_cast<int *>(app);
+    if (Globals::Canvas == nullptr) {
+        Globals::Canvas = app->paintCanvas;
     }
     Globals::appManager = app;
     ApplicationManager::gAppManager = app;

@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (TouchSlider layout wiring; older subsystem
+Last reviewed: 2026-10-11 (native Globals canvas pointer; older subsystem
 snapshots retain their dates)
+
+## Native Globals canvas pointer width (2026-10-11)
+
+`Globals::init` now copies `ApplicationManager::paintCanvas` into
+`Globals::Canvas` at native pointer width when the global is empty. The
+former `int *` write retained only the low 32 bits on 64-bit Windows;
+Android ARM reads the same first application-manager field. Native `gof2`,
+206/206 ARM units, and 35 verifier tests pass (one skipped). Full ARM
+corpus remains 4,713 comparisons of 4,323/4,524 original functions,
+92.32% source-shape, 80.46% strict fuzzy, 2,353 linked-exact and 1,008
+byte-exact, with no changed function shape or lost exact pair. Runtime
+canvas rendering is still untested because the full executable does not
+link. See [the canvas ABI audit](GLOBALS_CANVAS_NATIVE_POINTER_ARM_2026-10-11.md).
 
 ## TouchSlider layout-backed touch padding (2026-10-11)
 
