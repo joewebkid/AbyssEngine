@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (collision and part resource paths; older subsystem
+Last reviewed: 2026-10-11 (agent mod-price table; older subsystem
 snapshots retain their dates)
+
+## Agent mod-price table (2026-10-11)
+
+The four ARM rodata percentages used by `Agent::getModPricePercentage`
+are **20, 30, 40, 20**, not the four zeros in the recovered source.
+They now match both the original ELF and generated ARM object's bytes;
+the fallback 40 is unchanged. Native `gof2`, 206/206 ARM units and 36
+verifier tests pass (one skipped). This function remains 100%
+source-shape/strict fuzzy and linked-exact, demonstrating that
+instruction matching alone does not validate referenced data. The
+full corpus remains 4,323/4,524 compared at 92.05% source-shape and
+80.12% strict fuzzy, with 2,325 linked-exact and 997 byte-exact; no
+exact-pair loss, skipped row or wrong-type symbol. Live agent offers
+remain unverified; see [the ARM table audit](AGENT_MOD_PRICE_TABLE_ARM_2026-10-11.md).
 
 ## Collision and part resource paths (2026-10-11)
 

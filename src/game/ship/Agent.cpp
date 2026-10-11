@@ -50,7 +50,7 @@ String Agent::getName() {
     return this->name;
 }
 
-static const int kModPriceTable[4] = {0, 0, 0, 0};
+static const int kModPriceTable[4] = {20, 30, 40, 20};
 
 int Agent::getModPricePercentage() {
     uint32_t i = this->sellModIndex;
