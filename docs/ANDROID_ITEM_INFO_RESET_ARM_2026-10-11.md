@@ -13,6 +13,20 @@ the setter, so a populated reset left all names, descriptions, currencies,
 and prices allocated. The reset now names the original ARM targets without
 changing the group gates, deletion order, or clearing order.
 
+The Android symbol table exports only `cItemListID_00` through `_04` (five
+symbols at `0x218314..0x218324`), while the other 20 pointers are exported
+under their Name/Description/Currency/Price names. A source search found no
+remaining caller of the synthetic `cItemListID_05..24` declarations after
+the reset correction. Those extra definitions have therefore been removed;
+the native object now exposes exactly the five original ID names.
+After that removal, the native `gof2` build and all 206 ARM translation units
+still pass. The full report remains **4,323/4,524** functions, **91.91%**
+mean source-shape, **79.99%** strict fuzzy, **2,319 linked-exact** and
+**997 byte-exact**, with no lost exact pair. The verifier's 112 extra symbols
+are executable-function symbols, so removing these 20 data definitions does
+not change that count. Report:
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_item_abi_20261011.json`.
+
 The opt-in `gof2_item_info_reset_smoke` compiles the actual reset function,
 populates all 25 fields, and confirms every field is null afterward:
 
@@ -39,3 +53,7 @@ while reset calls `operator delete[]`; their allocator compatibility is
 platform-dependent and remains to be checked. An apparent ARM use of item
 name 3 for both name slots 3 and 4 was not introduced into the readable
 source solely to improve matching.
+
+Next priority: validate the setter's string ownership and its Java/JNI call
+sequence on a runnable Android path, then continue the separate `GameData`
+purchase-list producer investigation.

@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (Android premium-DLC callback; older subsystem
+Last reviewed: 2026-10-11 (Android item-information ABI; older subsystem
 snapshots retain their dates)
+
+## Android item-information reset and globals (2026-10-11)
+
+The reset now frees the same 25 ID/name/description/currency/price pointers
+that the Android setter fills, matching the original ARM GOT targets. Twenty
+synthetic `cItemListID_05..24` data symbols absent from the original were
+removed. The native reset smoke, native `gof2`, 206 ARM units and 36 verifier
+tests pass (one skipped). The full corpus remains **4,323/4,524** compared,
+**91.91%** source-shape, **79.99%** strict fuzzy, **2,319 linked-exact** and
+**997 byte-exact**, with no lost exact pair. The verifier's 112 extra *function*
+symbols are unaffected by removing data symbols. Setter/reset call sequencing
+and allocator compatibility are unverified; see
+[the ARM audit](ANDROID_ITEM_INFO_RESET_ARM_2026-10-11.md).
 
 ## Android premium-DLC callback (2026-10-11)
 
