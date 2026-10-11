@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (StarSystem supernova scale recovery; older subsystem
+Last reviewed: 2026-10-11 (StarSystem supernova intro recovery; older subsystem
 snapshots retain their dates)
+
+## StarSystem supernova intro transform handoff (2026-10-11)
+
+The intro path now calls the actual canvas transform getter and animation
+state setter in the ARM-confirmed **0, 3, 1** sequence instead of two null
+function pointers. It also reloads the sun and streak pointers as the native
+code does. Focused source-shape/strict fuzzy rise from **57.5%/42.6%** to
+**100%/100%** at 108/108 instructions (not linked- or byte-exact). Native
+`gof2`, 206 ARM units and 36 verifier tests pass (one skipped). The full
+corpus is **4,323/4,524**, **91.95%** source-shape, **80.04%** strict,
+**2,319 linked-exact**, **997 byte-exact**, with no exact-pair losses or
+wrong-type symbols. Device gameplay and broader initialization remain
+untested; see [the ARM intro audit](STARSYSTEM_SUPERNOVA_INTRO_ARM_2026-10-11.md).
 
 ## StarSystem supernova scale recovery (2026-10-11)
 
@@ -13,7 +26,7 @@ source-shape / 100% strict fuzzy**; the delta-scaling path remains **96.2% /
 206 ARM units and 36 verifier tests pass (one skipped). The full corpus is
 **4,323/4,524**, **91.94%** source-shape, **80.03%** strict, **2,319
 linked-exact**, **997 byte-exact**, with no exact-pair loss. Device gameplay
-and the intro transform-state calls remain unverified; see
+remains unverified; the intro calls were resolved in the later audit. See
 [the ARM scale audit](STARSYSTEM_SUPERNOVA_SCALE_ARM_2026-10-11.md).
 
 ## Purchase application-data producer cross-check (2026-10-11)

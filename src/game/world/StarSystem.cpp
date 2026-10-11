@@ -11,6 +11,7 @@
 #include "engine/render/Engine.h"
 #include "game/ship/PlayerStatic.h"
 #include "engine/render/LensFlare.h"
+#include "game/core/Globals.h"
 
 int StarSystem::orbitPlanetIndex;
 
@@ -601,36 +602,29 @@ void StarSystem::switchSunForSupernovaReversal() {
     sun->setScaling(Vector{0.2288818359375f, 0.2288818359375f, 0.2288818359375f});
 }
 
-typedef void *(*GetTransformFn)(PaintCanvas *canvas, int transform_id);
-
-typedef void (*SetTransformModeFn)(void *transform, int mode, int value);
-
-
-static GetTransformFn g_StarSystem_intro_getTransform = nullptr;
-
-static SetTransformModeFn g_StarSystem_intro_setTransformMode = nullptr;
-
 static const uint32_t *g_StarSystem_intro_colors = g_StarSystem_ctor_systemColors;
 
 void StarSystem::switchSunForSupernovaIntro() {
-    PaintCanvas::gCanvas->TextureCreate((uint16_t) 0x2df3, (*this->texturesArray)[0], false);
-    PaintCanvas::gCanvas->TextureCreate((uint16_t) 0x2df4, this->supernovaSunTexture, false);
+    Globals::Canvas->TextureCreate((uint16_t) 0x2df3, (*this->texturesArray)[0], false);
+    Globals::Canvas->TextureCreate((uint16_t) 0x2df4, this->supernovaSunTexture, false);
 
-    AEGeometry *streak = this->sunStreak;
-    streak->setMesh(0x2df2);
-    streak->setScaling(streak->getScaling() * 5.0f);
+    this->sunStreak->setMesh(0x2df2);
+    this->sunStreak->setScaling(this->sunStreak->getScaling() * 5.0f);
 
-    AEGeometry *sun = (*this->planetsArray)[0];
-    sun->setMesh(0x2df1);
-    sun->setScaling(0.6866455078125f);
+    (*this->planetsArray)[0]->setMesh(0x2df1);
+    (*this->planetsArray)[0]->setScaling(0.6866455078125f);
 
-    GetTransformFn getTransform = g_StarSystem_intro_getTransform;
-    SetTransformModeFn setTransformMode = g_StarSystem_intro_setTransformMode;
-    setTransformMode(getTransform(PaintCanvas::gCanvas, sun->transform), 0, 0);
-    setTransformMode(getTransform(PaintCanvas::gCanvas, sun->transform), 3, 0);
-    setTransformMode(getTransform(PaintCanvas::gCanvas, sun->transform), 1, 0);
+    auto *transform = static_cast<AbyssEngine::Transform *>(
+        Globals::Canvas->TransformGetTransform((*this->planetsArray)[0]->transform));
+    transform->SetAnimationState(AbyssEngine::AnimationMode_0, nullptr);
+    transform = static_cast<AbyssEngine::Transform *>(
+        Globals::Canvas->TransformGetTransform((*this->planetsArray)[0]->transform));
+    transform->SetAnimationState(static_cast<AbyssEngine::AnimationMode>(3), nullptr);
+    transform = static_cast<AbyssEngine::Transform *>(
+        Globals::Canvas->TransformGetTransform((*this->planetsArray)[0]->transform));
+    transform->SetAnimationState(static_cast<AbyssEngine::AnimationMode>(1), nullptr);
 
-    SolarSystem *system = (SolarSystem *) (intptr_t) Status::gStatus->getSystem();
+    SolarSystem *system = (SolarSystem *) (intptr_t) Globals::status->getSystem();
     this->tintColor = g_StarSystem_intro_colors[system->getIndex()];
 }
 

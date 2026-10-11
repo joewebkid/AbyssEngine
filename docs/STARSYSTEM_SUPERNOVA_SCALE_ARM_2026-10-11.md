@@ -26,5 +26,7 @@ verifier tests pass (one skipped). A full ARM corpus result is recorded in
 **4,323/4,524** compared, **91.94%** mean source-shape (+0.03), **80.03%**
 strict (+0.03), **2,319 linked-exact**, **997 byte-exact**, no lost exact
 pair, no skipped or wrong-type symbols. Supernova gameplay on a device and
-the larger `StarSystem` state machine remain untested. Next priority: the
-intro transform-state calls still pass through unresolved null placeholders.
+the larger `StarSystem` state machine remain untested. The subsequent
+[intro transform audit](STARSYSTEM_SUPERNOVA_INTRO_ARM_2026-10-11.md)
+removes the null call targets identified here; device gameplay remains the
+next validation priority.
