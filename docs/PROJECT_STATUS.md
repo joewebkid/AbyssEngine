@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (StarSystem supernova intro recovery; older subsystem
+Last reviewed: 2026-10-11 (NewsTicker global wiring; older subsystem
 snapshots retain their dates)
+
+## NewsTicker global wiring and lifetime (2026-10-11)
+
+Android ARM confirms the ticker's canvas, screen, layout, font, random,
+status and text sources. The recovered class now uses those `Globals`
+members instead of null stand-ins, restores the original text separator,
+and lets C++ destroy its member `String` once. Across its 11 focused rows,
+source-shape rises **63.9% to 88.0%** and strict **50.7% to 71.3%**;
+`getHeight` and two destructor aliases gain linked-exact matches. Native
+`gof2`, 206 ARM units and 36 verifier tests pass (one skipped). The full
+corpus is **4,323/4,524**, **92.01%** source-shape, **80.09%** strict,
+**2,322 linked-exact**, **997 byte-exact**, with no exact-pair loss.
+`replaceTokens`, station-side ticker construction, and in-game rendering
+remain unverified; see [the ARM ticker audit](NEWSTICKER_GLOBAL_WIRING_ARM_2026-10-11.md).
 
 ## StarSystem supernova intro transform handoff (2026-10-11)
 

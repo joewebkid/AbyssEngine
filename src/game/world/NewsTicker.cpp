@@ -7,27 +7,13 @@
 #include "engine/core/AERandom.h"
 #include "engine/file/FileRead.h"
 #include "game/core/String.h"
+#include "game/core/Globals.h"
+#include "game/ui/Layout.h"
 #include "engine/render/PaintCanvas.h"
 
-static PaintCanvas **g_NewsTicker_draw_canvas = nullptr;
-static int **g_NewsTicker_draw_fontHeight = nullptr;
-static int *g_NewsTicker_draw_screenHeight = nullptr;
-static void **g_NewsTicker_draw_font = nullptr;
-static int *g_NewsTicker_touchMove_screenWidth = nullptr;
-static int **g_NewsTicker_getHeight_font = nullptr;
-static int *g_NewsTicker_getHeight_screen = nullptr;
 static const char g_NewsTicker_ctor_empty[1] = {0};
-static AbyssEngine::AERandom **g_NewsTicker_ctor_random = nullptr;
-static Status **g_NewsTicker_ctor_status = nullptr;
-static GameText **g_NewsTicker_ctor_text = nullptr;
-static const char g_NewsTicker_ctor_separator[1] = {0};
-static void **g_NewsTicker_ctor_font = nullptr;
-static PaintCanvas **g_NewsTicker_ctor_canvas = nullptr;
-static int **g_NewsTicker_touchBegin_font = nullptr;
-static int *g_NewsTicker_touchBegin_screen = nullptr;
 
 NewsTicker::NewsTicker(int x, int y, int width, int faction, int level) {
-    { if (this->tickerText.data) delete[] this->tickerText.data; this->tickerText.data = nullptr; this->tickerText.length = 0; }
     this->x = x;
     this->y = y;
     this->width = width;
@@ -39,7 +25,7 @@ NewsTicker::NewsTicker(int x, int y, int width, int faction, int level) {
 
     Array<NewsItem *> *items = new Array<NewsItem *>();
 
-    AbyssEngine::AERandom *random = *g_NewsTicker_ctor_random;
+    AbyssEngine::AERandom *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
     int wanted = random->nextInt(1) + 2;
 
     for (uint32_t i = 0; i < allItems->size(); ++i) {
@@ -51,7 +37,7 @@ NewsTicker::NewsTicker(int x, int y, int width, int faction, int level) {
         }
     }
 
-    Status *status = *g_NewsTicker_ctor_status;
+    Status *status = Globals::status;
     int added = 0;
     int attempts = 0;
     while (added < wanted && attempts < 100) {
@@ -86,8 +72,8 @@ NewsTicker::NewsTicker(int x, int y, int width, int faction, int level) {
         ++added;
     }
 
-    String separator(g_NewsTicker_ctor_separator);
-    GameText *gameText = *g_NewsTicker_ctor_text;
+    String separator("    +++    ");
+    GameText *gameText = Globals::gameText;
     for (uint32_t i = 0; i < items->size(); ++i) {
         NewsItem *item = (*items)[i];
         String line(*gameText->getText(item->id + 0x0cbe));
@@ -104,8 +90,8 @@ NewsTicker::NewsTicker(int x, int y, int width, int faction, int level) {
         this->tickerText += replaced + separator;
     }
 
-    PaintCanvas *canvas = *g_NewsTicker_ctor_canvas;
-    unsigned int font = (unsigned int) (unsigned long) *g_NewsTicker_ctor_font;
+    PaintCanvas *canvas = Globals::Canvas;
+    unsigned int font = Globals::font;
     this->textWidth = canvas->GetTextWidth(font, this->tickerText);
     if (this->textWidth < width) {
         this->tickerText += String(this->tickerText);
@@ -126,23 +112,21 @@ NewsTicker::NewsTicker(int x, int y, int width, int faction, int level) {
 }
 
 NewsTicker::~NewsTicker() {
-    this->tickerText.~String();
 }
 
 void NewsTicker::draw() {
-    PaintCanvas *canvas = *g_NewsTicker_draw_canvas;
+    PaintCanvas *canvas = Globals::Canvas;
     canvas->SetColor(0x6f);
 
-    int *fontMetrics = *g_NewsTicker_draw_fontHeight;
-    int screenHeight = *g_NewsTicker_draw_screenHeight;
-    int fontHeight = fontMetrics[4];
+    int screenHeight = Globals::h;
+    int fontHeight = Globals::layout->field_0x10;
     int fillHeight = (2 - this->y) + screenHeight - fontHeight;
     canvas->FillRectangle(this->x, this->y - 2, this->width, fillHeight);
 
     canvas->EnableClip(this->x, this->y, this->width, screenHeight);
     canvas->SetColor(0x777777ff);
 
-    unsigned int font = (unsigned int) (unsigned long) *g_NewsTicker_draw_font;
+    unsigned int font = Globals::font;
     canvas->DrawString(font, this->tickerText,
                        (int) (this->scrollOffset + (float) this->x), this->y, false);
 
@@ -183,15 +167,12 @@ void NewsTicker::update(int dt) {
 }
 
 int NewsTicker::getHeight() {
-    int fontHeight = (*g_NewsTicker_getHeight_font)[4];
-    int bottom = (*g_NewsTicker_getHeight_screen + 2) - fontHeight;
-    return bottom - this->y;
+    return Globals::h + 2 - Globals::layout->field_0x10 - this->y;
 }
 
 uint8_t NewsTicker::OnTouchBegin(int x, int y) {
     if (this->x <= x && x <= this->x + this->width && this->y <= y) {
-        int fontHeight = (*g_NewsTicker_touchBegin_font)[4];
-        int bottom = (*g_NewsTicker_touchBegin_screen + 2) - fontHeight;
+        int bottom = Globals::h + 2 - Globals::layout->field_0x10;
         if (y <= bottom) {
             this->lastTouchX = x;
             this->touched = 1;
@@ -204,7 +185,7 @@ bool NewsTicker::OnTouchMove(int x, int) {
     if (this->touched != 0) {
         float delta = (float) (this->lastTouchX - x);
         this->scrollOffset -= delta;
-        float maxX = (float) *g_NewsTicker_touchMove_screenWidth;
+        float maxX = (float) Globals::w;
         if (maxX < this->scrollOffset) {
             this->scrollOffset = maxX;
         }
