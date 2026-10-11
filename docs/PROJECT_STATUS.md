@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (ModStation ticker construction; older subsystem
+Last reviewed: 2026-10-11 (Globals random sources; older subsystem
 snapshots retain their dates)
+
+## Globals random station and drinks system (2026-10-11)
+
+Android ARM confirms `Globals::getRandomStation` draws from `Globals::rnd`,
+loads through a real `FileRead`, and returns the station. The previous null
+RNG read is gone; the function is now **linked-exact** at **100%/100%**
+focused source-shape/strict fuzzy. `getRandomSystemForDrinks` now draws
+from the same RNG and returns `Galaxy::getSystem`, correcting a `void`
+return and null writes; its focused source-shape/strict rise to
+**94.3%/45.7%**. Native `gof2`, **206/206** ARM units and 36 verifier
+tests pass (one skipped). The full corpus compares **4,323/4,524**
+original functions at **92.02%** source-shape and **80.10%** strict,
+with **2,323 linked-exact** (+1) and **997 byte-exact** (unchanged).
+No exact-pair losses, skipped rows or wrong-type symbols occurred. The
+retained report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_globals_random_20261011.json`.
+`NewsTicker::replaceTokens` and other random-name dependencies remain
+unfinished; game-data runtime behavior is untested. See
+[the ARM random-source audit](GLOBALS_RANDOM_SOURCES_ARM_2026-10-11.md).
 
 ## ModStation station-entry ticker construction (2026-10-11)
 

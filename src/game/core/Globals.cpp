@@ -344,6 +344,7 @@ AbyssEngine::ApplicationManager *ApplicationManager::gAppManager = nullptr;
 
 #include "game/mission/Status.h"
 #include "game/world/Galaxy.h"
+#include "engine/file/FileRead.h"
 #include "game/mission/Achievements.h"
 #include "engine/core/AERandom.h"
 #include "game/ship/Agent.h"
@@ -470,13 +471,9 @@ float Globals::sqrt(float x) {
     return __builtin_sqrtf(x);
 }
 
-static void *const gDrinks_a = nullptr;
-static void *const gDrinks_rng = nullptr;
-
-void Globals::getRandomSystemForDrinks() {
-    int slot = *(int *) gDrinks_a;
-    int picked = nextInt_71ad0((AbyssEngine::AERandom *) *(int *) gDrinks_rng, 0x16);
-    *(int *) (long) slot = picked;
+SolarSystem *Globals::getRandomSystemForDrinks() {
+    int picked = static_cast<AbyssEngine::AERandom *>(Globals::rnd)->nextInt(22);
+    return static_cast<Galaxy *>(Globals::galaxy)->getSystem(picked);
 }
 
 void Globals::addSoundResourceToList(int snd) {
@@ -496,27 +493,12 @@ String Globals::replaceKeyBindingTokens(const String &src) {
     return src;
 }
 
-struct FileRead {
-    Station *loadStation(int32_t id);
-
-    Array<int32_t> *loadWreckCollision(int32_t id);
-
-    Array<Item *> *loadItemsBinary();
-
-    Array<Ship *> *loadShipsBinary();
-
-    Array<String *> *loadNamesBinary(int32_t type, bool first, bool second);
-};
-
-static void *const gStationRng = nullptr;
-
 Station *Globals::getRandomStation() {
-    FileRead *f = (FileRead *) ::operator new(1);
-    FileRead_ctor(f);
-    int which = nextInt_71ad0((AbyssEngine::AERandom *) *(int *) gStationRng, 0x87);
-    Station *r = f->loadStation(which);
-    ::operator delete(FileRead_dtor(f));
-    return r;
+    FileRead *reader = new FileRead();
+    int index = static_cast<AbyssEngine::AERandom *>(Globals::rnd)->nextInt(135);
+    Station *station = reader->loadStation(index);
+    delete reader;
+    return station;
 }
 
 void Globals::drawLines(unsigned int font, Array<String *> *lines, int baseX, int startY) {
