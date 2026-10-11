@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-10 (station loader synthetic smoke; older subsystem
+Last reviewed: 2026-10-11 (DLC menu setup; older subsystem
 snapshots retain their dates)
+
+## ModStation DLC menu setup (2026-10-11)
+
+`ModStation::showDlcMenu` now uses the ARM-confirmed menu constructor,
+button-coordinate globals, open/close flag bytes and DLC-menu call instead
+of null globals and unresolved fragments. Focused source-shape rises
+**57.3% to 99.0%**, strict fuzzy **29.8% to 72.6%**; it is not exact.
+Native `gof2`, 206/206 ARM units and verifier tests pass. The full corpus
+compares **4,323/4,524** originals: **91.88%** source-shape, **79.94%**
+strict, **2,313 linked-exact**, **997 byte-exact**, with no row or exact-pair
+losses. Running-game DLC behavior remains unverified; next audit the
+downstream helper. See [the ARM evidence](MODSTATION_SHOW_DLC_MENU_ARM_2026-10-11.md).
 
 ## Station loader synthetic smoke (2026-10-10)
 

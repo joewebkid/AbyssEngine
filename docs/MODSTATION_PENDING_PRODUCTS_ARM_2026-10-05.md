@@ -45,5 +45,7 @@ are 202 absent functions, zero wrong-type misses, zero skipped units, and
 `_work/blueprint-isunlocked/modstation_pending_full.json`.
 No running-game delivery was exercised, so cargo ownership, notification
 display, and the special-product transition remain unverified at runtime.
-The next bounded source-recovery priority is `ModStation::showDlcMenu()`,
-which still relies on fragment callbacks and button-cache globals.
+`ModStation::showDlcMenu()` has since been recovered from those fragment
+callbacks and button-cache globals; see the
+[follow-up ARM note](MODSTATION_SHOW_DLC_MENU_ARM_2026-10-11.md). The next
+bounded priority is its downstream `MenuTouchWindow::callDlcMenu()` path.

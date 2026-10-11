@@ -219,6 +219,11 @@ public:
 #if __SIZEOF_POINTER__ == 4
 static_assert(offsetof(ModStation, closeHangarAfterCredits) == 0x18,
               "ModStation::closeHangarAfterCredits @ 0x18");
+static_assert(offsetof(ModStation, dlcMenu) == 0x50, "ModStation::dlcMenu @ 0x50");
+static_assert(offsetof(ModStation, m_nStarMapWindowOpen) == 0x60,
+              "ModStation::DLC open flags @ 0x60");
+static_assert(offsetof(ModStation, subWindowFlags) == 0x64,
+              "ModStation::subwindow flags @ 0x64");
 static_assert(offsetof(ModStation, medalArray) == 0xbc,
               "ModStation::medalArray @ 0xbc");
 static_assert(offsetof(ModStation, scrollTarget) == 0x11c,

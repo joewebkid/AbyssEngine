@@ -260,3 +260,16 @@ source is unchanged from `c45161c0`, the last full report remains
 linked-exact and 997 byte-exact; no new full corpus run was made for this
 test-only package. Real asset parsing/order and station-to-Radar runtime
 remain unverified; see [the smoke note](FILE_READ_STATION_SYNTHETIC_SMOKE_2026-10-10.md).
+
+## ModStation DLC menu setup (2026-10-11)
+
+Android ARM `showDlcMenu` at `0x000dc1bc` confirms the real
+`MenuTouchWindow(2)` constructor, coordinate global arrays, menu count,
+field bytes `+0x62/+0x66`, and `callDlcMenu()` route. Native `gof2`, 206/206
+ARM units, verifier tests and scope tests pass. Focused source-shape rises
+57.3% to 99.0%; strict fuzzy rises 29.8% to 72.6%. The full report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_dlc_menu_20261010.json`:
+4,323/4,524 originals, 4,689 rows, 91.88% source-shape, 79.94% strict,
+2,313 linked-exact and 997 byte-exact, with no row or exact-pair losses.
+The downstream DLC/store flow is not runtime-tested; see
+[the focused note](MODSTATION_SHOW_DLC_MENU_ARM_2026-10-11.md).

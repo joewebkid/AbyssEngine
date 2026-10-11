@@ -3260,43 +3260,24 @@ void ModStation::OnInitialize() {
 
 static int *g_dlc_stack = 0;
 
-static int *g_dlc_btnX = 0;
-
-static int *g_dlc_btnY = 0;
-
-static int **g_dlc_btnCount = 0;
-
-
-void MenuTouchWindow_ctor_dlc(MenuTouchWindow *w, int kind);
-
-void MenuTouchWindow_callDlcMenu_dlc(MenuTouchWindow * w);
-
-void TouchButton_getPosition_dlc(void *dst, void *win, unsigned idx);
-
 void ModStation::showDlcMenu() {
     MenuTouchWindow *win = (MenuTouchWindow *) this->dlcMenu;
     if (win == 0) {
-        win = (MenuTouchWindow *) ::operator new(0x240);
-        MenuTouchWindow_ctor_dlc(win, 2);
+        win = new MenuTouchWindow(2);
         this->dlcMenu = win;
     }
-    this->modalFlags.bytes[2] = 1;
+    this->m_nStarMapWindowOpen.bytes[2] = 1;
 
-    int *bx = g_dlc_btnX;
-    int *by = g_dlc_btnY;
     for (unsigned i = 0; i < win->buttons->size(); i = i + 1) {
         if (i < 10) {
-            float pos[3];
-            TouchButton_getPosition_dlc(pos, win, i);
-            bx[i] = (int) pos[0];
-            TouchButton_getPosition_dlc(pos, win, i);
-            by[i] = (int) pos[1];
+            Globals::sub_menu_buttons_x[i] = (int) ((TouchButton *) (*win->buttons)[i])->getPosition().x;
             win = (MenuTouchWindow *) this->dlcMenu;
+            Globals::sub_menu_buttons_y[i] = (int) ((TouchButton *) (*win->buttons)[i])->getPosition().y;
         }
     }
-    **g_dlc_btnCount = win->buttons->size();
+    Globals::sub_menu_button_count = win->buttons->size();
     this->subWindowFlags.bytes[2] = 0;
-    MenuTouchWindow_callDlcMenu_dlc(win);
+    win->callDlcMenu();
 }
 
 
