@@ -32,10 +32,10 @@ Station *FileRead::loadStation(int32_t id) {
 }
 
 int32_t FileRead::loadStationsBinary() {
-    String path("stations_binary.bin");
+    String path("data/bin/stations.bin");
     if (AEFile::FileExist(path) != 0) {
         uint32_t handle;
-        AEFile::OpenRead("stations_binary.bin", &handle);
+        AEFile::OpenRead("data/bin/stations.bin", &handle);
 
         int32_t color0;
         int32_t color1;
@@ -380,13 +380,13 @@ Array<Station *> *FileRead::loadStationsBinary(int16_t *ids, int32_t count) {
     Array<Station *> *stations = new Array<Station *>();
     ArraySetLength<Station *>(count, *stations);
 
-    String path("stations_binary.bin");
+    String path("data/bin/stations.bin");
     if (AEFile::FileExist(path) == 0) {
         return 0;
     }
 
     uint32_t handle;
-    AEFile::OpenRead("stations_binary.bin", &handle);
+    AEFile::OpenRead("data/bin/stations.bin", &handle);
 
     String name;
     int32_t out = 0;
@@ -512,13 +512,13 @@ Array<String *> *FileRead::loadNamesBinary(int32_t type, bool first, bool second
 Array<Station *> *FileRead::loadStationsBinary(SolarSystem *system) {
     Array<Station *> *stations = new Array<Station *>();
 
-    String path("stations_binary.bin");
+    String path("data/bin/stations.bin");
     if (AEFile::FileExist(path) == 0) {
         return 0;
     }
 
     uint32_t handle;
-    AEFile::OpenRead("stations_binary.bin", &handle);
+    AEFile::OpenRead("data/bin/stations.bin", &handle);
 
     Array<int32_t> *ids = (Array<int32_t> *) system->getStations();
     ArraySetLength<Station *>(ids->size(), *stations);

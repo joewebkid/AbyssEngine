@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (ticker resource loader; older subsystem
+Last reviewed: 2026-10-11 (station resource loader; older subsystem
 snapshots retain their dates)
+
+## Station resource loader (2026-10-11)
+
+All three `FileRead::loadStationsBinary` overloads now probe and open
+Android's `data/bin/stations.bin`, replacing the incorrect
+`stations_binary.bin` path. Native `gof2` and 206/206 ARM units build.
+The focused family is 93.3% source-shape / 54.5% strict fuzzy; none of
+the overloads is exact. The full corpus remains 4,323/4,524 compared,
+92.05% source-shape, 80.12% strict fuzzy, 2,325 linked-exact and 997
+byte-exact, with zero exact-pair losses, skips or wrong-type symbols.
+The game runtime asset mount and the no-argument loader's incomplete
+color-table writes remain unverified; see
+[the ARM station-loader audit](FILE_READ_STATIONS_RESOURCE_ARM_2026-10-11.md).
 
 ## Ticker resource loader (2026-10-11)
 
