@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (PlayerAsteroid ABI and global dependencies; older subsystem
+Last reviewed: 2026-10-11 (PlayerAsteroid motion and blast force; older subsystem
 snapshots retain their dates)
+
+## PlayerAsteroid motion and blast force (2026-10-11)
+
+Android ARM confirms push duration `5000`, geometry-matrix-first
+rotation, and a blast impulse using scale clamped to `0.6–1.0` and
+multiplier `1024`. The recovered impulse had usually rounded to zero.
+It now stores the scaled vector in inherited `targetPos` and calls
+the asteroid's virtual translation rather than moving a base route.
+The projection method also updates the original class-static `pos`.
+Native `gof2`, 206/206 ARM units, and 36 verifier tests pass (one
+skipped). The four-function focused source-shape/strict fuzzy improve
+from 85.6%/48.9% to 86.8%/55.0%, without new exact matches. The full
+corpus remains 4,323/4,524 at 92.11% source-shape, 80.34% strict fuzzy,
+2,338 linked-exact, and 1,008 byte-exact, with no lost exact pair,
+skipped unit, or wrong-type symbol. Running-game physics is untested;
+next inspect `PlayerJunk`'s null RNG/sound dependencies. See
+[the ARM motion audit](PLAYER_ASTEROID_MOTION_ARM_2026-10-11.md).
 
 ## PlayerAsteroid ABI and global dependencies (2026-10-11)
 

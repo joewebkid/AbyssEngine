@@ -168,19 +168,19 @@ void PlayerAsteroid::update(int delta) {
 
     float bombForce = player->getBombForce();
     if (bombForce > 0.0f && this->state == 3) {
-        Vector hit = player->getHitVector();
+        this->targetPos = player->getHitVector();
         float scaling = this->scaling;
         float clamped = scaling;
         if (clamped > 1.0f)
             clamped = 1.0f;
-        if (scaling < 0.5f)
-            clamped = 1.0f;
-        float force = (float) (int) (bombForce * 0.1f * (clamped / 2.0f + 1.0f));
-        hit = hit * force;
-        KIPlayer::translate(hit);
-        this->explosion->translate(hit);
+        if (scaling < 0.6f)
+            clamped = 0.6f;
+        float force = (float) (int) (bombForce * 1024.0f * (1.0f + clamped / -100.0f));
+        this->targetPos *= force;
+        this->translate(this->targetPos);
+        this->explosion->translate(this->targetPos);
         if (this->secondaryGeometry() != nullptr)
-            this->secondaryGeometry()->translate(hit);
+            this->secondaryGeometry()->translate(this->targetPos);
         float nextForce = bombForce * 0.98f;
         if (nextForce < 0.05f)
             nextForce = 0.0f;
@@ -189,8 +189,8 @@ void PlayerAsteroid::update(int delta) {
 }
 
 Vector PlayerAsteroid::getProjectionVector(const Vector &value) {
-    Vector position = this->geometry->getPosition();
-    Vector toCenter = position - value;
+    pos = this->geometry->getPosition();
+    Vector toCenter = pos - value;
     return VectorNormalize(toCenter);
 }
 
@@ -239,13 +239,13 @@ void PlayerAsteroid::push(int delta) {
     AEGeometry *geometry = this->geometry;
     if (frameDelta > 0) {
         Matrix geometryMatrix = geometry->getMatrix();
-        Matrix combined = rotation * geometryMatrix;
+        Matrix combined = geometryMatrix * rotation;
         geometry->setMatrix(combined);
         frameDelta = this->lastDelta;
     }
 
     Vector baseMove = this->pushDirection() * ((float) frameDelta);
-    float scale = (2.0f - t) * 3.0f * ((float) this->pushDuration() / 1000.0f);
+    float scale = (2.0f - t) * 3.0f * ((float) this->pushDuration() / 5000.0f);
     Vector move = baseMove * scale;
     geometry->translate(move);
 }
@@ -255,7 +255,7 @@ void PlayerAsteroid::initPush(const Vector &target, int duration) {
     Vector delta = target - current;
     float ratio = VectorLength(delta) / (float) duration;
     float clamped = (ratio < 1.0f) ? ratio : 1.0f;
-    int pushFrames = (int) ((1.0f - clamped) * 1000.0f);
+    int pushFrames = (int) ((1.0f - clamped) * 5000.0f);
     this->pushTimer() = pushFrames;
     this->pushDuration() = pushFrames;
 
