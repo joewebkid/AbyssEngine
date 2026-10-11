@@ -12,6 +12,7 @@ class PendingProduct;
 class Agent;
 class Item;
 class Wanted;
+class Mission;
 // ARM layout is byte-faithful to the original 32-bit binary (449 bytes / 0x1c1).
 // The on-disk save record is read/written almost entirely through raw offsets:
 // GameRecord.cpp treats `this` as `uint32_t rec[]` (rec[N] == *(uint32_t*)(this
@@ -53,25 +54,48 @@ public:
     uint32_t field_0x48;         // 0x048  rec[0x12]
     uint32_t field_0x4c;         // 0x04c  rec[0x13]
     uint32_t field_0x50;         // 0x050  rec[0x14]
-    uint32_t field_0x54;         // 0x054  rec[0x15]
-    uint32_t field_0x58;         // 0x058  rec[0x16]
+#if __SIZEOF_POINTER__ == 4
+    Mission *freelanceMission;   // 0x054  rec[0x15]
+    Mission *campaignMission;    // 0x058  rec[0x16]
+#else
+    uint32_t field_0x54;
+    uint32_t field_0x58;
+#endif
 #if __SIZEOF_POINTER__ == 4
     Array<Station *> *stationStack; // 0x05c  rec[0x17]
 #else
     uint32_t field_0x5c;
 #endif
-    uint32_t field_0x60;         // 0x060  rec[0x18]
+#if __SIZEOF_POINTER__ == 4
+    int *medals;                 // 0x060  rec[0x18]
+#else
+    uint32_t field_0x60;
+#endif
     uint32_t field_0x64;         // 0x064  rec[0x19]
-    uint32_t field_0x68;         // 0x068  rec[0x1a]
-    uint32_t field_0x6c;         // 0x06c  rec[0x1b]
-    uint32_t field_0x70;         // 0x070  rec[0x1c]
+#if __SIZEOF_POINTER__ == 4
+    Array<bool> *flags68;       // 0x068  rec[0x1a]
+    Array<bool> *flags6c;       // 0x06c  rec[0x1b]
+    Array<int> *array70;        // 0x070  rec[0x1c]
+#else
+    uint32_t field_0x68;
+    uint32_t field_0x6c;
+    uint32_t field_0x70;
+#endif
     uint32_t field_0x74;         // 0x074  rec[0x1d]
     uint32_t field_0x78;         // 0x078  rec[0x1e]
     uint32_t field_0x7c;         // 0x07c  rec[0x1f]
     uint32_t field_0x80;         // 0x080  rec[0x20]
-    uint32_t field_0x84;         // 0x084  rec[0x21]
+#if __SIZEOF_POINTER__ == 4
+    Array<bool> *flags84;       // 0x084  rec[0x21]
+#else
+    uint32_t field_0x84;
+#endif
     uint32_t field_0x88;         // 0x088  rec[0x22]
-    uint32_t field_0x8c;         // 0x08c  rec[0x23]
+#if __SIZEOF_POINTER__ == 4
+    Array<bool> *flags8c;       // 0x08c  rec[0x23]
+#else
+    uint32_t field_0x8c;
+#endif
     uint32_t field_0x90;         // 0x090  rec[0x24]
     uint32_t field_0x94;         // 0x094  rec[0x25]
     uint32_t field_0x98;         // 0x098  rec[0x26]
@@ -259,6 +283,14 @@ public:
     Array<Station *> *stationStack;
     Array<Wanted *> *wanted;
     Ship *previousShip;
+    Mission *freelanceMission;
+    Mission *campaignMission;
+    int *medals;
+    Array<bool> *flags68;
+    Array<bool> *flags6c;
+    Array<int> *array70;
+    Array<bool> *flags84;
+    Array<bool> *flags8c;
 #endif
 
     AbyssEngine::String &getPreviewSystemName() { return previewSystemName; }
@@ -307,6 +339,22 @@ public:
     void setWanted(Array<Wanted *> *value) { wanted = value; }
     Ship *getPreviousShip() const { return previousShip; }
     void setPreviousShip(Ship *value) { previousShip = value; }
+    Mission *getFreelanceMission() const { return freelanceMission; }
+    Mission *getCampaignMission() const { return campaignMission; }
+    int *getMedals() const { return medals; }
+    Array<bool> *getFlags68() const { return flags68; }
+    Array<bool> *getFlags6c() const { return flags6c; }
+    Array<int> *getArray70() const { return array70; }
+    Array<bool> *getFlags84() const { return flags84; }
+    Array<bool> *getFlags8c() const { return flags8c; }
+    void setFreelanceMission(Mission *value) { freelanceMission = value; }
+    void setCampaignMission(Mission *value) { campaignMission = value; }
+    void setMedals(int *value) { medals = value; }
+    void setFlags68(Array<bool> *value) { flags68 = value; }
+    void setFlags6c(Array<bool> *value) { flags6c = value; }
+    void setArray70(Array<int> *value) { array70 = value; }
+    void setFlags84(Array<bool> *value) { flags84 = value; }
+    void setFlags8c(Array<bool> *value) { flags8c = value; }
 
     GameRecord();
 
@@ -322,6 +370,14 @@ static_assert(offsetof(GameRecord, data) == 0x0, "");
 static_assert(offsetof(GameRecord, field_0x98) == 0x98, "");
 static_assert(offsetof(GameRecord, field_0xa8) == 0xa8, "");
 static_assert(offsetof(GameRecord, stationStack) == 0x5c, "stationStack");
+static_assert(offsetof(GameRecord, freelanceMission) == 0x54, "freelanceMission");
+static_assert(offsetof(GameRecord, campaignMission) == 0x58, "campaignMission");
+static_assert(offsetof(GameRecord, medals) == 0x60, "medals");
+static_assert(offsetof(GameRecord, flags68) == 0x68, "flags68");
+static_assert(offsetof(GameRecord, flags6c) == 0x6c, "flags6c");
+static_assert(offsetof(GameRecord, array70) == 0x70, "array70");
+static_assert(offsetof(GameRecord, flags84) == 0x84, "flags84");
+static_assert(offsetof(GameRecord, flags8c) == 0x8c, "flags8c");
 static_assert(offsetof(GameRecord, field_0xc8) == 0xc8, "");
 static_assert(offsetof(GameRecord, field_0xd4) == 0xd4, "");
 static_assert(offsetof(GameRecord, field_0xd8) == 0xd8, "");
@@ -393,6 +449,10 @@ static_assert(offsetof(GameRecord, wanted) % alignof(Array<Wanted *> *) == 0,
               "native record wanted alignment");
 static_assert(offsetof(GameRecord, previousShip) % alignof(Ship *) == 0,
               "native record previous ship alignment");
+static_assert(offsetof(GameRecord, freelanceMission) % alignof(Mission *) == 0,
+              "native record mission alignment");
+static_assert(offsetof(GameRecord, flags8c) % alignof(Array<bool> *) == 0,
+              "native record flags alignment");
 #endif
 
 #endif

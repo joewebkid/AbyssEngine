@@ -1343,7 +1343,7 @@ void RecordHandler::recordStoreWrite(int slot) {
 
         AEFile_WriteInt(status->field_7c, fd);
         AEFile_WriteInt(status->field_84, fd);
-        AEFile_WriteInt((int) (intptr_t) status->field_90, fd);
+        AEFile_WriteInt(status->field_88, fd);
 
         {
             Array<bool> *arr = status->field_94;
@@ -1601,7 +1601,7 @@ void RecordHandler::recordStoreWrite(int slot) {
         AEFile_WriteBool((flags->flag[0x25] != 0), fd);
         AEFile_WriteBool((flags->flag[0x26] != 0), fd);
 
-        Ship *wingShip = reinterpret_cast<Ship *>(status->field_94);
+        Ship *wingShip = status->getPreviousShip();
 
         if (wingShip == 0) { AEFile_WriteInt(0, fd); } else {
             AEFile_WriteInt(1, fd);
@@ -1849,8 +1849,8 @@ void *RecordHandler::recordStoreRead(int slot) {
             AEFile_ReadInt(&rec->field_0x28, fd);
             AEFile_ReadInt(&rec->field_0x3c, fd);
             AEFile_ReadInt(&rec->field_0x40, fd);
-            *reinterpret_cast<void **>(&rec->field_0x54) = this->readMission(fd);
-            *reinterpret_cast<void **>(&rec->field_0x58) = this->readMission(fd);
+            rec->setFreelanceMission((Mission *) this->readMission(fd));
+            rec->setCampaignMission((Mission *) this->readMission(fd));
             AEFile_ReadInt(&rec->field_0x30, fd);
             AEFile_ReadInt(&rec->field_0x34, fd);
             AEFile_ReadInt(&rec->field_0x38, fd);
@@ -1861,7 +1861,7 @@ void *RecordHandler::recordStoreRead(int slot) {
             AEFile_ReadInt(&rec->field_0x50, fd);
 
             Array<bool> *flags0 = new Array<bool>();
-            *reinterpret_cast<void **>(&rec->field_0x68) = flags0;
+            rec->setFlags68(flags0);
             unsigned n0 = 0;
             AEFile_ReadInt(&n0, fd);
             ArraySetLength(n0, *flags0);
@@ -1871,7 +1871,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                 (*flags0)[i] = v;
             }
             Array<bool> *flags1 = new Array<bool>();
-            *reinterpret_cast<void **>(&rec->field_0x6c) = flags1;
+            rec->setFlags6c(flags1);
             unsigned n1 = 0;
             AEFile_ReadInt(&n1, fd);
             ArraySetLength(n1, *flags1);
@@ -1891,7 +1891,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                 AEFile_ReadInt(&rec->field_0x80, fd);
 
                 Array<bool> *flags84 = new Array<bool>();
-                *reinterpret_cast<void **>(&rec->field_0x84) = flags84;
+                rec->setFlags84(flags84);
                 int n84 = 0;
                 AEFile_ReadInt(&n84, fd);
                 ArraySetLength(n84, *flags84);
@@ -1904,7 +1904,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                 AEFile_ReadInt(&rec->field_0x88, fd);
 
                 Array<bool> *flags8c = new Array<bool>();
-                *reinterpret_cast<void **>(&rec->field_0x8c) = flags8c;
+                rec->setFlags8c(flags8c);
                 int n8c = 0;
                 AEFile_ReadInt(&n8c, fd);
                 ArraySetLength(n8c, *flags8c);
@@ -1931,7 +1931,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                 AEFile_ReadInt(&rec->field_0x64, fd);
                 unsigned len60 = rec->field_0x64;
                 int *buf60 = new int[len60];
-                *reinterpret_cast<void **>(&rec->field_0x60) = buf60;
+                rec->setMedals(buf60);
                 for (unsigned i = 0; i < len60; i++) { AEFile_ReadInt(buf60 + i, fd); }
 
                 int shipIdx = 0;
@@ -2253,7 +2253,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                 }
 
                 Array<int> *arr70 = new Array<int>();
-                *reinterpret_cast<void **>(&rec->field_0x70) = arr70;
+                rec->setArray70(arr70);
                 int n70 = 0;
                 AEFile_ReadInt(&n70, fd);
                 ArraySetLength(n70, *arr70);

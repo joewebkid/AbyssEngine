@@ -39,21 +39,21 @@ GameRecord::GameRecord() {
     this->field_0x48 = 0;
     this->field_0x4c = 0;
     this->field_0x50 = 0;
-    this->field_0x54 = 0;
-    this->field_0x58 = 0;
+    this->setFreelanceMission(nullptr);
+    this->setCampaignMission(nullptr);
     this->setStationStack(nullptr);
-    this->field_0x60 = 0;
+    this->setMedals(nullptr);
     this->field_0x64 = 0;
-    this->field_0x68 = 0;
-    this->field_0x6c = 0;
-    this->field_0x70 = 0;
+    this->setFlags68(nullptr);
+    this->setFlags6c(nullptr);
+    this->setArray70(nullptr);
     this->field_0x74 = 0;
     this->field_0x78 = 0;
     this->field_0x7c = 0;
     this->field_0x80 = 0;
-    this->field_0x84 = 0;
+    this->setFlags84(nullptr);
     this->field_0x88 = 0;
-    this->field_0x8c = 0;
+    this->setFlags8c(nullptr);
     this->field_0x90 = 0;
 
     this->field_0xb8 = 0;
@@ -260,18 +260,18 @@ void GameRecord::load() {
         campaignLocked = false;
     }
     if (((this->dlcRequiredFlag != '\0' || campaignLocked) && (this->field_0x40 == 0x2e)) &&
-        (campaignStage = ((Mission *) this->field_0x58)->isEmpty(), campaignStage != 0)) {
+        (campaignStage = this->getCampaignMission()->isEmpty(), campaignStage != 0)) {
         this->field_0x40 = 0x2d;
     }
     Status::gStatus->setCurrentCampaignMission(this->field_0x40);
     this->field_0x102 = 0x2d < (long) this->field_0x40;
     this->field_0x119 = 0x55 < (long) this->field_0x40;
-    Status::gStatus->setFreelanceMission((Mission *) this->field_0x54);
-    Status::gStatus->setCampaignMission((Mission *) this->field_0x58);
+    Status::gStatus->setFreelanceMission(this->getFreelanceMission());
+    Status::gStatus->setCampaignMission(this->getCampaignMission());
     Status::gStatus->setStationStack(this->getStationStack());
     campaignStage = this->field_0x40;
     if (campaignStage == 0x23) {
-        targetStation = ((Mission *) this->field_0x58)->getTargetStation();
+        targetStation = this->getCampaignMission()->getTargetStation();
         if (targetStation != 0x1d) {
             Mission *m = new Mission(0xb, 0, 0x1d);
             Status::gStatus->setCampaignMission(m);
@@ -300,25 +300,25 @@ void GameRecord::load() {
         Status::gStatus->setCampaignMission(m);
     }
     if (((this->versionMismatchFlag != '\0') || (this->field_0x118 != '\0')) &&
-        ((this->field_0x40 == 0x56 && (targetStation = ((Mission *) this->field_0x58)->getTargetStation(), targetStation != 100)))) {
+        ((this->field_0x40 == 0x56 && (targetStation = this->getCampaignMission()->getTargetStation(), targetStation != 100)))) {
         hints->flag_0x31 = 1;
         Mission *m = new Mission(0xb, 0, 100);
         Status::gStatus->setCampaignMission(m);
     }
     if (((this->versionMismatchFlag != '\0') || (this->field_0x118 != '\0')) &&
-        ((this->field_0x40 == 0x57 && (targetStation = ((Mission *) this->field_0x58)->getTargetStation(), targetStation != 10)))) {
+        ((this->field_0x40 == 0x57 && (targetStation = this->getCampaignMission()->getTargetStation(), targetStation != 10)))) {
         hints->flag_0x31 = 1;
         Mission *m = new Mission(4, 0, 10);
         Status::gStatus->setCampaignMission(m);
     }
     if ((((this->versionMismatchFlag != '\0') || (this->field_0x118 != '\0')) &&
-         (this->field_0x40 == 0x58)) && (targetStation = ((Mission *) this->field_0x58)->getTargetStation(), targetStation != 10)) {
+         (this->field_0x40 == 0x58)) && (targetStation = this->getCampaignMission()->getTargetStation(), targetStation != 10)) {
         hints->flag_0x31 = 1;
         Mission *m = new Mission(0xb, 0, 10);
         Status::gStatus->setCampaignMission(m);
     }
     if (((this->versionMismatchFlag != '\0') || (this->field_0x118 != '\0')) &&
-        ((this->field_0x40 == 0x59 && (targetStation = ((Mission *) this->field_0x58)->getTargetStation(), targetStation != 10)))) {
+        ((this->field_0x40 == 0x59 && (targetStation = this->getCampaignMission()->getTargetStation(), targetStation != 10)))) {
         hints->flag_0x31 = 1;
         Status::gStatus->setCurrentCampaignMission(0x56);
         Mission *m = new Mission(0xb, 0, 100);
@@ -327,7 +327,7 @@ void GameRecord::load() {
     if ((this->versionMismatchFlag != '\0') || (this->field_0x118 != '\0')) {
         campaignStage = this->field_0x40;
         if (campaignStage == 0x5b) {
-            targetStation = ((Mission *) this->field_0x58)->getTargetStation();
+            targetStation = this->getCampaignMission()->getTargetStation();
             if (targetStation == 0x6e) {
                 campaignStage = this->field_0x40;
                 goto LAB_checkStageRange;
@@ -353,19 +353,19 @@ stationStackLoaded:
         ::operator delete(deadArray);
         st = Status::gStatus;
     }
-    st->field_94 = (Array<bool> *) this->field_0x68;
+    st->field_94 = this->getFlags68();
     if (st->field_98 != (Array<bool> *) 0x0) {
         deadArray = (void *) Array_dtor(st->field_98);
         ::operator delete(deadArray);
         st = Status::gStatus;
     }
-    st->field_98 = (Array<bool> *) this->field_0x6c;
+    st->field_98 = this->getFlags6c();
     if (st->field_90 != (Array<int> *) 0x0) {
         deadArray = (void *) Array_dtor(st->field_90);
         ::operator delete(deadArray);
         st = Status::gStatus;
     }
-    st->field_90 = (Array<int> *) this->field_0x70;
+    st->field_90 = this->getArray70();
     st->field_10c = this->field_0xd0;
 
     st->field_110 = this->field_0xd4;
@@ -386,9 +386,9 @@ stationStackLoaded:
         ::operator delete(deadArray);
         st = Status::gStatus;
     }
-    st->field_ac = (Array<bool> *) this->field_0x84;
+    st->field_ac = this->getFlags84();
     st->field_b0 = this->field_0x88;
-    srcByteArray = (Array<uint8_t> *) this->field_0x8c;
+    srcByteArray = (Array<uint8_t> *) this->getFlags8c();
     srcCount = srcByteArray->size_;
     for (copyIndex = 0; srcCount != copyIndex; copyIndex = copyIndex + 1) {
         st->field_b4->data_[copyIndex] = srcByteArray->data_[copyIndex];
@@ -409,8 +409,8 @@ stationStackLoaded:
     st->field_e8 = this->field_0xc0;
     st->field_ec = this->field_0xc4;
     Achievements::gAchievements->init();
-    if ((int *) this->field_0x60 != (int *) 0x0) {
-        Achievements::gAchievements->setMedals((int *) this->field_0x60, this->field_0x64);
+    if (this->getMedals() != nullptr) {
+        Achievements::gAchievements->setMedals(this->getMedals(), this->field_0x64);
     }
     Status::gStatus->setShip(this->getShip());
     if (Status::gStatus->dlc1Won() != 0) {

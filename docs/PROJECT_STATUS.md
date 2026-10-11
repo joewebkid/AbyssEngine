@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (previous-ship and Status offset audit; older subsystem
+Last reviewed: 2026-10-11 (record core pointers and save-writer audit; older subsystem
 snapshots retain their dates)
+
+## Record core pointers and save writer (2026-10-11)
+
+Eight remaining pointer-valued `GameRecord` slots in the mission,
+medal, and status-array block (`0x54`–`0x8c`) now retain full-width
+native pointers while preserving ARM offsets. The writer also serializes
+the actual reroute counter at `Status + 0x88` and reads the previous
+ship at `+ 0x8c`, as the Android ARM source does, instead of treating
+unrelated array pointers as those values. Native `gof2`, 206/206 ARM
+units, and 35 verifier tests pass (one skipped). Full corpus remains
+4,713 comparisons of 4,323/4,524 original functions, 92.24%
+source-shape, 80.43% strict fuzzy, 2,353 linked-exact, 1,008
+byte-exact, with zero lost exact pairs, skipped units, or wrong-type
+symbols. A live save/reload and full executable link remain untested;
+these are the next priority. See [the ARM record writer audit](RECORD_CORE_POINTERS_SAVE_WRITER_ARM_2026-10-11.md).
 
 ## Previous-ship record and Status offset repair (2026-10-11)
 
