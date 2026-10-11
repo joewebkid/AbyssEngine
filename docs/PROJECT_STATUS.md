@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (DLC menu setup; older subsystem
+Last reviewed: 2026-10-11 (DLC dialog call; older subsystem
 snapshots retain their dates)
+
+## MenuTouchWindow DLC dialog call (2026-10-11)
+
+`callDlcMenu` now uses the ARM-confirmed application-data getter and
+two-string `ChoiceWindow::set` overload instead of undefined callbacks.
+It rises from 97.3%/84.9% to **100% source-shape / 100% strict fuzzy**
+and gains a linked-exact match. Native `gof2`, all 206 ARM units and verifier
+tests pass. The full corpus remains **4,323/4,524** originals at
+**91.88%** source-shape and **79.94%** strict fuzzy, with **2,314
+linked-exact** and **997 byte-exact**; no row or exact-pair losses.
+The platform DLC request consumer and running-game dialog remain untested;
+see [the ARM call evidence](MENUTOUCH_CALL_DLC_MENU_ARM_2026-10-11.md).
 
 ## ModStation DLC menu setup (2026-10-11)
 

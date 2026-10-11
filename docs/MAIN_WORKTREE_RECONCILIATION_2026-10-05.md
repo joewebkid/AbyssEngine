@@ -273,3 +273,17 @@ ARM units, verifier tests and scope tests pass. Focused source-shape rises
 2,313 linked-exact and 997 byte-exact, with no row or exact-pair losses.
 The downstream DLC/store flow is not runtime-tested; see
 [the focused note](MODSTATION_SHOW_DLC_MENU_ARM_2026-10-11.md).
+
+## MenuTouchWindow DLC dialog call (2026-10-11)
+
+Android ARM `callDlcMenu` at `0x0012d064` confirms two application-data
+getter calls, bytes `+0x4c/+0x3d`, GameText IDs `0x47/0x1a9` and the
+two-string `ChoiceWindow::set` tail. The undefined fragment callbacks are
+replaced by these real methods. Native `gof2`, 206/206 ARM units and verifier
+tests pass. This function rises from 97.3%/84.9% to 100%/100% source-shape
+and strict fuzzy and becomes linked-exact. The full report is
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_call_dlc_20261011.json`:
+4,323/4,524 originals, 4,689 rows, 91.88% source-shape, 79.94% strict,
+2,314 linked-exact and 997 byte-exact; no row or exact-pair losses.
+Platform request handling and running-game DLC dialog remain unverified;
+see [the ARM note](MENUTOUCH_CALL_DLC_MENU_ARM_2026-10-11.md).

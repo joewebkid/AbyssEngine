@@ -68,6 +68,9 @@ static_assert(offsetof(MtwAppData, purchaseResultFlag) == 0x41, "appdata 0x41");
 static_assert(offsetof(MtwAppData, purchaseErrorFlag) == 0x42, "appdata 0x42");
 static_assert(offsetof(MtwAppData, purchaseCode) == 0x48, "appdata 0x48");
 static_assert(offsetof(MtwAppData, dlcMenuAckFlag) == 0x4c, "appdata 0x4c");
+static_assert(offsetof(MenuTouchWindow, choiceWindow) == 0x104, "DLC choice window 0x104");
+static_assert(offsetof(MenuTouchWindow, messageShowing) == 0x170, "DLC message flag 0x170");
+static_assert(offsetof(MenuTouchWindow, dlcMessageShowing) == 0x17a, "DLC dialog flag 0x17a");
 #endif
 
 static inline void *_mtw_GameText_getText(void *gt, int id) { return ((GameText *) gt)->getText(id); }
@@ -1183,10 +1186,6 @@ static inline void _mtw_TouchButton_setYPosition(void *btn, int y) {
 static inline int _mtw_TouchButton_isVisible(void *btn) {
     return ((TouchButton *) btn)->isVisible();
 }
-
-void *_mtw_GetApplicationData(void *app);
-
-void _mtw_DlcMenu_call(void *win, void *s1, void *s2);
 
 static inline void _mtw_Layout_drawBG() { ((Layout *) Globals::layout)->drawBG(); }
 
@@ -3175,17 +3174,16 @@ void MenuTouchWindow::startSupernovaChallenge() {
 }
 
 void MenuTouchWindow::callDlcMenu() {
-    MtwAppData *ad = (MtwAppData *) _mtw_GetApplicationData(Globals::appManager);
+    void **app = &Globals::appManager;
+    MtwAppData *ad = (MtwAppData *) ((AbyssEngine::ApplicationManager *) *app)->GetApplicationData();
     ad->dlcMenuAckFlag = 0;
-    ad = (MtwAppData *) _mtw_GetApplicationData(Globals::appManager);
-    void *gt = Globals::gameText;
+    ad = (MtwAppData *) ((AbyssEngine::ApplicationManager *) *app)->GetApplicationData();
+    GameText **gt = &Globals::gameText;
     ad->dlcMenuRequestFlag = 1;
-    void *win = this->choiceWindow;
+    ChoiceWindow *win = this->choiceWindow;
     this->messageShowing = 1;
     this->dlcMessageShowing = 1;
-    void *s1 = _mtw_GameText_getText(gt, 0x47);
-    void *s2 = _mtw_GameText_getText(gt, 0x1a9);
-    return _mtw_DlcMenu_call(win, s1, s2);
+    win->set(*(*gt)->getText(0x47), *(*gt)->getText(0x1a9));
 }
 
 static inline void _mtw_draw_mainMenu(void *self) {

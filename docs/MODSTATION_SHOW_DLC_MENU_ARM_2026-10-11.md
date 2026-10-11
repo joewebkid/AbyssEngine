@@ -32,5 +32,7 @@ wrong-type misses, zero skipped units, and 112 extra symbols.
 No running-game DLC/store flow was exercised. Constructor side effects,
 button population, app-data flags and the downstream
 `MenuTouchWindow::callDlcMenu()` helper path therefore remain unverified at
-runtime. The next bounded priority is auditing that downstream helper and
-its fragment callbacks against ARM before claiming DLC-menu behavior.
+runtime. The helper's fragment callbacks have since been replaced with
+ARM-confirmed direct calls; see the
+[follow-up evidence](MENUTOUCH_CALL_DLC_MENU_ARM_2026-10-11.md). The next
+priority is the platform-side consumer of the DLC request bytes.
