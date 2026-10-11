@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (PlayerJunk death, loot, and effect; older subsystem
+Last reviewed: 2026-10-11 (PlayerGasCloud explosion; older subsystem
 snapshots retain their dates)
+
+## PlayerGasCloud explosion, construction, and render (2026-10-11)
+
+Android ARM confirms the shared Canvas, item table, and RNG dependencies;
+explosion deactivates the player and uses bounded `nextInt`, item
+attribute `56`, and the `130`, `100`, `5000`, and `200` scale factors.
+The null aliases and zero divisors in these three paths are removed.
+The four targeted comparisons (`explode`, two constructor aliases,
+`render`) rise from 80.7%/60.25% to 94.1%/70.9% average source-shape/
+strict fuzzy. Native `gof2`, 206/206 ARM units, and 36 verifier tests
+pass (one skipped). Full corpus: 4,323/4,524 original functions,
+92.13% source-shape, 80.37% strict fuzzy, 2,343 linked-exact,
+1,008 byte-exact, zero skipped and wrong-type symbols. No previously
+exact pair is lost; the five additional linked-exact comparisons are
+newly emitted `ArrayAdd` template symbols, not improved old pairs.
+`PlayerGasCloud::update` still uses null placeholders and zero constants;
+live-game effects are untested. This is the next priority. See
+[the ARM gas-cloud audit](PLAYER_GAS_CLOUD_EXPLOSION_ARM_2026-10-11.md).
 
 ## PlayerJunk death, loot, and effect (2026-10-11)
 

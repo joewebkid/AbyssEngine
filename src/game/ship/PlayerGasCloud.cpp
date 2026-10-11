@@ -15,6 +15,7 @@
 #include "game/ship/Player.h"
 #include "game/ship/PlayerEgo.h"
 #include "engine/render/PaintCanvas.h"
+#include "game/core/Globals.h"
 #include "game/world/Station.h"
 
 namespace AbyssEngine {
@@ -35,17 +36,7 @@ static_assert(offsetof(PgcCampaign, rescueMissionFlag) == 0x2d,
               "PgcCampaign.rescueMissionFlag must be at 0x2d");
 #endif
 
-// These globals are referenced only by this translation unit. They are defined
-// here as file-static handles into the live engine state. (extern eliminated;
-// linkage/parity to the original cross-TU definitions is intentionally dropped.)
-static PaintCanvas **g_pgc_canvas = nullptr;
-// g_pgc_itemList: indirection chain to the live Array<Item*> of cargo items.
-//   *g_pgc_itemList   -> Array<Item*>**
-//   **g_pgc_itemList  -> Array<Item*>*  (the table)
-static Array<Item *> ***g_pgc_itemList = nullptr;
-static PaintCanvas **g_pgc_canvasRoot = nullptr;
-static AbyssEngine::AERandom **g_pgc_rng = nullptr;
-static PaintCanvas **g_pgc_canvas2 = nullptr;
+// Unresolved update-only placeholders; these are not live engine pointers.
 static PaintCanvas **g_pgcu_canvasRoot = nullptr;
 // g_pgcu_itemDefs: *g_pgcu_itemDefs -> Array<Item*>* (the item-definition table).
 static Array<Item *> **g_pgcu_itemDefs = nullptr;
@@ -53,10 +44,6 @@ static FModSound *g_pgcu_pickupSound = nullptr;
 // g_pgcu_campaign: *g_pgcu_campaign -> PgcCampaign* (the campaign/save handle).
 static PgcCampaign **g_pgcu_campaign = nullptr;
 
-static float g_pgc_countScale = 0;
-static float g_pgc_attrDiv = 0;
-static float g_pgc_spread = 0;
-static float g_pgc_lifeDiv = 0;
 static float g_pgcu_velScale = 0;
 static float g_pgcu_catchDist = 0;
 static int g_pgcu_minTimer = 0;
@@ -102,7 +89,7 @@ PlayerGasCloud::PlayerGasCloud(int itemId, ParticleSystemManager * /*particles*/
 
     this->center = position;
 
-    this->modelGeometry = new AEGeometry(this->cloudMeshId, *g_pgc_canvas, false);
+    this->modelGeometry = new AEGeometry(this->cloudMeshId, Globals::Canvas, false);
     this->modelGeometry->setPosition(position);
 
     this->hasCargo = 1;
@@ -183,6 +170,7 @@ void PlayerGasCloud::explode(int itemIndex, Vector src, float radius) {
         return;
 
     this->state = 3;
+    this->setActive(false);
     this->exploded = 1;
 
     this->sparkGeometries = new Array<AEGeometry *>();
@@ -196,26 +184,25 @@ void PlayerGasCloud::explode(int itemIndex, Vector src, float radius) {
     Vector delta = src - this->center;
     float dist = VectorLength(delta);
     float t = 1.5f - dist / radius;
-    float countBase = t * g_pgc_countScale;
+    float countBase = t * 130.0f;
 
-    Array<Item *> *itemTable = **g_pgc_itemList;
+    auto *itemTable = static_cast<Array<Item *> *>(Globals::items);
     Item *item = (*itemTable)[itemIndex];
-    int attr = item->getAttribute(0);
-    float attrF = (float) attr / g_pgc_attrDiv;
-    float spread = t * g_pgc_spread;
-    float lifeDiv = g_pgc_lifeDiv;
+    int attr = item->getAttribute(56);
+    float attrF = (float) attr / 100.0f;
+    float spread = t * 5000.0f;
 
-    AbyssEngine::AERandom *rng = *g_pgc_rng;
+    auto *rng = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
 
     int count = (int) ((countBase / 1.5f + 10.0f) * attrF);
     for (int i = 0; i < count; i++) {
         AEGeometry *shard = new AEGeometry(this->sparkMeshId,
-                                           *g_pgc_canvasRoot, false);
+                                           Globals::Canvas, false);
         shard->setPosition(this->center);
 
-        float jx = (float) rng->next(10000);
-        float jy = (float) rng->next(10000);
-        float jz = (float) rng->next(10000);
+        float jx = (float) rng->nextInt(10000);
+        float jy = (float) rng->nextInt(10000);
+        float jz = (float) rng->nextInt(10000);
 
         Vector p;
         p.x = ((this->center.x + delta.x) - spread) + t * jx;
@@ -226,8 +213,8 @@ void PlayerGasCloud::explode(int itemIndex, Vector src, float radius) {
         Vector dn;
         VectorNormalize(&dn, &d);
 
-        float life = ((float) rng->next(200) / lifeDiv) * 3.0f + 3.0f;
-        int timer = rng->next(14000);
+        float life = ((float) rng->nextInt(200) / 200.0f) * 3.0f + 3.0f;
+        int timer = rng->nextInt(14000);
 
         ArrayAdd(life * 7.0f, *(this->sparkLife));
         ArrayAdd(life, *(this->sparkLifeMin));
@@ -394,7 +381,7 @@ void PlayerGasCloud::render() {
     if (mode != 3 && mode != 0)
         return;
 
-    PaintCanvas *cam = *g_pgc_canvas2;
+    PaintCanvas *cam = Globals::Canvas;
     unsigned int cur = cam->CameraGetCurrent();
     memcpy(cameraLocal, cam->CameraGetLocal(cur), 0x3c);
 
