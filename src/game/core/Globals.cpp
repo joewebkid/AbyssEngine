@@ -2271,35 +2271,14 @@ String Globals::getRandomPlanetName() {
     return name;
 }
 
-static void *const gGRN_guardHolder = nullptr;
-static const char gGRN_noFirst[] = "";
-static void *const gGRN_rng1 = nullptr;
-static const char gGRN_noLast[] = "";
-static void *const gGRN_rng2 = nullptr;
-static const char gGRN_space[] = "";
-
 String Globals::getRandomName(int kind, bool both) {
-    int *guardP = *(int **) gGRN_guardHolder;
-    volatile int saved = *guardP;
+    FileRead *reader = new FileRead();
+    Array<String *> *first = reader->loadNamesBinary(kind, both, true);
+    Array<String *> *last = reader->loadNamesBinary(kind, both, false);
 
-    void *fr = ::operator new(1);
-    FileRead_ctor(fr);
-    Array<String *> *first = ((FileRead *) fr)->loadNamesBinary(kind, both, 1);
-    Array<String *> *last = ((FileRead *) fr)->loadNamesBinary(kind, both, 0);
-
-    String firstStr, lastStr;
-    if (first == 0) {
-        firstStr.ctor_char(gGRN_noFirst, false);
-    } else {
-        int idx = nextInt_71aa4((AbyssEngine::AERandom *) **(int **) gGRN_rng1);
-        firstStr.Set(((*first)[idx])->data);
-    }
-    if (last == 0) {
-        lastStr.ctor_char(gGRN_noLast, false);
-    } else {
-        int idx = nextInt_71aa4((AbyssEngine::AERandom *) **(int **) gGRN_rng2);
-        lastStr.Set(((*last)[idx])->data);
-    }
+    AbyssEngine::AERandom *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
+    String firstStr = first ? *(*first)[random->nextInt(first->size())] : String("");
+    String lastStr = last ? *(*last)[random->nextInt(last->size())] : String("");
 
     if (first != 0) {
         ArrayReleaseClasses(*first);
@@ -2309,19 +2288,9 @@ String Globals::getRandomName(int kind, bool both) {
         ArrayReleaseClasses(*last);
         delete last;
     }
-    ::operator delete(FileRead_dtor(fr));
+    delete reader;
 
-    String result;
-    if (firstStr.size() == 0) {
-        result.Set((firstStr).data);
-    } else {
-        String space, mid;
-        space.ctor_char(gGRN_space, false);
-        mid = firstStr + space;
-        result = mid + lastStr;
-    }
-
-    return result;
+    return lastStr.size() ? firstStr + String(" ") + lastStr : firstStr;
 }
 
 static void *const gGL_canvas = nullptr;

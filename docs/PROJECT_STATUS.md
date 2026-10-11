@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (Globals random sources; older subsystem
+Last reviewed: 2026-10-11 (random-name loader; older subsystem
 snapshots retain their dates)
+
+## Random-name loader and composition (2026-10-11)
+
+`Globals::getRandomName` now draws bounded indices from `Globals::rnd`,
+copies list entries before releasing them, and joins first/last names
+according to the Android ARM branch. `FileRead::loadNamesBinary` now
+selects the 13 confirmed `data/bin/names_*.bin` resources and uses the
+same RNG for mixed-race selection; extracted Java assets corroborate all
+13 basenames. Focused source-shape/strict fuzzy rise from **85.7%/59.4%**
+to **95.6%/69.8%** for the composer, and **80.4%/59.4%** to
+**84.3%/77.3%** for the loader. Neither is exact. Native `gof2`,
+**206/206** ARM units and 36 verifier tests pass (one skipped). The full
+corpus remains **4,323/4,524** compared at **92.02%** source-shape,
+**80.11%** strict, **2,323 linked-exact** and **997 byte-exact**;
+there are no exact-pair losses, skipped rows or wrong-type symbols.
+The report is retained at
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_names_20261011.json`.
+No game-session asset read was exercised, and `NewsTicker::replaceTokens`
+still needs recovery. See [the ARM random-name audit](RANDOM_NAME_LOADER_ARM_2026-10-11.md).
 
 ## Globals random station and drinks system (2026-10-11)
 
