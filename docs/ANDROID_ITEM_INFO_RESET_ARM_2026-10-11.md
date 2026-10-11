@@ -27,8 +27,9 @@ are executable-function symbols, so removing these 20 data definitions does
 not change that count. Report:
 `C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_item_abi_20261011.json`.
 
-The opt-in `gof2_item_info_reset_smoke` compiles the actual reset function,
-populates all 25 fields, and confirms every field is null afterward:
+The opt-in `gof2_item_info_reset_smoke` compiles the actual copy and reset
+functions, copies a string into all 25 fields, and confirms every field is
+null afterward:
 
 ```powershell
 cmake -S . -B <native-build-dir> -DGOF2_BUILD_ITEM_INFO_RESET_SMOKE=ON
@@ -36,8 +37,20 @@ cmake --build <native-build-dir> --target gof2_item_info_reset_smoke
 <native-build-dir>/gof2_item_info_reset_smoke.exe
 ```
 
-Result: `item info reset smoke: OK`. Focused ARM comparison remains
-**100.0% source-shape** and **98.0% strict fuzzy**, with no exact match.
+Result: `item info reset smoke: OK`. Android ARM `pConstToNonConst` at
+`0x947f0` calls `malloc`, while reset calls `operator delete[]`. Native
+platforms now use nothrow `new[]` for copies so they match that delete; the
+Android ARM path keeps its original `malloc` call. The native object references
+`operator new[](size_t, std::nothrow_t const&)`, while the ARM object still
+relocates against `malloc`. The premium-IAP smoke also passes after the test
+isolation change. Focused ARM comparison of `pConstToNonConst` remains
+**95.1% source-shape / 75.0% strict fuzzy**; reset remains
+**100.0% source-shape / 98.0% strict fuzzy**, with no exact match.
+The current full report compares **4,323/4,524** functions at **91.91%**
+mean source-shape and **79.99%** strict fuzzy, with **2,319 linked-exact** and
+**997 byte-exact**. Against the preceding item-ABI report, no exact pair was
+lost; 201 missing, zero wrong-type and zero skipped remain. Current report:
+`C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_item_copy_20261011.json`.
 The native `gof2` build and 206/206 ARM translation units pass.
 Verifier tests pass (36 run, one skipped). The full ARM corpus compares
 **4,323/4,524** functions, with **91.91%** mean source-shape, **79.99%**
@@ -48,12 +61,12 @@ preceding premium-IAP report, no linked-exact or byte-exact pair was lost;
 
 Remaining limits: The Java-side sequence of setter/reset calls has not been
 observed, so repeated setter calls without reset and partial/null JNI arrays
-are not validated. The original helper allocates copied strings via `malloc`
-while reset calls `operator delete[]`; their allocator compatibility is
-platform-dependent and remains to be checked. An apparent ARM use of item
+are not validated. The original Android `malloc`/`operator delete[]` pairing
+has not been exercised on-device, and allocation-failure behavior is not
+runtime-tested. An apparent ARM use of item
 name 3 for both name slots 3 and 4 was not introduced into the readable
 source solely to improve matching.
 
-Next priority: validate the setter's string ownership and its Java/JNI call
-sequence on a runnable Android path, then continue the separate `GameData`
+Next priority: validate the setter/reset Java/JNI call sequence on a runnable
+Android path, then continue the separate `GameData`
 purchase-list producer investigation.

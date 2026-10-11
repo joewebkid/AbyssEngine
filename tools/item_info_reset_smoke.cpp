@@ -1,7 +1,9 @@
 #include "engine/render/LODManager.h"
 #include "game/core/Globals.h"
+#include "platform/android/NdkHooks.h"
 
 #include <cstdio>
+#include <cstring>
 
 #define ITEM_SLOT(group, index) char *Globals::cItemList##group##_##index = nullptr
 ITEM_SLOT(ID, 00);
@@ -48,8 +50,18 @@ int main() {
         &Globals::cItemListPrice_04,
     };
 
-    for (char **slot : slots)
-        *slot = new char[1]{'\0'};
+    const char *const text = "item string";
+    if (pConstToNonConst(nullptr) != nullptr) {
+        std::fputs("item info reset smoke: null copy was not null\n", stderr);
+        return 1;
+    }
+    for (char **slot : slots) {
+        *slot = pConstToNonConst(text);
+        if (*slot == nullptr || *slot == text || std::strcmp(*slot, text) != 0) {
+            std::fputs("item info reset smoke: copied string mismatch\n", stderr);
+            return 1;
+        }
+    }
     ndk_resetNativeItemInformationList();
     for (char **slot : slots) {
         if (*slot != nullptr) {

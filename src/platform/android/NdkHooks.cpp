@@ -4,6 +4,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <new>
 
 #include "game/mission/Status.h"
 #include "game/mission/RecordHandler.h"
@@ -29,6 +30,7 @@ int gi_iap_buy_credit_pack5_pressed;
 
 extern "C" {
 
+#ifndef GOF2_ITEM_INFO_RESET_SMOKE
 #ifndef GOF2_PREMIUM_IAP_SMOKE
 int setBaughtCredits(int amount) {
     int *packFlag;
@@ -88,10 +90,17 @@ void releaseStringUTFChars(JNIEnv *env, jstring str, const char *chars) {
         operator delete(reinterpret_cast<void *>(str));
     }
 }
+#endif
+#endif
 
 char *pConstToNonConst(const char *s) {
     if (s != nullptr) {
+#if defined(__ANDROID__) && defined(__arm__)
         char *copy = static_cast<char *>(std::malloc(std::strlen(s) + 1));
+#else
+        // The native reset pairs these copies with operator delete[].
+        char *copy = new (std::nothrow) char[std::strlen(s) + 1];
+#endif
         if (copy != nullptr) {
             std::strcpy(copy, s);
             return copy;
@@ -100,6 +109,8 @@ char *pConstToNonConst(const char *s) {
     return nullptr;
 }
 
+#ifndef GOF2_ITEM_INFO_RESET_SMOKE
+#ifndef GOF2_PREMIUM_IAP_SMOKE
 void ndk23_sendingPauseSignal() {
     if (gEngine == nullptr)
         return;
@@ -259,6 +270,7 @@ void ndk_setNativeItemInformationList(JNIEnv *env, jclass /*clazz*/,
         for (int row = 0; row < 5; ++row)
             env->ReleaseStringUTFChars(elems[col][row], utf[col][row]);
 }
+#endif
 #endif
 
 } // extern "C"

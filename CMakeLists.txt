@@ -107,9 +107,13 @@ option(GOF2_BUILD_ITEM_INFO_RESET_SMOKE
 if(GOF2_BUILD_ITEM_INFO_RESET_SMOKE)
     add_executable(gof2_item_info_reset_smoke
         tools/item_info_reset_smoke.cpp
-        src/engine/render/LODManager.cpp)
+        src/engine/render/LODManager.cpp
+        src/platform/android/NdkHooks.cpp)
     target_include_directories(gof2_item_info_reset_smoke PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/src")
+        "${CMAKE_CURRENT_SOURCE_DIR}/src"
+        "${CMAKE_CURRENT_SOURCE_DIR}/third_party/jni"
+        "${CMAKE_CURRENT_SOURCE_DIR}/third_party/gl"
+        "${CMAKE_CURRENT_SOURCE_DIR}/third_party/fmod/inc")
     target_compile_definitions(gof2_item_info_reset_smoke PRIVATE
         GOF2_ITEM_INFO_RESET_SMOKE)
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
