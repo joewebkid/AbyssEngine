@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (record reader helper calls; older subsystem
+Last reviewed: 2026-10-11 (record file I/O wiring; older subsystem
 snapshots retain their dates)
+
+## Record file I/O wiring (2026-10-11)
+
+The declared-only `AEFile_Read*`/`Write*` calls in `RecordHandler` now
+forward to existing `AEFile::Read`/`Write` methods. Native `gof2`, 206/206
+ARM translation units, and 36 verifier tests pass (one skipped); its object
+has no remaining references to the invented file-I/O helper names. Full
+corpus: 4,323/4,524 original functions compared, 92.18% average
+source-shape, 80.37% strict fuzzy, 2,350 linked-exact, 1,008 byte-exact,
+no lost exact pair, skipped unit, or wrong-type symbol. A final executable
+link and a save/reload round trip remain untested. The preview record's
+`String` fields are still raw 32-bit slots in `GameRecord`, unsafe to assume
+correct on 64-bit native builds. Next recover those field types and test
+serialization. See [the ARM file-I/O audit](RECORD_FILE_IO_WIRING_ARM_2026-10-11.md).
 
 ## Record reader station, standing, and string calls (2026-10-11)
 

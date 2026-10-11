@@ -121,49 +121,44 @@ extern "C" void Java_net_fishlabs_gof2hdallandroid2012_GOF2HD2012_ReleaseOrigami
     env->ReleaseStringUTFChars(value, g_android_origami_super_club);
 }
 
-void AEFile_ReadBool(void *out, unsigned int fd);
+static_assert(sizeof(int) == 4 && sizeof(float) == 4 && sizeof(long long) == 8,
+              "record file scalar widths");
 
-void AEFile_ReadInt(void *out, unsigned int fd);
+static inline void AEFile_ReadBool(void *out, unsigned int fd) { AEFile::Read(1, out, fd); }
+static inline void AEFile_ReadInt(void *out, unsigned int fd) { AEFile::Read(4, out, fd); }
+static inline void AEFile_ReadString(void *out, unsigned int fd, int flag) {
+    AEFile::Read(*static_cast<String *>(out), fd, flag != 0);
+}
+static inline void AEFile_Read_i64(void *out, unsigned int fd) { AEFile::Read(8, out, fd); }
+static inline void AEFile_Read_i32(void *out, unsigned int fd) { AEFile::Read(4, out, fd); }
+// The preview path passes 1 for wide strings; item flags pass 0 for a byte.
+static inline void AEFile_Read_bool(void *out, unsigned int fd, int wide) {
+    if (wide) {
+        AEFile::Read(*static_cast<String *>(out), fd, true);
+    } else {
+        AEFile::Read(1, out, fd);
+    }
+}
+static inline void AEFile_Read_f32(void *out, unsigned int fd) { AEFile::Read(4, out, fd); }
+static inline void AEFile_ReadByte(void *out, unsigned int fd) { AEFile::Read(1, out, fd); }
+static inline void AEFile_ReadFloat(void *out, unsigned int fd) { AEFile::Read(4, out, fd); }
+static inline void AEFile_ReadShort(void *out, unsigned int fd) { AEFile::Read(2, out, fd); }
+static inline void AEFile_ReadLong(void *out, unsigned int fd) { AEFile::Read(8, out, fd); }
 
-void AEFile_ReadString(void *out, unsigned int fd, int flag);
-
-void AEFile_Read_i64(void *dst, unsigned int fd);
-
-void AEFile_Read_i32(void *dst, unsigned int fd);
-
-void AEFile_Read_bool(void *dst, unsigned int fd, int b);
-
-void AEFile_Read_f32(void *dst, unsigned int fd);
-
-void AEFile_Write_i64(long long v, unsigned int fd);
-
-void AEFile_Write_i32(int v, unsigned int fd);
-
-void AEFile_Write_str(void *s, unsigned int fd, int b);
-
-void AEFile_Write_f32(int v, unsigned int fd);
-
-void AEFile_WriteInt(int v, unsigned int fd);
-
-void AEFile_WriteBool(int v, unsigned int fd);
-
-void AEFile_WriteString(void *s, unsigned int fd, int flag);
-
-void AEFile_ReadByte(void *out, unsigned int fd);
-
-void AEFile_ReadFloat(void *out, unsigned int fd);
-
-void AEFile_ReadShort(void *out, unsigned int fd);
-
-void AEFile_WriteByte(int v, unsigned int fd);
-
-void AEFile_WriteFloat(int v, unsigned int fd);
-
-void AEFile_WriteShort(int v, unsigned int fd);
-
-void AEFile_WriteLong(long long v, unsigned int fd);
-
-void AEFile_ReadLong(void *out, unsigned int fd);
+static inline void AEFile_Write_i64(long long v, unsigned int fd) { AEFile::Write(8, &v, fd); }
+static inline void AEFile_Write_i32(int v, unsigned int fd) { AEFile::Write(4, &v, fd); }
+static inline void AEFile_Write_str(void *s, unsigned int fd, int flag) {
+    AEFile::Write(*static_cast<String *>(s), fd, flag != 0);
+}
+static inline void AEFile_Write_f32(int bits, unsigned int fd) { AEFile::Write(4, &bits, fd); }
+static inline void AEFile_WriteInt(int v, unsigned int fd) { AEFile::Write(4, &v, fd); }
+static inline void AEFile_WriteBool(int v, unsigned int fd) { AEFile::Write(v != 0, fd); }
+static inline void AEFile_WriteString(void *s, unsigned int fd, int flag) {
+    AEFile::Write(*static_cast<String *>(s), fd, flag != 0);
+}
+static inline void AEFile_WriteByte(int v, unsigned int fd) { AEFile::Write(uint8_t(v), fd); }
+static inline void AEFile_WriteShort(int v, unsigned int fd) { AEFile::Write(int16_t(v), fd); }
+static inline void AEFile_WriteLong(long long v, unsigned int fd) { AEFile::Write(8, &v, fd); }
 
 
 static AbyssEngine::PaintCanvas *g_LS_canvas = nullptr;
