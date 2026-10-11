@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (dialogue sound pair table; older subsystem
+Last reviewed: 2026-10-11 (random planet RNG wiring; older subsystem
 snapshots retain their dates)
+
+## Random planet name RNG wiring (2026-10-11)
+
+`Globals::getRandomPlanetName` now uses initialized `Globals::rnd` for
+`nextInt(100)` instead of dereferencing a never-set null placeholder.
+Android ARM confirms that data source. Native `gof2`, 206/206 ARM units,
+and 36 verifier tests pass (one skipped). The function reaches 100%
+source-shape from 94.2%, while strict fuzzy rises 76.5% to 86.1%.
+Full corpus: 4,713 comparisons of 4,323/4,524 original functions,
+92.33% source-shape, 80.47% strict fuzzy, 2,353 linked-exact and
+1,008 byte-exact, with no lost exact pair. A live generated-name run
+remains untested. See [the RNG audit](GLOBALS_RANDOM_PLANET_RNG_ARM_2026-10-11.md).
 
 ## Dialogue sound pair table recovery (2026-10-11)
 

@@ -2248,12 +2248,10 @@ int Globals::getDialogueSoundId(int code, Agent *agent) {
     }
 }
 
-static void *const gPlanetRng = nullptr;
-
 String Globals::getRandomPlanetName() {
     FileRead *f = (FileRead *) ::operator new(1);
     FileRead_ctor(f);
-    int which = nextInt_71ad0((AbyssEngine::AERandom *) *(int *) gPlanetRng, 0x64);
+    int which = nextInt_71ad0(static_cast<AbyssEngine::AERandom *>(Globals::rnd), 0x64);
     Station *st = f->loadStation(which);
     String name = st->getName();
     delete st;
