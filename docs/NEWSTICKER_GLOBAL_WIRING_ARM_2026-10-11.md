@@ -27,9 +27,7 @@ comparison found no lost exact pair, no skipped rows, and no wrong-type
 symbols. The report is retained at
 `C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_news_ticker_20261011.json`.
 
-This is not a complete ticker restoration. `replaceTokens` remains a stub,
-and the recovered `ModStation::OnInitialize` does not yet create the ticker
-seen in original ARM at `0xd5708`; that initialization, asset decoding, and
-in-game rendering remain untested. Next priority: recover the station's
-ticker construction/ownership path, then the token substitutions, using the
-original ARM behavior rather than invented fallbacks.
+This was not a complete ticker restoration. A subsequent audit restored
+`ModStation::OnInitialize` ticker construction and its preceding coordinate
+producer; see [the station-entry audit](MODSTATION_TICKER_CONSTRUCTION_ARM_2026-10-11.md).
+`replaceTokens`, asset decoding, and in-game rendering remain untested.

@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (NewsTicker global wiring; older subsystem
+Last reviewed: 2026-10-11 (ModStation ticker construction; older subsystem
 snapshots retain their dates)
+
+## ModStation station-entry ticker construction (2026-10-11)
+
+The Android ARM `state 80` branch copies the station's ticker/touch X
+boundary from `Layout+0xcc` to `ModStation+0xa8`; `state 60` then constructs
+`NewsTicker`, resets its related flags, creates `ChoiceWindow`, and loads
+the faction image. These steps now replace the unresolved ticker placeholder.
+The `+0xa8` field is a coordinate, not geometry; the unrelated cutscene
+geometry dereference now uses `CutScene+0x20` as in ARM. Focused
+`OnInitialize` source-shape rises **57.9% to 61.4%**; strict is **16.9%**,
+so this function is still far from exact. Native `gof2`, **206/206** ARM
+translation units, and 36 verifier tests pass (one skipped). The full
+corpus remains **4,323/4,524** compared, **92.01%** source-shape,
+**80.09%** strict, **2,322 linked-exact**, **997 byte-exact**, with no
+lost exact pair, skipped row, or wrong-type symbol. The report is retained
+at `C:/Users/Dima/Documents/Galaxy on Fire new version/_verify_integrated_20261008/integrated_station_ticker_final_20261011.json`.
+Station entry/exit on a running game and `NewsTicker::replaceTokens` remain
+unverified; see [the ARM station-entry audit](MODSTATION_TICKER_CONSTRUCTION_ARM_2026-10-11.md).
 
 ## NewsTicker global wiring and lifetime (2026-10-11)
 
@@ -14,8 +32,9 @@ source-shape rises **63.9% to 88.0%** and strict **50.7% to 71.3%**;
 `gof2`, 206 ARM units and 36 verifier tests pass (one skipped). The full
 corpus is **4,323/4,524**, **92.01%** source-shape, **80.09%** strict,
 **2,322 linked-exact**, **997 byte-exact**, with no exact-pair loss.
-`replaceTokens`, station-side ticker construction, and in-game rendering
-remain unverified; see [the ARM ticker audit](NEWSTICKER_GLOBAL_WIRING_ARM_2026-10-11.md).
+Station-side construction was restored in the subsequent audit above;
+`replaceTokens` and in-game rendering remain unverified. See
+[the ARM ticker audit](NEWSTICKER_GLOBAL_WIRING_ARM_2026-10-11.md).
 
 ## StarSystem supernova intro transform handoff (2026-10-11)
 

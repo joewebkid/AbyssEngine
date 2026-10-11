@@ -1106,7 +1106,7 @@ void ModStation::OnUpdate() {
     }
     if ((int) (intptr_t) this->cutScene != 0 && this->m_nStarMapWindowOpen.bytes[0] == 0)
         {
-            void *geom = this->hangarGeom;
+            void *geom = this->cutScene->rootGeom;
             if (geom != nullptr)
                 AEGeometry_rotate_ou(geom, 0.0f, 0.1f, 0.0f);
         }
@@ -1355,7 +1355,7 @@ void ModStation::OnTouchMove(int x, int y, void *touch) {
         return;
     if (*(int *) *g_ModStation_tm_screenH - layout->field_0x10 <= y)
         return;
-    if (x <= (int) (intptr_t) this->hangarGeom)
+    if (x <= static_cast<int>(this->hangarLeftX))
         return;
     int delta = x - this->camScrollPos;
     this->camScrollVel = delta;
@@ -2477,7 +2477,7 @@ void ModStation::OnTouchBegin(int x, int y, void *touch) {
         return;
     if (*(int *) *g_ModStation_tb_screenH - layout->field_0x10 <= y)
         return;
-    if (x <= (int) (intptr_t) this->hangarGeom)
+    if (x <= static_cast<int>(this->hangarLeftX))
         return;
     this->field_0xfc = x;
     this->camScrollPos = x;
@@ -2734,7 +2734,6 @@ int GameText_getText_oiImpl(int id);
 void ChoiceWindow_setFee_oiImpl(void *cw, int credits, int templateId);
 void ChoiceWindow_set6_oiImpl(void *cw, int a, int b, int c, int d, int e, int f);
 void ChoiceWindow_set1_oiImpl(void *cw, int textStr);
-void NewsTicker_build_oiImpl(void *self);
 void DlcMenu_build_oiImpl(void *self);
 
 void ModStation::OnInitialize() {
@@ -3156,15 +3155,31 @@ void ModStation::OnInitialize() {
         this->field_0xf4 = 0;
         this->field_0xf8 = 0;
         this->field_0xfc = 0;
-        Status_getSystem_oi();
-        int angle = (SolarSystem_getRace_oi() == 2) ? (int) 0xffffff38 : 0x10e;
+        int angle = (Globals::status->getSystem()->getRace() == 2) ? -200 : 270;
         this->camAngle = angle;
         if (this->cutScene != 0)
             this->cutScene->cameraRotX = (float) angle / 120.0f;
         this->field_0xec = 0;
         this->cameraFlags.bytes[0] =
                 this->cameraFlags.bytes[3];
-        NewsTicker_build_oiImpl(this);
+        const int tickerX = static_cast<int>(this->hangarLeftX);
+        const int tickerY = Globals::h - Globals::layout->field_0x10 -
+                            Globals::Canvas->GetTextHeight(Globals::font);
+        this->newsTicker = new NewsTicker(
+            tickerX, tickerY, Globals::w - tickerX,
+            Globals::status->getSystem()->getRace(),
+            Globals::status->getCurrentCampaignMission());
+        this->accumTime = 0;
+        this->cameraFlags.bytes[1] = 0;
+        this->cameraFlags.bytes[2] = 0;
+        this->field_0xd0 = 0;
+        this->field_0xd4 = 0;
+        this->alarmFlags.word = 0;
+        this->choiceWindow = new ChoiceWindow();
+        static const unsigned short factionImages[4] = {0x4a6, 0x4a3, 0x4a5, 0x4a4};
+        Globals::Canvas->Image2DCreate(
+            factionImages[Globals::status->getSystem()->getRace()],
+            reinterpret_cast<unsigned int &>(this->departPending));
         next = 0x28;
     } else if (state == 0x50) {
         this->m_nStarMapWindowOpen.halfwords[1] = 0;   // upper half of 0x5c..0x5f word
@@ -3179,6 +3194,7 @@ void ModStation::OnInitialize() {
         this->field_0x12c.bytes[0] = 0;
         this->closeHangarAfterCredits = 0;
         this->m_nStarMapWindowOpen.bytes[3] = 0;
+        this->hangarLeftX = Globals::layout->field_0xcc;
         DlcMenu_build_oiImpl(this);
         next = 0x3c;
     } else if (state == 100) {

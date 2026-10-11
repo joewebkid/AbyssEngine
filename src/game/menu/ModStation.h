@@ -99,7 +99,7 @@ public:
     void *hangarShipGeom;     // 0xa0
 
     int field_0xa4;           // 0xa4 (trailing pad after hangarShipGeom)
-    void *hangarGeom;         // 0xa8  (cached hangar ship geometry / touch x-threshold)
+    intptr_t hangarLeftX;     // 0xa8  (Layout+0xcc; station touch/ticker boundary)
     int field_0xac;           // 0xac
     FlagWord cameraFlags;     // 0xb0  bytes [0]=camActive [1]=? [3]=camArmed
     int field_0xb4;           // 0xb4
@@ -219,6 +219,12 @@ public:
 #if __SIZEOF_POINTER__ == 4
 static_assert(offsetof(ModStation, closeHangarAfterCredits) == 0x18,
               "ModStation::closeHangarAfterCredits @ 0x18");
+static_assert(offsetof(ModStation, newsTicker) == 0x1c,
+              "ModStation::newsTicker @ 0x1c");
+static_assert(offsetof(ModStation, departPending) == 0x4c,
+              "ModStation::ticker faction image @ 0x4c");
+static_assert(offsetof(ModStation, hangarLeftX) == 0xa8,
+              "ModStation::station ticker/touch X @ 0xa8");
 static_assert(offsetof(ModStation, dlcMenu) == 0x50, "ModStation::dlcMenu @ 0x50");
 static_assert(offsetof(ModStation, m_nStarMapWindowOpen) == 0x60,
               "ModStation::DLC open flags @ 0x60");
