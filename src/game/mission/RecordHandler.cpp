@@ -1802,15 +1802,6 @@ void RecordHandler::recordStoreWrite(int slot) {
     return;
 }
 
-void *Galaxy_getStationByIndex(int idx);
-
-void *Standing_new();
-
-void Standing_setStandingsArr(void *st, int *standings);
-
-void *RH_str_make(void *src);
-
-
 int RecordHandler::readOptionsFileAsByteArray(signed char **out) {
     String tmp;
     unsigned int fd;
@@ -2017,7 +2008,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                     AEFile_ReadInt(&sIdx, fd);
                     void *st = 0;
                     if (sIdx != -1) {
-                        st = Galaxy_getStationByIndex(sIdx);
+                        st = Galaxy::gGalaxy->getStation(sIdx);
                         int iN = 0;
                         AEFile_ReadInt(&iN, fd);
                         if (iN > 0) {
@@ -2082,9 +2073,9 @@ void *RecordHandler::recordStoreRead(int slot) {
                 AEFile_ReadInt(&sdN, fd);
                 int *standings = new int[sdN];
                 for (int i = 0; i < sdN; i++) AEFile_ReadInt(standings + i, fd);
-                void *standing = Standing_new();
+                Standing *standing = new Standing();
                 *reinterpret_cast<void **>(&rec->field_0x13c) = standing;
-                Standing_setStandingsArr(standing, standings);
+                standing->setStandings(standings);
 
                 Array<void *> *bpArr = new Array<void *>();
                 int bpN = 0;
@@ -2123,8 +2114,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                         String nm;
                         { if (nm.data) delete[] nm.data; nm.data = nullptr; nm.length = 0; }
                         AEFile_ReadString(&nm, fd, 1);
-                        void *nameCopy = RH_str_make(&nm);
-                        void *pp = new PendingProduct(a, *(const String *) nameCopy, d, c);
+                        void *pp = new PendingProduct(a, String(nm, false), d, c);
                         (*ppArr)[i] = (PendingProduct *) pp;
                     }
                     *reinterpret_cast<void **>(&rec->field_0x144) = ppArr;
@@ -2139,7 +2129,7 @@ void *RecordHandler::recordStoreRead(int slot) {
                         String nm;
                         { if (nm.data) delete[] nm.data; nm.data = nullptr; nm.length = 0; }
                         AEFile_ReadString(&nm, fd, 1);
-                        (*strArr)[i] = (String *) RH_str_make(&nm);
+                        (*strArr)[i] = new String(nm, false);
                     }
                     *reinterpret_cast<void **>(&rec->field_0x14c) = strArr;
                     AEFile_ReadInt(&rec->field_0x150, fd);

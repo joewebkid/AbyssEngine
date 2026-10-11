@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (record reader definition tables; older subsystem
+Last reviewed: 2026-10-11 (record reader helper calls; older subsystem
 snapshots retain their dates)
+
+## Record reader station, standing, and string calls (2026-10-11)
+
+Android ARM resolves four declared-only reader helpers to existing
+`Galaxy::getStation`, `Standing` construction/setter, and `String`
+copy construction. The reader now calls those methods directly; the
+native object no longer references the four invented symbols, and
+the corresponding definitions exist in `libgof2.a`. Focused
+`recordStoreRead` source-shape/strict fuzzy improves from
+91.6%/16.9% to 91.8%/23.3%. Native `gof2`, 206/206 ARM units, and
+36 verifier tests pass (one skipped). Full corpus remains 4,323/4,524
+at 92.18% source-shape, improves to 80.38% strict fuzzy, and retains
+2,350 linked-exact and 1,008 byte-exact with no lost exact pair,
+skipped unit, or wrong-type symbol. Full executable linking and a
+save/reload round trip are untested; `RecordHandler` still references
+declared-only `AEFile_Read*`/`Write*` wrappers. Audit those file-I/O
+calls next. See
+[the ARM helper audit](RECORD_READER_HELPER_CALLS_ARM_2026-10-11.md).
 
 ## Record reader item and ship definitions (2026-10-11)
 
