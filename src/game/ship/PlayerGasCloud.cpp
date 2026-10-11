@@ -1,7 +1,5 @@
 #include "game/ship/PlayerGasCloud.h"
 
-#include <cstddef>
-
 #include "engine/core/AERandom.h"
 #include "engine/render/AEGeometry.h"
 #include "engine/audio/FModSound.h"
@@ -24,34 +22,7 @@ namespace AbyssEngine {
     }
 }
 
-// Minimal model of the campaign/save-state handle. Only the byte accessed by
-// this translation unit is named; the surrounding bytes are reserved padding so
-// the named field lands at its real offset.
-struct PgcCampaign {
-    char reserved0[0x2d];
-    char rescueMissionFlag; // offset 0x2d
-};
-#if __SIZEOF_POINTER__ == 4
-static_assert(offsetof(PgcCampaign, rescueMissionFlag) == 0x2d,
-              "PgcCampaign.rescueMissionFlag must be at 0x2d");
-#endif
-
-// Unresolved update-only placeholders; these are not live engine pointers.
-static PaintCanvas **g_pgcu_canvasRoot = nullptr;
-// g_pgcu_itemDefs: *g_pgcu_itemDefs -> Array<Item*>* (the item-definition table).
-static Array<Item *> **g_pgcu_itemDefs = nullptr;
-static FModSound *g_pgcu_pickupSound = nullptr;
-// g_pgcu_campaign: *g_pgcu_campaign -> PgcCampaign* (the campaign/save handle).
-static PgcCampaign **g_pgcu_campaign = nullptr;
-
-static float g_pgcu_velScale = 0;
-static float g_pgcu_catchDist = 0;
-static int g_pgcu_minTimer = 0;
-static int g_pgcu_resetTimer = 0;
-static float g_pgcu_fadeLo = 0;
-static float g_pgcu_fadeAdd = 0;
-static float g_pgcu_fadeDiv = 0;
-static float g_pgcu_growDiv = 0;
+static_assert(sizeof(Globals::hints) > 0x2d, "gas cloud campaign hint index");
 
 PlayerGasCloud::PlayerGasCloud(int itemId, ParticleSystemManager * /*particles*/,
                                AEGeometry *geometry, const Vector &position)
@@ -234,16 +205,16 @@ void PlayerGasCloud::update(int dt) {
     Array<AEGeometry *> *arr = this->sparkGeometries;
     if (this->exploded == 0 || this->settled != 0 || arr == 0) {
         AbyssEngine::Transform *t = (AbyssEngine::Transform *)
-                (*g_pgcu_canvasRoot)->TransformGetTransform(
+                Globals::Canvas->TransformGetTransform(
                     this->modelGeometry->transform);
-        t->Update(1, (bool) dt);
+        t->Update(dt, true);
         return;
     }
 
     float dtf = (float) dt;
     this->settled = 1;
     this->elapsedSinceExplosion += dt;
-    float velStep = dtf * g_pgcu_velScale;
+    float velStep = dtf * 0.08f;
 
     unsigned int i = 0;
     while (i < arr->size()) {
@@ -267,43 +238,42 @@ void PlayerGasCloud::update(int dt) {
         float dist = VectorLength(delta);
 
         bool collected = false;
-        if (dist < g_pgcu_catchDist && this->elapsedSinceExplosion >= 2000) {
+        if (dist < 800.0f && this->elapsedSinceExplosion >= 2000) {
             PlayerEgo *p2 = (PlayerEgo *) (intptr_t) this->level->getPlayer();
             if (p2->isInTurretMode() != 0 &&
-                (*this->sparkTimers)[i] >= g_pgcu_minTimer) {
-                (*this->sparkTimers)[i] = g_pgcu_resetTimer;
+                (*this->sparkTimers)[i] >= -1499) {
+                (*this->sparkTimers)[i] = -1500;
                 Ship *ship = Status::gStatus->getShip();
                 int itemId = this->itemId;
                 if (ship->getFreeSpace() < 1) {
                     if (this->level->getPlayer() != 0) {
-                        g_pgcu_pickupSound->stop(0x8d0);
-                        g_pgcu_pickupSound->play(0x8d0, 0, 0, 0.0f);
+                        Globals::sound->stop(0x8d0);
+                        Globals::sound->play(0x8d0, 0, 0, 0.0f);
                         PlayerEgo *ego = (PlayerEgo *) (intptr_t) this->level->getPlayer();
                         Hud *hud = (Hud *) (intptr_t) ego->getHUD();
                         hud->catchCargo(this->itemId, false, true, false, true, false, 0);
                     }
                 } else {
-                    Item *def = (*(*g_pgcu_itemDefs))[itemId];
-                    def->makeItem();
+                    auto *items = static_cast<Array<Item *> *>(Globals::items);
+                    Item *cargoItem = (*items)[itemId]->makeItem(1);
                     if (this->level->getPlayer() != 0) {
                         PlayerEgo *ego = (PlayerEgo *) (intptr_t) this->level->getPlayer();
                         Hud *hud = (Hud *) (intptr_t) ego->getHUD();
-                        hud->catchCargo(this->itemId, true, false, false, false, false, 0);
+                        hud->catchCargo(this->itemId, true, false, false, false, false, true);
 
-                        PgcCampaign *camp = *g_pgcu_campaign;
-                        if (camp->rescueMissionFlag == 0 &&
+                        if (Globals::hints[0x2d] == 0 &&
                             Status::gStatus->getCurrentCampaignMission() > 0x8e) {
                             Mission *mission = Status::gStatus->getMission();
                             if (mission->isEmpty() != 0 && this->itemId == 0xcc) {
-                                camp->rescueMissionFlag = 1;
+                                Globals::hints[0x2d] = 1;
                                 this->level->createRadioMessage(0x1a, 0);
                             }
                         }
                     }
-                    g_pgcu_pickupSound->stop(0x8d0);
-                    g_pgcu_pickupSound->play(0x8d0, 0, 0, 0.0f);
+                    Globals::sound->stop(0x8d0);
+                    Globals::sound->play(0x8d0, 0, 0, 0.0f);
                     Ship *ship2 = Status::gStatus->getShip();
-                    ship2->addCargo(def);
+                    ship2->addCargo(cargoItem);
                 }
                 (*this->sparkScale)[i] = 0.0f;
                 collected = true;
@@ -314,17 +284,17 @@ void PlayerGasCloud::update(int dt) {
             int tval = (*this->sparkTimers)[i];
             float *scale = &(*this->sparkScale)[i];
             if (tval <= 0) {
-                float sc = (float) tval / g_pgcu_growDiv + 1.0f;
+                float sc = (float) tval / 1500.0f + 1.0f;
                 *scale = sc;
                 if (sc < 0.0f)
                     *scale = 0.0f;
-            } else if (dist < g_pgcu_fadeLo) {
-                *scale = (dist + g_pgcu_fadeAdd) / g_pgcu_fadeDiv;
+            } else if (dist < 3500.0f) {
+                *scale = (dist - 800.0f) / 2700.0f;
             }
             AbyssEngine::Transform *t = (AbyssEngine::Transform *)
-                    (*g_pgcu_canvasRoot)->TransformGetTransform(
+                    Globals::Canvas->TransformGetTransform(
                         geom->transform);
-            t->Update(1, (bool) dt);
+            t->Update(dt, true);
         }
 
         AEGeometry *moveGeom;
@@ -343,9 +313,9 @@ void PlayerGasCloud::update(int dt) {
 
                 Ship *ship2 = Status::gStatus->getShip();
                 Item *eq = ship2->getFirstEquipmentOfSort(0x23);
-                int attr = eq->getAttribute(0);
+                int attr = eq->getAttribute(49);
                 float step = (float) (attr * dt);
-                Vector vel = turretPos;
+                Vector vel = dn;
                 vel *= step;
                 vel += shardPos;
                 moved = vel;
@@ -362,7 +332,7 @@ void PlayerGasCloud::update(int dt) {
             moveGeom->setPosition(moved);
         }
 
-        if (g_pgcu_minTimer <= (*this->sparkTimers)[i])
+        if (-1499 <= (*this->sparkTimers)[i])
             this->settled = 0;
         i++;
         arr = this->sparkGeometries;

@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (PlayerGasCloud explosion; older subsystem
+Last reviewed: 2026-10-11 (PlayerGasCloud particle update; older subsystem
 snapshots retain their dates)
+
+## PlayerGasCloud particle update and cargo pickup (2026-10-11)
+
+Android ARM confirms the live Canvas, sound, item table, and
+`Globals::hints[0x2d]` dependencies. The update path now advances
+transforms by the real `dt`, uses the original movement and fade
+constants, creates a one-unit cargo item rather than adding its
+prototype, and steers toward the player using a normalized direction
+and equipment attribute `49`. Its source-shape/strict fuzzy rises
+from 80.7%/6.8% to 93.4%/42.0%. Native `gof2`, 206/206 ARM units,
+and 36 verifier tests pass (one skipped). The full corpus is
+4,323/4,524 at 92.14% source-shape, 80.38% strict fuzzy, 2,343
+linked-exact, and 1,008 byte-exact, with no lost exact pair, skipped
+unit, or wrong-type symbol. Runtime pickup and save/reload behavior
+are not tested. Next audit the `GameRecord` hint save/load block,
+which still uses an absolute pointer overlay in native source. See
+[the ARM update audit](PLAYER_GAS_CLOUD_UPDATE_ARM_2026-10-11.md).
 
 ## PlayerGasCloud explosion, construction, and render (2026-10-11)
 
