@@ -83,6 +83,7 @@ static std::vector<RegionCall> regions;
 static std::vector<TextCall> texts;
 static std::vector<FillCall> fills;
 static std::vector<unsigned int> colors;
+static std::vector<unsigned int> imageWidthQueries;
 static unsigned int currentColor = 0x12345678;
 static short currentSpacing = 2;
 
@@ -93,7 +94,10 @@ void PaintCanvas::SetColor(unsigned char r, unsigned char g, unsigned char b, un
 }
 int PaintCanvas::FontGetSpacing(unsigned int) { return currentSpacing; }
 void PaintCanvas::FontSetSpacing(unsigned int, short spacing) { currentSpacing = spacing; }
-int PaintCanvas::GetImage2DWidth(unsigned int) { return 10; }
+int PaintCanvas::GetImage2DWidth(unsigned int id) {
+    imageWidthQueries.push_back(id);
+    return 10;
+}
 int PaintCanvas::GetImage2DHeight(unsigned int) { return 20; }
 int PaintCanvas::GetTextWidth(unsigned int, const String &) { return 8; }
 int PaintCanvas::GetTextHeight(unsigned int) { return 8; }
@@ -129,6 +133,7 @@ static bool sawColor(unsigned int color) {
 }
 static void clearDraws() {
     images.clear(); regions.clear(); texts.clear(); fills.clear(); colors.clear();
+    imageWidthQueries.clear();
     currentColor = 0x12345678;
     currentSpacing = 2;
 }
@@ -321,6 +326,44 @@ int main() {
     assert(!sawColor(0xff2a00ff));
     assert(texts.size() == 2 && texts[0].content == "15 / 20t");
     assert(texts[1].content == "123$" && texts[1].x == 65 && texts[1].y == 42);
+
+    TouchButton help(16, 0, 0, 40, 0);
+    layout.helpButton = &help;
+    layout.field_0x38 = 4;
+    assert(layout.getHelpButtonOffset() == 36);
+    Layout otherLayout;
+    otherLayout.field_0x38 = 9;
+    Globals::layout = &otherLayout;
+    assert(layout.getHelpButtonOffset() == 31);
+    Globals::layout = &layout;
+
+    clearDraws();
+    assert(layout.getFooterTransitionWidth() == 20);
+    assert(imageWidthQueries.size() == 2);
+    assert(imageWidthQueries[0] == 22 && imageWidthQueries[1] == 21);
+
+    Globals::w = 17;
+    Globals::h = 23;
+    layout.bgPatternImage = 42;
+    clearDraws();
+    layout.drawBG();
+    assert(imageAt(42, 0, 0) && regions.size() == 3);
+    assert(regions[0].x == 10 && regions[0].y == 0);
+    assert(regions[2].x == 10 && regions[2].y == 20);
+
+    clearDraws();
+    layout.drawMask();
+    assert(fills.size() == 1 && fills[0].x == 0 && fills[0].y == 0);
+    assert(fills[0].width == 17 && fills[0].height == 23);
+    assert(fills[0].color == 0x80 && currentColor == 0x12345678);
+
+    clearDraws();
+    layout.drawMask(2, 3, 4, 5);
+    assert(fills.size() == 1 && fills[0].x == 2 && fills[0].y == 3);
+    assert(fills[0].width == 4 && fills[0].height == 5);
+    assert(fills[0].color == 0x80 && currentColor == 0x12345678);
+    Globals::w = 480;
+    Globals::h = 320;
 
     clearDraws();
     layout.fadeProgress = 200;

@@ -21,6 +21,10 @@ the same host smoke. Their source evidence, assertions, and current
 metrics are recorded in
 [the Layout footer audit](LAYOUT_FOOTER_ARM_2026-10-12.md).
 
+Layout metric, background, and mask methods were also added to the
+fixture. Their Android anchors and checks are recorded in
+[the Layout UI metrics audit](LAYOUT_UI_METRICS_ARM_2026-10-12.md).
+
 The first expanded host run exposed a real coordinate error in
 `Layout::drawBGPattern`: the right partial-width strip started at
 `y + fullH`, overlapping the bottom remainder, instead of at `y`.

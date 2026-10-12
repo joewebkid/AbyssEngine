@@ -20,11 +20,9 @@ uint8_t Layout::isFading() {
 }
 
 
-static int **gTouchButtonHolder = nullptr;
-
 int Layout::getHelpButtonOffset() {
     int w = this->helpButton->getWidth();
-    return w - (*gTouchButtonHolder)[0x38 / 4];
+    return w - Globals::layout->field_0x38;
 }
 
 void Layout::update(int dt) {
@@ -48,12 +46,10 @@ void Layout::update(int dt) {
 }
 
 
-static PaintCanvas **gPaintCanvasHolder = nullptr;
-
 int Layout::getFooterTransitionWidth() {
-    PaintCanvas **holder = gPaintCanvasHolder;
-    int w1 = (*holder)->GetImage2DWidth(this->footerImageRight);
-    int w2 = (*holder)->GetImage2DWidth(this->footerImageLeft);
+    PaintCanvas *canvas = Globals::Canvas;
+    int w1 = canvas->GetImage2DWidth(this->footerImageRight);
+    int w2 = canvas->GetImage2DWidth(this->footerImageLeft);
     return w2 + w1;
 }
 
@@ -84,19 +80,8 @@ void Layout::setDrawColor(int color) {
 }
 
 
-static int *gW = nullptr;
-
-static int *gH = nullptr;
-
-
-static int *gA = nullptr;
-
-static int *gB = nullptr;
-
 void Layout::drawBG() {
-    int p4 = *gA;
-    int p5 = *gB;
-    this->drawBGPattern(this->bgPatternImage, 0, 0, p4, p5);
+    this->drawBGPattern(this->bgPatternImage, 0, 0, Globals::w, Globals::h);
 }
 
 void Layout::enableFillScreen(bool v) {
@@ -1189,9 +1174,7 @@ void Layout::drawWindow(String title, int x, int y, int w, int h) {
 }
 
 void Layout::drawMask() {
-    int w = *gW;
-    int h = *gH;
-    this->drawMask(0, 0, w, h);
+    this->drawMask(0, 0, Globals::w, Globals::h);
 }
 
 void Layout::drawBGBorder(unsigned corner, unsigned edge, int x, int y, int w, int h) {
@@ -1273,9 +1256,9 @@ void Layout::drawFooter(bool stationMode_, bool showBack_) {
 }
 
 void Layout::drawMask(int x, int y, int w, int h) {
-    PaintCanvas *pc = PaintCanvas::gCanvas;
+    PaintCanvas *pc = Globals::Canvas;
     unsigned saved = pc->GetColor();
-    pc->SetColor(this->drawColor);
+    pc->SetColor(0x80);
     pc->FillRectangle(x, y, w, h);
     pc->SetColor(saved);
 }

@@ -28,6 +28,7 @@ def main():
 #include "game/ship/Ship.h"
 '''
     extracted += function(source, "void TouchButton::setVisible(")
+    extracted += function(source, "int TouchButton::getWidth(")
     for signature in ("bool TouchButton::touchedInside(",
                       "bool TouchButton::OnTouchBegin(",
                       "unsigned int TouchButton::OnTouchMove(",
@@ -41,6 +42,12 @@ def main():
     extracted += function(layout, "void Layout::setDrawColor(")
     extracted += function(layout, "void Layout::drawBGPattern(")
     extracted += function(layout, "uint8_t Layout::drawFade(")
+    for signature in ("int Layout::getFooterTransitionWidth(",
+                      "int Layout::getHelpButtonOffset(",
+                      "void Layout::drawBG()",
+                      "void Layout::drawMask()",
+                      "void Layout::drawMask(int"):
+        extracted += function(layout, signature)
     for signature in ("void Layout::drawFooterNoBackButton(",
                       "void Layout::drawFooter()",
                       "void Layout::drawFooterStation(",

@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Layout footer routing and bindings; older subsystem
+Last reviewed: 2026-10-12 (Layout UI metrics, background, and mask; older subsystem
 snapshots retain their dates)
+
+## Layout UI metrics, background, and mask (2026-10-12)
+
+Android ARM confirms that `getFooterTransitionWidth` uses the live
+Canvas, `getHelpButtonOffset` reads the global layout inset, `drawBG`
+and no-argument `drawMask` use live screen dimensions, and explicit
+`drawMask` uses the fixed `0x80` tint. These five paths no longer read
+null holders or substitute the mutable layout color. Native `gof2`,
+206/206 ARM units, the focused UI host smoke, and 36 verifier tests
+pass (one skipped). Focused family source-shape rises 75.4% to 97.7%;
+three functions become linked-exact. Full corpus remains 4,323/4,524
+original functions covered; average source-shape rises to 92.52%,
+strict fuzzy to 80.79%, linked-exact to 2,376, while byte-exact
+stays 1,008. No prior exact pair is lost. Original assets, real
+rendering, and ARM runtime are untested. Next audit the null
+canvas/font/metric holders in `Layout::drawBox`. See
+[the UI metrics audit](LAYOUT_UI_METRICS_ARM_2026-10-12.md).
 
 ## Layout footer routing and global bindings (2026-10-12)
 
