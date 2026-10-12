@@ -789,37 +789,30 @@ void Layout::drawScrollBar(int x, int y, int trackH, int pos, int range) {
 }
 
 
-static PaintCanvas **g_dfCanvasA = nullptr;
-
-static int **g_dfDimA = nullptr;
-
-static PaintCanvas **g_dfCanvasB = nullptr;
-
-static int **g_dfDimB = nullptr;
-
 uint8_t Layout::drawFade() {
     if (this->fading != 0) {
-        PaintCanvas *pc = *g_dfCanvasA;
+        PaintCanvas *pc = Globals::Canvas;
         unsigned saved = pc->GetColor();
 
         float t = (float) this->fadeProgress / (float) this->fadeDuration;
-        if (this->fadeOut != 0)
+        if (this->fadeOut == 0)
             t = 1.0f - t;
-        if (t > 1.0f) t = 1.0f;
+        float capped = 1.0f;
+        if (t < 1.0f) capped = t;
 
         unsigned color = this->fadeColor;
-        if (t > 0.0f)
-            color += (int) (t * 255.0f);
-        PaintCanvas::gCanvas->SetColor(color);
-        (*g_dfCanvasA)->FillRectangle(0, 0, **g_dfDimA, 0);
-        PaintCanvas::gCanvas->SetColor(saved);
+        if (capped > 0.0f)
+            color += (int) (capped * 255.0f);
+        pc->SetColor(color);
+        pc->FillRectangle(0, 0, Globals::w, Globals::h);
+        pc->SetColor(saved);
     }
     if (this->fillScreen != 0) {
-        PaintCanvas *pc = *g_dfCanvasB;
+        PaintCanvas *pc = Globals::Canvas;
         unsigned saved = pc->GetColor();
-        PaintCanvas::gCanvas->SetColor(0xff);
-        (*g_dfCanvasB)->FillRectangle(0, 0, **g_dfDimB, 0);
-        PaintCanvas::gCanvas->SetColor(saved);
+        pc->SetColor(0xff);
+        pc->FillRectangle(0, 0, Globals::w, Globals::h);
+        pc->SetColor(saved);
     }
     return this->fading;
 }

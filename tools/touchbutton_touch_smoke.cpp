@@ -12,6 +12,8 @@ Layout *Globals::layout = nullptr;
 FModSound *Globals::sound = nullptr;
 PaintCanvas *Globals::Canvas = nullptr;
 unsigned int Globals::font = 5;
+int Globals::w = 480;
+int Globals::h = 320;
 
 AbyssEngine::String::String() : data(nullptr), length(0) {}
 AbyssEngine::String::~String() = default;
@@ -26,9 +28,11 @@ PaintCanvas::~PaintCanvas() = default;
 struct ImageCall { unsigned int id; int x, y; };
 struct RegionCall { unsigned int id; int width, height, x, y; };
 struct TextCall { unsigned int font; int x, y; };
+struct FillCall { int x, y, width, height; unsigned int color; };
 static std::vector<ImageCall> images;
 static std::vector<RegionCall> regions;
 static std::vector<TextCall> texts;
+static std::vector<FillCall> fills;
 static std::vector<unsigned int> colors;
 static unsigned int currentColor = 0x12345678;
 static short currentSpacing = 2;
@@ -51,6 +55,9 @@ void PaintCanvas::DrawImage2D(unsigned int id, int x, int y, unsigned char, unsi
 void PaintCanvas::DrawString(unsigned int font, const String &, int x, int y, bool) {
     texts.push_back({font, x, y});
 }
+void PaintCanvas::FillRectangle(int x, int y, int width, int height) {
+    fills.push_back({x, y, width, height, currentColor});
+}
 void PaintCanvas::DrawRegion2D(unsigned int id, int, int, int width, int height, float unused,
                                int, int, int x, int y) {
     assert(unused == 0.0f);
@@ -67,7 +74,7 @@ static bool sawColor(unsigned int color) {
     return false;
 }
 static void clearDraws() {
-    images.clear(); regions.clear(); texts.clear(); colors.clear();
+    images.clear(); regions.clear(); texts.clear(); fills.clear(); colors.clear();
     currentColor = 0x12345678;
     currentSpacing = 2;
 }
@@ -176,6 +183,49 @@ int main() {
     medal.draw();
     assert(imageAt(31, 100, 50) && imageAt(32, 120, 59) && imageAt(33, 100, 50));
     assert(sawColor(0xaabbccdd) && currentColor == 0x12345678);
+
+    clearDraws();
+    layout.fading = 0;
+    layout.fillScreen = 0;
+    assert(layout.drawFade() == 0 && fills.empty());
+
+    layout.fading = 1;
+    layout.fadeOut = 1;
+    layout.fadeColor = 0x11223300;
+    layout.fadeProgress = 25;
+    layout.fadeDuration = 100;
+    assert(layout.drawFade() == 1 && fills.size() == 1);
+    assert(fills[0].x == 0 && fills[0].y == 0);
+    assert(fills[0].width == 480 && fills[0].height == 320);
+    assert(fills[0].color == 0x1122333f && currentColor == 0x12345678);
+
+    clearDraws();
+    layout.fadeOut = 0;
+    layout.fillScreen = 1;
+    assert(layout.drawFade() == 1 && fills.size() == 2);
+    assert(fills[0].color == 0x112233bf && fills[1].color == 0xff);
+    assert(fills[1].width == 480 && fills[1].height == 320);
+    assert(currentColor == 0x12345678);
+
+    clearDraws();
+    layout.fading = 0;
+    assert(layout.drawFade() == 0 && fills.size() == 1);
+    assert(fills[0].color == 0xff && currentColor == 0x12345678);
+
+    clearDraws();
+    layout.fading = 1;
+    layout.fillScreen = 0;
+    layout.fadeOut = 1;
+    layout.fadeProgress = 0;
+    layout.fadeDuration = 0;
+    assert(layout.drawFade() == 1 && fills.size() == 1);
+    assert(fills[0].color == 0x112233ff && currentColor == 0x12345678);
+
+    clearDraws();
+    layout.fadeProgress = 200;
+    layout.fadeDuration = 100;
+    assert(layout.drawFade() == 1 && fills.size() == 1);
+    assert(fills[0].color == 0x112233ff && currentColor == 0x12345678);
 
     std::puts("TouchButton/Layout host smoke: OK");
 }

@@ -4,11 +4,17 @@
 
 `tools/run_touchbutton_touch_smoke.py` extracts the unchanged production
 method bodies for `TouchButton::touchedInside`, `OnTouchBegin`, `OnTouchMove`,
-`OnTouchEnd`, `draw`, `Layout::setDrawColor`, and `Layout::drawBGPattern`.
+`OnTouchEnd`, `draw`, `Layout::setDrawColor`, `Layout::drawBGPattern`, and
+`Layout::drawFade`.
 The generated source is compiled with fixture canvas, layout, and sound
 services, then run in an automatically removed temporary directory.
 It tests touch bounds and state transitions, sound call order, three-slice
-and progress drawing, text position, overlays, and partial pattern tiles.
+and progress drawing, text position, overlays, partial pattern tiles, and
+both fade/full-screen fill branches.
+
+Fade assertions were added after the original pattern audit; their
+ARM evidence and current metrics are recorded in
+[the Layout fade audit](LAYOUT_DRAW_FADE_ARM_2026-10-12.md).
 
 The first expanded host run exposed a real coordinate error in
 `Layout::drawBGPattern`: the right partial-width strip started at

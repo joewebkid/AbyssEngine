@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (TouchButton/Layout host smoke; older subsystem
+Last reviewed: 2026-10-12 (Layout fade/full-screen fill; older subsystem
 snapshots retain their dates)
+
+## Layout fade and full-screen fill (2026-10-12)
+
+`Layout::drawFade` now uses the ARM-confirmed `Globals::Canvas` and
+full screen dimensions in both branches instead of dereferencing
+never-set null holders and filling a zero-height rectangle. The
+`fadeOut` flag now follows the original alpha direction and the
+original cap behavior, including the zero-duration edge case. Native
+`gof2`, 206/206 ARM units, the focused host UI smoke, and 36 verifier
+tests pass (one skipped). Focused source-shape rises 85.3% to 94.5%;
+strict fuzzy rises 57.8% to 68.0%, without an exact match. Full corpus
+remains 4,323/4,524 original functions, 92.42% average source-shape,
+80.68% strict fuzzy, 2,373 linked-exact and 1,008 byte-exact, with no
+lost exact pair. Actual game rendering, frame timing, and ARM runtime
+remain untested. Next priority: recover the still-null canvas, font,
+and metric bindings in `Layout::drawFooter*`; the 201 missing original
+functions remain a separate coverage gap. See
+[the fade audit](LAYOUT_DRAW_FADE_ARM_2026-10-12.md).
 
 ## TouchButton/Layout host smoke and partial pattern tile (2026-10-12)
 

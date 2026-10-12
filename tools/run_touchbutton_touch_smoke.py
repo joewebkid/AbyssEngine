@@ -1,4 +1,4 @@
-"""Run production TouchButton touch bodies with fixture layout and sound services."""
+"""Run production TouchButton/Layout UI bodies with fixture services."""
 
 import argparse
 from pathlib import Path
@@ -37,6 +37,7 @@ def main():
     layout = (ROOT / "src/game/ui/Layout.cpp").read_text()
     extracted += function(layout, "void Layout::setDrawColor(")
     extracted += function(layout, "void Layout::drawBGPattern(")
+    extracted += function(layout, "uint8_t Layout::drawFade(")
 
     with tempfile.TemporaryDirectory(prefix="touchbutton-smoke-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "production_touch.cpp"
