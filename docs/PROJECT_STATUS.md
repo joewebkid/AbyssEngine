@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (TouchButton constructors/resource tables; older subsystem
+Last reviewed: 2026-10-12 (TouchButton image handles; older subsystem
 snapshots retain their dates)
+
+## TouchButton image-handle measurements (2026-10-12)
+
+`TouchButton::init` and `setText` now measure the ARM-confirmed image
+handles instead of handle zero. The two special kinds that use an
+existing image now store `subId` in their frame slot. Native `gof2`,
+206/206 ARM units, and 36 verifier tests pass (one skipped). Focused
+source-shape rises 79.8% to 80.7% for `init` and 93.9% to 95.6% for
+`setText`; neither is exact. Full corpus remains 4,323/4,524 original
+functions covered, with 92.41% average source-shape, 80.67% strict
+fuzzy, 2,370 linked-exact and 1,008 byte-exact. No exact pair was lost.
+Live UI rendering is untested; `TouchButton::draw` still has null layout
+holders and is the next priority. See
+[the image-handle audit](TOUCHBUTTON_IMAGE_HANDLES_ARM_2026-10-12.md).
 
 ## TouchButton constructors and resource tables (2026-10-12)
 

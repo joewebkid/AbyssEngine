@@ -266,8 +266,8 @@ int TouchButton::init(String const &text, unsigned int subId, int kind, int meda
             int elite = (ach->isEliteMedal(medalId) != 0) ? 1 : 0;
             this->iconTexId = TB_iconTexId(elite, medalStage);
             canvas->Image2DCreate(TB_iconImgId(elite, medalStage), this->iconImage);
-            this->height = ((PaintCanvas *) (canvas))->GetImage2DHeight(0);
-            int w = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
+            this->height = canvas->GetImage2DHeight(this->iconImage);
+            int w = canvas->GetImage2DWidth(this->iconImage);
             this->layoutHeight = this->height;
             this->width = w;
             this->leftWidth = w;
@@ -293,8 +293,8 @@ int TouchButton::init(String const &text, unsigned int subId, int kind, int meda
             ((PaintCanvas *) (canvas))->Image2DCreate(0x2329, frameH);
             this->imgFrameTL = frameH;
             this->imgFrameBL = this->imgFrameTL;
-            this->height = ((PaintCanvas *) (canvas))->GetImage2DHeight(0);
-            int w = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
+            this->height = canvas->GetImage2DHeight(this->imgFrameL);
+            int w = canvas->GetImage2DWidth(this->imgFrameL);
             this->layoutHeight = this->height;
             this->width = w;
             this->leftWidth = w;
@@ -311,15 +311,15 @@ int TouchButton::init(String const &text, unsigned int subId, int kind, int meda
             ((PaintCanvas *) (canvas))->Image2DCreate(0x473, frameH);
             this->imgFrameTL = frameH;
             {
-                this->height = ((PaintCanvas *) (canvas))->GetImage2DHeight(0);
-                int w = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
+                this->height = canvas->GetImage2DHeight(this->imgFrameL);
+                int w = canvas->GetImage2DWidth(this->imgFrameL);
                 this->layoutHeight = this->height;
                 this->width = w;
                 this->leftWidth = w;
-                int tw = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
+                int tw = canvas->GetImage2DWidth(subId);
                 int h = this->height;
                 this->textOffsetX = w / 2 - tw / 2;
-                int th = ((PaintCanvas *) (canvas))->GetImage2DHeight(0);
+                int th = canvas->GetImage2DHeight(subId);
                 this->textOffsetY = h / 2 - th / 2;
             }
             break;
@@ -332,15 +332,15 @@ int TouchButton::init(String const &text, unsigned int subId, int kind, int meda
             this->imgFrameTL = frameH;
             this->imgFrameBL = this->imgFrameTL;
             {
-                this->height = ((PaintCanvas *) (canvas))->GetImage2DHeight(0);
-                int w = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
+                this->height = canvas->GetImage2DHeight(this->imgFrameL);
+                int w = canvas->GetImage2DWidth(this->imgFrameL);
                 this->layoutHeight = this->height;
                 this->width = w;
                 this->leftWidth = w;
-                int tw = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
+                int tw = canvas->GetImage2DWidth(subId);
                 int h = this->height;
                 this->textOffsetX = w / 2 - tw / 2;
-                int th = ((PaintCanvas *) (canvas))->GetImage2DHeight(0);
+                int th = canvas->GetImage2DHeight(subId);
                 this->textOffsetY = h / 2 - th / 2;
             }
             break;
@@ -363,19 +363,19 @@ int TouchButton::init(String const &text, unsigned int subId, int kind, int meda
         }
         case 0x10: {
             unsigned int frameH;
-            this->imgFrameL = medalId;
+            this->imgFrameL = subId;
             ((PaintCanvas *) (canvas))->Image2DCreate(0xbb9, frameH);
             this->imgFrameTL = frameH;
             {
-                this->height = ((PaintCanvas *) (canvas))->GetImage2DHeight(0);
-                int w = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
+                this->height = canvas->GetImage2DHeight(this->imgFrameL);
+                int w = canvas->GetImage2DWidth(this->imgFrameL);
                 this->layoutHeight = this->height;
                 this->width = w;
                 this->leftWidth = w;
-                int tw = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
+                int tw = canvas->GetImage2DWidth(subId);
                 int h = this->height;
                 this->textOffsetX = w / 2 - tw / 2;
-                int th = ((PaintCanvas *) (canvas))->GetImage2DHeight(0);
+                int th = canvas->GetImage2DHeight(subId);
                 this->textOffsetY = h / 2 - th / 2;
             }
             break;
@@ -405,18 +405,18 @@ int TouchButton::init(String const &text, unsigned int subId, int kind, int meda
             goto wide_text_layout;
         }
         case 0x13:
-            this->imgFrameL = medalId;
+            this->imgFrameL = subId;
             this->imgFrameTL = (int) this->image;
             {
-                this->height = ((PaintCanvas *) (canvas))->GetImage2DHeight(0);
-                int w = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
+                this->height = canvas->GetImage2DHeight(this->imgFrameL);
+                int w = canvas->GetImage2DWidth(this->imgFrameL);
                 this->layoutHeight = this->height;
                 this->width = w;
                 this->leftWidth = w;
-                int tw = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
+                int tw = canvas->GetImage2DWidth(subId);
                 int h = this->height;
                 this->textOffsetX = w / 2 - tw / 2;
-                int th = ((PaintCanvas *) (canvas))->GetImage2DHeight(0);
+                int th = canvas->GetImage2DHeight(subId);
                 this->textOffsetY = h / 2 - th / 2;
             }
             break;
@@ -442,10 +442,10 @@ int TouchButton::init(String const &text, unsigned int subId, int kind, int meda
             ((PaintCanvas *) (canvas))->Image2DCreate(TB_frameId(alt, kind, 8), frameH);
             this->imgFrameBR = frameH;
 
-            this->height = ((PaintCanvas *) (canvas))->GetImage2DHeight(0);
-            this->leftWidth = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
-            this->midWidth = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
-            int rightW = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
+            this->height = canvas->GetImage2DHeight(this->imgFrameTL);
+            this->leftWidth = canvas->GetImage2DWidth(this->imgFrameTL);
+            this->midWidth = canvas->GetImage2DWidth(this->imgFrameT);
+            int rightW = canvas->GetImage2DWidth(this->imgFrameTR);
             this->rightWidth = rightW;
 
             if (kind != 0xb)
@@ -479,8 +479,8 @@ wide_text_layout: {
             factor = (lang == 0xe) ? 1.0f : 1.5f;
 
         this->imgFrameBL = this->imgFrameTL;
-        this->height = ((PaintCanvas *) (canvas))->GetImage2DHeight(0);
-        int w = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
+        this->height = canvas->GetImage2DHeight(this->imgFrameL);
+        int w = canvas->GetImage2DWidth(this->imgFrameL);
         this->layoutHeight = this->height;
         this->width = w;
         this->leftWidth = w;
@@ -686,9 +686,9 @@ TouchButton::TouchButton(String const &text, int type, int x, int y, int p5, uns
 
 void TouchButton::setText(String const &text) {
     this->text = text;
-    int w = PaintCanvas::gCanvas->GetTextWidth(this->fontId, this->text);
+    int w = Globals::Canvas->GetTextWidth(this->fontId, this->text);
     if (this->subId != -1)
-        w = PaintCanvas::gCanvas->GetImage2DWidth(0);
+        w = Globals::Canvas->GetImage2DWidth(this->subId);
     int a94 = this->leftWidth;
     int x;
     if (this->requestedWidth < 1)
@@ -719,14 +719,14 @@ void TouchButton::setText(String const &text) {
     this->textOffsetX = x;
 height:
     int h = this->height;
-    int th = PaintCanvas::gCanvas->GetTextHeight(this->fontId);
+    int th = Globals::Canvas->GetTextHeight(this->fontId);
     th = (h - th) / 2;
     this->textOffsetY = th;
     if (this->kind == 3)
         this->textOffsetY = th + 2;
     if (this->subId != -1) {
         h = this->height;
-        int ih = PaintCanvas::gCanvas->GetImage2DHeight(0);
+        int ih = Globals::Canvas->GetImage2DHeight(this->subId);
         this->textOffsetY = (h - ih) / 2;
         if (this->kind == 1)
             this->textOffsetX = this->textOffsetX + 3;
