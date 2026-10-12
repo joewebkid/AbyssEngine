@@ -125,6 +125,16 @@ only the production standing-bar block, checking geometry and region/image
 calls with fixtures; it does not execute the whole window. See
 [the standing-bar audit](STATUS_STANDING_REGION_ARM_2026-10-12.md).
 
+```powershell
+python tools/run_paintcanvas_region_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `PaintCanvas region host smoke: OK`. This extracts the
+production ten-argument region method, checking its crop geometry,
+rotation/pivot matrix, and draw-call order with fixture services. It
+does not execute OpenGL or the full game. See
+[the transform audit](PAINTCANVAS_REGION_TRANSFORM_ARM_2026-10-12.md).
+
 Windows note: the wrapper names are still `orbcc`, `orbnm`, `orbas`, and
 `orbobjdump`, but they now also support a local NDK r18b fallback. Set
 `GOF2_VERIFY_LOCAL_NDK=1` and keep the NDK at `.cache/ndk/android-ndk-r18b`, or

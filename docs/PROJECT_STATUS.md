@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (StatusWindow standing bars; older subsystem
+Last reviewed: 2026-10-12 (PaintCanvas region transform; older subsystem
 snapshots retain their dates)
+
+## PaintCanvas cropped-region transform (2026-10-12)
+
+The ten-argument `DrawRegion2D` now uses the supplied angle and pivot to
+compose the Android-backed `T(x+pivot) * R(angle) * T(-pivot)` transform.
+It restores the third index-buffer word (`0x20003`) and calls the real
+texture, matrix, GL, and mesh-draw paths instead of unresolved per-method
+shims. A production-body host smoke checks zero/nonzero rotation, UVs,
+vertices, index words, and call order. Native `gof2`, 206/206 ARM units,
+and 36 verifier tests pass (one skipped). The focused method changes
+from 82.4% to 74.2% source-shape, while strict fuzzy rises 18.5% to
+19.1%; replacing the two original matrix-product calls with a safe
+direct affine calculation explains the source-shape loss. Full corpus
+remains 4,323/4,524 functions covered and 201 missing, with 2,376
+linked-exact and 1,008 byte-exact pairs and no exact-symbol loss.
+Average source-shape moves 92.5338% to 92.5321%; strict fuzzy moves
+80.8033% to 80.8034%. The host fixture does not prove real GL output
+or ARM runtime. Next audit `AEMath::Matrix`'s 60/64-byte layout and
+out-of-bounds product path before recovering the other region overload.
+See [the region-transform audit](PAINTCANVAS_REGION_TRANSFORM_ARM_2026-10-12.md).
 
 ## StatusWindow standing-bar geometry (2026-10-12)
 

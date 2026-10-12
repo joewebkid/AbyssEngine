@@ -13,6 +13,7 @@
 namespace AbyssEngine {
     class SpriteSystem;
     class ImageFont;
+    int MeshDraw(Engine *engine, Mesh *mesh);
 }
 
 // Byte-faithful "view" structs for the otherwise-untyped engine handles that
@@ -996,28 +997,6 @@ void paintcanvas_ext_fsp_glFogf(unsigned int pname, float v);
 void paintcanvas_ext_fsp_glFogfv(unsigned int pname, void *v);
 
 void paintcanvas_ext_fsp_vec_assign(void *dst, void *src);
-
-void paintcanvas_ext_dr3_settexture(void *self, unsigned int tex);
-
-float paintcanvas_ext_dr3_signedtofloat(int v, unsigned int mode);
-
-float paintcanvas_ext_dr3_unsignedtofloat(unsigned int v, unsigned int mode);
-
-float paintcanvas_ext_dr3_sinf(float v);
-
-float paintcanvas_ext_dr3_cosf(float v);
-
-void paintcanvas_ext_dr3_mtx_mul(void *out, void *m);
-
-void paintcanvas_ext_dr3_mtx_assign(void *dst, void *src);
-
-void paintcanvas_ext_dr3_setwvm(void *self, void *m);
-
-void paintcanvas_ext_dr3_gldisable(unsigned int cap);
-
-void paintcanvas_ext_dr3_meshdraw(void *eng, void *mesh);
-
-void paintcanvas_ext_dr3_glenable(unsigned int cap);
 
 void paintcanvas_ext_rar_gldeltex(int n, void *ids);
 
@@ -4601,23 +4580,20 @@ void PaintCanvas::FogSetParameter(AbyssEngine::FogMode mode, float fogStart, flo
 }
 
 
-static const unsigned int g_dr3_const_88808 = 0;
-
 void PaintCanvas::DrawRegion2D(unsigned int index, int srcX, int srcY,
-                               int destW, int destH, float /*unused*/, int transY, int pivotX, int pivotY,
-                               int transX) {
+                               int destW, int destH, float angle, int pivotX, int pivotY, int x, int y) {
     if (index >= this->images.count) {
         return;
     }
     PCImage2DView *img = (PCImage2DView *) ((char **) this->images.data_)[index];
-    paintcanvas_ext_dr3_settexture(this, img->textureId);
+    this->SetTexture(img->textureId, 0xffffffff);
     PCImage2DView *mesh = (PCImage2DView *) ((char **) this->images.data_)[index];
     PCMeshView *meshObj = (PCMeshView *) mesh->mesh;
 
     mesh->restoreFlag = 1;
 
-    float fw = paintcanvas_ext_dr3_signedtofloat(destW, 0);
-    float fh = paintcanvas_ext_dr3_signedtofloat(destH, 0);
+    float fw = (float) destW;
+    float fh = (float) destH;
     float *verts = (float *) meshObj->positions;
     verts[0] = 0.0f;
     verts[1] = 0.0f;
@@ -4631,13 +4607,13 @@ void PaintCanvas::DrawRegion2D(unsigned int index, int srcX, int srcY,
     verts[9] = 0.0f;
     verts[10] = fh;
 
-    float u0 = paintcanvas_ext_dr3_unsignedtofloat(mesh->regionB, 0);
-    float w = paintcanvas_ext_dr3_unsignedtofloat(mesh->regionA, 0);
-    float h = paintcanvas_ext_dr3_unsignedtofloat(mesh->u0, 0);
-    float v0 = paintcanvas_ext_dr3_unsignedtofloat(mesh->v0, 0);
-    float a2 = paintcanvas_ext_dr3_signedtofloat(srcX, 0);
-    float a3 = paintcanvas_ext_dr3_signedtofloat(srcY, 0);
-    float a2s = paintcanvas_ext_dr3_signedtofloat((short) srcX, 0);
+    float u0 = (float) mesh->regionB;
+    float w = (float) mesh->regionA;
+    float h = (float) mesh->u0;
+    float v0 = (float) mesh->v0;
+    float a2 = (float) srcX;
+    float a3 = (float) srcY;
+    float a2s = (float) (short) srcX;
 
     float *uv = (float *) meshObj->uvs;
     float invW = 1.0f / w;
@@ -4658,50 +4634,25 @@ void PaintCanvas::DrawRegion2D(unsigned int index, int srcX, int srcY,
     unsigned int *blend = (unsigned int *) meshObj->indexBuffer;
     blend[0] = 0x20000;
     blend[1] = 1;
-    blend[2] = g_dr3_const_88808;
+    blend[2] = 0x20003;
 
-    float pivotM[16];
-    memset(pivotM, 0, sizeof(pivotM));
-    pivotM[0] = 1.0f;
-    pivotM[5] = 1.0f;
-    pivotM[10] = 1.0f;
-    pivotM[15] = 1.0f;
-    pivotM[3] = paintcanvas_ext_dr3_signedtofloat(-pivotX, 0);
-    pivotM[7] = paintcanvas_ext_dr3_signedtofloat(-pivotY, 0);
+    const float px = (float) pivotX;
+    const float py = (float) pivotY;
+    const float tx = (float) (x + pivotX);
+    const float ty = (float) (y + pivotY);
+    const float s = AEMath::Sinf(angle);
+    const float c = AEMath::Cosf(angle);
+    // Android 0x78538 composes T(x+pivot) * R(angle) * T(-pivot).
+    const Matrix composed(
+        c, -s, 0.0f, tx - c * px + s * py,
+        s, c, 0.0f, ty - s * px - c * py,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 1.0f);
 
-    float invPivotM[16];
-    memset(invPivotM, 0, sizeof(invPivotM));
-    invPivotM[0] = 1.0f;
-    invPivotM[5] = 1.0f;
-    invPivotM[10] = 1.0f;
-    invPivotM[15] = 1.0f;
-    invPivotM[3] = paintcanvas_ext_dr3_signedtofloat(transX + pivotX, 0);
-    invPivotM[7] = paintcanvas_ext_dr3_signedtofloat(transY + pivotY, 0);
-
-    float rotAng = invPivotM[7];
-    float s = paintcanvas_ext_dr3_sinf(rotAng);
-    float c = paintcanvas_ext_dr3_cosf(rotAng);
-    float rotM[16];
-    memset(rotM, 0, sizeof(rotM));
-    rotM[0] = c;
-    rotM[5] = c;
-    rotM[10] = 1.0f;
-    rotM[15] = 1.0f;
-    *(unsigned int *) &rotM[1] = *(unsigned int *) &s ^ 0x80000000;
-    rotM[4] = s;
-
-    float composed[16];
-    float scratch[16];
-    paintcanvas_ext_dr3_mtx_mul(scratch, rotM);
-    paintcanvas_ext_dr3_mtx_assign(composed, scratch);
-    paintcanvas_ext_dr3_mtx_mul(scratch, pivotM);
-    paintcanvas_ext_dr3_mtx_assign(composed, scratch);
-
-    paintcanvas_ext_dr3_setwvm(this, composed);
-    paintcanvas_ext_dr3_gldisable(0xb44);
-    paintcanvas_ext_dr3_meshdraw(this->engine,
-                                 ((PCImage2DView *) ((char **) this->images.data_)[index])->mesh);
-    paintcanvas_ext_dr3_glenable(0xb44);
+    this->SetWorldViewMatrix(composed);
+    glDisable(0xb44);
+    MeshDraw(this->engine, (Mesh *) mesh->mesh);
+    glEnable(0xb44);
 }
 
 void PaintCanvas::RestoreImage2D(AbyssEngine::Image2D *image) {
