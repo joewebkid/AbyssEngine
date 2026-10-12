@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (AEMath matrix constructor/product; older subsystem
+Last reviewed: 2026-10-12 (PaintCanvas matrix-field layout; older subsystem
 snapshots retain their dates)
+
+## PaintCanvas matrix-field layout (2026-10-12)
+
+Android ARM separates three 16-float Canvas matrices at `0x38`,
+`0x78`, and `0xb8` from the 15-float `AEMath::Matrix` constructed at
+`0xf8`. The local Canvas had modeled all four as 15 floats, offset the
+first two fields, and let writes to `m[15]` reach neighboring members.
+The first three now have explicit 16-float storage; 32-bit assertions
+confirm the four matrix and downstream resource/image offsets. The
+single `MaterialDraw` consumer copies the first 15 values for its
+existing `Matrix` interface; that function's wider draw semantics
+remain unrecovered. Native `gof2`, 206/206 ARM units, both existing
+host smokes, and 36 verifier tests pass (one skipped). Focused
+`Initialize` source-shape rises 81.7% to 84.2%; `MaterialDraw` falls
+85.8% to 82.5%. Full corpus stays 4,323/4,524 functions covered,
+201 missing, and 1,008 byte-exact; linked-exact rises 2,376 to
+2,378, with no prior exact-symbol loss. Average source-shape rises
+92.5365% to 92.5371%; strict fuzzy rises 80.8140% to 80.8212%.
+No real GL, original-asset, or ARM runtime test was run. Next audit
+`MaterialDraw`'s matrix product and model-matrix routing. See
+[the layout audit](PAINTCANVAS_MATRIX4_LAYOUT_ARM_2026-10-12.md).
 
 ## AEMath matrix constructor and product (2026-10-12)
 
@@ -17,9 +38,10 @@ The full corpus stays 4,323/4,524 original functions covered with 201
 missing, 2,376 linked-exact and 1,008 byte-exact; exact symbol sets are
 unchanged. Average source-shape rises 92.5321% to 92.5365%, strict
 fuzzy 80.8034% to 80.8140%. This does not settle the 60/64-byte
-matrix layout in every owner or prove native/ARM game runtime. Next
-audit remaining `m[15]` writes in `PaintCanvas` against their actual
-buffer/object bounds. See [the matrix audit](MATRIX_CTOR_PRODUCT_ARM_2026-10-12.md).
+matrix layout in every owner or prove native/ARM game runtime. The
+subsequent Canvas layout audit separates its 16-float matrix fields
+from the 15-float math type. See
+[the matrix audit](MATRIX_CTOR_PRODUCT_ARM_2026-10-12.md).
 
 ## PaintCanvas cropped-region transform (2026-10-12)
 

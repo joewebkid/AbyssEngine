@@ -45,6 +45,8 @@ existing assignment/operators. Its temporary executable is removed.
   `A:/Galaxy on Fire new version/_work/matrix_ctor_product_full_20261012.json`.
 
 The host smoke does not run original assets, OpenGL, or ARM32 gameplay.
-The 0x3c/0x40 owner-layout question remains open. `PaintCanvas.cpp`
-still has writes to `Matrix::m[15]` despite the declared 15-element
-array; those sites require per-buffer/layout audit before changing them.
+The 0x3c/0x40 owner-layout question was open at this snapshot. The
+subsequent [Canvas layout audit](PAINTCANVAS_MATRIX4_LAYOUT_ARM_2026-10-12.md)
+shows that its first three fields are separate 16-float arrays, so
+their `m[15]` writes are in bounds; its identity field remains a
+15-float `AEMath::Matrix`.

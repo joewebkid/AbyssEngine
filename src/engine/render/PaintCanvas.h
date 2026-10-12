@@ -39,6 +39,10 @@ namespace AbyssEngine {
     using AEMath::Matrix;
     using AEMath::Vector;
 
+    struct CanvasMatrix4 {
+        float m[16];
+    };
+
     class PaintCanvas {
     public:
         static PaintCanvas *gCanvas;
@@ -65,17 +69,10 @@ namespace AbyssEngine {
         char *mask2dImage;                                     // 0x2c (Ghidra gap)
         int gameOrientation;                                   // 0x30 (orientation)
         Engine *engine;                                        // 0x34
-        int field_0x38;                                        // 0x38
-        int field_0x3c;                                        // 0x3c
-        Matrix projMatrix3d;
-        Matrix projOrthoMatrix;
-        Matrix worldViewMatrix;
+        CanvasMatrix4 projMatrix3d;
+        CanvasMatrix4 projOrthoMatrix;
+        CanvasMatrix4 worldViewMatrix;
         Matrix identityMatrix;
-        // AEMath::Matrix is 0x3c here but 0x40 in the original (NEVER change Matrix.h). The four
-        // embedded matrices are each 4 bytes short (-0x10); the upstream model is +8, so the net
-        // deficit by this point is 8 bytes. Reserve it in the matrix region so lineMesh lands @0x1c8
-        // and field_0x1cc/field_0x1f8 land at their named offsets.
-        unsigned char _pad_matrix_undersize[4];
         ::Array<AbyssEngine::Resource *> resources;
         ::Array<AbyssEngine::ImageFont *> fonts;
         ::Array<AbyssEngine::Image2D *> images;
@@ -465,13 +462,19 @@ namespace AbyssEngine {
     };
 
 #if __SIZEOF_POINTER__ == 4
+    static_assert(sizeof(CanvasMatrix4) == 0x40, "CanvasMatrix4 size");
     static_assert(__builtin_offsetof(PaintCanvas, initialized) == 0x0, "PaintCanvas::initialized offset");
     static_assert(__builtin_offsetof(PaintCanvas, culledCount) == 0x4, "PaintCanvas::culledCount offset");
     static_assert(__builtin_offsetof(PaintCanvas, cubeTextures) == 0x10, "PaintCanvas::cubeTextures @0x10");
     static_assert(__builtin_offsetof(PaintCanvas, meshCount) == 0x24, "PaintCanvas::meshCount @0x24");
     static_assert(__builtin_offsetof(PaintCanvas, meshes) == 0x28, "PaintCanvas::meshes @0x28");
     static_assert(__builtin_offsetof(PaintCanvas, engine) == 0x34, "PaintCanvas::engine @0x34");
-    static_assert(__builtin_offsetof(PaintCanvas, projMatrix3d) == 0x40, "PaintCanvas::projMatrix3d @0x40");
+    static_assert(__builtin_offsetof(PaintCanvas, projMatrix3d) == 0x38, "PaintCanvas::projMatrix3d @0x38");
+    static_assert(__builtin_offsetof(PaintCanvas, projOrthoMatrix) == 0x78, "PaintCanvas::projOrthoMatrix @0x78");
+    static_assert(__builtin_offsetof(PaintCanvas, worldViewMatrix) == 0xb8, "PaintCanvas::worldViewMatrix @0xb8");
+    static_assert(__builtin_offsetof(PaintCanvas, identityMatrix) == 0xf8, "PaintCanvas::identityMatrix @0xf8");
+    static_assert(__builtin_offsetof(PaintCanvas, resources) == 0x134, "PaintCanvas::resources @0x134");
+    static_assert(__builtin_offsetof(PaintCanvas, images) == 0x14c, "PaintCanvas::images @0x14c");
     static_assert(__builtin_offsetof(PaintCanvas, lineMesh) == 0x1c8, "PaintCanvas::lineMesh offset");
     static_assert(__builtin_offsetof(PaintCanvas, field_0x1cc) == 0x1cc, "PaintCanvas::field_0x1cc offset");
     static_assert(__builtin_offsetof(PaintCanvas, field_0x1f8) == 0x1f8, "PaintCanvas::field_0x1f8 offset");
