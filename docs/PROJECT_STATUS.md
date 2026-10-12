@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-11 (Globals getLine canvas and breaks; older subsystem
+Last reviewed: 2026-10-12 (Globals getLineArray newline; older subsystem
 snapshots retain their dates)
+
+## Globals getLineArray trailing newline (2026-10-11)
+
+`Globals::getLineArray` now appends the ARM-confirmed newline sentinel to
+its working text; the recovered literal had been empty. Native `gof2`,
+206/206 ARM units, and 36 verifier tests pass (one skipped). Its focused
+source-shape remains 82.7% and strict fuzzy 42.6%; those metrics do not
+measure literal correctness. Full corpus stays at 4,323/4,524 original
+functions covered, 92.33% source-shape, 80.47% strict fuzzy, 2,353
+linked-exact and 1,008 byte-exact, with no exact-pair losses. Live text
+layout remains untested. See
+[the newline audit](GLOBALS_GETLINEARRAY_NEWLINE_ARM_2026-10-11.md).
 
 ## Globals getLine canvas and line breaks (2026-10-11)
 

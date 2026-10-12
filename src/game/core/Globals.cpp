@@ -507,7 +507,7 @@ void Globals::drawLines(unsigned int font, Array<String *> *lines, int baseX, in
 void Globals::reportSupernovaChallengeScore() {
 }
 
-static const char gGLA_newline[] = "";
+static const char gGLA_newline[] = "\n";
 
 void Globals::getLineArray(unsigned int font, const String &text, int maxWidth,
                            Array<String *> *out) {
