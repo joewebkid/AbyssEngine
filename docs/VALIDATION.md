@@ -101,7 +101,7 @@ python tools/run_touchbutton_touch_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
 ```
 
 Expected output: `TouchButton/Layout host smoke: OK`. The runner extracts the
-unchanged production touch, draw, pattern, fade, footer, metric, and mask
+unchanged production touch, draw, pattern, fade, footer, box, metric, and mask
 method bodies, executes them with fixture canvas/sound/status services,
 and removes its temporary executable.
 This checks selected geometry and call behavior, not a full game UI or ARM

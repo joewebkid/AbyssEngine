@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <utility>
 #include <vector>
 
 Layout *Globals::layout = nullptr;
@@ -78,10 +79,12 @@ struct ImageCall { unsigned int id; int x, y; unsigned char flagsA, flagsB; };
 struct RegionCall { unsigned int id; int width, height, x, y; };
 struct TextCall { unsigned int font; int x, y; std::string content; };
 struct FillCall { int x, y, width, height; unsigned int color; };
+struct BorderCall { unsigned int corner, edge; int x, y, width, height, inset, pad; };
 static std::vector<ImageCall> images;
 static std::vector<RegionCall> regions;
 static std::vector<TextCall> texts;
 static std::vector<FillCall> fills;
+static std::vector<BorderCall> borders;
 static std::vector<unsigned int> colors;
 static std::vector<unsigned int> imageWidthQueries;
 static unsigned int currentColor = 0x12345678;
@@ -121,6 +124,10 @@ void PaintCanvas::DrawRegion2D(unsigned int id, int, int, int width, int height,
     assert(unused == 0.0f);
     regions.push_back({id, width, height, x, y});
 }
+void Layout::drawBGBorder(unsigned int corner, unsigned int edge, int x, int y,
+                          int width, int height, int inset, int pad) {
+    borders.push_back({corner, edge, x, y, width, height, inset, pad});
+}
 
 static bool imageAt(unsigned int id, int x, int y) {
     for (const ImageCall &call : images)
@@ -132,7 +139,7 @@ static bool sawColor(unsigned int color) {
     return false;
 }
 static void clearDraws() {
-    images.clear(); regions.clear(); texts.clear(); fills.clear(); colors.clear();
+    images.clear(); regions.clear(); texts.clear(); fills.clear(); borders.clear(); colors.clear();
     imageWidthQueries.clear();
     currentColor = 0x12345678;
     currentSpacing = 2;
@@ -364,6 +371,85 @@ int main() {
     assert(fills[0].color == 0x80 && currentColor == 0x12345678);
     Globals::w = 480;
     Globals::h = 320;
+
+    layout.field_0x348 = 51;
+    layout.field_0x34c = 52;
+    layout.field_0x350 = 53;
+    layout.field_0x354 = 54;
+    layout.field_0x358 = 55;
+    layout.field_0x35c = 56;
+    layout.field_0x36c = 57;
+    layout.field_0x370 = 58;
+    layout.field_0x380 = 61;
+    layout.field_0x384 = 62;
+    layout.field_0x388 = 63;
+    layout.field_0x38c = 64;
+    layout.field_0x390 = 71;
+    layout.field_0x394 = 72;
+    layout.field_0x39c = 81;
+    layout.field_0x3a0 = 82;
+    layout.field_0x360 = 91;
+    layout.field_0x364 = 92;
+    layout.field_0x368 = 93;
+    layout.headerIconImage = 73;
+    layout.field_0x44 = 6;
+    layout.field_0x1c = 12;
+    layout.field_0x5c = 14;
+    layout.field_0x8 = 8;
+    layout.field_0x28 = 5;
+    layout.textBaselineAdjust = 2;
+    String boxText("BOX");
+
+    clearDraws();
+    layout.drawBox(0, 10, 20, 40, 20, boxText, 0);
+    assert(imageAt(51, 10, 20) && imageAt(51, 40, 20));
+    assert(texts.size() == 1 && texts[0].font == 5 && texts[0].content == "BOX");
+    assert(texts[0].x == 16 && texts[0].y == 25 && currentColor == 0x12345678);
+
+    clearDraws();
+    layout.drawBox(0, 10, 20, 40, 20, boxText, 2);
+    assert(texts.size() == 1 && texts[0].x == 36);
+    clearDraws();
+    layout.drawBox(0, 10, 20, 40, 20, boxText, 4);
+    assert(texts.size() == 1 && texts[0].x == 26);
+
+    clearDraws();
+    layout.drawBox(1, 10, 20, 40, 20, boxText, 0);
+    assert(imageAt(53, 10, 20) && texts.size() == 1);
+    assert(texts[0].x == 16 && texts[0].y == 26);
+    clearDraws();
+    layout.drawBox(6, 10, 20, 40, 20, boxText, 0);
+    assert(imageAt(63, 10, 20) && texts.size() == 1);
+    assert(texts[0].x == 16 && texts[0].y == 29);
+
+    clearDraws();
+    layout.drawBox(5, 10, 20, 40, 37, boxText, 0);
+    assert(borders.size() == 1 && borders[0].corner == 61 && borders[0].edge == 62);
+    assert(borders[0].height == 37 && borders[0].inset == 0);
+    clearDraws();
+    layout.drawBox(8, 10, 20, 40, 37, boxText, 0);
+    assert(borders.size() == 1 && borders[0].corner == 81 && borders[0].edge == 82);
+    assert(borders[0].height == 37 && borders[0].inset == 0);
+
+    clearDraws();
+    layout.drawBox(7, 10, 20, 40, 37, boxText, 0);
+    assert(borders.size() == 1 && borders[0].corner == 71 && borders[0].edge == 72);
+    assert(borders[0].y == 28 && borders[0].height == 29);
+    assert(borders[0].inset == -20 && borders[0].pad == -20);
+    assert(imageAt(73, 10, 20) && texts.size() == 1);
+    assert(texts[0].x == 15 && texts[0].y == 23 && currentColor == 0x12345678);
+
+    clearDraws();
+    layout.drawBox(2, 4, 5, 17, 23, boxText);
+    assert(imageAt(42, 4, 5) && regions.size() == 3);
+
+    for (const auto &entry : {std::pair<int, unsigned>{3, 55}, {4, 57},
+                              {9, 91}, {10, 93}}) {
+        clearDraws();
+        layout.drawBox(entry.first, 10, 20, 40, 20, String(""), 0);
+        assert(imageAt(entry.second, 10, 20) && imageAt(entry.second, 40, 20));
+        assert(texts.empty() && currentColor == 0x12345678);
+    }
 
     clearDraws();
     layout.fadeProgress = 200;

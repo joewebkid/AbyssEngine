@@ -53,6 +53,8 @@ def main():
                       "void Layout::drawFooterStation(",
                       "void Layout::drawFooter(bool"):
         extracted += function(layout, signature)
+    extracted += function(layout, "void Layout::drawBox(int style, int x, int y, int w, int h, String text, unsigned char flags)")
+    extracted += function(layout, "void Layout::drawBox(int style, int x, int y, int w, int h, String text)")
 
     with tempfile.TemporaryDirectory(prefix="touchbutton-smoke-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "production_touch.cpp"

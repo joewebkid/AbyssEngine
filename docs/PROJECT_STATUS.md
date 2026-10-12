@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Layout UI metrics, background, and mask; older subsystem
+Last reviewed: 2026-10-12 (Layout drawBox styles and text geometry; older subsystem
 snapshots retain their dates)
+
+## Layout drawBox styles and text geometry (2026-10-12)
+
+`Layout::drawBox` now reads Android ARM-confirmed Canvas, font, and
+layout metrics instead of never-set null holders. Styles 5 and 8
+forward the caller's requested height to `drawBGBorder` rather than
+substituting the image height. A host smoke exercises all 11 styles
+with fixture resources. Native `gof2`, 206/206 ARM units, and 36
+verifier tests pass (one skipped). The main renderer's source-shape
+rises 60.1% to 95.4% and strict fuzzy 21.4% to 37.9%; it is not
+exact. Full corpus stays 4,323/4,524 original functions covered;
+averages rise to 92.53% source-shape and 80.80% strict fuzzy, with
+2,376 linked-exact and 1,008 byte-exact. No prior exact pair is lost.
+Real fonts/assets and the called `drawBGBorder` implementation are
+not tested; that border still has a null canvas holder and is the
+next priority. See [the box audit](LAYOUT_DRAW_BOX_ARM_2026-10-12.md).
 
 ## Layout UI metrics, background, and mask (2026-10-12)
 
