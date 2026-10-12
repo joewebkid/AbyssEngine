@@ -94,6 +94,18 @@ String/Array paths and probe-module vtable dispatch on the host. It is not
 an ARM32 runtime pass; see [the ABI gate](ABI_RUNTIME_GATE_2026-09-27.md)
 for the original vtable relocations and remaining ownership risks.
 
+## TouchButton/Layout Host Smoke
+
+```powershell
+python tools/run_touchbutton_touch_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `TouchButton/Layout host smoke: OK`. The runner extracts the
+unchanged production touch, draw, and pattern method bodies, executes them
+with fixture canvas/sound services, and removes its temporary executable.
+This checks selected geometry and call behavior, not a full game UI or ARM
+runtime. See [the UI host-smoke audit](TOUCHBUTTON_UI_HOST_SMOKE_ARM_2026-10-12.md).
+
 Windows note: the wrapper names are still `orbcc`, `orbnm`, `orbas`, and
 `orbobjdump`, but they now also support a local NDK r18b fallback. Set
 `GOF2_VERIFY_LOCAL_NDK=1` and keep the NDK at `.cache/ndk/android-ndk-r18b`, or

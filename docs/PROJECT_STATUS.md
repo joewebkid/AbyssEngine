@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (TouchButton touch sound/text width; older subsystem
+Last reviewed: 2026-10-12 (TouchButton/Layout host smoke; older subsystem
 snapshots retain their dates)
+
+## TouchButton/Layout host smoke and partial pattern tile (2026-10-12)
+
+Production touch/draw/pattern method bodies now pass a focused native host
+smoke with fixture canvas and sound services. The smoke exposed a right-edge
+pattern tile starting at the bottom remainder instead of the top; the
+`Layout::drawBGPattern` cursor now follows the Android original. Native
+`gof2`, 206/206 ARM units, and 36 verifier tests pass (one skipped).
+The function's source-shape rises 94.6% to 95.7%, while strict fuzzy
+falls 45.9% to 22.7%; it remains non-exact. Full corpus coverage remains
+4,323/4,524 original functions; averages are 92.42% source-shape and
+80.68% strict fuzzy, with 2,373 linked-exact and 1,008 byte-exact.
+No exact pairs were lost. The fixture does not prove full game UI,
+assets, platform services, or ARM runtime behavior. Next priority:
+investigate remaining UI/runtime behavior and the 201 missing original
+functions. See [the host-smoke audit](TOUCHBUTTON_UI_HOST_SMOKE_ARM_2026-10-12.md).
 
 ## TouchButton touch sound and text width (2026-10-12)
 

@@ -579,7 +579,7 @@ void Layout::drawBGPattern(unsigned img, int x, int y, int w, int h) {
     int remH = h - fullH;
     int remW = w - fullW;
     if (remW > 0) {
-        int py = y + fullH;
+        int py = y;
         for (int r = 0; r < rows; r++) {
             pc->DrawRegion2D(img, 0, 0, remW, ih, 0, 0, 0, x + fullW, py);
             py += ih;
