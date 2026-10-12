@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Globals drawLines; older subsystem
+Last reviewed: 2026-10-12 (Globals getRandomEnemyFighter; older subsystem
 snapshots retain their dates)
+
+## Globals random enemy fighter source (2026-10-12)
+
+`Globals::getRandomEnemyFighter` now uses live `Globals::rnd` and
+`Globals::status` plus the ARM-confirmed 37-entry race table instead of
+null RNG pointers and a one-element placeholder. Native `gof2`, 206/206
+ARM units, and 36 verifier tests pass (one skipped). Focused source-shape
+rose 86.5% to 98.9% and strict fuzzy 72.7% to 95.8%; the residual
+comparison is semantically equivalent. Full corpus remains 4,323/4,524
+original functions covered, 92.35% source-shape, 80.52% strict fuzzy,
+2,355 linked-exact and 1,008 byte-exact, with no exact-pair losses.
+Live enemy spawning is untested.
+See [the fighter-selection audit](GLOBALS_RANDOM_ENEMY_FIGHTER_ARM_2026-10-12.md).
 
 ## Globals drawLines canvas and row advance (2026-10-12)
 

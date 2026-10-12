@@ -7,7 +7,7 @@
 // Named models for the untyped handles that Globals.cpp touches by raw byte
 // offset. These structs reconstruct the field layout of opaque engine/game
 // blobs (the video/options settings record, the per-frame mission counter
-// object, the campaign zero-init object, the line-height metrics record, ...)
+// object, the campaign zero-init object, ...)
 // so the call sites can use named members instead of pointer arithmetic.
 //
 // Layout is byte-exact for the 32-bit MATCH build; the static_asserts below
@@ -1196,9 +1196,12 @@ AEGeometry *Globals::getShipGroup(int kind, int variant, bool wireframe) {
     }
 }
 
-static void *const gREF_rng1 = nullptr;
-static void *const gREF_rng2 = nullptr;
-static const int gREF_table = 0;
+static const int gREF_table[37] = {
+    3, 0, 8, 3, 2, 0, 3, 0, 9, 1, 0, 8, 2, 0, 0, 0,
+    2, 0, 2, 3, 3, 2, 0, 8, 8, 8, 0, 0, 0, 8, 3, 2,
+    8, 0, 0, 2, 0
+};
+static_assert(sizeof(gREF_table) / sizeof(gREF_table[0]) == 37, "fighter race table");
 
 unsigned Globals::getRandomEnemyFighter(int kind) {
     (void) this;
@@ -1211,10 +1214,10 @@ unsigned Globals::getRandomEnemyFighter(int kind) {
     }
     unsigned r;
     if (t == 1) {
-        if (Status::gStatus->dlc1Won() == 0) {
+        if (Globals::status->dlc1Won() == 0) {
             r = 9;
         } else {
-            int n = AERandom_nextIntB(*(int *) gREF_rng1, 0x64);
+            int n = static_cast<AERandom *>(Globals::rnd)->nextInt(100);
             r = 0x27;
             if (n < 0x55) {
                 r = 0x29;
@@ -1228,14 +1231,12 @@ unsigned Globals::getRandomEnemyFighter(int kind) {
     } else if (t == 0xa) {
         r = 0x2c;
     } else {
-        const int *table = &gREF_table;
-        int *rng = (int *) gREF_rng2;
         do {
             do {
-                r = AERandom_nextIntB(*rng, 0x25);
+                r = static_cast<AERandom *>(Globals::rnd)->nextInt(37);
             } while ((unsigned) ((r & ~4u) - 9) < 2);
         } while (((r < 0x10) && ((1u << r & 0x8101u) != 0)) ||
-                 (table[r] != t));
+                 (gREF_table[r] != t));
     }
     return r;
 }
