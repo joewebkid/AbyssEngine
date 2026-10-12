@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Layout border tiling; older subsystem
+Last reviewed: 2026-10-12 (region-call ABI and PlayerEgo throttle; older subsystem
 snapshots retain their dates)
+
+## Region-call ABI and PlayerEgo throttle (2026-10-12)
+
+The mining progress bar and PlayerEgo throttle gauge now pass zero
+rotation and both destination coordinates to `DrawRegion2D`, as in
+Android ARM. `PlayerEgo::drawThrottle` also uses the live Canvas,
+global font, and crosshair position rather than null holders, with
+the recovered percentage-string and text call. A production-body
+host smoke, native `gof2`, 206/206 ARM units, and 36 verifier tests
+pass (one skipped). Throttle source-shape rises 79.2% to 94.0%,
+strict fuzzy 31.2% to 57.1%; mining `render2D` remains 25.6% /
+14.5% and neither is exact. Full corpus stays 4,323/4,524 covered,
+201 missing, 2,376 linked-exact and 1,008 byte-exact, with no exact
+symbol-set loss. Averages are 92.53% source-shape and 80.80% strict
+fuzzy. The shared canvas region renderer still ignores the angle,
+and `StatusWindow::draw` has two displaced standing-bar calls; audit
+that caller before changing the shared renderer. Original assets and
+full-game/ARM runtime remain untested. See
+[the region-call audit](REGION_CALL_THROTTLE_ARM_2026-10-12.md).
 
 ## Layout border tiling and rotations (2026-10-12)
 
@@ -15,7 +34,9 @@ non-exact. Full corpus stays 4,323/4,524 functions covered, 201 missing,
 92.53% average source-shape, 80.80% strict fuzzy, 2,376 linked-exact,
 and 1,008 byte-exact; exact symbol sets are unchanged. Original assets,
 pixels, and ARM runtime remain untested. The shared `PaintCanvas::DrawRegion2D`
-callee currently ignores the angle argument, so it is the next priority.
+callee currently ignores the angle argument; the subsequent
+[region-call audit](REGION_CALL_THROTTLE_ARM_2026-10-12.md) identifies
+caller fixes needed before that callee can be changed safely.
 See [the border audit](LAYOUT_BG_BORDER_ARM_2026-10-12.md).
 
 ## Layout drawBox styles and text geometry (2026-10-12)

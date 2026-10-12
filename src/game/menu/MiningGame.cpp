@@ -473,8 +473,8 @@ void MiningGame::render2D() {
     }
 
     int width = (int) (((2500.0f - (float) lossTimer) / 2500.0f) * (float) this->progressBarWidth);
-    canvas->DrawRegion2D(this->progressBarImageId, 0, 0, width, this->progressBarHeight, (float) width, 0, 0, 0,
-                         this->progressBarX);
+    canvas->DrawRegion2D(this->progressBarImageId, 0, 0, width, this->progressBarHeight, 0.0f, 0, 0,
+                         this->progressBarX, this->progressBarY);
     canvas->SetColor((unsigned int) -1);
     canvas->DrawImage2D(this->progressLabelImageId, this->centerX, this->progressBarY - 3, (unsigned char) 0x2411);
 

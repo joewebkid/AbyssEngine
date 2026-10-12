@@ -107,6 +107,15 @@ and removes its temporary executable.
 This checks selected geometry and call behavior, not a full game UI or ARM
 runtime. See [the UI host-smoke audit](TOUCHBUTTON_UI_HOST_SMOKE_ARM_2026-10-12.md).
 
+```powershell
+python tools/run_player_ego_throttle_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `PlayerEgo throttle host smoke: OK`. This extracts the
+production throttle method and checks its color, region/text calls, and
+inactive branch with fixture services; it does not run original assets or
+the full game. See [the region-call audit](REGION_CALL_THROTTLE_ARM_2026-10-12.md).
+
 Windows note: the wrapper names are still `orbcc`, `orbnm`, `orbas`, and
 `orbobjdump`, but they now also support a local NDK r18b fallback. Set
 `GOF2_VERIFY_LOCAL_NDK=1` and keep the NDK at `.cache/ndk/android-ndk-r18b`, or
