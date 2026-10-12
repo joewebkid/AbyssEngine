@@ -77,7 +77,7 @@ void TouchButton::replaceTextKeepSize(String const &text) {
     this->text = text;
     if (this->kind == 10) {
         int w = this->width;
-        int tw = PaintCanvas::gCanvas->GetTextWidth(this->fontId, this->text);
+        int tw = Globals::Canvas->GetTextWidth(this->fontId, text);
         this->textOffsetX = w / 2 - tw / 2;
     }
 }
@@ -106,8 +106,6 @@ void TouchButton::resetTouch() {
     this->touched = 0;
 }
 
-static FModSound **g_TB_sound = nullptr;
-
 bool TouchButton::OnTouchBegin(int px, int py) {
     if (this->visible == 0 || this->halfTransparent != 0)
         return false;
@@ -115,7 +113,7 @@ bool TouchButton::OnTouchBegin(int px, int py) {
     this->touched = (unsigned char) r;
     if (r == 0)
         return false;
-    (*g_TB_sound)->play(0x7c, 0, 0, 0.0f);
+    Globals::sound->play(0x7c, 0, 0, 0.0f);
     return this->touched != 0;
 }
 
@@ -128,7 +126,7 @@ unsigned int TouchButton::OnTouchEnd(int px, int py) {
         this->touched = 0;
     } else {
         this->touched = 0;
-        (*g_TB_sound)->play(0x7b, 0, 0, 0.0f);
+        Globals::sound->play(0x7b, 0, 0, 0.0f);
         res = 1;
     }
     return res;

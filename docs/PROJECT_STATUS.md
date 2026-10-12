@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (TouchButton draw/hit and Layout pattern; older subsystem
+Last reviewed: 2026-10-12 (TouchButton touch sound/text width; older subsystem
 snapshots retain their dates)
+
+## TouchButton touch sound and text width (2026-10-12)
+
+`TouchButton::OnTouchBegin` and `OnTouchEnd` now play their original
+sound IDs through `Globals::sound` instead of a null holder; the
+kind-10 `replaceTextKeepSize` width uses `Globals::Canvas` and the new
+text argument. All three become linked-exact at 100% focused
+source-shape/strict fuzzy. Native `gof2`, 206/206 ARM units, and 36
+verifier tests pass (one skipped). Full corpus coverage remains
+4,323/4,524 original functions, with 92.42% average source-shape,
+80.69% strict fuzzy, 2,373 linked-exact and 1,008 byte-exact. No
+prior exact pair was lost. Live sound and touch behavior remain
+untested; a focused native UI runtime smoke is the next priority.
+See [the touch-sound audit](TOUCHBUTTON_TOUCH_SOUND_ARM_2026-10-12.md).
 
 ## TouchButton draw/hit and Layout pattern (2026-10-12)
 
