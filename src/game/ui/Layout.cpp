@@ -525,20 +525,12 @@ void Layout::showMissionRewardMessage(int show, bool flag) {
 }
 
 
-static PaintCanvas **g_bbCanvas = nullptr;
-
-static int g_bbFlipTR = 0;
-
-static int g_bbFlipL = 0;
-
-static int g_bbFlipR = 0;
-
 void Layout::drawBGBorder(unsigned corner, unsigned edge, int x, int y, int w, int h, int inset, int pad) {
-    PaintCanvas *pc = *g_bbCanvas;
-    int cw = PaintCanvas::gCanvas->GetImage2DWidth(corner);
-    int ch = PaintCanvas::gCanvas->GetImage2DHeight(corner);
-    int ew = PaintCanvas::gCanvas->GetImage2DWidth(edge);
-    int eh = PaintCanvas::gCanvas->GetImage2DHeight(edge);
+    PaintCanvas *pc = Globals::Canvas;
+    int cw = pc->GetImage2DWidth(corner);
+    int ch = pc->GetImage2DHeight(corner);
+    int ew = pc->GetImage2DWidth(edge);
+    int eh = pc->GetImage2DHeight(edge);
 
     pc->DrawImage2D(corner, inset + x, inset + y);
     int rightX = ((w + x) - cw) - inset;
@@ -562,23 +554,28 @@ void Layout::drawBGBorder(unsigned corner, unsigned edge, int x, int y, int w, i
     if (remW > 0) {
         pc->DrawRegion2D(edge, 0, 0, remW, eh, 0, 0, 0,
                          colsH * ew + baseX + cw, topRowY);
-        pc->DrawRegion2D(edge, 0, 0, remW, eh, 0, g_bbFlipTR, 0,
-                         spanW + baseX + cw, botRowY);
+        pc->DrawRegion2D(edge, 0, 0, remW, eh, 3.1416f, 0, 0,
+                         spanW + baseX + cw, y + h - pad);
     }
 
     int spanH = h + ch * -2 + inset * -2;
     int rowsV = spanH / ew;
-    int leftX = pad + x + inset;
+    int coveredH = rowsV * ew;
+    int leftX = pad + x;
     int rightEdgeX = w + x + pad;
+    int rowY = ch + pad + y;
     for (int i = 0; i < rowsV; i++) {
-        pc->DrawRegion2D(edge, 0, 0, ew, eh, 0, g_bbFlipL, 0, leftX, 0);
-        pc->DrawRegion2D(edge, 0, 0, ew, eh, 0, g_bbFlipR, 0, rightEdgeX, 0);
+        pc->DrawRegion2D(edge, 0, 0, ew, eh, -1.5708f, 0, 0, leftX, ew + rowY);
+        pc->DrawRegion2D(edge, 0, 0, ew, eh, 1.5708f, 0, 0, rightEdgeX, rowY);
+        // Android ARM advances by the full tiled span, not one edge width.
+        rowY += coveredH;
     }
-    int remH = spanH - rowsV * ew;
+    int remH = spanH - coveredH;
     if (remH > 0) {
-        pc->DrawRegion2D(edge, 0, 0, remH, eh, 0, g_bbFlipL, 0, leftX, 0);
-        pc->DrawRegion2D(edge, 0, 0, remH, eh, 0, g_bbFlipR, 0,
-                         rightEdgeX + inset * -2, 0);
+        pc->DrawRegion2D(edge, 0, 0, remH, eh, -1.5708f, 0, 0,
+                         leftX, spanH + pad + y + ch);
+        pc->DrawRegion2D(edge, 0, 0, remH, eh, 1.5708f, 0, 0,
+                         rightEdgeX + inset * -2, pad + y + ch + coveredH);
     }
 }
 

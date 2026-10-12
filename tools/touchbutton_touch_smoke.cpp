@@ -76,15 +76,13 @@ PaintCanvas::PaintCanvas(Engine *value) { engine = value; }
 PaintCanvas::~PaintCanvas() = default;
 
 struct ImageCall { unsigned int id; int x, y; unsigned char flagsA, flagsB; };
-struct RegionCall { unsigned int id; int width, height, x, y; };
+struct RegionCall { unsigned int id; int width, height, x, y; float angle; };
 struct TextCall { unsigned int font; int x, y; std::string content; };
 struct FillCall { int x, y, width, height; unsigned int color; };
-struct BorderCall { unsigned int corner, edge; int x, y, width, height, inset, pad; };
 static std::vector<ImageCall> images;
 static std::vector<RegionCall> regions;
 static std::vector<TextCall> texts;
 static std::vector<FillCall> fills;
-static std::vector<BorderCall> borders;
 static std::vector<unsigned int> colors;
 static std::vector<unsigned int> imageWidthQueries;
 static unsigned int currentColor = 0x12345678;
@@ -119,14 +117,9 @@ void PaintCanvas::DrawString(unsigned int font, const String &value, int x, int 
 void PaintCanvas::FillRectangle(int x, int y, int width, int height) {
     fills.push_back({x, y, width, height, currentColor});
 }
-void PaintCanvas::DrawRegion2D(unsigned int id, int, int, int width, int height, float unused,
+void PaintCanvas::DrawRegion2D(unsigned int id, int, int, int width, int height, float angle,
                                int, int, int x, int y) {
-    assert(unused == 0.0f);
-    regions.push_back({id, width, height, x, y});
-}
-void Layout::drawBGBorder(unsigned int corner, unsigned int edge, int x, int y,
-                          int width, int height, int inset, int pad) {
-    borders.push_back({corner, edge, x, y, width, height, inset, pad});
+    regions.push_back({id, width, height, x, y, angle});
 }
 
 static bool imageAt(unsigned int id, int x, int y) {
@@ -139,7 +132,7 @@ static bool sawColor(unsigned int color) {
     return false;
 }
 static void clearDraws() {
-    images.clear(); regions.clear(); texts.clear(); fills.clear(); borders.clear(); colors.clear();
+    images.clear(); regions.clear(); texts.clear(); fills.clear(); colors.clear();
     imageWidthQueries.clear();
     currentColor = 0x12345678;
     currentSpacing = 2;
@@ -401,6 +394,22 @@ int main() {
     String boxText("BOX");
 
     clearDraws();
+    layout.drawBGBorder(61, 62, 10, 20, 47, 65, 2, 3);
+    assert(images.size() == 8 && regions.size() == 8);
+    assert(imageAt(61, 12, 22) && imageAt(61, 45, 63));
+    assert(imageAt(62, 23, 23) && imageAt(62, 33, 86));
+    assert(regions[0].width == 3 && regions[0].x == 43 && regions[0].y == 23);
+    assert(regions[0].angle == 0.0f);
+    assert(regions[1].width == 3 && regions[1].x == 46 && regions[1].y == 82);
+    assert(regions[1].angle == 3.1416f);
+    assert(regions[2].x == 13 && regions[2].y == 53 && regions[2].angle == -1.5708f);
+    assert(regions[3].x == 60 && regions[3].y == 43 && regions[3].angle == 1.5708f);
+    assert(regions[4].x == 13 && regions[4].y == 73);
+    assert(regions[5].x == 60 && regions[5].y == 63);
+    assert(regions[6].width == 1 && regions[6].x == 13 && regions[6].y == 64);
+    assert(regions[7].width == 1 && regions[7].x == 56 && regions[7].y == 63);
+
+    clearDraws();
     layout.drawBox(0, 10, 20, 40, 20, boxText, 0);
     assert(imageAt(51, 10, 20) && imageAt(51, 40, 20));
     assert(texts.size() == 1 && texts[0].font == 5 && texts[0].content == "BOX");
@@ -424,18 +433,17 @@ int main() {
 
     clearDraws();
     layout.drawBox(5, 10, 20, 40, 37, boxText, 0);
-    assert(borders.size() == 1 && borders[0].corner == 61 && borders[0].edge == 62);
-    assert(borders[0].height == 37 && borders[0].inset == 0);
+    assert(imageAt(61, 10, 20) && imageAt(61, 40, 37));
+    assert(imageAt(62, 20, 20) && imageAt(62, 30, 57));
     clearDraws();
     layout.drawBox(8, 10, 20, 40, 37, boxText, 0);
-    assert(borders.size() == 1 && borders[0].corner == 81 && borders[0].edge == 82);
-    assert(borders[0].height == 37 && borders[0].inset == 0);
+    assert(imageAt(81, 10, 20) && imageAt(81, 40, 37));
+    assert(imageAt(82, 20, 20) && imageAt(82, 30, 57));
 
     clearDraws();
     layout.drawBox(7, 10, 20, 40, 37, boxText, 0);
-    assert(borders.size() == 1 && borders[0].corner == 71 && borders[0].edge == 72);
-    assert(borders[0].y == 28 && borders[0].height == 29);
-    assert(borders[0].inset == -20 && borders[0].pad == -20);
+    assert(imageAt(71, -10, 8) && imageAt(71, 60, 57));
+    assert(imageAt(72, 0, 8) && !regions.empty());
     assert(imageAt(73, 10, 20) && texts.size() == 1);
     assert(texts[0].x == 15 && texts[0].y == 23 && currentColor == 0x12345678);
 

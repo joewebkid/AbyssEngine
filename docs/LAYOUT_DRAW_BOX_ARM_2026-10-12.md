@@ -45,6 +45,10 @@ recorder, not the production implementation.
   `A:/Galaxy on Fire new version/_work/layout_draw_box_full_20261012.json`.
 
 Original assets, real font metrics, and full-game rendering remain
-untested. Styles 5, 7, and 8 call `Layout::drawBGBorder`, which still
-contains a null canvas holder; recover and test that callee next
-before claiming those styles work end to end.
+untested. At this snapshot, styles 5, 7, and 8 called a
+`Layout::drawBGBorder` body with a null canvas holder, so the fixture
+could not establish end-to-end border behavior.
+
+Subsequent work replaced that border fixture with the production body;
+see [the border audit](LAYOUT_BG_BORDER_ARM_2026-10-12.md). The shared
+canvas region renderer remains a separate runtime limitation.

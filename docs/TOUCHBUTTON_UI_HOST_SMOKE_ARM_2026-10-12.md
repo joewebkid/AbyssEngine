@@ -25,9 +25,13 @@ Layout metric, background, and mask methods were also added to the
 fixture. Their Android anchors and checks are recorded in
 [the Layout UI metrics audit](LAYOUT_UI_METRICS_ARM_2026-10-12.md).
 
-The fixture now also exercises all 11 `Layout::drawBox` styles. It
-records (rather than executes) calls to the still-unrecovered
-`drawBGBorder`; see [the box audit](LAYOUT_DRAW_BOX_ARM_2026-10-12.md).
+The fixture also exercises all 11 `Layout::drawBox` styles. The initial
+box audit recorded rather than executed `drawBGBorder` calls; see
+[the box audit](LAYOUT_DRAW_BOX_ARM_2026-10-12.md).
+
+A later pass replaced that recorder with the production border body. It
+checks segment coordinates and rotation arguments with fixture dimensions;
+see [the border audit](LAYOUT_BG_BORDER_ARM_2026-10-12.md).
 
 The first expanded host run exposed a real coordinate error in
 `Layout::drawBGPattern`: the right partial-width strip started at

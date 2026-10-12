@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Layout drawBox styles and text geometry; older subsystem
+Last reviewed: 2026-10-12 (Layout border tiling; older subsystem
 snapshots retain their dates)
+
+## Layout border tiling and rotations (2026-10-12)
+
+`Layout::drawBGBorder` now uses the ARM-confirmed live Canvas and restores
+the original edge coordinates and rotation arguments. A host smoke executes
+the production border body, including two vertical rows and partial tiles,
+and covers its `drawBox` callers. Native `gof2`, 206/206 ARM units, and 36
+verifier tests pass (one skipped). The main body's source-shape rises from
+88.6% to 94.2%; strict fuzzy falls from 13.4% to 11.1%, and it remains
+non-exact. Full corpus stays 4,323/4,524 functions covered, 201 missing,
+92.53% average source-shape, 80.80% strict fuzzy, 2,376 linked-exact,
+and 1,008 byte-exact; exact symbol sets are unchanged. Original assets,
+pixels, and ARM runtime remain untested. The shared `PaintCanvas::DrawRegion2D`
+callee currently ignores the angle argument, so it is the next priority.
+See [the border audit](LAYOUT_BG_BORDER_ARM_2026-10-12.md).
 
 ## Layout drawBox styles and text geometry (2026-10-12)
 
@@ -15,9 +30,10 @@ rises 60.1% to 95.4% and strict fuzzy 21.4% to 37.9%; it is not
 exact. Full corpus stays 4,323/4,524 original functions covered;
 averages rise to 92.53% source-shape and 80.80% strict fuzzy, with
 2,376 linked-exact and 1,008 byte-exact. No prior exact pair is lost.
-Real fonts/assets and the called `drawBGBorder` implementation are
-not tested; that border still has a null canvas holder and is the
-next priority. See [the box audit](LAYOUT_DRAW_BOX_ARM_2026-10-12.md).
+Real fonts/assets and the called `drawBGBorder` implementation were
+not tested in this snapshot; the subsequent
+[border audit](LAYOUT_BG_BORDER_ARM_2026-10-12.md) executes the callee in
+a fixture. See [the box audit](LAYOUT_DRAW_BOX_ARM_2026-10-12.md).
 
 ## Layout UI metrics, background, and mask (2026-10-12)
 
