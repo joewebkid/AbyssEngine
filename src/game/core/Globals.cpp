@@ -411,11 +411,10 @@ int FModSound_tryToStopMusicForBGMusic();
 
 static Status **g_status;
 
-static void *const gLB_dest = nullptr;
+extern int g_android_leaderboard_scores[8];
 
 void Globals::reportLeaderboards() {
-    int kills = Status::gStatus->getKills();
-    *(int *) gLB_dest = kills;
+    g_android_leaderboard_scores[0] = Globals::status->getKills();
 }
 
 Array<int> *Globals::getSoundResourceList() {

@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Globals getItemName; older subsystem
+Last reviewed: 2026-10-12 (Globals reportLeaderboards; older subsystem
 snapshots retain their dates)
+
+## Globals leaderboard score handoff (2026-10-12)
+
+`Globals::reportLeaderboards` now reads kills from `Globals::status` and
+writes the score to the existing Android leaderboard array instead of a
+null destination. Native `gof2`, 206/206 ARM units, and 36 verifier tests
+pass (one skipped). Focused source-shape rises 80.7% to 100% and strict
+fuzzy 69.6% to 100%; the function becomes linked-exact, not byte-exact.
+Full corpus remains 4,323/4,524 original functions covered, with 92.36%
+average source-shape, 80.56% strict fuzzy, 2,359 linked-exact and 1,008
+byte-exact matches. No prior exact pair was lost. Live leaderboard handoff
+remains untested. Next priority: `Globals::releaseResources`, which still
+uses a null secondary-canvas placeholder instead of reloading layout.
+See [the leaderboard audit](GLOBALS_LEADERBOARDS_ARM_2026-10-12.md).
 
 ## Globals item name lookup (2026-10-12)
 
