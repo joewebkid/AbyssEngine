@@ -5,6 +5,7 @@
 #include "game/core/String.h"
 #include "engine/render/PaintCanvas.h"
 #include "engine/core/GameText.h"
+#include "game/core/Globals.h"
 
 void TouchButton::setVisible(bool value) {
     this->visible = value;
@@ -157,30 +158,86 @@ int TouchButton::getHeight() {
     return this->height;
 }
 
-unsigned int TB_iconTexId(int eliteVariant, int stage);
+// Android 2.0.16 .rodata at 0x1fb888..0x1fb8c8 and 0x2060bc.
+static constexpr uint32_t g_TB_iconTexIds[2][4] = {
+    {0x2198ff2f, 0xfad10eff, 0xffffffff, 0xce8258ff},
+    {0xfa792160, 0xfa7921ff, 0xffffffff, 0xce8258ff},
+};
+static constexpr uint16_t g_TB_iconImgIds[2][4] = {
+    {0x970, 0x96e, 0x96f, 0x96d},
+    {0x1f6d, 0x1f63, 0x96f, 0x96d},
+};
+static constexpr uint16_t g_TB_medalSmallIds[45] = {
+    0x948, 0x949, 0x94a, 0x94b, 0x94c, 0x94d, 0x94e, 0x94f, 0x950,
+    0x951, 0x952, 0x953, 0x954, 0x955, 0x956, 0x957, 0x958, 0x959,
+    0x95a, 0x95b, 0x95c, 0x95d, 0x95e, 0x95f, 0x960, 0x961, 0x962,
+    0x963, 0x964, 0x965, 0x966, 0x967, 0x968, 0x969, 0x96a, 0x96b,
+    0x1f64, 0x1f65, 0x1f66, 0x1f67, 0x1f68, 0x1f69, 0x1f6a, 0x1f6b,
+    0x1f6c,
+};
 
-unsigned short TB_iconImgId(int eliteVariant, int stage);
+static unsigned int TB_iconTexId(int eliteVariant, int stage) {
+    return g_TB_iconTexIds[eliteVariant != 0][stage];
+}
 
-unsigned short TB_medalSmallId(int achId);
+static unsigned short TB_iconImgId(int eliteVariant, int stage) {
+    return g_TB_iconImgIds[eliteVariant != 0][stage];
+}
 
-unsigned short TB_frameId(int useAltSkin, unsigned int kind, int slot);
+static unsigned short TB_medalSmallId(int medalId) {
+    return g_TB_medalSmallIds[medalId];
+}
 
-static char *g_TB_useAltSkin = nullptr;
-static char *g_TB_langWide = nullptr;
-static char *g_TB_langWide2 = nullptr;
-static Layout **g_TB_layoutMetrics = nullptr;
+// Android 2.0.16 .rodata at 0x206170 (iPad) and 0x206464 (other devices).
+static constexpr uint32_t g_TB_frameIds[2][21][9] = {
+    {
+        {0x45c, 0x45b, 0x45d, 0x462, 0x461, 0x463, 0x462, 0x461, 0x463},
+        {0x465, 0x464, 0x467, 0x469, 0x468, 0x46b, 0x46d, 0x46c, 0x46f},
+        {0x45a, 0x45b, 0x45d, 0x460, 0x461, 0x463, 0x460, 0x461, 0x463},
+        {0x465, 0x464, 0x466, 0x469, 0x468, 0x46a, 0x46d, 0x46c, 0x46e},
+        {0x45c, 0x45b, 0x45d, 0x462, 0x461, 0x463, 0x462, 0x461, 0x463},
+        {0x458, 0x45b, 0x45d, 0x45e, 0x461, 0x463, 0x45e, 0x461, 0x463},
+        {0x45c, 0x45b, 0x459, 0x462, 0x461, 0x45f, 0x462, 0x461, 0x45f},
+        {0x6b1, 0x6b0, 0x6b2, 0x6b6, 0x6b5, 0x6ad, 0x6b6, 0x6b5, 0x6ad},
+        {0x6ae, 0x6b0, 0x6b2, 0x6b3, 0x6b5, 0x6ad, 0x6b3, 0x6b5, 0x6ad},
+        {0x6b1, 0x6b0, 0x6af, 0x6b6, 0x6b5, 0x6b4, 0x6b6, 0x6b5, 0x6b4},
+        {0x45c, 0x45b, 0x45d, 0x462, 0x461, 0x463, 0x462, 0x461, 0x463},
+        {0x2522, 0x2524, 0x2526, 0x2523, 0x2525, 0x2527, 0x2523, 0x2525, 0x2527},
+    },
+    {
+        {0x45c, 0x45b, 0x45d, 0x462, 0x461, 0x463, 0x462, 0x461, 0x463},
+        {0x465, 0x464, 0x467, 0x469, 0x468, 0x46b, 0x46d, 0x46c, 0x46f},
+        {0x45a, 0x45b, 0x45d, 0x460, 0x461, 0x463, 0x460, 0x461, 0x463},
+        {0x465, 0x464, 0x466, 0x469, 0x468, 0x46a, 0x46d, 0x46c, 0x46e},
+        {0x45c, 0x45b, 0x45d, 0x462, 0x461, 0x463, 0x462, 0x461, 0x463},
+        {0x458, 0x45b, 0x45d, 0x45e, 0x461, 0x463, 0x45e, 0x461, 0x463},
+        {0x45c, 0x45b, 0x459, 0x462, 0x461, 0x45f, 0x462, 0x461, 0x45f},
+        {0x45c, 0x45b, 0x45d, 0x462, 0x461, 0x463, 0x462, 0x461, 0x463},
+        {0x458, 0x45b, 0x45d, 0x45e, 0x461, 0x463, 0x45e, 0x461, 0x463},
+        {0x45c, 0x45b, 0x459, 0x462, 0x461, 0x45f, 0x462, 0x461, 0x45f},
+        {0x45c, 0x45b, 0x45d, 0x462, 0x461, 0x463, 0x462, 0x461, 0x463},
+        {0x2522, 0x2524, 0x2526, 0x2523, 0x2525, 0x2527, 0x2523, 0x2525, 0x2527},
+    },
+};
+static_assert(g_TB_frameIds[0][7][0] == 0x6b1 && g_TB_frameIds[1][7][0] == 0x45c,
+              "TouchButton device frame IDs");
+
+static unsigned short TB_frameId(int useAltSkin, unsigned int kind, int slot) {
+    return static_cast<unsigned short>(g_TB_frameIds[useAltSkin ? 0 : 1][kind][slot]);
+}
+
 static const char g_TB_emptyStr[] = "";
 
-int TouchButton::init(String const &text, unsigned int kind, int achId, int achStage, int width, int d_unused, int x,
-                      int y, unsigned char flags0, unsigned char flags1) {
-    void *canvas = PaintCanvas::gCanvas;
+int TouchButton::init(String const &text, unsigned int subId, int kind, int medalId, int medalStage,
+                      int x, int y, int requestedWidth, unsigned char flags0, unsigned char flags1) {
+    PaintCanvas *canvas = Globals::Canvas;
 
     this->kind = (int) kind;
     this->visible = 1;
     this->text = text;
-    this->subId = achStage;
+    this->subId = subId;
     this->textColor = -1;
-    this->requestedWidth = width;
+    this->requestedWidth = requestedWidth;
     this->field_0x0 = 0;
     this->field_0x4 = 0;
     this->flags1 = flags1;
@@ -205,10 +262,10 @@ int TouchButton::init(String const &text, unsigned int kind, int achId, int achS
 
     switch (kind) {
         case 4: {
-            void *ach = Achievements::gAchievements;
-            int elite = (((Achievements *) (ach))->isEliteMedal(achId) != 0) ? 1 : 0;
-            this->iconTexId = TB_iconTexId(elite, achStage);
-            ((PaintCanvas *) (canvas))->Image2DCreate(TB_iconImgId(elite, achStage), this->iconImage);
+            Achievements *ach = static_cast<Achievements *>(Globals::achievements);
+            int elite = (ach->isEliteMedal(medalId) != 0) ? 1 : 0;
+            this->iconTexId = TB_iconTexId(elite, medalStage);
+            canvas->Image2DCreate(TB_iconImgId(elite, medalStage), this->iconImage);
             this->height = ((PaintCanvas *) (canvas))->GetImage2DHeight(0);
             int w = ((PaintCanvas *) (canvas))->GetImage2DWidth(0);
             this->layoutHeight = this->height;
@@ -220,9 +277,9 @@ int TouchButton::init(String const &text, unsigned int kind, int achId, int achS
             this->textOffsetX = w / 2 - tw / 2;
             this->iconSmall = -1;
             unsigned int iconSmallH;
-            ((PaintCanvas *) (canvas))->Image2DCreate(TB_medalSmallId(achId), iconSmallH);
+            canvas->Image2DCreate(TB_medalSmallId(medalId), iconSmallH);
             this->iconSmall = iconSmallH;
-            if (achStage != 0 || ((Achievements *) (ach))->isEliteMedal(achId) != 0) {
+            if (medalStage != 0 || ach->isEliteMedal(medalId) != 0) {
                 unsigned int iconOverlayH;
                 ((PaintCanvas *) (canvas))->Image2DCreate(0x96c, iconOverlayH);
                 this->iconOverlay = iconOverlayH;
@@ -244,7 +301,7 @@ int TouchButton::init(String const &text, unsigned int kind, int achId, int achS
             int tw = ((PaintCanvas *) (canvas))->GetTextWidth(this->fontId, this->text);
             this->textOffsetX = w / 2 - tw / 2;
             this->textOffsetY = ((PaintCanvas *) (canvas))->GetTextHeight(this->fontId);
-            this->touchMargin = (*g_TB_layoutMetrics)->field_0x80_touchMargin;
+            this->touchMargin = Globals::layout->field_0x80_touchMargin;
             break;
         }
         case 0xc: {
@@ -306,7 +363,7 @@ int TouchButton::init(String const &text, unsigned int kind, int achId, int achS
         }
         case 0x10: {
             unsigned int frameH;
-            this->imgFrameL = achStage;
+            this->imgFrameL = medalId;
             ((PaintCanvas *) (canvas))->Image2DCreate(0xbb9, frameH);
             this->imgFrameTL = frameH;
             {
@@ -348,7 +405,7 @@ int TouchButton::init(String const &text, unsigned int kind, int achId, int achS
             goto wide_text_layout;
         }
         case 0x13:
-            this->imgFrameL = achStage;
+            this->imgFrameL = medalId;
             this->imgFrameTL = (int) this->image;
             {
                 this->height = ((PaintCanvas *) (canvas))->GetImage2DHeight(0);
@@ -364,7 +421,7 @@ int TouchButton::init(String const &text, unsigned int kind, int achId, int achS
             }
             break;
         default: {
-            int alt = (*g_TB_useAltSkin != 0) ? 1 : 0;
+            int alt = Globals::iPad != 0 ? 1 : 0;
             unsigned int frameH;
             ((PaintCanvas *) (canvas))->Image2DCreate(TB_frameId(alt, kind, 0), frameH);
             this->imgFrameL = frameH;
@@ -392,18 +449,18 @@ int TouchButton::init(String const &text, unsigned int kind, int achId, int achS
             this->rightWidth = rightW;
 
             if (kind != 0xb)
-                this->layoutHeight = (*g_TB_layoutMetrics)->touchButtonLayoutHeight;
+                this->layoutHeight = Globals::layout->touchButtonLayoutHeight;
             else
                 this->layoutHeight = this->height;
 
             if (kind < 7 && ((1 << (kind & 0xff)) & 0x61) != 0) {
                 this->rightWidth = rightW - 2;
-            } else if ((kind - 7) < 3 && *g_TB_useAltSkin != 0) {
+            } else if ((kind - 7) < 3 && Globals::iPad != 0) {
                 int hh;
-                if (*g_TB_langWide != 0)
+                if (Globals::iPadHD != 0)
                     hh = 0x46;
                 else
-                    hh = (*g_TB_langWide2 != 0) ? 0x64 : 0x32;
+                    hh = (Globals::iPadLarge != 0) ? 0x64 : 0x32;
                 this->layoutHeight = hh;
             }
             setText(this->text);
@@ -432,7 +489,7 @@ wide_text_layout: {
         this->textOffsetX = w / 2 - tw / 2;
         int th = ((PaintCanvas *) (canvas))->GetTextHeight(this->fontId);
         this->textOffsetY = (int) ((float) (h / 2) + factor * (float) th);
-        this->touchMargin = (*g_TB_layoutMetrics)->field_0x80_touchMargin;
+        this->touchMargin = Globals::layout->field_0x80_touchMargin;
     }
 
 done:
@@ -440,16 +497,13 @@ done:
     return 0;
 }
 
-static unsigned int *g_TB_defSpacing = nullptr;
-
 TouchButton::TouchButton(unsigned int kind, int a, int b, int c, int d,
                          unsigned char flags0, unsigned char flags1) {
-    void *canvas = PaintCanvas::gCanvas;
-    this->fontId = *g_TB_defSpacing;
-    this->fontSpacing = ((PaintCanvas *) (canvas))->FontGetSpacing(this->fontId);
+    this->fontId = Globals::font;
+    this->fontSpacing = Globals::Canvas->FontGetSpacing(this->fontId);
 
     String tmp(g_TB_emptyStr, false);
-    this->init(tmp, kind, a, b, c, d, -1, -1, flags0, flags1);
+    this->init(tmp, kind, a, -1, -1, b, c, d, flags0, flags1);
 }
 
 static Layout **g_TB_d_layoutA = nullptr;
@@ -624,12 +678,10 @@ void TouchButton::draw() {
     PaintCanvas::gCanvas->SetColor(savedColor);
 }
 
-static int **g_TB_c1 = nullptr;
-
 TouchButton::TouchButton(String const &text, int type, int x, int y, int p5, unsigned char p6, unsigned char p7) {
-    this->fontId = (uint32_t) * *g_TB_c1;
-    this->fontSpacing = PaintCanvas::gCanvas->FontGetSpacing(this->fontId);
-    init(text, (unsigned int) type, x, y, p5, 0, 0, 0, p6, p7);
+    this->fontId = Globals::font;
+    this->fontSpacing = Globals::Canvas->FontGetSpacing(this->fontId);
+    init(text, 0xffffffff, type, -1, -1, x, y, p5, p6, p7);
 }
 
 void TouchButton::setText(String const &text) {
@@ -718,19 +770,18 @@ bool TouchButton::touchedInside(int px, int py) {
 
 TouchButton::TouchButton(unsigned int kind, unsigned int image,
                          int a, int b, int c, unsigned char flag) {
-    void *canvas = PaintCanvas::gCanvas;
     this->image = image;
-    this->fontId = *g_TB_defSpacing;
-    this->fontSpacing = ((PaintCanvas *) (canvas))->FontGetSpacing(this->fontId);
+    this->fontId = Globals::font;
+    this->fontSpacing = Globals::Canvas->FontGetSpacing(this->fontId);
 
     String tmp(g_TB_emptyStr, false);
-    this->init(tmp, kind, a, b, c, 0x44, -1, -1, flag, 0);
+    this->init(tmp, kind, a, -1, -1, b, c, 0, flag, 0x44);
 }
 
 TouchButton::TouchButton(String const &text, int x, int y, int p4, unsigned char p5) {
-    this->fontId = (uint32_t) * *g_TB_c1;
-    this->fontSpacing = PaintCanvas::gCanvas->FontGetSpacing(this->fontId);
-    init(text, 0xffffffff, 4, x, y, p4, 0, 0, p5, 0x44);
+    this->fontId = Globals::font;
+    this->fontSpacing = Globals::Canvas->FontGetSpacing(this->fontId);
+    init(text, 0xffffffff, x, -1, -1, y, p4, 0, p5, 0x44);
 }
 
 TouchButton::TouchButton(String const &text,
@@ -740,26 +791,25 @@ TouchButton::TouchButton(String const &text,
     this->fontSpacing = kerning;
     this->fontId = spacing;
 
-    void *canvas = PaintCanvas::gCanvas;
-    short prev = ((PaintCanvas *) (canvas))->FontGetSpacing(this->fontId);
-    ((PaintCanvas *) (canvas))->FontSetSpacing(spacing, (short) kerning);
+    PaintCanvas *canvas = Globals::Canvas;
+    short prev = canvas->FontGetSpacing(this->fontId);
+    canvas->FontSetSpacing(spacing, (short) kerning);
 
-    this->init(text, spacing, a, b, c, d, -1, -1, flags0, flags1);
+    this->init(text, 0xffffffff, a, -1, -1, b, c, d, flags0, flags1);
 
-    ((PaintCanvas *) (canvas))->FontSetSpacing(spacing, prev);
+    canvas->FontSetSpacing(spacing, prev);
 }
 
 TouchButton::TouchButton(int x, int y, String const &text, int p4, int p5, unsigned char p6) {
-    this->fontId = (uint32_t) * *g_TB_c1;
-    this->fontSpacing = PaintCanvas::gCanvas->FontGetSpacing(this->fontId);
+    this->fontId = Globals::font;
+    this->fontSpacing = Globals::Canvas->FontGetSpacing(this->fontId);
     init(text, 0xffffffff, 4, x, y, p4, p5, 0, p6, 0x44);
 }
 
 TouchButton::TouchButton(unsigned int kind, int a, int b, int c, unsigned char flag) {
-    void *canvas = PaintCanvas::gCanvas;
-    this->fontId = *g_TB_defSpacing;
-    this->fontSpacing = ((PaintCanvas *) (canvas))->FontGetSpacing(this->fontId);
+    this->fontId = Globals::font;
+    this->fontSpacing = Globals::Canvas->FontGetSpacing(this->fontId);
 
     String tmp(g_TB_emptyStr, false);
-    this->init(tmp, kind, a, b, c, 0x44, -1, -1, flag, 0);
+    this->init(tmp, kind, a, -1, -1, b, c, 0, flag, 0x44);
 }

@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Layout reload/resetWindowDimensions; older subsystem
+Last reviewed: 2026-10-12 (TouchButton constructors/resource tables; older subsystem
 snapshots retain their dates)
+
+## TouchButton constructors and resource tables (2026-10-12)
+
+The `TouchButton::init` argument contract, six constructor call mappings,
+live font/canvas/layout/achievement/device globals, and frame/medal
+resource-ID tables are now backed by the Android original. Native `gof2`,
+206/206 ARM units, and 36 verifier tests pass (one skipped). Five
+constructor C1/C2 pairs become linked-exact; no previous exact pair is
+lost. `init` itself rises from 76.1% to 79.8% source-shape but is not
+exact. Full corpus coverage remains 4,323/4,524 original functions;
+average source-shape is 92.41%, strict fuzzy 80.67%, with 2,370
+linked-exact and 1,008 byte-exact matches. Live UI behavior is untested;
+`init`'s image-handle measurements remain a priority. See
+[the TouchButton audit](TOUCHBUTTON_CTOR_TABLES_ARM_2026-10-12.md).
 
 ## Layout resource reload and window reset (2026-10-12)
 

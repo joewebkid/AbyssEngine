@@ -103,7 +103,8 @@ public:
 
     int getWidth();
 
-    int init(String const &text, unsigned int kind, int achId, int achStage, int width, int d_unused, int x, int y,
+    int init(String const &text, unsigned int subId, int kind, int medalId, int medalStage,
+             int x, int y, int requestedWidth,
              unsigned char flags0, unsigned char flags1);
 
     int isTouched();
