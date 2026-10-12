@@ -506,25 +506,23 @@ TouchButton::TouchButton(unsigned int kind, int a, int b, int c, int d,
     this->init(tmp, kind, a, -1, -1, b, c, d, flags0, flags1);
 }
 
-static Layout **g_TB_d_layoutA = nullptr;
-static Layout **g_TB_d_layoutBG = nullptr;
-static Layout **g_TB_d_layoutC = nullptr;
-static Layout **g_TB_d_layoutEnd = nullptr;
-static String **g_TB_d_unitStr = nullptr;
-static unsigned int g_TB_d_frameMask = 0;
+// Android 2.0.16 TouchButton::draw literal at 0x16991c: these kinds skip the three-slice pattern.
+static constexpr unsigned int g_TB_d_noPatternMask = 0x001ef400;
+static_assert((g_TB_d_noPatternMask & (1u << 10)) != 0 &&
+              (g_TB_d_noPatternMask & (1u << 11)) == 0, "TouchButton frame pattern kinds");
 
 void TouchButton::draw() {
-    void *canvas = PaintCanvas::gCanvas;
-    unsigned int savedColor = ((PaintCanvas *) (canvas))->GetColor();
+    PaintCanvas *canvas = Globals::Canvas;
+    unsigned int savedColor = canvas->GetColor();
 
     if (this->visible == 0)
         return;
 
     if (this->halfTransparent != 0) {
-        PaintCanvas::gCanvas->SetColor(0xffffff2f);
-        (*g_TB_d_layoutA)->setDrawColor(-0xd1);
+        canvas->SetColor(0xffffff2f);
+        Globals::layout->setDrawColor(-0xd1);
     } else {
-        PaintCanvas::gCanvas->SetColor(0xffffffff);
+        canvas->SetColor(0xffffffff);
     }
 
     short savedSpacing = (short) ((PaintCanvas *) (canvas))->FontGetSpacing(this->fontId);
@@ -532,6 +530,7 @@ void TouchButton::draw() {
 
     unsigned int kind = this->kind;
     int icon = -1;
+    int iconX = 0;
     int iconY = 0;
     bool tailIcon = false;
 
@@ -539,21 +538,22 @@ void TouchButton::draw() {
         ((PaintCanvas *) (canvas))->DrawImage2D(this->imgFrameL, this->x, this->y);
         if (this->touched != 0 || this->alwaysPressed != 0) {
             icon = this->imgFrameTL;
-            iconY = this->x;
+            iconX = this->x;
+            iconY = this->y;
             tailIcon = true;
         }
     } else if (kind == 4) {
         ((PaintCanvas *) (canvas))->DrawImage2D(this->iconImage, this->x, this->y);
         if (this->iconSmall != -1) {
-            PaintCanvas::gCanvas->SetColor(0xffffffff);
+            canvas->SetColor(this->iconTexId);
             ((PaintCanvas *) (canvas))->DrawImage2D(this->iconSmall, this->x + (this->width >> 1),
                                                     (this->y + (this->height >> 1)) - 1, (unsigned char) 0x11,
                                                     (unsigned char) 0x44);
-            PaintCanvas::gCanvas->SetColor(0xffffffff);
+            canvas->SetColor(0xffffffff);
             if (this->touched != 0 || this->alwaysPressed != 0)
                 ((PaintCanvas *) (canvas))->DrawImage2D(this->iconOverlay, this->x, this->y);
         }
-        PaintCanvas::gCanvas->SetColor(0xffffffff);
+        canvas->SetColor(this->iconSmall == -1 ? 0x777777ff : 0xffffffff);
         ((PaintCanvas *) (canvas))->DrawString(this->fontId, this->text, this->x + this->textOffsetX,
                                                this->y + this->textOffsetY, false);
     } else {
@@ -565,7 +565,7 @@ void TouchButton::draw() {
         else
             base = this->imgFrameL;
 
-        if (kind <= 0x14 && ((1u << (kind & 0xff)) & g_TB_d_frameMask) != 0) {
+        if (kind > 0x14 || ((1u << kind) & g_TB_d_noPatternMask) == 0) {
             unsigned int frameLeft;
             int frameMid;
             if (this->touched != 0) {
@@ -578,26 +578,26 @@ void TouchButton::draw() {
                 frameLeft = (unsigned int) this->imgFrameM;
                 frameMid = this->imgFrameR;
             }
-            (*g_TB_d_layoutBG)->drawBGPattern(frameLeft, this->leftWidth + this->x, this->y, this->midStretch,
-                                              this->height);
+            Globals::layout->drawBGPattern(frameLeft, this->leftWidth + this->x, this->y, this->midStretch,
+                                           this->height);
             ((PaintCanvas *) (canvas))->DrawImage2D(frameMid, this->x + this->leftWidth + this->midStretch, this->y);
         }
         ((PaintCanvas *) (canvas))->DrawImage2D(base, this->x, this->y);
 
-        Layout *layoutC = *g_TB_d_layoutC;
+        Layout *layoutC = Globals::layout;
         layoutC->setDrawColor(-1);
 
         float prog = this->pressProgress;
         if (prog > 0.0f) {
-            PaintCanvas::gCanvas->SetColor(0xffffffff);
+            canvas->SetColor(0xffffff80);
             layoutC->setDrawColor(-0x80);
             int span = this->leftWidth;
             int total = this->rightWidth + this->midStretch + span;
             int filled = (int) (prog * (float) total);
             int leftImg = (this->progressHighlight == 0) ? this->imgFrameL : this->imgFrameTL;
             int drawW = (filled < span) ? filled : span;
-            ((PaintCanvas *) (canvas))->DrawRegion2D((unsigned int) leftImg, 0, 0, drawW, this->height, (float) filled,
-                                                     0, 0, 0, this->x);
+            canvas->DrawRegion2D((unsigned int) leftImg, 0, 0, drawW, this->height, 0.0f,
+                                 0, 0, this->x, this->y);
 
             int mid = this->leftWidth;
             if (mid < filled) {
@@ -612,31 +612,31 @@ void TouchButton::draw() {
                 int rImg = (this->progressHighlight == 0) ? this->imgFrameR : this->imgFrameTR;
                 int rW = (filled - mid) - this->midStretch;
                 if (this->rightWidth < rW) rW = this->rightWidth;
-                ((PaintCanvas *) (canvas))->DrawRegion2D((unsigned int) rImg, 0, 0, rW, this->height, (float) filled, 0,
-                                                         0, 0, rstart + this->x);
+                canvas->DrawRegion2D((unsigned int) rImg, 0, 0, rW, this->height, 0.0f,
+                                     0, 0, rstart + this->x, this->y);
             }
             layoutC->setDrawColor(-1);
         }
 
         unsigned int lblColor = (unsigned int) this->textColor;
         if (this->halfTransparent != 0)
-            PaintCanvas::gCanvas->SetColor((unsigned char) (lblColor >> 16), (unsigned char) (lblColor >> 8),
-                              (unsigned char) lblColor, (unsigned char) (lblColor >> 24));
+            canvas->SetColor((unsigned char) (lblColor >> 24), (unsigned char) (lblColor >> 16),
+                             (unsigned char) (lblColor >> 8), (unsigned char) 0x2f);
         else
-            PaintCanvas::gCanvas->SetColor(0xffffffff);
+            canvas->SetColor(lblColor);
 
         if (this->subId == -1) {
             ((PaintCanvas *) (canvas))->DrawString(this->fontId, this->text, this->x + this->textOffsetX,
                                                    this->y + this->textOffsetY, false);
 
             if (this->splitText.size() != 0) {
-                String *t = &this->text;
+                String *t = &this->splitText;
                 int px = this->x;
                 int w = this->width;
                 int tx, ty;
                 if (this->kind == 10) {
                     int tw = ((PaintCanvas *) (canvas))->GetTextWidth(this->fontId, *t);
-                    int th = ((PaintCanvas *) (canvas))->GetTextHeight(this->fontId);
+                    int th = canvas->GetTextHeight(Globals::font);
                     ty = this->y + this->height + th * -2;
                     tx = (px + w / 2) - tw / 2;
                 } else {
@@ -649,33 +649,33 @@ void TouchButton::draw() {
             }
 
             if (this->numberText.size() != 0) {
-                PaintCanvas::gCanvas->SetColor(0xffffffff);
-                String *u = *g_TB_d_unitStr;
-                int tw = ((PaintCanvas *) (canvas))->GetTextWidth(this->fontId, *u);
-                ((PaintCanvas *) (canvas))->DrawString(this->fontId, this->numberText, (this->leftWidth + this->x) - tw,
-                                                       this->y + this->textOffsetY, false);
-                PaintCanvas::gCanvas->SetColor(0xffffffff);
+                canvas->SetColor(0x777777ff);
+                int tw = canvas->GetTextWidth(Globals::font, this->numberText);
+                canvas->DrawString(Globals::font, this->numberText, (this->leftWidth + this->x) - tw,
+                                   this->y + this->textOffsetY, false);
+                canvas->SetColor(lblColor);
             }
 
             if (this->adornImage != -1) {
-                PaintCanvas::gCanvas->SetColor(0xffffffff);
+                canvas->SetColor(0xffffffff);
                 ((PaintCanvas *) (canvas))->DrawImage2D(this->adornImage, (this->x + this->width + 6) - this->leftWidth,
                                                         this->y + 1, (unsigned char) 0x11, (unsigned char) 0x14);
-                PaintCanvas::gCanvas->SetColor(0xffffffff);
+                canvas->SetColor(lblColor);
             }
         } else if (this->kind != 0x13) {
-            icon = base;
-            iconY = this->textOffsetX + this->x;
+            icon = this->subId;
+            iconX = this->x + this->textOffsetX;
+            iconY = this->y + this->textOffsetY;
             tailIcon = true;
         }
     }
 
     if (tailIcon)
-        ((PaintCanvas *) (canvas))->DrawImage2D(icon, this->x + this->textOffsetX + 0, iconY);
+        canvas->DrawImage2D(icon, iconX, iconY);
 
-    (*g_TB_d_layoutEnd)->setDrawColor(-1);
+    Globals::layout->setDrawColor(-1);
     ((PaintCanvas *) (canvas))->FontSetSpacing(this->fontId, savedSpacing);
-    PaintCanvas::gCanvas->SetColor(savedColor);
+    canvas->SetColor(savedColor);
 }
 
 TouchButton::TouchButton(String const &text, int type, int x, int y, int p5, unsigned char p6, unsigned char p7) {
@@ -744,7 +744,7 @@ bool TouchButton::touchedInside(int px, int py) {
     int h;
     int top;
     if (this->kind == 3) {
-        int v = *reinterpret_cast<int *>(&PaintCanvas::gCanvas->engine);
+        int v = Globals::layout->field_0x38;
         if (xm1 + v > px)
             return false;
         if (this->width + ((x + 1) - v) <= px)

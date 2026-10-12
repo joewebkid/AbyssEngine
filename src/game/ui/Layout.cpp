@@ -557,15 +557,13 @@ String Layout::formatCredits(int n) {
 }
 
 
-static PaintCanvas **g_bgCanvas = nullptr;
-
 void Layout::drawBGPattern(unsigned img, int x, int y, int w, int h) {
-    PaintCanvas *pc = *g_bgCanvas;
-    PaintCanvas::gCanvas->SetColor(this->drawColor);
-    int iw = PaintCanvas::gCanvas->GetImage2DWidth(img);
+    PaintCanvas *pc = Globals::Canvas;
+    pc->SetColor(this->drawColor);
+    int iw = pc->GetImage2DWidth(img);
     int cols = w / iw;
     int fullW = cols * iw;
-    int ih = PaintCanvas::gCanvas->GetImage2DHeight(img);
+    int ih = pc->GetImage2DHeight(img);
     int rows = h / ih;
     int fullH = rows * ih;
 

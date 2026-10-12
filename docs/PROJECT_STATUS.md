@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (TouchButton image handles; older subsystem
+Last reviewed: 2026-10-12 (TouchButton draw/hit and Layout pattern; older subsystem
 snapshots retain their dates)
+
+## TouchButton draw/hit and Layout pattern (2026-10-12)
+
+`TouchButton::draw` now uses the ARM-confirmed canvas/layout, frame
+mask, tint, label, overlay and progress coordinates instead of null
+holders and shifted arguments. Its kind-3 touch inset now reads
+`Globals::layout + 0x38`; the called `Layout::drawBGPattern` uses the
+live canvas. Native `gof2`, 206/206 ARM units, and 36 verifier tests
+pass (one skipped). Focused source-shape rises 85.9% to 93.3% for
+`draw`, 90.2% to 90.6% for `touchedInside`, and 93.6% to 94.6% for
+`drawBGPattern`. None is exact. Full corpus coverage remains
+4,323/4,524 original functions, with 92.41% average source-shape,
+80.68% strict fuzzy, 2,370 linked-exact and 1,008 byte-exact; no
+exact pair was lost. Live UI rendering and touch handling remain
+untested. See [the draw/pattern audit](TOUCHBUTTON_DRAW_LAYOUT_PATTERN_ARM_2026-10-12.md).
 
 ## TouchButton image-handle measurements (2026-10-12)
 
