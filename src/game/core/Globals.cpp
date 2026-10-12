@@ -354,6 +354,7 @@ AbyssEngine::ApplicationManager *ApplicationManager::gAppManager = nullptr;
 #include "game/world/SolarSystem.h"
 #include "game/core/String.h"
 #include "engine/math/BoundingSphere.h"
+#include "engine/math/BoundingAAB.h"
 
 #include <new>
 
@@ -373,8 +374,6 @@ int AERandom_nextIntB(int rng, int bound);
 void FileRead_ctor(void *self);
 
 void *FileRead_dtor(void *self);
-
-float VectorScale(void *vec, float scalar);
 
 void *Galaxy_dtor(void *g);
 
@@ -1300,14 +1299,8 @@ unsigned int Globals::createBillBoard(int halfExtentXY, int halfExtentZ,
     return meshOut;
 }
 
-void BoundingAAB_ctor(void *self, float x0, float y0, float z0, float x1, float y1,
-                                 float z1);
-
-static void *const gGWC_guardHolder = nullptr;
-
 Array<BoundingVolume *> *Globals::getWreckCollision(int kind, AEGeometry *geom) {
-    int *guardP = *(int **) gGWC_guardHolder;
-    volatile int saved = *guardP;
+    (void) geom;
 
     void *fr = ::operator new(1);
     FileRead_ctor(fr);
@@ -1318,9 +1311,6 @@ Array<BoundingVolume *> *Globals::getWreckCollision(int kind, AEGeometry *geom) 
     if (data != 0) {
         int count = (*data)[0];
 
-        float v[3] = {0, 0, 0};
-        float c[3] = {0, 0, 0};
-
         outArr = new Array<BoundingVolume *>();
         ArraySetLength((unsigned) count, *outArr);
 
@@ -1328,49 +1318,41 @@ Array<BoundingVolume *> *Globals::getWreckCollision(int kind, AEGeometry *geom) 
         for (int i = 0; i < count; i++) {
             int *base = data->data();
             int kindWord = base[pos];
-            void *bound = 0;
             if (kindWord == 1) {
                 int *rec = base + pos;
-                c[2] = (float) (-base[pos + 1]);
-                c[0] = (float) rec[2];
-                c[1] = (float) rec[3];
-                v[0] = (float) rec[4];
-                v[1] = (float) rec[5];
-                v[2] = (float) rec[6];
-                float mag = VectorScale(v, c[1]);
-                if (geom == 0) {
-                    mag = VectorScale(c, mag);
-                    VectorScale(v, mag);
+                Vector center{(float) -rec[1], (float) rec[3], (float) rec[2]};
+                Vector size{(float) rec[4], (float) rec[6], (float) rec[5]};
+                size *= 1.1f;
+                if (kind == 0) {
+                    center *= 2.0f;
+                    size *= 2.0f;
                 }
-                bound = ::operator new(0x2c);
-                BoundingAAB_ctor(bound, v[2] + v[2], c[1] + c[1], v[1] + v[1], c[2], c[0], v[0]);
+                (*outArr)[i] = new BoundingAAB(0.0f, 0.0f, 0.0f,
+                                                center.x, center.y, center.z,
+                                                size.x + size.x, size.y + size.y, size.z + size.z);
                 pos += 7;
             } else if (kindWord == 0) {
                 int *rec = base + pos;
-                c[2] = (float) (-base[pos + 1]);
-                c[0] = (float) rec[2];
-                c[1] = (float) rec[3];
-                v[0] = (float) rec[4];
-                VectorScale(v, v[0]);
-                float mag = v[0];
-                if (v[0] < 0.0f) {
-                    mag = VectorScale(v, v[0]);
+                Vector center{(float) -rec[1], (float) rec[3], (float) rec[2]};
+                Vector size{(float) rec[4], 0.0f, 0.0f};
+                size *= 0.6f;
+                if (size.x < 0.0f) {
+                    size *= -1.0f;
                 }
-                if (geom == 0) {
-                    mag = VectorScale(c, mag);
-                    VectorScale(v, mag);
+                if (kind == 0) {
+                    center *= 2.0f;
+                    size *= 2.0f;
                 }
-                bound = ::operator new(0x48);
-                new(bound) BoundingSphere(c[2], c[1], c[0], 0.0f, 0.0f, 0.0f, v[0]);
+                (*outArr)[i] = new BoundingSphere(0.0f, 0.0f, 0.0f,
+                                                   center.x, center.y, center.z, size.x);
                 pos += 5;
             } else {
                 pos += 1;
                 continue;
             }
-            (*outArr)[i] = reinterpret_cast<BoundingVolume *>(bound);
         }
 
-        ArrayRemoveAll(*data);
+        ArrayRelease(*data);
         delete data;
     }
 

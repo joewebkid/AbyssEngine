@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Globals createBillBoard; older subsystem
+Last reviewed: 2026-10-12 (Globals getWreckCollision; older subsystem
 snapshots retain their dates)
+
+## Globals wreck collision shapes (2026-10-12)
+
+`Globals::getWreckCollision` now reconstructs sphere and AAB records with
+the Android ARM-confirmed coordinate order, scaling factors, constructor
+arguments, and `kind == 0` doubling rule. The null guard dereference and
+untyped geometry constructor are gone; the input array uses the original
+release path. Native `gof2`, 206/206 ARM units, and 36 verifier tests pass
+(one skipped). Focused source-shape rises 90.8% to 97.2% and strict fuzzy
+41.6% to 56.7%; this function is not exact. Full corpus covers
+4,323/4,524 original functions at 92.35% average source-shape and 80.55%
+strict fuzzy, with 2,357 linked-exact and 1,008 byte-exact matches and no
+prior exact-pair losses. Live wreck collision behavior remains untested.
+See [the wreck collision audit](GLOBALS_WRECK_COLLISION_ARM_2026-10-12.md).
 
 ## Globals createBillBoard geometry and material (2026-10-12)
 
