@@ -18,8 +18,9 @@ used unresolved conversion, texture, GL, and mesh-draw shims. The method
 now computes the equivalent 2D affine matrix directly, forwards it as
 an `AEMath::Matrix` to the real Canvas method, and uses the real engine
 calls. The direct formula avoids `AEMath::operator*(Matrix, Matrix)`,
-whose current 15-float `Matrix` result writes `m[15]` out of bounds.
-That matrix ABI requires a separate audit; this patch does not change it.
+which at this snapshot wrote `m[15]` out of bounds on a 15-float result.
+The subsequent [matrix audit](MATRIX_CTOR_PRODUCT_ARM_2026-10-12.md)
+removes that write; this region patch did not change the matrix ABI.
 
 The host smoke extracts the unchanged production method body and checks
 out-of-range early return; the source crop, vertex, and index writes;
@@ -47,5 +48,6 @@ texture/matrix/cull/draw/cull call sequence.
 
 The fixture does not render original assets, execute real OpenGL, or
 establish ARM32 runtime correctness. Remaining recovery includes the
-other `DrawRegion2D` overload and the `AEMath::Matrix` size/product
-contract; audit that ABI before attempting source-shape parity here.
+other `DrawRegion2D` overload and the `AEMath::Matrix` size contract.
+The subsequent matrix audit fixes the product bounds but not every
+remaining matrix-layout question.

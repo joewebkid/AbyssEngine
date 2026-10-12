@@ -135,6 +135,16 @@ rotation/pivot matrix, and draw-call order with fixture services. It
 does not execute OpenGL or the full game. See
 [the transform audit](PAINTCANVAS_REGION_TRANSFORM_ARM_2026-10-12.md).
 
+```powershell
+python tools/run_native_math_link_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `Matrix constructor/product host smoke: OK`. The runner
+compiles the production math units, checks the native default matrix,
+matrix product, and pre-existing assignment/operators, and removes its
+temporary executable. This does not establish ARM runtime or the full
+matrix owner layout. See [the matrix audit](MATRIX_CTOR_PRODUCT_ARM_2026-10-12.md).
+
 Windows note: the wrapper names are still `orbcc`, `orbnm`, `orbas`, and
 `orbobjdump`, but they now also support a local NDK r18b fallback. Set
 `GOF2_VERIFY_LOCAL_NDK=1` and keep the NDK at `.cache/ndk/android-ndk-r18b`, or

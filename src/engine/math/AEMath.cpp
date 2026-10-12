@@ -280,7 +280,6 @@ namespace AbyssEngine {
             result.m[12] = lhs.m[12] * rhs.m[12];
             result.m[13] = lhs.m[13] * rhs.m[13];
             result.m[14] = lhs.m[14] * rhs.m[14];
-            result.m[15] = 1.0f;
 
             return result;
         }

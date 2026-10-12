@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (PaintCanvas region transform; older subsystem
+Last reviewed: 2026-10-12 (AEMath matrix constructor/product; older subsystem
 snapshots retain their dates)
+
+## AEMath matrix constructor and product (2026-10-12)
+
+Android ARM at `0x6e8d8` confirms that the default `Matrix` has ones at
+`m[10]` and `m[13]`; the local constructor had zeros. The constructor now
+scores 100% strict fuzzy and source-shape, up from 50.0% / 78.7%, but
+is not linked- or byte-exact. The Android matrix product at `0x802c8`
+writes only `m[0..14]`; the local out-of-bounds `m[15]` store is gone.
+Product source-shape moves 48.6% to 47.9%, strict fuzzy stays 2.2%,
+and it remains non-exact. A native constructor/product smoke, native
+`gof2`, 206/206 ARM units, and 36 verifier tests pass (one skipped).
+The full corpus stays 4,323/4,524 original functions covered with 201
+missing, 2,376 linked-exact and 1,008 byte-exact; exact symbol sets are
+unchanged. Average source-shape rises 92.5321% to 92.5365%, strict
+fuzzy 80.8034% to 80.8140%. This does not settle the 60/64-byte
+matrix layout in every owner or prove native/ARM game runtime. Next
+audit remaining `m[15]` writes in `PaintCanvas` against their actual
+buffer/object bounds. See [the matrix audit](MATRIX_CTOR_PRODUCT_ARM_2026-10-12.md).
 
 ## PaintCanvas cropped-region transform (2026-10-12)
 
@@ -19,8 +37,8 @@ remains 4,323/4,524 functions covered and 201 missing, with 2,376
 linked-exact and 1,008 byte-exact pairs and no exact-symbol loss.
 Average source-shape moves 92.5338% to 92.5321%; strict fuzzy moves
 80.8033% to 80.8034%. The host fixture does not prove real GL output
-or ARM runtime. Next audit `AEMath::Matrix`'s 60/64-byte layout and
-out-of-bounds product path before recovering the other region overload.
+or ARM runtime. The subsequent matrix audit removes the product's
+out-of-bounds store; other matrix-boundary questions remain.
 See [the region-transform audit](PAINTCANVAS_REGION_TRANSFORM_ARM_2026-10-12.md).
 
 ## StatusWindow standing-bar geometry (2026-10-12)
