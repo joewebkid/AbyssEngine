@@ -1640,15 +1640,9 @@ void Globals::setCoordsFire(int p1, int p2, unsigned p3, unsigned p4,
     }
 }
 
-static void *const gRR_arg = nullptr;
-
 void Globals::releaseResources() {
-    PaintCanvas::gCanvas->ReleaseAllResources();
-
-    PaintCanvas *secondaryCanvas = *(PaintCanvas **) gRR_arg;
-    if (secondaryCanvas != nullptr) {
-        secondaryCanvas->ReleaseAllResources();
-    }
+    Globals::Canvas->ReleaseAllResources();
+    Globals::layout->reload();
 }
 
 static inline unsigned int &globals_font_slot(void *&slot) {

@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Globals reportLeaderboards; older subsystem
+Last reviewed: 2026-10-12 (Globals releaseResources; older subsystem
 snapshots retain their dates)
+
+## Globals resource-release handoff (2026-10-12)
+
+`Globals::releaseResources` now releases resources on `Globals::Canvas`
+and reloads `Globals::layout`, matching the Android ARM call sequence.
+The former null secondary-canvas placeholder is gone. Native `gof2`,
+206/206 ARM units, and 36 verifier tests pass (one skipped). Focused
+source-shape rises 44.2% to 100% and strict fuzzy 57.1% to 100%; the
+function becomes linked-exact, not byte-exact. Full corpus remains
+4,323/4,524 original functions covered, with 92.37% average source-shape,
+80.57% strict fuzzy, 2,360 linked-exact and 1,008 byte-exact matches;
+no previous exact pair was lost. The called `Layout::reload` still has
+null global bindings, so live resource reload is not yet verified. That
+function is the next priority. See
+[the resource-release audit](GLOBALS_RELEASE_RESOURCES_ARM_2026-10-12.md).
 
 ## Globals leaderboard score handoff (2026-10-12)
 
