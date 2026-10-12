@@ -116,6 +116,15 @@ production throttle method and checks its color, region/text calls, and
 inactive branch with fixture services; it does not run original assets or
 the full game. See [the region-call audit](REGION_CALL_THROTTLE_ARM_2026-10-12.md).
 
+```powershell
+python tools/run_status_standing_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `StatusWindow standing host smoke: OK`. This extracts
+only the production standing-bar block, checking geometry and region/image
+calls with fixtures; it does not execute the whole window. See
+[the standing-bar audit](STATUS_STANDING_REGION_ARM_2026-10-12.md).
+
 Windows note: the wrapper names are still `orbcc`, `orbnm`, `orbas`, and
 `orbobjdump`, but they now also support a local NDK r18b fallback. Set
 `GOF2_VERIFY_LOCAL_NDK=1` and keep the NDK at `.cache/ndk/android-ndk-r18b`, or

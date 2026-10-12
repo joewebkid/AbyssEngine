@@ -512,27 +512,34 @@ void StatusWindow::draw() {
         tw = canvas->GetTextWidth((unsigned) (uintptr_t) font, hpStr);
         canvas->DrawString((unsigned) (uintptr_t) font, hpStr, ((y + x0) - pad) - tw, y, false);
 
+        // ARM 0x15831c: the standing row follows the second stats header and boxes.
+        int standingRowY = y + layout->field_0x2d8 + layout->field_0x1c + pad * 3;
+        int standingCenterY = pad + this->charImageHeight + standingRowY -
+                              (this->charImageHeight >> 1);
+        int standingBarY = standingCenterY - (this->standingBarHeight >> 1);
         int standingX0 = x0 + (boxW >> 2);
         Standing *standing = Status::gStatus->getStanding();
         float rate = standing->getStandingRate(0);
-        canvas->DrawImage2D(this->standingEmblemImage, standingX0, y, (unsigned char) '\x11');
+        canvas->DrawImage2D(this->standingEmblemImage, standingX0, standingBarY,
+                            (unsigned char) 0x11, (unsigned char) 0x14);
         canvas->DrawRegion2D(this->standingBarImage, this->standingBarWidth, 0,
                              (int) -(rate * (float) this->standingBarWidth), this->standingBarHeight,
-                             -(rate * (float) this->standingBarWidth), 0, 0, 0, standingX0);
+                             0.0f, 0, 0, standingX0, standingBarY);
         canvas->DrawImage2D(this->standingFrameImage,
                             (int) ((float) standingX0 - rate * (float) this->standingBarWidth),
-                            y, (unsigned char) '\x11');
+                            standingCenterY, (unsigned char) 0x11, (unsigned char) 0x44);
 
         int standingX1 = (boxW - ((boxW - pad * 2) >> 2)) + pad * 2;
         Standing *standing2 = Status::gStatus->getStanding();
         float rate2 = standing2->getStandingRate(1);
-        canvas->DrawImage2D(this->standingEmblemImage, standingX1, y, (unsigned char) '\x11');
+        canvas->DrawImage2D(this->standingEmblemImage, standingX1, standingBarY,
+                            (unsigned char) 0x11, (unsigned char) 0x14);
         canvas->DrawRegion2D(this->standingBarImage, this->standingBarWidth, 0,
                              (int) -(rate2 * (float) this->standingBarWidth), this->standingBarHeight,
-                             -(rate2 * (float) this->standingBarWidth), 0, 0, 0, standingX1);
+                             0.0f, 0, 0, standingX1, standingBarY);
         canvas->DrawImage2D(this->standingFrameImage,
                             (int) ((float) standingX1 - rate2 * (float) this->standingBarWidth),
-                            y, (unsigned char) '\x11');
+                            standingCenterY, (unsigned char) 0x11, (unsigned char) 0x44);
 
         Status *st = Status::gStatus;
         String rowStr;

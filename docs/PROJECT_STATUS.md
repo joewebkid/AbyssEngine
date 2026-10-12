@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (region-call ABI and PlayerEgo throttle; older subsystem
+Last reviewed: 2026-10-12 (StatusWindow standing bars; older subsystem
 snapshots retain their dates)
+
+## StatusWindow standing-bar geometry (2026-10-12)
+
+Android ARM-backed row and baseline geometry now positions both standing
+emblems, cropped bars, and frames after the second stats header. Both
+`DrawRegion2D` calls pass zero rotation and actual destination X/Y;
+image flags are restored. A production-block host smoke, native `gof2`,
+206/206 ARM units, and 36 verifier tests pass (one skipped). The very
+large `StatusWindow::draw` still measures 2.6% source-shape / 1.4%
+strict fuzzy and is non-exact. Full corpus stays 4,323/4,524 covered,
+201 missing, 92.53% average source-shape, 80.80% strict fuzzy,
+2,376 linked-exact, and 1,008 byte-exact; exact symbol sets are
+unchanged. The rest of the window still has null service holders and
+unrecovered UI paths; real rendering is untested. Next audit the
+shared `PaintCanvas::DrawRegion2D` transform path, whose angle is
+currently ignored. See
+[the standing-bar audit](STATUS_STANDING_REGION_ARM_2026-10-12.md).
 
 ## Region-call ABI and PlayerEgo throttle (2026-10-12)
 
@@ -17,8 +34,9 @@ strict fuzzy 31.2% to 57.1%; mining `render2D` remains 25.6% /
 201 missing, 2,376 linked-exact and 1,008 byte-exact, with no exact
 symbol-set loss. Averages are 92.53% source-shape and 80.80% strict
 fuzzy. The shared canvas region renderer still ignores the angle,
-and `StatusWindow::draw` has two displaced standing-bar calls; audit
-that caller before changing the shared renderer. Original assets and
+and `StatusWindow::draw` had two displaced standing-bar calls. The subsequent
+[standing-bar audit](STATUS_STANDING_REGION_ARM_2026-10-12.md) corrects
+those calls. Original assets and
 full-game/ARM runtime remain untested. See
 [the region-call audit](REGION_CALL_THROTTLE_ARM_2026-10-12.md).
 

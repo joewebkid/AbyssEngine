@@ -53,3 +53,6 @@ the latter's row coordinates require a separate source audit. The
 shared `PaintCanvas::DrawRegion2D` callee itself still ignores its
 rotation argument. Audit the remaining caller before changing that
 shared renderer, then test the renderer's transform path.
+
+The subsequent [standing-bar audit](STATUS_STANDING_REGION_ARM_2026-10-12.md)
+corrects those two calls; the shared renderer remains unverified.
