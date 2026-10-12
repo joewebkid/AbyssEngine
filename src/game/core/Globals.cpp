@@ -621,35 +621,16 @@ void Globals::longToTimeString(long long ms, String &out) {
     return;
 }
 
-static void *const gGBS_guardHolder = nullptr;
-static void *const gGBS_strPtr = nullptr;
-static void *const gGBS_canvas = nullptr;
-static const char gGBS_prefix[] = "";
+static const char gGBS_suffix[] = "...";
 
 String Globals::getBoundedString(const String &text, int width) {
-    int *guardP = *(int **) gGBS_guardHolder;
-    volatile int saved = *guardP;
-
-    String result;
-    result.Set((const_cast<String *>(&text))->data);
-
-    String **strPtr = *(String ***) gGBS_strPtr;
-    int **canvas = *(int ***) gGBS_canvas;
-    int w = ((PaintCanvas *) (long) **canvas)->GetTextWidth(0, **strPtr);
-    if (width < w) {
-        String *line = (String *) ::operator new(0xc);
-        { String *_s = line; if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-
-        int font = (int) (long) *strPtr;
-        String tmpText;
-        tmpText.Set((const_cast<String *>(&text))->data);
-        Globals::gGlobals->getLine((unsigned) font, tmpText, width - 3, line);
-
-        String prefix;
-        prefix.ctor_char(gGBS_prefix, false);
-        result = prefix + *line;
-
-        { String *_s = line; if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
+    String result(text, false);
+    if (Globals::Canvas->GetTextWidth(Globals::font, text) > width) {
+        String *line = new String();
+        getLine(Globals::font, String(text, false), width - 3, line);
+        String suffix(gGBS_suffix, false);
+        result = *line + suffix;
+        delete line;
     }
 
     return result;

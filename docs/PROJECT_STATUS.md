@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Globals getLineArray newline; older subsystem
+Last reviewed: 2026-10-12 (Globals getBoundedString; older subsystem
 snapshots retain their dates)
+
+## Globals getBoundedString repair (2026-10-12)
+
+`Globals::getBoundedString` now measures through the live canvas and font,
+appends the ARM-confirmed `"..."` after the shortened line, and destroys
+its temporary heap string. Native `gof2`, 206/206 ARM units, and 36
+verifier tests pass (one skipped). Focused source-shape rose 82.2% to
+100.0% and strict fuzzy 37.8% to 91.8%; no exact match was gained.
+Full corpus remains 4,323/4,524 original functions covered and 92.33%
+source-shape; strict fuzzy rises 80.47% to 80.48%, with 2,353
+linked-exact and 1,008 byte-exact preserved. Live text-width/UI behavior
+remains untested. See
+[the bounded-string audit](GLOBALS_BOUNDED_STRING_ARM_2026-10-12.md).
 
 ## Globals getLineArray trailing newline (2026-10-11)
 
