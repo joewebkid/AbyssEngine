@@ -442,11 +442,8 @@ void Globals::startNewSoundResourceList() {
     ArrayAdd<int>(0x7b, *this->soundResources);
 }
 
-static void *const gItemNameGameText = nullptr;
-
 String Globals::getItemName(int item) {
-    String *src = (String *) ((GameText *) (*(void **) gItemNameGameText))->getText(item + 0x4fa);
-    return *(String *) src;
+    return String(*Globals::gameText->getText(item + 0x4fa), false);
 }
 
 String Globals::getKeyActionName(int action) {

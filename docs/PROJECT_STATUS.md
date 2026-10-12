@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Globals getWreckCollision; older subsystem
+Last reviewed: 2026-10-12 (Globals getItemName; older subsystem
 snapshots retain their dates)
+
+## Globals item name lookup (2026-10-12)
+
+`Globals::getItemName` now reads through the real `Globals::gameText`
+pointer and uses the ARM-confirmed `String` copy constructor with `false`,
+instead of dereferencing a null placeholder. Native `gof2`, 206/206 ARM
+units, and 36 verifier tests pass (one skipped). Focused source-shape rises
+82.0% to 100% and strict fuzzy 66.7% to 100%; the function becomes
+linked-exact, not byte-exact. Full corpus remains 4,323/4,524 original
+functions covered, with 92.36% average source-shape, 80.55% strict fuzzy,
+2,358 linked-exact and 1,008 byte-exact matches. No prior exact pair was
+lost. Live text lookup remains untested. Next priority:
+`Globals::reportLeaderboards`, whose output still targets a null placeholder.
+See [the item name audit](GLOBALS_ITEM_NAME_ARM_2026-10-12.md).
 
 ## Globals wreck collision shapes (2026-10-12)
 
