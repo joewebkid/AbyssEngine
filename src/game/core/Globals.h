@@ -99,7 +99,8 @@ public:
                        unsigned short &o14, unsigned short &o15, unsigned short &o16,
                        unsigned short &o17);
 
-    unsigned int createBillBoard(int p1, int height, float u0, float v0, float u1, float v1, int width);
+    unsigned int createBillBoard(int halfExtentXY, int halfExtentZ, float u0, float v0,
+                                 float u1, float v1, int materialResId);
 
     Array<BoundingVolume *> *getWreckCollision(int kind, AEGeometry *geom);
 

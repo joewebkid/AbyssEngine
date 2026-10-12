@@ -357,7 +357,6 @@ AbyssEngine::ApplicationManager *ApplicationManager::gAppManager = nullptr;
 
 #include <new>
 
-float VectorSignedToFloat(int v, int mode);
 
 float VectorUnsignedToFloat(unsigned v, int mode);
 
@@ -1255,59 +1254,48 @@ void Globals::drawLines(unsigned int font, Array<String *> *lines, int baseX, in
     }
 }
 
-static void *const gCBB_counter = nullptr;
-static void *const gCBB_canvas = nullptr;
-
-unsigned int Globals::createBillBoard(int p1, int height, float u0, float v0, float u1, float v1,
-                                      int width) {
-    (void) p1;
-    unsigned *counter = *(unsigned **) gCBB_counter;
-    int *canvasP = *(int **) gCBB_canvas;
-    int snapshot = *counter;
-
+unsigned int Globals::createBillBoard(int halfExtentXY, int halfExtentZ,
+                                      float u0, float v0, float u1, float v1,
+                                      int materialResId) {
     unsigned int meshOut = 0;
-    ((PaintCanvas *) (long) *canvasP)->MeshCreate((unsigned short) 0xc, (unsigned short) 6, (signed char) 0x13,
-                                                  (unsigned short) 0, meshOut);
-    int mesh = (int) meshOut;
-    int cv = *canvasP;
+    Globals::Canvas->MeshCreate(12, 6, 19, (unsigned short) materialResId, meshOut);
 
-    PaintCanvas *meshCanvas = (PaintCanvas *) (long) cv;
-    meshCanvas->MeshSetTriangle((unsigned int) mesh, 0, 0, 1, 2);
-    meshCanvas->MeshSetTriangle((unsigned int) mesh, 1, 2, 1, 3);
-    meshCanvas->MeshSetTriangle((unsigned int) mesh, 2, 4, 5, 6);
-    meshCanvas->MeshSetTriangle((unsigned int) mesh, 3, 6, 5, 7);
-    meshCanvas->MeshSetTriangle((unsigned int) mesh, 4, 8, 9, 10);
-    meshCanvas->MeshSetTriangle((unsigned int) mesh, 5, 10, 9, 0xb);
+    Globals::Canvas->MeshSetTriangle(meshOut, 0, 0, 1, 2);
+    Globals::Canvas->MeshSetTriangle(meshOut, 1, 2, 1, 3);
+    Globals::Canvas->MeshSetTriangle(meshOut, 2, 4, 5, 6);
+    Globals::Canvas->MeshSetTriangle(meshOut, 3, 6, 5, 7);
+    Globals::Canvas->MeshSetTriangle(meshOut, 4, 8, 9, 10);
+    Globals::Canvas->MeshSetTriangle(meshOut, 5, 10, 9, 11);
 
-    meshCanvas->MeshSetUv((unsigned int) mesh, 0, u0, 0);
-    meshCanvas->MeshSetUv((unsigned int) mesh, 1, u1, 0);
-    meshCanvas->MeshSetUv((unsigned int) mesh, 2, v1, u0);
-    meshCanvas->MeshSetUv((unsigned int) mesh, 3, v1, v0);
-    meshCanvas->MeshSetUv((unsigned int) mesh, 4, u0, 0);
-    meshCanvas->MeshSetUv((unsigned int) mesh, 5, u1, 0);
-    meshCanvas->MeshSetUv((unsigned int) mesh, 6, v1, u0);
-    meshCanvas->MeshSetUv((unsigned int) mesh, 7, v1, v0);
-    meshCanvas->MeshSetUv((unsigned int) mesh, 8, u0, 0);
-    meshCanvas->MeshSetUv((unsigned int) mesh, 9, u1, 0);
-    meshCanvas->MeshSetUv((unsigned int) mesh, 10, v1, u0);
-    meshCanvas->MeshSetUv((unsigned int) mesh, 0xb, v1, v0);
+    Globals::Canvas->MeshSetUv(meshOut, 0, u0, v0);
+    Globals::Canvas->MeshSetUv(meshOut, 1, u0, v1);
+    Globals::Canvas->MeshSetUv(meshOut, 2, u1, v0);
+    Globals::Canvas->MeshSetUv(meshOut, 3, u1, v1);
+    Globals::Canvas->MeshSetUv(meshOut, 4, u0, v0);
+    Globals::Canvas->MeshSetUv(meshOut, 5, u0, v1);
+    Globals::Canvas->MeshSetUv(meshOut, 6, u1, v0);
+    Globals::Canvas->MeshSetUv(meshOut, 7, u1, v1);
+    Globals::Canvas->MeshSetUv(meshOut, 8, u0, v0);
+    Globals::Canvas->MeshSetUv(meshOut, 9, u0, v1);
+    Globals::Canvas->MeshSetUv(meshOut, 10, u1, v0);
+    Globals::Canvas->MeshSetUv(meshOut, 11, u1, v1);
 
-    float pw = VectorSignedToFloat(width, 0);
-    float nh = VectorSignedToFloat(-height, 0);
-    meshCanvas->MeshSetPoint((unsigned int) mesh, 0, nh, 0, pw);
-    float nw = VectorSignedToFloat(-width, 0);
-    meshCanvas->MeshSetPoint((unsigned int) mesh, 1, nh, 0, nw);
-    float ph = VectorSignedToFloat(height, 0);
-    meshCanvas->MeshSetPoint((unsigned int) mesh, 2, ph, 0, pw);
-    meshCanvas->MeshSetPoint((unsigned int) mesh, 3, ph, 0, nw);
-    meshCanvas->MeshSetPoint((unsigned int) mesh, 4, 0, nh, pw);
-    meshCanvas->MeshSetPoint((unsigned int) mesh, 5, 0, nh, nw);
-    meshCanvas->MeshSetPoint((unsigned int) mesh, 6, 0, ph, pw);
-    meshCanvas->MeshSetPoint((unsigned int) mesh, 7, 0, ph, nw);
-    meshCanvas->MeshSetPoint((unsigned int) mesh, 8, nh, ph, 0);
-    meshCanvas->MeshSetPoint((unsigned int) mesh, 9, nh, nh, 0);
-    meshCanvas->MeshSetPoint((unsigned int) mesh, 10, ph, ph, 0);
-    meshCanvas->MeshSetPoint((unsigned int) mesh, 0xb, ph, nh, 0);
+    float negXY = (float) -halfExtentXY;
+    float posXY = (float) halfExtentXY;
+    float posZ = (float) halfExtentZ;
+    float negZ = (float) -halfExtentZ;
+    Globals::Canvas->MeshSetPoint(meshOut, 0, negXY, 0.0f, posZ);
+    Globals::Canvas->MeshSetPoint(meshOut, 1, negXY, 0.0f, negZ);
+    Globals::Canvas->MeshSetPoint(meshOut, 2, posXY, 0.0f, posZ);
+    Globals::Canvas->MeshSetPoint(meshOut, 3, posXY, 0.0f, negZ);
+    Globals::Canvas->MeshSetPoint(meshOut, 4, 0.0f, negXY, posZ);
+    Globals::Canvas->MeshSetPoint(meshOut, 5, 0.0f, negXY, negZ);
+    Globals::Canvas->MeshSetPoint(meshOut, 6, 0.0f, posXY, posZ);
+    Globals::Canvas->MeshSetPoint(meshOut, 7, 0.0f, posXY, negZ);
+    Globals::Canvas->MeshSetPoint(meshOut, 8, negXY, posXY, 0.0f);
+    Globals::Canvas->MeshSetPoint(meshOut, 9, negXY, negXY, 0.0f);
+    Globals::Canvas->MeshSetPoint(meshOut, 10, posXY, posXY, 0.0f);
+    Globals::Canvas->MeshSetPoint(meshOut, 11, posXY, negXY, 0.0f);
 
     return meshOut;
 }

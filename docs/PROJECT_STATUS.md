@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Globals getRandomEnemyFighter; older subsystem
+Last reviewed: 2026-10-12 (Globals createBillBoard; older subsystem
 snapshots retain their dates)
+
+## Globals createBillBoard geometry and material (2026-10-12)
+
+`Globals::createBillBoard` now uses the live canvas, the ARM-confirmed
+material resource ID, UV corners, and geometric extents instead of null
+placeholders and miswired arguments. Native `gof2`, 206/206 ARM units,
+and 36 verifier tests pass (one skipped). Focused source-shape and
+strict fuzzy both reach 100%, adding one linked-exact match. Full corpus
+remains 4,323/4,524 original functions covered and 92.35% average
+source-shape; strict fuzzy rises 80.52% to 80.54%, linked-exact 2,355
+to 2,356, with 1,008 byte-exact and no exact-pair losses. Live
+starfield rendering remains untested. See
+[the billboard audit](GLOBALS_CREATE_BILLBOARD_ARM_2026-10-12.md).
 
 ## Globals random enemy fighter source (2026-10-12)
 
