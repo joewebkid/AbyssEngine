@@ -16,6 +16,11 @@ Fade assertions were added after the original pattern audit; their
 ARM evidence and current metrics are recorded in
 [the Layout fade audit](LAYOUT_DRAW_FADE_ARM_2026-10-12.md).
 
+The three footer wrappers and common renderer were subsequently added to
+the same host smoke. Their source evidence, assertions, and current
+metrics are recorded in
+[the Layout footer audit](LAYOUT_FOOTER_ARM_2026-10-12.md).
+
 The first expanded host run exposed a real coordinate error in
 `Layout::drawBGPattern`: the right partial-width strip started at
 `y + fullH`, overlapping the bottom remainder, instead of at `y`.

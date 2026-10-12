@@ -4,8 +4,12 @@
 #include "game/core/Globals.h"
 #include "engine/audio/FModSound.h"
 #include "engine/render/PaintCanvas.h"
+#include "game/mission/Status.h"
+#include "game/ship/Ship.h"
 #include <cassert>
 #include <cstdio>
+#include <cstring>
+#include <string>
 #include <vector>
 
 Layout *Globals::layout = nullptr;
@@ -14,9 +18,54 @@ PaintCanvas *Globals::Canvas = nullptr;
 unsigned int Globals::font = 5;
 int Globals::w = 480;
 int Globals::h = 320;
+Status *Globals::status = nullptr;
 
 AbyssEngine::String::String() : data(nullptr), length(0) {}
-AbyssEngine::String::~String() = default;
+AbyssEngine::String::String(const char *text, bool) : data(nullptr), length(0) { Set(text); }
+AbyssEngine::String::String(int value) : data(nullptr), length(0) {
+    Set(std::to_string(value).c_str());
+}
+AbyssEngine::String::~String() { delete[] data; }
+void AbyssEngine::String::Set(const char *text) {
+    const int size = text ? int(std::strlen(text)) : 0;
+    auto *next = new unsigned short[size + 1];
+    for (int i = 0; i < size; ++i) next[i] = (unsigned char) text[i];
+    next[size] = 0;
+    delete[] data;
+    data = next;
+    length = size;
+}
+void AbyssEngine::String::Set(const unsigned short *text) {
+    int size = 0;
+    if (text) while (text[size]) ++size;
+    auto *next = new unsigned short[size + 1];
+    for (int i = 0; i < size; ++i) next[i] = text[i];
+    next[size] = 0;
+    delete[] data;
+    data = next;
+    length = size;
+}
+namespace AbyssEngine {
+String operator+(const String &left, const String &right) {
+    String joined;
+    joined.length = left.length + right.length;
+    joined.data = new unsigned short[joined.length + 1];
+    for (int i = 0; i < left.length; ++i) joined.data[i] = left.data[i];
+    for (int i = 0; i < right.length; ++i) joined.data[left.length + i] = right.data[i];
+    joined.data[joined.length] = 0;
+    return joined;
+}
+}
+Ship::Ship(int, int, int load, int, int, int, int, int, float)
+    : baseLoad(load), currentLoad(0), cargoPlus(0) {}
+Ship::~Ship() = default;
+int Ship::getCurrentLoad() { return currentLoad; }
+int Ship::getMaxLoad() { return baseLoad + cargoPlus; }
+Status::Status() : ship(nullptr), credits(0) {}
+Status::~Status() = default;
+Ship *Status::getShip() { return ship; }
+int Status::getCredits() { return credits; }
+String Layout::formatCredits(int value) { return String(value) + String("$"); }
 Layout::Layout() { field_0x38 = 0; drawColor = -1; }
 Layout::~Layout() = default;
 FModSound::FModSound() = default;
@@ -25,9 +74,9 @@ AbyssEngine::AEMath::Matrix::Matrix() = default;
 PaintCanvas::PaintCanvas(Engine *value) { engine = value; }
 PaintCanvas::~PaintCanvas() = default;
 
-struct ImageCall { unsigned int id; int x, y; };
+struct ImageCall { unsigned int id; int x, y; unsigned char flagsA, flagsB; };
 struct RegionCall { unsigned int id; int width, height, x, y; };
-struct TextCall { unsigned int font; int x, y; };
+struct TextCall { unsigned int font; int x, y; std::string content; };
 struct FillCall { int x, y, width, height; unsigned int color; };
 static std::vector<ImageCall> images;
 static std::vector<RegionCall> regions;
@@ -48,12 +97,17 @@ int PaintCanvas::GetImage2DWidth(unsigned int) { return 10; }
 int PaintCanvas::GetImage2DHeight(unsigned int) { return 20; }
 int PaintCanvas::GetTextWidth(unsigned int, const String &) { return 8; }
 int PaintCanvas::GetTextHeight(unsigned int) { return 8; }
-void PaintCanvas::DrawImage2D(unsigned int id, int x, int y) { ::images.push_back({id, x, y}); }
-void PaintCanvas::DrawImage2D(unsigned int id, int x, int y, unsigned char, unsigned char) {
-    ::images.push_back({id, x, y});
+void PaintCanvas::DrawImage2D(unsigned int id, int x, int y) { ::images.push_back({id, x, y, 0, 0}); }
+void PaintCanvas::DrawImage2D(unsigned int id, int x, int y, unsigned char flags) {
+    ::images.push_back({id, x, y, flags, 0});
 }
-void PaintCanvas::DrawString(unsigned int font, const String &, int x, int y, bool) {
-    texts.push_back({font, x, y});
+void PaintCanvas::DrawImage2D(unsigned int id, int x, int y, unsigned char a, unsigned char b) {
+    ::images.push_back({id, x, y, a, b});
+}
+void PaintCanvas::DrawString(unsigned int font, const String &value, int x, int y, bool) {
+    std::string content;
+    for (int i = 0; i < value.length; ++i) content.push_back(char(value.data[i]));
+    texts.push_back({font, x, y, content});
 }
 void PaintCanvas::FillRectangle(int x, int y, int width, int height) {
     fills.push_back({x, y, width, height, currentColor});
@@ -220,6 +274,53 @@ int main() {
     layout.fadeDuration = 0;
     assert(layout.drawFade() == 1 && fills.size() == 1);
     assert(fills[0].color == 0x112233ff && currentColor == 0x12345678);
+
+    Ship ship(0, 0, 20, 0, 0, 0, 0, 0, 0.0f);
+    Status status;
+    ship.currentLoad = 25;
+    status.ship = &ship;
+    status.credits = 123;
+    Globals::status = &status;
+    layout.windowX = 4;
+    layout.windowY = 5;
+    layout.windowWidth = 80;
+    layout.windowHeight = 40;
+    layout.field_0x10 = 20;
+    layout.field_0x74 = 15;
+    layout.footerTextInset = 3;
+    layout.footerImageLeft = 21;
+    layout.footerImageRight = 22;
+    layout.field_0x338 = 23;
+    layout.drawColor = -1;
+    TouchButton back(16, 1, 2, 10, 0);
+    TouchButton secondary(16, 2, 3, 10, 0);
+    back.imgFrameL = 31;
+    secondary.imgFrameL = 32;
+    layout.backButton = &back;
+    layout.secondaryButton = &secondary;
+
+    clearDraws();
+    layout.drawFooter();
+    assert(back.visible && imageAt(31, 1, 2) && !imageAt(32, 2, 3));
+    assert(imageAt(21, 4, 45) && imageAt(22, 14, 25));
+    assert(images[0].flagsA == 0x11 && images[0].flagsB == 0x21);
+    assert(sawColor(0xff2a00ff));
+    assert(texts.size() == 2 && texts[0].content == "25 / 20t");
+    assert(texts[0].font == 5 && texts[0].x == 40 && texts[0].y == 42);
+    assert(texts[1].content == "123$" && texts[1].x == 66 && texts[1].y == 42);
+
+    clearDraws();
+    layout.drawFooterNoBackButton();
+    assert(!back.visible && !imageAt(31, 1, 2) && !imageAt(32, 2, 3));
+    assert(texts.size() == 2 && texts[0].content == "25 / 20t");
+
+    clearDraws();
+    ship.currentLoad = 15;
+    layout.drawFooterStation();
+    assert(!back.visible && !imageAt(31, 1, 2) && imageAt(32, 2, 3));
+    assert(!sawColor(0xff2a00ff));
+    assert(texts.size() == 2 && texts[0].content == "15 / 20t");
+    assert(texts[1].content == "123$" && texts[1].x == 65 && texts[1].y == 42);
 
     clearDraws();
     layout.fadeProgress = 200;

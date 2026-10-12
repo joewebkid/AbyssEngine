@@ -24,7 +24,10 @@ def main():
 #include "game/ui/Layout.h"
 #include "game/core/Globals.h"
 #include "engine/audio/FModSound.h"
+#include "game/mission/Status.h"
+#include "game/ship/Ship.h"
 '''
+    extracted += function(source, "void TouchButton::setVisible(")
     for signature in ("bool TouchButton::touchedInside(",
                       "bool TouchButton::OnTouchBegin(",
                       "unsigned int TouchButton::OnTouchMove(",
@@ -38,6 +41,11 @@ def main():
     extracted += function(layout, "void Layout::setDrawColor(")
     extracted += function(layout, "void Layout::drawBGPattern(")
     extracted += function(layout, "uint8_t Layout::drawFade(")
+    for signature in ("void Layout::drawFooterNoBackButton(",
+                      "void Layout::drawFooter()",
+                      "void Layout::drawFooterStation(",
+                      "void Layout::drawFooter(bool"):
+        extracted += function(layout, signature)
 
     with tempfile.TemporaryDirectory(prefix="touchbutton-smoke-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "production_touch.cpp"

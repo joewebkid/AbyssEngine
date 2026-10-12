@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Layout fade/full-screen fill; older subsystem
+Last reviewed: 2026-10-12 (Layout footer routing and bindings; older subsystem
 snapshots retain their dates)
+
+## Layout footer routing and global bindings (2026-10-12)
+
+The three `drawFooter*` wrappers now forward to one shared renderer,
+as in Android ARM. That renderer uses the live Canvas, layout metrics,
+status and font instead of null holders, restores the cargo warning
+color and `" / "`/`"t"` load label, and draws no secondary button in
+no-back mode. Native `gof2`, 206/206 ARM units, the focused UI host
+smoke, and 36 verifier tests pass (one skipped). Focused source-shape
+rises from 4.0% to 100% for each wrapper and from 11.3% to 93.4%
+for the shared renderer; none is exact. Full corpus coverage remains
+4,323/4,524 original functions; averages rise to 92.50% source-shape
+and 80.75% strict fuzzy, with 2,373 linked-exact and 1,008 byte-exact.
+No exact pair was lost. Real assets, original string internals, and
+full-game UI runtime are not tested. Next audit the still-null canvas
+holder in `Layout::getFooterTransitionWidth`. See
+[the footer audit](LAYOUT_FOOTER_ARM_2026-10-12.md).
 
 ## Layout fade and full-screen fill (2026-10-12)
 

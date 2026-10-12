@@ -119,160 +119,12 @@ uint8_t Layout::helpPressed() {
 }
 
 
-static PaintCanvas **g_dfCanvas = nullptr;
-
-static int **g_dfMetric = nullptr;
-
-static int g_dfWarnColor = 0;
-
-static const char g_dfSep[] = "";
-
-static const char g_dfTail[] = "";
-
-static void **g_dfFont = nullptr;
-
 void Layout::drawFooterNoBackButton() {
-    int stationMode = 0;
-    int showBack = 0;
-    PaintCanvas *pc = *g_dfCanvas;
-    PaintCanvas::gCanvas->SetColor(this->drawColor);
-    int wRight = PaintCanvas::gCanvas->GetImage2DWidth(this->footerImageRight);
-    int wLeft = PaintCanvas::gCanvas->GetImage2DWidth(this->footerImageLeft);
-
-    pc->DrawImage2D(this->footerImageLeft, this->windowX,
-                    this->windowY + this->windowHeight, (unsigned char) (0x11));
-    int *m = *g_dfMetric;
-    int footerH = m[0x10 / 4];
-    pc->DrawImage2D(this->footerImageRight, this->windowX + wLeft,
-                    (this->windowY + this->windowHeight) - footerH);
-    int both = wLeft + wRight;
-    this->drawBGPattern(this->field_0x338, both + this->windowX, (this->windowY + this->windowHeight) - footerH,
-                        this->windowWidth + both * -2, footerH);
-    pc->DrawImage2D(this->footerImageRight,
-                    (this->windowX - both) + this->windowWidth,
-                    (this->windowHeight + this->windowY) - footerH, (unsigned char) (0x01));
-    pc->DrawImage2D(this->footerImageLeft,
-                    (this->windowX - wRight) + this->windowWidth,
-                    (this->windowHeight + this->windowY) - footerH, (unsigned char) (0x01));
-
-    int backVis = (!stationMode) && showBack;
-    this->backButton->setVisible(backVis);
-    if (!backVis)
-        this->secondaryButton->draw();
-    else if (showBack)
-        this->backButton->draw();
-
-    Status *status = Status::gStatus;
-    int load = status->getShip()->getCurrentLoad();
-    int maxLoad = status->getShip()->getMaxLoad();
-    if (maxLoad < load)
-        PaintCanvas::gCanvas->SetColor(*(unsigned *) &g_dfWarnColor);
-
-    String sLoad;
-    sLoad.Set((long long) (status->getShip())->getCurrentLoad());
-    String sMax;
-    sMax.Set((long long) (status->getShip())->getMaxLoad());
-    String loadStr = sLoad + String(g_dfSep) + sMax + String(g_dfTail);
-
-    {
-        int x = this->windowX;
-        int w = this->windowWidth;
-        void *font = *g_dfFont;
-        int tw = pc->GetTextWidth((unsigned) (unsigned long) (font), loadStr);
-        pc->DrawString((unsigned) (unsigned long) (font), loadStr, (x + w / 2) - tw / 2,
-                       (this->windowHeight + this->windowY) - this->footerTextInset, false);
-    }
-    PaintCanvas::gCanvas->SetColor(this->drawColor);
-
-    String credStr = Layout::formatCredits(status->getCredits());
-
-    {
-        int x = this->windowX;
-        int w = this->windowWidth;
-        void *font = *g_dfFont;
-        if (stationMode) {
-            int rightInset = m[0x74 / 4];
-            int tw = pc->GetTextWidth((unsigned) (unsigned long) (font), credStr);
-            pc->DrawString((unsigned) (unsigned long) (font), credStr, ((w + x) - rightInset) - tw / 2,
-                           (this->windowHeight + this->windowY) - this->footerTextInset, false);
-        } else {
-            int tw = pc->GetTextWidth((unsigned) (unsigned long) (font), credStr);
-            pc->DrawString((unsigned) (unsigned long) (font), credStr, (w + x - 10) - tw,
-                           (this->windowHeight + this->windowY) - this->footerTextInset, false);
-        }
-    }
+    this->drawFooter(false, false);
 }
 
 void Layout::drawFooter() {
-    int stationMode = 0;
-    int showBack = 1;
-    PaintCanvas *pc = *g_dfCanvas;
-    PaintCanvas::gCanvas->SetColor(this->drawColor);
-    int wRight = PaintCanvas::gCanvas->GetImage2DWidth(this->footerImageRight);
-    int wLeft = PaintCanvas::gCanvas->GetImage2DWidth(this->footerImageLeft);
-
-    pc->DrawImage2D(this->footerImageLeft, this->windowX,
-                    this->windowY + this->windowHeight, (unsigned char) (0x11));
-    int *m = *g_dfMetric;
-    int footerH = m[0x10 / 4];
-    pc->DrawImage2D(this->footerImageRight, this->windowX + wLeft,
-                    (this->windowY + this->windowHeight) - footerH);
-    int both = wLeft + wRight;
-    this->drawBGPattern(this->field_0x338, both + this->windowX, (this->windowY + this->windowHeight) - footerH,
-                        this->windowWidth + both * -2, footerH);
-    pc->DrawImage2D(this->footerImageRight,
-                    (this->windowX - both) + this->windowWidth,
-                    (this->windowHeight + this->windowY) - footerH, (unsigned char) (0x01));
-    pc->DrawImage2D(this->footerImageLeft,
-                    (this->windowX - wRight) + this->windowWidth,
-                    (this->windowHeight + this->windowY) - footerH, (unsigned char) (0x01));
-
-    int backVis = (!stationMode) && showBack;
-    this->backButton->setVisible(backVis);
-    if (!backVis)
-        this->secondaryButton->draw();
-    else if (showBack)
-        this->backButton->draw();
-
-    Status *status = Status::gStatus;
-    int load = status->getShip()->getCurrentLoad();
-    int maxLoad = status->getShip()->getMaxLoad();
-    if (maxLoad < load)
-        PaintCanvas::gCanvas->SetColor(*(unsigned *) &g_dfWarnColor);
-
-    String sLoad;
-    sLoad.Set((long long) (status->getShip())->getCurrentLoad());
-    String sMax;
-    sMax.Set((long long) (status->getShip())->getMaxLoad());
-    String loadStr = sLoad + String(g_dfSep) + sMax + String(g_dfTail);
-
-    {
-        int x = this->windowX;
-        int w = this->windowWidth;
-        void *font = *g_dfFont;
-        int tw = pc->GetTextWidth((unsigned) (unsigned long) (font), loadStr);
-        pc->DrawString((unsigned) (unsigned long) (font), loadStr, (x + w / 2) - tw / 2,
-                       (this->windowHeight + this->windowY) - this->footerTextInset, false);
-    }
-    PaintCanvas::gCanvas->SetColor(this->drawColor);
-
-    String credStr = Layout::formatCredits(status->getCredits());
-
-    {
-        int x = this->windowX;
-        int w = this->windowWidth;
-        void *font = *g_dfFont;
-        if (stationMode) {
-            int rightInset = m[0x74 / 4];
-            int tw = pc->GetTextWidth((unsigned) (unsigned long) (font), credStr);
-            pc->DrawString((unsigned) (unsigned long) (font), credStr, ((w + x) - rightInset) - tw / 2,
-                           (this->windowHeight + this->windowY) - this->footerTextInset, false);
-        } else {
-            int tw = pc->GetTextWidth((unsigned) (unsigned long) (font), credStr);
-            pc->DrawString((unsigned) (unsigned long) (font), credStr, (w + x - 10) - tw,
-                           (this->windowHeight + this->windowY) - this->footerTextInset, false);
-        }
-    }
+    this->drawFooter(false, true);
 }
 
 int Layout::OnTouchMove(int x, int y) {
@@ -1220,75 +1072,7 @@ void Layout::drawHeader() {
 }
 
 void Layout::drawFooterStation() {
-    int stationMode = 1;
-    int showBack = 0;
-    PaintCanvas *pc = *g_dfCanvas;
-    PaintCanvas::gCanvas->SetColor(this->drawColor);
-    int wRight = PaintCanvas::gCanvas->GetImage2DWidth(this->footerImageRight);
-    int wLeft = PaintCanvas::gCanvas->GetImage2DWidth(this->footerImageLeft);
-
-    pc->DrawImage2D(this->footerImageLeft, this->windowX,
-                    this->windowY + this->windowHeight, (unsigned char) (0x11));
-    int *m = *g_dfMetric;
-    int footerH = m[0x10 / 4];
-    pc->DrawImage2D(this->footerImageRight, this->windowX + wLeft,
-                    (this->windowY + this->windowHeight) - footerH);
-    int both = wLeft + wRight;
-    this->drawBGPattern(this->field_0x338, both + this->windowX, (this->windowY + this->windowHeight) - footerH,
-                        this->windowWidth + both * -2, footerH);
-    pc->DrawImage2D(this->footerImageRight,
-                    (this->windowX - both) + this->windowWidth,
-                    (this->windowHeight + this->windowY) - footerH, (unsigned char) (0x01));
-    pc->DrawImage2D(this->footerImageLeft,
-                    (this->windowX - wRight) + this->windowWidth,
-                    (this->windowHeight + this->windowY) - footerH, (unsigned char) (0x01));
-
-    int backVis = (!stationMode) && showBack;
-    this->backButton->setVisible(backVis);
-    if (!backVis)
-        this->secondaryButton->draw();
-    else if (showBack)
-        this->backButton->draw();
-
-    Status *status = Status::gStatus;
-    int load = status->getShip()->getCurrentLoad();
-    int maxLoad = status->getShip()->getMaxLoad();
-    if (maxLoad < load)
-        PaintCanvas::gCanvas->SetColor(*(unsigned *) &g_dfWarnColor);
-
-    String sLoad;
-    sLoad.Set((long long) (status->getShip())->getCurrentLoad());
-    String sMax;
-    sMax.Set((long long) (status->getShip())->getMaxLoad());
-    String loadStr = sLoad + String(g_dfSep) + sMax + String(g_dfTail);
-
-    {
-        int x = this->windowX;
-        int w = this->windowWidth;
-        void *font = *g_dfFont;
-        int tw = pc->GetTextWidth((unsigned) (unsigned long) (font), loadStr);
-        pc->DrawString((unsigned) (unsigned long) (font), loadStr, (x + w / 2) - tw / 2,
-                       (this->windowHeight + this->windowY) - this->footerTextInset, false);
-    }
-    PaintCanvas::gCanvas->SetColor(this->drawColor);
-
-    String credStr = Layout::formatCredits(status->getCredits());
-
-    {
-        int x = this->windowX;
-        int w = this->windowWidth;
-        void *font = *g_dfFont;
-        if (stationMode) {
-            int rightInset = m[0x74 / 4];
-            int tw = pc->GetTextWidth((unsigned) (unsigned long) (font), credStr);
-            pc->DrawString((unsigned) (unsigned long) (font), credStr, ((w + x) - rightInset) - tw / 2,
-                           (this->windowHeight + this->windowY) - this->footerTextInset, false);
-        } else {
-            int tw = pc->GetTextWidth((unsigned) (unsigned long) (font), credStr);
-            pc->DrawString((unsigned) (unsigned long) (font), credStr, (w + x - 10) - tw,
-                           (this->windowHeight + this->windowY) - this->footerTextInset, false);
-        }
-    }
+    this->drawFooter(true, false);
 }
 
 
@@ -1422,15 +1206,14 @@ void Layout::drawBox(int style, int x, int y, int w, int h, String text) {
 void Layout::drawFooter(bool stationMode_, bool showBack_) {
     int stationMode = stationMode_;
     int showBack = showBack_;
-    PaintCanvas *pc = *g_dfCanvas;
-    PaintCanvas::gCanvas->SetColor(this->drawColor);
-    int wRight = PaintCanvas::gCanvas->GetImage2DWidth(this->footerImageRight);
-    int wLeft = PaintCanvas::gCanvas->GetImage2DWidth(this->footerImageLeft);
+    PaintCanvas *pc = Globals::Canvas;
+    pc->SetColor(this->drawColor);
+    int wRight = pc->GetImage2DWidth(this->footerImageRight);
+    int wLeft = pc->GetImage2DWidth(this->footerImageLeft);
 
     pc->DrawImage2D(this->footerImageLeft, this->windowX,
-                    this->windowY + this->windowHeight, (unsigned char) (0x11));
-    int *m = *g_dfMetric;
-    int footerH = m[0x10 / 4];
+                    this->windowY + this->windowHeight, (unsigned char) 0x11, (unsigned char) 0x21);
+    int footerH = Globals::layout->field_0x10;
     pc->DrawImage2D(this->footerImageRight, this->windowX + wLeft,
                     (this->windowY + this->windowHeight) - footerH);
     int both = wLeft + wRight;
@@ -1445,47 +1228,45 @@ void Layout::drawFooter(bool stationMode_, bool showBack_) {
 
     int backVis = (!stationMode) && showBack;
     this->backButton->setVisible(backVis);
-    if (!backVis)
+    if (stationMode)
         this->secondaryButton->draw();
     else if (showBack)
         this->backButton->draw();
 
-    Status *status = Status::gStatus;
+    Status *status = Globals::status;
     int load = status->getShip()->getCurrentLoad();
     int maxLoad = status->getShip()->getMaxLoad();
     if (maxLoad < load)
-        PaintCanvas::gCanvas->SetColor(*(unsigned *) &g_dfWarnColor);
+        pc->SetColor(0xff2a00ff);
 
-    String sLoad;
-    sLoad.Set((long long) (status->getShip())->getCurrentLoad());
-    String sMax;
-    sMax.Set((long long) (status->getShip())->getMaxLoad());
-    String loadStr = sLoad + String(g_dfSep) + sMax + String(g_dfTail);
+    String sLoad(status->getShip()->getCurrentLoad());
+    String sMax(status->getShip()->getMaxLoad());
+    String loadStr = sLoad + String(" / ") + sMax + String("t");
 
     {
         int x = this->windowX;
         int w = this->windowWidth;
-        void *font = *g_dfFont;
-        int tw = pc->GetTextWidth((unsigned) (unsigned long) (font), loadStr);
-        pc->DrawString((unsigned) (unsigned long) (font), loadStr, (x + w / 2) - tw / 2,
+        unsigned font = Globals::font;
+        int tw = pc->GetTextWidth(font, loadStr);
+        pc->DrawString(font, loadStr, (x + w / 2) - tw / 2,
                        (this->windowHeight + this->windowY) - this->footerTextInset, false);
     }
-    PaintCanvas::gCanvas->SetColor(this->drawColor);
+    pc->SetColor(this->drawColor);
 
     String credStr = Layout::formatCredits(status->getCredits());
 
     {
         int x = this->windowX;
         int w = this->windowWidth;
-        void *font = *g_dfFont;
+        unsigned font = Globals::font;
         if (stationMode) {
-            int rightInset = m[0x74 / 4];
-            int tw = pc->GetTextWidth((unsigned) (unsigned long) (font), credStr);
-            pc->DrawString((unsigned) (unsigned long) (font), credStr, ((w + x) - rightInset) - tw / 2,
+            int rightInset = Globals::layout->field_0x74;
+            int tw = pc->GetTextWidth(font, credStr);
+            pc->DrawString(font, credStr, ((w + x) - rightInset) - tw / 2,
                            (this->windowHeight + this->windowY) - this->footerTextInset, false);
         } else {
-            int tw = pc->GetTextWidth((unsigned) (unsigned long) (font), credStr);
-            pc->DrawString((unsigned) (unsigned long) (font), credStr, (w + x - 10) - tw,
+            int tw = pc->GetTextWidth(font, credStr);
+            pc->DrawString(font, credStr, (w + x - 10) - tw,
                            (this->windowHeight + this->windowY) - this->footerTextInset, false);
         }
     }
