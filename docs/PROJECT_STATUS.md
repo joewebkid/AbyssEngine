@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Globals getBoundedString; older subsystem
+Last reviewed: 2026-10-12 (Globals drawLines; older subsystem
 snapshots retain their dates)
+
+## Globals drawLines canvas and row advance (2026-10-12)
+
+Both drawing overloads now use live `Globals::Canvas` and the ARM-confirmed
+row advance from `Globals::layout` at offset `+4`, replacing null
+placeholders. Native `gof2`, 206/206 ARM units, and 36 verifier tests pass
+(one skipped). Both overloads reached 100% focused source-shape and became
+linked-exact. Full corpus remains 4,323/4,524 original functions covered;
+average source-shape rose 92.33% to 92.35%, strict fuzzy 80.48% to
+80.52%, and linked-exact 2,353 to 2,355, with 1,008 byte-exact and no
+exact-pair losses. Live rendering remains untested. See
+[the draw-lines audit](GLOBALS_DRAW_LINES_ARM_2026-10-12.md).
 
 ## Globals getBoundedString repair (2026-10-12)
 

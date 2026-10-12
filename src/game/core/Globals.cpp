@@ -95,13 +95,6 @@ struct AgentBusyObject {
     int32_t  guardCounter;    // 0xd0
 };
 
-// Line metrics record reached through the `lineHeight` handle in the
-// Globals::drawLines() family: the advance between rows lives at +4.
-struct LineMetrics {
-    int32_t  field0;          // 0x00
-    int32_t  lineHeight;      // 0x04
-};
-
 // Object reached through the `secondary` handle in Globals::Globals(): two
 // leading int slots plus a flag byte at 0x13.
 struct CtorSecondaryObject {
@@ -160,7 +153,6 @@ static_assert(offsetof(InitZeroObject, tailAt33) == 0x33, "tailAt33");
 static_assert(offsetof(InitZeroObject, tailAt37) == 0x37, "tailAt37");
 
 static_assert(offsetof(AgentBusyObject, guardCounter) == 0xd0, "guardCounter");
-static_assert(offsetof(LineMetrics, lineHeight) == 0x04, "lineHeight");
 static_assert(offsetof(CtorSecondaryObject, slot1) == 0x04, "slot1");
 static_assert(offsetof(CtorSecondaryObject, flagAt13) == 0x13, "flagAt13");
 #endif
@@ -1248,22 +1240,17 @@ unsigned Globals::getRandomEnemyFighter(int kind) {
     return r;
 }
 
-static void *const gDL2_canvas = nullptr;
-static void *const gDL2_lineHeight = nullptr;
-
 void Globals::drawLines(unsigned int font, Array<String *> *lines, int baseX, int startY,
                         unsigned int rightX, bool centered) {
-    int *cv = (int *) gDL2_canvas;
-    LineMetrics **lh = (LineMetrics **) gDL2_lineHeight;
     int yacc = startY;
     int dx = 0;
     for (unsigned i = 0; i < lines->size(); i++) {
         if (!centered) {
-            int w = ((PaintCanvas *) (long) *cv)->GetTextWidth(font, *(*lines)[i]);
+            int w = Globals::Canvas->GetTextWidth(font, *(*lines)[i]);
             dx = (int) rightX - w;
         }
-        ((PaintCanvas *) (long) *cv)->DrawString(font, *(*lines)[i], dx + baseX, yacc, false);
-        yacc += (*lh)->lineHeight;
+        Globals::Canvas->DrawString(font, *(*lines)[i], dx + baseX, yacc, false);
+        yacc += Globals::layout->field_0x4;
     }
 }
 
@@ -1600,22 +1587,17 @@ Globals::~Globals() {
     **gG_tail = 0;
 }
 
-static void *const gDL_canvas = nullptr;
-static void *const gDL_lineHeight = nullptr;
-
 void Globals::drawLines(unsigned int font, Array<String *> *lines, int baseX, int startY,
                         bool centered) {
-    int *cv = (int *) gDL_canvas;
-    LineMetrics **lh = (LineMetrics **) gDL_lineHeight;
     int yacc = startY;
     int dx = 0;
     for (unsigned i = 0; i < lines->size(); i++) {
         if (centered) {
-            int w = ((PaintCanvas *) (long) *cv)->GetTextWidth(font, *(*lines)[i]);
+            int w = Globals::Canvas->GetTextWidth(font, *(*lines)[i]);
             dx = -(w >> 1);
         }
-        ((PaintCanvas *) (long) *cv)->DrawString(font, *(*lines)[i], dx + baseX, yacc, false);
-        yacc += (*lh)->lineHeight;
+        Globals::Canvas->DrawString(font, *(*lines)[i], dx + baseX, yacc, false);
+        yacc += Globals::layout->field_0x4;
     }
 }
 
