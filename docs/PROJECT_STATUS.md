@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (Globals releaseResources; older subsystem
+Last reviewed: 2026-10-12 (Layout reload/resetWindowDimensions; older subsystem
 snapshots retain their dates)
+
+## Layout resource reload and window reset (2026-10-12)
+
+`Layout::reload` now uses the ARM-confirmed canvas, device flag, text IDs,
+screen dimensions, font, and typed `TouchButton` constructors instead of
+null global holders and untyped constructor shims. Its called
+`resetWindowDimensions` now reads `Globals` dimensions and layout inset
+and writes the original back-button coordinates. Native `gof2`, 206/206
+ARM units, and 36 verifier tests pass (one skipped). Focused source-shape
+rises 71.8% to 90.4% for `reload` and 21.6% to 77.8% for its reset;
+neither is exact. Full corpus remains 4,323/4,524 original functions
+covered, with 92.39% average source-shape, 80.58% strict fuzzy, 2,360
+linked-exact and 1,008 byte-exact matches. No exact pair was lost.
+The called `TouchButton` constructors and `init` still have null global
+bindings, so live UI reload is not yet verified; those are the next
+priority. See [the Layout audit](LAYOUT_RELOAD_RESET_ARM_2026-10-12.md).
 
 ## Globals resource-release handoff (2026-10-12)
 
