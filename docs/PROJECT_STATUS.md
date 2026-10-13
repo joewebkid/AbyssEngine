@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (recursive transform draw; older subsystem
+Last reviewed: 2026-10-13 (recursive mesh draw; older subsystem
 snapshots retain their dates)
+
+## Recursive mesh draw (2026-10-13)
+
+`PaintCanvas::DrawMesh(Mesh *, Matrix &, Matrix &, unsigned, Matrix &)`
+now uses typed matrix, frustum, material-cache, and render calls. It
+restores the animated pivot/world/UV path, the `view * world` render
+matrix without losing the model matrix, and the original nested-mesh
+and child-transform traversal. A zero color divisor and its unresolved
+shims are gone. Focused source-shape rises 81.0% to 91.3%, strict fuzzy
+15.9% to 28.4%; not exact and short of 98%. Native `gof2`, 206/206 ARM
+units, four canvas smokes, and 36 verifier tests pass (one skipped).
+Full corpus: 4,717 comparisons; coverage stays 4,323/4,524 with 201
+missing. Average source-shape rises 92.5667% to 92.5708%; strict fuzzy
+slips 80.8845% to 80.8823% as three newly emitted material-cache
+template comparisons enter the denominator. The 2,378 linked-exact
+and 1,008 byte-exact symbol sets have no losses. Full 3D rendering,
+assets, and ARM32 runtime remain untested. Next audit the indexed
+`DrawMesh(unsigned)` wrapper. See [the mesh-draw audit](PAINTCANVAS_MESH_DRAW_ARM_2026-10-13.md).
 
 ## Recursive transform draw (2026-10-13)
 
