@@ -17,6 +17,7 @@ namespace AbyssEngine {
     class SpriteSystem;
     class ImageFont;
     int MeshDraw(Engine *engine, Mesh *mesh);
+    void SpriteSystemDraw(Engine *engine, const Matrix &view, const Matrix &world, SpriteSystem *sys);
 }
 
 // Byte-faithful "view" structs for the otherwise-untyped engine handles that
@@ -603,24 +604,6 @@ float paintcanvas_ext_spm_sinf(float v);
 float paintcanvas_ext_spm_cosf(float v);
 
 float paintcanvas_ext_spm_signedtofloat(int v, unsigned int mode);
-
-void paintcanvas_ext_dss1_matidentity(void *out, void *m);
-
-void *paintcanvas_ext_dss1_getgrav(void *eng);
-
-float paintcanvas_ext_dss1_sinf(float v);
-
-float paintcanvas_ext_dss1_cosf(float v);
-
-void paintcanvas_ext_dss1_memcpy(void *dst, void *src, unsigned int n);
-
-void paintcanvas_ext_dss1_mtx_muleq(void *m, void *rhs);
-
-void paintcanvas_ext_dss1_mtx_getinv(void *out, void *m);
-
-void paintcanvas_ext_dss1_mtx_assign(void *dst, void *src);
-
-void paintcanvas_ext_dss1_ssdraw(void *eng, void *ident, void *m, void *ss);
 
 unsigned short *paintcanvas_ext_gl_strindex(const AbyssEngine::String *str, unsigned int i);
 
@@ -2360,67 +2343,44 @@ void PaintCanvas::SetProjectionMatrix3d(float fov, float nearPlane,
 }
 
 
-static const double g_dss1_gravscale_8ac10 = 0;
-
 void PaintCanvas::DrawSpriteSystem(unsigned int index) {
     if (index >= this->spriteSystems.count) {
         return;
     }
-    if (((void **) this->spriteSystems.data_)[index] == 0) {
+    SpriteSystem *sys = this->spriteSystems.data_[index];
+    if (sys == 0) {
         return;
     }
 
-    float worldM[16];
-    memset(worldM, 0, sizeof(worldM));
-    worldM[0] = 1.0f;
-    worldM[5] = 1.0f;
-    worldM[14] = 1.0f;
+    Matrix world;
 
     if (this->currentCamera < this->cameras.count) {
+        PCCameraView *cam = (PCCameraView *) this->cameras.data_[this->currentCamera];
         if (this->initialized == 0) {
-            float inv[16];
-            memset(inv, 0, sizeof(inv));
-            inv[0] = 1.0f;
-            inv[5] = 1.0f;
-            inv[14] = 1.0f;
-            paintcanvas_ext_dss1_mtx_getinv(inv, worldM);
-            paintcanvas_ext_dss1_mtx_assign(worldM, inv);
+            world = AEMath::MatrixGetInverse(*reinterpret_cast<Matrix *>(cam->localMatrix));
         } else {
-            float rotM[16];
-            char scratch[60];
-            memset(rotM, 0, sizeof(rotM));
-            rotM[0] = 1.0f;
-            rotM[5] = 1.0f;
-            rotM[14] = 1.0f;
-            paintcanvas_ext_dss1_matidentity(scratch, rotM);
-
-            void *grav = paintcanvas_ext_dss1_getgrav(this->engine);
-            double angle = ((PCGravView *) grav)->angle * g_dss1_gravscale_8ac10;
+            Matrix rotation;
+            AEMath::MatrixIdentity(rotation);
+            double angle = this->engine->GetGravValue()[1] * 1.57079637;
             float a = (float) angle;
             int orient = this->gameOrientation;
             float rot = (orient == 1) ? a : -a;
-            float s = paintcanvas_ext_dss1_sinf(rot);
-            float c = paintcanvas_ext_dss1_cosf(rot);
-            rotM[0] = c;
-            rotM[5] = c;
-            *(unsigned int *) &rotM[1] = *(unsigned int *) &s ^ 0x80000000;
-            rotM[4] = s;
+            float s = AEMath::Sinf(rot);
+            float c = AEMath::Cosf(rot);
+            rotation.m[0] = c;
+            rotation.m[5] = c;
+            rotation.m[1] = -s;
+            rotation.m[4] = s;
 
-            PCCameraView *cam = (PCCameraView *) ((char **) this->cameras.data_)[this->currentCamera];
-            paintcanvas_ext_dss1_memcpy(scratch, cam->localMatrix, 0x3c);
-            paintcanvas_ext_dss1_mtx_muleq(scratch, rotM);
-            paintcanvas_ext_dss1_mtx_getinv(scratch, scratch);
-            paintcanvas_ext_dss1_mtx_assign(worldM, scratch);
+            Matrix cameraMatrix;
+            memcpy(&cameraMatrix, cam->localMatrix, sizeof(cameraMatrix));
+            cameraMatrix *= rotation;
+            world = AEMath::MatrixGetInverse(cameraMatrix);
         }
     }
 
-    float ident[16];
-    memset(ident, 0, sizeof(ident));
-    ident[0] = 1.0f;
-    ident[5] = 1.0f;
-    ident[14] = 1.0f;
-    paintcanvas_ext_dss1_ssdraw(this->engine, ident, worldM,
-                                ((void **) this->spriteSystems.data_)[index]);
+    Matrix view;
+    SpriteSystemDraw(this->engine, view, world, sys);
 }
 
 float PaintCanvas::MeshSetPoint(unsigned int index, unsigned short vtx,

@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (world-vector screen projection; older subsystem
+Last reviewed: 2026-10-13 (sprite draw camera path; older subsystem
 snapshots retain their dates)
+
+## PaintCanvas sprite draw camera path (2026-10-13)
+
+The game-facing `DrawSpriteSystem(index)` now inverts the selected
+camera matrix, applies the Android gravity/orientation rotation when
+initialized, and calls the real `SpriteSystemDraw` instead of nine
+unresolved shims. A production-body camera fixture and the adjacent
+sprite smoke pass, as do native `gof2`, 206/206 ARM units, and 36
+verifier tests (one skipped). Focused source-shape falls 89.5% to
+74.9%, strict fuzzy 41.9% to 40.2%; the recovered behavior takes
+precedence over preserving shim-shaped instructions. Full coverage
+remains 4,323/4,524. Average source-shape changes 92.5578% to
+92.5547%, strict fuzzy 80.8534% to 80.8531%; the 2,378 linked-exact
+and 1,008 byte-exact symbol sets have no losses. Real-device GL and
+non-identity camera rotation composition are untested. Next audit
+the two-matrix overload used by `ParticleSystemSprite`. See
+[the camera-path audit](PAINTCANVAS_SPRITE_DRAW_CAMERA_ARM_2026-10-13.md).
 
 ## World-vector screen projection (2026-10-13)
 
