@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo asteroid-docking target (2026-10-14)
+
+Android ARM `dockToAsteroid` tests the first argument (`KIPlayer*`)
+on entry, stores it at offset `0x1bc`, and calls
+`PlayerAsteroid::getScaling` on it. The previous C++ tested and
+stored the second argument (`Radar*`). Focused source-shape rises
+90.8% to 94.7%, strict fuzzy 53.7% to 72.1%, without exact match.
+The production-method host smoke covers distinct target/radar
+objects, no-target behavior and teardown; native `gof2`, all 206
+ARM units, the mining handoff smoke and 37 verifier tests pass
+(one skipped). Full corpus and exact-pair sets remain 4,323/4,524,
+93.10% average source-shape, 81.51% strict fuzzy, 2,403 linked-exact,
+1,008 byte-exact and 123 extras, with zero pair losses. This does
+not prove ARM32 runtime or the null-radar teardown from `update`.
+See [the evidence](PLAYER_EGO_DOCK_ASTEROID_ARM_2026-10-14.md).
+
 ## Ship cargo-add handoff (2026-10-14)
 
 Focused `Ship::addCargo(Item*)` stays at 100.0% source-shape and

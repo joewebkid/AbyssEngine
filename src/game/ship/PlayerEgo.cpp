@@ -1800,7 +1800,6 @@ void Vec_assign(void *dst, const void *src);
 
 
 void PlayerEgo::dockToAsteroid(KIPlayer *kip, Radar *radar) {
-    (void) kip;
     if (((char &) this->dockingState) != 0) {
         ((PlayerAsteroid *) (((void *&) this->asteroidTarget)))->setRotationEnabled(true);
         this->field_0x145 = 0;
@@ -1818,11 +1817,11 @@ void PlayerEgo::dockToAsteroid(KIPlayer *kip, Radar *radar) {
         ((Radar *) (radar))->unlockAsteroid();
         this->dockingPointIndex = 0;
         ((PlayerEgo *) (this))->setExhaustVisible(true);
-    } else if (radar != 0) {
+    } else if (kip != 0) {
         ((char &) this->dockingState) = 1;
         this->miningSettleTimer = 0;
-        ((void *&) this->asteroidTarget) = radar;
-        float dist = ((PlayerAsteroid *) (radar))->getScaling() * g_PE_astApproach;
+        ((void *&) this->asteroidTarget) = kip;
+        float dist = ((PlayerAsteroid *) (kip))->getScaling() * g_PE_astApproach;
         this->field_0x145 = 1;
         this->dockingPointIndex = 0;
         this->dockScaling = (int) dist;

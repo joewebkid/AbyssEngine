@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (Ship cargo-add handoff; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo asteroid-docking target; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo asteroid-docking target (2026-10-14)
+
+`PlayerEgo::dockToAsteroid` now starts docking only for a non-null
+`KIPlayer*` target, stores that target and obtains its asteroid scale.
+Previously it tested/stored the separate `Radar*` as the target.
+The Android ARM body at `0x9f4a0` confirms the target route; MGame
+callers pass the locked asteroid and radar separately. A production-
+method host smoke checks no-target, entry and teardown paths.
+Focused ARM source-shape rises 90.8% to 94.7% and strict fuzzy
+53.7% to 72.1%; the function is not exact. Native `gof2`, all 206
+ARM units, the docking and mining handoff smokes and 37 verifier
+tests pass (one skipped). Full corpus stays 4,323/4,524 covered,
+93.10% average source-shape, 81.51% strict fuzzy, 2,403 linked-exact,
+1,008 byte-exact and 123 extra symbols; the compared and exact sets
+are unchanged. ARM32 gameplay remains unverified. A separate
+`PlayerEgo::update` path calls teardown with a null radar; its
+original behavior and runtime safety need a focused audit next.
+See [the docking audit](PLAYER_EGO_DOCK_ASTEROID_ARM_2026-10-14.md).
 
 ## Ship cargo-add handoff (2026-10-14)
 
