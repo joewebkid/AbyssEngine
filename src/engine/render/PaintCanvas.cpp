@@ -772,14 +772,6 @@ void paintcanvas_ext_start_fbo(void *);
 
 void paintcanvas_ext_gl_deletetextures(int, void *);
 
-void paintcanvas_ext_mtx_mul(void *out, const void *a, void *b);
-
-void paintcanvas_ext_mtx_muleq(void *m, void *rhs);
-
-int paintcanvas_ext_dt_incamvf(void *tf, void *m, void *cam);
-
-void paintcanvas_ext_dt_drawtransform_rec(void *self, void *tf, void *m, void *m3);
-
 void paintcanvas_ext_di4_restore(unsigned int flag, void *img);
 
 void paintcanvas_ext_di4_settexture(void *self, unsigned int tex);
@@ -3539,25 +3531,21 @@ void PaintCanvas::Suspend() {
     }
 }
 
-void paintcanvas_ext_dt_drawmesh(void *self, void *mesh, void *m, void *m2,
-                                            unsigned int flag, void *m3);
-
 void PaintCanvas::DrawTransform(Transform *tf, const AbyssEngine::AEMath::Matrix &m2,
                                 AbyssEngine::AEMath::Matrix &m3) {
-    char buf[60];
     if (tf && tf->visible) {
-        paintcanvas_ext_mtx_mul(buf, &m2, tf);
+        Matrix combined = m2 * tf->worldMatrix;
         if (tf->keyFrames.size() != 0) {
-            paintcanvas_ext_mtx_muleq(buf, tf->rotationMatrix);
+            combined *= tf->rotationMatrix;
         }
         for (unsigned int i = 0; i < tf->meshes.size(); i++) {
-            paintcanvas_ext_dt_drawmesh(this, tf->meshes[i], buf, &m3, tf->id, tf->localMatrix);
+            this->DrawMesh(tf->meshes[i], combined, m3, tf->id, tf->localMatrix);
         }
         for (unsigned int i = 0; i < tf->children.size(); i++) {
             if (this->currentCamera < this->cameras.count &&
-                paintcanvas_ext_dt_incamvf(tf->children[i], buf,
-                                           (this->cameras.data_)[this->currentCamera])) {
-                paintcanvas_ext_dt_drawtransform_rec(this, tf->children[i], buf, &m3);
+                tf->children[i]->InCameraVF(&combined,
+                                            this->cameras.data_[this->currentCamera])) {
+                this->DrawTransform(tf->children[i], combined, m3);
             } else {
                 this->culledCount += 1;
             }

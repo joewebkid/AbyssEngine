@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (indexed transform draw; older subsystem
+Last reviewed: 2026-10-13 (recursive transform draw; older subsystem
 snapshots retain their dates)
+
+## Recursive transform draw (2026-10-13)
+
+`PaintCanvas::DrawTransform(Transform *, const Matrix &, Matrix &)`
+now composes parent, world, and optional keyframe matrices; calls
+typed `DrawMesh`; and recursively dispatches visible children while
+counting rejected or camera-less children. Its five unresolved shims
+are removed. Focused source-shape rises 89.5% to 100.0%, strict fuzzy
+64.2% to 94.9%; not exact. Native `gof2`, 206/206 ARM units, new and
+adjacent transform smokes, and 36 verifier tests pass (one skipped).
+Full coverage remains 4,323/4,524; average source-shape rises
+92.5644% to 92.5667%, strict fuzzy 80.8780% to 80.8845%. The 2,378
+linked-exact and 1,008 byte-exact symbol sets have no losses. Actual
+mesh rendering, full 3D composition, and ARM32 runtime are untested.
+Next audit the called `DrawMesh` path. See
+[the recursive-transform audit](PAINTCANVAS_RECURSIVE_DRAW_TRANSFORM_ARM_2026-10-13.md).
 
 ## Indexed transform draw (2026-10-13)
 
