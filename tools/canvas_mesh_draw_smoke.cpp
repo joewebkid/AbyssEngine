@@ -94,6 +94,13 @@ struct Engine {
 };
 static std::vector<int> meshOrder;
 static std::vector<int> transformOrder;
+static int vboCalls = 0;
+static Mesh *lastVboMesh = nullptr;
+int MeshConvertToVBO(Mesh *mesh) {
+    ++vboCalls;
+    lastVboMesh = mesh;
+    return 1;
+}
 void MeshDraw(Engine *engine, Mesh *mesh) {
     ++engine->draws;
     meshOrder.push_back(mesh->marker);
@@ -111,6 +118,8 @@ struct PaintCanvas {
     unsigned currentCamera = 0;
     unsigned transformCount = 0;
     char **transforms = nullptr;
+    unsigned meshCount = 0;
+    char **meshes = nullptr;
     int CameraIsSphereinViewFrustum(const Vector &center, float radius) {
         checkedCenter = center; checkedRadius = radius; ++frustumChecks;
         return inFrustum;
@@ -129,6 +138,7 @@ struct PaintCanvas {
     void MeshChangeShaderAnimValue(Transform *, float, unsigned);
     void MeshChangeMaterialIntern(Mesh *, Material *);
     void MeshChangeMaterialIntern(Transform *, Material *);
+    void MeshConvertToVBO(unsigned);
 };
 
 // PRODUCTION_COLOR
@@ -136,6 +146,7 @@ struct PaintCanvas {
 // PRODUCTION_TRI_METHODS
 // PRODUCTION_SHADER_METHODS
 // PRODUCTION_MATERIAL_METHODS
+// PRODUCTION_INDEX_VBO
 }
 // PRODUCTION_TRI_THUNK
 // PRODUCTION_MATERIAL_THUNK
@@ -257,5 +268,11 @@ int main() {
     canvas.MeshChangeMaterialIntern(&root, &secondReplacement);
     assert(inner.material == &secondReplacement && leaf.material == &secondReplacement);
     assert(outer.material == &replacement);
-    std::puts("PaintCanvas mesh draw, tri-count, shader-animation, and material smoke: OK");
+    char *storedMeshes[] = {reinterpret_cast<char *>(&outer)};
+    canvas.meshes = storedMeshes;
+    canvas.meshCount = 1;
+    canvas.MeshConvertToVBO(0);
+    canvas.MeshConvertToVBO(1);
+    assert(vboCalls == 1 && lastVboMesh == &outer);
+    std::puts("PaintCanvas mesh draw, tri-count, shader-animation, material, and VBO smoke: OK");
 }

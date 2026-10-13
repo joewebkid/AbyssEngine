@@ -490,8 +490,6 @@ void paintcanvas_ext_sprite_uv(unsigned int, float, float, float, float, void *)
 
 void paintcanvas_ext_set_wvm(void *);
 
-void paintcanvas_ext_convert_vbo(void *);
-
 void paintcanvas_ext_di2_restore(unsigned int flag, void *img);
 
 void paintcanvas_ext_di2_settexture(void *self, unsigned int tex, int slot);
@@ -1683,8 +1681,8 @@ void PaintCanvas::SetShaderMode(int mode) {
 
 void PaintCanvas::MeshConvertToVBO(unsigned int index) {
     if (index < this->meshCount) {
-        return paintcanvas_ext_convert_vbo(
-            (this->meshes)[index]);
+        Mesh *mesh = reinterpret_cast<Mesh *>(this->meshes[index]);
+        AbyssEngine::MeshConvertToVBO(mesh);
     }
 }
 

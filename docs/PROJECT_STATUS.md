@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (canvas material propagation; older subsystem
+Last reviewed: 2026-10-13 (indexed VBO dispatch; older subsystem
 snapshots retain their dates)
+
+## Indexed VBO conversion dispatch (2026-10-13)
+
+`PaintCanvas::MeshConvertToVBO(unsigned)` now calls the typed
+`AbyssEngine::MeshConvertToVBO` rather than an unresolved shim.
+Android ARM at `0x7a292` confirms the index guard, mesh lookup, and
+call. The wrapper remains 100.0% source-shape, 100.0% strict fuzzy,
+and linked-exact (not byte-exact). Native `gof2`, 206/206 ARM units,
+an extracted-body dispatch smoke, and 36 verifier tests pass (one
+skipped). Full corpus remains 4,717 comparisons, 4,323/4,524
+covered, 201 missing, 92.5708% average source-shape, 80.8861%
+average strict fuzzy, 2,378 linked-exact, and 1,008 byte-exact,
+with no exact-set losses. GPU upload, assets, and ARM32 runtime are
+untested. Next audit the converter's
+`AbyssEngine::MeshConvertToVBOIntern(Mesh *)` body. See
+[the indexed-VBO audit](PAINTCANVAS_INDEX_VBO_ARM_2026-10-13.md).
 
 ## Recursive mesh material propagation (2026-10-13)
 
