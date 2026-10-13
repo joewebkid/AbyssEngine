@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (transform color ABI; older subsystem
+Last reviewed: 2026-10-13 (transform clone keyframes; older subsystem
 snapshots retain their dates)
+
+## Transform clone keyframe-list ownership (2026-10-13)
+
+`Transform(Transform *)` now uses Android-backed `ArraySet` to copy
+keyframe pointers, keeping the destination's capacity tied to the
+copied count rather than inheriting spare source capacity. An
+extracted-body native smoke checks a non-null clone with a child
+transform, mesh copies, shared frame objects, and spare source
+capacity. Both constructor variants remain 91.5% source-shape and
+rise 57.6% to 58.1% strict fuzzy; neither is exact. Native `gof2`,
+206/206 ARM units, 37 verifier tests (one skipped), and adjacent
+release smoke pass. Full corpus: 4,720 comparisons, 4,323/4,524
+covered, 201 missing, 92.6014% average source-shape, 80.9370%
+strict fuzzy, 2,383 linked-exact, 1,008 byte-exact, with no exact
+losses. The two new linked rows are helper instances, not the clone
+constructor. Actual `Mesh` cloning, recursive release ownership,
+assets, and ARM32 runtime remain untested. Next audit the recursive
+release path. See [the keyframe-list audit](TRANSFORM_CLONE_KEYFRAMES_ARM_2026-10-13.md).
 
 ## Transform color ABI slot (2026-10-13)
 

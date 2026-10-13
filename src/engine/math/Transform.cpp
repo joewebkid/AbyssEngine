@@ -388,7 +388,7 @@ namespace AbyssEngine {
                 Mesh *mesh = new Mesh(other->meshes[i]);
                 ArrayAdd(mesh, this->meshes);
             }
-            this->keyFrames = other->keyFrames;
+            ArraySet(other->keyFrames, this->keyFrames);
             for (uint i = 0; i < other->children.size(); ++i) {
                 Transform * child = new Transform(other->children[i]);
                 ArrayAdd(child, this->children);
