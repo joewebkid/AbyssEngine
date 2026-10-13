@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (StatusWindow language-9 separator; older subsystem
+Last reviewed: 2026-10-13 (StatusWindow touch achievements; older subsystem
 snapshots retain their dates)
+
+## StatusWindow touch achievements service (2026-10-13)
+
+Android `OnTouchBegin` and `OnTouchMove` read medals and elite state via
+`Globals::achievements`. The local methods used the separate
+`Achievements::gAchievements` holder; both now use the Android service,
+consistent with the constructor and `OnTouchEnd`. The production-method
+host smoke exercises phone/iPad and locked/unlocked dispatch with that
+duplicate holder null. Native `gof2`, all 206 ARM units and 37 verifier
+tests pass (one skipped). Focused source-shape remains 98.5% for begin
+and 99.0% for move; no exact claim is added. The full corpus remains
+4,323/4,524 covered, 92.85% average source-shape, 81.23% strict fuzzy,
+2,397 linked-exact and 1,008 byte-exact, with unchanged exact and extra
+sets. Real touch input on ARM32 remains unverified. Next priority:
+remaining substantial `StatusWindow::draw` gaps. See
+[the touch-globals follow-up](STATUSWINDOW_TOUCH_GLOBALS_ARM_2026-10-13.md).
 
 ## StatusWindow language-9 separator (2026-10-13)
 

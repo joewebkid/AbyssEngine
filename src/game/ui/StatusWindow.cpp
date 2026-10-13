@@ -64,7 +64,7 @@ int StatusWindow::OnTouchMove(int x, int y) {
             (*this->tabButtons)[i]->OnTouchMove(x, y);
     }
     if (this->activeTab == 1) {
-        Achievements *ach = Achievements::gAchievements;
+        Achievements *ach = static_cast<Achievements *>(Globals::achievements);
         int *medals = ach->getMedals();
         for (int i = 0; i < this->medalCount; ++i) {
             if (medals[i] != 0 || ach->isEliteMedal(i) != 0)
@@ -169,7 +169,7 @@ int StatusWindow::OnTouchBegin(int x, int y) {
             (*this->tabButtons)[i]->OnTouchBegin(x, y);
     }
     if (this->activeTab == 1) {
-        Achievements *ach = Achievements::gAchievements;
+        Achievements *ach = static_cast<Achievements *>(Globals::achievements);
         int *medals = ach->getMedals();
         for (int i = 0; i < this->medalCount; ++i) {
             if (medals[i] != 0 || ach->isEliteMedal(i) != 0)

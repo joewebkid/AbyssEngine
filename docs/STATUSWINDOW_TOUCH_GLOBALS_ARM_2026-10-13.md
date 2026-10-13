@@ -27,3 +27,28 @@ The remaining 1.0%/1.5% source-shape gaps were not tuned with extra state or
 semantic changes. This audit establishes symbol and shape correspondence,
 not successful interactive input on a device; no ARM32 runtime or real touch
 session was exercised.
+
+## Follow-up: achievements service (2026-10-13)
+
+The Android methods at `0x15a010` and `0x15a0bc` also read medal state
+from `Globals::achievements`. The earlier package left the two local
+methods using `Achievements::gAchievements`, a duplicate holder set
+during initialization but not read by the original methods. Both now
+use the primary global, consistent with `StatusWindow` construction and
+touch release. A production-method host smoke leaves the duplicate
+holder null and checks unlocked/locked medal dispatch, phone/iPad tab
+dispatch, scrolling and drag cancellation. It uses fixture services,
+not a physical touch session or original assets.
+
+Native `gof2`, all 206 ARM translation units and 37 verifier tests pass
+(one skipped). Focused `OnTouchBegin` stays at 98.5% source-shape and
+80.3% strict fuzzy; `OnTouchMove` stays at 99.0% and 85.2%. Neither is
+exact. Full corpus: 4,719 comparisons, 4,323/4,524 original functions
+covered, 201 missing, 92.85% average source-shape, 81.23% strict
+fuzzy, 2,397 linked-exact, 1,008 byte-exact and 123 extra symbols.
+Complete exact and extra `(unit,symbol)` sets match the prior package.
+The report is
+`A:/Galaxy on Fire new version/_work/status_touch_services_full_20261013.json`.
+The change removes a divergent service dependency; it does not prove
+interactive behavior or improve the reported shape metrics. Next
+priority: the larger unresolved blocks of `StatusWindow::draw`.
