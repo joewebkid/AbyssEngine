@@ -38,7 +38,7 @@ namespace AbyssEngine {
         // and MatrixGetGL). AEMath::Matrix is 0x3c, Quaternion 0x10, Vector/Array<T> 0xc.
         AEMath::Matrix worldMatrix;          // 0x00
         Array<Mesh *> meshes;                // 0x3c
-        int id;                              // 0x48
+        int color;                           // 0x48
         Array<Transform *> children;         // 0x4c
 
         union {
@@ -55,7 +55,7 @@ namespace AbyssEngine {
         bool visible;                        // 0xec
         bool animating;                      // 0xed
         float animationSpeed;                // 0xf0
-        int color;                           // 0xf4 (packed RGBA from alpha)
+        int field_0xf4;                      // 0xf4
         longlong animationLength;            // 0xf8
         longlong rangeStart;                 // 0x100
         longlong rangeEnd;                   // 0x108
@@ -132,7 +132,7 @@ namespace AbyssEngine {
 
 #ifdef GOF2_MATCH  // 32-bit layout offsets only hold in the match build (native is 64-bit: 8-byte pointers)
     static_assert(__builtin_offsetof(Transform, meshes) == 0x3c, "Transform::meshes");
-    static_assert(__builtin_offsetof(Transform, id) == 0x48, "Transform::id");
+    static_assert(__builtin_offsetof(Transform, color) == 0x48, "Transform::color");
     static_assert(__builtin_offsetof(Transform, children) == 0x4c, "Transform::children");
     static_assert(__builtin_offsetof(Transform, flags) == 0x58, "Transform::flags");
     static_assert(__builtin_offsetof(Transform, rotationMatrix) == 0x5c, "Transform::rotationMatrix");

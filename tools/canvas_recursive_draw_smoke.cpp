@@ -31,7 +31,7 @@ static float lastFrustumWorldX = 0.0f;
 struct Transform {
     Matrix worldMatrix;
     Array<Mesh *> meshes;
-    unsigned id = 0;
+    unsigned color = 0;
     Array<Transform *> children;
     Matrix rotationMatrix;
     Matrix localMatrix;
@@ -84,10 +84,10 @@ int main() {
     root.worldMatrix.m[3] = 2.0f;
     root.rotationMatrix.m[3] = 4.0f;
     root.meshes = {1, rootMeshes};
-    root.id = 42;
+    root.color = 42;
     child.worldMatrix.m[3] = 3.0f;
     child.meshes = {1, childMeshes};
-    child.id = 17;
+    child.color = 17;
     culled.inFrustum = false;
     Transform *children[] = {&child, &culled};
     root.children = {2, children};

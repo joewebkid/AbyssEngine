@@ -302,7 +302,7 @@ void StarSystem::initLight() {
                 AbyssEngine::Transform *transform =
                         (AbyssEngine::Transform *) PaintCanvas::gCanvas->TransformGetTransform(geom->transform);
 
-                transform->id = (int) fogColor;
+                transform->color = (int) fogColor;
             }
             return;
         case 0x10:
@@ -326,7 +326,7 @@ void StarSystem::initLight() {
         AEGeometry *geom = (*this->planetsArray)[i];
         AbyssEngine::Transform *transform =
                 (AbyssEngine::Transform *) PaintCanvas::gCanvas->TransformGetTransform(geom->transform);
-        transform->id = (int) scaled;
+        transform->color = (int) scaled;
     }
 }
 

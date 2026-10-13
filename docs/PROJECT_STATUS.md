@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (transform null-source clone; older subsystem
+Last reviewed: 2026-10-13 (transform color ABI; older subsystem
 snapshots retain their dates)
+
+## Transform color ABI slot (2026-10-13)
+
+Android ARM constructors, animation update, and canvas setter all
+write transform packed color at `0x48`; the local constructors and
+animation update previously wrote the unrelated `0xf4` field while
+rendering read `0x48`. The `Transform` layout and color callers now
+agree on `0x48`, with a match-build offset assertion; `0xf4` remains
+unnamed because its role is unconfirmed. Native `gof2`, 206/206 ARM
+units, 37 verifier tests (one skipped), and related canvas/transform
+smokes pass. Full corpus remains 4,718 comparisons, 4,323/4,524
+covered, 201 missing, 92.5982% average source-shape, 80.9287%
+strict fuzzy, 2,381 linked-exact, and 1,008 byte-exact, with no
+exact-set losses. Real rendering and ARM32 runtime are untested.
+Next audit non-null transform-clone ownership. See
+[the color-slot audit](TRANSFORM_COLOR_OFFSET_ARM_2026-10-13.md).
 
 ## Transform null-source clone (2026-10-13)
 

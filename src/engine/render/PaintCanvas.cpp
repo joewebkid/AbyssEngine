@@ -3481,7 +3481,7 @@ void PaintCanvas::DrawTransform(Transform *tf, const AbyssEngine::AEMath::Matrix
             combined *= tf->rotationMatrix;
         }
         for (unsigned int i = 0; i < tf->meshes.size(); i++) {
-            this->DrawMesh(tf->meshes[i], combined, m3, tf->id, tf->localMatrix);
+            this->DrawMesh(tf->meshes[i], combined, m3, tf->color, tf->localMatrix);
         }
         for (unsigned int i = 0; i < tf->children.size(); i++) {
             if (this->currentCamera < this->cameras.count &&
@@ -3884,7 +3884,7 @@ void PaintCanvas::DrawMesh(AbyssEngine::Mesh *mesh, AbyssEngine::AEMath::Matrix 
         rotation.m[11] = 0.0f;
         worldM = (((worldMatrix * position) * pivotPositive) * rotation) * pivotNegative;
         uvM = resTf->localMatrix;
-        meshColor = mulColors(resTf->id, color);
+        meshColor = mulColors(resTf->color, color);
     }
 
     Vector center{mesh->boundsCenterX, mesh->boundsCenterY, mesh->boundsCenterZ};
