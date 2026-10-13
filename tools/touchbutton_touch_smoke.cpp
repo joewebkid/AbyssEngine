@@ -596,5 +596,10 @@ int main() {
     formatLanguage = 0;
     assert(formatted(-2147483647 - 1) == "--2,147,483,648");
 
+    String tagged = layout.tagString(String("SOL"));
+    std::string taggedAscii;
+    for (int i = 0; i < tagged.length; ++i) taggedAscii.push_back(char(tagged.data[i]));
+    assert(taggedAscii == "<c:-8388353>SOL<c:>");
+
     std::puts("TouchButton/Layout host smoke: OK");
 }

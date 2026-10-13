@@ -833,16 +833,14 @@ void Layout::resetWindowDimensions() {
 }
 
 
-static const String *g_tagBaseString = nullptr;
+static const char g_tagLit0[] = "<c:";
 
-static const char g_tagLit0[] = "";
+static const char g_tagLit1[] = ">";
 
-static const char g_tagLit1[] = "";
-
-static const char g_tagLit2[] = "";
+static const char g_tagLit2[] = "<c:>";
 
 String Layout::tagString(String in) {
-    return String(g_tagLit0) + *g_tagBaseString + String(g_tagLit1) + in + String(g_tagLit2);
+    return String(g_tagLit0) + String(-8388353) + String(g_tagLit1) + in + String(g_tagLit2);
 }
 
 

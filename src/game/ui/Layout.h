@@ -477,7 +477,7 @@ public:
 
     String formatNumber(int n);
 
-    static String tagString(String in);
+    String tagString(String in);
 
     String formatCredits(int n);
 

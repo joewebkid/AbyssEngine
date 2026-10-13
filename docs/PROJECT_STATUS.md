@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (Layout number formatting; older subsystem
+Last reviewed: 2026-10-14 (Layout color-tag string; older subsystem
 snapshots retain their dates)
+
+## Layout color-tag string (2026-10-14)
+
+`Layout::tagString(String)` now constructs the Android-backed
+`<c:-8388353>` prefix and `<c:>` suffix, replacing empty literals
+and a dereference of an unassigned null String pointer. Its header
+now declares an instance method, matching the original ARM ABI.
+The production-method host smoke confirms the resulting tag.
+Native `gof2`, all 206 ARM units and 37 verifier tests pass (one
+skipped). Focused source-shape rises 92.1% to 100.0%, strict fuzzy
+49.8% to 100.0%; it remains non-exact. Full corpus: 4,718
+comparisons, 4,323/4,524 covered, 201 missing, 92.95% average
+source-shape, 81.39% strict fuzzy, 2,402 linked-exact and 1,008
+byte-exact. Complete exact and extra-symbol sets are unchanged.
+ARM32 runtime and original-asset rendering remain untested. Next
+priority: audit `Layout::reload()` for real resource-loading gaps.
+See [the tag audit](LAYOUT_TAG_STRING_ARM_2026-10-14.md).
 
 ## Layout number formatting (2026-10-13)
 

@@ -4,6 +4,17 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout color-tag string (2026-10-14)
+
+The Android-backed `Layout::tagString(String)` now reaches 100.0%
+focused source-shape and strict fuzzy, but remains non-exact. Its
+instance ABI and literal sequence are restored; the host smoke
+checks the produced tag. Native `gof2`, all 206 ARM units and 37
+verifier tests pass (one skipped). Full corpus exact and
+extra-symbol sets are unchanged. Original ARM32 runtime and visual
+rendering remain untested. See
+[the evidence](LAYOUT_TAG_STRING_ARM_2026-10-14.md).
+
 ## Layout number formatting (2026-10-13)
 
 The Android-backed `Layout::formatNumber(int)` reaches 98.9%

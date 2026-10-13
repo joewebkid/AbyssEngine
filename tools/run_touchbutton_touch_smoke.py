@@ -47,6 +47,9 @@ def main():
     format_end = layout.index("void Layout::setWindowDimensions(", format_start)
     extracted += layout[format_start:format_end]
     extracted += function(layout, "void Layout::resetWindowDimensions()")
+    tag_start = layout.index("static const char g_tagLit0[]")
+    tag_end = layout.index("void Layout::reload()", tag_start)
+    extracted += layout[tag_start:tag_end]
     extracted += function(layout, "void Layout::drawBGPattern(")
     extracted += function(layout, "void Layout::drawEmptyFooter(")
     extracted += function(layout, "void Layout::drawHeader(String title, bool transition)")
