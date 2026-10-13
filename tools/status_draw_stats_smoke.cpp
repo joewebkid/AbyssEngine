@@ -45,18 +45,26 @@ struct Status {
     int getGoodsProduced() { return 88; }
 };
 struct GameText {
+    static int language;
+    static int getLanguage() { return language; }
     String text;
     String *getText(int id) {
         text.text = "T" + std::to_string(id);
         return &text;
     }
 };
+int GameText::language = 0;
 struct Globals {
     static GameText *gameText;
     static Status *status;
 };
 GameText *Globals::gameText = nullptr;
 Status *Globals::status = nullptr;
+
+String getSeparator() {
+// PRODUCTION_SEPARATOR
+    return sep;
+}
 
 struct StatusWindow {
     int charImageHeight = 21;
@@ -77,7 +85,7 @@ int main() {
     Globals::gameText = &gameText;
     Globals::status = &status;
     StatusWindow window;
-    String lbl, sep(":");
+    String lbl, sep = getSeparator();
     int tw = 0;
     window.drawStatsFixture(&canvas, &layout, 1, 10, 600, 100, 8, 12,
                             lbl, sep, tw);
@@ -120,5 +128,13 @@ int main() {
         assert(value.text == expectedValue && value.x == valueRight -
                static_cast<int>(expectedValue.size()) && value.y == rowY);
     }
+    GameText::language = 9;
+    String noSep = getSeparator();
+    assert(noSep.text.empty());
+    canvas.calls.clear();
+    layout.boxes.clear();
+    window.drawStatsFixture(&canvas, &layout, 1, 10, 600, 100, 8, 12,
+                            lbl, noSep, tw);
+    assert(canvas.calls[4].text == "T568");
     std::puts("StatusWindow stats-table host smoke: OK");
 }

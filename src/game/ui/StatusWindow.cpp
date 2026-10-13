@@ -405,7 +405,7 @@ void StatusWindow::draw() {
     { if (creditStr.data) delete[] creditStr.data; creditStr.data = nullptr; creditStr.length = 0; }
     String sep;
     if (GameText::getLanguage() == 9)
-        sep.ctor_char("\xa1", false);
+        sep.ctor_char("", false);
     else
         sep.ctor_char(":", false);
 

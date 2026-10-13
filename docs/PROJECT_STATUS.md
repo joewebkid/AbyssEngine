@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (StatusWindow destructor; older subsystem
+Last reviewed: 2026-10-13 (StatusWindow language-9 separator; older subsystem
 snapshots retain their dates)
+
+## StatusWindow language-9 separator (2026-10-13)
+
+The Android `draw` method constructs an empty label separator for
+language 9; the local code had inserted byte `0xA1`. The Android ELF's
+literal at `0x1ca472` is `00`, and the same literal supplies empty box
+labels. A production-block host smoke now checks both `":"` in other
+languages and the empty separator in language 9. Native `gof2`, all
+206 ARM units and 37 verifier tests pass (one skipped). `draw` remains
+84.6% source-shape and 21.4% strict fuzzy; full corpus remains
+4,323/4,524 covered, 92.85% average source-shape, 81.23% strict fuzzy,
+2,397 linked-exact and 1,008 byte-exact, with identical exact and extra
+sets. Real text assets and ARM32 rendering remain unverified. Next
+priority: remaining `draw` string/formatting blocks. See
+[the info-card follow-up](STATUSWINDOW_DRAW_INFO_CARD_ARM_2026-10-13.md).
 
 ## StatusWindow destructor ownership (2026-10-13)
 

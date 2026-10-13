@@ -18,11 +18,14 @@ def main():
         parser.error("specify --cxx")
 
     source = (ROOT / "src/game/ui/StatusWindow.cpp").read_text()
+    sep_start = source.index("    String sep;\n    if (GameText::getLanguage() == 9)")
+    sep_end = source.index("\n    int tab =", sep_start)
     header_start = source.index("        String standingHeader = ")
     header_end = source.index("        int standingRowY = ", header_start)
     rows_start = source.index("        int standingLabelY = ", header_end)
     rows_end = source.index("        drewStats = land;", rows_start)
     fixture = (ROOT / "tools/status_draw_stats_smoke.cpp").read_text()
+    fixture = fixture.replace("// PRODUCTION_SEPARATOR", source[sep_start:sep_end])
     fixture = fixture.replace("// PRODUCTION_STATS_HEADER", source[header_start:header_end])
     fixture = fixture.replace("// PRODUCTION_STATS_ROWS", source[rows_start:rows_end])
 

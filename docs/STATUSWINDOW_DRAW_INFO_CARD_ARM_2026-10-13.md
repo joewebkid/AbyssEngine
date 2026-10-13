@@ -38,3 +38,27 @@ below the card, separator encoding for language 9, some ship decimal
 corner cases, full UI placement, and ARM32 runtime are not yet verified.
 The method remains non-exact. Next priority: recover the two-column
 statistics table and its extra direct `Status` fields.
+
+## Follow-up: language-9 separator (2026-10-13)
+
+The earlier separator-encoding uncertainty is resolved for Android:
+`StatusWindow::draw` passes the literal at ELF address `0x1ca472` to the
+`String` constructor when `GameText::getLanguage() == 9`. That address
+contains `00` in the original ELF and is also used for empty `drawBox`
+labels. The local `"\xA1"` separator was therefore wrong; this branch
+now uses `""`, while other languages retain `":"`. A host smoke executes
+the production separator branch and confirms the language-9 statistics
+label has no appended punctuation; the existing info-card and draw-prefix
+smokes also pass.
+
+Native `gof2`, all 206 ARM translation units and 37 verifier tests pass
+(one skipped). Focused `draw` remains 84.6% source-shape and 21.4%
+strict fuzzy at report precision, non-exact. Full corpus: 4,719
+comparisons, 4,323/4,524 original functions covered, 201 missing,
+92.85% average source-shape, 81.23% strict fuzzy, 2,397 linked-exact,
+1,008 byte-exact and 123 extra symbols. Complete exact and extra sets
+match the preceding destructor package. The report is
+`A:/Galaxy on Fire new version/_work/status_sep_full_20261013.json`.
+Actual localized text assets, complete rendered UI and ARM32 runtime
+remain unverified. Next audit: remaining non-exact `draw` string
+ownership and firepower fractional-formatting corner cases.
