@@ -364,7 +364,6 @@ namespace AbyssEngine {
 
         if (other == 0) {
             Transform temp;
-            temp.~Transform();
         } else {
             this->animating = true;
             this->animationStart = other->animationStart;

@@ -22,6 +22,8 @@ def main():
     source = (ROOT / "src/engine/math/Transform.cpp").read_text()
     fixture = (ROOT / "tools/transform_release_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_DESTRUCTOR", function(source, "Transform::~Transform()"))
+    clone = source[source.index("Transform::Transform(Transform *other)"):]
+    fixture = fixture.replace("// PRODUCTION_NULL_BRANCH", function(clone, "if (other == 0)"))
     with tempfile.TemporaryDirectory(prefix="transform-release-smoke-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "transform_release_smoke.cpp"
         generated.write_text(fixture)

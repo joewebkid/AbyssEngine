@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (transform keyframe ownership; older subsystem
+Last reviewed: 2026-10-13 (transform null-source clone; older subsystem
 snapshots retain their dates)
+
+## Transform null-source clone (2026-10-13)
+
+`Transform(Transform *)` no longer explicitly destroys a temporary
+that C++ also destroys at scope exit when its source is null. Android
+ARM at `0x74918` shows one construction and one destruction. Both
+constructor variants rise 90.6% to 91.5% source-shape and 57.6% to
+57.7% strict fuzzy; neither is exact. Native `gof2`, 206/206 ARM
+units, 37 verifier tests (one skipped), and an extracted-branch
+ownership smoke pass. Full corpus: 4,718 comparisons, 4,323/4,524
+covered, 201 missing, 92.5982% average source-shape, 80.9288%
+strict fuzzy, 2,381 linked-exact, 1,008 byte-exact; no exact losses.
+The full non-null clone and real animation lifetime remain untested.
+Next audit shared-keyframe and child-mesh ownership in that path. See
+[the null-clone audit](TRANSFORM_NULL_CLONE_ARM_2026-10-13.md).
 
 ## Transform keyframe ownership (2026-10-13)
 
