@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (SpriteSystemDraw cached-array follow-up; older subsystem
+Last reviewed: 2026-10-13 (Material default ambient sentinel; older subsystem
 snapshots retain their dates)
+
+## Material default ambient sentinel (2026-10-13)
+
+Android ARM `Material` constructor at `0x7c188` writes −10.0f to
+`ambientColor.x` (offset `0x68`). The local constructor wrote zero,
+so a new material incorrectly selected `MaterialDraw`'s ambient-light
+override path. It now uses the original sentinel. A host smoke using
+the real `Material` and math units checks defaults, queue reuse over
+two rounds, and zero-sized copy/null-source paths. Native `gof2`,
+206/206 ARM units, SpriteSystemDraw and MaterialDraw smokes, and 36
+verifier tests pass (one skipped). Focused constructor source-shape
+rises 97.4% to 99.3%, strict fuzzy 91.4% to 93.5%; it remains
+non-exact. Full corpus stays at 4,323/4,524 functions covered,
+201 missing, 2,378 linked-exact and 1,008 byte-exact, with no
+exact-symbol change. Average source-shape rises 92.5434% to
+92.5438%; strict fuzzy 80.8333% to 80.8337%. Clone `addData`
+initialization/ownership and full GL/ARM32 runtime remain unverified.
+Next audit `PaintCanvas::MeshCloneMaterial`'s unresolved clone path.
+See [the Material audit](MATERIAL_DEFAULT_AMBIENT_ARM_2026-10-13.md).
 
 ## SpriteSystemDraw cached-array follow-up (2026-10-13)
 

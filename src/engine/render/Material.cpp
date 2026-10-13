@@ -1,12 +1,10 @@
 #include "engine/render/Material.h"
 
-static float Material_defaultVectorX = 0.0f;
-
 namespace AbyssEngine {
     Material::Material() {
         this->blendMode = 0;
 
-        this->ambientColor.x = Material_defaultVectorX;
+        this->ambientColor.x = -10.0f;
         this->ambientColor.y = 0;
         this->ambientColor.z = 0;
 
