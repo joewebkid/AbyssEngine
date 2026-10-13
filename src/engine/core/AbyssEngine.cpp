@@ -704,6 +704,10 @@ namespace AbyssEngine {
 namespace AbyssEngine {
     int MeshDraw(Engine * engine, Mesh * mesh);
 
+#if __SIZEOF_POINTER__ == 4
+    static_assert(__builtin_offsetof(Engine, lightAmbient) == 0x268, "Engine::lightAmbient @0x268");
+#endif
+
     void MaterialDraw(PaintCanvas *canvas, Engine *engine, Material *mat, bool setTextures) {
         if (canvas == 0 || mat == 0)
             return;
@@ -714,32 +718,35 @@ namespace AbyssEngine {
         engine->SetAddData(mat->addData, (int) mat->addDataSize);
 
         float ambient = mat->ambientColor.x;
+        float previousAmbientR = 0.0f;
+        float previousAmbientG = 0.0f;
+        float previousAmbientB = 0.0f;
         if (ambient != -10.0f) {
-            engine->LightSetGlobalSceneColorAmbient(ambient, 0.0f, 0.0f);
+            previousAmbientR = engine->lightAmbient.r;
+            previousAmbientG = engine->lightAmbient.g;
+            previousAmbientB = engine->lightAmbient.b;
+            engine->LightSetLightColorAmbient(mat->ambientColor.x, mat->ambientColor.y,
+                                              mat->ambientColor.z, 0x4000);
         }
 
-        const float inv255 = 1.0f / 255.0f;
         for (unsigned int i = 0; i < mat->meshes.size_; ++i) {
-            Matrix world;
-            AE_AEMath_matMul(&world, &mat->arr_5c.data_[i]);
-            Matrix view;
-            memcpy(view.m, canvas->worldViewMatrix.m, sizeof(view.m));
-            canvas->SetWorldViewMatrix(view);
-            engine->SetModelMatrix(world);
+            Matrix worldView = AEMath::operator*(mat->arr_5c.data_[i], mat->arr_2c.data_[i]);
+            canvas->SetWorldViewMatrix(worldView);
+            engine->SetModelMatrix(mat->arr_2c.data_[i]);
             engine->SetUVMatrix(mat->arr_38.data_[i]);
 
             unsigned int packed = mat->arr_50.data_[i];
-            float ca = (float) ((packed >> 24) & 0xff);
-            float cr = (float) ((packed >> 16) & 0xff);
-            float cg = (float) ((packed >> 8) & 0xff);
-            float cb = (float) (packed & 0xff);
-            engine->SetColor(ca * inv255, cr * inv255, cg * inv255, cb * inv255);
+            float ca = (float) ((double) ((packed >> 24) & 0xff) / 255.0);
+            float cr = (float) ((double) ((packed >> 16) & 0xff) / 255.0);
+            float cg = (float) ((double) ((packed >> 8) & 0xff) / 255.0);
+            float cb = (float) ((double) (packed & 0xff) / 255.0);
+            engine->SetColor(ca, cr, cg, cb);
 
             MeshDraw(engine, mat->meshes.data_[i]);
         }
 
         if (mat->ambientColor.x != -10.0f) {
-            engine->LightSetGlobalSceneColorAmbient(mat->ambientColor.x, 0.0f, 0.0f);
+            engine->LightSetLightColorAmbient(previousAmbientR, previousAmbientG, previousAmbientB, 0x4000);
         }
 
         mat->arr_2c.size_ = 0;

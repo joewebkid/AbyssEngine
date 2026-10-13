@@ -54,5 +54,7 @@ not claim its semantics are fixed.
 
 The host smokes do not execute the complete Canvas object, OpenGL,
 original assets, or ARM32 gameplay. The explicit copy in `MaterialDraw`
-preserves the numeric first 15 floats but does not recover its original
-matrix chain; audit that call next.
+preserved the numeric first 15 floats but did not recover its original
+matrix chain. The subsequent
+[MaterialDraw audit](MATERIAL_DRAW_MATRIX_LIGHT_ARM_2026-10-13.md)
+replaces that interim copy with the ARM-backed product and routing.

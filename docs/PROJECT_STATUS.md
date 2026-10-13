@@ -1,7 +1,29 @@
 # Project Status
 
-Last reviewed: 2026-10-12 (PaintCanvas matrix-field layout; older subsystem
+Last reviewed: 2026-10-13 (MaterialDraw matrix/light routing; older subsystem
 snapshots retain their dates)
+
+## MaterialDraw matrix and light routing (2026-10-13)
+
+Android ARM at `0x870b8` confirms the batched matrix order
+`arr_5c[i] * arr_2c[i]`, with the result sent to Canvas world-view,
+`arr_2c[i]` sent to model, and `arr_38[i]` sent to UV. The local
+method lost one product operand, sent a different model matrix, and
+used the wrong ambient-light service. It now saves/restores the
+engine's three light-ambient components, applies the material RGB to
+light `0x4000`, and converts packed color channels through the
+original double-precision division. A production-body host smoke
+checks two batched meshes, call order, colors, the sentinel ambient
+path, and Array reset. Native `gof2`, 206/206 ARM units, and 36
+verifier tests pass (one skipped). Focused source-shape rises 82.5%
+to 99.4%, strict fuzzy 43.9% to 96.3%; the method is not exact.
+Full corpus remains 4,323/4,524 original functions covered and 201
+missing, with 2,378 linked-exact and 1,008 byte-exact and no exact
+symbol-set change. Average source-shape rises 92.5371% to 92.5407%,
+strict fuzzy 80.8212% to 80.8323%. The smoke mocks matrix math and
+does not execute full rendering or ARM32 runtime. Next audit the
+`SpriteSystemDraw` producer of these matrix queues. See
+[the MaterialDraw audit](MATERIAL_DRAW_MATRIX_LIGHT_ARM_2026-10-13.md).
 
 ## PaintCanvas matrix-field layout (2026-10-12)
 
@@ -20,8 +42,8 @@ host smokes, and 36 verifier tests pass (one skipped). Focused
 201 missing, and 1,008 byte-exact; linked-exact rises 2,376 to
 2,378, with no prior exact-symbol loss. Average source-shape rises
 92.5365% to 92.5371%; strict fuzzy rises 80.8140% to 80.8212%.
-No real GL, original-asset, or ARM runtime test was run. Next audit
-`MaterialDraw`'s matrix product and model-matrix routing. See
+No real GL, original-asset, or ARM runtime test was run. The subsequent
+MaterialDraw audit restores its matrix and light routing. See
 [the layout audit](PAINTCANVAS_MATRIX4_LAYOUT_ARM_2026-10-12.md).
 
 ## AEMath matrix constructor and product (2026-10-12)

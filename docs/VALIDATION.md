@@ -145,6 +145,16 @@ matrix product, and pre-existing assignment/operators, and removes its
 temporary executable. This does not establish ARM runtime or the full
 matrix owner layout. See [the matrix audit](MATRIX_CTOR_PRODUCT_ARM_2026-10-12.md).
 
+```powershell
+python tools/run_material_draw_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `MaterialDraw host smoke: OK`. The runner executes the
+production batch-draw method with fixture math/render services and
+removes its temporary executable. It checks routing, colors, ambient
+restoration and queue reset, not real OpenGL or ARM runtime. See
+[the batch-draw audit](MATERIAL_DRAW_MATRIX_LIGHT_ARM_2026-10-13.md).
+
 Windows note: the wrapper names are still `orbcc`, `orbnm`, `orbas`, and
 `orbobjdump`, but they now also support a local NDK r18b fallback. Set
 `GOF2_VERIFY_LOCAL_NDK=1` and keep the NDK at `.cache/ndk/android-ndk-r18b`, or
