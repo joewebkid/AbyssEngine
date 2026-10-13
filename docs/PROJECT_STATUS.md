@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (StatusWindow draw globals; older subsystem
+Last reviewed: 2026-10-13 (StatusWindow info card; older subsystem
 snapshots retain their dates)
+
+## StatusWindow credits and ship info card (2026-10-13)
+
+The Android draw card places credits, level and time on separate
+line-height-spaced rows, with ship name and labeled firepower/HP values
+opposite. The local body previously drew several values at one point and
+formatted float return bits as an integer with `%`; the recovered block
+now shows decimal firepower and the source-backed positions and labels.
+A production-body host smoke passes eight text/coordinate checks; native
+`gof2`, 206/206 ARM translation units, and 37 verifier tests pass (one
+skipped). `draw` source-shape rises 57.4% to 60.1%, strict fuzzy 13.8%
+to 15.9%, still not exact. Full corpus remains 4,323/4,524 covered,
+92.82% average source-shape, 81.21% strict fuzzy, 2,395 linked-exact
+and 1,008 byte-exact, with no old exact-symbol losses. The remaining
+two-column statistics table, real assets and ARM32 UI remain
+unverified. See [the info-card audit](STATUSWINDOW_DRAW_INFO_CARD_ARM_2026-10-13.md).
 
 ## StatusWindow draw service bindings (2026-10-13)
 
@@ -16,8 +32,8 @@ the existing standing smoke and 37 verifier tests pass (one skipped).
 Full corpus remains 4,323/4,524 covered, with 92.82% average source-shape,
 81.21% strict fuzzy, 2,395 linked-exact and 1,008 byte-exact; no exact
 symbols were lost. The full UI, asset-backed rendering, several stats rows
-and exact ARM shape are not yet verified. Next audit
-the stats/ship text and row geometry. See
+and exact ARM shape are not yet verified. The subsequent info-card audit
+above addresses credits and ship text; the statistics table remains next. See
 [the draw-globals audit](STATUSWINDOW_DRAW_GLOBALS_ARM_2026-10-13.md).
 
 ## StatusWindow character/rank initialization (2026-10-13)

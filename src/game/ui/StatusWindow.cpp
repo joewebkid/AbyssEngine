@@ -12,6 +12,7 @@
 #include "game/world/Standing.h"
 #include "game/core/String.h"
 #include "game/ui/TouchButton.h"
+#include <cstring>
 
 StatusWindow::~StatusWindow() {
     if (this->tabButtons != 0) {
@@ -428,49 +429,57 @@ void StatusWindow::draw() {
             ->drawChar(this->imageParts, layout->field_0x4c + x0, y, false);
         String credTmp = Globals::layout->formatCredits(Globals::status->getCredits());
         creditStr = credTmp;
+        int textRight = (boxW >> 1) - pad - layout->field_0x4c;
+        int textY = y + pad;
+        int lineH = layout->field_0x4;
         int tw = canvas->GetTextWidth((unsigned) (uintptr_t) font, creditStr);
-        canvas->DrawString((unsigned) (uintptr_t) font, creditStr, (((boxW >> 1) - pad) - x0) - tw, y, false);
+        canvas->DrawString(font, creditStr, textRight - tw, textY, false);
 
         String lvlPrefix, lvlText, lvlFull;
         String *lt = Globals::gameText->getText(321);
         lvlPrefix.ctor_char(" ", false);
         lvlText = *lt;
         int lvl = Globals::status->getLevel();
-        lvlFull = lvlText;
+        lvlFull = lvlText + lvlPrefix;
         lvlFull += lvl;
         creditStr = lvlFull;
-        tw = canvas->GetTextWidth((unsigned) (uintptr_t) font, creditStr);
-        canvas->DrawString((unsigned) (uintptr_t) font, creditStr, (((boxW >> 1) - pad) - x0) - tw, y, false);
+        tw = canvas->GetTextWidth(font, creditStr);
+        canvas->DrawString(font, creditStr, textRight - tw, textY + lineH, false);
 
         static_cast<Globals *>(Globals::globals)
             ->longToTimeStringNoSeconds(Globals::status->getPlayingTime(), creditStr);
-        tw = canvas->GetTextWidth((unsigned) (uintptr_t) font, creditStr);
-        canvas->DrawString((unsigned) (uintptr_t) font, creditStr, (((boxW >> 1) - pad) - x0) - tw, y, false);
+        tw = canvas->GetTextWidth(font, creditStr);
+        canvas->DrawString(font, creditStr, textRight - tw, textY + 2 * lineH, false);
 
         lbl.ctor_char("", false);
         layout->drawBox(5, (boxW >> 1) + x0 + pad, y, (boxW >> 1) - pad, layout->field_0x2d8, lbl, 0);
         static_cast<ImageFactory *>(Globals::imageFactory)
             ->drawShip(Globals::status->getShip()->getIndex(), x0 + (boxW >> 1) + pad * 2, y);
         String *shipNameTxt = Globals::gameText->getText(Globals::status->getShip()->getIndex() + 913);
-        canvas->DrawString((unsigned) (uintptr_t) font, *shipNameTxt,
-                           x0 + (boxW >> 1) + pad * 3 + layout->field_0x2cc, y, false);
+        int shipTextX = x0 + (boxW >> 1) + pad * 3 + layout->field_0x2cc;
+        int shipValueRight = x0 + boxW - layout->field_0x4c;
+        canvas->DrawString(font, *shipNameTxt, shipTextX, textY, false);
 
-        String frac, fracStr, pct;
-        int firePow = Globals::status->getShip()->getFirePower();
-        float firePowF = *(float *) &firePow;
+        String fireLabel = *Globals::gameText->getText(569) + sep;
+        canvas->DrawString(font, fireLabel, shipTextX, textY + lineH, false);
+        String frac, fracStr, dot;
+        int firePowBits = Globals::status->getShip()->getFirePower();
+        float firePowF;
+        std::memcpy(&firePowF, &firePowBits, sizeof(firePowF));
         frac.Set((long long) (int) ((firePowF - (float) (int) firePowF) * 100.0f));
         fracStr = frac.SubString(0, 2);
-        int fp2 = Globals::status->getShip()->getFirePower();
-        pct.ctor_char("%", false);
-        String fpFull = (fp2 + pct) + fracStr;
+        dot.ctor_char(".", false);
+        String fpFull = ((int) firePowF + dot) + fracStr;
         creditStr = fpFull;
-        tw = canvas->GetTextWidth((unsigned) (uintptr_t) font, creditStr);
-        canvas->DrawString((unsigned) (uintptr_t) font, creditStr, ((y + x0) - pad) - tw, y, false);
+        tw = canvas->GetTextWidth(font, creditStr);
+        canvas->DrawString(font, creditStr, shipValueRight - tw, textY + lineH, false);
 
+        String hpLabel = *Globals::gameText->getText(570) + sep;
+        canvas->DrawString(font, hpLabel, shipTextX, textY + 2 * lineH, false);
         String hpStr;
         hpStr.Set((long long) (Globals::status->getShip())->getCombinedHP());
-        tw = canvas->GetTextWidth((unsigned) (uintptr_t) font, hpStr);
-        canvas->DrawString((unsigned) (uintptr_t) font, hpStr, ((y + x0) - pad) - tw, y, false);
+        tw = canvas->GetTextWidth(font, hpStr);
+        canvas->DrawString(font, hpStr, shipValueRight - tw, textY + 2 * lineH, false);
 
         // ARM 0x15831c: the standing row follows the second stats header and boxes.
         int standingRowY = y + layout->field_0x2d8 + layout->field_0x1c + pad * 3;

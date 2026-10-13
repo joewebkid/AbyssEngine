@@ -161,6 +161,15 @@ and iPad width behavior with fixtures; it does not render the full window.
 See [the draw-globals audit](STATUSWINDOW_DRAW_GLOBALS_ARM_2026-10-13.md).
 
 ```powershell
+python tools/run_status_draw_info_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `StatusWindow info-card host smoke: OK`. This extracts the
+production credits, level, time and ship-text block and checks strings and
+positions with fixtures; it does not load original assets or draw the
+statistics table. See [the info-card audit](STATUSWINDOW_DRAW_INFO_CARD_ARM_2026-10-13.md).
+
+```powershell
 python tools/run_status_medal_hint_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
 ```
 
