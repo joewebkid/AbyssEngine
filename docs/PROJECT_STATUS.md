@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (ImageFactory portrait data and dispatch; older subsystem
+Last reviewed: 2026-10-13 (Sprite canvas and scale dispatch; older subsystem
 snapshots retain their dates)
+
+## Sprite canvas and scale dispatch (2026-10-13)
+
+Android ARM `Sprite` constructors and drawing methods use `Globals::Canvas`,
+not the separately initialized `PaintCanvas::gCanvas` alias used by the
+recovered source. The multi-image `draw` branch selects unscaled output on
+`scaleX == 1.0f` alone; the former `scaleX || scaleY` test silently dropped
+horizontal scaling when only Y was one. Both routes now match ARM. An
+extracted-body smoke executes the production Sprite and
+`ImageFactory::reload` paths with distinct canvas fixtures and asymmetric
+scales. Native `gof2`, 206/206 ARM units, both image smokes, and 37 verifier
+tests pass (one skipped). Full corpus stays 4,323/4,524 covered,
+2,388 linked-exact and 1,008 byte-exact with no exact losses; average
+source-shape is 92.67619% (slightly down from 92.67655%) and strict
+fuzzy 81.04487% (slightly up from 81.04394%). Real assets, OpenGL, and
+ARM32 runtime remain untested. Next recover the separate
+`ParticleSystemMesh::emitTrail` stub. See
+[the Sprite audit](SPRITE_CANVAS_SCALE_ARM_2026-10-13.md).
 
 ## ImageFactory portrait data and dispatch (2026-10-13)
 

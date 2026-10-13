@@ -1,13 +1,7 @@
 #include "engine/render/Sprite.h"
 #include "engine/core/AbyssEngine.h"
 #include "engine/render/PaintCanvas.h"
-
-
-static PaintCanvas **g_Sprite_canvas = &PaintCanvas::gCanvas;
-
-static PaintCanvas **g_Sprite_draw_image_canvas = &PaintCanvas::gCanvas;
-
-static PaintCanvas **g_Sprite_draw_region_canvas = &PaintCanvas::gCanvas;
+#include "game/core/Globals.h"
 
 void Sprite::setPosition(int x, int y) {
     this->posX = x;
@@ -40,19 +34,19 @@ void Sprite::draw(float scaleX, float scaleY) {
         int refX = this->refPixelX;
         int x = this->posX - refX;
         int y = this->posY - refX;
-        (*g_Sprite_draw_region_canvas)->DrawRegion2D(
+        Globals::Canvas->DrawRegion2D(
             this->image, this->frameSrcX, this->frameSrcY,
             this->frameWidth, this->frameHeight, 0.0f, 0, 0, x, y);
         return;
     }
 
-    PaintCanvas *canvas = *g_Sprite_draw_image_canvas;
+    PaintCanvas *canvas = Globals::Canvas;
     uint32_t image = frames[this->currentFrame];
     int refX = this->refPixelX;
     int x = this->posX - refX;
     int y = this->posY - refX;
 
-    if (scaleX == 1.0f || scaleY == 1.0f) {
+    if (scaleX == 1.0f) {
         return canvas->DrawImage2D(image, x, y);
     }
 
@@ -68,7 +62,7 @@ void Sprite::draw(float scaleX, float scaleY) {
 }
 
 Sprite::Sprite(uint32_t image, int frameWidth, int frameHeight) {
-    PaintCanvas *canvas = *g_Sprite_canvas;
+    PaintCanvas *canvas = Globals::Canvas;
 
     this->frames = nullptr;
     this->image = image;
@@ -94,7 +88,7 @@ void Sprite::prevFrame() {
 }
 
 void Sprite::drawRegion(int srcX, int srcY, int w, int h) {
-    PaintCanvas *canvas = *g_Sprite_canvas;
+    PaintCanvas *canvas = Globals::Canvas;
     int refX = this->refPixelX;
     int x = this->posX + srcX - refX;
     int y = this->posY + srcY - refX;
@@ -110,7 +104,7 @@ void Sprite::drawRegion(int srcX, int srcY, int w, int h) {
 }
 
 Sprite::Sprite(uint32_t *frames, int frameCount, int frameWidth, int frameHeight) {
-    PaintCanvas *canvas = *g_Sprite_canvas;
+    PaintCanvas *canvas = Globals::Canvas;
 
     this->frames = frames;
     this->image = (uint32_t) - 1;

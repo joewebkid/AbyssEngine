@@ -108,6 +108,18 @@ random, sprite, and reload services; it removes its temporary executable.
 It does not validate original assets or OpenGL. See
 [the portrait audit](IMAGE_FACTORY_PORTRAITS_ARM_2026-10-13.md).
 
+For the adjacent production Sprite/reload path:
+
+```powershell
+python tools/run_sprite_reload_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `Sprite reload/draw host smoke: OK`. It distinguishes
+the original `Globals::Canvas` from `PaintCanvas::gCanvas`, checks
+asymmetric scaling and frame-array destruction calls, and removes its temporary
+executable. It does not render real assets; see
+[the Sprite audit](SPRITE_CANVAS_SCALE_ARM_2026-10-13.md).
+
 ## TouchButton/Layout Host Smoke
 
 ```powershell
