@@ -16,9 +16,10 @@ meshes, and owned keyframes. The source deliberately has spare
 keyframe-array capacity. It verifies that the clone has an independent
 pointer array sized to the copied count, shares the pointed-to frames,
 clones meshes and the child transform, and does not delete the owner's
-frames on clone destruction. The fixture stubs `Mesh::Mesh` and
-manually deletes child objects; it does not prove the production
-`MeshRelease` / `TransformRelease` lifetime path or real assets.
+frames on clone destruction. The original fixture stubbed `Mesh::Mesh`
+and manually deleted child objects. The later [clone/release audit](MESH_TRANSFORM_CLONE_RELEASE_SMOKE_2026-10-13.md)
+replaces that stub with the production constructor and exercises the
+production release bodies; real assets remain untested.
 
 Both clone-constructor variants stay **91.5% source-shape**, while
 strict fuzzy rises from **57.6%** to **58.1%**. Neither constructor

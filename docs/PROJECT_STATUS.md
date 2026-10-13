@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (transform clone keyframes; older subsystem
+Last reviewed: 2026-10-13 (mesh/transform clone and release; older subsystem
 snapshots retain their dates)
+
+## Mesh/Transform clone and recursive release smoke (2026-10-13)
+
+The clone smoke now executes production `Mesh::Mesh(Mesh *)`,
+`MeshRelease`, `MeshReleaseIntern`, and `TransformRelease` bodies alongside
+the `Transform` constructors/destructor. It verifies shared geometry/VBO
+ownership, separately cloned mesh animation, shader tangents, and recursive
+mesh-slot clearing. The Android-backed release traversal does **not**
+delete child `Transform` objects; the test explicitly frees them after
+traversal. This remains a caller-ownership question, not a source change.
+No production code or ARM metrics changed: latest full corpus remains
+4,323/4,524 covered, 92.6014% average source-shape, 2,383 linked-exact,
+1,008 byte-exact. See [the clone/release audit](MESH_TRANSFORM_CLONE_RELEASE_SMOKE_2026-10-13.md).
+Next trace the owner of cloned child transforms and test real asset lifetimes.
 
 ## Transform clone keyframe-list ownership (2026-10-13)
 
@@ -17,9 +31,9 @@ release smoke pass. Full corpus: 4,720 comparisons, 4,323/4,524
 covered, 201 missing, 92.6014% average source-shape, 80.9370%
 strict fuzzy, 2,383 linked-exact, 1,008 byte-exact, with no exact
 losses. The two new linked rows are helper instances, not the clone
-constructor. Actual `Mesh` cloning, recursive release ownership,
-assets, and ARM32 runtime remain untested. Next audit the recursive
-release path. See [the keyframe-list audit](TRANSFORM_CLONE_KEYFRAMES_ARM_2026-10-13.md).
+constructor. The later extracted-body smoke covers actual mesh copying
+and release traversal; assets and ARM32 runtime remain untested. See
+[the keyframe-list audit](TRANSFORM_CLONE_KEYFRAMES_ARM_2026-10-13.md).
 
 ## Transform color ABI slot (2026-10-13)
 
