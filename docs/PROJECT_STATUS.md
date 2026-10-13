@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (MiningGame layer membership; older subsystem
+Last reviewed: 2026-10-14 (MiningGame update; older subsystem
 snapshots retain their dates)
+
+## MiningGame update and layer speeds (2026-10-14)
+
+`MiningGame::update` now uses the Android-exported seven-entry
+`LAYER_SPEEDS` table and the original `Globals` service routes rather
+than unassigned holders. It also restores integer ore-boundary text
+alpha, the animation threshold, and the single-byte status medal flag.
+Focused source-shape rises 14.1% to 95.1%, strict fuzzy 14.1% to
+82.1%; it is not exact. A production-method host smoke, native `gof2`,
+all 206 ARM units and 37 verifier tests pass (one skipped). Full
+corpus coverage remains 4,323/4,524; average source-shape rises
+93.00% to 93.02% and strict fuzzy 81.43% to 81.45%. All 2,403
+linked-exact and 1,008 byte-exact pairs and 123 extra symbols are
+unchanged. Medal/loss branches and ARM32 runtime are untested; the
+constructor and `render2D` retain unassigned service holders. Next:
+recover those constructor/render dependencies, then test a complete
+native mining sequence. See [the update audit](MINING_UPDATE_ARM_2026-10-14.md).
 
 ## MiningGame layer membership (2026-10-14)
 

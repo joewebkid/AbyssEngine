@@ -22,9 +22,17 @@ def main():
     mining = (ROOT / "src/game/menu/MiningGame.cpp").read_text()
     start = mining.index('extern "C" {\nint LAYER_DIAMETERS[49] = {')
     end = mining.index("};\n}", start) + len("};\n}")
-    generated = '#include "game/menu/MiningGame.h"\n#include "game/core/Globals.h"\n'
+    generated = '''#include "game/menu/MiningGame.h"
+#include "game/core/Globals.h"
+#include "game/ui/Layout.h"
+#include "game/mission/Status.h"
+#include "game/mission/Achievements.h"
+#include "engine/core/AERandom.h"
+#include "engine/audio/FModSound.h"
+'''
     generated += mining[start:end] + "\n"
     generated += function(mining, "bool MiningGame::isInCurrentLayer()")
+    generated += function(mining, "int MiningGame::update(int delta)")
     globals_source = (ROOT / "src/game/core/Globals.cpp").read_text()
     generated += function(globals_source, "float Globals::sqrt(float x)")
 

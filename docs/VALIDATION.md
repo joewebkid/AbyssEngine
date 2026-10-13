@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## MiningGame update and layer speeds (2026-10-14)
+
+Focused `update` source-shape rises 14.1% to 95.1%, strict fuzzy
+14.1% to 82.1% (357 generated versus 376 target instructions), with
+no exact match. Constructor C1/C2 remain 1.3% source-shape and 0.6%
+strict fuzzy. The production-method host smoke, native `gof2`, all
+206 ARM units and 37 verifier tests pass (one skipped). Full corpus:
+4,323/4,524 covered, 93.02% average source-shape, 81.45% strict
+fuzzy, 2,403 linked-exact and 1,008 byte-exact. Exact and extra-symbol
+sets are unchanged. Medal/loss branches and ARM32 runtime remain
+untested. See [the evidence](MINING_UPDATE_ARM_2026-10-14.md).
+
 ## MiningGame layer membership (2026-10-14)
 
 The Android-backed `isInCurrentLayer()` reaches 99.1% focused
