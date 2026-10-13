@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (Layout full-screen window wrapper; older subsystem
+Last reviewed: 2026-10-13 (Layout one-argument window wrapper; older subsystem
 snapshots retain their dates)
+
+## Layout one-argument window wrapper (2026-10-13)
+
+`Layout::drawWindow(String)` now copies the title with the
+Android-backed non-reversing constructor and forwards `drawBG=false`
+instead of incorrectly painting the background. The production-method
+UI smoke covers frame/header placement without a background pattern.
+Native `gof2`, all 206 ARM units and 37 verifier tests pass (one
+skipped). Focused source-shape rises 76.1% to 100.0%, strict fuzzy
+63.2% to 100.0%, adding one linked-exact (not byte-exact) symbol.
+Full corpus: 4,718 comparisons, 4,323/4,524 covered, 201 missing,
+92.94% average source-shape, 81.35% strict fuzzy, 2,401 linked-exact
+and 1,008 byte-exact. Complete exact and extra-symbol comparisons
+show one linked-exact gain, no losses and no extra-symbol change.
+Original assets, visual output and ARM32 runtime remain untested.
+Next priority: audit `Layout::resetWindowDimensions()` (77.8%
+source-shape) for remaining behavior and ABI gaps. See
+[the wrapper audit](LAYOUT_ONE_ARG_WINDOW_ARM_2026-10-13.md).
 
 ## Layout full-screen window wrapper (2026-10-13)
 

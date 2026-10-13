@@ -1153,8 +1153,7 @@ void Layout::drawMask(int x, int y, int w, int h) {
 }
 
 void Layout::drawWindow(String title) {
-    String tmp(title);
-    this->drawWindow(tmp, true);
+    this->drawWindow(String(title, false), false);
 }
 
 void Layout::drawWindow(String title, bool drawBG) {

@@ -4,6 +4,16 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout one-argument window wrapper (2026-10-13)
+
+The Android-backed `Layout::drawWindow(String)` forwards
+`drawBG=false`, correcting a behavior difference. Focused
+source-shape and strict fuzzy reach 100.0%, adding a linked-exact
+(not byte-exact) result. The production-method UI smoke checks the
+background-free frame, and native `gof2`, all 206 ARM units and 37
+verifier tests pass (one skipped). See
+[the evidence](LAYOUT_ONE_ARG_WINDOW_ARM_2026-10-13.md).
+
 ## Layout full-screen window wrapper (2026-10-13)
 
 The Android-backed `Layout::drawWindow(String,bool)` reaches 100.0%

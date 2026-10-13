@@ -483,6 +483,12 @@ int main() {
     assert(outlines[0].width == 480 && outlines[0].height == 304);
 
     clearDraws();
+    layout.drawWindow(String("BOX"));
+    assert(!imageAt(42, 0, 8) && imageAt(73, 0, 0));
+    assert(outlines.size() == 1 && outlines[0].width == 480);
+    assert(outlines[0].height == 304 && currentColor == 0x12345678);
+
+    clearDraws();
     layout.drawBGBorder(61, 62, 10, 20, 47, 65, 2, 3);
     assert(images.size() == 8 && regions.size() == 8);
     assert(imageAt(61, 12, 22) && imageAt(61, 45, 63));
