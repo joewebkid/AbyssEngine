@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (Layout drawBox default-flags wrapper; older subsystem
+Last reviewed: 2026-10-13 (Layout number formatting; older subsystem
 snapshots retain their dates)
+
+## Layout number formatting (2026-10-13)
+
+`Layout::formatNumber(int)` now uses Android-backed comma/dot and
+minus literals, takes each three-digit substring from the current
+end, and joins groups in the original order. Direct String
+construction removes extra temporary copies. The production-method
+host smoke covers grouping boundaries, negative values, five
+language IDs and `INT_MIN`. Native `gof2`, all 206 ARM units and 37
+verifier tests pass (one skipped). Focused source-shape rises 83.6%
+to 98.9%, strict fuzzy 36.6% to 80.1%; it remains non-exact.
+Full corpus: 4,718 comparisons, 4,323/4,524 covered, 201 missing,
+92.95% average source-shape, 81.38% strict fuzzy, 2,402 linked-exact
+and 1,008 byte-exact. Complete exact and extra-symbol sets are
+unchanged.
+For `INT_MIN`, the host path yields a double minus after ARM-style
+32-bit negation; original ARM32 runtime output is not directly
+tested. Real localized text and visual output remain untested. Next
+priority: audit `Layout::tagString(String)` (92.1% source-shape),
+which still dereferences an unassigned holder. See
+[the formatting audit](LAYOUT_FORMAT_NUMBER_ARM_2026-10-13.md).
 
 ## Layout drawBox default-flags wrapper (2026-10-13)
 

@@ -22,6 +22,8 @@ int Globals::h = 320;
 Status *Globals::status = nullptr;
 int Globals::other_buttons_x[10] = {};
 int Globals::other_buttons_y[10] = {};
+static int formatLanguage = 0;
+int GameText::getLanguage() { return formatLanguage; }
 
 AbyssEngine::String::String() : data(nullptr), length(0) {}
 AbyssEngine::String::String(const char *text, bool) : data(nullptr), length(0) { Set(text); }
@@ -571,6 +573,28 @@ int main() {
     assert(back.x == 5 && back.y == 275);
     assert(secondary.x == 5 && secondary.y == 275);
     assert(Globals::other_buttons_x[0] == 5 && Globals::other_buttons_y[0] == 275);
+
+    auto formatted = [&](int value) {
+        String result = layout.formatNumber(value);
+        std::string ascii;
+        for (int i = 0; i < result.length; ++i) ascii.push_back(char(result.data[i]));
+        return ascii;
+    };
+    formatLanguage = 0;
+    assert(formatted(0) == "0" && formatted(123) == "123" && formatted(999) == "999");
+    assert(formatted(1000) == "1,000" && formatted(123456) == "123,456");
+    assert(formatted(999999) == "999,999" && formatted(1000000) == "1,000,000");
+    assert(formatted(-1234567) == "-1,234,567");
+    formatLanguage = 1;
+    assert(formatted(1234567) == "1.234.567");
+    formatLanguage = 10;
+    assert(formatted(1234) == "1,234");
+    formatLanguage = 11;
+    assert(formatted(1234) == "1,234");
+    formatLanguage = 12;
+    assert(formatted(1234) == "1.234");
+    formatLanguage = 0;
+    assert(formatted(-2147483647 - 1) == "--2,147,483,648");
 
     std::puts("TouchButton/Layout host smoke: OK");
 }

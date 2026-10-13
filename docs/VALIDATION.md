@@ -4,6 +4,16 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout number formatting (2026-10-13)
+
+The Android-backed `Layout::formatNumber(int)` reaches 98.9%
+source-shape and 80.1% strict fuzzy; it remains non-exact. The
+production-method host smoke covers grouped and negative values,
+language-specific separators and `INT_MIN`. Native `gof2`, all 206
+ARM units and 37 verifier tests pass (one skipped). The `INT_MIN`
+output is a host observation, not an ARM32 runtime test. See
+[the evidence](LAYOUT_FORMAT_NUMBER_ARM_2026-10-13.md).
+
 ## Layout drawBox default-flags wrapper (2026-10-13)
 
 The Android-backed six-argument `Layout::drawBox` wrapper reaches

@@ -417,47 +417,41 @@ void Layout::drawBGPattern(unsigned img, int x, int y, int w, int h) {
 
 static const char g_fnEmpty[] = "";
 
-static const char g_fnSepA[] = "";
+static const char g_fnSepA[] = ",";
 
-static const char g_fnSepB[] = "";
+static const char g_fnSepB[] = ".";
 
-static const char g_fnOverflow[] = "";
+static const char g_fnNegative[] = "-";
 
 String Layout::formatNumber(int value) {
-    unsigned mag = (value < 0) ? (unsigned) (-value) : (unsigned) value;
+    unsigned mag = (value < 0) ? 0u - (unsigned) value : (unsigned) value;
 
-    String digits;
-    digits.Set((long long) (int) mag);
+    String digits((int) mag);
     int len = (int) digits.size();
 
     String out(g_fnEmpty);
 
-    String sep;
     unsigned short lang = GameText::getLanguage();
-    if (lang < 0xc && ((1u << (lang & 0xff)) & 0xc01u) != 0)
-        sep = String(g_fnSepA);
-    else
-        sep = String(g_fnSepB);
+    String sep = (lang < 0xc && ((1u << lang) & 0xc01u) != 0)
+        ? String(g_fnSepA) : String(g_fnSepB);
 
-    if (len < 4) {
-        out = digits;
-    } else {
+    if (len >= 4) {
         int i = len;
         while (i > 2) {
             i -= 3;
-            String grp;
-            grp = digits.SubString(i, len);
-            String prefix = (out.size() < 2) ? String() : sep;
-            out = prefix + grp + out;
+            String grp = digits.SubString(i, i + 3);
+            String prefix = (out.size() < 2) ? String() : String(sep, false);
+            out = grp + prefix + out;
         }
-        String head;
-        head = digits.SubString(0, i);
+        String head = digits.SubString(0, i);
         if (head.size() != 0)
             out = head + sep + out;
+    } else {
+        out = digits;
     }
 
-    if ((unsigned) value > 0x7fffffff)
-        out = String(g_fnOverflow) + out;
+    if (value < 0)
+        out = String(g_fnNegative) + out;
 
     return out;
 }

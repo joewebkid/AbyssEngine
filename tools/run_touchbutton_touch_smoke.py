@@ -23,6 +23,7 @@ def main():
     extracted = '''#include "game/ui/TouchButton.h"
 #include "game/ui/Layout.h"
 #include "game/core/Globals.h"
+#include "engine/core/GameText.h"
 #include "engine/audio/FModSound.h"
 #include "game/mission/Status.h"
 #include "game/ship/Ship.h"
@@ -42,6 +43,9 @@ def main():
     extracted += function(source, "void TouchButton::draw(")
     layout = (ROOT / "src/game/ui/Layout.cpp").read_text()
     extracted += function(layout, "void Layout::setDrawColor(")
+    format_start = layout.index("static const char g_fnEmpty[]")
+    format_end = layout.index("void Layout::setWindowDimensions(", format_start)
+    extracted += layout[format_start:format_end]
     extracted += function(layout, "void Layout::resetWindowDimensions()")
     extracted += function(layout, "void Layout::drawBGPattern(")
     extracted += function(layout, "void Layout::drawEmptyFooter(")
@@ -50,8 +54,11 @@ def main():
     extracted += function(layout, "void Layout::drawWindow(String title, bool drawBG)")
     extracted += function(layout, "void Layout::drawWindow(String title)")
     extracted += function(layout, "uint8_t Layout::drawFade(")
-    extracted += function((ROOT / "src/game/core/String.cpp").read_text(),
-                          "unsigned int String::Compare(const char *s)")
+    string = (ROOT / "src/game/core/String.cpp").read_text()
+    for signature in ("String &String::operator=(const String &other)",
+                      "String String::SubString(unsigned int start, unsigned int end)",
+                      "unsigned int String::Compare(const char *s)"):
+        extracted += function(string, signature)
     for signature in ("int Layout::getFooterTransitionWidth(",
                       "int Layout::getHelpButtonOffset(",
                       "void Layout::drawBG()",
