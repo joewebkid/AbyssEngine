@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo mining-result handoff (2026-10-14)
+
+Focused `stopMining` source-shape rises 9.3% to 91.0%, strict fuzzy
+4.4% to 39.7%, without exact match. Six production-method host
+scenarios cover cargo, capacity, hardcore loss, discovery flags, HUD
+calls and terminal cleanup. Native `gof2`, all 206 ARM units, the
+three MiningGame smokes and 37 verifier tests pass (one skipped).
+Full corpus coverage remains 4,323/4,524; average source-shape rises
+93.08% to 93.09% and strict fuzzy 81.50% to 81.51%. The 2,403
+linked-exact and 1,008 byte-exact sets, 123 extras and 201 missing
+are unchanged.
+This is not an end-to-end native run: `Status::hardCoreMode` still
+has an unassigned service pointer. See
+[the evidence](PLAYER_EGO_STOP_MINING_ARM_2026-10-14.md).
+
 ## MiningGame outcomes and teardown audit (2026-10-14)
 
 The production-method layer/update smoke now covers the 2500/2501 ms

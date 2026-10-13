@@ -2061,11 +2061,61 @@ void PlayerEgo::shoot(int weapon, int type) {
 }
 
 void PlayerEgo::stopMining() {
-    void *mg = ((void *&) this->miningGame);
-    if (mg != 0) {
-        delete (MiningGame *) mg;
-        ((void *&) this->miningGame) = 0;
+    PlayerAsteroid *asteroid = (PlayerAsteroid *) ((void *&) this->asteroidTarget);
+    MiningGame *mining = (MiningGame *) ((void *&) this->miningGame);
+    Status *status = Globals::status;
+    Hud *hud = (Hud *) ((void *&) this->hud);
+    int oreId = asteroid->asteroidIndex;
+    int freeSpace = status->getShip()->getFreeSpace();
+    int coreId = oreId == 217 ? 218 : oreId + 11;
+    int amount = mining->getOreAmount();
+    if (status->hardCoreMode() && !mining->gameWon()) {
+        amount = (int) ((float) amount * 0.5f);
     }
+    if (freeSpace <= amount) {
+        amount = freeSpace;
+    }
+
+    if (freeSpace < 1) {
+        hud->catchCargo(oreId, 0, true, false, true, false, false);
+    } else {
+        if (mining->gotCore()) {
+            Item *core = static_cast<Array<Item *> *>(Globals::items)->data()[coreId]->makeItem(1);
+            status->getShip()->addCargo(core);
+            hud->catchCargo(coreId, 1, false, false, false, false, false);
+            ++status->field_a4;
+            if (coreId != 218) {
+                (*status->field_98)[coreId - 165] = true;
+            }
+            int remaining = status->getShip()->getFreeSpace();
+            if (remaining < amount) {
+                amount = remaining;
+            }
+        }
+        if (amount > 0) {
+            Item *ore = static_cast<Array<Item *> *>(Globals::items)->data()[oreId]->makeItem(amount);
+            status->getShip()->addCargo(ore);
+            hud->catchCargo(oreId, amount, false, false, true, false, false);
+            status->field_a0 += amount;
+            if (oreId != 217) {
+                (*status->field_94)[oreId - 154] = true;
+            }
+        }
+        if (status->getShip()->getFreeSpace() <= 0) {
+            hud->catchCargo(oreId, amount, true, false, true, false, false);
+        }
+    }
+
+    setExhaustVisible(true);
+    *reinterpret_cast<uint8_t *>(&asteroid->hasCargo) = 0;
+    asteroid->player->setHitpoints(-1);
+    --status->field_d8;
+    delete mining;
+    ((void *&) this->miningGame) = nullptr;
+    dockToAsteroid(nullptr, (Radar *) this->field_0x14);
+    Globals::sound->stop(1);
+    Globals::sound->stop(3);
+    Globals::sound->resume(this->field_0x1c);
 }
 
 

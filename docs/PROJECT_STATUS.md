@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (MiningGame outcomes and teardown; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo mining handoff; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo mining-result handoff (2026-10-14)
+
+`PlayerEgo::stopMining` now follows Android ARM and independent
+Ghidra evidence for ore/core cargo, hardcore halving, capacity,
+discovery flags, HUD events, asteroid/status reset, undocking and
+audio. Previously it only deleted MiningGame. Focused source-shape
+rises 9.3% to 91.0% and strict fuzzy 4.4% to 39.7%; it is not exact.
+Six production-method host scenarios, native `gof2`, all 206 ARM
+units, three MiningGame smokes and 37 verifier tests pass (one
+skipped). Full corpus remains 4,323/4,524 covered (201 missing);
+average source-shape rises 93.08% to 93.09% and strict fuzzy 81.50%
+to 81.51%. All 2,403 linked-exact and 1,008 byte-exact pairs and
+123 extra symbols are unchanged. A full runtime path is still
+unverified: the current
+`Status::hardCoreMode` dereferences an unassigned holder instead of
+the Android difficulty global. Next: recover that route and test
+the handoff with real dependencies; ARM32 runtime and marquee
+ownership remain open. See
+[the handoff audit](PLAYER_EGO_STOP_MINING_ARM_2026-10-14.md).
 
 ## MiningGame outcomes and teardown audit (2026-10-14)
 
