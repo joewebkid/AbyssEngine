@@ -180,6 +180,16 @@ original assets or render a complete UI frame. See
 [the statistics-table audit](STATUSWINDOW_DRAW_STATS_TABLE_ARM_2026-10-13.md).
 
 ```powershell
+python tools/run_status_draw_medals_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `StatusWindow medal-grid host smoke: OK`. This extracts
+the production medal grid and detail pane, checking iPad/phone placement,
+visibility, header and detail-text coordinates with fixture services. It
+does not execute the full window. See
+[the medal-grid audit](STATUSWINDOW_DRAW_MEDALS_ARM_2026-10-13.md).
+
+```powershell
 python tools/run_status_medal_hint_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
 ```
 

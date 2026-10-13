@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (StatusWindow statistics table; older subsystem
+Last reviewed: 2026-10-13 (StatusWindow medal grid; older subsystem
 snapshots retain their dates)
+
+## StatusWindow medal grid and detail pane (2026-10-13)
+
+The Android grid uses the two-argument `TouchButton::setPosition`, retaining
+the button's flags. On iPad its header follows the scroll offset, and the
+selected-medal text receives a calculated line position rather than a
+byte-truncated screen height. A production-block host smoke checks iPad
+and phone positions, culling, header and detail pane. Native `gof2`, all
+206 ARM translation units and 37 verifier tests pass (one skipped).
+`draw` source-shape rises 84.4% to 84.6%, while strict fuzzy falls 21.8%
+to 21.4%; it is not exact. Full corpus remains 4,323/4,524 covered,
+92.82% average source-shape, 81.21% strict fuzzy, 2,395 linked-exact and
+1,008 byte-exact, with no exact-symbol losses or extra-symbol growth.
+Interactive selection, asset-backed UI and ARM32 runtime remain unverified.
+Next priority: `StatusWindow` construction and its unassigned global holders.
+See [the medal-grid audit](STATUSWINDOW_DRAW_MEDALS_ARM_2026-10-13.md).
 
 ## StatusWindow standing and statistics table (2026-10-13)
 

@@ -594,14 +594,15 @@ void StatusWindow::draw() {
             String hdr;
             String *t = Globals::gameText->getText(168);
             hdr.Set((t)->data);
-            layout->drawBox(0, boxW + x0 * 2, top, x0 + boxW, layout->field_0x1c, hdr, 0);
+            layout->drawBox(0, boxW + x0 * 2, top + this->scrollOffset,
+                            x0 + boxW, layout->field_0x1c, hdr, 0);
             gridY0 += layout->field_0x1c + layout->field_0x2c;
         }
 
         for (int i = 0; i < this->medalCount; i++) {
             int col = (int) ((unsigned) i / 3u);
             int by = col * rowH + gridY0 + this->scrollOffset;
-            (*this->medalButtons)[i]->setPosition((i - col * 3) * third + gridX0, by, 0x44);
+            (*this->medalButtons)[i]->setPosition((i - col * 3) * third + gridX0, by);
             if (by >= 0 && by <= screenH)
                 (*this->medalButtons)[i]->draw();
         }
@@ -623,9 +624,11 @@ void StatusWindow::draw() {
                                                      layout->field_0x4c * -2, this->boxWidth,
                             layout->field_0x4c * 2 + lineH * lines, lbl, 0);
 
-            static_cast<Globals *>(Globals::globals)->drawLines((unsigned) (uintptr_t) font, this->detailLines,
-                                                              layout->field_0x4c + layout->buttonInsetX,
-                                                              (char) screenH);
+            int detailY = screenH - layout->field_0x10 - layout->field_0x24 -
+                          layout->field_0x2c - lineH * lines;
+            static_cast<Globals *>(Globals::globals)->drawLines(font, this->detailLines,
+                                                                layout->field_0x4c + x0,
+                                                                detailY, false);
         }
     }
 
