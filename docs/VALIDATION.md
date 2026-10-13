@@ -4,6 +4,15 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout empty footer (2026-10-13)
+
+Android-backed `Layout::drawEmptyFooter(bool)` reaches 100.0%
+source-shape and strict fuzzy, with a linked-exact (not byte-exact)
+result. The TouchButton/Layout smoke exercises both `showBack` paths,
+and native `gof2`, all 206 ARM units and 37 verifier tests pass (one
+skipped). This is not an ARM32 visual rendering test. See
+[the evidence](LAYOUT_EMPTY_FOOTER_ARM_2026-10-13.md).
+
 ## Layout tip initialization (2026-10-13)
 
 The Android-backed `Layout::initTip()` recovery reaches 100.0%

@@ -41,6 +41,7 @@ def main():
     layout = (ROOT / "src/game/ui/Layout.cpp").read_text()
     extracted += function(layout, "void Layout::setDrawColor(")
     extracted += function(layout, "void Layout::drawBGPattern(")
+    extracted += function(layout, "void Layout::drawEmptyFooter(")
     extracted += function(layout, "uint8_t Layout::drawFade(")
     for signature in ("int Layout::getFooterTransitionWidth(",
                       "int Layout::getHelpButtonOffset(",

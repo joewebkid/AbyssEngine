@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (Layout tip initialization; older subsystem
+Last reviewed: 2026-10-13 (Layout empty footer; older subsystem
 snapshots retain their dates)
+
+## Layout empty footer (2026-10-13)
+
+`Layout::drawEmptyFooter` now uses Android-backed canvas, color,
+image IDs, screen dimensions and footer height, and calls the normal
+back-button draw path only when requested. The production-method
+TouchButton/Layout host smoke covers both `showBack` branches,
+geometry and image flags. Native `gof2`, all 206 ARM units and 37
+verifier tests pass (one skipped). Focused source-shape and strict
+fuzzy rise from 43.0% / 20.5% to 100.0% / 100.0%, adding one
+linked-exact (not byte-exact) symbol. Full corpus: 4,718 comparisons,
+4,323/4,524 covered, 201 missing, 92.90% average source-shape,
+81.28% strict fuzzy, 2,399 linked-exact and 1,008 byte-exact.
+Complete exact and extra-symbol comparisons show one linked-exact
+gain, no losses and no extra-symbol change. ARM32 runtime and visual
+output remain untested. Next priority: bounded
+`Layout::drawWindow(String,int,int,int,int,bool)` recovery (24.0%
+source-shape). See [the empty-footer audit](LAYOUT_EMPTY_FOOTER_ARM_2026-10-13.md).
 
 ## Layout tip initialization (2026-10-13)
 

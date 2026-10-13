@@ -163,31 +163,22 @@ void Layout::initTip() {
 }
 
 
-static unsigned *g_efColor = nullptr;
-
-static int *g_efScreenH = nullptr;
-
-static int *g_efScreenW = nullptr;
-
-static int **g_efMetric = nullptr;
-
 void Layout::drawEmptyFooter(bool showBack) {
-    PaintCanvas *pc = PaintCanvas::gCanvas;
-    unsigned color = *g_efColor;
-    pc->SetColor(color);
-    int w = pc->GetImage2DWidth(color);
-    int screenH = *g_efScreenH;
-    pc->DrawImage2D(this->footerImageLeft, 0, screenH, (unsigned char) (0x11));
+    Globals::Canvas->SetColor(this->drawColor);
+    int w = Globals::Canvas->GetImage2DWidth(this->field_0x340);
+    Globals::Canvas->DrawImage2D(this->footerImageLeft, 0, Globals::h,
+                                  (unsigned char) 0x11, (unsigned char) 0x21);
 
-    int screenW = *g_efScreenW;
-    int footerH = (*g_efMetric)[0x10 / 4];
-    this->drawBGPattern(this->footerPatternImage, w, screenH - footerH, screenW - w * 2, footerH);
-    pc->DrawImage2D(this->footerImageLeft,
-                    screenW - w, screenH - (*g_efMetric)[0x10 / 4], (unsigned char) (0x01));
-    if (showBack == 0) return;
-    this->backButton->setVisible(1);
-    alignas(4) unsigned char sp[8];
-    TouchButton_footerAnim(this->backButton, 1, footerH, sp);
+    int footerH = Globals::layout->field_0x10;
+    this->drawBGPattern(this->footerPatternImage, w, Globals::h - footerH,
+                        Globals::w - w * 2, footerH);
+    Globals::Canvas->DrawImage2D(this->footerImageLeft,
+                                  Globals::w - w, Globals::h - Globals::layout->field_0x10,
+                                  (unsigned char) 0x01);
+    if (showBack) {
+        this->backButton->setVisible(true);
+        this->backButton->draw();
+    }
 }
 
 

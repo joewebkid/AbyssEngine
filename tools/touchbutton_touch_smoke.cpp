@@ -304,6 +304,23 @@ int main() {
     layout.backButton = &back;
     layout.secondaryButton = &secondary;
 
+    layout.field_0x340 = 26;
+    layout.footerPatternImage = 24;
+    back.visible = 0;
+    clearDraws();
+    layout.drawEmptyFooter(false);
+    assert(!imageWidthQueries.empty() && imageWidthQueries[0] == 26);
+    assert(colors[0] == layout.drawColor);
+    assert(images.front().id == 21 && images.front().x == 0 && images.front().y == 320);
+    assert(images.front().flagsA == 0x11 && images.front().flagsB == 0x21);
+    assert(imageAt(24, 10, 300));
+    assert(images.back().id == 21 && images.back().x == 470 && images.back().y == 300);
+    assert(images.back().flagsA == 1 && !back.visible && !imageAt(31, 1, 2));
+
+    clearDraws();
+    layout.drawEmptyFooter(true);
+    assert(back.visible && imageAt(31, 1, 2));
+
     clearDraws();
     layout.drawFooter();
     assert(back.visible && imageAt(31, 1, 2) && !imageAt(32, 2, 3));
