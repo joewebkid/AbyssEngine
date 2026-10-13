@@ -182,29 +182,64 @@ void Layout::drawEmptyFooter(bool showBack) {
 }
 
 
-static char *g_cfgHd = nullptr;
-
-static char *g_cfgWide = nullptr;
-
-static char *g_cfgScale = nullptr;
-
-static unsigned char *g_resByte = nullptr;
-
-static char *g_cfgA = nullptr;
-
-static char *g_cfgB = nullptr;
-
-static char *g_cfgC = nullptr;
-
-static char *g_cfgD = nullptr;
-
 Layout::Layout() {
-    int hd = (*g_cfgHd != 0);
-    int wide = (*g_cfgWide != 0);
-    int scale = (*g_cfgScale != 0);
-    int res = *g_resByte;
+    const bool hd = Globals::iPadHD != 0;
+    const bool n9 = Globals::n9 != 0;
+    const bool retina = Globals::retinaDisplay != 0;
+    const bool ipad = Globals::iPad != 0;
+    const bool ipadLarge = Globals::iPadLarge != 0;
 
+    // shortcut: the remaining early metric block is not yet recovered; replace the zero fill in a full constructor pass.
     memset(&this->field_0x4, 0, 0x2d8 - 0x04);
+
+    if (hd) {
+        this->field_0x4 = 21;  this->field_0x8 = 42;
+        this->field_0xc = 40;  this->field_0x10 = 52;
+        this->field_0x14 = 30; this->field_0x18 = 192;
+        this->field_0x1c = 28; this->field_0x20 = 112;
+        this->field_0x24 = 7;  this->field_0x28 = 112;
+        this->field_0x2c = 4;  this->field_0x30 = 42;
+        this->field_0x34 = 8;  this->field_0x38 = 9;
+        this->field_0x3c = 82; this->field_0x40 = 140;
+        this->field_0x44 = 7;  this->field_0x48 = 240;
+        this->field_0x4c = 7;  this->field_0x50 = 125;
+        this->field_0x54 = 487; this->field_0x58 = 341;
+    } else if (n9) {
+        this->field_0x4 = 22;  this->field_0x8 = 45;
+        this->field_0xc = 51;  this->field_0x10 = 58;
+        this->field_0x14 = 37; this->field_0x18 = 176;
+        this->field_0x1c = 30; this->field_0x20 = 112;
+        this->field_0x24 = 7;  this->field_0x28 = 144;
+        this->field_0x2c = 6;  this->field_0x30 = 51;
+        this->field_0x34 = 4;  this->field_0x38 = 12;
+        this->field_0x3c = 106; this->field_0x40 = 180;
+        this->field_0x44 = 9;  this->field_0x48 = 256;
+        this->field_0x4c = 10; this->field_0x50 = 160;
+        this->field_0x54 = 520; this->field_0x58 = 364;
+    } else {
+        this->field_0x4 = retina ? 30 : 15;
+        this->field_0x8 = retina ? 60 : 30;
+        this->field_0xc = retina ? 58 : 29;
+        this->field_0x10 = retina ? 74 : 37;
+        this->field_0x14 = retina ? 50 : 22;
+        this->field_0x18 = retina ? 14 : 9;
+        this->field_0x1c = retina ? 40 : 20;
+        this->field_0x20 = retina ? 10 : 5;
+        this->field_0x24 = retina ? 10 : 5;
+        this->field_0x28 = retina ? 10 : 5;
+        this->field_0x2c = retina ? 6 : 3;
+        this->field_0x30 = retina ? 60 : 30;
+        this->field_0x34 = retina ? 12 : 6;
+        this->field_0x38 = retina ? 14 : 7;
+        this->field_0x3c = retina ? 118 : 59;
+        this->field_0x40 = retina ? 200 : 100;
+        this->field_0x44 = retina ? 10 : 5;
+        this->field_0x48 = retina ? 22 : 11;
+        this->field_0x4c = retina ? 10 : 5;
+        this->field_0x50 = retina ? 178 : 89;
+        this->field_0x54 = retina ? 694 : 347;
+        this->field_0x58 = retina ? 486 : 243;
+    }
 
     // Android Layout::Layout @ 0x000d1028. ListItemWindow::draw uses these
     // two fields to place the ImageFactory item/ship Sprite in its title box.
@@ -237,134 +272,75 @@ Layout::Layout() {
         this->hangarRowIconOffsetY = Globals::retinaDisplay ? 2 : 1;
     }
 
-    if (!hd) {
-        this->field_0x238 = 0x46;
-        this->field_0x27c = 0x1c;
-        this->field_0x280 = 0;
-        this->scrollBarInset = 1;
-        this->scrollBarHandle = 0;
-        this->rewardBoxWidth = 0x8c;
-        this->rewardBoxY = 0x4d;
-        this->rewardBoxY2 = 0x84;
-    }
+    this->field_0x238 = hd ? 70 : n9 ? 90 : retina ? 100 : 50;
+    this->field_0x27c = hd ? 28 : n9 ? 30 : retina ? 40 : 20;
+    this->field_0x280 = hd ? 0 : n9 ? 4 : retina ? 5 : 0;
+    this->scrollBarInset = n9 ? 2 : retina ? 2 : 1;
+    this->scrollBarHandle = n9 ? 1 : retina ? 1 : 0;
 
     if (hd) {
-        this->rewardBoxHeight = (res == 0) ? 0xc4 : 0x188;
-        this->rewardBoxX = (res == 0) ? 0x32 : 100;
+        this->rewardBoxWidth = 140;
+        this->rewardBoxY = 77;
+        this->rewardBoxY2 = 132;
+    } else if (n9) {
+        this->rewardBoxWidth = 112;
+        this->rewardBoxY = 57;
+        this->rewardBoxY2 = 111;
     } else {
-        this->rewardBoxHeight = 0x160;
-        this->rewardBoxX = 0x4b;
+        this->rewardBoxWidth = ipadLarge ? 200 : ipad ? 100 : retina ? 150 : 75;
+        this->rewardBoxY = ipadLarge ? 110 : ipad ? 55 : retina ? 76 : 38;
+        this->rewardBoxY2 = (this->rewardBoxY + 17) << (retina ? 1 : 0);
     }
+    this->rewardBoxHeight = n9 ? 352 : retina ? 392 : 196;
+    this->rewardBoxX = n9 ? 75 : retina ? 100 : 50;
 
-    int v288, v28c, v3fc_, v200, v1f0, v1f4, v1f8, v2bc;
-    if (!hd) {
-        int wb = (res != 0) ? 4 : 2;
-        if (*g_cfgA == 0) wb = 2;
-        int below = (res == 0) ? 0xfffffff3 : 0xffffffe6;
-        if (!wide) below = 0xffffffe6;
-        int o1f0 = (res == 0) ? 0x13 : 0x26;
-        if (!wide) o1f0 = 0x22;
-        int o3fc = (res == 0) ? 3 : 6;
-        if (!wide) o3fc = 5;
-        int o1f8 = (*g_cfgA == 0) ? 2 : 4;
-        if (res == 0) o1f8 = 2;
-        v1f4 = (*g_cfgA == 0) ? (res ? 0x20 : 0x10) : wb;
-        v2bc = wide ? 2 : 3;
-        v200 = below;
-        v1f0 = o1f0;
-        v3fc_ = o3fc;
-        v1f8 = o1f8;
-        v288 = wide ? 0 : 0x14;
-        v28c = wide ? 0 : 0xffffffed;
-    } else {
-        v200 = 0xffffffee;
-        v1f4 = 0x16;
-        v1f0 = 0x1a;
-        v3fc_ = 4;
-        v1f8 = 2;
-        v2bc = 2;
-        v288 = 0x14;
-        v28c = 0xffffffed;
-    }
-    this->field_0x2bc = v2bc;
-    this->footerButtonOffset = v3fc_;
-    this->field_0x200 = v200;
-    this->field_0x1f0 = v1f0;
-    this->field_0x1f4 = v1f4;
-    this->field_0x1f8 = v1f8;
-    this->field_0x284 = 1;
+    this->field_0x2bc = hd ? 2 : n9 ? 3 : 2;
+    this->footerButtonOffset = hd ? 4 : n9 ? 5 : retina ? 6 : 3;
+    this->field_0x200 = hd ? -18 : n9 ? -26 : retina ? -26 : -13;
+    this->field_0x1f0 = hd ? 26 : n9 ? 34 : retina ? 38 : 19;
+    this->field_0x1f4 = hd ? 22 : ipad ? (retina ? 32 : 16) : (retina ? 4 : 2);
+    this->field_0x1f8 = hd ? 2 : (ipad && retina ? 4 : 2);
+    this->field_0x284 = n9 ? 0 : 1;
     this->field_0x285 = 1;
-    this->field_0x286 = 1;
-    this->field_0x288 = v288;
-    this->field_0x28c = v28c;
-    this->field_0x290 = wide ? (res == 0 ? 3 : 7) : 4;
+    this->field_0x286 = n9 ? 0 : 1;
+    this->field_0x288 = n9 ? 20 : 0;
+    this->field_0x28c = n9 ? -19 : 0;
+    this->field_0x290 = n9 ? 4 : retina ? 7 : 3;
 
-    int cwTitle;
-    if (!hd) {
-        int cw2f4;
-        if (*g_cfgWide != 0) {
-            cw2f4 = 0xa0;
-        } else if (*g_cfgB != 0) {
-            cw2f4 = 0x50;
-        } else {
-            cw2f4 = wide ? 0x3c : 0x2d;
-            if (res == 0) cw2f4 = 0x1e;
-        }
-        this->field_0x2f4 = cw2f4;
-        this->field_0x2f8 = 0;
-        this->field_0x2fc = (*g_cfgWide != 0) ? 0x48 : 0x24;
-        this->field_0x300 = (*g_cfgWide != 0) ? 400 : 200;
-        this->field_0x304 = (*g_cfgWide != 0) ? 700 : 0x15e;
-        cwTitle = (*g_cfgWide != 0) ? 500 : 0xfa;
-    } else {
-        this->field_0x2f4 = 0x70;
-        this->field_0x2f8 = 0;
-        this->field_0x2fc = 0x32;
-        this->field_0x300 = 0x119;
-        this->field_0x304 = 0x1ec;
-        cwTitle = 0x15f;
-    }
-    this->choiceWindowTitleHeight = cwTitle;
+    this->field_0x2f4 = hd ? 112 : ipadLarge ? 160 : ipad ? 80 : n9 ? 45 : retina ? 60 : 30;
+    // The original writes IEEE-754 float bits into this 32-bit storage slot.
+    this->field_0x2f8 = hd ? 1133289472 : ipadLarge ? 1137180672
+        : ipad ? 1128792064 : n9 ? 1125515264
+        : retina ? 1128792064 : 1120403456;
+    this->field_0x2fc = hd ? 50 : ipadLarge ? 72 : 36;
+    this->field_0x300 = hd ? 281 : ipadLarge ? 400 : 200;
+    this->field_0x304 = hd ? 492 : ipadLarge ? 700 : 350;
+    this->choiceWindowTitleHeight = hd ? 351 : ipadLarge ? 500 : 250;
 
-    int b318;
-    if (!hd) {
-        if (*g_cfgC == 0) {
-            if (wide) {
-                this->field_0x30c = 7;
-                this->field_0x310 = (res == 0) ? 0xfffffffb : 0xfffffff7;
-                this->field_0x314 = (res == 0) ? 0xfffffffb : 0xfffffff8;
-            } else {
-                this->field_0x30c = 4;
-                this->field_0x310 = 0xfffffff8;
-                this->field_0x314 = 0xfffffff8;
-            }
-            b318 = 0;
-        } else {
-            this->field_0x30c = 3;
-            this->field_0x310 = 0xfffffff4;
-            this->field_0x314 = 0xfffffffb;
-            b318 = 4;
-        }
-    } else {
+    if (ipadLarge) {
         this->field_0x30c = 6;
-        this->field_0x310 = 0xffffffe8;
-        this->field_0x314 = 0xfffffff6;
-        b318 = 8;
-    }
-    this->field_0x318 = b318;
-
-    if (!hd) {
-        if (wide) {
-            this->helpWindowX = (*g_cfgD != 0) ? 0x76 : 0xec;
-            this->helpWindowY = 0;
-        } else {
-            this->helpWindowX = 0x1d8;
-            this->helpWindowY = 0x120;
-        }
+        this->field_0x310 = -24;
+        this->field_0x314 = -10;
+        this->field_0x318 = 8;
+    } else if (ipad) {
+        this->field_0x30c = 3;
+        this->field_0x310 = -12;
+        this->field_0x314 = -5;
+        this->field_0x318 = 4;
+    } else if (n9) {
+        this->field_0x30c = 4;
+        this->field_0x310 = -8;
+        this->field_0x314 = -8;
+        this->field_0x318 = 0;
     } else {
-        this->helpWindowX = 0x14b;
-        this->helpWindowY = 0xca;
+        this->field_0x30c = retina ? 7 : 3;
+        this->field_0x310 = retina ? -9 : -5;
+        this->field_0x314 = retina ? -8 : -5;
+        this->field_0x318 = 0;
     }
+
+    this->helpWindowX = hd ? 331 : ipadLarge ? 472 : (ipad || n9 || retina ? 236 : 118);
+    this->helpWindowY = hd ? 202 : ipadLarge ? 288 : ipad ? 144 : (n9 || retina ? 150 : 76);
 }
 
 String Layout::formatCredits(int n) {

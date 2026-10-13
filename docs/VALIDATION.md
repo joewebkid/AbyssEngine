@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout constructor platform metrics (2026-10-14)
+
+Both Android `Layout::Layout()` C1/C2 aliases rise from 8.7% to 23.9%
+focused source-shape and from 2.9% to 5.8% strict fuzzy; neither is
+exact. The six-profile production-method host smoke, native `gof2`,
+all 206 ARM units, and 37 verifier tests pass (one skipped). Full
+corpus: 4,323/4,524 covered at 92.98% average source-shape and 81.41%
+strict fuzzy; 2,403 linked-exact and 1,008 byte-exact with zero
+exact-set or extra-symbol changes. Original ARM32 runtime, visual
+layout, and many constructor fields remain unverified. See
+[the evidence](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
+
 ## Layout mission reward (2026-10-14)
 
 The Android-backed reward display reaches 100.0% focused

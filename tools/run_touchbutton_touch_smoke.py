@@ -23,6 +23,7 @@ def main():
     extracted = '''#include "game/ui/TouchButton.h"
 #include "game/ui/Layout.h"
 #include "game/core/Globals.h"
+#include <cstring>
 #include "engine/core/GameText.h"
 #include "engine/audio/FModSound.h"
 #include "game/mission/Status.h"
@@ -42,6 +43,7 @@ def main():
     extracted += source[mask_start:draw_start]
     extracted += function(source, "void TouchButton::draw(")
     layout = (ROOT / "src/game/ui/Layout.cpp").read_text()
+    extracted += function(layout, "Layout::Layout()")
     extracted += function(layout, "void Layout::setDrawColor(")
     extracted += function(layout, "String Layout::formatCredits(int n)")
     format_start = layout.index("static const char g_fnEmpty[]")

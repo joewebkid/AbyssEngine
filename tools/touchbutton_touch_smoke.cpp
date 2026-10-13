@@ -22,6 +22,11 @@ GameText *Globals::gameText = nullptr;
 unsigned int Globals::font = 5;
 int Globals::w = 480;
 int Globals::h = 320;
+unsigned char Globals::iPad = 0;
+unsigned char Globals::iPadHD = 0;
+unsigned char Globals::iPadLarge = 0;
+unsigned char Globals::n9 = 0;
+unsigned char Globals::retinaDisplay = 0;
 Status *Globals::status = nullptr;
 int Globals::other_buttons_x[10] = {};
 int Globals::other_buttons_y[10] = {};
@@ -89,7 +94,6 @@ Status::Status() : ship(nullptr), credits(0) {}
 Status::~Status() = default;
 Ship *Status::getShip() { return ship; }
 int Status::getCredits() { return credits; }
-Layout::Layout() { field_0x38 = 0; drawColor = -1; }
 Layout::~Layout() = default;
 static int choiceConstructs, choiceDraws;
 static std::string choiceTitle, choiceMessage;
@@ -209,7 +213,39 @@ TouchButton::TouchButton(unsigned int buttonKind, int px, int py, int buttonWidt
 TouchButton::~TouchButton() = default;
 
 int main() {
+    {
+        Layout ordinary;
+        assert(ordinary.field_0x4 == 15 && ordinary.field_0x58 == 243);
+        assert(ordinary.rewardBoxWidth == 75 && ordinary.rewardBoxHeight == 196);
+        assert(ordinary.field_0x238 == 50 && ordinary.helpWindowY == 76);
+        Globals::retinaDisplay = 1;
+        Layout retina;
+        assert(retina.field_0x4 == 30 && retina.field_0x58 == 486);
+        assert(retina.rewardBoxWidth == 150 && retina.rewardBoxHeight == 392);
+        Globals::retinaDisplay = 0;
+        Globals::n9 = 1;
+        Layout n9;
+        assert(n9.field_0x4 == 22 && n9.field_0x58 == 364);
+        assert(n9.rewardBoxWidth == 112 && n9.rewardBoxHeight == 352);
+        Globals::n9 = 0;
+        Globals::iPadHD = 1;
+        Layout ipadHd;
+        assert(ipadHd.field_0x4 == 21 && ipadHd.field_0x58 == 341);
+        assert(ipadHd.rewardBoxWidth == 140 && ipadHd.helpWindowX == 331);
+        Globals::iPadHD = 0;
+        Globals::iPad = 1;
+        Layout ipad;
+        assert(ipad.rewardBoxWidth == 100 && ipad.field_0x2f4 == 80);
+        assert(ipad.field_0x2f8 == 1128792064 && ipad.helpWindowY == 144);
+        Globals::iPadLarge = 1;
+        Layout ipadLarge;
+        assert(ipadLarge.rewardBoxWidth == 200 && ipadLarge.field_0x2f4 == 160);
+        assert(ipadLarge.field_0x2f8 == 1137180672 && ipadLarge.helpWindowY == 288);
+        Globals::iPadLarge = 0;
+        Globals::iPad = 0;
+    }
     Layout layout;
+    layout.drawColor = -1;
     FModSound sound;
     PaintCanvas canvas(nullptr);
     Globals::layout = &layout;

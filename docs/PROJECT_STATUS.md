@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (Layout mission reward; older subsystem
+Last reviewed: 2026-10-14 (Layout constructor metrics; older subsystem
 snapshots retain their dates)
+
+## Layout constructor platform metrics (2026-10-14)
+
+`Layout::Layout()` no longer dereferences eight unassigned configuration
+pointers. Its first 22 metrics and several downstream reward, choice,
+scrollbar and help-window values now follow Android-backed platform
+branches. Focused C1/C2 source-shape rises from 8.7% to 23.9% (strict
+fuzzy 2.9% to 5.8%); this large constructor is **not** fully recovered.
+The production-method host smoke covers six platform profiles. Native
+`gof2`, all 206 ARM translation units, and 37 verifier tests pass (one
+skipped). Full corpus: 4,718 comparisons, 4,323/4,524 covered, 201
+missing, 92.98% average source-shape, 81.41% strict fuzzy, 2,403
+linked-exact and 1,008 byte-exact. Complete exact and extra-symbol
+sets are unchanged. The broad early field block, ambiguous platform
+values and ARM32 runtime/visual behavior remain unverified. Next:
+recover constructor fields `+0x5c..+0x2d8` in bounded,
+consumer-backed groups. See [the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
 
 ## Layout mission reward (2026-10-14)
 
