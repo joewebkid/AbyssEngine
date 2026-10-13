@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (indexed VBO dispatch; older subsystem
+Last reviewed: 2026-10-13 (VBO upload body; older subsystem
 snapshots retain their dates)
+
+## VBO upload body (2026-10-13)
+
+`AbyssEngine::MeshConvertToVBOIntern(Mesh *)` now snapshots raw
+attribute pointers before the first GL call and rereads the vertex
+count for each upload/accounting step, matching Android ARM at
+`0x6d510`. Focused source-shape rises 95.9% to 100.0% and strict
+fuzzy 83.7% to 100.0%; it is still not linked- or byte-exact.
+A recording-GL extracted-body smoke verifies guards, buffer order and
+sizes, count/pointer load timing, byte accounting, raw-data retention
+and release, and the GL-error branch. Native `gof2`, 206/206 ARM
+units, the new and adjacent canvas smokes, and 36 verifier tests pass
+(one skipped). Full corpus remains 4,717 comparisons, 4,323/4,524
+covered, 201 missing; average source-shape rises 92.5708% to
+92.5716%, strict fuzzy 80.8861% to 80.8895%, and 100%-fuzzy
+functions 2,528 to 2,529. The 2,378 linked-exact and 1,008
+byte-exact symbol sets have no losses. Real GPU allocation, assets,
+ARM32 runtime, and error-path resource lifetime remain unverified.
+Next audit canvas sprite-system resource release. See
+[the VBO upload audit](MESH_VBO_INTERN_ARM_2026-10-13.md).
 
 ## Indexed VBO conversion dispatch (2026-10-13)
 

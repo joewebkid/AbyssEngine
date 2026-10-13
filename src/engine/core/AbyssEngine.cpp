@@ -2015,22 +2015,23 @@ namespace AbyssEngine {
         if (m->uploaded != 0 || (short) m->indexCount == 0)
             return -4;
 
-        unsigned int vcount = m->vertexCount;
-
+        void *posArr = m->positions;
+        void *texArr = m->texCoords;
         void *colArr = m->colors;
+        void *normArr = m->normals;
         void *tanArr = m->tangents;
         void *binArr = m->binormals;
 
         glGenBuffers(1, &m->positionVBO);
         glBindBuffer(0x8892, m->positionVBO);
-        glBufferData(0x8892, vcount * 0xc, m->positions, 0x88e4);
+        glBufferData(0x8892, (unsigned int) m->vertexCount * 0xc, posArr, 0x88e4);
 
         unsigned char flags = m->vertexFormat;
         if (flags & 2) {
             glGenBuffers(1, &m->texCoordVBO);
             glBindBuffer(0x8892, m->texCoordVBO);
-            glBufferData(0x8892, vcount << 3, m->texCoords, 0x88e4);
-            m->vboByteSize += (int) (vcount * 8);
+            glBufferData(0x8892, (unsigned int) m->vertexCount << 3, texArr, 0x88e4);
+            m->vboByteSize += (int) ((unsigned int) m->vertexCount * 8);
 
             glGenBuffers(1, &m->indexVBO);
             glBindBuffer(0x8893, m->indexVBO);
@@ -2042,25 +2043,25 @@ namespace AbyssEngine {
         if (flags & 4) {
             glGenBuffers(1, &m->normalVBO);
             glBindBuffer(0x8892, m->normalVBO);
-            glBufferData(0x8892, vcount * 0xc, m->normals, 0x88e4);
-            m->vboByteSize += (int) (vcount * 0xc);
+            glBufferData(0x8892, (unsigned int) m->vertexCount * 0xc, normArr, 0x88e4);
+            m->vboByteSize += (int) ((unsigned int) m->vertexCount * 0xc);
             if (Engine::enableShader != 0) {
                 glGenBuffers(1, &m->tangentVBO);
                 glBindBuffer(0x8892, m->tangentVBO);
-                glBufferData(0x8892, vcount * 0xc, tanArr, 0x88e4);
-                m->vboByteSize += (int) (vcount * 0xc);
+                glBufferData(0x8892, (unsigned int) m->vertexCount * 0xc, tanArr, 0x88e4);
+                m->vboByteSize += (int) ((unsigned int) m->vertexCount * 0xc);
                 glGenBuffers(1, &m->binormalVBO);
                 glBindBuffer(0x8892, m->binormalVBO);
-                glBufferData(0x8892, vcount * 0xc, binArr, 0x88e4);
-                m->vboByteSize += (int) (vcount * 0xc);
+                glBufferData(0x8892, (unsigned int) m->vertexCount * 0xc, binArr, 0x88e4);
+                m->vboByteSize += (int) ((unsigned int) m->vertexCount * 0xc);
             }
         }
 
         if (m->vertexFormat & 8) {
             glGenBuffers(1, &m->colorVBO);
             glBindBuffer(0x8892, m->colorVBO);
-            glBufferData(0x8892, vcount << 4, colArr, 0x88e4);
-            m->vboByteSize += (int) (vcount * 0x10);
+            glBufferData(0x8892, (unsigned int) m->vertexCount << 4, colArr, 0x88e4);
+            m->vboByteSize += (int) ((unsigned int) m->vertexCount * 0x10);
         }
 
         glBindBuffer(0x8892, 0);
