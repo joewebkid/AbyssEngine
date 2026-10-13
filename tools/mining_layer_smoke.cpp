@@ -19,6 +19,9 @@ static float soundParam = -1.0f;
 static int spriteFrames = 0;
 static int randomCalls = 0;
 static int randomValues[5] = {5, 2, 0, 3, 1};
+static bool medalOwned = true;
+static int medalEvents = 0;
+static int medalPercent = -1;
 
 AERandom::AERandom() = default;
 AERandom::~AERandom() = default;
@@ -37,9 +40,26 @@ Sprite::~Sprite() = default;
 void Sprite::nextFrame() { ++spriteFrames; }
 Achievements::Achievements() = default;
 Achievements::~Achievements() = default;
-uint8_t Achievements::hasMedal(int, int) { return 1; }
-int Achievements::getValue(int, int) { return 10; }
-void Hud::hudEventMedal(int, int) {}
+uint8_t Achievements::hasMedal(int id, int tier) {
+    assert(id == 38 && tier == 1);
+    return medalOwned;
+}
+int Achievements::getValue(int id, int tier) {
+    assert(id == 38 && tier == 1);
+    return 10;
+}
+void Hud::hudEventMedal(int id, int percent) {
+    assert(id == 38);
+    ++medalEvents;
+    medalPercent = percent;
+}
+
+AbyssEngine::String::String() : data(nullptr), length(0) {}
+AbyssEngine::String::~String() = default;
+Status::Status() = default;
+Status::~Status() = default;
+Hud::Hud() = default;
+Hud::~Hud() = default;
 
 Layout *Globals::layout = nullptr;
 void *Globals::globals = nullptr;
@@ -169,5 +189,38 @@ int main() {
     game.layerTimer = 6001;
     assert(game.update(0) == 0);
     assert(game.gameWonFlag == 1 && game.gotCoreFlag == 1);
+
+    Status status;
+    Hud hud;
+    Globals::status = &status;
+    game.hud = &hud;
+    medalOwned = false;
+    status.field_124 = 2;
+    status.field_128 = 0x12345600;
+    game.currentLayer = 6;
+    game.layerTimer = 6001;
+    assert(game.update(0) == 0);
+    assert(status.field_124 == 3 && status.field_128 == 0x12345600);
+    assert(medalEvents == 1 && medalPercent == 30);
+
+    status.field_124 = 9;
+    game.currentLayer = 6;
+    game.layerTimer = 6001;
+    assert(game.update(0) == 0);
+    assert(status.field_124 == 10 && status.field_128 == 0x12345601);
+    assert(medalEvents == 2 && medalPercent == 100);
+
+    game.currentLayer = 0;
+    game.posX = 500.0f;
+    game.posY = game.inputX = game.inputY = game.driftX = game.driftY = 0.0f;
+    game.driftTimer = 0;
+    game.lossTimer = 2499;
+    game.oreAmount = 12.0f;
+    status.field_124 = 5;
+    assert(game.update(1) == 1);
+    assert(game.lossTimer == 2500 && game.gameLostFlag == 0);
+    assert(game.update(1) == 0);
+    assert(game.lossTimer == 2500 && game.oreAmount == 0.0f);
+    assert(game.gameLostFlag == 1 && status.field_124 == 0);
     std::puts("MiningGame layer smoke: OK");
 }

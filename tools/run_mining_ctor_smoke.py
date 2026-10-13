@@ -32,6 +32,7 @@ def main():
 '''
     generated += mining[start:end] + "\n"
     generated += function(mining, "MiningGame::MiningGame(int layer, int station, Hud *hud)")
+    generated += function(mining, "MiningGame::~MiningGame()")
 
     with tempfile.TemporaryDirectory(prefix="mining-ctor-", dir=ROOT / "_work") as temp:
         production = Path(temp) / "production_mining_ctor.cpp"

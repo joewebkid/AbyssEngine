@@ -14,6 +14,8 @@ static Ship *expectedShip = nullptr;
 static int createdCount = 0;
 static int lastResource = 0;
 static unsigned int drillInput = 0;
+static int destroyedSprites = 0;
+static int destroyedMarquees = 0;
 
 Layout *Globals::layout = nullptr;
 Status *Globals::status = nullptr;
@@ -56,11 +58,11 @@ int Item::getAttribute(int attribute) {
 }
 Sprite::Sprite(uint32_t id, int width, int height)
     : image(id), frameWidth(width), frameHeight(height) {}
-Sprite::~Sprite() = default;
+Sprite::~Sprite() { ++destroyedSprites; }
 void Sprite::defineReferencePixel(int x, int y) { refPixelX = x; refPixelY = y; }
 MarqueeImage::MarqueeImage(uint16_t id, int width, int xValue, int yValue, float value)
     : image(id), visibleWidth(width), x(xValue), y(yValue), speed(value) {}
-MarqueeImage::~MarqueeImage() = default;
+MarqueeImage::~MarqueeImage() { ++destroyedMarquees; }
 void MarqueeImage::setSpeed(float value) { speed = value; }
 
 int main() {
@@ -93,5 +95,8 @@ int main() {
     MiningGame *core = new MiningGame(7, 0xa4, nullptr);
     assert(createdCount == 14 && lastResource == 0x522);
     assert(core->isCoreLayer == 1 && core->coreImageId == 0x522 + 1000);
+    delete regular;
+    delete core;
+    assert(destroyedSprites == 2 && destroyedMarquees == 0);
     std::puts("MiningGame constructor smoke: OK");
 }

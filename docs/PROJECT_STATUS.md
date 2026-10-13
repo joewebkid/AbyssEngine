@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (MiningGame render2D; older subsystem
+Last reviewed: 2026-10-14 (MiningGame outcomes and teardown; older subsystem
 snapshots retain their dates)
+
+## MiningGame outcomes and teardown audit (2026-10-14)
+
+The ARM loss, medal and destructor paths are now checked by
+production-method host fixtures. The 2500/2501 ms loss boundary,
+ore/status reset, 30% and 100% medal HUD events, single-byte status
+flag and drill-sprite destruction pass. The ARM destructor frees only
+the drill sprite; it does not free constructor-created marquees, whose
+ownership remains unresolved. No production source changed. Native
+`gof2`, all 206 ARM units, three mining smokes and 37 verifier tests
+pass (one skipped). Full corpus remains 4,323/4,524 covered,
+93.08% average source-shape, 81.50% strict fuzzy, 2,403 linked-exact,
+1,008 byte-exact and 123 extra symbols, with exact sets unchanged.
+`update` is still 95.1% source-shape / 82.1% strict fuzzy, not exact.
+Next: recover `PlayerEgo::stopMining` from ARM: it currently only
+deletes `MiningGame`, omitting cargo, status, ship and audio effects.
+Then test the full handoff. ARM32 runtime and marquee lifetime remain
+unverified. See
+[the outcomes audit](MINING_OUTCOMES_TEARDOWN_ARM_2026-10-14.md).
 
 ## MiningGame render2D service and call recovery (2026-10-14)
 

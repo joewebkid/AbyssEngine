@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## MiningGame outcomes and teardown audit (2026-10-14)
+
+The production-method layer/update smoke now covers the 2500/2501 ms
+loss boundary, ore/status reset, medal HUD thresholds and byte-only
+completion flag. The constructor smoke executes the production
+destructor and confirms it destroys the drill sprite but not the
+marquees, as in Android ARM. The render smoke, native `gof2`, all 206
+ARM units and 37 verifier tests pass (one skipped). No production
+code changed: corpus coverage and shape stay 4,323/4,524,
+93.08% average source-shape and 81.50% strict fuzzy; all 2,403
+linked-exact, 1,008 byte-exact pairs and 123 extra symbols are
+unchanged. `PlayerEgo::stopMining` still omits the ARM cargo/status/
+ship/audio handoff; full mining flow and ARM32 runtime remain
+untested. See [the audit](MINING_OUTCOMES_TEARDOWN_ARM_2026-10-14.md).
+
 ## MiningGame render2D service and call recovery (2026-10-14)
 
 Focused `render2D` source-shape rises 25.6% to 97.4% and strict
