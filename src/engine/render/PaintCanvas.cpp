@@ -677,8 +677,6 @@ static inline int paintcanvas_ext_gsp_getheight(void *self) { return ((PaintCanv
 
 int paintcanvas_ext_sscreate(void *eng, unsigned short id, bool b, void **out);
 
-void paintcanvas_ext_shader_anim(void *, void *);
-
 char *paintcanvas_ext_rs_getAEChar(void *strField);
 
 void paintcanvas_ext_rs_deletearr(char *p);
@@ -933,10 +931,6 @@ void pc_ArrayAdd_Camera(void *cam, void *arr);
 int paintcanvas_ext_mesh_tricount(AbyssEngine::PaintCanvas *, void *);
 
 int paintcanvas_ext_transform_tricount(AbyssEngine::PaintCanvas *, void *);
-
-void paintcanvas_ext_mesh_shaderanim(AbyssEngine::PaintCanvas *, void *, float, unsigned int);
-
-void paintcanvas_ext_transform_shaderanim(AbyssEngine::PaintCanvas *, void *, float, unsigned int);
 
 void paintcanvas_ext_release_sprite_res(void *, void *);
 
@@ -2757,7 +2751,7 @@ void PaintCanvas::MeshChangeShaderAnimValue(AbyssEngine::Mesh *mesh, float value
     } else if (mode == 1) {
         memcpy(&mesh->materialId, &value, sizeof(value));
     }
-    return paintcanvas_ext_shader_anim(this, mesh->animation);
+    this->MeshChangeShaderAnimValue(mesh->animation, value, mode);
 }
 
 
@@ -4855,12 +4849,10 @@ int PaintCanvas::TransformGetTriCount(Transform *transform) {
 void PaintCanvas::MeshChangeShaderAnimValue(Transform *transform, float value, unsigned int mode) {
     if (transform) {
         for (unsigned int i = 0; i < transform->meshes.size(); ++i) {
-            void *m = transform->meshes[i];
-            paintcanvas_ext_mesh_shaderanim(this, m, value, mode);
+            this->MeshChangeShaderAnimValue(transform->meshes[i], value, mode);
         }
         for (unsigned int i = 0; i < transform->children.size(); ++i) {
-            void *c = transform->children[i];
-            paintcanvas_ext_transform_shaderanim(this, c, value, mode);
+            this->MeshChangeShaderAnimValue(transform->children[i], value, mode);
         }
     }
 }

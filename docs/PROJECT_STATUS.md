@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (canvas triangle counts; older subsystem
+Last reviewed: 2026-10-13 (canvas shader animation; older subsystem
 snapshots retain their dates)
+
+## Shader-animation value propagation (2026-10-13)
+
+`PaintCanvas::MeshChangeShaderAnimValue` now passes the value and mode
+through animated meshes and nested transforms using its typed
+overloads. The mesh overload previously called a two-argument shim
+that lost both arguments; the transform overload used two unresolved
+recursive shims. Android ARM confirms modes 1/2/4 and the recursive
+dispatch. Focused source-shape stays 100.0% for both functions, while
+strict fuzzy rises 58.8% to 76.5% for the mesh overload and stays
+97.1% for the transform overload. Native `gof2`, 206/206 ARM units,
+an extracted-body smoke, adjacent canvas smoke, and 36 verifier tests
+pass (one skipped). Full corpus stays 4,717 comparisons,
+4,323/4,524 covered, 201 missing, and 92.5708% average source-shape;
+average strict fuzzy rises 80.8823% to 80.8861%. The 2,378
+linked-exact and 1,008 byte-exact symbol sets have no losses.
+Shaders, original assets, malformed cyclic graphs, and ARM32 runtime
+remain untested. Next audit recursive mesh material propagation. See
+[the shader-animation audit](PAINTCANVAS_SHADER_ANIM_VALUE_ARM_2026-10-13.md).
 
 ## Mesh and transform triangle counts (2026-10-13)
 

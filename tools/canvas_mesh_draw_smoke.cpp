@@ -1,6 +1,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdio>
+#include <cstring>
 #include <vector>
 
 template <typename T> struct Array {
@@ -70,6 +71,8 @@ struct Mesh {
     int marker = 0;
     unsigned vertexCount = 1;
     unsigned indexCount = 0;
+    unsigned materialId = 0;
+    float shaderAnimValue0 = 0, shaderAnimValue1 = 0;
     Transform *animation = nullptr;
     void *material = nullptr;
     float pivotX = 0, pivotY = 0, pivotZ = 0;
@@ -120,11 +123,14 @@ struct PaintCanvas {
     int MeshGetTriCount(Mesh *);
     int TransformGetTriCount(unsigned);
     int TransformGetTriCount(Transform *);
+    void MeshChangeShaderAnimValue(Mesh *, float, unsigned);
+    void MeshChangeShaderAnimValue(Transform *, float, unsigned);
 };
 
 // PRODUCTION_COLOR
 // PRODUCTION_METHOD
 // PRODUCTION_TRI_METHODS
+// PRODUCTION_SHADER_METHODS
 }
 // PRODUCTION_TRI_THUNK
 
@@ -217,5 +223,21 @@ int main() {
     assert(canvas.MeshGetTriCount(&outer) == 9);
     assert(canvas.TransformGetTriCount(0u) == 5);
     assert(canvas.TransformGetTriCount(1u) == 0);
-    std::puts("PaintCanvas mesh draw and tri-count smoke: OK");
+
+    canvas.MeshChangeShaderAnimValue(&outer, 2.25f, 2);
+    assert(outer.shaderAnimValue0 == 2.25f && inner.shaderAnimValue0 == 2.25f);
+    assert(leaf.shaderAnimValue0 == 2.25f && outer.shaderAnimValue1 == 0);
+    canvas.MeshChangeShaderAnimValue(&outer, 3.5f, 4);
+    assert(outer.shaderAnimValue1 == 3.5f && inner.shaderAnimValue1 == 3.5f);
+    assert(leaf.shaderAnimValue1 == 3.5f);
+    float encoded = 1.75f;
+    unsigned bits = 0;
+    std::memcpy(&bits, &encoded, sizeof(bits));
+    canvas.MeshChangeShaderAnimValue(&outer, encoded, 1);
+    assert(outer.materialId == bits && inner.materialId == bits && leaf.materialId == bits);
+    canvas.MeshChangeShaderAnimValue(static_cast<Mesh *>(nullptr), encoded, 1);
+    canvas.MeshChangeShaderAnimValue(static_cast<Transform *>(nullptr), encoded, 1);
+    canvas.MeshChangeShaderAnimValue(&outer, 9.0f, 7);
+    assert(outer.shaderAnimValue0 == 2.25f && leaf.shaderAnimValue1 == 3.5f);
+    std::puts("PaintCanvas mesh draw, tri-count, and shader-animation smoke: OK");
 }

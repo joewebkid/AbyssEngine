@@ -1,4 +1,4 @@
-"""Run production canvas mesh draw and triangle-count bodies with fixtures."""
+"""Run production canvas mesh draw, triangle-count, and shader-animation bodies."""
 
 import argparse
 from pathlib import Path
@@ -29,6 +29,9 @@ def main():
         "int PaintCanvas::MeshGetTriCount(AbyssEngine::Mesh *mesh)",
         "int PaintCanvas::TransformGetTriCount(unsigned int index)",
         "int PaintCanvas::TransformGetTriCount(Transform *transform)")))
+    fixture = fixture.replace("// PRODUCTION_SHADER_METHODS", "\n".join(function(source, signature) for signature in (
+        "void PaintCanvas::MeshChangeShaderAnimValue(AbyssEngine::Mesh *mesh,",
+        "void PaintCanvas::MeshChangeShaderAnimValue(Transform *transform,")))
     fixture = fixture.replace("// PRODUCTION_TRI_THUNK", function(
         core, "int paintcanvas_ext_transform_tricount(AbyssEngine::PaintCanvas *canvas,"))
     with tempfile.TemporaryDirectory(prefix="canvas-mesh-smoke-", dir=ROOT / "_work") as temp:
