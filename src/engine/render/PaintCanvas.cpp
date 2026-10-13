@@ -2130,7 +2130,7 @@ int PaintCanvas::MeshGetTriCount(AbyssEngine::Mesh *mesh) {
         if (mesh->animation == 0) {
             tri = 0;
         } else {
-            tri = paintcanvas_ext_transform_tricount(this, mesh->animation);
+            tri = this->TransformGetTriCount(mesh->animation);
         }
         int q = (int) ((unsigned) (mesh->indexCount) / (unsigned) (3));
         return q + tri;
@@ -3267,8 +3267,8 @@ int PaintCanvas::ResourceLoaded(unsigned int index, AbyssEngine::ResourceType ty
 
 int PaintCanvas::TransformGetTriCount(unsigned int index) {
     if (index < this->transformCount) {
-        void *t = (this->transforms)[index];
-        return paintcanvas_ext_transform_tricount(this, t);
+        Transform *transform = reinterpret_cast<Transform *>(this->transforms[index]);
+        return paintcanvas_ext_transform_tricount(this, transform);
     }
     return 0;
 }

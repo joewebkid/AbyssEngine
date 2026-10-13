@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (indexed mesh draw; older subsystem
+Last reviewed: 2026-10-13 (canvas triangle counts; older subsystem
 snapshots retain their dates)
+
+## Mesh and transform triangle counts (2026-10-13)
+
+The mesh count and indexed transform count now reach the typed
+recursive `TransformGetTriCount(Transform *)` implementation instead
+of an unresolved shim. The indexed wrapper retains its external-call
+shape and linked-exact match through an out-of-line compatibility
+entry; a direct same-unit call lost that match. Android ARM confirms
+the index guard, null behavior, `indexCount / 3`, and recursive mesh
+and child counts. Focused family source-shape remains 98.2% and
+strict fuzzy 92.2%. Native `gof2`, 206/206 ARM units, an
+extracted-body smoke, and 36 verifier tests pass (one skipped).
+Full corpus remains 4,717 comparisons, 4,323/4,524 covered,
+201 missing, 92.5708% average source-shape, 80.8823% average strict
+fuzzy, 2,378 linked-exact, and 1,008 byte-exact, with no exact-set
+losses. The resolved compatibility entry adds one extra symbol.
+Malformed cyclic graphs, assets, and ARM32 runtime remain untested.
+Next audit the mesh/transform shader-animation value path. See
+[the triangle-count audit](PAINTCANVAS_TRI_COUNT_ARM_2026-10-13.md).
 
 ## Indexed mesh draw dispatch (2026-10-13)
 

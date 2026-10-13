@@ -14,6 +14,9 @@ template <typename T> void ArrayAddCached(T item, Array<T> &array) {
     array.values.push_back(item);
 }
 
+namespace AbyssEngine { struct PaintCanvas; }
+int paintcanvas_ext_transform_tricount(AbyssEngine::PaintCanvas *, void *);
+
 namespace AbyssEngine {
 namespace AEMath {
 struct Vector { float x, y, z; };
@@ -66,6 +69,7 @@ struct Material {
 struct Mesh {
     int marker = 0;
     unsigned vertexCount = 1;
+    unsigned indexCount = 0;
     Transform *animation = nullptr;
     void *material = nullptr;
     float pivotX = 0, pivotY = 0, pivotZ = 0;
@@ -100,6 +104,8 @@ struct PaintCanvas {
     Matrix worldView;
     Array<Camera *> cameras;
     unsigned currentCamera = 0;
+    unsigned transformCount = 0;
+    char **transforms = nullptr;
     int CameraIsSphereinViewFrustum(const Vector &center, float radius) {
         checkedCenter = center; checkedRadius = radius; ++frustumChecks;
         return inFrustum;
@@ -111,11 +117,16 @@ struct PaintCanvas {
         assert(view.m[3] == 7);
     }
     void DrawMesh(Mesh *, Matrix &, Matrix &, unsigned, Matrix &);
+    int MeshGetTriCount(Mesh *);
+    int TransformGetTriCount(unsigned);
+    int TransformGetTriCount(Transform *);
 };
 
 // PRODUCTION_COLOR
 // PRODUCTION_METHOD
+// PRODUCTION_TRI_METHODS
 }
+// PRODUCTION_TRI_THUNK
 
 int main() {
     using namespace AbyssEngine;
@@ -188,5 +199,23 @@ int main() {
     assert(canvas.checkedCenter.x == 15 && canvas.checkedRadius == 12);
     assert(std::fabs(engine.rgba[0] - 0.5f * 127 / 255) < 0.0001f);
     assert(std::fabs(engine.rgba[3] - 127.0f / 255) < 0.0001f);
-    std::puts("PaintCanvas mesh draw smoke: OK");
+
+    Mesh outer, inner, leaf;
+    Transform root, branch;
+    outer.indexCount = 12;
+    inner.indexCount = 6;
+    leaf.indexCount = 9;
+    outer.animation = &root;
+    root.meshes.values = {&inner};
+    root.children.values = {&branch};
+    branch.meshes.values = {&leaf};
+    char *transforms[] = {reinterpret_cast<char *>(&root)};
+    canvas.transforms = transforms;
+    canvas.transformCount = 1;
+    assert(canvas.MeshGetTriCount(nullptr) == 0);
+    assert(canvas.TransformGetTriCount(static_cast<Transform *>(nullptr)) == 0);
+    assert(canvas.MeshGetTriCount(&outer) == 9);
+    assert(canvas.TransformGetTriCount(0u) == 5);
+    assert(canvas.TransformGetTriCount(1u) == 0);
+    std::puts("PaintCanvas mesh draw and tri-count smoke: OK");
 }

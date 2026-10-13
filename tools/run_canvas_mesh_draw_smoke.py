@@ -1,4 +1,4 @@
-"""Compile and run the production PaintCanvas::DrawMesh body with fixture services."""
+"""Run production canvas mesh draw and triangle-count bodies with fixtures."""
 
 import argparse
 from pathlib import Path
@@ -20,10 +20,17 @@ def main():
         parser.error("specify --cxx")
 
     source = (ROOT / "src/engine/render/PaintCanvas.cpp").read_text()
+    core = (ROOT / "src/engine/core/AbyssEngine.cpp").read_text()
     fixture = (ROOT / "tools/canvas_mesh_draw_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_COLOR", function(source, "static unsigned int mulColors("))
     fixture = fixture.replace("// PRODUCTION_METHOD", function(
         source, "void PaintCanvas::DrawMesh(AbyssEngine::Mesh *mesh,"))
+    fixture = fixture.replace("// PRODUCTION_TRI_METHODS", "\n".join(function(source, signature) for signature in (
+        "int PaintCanvas::MeshGetTriCount(AbyssEngine::Mesh *mesh)",
+        "int PaintCanvas::TransformGetTriCount(unsigned int index)",
+        "int PaintCanvas::TransformGetTriCount(Transform *transform)")))
+    fixture = fixture.replace("// PRODUCTION_TRI_THUNK", function(
+        core, "int paintcanvas_ext_transform_tricount(AbyssEngine::PaintCanvas *canvas,"))
     with tempfile.TemporaryDirectory(prefix="canvas-mesh-smoke-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "canvas_mesh_draw_smoke.cpp"
         generated.write_text(fixture)

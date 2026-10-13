@@ -16,6 +16,10 @@
 #include <cstdint>
 #include <cstring>
 
+int paintcanvas_ext_transform_tricount(AbyssEngine::PaintCanvas *canvas, void *transform) {
+    return canvas->TransformGetTriCount(static_cast<AbyssEngine::Transform *>(transform));
+}
+
 // ARM SpriteSystemDraw calls these out-of-line specializations from Array.cpp.
 extern template void ArrayAddCached<AbyssEngine::Matrix>(AbyssEngine::Matrix, Array<AbyssEngine::Matrix> &);
 extern template void ArrayAddCached<AbyssEngine::Mesh *>(AbyssEngine::Mesh *, Array<AbyssEngine::Mesh *> &);
