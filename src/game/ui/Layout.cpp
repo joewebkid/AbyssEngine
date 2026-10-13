@@ -250,6 +250,48 @@ Layout::Layout() {
     this->field_0x98 = hd ? 590 : n9 ? 630 : retina ? 840 : 420;
     this->field_0x9c = hd ? 70 : n9 ? 75 : retina ? 100 : 50;
 
+    // MiningGame consumes this group for movement, ring selection and ore rendering.
+    if (hd) {
+        this->centerYBase = 21;
+        this->marqueeWidth = 28;
+        this->progressBarYBase = 52;
+        this->field_0xdc = 14.0625f;
+        this->animSpeedScale = 1.40625f;
+        this->driftSpeedDivisor = 28.125f;
+        this->ringRadiusScale = 1.40625f;
+        this->ringNearMidThreshold = 56;
+        this->ringMidFarThreshold = 281;
+        this->hudInset = 7;
+        this->oreLabelYOffset = 2;
+        this->oreTextYOffset = 5;
+    } else if (n9) {
+        this->centerYBase = 22;
+        this->marqueeWidth = 36;
+        this->progressBarYBase = 55;
+        this->field_0xdc = 15.0f;
+        this->animSpeedScale = 1.5f;
+        this->driftSpeedDivisor = 12.0f;
+        this->ringRadiusScale = 1.5f;
+        this->ringNearMidThreshold = 60;
+        this->ringMidFarThreshold = 300;
+        this->hudInset = 0;
+        this->oreLabelYOffset = 5;
+        this->oreTextYOffset = 4;
+    } else {
+        this->centerYBase = retina ? 30 : 15;
+        this->marqueeWidth = retina ? 40 : 20;
+        this->progressBarYBase = retina ? 74 : 37;
+        this->field_0xdc = retina ? 20.0f : 10.0f;
+        this->animSpeedScale = retina ? 2.0f : 1.0f;
+        this->driftSpeedDivisor = retina ? 10.0f : 20.0f;
+        this->ringRadiusScale = retina ? 2.0f : 1.0f;
+        this->ringNearMidThreshold = retina ? 80 : 40;
+        this->ringMidFarThreshold = retina ? 400 : 200;
+        this->hudInset = retina ? 10 : 5;
+        this->oreLabelYOffset = retina ? 4 : 2;
+        this->oreTextYOffset = retina ? 5 : 3;
+    }
+
     // Hud::init copies these eight constructor metrics into its touch and display state.
     if (hd) {
         this->field_0x12c = 21;  this->field_0x130 = 78;

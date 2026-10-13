@@ -122,7 +122,7 @@ public:
     int centerYBase;
     int marqueeWidth;
     int progressBarYBase;
-    int field_0xdc;
+    float field_0xdc;
     float animSpeedScale;
     float driftSpeedDivisor;
     float ringRadiusScale;

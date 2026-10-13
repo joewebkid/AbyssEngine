@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (Layout constructor HUD fields; older subsystem
+Last reviewed: 2026-10-14 (Layout constructor MiningGame fields; older subsystem
 snapshots retain their dates)
+
+## Layout constructor MiningGame parameters (2026-10-14)
+
+The Android-backed `Layout+0xd0..+0x104` values consumed by
+`MiningGame` now supply center/progress-bar placement, marquee speed,
+nonzero drift divisor, ring scale and thresholds, and ore-label
+offsets. `+0xdc` is typed as `float`, matching its only consumer.
+Focused `Layout` C1/C2 source-shape rises 29.3% to 30.9%, while
+strict fuzzy stays 7.6%; neither alias is exact. The `MiningGame`
+constructor's focused 1.3% source-shape and 0.6% strict fuzzy are
+unchanged. The six-profile host smoke, native `gof2`, all 206 ARM
+units and 37 verifier tests pass (one skipped). Full corpus remains
+4,323/4,524 covered at 92.98% average source-shape and 81.41%
+strict fuzzy; all 2,403 linked-exact and 1,008 byte-exact pairs and
+123 extra symbols are unchanged, with zero exact-set losses. Other constructor
+fields and `MiningGame`'s unassigned service holders remain; native
+ARM32 mining behavior is untested. Next: source-backed binding of its
+layout/service holders, beginning with the direct `Globals::layout`
+routes. See [the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
 
 ## Layout constructor HUD initialization fields (2026-10-14)
 

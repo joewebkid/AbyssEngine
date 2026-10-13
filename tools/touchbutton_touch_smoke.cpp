@@ -226,6 +226,12 @@ int main() {
                ordinary.field_0x134 == 80 && ordinary.field_0x138 == 35);
         assert(ordinary.field_0x13c == 17 && ordinary.field_0x140 == 11 &&
                ordinary.field_0x144 == 13 && ordinary.field_0x148 == 2);
+        assert(ordinary.centerYBase == 15 && ordinary.marqueeWidth == 20 &&
+               ordinary.progressBarYBase == 37 && ordinary.field_0xdc == 10.0f);
+        assert(ordinary.animSpeedScale == 1.0f && ordinary.driftSpeedDivisor == 20.0f &&
+               ordinary.ringRadiusScale == 1.0f);
+        assert(ordinary.ringNearMidThreshold == 40 && ordinary.ringMidFarThreshold == 200 &&
+               ordinary.hudInset == 5 && ordinary.oreLabelYOffset == 2 && ordinary.oreTextYOffset == 3);
         Globals::retinaDisplay = 1;
         Layout retina;
         assert(retina.field_0x4 == 30 && retina.field_0x58 == 486);
@@ -238,6 +244,12 @@ int main() {
                retina.field_0x134 == 160 && retina.field_0x138 == 70);
         assert(retina.field_0x13c == 34 && retina.field_0x140 == 22 &&
                retina.field_0x144 == 26 && retina.field_0x148 == 4);
+        assert(retina.centerYBase == 30 && retina.marqueeWidth == 40 &&
+               retina.progressBarYBase == 74 && retina.field_0xdc == 20.0f);
+        assert(retina.animSpeedScale == 2.0f && retina.driftSpeedDivisor == 10.0f &&
+               retina.ringRadiusScale == 2.0f);
+        assert(retina.ringNearMidThreshold == 80 && retina.ringMidFarThreshold == 400 &&
+               retina.hudInset == 10 && retina.oreLabelYOffset == 4 && retina.oreTextYOffset == 5);
         Globals::retinaDisplay = 0;
         Globals::n9 = 1;
         Layout n9;
@@ -251,6 +263,12 @@ int main() {
                n9.field_0x134 == 120 && n9.field_0x138 == 52);
         assert(n9.field_0x13c == 25 && n9.field_0x140 == 19 &&
                n9.field_0x144 == 19 && n9.field_0x148 == 19);
+        assert(n9.centerYBase == 22 && n9.marqueeWidth == 36 &&
+               n9.progressBarYBase == 55 && n9.field_0xdc == 15.0f);
+        assert(n9.animSpeedScale == 1.5f && n9.driftSpeedDivisor == 12.0f &&
+               n9.ringRadiusScale == 1.5f);
+        assert(n9.ringNearMidThreshold == 60 && n9.ringMidFarThreshold == 300 &&
+               n9.hudInset == 0 && n9.oreLabelYOffset == 5 && n9.oreTextYOffset == 4);
         Globals::n9 = 0;
         Globals::iPadHD = 1;
         Layout ipadHd;
@@ -264,6 +282,12 @@ int main() {
                ipadHd.field_0x134 == 151 && ipadHd.field_0x138 == 66);
         assert(ipadHd.field_0x13c == 23 && ipadHd.field_0x140 == 15 &&
                ipadHd.field_0x144 == 18 && ipadHd.field_0x148 == 2);
+        assert(ipadHd.centerYBase == 21 && ipadHd.marqueeWidth == 28 &&
+               ipadHd.progressBarYBase == 52 && ipadHd.field_0xdc == 14.0625f);
+        assert(ipadHd.animSpeedScale == 1.40625f && ipadHd.driftSpeedDivisor == 28.125f &&
+               ipadHd.ringRadiusScale == 1.40625f);
+        assert(ipadHd.ringNearMidThreshold == 56 && ipadHd.ringMidFarThreshold == 281 &&
+               ipadHd.hudInset == 7 && ipadHd.oreLabelYOffset == 2 && ipadHd.oreTextYOffset == 5);
         Globals::iPadHD = 0;
         Globals::iPad = 1;
         Layout ipad;
@@ -274,6 +298,8 @@ int main() {
                ipad.field_0x134 == 108 && ipad.field_0x138 == 47);
         assert(ipad.field_0x13c == 17 && ipad.field_0x140 == 11 &&
                ipad.field_0x144 == 13 && ipad.field_0x148 == 2);
+        assert(ipad.field_0xdc == 10.0f && ipad.driftSpeedDivisor == 20.0f &&
+               ipad.ringRadiusScale == 1.0f);
         Globals::iPadLarge = 1;
         Layout ipadLarge;
         assert(ipadLarge.rewardBoxWidth == 200 && ipadLarge.field_0x2f4 == 160);
@@ -283,6 +309,8 @@ int main() {
                ipadLarge.field_0x134 == 216 && ipadLarge.field_0x138 == 94);
         assert(ipadLarge.field_0x13c == 17 && ipadLarge.field_0x140 == 11 &&
                ipadLarge.field_0x144 == 13 && ipadLarge.field_0x148 == 2);
+        assert(ipadLarge.field_0xdc == 10.0f && ipadLarge.driftSpeedDivisor == 20.0f &&
+               ipadLarge.ringRadiusScale == 1.0f);
         Globals::iPadLarge = 0;
         Globals::iPad = 0;
     }

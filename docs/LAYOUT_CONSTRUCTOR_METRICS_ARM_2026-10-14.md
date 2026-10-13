@@ -113,8 +113,55 @@ complete exact-pair and extra-symbol sets match the preceding report:
 zero losses and zero gains. The aggregate shape percentage is
 unchanged after rounding despite the focused gain.
 
-Next: recover the zero-filled `+0xd0..+0x104` MiningGame metrics,
-especially its drift divisor and ring scale, then the remaining
+## Mining-game parameters (follow-up)
+
+`MiningGame` reads the constructor's `Layout+0xd0..+0x104` group for
+its center and progress-bar placement, marquee animation, drift
+division, ring scaling and selection, and ore-label offsets. The
+original Android constructor at `0xd1028` writes iPad HD constants at
+IDA lines 128018–128027 and 128008–128009, N9 constants at
+128438–128447 and 128454–128455, and ordinary Retina/low branches at
+128498–128555. The float words are decoded as IEEE-754; in
+particular, the layout-supplied drift divisor is nonzero in every
+profile. The `+0xdc` slot is now typed as `float` and its sole
+`MiningGame` reader uses that field directly.
+
+| Profile | center `+d0` | marquee `+d4` | bar Y `+d8` | near `+ec` | far `+f4` | HUD inset `+fc` | label Y `+100` | text Y `+104` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| ordinary low (including iPad low) | 15 | 20 | 37 | 40 | 200 | 5 | 2 | 3 |
+| ordinary Retina | 30 | 40 | 74 | 80 | 400 | 10 | 4 | 5 |
+| N9 | 22 | 36 | 55 | 60 | 300 | 0 | 5 | 4 |
+| iPad HD | 21 | 28 | 52 | 56 | 281 | 7 | 2 | 5 |
+
+| Profile | marquee speed `+dc` | animation `+e0` | drift divisor `+e4` | ring scale `+e8` |
+| --- | ---: | ---: | ---: | ---: |
+| ordinary low | 10.0 | 1.0 | 20.0 | 1.0 |
+| ordinary Retina | 20.0 | 2.0 | 10.0 | 2.0 |
+| N9 | 15.0 | 1.5 | 12.0 | 1.5 |
+| iPad HD | 14.0625 | 1.40625 | 28.125 | 1.40625 |
+
+The six-profile production constructor smoke checks these fields.
+Native `gof2`, 206 ARM translation units and 37 verifier tests pass
+(one skipped). Focused C1/C2 source-shape rises from 29.3% to 30.9%;
+strict fuzzy remains 7.6%. The generated body is 811 instructions
+against 2,225 target instructions, so neither alias is exact. The
+focused `MiningGame` constructor stays at 1.3% source-shape and 0.6%
+strict fuzzy after typing `+0xdc`.
+
+The full corpus remains at 4,323/4,524 covered across 4,718
+comparisons, 201 missing, 92.98% average source-shape and 81.41%
+strict fuzzy. All 2,403 linked-exact and 1,008 byte-exact pairs are
+preserved; the 123 extra-symbol set is unchanged. The aggregate
+source-shape does not change after rounding.
+
+The original also writes `+0xf0/+0xf8` and other fields not consumed
+by this package; those remain zero-filled in our source. Most
+`MiningGame` service/global holders remain unassigned, so neither the
+host constructor smoke nor the static-library build proves the mining
+game can run. Its ARM32 behavior and rendering remain untested.
+
+Next: bind the unassigned `MiningGame` layout/service holders to
+confirmed runtime globals, then recover the remaining `Layout`
 `+0x5c..+0x2d8` groups. Confirm ambiguous platform values from ARM,
 then validate layout behavior on-device or with a faithful ARM32
 runtime. Re-run the full corpus and compare exact and extra-symbol

@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout constructor MiningGame parameters (2026-10-14)
+
+Focused `Layout` C1/C2 source-shape rises 29.3% to 30.9%, strict
+fuzzy stays 7.6%, and neither alias is exact. The `MiningGame`
+constructor's focused shape remains 1.3% source and 0.6% strict.
+The six-profile host smoke, native `gof2`, all 206 ARM units and 37
+verifier tests pass (one skipped). Full corpus remains 4,323/4,524
+covered at 92.98% average source-shape and 81.41% strict fuzzy;
+2,403 linked-exact and 1,008 byte-exact pairs are preserved with
+zero exact-set or extra-symbol changes. The layout-supplied drift divisor
+is nonzero for every covered platform branch, but unassigned
+`MiningGame` service holders and untested ARM32 runtime remain. See
+[the evidence](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
+
 ## Layout constructor HUD initialization fields (2026-10-14)
 
 Focused C1/C2 source-shape rises 27.3% to 29.3% and strict fuzzy

@@ -40,8 +40,6 @@ int MiningGame_Status_getCurrentCampaignMission_render(void *status);
 
 String *MiningGame_GameText_getText(void *gameText, int id);
 
-static inline float &F(void *p, unsigned off) { return *(float *) ((char *) p + off); }
-
 int MiningGame::getOreAmount() {
     return (int) this->oreAmount;
 }
@@ -377,7 +375,8 @@ MiningGame::MiningGame(int layer, int station, Hud *hud) {
     this->oreImageHeight = canvas->GetImage2DHeight(this->oreTextImageId);
 
     MarqueeImage *oreMarquee =
-            new MarqueeImage(0x4e4, canvas->GetImage2DWidth(this->oreLabelImageId) - 8, 0, 0, F(layout, 0xdc));
+            new MarqueeImage(0x4e4, canvas->GetImage2DWidth(this->oreLabelImageId) - 8, 0, 0,
+                             layout->field_0xdc);
     this->oreMarquee = oreMarquee;
     oreMarquee->speed = layout->animSpeedScale * g_MiningGame_layerSpeed[this->currentLayer];
 
