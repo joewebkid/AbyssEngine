@@ -2,6 +2,7 @@
 
 #include "game/core/Globals.h"
 #include "engine/core/AERandom.h"
+#include "engine/core/GameText.h"
 #include "engine/audio/FModSound.h"
 #include "engine/render/PaintCanvas.h"
 #include "game/core/String.h"
@@ -9,6 +10,7 @@
 #include "game/ui/Layout.h"
 #include "game/mission/Status.h"
 #include "game/mission/Achievements.h"
+#include "game/ship/Ship.h"
 #include "engine/render/MarqueeImage.h"
 #include "engine/render/Sprite.h"
 
@@ -24,16 +26,6 @@ int LAYER_DIAMETERS[49] = {
 };
 float LAYER_SPEEDS[7] = {5.0f, 8.0f, 12.0f, 17.0f, 23.0f, 30.0f, 38.0f};
 }
-
-float MiningGame_Layout_getPulseValue(void *layout, float value);
-
-void *MiningGame_Status_getShip_render(void *status);
-
-int MiningGame_Ship_getFreeSpace(void *ship);
-
-int MiningGame_Status_getCurrentCampaignMission_render(void *status);
-
-String *MiningGame_GameText_getText(void *gameText, int id);
 
 int MiningGame::getOreAmount() {
     return (int) this->oreAmount;
@@ -313,146 +305,100 @@ MiningGame::MiningGame(int layer, int station, Hud *hud) {
 }
 
 
-static void **g_MiningGame_canvasRender = nullptr;
-
-static int *g_MiningGame_layerTableRender = nullptr;
-
-static void **g_MiningGame_layoutRender = nullptr;
-
-static void (*g_MiningGame_drawLayer)(void *canvas, int image, int x, int y,
-                                      int w, int h, int anchor, int tile,
-                                      int frame) = nullptr;
-
-
-static void **g_MiningGame_statusRender = nullptr;
-
-static char g_MiningGame_oreSuffix[1] = {};
-
-static void **g_MiningGame_fontString = nullptr;
-
-static void **g_MiningGame_gameText = nullptr;
-
-static int *g_MiningGame_screenWRender = nullptr;
-
 void MiningGame::render2D() {
-    String amountStorage;
-    String suffixStorage;
-    String oreStorage;
-    String *amountText = &amountStorage;
-    String *suffixText = &suffixStorage;
-    String *oreText = &oreStorage;
-
-    PaintCanvas *canvas = (PaintCanvas *) *g_MiningGame_canvasRender;
-    canvas->SetColor((unsigned int) -1);
-
-    int *layerTable = g_MiningGame_layerTableRender;
-    void **layoutHolder = g_MiningGame_layoutRender;
-    Layout *layout = (Layout *) *layoutHolder;
-    void (*drawLayer)(void *, int, int, int, int, int, int, int, int) = g_MiningGame_drawLayer;
+    Globals::Canvas->SetColor((unsigned int) -1);
 
     for (int layerIndex = this->currentLayer; layerIndex < this->targetLayer; layerIndex++) {
-        int raw = layerTable[(layerIndex - this->targetLayer * 7) + 0x31];
-        int radius = (int) (layout->ringRadiusScale * (float) raw);
+        int raw = LAYER_DIAMETERS[(layerIndex - this->targetLayer * 7) + 0x31];
+        int radius = (int) (Globals::layout->ringRadiusScale * (float) raw);
         uint32_t *imageSlot;
         if ((layerIndex & 1) == 0) {
             imageSlot = &this->ringEvenNear;
-            if (layout->ringNearMidThreshold < radius) {
+            if (Globals::layout->ringNearMidThreshold < radius) {
                 imageSlot = &this->ringEvenMid;
-                if (radius < layout->ringMidFarThreshold) {
+                if (radius < Globals::layout->ringMidFarThreshold) {
                     imageSlot = &this->ringEvenFar;
                 }
             }
         } else {
             imageSlot = &this->ringOddNear;
-            if (layout->ringNearMidThreshold < radius) {
+            if (Globals::layout->ringNearMidThreshold < radius) {
                 imageSlot = &this->ringOddFar;
-                if (radius < layout->ringMidFarThreshold) {
+                if (radius < Globals::layout->ringMidFarThreshold) {
                     imageSlot = &this->ringOddMid;
                 }
             }
         }
-        int image = *imageSlot;
+        uint32_t image = *imageSlot;
         int half = radius / 2;
-        drawLayer(canvas, image, this->centerX, this->centerY, half, half, 0x11, 0x22, 0);
-        drawLayer(canvas, image, this->centerX, this->centerY, half, half, 0x11, 0x21, 1);
-        drawLayer(canvas, image, this->centerX, this->centerY, half, half, 0x11, 0x12, 2);
-        drawLayer(canvas, image, this->centerX, this->centerY, half, half, 0x11, 0x11, 3);
+        Globals::Canvas->DrawImage2D(image, this->centerX, this->centerY, half, half, 0x11, 0x22, 0);
+        Globals::Canvas->DrawImage2D(image, this->centerX, this->centerY, half, half, 0x11, 0x21, 1);
+        Globals::Canvas->DrawImage2D(image, this->centerX, this->centerY, half, half, 0x11, 0x12, 2);
+        Globals::Canvas->DrawImage2D(image, this->centerX, this->centerY, half, half, 0x11, 0x11, 3);
     }
 
     if (this->isCoreLayer != 0) {
-        canvas->DrawImage2D(this->coreImageId, this->centerX, this->centerY, (unsigned char) 0x4411);
+        Globals::Canvas->DrawImage2D(this->coreImageId, this->centerX, this->centerY, 0x11, 0x44);
     }
 
-    canvas->DrawImage2D(this->oreIconImageId, (int) this->posX, (int) this->posY, (unsigned char) 0x4411);
+    Globals::Canvas->DrawImage2D(this->oreIconImageId, (int) this->posX, (int) this->posY, 0x11, 0x44);
     this->drillSprite->setRefPixelPosition((int) this->posX, (int) this->posY);
     this->drillSprite->draw(1.0f, 1.0f);
 
-    canvas->DrawImage2D(this->cornerImageId, this->progressBarX - layout->hudInset,
-                        this->progressBarY - layout->hudInset);
+    Globals::Canvas->DrawImage2D(this->cornerImageId, this->progressBarX - Globals::layout->hudInset,
+                                 this->progressBarY - Globals::layout->hudInset);
 
     int lossTimer = this->lossTimer;
     if (lossTimer > 0x341) {
-        float red = MiningGame_Layout_getPulseValue(layout, 10.0f) * 255.0f;
-        float green = MiningGame_Layout_getPulseValue(layout, 10.0f) * 255.0f;
-        canvas->SetColor((unsigned char) 0xff, (unsigned char) (int) red, (unsigned char) (int) green,
-                         (unsigned char) 0xff);
+        uint32_t red = (uint32_t) (Globals::layout->getPulseValue(10.0f) * 255.0f);
+        uint32_t green = (uint32_t) (Globals::layout->getPulseValue(10.0f) * 255.0f);
+        Globals::Canvas->SetColor(0xff, red, green, 0xff);
     }
 
     int width = (int) (((2500.0f - (float) lossTimer) / 2500.0f) * (float) this->progressBarWidth);
-    canvas->DrawRegion2D(this->progressBarImageId, 0, 0, width, this->progressBarHeight, 0.0f, 0, 0,
-                         this->progressBarX, this->progressBarY);
-    canvas->SetColor((unsigned int) -1);
-    canvas->DrawImage2D(this->progressLabelImageId, this->centerX, this->progressBarY - 3, (unsigned char) 0x2411);
+    Globals::Canvas->DrawRegion2D(this->progressBarImageId, 0, 0, width, this->progressBarHeight, 0.0f, 0, 0,
+                                  this->progressBarX, this->progressBarY);
+    Globals::Canvas->SetColor((unsigned int) -1);
+    Globals::Canvas->DrawImage2D(this->progressLabelImageId, this->centerX, this->progressBarY - 3, 0x11, 0x24);
 
     this->leftMarquee->draw();
     this->rightMarquee->draw();
     this->oreMarquee->draw((int) (this->posX + (float) this->oreIconOffsetX),
                            (int) (this->posY - (float) this->oreImageHeight));
 
-    canvas->DrawImage2D(this->oreLabelImageId,
-                        (int) ((this->posX + (float) this->oreIconOffsetX) - (float) layout->hudInset),
-                        (int) (this->posY - (float) layout->oreLabelYOffset));
+    Globals::Canvas->DrawImage2D(this->oreLabelImageId,
+                                 (int) ((this->posX + (float) this->oreIconOffsetX) - (float) Globals::layout->hudInset),
+                                 (int) (this->posY - (float) Globals::layout->oreLabelYOffset));
 
-    amountText->Set((long long) (int) this->oreAmount);
-    suffixText->ctor_char(g_MiningGame_oreSuffix, false);
-    *oreText = *amountText + *suffixText;
-    { String *_s = suffixText; if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-    { String *_s = amountText; if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
+    String oreText = String((int) this->oreAmount) + String("t", false);
 
-    void *ship = MiningGame_Status_getShip_render(*g_MiningGame_statusRender);
-    int freeSpace = MiningGame_Ship_getFreeSpace(ship);
-    int alpha = (int) (this->textAlpha * 255.0f);
+    int freeSpace = Globals::status->getShip()->getFreeSpace();
+    uint32_t alpha = (uint32_t) (this->textAlpha * 255.0f);
     if (freeSpace < (int) this->oreAmount) {
-        canvas->SetColor((unsigned char) 0xff, (unsigned char) 0x2a, (unsigned char) 0, (unsigned char) alpha);
+        Globals::Canvas->SetColor(0xff, 0x2a, 0, alpha);
     } else {
-        canvas->SetColor((unsigned char) 0xff, (unsigned char) 0xff, (unsigned char) 0xff, (unsigned char) alpha);
+        Globals::Canvas->SetColor(0xff, 0xff, 0xff, alpha);
     }
 
-    String *font = (String *) *g_MiningGame_fontString;
-    int textWidth = canvas->GetTextWidth((unsigned int) (long) font, *oreText);
+    int textWidth = Globals::Canvas->GetTextWidth(Globals::font, oreText);
     int textX = (int) (((this->posX + (float) this->oreIconOffsetX + (float) this->oreIconOffsetY) -
-                        (float) layout->hudInset) -
-                       (float) (textWidth / 2));
-    int textY = (int) (this->posY + (float) layout->oreTextYOffset);
-    canvas->DrawString((unsigned int) (long) font, *oreText, textX, textY, false);
-    canvas->SetColor((unsigned int) -1);
+                        (float) Globals::layout->hudInset) -
+                       (float) (textWidth >> 1));
+    int textY = (int) (this->posY + (float) Globals::layout->oreTextYOffset);
+    Globals::Canvas->DrawString(Globals::font, oreText, textX, textY, false);
+    Globals::Canvas->SetColor((unsigned int) -1);
 
-    if (MiningGame_Status_getCurrentCampaignMission_render(*g_MiningGame_statusRender) < 5) {
-        int promptAlpha = (int) (((float) this->promptPulseTimer / 2500.0f) * 255.0f);
+    if (Globals::status->getCurrentCampaignMission() < 5) {
+        int promptAlpha = (int) (((float) this->promptPulseTimer / 1000.0f) * 255.0f);
         if (promptAlpha > 255) {
             promptAlpha = 255 - promptAlpha;
         }
-        canvas->SetColor((unsigned char) 0xff, (unsigned char) 0xff, (unsigned char) 0xff,
-                         (unsigned char) (uint8_t) promptAlpha);
-        String *prompt = MiningGame_GameText_getText(*g_MiningGame_gameText, 0x268);
-        amountText->Set((prompt)->data);
-        int promptWidth = canvas->GetTextWidth((unsigned int) (long) font, *amountText);
-        canvas->DrawString((unsigned int) (long) font, *amountText,
-                           *g_MiningGame_screenWRender / 2 - promptWidth / 2,
-                           layout->promptYOffset + this->progressBarY, false);
-        canvas->SetColor((unsigned int) -1);
-        { String *_s = amountText; if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
+        Globals::Canvas->SetColor(0xff, 0xff, 0xff, (uint8_t) promptAlpha);
+        String prompt(*Globals::gameText->getText(0x268), false);
+        int promptWidth = Globals::Canvas->GetTextWidth(Globals::font, prompt);
+        Globals::Canvas->DrawString(Globals::font, prompt,
+                                    Globals::w / 2 - promptWidth / 2,
+                                    Globals::layout->promptYOffset + this->progressBarY, false);
+        Globals::Canvas->SetColor((unsigned int) -1);
     }
-
-    { String *_s = oreText; if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
 }

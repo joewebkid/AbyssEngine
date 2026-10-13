@@ -31,9 +31,11 @@ The no-equipment path leaves `controlDivisor` unset in both the
 recovered source and Android decompilation; whether that path can be
 reached in a real game session is not established. The constructor
 smoke uses service doubles, not original game assets or ARM32 runtime.
-`render2D` retains unassigned service holders; the full native mining
-sequence remains untested. That rendering path and the status-loss /
-achievement branches are the next priorities.
+At this checkpoint `render2D` retained unassigned service holders;
+its later recovery is documented in
+[the rendering audit](MINING_RENDER_ARM_2026-10-14.md). The full
+native mining sequence and status-loss/achievement branches remain
+untested.
 
 The full ARM corpus has 4,718 comparisons and 4,323/4,524 original
 functions covered (201 missing). Average source-shape rises from

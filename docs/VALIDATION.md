@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## MiningGame render2D service and call recovery (2026-10-14)
+
+Focused `render2D` source-shape rises 25.6% to 97.4% and strict
+fuzzy 14.5% to 78.9% (454 generated versus 464 target instructions),
+without an exact match. Its production-method host smoke checks
+ring/image flags, warning colors, ore and prompt text and positions,
+and the no-prompt path. The constructor/layer/update smokes, native
+`gof2`, all 206 ARM units and 37 verifier tests pass (one skipped).
+Full corpus: 4,323/4,524 covered, 93.08% average source-shape,
+81.50% strict fuzzy, 2,403 linked-exact and 1,008 byte-exact; exact
+and 123-symbol extra sets are unchanged.
+Game-asset visuals, status-loss/medal paths and ARM32 runtime remain
+untested. See [the evidence](MINING_RENDER_ARM_2026-10-14.md).
+
 ## MiningGame constructor service and image bindings (2026-10-14)
 
 Focused C1/C2 source-shape rises 1.3% to 99.1%, strict fuzzy 0.6%

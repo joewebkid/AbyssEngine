@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (MiningGame constructor; older subsystem
+Last reviewed: 2026-10-14 (MiningGame render2D; older subsystem
 snapshots retain their dates)
+
+## MiningGame render2D service and call recovery (2026-10-14)
+
+`MiningGame::render2D` now uses the Android-backed `Globals`
+services and `LAYER_DIAMETERS` instead of unassigned holders. The
+canvas calls use their original separate image alignment/placement
+flags, the ore suffix is `"t"`, the font is the numeric
+`Globals::font`, and the campaign prompt uses the original 1,000-tick
+pulse divisor. Focused source-shape rises 25.6% to 97.4%, strict
+fuzzy 14.5% to 78.9%; it is not exact. The production-method host
+smoke, previous MiningGame smokes, native `gof2`, all 206 ARM units
+and 37 verifier tests pass (one skipped). This validates call
+parameters, not visual output with game assets or ARM32 runtime.
+Full corpus coverage remains 4,323/4,524; average source-shape rises
+93.06% to 93.08% and strict fuzzy 81.48% to 81.50%. All 2,403
+linked-exact and 1,008 byte-exact pairs and 123 extra symbols are
+unchanged. The source now has no local null service holders, but a
+complete native mining sequence is untested.
+Next: test a complete mining sequence and the status-loss/medal
+branches, then audit teardown ownership. See
+[the rendering audit](MINING_RENDER_ARM_2026-10-14.md).
 
 ## MiningGame constructor service and image bindings (2026-10-14)
 
@@ -18,8 +39,9 @@ its reachability is unknown. ARM32 runtime and full mining sequence
 are untested. Full corpus coverage remains 4,323/4,524; average
 source-shape rises 93.02% to 93.06% and strict fuzzy 81.45% to
 81.48%. All 2,403 linked-exact and 1,008 byte-exact pairs and 123
-extra symbols are unchanged. Next: restore `render2D`'s unassigned
-service routes. See [the constructor audit](MINING_CONSTRUCTOR_ARM_2026-10-14.md).
+extra symbols are unchanged. At that checkpoint, the next step was
+`render2D` (subsequently covered above). See
+[the constructor audit](MINING_CONSTRUCTOR_ARM_2026-10-14.md).
 
 ## MiningGame update and layer speeds (2026-10-14)
 
