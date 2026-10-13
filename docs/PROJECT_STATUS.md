@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (mesh release dispatch; older subsystem
+Last reviewed: 2026-10-13 (transform keyframe ownership; older subsystem
 snapshots retain their dates)
+
+## Transform keyframe ownership (2026-10-13)
+
+`Transform::~Transform` now uses the Android-backed
+`ArrayReleaseClasses<KeyFrame *>` path for owned keyframes, instead
+of reallocating their array immediately before member destruction.
+Both destructor variants rise from 55.0% source-shape / 43.1%
+strict fuzzy to 100.0% / 100.0% and become linked-exact. Native
+`gof2`, 206/206 ARM units, 37 verifier tests (one skipped), and an
+owned/shared/empty-frame host smoke pass. Full corpus: 4,718
+comparisons, 4,323/4,524 covered, 201 missing, 92.5979% average
+source-shape, 80.9287% strict fuzzy, 2,381 linked-exact, 1,008
+byte-exact; no prior exact rows lost. The third new linked-exact row
+is a second unit instance of the already-exact helper, not a third
+independent recovered behavior. Real animations and ARM32 runtime
+remain untested. Next audit the `Transform(Transform *)` clone and
+shared-keyframe lifetime. See [the destructor audit](TRANSFORM_DESTRUCTOR_ARM_2026-10-13.md).
 
 ## Mesh release dispatch (2026-10-13)
 

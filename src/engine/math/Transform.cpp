@@ -108,12 +108,8 @@ namespace AbyssEngine {
     }
 
     Transform::~Transform() {
-        if (this->keyFramesShared == false) {
-            for (KeyFrame *kf: this->keyFrames) {
-                delete kf;
-            }
-            ArrayRemoveAll(this->keyFrames);
-        }
+        if (this->keyFramesShared == false)
+            ArrayReleaseClasses(this->keyFrames);
     }
 
     void Transform::InitAnimationRangeInTime() {
