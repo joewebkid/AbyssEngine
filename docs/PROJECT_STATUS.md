@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (Layout constructor middle fields; older subsystem
+Last reviewed: 2026-10-14 (Layout constructor HUD fields; older subsystem
 snapshots retain their dates)
+
+## Layout constructor HUD initialization fields (2026-10-14)
+
+The eight `Layout+0x12c..+0x148` values copied by `Hud::init` now
+follow the Android iPad HD, N9, ordinary, Retina, iPad and iPad Large
+branches instead of the zero-fill placeholder. This restores the
+HUD's touch extents, analog-stick radius, radar inset, event margins
+and boost-text offset at construction. Focused C1/C2 source-shape
+rises 27.3% to 29.3%, strict fuzzy 5.7% to 7.6%; neither alias is
+exact. The six-profile production constructor smoke, native `gof2`,
+all 206 ARM units and 37 verifier tests pass (one skipped). Full corpus
+remains 4,323/4,524 covered at 92.98% average source-shape and
+81.41% strict fuzzy; all 2,403 linked-exact and 1,008 byte-exact
+pairs and the 123 extra-symbol set are unchanged. Original ARM32
+runtime and visual/interaction behavior remain untested. Next:
+recover the zero-filled MiningGame-dependent `Layout+0xd0..+0x104`
+block, especially the nonzero drift divisor and ring scale. See
+[the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
 
 ## Layout constructor consumer-backed middle fields (2026-10-14)
 

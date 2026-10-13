@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout constructor HUD initialization fields (2026-10-14)
+
+Focused C1/C2 source-shape rises 27.3% to 29.3% and strict fuzzy
+5.7% to 7.6%; neither alias is exact. The six-profile production
+constructor smoke, native `gof2`, all 206 ARM units, and 37 verifier
+tests pass (one skipped). Full corpus remains 4,323/4,524 covered at
+92.98% average source-shape, 81.41% strict fuzzy, 2,403 linked-exact,
+and 1,008 byte-exact; exact and extra-symbol sets have zero change.
+`Hud::init` copies these eight fields into touch, radar and event
+state; ARM32 runtime and visual/interaction behavior remain untested. See
+[the evidence](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
+
 ## Layout constructor consumer-backed middle fields (2026-10-14)
 
 The six-profile host smoke, native `gof2`, all 206 ARM translation

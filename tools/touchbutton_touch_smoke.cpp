@@ -222,6 +222,10 @@ int main() {
         assert(ordinary.field_0x90 == 0x3f266666 && ordinary.field_0x94 == 10);
         assert(ordinary.field_0x98 == 420);
         assert(ordinary.field_0x9c == 50);
+        assert(ordinary.field_0x12c == 15 && ordinary.field_0x130 == 40 &&
+               ordinary.field_0x134 == 80 && ordinary.field_0x138 == 35);
+        assert(ordinary.field_0x13c == 17 && ordinary.field_0x140 == 11 &&
+               ordinary.field_0x144 == 13 && ordinary.field_0x148 == 2);
         Globals::retinaDisplay = 1;
         Layout retina;
         assert(retina.field_0x4 == 30 && retina.field_0x58 == 486);
@@ -230,6 +234,10 @@ int main() {
         assert(retina.field_0x90 == 0x3ea66666 && retina.field_0x94 == 20);
         assert(retina.field_0x98 == 840);
         assert(retina.field_0x9c == 100);
+        assert(retina.field_0x12c == 30 && retina.field_0x130 == 80 &&
+               retina.field_0x134 == 160 && retina.field_0x138 == 70);
+        assert(retina.field_0x13c == 34 && retina.field_0x140 == 22 &&
+               retina.field_0x144 == 26 && retina.field_0x148 == 4);
         Globals::retinaDisplay = 0;
         Globals::n9 = 1;
         Layout n9;
@@ -239,6 +247,10 @@ int main() {
         assert(n9.field_0x90 == 0x3ea66666 && n9.field_0x94 == 15);
         assert(n9.field_0x98 == 630);
         assert(n9.field_0x9c == 75);
+        assert(n9.field_0x12c == 22 && n9.field_0x130 == 60 &&
+               n9.field_0x134 == 120 && n9.field_0x138 == 52);
+        assert(n9.field_0x13c == 25 && n9.field_0x140 == 19 &&
+               n9.field_0x144 == 19 && n9.field_0x148 == 19);
         Globals::n9 = 0;
         Globals::iPadHD = 1;
         Layout ipadHd;
@@ -248,17 +260,29 @@ int main() {
         assert(ipadHd.field_0x90 == 1055696996 && ipadHd.field_0x94 == 14);
         assert(ipadHd.field_0x98 == 590);
         assert(ipadHd.field_0x9c == 70);
+        assert(ipadHd.field_0x12c == 21 && ipadHd.field_0x130 == 78 &&
+               ipadHd.field_0x134 == 151 && ipadHd.field_0x138 == 66);
+        assert(ipadHd.field_0x13c == 23 && ipadHd.field_0x140 == 15 &&
+               ipadHd.field_0x144 == 18 && ipadHd.field_0x148 == 2);
         Globals::iPadHD = 0;
         Globals::iPad = 1;
         Layout ipad;
         assert(ipad.rewardBoxWidth == 100 && ipad.field_0x2f4 == 80);
         assert(ipad.field_0x2f8 == 1128792064 && ipad.helpWindowY == 144);
         assert(ipad.field_0x70_rowHeight == 45 && ipad.field_0x90 == 0x3ea66666);
+        assert(ipad.field_0x12c == 15 && ipad.field_0x130 == 56 &&
+               ipad.field_0x134 == 108 && ipad.field_0x138 == 47);
+        assert(ipad.field_0x13c == 17 && ipad.field_0x140 == 11 &&
+               ipad.field_0x144 == 13 && ipad.field_0x148 == 2);
         Globals::iPadLarge = 1;
         Layout ipadLarge;
         assert(ipadLarge.rewardBoxWidth == 200 && ipadLarge.field_0x2f4 == 160);
         assert(ipadLarge.field_0x2f8 == 1137180672 && ipadLarge.helpWindowY == 288);
         assert(ipadLarge.field_0x70_rowHeight == 90 && ipadLarge.field_0x90 == 0x3ea66666);
+        assert(ipadLarge.field_0x12c == 15 && ipadLarge.field_0x130 == 112 &&
+               ipadLarge.field_0x134 == 216 && ipadLarge.field_0x138 == 94);
+        assert(ipadLarge.field_0x13c == 17 && ipadLarge.field_0x140 == 11 &&
+               ipadLarge.field_0x144 == 13 && ipadLarge.field_0x148 == 2);
         Globals::iPadLarge = 0;
         Globals::iPad = 0;
     }

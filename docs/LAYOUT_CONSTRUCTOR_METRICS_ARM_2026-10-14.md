@@ -80,8 +80,42 @@ losses or gains and no change in the extra-symbol set. The aggregate
 source percentage is unchanged after rounding despite the constructor
 improvement.
 
-Next: recover the remaining `+0x5c..+0x2d8` metrics in bounded,
-consumer-backed groups, confirm ambiguous platform values from ARM,
+## HUD initialization metrics (follow-up)
+
+`Hud::init` copies all eight `Layout+0x12c..+0x148` words into its
+boost text, touch-zone, analog-stick, radar, and event-line state.
+Before this pass the constructor's zero-fill left all eight at zero.
+Android IDA lines 128030–128053 contain the iPad HD packed writes;
+128464–128469 contain the N9 writes; 128583–128630 contain the
+ordinary branches and the final 128-bit selection for the last four
+fields. The table is decoded as little-endian 32-bit words, not as
+64-bit scalar values.
+
+| Profile | `+12c` | `+130` | `+134` | `+138` | `+13c` | `+140` | `+144` | `+148` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| ordinary low | 15 | 40 | 80 | 35 | 17 | 11 | 13 | 2 |
+| ordinary Retina | 30 | 80 | 160 | 70 | 34 | 22 | 26 | 4 |
+| iPad low | 15 | 56 | 108 | 47 | 17 | 11 | 13 | 2 |
+| iPad Large low | 15 | 112 | 216 | 94 | 17 | 11 | 13 | 2 |
+| N9 | 22 | 60 | 120 | 52 | 25 | 19 | 19 | 19 |
+| iPad HD | 21 | 78 | 151 | 66 | 23 | 15 | 18 | 2 |
+
+The production constructor smoke asserts every value in these six
+profiles. Native `gof2`, 206 ARM units, and 37 verifier tests pass
+(one skipped). Focused C1/C2 source-shape rises 27.3% to 29.3%,
+strict fuzzy 5.7% to 7.6%, and generated size 630 to 732 versus
+2,225 target instructions. Neither constructor alias is exact.
+
+The full corpus remains 4,323/4,524 covered over 4,718 comparisons,
+with 201 missing, 92.98% average source-shape, 81.41% strict fuzzy,
+2,403 linked-exact, 1,008 byte-exact, and 123 extra symbols. The
+complete exact-pair and extra-symbol sets match the preceding report:
+zero losses and zero gains. The aggregate shape percentage is
+unchanged after rounding despite the focused gain.
+
+Next: recover the zero-filled `+0xd0..+0x104` MiningGame metrics,
+especially its drift divisor and ring scale, then the remaining
+`+0x5c..+0x2d8` groups. Confirm ambiguous platform values from ARM,
 then validate layout behavior on-device or with a faithful ARM32
 runtime. Re-run the full corpus and compare exact and extra-symbol
 sets before accepting each group.

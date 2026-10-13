@@ -250,6 +250,28 @@ Layout::Layout() {
     this->field_0x98 = hd ? 590 : n9 ? 630 : retina ? 840 : 420;
     this->field_0x9c = hd ? 70 : n9 ? 75 : retina ? 100 : 50;
 
+    // Hud::init copies these eight constructor metrics into its touch and display state.
+    if (hd) {
+        this->field_0x12c = 21;  this->field_0x130 = 78;
+        this->field_0x134 = 151; this->field_0x138 = 66;
+        this->field_0x13c = 23;  this->field_0x140 = 15;
+        this->field_0x144 = 18;  this->field_0x148 = 2;
+    } else if (n9) {
+        this->field_0x12c = 22;  this->field_0x130 = 60;
+        this->field_0x134 = 120; this->field_0x138 = 52;
+        this->field_0x13c = 25;  this->field_0x140 = 19;
+        this->field_0x144 = 19;  this->field_0x148 = 19;
+    } else {
+        this->field_0x12c = retina ? 30 : 15;
+        this->field_0x130 = ipadLarge ? 112 : retina ? 80 : ipad ? 56 : 40;
+        this->field_0x134 = ipadLarge ? 216 : retina ? 160 : ipad ? 108 : 80;
+        this->field_0x138 = ipadLarge ? 94 : retina ? 70 : ipad ? 47 : 35;
+        this->field_0x13c = retina ? 34 : 17;
+        this->field_0x140 = retina ? 22 : 11;
+        this->field_0x144 = retina ? 26 : 13;
+        this->field_0x148 = retina ? 4 : 2;
+    }
+
     // Android Layout::Layout @ 0x000d1028. ListItemWindow::draw uses these
     // two fields to place the ImageFactory item/ship Sprite in its title box.
     // Keep the platform branches explicit: they are direct constructor writes,
