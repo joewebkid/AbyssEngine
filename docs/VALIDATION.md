@@ -208,6 +208,15 @@ medals and help; it does not use the original assets or full `Array` ABI.
 See [the touch-end audit](STATUSWINDOW_TOUCH_END_ARM_2026-10-13.md).
 
 ```powershell
+python tools/run_status_dtor_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `StatusWindow destructor host smoke: OK`. This runs
+the production destructor with tracked fixture objects and arrays; it
+does not test the original ARM32 allocator. See
+[the destructor audit](STATUSWINDOW_DTOR_ARM_2026-10-13.md).
+
+```powershell
 python tools/run_status_medal_hint_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
 ```
 

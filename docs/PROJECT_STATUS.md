@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (StatusWindow touch end; older subsystem
+Last reviewed: 2026-10-13 (StatusWindow destructor; older subsystem
 snapshots retain their dates)
+
+## StatusWindow destructor ownership (2026-10-13)
+
+The Android destructor releases the four owned arrays and destroys them
+without the local code's redundant `ArrayRemoveAll` calls. A
+production-destructor host smoke, the existing native ABI/lifetime smoke,
+native `gof2`, all 206 ARM units and 37 verifier tests pass (one
+skipped). Both destructor aliases rise from 86.6% to 100.0%
+source-shape and become linked-exact, but not byte-exact. The full
+corpus covers 4,323/4,524 originals with 4,719 comparisons, 92.85%
+average source-shape, 81.23% strict fuzzy, 2,397 linked-exact and 1,008
+byte-exact. No old exact symbols are lost; the one fewer comparison is
+an unused non-exact template instantiation in this unit, not a coverage
+loss. ARM32 runtime remains unverified. Next priority: bounded
+`StatusWindow::draw` recovery. See [the destructor audit](STATUSWINDOW_DTOR_ARM_2026-10-13.md).
 
 ## StatusWindow touch-end cleanup (2026-10-13)
 
