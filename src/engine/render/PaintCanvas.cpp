@@ -691,13 +691,9 @@ static inline void tcg_glBindTexture(unsigned target, unsigned tex) { glBindText
 
 int paintcanvas_ext_ss2_sscreate(void *eng, unsigned short id, bool b, void **out);
 
-void paintcanvas_ext_gsp_vec_assign(void *dst, void *src);
-
 static inline int paintcanvas_ext_gsp_getwidth(void *self) { return ((PaintCanvas *) self)->GetWidth(); }
 
 static inline int paintcanvas_ext_gsp_getheight(void *self) { return ((PaintCanvas *) self)->GetHeight(); }
-
-float paintcanvas_ext_gsp_signedtofloat(int v, unsigned int mode);
 
 int paintcanvas_ext_sscreate(void *eng, unsigned short id, bool b, void **out);
 
@@ -2841,58 +2837,51 @@ void PaintCanvas::SpriteSystemCreate(unsigned short resId, bool flag,
     out = result;
 }
 
-void PaintCanvas::GetScreenPosition(const AbyssEngine::AEMath::Matrix &srcMatrix,
+bool PaintCanvas::GetScreenPosition(const AbyssEngine::AEMath::Matrix &srcMatrix,
                                     AbyssEngine::AEMath::Vector &outVec) {
     if (this->currentCamera >= this->cameras.count) {
-        return;
+        return false;
     }
 
-    float src[3];
-    src[0] = srcMatrix.m[3];
-    src[1] = srcMatrix.m[7];
-    src[2] = srcMatrix.m[11];
-    paintcanvas_ext_gsp_vec_assign(&outVec, src);
+    Vector src = {srcMatrix.m[3], srcMatrix.m[7], srcMatrix.m[11]};
+    outVec = src;
 
     PCCameraView *cam = (PCCameraView *) ((char **) this->cameras.data_)[this->currentCamera];
     float z = outVec[2];
     float denomX = cam->factor4c * z;
     if (denomX == 0.0f) {
-        return;
+        return false;
     }
     float denomY = z * cam->factor48;
-    if (denomY == 0.0f) {
-        return;
-    }
 
     float px = outVec[0];
     int w0 = paintcanvas_ext_gsp_getwidth(this);
     int w1 = paintcanvas_ext_gsp_getwidth(this);
-    double fw = (double) paintcanvas_ext_gsp_signedtofloat(w0, 0);
+    double fw = (double) w0;
     double termY = ((double) outVec[1] * 0.5) / (double) denomY;
-    double halfW = (double) paintcanvas_ext_gsp_signedtofloat(w1 >> 1, 0);
+    double halfW = (double) (w1 >> 1);
     outVec[0] = (float) (halfW - (((double) px * 0.5) / (double) denomX) * fw);
 
     int h0 = paintcanvas_ext_gsp_getheight(this);
-    double fh = (double) paintcanvas_ext_gsp_signedtofloat(h0, 0);
+    double fh = (double) h0;
     int h1 = paintcanvas_ext_gsp_getheight(this);
-    double halfH = (double) paintcanvas_ext_gsp_signedtofloat(h1 >> 1, 0);
+    double halfH = (double) (h1 >> 1);
     outVec[1] = (float) (halfH + termY * fh);
 
     PCCameraView *cam2 = (PCCameraView *) ((char **) this->cameras.data_)[this->currentCamera];
-    if (outVec[2] <= cam2->param1) {
-        float fy = outVec[1];
-        if (fy >= 0.0f) {
-            float fx = outVec[0];
-            if (fx >= 0.0f) {
-                int ww = paintcanvas_ext_gsp_getwidth(this);
-                float fww = paintcanvas_ext_gsp_signedtofloat(ww, 0);
-                if (fx < fww) {
-                    int hh = paintcanvas_ext_gsp_getheight(this);
-                    paintcanvas_ext_gsp_signedtofloat(hh, 0);
-                }
-            }
+    if (outVec[2] > cam2->param1) {
+        return false;
+    }
+    if (outVec[1] >= 0.0f) {
+        int ww = paintcanvas_ext_gsp_getwidth(this);
+        float fww = (float) ww;
+        if (outVec[0] < fww) {
+            int hh = paintcanvas_ext_gsp_getheight(this);
+            float fhh = (float) hh;
+            return outVec[1] < fhh;
         }
     }
+    return false;
 }
 
 

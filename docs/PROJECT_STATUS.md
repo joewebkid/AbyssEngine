@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (MaterialCreate overloads; older subsystem
+Last reviewed: 2026-10-13 (matrix screen projection; older subsystem
 snapshots retain their dates)
+
+## Matrix screen projection (2026-10-13)
+
+`PaintCanvas::GetScreenPosition(const Matrix &, Vector &)` now returns
+the ARM-confirmed visibility flag, uses real vector assignment and
+numeric casts, and removes two non-original projection guards. Its
+focused source-shape rises 64.8% to 71.5%; strict fuzzy falls 30.7%
+to 27.5%, so it is not exact. Native `gof2`, 206/206 ARM units, and
+36 verifier tests pass (one skipped). The full corpus remains
+4,323/4,524 covered and 201 missing. Average source-shape rises
+92.5558% to 92.5573%, strict fuzzy falls 80.8509% to 80.8502%,
+and the 2,378 linked-exact and 1,008 byte-exact symbol sets have no
+losses. Real-camera/ARM runtime behavior is untested. Next audit the
+other matrix/world-vector `GetScreenPosition` overload. See
+[the screen-projection audit](GET_SCREEN_POSITION_MATRIX_ARM_2026-10-13.md).
 
 ## MaterialCreate overloads (2026-10-13)
 
