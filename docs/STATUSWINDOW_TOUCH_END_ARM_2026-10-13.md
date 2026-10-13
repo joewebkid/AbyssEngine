@@ -38,3 +38,38 @@ behavioral verification. Next priority: recover the separate
 `getMedalHintText` game-text binding and then exercise medal selection with
 a focused host fixture. That method and other `StatusWindow` draw helpers
 still have independent unresolved bindings and were not changed.
+
+## Follow-up: achievements service and detail-array lifetime
+
+When a medal is selected, Android obtains medal state through
+`Globals::achievements`. The local method instead used the duplicate
+`Achievements::gAchievements` holder. Android also releases the old
+detail strings, destroys their array, clears the field and creates a new
+array. The local method called `ArrayRemoveAll` after
+`ArrayReleaseClasses`, redundantly allocating fresh storage between
+release and destruction. The replacement uses the primary global service
+and removes that extra step. Tab selection, locked/elite medal handling,
+scroll inertia and help-window IDs remain unchanged.
+
+A production-method host smoke checks layout interception, phone/iPad
+tab handling, repeated and locked/elite medal selection, detail text,
+scroll state and both help IDs. Its strings, buttons and array are fixture
+services; it does not test the original assets or full `Array` ABI.
+Native `gof2`, all 206 ARM translation units and 37 verifier tests pass
+(one skipped). Focused source-shape rises 89.5% to 90.1%; strict fuzzy
+rises 48.4% to 48.7%. The method remains non-exact, with 319 local
+versus 293 original ARM instructions. The 22-row `StatusWindow` family
+remains 96.0% source-shape and 77.7% strict fuzzy at report precision,
+with seven linked-exact and one byte-exact symbol.
+
+The full ARM corpus has 4,720 comparisons, 4,323/4,524 original
+functions covered, 201 missing, 92.85% average source-shape and 81.23%
+strict fuzzy at report precision, 2,395 linked-exact and 1,008
+byte-exact. Complete `(unit,symbol)` exact-set comparisons against the
+constructor package show no gains or losses; the 123 extra-symbol set
+is unchanged. The report is
+`A:/Galaxy on Fire new version/_work/status_touch_end_full_20261013.json`.
+Full UI interaction, actual array ownership under ARM32 and asset-backed
+rendering remain unverified. Next priority: the `StatusWindow` scroll
+geometry helpers, starting with `getRelativeScrollHeight` (84.8%
+source-shape), followed by the remaining non-exact draw blocks.

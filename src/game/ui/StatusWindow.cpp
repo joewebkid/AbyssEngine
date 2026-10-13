@@ -109,7 +109,7 @@ int StatusWindow::OnTouchEnd(int x, int y) {
     if (this->activeTab == 1) {
         for (int i = 0; i < this->medalCount; i++) {
             if ((*this->medalButtons)[i]->OnTouchEnd(x, y) != 0) {
-                Achievements *ach = Achievements::gAchievements;
+                Achievements *ach = static_cast<Achievements *>(Globals::achievements);
                 int *medals = ach->getMedals();
                 int elite = ach->isEliteMedal(i);
                 if (elite != 0 || medals[i] != 0) {
@@ -119,9 +119,10 @@ int StatusWindow::OnTouchEnd(int x, int y) {
                     this->selectedMedal = i;
 
                     if (this->detailLines != 0) {
-                        ArrayReleaseClasses(*this->detailLines); ArrayRemoveAll(*(this->detailLines));
+                        ArrayReleaseClasses(*this->detailLines);
                         delete this->detailLines;
                     }
+                    this->detailLines = nullptr;
                     this->detailLines = new Array<String *>();
 
                     int count = (elite == 0) ? medals[this->selectedMedal] : 1;

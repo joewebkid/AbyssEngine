@@ -199,6 +199,15 @@ medals, images and dimensions; it does not load original assets or run
 on ARM32. See [the constructor audit](STATUSWINDOW_CTOR_GLOBALS_ARM_2026-10-13.md).
 
 ```powershell
+python tools/run_status_touch_end_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `StatusWindow touch-end host smoke: OK`. This runs the
+production touch-end method with fixture services for scroll, tabs,
+medals and help; it does not use the original assets or full `Array` ABI.
+See [the touch-end audit](STATUSWINDOW_TOUCH_END_ARM_2026-10-13.md).
+
+```powershell
 python tools/run_status_medal_hint_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
 ```
 

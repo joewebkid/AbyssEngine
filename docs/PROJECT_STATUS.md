@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (StatusWindow constructor; older subsystem
+Last reviewed: 2026-10-13 (StatusWindow touch end; older subsystem
 snapshots retain their dates)
+
+## StatusWindow touch-end cleanup (2026-10-13)
+
+Medal selection now reads the Android-backed achievements service and
+replaces detail strings without an extra array reallocation after release.
+A production-method host smoke covers scroll state, phone/iPad tabs,
+locked and elite medals, detail text and help IDs. Native `gof2`, all
+206 ARM units and 37 verifier tests pass (one skipped). `OnTouchEnd`
+source-shape rises 89.5% to 90.1%, strict fuzzy 48.4% to 48.7%; it is
+not exact. Full corpus remains 4,323/4,524 covered, 92.85% average
+source-shape, 81.23% strict fuzzy, 2,395 linked-exact and 1,008
+byte-exact, with no exact-set loss or extra-symbol change. ARM32 runtime
+and real assets remain unverified. Next priority: scroll geometry helpers.
+See [the touch-end audit](STATUSWINDOW_TOUCH_END_ARM_2026-10-13.md).
 
 ## StatusWindow constructor service bindings (2026-10-13)
 
