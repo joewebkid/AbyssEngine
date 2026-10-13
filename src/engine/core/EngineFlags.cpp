@@ -10,5 +10,4 @@ namespace AbyssEngine {
     char *g_SpriteSystem_tangentFlag;
     char *g_SpriteSystem_uvFlipFlag;
 
-    void (*g_MeshRelease_freeFn)(AbyssEngine::Engine *, AbyssEngine::Mesh **);
 }

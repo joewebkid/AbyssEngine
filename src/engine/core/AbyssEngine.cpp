@@ -68,7 +68,6 @@ namespace AbyssEngine {
     extern char *g_MeshIntersect_flipVFlag;
     extern char *g_SpriteSystem_tangentFlag;
     extern char *g_SpriteSystem_uvFlipFlag;
-    extern void (*g_MeshRelease_freeFn)(AbyssEngine::Engine *, AbyssEngine::Mesh **);
 
     // ImageFont, SpriteSystem, Curve, Image, AELoadedTexture are defined in
     // AbyssEngine.h (layouts recovered from the original disassembly).
@@ -1125,13 +1124,12 @@ namespace AbyssEngine {
 
 namespace AbyssEngine {
     void TransformRelease(Engine * engine, Transform * *slot);
+    void MeshReleaseIntern(Engine *engine, Mesh **slot);
 
     void MeshRelease(Engine *engine, Mesh **slot) {
         if (engine != 0 && *slot != 0) {
             TransformRelease(engine, &(*slot)->animation);
-
-            typedef void (*FreeFn)(Engine *, Mesh **);
-            ((FreeFn) g_MeshRelease_freeFn)(engine, slot);
+            MeshReleaseIntern(engine, slot);
         }
     }
 }

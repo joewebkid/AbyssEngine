@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (sprite-system release dispatch; older subsystem
+Last reviewed: 2026-10-13 (mesh release dispatch; older subsystem
 snapshots retain their dates)
+
+## Mesh release dispatch (2026-10-13)
+
+`AbyssEngine::MeshRelease` now calls the typed `MeshReleaseIntern`
+after `TransformRelease`, as Android ARM at `0x6c362` does. The old
+zero-initialized, never-assigned function pointer could crash on any
+non-null release. Focused source-shape rises 72.0% to 98.3% and
+strict fuzzy 31.2% to 83.3%; the function is not exact. Native
+`gof2`, 206/206 ARM units, 37 verifier tests (one skipped), and an
+extracted-body host smoke pass. The full corpus stays at 4,717
+comparisons, 4,323/4,524 covered, and 201 missing. Average
+source-shape rises 92.5716% to 92.5772%, strict fuzzy 80.8895% to
+80.9006%, while the 2,378 linked-exact and 1,008 byte-exact symbol
+sets remain unchanged. Real GL, assets, and ARM32 runtime are
+untested. Next audit animated/shared mesh ownership and
+`TransformRelease`. See [the mesh-release audit](MESH_RELEASE_ARM_2026-10-13.md).
 
 ## Sprite-system resource release dispatch (2026-10-13)
 
