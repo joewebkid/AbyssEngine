@@ -10,6 +10,9 @@
 #include <cstddef>
 #include <cstdio>
 
+// ARM MeshCloneMaterial calls the specialization defined in Array.cpp.
+extern template void ArrayAdd<AbyssEngine::Material *>(AbyssEngine::Material *, Array<AbyssEngine::Material *> &);
+
 namespace AbyssEngine {
     class SpriteSystem;
     class ImageFont;
@@ -659,8 +662,6 @@ void paintcanvas_ext_cam_persp4(float, float, float, float, float, void *);
 void paintcanvas_ext_cam_setcur(AbyssEngine::PaintCanvas *, unsigned int);
 
 void paintcanvas_ext_end3d(AbyssEngine::PaintCanvas *);
-
-void paintcanvas_ext_material_clone(void *, void *);
 
 void paintcanvas_ext_material_add(void *, void *);
 
@@ -2625,17 +2626,14 @@ void PaintCanvas::End3d() {
 }
 
 void PaintCanvas::MeshCloneMaterial(unsigned int index, unsigned int &out) {
-    int result;
-    if (index < this->meshCount) {
-        char *obj = (char *) paintcanvas_ext_alloc(0x74);
-        PCMeshView *mesh = (PCMeshView *) (this->meshes)[index];
-        paintcanvas_ext_material_clone(obj, mesh->material);
-        paintcanvas_ext_material_add(obj, &this->materials);
-        result = (int) this->materials.count - 1;
-    } else {
-        result = -1;
+    if (index >= this->meshCount) {
+        out = 0xffffffff;
+        return;
     }
-    out = result;
+    Mesh *mesh = (Mesh *) this->meshes[index];
+    Material *copy = new Material((Material *) mesh->material);
+    ArrayAdd(copy, this->materials);
+    out = this->materials.count - 1;
 }
 
 void PaintCanvas::GetGravValue() {

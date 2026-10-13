@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (Material default ambient sentinel; older subsystem
+Last reviewed: 2026-10-13 (MeshCloneMaterial constructor/append path; older subsystem
 snapshots retain their dates)
+
+## MeshCloneMaterial constructor/append path (2026-10-13)
+
+Android ARM at `0x7a380` allocates a `Material`, constructs it from
+the mesh's material, appends it through `ArrayAdd<Material *>`, and
+writes the new index; invalid mesh indices return `0xffffffff`.
+The local method's three unresolved shims are replaced by these real
+paths. A production-body host smoke uses real `Material` and `Mesh`
+objects to check two copies, Array growth, copied fields, and the
+invalid-index branch. Native `gof2`, 206/206 ARM units, the Material
+lifecycle smoke, and 36 verifier tests pass (one skipped). Focused
+source-shape rises 82.2% to 96.8%, strict fuzzy 74.6% to 87.1%; the
+method is not exact. Full corpus stays 4,323/4,524 original functions
+covered, 201 missing, 2,378 linked-exact and 1,008 byte-exact,
+with unchanged exact symbol sets. Average source-shape rises 92.5438%
+to 92.5469%, strict fuzzy 80.8337% to 80.8364%. Nonzero `addData`
+clone ownership and full GL/ARM32 runtime remain untested. Next audit
+`PaintCanvas::MaterialCreate`'s remaining material-table shims. See
+[the clone audit](MESH_CLONE_MATERIAL_ARM_2026-10-13.md).
 
 ## Material default ambient sentinel (2026-10-13)
 

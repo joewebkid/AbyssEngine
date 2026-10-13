@@ -176,6 +176,16 @@ constructor fields, and two rounds of Array reuse, then removes its
 temporary executable. It does not execute a full GL frame or ARM32
 runtime. See [the ambient audit](MATERIAL_DEFAULT_AMBIENT_ARM_2026-10-13.md).
 
+```powershell
+python tools/run_mesh_clone_material_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `MeshCloneMaterial host smoke: OK`. This compiles
+the production clone method against a fixture canvas and real
+`Material`/`Mesh` objects, then removes the temporary executable. It
+checks two clones and the invalid-index path, not a full render frame
+or ARM32 runtime. See [the clone audit](MESH_CLONE_MATERIAL_ARM_2026-10-13.md).
+
 Windows note: the wrapper names are still `orbcc`, `orbnm`, `orbas`, and
 `orbobjdump`, but they now also support a local NDK r18b fallback. Set
 `GOF2_VERIFY_LOCAL_NDK=1` and keep the NDK at `.cache/ndk/android-ndk-r18b`, or
