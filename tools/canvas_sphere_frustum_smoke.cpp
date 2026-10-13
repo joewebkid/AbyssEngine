@@ -41,6 +41,16 @@ int CameraIsSphereinViewFrustum(const Vector &point, float radius,
     if (extra) rotation01 = extra->m[1];
     return 7;
 }
+static int pointCalls = 0;
+static bool pointHadRotation = false;
+static float pointRotation01 = 0.0f;
+int CameraIsPointinViewFrustum(const Vector &point, Matrix *extra, Camera *camera) {
+    ++pointCalls;
+    assert(&point == lastPoint && camera == lastCamera);
+    pointHadRotation = extra != nullptr;
+    if (extra) pointRotation01 = extra->m[1];
+    return 9;
+}
 struct PaintCanvas {
     unsigned char initialized;
     struct { unsigned count; Camera **data_; } cameras;
@@ -48,9 +58,11 @@ struct PaintCanvas {
     int gameOrientation;
     Engine *engine;
     int CameraIsSphereinViewFrustum(const Vector &point, float radius);
+    int CameraIsPointinViewFrustum(const Vector &point);
 };
 
 // PRODUCTION_METHOD
+// PRODUCTION_POINT_METHOD
 }
 
 int main() {
@@ -74,5 +86,19 @@ int main() {
     canvas.gameOrientation = 0;
     assert(canvas.CameraIsSphereinViewFrustum(point, 2.0f) == 7);
     assert(calls == 3 && rotation01 > 0.70f && rotation01 < 0.72f);
-    std::puts("PaintCanvas sphere frustum smoke: OK");
+    canvas.currentCamera = 1;
+    assert(canvas.CameraIsPointinViewFrustum(point) == 1 && pointCalls == 0);
+    canvas.currentCamera = 0;
+    canvas.initialized = 0;
+    assert(canvas.CameraIsPointinViewFrustum(point) == 9);
+    assert(pointCalls == 1 && !pointHadRotation && engine.reads == 2);
+    canvas.initialized = 1;
+    canvas.gameOrientation = 1;
+    assert(canvas.CameraIsPointinViewFrustum(point) == 9);
+    assert(pointCalls == 2 && pointHadRotation && engine.reads == 3);
+    assert(pointRotation01 < -0.70f && pointRotation01 > -0.72f);
+    canvas.gameOrientation = 0;
+    assert(canvas.CameraIsPointinViewFrustum(point) == 9);
+    assert(pointCalls == 3 && pointRotation01 > 0.70f && pointRotation01 < 0.72f);
+    std::puts("PaintCanvas frustum wrappers smoke: OK");
 }

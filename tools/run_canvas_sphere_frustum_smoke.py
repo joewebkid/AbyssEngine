@@ -1,4 +1,4 @@
-"""Compile the production PaintCanvas sphere-frustum wrapper with fixture services."""
+"""Compile the production PaintCanvas frustum wrappers with fixture services."""
 
 import argparse
 from pathlib import Path
@@ -23,6 +23,8 @@ def main():
     fixture = (ROOT / "tools/canvas_sphere_frustum_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_METHOD", function(
         source, "int PaintCanvas::CameraIsSphereinViewFrustum("))
+    fixture = fixture.replace("// PRODUCTION_POINT_METHOD", function(
+        source, "int PaintCanvas::CameraIsPointinViewFrustum("))
     with tempfile.TemporaryDirectory(prefix="canvas-sphere-smoke-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "canvas_sphere_frustum_smoke.cpp"
         generated.write_text(fixture)

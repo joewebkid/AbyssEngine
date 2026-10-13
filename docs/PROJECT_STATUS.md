@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (sphere-frustum wrapper; older subsystem
+Last reviewed: 2026-10-13 (point-frustum wrapper; older subsystem
 snapshots retain their dates)
+
+## Point-frustum canvas wrapper (2026-10-13)
+
+`PaintCanvas::CameraIsPointinViewFrustum` now preserves the Android
+null-extra-matrix call when uninitialized and passes the recovered
+gravity/orientation rotation when initialized. Focused source-shape
+rises 86.0% to 100.0% and strict fuzzy 50.3% to 100.0%, but it is
+not linked- or byte-exact. Native `gof2`, 206/206 ARM units, the
+extended extracted-body frustum smoke, and 36 verifier tests pass
+(one skipped). Full coverage stays 4,323/4,524; average source-shape
+rises 92.5600% to 92.5630%, strict fuzzy 80.8612% to 80.8717%,
+and 100%-fuzzy functions increase from 2,527 to 2,528. The 2,378
+linked-exact and 1,008 byte-exact symbol sets have no losses. Real
+camera geometry and ARM32 runtime remain untested. Next audit the
+canvas `DrawTransform` gravity path. See
+[the point-frustum audit](PAINTCANVAS_POINT_FRUSTUM_ARM_2026-10-13.md).
 
 ## Sphere-frustum canvas wrapper (2026-10-13)
 
