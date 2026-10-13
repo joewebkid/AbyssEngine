@@ -39,9 +39,6 @@ jobject g_pActivity;
 static char *g_apkPath;
 static char *g_zipPath;
 
-static float g_gamepadAxisX;
-static float g_gamepadAxisY;
-
 extern "C" void ndk_checkPlaytimeAndSpendOfferwallCredits();
 
 extern "C" void ndk23_InitWithZip(const char *apkPath, const char *zipPath,
@@ -509,8 +506,8 @@ bool SpeedUp() {
 }
 
 void setValuesForGamepad(float x, float y) {
-    g_gamepadAxisX = x;
-    g_gamepadAxisY = y;
+    g_stick.savedX = x;
+    g_stick.savedY = y;
 }
 
 extern "C" jboolean Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getDLC1BOUGHT(

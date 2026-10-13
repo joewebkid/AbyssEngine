@@ -19,6 +19,11 @@ using AbyssEngine::AEMath::VectorSignedToFloat;
 
 bool g_virtualInputSlowMotion;
 bool g_virtualInputSpeedUp;
+SoftwareStick g_stick = {1, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
+
+static_assert(sizeof(SoftwareStick) == 28, "Android software-stick layout");
+static_assert(offsetof(SoftwareStick, savedX) == 20, "Android gamepad X slot");
+static_assert(offsetof(SoftwareStick, savedY) == 24, "Android gamepad Y slot");
 
 struct VirtualKey {
         char name[0x14];
@@ -161,19 +166,6 @@ namespace {
     int g_comboProgress;
 
     int g_mousePointerLatch = 1;
-
-    struct SoftwareStick {
-        float inputX;
-        float inputY;
-        float easedX;
-        float easedY;
-        float savedX;
-        float savedY;
-    };
-
-    SoftwareStick g_stick = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
-
-    int g_useJoystick;
 
     int g_simEdgesInit;
 
@@ -752,7 +744,7 @@ void simulateTouch(AbyssEngine::Engine *engine) {
         if (ey > 1.0f) g_stick.easedY = 1.0f;
     }
 
-    if (g_useJoystick != 0) {
+    if (g_stick.useJoystick != 0) {
         g_stick.easedX = g_stick.savedX;
         g_stick.easedY = g_stick.savedY;
     }

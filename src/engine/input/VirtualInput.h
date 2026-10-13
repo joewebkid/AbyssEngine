@@ -10,6 +10,18 @@ namespace AbyssEngine {
 extern bool g_virtualInputSlowMotion;
 extern bool g_virtualInputSpeedUp;
 
+struct SoftwareStick {
+    int useJoystick;
+    float inputX;
+    float inputY;
+    float easedX;
+    float easedY;
+    float savedX;
+    float savedY;
+};
+
+extern SoftwareStick g_stick __attribute__((visibility("hidden")));
+
 extern "C" unsigned int F(unsigned int value);
 
 int GetKeyState(char *name);

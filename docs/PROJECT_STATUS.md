@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (virtual-key table; older subsystem
+Last reviewed: 2026-10-13 (gamepad software-stick bridge; older subsystem
 snapshots retain their dates)
+
+## Gamepad software-stick bridge (2026-10-13)
+
+The Android `setValuesForGamepad` writes the saved pair in a 28-byte
+software-stick block whose initialized data begins with an enabled joystick
+flag and six centered floats. The local setter previously wrote disconnected
+private floats while its joystick flag started at zero. The shared block now
+matches all 28 original initializer bytes, and the setter becomes 100%
+source-shape/strict-fuzzy and linked-exact. Native `gof2`, all 206 ARM
+translation units, and 37 verifier tests pass (one skipped). Full corpus
+stays 4,323/4,524 covered and 1,008 byte-exact; average source-shape rises
+92.79% to 92.80%, strict fuzzy 81.18% to 81.20%, and linked-exact 2,394 to
+2,395, with no old exact losses. Hardware steering and the large
+`simulateTouch` body remain unverified. See
+[the gamepad audit](GAMEPAD_SOFTWARE_STICK_ARM_2026-10-13.md).
 
 ## Initialized virtual-key table (2026-10-13)
 
@@ -15,9 +30,10 @@ Native `gof2`, 206/206 ARM translation units, and 37 verifier tests pass
 (one skipped). Full corpus stays 4,323/4,524 covered, 201 missing,
 92.79% average source-shape at report precision, and 1,008 byte-exact;
 strict fuzzy rises 81.17% to 81.18%, linked-exact 2,389 to 2,394,
-with no previously exact losses. Device-level key input is still untested,
-and `setValuesForGamepad` remains disconnected from `simulateTouch`.
-See [the table audit](VIRTUAL_KEY_TABLE_ARM_2026-10-13.md).
+with no previously exact losses. Device-level key input is still untested.
+The later gamepad bridge recovery above connects `setValuesForGamepad` to
+`simulateTouch`; hardware behavior remains untested. See
+[the table audit](VIRTUAL_KEY_TABLE_ARM_2026-10-13.md).
 
 ## Virtual key dispatch and shared flags (2026-10-13)
 
