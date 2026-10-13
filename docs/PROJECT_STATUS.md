@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (hardcore difficulty route; older subsystem
+Last reviewed: 2026-10-14 (Ship cargo-add handoff; older subsystem
 snapshots retain their dates)
+
+## Ship cargo-add handoff (2026-10-14)
+
+`Ship::addCargo(Item*)` now forwards to the array overload, as in
+Android ARM, so adding ore after a core no longer replaces the core.
+The production-method cargo smoke covers retention, duplicate-item
+merging and free-space accounting. Native `gof2`, all 206 ARM units,
+the combined mining handoff smoke and 37 verifier tests pass (one
+skipped). Focused source-shape and strict fuzzy stay at 100%, with
+no exact match: the old wrong call target passed shape comparison.
+Full corpus remains 4,323/4,524 covered at 93.10% average
+source-shape and 81.51% strict fuzzy; all 2,403 linked-exact and
+1,008 byte-exact pairs and 123 extra symbols are unchanged.
+Full native/ARM32 gameplay, HUD/docking/audio dependencies and cargo
+lifetime are not yet verified. Next: test the remaining real handoff
+services. See [the cargo audit](SHIP_ADD_CARGO_HANDOFF_ARM_2026-10-14.md).
 
 ## Status hardcore difficulty route (2026-10-14)
 

@@ -56,3 +56,8 @@ unassigned local `g_hardCoreHolder` pointer. Its direct route to
 in the fixture. A real ARM32 mining session and marquee ownership are
 not yet verified. Next: exercise the native mining handoff through
 its real dependencies.
+
+The subsequent [cargo audit](SHIP_ADD_CARGO_HANDOFF_ARM_2026-10-14.md)
+found that the production `Ship::addCargo(Item*)` had been replacing
+existing cargo; its call route is now corrected and independently
+tested. The isolated `PlayerEgo` fixture did not detect that gap.

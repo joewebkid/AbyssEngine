@@ -80,7 +80,7 @@ void Ship::addCargo(Array<Item *> *items) {
 void Ship::addCargo(Item *item) {
     Array<Item *> *a = new Array<Item *>();
     ArrayAdd<Item *>(item, *a);
-    setCargo(a);
+    addCargo(a);
 }
 
 int Ship::removeCargo(int index, int amount) {

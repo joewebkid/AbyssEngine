@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Ship cargo-add handoff (2026-10-14)
+
+Focused `Ship::addCargo(Item*)` stays at 100.0% source-shape and
+strict fuzzy before and after its ARM-backed call-target correction;
+it remains non-exact. The production cargo-method smoke verifies that
+core and ore coexist and duplicate ore merges. Native `gof2`, all
+206 ARM units, the combined mining handoff smoke and 37 verifier
+tests pass (one skipped). Full corpus remains 4,323/4,524 covered
+at 93.10% average source-shape and 81.51% strict fuzzy; the 2,403
+linked-exact, 1,008 byte-exact and 123 extra sets are unchanged.
+This does not validate full gameplay, HUD/docking/audio or cargo
+memory ownership. See
+[the evidence](SHIP_ADD_CARGO_HANDOFF_ARM_2026-10-14.md).
+
 ## Status hardcore difficulty route (2026-10-14)
 
 Focused `Status::hardCoreMode` source-shape rises 83.6% to 93.7%,
