@@ -1,7 +1,9 @@
 // Fixture constructors/services surround unchanged TouchButton touch methods.
 #include "game/ui/TouchButton.h"
 #include "game/ui/Layout.h"
+#include "game/ui/ChoiceWindow.h"
 #include "game/core/Globals.h"
+#include "engine/core/GameText.h"
 #include "engine/audio/FModSound.h"
 #include "engine/render/PaintCanvas.h"
 #include "game/mission/Status.h"
@@ -16,6 +18,7 @@
 Layout *Globals::layout = nullptr;
 FModSound *Globals::sound = nullptr;
 PaintCanvas *Globals::Canvas = nullptr;
+GameText *Globals::gameText = nullptr;
 unsigned int Globals::font = 5;
 int Globals::w = 480;
 int Globals::h = 320;
@@ -24,6 +27,13 @@ int Globals::other_buttons_x[10] = {};
 int Globals::other_buttons_y[10] = {};
 static int formatLanguage = 0;
 int GameText::getLanguage() { return formatLanguage; }
+GameText::GameText() = default;
+GameText::~GameText() = default;
+String *GameText::getText(int key) {
+    assert(key == 0x187);
+    static String title("HELP");
+    return &title;
+}
 
 AbyssEngine::String::String() : data(nullptr), length(0) {}
 AbyssEngine::String::String(const char *text, bool) : data(nullptr), length(0) { Set(text); }
@@ -77,6 +87,17 @@ int Status::getCredits() { return credits; }
 String Layout::formatCredits(int value) { return String(value) + String("$"); }
 Layout::Layout() { field_0x38 = 0; drawColor = -1; }
 Layout::~Layout() = default;
+static int choiceConstructs, choiceDraws;
+static std::string choiceTitle, choiceMessage;
+ChoiceWindow::ChoiceWindow() { ++choiceConstructs; }
+ChoiceWindow::~ChoiceWindow() = default;
+void ChoiceWindow::draw() { ++choiceDraws; }
+void ChoiceWindow::set(String const &title, String const &message, bool hasButtons) {
+    assert(!hasButtons);
+    choiceTitle.clear(); choiceMessage.clear();
+    for (int i = 0; i < title.length; ++i) choiceTitle.push_back(char(title.data[i]));
+    for (int i = 0; i < message.length; ++i) choiceMessage.push_back(char(message.data[i]));
+}
 FModSound::FModSound() = default;
 FModSound::~FModSound() = default;
 AbyssEngine::AEMath::Matrix::Matrix() = default;
@@ -600,6 +621,26 @@ int main() {
     std::string taggedAscii;
     for (int i = 0; i < tagged.length; ++i) taggedAscii.push_back(char(tagged.data[i]));
     assert(taggedAscii == "<c:-8388353>SOL<c:>");
+
+    GameText gameText;
+    Globals::gameText = &gameText;
+    layout.helpPressedFlag = 1;
+    layout.choiceWindow = nullptr;
+    int helpSoundStart = soundCount;
+    layout.initHelpWindow(String("BODY"));
+    assert(choiceConstructs == 1 && layout.choiceWindow != nullptr);
+    assert(soundCount == helpSoundStart + 1 && sounds[soundCount - 1] == 0x7e);
+    assert(choiceTitle == "HELP" && choiceMessage == "BODY");
+    assert(layout.choiceWindowOpen == 1 && layout.helpPressedFlag == 0);
+    layout.drawHelpWindow();
+    assert(choiceDraws == 1);
+    ChoiceWindow *firstChoice = layout.choiceWindow;
+    layout.initHelpWindow(String("AGAIN"));
+    assert(layout.choiceWindow == firstChoice && choiceConstructs == 1);
+    assert(soundCount == helpSoundStart + 2 && sounds[soundCount - 1] == 0x7e);
+    assert(choiceMessage == "AGAIN");
+    delete layout.choiceWindow;
+    layout.choiceWindow = nullptr;
 
     std::puts("TouchButton/Layout host smoke: OK");
 }

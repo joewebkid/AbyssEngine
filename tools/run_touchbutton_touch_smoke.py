@@ -47,6 +47,8 @@ def main():
     format_end = layout.index("void Layout::setWindowDimensions(", format_start)
     extracted += layout[format_start:format_end]
     extracted += function(layout, "void Layout::resetWindowDimensions()")
+    extracted += function(layout, "void Layout::drawHelpWindow()")
+    extracted += function(layout, "void Layout::initHelpWindow(String text)")
     tag_start = layout.index("static const char g_tagLit0[]")
     tag_end = layout.index("void Layout::reload()", tag_start)
     extracted += layout[tag_start:tag_end]

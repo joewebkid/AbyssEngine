@@ -1,7 +1,29 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (Layout color-tag string; older subsystem
+Last reviewed: 2026-10-14 (Layout help window; older subsystem
 snapshots retain their dates)
+
+## Layout help-window dispatch (2026-10-14)
+
+`Layout::initHelpWindow(String)` now plays the original sound through
+`Globals::sound`, uses title text `0x187` from `Globals::gameText`,
+and calls `ChoiceWindow::set(title, message, false)` instead of a
+different two-argument overload. `drawHelpWindow()` now dispatches
+directly, matching the guarded Android call path. The
+production-method host smoke covers first/repeated initialization,
+sound, title, text, state flags, window reuse and drawing. Native
+`gof2`, all 206 ARM units and 37 verifier tests pass (one skipped).
+Focused `initHelpWindow` source-shape rises 93.9% to 100.0% and
+strict fuzzy 74.2% to 97.9%, but remains non-exact;
+`drawHelpWindow` rises 39.4% to 100.0% and 28.6% to 100.0%, adding
+one linked-exact result (not byte-exact). Full corpus: 4,718
+comparisons, 4,323/4,524 covered, 201 missing, 92.97% average
+source-shape, 81.41% strict fuzzy, 2,403 linked-exact and 1,008
+byte-exact. Complete exact and extra-symbol sets show this one
+linked-exact gain with no losses. Original ARM32 runtime and visual
+rendering remain untested. Next priority: audit the mission-reward
+display path and its unassigned sound holder. See
+[the help-window audit](LAYOUT_HELP_WINDOW_ARM_2026-10-14.md).
 
 ## Layout color-tag string (2026-10-14)
 

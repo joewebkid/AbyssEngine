@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout help-window dispatch (2026-10-14)
+
+The Android-backed `Layout::initHelpWindow(String)` reaches 100.0%
+focused source-shape and 97.9% strict fuzzy, but remains non-exact;
+`drawHelpWindow()` reaches 100.0% focused source-shape and strict
+fuzzy, adding one linked-exact (not byte-exact) result. The
+production-method host smoke checks the help-window path. Native
+`gof2`, all 206 ARM units and 37 verifier tests pass (one skipped).
+Full corpus: 4,323/4,524 covered, 2,403 linked-exact and 1,008
+byte-exact; complete exact/extra sets show one linked-exact gain
+and no losses. Original ARM32 runtime and visual rendering remain
+untested. See
+[the evidence](LAYOUT_HELP_WINDOW_ARM_2026-10-14.md).
+
 ## Layout color-tag string (2026-10-14)
 
 The Android-backed `Layout::tagString(String)` now reaches 100.0%

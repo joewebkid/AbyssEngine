@@ -788,19 +788,17 @@ void Layout::drawHeader(String title) {
 }
 
 void Layout::drawHelpWindow() {
-    if (this->choiceWindow != nullptr)
-        this->choiceWindow->draw();
+    this->choiceWindow->draw();
 }
 
-
-static FModSound **gFmodHelp = nullptr;
 
 void Layout::initHelpWindow(String text) {
     if (this->choiceWindow == nullptr)
         this->choiceWindow = new ChoiceWindow();
-    (*gFmodHelp)->play(0x7e, 0, 0, 0);
-    String *title = GameText::gGameText->getText(0x187);
-    this->choiceWindow->set(*title, text);
+    Globals::sound->play(0x7e, 0, 0, 0);
+    ChoiceWindow *choice = this->choiceWindow;
+    String *title = Globals::gameText->getText(0x187);
+    choice->set(*title, text, false);
     this->choiceWindowOpen = 1;
     this->helpPressedFlag = 0;
 }
