@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (mesh/transform clone and release; older subsystem
+Last reviewed: 2026-10-13 (ImageFactory portrait data and dispatch; older subsystem
 snapshots retain their dates)
+
+## ImageFactory portrait data and dispatch (2026-10-13)
+
+The Android 13×4 part-count/ID tables and four 13×4×2 coordinate tables
+replace null aliases in `ImageFactory`; its constructor, random descriptor
+generation, portrait loading, and image drawing now use live `Globals`
+services. `ImagePart` creation/draw uses the same canvas. All 520 recovered
+table integers match the local Android ELF, and an extracted-body host smoke
+passes across screen modes and drawing routes. `ImageFactory` family
+source-shape rises 76.31% → 97.87%; five comparison rows become linked-exact.
+Native `gof2`, 206/206 ARM units, and 37 verifier tests pass (one skipped).
+Full corpus: 4,720 comparisons, 4,323/4,524 covered, 201 missing,
+92.67655% average source-shape, 81.04394% strict fuzzy, 2,388 linked-exact,
+1,008 byte-exact, and no old exact losses. Original assets, OpenGL, the
+production `reload`/`Sprite` path, and ARM32 runtime remain untested.
+Next audit integrated image-resource ownership and drawing. See
+[the portrait audit](IMAGE_FACTORY_PORTRAITS_ARM_2026-10-13.md).
 
 ## Mesh/Transform clone and recursive release smoke (2026-10-13)
 

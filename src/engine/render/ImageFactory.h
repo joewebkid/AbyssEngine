@@ -18,7 +18,7 @@ public:
 
     ~ImageFactory();
 
-    void createChar(int race);
+    int *createChar(int race);
 
     int *createChar(bool isMale, int race);
 

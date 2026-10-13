@@ -1,4 +1,5 @@
 #include "engine/render/ImageFactory.h"
+#include "engine/render/ImageFactoryPortraitData.h"
 #include "engine/core/AbyssEngine.h"
 #include "engine/render/ImagePart.h"
 #include "engine/render/PaintCanvas.h"
@@ -10,30 +11,6 @@ namespace AbyssEngine {
         int nextInt(void *random, int limit);
     }
 }
-
-static unsigned *g_drawChar_canvas;
-static unsigned *g_IF_drawShip_canvas;
-static unsigned *g_drawItem_canvas;
-static int *g_IF_idTable;
-static unsigned *g_IF_drawItem4_canvas;
-static char *g_ctor_flagA;
-static char *g_ctor_flagB;
-static int *g_ctor_dst;
-static int *g_ctor_src;
-
-static void *gCreateChar2Rng1;
-static int gCreateChar2Table;
-static void *gCreateChar2Rng2;
-static void *gCreateCharRng;
-
-static unsigned *g_IF_li_canvas;
-static char *g_IF_flagA;
-static char *g_IF_flagB;
-static int *g_IF_posTableA;
-static int *g_IF_posTableB;
-static int *g_IF_posTableC;
-static char *g_IF_flagC;
-static int *g_IF_posTableD;
 
 int ImageFactory::getItemImageId(int itemId) {
     int base = 0xef0;
@@ -48,12 +25,12 @@ ImageFactory::~ImageFactory() {
 
 ImageFactory::ImageFactory() {
     this->sprite = nullptr;
-    if ((*g_ctor_flagA | *g_ctor_flagB) != 0) {
-        int *dst = g_ctor_dst;
-        int *src = g_ctor_src;
-        for (int r = 0; r != 0xd; ++r) {
+    if ((Globals::retinaDisplay | Globals::n9) != 0) {
+        int *dst = &gImagePartOffsets[0][0][0];
+        const int *src = &kImagePartOffsetsIpad[0][0][0];
+        for (int r = 0; r != 13; ++r) {
             int *d = dst;
-            int *s = src;
+            const int *s = src;
             for (int c = 0; c != 4; ++c) {
                 for (int k = 0; k != 2; ++k)
                     d[k] = s[k];
@@ -89,7 +66,7 @@ void ImageFactory::reload() {
 }
 
 void ImageFactory::drawChar(Array<ImagePart *> *parts, int x, int y, bool flag) {
-    PaintCanvas *pc = (PaintCanvas *) (long) *g_drawChar_canvas;
+    PaintCanvas *pc = Globals::Canvas;
     pc->SetColor(0xffffffffu);
     pc->DrawImage2D(this->itemImage, x, y);
     for (unsigned i = 0; i < parts->size(); ++i) {
@@ -100,7 +77,7 @@ void ImageFactory::drawChar(Array<ImagePart *> *parts, int x, int y, bool flag) 
 }
 
 void ImageFactory::drawShip(int shipId, int x, int y) {
-    PaintCanvas *pc = (PaintCanvas *) (long) *g_IF_drawShip_canvas;
+    PaintCanvas *pc = Globals::Canvas;
     unsigned classIcon = 0xffffffffu;
     pc->SetColor(0xffffffffu);
     this->sprite->setFrame(5);
@@ -111,7 +88,7 @@ void ImageFactory::drawShip(int shipId, int x, int y) {
 }
 
 void ImageFactory::drawItem(int itemId, int x, int y) {
-    PaintCanvas *pc = (PaintCanvas *) (long) *g_drawItem_canvas;
+    PaintCanvas *pc = Globals::Canvas;
     unsigned icon = 0xffffffffu;
     pc->SetColor(0xffffffffu);
     int base = 0xef0;
@@ -121,26 +98,24 @@ void ImageFactory::drawItem(int itemId, int x, int y) {
 }
 
 void *ImageFactory::loadImage(int row, int col, int frameBase) {
-    int id = g_IF_idTable[row * 4 + col];
+    int id = kImagePartIds[row][col];
     if (id < 0)
         return nullptr;
 
     unsigned image = 0;
-    ((PaintCanvas *) (long) *g_IF_li_canvas)
-            ->Image2DCreate((unsigned short) ((short) id + (short) frameBase), image);
+    Globals::Canvas->Image2DCreate(
+        (unsigned short) ((short) id + (short) frameBase), image);
 
-    int *posBase;
-    // Each (row,col) cell occupies two consecutive ints (px,py); rows have a
-    // stride of 8 ints and columns a stride of 2 ints.
+    const int *posBase;
     int cell = row * 8 + col * 2;
-    if (*g_IF_flagA != 0) {
-        posBase = g_IF_posTableA;
-    } else if (*g_IF_flagB != 0) {
-        posBase = g_IF_posTableB;
+    if (Globals::iPadHD != 0) {
+        posBase = &kImagePartOffsetsIpadHD[0][0][0];
+    } else if (Globals::iPadLarge != 0) {
+        posBase = &kImagePartOffsetsIpadLarge[0][0][0];
+    } else if (Globals::iPad != 0) {
+        posBase = &kImagePartOffsetsIpad[0][0][0];
     } else {
-        posBase = g_IF_posTableC;
-        if (*g_IF_flagC == 0)
-            posBase = g_IF_posTableD;
+        posBase = &gImagePartOffsets[0][0][0];
     }
 
     int px = posBase[cell];
@@ -149,7 +124,7 @@ void *ImageFactory::loadImage(int row, int col, int frameBase) {
 }
 
 void ImageFactory::drawItem(int itemId, int frame, int x, int y) {
-    PaintCanvas *pc = (PaintCanvas *) (long) *g_IF_drawItem4_canvas;
+    PaintCanvas *pc = Globals::Canvas;
     unsigned icon = 0xffffffffu;
     pc->SetColor(0xffffffffu);
     this->sprite->setFrame(frame);
@@ -178,26 +153,24 @@ Array<ImagePart *> *ImageFactory::loadChar(int *desc) {
     return parts;
 }
 
-void ImageFactory::createChar(int race) {
-    int sexRoll = AbyssEngine::AERandom::nextInt(*(void **) gCreateCharRng, 2);
-    this->createChar(sexRoll == 0, race);
+int *ImageFactory::createChar(int race) {
+    int sexRoll = AbyssEngine::AERandom::nextInt(Globals::rnd, 2);
+    return this->createChar(sexRoll == 0, race);
 }
 
 int *ImageFactory::createChar(bool isMale, int race) {
     if (race == 3) {
-        int reroll = AbyssEngine::AERandom::nextInt(*(void **) gCreateChar2Rng1, 4);
+        int reroll = AbyssEngine::AERandom::nextInt(Globals::rnd, 4);
         race = (reroll != 0) ? 2 : 0;
     }
     int row = race;
-    int *table = &gCreateChar2Table;
     if (race == 0) row = 10;
     if (isMale) row = race;
     if (row == 5) row = 0;
     int *desc = new int[5];
     desc[0] = row;
-    // gCreateChar2Table is a contiguous run of rows, each holding 4 part counts.
-    int *partCounts = &table[row * 4];
+    const int *partCounts = kImagePartCounts[row];
     for (int i = 0; i != 4; ++i)
-        desc[i + 1] = AbyssEngine::AERandom::nextInt(*(void **) gCreateChar2Rng2, partCounts[i]);
+        desc[i + 1] = AbyssEngine::AERandom::nextInt(Globals::rnd, partCounts[i]);
     return desc;
 }

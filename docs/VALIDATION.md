@@ -94,6 +94,20 @@ String/Array paths and probe-module vtable dispatch on the host. It is not
 an ARM32 runtime pass; see [the ABI gate](ABI_RUNTIME_GATE_2026-09-27.md)
 for the original vtable relocations and remaining ownership risks.
 
+## ImageFactory Portrait Host Smoke
+
+For the Android-backed portrait table and dispatch path:
+
+```powershell
+python tools/run_image_factory_portrait_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `ImageFactory portrait load/draw smoke: OK`. The runner
+executes extracted production factory/part bodies with fixture canvas,
+random, sprite, and reload services; it removes its temporary executable.
+It does not validate original assets or OpenGL. See
+[the portrait audit](IMAGE_FACTORY_PORTRAITS_ARM_2026-10-13.md).
+
 ## TouchButton/Layout Host Smoke
 
 ```powershell
