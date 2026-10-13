@@ -457,7 +457,7 @@ namespace AbyssEngine {
 
         bool GetScreenPosition(const Matrix &srcMatrix, Vector &outVec);
 
-        void GetScreenPosition(Matrix &m, const Vector &worldPos,
+        bool GetScreenPosition(Matrix &m, const Vector &worldPos,
                                Vector &outVec);
     };
 

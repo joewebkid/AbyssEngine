@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (matrix screen projection; older subsystem
+Last reviewed: 2026-10-13 (world-vector screen projection; older subsystem
 snapshots retain their dates)
+
+## World-vector screen projection (2026-10-13)
+
+The matrix/world-vector `PaintCanvas::GetScreenPosition` now uses its
+input matrix, the real camera inverse transform and gravity-based
+orientation rotation, and returns the ARM-confirmed visibility result.
+The two-vector game-facing overload now calls it through an identity
+matrix instead of an unresolved shim and retains 100% focused
+source-shape/strict fuzzy. The world-matrix overload rises 79.4% to
+82.1% source-shape and 21.6% to 36.9% strict fuzzy, not exact.
+Native `gof2`, an extracted-body host smoke, 206/206 ARM units, and
+36 verifier tests pass (one skipped). Full coverage remains
+4,323/4,524; average source-shape rises 92.5573% to 92.5578% and
+strict fuzzy 80.8502% to 80.8534%. The 2,378 linked-exact and
+1,008 byte-exact symbol sets have no losses. Real-device rendering
+and non-identity camera rotation composition remain untested. Next
+audit the remaining canvas gravity/orientation placeholders, starting
+with `DrawSpriteSystem`. See
+[the world-projection audit](GET_SCREEN_POSITION_WORLD_ARM_2026-10-13.md).
 
 ## Matrix screen projection (2026-10-13)
 
