@@ -155,6 +155,15 @@ removes its temporary executable. It checks routing, colors, ambient
 restoration and queue reset, not real OpenGL or ARM runtime. See
 [the batch-draw audit](MATERIAL_DRAW_MATRIX_LIGHT_ARM_2026-10-13.md).
 
+```powershell
+python tools/run_sprite_system_draw_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `SpriteSystemDraw host smoke: OK`. The runner checks
+the production sprite quad and matrix-queue path with fixture services,
+and removes its temporary executable. It is not a full GL or ARM32
+runtime test. See [the sprite queue audit](SPRITE_SYSTEM_DRAW_MATRIX_QUEUE_ARM_2026-10-13.md).
+
 Windows note: the wrapper names are still `orbcc`, `orbnm`, `orbas`, and
 `orbobjdump`, but they now also support a local NDK r18b fallback. Set
 `GOF2_VERIFY_LOCAL_NDK=1` and keep the NDK at `.cache/ndk/android-ndk-r18b`, or

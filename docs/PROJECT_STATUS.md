@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (MaterialDraw matrix/light routing; older subsystem
+Last reviewed: 2026-10-13 (SpriteSystemDraw matrix queues; older subsystem
 snapshots retain their dates)
+
+## SpriteSystemDraw matrix queues (2026-10-13)
+
+Android ARM at `0x86ddc` calls the real `view * world` product and,
+on the material path, appends the mesh, view matrix, constant flipped-Y
+UV matrix, world matrix, and opaque color to five queues. The local
+method had unresolved matrix shims, including a product missing its
+world operand; it now uses the real product and typed cached-array
+appends. A production-body host smoke checks both size modes, quad
+positions, all queues, and direct drawing. Native `gof2`, 206/206 ARM
+units, the MaterialDraw smoke, and 36 verifier tests pass (one
+skipped). Focused source-shape rises 73.8% to 79.4%, while strict
+fuzzy falls 18.3% to 11.2%; the method remains non-exact. Full corpus
+stays 4,323/4,524 original functions covered, 201 missing, 2,378
+linked-exact and 1,008 byte-exact, with no exact-symbol changes.
+Average source-shape rises 92.5407% to 92.5419%; strict fuzzy falls
+80.8323% to 80.8308%. The fixture does not test allocator lifetime,
+ARM32 runtime, or GL output. Next audit cached-array growth/matrix
+lifetime before claiming this batching path is runtime-safe. See
+[the sprite queue audit](SPRITE_SYSTEM_DRAW_MATRIX_QUEUE_ARM_2026-10-13.md).
 
 ## MaterialDraw matrix and light routing (2026-10-13)
 

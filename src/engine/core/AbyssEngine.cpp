@@ -92,11 +92,6 @@ namespace AbyssEngine {
     Engine *AE_getInitGLThis();
     int AE_getInitGLWidth();
     int AE_getInitGLHeight();
-    void AE_AEMath_matMul(AEMath::Matrix *out, const AEMath::Matrix *rhs);
-    void AE_SpriteSystem_pushMatrix(unsigned int m0, unsigned int m1, unsigned int m2, unsigned int m3,
-                                    unsigned int m4, unsigned int m5, unsigned int m6, unsigned int m7,
-                                    unsigned int m8, unsigned int m9, unsigned int m10, unsigned int m11,
-                                    unsigned int m12, unsigned int m13, unsigned int m14, int dst);
 }
 
 namespace {
@@ -1956,15 +1951,6 @@ namespace AbyssEngine {
 namespace AbyssEngine {
     int MeshDraw(Engine * engine, Mesh * mesh);
 
-    static inline unsigned int f2u(float f) {
-        union {
-            float f;
-            unsigned int u;
-        } c;
-        c.f = f;
-        return c.u;
-    }
-
     void SpriteSystemDraw(Engine *engine, const Matrix &view, const Matrix &world, SpriteSystem *sys) {
         if (sys == 0)
             return;
@@ -1972,8 +1958,8 @@ namespace AbyssEngine {
         Mesh *mesh = sys->mesh;
         float *vbuf = (float *) mesh->positions;
 
-        Matrix mv;
-        AE_AEMath_matMul(&mv, &view);
+        Matrix mv = view * world;
+        (void) mv;
 
         unsigned short count = sys->count;
         unsigned char sharedSize = sys->sharedSize;
@@ -2020,18 +2006,9 @@ namespace AbyssEngine {
             Material *batch = (Material *) mesh->material;
             ArrayAddCachedRaw<Mesh *>(mesh, &batch->meshes);
 
-            const float *v = view;
-            AE_SpriteSystem_pushMatrix(f2u(v[0]), f2u(v[1]), f2u(v[2]), f2u(v[3]), f2u(v[4]), f2u(v[5]),
-                                       f2u(v[6]), f2u(v[7]), f2u(v[8]), f2u(v[9]), f2u(v[10]), f2u(v[11]),
-                                       f2u(v[12]), f2u(v[13]), f2u(v[14]), (int) (intptr_t) &batch->arr_2c);
-            unsigned int one = 0x3f800000;
-            unsigned int negOne = 0xbf800000;
-            AE_SpriteSystem_pushMatrix(one, 0, 0, 0, 0, negOne, 0, 0, 0, 0, one, 0,
-                                       one, one, one, (int) (intptr_t) &batch->arr_38);
-            const float *w = world;
-            AE_SpriteSystem_pushMatrix(f2u(w[0]), f2u(w[1]), f2u(w[2]), f2u(w[3]), f2u(w[4]), f2u(w[5]),
-                                       f2u(w[6]), f2u(w[7]), f2u(w[8]), f2u(w[9]), f2u(w[10]), f2u(w[11]),
-                                       f2u(w[12]), f2u(w[13]), f2u(w[14]), (int) (intptr_t) &batch->arr_5c);
+            ArrayAddCachedRaw<Matrix>(view, &batch->arr_2c);
+            ArrayAddCachedRaw<Matrix>(Matrix(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 1), &batch->arr_38);
+            ArrayAddCachedRaw<Matrix>(world, &batch->arr_5c);
             ArrayAddCachedRaw<unsigned int>(0xffffffff, &batch->arr_50);
         }
     }
