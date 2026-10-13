@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (point-frustum wrapper; older subsystem
+Last reviewed: 2026-10-13 (indexed transform draw; older subsystem
 snapshots retain their dates)
+
+## Indexed transform draw (2026-10-13)
+
+`PaintCanvas::DrawTransform(index, viewMatrix)` now uses the original
+null/rotation frustum paths, inverts the selected view or camera matrix,
+updates the engine eye position, and calls the typed recursive draw.
+The zero gravity scale and ten unresolved shims are gone. Focused
+source-shape rises 86.6% to 93.5%, strict fuzzy 45.0% to 74.5%; not
+exact. Native `gof2`, 206/206 ARM units, an extracted-body host smoke,
+and 36 verifier tests pass (one skipped). Full coverage remains
+4,323/4,524; average source-shape rises 92.5630% to 92.5644%,
+strict fuzzy 80.8717% to 80.8780%. The 2,378 linked-exact and 1,008
+byte-exact symbol sets have no losses. Recursive rendering, arbitrary
+3D matrix composition, and ARM32 runtime are untested. Next audit the
+nested `DrawTransform` method. See
+[the indexed-transform audit](PAINTCANVAS_DRAW_TRANSFORM_ARM_2026-10-13.md).
 
 ## Point-frustum canvas wrapper (2026-10-13)
 

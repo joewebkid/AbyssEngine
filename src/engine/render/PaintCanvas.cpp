@@ -976,26 +976,6 @@ void paintcanvas_ext_tg2di_vec_assign(void *dst, void *src);
 
 void paintcanvas_ext_tg2di_inner(void *out, void *self, void *childtf, int x, int y);
 
-void paintcanvas_ext_dt2_matidentity(void *out, void *m);
-
-void *paintcanvas_ext_dt2_getgrav(void *eng);
-
-float paintcanvas_ext_dt2_sinf(float v);
-
-float paintcanvas_ext_dt2_cosf(float v);
-
-int paintcanvas_ext_dt2_incamvf(void *tf, void *m, void *cam);
-
-void paintcanvas_ext_dt2_mtx_assign(void *dst, const void *src);
-
-void paintcanvas_ext_dt2_mtx_muleq(void *m, void *rhs);
-
-void paintcanvas_ext_dt2_mtx_getinv(void *out, void *m);
-
-void paintcanvas_ext_dt2_seteye(void *eng, float a, float b, float c);
-
-void paintcanvas_ext_dt2_drawrec(void *self, void *tf, void *m, void *m2);
-
 void paintcanvas_ext_font_set_spacing(void *, int);
 
 int paintcanvas_ext_get_width(void *);
@@ -4810,87 +4790,76 @@ PaintCanvas::TransformGet2DPickedTextureRegion(Transform *transform, int x, int 
 }
 
 
-static const double g_dt_gravscale_898d8 = 0;
-
 void PaintCanvas::DrawTransform(unsigned int index, const AbyssEngine::AEMath::Matrix *viewMatrix) {
     if (index >= this->transformCount) {
         return;
     }
-    char *tf = ((char **) this->transforms)[index];
-    if (((PCTransformView *) tf)->visible == 0) {
+    Transform *tf = reinterpret_cast<Transform *>(this->transforms[index]);
+    if (!tf->visible) {
         return;
     }
 
-    float worldM[16];
-    memset(worldM, 0, sizeof(worldM));
-    worldM[0] = 1.0f;
-    worldM[5] = 1.0f;
-    worldM[14] = 1.0f;
+    Matrix world(1.0f, 0.0f, 0.0f, 0.0f,
+                 0.0f, 1.0f, 0.0f, 0.0f,
+                 0.0f, 0.0f, 1.0f, 0.0f,
+                 1.0f, 1.0f, 1.0f);
 
     if (this->currentCamera < this->cameras.count) {
-        void *cam = ((void **) this->cameras.data_)[this->currentCamera];
         if (this->initialized == 0) {
-            int vis = paintcanvas_ext_dt2_incamvf(((void **) this->transforms)[index], 0, cam);
-            if (vis == 0) {
+            int visible = reinterpret_cast<Transform *>(this->transforms[index])->InCameraVF(
+                nullptr, this->cameras.data_[this->currentCamera]);
+            if (visible == 0) {
                 this->culledCount += 1;
                 return;
             }
-            float inv[16];
-            paintcanvas_ext_dt2_mtx_getinv(inv, worldM);
-            paintcanvas_ext_dt2_mtx_assign(worldM, inv);
+            const Matrix &source = viewMatrix ? *viewMatrix
+                                              : this->cameras.data_[this->currentCamera]->projection;
+            world = AEMath::MatrixGetInverse(source);
         } else {
-            float rotM[16];
-            char scratch[60];
-            memset(rotM, 0, sizeof(rotM));
-            rotM[0] = 1.0f;
-            rotM[5] = 1.0f;
-            rotM[14] = 1.0f;
-            paintcanvas_ext_dt2_matidentity(scratch, rotM);
-
-            void *grav = paintcanvas_ext_dt2_getgrav(this->engine);
-            double angle = ((PCGravView *) grav)->angle * g_dt_gravscale_898d8;
+            Matrix rotation(1.0f, 0.0f, 0.0f, 0.0f,
+                            0.0f, 1.0f, 0.0f, 0.0f,
+                            0.0f, 0.0f, 1.0f, 0.0f,
+                            1.0f, 1.0f, 1.0f);
+            AEMath::MatrixIdentity(rotation);
+            double angle = this->engine->GetGravValue()[1] * 1.57079637;
             float a = (float) angle;
             int orient = this->gameOrientation;
             float ang = (orient == 1) ? a : -a;
-            float s = paintcanvas_ext_dt2_sinf(ang);
-            float c = paintcanvas_ext_dt2_cosf(ang);
-            rotM[0] = c;
-            rotM[5] = c;
-            *(unsigned int *) &rotM[1] = *(unsigned int *) &s ^ 0x80000000;
-            rotM[4] = s;
+            float s = AEMath::Sinf(ang);
+            float c = AEMath::Cosf(ang);
+            rotation.m[0] = c;
+            rotation.m[5] = c;
+            rotation.m[1] = -s;
+            rotation.m[4] = s;
 
-            int vis = paintcanvas_ext_dt2_incamvf(((void **) this->transforms)[index], rotM, cam);
-            if (vis == 0) {
+            int visible = reinterpret_cast<Transform *>(this->transforms[index])->InCameraVF(
+                &rotation, this->cameras.data_[this->currentCamera]);
+            if (visible == 0) {
                 this->culledCount += 1;
                 return;
             }
 
-            float viewM[16];
-            const float *src;
-            if (viewMatrix == 0) {
-                src = ((PCCameraView *) ((char **) this->cameras.data_)[this->currentCamera])->localMatrix;
-            } else {
-                src = *viewMatrix;
-            }
-            paintcanvas_ext_dt2_mtx_assign(viewM, src);
-            paintcanvas_ext_dt2_mtx_muleq(viewM, rotM);
-            paintcanvas_ext_dt2_mtx_getinv(scratch, viewM);
-            paintcanvas_ext_dt2_mtx_assign(worldM, scratch);
+            Matrix view(1.0f, 0.0f, 0.0f, 0.0f,
+                        0.0f, 1.0f, 0.0f, 0.0f,
+                        0.0f, 0.0f, 1.0f, 0.0f,
+                        1.0f, 1.0f, 1.0f);
+            view = viewMatrix ? *viewMatrix
+                              : this->cameras.data_[this->currentCamera]->projection;
+            view *= rotation;
+            world = AEMath::MatrixGetInverse(view);
         }
-        PCCameraEyeView *cam2 = (PCCameraEyeView *) ((void **) this->cameras.data_)[this->currentCamera];
-        paintcanvas_ext_dt2_seteye(this->engine,
-                                   cam2->eyeX,
-                                   cam2->eyeY,
-                                   cam2->eyeZ);
-        tf = ((char **) this->transforms)[index];
+        Camera *cam = this->cameras.data_[this->currentCamera];
+        this->engine->SetEyePosition(cam->projection.m[3],
+                                     cam->projection.m[7],
+                                     cam->projection.m[11]);
     }
 
-    float ident[16];
-    memset(ident, 0, sizeof(ident));
-    ident[0] = 1.0f;
-    ident[5] = 1.0f;
-    ident[14] = 1.0f;
-    paintcanvas_ext_dt2_drawrec(this, tf, ident, worldM);
+    Matrix identity(1.0f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f,
+                    1.0f, 1.0f, 1.0f);
+    this->DrawTransform(reinterpret_cast<Transform *>(this->transforms[index]),
+                        identity, world);
 }
 
 void PaintCanvas::FontSetSpacing(unsigned int index, short spacing) {
