@@ -161,6 +161,15 @@ with fixtures; it does not use original text assets or execute touch input.
 See [the medal-hint audit](STATUSWINDOW_MEDAL_HINT_ARM_2026-10-13.md).
 
 ```powershell
+python tools/run_status_reinit_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `StatusWindow reInit host smoke: OK`. This extracts the
+production method and checks standing queries, rank-image selection and
+size reads with fixture services. It does not load original image assets
+or execute an ARM32 UI. See [the reInit audit](STATUSWINDOW_REINIT_ARM_2026-10-13.md).
+
+```powershell
 python tools/run_paintcanvas_region_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
 ```
 

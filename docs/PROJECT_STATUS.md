@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (StatusWindow medal hints; older subsystem
+Last reviewed: 2026-10-13 (StatusWindow reInit; older subsystem
 snapshots retain their dates)
+
+## StatusWindow character/rank initialization (2026-10-13)
+
+`reInit` now uses the Android-backed global image factory, status standing,
+and canvas rather than unassigned holders and declared-only achievement
+helpers. Its character descriptor supplies all five words read by
+`ImageFactory::loadChar`; the old one-word descriptor risked an out-of-bounds
+read. A focused host smoke passes rank-image selection and first-image size
+reads without original assets. Native `gof2`, 206/206 ARM translation units,
+and 37 verifier tests pass (one skipped). The method rises 92.0% to 97.5%
+source-shape and 65.0% to 89.1% strict fuzzy, but is not exact. Full corpus
+remains 4,323/4,524 covered, with average source-shape 92.81%, strict
+fuzzy 81.21%, 2,395 linked-exact and 1,008 byte-exact; the complete
+exact-symbol sets show no losses. Live image loading and ARM32 UI remain
+untested. Next priority: the large `StatusWindow::draw` and its unassigned
+global holders. See [the reInit audit](STATUSWINDOW_REINIT_ARM_2026-10-13.md).
 
 ## StatusWindow medal-hint text (2026-10-13)
 
@@ -14,9 +30,8 @@ source-shape rises 90.6% to 92.1%, strict fuzzy 44.7% to 52.1%, with no
 family exact-count change; 37 verifier tests pass (one skipped). Full
 corpus remains 4,323/4,524 covered, 92.80% average source-shape,
 81.20% strict fuzzy, 2,395 linked-exact and 1,008 byte-exact, with no
-exact losses. Live medal selection remains untested. Next audit
-`StatusWindow::reInit` and its
-unassigned image-factory holder. See
+exact losses. Live medal selection remains untested. The subsequent
+reInit audit above addresses its unassigned image-factory holder. See
 [the medal-hint audit](STATUSWINDOW_MEDAL_HINT_ARM_2026-10-13.md).
 
 ## StatusWindow touch release (2026-10-13)

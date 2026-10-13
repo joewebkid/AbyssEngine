@@ -326,22 +326,19 @@ String StatusWindow::getMedalHintText(int medalIndex) {
     return out;
 }
 
-void *Achievements_get();
-
-int Achievements_isUnlocked(void *ach, int index);
-
-static ImageFactory **g_sw_imageFactory = nullptr;
-static int g_sw_charDef = 0;
+// Android .bss 0x21839c..0x2183af: five words consumed by loadChar.
+static int g_sw_charDef[5] = {};
 
 void StatusWindow::reInit() {
-    this->imageParts = (*g_sw_imageFactory)->loadChar(&g_sw_charDef);
+    this->imageParts = static_cast<ImageFactory *>(Globals::imageFactory)
+                           ->loadChar(g_sw_charDef);
 
-    int a0 = Achievements_isUnlocked(Achievements_get(), 0);
-    int a1 = Achievements_isUnlocked(Achievements_get(), 1);
-    int a2 = Achievements_isUnlocked(Achievements_get(), 2);
-    int a3 = Achievements_isUnlocked(Achievements_get(), 3);
+    int a0 = Globals::status->getStanding()->isEnemy(0);
+    int a1 = Globals::status->getStanding()->isEnemy(1);
+    int a2 = Globals::status->getStanding()->isEnemy(2);
+    int a3 = Globals::status->getStanding()->isEnemy(3);
 
-    PaintCanvas *canvas = PaintCanvas::gCanvas;
+    PaintCanvas *canvas = Globals::Canvas;
 
     int id = 0x493;
     if (a1) id = 0x494;
