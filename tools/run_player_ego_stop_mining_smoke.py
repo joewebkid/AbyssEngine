@@ -20,8 +20,11 @@ def main():
         parser.error("specify --cxx")
 
     source = (ROOT / "src/game/ship/PlayerEgo.cpp").read_text()
+    status = (ROOT / "src/game/mission/Status.cpp").read_text()
     fixture = (ROOT / "tools/player_ego_stop_mining_smoke.cpp").read_text()
-    fixture = fixture.replace("// PRODUCTION_METHOD", function(source, "void PlayerEgo::stopMining()"))
+    fixture = fixture.replace("// PRODUCTION_METHOD",
+                              function(status, "bool Status::hardCoreMode()") +
+                              function(source, "void PlayerEgo::stopMining()"))
 
     with tempfile.TemporaryDirectory(prefix="stop-mining-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "player_ego_stop_mining_smoke.cpp"

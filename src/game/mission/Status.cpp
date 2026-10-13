@@ -1,4 +1,6 @@
 #include "game/mission/Status.h"
+#include "game/core/Globals.h"
+#include <cstring>
 Status *Status::gStatus = nullptr;
 #include "game/mission/PendingProduct.h"
 #include "game/core/GameSettings.h"
@@ -112,15 +114,10 @@ void Status::setStationsVisited(int v) { stationsVisited = v; }
 
 void Status::setStationStack(Array<Station *> *stack) { stationStack = stack; }
 
-struct HardCoreHolder {
-    char pad[0x2c];
-    float difficulty;
-};
-
-static HardCoreHolder *g_hardCoreHolder = nullptr;
-
 bool Status::hardCoreMode() {
-    return g_hardCoreHolder->difficulty == 1.5f;
+    float difficulty;
+    std::memcpy(&difficulty, Globals::options + 0x2c, sizeof(difficulty));
+    return difficulty == 1.5f;
 }
 
 void Status::crateCaptured(int delta) { capturedCrates = delta + capturedCrates; }
@@ -591,8 +588,6 @@ static int **g_rg_zeroSlotC = nullptr;
 static int (*g_rg_makeItemB)(int) = nullptr;
 
 static void (*g_rg_addCargo)(int, int, int) = nullptr;
-
-#include "game/core/Globals.h"
 
 void Status::resetGame() {
     int *settings = g_rg_settings;

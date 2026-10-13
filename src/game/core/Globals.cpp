@@ -49,7 +49,7 @@ struct GameSettingsRecord {
     float    tintG;           // 0x20
     float    tintB;           // 0x24
     float    brightness;      // 0x28
-    float    contrast;        // 0x2c
+    float    difficulty;      // 0x2c
     uint8_t  enableFlag30;    // 0x30
     int32_t  intAt31;         // 0x31
     int32_t  intAt35;         // 0x35
@@ -130,7 +130,7 @@ static_assert(offsetof(GameSettingsRecord, tintR) == 0x1c, "tintR");
 static_assert(offsetof(GameSettingsRecord, tintG) == 0x20, "tintG");
 static_assert(offsetof(GameSettingsRecord, tintB) == 0x24, "tintB");
 static_assert(offsetof(GameSettingsRecord, brightness) == 0x28, "brightness");
-static_assert(offsetof(GameSettingsRecord, contrast) == 0x2c, "contrast");
+static_assert(offsetof(GameSettingsRecord, difficulty) == 0x2c, "difficulty");
 static_assert(offsetof(GameSettingsRecord, enableFlag30) == 0x30, "enableFlag30");
 static_assert(offsetof(GameSettingsRecord, intAt31) == 0x31, "intAt31");
 static_assert(offsetof(GameSettingsRecord, intAt35) == 0x35, "intAt35");
@@ -1392,7 +1392,7 @@ Globals::Globals() {
     settings->tintG = 0.6f;
     settings->tintB = 0.5f;
     settings->brightness = 1.0f;
-    settings->contrast = 0.5f;
+    settings->difficulty = 0.5f;
     settings->ambientVolume = 1;
     settings->enableFlag30 = 1;
     settings->shortAt40 = 0;

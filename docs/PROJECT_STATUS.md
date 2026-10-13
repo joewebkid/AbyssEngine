@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo mining handoff; older subsystem
+Last reviewed: 2026-10-14 (hardcore difficulty route; older subsystem
 snapshots retain their dates)
+
+## Status hardcore difficulty route (2026-10-14)
+
+The original ELF places `Globals::options` at `0x2181e8` and the
+hardcore float at `0x218214`, exactly options offset `0x2c`.
+`Status::hardCoreMode` now reads that setting instead of dereferencing
+an unassigned holder. Its focused ARM source-shape rises 83.6% to
+93.7%, strict fuzzy 66.7% to 88.0%; it is not exact. A combined
+production-method host fixture covers normal/hardcore mining rewards,
+and native `gof2`, all 206 ARM units and 37 verifier tests pass (one
+skipped). Full corpus remains 4,323/4,524 covered; average
+source-shape rises 93.09% to 93.10% and strict fuzzy stays 81.51%.
+All 2,403 linked-exact and 1,008 byte-exact pairs and 123 extra
+symbols are unchanged. A complete native/ARM32 mining session,
+persisted options load and marquee ownership are still unverified.
+Next: test the handoff through real cargo/HUD/docking services. See
+[the difficulty audit](STATUS_HARDCORE_OPTIONS_ARM_2026-10-14.md).
 
 ## PlayerEgo mining-result handoff (2026-10-14)
 
@@ -15,12 +32,10 @@ units, three MiningGame smokes and 37 verifier tests pass (one
 skipped). Full corpus remains 4,323/4,524 covered (201 missing);
 average source-shape rises 93.08% to 93.09% and strict fuzzy 81.50%
 to 81.51%. All 2,403 linked-exact and 1,008 byte-exact pairs and
-123 extra symbols are unchanged. A full runtime path is still
-unverified: the current
-`Status::hardCoreMode` dereferences an unassigned holder instead of
-the Android difficulty global. Next: recover that route and test
-the handoff with real dependencies; ARM32 runtime and marquee
-ownership remain open. See
+123 extra symbols are unchanged. At that checkpoint a full runtime
+path was unverified because `Status::hardCoreMode` used an unassigned
+holder; its route is recovered above. Real cargo/HUD/docking effects,
+ARM32 runtime and marquee ownership remain open. See
 [the handoff audit](PLAYER_EGO_STOP_MINING_ARM_2026-10-14.md).
 
 ## MiningGame outcomes and teardown audit (2026-10-14)

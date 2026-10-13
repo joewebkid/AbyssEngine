@@ -1,6 +1,7 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <vector>
 
 template<class T> struct Array {
@@ -25,14 +26,13 @@ struct Ship {
 
 struct Status {
     Ship *ship = nullptr;
-    bool hardcore = false;
     Array<bool> *field_94 = nullptr;
     Array<bool> *field_98 = nullptr;
     int field_a0 = 0;
     int field_a4 = 0;
     int field_d8 = 1;
     Ship *getShip() { return ship; }
-    bool hardCoreMode() { return hardcore; }
+    bool hardCoreMode();
 };
 
 struct CargoEvent { int id, count; bool single, mission, extender, slot, aggregate; };
@@ -75,10 +75,12 @@ struct Globals {
     static Status *status;
     static void *items;
     static FModSound *sound;
+    static unsigned char options[100];
 };
 Status *Globals::status = nullptr;
 void *Globals::items = nullptr;
 FModSound *Globals::sound = nullptr;
+unsigned char Globals::options[100] = {};
 
 struct PlayerEgo {
     union { int asteroidTarget; void *asteroidTargetPtr; };
@@ -122,7 +124,6 @@ struct Fixture {
         }
         ship.freeSpace = space;
         status.ship = &ship;
-        status.hardcore = hardcore;
         status.field_94 = &ores;
         status.field_98 = &cores;
         asteroid.player = &player;
@@ -136,6 +137,9 @@ struct Fixture {
         Globals::status = &status;
         Globals::items = &items;
         Globals::sound = &sound;
+        float difficulty = hardcore ? 1.5f : 0.5f;
+        std::memcpy(Globals::options + 0x2c, &difficulty, sizeof(difficulty));
+        assert(status.hardCoreMode() == hardcore);
     }
 
     void checkFinish() {

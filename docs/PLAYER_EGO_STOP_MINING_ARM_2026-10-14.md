@@ -48,11 +48,11 @@ are retained with zero losses or gains. The compared-function set and
 
 ## Remaining risk
 
-`Status::hardCoreMode()` still dereferences an unassigned local
-`g_hardCoreHolder` pointer even though the Android function reads the
-global difficulty float `flt_218214`. Thus this dependency remains a
-native runtime blocker; the host fixture substitutes its behavior.
-`Hud::catchCargo`, `Ship::addCargo`, docking and FMOD are also doubled
+At this checkpoint, `Status::hardCoreMode()` still dereferenced an
+unassigned local `g_hardCoreHolder` pointer. Its direct route to
+`Globals::options + 0x2c` is now recovered in
+[the follow-up audit](STATUS_HARDCORE_OPTIONS_ARM_2026-10-14.md).
+`Hud::catchCargo`, `Ship::addCargo`, docking and FMOD remain doubled
 in the fixture. A real ARM32 mining session and marquee ownership are
-not yet verified. Next: recover the difficulty-global route, then
-exercise the native mining handoff through its real dependencies.
+not yet verified. Next: exercise the native mining handoff through
+its real dependencies.
