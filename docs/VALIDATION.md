@@ -4,6 +4,16 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout drawBox default-flags wrapper (2026-10-13)
+
+The Android-backed six-argument `Layout::drawBox` wrapper reaches
+100.0% source-shape and strict fuzzy, adding a linked-exact (not
+byte-exact) result. Native `gof2`, all 206 ARM units, the
+production-method UI smoke and 37 verifier tests pass (one skipped).
+The smoke cannot observe flag bit 0, which the current renderer does
+not test; the focused ARM comparison verifies the call shape. See
+[the evidence](LAYOUT_DRAWBOX_WRAPPER_ARM_2026-10-13.md).
+
 ## Layout window-dimension reset (2026-10-13)
 
 The Android-backed `Layout::resetWindowDimensions()` reaches 99.8%

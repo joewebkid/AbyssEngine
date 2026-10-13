@@ -1077,8 +1077,7 @@ void Layout::drawBGBorder(unsigned corner, unsigned edge, int x, int y, int w, i
 }
 
 void Layout::drawBox(int style, int x, int y, int w, int h, String text) {
-    String tmp(text);
-    this->drawBox(style, x, y, w, h, tmp, 0u);
+    this->drawBox(style, x, y, w, h, String(text, false), 1u);
 }
 
 void Layout::drawFooter(bool stationMode_, bool showBack_) {

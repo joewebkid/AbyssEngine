@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (Layout window-dimension reset; older subsystem
+Last reviewed: 2026-10-13 (Layout drawBox default-flags wrapper; older subsystem
 snapshots retain their dates)
+
+## Layout drawBox default-flags wrapper (2026-10-13)
+
+`Layout::drawBox(int,int,int,int,int,String)` now forwards one
+Android-backed `String(const String&, false)` copy and flags `1`
+instead of an extra copy and flags `0`. The current Android renderer
+does not use bit 0 for visual placement, but this restores the
+confirmed call contract. Native `gof2`, all 206 ARM units, the
+production-method UI smoke and 37 verifier tests pass (one skipped).
+Focused source-shape rises 79.2% to 100.0%, strict fuzzy 50.0% to
+100.0%, adding one linked-exact (not byte-exact) symbol. Full corpus:
+4,718 comparisons, 4,323/4,524 covered, 201 missing, 92.95%
+average source-shape, 81.37% strict fuzzy, 2,402 linked-exact and
+1,008 byte-exact. Complete exact and extra-symbol sets show this
+one linked-exact gain and no losses or other changes. Original
+assets, visual output and ARM32 runtime remain untested. Next
+priority: audit `Layout::formatNumber(int)` (83.6% source-shape),
+including negative and grouping edge cases. See
+[the wrapper audit](LAYOUT_DRAWBOX_WRAPPER_ARM_2026-10-13.md).
 
 ## Layout window-dimension reset (2026-10-13)
 
