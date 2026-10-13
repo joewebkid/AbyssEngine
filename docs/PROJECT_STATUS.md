@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (one-matrix sprite draw; older subsystem
+Last reviewed: 2026-10-13 (sphere-frustum wrapper; older subsystem
 snapshots retain their dates)
+
+## Sphere-frustum canvas wrapper (2026-10-13)
+
+`PaintCanvas::CameraIsSphereinViewFrustum` now preserves the Android
+null-extra-matrix call when uninitialized and passes the recovered
+gravity/orientation rotation when initialized. Focused source-shape
+rises 84.6% to 98.4%, strict fuzzy 68.9% to 78.6%; not exact. Native
+`gof2`, 206/206 ARM units, an extracted-body host smoke, and 36
+verifier tests pass (one skipped). Full coverage stays 4,323/4,524;
+average source-shape rises 92.5571% to 92.5600%, strict fuzzy
+80.8591% to 80.8612%. The 2,378 linked-exact and 1,008 byte-exact
+symbol sets have no losses. Real camera geometry and ARM32 runtime
+remain untested. Next audit the adjacent point-frustum wrapper. See
+[the sphere-frustum audit](PAINTCANVAS_SPHERE_FRUSTUM_ARM_2026-10-13.md).
 
 ## One-matrix sprite draw (2026-10-13)
 

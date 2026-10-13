@@ -41,5 +41,5 @@ and ARM disassembly at `0x7ac20`–`0x7ad70`; baseline
 focused `A:/Galaxy on Fire new version/_work/draw_sprite_one_matrix_focus_20261013.json`,
 and full `A:/Galaxy on Fire new version/_work/draw_sprite_one_matrix_full_20261013.json`.
 Next priority: audit the remaining canvas gravity/orientation paths,
-starting with `CameraIsSphereinViewFrustum` at `0x7bcd8`, which still
+starting with `CameraIsSphereinViewFrustum` at `0x7bbb8`, which still
 uses a zero gravity scale and unresolved shims.

@@ -18,6 +18,7 @@ namespace AbyssEngine {
     class ImageFont;
     int MeshDraw(Engine *engine, Mesh *mesh);
     void SpriteSystemDraw(Engine *engine, const Matrix &view, const Matrix &world, SpriteSystem *sys);
+    int CameraIsSphereinViewFrustum(const Vector &center, float radius, Matrix *extra, Camera *cam);
 }
 
 // Byte-faithful "view" structs for the otherwise-untyped engine handles that
@@ -677,16 +678,6 @@ static inline int paintcanvas_ext_gsp_getwidth(void *self) { return ((PaintCanva
 static inline int paintcanvas_ext_gsp_getheight(void *self) { return ((PaintCanvas *) self)->GetHeight(); }
 
 int paintcanvas_ext_sscreate(void *eng, unsigned short id, bool b, void **out);
-
-void paintcanvas_ext_cisvf_matidentity(void *out, void *m);
-
-void *paintcanvas_ext_cisvf_getgrav(void *eng);
-
-float paintcanvas_ext_cisvf_sinf(float v);
-
-float paintcanvas_ext_cisvf_cosf(float v);
-
-int paintcanvas_ext_cisvf_inner(const float *pt, float radius, void *m, void *cam);
 
 void paintcanvas_ext_shader_anim(void *, void *);
 
@@ -2812,36 +2803,33 @@ void PaintCanvas::MaterialCreate(unsigned int &out, AbyssEngine::BlendMode mode,
 }
 
 
-static const double g_cisvf_gravscale_7bcd8 = 0;
-
 int PaintCanvas::CameraIsSphereinViewFrustum(const AbyssEngine::AEMath::Vector &point, float radius) {
-    if (radius == 0.0f ||
-        this->cameras.count <= this->currentCamera) {
+    if (radius == 0.0f || this->currentCamera >= this->cameras.count) {
         return 1;
     }
 
-    float m[16];
-    memset(m, 0, sizeof(m));
-    m[0] = 1.0f;
-    m[5] = 1.0f;
-    m[14] = 1.0f;
-    char scratch[60];
-    paintcanvas_ext_cisvf_matidentity(scratch, m);
+    Camera *cam = this->cameras.data_[this->currentCamera];
+    if (this->initialized == 0) {
+        return AbyssEngine::CameraIsSphereinViewFrustum(point, radius, nullptr, cam);
+    }
 
-    void *grav = paintcanvas_ext_cisvf_getgrav(this->engine);
-    double angle = ((PCGravView *) grav)->angle * g_cisvf_gravscale_7bcd8;
+    Matrix rotation(1.0f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f,
+                    1.0f, 1.0f, 1.0f);
+    AEMath::MatrixIdentity(rotation);
+    double angle = this->engine->GetGravValue()[1] * 1.57079637;
     float a = (float) angle;
     int orient = this->gameOrientation;
     float rot = (orient == 1) ? a : -a;
-    float s = paintcanvas_ext_cisvf_sinf(rot);
-    float c = paintcanvas_ext_cisvf_cosf(rot);
-    m[0] = c;
-    m[5] = c;
-    *(unsigned int *) &m[1] = *(unsigned int *) &s ^ 0x80000000;
-    m[4] = s;
+    float s = AEMath::Sinf(rot);
+    float c = AEMath::Cosf(rot);
+    rotation.m[0] = c;
+    rotation.m[5] = c;
+    rotation.m[1] = -s;
+    rotation.m[4] = s;
 
-    void *cam = ((void **) this->cameras.data_)[this->currentCamera];
-    return paintcanvas_ext_cisvf_inner(point, radius, m, cam);
+    return AbyssEngine::CameraIsSphereinViewFrustum(point, radius, &rotation, cam);
 }
 
 void PaintCanvas::MeshChangeShaderAnimValue(AbyssEngine::Mesh *mesh, float value, unsigned int mode) {
