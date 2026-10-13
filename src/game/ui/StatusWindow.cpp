@@ -13,13 +13,6 @@
 #include "game/core/String.h"
 #include "game/ui/TouchButton.h"
 
-static Layout **g_SWm_layout = nullptr;
-static int *g_SWm_height = nullptr;
-static int *g_SWm_force = nullptr;
-static unsigned char *g_SWm_btnFlag = nullptr;
-static Layout **g_StatusWindow_layout = nullptr;
-static unsigned char *g_StatusWindow_btnFlag = nullptr;
-
 StatusWindow::~StatusWindow() {
     if (this->tabButtons != 0) {
         ArrayReleaseClasses(*this->tabButtons); ArrayRemoveAll(*(this->tabButtons));
@@ -47,8 +40,8 @@ StatusWindow::~StatusWindow() {
 }
 
 int StatusWindow::OnTouchMove(int x, int y) {
-    Layout *layout = *g_SWm_layout;
-    if ((layout->field_0xc < y && y < *g_SWm_height - layout->field_0x10) || *g_SWm_force != 0) {
+    Layout *layout = Globals::layout;
+    if ((layout->field_0xc < y && y < Globals::h - layout->field_0x10) || Globals::mouse_wheel != 0) {
         int delta = y - this->lastTouchY;
         this->scrollVelocity = delta;
         this->scrollDamping = 1.0f;
@@ -60,12 +53,12 @@ int StatusWindow::OnTouchMove(int x, int y) {
             if (dragDist > 3) {
                 (*this->medalButtons)[this->selectedMedal]->setAlwaysPressed(0);
                 this->selectedMedal = -1;
-                layout = *g_SWm_layout;
+                layout = Globals::layout;
             }
         }
     }
     layout->OnTouchMove(x, y);
-    if (*g_SWm_btnFlag == 0) {
+    if (Globals::iPad == 0) {
         for (unsigned i = 0; i < this->tabButtons->size(); ++i)
             (*this->tabButtons)[i]->OnTouchMove(x, y);
     }
@@ -180,13 +173,13 @@ int StatusWindow::OnTouchEnd(int x, int y) {
 }
 
 int StatusWindow::OnTouchBegin(int x, int y) {
-    Layout *layout = *g_StatusWindow_layout;
+    Layout *layout = Globals::layout;
     this->touchStartY = y;
     this->lastTouchY = y;
     this->scrollVelocity = 0;
     this->isDragging = 1;
     layout->OnTouchBegin(x, y);
-    if (*g_StatusWindow_btnFlag == 0) {
+    if (Globals::iPad == 0) {
         for (unsigned i = 0; i < this->tabButtons->size(); ++i)
             (*this->tabButtons)[i]->OnTouchBegin(x, y);
     }

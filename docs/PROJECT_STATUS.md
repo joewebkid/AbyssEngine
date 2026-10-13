@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (Sprite canvas and scale dispatch; older subsystem
+Last reviewed: 2026-10-13 (StatusWindow touch globals; older subsystem
 snapshots retain their dates)
+
+## StatusWindow touch globals (2026-10-13)
+
+`OnTouchMove` and `OnTouchBegin` now read the Android-backed
+`Globals::layout`, `Globals::h`, `Globals::mouse_wheel`, and `Globals::iPad`
+fields instead of private null pointer placeholders. ARM source-shape moves
+from 0.2% to 99.0% for `OnTouchMove` and from 91.2% to 98.5% for
+`OnTouchBegin`; neither is linked- or byte-exact. `OnTouchEnd` remains
+82.7%. Native `gof2`, all 206 ARM translation units, and 37 verifier tests
+pass (one skipped). Full corpus stays 4,323/4,524 covered, 201 missing,
+2,388 linked-exact and 1,008 byte-exact with no exact losses; average
+source-shape rises 92.68% to 92.70% and strict fuzzy 81.04% to 81.07%.
+Interactive touch behaviour and ARM32 runtime remain untested. The much
+larger `ParticleSystemMesh::emitTrail` stub still needs recovery; its
+decompiler math is ambiguous, so no speculative implementation was added.
+See [the touch audit](STATUSWINDOW_TOUCH_GLOBALS_ARM_2026-10-13.md).
 
 ## Sprite canvas and scale dispatch (2026-10-13)
 
