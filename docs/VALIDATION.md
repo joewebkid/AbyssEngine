@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout mission reward (2026-10-14)
+
+The Android-backed reward display reaches 100.0% focused
+source-shape for `showMissionRewardMessage` and 97.3% for
+`drawMissionRewardMessage`; neither is exact. The production-method
+host smoke checks sound, text, icon, boxes and fade boundaries.
+Native `gof2`, all 206 ARM units and 37 verifier tests pass (one
+skipped). Full corpus: 4,323/4,524 covered, 2,403 linked-exact,
+1,008 byte-exact, no exact-set or extra-symbol changes. Original
+ARM32 runtime and visual rendering remain untested. See
+[the evidence](LAYOUT_MISSION_REWARD_ARM_2026-10-14.md).
+
 ## Layout help-window dispatch (2026-10-14)
 
 The Android-backed `Layout::initHelpWindow(String)` reaches 100.0%

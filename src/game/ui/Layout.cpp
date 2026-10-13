@@ -483,17 +483,14 @@ void Layout::setWindowDimensions(int p1, int p2, int p3, int p4) {
 }
 
 
-static FModSound **gFmod = nullptr;
-
 void Layout::showMissionRewardMessage(int show, bool flag) {
     if (show == 0)
         return;
     this->rewardMessageFlag = flag;
     this->rewardMessageActive = 1;
-    FModSound *sound = *gFmod;
     this->rewardMessageTimer = 0;
     this->rewardCredits = show;
-    sound->play(0x24, 0, 0, 0.0f);
+    Globals::sound->play(0x24, 0, 0, 0.0f);
 }
 
 
@@ -978,40 +975,30 @@ void Layout::drawHeader(String title, bool transition) {
 }
 
 
-static PaintCanvas **g_mrCanvas = nullptr;
-
-static int *g_mrDimA = nullptr;
-
 static const char g_mrLit0[] = "";
 
 static const char g_mrLit1[] = "";
 
-static int *g_mrDimB = nullptr;
-
-static int *g_mrTextId = nullptr;
-
-static void **g_mrFont = nullptr;
-
-static const char g_mrLit2[] = "";
+static const char g_mrLit2[] = "+ ";
 
 void Layout::drawMissionRewardMessage(bool transition) {
     if (this->rewardMessageActive != 0) {
-        PaintCanvas *pc = *g_mrCanvas;
+        PaintCanvas *pc = Globals::Canvas;
         unsigned saved = pc->GetColor();
         unsigned origColor = this->drawColor;
-        PaintCanvas::gCanvas->SetColor(0xffffffff);
+        pc->SetColor(0xffffffff);
 
         int t = this->rewardMessageTimer;
         float a;
         if (t < 2000) {
-            a = (float) t / 6000.0f;
+            a = (float) t / 2000.0f;
         } else if (t > 5000) {
-            a = (float) (7000 - t) / 6000.0f;
+            a = (float) (7000 - t) / 2000.0f;
         } else {
             a = 1.0f;
         }
-        unsigned col = (unsigned) ((int) (a * 256.0f)) - 0x100;
-        PaintCanvas::gCanvas->SetColor(col);
+        unsigned col = (unsigned) ((int) (a * 255.0f) - 256);
+        pc->SetColor(col);
 
         unsigned newColor = pc->GetColor();
         int boxW = this->rewardBoxWidth;
@@ -1021,35 +1008,33 @@ void Layout::drawMissionRewardMessage(bool transition) {
         this->drawColor = newColor;
 
         if (transition != 0) {
-            int sw = *g_mrDimA;
-            String s0(g_mrLit0);
-            this->drawBox(2, (sw >> 1) - (boxH >> 1), boxX, boxH, boxW, s0, 0u);
+            int sw = Globals::w;
+            this->drawBox(2, (sw >> 1) - (boxH >> 1), boxX, boxH, boxW, String(g_mrLit0));
 
-            sw = *g_mrDimA;
-            String s1(g_mrLit1);
-            this->drawBox(8, (sw >> 1) - (boxH >> 1), boxX, boxH, boxW, s1, 0u);
+            sw = Globals::w;
+            this->drawBox(8, (sw >> 1) - (boxH >> 1), boxX, boxH, boxW, String(g_mrLit1));
         }
 
-        int sh = *g_mrDimB;
-        pc->DrawImage2D(this->field_0x3a4, sh >> 1, (char) boxX, (unsigned char) (0x11));
+        int sh = Globals::w;
+        pc->DrawImage2D(this->field_0x3a4, sh >> 1, boxX, (unsigned char) 0x11, (unsigned char) 0x14);
 
-        String *txt = GameText::gGameText->getText(*g_mrTextId);
-        String line(*txt);
+        String *txt = Globals::gameText->getText(this->rewardMessageFlag ? 3206 : 216);
+        String line(*txt, false);
 
-        sh = *g_mrDimB;
-        void *font = *g_mrFont;
-        int tw = pc->GetTextWidth((unsigned) (unsigned long) (font), line);
-        pc->DrawString((unsigned) (unsigned long) (font), line, (sh >> 1) - (tw >> 1), boxX + boxY, false);
+        sh = Globals::w;
+        unsigned font = Globals::font;
+        int tw = pc->GetTextWidth(font, line);
+        pc->DrawString(font, line, (sh >> 1) - (tw >> 1), boxX + boxY, false);
 
         String suffix(g_mrLit2);
-        String credits = Layout::formatCredits(this->rewardCredits);
+        String credits = this->formatCredits(this->rewardCredits);
         line = suffix + credits;
 
-        sh = *g_mrDimB;
-        tw = pc->GetTextWidth((unsigned) (unsigned long) (font), line);
-        pc->DrawString((unsigned) (unsigned long) (font), line, (sh >> 1) - (tw >> 1),
+        sh = Globals::w;
+        tw = pc->GetTextWidth(font, line);
+        pc->DrawString(font, line, (sh >> 1) - (tw >> 1),
                        this->rewardBoxY2 + boxX, false);
-        PaintCanvas::gCanvas->SetColor(saved);
+        pc->SetColor(saved);
         this->drawColor = origColor;
     }
 }

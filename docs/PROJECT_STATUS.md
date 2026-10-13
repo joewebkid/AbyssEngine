@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (Layout help window; older subsystem
+Last reviewed: 2026-10-14 (Layout mission reward; older subsystem
 snapshots retain their dates)
+
+## Layout mission reward (2026-10-14)
+
+`Layout::showMissionRewardMessage` now plays the Android-backed
+sound through `Globals::sound` rather than an unassigned holder.
+`drawMissionRewardMessage` restores the original fade timing,
+color scaling, localized title selection, amount prefix, canvas,
+font, icon coordinates/alignment and six-argument box calls.
+The production-method host smoke checks both title variants,
+formatted credits, both transition branches and six fade-boundary
+values. Native `gof2`, all 206 ARM units and 37 verifier tests pass
+(one skipped). Focused source-shape rises 89.3% to 100.0% for show
+and 90.6% to 97.3% for draw; strict fuzzy rises 51.4% to 55.0%
+and 38.7% to 48.5%. Neither is exact. Full corpus: 4,718
+comparisons, 4,323/4,524 covered, 201 missing, 92.97% average
+source-shape, 81.41% strict fuzzy, 2,403 linked-exact and 1,008
+byte-exact; complete exact and extra-symbol sets are unchanged.
+ARM32 runtime and visual rendering remain untested. Next priority:
+audit `Layout::Layout()`
+for unassigned platform configuration holders and field defaults.
+See [the reward audit](LAYOUT_MISSION_REWARD_ARM_2026-10-14.md).
 
 ## Layout help-window dispatch (2026-10-14)
 

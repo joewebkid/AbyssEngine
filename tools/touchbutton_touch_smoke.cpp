@@ -26,13 +26,18 @@ Status *Globals::status = nullptr;
 int Globals::other_buttons_x[10] = {};
 int Globals::other_buttons_y[10] = {};
 static int formatLanguage = 0;
+static int lastTextKey = -1;
 int GameText::getLanguage() { return formatLanguage; }
 GameText::GameText() = default;
 GameText::~GameText() = default;
 String *GameText::getText(int key) {
-    assert(key == 0x187);
-    static String title("HELP");
-    return &title;
+    lastTextKey = key;
+    static String help("HELP"), reward("REWARD"), bonus("BONUS");
+    if (key == 0x187) return &help;
+    if (key == 216) return &reward;
+    if (key == 3206) return &bonus;
+    assert(false);
+    return nullptr;
 }
 
 AbyssEngine::String::String() : data(nullptr), length(0) {}
@@ -84,7 +89,6 @@ Status::Status() : ship(nullptr), credits(0) {}
 Status::~Status() = default;
 Ship *Status::getShip() { return ship; }
 int Status::getCredits() { return credits; }
-String Layout::formatCredits(int value) { return String(value) + String("$"); }
 Layout::Layout() { field_0x38 = 0; drawColor = -1; }
 Layout::~Layout() = default;
 static int choiceConstructs, choiceDraws;
@@ -641,6 +645,58 @@ int main() {
     assert(choiceMessage == "AGAIN");
     delete layout.choiceWindow;
     layout.choiceWindow = nullptr;
+
+    layout.rewardMessageActive = 0;
+    int rewardSoundStart = soundCount;
+    layout.showMissionRewardMessage(0, false);
+    assert(!layout.rewardMessageActive && soundCount == rewardSoundStart);
+    layout.showMissionRewardMessage(250, false);
+    assert(layout.rewardMessageActive && !layout.rewardMessageFlag);
+    assert(layout.rewardMessageTimer == 0 && layout.rewardCredits == 250);
+    assert(soundCount == rewardSoundStart + 1 && sounds[soundCount - 1] == 0x24);
+
+    layout.rewardBoxWidth = 30;
+    layout.rewardBoxHeight = 20;
+    layout.rewardBoxX = 150;
+    layout.rewardBoxY = 12;
+    layout.rewardBoxY2 = 36;
+    layout.rewardIconImage = 177;
+    layout.bgPatternImage = 178;
+    layout.field_0x39c = 181;
+    layout.field_0x3a0 = 182;
+    layout.drawColor = 0x55667788;
+    struct RewardFadeCase { int timer; unsigned color; };
+    const RewardFadeCase rewardFadeCases[] = {
+        {0, 0xffffff00u}, {1999, 0xfffffffeu}, {2000, 0xffffffffu},
+        {5000, 0xffffffffu}, {5001, 0xfffffffeu}, {7000, 0xffffff00u},
+    };
+    for (const RewardFadeCase &fade : rewardFadeCases) {
+        clearDraws();
+        layout.rewardMessageTimer = fade.timer;
+        layout.drawMissionRewardMessage(false);
+        assert(colors.size() == 3 && colors[0] == 0xffffffffu && colors[1] == fade.color);
+        assert(currentColor == 0x12345678 && layout.drawColor == 0x55667788u);
+        assert(lastTextKey == 216 && images.size() == 1);
+        assert(images[0].id == 177 && images[0].x == 240 && images[0].y == 150);
+        assert(images[0].flagsA == 0x11 && images[0].flagsB == 0x14);
+        assert(texts.size() == 2 && texts[0].content == "REWARD" && texts[1].content == "+ 250$");
+        assert(texts[0].x == 236 && texts[0].y == 162 && texts[1].y == 186);
+    }
+
+    layout.showMissionRewardMessage(1234, true);
+    assert(layout.rewardMessageFlag && layout.rewardMessageTimer == 0 && layout.rewardCredits == 1234);
+    assert(soundCount == rewardSoundStart + 2 && sounds[soundCount - 1] == 0x24);
+    layout.rewardMessageTimer = 2000;
+    clearDraws();
+    layout.drawMissionRewardMessage(true);
+    assert(lastTextKey == 3206 && texts.size() == 2);
+    assert(texts[0].content == "BONUS" && texts[1].content == "+ 1,234$");
+    assert(imageAt(178, 230, 150) && imageAt(181, 230, 150));
+    assert(currentColor == 0x12345678 && layout.drawColor == 0x55667788u);
+    layout.rewardMessageActive = 0;
+    clearDraws();
+    layout.drawMissionRewardMessage(false);
+    assert(images.empty() && texts.empty() && colors.empty());
 
     std::puts("TouchButton/Layout host smoke: OK");
 }
