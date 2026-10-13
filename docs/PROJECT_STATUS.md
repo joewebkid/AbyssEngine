@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (recursive mesh draw; older subsystem
+Last reviewed: 2026-10-13 (indexed mesh draw; older subsystem
 snapshots retain their dates)
+
+## Indexed mesh draw dispatch (2026-10-13)
+
+`PaintCanvas::DrawMesh(unsigned)` now calls the real typed `MeshDraw`
+instead of an unresolved shim. Android ARM at `0x7968c` confirms the
+index guard, mesh lookup, and direct draw call. The wrapper retains
+100.0% source-shape, 100.0% strict fuzzy, and linked-exact status
+(not byte-exact). Native `gof2`, 206/206 ARM units, and 36 verifier
+tests pass (one skipped). Full corpus remains 4,717 comparisons,
+4,323/4,524 covered, 201 missing, 92.5708% average source-shape,
+80.8823% average strict fuzzy, 2,378 linked-exact, and 1,008
+byte-exact; neither exact symbol set loses a member. This fixes the
+dispatch dependency but does not test GL rendering or ARM32 runtime.
+Next audit the shared `MeshGetTriCount` / `TransformGetTriCount`
+path, where an unresolved transform-count shim remains.
 
 ## Recursive mesh draw (2026-10-13)
 

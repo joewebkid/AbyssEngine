@@ -592,9 +592,6 @@ float paintcanvas_ext_init_signedtofloat(int v, unsigned int mode);
 
 void paintcanvas_ext_init_setpersp(void *self, float a, float b, float c);
 
-void paintcanvas_ext_draw_mesh(void *, void *);
-
-
 int paintcanvas_ext_font_get_yoff(void *);
 
 int paintcanvas_ext_spm_dispwidth(void *eng);
@@ -2122,8 +2119,8 @@ void PaintCanvas::Initialize(bool landscape) {
 
 void PaintCanvas::DrawMesh(unsigned int index) {
     if (index < this->meshCount) {
-        void *mesh = (this->meshes)[index];
-        return paintcanvas_ext_draw_mesh(this->engine, mesh);
+        Mesh *mesh = reinterpret_cast<Mesh *>(this->meshes[index]);
+        AbyssEngine::MeshDraw(this->engine, mesh);
     }
 }
 
