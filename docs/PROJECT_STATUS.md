@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (Layout header; older subsystem
+Last reviewed: 2026-10-13 (Layout full-screen window wrapper; older subsystem
 snapshots retain their dates)
+
+## Layout full-screen window wrapper (2026-10-13)
+
+`Layout::drawWindow(String,bool)` now obtains screen and top-inset
+dimensions from Android-backed globals instead of unassigned holders,
+and forwards the title through the original `String(const String&,
+false)` constructor. The production-method UI smoke covers both
+background flags and the original double top-inset adjustment. Native
+`gof2`, all 206 ARM units and 37 verifier tests pass (one skipped).
+Focused source-shape rises 74.7% to 100.0%, strict fuzzy 40.0% to
+100.0%, adding one linked-exact (not byte-exact) symbol. Full corpus:
+4,718 comparisons, 4,323/4,524 covered, 201 missing, 92.93% average
+source-shape, 81.34% strict fuzzy, 2,400 linked-exact and 1,008
+byte-exact. Complete exact and extra-symbol comparisons show one
+linked-exact gain, no losses and no extra-symbol change. Original
+assets, visual output and ARM32 runtime remain untested. Next
+priority: the one-argument `Layout::drawWindow(String)` overload
+(76.1% source-shape). See [the wrapper audit](LAYOUT_WINDOW_WRAPPER_ARM_2026-10-13.md).
 
 ## Layout header (2026-10-13)
 

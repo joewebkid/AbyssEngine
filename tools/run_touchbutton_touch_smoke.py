@@ -44,6 +44,7 @@ def main():
     extracted += function(layout, "void Layout::drawEmptyFooter(")
     extracted += function(layout, "void Layout::drawHeader(String title, bool transition)")
     extracted += function(layout, "void Layout::drawWindow(String title, int x, int y, int w, int h, bool drawBG)")
+    extracted += function(layout, "void Layout::drawWindow(String title, bool drawBG)")
     extracted += function(layout, "uint8_t Layout::drawFade(")
     extracted += function((ROOT / "src/game/core/String.cpp").read_text(),
                           "unsigned int String::Compare(const char *s)")

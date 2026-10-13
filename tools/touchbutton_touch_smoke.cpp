@@ -23,6 +23,10 @@ Status *Globals::status = nullptr;
 
 AbyssEngine::String::String() : data(nullptr), length(0) {}
 AbyssEngine::String::String(const char *text, bool) : data(nullptr), length(0) { Set(text); }
+AbyssEngine::String::String(const String &other, bool reverse) : data(nullptr), length(0) {
+    assert(!reverse);
+    Set(other.data);
+}
 AbyssEngine::String::String(int value) : data(nullptr), length(0) {
     Set(std::to_string(value).c_str());
 }
@@ -465,6 +469,18 @@ int main() {
     assert(!imageAt(42, 10, 28) && imageAt(73, 10, 20));
     assert(outlines.size() == 1 && outlines[0].y == 28 && outlines[0].height == 42);
     assert(currentColor == 0x12345678);
+
+    clearDraws();
+    layout.drawWindow(String("BOX"), false);
+    assert(!imageAt(42, 0, 8) && imageAt(73, 0, 0));
+    assert(outlines.size() == 1 && outlines[0].x == 0 && outlines[0].y == 8);
+    assert(outlines[0].width == 480 && outlines[0].height == 304);
+    assert(currentColor == 0x12345678);
+
+    clearDraws();
+    layout.drawWindow(String("BOX"), true);
+    assert(imageAt(42, 0, 8) && outlines.size() == 1);
+    assert(outlines[0].width == 480 && outlines[0].height == 304);
 
     clearDraws();
     layout.drawBGBorder(61, 62, 10, 20, 47, 65, 2, 3);

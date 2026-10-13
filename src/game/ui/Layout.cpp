@@ -463,12 +463,6 @@ String Layout::formatNumber(int value) {
 }
 
 
-static int *gW1 = nullptr;
-
-static int *gW2 = nullptr;
-
-static int *gW3 = nullptr;
-
 void Layout::setWindowDimensions(int p1, int p2, int p3, int p4) {
     this->windowX = p1;
     this->windowY = p2;
@@ -1164,8 +1158,6 @@ void Layout::drawWindow(String title) {
 }
 
 void Layout::drawWindow(String title, bool drawBG) {
-    String tmp(title);
-    int p4 = *gW2;
-    int p5 = *gW3 - ((int *) gW1)[2];
-    this->drawWindow(tmp, 0, 0, p4, p5, drawBG);
+    this->drawWindow(String(title, false), 0, 0,
+                     Globals::w, Globals::h - Globals::layout->field_0x8, drawBG);
 }

@@ -4,6 +4,16 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout full-screen window wrapper (2026-10-13)
+
+The Android-backed `Layout::drawWindow(String,bool)` reaches 100.0%
+source-shape and 100.0% strict fuzzy, adding a linked-exact (not
+byte-exact) result. The production-method UI smoke checks both
+background paths and the original double top-inset adjustment. Native
+`gof2`, all 206 ARM units and 37 verifier tests pass (one skipped).
+This is not an ARM32 runtime or visual rendering test. See
+[the evidence](LAYOUT_WINDOW_WRAPPER_ARM_2026-10-13.md).
+
 ## Layout header (2026-10-13)
 
 Android-backed `Layout::drawHeader(String,bool)` reaches 99.8%
