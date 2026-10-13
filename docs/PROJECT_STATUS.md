@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (virtual key dispatch; older subsystem
+Last reviewed: 2026-10-13 (virtual-key table; older subsystem
 snapshots retain their dates)
+
+## Initialized virtual-key table (2026-10-13)
+
+The Android `keys` table is restored as 48 initialized records rather than
+zero-filled local state. A local ARM-object comparison matched all 4,224
+initializer bytes and all 78 relocation targets, offsets, and types against
+the Android ELF. The touch-coordinate X/Y globals now have integer types,
+consistent with the Android input path. Focused `VirtualInput` average
+source-shape rises 73.87% to 74.59%; linked-exact rows rise 3 to 8.
+Native `gof2`, 206/206 ARM translation units, and 37 verifier tests pass
+(one skipped). Full corpus stays 4,323/4,524 covered, 201 missing,
+92.79% average source-shape at report precision, and 1,008 byte-exact;
+strict fuzzy rises 81.17% to 81.18%, linked-exact 2,389 to 2,394,
+with no previously exact losses. Device-level key input is still untested,
+and `setValuesForGamepad` remains disconnected from `simulateTouch`.
+See [the table audit](VIRTUAL_KEY_TABLE_ARM_2026-10-13.md).
 
 ## Virtual key dispatch and shared flags (2026-10-13)
 
@@ -17,10 +33,9 @@ exact. Native `gof2`, 206/206 ARM units and 37 verifier tests pass (one
 skipped). Full corpus stays 4,323/4,524 covered, 201 missing, and 1,008
 byte-exact; linked-exact rises 2,388 to 2,389 with no old exact losses.
 Average source-shape rises 92.70% to 92.79%, strict fuzzy 81.07% to 81.17%.
-The original 48-entry `keys` table is initialized in Android `.data`, whereas
-the local table is still zero-initialized: native key handling is **not**
-claimed operational. Next recover that table and its address fields, then
-exercise press/release with runtime fixtures. See
+This historical snapshot predates the initialized table recovery above;
+end-to-end key handling is still not claimed operational. Next exercise
+press/release with runtime fixtures. See
 [the input audit](VIRTUAL_INPUT_KEY_DISPATCH_ARM_2026-10-13.md).
 
 ## StatusWindow touch globals (2026-10-13)

@@ -22,7 +22,7 @@ void MouseWheel(float delta, float residual);
 
 void SetKeyCode(const char *name, int slot, int code);
 
-int IsSubMenuActive(int player);
+bool IsSubMenuActive(int player);
 
 bool ArrowKeyPressed();
 

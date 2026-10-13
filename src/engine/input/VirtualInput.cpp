@@ -20,8 +20,7 @@ using AbyssEngine::AEMath::VectorSignedToFloat;
 bool g_virtualInputSlowMotion;
 bool g_virtualInputSpeedUp;
 
-namespace {
-    struct VirtualKey {
+struct VirtualKey {
         char name[0x14];
         int pressed;
         int keyCode;
@@ -36,25 +35,86 @@ namespace {
         int offsetY;
 
         union {
-            void *touch;
             int touchWindowHandle;
+            void *touch;
         };
 
         int field_0x44;
         int field_0x48;
         int action;
         int field_0x50;
-        int (*predicate)(int);
-    };
+        bool (*predicate)(int);
+};
 
 #if UINTPTR_MAX == 0xffffffffu
-    static_assert(sizeof(VirtualKey) == 0x58, "Android virtual-key stride");
-    static_assert(offsetof(VirtualKey, touchX) == 0x28, "Android touch X slot");
-    static_assert(offsetof(VirtualKey, predicate) == 0x54, "Android predicate slot");
+static_assert(sizeof(VirtualKey) == 0x58, "Android virtual-key stride");
+static_assert(offsetof(VirtualKey, touchX) == 0x28, "Android touch X slot");
+static_assert(offsetof(VirtualKey, predicate) == 0x54, "Android predicate slot");
 #endif
 
+#define VKEY(name, key, alt1, alt2, alt3, touchX, touchY, baseX, baseY, handle, module, action, pass, predicate) \
+    {name, 0, key, alt1, alt2, alt3, touchX, touchY, baseX, baseY, 0, 0, {handle}, module, 0, action, pass, predicate}
+#define PRED(fn) &fn
+
+extern "C" {
+VirtualKey keys[48] = {
+    VKEY("Left", 97, 0xf702, -100, -13, nullptr, nullptr, 0, 0, 0, 2, -1, 0, PRED(IsInGameSubMenuNotActive)),
+    VKEY("Right", 100, 0xf703, -200, -14, nullptr, nullptr, 0, 0, 0, 2, -1, 0, PRED(IsInGameSubMenuNotActive)),
+    VKEY("Down", 119, 0xf700, -300, -11, nullptr, nullptr, 0, 0, 0, 2, -1, 0, PRED(IsInGameSubMenuNotActive)),
+    VKEY("Up", 115, 0xf701, -400, -12, nullptr, nullptr, 0, 0, 0, 2, -1, 0, PRED(IsInGameSubMenuNotActive)),
+    VKEY("SwipeLeft", 121, 0, -4, 0, nullptr, nullptr, 0, 0, 0, 2, -1, 0, nullptr),
+    VKEY("SwipeRight", 120, 0, -5, 0, nullptr, nullptr, 0, 0, 0, 2, -1, 0, nullptr),
+    VKEY("RotateLeft", 44, 0, 0, 0, nullptr, nullptr, 0, 0, 0, 2, -1, 0, nullptr),
+    VKEY("RotateRight", 46, 0, 0, 0, nullptr, nullptr, 0, 0, 0, 2, -1, 0, nullptr),
+    VKEY("Accelerate", 43, 0, 0, 0, nullptr, nullptr, 0, 0, 0, 2, -1, 0, nullptr),
+    VKEY("Decelerate", 45, 0, 0, 0, nullptr, nullptr, 0, 0, 0, 2, -1, 0, nullptr),
+    VKEY("Break", 1, 0, -2, 0, nullptr, nullptr, 0, 0, 0, 2, -1, 1, PRED(IsInGameSubMenuNotActive)),
+    VKEY("Left", 97, 0xf702, -100, -13, nullptr, nullptr, 0, 0, 0, 5, -1, 0, nullptr),
+    VKEY("Right", 100, 0xf703, -200, -14, nullptr, nullptr, 0, 0, 0, 5, -1, 0, nullptr),
+    VKEY("Down", 119, 0xf700, -300, -11, nullptr, nullptr, 0, 0, 0, 5, -1, 0, nullptr),
+    VKEY("Up", 115, 0xf701, -400, -12, nullptr, nullptr, 0, 0, 0, 5, -1, 0, nullptr),
+    VKEY("Left", 97, 0xf702, -100, -13, nullptr, nullptr, 0, 0, 0, 2, -1, 0, nullptr),
+    VKEY("Right", 100, 0xf703, -200, -14, nullptr, nullptr, 0, 0, 0, 2, -1, 0, nullptr),
+    VKEY("Down", 119, 0xf700, -300, -11, nullptr, nullptr, 0, 0, 0, 2, -1, 0, nullptr),
+    VKEY("Up", 115, 0xf701, -400, -12, nullptr, nullptr, 0, 0, 0, 2, -1, 0, nullptr),
+    VKEY("Wingmen", 0, 0, 0, 0, nullptr, nullptr, 0, 0, 213, 2, -1, 1, nullptr),
+    VKEY("Boost", 101, 98, -1, 0, &Globals::boost_x, &Globals::boost_y, 0, 0, 100, 2, -1, 0, nullptr),
+    VKEY("Dock", 102, 60, -3, 0, &Globals::fire_x, &Globals::fire_y, 4, 4, 1111, 2, -1, 0, PRED(IsDialogNotVisible2)),
+    VKEY("Fire", 49, 13, -10000, 0, &Globals::fire_x, &Globals::fire_y, 4, 4, 23, 2, -1, 0, PRED(IsDialogNotVisible2)),
+    VKEY("Fire", 49, 13, -10000, 0, &Globals::fire_x, &Globals::fire_y, 4, 4, 26, 1, -1, 0, nullptr),
+    VKEY("Fire", 49, 13, -10000, 0, &Globals::right_edge, &Globals::bottom_edge, 4, 4, 24, 5, -1, 0, PRED(IsDialogNotVisible2)),
+    VKEY("Fire", 49, 13, -10000, 0, &Globals::other_buttons_x[3], &Globals::other_buttons_y[3], 4, 4, 25, -1, -1, 1, PRED(IsDialogVisible)),
+    VKEY("SecondaryFire", 114, 118, 0, 0, &Globals::sec_fire_x, &Globals::sec_fire_y, 0, 0, 99, 2, -1, 0, nullptr),
+    VKEY("TurretView", 103, 0, 0, 0, &Globals::turret_view_x, &Globals::turret_view_y, 0, 0, 4, 2, -1, 0, nullptr),
+    VKEY("ActionMenu", 109, 0, 0, 0, &Globals::action_menu_x, &Globals::action_menu_y, 0, 0, 109, 2, 2, 0, nullptr),
+    VKEY("Pause", 53, 0, -8, 0, &Globals::pause_x, &Globals::pause_y, 0, 0, 108, 2, -1, 0, PRED(IsStarMapNotVisible)),
+    VKEY("AutoPilot", 113, 110, -10, 0, &Globals::autopilot_x, &Globals::autopilot_y, 0, 0, 102, 2, 1, 0, nullptr),
+    VKEY("FastForward", 9, 0, 0, 0, &Globals::fast_forward_x, &Globals::fast_forward_y, 0, 0, 103, 2, -1, 0, nullptr),
+    VKEY("Back", 53, 0, -9, 0, &Globals::other_buttons_x[0], &Globals::other_buttons_y[0], 0, 0, 201, -1, -1, 0, PRED(IsDialogNotVisible)),
+    VKEY("Back", 53, 0, -9, 0, &Globals::other_buttons_x[2], &Globals::other_buttons_y[2], 0, 0, 202, -1, -1, 1, PRED(IsDialogVisible)),
+    VKEY("Back", 53, 0, -9, 0, &Globals::pause_x, &Globals::pause_y, 0, 0, 203, -1, -1, 0, PRED(IsInGameSubMenuNotActive)),
+    VKEY("Back", 53, 0, -9, 0, &Globals::left_edge, &Globals::bottom_edge, 0, 0, 204, -1, -1, 1, PRED(IsInPrimaryMenu)),
+    VKEY("KhadorDrive", 40, 0, 0, 0, nullptr, nullptr, 0, 0, 211, 2, -1, 1, PRED(IsInGameSubMenuNotActive)),
+    VKEY("Cloak", 99, 0, 0, 0, nullptr, nullptr, 0, 0, 212, 2, -1, 1, PRED(IsInGameSubMenuNotActive)),
+    VKEY("1", 18, 0, 0, 0, &Globals::sub_menu_buttons_x[0], &Globals::sub_menu_buttons_y[0], 10, 0, 1401, -1, 0, 0, PRED(IsSubMenuActive)),
+    VKEY("2", 19, 0, 0, 0, &Globals::sub_menu_buttons_x[1], &Globals::sub_menu_buttons_y[1], 10, 0, 1402, -1, 0, 0, PRED(IsSubMenuActive)),
+    VKEY("3", 20, 0, 0, 0, &Globals::sub_menu_buttons_x[2], &Globals::sub_menu_buttons_y[2], 10, 0, 1403, -1, 0, 0, PRED(IsSubMenuActive)),
+    VKEY("4", 21, 0, 0, 0, &Globals::sub_menu_buttons_x[3], &Globals::sub_menu_buttons_y[3], 10, 0, 1404, -1, 0, 0, PRED(IsSubMenuActive)),
+    VKEY("5", 53, 0, 0, 0, &Globals::sub_menu_buttons_x[4], &Globals::sub_menu_buttons_y[4], 10, 0, 1405, -1, 0, 0, PRED(IsSubMenuActive)),
+    VKEY("6", 22, 0, 0, 0, &Globals::sub_menu_buttons_x[5], &Globals::sub_menu_buttons_y[5], 10, 0, 1406, -1, 0, 0, PRED(IsSubMenuActive)),
+    VKEY("7", 26, 0, 0, 0, &Globals::sub_menu_buttons_x[6], &Globals::sub_menu_buttons_y[6], 10, 0, 1407, -1, 0, 0, PRED(IsSubMenuActive)),
+    VKEY("8", 28, 0, 0, 0, &Globals::sub_menu_buttons_x[7], &Globals::sub_menu_buttons_y[7], 10, 0, 1408, -1, 0, 0, PRED(IsSubMenuActive)),
+    VKEY("9", 25, 0, 0, 0, &Globals::sub_menu_buttons_x[8], &Globals::sub_menu_buttons_y[8], 10, 0, 1409, -1, 0, 0, PRED(IsSubMenuActive)),
+    VKEY("0", 29, 0, 0, 0, &Globals::sub_menu_buttons_x[9], &Globals::sub_menu_buttons_y[9], 10, 0, 1410, -1, 0, 0, PRED(IsSubMenuActive)),
+};
+}
+
+#undef PRED
+#undef VKEY
+
+namespace {
     constexpr int kVirtualKeyCount = 48;
-    VirtualKey g_virtualKeys[kVirtualKeyCount];
+    VirtualKey (&g_virtualKeys)[kVirtualKeyCount] = keys;
 
     VirtualKey *const g_arrowKeys = g_virtualKeys;
 
@@ -218,7 +278,7 @@ void SetKeyCode(const char *name, int slot, int code) {
     }
 }
 
-int IsSubMenuActive(int player) {
+bool IsSubMenuActive(int player) {
     const int handle = g_virtualKeys[player].touchWindowHandle;
     if (handle <= kTouchWindowBase)
         return false;
