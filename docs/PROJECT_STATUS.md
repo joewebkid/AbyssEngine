@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (Layout tip; older subsystem
+Last reviewed: 2026-10-13 (Layout tip initialization; older subsystem
 snapshots retain their dates)
+
+## Layout tip initialization (2026-10-13)
+
+`Layout::initTip` now selects a tip text ID through the Android-backed
+global random service (`340 + nextInt(13)`), wraps text with the global
+font, canvas and layout metrics, and releases the previous line array
+without an extra reallocation. A production-method host smoke covers
+two consecutive calls. Native `gof2`, all 206 ARM units and 37 verifier
+tests pass (one skipped). Focused source-shape rises 79.2% to 100.0%
+and strict fuzzy 50.5% to 97.0%; it is not linked- or byte-exact.
+Full corpus: 4,323/4,524 covered, 201 missing, 92.88% average
+source-shape, 81.27% strict fuzzy, 2,398 linked-exact and 1,008
+byte-exact. Exact and extra-symbol sets are unchanged. The one fewer
+comparison is the now-unused non-exact `ArrayRemoveAll<String*>`
+instantiation, not a coverage loss. ARM32 runtime and real text assets
+remain untested. Next priority: `Layout::drawEmptyFooter`. See
+[the initialization audit](LAYOUT_INIT_TIP_ARM_2026-10-13.md).
 
 ## Layout tip (2026-10-13)
 
@@ -17,7 +34,7 @@ covered, 201 missing, 92.88% average source-shape, 81.25% strict
 fuzzy, 2,398 linked-exact and 1,008 byte-exact. Complete exact and
 extra-symbol comparisons show one linked-exact gain, no losses and no
 extra-symbol change. ARM32 runtime and visual output remain untested.
-Next priority: `Layout::setTip`. See [the tip audit](LAYOUT_TIP_ARM_2026-10-13.md).
+Next priority was `Layout::initTip`. See [the tip audit](LAYOUT_TIP_ARM_2026-10-13.md).
 
 ## Layout scrollbar (2026-10-13)
 

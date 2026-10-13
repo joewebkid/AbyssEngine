@@ -32,6 +32,5 @@ the same 123 extra symbols. The reports are
 `A:/Galaxy on Fire new version/_work/layout_tip_before_20261013.json`,
 `layout_tip_after_20261013.json` and `layout_tip_full_20261013.json`.
 Android ARM32 runtime, real texture assets and visual placement remain
-untested. The next priority is another bounded, source-backed Layout
-gap; `setTip` still contains unresolved service holders and needs its
-own audit.
+untested. The next priority was `initTip`, subsequently covered in
+[the initialization audit](LAYOUT_INIT_TIP_ARM_2026-10-13.md).

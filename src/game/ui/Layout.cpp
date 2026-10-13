@@ -145,32 +145,21 @@ void Layout::startFade(bool fadeOut, int color, int duration) {
 }
 
 
-static unsigned *g_tipColor = nullptr;
-
-static int **g_tipTextId = nullptr;
-
-static PaintCanvas ***g_tipCanvas = nullptr;
-
-static int **g_tipMetric = nullptr;
-
 void Layout::initTip() {
     if (this->tipLines != nullptr) {
-        ArrayReleaseClasses(*this->tipLines); ArrayRemoveAll(*(this->tipLines));
+        ArrayReleaseClasses(*this->tipLines);
         delete this->tipLines;
         this->tipLines = nullptr;
     }
-    Array<String *> *arr = new Array<String *>();
-
-    unsigned color = *g_tipColor;
-    int textId = **g_tipTextId;
-    PaintCanvas *canvas = **g_tipCanvas;
-    AERandom::gRandom->nextInt();
-    String *str = GameText::gGameText->getText(textId);
-
-    this->tipLines = arr;
-    int *m = *g_tipMetric;
-    int width = m[0x78 / 4] + m[0x4c / 4] * -2;
-    canvas->GetLineArray(color, *str, width, this->tipLines);
+    this->tipLines = new Array<String *>();
+    unsigned int font = Globals::font;
+    GameText *gameText = Globals::gameText;
+    PaintCanvas *canvas = Globals::Canvas;
+    // Android 2.0.16 selects one of tip text IDs 340..352.
+    int textId = reinterpret_cast<AERandom *>(Globals::rnd)->nextInt(13) + 340;
+    String *text = gameText->getText(textId);
+    int width = Globals::layout->field_0x78 - 2 * Globals::layout->field_0x4c;
+    canvas->GetLineArray(font, *text, width, this->tipLines);
 }
 
 

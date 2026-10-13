@@ -4,6 +4,15 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout tip initialization (2026-10-13)
+
+The Android-backed `Layout::initTip()` recovery reaches 100.0%
+source-shape and 97.0% strict fuzzy but remains non-exact. Its
+production-method host smoke checks two calls, the text ID, font,
+wrap width and old-array release. Native `gof2`, all 206 ARM units and
+37 verifier tests pass (one skipped). See
+[the evidence](LAYOUT_INIT_TIP_ARM_2026-10-13.md).
+
 ## Layout tip (2026-10-13)
 
 The Android-backed `Layout::drawTip()` recovery is 100.0% source-shape
