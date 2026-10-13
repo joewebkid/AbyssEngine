@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (StatusWindow touch achievements; older subsystem
+Last reviewed: 2026-10-13 (Layout scrollbar; older subsystem
 snapshots retain their dates)
+
+## Layout scrollbar (2026-10-13)
+
+The shared scrollbar now uses the Android canvas, track width and color
+sequence, and draws its top cap at the calculated thumb position rather
+than screen `y=0`. It serves `StatusWindow`, `WantedWindow`,
+`HangarWindow` and `ScrollTouchWindow`. A production-method host smoke,
+the existing TouchButton/Layout smoke, native `gof2`, all 206 ARM units
+and 37 verifier tests pass (one skipped). Focused source-shape rises
+39.1% to 93.1% and strict fuzzy 15.9% to 35.1%; the method remains
+non-exact. Full corpus: 4,323/4,524 covered, 92.86% average
+source-shape, 81.24% strict fuzzy, 2,397 linked-exact and 1,008
+byte-exact, without exact-symbol loss. Visual/ARM32 rendering remains
+unverified. Next priority: `Layout::drawTip`. See
+[the scrollbar audit](LAYOUT_SCROLLBAR_ARM_2026-10-13.md).
 
 ## StatusWindow touch achievements service (2026-10-13)
 

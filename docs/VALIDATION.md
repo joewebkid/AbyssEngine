@@ -134,6 +134,16 @@ This checks selected geometry and call behavior, not a full game UI or ARM
 runtime. See [the UI host-smoke audit](TOUCHBUTTON_UI_HOST_SMOKE_ARM_2026-10-12.md).
 
 ```powershell
+python tools/run_layout_scroll_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `Layout scrollbar host smoke: OK`. This extracts the
+production scrollbar method and checks track/cap geometry, colors and
+both thumb branches with fixture canvas services. It does not render
+original textures or run on ARM32. See
+[the scrollbar audit](LAYOUT_SCROLLBAR_ARM_2026-10-13.md).
+
+```powershell
 python tools/run_player_ego_throttle_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
 ```
 

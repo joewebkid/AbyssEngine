@@ -580,25 +580,17 @@ void Layout::drawBGBorder(unsigned corner, unsigned edge, int x, int y, int w, i
 }
 
 
-static PaintCanvas **g_sbCanvas = nullptr;
-
-static unsigned g_sbColor0 = 0;
-
-static unsigned g_sbColor1 = 0;
-
-static int **g_sbMetric = nullptr;
-
 void Layout::drawScrollBar(int x, int y, int trackH, int pos, int range) {
-    PaintCanvas *pc = *g_sbCanvas;
-    int iw = PaintCanvas::gCanvas->GetImage2DWidth(this->scrollBarImage);
-    int ih = PaintCanvas::gCanvas->GetImage2DHeight(this->scrollBarImage);
+    PaintCanvas *pc = Globals::Canvas;
+    int iw = pc->GetImage2DWidth(this->scrollBarImage);
+    int ih = pc->GetImage2DHeight(this->scrollBarImage);
 
-    PaintCanvas::gCanvas->SetColor(g_sbColor0);
-    PaintCanvas::gCanvas->SetColor(g_sbColor1);
+    pc->SetColor(0x111417ffu);
+    pc->SetColor(0x193043ffu);
 
     int inset = this->scrollBarInset;
-    pc->DrawRectangle(x, inset + y, (*g_sbMetric)[0x48 / 4], trackH - inset * 2);
-    PaintCanvas::gCanvas->SetColor(this->drawColor);
+    pc->DrawRectangle(x, inset + y, Globals::layout->field_0x48, trackH - inset * 2);
+    pc->SetColor(this->drawColor);
 
     int thumb = range - 1;
     if (thumb <= ih * 2) thumb = ih * 2;
@@ -617,7 +609,7 @@ void Layout::drawScrollBar(int x, int y, int trackH, int pos, int range) {
         if (lim <= off) off = lim;
     }
 
-    pc->DrawImage2D(this->scrollBarImage, handle + x + 1, 0);
+    pc->DrawImage2D(this->scrollBarImage, handle + x + 1, y + off);
     pc->DrawImage2D(this->scrollBarImage,
                     this->scrollBarHandle + x + 1, (thumb - ih) + y + off, (unsigned char) (0x02));
 }
