@@ -79,10 +79,12 @@ struct ImageCall { unsigned int id; int x, y; unsigned char flagsA, flagsB; };
 struct RegionCall { unsigned int id; int width, height, x, y; float angle; };
 struct TextCall { unsigned int font; int x, y; std::string content; };
 struct FillCall { int x, y, width, height; unsigned int color; };
+struct OutlineCall { int x, y, width, height; unsigned int color; };
 static std::vector<ImageCall> images;
 static std::vector<RegionCall> regions;
 static std::vector<TextCall> texts;
 static std::vector<FillCall> fills;
+static std::vector<OutlineCall> outlines;
 static std::vector<unsigned int> colors;
 static std::vector<unsigned int> imageWidthQueries;
 static unsigned int currentColor = 0x12345678;
@@ -117,6 +119,9 @@ void PaintCanvas::DrawString(unsigned int font, const String &value, int x, int 
 void PaintCanvas::FillRectangle(int x, int y, int width, int height) {
     fills.push_back({x, y, width, height, currentColor});
 }
+void PaintCanvas::DrawRectangle(int x, int y, int width, int height) {
+    outlines.push_back({x, y, width, height, currentColor});
+}
 void PaintCanvas::DrawRegion2D(unsigned int id, int, int, int width, int height, float angle,
                                int, int, int x, int y) {
     regions.push_back({id, width, height, x, y, angle});
@@ -132,7 +137,7 @@ static bool sawColor(unsigned int color) {
     return false;
 }
 static void clearDraws() {
-    images.clear(); regions.clear(); texts.clear(); fills.clear(); colors.clear();
+    images.clear(); regions.clear(); texts.clear(); fills.clear(); outlines.clear(); colors.clear();
     imageWidthQueries.clear();
     currentColor = 0x12345678;
     currentSpacing = 2;
@@ -409,6 +414,20 @@ int main() {
     layout.field_0x28 = 5;
     layout.textBaselineAdjust = 2;
     String boxText("BOX");
+
+    clearDraws();
+    layout.drawWindow(boxText, 10, 20, 40, 50, true);
+    assert(imageAt(42, 10, 28) && imageAt(73, 10, 20));
+    assert(outlines.size() == 1 && outlines[0].x == 10 && outlines[0].y == 28);
+    assert(outlines[0].width == 40 && outlines[0].height == 42);
+    assert(outlines[0].color == 0x255d8dff && currentColor == 0x12345678);
+    assert(texts.empty());
+
+    clearDraws();
+    layout.drawWindow(boxText, 10, 20, 40, 50, false);
+    assert(!imageAt(42, 10, 28) && imageAt(73, 10, 20));
+    assert(outlines.size() == 1 && outlines[0].y == 28 && outlines[0].height == 42);
+    assert(currentColor == 0x12345678);
 
     clearDraws();
     layout.drawBGBorder(61, 62, 10, 20, 47, 65, 2, 3);

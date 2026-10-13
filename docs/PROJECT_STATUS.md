@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (Layout empty footer; older subsystem
+Last reviewed: 2026-10-13 (Layout framed window; older subsystem
 snapshots retain their dates)
+
+## Layout framed window (2026-10-13)
+
+The six-argument `Layout::drawWindow` now reads the Android-backed
+canvas, font and layout metrics, paints the frame with `0x255d8dff`,
+uses the caller's header-image Y and restores the prior canvas color.
+The production-method UI smoke covers background on/off and frame
+geometry. Native `gof2`, all 206 ARM units and 37 verifier tests pass
+(one skipped). Focused source-shape rises 24.0% to 100.0%, strict
+fuzzy 17.5% to 100.0%; it is not linked- or byte-exact. Full corpus:
+4,718 comparisons, 4,323/4,524 covered, 201 missing, 92.92%
+average source-shape, 81.32% strict fuzzy, 2,399 linked-exact and
+1,008 byte-exact. Exact and extra-symbol sets are unchanged. The
+original title condition appears unreachable for ordinary nonempty
+strings; it was preserved and remains a behavioral uncertainty for
+unusual inputs or other platforms. ARM32 runtime and visual output
+remain untested. Next priority: `Layout::drawHeader(String,bool)`.
+See [the framed-window audit](LAYOUT_DRAW_WINDOW_ARM_2026-10-13.md).
 
 ## Layout empty footer (2026-10-13)
 

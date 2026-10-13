@@ -4,6 +4,15 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout framed window (2026-10-13)
+
+The Android-backed six-argument `Layout::drawWindow` reaches 100.0%
+source-shape and strict fuzzy, but remains non-exact. The expanded
+TouchButton/Layout smoke checks background on/off, outline and image
+placement, and color restoration. Native `gof2`, all 206 ARM units
+and 37 verifier tests pass (one skipped). The original title
+condition remains unusual; see [the audit](LAYOUT_DRAW_WINDOW_ARM_2026-10-13.md).
+
 ## Layout empty footer (2026-10-13)
 
 Android-backed `Layout::drawEmptyFooter(bool)` reaches 100.0%

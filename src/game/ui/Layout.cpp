@@ -750,37 +750,24 @@ void Layout::drawBox(int style, int x, int y, int w, int h, String text, unsigne
 }
 
 
-static PaintCanvas **g_dwCanvas = nullptr;
-
-static int **g_dwBorderTop = nullptr;
-
-static int **g_dwMetric = nullptr;
-
-static const char g_dwCmpLit[] = "";
-
-static void ***g_dwFont = nullptr;
-
 void Layout::drawWindow(String title, int x, int y, int w, int h, bool drawBG) {
-    PaintCanvas *pc = *g_dwCanvas;
-    unsigned saved = pc->GetColor();
+    unsigned saved = Globals::Canvas->GetColor();
     if (drawBG) {
-        int top = (*g_dwBorderTop)[8 / 4];
+        int top = Globals::layout->field_0x8;
         this->drawBGPattern(this->bgPatternImage, x, top + y, w, h - top);
     }
-    PaintCanvas::gCanvas->SetColor(*(unsigned *) g_dwCanvas);
-    int *m = *g_dwMetric;
-    int top = m[8 / 4];
-    pc->DrawRectangle(x, top + y, w, h - top);
-    PaintCanvas::gCanvas->SetColor(this->drawColor);
-    pc->DrawImage2D(this->headerIconImage, x, 0);
-    if (title.size() != 0 && title.Compare_char(g_dwCmpLit) == 0) {
-        int *mm = *g_dwMetric;
-        int half = mm[8 / 4];
-        half += half >> 31;
-        int ty = (y + (half >> 1) + 1) - this->textBaselineAdjust;
-        pc->DrawString((unsigned) (unsigned long) (**g_dwFont), title, mm[0x28 / 4] + x, ty, false);
+    Globals::Canvas->SetColor(0x255d8dff);
+    int top = Globals::layout->field_0x8;
+    Globals::Canvas->DrawRectangle(x, top + y, w, h - top);
+    Globals::Canvas->SetColor(this->drawColor);
+    Globals::Canvas->DrawImage2D(this->headerIconImage, x, y);
+    // Android 2.0.16 compares a nonempty title with the empty literal at 0x1ca472.
+    if (title.size() != 0 && title.Compare_char("") == 0) {
+        int ty = y + Globals::layout->field_0x8 / 2 + 1 - this->textBaselineAdjust;
+        Globals::Canvas->DrawString(Globals::font, title,
+                                     Globals::layout->field_0x28 + x, ty, false);
     }
-    pc->SetColor(saved);
+    Globals::Canvas->SetColor(saved);
 }
 
 
