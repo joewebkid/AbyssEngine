@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (Layout one-argument window wrapper; older subsystem
+Last reviewed: 2026-10-13 (Layout window-dimension reset; older subsystem
 snapshots retain their dates)
+
+## Layout window-dimension reset (2026-10-13)
+
+`Layout::resetWindowDimensions()` now reads `Vector.x/.y` directly
+after each original `getPosition()` call, without extra indexing or
+assignment ABI calls, and reevaluates each footer-button position.
+The production-method UI smoke checks screen dimensions, all three
+buttons and published back-button coordinates. Native `gof2`, all
+206 ARM units and 37 verifier tests pass (one skipped). Focused
+source-shape rises 77.8% to 99.8%, strict fuzzy 57.3% to 89.4%; it
+remains non-exact. Full corpus: 4,718 comparisons, 4,323/4,524
+covered, 201 missing, 92.94% average source-shape, 81.36% strict
+fuzzy, 2,401 linked-exact and 1,008 byte-exact. Complete exact and
+extra-symbol sets are unchanged. The original performs a back-button
+position call before checking its pointer for null, and that risk
+remains. Original assets, visual output and ARM32 runtime remain
+untested. Next priority: audit the six-argument `Layout::drawBox`
+overload (79.2% source-shape) for behavior and ABI gaps. See
+[the reset audit](LAYOUT_RESET_WINDOW_DIMENSIONS_ARM_2026-10-13.md).
 
 ## Layout one-argument window wrapper (2026-10-13)
 

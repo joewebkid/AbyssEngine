@@ -20,6 +20,8 @@ unsigned int Globals::font = 5;
 int Globals::w = 480;
 int Globals::h = 320;
 Status *Globals::status = nullptr;
+int Globals::other_buttons_x[10] = {};
+int Globals::other_buttons_y[10] = {};
 
 AbyssEngine::String::String() : data(nullptr), length(0) {}
 AbyssEngine::String::String(const char *text, bool) : data(nullptr), length(0) { Set(text); }
@@ -559,6 +561,16 @@ int main() {
     layout.fadeDuration = 100;
     assert(layout.drawFade() == 1 && fills.size() == 1);
     assert(fills[0].color == 0x112233ff && currentColor == 0x12345678);
+
+    layout.footerButtonOffset = 25;
+    layout.buttonInsetX = 5;
+    layout.resetWindowDimensions();
+    assert(layout.windowX == 0 && layout.windowY == 0);
+    assert(layout.windowWidth == 480 && layout.windowHeight == 320);
+    assert(help.x == 440 && help.y == 0);
+    assert(back.x == 5 && back.y == 275);
+    assert(secondary.x == 5 && secondary.y == 275);
+    assert(Globals::other_buttons_x[0] == 5 && Globals::other_buttons_y[0] == 275);
 
     std::puts("TouchButton/Layout host smoke: OK");
 }

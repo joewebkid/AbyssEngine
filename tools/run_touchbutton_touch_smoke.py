@@ -28,6 +28,8 @@ def main():
 #include "game/ship/Ship.h"
 '''
     extracted += function(source, "void TouchButton::setVisible(")
+    extracted += function(source, "void TouchButton::setPosition(int x, int y, unsigned char flags)")
+    extracted += function(source, "Vector TouchButton::getPosition()")
     extracted += function(source, "int TouchButton::getWidth(")
     for signature in ("bool TouchButton::touchedInside(",
                       "bool TouchButton::OnTouchBegin(",
@@ -40,6 +42,7 @@ def main():
     extracted += function(source, "void TouchButton::draw(")
     layout = (ROOT / "src/game/ui/Layout.cpp").read_text()
     extracted += function(layout, "void Layout::setDrawColor(")
+    extracted += function(layout, "void Layout::resetWindowDimensions()")
     extracted += function(layout, "void Layout::drawBGPattern(")
     extracted += function(layout, "void Layout::drawEmptyFooter(")
     extracted += function(layout, "void Layout::drawHeader(String title, bool transition)")

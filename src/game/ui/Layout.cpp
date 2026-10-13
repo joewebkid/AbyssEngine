@@ -477,10 +477,14 @@ void Layout::setWindowDimensions(int p1, int p2, int p3, int p4) {
     this->secondaryButton->setPosition(buttonX, buttonY, 0x21);
 
     if (this->backButton != nullptr) {
-        Vector posX = this->backButton->getPosition();
-        Globals::other_buttons_x[0] = (int) posX.x;
-        Vector posY = this->backButton->getPosition();
-        Globals::other_buttons_y[0] = (int) posY.y;
+        {
+            Vector posX = this->backButton->getPosition();
+            Globals::other_buttons_x[0] = (int) posX.x;
+        }
+        {
+            Vector posY = this->backButton->getPosition();
+            Globals::other_buttons_y[0] = (int) posY.y;
+        }
     }
 }
 
@@ -819,16 +823,18 @@ void Layout::resetWindowDimensions() {
 
     this->helpButton->setPosition(w, 0, (unsigned char) 0x12);
 
-    int inset = Globals::layout->buttonInsetX;
-    int btnY = (this->windowY + this->windowHeight) - this->footerButtonOffset;
-    this->backButton->setPosition(inset + this->windowX, btnY, (unsigned char) 0x21);
-    this->secondaryButton->setPosition(inset + this->windowX, btnY, (unsigned char) 0x21);
+    this->backButton->setPosition(Globals::layout->buttonInsetX + this->windowX,
+                                  (this->windowY + this->windowHeight) - this->footerButtonOffset,
+                                  (unsigned char) 0x21);
+    this->secondaryButton->setPosition(Globals::layout->buttonInsetX + this->windowX,
+                                       (this->windowY + this->windowHeight) - this->footerButtonOffset,
+                                       (unsigned char) 0x21);
 
     if (this->backButton != nullptr) {
-        Vector pos = this->backButton->getPosition();
-        Globals::other_buttons_x[0] = (int) pos[0];
-        pos = this->backButton->getPosition();
-        Globals::other_buttons_y[0] = (int) pos[1];
+        Vector posX = this->backButton->getPosition();
+        Globals::other_buttons_x[0] = (int) posX.x;
+        Vector posY = this->backButton->getPosition();
+        Globals::other_buttons_y[0] = (int) posY.y;
     }
 }
 

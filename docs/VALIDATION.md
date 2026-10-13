@@ -4,6 +4,15 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout window-dimension reset (2026-10-13)
+
+The Android-backed `Layout::resetWindowDimensions()` reaches 99.8%
+source-shape and 89.4% strict fuzzy; it remains non-exact. The
+production-method UI smoke checks button positions and published
+coordinates. Native `gof2`, all 206 ARM units and 37 verifier tests
+pass (one skipped). See
+[the evidence](LAYOUT_RESET_WINDOW_DIMENSIONS_ARM_2026-10-13.md).
+
 ## Layout one-argument window wrapper (2026-10-13)
 
 The Android-backed `Layout::drawWindow(String)` forwards
