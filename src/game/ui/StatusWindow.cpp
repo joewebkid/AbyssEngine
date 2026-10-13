@@ -228,97 +228,94 @@ void StatusWindow::update(int frameTime) {
     }
 }
 
-static GameText **g_swh_gameText = nullptr;
-
 String StatusWindow::getMedalHintText(int medalIndex) {
-    int *medals = Achievements::gAchievements->getMedals();
+    int *medals = static_cast<Achievements *>(Globals::achievements)->getMedals();
     int state = medals[medalIndex];
 
     String out;
-    { if (out.data) delete[] out.data; out.data = nullptr; out.length = 0; }
 
     if (state != 0) {
         String tmpA;
         String tmpB;
 
         if (medalIndex == 2 && state == 2) {
-            tmpA.ctor_char("\n", false);
-            String *hdr = (*g_swh_gameText)->getText(0x114);
+            tmpA.ctor_char("\n\n", false);
+            String *hdr = Globals::gameText->getText(0x114);
             tmpB = tmpA + *hdr;
             out += tmpB;
 
-            Status *base = Status::gStatus;
+            Status *base = Globals::status;
             Array<bool> *list = base->field_94;
             for (unsigned int i = 0; i < list->size(); i++) {
                 if ((*list)[i] == 0) {
-                    tmpA.ctor_char("\n", false);
-                    String *t = (*g_swh_gameText)->getText(0x594 + (int) i);
+                    tmpA.ctor_char("\n- ", false);
+                    String *t = Globals::gameText->getText(0x594 + (int) i);
                     tmpB = tmpA + *t;
                     out += tmpB;
                 }
             }
         } else if (medalIndex == 3 && state == 2) {
-            tmpA.ctor_char("\n", false);
-            String *hdr = (*g_swh_gameText)->getText(0x114);
+            tmpA.ctor_char("\n\n", false);
+            String *hdr = Globals::gameText->getText(0x114);
             tmpB = tmpA + *hdr;
             out += tmpB;
 
-            Status *base = Status::gStatus;
+            Status *base = Globals::status;
             Array<bool> *list = base->field_98;
             for (unsigned int i = 0; i < list->size(); i++) {
                 if ((*list)[i] == 0) {
-                    tmpA.ctor_char("\n", false);
-                    String *t = (*g_swh_gameText)->getText(0x59f + (int) i);
+                    tmpA.ctor_char("\n- ", false);
+                    String *t = Globals::gameText->getText(0x59f + (int) i);
                     tmpB = tmpA + *t;
                     out += tmpB;
                 }
             }
         } else if (medalIndex == 9 && state == 2) {
-            tmpA.ctor_char("\n", false);
-            String *hdr = (*g_swh_gameText)->getText(0x114);
+            tmpA.ctor_char("\n\n", false);
+            String *hdr = Globals::gameText->getText(0x114);
             tmpB = tmpA + *hdr;
             out += tmpB;
 
-            Status *base = Status::gStatus;
+            Status *base = Globals::status;
             Array<bool> *list = base->field_ac;
             for (unsigned int i = 0; i < list->size(); i++) {
                 if ((*list)[i] == 0) {
-                    tmpA.ctor_char("\n", false);
-                    String *t = (*g_swh_gameText)->getText(0x57e + (int) i);
+                    tmpA.ctor_char("\n- ", false);
+                    String *t = Globals::gameText->getText(0x57e + (int) i);
                     tmpB = tmpA + *t;
                     out += tmpB;
                 }
             }
         } else if (medalIndex == 0xd && state == 2) {
-            tmpA.ctor_char("\n", false);
-            String *hdr = (*g_swh_gameText)->getText(0x114);
+            tmpA.ctor_char("\n\n", false);
+            String *hdr = Globals::gameText->getText(0x114);
             tmpB = tmpA + *hdr;
             out += tmpB;
 
-            Status *root = Status::gStatus;
+            Status *root = Globals::status;
             for (unsigned int i = 0; i < 0xd; i++) {
                 BluePrint *bp = (*root->bluePrints)[i];
                 if (bp->locked == 0) {
-                    tmpA.ctor_char("\n", false);
+                    tmpA.ctor_char("\n- ", false);
                     int idx = bp->getIndex();
-                    String *t = (*g_swh_gameText)->getText(idx + 0x4fa);
+                    String *t = Globals::gameText->getText(idx + 0x4fa);
                     tmpB = tmpA + *t;
                     out += tmpB;
                 }
             }
         } else if (medalIndex == 0xe && state == 2) {
-            tmpA.ctor_char("\n", false);
-            String *hdr = (*g_swh_gameText)->getText(0x114);
+            tmpA.ctor_char("\n\n", false);
+            String *hdr = Globals::gameText->getText(0x114);
             tmpB = tmpA + *hdr;
             out += tmpB;
 
-            Status *root = Status::gStatus;
+            Status *root = Globals::status;
             for (unsigned int i = 0; i < 0xd; i++) {
                 BluePrint *bp = (*root->bluePrints)[i];
                 if (bp->productionCount == 0) {
-                    tmpA.ctor_char("\n", false);
+                    tmpA.ctor_char("\n- ", false);
                     int idx = bp->getIndex();
-                    String *t = (*g_swh_gameText)->getText(idx + 0x4fa);
+                    String *t = Globals::gameText->getText(idx + 0x4fa);
                     tmpB = tmpA + *t;
                     out += tmpB;
                 }

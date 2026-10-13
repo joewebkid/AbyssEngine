@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (StatusWindow touch release; older subsystem
+Last reviewed: 2026-10-13 (StatusWindow medal hints; older subsystem
 snapshots retain their dates)
+
+## StatusWindow medal-hint text (2026-10-13)
+
+`getMedalHintText` now reads the Android-backed achievements, status, and
+game-text globals instead of an unassigned text pointer. Its header and
+missing-requirement separators match the Android literals; a focused host
+smoke passes all five medal branches and empty cases without original
+assets. Native `gof2` and all 206 ARM translation units build. Focused
+source-shape rises 90.6% to 92.1%, strict fuzzy 44.7% to 52.1%, with no
+family exact-count change; 37 verifier tests pass (one skipped). Full
+corpus remains 4,323/4,524 covered, 92.80% average source-shape,
+81.20% strict fuzzy, 2,395 linked-exact and 1,008 byte-exact, with no
+exact losses. Live medal selection remains untested. Next audit
+`StatusWindow::reInit` and its
+unassigned image-factory holder. See
+[the medal-hint audit](STATUSWINDOW_MEDAL_HINT_ARM_2026-10-13.md).
 
 ## StatusWindow touch release (2026-10-13)
 
@@ -15,8 +31,8 @@ exact. Native `gof2`, 206/206 ARM units, an integer-String ABI smoke, and
 37 verifier tests pass (one skipped). Full corpus remains 4,323/4,524
 covered, 92.80% average source-shape, 81.20% strict fuzzy, 2,395
 linked-exact and 1,008 byte-exact, with no exact losses. Interactive
-medal/touch behavior and ARM32 runtime remain untested. Next recover the
-separate `getMedalHintText` game-text binding. See
+medal/touch behavior and ARM32 runtime remain untested. The subsequent
+medal-hint audit above addresses the separate game-text binding. See
 [the release audit](STATUSWINDOW_TOUCH_END_ARM_2026-10-13.md).
 
 ## Gamepad software-stick bridge (2026-10-13)

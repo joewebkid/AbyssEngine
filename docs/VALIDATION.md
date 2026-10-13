@@ -152,6 +152,15 @@ calls with fixtures; it does not execute the whole window. See
 [the standing-bar audit](STATUS_STANDING_REGION_ARM_2026-10-12.md).
 
 ```powershell
+python tools/run_status_medal_hint_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `StatusWindow medal-hint host smoke: OK`. This extracts the
+production hint method and checks branch-specific separators and text IDs
+with fixtures; it does not use original text assets or execute touch input.
+See [the medal-hint audit](STATUSWINDOW_MEDAL_HINT_ARM_2026-10-13.md).
+
+```powershell
 python tools/run_paintcanvas_region_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
 ```
 
