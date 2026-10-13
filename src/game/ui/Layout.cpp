@@ -804,40 +804,24 @@ void Layout::drawWindow(String title, int x, int y, int w, int h, bool drawBG) {
 }
 
 
-static unsigned *g_dtColor = nullptr;
-
-static int **g_dtMetricA = nullptr;
-
-static int *g_dtDimW = nullptr;
-
-static int *g_dtDimH = nullptr;
-
-static const char g_dtBoxLit[] = "";
-
-static void **g_dtLinesA = nullptr;
-
-static unsigned *g_dtLinesB = nullptr;
-
 void Layout::drawTip() {
-    if (this->tipLines != nullptr) {
-        PaintCanvas::gCanvas->SetColor(*g_dtColor);
-        int *mA = *g_dtMetricA;
-        int dimW = *g_dtDimW;
-        int dimH = *g_dtDimH;
-        int boxW = mA[0x78 / 4];
+    if (this->tipLines == nullptr)
+        return;
 
-        String box(g_dtBoxLit);
-        this->drawBox(5, (dimH >> 1) - (boxW >> 1), (dimW >> 1) + 0xd, boxW, 100, box, 0u);
+    Globals::Canvas->SetColor(0xffffffffu);
+    int boxW = Globals::layout->field_0x78;
+    Globals::layout->drawBox(5, (Globals::w >> 1) - (boxW >> 1),
+                             (Globals::h >> 1) + 13, boxW, 100, String(""));
 
-        PaintCanvas::gCanvas->DrawImage2D(this->tipBoxImage,
-                             dimH >> 1, (dimW >> 1) + 0x3f, (unsigned char) (0x11));
+    Globals::Canvas->DrawImage2D(this->tipBoxImage,
+                                  Globals::w >> 1, (Globals::h >> 1) + 63,
+                                  (unsigned char) 0x11, (unsigned char) 0x44);
 
-        int lineCount = (int) this->tipLines->size();
-        int y = (dimW >> 1) + 0x3f - ((lineCount * mA[4 / 4]) >> 1);
-        reinterpret_cast<Globals *>(*g_dtLinesB)->drawLines((unsigned) (uintptr_t) *(void **) g_dtLinesA,
-                                                            this->tipLines,
-                                                            dimH >> 1, y);
-    }
+    unsigned int linesHeight = (unsigned int) (Globals::layout->field_0x4 * this->tipLines->size());
+    int y = (Globals::h >> 1) + 63 - (int) (linesHeight >> 1);
+    reinterpret_cast<Globals *>(Globals::globals)->drawLines(Globals::font,
+                                                              this->tipLines,
+                                                              Globals::w >> 1, y, true);
 }
 
 void Layout::drawHeader(String title) {

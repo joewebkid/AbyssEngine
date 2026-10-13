@@ -4,6 +4,14 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout tip (2026-10-13)
+
+The Android-backed `Layout::drawTip()` recovery is 100.0% source-shape
+and 100.0% strict fuzzy, with a linked-exact (not byte-exact) result.
+All 206 ARM units, native `gof2`, the TouchButton/Layout host smoke and
+37 verifier tests pass (one skipped). This verifies the recovered ARM
+form, not rendering on an ARM device. See [the evidence](LAYOUT_TIP_ARM_2026-10-13.md).
+
 Continuously check whether our recovered C++ still assembles to the **same
 instructions** as the original Android binary, function by function, and tune
 compiler flags toward byte-exactness — without disturbing normal macOS

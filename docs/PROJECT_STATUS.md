@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (Layout scrollbar; older subsystem
+Last reviewed: 2026-10-13 (Layout tip; older subsystem
 snapshots retain their dates)
+
+## Layout tip (2026-10-13)
+
+`Layout::drawTip` now uses the original Android-backed canvas,
+dimensions, layout metrics, font and globals service instead of
+unassigned holders. It draws the box, image and centered lines with
+the original arguments; null `tipLines` remains a no-op. Focused
+source-shape and strict fuzzy rise from 12.9% / 10.0% to 100.0% /
+100.0%, adding one linked-exact match (not byte-exact). Native `gof2`,
+all 206 ARM units, the TouchButton/Layout host smoke and 37 verifier
+tests pass (one skipped). Full corpus: 4,719 comparisons, 4,323/4,524
+covered, 201 missing, 92.88% average source-shape, 81.25% strict
+fuzzy, 2,398 linked-exact and 1,008 byte-exact. Complete exact and
+extra-symbol comparisons show one linked-exact gain, no losses and no
+extra-symbol change. ARM32 runtime and visual output remain untested.
+Next priority: `Layout::setTip`. See [the tip audit](LAYOUT_TIP_ARM_2026-10-13.md).
 
 ## Layout scrollbar (2026-10-13)
 
