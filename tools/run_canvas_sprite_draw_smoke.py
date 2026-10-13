@@ -23,6 +23,9 @@ def main():
     fixture = (ROOT / "tools/canvas_sprite_draw_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_METHOD", function(
         source, "void PaintCanvas::DrawSpriteSystem(unsigned int index)"))
+    fixture = fixture.replace("// PRODUCTION_TWO_MATRICES", function(
+        source, "void PaintCanvas::DrawSpriteSystem(unsigned int index,\n"
+                "                                   AbyssEngine::AEMath::Matrix matA"))
     with tempfile.TemporaryDirectory(prefix="canvas-sprite-smoke-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "canvas_sprite_draw_smoke.cpp"
         generated.write_text(fixture)

@@ -57,9 +57,11 @@ struct PaintCanvas {
     unsigned char initialized;
     int gameOrientation;
     void DrawSpriteSystem(unsigned index);
+    void DrawSpriteSystem(unsigned index, Matrix matA, Matrix matB);
 };
 
 // PRODUCTION_METHOD
+// PRODUCTION_TWO_MATRICES
 }
 
 int main() {
@@ -97,5 +99,22 @@ int main() {
     canvas.gameOrientation = 0;
     canvas.DrawSpriteSystem(0);
     assert(drawCount == 4 && lastWorld.m[1] < -0.7f && lastWorld.m[1] > -0.72f);
+
+    Matrix first, second;
+    first.m[3] = 3.0f;
+    second.m[3] = 2.0f;
+    canvas.initialized = 0;
+    canvas.DrawSpriteSystem(0, first, second);
+    assert(drawCount == 5 && lastView.m[3] == 3.0f && lastWorld.m[3] == -2.0f);
+    canvas.initialized = 1;
+    engine.grav[1] = 0.5;
+    canvas.DrawSpriteSystem(0, identity, identity);
+    assert(drawCount == 6 && lastView.m[1] == 0.0f && lastWorld.m[1] == 0.0f);
+    engine.grav[1] = 1.0;
+    canvas.DrawSpriteSystem(0, identity, identity);
+    assert(drawCount == 7 && lastView.m[1] > 0.83f && lastWorld.m[1] < -0.83f);
+    canvas.gameOrientation = 1;
+    canvas.DrawSpriteSystem(0, identity, identity);
+    assert(drawCount == 8 && lastView.m[1] < -0.83f && lastWorld.m[1] > 0.83f);
     std::puts("PaintCanvas DrawSpriteSystem smoke: OK");
 }

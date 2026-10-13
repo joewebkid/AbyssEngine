@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (sprite draw camera path; older subsystem
+Last reviewed: 2026-10-13 (two-matrix sprite draw; older subsystem
 snapshots retain their dates)
+
+## Two-matrix sprite draw (2026-10-13)
+
+`PaintCanvas::DrawSpriteSystem(index, Matrix, Matrix)`, called by
+`ParticleSystemSprite`, now preserves Android's integer-truncated
+gravity angle and uses the real matrix inverse, multiplication,
+trigonometry, and `SpriteSystemDraw` calls. Focused source-shape rises
+79.7% to 85.5%, strict fuzzy 27.2% to 34.9%; not exact. Native
+`gof2`, 206/206 ARM units, extracted-body and adjacent sprite smokes,
+and 36 verifier tests pass (one skipped). Full coverage remains
+4,323/4,524; average source-shape rises 92.5547% to 92.5560%,
+strict fuzzy 80.8531% to 80.8547%. The 2,378 linked-exact and 1,008
+byte-exact symbol sets have no losses. Arbitrary-matrix composition,
+GL output, and ARM32 runtime remain untested. Next audit the
+one-matrix `DrawSpriteSystem` overload. See
+[the two-matrix audit](PAINTCANVAS_SPRITE_DRAW_TWO_MATRIX_ARM_2026-10-13.md).
 
 ## PaintCanvas sprite draw camera path (2026-10-13)
 
