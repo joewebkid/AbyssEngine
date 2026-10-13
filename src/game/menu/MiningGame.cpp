@@ -1,5 +1,6 @@
 #include "game/menu/MiningGame.h"
 
+#include "game/core/Globals.h"
 #include "engine/render/PaintCanvas.h"
 #include "game/core/String.h"
 #include "game/ui/Hud.h"
@@ -8,7 +9,17 @@
 #include "engine/render/MarqueeImage.h"
 #include "engine/render/Sprite.h"
 
-float MiningGame_sqrt(void *globals, float value);
+extern "C" {
+int LAYER_DIAMETERS[49] = {
+    250, 210, 170, 140, 110, 80, 50,
+    250, 210, 170, 140, 110, 80, 0,
+    250, 200, 150, 100, 70, 0, 0,
+    250, 170, 120, 80, 0, 0, 0,
+    250, 160, 80, 0, 0, 0, 0,
+    250, 120, 0, 0, 0, 0, 0,
+    250, 0, 0, 0, 0, 0, 0,
+};
+}
 
 void MiningGame_FModSound_setParamValue(void *sound, int index, int param, float value);
 
@@ -49,24 +60,12 @@ int MiningGame::getAsteroidType() {
 }
 
 
-static void **g_MiningGame_sqrt = nullptr;
-
-static void **g_MiningGame_layout = nullptr;
-
-static int *g_MiningGame_layerSizes = nullptr;
-
 bool MiningGame::isInCurrentLayer() {
     float dx = this->posX - (float) this->centerX;
     float dy = this->posY - (float) this->centerY;
-    void **sqrtHolder = g_MiningGame_sqrt;
-    int current = this->currentLayer;
-    int layer = this->targetLayer;
-    int *row = g_MiningGame_layerSizes + (7 - layer) * 7;
-    Layout *layout = (Layout *) *g_MiningGame_layout;
-    void *globals = *sqrtHolder;
-    int size = row[current];
-    float scale = layout->ringRadiusScale;
-    float distance = MiningGame_sqrt(globals, dx * dx + dy * dy);
+    int size = LAYER_DIAMETERS[7 * (7 - this->targetLayer) + this->currentLayer];
+    float scale = Globals::layout->ringRadiusScale;
+    float distance = static_cast<Globals *>(Globals::globals)->sqrt(dx * dx + dy * dy);
     return distance < scale * (float) (size / 2);
 }
 

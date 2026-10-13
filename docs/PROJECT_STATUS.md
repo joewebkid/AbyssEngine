@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (Layout constructor MiningGame fields; older subsystem
+Last reviewed: 2026-10-14 (MiningGame layer membership; older subsystem
 snapshots retain their dates)
+
+## MiningGame layer membership (2026-10-14)
+
+`MiningGame::isInCurrentLayer()` now uses the recovered Android
+`LAYER_DIAMETERS` table, `Globals::layout` and `Globals::sqrt` rather
+than unassigned holders. Focused source-shape rises 0.5% to 99.1%
+and strict fuzzy 0.0% to 81.8%, but the function is not exact. The
+production-method host smoke checks layer boundaries; native `gof2`,
+all 206 ARM units and 37 verifier tests pass (one skipped). Full
+corpus coverage is 4,323/4,524; average source-shape rises 92.98%
+to 93.00% and strict fuzzy 81.41% to 81.43%. All 2,403 linked-exact,
+1,008 byte-exact pairs and 123 extra symbols are unchanged. ARM32
+runtime behavior is untested. Next: audit `MiningGame::update`'s
+unassigned service dependencies and the original `LAYER_SPEEDS`
+table. See [the layer audit](MINING_LAYER_MEMBERSHIP_ARM_2026-10-14.md).
 
 ## Layout constructor MiningGame parameters (2026-10-14)
 

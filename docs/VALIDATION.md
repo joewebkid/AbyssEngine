@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## MiningGame layer membership (2026-10-14)
+
+The Android-backed `isInCurrentLayer()` reaches 99.1% focused
+source-shape and 81.8% strict fuzzy (44 generated and target
+instructions), but is neither linked-exact nor byte-exact. The
+production-method host smoke, native `gof2`, all 206 ARM units and
+37 verifier tests pass (one skipped). Full corpus: 4,323/4,524
+covered, 93.00% average source-shape, 81.43% strict fuzzy, 2,403
+linked-exact and 1,008 byte-exact. Exact-pair and 123-symbol extra
+sets are unchanged; ARM32 runtime remains untested. See
+[the evidence](MINING_LAYER_MEMBERSHIP_ARM_2026-10-14.md).
+
 ## Layout constructor MiningGame parameters (2026-10-14)
 
 Focused `Layout` C1/C2 source-shape rises 29.3% to 30.9%, strict
