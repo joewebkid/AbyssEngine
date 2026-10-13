@@ -27,11 +27,11 @@ struct Standing {
     float getStandingRate(int index) { return rates[index]; }
 };
 struct Status {
-    static Status *gStatus;
     Standing standing;
     Standing *getStanding() { return &standing; }
 };
-Status *Status::gStatus = nullptr;
+struct Globals { static Status *status; };
+Status *Globals::status = nullptr;
 
 struct Layout { int field_0x2d8 = 30; int field_0x1c = 12; };
 struct StatusWindow {
@@ -52,7 +52,7 @@ int main() {
     PaintCanvas canvas;
     Layout layout;
     Status status;
-    Status::gStatus = &status;
+    Globals::status = &status;
     StatusWindow window;
     window.drawStandingFixture(&canvas, &layout, 20, 10, 100, 5);
 

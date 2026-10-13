@@ -364,25 +364,13 @@ void StatusWindow::reInit() {
     this->charImageHeight = canvas->GetImage2DHeight(this->rankImage0);
 }
 
-void Globals_drawLines(void *globals, void *font, void *arr, int y, char clip);
-
-static int *g_swd_dimW = nullptr;
-static int *g_swd_dimH = nullptr;
-static Layout **g_swd_layout = nullptr;
-static ImageFactory **g_swd_imageFactory = nullptr;
-static void *g_swd_font = nullptr;
-static Globals **g_swd_globals = nullptr;
-static char *g_swd_landscape = nullptr;
-static int *g_swd_textId = nullptr;
-static GameText **g_swd_gameText = nullptr;
-
 void StatusWindow::draw() {
-    PaintCanvas *canvas = PaintCanvas::gCanvas;
-    Layout *layout = *g_swd_layout;
-    void *font = *(void **) g_swd_font;
-    char *land = g_swd_landscape;
-    int screenW = *g_swd_dimW;
-    int screenH = *g_swd_dimH;
+    PaintCanvas *canvas = Globals::Canvas;
+    Layout *layout = Globals::layout;
+    unsigned font = Globals::font;
+    bool land = Globals::iPad != 0;
+    int screenW = Globals::w;
+    int screenH = Globals::h;
 
     canvas->SetColor(0xffu);
     canvas->FillRectangle(0, 0, screenW, screenH);
@@ -401,7 +389,7 @@ void StatusWindow::draw() {
 
     int top = layout->field_0x20 + layout->field_0xc;
     int colW;
-    if (*land == 0) {
+    if (!land) {
         colW = screenW;
         top += this->scrollOffset;
     } else {
@@ -422,13 +410,13 @@ void StatusWindow::draw() {
     int tab = this->activeTab;
     char drewStats = 0;
 
-    if (tab == 0 || *land != 0) {
+    if (tab == 0 || land) {
         int boxW = this->boxWidth;
         int x0 = layout->buttonInsetX;
         int pad = layout->field_0x2c;
         String lbl;
 
-        String *t = (*g_swd_gameText)->getText(*g_swd_textId);
+        String *t = Globals::gameText->getText(1597);
         lbl.Set((t)->data);
         layout->drawBox(0, x0, top, boxW, layout->field_0x1c, lbl, 0);
 
@@ -436,41 +424,43 @@ void StatusWindow::draw() {
 
         lbl.ctor_char("", false);
         layout->drawBox(5, x0, y, (boxW >> 1) - pad, layout->field_0x2d8, lbl, 0);
-        (*g_swd_imageFactory)->drawChar(this->imageParts, layout->field_0x4c + x0, y, false);
-        String credTmp = Globals::layout->formatCredits(Status::gStatus->getCredits());
+        static_cast<ImageFactory *>(Globals::imageFactory)
+            ->drawChar(this->imageParts, layout->field_0x4c + x0, y, false);
+        String credTmp = Globals::layout->formatCredits(Globals::status->getCredits());
         creditStr = credTmp;
         int tw = canvas->GetTextWidth((unsigned) (uintptr_t) font, creditStr);
         canvas->DrawString((unsigned) (uintptr_t) font, creditStr, (((boxW >> 1) - pad) - x0) - tw, y, false);
 
         String lvlPrefix, lvlText, lvlFull;
-        String *lt = (*g_swd_gameText)->getText(*g_swd_textId);
+        String *lt = Globals::gameText->getText(321);
         lvlPrefix.ctor_char(" ", false);
         lvlText = *lt;
-        int lvl = Status::gStatus->getLevel();
+        int lvl = Globals::status->getLevel();
         lvlFull = lvlText;
         lvlFull += lvl;
         creditStr = lvlFull;
         tw = canvas->GetTextWidth((unsigned) (uintptr_t) font, creditStr);
         canvas->DrawString((unsigned) (uintptr_t) font, creditStr, (((boxW >> 1) - pad) - x0) - tw, y, false);
 
-        String timeStr;
-        (*g_swd_globals)->longToTimeStringNoSeconds(Status::gStatus->getPlayingTime(), timeStr);
+        static_cast<Globals *>(Globals::globals)
+            ->longToTimeStringNoSeconds(Globals::status->getPlayingTime(), creditStr);
         tw = canvas->GetTextWidth((unsigned) (uintptr_t) font, creditStr);
         canvas->DrawString((unsigned) (uintptr_t) font, creditStr, (((boxW >> 1) - pad) - x0) - tw, y, false);
 
         lbl.ctor_char("", false);
         layout->drawBox(5, (boxW >> 1) + x0 + pad, y, (boxW >> 1) - pad, layout->field_0x2d8, lbl, 0);
-        (*g_swd_imageFactory)->drawShip(Status::gStatus->getShip()->getIndex(), x0 + (boxW >> 1) + pad * 2, y);
-        String *shipNameTxt = (*g_swd_gameText)->getText(Status::gStatus->getShip()->getIndex());
+        static_cast<ImageFactory *>(Globals::imageFactory)
+            ->drawShip(Globals::status->getShip()->getIndex(), x0 + (boxW >> 1) + pad * 2, y);
+        String *shipNameTxt = Globals::gameText->getText(Globals::status->getShip()->getIndex() + 913);
         canvas->DrawString((unsigned) (uintptr_t) font, *shipNameTxt,
                            x0 + (boxW >> 1) + pad * 3 + layout->field_0x2cc, y, false);
 
         String frac, fracStr, pct;
-        int firePow = Status::gStatus->getShip()->getFirePower();
+        int firePow = Globals::status->getShip()->getFirePower();
         float firePowF = *(float *) &firePow;
         frac.Set((long long) (int) ((firePowF - (float) (int) firePowF) * 100.0f));
         fracStr = frac.SubString(0, 2);
-        int fp2 = Status::gStatus->getShip()->getFirePower();
+        int fp2 = Globals::status->getShip()->getFirePower();
         pct.ctor_char("%", false);
         String fpFull = (fp2 + pct) + fracStr;
         creditStr = fpFull;
@@ -478,7 +468,7 @@ void StatusWindow::draw() {
         canvas->DrawString((unsigned) (uintptr_t) font, creditStr, ((y + x0) - pad) - tw, y, false);
 
         String hpStr;
-        hpStr.Set((long long) (Status::gStatus->getShip())->getCombinedHP());
+        hpStr.Set((long long) (Globals::status->getShip())->getCombinedHP());
         tw = canvas->GetTextWidth((unsigned) (uintptr_t) font, hpStr);
         canvas->DrawString((unsigned) (uintptr_t) font, hpStr, ((y + x0) - pad) - tw, y, false);
 
@@ -488,7 +478,7 @@ void StatusWindow::draw() {
                               (this->charImageHeight >> 1);
         int standingBarY = standingCenterY - (this->standingBarHeight >> 1);
         int standingX0 = x0 + (boxW >> 2);
-        Standing *standing = Status::gStatus->getStanding();
+        Standing *standing = Globals::status->getStanding();
         float rate = standing->getStandingRate(0);
         canvas->DrawImage2D(this->standingEmblemImage, standingX0, standingBarY,
                             (unsigned char) 0x11, (unsigned char) 0x14);
@@ -500,7 +490,7 @@ void StatusWindow::draw() {
                             standingCenterY, (unsigned char) 0x11, (unsigned char) 0x44);
 
         int standingX1 = (boxW - ((boxW - pad * 2) >> 2)) + pad * 2;
-        Standing *standing2 = Status::gStatus->getStanding();
+        Standing *standing2 = Globals::status->getStanding();
         float rate2 = standing2->getStandingRate(1);
         canvas->DrawImage2D(this->standingEmblemImage, standingX1, standingBarY,
                             (unsigned char) 0x11, (unsigned char) 0x14);
@@ -511,7 +501,7 @@ void StatusWindow::draw() {
                             (int) ((float) standingX1 - rate2 * (float) this->standingBarWidth),
                             standingCenterY, (unsigned char) 0x11, (unsigned char) 0x44);
 
-        Status *st = Status::gStatus;
+        Status *st = Globals::status;
         String rowStr;
         int rowX = layout->field_0x4c + x0;
         for (unsigned r = 0; r < 6; r++) {
@@ -530,14 +520,15 @@ void StatusWindow::draw() {
                 default: rowVal = st->getGoodsProduced();
                     break;
             }
-            String *labelTxt = (*g_swd_gameText)->getText(*g_swd_textId);
+            const int labels[] = {568, 176, 559, 557, 564, 558};
+            String *labelTxt = Globals::gameText->getText(labels[r]);
             canvas->DrawString((unsigned) (uintptr_t) font, *labelTxt, rowX, y, false);
             rowStr.Set((long long) (rowVal));
             tw = canvas->GetTextWidth((unsigned) (uintptr_t) font, rowStr);
             canvas->DrawString((unsigned) (uintptr_t) font, rowStr, ((y + x0) - pad) - tw, y, false);
         }
 
-        drewStats = *land;
+        drewStats = land;
         tab = this->activeTab;
     }
 
@@ -551,7 +542,7 @@ void StatusWindow::draw() {
 
         if (drewStats != 0) {
             String hdr;
-            String *t = (*g_swd_gameText)->getText(*g_swd_textId);
+            String *t = Globals::gameText->getText(168);
             hdr.Set((t)->data);
             layout->drawBox(0, boxW + x0 * 2, top, x0 + boxW, layout->field_0x1c, hdr, 0);
             gridY0 += layout->field_0x1c + layout->field_0x2c;
@@ -582,19 +573,19 @@ void StatusWindow::draw() {
                                                      layout->field_0x4c * -2, this->boxWidth,
                             layout->field_0x4c * 2 + lineH * lines, lbl, 0);
 
-            static_cast<Globals *>(*g_swd_globals)->drawLines((unsigned) (uintptr_t) font, this->detailLines,
+            static_cast<Globals *>(Globals::globals)->drawLines((unsigned) (uintptr_t) font, this->detailLines,
                                                               layout->field_0x4c + layout->buttonInsetX,
                                                               (char) screenH);
         }
     }
 
     String header;
-    String *ht = (*g_swd_gameText)->getText(*g_swd_textId);
+    String *ht = Globals::gameText->getText(169);
     header.Set((ht)->data);
     layout->drawHeader(header);
     layout->drawFooter();
 
-    if (*land == 0) {
+    if (!land) {
         for (unsigned int i = 0; i < this->tabButtons->size(); i++)
             (*this->tabButtons)[i]->draw();
     }

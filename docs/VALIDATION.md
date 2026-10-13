@@ -152,6 +152,15 @@ calls with fixtures; it does not execute the whole window. See
 [the standing-bar audit](STATUS_STANDING_REGION_ARM_2026-10-12.md).
 
 ```powershell
+python tools/run_status_draw_prefix_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `StatusWindow draw-prefix host smoke: OK`. This extracts
+the production draw setup and checks the shared canvas/layout, scroll-bar,
+and iPad width behavior with fixtures; it does not render the full window.
+See [the draw-globals audit](STATUSWINDOW_DRAW_GLOBALS_ARM_2026-10-13.md).
+
+```powershell
 python tools/run_status_medal_hint_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
 ```
 

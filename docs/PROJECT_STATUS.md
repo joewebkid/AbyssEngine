@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (StatusWindow reInit; older subsystem
+Last reviewed: 2026-10-13 (StatusWindow draw globals; older subsystem
 snapshots retain their dates)
+
+## StatusWindow draw service bindings (2026-10-13)
+
+The Android `draw` uses shared canvas, layout, dimensions, iPad flag, font,
+image factory, game text, globals and status. The local method instead
+dereferenced unassigned holders and collapsed to 38 ARM instructions.
+Restoring those bindings, verified text IDs, ship-name offset and the
+playing-time output raises `draw` source-shape from 2.6% to 57.4% and
+strict fuzzy from 1.4% to 13.8%; 1,047 local instructions remain versus
+2,324 original. Native `gof2`, 206/206 ARM units, a draw-prefix smoke,
+the existing standing smoke and 37 verifier tests pass (one skipped).
+Full corpus remains 4,323/4,524 covered, with 92.82% average source-shape,
+81.21% strict fuzzy, 2,395 linked-exact and 1,008 byte-exact; no exact
+symbols were lost. The full UI, asset-backed rendering, several stats rows
+and exact ARM shape are not yet verified. Next audit
+the stats/ship text and row geometry. See
+[the draw-globals audit](STATUSWINDOW_DRAW_GLOBALS_ARM_2026-10-13.md).
 
 ## StatusWindow character/rank initialization (2026-10-13)
 
@@ -16,7 +33,7 @@ source-shape and 65.0% to 89.1% strict fuzzy, but is not exact. Full corpus
 remains 4,323/4,524 covered, with average source-shape 92.81%, strict
 fuzzy 81.21%, 2,395 linked-exact and 1,008 byte-exact; the complete
 exact-symbol sets show no losses. Live image loading and ARM32 UI remain
-untested. Next priority: the large `StatusWindow::draw` and its unassigned
+untested. The subsequent draw audit above addresses its unassigned
 global holders. See [the reInit audit](STATUSWINDOW_REINIT_ARM_2026-10-13.md).
 
 ## StatusWindow medal-hint text (2026-10-13)
