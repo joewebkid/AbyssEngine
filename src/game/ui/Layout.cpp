@@ -965,35 +965,26 @@ void Layout::drawFooterStation() {
 }
 
 
-static unsigned *g_dhColor = nullptr;
-
-static int **g_dhMetric = nullptr;
-
-static void ***g_dhFont = nullptr;
-
 void Layout::drawHeader(String title, bool transition) {
-    PaintCanvas *pc = PaintCanvas::gCanvas;
-    unsigned img = *g_dhColor;
-    pc->SetColor(this->drawColor);
-    int iw = pc->GetImage2DWidth(img);
-    int ih = pc->GetImage2DHeight(img);
-    pc->DrawImage2D(this->headerCapImage, this->windowX, this->windowY);
-    this->drawBGPattern(this->headerPatternImage, this->windowX + iw, this->windowY, this->windowWidth + iw * -2, ih);
-    pc->DrawImage2D(this->headerCapImage,
-                    this->windowWidth + this->windowX,
-                    this->windowY, iw, ih, (unsigned char) (0x11), (unsigned char) (0x12), (unsigned char) (0x01));
+    Globals::Canvas->SetColor(this->drawColor);
+    int iw = Globals::Canvas->GetImage2DWidth(this->headerCapImage);
+    int ih = Globals::Canvas->GetImage2DHeight(this->headerCapImage);
+    Globals::Canvas->DrawImage2D(this->headerCapImage, this->windowX, this->windowY);
+    this->drawBGPattern(this->headerPatternImage, this->windowX + iw,
+                        this->windowY, this->windowWidth - iw * 2, ih);
+    Globals::Canvas->DrawImage2D(this->headerCapImage,
+                                  this->windowWidth + this->windowX,
+                                  this->windowY, iw, ih, (unsigned char) 0x11,
+                                  (unsigned char) 0x12, (unsigned char) 0x01);
     if (title.size() != 0) {
-        pc->DrawImage2D(this->headerIconImage, this->windowX, this->windowY);
-        int *m = *g_dhMetric;
-        pc->DrawString((unsigned) (unsigned long) (**g_dhFont), title,
-                       m[0x28 / 4] + m[0x44 / 4] + this->windowX,
-                       this->headerTitleY + this->windowY, false);
+        Globals::Canvas->DrawImage2D(this->headerIconImage, this->windowX, this->windowY);
+        Globals::Canvas->DrawString(Globals::font, title,
+                                     Globals::layout->field_0x28 + Globals::layout->field_0x44 + this->windowX,
+                                     this->headerTitleY + this->windowY, false);
     }
     this->helpButtonEnabled = transition;
-    if (transition && this->choiceWindowOpen == 0) {
-        alignas(4) unsigned char sp[8];
-        TouchButton_footerAnim(this->helpButton, 0, 0, sp);
-    }
+    if (transition && this->choiceWindowOpen == 0)
+        this->helpButton->draw();
 }
 
 

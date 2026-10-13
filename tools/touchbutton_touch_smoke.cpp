@@ -76,17 +76,20 @@ PaintCanvas::PaintCanvas(Engine *value) { engine = value; }
 PaintCanvas::~PaintCanvas() = default;
 
 struct ImageCall { unsigned int id; int x, y; unsigned char flagsA, flagsB; };
+struct SizedImageCall { unsigned int id; int x, y, width, height; unsigned char align, anchor, flip; };
 struct RegionCall { unsigned int id; int width, height, x, y; float angle; };
 struct TextCall { unsigned int font; int x, y; std::string content; };
 struct FillCall { int x, y, width, height; unsigned int color; };
 struct OutlineCall { int x, y, width, height; unsigned int color; };
 static std::vector<ImageCall> images;
+static std::vector<SizedImageCall> sizedImages;
 static std::vector<RegionCall> regions;
 static std::vector<TextCall> texts;
 static std::vector<FillCall> fills;
 static std::vector<OutlineCall> outlines;
 static std::vector<unsigned int> colors;
 static std::vector<unsigned int> imageWidthQueries;
+static std::vector<unsigned int> imageHeightQueries;
 static unsigned int currentColor = 0x12345678;
 static short currentSpacing = 2;
 
@@ -101,7 +104,10 @@ int PaintCanvas::GetImage2DWidth(unsigned int id) {
     imageWidthQueries.push_back(id);
     return 10;
 }
-int PaintCanvas::GetImage2DHeight(unsigned int) { return 20; }
+int PaintCanvas::GetImage2DHeight(unsigned int id) {
+    imageHeightQueries.push_back(id);
+    return 20;
+}
 int PaintCanvas::GetTextWidth(unsigned int, const String &) { return 8; }
 int PaintCanvas::GetTextHeight(unsigned int) { return 8; }
 void PaintCanvas::DrawImage2D(unsigned int id, int x, int y) { ::images.push_back({id, x, y, 0, 0}); }
@@ -110,6 +116,10 @@ void PaintCanvas::DrawImage2D(unsigned int id, int x, int y, unsigned char flags
 }
 void PaintCanvas::DrawImage2D(unsigned int id, int x, int y, unsigned char a, unsigned char b) {
     ::images.push_back({id, x, y, a, b});
+}
+void PaintCanvas::DrawImage2D(unsigned int id, int x, int y, int width, int height,
+                              unsigned char align, unsigned char anchor, unsigned char flip) {
+    sizedImages.push_back({id, x, y, width, height, align, anchor, flip});
 }
 void PaintCanvas::DrawString(unsigned int font, const String &value, int x, int y, bool) {
     std::string content;
@@ -137,8 +147,8 @@ static bool sawColor(unsigned int color) {
     return false;
 }
 static void clearDraws() {
-    images.clear(); regions.clear(); texts.clear(); fills.clear(); outlines.clear(); colors.clear();
-    imageWidthQueries.clear();
+    images.clear(); sizedImages.clear(); regions.clear(); texts.clear(); fills.clear(); outlines.clear(); colors.clear();
+    imageWidthQueries.clear(); imageHeightQueries.clear();
     currentColor = 0x12345678;
     currentSpacing = 2;
 }
@@ -412,8 +422,35 @@ int main() {
     layout.field_0x5c = 14;
     layout.field_0x8 = 8;
     layout.field_0x28 = 5;
+    layout.headerTitleY = 7;
+    layout.headerCapImage = 74;
+    layout.headerPatternImage = 75;
     layout.textBaselineAdjust = 2;
     String boxText("BOX");
+
+    help.imgFrameL = 97;
+    layout.choiceWindowOpen = 0;
+    clearDraws();
+    layout.drawHeader(String(""), false);
+    assert(imageWidthQueries[0] == 74 && imageHeightQueries[0] == 74);
+    assert(imageAt(74, 4, 5) && imageAt(75, 14, 5));
+    assert(sizedImages.size() == 1 && sizedImages[0].id == 74);
+    assert(sizedImages[0].x == 84 && sizedImages[0].y == 5);
+    assert(sizedImages[0].width == 10 && sizedImages[0].height == 20);
+    assert(sizedImages[0].align == 0x11 && sizedImages[0].anchor == 0x12 && sizedImages[0].flip == 1);
+    assert(texts.empty() && !imageAt(97, 0, 0) && !layout.helpButtonEnabled);
+
+    clearDraws();
+    layout.drawHeader(String("HEAD"), true);
+    assert(imageAt(73, 4, 5) && imageAt(97, 0, 0));
+    assert(texts.size() == 1 && texts[0].content == "HEAD" && texts[0].font == 5);
+    assert(texts[0].x == 15 && texts[0].y == 12 && layout.helpButtonEnabled);
+
+    layout.choiceWindowOpen = 1;
+    clearDraws();
+    layout.drawHeader(String(""), true);
+    assert(layout.helpButtonEnabled && !imageAt(97, 0, 0));
+    layout.choiceWindowOpen = 0;
 
     clearDraws();
     layout.drawWindow(boxText, 10, 20, 40, 50, true);

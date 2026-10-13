@@ -4,6 +4,15 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout header (2026-10-13)
+
+Android-backed `Layout::drawHeader(String,bool)` reaches 99.8%
+source-shape and 97.7% strict fuzzy, but remains non-exact. The
+expanded production-method UI smoke checks image IDs, cap placement,
+title text and help-button branches. Native `gof2`, all 206 ARM units
+and 37 verifier tests pass (one skipped). See
+[the evidence](LAYOUT_DRAW_HEADER_ARM_2026-10-13.md).
+
 ## Layout framed window (2026-10-13)
 
 The Android-backed six-argument `Layout::drawWindow` reaches 100.0%

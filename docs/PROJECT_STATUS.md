@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (Layout framed window; older subsystem
+Last reviewed: 2026-10-13 (Layout header; older subsystem
 snapshots retain their dates)
+
+## Layout header (2026-10-13)
+
+`Layout::drawHeader(String,bool)` now uses Android-backed canvas,
+cap image, layout metrics and font instead of unassigned holders,
+and draws the help button through its normal method only for a
+requested transition without an open choice window. The
+production-method UI smoke covers empty/nonempty title, cap/pattern
+geometry and three help-button branches. Native `gof2`, all 206 ARM
+units and 37 verifier tests pass (one skipped). Focused source-shape
+rises 74.2% to 99.8%, strict fuzzy 32.1% to 97.7%; it remains
+non-exact. Full corpus: 4,718 comparisons, 4,323/4,524 covered,
+201 missing, 92.93% average source-shape, 81.33% strict fuzzy,
+2,399 linked-exact and 1,008 byte-exact. Exact and extra-symbol sets
+are unchanged. Original assets, visual output and ARM32 runtime remain
+untested. Next priority: `Layout::drawWindow(String,bool)`.
+See [the header audit](LAYOUT_DRAW_HEADER_ARM_2026-10-13.md).
 
 ## Layout framed window (2026-10-13)
 
