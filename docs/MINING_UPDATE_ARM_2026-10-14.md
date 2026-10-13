@@ -31,9 +31,10 @@ membership boundaries, integer ore-alpha transitions, animation NaN,
 random drift, sound transition, next-layer speed and core-layer win.
 Native `gof2` and 37 verifier tests pass (one skipped). The smoke
 does not cover the status-loss and achievement-medal branches, and no
-ARM32 runtime mining sequence has been executed. The constructor and
-`render2D` still contain unassigned service holders. These remain the
-next priority before claiming a runnable native mining sequence.
+ARM32 runtime mining sequence has been executed. At this checkpoint
+the constructor and `render2D` still contained unassigned service
+holders; the constructor recovery is documented separately in
+[the next audit](MINING_CONSTRUCTOR_ARM_2026-10-14.md).
 
 The full ARM corpus has 4,718 comparisons and 4,323/4,524 original
 functions covered (201 missing). Average source-shape rises from

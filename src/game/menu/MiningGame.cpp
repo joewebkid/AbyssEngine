@@ -25,14 +25,6 @@ int LAYER_DIAMETERS[49] = {
 float LAYER_SPEEDS[7] = {5.0f, 8.0f, 12.0f, 17.0f, 23.0f, 30.0f, 38.0f};
 }
 
-void *MiningGame_Status_getShip(void *status);
-
-void *MiningGame_Ship_getFirstEquipmentOfSort(void *ship, int sort);
-
-int MiningGame_Item_getAttribute(void *item, int attribute);
-
-int MiningGame_Status_getCurrentCampaignMission(void *status);
-
 float MiningGame_Layout_getPulseValue(void *layout, float value);
 
 void *MiningGame_Status_getShip_render(void *status);
@@ -225,35 +217,16 @@ int MiningGame::update(int delta) {
 }
 
 
-static void **g_MiningGame_layoutCtor = nullptr;
-
-static void **g_MiningGame_statusCtor = nullptr;
-
-static void **g_MiningGame_canvasCtor = nullptr;
-
-static int *g_MiningGame_screenW = nullptr;
-
-static int *g_MiningGame_screenH = nullptr;
-
 MiningGame::MiningGame(int layer, int station, Hud *hud) {
-    int imageId[2];
-    imageId[0] = -1;
-
-    int *screenW = g_MiningGame_screenW;
-    int *screenH = g_MiningGame_screenH;
-    void **layoutHolder = g_MiningGame_layoutCtor;
-    void **statusHolder = g_MiningGame_statusCtor;
-
     this->layer = layer;
     this->station = station;
     this->hud = hud;
 
-    Layout *layout = (Layout *) *layoutHolder;
-    int centerX = *screenW >> 1;
+    int centerX = Globals::w >> 1;
     this->centerX = centerX;
-    int centerY = layout->centerYBase + (*screenH >> 1);
+    int centerY = Globals::layout->centerYBase + (Globals::h >> 1);
     this->centerY = centerY;
-    this->marqueeWidth = layout->marqueeWidth;
+    this->marqueeWidth = Globals::layout->marqueeWidth;
     this->isCoreLayer = layer == 7;
     this->lossTimer = 0;
     this->oreAmount = 0.0f;
@@ -273,65 +246,49 @@ MiningGame::MiningGame(int layer, int station, Hud *hud) {
     this->driftY = 0.0f;
     this->posY = (float) centerY;
 
-    void *ship = MiningGame_Status_getShip(*statusHolder);
-    void *equipment = MiningGame_Ship_getFirstEquipmentOfSort(ship, 0x13);
+    Ship *ship = Globals::status->getShip();
+    Item *equipment = ship->getFirstEquipmentOfSort(0x13);
     if (equipment != 0) {
-        int value = MiningGame_Item_getAttribute(equipment, 0x20);
+        int value = equipment->getAttribute(0x20);
         this->controlDivisor = 0.3f + ((float) value / 100.0f) * 1.5f;
-        value = MiningGame_Item_getAttribute(equipment, 0x21);
+        value = equipment->getAttribute(0x21);
         this->oreRate = (float) value / 100.0f;
     }
 
-    PaintCanvas *canvas = (PaintCanvas *) *g_MiningGame_canvasCtor;
-    unsigned int drillImageId;
-    canvas->Image2DCreate(0x4e6, drillImageId);
-    imageId[0] = drillImageId;
-    int imageHeight = canvas->GetImage2DHeight(imageId[0]);
-    Sprite *sprite = new Sprite((uint32_t) imageId[0], imageHeight, imageHeight);
+    unsigned int drillImageId = static_cast<unsigned int>(-1);
+    Globals::Canvas->Image2DCreate(0x4e6, drillImageId);
+    int imageHeight = Globals::Canvas->GetImage2DHeight(drillImageId);
+    Sprite *sprite = new Sprite(drillImageId, imageHeight, imageHeight);
     this->drillSprite = sprite;
-    sprite->defineReferencePixel(imageHeight / 2, imageHeight / 2);
+    sprite->defineReferencePixel(imageHeight >> 1, imageHeight >> 1);
 
     this->animAccumulator = 0.0f;
-    unsigned int createdImageId;
-    canvas->Image2DCreate(0x4e2, createdImageId);
-    this->ringEvenNear = createdImageId;
-    canvas->Image2DCreate(0x4dd, createdImageId);
-    this->ringEvenFar = createdImageId;
-    canvas->Image2DCreate(0x4de, createdImageId);
-    this->ringEvenMid = createdImageId;
-    canvas->Image2DCreate(0x4e1, createdImageId);
-    this->ringOddNear = createdImageId;
-    canvas->Image2DCreate(0x4df, createdImageId);
-    this->ringOddMid = createdImageId;
-    canvas->Image2DCreate(0x4e0, createdImageId);
-    this->ringOddFar = createdImageId;
-    canvas->Image2DCreate(0x4e5, createdImageId);
-    this->oreLabelImageId = createdImageId;
-    canvas->Image2DCreate(0x4e4, createdImageId);
-    this->oreTextImageId = createdImageId;
-    canvas->Image2DCreate(0x4e7, createdImageId);
-    this->oreIconImageId = createdImageId;
-    canvas->Image2DCreate(0x4e3, createdImageId);
-    this->cornerImageId = createdImageId;
-    canvas->Image2DCreate(0x4e8, createdImageId);
-    this->progressBarImageId = createdImageId;
-    canvas->Image2DCreate(0x4ed, createdImageId);
-    this->progressLabelImageId = createdImageId;
+    Globals::Canvas->Image2DCreate(0x4e2, this->ringEvenNear);
+    Globals::Canvas->Image2DCreate(0x4dd, this->ringEvenFar);
+    Globals::Canvas->Image2DCreate(0x4de, this->ringEvenMid);
+    Globals::Canvas->Image2DCreate(0x4e1, this->ringOddNear);
+    Globals::Canvas->Image2DCreate(0x4df, this->ringOddMid);
+    Globals::Canvas->Image2DCreate(0x4e0, this->ringOddFar);
+    Globals::Canvas->Image2DCreate(0x4e5, this->oreLabelImageId);
+    Globals::Canvas->Image2DCreate(0x4e4, this->oreTextImageId);
+    Globals::Canvas->Image2DCreate(0x4e7, this->oreIconImageId);
+    Globals::Canvas->Image2DCreate(0x4e3, this->cornerImageId);
+    Globals::Canvas->Image2DCreate(0x4e8, this->progressBarImageId);
+    Globals::Canvas->Image2DCreate(0x4ed, this->progressLabelImageId);
 
     if (this->isCoreLayer != 0) {
         int coreImage = 0x523;
         if (station == 0xa4) {
             coreImage = 0x522;
         }
-        canvas->Image2DCreate(coreImage, createdImageId);
-        this->coreImageId = createdImageId;
+        Globals::Canvas->Image2DCreate(coreImage, this->coreImageId);
     }
 
-    this->progressBarWidth = canvas->GetImage2DWidth(this->progressBarImageId);
-    this->progressBarHeight = canvas->GetImage2DHeight(this->progressBarImageId);
-    int x = *screenW / 2 - this->progressBarWidth / 2;
+    this->progressBarWidth = Globals::Canvas->GetImage2DWidth(this->progressBarImageId);
+    this->progressBarHeight = Globals::Canvas->GetImage2DHeight(this->progressBarImageId);
+    int x = Globals::w / 2 - this->progressBarWidth / 2;
     this->progressBarX = x;
-    int y = layout->progressBarYBase;
+    int y = Globals::layout->progressBarYBase;
     this->progressBarY = y;
 
     this->leftMarquee = new MarqueeImage(0x4eb, this->marqueeWidth, x, this->progressBarHeight + y + 5, 20.0f);
@@ -340,19 +297,19 @@ MiningGame::MiningGame(int layer, int station, Hud *hud) {
                                           (this->progressBarX - this->marqueeWidth) + this->progressBarWidth,
                                           this->progressBarHeight + this->progressBarY + 5, 32.0f);
 
-    this->oreIconOffsetX = canvas->GetImage2DWidth(this->oreIconImageId) / 2 + 5;
-    this->oreIconOffsetY = canvas->GetImage2DWidth(this->oreLabelImageId) / 2;
-    this->oreImageHeight = canvas->GetImage2DHeight(this->oreTextImageId);
+    this->oreIconOffsetX = Globals::Canvas->GetImage2DWidth(this->oreIconImageId) / 2 + 5;
+    this->oreIconOffsetY = Globals::Canvas->GetImage2DWidth(this->oreLabelImageId) >> 1;
+    this->oreImageHeight = Globals::Canvas->GetImage2DHeight(this->oreTextImageId);
 
     MarqueeImage *oreMarquee =
-            new MarqueeImage(0x4e4, canvas->GetImage2DWidth(this->oreLabelImageId) - 8, 0, 0,
-                             layout->field_0xdc);
+            new MarqueeImage(0x4e4, Globals::Canvas->GetImage2DWidth(this->oreLabelImageId) - 8, 0, 0,
+                             Globals::layout->field_0xdc);
     this->oreMarquee = oreMarquee;
-    oreMarquee->setSpeed(layout->animSpeedScale * LAYER_SPEEDS[this->currentLayer]);
+    oreMarquee->setSpeed(Globals::layout->animSpeedScale * LAYER_SPEEDS[this->currentLayer]);
 
     this->promptPulseTimer = 0;
     this->textAlpha = 1.0f;
-    this->campaignFlag = MiningGame_Status_getCurrentCampaignMission(*statusHolder) > 4;
+    this->campaignFlag = Globals::status->getCurrentCampaignMission() > 4;
 }
 
 
@@ -396,7 +353,7 @@ void MiningGame::render2D() {
     for (int layerIndex = this->currentLayer; layerIndex < this->targetLayer; layerIndex++) {
         int raw = layerTable[(layerIndex - this->targetLayer * 7) + 0x31];
         int radius = (int) (layout->ringRadiusScale * (float) raw);
-        int *imageSlot;
+        uint32_t *imageSlot;
         if ((layerIndex & 1) == 0) {
             imageSlot = &this->ringEvenNear;
             if (layout->ringNearMidThreshold < radius) {

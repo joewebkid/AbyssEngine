@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (MiningGame update; older subsystem
+Last reviewed: 2026-10-14 (MiningGame constructor; older subsystem
 snapshots retain their dates)
+
+## MiningGame constructor service and image bindings (2026-10-14)
+
+The Android-backed constructor now reads the actual `Globals`
+screen, layout, status and canvas services and writes image handles
+directly into `uint32_t` fields. The drill image output starts at
+`-1`, matching the original. Focused C1/C2 source-shape rises 1.3%
+to 99.1%, strict fuzzy 0.6% to 89.1%; neither alias is exact.
+The production-constructor host smoke covers equipment, coordinates,
+images, marquees and both core-image choices; native `gof2`, all 206
+ARM units and 37 verifier tests pass (one skipped). A no-equipment
+path still leaves `controlDivisor` unset in the Android decompilation;
+its reachability is unknown. ARM32 runtime and full mining sequence
+are untested. Full corpus coverage remains 4,323/4,524; average
+source-shape rises 93.02% to 93.06% and strict fuzzy 81.45% to
+81.48%. All 2,403 linked-exact and 1,008 byte-exact pairs and 123
+extra symbols are unchanged. Next: restore `render2D`'s unassigned
+service routes. See [the constructor audit](MINING_CONSTRUCTOR_ARM_2026-10-14.md).
 
 ## MiningGame update and layer speeds (2026-10-14)
 
@@ -16,9 +34,10 @@ corpus coverage remains 4,323/4,524; average source-shape rises
 93.00% to 93.02% and strict fuzzy 81.43% to 81.45%. All 2,403
 linked-exact and 1,008 byte-exact pairs and 123 extra symbols are
 unchanged. Medal/loss branches and ARM32 runtime are untested; the
-constructor and `render2D` retain unassigned service holders. Next:
-recover those constructor/render dependencies, then test a complete
-native mining sequence. See [the update audit](MINING_UPDATE_ARM_2026-10-14.md).
+constructor and `render2D` retained unassigned service holders at that
+checkpoint. Constructor recovery is described above; rendering and a
+complete native mining sequence remain. See
+[the update audit](MINING_UPDATE_ARM_2026-10-14.md).
 
 ## MiningGame layer membership (2026-10-14)
 
