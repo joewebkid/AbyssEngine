@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (Layout constructor metrics; older subsystem
+Last reviewed: 2026-10-14 (Layout constructor middle fields; older subsystem
 snapshots retain their dates)
+
+## Layout constructor consumer-backed middle fields (2026-10-14)
+
+Android-backed `Layout+0x70` row height and `+0x8c..+0x9c`
+StarMap/Radio metrics now populate the six platform profiles instead
+of remaining zero-filled. This restores the float bit pattern copied
+into `StarMap::dragScale` and the dimensions consumed by `Radio`.
+Focused C1/C2 source-shape rises from 23.9% to 27.3%; strict fuzzy
+shifts from 5.8% to 5.7%, with neither alias exact. The production
+constructor host smoke, native `gof2`, all 206 ARM units, and 37
+verifier tests pass (one skipped). Full corpus remains 4,323/4,524
+covered at 92.98% average source-shape and 81.41% strict fuzzy;
+2,403 linked-exact and 1,008 byte-exact pairs and the 123 extra
+symbols are unchanged, with no exact-set losses. Many intervening
+fields remain unrecovered; no ARM32 runtime or visual-layout
+validation was done.
+Next priority: the zero-filled `Layout+0x12c..+0x148` metrics copied
+by `Hud::init`, with direct ARM branch confirmation. See
+[the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
 
 ## Layout constructor platform metrics (2026-10-14)
 

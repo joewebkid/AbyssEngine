@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout constructor consumer-backed middle fields (2026-10-14)
+
+The six-profile host smoke, native `gof2`, all 206 ARM translation
+units, and 37 verifier tests pass (one skipped). Focused C1/C2
+source-shape rises 23.9% to 27.3%; strict fuzzy moves 5.8% to 5.7%;
+neither alias is exact. Full corpus remains 4,323/4,524 covered at
+92.98% average source-shape, 81.41% strict fuzzy, 2,403 linked-exact,
+and 1,008 byte-exact, with no exact-set or extra-symbol change. These
+fields are read by `MenuTouchWindow`, `StarMap`, and `Radio`, but
+original ARM32 runtime and visual layout remain untested. See
+[the evidence](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
+
 ## Layout constructor platform metrics (2026-10-14)
 
 Both Android `Layout::Layout()` C1/C2 aliases rise from 8.7% to 23.9%

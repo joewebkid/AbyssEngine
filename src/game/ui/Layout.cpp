@@ -241,6 +241,15 @@ Layout::Layout() {
         this->field_0x58 = retina ? 486 : 243;
     }
 
+    this->field_0x70_rowHeight = hd ? 63 : n9 ? 51 : ipadLarge ? 90
+        : retina ? 60 : ipad ? 45 : 30;
+    this->field_0x8c = hd ? 45 : n9 ? 57 : retina ? 64 : 32;
+    // StarMap copies these original float bits from Layout+0x90.
+    this->field_0x90 = hd ? 1055696996 : (n9 || ipad || retina) ? 0x3ea66666 : 0x3f266666;
+    this->field_0x94 = hd ? 14 : n9 ? 15 : retina ? 20 : 10;
+    this->field_0x98 = hd ? 590 : n9 ? 630 : retina ? 840 : 420;
+    this->field_0x9c = hd ? 70 : n9 ? 75 : retina ? 100 : 50;
+
     // Android Layout::Layout @ 0x000d1028. ListItemWindow::draw uses these
     // two fields to place the ImageFactory item/ship Sprite in its title box.
     // Keep the platform branches explicit: they are direct constructor writes,
