@@ -98,6 +98,9 @@ int main() {
         assignedText = copy;
         check(assignedText.length == 4 && assignedText.data[0] == 'b',
               "String assignment");
+        AbyssEngine::String medalValue(1234);
+        check(medalValue.length == 4 && medalValue.data[0] == '1' &&
+                  medalValue.data[3] == '4', "String integer value");
 
         Array<AbyssEngine::String *> owned;
         auto *member = new AbyssEngine::String;

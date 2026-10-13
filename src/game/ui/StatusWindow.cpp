@@ -79,21 +79,12 @@ float StatusWindow::getRelativeScrollStartPos() {
     return -(float) range / (float) this->contentHeight;
 }
 
-void Status_replaceHash(void *out, void *key, void *a, void *b);
-
-static Layout **g_swe_layout = nullptr;
-static char *g_swe_dialogBlock = nullptr;
-static void *g_swe_status = nullptr;
-static GameText **g_swe_gameText = nullptr;
-static Globals **g_swe_globals = nullptr;
-static void *g_swe_font = nullptr;
-
 int StatusWindow::OnTouchEnd(int x, int y) {
     int vy = this->scrollVelocity;
     int newOff = this->scrollOffset + vy;
     float vf = (float) vy;
     int absvy = vy < 0 ? -vy : vy;
-    Layout *layout = *g_swe_layout;
+    Layout *layout = Globals::layout;
 
     this->scrollDamping = 0.9f;
     this->isDragging = 0;
@@ -104,7 +95,7 @@ int StatusWindow::OnTouchEnd(int x, int y) {
     if (layout->OnTouchEnd(x, y) != 0)
         return 1;
 
-    if (*g_swe_dialogBlock == 0) {
+    if (Globals::iPad == 0) {
         for (unsigned int i = 0; i < this->tabButtons->size(); i++) {
             if ((*this->tabButtons)[i]->OnTouchEnd(x, y) != 0) {
                 this->activeTab = i;
@@ -134,20 +125,16 @@ int StatusWindow::OnTouchEnd(int x, int y) {
 
                     int count = (elite == 0) ? medals[this->selectedMedal] : 1;
 
-                    String hdr, valStr, valTmp, full;
-                    void *key = *(void **) g_swe_status;
-                    String *t = (*g_swe_gameText)->getText(this->selectedMedal + 0x610);
-                    hdr.Set((t)->data);
-                    void *val = (void *) (intptr_t) ach->getValue(this->selectedMedal, count);
-                    valStr.Set(((String *) val)->data);
-                    valTmp.Set((valStr).data);
-                    Status_replaceHash(&full, key, &hdr, &valTmp);
+                    String hdr(*Globals::gameText->getText(this->selectedMedal + 0x610), false);
+                    String valStr(ach->getValue(this->selectedMedal, count));
+                    String valTmp(valStr, false);
+                    String full = Globals::status->replaceHash(hdr, valTmp);
 
                     String hint = this->getMedalHintText(this->selectedMedal);
                     full += hint;
 
-                    (*g_swe_globals)->getLineArray(
-                        static_cast<unsigned int>(reinterpret_cast<std::size_t>(*(void **) g_swe_font)),
+                    static_cast<Globals *>(Globals::globals)->getLineArray(
+                        Globals::font,
                         full, this->boxWidth - layout->field_0x4c * 2, this->detailLines);
                     (*this->medalButtons)[i]->setAlwaysPressed(true);
                 }
@@ -158,14 +145,10 @@ int StatusWindow::OnTouchEnd(int x, int y) {
 
     if (layout->helpPressed() != 0) {
         if (this->activeTab == 1) {
-            String title;
-            String *t = (*g_swe_gameText)->getText(0x287);
-            title.Set((t)->data);
+            String title(*Globals::gameText->getText(0x287), false);
             layout->initHelpWindow(title);
         } else if (this->activeTab == 0) {
-            String title;
-            String *t = (*g_swe_gameText)->getText(0x280);
-            title.Set((t)->data);
+            String title(*Globals::gameText->getText(0x280), false);
             layout->initHelpWindow(title);
         }
     }

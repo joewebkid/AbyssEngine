@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (gamepad software-stick bridge; older subsystem
+Last reviewed: 2026-10-13 (StatusWindow touch release; older subsystem
 snapshots retain their dates)
+
+## StatusWindow touch release (2026-10-13)
+
+`OnTouchEnd` now routes its layout, device flag, status, game text, globals,
+and font reads through the Android-backed shared fields instead of six
+unassigned pointer holders. Medal values now enter the integer `String`
+constructor rather than being dereferenced as pointers, and replacement
+uses the defined `Status::replaceHash` overload. Focused ARM source-shape
+rises 82.7% to 89.5%, strict fuzzy 39.7% to 48.4%; the function is not
+exact. Native `gof2`, 206/206 ARM units, an integer-String ABI smoke, and
+37 verifier tests pass (one skipped). Full corpus remains 4,323/4,524
+covered, 92.80% average source-shape, 81.20% strict fuzzy, 2,395
+linked-exact and 1,008 byte-exact, with no exact losses. Interactive
+medal/touch behavior and ARM32 runtime remain untested. Next recover the
+separate `getMedalHintText` game-text binding. See
+[the release audit](STATUSWINDOW_TOUCH_END_ARM_2026-10-13.md).
 
 ## Gamepad software-stick bridge (2026-10-13)
 
