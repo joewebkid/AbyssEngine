@@ -1,4 +1,4 @@
-"""Run production canvas mesh draw, triangle-count, and shader-animation bodies."""
+"""Run production canvas mesh draw, counts, animation, and material bodies."""
 
 import argparse
 from pathlib import Path
@@ -32,8 +32,13 @@ def main():
     fixture = fixture.replace("// PRODUCTION_SHADER_METHODS", "\n".join(function(source, signature) for signature in (
         "void PaintCanvas::MeshChangeShaderAnimValue(AbyssEngine::Mesh *mesh,",
         "void PaintCanvas::MeshChangeShaderAnimValue(Transform *transform,")))
+    fixture = fixture.replace("// PRODUCTION_MATERIAL_METHODS", "\n".join(function(source, signature) for signature in (
+        "void PaintCanvas::MeshChangeMaterialIntern(AbyssEngine::Mesh *mesh,",
+        "void PaintCanvas::MeshChangeMaterialIntern(Transform *transform,")))
     fixture = fixture.replace("// PRODUCTION_TRI_THUNK", function(
         core, "int paintcanvas_ext_transform_tricount(AbyssEngine::PaintCanvas *canvas,"))
+    fixture = fixture.replace("// PRODUCTION_MATERIAL_THUNK", function(
+        core, "void paintcanvas_ext_mat_intern(AbyssEngine::PaintCanvas *canvas,"))
     with tempfile.TemporaryDirectory(prefix="canvas-mesh-smoke-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "canvas_mesh_draw_smoke.cpp"
         generated.write_text(fixture)

@@ -15,8 +15,10 @@ template <typename T> void ArrayAddCached(T item, Array<T> &array) {
     array.values.push_back(item);
 }
 
-namespace AbyssEngine { struct PaintCanvas; }
+namespace AbyssEngine { struct PaintCanvas; struct Transform; struct Material; }
 int paintcanvas_ext_transform_tricount(AbyssEngine::PaintCanvas *, void *);
+void paintcanvas_ext_mat_intern(AbyssEngine::PaintCanvas *, AbyssEngine::Transform *,
+                                AbyssEngine::Material *);
 
 namespace AbyssEngine {
 namespace AEMath {
@@ -73,8 +75,8 @@ struct Mesh {
     unsigned indexCount = 0;
     unsigned materialId = 0;
     float shaderAnimValue0 = 0, shaderAnimValue1 = 0;
-    Transform *animation = nullptr;
-    void *material = nullptr;
+    union { Transform *animation = nullptr; Transform *field_0x34; };
+    union { void *material = nullptr; void *field_0x30; };
     float pivotX = 0, pivotY = 0, pivotZ = 0;
     float boundsCenterX = 1, boundsCenterY = 0, boundsCenterZ = 0;
     float boundsRadius = 2, boundsRadiusSq = 3;
@@ -125,14 +127,18 @@ struct PaintCanvas {
     int TransformGetTriCount(Transform *);
     void MeshChangeShaderAnimValue(Mesh *, float, unsigned);
     void MeshChangeShaderAnimValue(Transform *, float, unsigned);
+    void MeshChangeMaterialIntern(Mesh *, Material *);
+    void MeshChangeMaterialIntern(Transform *, Material *);
 };
 
 // PRODUCTION_COLOR
 // PRODUCTION_METHOD
 // PRODUCTION_TRI_METHODS
 // PRODUCTION_SHADER_METHODS
+// PRODUCTION_MATERIAL_METHODS
 }
 // PRODUCTION_TRI_THUNK
+// PRODUCTION_MATERIAL_THUNK
 
 int main() {
     using namespace AbyssEngine;
@@ -239,5 +245,17 @@ int main() {
     canvas.MeshChangeShaderAnimValue(static_cast<Transform *>(nullptr), encoded, 1);
     canvas.MeshChangeShaderAnimValue(&outer, 9.0f, 7);
     assert(outer.shaderAnimValue0 == 2.25f && leaf.shaderAnimValue1 == 3.5f);
-    std::puts("PaintCanvas mesh draw, tri-count, and shader-animation smoke: OK");
+
+    Material replacement, secondReplacement;
+    canvas.MeshChangeMaterialIntern(&outer, &replacement);
+    assert(outer.material == &replacement && inner.material == &replacement);
+    assert(leaf.material == &replacement);
+    canvas.MeshChangeMaterialIntern(&outer, static_cast<Material *>(nullptr));
+    assert(leaf.material == &replacement);
+    canvas.MeshChangeMaterialIntern(static_cast<Mesh *>(nullptr), &replacement);
+    canvas.MeshChangeMaterialIntern(static_cast<Transform *>(nullptr), &replacement);
+    canvas.MeshChangeMaterialIntern(&root, &secondReplacement);
+    assert(inner.material == &secondReplacement && leaf.material == &secondReplacement);
+    assert(outer.material == &replacement);
+    std::puts("PaintCanvas mesh draw, tri-count, shader-animation, and material smoke: OK");
 }

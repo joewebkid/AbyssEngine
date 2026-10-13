@@ -476,7 +476,7 @@ int paintcanvas_ext_getdisplaywidth(void *);
 
 int paintcanvas_ext_getdisplayheight(void *);
 
-void paintcanvas_ext_mat_intern(void *, void *);
+void paintcanvas_ext_mat_intern(AbyssEngine::PaintCanvas *, AbyssEngine::Transform *, AbyssEngine::Material *);
 
 void paintcanvas_ext_camera_apply(void *, unsigned int, unsigned int, unsigned int);
 
@@ -1519,7 +1519,7 @@ void PaintCanvas::SetProjOrthoMatrix() {
 void PaintCanvas::MeshChangeMaterialIntern(AbyssEngine::Mesh *mesh, AbyssEngine::Material *mat) {
     if (mesh && mat) {
         mesh->field_0x30 = mat;
-        return paintcanvas_ext_mat_intern(this, mesh->field_0x34);
+        return paintcanvas_ext_mat_intern(this, mesh->animation, mat);
     }
 }
 

@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (canvas shader animation; older subsystem
+Last reviewed: 2026-10-13 (canvas material propagation; older subsystem
 snapshots retain their dates)
+
+## Recursive mesh material propagation (2026-10-13)
+
+`PaintCanvas::MeshChangeMaterialIntern(Mesh *, Material *)` now
+passes the material to the animated transform after assigning it to
+the mesh. Its former two-argument unresolved shim lost that argument;
+the corrected out-of-line compatibility entry preserves the already
+linked-exact mesh function. Android ARM confirms the `+0x30` material
+field, `+0x34` animation link, null guards, and recursive mesh/child
+traversal. Focused source-shape remains 100.0% for both overloads;
+strict fuzzy stays 100.0% for mesh and 92.3% for transform. Native
+`gof2`, 206/206 ARM units, an extracted-body host smoke, and 36
+verifier tests pass (one skipped). Full corpus remains 4,717
+comparisons, 4,323/4,524 covered, 201 missing, 92.5708% average
+source-shape, 80.8861% average strict fuzzy, 2,378 linked-exact,
+and 1,008 byte-exact, with no exact-set losses. One resolved
+compatibility entry increases extra symbols to 125. Material lifetime,
+rendering, malformed cyclic graphs, and ARM32 runtime remain
+untested. Next audit indexed `MeshConvertToVBO`. See
+[the material-propagation audit](PAINTCANVAS_MATERIAL_PROPAGATION_ARM_2026-10-13.md).
 
 ## Shader-animation value propagation (2026-10-13)
 
