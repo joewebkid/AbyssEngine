@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (StatusWindow medal grid; older subsystem
+Last reviewed: 2026-10-13 (StatusWindow constructor; older subsystem
 snapshots retain their dates)
+
+## StatusWindow constructor service bindings (2026-10-13)
+
+The constructor now uses the Android-backed shared text, layout,
+dimensions, iPad flag, achievements and canvas services instead of five
+unassigned holders. It positions the second tab from the first tab's
+width and applies the iPad medal-height branch. A production-constructor
+host smoke checks both device modes; native `gof2`, all 206 ARM units
+and 37 verifier tests pass (one skipped). Constructor source-shape rises
+38.5% to 96.0%, strict fuzzy 16.6% to 53.1%; neither alias is exact.
+The full corpus covers 4,323/4,524 original functions, with 92.85%
+average source-shape, 81.23% strict fuzzy, 2,395 linked-exact and 1,008
+byte-exact. Exact-symbol sets and the 123 extra-symbol set are unchanged.
+Real assets and ARM32 runtime are unverified. Next priority is
+`StatusWindow::OnTouchEnd`. See [the constructor audit](STATUSWINDOW_CTOR_GLOBALS_ARM_2026-10-13.md).
 
 ## StatusWindow medal grid and detail pane (2026-10-13)
 

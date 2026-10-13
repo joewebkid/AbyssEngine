@@ -190,6 +190,15 @@ does not execute the full window. See
 [the medal-grid audit](STATUSWINDOW_DRAW_MEDALS_ARM_2026-10-13.md).
 
 ```powershell
+python tools/run_status_ctor_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `StatusWindow constructor host smoke: OK`. This runs
+the production constructor with fixture services for phone and iPad tabs,
+medals, images and dimensions; it does not load original assets or run
+on ARM32. See [the constructor audit](STATUSWINDOW_CTOR_GLOBALS_ARM_2026-10-13.md).
+
+```powershell
 python tools/run_status_medal_hint_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
 ```
 
