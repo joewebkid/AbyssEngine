@@ -186,6 +186,16 @@ the production clone method against a fixture canvas and real
 checks two clones and the invalid-index path, not a full render frame
 or ARM32 runtime. See [the clone audit](MESH_CLONE_MATERIAL_ARM_2026-10-13.md).
 
+```powershell
+python tools/run_material_create_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `MaterialCreate host smoke: OK`. This extracts both
+production overloads with real `Material` and Array code, fixtures
+resource/texture services, and removes the temporary executable. It
+does not run the real texture loader or ARM32 game. See
+[the material-create audit](MATERIAL_CREATE_ARM_2026-10-13.md).
+
 Windows note: the wrapper names are still `orbcc`, `orbnm`, `orbas`, and
 `orbobjdump`, but they now also support a local NDK r18b fallback. Set
 `GOF2_VERIFY_LOCAL_NDK=1` and keep the NDK at `.cache/ndk/android-ndk-r18b`, or

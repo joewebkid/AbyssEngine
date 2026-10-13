@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (MeshCloneMaterial constructor/append path; older subsystem
+Last reviewed: 2026-10-13 (MaterialCreate overloads; older subsystem
 snapshots retain their dates)
+
+## MaterialCreate overloads (2026-10-13)
+
+Android ARM at `0x7c13c` and `0x79e4c` confirms default `Material`
+construction, texture/mode assignment, resource lookup and deferred
+texture creation, color-vector copy, and `ArrayAdd<Material *>`.
+Both local overloads now call these real paths instead of unresolved
+material-create shims. A production-body host smoke with real Material
+and Array code checks ordinary creation, texture lookup/creation,
+resource-cache reuse, missing texture/resource cases, and Array
+growth. Native `gof2`, 206/206 ARM units, adjacent material smokes,
+and 36 verifier tests pass (one skipped). Focused source-shape rises
+78.9% to 100.0% (direct) and 75.8% to 96.8% (resource); strict fuzzy
+rises 68.1% to 96.2% and 19.0% to 59.3%. Neither overload is exact.
+Full corpus remains 4,323/4,524 functions covered, 201 missing,
+2,378 linked-exact and 1,008 byte-exact, with unchanged exact symbol
+sets. Average source-shape rises 92.5469% to 92.5558%; strict fuzzy
+80.8364% to 80.8509%. The actual nested texture loader, nonzero
+`addData` ownership, GL output, and ARM32 gameplay remain untested.
+Next audit `TextureCreate`. See
+[the material-create audit](MATERIAL_CREATE_ARM_2026-10-13.md).
 
 ## MeshCloneMaterial constructor/append path (2026-10-13)
 

@@ -415,8 +415,6 @@ void paintcanvas_ext_fr_meshdraw(void *eng, void *mesh);
 
 void paintcanvas_ext_sprite_rgba(unsigned int, float, float, float, float, void *);
 
-void *paintcanvas_ext_alloc(unsigned int);
-
 void paintcanvas_ext_dr_setwvm(void *self, void *m);
 
 void paintcanvas_ext_dr_glLineWidth(float w);
@@ -663,8 +661,6 @@ void paintcanvas_ext_cam_setcur(AbyssEngine::PaintCanvas *, unsigned int);
 
 void paintcanvas_ext_end3d(AbyssEngine::PaintCanvas *);
 
-void paintcanvas_ext_material_add(void *, void *);
-
 void paintcanvas_ext_get_grav(void *);
 
 void paintcanvas_ext_glMatrixMode(unsigned int);
@@ -704,8 +700,6 @@ static inline int paintcanvas_ext_gsp_getheight(void *self) { return ((PaintCanv
 float paintcanvas_ext_gsp_signedtofloat(int v, unsigned int mode);
 
 int paintcanvas_ext_sscreate(void *eng, unsigned short id, bool b, void **out);
-
-void *paintcanvas_ext_material_ctor(void *);
 
 void paintcanvas_ext_cisvf_matidentity(void *out, void *m);
 
@@ -1034,14 +1028,6 @@ void paintcanvas_ext_check_string(void *, unsigned int, unsigned int);
 char *paintcanvas_ext_rt_getAEChar(void *strField);
 
 void paintcanvas_ext_rt_deletearr(char *p);
-
-void *paintcanvas_ext_matc_findres(void *self, unsigned short id);
-
-void *paintcanvas_ext_matc_new_material();
-
-void paintcanvas_ext_matc_texcreate(void *self, unsigned short id, bool b);
-
-void paintcanvas_ext_matc_vec_assign(void *dst, void *src);
 
 float paintcanvas_ext_tg2di_signedtofloat(int v, unsigned int mode);
 
@@ -2942,13 +2928,11 @@ void PaintCanvas::SpriteSystemCreate(unsigned short resId,
 
 void PaintCanvas::MaterialCreate(unsigned int &out, AbyssEngine::BlendMode mode,
                                  unsigned int textures, unsigned short p4) {
-    char *obj = (char *) paintcanvas_ext_alloc(0x74);
-    paintcanvas_ext_material_ctor(obj);
     (void) p4;
-    PCMaterialView *mat = (PCMaterialView *) obj;
-    mat->textureSlots[0] = textures;
-    mat->flags0 = mode;
-    paintcanvas_ext_material_add(obj, &this->materials);
+    Material *mat = new Material();
+    mat->textures[0] = textures;
+    mat->materialMode = mode;
+    ArrayAdd(mat, this->materials);
     out = this->materials.count - 1;
 }
 
@@ -4901,34 +4885,35 @@ void PaintCanvas::ReloadTextures() {
 
 
 void PaintCanvas::MaterialCreate(unsigned short resId, unsigned int &out) {
-    PCResourceView *res = (PCResourceView *) paintcanvas_ext_matc_findres(this, resId);
+    PCResourceView *res = (PCResourceView *) this->FindResource(resId);
     if (res == 0) {
         return;
     }
     unsigned int idx = (unsigned int) res->handle;
     if (idx == 0xffffffff) {
         PCMaterialInfoView *info = (PCMaterialInfoView *) res->payload;
-        PCMaterialView *mat = (PCMaterialView *) paintcanvas_ext_matc_new_material();
+        Material *mat = new Material();
         for (unsigned int i = 0; i < 8; i++) {
             unsigned short tid = info->textureIds[i];
             if (tid != 0xffff) {
-                PCResourceView *tres = (PCResourceView *) paintcanvas_ext_matc_findres(this, tid);
+                PCResourceView *tres = (PCResourceView *) this->FindResource(tid);
                 if (tres == 0) {
                     break;
                 }
                 int t = tres->handle;
                 if (t == -1) {
-                    paintcanvas_ext_matc_texcreate(this, info->textureIds[i], true);
+                    unsigned int textureOut = 0;
+                    this->TextureCreate(tid, textureOut, true);
                     t = tres->handle;
                 }
-                mat->textureSlots[i] = (uint32_t) t;
+                mat->textures[i] = t;
             }
         }
-        mat->flags0 = info->flags0;
-        mat->flags1 = info->flags1;
-        mat->flags2 = info->flags2;
-        paintcanvas_ext_matc_vec_assign(mat->vec, info->vec);
-        PCArrayAdd<AbyssEngine::Material *>((AbyssEngine::Material *) mat, &this->materials);
+        mat->materialMode = info->flags0;
+        mat->addData = (void *) (uintptr_t) info->flags1;
+        mat->addDataSize = info->flags2;
+        mat->ambientColor = *(Vector *) info->vec;
+        ArrayAdd(mat, this->materials);
         idx = this->materials.count - 1;
         res->handle = (int) idx;
     }
