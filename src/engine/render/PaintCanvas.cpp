@@ -17,6 +17,7 @@ namespace AbyssEngine {
     class SpriteSystem;
     class ImageFont;
     int MeshDraw(Engine *engine, Mesh *mesh);
+    void SpriteSystemRelease(Engine *engine, SpriteSystem **slot);
     void SpriteSystemDraw(Engine *engine, const Matrix &view, const Matrix &world, SpriteSystem *sys);
     int CameraIsSphereinViewFrustum(const Vector &center, float radius, Matrix *extra, Camera *cam);
     int CameraIsPointinViewFrustum(const Vector &point, Matrix *extra, Camera *cam);
@@ -929,8 +930,6 @@ void pc_ArrayAdd_Camera(void *cam, void *arr);
 int paintcanvas_ext_mesh_tricount(AbyssEngine::PaintCanvas *, void *);
 
 int paintcanvas_ext_transform_tricount(AbyssEngine::PaintCanvas *, void *);
-
-void paintcanvas_ext_release_sprite_res(void *, void *);
 
 int PaintCanvas::GetImage2DWidth(unsigned int index) {
     if (index < this->images.count) {
@@ -4857,9 +4856,7 @@ void PaintCanvas::MeshChangeShaderAnimValue(Transform *transform, float value, u
 
 void PaintCanvas::ReleaseSpriteSystemResource(unsigned int index) {
     if (index < this->spriteSystems.count) {
-        void *ctx = this->engine;
-        char **arr = (char **) this->spriteSystems.data_;
-        return paintcanvas_ext_release_sprite_res(ctx, arr + index);
+        AbyssEngine::SpriteSystemRelease(this->engine, &this->spriteSystems.data_[index]);
     }
 }
 

@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (VBO upload body; older subsystem
+Last reviewed: 2026-10-13 (sprite-system release dispatch; older subsystem
 snapshots retain their dates)
+
+## Sprite-system resource release dispatch (2026-10-13)
+
+`PaintCanvas::ReleaseSpriteSystemResource(unsigned)` now calls the
+typed `AbyssEngine::SpriteSystemRelease` instead of an unresolved
+shim. Android ARM at `0x7c7f4` confirms its index guard and slot
+dispatch. The wrapper stays 100.0% source-shape, 100.0% strict fuzzy,
+and linked-exact (not byte-exact). An extracted-body host smoke checks
+the wrapper and release path, including invalid index, null slot,
+CPU-array release, adjacent-slot preservation, and repeat release;
+it stubs nested `MeshRelease`. Native `gof2`, 206/206 ARM units, and
+36 verifier tests pass (one skipped). Full corpus stays 4,717
+comparisons, 4,323/4,524 covered, 201 missing, 92.5716% average
+source-shape, 80.8895% average strict fuzzy, 2,378 linked-exact,
+and 1,008 byte-exact, with no exact-set losses. Real mesh ownership,
+assets, and ARM32 runtime are untested. Next audit `MeshRelease`,
+currently 72.0% source-shape. See
+[the sprite-release audit](PAINTCANVAS_SPRITE_RELEASE_ARM_2026-10-13.md).
 
 ## VBO upload body (2026-10-13)
 
