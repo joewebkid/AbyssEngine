@@ -27,7 +27,8 @@ def main():
         generated = Path(temp) / "sprite_system_draw_smoke.cpp"
         generated.write_text(fixture)
         exe = Path(temp) / "sprite_system_draw_smoke.exe"
-        subprocess.run([args.cxx, "-std=gnu++14", "-O0", str(generated), "-o", str(exe)],
+        subprocess.run([args.cxx, "-std=gnu++14", "-O0", "-I", str(ROOT / "src"),
+                        str(generated), "-o", str(exe)],
                        cwd=ROOT, check=True)
         subprocess.run([str(exe)], cwd=ROOT, check=True)
 

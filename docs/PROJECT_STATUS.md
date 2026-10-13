@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (SpriteSystemDraw matrix queues; older subsystem
+Last reviewed: 2026-10-13 (SpriteSystemDraw cached-array follow-up; older subsystem
 snapshots retain their dates)
+
+## SpriteSystemDraw cached-array follow-up (2026-10-13)
+
+The five sprite material-queue appends now call the existing
+`ArrayAddCached` specializations instead of a local raw-header
+duplicate. `extern template` keeps the implementations in `Array.cpp`,
+matching the original ARM out-of-line calls and avoiding three extra
+local comparison entries. A production-body host smoke checks the
+first real Array capacity growth, preservation of matrix/mesh/color
+entries, both sprite size modes, and direct drawing. Native `gof2`,
+206/206 ARM units, the MaterialDraw smoke, and 36 verifier tests pass
+(one skipped). Focused `SpriteSystemDraw` source-shape rises 79.4% to
+86.6%, strict fuzzy 11.2% to 22.7%; it remains non-exact. Full corpus
+stays at 4,323/4,524 functions covered, 201 missing, 2,378
+linked-exact and 1,008 byte-exact with no exact-symbol change.
+Average source-shape rises 92.5419% to 92.5434%; strict fuzzy rises
+80.8308% to 80.8333%. Android itself combines `new[]`, `realloc`,
+and `delete[]` in this Array lifecycle, so portable allocator safety
+remains unproven; the algorithm was not silently changed. Next audit
+real `Material` copy/lifetime and multi-frame batching. See
+[the follow-up audit](SPRITE_SYSTEM_DRAW_MATRIX_QUEUE_ARM_2026-10-13.md).
 
 ## SpriteSystemDraw matrix queues (2026-10-13)
 

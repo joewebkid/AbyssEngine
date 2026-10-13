@@ -1,26 +1,22 @@
 #include <cassert>
 #include <cmath>
 #include <cstdio>
-#include <vector>
+#include <cstring>
+#include "engine/core/Array.h"
+#include "engine/math/Matrix.h"
 
 namespace AbyssEngine {
 namespace AEMath {
-struct Matrix {
-    float m[15];
-    Matrix() : m{} {}
-    Matrix(float a, float b, float c, float d, float e, float f, float g, float h,
-           float i, float j, float k, float l, float n, float o, float p)
-        : m{a, b, c, d, e, f, g, h, i, j, k, l, n, o, p} {}
-    operator const float *() const { return m; }
-};
+Matrix::Matrix() : m{} {}
+Matrix::operator const float *() const { return m; }
+Matrix &Matrix::operator=(const Matrix &other) {
+    std::memcpy(m, other.m, sizeof(m));
+    return *this;
+}
 Matrix operator*(const Matrix &lhs, const Matrix &rhs);
 }
 using AEMath::Matrix;
 
-template <typename T> struct Array { std::vector<T> values; };
-template <typename T> void ArrayAddCachedRaw(T value, Array<T> *array) {
-    array->values.push_back(value);
-}
 struct Material {
     Array<Matrix> arr_2c, arr_38, arr_5c;
     Array<struct Mesh *> meshes;
@@ -77,18 +73,26 @@ int main() {
     near(vertices[3], 14); near(vertices[7], 25);
     near(vertices[12], 5); near(vertices[13], 16); near(vertices[14], 32);
     near(vertices[15], 13); near(vertices[19], 24);
-    assert(material.meshes.values.size() == 1 && material.meshes.values[0] == &mesh);
-    assert(material.arr_2c.values.size() == 1 && material.arr_2c.values[0].m[0] == 7);
-    assert(material.arr_38.values.size() == 1 && material.arr_38.values[0].m[5] == -1);
-    assert(material.arr_38.values[0].m[12] == 1);
-    assert(material.arr_5c.values.size() == 1 && material.arr_5c.values[0].m[3] == 10);
-    assert(material.arr_50.values.size() == 1 && material.arr_50.values[0] == 0xffffffff);
+    assert(material.meshes.size_ == 1 && material.meshes[0] == &mesh);
+    assert(material.arr_2c.size_ == 1 && material.arr_2c[0].m[0] == 7);
+    assert(material.arr_38.size_ == 1 && material.arr_38[0].m[5] == -1);
+    assert(material.arr_38[0].m[12] == 1);
+    assert(material.arr_5c.size_ == 1 && material.arr_5c[0].m[3] == 10);
+    assert(material.arr_50.size_ == 1 && material.arr_50[0] == 0xffffffff);
 
     sys.sharedSize = 1;
-    mesh.material = nullptr;
     SpriteSystemDraw(&engine, view, world, &sys);
-    assert(products == 2 && directDraws == 1);
+    assert(products == 2 && directDraws == 0);
     near(vertices[12], 7); near(vertices[13], 18);
     near(vertices[15], 11); near(vertices[19], 22);
+    assert(material.meshes.size_ == 2 && material.meshes.capacity_ == 2);
+    assert(material.arr_2c.size_ == 2 && material.arr_2c[1].m[0] == 7);
+    assert(material.arr_38.size_ == 2 && material.arr_38[1].m[5] == -1);
+    assert(material.arr_5c.size_ == 2 && material.arr_5c[1].m[3] == 10);
+    assert(material.arr_50.size_ == 2 && material.arr_50[1] == 0xffffffff);
+
+    mesh.material = nullptr;
+    SpriteSystemDraw(&engine, view, world, &sys);
+    assert(products == 3 && directDraws == 1);
     std::puts("SpriteSystemDraw host smoke: OK");
 }

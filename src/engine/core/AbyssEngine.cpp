@@ -16,6 +16,11 @@
 #include <cstdint>
 #include <cstring>
 
+// ARM SpriteSystemDraw calls these out-of-line specializations from Array.cpp.
+extern template void ArrayAddCached<AbyssEngine::Matrix>(AbyssEngine::Matrix, Array<AbyssEngine::Matrix> &);
+extern template void ArrayAddCached<AbyssEngine::Mesh *>(AbyssEngine::Mesh *, Array<AbyssEngine::Mesh *> &);
+extern template void ArrayAddCached<unsigned int>(unsigned int, Array<unsigned int> &);
+
 namespace {
 
 // A single keyframe record (heap-allocated; the Curve::entries array holds
@@ -92,27 +97,6 @@ namespace AbyssEngine {
     Engine *AE_getInitGLThis();
     int AE_getInitGLWidth();
     int AE_getInitGLHeight();
-}
-
-namespace {
-    struct EngineArrayHeader {
-        uint32_t count;
-        void *data;
-        uint32_t capacity;
-    };
-
-    template<class T>
-    inline void ArrayAddCachedRaw(T item, void *arrayHeader) {
-        EngineArrayHeader *a = (EngineArrayHeader *) arrayHeader;
-        if (a->count >= a->capacity) {
-            uint32_t oldCap = a->capacity;
-            a->data = realloc(a->data, (size_t) oldCap * 2 * sizeof(T));
-            memset((T *) a->data + oldCap, 0, oldCap * sizeof(T));
-            a->capacity = oldCap * 2;
-        }
-        ((T *) a->data)[a->count] = item;
-        a->count = a->count + 1;
-    }
 }
 
 unsigned int AELabelObject(unsigned int glIdentifier, unsigned int name, const char *label) {
@@ -2004,12 +1988,12 @@ namespace AbyssEngine {
             MeshDraw(engine, mesh);
         } else {
             Material *batch = (Material *) mesh->material;
-            ArrayAddCachedRaw<Mesh *>(mesh, &batch->meshes);
+            ArrayAddCached<Mesh *>(mesh, batch->meshes);
 
-            ArrayAddCachedRaw<Matrix>(view, &batch->arr_2c);
-            ArrayAddCachedRaw<Matrix>(Matrix(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 1), &batch->arr_38);
-            ArrayAddCachedRaw<Matrix>(world, &batch->arr_5c);
-            ArrayAddCachedRaw<unsigned int>(0xffffffff, &batch->arr_50);
+            ArrayAddCached<Matrix>(view, batch->arr_2c);
+            ArrayAddCached<Matrix>(Matrix(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, 1, 1), batch->arr_38);
+            ArrayAddCached<Matrix>(world, batch->arr_5c);
+            ArrayAddCached<unsigned int>(0xffffffff, batch->arr_50);
         }
     }
 }
