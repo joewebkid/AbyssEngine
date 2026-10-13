@@ -9,12 +9,16 @@
 #include "game/core/Globals.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <initializer_list>
 
 using AbyssEngine::AEMath::VectorSignedToFloat;
+
+bool g_virtualInputSlowMotion;
+bool g_virtualInputSpeedUp;
 
 namespace {
     struct VirtualKey {
@@ -24,8 +28,8 @@ namespace {
         int altCode1;
         int altCode2;
         int altCode3;
-        int hasTouch;
-        int field_0x2c;
+        int *touchX;
+        int *touchY;
         int baseX;
         int baseY;
         int offsetX;
@@ -40,8 +44,14 @@ namespace {
         int field_0x48;
         int action;
         int field_0x50;
-        int field_0x54;
+        int (*predicate)(int);
     };
+
+#if UINTPTR_MAX == 0xffffffffu
+    static_assert(sizeof(VirtualKey) == 0x58, "Android virtual-key stride");
+    static_assert(offsetof(VirtualKey, touchX) == 0x28, "Android touch X slot");
+    static_assert(offsetof(VirtualKey, predicate) == 0x54, "Android predicate slot");
+#endif
 
     constexpr int kVirtualKeyCount = 48;
     VirtualKey g_virtualKeys[kVirtualKeyCount];
@@ -87,38 +97,8 @@ namespace {
     constexpr float kAxisCenter = 0.5f;
     constexpr float kAxisStep = 0.1f;
 
-    struct SteeringAxis {
-        int field_0x00;
-        float axis1;
-        float axis2;
-    };
-
-    SteeringAxis g_steeringX;
-    SteeringAxis g_steeringY;
-
-    int *g_pendingZoom;
-    int *g_pendingWheelA;
-    int *g_pendingWheelB;
-    int *g_pendingFire;
-
     int g_followUpAction;
-
-    int *g_aimAssist;
-
-    int *g_pressWheelRequest;
-    int *g_pressFireFlag;
-
-    struct ModuleInputState {
-        int field_0x00;
-        int field_0x04;
-        int comboProgress;
-        int requiredTouch;
-    };
-
-    ModuleInputState *const *g_moduleInputState;
-
-    char *g_accelHeld;
-    char *g_decelHeld;
+    int g_comboProgress;
 
     int g_mousePointerLatch = 1;
 
@@ -259,14 +239,15 @@ int IsSubMenuActive(int player) {
 }
 
 void keyReleased(AbyssEngine::Engine *engine, int key) {
-    *g_pendingZoom = 0;
-    *g_pendingWheelA = 0;
-    *g_pendingWheelB = 0;
-    *g_pendingFire = 0;
+    Globals::is_choice_window_visible = 0;
+    Globals::is_dialogue_window_visible = 0;
+    Globals::is_menu_visible = 0;
+    Globals::is_hacking_visible = 0;
 
     if (engine == nullptr)
         return;
 
+    ApplicationManager::gAppManager->GetCurrentApplicationModule();
     int releasedIndex = -1;
 
     for (int i = 0; i < kVirtualKeyCount; ++i) {
@@ -282,7 +263,7 @@ void keyReleased(AbyssEngine::Engine *engine, int key) {
         if (i < 0xb)
             releasedIndex = i;
 
-        if (vk.hasTouch == 0)
+        if (vk.touchX == nullptr)
             continue;
 
         engine->appManager->OnTouchEnd(vk.baseX + vk.offsetX, vk.baseY + vk.offsetY,
@@ -295,20 +276,20 @@ void keyReleased(AbyssEngine::Engine *engine, int key) {
 
     switch (releasedIndex) {
         case 0:
-            g_steeringX.axis1 = (g_virtualKeys[1].pressed == 0) ? kAxisCenter : kAxisStep;
+            g_stick.inputX = (g_virtualKeys[1].pressed == 0) ? kAxisCenter : kAxisStep;
             break;
         case 1:
-            g_steeringX.axis1 = (g_virtualKeys[0].pressed == 0) ? kAxisCenter : -kAxisStep;
+            g_stick.inputX = (g_virtualKeys[0].pressed == 0) ? kAxisCenter : -kAxisStep;
             break;
         case 2:
-            g_steeringY.axis2 = (g_virtualKeys[3].pressed == 0) ? kAxisCenter : -kAxisStep;
+            g_stick.inputY = (g_virtualKeys[3].pressed == 0) ? kAxisCenter : -kAxisStep;
             break;
         case 3:
-            g_steeringY.axis2 = (g_virtualKeys[2].pressed == 0) ? kAxisCenter : kAxisStep;
+            g_stick.inputY = (g_virtualKeys[2].pressed == 0) ? kAxisCenter : kAxisStep;
             break;
         case 6:
         case 7:
-            *g_aimAssist = 0;
+            Globals::bankZ = 0.0f;
             break;
         default:
             break;
@@ -319,9 +300,7 @@ void keyPressed(AbyssEngine::Engine *engine, int key) {
     if (engine == nullptr)
         return;
 
-    ModuleInputState *module = *g_moduleInputState;
-
-    int progress = module->comboProgress;
+    int progress = g_comboProgress;
     if (key == 14) {
         switch (progress) {
             case 4: progress = 5;
@@ -347,10 +326,11 @@ void keyPressed(AbyssEngine::Engine *engine, int key) {
     } else if (progress != 9) {
         progress = 0;
     }
-    if (progress != 9 || module->comboProgress != 9)
-        module->comboProgress = progress;
+    if (progress != 9 || g_comboProgress != 9)
+        g_comboProgress = progress;
 
-    const int currentModule = static_cast<int>(ApplicationManager::gAppManager->currentModuleId);
+    const int currentModule = static_cast<int>(reinterpret_cast<std::intptr_t>(
+        ApplicationManager::gAppManager->GetCurrentApplicationModule()));
     int matchedIndex = -1;
 
     for (int pass = 2; pass >= 0; --pass) {
@@ -367,68 +347,68 @@ void keyPressed(AbyssEngine::Engine *engine, int key) {
             if (vk.field_0x44 != currentModule && vk.field_0x44 + 1 != 0)
                 continue;
 
-            if (vk.field_0x48 != 0 && module->requiredTouch != vk.field_0x48)
+            if (vk.field_0x48 != 0 && g_followUpAction != vk.field_0x48)
                 continue;
 
-            if (vk.action != 0) {
-                auto predicate = reinterpret_cast<int (*)(int)>(vk.action);
-                if (predicate(i) == 0)
+            if (vk.predicate != nullptr) {
+                if (vk.predicate(i) == 0)
                     continue;
             }
 
             vk.pressed = 1;
-            if (matchedIndex < 0xb)
+            if (i < 0xb)
                 matchedIndex = i;
             if (i == 19)
                 matchedIndex = 0x13;
 
-            if (vk.hasTouch != 0) {
-                engine->appManager->OnTouchBegin(vk.baseX + vk.offsetX,
-                                                 vk.baseY + vk.offsetY, vk.touch);
-                vk.offsetX = vk.baseX;
-                vk.offsetY = vk.baseY;
+            if (vk.touchX != nullptr) {
+                engine->appManager->OnTouchBegin(vk.baseX + *vk.touchX,
+                                                 vk.baseY + *vk.touchY, vk.touch);
+                vk.offsetX = *vk.touchX;
+                vk.offsetY = *vk.touchY;
+                if (pass != 0)
+                    goto matched;
             }
-            goto matched;
         }
     }
 
 matched:
 
-    if (module->comboProgress == 9) {
+    if (g_comboProgress == 9) {
         if (GetKeyState(const_cast<char *>("Accelerate")) != 0) {
-            *g_decelHeld = 0;
-            *g_accelHeld = 1;
+            g_virtualInputSlowMotion = false;
+            g_virtualInputSpeedUp = true;
         } else if (GetKeyState(const_cast<char *>("Decelerate")) != 0) {
-            *g_accelHeld = 0;
-            *g_decelHeld = 1;
+            g_virtualInputSpeedUp = false;
+            g_virtualInputSlowMotion = true;
         } else if (ApplicationManager::gAppManager->engine == nullptr) {
-            *g_accelHeld = 0;
-            *g_decelHeld = 0;
+            g_virtualInputSpeedUp = false;
+            g_virtualInputSlowMotion = false;
         }
     }
 
     switch (matchedIndex) {
-        case 0: g_steeringX.axis1 = -kAxisStep;
+        case 0: g_stick.inputX = -kAxisStep;
             break;
-        case 1: g_steeringX.axis1 = kAxisStep;
+        case 1: g_stick.inputX = kAxisStep;
             break;
-        case 2: g_steeringY.axis2 = kAxisStep;
+        case 2: g_stick.inputY = kAxisStep;
             break;
-        case 3: g_steeringY.axis2 = -kAxisStep;
+        case 3: g_stick.inputY = -kAxisStep;
             break;
-        case 4: *g_pressWheelRequest = -1;
+        case 4: Globals::keyboard_swipe = -1;
             break;
-        case 5: *g_pressWheelRequest = 1;
+        case 5: Globals::keyboard_swipe = 1;
             break;
-        case 6: *reinterpret_cast<float *>(g_aimAssist) = -0.01f;
+        case 6: Globals::bankZ = -0.01f;
             break;
-        case 7: *reinterpret_cast<float *>(g_aimAssist) = 0.01f;
+        case 7: Globals::bankZ = 0.01f;
             break;
         case 8: engine->field_0x360 = 0x3f800000;
             break;
         case 9: engine->field_0x360 = 0xbf800000;
             break;
-        case 0x13: *g_pressFireFlag = 1;
+        case 0x13: Globals::showWingmanMenu = 1;
             break;
         default: break;
     }

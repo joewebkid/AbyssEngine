@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (StatusWindow touch globals; older subsystem
+Last reviewed: 2026-10-13 (virtual key dispatch; older subsystem
 snapshots retain their dates)
+
+## Virtual key dispatch and shared flags (2026-10-13)
+
+Android ARM and independent Ghidra output establish the 88-byte virtual-key
+layout, key predicate at `+0x54`, touch coordinate pointers at `+0x28/0x2c`,
+and the global input-state writes. `keyPressed` now follows the Android
+multi-pass exit condition and uses the same speed-up/slow-motion flags exposed
+by the Android getters; `keyReleased` updates the actual overlay and steering
+state rather than uninitialized pointer placeholders. Focused ARM source-shape
+is 95.8% for `keyPressed` (from 1.1%) and 97.7% for `keyReleased` (from 0.1%).
+The two getters rise from 59.4% to 93.0%. None of those four functions is
+exact. Native `gof2`, 206/206 ARM units and 37 verifier tests pass (one
+skipped). Full corpus stays 4,323/4,524 covered, 201 missing, and 1,008
+byte-exact; linked-exact rises 2,388 to 2,389 with no old exact losses.
+Average source-shape rises 92.70% to 92.79%, strict fuzzy 81.07% to 81.17%.
+The original 48-entry `keys` table is initialized in Android `.data`, whereas
+the local table is still zero-initialized: native key handling is **not**
+claimed operational. Next recover that table and its address fields, then
+exercise press/release with runtime fixtures. See
+[the input audit](VIRTUAL_INPUT_KEY_DISPATCH_ARM_2026-10-13.md).
 
 ## StatusWindow touch globals (2026-10-13)
 

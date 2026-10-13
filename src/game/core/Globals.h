@@ -272,7 +272,7 @@ public:
     static void *rnd;
     static unsigned int font;
     static unsigned char keys[1020];
-    static void *bankZ;
+    static float bankZ;
     static unsigned char hints[59];
     static void *items;
     static void *ships;

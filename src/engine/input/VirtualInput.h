@@ -7,6 +7,9 @@ namespace AbyssEngine {
     class Engine;
  }
 
+extern bool g_virtualInputSlowMotion;
+extern bool g_virtualInputSpeedUp;
+
 extern "C" unsigned int F(unsigned int value);
 
 int GetKeyState(char *name);

@@ -39,9 +39,6 @@ jobject g_pActivity;
 static char *g_apkPath;
 static char *g_zipPath;
 
-static bool g_slowMotion;
-static bool g_speedUp;
-
 static float g_gamepadAxisX;
 static float g_gamepadAxisY;
 
@@ -504,11 +501,11 @@ extern "C" void ndk23_ndkDone() {
 }
 
 bool SlowMotion() {
-    return g_slowMotion;
+    return g_virtualInputSlowMotion;
 }
 
 bool SpeedUp() {
-    return g_speedUp;
+    return g_virtualInputSpeedUp;
 }
 
 void setValuesForGamepad(float x, float y) {

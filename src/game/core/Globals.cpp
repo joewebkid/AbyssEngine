@@ -308,7 +308,7 @@ unsigned char Globals::startLiteVersionWithMoreCredits;
 void *Globals::rnd;
 unsigned int Globals::font;
 unsigned char Globals::keys[1020];
-void *Globals::bankZ;
+float Globals::bankZ;
 unsigned char Globals::hints[59];
 void *Globals::items;
 void *Globals::ships;
