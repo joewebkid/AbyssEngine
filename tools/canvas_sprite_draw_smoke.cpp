@@ -8,6 +8,11 @@ namespace AEMath {
 struct Matrix {
     float m[15];
     Matrix() : m{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1} {}
+    Matrix(float p0, float p1, float p2, float p3, float p4,
+           float p5, float p6, float p7, float p8, float p9,
+           float p10, float p11, float p12, float p13, float p14)
+        : m{p0, p1, p2, p3, p4, p5, p6, p7, p8, p9,
+            p10, p11, p12, p13, p14} {}
     Matrix &operator*=(const Matrix &rhs) {
         // The initialized-branch fixture camera has identity rotation.
         std::memcpy(m, rhs.m, sizeof(m));
@@ -57,11 +62,13 @@ struct PaintCanvas {
     unsigned char initialized;
     int gameOrientation;
     void DrawSpriteSystem(unsigned index);
+    void DrawSpriteSystem(unsigned index, Matrix mat);
     void DrawSpriteSystem(unsigned index, Matrix matA, Matrix matB);
 };
 
 // PRODUCTION_METHOD
 // PRODUCTION_TWO_MATRICES
+// PRODUCTION_ONE_MATRIX
 }
 
 int main() {
@@ -116,5 +123,24 @@ int main() {
     canvas.gameOrientation = 1;
     canvas.DrawSpriteSystem(0, identity, identity);
     assert(drawCount == 8 && lastView.m[1] < -0.83f && lastWorld.m[1] > 0.83f);
+
+    Matrix one;
+    one.m[3] = 4.0f;
+    canvas.initialized = 0;
+    canvas.DrawSpriteSystem(1, one);
+    assert(drawCount == 8);
+    systems[0] = nullptr;
+    canvas.DrawSpriteSystem(0, one);
+    assert(drawCount == 8);
+    systems[0] = &system;
+    canvas.DrawSpriteSystem(0, one);
+    assert(drawCount == 9 && lastView.m[0] == 1.0f && lastWorld.m[3] == -4.0f);
+    canvas.initialized = 1;
+    engine.grav[1] = 0.5;
+    canvas.DrawSpriteSystem(0, identity);
+    assert(drawCount == 10 && lastWorld.m[1] > 0.7f && lastWorld.m[1] < 0.72f);
+    canvas.gameOrientation = 0;
+    canvas.DrawSpriteSystem(0, identity);
+    assert(drawCount == 11 && lastWorld.m[1] < -0.7f && lastWorld.m[1] > -0.72f);
     std::puts("PaintCanvas DrawSpriteSystem smoke: OK");
 }

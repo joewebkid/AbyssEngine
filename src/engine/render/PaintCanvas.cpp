@@ -1025,22 +1025,6 @@ void pc_Camera_ctor(void *cam, float h, float w);
 
 void pc_ArrayAdd_Camera(void *cam, void *arr);
 
-void paintcanvas_ext_dss_matidentity(void *out, void *m);
-
-void *paintcanvas_ext_dss_getgrav(void *eng);
-
-float paintcanvas_ext_dss_sinf(float v);
-
-float paintcanvas_ext_dss_cosf(float v);
-
-void paintcanvas_ext_dss_mtx_muleq(void *m, void *rhs);
-
-void paintcanvas_ext_dss_mtx_getinv(void *out, void *m);
-
-void paintcanvas_ext_dss_mtx_assign(void *dst, void *src);
-
-void paintcanvas_ext_dss_ssdraw(void *eng, void *ident, void *m, void *ss);
-
 int paintcanvas_ext_mesh_tricount(AbyssEngine::PaintCanvas *, void *);
 
 int paintcanvas_ext_transform_tricount(AbyssEngine::PaintCanvas *, void *);
@@ -4952,58 +4936,43 @@ void PaintCanvas::CameraCreate(unsigned int &out) {
 }
 
 
-static const double g_dss_gravscale_8ada0 = 0;
-
 void PaintCanvas::DrawSpriteSystem(unsigned int index, AbyssEngine::AEMath::Matrix mat) {
     if (index >= this->spriteSystems.count) {
         return;
     }
-    void *ss = ((void **) this->spriteSystems.data_)[index];
+    SpriteSystem *ss = this->spriteSystems.data_[index];
     if (ss == 0) {
         return;
     }
 
-    float local[15];
-    memcpy(local, mat, sizeof(local));
-
-    float identbuf[16];
-    char scratch[60];
-    float inv[16];
-
     if (this->initialized == 0) {
-        paintcanvas_ext_dss_mtx_getinv(inv, local);
-        paintcanvas_ext_dss_mtx_assign(local, inv);
+        mat = AEMath::MatrixGetInverse(mat);
     } else {
-        memset(identbuf, 0, sizeof(identbuf));
-        identbuf[0] = 1.0f;
-        identbuf[5] = 1.0f;
-        identbuf[14] = 1.0f;
-        paintcanvas_ext_dss_matidentity(scratch, identbuf);
-
-        void *grav = paintcanvas_ext_dss_getgrav(this->engine);
-        double angle = ((PCGravView *) grav)->angle * g_dss_gravscale_8ada0;
+        Matrix rotation(1.0f, 0.0f, 0.0f, 0.0f,
+                        0.0f, 1.0f, 0.0f, 0.0f,
+                        0.0f, 0.0f, 1.0f, 0.0f,
+                        1.0f, 1.0f, 1.0f);
+        AEMath::MatrixIdentity(rotation);
+        double angle = this->engine->GetGravValue()[1] * 1.57079637;
         float a = (float) angle;
         int orient = this->gameOrientation;
         float rot = (orient == 1) ? a : -a;
-        float s = paintcanvas_ext_dss_sinf(rot);
-        float c = paintcanvas_ext_dss_cosf(rot);
-        identbuf[0] = c;
-        identbuf[5] = c;
-        *(unsigned int *) &identbuf[1] = *(unsigned int *) &s ^ 0x80000000;
-        identbuf[4] = s;
+        float s = AEMath::Sinf(rot);
+        float c = AEMath::Cosf(rot);
+        rotation.m[0] = c;
+        rotation.m[5] = c;
+        rotation.m[1] = -s;
+        rotation.m[4] = s;
 
-        paintcanvas_ext_dss_mtx_muleq(local, identbuf);
-        paintcanvas_ext_dss_mtx_getinv(scratch, local);
-        paintcanvas_ext_dss_mtx_assign(local, scratch);
+        mat *= rotation;
+        mat = AEMath::MatrixGetInverse(mat);
     }
 
-    float ident2[16];
-    memset(ident2, 0, sizeof(ident2));
-    ident2[0] = 1.0f;
-    ident2[5] = 1.0f;
-    ident2[14] = 1.0f;
-    paintcanvas_ext_dss_ssdraw(this->engine, ident2, local,
-                               ((void **) this->spriteSystems.data_)[index]);
+    Matrix view(1.0f, 0.0f, 0.0f, 0.0f,
+                0.0f, 1.0f, 0.0f, 0.0f,
+                0.0f, 0.0f, 1.0f, 0.0f,
+                1.0f, 1.0f, 1.0f);
+    SpriteSystemDraw(this->engine, view, mat, ss);
 }
 
 void PaintCanvas::DrawString(unsigned int index, const AbyssEngine::String &str,

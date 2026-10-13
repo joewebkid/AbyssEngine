@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (two-matrix sprite draw; older subsystem
+Last reviewed: 2026-10-13 (one-matrix sprite draw; older subsystem
 snapshots retain their dates)
+
+## One-matrix sprite draw (2026-10-13)
+
+`PaintCanvas::DrawSpriteSystem(index, Matrix)` now applies the
+Android-confirmed fractional gravity/orientation rotation to its
+matrix, inverts the result, and calls real `SpriteSystemDraw` with an
+identity view. The zero gravity scale and eight unresolved shims are
+gone. Focused source-shape rises 87.5% to 92.8%, strict fuzzy 36.4%
+to 57.2%; not exact. Native `gof2`, 206/206 ARM units, two host smokes,
+and 36 verifier tests pass (one skipped). Full coverage remains
+4,323/4,524; average source-shape rises 92.5560% to 92.5571%,
+strict fuzzy 80.8547% to 80.8591%. The 2,378 linked-exact and 1,008
+byte-exact symbol sets have no losses. Arbitrary-matrix composition,
+GL output, and ARM32 runtime remain untested. Next audit the canvas
+frustum gravity path. See
+[the one-matrix audit](PAINTCANVAS_SPRITE_DRAW_ONE_MATRIX_ARM_2026-10-13.md).
 
 ## Two-matrix sprite draw (2026-10-13)
 
