@@ -482,6 +482,15 @@ void StatusWindow::draw() {
         canvas->DrawString(font, hpStr, shipValueRight - tw, textY + 2 * lineH, false);
 
         // ARM 0x15831c: the standing row follows the second stats header and boxes.
+        String standingHeader = *Globals::gameText->getText(576);
+        int standingHeaderY = y + layout->field_0x2d8 + pad;
+        layout->drawBox(0, x0, standingHeaderY, boxW, layout->field_0x1c, standingHeader, 0);
+        int standingBoxY = standingHeaderY + layout->field_0x1c + pad;
+        int standingBoxH = this->charImageHeight + lineH + pad * 2;
+        lbl.ctor_char("", false);
+        layout->drawBox(5, x0, standingBoxY, (boxW >> 1) - pad, standingBoxH, lbl, 0);
+        layout->drawBox(5, x0 + (boxW >> 1) + pad, standingBoxY,
+                        (boxW >> 1) - pad, standingBoxH, lbl, 0);
         int standingRowY = y + layout->field_0x2d8 + layout->field_0x1c + pad * 3;
         int standingCenterY = pad + this->charImageHeight + standingRowY -
                               (this->charImageHeight >> 1);
@@ -510,32 +519,64 @@ void StatusWindow::draw() {
                             (int) ((float) standingX1 - rate2 * (float) this->standingBarWidth),
                             standingCenterY, (unsigned char) 0x11, (unsigned char) 0x44);
 
+        // ARM 0x15831c: faction labels and two-column statistics table.
+        int standingLabelY = standingRowY + this->charImageHeight + pad;
+        int leftLabelX = x0 + layout->field_0x4c;
+        int leftValueRight = x0 + (boxW >> 1) - pad - layout->field_0x4c;
+        int rightLabelX = x0 + (boxW >> 1) + pad + layout->field_0x4c;
+        int rightValueRight = x0 + boxW - layout->field_0x4c;
+        String *standingLeft = Globals::gameText->getText(406);
+        canvas->DrawString(font, *standingLeft, leftLabelX, standingLabelY, false);
+        String *standingLeftValue = Globals::gameText->getText(407);
+        tw = canvas->GetTextWidth(font, *standingLeftValue);
+        canvas->DrawString(font, *standingLeftValue, leftValueRight - tw,
+                           standingLabelY, false);
+        String *standingRight = Globals::gameText->getText(408);
+        canvas->DrawString(font, *standingRight, rightLabelX, standingLabelY, false);
+        String *standingRightValue = Globals::gameText->getText(409);
+        tw = canvas->GetTextWidth(font, *standingRightValue);
+        canvas->DrawString(font, *standingRightValue, rightValueRight - tw,
+                           standingLabelY, false);
+
+        int statsHeaderY = standingLabelY + lineH + pad;
+        String statsHeader = *Globals::gameText->getText(577);
+        layout->drawBox(0, x0, statsHeaderY, boxW, layout->field_0x1c, statsHeader, 0);
+        int statsBoxY = statsHeaderY + layout->field_0x1c + pad;
+        int statsBoxH = pad + 6 * lineH;
+        lbl.ctor_char("", false);
+        layout->drawBox(5, x0, statsBoxY, (boxW >> 1) - pad, statsBoxH, lbl, 0);
+        layout->drawBox(5, x0 + (boxW >> 1) + pad, statsBoxY,
+                        (boxW >> 1) - pad, statsBoxH, lbl, 0);
+
         Status *st = Globals::status;
         String rowStr;
-        int rowX = layout->field_0x4c + x0;
-        for (unsigned r = 0; r < 6; r++) {
-            int rowVal;
-            switch (r) {
-                case 0: rowVal = st->getMissionCount();
-                    break;
-                case 1: rowVal = st->getKills();
-                    break;
-                case 2: rowVal = st->getCapturedCrates();
-                    break;
-                case 3: rowVal = st->getStationsVisited();
-                    break;
-                case 4: rowVal = st->getJumpgateUsed();
-                    break;
-                default: rowVal = st->getGoodsProduced();
-                    break;
-            }
-            const int labels[] = {568, 176, 559, 557, 564, 558};
-            String *labelTxt = Globals::gameText->getText(labels[r]);
-            canvas->DrawString((unsigned) (uintptr_t) font, *labelTxt, rowX, y, false);
-            rowStr.Set((long long) (rowVal));
-            tw = canvas->GetTextWidth((unsigned) (uintptr_t) font, rowStr);
-            canvas->DrawString((unsigned) (uintptr_t) font, rowStr, ((y + x0) - pad) - tw, y, false);
-        }
+        int firstStatY = statsBoxY + pad;
+        auto drawStat = [&](int labelId, int value, int labelX, int valueRight,
+                            int rowY) __attribute__((always_inline)) {
+            String label = *Globals::gameText->getText(labelId) + sep;
+            canvas->DrawString(font, label, labelX, rowY, false);
+            rowStr.Set((long long) value);
+            tw = canvas->GetTextWidth(font, rowStr);
+            canvas->DrawString(font, rowStr, valueRight - tw, rowY, false);
+        };
+        drawStat(568, st->getMissionCount(), leftLabelX, leftValueRight, firstStatY);
+        drawStat(176, st->getKills(), leftLabelX, leftValueRight, firstStatY + lineH);
+        drawStat(552, st->field_d8, leftLabelX, leftValueRight, firstStatY + 2 * lineH);
+        drawStat(559, st->getCapturedCrates(), leftLabelX, leftValueRight,
+                 firstStatY + 3 * lineH);
+        drawStat(557, st->getStationsVisited(), leftLabelX, leftValueRight,
+                 firstStatY + 4 * lineH);
+        drawStat(3235, st->field_118, leftLabelX, leftValueRight,
+                 firstStatY + 5 * lineH);
+        drawStat(564, st->getJumpgateUsed(), rightLabelX, rightValueRight, firstStatY);
+        drawStat(558, st->getGoodsProduced(), rightLabelX, rightValueRight,
+                 firstStatY + lineH);
+        drawStat(560, st->field_a0, rightLabelX, rightValueRight,
+                 firstStatY + 2 * lineH);
+        drawStat(561, st->field_a4, rightLabelX, rightValueRight,
+                 firstStatY + 3 * lineH);
+        drawStat(567, st->field_d4, rightLabelX, rightValueRight,
+                 firstStatY + 4 * lineH);
 
         drewStats = land;
         tab = this->activeTab;

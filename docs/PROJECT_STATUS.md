@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-13 (StatusWindow info card; older subsystem
+Last reviewed: 2026-10-13 (StatusWindow statistics table; older subsystem
 snapshots retain their dates)
+
+## StatusWindow standing and statistics table (2026-10-13)
+
+The Android draw section now includes its two headers, four boxed panels,
+four standing labels, and two columns containing 11 statistics rows. Five
+values use direct `Status` fields at the ARM-confirmed offsets; their gameplay
+names remain unproven. The earlier code omitted those rows and drew six
+others at one coordinate. A production-block host smoke checks six box calls,
+four standing labels, and all table rows/positions; the existing standing
+and info-card smokes, native `gof2`, all 206 ARM translation units, and 37
+verifier tests pass (one skipped). `draw` source-shape rises 60.1% to 84.4%,
+strict fuzzy 15.9% to 21.8%, with 1,728 local versus 2,324 original
+instructions; it is not exact. Full corpus: 4,323/4,524 covered, 92.82%
+average source-shape, 81.21% strict fuzzy, 2,395 linked-exact and 1,008
+byte-exact, with no exact-symbol losses or extra-symbol growth. Real assets,
+full interactive UI, and ARM32 runtime remain unverified. Next priority is
+the medal-grid/detail pane and final header/footer layout. See
+[the table audit](STATUSWINDOW_DRAW_STATS_TABLE_ARM_2026-10-13.md).
 
 ## StatusWindow credits and ship info card (2026-10-13)
 

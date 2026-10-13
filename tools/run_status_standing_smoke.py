@@ -19,7 +19,7 @@ def main():
 
     source = (ROOT / "src/game/ui/StatusWindow.cpp").read_text()
     start = source.index("        int standingRowY = ")
-    end = source.index("        Status *st = Globals::status;", start)
+    end = source.index("        // ARM 0x15831c: faction labels", start)
     fixture = (ROOT / "tools/status_standing_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_STANDING", source[start:end])
 

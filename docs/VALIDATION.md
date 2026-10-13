@@ -170,6 +170,16 @@ positions with fixtures; it does not load original assets or draw the
 statistics table. See [the info-card audit](STATUSWINDOW_DRAW_INFO_CARD_ARM_2026-10-13.md).
 
 ```powershell
+python tools/run_status_draw_stats_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected output: `StatusWindow stats-table host smoke: OK`. This extracts
+the production standing-section boxes and statistics table, checking the
+two-column labels, values, and positions with fixtures; it does not load
+original assets or render a complete UI frame. See
+[the statistics-table audit](STATUSWINDOW_DRAW_STATS_TABLE_ARM_2026-10-13.md).
+
+```powershell
 python tools/run_status_medal_hint_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
 ```
 
