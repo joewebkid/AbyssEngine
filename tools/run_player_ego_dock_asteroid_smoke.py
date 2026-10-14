@@ -1,4 +1,4 @@
-"""Exercise production asteroid docking, cargo refresh and shield recharge."""
+"""Exercise production asteroid docking, cargo, shield and repair branches."""
 
 import argparse
 from pathlib import Path
@@ -42,6 +42,18 @@ def main():
     fixture = fixture.replace("// PRODUCTION_UPDATE_SHIELD",
                               "void PlayerEgo::updateShield(int dt, Hud *hud) {\n" +
                               source[start:end] + "}\n")
+    end = source.index("    PE_upd_post(this, dt, radar, hud, radio, arg5);",
+                       source.index("void PlayerEgo::update("))
+    start = source.rindex("    Ship *ship = PE_status()->getShip();", 0, end)
+    fixture = fixture.replace("// PRODUCTION_UPDATE_RECOVERY",
+                              "void PlayerEgo::updateRecovery(int dt) {\n" +
+                              "    Player *player = this->player;\n" + source[start:end] + "}\n")
+    start = source.index("        this->shieldRecoveryAmount = (float) ship->getMaxShieldHP()",
+                         source.index("PlayerEgo::PlayerEgo("))
+    end = source.index(";", start) + 1
+    fixture = fixture.replace("// PRODUCTION_RECOVERY_AMOUNT",
+                              "void PlayerEgo::initializeRecoveryAmount(Ship *ship) {\n" +
+                              source[start:end] + "\n}\n")
 
     with tempfile.TemporaryDirectory(prefix="dock-asteroid-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "player_ego_dock_asteroid_smoke.cpp"

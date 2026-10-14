@@ -1,5 +1,6 @@
 #ifndef GOF2_PLAYEREGO_H
 #define GOF2_PLAYEREGO_H
+#include <cstdint>
 #include "engine/core/Array.h"
 #include "../../engine/core/AEString.h"
 #include "TargetFollowCamera.h"
@@ -127,7 +128,10 @@ public:
     float pitchAccumulator;
     float yawRate;
     float pitchRate;
-    char _unknown_0x114[0x1c];
+    char _unknown_0x114[4];
+    int64_t shieldRecoveryTimer;
+    int64_t hullRepairTimer;
+    int64_t armorRepairTimer;
     int lastHP;
     int shakeIntensity;
     int boostTimer;
@@ -193,7 +197,8 @@ public:
     int cloakRechargeTimer;
     int cloakChargeMax;
     int cloakDischargeMax;
-    char _unknown_0x218[8];
+    float shieldRecoveryAmount;
+    char _unknown_0x21c[4];
     int hud;
     AbyssEngine::AEMath::Vector turretOffsetVec;
     char _unknown_0x230[4];
@@ -631,6 +636,9 @@ static_assert(__builtin_offsetof(PlayerEgo, freeLookMode) == 0xc4, "PlayerEgo::f
 static_assert(__builtin_offsetof(PlayerEgo, boostSpeed) == 0xc8, "PlayerEgo::boostSpeed offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0xcc) == 0xcc, "PlayerEgo::boostTime offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0xd0) == 0xd0, "PlayerEgo::boostDelay offset");
+static_assert(__builtin_offsetof(PlayerEgo, shieldRecoveryTimer) == 0x118, "PlayerEgo::shieldRecoveryTimer offset");
+static_assert(__builtin_offsetof(PlayerEgo, hullRepairTimer) == 0x120, "PlayerEgo::hullRepairTimer offset");
+static_assert(__builtin_offsetof(PlayerEgo, armorRepairTimer) == 0x128, "PlayerEgo::armorRepairTimer offset");
 static_assert(__builtin_offsetof(PlayerEgo, lastHP) == 0x130, "PlayerEgo::lastHP offset");
 static_assert(__builtin_offsetof(PlayerEgo, shakeIntensity) == 0x134, "PlayerEgo::frameTime offset");
 static_assert(__builtin_offsetof(PlayerEgo, boostTimer) == 0x138, "PlayerEgo::boostTimer offset");
@@ -650,6 +658,7 @@ static_assert(__builtin_offsetof(PlayerEgo, miningGame) == 0x1e4, "PlayerEgo::mi
 static_assert(__builtin_offsetof(PlayerEgo, hackingGame) == 0x1e8, "PlayerEgo::hackingGame offset");
 static_assert(__builtin_offsetof(PlayerEgo, turretActive) == 0x1a0, "PlayerEgo::turretActive offset");
 static_assert(__builtin_offsetof(PlayerEgo, cloak) == 0x1b0, "PlayerEgo::cloak offset");
+static_assert(__builtin_offsetof(PlayerEgo, shieldRecoveryAmount) == 0x218, "PlayerEgo::shieldRecoveryAmount offset");
 static_assert(__builtin_offsetof(PlayerEgo, hud) == 0x220, "PlayerEgo::hud offset");
 static_assert(__builtin_offsetof(PlayerEgo, turretOffsetVec) == 0x224, "PlayerEgo::turretOffsetVec offset");
 static_assert(__builtin_offsetof(PlayerEgo, collidesWithStationFlag) == 0x234, "PlayerEgo::stationCollision offset");

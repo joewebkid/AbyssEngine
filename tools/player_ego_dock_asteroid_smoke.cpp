@@ -26,12 +26,25 @@ struct TargetFollowCamera {
 struct Player {
     int resetCount = 0;
     int hitpoints = 10;
+    int maxHitpoints = 10;
+    int armorHP = 0;
+    int maxArmorHP = 10;
     int shieldHP = 0;
     int maxShieldHP = 10;
+    int shieldRecoveries = 0;
+    int hullRepairs = 0;
+    int armorRepairs = 0;
+    float lastShieldRecovery = 0.0f;
     int getHitpoints() { return hitpoints; }
+    int getMaxHitpoints() { return maxHitpoints; }
+    int getArmorHP() { return armorHP; }
+    int getMaxArmorHP() { return maxArmorHP; }
     int getShieldHP() { return shieldHP; }
     int getMaxShieldHP() { return maxShieldHP; }
     void setShieldHP(int value) { shieldHP = value > maxShieldHP ? maxShieldHP : value; }
+    void regenerateShield(float amount) { ++shieldRecoveries; lastShieldRecovery = amount; }
+    void regenerateHull() { ++hullRepairs; ++hitpoints; }
+    void regenerateArmor() { ++armorRepairs; armorHP += 2; }
     void resetGunDelay(int value) { assert(value == 0); ++resetCount; }
 };
 struct PlayerEgo;
@@ -51,8 +64,14 @@ struct Ship {
     Item *equipment = nullptr;
     int cargo = 0;
     int removals = 0;
+    int shieldRegen = 0;
+    int maxShieldHP = 10;
+    int repairType = -1;
     int getFreeSpace() { return freeSpace; }
     bool hasVolatileGoods() { return volatileGoods; }
+    int getShieldRegen() { return shieldRegen; }
+    int getMaxShieldHP() { return maxShieldHP; }
+    int getRepairType() { return repairType; }
     Item *getFirstEquipmentOfSort(int sort) { assert(sort == 43); return equipment; }
     bool hasCargo(int index, int amount) { assert(index == 202); return cargo >= amount; }
     int removeCargo(int index, int amount) {
@@ -112,6 +131,10 @@ struct PlayerEgo {
     unsigned char volatileGoods = 0;
     unsigned char shieldRegenActive = 0;
     unsigned char shieldRegenEquipped = 0;
+    int64_t shieldRecoveryTimer = 0;
+    int64_t hullRepairTimer = 0;
+    int64_t armorRepairTimer = 0;
+    float shieldRecoveryAmount = 2.5f;
     Vector position{7.0f, 0.0f, 0.0f};
     bool exhaustVisible = false;
     void setExhaustVisible(bool value) { exhaustVisible = value; }
@@ -119,6 +142,9 @@ struct PlayerEgo {
     void updateDocking(Radar *radar, Hud *hud, Radio *radio);
     void updateCargoState();
     void updateShield(int dt, Hud *hud);
+    void updateRecovery(int dt);
+    void initializeRecoveryAmount(Ship *ship);
+    bool isDead() { return player->hitpoints < 1; }
     Vector getPosition() { return position; }
     int approachAsteroid(Hud *, int, Radar *) { ++approachCount; return 0; }
     int approachDockingPoint(Hud *, int, Radar *) { return 0; }
@@ -129,6 +155,8 @@ struct PlayerEgo {
 // PRODUCTION_UPDATE_DOCKING
 // PRODUCTION_UPDATE_CARGO
 // PRODUCTION_UPDATE_SHIELD
+// PRODUCTION_UPDATE_RECOVERY
+// PRODUCTION_RECOVERY_AMOUNT
 
 void PE_upd_docksFinishDelivery(PlayerEgo *, Radio *) { assert(false); }
 
@@ -233,9 +261,56 @@ int main() {
     assert(!ego.shieldRegenActive && sound.played[2] == 0x8d3 && sound.stopped == 2257);
     assert(sound.updated[3] == 0x8d3 && ship.removals == 1);
 
+    ship.maxShieldHP = 200;
+    ship.shieldRegen = 25;
+    ego.initializeRecoveryAmount(&ship);
+    assert(ego.shieldRecoveryAmount == 800.0f);
+    ego.shieldRecoveryAmount = 2.5f;
+    ship.shieldRegen = 0;
+    ego.updateRecovery(200);
+    assert(ego.shieldRecoveryTimer == 0 && ego.hullRepairTimer == 0 && ego.armorRepairTimer == 0);
+    ship.shieldRegen = 1;
+    ego.updateRecovery(100);
+    assert(ego.shieldRecoveryTimer == 100 && player.shieldRecoveries == 0);
+    ego.updateRecovery(1);
+    assert(ego.shieldRecoveryTimer == 0 && player.shieldRecoveries == 1);
+    assert(player.lastShieldRecovery == 2.5f);
+    player.hitpoints = 0;
+    ego.updateRecovery(200);
+    assert(ego.shieldRecoveryTimer == 0 && player.shieldRecoveries == 1);
+    ship.repairType = 0;
+    ego.updateRecovery(1001);
+    assert(ego.hullRepairTimer == 0 && ego.armorRepairTimer == 0);
+    player.hitpoints = 9;
+    ship.shieldRegen = 0;
+    ship.repairType = 0;
+    ego.updateRecovery(600);
+    assert(ego.hullRepairTimer == 600 && ego.armorRepairTimer == 600 && player.hullRepairs == 0);
+    ego.updateRecovery(1);
+    assert(ego.hullRepairTimer == 0 && player.hullRepairs == 1 && player.hitpoints == 10);
+    ego.updateRecovery(399);
+    assert(ego.armorRepairTimer == 1000 && player.armorRepairs == 0);
+    ego.updateRecovery(1);
+    assert(ego.armorRepairTimer == 0 && player.armorRepairs == 1);
+    ship.repairType = 1;
+    ego.hullRepairTimer = 0;
+    ego.armorRepairTimer = 0;
+    player.hitpoints = 8;
+    ego.updateRecovery(420);
+    assert(ego.hullRepairTimer == 420 && player.hullRepairs == 1);
+    ego.updateRecovery(1);
+    assert(ego.hullRepairTimer == 0 && player.hullRepairs == 2 && player.hitpoints == 9);
+    ego.updateRecovery(279);
+    assert(ego.armorRepairTimer == 700 && player.armorRepairs == 1);
+    ego.updateRecovery(1);
+    assert(ego.armorRepairTimer == 0 && player.armorRepairs == 1);
+    player.hitpoints = 10;
+    ego.updateRecovery(701);
+    assert(ego.armorRepairTimer == 0 && player.armorRepairs == 2);
+
     ego.asteroidTargetPtr = &asteroid;
     ego.dockedFlag = 1;
     ego.updateDocking(&radar, &hud, &radio);
     assert(ego.dockedFlag == 0 && ego.dockPointStops == 1);
-    std::puts("PlayerEgo docking/cargo/shield smoke: OK");
+    std::puts("PlayerEgo docking/cargo/shield/repair smoke: OK");
 }

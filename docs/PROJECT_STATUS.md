@@ -1,7 +1,29 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo shield recharge branch; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo passive recovery timers; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo passive shield and repair timers (2026-10-14)
+
+Android ARM and independent Ghidra confirm three 64-bit timers
+at `+0x118/+0x120/+0x128`, the shield recovery amount at
+`+0x218`, and the constructor's amount formula. The original
+literal pool gives strict repair thresholds of 420/700 ticks for
+nonzero repair type and 600/1000 for type zero. The update now
+advances timers only while alive, restores shield at 101 ticks,
+repairs hull when damaged and armor only after hull reaches full
+HP. A production-fragment smoke tests all threshold boundaries,
+death gating and the constructor amount expression. Native `gof2`,
+206/206 ARM units, 37 verifier tests (one skipped) and four
+PlayerEgo smokes pass. Focused source-shape rises **22.0% →
+27.1%** for `update` and **30.4% → 33.4%** for its constructor;
+neither is exact. Full corpus: **4,323/4,524** covered,
+**93.24%** source-shape, **82.12%** strict fuzzy,
+**2,474 linked-exact**, **1,062 byte-exact**, **123 extras**,
+with zero exact-pair losses. Linked ARM gameplay and the rest
+of `update` remain unverified. Next: the bounded player-update/
+sound handoff within `PE_upd_post`. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo shield recharge branch (2026-10-14)
 

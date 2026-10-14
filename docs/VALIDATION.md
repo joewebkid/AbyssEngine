@@ -4,6 +4,29 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo passive shield and repair timers (2026-10-14)
+
+Android IDA constructor lines 80135–80144/80349–80353 and
+`update` lines 84384–84436, cross-checked with independent Ghidra,
+establish the three `int64_t` timers and the float recovery amount.
+The original ARM literal pool at `0x9f09c..0x9f0ab` confirms the
+four strict repair thresholds. ARM32 assertions pin the offsets;
+the production-fragment host smoke covers the amount formula,
+both repair types at and beyond threshold, alive/dead gating and
+armor-after-hull ordering. Native `gof2`, 206/206 ARM units,
+37 verifier tests (one skipped) and four PlayerEgo smokes pass.
+Focused `update` source-shape/strict fuzzy is **27.1%/10.5%**
+versus **22.0%/8.3%**; constructor C1/C2 is **33.4%/19.8%**
+versus **30.4%/18.7%**. Full report
+`_work/player_repair_timers_full_20261014.json`:
+**4,323/4,524** covered, **93.24%** source-shape,
+**82.12%** strict fuzzy, **2,474 linked-exact**,
+**1,062 byte-exact**, **123 extras**. Against
+`_work/player_shield_update_full_20261014.json`, linked and
+byte exact-pair losses and gains are all zero. Neither entire
+function nor linked ARM gameplay is proven. See
+[the offset evidence](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo shield recharge branch (2026-10-14)
 
 Android IDA lines 83509–83545/84977–85005 and independent Ghidra

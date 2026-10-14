@@ -1656,6 +1656,10 @@ PlayerEgo::PlayerEgo(Player *player) {
     this->player = (void *) player;
     player->setPlayShootSound(true, 2);
     this->lastHP = player->getCombinedHP();
+    this->shieldRecoveryTimer = 0;
+    this->hullRepairTimer = 0;
+    this->armorRepairTimer = 0;
+    this->shieldRecoveryAmount = 0.0f;
 
     Ship *ship = (Ship *) PE_status()->getShip();
     this->boostTimer = 0;
@@ -1685,6 +1689,7 @@ PlayerEgo::PlayerEgo(Player *player) {
         this->volatileGoods = ship->hasVolatileGoods();
         this->lastFreeSpace = ship->getFreeSpace();
         this->shieldRegenEquipped = ship->getFirstEquipmentOfSort(43) != nullptr;
+        this->shieldRecoveryAmount = (float) ship->getMaxShieldHP() / ((float) ship->getShieldRegen() / 100.0f);
     }
 
     this->hardCoreMode = PE_status()->hardCoreMode();
@@ -2554,6 +2559,33 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         } else {
             this->autoTurretEnabled = 0;
             ((Player *) (this->player))->stopShooting(0);
+        }
+    }
+
+    Ship *ship = PE_status()->getShip();
+    if (ship->getShieldRegen() > 0 && !isDead()) {
+        this->shieldRecoveryTimer += dt;
+        if (this->shieldRecoveryTimer >= 101) {
+            this->shieldRecoveryTimer = 0;
+            player->regenerateShield(this->shieldRecoveryAmount);
+        }
+    }
+
+    ship = PE_status()->getShip();
+    int repairType = ship->getRepairType();
+    if (repairType >= 0 && !isDead()) {
+        this->hullRepairTimer += dt;
+        this->armorRepairTimer += dt;
+        if ((float) this->hullRepairTimer > (repairType == 0 ? 600.0f : 420.0f)) {
+            this->hullRepairTimer = 0;
+            if (player->getHitpoints() < player->getMaxHitpoints())
+                player->regenerateHull();
+        }
+        if ((float) this->armorRepairTimer > (repairType == 0 ? 1000.0f : 700.0f)) {
+            this->armorRepairTimer = 0;
+            if (player->getHitpoints() >= player->getMaxHitpoints()
+                && player->getArmorHP() < player->getMaxArmorHP())
+                player->regenerateArmor();
         }
     }
 

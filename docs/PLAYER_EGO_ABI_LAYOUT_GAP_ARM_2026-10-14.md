@@ -1,5 +1,42 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Passive shield and repair timers (2026-10-14)
+
+Android IDA constructor lines 80135–80144 and 80349–80353,
+`update` lines 84384–84436, and independent Ghidra constructor/
+update at 59520–59524 and 64319–64375 establish three signed
+64-bit counters at `+0x118/+0x120/+0x128` and a float shield
+recovery amount at `+0x218`. The constructor zeros the counters
+and computes `maxShieldHP / (shieldRegen / 100.0f)`. When the ship
+has positive passive shield regeneration and the ego is alive,
+the first counter advances by frame time, resets at **101** ticks,
+and calls `Player::regenerateShield(amount)`. Repair equipment
+advances the other two counters while alive. The original ARM
+literal pool at `0x9f09c..0x9f0ab` contains `420.0f`, `600.0f`,
+`700.0f`, `1000.0f`: nonzero repair type uses strict `>420` for
+hull and `>700` for armor; type zero uses `>600` and `>1000`.
+Hull repair requires missing hitpoints, while armor repair requires
+full hitpoints and missing armor. Both timers reset upon crossing
+their threshold even when no HP or armor is missing. The header
+now names these fields and asserts their ARM32 offsets; the host
+smoke extracts the production update fragment and constructor
+amount expression to test the boundary and death cases.
+
+Native `gof2`, 206/206 ARM translation units, 37 verifier tests
+(one skipped), and four PlayerEgo host smokes pass. Focused ARM
+source-shape rises from **22.0%** to **27.1%** for `update` and
+from **30.4%** to **33.4%** for the constructor; strict fuzzy rises
+from **8.3%** to **10.5%** and from **18.7%** to **19.8%**.
+Neither large function is exact. The full report
+`_work/player_repair_timers_full_20261014.json` compares
+**4,323/4,524** original functions at **93.24%** average
+source-shape and **82.12%** strict fuzzy, with **2,474 linked-exact**,
+**1,062 byte-exact**, and **123 extras**. Relative to the shield
+recharge checkpoint, the exact-pair sets have zero losses and gains.
+The rest of `update`, especially the unresolved `PE_upd_post`
+handoff, and linked ARM gameplay are not verified. Next: recover
+the bounded player-update/sound handoff within that post section.
+
 ## Shield recharge update branch (2026-10-14)
 
 Android IDA `PlayerEgo::update` lines 83509–83545 and 84977–85005,
