@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo move-to-position (2026-10-14)
+
+IDA/Ghidra and Android Thumb `0x9c6d4–0x9ca52` confirm heading blend,
+signed steering/history, forward and rotated strafe movement, and the
+soft-float return value. The constructor and `setAutoPilot` use the
+same history offsets. The production-body navigation smoke, native
+`gof2`, 206/206 ARM translation units and 37 verifier tests (one
+skipped) pass. Focused source-shape/strict fuzzy for `moveToPosition`
+changes **43.8%/22.2% → 92.9%/48.0%**; it is not exact. Full report
+`_work/player_move_to_position_full_20261014.json` covers
+**4,323/4,524** original functions at **93.34%** average source-shape
+and **82.24%** strict fuzzy, with **2,482 linked-exact**,
+**1,065 byte-exact**, **123 extras** and zero skipped. The linked- and
+byte-exact pair sets have no losses against
+`_work/player_handle_ship_full_20261014.json`. Live flight and ARM32
+runtime remain unverified. See
+[the move-to-position audit](PLAYER_EGO_MOVE_TO_POSITION_ARM_2026-10-14.md).
+
 ## PlayerEgo ship control (2026-10-14)
 
 IDA/Ghidra and Android Thumb `0x9bdf0–0x9c12c` confirm the two sound

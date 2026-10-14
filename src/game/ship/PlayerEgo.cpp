@@ -208,8 +208,6 @@ void Mat_assign(void *dst, const void *src);
 
 void Vec_assign(void *dst, const void *src);
 
-void PE_mtp_steer(PlayerEgo *self, const float *target, int steer, float speed);
-
 
 
 float Vec_length(const void *v);
@@ -1756,6 +1754,12 @@ PlayerEgo::PlayerEgo(Player *player) {
     PaintCanvas::gCanvas->Image2DCreate(0x1f5d, this->radarBlipImage4);
     PaintCanvas::gCanvas->Image2DCreate(0x548, this->dockArrowImage);
 
+    this->steerLimit = ((this->handling * 750.0f) / 63.0f) * 1.2f;
+    this->steerScale = 15.139357f; // Android +0x288: 0x41723ace.
+    for (float &angle : this->steerAngleHistory) angle = 0.0f;
+    this->steerHistoryFull = 0;
+    this->steerHistoryIndex = 0;
+
     ((int &) this->explosion) = 0;
     ((int &) this->explosion2) = 0;
     this->autoTurretEnabled = 0;
@@ -1792,33 +1796,76 @@ void PlayerEgo::PlayEngineSound() {
 }
 
 
-void PlayerEgo::moveToPosition(Vector target, bool steer, float speed) {
-    float t[3] = {target.x, target.y, target.z};
-    PE_mtp_steer(this, t, steer ? 1 : 0, speed);
+float PlayerEgo::moveToPosition(Vector target, bool steer, float speed) {
+    AEGeometry *ship = this->geometry;
+    // Thumb stores these vectors at +0xec and +0xe0, overlapping legacy members.
+    Vector &destination = *reinterpret_cast<Vector *>(&this->waypointY);
+    Vector &current = *reinterpret_cast<Vector *>(&this->rotY);
+    destination = target;
+    destination -= ship->getPosition();
+    destination = AbyssEngine::AEMath::VectorNormalize(destination);
+    current = AbyssEngine::AEMath::VectorNormalize(ship->getDirection());
+    destination -= current;
+    float blend = (float) (int) ((float) this->shakeIntensity * speed) * 0.000244140625f;
+    destination *= blend;
+    this->headingVec = AbyssEngine::AEMath::VectorNormalize(current + destination);
 
-    float up[3] = {0.0f, 1.0f, 0.0f};
-    ((AEGeometry *) (this->geometry))->setDirection(this->headingVec, *(Vector *) up);
+    float turn = 0.0f;
+    if (steer) {
+        float dot = AbyssEngine::AEMath::VectorDot(
+            AbyssEngine::AEMath::VectorNormalize(current), this->headingVec);
+        float angle = 0.0f;
+        if (dot < 1.0f && dot > -1.0f)
+            angle = AbyssEngine::AEMath::ACosf(dot);
+        if (angle < 0.0f) angle = -angle;
+        if (angle != 0.0f && AbyssEngine::AEMath::ACosf(
+                AbyssEngine::AEMath::VectorDot(ship->getRightVector(), this->headingVec)) < 1.57079637f)
+            angle = -angle;
 
-    float dt = (float) this->shakeIntensity;
-    ((AEGeometry *) (this->geometry))->moveForward(this->thrust * dt * ((float &) this->speed));
-    ((PlayerEgo *) (this))->roll(this->shakeIntensity);
+        int index = this->steerHistoryIndex;
+        this->steerAngleHistory[index] = angle;
+        if (this->steerHistoryFull || index != 0) {
+            int count = this->steerHistoryFull ? 5 : index;
+            float sum = 0.0f;
+            for (int i = 0; i < count; ++i) sum += this->steerAngleHistory[i];
+            angle = sum / (float) count;
+        }
+        this->steerHistoryIndex = index + 1;
+        if (index >= 4) {
+            this->steerHistoryIndex = 0;
+            this->steerHistoryFull = 1;
+        }
 
-    float slide = this->strafeAccel;
-    float mag = slide > 0.0f ? slide : -slide;
-    if (mag <= g_PE_mtp_strafeEps) {
-        this->strafeFactor = g_PE_mtp_strafeReset;
-    } else {
-        unsigned char m[0x30];
-        Mat_assign(m, ((AEGeometry *) (this->geometry))->getMatrix());
-
-        float v = slide * dt;
-        ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->translateNoUpdate(v, 0.0f, 0.0f);
-        this->strafeAccel = this->strafeAccel * g_PE_mtp_strafeK;
-        ((AEGeometry *) this->geometry)->setMatrix(*(const AbyssEngine::AEMath::Matrix *) m);
+        float raw = angle * this->steerLimit * this->steerScale;
+        turn = -raw;
+        if (turn > this->steerLimit) turn = this->steerLimit;
+        else if (raw > this->steerLimit) turn = -this->steerLimit;
     }
 
-    Mat_assign(((Player *) this->player)->transform, ((AEGeometry *) (this->geometry))->getMatrix());
-    ((AEGeometry *) (this->geometry))->getPosition();
+    ship->setDirection(this->headingVec, Vector{0.0f, 1.0f, 0.0f});
+    ship->moveForward(this->thrust * (float) this->shakeIntensity * this->speedValue);
+    this->roll(this->shakeIntensity);
+
+    float strafe = this->strafeAccel;
+    float strafeAbs = strafe > 0.0f ? strafe : -strafe;
+    if (strafeAbs > g_PE_mtp_strafeEps) {
+        Matrix local = ship->getMatrix();
+        Vector offset = AbyssEngine::AEMath::MatrixRotateVector(
+            local, Vector{strafe * (float) this->shakeIntensity, 0.0f, 0.0f});
+        local.m[3] += offset.x;
+        local.m[7] += offset.y;
+        local.m[11] += offset.z;
+        this->strafeAccel *= g_PE_mtp_strafeK;
+        ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))
+            ->translateNoUpdate(offset.x, offset.y, offset.z);
+        ship->setMatrix(local);
+    } else {
+        this->strafeFactor = g_PE_mtp_strafeReset;
+    }
+
+    ((Player *) this->player)->transformMatrix = ship->getMatrix();
+    this->dockOffsetVec = ship->getPosition();
+    return turn;
 }
 
 void PlayerEgo::resetGunDelay() {
@@ -3090,8 +3137,8 @@ void PlayerEgo::setAutoPilot(KIPlayer *kip) {
     if (v == 0) {
         ((KIPlayer *) this->field_0x14)->autoPilotState = 0;
         if (old != 0) {
-            this->field_0x2a8 = 0;
-            this->field_0x2a4 = 0;
+            this->steerHistoryFull = 0;
+            this->steerHistoryIndex = 0;
         }
         return;
     }

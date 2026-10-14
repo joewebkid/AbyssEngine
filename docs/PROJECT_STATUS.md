@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo ship control; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo move-to-position; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo move-to-position (2026-10-14)
+
+Android Thumb `0x9c6d4–0x9ca52` establishes the destination/current
+direction blend, heading, optional signed steering and five-slot
+history, forward travel, rotated strafe, and Player/position-cache
+updates. The old body delegated steering to a declared-only shim.
+The constructor now initializes the history and steering parameters;
+`setAutoPilot(nullptr)` resets the index at `+0x2a4` rather than the
+limit at `+0x284`. The production-body smoke, native `gof2`, 206/206
+ARM translation units and 37 verifier tests (one skipped) pass.
+Focused `moveToPosition` source-shape/strict fuzzy rises
+**43.8%/22.2% → 92.9%/48.0%**; no exact match. Full coverage stays
+**4,323/4,524** at **93.34%** average source-shape and **82.24%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**123 extras**, zero skipped and no exact-pair losses. Live flight and
+ARM32 runtime remain unverified. See
+[the move-to-position audit](PLAYER_EGO_MOVE_TO_POSITION_ARM_2026-10-14.md).
 
 ## PlayerEgo ship control (2026-10-14)
 

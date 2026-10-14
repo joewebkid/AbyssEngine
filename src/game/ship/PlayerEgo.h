@@ -226,9 +226,12 @@ public:
     double yawAccumD;
     double pitchAccumD;
     float yawAccumF;
-    int field_0x2a4;
-    char _unknown_0x288[32];
-    uint8_t field_0x2a8;
+    float steerLimit;
+    float steerScale;
+    float field_0x28c;
+    float steerAngleHistory[5];
+    int steerHistoryIndex;
+    uint8_t steerHistoryFull;
     uint8_t rollDirection;
     AbyssEngine::AEMath::Matrix rollMatrix;
     float rotateX;
@@ -506,7 +509,7 @@ public:
 
     unsigned char lostMiningGame();
 
-    void moveToPosition(AbyssEngine::AEMath::Vector target, bool steer, float speed);
+    float moveToPosition(AbyssEngine::AEMath::Vector target, bool steer, float speed);
 
     void pitchAllPrimaryGuns(float);
 
@@ -697,6 +700,11 @@ static_assert(__builtin_offsetof(PlayerEgo, agility) == 0x254, "PlayerEgo::agili
 static_assert(__builtin_offsetof(PlayerEgo, pitchRamp) == 0x258, "PlayerEgo::pitchRamp offset");
 static_assert(__builtin_offsetof(PlayerEgo, yawRamp) == 0x25c, "PlayerEgo::yawRamp offset");
 static_assert(__builtin_offsetof(PlayerEgo, rollAccum) == 0x268, "PlayerEgo::rollAccum offset");
+static_assert(__builtin_offsetof(PlayerEgo, steerLimit) == 0x284, "PlayerEgo::steerLimit offset");
+static_assert(__builtin_offsetof(PlayerEgo, steerScale) == 0x288, "PlayerEgo::steerScale offset");
+static_assert(__builtin_offsetof(PlayerEgo, steerAngleHistory) == 0x290, "PlayerEgo::steerAngleHistory offset");
+static_assert(__builtin_offsetof(PlayerEgo, steerHistoryIndex) == 0x2a4, "PlayerEgo::steerHistoryIndex offset");
+static_assert(__builtin_offsetof(PlayerEgo, steerHistoryFull) == 0x2a8, "PlayerEgo::steerHistoryFull offset");
 static_assert(__builtin_offsetof(PlayerEgo, rollDirection) == 0x2a9, "PlayerEgo::rollDirection offset");
 static_assert(__builtin_offsetof(PlayerEgo, rollMatrix) == 0x2ac, "PlayerEgo::rollMatrix offset");
 static_assert(__builtin_offsetof(PlayerEgo, rotateX) == 0x2e8, "PlayerEgo::rotateX offset");
