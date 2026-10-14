@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo early ARM32 layout repair; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo control-field ARM32 layout repair; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo control-field ARM32 layout repair (2026-10-14)
+
+The next verified group now places camera-switch flags at `+0xb0`
+and `+0xb1`, speed/thrust at `+0xb8`/`+0xbc`, free-look mode at
+`+0xc4`, and boost values at `+0xc8..+0xd0`, matching Android ARM
+accessors and constructor writes. The two camera flags share the
+`+0xb0` word; the constructor now initializes them and restores
+the original speed/thrust values and boost assignments. Native
+`gof2`, all 206 ARM units, and 37 verifier tests pass (one skipped).
+Ten more `PlayerEgo` functions become both linked- and byte-exact,
+with no lost exact pairs. Full corpus: **4,323/4,524** covered,
+**93.13%** source-shape, **81.64%** strict fuzzy, **2,414** linked-
+exact, **1,019** byte-exact, **123** extras. The class still has
+size `0x378` versus the original allocation `0x3a0`; `handling`
+remains at `+0x134` versus ARM `+0x154`, and the constructor and
+camera setter remain non-exact. Next: establish the intervening
+offset group before moving handling and docking fields. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo early ARM32 layout repair (2026-10-14)
 

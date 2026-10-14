@@ -324,8 +324,8 @@ unsigned char PlayerEgo::isChargingDrive() {
 }
 
 int PlayerEgo::shouldSwitchToFreeLookCam() {
-    if (this->switchToStandardCam == 0) return 0;
-    this->switchToStandardCam = 0;
+    if (this->switchToFreeLookCam == 0) return 0;
+    this->switchToFreeLookCam = 0;
     return 1;
 }
 
@@ -527,8 +527,8 @@ void PlayerEgo::setExhaustVisible(bool param) {
 }
 
 int PlayerEgo::shouldSwitchToStandardCam() {
-    if (((char &) this->field_0xb0) == 0) return 0;
-    ((char &) this->field_0xb0) = 0;
+    if (this->switchToStandardCam == 0) return 0;
+    this->switchToStandardCam = 0;
     return 1;
 }
 
@@ -1659,11 +1659,18 @@ PlayerEgo::PlayerEgo(Player *player) {
     Ship *ship = (Ship *) PE_status()->getShip();
     this->boostTimer = 0;
     this->boostingFlag = 0;
+    this->speedValue = 2.0f;
+    this->thrust = 1.0f;
+    this->switchToStandardCam = 0;
+    this->switchToFreeLookCam = 0;
+    this->field_0xb2 = 0;
     if (ship != 0) {
-        this->boostDelay = ship->getBoostDelay();
-        this->handling = ship->getBoostTime();
-        this->boostSpeed = ship->getBoostSpeed();
-        this->field_0xb0 = ship->getHandling();
+        this->field_0xd0 = ship->getBoostDelay();
+        int speed = ship->getBoostSpeed();
+        float speedRate = (float) speed / 100.0f;
+        this->boostSpeed = (int) (speedRate + speedRate) + 2;
+        this->field_0xcc = ship->getBoostTime();
+        this->handling = ship->getHandling();
     }
 
     ((int &) this->explosion) = 0;

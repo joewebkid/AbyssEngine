@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo control-field ARM32 layout repair (2026-10-14)
+
+Original accessors at IDA lines 86918–86948 and 87496–87577 place
+camera-switch flags at `+0xb0`/`+0xb1`, speed at `+0xb8`, thrust at
+`+0xbc`, and free-look mode at `+0xc4`. Original constructor lines
+80248–80257 initialize speed/thrust and boost values at `+0xc8`
+through `+0xd0`. The NDK r18b Clang record dump now matches these offsets.
+Focused verify gives nine byte-exact control methods; full corpus
+adds `changeThrust` as a tenth. Native `gof2`, all 206 ARM units and
+37 verifier tests pass (one skipped). Full report
+`_work/player_abi_controls_final_full_20261014.json`: **4,323/4,524**
+covered, **93.13%** source-shape, **81.64%** strict fuzzy,
+**2,414** linked-exact, **1,019** byte-exact and **123** extras.
+The exact-pair comparison with
+`_work/player_abi_matrix_full_20261014.json` has zero losses.
+Remaining class size `0x378` vs original `0x3a0` leaves handling,
+docking and later member accesses unverified. See
+[the offset evidence](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo early ARM32 layout repair (2026-10-14)
 
 NDK r18b Clang's record dump now places the Matrix storage at

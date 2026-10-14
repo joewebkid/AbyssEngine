@@ -90,3 +90,40 @@ the original. The existing camera setter calls
 That value's field mapping and gameplay effects are not yet verified.
 The next offset group must be established from ARM evidence before
 changing later members or this setter.
+
+## Control fields and boost initialization repaired (2026-10-14)
+
+Original `shouldSwitchToStandardCam`/`shouldSwitchToFreeLookCam`
+access bytes `+0xb0`/`+0xb1`; `setSpeed`/`getSpeed` access `+0xb8`,
+`setThrust`/`getThrust` access `+0xbc`, and free-look accessors use
+`+0xc4`. Constructor lines 80248–80257 assign `2.0f` speed and
+`1.0f` thrust, derive boost speed at `+0xc8`, and store boost time
+and delay at `+0xcc`/`+0xd0`. The header now has the intervening
+unidentified storage, overlapping byte flags at `+0xb0..+0xb2`,
+and compile-time assertions for the confirmed fields. The
+constructor restores those confirmed values and writes handling
+to its intended named member instead of overwriting the camera
+flags. The actual handling member offset is still unresolved.
+
+NDK r18b Clang records `PlayerEgo` size `0x378`, compared with
+original allocation `0x3a0`. Native `gof2`, all 206 ARM units and
+37 verifier tests pass (one skipped). Focused verification gives
+nine linked- and byte-exact methods in this group; the full corpus
+also gains `changeThrust`. The full report
+`_work/player_abi_controls_final_full_20261014.json` covers
+**4,323/4,524** functions, with **93.13%** source-shape,
+**81.64%** strict fuzzy, **2,414** linked-exact, **1,019**
+byte-exact and **123** extras. Compared with the prior Matrix
+checkpoint, exact-pair sets have zero losses and ten gains.
+Constructor source-shape rises from 18.9% to 20.9%, but remains
+non-exact.
+
+Later fields still diverge: `shakeIntensity +0x118` versus ARM
+`+0x134`, `handling +0x134` versus `+0x154`,
+`asteroidTarget +0x19c` versus `+0x1bc`, and `hud +0x1f4`
+versus `+0x220`.
+The camera setter still calls `resetShipHandling()` instead of
+passing the original `+0x154` value to `setShipHandling()`.
+Runtime ABI, the full constructor and gameplay semantics remain
+unverified. Next, map the intervening fields from ARM before
+moving handling and docking members.

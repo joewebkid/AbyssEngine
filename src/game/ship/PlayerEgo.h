@@ -89,16 +89,24 @@ public:
     };
     void *explosion;
     void *explosion2;
+    char _unknown_0x94[0x18];
     int field_0xac;
-    int field_0xb0;
-    uint8_t switchToStandardCam;
-    uint8_t field_0xb2;
+    union {
+        int field_0xb0;
+        struct {
+            uint8_t switchToStandardCam;
+            uint8_t switchToFreeLookCam;
+            uint8_t field_0xb2;
+            uint8_t field_0xb3;
+        };
+    };
     int engineSoundId;
     union {
         int speed; // Legacy bit view used by unreconstructed methods.
         float speedValue;
     };
     float thrust;
+    char _unknown_0xc0[4];
     uint8_t freeLookMode;
     int boostSpeed;
     int field_0xcc;
@@ -605,6 +613,14 @@ static_assert(__builtin_offsetof(PlayerEgo, matrix_0x40_storage) == 0x40, "Playe
 static_assert(__builtin_offsetof(PlayerEgo, maneuverParam) == 0x7c, "PlayerEgo::maneuverParam offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x80) == 0x80, "PlayerEgo::field_0x80 offset");
 static_assert(__builtin_offsetof(PlayerEgo, targetFollowCamera) == 0x88, "PlayerEgo::targetFollowCamera offset");
+static_assert(__builtin_offsetof(PlayerEgo, switchToStandardCam) == 0xb0, "PlayerEgo::standardCameraFlag offset");
+static_assert(__builtin_offsetof(PlayerEgo, switchToFreeLookCam) == 0xb1, "PlayerEgo::freeLookCameraFlag offset");
+static_assert(__builtin_offsetof(PlayerEgo, speedValue) == 0xb8, "PlayerEgo::speed offset");
+static_assert(__builtin_offsetof(PlayerEgo, thrust) == 0xbc, "PlayerEgo::thrust offset");
+static_assert(__builtin_offsetof(PlayerEgo, freeLookMode) == 0xc4, "PlayerEgo::freeLookMode offset");
+static_assert(__builtin_offsetof(PlayerEgo, boostSpeed) == 0xc8, "PlayerEgo::boostSpeed offset");
+static_assert(__builtin_offsetof(PlayerEgo, field_0xcc) == 0xcc, "PlayerEgo::boostTime offset");
+static_assert(__builtin_offsetof(PlayerEgo, field_0xd0) == 0xd0, "PlayerEgo::boostDelay offset");
 #endif
 
 #endif
