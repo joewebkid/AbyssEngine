@@ -4,6 +4,42 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo active-cursor aim and steering (2026-10-14)
+
+Raw Android Thumb at `0x9eb84–0x9eda6` and IDA lines 84609–84682
+establish the active-cursor path: center is `w >> 1, h >> 1`, the
+per-axis limit is center × the binary's double literal 0.7 then
+converted to float, and each mouse delta is clamped to its signed
+limit before integer conversion. The clamped integers replace
+`Globals::mouseDeltaX/Y`; the displayed crosshair is bounded to
+center ± limit. Positive/negative horizontal deltas call
+`PlayerEgo::right/left`, and positive/negative vertical deltas call
+`down/up`, with magnitude divided by its axis limit and the current
+frame time passed through. The path projects the same normalized
+camera direction × 22000 as the passive path, but stores the result
+in static `crosshairShootPos`. A nonpositive projected depth blends
+that result 0.2/0.8 with PlayerEgo `+0xa0`, which receives the final
+shoot position. Constructor IDA at 0x998cc, lines 80099 onward,
+zeros the two 12-byte previous-position vectors at `+0x94/+0xa0`.
+The iOS dump did not yield a reliable counterpart for this block.
+
+The extracted production-fragment smoke covers both steering signs,
+limits, shoot projection, negative-depth smoothing, passive gate
+overrides, and turret matrix order. Native `gof2`, 206/206 ARM units,
+37 verifier tests (one skipped), and four PlayerEgo smokes pass.
+Focused `update` source-shape/strict fuzzy changes
+**42.4%/10.9% → 48.2%/24.8%**; constructor C1/C2 aliases change
+**40.3%/24.8% → 41.9%/25.2%**. Full report
+`_work/player_crosshair_active_full_20261014.json`: **4,323/4,524**
+covered, **93.26%** source-shape, **82.17%** strict fuzzy,
+**2,478 linked-exact**, **1,065 byte-exact**, **123 extras**, zero
+skipped units. Exact pair comparison against
+`_work/player_crosshair_passive_full_20261014.json` finds zero
+losses and gains. No whole-function exact result or linked ARM
+gameplay is claimed. The visible previous-position store is still
+earlier than in the original, and the update tail remains incomplete.
+See [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo passive crosshair projection (2026-10-14)
 
 Android ARM `PlayerEgo::update` at `0x9ea32–0x9eda6` gets position and

@@ -1,5 +1,33 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Active cursor and previous shoot-position vector (2026-10-14)
+
+Android Thumb `0x9eb84–0x9eda6` and IDA lines 84609–84682
+establish the active-mouse branch in `PlayerEgo::update`: mouse deltas
+are clamped to ±70% of half-width/half-height, written back to
+`Globals`, and used to place the visible crosshair within that box.
+Their signs call right/left and down/up, with normalized displacement.
+The branch independently projects a 22,000-unit aim point into
+`crosshairShootPos`, smoothing nonpositive depth 0.2/0.8 against the
+prior shoot vector at PlayerEgo `+0xa0`. Raw ARM's `sl+0xa0` load and
+store support the new typed Vector and offset assertion. Original
+constructor IDA at 0x998cc, lines 80099 onward, clears the entire
+`+0x94..+0xab` pair of vectors; the source constructor now follows.
+
+Native `gof2`, 206/206 ARM units, 37 verifier tests (one skipped),
+and four PlayerEgo smokes pass. Focused `update` source-shape/strict
+fuzzy rises **42.4%/10.9% → 48.2%/24.8%**; constructor aliases
+rise **40.3%/24.8% → 41.9%/25.2%**. Full report
+`_work/player_crosshair_active_full_20261014.json` covers
+**4,323/4,524** at **93.26%** average source-shape and **82.17%**
+strict fuzzy, with **2,478 linked-exact**, **1,065 byte-exact**, and
+**123 extras**. No exact pair is lost or gained against the passive
+checkpoint. The original copies the visible crosshair to `+0x94`
+after the camera handoff at `0x9edf0`; the current C++ does it before
+that handoff. The post-handoff update tail and linked ARM gameplay
+remain unverified. Next: close the tail's death/weapon handling and
+restore the final store order when that path is recovered.
+
 ## Passive crosshair position and camera matrices (2026-10-14)
 
 Android ARM `PlayerEgo::update` at `0x9ea32–0x9eda6` reads the ship

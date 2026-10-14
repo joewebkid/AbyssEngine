@@ -1,7 +1,33 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo passive crosshair projection; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo active-cursor aim and steering; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo active-cursor aim and steering (2026-10-14)
+
+Android ARM `PlayerEgo::update` at `0x9eb84–0x9eda6` confirms the
+active-mouse branch following passive projection. It clamps mouse
+deltas to 70% of half the screen dimensions, writes the clamped
+deltas back, bounds the visible crosshair, and calls the corresponding
+left/right/up/down control with the normalized displacement. It then
+projects a separate 22,000-unit shoot point and smooths negative
+depth against the prior shoot position at `+0xa0` using 0.2/0.8.
+The constructor's Android initialization zeros both previous-position
+vectors at `+0x94/+0xa0`; the C++ now does so explicitly. The
+production-fragment smoke checks the active gates, steering signs,
+clamping, projection, smoothing, and turret source order. Native
+`gof2`, 206/206 ARM units, 37 verifier tests (one skipped), and four
+PlayerEgo smokes pass. Focused `update` source-shape/strict fuzzy
+changes **42.4%/10.9% → 48.2%/24.8%**; constructor aliases change
+**40.3%/24.8% → 41.9%/25.2%**. None is exact. Full report
+`_work/player_crosshair_active_full_20261014.json`: **4,323/4,524**
+covered, **93.26%** source-shape, **82.17%** strict fuzzy,
+**2,478 linked-exact**, **1,065 byte-exact**, **123 extras**. Exact
+pair sets lose or gain none against the passive-crosshair checkpoint.
+The original saves the visible previous position after the camera
+handoff, whereas the current C++ does so immediately before it; the
+remaining update tail and linked ARM gameplay are unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo passive crosshair projection (2026-10-14)
 

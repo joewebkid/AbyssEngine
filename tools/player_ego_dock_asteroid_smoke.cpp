@@ -223,7 +223,10 @@ namespace Globals {
     GlobalsService *gGlobals = nullptr;
     PaintCanvas *Canvas = nullptr;
     int mouseCursorActivated = 0;
+    int mouseDeltaX = 0;
+    int mouseDeltaY = 0;
     int w = 800;
+    int h = 600;
     unsigned char options[100]{};
 }
 static const float g_PE_astApproach = 2500.0f;
@@ -232,6 +235,7 @@ void Vec_assign(void *dst, const void *src) { std::memcpy(dst, src, 3 * sizeof(i
 struct PlayerEgo {
     static Vector vec_up;
     static Vector crosshairPos;
+    static Vector crosshairShootPos;
     union { int asteroidTarget; void *asteroidTargetPtr; };
     union { int targetFollowCamera; void *targetFollowCameraPtr; };
     union { int miningGame; void *miningGamePtr; };
@@ -267,6 +271,9 @@ struct PlayerEgo {
     unsigned char turretActive = 0;
     unsigned char autoPilot = 0;
     Vector crosshairPosPrevious{};
+    Vector crosshairShootPosPrevious{};
+    int rightCalls = 0, leftCalls = 0, downCalls = 0, upCalls = 0;
+    float lastRight = 0.0f, lastLeft = 0.0f, lastDown = 0.0f, lastUp = 0.0f;
     unsigned char boostingFlag = 0;
     float boostPercentage = 0.0f;
     int boostPercentReads = 0;
@@ -288,7 +295,11 @@ struct PlayerEgo {
     void updateVisualState();
     void updateRoute(Hud *hud);
     void updateHitState(Hud *hud);
-    void updateCrosshair(bool arg6, int arg7);
+    void updateCrosshair(int dt, bool arg6, int arg7);
+    float right(int dt, float delta) { assert(dt == 16); ++rightCalls; lastRight = delta; return 0.0f; }
+    float left(int dt, float delta) { assert(dt == 16); ++leftCalls; lastLeft = delta; return 0.0f; }
+    float down(int dt, float delta) { assert(dt == 16); ++downCalls; lastDown = delta; return 0.0f; }
+    float up(int dt, float delta) { assert(dt == 16); ++upCalls; lastUp = delta; return 0.0f; }
     void initializeRecoveryAmount(Ship *ship);
     void initializeEngineSound(Ship *ship);
     bool isDead() { return player->hitpoints < 1; }
@@ -301,6 +312,7 @@ struct PlayerEgo {
 };
 Vector PlayerEgo::vec_up{};
 Vector PlayerEgo::crosshairPos{};
+Vector PlayerEgo::crosshairShootPos{};
 
 // PRODUCTION_METHOD
 // PRODUCTION_UPDATE_DOCKING
@@ -654,31 +666,59 @@ int main() {
     player.transformMatrix.dir = {0.0f, 0.0f, 2.0f};
     canvas.screenResult = {320.0f, 240.0f, 5.0f};
     int previousProjections = canvas.projections;
-    ego.updateCrosshair(false, 1);
+    ego.updateCrosshair(16, false, 1);
     assert(canvas.projections == previousProjections + 1);
     assert(canvas.lastWorldPosition.x == 10.0f && canvas.lastWorldPosition.y == 20.0f);
     assert(canvas.lastWorldPosition.z == 22030.0f);
     assert(PlayerEgo::crosshairPos.x == 320.0f && ego.crosshairPosPrevious.z == 5.0f);
 
     canvas.screenResult = {100.0f, 140.0f, -5.0f};
-    ego.updateCrosshair(false, 1);
+    ego.updateCrosshair(16, false, 1);
     assert(PlayerEgo::crosshairPos.x == 276.0f && PlayerEgo::crosshairPos.y == 220.0f);
     assert(PlayerEgo::crosshairPos.z == 3.0f && ego.crosshairPosPrevious.x == 276.0f);
 
     Globals::mouseCursorActivated = 1;
     previousProjections = canvas.projections;
-    ego.updateCrosshair(false, 1);
-    assert(canvas.projections == previousProjections && PlayerEgo::crosshairPos.x == 276.0f);
-    canvas.screenResult = {400.0f, 300.0f, 1.0f};
-    ego.updateCrosshair(true, 1);
+    Globals::mouseDeltaX = 100;
+    Globals::mouseDeltaY = -90;
+    canvas.screenResult = {500.0f, 320.0f, 7.0f};
+    ego.updateCrosshair(16, false, 1);
     assert(canvas.projections == previousProjections + 1);
-    ego.updateCrosshair(false, 3);
+    assert(PlayerEgo::crosshairPos.x == 500.0f && PlayerEgo::crosshairPos.y == 210.0f);
+    assert(ego.crosshairPosPrevious.x == 500.0f);
+    assert(PlayerEgo::crosshairShootPos.x == 500.0f && ego.crosshairShootPosPrevious.z == 7.0f);
+    assert(ego.rightCalls == 1 && ego.upCalls == 1);
+    assert(std::fabs(ego.lastRight - 100.0f / 280.0f) < 0.00001f);
+    assert(std::fabs(ego.lastUp - 90.0f / 210.0f) < 0.00001f);
+
+    Globals::mouseDeltaX = 999;
+    Globals::mouseDeltaY = -999;
+    canvas.screenResult = {100.0f, 120.0f, -3.0f};
+    ego.updateCrosshair(16, false, 1);
+    assert(Globals::mouseDeltaX == 280 && Globals::mouseDeltaY == -210);
+    assert(PlayerEgo::crosshairPos.x == 680.0f && PlayerEgo::crosshairPos.y == 90.0f);
+    assert(PlayerEgo::crosshairShootPos.x == 420.0f && PlayerEgo::crosshairShootPos.z == 5.0f);
+    assert(ego.rightCalls == 2 && ego.upCalls == 2 && ego.lastRight == 1.0f && ego.lastUp == 1.0f);
+
+    Globals::mouseDeltaX = -71;
+    Globals::mouseDeltaY = 42;
+    canvas.screenResult = {400.0f, 300.0f, 1.0f};
+    ego.updateCrosshair(16, false, 1);
+    assert(PlayerEgo::crosshairPos.x == 329.0f && PlayerEgo::crosshairPos.y == 342.0f);
+    assert(ego.leftCalls == 1 && ego.downCalls == 1);
+    assert(std::fabs(ego.lastLeft - 71.0f / 280.0f) < 0.00001f);
+    assert(std::fabs(ego.lastDown - 42.0f / 210.0f) < 0.00001f);
+
+    previousProjections = canvas.projections;
+    ego.updateCrosshair(16, true, 1);
+    assert(canvas.projections == previousProjections + 1);
+    ego.updateCrosshair(16, false, 3);
     assert(canvas.projections == previousProjections + 2);
     ego.autoPilot = 1;
-    ego.updateCrosshair(false, 0);
+    ego.updateCrosshair(16, false, 0);
     assert(canvas.projections == previousProjections + 3);
-    ego.updateCrosshair(false, 1);
-    assert(canvas.projections == previousProjections + 3);
+    ego.updateCrosshair(16, false, 1);
+    assert(canvas.projections == previousProjections + 4);
 
     AEGeometry cameraGeometry;
     AEGeometry turretGeometry;
@@ -690,7 +730,7 @@ int main() {
     ego.turretGeometry = &turretGeometry;
     ego.turretActive = 1;
     Globals::mouseCursorActivated = 0;
-    ego.updateCrosshair(false, 1);
+    ego.updateCrosshair(16, false, 1);
     assert(canvas.lastWorldPosition.x == 22040.0f);
     assert(canvas.lastWorldPosition.y == 50.0f && canvas.lastWorldPosition.z == 60.0f);
     assert(ego.crosshairPosPrevious.x == 400.0f);

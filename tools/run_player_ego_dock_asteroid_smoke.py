@@ -64,12 +64,12 @@ def main():
                               "void PlayerEgo::updateRoute(Hud *hud) {\n" +
                               source[start:end] + "}\n")
     start = end
-    end = source.index("    if (!Globals::mouseCursorActivated || arg6", start)
+    end = source.index("    Vector cameraPosition = AbyssEngine::AEMath::MatrixGetPosition", start)
     hit_state = source[start:end]
     start = end
-    end = source.index("    // shortcut: cursor-driven steering", start)
+    end = source.index("    // shortcut: the original saves", start)
     fixture = fixture.replace("// PRODUCTION_UPDATE_CROSSHAIR",
-                              "void PlayerEgo::updateCrosshair(bool arg6, int arg7) {\n" +
+                              "void PlayerEgo::updateCrosshair(int dt, bool arg6, int arg7) {\n" +
                               "    Player *player = this->player;\n" + source[start:end] + "}\n")
     start = end
     end = source.index("    PE_upd_post(this, dt, radar, hud, radio, arg5);", start)

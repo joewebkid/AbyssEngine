@@ -1652,6 +1652,8 @@ void PlayerEgo::throttleChanged() {
 
 PlayerEgo::PlayerEgo(Player *player) {
     new (matrix_0x40_storage) AbyssEngine::AEMath::Matrix();
+    this->crosshairPosPrevious = Vector{0.0f, 0.0f, 0.0f};
+    this->crosshairShootPosPrevious = Vector{0.0f, 0.0f, 0.0f};
     this->rollMatrix = AbyssEngine::AEMath::Matrix();
 
     this->player = (void *) player;
@@ -2678,24 +2680,55 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         this->hudHitDirectionFlags = flags;
     }
 
+    Vector cameraPosition = AbyssEngine::AEMath::MatrixGetPosition(player->transformMatrix);
+    Vector cameraDirection = AbyssEngine::AEMath::MatrixGetDir(player->transformMatrix);
+    if (this->turretActive) {
+        Matrix &cameraMatrix = ((AEGeometry *) this->field_0x2c)->getMatrix();
+        Matrix &turretMatrix = ((AEGeometry *) this->turretGeometry)->getMatrix();
+        Matrix combined = cameraMatrix * turretMatrix;
+        cameraPosition = AbyssEngine::AEMath::MatrixGetPosition(combined);
+        cameraDirection = AbyssEngine::AEMath::MatrixGetDir(combined);
+    }
     if (!Globals::mouseCursorActivated || arg6 || arg7 == 3 || (arg7 != 1 && this->autoPilot)) {
-        Vector cameraPosition = AbyssEngine::AEMath::MatrixGetPosition(player->transformMatrix);
-        Vector cameraDirection = AbyssEngine::AEMath::MatrixGetDir(player->transformMatrix);
-        if (this->turretActive) {
-            Matrix &cameraMatrix = ((AEGeometry *) this->field_0x2c)->getMatrix();
-            Matrix &turretMatrix = ((AEGeometry *) this->turretGeometry)->getMatrix();
-            Matrix combined = cameraMatrix * turretMatrix;
-            cameraPosition = AbyssEngine::AEMath::MatrixGetPosition(combined);
-            cameraDirection = AbyssEngine::AEMath::MatrixGetDir(combined);
-        }
         Vector worldAim = cameraPosition + AbyssEngine::AEMath::VectorNormalize(cameraDirection) * 22000.0f;
         Globals::Canvas->GetScreenPosition(worldAim, crosshairPos);
         if (crosshairPos.z <= 0.0f)
             crosshairPos = crosshairPos * 0.2f + this->crosshairPosPrevious * 0.8f;
-        this->crosshairPosPrevious = crosshairPos;
-    }
+    } else {
+        float centerX = (float) (Globals::w >> 1);
+        float centerY = (float) (Globals::h >> 1);
+        float limitX = (float) ((double) centerX * 0.7);
+        float limitY = (float) ((double) centerY * 0.7);
+        float deltaX = (float) Globals::mouseDeltaX;
+        float deltaY = (float) Globals::mouseDeltaY;
+        if (deltaX > limitX) deltaX = limitX;
+        if (deltaY > limitY) deltaY = limitY;
+        if (deltaX < -limitX) deltaX = -limitX;
+        if (deltaY < -limitY) deltaY = -limitY;
+        int mouseX = (int) deltaX;
+        int mouseY = (int) deltaY;
+        Globals::mouseDeltaX = mouseX;
+        Globals::mouseDeltaY = mouseY;
+        crosshairPos.x = centerX + (float) mouseX;
+        crosshairPos.y = centerY + (float) mouseY;
+        if (crosshairPos.x > centerX + limitX) crosshairPos.x = centerX + limitX;
+        if (crosshairPos.x < centerX - limitX) crosshairPos.x = centerX - limitX;
+        if (crosshairPos.y > centerY + limitY) crosshairPos.y = centerY + limitY;
+        if (crosshairPos.y < centerY - limitY) crosshairPos.y = centerY - limitY;
+        if (mouseX > 0) this->right(dt, (float) mouseX / limitX);
+        else if (mouseX < 0) this->left(dt, (float) -mouseX / limitX);
+        if (mouseY > 0) this->down(dt, (float) mouseY / limitY);
+        else if (mouseY < 0) this->up(dt, (float) -mouseY / limitY);
 
-    // shortcut: cursor-driven steering belongs before this handoff; restore it when replacing PE_upd_post.
+        Vector worldAim = cameraPosition + AbyssEngine::AEMath::VectorNormalize(cameraDirection) * 22000.0f;
+        Globals::Canvas->GetScreenPosition(worldAim, crosshairShootPos);
+        if (crosshairShootPos.z <= 0.0f)
+            crosshairShootPos = crosshairShootPos * 0.2f + this->crosshairShootPosPrevious * 0.8f;
+        this->crosshairShootPosPrevious = crosshairShootPos;
+    }
+    this->crosshairPosPrevious = crosshairPos;
+
+    // shortcut: the original saves crosshairPosPrevious after this handoff; restore that order with the update tail.
     if (this->cursorStateDirty) {
         TargetFollowCamera *camera = (TargetFollowCamera *) ((void *&) this->targetFollowCamera);
         if (!camera->isInFastForwardMode()) {
