@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo auto-turret selection (2026-10-14)
+
+Android Thumb `0x9cac8–0x9cb32` confirms the virtual enemy-position
+call, subtraction from PlayerEgo `+0x148`, `VectorLength`, integer
+distance and nearest-target comparison. Thumb `0x9cde0–0x9cde4`
+confirms `stopShooting(2)`. The production-body host smoke checks
+target filters, nearest target, distance boundary and stop argument;
+native `gof2`, 206/206 ARM units and 37 verifier tests (one skipped)
+pass. Focused source-shape/strict fuzzy changes **45.7%/23.5% →
+45.7%/24.0%**. Full report
+`_work/player_auto_turret_full_20261014.json` covers **4,323/4,524**
+functions at **93.30%** average source-shape and **82.21%** strict
+fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**, **123
+extras** and zero skipped. Exact-pair and extra-symbol sets have no
+losses or gains against `_work/player_dock_vector_full_20261014.json`.
+The aim/fire tail and ARM32 runtime remain unverified. See
+[the selection audit](PLAYER_EGO_AUTO_TURRET_SELECTION_ARM_2026-10-14.md).
+
 ## PlayerEgo dock-vector reset (2026-10-14)
 
 Raw Android Thumb `0x9f4c8–0x9f4e2` and `0x9fc0e–0x9fc2c` shows

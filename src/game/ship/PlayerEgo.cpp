@@ -1865,11 +1865,9 @@ void PlayerEgo::handleAutoTurret(int dt) {
                 if (((KIPlayer *) (e))->isEnemy() == 0) continue;
                 if (((KIPlayer *) e)->noTargetFlag != 0) continue;
 
-                float epos[3];
-                ((KIPlayer *) (e))->getPosition();
-                float rel[3];
-                Vec_sub(rel, epos, &this->dockOffsetVec);
-                int dist = (int) Vec_length(rel);
+                Vector enemyPos = ((KIPlayer *) e)->getPosition();
+                Vector rel = this->dockOffsetVec - enemyPos;
+                int dist = (int) AbyssEngine::AEMath::VectorLength(rel);
                 if (dist < best
                     && (this->autoTurretTarget == 0 || this->autoTurretTarget != this->autoTurretPrevTarget)) {
                     this->autoTurretTarget = e;
@@ -1889,7 +1887,7 @@ void PlayerEgo::handleAutoTurret(int dt) {
         }
     }
 
-    ((Player *) (this->player))->stopShooting(0);
+    ((Player *) (this->player))->stopShooting(2);
 }
 
 void PlayerEgo::dockToAsteroid(KIPlayer *kip, Radar *radar) {

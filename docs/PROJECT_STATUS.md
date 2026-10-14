@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo dock-vector reset; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo auto-turret selection; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo auto-turret selection (2026-10-14)
+
+Android `handleAutoTurret` at `0x9ca78` obtains each eligible enemy's
+virtual position, subtracts it from the PlayerEgo position cache and
+compares integer distance with a 60,000-unit limit. The source had
+discarded that position and used an uninitialized array. The
+no-target/timeout path now stops weapon `2` as ARM specifies. A
+production-body host smoke, native `gof2`, 206/206 ARM units and
+verifier tests pass. Focused source-shape stays **45.7%**; strict
+fuzzy rises **23.5% → 24.0%**. Full coverage remains
+**4,323/4,524** at **93.30%** average source-shape and **82.21%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**123 extras**, zero skipped and no exact-pair losses. The aim/fire
+tail still uses an undefined shim; live aiming and ARM32 runtime are
+unverified. See [the selection audit](PLAYER_EGO_AUTO_TURRET_SELECTION_ARM_2026-10-14.md).
 
 ## PlayerEgo dock-vector reset (2026-10-14)
 
