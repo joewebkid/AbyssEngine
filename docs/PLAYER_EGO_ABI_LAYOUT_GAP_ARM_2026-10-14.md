@@ -1,5 +1,35 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Passive crosshair position and camera matrices (2026-10-14)
+
+Android ARM `PlayerEgo::update` at `0x9ea32–0x9eda6` reads the ship
+transform at Player `+0x4`. When the turret-active byte at PlayerEgo
+`+0x1a0` is set, it combines the geometry matrix from `+0x2c` with
+the turret geometry matrix from `+0x28`, in that order. The passive
+projection predicate is
+`!mouseCursorActivated || arg6 || arg7 == 3 || (arg7 != 1 && autoPilot)`;
+`autoPilot` is the byte at `+0x158`. It projects a world point 22,000
+units along the normalized direction and blends a behind-camera
+result 0.2/0.8 with the previous screen position at `+0x94`. That
+previous position is now a typed Vector with an ARM32 offset assertion.
+IDA lines 84563–84605, independent Ghidra lines 64543–64580, and
+raw Thumb instructions corroborate the layout and literals. The iOS
+dump did not supply a reliably identified counterpart for this block.
+
+The extracted production-fragment smoke tests the passive gate,
+screen projection, smoothing, and turret multiplication order. Native
+`gof2`, 206/206 ARM units, 37 verifier tests (one skipped), and four
+PlayerEgo smokes pass. Focused `update` source-shape changes
+**37.9% → 42.4%** and strict fuzzy **12.7% → 10.9%**; it remains
+non-exact. Full corpus `_work/player_crosshair_passive_full_20261014.json`
+has **4,323/4,524** coverage, **93.26%** average source-shape,
+**82.16%** strict fuzzy, **2,478 linked-exact**, **1,065 byte-exact**,
+and **123 extras**. Against the cursor/camera handoff checkpoint,
+exact-pair losses and gains are both zero. The active-cursor steering
+and shoot-position branch remains unrecovered; the current prior-
+position assignment is earlier than in the original. Linked ARM32
+gameplay remains unverified.
+
 ## Cursor-state handoff to the follow camera (2026-10-14)
 
 After the still-unrecovered camera/crosshair calculations, Android

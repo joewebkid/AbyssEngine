@@ -11,15 +11,28 @@ Vector operator*(const Vector &value, float factor) {
 Vector operator+(const Vector &a, const Vector &b) {
     return {a.x + b.x, a.y + b.y, a.z + b.z};
 }
-struct Matrix { Vector up; };
+struct Matrix { Vector up, position, dir; };
+static const Matrix *expectedFirstMatrix = nullptr;
+static const Matrix *expectedSecondMatrix = nullptr;
+static Matrix combinedMatrix{};
+Matrix operator*(const Matrix &first, const Matrix &second) {
+    assert(&first == expectedFirstMatrix && &second == expectedSecondMatrix);
+    return combinedMatrix;
+}
 namespace AbyssEngine { namespace AEMath {
 Vector MatrixGetUp(const Matrix &matrix) { return matrix.up; }
+Vector MatrixGetPosition(const Matrix &matrix) { return matrix.position; }
+Vector MatrixGetDir(const Matrix &matrix) { return matrix.dir; }
 Vector VectorNormalize(const Vector &value) {
     float length = std::sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
     return length == 0.0f ? Vector{} : Vector{value.x / length, value.y / length, value.z / length};
 }
 } }
-struct AEGeometry { unsigned int transform = 17; };
+struct AEGeometry {
+    unsigned int transform = 17;
+    Matrix matrix{};
+    Matrix &getMatrix() { return matrix; }
+};
 struct PaintCanvas {
     Matrix *local = nullptr;
     int reads = 0;
@@ -86,6 +99,7 @@ struct TargetFollowCamera {
     void resetShipHandling() { ++handlingResets; }
 };
 struct Player {
+    Matrix transformMatrix{};
     int resetCount = 0;
     int hitpoints = 10;
     int maxHitpoints = 10;
@@ -217,6 +231,7 @@ void Vec_assign(void *dst, const void *src) { std::memcpy(dst, src, 3 * sizeof(i
 
 struct PlayerEgo {
     static Vector vec_up;
+    static Vector crosshairPos;
     union { int asteroidTarget; void *asteroidTargetPtr; };
     union { int targetFollowCamera; void *targetFollowCameraPtr; };
     union { int miningGame; void *miningGamePtr; };
@@ -247,6 +262,11 @@ struct PlayerEgo {
     int lastHP = 0;
     int hitCameraCalls = 0;
     AEGeometry *geometry = nullptr;
+    void *field_0x2c = nullptr;
+    void *turretGeometry = nullptr;
+    unsigned char turretActive = 0;
+    unsigned char autoPilot = 0;
+    Vector crosshairPosPrevious{};
     unsigned char boostingFlag = 0;
     float boostPercentage = 0.0f;
     int boostPercentReads = 0;
@@ -268,6 +288,7 @@ struct PlayerEgo {
     void updateVisualState();
     void updateRoute(Hud *hud);
     void updateHitState(Hud *hud);
+    void updateCrosshair(bool arg6, int arg7);
     void initializeRecoveryAmount(Ship *ship);
     void initializeEngineSound(Ship *ship);
     bool isDead() { return player->hitpoints < 1; }
@@ -279,6 +300,7 @@ struct PlayerEgo {
     void dockToDockingPoint(KIPlayer *, Radar *) { dockedFlag = 0; ++dockPointStops; }
 };
 Vector PlayerEgo::vec_up{};
+Vector PlayerEgo::crosshairPos{};
 
 // PRODUCTION_METHOD
 // PRODUCTION_UPDATE_DOCKING
@@ -289,6 +311,7 @@ Vector PlayerEgo::vec_up{};
 // PRODUCTION_UPDATE_VISUAL_STATE
 // PRODUCTION_UPDATE_ROUTE
 // PRODUCTION_UPDATE_HIT_STATE
+// PRODUCTION_UPDATE_CROSSHAIR
 // PRODUCTION_RECOVERY_AMOUNT
 // PRODUCTION_ENGINE_SOUND_SELECTION
 
@@ -625,6 +648,52 @@ int main() {
     checkHitFlags(60000.0f, 1.0f, 0x02u);
     checkHitFlags(400.0f, -1.0f, 0x10u);
     checkHitFlags(-60000.0f, -1.0f, 0x11u);
+
+    Globals::mouseCursorActivated = 0;
+    player.transformMatrix.position = {10.0f, 20.0f, 30.0f};
+    player.transformMatrix.dir = {0.0f, 0.0f, 2.0f};
+    canvas.screenResult = {320.0f, 240.0f, 5.0f};
+    int previousProjections = canvas.projections;
+    ego.updateCrosshair(false, 1);
+    assert(canvas.projections == previousProjections + 1);
+    assert(canvas.lastWorldPosition.x == 10.0f && canvas.lastWorldPosition.y == 20.0f);
+    assert(canvas.lastWorldPosition.z == 22030.0f);
+    assert(PlayerEgo::crosshairPos.x == 320.0f && ego.crosshairPosPrevious.z == 5.0f);
+
+    canvas.screenResult = {100.0f, 140.0f, -5.0f};
+    ego.updateCrosshair(false, 1);
+    assert(PlayerEgo::crosshairPos.x == 276.0f && PlayerEgo::crosshairPos.y == 220.0f);
+    assert(PlayerEgo::crosshairPos.z == 3.0f && ego.crosshairPosPrevious.x == 276.0f);
+
+    Globals::mouseCursorActivated = 1;
+    previousProjections = canvas.projections;
+    ego.updateCrosshair(false, 1);
+    assert(canvas.projections == previousProjections && PlayerEgo::crosshairPos.x == 276.0f);
+    canvas.screenResult = {400.0f, 300.0f, 1.0f};
+    ego.updateCrosshair(true, 1);
+    assert(canvas.projections == previousProjections + 1);
+    ego.updateCrosshair(false, 3);
+    assert(canvas.projections == previousProjections + 2);
+    ego.autoPilot = 1;
+    ego.updateCrosshair(false, 0);
+    assert(canvas.projections == previousProjections + 3);
+    ego.updateCrosshair(false, 1);
+    assert(canvas.projections == previousProjections + 3);
+
+    AEGeometry cameraGeometry;
+    AEGeometry turretGeometry;
+    expectedFirstMatrix = &cameraGeometry.matrix;
+    expectedSecondMatrix = &turretGeometry.matrix;
+    combinedMatrix.position = {40.0f, 50.0f, 60.0f};
+    combinedMatrix.dir = {1.0f, 0.0f, 0.0f};
+    ego.field_0x2c = &cameraGeometry;
+    ego.turretGeometry = &turretGeometry;
+    ego.turretActive = 1;
+    Globals::mouseCursorActivated = 0;
+    ego.updateCrosshair(false, 1);
+    assert(canvas.lastWorldPosition.x == 22040.0f);
+    assert(canvas.lastWorldPosition.y == 50.0f && canvas.lastWorldPosition.z == 60.0f);
+    assert(ego.crosshairPosPrevious.x == 400.0f);
 
     ego.asteroidTargetPtr = &asteroid;
     ego.dockedFlag = 1;

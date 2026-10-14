@@ -4,6 +4,39 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo passive crosshair projection (2026-10-14)
+
+Android ARM `PlayerEgo::update` at `0x9ea32–0x9eda6` gets position and
+direction from `Player::transformMatrix` at Player `+0x4`. For an active
+turret, it obtains the geometry matrices at PlayerEgo `+0x2c` then
+`+0x28`, multiplies them in that order, and replaces the camera
+position/direction. The passive-path predicate is
+`!mouseCursorActivated || arg6 || arg7 == 3 || (arg7 != 1 && autoPilot)`;
+autopilot is at PlayerEgo `+0x158`. The normalized direction is scaled
+by the ARM literal 22000.0f, added to the position, and projected by
+`PaintCanvas::GetScreenPosition` into static `crosshairPos`. If depth
+is nonpositive, the projected position is blended with the previous
+position at `+0x94` using ARM literals 0.2f and 0.8f. IDA lines
+84563–84605, Ghidra lines 64543–64580, and raw Thumb agree on these
+calls, offsets, literals, and gates. The extracted production-fragment
+smoke tests ordinary aim, negative-depth smoothing, predicate gates,
+and turret multiplication order. Native `gof2`, 206/206 ARM units,
+37 verifier tests (one skipped), and four PlayerEgo smokes pass.
+
+Focused `update` source-shape/strict fuzzy changes
+**37.9%/12.7% → 42.4%/10.9%**. Full report
+`_work/player_crosshair_passive_full_20261014.json` covers
+**4,323/4,524** original functions at **93.26%** average source-shape
+and **82.16%** strict fuzzy, with **2,478 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Exact
+pair sets have zero losses and gains versus
+`_work/player_cursor_camera_full_20261014.json`. The current source
+stores the previous position immediately after the passive projection;
+the original stores it after the subsequent cursor/camera work. That
+intervening active-mouse steering, shoot-position path, and linked
+ARM gameplay remain unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo cursor/camera handoff (2026-10-14)
 
 Original ARM `update` at `0x9edaa–0x9edf0` tests the byte at

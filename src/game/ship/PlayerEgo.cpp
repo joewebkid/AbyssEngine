@@ -2435,8 +2435,6 @@ void PE_upd_post(PlayerEgo *self, int dt, void *radar, void *hud,
 // IDA 0x9ce38: _ZN9PlayerEgo6updateEiP5RadarP3HudP5RadioP11LevelScriptibi
 void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript *script, int arg5, bool arg6,
                        int arg7) {
-    (void) arg6;
-    (void) arg7;
     (void) script;
 
     if (((void *&) this->hud) == 0)
@@ -2680,7 +2678,24 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         this->hudHitDirectionFlags = flags;
     }
 
-    // shortcut: camera/crosshair work belongs before this handoff; restore its order when replacing PE_upd_post.
+    if (!Globals::mouseCursorActivated || arg6 || arg7 == 3 || (arg7 != 1 && this->autoPilot)) {
+        Vector cameraPosition = AbyssEngine::AEMath::MatrixGetPosition(player->transformMatrix);
+        Vector cameraDirection = AbyssEngine::AEMath::MatrixGetDir(player->transformMatrix);
+        if (this->turretActive) {
+            Matrix &cameraMatrix = ((AEGeometry *) this->field_0x2c)->getMatrix();
+            Matrix &turretMatrix = ((AEGeometry *) this->turretGeometry)->getMatrix();
+            Matrix combined = cameraMatrix * turretMatrix;
+            cameraPosition = AbyssEngine::AEMath::MatrixGetPosition(combined);
+            cameraDirection = AbyssEngine::AEMath::MatrixGetDir(combined);
+        }
+        Vector worldAim = cameraPosition + AbyssEngine::AEMath::VectorNormalize(cameraDirection) * 22000.0f;
+        Globals::Canvas->GetScreenPosition(worldAim, crosshairPos);
+        if (crosshairPos.z <= 0.0f)
+            crosshairPos = crosshairPos * 0.2f + this->crosshairPosPrevious * 0.8f;
+        this->crosshairPosPrevious = crosshairPos;
+    }
+
+    // shortcut: cursor-driven steering belongs before this handoff; restore it when replacing PE_upd_post.
     if (this->cursorStateDirty) {
         TargetFollowCamera *camera = (TargetFollowCamera *) ((void *&) this->targetFollowCamera);
         if (!camera->isInFastForwardMode()) {

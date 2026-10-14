@@ -64,10 +64,19 @@ def main():
                               "void PlayerEgo::updateRoute(Hud *hud) {\n" +
                               source[start:end] + "}\n")
     start = end
+    end = source.index("    if (!Globals::mouseCursorActivated || arg6", start)
+    hit_state = source[start:end]
+    start = end
+    end = source.index("    // shortcut: cursor-driven steering", start)
+    fixture = fixture.replace("// PRODUCTION_UPDATE_CROSSHAIR",
+                              "void PlayerEgo::updateCrosshair(bool arg6, int arg7) {\n" +
+                              "    Player *player = this->player;\n" + source[start:end] + "}\n")
+    start = end
     end = source.index("    PE_upd_post(this, dt, radar, hud, radio, arg5);", start)
     fixture = fixture.replace("// PRODUCTION_UPDATE_HIT_STATE",
                               "void PlayerEgo::updateHitState(Hud *hud) {\n" +
-                              "    Player *player = this->player;\n" + source[start:end] + "}\n")
+                              "    Player *player = this->player;\n" + hit_state +
+                              source[start:end] + "}\n")
     start = source.index("        this->shieldRecoveryAmount = (float) ship->getMaxShieldHP()",
                          source.index("PlayerEgo::PlayerEgo("))
     end = source.index(";", start) + 1

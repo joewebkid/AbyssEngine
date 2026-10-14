@@ -1,7 +1,30 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo cursor/camera handoff; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo passive crosshair projection; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo passive crosshair projection (2026-10-14)
+
+Android ARM `PlayerEgo::update` at `0x9ea32–0x9eda6`, checked against
+IDA, Ghidra, and raw Thumb, projects an aim point 22,000 units along
+the normalized ship direction. With an active turret, it first combines
+the geometry matrices at `+0x2c` and `+0x28` in that order. The passive
+path runs when the mouse cursor is inactive, `arg6` is true, `arg7` is
+3, or `arg7` is neither 1 nor 3 while autopilot is active. A point
+behind the camera is blended with the prior crosshair position at
+`+0x94` using 0.2/0.8. The production-fragment smoke covers all
+gates, projection, smoothing, and turret matrix order. Native `gof2`,
+206/206 ARM units, 37 verifier tests (one skipped), and four PlayerEgo
+smokes pass. Focused `update` source-shape rises **37.9% → 42.4%**;
+strict fuzzy falls **12.7% → 10.9%**, with no whole-function exact
+match. Full report `_work/player_crosshair_passive_full_20261014.json`:
+**4,323/4,524** covered, **93.26%** source-shape, **82.16%** strict
+fuzzy, **2,478 linked-exact**, **1,065 byte-exact**, **123 extras**.
+Pair-by-pair comparison with the cursor/camera checkpoint finds zero
+exact losses or gains. Cursor-driven steering, shoot-position handling,
+the original later store order for the prior position, and linked ARM
+gameplay remain unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo cursor/camera handoff (2026-10-14)
 

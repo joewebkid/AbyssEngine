@@ -92,7 +92,8 @@ public:
     };
     void *explosion;
     void *explosion2;
-    char _unknown_0x94[0x18];
+    AbyssEngine::AEMath::Vector crosshairPosPrevious;
+    char _unknown_0xa0[0x0c];
     int field_0xac;
     union {
         int field_0xb0;
@@ -634,6 +635,8 @@ static_assert(__builtin_offsetof(PlayerEgo, matrix_0x40_storage) == 0x40, "Playe
 static_assert(__builtin_offsetof(PlayerEgo, maneuverParam) == 0x7c, "PlayerEgo::maneuverParam offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x80) == 0x80, "PlayerEgo::field_0x80 offset");
 static_assert(__builtin_offsetof(PlayerEgo, targetFollowCamera) == 0x88, "PlayerEgo::targetFollowCamera offset");
+static_assert(__builtin_offsetof(PlayerEgo, crosshairPosPrevious) == 0x94,
+              "PlayerEgo::crosshairPosPrevious offset");
 static_assert(__builtin_offsetof(PlayerEgo, switchToStandardCam) == 0xb0, "PlayerEgo::standardCameraFlag offset");
 static_assert(__builtin_offsetof(PlayerEgo, switchToFreeLookCam) == 0xb1, "PlayerEgo::freeLookCameraFlag offset");
 static_assert(__builtin_offsetof(PlayerEgo, speedValue) == 0xb8, "PlayerEgo::speed offset");
