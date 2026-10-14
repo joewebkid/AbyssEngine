@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <vector>
 
 struct Vector { float x, y, z; };
 Vector operator*(const Vector &value, float factor) {
@@ -32,10 +33,12 @@ struct AEGeometry {
     unsigned int transform = 17;
     Matrix matrix{};
     Vector position{};
+    Vector scaling{1.0f, 1.0f, 1.0f};
     int rotations = 0;
     int matrixWrites = 0;
     Matrix &getMatrix() { return matrix; }
     Vector getPosition() { return position; }
+    Vector getScaling() { return scaling; }
     void rotate(float x, float y, float z) { assert(x == 0.03f && y == 0.03f && z == 0.03f); ++rotations; }
     void setMatrix(const Matrix &value) { matrix = value; ++matrixWrites; }
 };
@@ -64,7 +67,7 @@ struct ParticleDefinition {
     float lifeBase = 0.0f;
 };
 struct ParticleSettingsRef {
-    struct Table { ParticleDefinition sets[7]; };
+    struct Table { ParticleDefinition sets[48]; };
     static Table cur;
     static Table init;
 };
@@ -92,7 +95,11 @@ struct ParticleSystemManager {
         ++manualEmits;
     }
 };
-struct Level { ParticleSystemManager *field_74 = nullptr; int field_3c = 0; };
+struct Level {
+    ParticleSystemManager *field_74 = nullptr;
+    int field_3c = 0;
+    std::vector<AEGeometry *> *field_a4 = nullptr;
+};
 struct Explosion {
     int starts = 0, updates = 0, lastDt = -1;
     Vector lastPosition{}, lastDirection{};
@@ -135,6 +142,7 @@ struct TargetFollowCamera {
 struct Player {
     Matrix transformMatrix{};
     int resetCount = 0;
+    float flShake = 0.0f;
     int stopShots = 0;
     int hitpoints = 10;
     int maxHitpoints = 10;
@@ -192,12 +200,15 @@ struct Route {
 };
 struct Item {
     int amount = 2;
+    int index = 0;
     int getAttribute(int id) { assert(id == 59); return amount; }
+    int getIndex() { return index; }
 };
 struct Ship {
     int freeSpace = 0;
     bool volatileGoods = false;
     Item *equipment = nullptr;
+    Item *boostEquipment = nullptr;
     int cargo = 0;
     int removals = 0;
     int shieldRegen = 0;
@@ -212,7 +223,10 @@ struct Ship {
     int getIndex() { return index; }
     float getHandling() { return handling; }
     int getRepairType() { return repairType; }
-    Item *getFirstEquipmentOfSort(int sort) { assert(sort == 43); return equipment; }
+    Item *getFirstEquipmentOfSort(int sort) {
+        assert(sort == 43 || sort == 14);
+        return sort == 43 ? equipment : boostEquipment;
+    }
     bool hasCargo(int index, int amount) { assert(index == 202); return cargo >= amount; }
     int removeCargo(int index, int amount) {
         assert(index == 202 && cargo >= amount);
@@ -255,10 +269,22 @@ struct GlobalsService {
     int registrations = 0;
     void addSoundResourceToList(int id) { registeredSound = id; ++registrations; }
 };
+struct Engine {
+    int postEffectCalls = 0;
+    uint32_t lastEffect = 0;
+    void SetPostEffect(uint32_t effect, bool enable) {
+        assert(!enable); lastEffect = effect; ++postEffectCalls;
+    }
+};
+struct ApplicationManager {
+    Engine *engine = nullptr;
+    void *GetEngine() { return engine; }
+};
 namespace Globals {
     FModSound *sound = nullptr;
     GlobalsService *gGlobals = nullptr;
     PaintCanvas *Canvas = nullptr;
+    ApplicationManager *appManager = nullptr;
     int mouseCursorActivated = 0;
     int mouseDeltaX = 0;
     int mouseDeltaY = 0;
@@ -319,6 +345,12 @@ struct PlayerEgo {
     int rightCalls = 0, leftCalls = 0, downCalls = 0, upCalls = 0;
     float lastRight = 0.0f, lastLeft = 0.0f, lastDown = 0.0f, lastUp = 0.0f;
     unsigned char boostingFlag = 0;
+    int boostTimer = 0;
+    int boostSpeed = 0;
+    int field_0xcc = 0;
+    int field_0xd0 = 0;
+    unsigned char field_0x146 = 0;
+    float speedValue = 0.0f;
     float boostPercentage = 0.0f;
     int boostPercentReads = 0;
     Route *route = nullptr;
@@ -333,6 +365,8 @@ struct PlayerEgo {
     void dockToAsteroid(KIPlayer *kip, Radar *radar);
     void updateDocking(Radar *radar, Hud *hud, Radio *radio);
     void updateCargoState();
+    void updateBoostTimer(int dt);
+    void updateBoost(int dt);
     void updateShield(int dt, Hud *hud);
     void updateRecovery(int dt);
     void updatePlayerSound(int dt);
@@ -362,6 +396,8 @@ Vector PlayerEgo::crosshairShootPos{};
 // PRODUCTION_METHOD
 // PRODUCTION_UPDATE_DOCKING
 // PRODUCTION_UPDATE_CARGO
+// PRODUCTION_UPDATE_BOOST_TIMER
+// PRODUCTION_UPDATE_BOOST
 // PRODUCTION_UPDATE_SHIELD
 // PRODUCTION_UPDATE_RECOVERY
 // PRODUCTION_UPDATE_PLAYER_SOUND
@@ -467,6 +503,64 @@ int main() {
     ship.freeSpace = 4;
     ego.updateCargoState();
     assert(ego.lastFreeSpace == 4 && ego.volatileGoods == 0);
+
+    PlayerEgo boostEgo{};
+    Player boostPlayer;
+    Level boostLevel;
+    Engine engine;
+    ApplicationManager appManager{&engine};
+    Globals::appManager = &appManager;
+    boostEgo.player = &boostPlayer;
+    boostEgo.level = &boostLevel;
+    boostEgo.boostTimer = -100;
+    boostEgo.updateBoostTimer(30);
+    assert(boostEgo.boostTimer == -70);
+    boostEgo.updateBoostTimer(30);
+    assert(boostEgo.boostTimer == 30);
+    boostEgo.updateBoost(30);
+    assert(boostPlayer.flShake == 0.0f && engine.postEffectCalls == 0);
+
+    AEGeometry nozzle1, nozzle2;
+    nozzle1.scaling.x = 0.5f;
+    nozzle2.scaling.x = 2.0f;
+    std::vector<AEGeometry *> nozzles{&nozzle1, &nozzle2};
+    boostLevel.field_a4 = &nozzles;
+    boostEgo.boostTimer = 0;
+    boostEgo.field_0xcc = 100;
+    boostEgo.field_0xd0 = 30;
+    boostEgo.field_0x146 = 1;
+    boostEgo.boostingFlag = 1;
+    boostEgo.volatileGoods = 1;
+    boostEgo.boostPercentage = 0.25f;
+    boostEgo.updateBoostTimer(10);
+    boostEgo.updateBoost(10);
+    assert(std::fabs(boostPlayer.flShake - 0.0013f) < 0.000001f);
+    assert(ParticleSettingsRef::cur.sets[29].lifeBase == 140.625f);
+    assert(ParticleSettingsRef::cur.sets[30].lifeBase == 562.5f);
+    assert(boostEgo.boostPercentReads == 2 && engine.postEffectCalls == 0);
+    Item boostEquipment;
+    boostEquipment.index = 195;
+    ship.boostEquipment = &boostEquipment;
+    boostEgo.updateBoostTimer(90);
+    boostEgo.updateBoost(90);
+    assert(std::fabs(boostPlayer.flShake - 0.0166f) < 0.000001f);
+    assert(engine.postEffectCalls == 0 && boostEgo.boostingFlag == 1);
+    boostEgo.updateBoostTimer(1);
+    boostEgo.updateBoost(1);
+    assert(engine.postEffectCalls == 1 && engine.lastEffect == 0x1400002u);
+    assert(boostEgo.boostingFlag == 0 && boostEgo.speedValue == 2.0f);
+    assert(boostEgo.boostTimer == -30 && boostEgo.boostSpeed == 0);
+    assert(boostEgo.field_0xcc == 100 && boostEgo.field_0xd0 == 30);
+    boostEgo.updateBoostTimer(10);
+    assert(boostEgo.boostTimer == -20);
+    boostEgo.updateBoostTimer(7);
+    assert(boostEgo.boostTimer == 7);
+    boostEgo.field_0x146 = 0;
+    boostEgo.boostingFlag = 1;
+    boostEgo.boostTimer = 101;
+    boostEgo.updateBoost(0);
+    assert(engine.postEffectCalls == 2 && boostEgo.boostSpeed == 2);
+    assert(boostEgo.field_0xcc == 0 && boostEgo.field_0xd0 == 0);
 
     FModSound sound;
     Globals::sound = &sound;

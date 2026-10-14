@@ -1,5 +1,36 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Boost timer, cargo shake, nozzle life, and finish (2026-10-14)
+
+Android Thumb `0x9ce92–0x9ceba` reads/writes timer `+0x138`, using
+the signed test `timer <= -1 && timer + 3 * dt >= 1` to clear a nearly
+finished negative cooldown before adding `dt`. The active branch at
+`0x9d1d6–0x9d310` tests boost flag `+0x13c`, volatile-goods byte
+`+0x398`, and equipment sort 14/index 195. It adds `dt * 0.001 *
+(0.17 or 0.13)` to Player `flShake` at `+0x60`. Level `field_a4`
+at `+0xa4` holds the engine-nozzle geometries; each X scaling
+sets `ParticleSettingsRef::cur.sets[29+i].lifeBase` to
+`scaleX * 250 * (getBoostPercentage() * 0.5 + 1)` (the ARM global
+slot is at `0x21961c`, stride `0xa0`). The branch ends only when
+timer `+0x138` exceeds duration `+0xcc`, disables post-effect
+`0x1400002`, writes speed 2.0 at `+0xb8`, and sets the timer to the
+negative cooldown `+0xd0`. If byte `+0x146` is clear, it additionally
+sets boost speed `+0xc8` to 2 and zeros `+0xcc/+0xd0`.
+
+The extracted production-fragment smoke covers inactive boost, cooldown
+crossing, both shake rates, multiple nozzle scales, strict duration
+boundary, and both reset modes. Native and ARM builds are green;
+focused `update` source-shape **52.3% → 55.0%**, strict fuzzy
+**19.0% → 19.0%**, not exact. Full report
+`_work/player_boost_full_20261014.json`: **4,323/4,524** original
+functions covered, **93.26%** average source-shape, **82.16%** strict
+fuzzy, **2,478 linked-exact**, **1,065 byte-exact**, **123 extras**,
+zero skipped units, and zero exact-pair losses or gains against
+`_work/player_update_tail_full_20261014.json`. iOS source did not
+yield a reliable counterpart for this block. Remaining large helpers include
+`PE_upd_subsystems` and `PE_upd_docksFinishDelivery`; linked ARM
+gameplay remains unverified.
+
 ## Death/explosion and final turret update tail (2026-10-14)
 
 Raw Android Thumb `0x9edf0–0x9ef92`, cross-checked with IDA lines

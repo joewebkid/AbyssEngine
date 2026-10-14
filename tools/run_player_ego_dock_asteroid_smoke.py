@@ -32,10 +32,22 @@ def main():
                               docking + "}\n")
     start = source.index("    {\n        Ship *ship = PE_status()->getShip();",
                          source.index("void PlayerEgo::update("))
-    end = source.index("    PE_upd_boost(this, dt);", start)
+    end = source.index("    if (this->boostingFlag != 0) {", start)
     cargo = source[start:end]
     fixture = fixture.replace("// PRODUCTION_UPDATE_CARGO",
                               "void PlayerEgo::updateCargoState() {\n" + cargo + "}\n")
+    start = source.index("    int boostTime = this->boostTimer;",
+                         source.index("void PlayerEgo::update("))
+    end = source.index("    Player *player = (Player *) this->player;", start)
+    fixture = fixture.replace("// PRODUCTION_UPDATE_BOOST_TIMER",
+                              "void PlayerEgo::updateBoostTimer(int dt) {\n" +
+                              source[start:end] + "}\n")
+    start = source.index("    if (this->boostingFlag != 0) {",
+                         source.index("void PlayerEgo::update("))
+    end = source.index("    if (((char &) this->dockingState) != 0) {", start)
+    fixture = fixture.replace("// PRODUCTION_UPDATE_BOOST",
+                              "void PlayerEgo::updateBoost(int dt) {\n" +
+                              "    Player *player = this->player;\n" + source[start:end] + "}\n")
     start = source.index("    Player *player = (Player *) this->player;",
                          source.index("void PlayerEgo::update("))
     end = source.index("    PE_upd_subsystems(this, dt, radar, hud, radio, script);", start)

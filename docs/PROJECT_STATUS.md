@@ -1,7 +1,33 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo death/explosion update tail; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo boost update; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo boost update (2026-10-14)
+
+Android Thumb `0x9ce92–0x9ceba` advances the boost timer after the
+frame-time store, including the negative-cooldown crossing test
+`timer + 3 × dt >= 1`. The active-boost path at `0x9d1d6–0x9d310`
+adds cargo-induced shake at rate 0.13, or 0.17 for equipment 195;
+updates particle life for each engine nozzle from its X scale and
+`getBoostPercentage`; and, only when `boostTimer > duration`, disables
+the post-effect, resets speed to 2, and starts the negative cooldown.
+When byte `+0x146` is clear, it also resets the boost speed/duration/
+cooldown fields. The unresolved `PE_upd_boost` call is replaced by
+this source-backed branch. The extracted production-fragment smoke
+checks the cooldown boundary, rates, nozzle scaling, exact duration
+boundary, and both reset modes. Native `gof2`, 206/206 ARM units,
+37 verifier tests (one skipped), and four PlayerEgo smokes pass.
+Focused `update` source-shape rises **52.3% → 55.0%**; strict fuzzy
+stays **19.0%**. Full report `_work/player_boost_full_20261014.json`
+covers **4,323/4,524** original functions at **93.26%** average
+source-shape and **82.16%** strict fuzzy, with **2,478 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Exact
+pair sets lose or gain none against the preceding checkpoint. The
+whole `update` function is not exact, and linked ARM gameplay remains
+unverified. The next priority is the earlier `PE_upd_subsystems`
+behavior, then the delivery/docking branch. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo death/explosion update tail (2026-10-14)
 

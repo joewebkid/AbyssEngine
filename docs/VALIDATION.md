@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo boost update (2026-10-14)
+
+Raw Android Thumb `0x9ce92–0x9ceba` establishes the timer's negative
+cooldown crossing; `0x9d1d6–0x9d310` establishes the volatile-cargo
+shake rates, per-nozzle particle life, strict end threshold, post-effect
+disable, and conditional boost-parameter reset. The production-fragment
+smoke tests these branches. Native `gof2`, 206/206 ARM translation units,
+37 verifier tests (one skipped), and four PlayerEgo smokes pass. Focused
+`update` source-shape/strict fuzzy changes **52.3%/19.0% →
+55.0%/19.0%**. Full report `_work/player_boost_full_20261014.json`:
+**4,323/4,524** original functions covered, **93.26%** average
+source-shape, **82.16%** strict fuzzy, **2,478 linked-exact**,
+**1,065 byte-exact**, **123 extras**, zero skipped units, and no
+linked-/byte-exact pair losses or gains against
+`_work/player_update_tail_full_20261014.json`. No whole-function
+exact or linked ARM gameplay is claimed; `PE_upd_subsystems` and
+`PE_upd_docksFinishDelivery` remain unresolved. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo death/explosion update tail (2026-10-14)
 
 Android Thumb `0x9edf0–0x9ef92` and IDA lines 84683–84765 show the

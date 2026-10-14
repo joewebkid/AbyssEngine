@@ -239,8 +239,6 @@ void PlayEngineSound_(PlayerEgo * self);
 
 void *PE_dtdp_makeEase(const void *fromMatrix, const void *navPoint);
 
-void PE_upd_boost(PlayerEgo *self, int dt);
-
 void PE_upd_docksFinishDelivery(PlayerEgo *self, void *radio);
 
 void PE_um_dodgeStep(PlayerEgo * self);
@@ -2443,6 +2441,10 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
 
     this->dockOffsetVec = getPosition();
     this->shakeIntensity = dt;
+    int boostTime = this->boostTimer;
+    if (boostTime < 0 && boostTime + 3 * dt >= 1)
+        boostTime = 0;
+    this->boostTimer = boostTime + dt;
 
     Player *player = (Player *) this->player;
     // Android ARM: equipment gates activation, but an active recharge continues without it.
@@ -2494,7 +2496,34 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         }
     }
 
-    PE_upd_boost(this, dt);
+    if (this->boostingFlag != 0) {
+        if (this->volatileGoods != 0) {
+            Ship *ship = PE_status()->getShip();
+            Item *equipment = ship->getFirstEquipmentOfSort(14);
+            float rate = equipment != nullptr && equipment->getIndex() == 195 ? 0.17f : 0.13f;
+            player->flShake += (float) dt * 0.001f * rate;
+        }
+        if (this->level->field_a4 != nullptr) {
+            for (unsigned int i = 0; i < this->level->field_a4->size(); ++i) {
+                AEGeometry *nozzle = (*this->level->field_a4)[i];
+                Vector scaling = nozzle->getScaling();
+                ParticleSettingsRef::cur.sets[29 + i].lifeBase =
+                    scaling.x * 250.0f * (this->getBoostPercentage() * 0.5f + 1.0f);
+            }
+        }
+        if (this->boostTimer > this->field_0xcc) {
+            static_cast<Engine *>(static_cast<ApplicationManager *>(Globals::appManager)->GetEngine())
+                ->SetPostEffect(0x1400002u, false);
+            this->boostingFlag = 0;
+            this->speedValue = 2.0f;
+            this->boostTimer = -this->field_0xd0;
+            if (this->field_0x146 == 0) {
+                this->boostSpeed = 2;
+                this->field_0xcc = 0;
+                this->field_0xd0 = 0;
+            }
+        }
+    }
 
     if (((char &) this->dockingState) != 0) {
         this->field_0x145 = 1;
