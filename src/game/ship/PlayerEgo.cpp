@@ -405,12 +405,13 @@ void PlayerEgo::dockToStream(bool param) {
         return;
     }
     this->speed = 0x40000000;
-    ((PlayerEgo *) (this))->setPosition(this->rotX, this->rotY, this->rotZ);
+    // ARM reads the stream return position at +0xe0/+0xe4/+0xe8; +0xdc is the turret base.
+    Vec3 returnPosition = {this->rotY, this->rotZ, this->waypointX};
+    setPosition(returnPosition);
     this->freeze = 0;
     this->field_0x145 = 0;
     this->docked = 0;
-    if (this->geometry != 0)
-        ((AEGeometry *) this->geometry)->setVisible(this->field_0x309 != 0);
+    setAutoPilot(nullptr);
 }
 
 void PlayerEgo::hackingShuffle() {
@@ -851,7 +852,7 @@ int PlayerEgo::getBoostSpeed() {
 
 void PlayerEgo::addGun(Gun *gun, int x) {
     ((Player *) (this->player))->addGun(gun, x);
-    ((Player *) this->player)->resetGunDelay(0);
+    checkForTurret();
 }
 
 unsigned char PlayerEgo::aboutToReachAutoTarget() {
@@ -992,15 +993,10 @@ void PlayerEgo::refillGunDelay() {
     ((Player *) this->player)->refillGunDelay(0);
 }
 
-void PE_cft_finishMaterials(void *canvas, int mesh, void *out);
-
-void PE_cft_place(PlayerEgo *self, int turretIdx);
-
-
 void PlayerEgo::checkForTurret() {
     if (this->turretMode != 0)
         return;
-    int avail = ((Player *) (this->player))->gunAvailable(0);
+    int avail = ((Player *) (this->player))->gunAvailable(2);
     this->turretMode = (unsigned char) avail;
     if (avail == 0)
         return;
@@ -1008,35 +1004,45 @@ void PlayerEgo::checkForTurret() {
     this->autoTurretEquipped = 0;
     Array<Item *> *equip = ((Ship *) (PE_status()->getShip()))->getEquipment(2);
     Item **item = equip->data_;
-    this->turretPitch = (int) ((double) item[0]->getAttribute(0) * 1.5);
+    this->turretPitch = (int) ((double) item[0]->getAttribute(17) * 1.5);
 
     int idx = item[0]->getIndex();
     unsigned short base = 0xffff, barrel = 0xffff;
     int muzzle = -1, child = -1, extra = -1, extra2 = -1;
+    float offsetX = 0.0f, offsetY = 0.0f, offsetZ = 0.0f;
 
     if (idx == 0xe0) {
         base = 0x499a;
         barrel = 0x499b;
         muzzle = 0x499c;
         child = 0x499d;
+        offsetY = 82.0f;
     } else if (idx == 0x30) {
         base = 0x1a74;
         barrel = 0x1a75;
+        offsetY = 55.0f;
     } else if (idx == 0x31) {
         base = 0x1a76;
         barrel = 0x1a77;
+        offsetY = 60.0f;
     } else if (idx == 0xb4) {
         this->autoTurretEquipped = 1;
         base = 0x1a95;
         barrel = 0x1a96;
+        offsetY = 84.0f;
     } else if (idx == 0xb5) {
         this->autoTurretEquipped = 1;
         base = 0x1a97;
         barrel = 0x1a98;
+        offsetY = 88.0f;
+        offsetZ = -11.0f;
     } else if (idx == 0xb6) {
         this->autoTurretEquipped = 1;
         base = 0x1a99;
         barrel = 0x1a9a;
+        offsetX = 34.0f;
+        offsetY = 88.0f;
+        offsetZ = 1.6f;
     } else if (idx == 0xc6) {
         base = 0x4963;
         barrel = 0x4964;
@@ -1044,6 +1050,7 @@ void PlayerEgo::checkForTurret() {
         child = 0x4967;
         extra = -1;
         extra2 = 0x4a7f;
+        offsetY = 80.0f;
     } else if (idx == 0xc7) {
         base = 0x4968;
         barrel = 0x4969;
@@ -1051,6 +1058,7 @@ void PlayerEgo::checkForTurret() {
         child = 0x496b;
         extra = -1;
         extra2 = 0x4a7f;
+        offsetY = 38.0f;
     } else if (idx == 0xc8) {
         base = 0x496c;
         barrel = 0x496d;
@@ -1058,61 +1066,63 @@ void PlayerEgo::checkForTurret() {
         child = 0x496f;
         extra = 0x4970;
         extra2 = 0x4a7f;
+        offsetY = 75.0f;
     } else if (idx == 0x2f) {
         base = 0x1a72;
         barrel = 0x1a73;
+        offsetY = 60.0f;
     }
 
-    void *canvas = (void *) PaintCanvas::gCanvas;
+    PaintCanvas *canvas = Globals::Canvas;
 
-    void *baseGeo = (void *) new AEGeometry((uint16_t) base, (PaintCanvas *) canvas, false);
-    this->gunBaseGeo = baseGeo;
-    void *yawGeo = (void *) new AEGeometry((uint16_t) barrel, (PaintCanvas *) canvas, false);
-    this->gunYawGeo = yawGeo;
-    ((AEGeometry *) yawGeo)->setRotationOrder(AbyssEngine::AEMath::ROTATION_ORDER_YXZ);
-    void *muzzleRoot = (void *) new AEGeometry((PaintCanvas *) canvas);
-    this->gunMuzzleRoot = muzzleRoot;
+    AEGeometry *baseGeo = new AEGeometry(base, canvas, false);
+    this->rollGeometry = baseGeo;
+    AEGeometry *yawGeo = new AEGeometry(barrel, canvas, false);
+    this->turretGeometry = yawGeo;
+    yawGeo->setRotationOrder(AbyssEngine::AEMath::ROTATION_ORDER_YXZ);
+    AEGeometry *muzzleRoot = new AEGeometry(canvas);
+    this->field_0x2c = muzzleRoot;
 
     if (muzzle != -1) {
-        void *g = (void *) new AEGeometry((uint16_t)(unsigned short)muzzle, (PaintCanvas *) canvas, false);
-        ((AEGeometry *) (this->gunBaseGeo))->addChild((uint32_t)(uintptr_t)g);
-        delete (AEGeometry *) g;
+        AEGeometry *g = new AEGeometry((uint16_t) muzzle, canvas, false);
+        baseGeo->addChild(g->transform);
+        delete g;
     }
     if (child != -1) {
-        void *g = (void *) new AEGeometry((uint16_t)(unsigned short)child, (PaintCanvas *) canvas, false);
-        ((AEGeometry *) (this->gunYawGeo))->addChild((uint32_t)(uintptr_t)g);
-        delete (AEGeometry *) g;
+        AEGeometry *g = new AEGeometry((uint16_t) child, canvas, false);
+        yawGeo->addChild(g->transform);
+        delete g;
     }
     if (extra != -1) {
-        void *g = (void *) new AEGeometry((uint16_t)(unsigned short)extra, (PaintCanvas *) canvas, false);
-        ((AEGeometry *) (this->gunYawGeo))->addChild((uint32_t)(uintptr_t)g);
-        delete (AEGeometry *) g;
+        AEGeometry *g = new AEGeometry((uint16_t) extra, canvas, false);
+        yawGeo->addChild(g->transform);
+        delete g;
     }
     if (extra2 != -1) {
-        void *g = (void *) new AEGeometry((uint16_t)(unsigned short)extra2, (PaintCanvas *) canvas, false);
-        this->gunExtraGeo = g;
-        ((AEGeometry *) (this->gunYawGeo))->addChild((uint32_t)(uintptr_t)g);
-        void *tf = PaintCanvas::gCanvas->TransformGetTransform((unsigned int) ((unsigned int) (unsigned long) PaintCanvas::gCanvas));
-        ((AbyssEngine::Transform *) (tf))->SetVisible(this->turretActive != 0);
+        AEGeometry *g = new AEGeometry((uint16_t) extra2, canvas, false);
+        this->field_0x30 = g;
+        yawGeo->addChild(g->transform);
+        ((AbyssEngine::Transform *) canvas->TransformGetTransform(g->transform))->SetVisible(this->turretActive != 0);
     }
 
-    void *tf = PaintCanvas::gCanvas->TransformGetTransform((unsigned int) ((unsigned int) (unsigned long) PaintCanvas::gCanvas));
-    ((AbyssEngine::Transform *) tf)->boundingRadius = g_PE_cft_transformVal;
-    tf = PaintCanvas::gCanvas->TransformGetTransform((unsigned int) ((unsigned int) (unsigned long) PaintCanvas::gCanvas));
-    ((AbyssEngine::Transform *) (tf))->SetAnimationState((AbyssEngine::AnimationMode) 2, (void *) 0);
+    ((AbyssEngine::Transform *) canvas->TransformGetTransform(muzzleRoot->transform))->boundingRadius = g_PE_cft_transformVal;
+    ((AbyssEngine::Transform *) canvas->TransformGetTransform(yawGeo->transform))->SetAnimationState((AbyssEngine::AnimationMode) 2, nullptr);
 
-    ((AEGeometry *) (this->gunBaseGeo))->setPosition(this->turretOffsetVec);
-    ((AEGeometry *) (this->gunYawGeo))->setPosition(this->turretOffsetVec);
+    baseGeo->setPosition(this->turretOffsetVec);
+    yawGeo->setPosition(this->turretOffsetVec);
+    yawGeo->translate(offsetX, offsetY, offsetZ);
 
-    PE_cft_place(this, idx);
+    if (item[0]->getIndex() < 0xc6 || item[0]->getIndex() >= 0xc9) {
+        baseGeo->rotate(0.0f, 3.1416f, 0.0f);
+        yawGeo->rotate(0.0f, 3.1416f, 0.0f);
+    }
 
-    ((AEGeometry *) (this->gunMuzzleRoot))->addChild((uint32_t)(uintptr_t)this->gunBaseGeo);
-    ((AEGeometry *) (this->gunMuzzleRoot))->addChild((uint32_t)(uintptr_t)this->gunYawGeo);
+    muzzleRoot->addChild(baseGeo->transform);
+    muzzleRoot->addChild(yawGeo->transform);
 
     if (this->cloak != 0 && this->turretMode != 0) {
-        ((PaintCanvas *) (long) (canvas))->MeshCloneMaterial((unsigned int) (((AEGeometry *) this->gunBaseGeo)->meshId),
-                                                             (uint32_t &) this->cloakMaterial1);
-        PE_cft_finishMaterials(canvas, ((AEGeometry *) this->gunYawGeo)->meshId, &this->cloakMaterial2);
+        canvas->MeshCloneMaterial(baseGeo->meshId, (uint32_t &) this->cloakMaterial2);
+        canvas->MeshCloneMaterial(yawGeo->meshId, (uint32_t &) this->cloakMaterial3);
     }
 }
 
@@ -3554,7 +3564,7 @@ void PlayerEgo::setShip(int race, int group) {
 
 void PlayerEgo::addGun(Array<Gun *> *arr, int x) {
     static_cast<Player *>(this->player)->addGun(arr, x);
-    ((Player *) this->player)->resetGunDelay(0);
+    checkForTurret();
 }
 
 void PlayerEgo::render(bool allowHud) {

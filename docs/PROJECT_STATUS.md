@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo pitch/yaw ramps; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo turret construction; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo turret construction and stream return (2026-10-14)
+
+Android Thumb `0x9b340–0x9b7a4` restores turret equipment queries,
+mesh offsets, transform-handle parenting, animation/visibility,
+rotation and cloak material slots; both `addGun` overloads again call
+`checkForTurret`. The base geometry is at `PlayerEgo+0xdc`, not the
+old `+0xd8` alias. The adjacent `dockToStream` fix uses the original
+`+0xe0/+0xe4/+0xe8` return position and clears autopilot. The
+production-method smoke, native `gof2`, 206/206 ARM units, and 37
+verifier tests (one skipped) pass. Focused source-shape rises from
+86.5% to 95.2% for `checkForTurret`, 81.4% to 100% for
+`dockToStream`, and 90.7% to 100% for each `addGun` overload.
+Full coverage remains **4,323/4,524** at **93.38%** average
+source-shape and **82.28%** strict fuzzy, with **2,482 linked-exact**,
+**1,065 byte-exact**, **201 missing**, **123 extras**, zero skipped,
+and no exact-pair losses. Live ARM32 behavior and unidentified
+`+0xd8` semantics remain unverified. Next: audit turret render and
+cloak consumers against the corrected geometry addresses. See
+[the turret audit](PLAYER_EGO_TURRET_CONSTRUCTION_ARM_2026-10-14.md).
 
 ## PlayerEgo pitch/yaw ramps (2026-10-14)
 

@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo turret construction and stream return (2026-10-14)
+
+Android Thumb and IDA confirm turret geometry at `+0xdc/+0x28/+0x2c/+0x30`,
+sort 2, attribute 17, the mesh/offset table, transform-handle parenting,
+and cloak materials at `+0x38c/+0x390`. Both `addGun` wrappers tail-call
+`checkForTurret`; `dockToStream` reads `+0xe0/+0xe4/+0xe8` and clears
+autopilot. The production-method smoke, native `gof2`, 206/206 ARM
+units and 37 verifier tests (one skipped) pass. Focused source-shape/
+strict fuzzy is **95.2%/57.5%** for `checkForTurret`, **100%/95.2%**
+for `dockToStream`, and **100%/100%** for both `addGun` overloads;
+none is exact. Full report `_work/player_check_turret_full_20261014.json`
+covers **4,323/4,524** at **93.38%** average source-shape and
+**82.28%** strict fuzzy, with **2,482 linked-exact**, **1,065
+byte-exact**, **201 missing**, **123 extras** and zero skipped. Exact
+pair sets lose none against `_work/player_axis_ramp_full_20261014.json`.
+Live ARM32 behavior is unverified. See
+[the turret audit](PLAYER_EGO_TURRET_CONSTRUCTION_ARM_2026-10-14.md).
+
 ## PlayerEgo pitch/yaw ramps (2026-10-14)
 
 IDA and Android Thumb confirm the cursor-mode yaw cap of 280, option

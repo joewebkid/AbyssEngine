@@ -116,8 +116,11 @@ public:
     int field_0xcc;
     int field_0xd0;
     void *boostSoundId;
-    void *rollGeometry;
-    float rotX;
+    void *field_0xd8;
+    union {
+        void *rollGeometry;
+        float rotX;
+    };
     float rotY;
     float rotZ;
     float waypointX;
@@ -635,6 +638,9 @@ public:
 static_assert(__builtin_offsetof(PlayerEgo, transform) == 0x4, "PlayerEgo::transform offset");
 static_assert(__builtin_offsetof(PlayerEgo, rocketReturnMatrixStorage) == 0x10, "PlayerEgo::rocketReturnMatrix offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x14) == 0x14, "PlayerEgo::field_0x14 offset");
+static_assert(__builtin_offsetof(PlayerEgo, turretGeometry) == 0x28, "PlayerEgo::turretGeometry offset");
+static_assert(__builtin_offsetof(PlayerEgo, field_0x2c) == 0x2c, "PlayerEgo::turret root offset");
+static_assert(__builtin_offsetof(PlayerEgo, field_0x30) == 0x30, "PlayerEgo::turret extra offset");
 static_assert(__builtin_offsetof(PlayerEgo, gunMuzzleRoot) == 0x38, "PlayerEgo::gunMuzzleRoot offset");
 static_assert(__builtin_offsetof(PlayerEgo, hudHitDirectionFlags) == 0x20,
               "PlayerEgo::hudHitDirectionFlags offset");
@@ -649,6 +655,7 @@ static_assert(__builtin_offsetof(PlayerEgo, crosshairShootPosPrevious) == 0xa0,
 static_assert(__builtin_offsetof(PlayerEgo, switchToStandardCam) == 0xb0, "PlayerEgo::standardCameraFlag offset");
 static_assert(__builtin_offsetof(PlayerEgo, switchToFreeLookCam) == 0xb1, "PlayerEgo::freeLookCameraFlag offset");
 static_assert(__builtin_offsetof(PlayerEgo, speedValue) == 0xb8, "PlayerEgo::speed offset");
+static_assert(__builtin_offsetof(PlayerEgo, rollGeometry) == 0xdc, "PlayerEgo::turret base offset");
 static_assert(__builtin_offsetof(PlayerEgo, thrust) == 0xbc, "PlayerEgo::thrust offset");
 static_assert(__builtin_offsetof(PlayerEgo, freeLookMode) == 0xc4, "PlayerEgo::freeLookMode offset");
 static_assert(__builtin_offsetof(PlayerEgo, boostSpeed) == 0xc8, "PlayerEgo::boostSpeed offset");
@@ -687,6 +694,7 @@ static_assert(__builtin_offsetof(PlayerEgo, miningGame) == 0x1e4, "PlayerEgo::mi
 static_assert(__builtin_offsetof(PlayerEgo, hackingGame) == 0x1e8, "PlayerEgo::hackingGame offset");
 static_assert(__builtin_offsetof(PlayerEgo, turretActive) == 0x1a0, "PlayerEgo::turretActive offset");
 static_assert(__builtin_offsetof(PlayerEgo, cloak) == 0x1b0, "PlayerEgo::cloak offset");
+static_assert(__builtin_offsetof(PlayerEgo, turretPitch) == 0x1f8, "PlayerEgo::turretPitch offset");
 static_assert(__builtin_offsetof(PlayerEgo, shieldRecoveryAmount) == 0x218, "PlayerEgo::shieldRecoveryAmount offset");
 static_assert(__builtin_offsetof(PlayerEgo, hud) == 0x220, "PlayerEgo::hud offset");
 static_assert(__builtin_offsetof(PlayerEgo, turretOffsetVec) == 0x224, "PlayerEgo::turretOffsetVec offset");
