@@ -2715,6 +2715,13 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         }
     }
 
+    if (this->tractorBeam != nullptr)
+        ((TractorBeam *) this->tractorBeam)->update(dt, radar, this->level, hud);
+    if (this->repairBeams != nullptr) {
+        for (unsigned int i = 0; i < this->repairBeams->size(); ++i)
+            (*this->repairBeams)[i]->update(dt, radar, this->level, hud);
+    }
+
     if (((char &) this->dockingState) != 0) {
         this->field_0x145 = 1;
         KIPlayer *target = (KIPlayer *) ((void *&) this->asteroidTarget);

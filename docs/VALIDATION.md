@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo beam updates (2026-10-14)
+
+Android Thumb `0x9d8fe–0x9d93c` and IDA lines 83966–83981 confirm
+the tractor-then-repair dispatch and its frame-time/radar/level/HUD
+arguments. The production-fragment smoke, native `gof2`, 206/206
+ARM units and 37 verifier tests (one skipped) pass. Focused
+`update` source-shape changes **66.1% → 67.5%**, strict fuzzy
+**28.6% → 20.5%**, and the body remains non-exact. Full report
+`_work/player_update_beams_full_20261014.json` compares
+**4,323/4,524** at **93.39%** average source-shape and **82.28%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**201 missing**, **123 extras**, and zero skipped. Both exact pair
+sets lose and gain zero members against
+`_work/player_set_ship_full_20261014.json`. The smoke covers the
+changed fragment, not full-method or live ARM32 behavior. See
+[the beam-update audit](PLAYER_EGO_BEAM_UPDATE_ARM_2026-10-14.md).
+
 ## PlayerEgo setShip emergency and cloak tail (2026-10-14)
 
 Android Thumb `0x9a3f6–0x9a498` and IDA lines 80837–80875 confirm

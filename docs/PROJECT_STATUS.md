@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo setShip tail; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo beam updates; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo beam updates (2026-10-14)
+
+Android Thumb `0x9d8fe–0x9d93c` restores the missing per-frame
+`TractorBeam::update` and `RepairBeam::update` dispatch in
+`PlayerEgo::update`, after the constructor and render paths were
+already present. The production-fragment smoke, native `gof2`,
+206/206 ARM units and 37 verifier tests (one skipped) pass.
+Focused source-shape improves **66.1% → 67.5%**, while strict fuzzy
+falls **28.6% → 20.5%**; the full method is still incomplete and
+non-exact. Full coverage stays **4,323/4,524** at **93.39%**
+average source-shape and **82.28%** strict fuzzy, with **2,482
+linked-exact**, **1,065 byte-exact**, **201 missing**, **123 extras**,
+zero skipped and no exact-pair losses. Live ARM32 effects and
+ownership of the emergency geometry at `+0xac` remain unverified.
+Next: adjacent cloak/material and transform updates. See
+[the beam-update audit](PLAYER_EGO_BEAM_UPDATE_ARM_2026-10-14.md).
 
 ## PlayerEgo setShip emergency and cloak tail (2026-10-14)
 
