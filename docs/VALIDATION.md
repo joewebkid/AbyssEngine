@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo turret position repair (2026-10-14)
+
+Raw ARM `0x9b644–0x9b656` passes `PlayerEgo+0x224` to both
+`AEGeometry::setPosition` calls in `checkForTurret`;
+the new ARM32 assertion confirms this is `turretOffsetVec`.
+Native `gof2`, 206/206 ARM units and 37 verifier tests
+(one skipped) pass. Full report
+`_work/player_turret_position_full_20261014.json`:
+**4,323/4,524** covered, **93.24%** source-shape,
+**82.11%** strict fuzzy, **2,473 linked-exact**,
+**1,061 byte-exact**, **123 extras**. Relative to
+`_work/player_hud_ctor_full_20261014.json`, exact-pair sets
+have zero losses and zero gains. The full function and linked
+ARM gameplay remain unverified. See
+[the offset evidence](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo HUD/constructor group (2026-10-14)
 
 IDA constructor lines 80339–80349 and 80415–80439 establish the

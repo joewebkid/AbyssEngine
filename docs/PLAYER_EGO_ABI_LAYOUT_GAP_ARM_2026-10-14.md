@@ -331,3 +331,26 @@ still absent from the C++ `update` path, and the current
 handle as a Vector. Neither has been validated in linked ARM32
 gameplay. These are the next semantic priorities; do not infer
 full constructor or HUD correctness from the higher score.
+
+## Turret geometry position source repaired (2026-10-14)
+
+Raw Android ARM at `0x9b644–0x9b656` forms `this+0x224` and passes
+that same address to both `AEGeometry::setPosition(const Vector&)`
+calls in `checkForTurret`. This is the existing `turretOffsetVec`,
+also written by `setTurretPosition`; the C++ had instead reinterpreted
+three image handles beginning at `+0x238` as a Vector. Both calls
+now use the confirmed Vector, and an ARM32 offset assertion guards
+`+0x224`.
+
+Native `gof2`, all 206 ARM translation units and 37 verifier tests
+(one skipped) pass. Focused `checkForTurret` source-shape rises
+from 86.3% to 86.4%, strict fuzzy from 42.0% to 42.3%; the
+function remains non-exact. Full corpus
+`_work/player_turret_position_full_20261014.json` remains at
+**4,323/4,524** covered, **93.24%** source-shape,
+**82.11%** strict fuzzy, **2,473 linked-exact**,
+**1,061 byte-exact** and **123 extras**. Comparing exact-pair
+sets with the HUD/constructor checkpoint finds zero losses and
+zero gains. This verifies the addressed argument, not the whole
+turret construction or linked ARM gameplay. The next priority
+is the missing cargo/free-space refresh in `update`.

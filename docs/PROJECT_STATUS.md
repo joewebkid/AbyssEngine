@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo HUD/constructor group; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo turret position repair; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo turret position repair (2026-10-14)
+
+Raw Android ARM passes `PlayerEgo+0x224` to both turret-geometry
+`setPosition` calls. The C++ now uses `turretOffsetVec` instead of
+reinterpreting HUD image handles as coordinates. Native `gof2`,
+206/206 ARM units and 37 verifier tests (one skipped) pass.
+Full corpus remains **4,323/4,524** covered, **93.24%**
+source-shape, **82.11%** strict fuzzy, **2,473 linked-exact**,
+**1,061 byte-exact** and **123 extras**, with zero exact-pair
+losses. Turret construction as a whole is still non-exact and
+linked gameplay is untested. Next: restore cargo-state refresh
+in `update`. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo HUD/constructor group (2026-10-14)
 

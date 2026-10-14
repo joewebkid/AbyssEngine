@@ -1142,8 +1142,8 @@ void PlayerEgo::checkForTurret() {
     tf = PaintCanvas::gCanvas->TransformGetTransform((unsigned int) ((unsigned int) (unsigned long) PaintCanvas::gCanvas));
     ((AbyssEngine::Transform *) (tf))->SetAnimationState((AbyssEngine::AnimationMode) 2, (void *) 0);
 
-    ((AEGeometry *) (this->gunBaseGeo))->setPosition(*(Vector *) &this->dockArrowImage);
-    ((AEGeometry *) (this->gunYawGeo))->setPosition(*(Vector *) &this->dockArrowImage);
+    ((AEGeometry *) (this->gunBaseGeo))->setPosition(this->turretOffsetVec);
+    ((AEGeometry *) (this->gunYawGeo))->setPosition(this->turretOffsetVec);
 
     PE_cft_place(this, idx);
 
