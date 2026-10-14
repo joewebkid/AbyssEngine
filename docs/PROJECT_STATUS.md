@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo cloak activation; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo setShip tail; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo setShip emergency and cloak tail (2026-10-14)
+
+Android Thumb `0x9a3f6–0x9a498` restores sort-27 attribute 41
+for emergency-system setup and clones the hull material into the
+cloak handle at `+0x388`, replacing a vector copy over material
+slots. The production-fragment smoke, native `gof2`, 206/206 ARM
+units and 37 verifier tests (one skipped) pass. Focused `setShip`
+source-shape/strict fuzzy rises **97.4%/90.6% → 98.2%/91.3%**;
+it is non-exact. Full coverage stays **4,323/4,524** at
+**93.39%** average source-shape and **82.28%** strict fuzzy, with
+**2,482 linked-exact**, **1,065 byte-exact**, **201 missing**,
+**123 extras**, zero skipped and no exact-pair losses. Whole-ship
+runtime behavior remains unverified. Next: repair-beam/emergency
+geometry lifecycle. See
+[the setShip-tail audit](PLAYER_EGO_SET_SHIP_TAIL_ARM_2026-10-14.md).
 
 ## PlayerEgo cloak activation (2026-10-14)
 

@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo setShip emergency and cloak tail (2026-10-14)
+
+Android Thumb `0x9a3f6–0x9a498` and IDA lines 80837–80875 confirm
+emergency sort 27 attribute 41 and hull material cloning into
+`PlayerEgo+0x388`. The extracted production-fragment smoke, native
+`gof2`, 206/206 ARM units and 37 verifier tests (one skipped) pass.
+Focused `setShip` source-shape/strict fuzzy changes
+**97.4%/90.6% → 98.2%/91.3%**; both instruction counts are 195,
+but it is non-exact. Full report
+`_work/player_set_ship_full_20261014.json` compares
+**4,323/4,524** at **93.39%** average source-shape and **82.28%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**201 missing**, **123 extras** and zero skipped. Both exact pair
+sets lose none against `_work/player_cloak_full_20261014.json`.
+The test does not cover the whole ship replacement lifecycle or
+live ARM32 behavior. See
+[the setShip-tail audit](PLAYER_EGO_SET_SHIP_TAIL_ARM_2026-10-14.md).
+
 ## PlayerEgo cloak activation (2026-10-14)
 
 Android Thumb `0x9a708–0x9a9b0` and IDA lines 81068–81226 confirm

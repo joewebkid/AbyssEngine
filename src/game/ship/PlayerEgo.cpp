@@ -3539,9 +3539,8 @@ void PlayerEgo::setShip(int race, int group) {
         && ((Ship *) (PE_status()->getShip()))->hasEmergencySystem() != 0) {
         void *geo = (void *) new AEGeometry((uint16_t) 0x3826, PaintCanvas::gCanvas, false);
         ((void *&) this->field_0xac) = geo;
-        ((Ship *) (PE_status()->getShip()))->getFirstEquipmentOfSort(0x1b);
-        this->emergencyVal1 = ((Item *) ((void *) ((Ship *) (PE_status()->getShip()))->getFirstEquipmentOfSort(0x29)))->
-                getAttribute(0);
+        this->emergencyVal1 = ((Item *) ((Ship *) (PE_status()->getShip()))->getFirstEquipmentOfSort(0x1b))->
+                getAttribute(41);
         void *tf = PaintCanvas::gCanvas->TransformGetTransform((unsigned int) (this->field_0x4->transform));
         Vec_assign(&this->emergencyVec, &((AbyssEngine::Transform *) tf)->boundingCenter);
         tf = PaintCanvas::gCanvas->TransformGetTransform((unsigned int) (this->field_0x4->transform));
@@ -3554,10 +3553,7 @@ void PlayerEgo::setShip(int race, int group) {
     }
 
     if (this->cloak != 0) {
-        AbyssEngine::Mesh *mesh = PaintCanvas::gCanvas->MeshGetPointer(
-            (unsigned int) this->field_0x4->meshId);
-        if (mesh != 0)
-            Vec_assign(&this->cloakMaterial1, &mesh->localOffset);
+        Globals::Canvas->MeshCloneMaterial(this->field_0x4->meshId, (uint32_t &) this->cloakMaterial1);
     }
 }
 
