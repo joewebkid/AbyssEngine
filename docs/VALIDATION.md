@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo turret-view camera (2026-10-14)
+
+IDA/Ghidra and Android Thumb `0x9b96c–0x9bbb0` confirm the movement
+gates, composed camera matrix, randomized shake, camera handle and
+Player transform assignment. The production-body host smoke, native
+`gof2`, 206/206 ARM translation units and 37 verifier tests (one
+skipped) pass. Focused source-shape/strict fuzzy changes
+**80.8%/59.3% → 97.8%/80.4%**. The method is not exact. Live camera
+behavior and ARM32 runtime remain unverified. Full report
+`_work/player_turret_view_full_20261014.json` covers **4,323/4,524**
+original functions at **93.31%** average source-shape and **82.22%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**123 extras** and zero skipped. Exact-pair sets have no losses or
+gains against `_work/player_auto_turret_aim_full_20261014.json`. See
+[the turret-view audit](PLAYER_EGO_TURRET_VIEW_ARM_2026-10-14.md).
+
 ## PlayerEgo auto-turret aim/fire (2026-10-14)
 
 Android IDA/Ghidra and Thumb `0x9cb70–0x9cde4` establish the

@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo auto-turret aim/fire; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo turret-view camera; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo turret-view camera (2026-10-14)
+
+Android Thumb `0x9b96c–0x9bbb0` confirms the two movement gates,
+three geometry matrices, hit/boost shake, camera handle at `+0x174`
+and Player transform assignment. The previous body mis-gated movement
+and passed a canvas pointer as the camera handle. The recovered body
+and production-body smoke, native `gof2`, 206/206 ARM units and
+verifier tests pass. Focused source-shape/strict fuzzy rises
+**80.8%/59.3% → 97.8%/80.4%**; no exact match. Live camera feel and
+ARM32 runtime remain unverified. Full coverage remains
+**4,323/4,524** at **93.31%** average source-shape and **82.22%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**123 extras**, zero skipped and no exact-pair losses. See
+[the turret-view audit](PLAYER_EGO_TURRET_VIEW_ARM_2026-10-14.md).
 
 ## PlayerEgo auto-turret aim/fire (2026-10-14)
 
