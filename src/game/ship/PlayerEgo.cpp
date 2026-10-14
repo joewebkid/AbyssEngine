@@ -199,9 +199,7 @@ int aeabi_idiv_(int a, int b);
 
 float PE_pitchRampDelta(PlayerEgo *self, float rate, int frameTime);
 
-// shortcut: docking motion/easing still uses unresolved shims; replace after the ARM call contracts are recovered.
-int PE_adp_approach(PlayerEgo *self, void *station);
-
+// shortcut: docking glide/easing still uses unresolved shims; replace after the ARM call contracts are recovered.
 int PE_adp_glide(PlayerEgo * self);
 void PE_adp_apply(PlayerEgo * self);
 
@@ -1315,7 +1313,12 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
                 this->spacePoint = static_cast<SpacePoint *>(nav);
                 ((SpacePoint *) (nav))->take();
             }
-            int dist = PE_adp_approach(this, target);
+            Vector worldNav = target->getPosition()
+                              + AbyssEngine::AEMath::MatrixRotateVector(
+                                  target->geometry->getMatrix(), this->spacePoint->position);
+            // ARM 0x9fd88 stores this vector at +0xec across three legacy fields.
+            *reinterpret_cast<Vector *>(&this->waypointY) = worldNav;
+            int dist = static_cast<int>(AbyssEngine::AEMath::VectorLength(worldNav - this->getPosition()));
             if (dist < this->dockScaling) {
                 uint8_t *targetBytes = reinterpret_cast<uint8_t *>(target);
                 if (targetBytes[0x70] != 0)
@@ -1323,6 +1326,14 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
                 this->dockingPointIndex = 2;
                 ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setLookAtCam(true);
                 ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->useTargetsUpVector(false);
+            } else {
+                float speed = 4.0f;
+                Ship *ship = PE_status()->getShip();
+                if (ship->getHandling() + g_PE_upd_handlingBias < 4.0f)
+                    speed = ship->getHandling() + g_PE_upd_handlingBias;
+                this->moveToPosition(*reinterpret_cast<Vector *>(&this->waypointY), true, speed);
+                if (dist <= 19999)
+                    this->aboutToReachAutoTargetFlag = 1;
             }
         }
         return 0;

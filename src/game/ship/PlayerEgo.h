@@ -647,6 +647,10 @@ static_assert(__builtin_offsetof(PlayerEgo, freeLookMode) == 0xc4, "PlayerEgo::f
 static_assert(__builtin_offsetof(PlayerEgo, boostSpeed) == 0xc8, "PlayerEgo::boostSpeed offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0xcc) == 0xcc, "PlayerEgo::boostTime offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0xd0) == 0xd0, "PlayerEgo::boostDelay offset");
+static_assert(__builtin_offsetof(PlayerEgo, waypointX) == 0xe8, "PlayerEgo::waypointX offset");
+static_assert(__builtin_offsetof(PlayerEgo, waypointY) == 0xec, "PlayerEgo::dockWaypointX offset");
+static_assert(__builtin_offsetof(PlayerEgo, gunBaseGeo) == 0xf0, "PlayerEgo::dockWaypointY offset");
+static_assert(__builtin_offsetof(PlayerEgo, pitchAccumDir) == 0xf4, "PlayerEgo::dockWaypointZ offset");
 static_assert(__builtin_offsetof(PlayerEgo, cursorStateDirty) == 0x84, "PlayerEgo::cursorStateDirty offset");
 static_assert(__builtin_offsetof(PlayerEgo, route) == 0xfc, "PlayerEgo::route offset");
 static_assert(__builtin_offsetof(PlayerEgo, currentSecondaryWeaponIndex) == 0x10c,

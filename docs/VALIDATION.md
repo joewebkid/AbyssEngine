@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo docking navigation and approach speed (2026-10-14)
+
+Raw Android Thumb `0x9fd56–0x9fdc4` confirms the local-to-world
+SpacePoint calculation and 12-byte store at PlayerEgo `+0xec`.
+IDA/Ghidra confirm integer distance, steering-enabled
+`moveToPosition`, handling-plus-2.7 speed capped at 4, and near-target
+threshold 19,999. Extracted whole-method smoke covers the point,
+speed cap, and distance boundaries. Native `gof2`, 206/206 ARM units,
+37 verifier tests (one skipped), and four PlayerEgo smokes pass.
+Focused `approachDockingPoint` source-shape/strict fuzzy rises
+**22.2%/15.3% → 31.2%/16.1%**. Full-corpus exact comparison is
+in `_work/player_dock_nav_full_20261014.json`:
+**4,323/4,524** original functions, **93.27%** average source-shape,
+**82.17%** strict fuzzy, **2,479 linked-exact**, **1,065 byte-exact**,
+**123 extras**, zero skipped units. Exact pair comparison against
+`_work/player_approach_docking_full_20261014.json` finds no losses
+or gains. Remaining ease-matrix and glide shims are not verified.
+See [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo docking approach and exit transitions (2026-10-14)
 
 Android Thumb `0x9fcb8` and IDA/Ghidra cross-checks establish the
@@ -20,8 +39,9 @@ Full report `_work/player_approach_docking_full_20261014.json`:
 **82.17%** strict fuzzy, **2,479 linked-exact**, **1,065 byte-exact**,
 **123 extras**, zero skipped units. Exact pair comparison against
 `_work/player_delivery_full_20261014.json` has zero losses and
-gains. The approach function is not exact; the movement/easing
-shims and linked ARM gameplay remain unverified. See
+gains. At this checkpoint the approach function was not exact and
+its movement/easing shims remained unresolved; linked ARM gameplay
+is still unverified. See
 [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo docking delivery and transfer ABI (2026-10-14)

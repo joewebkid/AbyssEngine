@@ -1,5 +1,38 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Docking navigation world point and approach speed (2026-10-14)
+
+Raw Android Thumb `0x9fd56–0x9fdc4`, cross-checked with IDA lines
+85608–85629 and Ghidra lines 65440–65449/65516–65532, obtains the
+target's virtual position, rotates the held SpacePoint's local
+position through the target geometry matrix, adds the two vectors,
+and stores the 12-byte world navigation point at PlayerEgo `+0xec`.
+The old `PE_adp_approach` shim obscured this. On the ARM32 header,
+`+0xec/+0xf0/+0xf4` are legacy `waypointY/gunBaseGeo/pitchAccumDir`
+storage; offset assertions now guard this overlay. The distance is
+the integer-truncated length from the player position. At or above
+the `+0x1d8` threshold, the original calls `moveToPosition` with
+steering enabled and speed `min(ship handling + 2.7, 4.0)`. It sets
+the near-auto-target byte at `+0x330` only when integer distance is
+at most 19,999. Below the threshold it enters the existing state-2
+transition.
+
+The extracted whole-method smoke checks local-to-world addition,
+the `+0xec` store, both speed paths, and the 19,999/20,000 and
+1,399/1,400 boundaries. Native `gof2`, 206/206 ARM units, 37
+verifier tests (one skipped), and four PlayerEgo smokes pass.
+Focused `approachDockingPoint` source-shape/strict fuzzy changes
+**22.2%/15.3% → 31.2%/16.1%**; it is still non-exact. Full-corpus
+report `_work/player_dock_nav_full_20261014.json` covers
+**4,323/4,524** original functions at **93.27%** average
+source-shape and **82.17%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Pairwise
+comparison with `_work/player_approach_docking_full_20261014.json`
+finds no linked-/byte-exact losses or gains. The ease-matrix
+constructor at the threshold,
+and the state-2/3 glide/easing shims, remain unresolved. No linked
+ARM gameplay or reliable iOS counterpart is claimed.
+
 ## Docking approach and undocking transitions (2026-10-14)
 
 Android `PlayerEgo::approachDockingPoint` at `0x9fcb8` reads the
@@ -30,9 +63,10 @@ report `_work/player_approach_docking_full_20261014.json` covers
 source-shape and **82.17%** strict fuzzy, with **2,479 linked-exact**,
 **1,065 byte-exact**, **123 extras**, and zero skipped units. Pairwise
 comparison with `_work/player_delivery_full_20261014.json` finds no
-linked-/byte-exact losses or gains. The motion/easing shims `PE_adp_approach`,
-`PE_adp_glide`, and `PE_adp_apply` are still unresolved, so linked
-ARM gameplay remains unverified.
+linked-/byte-exact losses or gains. At this checkpoint,
+`PE_adp_approach`, `PE_adp_glide`, and `PE_adp_apply` were unresolved;
+the following navigation pass removes the first shim. Linked ARM
+gameplay remains unverified.
 
 ## Docking transfer and arrival-state ABI (2026-10-14)
 

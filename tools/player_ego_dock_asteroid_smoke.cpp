@@ -15,15 +15,26 @@ Vector operator*(const Vector &value, float factor) {
 Vector operator+(const Vector &a, const Vector &b) {
     return {a.x + b.x, a.y + b.y, a.z + b.z};
 }
+Vector operator-(const Vector &a, const Vector &b) {
+    return {a.x - b.x, a.y - b.y, a.z - b.z};
+}
 struct Matrix { Vector up, position, dir; };
 static const Matrix *expectedFirstMatrix = nullptr;
 static const Matrix *expectedSecondMatrix = nullptr;
+static const Matrix *expectedDockRotationMatrix = nullptr;
 static Matrix combinedMatrix{};
 Matrix operator*(const Matrix &first, const Matrix &second) {
     assert(&first == expectedFirstMatrix && &second == expectedSecondMatrix);
     return combinedMatrix;
 }
 namespace AbyssEngine { namespace AEMath {
+Vector MatrixRotateVector(const Matrix &matrix, const Vector &value) {
+    assert(&matrix == expectedDockRotationMatrix);
+    return value;
+}
+float VectorLength(const Vector &value) {
+    return std::sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
+}
 Vector MatrixGetUp(const Matrix &matrix) { return matrix.up; }
 Vector MatrixGetPosition(const Matrix &matrix) { return matrix.position; }
 Vector MatrixGetDir(const Matrix &matrix) { return matrix.dir; }
@@ -100,6 +111,7 @@ struct ParticleSystemManager {
 };
 struct KIPlayer;
 struct SpacePoint {
+    Vector position{};
     int takes = 0, releases = 0;
     void take() { ++takes; }
     void giveFree() { ++releases; }
@@ -144,9 +156,12 @@ struct KIPlayer {
     unsigned char field_0x8c = 0;
     CargoArray *cargo = nullptr;
     SpacePoint *nearestNav = nullptr;
+    AEGeometry *geometry = nullptr;
+    Vector position{};
     bool isDying() { return state == 3; }
     bool isDead() { return state == 4; }
     void *getNearestNavigationPoint(Vector, SpacePoint *) { return nearestNav; }
+    Vector getPosition() { return position; }
 };
 static_assert(offsetof(KIPlayer, field_0x70) == 0x70, "KIPlayer mock docking flag offset");
 static_assert(offsetof(KIPlayer, field_0x8c) == 0x8c, "KIPlayer mock target flag offset");
@@ -399,6 +414,7 @@ namespace Globals {
     unsigned char options[100]{};
 }
 static const float g_PE_astApproach = 2500.0f;
+static const float g_PE_upd_handlingBias = 2.7f;
 void Vec_assign(void *dst, const void *src) { std::memcpy(dst, src, 3 * sizeof(int)); }
 
 struct PlayerEgo {
@@ -424,9 +440,15 @@ struct PlayerEgo {
     SpacePoint *spacePoint = nullptr;
     void *dockStation = nullptr;
     LevelScript *levelScript = nullptr;
-    int mockDockDistance = 0;
     int mockGlideDistance = 0;
     int dockApplyCalls = 0;
+    float waypointX = 0.0f, waypointY = 0.0f;
+    uint32_t gunBaseGeo = 0;
+    int pitchAccumDir = 0;
+    Vector lastMovePosition{};
+    float lastMoveSpeed = 0.0f;
+    int moveCalls = 0;
+    bool lastMoveSteer = false;
     int approachCount = 0;
     int dockPointStops = 0;
     unsigned char field_0x145 = 0;
@@ -514,6 +536,9 @@ struct PlayerEgo {
     Vector getPosition() { return position; }
     int approachAsteroid(Hud *, int, Radar *) { ++approachCount; return 0; }
     int approachDockingPoint(Hud *, int, Radar *);
+    void moveToPosition(Vector target, bool steer, float speed) {
+        lastMovePosition = target; lastMoveSteer = steer; lastMoveSpeed = speed; ++moveCalls;
+    }
     int setTurretMode(bool enable) { turretActive = enable; return 0; }
     void dockToDockingPoint(KIPlayer *, Radar *) { dockedFlag = 0; ++dockPointStops; }
 };
@@ -522,7 +547,6 @@ Vector PlayerEgo::crosshairPos{};
 Vector PlayerEgo::crosshairShootPos{};
 int dockRadius[1] = {200};
 int *g_PE_adp_dockRadius = dockRadius;
-int PE_adp_approach(PlayerEgo *ego, void *) { return ego->mockDockDistance; }
 int PE_adp_glide(PlayerEgo *ego) { return ego->mockGlideDistance; }
 void PE_adp_apply(PlayerEgo *ego) { ++ego->dockApplyCalls; }
 
@@ -1151,6 +1175,7 @@ int main() {
     TargetFollowCamera approachCamera;
     LevelScript approachScript;
     SpacePoint dockNav;
+    AEGeometry dockGeometry;
     Radar approachRadar;
     approachScript.m_pLevel = &dockLevel;
     approachEgo.player = &player;
@@ -1158,19 +1183,41 @@ int main() {
     approachEgo.levelScript = &approachScript;
     approachEgo.targetFollowCameraPtr = &approachCamera;
     approachEgo.asteroidTargetPtr = &dockTarget;
+    approachEgo.position = {0.0f, 0.0f, 0.0f};
     approachEgo.dockScaling = 1400;
     approachEgo.dockApproachThreshold = 2000;
     dockTarget.nearestNav = &dockNav;
+    dockTarget.geometry = &dockGeometry;
+    expectedDockRotationMatrix = &dockGeometry.matrix;
+    dockNav.position = {400.0f, 5.0f, 6.0f};
     dockTarget.field_0x70 = 1;
     dockTarget.field_0x8c = 1;
-    approachEgo.mockDockDistance = 1400;
+    ship.handling = 1.0f;
+    dockTarget.position = {19600.0f, 0.0f, 0.0f};
     assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
-    assert(approachEgo.dockingPointIndex == 0 && approachEgo.dockApplyCalls == 0);
+    assert(approachEgo.moveCalls == 1 && approachEgo.lastMoveSteer);
+    assert(std::fabs(approachEgo.lastMoveSpeed - 3.7f) < 0.0001f);
+    assert(approachEgo.lastMovePosition.x == 20000.0f && approachEgo.lastMovePosition.y == 5.0f);
+    float waypointWorldY, waypointZ;
+    std::memcpy(&waypointWorldY, &approachEgo.gunBaseGeo, sizeof(float));
+    std::memcpy(&waypointZ, &approachEgo.pitchAccumDir, sizeof(float));
+    assert(approachEgo.waypointX == 0.0f && approachEgo.waypointY == 20000.0f);
+    assert(waypointWorldY == 5.0f && waypointZ == 6.0f);
+    assert(approachEgo.aboutToReachAutoTargetFlag == 0);
+    ship.handling = 2.0f;
+    dockTarget.position = {19599.0f, 0.0f, 0.0f};
+    assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
+    assert(approachEgo.moveCalls == 2 && approachEgo.lastMoveSpeed == 4.0f);
+    assert(approachEgo.aboutToReachAutoTargetFlag == 1);
+    dockTarget.position = {1000.0f, 0.0f, 0.0f};
+    assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
+    assert(approachEgo.dockingPointIndex == 0 && approachEgo.moveCalls == 3 && approachEgo.dockApplyCalls == 0);
     assert(approachEgo.spacePoint == &dockNav && dockNav.takes == 1);
-    approachEgo.mockDockDistance = 1399;
+    dockTarget.position = {999.0f, 0.0f, 0.0f};
     assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
     assert(approachEgo.dockingPointIndex == 2 && approachCamera.lookAt);
-    assert(dockTarget.field_0x8c == 0 && approachEgo.dockApplyCalls == 0);
+    assert(dockTarget.field_0x8c == 0 && approachEgo.moveCalls == 3 && approachEgo.dockApplyCalls == 0);
+    ship.handling = 1.4f;
 
     approachEgo.mockGlideDistance = 200;
     assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);

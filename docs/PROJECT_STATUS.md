@@ -1,7 +1,31 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo docking transitions; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo docking navigation; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo docking navigation and approach speed (2026-10-14)
+
+Android ARM `0x9fd56–0x9fdc4` and IDA/Ghidra cross-checks establish
+the state-0 world navigation point: target position plus its geometry
+matrix rotation of the held SpacePoint position, stored as a 12-byte
+vector at PlayerEgo `+0xec`. This spans three legacy header fields;
+new ARM32 offset assertions guard them. Integer-truncated distance
+chooses between state-2 entry and `moveToPosition` with steering and
+speed `min(ship handling + 2.7, 4.0)`; only distances at most 19,999
+set the near-target flag. The opaque `PE_adp_approach` call is gone.
+Extracted whole-method smoke checks coordinates, speed branches and
+distance boundaries. Native `gof2`, 206/206 ARM units, 37 verifier
+tests (one skipped), and four PlayerEgo smokes pass. Focused
+`approachDockingPoint` source-shape/strict fuzzy improves
+**22.2%/15.3% → 31.2%/16.1%**. Full-corpus exact comparison is
+recorded in `_work/player_dock_nav_full_20261014.json`:
+**4,323/4,524** original functions covered, **93.27%** average
+source-shape, **82.17%** strict fuzzy, **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Pairwise
+exact sets have no losses or gains against the previous approach
+checkpoint. The threshold's ease-matrix constructor and state-2/3
+glide/easing remain unresolved; linked ARM gameplay is unverified.
+See [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo docking approach and exit transitions (2026-10-14)
 
@@ -22,8 +46,8 @@ Focused source-shape/strict fuzzy rises **20.5%/12.1% →
 original functions covered, **93.27%** average source-shape,
 **82.17%** strict fuzzy, **2,479 linked-exact**, **1,065 byte-exact**,
 **123 extras**, and zero skipped units. Pairwise exact sets have no
-losses or gains against the docking-delivery checkpoint. The next
-priority is replacing the unresolved docking motion/easing shims;
+losses or gains against the docking-delivery checkpoint. At this
+checkpoint the next priority was docking navigation and easing;
 linked ARM gameplay remains unverified. See
 [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
