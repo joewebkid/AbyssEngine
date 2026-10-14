@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo update docking teardown (2026-10-14)
+
+Raw Android ARM instructions at `0x9dd18–0x9dd44` check the target
+at `PlayerEgo+0x1bc`, test `KIPlayer::isDying` and `isDead`, pass
+the saved radar register as the third `dockToAsteroid` argument,
+then branch to the function epilogue. The docking-point path at
+`0x9dd7a–0x9dd9e` checks the same target states and also returns
+directly. The C++ now follows those paths. The host smoke extracts
+and compiles the production docking-state fragment. Native `gof2`,
+all 206 ARM units, the `stopMining` smoke and 37 verifier tests
+pass (one skipped). Focused `update` source-shape rises 12.2% to
+12.7%, strict fuzzy falls 4.8% to 4.1%; no exact match. Full
+corpus remains 4,323/4,524 covered, 93.10% average source-shape,
+81.51% strict fuzzy, 2,403 linked-exact, 1,008 byte-exact and
+123 extras; the exact-pair sets are unchanged. Full gameplay and
+the missing-target path remain unverified. See
+[the evidence](PLAYER_EGO_UPDATE_DOCKING_ARM_2026-10-14.md).
+
 ## PlayerEgo asteroid-docking target (2026-10-14)
 
 Android ARM `dockToAsteroid` tests the first argument (`KIPlayer*`)
@@ -17,7 +35,8 @@ ARM units, the mining handoff smoke and 37 verifier tests pass
 (one skipped). Full corpus and exact-pair sets remain 4,323/4,524,
 93.10% average source-shape, 81.51% strict fuzzy, 2,403 linked-exact,
 1,008 byte-exact and 123 extras, with zero pair losses. This does
-not prove ARM32 runtime or the null-radar teardown from `update`.
+not prove ARM32 runtime. The null-radar call from `update` is
+corrected in the follow-up audit above.
 See [the evidence](PLAYER_EGO_DOCK_ASTEROID_ARM_2026-10-14.md).
 
 ## Ship cargo-add handoff (2026-10-14)

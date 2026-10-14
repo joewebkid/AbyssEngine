@@ -48,7 +48,8 @@ The smoke substitutes the Player, Radar, camera and MiningGame
 services; full docking/mining gameplay and ARM32 runtime remain
 unverified. `PlayerEgo::update` has a path that calls
 `dockToAsteroid(nullptr, nullptr)` while docking, whereas teardown
-calls `Radar::unlockAsteroid`; compare that caller with the original
-ARM code and establish whether the path is reachable and safe before
-changing the teardown semantics. Do not infer safety from the shape
-metric alone.
+calls `Radar::unlockAsteroid`. The follow-up
+[update docking audit](PLAYER_EGO_UPDATE_DOCKING_ARM_2026-10-14.md)
+confirms the ARM call passes the radar and corrects this route.
+Reachability and safety when the asteroid target itself is null
+remain unverified. Do not infer safety from the shape metric alone.

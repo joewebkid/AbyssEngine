@@ -1,4 +1,4 @@
-"""Exercise the production PlayerEgo::dockToAsteroid body with distinct target/radar doubles."""
+"""Exercise production asteroid docking and update's docking-state branches."""
 
 import argparse
 from pathlib import Path
@@ -23,6 +23,13 @@ def main():
     fixture = (ROOT / "tools/player_ego_dock_asteroid_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_METHOD",
                               function(source, "void PlayerEgo::dockToAsteroid("))
+    start = source.index("    if (((char &) this->dockingState) != 0) {",
+                         source.index("void PlayerEgo::update("))
+    end = source.index("    if (this->turretActive != 0", start)
+    docking = source[start:end]
+    fixture = fixture.replace("// PRODUCTION_UPDATE_DOCKING",
+                              "void PlayerEgo::updateDocking(Radar *radar, Hud *hud, Radio *radio) {\n" +
+                              docking + "}\n")
 
     with tempfile.TemporaryDirectory(prefix="dock-asteroid-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "player_ego_dock_asteroid_smoke.cpp"

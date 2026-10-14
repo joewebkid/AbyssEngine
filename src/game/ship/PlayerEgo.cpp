@@ -2416,9 +2416,9 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
 
     if (((char &) this->dockingState) != 0) {
         this->field_0x145 = 1;
-        if (((void *&) this->asteroidTarget) == 0 || ((PlayerEgo *) (this))->isDead() != 0) {
-            ((PlayerEgo *) (this))->dockToAsteroid(nullptr, nullptr);
-            PE_upd_post(this, dt, radar, hud, radio, arg5);
+        KIPlayer *target = (KIPlayer *) ((void *&) this->asteroidTarget);
+        if (target == nullptr || target->isDying() || target->isDead()) {
+            ((PlayerEgo *) (this))->dockToAsteroid(nullptr, radar);
             return;
         }
         ((PlayerEgo *) (this))->approachAsteroid(hud, (int) (intptr_t) hud, radar);
@@ -2426,9 +2426,9 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
 
     if (this->dockedFlag != 0 && ((Player *) (this->player))->getHitpoints() > 0) {
         this->field_0x145 = 1;
-        if (((void *&) this->asteroidTarget) == 0 || ((PlayerEgo *) (this))->isDead() != 0) {
+        KIPlayer *target = (KIPlayer *) ((void *&) this->asteroidTarget);
+        if (target == nullptr || target->isDying() || target->isDead()) {
             ((PlayerEgo *) (this))->dockToDockingPoint(nullptr, nullptr);
-            PE_upd_post(this, dt, radar, hud, radio, arg5);
             return;
         }
         if (((PlayerEgo *) (this))->approachDockingPoint(hud, 0, radar) != 0)

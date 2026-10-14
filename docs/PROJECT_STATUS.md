@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo asteroid-docking target; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo update docking teardown; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo update docking teardown (2026-10-14)
+
+The Android ARM `PlayerEgo::update` checks the docking target's
+`isDying`/`isDead` state, passes its `Radar*` to asteroid teardown,
+and returns directly after either docking teardown. The C++ had
+checked the player instead, passed a null radar to asteroid teardown,
+and ran an extra post-update path. Both asteroid and docking-point
+branches now follow the original sequence. A host smoke compiles the
+production docking-state fragment and covers live, dying and dead
+targets. Native `gof2`, all 206 ARM units, the two PlayerEgo smokes
+and 37 verifier tests pass (one skipped). Focused `update` source-
+shape rises 12.2% to 12.7%; strict fuzzy falls 4.8% to 4.1% and
+the function remains non-exact. Full corpus stays 4,323/4,524
+covered, 93.10% source-shape, 81.51% strict fuzzy, 2,403 linked-
+exact, 1,008 byte-exact and 123 extras; exact sets are unchanged.
+The full `update` flow, missing-target teardown and ARM32 runtime
+remain unverified. Next: audit reachability of the missing-target
+path and `approachAsteroid` arguments. See
+[the update audit](PLAYER_EGO_UPDATE_DOCKING_ARM_2026-10-14.md).
 
 ## PlayerEgo asteroid-docking target (2026-10-14)
 
@@ -18,8 +38,9 @@ tests pass (one skipped). Full corpus stays 4,323/4,524 covered,
 93.10% average source-shape, 81.51% strict fuzzy, 2,403 linked-exact,
 1,008 byte-exact and 123 extra symbols; the compared and exact sets
 are unchanged. ARM32 gameplay remains unverified. A separate
-`PlayerEgo::update` path calls teardown with a null radar; its
-original behavior and runtime safety need a focused audit next.
+`PlayerEgo::update` path called teardown with a null radar; the
+follow-up audit above restores the original argument and target
+checks. Missing-target runtime safety remains unverified.
 See [the docking audit](PLAYER_EGO_DOCK_ASTEROID_ARM_2026-10-14.md).
 
 ## Ship cargo-add handoff (2026-10-14)
