@@ -1,5 +1,42 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Post-route cursor and damage feedback (2026-10-14)
+
+Original Android ARM `PlayerEgo::update` at `0x9e86a–0x9e94c` first
+resets the hit-direction word at `PlayerEgo+0x20` and shield-flash byte
+at `+0x30a`. It compares the byte at `+0x378` with
+`Globals::mouseCursorActivated` and marks `+0x84` on mismatch. When
+`lastHP` at `+0x130` exceeds `Player::getCombinedHP` and the bytes
+`computerControlled` (`+0x1f4`) and `freeze` (`+0x24`) are both clear,
+it calls `Hud::playerHit`, refreshes `lastHP`, and calls `hitCamera`.
+The Player shield/armor/hull hit bytes at `+0x64/+0x65/+0x66` then
+select sounds 25/23/24 with shield-first priority, clearing only the
+chosen flag; shield also sets the flash byte. IDA lines 84488 onward,
+independent Ghidra lines 64459 onward, and raw ARM agree on the order.
+
+Neighboring ABI evidence resolves a pre-existing field overlap:
+`approachDockingPoint` and `dockToDockingPoint` use a `SpacePoint*` at
+`+0x36c`, not the strafe state. `moveToPosition`/`strafe` use floats
+at `+0x37c/+0x380`; the cursor byte is at `+0x378`. `setShip`,
+`checkForTurret`, and rendering access cloak materials at
+`+0x388/+0x38c/+0x390`. These positions are now asserted in ARM32.
+The iOS dump was not used to claim a matching sequence.
+
+The extracted production-fragment smoke checks no-damage reset,
+cursor mismatch/match, computer/freeze suppression, shield/armor/hull
+sound priority and flag clearing, repeated damage without sound, and
+healing without a `lastHP` refresh. Native `gof2`, 206/206 ARM units,
+37 verifier tests (one skipped), and four PlayerEgo smokes pass.
+Focused `update` source-shape/strict fuzzy changes from
+**31.4%/10.8%** to **34.0%/10.5%**; no exact match is claimed.
+Full report `_work/player_hit_cursor_layout_full_20261014.json` has
+**4,323/4,524** original functions compared, **93.26%** average
+source-shape, **82.16%** strict fuzzy, **2,478 linked-exact**,
+**1,065 byte-exact**, and **123 extras**. Against the preceding
+matrix/particle checkpoint, exact-pair losses and gains are zero.
+Next: recover the following hit-vector projection; linked ARM gameplay
+remains unverified.
+
 ## Matrix/particle prelude before the route (2026-10-14)
 
 Original Android ARM `PlayerEgo::update` at `0x9e7ac–0x9e82c` loads

@@ -72,12 +72,16 @@ struct Player {
     int updates = 0;
     int lastUpdateDt = 0;
     bool lastDoSound = false;
+    unsigned char shieldHit = 0;
+    unsigned char armorHit = 0;
+    unsigned char hullHit = 0;
     int getHitpoints() { return hitpoints; }
     int getMaxHitpoints() { return maxHitpoints; }
     int getArmorHP() { return armorHP; }
     int getMaxArmorHP() { return maxArmorHP; }
     int getShieldHP() { return shieldHP; }
     int getMaxShieldHP() { return maxShieldHP; }
+    int getCombinedHP() { return hitpoints + armorHP + shieldHP; }
     void setShieldHP(int value) { shieldHP = value > maxShieldHP ? maxShieldHP : value; }
     void regenerateShield(float amount) { ++shieldRecoveries; lastShieldRecovery = amount; }
     void regenerateHull() { ++hullRepairs; ++hitpoints; }
@@ -91,7 +95,9 @@ struct Hud {
     int event = -1;
     int amount = -1;
     int events = 0;
+    int hits = 0;
     void hudEvent(int id, PlayerEgo *, int value) { event = id; amount = value; ++events; }
+    void playerHit() { ++hits; }
 };
 struct Radio {};
 struct Route {
@@ -145,7 +151,7 @@ void PE_upd_docksFinishDelivery(PlayerEgo *, Radio *);
 static int destroyedMiningGames = 0;
 struct MiningGame { ~MiningGame() { ++destroyedMiningGames; } };
 struct FModSound {
-    int played[8]{};
+    int played[16]{};
     int playCount = 0;
     int stopped = 0;
     int updated[8]{};
@@ -171,6 +177,7 @@ namespace Globals {
     FModSound *sound = nullptr;
     GlobalsService *gGlobals = nullptr;
     PaintCanvas *Canvas = nullptr;
+    int mouseCursorActivated = 0;
     unsigned char options[100]{};
 }
 static const float g_PE_astApproach = 2500.0f;
@@ -199,6 +206,14 @@ struct PlayerEgo {
     int field_0x1c = -1;
     int engineSoundId = -1;
     float handling = 0.0f;
+    unsigned int hudHitDirectionFlags = 0;
+    unsigned char shieldHitFlash = 0;
+    unsigned char cursorStateByte = 0;
+    unsigned char cursorStateDirty = 0;
+    unsigned char computerControlled = 0;
+    unsigned char freeze = 0;
+    int lastHP = 0;
+    int hitCameraCalls = 0;
     AEGeometry *geometry = nullptr;
     unsigned char boostingFlag = 0;
     float boostPercentage = 0.0f;
@@ -220,10 +235,12 @@ struct PlayerEgo {
     void updatePlayerSound(int dt);
     void updateVisualState();
     void updateRoute(Hud *hud);
+    void updateHitState(Hud *hud);
     void initializeRecoveryAmount(Ship *ship);
     void initializeEngineSound(Ship *ship);
     bool isDead() { return player->hitpoints < 1; }
     float getBoostPercentage() { ++boostPercentReads; return boostPercentage; }
+    void hitCamera() { ++hitCameraCalls; }
     Vector getPosition() { return position; }
     int approachAsteroid(Hud *, int, Radar *) { ++approachCount; return 0; }
     int approachDockingPoint(Hud *, int, Radar *) { return 0; }
@@ -239,6 +256,7 @@ Vector PlayerEgo::vec_up{};
 // PRODUCTION_UPDATE_PLAYER_SOUND
 // PRODUCTION_UPDATE_VISUAL_STATE
 // PRODUCTION_UPDATE_ROUTE
+// PRODUCTION_UPDATE_HIT_STATE
 // PRODUCTION_RECOVERY_AMOUNT
 // PRODUCTION_ENGINE_SOUND_SELECTION
 
@@ -491,9 +509,58 @@ int main() {
     ego.updateRoute(&hud);
     assert(hud.events == oldEvents + 3 && hud.event == 23);
 
+    player.hitpoints = 10;
+    player.armorHP = 0;
+    player.shieldHP = 0;
+    ego.lastHP = player.getCombinedHP();
+    ego.hudHitDirectionFlags = 0xff;
+    ego.shieldHitFlash = 1;
+    ego.updateHitState(&hud);
+    assert(ego.hudHitDirectionFlags == 0 && ego.shieldHitFlash == 0);
+    assert(ego.cursorStateDirty == 0 && hud.hits == 0);
+    Globals::mouseCursorActivated = 1;
+    ego.updateHitState(&hud);
+    assert(ego.cursorStateDirty == 1);
+    ego.cursorStateDirty = 0;
+    ego.cursorStateByte = 1;
+    ego.updateHitState(&hud);
+    assert(ego.cursorStateDirty == 0);
+
+    ego.lastHP = 11;
+    player.shieldHit = 1;
+    player.armorHit = 1;
+    player.hullHit = 1;
+    ego.computerControlled = 1;
+    const int soundsBeforeHit = sound.playCount;
+    ego.updateHitState(&hud);
+    assert(hud.hits == 0 && ego.lastHP == 11 && sound.playCount == soundsBeforeHit);
+    ego.computerControlled = 0;
+    ego.freeze = 1;
+    ego.updateHitState(&hud);
+    assert(hud.hits == 0 && player.shieldHit == 1);
+    ego.freeze = 0;
+    ego.updateHitState(&hud);
+    assert(hud.hits == 1 && ego.hitCameraCalls == 1 && ego.lastHP == 10);
+    assert(ego.shieldHitFlash == 1 && sound.played[soundsBeforeHit] == 25);
+    assert(player.shieldHit == 0 && player.armorHit == 1 && player.hullHit == 1);
+    player.hitpoints = 9;
+    ego.updateHitState(&hud);
+    assert(hud.hits == 2 && ego.lastHP == 9 && sound.played[soundsBeforeHit + 1] == 23);
+    assert(player.armorHit == 0 && player.hullHit == 1 && ego.shieldHitFlash == 0);
+    player.hitpoints = 8;
+    ego.updateHitState(&hud);
+    assert(hud.hits == 3 && ego.lastHP == 8 && sound.played[soundsBeforeHit + 2] == 24);
+    assert(player.hullHit == 0);
+    player.hitpoints = 7;
+    ego.updateHitState(&hud);
+    assert(hud.hits == 4 && ego.hitCameraCalls == 4 && sound.playCount == soundsBeforeHit + 3);
+    player.hitpoints = 10;
+    ego.updateHitState(&hud);
+    assert(hud.hits == 4 && ego.lastHP == 7);
+
     ego.asteroidTargetPtr = &asteroid;
     ego.dockedFlag = 1;
     ego.updateDocking(&radar, &hud, &radio);
     assert(ego.dockedFlag == 0 && ego.dockPointStops == 1);
-    std::puts("PlayerEgo docking/cargo/shield/repair/sound/visual/route smoke: OK");
+    std::puts("PlayerEgo docking/cargo/shield/repair/sound/visual/route/hit smoke: OK");
 }

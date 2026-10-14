@@ -30,6 +30,7 @@ class LevelScript;
 class Radio;
 class RepairBeam;
 class Route;
+class SpacePoint;
 class TargetFollowCamera;
 
 
@@ -79,7 +80,8 @@ public:
             float matrix_0x40_storage[15];
             float maneuverParam;
             float field_0x80;
-            char _unknown_0x84[4];
+            uint8_t cursorStateDirty;
+            char _unknown_0x85[3];
             int targetFollowCamera;
         };
 
@@ -235,6 +237,7 @@ public:
     int explosionSmoke;
     uint8_t field_0x309;
     uint8_t requestedVisible;
+    uint8_t shieldHitFlash;
     int emergencySystemTimer;
     int emergencyVal1;
     AbyssEngine::AEMath::Vector emergencyVec;
@@ -257,15 +260,17 @@ public:
     int dockTotalAmount;
     int dockTransferedAmount;
     int cloakRechargeMax;
-    int spacePoint;
+    SpacePoint *spacePoint;
     uint8_t throttleStarted;
     int throttle;
+    uint8_t cursorStateByte;
+    char _unknown_0x379[3];
     float strafeAccel;
-    void *strafeNavPoint;
+    float strafeFactor;
+    int field_0x384;
     int cloakMaterial1;
     int cloakMaterial2;
     int cloakMaterial3;
-    char _unknown_0x38c[8];
     void *field_0x394;
     uint8_t volatileGoods;
     uint8_t shieldRegenActive;
@@ -637,6 +642,7 @@ static_assert(__builtin_offsetof(PlayerEgo, freeLookMode) == 0xc4, "PlayerEgo::f
 static_assert(__builtin_offsetof(PlayerEgo, boostSpeed) == 0xc8, "PlayerEgo::boostSpeed offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0xcc) == 0xcc, "PlayerEgo::boostTime offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0xd0) == 0xd0, "PlayerEgo::boostDelay offset");
+static_assert(__builtin_offsetof(PlayerEgo, cursorStateDirty) == 0x84, "PlayerEgo::cursorStateDirty offset");
 static_assert(__builtin_offsetof(PlayerEgo, route) == 0xfc, "PlayerEgo::route offset");
 static_assert(__builtin_offsetof(PlayerEgo, currentSecondaryWeaponIndex) == 0x10c,
               "PlayerEgo::currentSecondaryWeaponIndex offset");
@@ -681,9 +687,17 @@ static_assert(__builtin_offsetof(PlayerEgo, rotateX) == 0x2e8, "PlayerEgo::rotat
 static_assert(__builtin_offsetof(PlayerEgo, explosionTimer) == 0x2f8, "PlayerEgo::explosionTimer offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x309) == 0x308, "PlayerEgo::renderVisibility offset");
 static_assert(__builtin_offsetof(PlayerEgo, requestedVisible) == 0x309, "PlayerEgo::requestedVisibility offset");
+static_assert(__builtin_offsetof(PlayerEgo, shieldHitFlash) == 0x30a, "PlayerEgo::shieldHitFlash offset");
 static_assert(__builtin_offsetof(PlayerEgo, autoLevel) == 0x324, "PlayerEgo::autoLevel offset");
 static_assert(__builtin_offsetof(PlayerEgo, visible) == 0x32e, "PlayerEgo::visible offset");
 static_assert(__builtin_offsetof(PlayerEgo, exhaustVisible) == 0x32f, "PlayerEgo::exhaustVisible offset");
+static_assert(__builtin_offsetof(PlayerEgo, spacePoint) == 0x36c, "PlayerEgo::spacePoint offset");
+static_assert(__builtin_offsetof(PlayerEgo, cursorStateByte) == 0x378, "PlayerEgo::cursorStateByte offset");
+static_assert(__builtin_offsetof(PlayerEgo, strafeAccel) == 0x37c, "PlayerEgo::strafeAccel offset");
+static_assert(__builtin_offsetof(PlayerEgo, strafeFactor) == 0x380, "PlayerEgo::strafeFactor offset");
+static_assert(__builtin_offsetof(PlayerEgo, cloakMaterial1) == 0x388, "PlayerEgo::cloakMaterial1 offset");
+static_assert(__builtin_offsetof(PlayerEgo, cloakMaterial2) == 0x38c, "PlayerEgo::cloakMaterial2 offset");
+static_assert(__builtin_offsetof(PlayerEgo, cloakMaterial3) == 0x390, "PlayerEgo::cloakMaterial3 offset");
 static_assert(__builtin_offsetof(PlayerEgo, dockTotalAmount) == 0x360, "PlayerEgo::dockTotalAmount offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x394) == 0x394, "PlayerEgo::materialList offset");
 static_assert(__builtin_offsetof(PlayerEgo, volatileGoods) == 0x398, "PlayerEgo::volatileGoods offset");

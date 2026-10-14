@@ -59,10 +59,15 @@ def main():
                               "void PlayerEgo::updateVisualState() {\n" +
                               source[start:end] + "}\n")
     start = end
-    end = source.index("    PE_upd_post(this, dt, radar, hud, radio, arg5);", start)
+    end = source.index("    this->hudHitDirectionFlags = 0;", start)
     fixture = fixture.replace("// PRODUCTION_UPDATE_ROUTE",
                               "void PlayerEgo::updateRoute(Hud *hud) {\n" +
                               source[start:end] + "}\n")
+    start = end
+    end = source.index("    PE_upd_post(this, dt, radar, hud, radio, arg5);", start)
+    fixture = fixture.replace("// PRODUCTION_UPDATE_HIT_STATE",
+                              "void PlayerEgo::updateHitState(Hud *hud) {\n" +
+                              "    Player *player = this->player;\n" + source[start:end] + "}\n")
     start = source.index("        this->shieldRecoveryAmount = (float) ship->getMaxShieldHP()",
                          source.index("PlayerEgo::PlayerEgo("))
     end = source.index(";", start) + 1

@@ -1,7 +1,30 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo matrix/particle prelude; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo cursor/damage state; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo cursor/damage state and tail ABI (2026-10-14)
+
+Android ARM `update` at `0x9e86a–0x9e94c`, cross-checked with IDA and
+Ghidra, resets the per-frame direction/flash state, detects cursor-state
+changes, and gates HUD/camera hit feedback on reduced combined HP while
+neither computer control nor freeze is active. Shield, armor, and hull hit
+flags select sounds 25, 23, and 24 in priority order. Adjacent Android
+ARM accessors establish the docking `SpacePoint` at `+0x36c`, strafe
+acceleration/factor at `+0x37c/+0x380`, and cloak materials at
+`+0x388/+0x38c/+0x390`; the header asserts these offsets. An extracted
+production-fragment smoke covers the cursor and damage gates, sound
+priority, flag clearing, and unchanged HP. Native `gof2`, 206/206 ARM
+units, 37 verifier tests (one skipped), and four PlayerEgo smokes pass.
+Focused `update` source-shape rises **31.4% → 34.0%**, while strict
+fuzzy changes **10.8% → 10.5%**; the whole function is not exact. Full
+report `_work/player_hit_cursor_layout_full_20261014.json`:
+**4,323/4,524** covered, **93.26%** source-shape, **82.16%** strict
+fuzzy, **2,478 linked-exact**, **1,065 byte-exact**, **123 extras**,
+with zero exact-pair losses or gains against the matrix/particle
+checkpoint. The following hit-vector projection and linked ARM gameplay
+remain unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo matrix/particle prelude (2026-10-14)
 

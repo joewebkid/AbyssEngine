@@ -4,6 +4,32 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo cursor/damage state and tail ABI (2026-10-14)
+
+Android ARM `PlayerEgo::update` at `0x9e86a–0x9e94c` resets the hit
+direction word at `+0x20` and shield flash byte at `+0x30a`, compares
+the cursor byte at `+0x378` against `Globals::mouseCursorActivated`,
+then checks combined HP and the computer/freeze gates before calling
+`Hud::playerHit` and `hitCamera`. Its shield/armor/hull flags at Player
+`+0x64/+0x65/+0x66` drive sounds 25/23/24 with one branch cleared per
+hit. Android IDA lines 84488 onward and Ghidra lines 64459 onward
+corroborate the sequence. Independent Android ARM docking, strafe, and
+render accessors confirm `SpacePoint` at `+0x36c`, acceleration/factor
+at `+0x37c/+0x380`, and cloak materials at `+0x388/+0x38c/+0x390`.
+The extracted production-fragment smoke exercises cursor mismatch,
+combined-HP reduction, computer/freeze suppression, sound priority,
+and flag clearing. Native `gof2`, all 206 ARM translation units,
+37 verifier tests (one skipped), and four PlayerEgo smokes pass.
+Focused `update` source-shape/strict fuzzy is **34.0%/10.5%** versus
+**31.4%/10.8%**. Full report
+`_work/player_hit_cursor_layout_full_20261014.json`:
+**4,323/4,524** covered, **93.26%** source-shape, **82.16%** strict
+fuzzy, **2,478 linked-exact**, **1,065 byte-exact**, **123 extras**;
+against `_work/player_visual_prelude_full_20261014.json`, no linked
+or byte exact pairs are lost or gained. Neither the remaining
+hit-vector projection nor linked ARM gameplay has been validated. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo matrix/particle prelude (2026-10-14)
 
 Android ARM `update` at `0x9e7ac–0x9e82c` calls

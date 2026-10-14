@@ -1310,10 +1310,10 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
         Vector pos = ((PlayerEgo *) (this))->getPosition();
         void *nav = ((KIPlayer *) (station))->getNearestNavigationPoint(pos, (SpacePoint *) &this->navPoint);
         if (nav != 0) {
-            if (this->strafeNavPoint != nav) {
-                if (this->strafeNavPoint != 0)
-                    ((SpacePoint *) (this->strafeNavPoint))->giveFree();
-                this->strafeNavPoint = nav;
+            if (this->spacePoint != nav) {
+                if (this->spacePoint != nullptr)
+                    this->spacePoint->giveFree();
+                this->spacePoint = static_cast<SpacePoint *>(nav);
                 ((SpacePoint *) (nav))->take();
             }
             int dist = PE_adp_approach(this, station);
@@ -1414,9 +1414,9 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
             ((LevelScript *) (this->levelScript))->resetCamera(this->levelScript->m_pLevel);
             ((Player *) (this->player))->resetGunDelay(0);
             ((int &) this->emergencyVec.x) = 0;
-            if (this->strafeNavPoint != 0) {
-                ((SpacePoint *) (this->strafeNavPoint))->giveFree();
-                this->strafeNavPoint = 0;
+            if (this->spacePoint != nullptr) {
+                this->spacePoint->giveFree();
+                this->spacePoint = nullptr;
             }
             if (((void *&) this->hackingGame) != 0) {
                 delete (HackingGame *) ((void *&) this->hackingGame);
@@ -1769,7 +1769,7 @@ void PlayerEgo::moveToPosition(Vector target, bool steer, float speed) {
     float slide = this->strafeAccel;
     float mag = slide > 0.0f ? slide : -slide;
     if (mag <= g_PE_mtp_strafeEps) {
-        ((float &) this->strafeNavPoint) = g_PE_mtp_strafeReset;
+        this->strafeFactor = g_PE_mtp_strafeReset;
     } else {
         unsigned char m[0x30];
         Mat_assign(m, ((AEGeometry *) (this->geometry))->getMatrix());
@@ -2252,10 +2252,10 @@ void PlayerEgo::strafe(int /*dir*/, bool positive) {
 
     float sign = positive ? 1.0f : -1.0f;
     float accel = fmin_(base * 30.0f * g_PE_strafeAccelK, 2.0f);
-    float target = fmin_(((float &) this->strafeNavPoint) * 1.5f, 1.0f);
+    float target = fmin_(this->strafeFactor * 1.5f, 1.0f);
 
-    this->strafeAccel = ((float &) this->strafeNavPoint) * sign * accel;
-    ((float &) this->strafeNavPoint) = target;
+    this->strafeAccel = this->strafeFactor * sign * accel;
+    this->strafeFactor = target;
 }
 
 void PlayerEgo::dockToDockingPoint(KIPlayer *kip, Radar *radar) {
@@ -2279,7 +2279,7 @@ void PlayerEgo::dockToDockingPoint(KIPlayer *kip, Radar *radar) {
     if (!undock) {
         uint8_t *kipBytes = reinterpret_cast<uint8_t *>(kip);
         Vector pos = ((PlayerEgo *) (this))->getPosition();
-        SpacePoint *sp = (SpacePoint *) (unsigned long) this->spacePoint;
+        SpacePoint *sp = this->spacePoint;
         void *nav = kip->getNearestNavigationPoint(pos, sp);
         if (nav == 0) {
             if (kipBytes[0x70] != 0)
@@ -2327,9 +2327,9 @@ void PlayerEgo::dockToDockingPoint(KIPlayer *kip, Radar *radar) {
         ((Player *) (this->player))->resetGunDelay(0);
         this->dockingPointIndex = 0;
         ((PlayerEgo *) (this))->setExhaustVisible(true);
-        if (this->spacePoint != 0) {
-            ((SpacePoint *) ((void *) (unsigned long) this->spacePoint))->giveFree();
-            this->spacePoint = 0;
+        if (this->spacePoint != nullptr) {
+            this->spacePoint->giveFree();
+            this->spacePoint = nullptr;
         }
     }
 
@@ -2634,6 +2634,27 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         if (this->route->getCurrent() != previous) {
             int event = (this->route->loop != 0 || this->route->getCurrent() != 0) ? 23 : 24;
             hud->hudEvent(event, this, 0);
+        }
+    }
+
+    this->hudHitDirectionFlags = 0;
+    this->shieldHitFlash = 0;
+    if (Globals::mouseCursorActivated != this->cursorStateByte)
+        this->cursorStateDirty = 1;
+    if (this->lastHP > player->getCombinedHP() && !this->computerControlled && !this->freeze) {
+        hud->playerHit();
+        this->lastHP = player->getCombinedHP();
+        this->hitCamera();
+        if (player->shieldHit) {
+            this->shieldHitFlash = 1;
+            Globals::sound->play(0x19, nullptr, nullptr, 0.0f);
+            player->shieldHit = 0;
+        } else if (player->armorHit) {
+            Globals::sound->play(0x17, nullptr, nullptr, 0.0f);
+            player->armorHit = 0;
+        } else if (player->hullHit) {
+            Globals::sound->play(0x18, nullptr, nullptr, 0.0f);
+            player->hullHit = 0;
         }
     }
 
