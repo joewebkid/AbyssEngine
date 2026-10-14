@@ -2715,6 +2715,15 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         }
     }
 
+    if (this->cloaked == 0 && this->chargingCloak != 0) {
+        this->cloakCharge += dt;
+        if (this->cloakCharge > this->cloakDischargeMax) {
+            hud->hudEvent(29, this, 0);
+            this->toggleCloaking();
+            this->chargingCloak = 0;
+        }
+    }
+
     if (this->tractorBeam != nullptr)
         ((TractorBeam *) this->tractorBeam)->update(dt, radar, this->level, hud);
     if (this->repairBeams != nullptr) {

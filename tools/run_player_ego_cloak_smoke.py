@@ -16,8 +16,12 @@ def main():
     source = (ROOT / "src/game/ship/PlayerEgo.cpp").read_text()
     begin = source.index("int PlayerEgo::toggleCloaking() {")
     end = source.index("// Static data members present in the original binary", begin)
+    update_begin = source.index("void PlayerEgo::update(")
+    charge_begin = source.index("    if (this->cloaked == 0 && this->chargingCloak != 0) {", update_begin)
+    charge_end = source.index("    if (this->tractorBeam != nullptr)", charge_begin)
     fixture = (ROOT / "tools/player_ego_cloak_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_METHOD", source[begin:end])
+    fixture = fixture.replace("// PRODUCTION_UPDATE_FRAGMENT", source[charge_begin:charge_end])
     with tempfile.TemporaryDirectory(prefix="ego-cloak-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "cloak.cpp"
         generated.write_text(fixture)

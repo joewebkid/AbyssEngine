@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo beam updates; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo cloak-charge transition; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo cloak-charge transition (2026-10-14)
+
+Android Thumb `0x9d492–0x9d4c8` restores the missing per-frame
+charge and automatic activation of the cloak after a strict
+`cloakDischargeMax` threshold, preserving HUD-event and flag order.
+The extended production-fragment smoke, native `gof2`, 206/206 ARM
+units and 37 verifier tests (one skipped) pass. Focused `update`
+source-shape rises **67.5% → 68.2%**; strict fuzzy changes
+**20.5% → 20.4%**, with no exact match. Full coverage stays
+**4,323/4,524** at **93.39%** average source-shape and **82.28%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**201 missing**, **123 extras**, zero skipped and no exact-pair
+losses. Live ARM32 behavior remains unverified. Next: cloak fade,
+visibility and material restoration. See
+[the cloak-charge audit](PLAYER_EGO_CLOAK_CHARGE_ARM_2026-10-14.md).
 
 ## PlayerEgo beam updates (2026-10-14)
 

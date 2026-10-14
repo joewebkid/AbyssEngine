@@ -3,6 +3,8 @@
 #include <utility>
 #include <vector>
 
+static std::vector<int> transitionOrder;
+
 namespace AbyssEngine {
 namespace AEMath { struct Vector {}; }
 struct Material { int pad[8] = {}; int materialMode = 0; };
@@ -14,6 +16,7 @@ struct FModSound {
     int played = 0;
     void play(int id, Vector *, Vector *, float volume) {
         assert(id == 30 && volume == 0.0f);
+        transitionOrder.push_back(300);
         played++;
     }
 };
@@ -77,7 +80,10 @@ Status *currentStatus = nullptr;
 Status *PE_status() { return currentStatus; }
 struct Hud {
     std::vector<std::pair<int, int>> events;
-    void hudEvent(int id, void *, int arg) { events.emplace_back(id, arg); }
+    void hudEvent(int id, void *, int arg) {
+        events.emplace_back(id, arg);
+        transitionOrder.push_back(id);
+    }
 };
 struct Player { uint8_t field_5e = 0; };
 struct AEGeometry { unsigned meshId; };
@@ -91,9 +97,14 @@ struct PlayerEgo {
     int cloakMaterial1 = 0, cloakMaterial2 = 0, cloakMaterial3 = 0;
     uint8_t turretMode = 0;
     int toggleCloaking();
+    void updateCloakCharge(int dt, Hud *hud);
 };
 
 // PRODUCTION_METHOD
+
+void PlayerEgo::updateCloakCharge(int dt, Hud *hud) {
+// PRODUCTION_UPDATE_FRAGMENT
+}
 
 int main() {
     FModSound sound;
@@ -132,10 +143,15 @@ int main() {
     assert((hud.events == std::vector<std::pair<int, int>>{{30, 4}, {28, 0}}));
 
     assert(ego.toggleCloaking() == 0 && sound.played == 0);
-    ego.cloakCharge = 8;
-    assert(ego.toggleCloaking() == 1);
+    ego.updateCloakCharge(8, &hud);
+    assert(ego.cloakCharge == 8 && ego.chargingCloak == 1 && sound.played == 0);
+    ego.updateCloakCharge(1, &hud);
+    assert((hud.events == std::vector<std::pair<int, int>>{{30, 4}, {28, 0}, {29, 0}}));
+    assert((transitionOrder == std::vector<int>{30, 28, 29, 300}));
     assert(sound.played == 1 && player.field_5e == 1);
-    assert(ego.cloakCharge == 0 && ego.cloaked == 1);
+    assert(ego.cloakCharge == 0 && ego.cloaked == 1 && ego.chargingCloak == 0);
+    ego.updateCloakCharge(17, &hud);
+    assert(ego.cloakCharge == 0 && hud.events.size() == 3);
     assert(canvas.materials[11].materialMode == 14);
     assert((canvas.materialChanges == std::vector<std::pair<unsigned, unsigned>>{{40, 11}}));
     assert((canvas.shaderChanges == std::vector<std::pair<unsigned, unsigned>>{{40, 1}, {40, 2}}));
@@ -144,6 +160,7 @@ int main() {
     canvas.shaderChanges.clear();
     ego.cloaked = 0;
     ego.cloakCharge = 8;
+    ego.chargingCloak = 1;
     ego.turretMode = 1;
     Item equipment8;
     equipment8.index = 224;

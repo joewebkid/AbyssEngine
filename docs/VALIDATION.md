@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo cloak-charge transition (2026-10-14)
+
+Android Thumb `0x9d492–0x9d4c8` confirms frame-time addition to
+`cloakCharge`, the strict greater-than threshold, HUD event 29,
+`toggleCloaking` and subsequent clearing of `chargingCloak`.
+The extended production-fragment smoke, native `gof2`, 206/206
+ARM units and 37 verifier tests (one skipped) pass. Focused
+`update` source-shape/strict fuzzy changes **67.5%/20.5% →
+68.2%/20.4%**; it remains non-exact. Full report
+`_work/player_cloak_charge_full_20261014.json` compares
+**4,323/4,524** at **93.39%** average source-shape and **82.28%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**201 missing**, **123 extras** and zero skipped. Both exact pair
+sets lose and gain zero members against
+`_work/player_update_beams_full_20261014.json`. The smoke does
+not cover the whole `update` body or live ARM32 behavior. See
+[the cloak-charge audit](PLAYER_EGO_CLOAK_CHARGE_ARM_2026-10-14.md).
+
 ## PlayerEgo beam updates (2026-10-14)
 
 Android Thumb `0x9d8fe–0x9d93c` and IDA lines 83966–83981 confirm
