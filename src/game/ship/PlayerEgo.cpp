@@ -1655,6 +1655,7 @@ PlayerEgo::PlayerEgo(Player *player) {
 
     this->player = (void *) player;
     player->setPlayShootSound(true, 2);
+    this->lastHP = player->getCombinedHP();
 
     Ship *ship = (Ship *) PE_status()->getShip();
     this->boostTimer = 0;
@@ -2397,11 +2398,8 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
     if (this->freeze != 0)
         return;
 
-    float pos[3];
-    ((PlayerEgo *) (this))->getPosition();
-    ((int &) this->dockOffsetVec.x) = *(int *) &pos[0];
-    ((int &) this->dockOffsetVec.y) = *(int *) &pos[1];
-    this->boostDelay = *(int *) &pos[2];
+    this->dockOffsetVec = getPosition();
+    this->shakeIntensity = dt;
 
     PE_upd_subsystems(this, dt, radar, hud, radio, script);
 

@@ -4,6 +4,27 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo frame/docking ARM32 layout repair (2026-10-14)
+
+Original `update` ARM instructions at `0x9ce86–0x9ce96` assign
+the geometry position to `PlayerEgo+0x148` and frame time to
+`+0x134`. Other original accessors/constructor writes confirm
+`lastHP +0x130`, boost timer `+0x138`, boost flag `+0x13c`, collide
+flag `+0x144`, handling `+0x154`, auto-pilot target `+0x15c`,
+asteroid target `+0x1bc`, and docking state `+0x1c0`. NDK r18b
+Clang record layout now matches these addresses. Native `gof2`,
+all 206 ARM units, 37 verifier tests (one skipped) and three
+PlayerEgo smokes pass. Full report
+`_work/player_abi_frame_full_20261014.json`: **4,323/4,524**
+covered, **93.17%** source-shape, **81.85%** strict fuzzy,
+**2,439** linked-exact, **1,038** byte-exact, **123** extras.
+Compared with `_work/player_abi_controls_final_full_20261014.json`,
+there are 25 linked/19 byte gains and zero exact-pair losses.
+`update` source-shape rises 12.8% to 13.4%, but remains non-exact;
+runtime behavior is not validated. The class is `0x398` against
+the original `0x3a0` allocation; later member offsets differ.
+See [the offset evidence](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo control-field ARM32 layout repair (2026-10-14)
 
 Original accessors at IDA lines 86918–86948 and 87496–87577 place

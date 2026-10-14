@@ -127,3 +127,38 @@ passing the original `+0x154` value to `setShipHandling()`.
 Runtime ABI, the full constructor and gameplay semantics remain
 unverified. Next, map the intervening fields from ARM before
 moving handling and docking members.
+
+## Frame, position and docking offsets repaired (2026-10-14)
+
+At `0x9ce86–0x9ce96`, original ARM `update` passes the geometry
+position to `Vector::operator=` at `PlayerEgo+0x148`, then stores
+frame time at `+0x134`. The prior C++ dropped `getPosition()`'s
+return value and copied uninitialized stack floats into two Vector
+components and a separate integer. It now copies the returned Vector
+and assigns the frame time. The constructor also restores the
+original `Player::getCombinedHP` write at `+0x130` (IDA line
+80247). The header adds only the unresolved intervening storage
+needed to put confirmed members at their ARM offsets and removes
+the spurious integer between the position Vector and handling.
+
+Clang 7 ARM32 record layout now confirms `lastHP +0x130`,
+`shakeIntensity +0x134`, `boostTimer +0x138`, `boostingFlag +0x13c`,
+`collide +0x144`, `field_0x145 +0x145`, `dockOffsetVec +0x148`,
+`handling +0x154`, `autoPilotTarget +0x15c`,
+`asteroidTarget +0x1bc`, and `dockingState +0x1c0`. These map to original
+constructor, raw ARM update, boost/accessor, and docking evidence.
+
+Native `gof2`, all 206 ARM units, 37 verifier tests (one skipped)
+and the three existing PlayerEgo smokes pass. Full corpus
+`_work/player_abi_frame_full_20261014.json` covers **4,323/4,524**
+functions, with **93.17%** source-shape, **81.85%** strict fuzzy,
+**2,439** linked-exact, **1,038** byte-exact and **123** extras.
+Compared with the prior control-field checkpoint, exact-pair sets
+have zero losses, 25 linked gains and 19 byte gains. Constructor
+source-shape improves from 20.9% to 21.9%; `update` improves from
+12.8% to 13.4%. Neither is exact.
+
+The class still measures `0x398` versus original allocation `0x3a0`.
+The later `miningGame`/HUD groups and the camera setter are not yet
+aligned; no linked gameplay or ARM32 runtime test has been run.
+These remain the next ABI priority before claiming behavior parity.

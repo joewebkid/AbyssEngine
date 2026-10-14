@@ -127,15 +127,16 @@ public:
     float pitchAccumulator;
     float yawRate;
     float pitchRate;
+    char _unknown_0x114[0x1c];
     int lastHP;
     int shakeIntensity;
     int boostTimer;
     uint8_t boostingFlag;
+    char _unknown_0x13d[7];
     uint8_t collide;
     uint8_t field_0x145;
     uint8_t field_0x146;
     AbyssEngine::AEMath::Vector dockOffsetVec;
-    int boostDelay;
     int handling;
     uint8_t autoPilot;
     int autoPilotTarget;
@@ -621,6 +622,17 @@ static_assert(__builtin_offsetof(PlayerEgo, freeLookMode) == 0xc4, "PlayerEgo::f
 static_assert(__builtin_offsetof(PlayerEgo, boostSpeed) == 0xc8, "PlayerEgo::boostSpeed offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0xcc) == 0xcc, "PlayerEgo::boostTime offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0xd0) == 0xd0, "PlayerEgo::boostDelay offset");
+static_assert(__builtin_offsetof(PlayerEgo, lastHP) == 0x130, "PlayerEgo::lastHP offset");
+static_assert(__builtin_offsetof(PlayerEgo, shakeIntensity) == 0x134, "PlayerEgo::frameTime offset");
+static_assert(__builtin_offsetof(PlayerEgo, boostTimer) == 0x138, "PlayerEgo::boostTimer offset");
+static_assert(__builtin_offsetof(PlayerEgo, boostingFlag) == 0x13c, "PlayerEgo::boostingFlag offset");
+static_assert(__builtin_offsetof(PlayerEgo, collide) == 0x144, "PlayerEgo::collide offset");
+static_assert(__builtin_offsetof(PlayerEgo, field_0x145) == 0x145, "PlayerEgo::field_0x145 offset");
+static_assert(__builtin_offsetof(PlayerEgo, dockOffsetVec) == 0x148, "PlayerEgo::positionCache offset");
+static_assert(__builtin_offsetof(PlayerEgo, handling) == 0x154, "PlayerEgo::handling offset");
+static_assert(__builtin_offsetof(PlayerEgo, autoPilotTarget) == 0x15c, "PlayerEgo::autoPilotTarget offset");
+static_assert(__builtin_offsetof(PlayerEgo, asteroidTarget) == 0x1bc, "PlayerEgo::asteroidTarget offset");
+static_assert(__builtin_offsetof(PlayerEgo, dockingState) == 0x1c0, "PlayerEgo::dockingState offset");
 #endif
 
 #endif

@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo control-field ARM32 layout repair; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo frame/docking ARM32 layout repair; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo frame/docking ARM32 layout repair (2026-10-14)
+
+Raw Android ARM `update` stores the frame time at `+0x134` and
+copies the player's actual position to the Vector at `+0x148`.
+The C++ previously discarded the returned position and copied an
+uninitialized array, including its third component into a separate
+misidentified field. It now assigns the whole Vector and frame time.
+Confirmed surrounding offsets through `handling +0x154`, asteroid
+target `+0x1bc` and docking state `+0x1c0` now match ARM; the
+constructor also initializes `lastHP` as in the binary. Native
+`gof2`, all 206 ARM units, 37 verifier tests (one skipped) and three
+PlayerEgo smokes pass. Full corpus: **4,323/4,524** covered,
+**93.17%** source-shape, **81.85%** strict fuzzy, **2,439** linked-
+exact, **1,038** byte-exact and **123** extras. The exact-pair sets
+gain 25 linked and 19 byte matches with zero losses. The ARM32 class
+is still `0x398` versus original allocation `0x3a0`; mining-game
+and HUD fields remain offset, and the constructor/update are still
+non-exact. Next: map those later gaps and the camera setter. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo control-field ARM32 layout repair (2026-10-14)
 
