@@ -53,3 +53,6 @@ calls `Radar::unlockAsteroid`. The follow-up
 confirms the ARM call passes the radar and corrects this route.
 Reachability and safety when the asteroid target itself is null
 remain unverified. Do not infer safety from the shape metric alone.
+The later [ARM32 layout audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md)
+also finds that this method's current C++ member offsets do not yet
+match the original object; the host smoke does not validate that ABI.

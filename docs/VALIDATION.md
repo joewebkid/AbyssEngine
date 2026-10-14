@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo ARM32 layout gap (2026-10-14)
+
+The current ARM32 `PlayerEgo.h` record dump from the same NDK r18b
+Clang flags used by the verifier reports size **0x320**. Both IDA
+and Ghidra show an Android allocation of **0x3a0**, and raw ARM
+accesses place key docking fields beyond the header's offsets.
+This is an ABI contradiction, not an instruction-shape inference.
+No source code changed in this audit; the latest completed full
+corpus remains 4,323/4,524, 93.10% average source-shape, 81.52%
+strict fuzzy, 2,403 linked-exact and 1,008 byte-exact. Previous
+green static-library/ARM compilation and isolated host smokes do
+not prove end-to-end PlayerEgo behavior. See
+[the offset evidence](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo asteroid mining phase (2026-10-14)
 
 ARM `approachAsteroid` loads its target from `PlayerEgo+0x1bc`

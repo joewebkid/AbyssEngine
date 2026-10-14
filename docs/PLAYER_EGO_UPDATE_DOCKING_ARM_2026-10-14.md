@@ -60,3 +60,6 @@ whether this state is reachable in a real session needs a focused
 control-flow/runtime audit. Next, examine that path and the
 `approachAsteroid` call arguments without relying on the very low
 whole-function shape score as a semantic oracle.
+The later [ARM32 layout audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md)
+shows the underlying PlayerEgo member offsets are still wrong;
+the branch smoke cannot establish ABI-correct runtime behavior.

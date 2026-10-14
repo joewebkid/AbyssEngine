@@ -60,3 +60,8 @@ smoke also replaces game services and does not execute ARM32.
 Next, recover stage-zero navigation/orientation from ARM and
 remove the undefined helper. The target-null teardown path remains
 unproven in real gameplay; no speculative guard was added.
+The subsequent [ARM32 layout audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md)
+establishes a more immediate prerequisite: the C++ PlayerEgo object
+is only `0x320` bytes in the ARM build versus the original `0x3a0`,
+and its mining/docking fields are at wrong offsets. Repair that ABI
+before relying on these source routes in a game runtime.

@@ -1,7 +1,29 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo asteroid mining phase; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo ARM32 layout audit; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo ARM32 layout gap (2026-10-14)
+
+An ABI audit found a project-wide prerequisite for the recent
+PlayerEgo mining/docking source recoveries. The Android binary
+allocates `PlayerEgo` with **0x3a0** bytes, while Clang 7 lays out
+the current header at **0x320** bytes in the ARM build. Confirmed
+field mismatches include target-follow camera `+0x48` versus ARM
+`+0x88`, asteroid target `+0x144` versus `+0x1bc`, docking state
+`+0x148` versus `+0x1c0`, mining game `+0x168` versus `+0x1e4`,
+and HUD `+0x19c` versus `+0x220`. The divergence is not one
+uniform gap. No production code changed in this audit; native
+static-library and 206-unit ARM compilation remain green, and the
+latest full corpus remains 4,323/4,524 covered, 93.10% source-
+shape, 81.52% strict fuzzy, 2,403 linked-exact and 1,008 byte-
+exact. Those metrics do not validate these field accesses. Recent
+production-method smokes test control flow with isolated doubles,
+not the actual ARM32 object layout. Next: reconstruct and migrate
+the `PlayerEgo` layout in verified offset groups, checking the
+exact-pair sets after each change, before implementing stage-zero
+asteroid approach. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo asteroid mining phase (2026-10-14)
 
@@ -19,8 +41,8 @@ fuzzy 13.5% to 21.6%; no exact match. Full corpus remains
 fuzzy, 2,403 linked-exact, 1,008 byte-exact and 123 extras, with
 unchanged exact sets. The approach step still calls undefined
 `PE_aa_approachStep`, so this is not a linked gameplay path; full
-ARM32 runtime and null-target safety remain unverified. Next:
-recover the stage-zero approach path from ARM. See
+ARM32 runtime and null-target safety remain unverified. The ABI
+audit above must precede the stage-zero approach recovery. See
 [the mining-phase audit](PLAYER_EGO_APPROACH_ASTEROID_ARM_2026-10-14.md).
 
 ## PlayerEgo update docking teardown (2026-10-14)
