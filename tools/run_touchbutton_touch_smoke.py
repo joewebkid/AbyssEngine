@@ -85,6 +85,21 @@ def main():
     extracted += function(layout, "void Layout::drawBox(int style, int x, int y, int w, int h, String text, unsigned char flags)")
     extracted += function(layout, "void Layout::drawBox(int style, int x, int y, int w, int h, String text)")
     extracted += function(layout, "void Layout::drawBGBorder(unsigned corner, unsigned edge, int x, int y, int w, int h, int inset, int pad)")
+    menu = (ROOT / "src/game/ui/MenuTouchWindow.cpp").read_text()
+    extracted += function(menu, "static inline void *_mtw_GameText_getText(")
+    label_start = menu.index("            auto *combined = new String();")
+    label_end = menu.index("            rowData =", label_start)
+    extracted += """String previewLevelLabelForSmoke(GameText *gameText, int level) {
+    struct PreviewSlot { unsigned int savedLevel; } saved{static_cast<unsigned int>(level)};
+    auto *slot = &saved;
+    void *gtHolder = gameText;
+"""
+    extracted += menu[label_start:label_end]
+    extracted += """    String result(*combined);
+    delete combined;
+    return result;
+}
+"""
 
     with tempfile.TemporaryDirectory(prefix="touchbutton-smoke-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "production_touch.cpp"

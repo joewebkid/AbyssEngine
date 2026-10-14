@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Save-preview level label (2026-10-14)
+
+Android `MenuTouchWindow::createRecordButtons` at `0x125454`, IDA lines
+162752–162766 and Thumb `0x125730–0x12576e`, establish GameText ID 321,
+`: ` and `String(int)` from `GameRecord+0x20`. The production-expression
+smoke checks 0, 7 and 123; native `gof2`, 206/206 ARM units and verifier
+tests (37 run, one skipped) pass. Focused source-shape/strict fuzzy
+improves **89.5%/43.6% → 89.9%/44.4%**. Full report
+`_work/menutouch_preview_level_full_20261014.json` covers
+**4,323/4,524** functions at **93.28%** average source-shape and
+**82.18%** strict fuzzy, with **2,479 linked-exact**, **1,065
+byte-exact**, **123 extras** and zero skipped. Exact-pair and extra
+sets have no losses or gains against
+`_work/layout_save_menu_metrics_full_20261014.json`. Complete save/load
+UI interaction and ARM32 runtime remain unverified. See
+[the label audit](MENUTOUCH_PREVIEW_LEVEL_ARM_2026-10-14.md).
+
 ## Layout save-menu metrics (2026-10-14)
 
 Android `Layout::Layout()` at `0xd1028`, IDA lines 128010–128013,

@@ -41,7 +41,7 @@ public:
     };
     uint32_t field_0x18;         // 0x018  rec[6]
     uint32_t field_0x1c;         // 0x01c  rec[7]
-    uint32_t killsText;          // 0x020  rec[8] (String at 0x20, accessed via &)
+    uint32_t savedLevel;         // 0x020  rec[8] (stored integer level)
     uint32_t field_0x24;         // 0x024  rec[9]
     uint32_t field_0x28;         // 0x028  rec[0xa]
     uint32_t field_0x2c;         // 0x02c  rec[0xb]
@@ -388,7 +388,7 @@ static_assert(offsetof(GameRecord, field_0x102) == 0x102, "");
 static_assert(offsetof(GameRecord, dlcRequiredFlag) == 0x115, "dlcRequiredFlag");
 static_assert(offsetof(GameRecord, versionMismatchFlag) == 0x117, "versionMismatchFlag");
 static_assert(offsetof(GameRecord, playTimeObj) == 0x10, "playTimeObj");
-static_assert(offsetof(GameRecord, killsText) == 0x20, "killsText");
+static_assert(offsetof(GameRecord, savedLevel) == 0x20, "savedLevel");
 static_assert(sizeof(AbyssEngine::String) == 12, "ARM String layout");
 static_assert(offsetof(GameRecord, previewSystemName) == 0x188, "previewSystemName");
 static_assert(offsetof(GameRecord, previewStationName) == 0x194, "previewStationName");

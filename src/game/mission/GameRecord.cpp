@@ -26,7 +26,7 @@ GameRecord::GameRecord() {
     this->field_0x14 = 0;
     this->field_0x18 = 0;
     this->field_0x1c = 0;
-    this->killsText = 0;
+    this->savedLevel = 0;
     this->field_0x24 = 0;
     this->field_0x28 = 0;
     this->field_0x2c = 0;
@@ -230,7 +230,7 @@ void GameRecord::load() {
     Status::gStatus->setPlayingTime(*(int64_t *) &this->playTimeObj);
     Status::gStatus->setKills(this->field_0x18);
     Status::gStatus->setMissionCount(this->field_0x1c);
-    Status::gStatus->setLevel(this->killsText);
+    Status::gStatus->setLevel(this->savedLevel);
     Status::gStatus->setLastXP(this->field_0x24);
     Status::gStatus->setGoodsProduced(this->field_0x28);
     Status::gStatus->setPirateKills(this->field_0x2c);

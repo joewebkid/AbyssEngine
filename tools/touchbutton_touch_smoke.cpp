@@ -37,10 +37,11 @@ GameText::GameText() = default;
 GameText::~GameText() = default;
 String *GameText::getText(int key) {
     lastTextKey = key;
-    static String help("HELP"), reward("REWARD"), bonus("BONUS");
+    static String help("HELP"), reward("REWARD"), bonus("BONUS"), level("LEVEL");
     if (key == 0x187) return &help;
     if (key == 216) return &reward;
     if (key == 3206) return &bonus;
+    if (key == 0x141) return &level;
     assert(false);
     return nullptr;
 }
@@ -211,6 +212,7 @@ TouchButton::TouchButton(unsigned int buttonKind, int px, int py, int buttonWidt
     iconSmall = -1; iconOverlay = -1;
 }
 TouchButton::~TouchButton() = default;
+String previewLevelLabelForSmoke(GameText *gameText, int level);
 
 static void checkHangarChoiceMetrics(const Layout &layout, const int (&expected)[10]) {
     const int actual[] = {layout.field_0x254, layout.field_0x258, layout.field_0x25c,
@@ -241,6 +243,13 @@ static void checkSaveMenuMetrics(const Layout &layout, const int (&expected)[7])
 }
 
 int main() {
+    GameText previewText;
+    for (int level : {0, 7, 123}) {
+        String label = previewLevelLabelForSmoke(&previewText, level);
+        std::string result;
+        for (int i = 0; i < label.length; ++i) result.push_back(char(label.data[i]));
+        assert(result == "LEVEL: " + std::to_string(level) && lastTextKey == 0x141);
+    }
     {
         Layout ordinary;
         checkHangarChoiceMetrics(ordinary, {8, 2, 16, 1, 300, 8, 66, 70, 97, 300});

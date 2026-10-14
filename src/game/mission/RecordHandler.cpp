@@ -545,7 +545,7 @@ void *RecordHandler::recordStoreReadPreview(int slot) {
         AEFile_Read_bool(&gr->getPreviewStationName(), fd, true);
         AEFile_Read_bool(&gr->getPreviewSystemName(), fd, true);
         AEFile_Read_i32(&gr->field_0x40, fd);
-        AEFile_Read_i32(&gr->killsText, fd);
+        AEFile_Read_i32(&gr->savedLevel, fd);
         AEFile_Read_f32(&gr->rank, fd);
         AEFile_Read_i32(&gr->shipId, fd);
         AEFile::Close(fd);
@@ -1276,7 +1276,7 @@ int RecordHandler::recordStoreWritePreview(GameRecord *rec, int slot) {
 
     AEFile_Write_str(&rec->getPreviewSystemName(), fd, true);
     AEFile_Write_i32((int) rec->field_0x40, fd);
-    AEFile_Write_i32((int) rec->killsText, fd);
+    AEFile_Write_i32((int) rec->savedLevel, fd);
     AEFile_Write_f32(rec->rankBits, fd);
     AEFile_Write_i32(rec->getShip()->getIndex(), fd);
 
@@ -1844,7 +1844,7 @@ void *RecordHandler::recordStoreRead(int slot) {
             AEFile_ReadLong(&rec->playTime64, fd);
             AEFile_ReadInt(&rec->field_0x18, fd);
             AEFile_ReadInt(&rec->field_0x1c, fd);
-            AEFile_ReadInt(&rec->killsText, fd);
+            AEFile_ReadInt(&rec->savedLevel, fd);
             AEFile_ReadInt(&rec->field_0x24, fd);
             AEFile_ReadInt(&rec->field_0x28, fd);
             AEFile_ReadInt(&rec->field_0x3c, fd);

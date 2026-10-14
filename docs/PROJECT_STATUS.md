@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (Layout save-menu metrics; older subsystem
+Last reviewed: 2026-10-14 (save-preview level label; older subsystem
 snapshots retain their dates)
+
+## Save-preview level label (2026-10-14)
+
+`MenuTouchWindow::createRecordButtons` now renders GameText ID 321,
+`: ` and the saved integer level. The old source misread `GameRecord+0x20`
+as a `String`; Android IDA and Thumb, plus record serialization and
+`Status::setLevel`, establish its actual type. Extracted production
+expression smoke, native `gof2`, 206/206 ARM units and verifier tests
+pass. Focused source-shape/strict fuzzy improves **89.5%/43.6% →
+89.9%/44.4%**; no exact match. The full report compares
+**4,323/4,524** functions at **93.28%** average source-shape and
+**82.18%** strict fuzzy, with **2,479 linked-exact**, **1,065
+byte-exact**, **123 extras**, zero skipped, and no exact-pair losses.
+Full save/load interaction, asset-backed display and ARM32 runtime
+remain unverified. Next: preview rank and row ownership. See
+[the label audit](MENUTOUCH_PREVIEW_LEVEL_ARM_2026-10-14.md).
 
 ## Layout save-menu button and row metrics (2026-10-14)
 

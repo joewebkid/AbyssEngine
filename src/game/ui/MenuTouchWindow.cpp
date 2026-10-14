@@ -2187,8 +2187,6 @@ static inline void _mtw_ArrayReleaseClasses_StrArr(void *arr) {
     ArrayReleaseClasses<Array<String *> *>(*(Array<Array<String *> *> *) arr);
 }
 
-void *_mtw_String_op_plus(void *out, void *rhs);
-
 static inline void _mtw_TouchButton_ctorFull(void *btn, void *label, int a, int x, int y, int w,
                                              char type, char id) {
     new(btn) TouchButton(*(String *) label, a, x, y, w, (unsigned char) type, (unsigned char) id);
@@ -2296,14 +2294,8 @@ void MenuTouchWindow::createRecordButtons(bool inSaveMode) {
             rowData[3] = credits;
 
             auto *combined = new String();
-            void *label = _mtw_GameText_getText(gtHolder, 0x141);
-            String s6c;
-            s6c.ctor_char("", false);
-            String s60;
-            _mtw_String_op_plus(&s60, label);
-            String s78;
-            s78.Set(((String *) &slot->killsText)->data);
-            _mtw_String_op_plus(combined, &s60);
+            *combined = *(String *) _mtw_GameText_getText(gtHolder, 0x141) +
+                        String(": ", false) + String(static_cast<int>(slot->savedLevel));
             rowData = ((Array<void *> *) this->recordRows->data_[i])->data_;
             rowData[4] = combined;
 
