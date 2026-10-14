@@ -4,6 +4,26 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo docking glide and departure (2026-10-14)
+
+Raw Android Thumb `0xa0050–0xa039c` establishes state-2 docking-point
+distance, state-3 navigation-point distance, integer truncation before
+the 200-unit/radius thresholds, and the common EaseInOutMatrix and
+geometry update. Literal rates are `0.0006f` for approach and
+`0.0012f` for departure. The extracted whole-method smoke checks the
+thresholds, follow rates, frame-time advance and matrix propagation.
+Native `gof2`, 206/206 ARM translation units, 37 verifier tests (one
+skipped), and four PlayerEgo smokes pass. Focused
+`approachDockingPoint` source-shape/strict fuzzy rises
+**52.2%/27.1% → 69.9%/30.7%**; it remains non-exact. Full report
+`_work/player_dock_glide_full_20261014.json` covers **4,323/4,524**
+functions at **93.28%** average source-shape and **82.18%** strict
+fuzzy, with **2,479 linked-exact**, **1,065 byte-exact**, **123 extras**,
+and zero skipped units. Pairwise exact sets have no losses or gains
+against `_work/player_dock_ease_entry_full_20261014.json`. Linked ARM
+gameplay remains unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo docking ease-matrix entry (2026-10-14)
 
 Raw Android Thumb `0x9fdf4–0xa001a`, IDA and Ghidra establish the

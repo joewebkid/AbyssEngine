@@ -199,9 +199,6 @@ int aeabi_idiv_(int a, int b);
 
 float PE_pitchRampDelta(PlayerEgo *self, float rate, int frameTime);
 
-// shortcut: docking glide/easing still uses unresolved shims; replace after the ARM call contracts are recovered.
-int PE_adp_glide(PlayerEgo * self);
-void PE_adp_apply(PlayerEgo * self);
 
 
 float PE_yawRampDelta(float rate, int frameTime);
@@ -1303,6 +1300,21 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
     if (state == 1)
         return 1;
 
+    auto applyEase = [this](float followRate) {
+        auto *ease = static_cast<AbyssEngine::EaseInOutMatrix *>(this->easeMatrix);
+        ease->Increase(static_cast<float>(this->shakeIntensity));
+        Matrix eased = ease->GetValue();
+        Vector current = this->getPosition();
+        Vector delta = *reinterpret_cast<Vector *>(&this->waypointY) - this->getPosition();
+        Vector translation = current + (delta * static_cast<float>(this->shakeIntensity)) * followRate;
+        AbyssEngine::AEMath::MatrixSetTranslation(eased, translation);
+        Matrix identity;
+        this->field_0x4->setMatrix(identity);
+        this->geometry->setMatrix(eased);
+        ((Player *) this->player)->transformMatrix = this->geometry->getMatrix();
+        this->dockOffsetVec = this->geometry->getPosition();
+    };
+
     if (state == 0) {
         Vector pos = ((PlayerEgo *) (this))->getPosition();
         void *nav = target->getNearestNavigationPoint(pos, this->spacePoint);
@@ -1371,7 +1383,15 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
         this->aboutToReachAutoTargetFlag = 1;
         if (this->turretActive != 0)
             ((PlayerEgo *) (this))->setTurretMode(0);
-        int dist = PE_adp_glide(this);
+        Vector targetPos = target->getPosition();
+        const Matrix &targetMatrix = target->geometry->getMatrix();
+        Vector navWorld = targetPos + AbyssEngine::AEMath::MatrixRotateVector(
+            targetMatrix, this->spacePoint->position);
+        SpacePoint *dockPoint = target->getNearestDockingPoint(navWorld);
+        Vector dockWorld = target->getPosition() + AbyssEngine::AEMath::MatrixRotateVector(
+            target->geometry->getMatrix(), dockPoint->position);
+        *reinterpret_cast<Vector *>(&this->waypointY) = dockWorld;
+        int dist = static_cast<int>(AbyssEngine::AEMath::VectorLength(dockWorld - this->getPosition()));
         int radius = g_PE_adp_dockRadius[((Ship *) (PE_status()->getShip()))->getIndex()];
         if (dist < radius) {
             int ev = 0;
@@ -1438,12 +1458,18 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
             this->field_0xb2 = 0;
             return 1;
         }
-        PE_adp_apply(this);
+        // ARM 0xa02c2–0xa039c: approach follows the dock point at 0.0006 per ms.
+        applyEase(0.0006f);
         return 0;
     }
 
     if (state == 3) {
-        int dist = PE_adp_glide(this);
+        SpacePoint *navPoint = static_cast<SpacePoint *>(
+            target->getNearestNavigationPoint(this->getPosition(), this->spacePoint));
+        Vector navWorld = target->getPosition() + AbyssEngine::AEMath::MatrixRotateVector(
+            target->geometry->getMatrix(), navPoint->position);
+        *reinterpret_cast<Vector *>(&this->waypointY) = navWorld;
+        int dist = static_cast<int>(AbyssEngine::AEMath::VectorLength(navWorld - this->getPosition()));
         if (dist < 200) {
             this->field_0x145 = 0;
             this->dockedFlag = 0;
@@ -1469,7 +1495,8 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
             }
             return 0;
         }
-        PE_adp_apply(this);
+        // ARM 0xa0220–0xa029a: departure follows the navigation point twice as fast.
+        applyEase(0.0012f);
     }
     return 0;
 }

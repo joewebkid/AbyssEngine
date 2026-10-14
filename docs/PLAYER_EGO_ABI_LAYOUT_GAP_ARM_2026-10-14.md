@@ -1,5 +1,43 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Docking glide and departure update (2026-10-14)
+
+Raw Android Thumb `0xa0050–0xa039c`, with IDA lines 85689–85709 and
+85836–85875 and Ghidra lines 65537–65561/65687–65779, resolves the
+last two `approachDockingPoint` shims. In state 2 the target's nearest
+docking point is chosen using target position plus rotated held
+SpacePoint, then its own rotated position is added to target position
+and stored as the world-space waypoint at PlayerEgo `+0xec`. The
+integer-truncated distance from the player's position is compared
+against the ship-indexed docking radius. In state 3 the target's
+nearest navigation point is queried from the player's position and
+held SpacePoint, converted to world space and stored at the same
+waypoint; an integer distance below 200 completes departure.
+
+The continuing branches advance EaseInOutMatrix `+0x358` by the
+frame-time integer at `+0x134`, take its current matrix, and replace
+translation with current position plus
+`(waypoint - current position) * frameTime * rate`. ARM literal
+`0x3a1d4952` is `0.0006f` in state 2; `0x3a9d4952` is `0.0012f`
+in state 3. The body geometry at `+0x4` receives an identity matrix,
+the ship geometry at `+0x8` receives the translated ease matrix,
+Player's matrix at `+0x4` copies the ship geometry matrix, and
+PlayerEgo `+0x148` caches the resulting ship position. The original
+does not check for a null nearest point or ease object in these
+branches; the source follows that contract.
+
+The extracted whole-method smoke checks both integer-distance
+thresholds, the 16 ms translation steps, matrix propagation, and
+arrival/exit without a further ease update. Native `gof2`, 206/206
+ARM units, 37 verifier tests (one skipped), and four PlayerEgo smokes
+pass. Focused source-shape/strict fuzzy improves **52.2%/27.1% →
+69.9%/30.7%**; no whole-function exact match is claimed. Full report
+`_work/player_dock_glide_full_20261014.json`: **4,323/4,524**
+covered, **93.28%** average source-shape, **82.18%** strict fuzzy,
+**2,479 linked-exact**, **1,065 byte-exact**, **123 extras**, zero
+skipped units, and no exact-pair losses or gains against the previous
+checkpoint. Linked ARM gameplay is still unverified.
+
 ## Docking ease-matrix entry and audio cue (2026-10-14)
 
 Raw Android Thumb `0x9fdf4–0xa001a`, cross-checked with IDA lines

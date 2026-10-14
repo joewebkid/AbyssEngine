@@ -18,7 +18,12 @@ Vector operator+(const Vector &a, const Vector &b) {
 Vector operator-(const Vector &a, const Vector &b) {
     return {a.x - b.x, a.y - b.y, a.z - b.z};
 }
-struct Matrix { Vector right, up, position, dir; };
+struct Matrix {
+    Vector right{1.0f, 0.0f, 0.0f};
+    Vector up{0.0f, 1.0f, 0.0f};
+    Vector position{};
+    Vector dir{0.0f, 0.0f, 1.0f};
+};
 static const Matrix *expectedFirstMatrix = nullptr;
 static const Matrix *expectedSecondMatrix = nullptr;
 static const Matrix *expectedDockRotationMatrix = nullptr;
@@ -41,6 +46,9 @@ Vector VectorCross(const Vector &a, const Vector &b) {
 Matrix MatrixSetRotation(Matrix &matrix, const Vector &right, const Vector &up, const Vector &dir) {
     matrix.right = right; matrix.up = up; matrix.dir = dir; return matrix;
 }
+Matrix MatrixSetTranslation(Matrix &matrix, const Vector &position) {
+    matrix.position = position; return matrix;
+}
 Vector MatrixGetUp(const Matrix &matrix) { return matrix.up; }
 Vector MatrixGetPosition(const Matrix &matrix) { return matrix.position; }
 Vector MatrixGetDir(const Matrix &matrix) { return matrix.dir; }
@@ -54,9 +62,13 @@ struct EaseInOutMatrix {
     static int creations, destructions;
     Matrix min, max;
     int duration;
+    int elapsed = 0;
+    int increaseCalls = 0;
     EaseInOutMatrix(Matrix from, Matrix to, int milliseconds)
         : min(from), max(to), duration(milliseconds) { ++creations; }
     ~EaseInOutMatrix() { ++destructions; }
+    void Increase(float dt) { elapsed += static_cast<int>(dt); ++increaseCalls; }
+    Matrix GetValue() { return min; }
 };
 int EaseInOutMatrix::creations = 0;
 int EaseInOutMatrix::destructions = 0;
@@ -72,7 +84,7 @@ struct AEGeometry {
     Vector getPosition() { return position; }
     Vector getScaling() { return scaling; }
     void rotate(float x, float y, float z) { assert(x == 0.03f && y == 0.03f && z == 0.03f); ++rotations; }
-    void setMatrix(const Matrix &value) { matrix = value; ++matrixWrites; }
+    void setMatrix(const Matrix &value) { matrix = value; position = value.position; ++matrixWrites; }
 };
 struct PaintCanvas {
     Matrix *local = nullptr;
@@ -466,8 +478,6 @@ struct PlayerEgo {
     void *easeMatrix = nullptr;
     void *dockStation = nullptr;
     LevelScript *levelScript = nullptr;
-    int mockGlideDistance = 0;
-    int dockApplyCalls = 0;
     int engineSoundStops = 0;
     float waypointX = 0.0f, waypointY = 0.0f;
     uint32_t gunBaseGeo = 0;
@@ -575,8 +585,6 @@ Vector PlayerEgo::crosshairPos{};
 Vector PlayerEgo::crosshairShootPos{};
 int dockRadius[1] = {200};
 int *g_PE_adp_dockRadius = dockRadius;
-int PE_adp_glide(PlayerEgo *ego) { return ego->mockGlideDistance; }
-void PE_adp_apply(PlayerEgo *ego) { ++ego->dockApplyCalls; }
 
 // PRODUCTION_METHOD
 // PRODUCTION_UPDATE_DOCKING
@@ -1207,6 +1215,7 @@ int main() {
     SpacePoint dockSpot;
     AEGeometry dockGeometry;
     AEGeometry approachShipGeometry;
+    AEGeometry approachBodyGeometry;
     Radar approachRadar;
     approachScript.m_pLevel = &dockLevel;
     approachEgo.player = &player;
@@ -1215,7 +1224,9 @@ int main() {
     approachEgo.targetFollowCameraPtr = &approachCamera;
     approachEgo.asteroidTargetPtr = &dockTarget;
     approachEgo.geometry = &approachShipGeometry;
+    approachEgo.field_0x4 = &approachBodyGeometry;
     approachEgo.position = {0.0f, 0.0f, 0.0f};
+    approachEgo.shakeIntensity = 16;
     approachEgo.dockScaling = 1400;
     approachEgo.dockApproachThreshold = 2000;
     dockTarget.nearestNav = &dockNav;
@@ -1247,7 +1258,7 @@ int main() {
     assert(approachEgo.aboutToReachAutoTargetFlag == 1);
     dockTarget.position = {1000.0f, 0.0f, 0.0f};
     assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
-    assert(approachEgo.dockingPointIndex == 0 && approachEgo.moveCalls == 3 && approachEgo.dockApplyCalls == 0);
+    assert(approachEgo.dockingPointIndex == 0 && approachEgo.moveCalls == 3);
     assert(approachEgo.spacePoint == &dockNav && dockNav.takes == 1);
     approachEgo.easeMatrix = new AbyssEngine::EaseInOutMatrix(Matrix{}, Matrix{}, 100);
     int oldEaseCreations = AbyssEngine::EaseInOutMatrix::creations;
@@ -1257,7 +1268,7 @@ int main() {
     dockTarget.position = {999.0f, 0.0f, 0.0f};
     assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
     assert(approachEgo.dockingPointIndex == 2 && approachCamera.lookAt);
-    assert(dockTarget.field_0x8c == 0 && approachEgo.moveCalls == 3 && approachEgo.dockApplyCalls == 0);
+    assert(dockTarget.field_0x8c == 0 && approachEgo.moveCalls == 3);
     assert(dockTarget.dockQueries == 1 && dockTarget.lastDockQuery.x == 1399.0f);
     assert(dockTarget.lastDockQuery.y == 5.0f && dockTarget.lastDockQuery.z == 6.0f);
     auto *dockEase = static_cast<AbyssEngine::EaseInOutMatrix *>(approachEgo.easeMatrix);
@@ -1271,14 +1282,19 @@ int main() {
     assert(approachEgo.engineSoundStops == 1);
     ship.handling = 1.4f;
 
-    approachEgo.mockGlideDistance = 200;
+    dockTarget.position = {-190.0f, 0.0f, 0.0f};
     assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
-    assert(approachEgo.aboutToReachAutoTargetFlag == 1 && approachEgo.dockApplyCalls == 1);
-    approachEgo.mockGlideDistance = 199;
+    assert(approachEgo.aboutToReachAutoTargetFlag == 1 && dockEase->increaseCalls == 1);
+    assert(dockEase->elapsed == 16 && approachBodyGeometry.matrixWrites == 1);
+    assert(approachShipGeometry.matrixWrites == 1 && dockTarget.dockQueries == 2);
+    assert(std::fabs(approachShipGeometry.matrix.position.x - 1.92f) < 0.0001f);
+    assert(std::fabs(approachEgo.dockOffsetVec.x - 1.92f) < 0.0001f);
+    assert(std::fabs(player.transformMatrix.position.x - 1.92f) < 0.0001f);
+    dockTarget.position = {-191.0f, 0.0f, 0.0f};
     approachEgo.field_0xb2 = 1;
     assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 1);
     assert(approachEgo.dockingPointIndex == 1 && approachEgo.field_0xb2 == 0);
-    assert(approachEgo.switchToFreeLookCam == 0 && approachEgo.dockApplyCalls == 1);
+    assert(approachEgo.switchToFreeLookCam == 0 && dockEase->increaseCalls == 1);
     assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 1);
 
     approachEgo.dockingPointIndex = 3;
@@ -1290,13 +1306,15 @@ int main() {
     approachEgo.dockStation = &dockLevel;
     approachRadar.dockTargetPtr = &dockTarget;
     approachRadar.dockNavPtr = &dockNav;
-    approachEgo.mockGlideDistance = 200;
+    dockTarget.position = {-200.0f, 0.0f, 0.0f};
     assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
-    assert(approachEgo.dockedFlag == 1 && approachEgo.dockApplyCalls == 2);
+    assert(approachEgo.dockedFlag == 1 && dockEase->increaseCalls == 2);
+    assert(dockEase->elapsed == 32 && approachBodyGeometry.matrixWrites == 2);
+    assert(std::fabs(approachShipGeometry.matrix.position.x - 3.84f) < 0.0001f);
     approachEgo.hackingGame = new HackingGame;
     int oldHackingDestructions = HackingGame::destructions;
     int oldGunResets = player.resetCount;
-    approachEgo.mockGlideDistance = 199;
+    dockTarget.position = {-201.0f, 0.0f, 0.0f};
     assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
     assert(approachEgo.dockedFlag == 0 && approachEgo.field_0x145 == 0);
     assert(approachEgo.asteroidTarget == 0 && approachEgo.dockStation == &dockLevel);
@@ -1307,7 +1325,7 @@ int main() {
     assert(approachScript.cameraResets == 1 && player.resetCount == oldGunResets + 1);
     assert(approachEgo.spacePoint == nullptr && dockNav.releases == 1);
     assert(approachEgo.hackingGame == nullptr && HackingGame::destructions == oldHackingDestructions + 1);
-    assert(!hud.hackingActive && approachEgo.dockApplyCalls == 2);
+    assert(!hud.hackingActive && dockEase->increaseCalls == 2);
     delete static_cast<AbyssEngine::EaseInOutMatrix *>(approachEgo.easeMatrix);
     approachEgo.easeMatrix = nullptr;
 

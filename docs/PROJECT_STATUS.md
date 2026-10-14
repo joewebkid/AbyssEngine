@@ -1,7 +1,36 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo docking ease entry; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo docking glide and exit; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo docking glide and departure (2026-10-14)
+
+Android ARM `0xa0050–0xa039c`, cross-checked with the IDA and Ghidra
+`approachDockingPoint` branches, resolves the remaining state-2/3
+distance and ease-update shims. State 2 selects the nearest docking
+point from the held navigation point, converts it to world space,
+stores it at `+0xec`, and compares integer-truncated distance with
+the ship-specific radius. State 3 repeats the world-space calculation
+with the nearest navigation point and a 200-unit exit threshold. On
+non-arrival, both states advance the EaseInOutMatrix by frame time,
+replace its translation with current position plus the target delta
+scaled by frame time, reset the local body matrix, apply the eased
+ship matrix, copy it to Player, and cache the new position at `+0x148`.
+The ARM literals give follow rates `0.0006f` (approach) and
+`0.0012f` (departure).
+
+The extracted whole-method smoke covers both integer-distance
+boundaries, follow rates, matrix writes and arrival/exit behavior.
+Native `gof2`, 206/206 ARM units, 37 verifier tests (one skipped),
+and four PlayerEgo smokes pass. Focused `approachDockingPoint`
+source-shape/strict fuzzy improves **52.2%/27.1% → 69.9%/30.7%**;
+it is not exact. Full report `_work/player_dock_glide_full_20261014.json`
+covers **4,323/4,524** original functions at **93.28%** average
+source-shape and **82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Exact
+pair sets have no losses or gains against the ease-entry checkpoint.
+Linked ARM gameplay remains unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo docking ease-matrix entry (2026-10-14)
 
