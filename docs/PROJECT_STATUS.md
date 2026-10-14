@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (Layout Hangar/Choice metrics; older subsystem
+Last reviewed: 2026-10-14 (Layout late-window metrics; older subsystem
 snapshots retain their dates)
+
+## Layout late window placement metrics (2026-10-14)
+
+Android `Layout::Layout` at `0xd1028` writes six previously missing
+`+0x2c0/+0x2c4/+0x2cc..+0x2d8` words used by the save list, Hangar,
+dialogue, wanted and mission windows. IDA branch values are checked
+against Thumb stores at `0xd1122–0xd1128` and `0xd1786–0xd18b6`.
+The production constructor smoke checks seven profiles, including
+iPad + Retina. Native `gof2`, 206/206 ARM units, three Layout/
+TouchButton smokes and 37 verifier tests (one skipped) pass. Focused
+C1/C2 source-shape rises **38.0% → 39.9%**; strict fuzzy falls
+**9.7% → 9.1%**. Neither alias is exact. Full report
+`_work/layout_late_window_metrics_full_20261014.json` compares
+**4,323/4,524** original functions at **93.28%** average source-shape
+and **82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras** and zero skipped units. Exact pair
+sets have no losses or gains against the previous Layout checkpoint.
+Visual UI interactions with assets and ARM32 runtime remain unverified.
+Next: audit consumer-backed `Layout+0xcc` in `WantedWindow`. See
+[the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
 
 ## Layout Hangar and choice-window metrics (2026-10-14)
 

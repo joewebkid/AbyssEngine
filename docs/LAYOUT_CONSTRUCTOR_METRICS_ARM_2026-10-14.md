@@ -1,5 +1,43 @@
 # Layout constructor: platform metrics (2026-10-14)
 
+## Late window placement metrics (follow-up)
+
+Android `Layout::Layout()` at `0xd1028` writes six previously missing
+words at `+0x2c0/+0x2c4/+0x2cc..+0x2d8`. The first five were left
+zero by the placeholder fill; `+0x2d8` lay just beyond it and was
+uninitialized. IDA lines 127985–127993
+give iPad HD's packed values, 128065–128069 and 128330–128355 give
+N9, and 128254–128355 give ordinary/Retina/iPad selection. Thumb
+stores at `0xd1122–0xd1128` and `0xd1786–0xd18b6` cross-check the
+offsets and branch structure. `MenuTouchWindow` reads `+0x2c4` for
+save-list columns; `HangarWindow` reads `+0x2cc/+0x2d0` for row and
+marker placement; `DialogueWindow`, `WantedWindow` and `MissionsWindow`
+read `+0x2d4/+0x2d8`. `+0x2c0` has no confirmed consumer here.
+
+| Profile | `+2c0` | `+2c4` | `+2cc` | `+2d0` | `+2d4` | `+2d8` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| ordinary low | -2 | 60 | 60 | 30 | 60 | 75 |
+| ordinary Retina | -4 | 120 | 120 | 60 | 100 | 125 |
+| iPad low | -2 | 90 | 90 | 45 | 100 | 125 |
+| iPad Large low | -2 | 180 | 180 | 90 | 100 | 125 |
+| iPad Retina | -4 | 120 | 120 | 60 | 160 | 200 |
+| N9 | -3 | 108 | 106 | 53 | 100 | 125 |
+| iPad HD | -2 | 126 | 126 | 63 | 112 | 141 |
+
+The production-constructor smoke checks all six words across these seven
+profiles. Native `gof2`, 206/206 ARM units, three Layout/TouchButton
+smokes and 37 verifier tests (one skipped) pass. Focused C1/C2
+source-shape rises **38.0% → 39.9%**, while strict fuzzy falls
+**9.7% → 9.1%**; neither alias is exact. Full report
+`_work/layout_late_window_metrics_full_20261014.json` covers
+**4,323/4,524** original functions at **93.28%** average source-shape
+and **82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, zero skipped units and no exact-pair
+losses or gains against the previous Layout checkpoint. Save-list,
+Hangar, dialogue and mission visual behavior with assets and ARM32 runtime
+remain unverified. Next consumer-backed candidate: `Layout+0xcc`, read
+by `WantedWindow`; audit its platform writes before changing it.
+
 ## Hangar row and ChoiceWindow metrics (follow-up)
 
 Android `Layout::Layout()` at `0xd1028` writes ten formerly zero-filled

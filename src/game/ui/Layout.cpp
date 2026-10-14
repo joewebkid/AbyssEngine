@@ -445,6 +445,13 @@ Layout::Layout() {
     this->rewardBoxX = n9 ? 75 : retina ? 100 : 50;
 
     this->field_0x2bc = hd ? 2 : n9 ? 3 : 2;
+    // Android Layout::Layout @ 0xd1028: save-list, Hangar and dialogue placement.
+    this->field_0x2c0 = hd ? -2 : n9 ? -3 : retina ? -4 : -2;
+    this->field_0x2c4 = hd ? 126 : n9 ? 108 : ipadLarge ? 180 : retina ? 120 : ipad ? 90 : 60;
+    this->field_0x2cc = hd ? 126 : n9 ? 106 : ipadLarge ? 180 : retina ? 120 : ipad ? 90 : 60;
+    this->hangarRowMarkerOffsetY = hd ? 63 : n9 ? 53 : ipadLarge ? 90 : retina ? 60 : ipad ? 45 : 30;
+    this->field_0x2d4 = hd ? 112 : (retina || n9) ? (ipad ? 160 : 100) : ipad ? 100 : 60;
+    this->field_0x2d8 = hd ? 141 : (retina || n9) ? (ipad ? 200 : 125) : ipad ? 125 : 75;
     this->footerButtonOffset = hd ? 4 : n9 ? 5 : retina ? 6 : 3;
     this->field_0x200 = hd ? -18 : n9 ? -26 : retina ? -26 : -13;
     this->field_0x1f0 = hd ? 26 : n9 ? 34 : retina ? 38 : 19;

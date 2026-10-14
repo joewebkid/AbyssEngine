@@ -220,10 +220,17 @@ static void checkHangarChoiceMetrics(const Layout &layout, const int (&expected)
     for (int i = 0; i < 10; ++i) assert(actual[i] == expected[i]);
 }
 
+static void checkLateWindowMetrics(const Layout &layout, const int (&expected)[6]) {
+    const int actual[] = {layout.field_0x2c0, layout.field_0x2c4, layout.field_0x2cc,
+                          layout.hangarRowMarkerOffsetY, layout.field_0x2d4, layout.field_0x2d8};
+    for (int i = 0; i < 6; ++i) assert(actual[i] == expected[i]);
+}
+
 int main() {
     {
         Layout ordinary;
         checkHangarChoiceMetrics(ordinary, {8, 2, 16, 1, 300, 8, 66, 70, 97, 300});
+        checkLateWindowMetrics(ordinary, {-2, 60, 60, 30, 60, 75});
         assert(ordinary.field_0x4 == 15 && ordinary.field_0x58 == 243);
         assert(ordinary.field_0x5c == 30 && ordinary.field_0x60 == 44 && ordinary.field_0x64 == 60);
         assert(ordinary.field_0x68 == 303 && ordinary.field_0x6c == 131);
@@ -252,6 +259,7 @@ int main() {
         Globals::retinaDisplay = 1;
         Layout retina;
         checkHangarChoiceMetrics(retina, {8, 4, 32, 0, 600, 1, 132, 140, 194, 600});
+        checkLateWindowMetrics(retina, {-4, 120, 120, 60, 100, 125});
         assert(retina.field_0x4 == 30 && retina.field_0x58 == 486);
         assert(retina.field_0x5c == 60 && retina.field_0x60 == 88 && retina.field_0x64 == 120);
         assert(retina.field_0x68 == 606 && retina.field_0x6c == 262);
@@ -280,6 +288,7 @@ int main() {
         Globals::n9 = 1;
         Layout n9;
         checkHangarChoiceMetrics(n9, {7, 4, 28, 0, 450, 12, 99, 105, 145, 450});
+        checkLateWindowMetrics(n9, {-3, 108, 106, 53, 100, 125});
         assert(n9.field_0x4 == 22 && n9.field_0x58 == 364);
         assert(n9.field_0x5c == 51 && n9.field_0x60 == 79 && n9.field_0x64 == 108);
         assert(n9.field_0x68 == 545 && n9.field_0x6c == 170);
@@ -308,6 +317,7 @@ int main() {
         Globals::iPadHD = 1;
         Layout ipadHd;
         checkHangarChoiceMetrics(ipadHd, {5, 2, 22, 1, 421, 11, 92, 98, 136, 421});
+        checkLateWindowMetrics(ipadHd, {-2, 126, 126, 63, 112, 141});
         assert(ipadHd.field_0x4 == 21 && ipadHd.field_0x58 == 341);
         assert(ipadHd.field_0x5c == 63 && ipadHd.field_0x60 == 90 && ipadHd.field_0x64 == 112);
         assert(ipadHd.field_0x68 == 566 && ipadHd.field_0x6c == 191);
@@ -336,6 +346,7 @@ int main() {
         Globals::iPad = 1;
         Layout ipad;
         checkHangarChoiceMetrics(ipad, {8, 2, 16, 1, 300, 8, 66, 70, 97, 300});
+        checkLateWindowMetrics(ipad, {-2, 90, 90, 45, 100, 125});
         assert(ipad.field_0x5c == 45 && ipad.field_0x60 == 64 && ipad.field_0x64 == 80);
         assert(ipad.field_0x68 == 403 && ipad.field_0x6c == 136);
         assert(ipad.field_0x74 == 115 && ipad.field_0x78 == 263 && ipad.field_0x7c == 9);
@@ -356,6 +367,7 @@ int main() {
         Globals::iPadLarge = 1;
         Layout ipadLarge;
         checkHangarChoiceMetrics(ipadLarge, {8, 2, 16, 1, 300, 8, 66, 70, 97, 300});
+        checkLateWindowMetrics(ipadLarge, {-2, 180, 180, 90, 100, 125});
         assert(ipadLarge.field_0x5c == 90 && ipadLarge.field_0x60 == 128 && ipadLarge.field_0x64 == 160);
         assert(ipadLarge.field_0x68 == 806 && ipadLarge.field_0x6c == 272);
         assert(ipadLarge.field_0x74 == 115 && ipadLarge.field_0x78 == 263 && ipadLarge.field_0x7c == 9);
@@ -374,6 +386,10 @@ int main() {
         assert(ipadLarge.field_0xdc == 10.0f && ipadLarge.driftSpeedDivisor == 20.0f &&
                ipadLarge.ringRadiusScale == 1.0f);
         Globals::iPadLarge = 0;
+        Globals::retinaDisplay = 1;
+        Layout ipadRetina;
+        checkLateWindowMetrics(ipadRetina, {-4, 120, 120, 60, 160, 200});
+        Globals::retinaDisplay = 0;
         Globals::iPad = 0;
     }
     Layout layout;
