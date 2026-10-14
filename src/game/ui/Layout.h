@@ -143,7 +143,9 @@ public:
         int field_0x114_strip5c;
     };
 
-    uint8_t _pad_0x118[12];
+    int field_0x118;
+    int field_0x11c;
+    int field_0x120;
     union {
         int field_0x124;
         // Android ListItemWindow::draw: extra top inset before the item/ship

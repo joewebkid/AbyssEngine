@@ -1,7 +1,30 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (Layout window/touch metrics; older subsystem
+Last reviewed: 2026-10-14 (Layout save-list metrics; older subsystem
 snapshots retain their dates)
+
+## Layout save-list metrics (2026-10-14)
+
+Android `Layout::Layout` at `0xd1028` writes the previously zero-filled
+`+0x108..+0x120` group and `+0x128`. The first four slots control
+`MenuTouchWindow` save-list row and button placement; the remaining
+slots are direct adjacent constructor writes with no confirmed
+consumer in this package. IDA's ordinary/Retina vector selection and
+N9/iPad HD literals are cross-checked with raw Thumb stores at
+`0xd119a–0xd11ac`, `0xd1a9c–0xd1aac`, and `0xd1c48–0xd1c8c`.
+The production constructor smoke checks all eight values for six
+platform profiles. Native `gof2`, 206/206 ARM units, three Layout/
+TouchButton smokes and 37 verifier tests (one skipped) pass. Focused
+constructor C1/C2 source-shape/strict fuzzy rises **34.3%/9.5% →
+35.8%/9.8%**; neither alias is exact. Full report
+`_work/layout_save_metrics_full_20261014.json` covers
+**4,323/4,524** original functions at **93.28%** average
+source-shape and **82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Exact
+pair sets have no losses or gains against the prior Layout checkpoint.
+Save/load interaction, asset-backed rendering and ARM32 runtime remain
+unverified. Next: consumer-backed `Layout+0x254..+0x278` Hangar
+metrics. See [the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
 
 ## Layout window and touch metrics (2026-10-14)
 

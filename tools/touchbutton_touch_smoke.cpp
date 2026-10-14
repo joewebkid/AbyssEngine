@@ -220,6 +220,10 @@ int main() {
         assert(ordinary.field_0x68 == 303 && ordinary.field_0x6c == 131);
         assert(ordinary.field_0x74 == 115 && ordinary.field_0x78 == 263 && ordinary.field_0x7c == 9);
         assert(ordinary.field_0x80_touchMargin == 10 && ordinary.field_0x84 == 80 && ordinary.field_0x88 == 30);
+        assert(ordinary.field_0x108 == 0 && ordinary.field_0x10c_rowBaseY == 1 &&
+               ordinary.field_0x110_strip58 == 2 && ordinary.field_0x114_strip5c == 1);
+        assert(ordinary.field_0x118 == 7 && ordinary.field_0x11c == 25 &&
+               ordinary.field_0x120 == 15 && ordinary.field_0x128 == 1);
         assert(ordinary.rewardBoxWidth == 75 && ordinary.rewardBoxHeight == 196);
         assert(ordinary.field_0x238 == 50 && ordinary.helpWindowY == 76);
         assert(ordinary.field_0x70_rowHeight == 30 && ordinary.field_0x8c == 32);
@@ -243,6 +247,10 @@ int main() {
         assert(retina.field_0x68 == 606 && retina.field_0x6c == 262);
         assert(retina.field_0x74 == 230 && retina.field_0x78 == 526 && retina.field_0x7c == 18);
         assert(retina.field_0x80_touchMargin == 20 && retina.field_0x84 == 160 && retina.field_0x88 == 60);
+        assert(retina.field_0x108 == -2 && retina.field_0x10c_rowBaseY == 2 &&
+               retina.field_0x110_strip58 == 1 && retina.field_0x114_strip5c == -1);
+        assert(retina.field_0x118 == 14 && retina.field_0x11c == 50 &&
+               retina.field_0x120 == 28 && retina.field_0x128 == 2);
         assert(retina.rewardBoxWidth == 150 && retina.rewardBoxHeight == 392);
         assert(retina.field_0x70_rowHeight == 60 && retina.field_0x8c == 64);
         assert(retina.field_0x90 == 0x3ea66666 && retina.field_0x94 == 20);
@@ -266,6 +274,10 @@ int main() {
         assert(n9.field_0x68 == 545 && n9.field_0x6c == 170);
         assert(n9.field_0x74 == 207 && n9.field_0x78 == 473 && n9.field_0x7c == 13);
         assert(n9.field_0x80_touchMargin == 15 && n9.field_0x84 == 120 && n9.field_0x88 == 45);
+        assert(n9.field_0x108 == -1 && n9.field_0x10c_rowBaseY == 2 &&
+               n9.field_0x110_strip58 == 1 && n9.field_0x114_strip5c == -1);
+        assert(n9.field_0x118 == 13 && n9.field_0x11c == 37 &&
+               n9.field_0x120 == 22 && n9.field_0x128 == 2);
         assert(n9.rewardBoxWidth == 112 && n9.rewardBoxHeight == 352);
         assert(n9.field_0x70_rowHeight == 51 && n9.field_0x8c == 57);
         assert(n9.field_0x90 == 0x3ea66666 && n9.field_0x94 == 15);
@@ -289,6 +301,10 @@ int main() {
         assert(ipadHd.field_0x68 == 566 && ipadHd.field_0x6c == 191);
         assert(ipadHd.field_0x74 == 161 && ipadHd.field_0x78 == 369 && ipadHd.field_0x7c == 12);
         assert(ipadHd.field_0x80_touchMargin == 14 && ipadHd.field_0x84 == 112 && ipadHd.field_0x88 == 42);
+        assert(ipadHd.field_0x108 == -2 && ipadHd.field_0x10c_rowBaseY == 1 &&
+               ipadHd.field_0x110_strip58 == 2 && ipadHd.field_0x114_strip5c == 1);
+        assert(ipadHd.field_0x118 == 9 && ipadHd.field_0x11c == 35 &&
+               ipadHd.field_0x120 == 21 && ipadHd.field_0x128 == 1);
         assert(ipadHd.rewardBoxWidth == 140 && ipadHd.helpWindowX == 331);
         assert(ipadHd.field_0x70_rowHeight == 63 && ipadHd.field_0x8c == 45);
         assert(ipadHd.field_0x90 == 1055696996 && ipadHd.field_0x94 == 14);
@@ -311,6 +327,10 @@ int main() {
         assert(ipad.field_0x68 == 403 && ipad.field_0x6c == 136);
         assert(ipad.field_0x74 == 115 && ipad.field_0x78 == 263 && ipad.field_0x7c == 9);
         assert(ipad.field_0x80_touchMargin == 10 && ipad.field_0x84 == 80 && ipad.field_0x88 == 30);
+        assert(ipad.field_0x108 == 0 && ipad.field_0x10c_rowBaseY == 1 &&
+               ipad.field_0x110_strip58 == 2 && ipad.field_0x114_strip5c == 1);
+        assert(ipad.field_0x118 == 7 && ipad.field_0x11c == 25 &&
+               ipad.field_0x120 == 15 && ipad.field_0x128 == 1);
         assert(ipad.rewardBoxWidth == 100 && ipad.field_0x2f4 == 80);
         assert(ipad.field_0x2f8 == 1128792064 && ipad.helpWindowY == 144);
         assert(ipad.field_0x70_rowHeight == 45 && ipad.field_0x90 == 0x3ea66666);
@@ -326,6 +346,10 @@ int main() {
         assert(ipadLarge.field_0x68 == 806 && ipadLarge.field_0x6c == 272);
         assert(ipadLarge.field_0x74 == 115 && ipadLarge.field_0x78 == 263 && ipadLarge.field_0x7c == 9);
         assert(ipadLarge.field_0x80_touchMargin == 10 && ipadLarge.field_0x84 == 80 && ipadLarge.field_0x88 == 30);
+        assert(ipadLarge.field_0x108 == 0 && ipadLarge.field_0x10c_rowBaseY == 1 &&
+               ipadLarge.field_0x110_strip58 == 2 && ipadLarge.field_0x114_strip5c == 1);
+        assert(ipadLarge.field_0x118 == 7 && ipadLarge.field_0x11c == 25 &&
+               ipadLarge.field_0x120 == 15 && ipadLarge.field_0x128 == 1);
         assert(ipadLarge.rewardBoxWidth == 200 && ipadLarge.field_0x2f4 == 160);
         assert(ipadLarge.field_0x2f8 == 1137180672 && ipadLarge.helpWindowY == 288);
         assert(ipadLarge.field_0x70_rowHeight == 90 && ipadLarge.field_0x90 == 0x3ea66666);

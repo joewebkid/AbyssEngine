@@ -1,5 +1,43 @@
 # Layout constructor: platform metrics (2026-10-14)
 
+## Save-list placement and adjacent metrics (follow-up)
+
+Android `Layout::Layout()` at `0xd1028` writes `+0x108..+0x128`
+in three platform branches. IDA lines 128014–128017 give the iPad
+HD packed words, 128460–128463 the N9 words, and 128473–128581
+the ordinary/Retina vector selection and later scalar writes.
+Raw Thumb `0xd119a–0xd11ac`, `0xd1a9c–0xd1aac` and
+`0xd1c48–0xd1c8c` independently show stores at `+0x108`,
+`+0x118` and `+0x128`. For ordinary non-Retina, the vector mask
+selects words `[0,1,2,1]`; Retina selects `[-2,2,1,-1]`.
+`+0x124` was already set by the ListItem icon pass, so this package
+restores the other eight slots.
+
+| Profile | `+108` | `+10c` | `+110` | `+114` | `+118` | `+11c` | `+120` | `+128` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| ordinary low, iPad low, iPad Large low | 0 | 1 | 2 | 1 | 7 | 25 | 15 | 1 |
+| ordinary Retina | -2 | 2 | 1 | -1 | 14 | 50 | 28 | 2 |
+| N9 | -1 | 2 | 1 | -1 | 13 | 37 | 22 | 2 |
+| iPad HD | -2 | 1 | 2 | 1 | 9 | 35 | 21 | 1 |
+
+`MenuTouchWindow` reads the first four slots for save-list button
+placement, row base and background strips. The `+0x118..+0x120`
+slots replace the same-size padding but retain offset-based names
+because no consumer is confirmed here; `+0x128` likewise has no
+confirmed consumer. The six-profile production constructor smoke
+checks every value. Native `gof2`, 206/206 ARM units, three Layout/
+TouchButton smokes and 37 verifier tests (one skipped) pass. Focused
+C1/C2 source-shape/strict fuzzy rises **34.3%/9.5% → 35.8%/9.8%**;
+neither alias is exact. Full report
+`_work/layout_save_metrics_full_20261014.json` covers
+**4,323/4,524** original functions at **93.28%** average
+source-shape and **82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, zero skipped units and no
+exact-pair losses or gains against the previous Layout checkpoint.
+Live save/load interaction, asset-backed visuals and ARM32 runtime
+remain unverified. Next consumer-backed candidate:
+`Layout+0x254..+0x278` for HangarWindow.
+
 ## Window, button and touch metrics (follow-up)
 
 Android `Layout::Layout()` at `0xd1028` writes the `+0x5c..+0x88`

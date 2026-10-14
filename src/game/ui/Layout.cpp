@@ -321,6 +321,28 @@ Layout::Layout() {
         this->oreTextYOffset = retina ? 5 : 3;
     }
 
+    // Android Layout::Layout @ 0xd1028: save-list placement and adjacent metrics.
+    if (hd) {
+        this->field_0x108 = -2; this->field_0x10c_rowBaseY = 1;
+        this->field_0x110_strip58 = 2; this->field_0x114_strip5c = 1;
+        this->field_0x118 = 9; this->field_0x11c = 35;
+        this->field_0x120 = 21; this->field_0x128 = 1;
+    } else if (n9) {
+        this->field_0x108 = -1; this->field_0x10c_rowBaseY = 2;
+        this->field_0x110_strip58 = 1; this->field_0x114_strip5c = -1;
+        this->field_0x118 = 13; this->field_0x11c = 37;
+        this->field_0x120 = 22; this->field_0x128 = 2;
+    } else {
+        this->field_0x108 = retina ? -2 : 0;
+        this->field_0x10c_rowBaseY = retina ? 2 : 1;
+        this->field_0x110_strip58 = retina ? 1 : 2;
+        this->field_0x114_strip5c = retina ? -1 : 1;
+        this->field_0x118 = retina ? 14 : 7;
+        this->field_0x11c = retina ? 50 : 25;
+        this->field_0x120 = retina ? 28 : 15;
+        this->field_0x128 = retina ? 2 : 1;
+    }
+
     // Hud::init copies these eight constructor metrics into its touch and display state.
     if (hd) {
         this->field_0x12c = 21;  this->field_0x130 = 78;

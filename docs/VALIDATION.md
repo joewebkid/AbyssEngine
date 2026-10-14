@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout save-list metrics (2026-10-14)
+
+Android `Layout::Layout()` at `0xd1028`, IDA lines 128014–128017,
+128460–128463 and 128473–128581, plus raw Thumb's `+0x108/+0x118`
+vector stores, establish eight previously zero-filled slots through
+`+0x128`. `MenuTouchWindow` consumes the first four for save-list
+placement. The production constructor smoke checks six platform
+profiles; native `gof2`, 206/206 ARM units, three Layout/TouchButton
+smokes and 37 verifier tests (one skipped) pass. Focused C1/C2
+source-shape/strict fuzzy improves **34.3%/9.5% → 35.8%/9.8%**;
+neither is exact. Full report `_work/layout_save_metrics_full_20261014.json`
+covers **4,323/4,524** functions at **93.28%** average source-shape
+and **82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Exact
+pair sets have no losses or gains against
+`_work/layout_window_touch_metrics_full_20261014.json`. Live
+save/load UI, asset-backed visuals and ARM32 runtime are unverified.
+See [the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
+
 ## Layout window and touch metrics (2026-10-14)
 
 Android `Layout::Layout()` at `0xd1028`, IDA lines 127981–128083
