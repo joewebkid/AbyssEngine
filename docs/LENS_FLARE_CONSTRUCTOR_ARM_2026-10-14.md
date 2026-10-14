@@ -28,6 +28,7 @@ The test does not exercise real GL resources. `LensFlare::render2D`
 still has a null canvas alias, declared-only drawing helpers and
 substantial geometry/color differences from the Android body at
 `0x11d088`. Its focused source-shape/strict fuzzy remains
-**64.2%/15.5%**; live rendering, complete executable linking and
-ARM32 runtime are unverified. Recover `render2D` as the next bounded
-LensFlare package.
+**64.2%/15.5%** at this checkpoint. The subsequent
+[render audit](LENS_FLARE_RENDER_ARM_2026-10-14.md) addresses those
+source gaps; live GL, complete executable linking and ARM32 runtime
+remain unverified.

@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## LensFlare render2D recovery (2026-10-14)
+
+Android `render2D` at `0x11d088` establishes seven image draws,
+per-pass canvas/color/size arguments and a final input-canvas
+color-preserving fill. The extracted production-body host smoke
+checks center/displaced output and no-draw guards. Native `gof2`,
+206/206 ARM units and 37 verifier tests (one skipped) pass. Focused
+source-shape/strict fuzzy changes **64.2%/15.5% → 94.8%/48.7%**;
+the function is not exact. Full report
+`_work/lens_flare_render_full_20261014.json` covers **4,323/4,524**
+functions at **93.29%** average source-shape and **82.21%** strict
+fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**, **123
+extras** and zero skipped. Exact-pair and extra-symbol sets have no
+losses or gains against `_work/lens_flare_ctor_full_20261014.json`.
+Real GL, camera integration and ARM32 runtime remain unverified. See
+[the render audit](LENS_FLARE_RENDER_ARM_2026-10-14.md).
+
 ## LensFlare constructor canvas binding (2026-10-14)
 
 Android constructor `0x11d00c` uses `Globals::Canvas` for resource

@@ -1,4 +1,4 @@
-"""Run the production LensFlare constructor with canvas fixtures."""
+"""Run production LensFlare construction and rendering with canvas fixtures."""
 
 from pathlib import Path
 import shutil
@@ -15,13 +15,12 @@ def main():
         raise SystemExit("g++ is required")
     with tempfile.TemporaryDirectory(prefix="lens-flare-smoke-", dir=ROOT / "_work") as temp:
         source = (ROOT / "src/engine/render/LensFlare.cpp").read_text()
-        begin = source.index("LensFlare::LensFlare(")
-        end = source.index("void LensFlare::render2D(", begin)
+        begin = source.index("// ELF .rodata")
         extracted = Path(temp) / "lens_flare_ctor.cpp"
         extracted.write_text(
             '#include "engine/render/LensFlare.h"\n'
             '#include "engine/render/PaintCanvas.h"\n'
-            '#include "game/core/Globals.h"\n' + source[begin:end]
+            '#include "game/core/Globals.h"\n' + source[begin:]
         )
         exe = Path(temp) / "lens_flare_smoke.exe"
         subprocess.run([
@@ -30,7 +29,7 @@ def main():
             "-o", str(exe),
         ], cwd=ROOT, check=True)
         subprocess.run([str(exe)], cwd=ROOT, check=True)
-    print("LensFlare constructor host smoke: OK")
+    print("LensFlare constructor/render host smoke: OK")
 
 
 if __name__ == "__main__":

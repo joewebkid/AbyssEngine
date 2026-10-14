@@ -2,8 +2,6 @@
 #include "engine/render/PaintCanvas.h"
 #include "game/core/Globals.h"
 
-static PaintCanvas *const gLF_Canvas2 = nullptr;
-
 // ELF .rodata, Android libgof2hdaa.so:
 // dword_201E40 / dword_201E20 / dword_201E00.
 static const uint32_t gFlareR[5] = {200, 200, 255, 255, 255};
@@ -27,7 +25,7 @@ LensFlare::~LensFlare() {
 }
 
 void LensFlare::render2D(float srcX, float srcY, float alpha, int colorIndex) {
-    uint32_t r, g, b;
+    unsigned int r, g, b;
     if ((unsigned) colorIndex <= 4) {
         r = gFlareR[colorIndex];
         g = gFlareG[colorIndex];
@@ -38,102 +36,108 @@ void LensFlare::render2D(float srcX, float srcY, float alpha, int colorIndex) {
         b = 0xff;
     }
 
-    if (alpha >= 0.0f)
+    if (!(alpha < 0.0f))
         return;
 
     int w = this->width;
-    if ((float) (-w) >= srcX)
-        return;
-    if ((float) (w * 2) <= srcX)
-        return;
-
     int h = this->height;
-    if ((float) (-h) >= srcY)
-        return;
-    if ((float) (h * 2) <= srcY)
+    if (!((float) -w < srcX && srcX < (float) (w * 2) &&
+          (float) -h < srcY && srcY < (float) (h * 2)))
         return;
 
     float cx = (float) (w >> 1);
     float cy = (float) (h >> 1);
     float dx = cx - srcX;
     float dy = cy - srcY;
-    float dist = LensFlare_sqrtf(dx * dx + dy * dy);
+    float dist = static_cast<Globals *>(Globals::globals)->sqrt(dx * dx + dy * dy);
 
-    float ndx = -dx * 1.5f;
-    float ndy = -dy * 1.5f;
+    float stepX = -(dx * 65536.0f);
+    float stepY = -(dy * 65536.0f);
     if (dist > 0.0f) {
-        ndx = ndx / dist;
-        ndy = ndy / dist;
+        stepX /= dist;
+        stepY /= dist;
     }
 
     float halfH = (float) (h >> 1);
     float base = (colorIndex == 5) ? gFlareIntensityBaseColor5 : gFlareIntensityBase;
-    float fade = base * (1.0f - dist / halfH);
-    this->intensity = fade;
+    this->intensity = base * (1.0f - dist / halfH);
 
-    PaintCanvas *canvas = *(PaintCanvas **) gLF_Canvas2;
-    void *img0 = (void *) (uintptr_t) this->images[0];
-    void *img1 = (void *) (uintptr_t) this->images[1];
-    void *img2 = (void *) (uintptr_t) this->images[2];
+    float spanX = dist * stepX;
+    float spanY = dist * stepY;
+    constexpr float fixedToPixel = 1.0f / 65536.0f;
+    PaintCanvas *globalCanvas = Globals::Canvas;
+    unsigned int img0 = this->images[0];
+    unsigned int img1 = this->images[1];
+    unsigned int img2 = this->images[2];
 
-    {
-        uint32_t a = (uint32_t)(1.0f - (1.0f - fade));
-        uint32_t color = (a << 0) | (r << 8) | (g << 16) | (b << 24);
-        LensFlare_setColor(canvas, color);
-        float px = cx + ndx * 0.5f * 0.5f * 17.0f;
-        float py = cy + ndy * 0.5f * 0.5f * 17.0f;
-        LensFlare_drawScaled(canvas, img0, (int) px, (int) py);
+    globalCanvas->SetColor((unsigned char) r, (unsigned char) g, (unsigned char) b,
+                           (unsigned char) (120.0f - (50.0f - this->intensity)));
+    globalCanvas->DrawImage2D(img0,
+                              (int) (cx + spanX * 0.5f * fixedToPixel),
+                              (int) (cy + spanY * 0.5f * fixedToPixel), 0x11, 0x44);
+
+    int imageWidth = globalCanvas->GetImage2DWidth(img0);
+    int imageHeight = globalCanvas->GetImage2DWidth(img0);
+    globalCanvas->DrawImage2D(img0,
+                              (int) (cx + spanX * 0.25f * fixedToPixel),
+                              (int) (cy + spanY * 0.25f * fixedToPixel),
+                              (int) ((float) imageWidth * 0.75f),
+                              (int) ((float) imageHeight * 0.75f), 0x11, 0x44, 0);
+
+    imageWidth = globalCanvas->GetImage2DWidth(img1);
+    imageHeight = globalCanvas->GetImage2DWidth(img1);
+    float farX = spanX * 0.75f * fixedToPixel;
+    float farY = spanY * 0.75f * fixedToPixel;
+    globalCanvas->DrawImage2D(img1, (int) (cx + farX), (int) (cy + farY),
+                              (int) ((float) imageWidth * 0.5f),
+                              (int) ((float) imageHeight * 0.5f), 0x11, 0x44, 0);
+
+    globalCanvas->SetColor((unsigned char) r, (unsigned char) g, (unsigned char) b,
+                           (unsigned char) (90.0f - (50.0f - this->intensity)));
+    if (50.0f - this->intensity < 90.0f) {
+        imageWidth = globalCanvas->GetImage2DWidth(img0);
+        imageHeight = globalCanvas->GetImage2DWidth(img0);
+        globalCanvas->DrawImage2D(img0,
+                                  (int) (cx + spanX * 0.125f * fixedToPixel),
+                                  (int) (cy + spanY * 0.125f * fixedToPixel),
+                                  (int) ((float) imageWidth * 1.25f),
+                                  (int) ((float) imageHeight * 1.25f), 0x11, 0x44, 0);
     }
 
-    {
-        int iw = LensFlare_imgHandle(img0);
-        float s = (float) iw * 0.75f;
-        LensFlare_drawScaled(canvas, img0, (int) (cx + ndx * s), (int) (cy + ndy * s));
-    }
+    globalCanvas->SetColor((unsigned char) r, (unsigned char) g, (unsigned char) b,
+                           (unsigned char) (120.0f - (50.0f - this->intensity)));
+    imageWidth = globalCanvas->GetImage2DWidth(img1);
+    imageHeight = globalCanvas->GetImage2DWidth(img1);
+    globalCanvas->DrawImage2D(img1,
+                              (int) (cx + spanX / 11.0f * fixedToPixel),
+                              (int) (cy + spanY / 11.0f * fixedToPixel),
+                              (int) ((float) imageWidth * 0.5f),
+                              (int) ((float) imageHeight * 0.5f), 0x11, 0x44, 0);
 
-    {
-        int ih = LensFlare_imgHandle(img1);
-        float s = (float) ih * 0.5f;
-        LensFlare_drawScaled(canvas, img1, (int) (cx + ndx * s * 17.0f),
-                             (int) (cy + ndy * s * 17.0f));
-        float s2 = (float) ih * 0.25f;
-        LensFlare_drawScaled(canvas, img1, (int) (cx + ndx * s2 * 17.0f),
-                             (int) (cy + ndy * s2 * 17.0f));
-    }
+    globalCanvas->SetColor((unsigned char) r, (unsigned char) g, (unsigned char) b,
+                           (unsigned char) (120.0f - (50.0f - this->intensity)));
+    imageWidth = globalCanvas->GetImage2DWidth(img2);
+    imageHeight = globalCanvas->GetImage2DWidth(img2);
+    globalCanvas->DrawImage2D(img2, (int) (cx - farX), (int) (cy - farY),
+                              imageWidth + imageWidth, imageHeight + imageHeight,
+                              0x11, 0x44, 0);
 
-    {
-        uint32_t a = (uint32_t)(1.0f - this->intensity);
-        uint32_t color = (a << 0) | (r << 8) | (g << 16) | (b << 24);
-        LensFlare_setColor(canvas, color);
-    }
-    if (1.0f - this->intensity < 0.625f) {
-        int iw = LensFlare_imgWidth(canvas, img0);
-        int ih = LensFlare_imgWidth(canvas, img0);
-        float s = (float) iw * 1.25f;
-        LensFlare_drawScaled(canvas, img0, (int) (cx + ndx * (float) ih * 0.125f * 17.0f),
-                             (int) (cy + ndy * s));
-    }
-
-    {
-        uint32_t a = (uint32_t)(1.0f - this->intensity);
-        uint32_t color = (a << 0) | (r << 8) | (g << 16) | (b << 24);
-        LensFlare_setColor(canvas, color);
-        int iw0 = LensFlare_imgWidth(canvas, img2);
-        int iw1 = LensFlare_imgWidth(canvas, img2);
-        float s = (float) iw0 * 2.0f;
-        LensFlare_drawScaled(canvas, img2, (int) (cx + ndx * (float) iw1 * 0.5f),
-                             (int) (cy + ndy * s));
-    }
+    globalCanvas->SetColor((unsigned char) r, (unsigned char) g, (unsigned char) b,
+                           (unsigned char) (120.0f - (50.0f - this->intensity)));
+    imageWidth = globalCanvas->GetImage2DWidth(img2);
+    imageHeight = globalCanvas->GetImage2DWidth(img2);
+    globalCanvas->DrawImage2D(img2,
+                              (int) (cx - spanX * 0.2f * fixedToPixel),
+                              (int) (cy - spanY * 0.2f * fixedToPixel),
+                              (int) ((float) imageWidth * 0.5f),
+                              (int) ((float) imageHeight * 0.5f), 0x11, 0x44, 0);
 
     if (this->intensity > 0.0f) {
-        int saved = (int) (uintptr_t) this->canvas;
-        LensFlare_pushState(this->canvas);
-        uint32_t color = (g << 16) | (b << 8) | (r << 24);
-        uint32_t shifted = color + (uint32_t)(int)
-        this->intensity;
-        LensFlare_setBlend(this->canvas, shifted);
-        LensFlare_drawFinal(this->canvas, this->images, 0, this->height);
-        LensFlare_restoreState(this->canvas, saved);
+        unsigned int oldColor = this->canvas->GetColor();
+        this->canvas->SetColor(((g << 16) | (b << 8) | (r << 24)) +
+                               (int) this->intensity);
+        this->canvas->FillRectangle(0, 0, this->width, this->height);
+        this->canvas->SetColor(oldColor);
     }
 }
 
