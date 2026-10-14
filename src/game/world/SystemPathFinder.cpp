@@ -1,7 +1,5 @@
 #include "game/world/SystemPathFinder.h"
-#include "engine/render/LODManager.h"
-
-static Status **volatile g_SystemPathFinder_status = nullptr;
+#include "game/core/Globals.h"
 
 SystemPathFinder::SystemPathFinder() {
 }
@@ -87,7 +85,6 @@ Array<int> *SystemPathFinder::getSystemPath(Array<SolarSystem *> *systems,
         nodes->data()[i] = new Node((int) i);
     }
 
-    Status **statusPtr = g_SystemPathFinder_status;
     for (uint32_t s = 0; s < systems->size(); ++s) {
         Array<int> *routes = (Array<int> *) systems->data()[s]->getRoutes();
         if (routes == nullptr) {
@@ -95,7 +92,7 @@ Array<int> *SystemPathFinder::getSystemPath(Array<SolarSystem *> *systems,
         }
         for (uint32_t j = 0; j < routes->size(); ++j) {
             Array<uint8_t> *visibilities =
-                    (Array<uint8_t> *) (*statusPtr)->getSystemVisibilities();
+                    (Array<uint8_t> *) Globals::status->getSystemVisibilities();
             if (visibilities == nullptr) {
                 continue;
             }
@@ -121,10 +118,9 @@ Array<int> *SystemPathFinder::getSystemPath(Array<SolarSystem *> *systems,
                 out[i + 1] = nodePath->data()[i]->value;
             }
         }
-        for (uint32_t i = 0; i < nodePath->size(); ++i) {
-            delete nodePath->data()[i];
-        }
         delete nodePath;
+        ArrayReleaseClasses(*nodes);
+        delete nodes;
     }
     return path;
 }

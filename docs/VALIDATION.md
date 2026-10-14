@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## SystemPathFinder route state and node release (2026-10-14)
+
+Android `getSystemPath` at `0x11b7a8` reads `Globals::status` and, on
+success, releases its allocated node array with
+`ArrayReleaseClasses<Node *>`. The production-body host smoke checks
+route construction, jump distance and visibility filtering. Native
+`gof2`, 206/206 ARM units and 37 verifier tests (one skipped) pass.
+Focused source-shape/strict fuzzy changes **95.4%/67.6% →
+96.0%/59.1%**; it is not exact. Full report
+`_work/system_pathfinder_full_20261014.json` covers **4,323/4,524**
+functions at **93.28%** average source-shape and **82.18%** strict
+fuzzy, with **2,480 linked-exact**, **1,065 byte-exact**, **123 extras**
+and zero skipped. Exact-pair comparison with
+`_work/menutouch_preview_level_full_20261014.json` finds zero losses,
+one new linked-exact `ArrayReleaseClasses<Node *>` pair and no
+byte-exact or extra-set changes. Repeated-query memory behavior and
+ARM32 runtime are unverified. See
+[the pathfinder audit](SYSTEM_PATH_FINDER_ROUTE_ARM_2026-10-14.md).
+
 ## Save-preview level label (2026-10-14)
 
 Android `MenuTouchWindow::createRecordButtons` at `0x125454`, IDA lines

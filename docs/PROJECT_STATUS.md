@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (save-preview level label; older subsystem
+Last reviewed: 2026-10-14 (SystemPathFinder route state; older subsystem
 snapshots retain their dates)
+
+## SystemPathFinder route state and node release (2026-10-14)
+
+Android `getSystemPath` at `0x11b7a8` uses `Globals::status` for system
+visibility and releases the complete node array after constructing a
+successful path. The source's null local status pointer and partial
+node cleanup are corrected. A production-body host smoke checks a
+two-jump path, jump distance and an invisible destination; native
+`gof2`, 206/206 ARM units and verifier tests pass. Focused source-shape
+improves **95.4% → 96.0%** while strict fuzzy falls **67.6% → 59.1%**;
+the function is not exact. Full coverage is **4,323/4,524** at
+**93.28%** average source-shape and **82.18%** strict fuzzy, with
+**2,480 linked-exact**, **1,065 byte-exact**, **123 extras**, zero
+skipped and no lost exact pair. The newly emitted node-array release
+specialization adds one linked-exact pair. Repeated no-route queries,
+live StarMap behavior and ARM32 runtime remain unverified. See
+[the pathfinder audit](SYSTEM_PATH_FINDER_ROUTE_ARM_2026-10-14.md).
 
 ## Save-preview level label (2026-10-14)
 
