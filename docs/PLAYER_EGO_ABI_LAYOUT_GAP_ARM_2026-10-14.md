@@ -192,3 +192,30 @@ later offsets can compensate for this within the same total size.
 The camera setter's handling call and full linked/ARM gameplay
 remain unverified. Next map the HUD and terminal groups against
 raw ARM before claiming a completed class layout.
+
+## Camera-handling route repaired (2026-10-14)
+
+`Ship::getHandling()` is declared and implemented as a float. The
+previous constructor assigned it to `PlayerEgo::handling`, which
+was incorrectly typed `int`; this numerically truncated the
+handling value. The original ARM setter at `0xa21f2–0xa21fe`
+loads the raw float at `PlayerEgo+0x154`, stores the camera at
+`+0x88`, and tail-branches to
+`TargetFollowCamera::setShipHandling(float)`. C++ now stores
+handling as float and calls that setter rather than
+`resetShipHandling()`. The getter's return type is also float;
+its existing ARM byte-exact match is preserved.
+
+Focused setter source-shape improves from 82% to 100%, with a new
+linked-exact match; byte-exact is not achieved. Native
+`gof2`, all 206 ARM units, 37 verifier tests (one skipped) and
+three PlayerEgo smokes pass. Full report
+`_work/player_abi_handling_full_20261014.json` covers
+**4,323/4,524** original functions at **93.20%** source-shape,
+**81.97%** strict fuzzy, **2,459** linked-exact, **1,050**
+byte-exact and **123** extras. Compared with the previous mining
+checkpoint, exact-pair sets have zero losses and one linked gain.
+
+HUD remains `+0x218` versus original `+0x220` despite the equal
+overall `0x3a0` class size. Later offsets and full linked ARM32
+runtime behavior are not yet verified; they are the next priority.

@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo mining/docking ARM32 layout repair; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo camera-handling semantic repair; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo camera-handling semantic repair (2026-10-14)
+
+`Ship::getHandling()` returns a float, but `PlayerEgo` stored it in
+an integer at the now-correct `+0x154` offset, truncating the value.
+The member and getter now use float. Android ARM
+`setTargetFollowCamera` copies that value's bits from `+0x154` to
+`TargetFollowCamera::setShipHandling`; the C++ had incorrectly
+called `resetShipHandling`. The corrected setter is 100% source-
+shape and linked-exact (from 82% source-shape), while
+`getHandling` stays byte-exact. Native `gof2`, all 206 ARM units,
+37 verifier tests (one skipped) and three PlayerEgo smokes pass.
+The full corpus remains **4,323/4,524** covered, at **93.20%**
+source-shape and **81.97%** strict fuzzy, with **2,459** linked-
+exact, **1,050** byte-exact and **123** extras. There are no lost
+exact pairs. `PlayerEgo` size still matches `0x3a0`, but HUD and
+later members remain offset and linked ARM gameplay is untested.
+Next: reconstruct the HUD/terminal-field group before asserting
+full ABI parity. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo mining/docking ARM32 layout repair (2026-10-14)
 

@@ -329,7 +329,7 @@ int PlayerEgo::shouldSwitchToFreeLookCam() {
     return 1;
 }
 
-int PlayerEgo::getHandling() {
+float PlayerEgo::getHandling() {
     PlayerEgo *self = this;
     return this->handling;
 }
@@ -1269,11 +1269,11 @@ float PlayerEgo::down(int frameTime, float delta) {
     this->pitchAccumDir = -1;
     float rate;
     if (this->hardCoreMode == 0) {
-        rate = ((float &) this->handling);
+        rate = this->handling;
     } else {
         float cur = (float) ((Ship *) (PE_status()->getShip()))->getCurrentLoad();
         float max = (float) ((Ship *) (PE_status()->getShip()))->getMaxLoad();
-        rate = ((float &) this->handling) * (1.0f - cur / max) * g_PE_d_loadK + ((float &) this->handling) *
+        rate = this->handling * (1.0f - cur / max) * g_PE_d_loadK + this->handling *
                g_PE_d_loadB;
     }
 
@@ -1514,11 +1514,11 @@ float PlayerEgo::right(int frameTime, float delta) {
     this->yawAccumDir = -1;
     float rate;
     if (this->hardCoreMode == 0) {
-        rate = ((float &) this->handling);
+        rate = this->handling;
     } else {
         float cur = (float) ((Ship *) (PE_status()->getShip()))->getCurrentLoad();
         float max = (float) ((Ship *) (PE_status()->getShip()))->getMaxLoad();
-        rate = ((float &) this->handling) * (1.0f - cur / max) * g_PE_r_loadK + ((float &) this->handling) *
+        rate = this->handling * (1.0f - cur / max) * g_PE_r_loadK + this->handling *
                g_PE_r_loadB;
     }
 
@@ -1566,11 +1566,11 @@ float PlayerEgo::left(int frameTime, float delta) {
     this->yawAccumDir = 1;
     float rate;
     if (this->hardCoreMode == 0) {
-        rate = ((float &) this->handling);
+        rate = this->handling;
     } else {
         float cur = (float) ((Ship *) (PE_status()->getShip()))->getCurrentLoad();
         float max = (float) ((Ship *) (PE_status()->getShip()))->getMaxLoad();
-        rate = ((float &) this->handling) * (1.0f - cur / max) * g_PE_l_loadK + ((float &) this->handling) *
+        rate = this->handling * (1.0f - cur / max) * g_PE_l_loadK + this->handling *
                g_PE_l_loadB;
     }
 
@@ -1895,7 +1895,7 @@ void PlayerEgo::roll(int amount) {
 
 void PlayerEgo::setTargetFollowCamera(TargetFollowCamera *cam) {
     ((void *&) this->targetFollowCamera) = cam;
-    cam->resetShipHandling();
+    cam->setShipHandling(this->handling);
 }
 
 
@@ -2003,11 +2003,11 @@ float PlayerEgo::up(int frameTime, float delta) {
     this->pitchAccumDir = 1;
     float rate;
     if (this->hardCoreMode == 0) {
-        rate = ((float &) this->handling);
+        rate = this->handling;
     } else {
         float cur = (float) ((Ship *) (PE_status()->getShip()))->getCurrentLoad();
         float max = (float) ((Ship *) (PE_status()->getShip()))->getMaxLoad();
-        rate = ((float &) this->handling) * (1.0f - cur / max) * g_PE_u_loadK + ((float &) this->handling) *
+        rate = this->handling * (1.0f - cur / max) * g_PE_u_loadK + this->handling *
                g_PE_u_loadB;
     }
 
@@ -2198,10 +2198,10 @@ void PlayerEgo::strafe(int /*dir*/, bool positive) {
     if (this->hardCoreMode != 0) {
         float cur = (float) ((Ship *) (PE_status()->getShip()))->getCurrentLoad();
         float max = (float) ((Ship *) (PE_status()->getShip()))->getMaxLoad();
-        float rate = ((float &) this->handling);
+        float rate = this->handling;
         base = rate * (1.0f - cur / max) * g_PE_strafeLoadK + rate * g_PE_strafeLoadB;
     } else {
-        base = ((float &) this->handling);
+        base = this->handling;
     }
 
     float sign = positive ? 1.0f : -1.0f;

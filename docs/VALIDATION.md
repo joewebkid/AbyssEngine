@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo camera-handling semantic repair (2026-10-14)
+
+Original ARM `setTargetFollowCamera` at `0xa21f2–0xa21fe` loads
+`PlayerEgo+0x154`, stores the camera at `+0x88`, then branches to
+`TargetFollowCamera::setShipHandling(float)`. The source now uses
+a float handling member and this call, rather than converting the
+float to int in the constructor and resetting camera handling.
+Focused verification gives 100% source-shape and linked-exact for
+the setter, but not byte-exact. Native
+`gof2`, all 206 ARM units, 37 verifier tests (one skipped) and
+three PlayerEgo smokes pass. Full report
+`_work/player_abi_handling_full_20261014.json`: **4,323/4,524**
+covered, **93.20%** source-shape, **81.97%** strict fuzzy,
+**2,459** linked-exact, **1,050** byte-exact and **123** extras.
+Against `_work/player_abi_mining_full_20261014.json`, exact-pair
+sets have zero losses and one linked gain. HUD/later ABI and linked
+ARM gameplay remain unverified. See
+[the offset evidence](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo mining/docking ARM32 layout repair (2026-10-14)
 
 Original `dockToAsteroid` at IDA lines 85200–85206 writes the

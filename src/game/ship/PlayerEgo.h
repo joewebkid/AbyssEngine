@@ -137,7 +137,7 @@ public:
     uint8_t field_0x145;
     uint8_t field_0x146;
     AbyssEngine::AEMath::Vector dockOffsetVec;
-    int handling;
+    float handling;
     uint8_t autoPilot;
     int autoPilotTarget;
     uint8_t goingToWaypointFlag;
@@ -359,7 +359,7 @@ public:
 
     int getHackingGameDockIndex();
 
-    int getHandling();
+    float getHandling();
 
     int getHitpoints();
 
