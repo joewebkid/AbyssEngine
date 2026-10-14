@@ -600,6 +600,7 @@ struct PlayerEgo {
     void updateHitState(Hud *hud);
     void updateCrosshair(int dt, bool arg6, int arg7);
     void updateTail(Vector cameraPosition, Vector cameraDirection);
+    void initializeEmergency();
     float right(int dt, float delta) { assert(dt == 16); ++rightCalls; lastRight = delta; return 0.0f; }
     float left(int dt, float delta) { assert(dt == 16); ++leftCalls; lastLeft = delta; return 0.0f; }
     float down(int dt, float delta) { assert(dt == 16); ++downCalls; lastDown = delta; return 0.0f; }
@@ -645,6 +646,7 @@ int *g_PE_adp_dockRadius = dockRadius;
 // PRODUCTION_UPDATE_CROSSHAIR
 // PRODUCTION_UPDATE_TAIL
 // PRODUCTION_RECOVERY_AMOUNT
+// PRODUCTION_EMERGENCY_CONSTRUCTOR
 // PRODUCTION_ENGINE_SOUND_SELECTION
 
 int main() {
@@ -970,6 +972,15 @@ int main() {
     emergencyPlayer.transformMatrix.position = {10.0f, 20.0f, 30.0f};
     PlayerEgo emergencyEgo{};
     emergencyEgo.player = &emergencyPlayer;
+    emergencyEgo.field_0xac = 1;
+    emergencyEgo.emergencySystemTimer = 123;
+    emergencyEgo.emergencyVal1 = 456;
+    emergencyEgo.emergencyVec = {4.0f, 5.0f, 6.0f};
+    emergencyEgo.initializeEmergency();
+    assert(emergencyEgo.field_0xac == 0 && emergencyEgo.emergencySystemTimer == 0);
+    assert(emergencyEgo.emergencyVal1 == 0);
+    assert(emergencyEgo.emergencyVec.x == 0.0f && emergencyEgo.emergencyVec.y == 0.0f);
+    assert(emergencyEgo.emergencyVec.z == 0.0f);
     emergencyEgo.emergencyVal1 = 1000;
     emergencyEgo.emergencyVal2 = 2.0f;
     emergencyEgo.emergencyVec = {1.0f, 2.0f, 3.0f};

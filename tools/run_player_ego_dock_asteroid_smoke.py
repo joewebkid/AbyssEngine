@@ -139,6 +139,12 @@ def main():
     fixture = fixture.replace("// PRODUCTION_RECOVERY_AMOUNT",
                               "void PlayerEgo::initializeRecoveryAmount(Ship *ship) {\n" +
                               source[start:end] + "\n}\n")
+    start = source.index("    this->emergencyVec.x = 0.0f;",
+                         source.index("PlayerEgo::PlayerEgo("))
+    end = source.index("    this->player = (void *) player;", start)
+    fixture = fixture.replace("// PRODUCTION_EMERGENCY_CONSTRUCTOR",
+                              "void PlayerEgo::initializeEmergency() {\n" +
+                              source[start:end] + "}\n")
     start = source.index("        this->handling = ship->getHandling();",
                          source.index("PlayerEgo::PlayerEgo("))
     end = source.index("        int agility = ship->getAgility();", start)

@@ -1694,6 +1694,14 @@ PlayerEgo::PlayerEgo(Player *player) {
     this->crosshairShootPosPrevious = Vector{0.0f, 0.0f, 0.0f};
     this->rollMatrix = AbyssEngine::AEMath::Matrix();
 
+    // Android Thumb 0x99946-0x9994c, 0x99a82-0x99a86: inactive emergency state before setShip.
+    this->emergencyVec.x = 0.0f;
+    this->emergencyVec.y = 0.0f;
+    this->emergencyVec.z = 0.0f;
+    this->emergencySystemTimer = 0;
+    this->emergencyVal1 = 0;
+    this->field_0xac = 0;
+
     this->player = (void *) player;
     player->setPlayShootSound(true, 2);
     this->lastHP = player->getCombinedHP();

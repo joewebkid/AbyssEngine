@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo emergency visual lifecycle; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo emergency-state constructor; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo emergency-state constructor (2026-10-14)
+
+Android Thumb `0x99946–0x9994c` and `0x99a82–0x99a86` confirm
+zero-initialization of the emergency offset vector, timer, duration
+and geometry pointer before `setShip`. The extracted-constructor
+smoke, native `gof2`, 206/206 ARM units, related smokes and 37
+verifier tests (one skipped) pass. Focused constructor source-shape/
+strict fuzzy rises **44.8%/28.2% → 45.1%/28.3%** for both aliases;
+neither is exact. Full coverage remains **4,323/4,524** at
+**93.39%** average source-shape and **82.28%** strict fuzzy, with
+**2,482 linked-exact**, **1,065 byte-exact**, **201 missing**,
+**123 extras**, zero skipped and no exact-pair losses. The ARM
+destructor has no `+0xac` cleanup, so none was invented; ownership
+outside active expiry remains uncertain. Next: the emergency-start
+sound and equipment transition. See
+[the constructor audit](PLAYER_EGO_EMERGENCY_CONSTRUCTOR_ARM_2026-10-14.md).
 
 ## PlayerEgo emergency visual lifecycle (2026-10-14)
 
