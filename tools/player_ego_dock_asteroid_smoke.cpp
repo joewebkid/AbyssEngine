@@ -25,6 +25,18 @@ struct Matrix {
     Vector position{};
     Vector dir{0.0f, 0.0f, 1.0f};
 };
+namespace AbyssEngine {
+struct Mesh { float shaderAnimValue1 = 0.0f; };
+struct Transform {
+    int updates = 0;
+    int lastDt = -1;
+    void Update(int dt, bool updateBounds) {
+        assert(!updateBounds);
+        ++updates;
+        lastDt = dt;
+    }
+};
+}
 static const Matrix *expectedFirstMatrix = nullptr;
 static const Matrix *expectedSecondMatrix = nullptr;
 static const Matrix *expectedDockRotationMatrix = nullptr;
@@ -75,18 +87,24 @@ int EaseInOutMatrix::creations = 0;
 int EaseInOutMatrix::destructions = 0;
 }
 struct AEGeometry {
+    static int destructions;
     unsigned int transform = 17;
+    unsigned int meshId = 29;
     Matrix matrix{};
     Vector position{};
     Vector scaling{1.0f, 1.0f, 1.0f};
     int rotations = 0;
     int matrixWrites = 0;
+    ~AEGeometry() { ++destructions; }
     Matrix &getMatrix() { return matrix; }
     Vector getPosition() { return position; }
     Vector getScaling() { return scaling; }
     void rotate(float x, float y, float z) { assert(x == 0.03f && y == 0.03f && z == 0.03f); ++rotations; }
     void setMatrix(const Matrix &value) { matrix = value; position = value.position; ++matrixWrites; }
+    void translate(const Vector &value) { position = position + value; }
+    void setScaling(float x, float y, float z) { scaling = {x, y, z}; }
 };
+int AEGeometry::destructions = 0;
 struct PaintCanvas {
     Matrix *local = nullptr;
     Matrix *otherLocal = nullptr;
@@ -94,6 +112,16 @@ struct PaintCanvas {
     Vector screenResult{};
     Vector lastWorldPosition{};
     int projections = 0;
+    AbyssEngine::Mesh *emergencyMesh = nullptr;
+    AbyssEngine::Transform *emergencyTransform = nullptr;
+    AbyssEngine::Mesh *MeshGetPointer(unsigned int id) {
+        assert(id == 29 && emergencyMesh != nullptr);
+        return emergencyMesh;
+    }
+    void *TransformGetTransform(unsigned int id) {
+        assert(id == 17 && emergencyTransform != nullptr);
+        return emergencyTransform;
+    }
     void *TransformGetLocal(unsigned int id) {
         assert(id == 17 || id == 18);
         ++reads;
@@ -258,6 +286,9 @@ struct Player {
     int updates = 0;
     int lastUpdateDt = 0;
     bool lastDoSound = false;
+    bool vulnerable = true;
+    int vulnerabilityWrites = 0;
+    void setVulnerable(bool value) { vulnerable = value; ++vulnerabilityWrites; }
     unsigned char shieldHit = 0;
     unsigned char armorHit = 0;
     unsigned char hullHit = 0;
@@ -373,6 +404,7 @@ struct Status {
     std::vector<unsigned char> *field_58 = nullptr;
     int unlockedBlueprint = -1;
     int field_178 = 0;
+    int field_13c = 0;
     int currentCampaignMission = 0;
     Mission *mission = nullptr;
     Mission *campaignMission = nullptr;
@@ -444,6 +476,7 @@ namespace Globals {
     GlobalsService *gGlobals = nullptr;
     PaintCanvas *Canvas = nullptr;
     ApplicationManager *appManager = nullptr;
+    Status *status = nullptr;
     int mouseCursorActivated = 0;
     int mouseDeltaX = 0;
     int mouseDeltaY = 0;
@@ -525,7 +558,11 @@ struct PlayerEgo {
     int rightCalls = 0, leftCalls = 0, downCalls = 0, upCalls = 0;
     float lastRight = 0.0f, lastLeft = 0.0f, lastDown = 0.0f, lastUp = 0.0f;
     unsigned char boostingFlag = 0;
+    uintptr_t field_0xac = 0;
     int emergencySystemTimer = 0;
+    int emergencyVal1 = 0;
+    Vector emergencyVec{};
+    float emergencyVal2 = 0.0f;
     int cloakRechargeTimer = 0;
     void *hackingGame = nullptr;
     int boostTimer = 0;
@@ -556,6 +593,7 @@ struct PlayerEgo {
     void updateSubsystems(int dt, Hud *hud);
     void updateShield(int dt, Hud *hud);
     void updateRecovery(int dt);
+    void updateEmergency(int dt);
     void updatePlayerSound(int dt);
     void updateVisualState();
     void updateRoute(Hud *hud);
@@ -599,6 +637,7 @@ int *g_PE_adp_dockRadius = dockRadius;
 // PRODUCTION_UPDATE_SUBSYSTEMS
 // PRODUCTION_UPDATE_SHIELD
 // PRODUCTION_UPDATE_RECOVERY
+// PRODUCTION_UPDATE_EMERGENCY
 // PRODUCTION_UPDATE_PLAYER_SOUND
 // PRODUCTION_UPDATE_VISUAL_STATE
 // PRODUCTION_UPDATE_ROUTE
@@ -773,7 +812,7 @@ int main() {
     assert(hud.events == eventsBefore + 1);
     subsystemEgo.emergencySystemTimer = 3;
     subsystemEgo.updateSubsystems(3, &hud);
-    assert(subsystemEgo.emergencySystemTimer == 0 && hud.events == eventsBefore + 1);
+    assert(subsystemEgo.emergencySystemTimer == 3 && hud.events == eventsBefore + 1);
 
     Station station;
     status.station = &station;
@@ -926,6 +965,49 @@ int main() {
     PaintCanvas canvas;
     canvas.local = &matrix;
     Globals::Canvas = &canvas;
+    Globals::status = &status;
+    Player emergencyPlayer;
+    emergencyPlayer.transformMatrix.position = {10.0f, 20.0f, 30.0f};
+    PlayerEgo emergencyEgo{};
+    emergencyEgo.player = &emergencyPlayer;
+    emergencyEgo.emergencyVal1 = 1000;
+    emergencyEgo.emergencyVal2 = 2.0f;
+    emergencyEgo.emergencyVec = {1.0f, 2.0f, 3.0f};
+    emergencyEgo.emergencySystemTimer = 1000;
+    emergencyEgo.updateEmergency(25);
+    assert(emergencyEgo.emergencySystemTimer == 1000 && emergencyPlayer.vulnerabilityWrites == 0);
+    AbyssEngine::Mesh emergencyMesh;
+    AbyssEngine::Transform emergencyTransform;
+    canvas.emergencyMesh = &emergencyMesh;
+    canvas.emergencyTransform = &emergencyTransform;
+    expectedDockRotationMatrix = &emergencyPlayer.transformMatrix;
+    const int geometryDestructions = AEGeometry::destructions;
+    ((void *&) emergencyEgo.field_0xac) = new AEGeometry;
+    emergencyEgo.emergencySystemTimer = 0;
+    emergencyEgo.updateEmergency(25);
+    assert(emergencyTransform.updates == 0 && AEGeometry::destructions == geometryDestructions);
+    emergencyEgo.emergencySystemTimer = 1000;
+    status.field_13c = 9;
+    emergencyEgo.updateEmergency(25);
+    AEGeometry *emergencyGeometry = (AEGeometry *)(void *&) emergencyEgo.field_0xac;
+    assert(emergencyEgo.emergencySystemTimer == 975 && !emergencyPlayer.vulnerable);
+    assert(emergencyGeometry->matrixWrites == 1 && emergencyGeometry->position.x == 11.0f);
+    assert(emergencyGeometry->position.y == 22.0f && emergencyGeometry->position.z == 33.0f);
+    assert(emergencyGeometry->scaling.x == 1.0f && emergencyMesh.shaderAnimValue1 == 0.025f);
+    assert(emergencyTransform.updates == 1 && emergencyTransform.lastDt == 25);
+    emergencyEgo.updateEmergency(100);
+    assert(emergencyEgo.emergencySystemTimer == 875 && emergencyGeometry->scaling.x == 2.0f);
+    emergencyEgo.emergencySystemTimer = 40;
+    emergencyEgo.updateEmergency(20);
+    assert(emergencyEgo.emergencySystemTimer == 20 && emergencyGeometry->scaling.x == 0.8f);
+    const int stopsBeforeEmergency = sound.stopCount;
+    emergencyEgo.updateEmergency(30);
+    assert(emergencyEgo.emergencySystemTimer == -10 && emergencyEgo.field_0xac == 0);
+    assert(AEGeometry::destructions == geometryDestructions + 1);
+    assert(emergencyPlayer.vulnerable && emergencyPlayer.vulnerabilityWrites == 5);
+    assert(sound.stopCount == stopsBeforeEmergency + 1 && sound.stopped == 1115);
+    assert(status.field_13c == 0 && emergencyTransform.updates == 4);
+    expectedDockRotationMatrix = nullptr;
     AEGeometry geometry;
     ego.geometry = &geometry;
     ParticleSettingsRef::cur.sets[4].count = 5;

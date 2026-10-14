@@ -2635,10 +2635,6 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         if (this->cloakRechargeTimer <= 0)
             hud->hudEvent(46, this, 0);
     }
-    // shortcut: emergency timer still decays early; move it with the late visual teardown when restored.
-    if (this->emergencySystemTimer > 0)
-        this->emergencySystemTimer -= dt;
-
     HackingGame *hacking = (HackingGame *)(void *&) this->hackingGame;
     if (hacking != nullptr) {
         hacking->update(this->shakeIntensity);
@@ -3021,6 +3017,37 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
             if (player->getHitpoints() >= player->getMaxHitpoints()
                 && player->getArmorHP() < player->getMaxArmorHP())
                 player->regenerateArmor();
+        }
+    }
+
+    // Android Thumb 0x9e60c-0x9e748: the visual and its timer advance together.
+    if (this->field_0xac != 0 && this->emergencySystemTimer > 0) {
+        player->setVulnerable(false);
+        AEGeometry *effect = (AEGeometry *)(void *&) this->field_0xac;
+        this->emergencySystemTimer -= dt;
+        effect->setMatrix(player->transformMatrix);
+        effect->translate(AbyssEngine::AEMath::MatrixRotateVector(player->transformMatrix, this->emergencyVec));
+        AbyssEngine::Mesh *mesh = Globals::Canvas->MeshGetPointer(effect->meshId);
+        mesh->shaderAnimValue1 += (float) dt * 0.001f;
+
+        float duration = (float) this->emergencyVal1;
+        float remaining = (float) this->emergencySystemTimer;
+        float fade = duration * 0.05f;
+        float scale = 1.0f;
+        if (duration * 0.95f < remaining)
+            scale = (float) (this->emergencyVal1 - this->emergencySystemTimer) / fade;
+        else if (fade > remaining)
+            scale = remaining / fade;
+        scale *= this->emergencyVal2;
+        effect->setScaling(scale, scale, scale);
+        ((AbyssEngine::Transform *) Globals::Canvas->TransformGetTransform(effect->transform))->Update(dt, false);
+
+        if (this->emergencySystemTimer <= 0) {
+            delete effect;
+            ((void *&) this->field_0xac) = nullptr;
+            player->setVulnerable(true);
+            Globals::sound->stop(1115);
+            Globals::status->field_13c = 0;
         }
     }
 

@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo active cloak lifecycle; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo emergency visual lifecycle; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo emergency visual lifecycle (2026-10-14)
+
+Android Thumb `0x9e60c–0x9e748` restores the late emergency-system
+timer, invulnerability, effect transform/rotation/scale, and expiry
+cleanup. The earlier standalone timer decrement is removed. Native
+`gof2`, 206/206 ARM units, production-fragment smoke, related cloak/
+setShip/render smokes and 37 verifier tests (one skipped) pass.
+Focused `update` source-shape/strict fuzzy rises **77.0%/31.1% →
+79.5%/32.3%**; the function remains non-exact. Full coverage stays
+**4,323/4,524** at **93.39%** average source-shape and **82.28%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**201 missing**, **123 extras**, zero skipped and no exact-pair losses.
+Live ARM32 rendering and unused-geometry ownership on ship replacement
+or destruction remain unverified; the ownership path is next. See
+[the emergency-lifecycle audit](PLAYER_EGO_EMERGENCY_LIFECYCLE_ARM_2026-10-14.md).
 
 ## PlayerEgo active cloak lifecycle (2026-10-14)
 

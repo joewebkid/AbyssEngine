@@ -84,11 +84,16 @@ def main():
     fixture = fixture.replace("// PRODUCTION_UPDATE_SHIELD",
                               "void PlayerEgo::updateShield(int dt, Hud *hud) {\n" +
                               source[start:end] + "}\n")
-    end = source.index("    player->update(dt, !isDead() && this->field_0x1c != -1);",
+    end = source.index("    if (this->field_0xac != 0 && this->emergencySystemTimer > 0) {",
                        source.index("void PlayerEgo::update("))
     start = source.rindex("    Ship *ship = PE_status()->getShip();", 0, end)
     fixture = fixture.replace("// PRODUCTION_UPDATE_RECOVERY",
                               "void PlayerEgo::updateRecovery(int dt) {\n" +
+                              "    Player *player = this->player;\n" + source[start:end] + "}\n")
+    start = end
+    end = source.index("    player->update(dt, !isDead() && this->field_0x1c != -1);", start)
+    fixture = fixture.replace("// PRODUCTION_UPDATE_EMERGENCY",
+                              "void PlayerEgo::updateEmergency(int dt) {\n" +
                               "    Player *player = this->player;\n" + source[start:end] + "}\n")
     start = end
     end = source.index("    Matrix *local = static_cast<Matrix *>", start)

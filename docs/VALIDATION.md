@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo emergency visual lifecycle (2026-10-14)
+
+Android Thumb `0x9e60c–0x9e748` confirms the late emergency timer,
+effect update and expiry teardown. Native `gof2`, 206/206 ARM units,
+the production-fragment smoke, cloak/setShip/render smokes and 37
+verifier tests (one skipped) pass. Focused `update` source-shape/strict
+fuzzy changes **77.0%/31.1% → 79.5%/32.3%**; it is not exact.
+Full report `_work/player_emergency_full_20261014.json` compares
+**4,323/4,524** at **93.39%** average source-shape and **82.28%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**201 missing**, **123 extras** and zero skipped. Neither exact pair
+set loses or gains a member against
+`_work/player_cloak_lifecycle_full_20261014.json`. Live ARM32
+rendering and unused-geometry ownership are unverified. See
+[the emergency-lifecycle audit](PLAYER_EGO_EMERGENCY_LIFECYCLE_ARM_2026-10-14.md).
+
 ## PlayerEgo active cloak lifecycle (2026-10-14)
 
 Android Thumb `0x9cfe2–0x9d002` and `0x9d310–0x9d8a6` confirm
