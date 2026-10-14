@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (SystemPathFinder route state; older subsystem
+Last reviewed: 2026-10-14 (LensFlare constructor; older subsystem
 snapshots retain their dates)
+
+## LensFlare constructor canvas binding (2026-10-14)
+
+Android `LensFlare::LensFlare` at `0x11d00c` loads image resources
+1288–1290 through `Globals::Canvas` and reads dimensions from its
+input canvas. The null local pointer and declared-only constructor
+helpers are replaced by real `PaintCanvas` calls. A production-body
+host smoke checks both canvas roles and the three outputs; native
+`gof2`, 206/206 ARM units and verifier tests pass. Both constructor
+aliases rise **91.0%/46.2% → 100%/100%** source-shape/strict fuzzy
+and become linked-exact, not byte-exact. Full coverage is
+**4,323/4,524** at **93.29%** average source-shape and **82.20%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**123 extras**, zero skipped and no exact-pair losses. `render2D`
+and live GL behavior remain unverified; next recover that body. See
+[the constructor audit](LENS_FLARE_CONSTRUCTOR_ARM_2026-10-14.md).
 
 ## SystemPathFinder route state and node release (2026-10-14)
 

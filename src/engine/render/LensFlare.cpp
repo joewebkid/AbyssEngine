@@ -1,6 +1,7 @@
 #include "engine/render/LensFlare.h"
+#include "engine/render/PaintCanvas.h"
+#include "game/core/Globals.h"
 
-static PaintCanvas *const gLensFlareCanvas = nullptr;
 static PaintCanvas *const gLF_Canvas2 = nullptr;
 
 // ELF .rodata, Android libgof2hdaa.so:
@@ -13,11 +14,10 @@ static const float gFlareIntensityBaseColor5 = 80.0f; // flt_11D694
 
 LensFlare::LensFlare(PaintCanvas *canvas) {
     this->images = new uint32_t[3];
-    PaintCanvas *singleton = *(PaintCanvas **) gLensFlareCanvas;
     for (int i = 0; i != 3; ++i)
-        LensFlare_Image2DCreate(singleton, (short) (i + 0x508), &this->images[i]);
-    this->width = LensFlare_GetWidth(canvas);
-    this->height = LensFlare_GetHeight(canvas);
+        Globals::Canvas->Image2DCreate((unsigned short) (i + 0x508), this->images[i]);
+    this->width = canvas->GetWidth();
+    this->height = canvas->GetHeight();
     this->canvas = canvas;
 }
 

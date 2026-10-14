@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## LensFlare constructor canvas binding (2026-10-14)
+
+Android constructor `0x11d00c` uses `Globals::Canvas` for resource
+IDs 1288–1290 and its input canvas for width/height. The extracted
+production-body host smoke checks both canvas roles, all handles and
+the retained pointer. Native `gof2`, 206/206 ARM units and 37 verifier
+tests (one skipped) pass. Both C1/C2 aliases improve from **91.0%/
+46.2%** source-shape/strict fuzzy to **100%/100%** and become
+linked-exact, not byte-exact. Full report
+`_work/lens_flare_ctor_full_20261014.json` covers **4,323/4,524**
+functions at **93.29%** average source-shape and **82.20%** strict
+fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**, **123
+extras** and zero skipped. Compared with
+`_work/system_pathfinder_full_20261014.json`, no exact pair is lost;
+the C1/C2 constructor pairs are newly linked-exact. `render2D`, real
+GL and ARM32 runtime are unverified. See
+[the constructor audit](LENS_FLARE_CONSTRUCTOR_ARM_2026-10-14.md).
+
 ## SystemPathFinder route state and node release (2026-10-14)
 
 Android `getSystemPath` at `0x11b7a8` reads `Globals::status` and, on

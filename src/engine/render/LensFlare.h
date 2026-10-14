@@ -7,12 +7,6 @@ namespace AbyssEngine {
 }
 using ::AbyssEngine::PaintCanvas;
 
-void LensFlare_Image2DCreate(AbyssEngine::PaintCanvas *canvas, short id, uint32_t *out);
-
-int LensFlare_GetWidth(AbyssEngine::PaintCanvas * canvas);
-
-int LensFlare_GetHeight(AbyssEngine::PaintCanvas * canvas);
-
 float LensFlare_sqrtf(float v);
 
 int LensFlare_imgWidth(AbyssEngine::PaintCanvas *canvas, void *img);
