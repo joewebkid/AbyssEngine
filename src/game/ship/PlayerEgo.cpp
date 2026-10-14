@@ -63,7 +63,6 @@ namespace {
     static const float g_PE_shakeDiv = 40000.0f;
     static const float g_PE_camFov = 1.22f;
     static const float g_PE_camNear = 20.0f;
-    static void *g_engine_fmod = nullptr;
     static char **g_PE_d_miningGate = nullptr;
     static const float g_PE_d_eps = 70.0f;
     static const float g_PE_d_lookK1 = 0.00024414f;
@@ -1163,17 +1162,16 @@ void PlayerEgo::setRotation(float rx, float ry, float rz) {
 
 void PlayerEgo::StopEngineSound() {
     if (this->dockedFlag == 0 || this->dockingPointIndex != 1) {
-        if (((Ship *) (Status::gStatus->getShip()))->getFirstEquipmentOfSort(0x26) != 0
-            && Status::gStatus->inAlienOrbit() == 0) {
-            int idx = Station_getIndex(Status::gStatus->getStation());
-            int cm = Status::gStatus->getCurrentCampaignMission();
+        if (Globals::status->getShip()->getFirstEquipmentOfSort(38) != nullptr
+            && !Globals::status->inAlienOrbit()) {
+            int idx = Globals::status->getStation()->getIndex();
+            int cm = Globals::status->getCurrentCampaignMission();
             union {
                 int bits;
                 float value;
-            } gammaRate = {Status::gStatus->getGammaRayDamagePerSecond(idx, cm)};
+            } gammaRate = {Globals::status->getGammaRayDamagePerSecond(idx, cm)};
             if (0.0f < gammaRate.value && this->engineSoundId != -1) {
-                ((FModSound *) (*(void **) g_engine_fmod))->play((int) (intptr_t)((void *&) this->engineSoundId),
-                                                                 (Vector *) 0, (Vector *) 0, 0.0f);
+                Globals::sound->play(this->engineSoundId, nullptr, nullptr, 0.0f);
             }
         }
     }
@@ -1792,20 +1790,19 @@ PlayerEgo::PlayerEgo(Player *player) {
 
 
 void PlayerEgo::PlayEngineSound() {
-    if (((Ship *) (Status::gStatus->getShip()))->getFirstEquipmentOfSort(0x26) != 0
-        && Status::gStatus->inAlienOrbit() == 0) {
-        int idx = Station_getIndex(Status::gStatus->getStation());
-        int cm = Status::gStatus->getCurrentCampaignMission();
+    if (Globals::status->getShip()->getFirstEquipmentOfSort(38) != nullptr
+        && !Globals::status->inAlienOrbit()) {
+        int idx = Globals::status->getStation()->getIndex();
+        int cm = Globals::status->getCurrentCampaignMission();
         union {
             int bits;
             float value;
-        } gammaRate = {Status::gStatus->getGammaRayDamagePerSecond(idx, cm)};
+        } gammaRate = {Globals::status->getGammaRayDamagePerSecond(idx, cm)};
         if (0.0f < gammaRate.value && this->engineSoundId != -1) {
-            ((FModSound *) (*(void **) g_engine_fmod))->play((int) (intptr_t)((void *&) this->engineSoundId),
-                                                             (Vector *) 0, (Vector *) 0, 0.0f);
+            Globals::sound->play(this->engineSoundId, nullptr, nullptr, 0.0f);
         }
     }
-    ((Player *) this->player)->PlayEngineSound(0, (Vector *) 0);
+    ((Player *) this->player)->PlayEngineSound(this->field_0x1c, nullptr);
 }
 
 

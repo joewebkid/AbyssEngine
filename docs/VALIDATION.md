@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo engine-sound dispatch (2026-10-14)
+
+Android Thumb `0x9a550–0x9a5d0` and `0x9a5ec–0x9a676` confirms
+the sound receiver, gain, gates and ship resource passed to
+`Player::PlayEngineSound`. Native `gof2`, 206/206 ARM units, the
+extracted-method and adjacent smokes, and 37 verifier tests (one
+skipped) pass. Focused source-shape/strict fuzzy changes
+**94.0%/75.5% → 98.5%/87.4%** for `PlayEngineSound` and
+**94.7%/76.9% → 98.2%/86.2%** for `StopEngineSound`; neither is exact.
+Full report `_work/player_engine_sound_full_20261014.json`
+compares **4,323/4,524** at **93.39%** average source-shape and
+**82.29%** strict fuzzy, with **2,483 linked-exact**, **1,065
+byte-exact**, **201 missing**, **123 extras** and zero skipped.
+Both exact pair sets gain and lose no members against
+`_work/player_emergency_start_full_20261014.json`. Live ARM32
+audio remains unverified. See
+[the engine-sound audit](PLAYER_EGO_ENGINE_SOUND_ARM_2026-10-14.md).
+
 ## PlayerEgo emergency-system activation (2026-10-14)
 
 Android Thumb `0xa106c–0xa10f0` and IDA lines 86377–86403 confirm

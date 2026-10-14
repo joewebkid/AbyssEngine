@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo emergency activation; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo engine-sound dispatch; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo engine-sound dispatch (2026-10-14)
+
+Android Thumb `0x9a550–0x9a5d0` and `0x9a5ec–0x9a676` confirms
+the gamma-protection sound is played through `Globals::sound`, and
+`PlayEngineSound` passes the ship resource at `+0x1c` to `Player`.
+The former unconnected FMOD pointer and zero resource could break
+the live engine-audio path. Native `gof2`, 206/206 ARM units,
+extracted-method and adjacent smokes, and 37 verifier tests (one
+skipped) pass. Focused `PlayEngineSound` source-shape/strict fuzzy
+rises **94.0%/75.5% → 98.5%/87.4%**; `StopEngineSound` rises
+**94.7%/76.9% → 98.2%/86.2%**. Neither is exact. Full coverage
+remains **4,323/4,524** at **93.39%** average source-shape and
+**82.29%** strict fuzzy, with **2,483 linked-exact**, **1,065
+byte-exact**, **201 missing**, **123 extras**, zero skipped and no
+exact-pair losses. Audible behavior on live ARM32 remains
+unverified. See [the engine-sound audit](PLAYER_EGO_ENGINE_SOUND_ARM_2026-10-14.md).
 
 ## PlayerEgo emergency-system activation (2026-10-14)
 
