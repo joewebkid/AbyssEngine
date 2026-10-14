@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo roll; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo ship control; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo ship control (2026-10-14)
+
+Android Thumb `0x9bdf0–0x9c12c` establishes engine sound parameters,
+pitch/yaw and roll matrix composition, forward travel, normalized
+basis, strafe and follow-camera translation, and accumulator resets.
+The previous body delegated orientation to a declared-only helper and
+used an uninitialized sound pointer. The adjacent `handleTurretView`
+also incorrectly cleared direction flags instead of angle accumulators;
+that offset is corrected. Production-body host smokes, native `gof2`,
+206/206 ARM translation units and 37 verifier tests (one skipped) pass.
+Focused `handleShip` source-shape/strict fuzzy rises **40.8%/23.7% →
+92.1%/60.4%**; `handleTurretView` improves to **97.9%/80.8%**. Neither
+is exact. Full coverage remains **4,323/4,524**, with average
+source-shape **93.33%**, strict fuzzy **82.23%**, **2,482 linked-exact**,
+**1,065 byte-exact**, **123 extras**, zero skipped, and no exact-pair
+losses. Live ship motion and ARM32 runtime remain unverified. See
+[the ship-control audit](PLAYER_EGO_HANDLE_SHIP_ARM_2026-10-14.md).
 
 ## PlayerEgo roll (2026-10-14)
 

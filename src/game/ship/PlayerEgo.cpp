@@ -124,7 +124,6 @@ namespace {
     static const float g_PE_t_pctScale = 100.0f;
     static const float g_PE_t_textDiv = 1.6f;
     static const float g_PE_aa_settleEps = -1024.0f;
-    static FModSound **g_PE_hs_sound = nullptr;
     static const float g_PE_hs_throttleBias = 0.2f;
     static const float g_PE_ss_emDiv = 500.0f;
     static const float g_PE_ss_emBias = 0.1f;
@@ -238,8 +237,6 @@ void PE_um_strafeGlide(PlayerEgo * self);
 int PE_aa_approachStep(PlayerEgo *self, int hud2, void *radar);
 
 void Mat_mul(void *out, const void *a, const void *b);
-
-void PE_handleShip_orient(PlayerEgo *self, int dt, unsigned int tfHandle);
 
 void *TractorBeam_new(void *geo, int kind);
 
@@ -3186,8 +3183,9 @@ void PlayerEgo::handleTurretView(int dt) {
 
     Globals::Canvas->CameraSetLocal(this->turretCamera, look);
 
-    this->pitchAccumDir = 0;
-    this->yawAccumDir = 0;
+    // Thumb writes +0x100/+0x104, not the direction flags at +0xf4/+0xf8.
+    this->yawAccumulator = 0.0f;
+    this->pitchAccumulator = 0.0f;
     this->roll(this->shakeIntensity);
 
     Matrix *shipLocal = static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(this->geometry->transform));
@@ -3253,29 +3251,85 @@ void PlayerEgo::approachAsteroid(Hud *hud, int hud2, Radar *radar) {
 
 // IDA 0x9bdf0: _ZN9PlayerEgo10handleShipEi
 void PlayerEgo::handleShip(int dt) {
-    FModSound *snd = *g_PE_hs_sound;
+    Player *player = (Player *) this->player;
+    FMOD::Event *event = reinterpret_cast<FMOD::Event *>(
+        static_cast<std::intptr_t>(player->GetEngineEvent()));
+    float yaw = (float &) this->yawAccumD;
+    float bank = (float &) this->rollAccum;
+    float yawAbs = yaw > 0.0f ? yaw : -yaw;
+    float bankAbs = bank > 0.0f ? bank : -bank;
+    if (yawAbs > bankAbs) bankAbs = yawAbs;
+    Globals::sound->setParamValue(event, 0, bankAbs);
+    event = reinterpret_cast<FMOD::Event *>(
+        static_cast<std::intptr_t>(player->GetEngineEvent()));
+    Globals::sound->setParamValue(event, 1,
+                                  ((float &) this->rollAccum) * g_PE_hs_throttleBias + 0.5f);
 
-    snd->setParamValue((FMOD::Event *) (long) ((Player *) (this->player))->GetEngineEvent(), 0,
-                       ((float &) this->yawAccumD));
-    snd->setParamValue((FMOD::Event *) (long) ((Player *) (this->player))->GetEngineEvent(), 1,
-                       ((float &) this->rollAccum) * g_PE_hs_throttleBias + 0.5f);
+    auto *canvas = Globals::Canvas;
+    Matrix local = *static_cast<Matrix *>(canvas->TransformGetLocal(this->geometry->transform));
+    Matrix rotation{1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                    1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                    1.0f, 0.0f, 1.0f, 1.0f, 1.0f};
+    float pitch = (float &) this->pitchAccumD;
+    float yawRate = reinterpret_cast<float *>(&this->pitchAccumD)[1];
+    float frame = (float) dt;
+    AbyssEngine::AEMath::MatrixSetRotation(
+        rotation,
+        pitch * 0.0000152587890625f * 6.2831855f * frame * 0.033f,
+        yawRate * 0.0000152587890625f * 6.2831855f * frame * 0.033f,
+        0.0f);
+    this->yawAccumF = yawRate;
+    local *= rotation;
+    if (this->rolling)
+        local *= this->rollMatrix;
 
-    unsigned int tf = reinterpret_cast<unsigned int &>(PaintCanvas::gCanvas->initialized);
+    float forward = this->thrust * frame * this->speedValue;
+    local.m[3] += local.m[2] * forward;
+    local.m[7] += local.m[6] * forward;
+    local.m[11] += local.m[10] * forward;
 
-    PE_handleShip_orient(this, dt, tf);
+    Vector dir = AbyssEngine::AEMath::VectorNormalize(
+        Vector{local.m[2], local.m[6], local.m[10]});
+    Vector up = AbyssEngine::AEMath::VectorNormalize(
+        Vector{local.m[1], local.m[5], local.m[9]});
+    Vector right = AbyssEngine::AEMath::VectorNormalize(
+        AbyssEngine::AEMath::VectorCross(up, dir));
+    local.m[0] = right.x;
+    local.m[4] = right.y;
+    local.m[8] = right.z;
+    local.m[1] = up.x;
+    local.m[5] = up.y;
+    local.m[9] = up.z;
+    local.m[2] = dir.x;
+    local.m[6] = dir.y;
+    local.m[10] = dir.z;
+
+    float strafe = this->strafeAccel;
+    float strafeAbs = strafe > 0.0f ? strafe : -strafe;
+    if (strafeAbs <= 0.01f || std::isnan(strafeAbs)) {
+        this->strafeFactor = 0.1f;
+    } else {
+        Vector offset = AbyssEngine::AEMath::MatrixRotateVector(
+            local, Vector{strafe * (float) this->shakeIntensity, 0.0f, 0.0f});
+        local.m[3] += offset.x;
+        local.m[7] += offset.y;
+        local.m[11] += offset.z;
+        this->strafeAccel *= 0.7f;
+        ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))
+            ->translateNoUpdate(offset.x, offset.y, offset.z);
+    }
+    canvas->TransformSetLocal(this->geometry->transform, local);
 
     ((int &) this->pitchRamp) = 0;
     ((int &) this->yawRamp) = 0;
-    this->pitchAccumDir = 0;
-    this->yawAccumDir = 0;
+    this->yawAccumulator = 0.0f;
+    this->pitchAccumulator = 0.0f;
     ((int &) this->yawAccumD) = 0;
     ((int &) this->rollAccum) = 0;
 
-    unsigned int hull = (unsigned int) (long) PaintCanvas::gCanvas->TransformGetLocal((unsigned int) (this->geometry->transform));
-    unsigned int ret = (unsigned int) (long) PaintCanvas::gCanvas->TransformGetLocal((unsigned int) (this->field_0x4->transform));
-    unsigned char tmp[0x30];
-    Mat_mul(tmp, (void *) (unsigned long) hull, (void *) (unsigned long) ret);
-    Mat_assign(((Player *) this->player)->transform, tmp);
+    Matrix *shipLocal = static_cast<Matrix *>(canvas->TransformGetLocal(this->geometry->transform));
+    Matrix *bodyLocal = static_cast<Matrix *>(canvas->TransformGetLocal(this->field_0x4->transform));
+    player->transformMatrix = *shipLocal * *bodyLocal;
 }
 
 // IDA 0x9ae34: _ZN9PlayerEgo9stopBoostEv

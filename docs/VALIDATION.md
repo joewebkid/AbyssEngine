@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo ship control (2026-10-14)
+
+IDA/Ghidra and Android Thumb `0x9bdf0–0x9c12c` confirm the two sound
+parameters, rotation and roll, forward and strafe movement, camera
+translation, transform composition and accumulator resets. The
+production-body `handleShip` and turret-view smokes, native `gof2`,
+206/206 ARM translation units and 37 verifier tests (one skipped)
+pass. Focused `handleShip` source-shape/strict fuzzy changes
+**40.8%/23.7% → 92.1%/60.4%**; the corrected `handleTurretView` reaches
+**97.9%/80.8%**. Neither is exact. Full report
+`_work/player_handle_ship_full_20261014.json` covers **4,323/4,524**
+original functions at **93.33%** average source-shape and **82.23%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**123 extras** and zero skipped. The linked- and byte-exact pair sets
+have no losses against `_work/player_roll_full_20261014.json`. Live
+ship movement, sound and ARM32 runtime remain unverified. See
+[the ship-control audit](PLAYER_EGO_HANDLE_SHIP_ARM_2026-10-14.md).
+
 ## PlayerEgo roll (2026-10-14)
 
 IDA/Ghidra and Android Thumb `0x9bbf8–0x9bd94` confirm the roll

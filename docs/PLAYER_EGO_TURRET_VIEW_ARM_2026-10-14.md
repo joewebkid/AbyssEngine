@@ -17,8 +17,8 @@ three `nextInt(12)` calls at 0.001 scale. Boost clamps the `+0xc8`
 strength to 2–8 and perturbs each target coordinate using three
 `nextInt(2 * strength)` calls multiplied by boost percentage and
 0.0015. It then updates the correct camera, clears the pitch/yaw
-direction accumulators, calls `roll`, and assigns the product of the
-ship/body local transforms to the Player matrix. The call order and
+angle accumulators at `+0x100/+0x104`, calls `roll`, and assigns the
+product of the ship/body local transforms to the Player matrix. The call order and
 field offsets are visible in Thumb `0x9b9c8–0x9bbb0`.
 
 The production-body host smoke checks both movement gates, matrix and
@@ -41,3 +41,8 @@ it cannot prove live camera feel, visual shake or ARM32 runtime. Other
 `PlayerEgo` methods retain declared-only helpers and need independent
 recovery. Next priority: the adjacent `handleShip`/`roll` path and
 its remaining wrapper calls.
+
+Subsequent `handleShip` work corrected the reset from the direction
+flags at `+0xf4/+0xf8` to the angle accumulators at `+0x100/+0x104`.
+The later focused turret-view result is **97.9%** source-shape and
+**80.8%** strict fuzzy. See [the ship-control audit](PLAYER_EGO_HANDLE_SHIP_ARM_2026-10-14.md).

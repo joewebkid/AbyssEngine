@@ -92,6 +92,7 @@ struct PlayerEgo {
     int hitShakeTimer = 0, boostSpeed = 0;
     unsigned turretCamera = 7;
     int pitchAccumDir = 1, yawAccumDir = 1, shakeIntensity = 17;
+    float yawAccumulator = 1.0f, pitchAccumulator = 1.0f;
     int rolls = 0, lastRoll = 0;
     float getBoostPercentage() { return 0.5f; }
     void roll(int value) { ++rolls; lastRoll = value; }
@@ -127,7 +128,8 @@ int main() {
     assert(ship.moves == 1 && near(ship.lastMove, 60.0f));
     assert(canvas.cameraId == 7 && near(canvas.cameraMatrix.position.x, 12.0f));
     assert(near(player.transformMatrix.position.x, 11.0f));
-    assert(ego.pitchAccumDir == 0 && ego.yawAccumDir == 0);
+    assert(ego.yawAccumulator == 0.0f && ego.pitchAccumulator == 0.0f);
+    assert(ego.pitchAccumDir == 1 && ego.yawAccumDir == 1);
     assert(ego.rolls == 1 && ego.lastRoll == 17);
 
     ego.autoPilotTarget = 1;
