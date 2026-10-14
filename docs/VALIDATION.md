@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo mining/docking ARM32 layout repair (2026-10-14)
+
+Original `dockToAsteroid` at IDA lines 85200–85206 writes the
+scaling value to `PlayerEgo+0x1d8` and its timer to `+0x1dc`;
+`approachAsteroid` accesses `MiningGame` at `+0x1e4`, and
+`isHacking` reads `+0x1e8`. The NDK r18b Clang record dump now
+places these fields and the intervening station at their ARM
+offsets. Native `gof2`, all 206 ARM units, 37 verifier tests
+(one skipped) and three PlayerEgo smokes pass. Full report
+`_work/player_abi_mining_full_20261014.json`: **4,323/4,524**
+covered, **93.20%** source-shape, **81.95%** strict fuzzy,
+**2,458** linked-exact, **1,050** byte-exact, **123** extras.
+Compared with `_work/player_abi_frame_full_20261014.json`, there
+are 19 linked/12 byte gains and zero exact-pair losses. The class
+size equals the original allocation (`0x3a0`), but HUD remains
+8 bytes early and runtime ABI is not proved. See
+[the offset evidence](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo frame/docking ARM32 layout repair (2026-10-14)
 
 Original `update` ARM instructions at `0x9ce86–0x9ce96` assign

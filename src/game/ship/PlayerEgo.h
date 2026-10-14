@@ -174,6 +174,7 @@ public:
 
     int dockApproachThreshold;
     int field_0x1d0;
+    char _unknown_0x1d4[4];
     int dockScaling;
     int miningSettleTimer;
     void *dockStation;
@@ -633,6 +634,12 @@ static_assert(__builtin_offsetof(PlayerEgo, handling) == 0x154, "PlayerEgo::hand
 static_assert(__builtin_offsetof(PlayerEgo, autoPilotTarget) == 0x15c, "PlayerEgo::autoPilotTarget offset");
 static_assert(__builtin_offsetof(PlayerEgo, asteroidTarget) == 0x1bc, "PlayerEgo::asteroidTarget offset");
 static_assert(__builtin_offsetof(PlayerEgo, dockingState) == 0x1c0, "PlayerEgo::dockingState offset");
+static_assert(__builtin_offsetof(PlayerEgo, dockingPointIndex) == 0x1c4, "PlayerEgo::dockingPointIndex offset");
+static_assert(__builtin_offsetof(PlayerEgo, dockScaling) == 0x1d8, "PlayerEgo::dockScaling offset");
+static_assert(__builtin_offsetof(PlayerEgo, miningSettleTimer) == 0x1dc, "PlayerEgo::miningSettleTimer offset");
+static_assert(__builtin_offsetof(PlayerEgo, dockStation) == 0x1e0, "PlayerEgo::dockStation offset");
+static_assert(__builtin_offsetof(PlayerEgo, miningGame) == 0x1e4, "PlayerEgo::miningGame offset");
+static_assert(__builtin_offsetof(PlayerEgo, hackingGame) == 0x1e8, "PlayerEgo::hackingGame offset");
 #endif
 
 #endif

@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo frame/docking ARM32 layout repair; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo mining/docking ARM32 layout repair; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo mining/docking ARM32 layout repair (2026-10-14)
+
+Android ARM places `dockScaling`, its settle timer, station,
+`MiningGame` and `HackingGame` at `+0x1d8..+0x1e8`, after an
+unidentified four-byte slot at `+0x1d4`. The header now matches
+these confirmed offsets. Native `gof2`, all 206 ARM units, 37
+verifier tests (one skipped), and three PlayerEgo smokes pass.
+The full corpus covers **4,323/4,524** original functions at
+**93.20%** source-shape and **81.95%** strict fuzzy, with
+**2,458** linked-exact, **1,050** byte-exact and **123** extras.
+Exact-pair sets gain 19 linked and 12 byte matches with zero
+losses. `dockToAsteroid` source-shape rises from 98.2% to 99.4%.
+Although `sizeof(PlayerEgo)` is now `0x3a0`, matching the original
+allocation, this is not proof of full ABI parity: HUD is still at
+`+0x218` versus ARM `+0x220`, and later fields also need mapping.
+The camera setter and linked gameplay remain unverified. Next:
+reconstruct the later HUD/terminal-field offsets, then fix the
+camera setter's handling route. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo frame/docking ARM32 layout repair (2026-10-14)
 

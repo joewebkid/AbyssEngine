@@ -162,3 +162,33 @@ The class still measures `0x398` versus original allocation `0x3a0`.
 The later `miningGame`/HUD groups and the camera setter are not yet
 aligned; no linked gameplay or ARM32 runtime test has been run.
 These remain the next ABI priority before claiming behavior parity.
+
+## Mining and hacking offsets repaired (2026-10-14)
+
+Original `dockToAsteroid` writes its scaling value to DWORD 118
+(`+0x1d8`) and resets DWORD 119 (`+0x1dc`) in IDA lines
+85200–85206. `MiningGame` is read at DWORD 121 (`+0x1e4`) and
+`HackingGame` at DWORD 122 (`+0x1e8`). Current ARM32 layout
+needed a four-byte slot after the three-word approach Vector at
+`+0x1c8..+0x1d3`. Adding only that unidentified `+0x1d4` slot
+aligns `dockScaling`, `miningSettleTimer`, `dockStation`,
+`miningGame`, and `hackingGame`; compile-time assertions guard
+the confirmed offsets.
+
+Native `gof2`, all 206 ARM units, 37 verifier tests (one skipped)
+and three PlayerEgo smokes pass. The full corpus report
+`_work/player_abi_mining_full_20261014.json` covers **4,323/4,524**
+original functions, with **93.20%** source-shape, **81.95%** strict
+fuzzy, **2,458** linked-exact, **1,050** byte-exact and **123**
+extras. Relative to the preceding frame-offset report, exact
+pairs have zero losses and gain 19 linked/12 byte matches.
+`dockToAsteroid` rises from 98.2% to 99.4% source-shape, still
+without an exact match.
+
+The ARM32 record size is now `0x3a0`, equal to the original
+allocation, but this is insufficient to establish ABI parity.
+The header's `hud` remains `+0x218` against original `+0x220`;
+later offsets can compensate for this within the same total size.
+The camera setter's handling call and full linked/ARM gameplay
+remain unverified. Next map the HUD and terminal groups against
+raw ARM before claiming a completed class layout.
