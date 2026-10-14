@@ -254,6 +254,8 @@ public:
     AbyssEngine::AEMath::Vector emergencyVec;
     float emergencyVal2;
     uint8_t autoLevel;
+    uint8_t cloakChildHidden;
+    uint8_t _unknown_0x326[2];
     int hitShakeTimer;
     uint8_t hitShake;
     uint8_t field_0x32d;
@@ -721,6 +723,7 @@ static_assert(__builtin_offsetof(PlayerEgo, field_0x309) == 0x308, "PlayerEgo::r
 static_assert(__builtin_offsetof(PlayerEgo, requestedVisible) == 0x309, "PlayerEgo::requestedVisibility offset");
 static_assert(__builtin_offsetof(PlayerEgo, shieldHitFlash) == 0x30a, "PlayerEgo::shieldHitFlash offset");
 static_assert(__builtin_offsetof(PlayerEgo, autoLevel) == 0x324, "PlayerEgo::autoLevel offset");
+static_assert(__builtin_offsetof(PlayerEgo, cloakChildHidden) == 0x325, "PlayerEgo::cloakChildHidden offset");
 static_assert(__builtin_offsetof(PlayerEgo, visible) == 0x32e, "PlayerEgo::visible offset");
 static_assert(__builtin_offsetof(PlayerEgo, maneuverTimer) == 0x350, "PlayerEgo::maneuverTimer offset");
 static_assert(__builtin_offsetof(PlayerEgo, exhaustVisible) == 0x32f, "PlayerEgo::exhaustVisible offset");

@@ -178,10 +178,10 @@ movement/easing helpers, and linked ARM gameplay is unverified. The
 available iOS dumps did not yield a reliably identified counterpart
 for this branch.
 
-## Emergency timer and hacking-game reward path (2026-10-14)
+## Cloak recharge timer and hacking-game reward path (2026-10-14)
 
 Android Thumb `0x9cfe2–0x9d19e`, cross-checked with IDA lines
-83543–83617, places the emergency countdown at PlayerEgo `+0x20c`:
+83543–83617, places the cloak recharge countdown at PlayerEgo `+0x20c`:
 only positive values decrement, and the crossing to zero or below
 emits HUD event 46. Hacking-game pointer `+0x1e8` receives the
 stored frame time from `+0x134`. A win first disables the HUD game.
@@ -197,6 +197,8 @@ deleted and nulled. The level then receives radio message
 list still permits reward and radio progress; a win with no hidden
 blueprint only closes the HUD game, preserving the object.
 
+This timer was misidentified as the emergency timer in the original
+checkpoint; the later cloak-lifecycle audit corrects that binding.
 The extracted production-fragment smoke checks the countdown edge,
 ordinary and won hacking paths, first-match cleanup, and null enemy
 list. Native and ARM builds are green; focused `update` source-shape

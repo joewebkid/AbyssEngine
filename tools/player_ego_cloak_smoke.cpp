@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cmath>
 #include <cstdint>
 #include <utility>
 #include <vector>
@@ -9,6 +10,10 @@ namespace AbyssEngine {
 namespace AEMath { struct Vector {}; }
 struct Material { int pad[8] = {}; int materialMode = 0; };
 struct Mesh { unsigned id = 0; };
+struct Transform {
+    bool visible = true;
+    void SetVisible(bool value) { visible = value; }
+};
 }
 using Vector = AbyssEngine::AEMath::Vector;
 
@@ -23,11 +28,14 @@ struct FModSound {
 struct PaintCanvas {
     AbyssEngine::Material materials[32];
     AbyssEngine::Mesh meshes[256];
+    AbyssEngine::Transform transforms[256];
     std::vector<std::pair<unsigned, unsigned>> materialChanges;
     std::vector<std::pair<unsigned, unsigned>> shaderChanges;
+    std::vector<float> shaderValues;
+    std::vector<std::pair<unsigned, unsigned>> colorChanges;
     std::vector<std::pair<unsigned, unsigned>> resourceChanges;
     unsigned createdResource = 0;
-    unsigned *MaterialGetMaterial(unsigned id) {
+    void *MaterialGetMaterial(unsigned id) {
         assert(id < 32);
         return reinterpret_cast<unsigned *>(&materials[id]);
     }
@@ -40,8 +48,15 @@ struct PaintCanvas {
         return &meshes[mesh];
     }
     void MeshChangeShaderAnimValue(AbyssEngine::Mesh *mesh, float value, unsigned channel) {
-        assert(value == 0.0f);
         shaderChanges.emplace_back(mesh->id, channel);
+        shaderValues.push_back(value);
+    }
+    void TransformSetColor(unsigned transform, unsigned color) {
+        colorChanges.emplace_back(transform, color);
+    }
+    AbyssEngine::Transform *TransformGetTransform(unsigned transform) {
+        assert(transform < 256);
+        return &transforms[transform];
     }
     void MaterialCreate(unsigned short resource, unsigned &out) {
         assert(out == 0);
@@ -75,7 +90,7 @@ struct Ship {
         return sort == 8 ? sort8 : sort35;
     }
 };
-struct Status { Ship *ship; Ship *getShip() { return ship; } };
+struct Status { Ship *ship; int64_t field_c0_q = 0; Ship *getShip() { return ship; } };
 Status *currentStatus = nullptr;
 Status *PE_status() { return currentStatus; }
 struct Hud {
@@ -86,20 +101,30 @@ struct Hud {
     }
 };
 struct Player { uint8_t field_5e = 0; };
-struct AEGeometry { unsigned meshId; };
+struct AEGeometry {
+    unsigned meshId;
+    unsigned transform = 0;
+    unsigned parentTransform = static_cast<unsigned>(-1);
+    unsigned childTransform = static_cast<unsigned>(-1);
+};
 
 struct PlayerEgo {
     uint8_t chargingCloak = 0, cloaked = 0;
-    int cloakRechargeTimer = 0, cloakCharge = 0, cloakDischargeMax = 0;
+    int cloakRechargeTimer = 0, cloakRechargeMax = 0, cloakCharge = 0;
+    int cloakDischargeMax = 0, cloakChargeMax = 0;
     void *cloak = nullptr, *player = nullptr, *hud = nullptr;
     AEGeometry *field_0x4 = nullptr;
     void *rollGeometry = nullptr, *turretGeometry = nullptr;
     int cloakMaterial1 = 0, cloakMaterial2 = 0, cloakMaterial3 = 0;
+    int originalMaterialMode = 0;
     uint8_t turretMode = 0;
+    uint8_t cloakChildHidden = 0;
     int toggleCloaking();
+    float getCloakingPercentage();
     void updateCloakCharge(int dt, Hud *hud);
 };
 
+// PRODUCTION_PERCENTAGE
 // PRODUCTION_METHOD
 
 void PlayerEgo::updateCloakCharge(int dt, Hud *hud) {
@@ -122,6 +147,10 @@ int main() {
     Hud hud;
     Player player;
     AEGeometry hull{40}, base{50}, yaw{60};
+    hull.parentTransform = 70;
+    hull.childTransform = 71;
+    base.transform = 72;
+    yaw.transform = 73;
     PlayerEgo ego;
     ego.cloak = &cloak;
     ego.player = &player;
@@ -133,6 +162,9 @@ int main() {
     ego.cloakMaterial2 = 12;
     ego.cloakMaterial3 = 13;
     ego.cloakDischargeMax = 8;
+    ego.cloakChargeMax = 6000;
+    ego.cloakRechargeMax = 2500;
+    ego.originalMaterialMode = 7;
 
     assert(ego.toggleCloaking() == 0);
     assert(cloak.lastAttribute == 38 && ship.removedIndex == -1);
@@ -150,15 +182,33 @@ int main() {
     assert((transitionOrder == std::vector<int>{30, 28, 29, 300}));
     assert(sound.played == 1 && player.field_5e == 1);
     assert(ego.cloakCharge == 0 && ego.cloaked == 1 && ego.chargingCloak == 0);
-    ego.updateCloakCharge(17, &hud);
-    assert(ego.cloakCharge == 0 && hud.events.size() == 3);
     assert(canvas.materials[11].materialMode == 14);
     assert((canvas.materialChanges == std::vector<std::pair<unsigned, unsigned>>{{40, 11}}));
     assert((canvas.shaderChanges == std::vector<std::pair<unsigned, unsigned>>{{40, 1}, {40, 2}}));
 
+    ego.updateCloakCharge(500, &hud);
+    assert(ego.cloakCharge == 500 && status.field_c0_q == 500);
+    assert(ego.cloakChildHidden == 0 && canvas.transforms[71].visible);
+    assert(canvas.shaderChanges.back() == std::make_pair(40u, 2u));
+    assert(std::fabs(canvas.shaderValues.back() - 0.5f) < 0.0001f);
+    assert(canvas.colorChanges.back() == std::make_pair(71u, 0xffffffc0u));
+    ego.updateCloakCharge(1, &hud);
+    assert(ego.cloakChildHidden == 1 && !canvas.transforms[71].visible);
+    ego.updateCloakCharge(4999, &hud);
+    assert(ego.cloakCharge == 5500 && ego.cloakChildHidden == 1);
+    ego.updateCloakCharge(1, &hud);
+    assert(ego.cloakCharge == 5501 && ego.cloakChildHidden == 0);
+    assert(canvas.transforms[71].visible);
+    ego.updateCloakCharge(500, &hud);
+    assert(ego.cloaked == 0 && ego.cloakCharge == 0);
+    assert(ego.cloakRechargeTimer == 2500 && status.field_c0_q == 6001);
+    assert(player.field_5e == 0 && sound.played == 2);
+    assert(canvas.materials[11].materialMode == 7);
+    assert(hud.events.size() == 3);
+
     canvas.materialChanges.clear();
     canvas.shaderChanges.clear();
-    ego.cloaked = 0;
+    canvas.shaderValues.clear();
     ego.cloakCharge = 8;
     ego.chargingCloak = 1;
     ego.turretMode = 1;
@@ -174,4 +224,12 @@ int main() {
     assert((canvas.shaderChanges == std::vector<std::pair<unsigned, unsigned>>{{40, 1}, {40, 2}, {50, 1}, {50, 2}, {60, 1}, {60, 2}}));
     assert(canvas.createdResource == 0x7167);
     assert((canvas.resourceChanges == std::vector<std::pair<unsigned, unsigned>>{{50, 0x7167}, {60, 0x7167}}));
+    ego.updateCloakCharge(6001, &hud);
+    assert(ego.cloaked == 0 && ego.cloakRechargeTimer == 2500);
+    assert(status.field_c0_q == 12002 && sound.played == 4);
+    assert(canvas.materials[11].materialMode == 7);
+    assert(canvas.materials[12].materialMode == 7 && canvas.materials[13].materialMode == 7);
+    assert((canvas.resourceChanges == std::vector<std::pair<unsigned, unsigned>>{
+        {50, 0x7167}, {60, 0x7167}, {50, 29029}, {60, 29029}}));
+    assert(canvas.colorChanges[canvas.colorChanges.size() - 1].first == 73);
 }

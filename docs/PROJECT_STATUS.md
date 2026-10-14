@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo original material mode; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo active cloak lifecycle; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo active cloak lifecycle (2026-10-14)
+
+Android Thumb `0x9cfe2–0x9d002` and `0x9d310–0x9d8a6` restore
+the cloak recharge timer, active fade, child visibility, Status
+duration counter, material restoration and recharge transition.
+The previous event-46 timer binding to the emergency system was
+wrong; the old checkpoint notes are corrected. Native `gof2`,
+206/206 ARM units, two production-fragment smokes and 37 verifier
+tests (one skipped) pass. Focused `update` source-shape/strict
+fuzzy rises **68.2%/20.4% → 77.0%/31.1%**; the function remains
+non-exact. Full coverage stays **4,323/4,524** at **93.39%** average
+source-shape and **82.28%** strict fuzzy, with **2,482 linked-exact**,
+**1,065 byte-exact**, **201 missing**, **123 extras**, zero skipped
+and no exact-pair losses. Live ARM32 rendering and the later
+emergency visual teardown are unverified; the latter is next.
+See [the cloak-lifecycle audit](PLAYER_EGO_CLOAK_LIFECYCLE_ARM_2026-10-14.md).
 
 ## PlayerEgo original material mode (2026-10-14)
 
@@ -657,12 +674,14 @@ linked-/byte-exact losses or gains. Linked ARM gameplay and the remaining dockin
 movement/easing helpers are unverified. See
 [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
-## PlayerEgo emergency timer and hacking update (2026-10-14)
+## PlayerEgo cloak recharge timer and hacking update (2026-10-14)
 
 Android Thumb `0x9cfe2–0x9d19e` completes the previously unresolved
-`PE_upd_subsystems` segment. A positive emergency timer at `+0x20c`
+`PE_upd_subsystems` segment. A positive cloak recharge timer at `+0x20c`
 decrements by frame time and emits HUD event 46 when it reaches zero
-or below. The hacking game at `+0x1e8` updates with the stored frame
+or below. The original checkpoint mistakenly used the emergency-system
+field; the later cloak-lifecycle package corrects it. The hacking game
+at `+0x1e8` updates with the stored frame
 time `+0x134`; on a win, the HUD closes the game. If the current
 station has an undiscovered hidden blueprint, the ARM reward table at
 `0x1fba34` selects item IDs `226, 221, 223, 225, 227` by station

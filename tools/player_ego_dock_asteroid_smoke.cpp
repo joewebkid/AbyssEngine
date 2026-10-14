@@ -526,6 +526,7 @@ struct PlayerEgo {
     float lastRight = 0.0f, lastLeft = 0.0f, lastDown = 0.0f, lastUp = 0.0f;
     unsigned char boostingFlag = 0;
     int emergencySystemTimer = 0;
+    int cloakRechargeTimer = 0;
     void *hackingGame = nullptr;
     int boostTimer = 0;
     int boostSpeed = 0;
@@ -761,15 +762,18 @@ int main() {
     PlayerEgo subsystemEgo{};
     Level subsystemLevel;
     subsystemEgo.level = &subsystemLevel;
-    subsystemEgo.emergencySystemTimer = 5;
+    subsystemEgo.cloakRechargeTimer = 5;
     int eventsBefore = hud.events;
     subsystemEgo.updateSubsystems(4, &hud);
-    assert(subsystemEgo.emergencySystemTimer == 1 && hud.events == eventsBefore);
+    assert(subsystemEgo.cloakRechargeTimer == 1 && hud.events == eventsBefore);
     subsystemEgo.updateSubsystems(1, &hud);
-    assert(subsystemEgo.emergencySystemTimer == 0 && hud.event == 46);
+    assert(subsystemEgo.cloakRechargeTimer == 0 && hud.event == 46);
     assert(hud.events == eventsBefore + 1);
     subsystemEgo.updateSubsystems(1, &hud);
     assert(hud.events == eventsBefore + 1);
+    subsystemEgo.emergencySystemTimer = 3;
+    subsystemEgo.updateSubsystems(3, &hud);
+    assert(subsystemEgo.emergencySystemTimer == 0 && hud.events == eventsBefore + 1);
 
     Station station;
     status.station = &station;

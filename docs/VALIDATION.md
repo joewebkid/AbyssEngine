@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo active cloak lifecycle (2026-10-14)
+
+Android Thumb `0x9cfe2–0x9d002` and `0x9d310–0x9d8a6` confirm
+the cloak recharge countdown, fade, visibility, Status duration,
+material restoration and expiration. The old emergency-timer
+interpretation of `+0x20c` was wrong and is corrected. Native
+`gof2`, 206/206 ARM units, two production-fragment smokes and 37
+verifier tests (one skipped) pass. Focused `update` source-shape/
+strict fuzzy changes **68.2%/20.4% → 77.0%/31.1%**; it is not
+exact. Full report `_work/player_cloak_lifecycle_full_20261014.json`
+compares **4,323/4,524** at **93.39%** average source-shape and
+**82.28%** strict fuzzy, with **2,482 linked-exact**, **1,065
+byte-exact**, **201 missing**, **123 extras**, zero skipped and no
+exact-pair losses versus the preceding full report. Live ARM32
+rendering and the late emergency visual teardown remain unverified.
+See [the cloak-lifecycle audit](PLAYER_EGO_CLOAK_LIFECYCLE_ARM_2026-10-14.md).
+
 ## PlayerEgo original material mode (2026-10-14)
 
 Android Thumb `0x9a29a–0x9a2a6` confirms `setShip` stores the
@@ -635,14 +652,16 @@ comparison against `_work/player_subsystems_full_20261014.json` finds
 zero losses and gains. See
 [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
-## PlayerEgo emergency timer and hacking update (2026-10-14)
+## PlayerEgo cloak recharge timer and hacking update (2026-10-14)
 
-Android Thumb `0x9cfe2–0x9d19e` confirms the emergency timer and
+Android Thumb `0x9cfe2–0x9d19e` confirms the cloak recharge timer and
 the win/reward/cleanup paths after `HackingGame::update`. The five
 reward IDs come from Android `.rodata` at `0x1fba34`. Extracted
 production-fragment smoke covers the timer crossing, normal hacking,
 win without reward, first flagged enemy cleanup, and a null enemy
-list. Native `gof2`, 206/206 ARM units, 37 verifier tests (one
+list. This checkpoint used the wrong C++ field for that countdown;
+the later cloak-lifecycle package corrects it. Native `gof2`,
+206/206 ARM units, 37 verifier tests (one
 skipped), and four PlayerEgo smokes pass. Focused `update`
 source-shape/strict fuzzy changes **55.0%/19.0% → 57.1%/27.6%**.
 Full report `_work/player_subsystems_full_20261014.json` covers

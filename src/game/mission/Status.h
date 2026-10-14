@@ -143,8 +143,13 @@ public:
     Array<bool> *field_b4;                   // 0xb4
     int32_t field_b8;                        // 0xb8
     int32_t field_bc;                        // 0xbc
-    int32_t field_c0;                        // 0xc0
-    int32_t field_c4;                        // 0xc4
+    union {
+        struct {
+            int32_t field_c0;                // 0xc0
+            int32_t field_c4;                // 0xc4
+        };
+        int64_t field_c0_q;                  // 0xc0  cloaked duration
+    };
     union {
         struct {
             int32_t field_c8;                // 0xc8
@@ -517,6 +522,7 @@ static_assert(offsetof(Status, playerStation) == 0x78, "");
 static_assert(offsetof(Status, field_84) == 0x84, "menu preset field");
 static_assert(offsetof(Status, field_88) == 0x88, "mission reroute counter");
 static_assert(offsetof(Status, previousShip) == 0x8c, "previousShip");
+static_assert(offsetof(Status, field_c0_q) == 0xc0, "cloaked duration");
 static_assert(offsetof(Status, field_0xf0) == 0xf0, "");
 static_assert(offsetof(Status, field_f4) == 0xf4, "");
 static_assert(offsetof(Status, field_0x100) == 0x100, "");

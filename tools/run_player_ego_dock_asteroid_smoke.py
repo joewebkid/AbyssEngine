@@ -68,11 +68,11 @@ def main():
                               source[start:end] + "}\n")
     start = source.index("    if (this->boostingFlag != 0) {",
                          source.index("void PlayerEgo::update("))
-    end = source.index("    if (((char &) this->dockingState) != 0) {", start)
+    end = source.index("    if (this->cloaked != 0) {", start)
     fixture = fixture.replace("// PRODUCTION_UPDATE_BOOST",
                               "void PlayerEgo::updateBoost(int dt) {\n" +
                               "    Player *player = this->player;\n" + source[start:end] + "}\n")
-    start = source.index("    if (this->emergencySystemTimer > 0) {",
+    start = source.index("    if (this->cloakRechargeTimer > 0) {",
                          source.index("void PlayerEgo::update("))
     end = source.index("    {\n        Ship *ship = PE_status()->getShip();", start)
     fixture = fixture.replace("// PRODUCTION_UPDATE_SUBSYSTEMS",
@@ -80,7 +80,7 @@ def main():
                               source[start:end] + "}\n")
     start = source.index("    Player *player = (Player *) this->player;",
                          source.index("void PlayerEgo::update("))
-    end = source.index("    if (this->emergencySystemTimer > 0) {", start)
+    end = source.index("    if (this->cloakRechargeTimer > 0) {", start)
     fixture = fixture.replace("// PRODUCTION_UPDATE_SHIELD",
                               "void PlayerEgo::updateShield(int dt, Hud *hud) {\n" +
                               source[start:end] + "}\n")

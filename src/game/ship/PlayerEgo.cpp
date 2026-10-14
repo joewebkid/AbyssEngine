@@ -1772,6 +1772,7 @@ PlayerEgo::PlayerEgo(Player *player) {
     this->miningGame = 0;
     this->hackingGame = 0;
     this->visible = 1;
+    this->cloakChildHidden = 0;
     this->field_0x309 = 0;
     this->requestedVisible = 1;
     this->exhaustVisible = 1;
@@ -2629,11 +2630,14 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         }
     }
 
-    if (this->emergencySystemTimer > 0) {
-        this->emergencySystemTimer -= dt;
-        if (this->emergencySystemTimer <= 0)
+    if (this->cloakRechargeTimer > 0) {
+        this->cloakRechargeTimer -= dt;
+        if (this->cloakRechargeTimer <= 0)
             hud->hudEvent(46, this, 0);
     }
+    // shortcut: emergency timer still decays early; move it with the late visual teardown when restored.
+    if (this->emergencySystemTimer > 0)
+        this->emergencySystemTimer -= dt;
 
     HackingGame *hacking = (HackingGame *)(void *&) this->hackingGame;
     if (hacking != nullptr) {
@@ -2706,7 +2710,118 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         }
     }
 
-    if (this->cloaked == 0 && this->chargingCloak != 0) {
+    if (this->cloaked != 0) {
+        this->cloakCharge += dt;
+        PE_status()->field_c0_q += dt;
+        PaintCanvas *canvas = Globals::Canvas;
+        AEGeometry *turretBase = static_cast<AEGeometry *>(this->rollGeometry);
+        AEGeometry *turretYaw = static_cast<AEGeometry *>(this->turretGeometry);
+
+        if (this->cloakCharge < 2000) {
+            int alpha = 255 - static_cast<int>((static_cast<float>(this->cloakCharge) / 2000.0f) * 255.0f);
+            if (alpha <= 50)
+                alpha = 50;
+            if (this->cloakCharge == 0)
+                this->cloakCharge = 1;
+            unsigned int color = 0xffffff00u | static_cast<unsigned char>(alpha);
+            float fade = static_cast<float>(this->cloakCharge) / 2000.0f;
+            canvas->MeshChangeShaderAnimValue(canvas->MeshGetPointer(this->field_0x4->meshId), fade, 1);
+            if (this->turretMode != 0) {
+                canvas->MeshChangeShaderAnimValue(canvas->MeshGetPointer(turretBase->meshId), fade, 1);
+                canvas->MeshChangeShaderAnimValue(canvas->MeshGetPointer(turretYaw->meshId), fade, 1);
+            }
+            if (this->field_0x4->parentTransform != static_cast<uint32_t>(-1))
+                canvas->TransformSetColor(this->field_0x4->parentTransform, color);
+            if (this->field_0x4->childTransform != static_cast<uint32_t>(-1))
+                canvas->TransformSetColor(this->field_0x4->childTransform, color);
+            if (this->turretMode != 0) {
+                canvas->TransformSetColor(turretBase->transform, color);
+                canvas->TransformSetColor(turretYaw->transform, color);
+            }
+            if (this->getCloakingPercentage() > 25.0f && this->cloakChildHidden == 0) {
+                this->cloakChildHidden = 1;
+                if (this->field_0x4 != nullptr
+                    && this->field_0x4->childTransform != static_cast<uint32_t>(-1))
+                    static_cast<AbyssEngine::Transform *>(
+                        canvas->TransformGetTransform(this->field_0x4->childTransform))->SetVisible(false);
+            }
+        }
+
+        float shaderTime = static_cast<float>(this->cloakCharge) * 0.001f;
+        canvas->MeshChangeShaderAnimValue(canvas->MeshGetPointer(this->field_0x4->meshId), shaderTime, 2);
+        if (this->turretMode != 0) {
+            canvas->MeshChangeShaderAnimValue(canvas->MeshGetPointer(turretBase->meshId), shaderTime, 2);
+            canvas->MeshChangeShaderAnimValue(canvas->MeshGetPointer(turretYaw->meshId), shaderTime, 2);
+        }
+
+        int fadeOutStart = this->cloakChargeMax - 2000;
+        if (this->cloakCharge > fadeOutStart) {
+            float fade = 1.0f - static_cast<float>(this->cloakCharge - fadeOutStart) / 2000.0f;
+            canvas->MeshChangeShaderAnimValue(canvas->MeshGetPointer(this->field_0x4->meshId), fade, 1);
+            if (this->turretMode != 0) {
+                canvas->MeshChangeShaderAnimValue(canvas->MeshGetPointer(turretBase->meshId), fade, 1);
+                canvas->MeshChangeShaderAnimValue(canvas->MeshGetPointer(turretYaw->meshId), fade, 1);
+            }
+            int alpha = static_cast<int>((static_cast<float>(this->cloakCharge - fadeOutStart) / 2000.0f) * 255.0f);
+            if (alpha <= 50)
+                alpha = 50;
+            unsigned int color = 0xffffff00u | static_cast<unsigned char>(alpha);
+            if (this->field_0x4->parentTransform != static_cast<uint32_t>(-1))
+                canvas->TransformSetColor(this->field_0x4->parentTransform, color);
+            if (this->field_0x4->childTransform != static_cast<uint32_t>(-1))
+                canvas->TransformSetColor(this->field_0x4->childTransform, color);
+            if (this->turretMode != 0) {
+                canvas->TransformSetColor(turretBase->transform, color);
+                canvas->TransformSetColor(turretYaw->transform, color);
+            }
+            if (this->getCloakingPercentage() < 25.0f && this->cloakChildHidden != 0) {
+                this->cloakChildHidden = 0;
+                if (this->field_0x4 != nullptr
+                    && this->field_0x4->childTransform != static_cast<uint32_t>(-1))
+                    static_cast<AbyssEngine::Transform *>(
+                        canvas->TransformGetTransform(this->field_0x4->childTransform))->SetVisible(true);
+            }
+        }
+
+        if (this->cloakCharge > this->cloakChargeMax) {
+            this->cloaked = 0;
+            this->cloakCharge = 0;
+            this->cloakRechargeTimer = this->cloakRechargeMax;
+            static_cast<Player *>(this->player)->field_5e = 0;
+            Globals::sound->play(30, nullptr, nullptr, 0.0f);
+            if (this->cloakChildHidden != 0) {
+                this->cloakChildHidden = 0;
+                if (this->field_0x4 != nullptr
+                    && this->field_0x4->childTransform != static_cast<uint32_t>(-1))
+                    static_cast<AbyssEngine::Transform *>(
+                        canvas->TransformGetTransform(this->field_0x4->childTransform))->SetVisible(true);
+            }
+            static_cast<AbyssEngine::Material *>(canvas->MaterialGetMaterial(this->cloakMaterial1))
+                ->materialMode = this->originalMaterialMode;
+            if (this->turretMode != 0) {
+                static_cast<AbyssEngine::Material *>(canvas->MaterialGetMaterial(this->cloakMaterial2))
+                    ->materialMode = this->originalMaterialMode;
+                static_cast<AbyssEngine::Material *>(canvas->MaterialGetMaterial(this->cloakMaterial3))
+                    ->materialMode = this->originalMaterialMode;
+
+                unsigned short resource = 20102;
+                Item *equipment = PE_status()->getShip()->getFirstEquipmentOfSort(8);
+                if (equipment != nullptr && equipment->getIndex() == 224)
+                    resource = 24085;
+                equipment = PE_status()->getShip()->getFirstEquipmentOfSort(35);
+                if (equipment != nullptr) {
+                    int index = equipment->getIndex();
+                    resource = 29035;
+                    if (index == 199)
+                        resource = 29029;
+                    if (index == 198)
+                        resource = 29023;
+                }
+                canvas->MeshChangeResourceMaterial(turretBase->meshId, resource);
+                canvas->MeshChangeResourceMaterial(turretYaw->meshId, resource);
+            }
+        }
+    } else if (this->chargingCloak != 0) {
         this->cloakCharge += dt;
         if (this->cloakCharge > this->cloakDischargeMax) {
             hud->hudEvent(29, this, 0);
