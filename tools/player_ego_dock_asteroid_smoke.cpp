@@ -5,6 +5,8 @@
 #include <cstring>
 #include <vector>
 
+template<class T> using Array = std::vector<T>;
+
 struct Vector { float x, y, z; };
 Vector operator*(const Vector &value, float factor) {
     return {value.x * factor, value.y * factor, value.z * factor};
@@ -95,10 +97,15 @@ struct ParticleSystemManager {
         ++manualEmits;
     }
 };
+struct KIPlayer;
 struct Level {
     ParticleSystemManager *field_74 = nullptr;
     int field_3c = 0;
     std::vector<AEGeometry *> *field_a4 = nullptr;
+    std::vector<KIPlayer *> *enemies = nullptr;
+    int radioType = -1, radioParam = -1;
+    std::vector<KIPlayer *> *getEnemies() { return enemies; }
+    void createRadioMessage(int type, int param) { radioType = type; radioParam = param; }
 };
 struct Explosion {
     int starts = 0, updates = 0, lastDt = -1;
@@ -112,10 +119,21 @@ struct Explosion {
 };
 int ParticleSettings::interpolations = 0;
 float ParticleSettings::blend = -1.0f;
+struct CargoArray {
+    static int destructions;
+    ~CargoArray() { ++destructions; }
+};
+int CargoArray::destructions = 0;
 struct KIPlayer {
     int state = 0;
+    unsigned char field_0x70 = 0;
+    CargoArray *cargo = nullptr;
     bool isDying() { return state == 3; }
     bool isDead() { return state == 4; }
+};
+struct PlayerFixedObject : KIPlayer {
+    int dockingType = -1;
+    void setDockingType(int value) { dockingType = value; }
 };
 struct PlayerAsteroid : KIPlayer {
     float scaling = 1.0f;
@@ -185,8 +203,11 @@ struct Hud {
     int amount = -1;
     int events = 0;
     int hits = 0;
+    int hackingActiveChanges = 0;
+    bool hackingActive = true;
     void hudEvent(int id, PlayerEgo *, int value) { event = id; amount = value; ++events; }
     void playerHit() { ++hits; }
+    void setHackingGameActive(bool value) { hackingActive = value; ++hackingActiveChanges; }
 };
 struct Radio {};
 struct Route {
@@ -235,9 +256,20 @@ struct Ship {
         return cargo;
     }
 };
+struct Station {
+    bool hiddenBlueprint = false;
+    unsigned int hiddenBlueprintIndex = 0;
+    bool stationHasHiddenBlueprint(bool ignoreFound) { assert(!ignoreFound); return hiddenBlueprint; }
+    unsigned int getHiddenBlueprintIndex() { return hiddenBlueprintIndex; }
+};
 struct Status {
     Ship *ship = nullptr;
+    Station *station = nullptr;
+    std::vector<unsigned char> *field_58 = nullptr;
+    int unlockedBlueprint = -1;
     Ship *getShip() { return ship; }
+    Station *getStation() { return station; }
+    void unlockBluePrint(int index) { unlockedBlueprint = index; }
 };
 static Status status;
 Status *PE_status() { return &status; }
@@ -245,6 +277,15 @@ struct PlayerEgo;
 void PE_upd_docksFinishDelivery(PlayerEgo *, Radio *);
 static int destroyedMiningGames = 0;
 struct MiningGame { ~MiningGame() { ++destroyedMiningGames; } };
+struct HackingGame {
+    static int destructions;
+    bool won = false;
+    int updates = 0, lastDt = -1;
+    ~HackingGame() { ++destructions; }
+    int update(int dt) { ++updates; lastDt = dt; return 0; }
+    int gameWon() { return won; }
+};
+int HackingGame::destructions = 0;
 struct FModSound {
     int played[16]{};
     int playCount = 0;
@@ -345,6 +386,8 @@ struct PlayerEgo {
     int rightCalls = 0, leftCalls = 0, downCalls = 0, upCalls = 0;
     float lastRight = 0.0f, lastLeft = 0.0f, lastDown = 0.0f, lastUp = 0.0f;
     unsigned char boostingFlag = 0;
+    int emergencySystemTimer = 0;
+    void *hackingGame = nullptr;
     int boostTimer = 0;
     int boostSpeed = 0;
     int field_0xcc = 0;
@@ -367,6 +410,7 @@ struct PlayerEgo {
     void updateCargoState();
     void updateBoostTimer(int dt);
     void updateBoost(int dt);
+    void updateSubsystems(int dt, Hud *hud);
     void updateShield(int dt, Hud *hud);
     void updateRecovery(int dt);
     void updatePlayerSound(int dt);
@@ -398,6 +442,7 @@ Vector PlayerEgo::crosshairShootPos{};
 // PRODUCTION_UPDATE_CARGO
 // PRODUCTION_UPDATE_BOOST_TIMER
 // PRODUCTION_UPDATE_BOOST
+// PRODUCTION_UPDATE_SUBSYSTEMS
 // PRODUCTION_UPDATE_SHIELD
 // PRODUCTION_UPDATE_RECOVERY
 // PRODUCTION_UPDATE_PLAYER_SOUND
@@ -561,6 +606,58 @@ int main() {
     boostEgo.updateBoost(0);
     assert(engine.postEffectCalls == 2 && boostEgo.boostSpeed == 2);
     assert(boostEgo.field_0xcc == 0 && boostEgo.field_0xd0 == 0);
+
+    PlayerEgo subsystemEgo{};
+    Level subsystemLevel;
+    subsystemEgo.level = &subsystemLevel;
+    subsystemEgo.emergencySystemTimer = 5;
+    int eventsBefore = hud.events;
+    subsystemEgo.updateSubsystems(4, &hud);
+    assert(subsystemEgo.emergencySystemTimer == 1 && hud.events == eventsBefore);
+    subsystemEgo.updateSubsystems(1, &hud);
+    assert(subsystemEgo.emergencySystemTimer == 0 && hud.event == 46);
+    assert(hud.events == eventsBefore + 1);
+    subsystemEgo.updateSubsystems(1, &hud);
+    assert(hud.events == eventsBefore + 1);
+
+    Station station;
+    status.station = &station;
+    std::vector<unsigned char> blueprintFlags(5, 0);
+    status.field_58 = &blueprintFlags;
+    HackingGame *hacking = new HackingGame;
+    subsystemEgo.hackingGame = hacking;
+    subsystemEgo.shakeIntensity = 16;
+    subsystemEgo.updateSubsystems(4, &hud);
+    assert(hacking->updates == 1 && hacking->lastDt == 16);
+    assert(hud.hackingActiveChanges == 0 && HackingGame::destructions == 0);
+    hacking->won = true;
+    subsystemEgo.updateSubsystems(4, &hud);
+    assert(hud.hackingActiveChanges == 1 && !hud.hackingActive);
+    assert(subsystemEgo.hackingGame == hacking && HackingGame::destructions == 0);
+    assert(status.unlockedBlueprint == -1 && subsystemLevel.radioType == -1);
+
+    station.hiddenBlueprint = true;
+    station.hiddenBlueprintIndex = 2;
+    PlayerFixedObject ordinaryEnemy, hiddenEnemy, laterEnemy;
+    hiddenEnemy.field_0x70 = 1;
+    hiddenEnemy.cargo = new CargoArray;
+    laterEnemy.field_0x70 = 1;
+    std::vector<KIPlayer *> enemies{&ordinaryEnemy, &hiddenEnemy, &laterEnemy};
+    subsystemLevel.enemies = &enemies;
+    subsystemEgo.updateSubsystems(4, &hud);
+    assert(hud.hackingActiveChanges == 2 && subsystemEgo.hackingGame == nullptr);
+    assert(HackingGame::destructions == 1 && status.unlockedBlueprint == 223);
+    assert(hiddenEnemy.field_0x70 == 0 && hiddenEnemy.dockingType == 0);
+    assert(hiddenEnemy.cargo == nullptr && CargoArray::destructions == 1);
+    assert(laterEnemy.field_0x70 == 1 && laterEnemy.dockingType == -1);
+    assert(subsystemLevel.radioType == 23 && subsystemLevel.radioParam == 0);
+    assert(blueprintFlags[2] == 1);
+    station.hiddenBlueprintIndex = 4;
+    subsystemLevel.enemies = nullptr;
+    subsystemEgo.hackingGame = new HackingGame{true};
+    subsystemEgo.updateSubsystems(4, &hud);
+    assert(status.unlockedBlueprint == 227 && blueprintFlags[4] == 1);
+    assert(subsystemLevel.radioType == 25 && HackingGame::destructions == 2);
 
     FModSound sound;
     Globals::sound = &sound;

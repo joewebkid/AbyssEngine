@@ -2425,9 +2425,6 @@ void PlayerEgo::draw(bool allowHud) {
     ((PlayerEgo *) (this))->drawThrottle();
 }
 
-void PE_upd_subsystems(PlayerEgo *self, int dt, void *radar, void *hud,
-                                  void *radio, void *script);
-
 // IDA 0x9ce38: _ZN9PlayerEgo6updateEiP5RadarP3HudP5RadioP11LevelScriptibi
 void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript *script, int arg5, bool arg6,
                        int arg7) {
@@ -2486,7 +2483,45 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         }
     }
 
-    PE_upd_subsystems(this, dt, radar, hud, radio, script);
+    if (this->emergencySystemTimer > 0) {
+        this->emergencySystemTimer -= dt;
+        if (this->emergencySystemTimer <= 0)
+            hud->hudEvent(46, this, 0);
+    }
+
+    HackingGame *hacking = (HackingGame *)(void *&) this->hackingGame;
+    if (hacking != nullptr) {
+        hacking->update(this->shakeIntensity);
+        if (hacking->gameWon()) {
+            hud->setHackingGameActive(false);
+            Status *status = PE_status();
+            Station *station = status->getStation();
+            if (station->stationHasHiddenBlueprint(false)) {
+                // Android .rodata 0x1fba34; index is the station's hidden-blueprint slot.
+                static const int kHiddenBlueprintRewards[5] = {226, 221, 223, 225, 227};
+                unsigned int index = station->getHiddenBlueprintIndex();
+                status->unlockBluePrint(kHiddenBlueprintRewards[index]);
+                delete hacking;
+                ((void *&) this->hackingGame) = nullptr;
+                Array<KIPlayer *> *enemies = this->level->getEnemies();
+                if (enemies != nullptr) {
+                    for (unsigned int i = 0; i < enemies->size(); ++i) {
+                        KIPlayer *enemy = (*enemies)[i];
+                        if (enemy->field_0x70 != 0) {
+                            enemy->field_0x70 = 0;
+                            PlayerFixedObject *fixed = static_cast<PlayerFixedObject *>(enemy);
+                            fixed->setDockingType(0);
+                            delete fixed->cargo;
+                            fixed->cargo = nullptr;
+                            break;
+                        }
+                    }
+                }
+                this->level->createRadioMessage(index + 21, 0);
+                (*status->field_58)[index] = true;
+            }
+        }
+    }
 
     {
         Ship *ship = PE_status()->getShip();

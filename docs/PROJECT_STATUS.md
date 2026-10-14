@@ -1,7 +1,37 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo boost update; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo emergency/hacking update; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo emergency timer and hacking update (2026-10-14)
+
+Android Thumb `0x9cfe2–0x9d19e` completes the previously unresolved
+`PE_upd_subsystems` segment. A positive emergency timer at `+0x20c`
+decrements by frame time and emits HUD event 46 when it reaches zero
+or below. The hacking game at `+0x1e8` updates with the stored frame
+time `+0x134`; on a win, the HUD closes the game. If the current
+station has an undiscovered hidden blueprint, the ARM reward table at
+`0x1fba34` selects item IDs `226, 221, 223, 225, 227` by station
+slot. The game object is destroyed; the first level enemy with byte
+`+0x70` set has that byte cleared, docking type reset, and its `+0x50`
+cargo array released. A radio message of type `slot + 21` is emitted
+and the status flag at `+0x58` is marked. If no blueprint is available,
+the original leaves the hacking object in place after closing the HUD;
+the source preserves that distinction. Extracted-fragment smoke tests
+the timer edge, no-win and no-reward paths, reward/cargo cleanup,
+first-match selection, and null enemy list. Native `gof2`, 206/206
+ARM units, 37 verifier tests (one skipped), and four PlayerEgo smokes
+pass. Focused `update` source-shape/strict fuzzy rises
+**55.0%/19.0% → 57.1%/27.6%**. The function is still non-exact;
+full report `_work/player_subsystems_full_20261014.json` covers
+**4,323/4,524** original functions at **93.26%** average
+source-shape and **82.17%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Pairwise
+comparison with the preceding boost checkpoint finds zero exact losses
+and one new linked-exact pair (`Array<int>::~Array()`) from the cargo
+cleanup path. Linked ARM gameplay is unverified. The next unresolved `update`
+block is delivery/docking completion (`PE_upd_docksFinishDelivery`).
+See [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo boost update (2026-10-14)
 
@@ -25,8 +55,8 @@ source-shape and **82.16%** strict fuzzy, with **2,478 linked-exact**,
 **1,065 byte-exact**, **123 extras**, and zero skipped units. Exact
 pair sets lose or gain none against the preceding checkpoint. The
 whole `update` function is not exact, and linked ARM gameplay remains
-unverified. The next priority is the earlier `PE_upd_subsystems`
-behavior, then the delivery/docking branch. See
+unverified. At this checkpoint, the next priority was the earlier
+`PE_upd_subsystems` behavior, then the delivery/docking branch. See
 [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo death/explosion update tail (2026-10-14)

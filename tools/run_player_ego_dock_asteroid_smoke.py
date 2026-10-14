@@ -48,9 +48,15 @@ def main():
     fixture = fixture.replace("// PRODUCTION_UPDATE_BOOST",
                               "void PlayerEgo::updateBoost(int dt) {\n" +
                               "    Player *player = this->player;\n" + source[start:end] + "}\n")
+    start = source.index("    if (this->emergencySystemTimer > 0) {",
+                         source.index("void PlayerEgo::update("))
+    end = source.index("    {\n        Ship *ship = PE_status()->getShip();", start)
+    fixture = fixture.replace("// PRODUCTION_UPDATE_SUBSYSTEMS",
+                              "void PlayerEgo::updateSubsystems(int dt, Hud *hud) {\n" +
+                              source[start:end] + "}\n")
     start = source.index("    Player *player = (Player *) this->player;",
                          source.index("void PlayerEgo::update("))
-    end = source.index("    PE_upd_subsystems(this, dt, radar, hud, radio, script);", start)
+    end = source.index("    if (this->emergencySystemTimer > 0) {", start)
     fixture = fixture.replace("// PRODUCTION_UPDATE_SHIELD",
                               "void PlayerEgo::updateShield(int dt, Hud *hud) {\n" +
                               source[start:end] + "}\n")

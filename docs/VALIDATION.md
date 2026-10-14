@@ -4,6 +4,26 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo emergency timer and hacking update (2026-10-14)
+
+Android Thumb `0x9cfe2–0x9d19e` confirms the emergency timer and
+the win/reward/cleanup paths after `HackingGame::update`. The five
+reward IDs come from Android `.rodata` at `0x1fba34`. Extracted
+production-fragment smoke covers the timer crossing, normal hacking,
+win without reward, first flagged enemy cleanup, and a null enemy
+list. Native `gof2`, 206/206 ARM units, 37 verifier tests (one
+skipped), and four PlayerEgo smokes pass. Focused `update`
+source-shape/strict fuzzy changes **55.0%/19.0% → 57.1%/27.6%**.
+Full report `_work/player_subsystems_full_20261014.json` covers
+**4,323/4,524** original functions at **93.26%** average
+source-shape and **82.17%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Exact
+pair comparison with `_work/player_boost_full_20261014.json` finds
+zero losses and one linked-exact gain (`Array<int>::~Array()`).
+The function remains non-exact; linked ARM gameplay and the later
+delivery/docking completion branch remain unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo boost update (2026-10-14)
 
 Raw Android Thumb `0x9ce92–0x9ceba` establishes the timer's negative
@@ -19,8 +39,9 @@ source-shape, **82.16%** strict fuzzy, **2,478 linked-exact**,
 **1,065 byte-exact**, **123 extras**, zero skipped units, and no
 linked-/byte-exact pair losses or gains against
 `_work/player_update_tail_full_20261014.json`. No whole-function
-exact or linked ARM gameplay is claimed; `PE_upd_subsystems` and
-`PE_upd_docksFinishDelivery` remain unresolved. See
+exact or linked ARM gameplay is claimed; at this checkpoint
+`PE_upd_subsystems` and `PE_upd_docksFinishDelivery` remained
+unresolved. See
 [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo death/explosion update tail (2026-10-14)

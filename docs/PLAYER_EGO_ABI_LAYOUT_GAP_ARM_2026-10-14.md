@@ -1,5 +1,38 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Emergency timer and hacking-game reward path (2026-10-14)
+
+Android Thumb `0x9cfe2–0x9d19e`, cross-checked with IDA lines
+83543–83617, places the emergency countdown at PlayerEgo `+0x20c`:
+only positive values decrement, and the crossing to zero or below
+emits HUD event 46. Hacking-game pointer `+0x1e8` receives the
+stored frame time from `+0x134`. A win first disables the HUD game.
+The reward branch requires `Station::stationHasHiddenBlueprint(false)`;
+the slot from `getHiddenBlueprintIndex()` indexes the Android
+`.rodata` table at `0x1fba34`, containing blueprint item IDs
+`226, 221, 223, 225, 227`. It unlocks that blueprint, destroys the
+hacking game, and clears the pointer. The first enemy from
+`Level::getEnemies()` whose byte `+0x70` is set has that byte cleared,
+`setDockingType(0)` called, and its `Array<int>` pointer at `+0x50`
+deleted and nulled. The level then receives radio message
+`slot + 21, 0`, and Status `field_58[slot]` is set. A null enemy
+list still permits reward and radio progress; a win with no hidden
+blueprint only closes the HUD game, preserving the object.
+
+The extracted production-fragment smoke checks the countdown edge,
+ordinary and won hacking paths, first-match cleanup, and null enemy
+list. Native and ARM builds are green; focused `update` source-shape
+**55.0% → 57.1%**, strict fuzzy **19.0% → 27.6%**, not exact.
+Full report `_work/player_subsystems_full_20261014.json` covers
+**4,323/4,524** original functions at **93.26%** average
+source-shape and **82.17%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. No exact
+pair is lost against the preceding boost checkpoint; the cargo-array
+destructor adds one linked-exact pair.
+The iOS dump did not yield a reliable counterpart for this block;
+linked ARM gameplay and the remaining delivery/docking helper are
+unverified.
+
 ## Boost timer, cargo shake, nozzle life, and finish (2026-10-14)
 
 Android Thumb `0x9ce92–0x9ceba` reads/writes timer `+0x138`, using
@@ -27,9 +60,9 @@ functions covered, **93.26%** average source-shape, **82.16%** strict
 fuzzy, **2,478 linked-exact**, **1,065 byte-exact**, **123 extras**,
 zero skipped units, and zero exact-pair losses or gains against
 `_work/player_update_tail_full_20261014.json`. iOS source did not
-yield a reliable counterpart for this block. Remaining large helpers include
-`PE_upd_subsystems` and `PE_upd_docksFinishDelivery`; linked ARM
-gameplay remains unverified.
+yield a reliable counterpart for this block. At this checkpoint,
+remaining large helpers included `PE_upd_subsystems` and
+`PE_upd_docksFinishDelivery`; linked ARM gameplay remains unverified.
 
 ## Death/explosion and final turret update tail (2026-10-14)
 
