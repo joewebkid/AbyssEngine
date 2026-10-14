@@ -1,5 +1,37 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Shield recharge update branch (2026-10-14)
+
+Android IDA `PlayerEgo::update` lines 83509–83545 and 84977–85005,
+cross-checked against the independent Ghidra export at lines
+63331–63397, establishes the branch after the freeze guard.
+Equipment flag `+0x39a` gates only the start: at zero shield HP,
+equipment sort 43 supplies attribute 59 as the required amount of
+cargo item 202. A successful start spends that cargo, emits HUD event
+47 and starts sound events `0x8d2`/`0x8d1`. Active flag `+0x399`
+then heals at least 1 HP per frame, otherwise `int(dt * 0.15)` HP,
+and updates the `0x8d1` sound position and parameter. At full
+shield it plays `0x8d3`, stops event 2257, updates its position,
+and clears the active flag. An already-active recharge continues
+even if the equipment flag is clear. The source now follows this
+order; the production-fragment smoke tests absent equipment, absent
+cargo, same-frame activation, minimum and scaled healing, continued
+recharge, and full-shield completion.
+
+Focused ARM verification builds 206/206 translation units and raises
+`update` source-shape from **14.3%** to **22.0%**, strict fuzzy from
+**4.1%** to **8.3%**; the whole function is not exact. Native `gof2`,
+37 verifier tests (one skipped), and four PlayerEgo host smokes pass.
+The full report `_work/player_shield_update_full_20261014.json`
+compares **4,323/4,524** original functions at **93.24%** average
+source-shape and **82.12%** strict fuzzy, with **2,474 linked-exact**,
+**1,062 byte-exact**, and **123 extras**. Against the terminal-flag
+checkpoint, the linked and byte exact-pair sets have no losses or
+gains. The rest of `update`, including unresolved subsystem/post
+helpers, and linked ARM gameplay remain unverified. Next, recover
+the adjacent shield/repair timer branch without claiming the whole
+frame update is complete.
+
 ## Terminal shield/mining flags (2026-10-14)
 
 The original Android constructor clears `+0x399`, sets `+0x39a`
@@ -9,7 +41,7 @@ The original `update` reads `+0x399/+0x39a` for shield regeneration;
 C++ layout incorrectly put the mining-loss flag at `+0x399`, aliasing
 the shield state. The three bytes now have separate named fields,
 constructor initialization, and ARM32 offset assertions. The shield
-regeneration branch in `update` is not yet reconstructed.
+regeneration branch is recovered in the section above.
 
 Focused ARM verification builds all 206 translation units and makes
 `lostMiningGame()` linked- and byte-exact. Constructor source-shape
@@ -21,7 +53,7 @@ three PlayerEgo smokes pass. The full report
 source-shape, **82.12%** strict fuzzy, **2,474 linked-exact**,
 **1,062 byte-exact**, and **123 extras**. Relative to the cargo-state
 checkpoint, no exact-pair matches are lost; `lostMiningGame()`
-adds one linked and one byte match. These checks do not establish
+adds one linked and one byte match. These checkpoint checks did not establish
 complete constructor, shield-update, or linked ARM gameplay behavior.
 
 ## Initial verified contradiction

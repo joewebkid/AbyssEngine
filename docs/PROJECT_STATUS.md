@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo shield/mining flag split; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo shield recharge branch; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo shield recharge branch (2026-10-14)
+
+Confirmed Android IDA/Ghidra control flow now starts shield recharge
+only with equipment sort 43, zero shield HP and enough cargo item
+202, then spends its attribute-59 amount and emits the original HUD
+and sound events. An already-active recharge heals at least 1 HP per
+frame even without the equipment flag; full shield ends the effect.
+The production-fragment smoke covers these boundaries. Native
+`gof2`, 206/206 ARM units, 37 verifier tests (one skipped), and
+four PlayerEgo host smokes pass. `update` source-shape rises
+**14.3% → 22.0%** and strict fuzzy **4.1% → 8.3%**, without an
+exact match. Full corpus remains **4,323/4,524** covered,
+**93.24%** source-shape, **82.12%** strict fuzzy,
+**2,474 linked-exact**, **1,062 byte-exact**, **123 extras**;
+there are zero exact-pair losses. The rest of `update` and linked
+ARM gameplay remain unverified. Next: its adjacent shield/repair
+timer branch. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo shield/mining flag split (2026-10-14)
 

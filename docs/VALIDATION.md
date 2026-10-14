@@ -4,6 +4,26 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo shield recharge branch (2026-10-14)
+
+Android IDA lines 83509–83545/84977–85005 and independent Ghidra
+lines 63331–63397 establish the start, charging, sound and completion
+branches. The host smoke extracts the production `update` fragment
+and checks missing equipment/cargo, zero-HP activation, same-frame
+minimum healing, scaled healing, continuation and completion. Its
+fixture also repairs the stale throttle-image member name; all four
+PlayerEgo smokes pass. Native `gof2`, 206/206 ARM units and 37
+verifier tests (one skipped) pass. Focused `update` source-shape
+is **22.0%** versus **14.3%** before, strict fuzzy **8.3%** versus
+**4.1%**. Full report `_work/player_shield_update_full_20261014.json`:
+**4,323/4,524** covered, **93.24%** source-shape, **82.12%**
+strict fuzzy, **2,474 linked-exact**, **1,062 byte-exact**,
+**123 extras**. Relative to
+`_work/player_terminal_flags_full_20261014.json`, exact-pair
+losses and gains are both zero. Full `update` behavior and linked
+ARM gameplay are not proven. See
+[the offset evidence](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo shield/mining flag split (2026-10-14)
 
 Original Android constructor, `update`, `lostMiningGame`, and

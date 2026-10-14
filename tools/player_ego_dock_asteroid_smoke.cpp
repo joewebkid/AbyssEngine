@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstring>
 
+struct Vector { float x, y, z; };
 struct KIPlayer {
     int state = 0;
     bool isDying() { return state == 3; }
@@ -25,16 +26,41 @@ struct TargetFollowCamera {
 struct Player {
     int resetCount = 0;
     int hitpoints = 10;
+    int shieldHP = 0;
+    int maxShieldHP = 10;
     int getHitpoints() { return hitpoints; }
+    int getShieldHP() { return shieldHP; }
+    int getMaxShieldHP() { return maxShieldHP; }
+    void setShieldHP(int value) { shieldHP = value > maxShieldHP ? maxShieldHP : value; }
     void resetGunDelay(int value) { assert(value == 0); ++resetCount; }
 };
-struct Hud {};
+struct PlayerEgo;
+struct Hud {
+    int event = -1;
+    int amount = -1;
+    void hudEvent(int id, PlayerEgo *, int value) { event = id; amount = value; }
+};
 struct Radio {};
+struct Item {
+    int amount = 2;
+    int getAttribute(int id) { assert(id == 59); return amount; }
+};
 struct Ship {
     int freeSpace = 0;
     bool volatileGoods = false;
+    Item *equipment = nullptr;
+    int cargo = 0;
+    int removals = 0;
     int getFreeSpace() { return freeSpace; }
     bool hasVolatileGoods() { return volatileGoods; }
+    Item *getFirstEquipmentOfSort(int sort) { assert(sort == 43); return equipment; }
+    bool hasCargo(int index, int amount) { assert(index == 202); return cargo >= amount; }
+    int removeCargo(int index, int amount) {
+        assert(index == 202 && cargo >= amount);
+        cargo -= amount;
+        ++removals;
+        return cargo;
+    }
 };
 struct Status {
     Ship *ship = nullptr;
@@ -46,6 +72,25 @@ struct PlayerEgo;
 void PE_upd_docksFinishDelivery(PlayerEgo *, Radio *);
 static int destroyedMiningGames = 0;
 struct MiningGame { ~MiningGame() { ++destroyedMiningGames; } };
+struct FModSound {
+    int played[8]{};
+    int playCount = 0;
+    int stopped = 0;
+    int updated[8]{};
+    int updateCount = 0;
+    float parameter = -1.0f;
+    void play(int id, Vector *, Vector *, float) { played[playCount++] = id; }
+    void stop(int id) { stopped = id; }
+    void setParamValue(int param, int id, float value) {
+        assert(param == 0 && id == 2257);
+        parameter = value;
+    }
+    void updateEvent3DAttributes(int id, Vector *pos, Vector *vel, bool restart) {
+        assert(pos->x == 7.0f && vel->x == 0.0f && !restart);
+        updated[updateCount++] = id;
+    }
+};
+namespace Globals { FModSound *sound = nullptr; }
 static const float g_PE_astApproach = 2500.0f;
 void Vec_assign(void *dst, const void *src) { std::memcpy(dst, src, 3 * sizeof(int)); }
 
@@ -65,11 +110,16 @@ struct PlayerEgo {
     unsigned char field_0x145 = 0;
     int lastFreeSpace = 0;
     unsigned char volatileGoods = 0;
+    unsigned char shieldRegenActive = 0;
+    unsigned char shieldRegenEquipped = 0;
+    Vector position{7.0f, 0.0f, 0.0f};
     bool exhaustVisible = false;
     void setExhaustVisible(bool value) { exhaustVisible = value; }
     void dockToAsteroid(KIPlayer *kip, Radar *radar);
     void updateDocking(Radar *radar, Hud *hud, Radio *radio);
     void updateCargoState();
+    void updateShield(int dt, Hud *hud);
+    Vector getPosition() { return position; }
     int approachAsteroid(Hud *, int, Radar *) { ++approachCount; return 0; }
     int approachDockingPoint(Hud *, int, Radar *) { return 0; }
     void dockToDockingPoint(KIPlayer *, Radar *) { dockedFlag = 0; ++dockPointStops; }
@@ -78,6 +128,7 @@ struct PlayerEgo {
 // PRODUCTION_METHOD
 // PRODUCTION_UPDATE_DOCKING
 // PRODUCTION_UPDATE_CARGO
+// PRODUCTION_UPDATE_SHIELD
 
 void PE_upd_docksFinishDelivery(PlayerEgo *, Radio *) { assert(false); }
 
@@ -150,9 +201,41 @@ int main() {
     ego.updateCargoState();
     assert(ego.lastFreeSpace == 4 && ego.volatileGoods == 0);
 
+    FModSound sound;
+    Globals::sound = &sound;
+    Item equipment;
+    ego.updateShield(0, &hud);
+    assert(!ego.shieldRegenActive && sound.playCount == 0);
+    ego.shieldRegenEquipped = 1;
+    ship.cargo = 2;
+    ego.updateShield(0, &hud);
+    assert(!ego.shieldRegenActive && ship.cargo == 2);
+    ship.equipment = &equipment;
+    player.shieldHP = 1;
+    ego.updateShield(0, &hud);
+    assert(!ego.shieldRegenActive && sound.playCount == 0);
+    player.shieldHP = 0;
+    ship.cargo = 0;
+    ego.updateShield(0, &hud);
+    assert(!ego.shieldRegenActive && sound.playCount == 0);
+    ship.cargo = 2;
+    ego.updateShield(0, &hud);
+    assert(ego.shieldRegenActive && player.shieldHP == 1);
+    assert(ship.cargo == 0 && ship.removals == 1 && hud.event == 47 && hud.amount == 2);
+    assert(sound.playCount == 2 && sound.played[0] == 0x8d2 && sound.played[1] == 0x8d1);
+    assert(sound.updateCount == 2 && sound.updated[0] == 0x8d2 && sound.updated[1] == 0x8d1);
+    assert(sound.parameter == 0.1f);
+    ego.shieldRegenEquipped = 0;
+    ego.updateShield(20, &hud);
+    assert(ego.shieldRegenActive && player.shieldHP == 4 && ship.removals == 1);
+    player.shieldHP = player.maxShieldHP;
+    ego.updateShield(20, &hud);
+    assert(!ego.shieldRegenActive && sound.played[2] == 0x8d3 && sound.stopped == 2257);
+    assert(sound.updated[3] == 0x8d3 && ship.removals == 1);
+
     ego.asteroidTargetPtr = &asteroid;
     ego.dockedFlag = 1;
     ego.updateDocking(&radar, &hud, &radio);
     assert(ego.dockedFlag == 0 && ego.dockPointStops == 1);
-    std::puts("PlayerEgo dockToAsteroid smoke: OK");
+    std::puts("PlayerEgo docking/cargo/shield smoke: OK");
 }

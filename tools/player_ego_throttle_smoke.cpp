@@ -50,7 +50,7 @@ struct Position { float x, y, z; };
 struct PlayerEgo {
     int throttleStarted = 0;
     int throttle = 0;
-    int hpGaugeImage = 9;
+    int dockArrowImage = 9;
     float thrust = 0.0f;
     static Position crosshairPos;
     void drawThrottle();

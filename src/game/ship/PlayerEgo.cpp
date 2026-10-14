@@ -2424,6 +2424,46 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
     this->dockOffsetVec = getPosition();
     this->shakeIntensity = dt;
 
+    Player *player = (Player *) this->player;
+    // Android ARM: equipment gates activation, but an active recharge continues without it.
+    if (this->shieldRegenEquipped && !this->shieldRegenActive && player->getShieldHP() <= 0) {
+        Ship *ship = PE_status()->getShip();
+        Item *equipment = ship->getFirstEquipmentOfSort(43);
+        if (equipment != nullptr) {
+            int amount = equipment->getAttribute(59);
+            if (ship->hasCargo(202, amount)) {
+                this->shieldRegenActive = 1;
+                Globals::sound->play(0x8d2, nullptr, nullptr, 0.0f);
+                Globals::sound->play(0x8d1, nullptr, nullptr, 0.0f);
+                Vector velocity{0.0f, 0.0f, 0.0f};
+                Vector position = getPosition();
+                Globals::sound->updateEvent3DAttributes(0x8d2, &position, &velocity, false);
+                ship->removeCargo(202, amount);
+                hud->hudEvent(47, this, amount);
+            }
+        }
+    }
+    if (this->shieldRegenActive) {
+        if (player->getShieldHP() >= player->getMaxShieldHP()) {
+            Globals::sound->play(0x8d3, nullptr, nullptr, 0.0f);
+            Globals::sound->stop(2257);
+            Vector velocity{0.0f, 0.0f, 0.0f};
+            Vector position = getPosition();
+            Globals::sound->updateEvent3DAttributes(0x8d3, &position, &velocity, false);
+            this->shieldRegenActive = 0;
+        } else {
+            float restored = (float) dt * 0.15f;
+            if (restored < 1.0f)
+                restored = 1.0f;
+            player->setShieldHP((int) (restored + (float) player->getShieldHP()));
+            Globals::sound->setParamValue(0, 2257,
+                                          (float) player->getShieldHP() / (float) player->getMaxShieldHP());
+            Vector velocity{0.0f, 0.0f, 0.0f};
+            Vector position = getPosition();
+            Globals::sound->updateEvent3DAttributes(0x8d1, &position, &velocity, false);
+        }
+    }
+
     PE_upd_subsystems(this, dt, radar, hud, radio, script);
 
     {
