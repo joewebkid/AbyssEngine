@@ -1,7 +1,29 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo player/sound handoff; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo route/HUD transition; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo route/HUD transition and route ABI (2026-10-14)
+
+Android ARM `PlayerEgo::update` at `0x9e82c–0x9e866`, checked against
+IDA and Ghidra, reads `route` at `+0xfc`, updates it with the cached
+position at `+0x148`, and emits HUD event 23 on a changed waypoint or
+24 when a non-looping route returns to zero. The source and extracted
+host smoke now cover no route, no transition, advancement, completion,
+and loop wrap. The same ARM/IDA evidence fixes `route` at `+0xfc` and
+the secondary-weapon index at `+0x10c`; neighboring legacy field names
+are not yet independently confirmed. Native `gof2`, 206/206 ARM units,
+37 verifier tests (one skipped), and four PlayerEgo smokes pass.
+Focused `update` source-shape rises **28.7% → 30.0%**, while strict
+fuzzy changes **10.6% → 10.2%**; the whole function is not exact. Full
+report `_work/player_route_event_full_20261014.json`: **4,323/4,524**
+covered, **93.26%** source-shape, **82.16%** strict fuzzy,
+**2,478 linked-exact**, **1,065 byte-exact**, **123 extras**. Compared
+with the player/sound checkpoint, exact-pair losses are zero and gains
+are four linked / three byte. The matrix-up/particle-settings prelude
+between sound and route, remaining post logic, and linked ARM gameplay
+are still unverified. Next: recover that prelude in original order.
+See [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo player/sound handoff (2026-10-14)
 

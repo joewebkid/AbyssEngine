@@ -56,9 +56,19 @@ struct PlayerEgo;
 struct Hud {
     int event = -1;
     int amount = -1;
-    void hudEvent(int id, PlayerEgo *, int value) { event = id; amount = value; }
+    int events = 0;
+    void hudEvent(int id, PlayerEgo *, int value) { event = id; amount = value; ++events; }
 };
 struct Radio {};
+struct Route {
+    int current = 0;
+    int next = 0;
+    unsigned char loop = 0;
+    int updates = 0;
+    Vector lastPosition{};
+    int getCurrent() { return current; }
+    void update(const Vector &position) { ++updates; lastPosition = position; current = next; }
+};
 struct Item {
     int amount = 2;
     int getAttribute(int id) { assert(id == 59); return amount; }
@@ -153,6 +163,8 @@ struct PlayerEgo {
     int field_0x1c = -1;
     int engineSoundId = -1;
     float handling = 0.0f;
+    Route *route = nullptr;
+    Vector dockOffsetVec{};
     int64_t shieldRecoveryTimer = 0;
     int64_t hullRepairTimer = 0;
     int64_t armorRepairTimer = 0;
@@ -166,6 +178,7 @@ struct PlayerEgo {
     void updateShield(int dt, Hud *hud);
     void updateRecovery(int dt);
     void updatePlayerSound(int dt);
+    void updateRoute(Hud *hud);
     void initializeRecoveryAmount(Ship *ship);
     void initializeEngineSound(Ship *ship);
     bool isDead() { return player->hitpoints < 1; }
@@ -181,6 +194,7 @@ struct PlayerEgo {
 // PRODUCTION_UPDATE_SHIELD
 // PRODUCTION_UPDATE_RECOVERY
 // PRODUCTION_UPDATE_PLAYER_SOUND
+// PRODUCTION_UPDATE_ROUTE
 // PRODUCTION_RECOVERY_AMOUNT
 // PRODUCTION_ENGINE_SOUND_SELECTION
 
@@ -384,9 +398,30 @@ int main() {
     ego.updatePlayerSound(36);
     assert(sound.updateCount == 7);
 
+    const int oldEvents = hud.events;
+    ego.updateRoute(&hud);
+    assert(hud.events == oldEvents);
+    Route route;
+    ego.route = &route;
+    ego.dockOffsetVec = {7.0f, 8.0f, 9.0f};
+    ego.updateRoute(&hud);
+    assert(route.updates == 1 && route.lastPosition.x == 7.0f);
+    assert(route.lastPosition.y == 8.0f && route.lastPosition.z == 9.0f);
+    assert(hud.events == oldEvents);
+    route.next = 1;
+    ego.updateRoute(&hud);
+    assert(hud.events == oldEvents + 1 && hud.event == 23 && hud.amount == 0);
+    route.next = 0;
+    ego.updateRoute(&hud);
+    assert(hud.events == oldEvents + 2 && hud.event == 24);
+    route.current = 1;
+    route.loop = 1;
+    ego.updateRoute(&hud);
+    assert(hud.events == oldEvents + 3 && hud.event == 23);
+
     ego.asteroidTargetPtr = &asteroid;
     ego.dockedFlag = 1;
     ego.updateDocking(&radar, &hud, &radio);
     assert(ego.dockedFlag == 0 && ego.dockPointStops == 1);
-    std::puts("PlayerEgo docking/cargo/shield/repair/sound smoke: OK");
+    std::puts("PlayerEgo docking/cargo/shield/repair/sound/route smoke: OK");
 }

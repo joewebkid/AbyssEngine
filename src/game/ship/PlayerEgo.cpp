@@ -2614,6 +2614,15 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         Globals::sound->updateEvent3DAttributes(this->engineSoundId, &position, nullptr, false);
     }
 
+    if (this->route != nullptr) {
+        int previous = this->route->getCurrent();
+        this->route->update(this->dockOffsetVec);
+        if (this->route->getCurrent() != previous) {
+            int event = (this->route->loop != 0 || this->route->getCurrent() != 0) ? 23 : 24;
+            hud->hudEvent(event, this, 0);
+        }
+    }
+
     PE_upd_post(this, dt, radar, hud, radio, arg5);
 }
 

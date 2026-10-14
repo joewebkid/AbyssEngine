@@ -1,5 +1,39 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Route transition and ABI correction (2026-10-14)
+
+Original Android ARM `PlayerEgo::update` stores a pointer to
+`PlayerEgo+0x148` at `0x9ce86–0x9ce8c`, then at `0x9e82c–0x9e866`
+reads `route` from `+0xfc`, snapshots `Route::getCurrent`, passes the
+saved vector pointer to `Route::update(const Vector&)`, and sends HUD
+event 23 on a changed waypoint, except event 24 for non-looping
+completion at index zero. IDA lines 84468–84488 and independent
+Ghidra lines 64444–64456 corroborate the branch and event values.
+The original `setRoute`/`getRoute` access `+0xfc` (`0x9b150/0x9b156`);
+secondary-weapon-index accessors use `+0x10c` (`0x9b7b0/0x9b7b8`).
+The ARM32 header now asserts both offsets. The names and behavior of
+other nearby legacy fields remain provisional; their placement is not
+claimed as independently verified.
+
+The extracted production-fragment smoke checks missing/unchanged
+routes, advancing to a nonzero index, non-looping completion to zero,
+loop wrapping to zero, and the saved position passed to `update`.
+Native `gof2`, 206/206 ARM translation units, 37 verifier tests
+(one skipped), and all four PlayerEgo smokes pass. Focused `update`
+source-shape improves **28.7% → 30.0%**, strict fuzzy changes
+**10.6% → 10.2%**; no exact match is claimed for that large function.
+Full report `_work/player_route_event_full_20261014.json` has
+**4,323/4,524** original functions compared, **93.26%** average
+source-shape, **82.16%** strict fuzzy, **2,478 linked-exact**,
+**1,065 byte-exact**, and **123 extras**. Against the prior
+player/sound checkpoint, exact-pair losses are zero; four linked and
+three byte pairs are newly exact (`getRoute`, `setRoute`,
+`getCurrentSecondaryWeaponIndex`, plus linked-only `removeRoute`).
+The original matrix-up/particle-settings work precedes this route
+branch but is not yet reconstructed here. Remaining post logic and
+linked ARM gameplay are unverified. Next: restore that intervening
+prelude without treating the whole frame update as complete.
+
 ## Player update and positional sound handoff (2026-10-14)
 
 Android IDA `PlayerEgo::update` lines 84434–84453 and independent

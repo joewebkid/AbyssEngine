@@ -4,6 +4,28 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo route/HUD transition (2026-10-14)
+
+Original ARM `update` at `0x9ce86–0x9ce8c` saves a pointer to
+`PlayerEgo+0x148`; `0x9e82c–0x9e866` passes that pointer to
+`Route::update(const Vector&)`, detects a changed current index, and
+dispatches HUD event 23 or 24 according to the loop flag and new
+index. Android IDA `setRoute`/`getRoute` at `0x9b150/0x9b156` and
+secondary-index accessors at `0x9b7b0/0x9b7b8` establish ABI offsets
+`+0xfc/+0x10c`. The production-fragment host smoke checks the event
+branches and passed vector. Native `gof2`, all 206 ARM translation
+units, 37 verifier tests (one skipped), and four PlayerEgo smokes pass.
+Focused `update` source-shape/strict fuzzy is **30.0%/10.2%** versus
+**28.7%/10.6%**. Full report
+`_work/player_route_event_full_20261014.json`: **4,323/4,524**
+covered, **93.26%** source-shape, **82.16%** strict fuzzy,
+**2,478 linked-exact**, **1,065 byte-exact**, **123 extras**. Relative
+to `_work/player_update_sound_ctor_full_20261014.json`, no exact
+pairs are lost; four linked and three byte pairs are gained. The
+whole `update`, intervening matrix/particle prelude and linked ARM
+gameplay are not established. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo player/sound handoff (2026-10-14)
 
 Android IDA `update` lines 84434–84453 and independent Ghidra

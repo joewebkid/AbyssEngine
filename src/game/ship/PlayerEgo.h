@@ -120,13 +120,13 @@ public:
     float waypointX;
     float waypointY;
     void *gunBaseGeo;
-    Route *route;
     int pitchAccumDir;
     int yawAccumDir;
-    int currentSecondaryWeaponIndex;
+    Route *route;
     float yawAccumulator;
     float pitchAccumulator;
     float yawRate;
+    int currentSecondaryWeaponIndex;
     float pitchRate;
     char _unknown_0x114[4];
     int64_t shieldRecoveryTimer;
@@ -637,6 +637,9 @@ static_assert(__builtin_offsetof(PlayerEgo, freeLookMode) == 0xc4, "PlayerEgo::f
 static_assert(__builtin_offsetof(PlayerEgo, boostSpeed) == 0xc8, "PlayerEgo::boostSpeed offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0xcc) == 0xcc, "PlayerEgo::boostTime offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0xd0) == 0xd0, "PlayerEgo::boostDelay offset");
+static_assert(__builtin_offsetof(PlayerEgo, route) == 0xfc, "PlayerEgo::route offset");
+static_assert(__builtin_offsetof(PlayerEgo, currentSecondaryWeaponIndex) == 0x10c,
+              "PlayerEgo::currentSecondaryWeaponIndex offset");
 static_assert(__builtin_offsetof(PlayerEgo, shieldRecoveryTimer) == 0x118, "PlayerEgo::shieldRecoveryTimer offset");
 static_assert(__builtin_offsetof(PlayerEgo, hullRepairTimer) == 0x120, "PlayerEgo::hullRepairTimer offset");
 static_assert(__builtin_offsetof(PlayerEgo, armorRepairTimer) == 0x128, "PlayerEgo::armorRepairTimer offset");
