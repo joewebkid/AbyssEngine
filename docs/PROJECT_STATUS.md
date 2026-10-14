@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo move-to-position; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo maneuver update; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo maneuver update (2026-10-14)
+
+Android Thumb `0x9c1f8–0x9c684` replaces the declared-only dodge and
+strafe shims with movement, rotation, sway, camera and completion
+behavior. The timer at `+0x350` now advances by frame time from
+`+0x134`, and `initManeuver` initializes that same field. Production-body
+smokes, native `gof2`, 206/206 ARM translation units and 37 verifier
+tests (one skipped) pass. Focused `updateManeuver` source-shape/strict
+fuzzy rises **30.1%/20.0% → 93.0%/51.7%**; it is not exact. Full
+coverage remains **4,323/4,524** at **93.35%** average source-shape
+and **82.25%** strict fuzzy, with **2,482 linked-exact**,
+**1,065 byte-exact**, **123 extras**, zero skipped and no exact-pair
+losses. Live maneuver animation and ARM32 runtime remain unverified.
+Next priority: the adjacent `dockToDockingPoint` ease-matrix helper.
+See [the maneuver audit](PLAYER_EGO_UPDATE_MANEUVER_ARM_2026-10-14.md).
 
 ## PlayerEgo move-to-position (2026-10-14)
 

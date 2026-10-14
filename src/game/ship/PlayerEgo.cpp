@@ -225,12 +225,6 @@ void PlayEngineSound_(PlayerEgo * self);
 
 void *PE_dtdp_makeEase(const void *fromMatrix, const void *navPoint);
 
-void PE_um_dodgeStep(PlayerEgo * self);
-
-void PE_um_strafeTarget(PlayerEgo *self, float *out);
-
-void PE_um_strafeGlide(PlayerEgo * self);
-
 
 int PE_aa_approachStep(PlayerEgo *self, int hud2, void *radar);
 
@@ -973,7 +967,7 @@ void PlayerEgo::initManeuver(int type) {
 
     if (this->maneuverType == 0) {
         this->maneuverType = type;
-        this->navPoint = 0;
+        this->maneuverTimer = 0;
         if (type == 3) {
             Vec3 pos = getPosition();
             Vec3 dir = geometry->getDirection();
@@ -3150,41 +3144,77 @@ void PlayerEgo::setAutoPilot(KIPlayer *kip) {
 
 // IDA 0x9c1f8: _ZN9PlayerEgo14updateManeuverEv
 int PlayerEgo::updateManeuver() {
-    unsigned int type = ((uint32_t &) this->maneuverType);
+    unsigned int type = (unsigned int) this->maneuverType;
+    if (type - 1 < 2) {
+        this->maneuverTimer += this->shakeIntensity;
+        AEGeometry *ship = this->geometry;
+        auto *camera = (TargetFollowCamera *) (((void *&) this->targetFollowCamera));
+        float frame = (float) this->shakeIntensity;
+        Vector dodge = ship->getRightVector() * frame * 4.0f;
+        dodge *= 1.0f - (float) this->maneuverTimer / 1200.0f;
+        dodge *= this->handling * 0.05f;
+        if (type == 2) dodge *= -1.0f;
+        ship->moveForward(this->thrust * frame * this->speedValue);
+        ship->translate(dodge.x, dodge.y, dodge.z);
 
-    if ((type - 1) < 2) {
-        ((int &) this->navPoint) = ((int &) this->explosion) + ((int &) this->navPoint);
-        PE_um_dodgeStep(this);
-        if (((int &) this->navPoint) > 0x4af) {
-            void *level = this->levelScript;
+        Matrix rotation{1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                        1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                        1.0f, 0.0f, 1.0f, 1.0f, 1.0f};
+        float sign = type == 1 ? -1.0f : 1.0f;
+        AbyssEngine::AEMath::MatrixSetRotation(
+            rotation, 0.0f, sign * (1.0f - (float) this->maneuverTimer / 1200.0f) * 0.0062832f, 0.0f);
+        ship->setMatrix(ship->getMatrix() * rotation);
+
+        float sway = AbyssEngine::AEMath::Sinf((float) this->maneuverTimer / 1200.0f * 3.1415927f)
+            * (this->handling * 0.05f * 750.0f * 0.4f) * sign;
+        // Thumb stores sway at +0x27c, overlapping the legacy double view.
+        reinterpret_cast<float *>(&this->pitchAccumD)[1] = sway;
+        Vector offset = *camera->getTargetOffset();
+        offset.x = sway * -3.0f;
+        camera->setTargetOffset(offset);
+        Matrix *shipLocal = static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(ship->transform));
+        Matrix *bodyLocal = static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(this->field_0x4->transform));
+        ((Player *) this->player)->transformMatrix = *shipLocal * *bodyLocal;
+        camera->translateNoUpdate(dodge.x * -0.9f, dodge.y * -0.9f, dodge.z * -0.9f);
+
+        if (this->maneuverTimer >= 1200) {
             this->maneuverType = 0;
-            ((LevelScript *) (level))->resetCamera(((LevelScript *) level)->m_pLevel);
+            this->levelScript->resetCamera(this->level);
         }
         return 1;
     }
 
-    if (type != 3)
-        return 0;
+    if (type != 3) return 0;
+    this->maneuverTimer += this->shakeIntensity;
+    AEGeometry *ship = this->geometry;
+    auto *camera = (TargetFollowCamera *) (((void *&) this->targetFollowCamera));
+    float frame = (float) this->shakeIntensity;
+    Vector direction = ship->getDirection();
+    ship->getRightVector();
+    Vector up = ship->getUpVector();
+    Vector target = this->getPosition() + direction * 10000.0f + up * 10000.0f;
+    if (this->maneuverTimer > 900) target = this->strafeTargetVec;
+    this->moveToPosition(target, true, 7.0f);
 
-    ((int &) this->navPoint) = ((int &) this->explosion) + ((int &) this->navPoint);
-
-    float target[3];
-    PE_um_strafeTarget(this, target);
-    if (((int &) this->navPoint) > 900) {
-        target[0] = this->strafeTargetVec.x;
-        target[1] = this->strafeTargetVec.y;
-        target[2] = this->strafeTargetVec.z;
-    }
-    ((PlayerEgo *) (this))->moveToPosition(Vector{target[0], target[1], target[2]}, true, 0.0f);
-
-    PE_um_strafeGlide(this);
-    ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setLookAtCam(false);
-    ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->useTargetsUpVector(false);
-
-    if (((int &) this->navPoint) > 2999) {
+    Matrix rotation{1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                    1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                    1.0f, 0.0f, 1.0f, 1.0f, 1.0f};
+    AbyssEngine::AEMath::MatrixSetRotation(
+        rotation, 0.0f, 0.0f, ((float) this->maneuverTimer / 3000.0f) * 6.2831855f);
+    ship->setMatrix(ship->getMatrix() * rotation);
+    Matrix *shipLocal = static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(ship->transform));
+    Matrix *bodyLocal = static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(this->field_0x4->transform));
+    ((Player *) this->player)->transformMatrix = *shipLocal * *bodyLocal;
+    camera->setLookAtCam(true);
+    camera->useTargetsUpVector(false);
+    Vector cameraMove = this->facingVec * 7.0f * frame
+        * (1.0f - (float) this->maneuverTimer / 3000.0f);
+    camera->translate(cameraMove.x, cameraMove.y, cameraMove.z);
+    ship->moveForward(this->thrust * frame * this->speedValue);
+    if (this->maneuverTimer >= 3000) {
         this->maneuverType = 0;
-        ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setLookAtCam(false);
-        ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->useTargetsUpVector(false);
+        camera->setLookAtCam(false);
+        camera->useTargetsUpVector(true);
     }
     return 1;
 }

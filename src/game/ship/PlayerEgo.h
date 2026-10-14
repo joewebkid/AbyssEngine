@@ -260,7 +260,7 @@ public:
     int maneuverType;
     AbyssEngine::AEMath::Vector strafeTargetVec;
     AbyssEngine::AEMath::Vector facingVec;
-    void *navPoint;
+    int maneuverTimer;
     uint8_t autoTurretEnabled;
     uint8_t dockedFlag;
     void *easeMatrix;
@@ -714,6 +714,7 @@ static_assert(__builtin_offsetof(PlayerEgo, requestedVisible) == 0x309, "PlayerE
 static_assert(__builtin_offsetof(PlayerEgo, shieldHitFlash) == 0x30a, "PlayerEgo::shieldHitFlash offset");
 static_assert(__builtin_offsetof(PlayerEgo, autoLevel) == 0x324, "PlayerEgo::autoLevel offset");
 static_assert(__builtin_offsetof(PlayerEgo, visible) == 0x32e, "PlayerEgo::visible offset");
+static_assert(__builtin_offsetof(PlayerEgo, maneuverTimer) == 0x350, "PlayerEgo::maneuverTimer offset");
 static_assert(__builtin_offsetof(PlayerEgo, exhaustVisible) == 0x32f, "PlayerEgo::exhaustVisible offset");
 static_assert(__builtin_offsetof(PlayerEgo, spacePoint) == 0x36c, "PlayerEgo::spacePoint offset");
 static_assert(__builtin_offsetof(PlayerEgo, cursorStateByte) == 0x378, "PlayerEgo::cursorStateByte offset");

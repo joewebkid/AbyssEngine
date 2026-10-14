@@ -24,7 +24,7 @@ struct PlayerEgo {
     AEGeometry *geometry = nullptr;
     bool volatileGoods = false;
     int maneuverType = 0;
-    int navPoint = 9;
+    int maneuverTimer = 9;
     Vector strafeTargetVec{};
     Vector facingVec{};
     Vector position{1.0f, 2.0f, 3.0f};
@@ -41,7 +41,7 @@ int main() {
     ego.player = &player;
     ego.geometry = &geometry;
     ego.initManeuver(3);
-    assert(ego.maneuverType == 3 && ego.navPoint == 0);
+    assert(ego.maneuverType == 3 && ego.maneuverTimer == 0);
     assert(ego.strafeTargetVec.x == 1.0f && ego.strafeTargetVec.y == 2.0f);
     assert(ego.strafeTargetVec.z == -9997.0f);
     assert(ego.facingVec.z == 1.0f);

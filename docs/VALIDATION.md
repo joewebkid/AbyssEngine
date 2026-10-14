@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo maneuver update (2026-10-14)
+
+IDA/Ghidra and Android Thumb `0x9c1f8–0x9c684` confirm both dodge
+directions, the 1,200 ms fade/reset and the 3,000 ms strafe/camera
+path. Production-body maneuver smokes, native `gof2`, 206/206 ARM
+translation units and 37 verifier tests (one skipped) pass. Focused
+`updateManeuver` source-shape/strict fuzzy changes **30.1%/20.0% →
+93.0%/51.7%**; `initManeuver` is **99.4%/89.4%**. Neither is exact.
+Full report `_work/player_update_maneuver_full_20261014.json` covers
+**4,323/4,524** at **93.35%** average source-shape and **82.25%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**123 extras**, **201 missing** and zero skipped. Linked- and byte-exact
+pair sets have no losses against
+`_work/player_move_to_position_full_20261014.json`. Live maneuver
+animation and ARM32 runtime remain unverified. See
+[the maneuver audit](PLAYER_EGO_UPDATE_MANEUVER_ARM_2026-10-14.md).
+
 ## PlayerEgo move-to-position (2026-10-14)
 
 IDA/Ghidra and Android Thumb `0x9c6d4–0x9ca52` confirm heading blend,
