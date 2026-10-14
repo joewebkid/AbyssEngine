@@ -1326,6 +1326,34 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
                 this->dockingPointIndex = 2;
                 ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setLookAtCam(true);
                 ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->useTargetsUpVector(false);
+                if (this->easeMatrix != nullptr) {
+                    delete static_cast<AbyssEngine::EaseInOutMatrix *>(this->easeMatrix);
+                }
+                this->easeMatrix = nullptr;
+
+                Vector targetPos = target->getPosition();
+                const Matrix &targetMatrix = target->geometry->getMatrix();
+                Vector navWorld = targetPos + AbyssEngine::AEMath::MatrixRotateVector(
+                    targetMatrix, this->spacePoint->position);
+                SpacePoint *dockPoint = target->getNearestDockingPoint(navWorld);
+                Vector dir = AbyssEngine::AEMath::VectorNormalize(
+                    AbyssEngine::AEMath::MatrixRotateVector(targetMatrix, dockPoint->direction));
+                Vector navOffset = AbyssEngine::AEMath::MatrixRotateVector(
+                    targetMatrix, this->spacePoint->position);
+                Vector dockOffset = AbyssEngine::AEMath::MatrixRotateVector(
+                    targetMatrix, dockPoint->position);
+                Vector up = AbyssEngine::AEMath::VectorNormalize(navOffset - dockOffset);
+                Vector right = AbyssEngine::AEMath::VectorNormalize(
+                    AbyssEngine::AEMath::VectorCross(up, dir));
+                Matrix destination;
+                AbyssEngine::AEMath::MatrixSetRotation(destination, right, up, dir);
+                this->easeMatrix = new AbyssEngine::EaseInOutMatrix(this->geometry->getMatrix(), destination, 2000);
+
+                Globals::sound->play(0x8de, nullptr, nullptr, 0.0f);
+                Vector velocity{0.0f, 0.0f, 0.0f};
+                Vector soundPos = ((Player *) this->player)->getPosition();
+                Globals::sound->updateEvent3DAttributes(0x8de, &soundPos, &velocity, false);
+                this->StopEngineSound();
             } else {
                 float speed = 4.0f;
                 Ship *ship = PE_status()->getShip();

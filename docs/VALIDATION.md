@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo docking ease-matrix entry (2026-10-14)
+
+Raw Android Thumb `0x9fdf4–0xa001a`, IDA and Ghidra establish the
+old ease-object destruction, nearest docking-point query, rotated
+basis, 2000 ms EaseInOutMatrix constructor, sound `0x8de` 3D update,
+and engine-sound stop. The extracted whole-method smoke checks the
+constructor range/basis, ownership and audio. Native `gof2`, 206/206
+ARM units, 37 verifier tests (one skipped), and four PlayerEgo smokes
+pass. Focused `approachDockingPoint` source-shape/strict fuzzy rises
+**31.2%/16.1% → 52.2%/27.1%**; it is not exact. Full report
+`_work/player_dock_ease_entry_full_20261014.json` covers
+**4,323/4,524** original functions at **93.27%** average
+source-shape and **82.17%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Exact
+pair sets have no losses or gains against
+`_work/player_dock_nav_full_20261014.json`. The glide/easing update
+shims and linked ARM gameplay remain unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo docking navigation and approach speed (2026-10-14)
 
 Raw Android Thumb `0x9fd56–0x9fdc4` confirms the local-to-world
@@ -20,7 +39,8 @@ in `_work/player_dock_nav_full_20261014.json`:
 **82.17%** strict fuzzy, **2,479 linked-exact**, **1,065 byte-exact**,
 **123 extras**, zero skipped units. Exact pair comparison against
 `_work/player_approach_docking_full_20261014.json` finds no losses
-or gains. Remaining ease-matrix and glide shims are not verified.
+or gains. At that checkpoint the ease-matrix constructor and glide
+shims were not verified; the following pass recovers the constructor.
 See [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo docking approach and exit transitions (2026-10-14)

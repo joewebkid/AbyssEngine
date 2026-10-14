@@ -18,7 +18,7 @@ Vector operator+(const Vector &a, const Vector &b) {
 Vector operator-(const Vector &a, const Vector &b) {
     return {a.x - b.x, a.y - b.y, a.z - b.z};
 }
-struct Matrix { Vector up, position, dir; };
+struct Matrix { Vector right, up, position, dir; };
 static const Matrix *expectedFirstMatrix = nullptr;
 static const Matrix *expectedSecondMatrix = nullptr;
 static const Matrix *expectedDockRotationMatrix = nullptr;
@@ -35,6 +35,12 @@ Vector MatrixRotateVector(const Matrix &matrix, const Vector &value) {
 float VectorLength(const Vector &value) {
     return std::sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
 }
+Vector VectorCross(const Vector &a, const Vector &b) {
+    return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
+}
+Matrix MatrixSetRotation(Matrix &matrix, const Vector &right, const Vector &up, const Vector &dir) {
+    matrix.right = right; matrix.up = up; matrix.dir = dir; return matrix;
+}
 Vector MatrixGetUp(const Matrix &matrix) { return matrix.up; }
 Vector MatrixGetPosition(const Matrix &matrix) { return matrix.position; }
 Vector MatrixGetDir(const Matrix &matrix) { return matrix.dir; }
@@ -43,6 +49,18 @@ Vector VectorNormalize(const Vector &value) {
     return length == 0.0f ? Vector{} : Vector{value.x / length, value.y / length, value.z / length};
 }
 } }
+namespace AbyssEngine {
+struct EaseInOutMatrix {
+    static int creations, destructions;
+    Matrix min, max;
+    int duration;
+    EaseInOutMatrix(Matrix from, Matrix to, int milliseconds)
+        : min(from), max(to), duration(milliseconds) { ++creations; }
+    ~EaseInOutMatrix() { ++destructions; }
+};
+int EaseInOutMatrix::creations = 0;
+int EaseInOutMatrix::destructions = 0;
+}
 struct AEGeometry {
     unsigned int transform = 17;
     Matrix matrix{};
@@ -112,6 +130,7 @@ struct ParticleSystemManager {
 struct KIPlayer;
 struct SpacePoint {
     Vector position{};
+    Vector direction{};
     int takes = 0, releases = 0;
     void take() { ++takes; }
     void giveFree() { ++releases; }
@@ -156,11 +175,17 @@ struct KIPlayer {
     unsigned char field_0x8c = 0;
     CargoArray *cargo = nullptr;
     SpacePoint *nearestNav = nullptr;
+    SpacePoint *nearestDock = nullptr;
+    Vector lastDockQuery{};
+    int dockQueries = 0;
     AEGeometry *geometry = nullptr;
     Vector position{};
     bool isDying() { return state == 3; }
     bool isDead() { return state == 4; }
     void *getNearestNavigationPoint(Vector, SpacePoint *) { return nearestNav; }
+    SpacePoint *getNearestDockingPoint(const Vector &point) {
+        lastDockQuery = point; ++dockQueries; return nearestDock;
+    }
     Vector getPosition() { return position; }
 };
 static_assert(offsetof(KIPlayer, field_0x70) == 0x70, "KIPlayer mock docking flag offset");
@@ -438,10 +463,12 @@ struct PlayerEgo {
     int dockedFlag = 0;
     unsigned char aboutToReachAutoTargetFlag = 0;
     SpacePoint *spacePoint = nullptr;
+    void *easeMatrix = nullptr;
     void *dockStation = nullptr;
     LevelScript *levelScript = nullptr;
     int mockGlideDistance = 0;
     int dockApplyCalls = 0;
+    int engineSoundStops = 0;
     float waypointX = 0.0f, waypointY = 0.0f;
     uint32_t gunBaseGeo = 0;
     int pitchAccumDir = 0;
@@ -539,6 +566,7 @@ struct PlayerEgo {
     void moveToPosition(Vector target, bool steer, float speed) {
         lastMovePosition = target; lastMoveSteer = steer; lastMoveSpeed = speed; ++moveCalls;
     }
+    void StopEngineSound() { ++engineSoundStops; }
     int setTurretMode(bool enable) { turretActive = enable; return 0; }
     void dockToDockingPoint(KIPlayer *, Radar *) { dockedFlag = 0; ++dockPointStops; }
 };
@@ -881,7 +909,8 @@ int main() {
     ego.updatePlayerSound(36);
     assert(sound.updateCount == 7);
 
-    Matrix matrix{{1.0f, 2.0f, 3.0f}};
+    Matrix matrix{};
+    matrix.up = {1.0f, 2.0f, 3.0f};
     PaintCanvas canvas;
     canvas.local = &matrix;
     Globals::Canvas = &canvas;
@@ -1175,7 +1204,9 @@ int main() {
     TargetFollowCamera approachCamera;
     LevelScript approachScript;
     SpacePoint dockNav;
+    SpacePoint dockSpot;
     AEGeometry dockGeometry;
+    AEGeometry approachShipGeometry;
     Radar approachRadar;
     approachScript.m_pLevel = &dockLevel;
     approachEgo.player = &player;
@@ -1183,13 +1214,18 @@ int main() {
     approachEgo.levelScript = &approachScript;
     approachEgo.targetFollowCameraPtr = &approachCamera;
     approachEgo.asteroidTargetPtr = &dockTarget;
+    approachEgo.geometry = &approachShipGeometry;
     approachEgo.position = {0.0f, 0.0f, 0.0f};
     approachEgo.dockScaling = 1400;
     approachEgo.dockApproachThreshold = 2000;
     dockTarget.nearestNav = &dockNav;
+    dockTarget.nearestDock = &dockSpot;
     dockTarget.geometry = &dockGeometry;
     expectedDockRotationMatrix = &dockGeometry.matrix;
     dockNav.position = {400.0f, 5.0f, 6.0f};
+    dockSpot.position = {390.0f, 5.0f, 6.0f};
+    dockSpot.direction = {0.0f, 0.0f, 1.0f};
+    approachShipGeometry.matrix.position = {3.0f, 4.0f, 5.0f};
     dockTarget.field_0x70 = 1;
     dockTarget.field_0x8c = 1;
     ship.handling = 1.0f;
@@ -1213,10 +1249,26 @@ int main() {
     assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
     assert(approachEgo.dockingPointIndex == 0 && approachEgo.moveCalls == 3 && approachEgo.dockApplyCalls == 0);
     assert(approachEgo.spacePoint == &dockNav && dockNav.takes == 1);
+    approachEgo.easeMatrix = new AbyssEngine::EaseInOutMatrix(Matrix{}, Matrix{}, 100);
+    int oldEaseCreations = AbyssEngine::EaseInOutMatrix::creations;
+    int oldEaseDestructions = AbyssEngine::EaseInOutMatrix::destructions;
+    int oldDockSoundPlays = sound.playCount;
+    int oldDockSoundUpdates = sound.updateCount;
     dockTarget.position = {999.0f, 0.0f, 0.0f};
     assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
     assert(approachEgo.dockingPointIndex == 2 && approachCamera.lookAt);
     assert(dockTarget.field_0x8c == 0 && approachEgo.moveCalls == 3 && approachEgo.dockApplyCalls == 0);
+    assert(dockTarget.dockQueries == 1 && dockTarget.lastDockQuery.x == 1399.0f);
+    assert(dockTarget.lastDockQuery.y == 5.0f && dockTarget.lastDockQuery.z == 6.0f);
+    auto *dockEase = static_cast<AbyssEngine::EaseInOutMatrix *>(approachEgo.easeMatrix);
+    assert(dockEase != nullptr && dockEase->duration == 2000);
+    assert(dockEase->min.position.x == 3.0f && dockEase->min.position.y == 4.0f);
+    assert(dockEase->max.dir.z == 1.0f && dockEase->max.up.x == 1.0f && dockEase->max.right.y == -1.0f);
+    assert(AbyssEngine::EaseInOutMatrix::creations == oldEaseCreations + 1);
+    assert(AbyssEngine::EaseInOutMatrix::destructions == oldEaseDestructions + 1);
+    assert(sound.playCount == oldDockSoundPlays + 1 && sound.played[oldDockSoundPlays] == 0x8de);
+    assert(sound.updateCount == oldDockSoundUpdates + 1 && sound.updated[oldDockSoundUpdates] == 0x8de);
+    assert(approachEgo.engineSoundStops == 1);
     ship.handling = 1.4f;
 
     approachEgo.mockGlideDistance = 200;
@@ -1256,6 +1308,8 @@ int main() {
     assert(approachEgo.spacePoint == nullptr && dockNav.releases == 1);
     assert(approachEgo.hackingGame == nullptr && HackingGame::destructions == oldHackingDestructions + 1);
     assert(!hud.hackingActive && approachEgo.dockApplyCalls == 2);
+    delete static_cast<AbyssEngine::EaseInOutMatrix *>(approachEgo.easeMatrix);
+    approachEgo.easeMatrix = nullptr;
 
     dockTarget.dockingType = 1;
     mission.empty = false;

@@ -1,7 +1,29 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo docking navigation; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo docking ease entry; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo docking ease-matrix entry (2026-10-14)
+
+Android ARM `0x9fdf4–0xa001a` confirms the transition into eased
+docking: it releases the previous EaseInOutMatrix at `+0x358`,
+constructs a 2000 ms matrix from current ship geometry to a basis
+formed from rotated navigation/docking points and docking direction,
+stores the new object, plays sound `0x8de` at the player's position
+with zero velocity, and stops the engine sound. The extracted
+whole-method smoke checks basis axes, lifetime, duration and audio.
+Native `gof2`, 206/206 ARM units, 37 verifier tests (one skipped),
+and four PlayerEgo smokes pass. Focused `approachDockingPoint`
+source-shape/strict fuzzy improves **31.2%/16.1% →
+52.2%/27.1%**; still non-exact. Full report
+`_work/player_dock_ease_entry_full_20261014.json` covers
+**4,323/4,524** original functions at **93.27%** average
+source-shape and **82.17%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Exact
+pair sets have no losses or gains against the previous navigation
+checkpoint. State-2/3 glide and easing updates remain unresolved;
+linked ARM gameplay is unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo docking navigation and approach speed (2026-10-14)
 
@@ -23,8 +45,9 @@ recorded in `_work/player_dock_nav_full_20261014.json`:
 source-shape, **82.17%** strict fuzzy, **2,479 linked-exact**,
 **1,065 byte-exact**, **123 extras**, and zero skipped units. Pairwise
 exact sets have no losses or gains against the previous approach
-checkpoint. The threshold's ease-matrix constructor and state-2/3
-glide/easing remain unresolved; linked ARM gameplay is unverified.
+checkpoint. At that checkpoint the ease-matrix constructor and
+state-2/3 glide/easing were unresolved; the following pass recovers
+the constructor. Linked ARM gameplay is unverified.
 See [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo docking approach and exit transitions (2026-10-14)

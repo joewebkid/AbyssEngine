@@ -1,5 +1,38 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Docking ease-matrix entry and audio cue (2026-10-14)
+
+Raw Android Thumb `0x9fdf4–0xa001a`, cross-checked with IDA lines
+85640–85684 and Ghidra lines 65456–65514, first destroys the old
+EaseInOutMatrix at PlayerEgo `+0x358` and clears the pointer. It
+forms a world navigation point from the target's virtual position
+and rotated held SpacePoint, then selects the target's nearest
+docking point. The destination orientation uses normalized rotated
+dock direction, normalized difference of rotated navigation and
+dock-point positions, and a normalized cross product of those two
+axes. A default identity Matrix receives these three rotation axes.
+The original allocates `0xf4` bytes and constructs
+`EaseInOutMatrix(current ship geometry matrix, destination, 2000)`.
+It stores the new object, plays sound `0x8de`, updates that event's
+3D attributes at `Player::getPosition` with zero velocity, and stops
+the engine sound. No null nearest-dock fallback is visible in the
+original branch.
+
+The extracted whole-method smoke checks old-object destruction,
+nearest-dock query, basis axes, 2000 ms constructor range, sound
+event and engine stop. Native `gof2`, 206/206 ARM translation units,
+37 verifier tests (one skipped), and four PlayerEgo smokes pass.
+Focused `approachDockingPoint` source-shape/strict fuzzy rises
+**31.2%/16.1% → 52.2%/27.1%**; it remains non-exact. Full-corpus
+report `_work/player_dock_ease_entry_full_20261014.json` covers
+**4,323/4,524** original functions at **93.27%** average
+source-shape and **82.17%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Pairwise
+comparison with `_work/player_dock_nav_full_20261014.json` finds no
+linked-/byte-exact losses or gains. State-2/3 distance and easing
+updates still use unresolved `PE_adp_glide`/`PE_adp_apply` shims; no linked ARM
+gameplay or reliable iOS counterpart is claimed.
+
 ## Docking navigation world point and approach speed (2026-10-14)
 
 Raw Android Thumb `0x9fd56–0x9fdc4`, cross-checked with IDA lines
@@ -28,9 +61,9 @@ report `_work/player_dock_nav_full_20261014.json` covers
 source-shape and **82.17%** strict fuzzy, with **2,479 linked-exact**,
 **1,065 byte-exact**, **123 extras**, and zero skipped units. Pairwise
 comparison with `_work/player_approach_docking_full_20261014.json`
-finds no linked-/byte-exact losses or gains. The ease-matrix
-constructor at the threshold,
-and the state-2/3 glide/easing shims, remain unresolved. No linked
+finds no linked-/byte-exact losses or gains. At that checkpoint, the
+ease-matrix constructor and state-2/3 glide/easing shims remained
+unresolved; the following pass recovers the constructor. No linked
 ARM gameplay or reliable iOS counterpart is claimed.
 
 ## Docking approach and undocking transitions (2026-10-14)
