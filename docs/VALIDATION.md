@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo maneuver target (2026-10-14)
+
+Android `initManeuver` at `0xa1abc` loads the `10000.0f` literal at
+`0xa1b70` for the type-3 strafe target. Its recovered body uses real
+`AEMath` operators in the original call order, avoiding declared-only
+`Vec_*` wrappers. The production-body host smoke, native `gof2`,
+206/206 ARM units and 37 verifier tests (one skipped) pass. Focused
+source-shape/strict fuzzy improves **93.1%/78.5% → 99.4%/89.4%**,
+without an exact match. Full report
+`_work/player_maneuver_full_20261014.json` covers **4,323/4,524**
+functions at **93.30%** average source-shape and **82.21%** strict
+fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**, **123
+extras** and zero skipped. Exact-pair and extra-symbol sets are
+unchanged from `_work/starsystem_flare_full_20261014.json`. The full
+run used one worker after an eight-worker attempt hit Windows page-file
+error 1455. Live maneuver control and ARM32 runtime remain unverified.
+See [the maneuver audit](PLAYER_EGO_MANEUVER_ARM_2026-10-14.md).
+
 ## StarSystem flare handoff (2026-10-14)
 
 Android `StarSystem::render2D` at `0x1354e8` reads camera state from

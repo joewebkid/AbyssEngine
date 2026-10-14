@@ -57,7 +57,7 @@ namespace {
     static PlayerEgo *g_PlayerEgo_singleton = nullptr;
     static void *g_emerg_fmod = nullptr;
     static const float g_PE_rollNudge = 0.17f;
-    static const float g_PE_strafeDist = 0.0f; // TODO: extract exact literal from PlayerEgo::initManeuver(type==3) asm/data-ref.
+    static const float g_PE_strafeDist = 10000.0f; // ARM initManeuver literal at 0xa1b70.
     static const float g_PE_cft_transformVal = 1000000.0f; // IDA: checkForTurret writes 0x49742400 to Transform+0xE0.
     static const float g_PE_shakeDiv = 40000.0f;
     static const float g_PE_camFov = 1.22f;
@@ -986,13 +986,6 @@ Vec3 PlayerEgo::getTurretPosition() {
     return MatrixGetPosition(world);
 }
 
-void Vec_scale(void *out, const void *v, float s);
-
-void Vec_sub(void *out, const void *a, const void *b);
-
-void Vec_assign(void *dst, const void *src);
-
-
 void PlayerEgo::initManeuver(int type) {
     if ((unsigned) (type - 1) < 2 && this->volatileGoods != 0) {
         Player *player = (Player *) this->player;
@@ -1003,20 +996,10 @@ void PlayerEgo::initManeuver(int type) {
         this->maneuverType = type;
         this->navPoint = 0;
         if (type == 3) {
-            float pos[3];
-            *(AbyssEngine::AEMath::Vector *) pos = ((PlayerEgo *) this)->getPosition();
-
-            float dir[3];
-            *(AbyssEngine::AEMath::Vector *) dir = ((AEGeometry *) this->geometry)->getDirection();
-
-            float scaled[3];
-            Vec_scale(scaled, dir, g_PE_strafeDist);
-
-            float target[3];
-            Vec_sub(target, pos, scaled);
-            Vec_assign(&this->strafeTargetVec, target);
-
-            Vec_assign(&this->facingVec, dir);
+            Vec3 pos = getPosition();
+            Vec3 dir = geometry->getDirection();
+            this->strafeTargetVec = pos - g_PE_strafeDist * dir;
+            this->facingVec = geometry->getDirection();
         }
     }
 }

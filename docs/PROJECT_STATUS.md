@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (StarSystem flare handoff; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo maneuver target; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo maneuver target (2026-10-14)
+
+The Android `initManeuver` literal at `0xa1b70` is `10000.0f`, not the
+zero previously used for the type-3 strafe target. This function now
+uses the existing vector operators instead of declared-only `Vec_*`
+wrappers. Its production-body host smoke, native `gof2`, 206/206 ARM
+units and verifier tests pass. Focused source-shape/strict fuzzy rises
+**93.1%/78.5% → 99.4%/89.4%**; no exact match. Full coverage is
+**4,323/4,524** at **93.30%** average source-shape and **82.21%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**123 extras** and zero skipped. Exact-pair sets have no losses.
+Other `PlayerEgo` vector wrappers and live ARM32 maneuver behavior
+remain unverified. See [the maneuver audit](PLAYER_EGO_MANEUVER_ARM_2026-10-14.md).
 
 ## StarSystem flare handoff (2026-10-14)
 
