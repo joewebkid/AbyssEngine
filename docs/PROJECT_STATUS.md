@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (Layout save-list metrics; older subsystem
+Last reviewed: 2026-10-14 (Layout Hangar/Choice metrics; older subsystem
 snapshots retain their dates)
+
+## Layout Hangar and choice-window metrics (2026-10-14)
+
+Android `Layout::Layout` at `0xd1028` writes the previously zero-filled
+`+0x254..+0x278` group. `HangarWindow` consumes the first four slots for
+row/blueprint placement; `ChoiceWindow` consumes the remaining six for
+width, padding and height. IDA branch values are cross-checked against
+Thumb stores at `0xd23cc–0xd23fe`. The production constructor smoke
+checks all ten values for six profiles. Native `gof2`, 206/206 ARM units,
+three Layout/TouchButton smokes and 37 verifier tests (one skipped) pass.
+Focused C1/C2 source-shape rises **35.8% → 38.0%** while strict fuzzy
+moves **9.8% → 9.7%**; neither alias is exact. Full report
+`_work/layout_hangar_choice_metrics_full_20261014.json` compares
+**4,323/4,524** original functions at **93.28%** average source-shape
+and **82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras** and zero skipped units. Exact pair
+sets have no losses or gains against the previous Layout checkpoint.
+Hangar/Choice interaction, asset-backed rendering and ARM32 runtime
+remain unverified. Next: audit remaining zero-filled middle Layout
+fields for confirmed consumers. See
+[the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
 
 ## Layout save-list metrics (2026-10-14)
 

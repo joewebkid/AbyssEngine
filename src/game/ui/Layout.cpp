@@ -396,6 +396,32 @@ Layout::Layout() {
         this->hangarRowIconOffsetY = Globals::retinaDisplay ? 2 : 1;
     }
 
+    // Android Layout::Layout @ 0xd1028: Hangar row and ChoiceWindow metrics.
+    if (hd) {
+        this->field_0x254 = 5;   this->field_0x258 = 2;
+        this->field_0x25c = 22;  this->field_0x260 = 1;
+        this->field_0x264 = 421; this->field_0x268 = 11;
+        this->field_0x26c = 92;  this->field_0x270 = 98;
+        this->field_0x274 = 136; this->field_0x278 = 421;
+    } else if (n9) {
+        this->field_0x254 = 7;   this->field_0x258 = 4;
+        this->field_0x25c = 28;  this->field_0x260 = 0;
+        this->field_0x264 = 450; this->field_0x268 = 12;
+        this->field_0x26c = 99;  this->field_0x270 = 105;
+        this->field_0x274 = 145; this->field_0x278 = 450;
+    } else {
+        this->field_0x254 = 8;
+        this->field_0x258 = retina ? 4 : 2;
+        this->field_0x25c = retina ? 32 : 16;
+        this->field_0x260 = retina ? 0 : 1;
+        this->field_0x264 = retina ? 600 : 300;
+        this->field_0x268 = retina ? 1 : 8;
+        this->field_0x26c = retina ? 132 : 66;
+        this->field_0x270 = retina ? 140 : 70;
+        this->field_0x274 = retina ? 194 : 97;
+        this->field_0x278 = retina ? 600 : 300;
+    }
+
     this->field_0x238 = hd ? 70 : n9 ? 90 : retina ? 100 : 50;
     this->field_0x27c = hd ? 28 : n9 ? 30 : retina ? 40 : 20;
     this->field_0x280 = hd ? 0 : n9 ? 4 : retina ? 5 : 0;

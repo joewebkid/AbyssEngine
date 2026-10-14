@@ -1,5 +1,35 @@
 # Layout constructor: platform metrics (2026-10-14)
 
+## Hangar row and ChoiceWindow metrics (follow-up)
+
+Android `Layout::Layout()` at `0xd1028` writes ten formerly zero-filled
+words at `+0x254..+0x278`. IDA lines 129089–129103 establish the ordinary
+Retina/low selection; 129126–129130 and 129193–129197 give N9 and iPad HD
+packed words. Raw Thumb at `0xd23cc–0xd23fe` independently confirms the
+ordinary stores and the vector-copy addresses. `HangarWindow` reads the
+first four words for row captions, blueprint amounts and subtitle Y;
+`ChoiceWindow` reads the remaining six for width, padding and max height.
+
+| Profile | `+254` | `+258` | `+25c` | `+260` | `+264` | `+268` | `+26c` | `+270` | `+274` | `+278` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| ordinary low, iPad low, iPad Large low | 8 | 2 | 16 | 1 | 300 | 8 | 66 | 70 | 97 | 300 |
+| ordinary Retina | 8 | 4 | 32 | 0 | 600 | 1 | 132 | 140 | 194 | 600 |
+| N9 | 7 | 4 | 28 | 0 | 450 | 12 | 99 | 105 | 145 | 450 |
+| iPad HD | 5 | 2 | 22 | 1 | 421 | 11 | 92 | 98 | 136 | 421 |
+
+The production-constructor smoke checks all ten words for six profiles.
+Native `gof2`, 206/206 ARM units, three Layout/TouchButton smokes and 37
+verifier tests (one skipped) pass. Focused C1/C2 source-shape rises
+**35.8% → 38.0%**; strict fuzzy moves **9.8% → 9.7%**. Neither alias is
+exact. Full report `_work/layout_hangar_choice_metrics_full_20261014.json`
+covers **4,323/4,524** original functions at **93.28%** average
+source-shape and **82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, zero skipped units and no exact-pair
+losses or gains against the save-list checkpoint. Asset-backed visuals,
+Hangar/Choice interaction and ARM32 runtime remain unverified. Next: audit
+the still zero-filled middle constructor fields for confirmed consumers
+before recovering another group.
+
 ## Save-list placement and adjacent metrics (follow-up)
 
 Android `Layout::Layout()` at `0xd1028` writes `+0x108..+0x128`

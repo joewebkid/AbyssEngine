@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout Hangar/Choice metrics (2026-10-14)
+
+Android `Layout::Layout()` at `0xd1028`, IDA lines 129089–129103,
+129126–129130 and 129193–129197, plus Thumb stores at
+`0xd23cc–0xd23fe`, establish ten `+0x254..+0x278` words consumed by
+`HangarWindow` and `ChoiceWindow`. The production constructor smoke
+checks six platform profiles. Native `gof2`, 206/206 ARM units, three
+Layout/TouchButton smokes and 37 verifier tests (one skipped) pass.
+Focused C1/C2 source-shape rises **35.8% → 38.0%**; strict fuzzy
+moves **9.8% → 9.7%**. Full report
+`_work/layout_hangar_choice_metrics_full_20261014.json` covers
+**4,323/4,524** functions at **93.28%** average source-shape and
+**82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras** and zero skipped units. Exact
+pair sets have no losses or gains against
+`_work/layout_save_metrics_full_20261014.json`. Linked ARM32
+UI behavior and asset-backed visuals are unverified. See
+[the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
+
 ## Layout save-list metrics (2026-10-14)
 
 Android `Layout::Layout()` at `0xd1028`, IDA lines 128014–128017,
