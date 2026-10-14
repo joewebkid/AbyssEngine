@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo docking-point ease; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo asteroid approach; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo asteroid approach stage zero (2026-10-14)
+
+Android Thumb `0x9f5ac–0x9f8de` replaces the declared-only approach
+step with distance, steering speed, near-target flag, camera/exhaust
+entry and alignment rotation. The target byte at `+0x3c` is still
+accessed by offset because its semantic field name is unresolved.
+The expanded production-body smoke, native `gof2`, 206/206 ARM units
+and 37 verifier tests (one skipped) pass. Focused `approachAsteroid`
+source-shape/strict fuzzy rises **40.8%/21.6% → 91.9%/47.3%**; it is
+not exact. Full coverage remains **4,323/4,524** at **93.37%**
+average source-shape and **82.26%** strict fuzzy, with **2,482
+linked-exact**, **1,065 byte-exact**, **123 extras**, zero skipped and
+no exact-pair losses. Live approach/mining and ARM32 runtime remain
+unverified. Next priority: the declared-only pitch/yaw ramp helpers
+used by ship controls. See
+[the asteroid-approach audit](PLAYER_EGO_ASTEROID_APPROACH_STAGE0_ARM_2026-10-14.md).
 
 ## PlayerEgo docking-point ease (2026-10-14)
 
@@ -17,7 +34,8 @@ and 37 verifier tests (one skipped) pass. Focused
 strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
 **123 extras**, zero skipped and no exact-pair losses. Live docking
 and ARM32 runtime remain unverified. Next priority:
-`approachDockingPoint`'s declared-only `PE_aa_approachStep` path. See
+`approachAsteroid`'s declared-only `PE_aa_approachStep` path, recovered
+in the section above. See
 [the docking-point ease audit](PLAYER_EGO_DOCK_POINT_EASE_ARM_2026-10-14.md).
 
 ## PlayerEgo maneuver update (2026-10-14)

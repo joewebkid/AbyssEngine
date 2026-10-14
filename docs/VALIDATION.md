@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo asteroid approach stage zero (2026-10-14)
+
+IDA/Ghidra and Android Thumb `0x9f5ac–0x9f8de` confirm the stage-zero
+distance, movement, camera entry and alignment behavior. The
+production-body asteroid smoke, native `gof2`, 206/206 ARM units and
+37 verifier tests (one skipped) pass. Focused `approachAsteroid`
+source-shape/strict fuzzy changes **40.8%/21.6% → 91.9%/47.3%**;
+it is not exact. Full report
+`_work/player_approach_asteroid_stage0_full_20261014.json` covers
+**4,323/4,524** at **93.37%** average source-shape and **82.26%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**123 extras**, **201 missing** and zero skipped. Linked- and
+byte-exact pair sets have no losses against
+`_work/player_dock_point_full_20261014.json`. Live asteroid approach
+and ARM32 runtime remain unverified. See
+[the asteroid-approach audit](PLAYER_EGO_ASTEROID_APPROACH_STAGE0_ARM_2026-10-14.md).
+
 ## PlayerEgo docking-point ease (2026-10-14)
 
 IDA/Ghidra and Android Thumb `0x9fa6a–0x9fb5e` confirm the canvas and

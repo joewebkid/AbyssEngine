@@ -31,5 +31,6 @@ The linked- and byte-exact pair sets have no losses or gains against
 `_work/player_update_maneuver_full_20261014.json`.
 
 The fixture does not prove a live docking sequence or ARM32 runtime.
-The next priority is the adjacent declared-only `PE_aa_approachStep`
-path in `approachDockingPoint`.
+The declared-only `PE_aa_approachStep` path belongs to
+`approachAsteroid`, not `approachDockingPoint`; it is recovered in
+[the following asteroid-approach audit](PLAYER_EGO_ASTEROID_APPROACH_STAGE0_ARM_2026-10-14.md).

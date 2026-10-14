@@ -224,8 +224,6 @@ void PE_cc_destructible(PlayerEgo *self, void *obj);
 void PlayEngineSound_(PlayerEgo * self);
 
 
-int PE_aa_approachStep(PlayerEgo *self, int hud2, void *radar);
-
 void Mat_mul(void *out, const void *a, const void *b);
 
 void *TractorBeam_new(void *geo, int kind);
@@ -3275,7 +3273,7 @@ void PlayerEgo::handleTurretView(int dt) {
 
 
 
-void PlayerEgo::approachAsteroid(Hud *hud, int hud2, Radar *radar) {
+void PlayerEgo::approachAsteroid(Hud *hud, int /*hud2*/, Radar * /*radar*/) {
     PlayerAsteroid *asteroid = (PlayerAsteroid *) ((void *&) this->asteroidTarget);
     if (asteroid->isDying() != 0)
         return;
@@ -3320,7 +3318,60 @@ void PlayerEgo::approachAsteroid(Hud *hud, int hud2, Radar *radar) {
     }
 
     if (this->dockingPointIndex == 0) {
-        this->dockingPointIndex = PE_aa_approachStep(this, hud2, radar);
+        if (this->turretActive) this->setTurretMode(false);
+        Vector &delta = *reinterpret_cast<Vector *>(&this->waypointY);
+        delta = asteroid->getPosition();
+        delta -= this->geometry->getPosition();
+        int distance = static_cast<int>(AbyssEngine::AEMath::VectorLength(delta));
+        if (distance >= this->dockScaling) {
+            float speed = 4.0f;
+            Ship *ship = PE_status()->getShip();
+            if (ship->getHandling() + g_PE_upd_handlingBias < 4.0f)
+                speed = PE_status()->getShip()->getHandling() + g_PE_upd_handlingBias;
+            this->moveToPosition(asteroid->geometry->getPosition(), true, speed);
+            if (static_cast<int>(AbyssEngine::AEMath::VectorLength(
+                    asteroid->getPosition() - this->getPosition())) <= 19999)
+                this->aboutToReachAutoTargetFlag = 1;
+        } else if (this->_unknown_0x1d4[0]) {
+            // Thumb tests asteroid+0x3c before disabling its rotation.
+            if (reinterpret_cast<const uint8_t *>(asteroid)[0x3c])
+                asteroid->setRotationEnabled(false);
+            this->dockingPointIndex = 1;
+        }
+
+        if (distance < this->dockScaling + 2000) {
+            this->thrust = 1.0f;
+            if (!this->field_0x2f5) {
+                this->setExhaustVisible(false);
+                Globals::sound->play(2, nullptr, nullptr, 0.0f);
+                this->boostTimer = this->field_0xcc - this->field_0xcc / 6;
+                ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setActive(false);
+                this->dockApproachVector = AbyssEngine::AEMath::VectorNormalize(
+                    this->geometry->getUpVector());
+                this->field_0x2f5 = 1;
+            }
+            Vector &direction = *reinterpret_cast<Vector *>(&this->rotY);
+            direction = AbyssEngine::AEMath::VectorNormalize(this->geometry->getDirection());
+            float angle = AbyssEngine::AEMath::ACosf(
+                AbyssEngine::AEMath::VectorDot(direction, this->dockApproachVector));
+            float &settle = reinterpret_cast<float &>(this->miningSettleTimer);
+            if (angle <= 0.2f || settle <= g_PE_aa_settleEps) {
+                this->_unknown_0x1d4[0] = 1;
+                this->rolling = 0;
+                this->field_0x2f5 = 0;
+            } else {
+                settle += static_cast<float>(this->shakeIntensity) * -0.35f;
+                Matrix rotation{1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                                1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                                1.0f, 0.0f, 1.0f, 1.0f, 1.0f};
+                AbyssEngine::AEMath::MatrixSetRotation(
+                    rotation, settle * 0.0000152587890625f * 6.2831855f, 0.0f, 0.0f);
+                Matrix local = *static_cast<Matrix *>(
+                    Globals::Canvas->TransformGetLocal(this->field_0x4->transform));
+                local *= rotation;
+                this->field_0x4->setMatrix(local);
+            }
+        }
     }
 }
 
