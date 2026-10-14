@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo cargo-state refresh (2026-10-14)
+
+Raw Android ARM at `0x9d1a6–0x9d1d2` confirms the strict
+free-space-decrease guard, repeated free-space read and volatile
+flag write at `+0x250/+0x398`. The extended docking smoke extracts
+and tests this production fragment across decrease, increase and
+equality cases. Native `gof2`, 206/206 ARM units, 37 verifier
+tests (one skipped), and three PlayerEgo smokes pass. Full report
+`_work/player_cargo_refresh_full_20261014.json`:
+**4,323/4,524** covered, **93.24%** source-shape, **82.11%**
+strict fuzzy, **2,473 linked-exact**, **1,061 byte-exact**,
+**123 extras**. Against
+`_work/player_turret_position_full_20261014.json`, exact-pair
+sets have zero losses and zero gains. The rest of `update` and
+linked ARM32 behavior are not verified. See
+[the offset evidence](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo turret position repair (2026-10-14)
 
 Raw ARM `0x9b644–0x9b656` passes `PlayerEgo+0x224` to both

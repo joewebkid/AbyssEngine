@@ -2422,6 +2422,14 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
 
     PE_upd_subsystems(this, dt, radar, hud, radio, script);
 
+    {
+        Ship *ship = PE_status()->getShip();
+        if (ship->getFreeSpace() < this->lastFreeSpace) {
+            this->lastFreeSpace = ship->getFreeSpace();
+            this->volatileGoods = ship->hasVolatileGoods();
+        }
+    }
+
     PE_upd_boost(this, dt);
 
     if (((char &) this->dockingState) != 0) {

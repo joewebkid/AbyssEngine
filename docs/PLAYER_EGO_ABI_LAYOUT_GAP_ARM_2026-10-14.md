@@ -354,3 +354,31 @@ sets with the HUD/constructor checkpoint finds zero losses and
 zero gains. This verifies the addressed argument, not the whole
 turret construction or linked ARM gameplay. The next priority
 is the missing cargo/free-space refresh in `update`.
+
+## Cargo-state refresh restored in update (2026-10-14)
+
+Original Android ARM at `0x9d1a6–0x9d1d2` calls
+`Ship::getFreeSpace`, compares the result with
+`PlayerEgo+0x250`, and, only when free space has decreased,
+stores a fresh free-space value at `+0x250` and the result of
+`Ship::hasVolatileGoods` at `+0x398`. The C++ `update` had no
+corresponding work. This block is now placed after subsystem
+processing and before boost processing. The existing docking
+smoke extracts the production block and checks decreases,
+increases, equality, and the resulting volatile-goods flag.
+
+Native `gof2`, all 206 ARM translation units, 37 verifier tests
+(one skipped), and three PlayerEgo smokes pass. Full corpus
+`_work/player_cargo_refresh_full_20261014.json` covers
+**4,323/4,524** original functions at **93.24%** source-shape
+and **82.11%** strict fuzzy, with **2,473 linked-exact**,
+**1,061 byte-exact** and **123 extras**. Exact-pair sets have
+zero losses and zero gains versus the turret-position checkpoint.
+Focused `update` source-shape rises from 13.4% to 14.3%, while
+strict fuzzy for that function falls from 4.3% to 4.1%.
+
+The adjacent equipment-43/shield-regeneration branch and the
+other `update` subsystems remain incomplete. The smoke exercises
+this production fragment with doubles, not a linked ARM32 game;
+that is the next semantic priority before claiming whole-function
+behavior parity.

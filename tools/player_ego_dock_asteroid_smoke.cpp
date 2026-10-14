@@ -30,6 +30,18 @@ struct Player {
 };
 struct Hud {};
 struct Radio {};
+struct Ship {
+    int freeSpace = 0;
+    bool volatileGoods = false;
+    int getFreeSpace() { return freeSpace; }
+    bool hasVolatileGoods() { return volatileGoods; }
+};
+struct Status {
+    Ship *ship = nullptr;
+    Ship *getShip() { return ship; }
+};
+static Status status;
+Status *PE_status() { return &status; }
 struct PlayerEgo;
 void PE_upd_docksFinishDelivery(PlayerEgo *, Radio *);
 static int destroyedMiningGames = 0;
@@ -51,10 +63,13 @@ struct PlayerEgo {
     int approachCount = 0;
     int dockPointStops = 0;
     unsigned char field_0x145 = 0;
+    int lastFreeSpace = 0;
+    unsigned char volatileGoods = 0;
     bool exhaustVisible = false;
     void setExhaustVisible(bool value) { exhaustVisible = value; }
     void dockToAsteroid(KIPlayer *kip, Radar *radar);
     void updateDocking(Radar *radar, Hud *hud, Radio *radio);
+    void updateCargoState();
     int approachAsteroid(Hud *, int, Radar *) { ++approachCount; return 0; }
     int approachDockingPoint(Hud *, int, Radar *) { return 0; }
     void dockToDockingPoint(KIPlayer *, Radar *) { dockedFlag = 0; ++dockPointStops; }
@@ -62,6 +77,7 @@ struct PlayerEgo {
 
 // PRODUCTION_METHOD
 // PRODUCTION_UPDATE_DOCKING
+// PRODUCTION_UPDATE_CARGO
 
 void PE_upd_docksFinishDelivery(PlayerEgo *, Radio *) { assert(false); }
 
@@ -115,6 +131,24 @@ int main() {
     ego.dockToAsteroid(&asteroid, &radar);
     ego.updateDocking(&radar, &hud, &radio);
     assert(ego.dockingState == 0 && radar.unlocks == 3);
+
+    Ship ship;
+    status.ship = &ship;
+    ego.lastFreeSpace = 10;
+    ship.freeSpace = 5;
+    ship.volatileGoods = true;
+    ego.updateCargoState();
+    assert(ego.lastFreeSpace == 5 && ego.volatileGoods == 1);
+    ship.freeSpace = 10;
+    ship.volatileGoods = false;
+    ego.updateCargoState();
+    assert(ego.lastFreeSpace == 5 && ego.volatileGoods == 1);
+    ship.freeSpace = 5;
+    ego.updateCargoState();
+    assert(ego.lastFreeSpace == 5 && ego.volatileGoods == 1);
+    ship.freeSpace = 4;
+    ego.updateCargoState();
+    assert(ego.lastFreeSpace == 4 && ego.volatileGoods == 0);
 
     ego.asteroidTargetPtr = &asteroid;
     ego.dockedFlag = 1;

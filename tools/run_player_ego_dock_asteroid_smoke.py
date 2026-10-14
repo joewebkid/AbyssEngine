@@ -30,6 +30,12 @@ def main():
     fixture = fixture.replace("// PRODUCTION_UPDATE_DOCKING",
                               "void PlayerEgo::updateDocking(Radar *radar, Hud *hud, Radio *radio) {\n" +
                               docking + "}\n")
+    start = source.index("    {\n        Ship *ship = PE_status()->getShip();",
+                         source.index("void PlayerEgo::update("))
+    end = source.index("    PE_upd_boost(this, dt);", start)
+    cargo = source[start:end]
+    fixture = fixture.replace("// PRODUCTION_UPDATE_CARGO",
+                              "void PlayerEgo::updateCargoState() {\n" + cargo + "}\n")
 
     with tempfile.TemporaryDirectory(prefix="dock-asteroid-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "player_ego_dock_asteroid_smoke.cpp"
