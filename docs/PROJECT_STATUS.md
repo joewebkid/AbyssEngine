@@ -1,7 +1,29 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo cursor/damage state; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo hit-direction projection; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo hit-direction projection (2026-10-14)
+
+Original Android ARM `PlayerEgo::update` at `0x9e94c–0x9ea32`,
+cross-checked with IDA and Ghidra, normalizes `Player::getHitVector`,
+scales it by 5000, adds the cached position at `+0x148`, and projects
+the point through `PaintCanvas::GetScreenPosition`. The projected x
+coordinate and depth classify left/right and top/bottom HUD damage
+flags, including the original ±15,000/50,000 x thresholds. The
+existing `Hud::draw` reads those flags for its 300 ms indicators.
+An extracted production-fragment smoke covers damage gating, the
+world point, screen thresholds, and behind-camera cases. Native
+`gof2`, 206/206 ARM units, 37 verifier tests (one skipped), and four
+PlayerEgo smokes pass. Focused `update` source-shape/strict fuzzy
+changes **34.0%/10.5% → 37.0%/21.5%**; the function is not exact.
+Full report `_work/player_hit_projection_full_20261014.json`:
+**4,323/4,524** covered, **93.26%** source-shape, **82.16%** strict
+fuzzy, **2,478 linked-exact**, **1,065 byte-exact**, **123 extras**.
+Against the cursor/damage checkpoint, no linked- or byte-exact pair
+is lost or gained. The following camera/crosshair branch and linked
+ARM gameplay remain unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo cursor/damage state and tail ABI (2026-10-14)
 

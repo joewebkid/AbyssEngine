@@ -1,18 +1,38 @@
 #include <cassert>
+#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
 
 struct Vector { float x, y, z; };
+Vector operator*(const Vector &value, float factor) {
+    return {value.x * factor, value.y * factor, value.z * factor};
+}
+Vector operator+(const Vector &a, const Vector &b) {
+    return {a.x + b.x, a.y + b.y, a.z + b.z};
+}
 struct Matrix { Vector up; };
 namespace AbyssEngine { namespace AEMath {
 Vector MatrixGetUp(const Matrix &matrix) { return matrix.up; }
+Vector VectorNormalize(const Vector &value) {
+    float length = std::sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
+    return length == 0.0f ? Vector{} : Vector{value.x / length, value.y / length, value.z / length};
+}
 } }
 struct AEGeometry { unsigned int transform = 17; };
 struct PaintCanvas {
     Matrix *local = nullptr;
     int reads = 0;
+    Vector screenResult{};
+    Vector lastWorldPosition{};
+    int projections = 0;
     void *TransformGetLocal(unsigned int id) { assert(id == 17); ++reads; return local; }
+    int GetScreenPosition(const Vector &world, Vector &screen) {
+        ++projections;
+        lastWorldPosition = world;
+        screen = screenResult;
+        return 1;
+    }
 };
 struct ParticleDefinition {
     int count = 0;
@@ -75,6 +95,8 @@ struct Player {
     unsigned char shieldHit = 0;
     unsigned char armorHit = 0;
     unsigned char hullHit = 0;
+    Vector hitVector{3.0f, 4.0f, 0.0f};
+    int hitVectorReads = 0;
     int getHitpoints() { return hitpoints; }
     int getMaxHitpoints() { return maxHitpoints; }
     int getArmorHP() { return armorHP; }
@@ -82,6 +104,7 @@ struct Player {
     int getShieldHP() { return shieldHP; }
     int getMaxShieldHP() { return maxShieldHP; }
     int getCombinedHP() { return hitpoints + armorHP + shieldHP; }
+    Vector getHitVector() { ++hitVectorReads; return hitVector; }
     void setShieldHP(int value) { shieldHP = value > maxShieldHP ? maxShieldHP : value; }
     void regenerateShield(float amount) { ++shieldRecoveries; lastShieldRecovery = amount; }
     void regenerateHull() { ++hullRepairs; ++hitpoints; }
@@ -178,6 +201,7 @@ namespace Globals {
     GlobalsService *gGlobals = nullptr;
     PaintCanvas *Canvas = nullptr;
     int mouseCursorActivated = 0;
+    int w = 800;
     unsigned char options[100]{};
 }
 static const float g_PE_astApproach = 2500.0f;
@@ -517,7 +541,7 @@ int main() {
     ego.shieldHitFlash = 1;
     ego.updateHitState(&hud);
     assert(ego.hudHitDirectionFlags == 0 && ego.shieldHitFlash == 0);
-    assert(ego.cursorStateDirty == 0 && hud.hits == 0);
+    assert(ego.cursorStateDirty == 0 && hud.hits == 0 && canvas.projections == 0);
     Globals::mouseCursorActivated = 1;
     ego.updateHitState(&hud);
     assert(ego.cursorStateDirty == 1);
@@ -534,6 +558,7 @@ int main() {
     const int soundsBeforeHit = sound.playCount;
     ego.updateHitState(&hud);
     assert(hud.hits == 0 && ego.lastHP == 11 && sound.playCount == soundsBeforeHit);
+    assert(canvas.projections == 0 && player.hitVectorReads == 0);
     ego.computerControlled = 0;
     ego.freeze = 1;
     ego.updateHitState(&hud);
@@ -543,6 +568,10 @@ int main() {
     assert(hud.hits == 1 && ego.hitCameraCalls == 1 && ego.lastHP == 10);
     assert(ego.shieldHitFlash == 1 && sound.played[soundsBeforeHit] == 25);
     assert(player.shieldHit == 0 && player.armorHit == 1 && player.hullHit == 1);
+    assert(canvas.projections == 1 && player.hitVectorReads == 1);
+    assert(std::fabs(canvas.lastWorldPosition.x - 3007.0f) < 0.01f);
+    assert(std::fabs(canvas.lastWorldPosition.y - 4008.0f) < 0.01f);
+    assert(canvas.lastWorldPosition.z == 9.0f && ego.hudHitDirectionFlags == 0x21u);
     player.hitpoints = 9;
     ego.updateHitState(&hud);
     assert(hud.hits == 2 && ego.lastHP == 9 && sound.played[soundsBeforeHit + 1] == 23);
@@ -556,7 +585,24 @@ int main() {
     assert(hud.hits == 4 && ego.hitCameraCalls == 4 && sound.playCount == soundsBeforeHit + 3);
     player.hitpoints = 10;
     ego.updateHitState(&hud);
-    assert(hud.hits == 4 && ego.lastHP == 7);
+    assert(hud.hits == 4 && ego.lastHP == 7 && canvas.projections == 4);
+
+    auto checkHitFlags = [&](float x, float z, unsigned int expected) {
+        canvas.screenResult = {x, 0.0f, z};
+        ego.lastHP = player.getCombinedHP() + 1;
+        int previousProjections = canvas.projections;
+        ego.updateHitState(&hud);
+        assert(canvas.projections == previousProjections + 1);
+        assert(ego.hudHitDirectionFlags == expected);
+    };
+    checkHitFlags(-60000.0f, 1.0f, 0x01u);
+    checkHitFlags(-20000.0f, 1.0f, 0x21u);
+    checkHitFlags(400.0f, 1.0f, 0x20u);
+    checkHitFlags(900.0f, 1.0f, 0x22u);
+    checkHitFlags(50000.0f, 1.0f, 0x22u);
+    checkHitFlags(60000.0f, 1.0f, 0x02u);
+    checkHitFlags(400.0f, -1.0f, 0x10u);
+    checkHitFlags(-60000.0f, -1.0f, 0x11u);
 
     ego.asteroidTargetPtr = &asteroid;
     ego.dockedFlag = 1;

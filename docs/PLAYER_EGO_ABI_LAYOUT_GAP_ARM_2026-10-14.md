@@ -1,5 +1,34 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Projected hit-direction flags (2026-10-14)
+
+At Android ARM `0x9e94c–0x9ea32`, immediately after hit sounds,
+`PlayerEgo::update` obtains `Player::getHitVector`, normalizes it,
+scales it by the literal **5000.0f**, adds the cached world position
+at `PlayerEgo+0x148`, and calls `PaintCanvas::GetScreenPosition`.
+Its output x coordinate chooses base left/center/right flags 1/0/2
+relative to zero and `Globals::w`; negative projected z adds `0x10`.
+Otherwise it adds `0x20`, with x below -50,000 forcing 1, below
+-15,000 adding 1, above 50,000 forcing 2, and above 15,000 adding 2.
+IDA lines 84518–84562, independent Ghidra lines 64494–64543, and
+raw Thumb instructions corroborate the ordering, constants, and
+stores. The source uses the existing `hudHitDirectionFlags` at
+`+0x20`, whose HUD consumer creates 300 ms side pulses. The iOS
+dump was not used as evidence for this sequence.
+
+The extracted production-fragment smoke verifies no projection
+without damage, the normalized world point and projection call,
+edge/threshold cases, and negative depth. Native `gof2`, 206/206 ARM
+units, 37 verifier tests (one skipped), and all four PlayerEgo smokes
+pass. Focused `update` source-shape/strict fuzzy improves from
+**34.0%/10.5%** to **37.0%/21.5%**; no exact match is claimed. Full
+report `_work/player_hit_projection_full_20261014.json` retains
+**4,323/4,524** coverage, **93.26%** average source-shape,
+**82.16%** strict fuzzy, **2,478 linked-exact**, **1,065 byte-exact**,
+and **123 extras**. Relative to the preceding cursor/damage report,
+both exact-pair loss and gain counts are zero. Next: the following
+camera/crosshair logic; linked ARM gameplay remains unverified.
+
 ## Post-route cursor and damage feedback (2026-10-14)
 
 Original Android ARM `PlayerEgo::update` at `0x9e86a–0x9e94c` first

@@ -2656,6 +2656,28 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
             Globals::sound->play(0x18, nullptr, nullptr, 0.0f);
             player->hullHit = 0;
         }
+
+        Vector hitDirection = AbyssEngine::AEMath::VectorNormalize(player->getHitVector());
+        Vector screenPosition{};
+        Vector hitPosition = hitDirection * 5000.0f + this->dockOffsetVec;
+        Globals::Canvas->GetScreenPosition(hitPosition, screenPosition);
+
+        unsigned int flags = screenPosition.x <= 0.0f ? 1u :
+                             screenPosition.x < static_cast<float>(Globals::w) ? 0u : 2u;
+        if (screenPosition.z < 0.0f) {
+            flags |= 0x10u;
+        } else {
+            flags |= 0x20u;
+            if (screenPosition.x < -50000.0f)
+                flags = 1u;
+            else if (screenPosition.x < -15000.0f)
+                flags |= 1u;
+            if (screenPosition.x > 50000.0f)
+                flags = 2u;
+            else if (screenPosition.x > 15000.0f)
+                flags |= 2u;
+        }
+        this->hudHitDirectionFlags = flags;
     }
 
     PE_upd_post(this, dt, radar, hud, radio, arg5);

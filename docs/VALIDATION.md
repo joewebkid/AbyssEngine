@@ -4,6 +4,30 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo hit-direction projection (2026-10-14)
+
+Android ARM `update` at `0x9e94c–0x9ea32` calls
+`Player::getHitVector`, `VectorNormalize`, vector × 5000, vector +
+`PlayerEgo+0x148`, and `PaintCanvas::GetScreenPosition` in that
+order. The resulting `Vector.x` is compared with zero, screen width,
+and ±15,000/50,000; `Vector.z` selects the top/bottom flag path.
+IDA lines 84518–84562, independent Ghidra lines 64494–64543, and
+the raw Thumb instructions agree. `Hud::draw` consumes the resulting
+bitfield at `PlayerEgo+0x20`. The extracted production-fragment smoke
+tests no-damage suppression, the normalized world point, off-screen
+thresholds, and negative depth. Native `gof2`, 206/206 ARM units,
+37 verifier tests (one skipped), and four PlayerEgo smokes pass.
+Focused `update` source-shape/strict fuzzy is **37.0%/21.5%** versus
+**34.0%/10.5%**. Full report
+`_work/player_hit_projection_full_20261014.json`:
+**4,323/4,524** covered, **93.26%** source-shape, **82.16%** strict
+fuzzy, **2,478 linked-exact**, **1,065 byte-exact**, **123 extras**.
+Compared pair-by-pair with
+`_work/player_hit_cursor_layout_full_20261014.json`, there are zero
+linked- or byte-exact losses and gains. This does not validate the
+remaining camera/crosshair branch or linked ARM gameplay. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo cursor/damage state and tail ABI (2026-10-14)
 
 Android ARM `PlayerEgo::update` at `0x9e86a–0x9e94c` resets the hit
