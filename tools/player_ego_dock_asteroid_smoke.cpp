@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -98,6 +99,11 @@ struct ParticleSystemManager {
     }
 };
 struct KIPlayer;
+struct SpacePoint {
+    int takes = 0, releases = 0;
+    void take() { ++takes; }
+    void giveFree() { ++releases; }
+};
 struct Level {
     ParticleSystemManager *field_74 = nullptr;
     int field_3c = 0;
@@ -132,11 +138,18 @@ struct CargoArray {
 int CargoArray::destructions = 0;
 struct KIPlayer {
     int state = 0;
+    unsigned char _pad_0x04[0x6c]{};
     unsigned char field_0x70 = 0;
+    unsigned char _pad_0x71[0x1b]{};
+    unsigned char field_0x8c = 0;
     CargoArray *cargo = nullptr;
+    SpacePoint *nearestNav = nullptr;
     bool isDying() { return state == 3; }
     bool isDead() { return state == 4; }
+    void *getNearestNavigationPoint(Vector, SpacePoint *) { return nearestNav; }
 };
+static_assert(offsetof(KIPlayer, field_0x70) == 0x70, "KIPlayer mock docking flag offset");
+static_assert(offsetof(KIPlayer, field_0x8c) == 0x8c, "KIPlayer mock target flag offset");
 struct PlayerFixedObject : KIPlayer {
     int dockingType = -1;
     int getDockingType() { return dockingType; }
@@ -150,19 +163,29 @@ struct PlayerAsteroid : KIPlayer {
 };
 struct Radar {
     int unlocks = 0;
+    void *dockTargetPtr = nullptr;
+    void *dockNavPtr = nullptr;
     void unlockAsteroid() { ++unlocks; }
 };
 struct TargetFollowCamera {
     bool active = false;
+    bool lookAt = false, targetsUp = false;
     bool fastForward = false;
     int fastForwardQueries = 0;
     int handlingSets = 0;
     int handlingResets = 0;
     float lastHandling = 0.0f;
     void setActive(bool value) { active = value; }
+    void setLookAtCam(bool value) { lookAt = value; }
+    void useTargetsUpVector(bool value) { targetsUp = value; }
     bool isInFastForwardMode() { ++fastForwardQueries; return fastForward; }
     void setShipHandling(float value) { ++handlingSets; lastHandling = value; }
     void resetShipHandling() { ++handlingResets; }
+};
+struct LevelScript {
+    Level *m_pLevel = nullptr;
+    int cameraResets = 0;
+    void resetCamera(Level *level) { assert(level == m_pLevel); ++cameraResets; }
 };
 struct Player {
     Matrix transformMatrix{};
@@ -389,11 +412,21 @@ struct PlayerEgo {
     int dockingState = 0;
     int miningSettleTimer = 0;
     int dockingPointIndex = 0;
+    unsigned char switchToStandardCam = 0;
     unsigned char field_0xb2 = 0;
     unsigned char switchToFreeLookCam = 0;
     int dockScaling = 0;
-    int dockApproachDist[3]{};
+    int dockApproachDist = 0;
+    int dockApproachThreshold = 0;
+    int field_0x1d0 = 0;
     int dockedFlag = 0;
+    unsigned char aboutToReachAutoTargetFlag = 0;
+    SpacePoint *spacePoint = nullptr;
+    void *dockStation = nullptr;
+    LevelScript *levelScript = nullptr;
+    int mockDockDistance = 0;
+    int mockGlideDistance = 0;
+    int dockApplyCalls = 0;
     int approachCount = 0;
     int dockPointStops = 0;
     unsigned char field_0x145 = 0;
@@ -480,18 +513,25 @@ struct PlayerEgo {
     void hitCamera() { ++hitCameraCalls; }
     Vector getPosition() { return position; }
     int approachAsteroid(Hud *, int, Radar *) { ++approachCount; return 0; }
-    int approachDockingPoint(Hud *, int, Radar *) { return 0; }
+    int approachDockingPoint(Hud *, int, Radar *);
+    int setTurretMode(bool enable) { turretActive = enable; return 0; }
     void dockToDockingPoint(KIPlayer *, Radar *) { dockedFlag = 0; ++dockPointStops; }
 };
 Vector PlayerEgo::vec_up{};
 Vector PlayerEgo::crosshairPos{};
 Vector PlayerEgo::crosshairShootPos{};
+int dockRadius[1] = {200};
+int *g_PE_adp_dockRadius = dockRadius;
+int PE_adp_approach(PlayerEgo *ego, void *) { return ego->mockDockDistance; }
+int PE_adp_glide(PlayerEgo *ego) { return ego->mockGlideDistance; }
+void PE_adp_apply(PlayerEgo *ego) { ++ego->dockApplyCalls; }
 
 // PRODUCTION_METHOD
 // PRODUCTION_UPDATE_DOCKING
 // PRODUCTION_UPDATE_DOCK_FINISH
 // PRODUCTION_DOCK_TRANSFER_INIT
 // PRODUCTION_DOCK_STATE_GATE
+// PRODUCTION_APPROACH_DOCKING_POINT
 // PRODUCTION_UPDATE_CARGO
 // PRODUCTION_UPDATE_BOOST_TIMER
 // PRODUCTION_UPDATE_BOOST
@@ -529,13 +569,13 @@ int main() {
     assert(ego.dockingPointIndex == 0 && ego.field_0x145 == 1);
 
     ego.miningGamePtr = new MiningGame;
-    ego.dockApproachDist[0] = 1;
-    ego.dockApproachDist[1] = 2;
-    ego.dockApproachDist[2] = 3;
+    ego.dockApproachDist = 1;
+    ego.dockApproachThreshold = 2;
+    ego.field_0x1d0 = 3;
     ego.dockToAsteroid(nullptr, &radar);
     assert(ego.dockingState == 0 && ego.asteroidTargetPtr == nullptr);
     assert(ego.field_0x145 == 0 && asteroid.rotationEnabled);
-    assert(ego.dockApproachDist[0] == 0 && ego.dockApproachDist[1] == 0 && ego.dockApproachDist[2] == 0);
+    assert(ego.dockApproachDist == 0 && ego.dockApproachThreshold == 0 && ego.field_0x1d0 == 0);
     assert(camera.active && player.resetCount == 1 && radar.unlocks == 1);
     assert(ego.miningGamePtr == nullptr && destroyedMiningGames == 1);
     assert(ego.exhaustVisible && ego.dockingPointIndex == 0);
@@ -1106,6 +1146,70 @@ int main() {
     dockTarget.state = 0;
     dockEgo.dockingPointIndex = 0;
     assert(dockEgo.dockStateGate() == -1);
+
+    PlayerEgo approachEgo{};
+    TargetFollowCamera approachCamera;
+    LevelScript approachScript;
+    SpacePoint dockNav;
+    Radar approachRadar;
+    approachScript.m_pLevel = &dockLevel;
+    approachEgo.player = &player;
+    approachEgo.level = &dockLevel;
+    approachEgo.levelScript = &approachScript;
+    approachEgo.targetFollowCameraPtr = &approachCamera;
+    approachEgo.asteroidTargetPtr = &dockTarget;
+    approachEgo.dockScaling = 1400;
+    approachEgo.dockApproachThreshold = 2000;
+    dockTarget.nearestNav = &dockNav;
+    dockTarget.field_0x70 = 1;
+    dockTarget.field_0x8c = 1;
+    approachEgo.mockDockDistance = 1400;
+    assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
+    assert(approachEgo.dockingPointIndex == 0 && approachEgo.dockApplyCalls == 0);
+    assert(approachEgo.spacePoint == &dockNav && dockNav.takes == 1);
+    approachEgo.mockDockDistance = 1399;
+    assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
+    assert(approachEgo.dockingPointIndex == 2 && approachCamera.lookAt);
+    assert(dockTarget.field_0x8c == 0 && approachEgo.dockApplyCalls == 0);
+
+    approachEgo.mockGlideDistance = 200;
+    assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
+    assert(approachEgo.aboutToReachAutoTargetFlag == 1 && approachEgo.dockApplyCalls == 1);
+    approachEgo.mockGlideDistance = 199;
+    approachEgo.field_0xb2 = 1;
+    assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 1);
+    assert(approachEgo.dockingPointIndex == 1 && approachEgo.field_0xb2 == 0);
+    assert(approachEgo.switchToFreeLookCam == 0 && approachEgo.dockApplyCalls == 1);
+    assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 1);
+
+    approachEgo.dockingPointIndex = 3;
+    approachEgo.dockedFlag = 1;
+    approachEgo.field_0x145 = 1;
+    approachEgo.dockApproachDist = 1;
+    approachEgo.dockApproachThreshold = 2;
+    approachEgo.field_0x1d0 = 3;
+    approachEgo.dockStation = &dockLevel;
+    approachRadar.dockTargetPtr = &dockTarget;
+    approachRadar.dockNavPtr = &dockNav;
+    approachEgo.mockGlideDistance = 200;
+    assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
+    assert(approachEgo.dockedFlag == 1 && approachEgo.dockApplyCalls == 2);
+    approachEgo.hackingGame = new HackingGame;
+    int oldHackingDestructions = HackingGame::destructions;
+    int oldGunResets = player.resetCount;
+    approachEgo.mockGlideDistance = 199;
+    assert(approachEgo.approachDockingPoint(&hud, 0, &approachRadar) == 0);
+    assert(approachEgo.dockedFlag == 0 && approachEgo.field_0x145 == 0);
+    assert(approachEgo.asteroidTarget == 0 && approachEgo.dockStation == &dockLevel);
+    assert(approachEgo.dockingPointIndex == 0 && approachEgo.switchToStandardCam == 1);
+    assert(approachEgo.dockApproachDist == 0 && approachEgo.dockApproachThreshold == 0 && approachEgo.field_0x1d0 == 0);
+    assert(approachRadar.dockTargetPtr == nullptr && approachRadar.dockNavPtr == nullptr);
+    assert(approachCamera.active && !approachCamera.lookAt && !approachCamera.targetsUp);
+    assert(approachScript.cameraResets == 1 && player.resetCount == oldGunResets + 1);
+    assert(approachEgo.spacePoint == nullptr && dockNav.releases == 1);
+    assert(approachEgo.hackingGame == nullptr && HackingGame::destructions == oldHackingDestructions + 1);
+    assert(!hud.hackingActive && approachEgo.dockApplyCalls == 2);
+
     dockTarget.dockingType = 1;
     mission.empty = false;
     mission.type = 15;

@@ -1,5 +1,39 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Docking approach and undocking transitions (2026-10-14)
+
+Android `PlayerEgo::approachDockingPoint` at `0x9fcb8` reads the
+approach threshold from `+0x1d8` (`dockScaling`), not the old
+`+0x1cc` field. Raw Thumb at `0x9fdb6–0x9fde4` also confirms the
+distance comparison, conditional target byte `+0x8c` clear when
+`+0x70` is set, state 2, and look-at camera activation. IDA lines
+85595–85686 and Ghidra lines 65426–65455 cross-check that the
+state-0 path does not run the easing update before returning. State 2
+sets `aboutToReachAutoTargetFlag` (`+0x330`) before measuring the
+docking-point distance; on arrival it transitions to state 1,
+conditionally requests free-look camera, clears byte `+0xb2`, and
+returns **1** in that same frame. State 3 completion clears bytes
+`+0x145/+0x356`, target `+0x1bc`, both Radar docking pointers and
+the 12-byte approach vector, requests standard camera, releases its
+SpacePoint and hacking game, and returns **0**. It does not clear
+`dockStation` at `+0x1e0`. IDA lines 85828–85907 and Ghidra lines
+65680–65741 independently show these transitions.
+
+The production-fragment smoke compiles the whole approach method and
+checks the threshold boundary, state-2 arrival and state-3 exit,
+including their return values and cleanup. Native `gof2`, 206/206 ARM
+units, 37 verifier tests (one skipped), and four PlayerEgo smokes
+pass. Focused `approachDockingPoint` source-shape/strict fuzzy changes
+**20.5%/12.1% → 22.2%/15.3%**; it remains non-exact. Full-corpus
+report `_work/player_approach_docking_full_20261014.json` covers
+**4,323/4,524** original functions at **93.27%** average
+source-shape and **82.17%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Pairwise
+comparison with `_work/player_delivery_full_20261014.json` finds no
+linked-/byte-exact losses or gains. The motion/easing shims `PE_adp_approach`,
+`PE_adp_glide`, and `PE_adp_apply` are still unresolved, so linked
+ARM gameplay remains unverified.
+
 ## Docking transfer and arrival-state ABI (2026-10-14)
 
 Android Thumb `PlayerEgo::update` calls `approachDockingPoint` at

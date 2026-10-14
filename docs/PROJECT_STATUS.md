@@ -1,7 +1,31 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo docking delivery; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo docking transitions; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo docking approach and exit transitions (2026-10-14)
+
+Android `approachDockingPoint` at `0x9fcb8` uses the approach threshold
+at `+0x1d8`, clears the target byte `+0x8c` on entering state 2,
+and enables look-at camera. State 2 sets the near-target flag and
+returns true immediately on arrival in state 1, after clearing byte
+`+0xb2`; state 3 clears the docking target, flags, radar pointers,
+approach vector, SpacePoint and hacking game, requests standard
+camera, and returns false. The earlier source used the wrong
+threshold and return values and cleared `dockStation` instead of the
+docking target. An extracted whole-method smoke now covers the
+transition boundaries and cleanup. Native `gof2`, 206/206 ARM units,
+37 verifier tests (one skipped), and four PlayerEgo smokes pass.
+Focused source-shape/strict fuzzy rises **20.5%/12.1% →
+22.2%/15.3%** for this non-exact function. Full report
+`_work/player_approach_docking_full_20261014.json`: **4,323/4,524**
+original functions covered, **93.27%** average source-shape,
+**82.17%** strict fuzzy, **2,479 linked-exact**, **1,065 byte-exact**,
+**123 extras**, and zero skipped units. Pairwise exact sets have no
+losses or gains against the docking-delivery checkpoint. The next
+priority is replacing the unresolved docking motion/easing shims;
+linked ARM gameplay remains unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo docking delivery and transfer ABI (2026-10-14)
 

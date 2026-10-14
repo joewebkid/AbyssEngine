@@ -4,6 +4,26 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo docking approach and exit transitions (2026-10-14)
+
+Android Thumb `0x9fcb8` and IDA/Ghidra cross-checks establish the
+state-0 `+0x1d8` approach threshold, state-2 immediate true return
+and `+0xb2` clear on arrival, and state-3 target/flag cleanup with
+a false return. The extracted whole-method smoke checks threshold
+boundaries, near-target and camera flags, return values, Radar and
+SpacePoint cleanup, and HackingGame destruction. Native `gof2`,
+206/206 ARM translation units, 37 verifier tests (one skipped), and
+four PlayerEgo smokes pass. Focused source-shape/strict fuzzy for
+`approachDockingPoint` rises **20.5%/12.1% → 22.2%/15.3%**.
+Full report `_work/player_approach_docking_full_20261014.json`:
+**4,323/4,524** original functions, **93.27%** average source-shape,
+**82.17%** strict fuzzy, **2,479 linked-exact**, **1,065 byte-exact**,
+**123 extras**, zero skipped units. Exact pair comparison against
+`_work/player_delivery_full_20261014.json` has zero losses and
+gains. The approach function is not exact; the movement/easing
+shims and linked ARM gameplay remain unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo docking delivery and transfer ABI (2026-10-14)
 
 Android `PlayerEgo::update` at `0x9dda8` onward and

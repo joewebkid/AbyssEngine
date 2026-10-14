@@ -199,6 +199,7 @@ int aeabi_idiv_(int a, int b);
 
 float PE_pitchRampDelta(PlayerEgo *self, float rate, int frameTime);
 
+// shortcut: docking motion/easing still uses unresolved shims; replace after the ARM call contracts are recovered.
 int PE_adp_approach(PlayerEgo *self, void *station);
 
 int PE_adp_glide(PlayerEgo * self);
@@ -1315,17 +1316,20 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
                 ((SpacePoint *) (nav))->take();
             }
             int dist = PE_adp_approach(this, target);
-            if (dist < this->dockApproachThreshold) {
+            if (dist < this->dockScaling) {
+                uint8_t *targetBytes = reinterpret_cast<uint8_t *>(target);
+                if (targetBytes[0x70] != 0)
+                    targetBytes[0x8c] = 0;
                 this->dockingPointIndex = 2;
-                ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setLookAtCam(false);
+                ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setLookAtCam(true);
                 ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->useTargetsUpVector(false);
             }
         }
-        PE_adp_apply(this);
         return 0;
     }
 
     if (state == 2) {
+        this->aboutToReachAutoTargetFlag = 1;
         if (this->turretActive != 0)
             ((PlayerEgo *) (this))->setTurretMode(0);
         int dist = PE_adp_glide(this);
@@ -1392,6 +1396,8 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
             this->dockingPointIndex = 1;
             if (this->field_0xb2 == 0)
                 this->switchToFreeLookCam = 1;
+            this->field_0xb2 = 0;
+            return 1;
         }
         PE_adp_apply(this);
         return 0;
@@ -1400,7 +1406,9 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
     if (state == 3) {
         int dist = PE_adp_glide(this);
         if (dist < 200) {
-            this->dockStation = 0;
+            this->field_0x145 = 0;
+            this->dockedFlag = 0;
+            this->asteroidTarget = 0;
             radar->dockTargetPtr = 0;
             radar->dockNavPtr = 0;
             adp_clearDockVector(this);
@@ -1410,6 +1418,7 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
             ((LevelScript *) (this->levelScript))->resetCamera(this->levelScript->m_pLevel);
             ((Player *) (this->player))->resetGunDelay(0);
             this->dockingPointIndex = 0;
+            this->switchToStandardCam = 1;
             if (this->spacePoint != nullptr) {
                 this->spacePoint->giveFree();
                 this->spacePoint = nullptr;
@@ -1419,7 +1428,7 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
                 ((void *&) this->hackingGame) = 0;
                 hud->setHackingGameActive(false);
             }
-            return 1;
+            return 0;
         }
         PE_adp_apply(this);
     }

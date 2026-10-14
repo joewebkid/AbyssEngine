@@ -51,6 +51,9 @@ def main():
     fixture = fixture.replace("// PRODUCTION_DOCK_STATE_GATE",
                               "int PlayerEgo::dockStateGate() {\n" +
                               source[start:end] + "    return -1;\n}\n")
+    fixture = fixture.replace("// PRODUCTION_APPROACH_DOCKING_POINT",
+                              function(source, "static inline void adp_clearDockVector(") +
+                              function(source, "int PlayerEgo::approachDockingPoint("))
     start = source.index("    {\n        Ship *ship = PE_status()->getShip();",
                          source.index("void PlayerEgo::update("))
     end = source.index("    if (this->boostingFlag != 0) {", start)
