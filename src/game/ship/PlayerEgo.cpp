@@ -223,8 +223,6 @@ void PE_cc_destructible(PlayerEgo *self, void *obj);
 
 void PlayEngineSound_(PlayerEgo * self);
 
-void *PE_dtdp_makeEase(const void *fromMatrix, const void *navPoint);
-
 
 int PE_aa_approachStep(PlayerEgo *self, int hud2, void *radar);
 
@@ -2424,12 +2422,12 @@ void PlayerEgo::dockToDockingPoint(KIPlayer *kip, Radar *radar) {
 
             ((PlayerEgo *) (this))->setTurretMode(0);
             this->field_0x1a1 = 0;
-            PaintCanvas::gCanvas->CameraSetCurrent(
+            Globals::Canvas->CameraSetCurrent(
                 (unsigned int) (((TargetFollowCamera *) (intptr_t) this->targetFollowCamera)->id));
-            ((LevelScript *) (this->levelScript))->resetCamera(this->levelScript->m_pLevel);
+            this->levelScript->resetCamera(this->level);
             PlayEngineSound_(this);
             this->dockingPointIndex = 3;
-            ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setLookAtCam(false);
+            ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setLookAtCam(true);
             ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->useTargetsUpVector(false);
 
             if (this->easeMatrix != 0) {
@@ -2439,9 +2437,11 @@ void PlayerEgo::dockToDockingPoint(KIPlayer *kip, Radar *radar) {
             this->easeMatrix = 0;
 
             pos = ((PlayerEgo *) (this))->getPosition();
-            void *nav2 = kip->getNearestNavigationPoint(pos, sp);
-            void *from = ((AEGeometry *) (this->geometry))->getMatrix();
-            this->easeMatrix = PE_dtdp_makeEase(from, nav2);
+            SpacePoint *nav2 = kip->getNearestNavigationPoint(pos, sp);
+            Matrix destination = this->geometry->getMatrix();
+            AbyssEngine::AEMath::MatrixSetTranslation(destination, nav2->position);
+            this->easeMatrix = new AbyssEngine::EaseInOutMatrix(
+                this->geometry->getMatrix(), destination, 3000);
             ((PlayerEgo *) (this))->setExhaustVisible(true);
         }
     }

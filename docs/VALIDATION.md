@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo docking-point ease (2026-10-14)
+
+IDA/Ghidra and Android Thumb `0x9fa6a–0x9fb5e` confirm the canvas and
+level arguments, look-at camera mode, translated destination matrix,
+and 3,000 ms ease construction. The production-body dock-point smoke,
+native `gof2`, 206/206 ARM translation units and 37 verifier tests
+(one skipped) pass. Focused `dockToDockingPoint` source-shape/strict
+fuzzy changes **77.7%/54.3% → 97.7%/66.4%**; it is not exact.
+Full report `_work/player_dock_point_full_20261014.json` covers
+**4,323/4,524** at **93.36%** average source-shape and **82.25%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**123 extras**, **201 missing** and zero skipped. Linked- and byte-exact
+pair sets have no losses against
+`_work/player_update_maneuver_full_20261014.json`. Live docking and
+ARM32 runtime remain unverified. See
+[the docking-point ease audit](PLAYER_EGO_DOCK_POINT_EASE_ARM_2026-10-14.md).
+
 ## PlayerEgo maneuver update (2026-10-14)
 
 IDA/Ghidra and Android Thumb `0x9c1f8–0x9c684` confirm both dodge

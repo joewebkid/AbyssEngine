@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo maneuver update; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo docking-point ease; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo docking-point ease (2026-10-14)
+
+Android Thumb `0x9f9f4–0x9fcb4` confirms the navigation-point matrix
+translation and 3,000 ms `EaseInOutMatrix` construction. The
+declared-only ease helper is replaced; the same branch now uses the
+ARM-backed global canvas, level argument and look-at camera mode.
+The production-body smoke, native `gof2`, 206/206 ARM translation units
+and 37 verifier tests (one skipped) pass. Focused
+`dockToDockingPoint` source-shape/strict fuzzy rises
+**77.7%/54.3% → 97.7%/66.4%**; it is not exact. Full coverage remains
+**4,323/4,524** at **93.36%** average source-shape and **82.25%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**123 extras**, zero skipped and no exact-pair losses. Live docking
+and ARM32 runtime remain unverified. Next priority:
+`approachDockingPoint`'s declared-only `PE_aa_approachStep` path. See
+[the docking-point ease audit](PLAYER_EGO_DOCK_POINT_EASE_ARM_2026-10-14.md).
 
 ## PlayerEgo maneuver update (2026-10-14)
 
@@ -16,7 +33,8 @@ coverage remains **4,323/4,524** at **93.35%** average source-shape
 and **82.25%** strict fuzzy, with **2,482 linked-exact**,
 **1,065 byte-exact**, **123 extras**, zero skipped and no exact-pair
 losses. Live maneuver animation and ARM32 runtime remain unverified.
-Next priority: the adjacent `dockToDockingPoint` ease-matrix helper.
+The adjacent docking-point ease-matrix helper is recovered in the
+section above.
 See [the maneuver audit](PLAYER_EGO_UPDATE_MANEUVER_ARM_2026-10-14.md).
 
 ## PlayerEgo move-to-position (2026-10-14)
