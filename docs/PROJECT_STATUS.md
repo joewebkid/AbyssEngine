@@ -1,7 +1,32 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo passive recovery timers; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo player/sound handoff; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo player/sound handoff (2026-10-14)
+
+Android IDA and independent Ghidra show that `update` calls
+`Player::update` after passive recovery, passing `doSound` only
+when alive and the event word at `+0x1c` is valid. Its separate
+3D sound-position update requires a nonzero byte at `+0x38`,
+options byte `+0x0f`, and valid event ID at `+0xb4`. The source
+now uses that exact byte test rather than treating the overlapping
+pointer as a Boolean. The constructor also restores the missing
+producer of `+0x1c`: special ship IDs 42/43/40 or four base-handling
+bands select and register its sound resource before agility scaling.
+The production-fragment smoke tests these gates and selections.
+Native `gof2`, 206/206 ARM units, 37 verifier tests (one
+skipped) and four PlayerEgo smokes pass. `update` source-shape
+rises **27.1% → 28.7%**, strict fuzzy **10.5% → 10.6%**;
+constructor source-shape rises **33.4% → 40.3%**, strict fuzzy
+**19.8% → 24.8%**. Neither full function is exact. Full corpus
+remains **4,323/4,524** covered, **93.25%** source-shape,
+**82.12%** strict fuzzy, **2,474 linked-exact**,
+**1,062 byte-exact**, **123 extras**, with zero exact-pair
+losses. Linked ARM gameplay and the rest of `PE_upd_post`
+remain unverified. Next: route-change/HUD notification after
+the matrix and particle update. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo passive shield and repair timers (2026-10-14)
 

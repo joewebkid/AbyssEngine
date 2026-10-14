@@ -1656,6 +1656,7 @@ PlayerEgo::PlayerEgo(Player *player) {
     this->player = (void *) player;
     player->setPlayShootSound(true, 2);
     this->lastHP = player->getCombinedHP();
+    this->field_0x1c = -1;
     this->shieldRecoveryTimer = 0;
     this->hullRepairTimer = 0;
     this->armorRepairTimer = 0;
@@ -1682,6 +1683,22 @@ PlayerEgo::PlayerEgo(Player *player) {
         this->boostSpeed = (int) (speedRate + speedRate) + 2;
         this->field_0xcc = ship->getBoostTime();
         this->handling = ship->getHandling();
+        int shipIndex = ship->getIndex();
+        if (shipIndex == 42)
+            this->field_0x1c = 1104;
+        else if (shipIndex == 43)
+            this->field_0x1c = 1106;
+        else if (shipIndex == 40)
+            this->field_0x1c = 1107;
+        else if (this->handling >= 1.4f)
+            this->field_0x1c = 45;
+        else if (this->handling >= 1.15f)
+            this->field_0x1c = 44;
+        else if (this->handling >= 0.95f)
+            this->field_0x1c = 43;
+        else
+            this->field_0x1c = 42;
+        Globals::gGlobals->addSoundResourceToList(this->field_0x1c);
         int agility = ship->getAgility();
         this->agility = (float) agility;
         float handling = this->handling;
@@ -2587,6 +2604,14 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
                 && player->getArmorHP() < player->getMaxArmorHP())
                 player->regenerateArmor();
         }
+    }
+
+    player->update(dt, !isDead() && this->field_0x1c != -1);
+    // Android ARM reads only byte +0x38, not the whole overlapping pointer.
+    if (*reinterpret_cast<const uint8_t *>(&this->gunMuzzleRoot) != 0
+        && Globals::options[0x0f] != 0 && this->engineSoundId != -1) {
+        Vector position = player->getPosition();
+        Globals::sound->updateEvent3DAttributes(this->engineSoundId, &position, nullptr, false);
     }
 
     PE_upd_post(this, dt, radar, hud, radio, arg5);

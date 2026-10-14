@@ -42,11 +42,16 @@ def main():
     fixture = fixture.replace("// PRODUCTION_UPDATE_SHIELD",
                               "void PlayerEgo::updateShield(int dt, Hud *hud) {\n" +
                               source[start:end] + "}\n")
-    end = source.index("    PE_upd_post(this, dt, radar, hud, radio, arg5);",
+    end = source.index("    player->update(dt, !isDead() && this->field_0x1c != -1);",
                        source.index("void PlayerEgo::update("))
     start = source.rindex("    Ship *ship = PE_status()->getShip();", 0, end)
     fixture = fixture.replace("// PRODUCTION_UPDATE_RECOVERY",
                               "void PlayerEgo::updateRecovery(int dt) {\n" +
+                              "    Player *player = this->player;\n" + source[start:end] + "}\n")
+    start = end
+    end = source.index("    PE_upd_post(this, dt, radar, hud, radio, arg5);", start)
+    fixture = fixture.replace("// PRODUCTION_UPDATE_PLAYER_SOUND",
+                              "void PlayerEgo::updatePlayerSound(int dt) {\n" +
                               "    Player *player = this->player;\n" + source[start:end] + "}\n")
     start = source.index("        this->shieldRecoveryAmount = (float) ship->getMaxShieldHP()",
                          source.index("PlayerEgo::PlayerEgo("))
@@ -54,6 +59,12 @@ def main():
     fixture = fixture.replace("// PRODUCTION_RECOVERY_AMOUNT",
                               "void PlayerEgo::initializeRecoveryAmount(Ship *ship) {\n" +
                               source[start:end] + "\n}\n")
+    start = source.index("        this->handling = ship->getHandling();",
+                         source.index("PlayerEgo::PlayerEgo("))
+    end = source.index("        int agility = ship->getAgility();", start)
+    fixture = fixture.replace("// PRODUCTION_ENGINE_SOUND_SELECTION",
+                              "void PlayerEgo::initializeEngineSound(Ship *ship) {\n" +
+                              source[start:end] + "}\n")
 
     with tempfile.TemporaryDirectory(prefix="dock-asteroid-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "player_ego_dock_asteroid_smoke.cpp"

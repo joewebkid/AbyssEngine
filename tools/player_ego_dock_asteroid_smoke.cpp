@@ -35,6 +35,9 @@ struct Player {
     int hullRepairs = 0;
     int armorRepairs = 0;
     float lastShieldRecovery = 0.0f;
+    int updates = 0;
+    int lastUpdateDt = 0;
+    bool lastDoSound = false;
     int getHitpoints() { return hitpoints; }
     int getMaxHitpoints() { return maxHitpoints; }
     int getArmorHP() { return armorHP; }
@@ -45,6 +48,8 @@ struct Player {
     void regenerateShield(float amount) { ++shieldRecoveries; lastShieldRecovery = amount; }
     void regenerateHull() { ++hullRepairs; ++hitpoints; }
     void regenerateArmor() { ++armorRepairs; armorHP += 2; }
+    void update(int dt, bool doSound) { ++updates; lastUpdateDt = dt; lastDoSound = doSound; }
+    Vector getPosition() { return {7.0f, 0.0f, 0.0f}; }
     void resetGunDelay(int value) { assert(value == 0); ++resetCount; }
 };
 struct PlayerEgo;
@@ -67,10 +72,14 @@ struct Ship {
     int shieldRegen = 0;
     int maxShieldHP = 10;
     int repairType = -1;
+    int index = 0;
+    float handling = 1.0f;
     int getFreeSpace() { return freeSpace; }
     bool hasVolatileGoods() { return volatileGoods; }
     int getShieldRegen() { return shieldRegen; }
     int getMaxShieldHP() { return maxShieldHP; }
+    int getIndex() { return index; }
+    float getHandling() { return handling; }
     int getRepairType() { return repairType; }
     Item *getFirstEquipmentOfSort(int sort) { assert(sort == 43); return equipment; }
     bool hasCargo(int index, int amount) { assert(index == 202); return cargo >= amount; }
@@ -105,11 +114,20 @@ struct FModSound {
         parameter = value;
     }
     void updateEvent3DAttributes(int id, Vector *pos, Vector *vel, bool restart) {
-        assert(pos->x == 7.0f && vel->x == 0.0f && !restart);
+        assert(pos->x == 7.0f && (vel == nullptr || vel->x == 0.0f) && !restart);
         updated[updateCount++] = id;
     }
 };
-namespace Globals { FModSound *sound = nullptr; }
+struct GlobalsService {
+    int registeredSound = -1;
+    int registrations = 0;
+    void addSoundResourceToList(int id) { registeredSound = id; ++registrations; }
+};
+namespace Globals {
+    FModSound *sound = nullptr;
+    GlobalsService *gGlobals = nullptr;
+    unsigned char options[100]{};
+}
 static const float g_PE_astApproach = 2500.0f;
 void Vec_assign(void *dst, const void *src) { std::memcpy(dst, src, 3 * sizeof(int)); }
 
@@ -131,6 +149,10 @@ struct PlayerEgo {
     unsigned char volatileGoods = 0;
     unsigned char shieldRegenActive = 0;
     unsigned char shieldRegenEquipped = 0;
+    void *gunMuzzleRoot = nullptr;
+    int field_0x1c = -1;
+    int engineSoundId = -1;
+    float handling = 0.0f;
     int64_t shieldRecoveryTimer = 0;
     int64_t hullRepairTimer = 0;
     int64_t armorRepairTimer = 0;
@@ -143,7 +165,9 @@ struct PlayerEgo {
     void updateCargoState();
     void updateShield(int dt, Hud *hud);
     void updateRecovery(int dt);
+    void updatePlayerSound(int dt);
     void initializeRecoveryAmount(Ship *ship);
+    void initializeEngineSound(Ship *ship);
     bool isDead() { return player->hitpoints < 1; }
     Vector getPosition() { return position; }
     int approachAsteroid(Hud *, int, Radar *) { ++approachCount; return 0; }
@@ -156,7 +180,9 @@ struct PlayerEgo {
 // PRODUCTION_UPDATE_CARGO
 // PRODUCTION_UPDATE_SHIELD
 // PRODUCTION_UPDATE_RECOVERY
+// PRODUCTION_UPDATE_PLAYER_SOUND
 // PRODUCTION_RECOVERY_AMOUNT
+// PRODUCTION_ENGINE_SOUND_SELECTION
 
 void PE_upd_docksFinishDelivery(PlayerEgo *, Radio *) { assert(false); }
 
@@ -213,6 +239,30 @@ int main() {
 
     Ship ship;
     status.ship = &ship;
+    GlobalsService globals;
+    Globals::gGlobals = &globals;
+    ship.index = 42;
+    ego.initializeEngineSound(&ship);
+    assert(ego.field_0x1c == 1104 && globals.registeredSound == 1104);
+    ship.index = 43;
+    ego.initializeEngineSound(&ship);
+    assert(ego.field_0x1c == 1106);
+    ship.index = 40;
+    ego.initializeEngineSound(&ship);
+    assert(ego.field_0x1c == 1107);
+    ship.index = 0;
+    ship.handling = 0.94f;
+    ego.initializeEngineSound(&ship);
+    assert(ego.field_0x1c == 42);
+    ship.handling = 0.95f;
+    ego.initializeEngineSound(&ship);
+    assert(ego.field_0x1c == 43);
+    ship.handling = 1.15f;
+    ego.initializeEngineSound(&ship);
+    assert(ego.field_0x1c == 44);
+    ship.handling = 1.4f;
+    ego.initializeEngineSound(&ship);
+    assert(ego.field_0x1c == 45 && globals.registrations == 7);
     ego.lastFreeSpace = 10;
     ship.freeSpace = 5;
     ship.volatileGoods = true;
@@ -308,9 +358,35 @@ int main() {
     ego.updateRecovery(701);
     assert(ego.armorRepairTimer == 0 && player.armorRepairs == 2);
 
+    ego.gunMuzzleRoot = reinterpret_cast<void *>(static_cast<uintptr_t>(0x1234));
+    ego.engineSoundId = 99;
+    ego.field_0x1c = -1;
+    Globals::options[0x0f] = 1;
+    ego.updatePlayerSound(16);
+    assert(player.updates == 1 && player.lastUpdateDt == 16 && !player.lastDoSound);
+    assert(sound.updated[4] == 99);
+    ego.field_0x1c = 5;
+    ego.updatePlayerSound(20);
+    assert(player.updates == 2 && player.lastDoSound && sound.updated[5] == 99);
+    player.hitpoints = 0;
+    ego.updatePlayerSound(24);
+    assert(player.updates == 3 && !player.lastDoSound && sound.updated[6] == 99);
+    player.hitpoints = 10;
+    Globals::options[0x0f] = 0;
+    ego.updatePlayerSound(28);
+    assert(sound.updateCount == 7);
+    Globals::options[0x0f] = 1;
+    ego.gunMuzzleRoot = reinterpret_cast<void *>(static_cast<uintptr_t>(0x100));
+    ego.updatePlayerSound(32);
+    assert(sound.updateCount == 7);
+    ego.gunMuzzleRoot = reinterpret_cast<void *>(static_cast<uintptr_t>(0x1234));
+    ego.engineSoundId = -1;
+    ego.updatePlayerSound(36);
+    assert(sound.updateCount == 7);
+
     ego.asteroidTargetPtr = &asteroid;
     ego.dockedFlag = 1;
     ego.updateDocking(&radar, &hud, &radio);
     assert(ego.dockedFlag == 0 && ego.dockPointStops == 1);
-    std::puts("PlayerEgo docking/cargo/shield/repair smoke: OK");
+    std::puts("PlayerEgo docking/cargo/shield/repair/sound smoke: OK");
 }

@@ -61,7 +61,7 @@ public:
                     LevelScript *levelScript;
                     void *field_0x14;
                     Radio *radioRef;
-                    int field_0x1c;
+                    int field_0x1c; // Engine sound resource; distinct from engineSoundId at +0xb4.
                     union {
                         int field_0x20;
                         unsigned int hudHitDirectionFlags;
@@ -622,6 +622,7 @@ public:
 static_assert(__builtin_offsetof(PlayerEgo, transform) == 0x4, "PlayerEgo::transform offset");
 static_assert(__builtin_offsetof(PlayerEgo, rocketReturnMatrixStorage) == 0x10, "PlayerEgo::rocketReturnMatrix offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x14) == 0x14, "PlayerEgo::field_0x14 offset");
+static_assert(__builtin_offsetof(PlayerEgo, gunMuzzleRoot) == 0x38, "PlayerEgo::gunMuzzleRoot offset");
 static_assert(__builtin_offsetof(PlayerEgo, hudHitDirectionFlags) == 0x20,
               "PlayerEgo::hudHitDirectionFlags offset");
 static_assert(__builtin_offsetof(PlayerEgo, matrix_0x40_storage) == 0x40, "PlayerEgo::matrix_0x40 offset");

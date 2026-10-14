@@ -1,5 +1,45 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Player update and positional sound handoff (2026-10-14)
+
+Android IDA `PlayerEgo::update` lines 84434–84453 and independent
+Ghidra lines 64417–64425 show a direct `Player::update(dt, doSound)`
+call after passive recovery. `doSound` is true only when the ego is
+alive and the word at `+0x1c` is not `-1`. A separate 3D sound
+position update requires a nonzero **byte** at `PlayerEgo+0x38`,
+the options byte at `Globals::options+0x0f` (ELF `0x2181f7`), and
+an engine event ID at `+0xb4` other than `-1`. It obtains the
+position from `Player::getPosition` and passes no velocity. The
+byte at `+0x38` overlaps the existing `gunMuzzleRoot` pointer;
+testing the whole pointer would change behavior, so the source
+retains the observed byte read. The host smoke extracts this
+production fragment and checks the alive/event gate, sound-option
+gate, ID gate, and a non-null pointer whose low byte is zero.
+
+The producer of the `+0x1c` event word was also absent in C++.
+Android IDA constructor lines 80295–80339 and Ghidra lines
+59471–59516 select resources 1104/1106/1107 for ship indices
+42/43/40, otherwise 45/44/43/42 at base-handling boundaries
+1.4/1.15/0.95. The selection precedes agility scaling and is
+registered with `Globals::addSoundResourceToList`. The source and
+host smoke now cover all seven outcomes; without this producer,
+the new `Player::update` gate would read an uninitialized word.
+
+Native `gof2`, 206/206 ARM translation units, 37 verifier tests
+(one skipped), and four PlayerEgo host smokes pass. Focused `update`
+source-shape rises from **27.1%** to **28.7%** and strict fuzzy
+from **10.5%** to **10.6%**. The constructor rises from
+**33.4%/19.8%** to **40.3%/24.8%** source-shape/strict fuzzy;
+neither large function is exact. The full report
+`_work/player_update_sound_ctor_full_20261014.json`
+compares **4,323/4,524** original functions at **93.25%** average
+source-shape and **82.12%** strict fuzzy, with **2,474 linked-exact**,
+**1,062 byte-exact**, and **123 extras**. Against the passive
+recovery checkpoint, exact-pair losses and gains are both zero.
+The rest of `PE_upd_post` and linked ARM gameplay remain unverified.
+Next: the bounded route-change/HUD notification path after the
+matrix and particle update.
+
 ## Passive shield and repair timers (2026-10-14)
 
 Android IDA constructor lines 80135–80144 and 80349–80353,

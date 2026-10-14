@@ -4,6 +4,30 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo player/sound handoff (2026-10-14)
+
+Android IDA `update` lines 84434–84453 and independent Ghidra
+lines 64417–64425 confirm the direct player-update and positional
+sound calls. The production-fragment host smoke checks alive/event
+sound gating, options byte `+0x0f`, event ID, and the exact low-byte
+test at `PlayerEgo+0x38`; an initial wrong field alias failed ARM32
+assertions and was corrected before validation. Android IDA
+constructor lines 80295–80339 and Ghidra lines 59471–59516
+confirm the seven tested `+0x1c` sound-resource selections and
+registration. Native `gof2`,
+206/206 ARM units, 37 verifier tests (one skipped), and four
+PlayerEgo smokes pass. Focused `update` source-shape/strict fuzzy
+is **28.7%/10.6%** versus **27.1%/10.5%**; constructor C1/C2
+is **40.3%/24.8%** versus **33.4%/19.8%**. Full report
+`_work/player_update_sound_ctor_full_20261014.json`:
+**4,323/4,524** covered, **93.25%** source-shape,
+**82.12%** strict fuzzy, **2,474 linked-exact**,
+**1,062 byte-exact**, **123 extras**. Against
+`_work/player_repair_timers_full_20261014.json`, linked and
+byte exact-pair losses and gains are all zero. Full `update`
+behavior and linked ARM gameplay are not proven. See
+[the offset evidence](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo passive shield and repair timers (2026-10-14)
 
 Android IDA constructor lines 80135–80144/80349–80353 and
