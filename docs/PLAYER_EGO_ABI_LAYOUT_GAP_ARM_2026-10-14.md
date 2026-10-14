@@ -1,6 +1,6 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
-## Verified contradiction
+## Initial verified contradiction
 
 The Android 2.0.16 binary allocates `PlayerEgo` with `operator
 new(0x3a0)` in the game setup path. Both independent exports show
@@ -44,9 +44,9 @@ correct field addresses or a runnable linked game. Source-shape
 and exact counts remain measurements of compiled code, not an ABI
 validation of this class.
 
-No production source was changed in this audit. At the latest
-full-corpus checkpoint (`_work/approach_asteroid_guard_full_20261014.json`),
-coverage is **4,323/4,524**, average source-shape **93.10%**,
+At the initial audit checkpoint, no production source was changed.
+At the full-corpus checkpoint (`_work/approach_asteroid_guard_full_20261014.json`),
+coverage was **4,323/4,524**, average source-shape **93.10%**,
 strict fuzzy **81.52%**, linked-exact **2,403**, byte-exact
 **1,008** and extras **123**; the exact-pair sets were unchanged
 by the prior mining-phase patch. Those values are not promoted to
@@ -57,3 +57,36 @@ the constructor/allocation, migrate the header in bounded steps,
 and compare full exact-pair sets after each step. Only then resume
 the undefined stage-zero `PE_aa_approachStep` path. Do not add a
 padding guess solely to make the size `0x3a0`.
+
+## First verified offset group repaired (2026-10-14)
+
+Original constructor line 80098 constructs a Matrix at `PlayerEgo+0x40`.
+Original `up`/`down` maneuver writes at IDA lines 86202 and 86318
+target `+0x7c`; `right` at line 85987 targets `+0x80`. The raw ARM
+camera setter/getter at `0xa21f8`/`0xa2202` use `+0x88`. The header
+now constructs the separate `+0x40..+0x7b` Matrix and has an
+unidentified `+0x84..+0x87` slot, with compile-time ARM32 offset
+assertions for the confirmed members. Its size becomes `0x360`.
+
+NDK r18b Clang record layout, native `gof2`, and all 206 ARM
+translation units pass. The constructor's focused source-shape
+improves from 18.5% to 18.9% but remains non-exact. Focused
+`getTargetFollowCamera` is now
+100% source-shape, linked-exact and byte-exact. The full corpus
+`_work/player_abi_matrix_full_20261014.json` gives **4,323/4,524**
+covered, **93.11%** source-shape, **81.54%** strict fuzzy,
+**2,404** linked-exact, **1,009** byte-exact and **123** extras.
+Comparing exact pairs with the initial checkpoint shows zero losses
+and exactly the camera getter as the one new linked/byte exact pair.
+
+This does not close the ABI gap. Remaining Clang offsets include
+`shakeIntensity +0x100` versus original `+0x134`,
+`asteroidTarget +0x184` versus `+0x1bc`,
+`dockingState +0x188` versus `+0x1c0`,
+and `hud +0x1dc` versus `+0x220`; allocation remains `0x3a0` in
+the original. The existing camera setter calls
+`resetShipHandling()`, whereas original ARM calls
+`setShipHandling()` with a value loaded from `PlayerEgo+0x154`.
+That value's field mapping and gameplay effects are not yet verified.
+The next offset group must be established from ARM evidence before
+changing later members or this setter.

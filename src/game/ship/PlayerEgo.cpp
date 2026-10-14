@@ -37,6 +37,7 @@
 #include "game/weapons/TractorBeam.h"
 #include "game/ship/Ship.h"
 #include "game/core/Globals.h"
+#include <new>
 
 namespace AbyssEngine {
     namespace AEMath {
@@ -1648,6 +1649,7 @@ void PlayerEgo::throttleChanged() {
 }
 
 PlayerEgo::PlayerEgo(Player *player) {
+    new (matrix_0x40_storage) AbyssEngine::AEMath::Matrix();
     this->rollMatrix = AbyssEngine::AEMath::Matrix();
     this->turretHudMatrix = AbyssEngine::AEMath::Matrix();
 

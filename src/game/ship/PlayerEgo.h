@@ -45,11 +45,9 @@ public:
     // below. Expose both via an anonymous union without reordering.
     //
     // The outer union additionally exposes `rocketReturnMatrix`, a Matrix that
-    // begins at byte 0x10 (0xC into this storage region) and runs 0x3c bytes to
-    // 0x4c. During rocket-control hand-off the ship transform is copied into
-    // that slot via a single bulk Matrix store, which overruns the inner union
-    // into maneuverParam/field_0x80/targetFollowCamera. Modeling it as a named
-    // member keeps the store as plain member access.
+    // begins at byte 0x10 (0xC into this storage region) and runs to 0x4c.
+    // The original constructor also constructs a separate Matrix at 0x40;
+    // maneuver parameters and the camera pointer follow that Matrix.
     union {
         struct {
             union {
@@ -77,8 +75,10 @@ public:
                     void *gunExtraGeo;
                 };
             };
+            float matrix_0x40_storage[15];
             float maneuverParam;
             float field_0x80;
+            char _unknown_0x84[4];
             int targetFollowCamera;
         };
 
@@ -601,8 +601,10 @@ static_assert(__builtin_offsetof(PlayerEgo, rocketReturnMatrixStorage) == 0x10, 
 static_assert(__builtin_offsetof(PlayerEgo, field_0x14) == 0x14, "PlayerEgo::field_0x14 offset");
 static_assert(__builtin_offsetof(PlayerEgo, hudHitDirectionFlags) == 0x20,
               "PlayerEgo::hudHitDirectionFlags offset");
-static_assert(__builtin_offsetof(PlayerEgo, maneuverParam) == 0x40, "PlayerEgo::maneuverParam offset");
-static_assert(__builtin_offsetof(PlayerEgo, targetFollowCamera) == 0x48, "PlayerEgo::targetFollowCamera offset");
+static_assert(__builtin_offsetof(PlayerEgo, matrix_0x40_storage) == 0x40, "PlayerEgo::matrix_0x40 offset");
+static_assert(__builtin_offsetof(PlayerEgo, maneuverParam) == 0x7c, "PlayerEgo::maneuverParam offset");
+static_assert(__builtin_offsetof(PlayerEgo, field_0x80) == 0x80, "PlayerEgo::field_0x80 offset");
+static_assert(__builtin_offsetof(PlayerEgo, targetFollowCamera) == 0x88, "PlayerEgo::targetFollowCamera offset");
 #endif
 
 #endif

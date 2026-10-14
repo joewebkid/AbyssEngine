@@ -1,28 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo ARM32 layout audit; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo early ARM32 layout repair; older subsystem
 snapshots retain their dates)
 
-## PlayerEgo ARM32 layout gap (2026-10-14)
+## PlayerEgo early ARM32 layout repair (2026-10-14)
 
-An ABI audit found a project-wide prerequisite for the recent
-PlayerEgo mining/docking source recoveries. The Android binary
-allocates `PlayerEgo` with **0x3a0** bytes, while Clang 7 lays out
-the current header at **0x320** bytes in the ARM build. Confirmed
-field mismatches include target-follow camera `+0x48` versus ARM
-`+0x88`, asteroid target `+0x144` versus `+0x1bc`, docking state
-`+0x148` versus `+0x1c0`, mining game `+0x168` versus `+0x1e4`,
-and HUD `+0x19c` versus `+0x220`. The divergence is not one
-uniform gap. No production code changed in this audit; native
-static-library and 206-unit ARM compilation remain green, and the
-latest full corpus remains 4,323/4,524 covered, 93.10% source-
-shape, 81.52% strict fuzzy, 2,403 linked-exact and 1,008 byte-
-exact. Those metrics do not validate these field accesses. Recent
-production-method smokes test control flow with isolated doubles,
-not the actual ARM32 object layout. Next: reconstruct and migrate
-the `PlayerEgo` layout in verified offset groups, checking the
-exact-pair sets after each change, before implementing stage-zero
-asteroid approach. See
+The Android binary allocates `PlayerEgo` with **0x3a0** bytes. Its
+constructor constructs a Matrix at `+0x40`; ARM maneuver writes use
+`+0x7c`/`+0x80`, and the camera accessor uses `+0x88`. The header
+and constructor now represent this early offset group, increasing its ARM32 size
+from **0x320** to **0x360** and restoring byte-exact camera getter
+code. Constructor source-shape rises from 18.5% to 18.9% and remains
+non-exact. Native `gof2` and all 206 ARM units build. The full corpus is
+4,323/4,524 covered, 93.11% source-shape, 81.54% strict fuzzy,
+2,404 linked-exact and 1,009 byte-exact; no prior exact pair was
+lost. This is not a full ABI repair: asteroid target remains at
+`+0x184` versus original `+0x1bc`, docking state at `+0x188`
+versus `+0x1c0`, and HUD at `+0x1dc` versus `+0x220`.
+`setTargetFollowCamera` also still uses the wrong handling route.
+Isolated host smokes do not validate the real ARM32 object layout.
+Next: reconstruct subsequent offset groups and the camera setter
+against ARM, then revisit stage-zero asteroid approach. See
 [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo asteroid mining phase (2026-10-14)
