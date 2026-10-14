@@ -4,6 +4,42 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo death/explosion update tail (2026-10-14)
+
+Android Thumb `0x9edf0–0x9ef92` and IDA lines 84683–84765 show the
+remaining `PlayerEgo::update` path after cursor projection. The copy
+of static `crosshairPos` to PlayerEgo `+0x94` follows the camera
+handoff. When `isDead()` and explosion at `+0x8c` are both true, the
+path calls `Player::stopShooting(0)`, conditionally calls
+`FModSound::stop(0)` for nonzero `+0x1b4/+0x1b8`, and rotates the
+geometry at `+0x4` by 0.03 on each axis unless docked at point 1.
+The primary explosion starts when `explosionTimer + frameTime` first
+reaches 3000, is not updated at exactly 3000, and is updated after
+that value. The secondary explosion at `+0x90` updates whenever
+present; the timer at `+0x2f8` then advances by `+0x134`. The start
+also disables emission/render for `currentSystem` at `+0x2fc` and
+emits the level `+0x3c` particle using the previously cached camera
+position/direction. Finally, turret mode at `+0x170` composes local
+matrices for geometry `+0x8` then `+0x4` and writes geometry `+0x2c`.
+The old unresolved `PE_upd_post` call is removed; only the ARM
+stack-protector epilogue follows this path.
+
+The extracted production-fragment smoke tests alive/null-explosion
+skips, death sound and rotation gates, the 3000 ms start/update
+boundary, secondary update, particle calls, and turret matrix order.
+Native `gof2`, 206/206 ARM units, 37 verifier tests (one skipped),
+and four PlayerEgo smokes pass. Focused `update` source-shape/strict
+fuzzy changes **48.2%/24.8% → 52.3%/19.0%**. Full report
+`_work/player_update_tail_full_20261014.json`: **4,323/4,524**
+covered, **93.26%** source-shape, **82.16%** strict fuzzy,
+**2,478 linked-exact**, **1,065 byte-exact**, **123 extras**, zero
+skipped units. Pairwise comparison with
+`_work/player_crosshair_active_full_20261014.json` finds zero
+linked-/byte-exact losses or gains. The drop in strict fuzzy and the
+absence of linked ARM gameplay are explicit limits; earlier unresolved
+`update` helpers remain. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo active-cursor aim and steering (2026-10-14)
 
 Raw Android Thumb at `0x9eb84–0x9eda6` and IDA lines 84609–84682
@@ -36,8 +72,9 @@ covered, **93.26%** source-shape, **82.17%** strict fuzzy,
 skipped units. Exact pair comparison against
 `_work/player_crosshair_passive_full_20261014.json` finds zero
 losses and gains. No whole-function exact result or linked ARM
-gameplay is claimed. The visible previous-position store is still
-earlier than in the original, and the update tail remains incomplete.
+gameplay is claimed. At this checkpoint the previous-position store
+was still early and the update tail incomplete; the following pass
+corrected both.
 See [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo passive crosshair projection (2026-10-14)

@@ -1,5 +1,33 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Death/explosion and final turret update tail (2026-10-14)
+
+Raw Android Thumb `0x9edf0–0x9ef92`, cross-checked with IDA lines
+84683–84765, places the visible previous-crosshair copy at
+PlayerEgo `+0x94` after the camera handoff. On death with an explosion
+object at `+0x8c`, it stops shooting, conditionally stops sounds for
+the nonzero words at `+0x1b4/+0x1b8`, rotates geometry `+0x4`
+outside docking point 1, and handles the 3000 ms start boundary,
+subsequent primary update, optional secondary update at `+0x90`, and
+timer increment. The start disables particle emission/render for
+`currentSystem` at `+0x2fc` and emits level `+0x3c` with cached
+camera vectors. Turret mode at `+0x170` finally multiplies local
+matrices from geometry `+0x8` and `+0x4` in that order, then sets
+geometry `+0x2c`. The call to missing `PE_upd_post` is gone; the
+next instructions are the stack-protector epilogue.
+
+Native `gof2`, 206/206 ARM units, 37 verifier tests (one skipped),
+and four PlayerEgo smokes pass. Focused `update` source-shape rises
+**48.2% → 52.3%**, strict fuzzy falls **24.8% → 19.0%**; the whole
+function is not exact. Full report
+`_work/player_update_tail_full_20261014.json` covers **4,323/4,524**
+at **93.26%** average source-shape and **82.16%** strict fuzzy,
+with **2,478 linked-exact**, **1,065 byte-exact**, **123 extras**, and
+zero exact-pair losses or gains against the active-cursor checkpoint.
+The smoke checks the death gates, timer boundary, particle calls,
+and turret matrix order, but not a linked ARM32 game. Earlier
+`update` helpers, notably `PE_upd_subsystems`, remain unresolved.
+
 ## Active cursor and previous shoot-position vector (2026-10-14)
 
 Android Thumb `0x9eb84–0x9eda6` and IDA lines 84609–84682
@@ -23,10 +51,9 @@ rise **40.3%/24.8% → 41.9%/25.2%**. Full report
 strict fuzzy, with **2,478 linked-exact**, **1,065 byte-exact**, and
 **123 extras**. No exact pair is lost or gained against the passive
 checkpoint. The original copies the visible crosshair to `+0x94`
-after the camera handoff at `0x9edf0`; the current C++ does it before
-that handoff. The post-handoff update tail and linked ARM gameplay
-remain unverified. Next: close the tail's death/weapon handling and
-restore the final store order when that path is recovered.
+after the camera handoff at `0x9edf0`; at this checkpoint the C++ did
+it before that handoff. The following tail pass corrected the order
+and replaced `PE_upd_post`. Linked ARM gameplay remains unverified.
 
 ## Passive crosshair position and camera matrices (2026-10-14)
 

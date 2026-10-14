@@ -2430,14 +2430,11 @@ void PlayerEgo::draw(bool allowHud) {
 void PE_upd_subsystems(PlayerEgo *self, int dt, void *radar, void *hud,
                                   void *radio, void *script);
 
-void PE_upd_post(PlayerEgo *self, int dt, void *radar, void *hud,
-                            void *radio, int arg5);
-
-
 // IDA 0x9ce38: _ZN9PlayerEgo6updateEiP5RadarP3HudP5RadioP11LevelScriptibi
 void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript *script, int arg5, bool arg6,
                        int arg7) {
     (void) script;
+    (void) arg5;
 
     if (((void *&) this->hud) == 0)
         return;
@@ -2726,9 +2723,6 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
             crosshairShootPos = crosshairShootPos * 0.2f + this->crosshairShootPosPrevious * 0.8f;
         this->crosshairShootPosPrevious = crosshairShootPos;
     }
-    this->crosshairPosPrevious = crosshairPos;
-
-    // shortcut: the original saves crosshairPosPrevious after this handoff; restore that order with the update tail.
     if (this->cursorStateDirty) {
         TargetFollowCamera *camera = (TargetFollowCamera *) ((void *&) this->targetFollowCamera);
         if (!camera->isInFastForwardMode()) {
@@ -2740,8 +2734,37 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         }
     }
     this->cursorStateByte = Globals::mouseCursorActivated != 0;
+    this->crosshairPosPrevious = crosshairPos;
 
-    PE_upd_post(this, dt, radar, hud, radio, arg5);
+    if (isDead() && this->explosion != nullptr) {
+        player->stopShooting(0);
+        if (this->rocketControlGun != 0)
+            Globals::sound->stop(0);
+        if (this->rocketBanking != 0)
+            Globals::sound->stop(0);
+        if (!this->dockedFlag || this->dockingPointIndex != 1)
+            this->field_0x4->rotate(0.03f, 0.03f, 0.03f);
+
+        if (this->explosionTimer > 2999) {
+            if (this->explosionTimer != 3000)
+                ((Explosion *) this->explosion)->update(this->shakeIntensity, this->geometry->getPosition());
+        } else if (this->explosionTimer + this->shakeIntensity >= 3000) {
+            ((Explosion *) this->explosion)->start(this->geometry->getPosition(), Vector{0.0f, 0.0f, 0.0f});
+            ParticleSystemManager *particles = this->level->field_74;
+            particles->enableSystemEmit(this->currentSystem, false);
+            particles->enableSystemRender(this->currentSystem, false);
+            particles->emitManual(this->level->field_3c, cameraPosition, 0, cameraDirection, -1.0f);
+        }
+        if (this->explosion2 != nullptr)
+            ((Explosion *) this->explosion2)->update(this->shakeIntensity, this->geometry->getPosition());
+        this->explosionTimer += this->shakeIntensity;
+    }
+
+    if (this->turretMode != 0) {
+        Matrix *shipLocal = (Matrix *) Globals::Canvas->TransformGetLocal(this->geometry->transform);
+        Matrix *bodyLocal = (Matrix *) Globals::Canvas->TransformGetLocal(this->field_0x4->transform);
+        ((AEGeometry *) this->field_0x2c)->setMatrix(*shipLocal * *bodyLocal);
+    }
 }
 
 void PlayerEgo::setTurretPosition(Vector v) {

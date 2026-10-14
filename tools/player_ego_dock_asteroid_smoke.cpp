@@ -31,15 +31,26 @@ Vector VectorNormalize(const Vector &value) {
 struct AEGeometry {
     unsigned int transform = 17;
     Matrix matrix{};
+    Vector position{};
+    int rotations = 0;
+    int matrixWrites = 0;
     Matrix &getMatrix() { return matrix; }
+    Vector getPosition() { return position; }
+    void rotate(float x, float y, float z) { assert(x == 0.03f && y == 0.03f && z == 0.03f); ++rotations; }
+    void setMatrix(const Matrix &value) { matrix = value; ++matrixWrites; }
 };
 struct PaintCanvas {
     Matrix *local = nullptr;
+    Matrix *otherLocal = nullptr;
     int reads = 0;
     Vector screenResult{};
     Vector lastWorldPosition{};
     int projections = 0;
-    void *TransformGetLocal(unsigned int id) { assert(id == 17); ++reads; return local; }
+    void *TransformGetLocal(unsigned int id) {
+        assert(id == 17 || id == 18);
+        ++reads;
+        return id == 17 ? local : otherLocal;
+    }
     int GetScreenPosition(const Vector &world, Vector &screen) {
         ++projections;
         lastWorldPosition = world;
@@ -67,6 +78,29 @@ struct ParticleSettings {
         assert(a == ParticleSet_4 && b == ParticleSet_6 && out == ParticleSet_4);
         ++interpolations;
         blend = t;
+    }
+};
+struct ParticleSystemManager {
+    int emitDisables = 0, renderDisables = 0, manualEmits = 0;
+    int lastHandle = -1, lastSet = -1;
+    Vector lastPosition{}, lastVelocity{};
+    void enableSystemEmit(int handle, bool value) { assert(!value); lastHandle = handle; ++emitDisables; }
+    void enableSystemRender(int handle, bool value) { assert(!value); lastHandle = handle; ++renderDisables; }
+    void emitManual(int handle, const Vector &position, int set, const Vector &velocity, float lifetime) {
+        assert(lifetime == -1.0f);
+        lastHandle = handle; lastSet = set; lastPosition = position; lastVelocity = velocity;
+        ++manualEmits;
+    }
+};
+struct Level { ParticleSystemManager *field_74 = nullptr; int field_3c = 0; };
+struct Explosion {
+    int starts = 0, updates = 0, lastDt = -1;
+    Vector lastPosition{}, lastDirection{};
+    void start(const Vector &position, const Vector &direction) {
+        lastPosition = position; lastDirection = direction; ++starts;
+    }
+    void update(int dt, const Vector &position) {
+        lastDt = dt; lastPosition = position; ++updates;
     }
 };
 int ParticleSettings::interpolations = 0;
@@ -101,6 +135,7 @@ struct TargetFollowCamera {
 struct Player {
     Matrix transformMatrix{};
     int resetCount = 0;
+    int stopShots = 0;
     int hitpoints = 10;
     int maxHitpoints = 10;
     int armorHP = 0;
@@ -134,6 +169,7 @@ struct Player {
     void update(int dt, bool doSound) { ++updates; lastUpdateDt = dt; lastDoSound = doSound; }
     Vector getPosition() { return {7.0f, 0.0f, 0.0f}; }
     void resetGunDelay(int value) { assert(value == 0); ++resetCount; }
+    void stopShooting(int value) { assert(value == 0); ++stopShots; }
 };
 struct PlayerEgo;
 struct Hud {
@@ -199,11 +235,12 @@ struct FModSound {
     int played[16]{};
     int playCount = 0;
     int stopped = 0;
+    int stopCount = 0;
     int updated[8]{};
     int updateCount = 0;
     float parameter = -1.0f;
     void play(int id, Vector *, Vector *, float) { played[playCount++] = id; }
-    void stop(int id) { stopped = id; }
+    void stop(int id) { stopped = id; ++stopCount; }
     void setParamValue(int param, int id, float value) {
         assert(param == 0 && id == 2257);
         parameter = value;
@@ -266,12 +303,19 @@ struct PlayerEgo {
     int lastHP = 0;
     int hitCameraCalls = 0;
     AEGeometry *geometry = nullptr;
+    AEGeometry *field_0x4 = nullptr;
     void *field_0x2c = nullptr;
     void *turretGeometry = nullptr;
     unsigned char turretActive = 0;
     unsigned char autoPilot = 0;
     Vector crosshairPosPrevious{};
     Vector crosshairShootPosPrevious{};
+    Level *level = nullptr;
+    void *explosion = nullptr;
+    void *explosion2 = nullptr;
+    int rocketControlGun = 0, rocketBanking = 0;
+    int explosionTimer = 0, shakeIntensity = 0, currentSystem = 0;
+    unsigned char turretMode = 0;
     int rightCalls = 0, leftCalls = 0, downCalls = 0, upCalls = 0;
     float lastRight = 0.0f, lastLeft = 0.0f, lastDown = 0.0f, lastUp = 0.0f;
     unsigned char boostingFlag = 0;
@@ -296,6 +340,7 @@ struct PlayerEgo {
     void updateRoute(Hud *hud);
     void updateHitState(Hud *hud);
     void updateCrosshair(int dt, bool arg6, int arg7);
+    void updateTail(Vector cameraPosition, Vector cameraDirection);
     float right(int dt, float delta) { assert(dt == 16); ++rightCalls; lastRight = delta; return 0.0f; }
     float left(int dt, float delta) { assert(dt == 16); ++leftCalls; lastLeft = delta; return 0.0f; }
     float down(int dt, float delta) { assert(dt == 16); ++downCalls; lastDown = delta; return 0.0f; }
@@ -324,6 +369,7 @@ Vector PlayerEgo::crosshairShootPos{};
 // PRODUCTION_UPDATE_ROUTE
 // PRODUCTION_UPDATE_HIT_STATE
 // PRODUCTION_UPDATE_CROSSHAIR
+// PRODUCTION_UPDATE_TAIL
 // PRODUCTION_RECOVERY_AMOUNT
 // PRODUCTION_ENGINE_SOUND_SELECTION
 
@@ -735,9 +781,69 @@ int main() {
     assert(canvas.lastWorldPosition.y == 50.0f && canvas.lastWorldPosition.z == 60.0f);
     assert(ego.crosshairPosPrevious.x == 400.0f);
 
+    AEGeometry bodyGeometry;
+    AEGeometry shipGeometry;
+    bodyGeometry.transform = 18;
+    shipGeometry.position = {1.0f, 2.0f, 3.0f};
+    ego.field_0x4 = &bodyGeometry;
+    ego.geometry = &shipGeometry;
+    ParticleSystemManager particles;
+    Level level;
+    level.field_74 = &particles;
+    level.field_3c = 77;
+    ego.level = &level;
+    ego.currentSystem = 9;
+    ego.shakeIntensity = 20;
+    ego.explosionTimer = 2990;
+    Explosion primaryExplosion, secondaryExplosion;
+    ego.explosion = &primaryExplosion;
+    ego.explosion2 = &secondaryExplosion;
+    ego.updateTail({4.0f, 5.0f, 6.0f}, {0.0f, 0.0f, 1.0f});
+    assert(player.stopShots == 0 && primaryExplosion.starts == 0 && ego.explosionTimer == 2990);
+
+    player.hitpoints = 0;
+    ego.explosion = nullptr;
+    ego.updateTail({4.0f, 5.0f, 6.0f}, {0.0f, 0.0f, 1.0f});
+    assert(player.stopShots == 0 && ego.explosionTimer == 2990);
+    ego.explosion = &primaryExplosion;
+    ego.rocketControlGun = 1;
+    ego.rocketBanking = 1;
+    ego.dockedFlag = 0;
+    int priorStops = sound.stopCount;
+    ego.updateTail({4.0f, 5.0f, 6.0f}, {0.0f, 0.0f, 1.0f});
+    assert(player.stopShots == 1 && sound.stopCount == priorStops + 2 && sound.stopped == 0);
+    assert(bodyGeometry.rotations == 1 && primaryExplosion.starts == 1);
+    assert(primaryExplosion.lastPosition.x == 1.0f && primaryExplosion.lastDirection.x == 0.0f);
+    assert(particles.emitDisables == 1 && particles.renderDisables == 1 && particles.manualEmits == 1);
+    assert(particles.lastHandle == 77 && particles.lastSet == 0);
+    assert(particles.lastPosition.x == 4.0f && particles.lastVelocity.z == 1.0f);
+    assert(secondaryExplosion.updates == 1 && secondaryExplosion.lastDt == 20 && ego.explosionTimer == 3010);
+
+    ego.dockedFlag = 1;
+    ego.dockingPointIndex = 1;
+    ego.explosionTimer = 3000;
+    ego.updateTail({4.0f, 5.0f, 6.0f}, {0.0f, 0.0f, 1.0f});
+    assert(primaryExplosion.starts == 1 && primaryExplosion.updates == 0);
+    assert(bodyGeometry.rotations == 1 && ego.explosionTimer == 3020);
+    ego.explosionTimer = 3001;
+    ego.updateTail({4.0f, 5.0f, 6.0f}, {0.0f, 0.0f, 1.0f});
+    assert(primaryExplosion.updates == 1 && primaryExplosion.lastDt == 20);
+    assert(primaryExplosion.lastPosition.z == 3.0f && ego.explosionTimer == 3021);
+
+    player.hitpoints = 10;
+    ego.turretMode = 1;
+    Matrix shipLocal{}, bodyLocal{};
+    canvas.local = &shipLocal;
+    canvas.otherLocal = &bodyLocal;
+    expectedFirstMatrix = &shipLocal;
+    expectedSecondMatrix = &bodyLocal;
+    combinedMatrix.position = {9.0f, 8.0f, 7.0f};
+    ego.updateTail({4.0f, 5.0f, 6.0f}, {0.0f, 0.0f, 1.0f});
+    assert(cameraGeometry.matrixWrites == 1 && cameraGeometry.matrix.position.x == 9.0f);
+
     ego.asteroidTargetPtr = &asteroid;
     ego.dockedFlag = 1;
     ego.updateDocking(&radar, &hud, &radio);
     assert(ego.dockedFlag == 0 && ego.dockPointStops == 1);
-    std::puts("PlayerEgo docking/cargo/shield/repair/sound/visual/route/hit smoke: OK");
+    std::puts("PlayerEgo docking/cargo/shield/repair/sound/visual/route/hit/tail smoke: OK");
 }

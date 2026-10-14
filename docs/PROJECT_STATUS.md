@@ -1,7 +1,33 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo active-cursor aim and steering; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo death/explosion update tail; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo death/explosion update tail (2026-10-14)
+
+Android Thumb `PlayerEgo::update` at `0x9edf0–0x9ef92` completes the
+post-crosshair path: it stores the visible previous crosshair after
+camera handling, stops shooting and two conditional sounds when a dead
+player has an explosion object, applies death rotation outside the
+docking-point exception, starts the explosion at the 3000 ms crossing,
+updates primary/secondary explosions on their original gates, and
+advances the timer. At the crossing it disables the current particle
+system and emits a manual particle using the cached camera vectors.
+Turret mode then composes the two local geometry matrices in ARM call
+order. The unresolved `PE_upd_post` call has been replaced by this
+source-backed tail; raw ARM shows only the function epilogue after it.
+The extracted production-fragment smoke covers the gates, threshold,
+calls, and matrix order. Native `gof2`, 206/206 ARM units, 37 verifier
+tests (one skipped), and four PlayerEgo smokes pass. Focused `update`
+source-shape rises **48.2% → 52.3%**; strict fuzzy falls
+**24.8% → 19.0%**, with no whole-function exact match. Full report
+`_work/player_update_tail_full_20261014.json`: **4,323/4,524**
+covered, **93.26%** source-shape, **82.16%** strict fuzzy,
+**2,478 linked-exact**, **1,065 byte-exact**, **123 extras**.
+Exact-pair sets lose or gain none against the active-cursor checkpoint.
+Earlier unresolved helpers such as `PE_upd_subsystems` and linked ARM
+gameplay remain unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo active-cursor aim and steering (2026-10-14)
 
@@ -24,9 +50,9 @@ changes **42.4%/10.9% → 48.2%/24.8%**; constructor aliases change
 covered, **93.26%** source-shape, **82.17%** strict fuzzy,
 **2,478 linked-exact**, **1,065 byte-exact**, **123 extras**. Exact
 pair sets lose or gain none against the passive-crosshair checkpoint.
-The original saves the visible previous position after the camera
-handoff, whereas the current C++ does so immediately before it; the
-remaining update tail and linked ARM gameplay are unverified. See
+At this checkpoint the C++ saved the visible previous position before
+the camera handoff; the following tail pass corrected that order.
+Linked ARM gameplay remains unverified. See
 [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo passive crosshair projection (2026-10-14)

@@ -67,16 +67,25 @@ def main():
     end = source.index("    Vector cameraPosition = AbyssEngine::AEMath::MatrixGetPosition", start)
     hit_state = source[start:end]
     start = end
-    end = source.index("    // shortcut: the original saves", start)
+    end = source.index("    if (this->cursorStateDirty) {", start)
+    crosshair = source[start:end]
+    start = end
+    end = source.index("    if (isDead() && this->explosion != nullptr) {", start)
+    handoff = source[start:end]
+    copy_start = handoff.index("    this->crosshairPosPrevious = crosshairPos;")
+    previous_copy = handoff[copy_start:handoff.index("\n", copy_start) + 1]
     fixture = fixture.replace("// PRODUCTION_UPDATE_CROSSHAIR",
                               "void PlayerEgo::updateCrosshair(int dt, bool arg6, int arg7) {\n" +
-                              "    Player *player = this->player;\n" + source[start:end] + "}\n")
+                              "    Player *player = this->player;\n" + crosshair +
+                              previous_copy + "}")
     start = end
-    end = source.index("    PE_upd_post(this, dt, radar, hud, radio, arg5);", start)
+    end = source.index("\n}\n\nvoid PlayerEgo::setTurretPosition", start)
+    fixture = fixture.replace("// PRODUCTION_UPDATE_TAIL",
+                              "void PlayerEgo::updateTail(Vector cameraPosition, Vector cameraDirection) {\n" +
+                              "    Player *player = this->player;\n" + source[start:end] + "}\n")
     fixture = fixture.replace("// PRODUCTION_UPDATE_HIT_STATE",
                               "void PlayerEgo::updateHitState(Hud *hud) {\n" +
-                              "    Player *player = this->player;\n" + hit_state +
-                              source[start:end] + "}\n")
+                              "    Player *player = this->player;\n" + hit_state + handoff + "}\n")
     start = source.index("        this->shieldRecoveryAmount = (float) ship->getMaxShieldHP()",
                          source.index("PlayerEgo::PlayerEgo("))
     end = source.index(";", start) + 1
