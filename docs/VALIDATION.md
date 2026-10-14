@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo roll (2026-10-14)
+
+IDA/Ghidra and Android Thumb `0x9bbf8–0x9bd94` confirm the roll
+matrix inputs, rate literals, direction and autolevel flags, and the
+`MatrixSetRotation` call contract. The production-body host smoke,
+native `gof2`, 206/206 ARM translation units and 37 verifier tests
+(one skipped) pass. Focused source-shape/strict fuzzy changes
+**60.8%/38.6% → 92.2%/67.5%**. The method is not exact. Live
+animation and ARM32 runtime remain unverified. Full report
+`_work/player_roll_full_20261014.json` covers **4,323/4,524**
+original functions at **93.32%** average source-shape and **82.23%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**123 extras** and zero skipped. Exact-pair sets have no losses or
+gains against `_work/player_turret_view_full_20261014.json`. See
+[the roll audit](PLAYER_EGO_ROLL_ARM_2026-10-14.md).
+
 ## PlayerEgo turret-view camera (2026-10-14)
 
 IDA/Ghidra and Android Thumb `0x9b96c–0x9bbb0` confirm the movement

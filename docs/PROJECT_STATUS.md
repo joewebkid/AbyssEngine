@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo turret-view camera; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo roll; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo roll (2026-10-14)
+
+Android Thumb `0x9bbf8–0x9bd94` establishes the bank-rate table,
+direction reversal and autolevel transitions, exact-level reset and
+Matrix rotation contract. The previous body hid most behavior behind
+a declared-only helper and accepted an incorrect zero-component
+boundary. The recovered production-body smoke, native `gof2`,
+206/206 ARM translation units and verifier tests pass. Focused
+source-shape/strict fuzzy rises **60.8%/38.6% → 92.2%/67.5%**;
+no exact match. Live roll animation and ARM32 runtime remain
+unverified. Full coverage remains **4,323/4,524** at **93.32%**
+average source-shape and **82.23%** strict fuzzy, with **2,482
+linked-exact**, **1,065 byte-exact**, **123 extras**, zero skipped
+and no exact-pair losses. See
+[the roll audit](PLAYER_EGO_ROLL_ARM_2026-10-14.md).
 
 ## PlayerEgo turret-view camera (2026-10-14)
 

@@ -38,6 +38,7 @@
 #include "game/weapons/TractorBeam.h"
 #include "game/ship/Ship.h"
 #include "game/core/Globals.h"
+#include <cmath>
 #include <new>
 
 namespace AbyssEngine {
@@ -213,9 +214,6 @@ void PE_mtp_steer(PlayerEgo *self, const float *target, int steer, float speed);
 
 
 float Vec_length(const void *v);
-
-float PE_roll_bankFactor(PlayerEgo *self, float rx, float ry, float *outZ);
-
 
 void hitCamera_(PlayerEgo * self);
 
@@ -1985,45 +1983,55 @@ void PlayerEgo::killLiberator() {
     }
 }
 
-void Mat_identity(void *out, const void *src);
-
 void Mat_assign(void *dst, const void *src);
-
-void Mat_setRotation(void *out, float x, float y, float z);
-
 
 void PlayerEgo::roll(int amount) {
     if (this->rolling == 0)
         return;
 
-    AbyssEngine::AEMath::Matrix &m = ((AEGeometry *) (this->geometry))->getMatrix();
+    Matrix &m = this->geometry->getMatrix();
     float rx = m.m11_rightY;
     float ry = m.m12_upY;
-    float mag = rx > 0.0f ? rx : -rx;
+    float rate = rx > 0.0f ? rx : -rx;
 
-    if (amount > 0x3b)
-        amount = 0x3c;
+    if (amount >= 60)
+        amount = 60;
 
-    unsigned char rollMat[0x30];
-
-    if (ry >= 0.0f && mag < g_PE_rollLevelEps) {
-        Mat_identity(rollMat, &this->rollMatrix);
-        Mat_assign(&this->rollMatrix, rollMat);
+    if (ry > 0.0f && rate < g_PE_rollLevelEps) {
+        this->rollMatrix = AbyssEngine::AEMath::MatrixIdentity(this->rollMatrix);
         this->rollDirection = 0;
         this->rolling = 0;
         this->autoLevel = 0;
         return;
     }
 
-    float zAxis = 0.0f;
-    float xScale = PE_roll_bankFactor(this, rx, ry, &zAxis);
+    if (this->autoLevel) {
+        // Thumb 0x9bc88 checks ry for NaN before reversing the bank rate.
+        rate = rx < 0.0f && !std::isnan(ry) ? 0.0002f : -0.0002f;
+    } else if (rx > 0.0f && this->rollDirection == 1) {
+        rate = -0.00035f;
+        this->autoLevel = 1;
+    } else if (rx < 0.0f && this->rollDirection == 2) {
+        rate = 0.00035f;
+        this->autoLevel = 1;
+    } else if (rx >= 0.0f) {
+        if (ry < 0.0f)
+            rate = -0.00075f;
+        else if (rx > 0.0f && ry > 0.0f)
+            rate = rx > 0.3f ? -0.00035f : -0.00025f;
+    } else if (rx < 0.0f) {
+        if (ry < 0.0f)
+            rate = 0.00075f;
+        else if (ry > 0.0f)
+            rate = rx > -0.3f ? 0.00025f : 0.00035f;
+    }
 
-    if (rx != 0.0f)
+    if (rx != 0.0f && !std::isnan(rx))
         this->rollDirection = (rx < 0.0f) ? 1 : 2;
 
     this->rolling = 1;
-    Mat_setRotation(rollMat, xScale * (float) amount, 0.0f, zAxis);
-    Mat_assign(&this->rollMatrix, rollMat);
+    this->rollMatrix = AbyssEngine::AEMath::MatrixSetRotation(
+        this->rollMatrix, 0.0f, 0.0f, rate * (float) amount);
 }
 
 void PlayerEgo::setTargetFollowCamera(TargetFollowCamera *cam) {
