@@ -1,7 +1,32 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo docking glide and exit; older subsystem
+Last reviewed: 2026-10-14 (Layout window/touch metrics; older subsystem
 snapshots retain their dates)
+
+## Layout window and touch metrics (2026-10-14)
+
+Android `Layout::Layout` at `0xd1028` writes the previously zero-filled
+`+0x5c..+0x6c` window/button dimensions and `+0x74..+0x88`
+content, touch, slider and medal metrics. IDA platform branches and
+raw Thumb stores confirm the six ordinary low, Retina, iPad, iPad
+Large, N9 and iPad HD profiles. These fields feed `ListItemWindow`,
+`WantedWindow`, `HangarWindow`, `TouchButton`, `TouchSlider`,
+`StatusWindow` and Layout's own box/string drawing; the three
+formerly padded 32-bit slots are now named without changing offsets.
+The existing production-constructor smoke checks all eleven values
+for each profile. Native `gof2`, 206/206 ARM units, three Layout/
+TouchButton smokes and 37 verifier tests (one skipped) pass. Focused
+constructor C1/C2 source-shape/strict fuzzy rises **30.9%/7.6% →
+34.3%/9.5%**; neither alias is exact. Full report
+`_work/layout_window_touch_metrics_full_20261014.json` covers
+**4,323/4,524** original functions at **93.28%** average
+source-shape and **82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Pairwise
+exact sets have no losses or gains against the previous docking
+checkpoint. Other constructor slots and asset-backed visual/ARM32
+runtime behavior remain unverified. Next: a consumer-backed group
+around `Layout+0x108..+0x128`. See
+[the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
 
 ## PlayerEgo docking glide and departure (2026-10-14)
 

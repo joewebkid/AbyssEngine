@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout window and touch metrics (2026-10-14)
+
+Android `Layout::Layout()` at `0xd1028`, IDA lines 127981–128083
+and 128174–128381, and raw Thumb's packed stores restore eleven
+previously zero-filled `+0x5c..+0x88` slots across six platform
+profiles. The extracted production constructor smoke checks every
+profile; native `gof2`, 206/206 ARM units, three Layout/TouchButton
+smokes and 37 verifier tests (one skipped) pass. Focused C1/C2
+source-shape/strict fuzzy improves **30.9%/7.6% → 34.3%/9.5%**;
+neither is exact. Full report
+`_work/layout_window_touch_metrics_full_20261014.json` covers
+**4,323/4,524** functions at **93.28%** average source-shape and
+**82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras** and zero skipped units. Exact
+pair sets have no losses or gains against
+`_work/player_dock_glide_full_20261014.json`. Visual behavior with
+assets and ARM32 runtime is not verified. See
+[the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
+
 ## PlayerEgo docking glide and departure (2026-10-14)
 
 Raw Android Thumb `0xa0050–0xa039c` establishes state-2 docking-point

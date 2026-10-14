@@ -1,5 +1,44 @@
 # Layout constructor: platform metrics (2026-10-14)
 
+## Window, button and touch metrics (follow-up)
+
+Android `Layout::Layout()` at `0xd1028` writes the `+0x5c..+0x88`
+group in the same platform branches as its first 22 metrics. IDA
+lines 127981–127989 give iPad HD's packed writes, 128080–128083
+and 128356–128360 give N9, and 128174–128288/128362–128381 give
+ordinary profiles. Raw Thumb `0xd10a0–0xd1118` confirms the
+constructor's packed stores and the separate `+0x74` write in the
+iPad HD branch. `+0x70` was already recovered, so this pass fills
+the eleven neighboring slots that the old zero-fill still erased.
+
+| Profile | `+5c` | `+60` | `+64` | `+68` | `+6c` | `+74` | `+78` | `+7c` | `+80` | `+84` | `+88` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| ordinary low | 30 | 44 | 60 | 303 | 131 | 115 | 263 | 9 | 10 | 80 | 30 |
+| ordinary Retina | 60 | 88 | 120 | 606 | 262 | 230 | 526 | 18 | 20 | 160 | 60 |
+| iPad low | 45 | 64 | 80 | 403 | 136 | 115 | 263 | 9 | 10 | 80 | 30 |
+| iPad Large low | 90 | 128 | 160 | 806 | 272 | 115 | 263 | 9 | 10 | 80 | 30 |
+| N9 | 51 | 79 | 108 | 545 | 170 | 207 | 473 | 13 | 15 | 120 | 45 |
+| iPad HD | 63 | 90 | 112 | 566 | 191 | 161 | 369 | 12 | 14 | 112 | 42 |
+
+The `+0x5c` height and `+0x78` width feed several windows; `+0x60`
+and `+0x64` feed Hangar buttons; `+0x7c/+0x80/+0x84` feed the slider,
+TouchButton and medal row. `+0x68/+0x6c/+0x88` are direct constructor
+writes but have no confirmed consumer in this package; their names
+remain offset-based. Replacing their padding preserves all following
+offsets. The production constructor smoke checks all six profiles.
+
+Native `gof2`, 206/206 ARM units, three Layout/TouchButton smokes and
+37 verifier tests (one skipped) pass. Focused C1/C2 source-shape/
+strict fuzzy rises **30.9%/7.6% → 34.3%/9.5%**, with no exact alias.
+Full report `_work/layout_window_touch_metrics_full_20261014.json`
+covers **4,323/4,524** original functions at **93.28%** average
+source-shape and **82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, zero skipped units and no
+exact-pair losses or gains against the preceding full report. The
+other zero-filled constructor slots, asset-backed visual output and
+ARM32 runtime remain unverified. Next consumer-backed candidate:
+`Layout+0x108..+0x128`.
+
 ## Evidence and scope
 
 The Android `Layout::Layout()` constructor starts at `0xd1028` in the

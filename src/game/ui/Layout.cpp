@@ -241,6 +241,35 @@ Layout::Layout() {
         this->field_0x58 = retina ? 486 : 243;
     }
 
+    // Android Layout::Layout @ 0xd1028: window and touch metrics at +0x5c..+0x88.
+    if (hd) {
+        this->field_0x5c = 63;  this->field_0x60 = 90;
+        this->field_0x64 = 112; this->field_0x68 = 566;
+        this->field_0x6c = 191; this->field_0x74 = 161;
+        this->field_0x78 = 369; this->field_0x7c = 12;
+        this->field_0x80_touchMargin = 14; this->field_0x84 = 112;
+        this->field_0x88 = 42;
+    } else if (n9) {
+        this->field_0x5c = 51;  this->field_0x60 = 79;
+        this->field_0x64 = 108; this->field_0x68 = 545;
+        this->field_0x6c = 170; this->field_0x74 = 207;
+        this->field_0x78 = 473; this->field_0x7c = 13;
+        this->field_0x80_touchMargin = 15; this->field_0x84 = 120;
+        this->field_0x88 = 45;
+    } else {
+        this->field_0x5c = ipadLarge ? 90 : retina ? 60 : ipad ? 45 : 30;
+        this->field_0x60 = ipadLarge ? 128 : retina ? 88 : ipad ? 64 : 44;
+        this->field_0x64 = ipadLarge ? 160 : retina ? 120 : ipad ? 80 : 60;
+        this->field_0x68 = ipadLarge ? 806 : retina ? 606 : ipad ? 403 : 303;
+        this->field_0x6c = ipadLarge ? 272 : retina ? 262 : ipad ? 136 : 131;
+        this->field_0x74 = retina ? 230 : 115;
+        this->field_0x78 = retina ? 526 : 263;
+        this->field_0x7c = retina ? 18 : 9;
+        this->field_0x80_touchMargin = retina ? 20 : 10;
+        this->field_0x84 = retina ? 160 : 80;
+        this->field_0x88 = retina ? 60 : 30;
+    }
+
     this->field_0x70_rowHeight = hd ? 63 : n9 ? 51 : ipadLarge ? 90
         : retina ? 60 : ipad ? 45 : 30;
     this->field_0x8c = hd ? 45 : n9 ? 57 : retina ? 64 : 32;

@@ -94,7 +94,8 @@ public:
     int field_0x5c;
     int field_0x60;
     int field_0x64;
-    uint8_t _pad_0x68[8];
+    int field_0x68;
+    int field_0x6c;
 
     union {
         int field_0x70;
@@ -107,7 +108,7 @@ public:
     int field_0x7c;
     int field_0x80_touchMargin;
     int field_0x84;
-    uint8_t _pad_0x88[4];
+    int field_0x88;
     int field_0x8c;
     int field_0x90;
     int field_0x94;
