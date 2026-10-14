@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo update docking teardown; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo asteroid mining phase; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo asteroid mining phase (2026-10-14)
+
+`PlayerEgo::approachAsteroid` now checks the asteroid's dying/dead
+state rather than the ego's, passes its real HUD to MiningGame and
+loss events, uses the confirmed `Globals::hints`, sound and status
+slots, pauses the correct sound event and clears `asteroid->player`'s
+radius instead of an unrelated asteroid field. The production-method
+host smoke covers the target guard, mining-game creation, target death
+during update and a lost game. Native `gof2` static-library build,
+all 206 ARM units, three PlayerEgo smokes and 37 verifier tests pass
+(one skipped). Focused source-shape rises 23.8% to 39.6%, strict
+fuzzy 13.5% to 21.6%; no exact match. Full corpus remains
+4,323/4,524 covered, 93.10% average source-shape, 81.52% strict
+fuzzy, 2,403 linked-exact, 1,008 byte-exact and 123 extras, with
+unchanged exact sets. The approach step still calls undefined
+`PE_aa_approachStep`, so this is not a linked gameplay path; full
+ARM32 runtime and null-target safety remain unverified. Next:
+recover the stage-zero approach path from ARM. See
+[the mining-phase audit](PLAYER_EGO_APPROACH_ASTEROID_ARM_2026-10-14.md).
 
 ## PlayerEgo update docking teardown (2026-10-14)
 
@@ -19,8 +39,8 @@ the function remains non-exact. Full corpus stays 4,323/4,524
 covered, 93.10% source-shape, 81.51% strict fuzzy, 2,403 linked-
 exact, 1,008 byte-exact and 123 extras; exact sets are unchanged.
 The full `update` flow, missing-target teardown and ARM32 runtime
-remain unverified. Next: audit reachability of the missing-target
-path and `approachAsteroid` arguments. See
+remain unverified. The mining-phase follow-up above checks
+`approachAsteroid` target and HUD routes. See
 [the update audit](PLAYER_EGO_UPDATE_DOCKING_ARM_2026-10-14.md).
 
 ## PlayerEgo asteroid-docking target (2026-10-14)

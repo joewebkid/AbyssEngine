@@ -121,10 +121,6 @@ namespace {
     static const float g_PE_t_timerDiv = 500.0f;
     static const float g_PE_t_pctScale = 100.0f;
     static const float g_PE_t_textDiv = 1.6f;
-    static void **g_PE_aa_levelHolder = nullptr;
-    static int *g_PE_aa_mineSound = nullptr;
-    static void **g_PE_aa_winHolder1 = nullptr;
-    static void **g_PE_aa_winHolder2 = nullptr;
     static const float g_PE_aa_settleEps = -1024.0f;
     static FModSound **g_PE_hs_sound = nullptr;
     static const float g_PE_hs_throttleBias = 0.2f;
@@ -158,18 +154,6 @@ struct PE_MaterialBlock {
 #if __SIZEOF_POINTER__ == 4
 static_assert(__builtin_offsetof(PE_MaterialBlock, materialList) == 0x20, "materialList");
 #endif
-
-// PlayerAsteroid mining-target view: the int flag at object offset 0x44 is
-// cleared when mining starts. asteroidTarget points at the base; the original
-// code addressed it as (base + 4) + 0x40.
-struct PE_AsteroidMineTarget {
-    char pad0[0x44];   // 0x00..0x43
-    int miningFlag;    // 0x44
-};
-#if __SIZEOF_POINTER__ == 4
-static_assert(__builtin_offsetof(PE_AsteroidMineTarget, miningFlag) == 0x44, "miningFlag");
-#endif
-
 
 static inline Status *PE_status() { return Status::gStatus; }
 
@@ -2704,8 +2688,8 @@ void PlayerEgo::handleTurretView(int dt) {
 
 
 void PlayerEgo::approachAsteroid(Hud *hud, int hud2, Radar *radar) {
-    (void) hud;
-    if (((KIPlayer *) (this))->isDying() != 0)
+    PlayerAsteroid *asteroid = (PlayerAsteroid *) ((void *&) this->asteroidTarget);
+    if (asteroid->isDying() != 0)
         return;
 
     if (this->dockingPointIndex == 1) {
@@ -2718,16 +2702,13 @@ void PlayerEgo::approachAsteroid(Hud *hud, int hud2, Radar *radar) {
         if (((void *&) this->miningGame) == 0) {
             this->field_0x2f5 = 0;
             this->lostMiningGameFlag = 0;
-            ((MiningHostObject *) *g_PE_aa_levelHolder)->miningActiveFlag = 0;
-            MiningGame *mg = new MiningGame(((PlayerAsteroid *) (((void *&) this->asteroidTarget)))->getQuality(),
-                                            ((PlayerAsteroid *) ((void *&) this->asteroidTarget))->asteroidIndex,
-                                            (Hud *) (void *) (unsigned long) hud2);
+            Globals::hints[0x37] = 0;
+            MiningGame *mg = new MiningGame(asteroid->getQuality(), asteroid->asteroidIndex, hud);
             ((void *&) this->miningGame) = mg;
-            ((PE_AsteroidMineTarget *) (intptr_t) this->asteroidTarget)->miningFlag = 0;
+            asteroid->player->radius = 0;
 
-            int snd = *g_PE_aa_mineSound;
-            ((FModSound *) (snd))->play(1, (Vector *) 0, (Vector *) 0, 0);
-            ((FModSound *) ((void *) (unsigned long) snd))->pause(0);
+            Globals::sound->play(1, (Vector *) 0, (Vector *) 0, 0);
+            Globals::sound->pause(this->field_0x1c);
             return;
         }
 
@@ -2738,14 +2719,14 @@ void PlayerEgo::approachAsteroid(Hud *hud, int hud2, Radar *radar) {
                 ((PlayerEgo *) (this))->stopMining();
             } else if (((MiningGame *) (((void *&) this->miningGame)))->gameLost() != 0) {
                 this->lostMiningGameFlag = 1;
-                ((MiningHostObject *) *g_PE_aa_winHolder1)->miningResultSlot = 0;
+                Globals::status->field_124 = 0;
                 ((PlayerEgo *) (this))->stopMining();
-                ((Hud *) ((void *) (unsigned long) hud2))->hudEvent(8, this, 0);
+                hud->hudEvent(8, this, 0);
             }
-        } else if (((KIPlayer *) (this))->isDying() != 0 || ((KIPlayer *) (this))->isDead() != 0) {
-            ((MiningHostObject *) *g_PE_aa_winHolder2)->miningResultSlot = 0;
+        } else if (asteroid->isDying() != 0 || asteroid->isDead() != 0) {
+            Globals::status->field_124 = 0;
             ((PlayerEgo *) (this))->stopMining();
-            ((Hud *) ((void *) (unsigned long) hud2))->hudEvent(8, this, 0);
+            hud->hudEvent(8, this, 0);
         }
         return;
     }

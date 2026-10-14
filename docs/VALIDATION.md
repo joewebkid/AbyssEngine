@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo asteroid mining phase (2026-10-14)
+
+ARM `approachAsteroid` loads its target from `PlayerEgo+0x1bc`
+before both dying/dead checks, preserves the incoming HUD in `r5`,
+and routes mining flags, sound and status through known globals.
+The C++ no longer uses unassigned holders or writes the wrong
+asteroid slot. Focused source-shape rises 23.8% to 39.6%, strict
+fuzzy 13.5% to 21.6%; no exact match. A production-method host
+smoke checks guard, creation, loss and target death. Native `gof2`
+static-library build, all 206 ARM units, the docking and stopMining
+smokes and 37 verifier tests pass (one skipped). Full corpus stays
+4,323/4,524, 93.10% average source-shape, 81.52% strict fuzzy,
+2,403 linked-exact, 1,008 byte-exact and 123 extras; exact pairs
+are unchanged. Stage-zero approach still has an undefined helper;
+full link/gameplay and ARM32 runtime are not proved. See
+[the evidence](PLAYER_EGO_APPROACH_ASTEROID_ARM_2026-10-14.md).
+
 ## PlayerEgo update docking teardown (2026-10-14)
 
 Raw Android ARM instructions at `0x9dd18–0x9dd44` check the target
