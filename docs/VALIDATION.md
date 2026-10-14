@@ -4,6 +4,26 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo docking delivery and transfer ABI (2026-10-14)
+
+Android `PlayerEgo::update` at `0x9dda8` onward and
+`approachDockingPoint` at `0x9fcb8` establish the docking transfer
+state and side effects. ARM data at `0x9ded4/0x9ded8` gives 1000/1500
+ms intervals. The extracted production-fragment smoke tests target and
+state gates, transfer initialization, goods/passenger/campaign
+branches, event boundaries, and hacking-game selection. Native `gof2`,
+206/206 ARM units, 37 verifier tests (one skipped), and four PlayerEgo
+smokes pass. Focused source-shape/strict fuzzy changes:
+`update` **57.1%/27.6% → 66.1%/30.3%**,
+`approachDockingPoint` **20.4%/10.2% → 20.5%/12.1%**. Neither
+function is exact. Full report `_work/player_delivery_full_20261014.json`:
+**4,323/4,524** original functions covered, **93.27%** average
+source-shape, **82.17%** strict fuzzy, **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, zero skipped units. Exact-pair
+comparison against `_work/player_subsystems_full_20261014.json` finds
+zero losses and gains. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo emergency timer and hacking update (2026-10-14)
 
 Android Thumb `0x9cfe2–0x9d19e` confirms the emergency timer and

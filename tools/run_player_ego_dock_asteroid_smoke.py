@@ -30,6 +30,27 @@ def main():
     fixture = fixture.replace("// PRODUCTION_UPDATE_DOCKING",
                               "void PlayerEgo::updateDocking(Radar *radar, Hud *hud, Radio *radio) {\n" +
                               docking + "}\n")
+    start = source.index("            Status *status = PE_status();",
+                         source.index("approachDockingPoint(hud, 0, radar)"))
+    end = source.index("            this->dockTransferTimer += this->shakeIntensity;", start)
+    end = source.index("\n", end) + 1
+    fixture = fixture.replace("// PRODUCTION_UPDATE_DOCK_FINISH",
+                              "void PlayerEgo::updateDockFinish(Hud *hud) {\n" +
+                              "    KIPlayer *target = (KIPlayer *) this->asteroidTargetPtr;\n" +
+                              source[start:end] + "}\n")
+    start = source.index("            int ev = 0;",
+                         source.index("int PlayerEgo::approachDockingPoint("))
+    end = source.index("                this->switchToFreeLookCam = 1;", start)
+    end = source.index("\n", end) + 1
+    fixture = fixture.replace("// PRODUCTION_DOCK_TRANSFER_INIT",
+                              "void PlayerEgo::initializeDockTransfer(Hud *hud) {\n" +
+                              source[start:end] + "}\n")
+    start = source.index("    KIPlayer *target = (KIPlayer *)(void *&) this->asteroidTarget;",
+                         source.index("int PlayerEgo::approachDockingPoint("))
+    end = source.index("    if (state == 0) {", start)
+    fixture = fixture.replace("// PRODUCTION_DOCK_STATE_GATE",
+                              "int PlayerEgo::dockStateGate() {\n" +
+                              source[start:end] + "    return -1;\n}\n")
     start = source.index("    {\n        Ship *ship = PE_status()->getShip();",
                          source.index("void PlayerEgo::update("))
     end = source.index("    if (this->boostingFlag != 0) {", start)

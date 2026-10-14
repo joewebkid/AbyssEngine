@@ -72,7 +72,6 @@ namespace {
     static const float g_PE_d_loadB = 0.6f;
     static const float g_PE_d_rateK = 750.0f;
     static int *g_PE_adp_dockRadius = nullptr;
-    static PlayerFixedObject **g_PE_adp_fixedObj = nullptr;
     static const float g_PE_dc_farNormal = 300000.0f;
     static const float g_PE_dc_farAlien = 450000.0f;
     static const unsigned int g_PE_dc_defY = 0x43160000u;
@@ -238,8 +237,6 @@ void PE_cc_destructible(PlayerEgo *self, void *obj);
 void PlayEngineSound_(PlayerEgo * self);
 
 void *PE_dtdp_makeEase(const void *fromMatrix, const void *navPoint);
-
-void PE_upd_docksFinishDelivery(PlayerEgo *self, void *radio);
 
 void PE_um_dodgeStep(PlayerEgo * self);
 
@@ -1298,15 +1295,18 @@ static inline void adp_clearDockVector(PlayerEgo *self) {
 }
 
 int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
-    if (((KIPlayer *) (this))->isDying() != 0)
+    KIPlayer *target = (KIPlayer *)(void *&) this->asteroidTarget;
+    if (target->isDying())
         return 0;
 
-    int state = ((int &) this->emergencyVec.x);
+    int state = this->dockingPointIndex;
+
+    if (state == 1)
+        return 1;
 
     if (state == 0) {
-        void *station = this->dockStation;
         Vector pos = ((PlayerEgo *) (this))->getPosition();
-        void *nav = ((KIPlayer *) (station))->getNearestNavigationPoint(pos, (SpacePoint *) &this->navPoint);
+        void *nav = target->getNearestNavigationPoint(pos, this->spacePoint);
         if (nav != 0) {
             if (this->spacePoint != nav) {
                 if (this->spacePoint != nullptr)
@@ -1314,9 +1314,9 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
                 this->spacePoint = static_cast<SpacePoint *>(nav);
                 ((SpacePoint *) (nav))->take();
             }
-            int dist = PE_adp_approach(this, station);
+            int dist = PE_adp_approach(this, target);
             if (dist < this->dockApproachThreshold) {
-                ((int &) this->emergencyVec.x) = 2;
+                this->dockingPointIndex = 2;
                 ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setLookAtCam(false);
                 ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->useTargetsUpVector(false);
             }
@@ -1333,67 +1333,65 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
         if (dist < radius) {
             int ev = 0;
             {
-                void *mission = PE_status()->getMission();
-                void *campaign = (void *) PE_status()->getCampaignMission();
-                PlayerFixedObject *fixed = *g_PE_adp_fixedObj;
+                Status *status = PE_status();
+                Mission *mission = status->getMission();
+                Mission *campaign = (Mission *) status->getCampaignMission();
+                PlayerFixedObject *fixed = (PlayerFixedObject *)(void *&) this->asteroidTarget;
 
-                if (((Mission *) (mission))->isEmpty() == 0 && ((Mission *) (mission))->getType() == 0xf
-                    && fixed->getDockingType() == 1) {
-                    if (((Ship *) (PE_status()->getShip()))->hasCargo(((Mission *) (mission))->getProductionGoodIndex(), 1) != 0) {
-                        int amount = ((Item *) (((Ship *) (PE_status()->getShip()))->getCargo(
-                            ((Mission *) (mission))->getProductionGoodIndex())))->getAmount();
-                        ((int &) this->autoTurretEquipped) = amount;
-                        int need = ((Mission *) (mission))->getProductionGoodAmount()
-                                   - ((Level *) (this->level))->getNumDeliveredOre();
-                        if (need < amount) ((int &) this->autoTurretEquipped) = need;
-                        this->autoTurretTimer = 0;
-                        if (((int &) this->autoTurretEquipped) > 0) ev = 0x29;
+                if (!mission->isEmpty() && mission->getType() == 15 && fixed->getDockingType() == 1) {
+                    Ship *ship = status->getShip();
+                    int good = mission->getProductionGoodIndex();
+                    if (ship->hasCargo(good, 1)) {
+                        int amount = ship->getCargo(good)->getAmount();
+                        int needed = mission->getProductionGoodAmount() - this->level->getNumDeliveredOre();
+                        this->dockTotalAmount = amount < needed ? amount : needed;
+                        this->dockTransferedAmount = 0;
+                        this->dockTransferTimer = 0;
+                        if (this->dockTotalAmount > 0) ev = 41;
                     }
-                } else if (((Mission *) (mission))->isEmpty() == 0
-                    && (((Mission *) (mission))->getType() == 0xb8 || ((Mission *) (mission))->getType() == 0xa8)
-                    && fixed->getDockingType() == 2) {
-                    int carried = fixed->intPosX;
-                    int maxPax = ((Ship *) (PE_status()->getShip()))->getMaxPassengers();
-                    bool handled = false;
-                    if (maxPax > 0 && carried < maxPax) {
-                        int avail = (((Mission *) (mission))->getType() == 0xa8)
-                                        ? ((Mission *) (mission))->getStatusValue()
-                                        : maxPax;
-                        avail -= carried;
-                        ((int &) this->autoTurretEquipped) = avail;
-                        int status = ((Mission *) (mission))->getStatusValue() - carried;
-                        if (status < avail) ((int &) this->autoTurretEquipped) = status;
-                        this->autoTurretTimer = 0;
-                        if (((int &) this->autoTurretEquipped) > 0) { ev = 0x23; handled = true; }
+                } else if (!mission->isEmpty() && (mission->getType() == 184 || mission->getType() == 168)
+                           && fixed->getDockingType() == 2) {
+                    Ship *ship = status->getShip();
+                    int capacity = ship->getMaxPassengers();
+                    int aboard = status->field_178;
+                    if ((capacity < 1 || aboard >= capacity) && mission->getType() != 168) {
+                        if (capacity == 0) ev = 43;
+                    } else {
+                        int available = (mission->getType() == 168 ? mission->getStatusValue() : capacity) - aboard;
+                        int remaining = mission->getStatusValue() - aboard;
+                        this->dockTotalAmount = available < remaining ? available : remaining;
+                        this->dockTransferedAmount = 0;
+                        this->dockTransferTimer = 0;
+                        if (this->dockTotalAmount > 0) ev = 35;
                     }
-                    if (!handled && ((Mission *) (mission))->getType() != 0xa8
-                        && ((Ship *) (PE_status()->getShip()))->getMaxPassengers() == 0)
-                        ev = 0x2b;
-                } else if (((Mission *) (mission))->isEmpty() == 0 && ((Mission *) (mission))->getType() == 0xb8
-                    && fixed->getDockingType() == 1) {
-                    int n = fixed->intPosX;
-                    if (n > 0) {
-                        this->autoTurretTimer = 0;
-                        ((int &) this->autoTurretEquipped) = n;
-                        ev = 0x25;
+                } else if (!mission->isEmpty() && mission->getType() == 184
+                           && fixed->getDockingType() == 1) {
+                    if (status->field_178 > 0) {
+                        this->dockTransferTimer = 0;
+                        this->dockTotalAmount = status->field_178;
+                        this->dockTransferedAmount = 0;
+                        ev = 37;
                     }
-                } else if (campaign != 0 && ((Mission *) (campaign))->isEmpty() == 0
-                    && (((Mission *) (campaign))->getType() == 0xa7 || ((Mission *) (campaign))->getType() == 0xae)
-                    && fixed->getDockingType() == 1) {
-                    if (((Ship *) (PE_status()->getShip()))->hasCargo(((Mission *) (campaign))->getProductionGoodIndex(), 1) != 0) {
-                        int amount = ((Item *) (((Ship *) (PE_status()->getShip()))->getCargo(
-                            ((Mission *) (campaign))->getProductionGoodIndex())))->getAmount();
-                        ((int &) this->autoTurretEquipped) = amount;
-                        int need = ((Mission *) (campaign))->getProductionGoodAmount() - ((Mission *) (campaign))->getStatusValue();
-                        if (need < amount) ((int &) this->autoTurretEquipped) = need;
-                        this->autoTurretTimer = 0;
-                        if (((int &) this->autoTurretEquipped) > 0) ev = 0x29;
+                } else if (campaign != nullptr && !campaign->isEmpty()
+                           && (campaign->getType() == 167 || campaign->getType() == 174)
+                           && fixed->getDockingType() == 1) {
+                    Ship *ship = status->getShip();
+                    int good = campaign->getProductionGoodIndex();
+                    if (ship->hasCargo(good, 1)) {
+                        int amount = ship->getCargo(good)->getAmount();
+                        int needed = campaign->getProductionGoodAmount() - campaign->getStatusValue();
+                        this->dockTotalAmount = amount < needed ? amount : needed;
+                        this->dockTransferedAmount = 0;
+                        this->dockTransferTimer = 0;
+                        if (this->dockTotalAmount > 0) ev = 41;
                     }
                 }
             }
             if (ev != 0)
                 hud->hudEvent(ev, this, 0);
-            ((int &) this->emergencyVec.x) = 1;
+            this->dockingPointIndex = 1;
+            if (this->field_0xb2 == 0)
+                this->switchToFreeLookCam = 1;
         }
         PE_adp_apply(this);
         return 0;
@@ -1411,7 +1409,7 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
             ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->useTargetsUpVector(false);
             ((LevelScript *) (this->levelScript))->resetCamera(this->levelScript->m_pLevel);
             ((Player *) (this->player))->resetGunDelay(0);
-            ((int &) this->emergencyVec.x) = 0;
+            this->dockingPointIndex = 0;
             if (this->spacePoint != nullptr) {
                 this->spacePoint->giveFree();
                 this->spacePoint = nullptr;
@@ -2577,8 +2575,87 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
             ((PlayerEgo *) (this))->dockToDockingPoint(nullptr, nullptr);
             return;
         }
-        if (((PlayerEgo *) (this))->approachDockingPoint(hud, 0, radar) != 0)
-            PE_upd_docksFinishDelivery(this, radio);
+        if (((PlayerEgo *) (this))->approachDockingPoint(hud, 0, radar) != 0) {
+            Status *status = PE_status();
+            Mission *mission = status->getMission();
+            Mission *campaign = (Mission *) status->getCampaignMission();
+            int dockingType = static_cast<PlayerFixedObject *>(target)->getDockingType();
+            if (!mission->isEmpty() && (mission->getType() == 15 || mission->getType() == 184)
+                && dockingType == 1) {
+                int previous = this->dockTransferedAmount;
+                if (previous != this->dockTotalAmount) {
+                    float interval = mission->getType() == 184 ? 1500.0f : 1000.0f;
+                    int delivered = (int) ((float) this->dockTransferTimer / interval);
+                    this->dockTransferedAmount = delivered;
+                    if (delivered >= this->dockTotalAmount) {
+                        if (previous < delivered)
+                            hud->hudEvent(mission->getType() == 184 ? 38 : 42, this, 0);
+                        delivered = this->dockTotalAmount;
+                        this->dockTransferedAmount = delivered;
+                    }
+                    if (delivered > previous) {
+                        int difference = delivered - previous;
+                        if (mission->getType() == 184) {
+                            if (status->field_178 > 0) {
+                                status->field_178 -= difference;
+                                mission->setStatusValue(mission->getStatusValue() - difference);
+                                if (mission->getStatusValue() < 0)
+                                    mission->setStatusValue(0);
+                                if (status->field_178 < 0)
+                                    status->field_178 = 0;
+                            }
+                        } else {
+                            Ship *ship = status->getShip();
+                            ship->removeCargo(mission->getProductionGoodIndex(), difference);
+                            this->level->incNumDeliveredOre(difference);
+                        }
+                    }
+                }
+            } else if (!mission->isEmpty() && (mission->getType() == 184 || mission->getType() == 168)
+                       && dockingType == 2) {
+                int previous = this->dockTransferedAmount;
+                if (previous != this->dockTotalAmount) {
+                    int delivered = (int) ((float) this->dockTransferTimer / 1500.0f);
+                    this->dockTransferedAmount = delivered;
+                    if (delivered >= this->dockTotalAmount) {
+                        if (previous < delivered)
+                            hud->hudEvent(36, this, 0);
+                        delivered = this->dockTotalAmount;
+                        this->dockTransferedAmount = delivered;
+                    }
+                    if (delivered > previous)
+                        status->field_178 += delivered - previous;
+                }
+            } else if (campaign != nullptr && !campaign->isEmpty()
+                       && (campaign->getType() == 167 || campaign->getType() == 174)
+                       && dockingType == 1) {
+                int previous = this->dockTransferedAmount;
+                if (previous != this->dockTotalAmount) {
+                    int delivered = (int) ((float) this->dockTransferTimer / 1000.0f);
+                    this->dockTransferedAmount = delivered;
+                    if (delivered >= this->dockTotalAmount) {
+                        if (previous < delivered)
+                            hud->hudEvent(42, this, 0);
+                        delivered = this->dockTotalAmount;
+                        this->dockTransferedAmount = delivered;
+                    }
+                    if (delivered > previous) {
+                        status->getShip()->removeCargo(campaign->getProductionGoodIndex(), delivered - previous);
+                        campaign->setStatusValue(campaign->getStatusValue() + 1);
+                    }
+                }
+            } else if (dockingType == 3 && this->hackingGame == 0) {
+                int dockingIndex = 0;
+                for (int i = 0; i < this->level->getNumDockingTargets(); ++i) {
+                    if (this->asteroidTarget == this->level->getDockingTarget(i))
+                        dockingIndex = i;
+                }
+                int mode = status->getCurrentCampaignMission() == 91 ? 1 : 4;
+                ((void *&) this->hackingGame) = new HackingGame(0, mode, -1, -1, dockingIndex);
+                hud->setHackingGameActive(true);
+            }
+            this->dockTransferTimer += this->shakeIntensity;
+        }
     }
 
     if (this->turretActive != 0 || this->field_0x1a1 != 0)

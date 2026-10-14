@@ -1,7 +1,40 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo emergency/hacking update; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo docking delivery; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo docking delivery and transfer ABI (2026-10-14)
+
+Android `PlayerEgo::update` at `0x9dda8` onward, cross-checked with
+IDA lines 84161–84311, handles deliveries after
+`approachDockingPoint` returns true. Mission types 15/184 at docking
+type 1 unload goods or passengers; types 184/168 at docking type 2
+load passengers; campaign types 167/174 unload goods. The 1000/1500 ms
+intervals come from ARM literals at `0x9ded4/0x9ded8`. Each path
+clamps transferred amount to its initialized total, emits the
+appropriate HUD event, and updates cargo, passenger count, mission
+status, or delivered-ore count. Docking type 3 starts a hacking game
+for the last matching docking-target slot if one is not active.
+
+The corresponding `approachDockingPoint` function at `0x9fcb8` reads
+target `+0x1bc` and state `+0x1c4`; state 1 returns true every update.
+Its arrival path initializes transfer timer/total/delivered at
+`+0x35c/+0x360/+0x364`, not the previously used auto-turret fields,
+and transitions to state 1. Extracted production-fragment smoke checks
+the state gate, initializers, transfer boundaries and side effects,
+passenger-capacity exception, and both hacking modes. Native `gof2`,
+206/206 ARM units, 37 verifier tests (one skipped), and four PlayerEgo
+smokes pass. Focused source-shape/strict fuzzy changes are
+`update` **57.1%/27.6% → 66.1%/30.3%** and
+`approachDockingPoint` **20.4%/10.2% → 20.5%/12.1%**. Neither
+function is exact. Full report `_work/player_delivery_full_20261014.json`
+covers **4,323/4,524** original functions at **93.27%** average
+source-shape and **82.17%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, and zero skipped units. Pairwise
+comparison with `_work/player_subsystems_full_20261014.json` finds no
+linked-/byte-exact losses or gains. Linked ARM gameplay and the remaining docking
+movement/easing helpers are unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo emergency timer and hacking update (2026-10-14)
 

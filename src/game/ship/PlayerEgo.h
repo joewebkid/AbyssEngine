@@ -257,7 +257,7 @@ public:
     uint8_t autoTurretEnabled;
     uint8_t dockedFlag;
     void *easeMatrix;
-    char _unknown_0x35c[4];
+    int dockTransferTimer;
     int dockTotalAmount;
     int dockTransferedAmount;
     int cloakRechargeMax;
@@ -703,6 +703,7 @@ static_assert(__builtin_offsetof(PlayerEgo, strafeFactor) == 0x380, "PlayerEgo::
 static_assert(__builtin_offsetof(PlayerEgo, cloakMaterial1) == 0x388, "PlayerEgo::cloakMaterial1 offset");
 static_assert(__builtin_offsetof(PlayerEgo, cloakMaterial2) == 0x38c, "PlayerEgo::cloakMaterial2 offset");
 static_assert(__builtin_offsetof(PlayerEgo, cloakMaterial3) == 0x390, "PlayerEgo::cloakMaterial3 offset");
+static_assert(__builtin_offsetof(PlayerEgo, dockTransferTimer) == 0x35c, "PlayerEgo::dockTransferTimer offset");
 static_assert(__builtin_offsetof(PlayerEgo, dockTotalAmount) == 0x360, "PlayerEgo::dockTotalAmount offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x394) == 0x394, "PlayerEgo::materialList offset");
 static_assert(__builtin_offsetof(PlayerEgo, volatileGoods) == 0x398, "PlayerEgo::volatileGoods offset");

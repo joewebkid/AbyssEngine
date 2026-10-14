@@ -104,8 +104,14 @@ struct Level {
     std::vector<AEGeometry *> *field_a4 = nullptr;
     std::vector<KIPlayer *> *enemies = nullptr;
     int radioType = -1, radioParam = -1;
+    int deliveredOre = 0;
+    std::vector<int> dockingTargets;
     std::vector<KIPlayer *> *getEnemies() { return enemies; }
     void createRadioMessage(int type, int param) { radioType = type; radioParam = param; }
+    void incNumDeliveredOre(int amount) { deliveredOre += amount; }
+    int getNumDeliveredOre() { return deliveredOre; }
+    int getNumDockingTargets() { return static_cast<int>(dockingTargets.size()); }
+    int getDockingTarget(int index) { return dockingTargets[index]; }
 };
 struct Explosion {
     int starts = 0, updates = 0, lastDt = -1;
@@ -133,6 +139,7 @@ struct KIPlayer {
 };
 struct PlayerFixedObject : KIPlayer {
     int dockingType = -1;
+    int getDockingType() { return dockingType; }
     void setDockingType(int value) { dockingType = value; }
 };
 struct PlayerAsteroid : KIPlayer {
@@ -223,6 +230,7 @@ struct Item {
     int amount = 2;
     int index = 0;
     int getAttribute(int id) { assert(id == 59); return amount; }
+    int getAmount() { return amount; }
     int getIndex() { return index; }
 };
 struct Ship {
@@ -230,8 +238,12 @@ struct Ship {
     bool volatileGoods = false;
     Item *equipment = nullptr;
     Item *boostEquipment = nullptr;
+    Item *cargoItem = nullptr;
+    int maxPassengers = 0;
     int cargo = 0;
     int removals = 0;
+    int lastRemovedIndex = -1;
+    int lastRemovedAmount = 0;
     int shieldRegen = 0;
     int maxShieldHP = 10;
     int repairType = -1;
@@ -244,6 +256,8 @@ struct Ship {
     int getIndex() { return index; }
     float getHandling() { return handling; }
     int getRepairType() { return repairType; }
+    int getMaxPassengers() { return maxPassengers; }
+    Item *getCargo(int index) { assert(index == 202); return cargoItem; }
     Item *getFirstEquipmentOfSort(int sort) {
         assert(sort == 43 || sort == 14);
         return sort == 43 ? equipment : boostEquipment;
@@ -251,6 +265,8 @@ struct Ship {
     bool hasCargo(int index, int amount) { assert(index == 202); return cargo >= amount; }
     int removeCargo(int index, int amount) {
         assert(index == 202 && cargo >= amount);
+        lastRemovedIndex = index;
+        lastRemovedAmount = amount;
         cargo -= amount;
         ++removals;
         return cargo;
@@ -262,14 +278,34 @@ struct Station {
     bool stationHasHiddenBlueprint(bool ignoreFound) { assert(!ignoreFound); return hiddenBlueprint; }
     unsigned int getHiddenBlueprintIndex() { return hiddenBlueprintIndex; }
 };
+struct Mission {
+    bool empty = true;
+    int type = 0;
+    int statusValue = 0;
+    int productionGoodIndex = 202;
+    int productionGoodAmount = 0;
+    bool isEmpty() { return empty; }
+    int getType() { return type; }
+    int getStatusValue() { return statusValue; }
+    void setStatusValue(int value) { statusValue = value; }
+    int getProductionGoodIndex() { return productionGoodIndex; }
+    int getProductionGoodAmount() { return productionGoodAmount; }
+};
 struct Status {
     Ship *ship = nullptr;
     Station *station = nullptr;
     std::vector<unsigned char> *field_58 = nullptr;
     int unlockedBlueprint = -1;
+    int field_178 = 0;
+    int currentCampaignMission = 0;
+    Mission *mission = nullptr;
+    Mission *campaignMission = nullptr;
     Ship *getShip() { return ship; }
     Station *getStation() { return station; }
     void unlockBluePrint(int index) { unlockedBlueprint = index; }
+    Mission *getMission() { return mission; }
+    intptr_t getCampaignMission() { return reinterpret_cast<intptr_t>(campaignMission); }
+    int getCurrentCampaignMission() { return currentCampaignMission; }
 };
 static Status status;
 Status *PE_status() { return &status; }
@@ -281,6 +317,12 @@ struct HackingGame {
     static int destructions;
     bool won = false;
     int updates = 0, lastDt = -1;
+    int constructorType = -1, constructorMode = -1, constructorDockIndex = -1;
+    HackingGame() = default;
+    HackingGame(int type, int mode, int rewardItem, int rewardAmount, int dockingIndex)
+        : constructorType(type), constructorMode(mode), constructorDockIndex(dockingIndex) {
+        assert(rewardItem == -1 && rewardAmount == -1);
+    }
     ~HackingGame() { ++destructions; }
     int update(int dt) { ++updates; lastDt = dt; return 0; }
     int gameWon() { return won; }
@@ -347,6 +389,8 @@ struct PlayerEgo {
     int dockingState = 0;
     int miningSettleTimer = 0;
     int dockingPointIndex = 0;
+    unsigned char field_0xb2 = 0;
+    unsigned char switchToFreeLookCam = 0;
     int dockScaling = 0;
     int dockApproachDist[3]{};
     int dockedFlag = 0;
@@ -354,6 +398,9 @@ struct PlayerEgo {
     int dockPointStops = 0;
     unsigned char field_0x145 = 0;
     int lastFreeSpace = 0;
+    int dockTransferTimer = 0;
+    int dockTotalAmount = 0;
+    int dockTransferedAmount = 0;
     unsigned char volatileGoods = 0;
     unsigned char shieldRegenActive = 0;
     unsigned char shieldRegenEquipped = 0;
@@ -407,6 +454,9 @@ struct PlayerEgo {
     void setExhaustVisible(bool value) { exhaustVisible = value; }
     void dockToAsteroid(KIPlayer *kip, Radar *radar);
     void updateDocking(Radar *radar, Hud *hud, Radio *radio);
+    void updateDockFinish(Hud *hud);
+    void initializeDockTransfer(Hud *hud);
+    int dockStateGate();
     void updateCargoState();
     void updateBoostTimer(int dt);
     void updateBoost(int dt);
@@ -439,6 +489,9 @@ Vector PlayerEgo::crosshairShootPos{};
 
 // PRODUCTION_METHOD
 // PRODUCTION_UPDATE_DOCKING
+// PRODUCTION_UPDATE_DOCK_FINISH
+// PRODUCTION_DOCK_TRANSFER_INIT
+// PRODUCTION_DOCK_STATE_GATE
 // PRODUCTION_UPDATE_CARGO
 // PRODUCTION_UPDATE_BOOST_TIMER
 // PRODUCTION_UPDATE_BOOST
@@ -453,8 +506,6 @@ Vector PlayerEgo::crosshairShootPos{};
 // PRODUCTION_UPDATE_TAIL
 // PRODUCTION_RECOVERY_AMOUNT
 // PRODUCTION_ENGINE_SOUND_SELECTION
-
-void PE_upd_docksFinishDelivery(PlayerEgo *, Radio *) { assert(false); }
 
 int main() {
     PlayerEgo ego{};
@@ -654,7 +705,9 @@ int main() {
     assert(blueprintFlags[2] == 1);
     station.hiddenBlueprintIndex = 4;
     subsystemLevel.enemies = nullptr;
-    subsystemEgo.hackingGame = new HackingGame{true};
+    HackingGame *secondHacking = new HackingGame;
+    secondHacking->won = true;
+    subsystemEgo.hackingGame = secondHacking;
     subsystemEgo.updateSubsystems(4, &hud);
     assert(status.unlockedBlueprint == 227 && blueprintFlags[4] == 1);
     assert(subsystemLevel.radioType == 25 && HackingGame::destructions == 2);
@@ -1036,5 +1089,105 @@ int main() {
     ego.dockedFlag = 1;
     ego.updateDocking(&radar, &hud, &radio);
     assert(ego.dockedFlag == 0 && ego.dockPointStops == 1);
+
+    PlayerEgo dockEgo{};
+    Level dockLevel;
+    PlayerFixedObject dockTarget;
+    Mission mission, campaign;
+    status.mission = &mission;
+    status.campaignMission = &campaign;
+    dockEgo.level = &dockLevel;
+    dockEgo.asteroidTargetPtr = &dockTarget;
+    dockEgo.shakeIntensity = 1000;
+    dockEgo.dockingPointIndex = 1;
+    assert(dockEgo.dockStateGate() == 1);
+    dockTarget.state = 3;
+    assert(dockEgo.dockStateGate() == 0);
+    dockTarget.state = 0;
+    dockEgo.dockingPointIndex = 0;
+    assert(dockEgo.dockStateGate() == -1);
+    dockTarget.dockingType = 1;
+    mission.empty = false;
+    mission.type = 15;
+    mission.productionGoodAmount = 2;
+    Item dockCargo;
+    dockCargo.amount = 5;
+    ship.cargoItem = &dockCargo;
+    ship.cargo = 10;
+    dockEgo.dockTransferTimer = 17;
+    dockEgo.dockTransferedAmount = 7;
+    dockEgo.initializeDockTransfer(&hud);
+    assert(dockEgo.dockTotalAmount == 2 && dockEgo.dockTransferedAmount == 0);
+    assert(dockEgo.dockTransferTimer == 0 && hud.event == 41);
+    assert(dockEgo.dockingPointIndex == 1 && dockEgo.switchToFreeLookCam == 1);
+    dockEgo.updateDockFinish(&hud);
+    assert(dockEgo.dockTransferedAmount == 0 && dockEgo.dockTransferTimer == 1000);
+    dockEgo.updateDockFinish(&hud);
+    assert(dockEgo.dockTransferedAmount == 1 && dockLevel.deliveredOre == 1);
+    assert(ship.lastRemovedIndex == 202 && ship.lastRemovedAmount == 1);
+    int dockEvents = hud.events;
+    dockEgo.updateDockFinish(&hud);
+    assert(dockEgo.dockTransferedAmount == 2 && dockLevel.deliveredOre == 2);
+    assert(hud.events == dockEvents + 1 && hud.event == 42);
+    dockEgo.updateDockFinish(&hud);
+    assert(dockLevel.deliveredOre == 2 && dockEgo.dockTransferTimer == 4000);
+
+    mission.type = 184;
+    mission.statusValue = 1;
+    status.field_178 = 2;
+    dockEgo.initializeDockTransfer(&hud);
+    assert(dockEgo.dockTotalAmount == 2 && hud.event == 37);
+    dockEgo.dockTransferTimer = 3000;
+    dockEgo.updateDockFinish(&hud);
+    assert(dockEgo.dockTransferedAmount == 2 && hud.event == 38);
+    assert(status.field_178 == 0 && mission.statusValue == 0);
+
+    mission.type = 168;
+    mission.statusValue = 2;
+    dockTarget.dockingType = 2;
+    status.field_178 = 0;
+    ship.maxPassengers = 0;
+    dockEgo.initializeDockTransfer(&hud);
+    assert(dockEgo.dockTotalAmount == 2 && hud.event == 35);
+    dockEgo.dockTransferTimer = 3000;
+    dockEgo.updateDockFinish(&hud);
+    assert(dockEgo.dockTransferedAmount == 2 && hud.event == 36);
+    assert(status.field_178 == 2);
+
+    mission.empty = true;
+    campaign.empty = false;
+    campaign.type = 167;
+    campaign.statusValue = 5;
+    campaign.productionGoodAmount = 7;
+    dockTarget.dockingType = 1;
+    ship.cargo = 10;
+    dockEgo.initializeDockTransfer(&hud);
+    assert(dockEgo.dockTotalAmount == 2 && hud.event == 41);
+    dockEgo.dockTransferTimer = 2000;
+    dockEgo.updateDockFinish(&hud);
+    assert(dockEgo.dockTransferedAmount == 2 && hud.event == 42);
+    assert(ship.lastRemovedAmount == 2 && campaign.statusValue == 6);
+
+    campaign.empty = true;
+    dockTarget.dockingType = 3;
+    dockEgo.dockTransferTimer = 0;
+    dockLevel.dockingTargets = {41, dockEgo.asteroidTarget, 42, dockEgo.asteroidTarget};
+    status.currentCampaignMission = 91;
+    int hackedEvents = hud.hackingActiveChanges;
+    dockEgo.updateDockFinish(&hud);
+    HackingGame *dockHacking = static_cast<HackingGame *>(dockEgo.hackingGame);
+    assert(dockHacking != nullptr && dockHacking->constructorType == 0);
+    assert(dockHacking->constructorMode == 1 && dockHacking->constructorDockIndex == 3);
+    assert(hud.hackingActiveChanges == hackedEvents + 1 && hud.hackingActive);
+    assert(dockEgo.dockTransferTimer == 1000);
+    delete dockHacking;
+    dockEgo.hackingGame = nullptr;
+    status.currentCampaignMission = 90;
+    dockLevel.dockingTargets = {41, 42};
+    dockEgo.updateDockFinish(&hud);
+    dockHacking = static_cast<HackingGame *>(dockEgo.hackingGame);
+    assert(dockHacking->constructorMode == 4 && dockHacking->constructorDockIndex == 0);
+    delete dockHacking;
+    dockEgo.hackingGame = nullptr;
     std::puts("PlayerEgo docking/cargo/shield/repair/sound/visual/route/hit/tail smoke: OK");
 }

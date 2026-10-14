@@ -1,5 +1,44 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Docking transfer and arrival-state ABI (2026-10-14)
+
+Android Thumb `PlayerEgo::update` calls `approachDockingPoint` at
+`0x9dda8` and, on a true result, takes the mission/docking branch
+documented by IDA lines 84161–84311. The transfer timer is PlayerEgo
+`+0x35c`; total and transferred counts are `+0x360/+0x364`. ARM
+literals `0x9ded4/0x9ded8` are 1000.0f/1500.0f. Mission type 15
+unloads ore and increments level delivered count at docking type 1;
+type 184 unloads passengers at type 1 and loads them at type 2;
+type 168 loads passengers at type 2. Campaign types 167/174 unload
+goods at type 1, incrementing mission status once per positive
+transfer step. The branch caps progress, emits completion events,
+and advances the timer even after reaching the total. Docking type 3
+starts a hacking game in mode 1 for campaign step 91, otherwise mode
+4, with the last matching docking-target index.
+
+The linked `approachDockingPoint` function begins at `0x9fcb8`.
+Raw Thumb loads the target from `+0x1bc`, switches on docking state
+`+0x1c4`, and passes the held SpacePoint `+0x36c` when finding a
+navigation point. State 1 returns true. At arrival it initializes
+`+0x35c/+0x360/+0x364`, uses Status passenger count `+0x178`, and
+transitions to state 1; the previous source incorrectly wrote
+auto-turret fields and used emergency-system vector storage as
+the state. The extracted-fragment smoke checks state 1/death gates,
+initialization and transition, good/passenger/campaign transfers,
+capacity-zero type 168 behavior, and hacking modes. Native and ARM
+builds are green. Focused source-shape/strict fuzzy:
+`update` **57.1%/27.6% → 66.1%/30.3%**;
+`approachDockingPoint` **20.4%/10.2% → 20.5%/12.1%**.
+Full report `_work/player_delivery_full_20261014.json` covers
+**4,323/4,524** original functions at **93.27%** average
+source-shape and **82.17%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, zero skipped units, and no
+exact-pair losses or gains against the previous checkpoint.
+The non-exact approach path still references unresolved docking
+movement/easing helpers, and linked ARM gameplay is unverified. The
+available iOS dumps did not yield a reliably identified counterpart
+for this branch.
+
 ## Emergency timer and hacking-game reward path (2026-10-14)
 
 Android Thumb `0x9cfe2–0x9d19e`, cross-checked with IDA lines
