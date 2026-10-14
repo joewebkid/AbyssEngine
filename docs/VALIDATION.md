@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout Wanted-window width metrics (2026-10-14)
+
+Android `Layout::Layout()` at `0xd1028`, IDA lines 128000–128005,
+128414–128453 and 128473–128554, plus Thumb stores at `0xd1a46`,
+`0xd1b9e` and `0xd1c34`, establish five `+0xa0..+0xac/+0xcc`
+words. The production constructor smoke checks seven profiles;
+native `gof2`, 206/206 ARM units, three Layout/TouchButton smokes and
+37 verifier tests (one skipped) pass. Focused C1/C2 source-shape/
+strict fuzzy rises **39.9%/9.1% → 41.0%/9.5%**. Full report
+`_work/layout_wanted_width_metrics_full_20261014.json` covers
+**4,323/4,524** functions at **93.28%** average source-shape and
+**82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras** and zero skipped units. Exact
+pair sets have no losses or gains against
+`_work/layout_late_window_metrics_full_20261014.json`. Linked
+ARM32 UI behavior and asset-backed visuals are unverified. See
+[the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
+
 ## Layout late-window metrics (2026-10-14)
 
 Android `Layout::Layout()` at `0xd1028`, IDA lines 127985–127993,

@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (Layout late-window metrics; older subsystem
+Last reviewed: 2026-10-14 (Layout Wanted width metrics; older subsystem
 snapshots retain their dates)
+
+## Layout Wanted-window width metrics (2026-10-14)
+
+Android `Layout::Layout` at `0xd1028` writes the previously zero-filled
+`+0xa0..+0xac` words and `+0xcc` width used by `WantedWindow`'s
+detail button. IDA platform branches and Thumb scalar/vector stores
+confirm seven tested profiles. Native `gof2`, 206/206 ARM units, three
+Layout/TouchButton smokes and 37 verifier tests (one skipped) pass.
+Focused C1/C2 source-shape/strict fuzzy improves **39.9%/9.1% →
+41.0%/9.5%**; neither alias is exact. Full report
+`_work/layout_wanted_width_metrics_full_20261014.json` compares
+**4,323/4,524** original functions at **93.28%** average source-shape
+and **82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras** and zero skipped units. Exact pair
+sets have no losses or gains against the previous Layout checkpoint.
+Asset-backed `WantedWindow` interaction and ARM32 runtime remain
+unverified. Next: consumer-backed `Layout+0x2a4..+0x2ac` save-menu
+metrics. See [the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
 
 ## Layout late window placement metrics (2026-10-14)
 

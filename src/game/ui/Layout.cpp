@@ -278,6 +278,11 @@ Layout::Layout() {
     this->field_0x94 = hd ? 14 : n9 ? 15 : retina ? 20 : 10;
     this->field_0x98 = hd ? 590 : n9 ? 630 : retina ? 840 : 420;
     this->field_0x9c = hd ? 70 : n9 ? 75 : retina ? 100 : 50;
+    // Android Layout::Layout @ 0xd1028: the +0xcc width feeds WantedWindow's detail button.
+    this->field_0xa0 = hd ? 35 : n9 ? 45 : retina ? 50 : 25;
+    this->field_0xa4 = hd ? 7 : n9 ? 9 : retina ? 10 : 5;
+    this->field_0xa8 = this->field_0xac = hd ? 85 : ipadLarge ? 122 : (n9 || ipad) ? 61 : retina ? 82 : 41;
+    this->field_0xcc = hd ? 253 : n9 ? 270 : retina ? 360 : 180;
 
     // MiningGame consumes this group for movement, ring selection and ore rendering.
     if (hd) {

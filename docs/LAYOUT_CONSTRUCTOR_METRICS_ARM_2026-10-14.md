@@ -1,5 +1,41 @@
 # Layout constructor: platform metrics (2026-10-14)
 
+## Wanted-window width and adjacent metrics (follow-up)
+
+Android `Layout::Layout()` at `0xd1028` writes `+0xa0..+0xac` and
+`+0xcc`, previously left at zero by the placeholder fill. IDA lines
+128000–128005 give iPad HD, 128414–128453 give N9 and iPad selection,
+and 128473–128554 give ordinary low/Retina values. The ordinary
+`+0xcc` word is the high word of the selected 16-byte vector at
+`+0xc0`; raw Thumb stores at `0xd1a46`, `0xd1b9e` and `0xd1c34`
+cross-check the scalar/vector layout. `WantedWindow` reads `+0xcc`
+to size its detail button. No consumer of the four adjacent words is
+confirmed in this package, so their offset names remain.
+
+| Profile | `+a0` | `+a4` | `+a8` | `+ac` | `+cc` |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| ordinary low | 25 | 5 | 41 | 41 | 180 |
+| ordinary Retina | 50 | 10 | 82 | 82 | 360 |
+| iPad low | 25 | 5 | 61 | 61 | 180 |
+| iPad Large low | 25 | 5 | 122 | 122 | 180 |
+| iPad Retina | 50 | 10 | 61 | 61 | 360 |
+| N9 | 45 | 9 | 61 | 61 | 270 |
+| iPad HD | 35 | 7 | 85 | 85 | 253 |
+
+The production-constructor smoke checks all five values across seven
+profiles. Native `gof2`, 206/206 ARM units, three Layout/TouchButton
+smokes and 37 verifier tests (one skipped) pass. Focused C1/C2
+source-shape/strict fuzzy rises **39.9%/9.1% → 41.0%/9.5%**;
+neither alias is exact. Full report
+`_work/layout_wanted_width_metrics_full_20261014.json` covers
+**4,323/4,524** original functions at **93.28%** average source-shape
+and **82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, zero skipped units and no exact-pair
+losses or gains against the late-window checkpoint. `WantedWindow`
+interaction, asset-backed drawing and ARM32 runtime remain unverified.
+Next: recover consumer-backed `Layout+0x2a4..+0x2ac` save-menu
+metrics after auditing their platform writes.
+
 ## Late window placement metrics (follow-up)
 
 Android `Layout::Layout()` at `0xd1028` writes six previously missing
