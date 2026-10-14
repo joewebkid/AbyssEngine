@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo maneuver target; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo dock-vector reset; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo dock-vector reset (2026-10-14)
+
+Android `dockToAsteroid` and `dockToDockingPoint` each zero a
+12-byte vector at PlayerEgo `+0x1c8` through `Vector::operator=`.
+The header now exposes that overlapping view while preserving its
+three integer fields and ARM offsets; both paths no longer call an
+undefined `Vec_assign`. The existing docking smoke, native `gof2`,
+206/206 ARM units and verifier tests pass. Focused source-shape and
+strict fuzzy stay **99.4%/88.2%** and **77.7%/54.3%** respectively;
+neither function is exact. Full coverage stays **4,323/4,524** at
+**93.30%** average source-shape and **82.21%** strict fuzzy, with
+**2,482 linked-exact**, **1,065 byte-exact**, **123 extras**, zero
+skipped and no exact-pair losses. Live docking and ARM32 runtime are
+unverified. See [the vector audit](PLAYER_EGO_DOCK_VECTOR_ARM_2026-10-14.md).
 
 ## PlayerEgo maneuver target (2026-10-14)
 

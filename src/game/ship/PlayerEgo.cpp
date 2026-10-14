@@ -1892,9 +1892,6 @@ void PlayerEgo::handleAutoTurret(int dt) {
     ((Player *) (this->player))->stopShooting(0);
 }
 
-void Vec_assign(void *dst, const void *src);
-
-
 void PlayerEgo::dockToAsteroid(KIPlayer *kip, Radar *radar) {
     if (((char &) this->dockingState) != 0) {
         ((PlayerAsteroid *) (((void *&) this->asteroidTarget)))->setRotationEnabled(true);
@@ -1902,8 +1899,8 @@ void PlayerEgo::dockToAsteroid(KIPlayer *kip, Radar *radar) {
         ((char &) this->dockingState) = 0;
         ((void *&) this->asteroidTarget) = 0;
 
-        int zero[3] = {0, 0, 0};
-        Vec_assign(&this->dockApproachDist, zero);
+        Vec3 zero{};
+        this->dockApproachVector = zero;
 
         ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setActive(true);
         ((Player *) (this->player))->resetGunDelay(0);
@@ -2375,8 +2372,8 @@ void PlayerEgo::dockToDockingPoint(KIPlayer *kip, Radar *radar) {
         this->field_0x1a1 = 0;
         this->field_0x145 = 0;
         ((void *&) this->asteroidTarget) = 0;
-        int zero[3] = {0, 0, 0};
-        Vec_assign(&this->dockApproachDist, zero);
+        Vec3 zero{};
+        this->dockApproachVector = zero;
         ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setActive(true);
         ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setLookAtCam(false);
         ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->useTargetsUpVector(false);

@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo dock-vector reset (2026-10-14)
+
+Raw Android Thumb `0x9f4c8–0x9f4e2` and `0x9fc0e–0x9fc2c` shows
+both undock paths assigning a zero `Vector` to PlayerEgo `+0x1c8`.
+The header overlays that vector with the three existing integer
+fields, with ARM offset assertions. The production-method docking
+smoke, native `gof2`, 206/206 ARM units and 37 verifier tests (one
+skipped) pass. Focused source-shape/strict fuzzy remains
+**99.4%/88.2%** for asteroid docking and **77.7%/54.3%** for
+docking-point docking. Full report
+`_work/player_dock_vector_full_20261014.json` covers **4,323/4,524**
+functions at **93.30%** average source-shape and **82.21%** strict
+fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**, **123
+extras** and zero skipped. Exact-pair and extra-symbol sets have no
+losses or gains against `_work/player_maneuver_full_20261014.json`.
+Live docking and ARM32 runtime remain unverified. See
+[the vector audit](PLAYER_EGO_DOCK_VECTOR_ARM_2026-10-14.md).
+
 ## PlayerEgo maneuver target (2026-10-14)
 
 Android `initManeuver` at `0xa1abc` loads the `10000.0f` literal at

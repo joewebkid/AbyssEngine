@@ -175,12 +175,16 @@ public:
     int dockingPointIndex;
 
     union {
-        int dockApproachDist;
-        uint8_t resumeFlag;
+        struct {
+            union {
+                int dockApproachDist;
+                uint8_t resumeFlag;
+            };
+            int dockApproachThreshold;
+            int field_0x1d0;
+        };
+        Vec3 dockApproachVector;
     };
-
-    int dockApproachThreshold;
-    int field_0x1d0;
     char _unknown_0x1d4[4];
     int dockScaling;
     int miningSettleTimer;
@@ -670,6 +674,9 @@ static_assert(__builtin_offsetof(PlayerEgo, autoPilotTarget) == 0x15c, "PlayerEg
 static_assert(__builtin_offsetof(PlayerEgo, asteroidTarget) == 0x1bc, "PlayerEgo::asteroidTarget offset");
 static_assert(__builtin_offsetof(PlayerEgo, dockingState) == 0x1c0, "PlayerEgo::dockingState offset");
 static_assert(__builtin_offsetof(PlayerEgo, dockingPointIndex) == 0x1c4, "PlayerEgo::dockingPointIndex offset");
+static_assert(__builtin_offsetof(PlayerEgo, dockApproachVector) == 0x1c8, "PlayerEgo::dockApproachVector offset");
+static_assert(__builtin_offsetof(PlayerEgo, dockApproachThreshold) == 0x1cc, "PlayerEgo::dockApproachThreshold offset");
+static_assert(__builtin_offsetof(PlayerEgo, field_0x1d0) == 0x1d0, "PlayerEgo::field_0x1d0 offset");
 static_assert(__builtin_offsetof(PlayerEgo, dockScaling) == 0x1d8, "PlayerEgo::dockScaling offset");
 static_assert(__builtin_offsetof(PlayerEgo, miningSettleTimer) == 0x1dc, "PlayerEgo::miningSettleTimer offset");
 static_assert(__builtin_offsetof(PlayerEgo, dockStation) == 0x1e0, "PlayerEgo::dockStation offset");

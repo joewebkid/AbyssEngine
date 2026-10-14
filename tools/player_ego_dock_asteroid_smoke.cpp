@@ -9,6 +9,7 @@
 template<class T> using Array = std::vector<T>;
 
 struct Vector { float x, y, z; };
+using Vec3 = Vector;
 Vector operator*(const Vector &value, float factor) {
     return {value.x * factor, value.y * factor, value.z * factor};
 }
@@ -452,8 +453,6 @@ namespace Globals {
 }
 static const float g_PE_astApproach = 2500.0f;
 static const float g_PE_upd_handlingBias = 2.7f;
-void Vec_assign(void *dst, const void *src) { std::memcpy(dst, src, 3 * sizeof(int)); }
-
 struct PlayerEgo {
     static Vector vec_up;
     static Vector crosshairPos;
@@ -469,9 +468,10 @@ struct PlayerEgo {
     unsigned char field_0xb2 = 0;
     unsigned char switchToFreeLookCam = 0;
     int dockScaling = 0;
-    int dockApproachDist = 0;
-    int dockApproachThreshold = 0;
-    int field_0x1d0 = 0;
+    union {
+        struct { int dockApproachDist, dockApproachThreshold, field_0x1d0; };
+        Vector dockApproachVector{};
+    };
     int dockedFlag = 0;
     unsigned char aboutToReachAutoTargetFlag = 0;
     SpacePoint *spacePoint = nullptr;
