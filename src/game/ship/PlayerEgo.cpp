@@ -39,6 +39,7 @@
 #include "game/ship/Ship.h"
 #include "game/core/Globals.h"
 #include <cmath>
+#include <cstring>
 #include <new>
 
 namespace AbyssEngine {
@@ -197,11 +198,25 @@ void MatrixSetRotation(void *, void *, float, float, float);
 
 int aeabi_idiv_(int a, int b);
 
-float PE_pitchRampDelta(PlayerEgo *self, float rate, int frameTime);
+static inline __attribute__((always_inline)) float PE_pitchRampDelta(PlayerEgo *self, float rate, int frameTime) {
+    float denominator = 12.0f;
+    if (!Globals::mouseCursorActivated) {
+        float sensitivity;
+        std::memcpy(&sensitivity, Globals::options + (Globals::options[0x11] ? 0x14 : 0x18), sizeof(sensitivity));
+        if (!Globals::options[0x11])
+            sensitivity *= self->pitchAccumDir < 0 ? 1.45f : 1.25f;
+        denominator = (3.3f - sensitivity) * 20.0f;
+    }
+    return rate * (float) frameTime / denominator;
+}
 
-
-
-float PE_yawRampDelta(float rate, int frameTime);
+static inline __attribute__((always_inline)) float PE_yawRampDelta(float rate, int frameTime) {
+    if (Globals::mouseCursorActivated)
+        return std::fmin(rate * 25.0f / 6.0f, 280.0f);
+    float sensitivity;
+    std::memcpy(&sensitivity, Globals::options + (Globals::options[0x11] ? 0x14 : 0x18), sizeof(sensitivity));
+    return rate * (float) frameTime / ((3.3f - sensitivity) * 20.0f);
+}
 
 
 void Mat_assign(void *dst, const void *src);
@@ -1549,7 +1564,7 @@ float PlayerEgo::right(int frameTime, float delta) {
 
     float target = (float) aeabi_idiv_((int) (delta * g_PE_r_rateK * rate), 0x3f);
     ((float &) this->rollAccum) = delta;
-    this->yawRamp = -rate;
+    this->yawRamp = -this->handling;
     if (this->yawAccumF > target) {
         float step = PE_yawRampDelta(rate, frameTime);
         float v = this->yawAccumF - step;

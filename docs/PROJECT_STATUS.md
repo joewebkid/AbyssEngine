@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo asteroid approach; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo pitch/yaw ramps; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo pitch/yaw ramps (2026-10-14)
+
+Android Thumb `0xa08a2–0xa08f2`, `0xa0d58–0xa0da4` and
+`0xa0fc6–0xa1012` replace declared-only ramp calculations in
+`right`, `left`, `down` and `up`. Cursor steering, the two option
+sensitivity slots and direction-specific pitch factors are restored;
+`right` also stores base handling into `yawRamp` as ARM does. The
+production-helper smoke, native `gof2`, 206/206 ARM units and 37
+verifier tests (one skipped) pass. Focused average source-shape/strict
+fuzzy rises **80.3%/58.9% → 88.0%/69.8%**; none is exact. Full
+coverage remains **4,323/4,524** at **93.37%** average source-shape
+and **82.26%** strict fuzzy, with **2,482 linked-exact**,
+**1,065 byte-exact**, **123 extras**, zero skipped and no exact-pair
+losses. Live input feel and ARM32 runtime remain unverified. Next
+priority: the turret placement/material helpers in `checkForTurret`.
+See [the axis-ramp audit](PLAYER_EGO_AXIS_RAMP_ARM_2026-10-14.md).
 
 ## PlayerEgo asteroid approach stage zero (2026-10-14)
 
@@ -16,8 +33,8 @@ not exact. Full coverage remains **4,323/4,524** at **93.37%**
 average source-shape and **82.26%** strict fuzzy, with **2,482
 linked-exact**, **1,065 byte-exact**, **123 extras**, zero skipped and
 no exact-pair losses. Live approach/mining and ARM32 runtime remain
-unverified. Next priority: the declared-only pitch/yaw ramp helpers
-used by ship controls. See
+unverified. The declared-only pitch/yaw ramp helpers used by ship
+controls are recovered in the section above. See
 [the asteroid-approach audit](PLAYER_EGO_ASTEROID_APPROACH_STAGE0_ARM_2026-10-14.md).
 
 ## PlayerEgo docking-point ease (2026-10-14)

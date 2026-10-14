@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo pitch/yaw ramps (2026-10-14)
+
+IDA and Android Thumb confirm the cursor-mode yaw cap of 280, option
+float selection through `Globals::options+0x11`, direction-specific
+pitch sensitivity factors and base-handling `yawRamp` store on right
+input. The production-helper smoke, native `gof2`, 206/206 ARM units
+and 37 verifier tests (one skipped) pass. Focused average
+source-shape/strict fuzzy for `right`, `left`, `down` and `up` changes
+**80.3%/58.9% → 88.0%/69.8%**; none is exact. Full report
+`_work/player_axis_ramp_full_20261014.json` covers **4,323/4,524**
+at **93.37%** average source-shape and **82.26%** strict fuzzy,
+with **2,482 linked-exact**, **1,065 byte-exact**, **123 extras**,
+**201 missing** and zero skipped. Linked- and byte-exact pair sets
+have no losses against
+`_work/player_approach_asteroid_stage0_full_20261014.json`. Live
+input feel and ARM32 runtime remain unverified. See
+[the axis-ramp audit](PLAYER_EGO_AXIS_RAMP_ARM_2026-10-14.md).
+
 ## PlayerEgo asteroid approach stage zero (2026-10-14)
 
 IDA/Ghidra and Android Thumb `0x9f5ac–0x9f8de` confirm the stage-zero
