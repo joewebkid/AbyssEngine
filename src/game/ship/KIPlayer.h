@@ -111,7 +111,7 @@ public:
         Route *route;                // 0x6c
 
         struct {
-            uint8_t noTargetFlag;        // 0x6c
+            uint8_t routeByte0;          // 0x6c
             uint8_t routeByte1;          // 0x6d
             uint8_t routeByte2;          // 0x6e
             uint8_t routeByte3;          // 0x6f
@@ -122,7 +122,7 @@ public:
     uint8_t _pad_0x71;               // 0x71
     uint8_t field_0x72;              // 0x72
     uint8_t field_0x73;              // 0x73
-    uint8_t field_0x74;              // 0x74
+    union { uint8_t field_0x74; uint8_t noTargetFlag; }; // 0x74
     uint8_t field_0x75;              // 0x75
     uint8_t field_0x76;              // 0x76
     uint8_t _pad_0x77;               // 0x77
@@ -318,6 +318,7 @@ static_assert(sizeof(KIPlayer) == 292, "KIPlayer must be 292 bytes (binary layou
 static_assert(offsetof(KIPlayer, posX) == 0x58, "KIPlayer::posX must be at 0x58");
 static_assert(offsetof(KIPlayer, route) == 0x6c, "KIPlayer::route must be at 0x6c");
 static_assert(offsetof(KIPlayer, field_0x74) == 0x74, "KIPlayer::field_0x74 must be at 0x74");
+static_assert(offsetof(KIPlayer, noTargetFlag) == 0x74, "KIPlayer::noTargetFlag must be at 0x74");
 static_assert(offsetof(KIPlayer, field_0x76) == 0x76, "KIPlayer::field_0x76 must be at 0x76");
 #endif
 

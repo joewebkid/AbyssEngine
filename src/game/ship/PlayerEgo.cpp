@@ -216,8 +216,6 @@ void Vec_sub(void *out, const void *a, const void *b);
 
 float Vec_length(const void *v);
 
-int PE_hat_aimAndFire(PlayerEgo *self, int dt);
-
 float PE_roll_bankFactor(PlayerEgo *self, float rx, float ry, float *outZ);
 
 
@@ -1877,17 +1875,67 @@ void PlayerEgo::handleAutoTurret(int dt) {
         }
     }
 
-    void *target = this->autoTurretTarget;
-    if (target != 0 && ((KIPlayer *) target)->geometry != 0) {
-        int fireTimer = PE_hat_aimAndFire(this, dt);
-        this->autoTurretFireTimer = fireTimer;
-        if (fireTimer + dt > 0x1f4) {
-        } else {
-            return;
-        }
+    KIPlayer *target = (KIPlayer *) this->autoTurretTarget;
+    if (target == nullptr || target->geometry == nullptr) {
+        ((Player *) this->player)->stopShooting(2);
+        return;
     }
 
-    ((Player *) (this->player))->stopShooting(2);
+    Matrix aimMatrix = target->player->transformMatrix;
+    Vector targetPosition = target->getPosition();
+    Vector targetDirection = AbyssEngine::AEMath::VectorNormalize(
+        AbyssEngine::AEMath::MatrixGetDir(aimMatrix));
+    Vector worldTarget = targetPosition + targetDirection * 1500.0f;
+    *reinterpret_cast<Vector *>(&this->waypointY) = worldTarget;
+
+    AEGeometry *turret = (AEGeometry *) this->turretGeometry;
+    AEGeometry *roll = (AEGeometry *) this->rollGeometry;
+    aimMatrix = this->geometry->getMatrix() * turret->getMatrix();
+    Vector localTarget = AbyssEngine::AEMath::VectorNormalize(
+        AbyssEngine::AEMath::MatrixInverseTransformVector(aimMatrix, worldTarget));
+
+    bool alignedX = true;
+    if (localTarget.x > 0.05f || localTarget.x < -0.05f) {
+        float signedDt = (float) (localTarget.x > 0.05f ? dt : -dt);
+        float angle = (signedDt / (200.0f / (float) this->turretPitch))
+            * 0.000244140625f * 6.2831855f;
+        roll->rotate(0.0f, angle, 0.0f);
+        turret->rotate(0.0f, angle, 0.0f);
+        alignedX = false;
+    }
+
+    if (localTarget.y > 0.05f) {
+        if (this->lookYaw > -500.0f) {
+            this->lookYaw -= (float) this->shakeIntensity;
+            turret->rotate((float) this->shakeIntensity * 0.000244140625f * -6.2831855f,
+                           0.0f, 0.0f);
+            this->autoTurretPrevTarget = nullptr;
+        } else {
+            this->autoTurretPrevTarget = target;
+            this->autoTurretTimer += dt;
+        }
+    } else if (localTarget.y < -0.05f) {
+        if (this->lookYaw < 70.0f) {
+            this->lookYaw += (float) this->shakeIntensity;
+            turret->rotate((float) this->shakeIntensity * 0.000244140625f * 6.2831855f,
+                           0.0f, 0.0f);
+            this->autoTurretPrevTarget = nullptr;
+        } else {
+            this->autoTurretPrevTarget = target;
+            this->autoTurretTimer += dt;
+        }
+    } else if (alignedX) {
+        ((Player *) this->player)->shoot(2, (long long) dt, false, aimMatrix);
+        AbyssEngine::PaintCanvas *canvas = Globals::Canvas;
+        ((AbyssEngine::Transform *) canvas->TransformGetTransform(turret->transform))->Update(dt, false);
+        ((AbyssEngine::Transform *) canvas->TransformGetTransform(roll->transform))->Update(dt, false);
+        this->autoTurretFireTimer = 0;
+        return;
+    }
+
+    this->autoTurretFireTimer += dt;
+    if (this->autoTurretFireTimer > 500)
+        ((Player *) this->player)->stopShooting(2);
 }
 
 void PlayerEgo::dockToAsteroid(KIPlayer *kip, Radar *radar) {

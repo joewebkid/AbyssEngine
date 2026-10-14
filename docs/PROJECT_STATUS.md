@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo auto-turret selection; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo auto-turret aim/fire; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo auto-turret aim/fire (2026-10-14)
+
+The Android post-selection path now replaces the declared-only shim:
+target lead, local aim, horizontal/vertical turret movement, aligned
+weapon-2 firing, transform updates and timeout stop. The adjacent
+`KIPlayer::noTargetFlag` overlay is corrected from `+0x6c` to Android's
+`+0x74`. Production-body host smoke, native `gof2`, 206/206 ARM
+translation units and verifier tests pass. Focused source-shape/strict
+fuzzy rises **45.7%/24.0% → 93.8%/54.1%**. Full coverage remains
+**4,323/4,524** at **93.31%** average source-shape and **82.22%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**123 extras**, zero skipped and no exact-pair losses. Live aiming,
+animation side effects and ARM32 runtime remain unverified. See
+[the aim/fire audit](PLAYER_EGO_AUTO_TURRET_AIM_ARM_2026-10-14.md).
 
 ## PlayerEgo auto-turret selection (2026-10-14)
 
