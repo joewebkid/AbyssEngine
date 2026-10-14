@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo cloak activation (2026-10-14)
+
+Android Thumb `0x9a708–0x9a9b0` and IDA lines 81068–81226 confirm
+cloak attribute 38, amount-limited cargo removal, HUD event 30's
+amount, sound through `Globals::sound` and shader channels 1/2.
+The extracted production-method smoke, native `gof2`, 206/206 ARM
+units and 37 verifier tests (one skipped) pass. Focused
+`toggleCloaking` source-shape changes **92.5% → 94.2%** and strict
+fuzzy **56.5% → 23.0%**; call-count match reaches **100%**, but
+the function is not exact. Full report
+`_work/player_cloak_full_20261014.json` compares **4,323/4,524**
+at **93.39%** average source-shape and **82.28%** strict fuzzy,
+with **2,482 linked-exact**, **1,065 byte-exact**, **201 missing**,
+**123 extras**, and zero skipped. Both exact pair sets lose none
+against `_work/player_render_full_20261014.json`. Live ARM32 cloak
+behavior remains unverified. See
+[the cloak audit](PLAYER_EGO_CLOAK_ARM_2026-10-14.md).
+
 ## PlayerEgo render dispatch (2026-10-14)
 
 Android Thumb `0xa1b78–0xa1c56` and IDA lines 87170–87237 confirm

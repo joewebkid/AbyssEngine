@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo render dispatch; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo cloak activation; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo cloak activation (2026-10-14)
+
+Android Thumb `0x9a708–0x9a9b0` restores cloak attribute 38,
+amount-limited cargo removal, HUD event 30's amount, sound 30 via
+`Globals::sound`, and shader channels 1/2 for hull and turret
+materials. The production-method smoke, native `gof2`, 206/206 ARM
+units and 37 verifier tests (one skipped) pass. Focused source-shape
+rises **92.5% → 94.2%**, but strict fuzzy falls **56.5% → 23.0%**;
+the function remains non-exact. Full coverage stays **4,323/4,524**
+at **93.39%** average source-shape and **82.28%** strict fuzzy
+(down 0.01 point), with **2,482 linked-exact**, **1,065 byte-exact**,
+**201 missing**, **123 extras**, zero skipped and no exact-pair
+losses. Live ARM32 cloak behavior and visual output remain
+unverified. Next: `setShip` cloak-material lifecycle. See
+[the cloak audit](PLAYER_EGO_CLOAK_ARM_2026-10-14.md).
 
 ## PlayerEgo render dispatch (2026-10-14)
 

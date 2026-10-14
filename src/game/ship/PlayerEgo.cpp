@@ -128,7 +128,6 @@ namespace {
     static const float g_PE_hs_throttleBias = 0.2f;
     static const float g_PE_ss_emDiv = 500.0f;
     static const float g_PE_ss_emBias = 0.1f;
-    static int *g_PE_tc_sound = nullptr;
 }
 
 // Local 4-wide row-major matrix buffer used to build a transform on the stack.
@@ -3617,13 +3616,13 @@ int PlayerEgo::toggleCloaking() {
     if (this->chargingCloak == 0) {
         if (this->cloaked != 0 || this->cloakRechargeTimer > 0)
             return this->cloaked != 0;
-        int need = ((Item *) (this->cloak))->getAttribute(0);
+        int need = ((Item *) (this->cloak))->getAttribute(38);
         void *cargo = ((Ship *) (PE_status()->getShip()))->getCargo(0x7a);
         int have = (cargo == 0) ? 0 : ((Item *) (cargo))->getAmount();
         if (need <= have) {
-            ((Ship *) (PE_status()->getShip()))->removeCargo(0x7a);
+            ((Ship *) (PE_status()->getShip()))->removeCargo(0x7a, need);
             this->chargingCloak = 1;
-            ((Hud *) (((void *&) this->hud)))->hudEvent(0x1e, this, 0);
+            ((Hud *) (((void *&) this->hud)))->hudEvent(0x1e, this, need);
             ((Hud *) (((void *&) this->hud)))->hudEvent(0x1c, this, 0);
             return 1;
         }
@@ -3633,48 +3632,39 @@ int PlayerEgo::toggleCloaking() {
     if (this->cloakDischargeMax > this->cloakCharge)
         return this->cloaked != 0;
 
-    ((FModSound *) (*g_PE_tc_sound))->play(0x1e, (Vector *) 0, (Vector *) 0, 0);
-    void *canvas = (void *) PaintCanvas::gCanvas;
+    Globals::sound->play(0x1e, (Vector *) 0, (Vector *) 0, 0.0f);
+    PaintCanvas *canvas = Globals::Canvas;
     ((Player *) this->player)->field_5e = 1;
     this->cloakCharge = 0;
     this->cloaked = 1;
 
-    ((PaintCanvas *) (long) (canvas))->MaterialGetMaterial((unsigned int) (this->cloakMaterial1));
-
-    ((AbyssEngine::Material *) ((PaintCanvas *) (long) (canvas))->MaterialGetMaterial(
+    ((AbyssEngine::Material *) canvas->MaterialGetMaterial(
         (unsigned int) (this->cloakMaterial1)))->materialMode = 0xe;
-    ((PaintCanvas *) (long) (canvas))->MeshChangeMaterial((unsigned int) (this->field_0x4->meshId),
-                                                          (unsigned int) (this->cloakMaterial1));
-    ((PaintCanvas *) (long) (canvas))->MeshChangeShaderAnimValue(
-        ((PaintCanvas *) (long) (canvas))->MeshGetPointer((unsigned int) (this->field_0x4->meshId)), 0.0f,
-        (unsigned int) (0));
-    ((PaintCanvas *) (long) (canvas))->MeshChangeShaderAnimValue(
-        ((PaintCanvas *) (long) (canvas))->MeshGetPointer((unsigned int) (this->field_0x4->meshId)), 0.0f,
-        (unsigned int) (0));
+    canvas->MeshChangeMaterial(this->field_0x4->meshId, (unsigned short) this->cloakMaterial1);
+    canvas->MeshChangeShaderAnimValue(canvas->MeshGetPointer(this->field_0x4->meshId), 0.0f, 1);
+    canvas->MeshChangeShaderAnimValue(canvas->MeshGetPointer(this->field_0x4->meshId), 0.0f, 2);
 
     if (this->turretMode != 0) {
-        ((AbyssEngine::Material *) ((PaintCanvas *) (long) (canvas))->MaterialGetMaterial(
+        ((AbyssEngine::Material *) canvas->MaterialGetMaterial(
             (unsigned int) (this->cloakMaterial2)))->materialMode = 0xe;
-        ((AbyssEngine::Material *) ((PaintCanvas *) (long) (canvas))->MaterialGetMaterial(
+        ((AbyssEngine::Material *) canvas->MaterialGetMaterial(
             (unsigned int) (this->cloakMaterial3)))->materialMode = 0xe;
-        ((PaintCanvas *) (long) (canvas))->MeshChangeMaterial(
-            (unsigned int) (((AEGeometry *) this->rollGeometry)->meshId), (unsigned int) (this->cloakMaterial2));
-        ((PaintCanvas *) (long) (canvas))->MeshChangeMaterial(
-            (unsigned int) (((AEGeometry *) this->turretGeometry)->meshId), (unsigned int) (this->cloakMaterial3));
+        canvas->MeshChangeMaterial(((AEGeometry *) this->rollGeometry)->meshId, (unsigned short) this->cloakMaterial2);
+        canvas->MeshChangeMaterial(((AEGeometry *) this->turretGeometry)->meshId, (unsigned short) this->cloakMaterial3);
 
         AbyssEngine::Mesh *m;
-        m = ((PaintCanvas *) (long) (canvas))->MeshGetPointer(
+        m = canvas->MeshGetPointer(
             (unsigned int) (((AEGeometry *) this->rollGeometry)->meshId));
-        ((PaintCanvas *) (long) (canvas))->MeshChangeShaderAnimValue(m, 0.0f, (unsigned int) (1));
-        m = ((PaintCanvas *) (long) (canvas))->MeshGetPointer(
+        canvas->MeshChangeShaderAnimValue(m, 0.0f, 1);
+        m = canvas->MeshGetPointer(
             (unsigned int) (((AEGeometry *) this->rollGeometry)->meshId));
-        ((PaintCanvas *) (long) (canvas))->MeshChangeShaderAnimValue(m, 0.0f, (unsigned int) (2));
-        m = ((PaintCanvas *) (long) (canvas))->MeshGetPointer(
+        canvas->MeshChangeShaderAnimValue(m, 0.0f, 2);
+        m = canvas->MeshGetPointer(
             (unsigned int) (((AEGeometry *) this->turretGeometry)->meshId));
-        ((PaintCanvas *) (long) (canvas))->MeshChangeShaderAnimValue(m, 0.0f, (unsigned int) (1));
-        m = ((PaintCanvas *) (long) (canvas))->MeshGetPointer(
+        canvas->MeshChangeShaderAnimValue(m, 0.0f, 1);
+        m = canvas->MeshGetPointer(
             (unsigned int) (((AEGeometry *) this->turretGeometry)->meshId));
-        ((PaintCanvas *) (long) (canvas))->MeshChangeShaderAnimValue(m, 0.0f, (unsigned int) (2));
+        canvas->MeshChangeShaderAnimValue(m, 0.0f, 2);
 
         if (this->turretMode != 0) {
             unsigned short mat = 0x4e8e;
@@ -3688,11 +3678,11 @@ int PlayerEgo::toggleCloaking() {
                 if (idx == 0xc7) mat = 0x7167;
                 if (idx == 0xc6) mat = 0x7161;
             }
-            unsigned int out;
-            ((PaintCanvas *) (long) (canvas))->MaterialCreate((unsigned short) (mat), out);
-            ((PaintCanvas *) (long) (canvas))->MeshChangeResourceMaterial(
+            unsigned int out = 0;
+            canvas->MaterialCreate((unsigned short) (mat), out);
+            canvas->MeshChangeResourceMaterial(
                 (unsigned int) (((AEGeometry *) this->rollGeometry)->meshId), (unsigned int) (mat));
-            ((PaintCanvas *) (long) (canvas))->MeshChangeResourceMaterial(
+            canvas->MeshChangeResourceMaterial(
                 (unsigned int) (((AEGeometry *) this->turretGeometry)->meshId), (unsigned int) (mat));
         }
     }
