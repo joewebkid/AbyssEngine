@@ -295,6 +295,7 @@ struct Player {
     Vector hitVector{3.0f, 4.0f, 0.0f};
     int hitVectorReads = 0;
     int getHitpoints() { return hitpoints; }
+    void setHitpoints(int value) { hitpoints = value; }
     int getMaxHitpoints() { return maxHitpoints; }
     int getArmorHP() { return armorHP; }
     int getMaxArmorHP() { return maxArmorHP; }
@@ -345,6 +346,8 @@ struct Ship {
     bool volatileGoods = false;
     Item *equipment = nullptr;
     Item *boostEquipment = nullptr;
+    Item *emergencyEquipment = nullptr;
+    int emergencyRemovals = 0;
     Item *cargoItem = nullptr;
     int maxPassengers = 0;
     int cargo = 0;
@@ -366,8 +369,13 @@ struct Ship {
     int getMaxPassengers() { return maxPassengers; }
     Item *getCargo(int index) { assert(index == 202); return cargoItem; }
     Item *getFirstEquipmentOfSort(int sort) {
-        assert(sort == 43 || sort == 14);
-        return sort == 43 ? equipment : boostEquipment;
+        assert(sort == 43 || sort == 14 || sort == 27);
+        return sort == 43 ? equipment : sort == 14 ? boostEquipment : emergencyEquipment;
+    }
+    void removeEquipment(Item *item) {
+        assert(item == emergencyEquipment);
+        emergencyEquipment = nullptr;
+        ++emergencyRemovals;
     }
     bool hasCargo(int index, int amount) { assert(index == 202); return cargo >= amount; }
     int removeCargo(int index, int amount) {
@@ -444,7 +452,8 @@ struct FModSound {
     int updated[8]{};
     int updateCount = 0;
     float parameter = -1.0f;
-    void play(int id, Vector *, Vector *, float) { played[playCount++] = id; }
+    float lastPlayGain = -1.0f;
+    void play(int id, Vector *, Vector *, float gain) { played[playCount++] = id; lastPlayGain = gain; }
     void stop(int id) { stopped = id; ++stopCount; }
     void setParamValue(int param, int id, float value) {
         assert(param == 0 && id == 2257);
@@ -601,6 +610,7 @@ struct PlayerEgo {
     void updateCrosshair(int dt, bool arg6, int arg7);
     void updateTail(Vector cameraPosition, Vector cameraDirection);
     void initializeEmergency();
+    int tryToStartEmergencySystem();
     float right(int dt, float delta) { assert(dt == 16); ++rightCalls; lastRight = delta; return 0.0f; }
     float left(int dt, float delta) { assert(dt == 16); ++leftCalls; lastLeft = delta; return 0.0f; }
     float down(int dt, float delta) { assert(dt == 16); ++downCalls; lastDown = delta; return 0.0f; }
@@ -647,6 +657,7 @@ int *g_PE_adp_dockRadius = dockRadius;
 // PRODUCTION_UPDATE_TAIL
 // PRODUCTION_RECOVERY_AMOUNT
 // PRODUCTION_EMERGENCY_CONSTRUCTOR
+// PRODUCTION_EMERGENCY_START
 // PRODUCTION_ENGINE_SOUND_SELECTION
 
 int main() {
@@ -968,6 +979,30 @@ int main() {
     canvas.local = &matrix;
     Globals::Canvas = &canvas;
     Globals::status = &status;
+    Item emergencyItem;
+    ship.emergencyEquipment = &emergencyItem;
+    Player activationPlayer;
+    PlayerEgo activationEgo{};
+    activationEgo.player = &activationPlayer;
+    activationEgo.emergencyVal1 = 750;
+    activationPlayer.hitpoints = 0;
+    const int activationSoundCount = sound.playCount;
+    assert(activationEgo.tryToStartEmergencySystem() == 0);
+    assert(activationPlayer.hitpoints == 0 && ship.emergencyRemovals == 0);
+    activationEgo.field_0xac = 1;
+    activationEgo.emergencySystemTimer = 1;
+    assert(activationEgo.tryToStartEmergencySystem() == 0);
+    activationEgo.emergencySystemTimer = 0;
+    activationPlayer.hitpoints = 2;
+    assert(activationEgo.tryToStartEmergencySystem() == 0);
+    activationPlayer.hitpoints = 0;
+    assert(activationEgo.tryToStartEmergencySystem() == 1);
+    assert(activationPlayer.hitpoints == 1 && !activationPlayer.vulnerable);
+    assert(activationEgo.emergencySystemTimer == 750 && ship.emergencyRemovals == 1);
+    assert(ship.emergencyEquipment == nullptr && sound.playCount == activationSoundCount + 1);
+    assert(sound.played[activationSoundCount] == 1115 && sound.lastPlayGain == 0.0f);
+    assert(activationEgo.tryToStartEmergencySystem() == 0);
+    assert(sound.playCount == activationSoundCount + 1 && ship.emergencyRemovals == 1);
     Player emergencyPlayer;
     emergencyPlayer.transformMatrix.position = {10.0f, 20.0f, 30.0f};
     PlayerEgo emergencyEgo{};

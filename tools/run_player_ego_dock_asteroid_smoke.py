@@ -23,6 +23,8 @@ def main():
     fixture = (ROOT / "tools/player_ego_dock_asteroid_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_METHOD",
                               function(source, "void PlayerEgo::dockToAsteroid("))
+    fixture = fixture.replace("// PRODUCTION_EMERGENCY_START",
+                              function(source, "int PlayerEgo::tryToStartEmergencySystem("))
     start = source.index("    if (((char &) this->dockingState) != 0) {",
                          source.index("void PlayerEgo::update("))
     end = source.index("    if (this->turretActive != 0", start)

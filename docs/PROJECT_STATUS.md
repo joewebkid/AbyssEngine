@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo emergency-state constructor; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo emergency activation; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo emergency-system activation (2026-10-14)
+
+Android Thumb `0xa106c–0xa10f0` confirms the geometry/timer/hitpoint
+gates and the transition that consumes equipment sort 27 and plays
+sound 1115 via `Globals::sound` with zero gain. The previous sound
+receiver was disconnected and its gain was wrong. Native `gof2`,
+206/206 ARM units, extracted-method and related smokes, and 37
+verifier tests (one skipped) pass. Focused source-shape/strict fuzzy
+rises **90.4%/79.2% → 100%/100%**, gaining one linked-exact pair.
+Full coverage remains **4,323/4,524** at **93.39%** average
+source-shape and **82.28%** strict fuzzy, with **2,483 linked-exact**,
+**1,065 byte-exact**, **201 missing**, **123 extras**, zero skipped and
+no exact-pair losses. Live ARM32 behavior and emergency-geometry
+ownership across ship replacement or destruction remain unverified;
+the latter is a next bounded priority. See
+[the activation audit](PLAYER_EGO_EMERGENCY_START_ARM_2026-10-14.md).
 
 ## PlayerEgo emergency-state constructor (2026-10-14)
 

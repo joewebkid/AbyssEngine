@@ -57,7 +57,6 @@ namespace {
     static void *g_explode_obj = nullptr;
     static void (*g_explode_fn)(void *, int) = nullptr;
     static PlayerEgo *g_PlayerEgo_singleton = nullptr;
-    static void *g_emerg_fmod = nullptr;
     static const float g_PE_rollNudge = 0.17f;
     static const float g_PE_strafeDist = 10000.0f; // ARM initManeuver literal at 0xa1b70.
     static const float g_PE_cft_transformVal = 1000000.0f; // IDA: checkForTurret writes 0x49742400 to Transform+0xE0.
@@ -897,10 +896,10 @@ int PlayerEgo::tryToStartEmergencySystem() {
     ((Player *) (this->player))->setHitpoints(1);
     this->emergencySystemTimer = this->emergencyVal1;
     ((Player *) (this->player))->setVulnerable(0);
-    void *s1 = Status::gStatus->getShip();
-    Item *eq = ((Ship *) (Status::gStatus->getShip()))->getFirstEquipmentOfSort(0x1b);
-    ((Ship *) (s1))->removeEquipment(eq);
-    ((FModSound *) (*(void **) g_emerg_fmod))->play(0x45b, (Vector *) 0, (Vector *) 0, 1.0f);
+    Ship *ship = Globals::status->getShip();
+    Item *eq = Globals::status->getShip()->getFirstEquipmentOfSort(27);
+    ship->removeEquipment(eq);
+    Globals::sound->play(1115, nullptr, nullptr, 0.0f);
     return 1;
 }
 

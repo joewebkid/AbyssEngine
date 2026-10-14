@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo emergency-system activation (2026-10-14)
+
+Android Thumb `0xa106c–0xa10f0` and IDA lines 86377–86403 confirm
+the activation gates, equipment sort 27 removal, and sound 1115
+through `Globals::sound` at gain zero. Native `gof2`, 206/206 ARM
+units, the extracted-method and related smokes, and 37 verifier
+tests (one skipped) pass. Focused source-shape/strict fuzzy changes
+**90.4%/79.2% → 100.0%/100.0%**; it becomes linked-exact, not
+byte-exact. Full report `_work/player_emergency_start_full_20261014.json`
+compares **4,323/4,524** at **93.39%** average source-shape and
+**82.28%** strict fuzzy, with **2,483 linked-exact**, **1,065
+byte-exact**, **201 missing**, **123 extras** and zero skipped. The
+linked-exact set gains this function and loses none; the byte-exact
+set changes by zero versus
+`_work/player_emergency_ctor_full_20261014.json`. Live ARM32 execution
+and inactive emergency-geometry ownership remain unverified. See
+[the activation audit](PLAYER_EGO_EMERGENCY_START_ARM_2026-10-14.md).
+
 ## PlayerEgo emergency-state constructor (2026-10-14)
 
 Android Thumb `0x99946–0x9994c` and `0x99a82–0x99a86` confirms
