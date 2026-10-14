@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo engine-sound dispatch; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo supernova constructor; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo supernova-protection constructor (2026-10-14)
+
+Android Thumb `0x99a02–0x99a0a` and `0x99f4a–0x9a048`
+restores inactive sound/geometry state and the conditional
+supernova-protection sound and two-child effect. Native `gof2`,
+206/206 ARM units, extracted-tail and related smokes, and 37
+verifier tests (one skipped) pass. Focused constructor source-shape/
+strict fuzzy rises **45.1%/28.3% → 61.0%/35.2%** for both aliases;
+neither is exact. Full coverage remains **4,323/4,524** at
+**93.40%** average source-shape and **82.29%** strict fuzzy, with
+**2,483 linked-exact**, **1,065 byte-exact**, **201 missing**,
+**123 extras**, zero skipped and no exact-pair losses. Live ARM32
+render/audio and the constructor's other missing state remain
+unverified. See [the constructor audit](PLAYER_EGO_SUPERNOVA_CONSTRUCTOR_ARM_2026-10-14.md).
 
 ## PlayerEgo engine-sound dispatch (2026-10-14)
 

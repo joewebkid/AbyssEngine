@@ -1786,6 +1786,27 @@ PlayerEgo::PlayerEgo(Player *player) {
     void *stars = ::operator new(0x1c);
     MovingStars_ctor(stars);
     this->dockCameraNode = stars;
+
+    // Android Thumb 0x99a02-0x99a0a and 0x99f4a-0x9a048: supernova protection effect.
+    this->gunYawGeo = nullptr;
+    ((uint8_t &) this->gunMuzzleRoot) = 0;
+    this->engineSoundId = -1;
+    if (Globals::status->inSupernovaSystem() || Globals::status->inSupernovaOrbit()) {
+        Ship *protectedShip = Globals::status->getShip();
+        if (protectedShip->getFirstEquipmentOfSort(38) != nullptr) {
+            Item *protection = Globals::status->getShip()->getFirstEquipmentOfSort(38);
+            this->engineSoundId = protection->getIndex() == 205 ? 2261 : 2260;
+            ((uint8_t &) this->gunMuzzleRoot) = 1;
+            AEGeometry *effect = new AEGeometry(Globals::Canvas);
+            this->gunYawGeo = effect;
+            AEGeometry *childA = new AEGeometry(0x4973, Globals::Canvas, false);
+            AEGeometry *childB = new AEGeometry(0x4972, Globals::Canvas, false);
+            effect->addChild(childA->transform);
+            delete childA;
+            effect->addChild(childB->transform);
+            delete childB;
+        }
+    }
 }
 
 
