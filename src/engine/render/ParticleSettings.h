@@ -10,7 +10,7 @@ class ParticleSettings {
 public:
     enum ParticleSet {
         ParticleSet_dummy = 0,
-        ParticleSet_4 = 4, ParticleSet_7 = 7, ParticleSet_8 = 8, ParticleSet_9 = 9,
+        ParticleSet_4 = 4, ParticleSet_6 = 6, ParticleSet_7 = 7, ParticleSet_8 = 8, ParticleSet_9 = 9,
         ParticleSet_0xa = 0xa, ParticleSet_0xb = 0xb, ParticleSet_0xc = 0xc, ParticleSet_0xf = 0xf,
         ParticleSet_0x14 = 0x14, ParticleSet_0x15 = 0x15, ParticleSet_0x16 = 0x16,
         ParticleSet_0x17 = 0x17, ParticleSet_0x18 = 0x18, ParticleSet_0x19 = 0x19,

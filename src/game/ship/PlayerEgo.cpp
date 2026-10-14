@@ -11,6 +11,7 @@
 #include "game/world/LevelScript.h"
 #include "game/menu/MiningGame.h"
 #include "engine/render/ParticleSystemManager.h"
+#include "engine/render/ParticleSettingsRef.h"
 #include "game/ship/PlayerAsteroid.h"
 #include "game/ship/PlayerWormHole.h"
 #include "game/weapons/Gun.h"
@@ -2612,6 +2613,19 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         && Globals::options[0x0f] != 0 && this->engineSoundId != -1) {
         Vector position = player->getPosition();
         Globals::sound->updateEvent3DAttributes(this->engineSoundId, &position, nullptr, false);
+    }
+
+    Matrix *local = static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(this->geometry->transform));
+    PlayerEgo::vec_up = AbyssEngine::AEMath::MatrixGetUp(*local);
+    if (this->boostingFlag != 0) {
+        ParticleSettings::Interpolate(ParticleSettings::ParticleSet_4,
+                                      ParticleSettings::ParticleSet_6,
+                                      this->getBoostPercentage(), ParticleSettings::ParticleSet_4);
+    } else {
+        auto &current = ParticleSettingsRef::cur.sets[4];
+        uint32_t color = current.color0;
+        current = ParticleSettingsRef::init.sets[4];
+        current.color0 = color;
     }
 
     if (this->route != nullptr) {

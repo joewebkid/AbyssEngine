@@ -4,6 +4,30 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo matrix/particle prelude (2026-10-14)
+
+Android ARM `update` at `0x9e7ac–0x9e82c` calls
+`PaintCanvas::TransformGetLocal` on the ship geometry, passes its
+matrix to `MatrixGetUp`, then assigns `PlayerEgo::vec_up`. The
+`boostingFlag` byte at `+0x13c` chooses `ParticleSettings::Interpolate`
+with sets **4, 6, 4** and `getBoostPercentage`, or copies initial set
+4 into the live table while preserving the live `color0` at slot
+offset `+0x34`. Android IDA lines 84443–84468 and Ghidra lines
+64427–64443 independently corroborate the branches. The extracted
+production-fragment smoke checks both, and the real
+ParticleSettingsRef ABI/runtime smoke passes. Native `gof2`, all 206
+ARM translation units, 37 verifier tests (one skipped), and four
+PlayerEgo smokes pass. Focused `update` source-shape/strict fuzzy is
+**31.4%/10.8%** versus **30.0%/10.2%**. Full report
+`_work/player_visual_prelude_full_20261014.json`: **4,323/4,524**
+covered, **93.26%** source-shape, **82.16%** strict fuzzy,
+**2,478 linked-exact**, **1,065 byte-exact**, **123 extras**. Against
+`_work/player_route_event_full_20261014.json`, linked and byte
+exact-pair losses and gains are zero. The full update tail and
+linked ARM gameplay are not established; the unlabelled iOS dump
+could not independently confirm this exact sequence. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo route/HUD transition (2026-10-14)
 
 Original ARM `update` at `0x9ce86–0x9ce8c` saves a pointer to

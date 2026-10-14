@@ -1,7 +1,30 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo route/HUD transition; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo matrix/particle prelude; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo matrix/particle prelude (2026-10-14)
+
+Original ARM `update` at `0x9e7ac–0x9e82c`, cross-checked with Android
+IDA/Ghidra, obtains the ship transform's Up vector for static
+`PlayerEgo::vec_up` before the route transition. While boosting, it
+interpolates particle sets 4 and 6 into set 4 using
+`getBoostPercentage`; otherwise it restores set 4 from the initial
+table while preserving the live color field at slot offset `+0x34`.
+An extracted production-fragment smoke checks both branches, the
+vector, blend arguments and preserved color. Native `gof2`, 206/206
+ARM units, 37 verifier tests (one skipped), four PlayerEgo smokes,
+and the real ParticleSettingsRef smoke pass. Focused `update`
+source-shape/strict fuzzy rises **30.0%/10.2% → 31.4%/10.8%**;
+the whole function remains non-exact. Full report
+`_work/player_visual_prelude_full_20261014.json`: **4,323/4,524**
+covered, **93.26%** source-shape, **82.16%** strict fuzzy,
+**2,478 linked-exact**, **1,065 byte-exact**, **123 extras**,
+with zero exact-pair losses or gains. The iOS dump did not provide
+a reliably identified corresponding function. Linked ARM gameplay
+and the remaining update tail are unverified. Next: post-route
+cursor/damage state. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo route/HUD transition and route ABI (2026-10-14)
 

@@ -49,10 +49,15 @@ def main():
                               "void PlayerEgo::updateRecovery(int dt) {\n" +
                               "    Player *player = this->player;\n" + source[start:end] + "}\n")
     start = end
-    end = source.index("    if (this->route != nullptr) {", start)
+    end = source.index("    Matrix *local = static_cast<Matrix *>", start)
     fixture = fixture.replace("// PRODUCTION_UPDATE_PLAYER_SOUND",
                               "void PlayerEgo::updatePlayerSound(int dt) {\n" +
                               "    Player *player = this->player;\n" + source[start:end] + "}\n")
+    start = end
+    end = source.index("    if (this->route != nullptr) {", start)
+    fixture = fixture.replace("// PRODUCTION_UPDATE_VISUAL_STATE",
+                              "void PlayerEgo::updateVisualState() {\n" +
+                              source[start:end] + "}\n")
     start = end
     end = source.index("    PE_upd_post(this, dt, radar, hud, radio, arg5);", start)
     fixture = fixture.replace("// PRODUCTION_UPDATE_ROUTE",

@@ -4,6 +4,40 @@
 #include <cstring>
 
 struct Vector { float x, y, z; };
+struct Matrix { Vector up; };
+namespace AbyssEngine { namespace AEMath {
+Vector MatrixGetUp(const Matrix &matrix) { return matrix.up; }
+} }
+struct AEGeometry { unsigned int transform = 17; };
+struct PaintCanvas {
+    Matrix *local = nullptr;
+    int reads = 0;
+    void *TransformGetLocal(unsigned int id) { assert(id == 17); ++reads; return local; }
+};
+struct ParticleDefinition {
+    int count = 0;
+    uint32_t color0 = 0;
+    float lifeBase = 0.0f;
+};
+struct ParticleSettingsRef {
+    struct Table { ParticleDefinition sets[7]; };
+    static Table cur;
+    static Table init;
+};
+ParticleSettingsRef::Table ParticleSettingsRef::cur{};
+ParticleSettingsRef::Table ParticleSettingsRef::init{};
+struct ParticleSettings {
+    enum ParticleSet { ParticleSet_4 = 4, ParticleSet_6 = 6 };
+    static int interpolations;
+    static float blend;
+    static void Interpolate(ParticleSet a, ParticleSet b, float t, ParticleSet out) {
+        assert(a == ParticleSet_4 && b == ParticleSet_6 && out == ParticleSet_4);
+        ++interpolations;
+        blend = t;
+    }
+};
+int ParticleSettings::interpolations = 0;
+float ParticleSettings::blend = -1.0f;
 struct KIPlayer {
     int state = 0;
     bool isDying() { return state == 3; }
@@ -136,12 +170,14 @@ struct GlobalsService {
 namespace Globals {
     FModSound *sound = nullptr;
     GlobalsService *gGlobals = nullptr;
+    PaintCanvas *Canvas = nullptr;
     unsigned char options[100]{};
 }
 static const float g_PE_astApproach = 2500.0f;
 void Vec_assign(void *dst, const void *src) { std::memcpy(dst, src, 3 * sizeof(int)); }
 
 struct PlayerEgo {
+    static Vector vec_up;
     union { int asteroidTarget; void *asteroidTargetPtr; };
     union { int targetFollowCamera; void *targetFollowCameraPtr; };
     union { int miningGame; void *miningGamePtr; };
@@ -163,6 +199,10 @@ struct PlayerEgo {
     int field_0x1c = -1;
     int engineSoundId = -1;
     float handling = 0.0f;
+    AEGeometry *geometry = nullptr;
+    unsigned char boostingFlag = 0;
+    float boostPercentage = 0.0f;
+    int boostPercentReads = 0;
     Route *route = nullptr;
     Vector dockOffsetVec{};
     int64_t shieldRecoveryTimer = 0;
@@ -178,15 +218,18 @@ struct PlayerEgo {
     void updateShield(int dt, Hud *hud);
     void updateRecovery(int dt);
     void updatePlayerSound(int dt);
+    void updateVisualState();
     void updateRoute(Hud *hud);
     void initializeRecoveryAmount(Ship *ship);
     void initializeEngineSound(Ship *ship);
     bool isDead() { return player->hitpoints < 1; }
+    float getBoostPercentage() { ++boostPercentReads; return boostPercentage; }
     Vector getPosition() { return position; }
     int approachAsteroid(Hud *, int, Radar *) { ++approachCount; return 0; }
     int approachDockingPoint(Hud *, int, Radar *) { return 0; }
     void dockToDockingPoint(KIPlayer *, Radar *) { dockedFlag = 0; ++dockPointStops; }
 };
+Vector PlayerEgo::vec_up{};
 
 // PRODUCTION_METHOD
 // PRODUCTION_UPDATE_DOCKING
@@ -194,6 +237,7 @@ struct PlayerEgo {
 // PRODUCTION_UPDATE_SHIELD
 // PRODUCTION_UPDATE_RECOVERY
 // PRODUCTION_UPDATE_PLAYER_SOUND
+// PRODUCTION_UPDATE_VISUAL_STATE
 // PRODUCTION_UPDATE_ROUTE
 // PRODUCTION_RECOVERY_AMOUNT
 // PRODUCTION_ENGINE_SOUND_SELECTION
@@ -398,6 +442,34 @@ int main() {
     ego.updatePlayerSound(36);
     assert(sound.updateCount == 7);
 
+    Matrix matrix{{1.0f, 2.0f, 3.0f}};
+    PaintCanvas canvas;
+    canvas.local = &matrix;
+    Globals::Canvas = &canvas;
+    AEGeometry geometry;
+    ego.geometry = &geometry;
+    ParticleSettingsRef::cur.sets[4].count = 5;
+    ParticleSettingsRef::cur.sets[4].color0 = 0x12345678;
+    ParticleSettingsRef::cur.sets[4].lifeBase = 1.0f;
+    ParticleSettingsRef::init.sets[4].count = 20;
+    ParticleSettingsRef::init.sets[4].color0 = 0xaabbccdd;
+    ParticleSettingsRef::init.sets[4].lifeBase = 9.0f;
+    ego.updateVisualState();
+    assert(canvas.reads == 1 && PlayerEgo::vec_up.x == 1.0f);
+    assert(PlayerEgo::vec_up.y == 2.0f && PlayerEgo::vec_up.z == 3.0f);
+    assert(ParticleSettingsRef::cur.sets[4].count == 20);
+    assert(ParticleSettingsRef::cur.sets[4].lifeBase == 9.0f);
+    assert(ParticleSettingsRef::cur.sets[4].color0 == 0x12345678);
+    assert(ParticleSettings::interpolations == 0 && ego.boostPercentReads == 0);
+    matrix.up = {-1.0f, 0.0f, 1.0f};
+    ego.boostingFlag = 1;
+    ego.boostPercentage = 0.25f;
+    ego.updateVisualState();
+    assert(canvas.reads == 2 && PlayerEgo::vec_up.x == -1.0f);
+    assert(ParticleSettings::interpolations == 1 && ParticleSettings::blend == 0.25f);
+    assert(ego.boostPercentReads == 1);
+    assert(ParticleSettingsRef::cur.sets[4].color0 == 0x12345678);
+
     const int oldEvents = hud.events;
     ego.updateRoute(&hud);
     assert(hud.events == oldEvents);
@@ -423,5 +495,5 @@ int main() {
     ego.dockedFlag = 1;
     ego.updateDocking(&radar, &hud, &radio);
     assert(ego.dockedFlag == 0 && ego.dockPointStops == 1);
-    std::puts("PlayerEgo docking/cargo/shield/repair/sound/route smoke: OK");
+    std::puts("PlayerEgo docking/cargo/shield/repair/sound/visual/route smoke: OK");
 }

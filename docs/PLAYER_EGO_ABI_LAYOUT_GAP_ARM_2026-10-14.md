@@ -1,5 +1,38 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Matrix/particle prelude before the route (2026-10-14)
+
+Original Android ARM `PlayerEgo::update` at `0x9e7ac–0x9e82c` loads
+the ship geometry at `PlayerEgo+0x08`, reads its transform handle at
+`+0x0c`, and calls `PaintCanvas::TransformGetLocal` followed by
+`MatrixGetUp`. The resulting vector is assigned to the exported
+static `PlayerEgo::vec_up` (the destination GOT relocation resolves
+to that symbol). At `0x9e7d0` it tests the boost byte at
+`PlayerEgo+0x13c`. The active branch calls
+`ParticleSettings::Interpolate(4, 6, getBoostPercentage(), 4)`.
+The inactive branch copies `ParticleSettingsRef::init.sets[4]` to
+`cur.sets[4]`, saving and restoring the live slot's `color0` at
+offset `+0x34` around the assignment (`0x9e80c–0x9e828`).
+IDA lines 84443–84468 and independent Android Ghidra lines
+64427–64443 corroborate the same ordering and branches. The iOS
+dump has no reliably identified counterpart for this sequence,
+so it is not used as confirmation.
+
+The production-fragment host smoke exercises Up-vector assignment,
+both boost paths, interpolation arguments, and preserving live
+`color0` while restoring other set fields. The real
+ParticleSettingsRef ABI/runtime smoke also passes. Native `gof2`,
+206/206 ARM translation units, 37 verifier tests (one skipped), and
+all four PlayerEgo smokes pass. Focused `update` source-shape/strict
+fuzzy rises **30.0%/10.2% → 31.4%/10.8%**, not an exact match.
+Full report `_work/player_visual_prelude_full_20261014.json` has
+**4,323/4,524** original functions compared, **93.26%** average
+source-shape, **82.16%** strict fuzzy, **2,478 linked-exact**,
+**1,065 byte-exact**, and **123 extras**. Relative to the route
+checkpoint, linked and byte exact-pair losses and gains are zero.
+Linked ARM gameplay and the remainder of `PE_upd_post` are not
+verified. Next: bounded post-route cursor/damage-state recovery.
+
 ## Route transition and ABI correction (2026-10-14)
 
 Original Android ARM `PlayerEgo::update` stores a pointer to
