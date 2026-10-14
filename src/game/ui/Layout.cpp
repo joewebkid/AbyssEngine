@@ -468,6 +468,26 @@ Layout::Layout() {
     this->field_0x288 = n9 ? 20 : 0;
     this->field_0x28c = n9 ? -19 : 0;
     this->field_0x290 = n9 ? 4 : retina ? 7 : 3;
+    // Android Layout::Layout @ 0xd1028: MenuTouchWindow copies this seven-word group.
+    if (hd) {
+        this->field_0x294_buttonWidth = 281; this->field_0x298_buttonYBias = 118;
+        this->field_0x29c_buttonRowGap = 16; this->field_0x2a0_listRowGap = 16;
+        this->field_0x2a4_metricA = 154; this->field_0x2a8_metricB = 140;
+        this->field_0x2ac_metricC = 147;
+    } else if (n9) {
+        this->field_0x294_buttonWidth = 360; this->field_0x298_buttonYBias = 146;
+        this->field_0x29c_buttonRowGap = 8; this->field_0x2a0_listRowGap = 6;
+        this->field_0x2a4_metricA = 198; this->field_0x2a8_metricB = 180;
+        this->field_0x2ac_metricC = 189;
+    } else {
+        this->field_0x294_buttonWidth = retina ? 400 : 200;
+        this->field_0x298_buttonYBias = retina ? 168 : 84;
+        this->field_0x29c_buttonRowGap = retina ? 24 : 12;
+        this->field_0x2a0_listRowGap = retina ? 24 : 12;
+        this->field_0x2a4_metricA = retina ? 220 : 110;
+        this->field_0x2a8_metricB = retina ? 200 : 100;
+        this->field_0x2ac_metricC = retina ? 210 : 105;
+    }
 
     this->field_0x2f4 = hd ? 112 : ipadLarge ? 160 : ipad ? 80 : n9 ? 45 : retina ? 60 : 30;
     // The original writes IEEE-754 float bits into this 32-bit storage slot.

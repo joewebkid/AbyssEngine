@@ -1,5 +1,37 @@
 # Layout constructor: platform metrics (2026-10-14)
 
+## Save-menu button and row metrics (follow-up)
+
+Android `Layout::Layout()` at `0xd1028` writes seven previously
+zero-filled words at `+0x294..+0x2ac`. `MenuTouchWindow` copies the
+whole group into its button width/Y bias, row gaps and three metrics;
+its language-button placement and save-list drawing then use them.
+IDA lines 128010–128013 give iPad HD's packed words, 128456–128459
+give N9, and 128536–128556 give ordinary low/Retina vector selection.
+Raw Thumb at `0xd117e–0xd118c`, `0xd1a8c–0xd1a94` and
+`0xd1be4–0xd1c44` cross-checks the store offsets and vector copy.
+
+| Profile | `+294` | `+298` | `+29c` | `+2a0` | `+2a4` | `+2a8` | `+2ac` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| ordinary low, iPad low, iPad Large low | 200 | 84 | 12 | 12 | 110 | 100 | 105 |
+| ordinary Retina, iPad Retina | 400 | 168 | 24 | 24 | 220 | 200 | 210 |
+| N9 | 360 | 146 | 8 | 6 | 198 | 180 | 189 |
+| iPad HD | 281 | 118 | 16 | 16 | 154 | 140 | 147 |
+
+The production-constructor smoke checks all seven words across seven
+profiles. Native `gof2`, 206/206 ARM units, three Layout/TouchButton
+smokes and 37 verifier tests (one skipped) pass. Focused C1/C2
+source-shape rises **41.0% → 43.2%**, while strict fuzzy falls
+**9.5% → 9.0%**; neither alias is exact. Full report
+`_work/layout_save_menu_metrics_full_20261014.json` covers
+**4,323/4,524** original functions at **93.28%** average source-shape
+and **82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras**, zero skipped units and no exact-pair
+losses or gains against the Wanted-width checkpoint. Live save-menu
+interaction, asset-backed drawing and ARM32 runtime remain unverified.
+Next: audit `MenuTouchWindow` save/load interaction against ARM and
+exercise the now-populated layout fields in an extracted-method smoke.
+
 ## Wanted-window width and adjacent metrics (follow-up)
 
 Android `Layout::Layout()` at `0xd1028` writes `+0xa0..+0xac` and

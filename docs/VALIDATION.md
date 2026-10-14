@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Layout save-menu metrics (2026-10-14)
+
+Android `Layout::Layout()` at `0xd1028`, IDA lines 128010–128013,
+128456–128459 and 128536–128556, plus Thumb stores at
+`0xd117e–0xd118c`, `0xd1a8c–0xd1a94` and `0xd1be4–0xd1c44`,
+establish seven `+0x294..+0x2ac` words copied by `MenuTouchWindow`.
+The production constructor smoke checks seven profiles; native
+`gof2`, 206/206 ARM units, three Layout/TouchButton smokes and 37
+verifier tests (one skipped) pass. Focused C1/C2 source-shape rises
+**41.0% → 43.2%**; strict fuzzy falls **9.5% → 9.0%**. Full report
+`_work/layout_save_menu_metrics_full_20261014.json` covers
+**4,323/4,524** functions at **93.28%** average source-shape and
+**82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras** and zero skipped units. Exact
+pair sets have no losses or gains against
+`_work/layout_wanted_width_metrics_full_20261014.json`. Linked
+ARM32 UI behavior and asset-backed visuals are unverified. See
+[the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
+
 ## Layout Wanted-window width metrics (2026-10-14)
 
 Android `Layout::Layout()` at `0xd1028`, IDA lines 128000–128005,

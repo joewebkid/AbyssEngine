@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (Layout Wanted width metrics; older subsystem
+Last reviewed: 2026-10-14 (Layout save-menu metrics; older subsystem
 snapshots retain their dates)
+
+## Layout save-menu button and row metrics (2026-10-14)
+
+Android `Layout::Layout` at `0xd1028` writes the previously zero-filled
+`+0x294..+0x2ac` group copied by `MenuTouchWindow` for button widths,
+row gaps and save-list placement. IDA platform branches and Thumb
+scalar/vector stores confirm ordinary low/Retina, N9 and iPad HD
+values. The production constructor smoke checks seven profiles.
+Native `gof2`, 206/206 ARM units, three Layout/TouchButton smokes and
+37 verifier tests (one skipped) pass. Focused C1/C2 source-shape rises
+**41.0% → 43.2%**, while strict fuzzy falls **9.5% → 9.0%**; neither
+alias is exact. Full report
+`_work/layout_save_menu_metrics_full_20261014.json` compares
+**4,323/4,524** original functions at **93.28%** average source-shape
+and **82.18%** strict fuzzy, with **2,479 linked-exact**,
+**1,065 byte-exact**, **123 extras** and zero skipped units. Exact pair
+sets have no losses or gains against the previous Layout checkpoint.
+Live save-menu interaction, asset-backed drawing and ARM32 runtime
+remain unverified. Next: audit `MenuTouchWindow` save/load interaction
+and exercise the populated metrics. See
+[the constructor audit](LAYOUT_CONSTRUCTOR_METRICS_ARM_2026-10-14.md).
 
 ## Layout Wanted-window width metrics (2026-10-14)
 
