@@ -3569,59 +3569,46 @@ void PlayerEgo::addGun(Array<Gun *> *arr, int x) {
 
 void PlayerEgo::render(bool allowHud) {
     Level *level = this->level;
-
-    if (((PlayerEgo *) (this))->isDead() == 0) {
-        if (this->field_0x309 == 0)
-            return;
-
-        if (this->explosion != 0) {
-            ((Explosion *) (this->explosion))->render();
-            if (this->explosionTimer <= 0xbb7)
-                ((AEGeometry *) (this->geometry))->render();
-        }
-        if (this->explosion2 != 0)
-            ((Explosion *) (this->explosion2))->render();
-
-        ((AEGeometry *) (this->geometry))->render();
-
-        if (((void *&) this->field_0xac) != 0 && this->emergencySystemTimer >= 1)
-            ((AEGeometry *) (this->geometry))->render();
-
-        if (((char &) this->gunMuzzleRoot) != 0)
-            ((AEGeometry *) (this->gunYawGeo))->render();
-
-        if (this->turretMode != 0) {
-            if (this->field_0x30 != 0)
-                ((AEGeometry *) (this->field_0x30))->setVisible(this->turretActive != 0);
-            ((AEGeometry *) (this->field_0x2c))->render();
-        }
-
-        if (this->tractorBeam != 0)
-            ((TractorBeam *) (this->tractorBeam))->render();
-
-        Array<RepairBeam *> *beams = this->repairBeams;
-        if (beams != 0) {
-            for (unsigned int i = 0; i < beams->size(); i++) {
-                (*beams)[i]->render();
-            }
-        }
-
-        int flag = 1;
-        if (this->freeze == 0 && allowHud != 0)
-            flag = (this->dockingPointIndex - 1) != 0 ? 1 : 0;
-        else
-            flag = 1;
-        level->enableMovingStars(flag != 0);
-    } else {
+    if (isDead()) {
         if (this->explosion != 0) {
             ((Explosion *) (this->explosion))->render();
             if (this->explosionTimer < 3000)
                 ((AEGeometry *) (this->geometry))->render();
         }
-        if (((void *&) this->field_0xac) != 0)
-            ((Explosion *) (this->explosion))->render();
+        if (this->explosion2 != 0)
+            ((Explosion *) (this->explosion2))->render();
         level->enableMovingStars(true);
+        return;
     }
+
+    if (this->requestedVisible == 0)
+        return;
+
+    if (this->explosion != 0)
+        ((Explosion *) (this->explosion))->render();
+    ((AEGeometry *) (this->geometry))->render();
+    if (this->field_0xac != 0 && this->emergencySystemTimer >= 1)
+        ((AEGeometry *) (intptr_t) this->field_0xac)->render();
+    if (((char &) this->gunMuzzleRoot) != 0)
+        ((AEGeometry *) (this->gunYawGeo))->render();
+
+    if (this->turretMode != 0) {
+        if (this->field_0x30 != 0)
+            ((AEGeometry *) (this->field_0x30))->setVisible(this->turretActive != 0);
+        ((AEGeometry *) (this->field_0x2c))->render();
+    }
+
+    if (this->tractorBeam != 0)
+        ((TractorBeam *) (this->tractorBeam))->render();
+    if (this->repairBeams != 0) {
+        for (unsigned int i = 0; i < this->repairBeams->size(); i++)
+            (*this->repairBeams)[i]->render();
+    }
+
+    bool movingStars = false;
+    if (this->freeze == 0 && allowHud)
+        movingStars = this->dockingPointIndex != 1;
+    level->enableMovingStars(movingStars);
 }
 
 

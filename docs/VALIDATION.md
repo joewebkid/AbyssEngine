@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo render dispatch (2026-10-14)
+
+Android Thumb `0xa1b78–0xa1c56` and IDA lines 87170–87237 confirm
+the dead/live branch split, `+0x309` visibility gate, emergency/turret
+geometry and moving-stars predicate. The extracted production-method
+smoke, native `gof2`, 206/206 ARM translation units and 37 verifier
+tests (one skipped) pass. Focused `render` source-shape/strict fuzzy
+changes **86.8%/41.4% → 97.2%/60.4%**; no exact claim is made.
+Full report `_work/player_render_full_20261014.json` compares
+**4,323/4,524**, with **201 missing**, **123 extras**, zero skipped,
+**93.39%** average source-shape, **82.29%** strict fuzzy,
+**2,482 linked-exact** and **1,065 byte-exact**. Both exact pair
+sets lose none against `_work/player_check_turret_full_20261014.json`.
+Live ARM32 rendering is unverified. See
+[the render audit](PLAYER_EGO_RENDER_ARM_2026-10-14.md).
+
 ## PlayerEgo turret construction and stream return (2026-10-14)
 
 Android Thumb and IDA confirm turret geometry at `+0xdc/+0x28/+0x2c/+0x30`,
