@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo late movement/visibility ABI repair; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo HUD/constructor group; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo HUD/constructor group (2026-10-14)
+
+Confirmed Android ARM fields for hard-core mode, agility, prior
+free cargo space, crosshair/throttle images and the blink timer
+no longer overlap. The constructor now scales ship handling by
+agility, initializes the cargo flag, and creates five HUD images;
+`draw` reads the matching handles. Native `gof2`, 206/206 ARM
+units, 37 verifier tests (one skipped), and three PlayerEgo smokes
+pass. Full corpus: **4,323/4,524** covered, **93.24%**
+source-shape, **82.11%** strict fuzzy, **2,473 linked-exact**,
+**1,061 byte-exact**, **123 extras** and zero lost exact pairs.
+Constructor source-shape is **29.0%**, not a completion signal.
+Next: restore cargo-state refresh in `update` and resolve the
+unverified position argument in `checkForTurret`. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo late movement/visibility ABI repair (2026-10-14)
 

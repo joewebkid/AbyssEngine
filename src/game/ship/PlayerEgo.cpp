@@ -1665,6 +1665,9 @@ PlayerEgo::PlayerEgo(Player *player) {
     this->switchToStandardCam = 0;
     this->switchToFreeLookCam = 0;
     this->field_0xb2 = 0;
+    this->agility = 0.0f;
+    this->volatileGoods = 0;
+    this->lastFreeSpace = 0;
     if (ship != 0) {
         this->field_0xd0 = ship->getBoostDelay();
         int speed = ship->getBoostSpeed();
@@ -1672,7 +1675,22 @@ PlayerEgo::PlayerEgo(Player *player) {
         this->boostSpeed = (int) (speedRate + speedRate) + 2;
         this->field_0xcc = ship->getBoostTime();
         this->handling = ship->getHandling();
+        int agility = ship->getAgility();
+        this->agility = (float) agility;
+        float handling = this->handling;
+        this->handling = (handling + handling * ((float) agility / 100.0f)) * 20.0f;
+        this->volatileGoods = ship->hasVolatileGoods();
+        this->lastFreeSpace = ship->getFreeSpace();
     }
+
+    this->hardCoreMode = PE_status()->hardCoreMode();
+    this->collidesWithStationFlag = 0;
+    this->crosshairBlinkTimer = 0;
+    PaintCanvas::gCanvas->Image2DCreate(0x4c0, this->radarBlipImage1);
+    PaintCanvas::gCanvas->Image2DCreate(0x4ce, this->radarBlipImage2);
+    PaintCanvas::gCanvas->Image2DCreate(0x1f5e, this->radarBlipImage3);
+    PaintCanvas::gCanvas->Image2DCreate(0x1f5d, this->radarBlipImage4);
+    PaintCanvas::gCanvas->Image2DCreate(0x548, this->dockArrowImage);
 
     ((int &) this->explosion) = 0;
     ((int &) this->explosion2) = 0;
@@ -2353,27 +2371,27 @@ void PlayerEgo::draw(bool allowHud) {
         && ((Ship *) (PE_status()->getShip()))->getFirstEquipmentOfSort(0x23) != 0) {
         if (((Radar *) (this->field_0x14))->isPlasmaInRange() != 0) {
             float *p = g_PE_dr_posLock;
-            ((PaintCanvas *) (long) (canvas))->DrawImage2D((unsigned int) (this->radarBlipImage3), (int) p[0],
+            ((PaintCanvas *) (long) (canvas))->DrawImage2D((unsigned int) (this->radarBlipImage4), (int) p[0],
                                                            (int) p[1], (unsigned char) (0x11), (unsigned char) (0x44));
         } else {
             float *p = g_PE_dr_posNoLock;
-            ((PaintCanvas *) (long) (canvas))->DrawImage2D((unsigned int) (this->radarBlipImage2), (int) p[0],
+            ((PaintCanvas *) (long) (canvas))->DrawImage2D((unsigned int) (this->radarBlipImage3), (int) p[0],
                                                            (int) p[1], (unsigned char) (0x11), (unsigned char) (0x44));
         }
     } else {
         if ((char &) this->level->field_30 != 0) {
             float *p = g_PE_dr_posBlink;
-            ((PaintCanvas *) (long) (canvas))->DrawImage2D((unsigned int) (this->radarBlipImage1), (int) p[0],
+            ((PaintCanvas *) (long) (canvas))->DrawImage2D((unsigned int) (this->radarBlipImage2), (int) p[0],
                                                            (int) p[1], (unsigned char) (0x11), (unsigned char) (0x44));
-            int t = this->shakeAccum + this->shakeIntensity;
-            this->shakeAccum = t;
+            int t = this->crosshairBlinkTimer + this->shakeIntensity;
+            this->crosshairBlinkTimer = t;
             if (t >= 0xc9)
                 (char &) this->level->field_30 = 0;
         } else {
             float *p = g_PE_dr_posNormal;
-            ((PaintCanvas *) (long) (canvas))->DrawImage2D((unsigned int) (this->dockArrowImage), (int) p[0],
+            ((PaintCanvas *) (long) (canvas))->DrawImage2D((unsigned int) (this->radarBlipImage1), (int) p[0],
                                                            (int) p[1], (unsigned char) (0x11), (unsigned char) (0x44));
-            this->shakeAccum = 0;
+            this->crosshairBlinkTimer = 0;
         }
     }
 
@@ -2550,7 +2568,7 @@ void PlayerEgo::drawThrottle() {
     PaintCanvas *canvas = Globals::Canvas;
     canvas->SetColor((unsigned int) ((int) (frac * 255.0f) - 256));
 
-    int img = this->hpGaugeImage;
+    int img = this->dockArrowImage;
     int w = canvas->GetImage2DWidth(img);
     int h = canvas->GetImage2DHeight(img);
 

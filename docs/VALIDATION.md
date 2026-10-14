@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo HUD/constructor group (2026-10-14)
+
+IDA constructor lines 80339–80349 and 80415–80439 establish the
+agility/handling calculation, hard-core and cargo fields, and
+five Image2D resource IDs. `draw` and `drawThrottle` at lines
+87313–87410 confirm their consumers. ARM32 offset assertions
+cover the reconstructed members. Native `gof2`, 206/206 ARM
+units, 37 verifier tests (one skipped), and three PlayerEgo smokes
+pass. Full report `_work/player_hud_ctor_full_20261014.json`:
+**4,323/4,524** covered, **93.24%** source-shape, **82.11%**
+strict fuzzy, **2,473 linked-exact**, **1,061 byte-exact**,
+**123 extras**. Against
+`_work/player_abi_late_final_full_20261014.json`, exact-pair
+losses are zero and `collidesWithStation` adds one linked/byte
+match. Runtime HUD visuals and cargo-state refresh are not yet
+verified. See
+[the offset evidence](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo late movement/visibility ABI repair (2026-10-14)
 
 Original IDA `resetMovement`, `roll`, `rotate`, `setRotation`,

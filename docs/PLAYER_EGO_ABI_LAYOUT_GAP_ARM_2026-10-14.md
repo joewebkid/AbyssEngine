@@ -295,3 +295,39 @@ existing host smokes do not exercise `setVisible` or linked ARM32
 gameplay. Next, inspect the constructor's large initialization
 gaps and the interaction of render/requested/exhaust visibility
 in original update paths before claiming full class behavior.
+
+## HUD, cargo and handling constructor group (2026-10-14)
+
+Original constructor lines 80339–80349 save the ship's agility at
+`+0x254`, scale handling at `+0x154` by
+`(1 + agility / 100) * 20`, and set the hard-core flag at `+0x235`.
+Lines 80415–80439 initialize the volatile-goods flag at `+0x398`,
+the previous free-space value at `+0x250`, and five 2D image
+handles at `+0x23c..+0x248` and `+0x238`. Original `draw` uses
+the four crosshair handles at `+0x23c..+0x248` and the blink
+timer at `+0x24c` (IDA lines 87313–87347); `drawThrottle`
+uses the fifth handle at `+0x238` (lines 87390–87410).
+The former C++ overlaid these members with pitch/yaw ramps and
+omitted image creation. The header now has distinct members,
+with pitch/yaw ramps at the ARM-confirmed `+0x258/+0x25c`.
+The constructor initializes the confirmed gameplay fields and
+creates the images in the original resource-ID order. `draw`
+selects each matching image and updates its separate timer.
+
+Native `gof2`, all 206 ARM translation units, 37 verifier tests
+(one skipped), and three PlayerEgo smokes pass. Full corpus
+`_work/player_hud_ctor_full_20261014.json` covers
+**4,323/4,524** original functions at **93.24%** average
+source-shape and **82.11%** strict fuzzy, with **2,473
+linked-exact**, **1,061 byte-exact** and **123 extras**.
+Compared with the late-layout checkpoint, exact-pair sets lose
+none and gain the linked/byte-exact `collidesWithStation` pair.
+Constructor source-shape rises from 19.6% to 29.0%; it remains
+non-exact and far from fully reconstructed.
+
+The saved free-space/volatile-goods update during gameplay is
+still absent from the C++ `update` path, and the current
+`checkForTurret` position argument aliases the throttle image
+handle as a Vector. Neither has been validated in linked ARM32
+gameplay. These are the next semantic priorities; do not infer
+full constructor or HUD correctness from the higher score.
