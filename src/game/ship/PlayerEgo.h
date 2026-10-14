@@ -206,11 +206,13 @@ public:
     int shakeAccum;
     float pitchRamp;
     float yawRamp;
+    char _unknown_0x254[20];
     double rollAccum;
     double yawAccumD;
     double pitchAccumD;
     float yawAccumF;
     int field_0x2a4;
+    char _unknown_0x288[32];
     uint8_t field_0x2a8;
     uint8_t rollDirection;
     AbyssEngine::AEMath::Matrix rollMatrix;
@@ -224,6 +226,7 @@ public:
     int smokeSystem;
     int explosionSmoke;
     uint8_t field_0x309;
+    uint8_t requestedVisible;
     int emergencySystemTimer;
     int emergencyVal1;
     AbyssEngine::AEMath::Vector emergencyVec;
@@ -242,6 +245,7 @@ public:
     uint8_t autoTurretEnabled;
     uint8_t dockedFlag;
     void *easeMatrix;
+    char _unknown_0x35c[4];
     int dockTotalAmount;
     int dockTransferedAmount;
     int cloakRechargeMax;
@@ -253,10 +257,10 @@ public:
     int cloakMaterial1;
     int cloakMaterial2;
     int cloakMaterial3;
+    char _unknown_0x38c[8];
     void *field_0x394;
     uint8_t volatileGoods;
     uint8_t lostMiningGameFlag;
-    AbyssEngine::AEMath::Matrix turretHudMatrix;
 
     PlayerEgo(Player *player);
 
@@ -642,6 +646,21 @@ static_assert(__builtin_offsetof(PlayerEgo, hackingGame) == 0x1e8, "PlayerEgo::h
 static_assert(__builtin_offsetof(PlayerEgo, turretActive) == 0x1a0, "PlayerEgo::turretActive offset");
 static_assert(__builtin_offsetof(PlayerEgo, cloak) == 0x1b0, "PlayerEgo::cloak offset");
 static_assert(__builtin_offsetof(PlayerEgo, hud) == 0x220, "PlayerEgo::hud offset");
+static_assert(__builtin_offsetof(PlayerEgo, rollAccum) == 0x268, "PlayerEgo::rollAccum offset");
+static_assert(__builtin_offsetof(PlayerEgo, rollDirection) == 0x2a9, "PlayerEgo::rollDirection offset");
+static_assert(__builtin_offsetof(PlayerEgo, rollMatrix) == 0x2ac, "PlayerEgo::rollMatrix offset");
+static_assert(__builtin_offsetof(PlayerEgo, rotateX) == 0x2e8, "PlayerEgo::rotateX offset");
+static_assert(__builtin_offsetof(PlayerEgo, explosionTimer) == 0x2f8, "PlayerEgo::explosionTimer offset");
+static_assert(__builtin_offsetof(PlayerEgo, field_0x309) == 0x308, "PlayerEgo::renderVisibility offset");
+static_assert(__builtin_offsetof(PlayerEgo, requestedVisible) == 0x309, "PlayerEgo::requestedVisibility offset");
+static_assert(__builtin_offsetof(PlayerEgo, autoLevel) == 0x324, "PlayerEgo::autoLevel offset");
+static_assert(__builtin_offsetof(PlayerEgo, visible) == 0x32e, "PlayerEgo::visible offset");
+static_assert(__builtin_offsetof(PlayerEgo, exhaustVisible) == 0x32f, "PlayerEgo::exhaustVisible offset");
+static_assert(__builtin_offsetof(PlayerEgo, dockTotalAmount) == 0x360, "PlayerEgo::dockTotalAmount offset");
+static_assert(__builtin_offsetof(PlayerEgo, field_0x394) == 0x394, "PlayerEgo::materialList offset");
+static_assert(__builtin_offsetof(PlayerEgo, volatileGoods) == 0x398, "PlayerEgo::volatileGoods offset");
+static_assert(__builtin_offsetof(PlayerEgo, lostMiningGameFlag) == 0x399, "PlayerEgo::lostMiningGameFlag offset");
+static_assert(sizeof(PlayerEgo) == 0x3a0, "PlayerEgo ARM32 allocation size");
 #endif
 
 #endif

@@ -274,8 +274,9 @@ void MatrixGetPosition(void *, void *);
 void *MovingStars_ctor(void *self);
 
 void PlayerEgo::setVisible(bool v) {
+    this->requestedVisible = v;
     this->visible = v;
-    this->field_0x309 = v;
+    this->setExhaustVisible(v);
 }
 
 // IDA 0x9aea4: _ZN9PlayerEgo5boostEv
@@ -1651,7 +1652,6 @@ void PlayerEgo::throttleChanged() {
 PlayerEgo::PlayerEgo(Player *player) {
     new (matrix_0x40_storage) AbyssEngine::AEMath::Matrix();
     this->rollMatrix = AbyssEngine::AEMath::Matrix();
-    this->turretHudMatrix = AbyssEngine::AEMath::Matrix();
 
     this->player = (void *) player;
     player->setPlayShootSound(true, 2);
@@ -1681,7 +1681,8 @@ PlayerEgo::PlayerEgo(Player *player) {
     this->miningGame = 0;
     this->hackingGame = 0;
     this->visible = 1;
-    this->field_0x309 = 1;
+    this->field_0x309 = 0;
+    this->requestedVisible = 1;
     this->exhaustVisible = 1;
     this->dockingPointIndex = -1;
 

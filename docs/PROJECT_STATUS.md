@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo HUD/turret ABI repair; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo late movement/visibility ABI repair; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo late movement/visibility ABI repair (2026-10-14)
+
+Android ARM confirms late movement, roll-Matrix, rotation,
+explosion-timer, visibility, dock-total and material/volatile
+offsets. The header now matches these addresses at the original
+`0x3a0` class size, and `setVisible` again calls
+`setExhaustVisible` to update particle emission. Native `gof2`,
+all 206 ARM units, 37 verifier tests (one skipped) and three
+PlayerEgo smokes pass. Full corpus: **4,323/4,524** covered,
+**93.23%** source-shape, **82.09%** strict fuzzy, **2,472
+linked-exact**, **1,060 byte-exact** and **123 extras**; exact-pair
+losses are zero. Constructor shape remains only **19.6%** and
+linked ARM gameplay is untested. Next: reconstruct constructor
+initialization and validate the distinct visibility flags.
+See [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo HUD/turret ABI repair (2026-10-14)
 

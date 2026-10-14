@@ -252,3 +252,46 @@ the explosion timer is at `+0x2c8` versus original `+0x2f8`.
 The trailing Matrix in the C++ has no confirmed original counterpart.
 Next, map the intervening movement/rotation fields from ARM and
 remove or relocate members only when their addresses are supported.
+
+## Late movement, visibility and terminal offsets repaired (2026-10-14)
+
+The original `resetMovement` at IDA lines 81026–81035 zeros
+`+0x268..+0x27f`. `roll` at lines 82414–82503 uses a direction
+byte at `+0x2a9`, a Matrix at `+0x2ac`, a rolling flag at
+`+0x2f4` and auto-level at `+0x324`; the constructor calls the
+Matrix constructor at `+0x2ac` (line 80119). Original `rotate`
+and `setRotation` use angles at `+0x2e8..+0x2f0`, and
+`explosionEnded` reads its timer at `+0x2f8`. The C++ now reserves
+the intervening unidentified ranges at `+0x254..+0x267` and
+`+0x288..+0x2a7`, placing these members at the confirmed offsets.
+The trailing C++ Matrix was removed: the original constructor has
+no corresponding third Matrix construction.
+
+Original `setVisible` (IDA line 87263) writes `+0x309` and
+`+0x32e`, then calls `setExhaustVisible`, which writes `+0x32f`
+and updates particle emission. The C++ had conflated the first
+flag with the separate render-visibility byte at `+0x308` and
+omitted the exhaust call. Both flags and the call are now
+restored. Original accessors/constructor also support dock totals
+at `+0x360/+0x364`, material-list pointer at `+0x394`, and
+volatile/mining flags at `+0x398/+0x399`; bounded unidentified
+storage aligns them. ARM32 assertions cover the named anchors and
+the class remains `0x3a0` bytes.
+
+Native `gof2`, all 206 ARM translation units, 37 verifier tests
+(one skipped), and three PlayerEgo smokes pass. Full corpus
+`_work/player_abi_late_final_full_20261014.json` covers
+**4,323/4,524** original functions at **93.23%** source-shape
+and **82.09%** strict fuzzy, with **2,472 linked-exact**,
+**1,060 byte-exact** and **123 extras**. Against the preceding
+HUD checkpoint, exact-pair sets lose none and gain 11 linked and
+9 byte matches. `setVisible` source-shape rises from 53.3% to
+100%, but is not exact. Constructor source-shape falls from 21.7%
+to 19.6% after removing the unsupported third Matrix; its full
+initialization is still not reconstructed.
+
+The placeholder ranges have no assigned semantics, and the
+existing host smokes do not exercise `setVisible` or linked ARM32
+gameplay. Next, inspect the constructor's large initialization
+gaps and the interaction of render/requested/exhaust visibility
+in original update paths before claiming full class behavior.

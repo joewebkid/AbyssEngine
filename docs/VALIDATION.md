@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo late movement/visibility ABI repair (2026-10-14)
+
+Original IDA `resetMovement`, `roll`, `rotate`, `setRotation`,
+`explosionEnded`, `setVisible`, dock-total accessors, `setShip`
+and `hasVolatileGoods` establish offsets through `+0x399`.
+ARM32 offset and size assertions match them. The omitted
+`setExhaustVisible` call has been restored; focused `setVisible`
+source-shape is 100%, though it is not exact. Native `gof2`,
+206/206 ARM units, 37 verifier tests (one skipped), and three
+PlayerEgo smokes pass. Full report
+`_work/player_abi_late_final_full_20261014.json`:
+**4,323/4,524** covered, **93.23%** source-shape, **82.09%**
+strict fuzzy, **2,472 linked-exact**, **1,060 byte-exact**,
+**123 extras**. Compared with
+`_work/player_abi_hud_full_20261014.json`, exact-pair losses
+are zero; gains are 11 linked and 9 byte. Constructor semantics
+and linked ARM32 gameplay remain unverified. See
+[the offset evidence](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo HUD/turret ABI repair (2026-10-14)
 
 Original Android ARM `getHUD` reads `+0x220` (IDA line 87490),
