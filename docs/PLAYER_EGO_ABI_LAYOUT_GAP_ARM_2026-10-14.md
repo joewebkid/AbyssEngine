@@ -219,3 +219,36 @@ checkpoint, exact-pair sets have zero losses and one linked gain.
 HUD remains `+0x218` versus original `+0x220` despite the equal
 overall `0x3a0` class size. Later offsets and full linked ARM32
 runtime behavior are not yet verified; they are the next priority.
+
+## HUD and turret aliases repaired (2026-10-14)
+
+Original `getHUD` at IDA line 87490 reads DWORD 136 (`+0x220`),
+while the former ARM32 header placed `hud` at `+0x218`. The
+intervening eight bytes remain unidentified and are now reserved
+without assigning guessed semantics. Original `checkForTurret` at
+IDA lines 82047 and 82067 reads the byte at `+0x1a0` and pointer
+at `+0x1b0`; `approachDockingPoint` at line 85693 also reads the
+byte at `+0x1a0`. These are the existing `turretActive` and `cloak`
+members. The late duplicate members were removed, and their three
+uses now refer to the confirmed early members. ARM32 offset
+assertions cover all three addresses; the record size remains
+`0x3a0`.
+
+Native `gof2`, all 206 ARM translation units, 37 verifier tests
+(one skipped), and three PlayerEgo smokes pass. Full corpus
+`_work/player_abi_hud_full_20261014.json` covers **4,323/4,524**
+original functions at **93.20%** average source-shape and **81.98%**
+strict fuzzy, with **2,461 linked-exact**, **1,051 byte-exact** and
+**123 extras**. Relative to the camera-handling checkpoint, exact
+pair sets lose none and gain two linked matches (`getHUD` and
+`setTurretPosition`) and one byte match (`getHUD`). `getHUD` is now
+100% source-shape and byte-exact. The two larger turret/docking
+functions remain non-exact.
+
+This does not prove full `PlayerEgo` ABI or runtime behavior. The
+current roll Matrix is at `+0x27c` versus original construction at
+`+0x2ac`; `rotateX` is at `+0x2b8` versus original `+0x2e8`, and
+the explosion timer is at `+0x2c8` versus original `+0x2f8`.
+The trailing Matrix in the C++ has no confirmed original counterpart.
+Next, map the intervening movement/rotation fields from ARM and
+remove or relocate members only when their addresses are supported.

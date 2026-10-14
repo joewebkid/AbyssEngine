@@ -1133,7 +1133,7 @@ void PlayerEgo::checkForTurret() {
         this->gunExtraGeo = g;
         ((AEGeometry *) (this->gunYawGeo))->addChild((uint32_t)(uintptr_t)g);
         void *tf = PaintCanvas::gCanvas->TransformGetTransform((unsigned int) ((unsigned int) (unsigned long) PaintCanvas::gCanvas));
-        ((AbyssEngine::Transform *) (tf))->SetVisible(this->gunExtraVisible != 0);
+        ((AbyssEngine::Transform *) (tf))->SetVisible(this->turretActive != 0);
     }
 
     void *tf = PaintCanvas::gCanvas->TransformGetTransform((unsigned int) ((unsigned int) (unsigned long) PaintCanvas::gCanvas));
@@ -1149,7 +1149,7 @@ void PlayerEgo::checkForTurret() {
     ((AEGeometry *) (this->gunMuzzleRoot))->addChild((uint32_t)(uintptr_t)this->gunBaseGeo);
     ((AEGeometry *) (this->gunMuzzleRoot))->addChild((uint32_t)(uintptr_t)this->gunYawGeo);
 
-    if (this->field_0x2c0 != 0 && this->turretMode != 0) {
+    if (this->cloak != 0 && this->turretMode != 0) {
         ((PaintCanvas *) (long) (canvas))->MeshCloneMaterial((unsigned int) (((AEGeometry *) this->gunBaseGeo)->meshId),
                                                              (uint32_t &) this->cloakMaterial1);
         PE_cft_finishMaterials(canvas, ((AEGeometry *) this->gunYawGeo)->meshId, &this->cloakMaterial2);
@@ -1326,7 +1326,7 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
     }
 
     if (state == 2) {
-        if (this->gunExtraVisible != 0)
+        if (this->turretActive != 0)
             ((PlayerEgo *) (this))->setTurretMode(0);
         int dist = PE_adp_glide(this);
         int radius = g_PE_adp_dockRadius[((Ship *) (PE_status()->getShip()))->getIndex()];

@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo camera-handling semantic repair; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo HUD/turret ABI repair; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo HUD/turret ABI repair (2026-10-14)
+
+Android ARM reads the HUD at `PlayerEgo+0x220`, turret-active byte
+at `+0x1a0`, and cloak pointer at `+0x1b0`. The header and the
+three affected uses now agree with those addresses; duplicated
+late fields were removed. Native `gof2`, all 206 ARM units, 37
+verifier tests (one skipped) and three PlayerEgo smokes pass. Full
+corpus: **4,323/4,524** covered, **93.20%** source-shape,
+**81.98%** strict fuzzy, **2,461 linked-exact**, **1,051 byte-exact**
+and **123 extras**, with zero lost exact pairs. `getHUD` is now
+byte-exact. The later movement/rotation fields still diverge from
+ARM despite matching total class size; linked ARM gameplay is
+untested. Next: map the roll Matrix and rotation/timer group.
+See [the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo camera-handling semantic repair (2026-10-14)
 

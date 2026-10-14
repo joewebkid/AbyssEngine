@@ -193,6 +193,7 @@ public:
     int cloakRechargeTimer;
     int cloakChargeMax;
     int cloakDischargeMax;
+    char _unknown_0x218[8];
     int hud;
     AbyssEngine::AEMath::Vector turretOffsetVec;
     uint8_t collidesWithStationFlag;
@@ -213,8 +214,6 @@ public:
     uint8_t field_0x2a8;
     uint8_t rollDirection;
     AbyssEngine::AEMath::Matrix rollMatrix;
-    void *field_0x2c0;
-    uint8_t gunExtraVisible;
     float rotateX;
     float rotateY;
     float rotateZ;
@@ -640,6 +639,9 @@ static_assert(__builtin_offsetof(PlayerEgo, miningSettleTimer) == 0x1dc, "Player
 static_assert(__builtin_offsetof(PlayerEgo, dockStation) == 0x1e0, "PlayerEgo::dockStation offset");
 static_assert(__builtin_offsetof(PlayerEgo, miningGame) == 0x1e4, "PlayerEgo::miningGame offset");
 static_assert(__builtin_offsetof(PlayerEgo, hackingGame) == 0x1e8, "PlayerEgo::hackingGame offset");
+static_assert(__builtin_offsetof(PlayerEgo, turretActive) == 0x1a0, "PlayerEgo::turretActive offset");
+static_assert(__builtin_offsetof(PlayerEgo, cloak) == 0x1b0, "PlayerEgo::cloak offset");
+static_assert(__builtin_offsetof(PlayerEgo, hud) == 0x220, "PlayerEgo::hud offset");
 #endif
 
 #endif

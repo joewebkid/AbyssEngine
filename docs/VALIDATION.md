@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo HUD/turret ABI repair (2026-10-14)
+
+Original Android ARM `getHUD` reads `+0x220` (IDA line 87490),
+`checkForTurret` reads `+0x1a0` and `+0x1b0` (IDA lines 82047 and
+82067), and `approachDockingPoint` reads `+0x1a0` (IDA line 85693).
+ARM32 offset assertions and the NDK r18b record dump now confirm
+those source members. Native `gof2`, 206/206 ARM units, 37 verifier
+tests (one skipped), and three PlayerEgo smokes pass. Full report
+`_work/player_abi_hud_full_20261014.json`: **4,323/4,524**
+covered, **93.20%** source-shape, **81.98%** strict fuzzy,
+**2,461 linked-exact**, **1,051 byte-exact**, **123 extras**.
+Compared with `_work/player_abi_handling_full_20261014.json`,
+exact-pair losses are zero; linked gains are two and byte gains
+one. This is not a linked ARM gameplay test, and later member
+offsets remain unverified. See
+[the offset evidence](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo camera-handling semantic repair (2026-10-14)
 
 Original ARM `setTargetFollowCamera` at `0xa21f2–0xa21fe` loads
