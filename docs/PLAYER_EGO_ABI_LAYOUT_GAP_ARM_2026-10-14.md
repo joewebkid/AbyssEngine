@@ -1,5 +1,34 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Cursor-state handoff to the follow camera (2026-10-14)
+
+After the still-unrecovered camera/crosshair calculations, Android
+ARM `PlayerEgo::update` at `0x9edaa–0x9edf0` consumes the dirty byte
+at `+0x84`. If it is set and the `TargetFollowCamera` at `+0x88` is
+not in fast-forward mode, active `Globals::mouseCursorActivated`
+selects `setShipHandling` with the float at `+0x154`; inactive cursor
+selects `resetShipHandling`. Only that completed handoff clears the
+dirty byte. The cursor-state byte at `+0x378` is then set to 0 or 1
+from the global word, even when fast-forward deferred the handoff.
+IDA lines 84683–84697, independent Ghidra lines 64668 onward, and
+raw Thumb instructions confirm the gates, calls, and stores. The
+target-follow camera's own methods are already implemented; no new
+ABI field or replacement helper was introduced.
+
+The extracted production-fragment smoke checks the no-change path,
+fast-forward deferral, handling application, reset, and normalized
+cursor byte. Native `gof2`, 206/206 ARM units, 37 verifier tests
+(one skipped), and all four PlayerEgo smokes pass. Focused `update`
+source-shape rises **37.0% → 37.9%**, while strict fuzzy drops
+**21.5% → 12.7%**; the source-backed transition is retained without
+claiming an exact match. Full report
+`_work/player_cursor_camera_full_20261014.json` has **4,323/4,524**
+coverage, **93.26%** average source-shape, **82.16%** strict fuzzy,
+**2,478 linked-exact**, **1,065 byte-exact**, and **123 extras**.
+Relative to the hit-projection report, exact-pair losses and gains
+are zero. Next: recover the intervening camera/crosshair positions
+and steering branch; linked ARM gameplay remains unverified.
+
 ## Projected hit-direction flags (2026-10-14)
 
 At Android ARM `0x9e94c–0x9ea32`, immediately after hit sounds,

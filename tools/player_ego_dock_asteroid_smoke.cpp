@@ -75,7 +75,15 @@ struct Radar {
 };
 struct TargetFollowCamera {
     bool active = false;
+    bool fastForward = false;
+    int fastForwardQueries = 0;
+    int handlingSets = 0;
+    int handlingResets = 0;
+    float lastHandling = 0.0f;
     void setActive(bool value) { active = value; }
+    bool isInFastForwardMode() { ++fastForwardQueries; return fastForward; }
+    void setShipHandling(float value) { ++handlingSets; lastHandling = value; }
+    void resetShipHandling() { ++handlingResets; }
 };
 struct Player {
     int resetCount = 0;
@@ -542,13 +550,27 @@ int main() {
     ego.updateHitState(&hud);
     assert(ego.hudHitDirectionFlags == 0 && ego.shieldHitFlash == 0);
     assert(ego.cursorStateDirty == 0 && hud.hits == 0 && canvas.projections == 0);
+    assert(camera.fastForwardQueries == 0 && ego.cursorStateByte == 0);
     Globals::mouseCursorActivated = 1;
+    camera.fastForward = true;
     ego.updateHitState(&hud);
-    assert(ego.cursorStateDirty == 1);
-    ego.cursorStateDirty = 0;
-    ego.cursorStateByte = 1;
+    assert(ego.cursorStateDirty == 1 && ego.cursorStateByte == 1);
+    assert(camera.fastForwardQueries == 1 && camera.handlingSets == 0);
+    camera.fastForward = false;
+    ego.handling = 1.25f;
     ego.updateHitState(&hud);
-    assert(ego.cursorStateDirty == 0);
+    assert(ego.cursorStateDirty == 0 && camera.handlingSets == 1);
+    assert(camera.lastHandling == 1.25f && camera.handlingResets == 0);
+    Globals::mouseCursorActivated = 0;
+    ego.updateHitState(&hud);
+    assert(ego.cursorStateDirty == 0 && ego.cursorStateByte == 0);
+    assert(camera.handlingSets == 1 && camera.handlingResets == 1);
+    Globals::mouseCursorActivated = 2;
+    ego.updateHitState(&hud);
+    assert(ego.cursorStateByte == 1 && camera.handlingSets == 2);
+    Globals::mouseCursorActivated = 0;
+    ego.updateHitState(&hud);
+    assert(ego.cursorStateByte == 0 && camera.handlingResets == 2);
 
     ego.lastHP = 11;
     player.shieldHit = 1;

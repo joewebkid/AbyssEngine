@@ -2680,6 +2680,19 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         this->hudHitDirectionFlags = flags;
     }
 
+    // shortcut: camera/crosshair work belongs before this handoff; restore its order when replacing PE_upd_post.
+    if (this->cursorStateDirty) {
+        TargetFollowCamera *camera = (TargetFollowCamera *) ((void *&) this->targetFollowCamera);
+        if (!camera->isInFastForwardMode()) {
+            if (Globals::mouseCursorActivated)
+                camera->setShipHandling(this->handling);
+            else
+                camera->resetShipHandling();
+            this->cursorStateDirty = 0;
+        }
+    }
+    this->cursorStateByte = Globals::mouseCursorActivated != 0;
+
     PE_upd_post(this, dt, radar, hud, radio, arg5);
 }
 

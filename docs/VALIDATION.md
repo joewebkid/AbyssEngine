@@ -4,6 +4,31 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo cursor/camera handoff (2026-10-14)
+
+Original ARM `update` at `0x9edaa–0x9edf0` tests the byte at
+`PlayerEgo+0x84`, calls `TargetFollowCamera::isInFastForwardMode` via
+the pointer at `+0x88`, and only when fast-forward is clear calls
+`setShipHandling` with the float at `+0x154` for an active cursor or
+`resetShipHandling` otherwise. It then clears `+0x84`. Regardless of
+the fast-forward gate, it stores Boolean `Globals::mouseCursorActivated`
+to the byte at `+0x378`. Android IDA lines 84683–84697, independent
+Ghidra lines 64668 onward, and raw Thumb instructions corroborate
+the sequence and offsets. The extracted production-fragment smoke
+checks no-change, deferred fast-forward, apply/reset, and Boolean
+normalization. Native `gof2`, 206/206 ARM units, 37 verifier tests
+(one skipped), and four PlayerEgo smokes pass. Focused `update`
+source-shape/strict fuzzy changes **37.0%/21.5% → 37.9%/12.7%**;
+the strict-fuzzy regression is recorded rather than optimized away.
+Full report `_work/player_cursor_camera_full_20261014.json`:
+**4,323/4,524** covered, **93.26%** source-shape, **82.16%** strict
+fuzzy, **2,478 linked-exact**, **1,065 byte-exact**, **123 extras**.
+Pair-by-pair comparison with `_work/player_hit_projection_full_20261014.json`
+finds zero linked- or byte-exact losses and gains. The camera/crosshair
+calculations between hit projection and this handoff are not yet
+recovered; linked ARM gameplay is unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo hit-direction projection (2026-10-14)
 
 Android ARM `update` at `0x9e94c–0x9ea32` calls

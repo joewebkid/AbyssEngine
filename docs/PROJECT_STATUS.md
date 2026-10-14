@@ -1,7 +1,29 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo hit-direction projection; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo cursor/camera handoff; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo cursor/camera handoff (2026-10-14)
+
+Android ARM `PlayerEgo::update` at `0x9edaa–0x9edf0`, checked against
+IDA and Ghidra, consumes the cursor-change byte at `+0x84` after the
+camera/crosshair path. Unless the target-follow camera is in fast-forward,
+it applies the ego handling at `+0x154` when the mouse cursor is active,
+or resets camera handling otherwise, then clears the change byte. The
+stored cursor state at `+0x378` is refreshed to Boolean 0/1 even when
+fast-forward defers handling. The extracted production-fragment smoke
+checks deferral, application, reset, and normalization. Native `gof2`,
+206/206 ARM units, 37 verifier tests (one skipped), and four PlayerEgo
+smokes pass. Focused `update` source-shape rises **37.0% → 37.9%**;
+strict fuzzy falls **21.5% → 12.7%**, so this remains a non-exact
+large-function match. Full report
+`_work/player_cursor_camera_full_20261014.json`: **4,323/4,524**
+covered, **93.26%** source-shape, **82.16%** strict fuzzy,
+**2,478 linked-exact**, **1,065 byte-exact**, **123 extras**; no exact
+pairs are lost or gained against the hit-projection checkpoint.
+The intervening camera/crosshair calculations and linked ARM gameplay
+remain unverified. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo hit-direction projection (2026-10-14)
 
