@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo shield/mining flag split (2026-10-14)
+
+Original Android constructor, `update`, `lostMiningGame`, and
+`approachAsteroid` distinguish `+0x399/+0x39a` shield bytes from
+mining-loss byte `+0x39b`. ARM32 assertions pin all three; focused
+verification makes `lostMiningGame()` linked- and byte-exact.
+Native `gof2`, 206/206 ARM translation units, 37 verifier tests
+(one skipped), and three PlayerEgo smokes pass. Full report
+`_work/player_terminal_flags_full_20261014.json`: **4,323/4,524**
+covered, **93.24%** source-shape, **82.12%** strict fuzzy,
+**2,474 linked-exact**, **1,062 byte-exact**, **123 extras**.
+Relative to `_work/player_cargo_refresh_full_20261014.json`,
+exact-pair losses are zero and gains are one linked/byte match.
+The shield branch in `update` and linked ARM gameplay remain untested.
+See [the offset evidence](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
+
 ## PlayerEgo cargo-state refresh (2026-10-14)
 
 Raw Android ARM at `0x9d1a6–0x9d1d2` confirms the strict

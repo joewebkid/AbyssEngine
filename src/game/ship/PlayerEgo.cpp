@@ -1668,6 +1668,9 @@ PlayerEgo::PlayerEgo(Player *player) {
     this->agility = 0.0f;
     this->volatileGoods = 0;
     this->lastFreeSpace = 0;
+    this->shieldRegenActive = 0;
+    this->shieldRegenEquipped = 0;
+    this->lostMiningGameFlag = 0;
     if (ship != 0) {
         this->field_0xd0 = ship->getBoostDelay();
         int speed = ship->getBoostSpeed();
@@ -1681,6 +1684,7 @@ PlayerEgo::PlayerEgo(Player *player) {
         this->handling = (handling + handling * ((float) agility / 100.0f)) * 20.0f;
         this->volatileGoods = ship->hasVolatileGoods();
         this->lastFreeSpace = ship->getFreeSpace();
+        this->shieldRegenEquipped = ship->getFirstEquipmentOfSort(43) != nullptr;
     }
 
     this->hardCoreMode = PE_status()->hardCoreMode();

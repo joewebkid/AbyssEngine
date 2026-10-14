@@ -263,6 +263,8 @@ public:
     char _unknown_0x38c[8];
     void *field_0x394;
     uint8_t volatileGoods;
+    uint8_t shieldRegenActive;
+    uint8_t shieldRegenEquipped;
     uint8_t lostMiningGameFlag;
 
     PlayerEgo(Player *player);
@@ -672,7 +674,9 @@ static_assert(__builtin_offsetof(PlayerEgo, exhaustVisible) == 0x32f, "PlayerEgo
 static_assert(__builtin_offsetof(PlayerEgo, dockTotalAmount) == 0x360, "PlayerEgo::dockTotalAmount offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x394) == 0x394, "PlayerEgo::materialList offset");
 static_assert(__builtin_offsetof(PlayerEgo, volatileGoods) == 0x398, "PlayerEgo::volatileGoods offset");
-static_assert(__builtin_offsetof(PlayerEgo, lostMiningGameFlag) == 0x399, "PlayerEgo::lostMiningGameFlag offset");
+static_assert(__builtin_offsetof(PlayerEgo, shieldRegenActive) == 0x399, "PlayerEgo::shieldRegenActive offset");
+static_assert(__builtin_offsetof(PlayerEgo, shieldRegenEquipped) == 0x39a, "PlayerEgo::shieldRegenEquipped offset");
+static_assert(__builtin_offsetof(PlayerEgo, lostMiningGameFlag) == 0x39b, "PlayerEgo::lostMiningGameFlag offset");
 static_assert(sizeof(PlayerEgo) == 0x3a0, "PlayerEgo ARM32 allocation size");
 #endif
 

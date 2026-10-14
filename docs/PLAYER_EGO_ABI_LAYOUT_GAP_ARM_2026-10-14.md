@@ -1,5 +1,29 @@
 # PlayerEgo ARM32 layout gap (2026-10-14)
 
+## Terminal shield/mining flags (2026-10-14)
+
+The original Android constructor clears `+0x399`, sets `+0x39a`
+from `Ship::getFirstEquipmentOfSort(43) != 0`, and clears `+0x39b`.
+The original `update` reads `+0x399/+0x39a` for shield regeneration;
+`lostMiningGame` and `approachAsteroid` use `+0x39b`. The previous
+C++ layout incorrectly put the mining-loss flag at `+0x399`, aliasing
+the shield state. The three bytes now have separate named fields,
+constructor initialization, and ARM32 offset assertions. The shield
+regeneration branch in `update` is not yet reconstructed.
+
+Focused ARM verification builds all 206 translation units and makes
+`lostMiningGame()` linked- and byte-exact. Constructor source-shape
+rises from 29.0% to 30.4%; `approachAsteroid` rises from 40.6%
+to 40.8%. Native `gof2`, 37 verifier tests (one skipped), and all
+three PlayerEgo smokes pass. The full report
+`_work/player_terminal_flags_full_20261014.json` compares
+**4,323/4,524** original functions: **93.24%** average
+source-shape, **82.12%** strict fuzzy, **2,474 linked-exact**,
+**1,062 byte-exact**, and **123 extras**. Relative to the cargo-state
+checkpoint, no exact-pair matches are lost; `lostMiningGame()`
+adds one linked and one byte match. These checks do not establish
+complete constructor, shield-update, or linked ARM gameplay behavior.
+
 ## Initial verified contradiction
 
 The Android 2.0.16 binary allocates `PlayerEgo` with `operator
@@ -274,7 +298,8 @@ flag with the separate render-visibility byte at `+0x308` and
 omitted the exhaust call. Both flags and the call are now
 restored. Original accessors/constructor also support dock totals
 at `+0x360/+0x364`, material-list pointer at `+0x394`, and
-volatile/mining flags at `+0x398/+0x399`; bounded unidentified
+the volatile flag at `+0x398`; the later shield/mining audit above
+resolves `+0x399..+0x39b`. Bounded unidentified
 storage aligns them. ARM32 assertions cover the named anchors and
 the class remains `0x3a0` bytes.
 

@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo cargo-state refresh; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo shield/mining flag split; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo shield/mining flag split (2026-10-14)
+
+Android ARM shows that shield-regeneration state at `+0x399`,
+equipment presence at `+0x39a`, and mining-loss state at `+0x39b`
+are separate. The C++ had incorrectly placed mining loss at
+`+0x399`. The header and constructor now match these bytes;
+the shield branch in `update` remains to be reconstructed. Native
+`gof2`, 206/206 ARM units, 37 verifier tests (one skipped), and
+three PlayerEgo smokes pass. Full corpus: **4,323/4,524**
+covered, **93.24%** source-shape, **82.12%** strict fuzzy,
+**2,474 linked-exact**, **1,062 byte-exact**, **123 extras**.
+No exact-pair losses; `lostMiningGame()` adds one linked/byte
+match. Constructor is still only **30.4%** source-shape, so
+the class is not behavior-complete. See
+[the ABI audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md).
 
 ## PlayerEgo cargo-state refresh (2026-10-14)
 
