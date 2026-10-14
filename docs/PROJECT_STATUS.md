@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (LensFlare render2D; older subsystem
+Last reviewed: 2026-10-14 (StarSystem flare handoff; older subsystem
 snapshots retain their dates)
+
+## StarSystem flare handoff (2026-10-14)
+
+Android `StarSystem::render2D` at `0x1354e8` uses `Globals::Canvas`
+for the camera and draws only after successful screen projection.
+Both dependencies are restored; a production-body host smoke covers
+absent flare, failed projection and successful projected draw. Native
+`gof2`, 206/206 ARM units and verifier tests pass. Focused source-shape
+improves **95.6% → 98.6%**; strict fuzzy falls **67.2% → 64.4%**,
+and the function is not exact. Full coverage remains **4,323/4,524**
+at **93.29%** average source-shape and **82.21%** strict fuzzy, with
+**2,482 linked-exact**, **1,065 byte-exact**, **123 extras** and zero
+skipped; no exact-pair losses. A live graphics frame and ARM32 runtime
+remain unverified. See [the handoff audit](STARSYSTEM_FLARE_HANDOFF_ARM_2026-10-14.md).
 
 ## LensFlare render2D recovery (2026-10-14)
 

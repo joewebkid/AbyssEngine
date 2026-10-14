@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## StarSystem flare handoff (2026-10-14)
+
+Android `StarSystem::render2D` at `0x1354e8` reads camera state from
+`Globals::Canvas` and gates `LensFlare::render2D` on successful screen
+projection. A production-body host smoke checks both canvas roles,
+the failed-projection no-draw path and a successful projected draw.
+Native `gof2`, 206/206 ARM units and 37 verifier tests (one skipped)
+pass. Focused source-shape/strict fuzzy changes **95.6%/67.2% →
+98.6%/64.4%**; no exact match. Full report
+`_work/starsystem_flare_full_20261014.json` covers **4,323/4,524**
+functions at **93.29%** average source-shape and **82.21%** strict
+fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**, **123
+extras** and zero skipped. Exact-pair and extra-symbol sets have no
+losses or gains against `_work/lens_flare_render_full_20261014.json`.
+Real GL, assets and ARM32 runtime remain unverified. See
+[the handoff audit](STARSYSTEM_FLARE_HANDOFF_ARM_2026-10-14.md).
+
 ## LensFlare render2D recovery (2026-10-14)
 
 Android `render2D` at `0x11d088` establishes seven image draws,

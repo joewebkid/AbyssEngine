@@ -334,15 +334,16 @@ void StarSystem::render2D() {
     if (this->lensFlare == nullptr)
         return;
 
-    unsigned current = PaintCanvas::gCanvas->CameraGetCurrent();
-    Matrix *local = (Matrix *) PaintCanvas::gCanvas->CameraGetLocal(current);
+    PaintCanvas *canvas = Globals::Canvas;
+    unsigned current = canvas->CameraGetCurrent();
+    Matrix *local = (Matrix *) canvas->CameraGetLocal(current);
     Vector pos;
     pos.x = local->e3 + this->lightDirection.x * 65536.0f;
     pos.y = local->e7 + this->lightDirection.y * 65536.0f;
     pos.z = local->e11 + this->lightDirection.z * 65536.0f;
     this->lensFlare->update(0);
-    PaintCanvas::gCanvas->GetScreenPosition(pos, pos);
-    this->lensFlare->render2D(pos.x, pos.y, pos.z, this->tintColor);
+    if (canvas->GetScreenPosition(pos, pos))
+        this->lensFlare->render2D(pos.x, pos.y, pos.z, this->tintColor);
 }
 
 
