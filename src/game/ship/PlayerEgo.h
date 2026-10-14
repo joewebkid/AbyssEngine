@@ -282,7 +282,7 @@ public:
     int cloakMaterial1;
     int cloakMaterial2;
     int cloakMaterial3;
-    void *field_0x394;
+    int originalMaterialMode;
     uint8_t volatileGoods;
     uint8_t shieldRegenActive;
     uint8_t shieldRegenEquipped;
@@ -733,7 +733,7 @@ static_assert(__builtin_offsetof(PlayerEgo, cloakMaterial2) == 0x38c, "PlayerEgo
 static_assert(__builtin_offsetof(PlayerEgo, cloakMaterial3) == 0x390, "PlayerEgo::cloakMaterial3 offset");
 static_assert(__builtin_offsetof(PlayerEgo, dockTransferTimer) == 0x35c, "PlayerEgo::dockTransferTimer offset");
 static_assert(__builtin_offsetof(PlayerEgo, dockTotalAmount) == 0x360, "PlayerEgo::dockTotalAmount offset");
-static_assert(__builtin_offsetof(PlayerEgo, field_0x394) == 0x394, "PlayerEgo::materialList offset");
+static_assert(__builtin_offsetof(PlayerEgo, originalMaterialMode) == 0x394, "PlayerEgo::originalMaterialMode offset");
 static_assert(__builtin_offsetof(PlayerEgo, volatileGoods) == 0x398, "PlayerEgo::volatileGoods offset");
 static_assert(__builtin_offsetof(PlayerEgo, shieldRegenActive) == 0x399, "PlayerEgo::shieldRegenActive offset");
 static_assert(__builtin_offsetof(PlayerEgo, shieldRegenEquipped) == 0x39a, "PlayerEgo::shieldRegenEquipped offset");

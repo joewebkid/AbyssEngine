@@ -147,15 +147,6 @@ static_assert(__builtin_offsetof(PE_MatrixBuf, m11) == 0x14, "m11");
 static_assert(__builtin_offsetof(PE_MatrixBuf, m22) == 0x28, "m22");
 #endif
 
-// Mesh material block: only the pointer at offset 0x20 is referenced here.
-struct PE_MaterialBlock {
-    char pad0[0x20];      // 0x00..0x1f
-    void *materialList;   // 0x20
-};
-#if __SIZEOF_POINTER__ == 4
-static_assert(__builtin_offsetof(PE_MaterialBlock, materialList) == 0x20, "materialList");
-#endif
-
 static inline Status *PE_status() { return Status::gStatus; }
 
 
@@ -3516,10 +3507,8 @@ void PlayerEgo::setShip(int race, int group) {
     AEGeometry *grp = Globals::gGlobals->getShipGroup(race, group, true);
     this->field_0x4 = grp;
 
-    void *canvas = (void *) PaintCanvas::gCanvas;
-    AbyssEngine::Mesh *mesh = ((PaintCanvas *) (long) (canvas))->MeshGetPointer(
-        (unsigned int) (((AEGeometry *) grp)->meshId));
-    this->field_0x394 = ((PE_MaterialBlock *) mesh->materialBlock)->materialList;
+    AbyssEngine::Mesh *mesh = Globals::Canvas->MeshGetPointer(grp->meshId);
+    this->originalMaterialMode = static_cast<AbyssEngine::Material *>(mesh->materialBlock)->materialMode;
 
     void *hull = (void *) new AEGeometry(PaintCanvas::gCanvas);
     this->geometry = (AEGeometry *) hull;

@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo cloak-charge transition; older subsystem
+Last reviewed: 2026-10-14 (PlayerEgo original material mode; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo original material mode (2026-10-14)
+
+Android Thumb `0x9a29a–0x9a2a6` confirms `setShip` saves the integer
+`Material::materialMode` to `PlayerEgo+0x394`; the previous code
+treated that value as a pointer. The production-fragment smoke,
+native `gof2`, 206/206 ARM units and 37 verifier tests (one skipped)
+pass. Focused `setShip` source-shape/strict fuzzy changes
+**98.2%/91.3% → 97.8%/79.2%** because this is a behavior-backed
+correction, not an exact-match gain. Full coverage remains
+**4,323/4,524** at **93.39%** average source-shape and **82.28%**
+strict fuzzy, with **2,482 linked-exact**, **1,065 byte-exact**,
+**201 missing**, **123 extras**, zero skipped and no exact-pair
+losses. Live ARM32 material restoration remains unverified. Next:
+cloak fade, visibility and restoration in `PlayerEgo::update`. See
+[the material-mode audit](PLAYER_EGO_ORIGINAL_MATERIAL_MODE_ARM_2026-10-14.md).
 
 ## PlayerEgo cloak-charge transition (2026-10-14)
 

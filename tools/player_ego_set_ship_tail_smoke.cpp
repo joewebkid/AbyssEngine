@@ -2,6 +2,8 @@
 #include <cstdint>
 
 namespace AbyssEngine {
+struct Material { int pad[8] = {}; int materialMode = 0; };
+struct Mesh { void *materialBlock = nullptr; };
 struct Transform {
     struct Vector { float x, y, z; } boundingCenter;
     float boundingRadius = 0;
@@ -14,6 +16,11 @@ struct PaintCanvas {
     AbyssEngine::Transform transform;
     unsigned clonedMesh = 0;
     unsigned cloneCount = 0;
+    AbyssEngine::Mesh mesh;
+    AbyssEngine::Mesh *MeshGetPointer(unsigned handle) {
+        assert(handle == 42);
+        return &mesh;
+    }
     AbyssEngine::Transform *TransformGetTransform(unsigned handle) {
         assert(handle == 7);
         return &transform;
@@ -65,8 +72,14 @@ struct PlayerEgo {
     float emergencyVal2 = 0;
     void *cloak = nullptr;
     uint32_t cloakMaterial1 = 0;
+    int originalMaterialMode = -1;
+    void testMaterialMode();
     void testTail();
 };
+void PlayerEgo::testMaterialMode() {
+    AEGeometry *grp = field_0x4;
+// PRODUCTION_MATERIAL_MODE
+}
 void PlayerEgo::testTail() {
 // PRODUCTION_TAIL
 }
@@ -83,6 +96,11 @@ int main() {
     AEGeometry hull;
     PlayerEgo ego;
     ego.field_0x4 = &hull;
+    AbyssEngine::Material originalMaterial;
+    originalMaterial.materialMode = 7;
+    canvas.mesh.materialBlock = &originalMaterial;
+    ego.testMaterialMode();
+    assert(ego.originalMaterialMode == 7);
 
     ego.testTail();
     assert(AEGeometry::constructed == 0 && canvas.cloneCount == 0);

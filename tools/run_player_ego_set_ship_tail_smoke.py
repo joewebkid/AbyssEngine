@@ -17,12 +17,15 @@ def main():
     begin = source.index("void PlayerEgo::setShip(int race, int group) {")
     end = source.index("void PlayerEgo::addGun(Array<Gun *> *arr, int x)", begin)
     method = source[begin:end]
+    material_begin = method.index("    AbyssEngine::Mesh *mesh =")
+    material_end = method.index("\n\n    void *hull", material_begin)
     emergency_begin = method.index("    if (((Ship *) (PE_status()->getShip()))->getFirstEquipmentOfSort(0x1b)")
     emergency_end = method.index("    if (PE_status()->inSupernovaSystem()", emergency_begin)
     cloak_begin = method.index("    if (this->cloak != 0) {", emergency_end)
     cloak_end = method.rindex("\n}")
     fragment = method[emergency_begin:emergency_end] + method[cloak_begin:cloak_end]
     fixture = (ROOT / "tools/player_ego_set_ship_tail_smoke.cpp").read_text()
+    fixture = fixture.replace("// PRODUCTION_MATERIAL_MODE", method[material_begin:material_end])
     fixture = fixture.replace("// PRODUCTION_TAIL", fragment)
     with tempfile.TemporaryDirectory(prefix="set-ship-tail-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "set_ship_tail.cpp"
