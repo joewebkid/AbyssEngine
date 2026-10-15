@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PaintCanvas StopDraw2FBO call contract (2026-10-15)
+
+The four undefined `paintcanvas_ext_fbo_*` calls now invoke the original
+ARM-observed engine/canvas methods. Three direct-call targets match by
+symbol; the fourth is a tail `R_ARM_THM_JUMP24` to
+`Engine::ActivateViewBuffer`, identified separately with REA/IDA.
+Focused source-shape/strict fuzzy stays 100%/100%; the function remains
+linked-exact, not byte-exact. Native `gof2` and 206/206 ARM units pass.
+Full report `A:/Galaxy on Fire new version/_work/paintcanvas_stop_fbo_full_20261015.json`
+compares 4,323/4,524 unique functions at 93.59%/82.63% average
+source-shape/strict fuzzy, 2,503 linked-exact and 1,074 byte-exact,
+with no exact-pair losses/gains. Direct-call matches rise to 2,351.
+See [the focused audit](PAINTCANVAS_STOP_FBO_CALL_ARM_2026-10-15.md).
+
 ## ImageFactory RNG call contract (2026-10-15)
 
 All three `ImageFactory::createChar` RNG calls now target the ARM-observed

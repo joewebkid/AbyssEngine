@@ -436,14 +436,6 @@ void paintcanvas_ext_dr_glDrawArrays(int a, int b, int c);
 
 void paintcanvas_ext_dr_drawline2d(void *eng, void *p, int n, bool b);
 
-void paintcanvas_ext_fbo_a(void *);
-
-void paintcanvas_ext_fbo_b(void *, int);
-
-void paintcanvas_ext_fbo_c(void *);
-
-void paintcanvas_ext_fbo_d(void *);
-
 void paintcanvas_ext_sprite_alluv(float, float, float, float, void *);
 
 void paintcanvas_ext_sprite_allsize(unsigned int, void *);
@@ -1125,10 +1117,10 @@ void PaintCanvas::MeshSetUv(unsigned int index, unsigned short sub,
 }
 
 void PaintCanvas::StopDraw2FBO() {
-    paintcanvas_ext_fbo_a(this->engine);
-    paintcanvas_ext_fbo_b(this, 0);
-    paintcanvas_ext_fbo_c(this->engine);
-    return paintcanvas_ext_fbo_d(this->engine);
+    this->engine->DeactivateRender2TextureFBO();
+    this->SetBlendMode(static_cast<BlendMode>(0));
+    this->engine->DoPostEffect();
+    return this->engine->ActivateViewBuffer();
 }
 
 void PaintCanvas::SpriteSystemSetAllUv(unsigned int index,

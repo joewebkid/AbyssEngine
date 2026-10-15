@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (ImageFactory RNG call contract; older subsystem
+Last reviewed: 2026-10-15 (PaintCanvas FBO stop contract; older subsystem
 snapshots retain their dates)
+
+## PaintCanvas StopDraw2FBO call contract (2026-10-15)
+
+Android ARM `PaintCanvas::StopDraw2FBO` at `0x7d08e` calls
+`Engine::DeactivateRender2TextureFBO`, `PaintCanvas::SetBlendMode(0)`,
+`Engine::DoPostEffect`, then tail-branches to
+`Engine::ActivateViewBuffer`. Four undefined `paintcanvas_ext_fbo_*`
+calls in the recovered source have been replaced by these existing
+methods. REA/IDA identifies the original tail veneer; the rebuilt ARM
+object has the expected `R_ARM_THM_JUMP24` relocation.
+
+Native `gof2` and **206/206** ARM units pass. Focused source-shape/strict
+fuzzy remains **100%/100%**, linked-exact but not byte-exact. The full
+corpus remains **4,323/4,524** unique original functions, **201 missing**,
+**123 extras**, zero skipped, **93.59%/82.63%** average source-shape/
+strict fuzzy, **2,503 linked-exact / 1,074 byte-exact**. Exact-pair sets
+show zero losses or gains. Direct-call audit matches improve **2,348 →
+2,351**, candidates **77 → 74**; 647 unresolved remain. Runtime FBO/GL
+behavior is not yet tested; next priority is a bounded PaintCanvas shim
+cluster with a behavior check where feasible. See
+[the FBO call audit](PAINTCANVAS_STOP_FBO_CALL_ARM_2026-10-15.md).
 
 ## ImageFactory portrait RNG call contract (2026-10-15)
 
