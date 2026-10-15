@@ -65,7 +65,6 @@ namespace AbyssEngine {
     extern char *g_Engine_fboEnabledFlag;
     extern char *g_Engine_shaderModeFlag;
     extern char *g_GameText_arabicEnabledFlag;
-    extern char *g_MeshIntersect_flipVFlag;
 
     // ImageFont, SpriteSystem, Curve, Image, AELoadedTexture are defined in
     // AbyssEngine.h (layouts recovered from the original disassembly).
@@ -499,7 +498,7 @@ namespace AbyssEngine {
                             out.u = (uv[i0 * 2] + uv[i1 * 2] + uv[i2 * 2]) / 3.0f;
                             float vv = (uv[i0 * 2 + 1] + uv[i1 * 2 + 1] + uv[i2 * 2 + 1]) / 3.0f;
                             out.v = vv;
-                            if (*g_MeshIntersect_flipVFlag != 0)
+                            if (Engine::enableShader != 0)
                                 out.v = 1.0f - vv;
                             return out;
                         }

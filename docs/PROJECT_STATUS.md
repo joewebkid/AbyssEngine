@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (sprite creation shader flag; older subsystem
+Last reviewed: 2026-10-16 (MeshIntersect shader flag; older subsystem
 snapshots retain their dates)
+
+## MeshIntersect shader flag (2026-10-16)
+
+Android ARM `MeshIntersect` at `0x6d818` reads
+`Engine::enableShader` before optionally inverting a successful
+triangle hit's average V coordinate. The recovered body dereferenced
+an uninitialized placeholder pointer instead; it now reads the
+original static byte. A host test of the production body covers
+hit/miss, empty index data and both shader modes. Native `gof2`,
+**206/206** ARM units and **40** verifier tests (one skip) pass.
+Focused source-shape/strict fuzzy rises **84.7%/43.0% →
+86.2%/43.7%** without exact equality. Full coverage remains
+**4,323/4,524** unique functions, **201 missing**, **123 extras**,
+zero skipped, **93.59%/82.63%** average source-shape/strict fuzzy,
+**2,503 linked-exact / 1,074 byte-exact**, with zero exact-pair
+losses/gains. Live Android ARM32 and nonrepresentative geometry
+remain unverified; next priority is another independently anchored
+flag placeholder. See [the MeshIntersect audit](MESH_INTERSECT_SHADER_FLAG_ARM_2026-10-16.md).
 
 ## SpriteSystemCreate shader flag (2026-10-16)
 

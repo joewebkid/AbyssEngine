@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## MeshIntersect shader flag (2026-10-16)
+
+`python tools/run_mesh_intersect_flag_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe`
+compiles the production `MeshIntersect` body and tests hit/miss,
+an empty index list, and both `Engine::enableShader` V-coordinate
+branches. Native `gof2`, 206/206 ARM units, 40 verifier tests
+(one skip), and the fixture pass. Focused source-shape/strict fuzzy
+improves 84.7%/43.0% to 86.2%/43.7%; no exact match is claimed.
+Full report `A:/Galaxy on Fire new version/_work/mesh_intersect_flag_full_20261016.json`
+compares 4,323/4,524 unique functions at 93.59%/82.63% average
+source-shape/strict fuzzy, with 2,503 linked-exact and 1,074
+byte-exact and no exact-pair losses or gains. See
+[the focused audit](MESH_INTERSECT_SHADER_FLAG_ARM_2026-10-16.md).
+
 ## SpriteSystemCreate shader flag (2026-10-16)
 
 The original Android ARM body reads `Engine::enableShader` before
