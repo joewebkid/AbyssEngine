@@ -57,3 +57,27 @@ REA's IDA adapter does not establish complete function body ranges or
 indirect-call coverage. The smoke uses fixture services, not an original
 Android/iOS frame. A controlled runtime rendering check remains the next
 priority; do not infer it from compile or instruction matching alone.
+
+## Independent iOS cross-check
+
+The local GOF2 HD 1.1.4 iOS IPA (SHA-256
+`db4c28f9b4494a5e6f27979aa6bb7a9f49fb4c90896d8ed87fbb35f0e8801e02`)
+contains an armv7 Mach-O executable (SHA-256
+`74ece5bedf561eed4e71b8d0b875e201c47858a2649a59d65af57390a0554958`).
+The `CameraCreate` name is absent from its available symbols, so the iOS
+caller is identified by its call to the exported
+`Camera::Camera(float,float,float,float,float)` constructor, not by a
+recovered function name. At `0x318354–0x318392`, the caller prepares
+`0x45fa0000` (8000.0f), `0x43800000` (256.0f) and `0x46800000`
+(16384.0f), converts two integer dimensions to floats, and calls the
+constructor through its symbol stub. At `0x3183a2–0x3183c2`, it appends
+the object to an array and stores the new count minus one as the output
+index. This independently supports the Android-derived constructor
+arguments and index path; iOS 1.1.4 is an older, supplementary build and
+does not replace Android 2.0.16 as the primary oracle.
+
+A local SuperDuper debug build loaded this IPA with an isolated profile
+and reached the first rendered frame. A breakpoint on the iOS camera
+constructor was not hit during this bounded clean-profile launch; no
+gameplay or camera-rendering equivalence is inferred. The next runtime
+check needs a reproducible scene that actually constructs a camera.
