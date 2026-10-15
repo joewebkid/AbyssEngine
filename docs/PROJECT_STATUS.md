@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (sprite UV/RGBA flag contract; older subsystem
+Last reviewed: 2026-10-16 (sprite creation shader flag; older subsystem
 snapshots retain their dates)
+
+## SpriteSystemCreate shader flag (2026-10-16)
+
+Android ARM `SpriteSystemCreate` at `0x86adc` reads
+`Engine::enableShader` before conditionally filling mesh tangents
+and binormals. The recovered body dereferenced an uninitialized
+placeholder pointer instead; it now reads the original static byte.
+Native `gof2`, **206/206** ARM units and **40** verifier tests
+(one skip) pass. Focused strict fuzzy changes **66.9% → 67.1%**;
+source-shape slightly falls **95.2% → 95.0%**, so no exact match is
+claimed. Full coverage stays **4,323/4,524** unique functions,
+**201 missing**, **123 extras**, zero skipped, **93.59%/82.63%**
+average source-shape/strict fuzzy, **2,503 linked-exact /
+1,074 byte-exact**, with no exact-pair losses or gains. A full
+Android ARM32 sprite-creation runtime test remains open. Next
+priority: audit remaining flag placeholders one original target at
+a time. See [the shader-flag audit](SPRITE_CREATE_SHADER_FLAG_ARM_2026-10-16.md).
 
 ## Sprite UV/RGBA data helpers (2026-10-16)
 

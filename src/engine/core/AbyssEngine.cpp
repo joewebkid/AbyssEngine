@@ -66,7 +66,6 @@ namespace AbyssEngine {
     extern char *g_Engine_shaderModeFlag;
     extern char *g_GameText_arabicEnabledFlag;
     extern char *g_MeshIntersect_flipVFlag;
-    extern char *g_SpriteSystem_tangentFlag;
 
     // ImageFont, SpriteSystem, Curve, Image, AELoadedTexture are defined in
     // AbyssEngine.h (layouts recovered from the original disassembly).
@@ -1217,7 +1216,7 @@ namespace AbyssEngine {
         for (unsigned int i = 0; i <= vcount * 4 && vcount * 4 - i != 0; ++i)
             colors[i] = 1.0f;
 
-        char tangent = *g_SpriteSystem_tangentFlag;
+        unsigned char tangent = Engine::enableShader;
         float *normals = (float *) m->normals;
         float *tangents = (float *) m->tangents;
         float *binormals = (float *) m->binormals;

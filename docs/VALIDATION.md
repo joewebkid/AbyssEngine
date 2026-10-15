@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## SpriteSystemCreate shader flag (2026-10-16)
+
+The original Android ARM body reads `Engine::enableShader` before
+conditionally filling mesh tangent/binormal arrays. The recovered
+body now reads that byte rather than an uninitialized pointer.
+Native `gof2`, 206/206 ARM units and 40 verifier tests (one skip)
+pass. Focused strict fuzzy changes 66.9% to 67.1% and source-shape
+95.2% to 95.0%; no exact match is claimed. Full report
+`A:/Galaxy on Fire new version/_work/sprite_create_flag_full_20261016.json`
+compares 4,323/4,524 unique functions at 93.59%/82.63% average
+source-shape/strict fuzzy, with 2,503 linked-exact and 1,074
+byte-exact and no exact-pair losses/gains. See
+[the focused audit](SPRITE_CREATE_SHADER_FLAG_ARM_2026-10-16.md).
+
 ## Sprite UV/RGBA data helpers (2026-10-16)
 
 `python tools/run_sprite_uv_rgba_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe`
