@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (ARM32 ABI device smoke; older subsystem
+Last reviewed: 2026-10-15 (AERandom ARM-derived oracle; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -25,6 +25,23 @@ permit it; do not alter correct behavior solely to reach that number.
 Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
+
+## AERandom ARM-derived sequence check (2026-10-15)
+
+REA/IDA Android ARM instructions for `next(int)`, `nextInt()` and
+`nextInt(int)` now anchor a separate 32-bit limb oracle. An extracted
+production smoke passed **2,304 draws**, **112 rejection iterations** and
+state comparison after every draw across six seeds and representative bit
+widths/bounds. The rejection condition now uses defined unsigned 32-bit
+wraparound, matching the observed ARM signed-branch rule instead of relying
+on C++ signed overflow. Native `gof2` and 206/206 ARM units are green. Focused
+source-shape is **99.7%** across 11 symbols, with two linked-exact and two
+byte-exact destructor symbols; `nextInt(int)` remains 96.4% source-shape.
+This check does not execute the original `.so` or prove live particle
+behavior. Full corpus remains **4,323/4,524** at **93.43%** source-shape,
+**82.33%** strict fuzzy, **2,485 linked-exact** and **1,065 byte-exact**;
+neither exact-symbol set lost a member. See
+[the oracle audit](AERANDOM_ARM_ORACLE_2026-10-15.md).
 
 ## ARM32 ABI/lifetime device smoke (2026-10-15)
 

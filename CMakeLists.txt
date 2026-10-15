@@ -84,6 +84,16 @@ if(GOF2_BUILD_ABI_RUNTIME_SMOKE)
     endif()
 endif()
 
+option(GOF2_BUILD_AERANDOM_ORACLE_SMOKE
+       "Build the Android ARM AERandom differential smoke test" OFF)
+if(GOF2_BUILD_AERANDOM_ORACLE_SMOKE)
+    add_executable(gof2_aerandom_oracle_smoke
+        tools/verify/aerandom_oracle_smoke.cpp
+        src/engine/core/AERandom.cpp)
+    target_include_directories(gof2_aerandom_oracle_smoke PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/src")
+endif()
+
 option(GOF2_BUILD_PREMIUM_IAP_SMOKE
        "Build the Android premium purchase callback smoke test" OFF)
 if(GOF2_BUILD_PREMIUM_IAP_SMOKE)

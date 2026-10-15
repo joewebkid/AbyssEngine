@@ -64,7 +64,8 @@ namespace AbyssEngine {
             seed = (seed * 0x5deece66dULL + 0xbULL) & 0xffffffffffffULL;
             bits = static_cast<int>(seed >> 17);
             value = bits % bound;
-        } while (bits - value + (bound - 1) < 0);
+        } while ((static_cast<uint32_t>(bits - value) +
+                  static_cast<uint32_t>(bound - 1)) & 0x80000000U);
         seedLow = static_cast<uint32_t>(seed);
         seedHigh = static_cast<uint32_t>(seed >> 32);
         return value;
