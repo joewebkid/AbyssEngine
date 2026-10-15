@@ -4,6 +4,15 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Direct ARM call-target audit (2026-10-15)
+
+`linked-exact` means equality of bytes **outside** locally recorded relocation
+fields; it does not by itself verify the resolved call/data targets. A separate
+audit of direct `R_ARM_THM_CALL`/`R_ARM_CALL` sites in the current 2,503
+linked-equal function-pairs found 2,345 matching call symbols, 80 mismatch
+candidates and 647 unresolved sites among 3,072 calls. These counts do not
+replace or change the corpus metrics. See [the call-target audit](ARM_CALL_TARGET_AUDIT_2026-10-15.md).
+
 ## String numeric constructors (2026-10-15)
 
 `String(char)`, `String(int)` and `String(long long)` now initialize only
@@ -2255,14 +2264,14 @@ coverage: compared 2311/4524 original functions   missing 2213 (-> cmake-build-m
 report -> cmake-build-match/verify/report.json
 ```
 
-- **`L` (linked-exact)** is the real matching signal: the machine code is byte-identical to
-  the original **after linking** — i.e. identical except inside relocation-covered fields (call
-  targets, GOT/literal-pool addresses), which our unlinked `.o` leaves as placeholders while the
-  delinked target carries the linker-resolved value. This is what to chase. (`asmdiff.linked_equal`
-  masks the relocation byte-ranges, read from our object's `-r` table, before comparing.)
-- **`==` (byte-exact)** is the rarer strict subset: raw bytes identical with *no* relocations at
-  all — only leaf functions that never call out or load a global can reach it. A function can be a
-  perfect match (`L`) yet not `==` purely because it makes a call; don't chase `==`, chase `L`.
+- **`L` (linked-exact)** means identical machine-code bytes *outside* the relocation-covered
+  fields of our unlinked `.o`. The delinked original contains post-link values in those fields.
+  `asmdiff.linked_equal` masks them but does **not** compare the resolved targets. It is useful
+  code-shape evidence, not a proof of byte identity after linking or semantic equivalence.
+- **`==` (byte-exact)** means all raw bytes compare equal, including any relocation fields.
+  It is stricter than `L` but does not by itself prove that a coincidentally equal placeholder
+  resolves to the same target. Direct call destinations need the separate audit above; data
+  relocations, indirect calls and runtime behavior remain additional checks.
 - **`match`** is a fuzzy instruction-level score (0–100). Useful for "how close" and
   for comparing flag settings. It can read below 100% even for a byte-exact function
   when the original contains a literal pool (clang marks pools as data on our side;

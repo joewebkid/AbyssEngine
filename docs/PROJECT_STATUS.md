@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (String numeric constructors; older subsystem
+Last reviewed: 2026-10-15 (direct call-target audit and String numeric constructors; older subsystem
 snapshots retain their dates)
+
+## ARM direct call-target audit (2026-10-15)
+
+The current 2,503 `linked-exact` function-pairs were audited for direct ARM
+call relocations against the original Android 2.0.16 ELF. Of 3,072 call sites,
+2,345 have the same named callee, 80 are mismatch candidates across 59
+function-pairs, and 647 could not be resolved by the original disassembly
+header/label parser. In particular, several PaintCanvas functions call local
+`paintcanvas_ext_*` shims where the original calls named engine methods;
+`ImageFactory::createChar` calls a different `AERandom::nextInt` signature.
+Some candidates may be aliases or forwarding thunks; none is automatically a
+proven behavior defect. This tool-only audit changes no C++ or prior corpus
+metrics. Next priority: resolve the largest shim/call-contract cluster and
+audit data relocations separately. See [the detailed audit](ARM_CALL_TARGET_AUDIT_2026-10-15.md).
 
 ## String numeric constructors and append audit (2026-10-15)
 

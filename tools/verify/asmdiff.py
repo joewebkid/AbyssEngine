@@ -36,7 +36,7 @@ _ANGLE = re.compile(r"\s*<[^>]*>")          # objdump symbol annotation
 _PCREL = re.compile(r"\[pc,\s*#-?\d+\]")    # literal-pool load offset
 _PCREL_REFERENCE = re.compile(r"\[pc,\s*#(-?\d+)\]", re.I)
 _REG = re.compile(r"^(r\d+|sp|lr|pc|fp|ip|sl|sb)$", re.I)  # ARM register operand
-_RELOC = re.compile(r"^\s*([0-9a-f]+):\s+R_ARM_\S+")       # objdump -r inline reloc
+_RELOC = re.compile(r"^\s*([0-9a-f]+):\s+(R_ARM_\S+)(?:\s+(\S+))?")
 _RELOC_WIDTH = 4   # all R_ARM relocs in these objects (THM_CALL/JUMP24/GOT_PREL/REL32) are 4-byte fields
 _SHAPE_GPR = re.compile(
     r"(?<![A-Za-z0-9_])(r(?:[0-9]|1[0-2])|fp|ip|sl|sb)(?![A-Za-z0-9_])", re.I)
@@ -346,7 +346,8 @@ def disassemble(obj, objdump=DEFAULT_OBJDUMP):
     'reloc' is the set of function-relative byte offsets covered by a relocation
     in this (unlinked) object — the fields whose final value the linker fills in.
     They are wildcarded by linked_equal() so an external call / global load doesn't
-    read as a byte mismatch against the post-link target."""
+    read as a byte mismatch against the post-link target. 'relocation_records'
+    retains the type and symbol for separate target auditing."""
     # stderr is captured (not inherited) so a failing object's objdump message ("No such file",
     # bad format, ...) doesn't interleave into the report table; the failure is reported as a
     # concise per-unit skip instead.
@@ -368,7 +369,8 @@ def disassemble(obj, objdump=DEFAULT_OBJDUMP):
             start = int(m.group(1), 16)
             sz = sizes.get(m.group(2))
             limit = start + sz if sz else None
-            cur = {"insns": [], "widths": [], "entries": [], "bytes": "", "reloc": set()}
+            cur = {"insns": [], "widths": [], "entries": [], "bytes": "",
+                   "reloc": set(), "relocation_records": []}
             funcs[m.group(2)] = cur
             addr2label[(section, start)] = m.group(2)
             continue
@@ -386,6 +388,8 @@ def disassemble(obj, objdump=DEFAULT_OBJDUMP):
                 off = int(rm.group(1), 16) - start
                 if off >= 0 and (limit is None or start + off < limit):
                     cur["reloc"].update(range(off, off + _RELOC_WIDTH))
+                    cur["relocation_records"].append({
+                        "offset": off, "type": rm.group(2), "symbol": rm.group(3)})
             continue
         addr = int(m.group(1), 16)
         if limit is not None and addr >= limit:
@@ -441,10 +445,9 @@ def disassemble(obj, objdump=DEFAULT_OBJDUMP):
 def linked_equal(t, b):
     """True if the raw bytes match except inside relocation-covered fields, which
     legitimately differ: our unlinked .o (b) carries placeholder operands where the
-    delinked, post-link target (t) has the linker-resolved absolute value. Equivalent
-    to byte-identical machine code *after linking* — the real goal — and unlike a raw
-    byte compare it doesn't false-negative on every function that calls out or loads a
-    global. Relocation sites come from the base side (the post-link target has none)."""
+    delinked, post-link target (t) has the linker-resolved absolute value. This
+    masked-byte match does not verify relocation targets or linked machine code.
+    Relocation sites come from the base side (the post-link target has none)."""
     tb, bb, mask = t["bytes"], b["bytes"], b.get("reloc") or set()
     if len(tb) != len(bb):
         return False
