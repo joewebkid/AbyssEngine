@@ -11,7 +11,12 @@
 // String.cpp contains unrelated methods that this isolated target does not call.
 // Fail loudly if a new test path reaches one of their external dependencies.
 void String_printImpl(const char *) { std::abort(); }
-uint16_t *String_computeFloatString(float, int, int *, int *) { std::abort(); }
+uint16_t *String_computeFloatString(float value, int base, int *exponent, int *negative) {
+    if (base != 10 || (value != 1.5f && value != -1.5f)) std::abort();
+    *exponent = 1;
+    *negative = value < 0;
+    return new uint16_t[3]{'1', '5', 0};
+}
 int GameText::getLanguage() { std::abort(); }
 namespace AbyssEngine {
 String operator+(const String &, const String &) { std::abort(); }
@@ -138,6 +143,14 @@ int main() {
         AbyssEngine::String medalValue(1234);
         check(medalValue.length == 4 && medalValue.data[0] == '1' &&
                   medalValue.data[3] == '4', "String integer value");
+        AbyssEngine::String positiveFloat(1.5f);
+        AbyssEngine::String negativeFloat(-1.5f);
+        check(positiveFloat.length == 3 && positiveFloat.data[0] == '1' &&
+                  positiveFloat.data[1] == '.' && positiveFloat.data[2] == '5',
+              "String positive float sign");
+        check(negativeFloat.length == 4 && negativeFloat.data[0] == '-' &&
+                  negativeFloat.data[1] == '1' && negativeFloat.data[2] == '.' &&
+                  negativeFloat.data[3] == '5', "String negative float sign");
 
         Array<AbyssEngine::String *> owned;
         auto *member = new AbyssEngine::String;

@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (String append temporary-copy contract; older subsystem
+Last reviewed: 2026-10-15 (String float sign; older subsystem
 snapshots retain their dates)
+
+## String float sign and unresolved digit helper (2026-10-15)
+
+Android ARM `String::Set(float)` (`0x72cb0–0x72dbe`) loads `"-"` at
+`0x72d6e` when the digit helper reports a negative value. The recovered
+method previously used `"E"`; it now uses `"-"`. A controlled-helper ABI
+smoke checks `1.5` and `-1.5`. Native `gof2`, the smoke, **206/206** ARM
+units and **37** verifier tests (one skip) pass. Focused source-shape/strict
+fuzzy stays **42.3%/11.7%**; this is a behavioral fix, not an exact match.
+Full ARM corpus remains **4,323/4,524** original functions, **201 missing**,
+**123 extras**, zero skipped and **93.56%/82.60%** average
+source-shape/strict fuzzy, with no losses or gains in the **2,499
+linked-exact** and **1,074 byte-exact** `(unit, symbol)` sets.
+
+The real float digit helper is still a link/behavior gap: `String.cpp` calls
+an undefined four-argument `String_computeFloatString`, whereas the original
+calls a five-argument `AbyssEngine::computeFloatString` returning a UTF-16
+buffer. The existing project definition has the original parameter list
+but the wrong `void` return. The smoke does not test this real helper or
+live ARM32 behavior. Recovering that contract is the next String priority;
+see [the sign audit](STRING_FLOAT_SIGN_ARM_2026-10-15.md).
 
 ## String append temporary-copy contract (2026-10-15)
 

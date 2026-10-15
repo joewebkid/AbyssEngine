@@ -444,7 +444,7 @@ Array<String *> *String::SplitTags(String tag) {
 static const char kZeroDot[] = "0.";
 static const char kZero[] = "0";
 static const char kDot[] = ".";
-static const char kExp[] = "E";
+static const char kMinus[] = "-";
 
 void String::Set(float v) {
     int exp = 0;
@@ -480,10 +480,9 @@ void String::Set(float v) {
     }
 
     if (neg != 0) {
-        /* Prepend the 'E' (exponent/sign marker). */
         for (int i = len; i > 0; i--)
             acc[i] = acc[i - 1];
-        acc[0] = (unsigned short) (unsigned char) kExp[0];
+        acc[0] = (unsigned short) (unsigned char) kMinus[0];
         len++;
     }
 
