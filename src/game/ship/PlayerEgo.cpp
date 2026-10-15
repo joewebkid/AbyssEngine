@@ -1707,6 +1707,13 @@ PlayerEgo::PlayerEgo(Player *player) {
     this->hullRepairTimer = 0;
     this->armorRepairTimer = 0;
     this->shieldRecoveryAmount = 0.0f;
+    this->cloaked = 0;
+    this->chargingCloak = 0;
+    this->cloak = nullptr;
+    this->cloakCharge = -1;
+    this->cloakRechargeTimer = 0;
+    this->cloakChargeMax = 0;
+    this->cloakDischargeMax = 0;
 
     Ship *ship = (Ship *) PE_status()->getShip();
     this->boostTimer = 0;
@@ -1753,6 +1760,16 @@ PlayerEgo::PlayerEgo(Player *player) {
         this->lastFreeSpace = ship->getFreeSpace();
         this->shieldRegenEquipped = ship->getFirstEquipmentOfSort(43) != nullptr;
         this->shieldRecoveryAmount = (float) ship->getMaxShieldHP() / ((float) ship->getShieldRegen() / 100.0f);
+
+        Item *cloakItem = ship->hasCloakIntegrated()
+            ? static_cast<Array<Item *> *>(Globals::items)->data()[95]
+            : ship->getFirstEquipmentOfSort(21);
+        this->cloak = cloakItem;
+        if (cloakItem != nullptr) {
+            this->cloakChargeMax = cloakItem->getAttribute(35);
+            this->cloakDischargeMax = cloakItem->getAttribute(36);
+            Globals::gGlobals->addSoundResourceToList(30);
+        }
     }
 
     this->hardCoreMode = PE_status()->hardCoreMode();
@@ -1786,6 +1803,13 @@ PlayerEgo::PlayerEgo(Player *player) {
     void *stars = ::operator new(0x1c);
     MovingStars_ctor(stars);
     this->dockCameraNode = stars;
+
+    float difficulty;
+    std::memcpy(&difficulty, Globals::options + 0x2c, sizeof(difficulty));
+    if (difficulty <= 0.0f) this->cloakRechargeMax = 5000;
+    else if (difficulty <= 0.6f) this->cloakRechargeMax = 7000;
+    else if (difficulty <= 1.1f) this->cloakRechargeMax = 9000;
+    else this->cloakRechargeMax = 12000;
 
     // Android Thumb 0x99a02-0x99a0a and 0x99f4a-0x9a048: supernova protection effect.
     this->gunYawGeo = nullptr;

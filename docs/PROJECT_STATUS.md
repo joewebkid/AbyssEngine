@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-14 (PlayerEgo supernova constructor; older subsystem
+Last reviewed: 2026-10-15 (PlayerEgo cloak-state constructor; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo cloak-state constructor (2026-10-15)
+
+Android Thumb `0x99a12`, `0x99cdc–0x99d4e` and
+`0x99f56–0x99f94` restore inactive cloak state, integrated/ship
+equipment selection, attributes 35/36, sound 30 and a
+difficulty-dependent recharge maximum. Native `gof2`, 206/206 ARM
+units, extracted-fragment and adjacent smokes, and 37 verifier
+tests (one skipped) pass. Focused constructor source-shape/strict
+fuzzy rises **61.0%/35.2% → 68.2%/41.3%** for both aliases;
+neither is exact. Full coverage remains **4,323/4,524** at
+**93.40%** average source-shape and **82.29%** strict fuzzy, with
+**2,483 linked-exact**, **1,065 byte-exact**, **201 missing**,
+**123 extras**, zero skipped and no exact-pair losses. Live ARM32
+cloak/material behavior and other equipment state remain
+unverified. Next: jump-drive/boost initialization. See
+[the cloak-constructor audit](PLAYER_EGO_CLOAK_CONSTRUCTOR_ARM_2026-10-15.md).
 
 ## PlayerEgo supernova-protection constructor (2026-10-14)
 

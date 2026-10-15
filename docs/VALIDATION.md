@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo cloak-state constructor (2026-10-15)
+
+Android Thumb `0x99a12`, `0x99cdc–0x99d4e` and
+`0x99f56–0x99f94` confirm the cloak item, timers, sound resource
+and difficulty thresholds. Native `gof2`, 206/206 ARM units,
+the extracted-fragment and adjacent smokes, and 37 verifier tests
+(one skipped) pass. Focused C1/C2 source-shape/strict fuzzy changes
+**61.0%/35.2% → 68.2%/41.3%**; neither is exact. Full report
+`_work/player_cloak_ctor_full_20261014.json` compares
+**4,323/4,524** at **93.40%** average source-shape and **82.29%**
+strict fuzzy, with **2,483 linked-exact**, **1,065 byte-exact**,
+**201 missing**, **123 extras** and zero skipped. Neither exact
+pair set gains or loses a member against
+`_work/player_supernova_ctor_full_20261014.json`. Full live ARM32
+cloak behavior remains unverified. See
+[the cloak-constructor audit](PLAYER_EGO_CLOAK_CONSTRUCTOR_ARM_2026-10-15.md).
+
 ## PlayerEgo supernova-protection constructor (2026-10-14)
 
 Android Thumb `0x99a02–0x99a0a` and `0x99f4a–0x9a048` confirm
