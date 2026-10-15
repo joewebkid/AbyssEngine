@@ -43,8 +43,7 @@ The smoke runs reconstructed code with local dependencies. Original
 Android/iOS runtime behavior has not been replayed on identical inputs;
 in particular, no claim is made for `end > this->length` or invalid
 `data` pointers. REA/IDA `Set(unsigned short const *)` at `0x723dc`
-also reveals a remaining dependency difference: when a non-null input
-begins with zero, original `Set` retains an allocated zero terminator,
-whereas current C++ leaves `data == nullptr`. The next priority is to
-reconcile that `Set` contract and execute an original-vs-recovery
-comparison for valid UTF-16 inputs.
+also revealed an empty-buffer dependency difference. It was corrected
+in the subsequent [Set audit](STRING_SET_EMPTY_ARM_2026-10-15.md).
+The next priority is an original-vs-recovery comparison for valid
+UTF-16 inputs and object ownership paths.

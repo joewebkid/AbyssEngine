@@ -218,19 +218,22 @@ void String::Set(const char *s) {
     this->data = nullptr;
     this->length = 0;
     if (s == 0)
-        return;
-    int n = 0;
-    for (const unsigned char *p = (const unsigned char *) s; *p != 0; p++)
-        n++;
-    if (n == 0)
-        return;
-    unsigned short *nd = new unsigned short[n + 1];
+        s = "";
     const unsigned char *p = (const unsigned char *) s;
+    while (*p != 0)
+        p++;
+    int n = (int) (p - (const unsigned char *) s);
+    this->length = n;
+    if (n == 0) {
+        this->data = new unsigned short[1]{0};
+        return;
+    }
+    unsigned short *nd = new unsigned short[n + 1];
+    p = (const unsigned char *) s;
     for (int i = 0; i < n; i++)
         nd[i] = (unsigned short) p[i];
     nd[n] = 0;
     this->data = nd;
-    this->length = n;
 }
 
 int String::Compare(const String &otherRef) {
@@ -362,19 +365,23 @@ void String::Set(const unsigned short *s) {
     if (this->data) delete[] this->data;
     this->data = nullptr;
     this->length = 0;
-    if (s == 0)
+    if (s == 0) {
+        this->Set("");
         return;
-    int n = 0;
-    while (s[n] != 0)
-        n++;
-    if (n == 0)
+    }
+    const unsigned short *p = s;
+    while (*p != 0)
+        p++;
+    int n = (int) (p - s);
+    this->length = n;
+    if (n == 0) {
+        this->data = new unsigned short[1]{0};
         return;
+    }
     unsigned short *nd = new unsigned short[n + 1];
-    for (int i = 0; i < n; i++)
-        nd[i] = s[i];
+    std::memcpy(nd, s, n * sizeof(unsigned short));
     nd[n] = 0;
     this->data = nd;
-    this->length = n;
 }
 
 void String::ConvertFromUTF8() {

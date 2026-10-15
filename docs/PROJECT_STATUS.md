@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (String::SubString; older subsystem
+Last reviewed: 2026-10-15 (String::Set empty-buffer contract; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -26,6 +26,29 @@ Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
 
+## String::Set empty-buffer contract (2026-10-15)
+
+REA/IDA Android ARM `Set(unsigned short const *)` (`0x723dc–0x72482`)
+and `Set(char const *)` (`0x724b4–0x7255c`) confirm that null and
+non-null empty inputs leave an owned two-byte zero buffer, not
+`data == nullptr`. Both C++ overloads now follow that contract;
+the UTF-16 nonempty path also uses the original pointer scan and
+buffer copy. This closes the empty-buffer dependency noted in the
+`SubString` audit, including a slice beginning with an embedded zero.
+
+Native `gof2`, the production-code ABI smoke, **206/206** ARM units
+and **37** verifier tests (one skip) pass. Focused source-shape/strict
+fuzzy changes from **50.9%/32.0% → 73.0%/61.3%** for UTF-16 and
+**52.0%/35.0% → 69.2%/35.4%** for char input. Neither method is exact
+and the 98% family target is not reached. Full ARM corpus stays at
+**4,323/4,524** original functions, **201 missing**, **123 extras**,
+zero skipped and **93.56%/82.59%** average source-shape/strict fuzzy.
+The **2,499 linked-exact** and **1,074 byte-exact** `(unit, symbol)`
+sets have zero losses or gains versus the preceding full report.
+Identical-input original ARM32 execution is untested; constructor and
+assignment ownership paths remain the next String priority. See
+[the Set audit](STRING_SET_EMPTY_ARM_2026-10-15.md).
+
 ## String::SubString ARM behavior and source shape (2026-10-15)
 
 REA/IDA Android ARM `0x72ed8–0x72f64` confirms a hidden result slot,
@@ -43,8 +66,8 @@ average source-shape/strict fuzzy. Both exact `(unit, symbol)` sets
 have zero gains or losses versus the preceding full report: **2,499
 linked-exact** and **1,074 byte-exact**. Original live behavior on
 identical inputs is untested. The adjacent `Set(unsigned short const *)`
-still differs for a non-null pointer to an empty UTF-16 string; that
-contract is the next priority. See [the SubString audit](STRING_SUBSTRING_ARM_2026-10-15.md).
+empty-buffer difference recorded at this stage is resolved in the Set
+audit above. See [the SubString audit](STRING_SUBSTRING_ARM_2026-10-15.md).
 
 ## PlayerFighter cloak/reset ABI (2026-10-15)
 

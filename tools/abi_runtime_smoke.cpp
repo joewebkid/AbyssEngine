@@ -99,7 +99,26 @@ int main() {
         AbyssEngine::String embeddedZeroSlice = text.SubString(1, 4);
         check(embeddedZeroSlice.length == 1 && embeddedZeroSlice.data[0] == 'l',
               "String substring copy-constructor truncation");
+        AbyssEngine::String leadingZeroSlice = text.SubString(2, 4);
+        check(leadingZeroSlice.length == 0 && leadingZeroSlice.data != nullptr &&
+                  leadingZeroSlice.data[0] == 0,
+              "String leading-zero substring ownership");
         text.data[2] = 'p';
+        AbyssEngine::String emptyChar;
+        emptyChar.Set("");
+        check(emptyChar.length == 0 && emptyChar.data != nullptr && emptyChar.data[0] == 0,
+              "String empty char allocation");
+        emptyChar.Set(static_cast<const char *>(nullptr));
+        check(emptyChar.length == 0 && emptyChar.data != nullptr && emptyChar.data[0] == 0,
+              "String null char allocation");
+        const unsigned short emptyWide[] = {0};
+        AbyssEngine::String emptyUtf16;
+        emptyUtf16.Set(emptyWide);
+        check(emptyUtf16.length == 0 && emptyUtf16.data != nullptr && emptyUtf16.data[0] == 0,
+              "String empty UTF-16 allocation");
+        emptyUtf16.Set(static_cast<const unsigned short *>(nullptr));
+        check(emptyUtf16.length == 0 && emptyUtf16.data != nullptr && emptyUtf16.data[0] == 0,
+              "String null UTF-16 allocation");
         copy.Set("beta");
         check(text.length == 5 && text.data[0] == 'a', "String independent copy");
         AbyssEngine::String assignedText;
