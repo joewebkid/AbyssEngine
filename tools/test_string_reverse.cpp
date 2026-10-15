@@ -6,7 +6,9 @@
 
 // String.cpp retains unrelated entry points in this standalone link.
 void String_printImpl(const char *) { std::abort(); }
-uint16_t *String_computeFloatString(float, int, int *, int *) { std::abort(); }
+namespace AbyssEngine {
+unsigned short *computeFloatString(float, int, int *, int *, int) { std::abort(); }
+}
 namespace AbyssEngine {
 String operator+(const String &, const String &) { std::abort(); }
 }

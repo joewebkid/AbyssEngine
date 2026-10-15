@@ -11,14 +11,9 @@
 // String.cpp contains unrelated methods that this isolated target does not call.
 // Fail loudly if a new test path reaches one of their external dependencies.
 void String_printImpl(const char *) { std::abort(); }
-uint16_t *String_computeFloatString(float value, int base, int *exponent, int *negative) {
-    if (base != 10 || (value != 1.5f && value != -1.5f)) std::abort();
-    *exponent = 1;
-    *negative = value < 0;
-    return new uint16_t[3]{'1', '5', 0};
-}
 int GameText::getLanguage() { std::abort(); }
 namespace AbyssEngine {
+#include "engine/core/FloatStringImpl.inc"
 String operator+(const String &, const String &) { std::abort(); }
 }
 
@@ -32,6 +27,16 @@ void check(bool ok, const char *message) {
         std::fprintf(stderr, "ABI smoke failed: %s\n", message);
         ++failures;
     }
+}
+
+bool matchesAscii(const AbyssEngine::String &value, const char *expected) {
+    int i = 0;
+    while (expected[i] != 0) {
+        if (i >= value.length || value.data[i] != (unsigned char) expected[i])
+            return false;
+        ++i;
+    }
+    return i == value.length;
 }
 
 struct ProbeModule : AbyssEngine::IApplicationModule {
@@ -145,12 +150,14 @@ int main() {
                   medalValue.data[3] == '4', "String integer value");
         AbyssEngine::String positiveFloat(1.5f);
         AbyssEngine::String negativeFloat(-1.5f);
-        check(positiveFloat.length == 3 && positiveFloat.data[0] == '1' &&
-                  positiveFloat.data[1] == '.' && positiveFloat.data[2] == '5',
-              "String positive float sign");
-        check(negativeFloat.length == 4 && negativeFloat.data[0] == '-' &&
-                  negativeFloat.data[1] == '1' && negativeFloat.data[2] == '.' &&
-                  negativeFloat.data[3] == '5', "String negative float sign");
+        AbyssEngine::String fractionalFloat(0.25f);
+        AbyssEngine::String smallFloat(0.025f);
+        AbyssEngine::String zeroFloat(0.0f);
+        check(matchesAscii(positiveFloat, "1.5000000000"), "String positive float");
+        check(matchesAscii(negativeFloat, "-1.5000000000"), "String negative float");
+        check(matchesAscii(fractionalFloat, "0.2500000000"), "String fractional float");
+        check(matchesAscii(smallFloat, "0.0250000000"), "String small float");
+        check(matchesAscii(zeroFloat, "0.0000000000"), "String zero float");
 
         Array<AbyssEngine::String *> owned;
         auto *member = new AbyssEngine::String;
@@ -159,6 +166,15 @@ int main() {
         ArrayReleaseClasses(owned);
         check(owned.data() == nullptr, "Array<String*> element release");
     }
+
+    int exponent = 0;
+    int negative = 0;
+    unsigned short *digits = AbyssEngine::computeFloatString(1.5f, 2,
+                                                            &exponent, &negative, 0);
+    check(digits[0] == '1' && digits[1] == '5' && digits[2] == '0' &&
+              digits[3] == 0 && exponent == 1 && negative == 0,
+          "float digit helper fixed mode");
+    delete[] digits;
 
     const auto vec = vectorReturn(1.0f, 2.0f, 3.0f);
     check(sizeof(vec) == 12 && vec.x == 1.0f && vec.y == 2.0f && vec.z == 3.0f,

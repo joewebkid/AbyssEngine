@@ -6,7 +6,10 @@
 
 void String_printImpl(const char *s);
 
-uint16_t *String_computeFloatString(float v, int base, int *outExp, int *outNeg);
+namespace AbyssEngine {
+    unsigned short *computeFloatString(float value, int precision,
+                                       int *exponentOut, int *negativeOut, int mode);
+}
 
 void String_concat(String * out, String * a, String * b);
 
@@ -449,12 +452,12 @@ static const char kMinus[] = "-";
 void String::Set(float v) {
     int exp = 0;
     int neg = 0;
-    uint16_t *digitsW = String_computeFloatString(v, 10, &exp, &neg);
+    uint16_t *digitsW = AbyssEngine::computeFloatString(v, 10, &exp, &neg, 0);
 
     int digitCount = String::StrLen((const unsigned short *) digitsW);
 
     /* Upper bound on the result length: leading "0." plus up to -exp zeros,
-       the digits, a possible '.' separator, and a possible leading 'E' sign. */
+       the digits, a possible '.' separator, and a possible negative sign. */
     int leadingZeros = (exp < 1 && exp < 0) ? -exp : 0;
     int cap = 2 + leadingZeros + digitCount + 1 + 1;
     unsigned short *acc = (unsigned short *) ::operator new[]((cap + 1) * 2);

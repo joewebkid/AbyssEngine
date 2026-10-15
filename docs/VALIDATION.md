@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## String float digit helper and call contract (2026-10-15)
+
+`AbyssEngine::computeFloatString` now returns the ARM-observed owned UTF-16
+buffer and `String::Set(float)` calls its five-argument symbol with mode 0.
+The production-body ABI smoke checks positive, negative, zero and fractional
+values. Native `gof2`, standalone String reverse check, **206/206** ARM units
+and **37** verifier tests (one skip) pass. Focused helper source-shape/strict
+fuzzy rises **70.5%/20.5% → 86.8%/26.0%**; `Set(float)` rises
+**42.3%/11.7% → 43.4%/12.3%**, without an exact match. Full report
+`_work/float_helper_full_20261015.json` compares **4,323/4,524** original
+functions, **201 missing**, **123 extras**, zero skipped and no losses in
+the **2,499 linked-exact / 1,074 byte-exact** symbol sets. See
+[the helper audit](STRING_FLOAT_HELPER_ARM_2026-10-15.md).
+
 ## PaintCanvas camera creation and ABI (2026-10-15)
 
 `CameraCreate` now uses the real `Camera` constructor and
