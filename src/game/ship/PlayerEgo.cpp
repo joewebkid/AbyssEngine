@@ -52,8 +52,6 @@ namespace {
     void *g_setRotation_transform;
     void *g_dockToPlanet_fmod;
     void *g_rotate_transform;
-    static void *g_explode_obj = nullptr;
-    static void (*g_explode_fn)(void *, int) = nullptr;
     static PlayerEgo *g_PlayerEgo_singleton = nullptr;
     static const float g_PE_rollNudge = 0.17f;
     static const float g_PE_strafeDist = 10000.0f; // ARM initManeuver literal at 0xa1b70.
@@ -594,29 +592,22 @@ void PlayerEgo::addNukeVolatileForce(float v) {
 
 
 void PlayerEgo::explode() {
-    ((ParticleSystemManager *) (this->level->field_74))->enableSystemEmit(this->currentSystem, 1);
-    if (((int &) this->explosion) != 0) return;
-    ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setActive(0);
-    Explosion *e = new Explosion(0);
-    ((int &) this->explosion) = (int) (intptr_t) e;
+    this->level->field_74->enableSystemEmit(this->currentSystem, true);
+    if (this->explosion != nullptr) return;
+    ((TargetFollowCamera *) this->targetFollowCamera)->setActive(false);
+    this->explosion = new Explosion(0);
     static_cast<Player *>(this->player)->setActive(false);
-    void *o = g_explode_obj;
-    void (*fn)(void *, int) = g_explode_fn;
-    fn(*(void **) o, ((ExplosionEmitterHolder *) (*(void **) o))->emitterFirstId);
-    fn(*(void **) o, this->field_0x1c);
-    fn(*(void **) o, 0x1b);
-    fn(*(void **) o, 0x23);
-    fn(*(void **) o, 0x8d5);
-    fn(*(void **) o, 0x8d4);
-    fn(*(void **) o, 0x8cc);
-    fn(*(void **) o, 0x447);
-    fn(*(void **) o, 0x448);
-    fn(*(void **) o, 0x449);
-    Explosion *exp = (Explosion *) this->explosion;
-    if (exp != 0) {
-        Vector pos = ((PlayerEgo *) this)->getPosition();
-        exp->update(0, pos);
-    }
+    Globals::sound->stop(Globals::sound->currentMusicEvent);
+    Globals::sound->stop(this->field_0x1c);
+    Globals::sound->stop(27);
+    Globals::sound->stop(35);
+    Globals::sound->stop(2261);
+    Globals::sound->stop(2260);
+    Globals::sound->stop(2252);
+    Globals::sound->stop(1095);
+    Globals::sound->stop(1096);
+    Globals::sound->stop(1097);
+    this->setExhaustVisible(false);
 }
 
 unsigned char PlayerEgo::isDockingToStream() {

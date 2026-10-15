@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo explode (2026-10-15)
+
+REA/IDA Android Thumb `0xa13e0–0xa1488` supports the particle,
+camera/player, Explosion, FMOD stop and exhaust sequence recovered in
+`explode`. Native `gof2`, 206/206 ARM units, extracted-production and
+adjacent revive smokes, and 37 verifier tests (one skipped) pass.
+Focused source-shape/strict fuzzy changes **61.7%/49.5% →
+100%/100%**; the function remains non-exact. Full report
+`_work/player_explode_full_20261015.json` compares **4,323/4,524**
+at **93.42%** average source-shape and **82.32%** strict fuzzy, with
+**2,484 linked-exact**, **1,065 byte-exact**, **201 missing**,
+**123 extras** and zero skipped. Both exact symbol sets are unchanged
+versus `_work/player_revive_final_full_20261015.json`. Live Android
+ARM32 and iOS death flow remain unverified. See
+[the explode audit](PLAYER_EGO_EXPLODE_ARM_2026-10-15.md).
+
 ## PlayerEgo revive (2026-10-15)
 
 REA/IDA Android Thumb `0xa14a4–0xa1586` supports the particle, explosion,

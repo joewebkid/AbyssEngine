@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PlayerEgo revive; older subsystem
+Last reviewed: 2026-10-15 (PlayerEgo explode; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -25,6 +25,26 @@ permit it; do not alter correct behavior solely to reach that number.
 Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
+
+## PlayerEgo explode (2026-10-15)
+
+Android Thumb `0xa13e0–0xa1488`, inspected through REA/IDA instructions,
+restores the death path: always enable particle emission; on the first
+call deactivate camera/player, allocate `Explosion(0)`, stop ten FMOD
+events in original order and hide exhaust. The former code called
+through null function/object globals and updated the new explosion
+prematurely. An ARM32 size assertion guards the 0x68-byte Explosion
+object. Extracted-production first/repeated-call smoke, adjacent revive
+smoke, native `gof2`, 206/206 ARM units and 37 verifier tests (one
+skipped) pass. Focused source-shape/strict fuzzy improves
+**61.7%/49.5% → 100%/100%**; `explode` is still non-exact.
+Full coverage remains **4,323/4,524**, with average source-shape/
+strict fuzzy **93.41%/82.31% → 93.42%/82.32%**. Linked-exact
+**2,484**, byte-exact **1,065**, missing **201**, extras **123**, zero
+skipped and both exact symbol sets unchanged. Live Android ARM32 and
+iOS death-flow behavior remain unverified. Next: controlled runtime/
+ABI test of `explode`/`revive`. See
+[the explode audit](PLAYER_EGO_EXPLODE_ARM_2026-10-15.md).
 
 ## PlayerEgo revive (2026-10-15)
 

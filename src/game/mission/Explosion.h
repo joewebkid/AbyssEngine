@@ -56,4 +56,8 @@ public:
     void update(int dt, TargetFollowCamera *camera);
 };
 
+#if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(Explosion) == 0x68, "Explosion ARM32 size");
+#endif
+
 #endif
