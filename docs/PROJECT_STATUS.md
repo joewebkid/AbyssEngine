@@ -1,11 +1,33 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (direct call-target audit and String numeric constructors; older subsystem
+Last reviewed: 2026-10-15 (ImageFactory RNG call contract; older subsystem
 snapshots retain their dates)
+
+## ImageFactory portrait RNG call contract (2026-10-15)
+
+Android ARM `ImageFactory::createChar(int)` at `0x11c6cc` and
+`createChar(bool,int)` at `0x11c6f4` pass `Globals::rnd` as the object
+pointer to `AERandom::nextInt(int)`. The recovered source instead called
+an undefined free-function symbol with `(void*, int)`. Both overloads now
+invoke the actual member method at all three sites. REA/IDA assembly and
+the Android ELF's call annotations agree on the target; the portrait host
+smoke exercises the object call contract.
+
+Native `gof2`, portrait smoke and **206/206** ARM units pass. The two focused
+functions remain **100%/100%** source-shape/strict fuzzy and linked-exact,
+not byte-exact. Full corpus remains **4,323/4,524** unique original
+functions, **201 missing**, **123 extras**, zero skipped,
+**93.59%/82.63%** average source-shape/strict fuzzy, **2,503
+linked-exact / 1,074 byte-exact**, with zero exact-pair losses or gains.
+The direct-call audit improves **2,345 → 2,348** matching targets and
+**80 → 77** mismatch candidates; 647 sites remain unresolved. Original
+ARM32 runtime behavior and random-sequence parity remain untested.
+Next priority: audit the PaintCanvas shim/call-contract cluster. See
+[the focused contract audit](IMAGE_FACTORY_RNG_CALL_ARM_2026-10-15.md).
 
 ## ARM direct call-target audit (2026-10-15)
 
-The current 2,503 `linked-exact` function-pairs were audited for direct ARM
+At the String numeric-constructor baseline, 2,503 `linked-exact` function-pairs were audited for direct ARM
 call relocations against the original Android 2.0.16 ELF. Of 3,072 call sites,
 2,345 have the same named callee, 80 are mismatch candidates across 59
 function-pairs, and 647 could not be resolved by the original disassembly
@@ -13,9 +35,10 @@ header/label parser. In particular, several PaintCanvas functions call local
 `paintcanvas_ext_*` shims where the original calls named engine methods;
 `ImageFactory::createChar` calls a different `AERandom::nextInt` signature.
 Some candidates may be aliases or forwarding thunks; none is automatically a
-proven behavior defect. This tool-only audit changes no C++ or prior corpus
-metrics. Next priority: resolve the largest shim/call-contract cluster and
-audit data relocations separately. See [the detailed audit](ARM_CALL_TARGET_AUDIT_2026-10-15.md).
+proven behavior defect. This historical tool-only audit changed no C++ or
+corpus metrics. The ImageFactory correction above resolves three candidates;
+the largest shim cluster and data relocations remain. See
+[the detailed audit](ARM_CALL_TARGET_AUDIT_2026-10-15.md).
 
 ## String numeric constructors and append audit (2026-10-15)
 

@@ -4,11 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ImageFactory RNG call contract (2026-10-15)
+
+All three `ImageFactory::createChar` RNG calls now target the ARM-observed
+`AERandom::nextInt(int)` member instead of an undefined free function.
+Focused source-shape/strict fuzzy remains 100%/100% for both overloads;
+both remain linked-exact, not byte-exact. Native `gof2`, the portrait smoke
+and 206/206 ARM units pass. Full report
+`A:/Galaxy on Fire new version/_work/image_factory_rng_full_20261015.json`
+compares 4,323/4,524 unique functions at 93.59%/82.63% average
+source-shape/strict fuzzy, with 2,503 linked-exact and 1,074 byte-exact;
+the exact-pair sets have zero losses/gains. Direct-call-target matches rise
+by three to 2,348. See [the focused audit](IMAGE_FACTORY_RNG_CALL_ARM_2026-10-15.md).
+
 ## Direct ARM call-target audit (2026-10-15)
 
 `linked-exact` means equality of bytes **outside** locally recorded relocation
 fields; it does not by itself verify the resolved call/data targets. A separate
-audit of direct `R_ARM_THM_CALL`/`R_ARM_CALL` sites in the current 2,503
+audit of direct `R_ARM_THM_CALL`/`R_ARM_CALL` sites in the prior 2,503
 linked-equal function-pairs found 2,345 matching call symbols, 80 mismatch
 candidates and 647 unresolved sites among 3,072 calls. These counts do not
 replace or change the corpus metrics. See [the call-target audit](ARM_CALL_TARGET_AUDIT_2026-10-15.md).

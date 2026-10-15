@@ -40,14 +40,16 @@ unsigned char Globals::iPadHD = 0;
 unsigned char Globals::iPadLarge = 0;
 unsigned char Globals::iPad = 0;
 
-namespace AbyssEngine { namespace AERandom {
-int nextInt(void *random, int limit) {
-    assert(random == Globals::rnd && limit >= 0);
-    if (limit == 2) return 0;
-    if (limit == 4) return 1;
-    return limit ? limit - 1 : 0;
+namespace AbyssEngine {
+struct AERandom {
+    int nextInt(int limit) {
+        assert(this == Globals::rnd && limit >= 0);
+        if (limit == 2) return 0;
+        if (limit == 4) return 1;
+        return limit ? limit - 1 : 0;
+    }
+};
 }
-}}
 
 struct ImagePart {
     int id, f_4, pos_y, scale_x, scale_y;
@@ -95,7 +97,8 @@ int main() {
     assert(part->scale_x == 17 && part->scale_y == 29);
     int before = canvas.creates;
     assert(factory.loadImage(3, 0, 0) == nullptr && canvas.creates == before);
-    Globals::rnd = &factory;
+    AbyssEngine::AERandom random;
+    Globals::rnd = &random;
     int *male = factory.createChar(true, 0);
     assert(male[0] == 0 && male[1] == 10 && male[4] == 10);
     delete[] male;

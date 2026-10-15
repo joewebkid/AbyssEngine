@@ -272,8 +272,8 @@ def main():
     avg = sum(r["match"] for r in rows) / len(rows)
     avg_source = sum(r["source_match"] for r in rows) / len(rows)
 
-    # 'L' = byte-identical after linking (matches modulo relocation fields); '==' = raw
-    # bytes identical (the rarer subset with no external refs at all). The unit column is sized to
+    # 'L' = bytes equal outside relocation fields (targets not checked here);
+    # '==' = raw bytes equal. The unit column is sized to
     # the widest unit so the symbol column stays aligned, and symbols are printed in full.
     uw = max(len("unit"), max(len(r["unit"]) for r in rows))
     header = f"{'match':>7}  {'source':>7}  {'link':>4}  {'unit':<{uw}}  symbol"

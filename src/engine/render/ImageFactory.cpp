@@ -1,16 +1,11 @@
 #include "engine/render/ImageFactory.h"
 #include "engine/render/ImageFactoryPortraitData.h"
+#include "engine/core/AERandom.h"
 #include "engine/core/AbyssEngine.h"
 #include "engine/render/ImagePart.h"
 #include "engine/render/PaintCanvas.h"
 #include "engine/render/Sprite.h"
 #include "game/core/Globals.h"
-
-namespace AbyssEngine {
-    namespace AERandom {
-        int nextInt(void *random, int limit);
-    }
-}
 
 int ImageFactory::getItemImageId(int itemId) {
     int base = 0xef0;
@@ -154,13 +149,13 @@ Array<ImagePart *> *ImageFactory::loadChar(int *desc) {
 }
 
 int *ImageFactory::createChar(int race) {
-    int sexRoll = AbyssEngine::AERandom::nextInt(Globals::rnd, 2);
+    int sexRoll = static_cast<AbyssEngine::AERandom *>(Globals::rnd)->nextInt(2);
     return this->createChar(sexRoll == 0, race);
 }
 
 int *ImageFactory::createChar(bool isMale, int race) {
     if (race == 3) {
-        int reroll = AbyssEngine::AERandom::nextInt(Globals::rnd, 4);
+        int reroll = static_cast<AbyssEngine::AERandom *>(Globals::rnd)->nextInt(4);
         race = (reroll != 0) ? 2 : 0;
     }
     int row = race;
@@ -171,6 +166,6 @@ int *ImageFactory::createChar(bool isMale, int race) {
     desc[0] = row;
     const int *partCounts = kImagePartCounts[row];
     for (int i = 0; i != 4; ++i)
-        desc[i + 1] = AbyssEngine::AERandom::nextInt(Globals::rnd, partCounts[i]);
+        desc[i + 1] = static_cast<AbyssEngine::AERandom *>(Globals::rnd)->nextInt(partCounts[i]);
     return desc;
 }
