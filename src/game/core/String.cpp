@@ -444,56 +444,37 @@ Array<String *> *String::SplitTags(String tag) {
     return arr;
 }
 
-static const char kZeroDot[] = "0.";
-static const char kZero[] = "0";
-static const char kDot[] = ".";
-static const char kMinus[] = "-";
-
 void String::Set(float v) {
     int exp = 0;
     int neg = 0;
     uint16_t *digitsW = AbyssEngine::computeFloatString(v, 10, &exp, &neg, 0);
-
-    int digitCount = String::StrLen((const unsigned short *) digitsW);
-
-    /* Upper bound on the result length: leading "0." plus up to -exp zeros,
-       the digits, a possible '.' separator, and a possible negative sign. */
-    int leadingZeros = (exp < 1 && exp < 0) ? -exp : 0;
-    int cap = 2 + leadingZeros + digitCount + 1 + 1;
-    unsigned short *acc = (unsigned short *) ::operator new[]((cap + 1) * 2);
-    int len = 0;
-
-    if (exp < 1) {
-        for (const char *p = kZeroDot; *p; p++)
-            acc[len++] = (unsigned short) (unsigned char) *p;
-        for (int i = 0; exp < i; i--)
-            for (const char *p = kZero; *p; p++)
-                acc[len++] = (unsigned short) (unsigned char) *p;
+    String result;
+    if (exp <= 0) {
+        result.Set("0.");
+        for (int i = 0; i > exp; --i) {
+            String zero("0", false);
+            result += zero;
+        }
     }
-
-    for (const uint16_t *p = digitsW; *p != 0; p++)
-        acc[len++] = (unsigned short) *p;
-
-    if (exp > 0 && exp <= len) {
-        /* Insert '.' after the first `exp` code units. */
-        for (int i = len; i > exp; i--)
-            acc[i] = acc[i - 1];
-        acc[exp] = (unsigned short) (unsigned char) kDot[0];
-        len++;
+    {
+        String digits(digitsW, false);
+        result += digits;
     }
-
+    if (exp >= 1) {
+        String left = result.SubString(0, (unsigned int) exp);
+        String dot(".", false);
+        String joined = left + dot;
+        String right = result.SubString((unsigned int) exp, (unsigned int) result.length);
+        String combined = joined + right;
+        result = combined;
+    }
     if (neg != 0) {
-        for (int i = len; i > 0; i--)
-            acc[i] = acc[i - 1];
-        acc[0] = (unsigned short) (unsigned char) kMinus[0];
-        len++;
+        String minus("-", false);
+        String signedResult = minus + result;
+        result = signedResult;
     }
-
-    acc[len] = 0;
-
     delete[] digitsW;
-    this->Set(acc);
-    ::operator delete[](acc);
+    this->Set(result.data);
 }
 
 int String::StrLen(const unsigned short *s) {

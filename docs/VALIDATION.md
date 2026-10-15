@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## String float object composition (2026-10-15)
+
+`String::Set(float)` now follows the ARM-observed local `String`
+composition, substring insertion and temporary destruction sequence.
+Native `gof2`, ABI/lifetime and standalone String checks, **206/206** ARM
+units and **37** verifier tests (one skip) pass. Focused source-shape/
+strict fuzzy rises **43.4%/12.3% → 96.6%/65.6%**, without an exact
+match. Full report `_work/float_set_object_full_20261015.json` compares
+**4,323/4,524** unique original functions, **201 missing**, **123
+extras**, zero skipped and no losses in the **2,499 linked-exact /
+1,074 byte-exact** symbol sets. See
+[the object-composition audit](STRING_FLOAT_SET_OBJECT_ARM_2026-10-15.md).
+
 ## String float digit helper and call contract (2026-10-15)
 
 `AbyssEngine::computeFloatString` now returns the ARM-observed owned UTF-16

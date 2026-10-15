@@ -14,7 +14,11 @@ void String_printImpl(const char *) { std::abort(); }
 int GameText::getLanguage() { std::abort(); }
 namespace AbyssEngine {
 #include "engine/core/FloatStringImpl.inc"
-String operator+(const String &, const String &) { std::abort(); }
+String operator+(const String &a, const String &b) {
+    String result(a);
+    result += b;
+    return result;
+}
 }
 
 namespace {
@@ -158,6 +162,10 @@ int main() {
         check(matchesAscii(fractionalFloat, "0.2500000000"), "String fractional float");
         check(matchesAscii(smallFloat, "0.0250000000"), "String small float");
         check(matchesAscii(zeroFloat, "0.0000000000"), "String zero float");
+        AbyssEngine::String appendedFloat("value=");
+        appendedFloat += 1.5f;
+        check(matchesAscii(appendedFloat, "value=1.5000000000"),
+              "String append float");
 
         Array<AbyssEngine::String *> owned;
         auto *member = new AbyssEngine::String;

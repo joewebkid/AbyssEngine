@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (String float digit helper; older subsystem
+Last reviewed: 2026-10-15 (String float object composition; older subsystem
 snapshots retain their dates)
+
+## String float object composition (2026-10-15)
+
+Android ARM `String::Set(float)` constructs a local `String`, appends the
+helper's UTF-16 digits, adds leading `"0."` and zeros for nonpositive
+exponents, inserts `"."` through two `SubString` calls and `operator+`
+for positive exponents, and prefixes `"-"` when needed. The recovered
+method previously used a separate raw UTF-16 buffer; it now follows
+the observed temporary-object and destruction sequence.
+
+Native `gof2`, the ABI/lifetime smoke (including `String(float)` and
+`operator+=(float)`), standalone String reverse check, **206/206** ARM
+units and **37** verifier tests (one skip) pass. Focused source-shape/
+strict fuzzy improves **43.4%/12.3% → 96.6%/65.6%**; `Set(float)`
+remains non-exact. Full corpus compares **4,323/4,524** unique original
+functions, **201 missing**, **123 extras**, zero skipped and zero
+wrong-type, at **93.57%/82.61%** average source-shape/strict fuzzy.
+The **2,499 linked-exact / 1,074 byte-exact** `(unit, symbol)` sets
+have zero losses or gains. Live ARM32 float formatting, exceptional
+values, all rounding boundaries and remaining codegen differences
+remain unverified. See [the object-composition audit](STRING_FLOAT_SET_OBJECT_ARM_2026-10-15.md).
 
 ## String float digit helper and call contract (2026-10-15)
 
