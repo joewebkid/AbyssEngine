@@ -4,6 +4,27 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PaintCanvas camera creation and ABI (2026-10-15)
+
+`CameraCreate` now uses the real `Camera` constructor and
+`ArrayAdd<Camera*>`, replacing two undefined helper calls. Run the
+production-body smoke:
+
+```powershell
+python tools/run_canvas_camera_create_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected: `PaintCanvas camera creation production smoke: OK`. Native
+`gof2` and 206/206 ARM units pass. Focused
+`_work/camera_create_focused_20261015.json` improves source-shape/
+strict fuzzy **76.8%/69.6% → 84.7%/75.7%**; the function remains
+non-exact. See [the camera ABI audit](PAINTCANVAS_CAMERA_CREATE_ARM_2026-10-15.md).
+Full report `_work/camera_create_full_20261015.json` compares
+**4,323/4,524** at **93.46%** average source-shape and **82.36%** strict
+fuzzy. Both exact-symbol sets are unchanged with no losses:
+**2,486 linked-exact**, **1,065 byte-exact**. Missing/extra/skipped are
+**201/123/0**.
+
 ## ParticleSystemSprite camera-matrix render (2026-10-15)
 
 The two-argument static render overload now copies both 0x3c-byte camera

@@ -3,15 +3,18 @@
 #include "engine/core/AbyssEngine.h"
 #include "engine/render/Material.h"
 #include "engine/render/Mesh.h"
+#include "engine/render/Camera.h"
 #include "engine/core/Array.h"
 #include "engine/core/Node.h"
 #include "engine/math/Transform.h"
 #include <cstdint>
 #include <cstddef>
 #include <cstdio>
+#include <new>
 
 // ARM MeshCloneMaterial calls the specialization defined in Array.cpp.
 extern template void ArrayAdd<AbyssEngine::Material *>(AbyssEngine::Material *, Array<AbyssEngine::Material *> &);
+extern template void ArrayAdd<AbyssEngine::Camera *>(AbyssEngine::Camera *, Array<AbyssEngine::Camera *> &);
 
 namespace AbyssEngine {
     class SpriteSystem;
@@ -922,10 +925,6 @@ int paintcanvas_ext_get_width(void *);
 
 static inline int pc_GetWidth(AbyssEngine::PaintCanvas *self) { return self->GetWidth(); }
 static inline int pc_GetHeight(AbyssEngine::PaintCanvas *self) { return self->GetHeight(); }
-
-void pc_Camera_ctor(void *cam, float h, float w);
-
-void pc_ArrayAdd_Camera(void *cam, void *arr);
 
 int paintcanvas_ext_mesh_tricount(AbyssEngine::PaintCanvas *, void *);
 
@@ -4770,11 +4769,11 @@ int PaintCanvas::GetWidth() {
 }
 
 void PaintCanvas::CameraCreate(unsigned int &out) {
-    void *cam = operator new(0x5c);
+    Camera *cam = static_cast<Camera *>(::operator new(sizeof(Camera)));
     int w = pc_GetWidth(this);
     int h = pc_GetHeight(this);
-    pc_Camera_ctor(cam, (float) h, (float) w);
-    pc_ArrayAdd_Camera(cam, &this->cameras);
+    new (cam) Camera(8000.0f, 256.0f, 16384.0f, (float) w, (float) h);
+    ArrayAdd(cam, this->cameras);
     out = this->cameras.count - 1;
 }
 

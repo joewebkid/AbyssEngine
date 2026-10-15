@@ -38,8 +38,9 @@ set is unchanged at **1,065** with zero losses.
 
 REA's IDA adapter does not prove complete body ranges or indirect-call
 coverage. No original Android/iOS frame was executed for this change.
-The project's camera buffer is declared as `float[15]` but also used as
-`Matrix` elsewhere; that existing representation/aliasing contract merits
-a separate ABI audit rather than an incidental layout rewrite here.
-Next priority: audit that camera-buffer contract across producers and
-consumers, then seek a controlled Android/iOS rendering observation.
+The camera-buffer ABI has since been audited: `Camera::projection` is a
+constructed `Matrix` subobject at `+0x0c`; `CameraGetLocal` returns its
+address and `CameraSetLocal` assigns to it. The `float[15]` in
+`PCCameraView` is only a raw overlay, not the allocation's object type.
+See [the camera ABI audit](PAINTCANVAS_CAMERA_CREATE_ARM_2026-10-15.md).
+Controlled Android/iOS rendering remains unverified.

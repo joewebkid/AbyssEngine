@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (ParticleSystemSprite camera-matrix render; older subsystem
+Last reviewed: 2026-10-15 (PaintCanvas camera creation and ABI; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -26,6 +26,23 @@ Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
 
+## PaintCanvas camera creation and matrix ABI (2026-10-15)
+
+Android ARM constructor/getter/setter instructions and the typed `Camera`
+layout confirm that a constructed camera owns a `Matrix` subobject at
+`+0x0c`; the `float[15]` camera view is only a raw overlay. The two
+accessors are already linked-exact, so they were not rewritten.
+`CameraCreate` now replaces two undefined helper calls with the real
+five-argument `Camera` constructor and `ArrayAdd<Camera*>`, preserving
+the original constants and width/height order. Native `gof2`, 206/206
+ARM units and the extracted-production creation smoke pass. Focused
+source-shape/strict fuzzy improves **76.8%/69.6% → 84.7%/75.7%**;
+the function remains non-exact. Full corpus stays **4,323/4,524** at
+**93.46%/82.36%**, with **201 missing**, **123 extras**, zero skipped,
+**2,486 linked-exact** and **1,065 byte-exact**; both exact-symbol sets
+are unchanged. Live Android/iOS rendering is still
+unverified. See [the camera audit](PAINTCANVAS_CAMERA_CREATE_ARM_2026-10-15.md).
+
 ## ParticleSystemSprite camera-matrix render (2026-10-15)
 
 REA/IDA Android ARM `0x18347c` shows two direct 15-float camera-matrix
@@ -40,8 +57,9 @@ Full corpus remains **4,323/4,524** compared, **201 missing**, **123 extras**,
 zero skipped; average source-shape/strict fuzzy improves **93.45%/82.35% →
 93.46%/82.36%**. Linked-exact rises **2,485 → 2,486** with exactly this
 symbol added and no losses; byte-exact stays **1,065** with no losses.
-Next priority is the `float[15]`/`Matrix` camera-buffer ABI contract and
-a controlled Android/iOS render observation.
+The `float[15]`/`Matrix` camera-buffer ABI contract has since been
+confirmed for constructed cameras; a controlled Android/iOS render
+observation remains open.
 See [the render audit](PARTICLE_SPRITE_RENDER_ARM_2026-10-15.md).
 
 ## ParticleSystemSprite ordinary update (2026-10-15)
