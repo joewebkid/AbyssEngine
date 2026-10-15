@@ -41,7 +41,12 @@ linked-exact** and **1,065 byte-exact**. Live original ARM behavior is
 not tested. The next high-impact ABI package is `PlayerFighter::setLevel`:
 original ARM calls five real particle-system registration paths, while
 the current source calls null placeholders and has mismatched derived
-field offsets. See [the evidence and layout audit](STRING_REVERSE_ARM_2026-10-15.md).
+field offsets. Android `Level::createShip` allocates **0x2f0** bytes for
+this class; the current ARM C++ type is **0x368** bytes, and several
+derived names overlap original particle-handle offsets. Fix the class
+layout and affected accesses before restoring `setLevel` calls; no
+fighter code was changed in this audit. See
+[the evidence and layout audit](STRING_REVERSE_ARM_2026-10-15.md).
 
 ## PaintCanvas camera creation and matrix ABI (2026-10-15)
 

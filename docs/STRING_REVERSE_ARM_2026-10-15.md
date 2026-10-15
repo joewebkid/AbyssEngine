@@ -64,3 +64,20 @@ calls alone would still write several handles to wrong offsets. No
 `PlayerFighter` code was changed here; reconstruct its subclass layout
 and affected callers as a separate bounded ABI package before using
 this method as a runtime gate.
+
+The caller supplies a decisive object-size bound: Android
+`Level::createShip` allocates **0x2f0** bytes at `0xc06b6–0xc06bc`
+immediately before calling the `PlayerFighter` constructor at `0xc06f8`.
+The current ARM C++ type is **0x368** bytes. Original constructor
+instructions `0xdc5a2–0xdc5ae` initialize handles at `+0x130/+0x134/+0x138`
+to `-1`, and `0xdc72e` initializes `+0x1a0` to `-1`. Current C++ puts
+the correspondingly named `field_0x130/0x134/0x138` at
+`+0x1d8/+0x1dc/+0x1e0` and `engineTrailSystem` at `+0x224`.
+Its duplicate derived `wingmanCommand` and `renderPosition` instead
+occupy `+0x134/+0x138`, which the original uses for particle handles;
+the inherited `KIPlayer::wingmanCommand` already occupies `+0xe0`.
+This is a class-wide layout conflict, not just a missing-call problem.
+Before changing `setLevel`, reconcile duplicate derived members and
+every affected access, then verify `sizeof(PlayerFighter) == 0x2f0`
+under ARM and exercise the virtual `Level::createShip` → `setLevel`
+path. The original game's full runtime behavior is still unobserved.
