@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PlayerEgo explode; older subsystem
+Last reviewed: 2026-10-15 (PlayerEgo endExplosion; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -25,6 +25,22 @@ permit it; do not alter correct behavior solely to reach that number.
 Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
+
+## PlayerEgo endExplosion (2026-10-15)
+
+Android Thumb `0xa15c6–0xa15d2`, inspected through REA/IDA, confirms
+a null check followed by `Explosion::reset()`; the former code called
+`update(0, nullptr)`. An extracted-production smoke covers both paths.
+Native `gof2`, 206/206 ARM units, adjacent explode/revive smokes and
+37 verifier tests (one skipped) pass. Focused source-shape/strict fuzzy
+improves **59.2%/36.4% → 100%/100%**, gaining linked-exact but not
+byte-exact. Full coverage remains **4,323/4,524**; average
+source-shape/strict fuzzy changes **93.42%/82.32% → 93.43%/82.33%**,
+with **2,485 linked-exact**, **1,065 byte-exact**, **201 missing**,
+**123 extras**, zero skipped and no exact-pair losses. No direct source
+caller was found; live Android/iOS animation reset remains unverified.
+Next: controlled runtime/ABI death-to-revival test. See
+[the explosion audit](PLAYER_EGO_EXPLODE_ARM_2026-10-15.md).
 
 ## PlayerEgo explode (2026-10-15)
 

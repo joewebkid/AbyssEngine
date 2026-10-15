@@ -1,6 +1,25 @@
 # PlayerEgo::explode Android ARM recovery (2026-10-15)
 
-## Evidence and behavior
+## endExplosion follow-up (2026-10-15)
+
+Android Thumb `_ZN9PlayerEgo12endExplosionEv` at `0xa15c6–0xa15d2`
+loads `PlayerEgo+0x8c` and tail-calls `Explosion::reset()` only when it
+is non-null. The former C++ instead called `update(0, nullptr)`; this
+does not perform the same animation reset. The extracted-production
+smoke now checks both the null and non-null paths. No direct source
+callers were found, so the live route remains unknown.
+
+Focused source-shape/strict fuzzy improves **59.2%/36.4% →
+100%/100%** and becomes linked-exact, not byte-exact. Native `gof2`,
+206/206 ARM units, adjacent smokes and 37 verifier tests (one skipped)
+pass. Full report `_work/player_end_explosion_full_20261015.json`
+compares **4,323/4,524** functions at **93.43%** average source-shape
+and **82.33%** strict fuzzy, with **2,485 linked-exact**, **1,065
+byte-exact**, **201 missing**, **123 extras** and zero skipped. The
+linked-exact set gains only `endExplosion`; neither exact set loses a
+member versus `_work/player_explode_full_20261015.json`.
+
+## explode evidence and behavior
 
 Primary target: Android 2.0.16 `libgof2hdaa.so`, SHA-256
 `6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`,
@@ -24,7 +43,7 @@ updated the new explosion. Those were behavior and crash risks, not only
 source-shape differences. `MGame::gameOverCheck` calls `explode` on the
 player-death path.
 
-## Checks
+## explode checks
 
 An extracted-production smoke covers first and repeated calls, emission,
 creation and identity of the explosion, camera/player activation, ordered

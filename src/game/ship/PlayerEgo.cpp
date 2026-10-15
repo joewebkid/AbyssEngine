@@ -846,8 +846,8 @@ bool PlayerEgo::readyToBoost() {
 }
 
 void PlayerEgo::endExplosion() {
-    int v = ((int &) this->explosion);
-    if (v != 0) ((Explosion *) v)->update(0, (TargetFollowCamera *) 0);
+    if (this->explosion != nullptr)
+        static_cast<Explosion *>(this->explosion)->reset();
 }
 
 bool PlayerEgo::isLandingOrTakingOff() {

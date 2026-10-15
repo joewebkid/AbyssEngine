@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo endExplosion (2026-10-15)
+
+REA/IDA Android Thumb `0xa15c6–0xa15d2` supports the conditional
+`Explosion::reset()` call. Extracted-production/adjacent smokes,
+native `gof2`, 206/206 ARM units and 37 verifier tests (one skipped)
+pass. Focused source-shape/strict fuzzy improves **59.2%/36.4% →
+100%/100%** and gains linked-exact, not byte-exact. Full report
+`_work/player_end_explosion_full_20261015.json` compares
+**4,323/4,524** at **93.43%** average source-shape and **82.33%**
+strict fuzzy, with **2,485 linked-exact**, **1,065 byte-exact**,
+**201 missing**, **123 extras** and zero skipped. Linked-exact gains
+only `endExplosion`; both exact sets have zero losses versus
+`_work/player_explode_full_20261015.json`. Live Android/iOS reset
+behavior is unverified. See
+[the explosion audit](PLAYER_EGO_EXPLODE_ARM_2026-10-15.md).
+
 ## PlayerEgo explode (2026-10-15)
 
 REA/IDA Android Thumb `0xa13e0–0xa1488` supports the particle,

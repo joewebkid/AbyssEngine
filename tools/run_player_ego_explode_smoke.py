@@ -19,8 +19,11 @@ def main():
     source = (ROOT / "src/game/ship/PlayerEgo.cpp").read_text()
     begin = source.index("void PlayerEgo::explode()")
     end = source.index("unsigned char PlayerEgo::isDockingToStream()", begin)
+    end_begin = source.index("void PlayerEgo::endExplosion()")
+    end_end = source.index("bool PlayerEgo::isLandingOrTakingOff()", end_begin)
     fixture = (ROOT / "tools/player_ego_explode_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_METHOD", source[begin:end])
+    fixture = fixture.replace("// PRODUCTION_END_METHOD", source[end_begin:end_end])
     with tempfile.TemporaryDirectory(prefix="ego-explode-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "explode.cpp"
         generated.write_text(fixture)

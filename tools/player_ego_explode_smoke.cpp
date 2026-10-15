@@ -16,7 +16,9 @@ struct TargetFollowCamera {
 struct Explosion {
     static int constructed;
     int type;
+    int resetCalls = 0;
     explicit Explosion(int value) : type(value) { ++constructed; }
+    void reset() { ++resetCalls; }
 };
 int Explosion::constructed = 0;
 struct Player {
@@ -46,9 +48,11 @@ struct PlayerEgo {
     int exhaustCalls = 0;
     void setExhaustVisible(bool value) { exhaustVisible = value; ++exhaustCalls; }
     void explode();
+    void endExplosion();
 };
 
 // PRODUCTION_METHOD
+// PRODUCTION_END_METHOD
 
 int main() {
     ParticleSystemManager particles;
@@ -63,6 +67,7 @@ int main() {
     ego.targetFollowCamera = &camera;
     ego.player = &player;
     ego.field_0x1c = 45;
+    ego.endExplosion();
 
     ego.explode();
     assert(particles.calls == 1 && Explosion::constructed == 1);
@@ -80,5 +85,7 @@ int main() {
     assert(Explosion::constructed == 1 && ego.explosion == firstExplosion);
     assert(camera.calls == 1 && player.calls == 1 && ego.exhaustCalls == 1);
     assert(sound.count == 10);
+    ego.endExplosion();
+    assert(static_cast<Explosion *>(ego.explosion)->resetCalls == 1);
     delete static_cast<Explosion *>(ego.explosion);
 }
