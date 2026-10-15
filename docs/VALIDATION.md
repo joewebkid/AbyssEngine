@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## String signed-int append (2026-10-15)
+
+`String::operator+=(int const&)` now sign-extends and delegates directly to
+`operator+=(long long const&)`, as observed at Android ARM `0x72928–0x72950`.
+Native `gof2`, ABI/lifetime and standalone String checks, **206/206** ARM
+units and **37** verifier tests (one skip) pass. Focused source-shape/
+strict fuzzy rises **53.0%/14.3% → 100%/100%**, with linked-exact but
+not byte-exact equality. Full report
+`_work/string_append_int_full_20261015.json` compares **4,323/4,524**
+original functions, **201 missing**, **123 extras**, zero skipped,
+**93.59%/82.63%** average source-shape/strict fuzzy. Against
+`_work/string_set_i64_full_20261015.json`, linked-exact gains only this
+symbol (**2,499 → 2,500**) with zero losses; byte-exact remains **1,074**
+with zero losses. See
+[the signed-int append audit](STRING_APPEND_INT_ARM_2026-10-15.md).
+
 ## String 64-bit integer conversion (2026-10-15)
 
 `String::Set(long long)` now uses unsigned magnitude conversion and direct

@@ -169,6 +169,10 @@ int main() {
         appendedInt += std::numeric_limits<long long>::min();
         check(matchesAscii(appendedInt, "n=-9223372036854775808"),
               "String append minimum integer");
+        AbyssEngine::String appendedNarrowInt("i=");
+        appendedNarrowInt += std::numeric_limits<int>::min();
+        check(matchesAscii(appendedNarrowInt, "i=-2147483648"),
+              "String append signed int minimum");
         AbyssEngine::String positiveFloat(1.5f);
         AbyssEngine::String negativeFloat(-1.5f);
         AbyssEngine::String fractionalFloat(0.25f);

@@ -1,7 +1,29 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (String 64-bit integer conversion; older subsystem
+Last reviewed: 2026-10-15 (String signed-int append; older subsystem
 snapshots retain their dates)
+
+## String signed-int append delegation (2026-10-15)
+
+Android ARM `String::operator+=(int const&)` (`0x72928–0x72950`)
+sign-extends the input to a stack-local 64-bit value and calls
+`operator+=(long long const&)` directly. The recovered source previously
+constructed an intermediate `String` and used the string overload; it now
+follows the observed call contract. The native ABI/lifetime smoke checks
+`INT_MIN` through this path.
+
+Native `gof2`, the ABI smoke, standalone String reverse check, **206/206**
+ARM units and **37** verifier tests (one skip) pass. Focused
+source-shape/strict fuzzy improves **53.0%/14.3% → 100%/100%** and gains
+linked-exact, not byte-exact equality. Full corpus compares
+**4,323/4,524** unique original functions with **201 missing**, **123
+extras**, zero skipped, **93.59%/82.63%** average source-shape/strict
+fuzzy, **2,500 linked-exact / 1,074 byte-exact**. Exact-pair comparison
+against the preceding report shows one linked gain and zero losses in
+either set. Live ARM32 behavior and downstream `operator+=(long long)`
+allocator/terminator semantics remain unverified. Next priority: audit
+that downstream append path. See
+[the signed-int append audit](STRING_APPEND_INT_ARM_2026-10-15.md).
 
 ## String 64-bit integer conversion (2026-10-15)
 

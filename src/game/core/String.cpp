@@ -705,9 +705,8 @@ String &String::operator+=(const char &c) {
 }
 
 String &String::operator+=(const int &v) {
-    String tmp((long long) v);
-    *this += tmp;
-    return *this;
+    long long promoted = v;
+    return *this += promoted;
 }
 
 String &String::operator+=(const float &v) {
