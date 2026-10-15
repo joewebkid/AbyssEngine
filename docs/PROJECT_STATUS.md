@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PlayerFighter constructor initial values; older subsystem
+Last reviewed: 2026-10-15 (PlayerFighter update prelude; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -25,6 +25,29 @@ permit it; do not alter correct behavior solely to reach that number.
 Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
+
+## PlayerFighter update prelude (2026-10-15)
+
+REA/IDA Android ARM `0xdcfd8–0xdd116` confirms the initial death,
+position and allegiance paths of `PlayerFighter::update`. The source now
+calls `KIPlayer::setActive(false)` instead of an undefined helper on
+the terminal death branch, reads position from the real geometry, and
+updates both Player enemy/friend bytes including wingman, special-group
+and damage-threshold branches. The source-level null stack guard was
+removed; it is compiler instrumentation in the original. An extracted
+production-method smoke covers these branches and signed `dt`.
+
+Native `gof2`, all three Fighter smokes, **206/206** ARM units and
+**37** verifier tests (one skip) pass. Focused `update` source-shape/
+strict fuzzy improves **3.6%/2.2% → 5.3%/3.7%**; no exact match is
+claimed. Full corpus remains **4,323/4,524** original functions,
+**201 missing**, **123 extras**, zero skipped, **93.52%/82.55%**
+average source-shape/strict fuzzy, **2,499 linked-exact** and **1,074
+byte-exact** with zero exact-symbol losses. The original method has
+about 3,556 instructions while the recovered ARM body now has 118;
+the remaining `PF_update_body` is still an unresolved placeholder.
+Do not treat full Fighter update or live ARM32 behavior as verified.
+See [the prelude audit](PLAYER_FIGHTER_UPDATE_PRELUDE_ARM_2026-10-15.md).
 
 ## PlayerFighter constructor initial values (2026-10-15)
 

@@ -28,8 +28,6 @@ static inline int PF_nextInt(int rng) { return AERandom_nextInt_nobound(rng); }
 
 float VectorSignedToFloat(int v, int mode);
 
-void PF_update_dead(PlayerFighter * self);
-
 void PF_update_body(PlayerFighter *self, int dt);
 
 void AEMath_MatrixAssign(void *dst, void *src);
@@ -362,15 +360,10 @@ PlayerFighter::PlayerFighter(int faction, int wingmanCmd, Player *player, AEGeom
     return;
 }
 
-static void *const gUpd_guard = nullptr;
-
 void PlayerFighter::update(int dt) {
-    int *guardP = *(int **) gUpd_guard;
-    volatile int saved = *guardP;
-
     if (this->state == 4 && this->explosion->isPlaying() == 0 &&
         (this->crateCaptured == 0 || 60000 < this->deathTimer)) {
-        PF_update_dead(this);
+        KIPlayer::setActive(false);
         return;
     }
 
@@ -382,10 +375,9 @@ void PlayerFighter::update(int dt) {
     this->deltaTime = dt;
     this->deltaTimeHi = dt >> 31;
 
-    float pos[3];
-    ((AEGeometry *) (pos))->getPosition();
-    this->renderPosition = *(Vector *) pos;
+    this->renderPosition = this->geometry->getPosition();
 
+    Player *body = this->player;
     if (this->field_0x43 == 0) {
         unsigned char enemy;
         if ((this->shipGroup & 0xfffffffe) == 8) {
@@ -393,11 +385,24 @@ void PlayerFighter::update(int dt) {
         } else if (((KIPlayer *) (this))->isWingMan() != 0) {
             enemy = 0;
         } else {
-            enemy = (unsigned char) Status::gStatus->getStanding()->isEnemy(this->shipGroup);
+            enemy = (unsigned char) Globals::status->getStanding()->isEnemy(this->shipGroup);
         }
-        ((Player *) (intptr_t) this->player)->enemyFlagsLo = enemy;
+        body->enemyFlagsLo = enemy;
+
+        unsigned char friendly;
+        if ((this->shipGroup & 0xfffffffe) == 8) {
+            friendly = 0;
+        } else if (KIPlayer::isWingMan() != 0) {
+            friendly = 1;
+        } else {
+            friendly = (unsigned char) Globals::status->getStanding()->isFriend(this->shipGroup);
+        }
+        body->carriesFriendCargoFlag = friendly;
+    } else if (body->damageDoneByPlayer > body->getMaxHitpoints() / 20) {
+        body->enemyFlagsLo = 1;
     }
 
+    // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.
     PF_update_body(this, dt);
 
     return;
