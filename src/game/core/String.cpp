@@ -54,11 +54,12 @@ void String::ReplaceChar(char from, char to) {
 }
 
 void String::Reverse() {
-    if (this->length > 0 && GameText::getLanguage() == 9) {
-        for (int i = 0, j = this->length - 1; i < j; i++, j--) {
-            unsigned short t = this->data[i];
-            this->data[i] = this->data[j];
-            this->data[j] = t;
+    if (this->data != nullptr && GameText::getLanguage() == 9) {
+        // Android ARM copies the zero-terminated source before writing back by stored length.
+        const String source(this->data, false);
+        int output = 0;
+        for (int index = this->length - 1; index != -1; --index) {
+            this->data[output++] = *source[index];
         }
     }
 }

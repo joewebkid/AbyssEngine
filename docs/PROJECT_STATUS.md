@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PaintCanvas camera creation and ABI; older subsystem
+Last reviewed: 2026-10-15 (String reverse and PlayerFighter ABI gap; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -25,6 +25,23 @@ permit it; do not alter correct behavior solely to reach that number.
 Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
+
+## String reversal and next fighter ABI gap (2026-10-15)
+
+Android ARM `String::Reverse` copies the zero-terminated source before
+writing characters in reverse by the stored length. The former in-place
+swap disagreed for embedded zeros. The recovered body and a standalone
+production-source smoke cover ordinary, locale-gated, embedded-zero and
+empty inputs. Native `gof2`, 206/206 ARM units and 37 verifier tests
+(one skip) pass. Focused source-shape/strict fuzzy improves
+**36.3%/7.8% → 91.0%/62.3%**; no exact match is claimed. Full corpus
+is **4,323/4,524** at **93.47%/82.37%**, with **201 missing**,
+**123 extras**, zero skipped and unchanged exact sets of **2,486
+linked-exact** and **1,065 byte-exact**. Live original ARM behavior is
+not tested. The next high-impact ABI package is `PlayerFighter::setLevel`:
+original ARM calls five real particle-system registration paths, while
+the current source calls null placeholders and has mismatched derived
+field offsets. See [the evidence and layout audit](STRING_REVERSE_ARM_2026-10-15.md).
 
 ## PaintCanvas camera creation and matrix ABI (2026-10-15)
 
