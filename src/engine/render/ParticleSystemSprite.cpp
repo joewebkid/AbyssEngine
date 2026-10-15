@@ -4,11 +4,9 @@
 #include "engine/render/PaintCanvas.h"
 #include "engine/render/ParticleSettingsRef.h"
 
-#include <cstring>
-
 using AbyssEngine::AEMath::VectorSignedToFloat;
 
-static float g_uvRoundBias = 0.0f;
+static float g_uvRoundBias = 1.0f / 1024.0f;
 
 namespace {
 
@@ -112,7 +110,9 @@ void ParticleSystemSprite::updateSingle(int index, float dt) {
     int lifetime = set.lifetime;
     if ((int) age > lifetime) {
         ages[index] = -1;
-        pc->SpriteSystemSetPosition(handle, id, age, 0.0f, 0.0f);
+        pc->SpriteSystemSetPosition(handle, id,
+                                    4294967296.0f, 4294967296.0f, 4294967296.0f);
+        pc->SpriteSystemSetSize(handle, id, 0);
         return;
     }
 
@@ -128,7 +128,7 @@ void ParticleSystemSprite::updateSingle(int index, float dt) {
         int span = set.lifetime;
         int aged = ages[index] - 1;
         int cur = (aged * frames) / span;
-        int prevAged = (int) ((float) aged - dt);
+        int prevAged = aged - (int) dt;
         int prev = (prevAged * frames) / span;
         if (prev < 0) prev = 0;
 
@@ -153,6 +153,7 @@ void ParticleSystemSprite::updateSingle(int index, float dt) {
     }
 
     Vector movement = this->particleVelocities[index] * dt;
+    movement = movement * kMillisecondsToSeconds;
     pc->SpriteSystemAddPosition(handle, id, movement.x, movement.y, movement.z);
 }
 
@@ -242,9 +243,7 @@ void ParticleSystemSprite::updateAreaExitParticle(int index, float dt) {
         return;
     }
 
-    // ARM loads the +0x40 word as float here; other particle paths use it as int.
-    float innerRadius;
-    std::memcpy(&innerRadius, &set.posBase, sizeof(innerRadius));
+    const float innerRadius = set.colorFlag;
     const float innerSq = innerRadius * innerRadius;
     const float alpha = distanceSq > innerSq
         ? (distanceSq - innerSq) / (innerFadeSq - innerSq) : 0.0f;

@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (ParticleSystemSprite area-exit; older subsystem
+Last reviewed: 2026-10-15 (ParticleSystemSprite ordinary update; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -26,6 +26,25 @@ Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
 
+## ParticleSystemSprite ordinary update (2026-10-15)
+
+REA/IDA Android ARM `0x1830b4–0x183348` confirms a three-part correction
+to `updateSingle`: expired sprites move to the `2^32` sentinel and size
+zero; the previous UV frame uses integer `dt` and a `1/1024` wrap bias;
+and position velocity
+is scaled by `0.001`. The extracted-production host smoke now checks these
+cases plus the previously recovered area-exit path. Native `gof2`, 206/206
+ARM units and 37 verifier tests (one skip) pass. Focused source-shape/
+strict fuzzy improves **87.3%/39.8% → 92.9%/49.0%**; no exact match
+is claimed. Live renderer/timing and runtime setting overrides remain
+unverified. Layout assertions confirm `colorFlag` at `+0x40`, `posBase`
+at `+0x44` (the already-correct size input) and `posSpread` at `+0x48`.
+Full ARM corpus compares **4,323/4,524** at **93.45%** average
+source-shape and **82.35%** strict fuzzy, with **201 missing**, **123 extras**
+and zero skipped. Both exact-symbol sets are unchanged: **2,485
+linked-exact** and **1,065 byte-exact**, with zero losses.
+See [the update audit](PARTICLE_SPRITE_UPDATE_ARM_2026-10-15.md).
+
 ## ParticleSystemSprite area-exit recovery (2026-10-15)
 
 The former `updateAreaExitParticle` call to an undefined helper has been
@@ -33,14 +52,17 @@ replaced by the Android ARM-backed movement, squared-radius alpha bands,
 four-draw random rebirth and velocity reset. An extracted-production host
 smoke covers all branches and RNG state. Native `gof2`, 206/206 ARM units
 and 37 verifier tests (one expected skip) pass. Focused source-shape/strict
-fuzzy improves **1.8%/0.9% → 94.5%/66.2%**; the method is still
+fuzzy improves **1.8%/0.9% → 94.6%/66.7%** after correcting a prior
+mistaken `+0x40` field identification; the method is still
 non-exact. Full corpus remains **4,323/4,524** compared, with average
 source-shape/strict fuzzy **93.43%/82.33% → 93.45%/82.34%**,
 **2,485 linked-exact**, **1,065 byte-exact**, zero exact-symbol losses,
-**201 missing**, **123 extras** and zero skipped. The shared `+0x40`
-setting word is loaded as float in this ARM
-method but used as integer elsewhere; this cross-path type contract and
-live renderer behavior remain unverified. See
+**201 missing**, **123 extras** and zero skipped in the historical report
+before that correction. The new ordinary-update report supersedes these
+corpus averages without changing either exact-symbol set. The ARM method
+reads the float `colorFlag` at
+`+0x40`; configured overrides and live renderer behavior remain
+unverified. See
 [the area-exit audit](PARTICLE_SPRITE_AREA_EXIT_ARM_2026-10-15.md).
 
 ## AERandom ARM-derived sequence check (2026-10-15)

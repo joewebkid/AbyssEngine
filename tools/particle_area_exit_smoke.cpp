@@ -6,14 +6,20 @@
 #include <cassert>
 #include <cmath>
 #include <cstdio>
-#include <cstring>
 
 namespace {
 struct CanvasState {
     Vector position{};
     float alpha = -1;
+    float rgba[4]{};
+    float uv[4]{};
+    short sizeDelta = 0;
+    short sizeValue = -1;
     int adds = 0;
     int sets = 0;
+    int sizeAdds = 0;
+    int sizeSets = 0;
+    int uvSets = 0;
 } state;
 
 bool near(float a, float b) { return std::fabs(a - b) < 0.0001f; }
@@ -28,21 +34,27 @@ ParticleSystemSprite::ParticleSystemSprite(PaintCanvas *pc, const Matrix *m,
         const Array<ParticleSettings::ParticleSet> &, bool, bool) : IParticleSystem() {
     canvas = pc; matrix = m; resource = 1; resourceOffset = 0; alphaFade = 0;
     particleVelocities = new Vector[1]{};
+    particleAges = new int[1]{0};
     particleSetIds = static_cast<int8_t *>(::operator new(1));
     particleSetIds[0] = 0;
     random.setSeed(1);
 }
 ParticleSystemSprite::~ParticleSystemSprite() {
     delete[] particleVelocities;
+    delete[] particleAges;
     ::operator delete(particleSetIds);
 }
 int ParticleSystemSprite::init(uint32_t, uint16_t) { return 0; }
 void ParticleSystemSprite::reset() {}
 void ParticleSystemSprite::release() {}
 int ParticleSystemSprite::getQuadCount() { return 0; }
-void ParticleSystemSprite::updateSingle(int, float) {}
 void ParticleSystemSprite::setParticle(const Vector &, float, uint32_t,
         float, float, float, float, bool, float, float, const Vector &) {}
+
+void IParticleSystem::interpolateColor(int, float &a, float &r, float &g, float &b) {
+    a=0.2f; r=0.4f; g=0.6f; b=0.8f;
+}
+float *IParticleSystem::rotateUVs(float *src, int, float *) { return src; }
 
 PaintCanvas::PaintCanvas(Engine *) {}
 PaintCanvas::~PaintCanvas() {}
@@ -58,9 +70,21 @@ float PaintCanvas::SpriteSystemSetPosition(unsigned, unsigned short, float x,
                                           float y, float z) {
     state.position = {x, y, z}; ++state.sets; return z;
 }
-void PaintCanvas::SpriteSystemSetRGBA(unsigned, unsigned short, float,
-                                     float, float, float alpha) {
-    state.alpha = alpha;
+void PaintCanvas::SpriteSystemSetRGBA(unsigned, unsigned short, float a,
+                                     float r, float g, float b) {
+    state.alpha = b;
+    state.rgba[0]=a; state.rgba[1]=r; state.rgba[2]=g; state.rgba[3]=b;
+}
+void PaintCanvas::SpriteSystemAddSize(unsigned, unsigned short, short value) {
+    state.sizeDelta = value; ++state.sizeAdds;
+}
+void PaintCanvas::SpriteSystemSetSize(unsigned, unsigned short, short value) {
+    state.sizeValue = value; ++state.sizeSets;
+}
+void PaintCanvas::SpriteSystemSetUv(unsigned, unsigned short, float a, float b,
+                                    float c, float d) {
+    state.uv[0]=a; state.uv[1]=b; state.uv[2]=c; state.uv[3]=d;
+    ++state.uvSets;
 }
 
 namespace AbyssEngine { namespace AEMath {
@@ -85,8 +109,7 @@ int main() {
     auto &def = ParticleSettingsRef::cur.sets[0];
     def.color0 = 0xffffffffU;
     def.posRight = 10; def.posUp = 8; def.posDir = 3;
-    float inner = 1;
-    std::memcpy(&def.posBase, &inner, sizeof(inner));
+    def.colorFlag = 1;
     def.velBaseX = 7; def.velBaseY = 8; def.velBaseZ = 9;
 
     auto run = [&](float x, float expectedAlpha) {
@@ -142,5 +165,48 @@ int main() {
         }
     }
     assert(sawRebirth && sawRejected);
-    std::puts("Particle area-exit production smoke: OK");
+
+    state = {}; state.position = {105,200,300};
+    particle.flags = 0x80;
+    particle.particleAges[0] = 24;
+    particle.particleVelocities[0] = {0,0,0};
+    particle.updateSingle(0, 10);
+    assert(particle.particleAges[0] == 24 && near(state.alpha, 1));
+
+    particle.flags = 0;
+    def.lifetime = 100; def.posBase = 200; def.posSpread = 7;
+    def.frames = 4;
+    def.uvU0 = 0.8995f; def.uvU1 = 0.9995f;
+    def.uvV0 = 0.2f; def.uvV1 = 0.4f;
+    state = {}; state.position = {100,200,300};
+    particle.particleAges[0] = 24;
+    particle.particleVelocities[0] = {100,0,0};
+    particle.updateSingle(0, 10);
+    assert(particle.particleAges[0] == 34);
+    assert(state.sizeAdds == 1 && state.sizeDelta == 2);
+    assert(state.sizeSets == 0 && state.uvSets == 1);
+    assert(near(state.position.x, 101) && state.adds == 1);
+    assert(near(state.rgba[0], 0.2f) && near(state.rgba[3], 0.8f));
+    assert(near(state.uv[0], -0.0005f));
+    assert(near(state.uv[1], 0.4f));
+    assert(near(state.uv[2], 0.0995f));
+    assert(near(state.uv[3], 0.6f));
+
+    state = {}; state.position = {100,200,300};
+    particle.particleAges[0] = 26;
+    particle.updateSingle(0, 10.9f);
+    assert(particle.particleAges[0] == 36);
+    assert(state.uvSets == 0); // Prior frame uses int(dt), not int(aged-dt).
+
+    state = {}; state.position = {100,200,300};
+    def.lifetime = 30;
+    particle.particleAges[0] = 25;
+    particle.updateSingle(0, 10);
+    assert(particle.particleAges[0] == -1);
+    assert(state.sets == 1 && state.sizeSets == 1 && state.sizeValue == 0);
+    assert(state.position.x == 4294967296.0f);
+    assert(state.position.y == 4294967296.0f);
+    assert(state.position.z == 4294967296.0f);
+    assert(state.sizeAdds == 0 && state.adds == 0);
+    std::puts("Particle sprite update production smoke: OK");
 }

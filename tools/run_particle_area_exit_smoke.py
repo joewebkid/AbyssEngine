@@ -1,4 +1,4 @@
-"""Compile the two production ParticleSystemSprite bodies with focused services."""
+"""Compile production ParticleSystemSprite update bodies with focused services."""
 import argparse
 from pathlib import Path
 import shutil
@@ -31,16 +31,18 @@ def main():
 #include "engine/render/ParticleSettingsRef.h"
 #define GOF2_ENUM_BlendMode
 #include "engine/render/PaintCanvas.h"
-#include <cstring>
-namespace {
-constexpr float kMillisecondsToSeconds = 0.001f;
-const ParticleSettings::SetDefinition &currentParticleSet(int set) {
-    return ParticleSettingsRef::cur.sets[set];
-}
-}
+using AbyssEngine::AEMath::VectorSignedToFloat;
 '''
+    for prefix in ("static float g_uvRoundBias =",
+                   "constexpr float kMillisecondsToSeconds ="):
+        extracted += next(line for line in source.splitlines()
+                          if line.startswith(prefix)) + "\n"
+    extracted += "namespace {\n"
+    extracted += function(source, "const ParticleSettings::SetDefinition &currentParticleSet(")
+    extracted += "}\n"
     extracted += function(source, "void ParticleSystemSprite::setAlpha(")
     extracted += function(source, "void ParticleSystemSprite::updateAreaExitParticle(")
+    extracted += function(source, "void ParticleSystemSprite::updateSingle(")
 
     (ROOT / "_work").mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="gof2-particle-area-",

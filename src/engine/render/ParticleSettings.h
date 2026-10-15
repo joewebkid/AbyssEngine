@@ -79,6 +79,12 @@ public:
                   "ParticleSettings::count ARM offset must remain 0x10");
     static_assert(offsetof(SetDefinition, color0) == 0x34,
                   "ParticleSettings::color0 ARM offset must remain 0x34");
+    static_assert(offsetof(SetDefinition, colorFlag) == 0x40,
+                  "ParticleSettings::colorFlag ARM offset must remain 0x40");
+    static_assert(offsetof(SetDefinition, posBase) == 0x44,
+                  "ParticleSettings::posBase ARM offset must remain 0x44");
+    static_assert(offsetof(SetDefinition, posSpread) == 0x48,
+                  "ParticleSettings::posSpread ARM offset must remain 0x48");
     static_assert(offsetof(SetDefinition, velDir) == 0x70,
                   "ParticleSettings::velDir ARM offset must remain 0x70");
     static_assert(offsetof(SetDefinition, uvU0) == 0x88,

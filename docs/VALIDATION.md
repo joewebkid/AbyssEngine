@@ -4,6 +4,27 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ParticleSystemSprite ordinary update (2026-10-15)
+
+The area-exit host runner now also extracts the production `updateSingle`
+body and its source constants, checking expiry, size, UV and millisecond
+movement corrections alongside area-exit behavior:
+
+```powershell
+python tools/run_particle_area_exit_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected: `Particle sprite update production smoke: OK`. Native `gof2`,
+206/206 ARM units and 37 verifier tests (one skip) pass. Focused
+`updateSingle` source-shape/strict fuzzy changes **87.3%/39.8% →
+92.9%/49.0%**, with no exact claim. See
+[the update audit](PARTICLE_SPRITE_UPDATE_ARM_2026-10-15.md).
+Full report `_work/particle_sprite_update_full_20261015.json` compares
+**4,323/4,524** at **93.45%** average source-shape and **82.35%** strict
+fuzzy; both exact-symbol sets remain unchanged at **2,485 linked-exact**
+and **1,065 byte-exact**, with zero losses, **201 missing**, **123 extras**
+and zero skipped.
+
 ## ParticleSystemSprite area-exit (2026-10-15)
 
 The former undefined-helper call in `updateAreaExitParticle` is replaced
@@ -13,10 +34,11 @@ by the Android ARM-backed body. Run its extracted-production host check:
 python tools/run_particle_area_exit_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
 ```
 
-Expected: `Particle area-exit production smoke: OK`. Native `gof2`, all 206
+Expected: `Particle sprite update production smoke: OK`. Native `gof2`, all 206
 ARM units and 37 verifier tests (one skip) pass. Focused source-shape/strict
-fuzzy changes **1.8%/0.9% → 94.5%/66.2%**; no exact result is claimed.
-Full report `_work/particle_area_exit_full_20261015.json` compares
+fuzzy changes **1.8%/0.9% → 94.6%/66.7%** after the `colorFlag` field
+correction; no exact result is claimed. Historical full report
+`_work/particle_area_exit_full_20261015.json` (before that correction) compares
 **4,323/4,524** at **93.45%** average source-shape and **82.34%**
 strict fuzzy, with **2,485 linked-exact**, **1,065 byte-exact** and
 zero exact-symbol losses versus the preceding report.
