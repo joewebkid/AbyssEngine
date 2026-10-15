@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ParticleSystemSprite area-exit (2026-10-15)
+
+The former undefined-helper call in `updateAreaExitParticle` is replaced
+by the Android ARM-backed body. Run its extracted-production host check:
+
+```powershell
+python tools/run_particle_area_exit_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe
+```
+
+Expected: `Particle area-exit production smoke: OK`. Native `gof2`, all 206
+ARM units and 37 verifier tests (one skip) pass. Focused source-shape/strict
+fuzzy changes **1.8%/0.9% → 94.5%/66.2%**; no exact result is claimed.
+Full report `_work/particle_area_exit_full_20261015.json` compares
+**4,323/4,524** at **93.45%** average source-shape and **82.34%**
+strict fuzzy, with **2,485 linked-exact**, **1,065 byte-exact** and
+zero exact-symbol losses versus the preceding report.
+See [the area-exit audit](PARTICLE_SPRITE_AREA_EXIT_ARM_2026-10-15.md).
+
 ## PlayerEgo endExplosion (2026-10-15)
 
 REA/IDA Android Thumb `0xa15c6–0xa15d2` supports the conditional

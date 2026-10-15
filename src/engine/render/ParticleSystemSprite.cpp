@@ -4,8 +4,7 @@
 #include "engine/render/PaintCanvas.h"
 #include "engine/render/ParticleSettingsRef.h"
 
-
-void ParticleSystem_updateAreaExitParticleImpl(ParticleSystemSprite *self, int index, float dt);
+#include <cstring>
 
 using AbyssEngine::AEMath::VectorSignedToFloat;
 
@@ -185,7 +184,71 @@ void ParticleSystemSprite::enable(bool enabled) {
 }
 
 void ParticleSystemSprite::updateAreaExitParticle(int index, float dt) {
-    ParticleSystem_updateAreaExitParticleImpl(this, index, dt);
+    // Android ARM 0x182d6c: integrate, fade through four radius bands, then re-enter.
+    const ParticleSettings::SetDefinition &set =
+        currentParticleSet(this->particleSetIds[index]);
+    const uint16_t id = (uint16_t)(this->resourceOffset + index);
+
+    Vector movement = this->particleVelocities[index] * dt;
+    movement = movement * kMillisecondsToSeconds;
+    this->canvas->SpriteSystemAddPosition(this->resource, id,
+                                          movement.x, movement.y, movement.z);
+
+    Vector position{};
+    this->canvas->SpriteSystemGetPosition(this->resource, id, position);
+    const Vector center = AbyssEngine::AEMath::MatrixGetPosition(*this->matrix);
+    const Vector offset = position - center;
+    const float distanceSq = offset.y * offset.y + offset.x * offset.x +
+                             offset.z * offset.z;
+    const float outerSq = set.posRight * set.posRight;
+
+    if (distanceSq > outerSq) {
+        this->setAlpha(index, set.color0, 0.0f);
+        if (distanceSq <= outerSq * 1.01f)
+            return;
+
+        const float q0 = (float)(this->random.nextInt(2000) - 1000) * 0.001f;
+        const float q1 = (float)(this->random.nextInt(2000) - 1000) * 0.001f;
+        const float q2 = (float)(this->random.nextInt(2000) - 1000) * 0.001f;
+        const float q3 = (float)(this->random.nextInt(2000) - 1000) * 0.001f;
+        const float lengthSq = q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3;
+        if (lengthSq < 1.0f)
+            return;
+
+        Vector reborn{
+            2.0f * (q2 * q3 - q0 * q1) / lengthSq,
+            2.0f * (q1 * q3 + q0 * q2) / lengthSq,
+            (q0 * q0 + q3 * q3 - q1 * q1 - q2 * q2) / lengthSq,
+        };
+        reborn *= set.posRight;
+        reborn += AbyssEngine::AEMath::MatrixGetPosition(*this->matrix);
+        this->canvas->SpriteSystemSetPosition(this->resource, id,
+                                              reborn.x, reborn.y, reborn.z);
+        this->particleVelocities[index] = Vector{set.velBaseX,
+                                                  set.velBaseY, set.velBaseZ};
+        return;
+    }
+
+    const float middleSq = set.posUp * set.posUp;
+    if (distanceSq > middleSq) {
+        this->setAlpha(index, set.color0,
+                       (outerSq - distanceSq) / (outerSq - middleSq));
+        return;
+    }
+
+    const float innerFadeSq = set.posDir * set.posDir;
+    if (distanceSq > innerFadeSq) {
+        this->setAlpha(index, set.color0, 1.0f);
+        return;
+    }
+
+    // ARM loads the +0x40 word as float here; other particle paths use it as int.
+    float innerRadius;
+    std::memcpy(&innerRadius, &set.posBase, sizeof(innerRadius));
+    const float innerSq = innerRadius * innerRadius;
+    const float alpha = distanceSq > innerSq
+        ? (distanceSq - innerSq) / (innerFadeSq - innerSq) : 0.0f;
+    this->setAlpha(index, set.color0, alpha);
 }
 
 void ParticleSystemSprite::setParticle(const Vector &pos, float p2, uint32_t color, float p4,

@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (AERandom ARM-derived oracle; older subsystem
+Last reviewed: 2026-10-15 (ParticleSystemSprite area-exit; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -25,6 +25,23 @@ permit it; do not alter correct behavior solely to reach that number.
 Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
+
+## ParticleSystemSprite area-exit recovery (2026-10-15)
+
+The former `updateAreaExitParticle` call to an undefined helper has been
+replaced by the Android ARM-backed movement, squared-radius alpha bands,
+four-draw random rebirth and velocity reset. An extracted-production host
+smoke covers all branches and RNG state. Native `gof2`, 206/206 ARM units
+and 37 verifier tests (one expected skip) pass. Focused source-shape/strict
+fuzzy improves **1.8%/0.9% → 94.5%/66.2%**; the method is still
+non-exact. Full corpus remains **4,323/4,524** compared, with average
+source-shape/strict fuzzy **93.43%/82.33% → 93.45%/82.34%**,
+**2,485 linked-exact**, **1,065 byte-exact**, zero exact-symbol losses,
+**201 missing**, **123 extras** and zero skipped. The shared `+0x40`
+setting word is loaded as float in this ARM
+method but used as integer elsewhere; this cross-path type contract and
+live renderer behavior remain unverified. See
+[the area-exit audit](PARTICLE_SPRITE_AREA_EXIT_ARM_2026-10-15.md).
 
 ## AERandom ARM-derived sequence check (2026-10-15)
 
