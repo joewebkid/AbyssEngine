@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo jump-drive charge in update (2026-10-15)
+
+REA/IDA inspection of Android Thumb `0x9d8a6–0x9d8f6` supports the
+charge, threshold-event and volatile-goods branch restored in `update`.
+Native `gof2`, all 206 ARM units, extracted-production and adjacent
+smokes, and 37 verifier tests (one skipped) pass. Focused source-shape/
+strict fuzzy changes **79.5%/32.3% → 80.1%/30.8%**; `update` stays
+non-exact. Full report `_work/player_drive_charge_full_20261015.json`
+compares **4,323/4,524** functions at **93.41%** average source-shape
+and **82.31%** strict fuzzy, with **2,484 linked-exact** and **1,065
+byte-exact**, **201 missing**, **123 extras**, zero skipped. Both exact
+symbol sets are unchanged versus `_work/player_jump_full_20261015.json`.
+The local iOS 1.1.4 ARMv7 IPA and SuperDuperHyperHle's guest GDB server
+could supply runtime behavior for an analogous path, but no such trace
+was taken for this package. See
+[the charge audit](PLAYER_EGO_DRIVE_CHARGE_ARM_2026-10-15.md).
+
 ## PlayerEgo jump-drive initialization and activation (2026-10-15)
 
 Targeted REA/IDA reads of Android Thumb `0x99a30–0x99a38`,

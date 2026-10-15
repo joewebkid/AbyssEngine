@@ -698,6 +698,9 @@ static_assert(__builtin_offsetof(PlayerEgo, hackingGame) == 0x1e8, "PlayerEgo::h
 static_assert(__builtin_offsetof(PlayerEgo, turretActive) == 0x1a0, "PlayerEgo::turretActive offset");
 static_assert(__builtin_offsetof(PlayerEgo, cloak) == 0x1b0, "PlayerEgo::cloak offset");
 static_assert(__builtin_offsetof(PlayerEgo, turretPitch) == 0x1f8, "PlayerEgo::turretPitch offset");
+static_assert(__builtin_offsetof(PlayerEgo, driveCharge) == 0x1fc, "PlayerEgo::driveCharge offset");
+static_assert(__builtin_offsetof(PlayerEgo, driveChargeMax) == 0x200, "PlayerEgo::driveChargeMax offset");
+static_assert(__builtin_offsetof(PlayerEgo, chargingDrive) == 0x204, "PlayerEgo::chargingDrive offset");
 static_assert(__builtin_offsetof(PlayerEgo, shieldRecoveryAmount) == 0x218, "PlayerEgo::shieldRecoveryAmount offset");
 static_assert(__builtin_offsetof(PlayerEgo, hud) == 0x220, "PlayerEgo::hud offset");
 static_assert(__builtin_offsetof(PlayerEgo, turretOffsetVec) == 0x224, "PlayerEgo::turretOffsetVec offset");

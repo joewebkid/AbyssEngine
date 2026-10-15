@@ -1,22 +1,47 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PlayerEgo jump-drive initialization; older subsystem
+Last reviewed: 2026-10-15 (PlayerEgo jump-drive charge; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
 
 Continue improving native recovery one bounded function group at a time.
-Use targeted REA/IDA reads of the original Android ARM binary to identify
+For each selected family, use targeted REA/IDA reads of the original Android
+ARM binary to map the function, relevant callers/callees, field accesses,
+branches and remaining unknowns before editing. Use these reads to identify
 addresses, data flow and plausible source structure; cross-check claims
 against instruction evidence, other available platform sources and focused
 behavior tests. Accept C++ changes only with native and ARM build gates,
 focused source-shape verification and a full-corpus exact-pair comparison.
 REA output is evidence, not an automatic semantic proof or a replacement for
-the verifier. Aim for at least 98% source-shape in a selected family when
-the evidence and toolchain permit it; do not alter correct behavior solely
-to reach that number. Report unattained targets and untested live behavior
+the verifier. Its call relationships may be partial; record this rather than
+assuming the graph is complete. Where an executable original is available,
+prefer controlled runtime observations for unresolved behavior. The local
+GOF2 HD 1.1.4 iOS IPA is ARMv7 and runs in SuperDuperHyperHle, which
+provides a guest GDB server; use it as a supplementary behavioral oracle,
+not as an exact binary reference for Android 2.0.16. Aim for at least
+98% source-shape in a selected family when the evidence and toolchain
+permit it; do not alter correct behavior solely to reach that number.
+Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
+
+## PlayerEgo jump-drive charge in update (2026-10-15)
+
+Android Thumb `0x9d8a6–0x9d8f6`, inspected through REA/IDA, restores
+per-frame charge growth, threshold HUD event 26 and volatile-cargo shake.
+The ARM field offsets `+0x1fc/+0x200/+0x204` are asserted. The low-byte
+store to `+0x38` is preserved exactly, but its higher-level purpose is not
+yet established. Native `gof2`, 206/206 ARM units, extracted and adjacent
+smokes and 37 verifier tests (one skipped) pass. Focused `update`
+source-shape/strict fuzzy changes **79.5%/32.3% → 80.1%/30.8%**;
+it remains non-exact. The full corpus is **4,323/4,524** compared at
+**93.41%** average source-shape and **82.31%** strict fuzzy, with
+**2,484 linked-exact**, **1,065 byte-exact**, **201 missing**,
+**123 extras**, zero skipped and no exact-pair losses. The iOS ARMv7
+emulator may allow controlled guest breakpoints on the analogous path;
+that cross-version behavior has not yet been measured. See
+[the charge audit](PLAYER_EGO_DRIVE_CHARGE_ARM_2026-10-15.md).
 
 ## PlayerEgo jump-drive initialization and activation (2026-10-15)
 

@@ -2902,6 +2902,17 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         }
     }
 
+    // Android Thumb 0x9d8a6-0x9d8f6: charge completion precedes the volatile-cargo shake.
+    if (this->chargingDrive != 0) {
+        this->driveCharge += dt;
+        if (this->driveCharge >= this->driveChargeMax) {
+            *reinterpret_cast<uint8_t *>(&this->gunMuzzleRoot) = 0;
+            hud->hudEvent(26, this, 0);
+        }
+        if (this->volatileGoods != 0)
+            player->flShake += static_cast<float>(dt) * 0.001f * 0.5f;
+    }
+
     if (this->tractorBeam != nullptr)
         ((TractorBeam *) this->tractorBeam)->update(dt, radar, this->level, hud);
     if (this->repairBeams != nullptr) {
