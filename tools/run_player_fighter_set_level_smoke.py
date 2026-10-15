@@ -15,7 +15,7 @@ def main():
         raise SystemExit("g++ is required")
     source = (ROOT / "src/game/ship/PlayerFighter.cpp").read_text()
     begin = source.index("void PlayerFighter::setLevel(Level *lvl)")
-    end = source.index("static void *const gPFC_guard", begin)
+    end = source.index("PlayerFighter::PlayerFighter(", begin)
     fixture = (ROOT / "tools/player_fighter_set_level_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_METHOD", source[begin:end])
     with tempfile.TemporaryDirectory(prefix="fighter-level-", dir=ROOT / "_work") as temp:

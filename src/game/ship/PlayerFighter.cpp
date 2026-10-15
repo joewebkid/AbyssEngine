@@ -6,6 +6,7 @@
 #include "game/mission/Mission.h"
 #include "engine/render/AEGeometry.h"
 #include "game/mission/Generator.h"
+#include "game/core/Globals.h"
 #include "game/world/Level.h"
 #include "game/mission/Status.h"
 #include "engine/render/Trail.h"
@@ -19,7 +20,6 @@
 
 
 
-void AEMath_Matrix_ctor(void *m);
 // PaintCanvas::gCanvas is declared extern in engine/render/PaintCanvas.h (included above).
 
 int AERandom_nextInt_nobound(int rng);
@@ -27,10 +27,6 @@ int AERandom_nextInt_nobound(int rng);
 static inline int PF_nextInt(int rng) { return AERandom_nextInt_nobound(rng); }
 
 float VectorSignedToFloat(int v, int mode);
-
-int *RH_op_new_arr(unsigned int n);
-
-void RH_op_delete_arr(void *p);
 
 void PF_update_dead(PlayerFighter * self);
 
@@ -172,16 +168,10 @@ void PlayerFighter::setLevel(Level *lvl) {
     manager->enableSystemEmit(this->field_0x138, false);
 }
 
-static void *const gPFC_guard = nullptr;
-static int *const gPFC_sharedRoute = nullptr;
-static const int gPFC_defaultRoute = 0;
-
 PlayerFighter::PlayerFighter(int faction, int wingmanCmd, Player *player, AEGeometry *geom,
                              float x, float y, float z, bool flag)
     : KIPlayer(faction, -1, player, geom, x, y, z, flag) {
     PlayerFighter * self = this;
-    int *guardP = *(int **) gPFC_guard;
-    volatile int saved = *guardP;
 
     self->field_0x200 = 0;
     self->field_0x204 = 0;
@@ -199,48 +189,42 @@ PlayerFighter::PlayerFighter(int faction, int wingmanCmd, Player *player, AEGeom
     {
         0, 0, 0
     };
-    AEMath_Matrix_ctor(&self->easeBaseMatrix);
-    AEMath_Matrix_ctor(&self->rollMatrix);
+    AERandom *rng = static_cast<AERandom *>(Globals::rnd);
 
-    int rng = (int) (intptr_t) AERandom::gRandom;
-
-    float wp[27];
+    float wp[12];
     int r;
-    r = PF_nextInt(rng);
-    wp[0] = VectorSignedToFloat(r - 30000, 0);
-    int r1 = PF_nextInt(rng);
-    int r2 = PF_nextInt(rng);
-    wp[2] = VectorSignedToFloat(r2 + 20000, 0);
-    wp[1] = VectorSignedToFloat(r1 - 10000, 0);
-    r = PF_nextInt(rng);
-    wp[3] = VectorSignedToFloat(r + 5000, 0);
-    r1 = PF_nextInt(rng);
-    r2 = PF_nextInt(rng);
-    wp[5] = VectorSignedToFloat(r2 + 20000, 0);
-    wp[4] = VectorSignedToFloat(r1 - 10000, 0);
-    r = PF_nextInt(rng);
-    wp[6] = VectorSignedToFloat(r + 5000, 0);
-    r1 = PF_nextInt(rng);
-    r2 = PF_nextInt(rng);
-    wp[8] = VectorSignedToFloat(r2 + 55000, 0);
-    wp[7] = VectorSignedToFloat(r1 - 10000, 0);
-    r = PF_nextInt(rng);
-    wp[9] = VectorSignedToFloat(r - 30000, 0);
-    r1 = PF_nextInt(rng);
-    r2 = PF_nextInt(rng);
-    wp[10] = VectorSignedToFloat(r1 - 10000, 0);
-    wp[11] = VectorSignedToFloat(r2 + 55000, 0);
+    r = rng->nextInt(25000);
+    wp[0] = static_cast<float>(r - 30000);
+    int r1 = rng->nextInt(10000);
+    int r2 = rng->nextInt(25000);
+    wp[2] = static_cast<float>(r2 + 20000);
+    wp[1] = static_cast<float>(r1 - 10000);
+    r = rng->nextInt(25000);
+    wp[3] = static_cast<float>(r + 5000);
+    r1 = rng->nextInt(10000);
+    r2 = rng->nextInt(25000);
+    wp[5] = static_cast<float>(r2 + 20000);
+    wp[4] = static_cast<float>(r1 - 10000);
+    r = rng->nextInt(25000);
+    wp[6] = static_cast<float>(r + 5000);
+    r1 = rng->nextInt(10000);
+    r2 = rng->nextInt(25000);
+    wp[8] = static_cast<float>(r2 + 55000);
+    wp[7] = static_cast<float>(r1 - 10000);
+    r = rng->nextInt(25000);
+    wp[9] = static_cast<float>(r - 30000);
+    r1 = rng->nextInt(10000);
+    r2 = rng->nextInt(25000);
+    wp[10] = static_cast<float>(r1 - 10000);
+    wp[11] = static_cast<float>(r2 + 55000);
 
-    int count = PF_nextInt(rng) * 3 + 6;
-    char used[16];
-    for (int i = 0; i < 13; i++) used[i] = 0;
-    unsigned long long bytes = (unsigned long long) (unsigned) count * 4;
-    unsigned sz = (int) (bytes >> 32) != 0 ? 0xffffffff : (unsigned) bytes;
-    int *pts = RH_op_new_arr(sz);
+    int count = rng->nextInt(3) * 3 + 6;
+    char used[4] = {};
+    int *pts = new int[count];
     for (int i = 0; i < count; i += 3) {
         int idx;
         do {
-            idx = PF_nextInt(rng);
+            idx = rng->nextInt(4);
         } while (used[idx] != 0);
         used[idx] = 1;
         pts[i] = (int) wp[idx * 3];
@@ -248,13 +232,16 @@ PlayerFighter::PlayerFighter(int faction, int wingmanCmd, Player *player, AEGeom
         pts[i + 2] = (int) wp[idx * 3 + 2];
     }
     self->route = new Route(pts, (unsigned) count);
-    RH_op_delete_arr(pts);
+    delete[] pts;
 
-    int *shared = gPFC_sharedRoute;
-    if (*shared == 0) {
-        int defPts[12];
-        memcpy(defPts, &gPFC_defaultRoute, 0x30);
-        *shared = (int) (intptr_t)(new Route(defPts, 0xc));
+    if (stationRouteAliens == nullptr) {
+        int stationPts[12] = {
+            40000, 0, 40000,
+            40000, 0, -40000,
+            -40000, 0, -40000,
+            -40000, 0, 40000,
+        };
+        stationRouteAliens = new Route(stationPts, 12);
     }
 
     self->field_0x130 = -1;
@@ -297,20 +284,20 @@ PlayerFighter::PlayerFighter(int faction, int wingmanCmd, Player *player, AEGeom
     self->field_0x1ec = 0;
     self->currentRotate = 0;
 
-    self->workingPosition.x = *(float *) &flag;
-    self->workingPosition.y = 0;
-    self->workingPosition.z = 0;
+    self->workingPosition.x = x;
+    self->workingPosition.y = y;
+    self->workingPosition.z = z;
     self->field_0x13d = 1;
     self->crateCaptured = 1;
     self->currentSpeed = self->speed;
     self->currentRotate = self->rotate;
-    self->route->setLoop(0);
-    ((Route *) ((void *) (long) *shared))->setLoop(0);
+    self->route->setLoop(true);
+    stationRouteAliens->setLoop(true);
     self->routeClone = 0;
 
     if (Status::gStatus->getCurrentCampaignMission() != 0x29) {
         if (wingmanCmd == 9) {
-            self->routeClone = ((Route *) ((void *) (long) *shared))->clone();
+            self->routeClone = stationRouteAliens->clone();
         } else {
             self->routeClone = self->route->clone();
         }
@@ -988,4 +975,4 @@ void PlayerFighter::revive() {
 }
 
 // Static data members present in the original binary (defined for symbol parity).
-int PlayerFighter::stationRouteAliens;
+Route *PlayerFighter::stationRouteAliens;

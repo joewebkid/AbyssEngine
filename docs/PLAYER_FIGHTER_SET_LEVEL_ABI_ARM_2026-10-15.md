@@ -58,9 +58,11 @@ generated validation data, not source files.
 ## Remaining uncertainty
 
 The smoke verifies this production method in a mock environment, not the
-original Android binary or the complete Fighter object lifecycle. The
-constructor still has unresolved null guard, route and related placeholders;
-its `Level::createShip` path must not be described as runtime-ready. The
+original Android binary or the complete Fighter object lifecycle. At this
+stage the constructor still had unresolved null guard and route
+placeholders; [the subsequent route recovery](PLAYER_FIGHTER_ROUTE_ARM_2026-10-15.md)
+removes them. Its `Level::createShip` path still must not be described as
+runtime-ready. The
 allocated tail at `+0x2ec` has no established meaning. Next, recover the
 constructor's external dependencies and ownership/initialization sequence,
 then execute a narrow ARM32 object-lifecycle smoke with known inputs.

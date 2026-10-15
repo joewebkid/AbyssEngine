@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PlayerFighter ABI and setLevel; older subsystem
+Last reviewed: 2026-10-15 (PlayerFighter constructor routes; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -26,6 +26,26 @@ Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
 
+## PlayerFighter constructor routes (2026-10-15)
+
+REA/IDA and original ELF bytes confirm the constructor's bounded RNG
+draws, 2–4 distinct route waypoints, the four-point shared station route,
+looping and x/y/z position. The prior unbounded indices and null shared
+pointer could corrupt memory or crash; both are removed. A production-code
+route smoke covers all route lengths, duplicate-index retry, draw bounds,
+shared-route reuse, coordinates and loop flags. The earlier `setLevel`
+smoke also passes after updating its extraction boundary. Native `gof2`,
+**206/206** ARM units and **37** verifier tests (one skip) pass.
+
+Constructor source-shape improves **85.2% → 94.5%**; strict fuzzy is
+**37.9%**, with no exact match. Full corpus remains **4,323/4,524**
+original functions, **201 missing**, **123 extras**, zero skipped, and
+**93.52%/82.55%** average source-shape/strict fuzzy. Both exact-symbol
+sets are unchanged, with zero losses: **2,499 linked-exact** and
+**1,074 byte-exact**. The full constructor and object lifecycle have not
+run against the original ARM32 game; other dependent initialization
+effects remain open. See [the route audit](PLAYER_FIGHTER_ROUTE_ARM_2026-10-15.md).
+
 ## PlayerFighter ABI and particle registration (2026-10-15)
 
 REA/IDA on Android 2.0.16 confirms a **0x2f0-byte** PlayerFighter
@@ -43,10 +63,10 @@ original functions, at **93.52%** average source-shape and **82.55%** strict
 fuzzy; **201 missing**, **123 extras**, zero skipped. It has **2,499
 linked-exact** and **1,074 byte-exact**, gains of 13 and 9 Fighter symbols
 respectively, with no exact-symbol losses against the prior full report.
-The four trailing bytes of the allocation remain unclassified. The
-constructor still contains unresolved null placeholders and its live ARM32
-path has not been executed; that is the next priority before claiming a
-working `Level::createShip` route. See
+The four trailing bytes of the allocation remain unclassified. At this
+stage the constructor still contained null placeholders; the route audit
+above records their subsequent removal. Its live ARM32 path has not been
+executed, so a working `Level::createShip` route is not yet established. See
 [the Fighter ABI audit](PLAYER_FIGHTER_SET_LEVEL_ABI_ARM_2026-10-15.md).
 
 ## String reversal and historical fighter ABI gap (2026-10-15)

@@ -180,7 +180,7 @@ public:
     void update(int dt) override;
 
     // Static data members present in the original binary (defined for symbol parity).
-    static int stationRouteAliens;
+    static Route *stationRouteAliens;
 };
 #if __SIZEOF_POINTER__ == 4
 static_assert(sizeof(PlayerFighter) == 0x2f0, "PlayerFighter ARM allocation must be 0x2f0 bytes");
