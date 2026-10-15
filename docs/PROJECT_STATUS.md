@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PaintCanvas FBO stop contract; older subsystem
+Last reviewed: 2026-10-16 (PaintCanvas sprite-system call contracts; older subsystem
 snapshots retain their dates)
+
+## PaintCanvas sprite-system call contracts (2026-10-16)
+
+Android ARM `PaintCanvas::SpriteSystemSetAllUv` (`0x7a7bc`),
+`SpriteSystemSetUv` (`0x7a7f8`) and `SpriteSystemSetRGBA` (`0x7a840`)
+perform the existing bounds/null checks, then call their corresponding
+`AbyssEngine::SpriteSystemSet*` functions. The recovered wrappers passed
+the same arguments to three undefined `paintcanvas_ext_sprite_*` symbols;
+they now call the implemented, original-named helpers.
+
+Native `gof2`, **206/206** ARM units and **40** verifier tests (one skip)
+pass. All three focused functions remain **100%/100%** source-shape/
+strict fuzzy and linked-exact, not byte-exact. Full coverage remains
+**4,323/4,524** unique original functions, **201 missing**, **123 extras**,
+zero skipped, **93.59%/82.63%** average source-shape/strict fuzzy,
+**2,503 linked-exact / 1,074 byte-exact** with no exact-pair losses or
+gains. Direct-call-target matches improve **2,351 → 2,354** and mismatch
+candidates fall **74 → 71**; 647 unresolved remain. A real GL/ARM32
+sprite-output test is still missing. Next priority: controlled sprite
+data/UV/RGBA behavior checks or the next call-contract cluster. See
+[the sprite call audit](PAINTCANVAS_SPRITE_CALLS_ARM_2026-10-16.md).
 
 ## PaintCanvas StopDraw2FBO call contract (2026-10-15)
 

@@ -22,6 +22,9 @@ namespace AbyssEngine {
     int MeshDraw(Engine *engine, Mesh *mesh);
     void SpriteSystemRelease(Engine *engine, SpriteSystem **slot);
     void SpriteSystemDraw(Engine *engine, const Matrix &view, const Matrix &world, SpriteSystem *sys);
+    void SpriteSystemSetAllUv(float u0, float v0, float u1, float v1, SpriteSystem *sys);
+    void SpriteSystemSetUv(unsigned short idx, float a, float b, float c, float d, SpriteSystem *sys);
+    void SpriteSystemSetRGBA(unsigned short idx, float r, float g, float b, float a, SpriteSystem *sys);
     int CameraIsSphereinViewFrustum(const Vector &center, float radius, Matrix *extra, Camera *cam);
     int CameraIsPointinViewFrustum(const Vector &point, Matrix *extra, Camera *cam);
 }
@@ -420,8 +423,6 @@ void paintcanvas_ext_fr_glenable(void *eng, unsigned int cap, bool on);
 
 void paintcanvas_ext_fr_meshdraw(void *eng, void *mesh);
 
-void paintcanvas_ext_sprite_rgba(unsigned int, float, float, float, float, void *);
-
 void paintcanvas_ext_dr_setwvm(void *self, void *m);
 
 void paintcanvas_ext_dr_glLineWidth(float w);
@@ -435,8 +436,6 @@ void paintcanvas_ext_dr_glColorMask(void *eng, unsigned int cap, int on);
 void paintcanvas_ext_dr_glDrawArrays(int a, int b, int c);
 
 void paintcanvas_ext_dr_drawline2d(void *eng, void *p, int n, bool b);
-
-void paintcanvas_ext_sprite_alluv(float, float, float, float, void *);
 
 void paintcanvas_ext_sprite_allsize(unsigned int, void *);
 
@@ -481,8 +480,6 @@ void paintcanvas_ext_disable(int);
 int paintcanvas_ext_is_posteffect(void *);
 
 void paintcanvas_ext_use_refract(void *);
-
-void paintcanvas_ext_sprite_uv(unsigned int, float, float, float, float, void *);
 
 void paintcanvas_ext_set_wvm(void *);
 
@@ -1020,7 +1017,8 @@ void PaintCanvas::SpriteSystemSetRGBA(unsigned int index, unsigned short sub,
             if ((unsigned int) (unsigned short) s->count <= (unsigned int) sub) {
                 return;
             }
-            return paintcanvas_ext_sprite_rgba(sub, a, b, c, d, s);
+            return AbyssEngine::SpriteSystemSetRGBA(sub, a, b, c, d,
+                                                     reinterpret_cast<SpriteSystem *>(s));
         }
     }
 }
@@ -1132,7 +1130,8 @@ void PaintCanvas::SpriteSystemSetAllUv(unsigned int index,
     if (sprite == 0) {
         return;
     }
-    return paintcanvas_ext_sprite_alluv(a, b, c, d, sprite);
+    return AbyssEngine::SpriteSystemSetAllUv(a, b, c, d,
+                                             static_cast<SpriteSystem *>(sprite));
 }
 
 void PaintCanvas::SpriteSystemGetPosition(unsigned int index, unsigned short sub, Vector &out) {
@@ -1649,7 +1648,8 @@ void PaintCanvas::SpriteSystemSetUv(unsigned int index, unsigned short sub,
             if ((unsigned int) (unsigned short) s->count <= (unsigned int) sub) {
                 return;
             }
-            return paintcanvas_ext_sprite_uv(sub, a, b, c, d, s);
+            return AbyssEngine::SpriteSystemSetUv(sub, a, b, c, d,
+                                                   reinterpret_cast<SpriteSystem *>(s));
         }
     }
 }

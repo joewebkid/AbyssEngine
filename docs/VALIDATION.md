@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PaintCanvas sprite-system call contracts (2026-10-16)
+
+`SpriteSystemSetAllUv`, `SpriteSystemSetUv` and `SpriteSystemSetRGBA`
+now call the original-named `AbyssEngine::SpriteSystemSet*` functions
+instead of undefined transition shims. Focused source-shape/strict
+fuzzy stays 100%/100% for all three; each remains linked-exact, not
+byte-exact, and its direct call target now matches. Native `gof2`,
+206/206 ARM units and 40 verifier tests (one skip) pass. Full report
+`A:/Galaxy on Fire new version/_work/paintcanvas_sprite_calls_full_20261015.json`
+compares 4,323/4,524 unique functions at 93.59%/82.63% average
+source-shape/strict fuzzy, 2,503 linked-exact and 1,074 byte-exact,
+with zero exact-pair losses or gains. Direct-call-target matches rise
+to 2,354. See [the focused audit](PAINTCANVAS_SPRITE_CALLS_ARM_2026-10-16.md).
+
 ## PaintCanvas StopDraw2FBO call contract (2026-10-15)
 
 The four undefined `paintcanvas_ext_fbo_*` calls now invoke the original
