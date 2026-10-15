@@ -49,7 +49,6 @@ namespace AbyssEngine {
 }
 
 namespace {
-    void *g_boost_fmod;
     void *g_FMod_singleton;
     void *g_setRotation_transform;
     void *g_dockToPlanet_fmod;
@@ -252,9 +251,8 @@ void PlayerEgo::boost() {
     float v = (float) this->boostSpeed;
     this->boostTimer = 0;
     this->boostingFlag = 1;
-    void *snd = *(void **) g_boost_fmod;
-    ((float &) this->speed) = v;
-    ((FModSound *) (*(void **) snd))->play((int) (intptr_t) this->boostSoundId, (Vector *) 0, (Vector *) 0, v);
+    this->speedValue = v;
+    Globals::sound->play(this->boostSoundId, nullptr, nullptr, 0.0f);
 }
 
 float PlayerEgo::getDriveChargeRate() {
@@ -1718,6 +1716,12 @@ PlayerEgo::PlayerEgo(Player *player) {
     Ship *ship = (Ship *) PE_status()->getShip();
     this->boostTimer = 0;
     this->boostingFlag = 0;
+    this->rocketControlGun = 0;
+    this->boostSpeed = 5;
+    this->field_0xcc = 5000;
+    this->field_0xd0 = 20000;
+    this->boostSoundId = 0;
+    this->field_0x146 = 0;
     this->speedValue = 2.0f;
     this->thrust = 1.0f;
     this->switchToStandardCam = 0;
@@ -1735,6 +1739,19 @@ PlayerEgo::PlayerEgo(Player *player) {
         float speedRate = (float) speed / 100.0f;
         this->boostSpeed = (int) (speedRate + speedRate) + 2;
         this->field_0xcc = ship->getBoostTime();
+        this->field_0x146 = this->field_0xd0 > 0;
+        Item *boostItem = ship->getFirstEquipmentOfSort(14);
+        if (boostItem != nullptr) {
+            int index = boostItem->getIndex();
+            switch (index) {
+            case 71: this->boostSoundId = 38; break;
+            case 72: this->boostSoundId = 39; break;
+            case 73: this->boostSoundId = 40; break;
+            case 74: this->boostSoundId = 41; break;
+            case 195: this->boostSoundId = 1102; break;
+            }
+            Globals::gGlobals->addSoundResourceToList(this->boostSoundId);
+        }
         this->handling = ship->getHandling();
         int shipIndex = ship->getIndex();
         if (shipIndex == 42)

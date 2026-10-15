@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo boost setup and activation (2026-10-15)
+
+Android Thumb `0x99b20–0x99bbc` and `0x9aea4–0x9aefa` confirms
+boost equipment, availability, sound ID and play gain. Native
+`gof2`, 206/206 ARM units, the extracted-production and adjacent
+smokes, and 37 verifier tests (one skipped) pass. Focused
+constructor source-shape/strict fuzzy changes **68.2%/41.3% →
+73.9%/41.6%** for C1/C2; neither is exact. Focused `boost()`
+changes **90.1%/67.8% → 100%/100%**, becoming linked-exact but
+not byte-exact. Full report `_work/player_boost_full_20261015.json`
+compares **4,323/4,524** at **93.41%** average source-shape and
+**82.30%** strict fuzzy, with **2,484 linked-exact**, **1,065
+byte-exact**, **201 missing**, **123 extras** and zero skipped.
+The linked-exact set gains only `boost()` and loses none; the
+byte-exact set changes by zero versus
+`_work/player_cloak_ctor_full_20261014.json`. Live ARM32
+boost/audio remains unverified. See
+[the boost audit](PLAYER_EGO_BOOST_ARM_2026-10-15.md).
+
 ## PlayerEgo cloak-state constructor (2026-10-15)
 
 Android Thumb `0x99a12`, `0x99cdc–0x99d4e` and

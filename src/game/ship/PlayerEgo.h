@@ -115,7 +115,7 @@ public:
     int boostSpeed;
     int field_0xcc;
     int field_0xd0;
-    void *boostSoundId;
+    int boostSoundId;
     void *field_0xd8;
     union {
         void *rollGeometry;
@@ -663,6 +663,7 @@ static_assert(__builtin_offsetof(PlayerEgo, freeLookMode) == 0xc4, "PlayerEgo::f
 static_assert(__builtin_offsetof(PlayerEgo, boostSpeed) == 0xc8, "PlayerEgo::boostSpeed offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0xcc) == 0xcc, "PlayerEgo::boostTime offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0xd0) == 0xd0, "PlayerEgo::boostDelay offset");
+static_assert(__builtin_offsetof(PlayerEgo, boostSoundId) == 0xd4, "PlayerEgo::boostSoundId offset");
 static_assert(__builtin_offsetof(PlayerEgo, waypointX) == 0xe8, "PlayerEgo::waypointX offset");
 static_assert(__builtin_offsetof(PlayerEgo, waypointY) == 0xec, "PlayerEgo::dockWaypointX offset");
 static_assert(__builtin_offsetof(PlayerEgo, gunBaseGeo) == 0xf0, "PlayerEgo::dockWaypointY offset");

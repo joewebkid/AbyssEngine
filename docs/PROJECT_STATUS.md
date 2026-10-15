@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PlayerEgo cloak-state constructor; older subsystem
+Last reviewed: 2026-10-15 (PlayerEgo boost setup/activation; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo boost setup and activation (2026-10-15)
+
+Android Thumb `0x999b8`, `0x99a6e`, `0x99b20–0x99bbc` and
+`0x9aea4–0x9aefa` restores boost availability, sound selection and
+activation through `Globals::sound` at zero gain. The former code
+left gates uninitialized and dereferenced an unconnected FMOD
+pointer. Native `gof2`, 206/206 ARM units, extracted-method and
+adjacent smokes, and 37 verifier tests (one skipped) pass.
+Focused constructor source-shape/strict fuzzy rises **68.2%/41.3%
+→ 73.9%/41.6%** for both aliases; `boost()` rises
+**90.1%/67.8% → 100%/100%** and becomes linked-exact. Full
+coverage remains **4,323/4,524** at **93.41%** average
+source-shape and **82.30%** strict fuzzy, with **2,484 linked-exact**,
+**1,065 byte-exact**, **201 missing**, **123 extras**, zero skipped
+and no exact-pair losses. Live ARM32 boost/audio is unverified.
+Next: jump-drive initialization. See
+[the boost audit](PLAYER_EGO_BOOST_ARM_2026-10-15.md).
 
 ## PlayerEgo cloak-state constructor (2026-10-15)
 
