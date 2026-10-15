@@ -497,26 +497,16 @@ int String::StrLen(const unsigned short *s) {
 }
 
 String String::SubString(unsigned int start, unsigned int end) {
-    String out;
-    unsigned int slen = (unsigned int) this->length;
-    if (start < end && start < slen) {
-        unsigned int hi = end > slen ? slen : end;
-        {
-            const unsigned short *_src = this->data + start;
-            int _n = (int) (hi - start);
-            if (out.data) delete[] out.data;
-            out.data = nullptr;
-            out.length = 0;
-            if (_src && _n >= 0) {
-                unsigned short *_nd = new unsigned short[_n + 1];
-                for (int _i = 0; _i < _n; _i++) _nd[_i] = _src[_i];
-                _nd[_n] = 0;
-                out.data = _nd;
-                out.length = _n;
-            }
-        }
-    }
-    return out;
+    String scratch;
+    if (end <= start)
+        return String();
+
+    unsigned int count = end - start;
+    scratch.data = new unsigned short[count + 1];
+    std::memcpy(scratch.data, this->data + start, count * sizeof(unsigned short));
+    scratch.data[count] = 0;
+    scratch.length = (int) count;
+    return String(scratch, false);
 }
 
 uint16_t *String::getWCharFromUtf8(char *s, int len) {

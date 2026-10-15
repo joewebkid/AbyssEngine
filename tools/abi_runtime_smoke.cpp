@@ -92,6 +92,14 @@ int main() {
         AbyssEngine::String slice = text.SubString(1, 4);
         check(slice.length == 3 && slice.data[0] == 'l' && slice.data[2] == 'h',
               "String hidden return");
+        AbyssEngine::String emptySlice = text.SubString(4, 4);
+        check(emptySlice.length == 0 && emptySlice.data == nullptr,
+              "String empty substring");
+        text.data[2] = 0;
+        AbyssEngine::String embeddedZeroSlice = text.SubString(1, 4);
+        check(embeddedZeroSlice.length == 1 && embeddedZeroSlice.data[0] == 'l',
+              "String substring copy-constructor truncation");
+        text.data[2] = 'p';
         copy.Set("beta");
         check(text.length == 5 && text.data[0] == 'a', "String independent copy");
         AbyssEngine::String assignedText;

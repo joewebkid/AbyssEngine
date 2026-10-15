@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PlayerFighter cloak/reset ABI; older subsystem
+Last reviewed: 2026-10-15 (String::SubString; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -25,6 +25,26 @@ permit it; do not alter correct behavior solely to reach that number.
 Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
+
+## String::SubString ARM behavior and source shape (2026-10-15)
+
+REA/IDA Android ARM `0x72ed8–0x72f64` confirms a hidden result slot,
+exact `end-start` UTF-16 copy for `end > start`, temporary-copy
+construction and destruction, and no clamp to `this->length`. The
+recovered C++ now follows this lifecycle. Its ABI smoke covers a normal
+slice, an empty slice and truncation when the selected range contains a
+zero. Native `gof2`, the smoke, **206/206** ARM units and **37** verifier
+tests (one skip) pass. Focused source-shape/strict fuzzy changes
+**58.4%/23.4% → 99.3%/94.2%**; the function is not exact.
+
+The full ARM corpus compares **4,323/4,524** original functions,
+with **201 missing**, **123 extras**, zero skipped and **93.55%/82.59%**
+average source-shape/strict fuzzy. Both exact `(unit, symbol)` sets
+have zero gains or losses versus the preceding full report: **2,499
+linked-exact** and **1,074 byte-exact**. Original live behavior on
+identical inputs is untested. The adjacent `Set(unsigned short const *)`
+still differs for a non-null pointer to an empty UTF-16 string; that
+contract is the next priority. See [the SubString audit](STRING_SUBSTRING_ARM_2026-10-15.md).
 
 ## PlayerFighter cloak/reset ABI (2026-10-15)
 
