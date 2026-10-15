@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PlayerEgo autopilot waypoint distance; older subsystem
+Last reviewed: 2026-10-15 (PlayerEgo revive; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -25,6 +25,25 @@ permit it; do not alter correct behavior solely to reach that number.
 Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
+
+## PlayerEgo revive (2026-10-15)
+
+Android Thumb `0xa14a4–0xa1586`, inspected through REA/IDA instructions,
+confirms unconditional particle disablement, explosion cleanup, camera/player
+reactivation, both `Globals::sound` events, full hull/armor restoration,
+position `(0,0,10000)`, direction reset and timer clear. The previous
+code could dereference an uninitialized sound pointer and did not relocate
+the ship. ARM32 field-offset assertions cover the sound ID, explosion and
+particle system. Extracted-production smoke (with and without explosion),
+adjacent tests, native `gof2`, 206/206 ARM units and 37 verifier tests
+(one skipped) pass. Focused source-shape/strict fuzzy improves
+**88.4%/64.9% → 93.0%/70.3%**; the function remains non-exact.
+The full corpus stays at **4,323/4,524** compared, **93.41%** average
+source-shape, **82.31%** strict fuzzy, **2,484 linked-exact** and
+**1,065 byte-exact**, with **201 missing**, **123 extras**, zero skipped
+and no exact-pair losses. Live Android ARM32 and iOS revive behavior is
+untested. Next: an ARM32 runtime/ABI probe, then a controlled iOS guest
+trace. See [the revive audit](PLAYER_EGO_REVIVE_ARM_2026-10-15.md).
 
 ## PlayerEgo autopilot waypoint distance (2026-10-15)
 

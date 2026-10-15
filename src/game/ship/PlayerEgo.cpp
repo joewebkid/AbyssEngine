@@ -116,7 +116,6 @@ namespace {
     static float *g_PE_dr_posBlink = nullptr;
     static float *g_PE_dr_posNormal = nullptr;
     static const float g_PE_upd_handlingBias = 2.7f;
-    static void **g_PE_reviveSound = nullptr;
     static const float g_PE_t_timerDiv = 500.0f;
     static const float g_PE_t_pctScale = 100.0f;
     static const float g_PE_t_textDiv = 1.6f;
@@ -3302,9 +3301,8 @@ void PlayerEgo::setTurretPosition(Vector v) {
 
 void PlayerEgo::revive() {
     ParticleSystemManager *psm = this->level->field_74;
-    bool en = ((char &) this->currentSystem) != 0;
-    psm->enableSystemEmit(this->currentSystem, en);
-    psm->enableSystemRender(this->currentSystem, en);
+    psm->enableSystemEmit(this->currentSystem, false);
+    psm->enableSystemRender(this->currentSystem, false);
 
     if (this->explosion != 0)
         delete (Explosion *) (intptr_t) this->explosion;
@@ -3312,11 +3310,8 @@ void PlayerEgo::revive() {
 
     ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setActive(true);
     ((Player *) (this->player))->setActive(true);
-    int v = 0;
-
-    void *snd = *g_PE_reviveSound;
-    ((FModSound *) (*(void **) snd))->play((int) (intptr_t) * (void **) snd, (Vector *) 0, (Vector *) 0, (float) v);
-    ((FModSound *) (snd))->play((int) (intptr_t)((void *&) this->field_0x1c), (Vector *) 0, (Vector *) 0, (float) v);
+    Globals::sound->play(Globals::sound->currentMusicEvent, nullptr, nullptr, 0.0f);
+    Globals::sound->play(this->field_0x1c, nullptr, nullptr, 0.0f);
 
     ((PlayerEgo *) (this))->setExhaustVisible(true);
 
@@ -3325,10 +3320,7 @@ void PlayerEgo::revive() {
     player = this->player;
     ((Player *) (player))->setArmorHP(((Player *) (player))->getMaxArmorHP());
 
-    if (this->geometry != nullptr) {
-        Vector pos = this->getPosition();
-        ((AEGeometry *) (this->geometry))->setPosition(pos);
-    }
+    this->setPosition(0.0f, 0.0f, 10000.0f);
 
     float fwd[3] = {0.0f, 0.0f, 1.0f};
     float fwdUp[3] = {0.0f, 1.0f, 0.0f};

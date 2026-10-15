@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo revive (2026-10-15)
+
+REA/IDA Android Thumb `0xa14a4–0xa1586` supports the particle, explosion,
+sound, health, position and direction sequence restored in `revive`.
+Native `gof2`, 206/206 ARM units, extracted-production/adjacent smokes,
+the `Player` recovery check and 37 verifier tests (one skipped) pass.
+Focused source-shape/strict fuzzy changes **88.4%/64.9% →
+93.0%/70.3%**; it remains non-exact. Final full report
+`_work/player_revive_final_full_20261015.json` compares **4,323/4,524**
+at **93.41%** average source-shape and **82.31%** strict fuzzy, with
+**2,484 linked-exact**, **1,065 byte-exact**, **201 missing**,
+**123 extras** and zero skipped. Both exact symbol sets are unchanged
+versus `_work/player_autopilot_full_20261015.json`. Live Android ARM32
+and iOS revive behavior remain unverified. See
+[the revive audit](PLAYER_EGO_REVIVE_ARM_2026-10-15.md).
+
 ## PlayerEgo autopilot waypoint distance (2026-10-15)
 
 REA/IDA pseudocode and Android Thumb `0x9e344–0x9e3e8` confirm the

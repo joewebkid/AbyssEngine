@@ -640,6 +640,7 @@ public:
 static_assert(__builtin_offsetof(PlayerEgo, transform) == 0x4, "PlayerEgo::transform offset");
 static_assert(__builtin_offsetof(PlayerEgo, rocketReturnMatrixStorage) == 0x10, "PlayerEgo::rocketReturnMatrix offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x14) == 0x14, "PlayerEgo::field_0x14 offset");
+static_assert(__builtin_offsetof(PlayerEgo, field_0x1c) == 0x1c, "PlayerEgo::engine sound offset");
 static_assert(__builtin_offsetof(PlayerEgo, turretGeometry) == 0x28, "PlayerEgo::turretGeometry offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x2c) == 0x2c, "PlayerEgo::turret root offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x30) == 0x30, "PlayerEgo::turret extra offset");
@@ -650,6 +651,7 @@ static_assert(__builtin_offsetof(PlayerEgo, matrix_0x40_storage) == 0x40, "Playe
 static_assert(__builtin_offsetof(PlayerEgo, maneuverParam) == 0x7c, "PlayerEgo::maneuverParam offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x80) == 0x80, "PlayerEgo::field_0x80 offset");
 static_assert(__builtin_offsetof(PlayerEgo, targetFollowCamera) == 0x88, "PlayerEgo::targetFollowCamera offset");
+static_assert(__builtin_offsetof(PlayerEgo, explosion) == 0x8c, "PlayerEgo::explosion offset");
 static_assert(__builtin_offsetof(PlayerEgo, crosshairPosPrevious) == 0x94,
               "PlayerEgo::crosshairPosPrevious offset");
 static_assert(__builtin_offsetof(PlayerEgo, crosshairShootPosPrevious) == 0xa0,
@@ -723,6 +725,7 @@ static_assert(__builtin_offsetof(PlayerEgo, rollDirection) == 0x2a9, "PlayerEgo:
 static_assert(__builtin_offsetof(PlayerEgo, rollMatrix) == 0x2ac, "PlayerEgo::rollMatrix offset");
 static_assert(__builtin_offsetof(PlayerEgo, rotateX) == 0x2e8, "PlayerEgo::rotateX offset");
 static_assert(__builtin_offsetof(PlayerEgo, explosionTimer) == 0x2f8, "PlayerEgo::explosionTimer offset");
+static_assert(__builtin_offsetof(PlayerEgo, currentSystem) == 0x2fc, "PlayerEgo::currentSystem offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x309) == 0x308, "PlayerEgo::renderVisibility offset");
 static_assert(__builtin_offsetof(PlayerEgo, requestedVisible) == 0x309, "PlayerEgo::requestedVisibility offset");
 static_assert(__builtin_offsetof(PlayerEgo, shieldHitFlash) == 0x30a, "PlayerEgo::shieldHitFlash offset");
