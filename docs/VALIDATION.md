@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## String 64-bit integer conversion (2026-10-15)
+
+`String::Set(long long)` now uses unsigned magnitude conversion and direct
+UTF-16 output, avoiding signed overflow at `INT64_MIN`; it deliberately
+allocates 42 rather than the original ARM's 40 bytes for safe negative
+19-digit output. Native `gof2`, the ABI/lifetime smoke and standalone
+String reverse check, **206/206** ARM units and **37** verifier tests
+(one skip) pass. Focused source-shape/strict fuzzy rises
+**65.1%/18.9% → 89.4%/21.9%**, without an exact match. The full report
+`_work/string_set_i64_full_20261015.json` compares **4,323/4,524**
+original functions, **201 missing**, **123 extras**, zero skipped,
+**93.58%/82.61%** average source-shape/strict fuzzy, and zero exact-pair
+losses or gains versus `_work/float_set_object_full_20261015.json`:
+**2,499 linked-exact / 1,074 byte-exact**. See
+[the integer-conversion audit](STRING_SET_I64_ARM_2026-10-15.md).
+
 ## String float object composition (2026-10-15)
 
 `String::Set(float)` now follows the ARM-observed local `String`

@@ -7,6 +7,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <limits>
 
 // String.cpp contains unrelated methods that this isolated target does not call.
 // Fail loudly if a new test path reaches one of their external dependencies.
@@ -152,6 +153,22 @@ int main() {
         AbyssEngine::String medalValue(1234);
         check(medalValue.length == 4 && medalValue.data[0] == '1' &&
                   medalValue.data[3] == '4', "String integer value");
+        AbyssEngine::String negativeInt(-1234LL);
+        AbyssEngine::String minimumInt(std::numeric_limits<long long>::min());
+        AbyssEngine::String maximumInt(std::numeric_limits<long long>::max());
+        AbyssEngine::String zeroInt(0LL);
+        check(matchesAscii(negativeInt, "-1234"), "String negative integer");
+        check(matchesAscii(minimumInt, "-9223372036854775808"), "String minimum integer");
+        check(matchesAscii(maximumInt, "9223372036854775807"), "String maximum integer");
+        check(zeroInt.length == 0 && zeroInt.data != nullptr && zeroInt.data[0] == 0,
+              "String zero integer");
+        AbyssEngine::String reusedInt("old");
+        reusedInt.Set(-42LL);
+        check(matchesAscii(reusedInt, "-42"), "String replace integer");
+        AbyssEngine::String appendedInt("n=");
+        appendedInt += std::numeric_limits<long long>::min();
+        check(matchesAscii(appendedInt, "n=-9223372036854775808"),
+              "String append minimum integer");
         AbyssEngine::String positiveFloat(1.5f);
         AbyssEngine::String negativeFloat(-1.5f);
         AbyssEngine::String fractionalFloat(0.25f);

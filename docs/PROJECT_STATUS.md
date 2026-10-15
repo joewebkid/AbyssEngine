@@ -1,7 +1,29 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (String float object composition; older subsystem
+Last reviewed: 2026-10-15 (String 64-bit integer conversion; older subsystem
 snapshots retain their dates)
+
+## String 64-bit integer conversion (2026-10-15)
+
+Android ARM `String::Set(long long)` (`0x72a0c–0x72ad4`) writes decimal
+digits directly to its owned UTF-16 buffer, using unsigned 64-bit division
+and in-place reversal. The recovered method no longer invokes undefined
+signed negation for `INT64_MIN` or copies through a temporary buffer.
+The original requests 40 bytes, which static analysis shows is too small
+for a negative 19-digit value plus terminator; our deliberate 42-byte
+allocation prevents that overflow and is not an exact-code claim.
+
+Native `gof2`, the ABI/lifetime smoke, standalone String reverse check,
+**206/206** ARM units and **37** verifier tests (one skip) pass. Focused
+source-shape/strict fuzzy improves **65.1%/18.9% → 89.4%/21.9%**;
+the function remains non-exact. Full corpus compares **4,323/4,524**
+unique original functions, with **201 missing**, **123 extras**, zero
+skipped, **93.58%/82.61%** average source-shape/strict fuzzy, and no
+losses or gains in the **2,499 linked-exact / 1,074 byte-exact**
+`(unit, symbol)` sets. Live original ARM32 behavior and allocator effects
+remain unverified. Next priority: adjacent integer-constructor/append ARM
+shapes and a controlled ARMv7 boundary check if available. See
+[the integer-conversion audit](STRING_SET_I64_ARM_2026-10-15.md).
 
 ## String float object composition (2026-10-15)
 

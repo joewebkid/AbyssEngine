@@ -149,37 +149,39 @@ unsigned short *String::operator[](int i) {
 void String::Set(long long v) {
     if (this->data) delete[] this->data;
     this->data = nullptr;
-    this->length = 0;
-
     if (v == 0) {
         this->Set("");
         return;
     }
 
-    bool neg = v < 0;
-    unsigned long long mag = neg ? (unsigned long long) (-v) : (unsigned long long) v;
+    // The ARM allocation is 20 units; INT64_MIN needs 21 including the terminator.
+    this->data = new unsigned short[21];
+    this->length = 0;
+    unsigned short *write = this->data;
+    unsigned long long mag = (unsigned long long) v;
+    if (v < 0) {
+        *write++ = '-';
+        ++this->length;
+        mag = 0ULL - mag;
+    }
 
-    char16_t tmp[24];
-    int n = 0;
+    unsigned short *digits = write;
     do {
         unsigned int rem = (unsigned int) (mag % 10);
-        char16_t ch = (char16_t) (rem | 0x30);
+        unsigned short ch = (unsigned short) (rem | 0x30);
         if (rem > 9)
-            ch = (char16_t) (rem + 0x57);
-        tmp[n++] = ch;
+            ch = (unsigned short) (rem + 0x57);
+        *write++ = ch;
+        ++this->length;
         mag /= 10;
     } while (mag != 0);
 
-    int total = n + (neg ? 1 : 0);
-    unsigned short *out = (unsigned short *) ::operator new[]((total + 1) * 2);
-    int w = 0;
-    if (neg)
-        out[w++] = (unsigned short) u'-';
-    for (int i = n - 1; i >= 0; i--)
-        out[w++] = (unsigned short) tmp[i];
-    out[w] = 0;
-    this->Set(out);
-    ::operator delete[](out);
+    *write = 0;
+    for (unsigned short *left = digits, *right = write - 1; left < right; ++left, --right) {
+        unsigned short ch = *left;
+        *left = *right;
+        *right = ch;
+    }
 }
 
 int String::StrLen(const char *s) {
