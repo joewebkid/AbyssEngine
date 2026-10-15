@@ -688,9 +688,10 @@ String::String(float v) : data(nullptr), length(0) { ctor_float(v); }
 String::String(long long v) : data(nullptr), length(0) { ctor_longlong(v); }
 
 String &String::operator+=(const String &other) {
-    const unsigned short *src = other.data;
-    int n = other.length;
-    if (src && n > 0) {
+    if (other.length != 0) {
+        String source(other, false);
+        const unsigned short *src = source.data;
+        int n = source.length;
         int newLen = this->length + n;
         unsigned short *nd = new unsigned short[newLen + 1];
         for (int i = 0; i < this->length; i++) nd[i] = this->data[i];

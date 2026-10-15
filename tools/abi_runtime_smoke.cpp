@@ -125,6 +125,16 @@ int main() {
         assignedText = copy;
         check(assignedText.length == 4 && assignedText.data[0] == 'b',
               "String assignment");
+        AbyssEngine::String appendSource("abc");
+        appendSource.data[1] = 0;
+        AbyssEngine::String appended("xy");
+        appended += appendSource;
+        check(appended.length == 3 && appended.data[0] == 'x' &&
+                  appended.data[1] == 'y' && appended.data[2] == 'a',
+              "String append copies zero-terminated source");
+        appended += appended;
+        check(appended.length == 6 && appended.data[3] == 'x' &&
+                  appended.data[5] == 'a', "String self append");
         AbyssEngine::String medalValue(1234);
         check(medalValue.length == 4 && medalValue.data[0] == '1' &&
                   medalValue.data[3] == '4', "String integer value");

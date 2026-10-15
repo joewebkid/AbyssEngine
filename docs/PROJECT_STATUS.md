@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (String::Set empty-buffer contract; older subsystem
+Last reviewed: 2026-10-15 (String append temporary-copy contract; older subsystem
 snapshots retain their dates)
+
+## String append temporary-copy contract (2026-10-15)
+
+REA/IDA Android ARM `String::operator+=(String const&)` (`0x727d8–0x72848`)
+copies the source through `String(other, false)` before appending. Its copy
+constructor calls zero-terminated `Set`, so a source with an embedded zero
+contributes only the prefix, even when its stored length is larger. The
+recovered method now follows that behavior; the native ABI smoke covers the
+embedded-zero and self-append cases. `operator=` at `0x727a8–0x727ba` already
+matches the original gate and was not changed.
+
+Native `gof2`, the ABI smoke, **206/206** ARM units and **37** verifier tests
+(one skip) pass. Focused source-shape/strict fuzzy improves
+**50.5%/9.4% -> 66.7%/30.5%**; the method remains non-exact. Full ARM
+corpus compares **4,323/4,524** original functions, **201 missing**,
+**123 extras**, zero skipped and **93.56%/82.60%** average
+source-shape/strict fuzzy. The **2,499 linked-exact** and **1,074 byte-exact**
+`(unit, symbol)` sets have zero gains or losses versus the preceding report.
+Original live ARM32 behavior and the original `realloc` versus recovered
+`new[]` allocator distinction remain unverified. See
+[the append audit](STRING_APPEND_COPY_ARM_2026-10-15.md).
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
 
