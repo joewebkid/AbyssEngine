@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (PaintCanvas sprite-system call contracts; older subsystem
+Last reviewed: 2026-10-16 (sprite UV/RGBA flag contract; older subsystem
 snapshots retain their dates)
+
+## Sprite UV/RGBA data helpers (2026-10-16)
+
+Android ARM `AbyssEngine::SpriteSystemSetUv` at `0x86cd4` tests
+`Engine::enableShader` before deciding whether to invert V coordinates.
+The recovered function dereferenced an uninitialized placeholder flag
+pointer instead; it now reads the original static byte. A host test of
+the production bodies covers selected-sprite writes, both shader-flag
+branches, bounds/null cases and RGBA replication. Native `gof2`,
+**206/206** ARM units and **40** verifier tests (one skip) pass.
+Focused `SetUv` source-shape/strict fuzzy rises **87.9%/46.6% →
+88.9%/52.8%** without becoming exact. The full corpus remains
+**4,323/4,524** unique original functions, **201 missing**,
+**123 extras**, zero skipped, **93.59%/82.63%** average
+source-shape/strict fuzzy, **2,503 linked-exact / 1,074 byte-exact**
+with zero exact-pair losses/gains. Live ARM32/GL sprite output remains
+untested; next priority is the neighboring sprite-creation flag.
+See [the helper audit](SPRITE_UV_RGBA_FLAG_ARM_2026-10-16.md).
 
 ## PaintCanvas sprite-system call contracts (2026-10-16)
 

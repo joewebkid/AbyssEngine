@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Sprite UV/RGBA data helpers (2026-10-16)
+
+`python tools/run_sprite_uv_rgba_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe`
+compiles the production `SpriteSystemSetAllUv`, `SetUv`, and `SetRGBA`
+bodies in a small host fixture. It checks null/bounds behavior, the
+two `Engine::enableShader` UV paths, and per-vertex RGBA output. The
+corrected `SetUv` reads the ARM-observed static flag rather than an
+uninitialized pointer. Native `gof2`, 206/206 ARM units, 40 verifier
+tests (one skip), and the fixture pass. Focused `SetUv`
+source-shape/strict fuzzy improves 87.9%/46.6% to 88.9%/52.8%.
+Full report `A:/Galaxy on Fire new version/_work/sprite_uv_flag_full_20261016.json`
+compares 4,323/4,524 unique functions at 93.59%/82.63% average
+source-shape/strict fuzzy, 2,503 linked-exact and 1,074 byte-exact,
+with no exact-pair losses or gains. See
+[the focused audit](SPRITE_UV_RGBA_FLAG_ARM_2026-10-16.md).
+
 ## PaintCanvas sprite-system call contracts (2026-10-16)
 
 `SpriteSystemSetAllUv`, `SpriteSystemSetUv` and `SpriteSystemSetRGBA`

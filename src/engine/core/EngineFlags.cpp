@@ -8,6 +8,5 @@ namespace AbyssEngine {
     char *g_GameText_arabicEnabledFlag;
     char *g_MeshIntersect_flipVFlag;
     char *g_SpriteSystem_tangentFlag;
-    char *g_SpriteSystem_uvFlipFlag;
 
 }

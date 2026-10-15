@@ -67,7 +67,6 @@ namespace AbyssEngine {
     extern char *g_GameText_arabicEnabledFlag;
     extern char *g_MeshIntersect_flipVFlag;
     extern char *g_SpriteSystem_tangentFlag;
-    extern char *g_SpriteSystem_uvFlipFlag;
 
     // ImageFont, SpriteSystem, Curve, Image, AELoadedTexture are defined in
     // AbyssEngine.h (layouts recovered from the original disassembly).
@@ -276,7 +275,7 @@ namespace AbyssEngine {
         if (sys == 0 || idx >= count)
             return;
 
-        char flag = *g_SpriteSystem_uvFlipFlag;
+        unsigned char flag = Engine::enableShader;
         float *p = (float *) sys->mesh->texCoords + (unsigned int) idx * 8;
 
         if (flag == 0) {
