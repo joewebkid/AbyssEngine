@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Camera view-frustum flag (2026-10-16)
+
+Android ARM point and sphere frustum checks load `Engine::vfc`.
+Both recovered bodies now read that byte instead of a never-assigned
+pointer. Native `gof2`, 206/206 ARM units, 40 verifier tests (one
+skip), and the existing canvas-wrapper smoke pass. Focused point
+source-shape/strict fuzzy changes 81.1%/53.8% to 82.3%/54.0%; sphere
+changes 82.5%/34.9% to 82.4%/46.3%. Neither is exact. Full report
+`A:/Galaxy on Fire new version/_work/camera_vfc_full_20261016.json`
+compares 4,323/4,524 unique functions at 93.59%/82.63% average
+source-shape/strict fuzzy, with 2,503 linked-exact and 1,074
+byte-exact. Comparison against the prior full report shows zero
+exact `(unit,symbol)` losses or gains. The wrapper smoke does not
+exercise the production core frustum computations. See
+[the focused audit](CAMERA_VFC_FLAG_ARM_2026-10-16.md).
+
 ## MeshIntersect shader flag (2026-10-16)
 
 `python tools/run_mesh_intersect_flag_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe`

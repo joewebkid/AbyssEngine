@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (MeshIntersect shader flag; older subsystem
+Last reviewed: 2026-10-16 (camera view-frustum flag; older subsystem
 snapshots retain their dates)
+
+## Camera view-frustum flag (2026-10-16)
+
+Android ARM `CameraIsPointinViewFrustum` and
+`CameraIsSphereinViewFrustum` read `Engine::vfc` before frustum work.
+The recovered functions dereferenced a never-assigned placeholder
+pointer; both now read the original static byte. Native `gof2`,
+**206/206** ARM units, **40** verifier tests (one skip) and the
+existing canvas wrapper smoke pass. Focused point source-shape/strict
+fuzzy changes **81.1%/53.8% -> 82.3%/54.0%**; sphere changes
+**82.5%/34.9% -> 82.4%/46.3%**. Neither is exact. Full coverage is
+**4,323/4,524** unique functions, **201 missing**, **123 extras**,
+zero skipped, **93.59%/82.63%** average source-shape/strict fuzzy,
+**2,503 linked-exact / 1,074 byte-exact** with zero exact-pair
+losses/gains. The source-tree path that enables `Engine::vfc` and
+live ARM32 frustum behavior remain unverified. See
+[the camera flag audit](CAMERA_VFC_FLAG_ARM_2026-10-16.md).
 
 ## MeshIntersect shader flag (2026-10-16)
 

@@ -61,7 +61,6 @@ static_assert(offsetof(CurveKeyframe, c1) == 0x18, "CurveKeyframe.c1");
 namespace AbyssEngine {
     // Defined in EngineFlags.cpp. These must have external linkage so the
     // flag-gated engine functions cannot be folded to local null-pointer stubs.
-    extern char *g_Camera_frustumEnabledFlag;
     extern char *g_Engine_fboEnabledFlag;
     extern char *g_Engine_shaderModeFlag;
     extern char *g_GameText_arabicEnabledFlag;
@@ -120,7 +119,7 @@ namespace AbyssEngine {
 
 namespace AbyssEngine {
     int CameraIsPointinViewFrustum(const Vector &point, Matrix *extra, Camera *cam) {
-        if (*g_Camera_frustumEnabledFlag == 0)
+        if (!Engine::vfc)
             return 1;
 
         Matrix local;
@@ -2697,7 +2696,7 @@ namespace AbyssEngine {
 
 namespace AbyssEngine {
     int CameraIsSphereinViewFrustum(const Vector &center, float radius, Matrix *extra, Camera *cam) {
-        if (!(radius != 0.0f && *g_Camera_frustumEnabledFlag != 0))
+        if (!(radius != 0.0f && Engine::vfc))
             return 1;
 
         Matrix local;
