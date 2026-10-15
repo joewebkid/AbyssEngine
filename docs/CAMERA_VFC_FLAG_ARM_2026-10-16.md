@@ -28,7 +28,7 @@ Focused point source-shape/strict fuzzy changes **81.1%/53.8% →
 82.3%/54.0%**; sphere changes **82.5%/34.9% → 82.4%/46.3%**.
 Neither function is exact. The full corpus compares **4,323/4,524**
 unique original functions, with **201 missing**, **123 extras**, zero
-skipped, **93.59%/82.63%** average source-shape/strict fuzzy,
+skipped, **93.59%/82.64%** average source-shape/strict fuzzy,
 **2,503 linked-exact** and **1,074 byte-exact**. Compared with the
 previous full report, exact `(unit,symbol)` sets have zero losses
 and zero gains. Reports are on A: at

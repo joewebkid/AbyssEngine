@@ -13,7 +13,7 @@ skip), and the existing canvas-wrapper smoke pass. Focused point
 source-shape/strict fuzzy changes 81.1%/53.8% to 82.3%/54.0%; sphere
 changes 82.5%/34.9% to 82.4%/46.3%. Neither is exact. Full report
 `A:/Galaxy on Fire new version/_work/camera_vfc_full_20261016.json`
-compares 4,323/4,524 unique functions at 93.59%/82.63% average
+compares 4,323/4,524 unique functions at 93.59%/82.64% average
 source-shape/strict fuzzy, with 2,503 linked-exact and 1,074
 byte-exact. Comparison against the prior full report shows zero
 exact `(unit,symbol)` losses or gains. The wrapper smoke does not

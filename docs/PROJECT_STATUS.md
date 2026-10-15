@@ -14,7 +14,7 @@ existing canvas wrapper smoke pass. Focused point source-shape/strict
 fuzzy changes **81.1%/53.8% -> 82.3%/54.0%**; sphere changes
 **82.5%/34.9% -> 82.4%/46.3%**. Neither is exact. Full coverage is
 **4,323/4,524** unique functions, **201 missing**, **123 extras**,
-zero skipped, **93.59%/82.63%** average source-shape/strict fuzzy,
+zero skipped, **93.59%/82.64%** average source-shape/strict fuzzy,
 **2,503 linked-exact / 1,074 byte-exact** with zero exact-pair
 losses/gains. The source-tree path that enables `Engine::vfc` and
 live ARM32 frustum behavior remain unverified. See
