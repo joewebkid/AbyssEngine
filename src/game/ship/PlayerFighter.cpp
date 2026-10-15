@@ -349,9 +349,10 @@ PlayerFighter::PlayerFighter(int faction, int wingmanCmd, Player *player, AEGeom
     self->field_0x13c = 0;
     self->spacePoint = 0;
     self->cloakTimer = 0;
+    self->cloakDuration = 0;
+    self->cloakActive = 0;
     self->cloakCooldown = 0;
-    self->field_0x2cd = 0;
-    self->field_0x2c9 = 0;
+    self->field_0x2c4 = 0;
     self->cloakingPossible = 1;
     self->cloakMaterial = -1;
     self->aiDisabled = 0;
@@ -517,7 +518,7 @@ void PlayerFighter::cloak(int dur, bool b) {
     if (dur > 0) {
         v = (unsigned) dur;
     } else {
-        v = PF_nextInt((int) (intptr_t) AERandom::gRandom) + 5000;
+        v = static_cast<AERandom *>(Globals::rnd)->nextInt(5000) + 5000;
     }
     this->cloakActive = 1;
     this->cloakDuration = v + 4000;
@@ -791,12 +792,8 @@ void PlayerFighter::push(int dt) {
     return;
 }
 
-static void *const gReset_vfn = nullptr;
-
-typedef void (*VFn)(void *dst, void *zeroVec);
-
 void PlayerFighter::reset() {
-    ((KIPlayer *) (this))->reset();
+    KIPlayer::reset();
     this->crateCaptured = 1;
 
     Vector spawn = {this->posX, this->posY, this->posZ};
@@ -817,14 +814,14 @@ void PlayerFighter::reset() {
         this->state = 0;
     }
 
-    VFn vfn = (VFn) gReset_vfn;
-    int z[3] = {0, 0, 0};
-    vfn(&this->resetVecA, z);
-    vfn(&this->resetVecB, z);
-    vfn(&this->resetVecC, z);
+    const Vector zero = {0, 0, 0};
+    this->resetVecA = zero;
+    this->resetVecB = zero;
+    this->resetVecC = zero;
 
     this->isMissionCrate = 0;
     this->missionCrateLost = 0;
+    this->missionCrateCaptured = 0;
     this->crateLost = 0;
     this->crateCaptured = 1;
     this->field_0x140 = 0;

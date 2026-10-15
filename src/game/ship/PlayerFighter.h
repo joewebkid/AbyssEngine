@@ -96,10 +96,10 @@ public:
     uint8_t rollBufferFilled;
     AbyssEngine::EaseInOutMatrix *easeMatrix;
     int32_t spacePoint;
+    int32_t field_0x2c0;
+    int32_t field_0x2c4;
     int32_t cloakTimer;
-    int32_t field_0x2c9;
     int32_t cloakDuration;
-    int32_t field_0x2cd;
     uint8_t cloakActive;
     int32_t cloakCooldown;
     uint8_t cloakingPossible;
@@ -193,5 +193,9 @@ static_assert(offsetof(PlayerFighter, engineTrailSystem) == 0x1a0, "PlayerFighte
 static_assert(offsetof(PlayerFighter, deltaTime) == 0x1d0, "PlayerFighter::deltaTime ABI offset");
 static_assert(offsetof(PlayerFighter, easeBaseMatrix) == 0x218, "PlayerFighter first matrix ABI offset");
 static_assert(offsetof(PlayerFighter, rollMatrix) == 0x258, "PlayerFighter roll matrix ABI offset");
+static_assert(offsetof(PlayerFighter, cloakTimer) == 0x2c8, "PlayerFighter cloak timer ABI offset");
+static_assert(offsetof(PlayerFighter, cloakDuration) == 0x2cc, "PlayerFighter cloak duration ABI offset");
+static_assert(offsetof(PlayerFighter, cloakActive) == 0x2d0, "PlayerFighter cloak active ABI offset");
+static_assert(offsetof(PlayerFighter, cloakCooldown) == 0x2d4, "PlayerFighter cloak cooldown ABI offset");
 #endif
 #endif

@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PlayerFighter update prelude; older subsystem
+Last reviewed: 2026-10-15 (PlayerFighter cloak/reset ABI; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -25,6 +25,31 @@ permit it; do not alter correct behavior solely to reach that number.
 Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
+
+## PlayerFighter cloak/reset ABI (2026-10-15)
+
+REA/IDA Android ARM `reset` (`0xdc934–0xdca22`), `cloak`
+(`0xdcd58–0xdcd94`), `setCloakingPossible` (`0xdcd9c–0xdcdb8`) and
+`handleCloaking` confirm the cloak timer/duration at `+0x2c8/+0x2cc`,
+not the former C++ offsets. The source now uses those offsets, a bounded
+`nextInt(5000)` draw, real zero-Vector assignments instead of a null
+function pointer, and clears both mission-crate flag bytes in `reset`.
+
+The extracted-production cloak/reset smoke, other Fighter smokes, native
+`gof2`, **206/206** ARM units and **37** verifier tests (one skip) pass.
+Focused source-shape/strict fuzzy changes are `reset` **43.6%/16.8% →
+93.2%/75.0%**, `cloak` **91.8%/60.5% → 100%/91.3%**, and
+`setCloakingPossible` **96.0%/80.0% → 100%/100%**. `handleCloaking`
+changes **87.0%/50.7% → 87.5%/50.1%**; its other behavior is not
+closed. No exact match is claimed for these four functions.
+
+Full ARM corpus remains **4,323/4,524** original functions,
+**201 missing**, **123 extras**, zero skipped, **93.54%/82.57%**
+average source-shape/strict fuzzy, **2,499 linked-exact** and
+**1,074 byte-exact**. Both exact `(unit, symbol)` sets have zero gains
+or losses against the preceding full report. This smoke uses mock
+dependencies; original ARM32 cloak effects and the opaque `+0x2c0`
+word remain unverified. See [the cloak/reset audit](PLAYER_FIGHTER_CLOAK_RESET_ARM_2026-10-15.md).
 
 ## PlayerFighter update prelude (2026-10-15)
 
