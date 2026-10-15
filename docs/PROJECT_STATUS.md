@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PlayerEgo jump-drive charge; older subsystem
+Last reviewed: 2026-10-15 (PlayerEgo autopilot waypoint distance; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -25,6 +25,25 @@ permit it; do not alter correct behavior solely to reach that number.
 Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
+
+## PlayerEgo autopilot waypoint distance (2026-10-15)
+
+Android Thumb `0x9e344–0x9e3e8`, checked with REA/IDA pseudocode and
+instructions, restores the target Vector at `+0xec`, the difference
+from the actual player position, and the truncated Euclidean distance
+test (`<=19999`). The previous code read an uninitialized array,
+shifted the stored waypoint by one field, and compared squared distance
+against 20000. An extracted-production test covers the waypoint,
+near/far and truncation boundaries. Native `gof2`, 206/206 ARM units,
+adjacent smokes and 37 verifier tests (one skipped) pass. Focused
+`update` source-shape/strict fuzzy changes **80.1%/30.8% →
+80.6%/30.8%**; it remains non-exact. The full corpus is
+**4,323/4,524** at **93.41%** average source-shape and **82.31%**
+strict fuzzy, with **2,484 linked-exact**, **1,065 byte-exact**,
+**201 missing**, **123 extras**, zero skipped and no exact-pair loss.
+Live ARM32 waypoint behavior and the analogous iOS path are untested.
+Next: controlled iOS guest trace and the remaining PlayerEgo update
+branches. See [the autopilot audit](PLAYER_EGO_AUTOPILOT_DISTANCE_ARM_2026-10-15.md).
 
 ## PlayerEgo jump-drive charge in update (2026-10-15)
 

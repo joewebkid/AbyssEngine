@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo autopilot waypoint distance (2026-10-15)
+
+REA/IDA pseudocode and Android Thumb `0x9e344–0x9e3e8` confirm the
+target Vector at `+0xec`, position subtraction, `VectorLength`, signed
+integer conversion and inclusive 19999 threshold. Native `gof2`, all
+206 ARM units, extracted-production and adjacent smokes, and 37
+verifier tests (one skipped) pass. Focused `update` source-shape/
+strict fuzzy changes **80.1%/30.8% → 80.6%/30.8%**; it remains
+non-exact. Full report `_work/player_autopilot_full_20261015.json`
+compares **4,323/4,524** functions at **93.41%** average source-shape
+and **82.31%** strict fuzzy, with **2,484 linked-exact**, **1,065
+byte-exact**, **201 missing**, **123 extras**, zero skipped. Both exact
+symbol sets are unchanged versus `_work/player_drive_charge_full_20261015.json`.
+Live ARM32 waypoint and iOS analogue behavior are not yet validated.
+See [the autopilot audit](PLAYER_EGO_AUTOPILOT_DISTANCE_ARM_2026-10-15.md).
+
 ## PlayerEgo jump-drive charge in update (2026-10-15)
 
 REA/IDA inspection of Android Thumb `0x9d8a6–0x9d8f6` supports the

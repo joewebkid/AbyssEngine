@@ -729,6 +729,8 @@ static_assert(__builtin_offsetof(PlayerEgo, shieldHitFlash) == 0x30a, "PlayerEgo
 static_assert(__builtin_offsetof(PlayerEgo, autoLevel) == 0x324, "PlayerEgo::autoLevel offset");
 static_assert(__builtin_offsetof(PlayerEgo, cloakChildHidden) == 0x325, "PlayerEgo::cloakChildHidden offset");
 static_assert(__builtin_offsetof(PlayerEgo, visible) == 0x32e, "PlayerEgo::visible offset");
+static_assert(__builtin_offsetof(PlayerEgo, aboutToReachAutoTargetFlag) == 0x330,
+              "PlayerEgo::aboutToReachAutoTargetFlag offset");
 static_assert(__builtin_offsetof(PlayerEgo, maneuverTimer) == 0x350, "PlayerEgo::maneuverTimer offset");
 static_assert(__builtin_offsetof(PlayerEgo, exhaustVisible) == 0x32f, "PlayerEgo::exhaustVisible offset");
 static_assert(__builtin_offsetof(PlayerEgo, spacePoint) == 0x36c, "PlayerEgo::spacePoint offset");

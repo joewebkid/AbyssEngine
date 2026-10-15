@@ -3043,25 +3043,18 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         if (wp == 0 || this->dockedToStream != 0) {
             this->setAutoPilot(nullptr);
         } else {
-            AbyssEngine::AEMath::Vector wpVec = ((KIPlayer *) wp)->getPosition();
-            float wpPos[3] = {wpVec.x, wpVec.y, wpVec.z};
-            ((int &) this->waypointX) = *(int *) &wpPos[0];
-            ((int &) this->waypointY) = *(int *) &wpPos[1];
-            ((int &) this->gunBaseGeo) = *(int *) &wpPos[2];
-
-            float me[3];
-            ((PlayerEgo *) (this))->getPosition();
-            float dx = me[0] - wpPos[0], dy = me[1] - wpPos[1], dz = me[2] - wpPos[2];
-            if ((int) (dx * dx + dy * dy + dz * dz) < 20000)
+            // Android Thumb 0x9e34c-0x9e38e stores the target at +0xec.
+            Vector &target = *reinterpret_cast<Vector *>(&this->waypointY);
+            target = static_cast<KIPlayer *>(wp)->getPosition();
+            Vector delta = target - this->getPosition();
+            if (static_cast<int>(AbyssEngine::AEMath::VectorLength(delta)) <= 19999)
                 this->aboutToReachAutoTargetFlag = 1;
 
             float speed = 4.0f;
             float h = ((Ship *) (PE_status()->getShip()))->getHandling();
             if (h + g_PE_upd_handlingBias < 4.0f)
                 speed = ((Ship *) (PE_status()->getShip()))->getHandling() + g_PE_upd_handlingBias;
-            ((PlayerEgo *) (this))->moveToPosition(Vector{
-                                                       this->waypointX, this->waypointY, ((float &) this->gunBaseGeo)
-                                                   }, true, speed);
+            ((PlayerEgo *) (this))->moveToPosition(target, true, speed);
             if (this->turretActive != 0)
                 ((PlayerEgo *) (this))->handleTurretView(dt);
         }
