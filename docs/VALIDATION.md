@@ -1833,9 +1833,12 @@ C:\msys64\ucrt64\bin\cmake.exe --build cmake-build-ucrt `
 ```
 
 Expected output: `GOF2 native ABI/lifetime smoke: OK`. This exercises real
-String/Array paths and probe-module vtable dispatch on the host. It is not
-an ARM32 runtime pass; see [the ABI gate](ABI_RUNTIME_GATE_2026-09-27.md)
-for the original vtable relocations and remaining ownership risks.
+String/Array paths and probe-module vtable dispatch on the host. A fresh
+`armeabi-v7a` build of the same isolated target ran 5/5 times on an
+Android 12 M2007J20CG on 2026-10-15; see
+[the ABI gate](ABI_RUNTIME_GATE_2026-09-27.md) for build identity,
+original vtable relocations, and remaining ownership risks. Neither
+the host nor the device smoke proves a playable native game.
 
 ## ImageFactory Portrait Host Smoke
 

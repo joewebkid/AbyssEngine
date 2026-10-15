@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PlayerEgo endExplosion; older subsystem
+Last reviewed: 2026-10-15 (ARM32 ABI device smoke; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -25,6 +25,21 @@ permit it; do not alter correct behavior solely to reach that number.
 Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
+
+## ARM32 ABI/lifetime device smoke (2026-10-15)
+
+The existing isolated `gof2_abi_runtime_smoke` was rebuilt as an ELF32
+ARM `armeabi-v7a` executable from this checkout and ran **5/5** times
+on an Android 12 M2007J20CG. Each run passed 100 String/Array lifetime
+iterations plus Vector by-value return, virtual dispatch and base-pointer
+destruction. The temporary device file and drive mapping were removed;
+UCRT64 host smoke and native `gof2` remain green. This is a real ARM32
+execution gate for the reconstructed probe, **not** the original game,
+not a sanitizer run and not a death-to-revival gameplay test. The latest
+unchanged full corpus is **4,323/4,524** at **93.43%** source-shape and
+**82.33%** strict fuzzy, with **2,485 linked-exact** and **1,065
+byte-exact**. Next: original-derived ABI cases and a controlled
+`explode`/`revive` runtime path. See [the ABI gate](ABI_RUNTIME_GATE_2026-09-27.md).
 
 ## PlayerEgo endExplosion (2026-10-15)
 

@@ -75,7 +75,36 @@ slot and `r1` as `this`, with `r2/r3` as the bounds. Original
 `AEGeometry::getPosition` at `0xa4592` saves `r0` as its Vector result slot,
 uses `r1` as `this`, and passes that slot to `MatrixGetPosition`. Thus the
 return-slot placement is backed by both original and local ARM instructions.
-These are call-convention checks, not execution on Android.
+These were initially call-convention checks, not execution on Android.
+
+## ARM32 device follow-up (2026-10-15)
+
+The same smoke was rebuilt from the current
+`codex/integrate-main-working-20261005` checkout using NDK r18b,
+`ANDROID_ABI=armeabi-v7a`, `ANDROID_PLATFORM=android-21` and the
+existing CMake target. `readelf` identifies the result as ELF32 ARM
+PIE; SHA-256 is
+`080636078a8936462bdac48402f362e87255bb2cdb864b873488355cb2226b07`.
+The temporary `subst X:` mapping was removed after the build.
+
+ADB reported an M2007J20CG on Android 12 supporting `armeabi-v7a`.
+The isolated executable was pushed to a previously absent, uniquely
+named file in `/data/local/tmp`, run five times, and removed. All five
+runs printed `GOF2 native ABI/lifetime smoke: OK` and exited zero.
+Each run includes the smoke's 100 String/Array lifetime iterations,
+Vector return, application-module vtable slots and virtual destruction.
+The temporary device file was confirmed absent afterward. The UCRT64
+host smoke and native `gof2` target also remained green.
+
+This is **observed execution of the reconstructed isolated ABI probe**,
+not execution of the original GOF2 binary, a memory-sanitizer result,
+or proof that the full native game runs. The most recent full ARM
+corpus before this documentation-only update, at
+`_work/player_end_explosion_full_20261015.json`, remains
+**4,323/4,524** compared, **93.43%** source-shape, **82.33%** strict
+fuzzy, **2,485 linked-exact**, **1,065 byte-exact**, **201 missing**,
+**123 extras** and zero skipped; no new source-shape or exact claim is
+made from this device run.
 
 The final full ARM verifier run after the dispatcher edit compares 4,626
 functions, covers 4,282/4,524 original names, reports 242 external exact-name
@@ -99,9 +128,9 @@ for a verifier score without checking this original convention.
 
 ## Remaining Gate
 
-- Run this smoke as an Android `armeabi-v7a` executable on an actual ARM32
-  device or compatible emulator, ideally under a memory checker, and repeat
-  object construction/destruction with original derived modules and guns.
+- Repeat the now-passing Android `armeabi-v7a` smoke under a memory checker
+  where available, and exercise original derived modules and guns rather
+  than only the isolated probe classes.
 - Inspect the actual Android C++ allocator targets and `Array<bool>`/
   `ParticleSettings` callers before declaring new[]/realloc/delete[] safe.
 - Extend return-slot checks to real game functions and both branch paths, not
