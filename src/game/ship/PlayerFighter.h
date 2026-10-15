@@ -28,47 +28,10 @@ namespace AbyssEngine {
 
 class PlayerFighter : public KIPlayer {
 public:
-    int32_t player;
-    int32_t geometry;
-    int32_t subGeometry;
-    uint8_t field_0x24;
-    signed char field_0x25;
-    int32_t wingmanCommand;
-    Vector renderPosition;
-    int32_t field_0x38;
-    signed char field_0x43;
-    uint8_t crateCaptured;
-    Array<int> *lootList;
-    int32_t level;
-    float posX;
-    float posY;
-    float posZ;
-    uint8_t missionCrateLost;
-    uint8_t missionCrateCaptured;
-    uint8_t crateLost;
-    Route *routeClone;
-    uint8_t exhaustHidden;
-    AEGeometry *wreckGeometry;
-    int32_t field_0x80;
-    int32_t field_0x84;
-    int32_t state;
-    Vector resetVecA;
-    uint8_t isMissionCrate;
-    int32_t deathTimer;
-    signed char field_0xdc;
-    int32_t field_0xe4;
-    int32_t field_0xf0;
-    uint8_t field_0xf5;
-    int32_t fov;
-    signed char rollActive;
-    int32_t pushTimer;
-    int32_t pushDuration;
-    Vector pushNormal;
-    Vector pushImpulse;
     Explosion *explosion;
     int32_t field_0x128;
     uint8_t field_0x12c;
-    short field_0x12d;
+    uint8_t field_0x12d;
     uint8_t field_0x12e;
     signed char field_0x12f;
     int32_t field_0x130;
@@ -86,6 +49,7 @@ public:
     Vector workingPosition;
     Vector resetVecB;
     Vector resetVecC;
+    uint8_t _pad_0x17c[0x24];
     int32_t engineTrailSystem;
     float rotate;
     float shootError;
@@ -93,9 +57,11 @@ public:
     int32_t field_0x1b0;
     int32_t boostProb;
     int32_t maneuverTimer;
+    uint8_t _pad_0x1bc[4];
     int32_t field_0x1c0;
     int32_t field_0x1c4;
     int32_t field_0x1c8;
+    uint8_t _pad_0x1cc[4];
     int32_t deltaTime;
     int32_t deltaTimeHi;
     int32_t hitpoints;
@@ -115,9 +81,10 @@ public:
     int32_t smoothRoll;
     int32_t field_0x214;
     AbyssEngine::Matrix easeBaseMatrix;
-    AbyssEngine::Matrix rollMatrix;
     signed char field_0x254;
     signed char field_0x255;
+    uint8_t _pad_0x256[2];
+    AbyssEngine::Matrix rollMatrix;
     int32_t field_0x294;
     int32_t field_0x298;
     int32_t rollSamples;
@@ -141,6 +108,7 @@ public:
     int32_t cloakSavedMode;
     uint8_t aiDisabled;
     int32_t gunSwitchTimer;
+    uint32_t field_0x2ec; // Original allocation includes this unclassified tail word.
 
     PlayerFighter(int faction, int wingmanCmd, Player *player, AEGeometry *geom,
                   float x, float y, float z, bool active);
@@ -214,4 +182,16 @@ public:
     // Static data members present in the original binary (defined for symbol parity).
     static int stationRouteAliens;
 };
+#if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(PlayerFighter) == 0x2f0, "PlayerFighter ARM allocation must be 0x2f0 bytes");
+static_assert(offsetof(PlayerFighter, explosion) == 0x124, "PlayerFighter::explosion ABI offset");
+static_assert(offsetof(PlayerFighter, field_0x130) == 0x130, "PlayerFighter particle handle ABI offset");
+static_assert(offsetof(PlayerFighter, field_0x134) == 0x134, "PlayerFighter particle handle ABI offset");
+static_assert(offsetof(PlayerFighter, field_0x138) == 0x138, "PlayerFighter particle handle ABI offset");
+static_assert(offsetof(PlayerFighter, route) == 0x144, "PlayerFighter::route ABI offset");
+static_assert(offsetof(PlayerFighter, engineTrailSystem) == 0x1a0, "PlayerFighter engine trail ABI offset");
+static_assert(offsetof(PlayerFighter, deltaTime) == 0x1d0, "PlayerFighter::deltaTime ABI offset");
+static_assert(offsetof(PlayerFighter, easeBaseMatrix) == 0x218, "PlayerFighter first matrix ABI offset");
+static_assert(offsetof(PlayerFighter, rollMatrix) == 0x258, "PlayerFighter roll matrix ABI offset");
+#endif
 #endif

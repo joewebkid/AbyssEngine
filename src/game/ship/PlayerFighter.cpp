@@ -80,13 +80,13 @@ void PlayerFighter::awake() {
     this->state = 1;
     ((Player *) (this->player))->setActive(1);
     ((PlayerFighter *) (this))->setExhaustVisible(true);
-    int geom = this->subGeometry;
+    AEGeometry *geom = this->subGeometry;
     this->field_0xf5 = 1;
     if (geom == 0) {
         geom = this->geometry;
     }
 
-    return ((AEGeometry *) (intptr_t) geom)->setVisible(true);
+    return geom->setVisible(true);
 }
 
 void PlayerFighter::setBV(Array<BoundingVolume *> *v) {
@@ -151,43 +151,25 @@ uint8_t PlayerFighter::hasCrateLost() {
     return this->crateLost;
 }
 
-static void *const gSL_f1 = nullptr;
-static void *const gSL_f2 = nullptr;
-static void *const gSL_f3 = nullptr;
-
-typedef int (*F1)(int geom);
-
-typedef int (*F2)(int base, int v, int kind, int z);
-
-typedef void (*F3)(int base, int v, int z);
-
 void PlayerFighter::setLevel(Level *lvl) {
-    ((KIPlayer *) (this))->setLevel(lvl);
-    F1 f1 = (F1) gSL_f1;
-    F2 f2 = (F2) gSL_f2;
-    F3 f3 = (F3) gSL_f3;
-    Level *lev = (Level *) (intptr_t) this->level;
+    KIPlayer::setLevel(lvl);
+    ParticleSystemManager *manager = this->level->field_74;
+    this->engineTrailSystem = manager->addSystem(&this->geometry->getReferenceMatrix(), ParticleSettings::ParticleSet_9, false);
+    manager->enableSystemEmit(this->engineTrailSystem, false);
 
-    int v;
-    v = f2((int) (intptr_t) lev->field_74, f1(this->geometry), 9, 0);
-    this->engineTrailSystem = v;
-    f3((int) (intptr_t) lev->field_74, v, 0);
+    manager = this->level->particleEmitBoolPtr;
+    this->field_0x80 = manager->addSystem(&this->geometry->getReferenceMatrix(), ParticleSettings::ParticleSet_0xf, false);
+    manager->enableSystemEmit(this->field_0x80, false);
 
-    v = f2((int) (intptr_t) lev->particleEmitBoolPtr, f1(this->geometry), 0xf, 0);
-    this->field_0x80 = v;
-    f3((int) (intptr_t) lev->particleEmitBoolPtr, v, 0);
+    manager = this->level->particleRenderBoolPtr;
+    this->field_0x84 = manager->addSystem(&this->geometry->getReferenceMatrix(), ParticleSettings::ParticleSet_0x2a, false);
+    manager->enableSystemEmit(this->field_0x84, false);
 
-    v = f2((int) (intptr_t) lev->particleRenderBoolPtr, f1(this->geometry), 0x2a, 0);
-    this->field_0x84 = v;
-    f3((int) (intptr_t) lev->particleRenderBoolPtr, v, 0);
-
-    v = f2((int) (intptr_t) lev->field_8c, f1(this->geometry), 0x11, 0);
-    this->field_0x134 = v;
-    f3((int) (intptr_t) lev->field_8c, v, 0);
-
-    v = f2((int) (intptr_t) lev->field_8c, f1(this->geometry), 0x12, 0);
-    this->field_0x138 = v;
-    return f3((int) (intptr_t) lev->field_8c, v, 0);
+    manager = this->level->field_8c;
+    this->field_0x134 = manager->addSystem(&this->geometry->getReferenceMatrix(), static_cast<ParticleSettings::ParticleSet>(17), false);
+    manager->enableSystemEmit(this->field_0x134, false);
+    this->field_0x138 = manager->addSystem(&this->geometry->getReferenceMatrix(), static_cast<ParticleSettings::ParticleSet>(18), false);
+    manager->enableSystemEmit(this->field_0x138, false);
 }
 
 static void *const gPFC_guard = nullptr;
@@ -196,7 +178,7 @@ static const int gPFC_defaultRoute = 0;
 
 PlayerFighter::PlayerFighter(int faction, int wingmanCmd, Player *player, AEGeometry *geom,
                              float x, float y, float z, bool flag)
-    : KIPlayer(faction, wingmanCmd, player, geom, x, y, z, flag) {
+    : KIPlayer(faction, -1, player, geom, x, y, z, flag) {
     PlayerFighter * self = this;
     int *guardP = *(int **) gPFC_guard;
     volatile int saved = *guardP;
@@ -287,6 +269,7 @@ PlayerFighter::PlayerFighter(int faction, int wingmanCmd, Player *player, AEGeom
     self->field_0x38 = 0;
     self->field_0x140 = 0;
     self->field_0x12d = 0;
+    self->field_0x12e = 0;
     self->field_0x13d = 0;
     self->field_0x1f8 = 0;
     self->deathTimer = 0;
@@ -295,7 +278,7 @@ PlayerFighter::PlayerFighter(int faction, int wingmanCmd, Player *player, AEGeom
     self->field_0x1c8 = 0;
     self->field_0x1e0 = 0;
     self->field_0x1f4 = 0;
-    self->wingmanCommand = wingmanCmd;
+    self->shipGroup = wingmanCmd;
 
     self->maneuverTimer = 0;
     self->field_0x1c0 = 0;
@@ -406,8 +389,8 @@ void PlayerFighter::update(int dt) {
 
     this->field_0x1c0 += dt;
     this->maneuverTimer += dt;
-    if (this->wingmanCommand == 1) {
-        this->wingmanCommand = 1;
+    if (this->shipGroup == 1) {
+        this->shipGroup = 1;
     }
     this->deltaTime = dt;
     this->deltaTimeHi = dt >> 31;
@@ -418,12 +401,12 @@ void PlayerFighter::update(int dt) {
 
     if (this->field_0x43 == 0) {
         unsigned char enemy;
-        if ((this->wingmanCommand & 0xfffffffe) == 8) {
+        if ((this->shipGroup & 0xfffffffe) == 8) {
             enemy = 1;
         } else if (((KIPlayer *) (this))->isWingMan() != 0) {
             enemy = 0;
         } else {
-            enemy = (unsigned char) Status::gStatus->getStanding()->isEnemy(this->wingmanCommand);
+            enemy = (unsigned char) Status::gStatus->getStanding()->isEnemy(this->shipGroup);
         }
         ((Player *) (intptr_t) this->player)->enemyFlagsLo = enemy;
     }
@@ -693,12 +676,10 @@ void PlayerFighter::initPush(const Vector &target, int radius) {
 static void *const gExhaustCanvas = nullptr;
 
 void PlayerFighter::setExhaustVisible(bool vis) {
-    int geom = this->geometry;
+    AEGeometry *geom = this->geometry;
     if (geom != 0) {
-        int sub = this->subGeometry;
-        int id = (sub != 0)
-                     ? (int) ((AEGeometry *) (intptr_t) sub)->childTransform
-                     : (int) ((AEGeometry *) (intptr_t) geom)->childTransform;
+        AEGeometry *sub = this->subGeometry;
+        int id = (sub != 0) ? sub->childTransform : geom->childTransform;
         if (id != -1) {
             unsigned t = (unsigned) (unsigned long) PaintCanvas::gCanvas->TransformGetTransform(*(unsigned *) gExhaustCanvas);
 
@@ -875,7 +856,7 @@ static const float gHC_divIn = 0;
 static const float gHC_divOut = 0;
 
 void PlayerFighter::handleCloaking() {
-    if (this->wingmanCommand != 10) return;
+    if (this->shipGroup != 10) return;
     if (this->geometry == 0) return;
     if (((KIPlayer *) (this))->isDead() != 0) return;
     if (((Player *) (intptr_t) this->player)->empDisabledByte != 0) return;
@@ -987,14 +968,14 @@ void PlayerFighter::revive() {
     this->field_0x24 = 0;
     this->setExhaustVisible(true);
 
-    int geom = this->subGeometry;
+    AEGeometry *geom = this->subGeometry;
     this->field_0xf5 = 1;
     if (geom == 0) {
         geom = this->geometry;
     }
     ((AEGeometry *) (geom))->setVisible(1);
 
-    if ((unsigned) (this->wingmanCommand - 9) < 2) {
+    if ((unsigned) (this->shipGroup - 9) < 2) {
         delete this->lootList;
         this->lootList = 0;
     } else {

@@ -31,7 +31,7 @@ public:
     // 32-bit MATCH build with offsetof probes.
     Player *player;                  // 0x04
     AEGeometry *geometry;            // 0x08
-    AEGeometry *parentGeometry;      // 0x0c
+    union { AEGeometry *parentGeometry; AEGeometry *subGeometry; }; // 0x0c
     int field_0x10;                  // 0x10
     int field_0x14;                  // 0x14
     String name;                     // 0x18 (12 bytes -> ends 0x24)
@@ -55,6 +55,7 @@ public:
             int field_0x34;          // 0x34
         };
         Vector position; // PlayerFixedObject cached position, Android +0x2c.
+        Vector renderPosition;
     };
     int field_0x38;                  // 0x38
 
@@ -83,32 +84,34 @@ public:
             union { char field_0x40b; uint8_t collisionEnabled; }; // 0x40
             union { char field_0x41b; uint8_t field_0x41; }; // 0x41
             char field_0x42b;            // 0x42
-            char field_0x43b;            // 0x43
+            union { char field_0x43b; char field_0x43; }; // 0x43
         };
     };
 
     int field_0x44;                  // 0x44
     int field_0x48;                  // 0x48
-    int hasCargo;                    // 0x4c
+    union { int hasCargo; struct { uint8_t crateCaptured; uint8_t _pad_crateCaptured[3]; }; }; // 0x4c
     union { Array<int> *cargo; Array<int> *lootList; }; // 0x50
     Level *level;                    // 0x54
     union { float posX; float spawnX; }; // 0x58
     union { float posY; float spawnY; }; // 0x5c
     union { float posZ; float spawnZ; }; // 0x60
     uint32_t field_0x64;             // 0x64
-    uint8_t diedWithMissionCrate;    // 0x68
+    union { uint8_t diedWithMissionCrate; uint8_t missionCrateLost; }; // 0x68
 
     union {
         uint8_t lostMissionCrateToEgo;
         uint8_t inactiveFlag;
         uint8_t proximityAlarmFlag;  // 0x69
+        uint8_t missionCrateCaptured;
     };
 
-    uint8_t field_0x6a;              // 0x6a
+    union { uint8_t field_0x6a; uint8_t crateLost; }; // 0x6a
     uint8_t _pad_0x6b;               // 0x6b
 
     union {
         Route *route;                // 0x6c
+        Route *routeClone;
 
         struct {
             uint8_t routeByte0;          // 0x6c
@@ -122,11 +125,11 @@ public:
     uint8_t _pad_0x71;               // 0x71
     uint8_t field_0x72;              // 0x72
     uint8_t field_0x73;              // 0x73
-    union { uint8_t field_0x74; uint8_t noTargetFlag; }; // 0x74
+    union { uint8_t field_0x74; uint8_t noTargetFlag; uint8_t exhaustHidden; }; // 0x74
     uint8_t field_0x75;              // 0x75
     uint8_t field_0x76;              // 0x76
     uint8_t _pad_0x77;               // 0x77
-    union { AEGeometry *crateGeometry; AEGeometry *secondaryGeometry; }; // 0x78
+    union { AEGeometry *crateGeometry; AEGeometry *secondaryGeometry; AEGeometry *wreckGeometry; }; // 0x78
     int shipGroupFlag;               // 0x7c
     int field_0x80;                  // 0x80
     int field_0x84;                  // 0x84
@@ -139,6 +142,7 @@ public:
             int field_0x98;          // 0x98
         };
         Vector targetPos; // PlayerFixedObject target position, Android +0x90.
+        Vector resetVecA;
     };
     int field_0x9c;                  // 0x9c
     int field_0xa0;                  // 0xa0
@@ -157,32 +161,35 @@ public:
     Array<uint32_t> *spacePointIds;  // 0xc4
     int field_0xc8;                  // 0xc8
     Array<SpacePoint *> *spacePoints;// 0xcc
-    int carriesMissionCrate;         // 0xd0
+    union { int carriesMissionCrate; struct { uint8_t isMissionCrate; uint8_t _pad_isMissionCrate[3]; }; }; // 0xd0
     uint32_t jumpSphere;             // 0xd4
-    union { int field_0xd8; int explosionTimer; }; // 0xd8
-    uint8_t wingmanFlag;             // 0xdc
+    union { int field_0xd8; int explosionTimer; int deathTimer; }; // 0xd8
+    union { uint8_t wingmanFlag; uint8_t field_0xdc; }; // 0xdc
     uint8_t _pad_0xdd[3];            // 0xdd..0xdf
     int wingmanCommand;              // 0xe0
     int field_0xe4;                  // 0xe4
     KIPlayer *wingmanTarget;         // 0xe8
     uint8_t jumperFlag;              // 0xec
-    uint8_t _pad_0xed[7];            // 0xed..0xf3
+    uint8_t _pad_0xed[3];            // 0xed..0xef
+    int field_0xf0;                  // 0xf0
     uint8_t jumpDone;                // 0xf4
-    uint8_t visibleFlag;             // 0xf5
+    union { uint8_t visibleFlag; uint8_t field_0xf5; }; // 0xf5
     uint8_t _pad_0xf6[2];            // 0xf6..0xf7
-    union { int engineSoundEvent; int aiActiveCounter; }; // 0xf8
+    union { int engineSoundEvent; int aiActiveCounter; int fov; }; // 0xf8
     uint32_t field_0xfc;             // 0xfc
-    uint8_t field_0x100;             // 0x100
+    union { uint8_t field_0x100; uint8_t rollActive; }; // 0x100
     union { uint8_t field_0x101; unsigned char finished; }; // 0x101
     uint8_t _pad_0x102[2];           // 0x102..0x103
-    int field_0x104;                 // 0x104
-    int field_0x108;                 // 0x108
-    int field_0x10c;                 // 0x10c
-    int field_0x110;                 // 0x110
-    int field_0x114;                 // 0x114
-    int field_0x118;                 // 0x118
-    int field_0x11c;                 // 0x11c
-    int field_0x120;                 // 0x120
+    union { int field_0x104; int pushTimer; }; // 0x104
+    union { int field_0x108; int pushDuration; }; // 0x108
+    union {
+        struct { int field_0x10c; int field_0x110; int field_0x114; };
+        Vector pushNormal;
+    };
+    union {
+        struct { int field_0x118; int field_0x11c; int field_0x120; };
+        Vector pushImpulse;
+    };
 
     KIPlayer(int faction, int group, Player *player, AEGeometry *geom,
              float x, float y, float z, bool active);

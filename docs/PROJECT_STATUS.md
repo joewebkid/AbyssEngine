@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (String reverse and PlayerFighter ABI gap; older subsystem
+Last reviewed: 2026-10-15 (PlayerFighter ABI and setLevel; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -26,7 +26,30 @@ Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
 
-## String reversal and next fighter ABI gap (2026-10-15)
+## PlayerFighter ABI and particle registration (2026-10-15)
+
+REA/IDA on Android 2.0.16 confirms a **0x2f0-byte** PlayerFighter
+allocation, its KIPlayer base fields, two Matrix subobjects and five
+particle-system registrations in `setLevel`. The C++ layout now has ARM
+size/offset assertions and the five calls use typed managers instead of
+null function pointers. A production-method smoke records the selected
+managers, particle sets, returned handles, reference matrix and disabled
+emission. Native `gof2`, **206/206** ARM units, the smoke and **37** verifier
+tests (one skip) pass.
+
+The focused `setLevel` source-shape/strict fuzzy pair changes from
+**6.6%/0.0% to 94.8%/82.0%**. The full corpus compares **4,323/4,524**
+original functions, at **93.52%** average source-shape and **82.55%** strict
+fuzzy; **201 missing**, **123 extras**, zero skipped. It has **2,499
+linked-exact** and **1,074 byte-exact**, gains of 13 and 9 Fighter symbols
+respectively, with no exact-symbol losses against the prior full report.
+The four trailing bytes of the allocation remain unclassified. The
+constructor still contains unresolved null placeholders and its live ARM32
+path has not been executed; that is the next priority before claiming a
+working `Level::createShip` route. See
+[the Fighter ABI audit](PLAYER_FIGHTER_SET_LEVEL_ABI_ARM_2026-10-15.md).
+
+## String reversal and historical fighter ABI gap (2026-10-15)
 
 Android ARM `String::Reverse` copies the zero-terminated source before
 writing characters in reverse by the stored length. The former in-place
@@ -38,14 +61,10 @@ empty inputs. Native `gof2`, 206/206 ARM units and 37 verifier tests
 is **4,323/4,524** at **93.47%/82.37%**, with **201 missing**,
 **123 extras**, zero skipped and unchanged exact sets of **2,486
 linked-exact** and **1,065 byte-exact**. Live original ARM behavior is
-not tested. The next high-impact ABI package is `PlayerFighter::setLevel`:
-original ARM calls five real particle-system registration paths, while
-the current source calls null placeholders and has mismatched derived
-field offsets. Android `Level::createShip` allocates **0x2f0** bytes for
-this class; the current ARM C++ type is **0x368** bytes, and several
-derived names overlap original particle-handle offsets. Fix the class
-layout and affected accesses before restoring `setLevel` calls; no
-fighter code was changed in this audit. See
+not tested. At the time of that audit, `PlayerFighter::setLevel` still
+called null placeholders and the derived type was **0x368** bytes despite
+Android allocating **0x2f0**. The PlayerFighter section above supersedes
+that historical gap; no fighter code was changed in the String audit. See
 [the evidence and layout audit](STRING_REVERSE_ARM_2026-10-15.md).
 
 ## PaintCanvas camera creation and matrix ABI (2026-10-15)
