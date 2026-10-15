@@ -49,7 +49,6 @@ namespace AbyssEngine {
 }
 
 namespace {
-    void *g_FMod_singleton;
     void *g_setRotation_transform;
     void *g_dockToPlanet_fmod;
     void *g_rotate_transform;
@@ -731,7 +730,7 @@ unsigned char PlayerEgo::isInTurretMode() {
 
 void PlayerEgo::startJumpDrive() {
     if (this->chargingDrive != 0) return;
-    ((FModSound *) (*(void **) g_FMod_singleton))->play(0x21, (Vector *) 0, (Vector *) 0, 0);
+    Globals::sound->play(33, nullptr, nullptr, 0.0f);
     ((Hud *) (this->hud))->hudEvent(0x19, this, 0);
     this->driveCharge = 0;
     this->chargingDrive = 1;
@@ -1712,6 +1711,9 @@ PlayerEgo::PlayerEgo(Player *player) {
     this->cloakRechargeTimer = 0;
     this->cloakChargeMax = 0;
     this->cloakDischargeMax = 0;
+    this->driveCharge = 0;
+    this->driveChargeMax = 0;
+    this->chargingDrive = 0;
 
     Ship *ship = (Ship *) PE_status()->getShip();
     this->boostTimer = 0;
@@ -1786,6 +1788,14 @@ PlayerEgo::PlayerEgo(Player *player) {
             this->cloakChargeMax = cloakItem->getAttribute(35);
             this->cloakDischargeMax = cloakItem->getAttribute(36);
             Globals::gGlobals->addSoundResourceToList(30);
+        }
+        Item *driveItem = ship->getFirstEquipmentOfSort(18);
+        if (driveItem != nullptr) {
+            this->driveChargeMax = driveItem->getAttribute(37);
+            Globals::gGlobals->addSoundResourceToList(32);
+            Globals::gGlobals->addSoundResourceToList(33);
+        } else if (ship->hasJumpDriveIntegrated()) {
+            this->driveChargeMax = static_cast<Array<Item *> *>(Globals::items)->data()[85]->getAttribute(37);
         }
     }
 

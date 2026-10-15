@@ -1,7 +1,39 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PlayerEgo boost setup/activation; older subsystem
+Last reviewed: 2026-10-15 (PlayerEgo jump-drive initialization; older subsystem
 snapshots retain their dates)
+
+## Recovery objective and REA/IDA workflow (2026-10-15)
+
+Continue improving native recovery one bounded function group at a time.
+Use targeted REA/IDA reads of the original Android ARM binary to identify
+addresses, data flow and plausible source structure; cross-check claims
+against instruction evidence, other available platform sources and focused
+behavior tests. Accept C++ changes only with native and ARM build gates,
+focused source-shape verification and a full-corpus exact-pair comparison.
+REA output is evidence, not an automatic semantic proof or a replacement for
+the verifier. Aim for at least 98% source-shape in a selected family when
+the evidence and toolchain permit it; do not alter correct behavior solely
+to reach that number. Report unattained targets and untested live behavior
+explicitly. Large whole-binary REA overviews may exceed its IDA response
+limit; prefer named-function queries.
+
+## PlayerEgo jump-drive initialization and activation (2026-10-15)
+
+Android Thumb constructor `0x99a30–0x99a38`, `0x99d56–0x99dcc` and
+`startJumpDrive` `0x9a6c4–0x9a700`, inspected through REA/IDA, confirm
+the initial drive state, equipment sort 18 / attribute 37, integrated
+item 85 fallback, sounds 32/33, and charging-event order. Extracted
+production and adjacent smokes, native `gof2`, 206/206 ARM units and
+37 verifier tests (one skipped) pass. Focused constructor source-shape/
+strict fuzzy rises **73.9%/41.6% → 77.8%/47.3%** for both aliases;
+`startJumpDrive` rises **91.9%/85.1% → 100%/96.2%**. None becomes
+exact. Full coverage remains **4,323/4,524** at **93.41%** average
+source-shape and **82.31%** strict fuzzy, with **2,484 linked-exact**,
+**1,065 byte-exact**, **201 missing**, **123 extras**, zero skipped
+and no exact-pair losses. Live ARM32 jump/audio remains unverified.
+Next: jump-charge update and flight transition. See
+[the jump-drive audit](PLAYER_EGO_JUMP_DRIVE_ARM_2026-10-15.md).
 
 ## PlayerEgo boost setup and activation (2026-10-15)
 

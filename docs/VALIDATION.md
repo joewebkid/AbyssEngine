@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo jump-drive initialization and activation (2026-10-15)
+
+Targeted REA/IDA reads of Android Thumb `0x99a30–0x99a38`,
+`0x99d56–0x99dcc` and `0x9a6c4–0x9a700` confirm jump-drive state,
+equipment and activation order. Native `gof2`, 206/206 ARM units,
+extracted-production and adjacent smokes, and 37 verifier tests (one
+skipped) pass. Focused constructor C1/C2 source-shape/strict fuzzy
+changes **73.9%/41.6% → 77.8%/47.3%**; `startJumpDrive` changes
+**91.9%/85.1% → 100%/96.2%**. The full report
+`_work/player_jump_full_20261015.json` compares **4,323/4,524** at
+**93.41%** average source-shape and **82.31%** strict fuzzy, with
+**2,484 linked-exact**, **1,065 byte-exact**, **201 missing**,
+**123 extras**, zero skipped and no exact-pair losses versus
+`_work/player_boost_full_20261015.json`. None of the three targeted
+symbols is exact. Live ARM32 jump/audio remains unverified. See
+[the jump-drive audit](PLAYER_EGO_JUMP_DRIVE_ARM_2026-10-15.md).
+
 ## PlayerEgo boost setup and activation (2026-10-15)
 
 Android Thumb `0x99b20–0x99bbc` and `0x9aea4–0x9aefa` confirms
