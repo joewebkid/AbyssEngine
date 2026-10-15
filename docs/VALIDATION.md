@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ParticleSystemSprite camera-matrix render (2026-10-15)
+
+The two-argument static render overload now copies both 0x3c-byte camera
+matrices directly. All 206 ARM translation units and native `gof2` build pass.
+Focused ARM report `_work/particle_render_focused_20261015.json` records
+**71.0%/29.8% → 100%/100%** source-shape/strict fuzzy, 107/107
+instructions and one new linked-exact (not byte-exact) match. See
+[the render audit](PARTICLE_SPRITE_RENDER_ARM_2026-10-15.md).
+Full report `_work/particle_render_full_20261015.json` compares
+**4,323/4,524** at **93.46%** average source-shape and **82.36%** strict
+fuzzy; linked-exact rises to **2,486** with exactly the render symbol gained
+and no losses, byte-exact remains **1,065** with no losses. Missing/extra/
+skipped remain **201/123/0**.
+
 ## ParticleSystemSprite ordinary update (2026-10-15)
 
 The area-exit host runner now also extracts the production `updateSingle`

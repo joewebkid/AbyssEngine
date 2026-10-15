@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (ParticleSystemSprite ordinary update; older subsystem
+Last reviewed: 2026-10-15 (ParticleSystemSprite camera-matrix render; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -25,6 +25,24 @@ permit it; do not alter correct behavior solely to reach that number.
 Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
+
+## ParticleSystemSprite camera-matrix render (2026-10-15)
+
+REA/IDA Android ARM `0x18347c` shows two direct 15-float camera-matrix
+copies before `DrawSpriteSystem`. Replacing default construction and
+element loops with direct `Matrix` copies makes the two-argument render
+overload **100% source-shape / 100% strict fuzzy** (previously
+71.0%/29.8%) and adds one linked-exact match; it is not byte-exact.
+Native `gof2` and 206/206 ARM translation units pass. The nearby
+`calcEmitterVelocity` low source-shape was investigated but its existing
+math and writes match ARM evidence, so it was not rewritten for the metric.
+Full corpus remains **4,323/4,524** compared, **201 missing**, **123 extras**,
+zero skipped; average source-shape/strict fuzzy improves **93.45%/82.35% →
+93.46%/82.36%**. Linked-exact rises **2,485 → 2,486** with exactly this
+symbol added and no losses; byte-exact stays **1,065** with no losses.
+Next priority is the `float[15]`/`Matrix` camera-buffer ABI contract and
+a controlled Android/iOS render observation.
+See [the render audit](PARTICLE_SPRITE_RENDER_ARM_2026-10-15.md).
 
 ## ParticleSystemSprite ordinary update (2026-10-15)
 
