@@ -664,13 +664,13 @@ String::String(const String &other, bool reverse) : data(nullptr), length(0) {
     if (reverse) Reverse();
 }
 
-String::String(char c) : data(nullptr), length(0) { Set((long long) c); }
+String::String(char c) : data(nullptr) { Set((long long) (unsigned char) c); }
 
-String::String(int v) : data(nullptr), length(0) { Set((long long) v); }
+String::String(int v) : data(nullptr) { Set((long long) v); }
 
 String::String(float v) : data(nullptr), length(0) { ctor_float(v); }
 
-String::String(long long v) : data(nullptr), length(0) { ctor_longlong(v); }
+String::String(long long v) : data(nullptr) { Set(v); }
 
 String &String::operator+=(const String &other) {
     if (other.length != 0) {

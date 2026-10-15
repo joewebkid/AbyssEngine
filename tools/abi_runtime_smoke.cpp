@@ -153,6 +153,11 @@ int main() {
         AbyssEngine::String medalValue(1234);
         check(medalValue.length == 4 && medalValue.data[0] == '1' &&
                   medalValue.data[3] == '4', "String integer value");
+        AbyssEngine::String minimumNarrowInt(std::numeric_limits<int>::min());
+        check(matchesAscii(minimumNarrowInt, "-2147483648"),
+              "String signed int minimum");
+        AbyssEngine::String highByte((char) 0xff);
+        check(matchesAscii(highByte, "255"), "String unsigned char value");
         AbyssEngine::String negativeInt(-1234LL);
         AbyssEngine::String minimumInt(std::numeric_limits<long long>::min());
         AbyssEngine::String maximumInt(std::numeric_limits<long long>::max());
@@ -169,6 +174,17 @@ int main() {
         appendedInt += std::numeric_limits<long long>::min();
         check(matchesAscii(appendedInt, "n=-9223372036854775808"),
               "String append minimum integer");
+        check(appendedInt.data[appendedInt.length] == 0,
+              "String append integer terminator");
+        AbyssEngine::String appendedToEmpty;
+        appendedToEmpty += 123LL;
+        check(matchesAscii(appendedToEmpty, "123") &&
+                  appendedToEmpty.data[appendedToEmpty.length] == 0,
+              "String append integer to empty");
+        AbyssEngine::String appendedZero("keep");
+        AbyssEngine::String *zeroResult = &(appendedZero += 0LL);
+        check(zeroResult == &appendedZero && matchesAscii(appendedZero, "keep"),
+              "String append zero returns self without changing text");
         AbyssEngine::String appendedNarrowInt("i=");
         appendedNarrowInt += std::numeric_limits<int>::min();
         check(matchesAscii(appendedNarrowInt, "i=-2147483648"),

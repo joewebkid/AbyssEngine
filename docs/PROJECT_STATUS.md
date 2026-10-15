@@ -1,7 +1,35 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (String signed-int append; older subsystem
+Last reviewed: 2026-10-15 (String numeric constructors; older subsystem
 snapshots retain their dates)
+
+## String numeric constructors and append audit (2026-10-15)
+
+Android ARM C2 constructors for `String(char)` (`0x6e484`), `String(int)`
+(`0x737b4`) and `String(long long)` (`0x72904`) initialize the vtable and
+null data pointer, then call `Set(long long)` without first writing
+`length`. The recovered constructors now follow that order. The `char`
+path explicitly uses an unsigned byte on native hosts, matching the
+observed zero high word. Native smoke checks `0xff`, `INT_MIN`,
+`INT64_MIN`, `INT64_MAX` and zero.
+
+Native `gof2`, ABI/lifetime and standalone String checks, **206/206** ARM
+units and **37** verifier tests (one skip) pass. Focused source-shape/
+strict fuzzy reaches **100%/100%** for all three constructors, from
+**97.6%/97.0%**, **97.6%/97.0%** and **97.3%/96.6%** respectively.
+Full corpus compares **4,323/4,524** unique original functions with
+**201 missing**, **123 extras**, zero skipped and **93.59%/82.63%**
+average source-shape/strict fuzzy. Linked-exact gains exactly three
+constructor pairs, **2,500 → 2,503**, with zero losses; byte-exact
+remains **1,074** with zero losses.
+
+The adjacent `operator+=(long long)` ARM audit confirms a direct
+`realloc`/copy path without an explicit final terminator write. Safe
+direct-append experiments lost source shape, so the production method
+was left unchanged and native terminator/empty/zero tests were added.
+Live Android ARM32 and allocator-dependent bytes remain unverified;
+next priority is a controlled ARMv7 append-boundary observation. See
+[the constructor and append audit](STRING_NUMERIC_CTORS_ARM_2026-10-15.md).
 
 ## String signed-int append delegation (2026-10-15)
 

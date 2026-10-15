@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## String numeric constructors (2026-10-15)
+
+`String(char)`, `String(int)` and `String(long long)` now initialize only
+the null data pointer before calling `Set(long long)`; the native `char`
+path converts through `unsigned char`. Native `gof2`, the ABI/lifetime
+smoke, standalone String reverse check, **206/206** ARM units and **37**
+verifier tests (one skip) pass. Focused C2 source-shape/strict fuzzy is
+**100%/100%** for all three versus **97.6%/97.0%**, **97.6%/97.0%** and
+**97.3%/96.6%** before; all gain linked-exact, not byte-exact equality.
+The full report `_work/string_numeric_ctors_full_20261015.json` compares
+**4,323/4,524** original functions, **201 missing**, **123 extras**, zero
+skipped and **93.59%/82.63%** average source-shape/strict fuzzy.
+Against `_work/string_append_int_full_20261015.json`, the linked-exact
+set gains only these three pairs (**2,500 → 2,503**) and loses none;
+byte-exact remains **1,074** with zero losses. See
+[the constructor and append audit](STRING_NUMERIC_CTORS_ARM_2026-10-15.md).
+
 ## String signed-int append (2026-10-15)
 
 `String::operator+=(int const&)` now sign-extends and delegates directly to
