@@ -249,7 +249,7 @@ PlayerFighter::PlayerFighter(int faction, int wingmanCmd, Player *player, AEGeom
     self->field_0x138 = -1;
     self->field_0x128 = 50000;
     self->rotate = 2.0f;
-    self->shootError = 0;
+    self->shootError = 0.00762939f;
     self->speed = 2.0f;
     self->field_0x1b0 = 0x5dc;
     self->boostProb = 5;
@@ -336,8 +336,8 @@ PlayerFighter::PlayerFighter(int faction, int wingmanCmd, Player *player, AEGeom
     self->targetRoll = 0;
     self->smoothRoll = 0;
     self->field_0x214 = 0;
-    self->field_0x294 = 0;
-    self->field_0x298 = 0;
+    self->field_0x294 = 0x443B8000;
+    self->field_0x298 = 0x41723ACE;
     self->rollSamples = 0;
     self->field_0x2a0 = 0;
     self->field_0x2a4 = 0;

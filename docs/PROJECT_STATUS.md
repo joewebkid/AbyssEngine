@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-15 (PlayerFighter constructor routes; older subsystem
+Last reviewed: 2026-10-15 (PlayerFighter constructor initial values; older subsystem
 snapshots retain their dates)
 
 ## Recovery objective and REA/IDA workflow (2026-10-15)
@@ -25,6 +25,24 @@ permit it; do not alter correct behavior solely to reach that number.
 Report unattained targets and untested live behavior
 explicitly. Large whole-binary REA overviews may exceed its IDA response
 limit; prefer named-function queries.
+
+## PlayerFighter constructor initial values (2026-10-15)
+
+REA/IDA confirms the original constructor writes float bits
+`0x3bf9fff6` to `shootError` at `+0x1a8` and words `0x443b8000` and
+`0x41723ace` at `+0x294/+0x298`. These were incorrectly zero in C++.
+The already-correct `setShootError(int)` was left untouched; the roles
+of the two latter fields remain unclassified. Native `gof2`, both
+PlayerFighter fragment smokes, **206/206** ARM units and **37** verifier
+tests (one skip) pass. Constructor source-shape remains **94.5%**;
+strict fuzzy improves **37.9% → 38.6%**, without exact equality.
+
+Full corpus is unchanged at **4,323/4,524** original functions,
+**201 missing**, **123 extras**, zero skipped and **93.52%/82.55%**
+average source-shape/strict fuzzy. Exact `(unit, symbol)` sets have
+zero losses or gains: **2,499 linked-exact**, **1,074 byte-exact**.
+Live ARM32 construction remains untested; see
+[the initial-values audit](PLAYER_FIGHTER_INITIAL_VALUES_ARM_2026-10-15.md).
 
 ## PlayerFighter constructor routes (2026-10-15)
 
