@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene mode-4 setup (2026-10-17)
+
+`python tools/run_cutscene_mode4_setup_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2`, exercising
+races 3, 0 and 1 with the extracted production setup. Native `gof2`,
+**208/208** ARM units, 40 verifier tests (one existing skip), and the
+earlier CutScene camera/time smokes pass. Focused report
+`A:/Galaxy on Fire new version/_work/cutscene_init_mode4_focused_20261017.json`
+scores `initialize` at **93.1% source-shape / 37.9% strict fuzzy**,
+up from **92.3% / 37.0%**, nonexact. Full report
+`A:/Galaxy on Fire new version/_work/cutscene_init_mode4_full_20261017.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.85%** rounded averages, **2,517 linked-exact / 1,076
+byte-exact**. Exact `(unit,symbol)` sets are unchanged from
+`cutscene_init_mode23_full_20261017.json`. See
+[the mode-4 setup audit](CUTSCENE_INIT_MODE4_SETUP_ARM_2026-10-17.md).
+
 ## CutScene mode-23 camera initialization (2026-10-17)
 
 `python tools/run_cutscene_mode23_camera_smoke.py --cxx

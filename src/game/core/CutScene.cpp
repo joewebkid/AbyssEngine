@@ -470,7 +470,7 @@ void CutScene::initialize() {
         this->checkForTurret();
     } else if (this->mode == 4) {
         canvas->CameraCreate(this->cameraId6c);
-        canvas->CameraSetPerspective(0, CutScene_persp_fov, CutScene_persp_znear, CutScene_persp_zfar);
+        canvas->CameraSetPerspective(this->cameraId6c, 1.2f, 200.0f, 48000.0f);
         if (this->followCamera != nullptr) {
             delete this->followCamera;
             this->followCamera = nullptr;
@@ -480,13 +480,13 @@ void CutScene::initialize() {
         int race = Status::gStatus->getSystem()->getRace();
         if (race == 3) {
             this->geom2c = new AEGeometry((uint16_t) 0x36d6, canvas, false);
-            AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
+            AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geom2c->transform);
             t->SetAnimationState((AnimationMode) 0, nullptr);
         } else {
             if (Status::gStatus->getSystem()->getRace() == 0) {
                 this->geom30 = new AEGeometry((uint16_t) 0x37c8, canvas, false);
                 this->geom34 = new AEGeometry((uint16_t) 0x37c7, canvas, false);
-                this->geom30->addChild(this->geom34->childTransform);
+                this->geom30->addChild(this->geom34->transform);
                 delete this->geom34;
                 this->geom34 = nullptr;
             } else {
