@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (CutScene process fog; older subsystem
+Last reviewed: 2026-10-17 (CutScene mode-23 process animation; older subsystem
 snapshots retain their dates)
+
+## CutScene mode-23 process animation (2026-10-17)
+
+Android ARM confirms geometry transform IDs at `AEGeometry+0x0c`,
+child IDs at `+0x14`, signed frame-delta updates with a false flag,
+and bounded `nextInt(100)` trials before animation states 3 then 1.
+Recovered ID-zero and integer-as-canvas-pointer calls are replaced.
+Focused `process` source-shape/strict fuzzy rises from **89.7%/49.3%
+to 90.1%/50.8%**, still nonexact. Native `gof2`, **208/208** ARM
+units, 40 verifier tests (one existing skip), and `-O0/-O2`
+extracted animation tests pass. Full corpus remains **4,323/4,524**
+compared, **201 missing**, **123 extras**, **93.73%/82.85%** rounded
+averages, **2,517 linked-exact / 1,076 byte-exact**, with zero
+exact-pair losses. Live ARM32/GPU output is untested. Next priority:
+mode-4 process transform handles. See
+[the animation audit](CUTSCENE_PROCESS_MODE23_ANIMATION_ARM_2026-10-17.md).
 
 ## CutScene process fog (2026-10-17)
 

@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene mode-23 process animation (2026-10-17)
+
+`python tools/run_cutscene_process_mode23_animation_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2`, including
+timer, random, running-state and high-bit frame-delta cases. Native
+`gof2`, **208/208** ARM units, 40 verifier tests (one existing skip),
+and the preceding mode-23 process smokes pass. Focused report
+`A:/Galaxy on Fire new version/_work/cutscene_process_mode23_anim_after_20261017.json`
+scores `process` at **90.1% source-shape / 50.8% strict fuzzy**,
+up from **89.7% / 49.3%** in
+`cutscene_process_fog_after_20261017.json`, still nonexact. Full
+report `A:/Galaxy on Fire new version/_work/cutscene_process_mode23_anim_full_20261017.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.85%** rounded averages, **2,517 linked-exact / 1,076
+byte-exact**. Exact `(unit,symbol)` sets are unchanged from
+`cutscene_process_fog_full_20261017.json`. See
+[the animation audit](CUTSCENE_PROCESS_MODE23_ANIMATION_ARM_2026-10-17.md).
+
 ## CutScene process fog (2026-10-17)
 
 `python tools/run_cutscene_process_fog_smoke.py --cxx

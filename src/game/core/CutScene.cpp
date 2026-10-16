@@ -196,30 +196,26 @@ void CutScene::process(int /*delta*/) {
         } else if (kind == 2 && this->geometries != nullptr) {
             unsigned int n = this->geometries->size();
             for (unsigned int i = 0; i < n; i++) {
-                AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
-                t->Update((long long) (unsigned) this->frameDelta, (bool) (unsigned char) this->frameDelta);
+                AEGeometry *geom = (*this->geometries)[i];
+                AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(geom->transform);
+                t->Update((long long) (int32_t) this->frameDelta, false);
                 n = this->geometries->size();
             }
             if (this->fogTimer84 > 3000) {
                 this->fogTimer84 = 0;
                 AERandom *rng = AERandom::gRandom;
                 for (unsigned int i = 0; i < n; i++) {
-                    if (rng->nextInt() < 0x14) {
-                        AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
+                    if (rng->nextInt(100) < 20) {
+                        AEGeometry *c0 = (*this->geometries)[i];
+                        AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(c0->transform);
                         if (t->IsRunning() == 0) {
-                            AEGeometry *c0 = (*this->geometries)[i];
-                            AbyssEngine::Transform *tr;
-                            tr = (AbyssEngine::Transform *) ((PaintCanvas *) (uintptr_t) c0->transform)->
-                                    TransformGetTransform(0);
+                            AbyssEngine::Transform *tr = (AbyssEngine::Transform *) canvas->TransformGetTransform(c0->transform);
                             tr->SetAnimationState((AnimationMode) 3, nullptr);
-                            tr = (AbyssEngine::Transform *) ((PaintCanvas *) (uintptr_t) c0->transform)->
-                                    TransformGetTransform(0);
+                            tr = (AbyssEngine::Transform *) canvas->TransformGetTransform(c0->transform);
                             tr->SetAnimationState((AnimationMode) 1, nullptr);
-                            tr = (AbyssEngine::Transform *) ((PaintCanvas *) (uintptr_t) c0->childTransform)->
-                                    TransformGetTransform(0);
+                            tr = (AbyssEngine::Transform *) canvas->TransformGetTransform(c0->childTransform);
                             tr->SetAnimationState((AnimationMode) 3, nullptr);
-                            tr = (AbyssEngine::Transform *) ((PaintCanvas *) (uintptr_t) c0->childTransform)->
-                                    TransformGetTransform(0);
+                            tr = (AbyssEngine::Transform *) canvas->TransformGetTransform(c0->childTransform);
                             tr->SetAnimationState((AnimationMode) 1, nullptr);
                         }
                     }
