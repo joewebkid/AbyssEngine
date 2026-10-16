@@ -31,7 +31,13 @@ static float CutScene_persp_fov_mode4;
 static float CutScene_turret_tx, CutScene_turret_ty, CutScene_turret_tz;
 static float CutScene_turret_rx, CutScene_turret_ry, CutScene_turret_rz;
 static float CutScene_turret_rx2, CutScene_turret_ry2, CutScene_turret_rz2;
-static int CutScene_shipBankTable[256];
+// Android .rodata 0x1fb934; the following five words are a separate item-ID table.
+static constexpr int CutScene_shipVerticalOffsets[64] = {
+    160, 150, 220, 310, 160, 180, 140, 170, 170, 110, 250, 205, 240, 250, 250, 250,
+    170, 170, 190, 460, 170, 210, 140, 170, 160, 190, 170, 240, 220, 280, 200, 200,
+    140, 160, 180, 150, 310, 390, 480, 200, 300, 300, 170, 200, 170, 370, 370, 300,
+    440, 340, 170, 470, 170, 170, 170, 170, 200, 170, 250, 150, 170, 250, 270, 170,
+};
 
 float VectorSignedToFloat(int v, int mode);
 
@@ -360,7 +366,7 @@ void CutScene::renderBG() {
         this->level->renderBG((int) this->frameDelta);
 }
 
-void CutScene::replacePlayerShip(int /*a*/, int b) {
+void CutScene::replacePlayerShip(int shipIndex, int variant) {
     if (this->level->getEnemies() == nullptr)
         return;
 
@@ -372,13 +378,13 @@ void CutScene::replacePlayerShip(int /*a*/, int b) {
             PaintCanvas *canvas = PaintCanvas::gCanvas;
             Array<KIPlayer *> *en2 = this->level->getEnemies();
             AEGeometry *lead = (*en2)[0]->geometry;
-            canvas->TransformRemoveChild(lead->childTransform, this->turretGeom->childTransform);
+            canvas->TransformRemoveChild(lead->transform, this->turretGeom->transform);
         }
 
         char matrix[0x3c];
         memcpy(matrix, &oldGeom->getMatrix(), 0x3c);
 
-        AEGeometry *grp = Globals::gGlobals->getShipGroup(b, 0, false);
+        AEGeometry *grp = Globals::gGlobals->getShipGroup(shipIndex, variant, false);
 
         Array<KIPlayer *> *en3 = this->level->getEnemies();
         (*en3)[0]->geometry = grp;
@@ -389,14 +395,15 @@ void CutScene::replacePlayerShip(int /*a*/, int b) {
 
         Array<KIPlayer *> *en5 = this->level->getEnemies();
         KIPlayer *ship = (*en5)[0];
-        float bank = VectorSignedToFloat(CutScene_shipBankTable[b], 0);
+        float bank = static_cast<float>(CutScene_shipVerticalOffsets[shipIndex]);
 
-        ship->setPosition(0.0f, bank, 0.0f);
+        Vector position{0.0f, bank, 0.0f};
+        ship->setPosition(position);
 
         Array<KIPlayer *> *en6 = this->level->getEnemies();
         ((PlayerFighter *) ((*en6)[0]))->setExhaustVisible(false);
 
-        ((LODManager *) (*(void **) this))->removeObject(oldGeom);
+        this->level->lodManager->removeObject(oldGeom);
         delete oldGeom;
     }
 

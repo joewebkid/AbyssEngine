@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (CutScene mode-2 ship motion; older subsystem
+Last reviewed: 2026-10-17 (CutScene ship replacement; older subsystem
 snapshots retain their dates)
+
+## CutScene ship replacement (2026-10-17)
+
+Android ARM restores the 64-entry ship vertical-offset table, both
+`getShipGroup` arguments, main transform IDs, virtual vector-position
+call, and `Level::lodManager` removal path. The prior code ignored the
+first argument, forced the variant to zero, used zero offsets and
+read the LOD manager from the wrong object. Focused `replacePlayerShip`
+source-shape/strict fuzzy rises from **94.7%/64.9% to 98.0%/89.5%**,
+still nonexact. Native `gof2`, **208/208** ARM units, 40 verifier
+tests (one existing skip), and extracted `-O0/-O2` tests pass. Full
+corpus remains **4,323/4,524** compared, **201 missing**, **123
+extras**, **93.73%/82.86%** rounded averages, **2,517 linked-exact
+/ 1,076 byte-exact**, with zero exact-pair losses. Live ARM32/GPU
+behavior and caller index range are untested. Next priority:
+`CutScene::checkForTurret` transform IDs, then mode-2
+`CutScene::initialize` ship placement. See
+[the replacement audit](CUTSCENE_REPLACE_SHIP_ARM_2026-10-17.md).
 
 ## CutScene mode-2 ship motion (2026-10-17)
 

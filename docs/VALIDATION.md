@@ -4,6 +4,26 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene ship replacement (2026-10-17)
+
+`python tools/run_cutscene_replace_ship_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2` for both
+`getShipGroup` arguments, offsets at indices 19 and 63, matrix copy,
+main transform IDs, exhaust hiding, LOD removal, and null-list and
+null-old-geometry paths. Native `gof2`, **208/208** ARM units, and
+40 verifier tests (one existing skip) pass. Focused report
+`A:/Galaxy on Fire new version/_work/cutscene_replace_ship_final_after_20261017.json`
+scores `replacePlayerShip` at **98.0% source-shape / 89.5% strict
+fuzzy**, up from **94.7% / 64.9%** in
+`cutscene_replace_ship_before_20261017.json`, still nonexact. Full
+report
+`A:/Galaxy on Fire new version/_work/cutscene_replace_ship_final_full_20261017.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.86%** rounded averages, **2,517 linked-exact / 1,076
+byte-exact**. Exact `(unit,symbol)` sets are unchanged from
+`cutscene_process_mode2_ship_final_full_20261017.json`. See
+[the replacement audit](CUTSCENE_REPLACE_SHIP_ARM_2026-10-17.md).
+
 ## CutScene mode-2 ship motion (2026-10-17)
 
 `python tools/run_cutscene_process_mode2_ship_smoke.py --cxx
