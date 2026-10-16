@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ObjectGun mesh replacement (2026-10-16)
+
+`python tools/run_objectgun_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` checks the extracted production
+`replaceGun` body at host `-O0` and `-O2`, including 16-bit ID
+arguments and re-reading `Globals::Canvas` between the removal and
+addition calls. Native `gof2`, 207/207 ARM units and 40 verifier tests
+(one skip) pass. Focused source-shape/strict fuzzy rises from
+83.0%/41.2% to 100%/100%, linked-exact. The full report
+`A:/Galaxy on Fire new version/_work/objectgun_replace_full_20261016.json`
+compares 4,323/4,524 originals, 201 missing, 124 extras, zero skipped,
+93.66%/82.74% average source-shape/strict fuzzy, 2,510 linked-exact
+and 1,074 byte-exact. Against
+`A:/Galaxy on Fire new version/_work/trail_canvas_full_20261016.json`,
+exact `(unit,symbol)` sets have one linked gain and zero linked/byte
+losses. See [the mesh replacement audit](OBJECTGUN_REPLACE_MESH_ARM_2026-10-16.md).
+
 ## Trail constructor behavior (2026-10-16)
 
 `python tools/run_trail_canvas_calls_smoke.py --cxx

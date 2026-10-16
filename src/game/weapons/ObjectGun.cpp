@@ -7,6 +7,7 @@
 #include "game/mission/Explosion.h"
 #include "game/ship/PlayerEgo.h"
 #include "game/weapons/Gun.h"
+#include "game/core/Globals.h"
 #include "game/ship/Player.h"
 #include "engine/render/AEGeometry.h"
 
@@ -36,8 +37,6 @@ namespace AbyssEngine {
 }
 
 static void *g_PaintCanvas = nullptr;
-
-void TransformRemoveMesh(void *canvas, uint32_t transform, uint16_t mesh);
 
 void TransformAddMesh(void *canvas, uint32_t transform, uint16_t mesh, int flags);
 
@@ -182,10 +181,10 @@ void ObjectGun::setScaling(int x, int y, int /*z*/) {
 }
 
 void ObjectGun::replaceGun(unsigned int mesh, int /*unused*/) {
-    void **canvas = (void **) g_PaintCanvas;
-    TransformRemoveMesh(*canvas, this->transform, this->meshId);
+    PaintCanvas **canvas = &Globals::Canvas;
+    (*canvas)->TransformRemoveMesh(this->transform, (uint16_t) this->meshId);
     this->meshId = (int) mesh;
-    TransformAddMesh(*canvas, this->transform, (uint16_t) mesh, 0);
+    (*canvas)->TransformAddMesh(this->transform, (uint16_t) mesh, false);
 }
 
 void ObjectGun::setEnemies(Array<Player *> *enemies) {

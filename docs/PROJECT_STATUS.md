@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (Trail constructor behavior; older subsystem
+Last reviewed: 2026-10-16 (ObjectGun mesh replacement; older subsystem
 snapshots retain their dates)
+
+## ObjectGun mesh replacement (2026-10-16)
+
+Android ARM `ObjectGun::replaceGun(unsigned,int)` uses the GOT binding
+for `Globals::Canvas`, re-reads it after removing the old mesh, stores
+the full new mesh ID, then adds its 16-bit ID via typed `PaintCanvas`
+calls. The previous body dereferenced a null placeholder and called
+declared-only helpers. A production-body fixture verifies old/new
+16-bit ABI truncation, the full stored ID and a canvas swap inside the
+first call. Native `gof2`, **207/207** ARM units and **40** verifier
+tests (one skip) pass. Focused source-shape/strict fuzzy rises
+**83.0%/41.2% -> 100%/100%**, linked-exact but not byte-exact.
+Full corpus: **4,323/4,524** compared, **201 missing**, **124 extras**,
+zero skipped, **93.66%/82.74%** average source-shape/strict fuzzy,
+**2,510 linked-exact / 1,074 byte-exact**. Exact `(unit,symbol)`
+comparison shows one linked gain and zero linked/byte losses.
+Constructor, update and render still contain unresolved ObjectGun
+bindings; live ARM32 rendering remains untested. See
+[the mesh replacement audit](OBJECTGUN_REPLACE_MESH_ARM_2026-10-16.md).
 
 ## Trail constructor behavior (2026-10-16)
 
