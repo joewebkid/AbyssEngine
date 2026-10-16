@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo position overload (2026-10-16)
+
+`PlayerEgo::setPosition(Vector)` now forwards through its native
+three-float overload. Focused report
+`A:/Galaxy on Fire new version/_work/player_ego_setposition_focused_20261016.json`
+measures **100% source-shape / 100% strict fuzzy** at one instruction,
+up from **1.1% / 0.0%**; it is not linked- or byte-exact. Native
+`gof2`, **208/208** ARM units and 40 verifier tests (one existing
+skip) pass. Full report
+`A:/Galaxy on Fire new version/_work/player_ego_setposition_full_20261016.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.70%/82.80%** average source-shape/strict fuzzy, **2,515
+linked-exact / 1,075 byte-exact**. Compared against
+`particle_sprite_spawn_full_20261016.json`, both exact `(unit,symbol)`
+sets have zero gains and zero losses. See
+[the overload audit](PLAYER_EGO_POSITION_OVERLOAD_ARM_2026-10-16.md).
+
 ## Particle emitter argument ABI (2026-10-16)
 
 `python tools/run_particle_emit_smoke.py --cxx

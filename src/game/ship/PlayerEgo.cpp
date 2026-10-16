@@ -504,7 +504,7 @@ bool PlayerEgo::isHacking() {
 }
 
 void PlayerEgo::setPosition(Vector v) {
-    this->geometry->setPosition(v);
+    this->setPosition(v.x, v.y, v.z);
 }
 
 void PlayerEgo::resetChargingDrive() {

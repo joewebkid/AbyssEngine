@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (particle emitter argument ABI; older subsystem
+Last reviewed: 2026-10-16 (PlayerEgo position overload; older subsystem
 snapshots retain their dates)
+
+## PlayerEgo position overload (2026-10-16)
+
+Android ARM `PlayerEgo::setPosition(Vector)` tail-forwards to its
+three-float overload; the recovered direct geometry call bypassed that
+route. The one-line correction raises focused source-shape/strict
+fuzzy from **1.1%/0.0% to 100%/100%** at one instruction, though it
+is not linked- or byte-exact. Native `gof2`, **208/208** ARM units and
+40 verifier tests (one existing skip) pass. The fresh full corpus is
+**4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.70%/82.80%** average source-shape/strict fuzzy, **2,515
+linked-exact / 1,075 byte-exact**, with zero exact-pair losses.
+Live ARM32 gameplay remains untested. See
+[the overload audit](PLAYER_EGO_POSITION_OVERLOAD_ARM_2026-10-16.md).
+Next priority: source-backed audit of the separate `CutScene::update()`
+one-instruction call route and its timing semantics.
 
 ## Particle emitter argument ABI (2026-10-16)
 
