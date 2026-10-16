@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ParticleSystemMesh direct trail dispatch (2026-10-16)
+
+The extracted particle trail fixture passes; native `gof2`, 208/208
+ARM units and 40 verifier tests (one existing skip) pass. Original ARM
+`emit` branches to `emitTrail` or `IParticleSystem::emit`; the rebuilt
+object now has matching `R_ARM_THM_JUMP24` targets. Focused `emit` stays
+100% source-shape/strict fuzzy and linked-exact. The full report
+`A:/Galaxy on Fire new version/_work/particle_emit_direct_split_full_20261016.json`
+compares 4,323/4,524 originals, 201 missing, 123 extras, zero skipped
+or wrong signatures, 93.67%/82.77% average source-shape/strict fuzzy,
+2,513 linked-exact and 1,074 byte-exact. Against
+`objectgun_update_offsets_full_20261016.json`, both exact
+`(unit,symbol)` sets have zero losses or gains. See
+[the dispatch audit](PARTICLE_MESH_DIRECT_TRAIL_DISPATCH_ARM_2026-10-16.md).
+
 ## ObjectGun geometry offsets (2026-10-16)
 
 `python tools/run_objectgun_canvas_calls_smoke.py --cxx

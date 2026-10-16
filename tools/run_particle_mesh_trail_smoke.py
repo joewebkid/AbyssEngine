@@ -20,12 +20,11 @@ def main():
         parser.error("specify --cxx")
 
     source = (ROOT / "src/engine/render/ParticleSystemMesh.cpp").read_text()
+    trail_source = (ROOT / "src/engine/render/ParticleSystemMeshTrail.cpp").read_text()
     fixture = (ROOT / "tools/particle_mesh_trail_smoke.cpp").read_text()
-    manager = (ROOT / "src/engine/render/ParticleSystemManager.cpp").read_text()
     bodies = "\n".join((
-        function(manager, "void _psm_emitTrail(ParticleSystemMesh *self, int delta)"),
         function(source, "void ParticleSystemMesh::emit(int id)"),
-        function(source, "void ParticleSystemMesh::emitTrail(int delta)"),
+        function(trail_source, "void ParticleSystemMesh::emitTrail(int delta)"),
     ))
     with tempfile.TemporaryDirectory(prefix="particle-trail-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "smoke.cpp"

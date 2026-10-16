@@ -13,10 +13,6 @@
 
 void _psm_constructAfterCamera(void *self);
 
-void _psm_emitTrail(ParticleSystemMesh *self, int delta) {
-    self->emitTrail(delta);
-}
-
 int _psm_firstUpdate(void *self, int a, int b, int c);
 
 void _ips_reset(void *sys);

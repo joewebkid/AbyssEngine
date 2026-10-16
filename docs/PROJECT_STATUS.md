@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ObjectGun geometry offsets; older subsystem
+Last reviewed: 2026-10-16 (ParticleSystemMesh direct trail dispatch; older subsystem
 snapshots retain their dates)
+
+## ParticleSystemMesh direct trail dispatch (2026-10-16)
+
+The trail branch of `ParticleSystemMesh::emit` now targets the original
+`emitTrail` method directly. The method body lives in a separate ARM
+translation unit to preserve the caller's linked-exact relocation; the
+extra forwarding symbol was removed. Native `gof2`, **208/208** ARM
+units, the particle trail fixture and **40** verifier tests (one existing
+skip) pass. Full corpus remains **4,323/4,524** compared, **201 missing**,
+**93.67%/82.77%** average source-shape/strict fuzzy and **2,513
+linked-exact / 1,074 byte-exact** with zero exact-set losses. Extra
+symbols decline **124 → 123**. Trail and base emitter behavior remain
+partially unverified; next audit their state and lifetime branches. See
+[the dispatch audit](PARTICLE_MESH_DIRECT_TRAIL_DISPATCH_ARM_2026-10-16.md).
 
 ## ObjectGun geometry offsets (2026-10-16)
 
