@@ -4,6 +4,26 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene mode-2 ship motion (2026-10-17)
+
+`python tools/run_cutscene_process_mode2_ship_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2` for both
+ships' three-axis motion, zero/negative playing time (no enemy-list
+access), missing first geometry and a high-bit frame delta. Native
+`gof2`, **208/208** ARM units and 40 verifier tests (one existing
+skip) pass. Focused report
+`A:/Galaxy on Fire new version/_work/cutscene_process_mode2_ship_after_20261017.json`
+scores `process` at **94.0% source-shape / 63.5% strict fuzzy**,
+up from **93.9% / 62.8%** in
+`cutscene_process_mode4_race2_after_20261017.json`, still nonexact.
+Full report
+`A:/Galaxy on Fire new version/_work/cutscene_process_mode2_ship_final_full_20261017.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.85%** rounded averages, **2,517 linked-exact / 1,076
+byte-exact**. Exact `(unit,symbol)` sets are unchanged from
+`cutscene_process_mode4_race2_full_20261017.json`. See
+[the mode-2 audit](CUTSCENE_PROCESS_MODE2_SHIP_ARM_2026-10-17.md).
+
 ## CutScene mode-4 race-2 process path (2026-10-17)
 
 `python tools/run_cutscene_process_mode4_race2_smoke.py --cxx

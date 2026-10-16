@@ -20,8 +20,6 @@
 using AbyssEngine::AERandom;
 using AbyssEngine::AnimationMode;
 
-static float CutScene_proc_tx0, CutScene_proc_tz0;
-static float CutScene_proc_rx0, CutScene_proc_rz0, CutScene_proc_rz1;
 static float CutScene_fogColorMode17, CutScene_fogDensityMode17;
 static float CutScene_fogColorMode4, CutScene_fogDensityMode4;
 static float CutScene_persp_fov, CutScene_persp_znear, CutScene_persp_zfar;
@@ -153,27 +151,29 @@ void CutScene::process(int /*delta*/) {
         canvas->CameraSetLocal(this->cameraId74, local);
 
         long long pt = Status::gStatus->getPlayingTime();
-        Array<KIPlayer *> *enemies = this->level->getEnemies();
-        if (pt != 0 && enemies != nullptr && enemies->size() > 1) {
+        if (pt > 0) {
+            Array<KIPlayer *> *enemies = this->level->getEnemies();
+            if (enemies == nullptr || enemies->size() < 2)
+                return;
             unsigned int n = enemies->size();
             void *e0 = (*enemies)[n - 2];
 
             if (e0 != nullptr && ((KIPlayer *) e0)->geometry != nullptr) {
                 AEGeometry *g0 = ((KIPlayer *) e0)->geometry;
-                float f = VectorSignedToFloat(this->frameDelta, 0);
-                g0->translate(f * CutScene_proc_tx0, 0.0f, 0.0f);
-                float f1 = VectorSignedToFloat(this->frameDelta, 0);
-                float f2 = VectorSignedToFloat(-(int) this->frameDelta, 0);
-                g0->rotate(f1 * CutScene_proc_rx0, 0.0f, f2 * CutScene_proc_rz0);
+                float step = VectorSignedToFloat((int) this->frameDelta, 0);
+                g0->translate(step * 0.1f, 0.0f, step * 0.001f);
+                float reverseStep = VectorSignedToFloat((int) (0u - this->frameDelta), 0);
+                g0->rotate(reverseStep * 0.0002f, step * 0.0002f,
+                           reverseStep * 0.00018f);
             }
             void *e1 = (*enemies)[n - 1];
             if (e1 != nullptr && ((KIPlayer *) e1)->geometry != nullptr) {
                 AEGeometry *g1 = ((KIPlayer *) e1)->geometry;
-                float f = VectorSignedToFloat(this->frameDelta, 0);
-                g1->translate(f * CutScene_proc_tx0, 0.0f, 0.0f);
-                float f1 = VectorSignedToFloat(this->frameDelta, 0);
-                float f2 = VectorSignedToFloat(-(int) this->frameDelta, 0);
-                g1->rotate(f1 * CutScene_proc_rx0, 0.0f, f2 * CutScene_proc_rz1);
+                float step = VectorSignedToFloat((int) this->frameDelta, 0);
+                g1->translate(step * 0.1f, 0.0f, 0.0f);
+                float reverseStep = VectorSignedToFloat((int) (0u - this->frameDelta), 0);
+                g1->rotate(step * 0.0002f, reverseStep * 0.0005f,
+                           reverseStep * 0.0003f);
             }
         }
     } else if (this->mode == 0x17) {
