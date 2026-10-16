@@ -37,8 +37,17 @@ def main():
         "                if (Globals::iPad != 0)", 1)[1].split(
         "\n\n                if (this->gun->weaponType", 1)[0]
     render_scale_body = (
-        "void ObjectGun::applyRenderScale(Matrix &local) {\n"
+        "void ObjectGun::applyRenderScale() {\n"
         f"{render_scale}\n"
+        "}\n"
+    )
+    ego_start = "                    scaleMatrix = AbyssEngine::AEMath::MatrixSetRotation(local, player->empPointsF"
+    render_ego = ego_start + source.split(ego_start, 1)[1].split(
+        "\n                    scaleMatrix = AbyssEngine::AEMath::MatrixSetTranslation", 1)[0]
+    render_ego_body = (
+        "void ObjectGun::applyEgoRotation(EgoPlayerView *playerView, Player *player, "
+        "Matrix &local, Matrix &scaleMatrix) {\n"
+        f"{render_ego}\n"
         "}\n"
     )
     render_final = "                PaintCanvas **canvas = &Globals::Canvas;" + source.split(
@@ -53,7 +62,8 @@ def main():
         generated = Path(temp) / "smoke.cpp"
         generated.write_text(fixture.replace(
             "// PRODUCTION_METHODS",
-            "\n".join((body, inactive_body, render_scale_body, render_final_body))))
+            "\n".join((body, inactive_body, render_scale_body, render_ego_body,
+                       render_final_body))))
         for optimization in ("-O0", "-O2"):
             exe = Path(temp) / f"smoke-{optimization[2:]}.exe"
             subprocess.run([args.cxx, "-std=gnu++17", optimization,

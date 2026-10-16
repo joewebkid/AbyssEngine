@@ -4,6 +4,7 @@
 
 #include "game/world/Level.h"
 #include "engine/math/Transform.h"
+#include "engine/math/AEMath.h"
 #include "game/mission/Explosion.h"
 #include "game/ship/PlayerEgo.h"
 #include "game/weapons/Gun.h"
@@ -72,16 +73,6 @@ void MatrixRotateVector(void *out, const void *matrix, const void *vec);
 void MatrixGetDir(Vector *out, const Matrix *matrix);
 
 void MatrixGetUp(Vector *out, const Matrix *matrix);
-
-void MatrixSetRotation(Matrix *dst, float x, float y, float z);
-
-void MatrixSetTranslation(Matrix *dst, float x, float y, float z);
-
-void MatrixSetScaling(Matrix *dst, float x, float y, float z);
-
-void VectorNormalize(Vector *out, const Vector *in);
-
-void VectorCross(Vector *out, const Vector *a, const Vector *b);
 
 void ObjectGun_setEnemies_impl(void *items);
 
@@ -401,9 +392,9 @@ void ObjectGun::render() {
                 rotate.m[0] = 1.0f;
                 rotate.m[5] = 1.0f;
                 rotate.m[14] = 1.0f;
-                MatrixSetRotation(&scaleMatrix, this->spinAngle, 0.0f, 0.0f);
+                scaleMatrix = AbyssEngine::AEMath::MatrixSetRotation(rotate, this->spinAngle, 0.0f, 0.0f);
                 rotate = scaleMatrix;
-                AbyssEngine::AEMath::MatrixMultiply(cameraLocal, rotate);
+                cameraLocal *= rotate;
             }
         }
 
@@ -411,9 +402,8 @@ void ObjectGun::render() {
         for (uint32_t i = 0; i < gun->count; ++i) {
             Vector *gunPos = &((Vector *) gun->positions)[i];
             if (gunPos->x != -1000.0f) {
-                MatrixSetTranslation(&local, gunPos->x, gunPos->y, gunPos->z);
-                ::VectorNormalize((Vector *) &local, &((Vector *) gun->velocities)[i]);
-                this->dir = *(const Vector *) &local;
+                AbyssEngine::AEMath::MatrixSetTranslation(this->orientation, gunPos->x, gunPos->y, gunPos->z);
+                this->dir = AbyssEngine::AEMath::VectorNormalize(((Vector *) gun->velocities)[i]);
 
                 if (this->visible != 0) {
                     muzzle.x = -this->dir.x;
@@ -423,7 +413,7 @@ void ObjectGun::render() {
                         PaintCanvas *paint = Globals::Canvas;
                         unsigned camera = paint->CameraGetCurrent();
                         cameraLocal = *static_cast<const Matrix *>(paint->CameraGetLocal(camera));
-                        MatrixGetDir(&dir, &cameraLocal);
+                        dir = AbyssEngine::AEMath::MatrixGetDir(cameraLocal);
                         muzzle = dir;
                         gun = this->gun;
                     }
@@ -441,9 +431,9 @@ void ObjectGun::render() {
                     int scale = gun->lifetimes[i];
                     if (scale < 1000) {
                         float fscale = (float) scale / 750.0f;
-                        MatrixSetScaling(&local, fscale, fscale, fscale);
+                        AbyssEngine::AEMath::MatrixSetScaling(this->orientation, fscale, fscale, fscale);
                     } else if (gun->hitSmall != 0) {
-                        MatrixSetScaling(&local, 1.0f, 1.0f, 1.0f);
+                        AbyssEngine::AEMath::MatrixSetScaling(this->orientation, 1.0f, 1.0f, 1.0f);
                     }
                 } else if (this->useEgoOrientation == 0) {
                     Vector base;
@@ -456,10 +446,10 @@ void ObjectGun::render() {
                         base = ((const Vector *) gun->upVectors)[i];
                     }
                     this->up = base;
-                    VectorCross(&side, &this->up, &this->dir);
-                    ::VectorNormalize(&this->side, &side);
-                    VectorCross(&side, &this->side, &this->dir);
-                    ::VectorNormalize(&this->up, &side);
+                    side = AbyssEngine::AEMath::VectorCross(this->up, this->dir);
+                    this->side = AbyssEngine::AEMath::VectorNormalize(side);
+                    side = AbyssEngine::AEMath::VectorCross(this->side, this->dir);
+                    this->up = AbyssEngine::AEMath::VectorNormalize(side);
 
                     this->orientation.m[0] = this->side.x;
                     this->orientation.m[1] = this->up.x;
@@ -474,9 +464,9 @@ void ObjectGun::render() {
                     int scale = gun->lifetimes[i];
                     if (scale < 1000) {
                         float fscale = (float) scale / 750.0f;
-                        MatrixSetScaling(&local, fscale, fscale, fscale);
+                        AbyssEngine::AEMath::MatrixSetScaling(this->orientation, fscale, fscale, fscale);
                     } else if (gun->hitSmall != 0) {
-                        MatrixSetScaling(&local, 1.0f, 1.0f, 1.0f);
+                        AbyssEngine::AEMath::MatrixSetScaling(this->orientation, 1.0f, 1.0f, 1.0f);
                         if (this->isRocketGun() == 0)
                             gun->hitSmall = 0;
                     }
@@ -489,35 +479,35 @@ void ObjectGun::render() {
                     local.m[5] = 1.0f;
                     local.m[14] = 1.0f;
 
-                    MatrixSetRotation(&scaleMatrix, player->empPointsF, player->maxEmpPointsF, 0.0f);
-                    AbyssEngine::AEMath::MatrixMultiply(playerView->orientation, local);
+                    scaleMatrix = AbyssEngine::AEMath::MatrixSetRotation(local, player->empPointsF, player->maxEmpPointsF, 0.0f);
+                    playerView->orientation *= local;
                     this->orientation = playerView->orientation;
-                    MatrixSetTranslation(&scaleMatrix, gunPos->x, gunPos->y, gunPos->z);
-                    MatrixGetDir(&dir, &scaleMatrix);
-                    ::VectorNormalize(&muzzle, &dir);
+                    scaleMatrix = AbyssEngine::AEMath::MatrixSetTranslation(this->orientation, gunPos->x, gunPos->y, gunPos->z);
+                    dir = AbyssEngine::AEMath::MatrixGetDir(this->orientation);
+                    muzzle = AbyssEngine::AEMath::VectorNormalize(dir);
                     muzzle *= gun->field_0x50;
                     ((Vector *) gun->velocities)[i] = muzzle;
                     player->empPointsF = 0.0f;
                     player->maxEmpPointsF = 0.0f;
-                    MatrixSetRotation(&scaleMatrix, this->rollAngle, 0.0f, 0.0f);
+                    scaleMatrix = AbyssEngine::AEMath::MatrixSetRotation(local, this->rollAngle, 0.0f, 0.0f);
                     Globals::Canvas->TransformSetLocal(this->secondaryTransform, scaleMatrix);
                 }
 
                 if (Globals::iPad != 0)
-                    MatrixSetScaling(&local, this->scaleX, this->scaleY, this->scaleZ);
+                    AbyssEngine::AEMath::MatrixSetScaling(this->orientation, this->scaleX, this->scaleY, this->scaleZ);
 
                 if (this->gun->weaponType == ITEM_SORT_MINE) {
                     Array<Vector *> *spins = (Array<Vector *> *) this->gun->wobbleOffsets;
                     Vector *spin = spins->data()[i];
                     if (spin != nullptr && this->deltaTime > 0) {
-                        MatrixSetRotation(&local, spin->x, spin->y, spin->z);
+                        AbyssEngine::AEMath::MatrixSetRotation(this->orientation, spin->x, spin->y, spin->z);
                         float step = (float) this->deltaTime * 0.02f;
                         float neg = -step;
                         spin->x += spin->x < 0.0f ? neg : step;
                         spin->y += spin->y < 0.0f ? neg : step;
                         spin->z += spin->z < 0.0f ? neg : step;
                     }
-                    MatrixSetScaling(&local, this->scaleX, this->scaleY, this->scaleZ);
+                    AbyssEngine::AEMath::MatrixSetScaling(this->orientation, this->scaleX, this->scaleY, this->scaleZ);
                 }
 
                 PaintCanvas **canvas = &Globals::Canvas;

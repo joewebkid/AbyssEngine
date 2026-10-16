@@ -4,14 +4,27 @@
 struct Matrix {
     int marker = 42;
     bool scaled = false;
+    bool rotated = false;
+    bool multiplied = false;
     float x = 0, y = 0, z = 0;
+    Matrix &operator*=(const Matrix &other) {
+        multiplied = other.rotated;
+        return *this;
+    }
 };
-void MatrixSetScaling(Matrix *matrix, float x, float y, float z) {
-    matrix->scaled = true;
-    matrix->x = x;
-    matrix->y = y;
-    matrix->z = z;
+namespace AbyssEngine { namespace AEMath {
+Matrix MatrixSetRotation(Matrix &matrix, float, float, float) {
+    matrix.rotated = true;
+    return matrix;
 }
+Matrix MatrixSetScaling(Matrix &matrix, float x, float y, float z) {
+    matrix.scaled = true;
+    matrix.x = x;
+    matrix.y = y;
+    matrix.z = z;
+    return matrix;
+}
+} }
 
 struct PaintCanvas;
 struct Globals {
@@ -84,6 +97,8 @@ unsigned char Globals::iPad = 0;
 
 struct Gun { int delayActive = 0; };
 struct AEGeometry { unsigned transform = 77; };
+struct Player { float empPointsF = 0.2f, maxEmpPointsF = 0.3f; };
+struct EgoPlayerView { Matrix orientation; };
 
 struct ObjectGun {
     unsigned transform = 17;
@@ -94,7 +109,9 @@ struct ObjectGun {
     float scaleX = 0.6f, scaleY = 0.7f, scaleZ = 0.8f;
     void replaceGun(unsigned mesh, int unused);
     void applyInactive();
-    void applyRenderScale(Matrix &local);
+    void applyRenderScale();
+    void applyEgoRotation(EgoPlayerView *playerView, Player *player,
+                          Matrix &local, Matrix &scaleMatrix);
     void renderFinal();
 };
 
@@ -141,13 +158,20 @@ int main() {
     assert(third.transform.calls == 1 && third.transform.mode == 1 &&
            third.transform.argument == nullptr);
 
-    Matrix local;
     Globals::iPad = 0;
-    gun.applyRenderScale(local);
-    assert(!local.scaled);
+    gun.applyRenderScale();
+    assert(!gun.orientation.scaled);
     Globals::iPad = 1;
-    gun.applyRenderScale(local);
-    assert(local.scaled && local.x == 0.6f && local.y == 0.7f && local.z == 0.8f);
+    gun.applyRenderScale();
+    assert(gun.orientation.scaled && gun.orientation.x == 0.6f &&
+           gun.orientation.y == 0.7f && gun.orientation.z == 0.8f);
+
+    EgoPlayerView playerView;
+    Player player;
+    Matrix egoLocal, rotatedCopy;
+    gun.applyEgoRotation(&playerView, &player, egoLocal, rotatedCopy);
+    assert(egoLocal.rotated && rotatedCopy.rotated);
+    assert(playerView.orientation.multiplied && gun.orientation.multiplied);
 
     PaintCanvas beforeDraw, afterSetLocal;
     beforeDraw.replacementOnSetLocal = &afterSetLocal;

@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ObjectGun render math (2026-10-16)
+
+`python tools/run_objectgun_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` checks extracted iPad scaling and ego
+rotation fragments at host `-O0/-O2`. Native `gof2`, 207/207 ARM units
+and 40 verifier tests (one skip) pass. Focused render source-shape
+changes 90.4% -> 89.6%, while strict fuzzy improves 34.6% -> 39.7%;
+it is still nonexact. Full report
+`A:/Galaxy on Fire new version/_work/objectgun_render_math_full_20261016.json`
+compares 4,323/4,524 originals, 201 missing, 124 extras, zero skipped,
+no wrong signatures, 93.66%/82.75% average source-shape/strict fuzzy,
+2,510 linked-exact and 1,074 byte-exact. Against
+`objectgun_render_bindings_full_20261016.json`, exact `(unit,symbol)`
+sets have zero gains and zero losses. See
+[the math audit](OBJECTGUN_RENDER_MATH_ARM_2026-10-16.md).
+
 ## ObjectGun render bindings (2026-10-16)
 
 `python tools/run_objectgun_canvas_calls_smoke.py --cxx

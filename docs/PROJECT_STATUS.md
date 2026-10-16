@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ObjectGun render bindings; older subsystem
+Last reviewed: 2026-10-16 (ObjectGun render math; older subsystem
 snapshots retain their dates)
+
+## ObjectGun render math (2026-10-16)
+
+Android ARM confirms by-value math results and mutable matrix inputs
+in `ObjectGun::render`, including `Matrix::operator*=` for turret and
+ego orientation. The previous `void` free-function shims omitted those
+inputs or discarded matrix products. Typed calls now update the
+orientation and normalize/cross the vectors. Extracted production
+fragments check iPad scaling and ego rotation under host `-O0/-O2`.
+Native `gof2`, **207/207** ARM units, and **40** verifier tests (one
+skip) pass. Focused render source-shape **90.4% -> 89.6%**; strict
+fuzzy **34.6% -> 39.7%**; no exact status. Full corpus:
+**4,323/4,524** compared, **201 missing**, **124 extras**, no skipped
+or wrong signatures, **93.66%/82.75%** average source-shape/strict
+fuzzy, **2,510 linked-exact / 1,074 byte-exact**, with zero exact
+gains/losses. Full render behavior and live ARM32 GPU output remain
+unverified. See [the math audit](OBJECTGUN_RENDER_MATH_ARM_2026-10-16.md).
 
 ## ObjectGun render bindings (2026-10-16)
 
