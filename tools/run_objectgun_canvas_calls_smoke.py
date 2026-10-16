@@ -125,6 +125,28 @@ def main():
         f"{wobble}\n"
         "}\n"
     )
+    owner_offset_start = "        offsets.x = gun->offset.x;"
+    owner_offset = owner_offset_start + source.split(owner_offset_start, 1)[1].split(
+        "\n        position +=", 1)[0]
+    owner_offset_body = (
+        "Vector ObjectGun::ownerOffset() {\n"
+        "    Gun *gun = this->gun;\n"
+        "    Vector offsets;\n"
+        f"{owner_offset}\n"
+        "    return offsets;\n"
+        "}\n"
+    )
+    turret_offset_start = "        int weapon = gun->itemIndex;"
+    turret_offset = turret_offset_start + source.split(turret_offset_start, 1)[1].split(
+        "\n        Vector rotatedOffset =", 1)[0]
+    turret_offset_body = (
+        "Vector ObjectGun::turretOffset() {\n"
+        "    Gun *gun = this->gun;\n"
+        "    Vector offsets;\n"
+        f"{turret_offset}\n"
+        "    return offsets;\n"
+        "}\n"
+    )
     render_scale = "                if (Globals::iPad != 0)" + source.split(
         "                if (Globals::iPad != 0)", 1)[1].split(
         "\n\n                if (this->gun->weaponType", 1)[0]
@@ -158,6 +180,7 @@ def main():
                        explosion_body, explosion_render_body, visible_body,
                        renderable_body, turret_spin_body, visible_lifetime_body,
                        world_lifetime_body, basis_body, wobble_body,
+                       owner_offset_body, turret_offset_body,
                        render_scale_body, render_ego_body, render_final_body))))
         for optimization in ("-O0", "-O2"):
             exe = Path(temp) / f"smoke-{optimization[2:]}.exe"

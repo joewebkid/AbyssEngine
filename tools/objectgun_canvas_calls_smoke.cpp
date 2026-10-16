@@ -152,6 +152,17 @@ struct Gun {
     uint8_t ignited = 0;
     int *lifetimes = nullptr;
     uint8_t hitSmall = 0;
+    int itemIndex = 0;
+    Vector offset;
+    union {
+        int field_0xa4 = 0;
+        struct {
+            uint8_t field_0xa4_b0;
+            uint8_t field_0xa5;
+            uint8_t field_0xa6;
+            uint8_t field_0xa7;
+        };
+    };
     Array<Player *> *enemies = nullptr;
     void setEnemies(Array<Player *> *value) { enemies = value; }
     void render() { ++renderCalls; }
@@ -198,6 +209,8 @@ struct ObjectGun {
     void applyWorldLifetimeScaling(unsigned i);
     void applyBasisUp();
     void applyWobbleStep(Vector *spin);
+    Vector ownerOffset();
+    Vector turretOffset();
     bool isRocketGun() const { return rocketGun; }
     void applyRenderScale();
     void applyEgoRotation(EgoPlayerView *playerView, Player *player,
@@ -369,6 +382,43 @@ int main() {
     gun.deltaTime = 100;
     gun.applyWobbleStep(&wobble);
     assert(wobble.x == -1.05f && wobble.y == 2.05f && wobble.z == -3.05f);
+
+    lifetimeGun.offset = {0, 2, 3, 4};
+    Vector offset = gun.ownerOffset();
+    assert(offset.x == 2 && offset.y == 3 && offset.z == -96);
+    const int weapons[] = {0, 0x2f, 0xb5, 0x31, 0xb4, 0x30, 0xe0, 0xb6};
+    const float depths[] = {205, 260, 190, 200, 172, 170, 147, 150};
+    for (int j = 0; j < 8; ++j) {
+        lifetimeGun.itemIndex = weapons[j];
+        offset = gun.turretOffset();
+        assert(offset.x == 0 && offset.y == 0 && offset.z == depths[j]);
+    }
+    lifetimeGun.itemIndex = 0;
+    lifetimeGun.field_0xa5 = 1;
+    assert(lifetimeGun.field_0xa4 != 0 && lifetimeGun.field_0xa4_b0 == 0);
+    assert(gun.turretOffset().x == 0);
+    lifetimeGun.field_0xa5 = 0;
+    lifetimeGun.field_0xa4_b0 = 1;
+    assert(gun.turretOffset().x == 43);
+    lifetimeGun.field_0xa6 = 1;
+    assert(gun.turretOffset().x == -43);
+    lifetimeGun.itemIndex = 0x30;
+    lifetimeGun.field_0xa6 = 0;
+    assert(gun.turretOffset().x == 18);
+    lifetimeGun.field_0xa6 = 1;
+    assert(gun.turretOffset().x == -18);
+    lifetimeGun.itemIndex = 0xb5;
+    lifetimeGun.field_0xa6 = 0;
+    lifetimeGun.field_0xa5 = 1;
+    assert(gun.turretOffset().x == 35 && gun.turretOffset().y == 16.5f);
+    lifetimeGun.field_0xa6 = 1;
+    lifetimeGun.field_0xa7 = 1;
+    assert(gun.turretOffset().x == -35 && gun.turretOffset().y == -16.5f);
+    lifetimeGun.itemIndex = 0xe0;
+    lifetimeGun.field_0xa7 = 0;
+    assert(gun.turretOffset().y == 13);
+    lifetimeGun.field_0xa7 = 1;
+    assert(gun.turretOffset().y == -13);
 
     gun.orientation.scaled = false;
     Globals::iPad = 0;

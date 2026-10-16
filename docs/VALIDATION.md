@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ObjectGun geometry offsets (2026-10-16)
+
+`python tools/run_objectgun_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` checks extracted owner and turret
+offset expressions under host `-O0/-O2`, including all Z choices
+and a high-byte-only flag. Native `gof2`, 207/207 ARM units and
+40 verifier tests (one existing skip) pass. Focused `update`
+source-shape/strict fuzzy changes 87.9%/31.0% -> 90.8%/30.4%,
+nonexact. Full report
+`A:/Galaxy on Fire new version/_work/objectgun_update_offsets_full_20261016.json`
+compares 4,323/4,524 originals, 201 missing, 124 extras, zero
+skipped or wrong signatures, 93.67%/82.77% average source-shape/
+strict fuzzy, 2,513 linked-exact and 1,074 byte-exact. Against
+`objectgun_render_semantics_full_20261016.json`, both exact
+`(unit,symbol)` sets are unchanged. See
+[the offset audit](OBJECTGUN_UPDATE_OFFSETS_ARM_2026-10-16.md).
+
 ## Per-function missing-symbol triage (2026-10-16)
 
 The latest full report's 201 missing names were classified and

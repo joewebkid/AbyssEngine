@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (missing-symbol archive triage; older subsystem
+Last reviewed: 2026-10-16 (ObjectGun geometry offsets; older subsystem
 snapshots retain their dates)
+
+## ObjectGun geometry offsets (2026-10-16)
+
+Android ARM `ObjectGun::update` subtracts 100 from the owner gun's
+Z offset and selects turret Z offsets of 205 (default), 260, 190,
+200, 172, 170, 147 or 150 by item index. Its X/Y branches use
+the ARM literals ±45, ±35 and ±16.5, plus the existing ±20 and
+±13 cases; the X-enable condition reads only the byte at
+`Gun+0xa4`. The previous C++ used smaller, incorrect offsets and
+tested the four-byte flag word. Extracted production fragments
+pass at host `-O0/-O2`. Native `gof2`, **207/207** ARM units and
+**40** verifier tests (one existing skip) pass. Focused `update`
+source-shape/strict fuzzy changes **87.9%/31.0% -> 90.8%/30.4%**;
+it remains nonexact. Full corpus: **4,323/4,524** compared,
+**201 missing**, **124 extras**, no skipped or wrong signatures,
+**93.67%/82.77%** average source-shape/strict fuzzy, **2,513
+linked-exact / 1,074 byte-exact**. Both exact sets are unchanged.
+Live ARM32 placement remains unverified. Next priority is other
+first-party behavior/ABI gaps, including the extra-symbol set. See
+[the offset audit](OBJECTGUN_UPDATE_OFFSETS_ARM_2026-10-16.md).
 
 ## Per-function missing-symbol triage (2026-10-16)
 

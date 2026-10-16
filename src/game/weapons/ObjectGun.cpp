@@ -252,7 +252,7 @@ void ObjectGun::update(int dt) {
 
         offsets.x = gun->offset.x;
         offsets.y = gun->offset.y;
-        offsets.z = gun->offset.z + 8.0f;
+        offsets.z = gun->offset.z - 100.0f;
         position += AbyssEngine::AEMath::MatrixRotateVector(playerMatrix, offsets);
         this->geometry->setPosition(position);
 
@@ -280,27 +280,29 @@ void ObjectGun::update(int dt) {
         int weapon = gun->itemIndex;
         offsets.x = 0.0f;
         offsets.y = 0.0f;
-        offsets.z = -3.5f;
+        offsets.z = 205.0f;
         if (weapon == 0xb5) {
-            offsets.z = -1.5f;
+            offsets.z = 190.0f;
         } else if (weapon == 0x31) {
-            offsets.z = 7.0f;
+            offsets.z = 200.0f;
         } else if (weapon == 0xb4) {
-            offsets.z = -6.0f;
+            offsets.z = 172.0f;
         } else if (weapon == 0x30) {
-            offsets.z = 15.0f;
+            offsets.z = 170.0f;
+        } else if (weapon == 0x2f) {
+            offsets.z = 260.0f;
         } else if (weapon == 0xe0) {
-            offsets.z = -13.0f;
+            offsets.z = 147.0f;
         } else if (weapon == 0xb6) {
-            offsets.z = 13.0f;
+            offsets.z = 150.0f;
         }
 
-        if (gun->field_0xa4 != 0) {
+        if (gun->field_0xa4_b0 != 0) {
             if (weapon == 0xb5) {
-                offsets.x = gun->field_0xa6 != 0 ? -1.5f : 1.5f;
+                offsets.x = gun->field_0xa6 != 0 ? -35.0f : 35.0f;
             } else {
-                float left = weapon == 0x30 ? 20.0f : 15.0f;
-                float right = weapon == 0x30 ? -20.0f : -15.0f;
+                float left = weapon == 0x30 ? 20.0f : 45.0f;
+                float right = weapon == 0x30 ? -20.0f : -45.0f;
                 offsets.x = left - gun->offset.x;
                 if (gun->field_0xa6 != 0)
                     offsets.x = gun->offset.x + right;
@@ -310,7 +312,7 @@ void ObjectGun::update(int dt) {
             if (weapon == 0xe0) {
                 offsets.y = gun->field_0xa7 == 0 ? 13.0f : -13.0f;
             } else if (weapon == 0xb5) {
-                offsets.y = gun->field_0xa7 == 0 ? 2.5f : -2.5f;
+                offsets.y = gun->field_0xa7 == 0 ? 16.5f : -16.5f;
             }
         }
         Vector rotatedOffset = AbyssEngine::AEMath::MatrixRotateVector(workMatrix, offsets);
