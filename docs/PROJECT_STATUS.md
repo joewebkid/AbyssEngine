@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (particle init return ABI and sprite alpha; older subsystem
+Last reviewed: 2026-10-16 (sprite particle update output; older subsystem
 snapshots retain their dates)
+
+## Sprite particle update output (2026-10-16)
+
+The extracted production `ParticleSystemSprite::updateSingle` body now
+has host `-O0/-O2` recording-canvas checks for exact/expired lifetime,
+clear-position and size, size/color/UV/movement call order, frame
+transition and area-exit dispatch. These agree with the Android ARM
+branches; no production C++ changed. The fixture, native `gof2` and
+40 verifier tests (one existing skip) pass. Focused source-shape/
+strict fuzzy stays **92.9%/49.0%**, nonexact. The unchanged full
+corpus remains **4,323/4,524** compared, **201 missing**, **123
+extras**, **93.68%/82.78%** averages, **2,515 linked-exact / 1,075
+byte-exact**; the prior **208/208** ARM build still applies. Actual
+area-exit behavior and live ARM32/GPU output remain unverified. See
+[the update audit](PARTICLE_SPRITE_UPDATE_OUTPUT_ARM_2026-10-16.md).
 
 ## Particle init return ABI and sprite alpha output (2026-10-16)
 

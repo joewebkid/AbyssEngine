@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Sprite particle update output (2026-10-16)
+
+`python tools/run_particle_sprite_alpha_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` now extracts the production sprite
+`updateSingle` body and records exact/expired lifetime behavior,
+canvas call order, size/movement values, UV transition, and area-exit
+dispatch at host `-O0/-O2`. The interpolator, rotation and area-exit
+callee are fixture stubs; their internals are not checked here.
+The fixture, native `gof2` and 40 verifier tests (one existing skip)
+pass. No production C++ changed. Focused report
+`A:/Galaxy on Fire new version/_work/particle_sprite_update_output_focused_20261016.json`
+remains **92.9% source-shape / 49.0% strict fuzzy**, nonexact. The
+last full ARM report `particle_init_void_full_20261016.json` still
+applies: **4,323/4,524** compared, **93.68%/82.78%** averages,
+**2,515 linked-exact / 1,075 byte-exact**. ARM compilation was not
+rerun for this test-only change; the prior 208/208 result remains
+applicable. See [the update audit](PARTICLE_SPRITE_UPDATE_OUTPUT_ARM_2026-10-16.md).
+
 ## Particle init return ABI and sprite alpha output (2026-10-16)
 
 Android sprite and mesh `init` both tail-call virtual `reset` without

@@ -1,4 +1,4 @@
-"""Exercise the production sprite init and alpha calls without a GPU."""
+"""Exercise production sprite init, alpha and update calls without a GPU."""
 
 import argparse
 from pathlib import Path
@@ -24,6 +24,7 @@ def main():
     bodies = "\n".join((
         function(source, "void ParticleSystemSprite::init(uint32_t spriteId, uint16_t idOffset)"),
         function(source, "void ParticleSystemSprite::setAlpha(int index, uint32_t color, float alpha)"),
+        function(source, "void ParticleSystemSprite::updateSingle(int index, float dt)"),
     ))
     with tempfile.TemporaryDirectory(prefix="particle-sprite-alpha-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "smoke.cpp"
