@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene fixed camera step (2026-10-17)
+
+Android ARM at `0x98eec` passes `30` to
+`TargetFollowCamera::update(int)`; the recovered caller now agrees.
+Focused report
+`A:/Galaxy on Fire new version/_work/cutscene_camera_step_focused_20261016.json`
+scores `CutScene::process` at **87.6% source-shape / 43.6% strict
+fuzzy**, up from **87.5% / 42.1%**, nonexact. Native `gof2`, **208/208**
+ARM units, 40 verifier tests (one existing skip), and
+`run_cutscene_time_smoke.py` pass. Full report
+`A:/Galaxy on Fire new version/_work/cutscene_camera_step_full_20261016.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.85%** averages, **2,517 linked-exact / 1,076 byte-exact**.
+Both exact `(unit,symbol)` sets are unchanged from
+`cutscene_time64_full_20261016.json`. See
+[the fixed-step audit](CUTSCENE_CAMERA_FIXED_STEP_ARM_2026-10-17.md).
+
 ## CutScene render and time layout (2026-10-16)
 
 `python tools/run_cutscene_time_smoke.py --cxx

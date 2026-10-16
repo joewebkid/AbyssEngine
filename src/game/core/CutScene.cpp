@@ -142,7 +142,7 @@ void CutScene::process(int /*delta*/) {
     this->prevTime = now;
 
     if (this->followCamera != nullptr)
-        this->followCamera->update((int) this->frameDelta);
+        this->followCamera->update(30);
 
     PaintCanvas *canvas = PaintCanvas::gCanvas;
 

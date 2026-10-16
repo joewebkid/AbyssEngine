@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (CutScene render/time layout; older subsystem
+Last reviewed: 2026-10-17 (CutScene camera fixed step; older subsystem
 snapshots retain their dates)
+
+## CutScene fixed camera step (2026-10-17)
+
+Android ARM `CutScene::process` passes the constant **30** to the
+optional follow camera; the recovered code passed variable frame time.
+The source now uses the confirmed fixed step. Focused process
+source-shape/strict fuzzy rises from **87.5%/42.1% to 87.6%/43.6%**,
+still nonexact. Native `gof2`, **208/208** ARM units, 40 verifier tests
+(one existing skip), and the host time smoke pass. Full corpus stays
+**4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.85%** average source-shape/strict fuzzy, **2,517
+linked-exact / 1,076 byte-exact**, with zero exact-pair losses.
+Live ARM32 camera output remains untested. Next priority: the bounded
+mode-2 camera-matrix path. See
+[the fixed-step audit](CUTSCENE_CAMERA_FIXED_STEP_ARM_2026-10-17.md).
 
 ## CutScene render and time layout (2026-10-16)
 
