@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (base particle random branches; older subsystem
+Last reviewed: 2026-10-16 (base particle UV dispatch; older subsystem
 snapshots retain their dates)
+
+## Base particle UV dispatch and second-frame guard (2026-10-16)
+
+Android ARM checks flags byte `+0x37`, bit 1, before calling
+`IParticleSystem::rotateUVs`; the base emitter tested the wrong full-word
+bit (`0x80000000` instead of `0x02000000`). The source now uses the
+confirmed flag. An extracted-production-body smoke first reproduced the
+failure, then verified both flag values, UV output mapping, and suppression
+of a second emission for flags `0x80` and `0x40`. Native `gof2`, **206/206**
+ARM units and **40** verifier tests (one skip) pass. Focused `emit`
+improves **88.5%/16.7% → 88.8%/19.9%** source-shape/strict fuzzy;
+it is not exact. Full corpus remains **4,323/4,524** compared,
+**201 missing**, **124 extras**, zero skipped, **93.62%/82.69%**
+average source-shape/strict fuzzy, **2,507 linked-exact / 1,074
+byte-exact**, with no exact-pair losses. The UV helper itself and live
+ARM32/GPU output are not independently validated. See
+[the emitter audit](PARTICLE_BASE_EMIT_TIMING_ARM_2026-10-16.md).
 
 ## Base particle random-emission checks (2026-10-16)
 

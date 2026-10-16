@@ -9,6 +9,7 @@ struct EmitProbe : IParticleSystem {
     int8_t ids[3]{-1, -1, -1};
     float updateDeltas[3]{};
     Vector positions[3]{};
+    float uv[3][4]{};
     Vector emittedVelocity{};
     float life = 0, size0 = 0, size1 = 0;
     int updates = 0;
@@ -36,9 +37,15 @@ struct EmitProbe : IParticleSystem {
     void release() override {}
     int getQuadCount() override { return 0; }
     void updateSingle(int, float delta) override { updateDeltas[updates++] = delta; }
-    void setParticle(const Vector &position, float lifetime, uint32_t, float, float, float, float,
+    void setParticle(const Vector &position, float lifetime, uint32_t,
+                     float u0, float u1, float v0, float v1,
                      bool, float startSize, float endSize, const Vector &velocity) override {
-        positions[submissions++] = position;
+        positions[submissions] = position;
+        uv[submissions][0] = u0;
+        uv[submissions][1] = u1;
+        uv[submissions][2] = v0;
+        uv[submissions][3] = v1;
+        ++submissions;
         life = lifetime;
         size0 = startSize;
         size1 = endSize;
@@ -126,6 +133,10 @@ int main() {
     assert(randomPosition.updateDeltas[0] == 0.0f);
     assert(randomPosition.random.seedLow == expectedRandom.seedLow);
     assert(randomPosition.random.seedHigh == expectedRandom.seedHigh);
+    randomPosition.emit(200);
+    assert(randomPosition.submissions == 1);
+    assert(randomPosition.random.seedLow == expectedRandom.seedLow);
+    assert(randomPosition.random.seedHigh == expectedRandom.seedHigh);
 
     def = {};
     def.count = 1;
@@ -150,4 +161,41 @@ int main() {
     assert(spreadPosition.positions[0].z == 3.0f + direction + zSpread);
     assert(spreadPosition.random.seedLow == spreadRandom.seedLow);
     assert(spreadPosition.random.seedHigh == spreadRandom.seedHigh);
+
+    def = {};
+    def.count = 1;
+    def.oneShot = 1;
+    def.uvU0 = 0.1f;
+    def.uvU1 = 0.2f;
+    def.uvV0 = 0.3f;
+    def.uvV1 = 0.4f;
+    EmitProbe rotatedUV(&transform);
+    rotatedUV.flags = 0x02000000u;
+    rotatedUV.currentParticle = 1;
+    float originalUV[4]{def.uvU0, def.uvU1, def.uvV0, def.uvV1};
+    float rotated[4];
+    rotatedUV.rotateUVs(originalUV, 1, rotated);
+    rotatedUV.emit(200);
+    assert(rotatedUV.submissions == 1);
+    assert(rotatedUV.uv[0][0] == rotated[0]);
+    assert(rotatedUV.uv[0][1] == rotated[2]);
+    assert(rotatedUV.uv[0][2] == rotated[1]);
+    assert(rotatedUV.uv[0][3] == rotated[3]);
+
+    EmitProbe unrelatedHighBit(&transform);
+    unrelatedHighBit.flags = 0x80000000u;
+    unrelatedHighBit.currentParticle = 1;
+    unrelatedHighBit.emit(200);
+    assert(unrelatedHighBit.submissions == 1);
+    assert(unrelatedHighBit.uv[0][0] == def.uvU0);
+    assert(unrelatedHighBit.uv[0][1] == def.uvV0);
+    assert(unrelatedHighBit.uv[0][2] == def.uvU1);
+    assert(unrelatedHighBit.uv[0][3] == def.uvV1);
+
+    EmitProbe oneShot(&transform);
+    oneShot.flags = 0x40;
+    oneShot.emit(200);
+    assert(oneShot.submissions == 1 && oneShot.emitEnabled == 0);
+    oneShot.emit(200);
+    assert(oneShot.submissions == 1);
 }

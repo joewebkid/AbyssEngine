@@ -201,7 +201,7 @@ void IParticleSystem::emit(int delta) {
         int current = this->currentParticle;
         this->particleSetIds[current] = (int8_t) set;
         this->particleAges[current] = 0;
-        if (((this->flags >> 24) & 0x80) != 0) {
+        if ((this->flags & 0x02000000u) != 0) {
             uvp = (uint32_t *) rotateUVs((float *) uv, current, (float *) rotated);
         }
 

@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Base particle UV dispatch and second-frame guard (2026-10-16)
+
+`python tools/run_particle_emit_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` checks production-body UV dispatch for
+`0x02000000` and its absence for `0x80000000`, all four UV outputs,
+and suppression of a second emission for flags `0x80` and `0x40`.
+The positive-bit assertion failed before the source correction and
+passes afterward. Native `gof2`, 206/206 ARM units and 40 verifier
+tests (one skip) pass. Focused `emit` is 88.8% source-shape / 19.9%
+strict fuzzy, nonexact; the unchanged `rotateUVs` helper is 95.2% /
+72.0%, nonexact. Focused report:
+`A:/Galaxy on Fire new version/_work/particle_emit_uv_focused_20261016.json`.
+Full report `A:/Galaxy on Fire new version/_work/particle_emit_uv_full_20261016.json`
+compares 4,323/4,524 original unique functions, with 201 missing,
+124 extras, zero skipped, 93.62%/82.69% average source-shape/strict
+fuzzy, 2,507 linked-exact and 1,074 byte-exact. Exact pair sets have
+zero losses or gains against the preceding full report.
+See [the emitter audit](PARTICLE_BASE_EMIT_TIMING_ARM_2026-10-16.md).
+
 ## Base particle random-emission checks (2026-10-16)
 
 `python tools/run_particle_emit_smoke.py --cxx

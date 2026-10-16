@@ -58,8 +58,32 @@ the same compiled source. A fresh focused report is
 and still reads 88.5% source-shape / 16.7% strict fuzzy. Native `gof2`,
 206/206 ARM units and 40 verifier tests (one skip) remain green.
 
-These tests cover selected random cases, timing and ring advancement;
-they do not validate UV rotation, repeated emission over many frames,
-all particle-lifetime branches, GPU output or live ARM32 behavior. Next
-work should examine those branches and their call targets before
-attempting shape-only changes.
+At that stage, the tests covered selected random cases, timing and ring
+advancement, but not UV dispatch, repeated emission over many frames,
+all particle-lifetime branches, GPU output or live ARM32 behavior.
+
+The subsequent UV dispatch audit found a concrete flag mismatch in the
+same production body. Android ARM loads the flags byte at `+0x37`,
+shifts it left by 30 and calls `rotateUVs` at `0x1820bc` only when bit 1
+is set (`0x02000000` in the full flags word). The base-emitter C++ had
+instead tested `0x80000000`; the neighboring `emitManual` body already
+used `0x02000000`. A production-body smoke failed on the intended bit
+before the correction and now checks both the intended bit and the
+unrelated high bit, including all four UV outputs. It also checks that
+flags `0x80` and `0x40` suppress a second emission as indicated by ARM
+at `0x181e22`–`0x181e2a` and `0x181f28`–`0x181f2c`.
+
+Native `gof2`, 206/206 ARM units and 40 verifier tests (one skip) pass.
+Focused `IParticleSystem::emit` moves from 88.5%/16.7% to
+**88.8% source-shape / 19.9% strict fuzzy**, still nonexact.
+`rotateUVs` itself remains **95.2% / 72.0%**, nonexact; this package
+confirms its dispatch bit, not the independent equivalence of its
+algorithm. Focused report:
+`A:/Galaxy on Fire new version/_work/particle_emit_uv_focused_20261016.json`.
+The corrected global corpus report is
+`A:/Galaxy on Fire new version/_work/particle_emit_uv_full_20261016.json`.
+It compares **4,323/4,524** original unique functions, with **201 missing**,
+**124 extras**, zero skipped, **93.62%/82.69%** average
+source-shape/strict fuzzy, **2,507 linked-exact** and **1,074 byte-exact**.
+The exact `(unit, symbol)` pair sets have zero losses or gains against
+the preceding full report.
