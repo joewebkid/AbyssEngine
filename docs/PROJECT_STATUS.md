@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ObjectGun render math; older subsystem
+Last reviewed: 2026-10-16 (ObjectGun update math; older subsystem
 snapshots retain their dates)
+
+## ObjectGun update math (2026-10-16)
+
+Android ARM confirms typed vector-returning math calls in
+`ObjectGun::update`: the first rotated offset moves the geometry,
+the non-turret direction uses the player matrix while up uses the
+camera matrix, and the turret uses the ordered product of two
+`PlayerEgo` geometry matrices. The previous free shims had wrong
+signatures and the previous matrix helper discarded its product.
+Extracted production fragments check the direction inputs and
+turret matrix order under host `-O0/-O2`. Native `gof2`, **207/207**
+ARM units, and **40** verifier tests (one skip) pass. Focused update
+source-shape/strict fuzzy **87.8%/29.0% -> 87.9%/31.0%**, still
+nonexact. Full corpus: **4,323/4,524** compared, **201 missing**,
+**124 extras**, no skipped or wrong signatures, **93.66%/82.75%**
+average source-shape/strict fuzzy, **2,510 linked-exact / 1,074
+byte-exact**, with zero exact gains/losses. Explosion timing and
+live ARM32 behavior remain unverified. See
+[the update math audit](OBJECTGUN_UPDATE_MATH_ARM_2026-10-16.md).
 
 ## ObjectGun render math (2026-10-16)
 

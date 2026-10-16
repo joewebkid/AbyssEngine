@@ -62,18 +62,6 @@ static_assert(offsetof(EgoPlayerView, orientation) == 0x40,
               "EgoPlayerView.orientation must sit at 0x40");
 #endif
 
-namespace AbyssEngine {
-    namespace AEMath {
-        void MatrixMultiply(const Matrix &, const Matrix &);
-    }
-}
-
-void MatrixRotateVector(void *out, const void *matrix, const void *vec);
-
-void MatrixGetDir(Vector *out, const Matrix *matrix);
-
-void MatrixGetUp(Vector *out, const Matrix *matrix);
-
 void ObjectGun_setEnemies_impl(void *items);
 
 ObjectGun::ObjectGun(int /*unused*/, Gun *gun, int mesh, uint32_t /*param*/, Level *level) {
@@ -267,8 +255,7 @@ void ObjectGun::update(int dt) {
         offsets.x = gun->offset.x;
         offsets.y = gun->offset.y;
         offsets.z = gun->offset.z + 8.0f;
-        MatrixRotateVector(&workMatrix, &playerMatrix, &offsets);
-        position += *(const Vector *) &workMatrix;
+        position += AbyssEngine::AEMath::MatrixRotateVector(playerMatrix, offsets);
         this->geometry->setPosition(position);
 
         transform = static_cast<AbyssEngine::Transform *>(
@@ -279,13 +266,17 @@ void ObjectGun::update(int dt) {
             PaintCanvas *paint = *canvas;
             unsigned camera = paint->CameraGetCurrent();
             cameraMatrix = *static_cast<const Matrix *>(paint->CameraGetLocal(camera));
-            MatrixGetDir(&dir, &cameraMatrix);
-            MatrixGetUp(&up, &cameraMatrix);
+            dir = AbyssEngine::AEMath::MatrixGetDir(playerMatrix);
+            up = AbyssEngine::AEMath::MatrixGetUp(cameraMatrix);
             this->geometry->setDirection(dir, up);
             goto after_geometry;
         }
 
-        AbyssEngine::AEMath::MatrixMultiply(workMatrix, this->geometry->getMatrix());
+        PlayerEgo *ego = (PlayerEgo *) player;
+        // ARM 0x15fb16-0x15fb2a: multiply geometry matrices at ego +0x2c, then +0x28.
+        workMatrix = AbyssEngine::AEMath::operator*(
+            static_cast<AEGeometry *>(ego->field_0x2c)->getMatrix(),
+            static_cast<AEGeometry *>(ego->turretGeometry)->getMatrix());
 
         gun = this->gun;
         int weapon = gun->itemIndex;
@@ -324,9 +315,9 @@ void ObjectGun::update(int dt) {
                 offsets.y = gun->field_0xa7 == 0 ? 2.5f : -2.5f;
             }
         }
-        MatrixRotateVector(&cameraMatrix, &workMatrix, &offsets);
+        Vector rotatedOffset = AbyssEngine::AEMath::MatrixRotateVector(workMatrix, offsets);
         this->geometry->setMatrix(workMatrix);
-        this->geometry->translate(*(Vector *) &cameraMatrix);
+        this->geometry->translate(rotatedOffset);
     }
 
 after_geometry:

@@ -12,7 +12,15 @@ struct Matrix {
         return *this;
     }
 };
+struct Vector { int marker = 0; };
 namespace AbyssEngine { namespace AEMath {
+Matrix operator*(const Matrix &lhs, const Matrix &rhs) {
+    Matrix result;
+    result.marker = lhs.marker * 100 + rhs.marker;
+    return result;
+}
+Vector MatrixGetDir(const Matrix &matrix) { return {matrix.marker * 10 + 1}; }
+Vector MatrixGetUp(const Matrix &matrix) { return {matrix.marker * 10 + 2}; }
 Matrix MatrixSetRotation(Matrix &matrix, float, float, float) {
     matrix.rotated = true;
     return matrix;
@@ -96,8 +104,18 @@ PaintCanvas *Globals::Canvas = nullptr;
 unsigned char Globals::iPad = 0;
 
 struct Gun { int delayActive = 0; };
-struct AEGeometry { unsigned transform = 77; };
+struct AEGeometry {
+    unsigned transform = 77;
+    Matrix matrix;
+    int directionMarker = 0, upMarker = 0;
+    Matrix &getMatrix() { return matrix; }
+    void setDirection(const Vector &dir, const Vector &up) {
+        directionMarker = dir.marker;
+        upMarker = up.marker;
+    }
+};
 struct Player { float empPointsF = 0.2f, maxEmpPointsF = 0.3f; };
+struct PlayerEgo { void *turretGeometry = nullptr, *field_0x2c = nullptr; };
 struct EgoPlayerView { Matrix orientation; };
 
 struct ObjectGun {
@@ -109,6 +127,8 @@ struct ObjectGun {
     float scaleX = 0.6f, scaleY = 0.7f, scaleZ = 0.8f;
     void replaceGun(unsigned mesh, int unused);
     void applyInactive();
+    void applyCameraDirection(Matrix &playerMatrix, Matrix &cameraMatrix);
+    void applyTurretMatrix(PlayerEgo *player, Matrix &workMatrix);
     void applyRenderScale();
     void applyEgoRotation(EgoPlayerView *playerView, Player *player,
                           Matrix &local, Matrix &scaleMatrix);
@@ -157,6 +177,22 @@ int main() {
            second.transform.argument == nullptr);
     assert(third.transform.calls == 1 && third.transform.mode == 1 &&
            third.transform.argument == nullptr);
+
+    Matrix playerMatrix, cameraMatrix;
+    playerMatrix.marker = 3;
+    cameraMatrix.marker = 5;
+    gun.applyCameraDirection(playerMatrix, cameraMatrix);
+    assert(geometry.directionMarker == 31 && geometry.upMarker == 52);
+
+    AEGeometry turretRoot, turretView;
+    turretRoot.matrix.marker = 7;
+    turretView.matrix.marker = 9;
+    PlayerEgo ego;
+    ego.field_0x2c = &turretRoot;
+    ego.turretGeometry = &turretView;
+    Matrix combined;
+    gun.applyTurretMatrix(&ego, combined);
+    assert(combined.marker == 709);
 
     Globals::iPad = 0;
     gun.applyRenderScale();

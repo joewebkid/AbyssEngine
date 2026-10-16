@@ -33,6 +33,24 @@ def main():
         f"{inactive}\n"
         "}\n"
     )
+    camera_start = "            dir = AbyssEngine::AEMath::MatrixGetDir(playerMatrix);"
+    camera_direction = camera_start + source.split(camera_start, 1)[1].split(
+        "\n            goto after_geometry;", 1)[0]
+    camera_body = (
+        "void ObjectGun::applyCameraDirection(Matrix &playerMatrix, "
+        "Matrix &cameraMatrix) {\n"
+        "    Vector dir, up;\n"
+        f"{camera_direction}\n"
+        "}\n"
+    )
+    turret_start = "        PlayerEgo *ego = (PlayerEgo *) player;"
+    turret_matrix = turret_start + source.split(turret_start, 1)[1].split(
+        "\n\n        gun = this->gun;", 1)[0]
+    turret_body = (
+        "void ObjectGun::applyTurretMatrix(PlayerEgo *player, Matrix &workMatrix) {\n"
+        f"{turret_matrix}\n"
+        "}\n"
+    )
     render_scale = "                if (Globals::iPad != 0)" + source.split(
         "                if (Globals::iPad != 0)", 1)[1].split(
         "\n\n                if (this->gun->weaponType", 1)[0]
@@ -62,8 +80,8 @@ def main():
         generated = Path(temp) / "smoke.cpp"
         generated.write_text(fixture.replace(
             "// PRODUCTION_METHODS",
-            "\n".join((body, inactive_body, render_scale_body, render_ego_body,
-                       render_final_body))))
+            "\n".join((body, inactive_body, camera_body, turret_body,
+                       render_scale_body, render_ego_body, render_final_body))))
         for optimization in ("-O0", "-O2"):
             exe = Path(temp) / f"smoke-{optimization[2:]}.exe"
             subprocess.run([args.cxx, "-std=gnu++17", optimization,
