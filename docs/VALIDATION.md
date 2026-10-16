@@ -4,6 +4,27 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Sprite spawn size argument (2026-10-16)
+
+`python tools/run_particle_sprite_alpha_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` extracts the production sprite
+`setParticle` body. The size assertion fails before the patch with
+`p2=23.75`, `p9=99.25` and passes afterward at `-O0/-O2`; position,
+UV, color mask and 16-bit id calls also pass. Native `gof2`, 208/208
+ARM units and 40 verifier tests (one existing skip) pass. Focused
+reports `A:/Galaxy on Fire new version/_work/particle_sprite_spawn_before_20261016.json`
+and `particle_sprite_spawn_after_20261016.json` show source-shape/
+strict fuzzy **90.8%/43.5% → 89.1%/38.4%**, nonexact. The decline
+does not justify reverting the ARM-confirmed behavior. See
+[the spawn audit](PARTICLE_SPRITE_SPAWN_SIZE_ARM_2026-10-16.md).
+Full report
+`A:/Galaxy on Fire new version/_work/particle_sprite_spawn_full_20261016.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+zero skipped/wrong signatures, **93.68%/82.78%** average source-shape/
+strict fuzzy, **2,515 linked-exact / 1,075 byte-exact**. Both exact
+`(unit,symbol)` sets are unchanged against
+`particle_init_void_full_20261016.json`.
+
 ## Sprite particle area-exit behavior (2026-10-16)
 
 `python tools/run_particle_sprite_alpha_smoke.py --cxx

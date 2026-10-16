@@ -252,7 +252,7 @@ void ParticleSystemSprite::updateAreaExitParticle(int index, float dt) {
 void ParticleSystemSprite::setParticle(const Vector &pos, float p2, uint32_t color, float p4,
                                        float p5, float p6, float p7, bool clearColor, float p9,
                                        float p10, const Vector &velocity) {
-    (void) p2;
+    (void) p9;
     (void) p10;
     (void) velocity;
 
@@ -262,7 +262,8 @@ void ParticleSystemSprite::setParticle(const Vector &pos, float p2, uint32_t col
 
     pc->SpriteSystemSetPosition(handle, id, pos.x, pos.y, pos.z);
 
-    pc->SpriteSystemSetSize(handle, id, (short) (int) p9);
+    // Android ARM 0x182cb0 converts the r2 scale argument, not the later p9.
+    pc->SpriteSystemSetSize(handle, id, (short) (int) p2);
 
     pc->SpriteSystemSetUv(handle, id, p4, p5, p6, p7);
 

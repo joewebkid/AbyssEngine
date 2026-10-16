@@ -28,6 +28,7 @@ using AbyssEngine::AEMath::Matrix;
 using AbyssEngine::AEMath::VectorSignedToFloat;
 
 constexpr float kMillisecondsToSeconds = 0.001f;
+constexpr float kColorChannelScale = 1.0f / 255.0f;
 static float g_uvRoundBias = 1.0f / 1024.0f;
 
 struct ParticleSettings {
@@ -102,6 +103,7 @@ struct IParticleSystem {
     uint8_t alphaFade = 0;
     uint8_t initialized = 0;
     uint32_t flags = 0;
+    int currentParticle = 0;
     int ages[2]{0, 0};
     int *particleAges = ages;
     int8_t setIds[2]{0, 0};
@@ -135,6 +137,10 @@ struct ParticleSystemSprite : IParticleSystem {
     void setAlpha(int index, uint32_t color, float alpha);
     void updateSingle(int index, float dt);
     void updateAreaExitParticle(int index, float dt);
+    void setParticle(const Vector &pos, float p2, uint32_t color,
+                     float p4, float p5, float p6, float p7,
+                     bool clearColor, float p9, float p10,
+                     const Vector &velocity);
 };
 
 // PRODUCTION_METHODS
@@ -266,4 +272,33 @@ int main() {
     innerCore.recording.currentPosition = {2.5f, 3, 4};
     innerCore.updateAreaExitParticle(0, 0.0f);
     assert(near(innerCore.recording.colors[0].b, 0.0f));
+
+    ParticleSystemSprite spawn;
+    spawn.resourceOffset = 65535;
+    spawn.currentParticle = 1;
+    const Vector unusedVelocity{1, 2, 3};
+    spawn.setParticle({3, 4, 5}, 23.75f, 0x21426384u,
+                      0.1f, 0.2f, 0.6f, 0.8f, false,
+                      99.25f, 7.0f, unusedVelocity);
+    assert(spawn.recording.order == std::vector<char>({'P', 'S', 'U', 'C'}));
+    assert(spawn.recording.positions[0].id == 0);
+    assert(spawn.recording.sizes[0].id == 0);
+    assert(spawn.recording.sizes[0].value == 23);
+    assert(near(spawn.recording.currentPosition.x, 3));
+    assert(near(spawn.recording.currentPosition.y, 4));
+    assert(near(spawn.recording.currentPosition.z, 5));
+    assert(near(spawn.recording.uvs[0].u0, 0.1f));
+    assert(near(spawn.recording.uvs[0].v0, 0.2f));
+    assert(near(spawn.recording.uvs[0].u1, 0.6f));
+    assert(near(spawn.recording.uvs[0].v1, 0.8f));
+    assert(near(spawn.recording.colors[0].a, 0x21 / 255.0f));
+    assert(near(spawn.recording.colors[0].r, 0x42 / 255.0f));
+    assert(near(spawn.recording.colors[0].g, 0x63 / 255.0f));
+    assert(near(spawn.recording.colors[0].b, 0x84 / 255.0f));
+
+    ParticleSystemSprite maskedSpawn;
+    maskedSpawn.setParticle({0, 0, 0}, 5.0f, 0x21426384u,
+                            0, 0, 1, 1, true, 99.0f, 0, unusedVelocity);
+    assert(maskedSpawn.recording.sizes[0].value == 5);
+    assert(maskedSpawn.recording.colors[0].b == 0.0f);
 }

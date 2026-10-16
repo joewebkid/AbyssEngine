@@ -26,6 +26,7 @@ def main():
         function(source, "void ParticleSystemSprite::setAlpha(int index, uint32_t color, float alpha)"),
         function(source, "void ParticleSystemSprite::updateSingle(int index, float dt)"),
         function(source, "void ParticleSystemSprite::updateAreaExitParticle(int index, float dt)"),
+        function(source, "void ParticleSystemSprite::setParticle(const Vector &pos, float p2, uint32_t color, float p4,"),
     ))
     with tempfile.TemporaryDirectory(prefix="particle-sprite-alpha-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "smoke.cpp"

@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (sprite area-exit behavior; older subsystem
+Last reviewed: 2026-10-16 (sprite spawn size argument; older subsystem
 snapshots retain their dates)
+
+## Sprite spawn size argument (2026-10-16)
+
+Android ARM `ParticleSystemSprite::setParticle` converts its `r2`
+second argument (`p2`) for SetSize, not later stack argument `p9`.
+The old source used `p9`; an extracted-body `-O0` test failed with
+different values and now passes at `-O0/-O2` using `p2`. Position,
+UV, RGBA, clear-color and 16-bit id output are also checked. Native
+`gof2`, **208/208** ARM units and 40 verifier tests (one existing
+skip) pass. Focused source-shape/strict fuzzy declines from
+**90.8%/43.5% → 89.1%/38.4%**, nonexact; the semantic correction
+is kept rather than inflating a code-shape metric with the wrong
+input. Live ARM32/GPU output and full caller argument naming remain
+unverified. The full corpus remains **4,323/4,524** compared,
+**201 missing**, **123 extras**, **93.68%/82.78%** averages,
+**2,515 linked-exact / 1,075 byte-exact**, with zero exact-pair
+losses against the previous report. See
+[the spawn audit](PARTICLE_SPRITE_SPAWN_SIZE_ARM_2026-10-16.md).
 
 ## Sprite particle area-exit behavior (2026-10-16)
 
