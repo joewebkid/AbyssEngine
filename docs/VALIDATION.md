@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene mode-2 camera initialization (2026-10-17)
+
+`python tools/run_cutscene_init_mode2_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2` on the extracted
+production setup calls. Native `gof2`, **208/208** ARM units, 40
+verifier tests (one existing skip), and the prior CutScene camera/time
+smokes pass. Focused report
+`A:/Galaxy on Fire new version/_work/cutscene_init_mode2_focused_20261017.json`
+scores `initialize` at **88.9% source-shape / 36.2% strict fuzzy**,
+up from **86.9% / 35.7%**, nonexact. Full report
+`A:/Galaxy on Fire new version/_work/cutscene_init_mode2_full_20261017.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.85%** rounded averages, **2,517 linked-exact /
+1,076 byte-exact**. Exact `(unit,symbol)` sets are unchanged from
+`cutscene_mode2_camera_full_20261017.json`. See
+[the initialization audit](CUTSCENE_INIT_MODE2_CAMERA_ARM_2026-10-17.md).
+
 ## CutScene mode-2 camera matrix (2026-10-17)
 
 `python tools/run_cutscene_mode2_camera_smoke.py --cxx

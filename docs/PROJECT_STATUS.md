@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (CutScene mode-2 camera matrix; older subsystem
+Last reviewed: 2026-10-17 (CutScene mode-2 camera initialization; older subsystem
 snapshots retain their dates)
+
+## CutScene mode-2 camera initialization (2026-10-17)
+
+Android ARM and REA confirm the output camera ID at `CutScene+0x74`,
+perspective `0.92/200/200000`, bounded random draws, matrix translation
+and `-0.7853982` Y rotation. The recovered camera-0/placeholder path
+is replaced. Focused `initialize` source-shape/strict fuzzy rises from
+**86.9%/35.7% to 88.9%/36.2%**, still nonexact. Native `gof2`,
+**208/208** ARM units, 40 verifier tests (one existing skip) and
+`-O0/-O2` extracted setup tests pass. Full corpus remains
+**4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.85%** rounded averages and **2,517 linked-exact /
+1,076 byte-exact**, with zero exact-pair losses. Live ARM32/GPU output
+is untested. Next priority: separate mode-23 camera setup. See
+[the mode-2 initialization audit](CUTSCENE_INIT_MODE2_CAMERA_ARM_2026-10-17.md).
 
 ## CutScene mode-2 camera matrix (2026-10-17)
 

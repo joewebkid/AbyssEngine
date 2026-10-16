@@ -24,7 +24,6 @@ static float CutScene_proc_tx0, CutScene_proc_tz0;
 static float CutScene_proc_rx0, CutScene_proc_rz0, CutScene_proc_rz1;
 static float CutScene_fogColorMode17, CutScene_fogDensityMode17;
 static float CutScene_fogColorMode4, CutScene_fogDensityMode4;
-static float CutScene_initStartXRotMode2;
 static float CutScene_persp_fov, CutScene_persp_znear, CutScene_persp_zfar;
 static float CutScene_fogDensity_mode17;
 static float CutScene_fogDensity_mode4;
@@ -423,20 +422,18 @@ void CutScene::initialize() {
 
     if (this->mode == 2) {
         canvas->CameraCreate(this->cameraId74);
-        canvas->CameraSetPerspective(0, CutScene_persp_fov, CutScene_persp_znear, CutScene_persp_zfar);
+        canvas->CameraSetPerspective(this->cameraId74, 0.92f, 200.0f, 200000.0f);
         canvas->CameraSetCurrent(this->cameraId74);
-        char tmp[0x3c];
-        memcpy(tmp, canvas->CameraGetLocal(0), 0x3c);
+        Matrix cameraLocal = *static_cast<const Matrix *>(canvas->CameraGetLocal(this->cameraId74));
 
         AERandom *rng = AERandom::gRandom;
-        int rx = rng->nextInt();
-        int ry = rng->nextInt();
-        float tx = VectorSignedToFloat(rx - 20000, 0);
-        float ty = VectorSignedToFloat(ry + 40000, 0);
-        MatrixSetTranslation(localMatrix, tx, ty, 0.0f);
-        this->cameraRotX = CutScene_initStartXRotMode2;
-        MatrixSetRotation(localMatrix, 0.0f, 0.0f, 0.0f);
-        canvas->CameraSetLocal(0, *(const Matrix *) (uintptr_t) this->cameraId74);
+        int rx = rng->nextInt(20000);
+        int ry = rng->nextInt(60000);
+        AbyssEngine::AEMath::MatrixSetTranslation(cameraLocal, (float) (rx - 20000),
+                                                   0.0f, (float) (ry + 40000));
+        this->cameraRotX = -0.7853982f;
+        AbyssEngine::AEMath::MatrixSetRotation(cameraLocal, 0.0f, this->cameraRotX, 0.0f);
+        canvas->CameraSetLocal(this->cameraId74, cameraLocal);
 
         long long pt = Status::gStatus->getPlayingTime();
         Array<KIPlayer *> *enemies = this->level->getEnemies();
