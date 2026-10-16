@@ -4,15 +4,16 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
-## Base particle-emission timing (2026-10-16)
+## Base particle-emission position/timing (2026-10-16)
 
 `python tools/run_particle_emit_smoke.py --cxx
 C:/msys64/ucrt64/bin/g++.exe` compiles the production
-`IParticleSystem::emit` body and checks speed-based update timing at
-150 ms and 200 ms frame lengths. Native `gof2`, 206/206 ARM units and
+`IParticleSystem::emit` body and checks particle position and update
+timing at 150 ms and 200 ms frame lengths, plus configured spacing.
+Native `gof2`, 206/206 ARM units and
 40 verifier tests (one skip) pass. Focused `emit` is 88.5%
-source-shape, 17.5% strict fuzzy, nonexact. Full report
-`A:/Galaxy on Fire new version/_work/particle_emit_timing_full_20261016.json`
+source-shape, 16.7% strict fuzzy, nonexact. Full report
+`A:/Galaxy on Fire new version/_work/particle_emit_step_full_20261016.json`
 keeps 4,323/4,524 original unique comparisons, 93.62%/82.69%
 average source-shape/strict fuzzy, 2,507 linked-exact and 1,074
 byte-exact. Exact pair sets have zero losses or gains against the

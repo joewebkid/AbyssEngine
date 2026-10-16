@@ -184,11 +184,11 @@ void IParticleSystem::emit(int delta) {
     *(Vector *) baseDelta = *(const Vector *) matrixPos - *(const Vector *) travelDiv;
     float spreadScale = 0.0f;
     float pathScale = 0.0f;
-    float pathCorrection = 1.5f;
+    float timingStep = 1.5f;
     if ((this->flags & 0xc0) == 0) {
         float y = bits_float(0x5f3759df - (float_bits(speed2) >> 1));
-        pathCorrection = speed2 * -0.5f * y * y + 1.5f;
-        pathScale = pathCorrection * y;
+        timingStep = speed2 * -0.5f * y * y + 1.5f;
+        pathScale = timingStep * y;
     }
 
     ((uint32_t *) uv)[0] = *(uint32_t *) (def + 0x88);
@@ -249,11 +249,11 @@ void IParticleSystem::emit(int delta) {
         zero_vec(particlePos);
         if ((this->flags & 0xc0) == 0) {
             if (distance >= 1.0f) {
-                float step = ((this->flags & 0x10) != 0)
-                                 ? *(float *) (def + 0x2c)
-                                 : distance / (float) emitCount;
-                *(Vector *) tmp = *(const Vector *) travelDiv * (phase * step);
-                *(Vector *) tmp2 = *(const Vector *) tmp * pathScale;
+                timingStep = ((this->flags & 0x10) != 0)
+                                     ? *(float *) (def + 0x2c)
+                                     : distance / (float) emitCount;
+                *(Vector *) tmp = *(const Vector *) travelDiv * (phase * timingStep);
+                *(Vector *) tmp2 = *(const Vector *) tmp * invLen;
                 *(Vector *) (particlePos) = *(Vector *) (tmp2);
                 *(Vector *) tmp2 = *(const Vector *) baseDelta + *(const Vector *) particlePos;
                 *(Vector *) (particlePos) = *(Vector *) (tmp2);
@@ -340,7 +340,7 @@ void IParticleSystem::emit(int delta) {
             slot += *(Vector *) (tmp2);
         }
 
-        float remaining = pathScale * pathCorrection * ((float) emitCount - phase) * 1000.0f;
+        float remaining = pathScale * timingStep * ((float) emitCount - phase) * 1000.0f;
         if (remaining > fdelta) {
             remaining = fdelta;
         }

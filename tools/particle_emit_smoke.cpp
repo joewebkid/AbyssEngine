@@ -8,7 +8,9 @@ struct EmitProbe : IParticleSystem {
     int ages[3]{-1, -1, -1};
     int8_t ids[3]{-1, -1, -1};
     float updateDeltas[3]{};
+    Vector positions[3]{};
     int updates = 0;
+    int submissions = 0;
 
     explicit EmitProbe(const Matrix *transform) {
         matrix = transform;
@@ -32,8 +34,10 @@ struct EmitProbe : IParticleSystem {
     void release() override {}
     int getQuadCount() override { return 0; }
     void updateSingle(int, float delta) override { updateDeltas[updates++] = delta; }
-    void setParticle(const Vector &, float, uint32_t, float, float, float, float,
-                     bool, float, float, const Vector &) override {}
+    void setParticle(const Vector &position, float, uint32_t, float, float, float, float,
+                     bool, float, float, const Vector &) override {
+        positions[submissions++] = position;
+    }
 };
 
 int main() {
@@ -48,20 +52,26 @@ int main() {
     EmitProbe probe(&transform);
     probe.emit(200);
     assert(probe.updates == 2);
+    assert(probe.submissions == 2);
     assert(probe.currentParticle == 2);
+    assert(std::fabs(probe.positions[0].x + 1.0f) < 0.01f);
+    assert(std::fabs(probe.positions[1].x) < 0.01f);
 
-    // ARM: S17 is the speed Newton factor and S26 is its inverse-speed
-    // estimate. Travel distance must not enter this update time.
-    float speed2 = 100.0f;
-    union { float f; int i; } bits{speed2};
-    bits.i = 0x5f3759df - (bits.i >> 1);
-    float correction = speed2 * -0.5f * bits.f * bits.f + 1.5f;
-    float expected = (correction * bits.f) * correction * 1000.0f;
-    assert(std::fabs(probe.updateDeltas[0] - expected) < 0.001f);
+    // ARM reuses S17 for the emission step before calculating update time.
+    assert(std::fabs(probe.updateDeltas[0] - 100.0f) < 0.5f);
     assert(probe.updateDeltas[1] == 0.0f);
 
     EmitProbe shorterFrame(&transform);
     shorterFrame.emit(150);
     assert(shorterFrame.updates == 2);
-    assert(std::fabs(shorterFrame.updateDeltas[0] - expected) < 0.001f);
+    assert(std::fabs(shorterFrame.updateDeltas[0] - 75.0f) < 0.5f);
+    assert(std::fabs(shorterFrame.positions[0].x + 0.75f) < 0.01f);
+
+    def.flLifetime = 0.75f;
+    EmitProbe fixedSpacing(&transform);
+    fixedSpacing.flags = 0x10;
+    fixedSpacing.emit(200);
+    assert(fixedSpacing.updates == 2);
+    assert(std::fabs(fixedSpacing.updateDeltas[0] - 75.0f) < 0.5f);
+    assert(std::fabs(fixedSpacing.positions[0].x + 1.25f) < 0.01f);
 }

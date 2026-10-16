@@ -1,17 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (base particle-emission timing; older subsystem
+Last reviewed: 2026-10-16 (base particle position/timing; older subsystem
 snapshots retain their dates)
 
-## Base particle-emission timing (2026-10-16)
+## Base particle-emission position/timing (2026-10-16)
 
-REA/Android ARM analysis of `IParticleSystem::emit` confirmed that the
-per-particle update delay uses the Newton factor from emitter speed,
-not the inverse length of frame travel. The C++ formula is corrected,
-and an extracted-production-body smoke checks equal speed-based delay
-across two frame lengths. Native `gof2`, **206/206** ARM units, and **40**
-verifier tests (one skip) pass. Focused `emit` remains **88.5%**
-source-shape and nonexact; strict fuzzy moves **17.9% → 17.5%**.
+REA/Android ARM analysis of `IParticleSystem::emit` confirms that
+particle position uses inverse frame-travel length, while update time
+uses inverse emitter speed times a retained emission step. ARM reuses
+the step register; the previous timing audit missed this overwrite and
+has been corrected. An extracted-production-body smoke checks both
+position and time across two frame lengths and the configured-step
+branch. Native `gof2`, **206/206** ARM units, and **40** verifier tests
+(one skip) pass. Focused `emit` remains **88.5%** source-shape and
+nonexact; strict fuzzy moves **17.5% → 16.7%**.
 Full corpus remains **4,323/4,524** compared, **201 missing**, **124
 extras**, zero skipped, **93.62%/82.69%** average source-shape/strict
 fuzzy, and **2,507 linked-exact / 1,074 byte-exact**. Exact pair sets
