@@ -245,16 +245,17 @@ void CutScene::process(int /*delta*/) {
         for (unsigned int i = 0; i < arr->size(); i++) {
             Array<KIPlayer *> *en = this->level->getEnemies();
             if ((*en)[i] != nullptr) {
-                AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
-                t->Update((long long) (unsigned) this->frameDelta, (bool) (unsigned char) this->frameDelta);
+                AEGeometry *geom = (*this->level->getEnemies())[i]->geometry;
+                AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(geom->transform);
+                t->Update((long long) (int32_t) this->frameDelta, false);
             }
             arr = this->level->getEnemies();
         }
 
         int race = Status::gStatus->getSystem()->getRace();
         if (race == 0) {
-            AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
-            t->Update((long long) (unsigned) this->frameDelta, (bool) (unsigned char) this->frameDelta);
+            AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geom30->transform);
+            t->Update((long long) (int32_t) this->frameDelta, false);
         } else {
             int race1 = Status::gStatus->getSystem()->getRace();
             if (race1 == 1) {

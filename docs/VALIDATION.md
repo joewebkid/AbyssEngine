@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene mode-4 common process transforms (2026-10-17)
+
+`python tools/run_cutscene_process_mode4_common_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2` for a null
+middle enemy and ordinary/high-bit frame deltas. Native `gof2`,
+**208/208** ARM units, 40 verifier tests (one existing skip), and the
+preceding mode-23 process smokes pass. Focused report
+`A:/Galaxy on Fire new version/_work/cutscene_process_mode4_common_after_20261017.json`
+scores `process` at **90.2% source-shape / 53.2% strict fuzzy**,
+up from **90.1% / 50.8%** in
+`cutscene_process_mode23_anim_after_20261017.json`, still nonexact.
+Full report
+`A:/Galaxy on Fire new version/_work/cutscene_process_mode4_common_full_20261017.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.85%** rounded averages, **2,517 linked-exact / 1,076
+byte-exact**. Exact `(unit,symbol)` sets are unchanged from
+`cutscene_process_mode23_anim_full_20261017.json`. See
+[the mode-4 common audit](CUTSCENE_PROCESS_MODE4_COMMON_ARM_2026-10-17.md).
+
 ## CutScene mode-23 process animation (2026-10-17)
 
 `python tools/run_cutscene_process_mode23_animation_smoke.py --cxx
