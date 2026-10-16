@@ -26,7 +26,7 @@ def main():
                         "-fdata-sections", "-Isrc", *map(str, sources),
                         "-Wl,--gc-sections", "-o", str(exe)], cwd=ROOT, check=True)
         subprocess.run([str(exe)], cwd=ROOT, check=True)
-    print("Matrix constructor/product host smoke: OK")
+    print("Native matrix/vector host smoke: OK")
 
 
 if __name__ == "__main__":

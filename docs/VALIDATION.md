@@ -4,6 +4,27 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## AEGeometry direction basis (2026-10-16)
+
+`python tools/run_aegeometry_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` now exercises nineteen production
+AEGeometry bodies. The new direction cases check nonunit and zero-up
+inputs, three unequal scale values, preserved translation, and the
+original column layout. `python tools/run_native_math_link_smoke.py
+--cxx C:/msys64/ucrt64/bin/g++.exe` checks the actual vector
+cross/normalize and matrix-scaling implementations for these inputs.
+Native `gof2`, 206/206 ARM units and 40 verifier tests (one skip)
+pass. Focused `setDirection` strict fuzzy/source-shape improves from
+45.1%/95.6% to 85.4%/100%; it is not exact. Full report
+`A:/Galaxy on Fire new version/_work/aegeometry_direction_full_20261016.json`
+compares 4,323/4,524 unique original functions at 93.60%/82.68%
+average source-shape/strict fuzzy, 2,507 linked-exact and 1,074
+byte-exact. Exact `(unit,symbol)` pair comparison against the previous
+full report shows zero losses/gains. The separate linked-function
+call audit records 2,392 matches, 53 mismatch candidates and 647
+unresolved; this nonexact method's ten calls were checked manually.
+See [the focused audit](AEGEOMETRY_DIRECTION_ARM_2026-10-16.md).
+
 ## AEGeometry translation axes (2026-10-16)
 
 `python tools/run_aegeometry_canvas_calls_smoke.py --cxx

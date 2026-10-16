@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cmath>
 #include <cstdint>
 
 struct Vector { float x, y, z; };
@@ -18,9 +19,23 @@ Matrix MatrixSetTranslation(Matrix &m, float x, float y, float z) {
 namespace AbyssEngine { namespace AEMath {
 enum RotationOrder { ROTATION_ORDER_XYZ = 0 };
 int rotationCalls = 0, scalingCalls = 0;
+int crossCalls = 0, normalizeCalls = 0;
 Matrix *rotationMatrix = nullptr, *scalingMatrix = nullptr;
 float angles[3]{}, scales[3]{};
 int lastOrder = -1;
+Vector VectorCross(const Vector &lhs, const Vector &rhs) {
+    ++crossCalls;
+    return {lhs.y * rhs.z - lhs.z * rhs.y,
+            lhs.z * rhs.x - lhs.x * rhs.z,
+            lhs.x * rhs.y - lhs.y * rhs.x};
+}
+Vector VectorNormalize(const Vector &value) {
+    ++normalizeCalls;
+    float length = std::sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
+    if (length == 0.0f)
+        return {0.0f, 1.0f, 0.0f};
+    return {value.x / length, value.y / length, value.z / length};
+}
 Matrix MatrixSetRotation(Matrix &m, float x, float y, float z, RotationOrder order) {
     rotationMatrix = &m;
     angles[0] = x; angles[1] = y; angles[2] = z;
@@ -33,6 +48,9 @@ Matrix MatrixSetScaling(Matrix &m, float x, float y, float z) {
     scalingMatrix = &m;
     scales[0] = x; scales[1] = y; scales[2] = z;
     ++scalingCalls;
+    m.value[0] *= x; m.value[4] *= x; m.value[8] *= x;
+    m.value[1] *= y; m.value[5] *= y; m.value[9] *= y;
+    m.value[2] *= z; m.value[6] *= z; m.value[10] *= z;
     m.value[12] = x; m.value[13] = y; m.value[14] = z;
     return m;
 }
@@ -131,6 +149,7 @@ struct AEGeometry {
     void setScaling(float, float, float);
     void translate(float, float, float);
     void translate(const Vector &);
+    void setDirection(const Vector &, const Vector &);
     void setLodChildMeshes(uint16_t *);
     void setLodChildTransform(uint32_t);
 };
@@ -220,6 +239,40 @@ int main() {
     geom.translate(Vector{2.0f, 4.0f, 6.0f});
     assert(translationCalls == 2 && translationArgs[0] == 13.0f &&
            translationArgs[1] == 26.0f && translationArgs[2] == 39.0f);
+
+    PaintCanvas directionCanvas;
+    directionCanvas.matrices[5].m[3] = 11.0f;
+    directionCanvas.matrices[5].m[7] = 22.0f;
+    directionCanvas.matrices[5].m[11] = 33.0f;
+    AEGeometry directionGeom;
+    directionGeom.canvas = &directionCanvas;
+    directionGeom.scalingX = 2.0f;
+    directionGeom.scalingY = 3.0f;
+    directionGeom.scalingZ = 4.0f;
+    int initialCrosses = AbyssEngine::AEMath::crossCalls;
+    int initialNormalizes = AbyssEngine::AEMath::normalizeCalls;
+    int initialScalings = AbyssEngine::AEMath::scalingCalls;
+    directionGeom.setDirection(Vector{2.0f, 0.0f, 0.0f}, Vector{0.0f, 3.0f, 0.0f});
+    assert(directionCanvas.getCalls == 2 && directionCanvas.lastSet == 5);
+    assert(AbyssEngine::AEMath::crossCalls == initialCrosses + 2 &&
+           AbyssEngine::AEMath::normalizeCalls == initialNormalizes + 2 &&
+           AbyssEngine::AEMath::scalingCalls == initialScalings + 1);
+    assert(AbyssEngine::AEMath::scalingMatrix == &directionCanvas.matrices[5]);
+    const Matrix &facing = directionCanvas.matrices[5];
+    assert(facing.m[0] == 0.0f && facing.m[4] == 0.0f && facing.m[8] == -2.0f);
+    assert(facing.m[1] == 0.0f && facing.m[5] == 3.0f && facing.m[9] == 0.0f);
+    assert(facing.m[2] == 8.0f && facing.m[6] == 0.0f && facing.m[10] == 0.0f);
+    assert(facing.m[3] == 11.0f && facing.m[7] == 22.0f && facing.m[11] == 33.0f);
+    assert(facing.m[12] == 2.0f && facing.m[13] == 3.0f && facing.m[14] == 4.0f);
+    directionGeom.setDirection(Vector{0.0f, 0.0f, 1.0f}, Vector{0.0f, 0.0f, 0.0f});
+    assert(directionCanvas.getCalls == 4 && directionCanvas.lastSet == 5);
+    assert(AbyssEngine::AEMath::crossCalls == initialCrosses + 4 &&
+           AbyssEngine::AEMath::normalizeCalls == initialNormalizes + 4 &&
+           AbyssEngine::AEMath::scalingCalls == initialScalings + 2);
+    assert(facing.m[0] == 0.0f && facing.m[4] == 2.0f && facing.m[8] == 0.0f);
+    assert(facing.m[1] == -3.0f && facing.m[5] == 0.0f && facing.m[9] == 0.0f);
+    assert(facing.m[2] == 0.0f && facing.m[6] == 0.0f && facing.m[10] == 4.0f);
+    assert(facing.m[3] == 11.0f && facing.m[7] == 22.0f && facing.m[11] == 33.0f);
 
     PaintCanvas ctorCanvas;
     ctorCanvas.matrices[7].value[0] = 71;

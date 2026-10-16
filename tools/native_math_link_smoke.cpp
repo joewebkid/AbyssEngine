@@ -34,5 +34,25 @@ int main() {
     for (float element : matrix.m) {
         if (element != 0.0f) return 4;
     }
+
+    const AbyssEngine::AEMath::Vector direction{2.0f, 0.0f, 0.0f};
+    const AbyssEngine::AEMath::Vector up{0.0f, 3.0f, 0.0f};
+    const auto facingRight = AbyssEngine::AEMath::VectorNormalize(
+        AbyssEngine::AEMath::VectorCross(up, direction));
+    const auto facingUp = AbyssEngine::AEMath::VectorNormalize(
+        AbyssEngine::AEMath::VectorCross(direction, facingRight));
+    if (facingRight.x != 0.0f || facingRight.y != 0.0f || facingRight.z != -1.0f ||
+        facingUp.x != 0.0f || facingUp.y != 1.0f || facingUp.z != 0.0f) return 5;
+
+    const auto fallback = AbyssEngine::AEMath::VectorNormalize({0.0f, 0.0f, 0.0f});
+    if (fallback.x != 0.0f || fallback.y != 1.0f || fallback.z != 0.0f) return 6;
+
+    AbyssEngine::AEMath::Matrix scaled;
+    scaled.m[3] = 11.0f;
+    scaled.m[7] = 22.0f;
+    scaled.m[11] = 33.0f;
+    AbyssEngine::AEMath::MatrixSetScaling(scaled, 2.0f, 3.0f, 4.0f);
+    if (scaled.m[0] != 2.0f || scaled.m[5] != 3.0f || scaled.m[10] != 4.0f ||
+        scaled.m[3] != 11.0f || scaled.m[7] != 22.0f || scaled.m[11] != 33.0f) return 7;
     return 0;
 }

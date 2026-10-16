@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (AEGeometry translation axes; older subsystem
+Last reviewed: 2026-10-16 (AEGeometry direction basis; older subsystem
 snapshots retain their dates)
+
+## AEGeometry direction basis (2026-10-16)
+
+Original Android ARM confirms `setDirection` writes right/up/direction
+as the three matrix columns, preserving the translation entries; the
+old body wrote them consecutively and used unresolved hooks with
+32-bit pointer narrowing. The source now uses the original vector
+cross/normalize order and typed canvas/math calls. The 19-body host
+smoke, production native math smoke, native `gof2`, **206/206** ARM
+units and **40** verifier tests (one skip) pass. Focused strict
+fuzzy/source-shape rises **45.1%/95.6% -> 85.4%/100%**, but this
+function is not exact. Full coverage stays **4,323/4,524**, with
+**201 missing**, **123 extras**, zero skipped and **93.60%/82.68%**
+average source-shape/strict fuzzy. **2,507 linked-exact / 1,074
+byte-exact** remain, with zero exact-pair losses/gains. The
+linked-function call audit remains **2,392 matches / 53 mismatch
+candidates / 647 unresolved**; `setDirection`'s ten direct calls were
+checked separately against the Android disassembly. Four
+`AEGeomCanvas` routes remain in `updateLod`; live ARM32 behavior is
+unverified. See [the direction audit](AEGEOMETRY_DIRECTION_ARM_2026-10-16.md).
 
 ## AEGeometry translation axes (2026-10-16)
 
