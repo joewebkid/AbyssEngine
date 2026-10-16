@@ -262,42 +262,42 @@ void CutScene::process(int /*delta*/) {
                 canvas->FogSetParameter(AbyssEngine::FogMode_linear, 0.0f, 5000.0f, 1.0f,
                                         0x011e0cffu);
                 canvas->FogEnable(1, AbyssEngine::FogMode_1);
-                this->level->getEnemies();
-                this->level->getEnemies();
-                AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
-                t->Update((long long) (unsigned) this->frameDelta, (bool) (unsigned char) this->frameDelta);
+                Array<KIPlayer *> *enemies = this->level->getEnemies();
+                unsigned int count = this->level->getEnemies()->size();
+                AEGeometry *thirdFromLast = (*enemies)[count - 3]->geometry;
+                AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(thirdFromLast->transform);
+                t->Update((long long) (int32_t) this->frameDelta, false);
                 if (this->geom30 != nullptr) {
-                    AbyssEngine::Transform *t2 = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
-                    t2->Update((long long) (unsigned) this->frameDelta, (bool) (unsigned char) this->frameDelta);
+                    AbyssEngine::Transform *t2 = (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geom30->transform);
+                    t2->Update((long long) (int32_t) this->frameDelta, false);
                     int acc = this->frameDelta + this->animTimer7c;
                     this->animTimer7c = acc;
                     if (acc > 20000) {
                         this->animTimer7c = 0;
-                        if (AERandom::gRandom->nextInt() < 100) {
-                            AbyssEngine::Transform *a = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
+                        if (AERandom::gRandom->nextInt(100) < 100) {
+                            AbyssEngine::Transform *a = (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geom30->transform);
                             a->SetAnimationState((AnimationMode) 3, nullptr);
-                            a = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
+                            a = (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geom30->transform);
                             a->SetAnimationState((AnimationMode) 1, nullptr);
                         }
                     }
                 }
                 if (this->geom34 != nullptr) {
-                    AbyssEngine::Transform *t2 = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
-                    t2->Update((long long) (unsigned) this->frameDelta, (bool) (unsigned char) this->frameDelta);
+                    AbyssEngine::Transform *t2 = (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geom34->transform);
+                    t2->Update((long long) (int32_t) this->frameDelta, false);
                     int acc = this->frameDelta + this->animTimer80;
                     this->animTimer80 = acc;
                     if (acc > 22000) {
                         this->animTimer80 = 0;
-                        if (AERandom::gRandom->nextInt() < 100) {
-                            AbyssEngine::Transform *a = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
+                        if (AERandom::gRandom->nextInt(100) < 100) {
+                            AbyssEngine::Transform *a = (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geom34->transform);
                             a->SetAnimationState((AnimationMode) 3, nullptr);
-                            canvas->TransformGetTransform(0);
-                            if (this->level != nullptr) this->level->getEnemies();
+                            a = (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geom34->transform);
+                            a->SetAnimationState((AnimationMode) 1, nullptr);
                             return;
                         }
                     }
                 }
-                if (this->level != nullptr) this->level->getEnemies();
                 return;
             }
             int race3 = Status::gStatus->getSystem()->getRace();
