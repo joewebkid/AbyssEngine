@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ObjectGun render gating and animation (2026-10-16)
+
+`python tools/run_objectgun_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` checks extracted production fragments
+for inactive sentinel, turret rotation arguments, both lifetime
+scales, cross order and mine wobble at host `-O0/-O2`. Native `gof2`,
+207/207 ARM units and 40 verifier tests (one existing skip) pass.
+Focused `render` source-shape/strict fuzzy improves 89.6%/39.7% ->
+89.7%/41.5%, nonexact. Full report
+`A:/Galaxy on Fire new version/_work/objectgun_render_semantics_full_20261016.json`
+compares 4,323/4,524 originals, 201 missing, 124 extras, zero
+skipped or wrong signatures, 93.67%/82.77% average source-shape/
+strict fuzzy, 2,513 linked-exact and 1,074 byte-exact. Against
+`objectgun_visible_axes_full_20261016.json`, both exact
+`(unit,symbol)` sets are unchanged. See
+[the render audit](OBJECTGUN_RENDER_SEMANTICS_ARM_2026-10-16.md).
+
 ## ObjectGun visible orientation axes (2026-10-16)
 
 `python tools/run_objectgun_canvas_calls_smoke.py --cxx

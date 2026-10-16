@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ObjectGun visible orientation axes; older subsystem
+Last reviewed: 2026-10-16 (ObjectGun render gating and animation; older subsystem
 snapshots retain their dates)
+
+## ObjectGun render gating and animation (2026-10-16)
+
+Android ARM `ObjectGun::render` uses `50000.0f` as the inactive
+position sentinel, divides two lifetime scaling paths by `1000.0f`,
+passes `(0, PI, spinAngle)` to turret rotation, crosses direction
+with side in that order, and advances mine wobble by
+`deltaTime * 0.0005f`. The previous C++ used a different sentinel,
+divisor, rotation axis, cross order and wobble rate; these are now
+restored. Extracted production fragments pass under host `-O0/-O2`.
+Native `gof2`, **207/207** ARM units and **40** verifier tests (one
+existing skip) pass. Focused `render` source-shape/strict fuzzy
+changes **89.6%/39.7% -> 89.7%/41.5%**, still nonexact. Full corpus:
+**4,323/4,524** compared, **201 missing**, **124 extras**, no skipped
+or wrong signatures, **93.67%/82.77%** average source-shape/strict
+fuzzy, **2,513 linked-exact / 1,074 byte-exact**. Both exact sets
+are unchanged. Live ARM32 frame/GPU behavior remains unverified;
+next priority is remaining render effects and missing-function triage.
+See [the render audit](OBJECTGUN_RENDER_SEMANTICS_ARM_2026-10-16.md).
 
 ## ObjectGun visible orientation axes (2026-10-16)
 

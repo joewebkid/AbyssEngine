@@ -77,6 +77,54 @@ def main():
         f"{visible_axes}\n"
         "}\n"
     )
+    renderable_condition = source.split("            if (gunPos->x != ", 1)[1].split(") {", 1)[0]
+    renderable_body = (
+        "bool ObjectGun::isRenderable(const Vector *gunPos) {\n"
+        f"    return gunPos->x != {renderable_condition};\n"
+        "}\n"
+    )
+    turret_spin_start = "                scaleMatrix = AbyssEngine::AEMath::MatrixSetRotation(rotate, "
+    turret_spin = turret_spin_start + source.split(turret_spin_start, 1)[1].split(";", 1)[0] + ";"
+    turret_spin_body = (
+        "void ObjectGun::applyTurretSpin(Matrix &rotate, Matrix &scaleMatrix) {\n"
+        f"{turret_spin}\n"
+        "}\n"
+    )
+    lifetime_start = "                    int scale = gun->lifetimes[i];"
+    lifetime_parts = source.split(lifetime_start)
+    visible_lifetime = lifetime_start + lifetime_parts[1].split(
+        "\n                } else if (this->useEgoOrientation", 1)[0]
+    world_lifetime = lifetime_start + lifetime_parts[2].split(
+        "\n                } else {", 1)[0]
+    visible_lifetime_body = (
+        "void ObjectGun::applyVisibleLifetimeScaling(unsigned i) {\n"
+        "    Gun *gun = this->gun;\n"
+        f"{visible_lifetime}\n"
+        "}\n"
+    )
+    world_lifetime_body = (
+        "void ObjectGun::applyWorldLifetimeScaling(unsigned i) {\n"
+        "    Gun *gun = this->gun;\n"
+        f"{world_lifetime}\n"
+        "}\n"
+    )
+    basis_start = "                    side = AbyssEngine::AEMath::VectorCross(this->dir, this->side);"
+    basis = basis_start + source.split(basis_start, 1)[1].split(
+        "\n\n                    this->orientation.m[0]", 1)[0]
+    basis_body = (
+        "void ObjectGun::applyBasisUp() {\n"
+        "    Vector side;\n"
+        f"{basis}\n"
+        "}\n"
+    )
+    wobble_start = "                        float step = (float) this->deltaTime * "
+    wobble = wobble_start + source.split(wobble_start, 1)[1].split(
+        "\n                    }", 1)[0]
+    wobble_body = (
+        "void ObjectGun::applyWobbleStep(Vector *spin) {\n"
+        f"{wobble}\n"
+        "}\n"
+    )
     render_scale = "                if (Globals::iPad != 0)" + source.split(
         "                if (Globals::iPad != 0)", 1)[1].split(
         "\n\n                if (this->gun->weaponType", 1)[0]
@@ -108,6 +156,8 @@ def main():
             "// PRODUCTION_METHODS",
             "\n".join((set_enemies, body, inactive_body, camera_body, turret_body,
                        explosion_body, explosion_render_body, visible_body,
+                       renderable_body, turret_spin_body, visible_lifetime_body,
+                       world_lifetime_body, basis_body, wobble_body,
                        render_scale_body, render_ego_body, render_final_body))))
         for optimization in ("-O0", "-O2"):
             exe = Path(temp) / f"smoke-{optimization[2:]}.exe"

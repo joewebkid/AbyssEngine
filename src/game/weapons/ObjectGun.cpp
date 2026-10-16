@@ -381,7 +381,7 @@ void ObjectGun::render() {
                 rotate.m[0] = 1.0f;
                 rotate.m[5] = 1.0f;
                 rotate.m[14] = 1.0f;
-                scaleMatrix = AbyssEngine::AEMath::MatrixSetRotation(rotate, this->spinAngle, 0.0f, 0.0f);
+                scaleMatrix = AbyssEngine::AEMath::MatrixSetRotation(rotate, 0.0f, 3.1415927f, this->spinAngle);
                 rotate = scaleMatrix;
                 cameraLocal *= rotate;
             }
@@ -390,7 +390,7 @@ void ObjectGun::render() {
         uint32_t inactive = 0;
         for (uint32_t i = 0; i < gun->count; ++i) {
             Vector *gunPos = &((Vector *) gun->positions)[i];
-            if (gunPos->x != -1000.0f) {
+            if (gunPos->x != 50000.0f) {
                 AbyssEngine::AEMath::MatrixSetTranslation(this->orientation, gunPos->x, gunPos->y, gunPos->z);
                 this->dir = AbyssEngine::AEMath::VectorNormalize(((Vector *) gun->velocities)[i]);
 
@@ -419,7 +419,7 @@ void ObjectGun::render() {
 
                     int scale = gun->lifetimes[i];
                     if (scale < 1000) {
-                        float fscale = (float) scale / 750.0f;
+                        float fscale = (float) scale / 1000.0f;
                         AbyssEngine::AEMath::MatrixSetScaling(this->orientation, fscale, fscale, fscale);
                     } else if (gun->hitSmall != 0) {
                         AbyssEngine::AEMath::MatrixSetScaling(this->orientation, 1.0f, 1.0f, 1.0f);
@@ -437,7 +437,7 @@ void ObjectGun::render() {
                     this->up = base;
                     side = AbyssEngine::AEMath::VectorCross(this->up, this->dir);
                     this->side = AbyssEngine::AEMath::VectorNormalize(side);
-                    side = AbyssEngine::AEMath::VectorCross(this->side, this->dir);
+                    side = AbyssEngine::AEMath::VectorCross(this->dir, this->side);
                     this->up = AbyssEngine::AEMath::VectorNormalize(side);
 
                     this->orientation.m[0] = this->side.x;
@@ -452,7 +452,7 @@ void ObjectGun::render() {
 
                     int scale = gun->lifetimes[i];
                     if (scale < 1000) {
-                        float fscale = (float) scale / 750.0f;
+                        float fscale = (float) scale / 1000.0f;
                         AbyssEngine::AEMath::MatrixSetScaling(this->orientation, fscale, fscale, fscale);
                     } else if (gun->hitSmall != 0) {
                         AbyssEngine::AEMath::MatrixSetScaling(this->orientation, 1.0f, 1.0f, 1.0f);
@@ -490,7 +490,7 @@ void ObjectGun::render() {
                     Vector *spin = spins->data()[i];
                     if (spin != nullptr && this->deltaTime > 0) {
                         AbyssEngine::AEMath::MatrixSetRotation(this->orientation, spin->x, spin->y, spin->z);
-                        float step = (float) this->deltaTime * 0.02f;
+                        float step = (float) this->deltaTime * 0.0005f;
                         float neg = -step;
                         spin->x += spin->x < 0.0f ? neg : step;
                         spin->y += spin->y < 0.0f ? neg : step;

@@ -22,10 +22,18 @@ Matrix operator*(const Matrix &lhs, const Matrix &rhs) {
 }
 Vector MatrixGetDir(const Matrix &matrix) { return {matrix.marker * 10 + 1}; }
 Vector MatrixGetUp(const Matrix &matrix) { return {matrix.marker * 10 + 2}; }
-Matrix MatrixSetRotation(Matrix &matrix, float, float, float) {
+Matrix MatrixSetRotation(Matrix &matrix, float x, float y, float z) {
     matrix.rotated = true;
+    matrix.x = x;
+    matrix.y = y;
+    matrix.z = z;
     return matrix;
 }
+Vector VectorCross(const Vector &a, const Vector &b) {
+    return {0, a.y * b.z - a.z * b.y,
+            a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
+}
+Vector VectorNormalize(const Vector &vector) { return vector; }
 Matrix MatrixSetScaling(Matrix &matrix, float x, float y, float z) {
     matrix.scaled = true;
     matrix.x = x;
@@ -142,6 +150,8 @@ struct Gun {
     uint8_t *hitFlags = nullptr;
     Vector *hitPositions = nullptr;
     uint8_t ignited = 0;
+    int *lifetimes = nullptr;
+    uint8_t hitSmall = 0;
     Array<Player *> *enemies = nullptr;
     void setEnemies(Array<Player *> *value) { enemies = value; }
     void render() { ++renderCalls; }
@@ -168,6 +178,10 @@ struct ObjectGun {
     Array<Explosion *> *explosions = nullptr;
     uint8_t *explosionReady = nullptr;
     uint8_t wasFiring = 0;
+    int deltaTime = 0;
+    float spinAngle = 0;
+    bool rocketGun = false;
+    Vector dir, up, side;
     Matrix orientation;
     float scaleX = 0.6f, scaleY = 0.7f, scaleZ = 0.8f;
     void setEnemies(Array<Player *> *enemies);
@@ -178,6 +192,13 @@ struct ObjectGun {
     void applyExplosionUpdate(int dt);
     void applyExplosionRender();
     void applyVisibleOrientation(Matrix &cameraLocal, Vector &muzzle);
+    bool isRenderable(const Vector *gunPos);
+    void applyTurretSpin(Matrix &rotate, Matrix &scaleMatrix);
+    void applyVisibleLifetimeScaling(unsigned i);
+    void applyWorldLifetimeScaling(unsigned i);
+    void applyBasisUp();
+    void applyWobbleStep(Vector *spin);
+    bool isRocketGun() const { return rocketGun; }
     void applyRenderScale();
     void applyEgoRotation(EgoPlayerView *playerView, Player *player,
                           Matrix &local, Matrix &scaleMatrix);
@@ -309,6 +330,47 @@ int main() {
     assert(gun.orientation.m[2] == -2 && gun.orientation.m[6] == -3 &&
            gun.orientation.m[10] == -4);
 
+    Vector sentinel, ordinary;
+    sentinel.x = 50000;
+    ordinary.x = -1000;
+    assert(!gun.isRenderable(&sentinel) && gun.isRenderable(&ordinary));
+
+    Matrix turretRotate, turretCopy;
+    gun.spinAngle = 0.75f;
+    gun.applyTurretSpin(turretRotate, turretCopy);
+    assert(turretRotate.rotated && turretCopy.rotated &&
+           turretRotate.x == 0.0f && turretRotate.y == 3.1415927f &&
+           turretRotate.z == 0.75f);
+
+    int lifetimes[1] = {250};
+    Gun lifetimeGun;
+    lifetimeGun.lifetimes = lifetimes;
+    gun.gun = &lifetimeGun;
+    gun.applyVisibleLifetimeScaling(0);
+    assert(gun.orientation.x == 0.25f && gun.orientation.y == 0.25f &&
+           gun.orientation.z == 0.25f);
+    gun.applyWorldLifetimeScaling(0);
+    assert(gun.orientation.x == 0.25f);
+    lifetimes[0] = 1000;
+    lifetimeGun.hitSmall = 1;
+    gun.applyWorldLifetimeScaling(0);
+    assert(gun.orientation.x == 1.0f && lifetimeGun.hitSmall == 0);
+    lifetimeGun.hitSmall = 1;
+    gun.rocketGun = true;
+    gun.applyWorldLifetimeScaling(0);
+    assert(lifetimeGun.hitSmall == 1);
+
+    gun.dir = {0, 0, 0, 1};
+    gun.side = {0, 1, 0, 0};
+    gun.applyBasisUp();
+    assert(gun.up.x == 0 && gun.up.y == 1 && gun.up.z == 0);
+
+    Vector wobble{0, -1.0f, 2.0f, -3.0f};
+    gun.deltaTime = 100;
+    gun.applyWobbleStep(&wobble);
+    assert(wobble.x == -1.05f && wobble.y == 2.05f && wobble.z == -3.05f);
+
+    gun.orientation.scaled = false;
     Globals::iPad = 0;
     gun.applyRenderScale();
     assert(!gun.orientation.scaled);
