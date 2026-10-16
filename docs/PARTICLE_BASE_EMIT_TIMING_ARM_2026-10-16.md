@@ -87,3 +87,19 @@ It compares **4,323/4,524** original unique functions, with **201 missing**,
 source-shape/strict fuzzy, **2,507 linked-exact** and **1,074 byte-exact**.
 The exact `(unit, symbol)` pair sets have zero losses or gains against
 the preceding full report.
+
+Direct disassembly of the original `rotateUVs` at `0x182704`–`0x182778`
+confirms signed extension of the integer seed (`0x182712`), one
+`AERandom::nextInt(40000)` call (`0x182724`–`0x182728`), and UV selection
+from the result's two low bits (`0x18272c`–`0x182760`). The source uses
+the same four selectors and returns the destination pointer. A focused
+host check derives those selectors independently from the ARM sequence
+for 256 negative and nonnegative seeds; all outputs match. Native
+`gof2`, 206/206 ARM units and 40 verifier tests (one skip) remain green.
+No production C++ changed, so the full corpus and exact-pair counts
+above still apply. The fresh focused report for `rotateUVs` is
+`A:/Galaxy on Fire new version/_work/particle_rotate_uv_focused_20261016.json`:
+**95.2% source-shape / 72.0% strict fuzzy**, nonexact. This confirms
+the selector mapping, not an independent equivalence proof for
+`AERandom::nextInt(int)` or live GPU texture coordinates. The bounded
+RNG method is the next targeted audit.

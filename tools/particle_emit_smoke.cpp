@@ -192,6 +192,19 @@ int main() {
     assert(unrelatedHighBit.uv[0][2] == def.uvU1);
     assert(unrelatedHighBit.uv[0][3] == def.uvV1);
 
+    float uvSource[4]{0.125f, 0.25f, 0.5f, 0.75f};
+    for (int seed = -128; seed < 128; ++seed) {
+        AERandom expectedUVRandom((long long) seed);
+        unsigned value = (unsigned) expectedUVRandom.nextInt(40000);
+        unsigned invertedLowBits = ~(value & 3u);
+        float result[4]{};
+        assert(rotatedUV.rotateUVs(uvSource, seed, result) == result);
+        assert(result[0] == uvSource[value & 1]);
+        assert(result[1] == uvSource[invertedLowBits & 1]);
+        assert(result[2] == uvSource[2 + ((value >> 1) & 1)]);
+        assert(result[3] == uvSource[2 + ((invertedLowBits >> 1) & 1)]);
+    }
+
     EmitProbe oneShot(&transform);
     oneShot.flags = 0x40;
     oneShot.emit(200);

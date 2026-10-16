@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (base particle UV dispatch; older subsystem
+Last reviewed: 2026-10-16 (particle UV selector mapping; older subsystem
 snapshots retain their dates)
+
+## Particle UV selector mapping (2026-10-16)
+
+Direct Android ARM disassembly of `IParticleSystem::rotateUVs` confirms
+the signed seed, one bounded random draw and the four UV selectors.
+An independent selector check against the production method passes for
+256 negative/nonnegative seeds. No production C++ changed; native
+`gof2`, **206/206** ARM units and **40** verifier tests (one skip) pass.
+The helper remains **95.2%** source-shape / **72.0%** strict fuzzy,
+nonexact. The unchanged full corpus remains **4,323/4,524** compared,
+**201 missing**, **124 extras**, zero skipped, **93.62%/82.69%**
+average source-shape/strict fuzzy, **2,507 linked-exact / 1,074
+byte-exact**. Bounded `AERandom::nextInt(int)` and live GPU output
+still require separate validation. See
+[the emitter audit](PARTICLE_BASE_EMIT_TIMING_ARM_2026-10-16.md).
 
 ## Base particle UV dispatch and second-frame guard (2026-10-16)
 

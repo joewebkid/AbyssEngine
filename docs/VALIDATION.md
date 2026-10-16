@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Particle UV selector mapping (2026-10-16)
+
+`python tools/run_particle_emit_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` checks all four production `rotateUVs`
+outputs against selectors derived from original ARM instructions for
+256 signed seeds. Native `gof2`, 206/206 ARM units and 40 verifier
+tests (one skip) pass. Focused report
+`A:/Galaxy on Fire new version/_work/particle_rotate_uv_focused_20261016.json`
+shows 95.2% source-shape / 72.0% strict fuzzy, nonexact. Production
+C++ is unchanged, so the prior full corpus report and its 2,507
+linked-exact / 1,074 byte-exact pairs still apply. See
+[the emitter audit](PARTICLE_BASE_EMIT_TIMING_ARM_2026-10-16.md).
+
 ## Base particle UV dispatch and second-frame guard (2026-10-16)
 
 `python tools/run_particle_emit_smoke.py --cxx
