@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ParticleSystemMesh ordinary-emission dispatch (2026-10-16)
+
+`python tools/run_particle_mesh_trail_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` now tests the production `emit` branch
+against a recording base-emitter stub and the recovered trail method.
+The native `gof2` build, 206/206 ARM units and 40 verifier tests (one
+skip) pass. ARM `emit` remains 100%/100% strict fuzzy/source-shape and
+linked-exact; its ordinary tail relocation now names
+`IParticleSystem::emit`. Full report
+`A:/Galaxy on Fire new version/_work/particle_emit_dispatch_full_20261016.json`
+retains 4,323/4,524 original unique comparisons, 93.62%/82.69%
+average source-shape/strict fuzzy, 2,507 linked-exact and 1,074
+byte-exact. Exact `(unit,symbol)` pair sets have zero losses/gains
+against the preceding full report. See
+[the dispatch audit](PARTICLE_MESH_EMIT_DISPATCH_ARM_2026-10-16.md).
+
 ## ParticleSystemMesh trail emission (2026-10-16)
 
 `python tools/run_particle_mesh_trail_smoke.py --cxx

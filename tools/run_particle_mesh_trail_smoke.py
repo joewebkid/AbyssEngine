@@ -21,10 +21,15 @@ def main():
 
     source = (ROOT / "src/engine/render/ParticleSystemMesh.cpp").read_text()
     fixture = (ROOT / "tools/particle_mesh_trail_smoke.cpp").read_text()
-    body = function(source, "void ParticleSystemMesh::emitTrail(int delta)")
+    manager = (ROOT / "src/engine/render/ParticleSystemManager.cpp").read_text()
+    bodies = "\n".join((
+        function(manager, "void _psm_emitTrail(ParticleSystemMesh *self, int delta)"),
+        function(source, "void ParticleSystemMesh::emit(int id)"),
+        function(source, "void ParticleSystemMesh::emitTrail(int delta)"),
+    ))
     with tempfile.TemporaryDirectory(prefix="particle-trail-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "smoke.cpp"
-        generated.write_text(fixture.replace("// PRODUCTION_METHOD", body))
+        generated.write_text(fixture.replace("// PRODUCTION_METHODS", bodies))
         exe = Path(temp) / "smoke.exe"
         subprocess.run([args.cxx, "-std=gnu++17", "-O0", str(generated), "-o", str(exe)],
                        cwd=ROOT, check=True)

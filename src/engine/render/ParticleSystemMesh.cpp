@@ -5,8 +5,6 @@
 
 void _psm_emitTrail(ParticleSystemMesh *self, int delta);
 
-void _psm_emitUsual(ParticleSystemMesh *self, int id);
-
 void _psm_meshSetPoint(PaintCanvas *canvas, uint32_t mesh, uint16_t point, float x, float y, float z);
 
 void _psm_vectorMinus(Vector *out, const Vector *a, const Vector *b);
@@ -76,7 +74,7 @@ void ParticleSystemMesh::emit(int id) {
         return;
     if ((int) (flags << 16) < 0)
         return _psm_emitTrail(this, id);
-    return _psm_emitUsual(this, id);
+    return IParticleSystem::emit(id);
 }
 
 void ParticleSystemMesh::finishCurrentTrailParticle(ParticleSet set, int id, const Vector &first,

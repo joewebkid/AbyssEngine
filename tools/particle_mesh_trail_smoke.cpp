@@ -59,7 +59,12 @@ struct PaintCanvas {
     }
 };
 
-struct ParticleSystemMesh {
+struct IParticleSystem {
+    int baseEmitCalls = 0, lastBaseDelta = -1;
+    void emit(int delta) { ++baseEmitCalls; lastBaseDelta = delta; }
+};
+
+struct ParticleSystemMesh : IParticleSystem {
     struct Sets { ParticleSet values[1]{ParticleSet::dummy}; ParticleSet operator[](int i) {
         return values[i];
     } } particleSets;
@@ -68,6 +73,7 @@ struct ParticleSystemMesh {
     uint32_t flags = 0x1000, edgeCount = 1, stride = 1;
     uint32_t resource = 1, resourceOffset = 100;
     uint8_t mirror = 0, newSectionStarted = 1, wide = 0, alphaFade = 0;
+    uint8_t emitEnabled = 1, renderEnabled = 1;
     Matrix matrixValue{{10, 20, 30}};
     const Matrix *matrix = &matrixValue;
     Vector lastTrailPosition{};
@@ -95,14 +101,32 @@ struct ParticleSystemMesh {
         particleAges[id] = 0;
     }
     void incId() { currentParticle = (currentParticle + 1) % maxParticles; }
+    void emit(int id);
     void emitTrail(int delta);
 };
 
-// PRODUCTION_METHOD
+// PRODUCTION_METHODS
 
 static bool near(float a, float b) { return std::fabs(a - b) < 0.0001f; }
 
 int main() {
+    ParticleSystemMesh ordinary;
+    ordinary.emit(7);
+    assert(ordinary.baseEmitCalls == 1 && ordinary.lastBaseDelta == 7);
+    assert(ordinary.finishCalls == 0);
+    ordinary.flags |= 0x80;
+    ordinary.emit(8);
+    assert(ordinary.baseEmitCalls == 1 && ordinary.finishCalls == 0);
+    ordinary.emitEnabled = 0;
+    ordinary.newSectionStarted = 0;
+    ordinary.emit(9);
+    assert(ordinary.newSectionStarted == 1 && ordinary.baseEmitCalls == 1);
+
+    ParticleSystemMesh trailDispatch;
+    trailDispatch.flags |= 0x8000;
+    trailDispatch.emit(8);
+    assert(trailDispatch.baseEmitCalls == 0 && trailDispatch.finishCalls == 1);
+
     ParticleSystemMesh mesh;
     mesh.emitTrail(10);
     assert(mesh.finishCalls == 1 && mesh.lastFinished == 0);

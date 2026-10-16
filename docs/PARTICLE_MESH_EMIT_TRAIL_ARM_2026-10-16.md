@@ -25,6 +25,10 @@ symbol** versus the original (`123 -> 124`); masked-byte equality of the
 caller alone does not prove its call destination. The other `_psm_emitUsual`
 route and mesh/math helper shims remain outside this package.
 
+Follow-up on the same date: the ordinary path was subsequently tied to
+`IParticleSystem::emit(int)` by the original ARM tail branch and fixed in
+[the dispatch audit](PARTICLE_MESH_EMIT_DISPATCH_ARM_2026-10-16.md).
+
 `python tools/run_particle_mesh_trail_smoke.py --cxx
 C:/msys64/ucrt64/bin/g++.exe` extracts the unchanged production body into a
 small host fixture. It covers initial and continuing sections, ring wrap,

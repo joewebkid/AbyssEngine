@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ParticleSystemMesh trail emission; older subsystem
+Last reviewed: 2026-10-16 (ParticleSystemMesh emission dispatch; older subsystem
 snapshots retain their dates)
+
+## ParticleSystemMesh ordinary-emission dispatch (2026-10-16)
+
+Original Android ARM `ParticleSystemMesh::emit` tail-branches to the
+existing `IParticleSystem::emit(int)` when flag `0x8000` is clear;
+source instead called an undefined ordinary-emission shim. The direct
+ARM relocation now names the original base method. A production-body
+host fixture checks ordinary/trail selection, suppression and section
+reset. Native `gof2`, **206/206** ARM units and **40** verifier tests
+(one skip) pass. `emit` remains **100%/100%** strict fuzzy/source-shape
+and linked-exact. Full corpus metrics and exact pair sets are unchanged:
+**4,323/4,524** compared, **201 missing**, **124 extras**, zero skipped,
+**93.62%/82.69%** average source-shape/strict fuzzy, **2,507
+linked-exact / 1,074 byte-exact**. The base emitter algorithm and live
+ARM32 output still need independent validation. See
+[the dispatch audit](PARTICLE_MESH_EMIT_DISPATCH_ARM_2026-10-16.md).
 
 ## ParticleSystemMesh trail emission (2026-10-16)
 
