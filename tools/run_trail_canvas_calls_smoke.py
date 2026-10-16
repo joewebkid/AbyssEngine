@@ -22,14 +22,17 @@ def main():
     source = (ROOT / "src/engine/render/Trail.cpp").read_text()
     fixture = (ROOT / "tools/trail_canvas_calls_smoke.cpp").read_text()
     methods = "\n".join(function(source, signature) for signature in (
-        "void Trail::render()", "void Trail::changeType(int type)"))
+        "void Trail::render()", "void Trail::changeType(int type)",
+        "void Trail::setWidth(int width)",
+        "void Trail::update(float ax, float ay, float az, float bx, float by, float bz)"))
     with tempfile.TemporaryDirectory(prefix="trail-canvas-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "smoke.cpp"
         generated.write_text(fixture.replace("// PRODUCTION_METHODS", methods))
-        exe = Path(temp) / "smoke.exe"
-        subprocess.run([args.cxx, "-std=gnu++17", "-O0", str(generated), "-o", str(exe)],
-                       cwd=ROOT, check=True)
-        subprocess.run([str(exe)], cwd=ROOT, check=True)
+        for optimization in ("-O0", "-O2"):
+            exe = Path(temp) / f"smoke-{optimization[2:]}.exe"
+            subprocess.run([args.cxx, "-std=gnu++17", optimization,
+                            str(generated), "-o", str(exe)], cwd=ROOT, check=True)
+            subprocess.run([str(exe)], cwd=ROOT, check=True)
 
 
 if __name__ == "__main__":

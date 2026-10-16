@@ -48,6 +48,8 @@ byte-exact**. Against the preceding report, there is one linked gain
 `A:/Galaxy on Fire new version/_work/aegeometry_render_full_20261016.json`
 and `A:/Galaxy on Fire new version/_work/trail_canvas_full_20261016.json`.
 The
-constructor, float `update`, and `setWidth` still lack independent
-behavioral fixtures and exact instruction matches; their remaining
+constructor still lacks an independent behavioral fixture. The float
+`update` and `setWidth` now have a bounded ARM-derived behavior check
+in [the Trail semantics audit](TRAIL_UPDATE_WIDTH_SEMANTICS_ARM_2026-10-16.md),
+but neither has an exact instruction match. Their remaining compiler
 differences require a separate recovery pass.

@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Trail update and width behavior (2026-10-16)
+
+`python tools/run_trail_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` now compiles extracted production
+`render`, `changeType`, `setWidth` and float `update` bodies with both
+`-O0` and `-O2`. It validates the ARM-observed point-shift ordering,
+relative coordinates, six mesh point calls, local translation, and
+width adjustments in both directions. Native `gof2`, 207/207 ARM
+units and 40 verifier tests (one skip) pass. No production C++ changed,
+so the focused Trail report
+`A:/Galaxy on Fire new version/_work/trail_semantics_focused_20261016.json`
+remains 98.76% source-shape / 88.72% strict fuzzy with 7 linked-exact
+and 1 byte-exact; the previous full report remains 4,323/4,524
+compared, 93.66%/82.73% average source-shape/strict fuzzy, 2,509
+linked-exact and 1,074 byte-exact. See
+[the semantics audit](TRAIL_UPDATE_WIDTH_SEMANTICS_ARM_2026-10-16.md).
+
 ## Trail canvas routing (2026-10-16)
 
 `python tools/run_trail_canvas_calls_smoke.py --cxx

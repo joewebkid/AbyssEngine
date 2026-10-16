@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (Trail canvas routing; older subsystem
+Last reviewed: 2026-10-16 (Trail point-update and width behavior; older subsystem
 snapshots retain their dates)
+
+## Trail update and width behavior (2026-10-16)
+
+An ARM-derived production-body fixture now checks `Trail::update` and
+`setWidth` under host `-O0` and `-O2`. It covers the observed endpoint
+write-then-shift order, fractional/negative coordinate truncation,
+six mesh vertex updates, both signs of width change, and the local
+translation. Source C++ was unchanged; native `gof2`, **207/207** ARM
+units and **40** verifier tests (one skip) pass. Focused Trail metrics
+remain **98.76%/88.72%** source-shape/strict fuzzy with **7
+linked-exact / 1 byte-exact**. The unchanged full corpus remains
+**4,323/4,524** compared, **201 missing**, **124 extras**, zero skipped,
+**93.66%/82.73%** average source-shape/strict fuzzy, **2,509
+linked-exact / 1,074 byte-exact**. Constructor behavior and live
+ARM32/GPU output remain unverified. See
+[the semantics audit](TRAIL_UPDATE_WIDTH_SEMANTICS_ARM_2026-10-16.md).
 
 ## Trail canvas routing (2026-10-16)
 
@@ -18,8 +34,8 @@ Full corpus: **4,323/4,524** compared, **201 missing**, **124 extras**,
 zero skipped, **93.66%/82.73%** average source-shape/strict fuzzy,
 **2,509 linked-exact / 1,074 byte-exact**. Exact `(unit,symbol)` sets
 show one linked gain and zero linked/byte losses. The constructor,
-float `update`, and `setWidth` remain nonexact and lack independent
-behavioral fixtures; live rendering remains untested. See
+float `update`, and `setWidth` remain nonexact; the latter two now have
+bounded behavior fixtures, while live rendering remains untested. See
 [the Trail audit](TRAIL_CANVAS_ROUTING_ARM_2026-10-16.md).
 
 ## AEGeometry render routing (2026-10-16)
