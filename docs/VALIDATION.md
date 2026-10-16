@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene process fog (2026-10-17)
+
+`python tools/run_cutscene_process_fog_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2` on extracted
+production fog-call fragments. Native `gof2`, **208/208** ARM units,
+40 verifier tests (one existing skip), and the earlier mode-23
+transform and reset-camera smokes pass. Focused report
+`A:/Galaxy on Fire new version/_work/cutscene_process_fog_after_20261017.json`
+scores `process` at **89.7% source-shape / 49.3% strict fuzzy**,
+up from **89.1% / 47.8%** in
+`cutscene_process_mode23_after_20261017.json`, still nonexact. Full
+report `A:/Galaxy on Fire new version/_work/cutscene_process_fog_full_20261017.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.85%** rounded averages, **2,517 linked-exact / 1,076
+byte-exact**. Exact `(unit,symbol)` sets are unchanged from
+`cutscene_process_mode23_full_20261017.json`. See
+[the process-fog audit](CUTSCENE_PROCESS_FOG_ARM_2026-10-17.md).
+
 ## CutScene mode-23 process transform (2026-10-17)
 
 `python tools/run_cutscene_process_mode23_transform_smoke.py --cxx

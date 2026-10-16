@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (CutScene mode-23 process transform; older subsystem
+Last reviewed: 2026-10-17 (CutScene process fog; older subsystem
 snapshots retain their dates)
+
+## CutScene process fog (2026-10-17)
+
+Android ARM confirms linear fog with color `0x011e0cff`, density
+`1.0`, and end distances `30000` in mode 23 and `5000` in mode 4;
+only the mode-4 process branch enables fog afterward. Recovered
+placeholder mode, distances, color and enable enum are corrected.
+Focused `process` source-shape/strict fuzzy rises from **89.1%/47.8%
+to 89.7%/49.3%**, still nonexact. Native `gof2`, **208/208** ARM
+units, 40 verifier tests (one existing skip), and `-O0/-O2`
+extracted fog-call tests pass. Full corpus remains **4,323/4,524**
+compared, **201 missing**, **123 extras**, **93.73%/82.85%** rounded
+averages, **2,517 linked-exact / 1,076 byte-exact**, with zero
+exact-pair losses. Live ARM32/GPU output is untested. Next priority:
+mode-23 animation transform handles. See
+[the process-fog audit](CUTSCENE_PROCESS_FOG_ARM_2026-10-17.md).
 
 ## CutScene mode-23 process transform (2026-10-17)
 

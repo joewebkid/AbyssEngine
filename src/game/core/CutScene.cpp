@@ -191,8 +191,8 @@ void CutScene::process(int /*delta*/) {
         }
         this->fogTimer84 = this->frameDelta + this->fogTimer84;
         if (Status::gStatus->getSystem()->getRace() == 1) {
-            canvas->FogSetParameter(AbyssEngine::FogMode_dummy, 0, CutScene_fogColorMode17, 1.0f,
-                                    CutScene_fogDensityMode17);
+            canvas->FogSetParameter(AbyssEngine::FogMode_linear, 0.0f, 30000.0f, 1.0f,
+                                    0x011e0cffu);
         } else if (kind == 2 && this->geometries != nullptr) {
             unsigned int n = this->geometries->size();
             for (unsigned int i = 0; i < n; i++) {
@@ -262,9 +262,9 @@ void CutScene::process(int /*delta*/) {
         } else {
             int race1 = Status::gStatus->getSystem()->getRace();
             if (race1 == 1) {
-                canvas->FogSetParameter(AbyssEngine::FogMode_dummy, 0, CutScene_fogColorMode4, 1.0f,
-                                        CutScene_fogDensityMode4);
-                canvas->FogEnable(1, AbyssEngine::FogMode_dummy);
+                canvas->FogSetParameter(AbyssEngine::FogMode_linear, 0.0f, 5000.0f, 1.0f,
+                                        0x011e0cffu);
+                canvas->FogEnable(1, AbyssEngine::FogMode_1);
                 this->level->getEnemies();
                 this->level->getEnemies();
                 AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
