@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ObjectGun constructor bindings (2026-10-16)
+
+The constructor's canvas/iPad GOT bindings and its shared 232-entry
+signed mesh-ID table are source-backed by Android ARM. All source
+table entries were compared with `.rodata 0x203398-0x203737`.
+Native `gof2`, 207/207 ARM units and 40 verifier tests (one skip)
+pass. Focused C1/C2 source-shape/strict fuzzy improves from
+80.2%/41.1% to 87.4%/65.5%; neither is exact. The full report
+`A:/Galaxy on Fire new version/_work/objectgun_ctor_full_20261016.json`
+compares 4,323/4,524 originals, 201 missing, 124 extras, zero
+skipped, 93.66%/82.75% average source-shape/strict fuzzy, 2,510
+linked-exact and 1,074 byte-exact. Against the prior
+`objectgun_replace_full_20261016.json`, exact `(unit,symbol)`
+sets have zero gains and zero losses. See
+[the constructor audit](OBJECTGUN_CONSTRUCTOR_BINDINGS_ARM_2026-10-16.md).
+
 ## ObjectGun mesh replacement (2026-10-16)
 
 `python tools/run_objectgun_canvas_calls_smoke.py --cxx

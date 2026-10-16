@@ -44,6 +44,7 @@ and `A:/Galaxy on Fire new version/_work/objectgun_replace_full_20261016.json`.
 This tests the replacement method's canvas contract, not construction
 or the much larger ObjectGun update/render paths. Live ARM32 rendering,
 resource ownership and external game initialization remain untested.
-The next priority is the ObjectGun constructor: its original ARM
-canvas and scale-flag GOT slots resolve to `Globals::Canvas` and
-`Globals::iPad`, while the current C++ still holds null placeholders.
+The constructor's canvas, iPad and mesh-ID-table bindings were
+subsequently recovered in
+[the constructor audit](OBJECTGUN_CONSTRUCTOR_BINDINGS_ARM_2026-10-16.md).
+`ObjectGun::update` and `render` remain priorities.

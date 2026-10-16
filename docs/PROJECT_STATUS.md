@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ObjectGun mesh replacement; older subsystem
+Last reviewed: 2026-10-16 (ObjectGun constructor bindings; older subsystem
 snapshots retain their dates)
+
+## ObjectGun constructor bindings (2026-10-16)
+
+Android ARM confirms `Globals::Canvas`, `Globals::iPad`, and one
+232-entry signed mesh-ID table shared by the constructor and
+`ObjectGun::update`. The former null placeholders and two distinct
+zero arrays have been replaced; all 232 entries match the original
+`.rodata`. Native `gof2`, **207/207** ARM units, and **40**
+verifier tests (one skip) pass. Both constructor aliases improve
+**80.2%/41.1% -> 87.4%/65.5%** source-shape/strict fuzzy, but are
+not exact. Full corpus: **4,323/4,524** compared, **201 missing**,
+**124 extras**, zero skipped, **93.66%/82.75%** average
+source-shape/strict fuzzy, **2,510 linked-exact / 1,074 byte-exact**.
+Exact sets show zero gains and zero losses. `update` and `render`
+still have unresolved call bindings, and live ARM32 rendering was
+not tested. See [the constructor audit](OBJECTGUN_CONSTRUCTOR_BINDINGS_ARM_2026-10-16.md).
 
 ## ObjectGun mesh replacement (2026-10-16)
 

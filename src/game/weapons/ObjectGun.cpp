@@ -12,10 +12,41 @@
 #include "engine/render/AEGeometry.h"
 
 
-struct MeshId {
-    uint16_t id;
-    uint16_t pad;
+// Android 2.0.16 .rodata at 0x203398: one signed ID table for both the
+// negative sentinel check and the 16-bit geometry ID passed to AEGeometry.
+static constexpr int kObjectGunMeshIds[232] = {
+    14500, 14500, 14500, 14501, 14501, 14502, 14502, 14503,
+    14503, 14500, 14503, 14502, 14501, 14501, 14501, 14501,
+    14504, 14504, 14504, 14505, 14505, 14505, 14506, 14506,
+    14507, 14507, 14508, 14508, 14506, 14505, 14502, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, 14503,
+    14505, 14501, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    14506, 14503, 14502, -1, 14509, 14510, 14506, 14503,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, 14500, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1,
+    14505, -1, -1, -1, 14501, 14501, 14508, 14502,
 };
+static_assert(kObjectGunMeshIds[31] == -1 && kObjectGunMeshIds[176] == 14506 &&
+              kObjectGunMeshIds[231] == 14502, "ObjectGun mesh table anchors");
 
 // View used by the ego-orientation branch of render(): in the shipped binary the
 // player object stores an orientation Matrix starting at byte 0x40 (the same
@@ -70,10 +101,7 @@ void VectorCross(Vector *out, const Vector *a, const Vector *b);
 
 void ObjectGun_setEnemies_impl(void *items);
 
-static void *g_ObjectGunScaleFlag = nullptr;
 static void *g_ObjectGunRenderScaleFlag = nullptr;
-static MeshId g_ObjectGunGeometryIds[256] = {};
-static int g_ObjectGunPlayerGunIds[256] = {};
 
 static uint32_t (*g_TransformGetObject)(void *canvas, uint32_t mesh) = nullptr;
 
@@ -89,7 +117,7 @@ ObjectGun::ObjectGun(int /*unused*/, Gun *gun, int mesh, uint32_t /*param*/, Lev
     this->side.z = 0.0f;
     this->orientation = AbyssEngine::AEMath::Matrix();
 
-    void **canvas = (void **) g_PaintCanvas;
+    PaintCanvas **canvas = &Globals::Canvas;
     this->useEgoOrientation = 0;
     this->explosions = nullptr;
     this->explosionReady = nullptr;
@@ -97,9 +125,9 @@ ObjectGun::ObjectGun(int /*unused*/, Gun *gun, int mesh, uint32_t /*param*/, Lev
     this->gun = gun;
     this->level = level;
     this->secondaryTransform = -1;
-    TransformCreate(*canvas, &this->transform);
+    (*canvas)->TransformCreate(this->transform);
     this->meshId = mesh;
-    TransformAddMesh(*canvas, this->transform, (uint16_t) mesh, 0);
+    (*canvas)->TransformAddMesh(this->transform, (uint16_t) mesh, false);
     this->rollAngle = 0.0f;
     this->scaleX = 1.0f;
     this->scaleY = 1.0f;
@@ -109,7 +137,7 @@ ObjectGun::ObjectGun(int /*unused*/, Gun *gun, int mesh, uint32_t /*param*/, Lev
     int type = gun->weaponType;
     this->visible = (type <= 8 && ((1u << type) & 0x10aU) != 0) ? 1 : 0;
 
-    if (*(uint8_t *) g_ObjectGunScaleFlag != 0) {
+    if (Globals::iPad != 0) {
         if (type == 1 || type == 3 || type == 8) {
             this->scaleX = 0.6f;
             this->scaleY = 0.6f;
@@ -141,7 +169,7 @@ ObjectGun::ObjectGun(int /*unused*/, Gun *gun, int mesh, uint32_t /*param*/, Lev
     AEGeometry *geometry = nullptr;
     bool createGeometry = true;
     if (gun->field_0xa8 == 0) {
-        if (gun->isPlayerGun() == 0 || g_ObjectGunPlayerGunIds[gun->itemIndex] < 0) {
+        if (gun->isPlayerGun() == 0 || kObjectGunMeshIds[gun->itemIndex] < 0) {
             this->hasGeometry = 0;
             createGeometry = false;
         } else {
@@ -153,8 +181,8 @@ ObjectGun::ObjectGun(int /*unused*/, Gun *gun, int mesh, uint32_t /*param*/, Lev
     }
 
     if (createGeometry)
-        geometry = new AEGeometry((uint16_t) g_ObjectGunGeometryIds[gun->itemIndex].id,
-                                  (PaintCanvas *) *canvas, false);
+        geometry = new AEGeometry((uint16_t) kObjectGunMeshIds[gun->itemIndex],
+                                  *canvas, false);
 
     this->wasFiring = 0;
     this->geometry = geometry;
@@ -224,7 +252,7 @@ void ObjectGun::update(int dt) {
                 if (ki != nullptr && ki->field_0x3f_b != 0) {
                     this->hasGeometry = 1;
                     this->geometry = new AEGeometry(
-                        (uint16_t) g_ObjectGunGeometryIds[this->gun->itemIndex].id,
+                        (uint16_t) kObjectGunMeshIds[this->gun->itemIndex],
                         (PaintCanvas *) *canvas, false);
                 }
             }
