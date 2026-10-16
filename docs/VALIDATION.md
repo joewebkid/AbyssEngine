@@ -4,6 +4,27 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene turret geometry (2026-10-17)
+
+`python tools/run_cutscene_turret_transform_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` and `python
+tools/run_cutscene_turret_motion_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` pass at host `-O0/-O2` for seven
+transform-ID calls, all known item-index translations, outer position
+slot 2 and the rotation gate. Native `gof2`, **208/208** ARM units and
+40 verifier tests (one existing skip) pass. Focused report
+`A:/Galaxy on Fire new version/_work/cutscene_check_turret_after_20261017.json`
+scores `checkForTurret` at **93.8% source-shape / 48.7% strict fuzzy**,
+up from **89.6% / 45.8%** in
+`cutscene_check_turret_before_20261017.json`, still nonexact. Full
+report
+`A:/Galaxy on Fire new version/_work/cutscene_check_turret_full_20261017.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.74%/82.86%** rounded averages, **2,517 linked-exact / 1,076
+byte-exact**. Exact `(unit,symbol)` sets are unchanged from
+`cutscene_replace_ship_final_full_20261017.json`. See
+[the turret audit](CUTSCENE_TURRET_ARM_2026-10-17.md).
+
 ## CutScene ship replacement (2026-10-17)
 
 `python tools/run_cutscene_replace_ship_smoke.py --cxx

@@ -28,9 +28,6 @@ static float CutScene_fogDensity_mode4;
 static float CutScene_fogColor;
 static float CutScene_persp_fov_mode17;
 static float CutScene_persp_fov_mode4;
-static float CutScene_turret_tx, CutScene_turret_ty, CutScene_turret_tz;
-static float CutScene_turret_rx, CutScene_turret_ry, CutScene_turret_rz;
-static float CutScene_turret_rx2, CutScene_turret_ry2, CutScene_turret_rz2;
 // Android .rodata 0x1fb934; the following five words are a separate item-ID table.
 static constexpr int CutScene_shipVerticalOffsets[64] = {
     160, 150, 220, 310, 160, 180, 140, 170, 170, 110, 250, 205, 240, 250, 250, 250,
@@ -556,7 +553,7 @@ void CutScene::checkForTurret() {
     if (this->turretGeom != nullptr) {
         Array<KIPlayer *> *enemies = this->level->getEnemies();
         AEGeometry *lead = (*enemies)[0]->geometry;
-        canvas->TransformRemoveChild(lead->childTransform, this->turretGeom->childTransform);
+        canvas->TransformRemoveChild(lead->transform, this->turretGeom->transform);
     }
 
     Ship *ship = Status::gStatus->getShip();
@@ -574,6 +571,7 @@ void CutScene::checkForTurret() {
     int child0 = -1;
     int child1 = -1;
     int child2 = -1;
+    float tx = 0.0f, ty = 0.0f, tz = 0.0f;
 
     switch (idx) {
         case 0xe0:
@@ -582,21 +580,30 @@ void CutScene::checkForTurret() {
             child0 = 0x499c;
             child1 = 0x499d;
             child2 = -1;
+            ty = 82.0f;
             break;
         case 0x30: id0 = 0x1a74;
             id1 = 0x1a75;
+            ty = 55.0f;
             break;
         case 0x31: id0 = 0x1a76;
             id1 = 0x1a77;
+            ty = 60.0f;
             break;
         case 0xb4: id0 = 0x1a95;
             id1 = 0x1a96;
+            ty = 84.0f;
             break;
         case 0xb5: id0 = 0x1a97;
             id1 = 0x1a98;
+            ty = 88.0f;
+            tz = -11.0f;
             break;
         case 0xb6: id0 = 0x1a99;
             id1 = 0x1a9a;
+            tx = 34.0f;
+            ty = 88.0f;
+            tz = 1.6f;
             break;
         case 0xc6:
             id0 = 0x4963;
@@ -604,6 +611,7 @@ void CutScene::checkForTurret() {
             child0 = 0x4964;
             child1 = 0x4966;
             child2 = -1;
+            ty = 80.0f;
             break;
         case 199:
             id0 = 0x4968;
@@ -611,6 +619,7 @@ void CutScene::checkForTurret() {
             child0 = 0x4969;
             child1 = 0x496a;
             child2 = -1;
+            ty = 38.0f;
             break;
         case 200:
             id0 = 0x496c;
@@ -618,9 +627,11 @@ void CutScene::checkForTurret() {
             child0 = 0x496d;
             child1 = 0x496e;
             child2 = 0x4970;
+            ty = 75.0f;
             break;
         case 0x2f: id0 = 0x1a72;
             id1 = 0x1a73;
+            ty = 60.0f;
             break;
         default: id0 = 0xffff;
             id1 = 0xffff;
@@ -633,17 +644,17 @@ void CutScene::checkForTurret() {
 
     if (child0 != -1) {
         AEGeometry *c = new AEGeometry((uint16_t)(unsigned short)child0, canvas, false);
-        geom0->addChild(c->childTransform);
+        geom0->addChild(c->transform);
         delete c;
     }
     if (child1 != -1) {
         AEGeometry *c = new AEGeometry((uint16_t)(unsigned short)child1, canvas, false);
-        geom1->addChild(c->childTransform);
+        geom1->addChild(c->transform);
         delete c;
     }
     if (child2 != -1) {
         AEGeometry *c = new AEGeometry((uint16_t)(unsigned short)child2, canvas, false);
-        geom1->addChild(c->childTransform);
+        geom1->addChild(c->transform);
         delete c;
     }
 
@@ -654,21 +665,21 @@ void CutScene::checkForTurret() {
     int shipIdx = Status::gStatus->getShip()->getIndex();
     Array<Array<Vector *> *> *positions = fr.loadWeaponPositions(shipIdx);
 
-    Vector *posVec = (*(*positions)[0])[0];
+    Vector *posVec = (*(*positions)[2])[0];
     geom0->setPosition(*posVec);
     geom1->setPosition(*posVec);
-    geom0->translate(CutScene_turret_tx, CutScene_turret_ty, CutScene_turret_tz);
+    geom1->translate(tx, ty, tz);
 
     int idx2 = item->getIndex();
-    if (idx2 >= 0xc6 && item->getIndex() <= 200) {
-        geom0->rotate(CutScene_turret_rx, CutScene_turret_ry, CutScene_turret_rz);
-        geom1->rotate(CutScene_turret_rx2, CutScene_turret_ry2, CutScene_turret_rz2);
+    if (idx2 < 0xc6 || item->getIndex() > 200) {
+        geom0->rotate(0.0f, 3.1415927f, 0.0f);
+        geom1->rotate(0.0f, 3.1415927f, 0.0f);
     }
 
-    this->turretGeom->addChild(geom0->childTransform);
-    this->turretGeom->addChild(geom1->childTransform);
+    this->turretGeom->addChild(geom0->transform);
+    this->turretGeom->addChild(geom1->transform);
     Array<KIPlayer *> *enemies2 = this->level->getEnemies();
-    (*enemies2)[0]->geometry->addChild(this->turretGeom->childTransform);
+    (*enemies2)[0]->geometry->addChild(this->turretGeom->transform);
 
     if (positions == nullptr)
         return;

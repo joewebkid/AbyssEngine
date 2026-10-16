@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (CutScene ship replacement; older subsystem
+Last reviewed: 2026-10-17 (CutScene turret geometry; older subsystem
 snapshots retain their dates)
+
+## CutScene turret geometry (2026-10-17)
+
+Android ARM restores the seven main-transform detach/attach IDs,
+weapon-position slot 2, per-item translation of the second turret
+geometry, and the rotation condition outside item indices 198..200.
+Zero-valued placeholder translations and rotations and an inverted
+condition had changed visible geometry. Focused `checkForTurret`
+source-shape/strict fuzzy rises from **89.6%/45.8% to 93.8%/48.7%**,
+still nonexact. Native `gof2`, **208/208** ARM units, 40 verifier
+tests (one existing skip), and extracted `-O0/-O2` tests pass. Full
+corpus remains **4,323/4,524** compared, **201 missing**, **123
+extras**, **93.74%/82.86%** rounded averages, **2,517 linked-exact
+/ 1,076 byte-exact**, with zero exact-pair losses. Live ARM32/GPU
+behavior and weapon-position ownership remain untested. Next priority:
+mode-2 `CutScene::initialize` ship placement and call order. See
+[the turret audit](CUTSCENE_TURRET_ARM_2026-10-17.md).
 
 ## CutScene ship replacement (2026-10-17)
 
