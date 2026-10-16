@@ -1,4 +1,4 @@
-"""Exercise production ObjectGun canvas calls and inactive animation states."""
+"""Exercise production ObjectGun canvas, animation, and render bindings."""
 
 import argparse
 from pathlib import Path
@@ -33,9 +33,27 @@ def main():
         f"{inactive}\n"
         "}\n"
     )
+    render_scale = "                if (Globals::iPad != 0)" + source.split(
+        "                if (Globals::iPad != 0)", 1)[1].split(
+        "\n\n                if (this->gun->weaponType", 1)[0]
+    render_scale_body = (
+        "void ObjectGun::applyRenderScale(Matrix &local) {\n"
+        f"{render_scale}\n"
+        "}\n"
+    )
+    render_final = "                PaintCanvas **canvas = &Globals::Canvas;" + source.split(
+        "                PaintCanvas **canvas = &Globals::Canvas;", 1)[1].split(
+        "\n            } else {\n                ++inactive;", 1)[0]
+    render_final_body = (
+        "void ObjectGun::renderFinal() {\n"
+        f"{render_final}\n"
+        "}\n"
+    )
     with tempfile.TemporaryDirectory(prefix="objectgun-canvas-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "smoke.cpp"
-        generated.write_text(fixture.replace("// PRODUCTION_METHODS", body + "\n" + inactive_body))
+        generated.write_text(fixture.replace(
+            "// PRODUCTION_METHODS",
+            "\n".join((body, inactive_body, render_scale_body, render_final_body))))
         for optimization in ("-O0", "-O2"):
             exe = Path(temp) / f"smoke-{optimization[2:]}.exe"
             subprocess.run([args.cxx, "-std=gnu++17", optimization,

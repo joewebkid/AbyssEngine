@@ -47,4 +47,7 @@ resource ownership and external game initialization remain untested.
 The constructor's canvas, iPad and mesh-ID-table bindings were
 subsequently recovered in
 [the constructor audit](OBJECTGUN_CONSTRUCTOR_BINDINGS_ARM_2026-10-16.md).
-`ObjectGun::update` and `render` remain priorities.
+Later [update](OBJECTGUN_UPDATE_BINDINGS_ARM_2026-10-16.md)
+and [render](OBJECTGUN_RENDER_BINDINGS_ARM_2026-10-16.md)
+passes recovered their canvas bindings. Their full behavior
+still needs validation.

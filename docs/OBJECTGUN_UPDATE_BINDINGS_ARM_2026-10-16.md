@@ -47,6 +47,8 @@ preceding full report have zero gains and zero losses. Reports:
 and `A:/Galaxy on Fire new version/_work/objectgun_update_bindings_enum_full_20261016.json`.
 
 Only the inactive-delay branch has a host behavior fixture.
-The complete `update` math/explosion path, `render` canvas
-and scale-flag bindings, live ARM32 rendering, and full native
-game startup remain unverified.
+The complete `update` math/explosion path, live ARM32
+rendering, and full native game startup remain unverified.
+The later
+[render binding pass](OBJECTGUN_RENDER_BINDINGS_ARM_2026-10-16.md)
+removed its null canvas and scale-flag placeholders.

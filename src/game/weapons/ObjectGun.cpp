@@ -67,17 +67,7 @@ namespace AbyssEngine {
     }
 }
 
-static void *g_PaintCanvas = nullptr;
-
-void TransformSetLocal(void *canvas, uint32_t transform, Matrix *matrix);
-
-void DrawTransform(void *canvas, uint32_t transform, int flags);
-
 void MatrixRotateVector(void *out, const void *matrix, const void *vec);
-
-void *CameraGetCurrent(void *canvas);
-
-void *CameraGetLocal(void *canvas, void *camera);
 
 void MatrixGetDir(Vector *out, const Matrix *matrix);
 
@@ -94,8 +84,6 @@ void VectorNormalize(Vector *out, const Vector *in);
 void VectorCross(Vector *out, const Vector *a, const Vector *b);
 
 void ObjectGun_setEnemies_impl(void *items);
-
-static void *g_ObjectGunRenderScaleFlag = nullptr;
 
 ObjectGun::ObjectGun(int /*unused*/, Gun *gun, int mesh, uint32_t /*param*/, Level *level) {
     this->dir.x = 0.0f;
@@ -404,10 +392,9 @@ void ObjectGun::render() {
         cameraLocal.m[5] = 1.0f;
         cameraLocal.m[14] = 1.0f;
         if (gun->weaponType == ITEM_SORT_TURRET) {
-            void **canvas = (void **) g_PaintCanvas;
-            void *paint = *canvas;
-            void *camera = CameraGetCurrent(paint);
-            cameraLocal = *(const Matrix *) CameraGetLocal(paint, camera);
+            PaintCanvas *paint = Globals::Canvas;
+            unsigned camera = paint->CameraGetCurrent();
+            cameraLocal = *static_cast<const Matrix *>(paint->CameraGetLocal(camera));
             if (this->visible != 0) {
                 for (uint32_t mi = 0; mi < 15; ++mi)
                     rotate.m[mi] = 0.0f;
@@ -433,10 +420,9 @@ void ObjectGun::render() {
                     muzzle.y = -this->dir.y;
                     muzzle.z = -this->dir.z;
                     if ((uint32_t)(gun->itemIndex - 0xb4) > 2) {
-                        void **canvas = (void **) g_PaintCanvas;
-                        void *paint = *canvas;
-                        void *camera = CameraGetCurrent(paint);
-                        cameraLocal = *(const Matrix *) CameraGetLocal(paint, camera);
+                        PaintCanvas *paint = Globals::Canvas;
+                        unsigned camera = paint->CameraGetCurrent();
+                        cameraLocal = *static_cast<const Matrix *>(paint->CameraGetLocal(camera));
                         MatrixGetDir(&dir, &cameraLocal);
                         muzzle = dir;
                         gun = this->gun;
@@ -514,10 +500,10 @@ void ObjectGun::render() {
                     player->empPointsF = 0.0f;
                     player->maxEmpPointsF = 0.0f;
                     MatrixSetRotation(&scaleMatrix, this->rollAngle, 0.0f, 0.0f);
-                    TransformSetLocal(*(void **) g_PaintCanvas, this->secondaryTransform, &scaleMatrix);
+                    Globals::Canvas->TransformSetLocal(this->secondaryTransform, scaleMatrix);
                 }
 
-                if (*(uint8_t *) g_ObjectGunRenderScaleFlag != 0)
+                if (Globals::iPad != 0)
                     MatrixSetScaling(&local, this->scaleX, this->scaleY, this->scaleZ);
 
                 if (this->gun->weaponType == ITEM_SORT_MINE) {
@@ -534,9 +520,9 @@ void ObjectGun::render() {
                     MatrixSetScaling(&local, this->scaleX, this->scaleY, this->scaleZ);
                 }
 
-                void **canvas = (void **) g_PaintCanvas;
-                TransformSetLocal(*canvas, this->transform, &this->orientation);
-                DrawTransform(*canvas, this->transform, 0);
+                PaintCanvas **canvas = &Globals::Canvas;
+                (*canvas)->TransformSetLocal(this->transform, this->orientation);
+                (*canvas)->DrawTransform(this->transform, nullptr);
             } else {
                 ++inactive;
             }

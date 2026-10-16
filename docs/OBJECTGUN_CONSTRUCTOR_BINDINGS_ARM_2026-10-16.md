@@ -49,6 +49,8 @@ This is a bounded binding/table recovery, not proof that the full
 constructor or game runtime works. The constructor has additional
 source-shape differences. The later
 [update binding pass](OBJECTGUN_UPDATE_BINDINGS_ARM_2026-10-16.md)
-removed its null canvas and animation-function placeholders;
-`render` still holds unresolved bindings. No live ARM32
-rendering test was run.
+removed its null canvas and animation-function placeholders.
+The subsequent
+[render binding pass](OBJECTGUN_RENDER_BINDINGS_ARM_2026-10-16.md)
+removed the render canvas and scale-flag placeholders.
+No live ARM32 rendering test was run.

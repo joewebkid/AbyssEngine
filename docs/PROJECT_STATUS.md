@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ObjectGun update bindings; older subsystem
+Last reviewed: 2026-10-16 (ObjectGun render bindings; older subsystem
 snapshots retain their dates)
+
+## ObjectGun render bindings (2026-10-16)
+
+Android ARM confirms that the render path reads
+`Globals::Canvas` for camera, local-transform and draw calls,
+and `Globals::iPad` for conditional scaling. The former null
+file-static placeholders and their declared-only canvas call shims
+in `ObjectGun::render` have been replaced with typed calls.
+An extracted production-fragment fixture checks iPad scaling
+and re-reading the canvas after `TransformSetLocal` at
+host `-O0/-O2`. Native `gof2`, **207/207** ARM units and
+**40** verifier tests (one skip) pass. Focused render
+source-shape/strict fuzzy improves **86.8%/30.9% ->
+90.4%/34.6%**, without exact status. Full corpus:
+**4,323/4,524** compared, **201 missing**, **124 extras**,
+zero skipped, **93.66%/82.75%** average source-shape/strict
+fuzzy, **2,510 linked-exact / 1,074 byte-exact**; exact
+sets have zero gains/losses. Full rendering behavior and
+live ARM32 GPU output remain untested. See
+[the render audit](OBJECTGUN_RENDER_BINDINGS_ARM_2026-10-16.md).
 
 ## ObjectGun update bindings (2026-10-16)
 
@@ -17,7 +37,8 @@ Native `gof2`, **207/207** ARM units, and **40** verifier tests
 **4,323/4,524** compared, **201 missing**, **124 extras**, zero
 skipped, **93.66%/82.75%** average source-shape/strict fuzzy,
 **2,510 linked-exact / 1,074 byte-exact**, with zero exact
-gains/losses. Full update behavior and `render` remain unverified.
+gains/losses. Full update behavior remains unverified; the
+later render binding pass is documented separately.
 See [the update audit](OBJECTGUN_UPDATE_BINDINGS_ARM_2026-10-16.md).
 
 ## ObjectGun constructor bindings (2026-10-16)

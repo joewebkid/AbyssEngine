@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ObjectGun render bindings (2026-10-16)
+
+`python tools/run_objectgun_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` checks extracted iPad scaling
+and set-local/draw fragments at host `-O0/-O2`.
+Native `gof2`, 207/207 ARM units and 40 verifier tests
+(one skip) pass. Focused render source-shape/strict fuzzy
+improves 86.8%/30.9% to 90.4%/34.6%, without exact status.
+The full report
+`A:/Galaxy on Fire new version/_work/objectgun_render_bindings_full_20261016.json`
+compares 4,323/4,524 originals, 201 missing, 124 extras,
+zero skipped, 93.66%/82.75% average source-shape/strict
+fuzzy, 2,510 linked-exact and 1,074 byte-exact. Against
+`objectgun_update_bindings_enum_full_20261016.json`,
+exact `(unit,symbol)` sets have zero gains and zero losses.
+See [the render audit](OBJECTGUN_RENDER_BINDINGS_ARM_2026-10-16.md).
+
 ## ObjectGun update bindings (2026-10-16)
 
 The production inactive-delay branch is exercised by
