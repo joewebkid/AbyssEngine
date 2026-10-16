@@ -1,4 +1,4 @@
-"""Exercise the production ParticleSystemMesh::emitTrail body without a GPU."""
+"""Exercise production particle-trail and color bodies without a GPU."""
 
 import argparse
 from pathlib import Path
@@ -20,6 +20,7 @@ def main():
         parser.error("specify --cxx")
 
     source = (ROOT / "src/engine/render/ParticleSystemMesh.cpp").read_text()
+    base_source = (ROOT / "src/engine/render/IParticleSystem.cpp").read_text()
     trail_source = (ROOT / "src/engine/render/ParticleSystemMeshTrail.cpp").read_text()
     fixture = (ROOT / "tools/particle_mesh_trail_smoke.cpp").read_text()
     bodies = "\n".join((
@@ -28,6 +29,7 @@ def main():
         function(source, "void ParticleSystemMesh::updateSingle(int id, float delta)"),
         function(source, "void ParticleSystemMesh::updateTrailEdges(int id, int delta)"),
         function(source, "void ParticleSystemMesh::updateSingleColor(int id)"),
+        function(base_source, "void IParticleSystem::interpolateColor(int index, float &alpha, float &red, float &green, float &blue)"),
     ))
     with tempfile.TemporaryDirectory(prefix="particle-trail-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "smoke.cpp"

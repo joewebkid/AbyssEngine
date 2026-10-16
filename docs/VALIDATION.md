@@ -4,6 +4,28 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Base particle color interpolation (2026-10-16)
+
+`python tools/run_particle_mesh_trail_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` now extracts the real
+`IParticleSystem::interpolateColor` in addition to the mesh methods.
+The `-O0/-O2` fixture checks a half-life blend, over-life cap, both
+fade modes, second set and trail vertex propagation. Native `gof2`
+and 40 verifier tests (one existing skip) pass. No production C++
+changed. Fresh focused `--no-build` report
+`A:/Galaxy on Fire new version/_work/particle_interpolation_baseline_20261016.json`
+records **91.4% source-shape / 42.8% strict fuzzy**, nonexact. The
+fresh full `--no-build` report
+`A:/Galaxy on Fire new version/_work/particle_interpolation_full_20261016.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+zero skipped, **93.67%/82.77%** averages, **2,513 linked-exact /
+1,074 byte-exact**. Both exact `(unit,symbol)` sets have zero
+differences against `particle_trail_edge_sign_full_20261016.json`.
+ARM compilation was not rerun; the previous 208/208 result remains
+valid because production C++ is unchanged. Live ARM32/GPU
+behavior remains unverified. See
+[the interpolation audit](PARTICLE_INTERPOLATE_COLOR_ARM_2026-10-16.md).
+
 ## ParticleSystemMesh color and expiry output (2026-10-16)
 
 `python tools/run_particle_mesh_trail_smoke.py --cxx

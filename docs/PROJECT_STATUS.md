@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ParticleSystemMesh color/expiry output; older subsystem
+Last reviewed: 2026-10-16 (particle color interpolation; older subsystem
 snapshots retain their dates)
+
+## Base particle color interpolation (2026-10-16)
+
+Android ARM `IParticleSystem::interpolateColor` confirms the `0xa0`
+set stride, color/fade offsets, upper-only age-fraction cap and the
+distinct `alphaFade` channel groups. The mesh-trail smoke fixture now
+executes the real production interpolator at host `-O0/-O2` for
+half-life, over-life, both fades, second-set selection and adjacent
+trail propagation. No production C++ changed. Native `gof2` and 40
+verifier tests (one existing skip) pass. Focused source-shape/strict
+fuzzy is **91.4%/42.8%**, nonexact. A fresh full ARM comparison is
+**4,323/4,524** compared, **93.67%/82.77%** averages, **2,513
+linked-exact / 1,074 byte-exact**, with zero exact-pair changes from
+the previous report; the prior **208/208** ARM build remains valid.
+Live ARM32/GPU output and sprite
+render propagation remain unverified. See
+[the interpolation audit](PARTICLE_INTERPOLATE_COLOR_ARM_2026-10-16.md).
 
 ## ParticleSystemMesh color and expiry output (2026-10-16)
 

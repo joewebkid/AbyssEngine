@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstddef>
 #include <cmath>
 #include <cstdint>
 #include <vector>
@@ -35,17 +36,28 @@ struct ParticleSettings {
         float lifeBase = 2, colorFlag = 0, flLifetime = 100;
         float posRight = 1, posUp = 2, posDir = 3;
         float uvU0 = 0.1f, uvV0 = 0.3f, uvU1 = 0.2f, uvV1 = 0.4f;
-        int posBase = 3;
         int lifetime = 100;
+        int posBase = 3;
+        int field_0x30 = 0;
         uint32_t color0 = 0x11223344u;
         uint32_t color1 = 0xa1b2c3d4u;
-    } sets[1];
+        int fadeFrames = 0;
+        uint8_t remaining[0xa0 - 0x40]{};
+    } sets[2];
 };
+static_assert(sizeof(ParticleSettings::SetDefinition) == 0xa0);
+static_assert(offsetof(ParticleSettings::SetDefinition, lifetime) == 0x28);
+static_assert(offsetof(ParticleSettings::SetDefinition, color0) == 0x34);
+static_assert(offsetof(ParticleSettings::SetDefinition, color1) == 0x38);
+static_assert(offsetof(ParticleSettings::SetDefinition, fadeFrames) == 0x3c);
 using ParticleSet = ParticleSettings::ParticleSet;
 struct ParticleSettingsRef { static ParticleSettings cur; };
 ParticleSettings ParticleSettingsRef::cur;
 const ParticleSettings::SetDefinition &currentParticleSet(int set) {
     return ParticleSettingsRef::cur.sets[set];
+}
+static char *particleSetDefinition(ParticleSet set) {
+    return reinterpret_cast<char *>(&ParticleSettingsRef::cur.sets[static_cast<int>(set)]);
 }
 
 struct PaintCanvas {
@@ -70,12 +82,11 @@ struct PaintCanvas {
 
 struct IParticleSystem {
     int baseEmitCalls = 0, lastBaseDelta = -1;
-    int interpolateCalls = 0;
+    int *particleAges = nullptr;
+    int8_t *particleSetIds = nullptr;
+    uint8_t alphaFade = 0;
     void emit(int delta) { ++baseEmitCalls; lastBaseDelta = delta; }
-    void interpolateColor(int, float &a, float &r, float &g, float &b) {
-        ++interpolateCalls;
-        a = 0.1f; r = 0.2f; g = 0.3f; b = 0.4f;
-    }
+    void interpolateColor(int, float &, float &, float &, float &);
 };
 
 struct ParticleSystemMesh : IParticleSystem {
@@ -86,7 +97,7 @@ struct ParticleSystemMesh : IParticleSystem {
     int maxParticles = 2, currentParticle = 0, frameCounter = 0;
     uint32_t flags = 0x1000, edgeCount = 1, stride = 1;
     uint32_t resource = 1, resourceOffset = 100;
-    uint8_t mirror = 0, newSectionStarted = 1, wide = 0, alphaFade = 0;
+    uint8_t mirror = 0, newSectionStarted = 1, wide = 0;
     uint8_t emitEnabled = 1, renderEnabled = 1;
     Matrix matrixValue{{10, 20, 30}};
     const Matrix *matrix = &matrixValue;
@@ -94,9 +105,7 @@ struct ParticleSystemMesh : IParticleSystem {
     Vector velocities[8]{};
     Vector *particleVelocities = velocities;
     int ages[2]{-1, -1};
-    int *particleAges = ages;
     int8_t ids[2]{0, 0};
-    int8_t *particleSetIds = ids;
     PaintCanvas canvasValue;
     PaintCanvas *canvas = &canvasValue;
     int edgeCalls = 0, finishCalls = 0, extraCalls = 0;
@@ -104,6 +113,8 @@ struct ParticleSystemMesh : IParticleSystem {
     int lastEdgePoint = -1, lastFinished = -1, extraSlot = -1;
     Vector lastEdge{}, lastEdgeOffset{}, lastFinishRight{}, lastFinishUp{}, extraPosition{};
     bool extraFinish = false;
+
+    ParticleSystemMesh() { particleAges = ages; particleSetIds = ids; }
 
     void setQuadEdge(const Vector &position, int point, const Vector &offset) {
         ++edgeCalls; lastEdge = position; lastEdgeOffset = offset; lastEdgePoint = point;
@@ -262,7 +273,6 @@ int main() {
     colorStart.updateSingleColor(0);
     const auto &front = colorStart.canvas->floatColors;
     assert(front.size() == 2 && front[0].point == 102 && front[1].point == 103);
-    assert(colorStart.interpolateCalls == 0);
     assert(near(front[0].a, 0xa1 / 255.0f) && near(front[0].r, 0xb2 / 255.0f));
     assert(near(front[0].g, 0xc3 / 255.0f) && front[0].b == 0.0f);
 
@@ -278,12 +288,16 @@ int main() {
     ParticleSystemMesh linkedColor;
     linkedColor.flags |= 0x8000;
     linkedColor.ages[1] = 5;
+    linkedColor.ages[0] = 50;
     linkedColor.updateSingleColor(0);
     const auto &linked = linkedColor.canvas->floatColors;
-    assert(linkedColor.interpolateCalls == 1 && linked.size() == 4);
+    assert(linked.size() == 4);
     assert(linked[0].point == 102 && linked[1].point == 103);
     assert(linked[2].point == 104 && linked[3].point == 105);
-    assert(near(linked[0].a, 0.1f) && near(linked[2].b, 0.4f));
+    assert(near(linked[0].a, 89.0f / 255.0f));
+    assert(near(linked[0].r, 106.0f / 255.0f));
+    assert(near(linked[2].g, 123.0f / 255.0f));
+    assert(near(linked[2].b, 140.0f / 255.0f));
 
     ParticleSystemMesh wrapColor;
     wrapColor.flags |= 0x8000;
@@ -291,7 +305,7 @@ int main() {
     wrapColor.ages[1] = 5;
     wrapColor.updateSingleColor(1);
     const auto &wrapped = wrapColor.canvas->floatColors;
-    assert(wrapColor.interpolateCalls == 1 && wrapped.size() == 4);
+    assert(wrapped.size() == 4);
     assert(wrapped[0].point == 106 && wrapped[1].point == 107);
     assert(wrapped[2].point == 100 && wrapped[3].point == 101);
 
@@ -314,4 +328,41 @@ int main() {
     assert(boundary.ages[0] == 100 && boundary.canvas->points.empty());
     boundary.updateSingle(0, 1.0f);
     assert(boundary.ages[0] == -1 && boundary.canvas->points.size() == 4);
+
+    ParticleSystemMesh capped;
+    capped.ages[0] = 125;
+    float a, r, g, b;
+    capped.interpolateColor(0, a, r, g, b);
+    assert(near(a, 0xa1 / 255.0f) && near(r, 0xb2 / 255.0f));
+    assert(near(g, 0xc3 / 255.0f) && near(b, 0xd4 / 255.0f));
+
+    ParticleSettingsRef::cur.sets[1].color1 = 0x21426384u;
+    ParticleSystemMesh secondSet;
+    secondSet.ids[0] = 1;
+    secondSet.ages[0] = 100;
+    secondSet.interpolateColor(0, a, r, g, b);
+    assert(near(a, 0x21 / 255.0f) && near(r, 0x42 / 255.0f));
+    assert(near(g, 0x63 / 255.0f) && near(b, 0x84 / 255.0f));
+
+    ParticleSettingsRef::cur.sets[0].fadeFrames = 20;
+    ParticleSystemMesh blueFade;
+    blueFade.ages[0] = 10;
+    blueFade.interpolateColor(0, a, r, g, b);
+    assert(near(a, 31.4f / 255.0f) && near(r, 48.4f / 255.0f));
+    assert(near(g, 65.4f / 255.0f) && near(b, 41.2f / 255.0f));
+    blueFade.ages[0] = 20;
+    blueFade.interpolateColor(0, a, r, g, b);
+    assert(near(b, 96.8f / 255.0f));
+
+    ParticleSystemMesh alphaFade;
+    alphaFade.alphaFade = 1;
+    alphaFade.ages[0] = 10;
+    alphaFade.interpolateColor(0, a, r, g, b);
+    assert(near(a, 15.7f / 255.0f) && near(r, 24.2f / 255.0f));
+    assert(near(g, 32.7f / 255.0f) && near(b, 82.4f / 255.0f));
+    alphaFade.ages[0] = 0;
+    alphaFade.interpolateColor(0, a, r, g, b);
+    assert(a == 0.0f && r == 0.0f && g == 0.0f);
+    assert(near(b, 0x44 / 255.0f));
+    ParticleSettingsRef::cur.sets[0].fadeFrames = 0;
 }
