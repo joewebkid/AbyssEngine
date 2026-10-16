@@ -26,15 +26,13 @@ public:
     uint32_t pointCount; // +0x70
     uint8_t wide;
     uint8_t field_0x75[3];
-    uint32_t field_0x78;
-    uint32_t field_0x7c;
-    uint32_t field_0x80;
-    uint32_t field_0x84;
-    uint32_t field_0x88;
+    int32_t field_0x78;
+    int32_t field_0x7c;
+    Vector lastTrailPosition;
     uint32_t field_0x8c;
     uint8_t newSectionStarted;
     uint8_t field_0x91[3];
-    uint32_t frameCounter;
+    int32_t frameCounter;
     uint32_t edgeCount;
     uint32_t stride;
 
@@ -83,7 +81,7 @@ public:
 
     static void render(PaintCanvas *canvas, uint32_t mesh, uint32_t texture, BlendMode blend);
 
-    static void emitTrail(int self);
+    void emitTrail(int delta);
 };
 
 #if UINTPTR_MAX == 0xffffffffu

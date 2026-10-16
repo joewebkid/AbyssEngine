@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (AEGeometry LOD transfer; older subsystem
+Last reviewed: 2026-10-16 (ParticleSystemMesh trail emission; older subsystem
 snapshots retain their dates)
+
+## ParticleSystemMesh trail emission (2026-10-16)
+
+Android ARM at `0x18564c` anchors the recovered `emitTrail` instance
+method: emitter/edge vectors, optional cap, UV and color writes, section
+turnover and ring-buffer state now replace a one-instruction stub. An
+extracted-body host smoke, native `gof2`, **206/206** ARM units and **40**
+verifier tests (one skip) pass. Focused strict fuzzy/source-shape rises
+**0%/0% -> 37.5%/94.9%** over a 605-instruction original body; no exact
+match is claimed. Full coverage remains **4,323/4,524**, **201 missing**,
+zero skipped, **93.62%/82.69%** average source-shape/strict fuzzy,
+**2,507 linked-exact / 1,074 byte-exact** with no exact-pair loss or gain.
+One forwarding dispatch adds an extra symbol (**123 -> 124**), while the
+linked-function call audit stays **2,392/53/647** match/mismatch-candidate/
+unresolved. Ordinary emission, real GPU output and live ARM32 trail
+continuity remain unverified. See
+[the trail audit](PARTICLE_MESH_EMIT_TRAIL_ARM_2026-10-16.md).
 
 ## AEGeometry LOD selection and transform transfer (2026-10-16)
 

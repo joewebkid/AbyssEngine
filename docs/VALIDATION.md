@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ParticleSystemMesh trail emission (2026-10-16)
+
+`python tools/run_particle_mesh_trail_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` exercises the production `emitTrail` body
+with recorded canvas calls and fake neighboring implementations. Native
+`gof2`, 206/206 ARM units and 40 verifier tests (one skip) pass. The
+function moves from a one-instruction stub at 0%/0% strict fuzzy/
+source-shape to a 605-instruction reconstruction at 37.5%/94.9%; it is
+not exact. Full report
+`A:/Galaxy on Fire new version/_work/particle_emit_trail_full_20261016.json`
+compares 4,323/4,524 original unique functions at 93.62%/82.69%
+average source-shape/strict fuzzy, 2,507 linked-exact and 1,074
+byte-exact. Exact `(unit,symbol)` pair comparison against the prior
+full report found zero losses/gains. One extra forwarding symbol raises
+extras to 124. The linked-call audit is unchanged at 2,392 matches,
+53 mismatch candidates and 647 unresolved; it does not cover the
+nonexact trail method. See
+[the trail audit](PARTICLE_MESH_EMIT_TRAIL_ARM_2026-10-16.md).
+
 ## AEGeometry LOD selection and transfer (2026-10-16)
 
 `python tools/run_aegeometry_canvas_calls_smoke.py --cxx

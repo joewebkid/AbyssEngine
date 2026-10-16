@@ -1,0 +1,155 @@
+#include <cassert>
+#include <cmath>
+#include <cstdint>
+#include <vector>
+
+namespace AbyssEngine { namespace AEMath {
+struct Vector {
+    float x, y, z;
+    Vector &operator-=(const Vector &other) {
+        x -= other.x; y -= other.y; z -= other.z;
+        return *this;
+    }
+};
+struct Matrix {
+    Vector position;
+};
+Vector operator+(Vector a, Vector b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
+Vector operator-(Vector a, Vector b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
+Vector operator*(Vector a, float s) { return {a.x * s, a.y * s, a.z * s}; }
+Vector operator*(float s, Vector a) { return a * s; }
+Vector MatrixGetRight(const Matrix &) { return {1, 0, 0}; }
+Vector MatrixGetUp(const Matrix &) { return {0, 1, 0}; }
+Vector MatrixGetDir(const Matrix &) { return {0, 0, 1}; }
+Vector MatrixTransformVector(const Matrix &m, const Vector &v) { return v + m.position; }
+float VectorDot(const Vector &a, const Vector &b) {
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+}}
+using AbyssEngine::AEMath::Vector;
+using AbyssEngine::AEMath::Matrix;
+
+struct ParticleSettings {
+    enum ParticleSet { dummy = 0 };
+    struct SetDefinition {
+        float lifeBase = 2, colorFlag = 0, flLifetime = 100;
+        float posRight = 1, posUp = 2, posDir = 3;
+        float uvU0 = 0.1f, uvV0 = 0.3f, uvU1 = 0.2f, uvV1 = 0.4f;
+        int posBase = 3;
+        uint32_t color0 = 0x11223344u;
+    } sets[1];
+};
+using ParticleSet = ParticleSettings::ParticleSet;
+struct ParticleSettingsRef { static ParticleSettings cur; };
+ParticleSettings ParticleSettingsRef::cur;
+const ParticleSettings::SetDefinition &currentParticleSet(int set) {
+    return ParticleSettingsRef::cur.sets[set];
+}
+
+struct PaintCanvas {
+    struct Uv { uint16_t point; float u, v; };
+    struct Color { uint16_t point; uint32_t value; };
+    std::vector<Uv> uv;
+    std::vector<Color> colors;
+    void MeshSetUv(uint32_t, uint16_t point, float u, float v) {
+        uv.push_back({point, u, v});
+    }
+    void MeshSetColor(uint32_t, uint16_t point, uint32_t value) {
+        colors.push_back({point, value});
+    }
+};
+
+struct ParticleSystemMesh {
+    struct Sets { ParticleSet values[1]{ParticleSet::dummy}; ParticleSet operator[](int i) {
+        return values[i];
+    } } particleSets;
+    int particleSetIndex = 0, field_0x78 = 1, field_0x7c = 2;
+    int maxParticles = 2, currentParticle = 0, frameCounter = 0;
+    uint32_t flags = 0x1000, edgeCount = 1, stride = 1;
+    uint32_t resource = 1, resourceOffset = 100;
+    uint8_t mirror = 0, newSectionStarted = 1, wide = 0, alphaFade = 0;
+    Matrix matrixValue{{10, 20, 30}};
+    const Matrix *matrix = &matrixValue;
+    Vector lastTrailPosition{};
+    Vector velocities[8]{};
+    Vector *particleVelocities = velocities;
+    int ages[2]{-1, -1};
+    int *particleAges = ages;
+    PaintCanvas canvasValue;
+    PaintCanvas *canvas = &canvasValue;
+    int edgeCalls = 0, finishCalls = 0, extraCalls = 0;
+    int lastEdgePoint = -1, lastFinished = -1, extraSlot = -1;
+    Vector lastEdge{}, lastEdgeOffset{}, lastFinishRight{}, lastFinishUp{}, extraPosition{};
+    bool extraFinish = false;
+
+    void setQuadEdge(const Vector &position, int point, const Vector &offset) {
+        ++edgeCalls; lastEdge = position; lastEdgeOffset = offset; lastEdgePoint = point;
+    }
+    void setParticle(const Vector &position, float, uint32_t, float, float, float, float,
+                     bool, float, float, const Vector &, bool finish) {
+        ++extraCalls; extraPosition = position; extraSlot = currentParticle;
+        extraFinish = finish;
+    }
+    void finishCurrentTrailParticle(ParticleSet, int id, const Vector &right, const Vector &up) {
+        ++finishCalls; lastFinished = id; lastFinishRight = right; lastFinishUp = up;
+        particleAges[id] = 0;
+    }
+    void incId() { currentParticle = (currentParticle + 1) % maxParticles; }
+    void emitTrail(int delta);
+};
+
+// PRODUCTION_METHOD
+
+static bool near(float a, float b) { return std::fabs(a - b) < 0.0001f; }
+
+int main() {
+    ParticleSystemMesh mesh;
+    mesh.emitTrail(10);
+    assert(mesh.finishCalls == 1 && mesh.lastFinished == 0);
+    assert(mesh.currentParticle == 1 && mesh.frameCounter == 0 && mesh.newSectionStarted == 0);
+    assert(mesh.edgeCalls == 2 && mesh.lastEdgePoint == 106);
+    assert(near(mesh.lastEdge.x, 12) && near(mesh.lastEdge.y, 22) && near(mesh.lastEdge.z, 35));
+    assert(near(mesh.lastFinishRight.x, 3) && near(mesh.lastFinishUp.y, 3));
+    assert(near(mesh.velocities[2].x, 3) && near(mesh.velocities[3].x, 0));
+    assert(mesh.ages[1] == -2 && mesh.canvas->colors.size() == 4);
+    assert(mesh.canvas->colors[0].value == 0x11223300u);
+    assert(mesh.canvas->colors[2].value == 0x11223344u);
+    assert(mesh.canvas->uv.size() == 4 && near(mesh.canvas->uv[3].v, 0.4f));
+
+    mesh.emitTrail(20);
+    assert(mesh.edgeCalls == 3 && mesh.lastEdgePoint == 106);
+    assert(mesh.finishCalls == 1 && mesh.frameCounter == 20 && mesh.canvas->colors.size() == 4);
+    mesh.flags |= 0x100000;
+    mesh.emitTrail(10);
+    assert(mesh.canvas->uv.size() == 6 && mesh.canvas->uv[4].point == 106);
+    assert(near(mesh.canvas->uv[4].v, 0.33f) && mesh.frameCounter == 30);
+
+    mesh.lastTrailPosition = {1000, 0, 0};
+    mesh.frameCounter = 100;
+    mesh.emitTrail(1);
+    assert(mesh.finishCalls == 2 && mesh.currentParticle == 0);
+    assert(mesh.frameCounter == 0 && mesh.newSectionStarted == 0 && mesh.ages[0] == -2);
+    assert(mesh.canvas->colors.size() == 8);
+    assert(mesh.canvas->colors[4].value == 0x11223344u);
+
+    ParticleSystemMesh cap;
+    ParticleSettingsRef::cur.sets[0].colorFlag = 4.0f;
+    cap.emitTrail(1);
+    assert(cap.extraCalls == 1 && cap.extraSlot == 2 && cap.extraFinish);
+    assert(near(cap.extraPosition.z, 33.0f));
+    assert(near(cap.lastTrailPosition.z, 31.0f));
+    assert(cap.currentParticle == 1);
+
+    ParticleSystemMesh rotated;
+    rotated.flags = 0x1000 | 0x2000 | 0x4000 | 0x20000;
+    rotated.edgeCount = 3;
+    rotated.stride = 6;
+    rotated.wide = 1;
+    rotated.mirror = 1;
+    rotated.alphaFade = 1;
+    rotated.newSectionStarted = 0;
+    rotated.emitTrail(1);
+    assert(rotated.edgeCalls == 3 && rotated.lastEdgePoint == 118);
+    assert(near(rotated.lastEdgeOffset.z, 2.0f));
+    assert(rotated.finishCalls == 0 && rotated.frameCounter == 1);
+}
