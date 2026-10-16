@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (base particle position/timing; older subsystem
+Last reviewed: 2026-10-16 (base particle random branches; older subsystem
 snapshots retain their dates)
+
+## Base particle random-emission checks (2026-10-16)
+
+REA/ARM call sequences in `IParticleSystem::emit` now have focused
+production-body host coverage for the `0x80` random-position branch
+and the ordinary directional/XZ/Y spread branch. The probe checks
+draw order, final RNG state, particle position and velocity, and
+randomized lifetime/sizes. No production C++ changed; native `gof2`,
+**206/206** ARM units and **40** verifier tests (one skip) pass.
+Focused `emit` remains **88.5%** source-shape / **16.7%** strict fuzzy,
+nonexact. The unchanged full-source corpus report remains **4,323/4,524**
+compared, **201 missing**, **124 extras**, **93.62%/82.69%** average
+source-shape/strict fuzzy, **2,507 linked-exact / 1,074 byte-exact**.
+UV rotation, repeated-frame state and live ARM32/GPU behavior remain
+unverified. See [the emitter audit](PARTICLE_BASE_EMIT_TIMING_ARM_2026-10-16.md).
 
 ## Base particle-emission position/timing (2026-10-16)
 

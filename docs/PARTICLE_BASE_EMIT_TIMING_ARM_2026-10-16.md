@@ -42,8 +42,24 @@ or gains. Focused and full reports are
 `A:/Galaxy on Fire new version/_work/particle_emit_step_focused_20261016.json`
 and `A:/Galaxy on Fire new version/_work/particle_emit_step_full_20261016.json`.
 
-This smoke isolates position, timing and ring advancement with a deterministic
-particle set; it does not validate all random emission, GPU output,
-particle lifetime, or live ARM32 behavior. Next work should examine
-remaining emitter branches and their call targets, then run broader
-stateful particle scenarios before attempting shape-only changes.
+Further REA/ARM inspection confirms the random-call order in two branches.
+Velocity spread draws three values at `0x1820da`–`0x182106`, followed by
+the random phase at `0x18225a`. Flag `0x80` then draws three position
+components at `0x182448`–`0x182468`; the ordinary branch instead draws
+direction spread, X/Z spread and Y spread at `0x18239c`–`0x18240c`.
+When lifetime randomization is enabled, three more draws occur at
+`0x18249a`, `0x18251a` and `0x182530` for life and the two sizes.
+The extracted production-body smoke now checks both branches against
+an independently seeded `AERandom` sequence, including the final seed,
+position, velocity and lifetime/size values. No production C++ changed
+in this follow-up; the full corpus report above remains the report for
+the same compiled source. A fresh focused report is
+`A:/Galaxy on Fire new version/_work/particle_emit_random_focused_20261016.json`
+and still reads 88.5% source-shape / 16.7% strict fuzzy. Native `gof2`,
+206/206 ARM units and 40 verifier tests (one skip) remain green.
+
+These tests cover selected random cases, timing and ring advancement;
+they do not validate UV rotation, repeated emission over many frames,
+all particle-lifetime branches, GPU output or live ARM32 behavior. Next
+work should examine those branches and their call targets before
+attempting shape-only changes.

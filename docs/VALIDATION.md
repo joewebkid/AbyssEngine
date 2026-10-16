@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Base particle random-emission checks (2026-10-16)
+
+`python tools/run_particle_emit_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` now also checks both random-position
+branches of the production `IParticleSystem::emit` body against the
+ARM-observed RNG call order, final seed, position, velocity and
+lifetime/size outputs. Native `gof2`, 206/206 ARM units and 40
+verifier tests (one skip) pass. Production C++ is unchanged, so the
+preceding full corpus report and its 2,507 linked-exact / 1,074
+byte-exact pairs still apply. Fresh focused report:
+`A:/Galaxy on Fire new version/_work/particle_emit_random_focused_20261016.json`
+(88.5% source-shape, 16.7% strict fuzzy, nonexact). See
+[the emitter audit](PARTICLE_BASE_EMIT_TIMING_ARM_2026-10-16.md).
+
 ## Base particle-emission position/timing (2026-10-16)
 
 `python tools/run_particle_emit_smoke.py --cxx
