@@ -411,12 +411,6 @@ void paintcanvas_ext_has_vibration(void *);
 
 void MatrixIdentity(void *result, void *matrix);
 
-int paintcanvas_ext_dtl_textwidth(void *, unsigned int, void *);
-
-void paintcanvas_ext_dtl_drawstring(void *, unsigned int, void *, int, int, bool);
-
-int paintcanvas_ext_dtl_textheight(void *, unsigned int);
-
 void paintcanvas_ext_fr_setwvm(void *self, void *m);
 
 void paintcanvas_ext_fr_glenable(void *eng, unsigned int cap, bool on);
@@ -961,11 +955,11 @@ void PaintCanvas::DrawTextLines(unsigned int font,
     int xoff = 0;
     for (unsigned int i = 0; i < arr->size(); i++) {
         if (center) {
-            int w = paintcanvas_ext_dtl_textwidth(this, font, arr->data()[i]);
+            int w = this->GetTextWidth(font, *arr->data()[i]);
             xoff = -(w >> 1);
         }
-        paintcanvas_ext_dtl_drawstring(this, font, arr->data()[i], xoff + x, y, false);
-        y += paintcanvas_ext_dtl_textheight(this, font);
+        this->DrawString(font, *arr->data()[i], xoff + x, y, false);
+        y += this->GetTextHeight(font);
     }
 }
 
@@ -1181,11 +1175,11 @@ void PaintCanvas::DrawTextLines(unsigned int font,
     int xoff = 0;
     for (unsigned int i = 0; i < arr->size(); i++) {
         if (flag == 0) {
-            int w = paintcanvas_ext_dtl_textwidth(this, font, arr->data()[i]);
+            int w = this->GetTextWidth(font, *arr->data()[i]);
             xoff = (int) p5 - w;
         }
-        paintcanvas_ext_dtl_drawstring(this, font, arr->data()[i], xoff + x, y, false);
-        y += paintcanvas_ext_dtl_textheight(this, font);
+        this->DrawString(font, *arr->data()[i], xoff + x, y, false);
+        y += this->GetTextHeight(font);
     }
 }
 

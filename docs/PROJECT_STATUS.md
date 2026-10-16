@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (camera view-frustum flag; older subsystem
+Last reviewed: 2026-10-16 (PaintCanvas text-line call contracts; older subsystem
 snapshots retain their dates)
+
+## PaintCanvas text-line call contracts (2026-10-16)
+
+The two `DrawTextLines` alignment overloads now call their existing
+`GetTextWidth`, `DrawString` and `GetTextHeight` methods directly,
+matching six Android ARM call targets instead of unresolved transition
+shims. A production-body host smoke checks both alignment branches,
+line spacing and an empty array. Native `gof2`, **206/206** ARM units
+and **40** verifier tests (one skip) pass. Both changed overloads
+remain **100%/100%** source-shape/strict fuzzy and linked-exact, not
+byte-exact. Full coverage stays **4,323/4,524** unique original
+functions, **201 missing**, **123 extras**, zero skipped,
+**93.59%/82.64%** average source-shape/strict fuzzy, **2,503
+linked-exact / 1,074 byte-exact**, with zero exact-pair losses/gains.
+Named direct-call matches rise **2,354 -> 2,360** and mismatch
+candidates fall **71 -> 65**; **647** calls remain unresolved by the
+audit. Real fonts, rendering and live ARM32 UI output remain
+unverified. See [the text-line call audit](PAINTCANVAS_TEXT_LINES_CALLS_ARM_2026-10-16.md).
 
 ## Camera view-frustum flag (2026-10-16)
 

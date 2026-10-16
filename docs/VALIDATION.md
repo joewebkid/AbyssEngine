@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PaintCanvas text-line call contracts (2026-10-16)
+
+`python tools/run_paintcanvas_draw_text_lines_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` compiles the production bodies of the
+two alignment overloads with instrumented text-method fixtures. It
+checks centered/right-aligned offsets, no-alignment paths, line
+spacing, method arguments and an empty array. Native `gof2`, 206/206
+ARM units and 40 verifier tests (one skip) pass. Both changed
+overloads stay 100%/100% source-shape/strict fuzzy and linked-exact,
+not byte-exact; all six direct-call targets now match Android ARM.
+Full report `A:/Galaxy on Fire new version/_work/draw_text_lines_full_20261016.json`
+compares 4,323/4,524 unique functions at 93.59%/82.64% average
+source-shape/strict fuzzy, with 2,503 linked-exact and 1,074
+byte-exact and zero exact `(unit,symbol)` losses/gains. A separate
+call-target audit records 2,360 matches, 65 mismatch candidates and
+647 unresolved calls. See [the focused audit](PAINTCANVAS_TEXT_LINES_CALLS_ARM_2026-10-16.md).
+
 ## Camera view-frustum flag (2026-10-16)
 
 Android ARM point and sphere frustum checks load `Engine::vfc`.
