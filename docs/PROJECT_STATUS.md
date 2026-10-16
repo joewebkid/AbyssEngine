@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ObjectGun render gating and animation; older subsystem
+Last reviewed: 2026-10-16 (missing-symbol archive triage; older subsystem
 snapshots retain their dates)
+
+## Per-function missing-symbol triage (2026-10-16)
+
+All **201** names listed as missing by the current per-function ARM
+verifier are external library/runtime symbols: **74 ZIP**, **47
+zlib**, **23 OpenSSL/crypto** and **57 C++ ABI/runtime**. Each name
+is defined exactly in the existing corresponding ARM archive; none
+is an absent first-party game/engine name in this list. These
+archives are excluded from per-function comparison and belong to
+the separate whole-library relink gate. The published metrics remain
+**4,323/4,524** compared, **201 missing**, **124 extras**, no skipped
+or wrong signatures, **93.67%/82.77%** average source-shape/strict
+fuzzy, **2,513 linked-exact / 1,074 byte-exact**. Archive symbol
+presence does not prove link success, byte identity or behavior.
+Next priority is first-party semantics/ABI and the extra-symbol
+audit, not placeholder bodies for dependency functions. See
+[the missing-symbol triage](MISSING_SYMBOLS_ARCHIVE_TRIAGE_2026-10-16.md).
 
 ## ObjectGun render gating and animation (2026-10-16)
 

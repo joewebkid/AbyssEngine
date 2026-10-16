@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Per-function missing-symbol triage (2026-10-16)
+
+The latest full report's 201 missing names were classified and
+checked by exact name against `arm-linux-androideabi-nm -g
+--defined-only -P` on the current ZIP, zlib, OpenSSL and NDK r18b
+libc++abi ARM archives. They partition as 74/47/23/57 with zero
+unclassified and zero absent from those archives. This is an
+archive-availability audit, not a new per-function build or a
+whole-library link. The report's 4,323/4,524 coverage, 2,513
+linked-exact and 1,074 byte-exact values remain unchanged. See
+[the triage note](MISSING_SYMBOLS_ARCHIVE_TRIAGE_2026-10-16.md).
+
 ## ObjectGun render gating and animation (2026-10-16)
 
 `python tools/run_objectgun_canvas_calls_smoke.py --cxx
