@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (AEGeometry construction/LOD contracts; older subsystem
+Last reviewed: 2026-10-16 (AEGeometry rotation/scaling contracts; older subsystem
 snapshots retain their dates)
+
+## AEGeometry rotation and scaling calls (2026-10-16)
+
+Original Android ARM confirms the call order and arguments in
+`setRotation(float,float,float)`, `rotate(float,float,float)` and
+`setScaling(float,float,float)`. Those bodies now call the real typed
+`PaintCanvas::TransformGetLocal` and `AEMath::MatrixSetRotation/Scaling`
+methods instead of declared-only hooks with 32-bit pointer narrowing.
+The 16-body host smoke, native `gof2`, **206/206** ARM units and **40**
+verifier tests (one skip) pass. All three become **100%/100%**
+source-shape/strict fuzzy and linked-exact, not byte-exact. Full corpus
+coverage stays **4,323/4,524**, with **201 missing**, **123 extras** and
+zero skipped; average source-shape/strict fuzzy is **93.59%/82.65%**.
+Linked-exact rises **2,503 -> 2,506**, byte-exact stays **1,074**, with
+zero exact-pair losses. Named direct-call matches rise **2,372 -> 2,387**;
+**53 mismatch candidates / 647 unresolved** remain. Eight
+`AEGeomCanvas` routes and live ARM32 transform behavior remain open.
+See [the rotation/scaling audit](AEGEOMETRY_ROTATION_SCALING_ARM_2026-10-16.md).
 
 ## AEGeometry construction and LOD calls (2026-10-16)
 

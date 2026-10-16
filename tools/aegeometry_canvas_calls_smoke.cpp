@@ -2,7 +2,30 @@
 #include <cstdint>
 
 struct Vector { float x, y, z; };
-struct Matrix { float value[12]; };
+struct Matrix { float value[15]; };
+
+namespace AbyssEngine { namespace AEMath {
+enum RotationOrder { ROTATION_ORDER_XYZ = 0 };
+int rotationCalls = 0, scalingCalls = 0;
+Matrix *rotationMatrix = nullptr, *scalingMatrix = nullptr;
+float angles[3]{}, scales[3]{};
+int lastOrder = -1;
+Matrix MatrixSetRotation(Matrix &m, float x, float y, float z, RotationOrder order) {
+    rotationMatrix = &m;
+    angles[0] = x; angles[1] = y; angles[2] = z;
+    lastOrder = order;
+    ++rotationCalls;
+    m.value[0] = x;
+    return m;
+}
+Matrix MatrixSetScaling(Matrix &m, float x, float y, float z) {
+    scalingMatrix = &m;
+    scales[0] = x; scales[1] = y; scales[2] = z;
+    ++scalingCalls;
+    m.value[12] = x; m.value[13] = y; m.value[14] = z;
+    return m;
+}
+}}
 
 Vector MatrixGetPosition(const Matrix &m) { return {m.value[0], m.value[1], m.value[2]}; }
 Vector MatrixGetRight(const Matrix &m) { return {m.value[3], m.value[4], m.value[5]}; }
@@ -13,6 +36,7 @@ struct PaintCanvas {
     Matrix matrices[10]{};
     unsigned int nextTransform = 7;
     unsigned int lastGet = 0xffffffffu;
+    int getCalls = 0;
     unsigned int lastParent = 0xffffffffu, lastChild = 0xffffffffu;
     unsigned int lastSet = 0xffffffffu, lastMeshIdTransform = 0xffffffffu;
     unsigned int lastMeshId = 0xffffffffu;
@@ -25,6 +49,7 @@ struct PaintCanvas {
     void *TransformGetLocal(unsigned int index) {
         assert(index < 10);
         lastGet = index;
+        ++getCalls;
         return &matrices[index];
     }
     void TransformAddChild(unsigned int parent, unsigned int child) {
@@ -90,6 +115,9 @@ struct AEGeometry {
     void updateReferenceMatrix();
     void addChild(uint32_t child);
     void setMatrix(const Matrix &);
+    void setRotation(float, float, float);
+    void rotate(float, float, float);
+    void setScaling(float, float, float);
     void setLodChildMeshes(uint16_t *);
     void setLodChildTransform(uint32_t);
 };
@@ -131,6 +159,41 @@ int main() {
     Matrix replacement{{31, 32, 33}};
     geom.setMatrix(replacement);
     assert(canvas.lastSet == 5 && canvas.matrices[5].value[0] == 31);
+
+    int initialGets = canvas.getCalls;
+    geom.rotationOrder = 0;
+    geom.setRotation(0.5f, 1.0f, 1.5f);
+    assert(canvas.getCalls == initialGets + 2 && canvas.lastGet == 5);
+    assert(AbyssEngine::AEMath::rotationCalls == 1 &&
+           AbyssEngine::AEMath::scalingCalls == 1);
+    assert(AbyssEngine::AEMath::rotationMatrix == &canvas.matrices[5] &&
+           AbyssEngine::AEMath::scalingMatrix == &canvas.matrices[5]);
+    assert(AbyssEngine::AEMath::angles[0] == 0.5f &&
+           AbyssEngine::AEMath::angles[1] == 1.0f &&
+           AbyssEngine::AEMath::angles[2] == 1.5f);
+    assert(AbyssEngine::AEMath::lastOrder == 0 &&
+           canvas.matrices[5].value[12] == 1.0f);
+
+    geom.rotate(0.25f, 0.5f, 0.75f);
+    assert(geom.rotation.x == 0.75f && geom.rotation.y == 1.5f &&
+           geom.rotation.z == 2.25f);
+    assert(canvas.getCalls == initialGets + 4 &&
+           AbyssEngine::AEMath::rotationCalls == 2 &&
+           AbyssEngine::AEMath::scalingCalls == 2);
+    assert(AbyssEngine::AEMath::angles[0] == 0.75f &&
+           AbyssEngine::AEMath::angles[1] == 1.5f &&
+           AbyssEngine::AEMath::angles[2] == 2.25f);
+
+    geom.setScaling(2.0f, 3.0f, 4.0f);
+    assert(canvas.getCalls == initialGets + 6 &&
+           AbyssEngine::AEMath::rotationCalls == 3 &&
+           AbyssEngine::AEMath::scalingCalls == 3);
+    assert(AbyssEngine::AEMath::angles[0] == 0.75f &&
+           AbyssEngine::AEMath::scales[0] == 2.0f &&
+           AbyssEngine::AEMath::scales[1] == 3.0f &&
+           AbyssEngine::AEMath::scales[2] == 4.0f);
+    assert(geom.scalingX == 2.0f && geom.scalingY == 3.0f &&
+           geom.scalingZ == 4.0f);
 
     PaintCanvas ctorCanvas;
     ctorCanvas.matrices[7].value[0] = 71;

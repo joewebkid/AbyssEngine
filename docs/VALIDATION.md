@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## AEGeometry rotation and scaling calls (2026-10-16)
+
+`python tools/run_aegeometry_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` now exercises sixteen production AEGeometry
+bodies; new cases record matrix call order, object identity, arguments
+and state changes in rotation/scaling. Native `gof2`, 206/206 ARM units
+and 40 verifier tests (one skip) pass. The three changed methods are
+100%/100% source-shape/strict fuzzy and linked-exact; focused totals
+are 26 linked-exact and 8 byte-exact across 45 functions. Full report
+`A:/Galaxy on Fire new version/_work/aegeometry_rotation_full_20261016.json`
+compares 4,323/4,524 unique original functions at 93.59%/82.65%
+average source-shape/strict fuzzy, 2,506 linked-exact and 1,074
+byte-exact. Compared with the preceding report, exact `(unit,symbol)`
+sets show zero losses and three linked gains. The separate call audit
+records 2,387 matches, 53 mismatch candidates and 647 unresolved.
+See [the focused audit](AEGEOMETRY_ROTATION_SCALING_ARM_2026-10-16.md).
+
 ## AEGeometry construction and LOD calls (2026-10-16)
 
 `python tools/run_aegeometry_canvas_calls_smoke.py --cxx
