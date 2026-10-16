@@ -57,7 +57,7 @@ public:
 
     ~IParticleSystem() = default;
 
-    virtual int init(uint32_t resource, uint16_t idOffset) = 0;
+    virtual void init(uint32_t resource, uint16_t idOffset) = 0;
 
     virtual void emit(int delta);
 

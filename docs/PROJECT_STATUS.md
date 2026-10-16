@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (particle color interpolation; older subsystem
+Last reviewed: 2026-10-16 (particle init return ABI and sprite alpha; older subsystem
 snapshots retain their dates)
+
+## Particle init return ABI and sprite alpha output (2026-10-16)
+
+Both Android ARM particle `init` bodies end in a tail-call to virtual
+`reset`, without producing an integer result; their manager callers
+ignore any result. The shared declaration and both overrides now use
+`void`. ARM **208/208** units, native `gof2`, 40 verifier tests (one
+existing skip), and `-O0/-O2` sprite/mesh output fixtures pass.
+Sprite init improves from **57.0%/62.5%** source-shape/strict fuzzy
+to **100%/100% byte-exact**; mesh init improves from **97.6%/97.9%**
+to **100%/100% linked-exact**. `ParticleSystemSprite::setAlpha` has a
+new extracted-body RGBA/index test, remains **80.6%/46.9%** nonexact,
+and needs no evidenced behavior change. The full corpus is now
+**4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.68%/82.78%** average source-shape/strict fuzzy, **2,515
+linked-exact / 1,075 byte-exact**. Exact-pair comparison against the
+previous full report shows two linked gains, one byte gain and zero
+losses. Live ARM32/GPU output and an
+independent iOS/PC return-type declaration remain unverified. See
+[the init/alpha audit](PARTICLE_INIT_VOID_SPRITE_ALPHA_ARM_2026-10-16.md).
 
 ## Base particle color interpolation (2026-10-16)
 

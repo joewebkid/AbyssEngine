@@ -290,7 +290,7 @@ void ParticleSystemMesh::setParticle(const Vector &pos, float scale, uint32_t co
     }
 }
 
-int ParticleSystemMesh::init(uint32_t mesh, uint16_t firstPoint) {
+void ParticleSystemMesh::init(uint32_t mesh, uint16_t firstPoint) {
     this->resource = mesh;
     this->resourceOffset = firstPoint;
 
@@ -322,7 +322,6 @@ int ParticleSystemMesh::init(uint32_t mesh, uint16_t firstPoint) {
     this->initialized = 1;
 
     this->reset();
-    return 0;
 }
 
 void ParticleSystemMesh::updateUsualEdges(int id, int delta) {

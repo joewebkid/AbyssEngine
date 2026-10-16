@@ -35,7 +35,7 @@ public:
 
     ~ParticleSystemSprite();
 
-    int init(uint32_t spriteId, uint16_t idOffset) override;
+    void init(uint32_t spriteId, uint16_t idOffset) override;
 
     void reset() override;
 

@@ -48,7 +48,7 @@ public:
 
     void release() override;
 
-    int init(uint32_t mesh, uint16_t firstPoint) override;
+    void init(uint32_t mesh, uint16_t firstPoint) override;
 
     void setParticle(const Vector &pos, float scale, uint32_t color, float u0, float u1, float v0,
                      float v1, bool useMaskedColor, float upScale, float dirScale,

@@ -4,6 +4,29 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Particle init return ABI and sprite alpha output (2026-10-16)
+
+Android sprite and mesh `init` both tail-call virtual `reset` without
+forming an integer return; the source virtual interface and overrides
+now use `void`. Native `gof2`, **208/208** ARM translation units, 40
+verifier tests (one existing skip), the mesh trail fixture and the
+new `python tools/run_particle_sprite_alpha_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` fixture at `-O0/-O2` pass. The latter
+records sprite init/reset and RGBA output for both alpha modes and
+16-bit index wrap. Focused ARM reports
+`A:/Galaxy on Fire new version/_work/particle_sprite_init_alpha_after_20261016.json`
+and `particle_mesh_init_after_20261016.json` show sprite init
+**57.0%/62.5% → 100%/100%** source-shape/strict fuzzy, now byte-exact;
+mesh init **97.6%/97.9% → 100%/100%**, now linked-exact. Sprite
+`setAlpha` remains **80.6%/46.9%**, nonexact. Full report
+`A:/Galaxy on Fire new version/_work/particle_init_void_full_20261016.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**, no
+skips/wrong signatures, **93.68%/82.78%** average source-shape/strict
+fuzzy, **2,515 linked-exact / 1,075 byte-exact**. Exact `(unit,symbol)`
+set comparison against `particle_interpolation_full_20261016.json`
+shows two linked gains, one byte gain and no losses. See
+[the init/alpha audit](PARTICLE_INIT_VOID_SPRITE_ALPHA_ARM_2026-10-16.md).
+
 ## Base particle color interpolation (2026-10-16)
 
 `python tools/run_particle_mesh_trail_smoke.py --cxx

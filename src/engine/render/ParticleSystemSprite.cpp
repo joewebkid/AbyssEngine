@@ -48,13 +48,12 @@ void ParticleSystemSprite::reset() {
     this->resetEmitterVelocityPending = 1;
 }
 
-int ParticleSystemSprite::init(uint32_t spriteId, uint16_t idOffset) {
+void ParticleSystemSprite::init(uint32_t spriteId, uint16_t idOffset) {
     this->resource = spriteId;
     this->resourceOffset = idOffset;
     this->initialized = 1;
 
     this->reset();
-    return 0;
 }
 
 int ParticleSystemSprite::getQuadCount() {
