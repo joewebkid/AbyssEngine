@@ -38,6 +38,7 @@ struct ParticleSettings {
         int posBase = 3;
         int lifetime = 100;
         uint32_t color0 = 0x11223344u;
+        uint32_t color1 = 0xa1b2c3d4u;
     } sets[1];
 };
 using ParticleSet = ParticleSettings::ParticleSet;
@@ -51,9 +52,14 @@ struct PaintCanvas {
     struct Uv { uint16_t point; float u, v; };
     struct Color { uint16_t point; uint32_t value; };
     struct Move { uint16_t point; float x, y, z; };
+    struct FloatColor { uint16_t point; float a, r, g, b; };
+    struct Point { uint16_t point; float x, y, z; };
     std::vector<Uv> uv;
     std::vector<Color> colors;
     std::vector<Move> moves;
+    std::vector<FloatColor> floatColors;
+    std::vector<Point> points;
+    std::vector<char> order;
     void MeshSetUv(uint32_t, uint16_t point, float u, float v) {
         uv.push_back({point, u, v});
     }
@@ -64,7 +70,12 @@ struct PaintCanvas {
 
 struct IParticleSystem {
     int baseEmitCalls = 0, lastBaseDelta = -1;
+    int interpolateCalls = 0;
     void emit(int delta) { ++baseEmitCalls; lastBaseDelta = delta; }
+    void interpolateColor(int, float &a, float &r, float &g, float &b) {
+        ++interpolateCalls;
+        a = 0.1f; r = 0.2f; g = 0.3f; b = 0.4f;
+    }
 };
 
 struct ParticleSystemMesh : IParticleSystem {
@@ -89,7 +100,7 @@ struct ParticleSystemMesh : IParticleSystem {
     PaintCanvas canvasValue;
     PaintCanvas *canvas = &canvasValue;
     int edgeCalls = 0, finishCalls = 0, extraCalls = 0;
-    int usualUpdates = 0, colorUpdates = 0;
+    int usualUpdates = 0;
     int lastEdgePoint = -1, lastFinished = -1, extraSlot = -1;
     Vector lastEdge{}, lastEdgeOffset{}, lastFinishRight{}, lastFinishUp{}, extraPosition{};
     bool extraFinish = false;
@@ -109,7 +120,7 @@ struct ParticleSystemMesh : IParticleSystem {
     void incId() { currentParticle = (currentParticle + 1) % maxParticles; }
     void updateTrailEdges(int, int);
     void updateUsualEdges(int, int) { ++usualUpdates; }
-    void updateSingleColor(int) { ++colorUpdates; }
+    void updateSingleColor(int);
     void emit(int id);
     void emitTrail(int delta);
     void updateSingle(int id, float delta);
@@ -122,7 +133,16 @@ void _psm_finishCurrentTrailParticle(ParticleSystemMesh *mesh, ParticleSet set, 
                                      const Vector *right, const Vector *up) {
     mesh->finishCurrentTrailParticle(set, id, *right, *up);
 }
-void _psm_meshSetPoint(PaintCanvas *, uint32_t, uint16_t, float, float, float) {}
+void _psm_meshSetPoint(PaintCanvas *canvas, uint32_t, uint16_t point,
+                       float x, float y, float z) {
+    canvas->points.push_back({point, x, y, z});
+    canvas->order.push_back('P');
+}
+void _psm_meshSetColor(PaintCanvas *canvas, uint32_t, uint16_t point,
+                       float a, float r, float g, float b) {
+    canvas->floatColors.push_back({point, a, r, g, b});
+    canvas->order.push_back('C');
+}
 void _psm_meshTranslatePoint(PaintCanvas *canvas, uint32_t, uint16_t point,
                              float x, float y, float z) {
     canvas->moves.push_back({point, x, y, z});
@@ -206,7 +226,7 @@ int main() {
     dormant.ages[0] = -2;
     dormant.updateSingle(0, 10.0f);
     assert(dormant.canvas->moves.size() == 2 && dormant.finishCalls == 0);
-    assert(dormant.ages[0] == -2 && dormant.colorUpdates == 0);
+    assert(dormant.ages[0] == -2 && dormant.canvas->floatColors.empty());
 
     ParticleSystemMesh resumed;
     resumed.flags |= 0x8000;
@@ -214,7 +234,7 @@ int main() {
     resumed.ages[0] = -2;
     resumed.updateSingle(0, 10.0f);
     assert(resumed.canvas->moves.size() == 2 && resumed.finishCalls == 1);
-    assert(resumed.ages[0] == 10 && resumed.colorUpdates == 1);
+    assert(resumed.ages[0] == 10 && resumed.canvas->floatColors.size() == 2);
 
     ParticleSystemMesh ongoing;
     ongoing.flags |= 0x8000;
@@ -222,7 +242,7 @@ int main() {
     ongoing.ages[0] = 5;
     ongoing.updateSingle(0, 10.0f);
     assert(ongoing.canvas->moves.size() == 4 && ongoing.finishCalls == 0);
-    assert(ongoing.ages[0] == 15 && ongoing.colorUpdates == 1);
+    assert(ongoing.ages[0] == 15 && ongoing.canvas->floatColors.size() == 2);
 
     ParticleSystemMesh edgeSign;
     edgeSign.flags |= 0x8000;
@@ -236,4 +256,62 @@ int main() {
     assert(moves[1].point == 101 && near(moves[1].x, 2) && near(moves[1].y, 3) && near(moves[1].z, 4));
     assert(moves[2].point == 102 && near(moves[2].x, -5) && near(moves[2].y, -6) && near(moves[2].z, -7));
     assert(moves[3].point == 103 && near(moves[3].x, 5) && near(moves[3].y, 6) && near(moves[3].z, 7));
+
+    ParticleSystemMesh colorStart;
+    colorStart.flags |= 0x8000;
+    colorStart.updateSingleColor(0);
+    const auto &front = colorStart.canvas->floatColors;
+    assert(front.size() == 2 && front[0].point == 102 && front[1].point == 103);
+    assert(colorStart.interpolateCalls == 0);
+    assert(near(front[0].a, 0xa1 / 255.0f) && near(front[0].r, 0xb2 / 255.0f));
+    assert(near(front[0].g, 0xc3 / 255.0f) && front[0].b == 0.0f);
+
+    ParticleSystemMesh alphaStart;
+    alphaStart.flags |= 0x8000;
+    alphaStart.alphaFade = 1;
+    alphaStart.updateSingleColor(0);
+    const auto &alphaFront = alphaStart.canvas->floatColors;
+    assert(alphaFront.size() == 2 && alphaFront[0].a == 0.0f);
+    assert(alphaFront[0].r == 0.0f && alphaFront[0].g == 0.0f);
+    assert(near(alphaFront[0].b, 0xd4 / 255.0f));
+
+    ParticleSystemMesh linkedColor;
+    linkedColor.flags |= 0x8000;
+    linkedColor.ages[1] = 5;
+    linkedColor.updateSingleColor(0);
+    const auto &linked = linkedColor.canvas->floatColors;
+    assert(linkedColor.interpolateCalls == 1 && linked.size() == 4);
+    assert(linked[0].point == 102 && linked[1].point == 103);
+    assert(linked[2].point == 104 && linked[3].point == 105);
+    assert(near(linked[0].a, 0.1f) && near(linked[2].b, 0.4f));
+
+    ParticleSystemMesh wrapColor;
+    wrapColor.flags |= 0x8000;
+    wrapColor.ages[0] = 5;
+    wrapColor.ages[1] = 5;
+    wrapColor.updateSingleColor(1);
+    const auto &wrapped = wrapColor.canvas->floatColors;
+    assert(wrapColor.interpolateCalls == 1 && wrapped.size() == 4);
+    assert(wrapped[0].point == 106 && wrapped[1].point == 107);
+    assert(wrapped[2].point == 100 && wrapped[3].point == 101);
+
+    ParticleSystemMesh expired;
+    expired.flags |= 0x8000;
+    expired.ages[0] = 95;
+    expired.updateSingle(0, 10.0f);
+    assert(expired.ages[0] == -1);
+    assert(expired.canvas->floatColors.size() == 2 && expired.canvas->points.size() == 4);
+    assert(expired.canvas->order == std::vector<char>({'C', 'C', 'P', 'P', 'P', 'P'}));
+    for (int i = 0; i < 4; ++i) {
+        const auto &point = expired.canvas->points[i];
+        assert(point.point == 100 + i && point.x == 0 && point.y == 0 && point.z == 0);
+    }
+
+    ParticleSystemMesh boundary;
+    boundary.flags |= 0x8000;
+    boundary.ages[0] = 90;
+    boundary.updateSingle(0, 10.0f);
+    assert(boundary.ages[0] == 100 && boundary.canvas->points.empty());
+    boundary.updateSingle(0, 1.0f);
+    assert(boundary.ages[0] == -1 && boundary.canvas->points.size() == 4);
 }

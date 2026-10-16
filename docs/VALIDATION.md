@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ParticleSystemMesh color and expiry output (2026-10-16)
+
+`python tools/run_particle_mesh_trail_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` extracts the production `updateSingleColor`
+and `updateSingle` bodies and checks recorded canvas calls at host
+`-O0/-O2`: start masks, adjacent/wrapped sections, expiry order and
+`age == lifetime` boundary. The interpolator is a fixture stub, so
+its arithmetic and live GPU output are outside this check. The smoke
+test, native `gof2` and 40 verifier tests (one existing skip) pass.
+No production C++ changed; the prior 208/208 ARM build and full report
+still apply. Fresh focused `--no-build` report
+`A:/Galaxy on Fire new version/_work/particle_color_expiry_focused_20261016.json`
+shows 97.2%/70.5% `updateSingle` and 99.8%/74.6%
+`updateSingleColor` source-shape/strict fuzzy, both nonexact. The
+unchanged full report has 4,323/4,524 compared, 93.67%/82.77%
+averages, 2,513 linked-exact and 1,074 byte-exact. See
+[the output audit](PARTICLE_MESH_COLOR_EXPIRY_OUTPUT_ARM_2026-10-16.md).
+
 ## ParticleSystemMesh trail-edge Y sign (2026-10-16)
 
 `python tools/run_particle_mesh_trail_smoke.py --cxx

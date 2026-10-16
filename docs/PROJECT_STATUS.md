@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ParticleSystemMesh trail-edge sign; older subsystem
+Last reviewed: 2026-10-16 (ParticleSystemMesh color/expiry output; older subsystem
 snapshots retain their dates)
+
+## ParticleSystemMesh color and expiry output (2026-10-16)
+
+The extracted production `updateSingleColor` and `updateSingle` bodies
+now have host `-O0/-O2` canvas-output checks for trail start masks,
+neighbor/wrap coloring, color-before-clear order and lifetime boundary.
+The test, native `gof2` build and 40 verifier tests (one existing skip)
+pass; no production C++ changed. Fresh focused ARM scores remain
+**97.2%/70.5%** for `updateSingle` and **99.8%/74.6%** for
+`updateSingleColor` (source-shape/strict fuzzy), neither exact. The
+previously verified **208/208** ARM build and full **4,323/4,524**
+corpus remain applicable: **93.67%/82.77%** averages, **2,513
+linked-exact / 1,074 byte-exact**. Interpolation arithmetic and live
+ARM32/GPU output are still unverified. See
+[the output audit](PARTICLE_MESH_COLOR_EXPIRY_OUTPUT_ARM_2026-10-16.md).
 
 ## ParticleSystemMesh trail-edge Y sign (2026-10-16)
 
