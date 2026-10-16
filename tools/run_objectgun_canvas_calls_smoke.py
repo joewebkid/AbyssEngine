@@ -52,6 +52,22 @@ def main():
         f"{turret_matrix}\n"
         "}\n"
     )
+    explosion_tail = "after_geometry:\n" + source.split("after_geometry:\n", 1)[1].split(
+        "\n}\n\nvoid ObjectGun::render()", 1)[0]
+    explosion_body = (
+        "void ObjectGun::applyExplosionUpdate(int dt) {\n"
+        "    Vector zero = {0, 0, 0};\n"
+        f"{explosion_tail}\n"
+        "}\n"
+    )
+    render_start = "    Gun *gun = this->gun;\n    gun->render();"
+    explosion_render = render_start + source.split(render_start, 1)[1].split(
+        "\n\n    if (gun->active != 0)", 1)[0]
+    explosion_render_body = (
+        "void ObjectGun::applyExplosionRender() {\n"
+        f"{explosion_render}\n"
+        "}\n"
+    )
     render_scale = "                if (Globals::iPad != 0)" + source.split(
         "                if (Globals::iPad != 0)", 1)[1].split(
         "\n\n                if (this->gun->weaponType", 1)[0]
@@ -82,6 +98,7 @@ def main():
         generated.write_text(fixture.replace(
             "// PRODUCTION_METHODS",
             "\n".join((set_enemies, body, inactive_body, camera_body, turret_body,
+                       explosion_body, explosion_render_body,
                        render_scale_body, render_ego_body, render_final_body))))
         for optimization in ("-O0", "-O2"):
             exe = Path(temp) / f"smoke-{optimization[2:]}.exe"

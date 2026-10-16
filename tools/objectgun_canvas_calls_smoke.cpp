@@ -12,7 +12,7 @@ struct Matrix {
         return *this;
     }
 };
-struct Vector { int marker = 0; };
+struct Vector { int marker = 0; float x = 0, y = 0, z = 0; };
 namespace AbyssEngine { namespace AEMath {
 Matrix operator*(const Matrix &lhs, const Matrix &rhs) {
     Matrix result;
@@ -103,12 +103,47 @@ struct PaintCanvas {
 PaintCanvas *Globals::Canvas = nullptr;
 unsigned char Globals::iPad = 0;
 
-template <typename T> struct Array {};
+template <typename T> struct Array {
+    T *items = nullptr;
+    T *data() { return items; }
+};
 struct Player;
+struct TargetFollowCamera;
+constexpr int ITEM_SORT_SCATTER_GUN = 25;
+struct Explosion {
+    int startCalls = 0, updateCalls = 0, resetCalls = 0, renderCalls = 0;
+    int hitMarker = 0, directionMarker = -1, lastDt = 0;
+    float directionX = 1, directionY = 1, directionZ = 1;
+    TargetFollowCamera *lastCamera = reinterpret_cast<TargetFollowCamera *>(1);
+    uint8_t playing = 1;
+    void start(const Vector &hit, const Vector &direction) {
+        ++startCalls;
+        hitMarker = hit.marker;
+        directionMarker = direction.marker;
+        directionX = direction.x;
+        directionY = direction.y;
+        directionZ = direction.z;
+    }
+    void update(int dt, TargetFollowCamera *camera) {
+        ++updateCalls;
+        lastDt = dt;
+        lastCamera = camera;
+    }
+    uint8_t isPlaying() { return playing; }
+    void reset() { ++resetCalls; }
+    void render() { ++renderCalls; }
+};
 struct Gun {
     int delayActive = 0;
+    int renderCalls = 0;
+    int weaponType = 0;
+    uint32_t count = 0;
+    uint8_t *hitFlags = nullptr;
+    Vector *hitPositions = nullptr;
+    uint8_t ignited = 0;
     Array<Player *> *enemies = nullptr;
     void setEnemies(Array<Player *> *value) { enemies = value; }
+    void render() { ++renderCalls; }
 };
 struct AEGeometry {
     unsigned transform = 77;
@@ -129,6 +164,9 @@ struct ObjectGun {
     int meshId = 0x12345;
     Gun *gun = nullptr;
     AEGeometry *geometry = nullptr;
+    Array<Explosion *> *explosions = nullptr;
+    uint8_t *explosionReady = nullptr;
+    uint8_t wasFiring = 0;
     Matrix orientation;
     float scaleX = 0.6f, scaleY = 0.7f, scaleZ = 0.8f;
     void setEnemies(Array<Player *> *enemies);
@@ -136,6 +174,8 @@ struct ObjectGun {
     void applyInactive();
     void applyCameraDirection(Matrix &playerMatrix, Matrix &cameraMatrix);
     void applyTurretMatrix(PlayerEgo *player, Matrix &workMatrix);
+    void applyExplosionUpdate(int dt);
+    void applyExplosionRender();
     void applyRenderScale();
     void applyEgoRotation(EgoPlayerView *playerView, Player *player,
                           Matrix &local, Matrix &scaleMatrix);
@@ -205,6 +245,47 @@ int main() {
     Matrix combined;
     gun.applyTurretMatrix(&ego, combined);
     assert(combined.marker == 709);
+
+    Gun scatter;
+    scatter.weaponType = ITEM_SORT_SCATTER_GUN;
+    scatter.count = 2;
+    scatter.delayActive = 1;
+    scatter.ignited = 1;
+    uint8_t hits[2] = {0, 1}, ready[2] = {1, 1};
+    Vector hitPositions[2];
+    hitPositions[1].marker = 77;
+    scatter.hitFlags = hits;
+    scatter.hitPositions = hitPositions;
+    Explosion skipped, active;
+    Explosion *explosionItems[2] = {&skipped, &active};
+    Array<Explosion *> explosionArray;
+    explosionArray.items = explosionItems;
+    gun.gun = &scatter;
+    gun.explosions = &explosionArray;
+    gun.explosionReady = ready;
+    gun.applyExplosionUpdate(16);
+    assert(gun.wasFiring == 1 && skipped.startCalls == 0 &&
+           skipped.updateCalls == 0 && active.startCalls == 1 &&
+           active.updateCalls == 1 && active.resetCalls == 0);
+    assert(active.hitMarker == 77 && active.directionMarker == 0 &&
+           active.directionX == 0 && active.directionY == 0 &&
+           active.directionZ == 0 && active.lastDt == 16 &&
+           active.lastCamera == nullptr);
+    assert(hits[1] == 1 && ready[1] == 0 && scatter.ignited == 1);
+    active.playing = 0;
+    gun.applyExplosionUpdate(17);
+    assert(active.startCalls == 1 && active.updateCalls == 2 &&
+           active.resetCalls == 1 && active.lastDt == 17);
+    assert(hits[1] == 0 && ready[1] == 1 && scatter.ignited == 0);
+    gun.applyExplosionUpdate(18);
+    assert(active.updateCalls == 2 && active.resetCalls == 1);
+    gun.applyExplosionRender();
+    assert(scatter.renderCalls == 1 && skipped.renderCalls == 0 &&
+           active.renderCalls == 0);
+    hits[1] = 1;
+    gun.applyExplosionRender();
+    assert(scatter.renderCalls == 2 && skipped.renderCalls == 0 &&
+           active.renderCalls == 1);
 
     Globals::iPad = 0;
     gun.applyRenderScale();

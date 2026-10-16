@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ObjectGun destructor ownership; older subsystem
+Last reviewed: 2026-10-16 (ObjectGun scatter explosion flow; older subsystem
 snapshots retain their dates)
+
+## ObjectGun scatter explosion flow (2026-10-16)
+
+Android ARM and extracted production fragments confirm the
+scatter-gun hit/ready gating, one-time explosion start with a zero
+direction, per-frame update with a null camera, completed-hit flag
+reset, and hit-gated rendering. The host fixture passes under
+`-O0/-O2`. No production C++ or ARM object changed. Focused
+`update` and `render` remain **87.9%/31.0%** and **89.6%/39.7%**
+source-shape/strict fuzzy, both nonexact. The last full report at
+this source revision remains **4,323/4,524** compared, **201
+missing**, **124 extras**, no skipped or wrong signatures,
+**93.67%/82.77%** average source-shape/strict fuzzy, **2,513
+linked-exact / 1,074 byte-exact**. Timing, audio, GPU output and
+live ARM32 behavior remain unverified. See
+[the explosion flow audit](OBJECTGUN_EXPLOSION_FLOW_ARM_2026-10-16.md).
 
 ## ObjectGun destructor ownership (2026-10-16)
 

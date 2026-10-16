@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ObjectGun scatter explosion flow (2026-10-16)
+
+`python tools/run_objectgun_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` now checks extracted `update` and
+`render` explosion fragments at host `-O0/-O2`. Native `gof2` has
+no pending rebuild; 40 verifier tests pass (one skip). Production
+source is unchanged. Focused `update` source-shape/strict fuzzy
+remains 87.9%/31.0% and `render` 89.6%/39.7%, both nonexact.
+The last full report at this source revision,
+`A:/Galaxy on Fire new version/_work/objectgun_dtor_full_20261016.json`,
+remains 4,323/4,524 compared, 201 missing, 124 extras, zero skipped
+or wrong signatures, 93.67%/82.77% average source-shape/strict fuzzy,
+2,513 linked-exact and 1,074 byte-exact. See
+[the explosion flow audit](OBJECTGUN_EXPLOSION_FLOW_ARM_2026-10-16.md).
+
 ## ObjectGun destructor ownership (2026-10-16)
 
 Native `gof2`, 207/207 ARM units, the ObjectGun host fixture and 40
