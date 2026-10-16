@@ -1,4 +1,4 @@
-"""Exercise production AEGeometry transform getters and child routing."""
+"""Exercise production AEGeometry transform, construction, and LOD routing."""
 
 import argparse
 from pathlib import Path
@@ -11,6 +11,8 @@ from run_particle_control_smoke import function
 
 ROOT = Path(__file__).resolve().parents[1]
 METHODS = (
+    "AEGeometry::AEGeometry(PaintCanvas *canvas)",
+    "AEGeometry::AEGeometry(uint16_t mesh, PaintCanvas *canvas, bool flag)",
     "Vector AEGeometry::getPosition()",
     "Vector AEGeometry::getRightVector()",
     "Vector AEGeometry::getUpVector()",
@@ -19,6 +21,9 @@ METHODS = (
     "Matrix &AEGeometry::getMatrix()",
     "void AEGeometry::updateReferenceMatrix()",
     "void AEGeometry::addChild(uint32_t child)",
+    "void AEGeometry::setMatrix(const Matrix &m)",
+    "void AEGeometry::setLodChildMeshes(uint16_t *meshes)",
+    "void AEGeometry::setLodChildTransform(uint32_t param)",
 )
 
 

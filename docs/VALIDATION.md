@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## AEGeometry construction and LOD calls (2026-10-16)
+
+`python tools/run_aegeometry_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` now exercises 13 production method bodies,
+including both constructors, `setMatrix` and two LOD-child setters. A
+nonzero created transform index verifies the mesh constructor's reference
+matrix lookup. Native `gof2`, 206/206 ARM units and 40 verifier tests (one
+skip) pass. Focused `AEGeometry` verification compares 45 functions with
+23 linked-exact and 8 byte-exact. Full report
+`A:/Galaxy on Fire new version/_work/aegeometry_ctor_lod_full_20261016.json`
+compares 4,323/4,524 unique original functions at 93.59%/82.64% average
+source-shape/strict fuzzy, with 2,503 linked-exact and 1,074 byte-exact.
+Exact `(unit,symbol)` pair comparison against the previous full report
+shows zero losses/gains. The separate full call-target audit stays at
+2,372 matches, 53 mismatch candidates and 647 unresolved. See
+[the focused audit](AEGEOMETRY_CTOR_LOD_CALLS_ARM_2026-10-16.md).
+
 ## AEGeometry canvas call contracts (2026-10-16)
 
 `python tools/run_aegeometry_canvas_calls_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe`

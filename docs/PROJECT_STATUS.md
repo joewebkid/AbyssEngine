@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (AEGeometry canvas call contracts; older subsystem
+Last reviewed: 2026-10-16 (AEGeometry construction/LOD contracts; older subsystem
 snapshots retain their dates)
+
+## AEGeometry construction and LOD calls (2026-10-16)
+
+Original Android ARM confirms eight more canvas call routes in the two
+constructors, `setMatrix` and two LOD-child methods. The mesh constructor
+now reads its reference matrix from the newly created transform instead of
+index zero and no longer narrows that matrix pointer on a 64-bit host. A
+13-body production-source smoke, native `gof2`, **206/206** ARM units and
+**40** verifier tests (one skip) pass. The mesh constructor C1/C2 strict
+fuzzy score rises **45.6% -> 52.7%**; no constructor exact match is claimed.
+Full coverage stays **4,323/4,524**, **201 missing**, **123 extras**, zero
+skipped, **93.59%/82.64%** average source-shape/strict fuzzy, **2,503
+linked-exact / 1,074 byte-exact** with zero exact-pair losses/gains.
+The linked-function direct-call audit remains **2,372 matches / 53
+mismatch candidates / 647 unresolved**. Fourteen `AEGeomCanvas` routes
+remain; live ARM32 transform behavior is unverified. See
+[the construction/LOD audit](AEGEOMETRY_CTOR_LOD_CALLS_ARM_2026-10-16.md).
 
 ## AEGeometry canvas call contracts (2026-10-16)
 

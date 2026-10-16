@@ -124,7 +124,7 @@ Matrix &AEGeometry::getReferenceMatrix() {
 }
 
 void AEGeometry::setMatrix(const Matrix &m) {
-    AEGeomCanvas::TransformSetLocal(this->canvas, this->transform, (Matrix *) &m);
+    this->canvas->TransformSetLocal(this->transform, m);
 }
 
 void AEGeometry::setRotationOrder(AbyssEngine::AEMath::RotationOrder order) {
@@ -200,11 +200,11 @@ void AEGeometry::setLodChildMeshes(uint16_t *meshes) {
         this->lodChildTransforms = new uint32_t[count];
         for (int i = 0; i < count; i++) {
             this->lodChildMeshes[i] = meshes[i];
-            AEGeomCanvas::TransformCreate(this->canvas, &this->lodChildTransforms[i]);
+            this->canvas->TransformCreate(this->lodChildTransforms[i]);
             this->canvas->TransformAddMesh(this->lodChildTransforms[i], meshes[i], false);
-            AEGeomCanvas::TransformAddChild(this->canvas, this->lodTransforms[i], this->lodChildTransforms[i]);
+            this->canvas->TransformAddChild(this->lodTransforms[i], this->lodChildTransforms[i]);
             this->canvas->TransformRemoveChild(this->lodTransforms[i], this->childTransform);
-            AEGeomCanvas::TransformAddChild(this->canvas, this->lodTransforms[i], this->childTransform);
+            this->canvas->TransformAddChild(this->lodTransforms[i], this->childTransform);
             count = this->lodCount;
         }
     }
@@ -227,7 +227,7 @@ AEGeometry::AEGeometry(PaintCanvas *canvas) {
     this->referenceMatrix = Matrix();
     this->mesh = 0;
     this->canvas = canvas;
-    AEGeomCanvas::TransformCreate(canvas, &this->baseTransform);
+    canvas->TransformCreate(this->baseTransform);
 
     this->rotation = Vector{0.0f, 0.0f, 0.0f};
     this->scalingX = 1.0f;
@@ -271,7 +271,7 @@ AEGeometry::AEGeometry(uint16_t mesh, PaintCanvas *canvas, bool flag) {
     this->mesh = mesh;
     this->transform = 0;
     this->baseTransform = 0;
-    AEGeomCanvas::TransformCreate(canvas, &this->baseTransform);
+    canvas->TransformCreate(this->baseTransform);
     canvas->MeshCreate(mesh, this->meshId, flag);
     canvas->TransformAddMeshId(this->baseTransform, this->meshId);
 
@@ -292,8 +292,7 @@ AEGeometry::AEGeometry(uint16_t mesh, PaintCanvas *canvas, bool flag) {
     this->transform = this->baseTransform;
     this->parentTransform = 0xffffffff;
     this->childTransform = 0xffffffff;
-    uint32_t loc = AEGeomCanvas::TransformGetLocal((uint32_t)(uintptr_t)canvas, 0);
-    this->referenceMatrix = *(Matrix *) loc;
+    this->referenceMatrix = *(Matrix *) canvas->TransformGetLocal(this->baseTransform);
     this->merger = nullptr;
 }
 
@@ -429,7 +428,7 @@ void AEGeometry::setLodChildTransform(uint32_t param) {
     if (count > 0) {
         this->lodChildTransforms = new uint32_t[count];
         for (int i = 0; i < count; i++) {
-            AEGeomCanvas::TransformAddChild(this->canvas, this->lodTransforms[i], param);
+            this->canvas->TransformAddChild(this->lodTransforms[i], param);
             count = this->lodCount;
         }
     }
