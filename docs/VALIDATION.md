@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Bounded AERandom semantics (2026-10-16)
+
+`tools/aerandom_bound_smoke.cpp` compares 2,560 production
+`AERandom::nextInt(int)` results and seed states against an ARM-derived
+48-bit model. It passes with optimized UCRT64 compilation and with
+`-ftrapv`; the overflow-trap build terminated before the unsigned
+power-of-two test was fixed. Native `gof2`, 206/206 ARM units and 40
+verifier tests (one skip) pass. Focused `nextInt(int)` remains 96.4%
+source-shape / 50.5% strict fuzzy, nonexact. Full report
+`A:/Galaxy on Fire new version/_work/aerandom_bound_full_20261016.json`
+compares 4,323/4,524 original unique functions at 93.62%/82.69%
+average source-shape/strict fuzzy, 2,507 linked-exact and 1,074
+byte-exact, with zero exact-pair losses. See
+[the RNG audit](AERANDOM_BOUND_ARM_2026-10-16.md).
+
 ## Particle UV selector mapping (2026-10-16)
 
 `python tools/run_particle_emit_smoke.py --cxx

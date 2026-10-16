@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (particle UV selector mapping; older subsystem
+Last reviewed: 2026-10-16 (bounded AERandom semantics; older subsystem
 snapshots retain their dates)
+
+## Bounded AERandom semantics (2026-10-16)
+
+Android ARM `AERandom::nextInt(int)` wraps negation for its power-of-two
+test. The C++ signed `-bound` was undefined for `INT_MIN`; the test now
+uses unsigned 32-bit arithmetic without changing ordinary bounds.
+An ARM-derived 48-bit oracle checks 2,560 return/seed transitions,
+including rejection retries and `INT_MIN`. Optimized and overflow-trap
+host builds pass after the change; the trap build failed before it.
+Native `gof2`, **206/206** ARM units and **40** verifier tests (one skip)
+pass. Focused source-shape/strict fuzzy stay **96.4%/50.5%**, nonexact.
+Full corpus remains **4,323/4,524** compared, **201 missing**, **124
+extras**, zero skipped, **93.62%/82.69%** average source-shape/strict
+fuzzy, **2,507 linked-exact / 1,074 byte-exact**, with no exact-pair
+losses. Negative nonpower bounds and live ARM32 execution remain
+unverified. See [the RNG audit](AERANDOM_BOUND_ARM_2026-10-16.md).
 
 ## Particle UV selector mapping (2026-10-16)
 

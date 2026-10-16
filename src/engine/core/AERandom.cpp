@@ -48,7 +48,8 @@ namespace AbyssEngine {
     }
 
     int AERandom::nextInt(int bound) {
-        if ((bound & -bound) == bound) {
+        uint32_t unsignedBound = static_cast<uint32_t>(bound);
+        if ((unsignedBound & (0u - unsignedBound)) == unsignedBound) {
             uint64_t seed = (static_cast<uint64_t>(seedHigh) << 32) | seedLow;
             seed = seed * 0x5deece66dULL + 0xbULL;
             seedLow = static_cast<uint32_t>(seed);
