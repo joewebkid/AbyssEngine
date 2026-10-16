@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (AEGeometry render routing; older subsystem
+Last reviewed: 2026-10-16 (Trail canvas routing; older subsystem
 snapshots retain their dates)
+
+## Trail canvas routing (2026-10-16)
+
+Original Android ARM Trail methods use the GOT slot relocated to
+`Globals::Canvas`. The previous C++ used ten null file-static canvas
+pointers and declared-only render/color hooks. The constructor,
+`update`, `setWidth`, `changeType`, and `render` now use the confirmed
+global canvas and typed `PaintCanvas` calls. A production-body fixture
+tests `render`, 13 type/color selections, and switching canvas pointers;
+native `gof2`, **207/207** ARM units and **40** verifier tests (one skip)
+pass. Focused 12-function source-shape/strict fuzzy rises
+**93.65%/83.60% -> 98.76%/88.72%**; linked-exact rises **6 -> 7**.
+Full corpus: **4,323/4,524** compared, **201 missing**, **124 extras**,
+zero skipped, **93.66%/82.73%** average source-shape/strict fuzzy,
+**2,509 linked-exact / 1,074 byte-exact**. Exact `(unit,symbol)` sets
+show one linked gain and zero linked/byte losses. The constructor,
+float `update`, and `setWidth` remain nonexact and lack independent
+behavioral fixtures; live rendering remains untested. See
+[the Trail audit](TRAIL_CANVAS_ROUTING_ARM_2026-10-16.md).
 
 ## AEGeometry render routing (2026-10-16)
 

@@ -1,25 +1,15 @@
 #include "engine/render/Trail.h"
 #include "engine/render/PaintCanvas.h"
+#include "game/core/Globals.h"
 
 namespace AEMath = AbyssEngine::AEMath;
-
-static AbyssEngine::PaintCanvas **gTrailCanvasRender = nullptr;
-static AbyssEngine::PaintCanvas **gTrailCanvasType1 = nullptr;
-static AbyssEngine::PaintCanvas **gTrailCanvasType2 = nullptr;
-static AbyssEngine::PaintCanvas **gTrailCanvasType3 = nullptr;
-static AbyssEngine::PaintCanvas **gTrailCanvasTypeDefault = nullptr;
-static AbyssEngine::PaintCanvas **gTrailCanvasType5 = nullptr;
-static AbyssEngine::PaintCanvas **gTrailCanvasType8 = nullptr;
-static AbyssEngine::PaintCanvas **gTrailCanvasCtor = nullptr;
-static AbyssEngine::PaintCanvas **gTrailCanvasUpdate = nullptr;
-static AbyssEngine::PaintCanvas **gTrailCanvasSetWidth = nullptr;
 
 void Trail::update(const Vector &a, const Vector &b) {
     update(a.x, a.y, a.z, b.x, b.y, b.z);
 }
 
 void Trail::render() {
-    Trail_renderTransform(*gTrailCanvasRender, this->transformId, 0);
+    Globals::Canvas->DrawTransform(this->transformId, nullptr);
 }
 
 void Trail::translate(const Vector &delta) {
@@ -83,7 +73,7 @@ void Trail::update(float ax, float ay, float az, float bx, float by, float bz) {
         relative[2] = (int) ((float) source[2] - az);
     }
 
-    PaintCanvas *canvas = *gTrailCanvasUpdate;
+    PaintCanvas *canvas = Globals::Canvas;
     for (int vertex = 0; vertex < (this->segments + 1) * 2; ++vertex) {
         int *point = this->relativePoints + vertex * 3;
         float x = (float) point[0];
@@ -110,7 +100,7 @@ Trail::Trail(int type, int segments) {
         }
     }
 
-    PaintCanvas *canvas = *gTrailCanvasCtor;
+    PaintCanvas *canvas = Globals::Canvas;
     this->width = 0x3c;
     canvas->MeshCreate((uint16_t)(segments * 2 + 2),
                        (uint16_t)(segments * 2),
@@ -154,7 +144,7 @@ void Trail::update(const Matrix &a, const Matrix &b, const Vector &v) {
 
 void Trail::setWidth(int width) {
     int delta = this->width - width;
-    PaintCanvas *canvas = *gTrailCanvasSetWidth;
+    PaintCanvas *canvas = Globals::Canvas;
     for (int vertex = 0; vertex < (this->segments + 1) * 2; ++vertex) {
         int *point = this->points + vertex * 3;
         int x = point[0] + delta;
@@ -170,25 +160,25 @@ void Trail::changeType(int type) {
         case 1:
         case 7:
         case 11:
-            Trail_transformSetColor(*gTrailCanvasType1, this->transformId, 0xff0000ffu);
+            Globals::Canvas->TransformSetColor(this->transformId, 0xff0000ffu);
             break;
         case 2:
         case 9:
-            Trail_transformSetColor(*gTrailCanvasType2, this->transformId, 0x00ff00ffu);
+            Globals::Canvas->TransformSetColor(this->transformId, 0x00ff00ffu);
             break;
         case 3:
         case 6:
         case 10:
-            Trail_transformSetColor(*gTrailCanvasType3, this->transformId, 0xffff00ffu);
+            Globals::Canvas->TransformSetColor(this->transformId, 0xffff00ffu);
             break;
         case 5:
-            Trail_transformSetColor(*gTrailCanvasType5, this->transformId, 0x00ff0000u);
+            Globals::Canvas->TransformSetColor(this->transformId, 0x00ff0000u);
             break;
         case 8:
-            Trail_transformSetColor(*gTrailCanvasType8, this->transformId, 0xff4000ffu);
+            Globals::Canvas->TransformSetColor(this->transformId, 0xff4000ffu);
             break;
         default:
-            Trail_transformSetColor(*gTrailCanvasTypeDefault, this->transformId, 0xffffffffu);
+            Globals::Canvas->TransformSetColor(this->transformId, 0xffffffffu);
             break;
     }
 }

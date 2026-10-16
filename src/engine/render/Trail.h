@@ -54,8 +54,4 @@ namespace AbyssEngine {
     using ::Trail;
 }
 
-void Trail_renderTransform(AbyssEngine::PaintCanvas *canvas, uint32_t transform, int mode);
-
-void Trail_transformSetColor(AbyssEngine::PaintCanvas *canvas, uint32_t transform, uint32_t color);
-
 #endif

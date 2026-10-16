@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Trail canvas routing (2026-10-16)
+
+`python tools/run_trail_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` executes extracted production `render`
+and `changeType` bodies with a recording canvas. It checks all 13
+tested type/color branches, render arguments and a changed global
+canvas pointer. Native `gof2`, 207/207 ARM units and 40 verifier tests
+(one skip) pass. Focused 12-function source-shape/strict fuzzy rises
+93.65%/83.60% -> 98.76%/88.72%; linked-exact rises 6 -> 7.
+Full report `A:/Galaxy on Fire new version/_work/trail_canvas_full_20261016.json`
+compares 4,323/4,524 originals, 201 missing, 124 extras, zero skipped,
+93.66%/82.73% average source-shape/strict fuzzy, 2,509 linked-exact
+and 1,074 byte-exact. Against
+`A:/Galaxy on Fire new version/_work/aegeometry_render_full_20261016.json`,
+exact `(unit,symbol)` sets have one linked gain (`Trail::render`) and
+zero linked/byte losses. See [the Trail audit](TRAIL_CANVAS_ROUTING_ARM_2026-10-16.md).
+
 ## AEGeometry render routing (2026-10-16)
 
 `python tools/run_aegeometry_canvas_calls_smoke.py --cxx
