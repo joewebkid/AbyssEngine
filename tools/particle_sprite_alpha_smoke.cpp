@@ -4,13 +4,27 @@
 #include <vector>
 
 namespace AbyssEngine { namespace AEMath {
-struct Vector { float x, y, z; };
+struct Vector {
+    float x, y, z;
+    Vector &operator*=(float scale) {
+        x *= scale; y *= scale; z *= scale; return *this;
+    }
+    Vector &operator+=(const Vector &other) {
+        x += other.x; y += other.y; z += other.z; return *this;
+    }
+};
+struct Matrix { Vector position; };
+Vector operator-(Vector a, Vector b) {
+    return {a.x - b.x, a.y - b.y, a.z - b.z};
+}
 Vector operator*(Vector v, float scale) {
     return {v.x * scale, v.y * scale, v.z * scale};
 }
+Vector MatrixGetPosition(const Matrix &matrix) { return matrix.position; }
 float VectorSignedToFloat(int value, unsigned char) { return (float) value; }
 }}
 using AbyssEngine::AEMath::Vector;
+using AbyssEngine::AEMath::Matrix;
 using AbyssEngine::AEMath::VectorSignedToFloat;
 
 constexpr float kMillisecondsToSeconds = 0.001f;
@@ -22,6 +36,9 @@ struct ParticleSettings {
         int posBase = 1000;
         int frames = 0;
         float uvU0 = 0.1f, uvV0 = 0.2f, uvU1 = 0.6f, uvV1 = 0.8f;
+        float posRight = 10, posUp = 6, posDir = 3, colorFlag = 1;
+        uint32_t color0 = 0x21426384u;
+        float velBaseX = 7, velBaseY = 8, velBaseZ = 9;
     } sets[1];
 };
 struct ParticleSettingsRef { static ParticleSettings cur; };
@@ -40,12 +57,14 @@ struct PaintCanvas {
     std::vector<Size> sizes, sizeDeltas;
     std::vector<Uv> uvs;
     std::vector<char> order;
+    Vector currentPosition{};
     void SpriteSystemSetRGBA(uint32_t resource, uint16_t id,
                              float a, float r, float g, float b) {
         colors.push_back({resource, id, a, r, g, b});
         order.push_back('C');
     }
     void SpriteSystemSetPosition(uint32_t, uint16_t id, float x, float y, float z) {
+        currentPosition = {x, y, z};
         positions.push_back({id, x, y, z}); order.push_back('P');
     }
     void SpriteSystemSetSize(uint32_t, uint16_t id, short value) {
@@ -59,7 +78,20 @@ struct PaintCanvas {
         uvs.push_back({id, u0, v0, u1, v1}); order.push_back('U');
     }
     void SpriteSystemAddPosition(uint32_t, uint16_t id, float x, float y, float z) {
+        currentPosition.x += x; currentPosition.y += y; currentPosition.z += z;
         movements.push_back({id, x, y, z}); order.push_back('M');
+    }
+    void SpriteSystemGetPosition(uint32_t, uint16_t, Vector &out) {
+        out = currentPosition; order.push_back('G');
+    }
+};
+
+struct ScriptedRandom {
+    int values[4]{1000, 1000, 1000, 1000};
+    int calls = 0;
+    int nextInt(int limit) {
+        assert(limit == 2000 && calls < 4);
+        return values[calls++];
     }
 };
 
@@ -76,6 +108,8 @@ struct IParticleSystem {
     int8_t *particleSetIds = setIds;
     Vector velocities[2]{};
     Vector *particleVelocities = velocities;
+    ScriptedRandom random;
+    const Matrix *matrix = nullptr;
     int interpolateCalls = 0;
     virtual void reset() = 0;
     void interpolateColor(int, float &a, float &r, float &g, float &b) {
@@ -93,14 +127,14 @@ struct IParticleSystem {
 
 struct ParticleSystemSprite : IParticleSystem {
     PaintCanvas recording;
+    Matrix matrixValue{{2, 3, 4}};
     int resetCalls = 0;
-    int areaCalls = 0;
-    ParticleSystemSprite() { canvas = &recording; }
+    ParticleSystemSprite() { canvas = &recording; matrix = &matrixValue; }
     void reset() override { ++resetCalls; }
     void init(uint32_t spriteId, uint16_t idOffset);
     void setAlpha(int index, uint32_t color, float alpha);
     void updateSingle(int index, float dt);
-    void updateAreaExitParticle(int, float) { ++areaCalls; }
+    void updateAreaExitParticle(int index, float dt);
 };
 
 // PRODUCTION_METHODS
@@ -172,7 +206,64 @@ int main() {
     ParticleSystemSprite areaExit;
     areaExit.flags = 0x80;
     areaExit.ages[0] = 25;
+    areaExit.recording.currentPosition = {13, 3, 4};
     areaExit.updateSingle(0, 1.0f);
-    assert(areaExit.areaCalls == 1 && areaExit.ages[0] == 25);
-    assert(areaExit.recording.order.empty());
+    assert(areaExit.ages[0] == 25 && areaExit.random.calls == 4);
+    assert(areaExit.recording.order == std::vector<char>({'M', 'G', 'C'}));
+    assert(near(areaExit.recording.colors[0].b, 0.0f));
+
+    ParticleSystemSprite outerEdge;
+    outerEdge.recording.currentPosition = {12.02f, 3, 4};
+    outerEdge.updateAreaExitParticle(0, 0.0f);
+    assert(outerEdge.random.calls == 0);
+    assert(outerEdge.recording.order == std::vector<char>({'M', 'G', 'C'}));
+    assert(near(outerEdge.recording.colors[0].b, 0.0f));
+
+    ParticleSystemSprite outerExact;
+    outerExact.recording.currentPosition = {12, 3, 4};
+    outerExact.updateAreaExitParticle(0, 0.0f);
+    assert(outerExact.random.calls == 0);
+    assert(near(outerExact.recording.colors[0].b, 0.0f));
+
+    ParticleSystemSprite reborn;
+    reborn.recording.currentPosition = {13, 3, 4};
+    reborn.random.values[3] = 0;
+    reborn.updateAreaExitParticle(0, 0.0f);
+    assert(reborn.random.calls == 4);
+    assert(reborn.recording.order == std::vector<char>({'M', 'G', 'C', 'P'}));
+    assert(near(reborn.recording.currentPosition.x, 2));
+    assert(near(reborn.recording.currentPosition.y, 3));
+    assert(near(reborn.recording.currentPosition.z, 14));
+    assert(near(reborn.velocities[0].x, 7));
+    assert(near(reborn.velocities[0].y, 8));
+    assert(near(reborn.velocities[0].z, 9));
+
+    ParticleSystemSprite middleFade;
+    middleFade.recording.currentPosition = {10, 3, 4};
+    middleFade.updateAreaExitParticle(0, 0.0f);
+    assert(middleFade.random.calls == 0);
+    assert(middleFade.recording.order == std::vector<char>({'M', 'G', 'C'}));
+    assert(near(middleFade.recording.colors[0].b,
+                (0x84 / 255.0f) * (36.0f / 64.0f)));
+
+    ParticleSystemSprite middleExact;
+    middleExact.recording.currentPosition = {8, 3, 4};
+    middleExact.updateAreaExitParticle(0, 0.0f);
+    assert(near(middleExact.recording.colors[0].b, 0x84 / 255.0f));
+
+    ParticleSystemSprite middleBand;
+    middleBand.recording.currentPosition = {6, 3, 4};
+    middleBand.updateAreaExitParticle(0, 0.0f);
+    assert(near(middleBand.recording.colors[0].b, 0x84 / 255.0f));
+
+    ParticleSystemSprite innerFade;
+    innerFade.recording.currentPosition = {4, 3, 4};
+    innerFade.updateAreaExitParticle(0, 0.0f);
+    assert(near(innerFade.recording.colors[0].b,
+                (0x84 / 255.0f) * (3.0f / 8.0f)));
+
+    ParticleSystemSprite innerCore;
+    innerCore.recording.currentPosition = {2.5f, 3, 4};
+    innerCore.updateAreaExitParticle(0, 0.0f);
+    assert(near(innerCore.recording.colors[0].b, 0.0f));
 }

@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (sprite particle update output; older subsystem
+Last reviewed: 2026-10-16 (sprite area-exit behavior; older subsystem
 snapshots retain their dates)
+
+## Sprite particle area-exit behavior (2026-10-16)
+
+The extracted production `updateAreaExitParticle` and `setAlpha`
+bodies now have `-O0/-O2` recording-canvas checks for every normal
+radius band, exact outer/middle boundaries, rejected and accepted
+rebirth candidates, position and base-velocity output. These match the
+Android ARM branch/formula evidence; no production C++ changed. The
+fixture, native `gof2` and 40 verifier tests (one existing skip) pass.
+Focused source-shape/strict fuzzy remains **94.6%/66.7%**, nonexact.
+The unchanged full corpus is **4,323/4,524** compared, **201
+missing**, **123 extras**, **93.68%/82.78%** averages, **2,515
+linked-exact / 1,075 byte-exact**; the prior **208/208** ARM build
+still applies. Real RNG behavior and live ARM32/GPU output remain
+unverified. See [the area-exit audit](PARTICLE_SPRITE_AREA_EXIT_ARM_2026-10-16.md).
 
 ## Sprite particle update output (2026-10-16)
 

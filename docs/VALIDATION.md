@@ -4,6 +4,26 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Sprite particle area-exit behavior (2026-10-16)
+
+`python tools/run_particle_sprite_alpha_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` now extracts the production
+`updateAreaExitParticle` and `setAlpha` bodies. Host `-O0/-O2`
+recording-canvas checks cover the outer, middle and inner radius
+bands, exact outer/middle boundaries, four-draw rejected/accepted
+rebirth, position
+and base-velocity effects. The random source is scripted and the
+Vector/Matrix and canvas helpers are fixtures; live ARM32/GPU and
+production RNG remain untested. Native `gof2` and 40 verifier tests
+(one existing skip) pass. No production C++ changed. Focused report
+`A:/Galaxy on Fire new version/_work/particle_sprite_area_exit_focused_20261016.json`
+stays **94.6% source-shape / 66.7% strict fuzzy**, nonexact. The
+unchanged full report `particle_init_void_full_20261016.json` has
+**4,323/4,524** compared, **93.68%/82.78%** averages, **2,515
+linked-exact / 1,075 byte-exact**. ARM build was not rerun for this
+test-only change; prior **208/208** remains applicable. See
+[the area-exit audit](PARTICLE_SPRITE_AREA_EXIT_ARM_2026-10-16.md).
+
 ## Sprite particle update output (2026-10-16)
 
 `python tools/run_particle_sprite_alpha_smoke.py --cxx
