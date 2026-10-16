@@ -1,5 +1,6 @@
 #ifndef GOF2_CUTSCENE_H
 #define GOF2_CUTSCENE_H
+#include <cstddef>
 #include "engine/core/Array.h"
 #include "../../engine/core/AEString.h"
 #include "engine/math/Vector.h"
@@ -26,12 +27,9 @@ public:
     AEGeometry *geom30;
     AEGeometry *geom34;
     Array<AEGeometry *> *geometries;
-    uint32_t renderAtTimeLo;
-    uint32_t renderAtTimeHi;
-    uint32_t prevTimeLo;
-    uint32_t prevTimeHi;
-    uint32_t accumLo;
-    uint32_t accumHi;
+    uint64_t renderAtTime;
+    uint64_t prevTime;
+    uint64_t accum;
     uint32_t frameDelta;
     uint8_t initialized;
     PlayerEgo *player;
@@ -72,5 +70,15 @@ public:
 
     void checkForTurret();
 };
+
+#if defined(__arm__) && !defined(__aarch64__)
+static_assert(offsetof(CutScene, renderAtTime) == 0x40, "CutScene time alignment");
+static_assert(offsetof(CutScene, prevTime) == 0x48, "CutScene previous time offset");
+static_assert(offsetof(CutScene, accum) == 0x50, "CutScene accumulator offset");
+static_assert(offsetof(CutScene, frameDelta) == 0x58, "CutScene frame delta offset");
+static_assert(offsetof(CutScene, initialized) == 0x5c, "CutScene initialized offset");
+static_assert(offsetof(CutScene, followCamera) == 0x68, "CutScene camera offset");
+static_assert(offsetof(CutScene, mode) == 0x88, "CutScene mode offset");
+#endif
 
 #endif

@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene render and time layout (2026-10-16)
+
+`python tools/run_cutscene_time_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2`, exercising
+extracted production time fragments across high-word and wrap cases.
+Native `gof2`, **208/208** ARM units and 40 verifier tests (one
+existing skip) pass. Focused report
+`A:/Galaxy on Fire new version/_work/cutscene_time64_focused_20261016.json`
+shows `render3D` at **100% linked-exact**, `isInitialized` at **100%
+byte-exact**, `process` at **87.5%/42.1%** and `initialize` at
+**86.9%/35.7%** source-shape/strict fuzzy. Full report
+`A:/Galaxy on Fire new version/_work/cutscene_time64_full_20261016.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.84%** averages, **2,517 linked-exact / 1,076 byte-exact**.
+Compared with `cutscene_update_full_20261016.json`, exact
+`(unit,symbol)` sets gain two linked and one byte pair, zero losses.
+See [the render/time audit](CUTSCENE_RENDER_TIME_LAYOUT_ARM_2026-10-16.md).
+
 ## CutScene update dispatch (2026-10-16)
 
 The Android ARM `update()` and `update(int)` symbols both tail-branch

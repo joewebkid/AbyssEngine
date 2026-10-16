@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (CutScene update dispatch; older subsystem
+Last reviewed: 2026-10-16 (CutScene render/time layout; older subsystem
 snapshots retain their dates)
+
+## CutScene render and time layout (2026-10-16)
+
+Android ARM proves three aligned 64-bit time fields at `+0x40/+0x48/+0x50`,
+frame delta at `+0x58`, and indexed geometry rendering. The recovered
+16-bit-masked timestamps and misaligned class tail are corrected.
+`CutScene::render3D` is now **100% linked-exact**; `isInitialized` is
+**100% byte-exact**. `process` improves to **87.5% source-shape /
+42.1% strict fuzzy** but remains nonexact. Native `gof2`, **208/208**
+ARM units, 40 verifier tests (one existing skip), and the extracted
+host time smoke pass. Full corpus: **4,323/4,524** compared, **201
+missing**, **123 extras**, **93.73%/82.84%** average source-shape/
+strict fuzzy, **2,517 linked-exact / 1,076 byte-exact**; two linked
+and one byte pair gained, zero lost. Live ARM32 gameplay/GPU remains
+untested. Next priority is a bounded `CutScene::process` mode branch.
+See [the render/time audit](CUTSCENE_RENDER_TIME_LAYOUT_ARM_2026-10-16.md).
 
 ## CutScene update dispatch (2026-10-16)
 

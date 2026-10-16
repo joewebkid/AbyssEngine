@@ -119,8 +119,8 @@ void CutScene::render3D() {
     if (this->geom34 != nullptr) this->geom34->render();
 
     if (this->geometries != nullptr) {
-        for (AEGeometry *g: *this->geometries)
-            g->render();
+        for (unsigned i = 0; i < this->geometries->size(); ++i)
+            (*this->geometries)[i]->render();
     }
 }
 
@@ -133,18 +133,13 @@ void CutScene::process(int /*delta*/) {
     if (this->initialized == 0)
         return;
 
-    unsigned int now = (unsigned int) ApplicationManager::gAppManager->GetCurrentTimeMillis();
-    unsigned int prev = this->prevTimeLo;
-    unsigned int dt = now - prev;
+    uint64_t now = ApplicationManager::gAppManager->GetCurrentTimeMillis();
+    unsigned int dt = (unsigned int) now - (unsigned int) this->prevTime;
 
-    unsigned int lo = this->accumLo;
-    this->accumLo = lo + dt;
-    this->accumHi = this->accumHi + ((int) dt >> 31) + (lo + dt < lo ? 1u : 0u);
+    this->accum += (int64_t) (int32_t) dt;
     this->frameDelta = dt;
-    this->renderAtTimeLo = now & 0xffff;
-    this->renderAtTimeHi = 0;
-    this->prevTimeLo = now & 0xffff;
-    this->prevTimeHi = 0;
+    this->renderAtTime = now;
+    this->prevTime = now;
 
     if (this->followCamera != nullptr)
         this->followCamera->update((int) this->frameDelta);
@@ -510,18 +505,15 @@ void CutScene::initialize() {
     this->rootGeom = new AEGeometry(canvas);
     this->rootGeom->setRotationOrder(AbyssEngine::AEMath::ROTATION_ORDER_YXZ);
 
-    this->accumLo = 0;
-    this->accumHi = 0;
+    this->accum = 0;
     this->animTimer7c = 0;
     this->animTimer80 = 0;
     this->fogTimer84 = 0;
 
-    unsigned int now = (unsigned int) ApplicationManager::gAppManager->GetCurrentTimeMillis();
+    uint64_t now = ApplicationManager::gAppManager->GetCurrentTimeMillis();
     this->initialized = 1;
-    this->renderAtTimeLo = now & 0xffff;
-    this->renderAtTimeHi = 0;
-    this->prevTimeLo = now & 0xffff;
-    this->prevTimeHi = 0;
+    this->renderAtTime = now;
+    this->prevTime = now;
 }
 
 void CutScene::resetCamera() {
