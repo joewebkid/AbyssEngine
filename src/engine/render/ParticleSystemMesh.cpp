@@ -458,7 +458,7 @@ void ParticleSystemMesh::updateTrailEdges(int id, int delta) {
     for (int i = 0; i < edgeCount; i++) {
         Vector move;
         _psm_vectorScale(&move, edge, scale);
-        _psm_meshTranslatePoint(this->canvas, this->resource, (uint16_t) point, -move.x, move.y,
+        _psm_meshTranslatePoint(this->canvas, this->resource, (uint16_t) point, -move.x, -move.y,
                                 -move.z);
         int span = this->wide == 0 ? 1 : 4;
         _psm_meshTranslatePoint(this->canvas, this->resource, (uint16_t)(point + span), move.x,
@@ -468,7 +468,7 @@ void ParticleSystemMesh::updateTrailEdges(int id, int delta) {
             Vector move2;
             _psm_vectorScale(&move2, edge + 1, scale);
             _psm_meshTranslatePoint(this->canvas, this->resource, (uint16_t)(point + 2),
-                                    -move2.x, move2.y, -move2.z);
+                                    -move2.x, -move2.y, -move2.z);
             _psm_meshTranslatePoint(this->canvas, this->resource, (uint16_t)(point + span + 2),
                                     move2.x, move2.y, move2.z);
             edge += 2;

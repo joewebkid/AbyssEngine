@@ -26,6 +26,7 @@ def main():
         function(source, "void ParticleSystemMesh::emit(int id)"),
         function(trail_source, "void ParticleSystemMesh::emitTrail(int delta)"),
         function(source, "void ParticleSystemMesh::updateSingle(int id, float delta)"),
+        function(source, "void ParticleSystemMesh::updateTrailEdges(int id, int delta)"),
     ))
     with tempfile.TemporaryDirectory(prefix="particle-trail-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "smoke.cpp"

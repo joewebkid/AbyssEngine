@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ParticleSystemMesh dormant sentinel; older subsystem
+Last reviewed: 2026-10-16 (ParticleSystemMesh trail-edge sign; older subsystem
 snapshots retain their dates)
+
+## ParticleSystemMesh trail-edge Y sign (2026-10-16)
+
+Android ARM negates X/Y/Z for each negative trail-edge movement;
+the source had left Y positive in both calls. A production-body
+recording-canvas test failed before the fix and passes at host
+`-O0/-O2` afterward. Native `gof2`, **208/208** ARM units and
+**40** verifier tests (one existing skip) pass. Focused
+`updateTrailEdges` source-shape/strict fuzzy improves
+**96.1%/67.2% → 96.8%/73.4%**, nonexact. Full corpus remains
+**4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.67%/82.77%** average source-shape/strict fuzzy, **2,513
+linked-exact / 1,074 byte-exact** with no exact-set losses.
+Live GPU/ARM32 output remains unverified. See
+[the edge audit](PARTICLE_MESH_TRAIL_EDGE_SIGN_ARM_2026-10-16.md).
 
 ## ParticleSystemMesh dormant trail sentinel (2026-10-16)
 

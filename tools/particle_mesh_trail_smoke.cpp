@@ -50,8 +50,10 @@ const ParticleSettings::SetDefinition &currentParticleSet(int set) {
 struct PaintCanvas {
     struct Uv { uint16_t point; float u, v; };
     struct Color { uint16_t point; uint32_t value; };
+    struct Move { uint16_t point; float x, y, z; };
     std::vector<Uv> uv;
     std::vector<Color> colors;
+    std::vector<Move> moves;
     void MeshSetUv(uint32_t, uint16_t point, float u, float v) {
         uv.push_back({point, u, v});
     }
@@ -87,7 +89,7 @@ struct ParticleSystemMesh : IParticleSystem {
     PaintCanvas canvasValue;
     PaintCanvas *canvas = &canvasValue;
     int edgeCalls = 0, finishCalls = 0, extraCalls = 0;
-    int trailUpdates = 0, usualUpdates = 0, colorUpdates = 0;
+    int usualUpdates = 0, colorUpdates = 0;
     int lastEdgePoint = -1, lastFinished = -1, extraSlot = -1;
     Vector lastEdge{}, lastEdgeOffset{}, lastFinishRight{}, lastFinishUp{}, extraPosition{};
     bool extraFinish = false;
@@ -105,7 +107,7 @@ struct ParticleSystemMesh : IParticleSystem {
         particleAges[id] = 0;
     }
     void incId() { currentParticle = (currentParticle + 1) % maxParticles; }
-    void updateTrailEdges(int, int) { ++trailUpdates; }
+    void updateTrailEdges(int, int);
     void updateUsualEdges(int, int) { ++usualUpdates; }
     void updateSingleColor(int) { ++colorUpdates; }
     void emit(int id);
@@ -121,6 +123,10 @@ void _psm_finishCurrentTrailParticle(ParticleSystemMesh *mesh, ParticleSet set, 
     mesh->finishCurrentTrailParticle(set, id, *right, *up);
 }
 void _psm_meshSetPoint(PaintCanvas *, uint32_t, uint16_t, float, float, float) {}
+void _psm_meshTranslatePoint(PaintCanvas *canvas, uint32_t, uint16_t point,
+                             float x, float y, float z) {
+    canvas->moves.push_back({point, x, y, z});
+}
 
 // PRODUCTION_METHODS
 
@@ -199,7 +205,7 @@ int main() {
     dormant.newSectionStarted = 0;
     dormant.ages[0] = -2;
     dormant.updateSingle(0, 10.0f);
-    assert(dormant.trailUpdates == 1 && dormant.finishCalls == 0);
+    assert(dormant.canvas->moves.size() == 2 && dormant.finishCalls == 0);
     assert(dormant.ages[0] == -2 && dormant.colorUpdates == 0);
 
     ParticleSystemMesh resumed;
@@ -207,7 +213,7 @@ int main() {
     resumed.newSectionStarted = 1;
     resumed.ages[0] = -2;
     resumed.updateSingle(0, 10.0f);
-    assert(resumed.trailUpdates == 1 && resumed.finishCalls == 1);
+    assert(resumed.canvas->moves.size() == 2 && resumed.finishCalls == 1);
     assert(resumed.ages[0] == 10 && resumed.colorUpdates == 1);
 
     ParticleSystemMesh ongoing;
@@ -215,6 +221,19 @@ int main() {
     ongoing.newSectionStarted = 0;
     ongoing.ages[0] = 5;
     ongoing.updateSingle(0, 10.0f);
-    assert(ongoing.trailUpdates == 1 && ongoing.finishCalls == 0);
+    assert(ongoing.canvas->moves.size() == 4 && ongoing.finishCalls == 0);
     assert(ongoing.ages[0] == 15 && ongoing.colorUpdates == 1);
+
+    ParticleSystemMesh edgeSign;
+    edgeSign.flags |= 0x8000;
+    edgeSign.ages[0] = 5;
+    edgeSign.velocities[0] = {2, 3, 4};
+    edgeSign.velocities[1] = {5, 6, 7};
+    edgeSign.updateTrailEdges(0, 1000);
+    const auto &moves = edgeSign.canvas->moves;
+    assert(moves.size() == 4);
+    assert(moves[0].point == 100 && near(moves[0].x, -2) && near(moves[0].y, -3) && near(moves[0].z, -4));
+    assert(moves[1].point == 101 && near(moves[1].x, 2) && near(moves[1].y, 3) && near(moves[1].z, 4));
+    assert(moves[2].point == 102 && near(moves[2].x, -5) && near(moves[2].y, -6) && near(moves[2].z, -7));
+    assert(moves[3].point == 103 && near(moves[3].x, 5) && near(moves[3].y, 6) && near(moves[3].z, 7));
 }
