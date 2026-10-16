@@ -36,6 +36,7 @@ struct ParticleSettings {
         float posRight = 1, posUp = 2, posDir = 3;
         float uvU0 = 0.1f, uvV0 = 0.3f, uvU1 = 0.2f, uvV1 = 0.4f;
         int posBase = 3;
+        int lifetime = 100;
         uint32_t color0 = 0x11223344u;
     } sets[1];
 };
@@ -81,9 +82,12 @@ struct ParticleSystemMesh : IParticleSystem {
     Vector *particleVelocities = velocities;
     int ages[2]{-1, -1};
     int *particleAges = ages;
+    int8_t ids[2]{0, 0};
+    int8_t *particleSetIds = ids;
     PaintCanvas canvasValue;
     PaintCanvas *canvas = &canvasValue;
     int edgeCalls = 0, finishCalls = 0, extraCalls = 0;
+    int trailUpdates = 0, usualUpdates = 0, colorUpdates = 0;
     int lastEdgePoint = -1, lastFinished = -1, extraSlot = -1;
     Vector lastEdge{}, lastEdgeOffset{}, lastFinishRight{}, lastFinishUp{}, extraPosition{};
     bool extraFinish = false;
@@ -101,9 +105,22 @@ struct ParticleSystemMesh : IParticleSystem {
         particleAges[id] = 0;
     }
     void incId() { currentParticle = (currentParticle + 1) % maxParticles; }
+    void updateTrailEdges(int, int) { ++trailUpdates; }
+    void updateUsualEdges(int, int) { ++usualUpdates; }
+    void updateSingleColor(int) { ++colorUpdates; }
     void emit(int id);
     void emitTrail(int delta);
+    void updateSingle(int id, float delta);
 };
+
+void _psm_matrixGetRight(Vector *out, const Matrix *m) { *out = AbyssEngine::AEMath::MatrixGetRight(*m); }
+void _psm_matrixGetUp(Vector *out, const Matrix *m) { *out = AbyssEngine::AEMath::MatrixGetUp(*m); }
+void _psm_vectorScale(Vector *out, const Vector *v, float scale) { *out = *v * scale; }
+void _psm_finishCurrentTrailParticle(ParticleSystemMesh *mesh, ParticleSet set, int id,
+                                     const Vector *right, const Vector *up) {
+    mesh->finishCurrentTrailParticle(set, id, *right, *up);
+}
+void _psm_meshSetPoint(PaintCanvas *, uint32_t, uint16_t, float, float, float) {}
 
 // PRODUCTION_METHODS
 
@@ -176,4 +193,28 @@ int main() {
     assert(rotated.edgeCalls == 3 && rotated.lastEdgePoint == 118);
     assert(near(rotated.lastEdgeOffset.z, 2.0f));
     assert(rotated.finishCalls == 0 && rotated.frameCounter == 1);
+
+    ParticleSystemMesh dormant;
+    dormant.flags |= 0x8000;
+    dormant.newSectionStarted = 0;
+    dormant.ages[0] = -2;
+    dormant.updateSingle(0, 10.0f);
+    assert(dormant.trailUpdates == 1 && dormant.finishCalls == 0);
+    assert(dormant.ages[0] == -2 && dormant.colorUpdates == 0);
+
+    ParticleSystemMesh resumed;
+    resumed.flags |= 0x8000;
+    resumed.newSectionStarted = 1;
+    resumed.ages[0] = -2;
+    resumed.updateSingle(0, 10.0f);
+    assert(resumed.trailUpdates == 1 && resumed.finishCalls == 1);
+    assert(resumed.ages[0] == 10 && resumed.colorUpdates == 1);
+
+    ParticleSystemMesh ongoing;
+    ongoing.flags |= 0x8000;
+    ongoing.newSectionStarted = 0;
+    ongoing.ages[0] = 5;
+    ongoing.updateSingle(0, 10.0f);
+    assert(ongoing.trailUpdates == 1 && ongoing.finishCalls == 0);
+    assert(ongoing.ages[0] == 15 && ongoing.colorUpdates == 1);
 }

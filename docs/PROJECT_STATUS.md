@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (base particle repeated-frame check; older subsystem
+Last reviewed: 2026-10-16 (ParticleSystemMesh dormant sentinel; older subsystem
 snapshots retain their dates)
+
+## ParticleSystemMesh dormant trail sentinel (2026-10-16)
+
+Android ARM `updateSingle` returns after trail-edge handling when age
+is `-2` and no new section has begun. The prior source incorrectly
+advanced age and color. An extracted-production test failed before
+the fix and now passes at host `-O0/-O2`, including the resumed and
+ongoing branches. Native `gof2`, **208/208** ARM units and **40**
+verifier tests (one existing skip) pass. Focused source-shape stays
+**97.2%**; strict fuzzy rises
+**69.2% → 70.5%**, nonexact. Full ARM corpus remains **4,323/4,524**
+compared, **201 missing**, **123 extras**, **93.67%/82.77%** average
+source-shape/strict fuzzy, **2,513 linked-exact / 1,074 byte-exact**,
+with no exact-set losses. Other trail lifetime/output branches and
+live ARM32/GPU behavior remain unverified. See
+[the sentinel audit](PARTICLE_MESH_SENTINEL_UPDATE_ARM_2026-10-16.md).
 
 ## Base particle repeated-frame rate and ring check (2026-10-16)
 

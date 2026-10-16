@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ParticleSystemMesh dormant trail sentinel (2026-10-16)
+
+The extracted `ParticleSystemMesh::updateSingle` test failed on the
+original C++ for age `-2` with `newSectionStarted == 0`, then passed
+after restoring the ARM early exit at `0x1868c8`. It also checks
+resumed and ongoing trail particles at host `-O0/-O2`. Native `gof2`,
+208/208 ARM units and 40 verifier tests (one existing skip) pass. Focused
+source-shape/strict fuzzy changes 97.2%/69.2% to 97.2%/70.5%,
+nonexact. Full report
+`A:/Galaxy on Fire new version/_work/particle_mesh_update_sentinel_full_20261016.json`
+compares 4,323/4,524 originals, 201 missing, 123 extras, no skipped
+or wrong signatures, 93.67%/82.77% average source-shape/strict fuzzy,
+2,513 linked-exact and 1,074 byte-exact. Both exact `(unit,symbol)`
+sets have zero losses/gains against
+`particle_emit_direct_split_full_20261016.json`. See
+[the sentinel audit](PARTICLE_MESH_SENTINEL_UPDATE_ARM_2026-10-16.md).
+
 ## Base particle repeated-frame rate and ring check (2026-10-16)
 
 `python tools/run_particle_emit_smoke.py --cxx

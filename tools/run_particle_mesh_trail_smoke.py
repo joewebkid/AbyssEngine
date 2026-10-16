@@ -25,14 +25,16 @@ def main():
     bodies = "\n".join((
         function(source, "void ParticleSystemMesh::emit(int id)"),
         function(trail_source, "void ParticleSystemMesh::emitTrail(int delta)"),
+        function(source, "void ParticleSystemMesh::updateSingle(int id, float delta)"),
     ))
     with tempfile.TemporaryDirectory(prefix="particle-trail-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "smoke.cpp"
         generated.write_text(fixture.replace("// PRODUCTION_METHODS", bodies))
-        exe = Path(temp) / "smoke.exe"
-        subprocess.run([args.cxx, "-std=gnu++17", "-O0", str(generated), "-o", str(exe)],
-                       cwd=ROOT, check=True)
-        subprocess.run([str(exe)], cwd=ROOT, check=True)
+        for level in ("-O0", "-O2"):
+            exe = Path(temp) / ("smoke-" + level[1:] + ".exe")
+            subprocess.run([args.cxx, "-std=gnu++17", level, str(generated), "-o", str(exe)],
+                           cwd=ROOT, check=True)
+            subprocess.run([str(exe)], cwd=ROOT, check=True)
 
 
 if __name__ == "__main__":

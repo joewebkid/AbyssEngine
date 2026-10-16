@@ -414,7 +414,9 @@ void ParticleSystemMesh::updateSingle(int id, float delta) {
     int set = this->particleSetIds[id];
     if ((this->flags & 0x00008000u) != 0) {
         updateTrailEdges(id, intDelta);
-        if (this->particleAges[id] == -2 && this->newSectionStarted != 0) {
+        if (this->particleAges[id] == -2) {
+            if (this->newSectionStarted == 0)
+                return;
             Vector right;
             Vector scaledRight;
             Vector up;
