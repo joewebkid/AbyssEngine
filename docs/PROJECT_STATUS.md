@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (Trail point-update and width behavior; older subsystem
+Last reviewed: 2026-10-16 (Trail constructor behavior; older subsystem
 snapshots retain their dates)
+
+## Trail constructor behavior (2026-10-16)
+
+An extracted production-body fixture now checks `Trail::Trail(int,int)`
+against Android ARM for `(type=9, segments=2)` and the zero-segment
+boundary `(type=4, segments=0)`. It verifies mesh counts, triangle and
+UV call order, allocations, transform attachment and color. The
+original's zero UV multiplier is confirmed, not corrected. Source C++
+was unchanged; host `-O0`/`-O2`, native `gof2`, **207/207** ARM units
+and **40** verifier tests (one skip) pass. Focused Trail remains
+**98.76%/88.72%** source-shape/strict fuzzy, **7 linked-exact /
+1 byte-exact**. The unchanged full corpus remains **4,323/4,524**
+compared, **201 missing**, **124 extras**, zero skipped,
+**93.66%/82.73%** average source-shape/strict fuzzy, **2,509
+linked-exact / 1,074 byte-exact**. Live ARM32 rendering, larger
+segment counts and allocation failure remain untested. See
+[the constructor audit](TRAIL_CONSTRUCTOR_SEMANTICS_ARM_2026-10-16.md).
 
 ## Trail update and width behavior (2026-10-16)
 
@@ -15,8 +32,8 @@ remain **98.76%/88.72%** source-shape/strict fuzzy with **7
 linked-exact / 1 byte-exact**. The unchanged full corpus remains
 **4,323/4,524** compared, **201 missing**, **124 extras**, zero skipped,
 **93.66%/82.73%** average source-shape/strict fuzzy, **2,509
-linked-exact / 1,074 byte-exact**. Constructor behavior and live
-ARM32/GPU output remain unverified. See
+linked-exact / 1,074 byte-exact**. The constructor now has a bounded
+behavior fixture; live ARM32/GPU output remains unverified. See
 [the semantics audit](TRAIL_UPDATE_WIDTH_SEMANTICS_ARM_2026-10-16.md).
 
 ## Trail canvas routing (2026-10-16)

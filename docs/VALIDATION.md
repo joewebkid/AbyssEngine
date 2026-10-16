@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Trail constructor behavior (2026-10-16)
+
+`python tools/run_trail_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` now also extracts `Trail::Trail(int,int)`
+and runs under host `-O0` and `-O2`. Cases `(9,2)` and `(4,0)` check
+mesh dimensions, ordered triangle/UV calls, both integer allocations,
+transform/mesh attachment and the color chosen by `changeType`.
+Native `gof2`, 207/207 ARM units and 40 verifier tests (one skip) pass.
+No production C++ changed; focused report
+`A:/Galaxy on Fire new version/_work/trail_ctor_semantics_focused_20261016.json`
+remains 98.76% source-shape / 88.72% strict fuzzy, 7 linked-exact
+and 1 byte-exact among 12 functions. The prior full report remains
+4,323/4,524 compared, 93.66%/82.73% average source-shape/strict
+fuzzy, 2,509 linked-exact and 1,074 byte-exact. See
+[the constructor audit](TRAIL_CONSTRUCTOR_SEMANTICS_ARM_2026-10-16.md).
+
 ## Trail update and width behavior (2026-10-16)
 
 `python tools/run_trail_canvas_calls_smoke.py --cxx

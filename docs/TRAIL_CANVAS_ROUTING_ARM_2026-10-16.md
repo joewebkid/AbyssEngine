@@ -47,9 +47,8 @@ byte-exact**. Against the preceding report, there is one linked gain
 (`Trail::render`) and zero linked or byte losses. Reports:
 `A:/Galaxy on Fire new version/_work/aegeometry_render_full_20261016.json`
 and `A:/Galaxy on Fire new version/_work/trail_canvas_full_20261016.json`.
-The
-constructor still lacks an independent behavioral fixture. The float
-`update` and `setWidth` now have a bounded ARM-derived behavior check
-in [the Trail semantics audit](TRAIL_UPDATE_WIDTH_SEMANTICS_ARM_2026-10-16.md),
-but neither has an exact instruction match. Their remaining compiler
-differences require a separate recovery pass.
+The constructor, float `update`, and `setWidth` now have bounded ARM-derived
+behavior checks in [the constructor audit](TRAIL_CONSTRUCTOR_SEMANTICS_ARM_2026-10-16.md)
+and [the Trail semantics audit](TRAIL_UPDATE_WIDTH_SEMANTICS_ARM_2026-10-16.md).
+None of those three bodies has an exact instruction match; their
+remaining compiler differences require a separate recovery pass.

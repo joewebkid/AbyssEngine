@@ -34,7 +34,9 @@ compared, **93.66%/82.73%** average source-shape/strict fuzzy,
 Reports: `A:/Galaxy on Fire new version/_work/trail_semantics_focused_20261016.json`
 and `A:/Galaxy on Fire new version/_work/trail_canvas_full_20261016.json`.
 
-This fixture does not exercise the Trail constructor, GPU rendering,
-live ARM32 execution, or unusual signed-overflow and strict-aliasing
-cases in the point-copy implementation. The remaining fuzzy mismatch
+The Trail constructor now has a separate bounded fixture in
+[the constructor audit](TRAIL_CONSTRUCTOR_SEMANTICS_ARM_2026-10-16.md).
+This point-update fixture does not exercise GPU rendering, live ARM32
+execution, or unusual signed-overflow and strict-aliasing cases in
+the point-copy implementation. The remaining fuzzy mismatch
 in these functions is not evidence of a behavior error by itself.

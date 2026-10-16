@@ -17,6 +17,15 @@ struct PointCall {
     unsigned short vertex;
     float x, y, z;
 };
+struct TriangleCall {
+    unsigned mesh;
+    unsigned short index, a, b, c;
+};
+struct UvCall {
+    unsigned mesh;
+    unsigned short vertex;
+    float u, v;
+};
 
 struct PaintCanvas {
     int drawCalls = 0;
@@ -27,6 +36,12 @@ struct PaintCanvas {
     unsigned lastLocal = 0xffffffffu;
     Matrix local{};
     std::vector<PointCall> pointCalls;
+    std::vector<TriangleCall> triangleCalls;
+    std::vector<UvCall> uvCalls;
+    unsigned short createdVertices = 0, createdTriangles = 0;
+    signed char createdType = 0;
+    unsigned short createdMaterial = 0;
+    unsigned addedTransform = 0xffffffffu, addedMesh = 0xffffffffu;
 
     void DrawTransform(unsigned transform, const void *view) {
         ++drawCalls;
@@ -46,12 +61,33 @@ struct PaintCanvas {
         lastLocal = transform;
         return &local;
     }
+    void MeshCreate(unsigned short vertices, unsigned short triangles,
+                    signed char type, unsigned short material, unsigned &out) {
+        createdVertices = vertices;
+        createdTriangles = triangles;
+        createdType = type;
+        createdMaterial = material;
+        out = 42;
+    }
+    void MeshSetTriangle(unsigned mesh, unsigned short index, unsigned short a,
+                         unsigned short b, unsigned short c) {
+        triangleCalls.push_back({mesh, index, a, b, c});
+    }
+    void MeshSetUv(unsigned mesh, unsigned short vertex, float u, float v) {
+        uvCalls.push_back({mesh, vertex, u, v});
+    }
+    void TransformCreate(unsigned &out) { out = 19; }
+    void TransformAddMeshId(unsigned transform, unsigned mesh) {
+        addedTransform = transform;
+        addedMesh = mesh;
+    }
 };
 
 struct Globals { static PaintCanvas *Canvas; };
 PaintCanvas *Globals::Canvas = nullptr;
 
 struct Trail {
+    int sourceX = -1, sourceY = -1, sourceZ = -1;
     unsigned transformId = 19;
     unsigned meshId = 42;
     int width = 2;
@@ -59,6 +95,8 @@ struct Trail {
     int pointCount = 18;
     int *points = nullptr;
     int *relativePoints = nullptr;
+    Trail() = default;
+    Trail(int type, int segments);
     void render();
     void changeType(int type);
     void setWidth(int width);
@@ -151,4 +189,45 @@ int main() {
     assert(updateCanvas.local.m[3] == 10.25f &&
            updateCanvas.local.m[7] == 20.75f &&
            updateCanvas.local.m[11] == -30.5f);
+
+    PaintCanvas constructedCanvas;
+    Globals::Canvas = &constructedCanvas;
+    Trail constructed(9, 2);
+    assert(constructed.sourceX == 0 && constructed.sourceY == 0 &&
+           constructed.sourceZ == 0 && constructed.width == 60);
+    assert(constructed.segments == 2 && constructed.pointCount == 18 &&
+           constructed.points != nullptr && constructed.relativePoints != nullptr);
+    assert(constructed.meshId == 42 && constructed.transformId == 19);
+    assert(constructedCanvas.createdVertices == 6 &&
+           constructedCanvas.createdTriangles == 4 &&
+           constructedCanvas.createdType == 19 &&
+           constructedCanvas.createdMaterial == 0x4e77);
+    assert(constructedCanvas.triangleCalls.size() == 2);
+    const auto &first = constructedCanvas.triangleCalls[0];
+    const auto &second = constructedCanvas.triangleCalls[1];
+    assert(first.mesh == 42 && first.index == 0 && first.a == 0 &&
+           first.b == 1 && first.c == 2);
+    assert(second.mesh == 42 && second.index == 1 && second.a == 3 &&
+           second.b == 2 && second.c == 1);
+    assert(constructedCanvas.uvCalls.size() == 6);
+    for (int i = 0; i < 6; ++i) {
+        const auto &uv = constructedCanvas.uvCalls[i];
+        assert(uv.mesh == 42 && uv.vertex == i && uv.u == 1.0f && uv.v == 0.0f);
+    }
+    assert(constructedCanvas.addedTransform == 19 && constructedCanvas.addedMesh == 42);
+    assert(constructedCanvas.colorCalls == 1 && constructedCanvas.lastColor == 0x00ff00ffu);
+    delete[] constructed.points;
+    delete[] constructed.relativePoints;
+
+    PaintCanvas emptyCanvas;
+    Globals::Canvas = &emptyCanvas;
+    Trail empty(4, 0);
+    assert(empty.pointCount == 6 && emptyCanvas.createdVertices == 2 &&
+           emptyCanvas.createdTriangles == 0 && emptyCanvas.triangleCalls.empty());
+    assert(emptyCanvas.uvCalls.size() == 2 && emptyCanvas.colorCalls == 1);
+    for (const auto &uv : emptyCanvas.uvCalls)
+        assert(uv.u == 0.0f && uv.v == 0.0f);
+    assert(emptyCanvas.lastColor == 0xffffffffu);
+    delete[] empty.points;
+    delete[] empty.relativePoints;
 }

@@ -22,6 +22,7 @@ def main():
     source = (ROOT / "src/engine/render/Trail.cpp").read_text()
     fixture = (ROOT / "tools/trail_canvas_calls_smoke.cpp").read_text()
     methods = "\n".join(function(source, signature) for signature in (
+        "Trail::Trail(int type, int segments)",
         "void Trail::render()", "void Trail::changeType(int type)",
         "void Trail::setWidth(int width)",
         "void Trail::update(float ax, float ay, float az, float bx, float by, float bz)"))
