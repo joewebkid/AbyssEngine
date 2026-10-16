@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ParticleSystemMesh emission dispatch; older subsystem
+Last reviewed: 2026-10-16 (base particle-emission timing; older subsystem
 snapshots retain their dates)
+
+## Base particle-emission timing (2026-10-16)
+
+REA/Android ARM analysis of `IParticleSystem::emit` confirmed that the
+per-particle update delay uses the Newton factor from emitter speed,
+not the inverse length of frame travel. The C++ formula is corrected,
+and an extracted-production-body smoke checks equal speed-based delay
+across two frame lengths. Native `gof2`, **206/206** ARM units, and **40**
+verifier tests (one skip) pass. Focused `emit` remains **88.5%**
+source-shape and nonexact; strict fuzzy moves **17.9% → 17.5%**.
+Full corpus remains **4,323/4,524** compared, **201 missing**, **124
+extras**, zero skipped, **93.62%/82.69%** average source-shape/strict
+fuzzy, and **2,507 linked-exact / 1,074 byte-exact**. Exact pair sets
+have no losses. Random emission branches and live ARM32/GPU behavior
+remain unverified. See [the timing audit](PARTICLE_BASE_EMIT_TIMING_ARM_2026-10-16.md).
 
 ## ParticleSystemMesh ordinary-emission dispatch (2026-10-16)
 

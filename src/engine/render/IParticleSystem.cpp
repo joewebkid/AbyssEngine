@@ -184,9 +184,11 @@ void IParticleSystem::emit(int delta) {
     *(Vector *) baseDelta = *(const Vector *) matrixPos - *(const Vector *) travelDiv;
     float spreadScale = 0.0f;
     float pathScale = 0.0f;
+    float pathCorrection = 1.5f;
     if ((this->flags & 0xc0) == 0) {
         float y = bits_float(0x5f3759df - (float_bits(speed2) >> 1));
-        pathScale = (speed2 * -0.5f * y * y + 1.5f) * y;
+        pathCorrection = speed2 * -0.5f * y * y + 1.5f;
+        pathScale = pathCorrection * y;
     }
 
     ((uint32_t *) uv)[0] = *(uint32_t *) (def + 0x88);
@@ -338,7 +340,7 @@ void IParticleSystem::emit(int delta) {
             slot += *(Vector *) (tmp2);
         }
 
-        float remaining = pathScale * invLen * ((float) emitCount - phase) * 1000.0f;
+        float remaining = pathScale * pathCorrection * ((float) emitCount - phase) * 1000.0f;
         if (remaining > fdelta) {
             remaining = fdelta;
         }
