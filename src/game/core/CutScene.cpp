@@ -228,20 +228,19 @@ void CutScene::process(int /*delta*/) {
             }
         }
 
-        char tmp[0x3c];
-        memcpy(tmp, canvas->TransformGetLocal(0), 0x3c);
-        char mtx[0x3c];
-        MatrixSetRotation(mtx, 0.0f, 0.0f, 0.0f);
         Array<KIPlayer *> *enemies = this->level->getEnemies();
-
         AEGeometry *leadGeom = (*enemies)[0]->geometry;
-        canvas->TransformSetLocal(0, *(const Matrix *) (uintptr_t) leadGeom->transform);
+        Matrix local = *static_cast<const Matrix *>(canvas->TransformGetLocal(leadGeom->transform));
+        AbyssEngine::AEMath::MatrixSetRotation(local, 0.0f, this->cameraRotX, 0.0f);
+        AEGeometry *leadGeomForWrite = (*this->level->getEnemies())[0]->geometry;
+        canvas->TransformSetLocal(leadGeomForWrite->transform, local);
         Array<KIPlayer *> *arr = this->level->getEnemies();
         for (unsigned int i = 0; i < arr->size(); i++) {
             Array<KIPlayer *> *en = this->level->getEnemies();
             if ((*en)[i] != nullptr) {
-                AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
-                t->Update((long long) (unsigned) this->frameDelta, (bool) (unsigned char) this->frameDelta);
+                AEGeometry *geom = (*this->level->getEnemies())[i]->geometry;
+                AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(geom->transform);
+                t->Update((long long) (int32_t) this->frameDelta, false);
             }
             arr = this->level->getEnemies();
         }

@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene mode-23 process transform (2026-10-17)
+
+`python tools/run_cutscene_process_mode23_transform_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2` on extracted
+production statements, including a high-bit frame delta. Native
+`gof2`, **208/208** ARM units, 40 verifier tests (one existing skip),
+and earlier CutScene setup smokes pass. Focused reports
+`A:/Galaxy on Fire new version/_work/cutscene_process_mode23_before_20261017.json`
+and
+`A:/Galaxy on Fire new version/_work/cutscene_process_mode23_after_20261017.json`
+score `process` at **88.3%/43.7%** before and **89.1%/47.8%** after
+for source-shape/strict fuzzy, still nonexact. Full report
+`A:/Galaxy on Fire new version/_work/cutscene_process_mode23_full_20261017.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.85%** rounded averages, **2,517 linked-exact / 1,076
+byte-exact**. Exact `(unit,symbol)` sets are unchanged from
+`cutscene_reset_camera_full_20261017.json`. See
+[the transform audit](CUTSCENE_PROCESS_MODE23_TRANSFORM_ARM_2026-10-17.md).
+
 ## CutScene resetCamera (2026-10-17)
 
 `python tools/run_cutscene_reset_camera_smoke.py --cxx

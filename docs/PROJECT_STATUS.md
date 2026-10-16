@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (CutScene resetCamera; older subsystem
+Last reviewed: 2026-10-17 (CutScene mode-23 process transform; older subsystem
 snapshots retain their dates)
+
+## CutScene mode-23 process transform (2026-10-17)
+
+Android ARM confirms a 60-byte copy of the lead enemy's transform
+matrix, Y rotation by `cameraRotX`, submission under that geometry's
+transform ID, and signed frame-delta updates of each non-null enemy's
+transform with a false flag. Recovered ID-zero, zero-angle, invalid
+pointer-cast and frame-delta-as-boolean placeholders are corrected.
+Focused `process` source-shape/strict fuzzy rises from **88.3%/43.7%
+to 89.1%/47.8%**, still nonexact. Native `gof2`, **208/208** ARM
+units, 40 verifier tests (one existing skip), and `-O0/-O2`
+extracted tests pass. Full corpus remains **4,323/4,524** compared,
+**201 missing**, **123 extras**, **93.73%/82.85%** rounded averages,
+**2,517 linked-exact / 1,076 byte-exact**, with zero exact-pair
+losses. Live ARM32/GPU output is untested. Next priority: separate
+`CutScene::process` fog calls. See
+[the transform audit](CUTSCENE_PROCESS_MODE23_TRANSFORM_ARM_2026-10-17.md).
 
 ## CutScene resetCamera (2026-10-17)
 
