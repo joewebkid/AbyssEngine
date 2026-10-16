@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (AEGeometry position setter; older subsystem
+Last reviewed: 2026-10-16 (AEGeometry render routing; older subsystem
 snapshots retain their dates)
+
+## AEGeometry render routing (2026-10-16)
+
+Original Android ARM `AEGeometry::render()` tail-branches through a
+veneer to `PaintCanvas::DrawTransform(unsigned, const Matrix*)`. The
+previous C++ used an undefined `_ae_geom_render` hook with the same
+register arguments; linked-exact masked that wrong call destination.
+The method now calls the typed canvas entry with its transform index
+and null view matrix. An extracted-body fixture checks the low
+visibility byte and call arguments; native `gof2`, **207/207** ARM units
+and **40** verifier tests (one skip) pass. The focused method stays
+**100%/100%** source-shape/strict fuzzy and linked-exact, not byte-exact.
+Full corpus stays **4,323/4,524** compared, **201 missing**, **124
+extras**, zero skipped, **93.64%/82.72%** average source-shape/strict
+fuzzy, **2,508 linked-exact / 1,074 byte-exact**. Exact `(unit,symbol)`
+sets show zero gains and zero losses. This fixes routing, not yet live
+ARM32 rendering. See [the render audit](AEGEOMETRY_RENDER_ARM_2026-10-16.md).
 
 ## AEGeometry position setter (2026-10-16)
 

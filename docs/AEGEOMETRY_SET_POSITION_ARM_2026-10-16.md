@@ -3,7 +3,7 @@
 Primary reference: `android_2.0.16_libgof2hdaa.so`, SHA-256
 `6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`.
 The original `AEGeometry::setPosition(float,float,float)` at `0xa4640`
-reads the canvas at object offset `+0x0c` and transform index at `+0x2c`,
+reads the canvas at object offset `+0x2c` and transform index at `+0x0c`,
 calls `PaintCanvas::TransformGetLocal`, then passes its returned matrix
 pointer and the three float arguments to
 `AEMath::MatrixSetTranslation(Matrix&,float,float,float)`. It does not call

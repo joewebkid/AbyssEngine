@@ -4,8 +4,6 @@
 #include "engine/math/Transform.h"
 
 
-void _ae_geom_render(uint32_t canvas, uint32_t tf, int z);
-
 Vector AEGeometry::getPosition() {
     Matrix &loc = *(Matrix *) this->canvas->TransformGetLocal(this->transform);
     return MatrixGetPosition(loc);
@@ -50,7 +48,7 @@ void AEGeometry::addChild(uint32_t child) {
 void AEGeometry::render() {
     if ((uint8_t) this->visibility == 0)
         return;
-    _ae_geom_render((uint32_t)(uintptr_t)this->canvas, this->transform, 0);
+    this->canvas->DrawTransform(this->transform, nullptr);
 }
 
 void AEGeometry::translate(const Vector &v) {

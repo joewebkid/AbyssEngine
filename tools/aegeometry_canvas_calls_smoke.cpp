@@ -101,6 +101,9 @@ struct PaintCanvas {
     unsigned int lastSet = 0xffffffffu, lastMeshIdTransform = 0xffffffffu;
     unsigned int lastMeshId = 0xffffffffu;
     int addChildCalls = 0, removeChildCalls = 0, addMeshCalls = 0;
+    int drawCalls = 0;
+    unsigned int lastDraw = 0xffffffffu;
+    const Matrix *lastDrawView = reinterpret_cast<const Matrix *>(1);
     int createCalls = 0, meshCreateCalls = 0;
     void TransformCreate(unsigned int &out) {
         out = nextTransform++;
@@ -146,6 +149,11 @@ struct PaintCanvas {
         ++setCalls;
         matrices[index] = matrix;
     }
+    void DrawTransform(unsigned int index, const Matrix *viewMatrix) {
+        ++drawCalls;
+        lastDraw = index;
+        lastDrawView = viewMatrix;
+    }
 };
 
 struct AEGeometry {
@@ -183,6 +191,7 @@ struct AEGeometry {
     Matrix &getMatrix();
     void updateReferenceMatrix();
     void addChild(uint32_t child);
+    void render();
     void setMatrix(const Matrix &);
     void setPosition(float, float, float);
     void setPosition(const Vector &);
@@ -209,6 +218,17 @@ int main() {
     canvas.matrices[9] = {{0, 0, 0, 21, 0, 0, 0, 22, 0, 0, 0, 23}};
     AEGeometry geom;
     geom.canvas = &canvas;
+
+    geom.visibility = 0;
+    geom.render();
+    assert(canvas.drawCalls == 0);
+    geom.visibility = 0x0100;
+    geom.render();
+    assert(canvas.drawCalls == 0);
+    geom.visibility = 0x0101;
+    geom.render();
+    assert(canvas.drawCalls == 1 && canvas.lastDraw == 5 &&
+           canvas.lastDrawView == nullptr);
 
     equal(geom.getPosition(), 4, 8, 12);
     equal(geom.getRightVector(), 1, 5, 9);

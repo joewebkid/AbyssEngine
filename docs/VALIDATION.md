@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## AEGeometry render routing (2026-10-16)
+
+`python tools/run_aegeometry_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` now covers the production `render()`
+body's low-byte visibility gate and typed `DrawTransform` arguments.
+It failed to compile before removal of the undeclared hook and passes
+afterward. The original ARM tail-branch destination was resolved
+manually through a veneer to the named `DrawTransform` PLT entry;
+the generic direct-call audit excludes `R_ARM_THM_JUMP24`. Focused
+source-shape/strict fuzzy remains 100%/100%, linked-exact. Native
+`gof2`, 207/207 ARM units and 40 verifier tests (one skip) pass.
+Full report
+`A:/Galaxy on Fire new version/_work/aegeometry_render_full_20261016.json`
+has 4,323/4,524 compared, 93.64%/82.72% average source-shape/strict
+fuzzy, 2,508 linked-exact and 1,074 byte-exact. Compared with
+`A:/Galaxy on Fire new version/_work/aegeometry_set_position_split_full_20261016.json`,
+there are no exact `(unit,symbol)` gains or losses. See
+[the render audit](AEGEOMETRY_RENDER_ARM_2026-10-16.md).
+
 ## AEGeometry position setter (2026-10-16)
 
 `python tools/run_aegeometry_canvas_calls_smoke.py --cxx

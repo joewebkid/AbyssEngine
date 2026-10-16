@@ -21,6 +21,7 @@ METHODS = (
     "Matrix &AEGeometry::getMatrix()",
     "void AEGeometry::updateReferenceMatrix()",
     "void AEGeometry::addChild(uint32_t child)",
+    "void AEGeometry::render()",
     "void AEGeometry::setMatrix(const Matrix &m)",
     "void AEGeometry::setPosition(const Vector &v)",
     "void AEGeometry::setRotation(float x, float y, float z)",
