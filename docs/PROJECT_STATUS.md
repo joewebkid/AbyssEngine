@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (sprite spawn size argument; older subsystem
+Last reviewed: 2026-10-16 (particle emitter argument ABI; older subsystem
 snapshots retain their dates)
+
+## Particle emitter argument ABI (2026-10-16)
+
+Android ARM `emit` and both `emitManual` call paths pass lifetime as
+the second `setParticle` argument and separate start/end sizes as the
+ninth/tenth arguments. The extracted production callers pass host
+smoke tests; two fixture overrides were updated to the already-corrected
+`void init` interface. No production code changed. Native `gof2` and
+40 verifier tests (one existing skip) pass. The prior **208/208** ARM
+build and full corpus remain applicable: **4,323/4,524** compared,
+**201 missing**, **123 extras**, **93.68%/82.78%** average
+source-shape/strict fuzzy and **2,515 linked-exact / 1,075 byte-exact**.
+The unusual original sprite use of lifetime as initial SetSize is
+confirmed at the call boundary but not explained by live ARM32/GPU
+behavior. See [the argument audit](PARTICLE_EMIT_ARGUMENT_ABI_ARM_2026-10-16.md).
 
 ## Sprite spawn size argument (2026-10-16)
 
@@ -14,8 +29,10 @@ UV, RGBA, clear-color and 16-bit id output are also checked. Native
 skip) pass. Focused source-shape/strict fuzzy declines from
 **90.8%/43.5% → 89.1%/38.4%**, nonexact; the semantic correction
 is kept rather than inflating a code-shape metric with the wrong
-input. Live ARM32/GPU output and full caller argument naming remain
-unverified. The full corpus remains **4,323/4,524** compared,
+input. Live ARM32/GPU output remains unverified; the caller argument
+mapping is now covered by the
+[argument audit](PARTICLE_EMIT_ARGUMENT_ABI_ARM_2026-10-16.md). The full
+corpus remains **4,323/4,524** compared,
 **201 missing**, **123 extras**, **93.68%/82.78%** averages,
 **2,515 linked-exact / 1,075 byte-exact**, with zero exact-pair
 losses against the previous report. See

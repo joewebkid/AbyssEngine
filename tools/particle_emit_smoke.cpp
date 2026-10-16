@@ -32,7 +32,7 @@ struct EmitProbe : IParticleSystem {
         particleSetIndex = 0;
     }
 
-    int init(uint32_t, uint16_t) override { return 0; }
+    void init(uint32_t, uint16_t) override {}
     void reset() override {}
     void release() override {}
     int getQuadCount() override { return 0; }

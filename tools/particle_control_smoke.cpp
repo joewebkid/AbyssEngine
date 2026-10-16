@@ -25,7 +25,7 @@ struct Probe : IParticleSystem {
         particleSets.data_[0] = ParticleSettings::ParticleSet_dummy;
         particleSets.size_ = 1;
     }
-    int init(uint32_t, uint16_t) override { return 0; }
+    void init(uint32_t, uint16_t) override {}
     void emit(int) override {}
     void reset() override { ++resets; }
     void release() override {}

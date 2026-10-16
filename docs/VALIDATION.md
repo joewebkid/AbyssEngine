@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Particle emitter argument ABI (2026-10-16)
+
+`python tools/run_particle_emit_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2`; `python
+tools/run_particle_control_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe`
+passes at `-O0`. Their `init` fixture overrides now match the `void`
+virtual interface. The tests cover distinct lifetime/start/end sizes,
+random draws and UV order in extracted production callers. Native
+`gof2` and 40 verifier tests pass (one existing skip). No production
+C++ changed; prior **208/208** ARM build and full report
+`A:/Galaxy on Fire new version/_work/particle_sprite_spawn_full_20261016.json`
+still apply. See [the ARM call-site audit](PARTICLE_EMIT_ARGUMENT_ABI_ARM_2026-10-16.md).
+
 ## Sprite spawn size argument (2026-10-16)
 
 `python tools/run_particle_sprite_alpha_smoke.py --cxx
