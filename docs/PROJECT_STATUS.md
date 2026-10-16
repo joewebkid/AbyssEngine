@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ObjectGun update math; older subsystem
+Last reviewed: 2026-10-16 (ObjectGun enemy delegation; older subsystem
 snapshots retain their dates)
+
+## ObjectGun enemy delegation (2026-10-16)
+
+Android ARM confirms that `ObjectGun::setEnemies` forwards its
+`Array<Player*>*` unchanged to `Gun::setEnemies`; the previous
+declared-only helper dereferenced the array and would fail on
+`nullptr`. An extracted production-body fixture checks nonnull and
+null forwarding at host `-O0/-O2`. `setEnemy` and `translate` are
+genuine ARM no-ops and remain byte-exact. Native `gof2`, **207/207**
+ARM units, and **40** verifier tests (one skip) pass. Focused
+`setEnemies` source-shape/strict fuzzy **90.0%/50.0% ->
+100%/100%**, now linked-exact. Full corpus: **4,323/4,524**
+compared, **201 missing**, **124 extras**, no skipped or wrong
+signatures, **93.67%/82.77%** average source-shape/strict fuzzy,
+**2,511 linked-exact / 1,074 byte-exact**. Exact sets show one
+linked gain and zero losses. Live game AI remains unverified. See
+[the enemy delegation audit](OBJECTGUN_ENEMY_DELEGATION_ARM_2026-10-16.md).
 
 ## ObjectGun update math (2026-10-16)
 

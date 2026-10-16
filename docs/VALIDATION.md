@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ObjectGun enemy delegation (2026-10-16)
+
+`python tools/run_objectgun_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` checks the extracted `setEnemies`
+body with nonnull and null arrays at host `-O0/-O2`. Native `gof2`,
+207/207 ARM units and 40 verifier tests (one skip) pass. Focused
+source-shape/strict fuzzy improves 90.0%/50.0% -> 100%/100% and
+becomes linked-exact; `setEnemy` and `translate` remain byte-exact.
+Full report
+`A:/Galaxy on Fire new version/_work/objectgun_setenemies_full_20261016.json`
+compares 4,323/4,524 originals, 201 missing, 124 extras, zero skipped
+or wrong signatures, 93.67%/82.77% average source-shape/strict fuzzy,
+2,511 linked-exact and 1,074 byte-exact. Against
+`objectgun_update_math_full_20261016.json`, exact `(unit,symbol)`
+sets have one linked gain and zero losses. See
+[the enemy delegation audit](OBJECTGUN_ENEMY_DELEGATION_ARM_2026-10-16.md).
+
 ## ObjectGun update math (2026-10-16)
 
 `python tools/run_objectgun_canvas_calls_smoke.py --cxx

@@ -103,7 +103,13 @@ struct PaintCanvas {
 PaintCanvas *Globals::Canvas = nullptr;
 unsigned char Globals::iPad = 0;
 
-struct Gun { int delayActive = 0; };
+template <typename T> struct Array {};
+struct Player;
+struct Gun {
+    int delayActive = 0;
+    Array<Player *> *enemies = nullptr;
+    void setEnemies(Array<Player *> *value) { enemies = value; }
+};
 struct AEGeometry {
     unsigned transform = 77;
     Matrix matrix;
@@ -125,6 +131,7 @@ struct ObjectGun {
     AEGeometry *geometry = nullptr;
     Matrix orientation;
     float scaleX = 0.6f, scaleY = 0.7f, scaleZ = 0.8f;
+    void setEnemies(Array<Player *> *enemies);
     void replaceGun(unsigned mesh, int unused);
     void applyInactive();
     void applyCameraDirection(Matrix &playerMatrix, Matrix &cameraMatrix);
@@ -166,6 +173,11 @@ int main() {
     AEGeometry geometry;
     gun.gun = &inactive;
     gun.geometry = &geometry;
+    Array<Player *> enemies;
+    gun.setEnemies(&enemies);
+    assert(inactive.enemies == &enemies);
+    gun.setEnemies(nullptr);
+    assert(inactive.enemies == nullptr);
     Globals::Canvas = &first;
     gun.applyInactive();
     assert(first.getCalls == 1 && second.getCalls == 1 && third.getCalls == 1);

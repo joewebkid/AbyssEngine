@@ -21,6 +21,7 @@ def main():
 
     source = (ROOT / "src/game/weapons/ObjectGun.cpp").read_text()
     fixture = (ROOT / "tools/objectgun_canvas_calls_smoke.cpp").read_text()
+    set_enemies = function(source, "void ObjectGun::setEnemies(Array<Player *> *enemies)")
     body = function(source, "void ObjectGun::replaceGun(unsigned int mesh, int /*unused*/)")
     inactive = source.split("    if (gun->delayActive == 0) {", 1)[1].split(
         "\n    {\n        Player *player", 1)[0]
@@ -80,7 +81,7 @@ def main():
         generated = Path(temp) / "smoke.cpp"
         generated.write_text(fixture.replace(
             "// PRODUCTION_METHODS",
-            "\n".join((body, inactive_body, camera_body, turret_body,
+            "\n".join((set_enemies, body, inactive_body, camera_body, turret_body,
                        render_scale_body, render_ego_body, render_final_body))))
         for optimization in ("-O0", "-O2"):
             exe = Path(temp) / f"smoke-{optimization[2:]}.exe"

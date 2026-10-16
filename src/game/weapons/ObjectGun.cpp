@@ -62,8 +62,6 @@ static_assert(offsetof(EgoPlayerView, orientation) == 0x40,
               "EgoPlayerView.orientation must sit at 0x40");
 #endif
 
-void ObjectGun_setEnemies_impl(void *items);
-
 ObjectGun::ObjectGun(int /*unused*/, Gun *gun, int mesh, uint32_t /*param*/, Level *level) {
     this->dir.x = 0.0f;
     this->dir.y = 0.0f;
@@ -173,7 +171,7 @@ void ObjectGun::replaceGun(unsigned int mesh, int /*unused*/) {
 }
 
 void ObjectGun::setEnemies(Array<Player *> *enemies) {
-    ObjectGun_setEnemies_impl((void *) enemies->data());
+    this->gun->setEnemies(enemies);
 }
 
 void ObjectGun::setEnemy(Player * /*enemy*/) {
