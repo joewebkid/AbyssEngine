@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene resetCamera (2026-10-17)
+
+`python tools/run_cutscene_reset_camera_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2` on the
+extracted production body for modes 23, 4 and 2 with races 1 and 0.
+Native `gof2`, **208/208** ARM units, 40 verifier tests (one existing
+skip), and the earlier CutScene setup smokes pass. Focused reports
+`A:/Galaxy on Fire new version/_work/cutscene_reset_camera_before_20261017.json`
+and
+`A:/Galaxy on Fire new version/_work/cutscene_reset_camera_after_20261017.json`
+score `resetCamera` at **77.9%/34.3%** before and **91.6%/57.3%**
+after for source-shape/strict fuzzy, still nonexact. Full report
+`A:/Galaxy on Fire new version/_work/cutscene_reset_camera_full_20261017.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.85%** rounded averages, **2,517 linked-exact / 1,076
+byte-exact**. Exact `(unit,symbol)` sets are unchanged from
+`cutscene_init_mode4_full_20261017.json`. See
+[the reset-camera audit](CUTSCENE_RESET_CAMERA_ARM_2026-10-17.md).
+
 ## CutScene mode-4 setup (2026-10-17)
 
 `python tools/run_cutscene_mode4_setup_smoke.py --cxx

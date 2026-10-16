@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (CutScene mode-4 setup; older subsystem
+Last reviewed: 2026-10-17 (CutScene resetCamera; older subsystem
 snapshots retain their dates)
+
+## CutScene resetCamera (2026-10-17)
+
+Android ARM confirms per-mode fog and perspective for modes 23 and 4,
+including linear fog, color `0x011e0cff`, end distances `30000/5000`
+and the respective camera IDs. The mode-23 tail also calls
+`KIPlayer::getType()` on the first enemy. Recovered placeholders and
+the omitted call are corrected. Focused `resetCamera` source-shape/
+strict fuzzy rises from **77.9%/34.3% to 91.6%/57.3%**, still
+nonexact. Native `gof2`, **208/208** ARM units, 40 verifier tests
+(one existing skip), and `-O0/-O2` extracted tests pass. Full corpus
+remains **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.85%** rounded averages and **2,517 linked-exact / 1,076
+byte-exact**, with zero exact-pair losses. Live ARM32/GPU output is
+untested. Next priority: separate `CutScene::process` camera/fog
+branches. See [the reset-camera audit](CUTSCENE_RESET_CAMERA_ARM_2026-10-17.md).
 
 ## CutScene mode-4 setup (2026-10-17)
 

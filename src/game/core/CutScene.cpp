@@ -514,27 +514,26 @@ void CutScene::resetCamera() {
 
     if (this->mode == 0x17) {
         if (Status::gStatus->getSystem()->getRace() == 1) {
-            canvas->FogSetParameter(AbyssEngine::FogMode_dummy, 0, CutScene_fogColor, 1.0f, CutScene_fogDensity_mode17);
-            canvas->FogEnable(1, AbyssEngine::FogMode_dummy);
+            canvas->FogSetParameter(AbyssEngine::FogMode_linear, 0.0f, 30000.0f, 1.0f, 0x011e0cffu);
+            canvas->FogEnable(1, AbyssEngine::FogMode_1);
         }
         canvas->CameraSetCurrent(this->cameraId70);
-        canvas->CameraSetPerspective(0, CutScene_persp_fov_mode17, CutScene_persp_znear, CutScene_persp_zfar);
+        canvas->CameraSetPerspective(this->cameraId70, 0.8f, 200.0f, 100000.0f);
 
         Array<KIPlayer *> *enemies = this->level->getEnemies();
-        void *lead = (*enemies)[0];
-        (void) lead;
+        (*enemies)[0]->getType();
         return;
     }
 
     if (this->mode != 4)
         return;
 
-        if (Status::gStatus->getSystem()->getRace() == 1) {
-        canvas->FogSetParameter(AbyssEngine::FogMode_dummy, 0, CutScene_fogColor, 1.0f, CutScene_fogDensity_mode4);
-        canvas->FogEnable(1, AbyssEngine::FogMode_dummy);
+    if (Status::gStatus->getSystem()->getRace() == 1) {
+        canvas->FogSetParameter(AbyssEngine::FogMode_linear, 0.0f, 5000.0f, 1.0f, 0x011e0cffu);
+        canvas->FogEnable(1, AbyssEngine::FogMode_1);
     }
     canvas->CameraSetCurrent(this->cameraId6c);
-    canvas->CameraSetPerspective(0, CutScene_persp_fov_mode4, CutScene_persp_znear, CutScene_persp_zfar);
+    canvas->CameraSetPerspective(this->cameraId6c, 1.2f, 200.0f, 48000.0f);
 }
 
 class FileRead {
