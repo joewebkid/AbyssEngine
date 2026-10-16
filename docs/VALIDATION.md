@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## AEGeometry canvas call contracts (2026-10-16)
+
+`python tools/run_aegeometry_canvas_calls_smoke.py --cxx C:/msys64/ucrt64/bin/g++.exe`
+compiles eight production transform
+method bodies with a recording `PaintCanvas` fixture. It checks
+transform indices, returned matrix/vector values, both parent-index
+branches, reference-matrix copy and child-link bookkeeping. Native
+`gof2`, 206/206 ARM units and 40 verifier tests (one skip) pass. All
+ten changed methods remain 100%/100% source-shape/strict fuzzy and
+linked-exact, not byte-exact; all 12 corrected direct-call targets
+match Android ARM. Full report
+`A:/Galaxy on Fire new version/_work/aegeometry_canvas_calls_full_20261016.json`
+compares 4,323/4,524 unique functions at 93.59%/82.64% average
+source-shape/strict fuzzy, with 2,503 linked-exact and 1,074
+byte-exact and zero exact `(unit,symbol)` losses/gains. A separate
+call-target audit records 2,372 matches, 53 mismatch candidates and
+647 unresolved sites. The LOD bodies are not exercised by the host
+fixture. See [the focused audit](AEGEOMETRY_CANVAS_CALLS_ARM_2026-10-16.md).
+
 ## PaintCanvas text-line call contracts (2026-10-16)
 
 `python tools/run_paintcanvas_draw_text_lines_smoke.py --cxx

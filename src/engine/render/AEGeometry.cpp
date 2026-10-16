@@ -17,7 +17,7 @@ uint32_t Transform_GetTransform(uint32_t tf);
 void VectorCross(Vector *out, const Vector *b);
 
 Vector AEGeometry::getPosition() {
-    Matrix &loc = *(Matrix *) AEGeomCanvas::TransformGetLocal((uint32_t)(uintptr_t)this->canvas, this->transform);
+    Matrix &loc = *(Matrix *) this->canvas->TransformGetLocal(this->transform);
     return MatrixGetPosition(loc);
 }
 
@@ -50,7 +50,7 @@ void AEGeometry::DEBUG_setMeshMergerIndex(int a, LodMeshMerger *b) {
 }
 
 void AEGeometry::addChild(uint32_t child) {
-    AEGeomCanvas::TransformAddChild(this->canvas, this->transform, child);
+    this->canvas->TransformAddChild(this->transform, child);
     uint32_t old = this->childTransform;
     if (old != 0xffffffffu)
         this->parentTransform = old;
@@ -87,12 +87,12 @@ void AEGeometry::setLodMeshesWithMeshIds(uint16_t *meshes, uint32_t *meshIds, in
     for (int i = 0; i < count; i++) {
         this->lodMeshes[i] = meshes[i];
         this->lodDistancesSq[i] = (unsigned long long) (long long) dists[i];
-        AEGeomCanvas::TransformCreate(this->canvas, &this->lodTransforms[i]);
+        this->canvas->TransformCreate(this->lodTransforms[i]);
         this->canvas->TransformAddMeshId(this->lodTransforms[i], meshIds[i]);
         unsigned long long v = this->lodDistancesSq[i];
         this->lodDistancesSq[i] = v * v;
         if (this->childTransform != 0xffffffffu)
-            AEGeomCanvas::TransformAddChild(this->canvas, this->lodTransforms[i], this->childTransform);
+            this->canvas->TransformAddChild(this->lodTransforms[i], this->childTransform);
     }
 }
 
@@ -101,21 +101,21 @@ void AEGeometry::setLodLastVisibleDistance(uint64_t d) {
 }
 
 Vector AEGeometry::getRightVector() {
-    Matrix &loc = *(Matrix *) AEGeomCanvas::TransformGetLocal((uint32_t)(uintptr_t)this->canvas, this->transform);
+    Matrix &loc = *(Matrix *) this->canvas->TransformGetLocal(this->transform);
     return MatrixGetRight(loc);
 }
 
 Vector AEGeometry::getUpVector() {
-    Matrix &loc = *(Matrix *) AEGeomCanvas::TransformGetLocal((uint32_t)(uintptr_t)this->canvas, this->transform);
+    Matrix &loc = *(Matrix *) this->canvas->TransformGetLocal(this->transform);
     return MatrixGetUp(loc);
 }
 
 Matrix &AEGeometry::getMatrix() {
-    return *(Matrix *) AEGeomCanvas::TransformGetLocal((uint32_t)(uintptr_t)this->canvas, this->transform);
+    return *(Matrix *) this->canvas->TransformGetLocal(this->transform);
 }
 
 Vector AEGeometry::getDirection() {
-    Matrix &loc = *(Matrix *) AEGeomCanvas::TransformGetLocal((uint32_t)(uintptr_t)this->canvas, this->transform);
+    Matrix &loc = *(Matrix *) this->canvas->TransformGetLocal(this->transform);
     return MatrixGetDir(loc);
 }
 
@@ -144,7 +144,7 @@ Vector AEGeometry::getScaling() {
 }
 
 void AEGeometry::updateReferenceMatrix() {
-    Matrix *loc = (Matrix *) AEGeomCanvas::TransformGetLocal((uint32_t)(uintptr_t)this->canvas, this->transform);
+    Matrix *loc = (Matrix *) this->canvas->TransformGetLocal(this->transform);
     this->referenceMatrix = *loc;
 }
 
@@ -156,22 +156,21 @@ void AEGeometry::setLodMeshes(uint16_t *meshes, int *dists, int count) {
     for (int i = 0; i < count; i++) {
         this->lodMeshes[i] = meshes[i];
         this->lodDistancesSq[i] = (unsigned long long) (long long) dists[i];
-        AEGeomCanvas::TransformCreate(this->canvas, &this->lodTransforms[i]);
+        this->canvas->TransformCreate(this->lodTransforms[i]);
         this->canvas->TransformAddMesh(this->lodTransforms[i], meshes[i], false);
         unsigned long long v = this->lodDistancesSq[i];
         this->lodDistancesSq[i] = v * v;
         if (this->childTransform != 0xffffffffu)
-            AEGeomCanvas::TransformAddChild(this->canvas, this->lodTransforms[i], this->childTransform);
+            this->canvas->TransformAddChild(this->lodTransforms[i], this->childTransform);
     }
 }
 
 Vector AEGeometry::getParentPosition() {
-    uint32_t canvas = (uint32_t)(uintptr_t)
-    this->canvas;
+    PaintCanvas *canvas = this->canvas;
     uint32_t tf = this->altTransform;
     if (tf == 0xffffffffu)
         tf = this->transform;
-    Matrix &loc = *(Matrix *) AEGeomCanvas::TransformGetLocal(canvas, tf);
+    Matrix &loc = *(Matrix *) canvas->TransformGetLocal(tf);
     return MatrixGetPosition(loc);
 }
 

@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (PaintCanvas text-line call contracts; older subsystem
+Last reviewed: 2026-10-16 (AEGeometry canvas call contracts; older subsystem
 snapshots retain their dates)
+
+## AEGeometry canvas call contracts (2026-10-16)
+
+Ten `AEGeometry` transform/LOD methods now call existing
+`PaintCanvas::TransformGetLocal`, `TransformCreate` and
+`TransformAddChild` methods instead of declared-only `AEGeomCanvas`
+routes. Android ARM confirms the 12 corrected direct-call targets.
+A host smoke exercises eight production method bodies, including both
+parent-transform choices and child bookkeeping; the two LOD bodies
+are covered by ARM call-target comparison, not host behavior. Native
+`gof2`, **206/206** ARM units and **40** verifier tests (one skip)
+pass. All ten changed methods remain **100%/100%** source-shape/strict
+fuzzy and linked-exact, not byte-exact. Full coverage stays
+**4,323/4,524** unique original functions, **201 missing**,
+**123 extras**, zero skipped, **93.59%/82.64%** average
+source-shape/strict fuzzy, **2,503 linked-exact / 1,074 byte-exact**,
+with zero exact-pair losses/gains. Named direct-call matches rise
+**2,360 -> 2,372** and mismatch candidates fall **65 -> 53**;
+**647** sites remain unresolved. Another **22** `AEGeomCanvas` calls
+in other methods and live ARM32 transform/GL behavior remain open.
+See [the canvas call audit](AEGEOMETRY_CANVAS_CALLS_ARM_2026-10-16.md).
 
 ## PaintCanvas text-line call contracts (2026-10-16)
 
