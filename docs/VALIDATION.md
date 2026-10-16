@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ObjectGun destructor ownership (2026-10-16)
+
+Native `gof2`, 207/207 ARM units, the ObjectGun host fixture and 40
+verifier tests (one skip) pass. Focused `D1`/`D2` source-shape/strict
+fuzzy improves 89.2%/95.1% -> 100%/100%; both become linked-exact.
+`setScaling` remains byte-exact after source-backed confirmation that
+ARM ignores its third argument. Full report
+`A:/Galaxy on Fire new version/_work/objectgun_dtor_full_20261016.json`
+compares 4,323/4,524 originals, 201 missing, 124 extras, zero skipped
+or wrong signatures, 93.67%/82.77% average source-shape/strict fuzzy,
+2,513 linked-exact and 1,074 byte-exact. Against
+`objectgun_setenemies_full_20261016.json`, exact `(unit,symbol)`
+sets have two linked gains and zero losses. See
+[the destructor audit](OBJECTGUN_DESTRUCTOR_ARM_2026-10-16.md).
+
 ## ObjectGun enemy delegation (2026-10-16)
 
 `python tools/run_objectgun_canvas_calls_smoke.py --cxx

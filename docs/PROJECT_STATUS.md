@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ObjectGun enemy delegation; older subsystem
+Last reviewed: 2026-10-16 (ObjectGun destructor ownership; older subsystem
 snapshots retain their dates)
+
+## ObjectGun destructor ownership (2026-10-16)
+
+Android ARM confirms that the destructor releases owned geometry,
+explosion objects and their array, then the readiness byte buffer.
+The previous C++ called `ArrayRemoveAll` after
+`ArrayReleaseClasses`, unnecessarily reallocating a buffer just
+before deleting it; the ARM code has no such call. Removing it makes
+both `D1`/`D2` aliases **100%/100%** source-shape/strict fuzzy and
+linked-exact (from **89.2%/95.1%**). The neighboring `setScaling`
+ignores its third argument in ARM and remains byte-exact without
+change. Native `gof2`, **207/207** ARM units, the ObjectGun host
+fixture, and **40** verifier tests (one skip) pass. Full corpus:
+**4,323/4,524** compared, **201 missing**, **124 extras**, no skipped
+or wrong signatures, **93.67%/82.77%** average source-shape/strict
+fuzzy, **2,513 linked-exact / 1,074 byte-exact**. Exact sets show
+two linked gains and zero losses. Live ARM32 teardown remains
+unverified. See [the destructor audit](OBJECTGUN_DESTRUCTOR_ARM_2026-10-16.md).
 
 ## ObjectGun enemy delegation (2026-10-16)
 
