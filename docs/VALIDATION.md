@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Base particle repeated-frame rate and ring check (2026-10-16)
+
+`python tools/run_particle_emit_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` runs the extracted production `emit`
+body at host `-O0/-O2`. The new 100/200/100/200 ms sequence checks
+rate-mode timer carry and three-slot wrap against original ARM at
+`0x181f62`–`0x181f92` and `0x1826c4`–`0x1826cc`. Native `gof2`
+and 40 verifier tests (one existing skip) pass. Focused report
+`A:/Galaxy on Fire new version/_work/particle_emit_repeated_frame_focused_20261016.json`
+is 88.8% source-shape / 19.9% strict fuzzy, nonexact. Production C++
+is unchanged; the preceding full ARM corpus report
+`particle_emit_direct_split_full_20261016.json` still applies with
+4,323/4,524 originals, 201 missing, 123 extras, 93.67%/82.77%
+average source-shape/strict fuzzy, 2,513 linked-exact and 1,074
+byte-exact. See [the emitter audit](PARTICLE_BASE_EMIT_TIMING_ARM_2026-10-16.md).
+
 ## ParticleSystemMesh direct trail dispatch (2026-10-16)
 
 The extracted particle trail fixture passes; native `gof2`, 208/208

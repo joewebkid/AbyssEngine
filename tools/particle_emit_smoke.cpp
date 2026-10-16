@@ -88,6 +88,27 @@ int main() {
     assert(std::fabs(fixedSpacing.updateDeltas[0] - 75.0f) < 0.5f);
     assert(std::fabs(fixedSpacing.positions[0].x + 1.25f) < 0.01f);
 
+    // ARM 0x181f62-0x181f92 retains the fractional interval; 0x1826c4-0x1826cc wraps the ring.
+    def = {};
+    def.flLifetime = 5.0f;
+    def.lifeBase = 100.0f;
+    def.oneShot = 1;
+    EmitProbe rateBased(&transform);
+    rateBased.flags = 0x20;
+    rateBased.emit(100);
+    assert(rateBased.submissions == 0 && rateBased.updates == 0);
+    assert(rateBased.emitTimer == 100.0f && rateBased.currentParticle == 0);
+    rateBased.emit(200);
+    assert(rateBased.submissions == 1 && rateBased.emitTimer == 100.0f);
+    assert(rateBased.currentParticle == 1 && rateBased.ages[0] == 0);
+    rateBased.emit(100);
+    assert(rateBased.submissions == 2 && rateBased.emitTimer == 0.0f);
+    assert(rateBased.currentParticle == 2 && rateBased.ages[1] == 0);
+    rateBased.emit(200);
+    assert(rateBased.submissions == 3 && rateBased.updates == 3);
+    assert(rateBased.emitTimer == 0.0f && rateBased.currentParticle == 0);
+    assert(rateBased.ages[2] == 0);
+
     def = {};
     def.count = 1;
     def.lifeBase = 100;

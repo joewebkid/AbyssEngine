@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ParticleSystemMesh direct trail dispatch; older subsystem
+Last reviewed: 2026-10-16 (base particle repeated-frame check; older subsystem
 snapshots retain their dates)
+
+## Base particle repeated-frame rate and ring check (2026-10-16)
+
+Android ARM rate-mode arithmetic and ring-wrap instructions now have
+a four-frame check against the extracted production `IParticleSystem::emit`
+body. The expected zero/one/one/one emissions, retained timer values
+and 0/1/2/0 ring indices pass at host `-O0/-O2`. No production C++
+changed; native `gof2` and **40** verifier tests (one existing skip)
+pass. Focused `emit` remains **88.8%/19.9%** source-shape/strict fuzzy,
+nonexact. The unchanged full report covers **4,323/4,524** originals,
+**201 missing**, **123 extras**, **93.67%/82.77%** average
+source-shape/strict fuzzy, **2,513 linked-exact / 1,074 byte-exact**.
+Other lifetime/output branches and live ARM32/GPU behavior remain
+unverified. See [the emitter audit](PARTICLE_BASE_EMIT_TIMING_ARM_2026-10-16.md).
 
 ## ParticleSystemMesh direct trail dispatch (2026-10-16)
 

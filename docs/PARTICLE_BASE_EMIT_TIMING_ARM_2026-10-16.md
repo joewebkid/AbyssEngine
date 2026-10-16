@@ -103,3 +103,26 @@ above still apply. The fresh focused report for `rotateUVs` is
 the selector mapping, not an independent equivalence proof for
 `AERandom::nextInt(int)` or live GPU texture coordinates. The bounded
 RNG method is the next targeted audit.
+
+## Repeated-frame rate and ring check
+
+Original ARM at `0x181f62`–`0x181f92` computes the rate-mode emission
+count from `rate * (emitTimer + delta) * 0.001` and stores the leftover
+time; `0x1826c4`–`0x1826cc` advances the particle index and wraps at
+`maxParticles`. The extracted production `IParticleSystem::emit` body
+now has a four-frame host check with rate 5/s and deltas 100, 200,
+100 and 200 ms. It verifies zero/one/one/one emissions, timer values
+100/100/0/0 ms, and index progression 0/1/2/0 in a three-slot ring.
+The test passes at host `-O0` and `-O2`. Native `gof2` and 40 verifier
+tests (one existing skip) pass. The focused ARM comparison remains
+**88.8% source-shape / 19.9% strict fuzzy**, nonexact; report:
+`A:/Galaxy on Fire new version/_work/particle_emit_repeated_frame_focused_20261016.json`.
+No production source changed, so the most recent full corpus report
+`particle_emit_direct_split_full_20261016.json` still applies:
+**4,323/4,524** originals compared, **201 missing**, **123 extras**,
+**93.67%/82.77%** average source-shape/strict fuzzy, **2,513
+linked-exact / 1,074 byte-exact**. This confirms these specific
+static-ARM-derived state transitions in the host fixture, not general
+frame scheduling, every particle lifetime case, GPU output or live
+ARM32 behavior. Next audit: lifecycle and output branches not yet
+covered by this fixture.

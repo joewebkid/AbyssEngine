@@ -66,15 +66,16 @@ char *MatrixGetDir(char *out, Matrix const *matrix) { return matrix_column(out, 
     (ROOT / "_work").mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="gof2-particle-emit-", dir=ROOT / "_work") as temp:
         body = Path(temp) / "production.cpp"
-        exe = Path(temp) / "smoke.exe"
         body.write_text(source)
-        subprocess.run([args.cxx, "-std=c++17", "-O0", "-Isrc",
-                        "tools/particle_emit_smoke.cpp", str(body),
-                        "src/engine/render/ParticleSettings.cpp",
-                        "src/engine/render/ParticleSettingsRef.cpp",
-                        "src/engine/core/AERandom.cpp", "-o", str(exe)],
-                       cwd=ROOT, check=True)
-        subprocess.run([str(exe)], cwd=ROOT, check=True)
+        for level in ("-O0", "-O2"):
+            exe = Path(temp) / ("smoke-" + level[1:] + ".exe")
+            subprocess.run([args.cxx, "-std=c++17", level, "-Isrc",
+                            "tools/particle_emit_smoke.cpp", str(body),
+                            "src/engine/render/ParticleSettings.cpp",
+                            "src/engine/render/ParticleSettingsRef.cpp",
+                            "src/engine/core/AERandom.cpp", "-o", str(exe)],
+                           cwd=ROOT, check=True)
+            subprocess.run([str(exe)], cwd=ROOT, check=True)
 
 
 if __name__ == "__main__":
