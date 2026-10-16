@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene mode-4 race-3 process path (2026-10-17)
+
+`python tools/run_cutscene_process_mode4_race3_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2` for both
+random thresholds, optional `geom28`, both timers and a high-bit
+frame delta. Native `gof2`, **208/208** ARM units, 40 verifier tests
+(one existing skip), and preceding mode-4 smokes pass. Focused
+report `A:/Galaxy on Fire new version/_work/cutscene_process_mode4_race3_after_20261017.json`
+scores `process` at **92.1% source-shape / 59.7% strict fuzzy**,
+up from **90.7% / 56.1%** in
+`cutscene_process_mode4_race1_after_20261017.json`, still nonexact.
+Full report
+`A:/Galaxy on Fire new version/_work/cutscene_process_mode4_race3_full_20261017.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.85%** rounded averages, **2,517 linked-exact / 1,076
+byte-exact**. Exact `(unit,symbol)` sets are unchanged from
+`cutscene_process_mode4_race1_full_20261017.json`. See
+[the race-3 audit](CUTSCENE_PROCESS_MODE4_RACE3_ARM_2026-10-17.md).
+
 ## CutScene mode-4 race-1 process path (2026-10-17)
 
 `python tools/run_cutscene_process_mode4_race1_smoke.py --cxx

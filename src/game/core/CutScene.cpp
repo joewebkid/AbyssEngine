@@ -302,41 +302,41 @@ void CutScene::process(int /*delta*/) {
             }
             int race3 = Status::gStatus->getSystem()->getRace();
             if (race3 == 3) {
-                this->level->getEnemies();
-                this->level->getEnemies();
-                AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
-                t->Update((long long) (unsigned) this->frameDelta, (bool) (unsigned char) this->frameDelta);
+                Array<KIPlayer *> *enemies = this->level->getEnemies();
+                unsigned int count = this->level->getEnemies()->size();
+                AEGeometry *thirdFromLast = (*enemies)[count - 3]->geometry;
+                AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(thirdFromLast->transform);
+                t->Update((long long) (int32_t) this->frameDelta, false);
                 if (this->geom28 != nullptr) {
-                    AbyssEngine::Transform *t2 = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
-                    t2->Update((long long) (unsigned) this->frameDelta, (bool) (unsigned char) this->frameDelta);
+                    AbyssEngine::Transform *t2 = (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geom28->transform);
+                    t2->Update((long long) (int32_t) this->frameDelta, false);
                 }
-                AbyssEngine::Transform *t3 = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
-                t3->Update((long long) (unsigned) this->frameDelta, (bool) (unsigned char) this->frameDelta);
+                AbyssEngine::Transform *t3 = (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geom2c->transform);
+                t3->Update((long long) (int32_t) this->frameDelta, false);
                 int acc7c = this->animTimer7c + this->frameDelta;
                 int acc80 = this->frameDelta + this->animTimer80;
                 this->animTimer7c = acc7c;
                 this->animTimer80 = acc80;
                 if (acc7c > 1000 && this->geom28 != nullptr) {
                     this->animTimer7c = 0;
-                    if (AERandom::gRandom->nextInt() < 0x28) {
-                        AbyssEngine::Transform *a = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
+                    if (AERandom::gRandom->nextInt(100) < 40) {
+                        AbyssEngine::Transform *a = (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geom28->transform);
                         a->SetAnimationState((AnimationMode) 3, nullptr);
-                        a = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
+                        a = (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geom28->transform);
                         a->SetAnimationState((AnimationMode) 1, nullptr);
                     }
                     acc80 = this->animTimer80;
                 }
                 if (acc80 > 2000) {
                     this->animTimer80 = 0;
-                    if (AERandom::gRandom->nextInt() < 0x1e) {
-                        AbyssEngine::Transform *a = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
+                    if (AERandom::gRandom->nextInt(100) < 30) {
+                        AbyssEngine::Transform *a = (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geom2c->transform);
                         a->SetAnimationState((AnimationMode) 3, nullptr);
-                        canvas->TransformGetTransform(0);
-                        if (this->level != nullptr) this->level->getEnemies();
+                        a = (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geom2c->transform);
+                        a->SetAnimationState((AnimationMode) 1, nullptr);
                         return;
                     }
                 }
-                if (this->level != nullptr) this->level->getEnemies();
                 return;
             }
             if (Status::gStatus->getSystem()->getRace() != 2)
