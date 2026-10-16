@@ -6,8 +6,6 @@
 
 void _ae_geom_render(uint32_t canvas, uint32_t tf, int z);
 
-void _ae_setPosition3(void *self, float x, float y, float z);
-
 Vector AEGeometry::getPosition() {
     Matrix &loc = *(Matrix *) this->canvas->TransformGetLocal(this->transform);
     return MatrixGetPosition(loc);
@@ -121,10 +119,6 @@ void AEGeometry::setMatrix(const Matrix &m) {
 
 void AEGeometry::setRotationOrder(AbyssEngine::AEMath::RotationOrder order) {
     this->rotationOrder = order;
-}
-
-void AEGeometry::setPosition(float x, float y, float z) {
-    _ae_setPosition3(this, x, y, z);
 }
 
 Vector AEGeometry::getScaling() {

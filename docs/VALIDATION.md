@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## AEGeometry position setter (2026-10-16)
+
+`python tools/run_aegeometry_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` exercises both production `setPosition`
+overloads against a recording canvas/math fixture. The `Vector`
+overload and numeric setter each reach linked-exact in focused ARM
+verification; numeric source-shape/strict fuzzy rises from 0.7%/0.0%
+to 100%/100%. Native `gof2`, 207/207 ARM units and 40 verifier tests
+(one skip) pass. Full report
+`A:/Galaxy on Fire new version/_work/aegeometry_set_position_split_full_20261016.json`
+compares 4,323/4,524 originals, 201 missing, 124 extras, zero skipped,
+93.64%/82.72% average source-shape/strict fuzzy, 2,508 linked-exact and
+1,074 byte-exact. Relative to
+`A:/Galaxy on Fire new version/_work/aerandom_bound_full_20261016.json`,
+exact `(unit,symbol)` sets have one linked gain and zero linked/byte
+losses. See [the position audit](AEGEOMETRY_SET_POSITION_ARM_2026-10-16.md).
+
 ## Bounded AERandom semantics (2026-10-16)
 
 `tools/aerandom_bound_smoke.cpp` compares 2,560 production

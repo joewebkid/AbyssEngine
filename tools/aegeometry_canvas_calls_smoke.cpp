@@ -13,8 +13,10 @@ Vector operator-(const Vector &lhs, const Vector &rhs) {
 
 int translationCalls = 0;
 float translationArgs[3]{};
+Matrix *translationMatrix = nullptr;
 Matrix MatrixSetTranslation(Matrix &m, float x, float y, float z) {
     ++translationCalls;
+    translationMatrix = &m;
     translationArgs[0] = x;
     translationArgs[1] = y;
     translationArgs[2] = z;
@@ -182,6 +184,8 @@ struct AEGeometry {
     void updateReferenceMatrix();
     void addChild(uint32_t child);
     void setMatrix(const Matrix &);
+    void setPosition(float, float, float);
+    void setPosition(const Vector &);
     void setRotation(float, float, float);
     void rotate(float, float, float);
     void setScaling(float, float, float);
@@ -278,6 +282,25 @@ int main() {
     geom.translate(Vector{2.0f, 4.0f, 6.0f});
     assert(translationCalls == 2 && translationArgs[0] == 13.0f &&
            translationArgs[1] == 26.0f && translationArgs[2] == 39.0f);
+
+    int getsBeforePosition = canvas.getCalls;
+    int setsBeforePosition = canvas.setCalls;
+    geom.setPosition(41.0f, 42.0f, 43.0f);
+    assert(canvas.getCalls == getsBeforePosition + 1 && canvas.lastGet == 5);
+    assert(canvas.setCalls == setsBeforePosition);
+    assert(translationCalls == 3 && translationMatrix == &canvas.matrices[5]);
+    assert(translationArgs[0] == 41.0f && translationArgs[1] == 42.0f &&
+           translationArgs[2] == 43.0f);
+    equal(geom.getPosition(), 41.0f, 42.0f, 43.0f);
+
+    getsBeforePosition = canvas.getCalls;
+    geom.setPosition(Vector{7.0f, 8.0f, 9.0f});
+    assert(canvas.getCalls == getsBeforePosition + 1 && canvas.lastGet == 5);
+    assert(canvas.setCalls == setsBeforePosition);
+    assert(translationCalls == 4 && translationMatrix == &canvas.matrices[5]);
+    assert(translationArgs[0] == 7.0f && translationArgs[1] == 8.0f &&
+           translationArgs[2] == 9.0f);
+    equal(geom.getPosition(), 7.0f, 8.0f, 9.0f);
 
     PaintCanvas directionCanvas;
     directionCanvas.matrices[5].m[3] = 11.0f;

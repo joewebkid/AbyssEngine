@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (bounded AERandom semantics; older subsystem
+Last reviewed: 2026-10-16 (AEGeometry position setter; older subsystem
 snapshots retain their dates)
+
+## AEGeometry position setter (2026-10-16)
+
+Android ARM confirms that `AEGeometry::setPosition(float,float,float)`
+gets the local matrix from `PaintCanvas` and calls
+`AEMath::MatrixSetTranslation` directly. The declared-only
+`_ae_setPosition3` hook has been replaced. The numeric setter is in a
+separate translation unit to preserve the original external branch shape
+of the `Vector` overload; both are linked-exact. The extracted-body
+canvas test passes, as do native `gof2`, **207/207** ARM units and
+**40** verifier tests (one skip). Focused numeric source-shape/strict
+fuzzy improves **0.7%/0.0% -> 100%/100%**, linked-exact but not
+byte-exact. Full corpus: **4,323/4,524** compared, **201 missing**,
+**124 extras**, zero skipped, **93.64%/82.72%** average source-shape/
+strict fuzzy, **2,508 linked-exact / 1,074 byte-exact**. Exact-symbol
+set comparison against the prior full report shows one linked gain and
+zero linked or byte losses. Live ARM32 rendering remains unverified.
+See [the position audit](AEGEOMETRY_SET_POSITION_ARM_2026-10-16.md).
 
 ## Bounded AERandom semantics (2026-10-16)
 

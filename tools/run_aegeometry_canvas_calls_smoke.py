@@ -22,6 +22,7 @@ METHODS = (
     "void AEGeometry::updateReferenceMatrix()",
     "void AEGeometry::addChild(uint32_t child)",
     "void AEGeometry::setMatrix(const Matrix &m)",
+    "void AEGeometry::setPosition(const Vector &v)",
     "void AEGeometry::setRotation(float x, float y, float z)",
     "void AEGeometry::rotate(float x, float y, float z)",
     "void AEGeometry::setScaling(float x, float y, float z)",
@@ -42,8 +43,11 @@ def main():
         parser.error("specify --cxx")
 
     source = (ROOT / "src/engine/render/AEGeometry.cpp").read_text()
+    position_source = (ROOT / "src/engine/render/AEGeometryPosition.cpp").read_text()
     fixture = (ROOT / "tools/aegeometry_canvas_calls_smoke.cpp").read_text()
     methods = "\n".join(function(source, signature) for signature in METHODS)
+    methods += "\n" + function(position_source,
+                               "void AEGeometry::setPosition(float x, float y, float z)")
     with tempfile.TemporaryDirectory(prefix="aegeometry-canvas-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "smoke.cpp"
         generated.write_text(fixture.replace("// PRODUCTION_METHODS", methods))
