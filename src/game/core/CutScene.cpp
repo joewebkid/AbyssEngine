@@ -341,14 +341,16 @@ void CutScene::process(int /*delta*/) {
             }
             if (Status::gStatus->getSystem()->getRace() != 2)
                 return;
-            if (this->level != nullptr) this->level->getEnemies();
-            if (this->level != nullptr) this->level->getEnemies();
-            AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
-            t->Update((long long) (unsigned) this->frameDelta, (bool) (unsigned char) this->frameDelta);
-            if (this->level != nullptr) this->level->getEnemies();
-            if (this->level != nullptr) this->level->getEnemies();
-            AbyssEngine::Transform *t2 = (AbyssEngine::Transform *) canvas->TransformGetTransform(0);
-            t2->Update((long long) (unsigned) this->frameDelta, (bool) (unsigned char) this->frameDelta);
+            Array<KIPlayer *> *enemies = this->level->getEnemies();
+            unsigned int count = this->level->getEnemies()->size();
+            AEGeometry *penultimate = (*enemies)[count - 2]->geometry;
+            AbyssEngine::Transform *t = (AbyssEngine::Transform *) canvas->TransformGetTransform(penultimate->transform);
+            t->Update((long long) (int32_t) this->frameDelta, false);
+            enemies = this->level->getEnemies();
+            count = this->level->getEnemies()->size();
+            AEGeometry *last = (*enemies)[count - 1]->geometry;
+            AbyssEngine::Transform *t2 = (AbyssEngine::Transform *) canvas->TransformGetTransform(last->transform);
+            t2->Update((long long) (int32_t) this->frameDelta, false);
         }
     }
 }

@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (CutScene mode-4 race-3 process path; older subsystem
+Last reviewed: 2026-10-17 (CutScene mode-4 race-2 process path; older subsystem
 snapshots retain their dates)
+
+## CutScene mode-4 race-2 process path (2026-10-17)
+
+Android ARM confirms the penultimate and last enemies' geometry
+transform IDs, each updated with signed frame delta and false.
+Recovered four discarded list reads, ID-zero calls and
+frame-delta-as-boolean placeholders are corrected. Focused `process`
+source-shape/strict fuzzy rises from **92.1%/59.7% to 93.9%/62.8%**,
+still nonexact. Native `gof2`, **208/208** ARM units, 40 verifier
+tests (one existing skip), and `-O0/-O2` extracted tests pass. Full
+corpus remains **4,323/4,524** compared, **201 missing**, **123
+extras**, **93.73%/82.85%** rounded averages, **2,517 linked-exact
+/ 1,076 byte-exact**, with zero exact-pair losses. Live ARM32/GPU
+output is untested. Next priority: mode-2 ship-motion coefficients
+and calls in `CutScene::process`. See
+[the race-2 audit](CUTSCENE_PROCESS_MODE4_RACE2_ARM_2026-10-17.md).
 
 ## CutScene mode-4 race-3 process path (2026-10-17)
 
