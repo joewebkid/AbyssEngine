@@ -25,6 +25,8 @@ METHODS = (
     "void AEGeometry::setRotation(float x, float y, float z)",
     "void AEGeometry::rotate(float x, float y, float z)",
     "void AEGeometry::setScaling(float x, float y, float z)",
+    "void AEGeometry::translate(float x, float y, float z)",
+    "void AEGeometry::translate(const Vector &v)",
     "void AEGeometry::setLodChildMeshes(uint16_t *meshes)",
     "void AEGeometry::setLodChildTransform(uint32_t param)",
 )

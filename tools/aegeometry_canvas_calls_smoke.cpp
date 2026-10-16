@@ -2,7 +2,18 @@
 #include <cstdint>
 
 struct Vector { float x, y, z; };
-struct Matrix { float value[15]; };
+struct Matrix { union { float value[15]; float m[15]; }; };
+
+int translationCalls = 0;
+float translationArgs[3]{};
+Matrix MatrixSetTranslation(Matrix &m, float x, float y, float z) {
+    ++translationCalls;
+    translationArgs[0] = x;
+    translationArgs[1] = y;
+    translationArgs[2] = z;
+    m.value[3] = x; m.value[7] = y; m.value[11] = z;
+    return m;
+}
 
 namespace AbyssEngine { namespace AEMath {
 enum RotationOrder { ROTATION_ORDER_XYZ = 0 };
@@ -118,6 +129,8 @@ struct AEGeometry {
     void setRotation(float, float, float);
     void rotate(float, float, float);
     void setScaling(float, float, float);
+    void translate(float, float, float);
+    void translate(const Vector &);
     void setLodChildMeshes(uint16_t *);
     void setLodChildTransform(uint32_t);
 };
@@ -194,6 +207,19 @@ int main() {
            AbyssEngine::AEMath::scales[2] == 4.0f);
     assert(geom.scalingX == 2.0f && geom.scalingY == 3.0f &&
            geom.scalingZ == 4.0f);
+
+    canvas.matrices[5].m[3] = 10.0f;
+    canvas.matrices[5].m[7] = 20.0f;
+    canvas.matrices[5].m[11] = 30.0f;
+    geom.translate(1.0f, 2.0f, 3.0f);
+    assert(translationCalls == 1 && canvas.lastGet == 5 && canvas.lastSet == 5);
+    assert(translationArgs[0] == 11.0f && translationArgs[1] == 22.0f &&
+           translationArgs[2] == 33.0f);
+    assert(canvas.matrices[5].m[3] == 11.0f &&
+           canvas.matrices[5].m[7] == 22.0f && canvas.matrices[5].m[11] == 33.0f);
+    geom.translate(Vector{2.0f, 4.0f, 6.0f});
+    assert(translationCalls == 2 && translationArgs[0] == 13.0f &&
+           translationArgs[1] == 26.0f && translationArgs[2] == 39.0f);
 
     PaintCanvas ctorCanvas;
     ctorCanvas.matrices[7].value[0] = 71;

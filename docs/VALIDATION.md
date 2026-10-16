@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## AEGeometry translation axes (2026-10-16)
+
+`python tools/run_aegeometry_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` now exercises eighteen production bodies.
+New float and vector translation cases use unequal starting coordinates
+to check all three matrix-axis increments and write-back. Native
+`gof2`, 206/206 ARM units and 40 verifier tests (one skip) pass. The
+float overload reaches 100%/100% source-shape/strict fuzzy and
+linked-exact; focused AEGeometry totals are 27 linked-exact and 8
+byte-exact across 45 functions. Full report
+`A:/Galaxy on Fire new version/_work/aegeometry_translate_full_20261016.json`
+compares 4,323/4,524 unique original functions at 93.60%/82.67%
+average source-shape/strict fuzzy, 2,507 linked-exact and 1,074
+byte-exact. Exact `(unit,symbol)` set comparison against the previous
+full report shows zero losses and one linked gain. The separate
+call-target audit records 2,392 matches, 53 mismatch candidates and
+647 unresolved. See
+[the focused audit](AEGEOMETRY_TRANSLATE_ARM_2026-10-16.md).
+
 ## AEGeometry rotation and scaling calls (2026-10-16)
 
 `python tools/run_aegeometry_canvas_calls_smoke.py --cxx

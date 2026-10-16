@@ -255,11 +255,9 @@ void AEGeometry::setMesh(uint16_t mesh) {
 }
 
 void AEGeometry::translate(float x, float y, float z) {
-    uint32_t loc = AEGeomCanvas::TransformGetLocal((uint32_t)(uintptr_t)this->canvas, this->transform);
-    Matrix matrix = *(Matrix *) (uintptr_t) loc;
-    MatrixSetTranslation(matrix, matrix.m[3] + z, matrix.m[7], matrix.m[11] + y);
+    Matrix matrix = *(Matrix *) this->canvas->TransformGetLocal(this->transform);
+    MatrixSetTranslation(matrix, matrix.m[3] + x, matrix.m[7] + y, matrix.m[11] + z);
     this->canvas->TransformSetLocal(this->transform, matrix);
-    (void) x;
 }
 
 AEGeometry::AEGeometry(uint16_t mesh, PaintCanvas *canvas, bool flag) {

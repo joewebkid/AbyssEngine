@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (AEGeometry rotation/scaling contracts; older subsystem
+Last reviewed: 2026-10-16 (AEGeometry translation axes; older subsystem
 snapshots retain their dates)
+
+## AEGeometry translation axes (2026-10-16)
+
+Original Android ARM confirms `translate(x,y,z)` adds `x`, `y` and `z`
+to matrix entries `m[3]`, `m[7]` and `m[11]`, respectively. The old
+body ignored `x`, misrouted `z` and narrowed matrix pointers; these
+errors are corrected. The 18-body host smoke, native `gof2`, **206/206**
+ARM units and **40** verifier tests (one skip) pass. The float overload
+becomes **100%/100%** source-shape/strict fuzzy and linked-exact, not
+byte-exact. Full coverage stays **4,323/4,524**, with **201 missing**,
+**123 extras** and zero skipped; average source-shape/strict fuzzy is
+**93.60%/82.67%**. Linked-exact rises **2,506 -> 2,507**;
+byte-exact stays **1,074**, with zero exact-pair losses. Named
+direct-call matches rise **2,387 -> 2,392**; **53 mismatch candidates /
+647 unresolved** remain. Seven `AEGeomCanvas` routes and live ARM32
+transform behavior remain open. See
+[the translation audit](AEGEOMETRY_TRANSLATE_ARM_2026-10-16.md).
 
 ## AEGeometry rotation and scaling calls (2026-10-16)
 
