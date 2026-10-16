@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (CutScene mode-2 camera initialization; older subsystem
+Last reviewed: 2026-10-17 (CutScene mode-23 camera initialization; older subsystem
 snapshots retain their dates)
+
+## CutScene mode-23 camera initialization (2026-10-17)
+
+Android ARM confirms the camera/transform IDs at `CutScene+0x70/+0x78`,
+perspective `0.8/200/100000`, Y rotation `0.3926991`, translation
+`(300, 700, 3000)` and the first enemy geometry's position as the
+transform translation. The recovered null-geometry dereference and
+placeholder matrix operations are replaced. Focused `initialize`
+source-shape/strict fuzzy rises from **88.9%/36.2% to 92.3%/37.0%**,
+still nonexact. Native `gof2`, **208/208** ARM units, 40 verifier tests
+(one existing skip), and `-O0/-O2` extracted setup tests pass. Full
+corpus remains **4,323/4,524** compared, **201 missing**, **123
+extras**, **93.73%/82.85%** rounded averages and **2,517 linked-exact
+/ 1,076 byte-exact**, with zero exact-pair losses. Live ARM32/GPU
+output is untested. Next priority: a separate mode-4 setup audit. See
+[the mode-23 initialization audit](CUTSCENE_INIT_MODE23_CAMERA_ARM_2026-10-17.md).
 
 ## CutScene mode-2 camera initialization (2026-10-17)
 

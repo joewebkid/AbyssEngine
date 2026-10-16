@@ -417,7 +417,6 @@ void CutScene::initialize() {
 
     this->level->initParticleSystems();
 
-    char localMatrix[0x3c];
     PaintCanvas *canvas = PaintCanvas::gCanvas;
 
     if (this->mode == 2) {
@@ -455,18 +454,17 @@ void CutScene::initialize() {
     } else if (this->mode == 0x17) {
         this->turretGeom = nullptr;
         canvas->CameraCreate(this->cameraId70);
-        canvas->CameraSetPerspective(0, CutScene_persp_fov, CutScene_persp_znear, CutScene_persp_zfar);
+        canvas->CameraSetPerspective(this->cameraId70, 0.8f, 200.0f, 100000.0f);
         canvas->CameraSetCurrent(this->cameraId70);
-        char tmp[0x3c];
-        memcpy(tmp, canvas->CameraGetLocal(0), 0x3c);
-        MatrixSetRotation(localMatrix, 0.0f, 0.0f, 0.0f);
-        MatrixSetTranslation(localMatrix, 0.0f, 0.0f, 0.0f);
-        canvas->CameraSetLocal(0, *(const Matrix *) (uintptr_t) this->cameraId70);
+        Matrix cameraLocal = *static_cast<const Matrix *>(canvas->CameraGetLocal(this->cameraId70));
+        AbyssEngine::AEMath::MatrixSetRotation(cameraLocal, 0.0f, 0.3926991f, 0.0f);
+        AbyssEngine::AEMath::MatrixSetTranslation(cameraLocal, 300.0f, 700.0f, 3000.0f);
+        canvas->CameraSetLocal(this->cameraId70, cameraLocal);
         canvas->TransformCreate(this->transformId78);
-        this->level->getEnemies();
-        ((AEGeometry *) nullptr)->getPosition();
-        canvas->TransformGetLocal(0);
-        MatrixSetTranslation(localMatrix, 0.0f, 0.0f, 0.0f);
+        Vector leadPosition = (*this->level->getEnemies())[0]->geometry->getPosition();
+        Matrix *transformLocal = static_cast<Matrix *>(canvas->TransformGetLocal(this->transformId78));
+        AbyssEngine::AEMath::MatrixSetTranslation(*transformLocal, leadPosition.x,
+                                                   leadPosition.y, leadPosition.z);
         canvas->TransformAddChild(this->transformId78, this->cameraId70);
         this->resetCamera();
         this->checkForTurret();
