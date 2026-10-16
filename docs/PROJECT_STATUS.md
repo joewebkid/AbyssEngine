@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (CutScene turret geometry; older subsystem
+Last reviewed: 2026-10-17 (CutScene mode-2 ship placement; older subsystem
 snapshots retain their dates)
+
+## CutScene mode-2 ship placement (2026-10-17)
+
+Android ARM confirms the positive-time gate before enemy-list access,
+both nonnull players, virtual vector-position calls and distinct
+Y coordinates `-30` and `50`. The previous C++ called the float
+overload, used Y=0 twice, and read enemies at zero time. Focused
+`initialize` source-shape/strict fuzzy rises from **93.1%/37.9% to
+95.8%/61.9%**, still nonexact. Native `gof2`, **208/208** ARM units,
+40 verifier tests (one existing skip), and extracted `-O0/-O2`
+tests pass. Full corpus remains **4,323/4,524** compared, **201
+missing**, **123 extras**, **93.74%/82.87%** rounded averages,
+**2,517 linked-exact / 1,076 byte-exact**, with zero exact-pair
+losses. Live ARM32/GPU output is untested. Next priority: investigate
+`CutScene::checkForTurret` weapon-position ownership and its remaining
+nonexact cleanup path; do not infer that a green host build covers
+runtime loading. See
+[the placement audit](CUTSCENE_INIT_MODE2_SHIPS_ARM_2026-10-17.md).
 
 ## CutScene turret geometry (2026-10-17)
 

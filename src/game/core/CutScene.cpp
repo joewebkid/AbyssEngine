@@ -437,20 +437,21 @@ void CutScene::initialize() {
         canvas->CameraSetLocal(this->cameraId74, cameraLocal);
 
         long long pt = Status::gStatus->getPlayingTime();
-        Array<KIPlayer *> *enemies = this->level->getEnemies();
-        if (pt != 0 && enemies != nullptr && enemies->size() > 1) {
-            unsigned int n = enemies->size();
-            void *e0 = (*enemies)[n - 2];
-            if (e0 != nullptr && (*enemies)[n - 1] != nullptr) {
-                float v[3];
-                v[0] = VectorSignedToFloat(rx - 24000, 0);
-                v[1] = 0.0f;
-                v[2] = VectorSignedToFloat(ry + 0x9a4c, 0);
-
-                ((KIPlayer *) e0)->setPosition(v[0], v[1], v[2]);
-                v[0] = VectorSignedToFloat(rx - 0x5b68, 0);
-                v[2] = VectorSignedToFloat(ry + 0x96c8, 0);
-                ((KIPlayer *) (*enemies)[n - 1])->setPosition(v[0], v[1], v[2]);
+        if (pt > 0) {
+            Array<KIPlayer *> *enemies = this->level->getEnemies();
+            if (enemies != nullptr && enemies->size() > 1) {
+                unsigned int n = enemies->size();
+                KIPlayer *penultimate = (*enemies)[n - 2];
+                KIPlayer *last = (*enemies)[n - 1];
+                if (penultimate != nullptr && last != nullptr) {
+                    Vector position{static_cast<float>(rx - 24000), -30.0f,
+                                    static_cast<float>(ry + 39500)};
+                    penultimate->setPosition(position);
+                    position.x = static_cast<float>(rx - 23400);
+                    position.y = 50.0f;
+                    position.z = static_cast<float>(ry + 38600);
+                    last->setPosition(position);
+                }
             }
         }
     } else if (this->mode == 0x17) {

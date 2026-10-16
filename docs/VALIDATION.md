@@ -4,6 +4,26 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene mode-2 ship placement (2026-10-17)
+
+`python tools/run_cutscene_init_mode2_ships_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2` for both
+positions, the positive-time gate, null and short enemy lists and
+missing players. The prior mode-2 and mode-23 camera smokes, native
+`gof2`, **208/208** ARM units and 40 verifier tests (one existing
+skip) also pass. Focused report
+`A:/Galaxy on Fire new version/_work/cutscene_init_mode2_placement_after_20261017.json`
+scores `initialize` at **95.8% source-shape / 61.9% strict fuzzy**,
+up from **93.1% / 37.9%** in
+`cutscene_init_mode2_placement_before_20261017.json`, still nonexact.
+Full report
+`A:/Galaxy on Fire new version/_work/cutscene_init_mode2_placement_full_20261017.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.74%/82.87%** rounded averages, **2,517 linked-exact / 1,076
+byte-exact**. Exact `(unit,symbol)` sets are unchanged from
+`cutscene_check_turret_full_20261017.json`. See
+[the placement audit](CUTSCENE_INIT_MODE2_SHIPS_ARM_2026-10-17.md).
+
 ## CutScene turret geometry (2026-10-17)
 
 `python tools/run_cutscene_turret_transform_smoke.py --cxx
