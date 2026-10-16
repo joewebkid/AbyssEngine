@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ObjectGun constructor bindings; older subsystem
+Last reviewed: 2026-10-16 (ObjectGun update bindings; older subsystem
 snapshots retain their dates)
+
+## ObjectGun update bindings (2026-10-16)
+
+Android ARM confirms `Globals::Canvas`, typed transform update,
+the `0 -> 3 -> 1` inactive animation sequence, and typed camera
+lookups in `ObjectGun::update`. These replace a null canvas and
+two null function pointers. `AnimationMode` now has fixed `int`
+representation for observed modes `0-3`. A production-branch
+host fixture checks call order and canvas re-reads at `-O0/-O2`.
+Native `gof2`, **207/207** ARM units, and **40** verifier tests
+(one skip) pass. Focused update source-shape/strict fuzzy improves
+**83.8%/20.5% -> 87.8%/29.0%**; no exact match. Full corpus:
+**4,323/4,524** compared, **201 missing**, **124 extras**, zero
+skipped, **93.66%/82.75%** average source-shape/strict fuzzy,
+**2,510 linked-exact / 1,074 byte-exact**, with zero exact
+gains/losses. Full update behavior and `render` remain unverified.
+See [the update audit](OBJECTGUN_UPDATE_BINDINGS_ARM_2026-10-16.md).
 
 ## ObjectGun constructor bindings (2026-10-16)
 
@@ -34,8 +51,9 @@ Full corpus: **4,323/4,524** compared, **201 missing**, **124 extras**,
 zero skipped, **93.66%/82.74%** average source-shape/strict fuzzy,
 **2,510 linked-exact / 1,074 byte-exact**. Exact `(unit,symbol)`
 comparison shows one linked gain and zero linked/byte losses.
-Constructor, update and render still contain unresolved ObjectGun
-bindings; live ARM32 rendering remains untested. See
+The constructor and update have since received bounded binding
+recoveries; render still contains unresolved bindings. Live ARM32
+rendering remains untested. See
 [the mesh replacement audit](OBJECTGUN_REPLACE_MESH_ARM_2026-10-16.md).
 
 ## Trail constructor behavior (2026-10-16)

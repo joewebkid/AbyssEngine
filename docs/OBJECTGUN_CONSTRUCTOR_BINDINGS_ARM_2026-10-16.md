@@ -47,6 +47,8 @@ and `A:/Galaxy on Fire new version/_work/objectgun_ctor_full_20261016.json`.
 
 This is a bounded binding/table recovery, not proof that the full
 constructor or game runtime works. The constructor has additional
-source-shape differences. `ObjectGun::update` and `render` still
-hold null canvas and other function-pointer placeholders; no live
-ARM32 rendering test was run.
+source-shape differences. The later
+[update binding pass](OBJECTGUN_UPDATE_BINDINGS_ARM_2026-10-16.md)
+removed its null canvas and animation-function placeholders;
+`render` still holds unresolved bindings. No live ARM32
+rendering test was run.

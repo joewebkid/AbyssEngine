@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ObjectGun update bindings (2026-10-16)
+
+The production inactive-delay branch is exercised by
+`python tools/run_objectgun_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` at host `-O0/-O2`.
+Native `gof2`, 207/207 ARM units and 40 verifier tests (one
+skip) pass. Focused update source-shape/strict fuzzy improves
+83.8%/20.5% to 87.8%/29.0%, without exact status. The full report
+`A:/Galaxy on Fire new version/_work/objectgun_update_bindings_enum_full_20261016.json`
+compares 4,323/4,524 originals, 201 missing, 124 extras,
+zero skipped, 93.66%/82.75% average source-shape/strict fuzzy,
+2,510 linked-exact and 1,074 byte-exact. Exact `(unit,symbol)`
+comparison with `objectgun_ctor_full_20261016.json` shows zero
+gains and zero losses. See
+[the update audit](OBJECTGUN_UPDATE_BINDINGS_ARM_2026-10-16.md).
+
 ## ObjectGun constructor bindings (2026-10-16)
 
 The constructor's canvas/iPad GOT bindings and its shared 232-entry

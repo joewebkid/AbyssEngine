@@ -26,7 +26,8 @@ namespace AbyssEngine {
 
     class Transform;
 
-    enum AnimationMode {
+    // ARM SetAnimationState accepts the observed 0-3 values in an int register.
+    enum AnimationMode : int {
         AnimationMode_0 = 0
     };
 

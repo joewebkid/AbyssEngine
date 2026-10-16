@@ -69,12 +69,6 @@ namespace AbyssEngine {
 
 static void *g_PaintCanvas = nullptr;
 
-void TransformAddMesh(void *canvas, uint32_t transform, uint16_t mesh, int flags);
-
-void TransformCreate(void *canvas, uint32_t *transform);
-
-uint32_t TransformGetTransform(void *canvas, uint32_t transform);
-
 void TransformSetLocal(void *canvas, uint32_t transform, Matrix *matrix);
 
 void DrawTransform(void *canvas, uint32_t transform, int flags);
@@ -102,10 +96,6 @@ void VectorCross(Vector *out, const Vector *a, const Vector *b);
 void ObjectGun_setEnemies_impl(void *items);
 
 static void *g_ObjectGunRenderScaleFlag = nullptr;
-
-static uint32_t (*g_TransformGetObject)(void *canvas, uint32_t mesh) = nullptr;
-
-static void (*g_TransformSetState)(uint32_t object, int state, int value) = nullptr;
 
 ObjectGun::ObjectGun(int /*unused*/, Gun *gun, int mesh, uint32_t /*param*/, Level *level) {
     this->dir.x = 0.0f;
@@ -235,9 +225,10 @@ void ObjectGun::update(int dt) {
     Vector offsets;
     Vector zero = {0.0f, 0.0f, 0.0f};
 
-    void **canvas = (void **) g_PaintCanvas;
-    uint32_t transform = TransformGetTransform(*canvas, this->transform);
-    ((AbyssEngine::Transform *) ((uint64_t) transform))->Update((int64_t) dt, 0);
+    PaintCanvas **canvas = &Globals::Canvas;
+    auto *transform = static_cast<AbyssEngine::Transform *>(
+        (*canvas)->TransformGetTransform(this->transform));
+    transform->Update((int64_t) dt, false);
 
     this->deltaTime = dt;
     Gun *gun = this->gun;
@@ -253,7 +244,7 @@ void ObjectGun::update(int dt) {
                     this->hasGeometry = 1;
                     this->geometry = new AEGeometry(
                         (uint16_t) kObjectGunMeshIds[this->gun->itemIndex],
-                        (PaintCanvas *) *canvas, false);
+                        *canvas, false);
                 }
             }
         }
@@ -263,9 +254,15 @@ void ObjectGun::update(int dt) {
 
     gun = this->gun;
     if (gun->delayActive == 0) {
-        g_TransformSetState(g_TransformGetObject(*canvas, this->geometry->transform), 0, 0);
-        g_TransformSetState(g_TransformGetObject(*canvas, this->geometry->transform), 3, 0);
-        g_TransformSetState(g_TransformGetObject(*canvas, this->geometry->transform), 1, 0);
+        static_cast<AbyssEngine::Transform *>(
+            (*canvas)->TransformGetTransform(this->geometry->transform))
+            ->SetAnimationState((AbyssEngine::AnimationMode) 0, nullptr);
+        static_cast<AbyssEngine::Transform *>(
+            (*canvas)->TransformGetTransform(this->geometry->transform))
+            ->SetAnimationState((AbyssEngine::AnimationMode) 3, nullptr);
+        static_cast<AbyssEngine::Transform *>(
+            (*canvas)->TransformGetTransform(this->geometry->transform))
+            ->SetAnimationState((AbyssEngine::AnimationMode) 1, nullptr);
         goto after_geometry;
     }
 
@@ -295,13 +292,14 @@ void ObjectGun::update(int dt) {
         position += *(const Vector *) &workMatrix;
         this->geometry->setPosition(position);
 
-        transform = TransformGetTransform(*canvas, this->geometry->transform);
-        ((AbyssEngine::Transform *) ((uint64_t) transform))->Update((int64_t) dt, 0);
+        transform = static_cast<AbyssEngine::Transform *>(
+            (*canvas)->TransformGetTransform(this->geometry->transform));
+        transform->Update((int64_t) dt, false);
 
         if (this->gun->weaponType != ITEM_SORT_TURRET) {
-            void *paint = *canvas;
-            void *camera = CameraGetCurrent(paint);
-            cameraMatrix = *(const Matrix *) CameraGetLocal(paint, camera);
+            PaintCanvas *paint = *canvas;
+            unsigned camera = paint->CameraGetCurrent();
+            cameraMatrix = *static_cast<const Matrix *>(paint->CameraGetLocal(camera));
             MatrixGetDir(&dir, &cameraMatrix);
             MatrixGetUp(&up, &cameraMatrix);
             this->geometry->setDirection(dir, up);
