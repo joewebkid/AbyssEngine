@@ -68,6 +68,15 @@ def main():
         f"{explosion_render}\n"
         "}\n"
     )
+    visible_start = "                    this->orientation.m[0] = cameraLocal.m[0];"
+    visible_axes = visible_start + source.split(visible_start, 1)[1].split(
+        "\n\n                    int scale = gun->lifetimes[i];", 1)[0]
+    visible_body = (
+        "void ObjectGun::applyVisibleOrientation(Matrix &cameraLocal, "
+        "Vector &muzzle) {\n"
+        f"{visible_axes}\n"
+        "}\n"
+    )
     render_scale = "                if (Globals::iPad != 0)" + source.split(
         "                if (Globals::iPad != 0)", 1)[1].split(
         "\n\n                if (this->gun->weaponType", 1)[0]
@@ -98,7 +107,7 @@ def main():
         generated.write_text(fixture.replace(
             "// PRODUCTION_METHODS",
             "\n".join((set_enemies, body, inactive_body, camera_body, turret_body,
-                       explosion_body, explosion_render_body,
+                       explosion_body, explosion_render_body, visible_body,
                        render_scale_body, render_ego_body, render_final_body))))
         for optimization in ("-O0", "-O2"):
             exe = Path(temp) / f"smoke-{optimization[2:]}.exe"

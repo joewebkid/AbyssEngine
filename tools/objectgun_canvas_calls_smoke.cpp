@@ -3,6 +3,7 @@
 
 struct Matrix {
     int marker = 42;
+    float m[15] = {};
     bool scaled = false;
     bool rotated = false;
     bool multiplied = false;
@@ -176,6 +177,7 @@ struct ObjectGun {
     void applyTurretMatrix(PlayerEgo *player, Matrix &workMatrix);
     void applyExplosionUpdate(int dt);
     void applyExplosionRender();
+    void applyVisibleOrientation(Matrix &cameraLocal, Vector &muzzle);
     void applyRenderScale();
     void applyEgoRotation(EgoPlayerView *playerView, Player *player,
                           Matrix &local, Matrix &scaleMatrix);
@@ -286,6 +288,26 @@ int main() {
     gun.applyExplosionRender();
     assert(scatter.renderCalls == 2 && skipped.renderCalls == 0 &&
            active.renderCalls == 1);
+
+    Matrix visibleCamera;
+    visibleCamera.m[0] = 10;
+    visibleCamera.m[1] = 11;
+    visibleCamera.m[4] = 14;
+    visibleCamera.m[5] = 15;
+    visibleCamera.m[8] = 18;
+    visibleCamera.m[9] = 19;
+    visibleCamera.m[10] = 110;
+    visibleCamera.m[11] = 111;
+    Vector muzzle;
+    muzzle.x = 2;
+    muzzle.y = 3;
+    muzzle.z = 4;
+    gun.applyVisibleOrientation(visibleCamera, muzzle);
+    assert(gun.orientation.m[0] == 10 && gun.orientation.m[1] == 11 &&
+           gun.orientation.m[4] == 14 && gun.orientation.m[5] == 15 &&
+           gun.orientation.m[8] == 18 && gun.orientation.m[9] == 19);
+    assert(gun.orientation.m[2] == -2 && gun.orientation.m[6] == -3 &&
+           gun.orientation.m[10] == -4);
 
     Globals::iPad = 0;
     gun.applyRenderScale();

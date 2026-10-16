@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ObjectGun visible orientation axes (2026-10-16)
+
+`python tools/run_objectgun_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` checks the production orientation
+assignments at host `-O0/-O2` with camera `8,9` distinct from
+`10,11`. Native `gof2`, 207/207 ARM units and 40 verifier tests
+(one existing skip) pass. Focused `render` source-shape/strict fuzzy
+remains 89.6%/39.7%, nonexact. Full report
+`A:/Galaxy on Fire new version/_work/objectgun_visible_axes_full_20261016.json`
+compares 4,323/4,524 originals, 201 missing, 124 extras, zero
+skipped or wrong signatures, 93.67%/82.77% average source-shape/
+strict fuzzy, 2,513 linked-exact and 1,074 byte-exact. Against
+`objectgun_dtor_full_20261016.json`, both exact `(unit,symbol)`
+sets are unchanged. See
+[the orientation audit](OBJECTGUN_VISIBLE_ORIENTATION_ARM_2026-10-16.md).
+
 ## ObjectGun scatter explosion flow (2026-10-16)
 
 `python tools/run_objectgun_canvas_calls_smoke.py --cxx

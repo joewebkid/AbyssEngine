@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (ObjectGun scatter explosion flow; older subsystem
+Last reviewed: 2026-10-16 (ObjectGun visible orientation axes; older subsystem
 snapshots retain their dates)
+
+## ObjectGun visible orientation axes (2026-10-16)
+
+Android ARM confirms that the visible-gun branch copies camera
+matrix indices `0,1,4,5,8,9` into the corresponding orientation
+entries. The C++ incorrectly copied camera `10,11` into orientation
+`8,9`; it now uses `8,9`. An extracted production-fragment fixture
+checks distinct camera values and negated muzzle components under
+host `-O0/-O2`. Native `gof2`, **207/207** ARM units and **40**
+verifier tests (one existing skip) pass. Focused `render` remains
+**89.6%/39.7%** source-shape/strict fuzzy and nonexact. Full corpus:
+**4,323/4,524** compared, **201 missing**, **124 extras**, no skipped
+or wrong signatures, **93.67%/82.77%** average source-shape/strict
+fuzzy, **2,513 linked-exact / 1,074 byte-exact**. The exact sets
+show zero gains and zero losses. Whole-frame and live ARM32 GPU
+behavior remain unverified. See
+[the orientation audit](OBJECTGUN_VISIBLE_ORIENTATION_ARM_2026-10-16.md).
 
 ## ObjectGun scatter explosion flow (2026-10-16)
 

@@ -411,8 +411,8 @@ void ObjectGun::render() {
                     this->orientation.m[1] = cameraLocal.m[1];
                     this->orientation.m[4] = cameraLocal.m[4];
                     this->orientation.m[5] = cameraLocal.m[5];
-                    this->orientation.m[8] = cameraLocal.m[10];
-                    this->orientation.m[9] = cameraLocal.m[11];
+                    this->orientation.m[8] = cameraLocal.m[8];
+                    this->orientation.m[9] = cameraLocal.m[9];
                     this->orientation.m[2] = -muzzle.x;
                     this->orientation.m[6] = -muzzle.y;
                     this->orientation.m[10] = -muzzle.z;
