@@ -28,6 +28,7 @@ METHODS = (
     "void AEGeometry::translate(float x, float y, float z)",
     "void AEGeometry::translate(const Vector &v)",
     "void AEGeometry::setDirection(const Vector &dir, const Vector &up)",
+    "void AEGeometry::updateLod(const Vector &camPos, float screenScale)",
     "void AEGeometry::setLodChildMeshes(uint16_t *meshes)",
     "void AEGeometry::setLodChildTransform(uint32_t param)",
 )

@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## AEGeometry LOD selection and transfer (2026-10-16)
+
+`python tools/run_aegeometry_canvas_calls_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` now exercises twenty production
+AEGeometry bodies. New cases cover alternate/fallback position
+transforms, camera delta, culling, `0.33`/`0.66`/`NaN` factors, LOD
+transitions, base fallback, matrix destinations and animation time.
+Native `gof2`, 206/206 ARM units and 40 verifier tests (one skip)
+pass. Focused `updateLod` strict fuzzy/source-shape improves from
+82.8%/96.4% to 97.6%/100%; it is not exact. Full report
+`A:/Galaxy on Fire new version/_work/aegeometry_lod_full_20261016.json`
+compares 4,323/4,524 unique original functions at 93.60%/82.69%
+average source-shape/strict fuzzy, 2,507 linked-exact and 1,074
+byte-exact. Exact `(unit,symbol)` pair comparison against the previous
+full report shows zero losses/gains. The separate linked-function
+call audit records 2,392 matches, 53 mismatch candidates and 647
+unresolved; this nonexact method's 19 calls were checked manually.
+See [the focused audit](AEGEOMETRY_UPDATE_LOD_ARM_2026-10-16.md).
+
 ## AEGeometry direction basis (2026-10-16)
 
 `python tools/run_aegeometry_canvas_calls_smoke.py --cxx

@@ -8,8 +8,6 @@ void _ae_geom_render(uint32_t canvas, uint32_t tf, int z);
 
 void _ae_setPosition3(void *self, float x, float y, float z);
 
-uint32_t Transform_GetTransform(uint32_t tf);
-
 Vector AEGeometry::getPosition() {
     Matrix &loc = *(Matrix *) this->canvas->TransformGetLocal(this->transform);
     return MatrixGetPosition(loc);
@@ -314,13 +312,13 @@ void AEGeometry::moveForward(float dist) {
 void AEGeometry::updateLod(const Vector &camPos, float screenScale) {
     this->visibility = (this->visibility & 0xff00) | (this->visibility >> 8);
 
-    char matrixCopy[60];
-    uint32_t loc = AEGeomCanvas::TransformGetLocal((uint32_t)(uintptr_t)this->canvas, this->transform);
-    memcpy(matrixCopy, (void *) loc, 0x3c);
-
-    loc = AEGeomCanvas::TransformGetLocal((uint32_t)(uintptr_t)this->canvas, this->transform);
-    Vector pos = MatrixGetPosition(*(Matrix *) loc);
-    this->cameraDelta = camPos - pos;
+    Matrix matrixCopy = *(Matrix *) this->canvas->TransformGetLocal(this->transform);
+    uint32_t positionTransform = this->altTransform;
+    if (positionTransform == 0xffffffffu)
+        positionTransform = this->transform;
+    Vector pos = MatrixGetPosition(
+        *(Matrix *) this->canvas->TransformGetLocal(positionTransform));
+    this->cameraDelta = pos - camPos;
 
     float dx = this->cameraDelta.x, dy = this->cameraDelta.y, dz = this->cameraDelta.z;
     this->distSq = (unsigned long long) (dy * dy + dx * dx + dz * dz);
@@ -339,12 +337,16 @@ void AEGeometry::updateLod(const Vector &camPos, float screenScale) {
         return;
     }
 
-    Transform_GetTransform((uint32_t)(uintptr_t)this->canvas);
+    AbyssEngine::Transform *activeTransform = (AbyssEngine::Transform *)
+        this->canvas->TransformGetTransform(this->transform);
 
-    float factor = (screenScale <= 0.0625f) ? 0.75f : 1.0f;
-    float detail = (0.03125f < screenScale) ? factor : 0.5f;
+    float factor = (screenScale <= 0.66f) ? 0.75f : 1.0f;
+    float detail = 0.5f;
+    if (!(screenScale <= 0.33f))
+        detail = factor;
 
     int level = this->lodCount;
+    longlong animationTime = activeTransform->currentTime;
 
     while (level >= 1) {
         int idx = level - 1;
@@ -357,21 +359,21 @@ void AEGeometry::updateLod(const Vector &camPos, float screenScale) {
 
         uint32_t lodTf = this->lodTransforms[idx];
         if (lodTf != this->transform) {
-            AEGeomCanvas::TransformSetLocal(this->canvas, this->transform, (Matrix *) (uintptr_t) lodTf);
+            this->canvas->TransformSetLocal(lodTf, matrixCopy);
             this->transform = this->lodTransforms[idx];
-            uint32_t t = Transform_GetTransform((uint32_t)(uintptr_t)this->canvas);
-            ((AbyssEngine::Transform *) (uintptr_t) t)->SetCurrentAnimationTime(0);
-            t = Transform_GetTransform((uint32_t)(uintptr_t)this->canvas);
-            ((AbyssEngine::Transform *) (uintptr_t) t)->SetCurrentAnimationTime(0);
+            ((AbyssEngine::Transform *) this->canvas->TransformGetTransform(
+                this->lodTransforms[idx]))->SetCurrentAnimationTime(animationTime);
+            ((AbyssEngine::Transform *) this->canvas->TransformGetTransform(
+                this->baseTransform))->SetCurrentAnimationTime(animationTime);
             this->currentLod = level;
-            this->referenceMatrix = *(Matrix *) matrixCopy;
+            this->referenceMatrix = matrixCopy;
             if (this->merger != nullptr)
                 this->merger->setLod(this->mergerIndex, (signed char) level);
         }
         return;
     }
 
-    AEGeomCanvas::TransformSetLocal(this->canvas, this->transform, (Matrix *) (uintptr_t) this->baseTransform);
+    this->canvas->TransformSetLocal(this->baseTransform, matrixCopy);
     this->currentLod = 0;
     this->transform = this->baseTransform;
     if (this->merger != nullptr)

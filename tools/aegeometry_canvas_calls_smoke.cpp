@@ -1,9 +1,15 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <limits>
 
 struct Vector { float x, y, z; };
 struct Matrix { union { float value[15]; float m[15]; }; };
+using longlong = long long;
+
+Vector operator-(const Vector &lhs, const Vector &rhs) {
+    return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
+}
 
 int translationCalls = 0;
 float translationArgs[3]{};
@@ -56,16 +62,39 @@ Matrix MatrixSetScaling(Matrix &m, float x, float y, float z) {
 }
 }}
 
-Vector MatrixGetPosition(const Matrix &m) { return {m.value[0], m.value[1], m.value[2]}; }
-Vector MatrixGetRight(const Matrix &m) { return {m.value[3], m.value[4], m.value[5]}; }
-Vector MatrixGetUp(const Matrix &m) { return {m.value[6], m.value[7], m.value[8]}; }
-Vector MatrixGetDir(const Matrix &m) { return {m.value[9], m.value[10], m.value[11]}; }
+Vector MatrixGetPosition(const Matrix &m) { return {m.m[3], m.m[7], m.m[11]}; }
+Vector MatrixGetRight(const Matrix &m) { return {m.m[0], m.m[4], m.m[8]}; }
+Vector MatrixGetUp(const Matrix &m) { return {m.m[1], m.m[5], m.m[9]}; }
+Vector MatrixGetDir(const Matrix &m) { return {m.m[2], m.m[6], m.m[10]}; }
+
+namespace AbyssEngine {
+struct Transform {
+    longlong currentTime = 0;
+    int setCalls = 0;
+    void SetCurrentAnimationTime(longlong time) {
+        currentTime = time;
+        ++setCalls;
+    }
+};
+}
+
+struct LodMeshMerger {
+    int calls = 0, lastIndex = -1, lastLod = -1;
+    void setLod(int index, signed char lod) {
+        ++calls;
+        lastIndex = index;
+        lastLod = lod;
+    }
+};
 
 struct PaintCanvas {
     Matrix matrices[10]{};
+    AbyssEngine::Transform transforms[10]{};
     unsigned int nextTransform = 7;
     unsigned int lastGet = 0xffffffffu;
     int getCalls = 0;
+    unsigned int lastTransform = 0xffffffffu;
+    int getTransformCalls = 0, setCalls = 0;
     unsigned int lastParent = 0xffffffffu, lastChild = 0xffffffffu;
     unsigned int lastSet = 0xffffffffu, lastMeshIdTransform = 0xffffffffu;
     unsigned int lastMeshId = 0xffffffffu;
@@ -80,6 +109,12 @@ struct PaintCanvas {
         lastGet = index;
         ++getCalls;
         return &matrices[index];
+    }
+    void *TransformGetTransform(unsigned int index) {
+        assert(index < 10);
+        lastTransform = index;
+        ++getTransformCalls;
+        return &transforms[index];
     }
     void TransformAddChild(unsigned int parent, unsigned int child) {
         lastParent = parent;
@@ -106,11 +141,13 @@ struct PaintCanvas {
     void TransformSetLocal(unsigned int index, const Matrix &matrix) {
         assert(index < 10);
         lastSet = index;
+        ++setCalls;
         matrices[index] = matrix;
     }
 };
 
 struct AEGeometry {
+    unsigned int mergerIndex = 0;
     unsigned short mesh = 0;
     unsigned int transform = 5;
     unsigned int parentTransform = 77;
@@ -127,9 +164,10 @@ struct AEGeometry {
     unsigned int *lodTransforms = nullptr, *lodChildTransforms = nullptr;
     unsigned short *lodMeshes = nullptr, *lodChildMeshes = nullptr;
     unsigned long long *lodDistancesSq = nullptr;
+    unsigned long long distSq = 0, lastVisibleDistSq = 0;
     Vector cameraDelta{};
     Matrix referenceMatrix{};
-    void *merger = nullptr;
+    LodMeshMerger *merger = nullptr;
 
     AEGeometry() = default;
     explicit AEGeometry(PaintCanvas *);
@@ -150,6 +188,7 @@ struct AEGeometry {
     void translate(float, float, float);
     void translate(const Vector &);
     void setDirection(const Vector &, const Vector &);
+    void updateLod(const Vector &, float);
     void setLodChildMeshes(uint16_t *);
     void setLodChildTransform(uint32_t);
 };
@@ -163,19 +202,19 @@ static void equal(Vector actual, float a, float b, float c) {
 int main() {
     PaintCanvas canvas;
     canvas.matrices[5] = {{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}};
-    canvas.matrices[9] = {{21, 22, 23}};
+    canvas.matrices[9] = {{0, 0, 0, 21, 0, 0, 0, 22, 0, 0, 0, 23}};
     AEGeometry geom;
     geom.canvas = &canvas;
 
-    equal(geom.getPosition(), 1, 2, 3);
-    equal(geom.getRightVector(), 4, 5, 6);
-    equal(geom.getUpVector(), 7, 8, 9);
-    equal(geom.getDirection(), 10, 11, 12);
+    equal(geom.getPosition(), 4, 8, 12);
+    equal(geom.getRightVector(), 1, 5, 9);
+    equal(geom.getUpVector(), 2, 6, 10);
+    equal(geom.getDirection(), 3, 7, 11);
     assert(&geom.getMatrix() == &canvas.matrices[5] && canvas.lastGet == 5);
     geom.updateReferenceMatrix();
     assert(geom.referenceMatrix.value[11] == 12 && canvas.lastGet == 5);
 
-    equal(geom.getParentPosition(), 1, 2, 3);
+    equal(geom.getParentPosition(), 4, 8, 12);
     assert(canvas.lastGet == 5);
     geom.altTransform = 9;
     equal(geom.getParentPosition(), 21, 22, 23);
@@ -273,6 +312,95 @@ int main() {
     assert(facing.m[1] == -3.0f && facing.m[5] == 0.0f && facing.m[9] == 0.0f);
     assert(facing.m[2] == 0.0f && facing.m[6] == 0.0f && facing.m[10] == 4.0f);
     assert(facing.m[3] == 11.0f && facing.m[7] == 22.0f && facing.m[11] == 33.0f);
+
+    PaintCanvas lodCanvas;
+    lodCanvas.matrices[5].m[0] = 9.0f;
+    lodCanvas.matrices[5].m[3] = 50.0f;
+    lodCanvas.matrices[5].m[7] = 60.0f;
+    lodCanvas.matrices[5].m[11] = 70.0f;
+    lodCanvas.matrices[7].m[3] = 16.0f;
+    lodCanvas.transforms[5].currentTime = 1234;
+    unsigned int lodHandles[] = {6, 8};
+    unsigned long long lodDistances[] = {100, 400};
+    LodMeshMerger lodMerger;
+    AEGeometry lodGeom;
+    lodGeom.canvas = &lodCanvas;
+    lodGeom.transform = 5;
+    lodGeom.baseTransform = 3;
+    lodGeom.altTransform = 7;
+    lodGeom.visibility = 0x101;
+    lodGeom.lodCount = 2;
+    lodGeom.lodTransforms = lodHandles;
+    lodGeom.lodDistancesSq = lodDistances;
+    lodGeom.mergerIndex = 23;
+    lodGeom.merger = &lodMerger;
+    Vector cameraPosition{1.0f, 0.0f, 0.0f};
+
+    lodGeom.updateLod(cameraPosition, 0.33f);
+    assert(lodGeom.cameraDelta.x == 15.0f && lodGeom.cameraDelta.y == 0.0f &&
+           lodGeom.distSq == 225 && (lodGeom.visibility & 0xff) == 1);
+    assert(lodCanvas.lastGet == 7 && lodCanvas.lastSet == 8 && lodCanvas.setCalls == 1);
+    assert(lodGeom.transform == 8 && lodGeom.currentLod == 2);
+    assert(lodCanvas.matrices[8].m[0] == 9.0f && lodCanvas.matrices[8].m[3] == 50.0f);
+    assert(lodGeom.referenceMatrix.m[3] == 50.0f);
+    assert(lodCanvas.getTransformCalls == 3 && lodCanvas.lastTransform == 3);
+    assert(lodCanvas.transforms[8].currentTime == 1234 &&
+           lodCanvas.transforms[3].currentTime == 1234);
+    assert(lodMerger.calls == 1 && lodMerger.lastIndex == 23 && lodMerger.lastLod == 2);
+
+    lodGeom.updateLod(cameraPosition, 0.33f);
+    assert(lodGeom.transform == 8 && lodGeom.currentLod == 2);
+    assert(lodCanvas.setCalls == 1 && lodMerger.calls == 1 &&
+           lodCanvas.transforms[8].setCalls == 1);
+
+    lodGeom.updateLod(cameraPosition, 0.34f);
+    assert(lodGeom.transform == 6 && lodGeom.currentLod == 1 &&
+           lodCanvas.lastSet == 6 && lodCanvas.setCalls == 2);
+    assert(lodCanvas.transforms[6].currentTime == 1234 &&
+           lodCanvas.transforms[3].setCalls == 2);
+    assert(lodMerger.calls == 2 && lodMerger.lastLod == 1);
+
+    lodCanvas.matrices[7].m[3] = 1.0f;
+    int baseTimeCalls = lodCanvas.transforms[3].setCalls;
+    lodGeom.updateLod(cameraPosition, 0.8f);
+    assert(lodGeom.transform == 3 && lodGeom.currentLod == 0 && lodGeom.distSq == 0);
+    assert(lodCanvas.lastSet == 3 && lodCanvas.matrices[3].m[3] == 50.0f);
+    assert(lodCanvas.transforms[3].setCalls == baseTimeCalls);
+    assert(lodMerger.calls == 3 && lodMerger.lastLod == 0);
+
+    lodCanvas.matrices[7].m[3] = 16.0f;
+    lodGeom.lastVisibleDistSq = 25;
+    int priorTransformCalls = lodCanvas.getTransformCalls;
+    int priorSetCalls = lodCanvas.setCalls;
+    lodGeom.updateLod(cameraPosition, 0.8f);
+    assert(lodGeom.currentLod == -1 && (lodGeom.visibility & 0xff) == 0);
+    assert(lodCanvas.getTransformCalls == priorTransformCalls &&
+           lodCanvas.setCalls == priorSetCalls && lodMerger.calls == 3);
+
+    lodGeom.altTransform = 0xffffffffu;
+    lodGeom.transform = 5;
+    lodGeom.updateLod(cameraPosition, 0.8f);
+    assert(lodCanvas.lastGet == 5 && lodGeom.cameraDelta.x == 49.0f &&
+           lodGeom.cameraDelta.y == 60.0f && lodGeom.cameraDelta.z == 70.0f);
+    assert(lodGeom.distSq == 10901 && lodCanvas.getTransformCalls == priorTransformCalls);
+
+    lodGeom.altTransform = 7;
+    lodGeom.lastVisibleDistSq = 0;
+    lodGeom.visibility = 0x101;
+    lodCanvas.matrices[7].m[3] = 20.0f;
+    lodCanvas.transforms[5].currentTime = 3333;
+    lodGeom.updateLod(cameraPosition, 0.66f);
+    assert(lodGeom.distSq == 361 && lodGeom.transform == 8 && lodGeom.currentLod == 2);
+    assert(lodCanvas.transforms[8].currentTime == 3333 && lodMerger.calls == 4);
+    lodGeom.updateLod(cameraPosition, 0.67f);
+    assert(lodGeom.transform == 6 && lodGeom.currentLod == 1 &&
+           lodCanvas.transforms[6].currentTime == 3333 && lodMerger.calls == 5);
+    lodGeom.updateLod(cameraPosition, std::numeric_limits<float>::quiet_NaN());
+    assert(lodGeom.transform == 6 && lodGeom.currentLod == 1 && lodMerger.calls == 5);
+    lodGeom.lastVisibleDistSq = 400;
+    lodGeom.updateLod(cameraPosition, 0.67f);
+    assert((lodGeom.visibility & 0xff) == 1 && lodGeom.transform == 6 &&
+           lodGeom.currentLod == 1 && lodMerger.calls == 5);
 
     PaintCanvas ctorCanvas;
     ctorCanvas.matrices[7].value[0] = 71;

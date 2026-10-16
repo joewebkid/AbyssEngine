@@ -1,7 +1,29 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (AEGeometry direction basis; older subsystem
+Last reviewed: 2026-10-16 (AEGeometry LOD transfer; older subsystem
 snapshots retain their dates)
+
+## AEGeometry LOD selection and transform transfer (2026-10-16)
+
+Android ARM `updateLod` confirms an alternative position transform,
+position-minus-camera delta, `0.33`/`0.66` detail thresholds, target
+matrix-copy destinations and transfer of the active transform's time
+to selected/base transforms. The old body used four unresolved
+`AEGeomCanvas` routes, 32-bit pointer narrowing, different thresholds
+and zero animation time; these are corrected. A 20-body host smoke
+covers visibility, boundary and `NaN` factors, unchanged/changed/base
+LOD branches and animation handoff. Native `gof2`, **206/206** ARM
+units and **40** verifier tests (one skip) pass. Focused strict
+fuzzy/source-shape rises **82.8%/96.4% -> 97.6%/100%**; this
+function is not exact. Full coverage stays **4,323/4,524**, with
+**201 missing**, **123 extras**, zero skipped, **93.60%/82.69%**
+average source-shape/strict fuzzy and **2,507 linked-exact / 1,074
+byte-exact**, with zero exact-pair losses/gains. The linked-function
+call audit remains **2,392 matches / 53 mismatch candidates / 647
+unresolved**; `updateLod`'s 19 direct calls were checked separately.
+No `AEGeomCanvas` calls remain in `AEGeometry.cpp`, but live ARM32 LOD
+and animation behavior remains unverified. See
+[the LOD audit](AEGEOMETRY_UPDATE_LOD_ARM_2026-10-16.md).
 
 ## AEGeometry direction basis (2026-10-16)
 
