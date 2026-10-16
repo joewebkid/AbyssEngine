@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene mode-2 camera matrix (2026-10-17)
+
+`python tools/run_cutscene_mode2_camera_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2`, exercising
+the extracted production matrix copy/rotate/submit route. Native
+`gof2`, **208/208** ARM units and 40 verifier tests (one existing skip)
+also pass. Focused report
+`A:/Galaxy on Fire new version/_work/cutscene_mode2_camera_focused_20261017.json`
+scores `process` at **88.3% source-shape / 43.7% strict fuzzy**,
+up from **87.6% / 43.6%**. Full report
+`A:/Galaxy on Fire new version/_work/cutscene_mode2_camera_full_20261017.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.73%/82.85%** rounded averages, **2,517 linked-exact /
+1,076 byte-exact**. Exact `(unit,symbol)` sets are unchanged from
+`cutscene_camera_step_full_20261016.json`. See
+[the matrix audit](CUTSCENE_MODE2_CAMERA_MATRIX_ARM_2026-10-17.md).
+
 ## CutScene fixed camera step (2026-10-17)
 
 Android ARM at `0x98eec` passes `30` to

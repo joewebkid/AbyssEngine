@@ -149,11 +149,9 @@ void CutScene::process(int /*delta*/) {
     if (this->mode == 2) {
         float ft = VectorSignedToFloat((int) this->frameDelta, 0);
         this->cameraRotX = this->cameraRotX + this->rotationSpeed * ft;
-        char tmp[0x3c];
-        memcpy(tmp, canvas->CameraGetLocal(0), 0x3c);
-        char mtx[0x3c];
-        MatrixSetRotation(mtx, 0.0f, 0.0f, 0.0f);
-        canvas->CameraSetLocal(0, *(const Matrix *) (uintptr_t) this->cameraId74);
+        Matrix local = *static_cast<const Matrix *>(canvas->CameraGetLocal(this->cameraId74));
+        AbyssEngine::AEMath::MatrixSetRotation(local, 0.0f, this->cameraRotX, 0.0f);
+        canvas->CameraSetLocal(this->cameraId74, local);
 
         long long pt = Status::gStatus->getPlayingTime();
         Array<KIPlayer *> *enemies = this->level->getEnemies();

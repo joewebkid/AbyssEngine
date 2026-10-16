@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (CutScene camera fixed step; older subsystem
+Last reviewed: 2026-10-17 (CutScene mode-2 camera matrix; older subsystem
 snapshots retain their dates)
+
+## CutScene mode-2 camera matrix (2026-10-17)
+
+Android ARM copies the selected 60-byte camera matrix, applies
+`cameraRotX` as its Y rotation and submits it with the same camera ID.
+The recovered mode-2 path instead interpreted the integer camera ID
+as a matrix pointer; this is corrected. A host `-O0/-O2` extracted-body
+test verifies the call order, IDs, angle and copy. Native `gof2`,
+**208/208** ARM units and 40 verifier tests (one existing skip) pass.
+Focused `CutScene::process` rises to **88.3% source-shape / 43.7%
+strict fuzzy**, still nonexact. Full corpus remains **4,323/4,524**
+compared, **201 missing**, **123 extras**, **93.73%/82.85%** rounded
+averages, **2,517 linked-exact / 1,076 byte-exact**, with zero
+exact-pair losses. Live ARM32/GPU output remains untested. Next
+priority: separately audit mode-2 `CutScene::initialize` camera setup.
+See [the matrix audit](CUTSCENE_MODE2_CAMERA_MATRIX_ARM_2026-10-17.md).
 
 ## CutScene fixed camera step (2026-10-17)
 
