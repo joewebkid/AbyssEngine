@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-16 (PlayerEgo position overload; older subsystem
+Last reviewed: 2026-10-16 (CutScene update dispatch; older subsystem
 snapshots retain their dates)
+
+## CutScene update dispatch (2026-10-16)
+
+Both original Android ARM `CutScene::update` overloads tail-forward
+to `process(int)`. The recovered no-argument wrapper instead called
+`Level::update` and skipped cut-scene processing; both wrappers now
+dispatch correctly. Focused `update()` source-shape/strict fuzzy rises
+from **1.7%/0.0% to 100%/100%**; `update(int)` remains **100%/100%**.
+Neither is linked- or byte-exact. Native `gof2`, **208/208** ARM units
+and 40 verifier tests (one existing skip) pass. The fresh full corpus
+is **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.72%/82.82%** average source-shape/strict fuzzy, **2,515
+linked-exact / 1,075 byte-exact**, with zero exact-pair losses.
+Live ARM32 cut-scene timing remains untested. Next priority is a
+focused `render3D` audit. See
+[the dispatch audit](CUTSCENE_UPDATE_DISPATCH_ARM_2026-10-16.md).
 
 ## PlayerEgo position overload (2026-10-16)
 

@@ -4,6 +4,23 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene update dispatch (2026-10-16)
+
+The Android ARM `update()` and `update(int)` symbols both tail-branch
+through a veneer to `CutScene::process(int)@plt`; the rebuilt wrappers
+now use that route. Focused report
+`A:/Galaxy on Fire new version/_work/cutscene_update_focused_20261016.json`
+shows **100% source-shape / 100% strict fuzzy** for both one-instruction
+wrappers, up from **1.7% / 0.0%** for `update()`. Neither is linked-
+or byte-exact. Native `gof2`, **208/208** ARM units and 40 verifier
+tests pass (one existing skip). Full report
+`A:/Galaxy on Fire new version/_work/cutscene_update_full_20261016.json`
+has **4,323/4,524** compared, **201 missing**, **123 extras**,
+**93.72%/82.82%** average source-shape/strict fuzzy, **2,515
+linked-exact / 1,075 byte-exact**. Both exact `(unit,symbol)` sets
+are unchanged against `player_ego_setposition_full_20261016.json`.
+See [the dispatch audit](CUTSCENE_UPDATE_DISPATCH_ARM_2026-10-16.md).
+
 ## PlayerEgo position overload (2026-10-16)
 
 `PlayerEgo::setPosition(Vector)` now forwards through its native

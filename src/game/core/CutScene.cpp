@@ -99,12 +99,11 @@ uint8_t CutScene::isInitialized() {
 }
 
 void CutScene::update() {
-    if (this->level != nullptr)
-        this->level->update((long long) (int) this->frameDelta, 0u);
+    this->process(0);
 }
 
-void CutScene::update(int /*delta*/) {
-    this->update();
+void CutScene::update(int delta) {
+    this->process(delta);
 }
 
 void CutScene::render3D() {
