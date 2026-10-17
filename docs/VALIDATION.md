@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level weapon-position cleanup (2026-10-17)
+
+`python tools/run_level_weapon_cleanup_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2` for null,
+populated and empty slots. Native `gof2`, **208/208** ARM units and
+40 verifier tests (one existing skip) pass. Focused
+`Level::createPlayer` rises from **86.2% source-shape / 37.2% strict
+fuzzy** in `level_weapon_cleanup_before_20261017.json` to
+**86.5% / 37.8%** in `level_weapon_cleanup_after_20261017.json`,
+still nonexact. Full report
+`A:/Galaxy on Fire new version/_work/level_weapon_cleanup_full_20261017.json`
+compares **4,323/4,524** originals over **4,723** comparisons, with
+**201 missing**, **123 extras**, **93.74%/82.88%** rounded averages,
+**2,520 linked-exact / 1,076 byte-exact**. Against
+`filread_weapon_positions_lifetime_full_20261017.json`, there are
+zero exact-pair losses and two linked-exact release-helper gains.
+See [the cleanup audit](LEVEL_WEAPON_POSITION_CLEANUP_ARM_2026-10-17.md).
+
 ## FileRead weapon path lifetime (2026-10-17)
 
 Native `gof2`, **208/208** ARM units and 40 verifier tests (one

@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (FileRead weapon path lifetime; older subsystem
+Last reviewed: 2026-10-17 (Level weapon-position cleanup; older subsystem
 snapshots retain their dates)
+
+## Level weapon-position cleanup (2026-10-17)
+
+Android ARM `Level::createPlayer` releases each nonnull inner
+weapon-position array with `ArrayReleaseClasses<Vector*>`, then
+releases the outer array with
+`ArrayReleaseClasses<Array<Vector*>*>` before destruction. The
+recovered manual loop missed the outer release; both calls and the
+observed null/slot clearing are restored. An extracted `-O0/-O2`
+test covers null outer input, populated type-3 and ordinary slots,
+empty slots and single destruction of three vectors. Native `gof2`,
+**208/208** ARM units and 40 verifier tests (one existing skip) pass.
+Focused `createPlayer` source-shape/strict fuzzy rises from
+**86.2%/37.2%** to **86.5%/37.8%**, still nonexact. Full corpus:
+**4,323/4,524** originals, **4,723** comparisons, **201 missing**,
+**123 extras**, rounded averages **93.74%/82.88%**, **2,520
+linked-exact / 1,076 byte-exact**. Exact-pair comparison shows zero
+losses and two new linked-exact release helpers. An asset-backed
+game run and non-market ship changes remain unverified. Next
+priority: verify the remaining caller paths and actual file-backed
+runtime behavior. See [the cleanup audit](LEVEL_WEAPON_POSITION_CLEANUP_ARM_2026-10-17.md).
 
 ## FileRead weapon path lifetime (2026-10-17)
 

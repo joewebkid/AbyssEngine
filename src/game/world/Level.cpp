@@ -5697,14 +5697,17 @@ void Level::createPlayer() {
             }
         }
 
-        for (unsigned k = 0; k < wpos->size(); k++) {
-            if ((*wpos)[k] != nullptr) {
-                for (Vector *v: *(*wpos)[k])
-                    delete v;
-                delete (*wpos)[k];
+        if (wpos != nullptr) {
+            for (unsigned k = 0; k < wpos->size(); k++) {
+                if ((*wpos)[k] != nullptr) {
+                    ArrayReleaseClasses(*(*wpos)[k]);
+                    delete (*wpos)[k];
+                    (*wpos)[k] = nullptr;
+                }
             }
+            ArrayReleaseClasses(*wpos);
+            delete wpos;
         }
-        delete wpos;
     }
 
     for (unsigned t = 0; t < buckets->size(); t++) {
