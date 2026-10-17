@@ -46,6 +46,7 @@ float Level::b;
 #include "game/ship/PlayerGasCloud.h"
 #include "game/ship/PlayerStatic.h"
 #include "game/ship/PlayerStation.h"
+#include "game/ship/PlayerJumpgate.h"
 #include "game/ship/PlayerJunk.h"
 #include "game/weapons/RocketGun.h"
 #include "game/world/Galaxy.h"
@@ -1110,6 +1111,74 @@ void Level::createSpace() {
             delete nameSource;
         }
     }
+
+    // Android ARM rodata at 0x1fdc54 and 0x1fb7f8, indexed by system race.
+    static const uint16_t gateMeshes[4][4] = {
+        {0x3a98, 0x3a9a, 0x3a99, 0x3a9b},
+        {0x3a9c, 0x3a9e, 0x3a9d, 0x3a9f},
+        {0x3aa0, 0x3aa2, 0x3aa1, 0x3aa3},
+        {0x3aa4, 0x3aa6, 0x3aa5, 0x3aa7},
+    };
+    static const uint16_t gateLodMeshes[4][2] = {
+        {0x3aa8, 0x3aac}, {0x3aa9, 0x3aad},
+        {0x3aaa, 0x3aae}, {0x3aab, 0x3aaf},
+    };
+
+    field_138 = 0;
+    AERandom *random = static_cast<AERandom *>(Globals::rnd);
+    Station *currentStation = Status::gStatus->getStation();
+    random->setSeed(currentStation ? 2 * currentStation->getIndex() : -1);
+    for (int slot = 1; slot < 3; ++slot) {
+        if (slot == 1) {
+            SolarSystem *system = static_cast<SolarSystem *>(Status::gStatus->getSystem());
+            if (!system || !system->currentOrbitHasWarpGate()) {
+                continue;
+            }
+        }
+
+        Vector position = missionSpawnPosition;
+        if (currentStation) {
+            int direction = random->nextInt(2);
+            int variation = random->nextInt(500);
+            field_138 += (direction ? 250 + variation : -(250 + variation)) * 16;
+            missionSpawnPosition.z = (slot == 1 ? 90000.0f : 120000.0f) + float(field_138) * 3.0f;
+            Matrix rotation;
+            AbyssEngine::AEMath::MatrixSetRotation(rotation, 0.0f, float(field_138) * (1.0f / 65536.0f) * 6.2832f, 0.0f);
+            position = AbyssEngine::AEMath::MatrixRotateVector(rotation, missionSpawnPosition);
+            position.y = 0.0f;
+        }
+
+        int race = Status::gStatus->inAlienOrbit()
+                       ? 0
+                       : static_cast<SolarSystem *>(Status::gStatus->getSystem())->getRace();
+        AEGeometry *geometry = new AEGeometry(gateMeshes[race][0], PaintCanvas::gCanvas, false);
+        for (int child = 1; child <= 2; ++child) {
+            unsigned int transform = 0xffffffffU;
+            PaintCanvas::gCanvas->TransformCreate(transform);
+            PaintCanvas::gCanvas->TransformAddMesh(transform, gateMeshes[race][child], false);
+            geometry->addChild(transform);
+        }
+
+        PlayerJumpgate *gate = new PlayerJumpgate(15, geometry, position.x, position.y, position.z, slot != 2);
+        (*landmarks)[slot] = gate;
+        if (slot == 2) {
+            gate->player->radius = 0;
+        }
+        unsigned int animation = 0xffffffffU;
+        PaintCanvas::gCanvas->TransformCreate(animation);
+        PaintCanvas::gCanvas->TransformAddMesh(animation, gateMeshes[race][3], false);
+        gate->addJumpAnimationHandle(animation);
+
+        uint16_t lodMeshes[2] = {gateLodMeshes[race][0], gateLodMeshes[race][1]};
+        int lodDistances[2] = {40000, 70000};
+        geometry->setLodMeshes(lodMeshes, lodDistances, 2);
+        lodManager->addObject(geometry);
+        if (race == 1) {
+            uint16_t childLodMeshes[2] = {0x3ab0, 0x3ab1};
+            geometry->setLodChildMeshes(childLodMeshes);
+        }
+    }
+    random->reset();
 }
 
 void Level::createRadioMessage(int type, int sub) {

@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level jumpgate-landmark gate (2026-10-17)
+
+The source-extracted `-O0/-O2` host smoke covers entry/exit gates, no-warp
+suppression, alien race selection, and a missing station. The station smoke
+continues to pass. Native `gof2`, 208/208 ARM TUs and 40 verifier tests pass
+(one skip). Focused `Level::createSpace` source-shape rises 32.0% → 55.0%,
+strict fuzzy 15.2% → 11.3% (nonexact). Focused `PlayerJumpgate` constructor
+source-shape is 97.8% (strict fuzzy 86.0%, nonexact). These tests do not yet
+execute full `Level::init`. See
+[the jumpgate evidence](LEVEL_CREATE_SPACE_JUMPGATES_ARM_2026-10-17.md).
+Full ARM comparison: 4,323/4,524 originals, mean source-shape 93.84%,
+strict fuzzy 83.02%, 2,528 linked-exact, 1,076 byte-exact; no exact-pair
+losses versus the previous station-landmark report.
+
 ## Level station-landmark gate (2026-10-17)
 
 The source-extracted `-O0/-O2` host smoke covers creation, suppression,

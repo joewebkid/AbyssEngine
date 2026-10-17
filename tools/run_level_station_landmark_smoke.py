@@ -15,7 +15,7 @@ def main() -> None:
     root = pathlib.Path(__file__).resolve().parents[1]
     level_source = (root / "src/game/world/Level.cpp").read_text(encoding="utf-8")
     begin = level_source.index("    bool createStation = !Status::gStatus->inEmptyOrbit();")
-    end = level_source.index("\n}\n\nvoid Level::createRadioMessage", begin)
+    end = level_source.index("\n    // Android ARM rodata at 0x1fdc54", begin)
     branch = level_source[begin:end]
     args.out_dir.mkdir(parents=True, exist_ok=True)
     source = args.out_dir / "level_station_landmark_extracted.cpp"

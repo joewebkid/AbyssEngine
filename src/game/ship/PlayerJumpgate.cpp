@@ -7,11 +7,8 @@
 #include "engine/math/BoundingSphere.h"
 #include "engine/render/PaintCanvas.h"
 
-static PaintCanvas *g_PaintCanvas = nullptr;
-static Status **g_Status = nullptr;
-
 static PaintCanvas *paintCanvas() {
-    return g_PaintCanvas;
+    return PaintCanvas::gCanvas;
 }
 
 bool PlayerJumpgate::timeToJump() {
@@ -76,7 +73,7 @@ PlayerJumpgate::PlayerJumpgate(int playerId, AEGeometry *geometry, float x, floa
         this->boundingVolumes = new Array<BoundingVolume *>();
         ArraySetLength(1, *(this->boundingVolumes));
 
-        Status *status = *g_Status;
+        Status *status = Status::gStatus;
         int radius;
         if (status->inAlienOrbit()) {
             radius = 0x1d4c;

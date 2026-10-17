@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (Level station-landmark gate; older subsystem
+Last reviewed: 2026-10-17 (Level jumpgate-landmark gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -17,6 +17,22 @@ but the full init path has not yet passed a host runtime gate. A catalog-backed
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Level jumpgate landmarks (2026-10-17)
+
+Android `Level::createSpace` now supplies the conditional entry gate and
+exit gate in landmark slots 1 and 2, including source-backed placement,
+race meshes, child transforms, animation handles, and LOD. The previously
+null `PlayerJumpgate` status/canvas pointers now use the initialized global
+instances. The extracted `-O0/-O2` host smoke covers warp/no-warp, alien,
+and no-station paths; native and 208/208 ARM TUs build. Focused
+`createSpace` source-shape rises from 32.0% to 55.0%, while strict fuzzy
+changes from 15.2% to 11.3%, still nonexact. The alien gate relocation,
+wormhole, final entry angle, and full stage-0 runtime remain open. See
+[the jumpgate evidence](LEVEL_CREATE_SPACE_JUMPGATES_ARM_2026-10-17.md).
+Full ARM coverage remains 4,323/4,524 originals; mean source-shape/strict
+fuzzy rises to 93.84%/83.02%. Linked-exact/byte-exact remains 2,528/1,076,
+with zero exact-pair losses.
 
 ## Level station landmark (2026-10-17)
 
