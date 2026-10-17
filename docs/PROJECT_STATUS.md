@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (host asset bridge; older subsystem
+Last reviewed: 2026-10-17 (systems catalog cross-check; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -11,6 +11,22 @@ gates. The next integration milestone is a real asset-mounted executable
 host and a station-to-flight smoke test. Only after that can gameplay
 paths be verified end-to-end; exact code matching remains a separate
 polish metric, not the definition of completion.
+
+## Systems catalog cross-check (2026-10-17)
+
+The asset-backed native file-stack test now reads `systems.bin` with
+the unchanged production `FileRead::loadSystemsBinary` and
+`SolarSystem` constructor/destructor bodies. Both `-O0` and `-O2`
+parse all **34** systems, check selected map coordinates and routes,
+and cross-check that every one of the **135** loaded station IDs is
+listed by its declared system. Missing-file behavior and **8/8**
+open/close pairs pass. Native `gof2` is green. The last ARM corpus
+remains **4,323/4,524**, **93.76%/82.91%** source-shape/strict fuzzy,
+**2,521/1,076** linked-/byte-exact; `loadSystemsBinary` itself is
+**97.1%/63.4%**, nonexact in that report. Production source is
+unchanged, so no ARM gain is claimed. The next integration step is
+resource-backed station-to-flight execution, not just catalog parsing.
+See [the systems evidence](SYSTEMS_CATALOG_ASSET_CROSSCHECK_2026-10-17.md).
 
 ## Host read-only asset bridge (2026-10-17)
 

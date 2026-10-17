@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Systems catalog asset cross-check (2026-10-17)
+
+`tools/run_weapon_positions_file_stack_smoke.py` now includes the
+unchanged `loadSystemsBinary` and `SolarSystem` bodies. Against the
+local Android 2.0.16 `systems.bin`, host `-O0/-O2` tests pass for all
+34 systems and the mapping of all 135 stations to their systems.
+Missing file and 8/8 stream lifetime checks pass. The native `gof2`
+target and 40 verifier tests (one existing skip) pass. No production
+source changed, so the latest ARM corpus is still
+`A:/Galaxy on Fire new version/_work/station_lifetime_full_final_20261017.json`;
+in it `loadSystemsBinary` is 97.1% source-shape, 63.4% strict fuzzy,
+not exact. See [the systems evidence](SYSTEMS_CATALOG_ASSET_CROSSCHECK_2026-10-17.md).
+
 ## Native host asset bridge (2026-10-17)
 
 `python tools/run_weapon_positions_file_stack_smoke.py --asset-dir

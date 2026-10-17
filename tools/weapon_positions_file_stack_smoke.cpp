@@ -8,6 +8,7 @@
 #include "game/core/Globals.h"
 #include "game/world/Standing.h"
 #include "game/world/Station.h"
+#include "game/world/SolarSystem.h"
 #include "host/ReadOnlyAssetFileInterface.h"
 #include <cassert>
 #include <cmath>
@@ -61,6 +62,7 @@ int main(int argc, char **argv) {
     assert(std::filesystem::is_regular_file(realAssetDirectory / "items.bin"));
     assert(std::filesystem::is_regular_file(realAssetDirectory / "ships.bin"));
     assert(std::filesystem::is_regular_file(realAssetDirectory / "stations.bin"));
+    assert(std::filesystem::is_regular_file(realAssetDirectory / "systems.bin"));
     ReadOnlyAssetFileInterface interface;
     AEFile::SetInterface(&interface);
     FileRead reader;
@@ -68,6 +70,7 @@ int main(int argc, char **argv) {
     assert(reader.loadWeaponPositions(63) == nullptr);
     assert(reader.loadItemsBinary() == nullptr);
     assert(reader.loadShipsBinary() == nullptr);
+    assert(reader.loadSystemsBinary() == nullptr);
     assert(interface.opens() == 0 && interface.closes() == 0);
     assert(!interface.addMount("data/bin/../", realAssetDirectory));
     assert(interface.addMount("data/bin/", realAssetDirectory));
@@ -76,6 +79,7 @@ int main(int argc, char **argv) {
     assert(!interface.FileExist(String("data/bin_evil/stations.bin")));
     assert(!interface.FileExist(String("data/bin/not_present.bin")));
     assert(interface.FileExist(String("data/bin/stations.bin")));
+    assert(interface.FileExist(String("data/bin/systems.bin")));
     assert(interface.OpenWrite(String("data/bin/stations.bin"), 0, false, 0) == nullptr);
 
     auto *first = reader.loadWeaponPositions(63);
@@ -129,18 +133,44 @@ int main(int argc, char **argv) {
     }
     delete ships;
 
+    auto *systems = reader.loadSystemsBinary();
+    assert(systems && systems->size() == 34);
+    for (unsigned i = 0; i < systems->size(); ++i) {
+        assert((*systems)[i] && (*systems)[i]->systemId == static_cast<int>(i));
+    }
+    assert(narrow((*systems)[0]->name) == "Suteo");
+    assert((*systems)[0]->mapX == 22 && (*systems)[0]->mapY == 55);
+    assert((*systems)[0]->mapZ == 55 && (*systems)[0]->jumpgateStationId == 0);
+    assert((*systems)[0]->stationIds->size() == 5 && (*(*systems)[0]->stationIds)[4] == 4);
+    assert((*systems)[0]->linkedSystemIds->size() == 2);
+    assert((*(*systems)[0]->linkedSystemIds)[0] == 2 && (*(*systems)[0]->linkedSystemIds)[1] == 8);
+    assert(narrow((*systems)[18]->name) == "Pescal Inartu");
+    assert((*systems)[18]->jumpgateStationId == 90 && (*systems)[18]->visible);
+    assert((*systems)[18]->linkedSystemIds->size() == 2);
+    assert((*(*systems)[18]->linkedSystemIds)[0] == 1 && (*(*systems)[18]->linkedSystemIds)[1] == 8);
+    assert((*systems)[18]->stationIsInSystem(91));
+    assert(narrow((*systems)[33]->name) == "Alda");
+    assert((*systems)[33]->stationIds->size() == 2);
+    assert((*(*systems)[33]->stationIds)[0] == 133);
+
     int16_t ids[135];
     for (int16_t i = 0; i < 135; ++i) ids[i] = i;
     auto *stations = reader.loadStationsBinary(ids, 135);
     assert(stations && stations->size() == 135);
     for (unsigned i = 0; i < stations->size(); ++i) {
         assert((*stations)[i] && (*stations)[i]->index == static_cast<int>(i));
+        const int system = (*stations)[i]->systemIndex;
+        assert(system >= 0 && system < static_cast<int>(systems->size()));
+        assert((*systems)[system]->stationIsInSystem(static_cast<int>(i)));
     }
     assert((*stations)[0]->name.data[3] == 0xe9); // Nehébru, UTF-8 decoded.
     assert((*stations)[70]->systemIndex == 14 && narrow((*stations)[70]->name) == "Dis");
     assert((*stations)[91]->systemIndex == 18 && narrow((*stations)[91]->name) == "Dima");
     for (Station *station : *stations) delete station;
     delete stations;
+
+    for (SolarSystem *system : *systems) delete system;
+    delete systems;
 
     Station *dlc1 = reader.loadStation(91);
     Station *dlc2 = reader.loadStation(70);
@@ -150,6 +180,6 @@ int main(int argc, char **argv) {
     delete dlc2;
 
     AEFile::Release();
-    assert(interface.opens() == 7 && interface.closes() == 7);
-    std::puts("production AEFile/FileRead core assets: OK");
+    assert(interface.opens() == 8 && interface.closes() == 8);
+    std::puts("production AEFile/FileRead five core assets: OK");
 }

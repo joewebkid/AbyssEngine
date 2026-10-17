@@ -17,7 +17,7 @@ def main():
     parser.add_argument("--cxx", required=True)
     args = parser.parse_args()
     asset_dir = args.asset_dir.resolve()
-    for name in ("weapons_hd.bin", "items.bin", "ships.bin", "stations.bin"):
+    for name in ("weapons_hd.bin", "items.bin", "ships.bin", "stations.bin", "systems.bin"):
         if not (asset_dir / name).is_file():
             parser.error(f"--asset-dir must contain {name}")
     out = args.out.resolve()
@@ -39,12 +39,16 @@ def main():
     item_source = (ROOT / "src/game/mission/Item.cpp").read_text()
     ship_source = (ROOT / "src/game/ship/Ship.cpp").read_text()
     station_source = (ROOT / "src/game/world/Station.cpp").read_text()
+    system_source = (ROOT / "src/game/world/SolarSystem.cpp").read_text()
+    systems_begin = source.index("Array<SolarSystem *> *FileRead::loadSystemsBinary()")
+    systems_end = source.index("Array<Wanted *> *FileRead::loadWanted()", systems_begin)
     extracted.write_text(
         '#include "engine/file/FileRead.h"\n'
         '#include "game/mission/Item.h"\n#include "game/ship/Ship.h"\n'
         '#include "game/core/Globals.h"\n#include "game/mission/Status.h"\n'
         '#include "game/world/Standing.h"\n'
         '#include "game/world/Station.h"\n'
+        '#include "game/world/SolarSystem.h"\n'
         'using AbyssEngine::Vector;\n'
         'FileRead::FileRead() {}\nFileRead::~FileRead() {}\n'
         + source[begin:end]
@@ -52,6 +56,7 @@ def main():
         + source[ships_begin:]
         + source[station_begin:station_end]
         + source[load_one_begin:load_one_end]
+        + source[systems_begin:systems_end]
         + function(item_source, "Item::~Item()")
         + function(item_source, "void Item::init()")
         + function(item_source, "Item::Item(IntArray *ingredients_")
@@ -64,6 +69,9 @@ def main():
         + function(ship_source, "int Ship::getCargoValue()")
         + function(ship_source, "void Ship::refreshValue()")
         + function(station_source, "Station::Station(String name,")
+        + function(system_source, "SolarSystem::SolarSystem(int unk0,")
+        + function(system_source, "SolarSystem::~SolarSystem()")
+        + function(system_source, "int SolarSystem::stationIsInSystem(int idx)")
     )
     sources = [
         "tools/weapon_positions_file_stack_smoke.cpp",
