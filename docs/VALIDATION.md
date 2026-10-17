@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Weapon-position asset-backed loader check (2026-10-17)
+
+`python tools/run_weapon_positions_asset_smoke.py --asset
+"A:/Galaxy on Fire new version/analysis/gof2_raw_bin/weapons_hd.bin"
+--cxx C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2`.
+The test extracts the production loader body but uses a host file
+shim; it checks absent-file return, records for ships 63 and 1,
+slot counts, selected coordinates, string lifetime and close calls.
+The incremental native `gof2` build passes. Focused ARM report
+`A:/Galaxy on Fire new version/_work/weapon_positions_asset_smoke_focus_20261017.json`
+compiles **208/208** units and retains **97.7% source-shape / 53.1%
+strict fuzzy**, still nonexact. No C++ source changed; the latest
+completed full-corpus metrics remain those in the Level cleanup
+section below.
+See [the asset check](WEAPON_POSITIONS_ASSET_SMOKE_2026-10-17.md).
+
 ## Level weapon-position cleanup (2026-10-17)
 
 `python tools/run_level_weapon_cleanup_smoke.py --cxx

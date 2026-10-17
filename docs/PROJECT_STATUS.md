@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (Level weapon-position cleanup; older subsystem
+Last reviewed: 2026-10-17 (weapon-position asset-backed loader check; older subsystem
 snapshots retain their dates)
+
+## Weapon-position asset-backed loader check (2026-10-17)
+
+The recovered `FileRead::loadWeaponPositions` body passes a host
+`-O0/-O2` check against the local 7,484-byte Android 2.0.16
+`weapons_hd.bin`: absent-file return, first and later ship records,
+four slot counts, coordinates, path lifetime and file closure.
+No production source changed, so the latest completed ARM corpus
+remains **4,323/4,524** originals, **4,723** comparisons,
+**93.74%/82.88%** rounded source-shape/strict fuzzy and **2,520
+linked-exact / 1,076 byte-exact**. This is not a full-game or ARM32
+runtime test. Android ARM save loading reads a ship ID and indexes
+the template array without an intervening check; malformed or edited
+saves can therefore bypass market exclusions, but reachability in a
+legitimate save is unproven. Next priority: audit remaining direct
+ship changes and establish an actual game asset mount. See
+[the asset check](WEAPON_POSITIONS_ASSET_SMOKE_2026-10-17.md).
 
 ## Level weapon-position cleanup (2026-10-17)
 
