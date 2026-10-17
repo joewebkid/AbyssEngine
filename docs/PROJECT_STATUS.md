@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (system station order; older subsystem
+Last reviewed: 2026-10-17 (startup catalogs; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -11,6 +11,22 @@ gates. The next integration milestone is a real asset-mounted executable
 host and a station-to-flight smoke test. Only after that can gameplay
 paths be verified end-to-end; exact code matching remains a separate
 polish metric, not the definition of completion.
+
+## Status startup catalogs (2026-10-17)
+
+The native asset-backed stack now runs the unchanged production
+`loadAgents` and `loadWanted` bodies against two more real Android
+files. At `-O0/-O2`, **27** agents and **25** wanted entries parse;
+each agent's station/system pair is valid, and wanted ship/loot IDs
+refer to the loaded catalogs. Missing-file paths and **44/44**
+open/close pairs pass. Native `gof2` and verifier unit tests are
+green. ARM source is unchanged: last corpus **4,323/4,524**,
+**93.76%/82.91%** source-shape/strict fuzzy and **2,521/1,076**
+linked-/byte-exact. `loadAgents` is **95.6%/48.0%** and `loadWanted`
+**96.4%/63.2%**, both nonexact. Only the first wanted record has an
+independent JSON decode; the others have structural checks, not full
+semantic confirmation. `Status::activate` itself is still untested.
+See [the startup catalog evidence](STATUS_STARTUP_CATALOG_ASSETS_2026-10-17.md).
 
 ## System station loader ordering (2026-10-17)
 

@@ -9,6 +9,8 @@
 #include "game/world/Standing.h"
 #include "game/world/Station.h"
 #include "game/world/SolarSystem.h"
+#include "game/ship/Agent.h"
+#include "game/world/Wanted.h"
 #include "host/ReadOnlyAssetFileInterface.h"
 #include <cassert>
 #include <algorithm>
@@ -65,6 +67,8 @@ int main(int argc, char **argv) {
     assert(std::filesystem::is_regular_file(realAssetDirectory / "ships.bin"));
     assert(std::filesystem::is_regular_file(realAssetDirectory / "stations.bin"));
     assert(std::filesystem::is_regular_file(realAssetDirectory / "systems.bin"));
+    assert(std::filesystem::is_regular_file(realAssetDirectory / "agents.bin"));
+    assert(std::filesystem::is_regular_file(realAssetDirectory / "wanted.bin"));
     ReadOnlyAssetFileInterface interface;
     AEFile::SetInterface(&interface);
     FileRead reader;
@@ -73,6 +77,8 @@ int main(int argc, char **argv) {
     assert(reader.loadItemsBinary() == nullptr);
     assert(reader.loadShipsBinary() == nullptr);
     assert(reader.loadSystemsBinary() == nullptr);
+    assert(reader.loadAgents() == nullptr);
+    assert(reader.loadWanted() == nullptr);
     assert(interface.opens() == 0 && interface.closes() == 0);
     assert(!interface.addMount("data/bin/../", realAssetDirectory));
     assert(interface.addMount("data/bin/", realAssetDirectory));
@@ -82,6 +88,8 @@ int main(int argc, char **argv) {
     assert(!interface.FileExist(String("data/bin/not_present.bin")));
     assert(interface.FileExist(String("data/bin/stations.bin")));
     assert(interface.FileExist(String("data/bin/systems.bin")));
+    assert(interface.FileExist(String("data/bin/agents.bin")));
+    assert(interface.FileExist(String("data/bin/wanted.bin")));
     assert(interface.OpenWrite(String("data/bin/stations.bin"), 0, false, 0) == nullptr);
 
     auto *first = reader.loadWeaponPositions(63);
@@ -184,6 +192,39 @@ int main(int argc, char **argv) {
         }
         delete local;
     }
+    auto *agents = reader.loadAgents();
+    assert(agents && agents->size() == 27);
+    assert(narrow((*agents)[0]->name) == "Geryan Zhamoum");
+    assert((*agents)[0]->station == 3 && (*agents)[0]->system == 0);
+    assert((*agents)[0]->sellBlueprintIndex == 11);
+    assert((*agents)[0]->imageParts && (*agents)[0]->imageParts[0] == 2);
+    assert(narrow((*agents)[26]->name) == "Umnar Zoboon");
+    assert((*agents)[26]->station == 108 && (*agents)[26]->system == 26);
+    for (unsigned i = 0; i < agents->size(); ++i) {
+        Agent *agent = (*agents)[i];
+        assert(agent && agent->station >= 0 && agent->station < 135);
+        assert(agent->type == i);
+        assert(agent->system >= 0 && agent->system < 34);
+        assert((*stations)[agent->station]->systemIndex == agent->system);
+        assert((*systems)[agent->system]->stationIsInSystem(agent->station));
+        delete agent;
+    }
+    delete agents;
+
+    auto *wanted = reader.loadWanted();
+    assert(wanted && wanted->size() == 25);
+    assert(narrow((*wanted)[0]->name) == "Pal Tyyrt");
+    assert((*wanted)[0]->shipId == 9 && (*wanted)[0]->lootItemId == 103);
+    assert((*wanted)[0]->reward == 50000 && (*wanted)[0]->imageParts);
+    for (unsigned i = 0; i < wanted->size(); ++i) {
+        Wanted *entry = (*wanted)[i];
+        assert(entry && entry->index == static_cast<int>(i));
+        assert(entry->shipId >= 0 && entry->shipId < 64);
+        assert(entry->lootItemId >= 0 && entry->lootItemId < 233);
+        delete entry;
+    }
+    delete wanted;
+
     for (Station *station : *stations) delete station;
     delete stations;
 
@@ -198,6 +239,6 @@ int main(int argc, char **argv) {
     delete dlc2;
 
     AEFile::Release();
-    assert(interface.opens() == 42 && interface.closes() == 42);
-    std::puts("production AEFile/FileRead five core assets: OK");
+    assert(interface.opens() == 44 && interface.closes() == 44);
+    std::puts("production AEFile/FileRead seven core assets: OK");
 }

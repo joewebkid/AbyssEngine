@@ -4,6 +4,17 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Status startup catalogs (2026-10-17)
+
+The host `tools/run_weapon_positions_file_stack_smoke.py` test now
+includes `agents.bin` and `wanted.bin`. At `-O0/-O2`, all 27 agents
+and 25 wanted entries parse, cross-catalog bounds and agent station
+membership pass, and 44/44 file lifetimes balance. Native `gof2`
+and 40 verifier tests (one existing skip) pass. No production source
+changed, so the last full ARM corpus remains
+`A:/Galaxy on Fire new version/_work/station_lifetime_full_final_20261017.json`.
+See [the evidence note](STATUS_STARTUP_CATALOG_ASSETS_2026-10-17.md).
+
 ## System station order (2026-10-17)
 
 The five-file host test now invokes the production

@@ -14,11 +14,12 @@ spoofing and resolved symlinks outside the mounted directory.
 The existing production-stack smoke now uses this component rather
 than its private four-name file shim. Against the local Android 2.0.16
 assets, it reads `weapons_hd.bin`, `items.bin`, `ships.bin`,
-`stations.bin` and `systems.bin`, including all 233 items, 64 ships,
-135 station IDs, 34 systems and direct station reads 70/91. Each
+`stations.bin`, `systems.bin`, `agents.bin` and `wanted.bin`, including
+all 233 items, 64 ships, 135 station IDs, 34 systems, 27 agents,
+25 wanted entries and direct station reads 70/91. Each
 station is found in its declared system. The per-system station
 loader is also tested for all 34 systems. Missing-asset and
-path-rejection checks pass. Forty-two opens have forty-two closes at both
+path-rejection checks pass. Forty-four opens have forty-four closes at both
 host `-O0` and `-O2`.
 The native `gof2` and `gof2_host_file` targets build. Since `src/`
 and the ARM-target definition did not change, the last full ARM report

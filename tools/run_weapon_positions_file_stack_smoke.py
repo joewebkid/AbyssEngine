@@ -17,7 +17,8 @@ def main():
     parser.add_argument("--cxx", required=True)
     args = parser.parse_args()
     asset_dir = args.asset_dir.resolve()
-    for name in ("weapons_hd.bin", "items.bin", "ships.bin", "stations.bin", "systems.bin"):
+    for name in ("weapons_hd.bin", "items.bin", "ships.bin", "stations.bin",
+                 "systems.bin", "agents.bin", "wanted.bin"):
         if not (asset_dir / name).is_file():
             parser.error(f"--asset-dir must contain {name}")
     out = args.out.resolve()
@@ -42,8 +43,14 @@ def main():
     ship_source = (ROOT / "src/game/ship/Ship.cpp").read_text()
     station_source = (ROOT / "src/game/world/Station.cpp").read_text()
     system_source = (ROOT / "src/game/world/SolarSystem.cpp").read_text()
+    agent_source = (ROOT / "src/game/ship/Agent.cpp").read_text()
+    wanted_source = (ROOT / "src/game/world/Wanted.cpp").read_text()
     systems_begin = source.index("Array<SolarSystem *> *FileRead::loadSystemsBinary()")
     systems_end = source.index("Array<Wanted *> *FileRead::loadWanted()", systems_begin)
+    agents_begin = source.index("Array<Agent *> *FileRead::loadAgents()")
+    agents_end = source.index("Array<int32_t> *FileRead::loadWreckCollision(", agents_begin)
+    wanted_begin = source.index("Array<Wanted *> *FileRead::loadWanted()")
+    wanted_end = source.index("Array<NewsItem *> *FileRead::loadTicker()", wanted_begin)
     extracted.write_text(
         '#include "engine/file/FileRead.h"\n'
         '#include "game/mission/Item.h"\n#include "game/ship/Ship.h"\n'
@@ -51,6 +58,8 @@ def main():
         '#include "game/world/Standing.h"\n'
         '#include "game/world/Station.h"\n'
         '#include "game/world/SolarSystem.h"\n'
+        '#include "game/ship/Agent.h"\n'
+        '#include "game/world/Wanted.h"\n'
         'using AbyssEngine::Vector;\n'
         'FileRead::FileRead() {}\nFileRead::~FileRead() {}\n'
         + source[begin:end]
@@ -60,6 +69,8 @@ def main():
         + source[system_stations_begin:system_stations_end]
         + source[load_one_begin:load_one_end]
         + source[systems_begin:systems_end]
+        + source[agents_begin:agents_end]
+        + source[wanted_begin:wanted_end]
         + function(item_source, "Item::~Item()")
         + function(item_source, "void Item::init()")
         + function(item_source, "Item::Item(IntArray *ingredients_")
@@ -76,6 +87,12 @@ def main():
         + function(system_source, "SolarSystem::~SolarSystem()")
         + function(system_source, "int SolarSystem::stationIsInSystem(int idx)")
         + function(system_source, "uint32_t *SolarSystem::getStations()")
+        + function(agent_source, "Agent::Agent(int kind,")
+        + function(agent_source, "Agent::~Agent() noexcept(false)")
+        + function(agent_source, "void Agent::setImageParts(int *parts)")
+        + function(wanted_source, "Wanted::Wanted(int index,")
+        + function(wanted_source, "Wanted::~Wanted()")
+        + function(wanted_source, "void Wanted::setImageParts(int *parts)")
     )
     sources = [
         "tools/weapon_positions_file_stack_smoke.cpp",
