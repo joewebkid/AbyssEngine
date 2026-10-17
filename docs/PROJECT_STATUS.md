@@ -1,7 +1,30 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (weapon-position asset-backed loader check; older subsystem
+Last reviewed: 2026-10-17 (DLC start presets; older subsystem
 snapshots retain their dates)
+
+## Current recovery stage
+
+The project is past the initial symbol inventory and is in source-backed
+behavior recovery, with a native static-library build and ARM comparison
+gates. The next integration milestone is a real asset-mounted executable
+host and a station-to-flight smoke test. Only after that can gameplay
+paths be verified end-to-end; exact code matching remains a separate
+polish metric, not the definition of completion.
+
+## DLC start presets (2026-10-17)
+
+`MenuTouchWindow::startValkyrie` and `startSupernova` now use the
+Android-confirmed ship and item arrays, amounts, equipment slots, cargo,
+mission and module transition instead of invalid synthetic row/shim
+logic. Their focused ARM source-shape rises **89.1% → 97.5%** and
+**91.4% → 96.4%**, respectively; neither is exact. Native `gof2`,
+**208/208** ARM units and source regression tests pass. The full corpus
+is **4,323/4,524** originals, **4,723** comparisons, **201 missing**,
+**123 extra**, **93.75%/82.89%** source-shape/strict fuzzy and **2,520
+linked-exact / 1,076 byte-exact**, with no exact-pair losses. Actual
+asset-backed DLC entry remains untested. See
+[the ARM evidence note](MENUTOUCH_DLC_PRESETS_ARM_2026-10-17.md).
 
 ## Weapon-position asset-backed loader check (2026-10-17)
 

@@ -20,7 +20,6 @@
 #include "game/ui/ChoiceWindow.h"
 #include "game/ui/MissionsWindow.h"
 #include "game/ui/ScrollTouchWindow.h"
-#include "game/ship/ShipDefTable.h"
 #include "game/ship/Ship.h"
 #include "game/mission/Item.h"
 #include "game/world/Galaxy.h"
@@ -2359,61 +2358,33 @@ void _mtw_Ship_setItem(void *ship, void *item, int slot);
 typedef void (*TransitionFn)(void *app, int mode);
 
 void MenuTouchWindow::startValkyrie() {
-    Status **statusHolder = &Globals::status;
-    _mtw_Status_resetGame();
-    for (int i = 0x2d; i != 0; i--)
-        _mtw_Status_nextCampaignMission((bool) (unsigned char) (uintptr_t) *statusHolder);
+    Globals::status->resetGame();
+    for (int i = 0; i < 45; ++i)
+        Globals::status->nextCampaignMission(false);
 
-    void *status = *statusHolder;
-    void *mission = ::operator new(sizeof(Mission));
-    _mtw_Mission_ctor(mission);
-    _mtw_Status_setMission(status);
+    Globals::status->setMission(new Mission());
+    Globals::status->setShip(((Array<Ship *> *) Globals::ships)->data()[5]->makeShip(-1));
+    Globals::status->getShip()->setRace(0);
 
-    ShipDefTable *row = *(ShipDefTable **) (*(int *) ((int *) Globals::ships) + 4);
-    status = *statusHolder;
-    _mtw_Ship_makeShip(row->shipDefId);
-    _mtw_Status_setShip(status);
+    // Android 2.0.16, 0x12cad0-0x12cbb2: ship/item array indices, amounts and slots.
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[2]->makeItem(), 0);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[5]->makeItem(), 1);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[36]->makeItem(10), 0);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[81]->makeItem(), 0);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[51]->makeItem(), 1);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[86]->makeItem(10), 2);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[85]->makeItem(), 3);
 
-    void *ship = *statusHolder;
-    int race = (int) (uintptr_t) _mtw_Status_getShip(ship);
-    _mtw_Ship_setRace(ship, race);
-
-    void *it;
-    void *sh;
-    it = _mtw_Item_make(row->itemDef_primary);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 0);
-    it = _mtw_Item_make(row->itemDef_secondary);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 1);
-    it = _mtw_Item_makeQty(row->itemDef_missile, 0xa);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 0);
-    it = _mtw_Item_make(row->itemDef_equip0x144);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 0);
-    it = _mtw_Item_make(row->itemDef_equip0xcc);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 1);
-    it = _mtw_Item_makeQty(row->itemDef_equip0x158, 0xa);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 2);
-    it = _mtw_Item_make(row->itemDef_equip0x154);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 3);
-
-    _mtw_Status_setCredits(*statusHolder);
-    void *station = *statusHolder;
-    _mtw_Galaxy_getStation(Globals::galaxy, 0x5b);
-    _mtw_Status_setStation(station);
-    _mtw_Status_setSystemVisibility(*statusHolder, 6, true);
-    _mtw_Status_setSystemVisibility(*statusHolder, 0x19, true);
-    _mtw_Status_setCredits(*statusHolder);
+    Globals::status->setCredits(0);
+    Globals::status->setStation(((Galaxy *) Globals::galaxy)->getStation(91));
+    Globals::status->setSystemVisibility(6, true);
+    Globals::status->setSystemVisibility(25, true);
+    Globals::status->setCredits(0);
 
     OptionsRecord *opt = (OptionsRecord *) Globals::hints;
     void *ach = Globals::achievements;
     OptionsRecord *optB = (OptionsRecord *) Globals::options;
-    ((Status *) *statusHolder)->field_84 = 0x1a0a;
+    Globals::status->field_84 = 0x1a0a;
     opt->flag_word_0x8 = 0x101;
     opt->flag_word_0xd = 0x101;
     opt->flag_word_0x1c = 0x101;
@@ -2430,16 +2401,14 @@ void MenuTouchWindow::startValkyrie() {
     opt->flag_0x38 = 1;
     optB->flag_0x34 = 1;
 
-    _mtw_Achievements_setMedal(ach, 0x17, 3);
-    _mtw_Achievements_setMedal(Globals::achievements, 0x1e, 1);
-    _mtw_RecordHandler_saveOptions(Globals::recordHandler);
-    _mtw_Status_setKills(*statusHolder, 0xc5);
-    _mtw_FModSound_stop(Globals::sound);
+    ((Achievements *) ach)->setMedal(23, 3);
+    ((Achievements *) Globals::achievements)->setMedal(30, 1);
+    ((RecordHandler *) Globals::recordHandler)->saveOptions();
+    Globals::status->setKills(197);
+    Globals::sound->stop(*(int *) Globals::sound);
 
-    void *app = Globals::appManager;
     optB->fadeValue = this->fadeValue;
-    ModuleTransitionThunk *thunk = (ModuleTransitionThunk *) app;
-    thunk->transitionFn(app, 5);
+    ((AbyssEngine::ApplicationManager *) Globals::appManager)->SetCurrentApplicationModule(5);
 }
 
 int MenuTouchWindow::OnTouchBegin(int y, int x, void *touchId) {
@@ -3865,68 +3834,36 @@ void _mtw_Ship_setItem(void *ship, void *item, int slot);
 typedef void (*TransitionFn)(void *app, int mode);
 
 void MenuTouchWindow::startSupernova() {
-    Status **statusHolder = &Globals::status;
-    _mtw_Status_resetGame();
-    for (int i = 0x54; i != 0; i--)
-        _mtw_Status_nextCampaignMission((bool) (unsigned char) (uintptr_t) *statusHolder);
+    Globals::status->resetGame();
+    for (int i = 0; i < 84; ++i)
+        Globals::status->nextCampaignMission(false);
 
-    _mtw_Status_setMission(*statusHolder);
-    void *status = *statusHolder;
-    ShipDefTable *row = *(ShipDefTable **) (*(int *) ((int *) Globals::ships) + 4);
-    _mtw_Ship_makeShip(row->shipDefId_0x78);
-    _mtw_Status_setShip(status);
+    Globals::status->setMission(reinterpret_cast<Mission *>(Mission::empty));
+    Globals::status->setShip(((Array<Ship *> *) Globals::ships)->data()[30]->makeShip(-1));
+    Globals::status->getShip()->setRace(3);
 
-    void *ship = *statusHolder;
-    int race = (int) (uintptr_t) _mtw_Status_getShip(ship);
-    _mtw_Ship_setRace(ship, race);
+    // Android 2.0.16, 0x12cd2a-0x12ce58: ship/item array indices, amounts and slots.
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[176]->makeItem(), 0);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[20]->makeItem(), 1);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[36]->makeItem(20), 0);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[44]->makeItem(20), 1);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[81]->makeItem(), 0);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[51]->makeItem(), 1);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[68]->makeItem(), 2);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[86]->makeItem(), 3);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[85]->makeItem(), 4);
+    Globals::status->getShip()->setEquipment(((Array<Item *> *) Globals::items)->data()[56]->makeItem(), 5);
+    Globals::status->getShip()->addCargo(((Array<Item *> *) Globals::items)->data()[122]->makeItem(8));
 
-    void *it;
-    void *sh;
-    it = _mtw_Item_make(row->itemDef_0x2c0);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 0);
-    it = _mtw_Item_make(row->itemDef_0x50);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 1);
-    it = _mtw_Item_makeQty(row->itemDef_missile, 0x14);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 0);
-    it = _mtw_Item_makeQty(row->itemDef_0xb0, 0x14);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 1);
-    it = _mtw_Item_make(row->itemDef_equip0x144);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 0);
-    it = _mtw_Item_make(row->itemDef_equip0xcc);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 1);
-    it = _mtw_Item_make(row->itemDef_0x110);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 2);
-    it = _mtw_Item_make(row->itemDef_equip0x158);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 3);
-    it = _mtw_Item_make(row->itemDef_equip0x154);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 4);
-    it = _mtw_Item_make(row->itemDef_0xe0);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_setItem(sh, it, 5);
-    it = _mtw_Item_makeQty(row->itemDef_cargo0x1e8, 8);
-    sh = _mtw_Status_getShip(*statusHolder);
-    _mtw_Ship_addCargo(sh, it);
-
-    _mtw_Status_setCredits(*statusHolder);
-    void *station = *statusHolder;
-    _mtw_Galaxy_getStation(Globals::galaxy, 0x46);
-    _mtw_Status_setStation(station);
-    _mtw_Status_setSystemVisibility(*statusHolder, 6, true);
-    _mtw_Status_setSystemVisibility(*statusHolder, 0x19, true);
-    _mtw_Status_setCredits(*statusHolder);
+    Globals::status->setCredits(0);
+    Globals::status->setStation(((Galaxy *) Globals::galaxy)->getStation(70));
+    Globals::status->setSystemVisibility(6, true);
+    Globals::status->setSystemVisibility(25, true);
+    Globals::status->setCredits(0);
 
     OptionsRecord *opt = (OptionsRecord *) Globals::hints;
     OptionsRecord *optB = (OptionsRecord *) Globals::options;
-    ((Status *) *statusHolder)->field_84 = 0x1a0a;
+    Globals::status->field_84 = 0x1a0a;
     opt->flag_dword_0x20 = 0x1010101;
     opt->flag_0x17 = 1;
     opt->flag_0x36 = 0;
@@ -3946,16 +3883,14 @@ void MenuTouchWindow::startSupernova() {
     void *ach = Globals::achievements;
     optB->flag_0x34 = 1;
 
-    _mtw_Achievements_setMedal(ach, 0x17, 3);
-    _mtw_Achievements_setMedal(Globals::achievements, 0x1e, 1);
-    _mtw_Status_setKills(*statusHolder, 0x182);
-    _mtw_RecordHandler_saveOptions(Globals::recordHandler);
-    _mtw_FModSound_stop(Globals::sound);
+    ((Achievements *) ach)->setMedal(23, 3);
+    ((Achievements *) Globals::achievements)->setMedal(30, 1);
+    Globals::status->setKills(386);
+    ((RecordHandler *) Globals::recordHandler)->saveOptions();
+    Globals::sound->stop(*(int *) Globals::sound);
 
-    void *app = Globals::appManager;
     optB->fadeValue = this->fadeValue;
-    ModuleTransitionThunk *thunk = (ModuleTransitionThunk *) app;
-    thunk->transitionFn(app, 5);
+    ((AbyssEngine::ApplicationManager *) Globals::appManager)->SetCurrentApplicationModule(5);
 }
 
 void MenuTouchWindow::startGOF2() {

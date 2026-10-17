@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## DLC start presets (2026-10-17)
+
+`python tools/test_menutouch_dlc_presets.py` passes two source-mapping
+tests. Native `gof2` links; focused ARM builds **208/208** units.
+`startValkyrie` source-shape/strict fuzzy is **97.5%/70.8%** (from
+89.1%/53.7%) and `startSupernova` is **96.4%/64.7%** (from
+91.4%/45.8%); both remain nonexact. Full corpus report
+`A:/Galaxy on Fire new version/_work/mtw_dlc_preset_full_20261017.json`
+records **4,323/4,524** originals, **4,723** comparisons,
+**93.75%/82.89%** averages and **2,520/1,076** linked-/byte-exact,
+with zero exact-pair losses against the preceding full report.
+The 40 verifier tests pass with one existing skip. See
+[the evidence note](MENUTOUCH_DLC_PRESETS_ARM_2026-10-17.md).
+
 ## Weapon-position asset-backed loader check (2026-10-17)
 
 `python tools/run_weapon_positions_asset_smoke.py --asset
