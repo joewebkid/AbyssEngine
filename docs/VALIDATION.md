@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Galaxy system distance ARM/runtime correction (2026-10-17)
+
+The ARM body at `0x175f80` confirms the `Globals::globals` load and
+18.85 VFP scale. Catalog-backed host `-O0/-O2` checks same- and
+different-system distances; native `gof2` and 40 verifier tests pass
+(one existing skip). Focused source-shape/strict fuzzy rises from
+96.8%/70.9% to 97.2%/71.7%, nonexact. Full ARM report
+`A:/Galaxy on Fire new version/_work/galaxy_distance_full_20261017.json`
+has 208/208 compiled TUs, 4,323/4,524 originals, 4,730 rows,
+93.78%/82.95% averages, 2,527 linked-exact and 1,076 byte-exact.
+There are zero skipped/wrong-type units and zero exact-pair losses
+against the previous full report. See
+[the distance evidence](GALAXY_DISTANCE_ARM_RUNTIME_2026-10-17.md).
+
 ## Real agent-creation host gate (2026-10-17)
 
 The real-asset `-O0/-O2` host smoke now executes production

@@ -65,6 +65,7 @@ def main():
     galaxy_source = (ROOT / "src/game/world/Galaxy.cpp").read_text()
     globals_source = (ROOT / "src/game/core/Globals.cpp").read_text()
     image_factory_source = (ROOT / "src/engine/render/ImageFactory.cpp").read_text()
+    math_source = (ROOT / "src/engine/math/AEMath.cpp").read_text()
     generator_begin = status_source.index("struct Generator {")
     generator_end = status_source.index("};", generator_begin) + 2
     achievements_source = (ROOT / "src/game/mission/Achievements.cpp").read_text()
@@ -95,6 +96,7 @@ def main():
         '#include "engine/core/AERandom.h"\n'
         '#include "engine/render/ImageFactory.h"\n'
         '#include "engine/render/ImageFactoryPortraitData.h"\n'
+        '#include "engine/math/AEMath.h"\n'
         'using AbyssEngine::Vector;\n'
         'FileRead::FileRead() {}\nFileRead::~FileRead() {}\n'
         + status_source[generator_begin:generator_end].replace(
@@ -194,6 +196,7 @@ def main():
         + function(system_source, "int SolarSystem::getRace()")
         + function(system_source, "int SolarSystem::getX()")
         + function(system_source, "int SolarSystem::getY()")
+        + function(system_source, "int SolarSystem::getZ()")
         + function(system_source, "uint8_t SolarSystem::isVisible()")
         + function(agent_source, "Agent::Agent(int kind,")
         + function(agent_source, "Agent::~Agent() noexcept(false)")
@@ -244,11 +247,14 @@ def main():
         + function(status_source, "void Status::moveWanted()")
         + galaxy_source[galaxy_source.index("static const int kStationCount"):
                         galaxy_source.index("Galaxy::Galaxy()")]
+        + galaxy_source[galaxy_source.index("static float g_galaxyDistanceScale"):
+                        galaxy_source.index(";", galaxy_source.index("static float g_galaxyDistanceScale")) + 1] + '\n'
         + function(galaxy_source, "Galaxy::Galaxy()")
         + function(galaxy_source, "Galaxy::~Galaxy()")
         + function(galaxy_source, "void Galaxy::reset()")
         + function(galaxy_source, "int Galaxy::distancePercent(int x1, int y1, int x2, int y2)")
         + function(galaxy_source, "int Galaxy::invDistancePercent(int x1, int y1, int x2, int y2)")
+        + function(galaxy_source, "float Galaxy::distance(SolarSystem *a, SolarSystem *b)")
         + function(galaxy_source, "SolarSystem *Galaxy::getSystem(int index)")
         + function(galaxy_source, "Station *Galaxy::getStation(int index)")
         + function(galaxy_source, "Array<SolarSystem *> *Galaxy::getSystems()")
@@ -258,6 +264,9 @@ def main():
         + function(globals_source, "unsigned Globals::getRandomEnemyFighter(int kind)")
         + function(globals_source, "String Globals::getRandomName(int kind, bool both)")
         + function(image_factory_source, "int *ImageFactory::createChar(bool isMale, int race)")
+        + 'namespace AbyssEngine { namespace AEMath {\n'
+        + function(math_source, "Vector &Vector::operator-=(const Vector &other)")
+        + '} }\n'
         + function(achievements_source, "Achievements::Achievements()")
         + function(achievements_source, "Achievements::~Achievements()")
         + function(achievements_source, "uint8_t Achievements::gotAllGoldMedals()")

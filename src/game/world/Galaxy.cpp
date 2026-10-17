@@ -8,7 +8,8 @@ Galaxy *Galaxy::gGalaxy = nullptr;
 #include "game/world/SolarSystem.h"
 #include "game/world/Station.h"
 
-static float g_galaxyDistanceScale = 0.0f;
+// Android 2.0.16 Galaxy::distance, 0x176062: VFP literal 18.85.
+static float g_galaxyDistanceScale = 18.85f;
 
 static const int kStationCount = 0x87;
 
@@ -78,7 +79,7 @@ float Galaxy::distance(SolarSystem *a, SolarSystem *b) {
 
     pa -= pb;
     float sq = pa.x * pa.x + pa.y * pa.y + pa.z * pa.z;
-    return Globals::gGlobals->sqrt(sq) * g_galaxyDistanceScale;
+    return static_cast<Globals *>(Globals::globals)->sqrt(sq) * g_galaxyDistanceScale;
 }
 
 void *Galaxy::getPlasmaProbabilities(Station *station) {

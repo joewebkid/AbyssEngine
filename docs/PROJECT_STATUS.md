@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (real agent-creation host gate; older subsystem
+Last reviewed: 2026-10-17 (Galaxy system distance ARM/runtime correction; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -16,6 +16,22 @@ integration milestones are complete agent stock and entry to `Level::init`; a ca
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Galaxy system distance correction (2026-10-17)
+
+Android ARM `Galaxy::distance` at `0x175f80` uses `Globals::globals`
+and the VFP literal 18.85. Recovered source had instead used the
+unassigned `gGlobals` and zero, making nontrivial distances invalid.
+The corrected production body passes catalog-backed host `-O0/-O2`
+checks for same and different systems, both with and without the
+supplementary name assets. Focused source-shape/strict fuzzy rises
+96.8%/70.9% → 97.2%/71.7%, still nonexact. Native `gof2`, 208/208
+ARM TUs and 40 verifier tests pass (one existing skip). The full
+corpus remains 4,323/4,524 originals, 93.78%/82.95% averages,
+2,527 linked-exact and 1,076 byte-exact; exact-pair sets have zero
+losses. This unlocks a valid distance dependency for agent missions,
+which are not yet runtime-verified. See
+[the distance evidence](GALAXY_DISTANCE_ARM_RUNTIME_2026-10-17.md).
 
 ## Real agent-creation host gate (2026-10-17)
 

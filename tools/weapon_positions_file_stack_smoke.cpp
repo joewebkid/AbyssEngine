@@ -347,6 +347,14 @@ int main(int argc, char **argv) {
         assert(Globals::gGlobals == nullptr);
         assert(galaxy.distancePercent(0, 0, 3, 4) == 5);
         assert(galaxy.invDistancePercent(0, 0, 3, 4) == 95);
+        SolarSystem *from = galaxy.getSystem(18);
+        SolarSystem *to = galaxy.getSystem(20);
+        assert(galaxy.distance(from, from) == 0.0f);
+        const float dx = static_cast<float>(from->getX() - to->getX());
+        const float dy = static_cast<float>(from->getY() - to->getY());
+        const float dz = static_cast<float>(from->getZ() / 10 - to->getZ() / 10);
+        const float expectedDistance = std::sqrt(dx * dx + dy * dy + dz * dz) * 18.85f;
+        assert(std::fabs(galaxy.distance(from, to) - expectedDistance) < 0.01f);
         Status status;
         Globals::status = &status;
         Status::gStatus = &status;
