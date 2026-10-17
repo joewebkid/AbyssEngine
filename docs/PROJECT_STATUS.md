@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (startup catalogs; older subsystem
+Last reviewed: 2026-10-17 (asset-backed station transition; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -11,6 +11,21 @@ gates. The next integration milestone is a real asset-mounted executable
 host and a station-to-flight smoke test. Only after that can gameplay
 paths be verified end-to-end; exact code matching remains a separate
 polish metric, not the definition of completion.
+
+## Asset-backed Status station transition (2026-10-17)
+
+Production `Galaxy` and `Status` construction and `Status::setStation`
+now execute in the native file-stack smoke on real catalog data.
+Transitions 91 → 58 validate system pointers, visited flags, campaign
+name visibility and all K'ontrr planet names/textures by station ID;
+reselecting 58 does not reopen the file. Host `-O0/-O2` and **47/47**
+file lifetimes pass, as do native `gof2` and verifier tests. Android
+ARM at `0x0a90b8` confirms the by-ID station search. No production
+source changed, so the latest full corpus remains **4,323/4,524**,
+**93.76%/82.91%** source-shape/strict fuzzy and **2,521/1,076**
+linked-/byte-exact; `setStation` is **86.9%/47.7%**, nonexact. This
+still does not execute `Status::activate` or a flight scene. See
+[the runtime evidence](STATUS_SET_STATION_ASSET_RUNTIME_2026-10-17.md).
 
 ## Status startup catalogs (2026-10-17)
 

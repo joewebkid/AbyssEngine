@@ -1,4 +1,4 @@
-"""Compile production core-resource loaders with a host file boundary."""
+"""Compile production core loaders and station state with a host file boundary."""
 import argparse
 import os
 from pathlib import Path
@@ -45,6 +45,8 @@ def main():
     system_source = (ROOT / "src/game/world/SolarSystem.cpp").read_text()
     agent_source = (ROOT / "src/game/ship/Agent.cpp").read_text()
     wanted_source = (ROOT / "src/game/world/Wanted.cpp").read_text()
+    status_source = (ROOT / "src/game/mission/Status.cpp").read_text()
+    galaxy_source = (ROOT / "src/game/world/Galaxy.cpp").read_text()
     systems_begin = source.index("Array<SolarSystem *> *FileRead::loadSystemsBinary()")
     systems_end = source.index("Array<Wanted *> *FileRead::loadWanted()", systems_begin)
     agents_begin = source.index("Array<Agent *> *FileRead::loadAgents()")
@@ -60,6 +62,7 @@ def main():
         '#include "game/world/SolarSystem.h"\n'
         '#include "game/ship/Agent.h"\n'
         '#include "game/world/Wanted.h"\n'
+        '#include "game/world/Galaxy.h"\n'
         'using AbyssEngine::Vector;\n'
         'FileRead::FileRead() {}\nFileRead::~FileRead() {}\n'
         + source[begin:end]
@@ -93,6 +96,19 @@ def main():
         + function(wanted_source, "Wanted::Wanted(int index,")
         + function(wanted_source, "Wanted::~Wanted()")
         + function(wanted_source, "void Wanted::setImageParts(int *parts)")
+        + function(status_source, "Status::Status()")
+        + function(status_source, "Status::~Status()")
+        + function(status_source, "void Status::setStation(Station *s)")
+        + galaxy_source[galaxy_source.index("static const int kStationCount"):
+                        galaxy_source.index("Galaxy::Galaxy()")]
+        + function(galaxy_source, "Galaxy::Galaxy()")
+        + function(galaxy_source, "Galaxy::~Galaxy()")
+        + function(galaxy_source, "SolarSystem *Galaxy::getSystem(int index)")
+        + function(station_source, "Station::Station()")
+        + function(station_source, "int Station::getIndex()")
+        + function(station_source, "int Station::getSystem()")
+        + function(station_source, "int Station::getTextureIndex()")
+        + function(station_source, "String Station::getName()")
     )
     sources = [
         "tools/weapon_positions_file_stack_smoke.cpp",

@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Asset-backed Status station transition (2026-10-17)
+
+The `tools/run_weapon_positions_file_stack_smoke.py` host test now
+executes production `Galaxy::Galaxy` and `Status::Status` /
+`Status::setStation` over stations 91 and 58, including K'ontrr's
+unsorted input order. Host `-O0/-O2` tests and **47/47** file
+lifetimes pass. Native `gof2` and `gof2_host_file` build and 40
+verifier tests pass (one existing skip). No production source changed;
+the latest ARM corpus remains
+`A:/Galaxy on Fire new version/_work/station_lifetime_full_final_20261017.json`.
+See [the transition evidence](STATUS_SET_STATION_ASSET_RUNTIME_2026-10-17.md).
+
 ## Status startup catalogs (2026-10-17)
 
 The host `tools/run_weapon_positions_file_stack_smoke.py` test now

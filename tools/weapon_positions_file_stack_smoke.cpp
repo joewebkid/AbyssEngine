@@ -11,6 +11,7 @@
 #include "game/world/SolarSystem.h"
 #include "game/ship/Agent.h"
 #include "game/world/Wanted.h"
+#include "game/world/Galaxy.h"
 #include "host/ReadOnlyAssetFileInterface.h"
 #include <cassert>
 #include <algorithm>
@@ -36,6 +37,8 @@ void String_printImpl(const char *) { std::abort(); }
 
 // These player-status branches are unreachable while loading catalog templates.
 Status *Globals::status = nullptr;
+Galaxy *Galaxy::gGalaxy = nullptr;
+Status *Status::gStatus = nullptr;
 Standing *Status::getStanding() { std::abort(); }
 void Standing::setPlayerSignatureRace(int) { std::abort(); }
 // Catalog stations have no owned item/ship/agent lists in this fixture.
@@ -225,6 +228,47 @@ int main(int argc, char **argv) {
     }
     delete wanted;
 
+    {
+        Galaxy galaxy;
+        Galaxy::gGalaxy = &galaxy;
+        Status status;
+        Status::gStatus = &status;
+        status.setStation((*stations)[91]);
+        assert(status.system == galaxy.getSystem(18));
+        assert((*status.field_b4)[18]);
+        assert(status.planetNames->size() == status.system->stationIds->size());
+        assert(narrow(*(*status.planetNames)[1]).empty());
+        status.currentCampaignMission = 1;
+        status.setStation((*stations)[58]);
+        assert(status.system == galaxy.getSystem(20));
+        assert((*status.field_b4)[20]);
+        for (unsigned i = 0; i < status.system->stationIds->size(); ++i) {
+            const int id = (*status.system->stationIds)[i];
+            assert(narrow(*(*status.planetNames)[i]) == narrow((*stations)[id]->name));
+            assert((*status.planetTextures)[i] == (*stations)[id]->textureIndex);
+        }
+        const unsigned opened = interface.opens();
+        status.setStation((*stations)[58]);
+        assert(interface.opens() == opened);
+        ArrayReleaseClasses(*status.planetNames);
+        delete status.planetNames;
+        delete status.planetTextures;
+        delete status.playerStation;
+        delete status.missions;
+        delete status.systemVisibilities;
+        delete status.field_94;
+        delete status.field_98;
+        delete status.field_ac;
+        delete status.field_b4;
+        delete status.field_4c;
+        delete status.field_50;
+        delete status.field_90;
+        delete status.field_54;
+        delete status.field_58;
+        Status::gStatus = nullptr;
+        Galaxy::gGalaxy = nullptr;
+    }
+
     for (Station *station : *stations) delete station;
     delete stations;
 
@@ -239,6 +283,6 @@ int main(int argc, char **argv) {
     delete dlc2;
 
     AEFile::Release();
-    assert(interface.opens() == 44 && interface.closes() == 44);
-    std::puts("production AEFile/FileRead seven core assets: OK");
+    assert(interface.opens() == 47 && interface.closes() == 47);
+    std::puts("production AEFile/FileRead seven assets and Status station path: OK");
 }
