@@ -32,3 +32,15 @@ path is a license to invent a guard in the reconstructed source.
 The shipped `weapons_hd.bin` data and both caller paths still need
 runtime validation; ship IDs absent from the file need a separate
 call-path audit.
+
+A fresh read-only walk of the 7,484-byte local resource consumes all
+bytes as **59 ship records**, **552 entries** and **236 type-3 extra
+vectors**. Comparing its IDs with the 64 local `ships.bin` templates
+finds five absent IDs: **13, 14, 15, 50 and 53**. These templates have
+weapon slots. A normal `Ship` constructor allocates a nonnull
+equipment array, so `Level::createPlayer` can reach this loader if
+one of those IDs becomes the current ship; `CutScene::checkForTurret`
+also passes the current ship ID. Whether the game actually permits
+these five templates on either caller path remains unverified. The
+native loop's missing-ID behavior is therefore a conditional risk,
+not proof that a shipped play path hangs.
