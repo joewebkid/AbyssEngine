@@ -1639,12 +1639,9 @@ void Status::checkForLevelUp() {
     }
 }
 
-static Station **g_mwPrevStation = nullptr;
-
 void Status::moveWanted() {
     Array<SolarSystem *> *systemsTable = 0;
     SystemPathFinder *pf = 0;
-    Station **prevHolder = g_mwPrevStation;
 
     for (unsigned i = 0; i < wanted->size(); i = i + 1) {
         Wanted *w = (*wanted)[i];
@@ -1657,10 +1654,9 @@ void Status::moveWanted() {
 
         if (w->getCurrentLocation() == station->getIndex())
             continue;
-        if (*prevHolder != 0) {
-            if ((*prevHolder)->getIndex() == w->getCurrentLocation())
-                continue;
-        }
+        Station *programmed = static_cast<Station *>(Level::programmedStation);
+        if (programmed != 0 && programmed->getIndex() == w->getCurrentLocation())
+            continue;
 
         if (pf == 0) {
             FileRead fr;
@@ -1668,9 +1664,10 @@ void Status::moveWanted() {
             pf = new SystemPathFinder();
         }
 
-        Station *fromSt = Globals::gGlobals->getRandomStation();
+        FileRead stationReader;
+        Station *fromSt = stationReader.loadStation(w->getCurrentLocation());
         int fromSys = fromSt->getSystem();
-        Station *toSt = Globals::gGlobals->getRandomStation();
+        Station *toSt = stationReader.loadStation(w->getTravelsTo());
         int toSys = toSt->getSystem();
 
         Array<int> *path = 0;
@@ -1686,14 +1683,14 @@ void Status::moveWanted() {
             }
             w->setLastSeen(w->getCurrentLocation());
             if (toSt != 0) delete toSt;
-            toSt = Globals::gGlobals->getRandomStation();
+            toSt = static_cast<Globals *>(Globals::globals)->getRandomStation();
             toSys = toSt->getSystem();
             for (;;) {
                 path = pf->getSystemPath(systemsTable, fromSys, toSys);
                 int dsys = toSt->getSystem();
                 int routes = (int) (intptr_t)(*systemsTable)[dsys]->getRoutes();
                 bool ok = path != 0 && routes != 0 &&
-                          (unsigned) (*path)[0] >= lo && (unsigned) (*path)[0] <= hi &&
+                          path->size() >= lo && path->size() <= hi &&
                           (*systemVisibilities)[dsys] != 0 &&
                           dsys != 0x1b && dsys != 0x1c && dsys != 0x19 && dsys != 0x1a && dsys != 6 &&
                           dsys != fromSt->getSystem();
@@ -1702,7 +1699,7 @@ void Status::moveWanted() {
                     break;
                 }
                 if (toSt != 0) delete toSt;
-                toSt = Globals::gGlobals->getRandomStation();
+                toSt = static_cast<Globals *>(Globals::globals)->getRandomStation();
                 toSys = toSt->getSystem();
             }
         } else if (fromSys == toSys) {

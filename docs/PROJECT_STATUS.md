@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (station departure ARM/host gate; older subsystem
+Last reviewed: 2026-10-17 (wanted movement ARM/host gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -10,11 +10,31 @@ behavior recovery, with a native static-library build, asset-backed host
 smokes and ARM comparison gates. `Status::resetGame` now executes in an
 asset-backed host fixture. A bounded `Status::departStation` slice now
 executes after startup with an explicit test-only Generator boundary;
-the next integration milestone is real station generation/wanted
-movement followed by entry to `Level::init`. Only after that can
+the next integration milestone is real station generation and
+cross-system wanted pathfinding followed by entry to `Level::init`.
+Only after that can
 gameplay paths be verified end-to-end;
 exact code matching remains a separate polish metric, not the definition
 of completion.
+
+## Saved-route wanted movement (2026-10-17)
+
+ARM confirms that `Status::moveWanted` checks `Level::programmedStation`,
+loads the wanted record's saved current/destination stations, uses
+`Globals::globals` for random rerouting, and compares a route's **length**
+rather than its first system ID. These repairs execute in the real-asset
+host fixture at `-O0/-O2`: a guarded record stays put, an ordinary
+same-system record advances 62 → 59, and a controlled three-element
+reroute updates `travelsTo`/`lastSeen`. File lifetimes balance **63/63**;
+the pathfinder and random choice are explicit test boundaries. Focused
+`moveWanted` source-shape rises **78.9% → 86.2%**, while strict fuzzy
+falls **34.9% → 33.7%**; it remains nonexact. Native `gof2`, **208/208**
+ARM TUs and 40 verifier tests (one existing skip) pass. Full corpus:
+**4,323/4,524** originals in **4,730** rows, **93.78% / 82.95%**
+average source-shape/strict fuzzy, **2,527 linked-exact / 1,076
+byte-exact**, 201 absent, zero wrong-type or skipped units and zero
+exact-pair gains/losses. Real cross-system pathfinding and `Level::init`
+are still unverified. See [the evidence](STATUS_MOVE_WANTED_SAVED_ROUTE_ARM_2026-10-17.md).
 
 ## Station departure gate (2026-10-17)
 

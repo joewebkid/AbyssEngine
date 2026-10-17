@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Saved-route wanted movement (2026-10-17)
+
+The asset-backed host smoke now executes production `Status::moveWanted`
+at `-O0/-O2`, checking the programmed-station guard, a same-system
+saved-ID move and a controlled three-element reroute. It balances
+**63/63** file lifetimes; real pathfinding and random choice remain
+test boundaries. Native `gof2`, **208/208** ARM TUs and 40 verifier
+tests (one existing skip) pass. Focused `moveWanted` source-shape is
+**86.2%** (from 78.9%), strict fuzzy **33.7%** (from 34.9%), nonexact.
+The full report at
+`A:/Galaxy on Fire new version/_work/status_move_wanted_full_20261017.json`
+compares **4,323/4,524** originals in **4,730** rows, averaging
+**93.78%/82.95%**, with **2,527 linked-exact / 1,076 byte-exact**,
+201 absent, zero wrong-type or skipped units and no exact-pair changes.
+See [the evidence](STATUS_MOVE_WANTED_SAVED_ROUTE_ARM_2026-10-17.md).
+
 ## Station departure gate (2026-10-17)
 
 The asset-backed host smoke now extracts the production

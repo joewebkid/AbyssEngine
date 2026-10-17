@@ -49,6 +49,8 @@ def main():
     galaxy_source = (ROOT / "src/game/world/Galaxy.cpp").read_text()
     generator_begin = status_source.index("struct Generator {")
     generator_end = status_source.index("};", generator_begin) + 2
+    pathfinder_begin = status_source.index("struct SystemPathFinder {")
+    pathfinder_end = status_source.index("};", pathfinder_begin) + 2
     achievements_source = (ROOT / "src/game/mission/Achievements.cpp").read_text()
     blueprint_source = (ROOT / "src/game/mission/BluePrint.cpp").read_text()
     mission_source = (ROOT / "src/game/mission/Mission.cpp").read_text()
@@ -82,6 +84,19 @@ def main():
         + 'Array<Item *> *Generator::getItemBuyList(Station *) { ++g_station_generator_calls; return new Array<Item *>(); }\n'
         + 'Array<Ship *> *Generator::getShipBuyList(Station *) { ++g_station_generator_calls; return new Array<Ship *>(); }\n'
         + 'Array<Agent *> *Generator::createAgents(Station *) { ++g_station_generator_calls; return new Array<Agent *>(); }\n'
+        + status_source[pathfinder_begin:pathfinder_end] + '\n'
+        # shortcut: a controlled route/candidate tests moveWanted; use production pathfinding for cross-system smoke.
+        + 'SystemPathFinder::SystemPathFinder() {}\n'
+        + 'SystemPathFinder::~SystemPathFinder() {}\n'
+        + 'extern int g_wanted_path_calls;\n'
+        + 'Array<int> *SystemPathFinder::getSystemPath(Array<SolarSystem *> *, int from, int to) { '
+          '++g_wanted_path_calls; auto *path = new Array<int>(); ArraySetLength(3, *path); '
+          '(*path)[0] = from; (*path)[1] = to; (*path)[2] = to; return path; }\n'
+        + 'extern int g_wanted_random_station_id;\n'
+        + 'extern int g_wanted_random_station_calls;\n'
+        + 'Station *Globals::getRandomStation() { ++g_wanted_random_station_calls; '
+          'if (g_wanted_random_station_id < 0) std::abort(); '
+          'return Galaxy::gGalaxy->getStation(g_wanted_random_station_id); }\n'
         + source[begin:end]
         + source[items_begin:ships_begin]
         + source[ships_begin:]
@@ -134,6 +149,8 @@ def main():
         + function(system_source, "SolarSystem::~SolarSystem()")
         + function(system_source, "int SolarSystem::stationIsInSystem(int idx)")
         + function(system_source, "uint32_t *SolarSystem::getStations()")
+        + function(system_source, "uint32_t *SolarSystem::getRoutes()")
+        + function(system_source, "int SolarSystem::getWarpGateIndex()")
         + function(system_source, "uint8_t SolarSystem::isVisible()")
         + function(agent_source, "Agent::Agent(int kind,")
         + function(agent_source, "Agent::~Agent() noexcept(false)")
@@ -141,6 +158,14 @@ def main():
         + function(wanted_source, "Wanted::Wanted(int index,")
         + function(wanted_source, "Wanted::~Wanted()")
         + function(wanted_source, "void Wanted::setImageParts(int *parts)")
+        + function(wanted_source, "uint8_t Wanted::isActive()")
+        + function(wanted_source, "uint8_t Wanted::isTerminated()")
+        + function(wanted_source, "void Wanted::setActive(bool v)")
+        + function(wanted_source, "int Wanted::getCurrentLocation()")
+        + function(wanted_source, "int Wanted::getTravelsTo()")
+        + function(wanted_source, "void Wanted::setCurrentLocation(int v)")
+        + function(wanted_source, "void Wanted::setTravelsTo(int v)")
+        + function(wanted_source, "void Wanted::setLastSeen(int v)")
         + function(status_source, "Status::Status()")
         + function(status_source, "Status::~Status()")
         + function(status_source, "Standing *Status::getStanding()")
@@ -156,7 +181,7 @@ def main():
         + function(status_source, "int Status::addStationToStack(Station *s)")
         + 'static int g_dsTypeMask = 0x8B782B;\n'
         + function(status_source, "void Status::departStation(Station *dest)")
-        + 'void Status::moveWanted() { std::abort(); }\n'
+        + function(status_source, "void Status::moveWanted()")
         + galaxy_source[galaxy_source.index("static const int kStationCount"):
                         galaxy_source.index("Galaxy::Galaxy()")]
         + function(galaxy_source, "Galaxy::Galaxy()")

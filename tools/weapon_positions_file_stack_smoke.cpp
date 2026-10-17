@@ -40,6 +40,7 @@ void String_printImpl(const char *) { std::abort(); }
 
 // The player-status pointer is the host boundary for negative station IDs.
 Status *Globals::status = nullptr;
+Globals *Globals::gGlobals = nullptr;
 void *Globals::globals = nullptr;
 void *Globals::galaxy = nullptr;
 void *Globals::items = nullptr;
@@ -57,6 +58,9 @@ void *Mission::empty = nullptr;
 Galaxy *Galaxy::gGalaxy = nullptr;
 Status *Status::gStatus = nullptr;
 int g_station_generator_calls = 0;
+int g_wanted_path_calls = 0;
+int g_wanted_random_station_id = -1;
+int g_wanted_random_station_calls = 0;
 // Catalog stations have no owned item/ship/agent lists in this fixture.
 Station::~Station() {}
 
@@ -418,6 +422,47 @@ int main(int argc, char **argv) {
         assert(status.mission == &emptyMission);
         status.mission = campaign;
         campaign->targetStation = savedTarget;
+        Station *savedPlayerStation = status.playerStation;
+        status.playerStation = status.station;
+        Station programmed(String("route guard"), 62, 20, 0, 0);
+        Wanted *moving = (*status.wanted)[0];
+        assert(std::all_of(status.wanted->begin(), status.wanted->end(),
+                           [](Wanted *w) { return !w->isActive(); }));
+        moving->setActive(true);
+        moving->setCurrentLocation(62);
+        moving->setTravelsTo(59);
+        Level::programmedStation = &programmed;
+        status.moveWanted();
+        assert(moving->getCurrentLocation() == 62);
+        assert(interface.opens() == 56 && interface.closes() == 56);
+        Level::programmedStation = nullptr;
+        status.moveWanted();
+        assert(moving->getCurrentLocation() == 59);
+        assert(interface.opens() == 59 && interface.closes() == 59);
+        int randomSystem = -1;
+        for (int i = 0; i < 34; ++i) {
+            if (i == 20 || i == 27 || i == 28 || i == 25 || i == 26 || i == 6)
+                continue;
+            SolarSystem *candidate = galaxy.getSystem(i);
+            auto *ids = reinterpret_cast<Array<int> *>(candidate->getStations());
+            if (candidate->getRoutes() && ids && !ids->empty()) {
+                randomSystem = i;
+                g_wanted_random_station_id = (*ids)[0];
+                break;
+            }
+        }
+        assert(randomSystem >= 0);
+        (*status.systemVisibilities)[randomSystem] = true;
+        moving->setCurrentLocation(62);
+        moving->setTravelsTo(62);
+        status.moveWanted();
+        assert(g_wanted_path_calls == 1);
+        assert(g_wanted_random_station_calls == 1);
+        assert(moving->lastSeen == 62);
+        assert(moving->getTravelsTo() == g_wanted_random_station_id);
+        assert(interface.opens() == 63 && interface.closes() == 63);
+        moving->setActive(false);
+        status.playerStation = savedPlayerStation;
         for (Station *&stackStation : *status.stationStack)
             if (stackStation == status.station) stackStation = nullptr;
         delete status.station->items;
@@ -472,6 +517,6 @@ int main(int argc, char **argv) {
     }
 
     AEFile::Release();
-    assert(interface.opens() == 56 && interface.closes() == 56);
-    std::puts("production AEFile/FileRead assets and Status startup/departure path: OK");
+    assert(interface.opens() == 63 && interface.closes() == 63);
+    std::puts("production AEFile/FileRead assets and Status startup/departure/wanted path: OK");
 }
