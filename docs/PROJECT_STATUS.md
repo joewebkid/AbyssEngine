@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (real ship-stock host gate; older subsystem
+Last reviewed: 2026-10-17 (real agent-creation host gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -10,11 +10,27 @@ behavior recovery, with a native static-library build, asset-backed host
 smokes and ARM comparison gates. `Status::resetGame` now executes in an
 asset-backed host fixture. A bounded `Status::departStation` slice now
 executes after startup with real item and ship-stock generation; agent
-generation remains an explicit test boundary. The next integration milestones
-are agent stock and entry to `Level::init`; a catalog-backed
+generation remains an explicit station-transition test boundary, although
+production `createAgent` now has a direct asset-backed host test. The next
+integration milestones are complete agent stock and entry to `Level::init`; a catalog-backed
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Real agent-creation host gate (2026-10-17)
+
+Production `Generator::createAgent`, name loading and portrait-description
+generation now execute 64 times against the catalog station 41 in host
+`-O0/-O2`. Item-sale and wingman offers are covered. The primary catalog
+has no name binaries (68/68 file lifetimes), but an optional overlay of
+13 extracted Java-reference name binaries also passes and produces
+nonempty names. Their exact Android provenance is unconfirmed. `createAgents` remains
+a station-transition test substitute; mission offers are not covered.
+Native `gof2` and 40 verifier tests pass (one existing skip). Production
+source is unchanged; the last ARM baseline remains 208/208 TUs,
+4,323/4,524 originals, 93.78%/82.95% source-shape/strict fuzzy,
+2,527/1,076 linked-/byte-exact. See
+[the agent-creation evidence](GENERATOR_AGENT_CREATION_ASSET_HOST_2026-10-17.md).
 
 ## Real ship-stock host gate (2026-10-17)
 

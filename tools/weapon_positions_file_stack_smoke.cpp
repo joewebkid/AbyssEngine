@@ -3,6 +3,8 @@
 #include "engine/file/FileRead.h"
 #include "engine/core/GameText.h"
 #include "engine/core/AERandom.h"
+#include "engine/render/ImageFactory.h"
+#include "engine/render/ImageFactoryPortraitData.h"
 #include "game/mission/Item.h"
 #include "game/mission/Status.h"
 #include "game/mission/Mission.h"
@@ -48,6 +50,7 @@ void *Globals::galaxy = nullptr;
 void *Globals::items = nullptr;
 void *Globals::ships = nullptr;
 void *Globals::rnd = nullptr;
+void *Globals::imageFactory = nullptr;
 int Globals::globalPriceRaise = 0;
 int Globals::energyCellsProbChange = 0;
 int Globals::secondaryWeaponsProbChange = 0;
@@ -67,6 +70,11 @@ int g_station_generator_calls = 0;
 int g_wanted_random_station_id = -1;
 int g_wanted_random_station_calls = 0;
 Array<Item *> *generateRealMarketItems(Station *station);
+Agent *generateRealAgent(Station *station);
+// shortcut: rendering setup is unavailable in this headless host test; the
+// production createChar body uses no instance fields and is linked separately.
+ImageFactory::ImageFactory() : sprite(nullptr), itemImage(0), shipImage(0) {}
+ImageFactory::~ImageFactory() {}
 // Catalog stations have no owned item/ship/agent lists in this fixture.
 Station::~Station() {}
 
@@ -89,7 +97,8 @@ void release(Array<Array<AbyssEngine::AEMath::Vector *> *> *positions) {
 }
 
 int main(int argc, char **argv) {
-    assert(argc == 2);
+    assert(argc == 2 || (argc == 3 && std::string(argv[2]) == "names"));
+    const bool expectNames = argc == 3;
     const std::filesystem::path realAssetDirectory = argv[1];
     assert(std::filesystem::is_regular_file(realAssetDirectory / "weapons_hd.bin"));
     assert(std::filesystem::is_regular_file(realAssetDirectory / "items.bin"));
@@ -536,6 +545,40 @@ int main(int argc, char **argv) {
         Globals::rnd = &marketRandom;
         status.field_88 = 0;
         status.departStation(marketStation);
+        ImageFactory portraitFactory;
+        Globals::imageFactory = &portraitFactory;
+        unsigned offersSeen = 0;
+        for (int i = 0; i < 64; ++i) {
+            Agent *agent = generateRealAgent(marketStation);
+            assert(agent && agent->station == marketStation->index);
+            if (expectNames) assert(agent->name.size() > 0);
+            assert(agent->system == status.system->getIndex());
+            assert(agent->race >= 0 && agent->race < 8);
+            assert(agent->offer >= 0 && agent->offer <= 6);
+            assert(agent->imageParts);
+            int row = agent->imageParts[0];
+            assert(row >= 0 && row < 13);
+            for (int part = 0; part < 4; ++part) {
+                int count = kImagePartCounts[row][part];
+                assert(agent->imageParts[part + 1] >= 0 &&
+                       (count == 0 ? agent->imageParts[part + 1] == 0 :
+                                     agent->imageParts[part + 1] < count));
+            }
+            if (agent->offer == 2) {
+                assert(agent->sellItemIndex >= 0 && agent->sellItemIndex < 233);
+                assert(agent->sellItemQuantity > 0 && agent->sellItemPrice >= 0);
+            }
+            if (agent->offer == 6)
+                assert(agent->costs >= 700);
+            offersSeen |= 1u << agent->offer;
+            delete agent->wingman2;
+            if (agent->wingmanNames)
+                delete (*agent->wingmanNames)[0];
+            delete agent->wingmanNames;
+            delete agent;
+        }
+        assert((offersSeen & (1u << 2)) && (offersSeen & (1u << 6)));
+        Globals::imageFactory = nullptr;
         Globals::rnd = nullptr;
         assert(status.station == marketStation && marketStation->items &&
                !marketStation->items->empty());
@@ -548,7 +591,8 @@ int main(int argc, char **argv) {
                    offered->price > 0);
         assert(marketStation->agents && marketStation->agents->empty());
         assert(openingStation->items && openingStation->items->size() == 3);
-        assert(interface.opens() == 68 && interface.closes() == 68);
+        assert(interface.opens() == interface.closes() &&
+               interface.opens() >= (expectNames ? 69u : 68u));
         status.mission = campaign;
         for (Station *&stackStation : *status.stationStack)
             if (stackStation == openingStation || stackStation == marketStation)
@@ -610,6 +654,7 @@ int main(int argc, char **argv) {
     }
 
     AEFile::Release();
-    assert(interface.opens() == 68 && interface.closes() == 68);
+    assert(interface.opens() == interface.closes() &&
+           interface.opens() >= (expectNames ? 69u : 68u));
     std::puts("production assets, Status startup/departure/wanted, real pathfinder and market: OK");
 }

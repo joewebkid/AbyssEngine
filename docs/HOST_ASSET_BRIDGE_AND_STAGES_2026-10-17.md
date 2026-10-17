@@ -57,7 +57,9 @@ non-ASCII characters are not yet covered by a Windows runtime test.
    compiler ceiling or unverified behavior. No single metric alone
    declares decompilation complete.
 
-The immediate next package is a small native executable that mounts
-the required loose resource roots and runs a station-to-flight
-scenario. Before presenting it as playable, it must report the first
-unimplemented platform call instead of silently faking it.
+The immediate next package is production `createAgents` in the bounded
+station transition, including mission creation and ownership checks.
+Then a small native executable can mount the required resource roots
+and run a station-to-flight scenario. Before presenting it as playable,
+it must report the first unimplemented platform call instead of
+silently faking it.

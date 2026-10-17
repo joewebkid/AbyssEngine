@@ -2,6 +2,7 @@
 import argparse
 import os
 from pathlib import Path
+import shutil
 import subprocess
 
 from run_particle_control_smoke import function
@@ -13,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--asset-dir", type=Path, required=True)
+    parser.add_argument("--names-asset-dir", type=Path)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--cxx", required=True)
     args = parser.parse_args()
@@ -23,6 +25,19 @@ def main():
             parser.error(f"--asset-dir must contain {name}")
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
+    run_asset_dir = asset_dir
+    if args.names_asset_dir is not None:
+        names_dir = args.names_asset_dir.resolve()
+        names = list(names_dir.glob("names_*.bin"))
+        if len(names) < 13:
+            parser.error("--names-asset-dir must contain the 13 name binaries")
+        run_asset_dir = out / "asset_overlay"
+        run_asset_dir.mkdir(exist_ok=True)
+        for name in ("weapons_hd.bin", "items.bin", "ships.bin", "stations.bin",
+                     "systems.bin", "agents.bin", "wanted.bin"):
+            shutil.copyfile(asset_dir / name, run_asset_dir / name)
+        for name in names:
+            shutil.copyfile(name, run_asset_dir / name.name)
     compiler_env = os.environ.copy()
     compiler_env.update({"TMP": str(out), "TEMP": str(out), "TMPDIR": str(out)})
     # Isolate the unchanged production loaders so unrelated FileRead parsers
@@ -49,6 +64,7 @@ def main():
     generator_source = (ROOT / "src/game/mission/Generator.cpp").read_text()
     galaxy_source = (ROOT / "src/game/world/Galaxy.cpp").read_text()
     globals_source = (ROOT / "src/game/core/Globals.cpp").read_text()
+    image_factory_source = (ROOT / "src/engine/render/ImageFactory.cpp").read_text()
     generator_begin = status_source.index("struct Generator {")
     generator_end = status_source.index("};", generator_begin) + 2
     achievements_source = (ROOT / "src/game/mission/Achievements.cpp").read_text()
@@ -77,9 +93,14 @@ def main():
         '#include "game/mission/Achievements.h"\n#include "game/mission/BluePrint.h"\n'
         '#include "game/mission/Mission.h"\n#include "game/mission/PendingProduct.h"\n'
         '#include "engine/core/AERandom.h"\n'
+        '#include "engine/render/ImageFactory.h"\n'
+        '#include "engine/render/ImageFactoryPortraitData.h"\n'
         'using AbyssEngine::Vector;\n'
         'FileRead::FileRead() {}\nFileRead::~FileRead() {}\n'
-        + status_source[generator_begin:generator_end] + '\n'
+        + status_source[generator_begin:generator_end].replace(
+            "    Array<Agent *> *createAgents(Station *station);",
+            "    Array<Agent *> *createAgents(Station *station);\n"
+            "    Agent *createAgent(Station *station);") + '\n'
         + generator_source[generator_source.index("static const volatile int kaamoSpecialItems[9]"):
                            generator_source.index("};", generator_source.index("static const volatile int kaamoSpecialItems[9]")) + 2] + '\n'
         + generator_source[generator_source.index("static const volatile int g_Generator_kaamoAllowed[10]"):
@@ -93,6 +114,9 @@ def main():
           'Generator generator; return generator.getItemBuyList(station); }\n'
         + function(generator_source, "Array<Ship *> *Generator::getShipBuyList(Station *station)")
         + 'Array<Agent *> *Generator::createAgents(Station *) { ++g_station_generator_calls; return new Array<Agent *>(); }\n'
+        + function(generator_source, "Agent *Generator::createAgent(Station *station)")
+        + 'Agent *generateRealAgent(Station *station) { '
+          'Generator generator; return generator.createAgent(station); }\n'
         + 'extern int g_wanted_random_station_id;\n'
         + 'extern int g_wanted_random_station_calls;\n'
         # shortcut: the random choice is deterministic; exercise the real RNG distribution separately.
@@ -103,6 +127,7 @@ def main():
         + source[items_begin:ships_begin]
         + source[ships_begin:]
         + source[station_begin:station_end]
+        + function(source, "Array<String *> *FileRead::loadNamesBinary(")
         + source[system_stations_begin:system_stations_end]
         + source[load_one_begin:load_one_end]
         + source[systems_begin:systems_end]
@@ -173,6 +198,15 @@ def main():
         + function(agent_source, "Agent::Agent(int kind,")
         + function(agent_source, "Agent::~Agent() noexcept(false)")
         + function(agent_source, "void Agent::setImageParts(int *parts)")
+        + function(agent_source, "int Agent::getStation()")
+        + function(agent_source, "int Agent::getSystem()")
+        + function(agent_source, "int Agent::getRace()")
+        + function(agent_source, "int Agent::getCosts()")
+        + function(agent_source, "void Agent::setCosts(int costs)")
+        + function(agent_source, "int Agent::getOffer()")
+        + function(agent_source, "void Agent::setOffer(int offer)")
+        + function(agent_source, "void Agent::setWingmanFriendNames(")
+        + function(agent_source, "Triple *Agent::setSellItemData(")
         + function(wanted_source, "Wanted::Wanted(int index,")
         + function(wanted_source, "Wanted::~Wanted()")
         + function(wanted_source, "void Wanted::setImageParts(int *parts)")
@@ -222,6 +256,8 @@ def main():
         + globals_source[globals_source.index("static const int gREF_table[37]"):
                           globals_source.index("};", globals_source.index("static const int gREF_table[37]")) + 2] + '\n'
         + function(globals_source, "unsigned Globals::getRandomEnemyFighter(int kind)")
+        + function(globals_source, "String Globals::getRandomName(int kind, bool both)")
+        + function(image_factory_source, "int *ImageFactory::createChar(bool isMale, int race)")
         + function(achievements_source, "Achievements::Achievements()")
         + function(achievements_source, "Achievements::~Achievements()")
         + function(achievements_source, "uint8_t Achievements::gotAllGoldMedals()")
@@ -274,7 +310,10 @@ def main():
             "-Ithird_party/gl", "-Ithird_party/fmod/inc", *sources,
             "-o", str(exe),
         ], cwd=ROOT, env=compiler_env, check=True)
-        subprocess.run([str(exe), str(asset_dir)], cwd=ROOT, check=True)
+        command = [str(exe), str(run_asset_dir)]
+        if args.names_asset_dir is not None:
+            command.append("names")
+        subprocess.run(command, cwd=ROOT, check=True)
 
 
 if __name__ == "__main__":

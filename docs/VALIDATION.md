@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Real agent-creation host gate (2026-10-17)
+
+The real-asset `-O0/-O2` host smoke now executes production
+`Generator::createAgent`, `Globals::getRandomName`, name file probing
+and `ImageFactory::createChar(bool, int)` for 64 generated agents.
+Both runs cover item-sale and wingman offers. The primary asset subset
+lacks names and preserves 68/68 balanced file lifetimes. An optional
+overlay of 13 extracted Java-reference name binaries also passes with
+nonempty names; exact Android provenance remains unconfirmed.
+`createAgents` and mission creation remain test boundaries. Native
+`gof2` and 40 verifier tests pass (one existing skip). With no
+production source change, the last full ARM result remains
+208/208 TUs, 4,323/4,524 originals, 93.78%/82.95% averages and
+2,527/1,076 linked-/byte-exact. See
+[the agent-creation evidence](GENERATOR_AGENT_CREATION_ASSET_HOST_2026-10-17.md).
+
 ## Real ship-stock host gate (2026-10-17)
 
 The real-asset `-O0/-O2` smoke now executes production
