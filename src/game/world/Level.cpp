@@ -234,8 +234,6 @@ static int *g_crm_counts8 = nullptr;
 
 static int *g_crm_table8 = nullptr;
 
-static PaintCanvas ***g_init_canvas = nullptr;
-
 static char **g_init_flagStack = nullptr;
 
 static int **g_init_missionDef = nullptr;
@@ -268,9 +266,6 @@ static float *g_flashCol_r = nullptr;
 static float *g_flashCol_g = nullptr;
 
 static float *g_flashCol_b = nullptr;
-
-static void (**g_levelSubCtor)(void *) = nullptr;
-
 
 static int **g_cso_textA = nullptr;
 
@@ -1332,7 +1327,7 @@ int Level::init() {
         new(lod) LODManager();
         this->lodManager = lod;
 
-        PaintCanvas *canvas = **g_init_canvas;
+        PaintCanvas *canvas = Globals::Canvas;
 
         bool dustVariant = false;
         if (Status::gStatus->inAlienOrbit() == 0) {
@@ -5742,7 +5737,6 @@ static inline void zero16(void *p) {
 }
 
 Level::Level(int mission) {
-    void (*ctor)(void *) = *g_levelSubCtor;
     field_b4 = 0;
     field_b8 = 0;
     field_bc = 0;
@@ -5752,9 +5746,6 @@ Level::Level(int mission) {
     field_18c = 0;
     field_190 = 0;
     field_194 = 0;
-    ctor(&this->skyMatrix);
-    ctor(&this->cloudMatrix);
-    ctor(&this->reversalMatrix);
     zero16(&field_1c);
     zero16(&this->field_90);
     zero16(&this->particleRenderBoolPtr);

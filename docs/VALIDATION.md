@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level entry constructor/canvas gate (2026-10-17)
+
+Android ARM confirms three `Matrix` member-constructor calls and the
+`Globals::Canvas` source in `Level::init`. The `Level` constructor now passes
+the extracted-production-body host smoke at `-O0/-O2`; native `gof2` and
+40 verifier tests pass (one existing skip). Focused ARM source-shape rises
+from 32.6% to 95.0% for C1/C2 and 63.0% to 64.3% for init, with all three
+still nonexact. See
+[the focused evidence](LEVEL_ENTRY_CTOR_CANVAS_ARM_2026-10-17.md). The full
+ARM report compiled 208/208 TUs, compared 4,323/4,524 originals and returned
+93.81%/82.97% mean source-shape/strict fuzzy, 2,527 linked-exact and 1,076
+byte-exact, with zero exact-pair losses against the preceding full report.
+
 ## Agent stock and mission host gate (2026-10-17)
 
 The catalog-backed `-O0/-O2` smoke runs production `createAgents`

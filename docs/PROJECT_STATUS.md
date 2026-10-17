@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (agent stock and mission host gate; older subsystem
+Last reviewed: 2026-10-17 (Level entry constructor/canvas gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -11,10 +11,26 @@ smokes and ARM comparison gates. `Status::resetGame` now executes in an
 asset-backed host fixture. A bounded `Status::departStation` slice now
 executes after startup with real item, ship and agent-stock generation,
 including mission offers under a controlled RNG boundary. The next
-integration milestone is entry to `Level::init`; a catalog-backed
+integration milestone is executing `Level::init` with real resources; its
+constructor and stage-0 canvas source are now corrected against Android ARM,
+but the full init path has not yet passed a host runtime gate. A catalog-backed
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Level entry constructor and canvas (2026-10-17)
+
+Android ARM confirms three implicit `Matrix` member constructors in
+`Level::Level(int)` and a `Globals::Canvas` load in stage 0 of `Level::init`.
+Removing the extra null function-pointer calls raises constructor focused
+source-shape from 32.6% to 95.0%; the canvas correction raises init from
+63.0% to 64.3%. Both remain nonexact. The constructor passes an isolated
+`-O0/-O2` host smoke; native `gof2` and verifier tests are green. This is not
+yet a stage-0 execution claim. Full ARM verification compiled 208/208 TUs,
+compared 4,323/4,524 originals and reports 93.81% mean source-shape,
+82.97% strict fuzzy, 2,527 linked-exact and 1,076 byte-exact with no
+exact-pair losses. See
+[the entry evidence](LEVEL_ENTRY_CTOR_CANVAS_ARM_2026-10-17.md).
 
 ## Agent stock and missions in station transition (2026-10-17)
 
