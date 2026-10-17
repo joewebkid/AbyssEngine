@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Real pathfinder wanted route (2026-10-17)
+
+The asset-backed host smoke links production `SystemPathFinder` and
+`Node`. `-O0/-O2` exercise a direct system-20 route and a route with
+an intermediate system through `Status::moveWanted`, with **66/66**
+balanced file lifetimes. Random station choice remains a deterministic
+test boundary. Native `gof2` and 40 verifier tests (one existing skip)
+pass. The focused four-symbol pathfinder report at
+`A:/Galaxy on Fire new version/_work/system_pathfinder_focused_20261017.json`
+averages **97.0% / 81.0%** source-shape/strict fuzzy and has one
+linked-exact/byte-exact comparison. No production source changed, so
+the last full corpus remains **208/208** ARM TUs,
+**4,323/4,524** originals, **93.78% / 82.95%** averages and
+**2,527 linked-exact / 1,076 byte-exact** with no exact-pair changes.
+See [the evidence](SYSTEM_PATHFINDER_WANTED_ASSET_RUNTIME_2026-10-17.md).
+
 ## Saved-route wanted movement (2026-10-17)
 
 The asset-backed host smoke now executes production `Status::moveWanted`

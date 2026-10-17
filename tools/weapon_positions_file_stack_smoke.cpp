@@ -15,6 +15,7 @@
 #include "game/world/Wanted.h"
 #include "game/world/Galaxy.h"
 #include "game/world/Level.h"
+#include "game/world/SystemPathFinder.h"
 #include "host/ReadOnlyAssetFileInterface.h"
 #include <cassert>
 #include <algorithm>
@@ -58,7 +59,6 @@ void *Mission::empty = nullptr;
 Galaxy *Galaxy::gGalaxy = nullptr;
 Status *Status::gStatus = nullptr;
 int g_station_generator_calls = 0;
-int g_wanted_path_calls = 0;
 int g_wanted_random_station_id = -1;
 int g_wanted_random_station_calls = 0;
 // Catalog stations have no owned item/ship/agent lists in this fixture.
@@ -439,28 +439,59 @@ int main(int argc, char **argv) {
         status.moveWanted();
         assert(moving->getCurrentLocation() == 59);
         assert(interface.opens() == 59 && interface.closes() == 59);
+        for (unsigned i = 0; i < status.systemVisibilities->size(); ++i)
+            (*status.systemVisibilities)[i] = true;
+        SystemPathFinder pathFinder;
+        auto *systemsForRoute = galaxy.getSystems();
+        auto *routes = reinterpret_cast<Array<int> *>(galaxy.getSystem(20)->getRoutes());
+        assert(routes && !routes->empty());
         int randomSystem = -1;
-        for (int i = 0; i < 34; ++i) {
-            if (i == 20 || i == 27 || i == 28 || i == 25 || i == 26 || i == 6)
+        for (int candidateId : *routes) {
+            if (candidateId == 20 || candidateId == 27 || candidateId == 28 ||
+                candidateId == 25 || candidateId == 26 || candidateId == 6)
                 continue;
-            SolarSystem *candidate = galaxy.getSystem(i);
+            SolarSystem *candidate = galaxy.getSystem(candidateId);
             auto *ids = reinterpret_cast<Array<int> *>(candidate->getStations());
-            if (candidate->getRoutes() && ids && !ids->empty()) {
-                randomSystem = i;
+            if (!candidate->getRoutes() || !ids || ids->empty()) continue;
+            Array<int> *path = pathFinder.getSystemPath(systemsForRoute, 20, candidateId);
+            bool eligible = path && path->size() >= 2 && path->size() <= 4;
+            delete path;
+            if (eligible) {
+                randomSystem = candidateId;
                 g_wanted_random_station_id = (*ids)[0];
                 break;
             }
         }
         assert(randomSystem >= 0);
-        (*status.systemVisibilities)[randomSystem] = true;
         moving->setCurrentLocation(62);
         moving->setTravelsTo(62);
         status.moveWanted();
-        assert(g_wanted_path_calls == 1);
         assert(g_wanted_random_station_calls == 1);
         assert(moving->lastSeen == 62);
         assert(moving->getTravelsTo() == g_wanted_random_station_id);
         assert(interface.opens() == 63 && interface.closes() == 63);
+        int crossSystemStation = -1;
+        int expectedGate = -1;
+        for (int i = 0; i < 34; ++i) {
+            if (i == 20) continue;
+            auto *targetIds = reinterpret_cast<Array<int> *>(galaxy.getSystem(i)->getStations());
+            if (!targetIds || targetIds->empty()) continue;
+            Array<int> *crossPath = pathFinder.getSystemPath(systemsForRoute, 20, i);
+            if (crossPath && crossPath->size() >= 3) {
+                assert((*crossPath)[0] == 20 && crossPath->back() == i);
+                crossSystemStation = (*targetIds)[0];
+                expectedGate = galaxy.getSystem((*crossPath)[1])->getWarpGateIndex();
+                delete crossPath;
+                break;
+            }
+            delete crossPath;
+        }
+        assert(crossSystemStation >= 0 && expectedGate >= 0);
+        moving->setCurrentLocation(62);
+        moving->setTravelsTo(crossSystemStation);
+        status.moveWanted();
+        assert(moving->getCurrentLocation() == expectedGate);
+        assert(interface.opens() == 66 && interface.closes() == 66);
         moving->setActive(false);
         status.playerStation = savedPlayerStation;
         for (Station *&stackStation : *status.stationStack)
@@ -517,6 +548,6 @@ int main(int argc, char **argv) {
     }
 
     AEFile::Release();
-    assert(interface.opens() == 63 && interface.closes() == 63);
-    std::puts("production AEFile/FileRead assets and Status startup/departure/wanted path: OK");
+    assert(interface.opens() == 66 && interface.closes() == 66);
+    std::puts("production assets, Status startup/departure/wanted, and real pathfinder: OK");
 }

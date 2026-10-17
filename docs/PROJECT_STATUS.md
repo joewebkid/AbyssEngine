@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (wanted movement ARM/host gate; older subsystem
+Last reviewed: 2026-10-17 (real pathfinder wanted gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -10,12 +10,29 @@ behavior recovery, with a native static-library build, asset-backed host
 smokes and ARM comparison gates. `Status::resetGame` now executes in an
 asset-backed host fixture. A bounded `Status::departStation` slice now
 executes after startup with an explicit test-only Generator boundary;
-the next integration milestone is real station generation and
-cross-system wanted pathfinding followed by entry to `Level::init`.
+the next integration milestone is real station generation and entry
+to `Level::init`; a catalog-backed cross-system wanted path now runs.
 Only after that can
 gameplay paths be verified end-to-end;
 exact code matching remains a separate polish metric, not the definition
 of completion.
+
+## Cross-system wanted route with real pathfinder (2026-10-17)
+
+The asset-backed `-O0/-O2` fixture now links production
+`SystemPathFinder` and `Node`, finds a real route from system 20 with
+at least one intermediate system, and verifies that `Status::moveWanted`
+uses the next system's warp gate. **66/66** file lifetimes balance.
+Focused pathfinder family: **97.0%** average source-shape / **81.0%**
+strict fuzzy, one linked-exact and one byte-exact; `getSystemPath`
+itself is **96.0% / 59.1%**, nonexact. Native `gof2` and 40 verifier
+tests (one existing skip) pass. No production source changed, so the
+last full ARM gate remains **208/208** TUs, **4,323/4,524** originals,
+**93.78% / 82.95%** average source-shape/strict fuzzy and **2,527 /
+1,076** linked-/byte-exact; no exact pairs changed. Random station
+choice is still deterministic in the host test; Generator and
+`Level::init` remain unverified. See
+[the route evidence](SYSTEM_PATHFINDER_WANTED_ASSET_RUNTIME_2026-10-17.md).
 
 ## Saved-route wanted movement (2026-10-17)
 
