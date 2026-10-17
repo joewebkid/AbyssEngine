@@ -17,7 +17,7 @@ def main() -> None:
     prelude_start = source_text.index("    bool showWormhole = (comingFromAlienWorld")
     prelude_end = source_text.index("    this->landmarks =", prelude_start)
     tail_start = source_text.index("    random->reset();", prelude_end)
-    tail_end = source_text.index("\n}\n\nvoid Level::createRadioMessage", tail_start)
+    tail_end = source_text.index("\n    }\n\n    this->starSystem = new StarSystem(mode);", tail_start)
     prelude = source_text[prelude_start:prelude_end]
     tail = source_text[tail_start:tail_end]
     worm_source = (root / "src/game/ship/PlayerWormHole.cpp").read_text(encoding="utf-8")

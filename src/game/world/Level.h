@@ -388,9 +388,9 @@ public:
     static float i_b;
     static float i_g;
     static float i_r;
-    static float b_min;
-    static float g_min;
-    static float r_min;
+    static int b_min;
+    static int g_min;
+    static int r_min;
 };
 
 #if __SIZEOF_POINTER__ == 4

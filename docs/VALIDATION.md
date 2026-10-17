@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level StarSystem/stream-out gate (2026-10-17)
+
+Source-extracted `-O0/-O2` host smokes cover ordinary/gate/station-planet
+entry and the common `StarSystem`/RGB tail. Earlier station, jumpgate and
+wormhole-tail smokes, native `gof2`, 208/208 ARM TUs and 40 verifier tests
+pass (one skip). Focused `createSpace` source-shape/strict fuzzy rises
+67.2%/32.3% → 71.5%/39.0%; `init` rises 71.7%/47.2% → 84.8%/52.7%,
+nonexact. The test doubles do not verify asset-backed full `Level::init`.
+See [the entry evidence](LEVEL_ENTRY_STARSYSTEM_ARM_2026-10-17.md).
+Full ARM comparison: 4,323/4,524 originals, 93.86% mean source-shape,
+83.04% strict fuzzy, 2,528 linked-exact and 1,076 byte-exact with zero
+exact-pair losses versus the preceding wormhole/entry-angle report.
+
 ## Level wormhole/entry-angle gate (2026-10-17)
 
 The source-extracted `-O0/-O2` tail smoke covers ordinary, attacked-station,

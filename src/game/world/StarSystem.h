@@ -72,4 +72,8 @@ public:
     void updateSupernova(int dt);
 
 };
+
+#if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(StarSystem) == 0x60, "StarSystem ARM size");
+#endif
 #endif

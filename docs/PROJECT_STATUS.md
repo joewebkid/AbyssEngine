@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (Level wormhole/entry-angle gate; older subsystem
+Last reviewed: 2026-10-17 (Level StarSystem/stream-out gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -17,6 +17,23 @@ but the full init path has not yet passed a host runtime gate. A catalog-backed
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Level StarSystem and stream-out entry (2026-10-17)
+
+Android `Level::createSpace` constructs `StarSystem` for all modes after
+the landmark branch; the source no longer leaves ordinary flight without
+it. The common tail restores system/fallback RGB and integer minima.
+`Level::init` now positions stream-out entry from landmark 2 or a
+matching station planet when the orbit has no warp gate, then faces the
+player toward the origin. Source-extracted `-O0/-O2` host smokes pass,
+as do native and 208/208 ARM builds. Focused `createSpace` source-shape/
+strict fuzzy rises 67.2%/32.3% → 71.5%/39.0%; `init` rises
+71.7%/47.2% → 84.8%/52.7%, both nonexact. Full asset-backed entry and
+earlier skybox setup remain open. See
+[the entry evidence](LEVEL_ENTRY_STARSYSTEM_ARM_2026-10-17.md).
+Full ARM coverage remains 4,323/4,524 originals, with 93.86% mean
+source-shape, 83.04% strict fuzzy, 2,528 linked-exact and 1,076
+byte-exact; exact-pair losses are zero.
 
 ## Level wormhole and entry angle (2026-10-17)
 

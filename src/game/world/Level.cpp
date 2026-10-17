@@ -1084,16 +1084,7 @@ void Level::createSpace() {
     }
 
     int mode = this->missionPtr;
-    if (mode == 4 || mode == 0x17) {
-        StarSystem *ss = (StarSystem *) ::operator new(0x60);
-        new(ss) StarSystem(mode);
-        *(StarSystem **) &this->starSystem = ss;
-        this->skyRotX = 0.0f;
-        this->skyRotY = 0.0f;
-        this->skyRotZ = 0.0f;
-        return;
-    }
-
+    if (mode != 4 && mode != 0x17) {
     bool showWormhole = (comingFromAlienWorld ||
                          Status::gStatus->getStation()->isAttackedByAliens() ||
                          Status::gStatus->inAlienOrbit()) &&
@@ -1214,6 +1205,20 @@ void Level::createSpace() {
     if (!initStreamOutPosition) {
         field_138 = random->nextInt(2) == 0 ? 1600 : -1600;
     }
+    }
+
+    this->starSystem = new StarSystem(mode);
+
+    SolarSystem *system = static_cast<SolarSystem *>(Status::gStatus->getSystem());
+    r = system ? float(system->starR) : 10.0f;
+    g = system ? float(system->starG) : 136.0f;
+    b = system ? float(system->starB) : 10.0f;
+    i_r = r;
+    i_g = g;
+    i_b = b;
+    r_min = int(r / 3.0f);
+    g_min = int(g / 3.0f);
+    b_min = int(b / 3.0f);
 }
 
 void Level::createRadioMessage(int type, int sub) {
@@ -1483,10 +1488,35 @@ int Level::init() {
         if (this->missionPtr == 3) {
             thisptr->createPlayer();
             if (initStreamOutPosition != 0 && this->player->geometry != nullptr) {
-                // shortcut: special stream-out placement needs the missing createSpace landmarks.
-                int stk = (int) (intptr_t) Status::gStatus->getStationStack();
-                PlayerEgoPolymorphic *ego = (PlayerEgoPolymorphic *) thisptr->player;
-                ego->vtable->placeAtStation(ego, stk);
+                bool useStationOrbit = false;
+                Array<Station *> *stack = Status::gStatus->getStationStack();
+                if (stack && stack->size() > 1 && (*stack)[1]) {
+                    SolarSystem *system = static_cast<SolarSystem *>(Status::gStatus->getSystem());
+                    if (system && !system->currentOrbitHasWarpGate()) {
+                        Array<int> *stationIds = reinterpret_cast<Array<int> *>(system->getStations());
+                        int stationIndex = (*stack)[1]->getIndex();
+                        int planetIndex = -1;
+                        for (unsigned int i = 0; i < stationIds->size(); ++i) {
+                            if ((*stationIds)[i] == stationIndex) {
+                                planetIndex = int(i);
+                                break;
+                            }
+                        }
+                        Vector position = {0.0f, 0.0f, 25000.0f};
+                        if (planetIndex >= 0) {
+                            Array<AEGeometry *> *planets = static_cast<Array<AEGeometry *> *>(starSystem->getPlanets());
+                            position = (*planets)[planetIndex + 1]->getPosition();
+                        }
+                        position *= 4.0f;
+                        this->player->setPosition(position);
+                        Vector facing = AbyssEngine::AEMath::VectorNormalize(-position);
+                        this->player->geometry->setDirection(facing, Vector{0.0f, 1.0f, 0.0f});
+                        useStationOrbit = true;
+                    }
+                }
+                if (!useStationOrbit) {
+                    this->player->setPosition((*landmarks)[2]->getPosition());
+                }
             } else {
                 this->player->setPosition(10.0f, 10.0f, 10000.0f);
             }
@@ -7695,6 +7725,6 @@ float Level::i_a;
 float Level::i_b;
 float Level::i_g;
 float Level::i_r;
-float Level::b_min;
-float Level::g_min;
-float Level::r_min;
+int Level::b_min;
+int Level::g_min;
+int Level::r_min;
