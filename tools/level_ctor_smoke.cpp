@@ -5,6 +5,12 @@
 #include <new>
 
 int main() {
+    Level::initStreamOutPosition = 0;
+    Level::setInitStreamOut();
+    if (Level::initStreamOutPosition != 1) {
+        std::fputs("Level stream-out flag mismatch\n", stderr);
+        return 1;
+    }
     // The constructor owns no heap allocations; the unrelated Level destructor
     // is outside this focused entry test.
     alignas(Level) unsigned char storage[sizeof(Level)];

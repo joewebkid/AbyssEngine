@@ -26,6 +26,8 @@ struct GameSettings {
     int fireAnchorX;
 };
 
+static_assert(offsetof(GameSettings, settingSkipCampaignFlag) == 0x35, "GameSettings::settingSkipCampaignFlag offset");
+static_assert(offsetof(GameSettings, settingSkipIntroFlag) == 0x37, "GameSettings::settingSkipIntroFlag offset");
 static_assert(offsetof(GameSettings, steerAnchorX) == 0x54, "GameSettings::steerAnchorX offset");
 static_assert(offsetof(GameSettings, fireAnchorX) == 0x58, "GameSettings::fireAnchorX offset");
 

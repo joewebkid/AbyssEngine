@@ -4,6 +4,17 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level init global-source gate (2026-10-17)
+
+Android `Level::setInitStreamOut()` is now linked-exact and the focused
+`Level::init()` source-shape/strict fuzzy rises from 64.3%/35.4% to
+69.8%/44.8%. The extracted-body `-O0/-O2` host smoke checks the flag;
+native `gof2` and 40 verifier tests pass (one skip). Neither the smoke nor
+the focused comparison proves a full initialization runtime path. Full ARM
+coverage remains 4,323/4,524 originals, with 93.83%/82.99% means,
+2,528 linked-exact and 1,076 byte-exact and no exact-pair losses. See
+[the source evidence](LEVEL_INIT_GLOBAL_SOURCES_ARM_2026-10-17.md).
+
 ## Level entry constructor/canvas gate (2026-10-17)
 
 Android ARM confirms three `Matrix` member-constructor calls and the

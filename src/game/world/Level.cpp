@@ -184,8 +184,6 @@ const HangarSeat *levelGetHangarSeats(int race) {
 Matrix *CameraGetLocal(void *canvas, uint32_t index);
 
 
-static unsigned char *g_initStreamOut = nullptr;
-
 static int *g_cg_beamTable = nullptr;
 
 static int g_cg_rocketFx = 0;
@@ -233,14 +231,6 @@ static int **g_cg_snd2e = nullptr;
 static int *g_crm_counts8 = nullptr;
 
 static int *g_crm_table8 = nullptr;
-
-static char **g_init_flagStack = nullptr;
-
-static int **g_init_missionDef = nullptr;
-
-static int **g_init_settings = nullptr;
-
-static char **g_init_bmFlag = nullptr;
 
 static char **g_ca_lowDetail = nullptr;
 
@@ -382,7 +372,7 @@ void Level::enableMovingStars(bool enable) {
 }
 
 void Level::setInitStreamOut() {
-    *g_initStreamOut = 1;
+    initStreamOutPosition = 1;
 }
 
 int Level::getMiningPlant() {
@@ -1373,7 +1363,7 @@ int Level::init() {
         if (this->missionPtr == 3) {
             thisptr->createPlayer();
             int stk = 0;
-            if (**g_init_flagStack != 0 && this->player->geometry != 0)
+            if (initStreamOutPosition != 0 && this->player->geometry != 0)
                 stk = (int) (intptr_t) Status::gStatus->getStationStack();
             if (thisptr->player != nullptr) {
                 PlayerEgoPolymorphic *ego = (PlayerEgoPolymorphic *) thisptr->player;
@@ -1395,7 +1385,7 @@ int Level::init() {
 
     Mission *m = (Mission *) Status::gStatus->getMission();
     if (m == 0)
-        Status::gStatus->setMission((Mission *) **g_init_missionDef);
+        Status::gStatus->setMission(reinterpret_cast<Mission *>(Mission::empty));
 
     int mode = this->missionPtr;
     if (mode == 3) {
@@ -1404,12 +1394,12 @@ int Level::init() {
         if (campaign) {
             if (this->missionPtr != 3) { madeScene = true; } else {
                 int won = Status::gStatus->gameWon();
-                GameSettings *settings = (GameSettings *) *g_init_settings;
+                GameSettings *settings = reinterpret_cast<GameSettings *>(Globals::options);
                 bool skip = won != 0 && settings->settingSkipIntroFlag == 0 &&
                             settings->settingSkipCampaignFlag == 0;
                 if (skip) {
                     thisptr->createMission();
-                    if (**g_init_bmFlag != 0 && Status::gStatus->inBlackMarketSystem() != 0) {
+                    if (initStreamOutPosition != 0 && Status::gStatus->inBlackMarketSystem() != 0) {
                         if (thisptr->player != nullptr) {
                             PlayerEgoPolymorphic *ego = (PlayerEgoPolymorphic *) thisptr->player;
                             ego->vtable->placeAtStation(ego, 0);
@@ -1428,7 +1418,7 @@ int Level::init() {
             }
         } else {
             thisptr->createMission();
-            if (**g_init_bmFlag != 0 && Status::gStatus->inBlackMarketSystem() != 0) {
+            if (initStreamOutPosition != 0 && Status::gStatus->inBlackMarketSystem() != 0) {
                 if (thisptr->player != nullptr) {
                     PlayerEgoPolymorphic *ego = (PlayerEgoPolymorphic *) thisptr->player;
                     ego->vtable->placeAtStation(ego, 0);

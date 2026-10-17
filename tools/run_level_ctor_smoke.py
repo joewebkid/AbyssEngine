@@ -30,10 +30,13 @@ def main() -> None:
     source = (root / "src/game/world/Level.cpp").read_text(encoding="utf-8")
     ctor = extract_function(source, "Level::Level(int mission) {")
     zero16 = extract_function(source, "static inline void zero16(void *p) {")
+    set_stream_out = extract_function(source, "void Level::setInitStreamOut() {")
     args.out_dir.mkdir(parents=True, exist_ok=True)
     extracted = args.out_dir / "level_ctor_extracted.cpp"
     extracted.write_text(
-        '#include "game/world/Level.h"\n' + zero16 + "\n" + ctor + "\n",
+        '#include "game/world/Level.h"\n'
+        + "unsigned char Level::initStreamOutPosition;\n"
+        + zero16 + "\n" + ctor + "\n" + set_stream_out + "\n",
         encoding="utf-8",
     )
 

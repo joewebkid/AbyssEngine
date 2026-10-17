@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (Level entry constructor/canvas gate; older subsystem
+Last reviewed: 2026-10-17 (Level init global-source gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -17,6 +17,20 @@ but the full init path has not yet passed a host runtime gate. A catalog-backed
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Level init global sources (2026-10-17)
+
+Android ARM confirms that `Level::setInitStreamOut()` writes the existing
+`initStreamOutPosition` flag, and `Level::init()` reads that flag,
+`Mission::empty`, and the option bytes at `Globals::options[0x35/0x37]`.
+Replacing the null placeholders makes `setInitStreamOut()` linked-exact and
+raises focused `init` source-shape from 64.3% to 69.8%. The flag passes an
+isolated `-O0/-O2` host smoke; native `gof2` and verifier tests are green.
+The surrounding entry-placement behavior and full `Level::init` runtime path
+remain unverified. Full ARM comparison covers 4,323/4,524 originals and
+returns 93.83% mean source-shape, 82.99% strict fuzzy, 2,528 linked-exact
+and 1,076 byte-exact; exact-pair losses are zero. See
+[the global-source evidence](LEVEL_INIT_GLOBAL_SOURCES_ARM_2026-10-17.md).
 
 ## Level entry constructor and canvas (2026-10-17)
 
