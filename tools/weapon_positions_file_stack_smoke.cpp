@@ -11,11 +11,13 @@
 #include "game/world/SolarSystem.h"
 #include "host/ReadOnlyAssetFileInterface.h"
 #include <cassert>
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
 #include <string>
+#include <vector>
 
 // Unused String/locale services are host boundaries; the concatenation is
 // the same five-line body as AbyssEngine.cpp's String operator+.
@@ -166,6 +168,22 @@ int main(int argc, char **argv) {
     assert((*stations)[0]->name.data[3] == 0xe9); // Nehébru, UTF-8 decoded.
     assert((*stations)[70]->systemIndex == 14 && narrow((*stations)[70]->name) == "Dis");
     assert((*stations)[91]->systemIndex == 18 && narrow((*stations)[91]->name) == "Dima");
+    for (SolarSystem *system : *systems) {
+        auto *local = reader.loadStationsBinary(system);
+        assert(local && local->size() == system->stationIds->size());
+        std::vector<int> fileOrder;
+        for (int id : *system->stationIds) fileOrder.push_back(id);
+        std::sort(fileOrder.begin(), fileOrder.end());
+        if (system->systemId == 20) {
+            assert((*system->stationIds)[0] == 62 && (*system->stationIds)[1] == 59);
+            assert(fileOrder[0] == 58 && fileOrder[2] == 62);
+        }
+        for (unsigned i = 0; i < local->size(); ++i) {
+            assert((*local)[i] && (*local)[i]->index == fileOrder[i]);
+            delete (*local)[i];
+        }
+        delete local;
+    }
     for (Station *station : *stations) delete station;
     delete stations;
 
@@ -180,6 +198,6 @@ int main(int argc, char **argv) {
     delete dlc2;
 
     AEFile::Release();
-    assert(interface.opens() == 8 && interface.closes() == 8);
+    assert(interface.opens() == 42 && interface.closes() == 42);
     std::puts("production AEFile/FileRead five core assets: OK");
 }

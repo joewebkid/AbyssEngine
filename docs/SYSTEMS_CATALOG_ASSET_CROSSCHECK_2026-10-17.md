@@ -16,7 +16,8 @@ and visibility match independently decoded `systems.json` for
 systems 0, 18 and 33. Every one of the **135** separately loaded
 station IDs is contained in the system named by the station record.
 Before mounting assets, `loadSystemsBinary` returns null. Across the
-five tested files, **8** opens have **8** closes. The native `gof2`
+five tested files, the follow-up per-system loader brings the total
+to **42** opens and **42** closes. The native `gof2`
 build and verifier unit tests pass.
 
 The Android C++ source and ARM target are unchanged. The most recent
@@ -33,4 +34,6 @@ and other world services); the fixture therefore continues to use
 extracted, unmodified production bodies. No gameplay scene, save
 path or complete `gof2` executable is claimed. The next priority is
 to turn the station/system catalog into a controlled station-to-flight
-entry with explicit platform-boundary failures.
+entry with explicit platform-boundary failures. The nonascending
+K'ontrr list is detailed in
+[the station-order audit](FILE_READ_SYSTEM_STATION_ORDER_ARM_2026-10-17.md).

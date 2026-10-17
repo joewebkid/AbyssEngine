@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (systems catalog cross-check; older subsystem
+Last reviewed: 2026-10-17 (system station order; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -12,6 +12,26 @@ host and a station-to-flight smoke test. Only after that can gameplay
 paths be verified end-to-end; exact code matching remains a separate
 polish metric, not the definition of completion.
 
+## System station loader ordering (2026-10-17)
+
+The production `FileRead::loadStationsBinary(SolarSystem*)` body now
+runs against every actual system and station catalog record at native
+`-O0/-O2`. All **34** per-system loads return station IDs in ascending
+`stations.bin` order; **42/42** streams open/close across the five-file
+smoke. Android ARM at `0x12014c` confirms this scan-and-append order.
+System **20 K'ontrr** has a nonascending input ID list
+(`62,59,58,63,64`), so its input and result arrays are not
+positionally aligned. This is an original-code/data property, not a
+new native regression. ARM `StarSystem::StarSystem(int)` also compares
+the input ID and reads the returned station's texture at the same
+position; the first three K'ontrr pairs therefore differ. The
+on-screen effect is not runtime-confirmed. No matching source was
+changed. Last full ARM metrics remain
+**4,323/4,524**, **93.76%/82.91%** source-shape/strict fuzzy and
+**2,521/1,076** linked-/byte-exact. This overloaded loader is
+**93.7%/56.2%**, nonexact. See
+[the ordering evidence](FILE_READ_SYSTEM_STATION_ORDER_ARM_2026-10-17.md).
+
 ## Systems catalog cross-check (2026-10-17)
 
 The asset-backed native file-stack test now reads `systems.bin` with
@@ -19,7 +39,7 @@ the unchanged production `FileRead::loadSystemsBinary` and
 `SolarSystem` constructor/destructor bodies. Both `-O0` and `-O2`
 parse all **34** systems, check selected map coordinates and routes,
 and cross-check that every one of the **135** loaded station IDs is
-listed by its declared system. Missing-file behavior and **8/8**
+listed by its declared system. Missing-file behavior and **42/42**
 open/close pairs pass. Native `gof2` is green. The last ARM corpus
 remains **4,323/4,524**, **93.76%/82.91%** source-shape/strict fuzzy,
 **2,521/1,076** linked-/byte-exact; `loadSystemsBinary` itself is

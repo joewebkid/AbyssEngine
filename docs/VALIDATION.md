@@ -4,13 +4,26 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## System station order (2026-10-17)
+
+The five-file host test now invokes the production
+`loadStationsBinary(SolarSystem*)` body for all **34** systems at
+`-O0/-O2`. Returned station IDs follow `stations.bin` scan order;
+**42/42** file lifetimes balance. ARM REA inspection of
+`_ZN8FileRead18loadStationsBinaryEP11SolarSystem` at `0x12014c`
+confirms its increasing 0..134 scan and append index. System 20's
+catalog order is nonascending. No production code changed; the last
+full corpus is unchanged, and this overloaded loader remains
+**93.7% source-shape / 56.2% strict fuzzy**, nonexact. See
+[the evidence note](FILE_READ_SYSTEM_STATION_ORDER_ARM_2026-10-17.md).
+
 ## Systems catalog asset cross-check (2026-10-17)
 
 `tools/run_weapon_positions_file_stack_smoke.py` now includes the
 unchanged `loadSystemsBinary` and `SolarSystem` bodies. Against the
 local Android 2.0.16 `systems.bin`, host `-O0/-O2` tests pass for all
 34 systems and the mapping of all 135 stations to their systems.
-Missing file and 8/8 stream lifetime checks pass. The native `gof2`
+Missing file and 42/42 stream lifetime checks pass. The native `gof2`
 target and 40 verifier tests (one existing skip) pass. No production
 source changed, so the latest ARM corpus is still
 `A:/Galaxy on Fire new version/_work/station_lifetime_full_final_20261017.json`;

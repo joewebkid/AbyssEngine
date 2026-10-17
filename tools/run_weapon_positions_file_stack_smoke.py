@@ -34,6 +34,8 @@ def main():
     ships_begin = source.index("Array<Ship *> *FileRead::loadShipsBinary(", items_begin)
     station_begin = source.index("Array<Station *> *FileRead::loadStationsBinary(int16_t *ids,")
     station_end = source.index("Array<String *> *FileRead::loadNamesBinary(", station_begin)
+    system_stations_begin = source.index("Array<Station *> *FileRead::loadStationsBinary(SolarSystem *system)")
+    system_stations_end = source.index("Array<Agent *> *FileRead::loadAgents()", system_stations_begin)
     load_one_begin = source.index("Station *FileRead::loadStation(int32_t id)")
     load_one_end = source.index("int32_t FileRead::loadStationsBinary()", load_one_begin)
     item_source = (ROOT / "src/game/mission/Item.cpp").read_text()
@@ -55,6 +57,7 @@ def main():
         + source[items_begin:ships_begin]
         + source[ships_begin:]
         + source[station_begin:station_end]
+        + source[system_stations_begin:system_stations_end]
         + source[load_one_begin:load_one_end]
         + source[systems_begin:systems_end]
         + function(item_source, "Item::~Item()")
@@ -72,6 +75,7 @@ def main():
         + function(system_source, "SolarSystem::SolarSystem(int unk0,")
         + function(system_source, "SolarSystem::~SolarSystem()")
         + function(system_source, "int SolarSystem::stationIsInSystem(int idx)")
+        + function(system_source, "uint32_t *SolarSystem::getStations()")
     )
     sources = [
         "tools/weapon_positions_file_stack_smoke.cpp",
