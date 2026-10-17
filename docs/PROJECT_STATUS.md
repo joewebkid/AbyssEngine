@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (DLC start presets; older subsystem
+Last reviewed: 2026-10-17 (weapon-position file-stack asset check; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -11,6 +11,19 @@ gates. The next integration milestone is a real asset-mounted executable
 host and a station-to-flight smoke test. Only after that can gameplay
 paths be verified end-to-end; exact code matching remains a separate
 polish metric, not the definition of completion.
+
+## Weapon-position native file-stack check (2026-10-17)
+
+An asset-backed host fixture now runs the production AEFile/AENormalFile
+stack and extracted production `FileRead::loadWeaponPositions` body for
+missing-asset, first-record and later-record cases at `-O0/-O2`. It
+checks coordinates and two open/close pairs. Native `gof2` and
+**208/208** ARM units pass; focused loader source-shape/strict fuzzy
+remains **97.7%/53.1%**, nonexact. No production source changed, so
+the full corpus remains **4,323/4,524** originals, **93.75%/82.89%**
+averages and **2,520/1,076** linked-/byte-exact. This does not yet
+mount the full resource tree or run the game. See
+[the file-stack evidence](WEAPON_FILE_STACK_ASSET_MOUNT_2026-10-17.md).
 
 ## DLC start presets (2026-10-17)
 

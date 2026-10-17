@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Weapon-position native file-stack check (2026-10-17)
+
+`tools/run_weapon_positions_file_stack_smoke.py` compiles the unchanged
+production AEFile stack and extracted weapon loader with a host file
+boundary. The local asset passes missing/present, first/later record,
+coordinates and open/close checks at `-O0/-O2`. Incremental native
+`gof2` passes. Focused report
+`A:/Galaxy on Fire new version/_work/weapon_file_stack_focus_20261017.json`
+compiles **208/208** ARM units and retains **97.7%/53.1%**
+source-shape/strict fuzzy, nonexact. No production source changed;
+full-corpus counts remain those in the DLC preset section below.
+See [the evidence note](WEAPON_FILE_STACK_ASSET_MOUNT_2026-10-17.md).
+
 ## DLC start presets (2026-10-17)
 
 `python tools/test_menutouch_dlc_presets.py` passes two source-mapping
