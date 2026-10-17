@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Native host asset bridge (2026-10-17)
+
+`python tools/run_weapon_positions_file_stack_smoke.py --asset-dir
+"A:/Galaxy on Fire new version/analysis/gof2_raw_bin" --out
+"A:/Galaxy on Fire new version/_work/weapon-file-stack-smoke" --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at `-O0/-O2` with the new
+`host/ReadOnlyAssetFileInterface` and unchanged production loaders.
+Missing-asset and path checks pass; four real resource files produce
+seven balanced opens/closes. The native `gof2` and `gof2_host_file`
+targets build. No Android source or ARM comparison target changed;
+the most recent full report remains
+`A:/Galaxy on Fire new version/_work/station_lifetime_full_final_20261017.json`.
+See [the host stage note](HOST_ASSET_BRIDGE_AND_STAGES_2026-10-17.md).
+
 ## Station lookup ownership recovery (2026-10-17)
 
 Focused ARM `loadStation` rises **57.5%/14.3% → 100%/100%**

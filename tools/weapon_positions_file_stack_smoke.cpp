@@ -8,6 +8,7 @@
 #include "game/core/Globals.h"
 #include "game/world/Standing.h"
 #include "game/world/Station.h"
+#include "host/ReadOnlyAssetFileInterface.h"
 #include <cassert>
 #include <cmath>
 #include <cstdio>
@@ -36,79 +37,12 @@ void Standing::setPlayerSignatureRace(int) { std::abort(); }
 Station::~Station() {}
 
 namespace {
-std::filesystem::path assetDirectory;
-int opens = 0;
-int closes = 0;
-
 std::string narrow(const String &name) {
     char *text = name.GetAEChar();
     std::string result(text);
     delete[] text;
     return result;
 }
-
-std::filesystem::path resource(const String &name) {
-    const std::string path = narrow(name);
-    if (path == "data/bin/weapons_hd.bin") return assetDirectory / "weapons_hd.bin";
-    if (path == "data/bin/items.bin") return assetDirectory / "items.bin";
-    if (path == "data/bin/ships.bin") return assetDirectory / "ships.bin";
-    if (path == "data/bin/stations.bin") return assetDirectory / "stations.bin";
-    return {};
-}
-
-// This fixture mounts only four evidenced paths; it is not a game host.
-class HostFile final : public FileInterface {
-public:
-    explicit HostFile(std::FILE *stream = nullptr) : stream_(stream) { enabled = 1; }
-    ~HostFile() override { Close(); }
-
-    void *OpenRead(String name, int, bool windowed, int, int, unsigned offset) override {
-        assert(!windowed && offset == 0);
-        const auto path = resource(name);
-        if (path.empty()) return nullptr;
-        std::FILE *stream = std::fopen(path.string().c_str(), "rb");
-        if (!stream) return nullptr;
-        ++opens;
-        return new HostFile(stream);
-    }
-    uint32_t FileExist(String name) override {
-        const auto path = resource(name);
-        return !path.empty() && std::filesystem::is_regular_file(path);
-    }
-    uint32_t Read(uint32_t bytes, void *buffer) override {
-        assert(stream_);
-        return static_cast<uint32_t>(std::fread(buffer, 1, bytes, stream_));
-    }
-    uint32_t GetFileSize() override {
-        assert(stream_);
-        long position = std::ftell(stream_);
-        std::fseek(stream_, 0, SEEK_END);
-        long size = std::ftell(stream_);
-        std::fseek(stream_, position, SEEK_SET);
-        return static_cast<uint32_t>(size);
-    }
-    void Close() override {
-        if (stream_) { std::fclose(stream_); stream_ = nullptr; ++closes; }
-    }
-    void *OpenWrite(String, int, bool, unsigned) override { return nullptr; }
-    void *OpenAppend(String, int, bool, unsigned) override { return nullptr; }
-    uint32_t Write(uint32_t, const void *) override { return 0; }
-    uint32_t Seek(uint32_t) override { return 0; }
-    uint32_t FileDelete(String) override { return 0; }
-    uint32_t GetDeviceFreeSpace() override { return 0; }
-    const char *GetAppRootDir() override { return ""; }
-    void SetAppRootDir(void *) override {}
-    void SetZipDirectory(void *) override {}
-    uint32_t FileEnumInit(char *, bool) override { return 0; }
-    uint32_t FileGetNextEnum(String &) override { return 0; }
-    String GetDirPreFix() override { return String(""); }
-    char *Output(char *line) override { return line; }
-    void SetSaveDirectory(String) override {}
-    void ResetSaveDirectory() override {}
-
-private:
-    std::FILE *stream_;
-};
 
 void release(Array<Array<AbyssEngine::AEMath::Vector *> *> *positions) {
     for (auto *slot : *positions) {
@@ -127,16 +61,22 @@ int main(int argc, char **argv) {
     assert(std::filesystem::is_regular_file(realAssetDirectory / "items.bin"));
     assert(std::filesystem::is_regular_file(realAssetDirectory / "ships.bin"));
     assert(std::filesystem::is_regular_file(realAssetDirectory / "stations.bin"));
-    HostFile interface;
+    ReadOnlyAssetFileInterface interface;
     AEFile::SetInterface(&interface);
     FileRead reader;
 
-    assetDirectory = realAssetDirectory / "missing";
     assert(reader.loadWeaponPositions(63) == nullptr);
     assert(reader.loadItemsBinary() == nullptr);
     assert(reader.loadShipsBinary() == nullptr);
-    assert(opens == 0 && closes == 0);
-    assetDirectory = realAssetDirectory;
+    assert(interface.opens() == 0 && interface.closes() == 0);
+    assert(!interface.addMount("data/bin/../", realAssetDirectory));
+    assert(interface.addMount("data/bin/", realAssetDirectory));
+    assert(!interface.addMount("data/bin/", realAssetDirectory));
+    assert(!interface.FileExist(String("data/bin/../stations.bin")));
+    assert(!interface.FileExist(String("data/bin_evil/stations.bin")));
+    assert(!interface.FileExist(String("data/bin/not_present.bin")));
+    assert(interface.FileExist(String("data/bin/stations.bin")));
+    assert(interface.OpenWrite(String("data/bin/stations.bin"), 0, false, 0) == nullptr);
 
     auto *first = reader.loadWeaponPositions(63);
     assert(first && first->size() == 4);
@@ -210,6 +150,6 @@ int main(int argc, char **argv) {
     delete dlc2;
 
     AEFile::Release();
-    assert(opens == 7 && closes == 7);
+    assert(interface.opens() == 7 && interface.closes() == 7);
     std::puts("production AEFile/FileRead core assets: OK");
 }

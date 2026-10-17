@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (loadStation ownership recovery; older subsystem
+Last reviewed: 2026-10-17 (host asset bridge; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -11,6 +11,20 @@ gates. The next integration milestone is a real asset-mounted executable
 host and a station-to-flight smoke test. Only after that can gameplay
 paths be verified end-to-end; exact code matching remains a separate
 polish metric, not the definition of completion.
+
+## Host read-only asset bridge (2026-10-17)
+
+A native-only, reusable `FileInterface` now mounts logical resource
+prefixes to loose asset directories. The production AEFile/FileRead
+smoke passes at `-O0/-O2` on four actual Android catalog files,
+including 233 items, 64 ships, 135 stations and two direct station
+lookups. Missing resources and unsafe paths are rejected; seven
+streams open and close. Native `gof2` and `gof2_host_file` build.
+Android source is unchanged, so the last full corpus remains
+**4,323/4,524** originals, **93.76%/82.91%** source-shape/strict
+fuzzy and **2,521/1,076** linked-/byte-exact. This is a host
+integration step, not a gameplay run or new ARM metric. See
+[the host stages and limits](HOST_ASSET_BRIDGE_AND_STAGES_2026-10-17.md).
 
 ## Station lookup ownership recovery (2026-10-17)
 

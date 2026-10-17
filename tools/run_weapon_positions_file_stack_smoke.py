@@ -67,6 +67,7 @@ def main():
     )
     sources = [
         "tools/weapon_positions_file_stack_smoke.cpp",
+        "host/ReadOnlyAssetFileInterface.cpp",
         "src/engine/file/AEFile.cpp",
         "src/engine/file/AENormalFile.cpp",
         "src/engine/file/AEPakFile.cpp",
@@ -77,7 +78,7 @@ def main():
         exe = out / f"weapon_file_stack_{opt[1:]}.exe"
         subprocess.run([
             args.cxx, "-std=c++17", opt, "-fpermissive", "-ffunction-sections",
-            "-fdata-sections", "-Wl,--gc-sections", "-Isrc", "-Ithird_party/jni",
+            "-fdata-sections", "-Wl,--gc-sections", "-I.", "-Isrc", "-Ithird_party/jni",
             "-Ithird_party/gl", "-Ithird_party/fmod/inc", *sources,
             "-o", str(exe),
         ], cwd=ROOT, env=compiler_env, check=True)

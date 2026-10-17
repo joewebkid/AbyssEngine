@@ -36,7 +36,7 @@ endif()
 # that work is preserved in git history. Layout:
 #   src/           one .cpp + its co-located .h per class; shared foundation (common.h/math.h/
 #                  externs.h, platform/) at the tree root. Include paths are relative to src/.
-#   host/          future platform entry points and runtime services (not implemented yet)
+#   host/          host-only runtime services (read-only loose-asset bridge so far)
 #   tools/         transformation/build helpers (rewrite_body.py, reconcile.py, build.sh, ...)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -56,6 +56,11 @@ target_include_directories(gof2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_compile_options(gof2 PRIVATE
     $<$<CXX_COMPILER_ID:GNU>:-fpermissive>
     -Wno-int-to-pointer-cast -Wno-int-to-void-pointer-cast)
+
+add_library(gof2_host_file STATIC host/ReadOnlyAssetFileInterface.cpp)
+target_include_directories(gof2_host_file PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/src")
+target_compile_features(gof2_host_file PUBLIC cxx_std_17)
 
 option(GOF2_BUILD_PARTICLE_SETTINGS_SMOKE
        "Build the native ParticleSettingsRef ABI/runtime smoke test" OFF)
