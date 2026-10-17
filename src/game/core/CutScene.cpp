@@ -693,5 +693,6 @@ void CutScene::checkForTurret() {
             (*positions)[i] = nullptr;
         }
     }
+    ArrayReleaseClasses(*positions);
     delete positions;
 }

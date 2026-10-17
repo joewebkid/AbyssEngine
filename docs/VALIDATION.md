@@ -4,6 +4,28 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene turret position cleanup (2026-10-17)
+
+`python tools/run_cutscene_turret_cleanup_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2` for two
+populated and two empty position slots, plus the null-list return.
+Native `gof2`, **208/208** ARM units, 40 verifier tests (one existing
+skip), and previous turret motion/transform smokes pass. Focused
+report
+`A:/Galaxy on Fire new version/_work/cutscene_turret_cleanup_after_20261017.json`
+scores `checkForTurret` at **93.3% source-shape / 48.5% strict fuzzy**,
+versus **93.8% / 48.7%** in
+`cutscene_check_turret_after_20261017.json`; the ARM cleanup call
+takes precedence over this nonexact function's score. Full report
+`A:/Galaxy on Fire new version/_work/cutscene_turret_cleanup_full_20261017.json`
+has **4,323/4,524** originals compared in **4,721 comparisons**,
+**201 missing**, **123 extras**, **93.74%/82.87%** rounded averages,
+**2,518 linked-exact / 1,076 byte-exact**. Relative to
+`cutscene_init_mode2_placement_full_20261017.json`, no exact
+`(unit,symbol)` pair is lost and the outer `ArrayReleaseClasses`
+specialization gains linked-exact. See
+[the cleanup audit](CUTSCENE_TURRET_CLEANUP_ARM_2026-10-17.md).
+
 ## CutScene mode-2 ship placement (2026-10-17)
 
 `python tools/run_cutscene_init_mode2_ships_smoke.py --cxx

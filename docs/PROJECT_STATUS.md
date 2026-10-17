@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (CutScene mode-2 ship placement; older subsystem
+Last reviewed: 2026-10-17 (CutScene turret position cleanup; older subsystem
 snapshots retain their dates)
+
+## CutScene turret position cleanup (2026-10-17)
+
+Android ARM confirms that `checkForTurret` releases the outer
+weapon-position array with `ArrayReleaseClasses` after releasing its
+inner arrays and before destruction. The missing call is restored;
+an extracted host test exercises populated and null slots without
+double deletion. Native `gof2`, **208/208** ARM units, 40 verifier
+tests (one existing skip), and prior turret smokes pass. Focused
+`checkForTurret` source-shape/strict fuzzy changes from **93.8%/48.7%**
+to **93.3%/48.5%**, still nonexact. Full corpus compares **4,323/4,524**
+original functions over **4,721 comparisons**, with **201 missing**
+and **123 extras**. Rounded averages remain **93.74%/82.87%**;
+linked-exact rises from **2,517 to 2,518** because the outer-release
+template now matches, while **1,076 byte-exact** is unchanged and
+there are zero exact-pair losses. Live ARM32 file loading and the
+missing-data path are untested. Next priority: investigate another
+bounded gameplay or ABI gap; do not treat this cleanup as proof of
+runtime completeness. See
+[the cleanup audit](CUTSCENE_TURRET_CLEANUP_ARM_2026-10-17.md).
 
 ## CutScene mode-2 ship placement (2026-10-17)
 
