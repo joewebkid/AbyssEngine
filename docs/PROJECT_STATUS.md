@@ -18,9 +18,10 @@ and **123 extras**. Rounded averages remain **93.74%/82.87%**;
 linked-exact rises from **2,517 to 2,518** because the outer-release
 template now matches, while **1,076 byte-exact** is unchanged and
 there are zero exact-pair losses. Live ARM32 file loading and the
-missing-data path are untested. Next priority: investigate another
-bounded gameplay or ABI gap; do not treat this cleanup as proof of
-runtime completeness. See
+missing-data path are untested. Next priority: audit the
+`FileRead::loadWeaponPositions` allocation/lifetime contract at its
+`CutScene::checkForTurret` caller and the missing-data precondition;
+do not treat this cleanup as proof of runtime completeness. See
 [the cleanup audit](CUTSCENE_TURRET_CLEANUP_ARM_2026-10-17.md).
 
 ## CutScene mode-2 ship placement (2026-10-17)
