@@ -5,7 +5,7 @@ The Android 2.0.16 ARM binary returns a `Station *` from both
 (`0x175ea8`). The former loads the first station pointer from the returned
 array into `r4` and returns it in `r0`. The latter preserves that result on
 the nonnegative path; on the negative path it loads
-`Status::gStatus->playerStation` at offset `0x78` and returns the pointer.
+`Globals::status->playerStation` at offset `0x78` and returns the pointer.
 The existing `Globals.cpp` call-site declaration independently used
 `Station *` for `FileRead::loadStation`.
 
@@ -34,8 +34,8 @@ Galaxy 72.0%);
 this is an ABI/runtime correction, not a claimed shape improvement.
 
 The original positive `Galaxy::getStation` path allocates `FileRead` on the
-heap while the current source uses a stack object. The original
-`FileRead::loadStation` allocation/cleanup path also differs. Those lifetime
-details, native gameplay and ARM-device runtime remain unverified. The
-separate `Galaxy::getSystem` contract was subsequently corrected; see
+heap; that lifetime and the negative-path global were subsequently corrected.
+The original `FileRead::loadStation` allocation/cleanup path still differs,
+and native gameplay and ARM-device runtime remain unverified. See
+[the lifetime evidence](GALAXY_GET_STATION_LIFETIME_ARM_2026-10-17.md) and
 [the system pointer evidence](GALAXY_SYSTEM_POINTER_ABI_2026-10-09.md).

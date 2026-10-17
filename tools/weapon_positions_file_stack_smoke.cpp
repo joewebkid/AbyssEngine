@@ -35,7 +35,7 @@ unsigned short *computeFloatString(float, int, int *, int *, int) { std::abort()
 int GameText::getLanguage() { return 0; }
 void String_printImpl(const char *) { std::abort(); }
 
-// These player-status branches are unreachable while loading catalog templates.
+// The player-status pointer is the host boundary for negative station IDs.
 Status *Globals::status = nullptr;
 Galaxy *Galaxy::gGalaxy = nullptr;
 Status *Status::gStatus = nullptr;
@@ -232,7 +232,13 @@ int main(int argc, char **argv) {
         Galaxy galaxy;
         Galaxy::gGalaxy = &galaxy;
         Status status;
+        Globals::status = &status;
+        // Keep the two globals distinct to check the ARM-observed source.
+        assert(galaxy.getStation(-1) == status.playerStation);
         Status::gStatus = &status;
+        Station *directStation = galaxy.getStation(0);
+        assert(directStation && directStation->index == 0);
+        delete directStation;
         status.setStation((*stations)[91]);
         assert(status.system == galaxy.getSystem(18));
         assert((*status.field_b4)[18]);
@@ -265,6 +271,7 @@ int main(int argc, char **argv) {
         delete status.field_90;
         delete status.field_54;
         delete status.field_58;
+        Globals::status = nullptr;
         Status::gStatus = nullptr;
         Galaxy::gGalaxy = nullptr;
     }
@@ -283,6 +290,6 @@ int main(int argc, char **argv) {
     delete dlc2;
 
     AEFile::Release();
-    assert(interface.opens() == 47 && interface.closes() == 47);
-    std::puts("production AEFile/FileRead seven assets and Status station path: OK");
+    assert(interface.opens() == 48 && interface.closes() == 48);
+    std::puts("production AEFile/FileRead seven assets and Galaxy/Status station paths: OK");
 }

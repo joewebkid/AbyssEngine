@@ -1,16 +1,33 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (asset-backed station transition; older subsystem
+Last reviewed: 2026-10-17 (Galaxy station lookup lifetime; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
 
 The project is past the initial symbol inventory and is in source-backed
-behavior recovery, with a native static-library build and ARM comparison
-gates. The next integration milestone is a real asset-mounted executable
-host and a station-to-flight smoke test. Only after that can gameplay
-paths be verified end-to-end; exact code matching remains a separate
-polish metric, not the definition of completion.
+behavior recovery, with a native static-library build, asset-backed host
+smokes and ARM comparison gates. The next integration milestone is to
+execute a bounded `Status::resetGame` startup slice, then a station-to-flight
+smoke test. Only after that can gameplay paths be verified end-to-end;
+exact code matching remains a separate polish metric, not the definition
+of completion.
+
+## Galaxy station lookup lifetime (2026-10-17)
+
+Android ARM confirms that `Galaxy::getStation` returns the player station
+through `Globals::status` for a negative ID and heap-constructs/destroys
+`FileRead` for a nonnegative ID. The recovered source now follows both
+paths. Focused source-shape rose **72.0% → 100.0%**, strict fuzzy
+**29.4% → 96.7%**; this function is still nonexact. Real-asset host tests
+at `-O0/-O2` exercise both branches, with **48/48** file opens/closes.
+Native targets and **208/208** ARM translation units build; 40 verifier
+tests pass (one existing skip). The full corpus compares **4,323/4,524**
+original functions in **4,723** rows, with **93.76%** average source-shape,
+**82.92%** strict fuzzy, **2,521 linked-exact** and **1,076 byte-exact**.
+No exact pairs were lost; 201 originals remain missing, zero have a wrong
+signature, and zero units were skipped. This does not run `Status::resetGame`
+or a flight scene. See [the lifetime evidence](GALAXY_GET_STATION_LIFETIME_ARM_2026-10-17.md).
 
 ## Asset-backed Status station transition (2026-10-17)
 
@@ -24,7 +41,7 @@ ARM at `0x0a90b8` confirms the by-ID station search. No production
 source changed, so the latest full corpus remains **4,323/4,524**,
 **93.76%/82.91%** source-shape/strict fuzzy and **2,521/1,076**
 linked-/byte-exact; `setStation` is **86.9%/47.7%**, nonexact. This
-still does not execute `Status::activate` or a flight scene. See
+still does not execute `Status::resetGame` or a flight scene. See
 [the runtime evidence](STATUS_SET_STATION_ASSET_RUNTIME_2026-10-17.md).
 
 ## Status startup catalogs (2026-10-17)

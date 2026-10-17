@@ -104,6 +104,7 @@ def main():
         + function(galaxy_source, "Galaxy::Galaxy()")
         + function(galaxy_source, "Galaxy::~Galaxy()")
         + function(galaxy_source, "SolarSystem *Galaxy::getSystem(int index)")
+        + function(galaxy_source, "Station *Galaxy::getStation(int index)")
         + function(station_source, "Station::Station()")
         + function(station_source, "int Station::getIndex()")
         + function(station_source, "int Station::getSystem()")

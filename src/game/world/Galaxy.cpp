@@ -243,10 +243,12 @@ void *Galaxy::getAsteroidProbabilities(Station *station) {
 
 Station *Galaxy::getStation(int index) {
     if (index < 0)
-        return Status::gStatus->playerStation;
+        return Globals::status->playerStation;
 
-    FileRead loader;
-    return loader.loadStation(index);
+    FileRead *loader = new FileRead();
+    Station *station = loader->loadStation(index);
+    delete loader;
+    return station;
 }
 
 Array<SolarSystem *> *Galaxy::getSystems() {

@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Galaxy station lookup lifetime (2026-10-17)
+
+`Galaxy::getStation` now follows the Android ARM lifetime and negative-ID
+global. Asset-backed host `-O0/-O2` tests exercise both paths with
+**48/48** balanced file opens/closes. Native `gof2` and `gof2_host_file`
+build; **208/208** ARM units compile and 40 verifier tests pass (one
+existing skip). The focused source-shape/strict fuzzy scores move from
+**72.0%/29.4%** to **100.0%/96.7%**. The full report at
+`A:/Galaxy on Fire new version/_work/galaxy_getstation_full_20261017.json`
+compares **4,323/4,524** originals in **4,723** rows; averages are
+**93.76%/82.92%**, with **2,521 linked-exact / 1,076 byte-exact**.
+Comparison against the preceding full report finds zero linked- or
+byte-exact pair losses, zero skipped units and zero wrong-type missing
+symbols. See [the lifetime evidence](GALAXY_GET_STATION_LIFETIME_ARM_2026-10-17.md).
+
 ## Asset-backed Status station transition (2026-10-17)
 
 The `tools/run_weapon_positions_file_stack_smoke.py` host test now

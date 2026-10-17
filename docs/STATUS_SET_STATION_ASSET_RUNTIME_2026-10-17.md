@@ -34,9 +34,9 @@ These figures are inherited, not gains from the host runtime test.
 
 The native `gof2` and `gof2_host_file` targets build; 40 verifier
 tests pass with one pre-existing skip. This is a real call through
-`Status::setStation`, **not** an execution of `Status::activate`, a
+`Status::setStation`, **not** an execution of `Status::resetGame`, a
 rendered orbit, save loading or a station-to-flight scene. Error
 paths for missing files or invalid station IDs remain untested. Next
-priority: establish the smallest complete `Status::activate` or
+priority: establish the smallest complete `Status::resetGame` or
 station-departure slice, identifying platform calls that still block
 an executable scene.
