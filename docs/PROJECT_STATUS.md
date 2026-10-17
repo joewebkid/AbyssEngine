@@ -18,8 +18,11 @@ byte-exact** pairs (zero losses). The parser's type-3 vector order
 matches ARM; an asset-backed game run and absent-ship-ID call paths
 remain unverified. The local resource omits ship IDs **13, 14, 15,
 50 and 53**; their reachability as the current ship is unproven.
-Next priority: validate those caller preconditions
-and the four-slot ownership path without inventing an EOF policy.
+Android ARM confirms ordinary station purchase generation excludes
+all five; save and scripted/direct ship changes remain unaudited.
+Next priority: validate the four-slot ownership path with an
+asset-backed runtime check, then audit non-market ship changes
+without inventing an EOF policy.
 See [the path-lifetime audit](FILE_READ_WEAPON_PATH_LIFETIME_ARM_2026-10-17.md).
 
 ## CutScene FileRead lifetime (2026-10-17)

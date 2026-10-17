@@ -44,3 +44,19 @@ also passes the current ship ID. Whether the game actually permits
 these five templates on either caller path remains unverified. The
 native loop's missing-ID behavior is therefore a conditional risk,
 not proof that a shipped play path hangs.
+
+The ordinary station purchase path is narrower. Android ARM
+`Globals::getRandomEnemyFighter` at `0xe49dc` samples IDs below 37,
+rejects 13 and 14 with the `(id & ~4) - 9 < 2` gate, and rejects 15
+with the `0x8101` bit mask; its fixed return cases are other IDs.
+Android ARM `Generator::getShipBuyList` at `0x95bcc` uses that helper
+for ordinary random offers. Its race-8 station scans only IDs below
+50 and checks the race table at `0x1fb5dc` (IDs 13–15 have race 0).
+The all-template station calls `Ship::hasJumpDriveIntegrated`, whose
+ARM body at `0x174bcc` admits only IDs 37, 38 and 40. The explicit
+additions in the recovered generator also contain none of the five
+missing IDs. `Status` assigns this buy list to stations and
+`HangarWindow` constructs the purchased ship from a selected list
+entry. Thus the *ordinary station purchase list* does not offer the
+five missing IDs. This does not prove they are unreachable through
+save loading, scripted/direct ship changes, or other unreviewed paths.
