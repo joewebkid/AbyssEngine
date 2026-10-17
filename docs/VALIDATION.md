@@ -4,6 +4,17 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level ordinary entry-position gate (2026-10-17)
+
+The source-extracted `-O0/-O2` host smoke covers ordinary and first-mission
+entry coordinates. Native `gof2`, 208/208 ARM TUs and 40 verifier tests pass
+(one skip). Focused `Level::init` source-shape/strict fuzzy rises from
+69.8%/44.8% to 71.7%/47.2%, nonexact. The special stream-out path and
+full stage-0/1 runtime remain unverified. Full ARM comparison covers
+4,323/4,524 originals, 93.83%/82.99% means, 2,528 linked-exact and
+1,076 byte-exact with no exact-pair losses. See
+[the entry-position evidence](LEVEL_ENTRY_POSITION_ARM_2026-10-17.md).
+
 ## Level init global-source gate (2026-10-17)
 
 Android `Level::setInitStreamOut()` is now linked-exact and the focused

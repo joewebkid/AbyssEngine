@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (Level init global-source gate; older subsystem
+Last reviewed: 2026-10-17 (Level ordinary entry-position gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -17,6 +17,19 @@ but the full init path has not yet passed a host runtime gate. A catalog-backed
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Level ordinary entry position (2026-10-17)
+
+Android `Level::init` places an ordinary launch at `(10, 10, 10000)` and
+overrides it to `(0, 0, -110000)` for campaign mission 1. The source no longer
+invokes the guessed virtual placement for these paths. An extracted-branch
+`-O0/-O2` host smoke passes; native and ARM builds and verifier tests are
+green. Focused `init` source-shape/strict fuzzy rises from 69.8%/44.8% to
+71.7%/47.2%, still nonexact. The stream-out branch and `createSpace`
+landmark creation remain open. Full ARM coverage remains 4,323/4,524
+originals, with 93.83%/82.99% means, 2,528 linked-exact and 1,076
+byte-exact; no exact-pair losses. See
+[the entry-position evidence](LEVEL_ENTRY_POSITION_ARM_2026-10-17.md).
 
 ## Level init global sources (2026-10-17)
 

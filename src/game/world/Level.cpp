@@ -1362,13 +1362,16 @@ int Level::init() {
 
         if (this->missionPtr == 3) {
             thisptr->createPlayer();
-            int stk = 0;
-            if (initStreamOutPosition != 0 && this->player->geometry != 0)
-                stk = (int) (intptr_t) Status::gStatus->getStationStack();
-            if (thisptr->player != nullptr) {
+            if (initStreamOutPosition != 0 && this->player->geometry != nullptr) {
+                // shortcut: special stream-out placement needs the missing createSpace landmarks.
+                int stk = (int) (intptr_t) Status::gStatus->getStationStack();
                 PlayerEgoPolymorphic *ego = (PlayerEgoPolymorphic *) thisptr->player;
                 ego->vtable->placeAtStation(ego, stk);
+            } else {
+                this->player->setPosition(10.0f, 10.0f, 10000.0f);
             }
+            if (Status::gStatus->getCurrentCampaignMission() == 1)
+                this->player->setPosition(0.0f, 0.0f, -110000.0f);
         }
         stage = this->field_134;
     }
