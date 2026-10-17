@@ -290,8 +290,6 @@ static int *g_ips_envB = nullptr;
 
 static int **g_cwm_seedSrc = nullptr;
 
-static unsigned int g_level_texOutScratch;
-
 static inline float bitsToFloat(int bits) {
     float f;
     __builtin_memcpy(&f, &bits, sizeof(f));
@@ -1045,42 +1043,94 @@ Gun *Level::createGun(int idx, int owner, int kind, int hp, int dmg, int rate, i
 }
 
 void Level::createSpace() {
-    if (*(unsigned *) &this->skyboxMesh == 0xffffffff) {
-        int alien = Status::gStatus->inAlienOrbit();
+    if (skyboxMesh == -1) {
+        PaintCanvas *canvas = Globals::Canvas;
+        if (!Status::gStatus->inAlienOrbit()) {
+            SolarSystem *system = static_cast<SolarSystem *>(Status::gStatus->getSystem());
+            const int variant = system->getIndex() % 3;
+            canvas->MeshCreate(static_cast<unsigned short>(0x45ba + variant),
+                               reinterpret_cast<unsigned int &>(field_08), false);
+            canvas->TextureCreate(static_cast<unsigned short>(0x2766 + variant),
+                                  reinterpret_cast<unsigned int &>(field_19c), false);
 
-        if (alien == 0) {
-            Status::gStatus->getSystem();
-            int sysVariant = (((SolarSystem *) Status::gStatus->getSystem())->getIndex() % 3);
-            unsigned int field08Handle;
-            PaintCanvas::gCanvas->MeshCreate((unsigned short) (sysVariant + 0x45ba), field08Handle, false);
-            this->field_08 = field08Handle;
-            Status::gStatus->getSystem();
-            sysVariant = (((SolarSystem *) Status::gStatus->getSystem())->getIndex() % 3);
-            PaintCanvas::gCanvas->TextureCreate((unsigned short) ((sysVariant + 0x2766) & 0xffff), nullptr, nullptr,
-                                   g_level_texOutScratch, false);
+            const int mission = Status::gStatus->getCurrentCampaignMission();
+            if (mission == 0 && missionPtr == 3) {
+                canvas->MeshCreate(0x458b, reinterpret_cast<unsigned int &>(skyboxMesh), false);
+                canvas->TextureCreate(0x2754, reinterpret_cast<unsigned int &>(field_198), false);
+            } else {
+                if (Status::gStatus->inSupernovaSystem()) {
+                    if (mission == 89) {
+                        canvas->MeshCreate(0x458d, reinterpret_cast<unsigned int &>(skyboxMesh), false);
+                        canvas->TextureCreate(0x2756, reinterpret_cast<unsigned int &>(field_198), false);
+                    } else {
+                        if (mission <= 157) {
+                            canvas->MeshCreate(0x45a0, reinterpret_cast<unsigned int &>(skyboxTexture), false);
+                            canvas->TransformCreate(reinterpret_cast<unsigned int &>(field_10));
+                            canvas->TransformAddMeshId(field_10, skyboxTexture);
+                            static_cast<AbyssEngine::Transform *>(canvas->TransformGetTransform(field_10))->Update(1000, false);
+                            canvas->MeshCreate(0x45a1, reinterpret_cast<unsigned int &>(field_14), false);
+                            canvas->TransformCreate(reinterpret_cast<unsigned int &>(field_18));
+                            canvas->TransformAddMeshId(field_18, field_14);
+                            static_cast<AbyssEngine::Transform *>(canvas->TransformGetTransform(field_18))->Update(1000, false);
+                            canvas->TextureCreate(mission >= 106 ? 0x2765 : 0x2764,
+                                                  reinterpret_cast<unsigned int &>(field_1a0), false);
+                        }
+                        canvas->MeshCreate(0x4597, reinterpret_cast<unsigned int &>(skyboxMesh), false);
+                        canvas->TextureCreate(0x2760, reinterpret_cast<unsigned int &>(field_198), false);
+                    }
+                } else {
+                    const int textureIndex = system->getTextureIndex();
+                    canvas->MeshCreate(static_cast<unsigned short>(0x4588 + textureIndex),
+                                       reinterpret_cast<unsigned int &>(skyboxMesh), false);
+                    canvas->TextureCreate(static_cast<unsigned short>(0x2751 + textureIndex),
+                                          reinterpret_cast<unsigned int &>(field_198), false);
+                }
 
-            Status::gStatus->getSystem();
-            if (0xf < ((SolarSystem *) Status::gStatus->getSystem())->getTextureIndex()) {
-                Engine *eng = (Engine *) ApplicationManager::gAppManager->GetEngine();
-                if (eng->IsPostEffectActivated() != false) {
-                    AbyssEngine::Mesh *mp = PaintCanvas::gCanvas->MeshGetPointer((unsigned int) *(unsigned *) &this->skyboxMesh);
-                    mp->meshPostEffectFlag = 0;
+                const int systemIndex = system->getIndex();
+                if ((systemIndex | 2) == 26 || systemIndex == 25) {
+                    supernovaFlareActive = 1;
+                    canvas->MeshCreate(0x3827, reinterpret_cast<unsigned int &>(supernovaFlareMesh), false);
+                    canvas->TextureCreate(0x8282, reinterpret_cast<unsigned int &>(supernovaFlareTexture), false);
+                    canvas->TextureCreate(0x8283, reinterpret_cast<unsigned int &>(field_1c8), false);
+                }
+                if (Status::gStatus->inPlanetRingOrbit()) {
+                    unsigned int ringMesh = 0xffffffffU;
+                    canvas->MeshCreate(0x499f, ringMesh, false);
+                    canvas->TransformCreate(reinterpret_cast<unsigned int &>(field_1b4));
+                    canvas->TransformAddMeshId(field_1b4, ringMesh);
+                    canvas->TextureCreate(0x715a, reinterpret_cast<unsigned int &>(field_1b8), false);
+                }
+                if (Status::gStatus->inStormOrbit()) {
+                    unsigned int stormMesh = 0xffffffffU;
+                    canvas->MeshCreate(0x49a0, stormMesh, false);
+                    canvas->TransformCreate(reinterpret_cast<unsigned int &>(field_1bc));
+                    canvas->TransformAddMeshId(field_1bc, stormMesh);
+                    canvas->TextureCreate(0x715b, reinterpret_cast<unsigned int &>(field_1c0), false);
                 }
             }
+
+            if (system->getTextureIndex() >= 16 &&
+                static_cast<Engine *>(ApplicationManager::gAppManager->GetEngine())->IsPostEffectActivated()) {
+                canvas->MeshGetPointer(skyboxMesh)->meshPostEffectFlag = 1046562734;
+            }
         } else {
-            unsigned int field08Handle;
-            PaintCanvas::gCanvas->MeshCreate((unsigned short) 0x45bc, field08Handle, false);
-            this->field_08 = field08Handle;
-            PaintCanvas::gCanvas->TextureCreate((unsigned short) 0x2768, nullptr, nullptr, g_level_texOutScratch, false);
-            unsigned int skyboxMeshHandle;
-            PaintCanvas::gCanvas->MeshCreate((unsigned short) 0x4592, skyboxMeshHandle, false);
-            this->skyboxMesh = skyboxMeshHandle;
-            PaintCanvas::gCanvas->TextureCreate((unsigned short) 0x275b, nullptr, nullptr, g_level_texOutScratch, false);
+            canvas->MeshCreate(0x45bc, reinterpret_cast<unsigned int &>(field_08), false);
+            canvas->TextureCreate(0x2768, reinterpret_cast<unsigned int &>(field_19c), false);
+            canvas->MeshCreate(0x4592, reinterpret_cast<unsigned int &>(skyboxMesh), false);
+            canvas->TextureCreate(0x275b, reinterpret_cast<unsigned int &>(field_198), false);
         }
 
-        this->skyRotX = 0.0f;
-        this->skyRotY = 0.0f;
-        this->skyRotZ = 0.0f;
+        if (Status::gStatus->inFogSkyboxOrbit()) {
+            skyRotX = skyRotY = skyRotZ = 0.0f;
+        } else {
+            AERandom *random = static_cast<AERandom *>(Globals::rnd);
+            Station *station = Status::gStatus->getStation();
+            random->setSeed(station ? 2 * station->getIndex() : -1);
+            skyRotX = float(random->nextInt(0x10000)) * (1.0f / 65536.0f) * 6.2832f;
+            skyRotY = float(random->nextInt(0x10000)) * (1.0f / 65536.0f) * 6.2832f;
+            skyRotZ = float(random->nextInt(0x10000)) * (1.0f / 65536.0f) * 6.2832f;
+            random->reset();
+        }
     }
 
     int mode = this->missionPtr;

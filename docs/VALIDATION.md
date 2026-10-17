@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level skybox setup gate (2026-10-17)
+
+Production-source-extracted `-O0/-O2` host smokes cover ordinary, alien,
+intro, supernova, ring/storm/flare, post-effect, fog/RNG and already-created
+paths. Earlier Level station, jumpgate, wormhole-tail, StarSystem-tail,
+entry-position and constructor smokes pass. Native `gof2`, 208/208 ARM TUs
+and 40 verifier tests pass (one skip). Focused `createSpace` source-shape/
+strict fuzzy rises 71.5%/39.0% → 86.1%/46.2%, nonexact. Full ARM comparison:
+4,323/4,524 originals, 93.86%/83.04% means, 2,528 linked-exact and
+1,076 byte-exact, zero exact-pair losses. See
+[the skybox evidence](LEVEL_SKYBOX_SETUP_ARM_2026-10-17.md). Full asset-backed
+level initialization and render are not yet validated.
+
 ## Level StarSystem/stream-out gate (2026-10-17)
 
 Source-extracted `-O0/-O2` host smokes cover ordinary/gate/station-planet

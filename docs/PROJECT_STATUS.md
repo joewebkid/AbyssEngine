@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (Level StarSystem/stream-out gate; older subsystem
+Last reviewed: 2026-10-17 (Level skybox setup gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -17,6 +17,20 @@ but the full init path has not yet passed a host runtime gate. A catalog-backed
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Level skybox setup (2026-10-17)
+
+Android `Level::createSpace` now supplies the missing normal/alien skybox
+meshes and textures, intro and supernova variants, ring/storm/flare assets,
+post-effect flag and station-seeded rotations. The previous scratch texture
+output and invalid main-mesh lookup are removed. Production-source-extracted
+`-O0/-O2` host smokes, native `gof2`, 208/208 ARM TUs and 40 verifier tests
+pass (one skip). Focused source-shape/strict fuzzy rises 71.5%/39.0% →
+86.1%/46.2%, still nonexact. Full ARM coverage is 4,323/4,524 originals,
+93.86%/83.04% means, 2,528 linked-exact and 1,076 byte-exact; exact-pair
+losses are zero. See [the skybox evidence](LEVEL_SKYBOX_SETUP_ARM_2026-10-17.md).
+The asset-backed full `Level::init`/render gate and the initial flare flag
+state remain unverified.
 
 ## Level StarSystem and stream-out entry (2026-10-17)
 
