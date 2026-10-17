@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (CutScene FileRead lifetime; older subsystem
+Last reviewed: 2026-10-17 (FileRead weapon path lifetime; older subsystem
 snapshots retain their dates)
+
+## FileRead weapon path lifetime (2026-10-17)
+
+Android ARM destroys the temporary path string immediately after
+`FileExist` and before branching to `OpenRead`. The recovered loader
+had kept it alive until return; its lifetime now follows the ARM
+order. Focused `loadWeaponPositions` source-shape/strict fuzzy rises
+from **83.1%/36.0%** to **97.7%/53.1%**, still nonexact. Native `gof2`,
+**208/208** ARM units and 40 verifier tests (one existing skip) pass.
+The full corpus remains **4,323/4,524** originals over **4,721**
+comparisons, **201 missing**, **123 extras**, with rounded averages
+**93.74%/82.88%** and unchanged **2,518 linked-exact / 1,076
+byte-exact** pairs (zero losses). The parser's type-3 vector order
+matches ARM; an asset-backed game run and absent-ship-ID call paths
+remain unverified. Next priority: validate those caller preconditions
+and the four-slot ownership path without inventing an EOF policy.
+See [the path-lifetime audit](FILE_READ_WEAPON_PATH_LIFETIME_ARM_2026-10-17.md).
 
 ## CutScene FileRead lifetime (2026-10-17)
 

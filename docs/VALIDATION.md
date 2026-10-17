@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## FileRead weapon path lifetime (2026-10-17)
+
+Native `gof2`, **208/208** ARM units and 40 verifier tests (one
+existing skip) pass. Focused report
+`A:/Galaxy on Fire new version/_work/filread_weapon_positions_lifetime_after_20261017.json`
+scores `loadWeaponPositions` at **97.7% source-shape / 53.1% strict
+fuzzy**, versus **83.1% / 36.0%** in
+`filread_weapon_positions_baseline_20261017.json`, still nonexact.
+Full report
+`A:/Galaxy on Fire new version/_work/filread_weapon_positions_lifetime_full_20261017.json`
+has **4,323/4,524** originals over **4,721** comparisons, **201
+missing**, **123 extras**, **93.74%/82.88%** rounded averages and
+**2,518 linked-exact / 1,076 byte-exact**. Exact `(unit,symbol)`
+sets are unchanged from `cutscene_filread_lifetime_full_20261017.json`.
+See [the path-lifetime audit](FILE_READ_WEAPON_PATH_LIFETIME_ARM_2026-10-17.md).
+
 ## CutScene FileRead lifetime (2026-10-17)
 
 `python tools/run_cutscene_filread_lifetime_smoke.py --cxx

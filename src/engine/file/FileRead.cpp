@@ -55,10 +55,8 @@ int32_t FileRead::loadStationsBinary() {
 }
 
 Array<Array<Vector *> *> *FileRead::loadWeaponPositions(int32_t id) {
-    String path("data/bin/weapons_hd.bin");
-
     Array<Array<Vector *> *> *positions = 0;
-    if (AEFile::FileExist(path) != 0) {
+    if (AEFile::FileExist(String("data/bin/weapons_hd.bin")) != 0) {
         uint32_t handle;
         AEFile::OpenRead("data/bin/weapons_hd.bin", &handle);
 
