@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Generic market host gate (2026-10-17)
+
+The asset-backed `-O0`/`-O2` smoke now calls the production generic
+`Generator::getItemBuyList` body with real `AERandom` and checks
+catalog-backed invariants. It then executes production
+`Status::departStation` for catalog station 91; **68/68** file
+lifetimes balance. Native
+`gof2` and 40 verifier tests pass (one existing skip). No production
+source changed, so the latest full ARM report remains
+`A:/Galaxy on Fire new version/_work/generator_market_full_20261017.json`:
+**208/208** TUs, **4,323/4,524** originals, **93.78%/82.95%** mean
+source-shape/strict fuzzy, **2,527** linked-exact and **1,076**
+byte-exact, with zero pair losses. See
+[the host evidence](GENERATOR_GENERIC_MARKET_ASSET_HOST_2026-10-17.md).
+
 ## Opening stock and Galaxy distance (2026-10-17)
 
 The real-asset host smoke now executes production

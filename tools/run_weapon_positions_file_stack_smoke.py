@@ -87,6 +87,8 @@ def main():
         + 'extern int g_station_generator_calls;\n'
         + 'Generator::Generator() { ++g_station_generator_calls; }\n'
         + function(generator_source, "Array<Item *> *Generator::getItemBuyList(Station *station)")
+        + 'Array<Item *> *generateRealMarketItems(Station *station) { '
+          'Generator generator; return generator.getItemBuyList(station); }\n'
         + 'Array<Ship *> *Generator::getShipBuyList(Station *) { ++g_station_generator_calls; return new Array<Ship *>(); }\n'
         + 'Array<Agent *> *Generator::createAgents(Station *) { ++g_station_generator_calls; return new Array<Agent *>(); }\n'
         + 'extern int g_wanted_random_station_id;\n'

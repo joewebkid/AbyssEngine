@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (real opening-stock generation; older subsystem
+Last reviewed: 2026-10-17 (generic market host gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -11,12 +11,28 @@ smokes and ARM comparison gates. `Status::resetGame` now executes in an
 asset-backed host fixture. A bounded `Status::departStation` slice now
 executes after startup with real opening-stock generation; ship and agent
 generation remain explicit test boundaries. The next integration milestones
-are ordinary station markets and entry to `Level::init`; a catalog-backed
+are ship/agent stock and entry to `Level::init`; a catalog-backed
 cross-system wanted path now runs.
-Only after that can
-gameplay paths be verified end-to-end;
-exact code matching remains a separate polish metric, not the definition
-of completion.
+Only after that can gameplay paths be verified end-to-end. Exact code
+matching remains a separate polish metric, not the definition of completion.
+
+## Generic market host gate (2026-10-17)
+
+Production `Generator::getItemBuyList` now runs its ordinary-market
+branch in the real-catalog host fixture for station 78 after the early
+campaign. A real `AERandom` drives the loop. `-O0`/`-O2` assert a
+nonempty ordered list of separately cloned catalog items with positive
+amounts and preserved prices. A second catalog station is then entered
+through production `Status::departStation` and receives a nonempty real
+item market while startup stock remains intact; **68/68** file
+lifetimes balance. Native `gof2` and 40 verifier tests (one
+existing skip) pass. Production source is unchanged, so the last full
+ARM report remains **208/208** TUs, **4,323/4,524** originals,
+**93.78% / 82.95%** average source-shape/strict fuzzy and **2,527 /
+1,076** linked-/byte-exact, with no pair losses. The clock-driven
+item distribution, ship/agent stock and
+`Level::init` remain unverified. See
+[the host evidence](GENERATOR_GENERIC_MARKET_ASSET_HOST_2026-10-17.md).
 
 ## Opening stock and Galaxy distance (2026-10-17)
 

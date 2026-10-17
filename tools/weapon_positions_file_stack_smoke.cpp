@@ -2,6 +2,7 @@
 #include "engine/file/AEFile.h"
 #include "engine/file/FileRead.h"
 #include "engine/core/GameText.h"
+#include "engine/core/AERandom.h"
 #include "game/mission/Item.h"
 #include "game/mission/Status.h"
 #include "game/mission/Mission.h"
@@ -64,6 +65,7 @@ Status *Status::gStatus = nullptr;
 int g_station_generator_calls = 0;
 int g_wanted_random_station_id = -1;
 int g_wanted_random_station_calls = 0;
+Array<Item *> *generateRealMarketItems(Station *station);
 // Catalog stations have no owned item/ship/agent lists in this fixture.
 Station::~Station() {}
 
@@ -433,6 +435,24 @@ int main(int argc, char **argv) {
         assert(status.mission == &emptyMission);
         status.mission = campaign;
         campaign->targetStation = savedTarget;
+        AERandom marketRandom(0x1234);
+        Globals::rnd = &marketRandom;
+        Array<Item *> *marketItems = generateRealMarketItems(status.station);
+        assert(marketItems && !marketItems->empty());
+        int previousMarketId = -1;
+        for (Item *item : *marketItems) {
+            assert(item && item->index >= 0 &&
+                   static_cast<unsigned>(item->index) < startupItems->size());
+            assert(item->index > previousMarketId);
+            previousMarketId = item->index;
+            Item *catalogItem = (*startupItems)[item->index];
+            assert(item != catalogItem && item->amount > 0);
+            assert(item->price == catalogItem->price);
+        }
+        assert(status.station->items->size() == 3);
+        ArrayReleaseClasses(*marketItems);
+        delete marketItems;
+        Globals::rnd = nullptr;
         Station *savedPlayerStation = status.playerStation;
         status.playerStation = status.station;
         Station programmed(String("route guard"), 62, 20, 0, 0);
@@ -505,20 +525,38 @@ int main(int argc, char **argv) {
         assert(interface.opens() == 66 && interface.closes() == 66);
         moving->setActive(false);
         status.playerStation = savedPlayerStation;
+        Station *openingStation = status.station;
+        Station *marketStation = galaxy.getStation(91);
+        assert(marketStation && marketStation->index == 91 && marketStation != openingStation);
+        Globals::rnd = &marketRandom;
+        status.field_88 = 0;
+        status.departStation(marketStation);
+        Globals::rnd = nullptr;
+        assert(status.station == marketStation && marketStation->items &&
+               !marketStation->items->empty());
+        assert(marketStation->ships && marketStation->ships->empty());
+        assert(marketStation->agents && marketStation->agents->empty());
+        assert(openingStation->items && openingStation->items->size() == 3);
+        assert(interface.opens() == 68 && interface.closes() == 68);
+        status.mission = campaign;
         for (Station *&stackStation : *status.stationStack)
-            if (stackStation == status.station) stackStation = nullptr;
-        ArrayReleaseClasses(*status.station->items);
-        delete status.station->items;
-        delete status.station->ships;
-        delete status.station->agents;
-        status.station->items = nullptr;
-        status.station->ships = nullptr;
-        status.station->agents = nullptr;
+            if (stackStation == openingStation || stackStation == marketStation)
+                stackStation = nullptr;
+        for (Station *ownedStation : {openingStation, marketStation}) {
+            ArrayReleaseClasses(*ownedStation->items);
+            delete ownedStation->items;
+            delete ownedStation->ships;
+            delete ownedStation->agents;
+            ownedStation->items = nullptr;
+            ownedStation->ships = nullptr;
+            ownedStation->agents = nullptr;
+        }
 
         ArrayReleaseClasses(*status.planetNames);
         delete status.planetNames;
         delete status.planetTextures;
-        delete status.station;
+        delete openingStation;
+        delete marketStation;
         delete status.playerStation;
         delete status.voidStation;
         ArrayReleaseClasses(*status.bluePrints);
@@ -560,6 +598,6 @@ int main(int argc, char **argv) {
     }
 
     AEFile::Release();
-    assert(interface.opens() == 66 && interface.closes() == 66);
-    std::puts("production assets, Status startup/departure/wanted, real pathfinder and opening stock: OK");
+    assert(interface.opens() == 68 && interface.closes() == 68);
+    std::puts("production assets, Status startup/departure/wanted, real pathfinder and market: OK");
 }
