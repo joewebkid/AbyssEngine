@@ -1488,7 +1488,7 @@ int Level::init() {
             ((this->objectivesA)->~Objective(), ::operator delete(this->objectivesA));
         this->objectivesA = nullptr;
 
-        LODManager *lod = (LODManager *) ::operator new(0x14);
+        LODManager *lod = (LODManager *) ::operator new(sizeof(LODManager));
         new(lod) LODManager();
         this->lodManager = lod;
 
@@ -1501,35 +1501,35 @@ int Level::init() {
         }
 
         ParticleSystemManager *psm;
-        psm = (ParticleSystemManager *) ::operator new(100);
+        psm = (ParticleSystemManager *) ::operator new(sizeof(ParticleSystemManager));
         new(psm) ParticleSystemManager(canvas, ParticleSettings::CameraSet_1, 0x4e85, false, 0xffff, false);
         this->particleEmitBoolPtr = psm;
-        psm = (ParticleSystemManager *) ::operator new(100);
+        psm = (ParticleSystemManager *) ::operator new(sizeof(ParticleSystemManager));
         new(psm) ParticleSystemManager(canvas, ParticleSettings::CameraSet_1, 0x6a72, false, 0xffff, false);
         this->particleRenderBoolPtr = psm;
-        psm = (ParticleSystemManager *) ::operator new(100);
+        psm = (ParticleSystemManager *) ::operator new(sizeof(ParticleSystemManager));
         new(psm) ParticleSystemManager(canvas, ParticleSettings::CameraSet_1, 0x4e83, true, 0xffff, false);
         this->field_74 = psm;
-        psm = (ParticleSystemManager *) ::operator new(100);
+        psm = (ParticleSystemManager *) ::operator new(sizeof(ParticleSystemManager));
         new(psm) ParticleSystemManager(canvas, ParticleSettings::CameraSet_1, 0x4e7a, true, 0x4e7a, true);
         this->field_80 = psm;
-        psm = (ParticleSystemManager *) ::operator new(100);
+        psm = (ParticleSystemManager *) ::operator new(sizeof(ParticleSystemManager));
         new(psm) ParticleSystemManager(canvas, ParticleSettings::CameraSet_1, 0x5e20, true, 0x5e20, true);
         this->field_98 = psm;
-        psm = (ParticleSystemManager *) ::operator new(100);
+        psm = (ParticleSystemManager *) ::operator new(sizeof(ParticleSystemManager));
         new(psm) ParticleSystemManager(canvas, ParticleSettings::CameraSet_1,
                                        (unsigned short) (dustVariant ? 0x4ea9 : 0x4e7f), true, 0, false);
         this->particleSystemMgr = psm;
-        psm = (ParticleSystemManager *) ::operator new(100);
+        psm = (ParticleSystemManager *) ::operator new(sizeof(ParticleSystemManager));
         new(psm) ParticleSystemManager(canvas, ParticleSettings::CameraSet_1, 0x4e7c, false, 0x4e7c, false);
         this->skybox2Mesh = psm;
-        psm = (ParticleSystemManager *) ::operator new(100);
+        psm = (ParticleSystemManager *) ::operator new(sizeof(ParticleSystemManager));
         new(psm) ParticleSystemManager(canvas, ParticleSettings::CameraSet_1, 0x6a7c, true, 0x6a7c, true);
         this->field_8c = psm;
-        psm = (ParticleSystemManager *) ::operator new(100);
+        psm = (ParticleSystemManager *) ::operator new(sizeof(ParticleSystemManager));
         new(psm) ParticleSystemManager(canvas, ParticleSettings::CameraSet_1, 0x6ab9, true, 0xffff, false);
         this->field_9c = psm;
-        psm = (ParticleSystemManager *) ::operator new(100);
+        psm = (ParticleSystemManager *) ::operator new(sizeof(ParticleSystemManager));
         new(psm) ParticleSystemManager(canvas, ParticleSettings::CameraSet_1, 0x6aaf, true, 0xffff, false);
         this->field_94 = psm;
 

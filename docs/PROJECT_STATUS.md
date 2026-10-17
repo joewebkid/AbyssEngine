@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (Level skybox setup gate; older subsystem
+Last reviewed: 2026-10-17 (Level stage-0 allocation gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -17,6 +17,20 @@ but the full init path has not yet passed a host runtime gate. A catalog-backed
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Level stage-0 host allocations (2026-10-17)
+
+`Level::init` now allocates its `LODManager` and ten
+`ParticleSystemManager` objects using the actual type sizes. This preserves
+the original ARM32 sizes (0x14/0x64) while avoiding undersized blocks on
+the native x64 host before `createSpace`. The production allocation block
+and constructors pass guarded `-O0/-O2` host smokes; native and 208/208 ARM
+builds pass. Focused `init` source-shape/strict fuzzy remains 84.8%/52.7%,
+nonexact. Full ARM comparison remains 4,323/4,524 originals,
+93.86%/83.04% means, 2,528 linked-exact and 1,076 byte-exact with zero
+pair losses. See [the allocation evidence](LEVEL_STAGE0_HOST_ALLOCATIONS_2026-10-17.md).
+The complete asset-backed `Level::init` path is not yet validated; the
+fixed player/ego allocations and raw player offset are next.
 
 ## Level skybox setup (2026-10-17)
 

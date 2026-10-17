@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level stage-0 host allocation gate (2026-10-17)
+
+The production stage-0 allocation block and constructors run at `-O0/-O2`
+with guarded host allocations and correct particle resource IDs. Native
+`gof2` and 208/208 ARM TUs build. Focused `Level::init` source-shape/strict
+fuzzy remains 84.8%/52.7%, nonexact. See
+[the allocation evidence](LEVEL_STAGE0_HOST_ALLOCATIONS_2026-10-17.md).
+Full ARM comparison remains 4,323/4,524 originals, 93.86%/83.04%
+means, 2,528 linked-exact and 1,076 byte-exact, with zero pair losses.
+All 40 verifier unit tests pass (one existing skip). Full asset-backed
+level entry remains untested.
+
 ## Level skybox setup gate (2026-10-17)
 
 Production-source-extracted `-O0/-O2` host smokes cover ordinary, alien,
