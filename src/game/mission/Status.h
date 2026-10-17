@@ -286,7 +286,7 @@ public:
 
     int addStationToStack(Station *station);
 
-    bool isOnStack(Station *station);
+    Station *isOnStack(Station *station);
 
     void setStation(Station *station);
 

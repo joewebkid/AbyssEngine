@@ -47,6 +47,8 @@ def main():
     wanted_source = (ROOT / "src/game/world/Wanted.cpp").read_text()
     status_source = (ROOT / "src/game/mission/Status.cpp").read_text()
     galaxy_source = (ROOT / "src/game/world/Galaxy.cpp").read_text()
+    generator_begin = status_source.index("struct Generator {")
+    generator_end = status_source.index("};", generator_begin) + 2
     achievements_source = (ROOT / "src/game/mission/Achievements.cpp").read_text()
     blueprint_source = (ROOT / "src/game/mission/BluePrint.cpp").read_text()
     mission_source = (ROOT / "src/game/mission/Mission.cpp").read_text()
@@ -71,8 +73,15 @@ def main():
         '#include "game/world/Level.h"\n#include "game/core/GameSettings.h"\n'
         '#include "game/mission/Achievements.h"\n#include "game/mission/BluePrint.h"\n'
         '#include "game/mission/Mission.h"\n#include "game/mission/PendingProduct.h"\n'
+        '#include "engine/core/AERandom.h"\n'
         'using AbyssEngine::Vector;\n'
         'FileRead::FileRead() {}\nFileRead::~FileRead() {}\n'
+        + status_source[generator_begin:generator_end] + '\n'
+        + 'extern int g_station_generator_calls;\n'
+        + 'Generator::Generator() { ++g_station_generator_calls; }\n'
+        + 'Array<Item *> *Generator::getItemBuyList(Station *) { ++g_station_generator_calls; return new Array<Item *>(); }\n'
+        + 'Array<Ship *> *Generator::getShipBuyList(Station *) { ++g_station_generator_calls; return new Array<Ship *>(); }\n'
+        + 'Array<Agent *> *Generator::createAgents(Station *) { ++g_station_generator_calls; return new Array<Agent *>(); }\n'
         + source[begin:end]
         + source[items_begin:ships_begin]
         + source[ships_begin:]
@@ -95,6 +104,7 @@ def main():
         + function(item_source, "IntArray *Item::getIngredients()")
         + function(item_source, "IntArray *Item::getQuantities()")
         + function(item_source, "int Item::getType()")
+        + function(item_source, "void Item::setStationAmount(int value)")
         + function(item_source, "Item *Item::clone()")
         + function(item_source, "Item *Item::makeItem()")
         + function(item_source, "Item *Item::makeItem(int amount)")
@@ -111,7 +121,15 @@ def main():
         + function(ship_source, "int Ship::getMaxHP()")
         + function(ship_source, "int Ship::getMaxShieldHP()")
         + function(ship_source, "int Ship::getMaxArmorHP()")
+        + function(ship_source, "Array<Item *> *Ship::getCargo()")
+        + function(ship_source, "bool Ship::hasCargo(int index, int amount)")
         + function(station_source, "Station::Station(String name,")
+        + function(station_source, "bool Station::equals(Station *other)")
+        + function(station_source, "Array<Item *> *Station::getItems()")
+        + function(station_source, "Array<Ship *> *Station::getShips()")
+        + function(station_source, "void Station::setItems(Array<Item *> *items, bool deep)")
+        + function(station_source, "void Station::setShips(Array<Ship *> *ships, bool deep)")
+        + function(station_source, "void Station::setAgents(Array<Agent *> *agents)")
         + function(system_source, "SolarSystem::SolarSystem(int unk0,")
         + function(system_source, "SolarSystem::~SolarSystem()")
         + function(system_source, "int SolarSystem::stationIsInSystem(int idx)")
@@ -133,6 +151,12 @@ def main():
         + function(status_source, "void Status::loadWanted()")
         + function(status_source, "void Status::resetGame()")
         + function(status_source, "void Status::setStation(Station *s)")
+        + function(status_source, "Station *Status::isOnStack(Station *s)")
+        + function(status_source, "bool Status::inAlienOrbit()")
+        + function(status_source, "int Status::addStationToStack(Station *s)")
+        + 'static int g_dsTypeMask = 0x8B782B;\n'
+        + function(status_source, "void Status::departStation(Station *dest)")
+        + 'void Status::moveWanted() { std::abort(); }\n'
         + galaxy_source[galaxy_source.index("static const int kStationCount"):
                         galaxy_source.index("Galaxy::Galaxy()")]
         + function(galaxy_source, "Galaxy::Galaxy()")
@@ -155,6 +179,11 @@ def main():
         + function(mission_source, "Mission::Mission()")
         + function(mission_source, "Mission::~Mission()")
         + function(mission_source, "void Mission::setCampaignMission(bool flag)")
+        + function(mission_source, "int Mission::getType()")
+        + function(mission_source, "bool Mission::isCampaignMission()")
+        + function(mission_source, "bool Mission::isEmpty()")
+        + function(mission_source, "int Mission::getTargetStation()")
+        + function(mission_source, "int Mission::getProductionGoodIndex()")
         + function(standing_source, "Standing::Standing()")
         + function(standing_source, "Standing::~Standing()")
         + function(standing_source, "void Standing::setPlayerSignatureRace(int race)")
@@ -173,6 +202,7 @@ def main():
         "src/engine/file/AEPakFile.cpp",
         str(extracted),
         "src/game/core/String.cpp",
+        "src/engine/core/AERandom.cpp",
     ]
     for opt in ("-O0", "-O2"):
         exe = out / f"weapon_file_stack_{opt[1:]}.exe"

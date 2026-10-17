@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (asset-backed new-game startup; older subsystem
+Last reviewed: 2026-10-17 (station departure ARM/host gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -8,11 +8,32 @@ snapshots retain their dates)
 The project is past the initial symbol inventory and is in source-backed
 behavior recovery, with a native static-library build, asset-backed host
 smokes and ARM comparison gates. `Status::resetGame` now executes in an
-asset-backed host fixture. The next integration milestone is a
-`Status::departStation` to `Level::init` smoke test. Only after that can
+asset-backed host fixture. A bounded `Status::departStation` slice now
+executes after startup with an explicit test-only Generator boundary;
+the next integration milestone is real station generation/wanted
+movement followed by entry to `Level::init`. Only after that can
 gameplay paths be verified end-to-end;
 exact code matching remains a separate polish metric, not the definition
 of completion.
+
+## Station departure gate (2026-10-17)
+
+ARM confirms `Status::isOnStack` returns the stored Station pointer;
+this repair makes it **100% source-shape / 100% strict fuzzy and
+linked-exact**, without a byte-exact claim. `departStation` now keeps
+that identity, restores the mission sentinel, selection mask, type
+11/13 stop, reroute counter semantics and ship-value refresh. Its
+focused score is **84.6% source-shape / 20.4% strict fuzzy**, nonexact.
+Real-asset host startup/departure tests pass at `-O0`/`-O2` with
+**56/56** balanced file lifetimes; market generation is a deliberately
+empty test boundary. Native targets and **208/208** ARM TUs build; 40
+verifier tests run with one existing skip. Full corpus:
+**4,323/4,524** originals in **4,730** rows, **93.78% / 82.95%**
+average source-shape/strict fuzzy, **2,527 linked-exact / 1,076
+byte-exact**, 201 absent, zero wrong-type and skipped units. The only
+exact-pair change is one linked-exact gain; there are no losses. Real
+Generator, wanted relocation, reroute RNG and `Level::init` remain
+unverified. See [the evidence](STATUS_DEPART_STATION_ARM_HOST_2026-10-17.md).
 
 ## Asset-backed new-game startup (2026-10-17)
 

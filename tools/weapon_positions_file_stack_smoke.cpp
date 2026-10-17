@@ -56,6 +56,7 @@ void *Level::programmedStation = nullptr;
 void *Mission::empty = nullptr;
 Galaxy *Galaxy::gGalaxy = nullptr;
 Status *Status::gStatus = nullptr;
+int g_station_generator_calls = 0;
 // Catalog stations have no owned item/ship/agent lists in this fixture.
 Station::~Station() {}
 
@@ -375,6 +376,57 @@ int main(int argc, char **argv) {
         for (Item *item : *status.ship->equipment)
             if (item && item->index == 0x24) assert(item->amount == 6);
 
+        status.ship->value = -999;
+        status.departStation(status.station);
+        assert(g_station_generator_calls == 4);
+        assert(status.station->items && status.station->items->empty());
+        assert(status.station->ships && status.station->ships->empty());
+        assert(status.station->agents && status.station->agents->empty());
+        assert(status.mission == (*status.missions)[0]);
+        assert(status.ship->value != -999);
+        Station sameStation(status.station->name, status.station->index,
+                            status.station->systemIndex, status.station->techLevel,
+                            status.station->textureIndex);
+        assert(status.isOnStack(&sameStation) == status.station);
+        Mission *campaign = (*status.missions)[0];
+        Mission filtered;
+        filtered.id = 150;
+        filtered.targetStation = status.station->index;
+        (*status.missions)[0] = &filtered;
+        status.departStation(status.station);
+        assert(status.mission == &emptyMission);
+        Mission stop;
+        stop.id = 11;
+        stop.targetStation = status.station->index;
+        Mission later;
+        later.id = 4;
+        later.targetStation = status.station->index;
+        (*status.missions)[0] = &stop;
+        (*status.missions)[1] = &later;
+        status.departStation(status.station);
+        assert(status.mission == &emptyMission);
+        (*status.missions)[0] = campaign;
+        (*status.missions)[1] = &emptyMission;
+        int savedTarget = campaign->targetStation;
+        campaign->targetStation = -2;
+        status.currentCampaignMission = 32;
+        status.field_80 = -2;
+        status.field_88 = 9;
+        status.departStation(status.station);
+        assert(g_station_generator_calls == 4);
+        assert(status.field_88 == 10);
+        assert(status.mission == &emptyMission);
+        status.mission = campaign;
+        campaign->targetStation = savedTarget;
+        for (Station *&stackStation : *status.stationStack)
+            if (stackStation == status.station) stackStation = nullptr;
+        delete status.station->items;
+        delete status.station->ships;
+        delete status.station->agents;
+        status.station->items = nullptr;
+        status.station->ships = nullptr;
+        status.station->agents = nullptr;
+
         ArrayReleaseClasses(*status.planetNames);
         delete status.planetNames;
         delete status.planetTextures;
@@ -421,5 +473,5 @@ int main(int argc, char **argv) {
 
     AEFile::Release();
     assert(interface.opens() == 56 && interface.closes() == 56);
-    std::puts("production AEFile/FileRead assets and Status startup path: OK");
+    std::puts("production AEFile/FileRead assets and Status startup/departure path: OK");
 }

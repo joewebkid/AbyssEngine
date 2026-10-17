@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Station departure gate (2026-10-17)
+
+The asset-backed host smoke now extracts the production
+`Status::departStation` and `isOnStack` bodies. `-O0/-O2` verify the
+stored station identity, mission type mask and stop, reroute counter,
+ship refresh and **56/56** file lifetimes; Generator is a test-only
+empty-market boundary. Native `gof2`/`gof2_host_file`, **208/208** ARM
+units and 40 verifier tests (one existing skip) pass. Focused ARM:
+`isOnStack` **100%/100% linked-exact**, `departStation` **84.6%/20.4%**
+source-shape/strict fuzzy and nonexact. The full report at
+`A:/Galaxy on Fire new version/_work/status_depart_full_20261017.json`
+compares **4,323/4,524** originals in **4,730** rows, averaging
+**93.78%/82.95%**, with **2,527 linked-exact / 1,076 byte-exact**,
+201 absent, zero wrong-type or skipped units and zero exact-pair losses.
+See [the gate evidence](STATUS_DEPART_STATION_ARM_HOST_2026-10-17.md).
+
 ## Asset-backed new-game startup (2026-10-17)
 
 The file-stack host smoke now extracts the production `Status::resetGame`

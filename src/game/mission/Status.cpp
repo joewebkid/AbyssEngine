@@ -560,11 +560,11 @@ void Status::calcCargoPrices() {
     }
 }
 
-bool Status::isOnStack(Station *s) {
+Station *Status::isOnStack(Station *s) {
     unsigned i = 0;
     while (true) {
         if (2 < i) {
-            return 0;
+            return nullptr;
         }
         Station *cur = (*stationStack)[i];
         if (cur != 0 && cur->equals(s) != 0) {
@@ -572,7 +572,7 @@ bool Status::isOnStack(Station *s) {
         }
         i = i + 1;
     }
-    return (*stationStack)[i] != 0;
+    return (*stationStack)[i];
 }
 
 bool Status::inAlienOrbit() {
@@ -1289,7 +1289,7 @@ void Status::changeRating(int delta) {
     }
 }
 
-static int g_dsTypeMask = 0;
+static int g_dsTypeMask = 0x8B782B;
 
 void Status::departStation(Station *dest) {
     if (!inAlienOrbit()) {
@@ -1307,8 +1307,8 @@ void Status::departStation(Station *dest) {
     }
 
     if (playerStation != dest) {
-        bool wasOnStack = isOnStack(dest);
-        Station *prev = isOnStack(dest) ? dest : 0;
+        Station *prev = isOnStack(dest);
+        bool wasOnStack = prev != nullptr;
         addStationToStack(dest);
         bool hub = dest->getIndex() == 0x6c;
         if (hub && field_114 == 3) {
@@ -1333,7 +1333,7 @@ void Status::departStation(Station *dest) {
     }
 
     Status * st = Status::gStatus;
-    this->mission = 0;
+    this->mission = static_cast<Mission *>(Mission::empty);
     for (unsigned i = 0; i < missions->size(); i = i + 1) {
         Mission *mi = (*missions)[i];
         if (mi == 0)
@@ -1362,6 +1362,7 @@ void Status::departStation(Station *dest) {
                     this->mission = mi;
                     break;
                 }
+                break;
             }
         }
         if (!mi->isEmpty() && camp) {
@@ -1374,12 +1375,11 @@ void Status::departStation(Station *dest) {
 
     if (currentCampaignMission < 0x2d) {
         if (currentCampaignMission >= 0x20) {
-            bool same = false;
-            if (mission != 0)
-                same = dest->getIndex() == mission->getTargetStation();
-            same = same || dest->getIndex() == field_80;
+            bool same = dest->getIndex() == (*missions)[0]->getTargetStation() ||
+                        dest->getIndex() == field_80;
             if (!same) {
-                if (field_88 + 1 >= 10) {
+                int prior = field_88++;
+                if (prior >= 10) {
                     field_88 = 0;
                     AbyssEngine::AERandom *rng = AERandom::gRandom;
                     int sys;
@@ -1389,12 +1389,10 @@ void Status::departStation(Station *dest) {
                             field_7c = sys;
                         } while ((*systemVisibilities)[sys] == 0);
                     } while (sys == 10 || sys == 0xf);
-                    SolarSystem *ss = Galaxy::gGalaxy->getSystems()->at(field_7c);
+                    SolarSystem *ss = Galaxy::gGalaxy->getSystem(field_7c);
                     Array<int> *sids = (Array<int> *) ss->getStations();
                     int n = rng->nextInt(sids->size());
                     field_80 = (*sids)[n];
-                } else {
-                    field_88 = field_88 + 1;
                 }
             }
         }
@@ -1415,6 +1413,7 @@ void Status::departStation(Station *dest) {
         }
     }
     field_0x108 = 0;
+    ship->refreshValue();
 }
 
 Mission *Status::missionCompleted(bool atStation, bool docked, long long extra) {
