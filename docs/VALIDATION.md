@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Core catalog asset check (2026-10-17)
+
+`tools/run_weapon_positions_file_stack_smoke.py` now exercises the
+unchanged `items.bin` and `ships.bin` loader and constructor bodies
+alongside the weapon-position asset at host `-O0/-O2`. All 233 item
+and 64 ship IDs pass; missing-file and open/close paths pass. Native
+`gof2`, **208/208** ARM units and 40 verifier tests (one existing
+skip) pass. Focused report
+`A:/Galaxy on Fire new version/_work/core_catalog_file_stack_focus_20261017.json`
+records **95.9%/59.9%** source-shape/strict fuzzy for items and
+**78.4%/61.0%** for ships. No production code changed, so full-corpus
+counts remain those in the DLC section below. See
+[the asset evidence](CORE_CATALOG_ASSET_FILE_STACK_2026-10-17.md).
+
 ## Weapon-position native file-stack check (2026-10-17)
 
 `tools/run_weapon_positions_file_stack_smoke.py` compiles the unchanged

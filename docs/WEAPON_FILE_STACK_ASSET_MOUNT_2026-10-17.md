@@ -7,6 +7,8 @@ was read through the unchanged production `AEFile.cpp`, `AENormalFile.cpp`,
 `FileRead::loadWeaponPositions`. A small host `FileInterface` fixture maps
 only `data/bin/weapons_hd.bin` to the local asset directory; it does not
 provide a general game filesystem, PAK support, saves or a platform host.
+The fixture was later extended to `items.bin` and `ships.bin`; see
+[the catalog check](CORE_CATALOG_ASSET_FILE_STACK_2026-10-17.md).
 The String locale, float-formatting and print services are inert host
 boundaries; the String concatenation used by AEFile matches the production
 five-line implementation.

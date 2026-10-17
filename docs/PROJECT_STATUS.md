@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (weapon-position file-stack asset check; older subsystem
+Last reviewed: 2026-10-17 (core catalog asset check; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -11,6 +11,22 @@ gates. The next integration milestone is a real asset-mounted executable
 host and a station-to-flight smoke test. Only after that can gameplay
 paths be verified end-to-end; exact code matching remains a separate
 polish metric, not the definition of completion.
+
+## Items and ships catalog asset check (2026-10-17)
+
+The native file-stack host fixture now also reads the actual local
+`items.bin` and `ships.bin` with unchanged production loader and
+constructor bodies. At `-O0/-O2`, all **233 item** and **64 ship** IDs
+parse in order; selected attributes and DLC-start ship templates match
+independent local asset decoding. Missing resources return null, and
+four opens have four closes across the three tested resources. Native
+`gof2`, **208/208** ARM units and verifier tests pass. Focused loader
+source-shape/strict fuzzy remains **95.9%/59.9%** (items) and
+**78.4%/61.0%** (ships); both nonexact. No production source changed:
+the full corpus remains **4,323/4,524** originals,
+**93.75%/82.89%** averages and **2,520/1,076** linked-/byte-exact.
+The test does not execute station-to-flight gameplay. See
+[the catalog evidence](CORE_CATALOG_ASSET_FILE_STACK_2026-10-17.md).
 
 ## Weapon-position native file-stack check (2026-10-17)
 
