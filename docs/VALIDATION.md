@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CutScene FileRead lifetime (2026-10-17)
+
+`python tools/run_cutscene_filread_lifetime_smoke.py --cxx
+C:/msys64/ucrt64/bin/g++.exe` passes at host `-O0/-O2` for
+constructor, ship lookup, load and destructor ordering. Native
+`gof2`, **208/208** ARM units, 40 verifier tests (one existing skip)
+and preceding turret smokes pass. Focused report
+`A:/Galaxy on Fire new version/_work/cutscene_filread_lifetime_after_20261017.json`
+scores `checkForTurret` at **96.0% source-shape / 65.0% strict fuzzy**,
+up from **93.3% / 48.5%** in
+`cutscene_turret_cleanup_after_20261017.json`, still nonexact. Full
+report
+`A:/Galaxy on Fire new version/_work/cutscene_filread_lifetime_full_20261017.json`
+has **4,323/4,524** original functions over **4,721 comparisons**,
+**201 missing**, **123 extras**, **93.74%/82.87%** rounded averages,
+**2,518 linked-exact / 1,076 byte-exact**. Exact `(unit,symbol)`
+sets are unchanged from `cutscene_turret_cleanup_full_20261017.json`.
+See [the lifetime audit](CUTSCENE_FILREAD_LIFETIME_ARM_2026-10-17.md).
+
 ## CutScene turret position cleanup (2026-10-17)
 
 `python tools/run_cutscene_turret_cleanup_smoke.py --cxx

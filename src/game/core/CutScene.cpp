@@ -10,6 +10,7 @@
 #include "engine/render/LODManager.h"
 #include "engine/math/Transform.h"
 #include "engine/core/ApplicationManager.h"
+#include "engine/file/FileRead.h"
 #include "game/world/Level.h"
 #include "game/world/LevelScript.h"
 #include "game/ship/PlayerEgo.h"
@@ -539,15 +540,6 @@ void CutScene::resetCamera() {
     canvas->CameraSetPerspective(this->cameraId6c, 1.2f, 200.0f, 48000.0f);
 }
 
-class FileRead {
-public:
-    FileRead();
-
-    ~FileRead();
-
-    Array<Array<Vector *> *> *loadWeaponPositions(int32_t id);
-};
-
 void CutScene::checkForTurret() {
     PaintCanvas *canvas = PaintCanvas::gCanvas;
 
@@ -662,9 +654,10 @@ void CutScene::checkForTurret() {
     delete this->turretGeom;
     this->turretGeom = new AEGeometry(canvas);
 
-    FileRead fr;
+    FileRead *fr = new FileRead();
     int shipIdx = Status::gStatus->getShip()->getIndex();
-    Array<Array<Vector *> *> *positions = fr.loadWeaponPositions(shipIdx);
+    Array<Array<Vector *> *> *positions = fr->loadWeaponPositions(shipIdx);
+    delete fr;
 
     Vector *posVec = (*(*positions)[2])[0];
     geom0->setPosition(*posVec);

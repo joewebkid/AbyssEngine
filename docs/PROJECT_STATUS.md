@@ -1,7 +1,29 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (CutScene turret position cleanup; older subsystem
+Last reviewed: 2026-10-17 (CutScene FileRead lifetime; older subsystem
 snapshots retain their dates)
+
+## CutScene FileRead lifetime (2026-10-17)
+
+Android ARM constructs `FileRead` on the heap for
+`checkForTurret`, destroys it immediately after
+`loadWeaponPositions`, and only then uses the returned array. The
+local incomplete `FileRead` declaration and later stack lifetime
+are replaced with the real header and observed order. Focused
+`checkForTurret` source-shape/strict fuzzy rises from **93.3%/48.5%**
+to **96.0%/65.0%**, still nonexact. Native `gof2`, **208/208** ARM
+units, 40 verifier tests (one existing skip), extracted `-O0/-O2`
+lifetime test and prior turret smokes pass. Full corpus remains
+**4,323/4,524** original functions over **4,721 comparisons**,
+**201 missing**, **123 extras**, **93.74%/82.87%** rounded averages,
+**2,518 linked-exact / 1,076 byte-exact**, with zero exact-pair
+losses. ARM confirms the loader returns null when
+`weapons_hd.bin` is missing and the original caller dereferences
+it before its later null check; this path is an untested runtime
+precondition, not a recovered guard. Next priority: audit
+`FileRead::loadWeaponPositions` record decoding and four-slot
+ownership (current focused **83.1%/36.0%**). See
+[the lifetime audit](CUTSCENE_FILREAD_LIFETIME_ARM_2026-10-17.md).
 
 ## CutScene turret position cleanup (2026-10-17)
 
