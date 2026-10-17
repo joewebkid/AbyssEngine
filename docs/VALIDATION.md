@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Station lookup ownership recovery (2026-10-17)
+
+Focused ARM `loadStation` rises **57.5%/14.3% → 100%/100%**
+source-shape/strict fuzzy and becomes linked-exact, not byte-exact;
+`Array<Station *>::~Array` remains linked-exact. The host file-stack
+smoke passes `stations.bin` at `-O0/-O2`, including all 135 station
+IDs and direct reads of DLC starting stations 70/91. Native `gof2`,
+**208/208** ARM units and 40 verifier tests (one existing skip) pass.
+Full report
+`A:/Galaxy on Fire new version/_work/station_lifetime_full_final_20261017.json`
+records **4,323/4,524** originals, **4,723** comparisons,
+**93.76%/82.91%** averages, **2,521/1,076** linked-/byte-exact,
+zero exact-pair losses, and one extra destructor alias. See
+[the evidence note](FILE_READ_LOAD_STATION_OWNERSHIP_ARM_2026-10-17.md).
+
 ## Core catalog asset check (2026-10-17)
 
 `tools/run_weapon_positions_file_stack_smoke.py` now exercises the

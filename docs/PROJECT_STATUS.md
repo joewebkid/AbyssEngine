@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (core catalog asset check; older subsystem
+Last reviewed: 2026-10-17 (loadStation ownership recovery; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -11,6 +11,25 @@ gates. The next integration milestone is a real asset-mounted executable
 host and a station-to-flight smoke test. Only after that can gameplay
 paths be verified end-to-end; exact code matching remains a separate
 polish metric, not the definition of completion.
+
+## Station lookup ownership recovery (2026-10-17)
+
+Android ARM `FileRead::loadStation` allocates a one-element `int16_t`
+ID array, passes it to the selected-station loader, returns the first
+station and deletes only that ID array. The recovered stack ID and
+deletion of the returned station-array container were wrong. The
+corrected function rises **57.5%/14.3% → 100%/100%** source-shape /
+strict fuzzy and becomes linked-exact, not byte-exact. A retained
+FileRead-local template destructor preserves every prior exact pair;
+its extra `D1` alias is disclosed. Asset-backed `stations.bin` tests
+pass at `-O0/-O2` for all **135** station IDs and direct DLC starts
+at **70/91**. Native `gof2`, **208/208** ARM units and verifier tests
+pass. Full corpus: **4,323/4,524** originals, **4,723** comparisons,
+**201 missing**, **124 extras**, **93.76%/82.91%** source-shape/strict
+fuzzy, **2,521 linked-exact / 1,076 byte-exact**, zero exact-pair
+losses. This does not verify an executable station-to-flight run; the
+original missing-asset path remains unsafe. See
+[the ARM ownership evidence](FILE_READ_LOAD_STATION_OWNERSHIP_ARM_2026-10-17.md).
 
 ## Items and ships catalog asset check (2026-10-17)
 

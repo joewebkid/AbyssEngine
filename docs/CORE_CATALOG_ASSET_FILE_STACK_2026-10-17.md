@@ -11,8 +11,8 @@ evidence files remain outside Git:
 | `items.bin` | 27,628 | `55b953629d994d553604418988d43d2b1935f93061da7040a464acad57677e95` |
 | `ships.bin` | 2,304 | `4a04c753410318af223e2f6bef852d336bff175eeec767c8b82940a75859f182` |
 
-The existing host file-stack test now mounts those two exact logical
-paths alongside `weapons_hd.bin`. It compiles the unchanged production
+The host file-stack test mounts those two exact logical paths alongside
+`weapons_hd.bin`. It compiles the unchanged production
 `AEFile` stack, the extracted unchanged `FileRead` loader bodies, and
 the production `Item` and `Ship` constructors and initialization code.
 The unrelated player-status branch is held null at this test boundary;
@@ -23,7 +23,10 @@ file. With the resources present, all 233 item indices and all 64 ship
 indices are parsed in order. The test checks first/last item attributes
 and the source-backed Valkyrie/Supernova template IDs 5 and 30, their
 slots, values and handling. All created objects and arrays are released;
-the full three-resource test observes four opens and four closes.
+the three-resource test observed four opens and four closes. The test
+was subsequently extended to `stations.bin` and direct station lookup;
+the current four-resource run observes seven of each. See
+[the station ownership check](FILE_READ_LOAD_STATION_OWNERSHIP_ARM_2026-10-17.md).
 
 The native `gof2` target and **208/208** ARM translation units pass, as
 do 40 verifier tests (one existing skip). Focused ARM scores remain

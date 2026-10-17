@@ -7,6 +7,7 @@
 #include "game/ship/Ship.h"
 #include "game/core/Globals.h"
 #include "game/world/Standing.h"
+#include "game/world/Station.h"
 #include <cassert>
 #include <cmath>
 #include <cstdio>
@@ -31,6 +32,8 @@ void String_printImpl(const char *) { std::abort(); }
 Status *Globals::status = nullptr;
 Standing *Status::getStanding() { std::abort(); }
 void Standing::setPlayerSignatureRace(int) { std::abort(); }
+// Catalog stations have no owned item/ship/agent lists in this fixture.
+Station::~Station() {}
 
 namespace {
 std::filesystem::path assetDirectory;
@@ -49,10 +52,11 @@ std::filesystem::path resource(const String &name) {
     if (path == "data/bin/weapons_hd.bin") return assetDirectory / "weapons_hd.bin";
     if (path == "data/bin/items.bin") return assetDirectory / "items.bin";
     if (path == "data/bin/ships.bin") return assetDirectory / "ships.bin";
+    if (path == "data/bin/stations.bin") return assetDirectory / "stations.bin";
     return {};
 }
 
-// This fixture mounts only three evidenced paths; it is not a game host.
+// This fixture mounts only four evidenced paths; it is not a game host.
 class HostFile final : public FileInterface {
 public:
     explicit HostFile(std::FILE *stream = nullptr) : stream_(stream) { enabled = 1; }
@@ -122,6 +126,7 @@ int main(int argc, char **argv) {
     assert(std::filesystem::is_regular_file(realAssetDirectory / "weapons_hd.bin"));
     assert(std::filesystem::is_regular_file(realAssetDirectory / "items.bin"));
     assert(std::filesystem::is_regular_file(realAssetDirectory / "ships.bin"));
+    assert(std::filesystem::is_regular_file(realAssetDirectory / "stations.bin"));
     HostFile interface;
     AEFile::SetInterface(&interface);
     FileRead reader;
@@ -184,7 +189,27 @@ int main(int argc, char **argv) {
     }
     delete ships;
 
+    int16_t ids[135];
+    for (int16_t i = 0; i < 135; ++i) ids[i] = i;
+    auto *stations = reader.loadStationsBinary(ids, 135);
+    assert(stations && stations->size() == 135);
+    for (unsigned i = 0; i < stations->size(); ++i) {
+        assert((*stations)[i] && (*stations)[i]->index == static_cast<int>(i));
+    }
+    assert((*stations)[0]->name.data[3] == 0xe9); // Nehébru, UTF-8 decoded.
+    assert((*stations)[70]->systemIndex == 14 && narrow((*stations)[70]->name) == "Dis");
+    assert((*stations)[91]->systemIndex == 18 && narrow((*stations)[91]->name) == "Dima");
+    for (Station *station : *stations) delete station;
+    delete stations;
+
+    Station *dlc1 = reader.loadStation(91);
+    Station *dlc2 = reader.loadStation(70);
+    assert(dlc1 && dlc1->index == 91 && narrow(dlc1->name) == "Dima");
+    assert(dlc2 && dlc2->index == 70 && narrow(dlc2->name) == "Dis");
+    delete dlc1;
+    delete dlc2;
+
     AEFile::Release();
-    assert(opens == 4 && closes == 4);
+    assert(opens == 7 && closes == 7);
     std::puts("production AEFile/FileRead core assets: OK");
 }

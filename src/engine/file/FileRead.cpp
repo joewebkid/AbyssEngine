@@ -17,6 +17,10 @@
 
 using AbyssEngine::Vector;
 
+// Keep the original FileRead-local template body after loadStation stops
+// destroying the returned station array (Android ARM 0x11f948).
+template Array<Station *>::~Array();
+
 FileRead::FileRead() {
 }
 
@@ -24,10 +28,12 @@ FileRead::~FileRead() {
 }
 
 Station *FileRead::loadStation(int32_t id) {
-    int16_t selected = (int16_t) id;
-    Array<Station *> *stations = loadStationsBinary(&selected, 1);
+    // Android 2.0.16, 0x11f94c-0x11f966: the temporary ID is heap-owned.
+    int16_t *selected = new int16_t[1];
+    selected[0] = (int16_t) id;
+    Array<Station *> *stations = loadStationsBinary(selected, 1);
     Station *result = stations->data()[0];
-    delete stations;
+    delete[] selected;
     return result;
 }
 
