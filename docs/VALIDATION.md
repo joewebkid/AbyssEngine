@@ -4,6 +4,27 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Opening stock and Galaxy distance (2026-10-17)
+
+The real-asset host smoke now executes production
+`Generator::getItemBuyList` for early campaign station 78 and checks
+items 0/22/55, amount 1 and price 0. It also executes production
+`Galaxy::distancePercent` and `invDistancePercent` while
+`Globals::gGlobals` is null, confirming the corrected
+`Globals::globals` path. `-O0`/`-O2` and **66/66** file lifetimes pass;
+native `gof2` builds and 40 verifier tests pass (one existing skip).
+The focused Galaxy report at
+`A:/Galaxy on Fire new version/_work/galaxy_distance_after_20261017.json`
+keeps both symbols 100% source-shape/strict fuzzy and linked-exact.
+The full report at
+`A:/Galaxy on Fire new version/_work/generator_market_full_20261017.json`
+has **208/208** ARM TUs, **4,323/4,524** originals in **4,730** rows,
+**93.78%/82.95%** average source-shape/strict fuzzy, **2,527**
+linked-exact and **1,076** byte-exact. Pairwise comparison with
+`status_move_wanted_full_20261017.json` finds zero exact-pair changes;
+201 symbols remain absent, with zero wrong-type and skipped units. See
+[the evidence](GENERATOR_OPENING_STOCK_GALAXY_DISTANCE_ARM_HOST_2026-10-17.md).
+
 ## Real pathfinder wanted route (2026-10-17)
 
 The asset-backed host smoke links production `SystemPathFinder` and

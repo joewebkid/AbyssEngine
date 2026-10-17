@@ -46,6 +46,9 @@ void *Globals::globals = nullptr;
 void *Globals::galaxy = nullptr;
 void *Globals::items = nullptr;
 void *Globals::ships = nullptr;
+void *Globals::rnd = nullptr;
+int Globals::energyCellsProbChange = 0;
+int Globals::secondaryWeaponsProbChange = 0;
 void *Globals::achievements = nullptr;
 unsigned char Globals::options[100] = {};
 unsigned char Globals::hints[59] = {};
@@ -329,6 +332,9 @@ int main(int argc, char **argv) {
         Galaxy galaxy;
         Globals::galaxy = &galaxy;
         Galaxy::gGalaxy = &galaxy;
+        assert(Globals::gGlobals == nullptr);
+        assert(galaxy.distancePercent(0, 0, 3, 4) == 5);
+        assert(galaxy.invDistancePercent(0, 0, 3, 4) == 95);
         Status status;
         Globals::status = &status;
         Status::gStatus = &status;
@@ -382,8 +388,13 @@ int main(int argc, char **argv) {
 
         status.ship->value = -999;
         status.departStation(status.station);
-        assert(g_station_generator_calls == 4);
-        assert(status.station->items && status.station->items->empty());
+        assert(g_station_generator_calls == 3);
+        assert(status.station->items && status.station->items->size() == 3);
+        const int openingStock[] = {0, 22, 55};
+        for (unsigned i = 0; i < status.station->items->size(); ++i) {
+            Item *item = (*status.station->items)[i];
+            assert(item->index == openingStock[i] && item->amount == 1 && item->price == 0);
+        }
         assert(status.station->ships && status.station->ships->empty());
         assert(status.station->agents && status.station->agents->empty());
         assert(status.mission == (*status.missions)[0]);
@@ -417,7 +428,7 @@ int main(int argc, char **argv) {
         status.field_80 = -2;
         status.field_88 = 9;
         status.departStation(status.station);
-        assert(g_station_generator_calls == 4);
+        assert(g_station_generator_calls == 3);
         assert(status.field_88 == 10);
         assert(status.mission == &emptyMission);
         status.mission = campaign;
@@ -496,6 +507,7 @@ int main(int argc, char **argv) {
         status.playerStation = savedPlayerStation;
         for (Station *&stackStation : *status.stationStack)
             if (stackStation == status.station) stackStation = nullptr;
+        ArrayReleaseClasses(*status.station->items);
         delete status.station->items;
         delete status.station->ships;
         delete status.station->agents;
@@ -549,5 +561,5 @@ int main(int argc, char **argv) {
 
     AEFile::Release();
     assert(interface.opens() == 66 && interface.closes() == 66);
-    std::puts("production assets, Status startup/departure/wanted, and real pathfinder: OK");
+    std::puts("production assets, Status startup/departure/wanted, real pathfinder and opening stock: OK");
 }

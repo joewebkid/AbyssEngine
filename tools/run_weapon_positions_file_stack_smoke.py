@@ -46,7 +46,9 @@ def main():
     agent_source = (ROOT / "src/game/ship/Agent.cpp").read_text()
     wanted_source = (ROOT / "src/game/world/Wanted.cpp").read_text()
     status_source = (ROOT / "src/game/mission/Status.cpp").read_text()
+    generator_source = (ROOT / "src/game/mission/Generator.cpp").read_text()
     galaxy_source = (ROOT / "src/game/world/Galaxy.cpp").read_text()
+    globals_source = (ROOT / "src/game/core/Globals.cpp").read_text()
     generator_begin = status_source.index("struct Generator {")
     generator_end = status_source.index("};", generator_begin) + 2
     achievements_source = (ROOT / "src/game/mission/Achievements.cpp").read_text()
@@ -78,9 +80,13 @@ def main():
         'using AbyssEngine::Vector;\n'
         'FileRead::FileRead() {}\nFileRead::~FileRead() {}\n'
         + status_source[generator_begin:generator_end] + '\n'
+        + generator_source[generator_source.index("static const volatile int kaamoSpecialItems[9]"):
+                           generator_source.index("};", generator_source.index("static const volatile int kaamoSpecialItems[9]")) + 2] + '\n'
+        + generator_source[generator_source.index("static const volatile int g_Generator_kaamoAllowed[10]"):
+                           generator_source.index("};", generator_source.index("static const volatile int g_Generator_kaamoAllowed[10]")) + 2] + '\n'
         + 'extern int g_station_generator_calls;\n'
         + 'Generator::Generator() { ++g_station_generator_calls; }\n'
-        + 'Array<Item *> *Generator::getItemBuyList(Station *) { ++g_station_generator_calls; return new Array<Item *>(); }\n'
+        + function(generator_source, "Array<Item *> *Generator::getItemBuyList(Station *station)")
         + 'Array<Ship *> *Generator::getShipBuyList(Station *) { ++g_station_generator_calls; return new Array<Ship *>(); }\n'
         + 'Array<Agent *> *Generator::createAgents(Station *) { ++g_station_generator_calls; return new Array<Agent *>(); }\n'
         + 'extern int g_wanted_random_station_id;\n'
@@ -111,10 +117,15 @@ def main():
         + function(item_source, "IntArray *Item::getIngredients()")
         + function(item_source, "IntArray *Item::getQuantities()")
         + function(item_source, "int Item::getType()")
+        + function(item_source, "int Item::getTecLevel()")
+        + function(item_source, "int Item::getOccurence()")
+        + function(item_source, "int Item::getMinPriceSystem()")
+        + function(item_source, "bool Item::isWeapon()")
         + function(item_source, "void Item::setStationAmount(int value)")
         + function(item_source, "Item *Item::clone()")
         + function(item_source, "Item *Item::makeItem()")
         + function(item_source, "Item *Item::makeItem(int amount)")
+        + function(item_source, "Item *Item::makeItem(int amount, int price)")
         + function(ship_source, "Ship::Ship(int index,")
         + function(ship_source, "Ship::~Ship()")
         + function(ship_source, "int Ship::getCargoValue()")
@@ -144,6 +155,9 @@ def main():
         + function(system_source, "uint32_t *SolarSystem::getRoutes()")
         + function(system_source, "int SolarSystem::getWarpGateIndex()")
         + function(system_source, "int SolarSystem::getIndex()")
+        + function(system_source, "int SolarSystem::getRace()")
+        + function(system_source, "int SolarSystem::getX()")
+        + function(system_source, "int SolarSystem::getY()")
         + function(system_source, "uint8_t SolarSystem::isVisible()")
         + function(agent_source, "Agent::Agent(int kind,")
         + function(agent_source, "Agent::~Agent() noexcept(false)")
@@ -171,6 +185,10 @@ def main():
         + function(status_source, "void Status::setStation(Station *s)")
         + function(status_source, "Station *Status::isOnStack(Station *s)")
         + function(status_source, "bool Status::inAlienOrbit()")
+        + function(status_source, "int Status::getCurrentCampaignMission()")
+        + function(status_source, "int Status::inSupernovaSystem()")
+        + function(status_source, "bool Status::inBlackMarketSystem()")
+        + function(status_source, "bool Status::hardCoreMode()")
         + function(status_source, "Array<bool> *Status::getSystemVisibilities()")
         + function(status_source, "int Status::addStationToStack(Station *s)")
         + 'static int g_dsTypeMask = 0x8B782B;\n'
@@ -181,9 +199,12 @@ def main():
         + function(galaxy_source, "Galaxy::Galaxy()")
         + function(galaxy_source, "Galaxy::~Galaxy()")
         + function(galaxy_source, "void Galaxy::reset()")
+        + function(galaxy_source, "int Galaxy::distancePercent(int x1, int y1, int x2, int y2)")
+        + function(galaxy_source, "int Galaxy::invDistancePercent(int x1, int y1, int x2, int y2)")
         + function(galaxy_source, "SolarSystem *Galaxy::getSystem(int index)")
         + function(galaxy_source, "Station *Galaxy::getStation(int index)")
         + function(galaxy_source, "Array<SolarSystem *> *Galaxy::getSystems()")
+        + function(globals_source, "float Globals::sqrt(float x)")
         + function(achievements_source, "Achievements::Achievements()")
         + function(achievements_source, "Achievements::~Achievements()")
         + function(achievements_source, "int Achievements::init()")
@@ -210,6 +231,7 @@ def main():
         + function(station_source, "Station::Station()")
         + function(station_source, "int Station::getIndex()")
         + function(station_source, "int Station::getSystem()")
+        + function(station_source, "int Station::getTecLevel()")
         + function(station_source, "int Station::getTextureIndex()")
         + function(station_source, "String Station::getName()")
     )

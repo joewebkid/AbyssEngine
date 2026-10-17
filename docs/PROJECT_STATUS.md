@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (real pathfinder wanted gate; older subsystem
+Last reviewed: 2026-10-17 (real opening-stock generation; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -9,13 +9,32 @@ The project is past the initial symbol inventory and is in source-backed
 behavior recovery, with a native static-library build, asset-backed host
 smokes and ARM comparison gates. `Status::resetGame` now executes in an
 asset-backed host fixture. A bounded `Status::departStation` slice now
-executes after startup with an explicit test-only Generator boundary;
-the next integration milestone is real station generation and entry
-to `Level::init`; a catalog-backed cross-system wanted path now runs.
+executes after startup with real opening-stock generation; ship and agent
+generation remain explicit test boundaries. The next integration milestones
+are ordinary station markets and entry to `Level::init`; a catalog-backed
+cross-system wanted path now runs.
 Only after that can
 gameplay paths be verified end-to-end;
 exact code matching remains a separate polish metric, not the definition
 of completion.
+
+## Opening stock and Galaxy distance (2026-10-17)
+
+The asset-backed host fixture now calls production
+`Generator::getItemBuyList`: early campaign station 78 gets exactly
+catalog items 0, 22 and 55, one each at zero price. ARM also confirms
+that `Galaxy::distancePercent` uses `Globals::globals`, not the
+uninitialized `gGlobals`; this was fixed and host-tested. Both `-O0`
+and `-O2` runs pass with **66/66** balanced file lifetimes. The two
+Galaxy distance-percent symbols remain **100% source-shape / 100%**
+strict fuzzy and linked-exact; `getItemBuyList` remains **97.0% /
+67.9%**, nonexact. Native `gof2`, **208/208** ARM TUs and 40 verifier
+tests (one existing skip) pass. Full corpus: **4,323/4,524** originals
+in **4,730** rows, **93.78% / 82.95%** average source-shape/strict
+fuzzy, **2,527 linked-exact / 1,076 byte-exact**, 201 absent, zero
+wrong-type/skipped units and zero exact-pair gains or losses. Generic
+market RNG, ship/agent generation and `Level::init` remain unverified.
+See [the evidence](GENERATOR_OPENING_STOCK_GALAXY_DISTANCE_ARM_HOST_2026-10-17.md).
 
 ## Cross-system wanted route with real pathfinder (2026-10-17)
 
