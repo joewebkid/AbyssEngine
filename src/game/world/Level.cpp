@@ -1094,6 +1094,22 @@ void Level::createSpace() {
 
     this->landmarks = new Array<KIPlayer *>();
     ArraySetLength(4, *(this->landmarks));
+
+    bool createStation = !Status::gStatus->inEmptyOrbit();
+    if (!createStation && !Status::gStatus->inAlienOrbit()) {
+        int stationIndex = Status::gStatus->getStation()->getIndex();
+        createStation = stationIndex == 27 || stationIndex == 110 || stationIndex == 111;
+    }
+    if (createStation) {
+        PlayerStation *station = new PlayerStation(Status::gStatus->getStation());
+        (*this->landmarks)[0] = station;
+        this->lodManager->addObject(station->rootGeometry);
+        if (Status::gStatus->dlc1Won()) {
+            Station *nameSource = static_cast<Galaxy *>(Globals::galaxy)->getStation(101);
+            station->name = nameSource->getName();
+            delete nameSource;
+        }
+    }
 }
 
 void Level::createRadioMessage(int type, int sub) {

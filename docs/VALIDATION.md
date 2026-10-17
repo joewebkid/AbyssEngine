@@ -4,6 +4,17 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level station-landmark gate (2026-10-17)
+
+The source-extracted `-O0/-O2` host smoke covers creation, suppression,
+exceptional station indices, and DLC renaming. Native `gof2`, 208/208 ARM
+TUs and 40 verifier tests pass (one skip). Focused `Level::createSpace`
+source-shape/strict fuzzy rises from 22.2%/11.6% to 32.0%/15.2%, nonexact.
+The smoke does not run the real `PlayerStation` constructor or full level
+entry. Full ARM coverage remains 4,323/4,524 originals, 93.83%/82.99%
+means, 2,528 linked-exact and 1,076 byte-exact with no exact-pair losses.
+See [the station evidence](LEVEL_CREATE_SPACE_STATION_ARM_2026-10-17.md).
+
 ## Level ordinary entry-position gate (2026-10-17)
 
 The source-extracted `-O0/-O2` host smoke covers ordinary and first-mission

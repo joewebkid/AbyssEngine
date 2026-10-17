@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (Level ordinary entry-position gate; older subsystem
+Last reviewed: 2026-10-17 (Level station-landmark gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -17,6 +17,19 @@ but the full init path has not yet passed a host runtime gate. A catalog-backed
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Level station landmark (2026-10-17)
+
+Android `Level::createSpace` creates the conditional station landmark in
+slot 0, registers its root geometry with LOD, and can replace its name after
+DLC 1 completion. Those branches now exist in source and pass an extracted
+`-O0/-O2` host smoke. Focused source-shape/strict fuzzy rises from
+22.2%/11.6% to 32.0%/15.2%, still nonexact. Native and ARM builds and
+verifier tests pass. Jumpgate/wormhole landmarks and full stage-0 runtime
+remain unverified. Full ARM coverage remains 4,323/4,524 originals,
+93.83%/82.99% means, 2,528 linked-exact and 1,076 byte-exact with zero
+exact-pair losses. See
+[the station-landmark evidence](LEVEL_CREATE_SPACE_STATION_ARM_2026-10-17.md).
 
 ## Level ordinary entry position (2026-10-17)
 
