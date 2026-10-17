@@ -1,4 +1,5 @@
 #include "game/mission/BluePrint.h"
+#include "game/core/Globals.h"
 #include "game/world/Galaxy.h"
 #include "game/mission/Item.h"
 #include "game/mission/Status.h"
@@ -8,7 +9,7 @@
 int BluePrint::getAutoCompletionPrice() {
     if (itemIndex == 0xd2)
         return getIngredientsValue() + 0x1e8480;
-    int maxPrice = (*Item::g_items)[itemIndex]->getMaxPrice();
+    int maxPrice = (*static_cast<Array<Item *> *>(Globals::items))[itemIndex]->getMaxPrice();
     return (int) ((float) (batchMultiplier * maxPrice) * 1.25f);
 }
 
@@ -91,11 +92,11 @@ int BluePrint::getTotalAmount(int item) {
 }
 
 Array<int> *BluePrint::getIngredientList() {
-    return (Array<int> *) (*Item::g_items)[itemIndex]->getIngredients();
+    return (Array<int> *) (*static_cast<Array<Item *> *>(Globals::items))[itemIndex]->getIngredients();
 }
 
 Array<int> *BluePrint::getQuantityList() {
-    return (Array<int> *) (*Item::g_items)[itemIndex]->getQuantities();
+    return (Array<int> *) (*static_cast<Array<Item *> *>(Globals::items))[itemIndex]->getQuantities();
 }
 
 int BluePrint::getIngredientsValue() {
@@ -103,7 +104,7 @@ int BluePrint::getIngredientsValue() {
     int total = 0;
     if (il != nullptr) {
         for (uint32_t i = 0; i < il->size(); i++) {
-            int price = (*Item::g_items)[(*il)[i]]->getSinglePrice();
+            int price = (*static_cast<Array<Item *> *>(Globals::items))[(*il)[i]]->getSinglePrice();
             total += (*ingredientCounters)[i] * price;
         }
     }
@@ -112,7 +113,7 @@ int BluePrint::getIngredientsValue() {
 
 BluePrint::BluePrint(int item) {
     itemIndex = item;
-    Item *it = (*Item::g_items)[item];
+    Item *it = (*static_cast<Array<Item *> *>(Globals::items))[item];
     int type = it->getType();
     stationIndex = -1;
     batchMultiplier = (type == 1) ? 10 : 1;

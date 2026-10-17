@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Asset-backed new-game startup (2026-10-17)
+
+The file-stack host smoke now extracts the production `Status::resetGame`
+and related catalog, Mission, BluePrint, Ship and Galaxy bodies. With
+seven mounted Android catalogs, `-O0/-O2` tests pass **56/56** file
+opens/closes and assert station 78, ship 10, campaign/empty mission slots,
+27 agents, 25 wanted records, all catalog-derived blueprints, starting
+equipment and jump-state reset. Native `gof2` / `gof2_host_file`, all
+**208/208** ARM units and 40 verifier tests pass (one existing skip).
+Focused `resetGame` source-shape/strict fuzzy rises
+**32.9%/15.4% → 88.1%/34.7%**. The full report is
+`A:/Galaxy on Fire new version/_work/status_reset_blueprint_full_final_20261017.json`:
+**4,323/4,524** originals, **4,730** rows, **93.78%/82.94%** average
+source-shape/strict fuzzy, **2,526 linked-exact / 1,076 byte-exact**.
+Compared by `(unit, symbol)` to the preceding full report, there are
+zero exact losses and five linked-exact gains, with zero wrong-type
+missing and zero skipped units. See
+[the startup evidence](STATUS_RESET_GAME_ASSET_RUNTIME_ARM_2026-10-17.md).
+
 ## Galaxy station lookup lifetime (2026-10-17)
 
 `Galaxy::getStation` now follows the Android ARM lifetime and negative-ID

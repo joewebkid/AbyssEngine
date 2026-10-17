@@ -4,6 +4,8 @@
 #include "engine/core/GameText.h"
 #include "game/mission/Item.h"
 #include "game/mission/Status.h"
+#include "game/mission/Mission.h"
+#include "game/mission/Achievements.h"
 #include "game/ship/Ship.h"
 #include "game/core/Globals.h"
 #include "game/world/Standing.h"
@@ -12,6 +14,7 @@
 #include "game/ship/Agent.h"
 #include "game/world/Wanted.h"
 #include "game/world/Galaxy.h"
+#include "game/world/Level.h"
 #include "host/ReadOnlyAssetFileInterface.h"
 #include <cassert>
 #include <algorithm>
@@ -37,10 +40,22 @@ void String_printImpl(const char *) { std::abort(); }
 
 // The player-status pointer is the host boundary for negative station IDs.
 Status *Globals::status = nullptr;
+void *Globals::globals = nullptr;
+void *Globals::galaxy = nullptr;
+void *Globals::items = nullptr;
+void *Globals::ships = nullptr;
+void *Globals::achievements = nullptr;
+unsigned char Globals::options[100] = {};
+unsigned char Globals::hints[59] = {};
+Globals::Globals() {}
+Globals::~Globals() {}
+void Globals::resetHints() { std::fill(std::begin(hints), std::end(hints), 0); }
+int Level::energyCellsForNextJump = 0;
+unsigned char Level::doInstantJump = 0;
+void *Level::programmedStation = nullptr;
+void *Mission::empty = nullptr;
 Galaxy *Galaxy::gGalaxy = nullptr;
 Status *Status::gStatus = nullptr;
-Standing *Status::getStanding() { std::abort(); }
-void Standing::setPlayerSignatureRace(int) { std::abort(); }
 // Catalog stations have no owned item/ship/agent lists in this fixture.
 Station::~Station() {}
 
@@ -289,7 +304,122 @@ int main(int argc, char **argv) {
     delete dlc1;
     delete dlc2;
 
-    AEFile::Release();
     assert(interface.opens() == 48 && interface.closes() == 48);
-    std::puts("production AEFile/FileRead seven assets and Galaxy/Status station paths: OK");
+    {
+        auto *startupItems = reader.loadItemsBinary();
+        auto *startupShips = reader.loadShipsBinary();
+        assert(startupItems && startupItems->size() == 233);
+        assert(startupShips && startupShips->size() == 64);
+        const unsigned blueprintCount = static_cast<unsigned>(std::count_if(
+            startupItems->begin(), startupItems->end(),
+            [](Item *item) { return item->getIngredients() != nullptr; }));
+        Globals globals;
+        Globals::globals = &globals;
+        Globals::items = startupItems;
+        Globals::ships = startupShips;
+        Achievements achievements;
+        Globals::achievements = &achievements;
+        Mission emptyMission;
+        Mission::empty = &emptyMission;
+        Galaxy galaxy;
+        Globals::galaxy = &galaxy;
+        Galaxy::gGalaxy = &galaxy;
+        Status status;
+        Globals::status = &status;
+        Status::gStatus = &status;
+        Globals::options[0x35] = 1;
+        Globals::options[0x36] = 1;
+        std::fill(std::begin(Globals::hints), std::end(Globals::hints), 0xff);
+        Level::energyCellsForNextJump = 7;
+        Level::doInstantJump = 1;
+        Level::programmedStation = &status;
+
+        status.resetGame();
+        assert(status.station && status.station->index == 78);
+        assert(status.ship && status.ship->index == 10);
+        assert(status.mission == (*status.missions)[0]);
+        assert((*status.missions)[1] == &emptyMission);
+        assert(status.mission->targetStation == 78);
+        assert(status.agents && status.agents->size() == 27);
+        assert(status.wanted && status.wanted->size() == 25);
+        assert(status.bluePrints && status.bluePrints->size() == blueprintCount);
+        BluePrint *blueprint = nullptr;
+        for (BluePrint *candidate : *status.bluePrints)
+            if (candidate->getIndex() != 210) { blueprint = candidate; break; }
+        assert(blueprint);
+        Item *templateItem = (*startupItems)[blueprint->getIndex()];
+        Array<int> *ingredientIds = blueprint->getIngredientList();
+        Array<int> *quantities = templateItem->getQuantities();
+        assert(ingredientIds == templateItem->getIngredients());
+        int ingredientsValue = 0;
+        for (unsigned i = 0; i < ingredientIds->size(); ++i)
+            ingredientsValue += (*quantities)[i] *
+                (*startupItems)[(*ingredientIds)[i]]->getSinglePrice();
+        assert(blueprint->getIngredientsValue() == ingredientsValue);
+        assert(blueprint->getAutoCompletionPrice() ==
+               static_cast<int>(static_cast<float>(blueprint->batchMultiplier *
+                   templateItem->getMaxPrice()) * 1.25f));
+        assert(status.field_114 == 3);
+        assert((*status.systemVisibilities)[25]);
+        assert(Level::energyCellsForNextJump == 0);
+        assert(Level::doInstantJump == 0 && Level::programmedStation == nullptr);
+        assert(std::all_of(std::begin(Globals::hints), std::end(Globals::hints),
+                           [](unsigned char value) { return value == 0; }));
+        const int equipmentIds[] = {2, 2, 0x36, 0x3b, 0x52, 0x49, 0x24};
+        for (int id : equipmentIds) {
+            int count = 0;
+            for (Item *item : *status.ship->equipment)
+                count += item && item->index == id;
+            assert(count == (id == 2 ? 2 : 1));
+        }
+        for (Item *item : *status.ship->equipment)
+            if (item && item->index == 0x24) assert(item->amount == 6);
+
+        ArrayReleaseClasses(*status.planetNames);
+        delete status.planetNames;
+        delete status.planetTextures;
+        delete status.station;
+        delete status.playerStation;
+        delete status.voidStation;
+        ArrayReleaseClasses(*status.bluePrints);
+        delete status.bluePrints;
+        delete status.standing;
+        delete status.missions;
+        delete status.systemVisibilities;
+        delete status.field_94;
+        delete status.field_98;
+        delete status.field_ac;
+        delete status.field_b4;
+        delete status.field_4c;
+        delete status.field_50;
+        delete status.field_90;
+        delete status.field_54;
+        delete status.field_58;
+        delete status.field_0x3c;
+        delete status.field_0x40;
+        delete status.field_0x44;
+        delete status.field_0x48;
+        Globals::status = nullptr;
+        Status::gStatus = nullptr;
+        Globals::galaxy = nullptr;
+        Galaxy::gGalaxy = nullptr;
+        Globals::achievements = nullptr;
+        Mission::empty = nullptr;
+        Globals::items = nullptr;
+        Globals::ships = nullptr;
+        Globals::globals = nullptr;
+        for (Ship *ship : *startupShips) delete ship;
+        delete startupShips;
+        for (Item *item : *startupItems) {
+            delete item->ingredients;
+            delete item->quantities;
+            delete item->attributes;
+            delete item;
+        }
+        delete startupItems;
+    }
+
+    AEFile::Release();
+    assert(interface.opens() == 56 && interface.closes() == 56);
+    std::puts("production AEFile/FileRead assets and Status startup path: OK");
 }

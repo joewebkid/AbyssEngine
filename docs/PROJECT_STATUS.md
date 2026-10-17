@@ -1,17 +1,39 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (Galaxy station lookup lifetime; older subsystem
+Last reviewed: 2026-10-17 (asset-backed new-game startup; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
 
 The project is past the initial symbol inventory and is in source-backed
 behavior recovery, with a native static-library build, asset-backed host
-smokes and ARM comparison gates. The next integration milestone is to
-execute a bounded `Status::resetGame` startup slice, then a station-to-flight
-smoke test. Only after that can gameplay paths be verified end-to-end;
+smokes and ARM comparison gates. `Status::resetGame` now executes in an
+asset-backed host fixture. The next integration milestone is a
+`Status::departStation` to `Level::init` smoke test. Only after that can
+gameplay paths be verified end-to-end;
 exact code matching remains a separate polish metric, not the definition
 of completion.
+
+## Asset-backed new-game startup (2026-10-17)
+
+Android ARM at `0x0ad304` confirms the direct Globals/Level startup
+links, catalog ship 10, station 78 and seven starting equipment items.
+The recovered `Status::resetGame` no longer dereferences an uncreated
+ship or null callback pointers. Five `BluePrint` methods now read
+`Globals::items`, as ARM does, rather than the uninitialized
+`Item::g_items`. Real-asset host `-O0/-O2` tests execute the production
+startup path with **56/56** file lifetimes, all catalog-derived
+blueprints, ship, station, agents, wanted and equipment assertions.
+Native targets, **208/208** ARM translation units and 40 verifier tests
+(one existing skip) pass. Focused `resetGame` source-shape/strict fuzzy
+rose **32.9%/15.4% → 88.1%/34.7%**; the BluePrint constructor stays
+**99.4%/94.5%**. Full ARM corpus: **4,323/4,524** original functions
+in **4,730** rows, **93.78%/82.94%** average source-shape/strict fuzzy,
+**2,526 linked-exact / 1,076 byte-exact**, 201 missing, zero wrong-type
+and zero skipped units. Pairwise comparison shows zero exact losses and
+five linked-exact gains. Platform startup, repeated resets and
+station-to-flight remain unverified. See
+[the startup evidence](STATUS_RESET_GAME_ASSET_RUNTIME_ARM_2026-10-17.md).
 
 ## Galaxy station lookup lifetime (2026-10-17)
 
@@ -26,8 +48,9 @@ tests pass (one existing skip). The full corpus compares **4,323/4,524**
 original functions in **4,723** rows, with **93.76%** average source-shape,
 **82.92%** strict fuzzy, **2,521 linked-exact** and **1,076 byte-exact**.
 No exact pairs were lost; 201 originals remain missing, zero have a wrong
-signature, and zero units were skipped. This does not run `Status::resetGame`
-or a flight scene. See [the lifetime evidence](GALAXY_GET_STATION_LIFETIME_ARM_2026-10-17.md).
+signature, and zero units were skipped. At this earlier checkpoint the
+fixture did not yet run `Status::resetGame` or a flight scene. See
+[the lifetime evidence](GALAXY_GET_STATION_LIFETIME_ARM_2026-10-17.md).
 
 ## Asset-backed Status station transition (2026-10-17)
 

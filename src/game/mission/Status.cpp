@@ -16,6 +16,7 @@ Status *Status::gStatus = nullptr;
 #include "game/world/SolarSystem.h"
 #include "game/world/Wanted.h"
 #include "game/world/Standing.h"
+#include "game/world/Level.h"
 #include "game/ship/Ship.h"
 
 static int *g_campaignSentinel = nullptr;
@@ -578,20 +579,8 @@ bool Status::inAlienOrbit() {
     return station != playerStation;
 }
 
-static int *g_rg_settings = nullptr;
-static Array<Item *> **g_rg_itemTable = nullptr;
-static int **g_rg_statusSlotC = nullptr;
-static int **g_rg_zeroSlotA = nullptr;
-static char **g_rg_zeroSlotB = nullptr;
-static int **g_rg_zeroSlotC = nullptr;
-
-static int (*g_rg_makeItemB)(int) = nullptr;
-
-static void (*g_rg_addCargo)(int, int, int) = nullptr;
-
 void Status::resetGame() {
-    int *settings = g_rg_settings;
-    GameSettings *srec = (GameSettings *) *settings;
+    GameSettings *srec = reinterpret_cast<GameSettings *>(Globals::options);
 
     this->setPreviousShip(nullptr);
     this->boughtEquipment = 0;
@@ -674,8 +663,8 @@ void Status::resetGame() {
         }
     }
 
-    Globals::gGlobals->resetHints();
-    Galaxy *gal = Galaxy::gGalaxy;
+    static_cast<Globals *>(Globals::globals)->resetHints();
+    Galaxy *gal = static_cast<Galaxy *>(Globals::galaxy);
     gal->reset();
 
     for (unsigned j = 0; j < this->field_50->size(); j = j + 1)
@@ -706,9 +695,9 @@ void Status::resetGame() {
     this->field_d8 = 0;
     this->field_dc = 0;
 
-    **g_rg_zeroSlotA = 0;
-    **g_rg_zeroSlotB = 0;
-    **g_rg_zeroSlotC = 0;
+    Level::energyCellsForNextJump = 0;
+    Level::doInstantJump = 0;
+    Level::programmedStation = nullptr;
 
     this->field_160 = 0;
     this->field_164 = 0;
@@ -718,7 +707,7 @@ void Status::resetGame() {
     this->field_f4 = -1;
     this->field_f8 = 1;
 
-    Achievements::gAchievements->init();
+    static_cast<Achievements *>(Globals::achievements)->init();
 
     Array<int> **off4[4] = {
         &this->field_0x40, &this->field_0x3c,
@@ -762,7 +751,7 @@ void Status::resetGame() {
     }
 
     unsigned bpCount = 0;
-    Array<Item *> *items = *g_rg_itemTable;
+    Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
     for (unsigned k = 0; k < items->size(); k = k + 1) {
         if ((*items)[k]->getIngredients() != 0)
             bpCount = bpCount + 1;
@@ -801,30 +790,25 @@ void Status::resetGame() {
     this->field_80 = -1;
     this->field_84 = 0;
 
-    (*this->missions)[0]->setType(**g_rg_statusSlotC);
+    (*this->missions)[1] = static_cast<Mission *>(Mission::empty);
     this->currentCampaignMission = 0;
 
     setCampaignMission(new Mission(4, 0, 0x4e));
 
     this->mission = (*this->missions)[0];
-    setShip(Status::gStatus->ship->makeShip(-1));
+    setShip(static_cast<Array<Ship *> *>(Globals::ships)->data()[10]->makeShip(-1));
     this->ship->priceDecline();
-    setStation(gal->getStation(0));
-    this->ship->setCargo(0);
+    setStation(gal->getStation(78));
+    this->ship->setCargo(nullptr);
 
-    int (*makeItemB)(int) = g_rg_makeItemB;
-    void (*addCargo)(int, int, int) = g_rg_addCargo;
-    int shipObj = (int) (intptr_t) this->ship;
-    int *srcShip = (int *) (*items->data());
-
-    addCargo(shipObj, makeItemB(srcShip[2]), 0);
-    addCargo(shipObj, makeItemB(srcShip[2]), 1);
-    addCargo(shipObj, makeItemB(srcShip[0x36]), 0);
-    addCargo(shipObj, makeItemB(srcShip[0x3b]), 1);
-    addCargo(shipObj, makeItemB(srcShip[0x52]), 2);
-    addCargo(shipObj, makeItemB(srcShip[0x49]), 3);
-    addCargo((int) (intptr_t) Status::gStatus->ship,
-             (int) (intptr_t)((Item *) (intptr_t) srcShip[0x24])->makeItem(), 0);
+    this->ship->setEquipment((*items)[2]->makeItem(), 0);
+    this->ship->setEquipment((*items)[2]->makeItem(), 1);
+    this->ship->setEquipment((*items)[0x36]->makeItem(), 0);
+    this->ship->setEquipment((*items)[0x3b]->makeItem(), 1);
+    this->ship->setEquipment((*items)[0x52]->makeItem(), 2);
+    this->ship->setEquipment((*items)[0x49]->makeItem(), 3);
+    static_cast<Status *>(Globals::status)->ship->setEquipment(
+        (*items)[0x24]->makeItem(6), 0);
 
     if (srec->blackMarketUnlockedFlag != 0)
         (*this->systemVisibilities)[0x19] = 1;
