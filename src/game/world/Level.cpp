@@ -47,6 +47,7 @@ float Level::b;
 #include "game/ship/PlayerStatic.h"
 #include "game/ship/PlayerStation.h"
 #include "game/ship/PlayerJumpgate.h"
+#include "game/ship/PlayerWormHole.h"
 #include "game/ship/PlayerJunk.h"
 #include "game/weapons/RocketGun.h"
 #include "game/world/Galaxy.h"
@@ -1093,6 +1094,14 @@ void Level::createSpace() {
         return;
     }
 
+    bool showWormhole = (comingFromAlienWorld ||
+                         Status::gStatus->getStation()->isAttackedByAliens() ||
+                         Status::gStatus->inAlienOrbit()) &&
+                        Status::gStatus->getCurrentCampaignMission() < 43;
+    if (showWormhole) {
+        Globals::gGlobals->addSoundResourceToList(34);
+    }
+
     this->landmarks = new Array<KIPlayer *>();
     ArraySetLength(4, *(this->landmarks));
 
@@ -1179,6 +1188,32 @@ void Level::createSpace() {
         }
     }
     random->reset();
+
+    if (Status::gStatus->inAlienOrbit()) {
+        Vector position = {0.0f,
+                           float(random->nextInt(20000) - 10000),
+                           float(random->nextInt(50000) + 170000)};
+        KIPlayer *exitGate = (*landmarks)[2];
+        exitGate->setPosition(position);
+        Vector facing = AbyssEngine::AEMath::operator-(position);
+        exitGate->geometry->setDirection(facing, Vector{0.0f, 1.0f, 0.0f});
+        field_138 = 0;
+    }
+
+    if (!Status::gStatus->gameWon()) {
+        AEGeometry *geometry = new AEGeometry(0x4262, PaintCanvas::gCanvas, false);
+        float x = float(random->nextInt(80000) - 40000);
+        float y = float(random->nextInt(40000) - 20000);
+        float z = float(random->nextInt(40000) + 40000);
+        PlayerWormHole *wormhole = new PlayerWormHole(16994, geometry, x, y, z, showWormhole);
+        (*landmarks)[3] = wormhole;
+        wormhole->setLevel(this);
+    }
+
+    field_138 += 0x8000;
+    if (!initStreamOutPosition) {
+        field_138 = random->nextInt(2) == 0 ? 1600 : -1600;
+    }
 }
 
 void Level::createRadioMessage(int type, int sub) {

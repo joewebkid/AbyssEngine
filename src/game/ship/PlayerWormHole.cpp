@@ -13,28 +13,8 @@
 #include "game/ship/PlayerStaticFar.h"
 #include "game/ui/Hud.h"
 #include "game/core/String.h"
-
-
-static GameText **g_playerWormHole_text = nullptr;
-
-static AbyssEngine::PaintCanvas **g_playerWormHole_canvas = nullptr;
-
-static AbyssEngine::PaintCanvas **g_playerWormHole_update_canvas = nullptr;
-
-static Status **g_playerWormHole_update_status = nullptr;
-
-static void **g_playerWormHole_update_random = nullptr;
-
-typedef int (*RandomNextIntFn)(void *random, int limit);
-
-typedef PlayerEgo *(*GetPlayerFn)(Level *level);
-
-
-static RandomNextIntFn g_playerWormHole_update_randomAlien = nullptr;
-
-static RandomNextIntFn g_playerWormHole_update_randomNormal = nullptr;
-
-static GetPlayerFn g_playerWormHole_update_getPlayer = nullptr;
+#include "game/core/Globals.h"
+#include "engine/core/AERandom.h"
 
 static inline int wormholeSign(int value) {
     return value == 0 ? 1 : -1;
@@ -42,12 +22,12 @@ static inline int wormholeSign(int value) {
 
 PlayerWormHole::PlayerWormHole(int playerId, AEGeometry *geometry, float x, float y, float z, bool visible)
     : PlayerStaticFar(playerId, geometry, x, y, z) {
-    GameText *text = *g_playerWormHole_text;
+    GameText *text = Globals::gameText;
     this->name = *text->getText(0x221);
     this->setVisible(visible);
     this->player->setRadius(40000);
 
-    AbyssEngine::PaintCanvas *canvas = *g_playerWormHole_canvas;
+    AbyssEngine::PaintCanvas *canvas = Globals::Canvas;
     AbyssEngine::Transform *transform =
             (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geometry->transform);
     transform->SetAnimationState((AbyssEngine::AnimationMode) 2, 0);
@@ -101,7 +81,7 @@ void PlayerWormHole::setPosition(float x, float y, float z) {
 }
 
 void PlayerWormHole::update(int elapsed) {
-    AbyssEngine::PaintCanvas *canvas = *g_playerWormHole_update_canvas;
+    AbyssEngine::PaintCanvas *canvas = Globals::Canvas;
     AbyssEngine::Transform *transform =
             (AbyssEngine::Transform *) canvas->TransformGetTransform(this->geometry->transform);
     transform->Update((long long) elapsed, false);
@@ -115,7 +95,7 @@ void PlayerWormHole::update(int elapsed) {
     if (time < 0) {
         this->scale = 0x1000 - (int) (((float) -time / 3000.0f) * 4096.0f);
     } else if (time > 60000) {
-        Status *status = *g_playerWormHole_update_status;
+        Status *status = Globals::status;
         int mission = status->getCurrentCampaignMission();
         int current = time;
 
@@ -153,18 +133,20 @@ void PlayerWormHole::update(int elapsed) {
 
             this->timer = -3000;
 
-            void *random = *g_playerWormHole_update_random;
+            AERandom *random = static_cast<AERandom *>(Globals::rnd);
             int x, y, z;
             if (!status->inAlienOrbit()) {
-                RandomNextIntFn next = g_playerWormHole_update_randomNormal;
-                x = (next(random, 40000) + 20000) * wormholeSign(next(random, 2));
-                y = (next(random, 40000) + 20000) * wormholeSign(next(random, 2));
-                z = (next(random, 40000) + 20000) * wormholeSign(next(random, 2));
+                x = random->nextInt(40000) + 20000;
+                x *= wormholeSign(random->nextInt(2));
+                y = random->nextInt(40000) + 20000;
+                y *= wormholeSign(random->nextInt(2));
+                z = random->nextInt(40000) + 20000;
+                z *= wormholeSign(random->nextInt(2));
             } else {
-                RandomNextIntFn next = g_playerWormHole_update_randomAlien;
-                x = (next(random, 60000) + 30000) * wormholeSign(next(random, 2));
-                y = next(random, 40000) + 20000;
-                z = -60000 - next(random, 40000);
+                x = random->nextInt(60000) + 30000;
+                x *= wormholeSign(random->nextInt(2));
+                y = random->nextInt(40000) + 20000;
+                z = -60000 - random->nextInt(40000);
             }
 
             if (mission == 0x1d || mission == 0x29) {
@@ -179,11 +161,11 @@ void PlayerWormHole::update(int elapsed) {
 
             PlayerEgo *ego = (PlayerEgo *) (intptr_t) this->level->getPlayer();
             if (ego->goingToWormhole()) {
-                PlayerEgo *target = g_playerWormHole_update_getPlayer(this->level);
+                PlayerEgo *target = this->level->getPlayer();
                 Hud *hud = (Hud *) (intptr_t) target->getHUD();
-                target = g_playerWormHole_update_getPlayer(this->level);
+                target = this->level->getPlayer();
                 hud->hudEvent(6, target, 0);
-                target = g_playerWormHole_update_getPlayer(this->level);
+                target = this->level->getPlayer();
                 target->setAutoPilot(nullptr);
             }
         }
@@ -191,7 +173,7 @@ void PlayerWormHole::update(int elapsed) {
 
     this->PlayerStaticFar::update(elapsed);
 
-    canvas = *g_playerWormHole_update_canvas;
+    canvas = Globals::Canvas;
     unsigned int currentCamera = canvas->CameraGetCurrent();
     this->cameraPosition =
             AbyssEngine::AEMath::MatrixGetPosition(

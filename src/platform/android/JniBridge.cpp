@@ -158,6 +158,7 @@ void OnCreateApplication(AbyssEngine::Engine *engine) {
 
     GameText *text = new GameText();
     GameText::gGameText = text;
+    Globals::gameText = text;
     text->setLanguage(static_cast<short>(Engine::countryCode), 3401);
     data->globals->loadFont(GameText::getLanguage());
     data->globals->init(engine->appManager, engine);

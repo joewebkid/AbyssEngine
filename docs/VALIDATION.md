@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level wormhole/entry-angle gate (2026-10-17)
+
+The source-extracted `-O0/-O2` tail smoke covers ordinary, attacked-station,
+alien, victorious, visible/hidden wormhole and entry-angle paths. Prior
+station/jumpgate smokes, native `gof2`, 208/208 ARM TUs and 40 verifier
+tests pass (one skip). Focused `Level::createSpace` source-shape/strict
+fuzzy rises 55.0%/11.3% → 67.2%/32.3%, still nonexact. Focused
+`PlayerWormHole` constructor C1/C2 rises to 97.1%/93.6%, update to
+95.6%/53.6%, still nonexact. These smokes do not exercise full stage 0/1.
+See [the wormhole evidence](LEVEL_SPACE_TAIL_WORMHOLE_ARM_2026-10-17.md).
+Full ARM comparison: 4,323/4,524 originals, mean source-shape 93.86%,
+strict fuzzy 83.03%, 2,528 linked-exact and 1,076 byte-exact with no
+exact-pair losses against the preceding jumpgate report.
+
 ## Level jumpgate-landmark gate (2026-10-17)
 
 The source-extracted `-O0/-O2` host smoke covers entry/exit gates, no-warp
