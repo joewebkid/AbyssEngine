@@ -4,11 +4,26 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Real ship-stock host gate (2026-10-17)
+
+The real-asset `-O0/-O2` smoke now executes production
+`Generator::getShipBuyList`, `Globals::getRandomEnemyFighter` and
+`Ship::adjustPrice` during `Status::departStation` to catalog station
+41. It checks the forced first ship, race, IDs, price and owned clones;
+**68/68** file lifetimes balance. Native `gof2` and 40 verifier tests
+pass (one existing skip). No production source changed, so the last
+full ARM report remains
+`A:/Galaxy on Fire new version/_work/generator_market_full_20261017.json`:
+**208/208** TUs, **4,323/4,524** originals, **93.78%/82.95%** mean
+source-shape/strict fuzzy, **2,527** linked-exact and **1,076**
+byte-exact, with no pair losses. See
+[the ship-stock evidence](GENERATOR_SHIP_STOCK_ASSET_HOST_2026-10-17.md).
+
 ## Generic market host gate (2026-10-17)
 
-The asset-backed `-O0`/`-O2` smoke now calls the production generic
-`Generator::getItemBuyList` body with real `AERandom` and checks
-catalog-backed invariants. It then executes production
+At the preceding checkpoint, the asset-backed `-O0`/`-O2` smoke called
+the production generic `Generator::getItemBuyList` body with real
+`AERandom` and checked catalog-backed invariants. It then executed production
 `Status::departStation` for catalog station 91; **68/68** file
 lifetimes balance. Native
 `gof2` and 40 verifier tests pass (one existing skip). No production

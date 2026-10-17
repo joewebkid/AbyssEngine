@@ -84,12 +84,14 @@ def main():
                            generator_source.index("};", generator_source.index("static const volatile int kaamoSpecialItems[9]")) + 2] + '\n'
         + generator_source[generator_source.index("static const volatile int g_Generator_kaamoAllowed[10]"):
                            generator_source.index("};", generator_source.index("static const volatile int g_Generator_kaamoAllowed[10]")) + 2] + '\n'
+        + generator_source[generator_source.index("static const volatile int g_Generator_shipRaces[64]"):
+                           generator_source.index("};", generator_source.index("static const volatile int g_Generator_shipRaces[64]")) + 2] + '\n'
         + 'extern int g_station_generator_calls;\n'
         + 'Generator::Generator() { ++g_station_generator_calls; }\n'
         + function(generator_source, "Array<Item *> *Generator::getItemBuyList(Station *station)")
         + 'Array<Item *> *generateRealMarketItems(Station *station) { '
           'Generator generator; return generator.getItemBuyList(station); }\n'
-        + 'Array<Ship *> *Generator::getShipBuyList(Station *) { ++g_station_generator_calls; return new Array<Ship *>(); }\n'
+        + function(generator_source, "Array<Ship *> *Generator::getShipBuyList(Station *station)")
         + 'Array<Agent *> *Generator::createAgents(Station *) { ++g_station_generator_calls; return new Array<Agent *>(); }\n'
         + 'extern int g_wanted_random_station_id;\n'
         + 'extern int g_wanted_random_station_calls;\n'
@@ -137,6 +139,13 @@ def main():
         + function(ship_source, "void Ship::addMod(int mod)")
         + function(ship_source, "Ship *Ship::clone()")
         + function(ship_source, "Ship *Ship::makeShip(int price)")
+        + ship_source[ship_source.index("const int shipRaces[64]"):
+                      ship_source.index("};", ship_source.index("const int shipRaces[64]")) + 2] + '\n'
+        + function(ship_source, "void Ship::adjustPrice()")
+        + function(ship_source, "unsigned int Ship::hasJumpDriveIntegrated()")
+        + function(ship_source, "int Ship::getIndex()")
+        + function(ship_source, "int Ship::getPrice()")
+        + function(ship_source, "void Ship::setRace(int race)")
         + function(ship_source, "void Ship::priceDecline()")
         + function(ship_source, "int Ship::getMaxHP()")
         + function(ship_source, "int Ship::getMaxShieldHP()")
@@ -188,6 +197,9 @@ def main():
         + function(status_source, "Station *Status::isOnStack(Station *s)")
         + function(status_source, "bool Status::inAlienOrbit()")
         + function(status_source, "int Status::getCurrentCampaignMission()")
+        + function(status_source, "bool Status::dlc1Won()")
+        + function(status_source, "SolarSystem *Status::getSystem()")
+        + function(status_source, "Station *Status::getStation()")
         + function(status_source, "int Status::inSupernovaSystem()")
         + function(status_source, "bool Status::inBlackMarketSystem()")
         + function(status_source, "bool Status::hardCoreMode()")
@@ -207,8 +219,13 @@ def main():
         + function(galaxy_source, "Station *Galaxy::getStation(int index)")
         + function(galaxy_source, "Array<SolarSystem *> *Galaxy::getSystems()")
         + function(globals_source, "float Globals::sqrt(float x)")
+        + globals_source[globals_source.index("static const int gREF_table[37]"):
+                          globals_source.index("};", globals_source.index("static const int gREF_table[37]")) + 2] + '\n'
+        + function(globals_source, "unsigned Globals::getRandomEnemyFighter(int kind)")
         + function(achievements_source, "Achievements::Achievements()")
         + function(achievements_source, "Achievements::~Achievements()")
+        + function(achievements_source, "uint8_t Achievements::gotAllGoldMedals()")
+        + function(achievements_source, "uint8_t Achievements::gotAllSupernovaMedals()")
         + function(achievements_source, "int Achievements::init()")
         + function(blueprint_source, "BluePrint::BluePrint(int item)")
         + function(blueprint_source, "BluePrint::~BluePrint()")

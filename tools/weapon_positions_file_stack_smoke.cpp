@@ -48,6 +48,7 @@ void *Globals::galaxy = nullptr;
 void *Globals::items = nullptr;
 void *Globals::ships = nullptr;
 void *Globals::rnd = nullptr;
+int Globals::globalPriceRaise = 0;
 int Globals::energyCellsProbChange = 0;
 int Globals::secondaryWeaponsProbChange = 0;
 void *Globals::achievements = nullptr;
@@ -389,15 +390,20 @@ int main(int argc, char **argv) {
             if (item && item->index == 0x24) assert(item->amount == 6);
 
         status.ship->value = -999;
+        AERandom marketRandom(0x1234);
+        Globals::rnd = &marketRandom;
         status.departStation(status.station);
-        assert(g_station_generator_calls == 3);
+        Globals::rnd = nullptr;
+        assert(g_station_generator_calls == 2);
         assert(status.station->items && status.station->items->size() == 3);
         const int openingStock[] = {0, 22, 55};
         for (unsigned i = 0; i < status.station->items->size(); ++i) {
             Item *item = (*status.station->items)[i];
             assert(item->index == openingStock[i] && item->amount == 1 && item->price == 0);
         }
-        assert(status.station->ships && status.station->ships->empty());
+        if (status.station->ships)
+            for (Ship *offered : *status.station->ships)
+                assert(offered && offered->index >= 0 && offered->index < 64);
         assert(status.station->agents && status.station->agents->empty());
         assert(status.mission == (*status.missions)[0]);
         assert(status.ship->value != -999);
@@ -430,12 +436,11 @@ int main(int argc, char **argv) {
         status.field_80 = -2;
         status.field_88 = 9;
         status.departStation(status.station);
-        assert(g_station_generator_calls == 3);
+        assert(g_station_generator_calls == 2);
         assert(status.field_88 == 10);
         assert(status.mission == &emptyMission);
         status.mission = campaign;
         campaign->targetStation = savedTarget;
-        AERandom marketRandom(0x1234);
         Globals::rnd = &marketRandom;
         Array<Item *> *marketItems = generateRealMarketItems(status.station);
         assert(marketItems && !marketItems->empty());
@@ -526,15 +531,21 @@ int main(int argc, char **argv) {
         moving->setActive(false);
         status.playerStation = savedPlayerStation;
         Station *openingStation = status.station;
-        Station *marketStation = galaxy.getStation(91);
-        assert(marketStation && marketStation->index == 91 && marketStation != openingStation);
+        Station *marketStation = galaxy.getStation(41);
+        assert(marketStation && marketStation->index == 41 && marketStation != openingStation);
         Globals::rnd = &marketRandom;
         status.field_88 = 0;
         status.departStation(marketStation);
         Globals::rnd = nullptr;
         assert(status.station == marketStation && marketStation->items &&
                !marketStation->items->empty());
-        assert(marketStation->ships && marketStation->ships->empty());
+        assert(marketStation->ships && !marketStation->ships->empty());
+        assert((*marketStation->ships)[0]->index == 10);
+        assert((*marketStation->ships)[0] != (*startupShips)[10]);
+        assert((*marketStation->ships)[0]->race == 0);
+        for (Ship *offered : *marketStation->ships)
+            assert(offered && offered->index >= 0 && offered->index < 64 &&
+                   offered->price > 0);
         assert(marketStation->agents && marketStation->agents->empty());
         assert(openingStation->items && openingStation->items->size() == 3);
         assert(interface.opens() == 68 && interface.closes() == 68);
@@ -545,6 +556,7 @@ int main(int argc, char **argv) {
         for (Station *ownedStation : {openingStation, marketStation}) {
             ArrayReleaseClasses(*ownedStation->items);
             delete ownedStation->items;
+            if (ownedStation->ships) ArrayReleaseClasses(*ownedStation->ships);
             delete ownedStation->ships;
             delete ownedStation->agents;
             ownedStation->items = nullptr;
