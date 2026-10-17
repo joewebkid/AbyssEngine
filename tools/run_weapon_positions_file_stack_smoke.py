@@ -102,11 +102,20 @@ def main():
         + status_source[generator_begin:generator_end].replace(
             "    Array<Agent *> *createAgents(Station *station);",
             "    Array<Agent *> *createAgents(Station *station);\n"
+            "    Array<Agent *> *createAgentsProduction(Station *station);\n"
+            "    Mission *createMission(Agent *agent, Array<SolarSystem *> *systems);\n"
+            "    int generateStationIndex(Array<SolarSystem *> *systems, int station);\n"
             "    Agent *createAgent(Station *station);") + '\n'
+        + generator_source[generator_source.index("static const volatile int g_Generator_stationBlockList[52]"):
+                           generator_source.index("};", generator_source.index("static const volatile int g_Generator_stationBlockList[52]")) + 2] + '\n'
         + generator_source[generator_source.index("static const volatile int kaamoSpecialItems[9]"):
                            generator_source.index("};", generator_source.index("static const volatile int kaamoSpecialItems[9]")) + 2] + '\n'
         + generator_source[generator_source.index("static const volatile int g_Generator_kaamoAllowed[10]"):
                            generator_source.index("};", generator_source.index("static const volatile int g_Generator_kaamoAllowed[10]")) + 2] + '\n'
+        + generator_source[generator_source.index("static const volatile int g_Generator_offerShipIds[6]"):
+                           generator_source.index("};", generator_source.index("static const volatile int g_Generator_offerShipIds[6]")) + 2] + '\n'
+        + generator_source[generator_source.index("static const volatile int g_Generator_enemyRaces[4]"):
+                           generator_source.index("};", generator_source.index("static const volatile int g_Generator_enemyRaces[4]")) + 2] + '\n'
         + generator_source[generator_source.index("static const volatile int g_Generator_shipRaces[64]"):
                            generator_source.index("};", generator_source.index("static const volatile int g_Generator_shipRaces[64]")) + 2] + '\n'
         + 'extern int g_station_generator_calls;\n'
@@ -115,7 +124,21 @@ def main():
         + 'Array<Item *> *generateRealMarketItems(Station *station) { '
           'Generator generator; return generator.getItemBuyList(station); }\n'
         + function(generator_source, "Array<Ship *> *Generator::getShipBuyList(Station *station)")
-        + 'Array<Agent *> *Generator::createAgents(Station *) { ++g_station_generator_calls; return new Array<Agent *>(); }\n'
+        + 'extern bool g_use_real_agent_stock;\n'
+        # shortcut: isolate the agent RNG from getItemBuyList's wall-clock reset;
+        # upgrade the earlier station paths and coupled clock route separately.
+        + 'Array<Agent *> *Generator::createAgents(Station *station) { '
+          '++g_station_generator_calls; if (g_use_real_agent_stock) { '
+          'auto *rng = static_cast<AERandom *>(Globals::rnd); '
+          'rng->setSeed(1); '
+          'return createAgentsProduction(station); } return new Array<Agent *>(); }\n'
+        + function(generator_source, "Array<Agent *> *Generator::createAgents(Station *station)").replace(
+            "Generator::createAgents(Station *station)",
+            "Generator::createAgentsProduction(Station *station)", 1)
+        + 'Array<Agent *> *generateRealAgentStock(Station *station) { '
+          'Generator generator; return generator.createAgentsProduction(station); }\n'
+        + function(generator_source, "int Generator::generateStationIndex(")
+        + function(generator_source, "Mission *Generator::createMission(")
         + function(generator_source, "Agent *Generator::createAgent(Station *station)")
         + 'Agent *generateRealAgent(Station *station) { '
           'Generator generator; return generator.createAgent(station); }\n'
@@ -186,6 +209,7 @@ def main():
         + function(station_source, "void Station::setItems(Array<Item *> *items, bool deep)")
         + function(station_source, "void Station::setShips(Array<Ship *> *ships, bool deep)")
         + function(station_source, "void Station::setAgents(Array<Agent *> *agents)")
+        + function(station_source, "uint32_t Station::hasShip(int index)")
         + function(system_source, "SolarSystem::SolarSystem(int unk0,")
         + function(system_source, "SolarSystem::~SolarSystem()")
         + function(system_source, "int SolarSystem::stationIsInSystem(int idx)")
@@ -197,10 +221,18 @@ def main():
         + function(system_source, "int SolarSystem::getX()")
         + function(system_source, "int SolarSystem::getY()")
         + function(system_source, "int SolarSystem::getZ()")
+        + function(system_source, "String SolarSystem::getName()")
         + function(system_source, "uint8_t SolarSystem::isVisible()")
         + function(agent_source, "Agent::Agent(int kind,")
         + function(agent_source, "Agent::~Agent() noexcept(false)")
         + function(agent_source, "void Agent::setImageParts(int *parts)")
+        + function(agent_source, "int *Agent::getImageParts()")
+        + function(agent_source, "Mission *Agent::getMission()")
+        + function(agent_source, "void Agent::setMission(Mission *mission)")
+        + function(agent_source, "String Agent::getName()")
+        + function(agent_source, "bool Agent::isStoryAgent()")
+        + function(agent_source, "bool Agent::isGenericAgent()")
+        + function(agent_source, "void Agent::setOfferAccepted(bool v)")
         + function(agent_source, "int Agent::getStation()")
         + function(agent_source, "int Agent::getSystem()")
         + function(agent_source, "int Agent::getRace()")
@@ -225,6 +257,7 @@ def main():
         + function(status_source, "Status::~Status()")
         + function(status_source, "Standing *Status::getStanding()")
         + function(status_source, "void Status::setShip(Ship *s)")
+        + function(status_source, "Ship *Status::getShip()")
         + 'static int *g_campaignSentinel = nullptr;\n'
         + function(status_source, "void Status::setCampaignMission(Mission *m)")
         + function(status_source, "void Status::loadAgents()")
@@ -234,7 +267,10 @@ def main():
         + function(status_source, "Station *Status::isOnStack(Station *s)")
         + function(status_source, "bool Status::inAlienOrbit()")
         + function(status_source, "int Status::getCurrentCampaignMission()")
+        + function(status_source, "Array<Agent *> *Status::getAgents()")
+        + function(status_source, "int Status::getLevel()")
         + function(status_source, "bool Status::dlc1Won()")
+        + function(status_source, "bool Status::inSupernovaOrbit()")
         + function(status_source, "SolarSystem *Status::getSystem()")
         + function(status_source, "Station *Status::getStation()")
         + function(status_source, "int Status::inSupernovaSystem()")
@@ -255,6 +291,7 @@ def main():
         + function(galaxy_source, "int Galaxy::distancePercent(int x1, int y1, int x2, int y2)")
         + function(galaxy_source, "int Galaxy::invDistancePercent(int x1, int y1, int x2, int y2)")
         + function(galaxy_source, "float Galaxy::distance(SolarSystem *a, SolarSystem *b)")
+        + function(galaxy_source, "void *Galaxy::getAsteroidProbabilities(Station *station)")
         + function(galaxy_source, "SolarSystem *Galaxy::getSystem(int index)")
         + function(galaxy_source, "Station *Galaxy::getStation(int index)")
         + function(galaxy_source, "Array<SolarSystem *> *Galaxy::getSystems()")
@@ -280,6 +317,7 @@ def main():
         + function(blueprint_source, "int BluePrint::getIngredientsValue()")
         + function(blueprint_source, "int BluePrint::getAutoCompletionPrice()")
         + function(mission_source, "Mission::Mission(int id, int goods, int station)")
+        + function(mission_source, "Mission::Mission(int id, AbyssEngine::String client,")
         + function(mission_source, "Mission::Mission()")
         + function(mission_source, "Mission::~Mission()")
         + function(mission_source, "void Mission::setCampaignMission(bool flag)")
@@ -288,8 +326,17 @@ def main():
         + function(mission_source, "bool Mission::isEmpty()")
         + function(mission_source, "int Mission::getTargetStation()")
         + function(mission_source, "int Mission::getProductionGoodIndex()")
+        + function(mission_source, "int Mission::getReward()")
+        + function(mission_source, "void Mission::setReward(int reward)")
+        + function(mission_source, "void Mission::setCosts(int costs)")
+        + function(mission_source, "void *Mission::setTargetName(String rhs)")
+        + function(mission_source, "void Mission::setProductionGoods(int a, int b)")
+        + function(mission_source, "void Mission::setBonus(int bonus)")
+        + function(mission_source, "void *Mission::setTargetSystemName(const String &rhs)")
         + function(standing_source, "Standing::Standing()")
         + function(standing_source, "Standing::~Standing()")
+        + function(standing_source, "bool Standing::isEnemy(int race)")
+        + function(standing_source, "float Standing::getMissionBonus(int race)")
         + function(standing_source, "void Standing::setPlayerSignatureRace(int race)")
         + function(pending_source, "PendingProduct::~PendingProduct()")
         + function(station_source, "Station::Station()")

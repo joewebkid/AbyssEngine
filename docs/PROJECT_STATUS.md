@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (Galaxy system distance ARM/runtime correction; older subsystem
+Last reviewed: 2026-10-17 (agent stock and mission host gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -9,13 +9,30 @@ The project is past the initial symbol inventory and is in source-backed
 behavior recovery, with a native static-library build, asset-backed host
 smokes and ARM comparison gates. `Status::resetGame` now executes in an
 asset-backed host fixture. A bounded `Status::departStation` slice now
-executes after startup with real item and ship-stock generation; agent
-generation remains an explicit station-transition test boundary, although
-production `createAgent` now has a direct asset-backed host test. The next
-integration milestones are complete agent stock and entry to `Level::init`; a catalog-backed
+executes after startup with real item, ship and agent-stock generation,
+including mission offers under a controlled RNG boundary. The next
+integration milestone is entry to `Level::init`; a catalog-backed
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Agent stock and missions in station transition (2026-10-17)
+
+The asset-backed host fixture now enters catalog station 41 through
+production `Status::departStation` and runs production
+`Generator::createAgents`, `createAgent` and `createMission`. Both
+`-O0/-O2` and primary/supplementary-name resource modes produce three
+agents with three missions under a controlled agent-boundary seed.
+Station 108 retains six original agents and refreshes its two special
+sellers; a 31-seed ordinary-stock run checks 3–5 offers and at most
+one wingman. File lifetimes balance at 179/179 or 551/551. The
+preceding item-stock generator resets RNG from wall-clock time, so
+the uninterrupted random sequence and other special branches remain
+unverified. Native `gof2` and 40 verifier tests pass (one skip).
+No production source changed: the latest full ARM report remains
+208/208 TUs, 4,323/4,524 originals, 93.78%/82.95% averages,
+2,527 linked-exact and 1,076 byte-exact, without pair losses.
+See [the agent-stock evidence](GENERATOR_AGENT_STOCK_MISSIONS_ASSET_HOST_2026-10-17.md).
 
 ## Galaxy system distance correction (2026-10-17)
 

@@ -51,6 +51,7 @@ void *Globals::items = nullptr;
 void *Globals::ships = nullptr;
 void *Globals::rnd = nullptr;
 void *Globals::imageFactory = nullptr;
+Array<Item *> *Item::g_items = nullptr;
 int Globals::globalPriceRaise = 0;
 int Globals::energyCellsProbChange = 0;
 int Globals::secondaryWeaponsProbChange = 0;
@@ -67,10 +68,12 @@ void *Mission::empty = nullptr;
 Galaxy *Galaxy::gGalaxy = nullptr;
 Status *Status::gStatus = nullptr;
 int g_station_generator_calls = 0;
+bool g_use_real_agent_stock = false;
 int g_wanted_random_station_id = -1;
 int g_wanted_random_station_calls = 0;
 Array<Item *> *generateRealMarketItems(Station *station);
 Agent *generateRealAgent(Station *station);
+Array<Agent *> *generateRealAgentStock(Station *station);
 // shortcut: rendering setup is unavailable in this headless host test; the
 // production createChar body uses no instance fields and is linked separately.
 ImageFactory::ImageFactory() : sprite(nullptr), itemImage(0), shipImage(0) {}
@@ -93,6 +96,14 @@ void release(Array<Array<AbyssEngine::AEMath::Vector *> *> *positions) {
         delete slot;
     }
     delete positions;
+}
+
+void releaseGeneratedAgent(Agent *agent) {
+    delete agent->mission;
+    delete agent->wingman2;
+    if (agent->wingmanNames) delete (*agent->wingmanNames)[0];
+    delete agent->wingmanNames;
+    delete agent;
 }
 }
 
@@ -550,11 +561,14 @@ int main(int argc, char **argv) {
         Station *openingStation = status.station;
         Station *marketStation = galaxy.getStation(41);
         assert(marketStation && marketStation->index == 41 && marketStation != openingStation);
+        ImageFactory portraitFactory;
+        Globals::imageFactory = &portraitFactory;
+        Item::g_items = startupItems;
+        g_use_real_agent_stock = true;
         Globals::rnd = &marketRandom;
         status.field_88 = 0;
         status.departStation(marketStation);
-        ImageFactory portraitFactory;
-        Globals::imageFactory = &portraitFactory;
+        g_use_real_agent_stock = false;
         unsigned offersSeen = 0;
         for (int i = 0; i < 64; ++i) {
             Agent *agent = generateRealAgent(marketStation);
@@ -579,14 +593,55 @@ int main(int argc, char **argv) {
             if (agent->offer == 6)
                 assert(agent->costs >= 700);
             offersSeen |= 1u << agent->offer;
-            delete agent->wingman2;
-            if (agent->wingmanNames)
-                delete (*agent->wingmanNames)[0];
-            delete agent->wingmanNames;
-            delete agent;
+            releaseGeneratedAgent(agent);
         }
         assert((offersSeen & (1u << 2)) && (offersSeen & (1u << 6)));
+        Station *storyStation = galaxy.getStation(108);
+        assert(storyStation && storyStation->index == 108);
+        Array<Agent *> *retained = generateRealAgentStock(storyStation);
+        assert(retained && retained->size() == 6);
+        unsigned specialOffers = 0;
+        for (Agent *agent : *retained) {
+            assert(agent && agent->station == 108);
+            assert(std::find(status.agents->begin(), status.agents->end(), agent)
+                   != status.agents->end());
+            if (agent->offer == 9) {
+                assert(agent->sellItemIndex >= 0 && agent->sellItemIndex < 233);
+                assert(agent->sellItemQuantity > 0 && agent->sellItemPrice > 0);
+                assert(!agent->offerAccepted);
+                ++specialOffers;
+            } else if (agent->offer == 10) {
+                assert(agent->sellItemIndex >= 55 && agent->sellItemIndex <= 60);
+                assert(agent->sellItemQuantity == 1 && agent->sellItemPrice > 0);
+                assert(!agent->offerAccepted);
+                ++specialOffers;
+            }
+        }
+        assert(specialOffers == 2);
+        delete retained;
+        delete storyStation;
+        bool sawWingman = false;
+        bool sawNonMission = false;
+        for (int seed = 2; seed <= 32; ++seed) {
+            marketRandom.setSeed(seed);
+            ArraySetLength(15, *status.field_50);
+            Array<Agent *> *offers = generateRealAgentStock(marketStation);
+            assert(offers && offers->size() >= 3 && offers->size() <= 5);
+            unsigned wingmen = 0;
+            for (Agent *agent : *offers) {
+                assert(agent && agent->station == marketStation->index);
+                if (agent->offer == 0) assert(agent->mission);
+                if (agent->offer == 6) ++wingmen;
+                if (agent->offer != 0) sawNonMission = true;
+                releaseGeneratedAgent(agent);
+            }
+            assert(wingmen <= 1);
+            sawWingman |= wingmen != 0;
+            delete offers;
+        }
+        assert(sawWingman && sawNonMission);
         Globals::imageFactory = nullptr;
+        Item::g_items = nullptr;
         Globals::rnd = nullptr;
         assert(status.station == marketStation && marketStation->items &&
                !marketStation->items->empty());
@@ -597,7 +652,28 @@ int main(int argc, char **argv) {
         for (Ship *offered : *marketStation->ships)
             assert(offered && offered->index >= 0 && offered->index < 64 &&
                    offered->price > 0);
-        assert(marketStation->agents && marketStation->agents->empty());
+        assert(marketStation->agents && marketStation->agents->size() >= 3 &&
+               marketStation->agents->size() <= 5);
+        unsigned missionOffers = 0;
+        int firstMissionType = -1;
+        for (Agent *agent : *marketStation->agents) {
+            assert(agent && agent->station == marketStation->index);
+            if (agent->offer == 0) {
+                assert(agent->mission);
+                assert(agent->mission->targetStation >= 0 &&
+                       agent->mission->targetStation < 135);
+                assert(agent->mission->clientImage == agent->imageParts);
+                assert(agent->mission->costs > 0 && agent->mission->costsValue >= 0);
+                assert(agent->mission->targetStationName.size() > 0);
+                assert(agent->mission->targetSystemName.size() > 0);
+                if (firstMissionType < 0) firstMissionType = agent->mission->id;
+                ++missionOffers;
+            }
+        }
+        assert(missionOffers > 0);
+        std::printf("agent stock: %u offers, %u missions, first type %d; "
+                    "6 retained story agents\n",
+                    marketStation->agents->size(), missionOffers, firstMissionType);
         assert(openingStation->items && openingStation->items->size() == 3);
         assert(interface.opens() == interface.closes() &&
                interface.opens() >= (expectNames ? 69u : 68u));
@@ -610,6 +686,13 @@ int main(int argc, char **argv) {
             delete ownedStation->items;
             if (ownedStation->ships) ArrayReleaseClasses(*ownedStation->ships);
             delete ownedStation->ships;
+            if (ownedStation->agents) {
+                for (Agent *agent : *ownedStation->agents) {
+                    if (std::find(status.agents->begin(), status.agents->end(), agent)
+                        != status.agents->end()) continue;
+                    releaseGeneratedAgent(agent);
+                }
+            }
             delete ownedStation->agents;
             ownedStation->items = nullptr;
             ownedStation->ships = nullptr;
@@ -664,5 +747,7 @@ int main(int argc, char **argv) {
     AEFile::Release();
     assert(interface.opens() == interface.closes() &&
            interface.opens() >= (expectNames ? 69u : 68u));
-    std::puts("production assets, Status startup/departure/wanted, real pathfinder and market: OK");
+    std::printf("production assets, Status startup/departure/wanted, real pathfinder "
+                "and market: %u/%u file lifetimes OK\n",
+                interface.opens(), interface.closes());
 }

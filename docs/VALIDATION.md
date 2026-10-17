@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Agent stock and mission host gate (2026-10-17)
+
+The catalog-backed `-O0/-O2` smoke runs production `createAgents`
+and `createMission` inside `Status::departStation` for station 41,
+plus retained special sellers at station 108 and a 31-seed offer run.
+Both primary and supplementary-name modes pass with 179/179 and
+551/551 balanced file lifetimes respectively. RNG is seeded at the
+agent boundary because the preceding item-stock generator resets it
+from wall-clock time. Native `gof2` and 40 verifier tests pass (one
+existing skip). Only host tests changed; the last full ARM report
+remains 208/208 TUs, 4,323/4,524 originals, 93.78%/82.95%
+averages and 2,527/1,076 linked-/byte-exact pairs. See
+[the agent-stock evidence](GENERATOR_AGENT_STOCK_MISSIONS_ASSET_HOST_2026-10-17.md).
+
 ## Galaxy system distance ARM/runtime correction (2026-10-17)
 
 The ARM body at `0x175f80` confirms the `Globals::globals` load and
