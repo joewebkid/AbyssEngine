@@ -1,8 +1,7 @@
 # Station texture loop, record cleanup and target arrays
 
-Base: `95a89df553481a689bcfa27c3b064d74f6e1181b` (remote main verified before
-branch creation). Work branch: `codex/astra-station-loop-next-20261020`.
-Previous branch and commit `b234041e7ac44193f56bded057b80ebe69cf1539` remain intact.
+Base: `95a89df553481a689bcfa27c3b064d74f6e1181b` (remote main verified
+before the change).
 
 The continuous original-asset Level/GLES fixture now passes the previous
 `TextureCreate(10021)` boundary, finishes all five Pan station textures,

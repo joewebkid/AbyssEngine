@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (weapon positions and first station texture; older subsystem
+Last reviewed: 2026-10-20 (weapon consumers and five-station loop; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -12,19 +12,55 @@ asset-backed host fixture. A bounded `Status::departStation` slice now
 executes after startup with real item, ship and agent-stock generation,
 including mission offers under a controlled RNG boundary. The next
 integration milestone is completing `Level::init` with real resources. A
-continuous host gate registers 2,724 resources and runs through
+continuous host gate registers 2,725 resources and runs through
 `PlayerStation`, both jumpgates and `LensFlare`, including a real GLES atlas
 upload and managed texture publication. It checks 44 station collision
 volumes, 17 meshes, 15 transforms and a real GLES atlas readback at `-O0/-O2`
 on Windows and an Android ARMv7 device. The extended gate crosses
 `SolarSystem::getStations` and the real station binary reader, uploads the
-ETC1 sun and first station-orbit RGBA texture through GLES, completes the
-first StarSystem station-loop iteration, then stops before the second texture
-request, `TextureCreate(10021)`.
+ETC1 sun and all five station-orbit RGBA textures through GLES, completes the
+five station-loop iterations and record cleanup, then stops before
+`AERandom::setSeed(2100)` and planet placement.
 Stage 0 has not returned, and the game is not running. A catalog-backed
 cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Weapon consumers and five-station loop (2026-10-20)
+
+Original Android ARM shows that `Level::createPlayer` always passes the first
+type-2 mount vector to `PlayerEgo::setTurretPosition`; `Ship::getSlotPos` is
+used for type-0/1 guns only. The corrected production body passes all 59
+original weapon records in both equipment orders at `-O0/-O2` (118 cases),
+including loader cleanup and gun publication. The previous body fails the
+negative control. The fixed three-function family's source-shape/strict fuzzy
+mean changes **95.50%/79.27% → 95.33%/78.17%**. The 98% target is not met;
+the shape decline is retained because the ARM-backed behavior is stronger
+evidence. See [weapon consumer evidence](CREATEPLAYER_WEAPON_CONSUMERS_ARM_2026-10-20.md).
+
+`StarSystem` now releases the typed station records and allocates a typed
+`Array<KIPlayer *>`, instead of assuming a 12-byte Array on every host.
+Resource 10056 passes the ARM-confirmed `0.0f` texture parameter. The
+continuous original-asset gate uploads all five station textures, frees five
+station records, and creates target/planet/position arrays; Windows
+SwiftShader and real Android ARMv7 pass at `-O0/-O2`. Its boundary is before
+`AERandom::setSeed(2100)`. The fixed four-function family changes
+**90.525%/48.175% → 90.55%/48.675%** source-shape/strict fuzzy, below 98%.
+See [station-loop evidence](STATION_LOOP_ARRAYS_ARM_2026-10-20.md).
+
+The combined tree passes native `gof2`, ABI/lifetime smoke, both bounded
+original-asset gates and **208/208 ARM units**; **81 verifier tests** run with
+one pre-existing skip and no failures. The complete corpus compares
+**4,323/4,524** original functions in **4,735 pairs**: **93.92%** mean
+source-shape, **83.20%** strict fuzzy, **2,551 linked-exact** and
+**1,079 byte-exact**. Against the preceding
+published report, no exact `(unit, symbol)` pair is lost; three linked-exact
+pairs are gained, with zero skipped units and zero wrong-type signatures.
+The ignored combined report is on local C: with SHA-256
+`887da2e22e095a95f775c4cc3f43503bf54ebbe06595bcaa555d73926c87f5cd`.
+Neither the full StarSystem lifetime nor Level stage 0 or a playable native
+frame is established. Next priority: seed arithmetic and planet placement,
+then stage-0 return.
 
 ## Weapon positions and first station texture (2026-10-20)
 

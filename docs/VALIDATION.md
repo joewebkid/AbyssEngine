@@ -4,6 +4,32 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Combined weapon-consumer and five-station-loop gate (2026-10-20)
+
+The integrated native `gof2` static library and ABI/lifetime smoke pass.
+The production `createPlayer` host gate passes all 59 original weapon records
+at `-O0/-O2` (118 equipment-order cases); the old body fails its negative
+control. The continuous original-asset station gate passes on Windows
+SwiftShader and a real Android ARMv7/Adreno device at `-O0/-O2`. It verifies
+all five station textures, record cleanup and typed target/planet/position
+arrays, then stops before `AERandom::setSeed(2100)`. Level stage 0 and a
+native game frame remain incomplete.
+
+The full combined ARM build compiles **208/208** units; **81 verifier tests**
+run with one pre-existing skip and no failures. It compares **4,323/4,524**
+original functions in **4,735 pairs**: **93.92%** mean source-shape,
+**83.20%** strict fuzzy, **2,551 linked-exact** and **1,079 byte-exact**.
+Against the last
+published report, `(unit, symbol)` exact sets have **zero losses** and three
+linked-exact gains, all in `StarSystem`; byte-exact gains are zero. There are
+zero skipped units, zero wrong-type signatures, 201 absent originals and 124
+extra symbols. The fresh ignored report is locally stored at
+`C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/integration-combined-full.json`
+(SHA-256 `887da2e22e095a95f775c4cc3f43503bf54ebbe06595bcaa555d73926c87f5cd`).
+See [weapon consumers](CREATEPLAYER_WEAPON_CONSUMERS_ARM_2026-10-20.md) and
+[station loop](STATION_LOOP_ARRAYS_ARM_2026-10-20.md) for ARM anchors, fixed
+families, asset hashes, verification boundaries and remaining work.
+
 ## Combined weapon-position and station-texture gate (2026-10-20)
 
 The integrated native `gof2` build and ABI/lifetime smoke pass. The original-

@@ -1,9 +1,7 @@
 # createPlayer immediate weapon consumers — 2026-10-20
 
 Base: published `origin/main` at `95a89df553481a689bcfa27c3b064d74f6e1181b`,
-confirmed with `git ls-remote origin refs/heads/main` before branching.
-Branch: `codex/sol-createplayer-weapon-consumer-20261020`, existing isolated
-checkout `_work/sol-portrait-runtime-20261019`. Earlier branches are preserved.
+confirmed with `git ls-remote origin refs/heads/main` before the change.
 
 ## Fixed family and measurements
 
@@ -145,8 +143,8 @@ Fresh reports/logs and host compiler temporaries are local:
 `C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/sol/`.
 Existing `_work/portrait-arm`, `_work/portrait-arm-after` and
 `_work/portrait-native` outputs were reused. Nothing was written to G:.
-No shared status/validation, FileRead production, StarSystem, GLES/PaintCanvas
-or Godot files changed; no push, PR or merge was performed.
+The bounded production change did not modify FileRead, StarSystem,
+GLES/PaintCanvas or Godot code. Shared status was updated at integration.
 
 Next bounded task: validate createPlayer's startup rotation/counter allocation
 against Android before deciding whether to change setup behavior; keep the
