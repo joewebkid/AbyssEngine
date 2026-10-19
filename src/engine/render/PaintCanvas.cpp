@@ -852,8 +852,6 @@ void paintcanvas_ext_fsp_glFogf(unsigned int pname, float v);
 
 void paintcanvas_ext_fsp_glFogfv(unsigned int pname, void *v);
 
-void paintcanvas_ext_fsp_vec_assign(void *dst, void *src);
-
 void paintcanvas_ext_rar_gldeltex(int n, void *ids);
 
 void paintcanvas_ext_rar_str_dtor(void *s);
@@ -4216,44 +4214,31 @@ void PaintCanvas::MeshCreate(unsigned short resId, unsigned int &out,
 }
 
 
-static char g_fsp_flag_8cf40_storage = 0;
-static char *const g_fsp_flag_8cf40 = &g_fsp_flag_8cf40_storage;
-
-static const double g_fsp_255d_8d070 = 0;
-
-static const float g_fsp_255f_8d078 = 0;
-
 void PaintCanvas::FogSetParameter(AbyssEngine::FogMode mode, float fogStart, float fogEnd,
                                   float fogDensity, unsigned int color) {
-    float col[4];
-    if (*g_fsp_flag_8cf40 == 0) {
+    if (!Engine::enableShader) {
         float modeF = paintcanvas_ext_fsp_unsignedtofloat((unsigned int) mode, 0);
         paintcanvas_ext_fsp_glFogf(0xb65, modeF);
         paintcanvas_ext_fsp_glFogf(0xb62, fogDensity);
         paintcanvas_ext_fsp_glFogf(0xb63, fogStart);
         paintcanvas_ext_fsp_glFogf(0xb64, fogEnd);
 
-        float r = paintcanvas_ext_fsp_unsignedtofloat((color >> 16) & 0xff, 0);
-        float g = paintcanvas_ext_fsp_unsignedtofloat((color >> 8) & 0xff, 0);
-        paintcanvas_ext_fsp_unsignedtofloat(color >> 24, 0);
-        float b = paintcanvas_ext_fsp_unsignedtofloat(color & 0xff, 0);
-        col[0] = r / g_fsp_255f_8d078;
-        col[1] = g / g_fsp_255f_8d078;
-        col[2] = b / g_fsp_255f_8d078;
-        col[3] = fogStart;
+        float col[4];
+        col[0] = float(color >> 24) / 255.0f;
+        col[1] = float((color >> 16) & 0xff) / 255.0f;
+        col[2] = float((color >> 8) & 0xff) / 255.0f;
+        col[3] = float(color & 0xff) / 255.0f;
         paintcanvas_ext_fsp_glFogfv(0xb66, col);
     } else {
-        double r = (double) paintcanvas_ext_fsp_unsignedtofloat((color >> 16) & 0xff, 0);
-        r = r / g_fsp_255d_8d070;
-        paintcanvas_ext_fsp_unsignedtofloat(color >> 24, 0);
-        double g = (double) paintcanvas_ext_fsp_unsignedtofloat((color >> 8) & 0xff, 0);
         Engine *eng = (Engine *) this->engine;
-        g = g / g_fsp_255d_8d070;
         eng->fogMinDist = fogStart;
         eng->fogMaxDist = fogEnd;
-        col[0] = (float) r;
-        col[1] = (float) g;
-        paintcanvas_ext_fsp_vec_assign(&eng->fogColor, col);
+        Vector col = {
+            float(double(color >> 24) / 255.0),
+            float(double((color >> 16) & 0xff) / 255.0),
+            float(double((color >> 8) & 0xff) / 255.0),
+        };
+        eng->fogColor = col;
     }
 }
 

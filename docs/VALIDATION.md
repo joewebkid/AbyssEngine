@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PaintCanvas fog parameter gate (2026-10-19)
+
+The production `FogSetParameter` body runs at `-O0/-O2` with test GL and
+shader services. The test checks mode/density/start/end call order, four
+normalized fixed-function color channels and the shader engine state.
+Native `gof2`, 208/208 ARM TUs and 40 verifier tests pass (one skip).
+Focused source-shape/strict fuzzy improves 65.2%/31.8% to 92.0%/96.2%,
+nonexact. See [the ARM evidence](PAINTCANVAS_FOG_PARAMETER_ARM_2026-10-19.md).
+All 51 skybox resource paths exist in the Android OBB extract, but no
+full asset-backed level render has been validated yet.
+The full corpus is 4,323/4,524 compared, with 93.87%/83.05% means,
+2,528 linked-exact and 1,076 byte-exact and no exact-pair losses.
+
 ## Level player-entry host layout gate (2026-10-19)
 
 The host layout smoke checks size-based `Player`/`PlayerEgo` allocation and

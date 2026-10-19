@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-19 (Level player-entry layout gate; older subsystem
+Last reviewed: 2026-10-19 (PaintCanvas fog parameter gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -17,6 +17,23 @@ but the full init path has not yet passed a host runtime gate. A catalog-backed
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## PaintCanvas fog parameters (2026-10-19)
+
+The ARM renderer selects its fixed-function or shader fog path using
+`Engine::enableShader`. The recovered host code previously used a local
+zero flag, divided color channels by zero and misplaced the final GL color
+component. The production body now follows the original branch and color
+mapping; extracted `-O0/-O2` host tests cover both paths. Focused
+`FogSetParameter` source-shape/strict fuzzy improves 65.2%/31.8% to
+92.0%/96.2%, still nonexact. Native and 208/208 ARM TUs build. All 51
+distinct skybox asset paths named by the resource tables exist in the
+extracted Android data. This is not an asset-backed `Level::init` runtime
+gate; that integration milestone remains open. See
+[the fog parameter evidence](PAINTCANVAS_FOG_PARAMETER_ARM_2026-10-19.md).
+Full ARM corpus: 4,323/4,524 compared, 93.87%/83.05% mean source-shape/
+strict fuzzy, 2,528 linked-exact and 1,076 byte-exact, zero exact-pair
+losses against the previous report.
 
 ## Level player-entry host layout (2026-10-19)
 
