@@ -110,6 +110,9 @@ int main(int argc, char **argv) {
 
     registerSkyboxResources(&canvas);
     assert(canvas.resources.count == 6);
+    const unsigned short tableIds[] = {33410, 0x458a, 0x45bb, 14287};
+    for (unsigned i = 0; i < 4; ++i)
+        assert(static_cast<PCResourceView *>(canvas.resources.data_[i])->id == tableIds[i]);
     auto *belt = static_cast<PCResourceView *>(canvas.FindResource(33410));
     assert(belt && belt->type == 2 && belt->handle == -1);
     auto *beltTexture = static_cast<AbyssEngine::ResourceTexture *>(belt->payload);

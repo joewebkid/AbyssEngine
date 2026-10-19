@@ -47,6 +47,16 @@ zero exact-pair losses. Mean source-shape/strict fuzzy is now
 93.87%/83.05%; focused `BuildResourceList` is 73.9%/13.6%, where the
 strict fuzzy drop is explicitly recorded. See the technical note for
 before/after and ARM addresses.
+`PaintCanvas::SetResourceList` now directly calls the ARM-confirmed
+bulk `ArrayAdd<Resource*>` specialization instead of an unresolved shim.
+The asset-backed host gate exercises the production handoff on four
+source-table entries at `-O0/-O2`; full-table registration and consumer
+behavior remain open. Focused `SetResourceList` remains 100%/100%
+source-shape/strict fuzzy and linked-exact.
+Native and 208/208 ARM units build; 40 verifier tests pass (one existing
+skip). The full corpus remains 4,323/4,524 compared, mean
+source-shape/strict fuzzy 93.87%/83.05%, 2,529 linked-exact and 1,076
+byte-exact, with no losses from the preceding exact-pair sets.
 
 ## Level skybox canvas-to-loader gate (2026-10-19)
 

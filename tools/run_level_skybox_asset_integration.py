@@ -51,6 +51,7 @@ def main():
             "\n".join(function(canvas, signature) for signature in (
                 "void PaintCanvas::TextureCreate(unsigned short resId, void (*callback)",
                 "void PaintCanvas::TextureCreate(unsigned short id, unsigned int &out, bool flag) {",
+                "void PaintCanvas::SetResourceList(AbyssEngine::Resource * const * list, unsigned int count) {",
             )) + "\n"
         )
         table = (ROOT / "src/engine/render/BuildResourceList.cpp").read_text()
@@ -78,10 +79,9 @@ def main():
             macro + "\nvoid registerSkyboxResources(AbyssEngine::PaintCanvas *canvas) {\n"
             "    AbyssEngine::Resource *resources[2488]{};\n"
             + "\n".join(entries)
-            + "\n    canvas->AddResource(resources[522]);\n"
-            + "    canvas->AddResource(resources[1653]);\n"
-            + "    canvas->AddResource(resources[1667]);\n"
-            + "    canvas->AddResource(resources[2487]);\n"
+            + "\n    AbyssEngine::Resource *selected[] = {"
+            + "resources[522], resources[1653], resources[1667], resources[2487]};\n"
+            + "    canvas->SetResourceList(selected, 4);\n"
             + "\n".join(blocks)
             + "\n}\n#undef ADD_RES\n"
         )

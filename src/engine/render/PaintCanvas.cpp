@@ -15,6 +15,8 @@
 // ARM MeshCloneMaterial calls the specialization defined in Array.cpp.
 extern template void ArrayAdd<AbyssEngine::Material *>(AbyssEngine::Material *, Array<AbyssEngine::Material *> &);
 extern template void ArrayAdd<AbyssEngine::Camera *>(AbyssEngine::Camera *, Array<AbyssEngine::Camera *> &);
+extern template void ArrayAdd<AbyssEngine::Resource *>(AbyssEngine::Resource * const *, unsigned int,
+                                                        Array<AbyssEngine::Resource *> &);
 
 namespace AbyssEngine {
     class SpriteSystem;
@@ -646,8 +648,6 @@ void paintcanvas_ext_gl_ortho_persp(float, float, float);
 void paintcanvas_ext_gl_loadmatrix(void *);
 
 void paintcanvas_ext_gl_done();
-
-void paintcanvas_ext_set_reslist(AbyssEngine::Resource * const *, unsigned int, void *);
 
 void paintcanvas_ext_child_link(void *, void *, void *);
 
@@ -2465,7 +2465,7 @@ void PaintCanvas::FontCreate(unsigned short resId, unsigned int &out,
 }
 
 void PaintCanvas::SetResourceList(AbyssEngine::Resource * const * list, unsigned int count) {
-    return paintcanvas_ext_set_reslist(list, count, &this->resources);
+    ArrayAdd<AbyssEngine::Resource *>(list, count, this->resources);
 }
 
 void PaintCanvas::MaterialResourceChangeTexture(unsigned int resId,

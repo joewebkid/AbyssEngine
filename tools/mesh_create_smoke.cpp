@@ -194,6 +194,9 @@ public:
     unsigned short lastMaterialId = 0;
     void *FindResource(unsigned short id);
     void AddResource(Resource *resource);
+#ifdef GOF2_LEVEL_INTEGRATION
+    void SetResourceList(Resource *const *list, unsigned int count);
+#endif
     void MeshCreate(unsigned short id, unsigned int &out, bool forceClone);
     void MaterialCreate(unsigned short id, unsigned int &) { lastMaterialId = id; }
 #ifdef GOF2_LEVEL_INTEGRATION

@@ -47,10 +47,8 @@ bytes. This is a **host-safety workaround**, not a claim that Android ARM
 zeroed the array or that the missing resources were optional. Complete
 `BuildResourceList` execution and all resource consumers are **not
 validated**. The next priority is the concentrated 608–681 gap cluster,
-then an ARM-backed native `SetResourceList` handoff and a complete-table
-host gate. Its current C++ body forwards to the unresolved
-`paintcanvas_ext_set_reslist`; a successful static-library build does
-not prove executable linkage.
+then a complete-table host gate. The `SetResourceList` handoff is recovered
+in the follow-up below; the static-library build alone did not prove it.
 
 Validation at this revision: native `gof2` and all 208 ARM translation
 units build; the asset-backed host gate passes at `-O0/-O2`; 40 verifier
@@ -93,3 +91,27 @@ source-shape is 73.9%, versus 73.8%; strict fuzzy falls from 21.7% to
 13.6%. This is a recorded strict-fuzzy metric regression despite the
 ARM-backed table corrections; exact matching of this giant function
 remains open.
+
+## Follow-up: bulk resource registration
+
+Android ARM `PaintCanvas::SetResourceList` at `0x77f40`–`0x77f4a`
+rearranges its three arguments and tail-calls the bulk
+`ArrayAdd<Resource*>(Resource* const*, unsigned int, Array<Resource*>&)`
+specialization, defined at `0x77f4e`. The existing C++ body instead
+forwarded to unresolved `paintcanvas_ext_set_reslist`. It now calls the
+already-instantiated `ArrayAdd` directly, leaving the ARM function
+100% source-shape/strict fuzzy and linked-exact. The native PaintCanvas
+object now refers to the defined bulk-add specialization rather than
+the unresolved shim.
+
+The existing asset-backed `Level` host gate now source-extracts this
+production `SetResourceList` body, bulk-registers its four selected
+table records, checks their order, and then exercises the same resource-ID
+mesh and texture paths against original Android files at `-O0/-O2`.
+This validates the handoff on a selected subset, not execution of all
+2,488 table entries or their consumers. Full-table registration remains
+the next integration gate.
+Native `gof2`, 208/208 ARM units and 40 verifier tests pass (one existing
+skip). The full ARM corpus remains 4,323/4,524 compared, mean
+source-shape/strict fuzzy 93.87%/83.05%, 2,529 linked-exact and 1,076
+byte-exact, with no exact-pair losses against the material-cluster report.

@@ -29,6 +29,16 @@ the same asset-backed gate passes `-O0/-O2`, and 40 verifier tests pass
 Mean source-shape/strict fuzzy is 93.87%/83.05%; focused
 `BuildResourceList` is 73.9%/13.6%. The sizeable strict fuzzy fall is
 documented, not hidden behind source-shape or corpus means.
+The production `SetResourceList` body now calls bulk `ArrayAdd<Resource*>`
+and is exercised on four source-table entries in the asset-backed host
+gate at `-O0/-O2`. Their registration order and subsequent resource-ID
+loading are checked. Focused ARM `SetResourceList` remains 100%/100%
+source-shape/strict fuzzy and linked-exact. This is not yet a full
+2,488-entry table execution gate.
+Native `gof2` and 208/208 ARM units build; 40 verifier tests pass (one
+existing skip). Full corpus remains 4,323/4,524 compared, 93.87%/83.05%
+mean source-shape/strict fuzzy, 2,529 linked-exact and 1,076 byte-exact.
+The previous full report's exact-pair sets have zero losses.
 
 ## Level skybox canvas-to-loader gate (2026-10-19)
 
