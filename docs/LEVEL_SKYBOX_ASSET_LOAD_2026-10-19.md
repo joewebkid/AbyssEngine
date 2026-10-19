@@ -50,6 +50,16 @@ parser tests, but the source extraction stops before the rest of
 VBO and GPU services remain bounded host fixtures. Focused `createSpace` source-shape/
 fuzzy is still 86.1%/46.2%, nonexact.
 
+The subsequent ARM-backed table-gap recovery adds resource 33410,
+`skybox_asteroid_belt_diffuse.aei`, to this host gate. Its original
+type-3 AEI bytes decode to format 3 and 4 MiB of pixel data; explicit
+`TextureCreate` calls check its cached handle without another file open.
+This fifth resource is separate from the four-file ordinary-orbit
+`Level::createSpace` path. The restored final table mesh 14287 is a
+sixth, separately requested resource: production `MeshCreate` reaches
+its animated AEM parser once; clone-on-reuse is not tested. See
+[the missing-slot evidence](BUILD_RESOURCE_LIST_GAPS_ARM_2026-10-19.md).
+
 Android ARM `PaintCanvas::AddResource` at `0x77f84`–`0x77f8c` forwards
 the resource and `this+0x134` through a veneer to
 `ArrayAdd<Resource*>@plt` at `0x5fa30` (the defined specialization is at

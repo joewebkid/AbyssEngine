@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BuildResourceList missing-slot gate (2026-10-19)
+
+Android ARM evidence restores ten omitted records in the 2,488-slot
+resource list. The `Level` asset-backed gate loads restored texture 33410
+from the original OBB at `-O0/-O2` and checks its cached handle; restored
+mesh 14287 passes resource-ID `MeshCreate` into production
+`MeshCreateFromFile`/`MeshReadData` with its original file. Animated-mesh
+clone-on-reuse remains untested. The remaining 44 positions are null-initialized
+for host safety, not confirmed as null in the original. The full list and
+its consumers remain untested. See
+[the ARM evidence](BUILD_RESOURCE_LIST_GAPS_ARM_2026-10-19.md).
+Native `gof2`, 208/208 ARM TUs and 40 verifier tests pass (one existing
+skip). Full corpus: 4,323/4,524 compared, 2,529 linked-exact and
+1,076 byte-exact, no exact-pair losses; mean source-shape/strict fuzzy
+93.87%/83.06%. Focused `BuildResourceList` is 73.8%/21.7%, against
+73.5%/22.8% before this patch. The strict fuzzy decline is recorded,
+not treated as a regression in the verified resource records.
+
 ## Level skybox canvas-to-loader gate (2026-10-19)
 
 The production `MeshCreateFromFile`/`MeshReadData` host smoke parses the
@@ -18,7 +36,8 @@ prelude of `Level::createSpace` to those calls and all four original files
 in one process at `-O0/-O2`. Its four resource records and constructors
 are source-extracted from the production tables; IDs, paths and payloads
 are checked before loading. Four opens occur on the first call and none
-on the second. Focused `createSpace` remains 86.1%/46.2% source-shape/
+on the second; the restored asteroid-belt texture is a separate fifth
+resource loaded afterward. Focused `createSpace` remains 86.1%/46.2% source-shape/
 strict fuzzy, nonexact.
 Native `gof2`, 208/208 ARM TUs and 40 verifier tests pass (one skip).
 Focused `ImageCreateFromFile` source-shape/strict fuzzy remains

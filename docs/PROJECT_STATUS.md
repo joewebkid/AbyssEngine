@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-19 (Level skybox in-process asset gate; older subsystem
+Last reviewed: 2026-10-19 (BuildResourceList missing-slot recovery; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -17,6 +17,25 @@ but the full init path has not yet passed a host runtime gate. A catalog-backed
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## BuildResourceList missing slots (2026-10-19)
+
+Android ARM disassembly confirms ten previously omitted resource records,
+including asteroid-belt skybox diffuse texture 33410 and the final mesh
+record 14287. They are restored in `BuildResourceList.cpp`. The asset-backed
+host gate now decodes original texture 33410 and checks cache reuse, alongside
+the existing Level skybox path; restored mesh 14287 also passes the
+resource-ID loader once, with animated reuse untested. **44 of 2,488 table slots remain unrecovered**
+in C++; they are null-initialized as a labelled host-safety workaround,
+not as a claim of original behavior. Full table execution and consumers
+remain unvalidated. Next: recover the 608–681 gap cluster, implement the
+native `SetResourceList` handoff and run the complete table. See
+[the ARM slot evidence](BUILD_RESOURCE_LIST_GAPS_ARM_2026-10-19.md).
+Native and 208/208 ARM units build; the host gate passes at `-O0/-O2`.
+The fresh full corpus remains 4,323/4,524 compared, 2,529 linked-exact,
+1,076 byte-exact, with no loss of prior exact pairs. Mean source-shape/
+strict fuzzy stays 93.87%/83.06%. Focused `BuildResourceList` source-shape
+is 73.8% (was 73.5%); strict fuzzy is 21.7% (was 22.8%).
 
 ## Level skybox canvas-to-loader gate (2026-10-19)
 

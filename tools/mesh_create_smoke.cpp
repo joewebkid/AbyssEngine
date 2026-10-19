@@ -155,7 +155,11 @@ Transform::~Transform() {}
 void Transform::InsertKeyFrame(const float *, longlong, int) { ArrayAdd<KeyFrame *>(nullptr, keyFrames); }
 void Transform::CollectAnimationData() {
     ++collected;
+#ifdef GOF2_LEVEL_INTEGRATION
+    assert(closed == opened && closed > 0);
+#else
     assert(closed == 1);
+#endif
     if (changeTimeOnCollect) timeBetweenFrames = 3.75f;
 }
 void Transform::SetAnimationRangeInTime(longlong first, longlong last) {

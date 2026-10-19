@@ -12,6 +12,8 @@ from run_particle_control_smoke import function
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = (
+    "data/assets/main/3d/textures/low/etc/skyboxes/skybox_asteroid_belt_diffuse.aei",
+    "data/assets/main/3d/meshes/fx/explosion_void_station_alpha_lookat.aem",
     "data/assets/main/3d/meshes/skyboxes/skybox_stars.aem",
     "data/assets/main/3d/textures/low/etc/skyboxes/skybox_stars_001.aei",
     "data/assets/main/3d/meshes/skyboxes/skybox_002.aem",
@@ -56,7 +58,7 @@ def main():
         macro_end = table.index("\n\nvoid BuildResourceList", macro_start)
         macro = table[macro_start:macro_end]
         entries = []
-        for slot in (1653, 1667):
+        for slot in (522, 1653, 1667, 2487):
             marker = f"ADD_RES(resources[{slot}],"
             assert table.count(marker) == 1
             start = table.index(marker)
@@ -74,10 +76,12 @@ def main():
             blocks.append(block)
         (Path(temp) / "level_resource_under_test.inc").write_text(
             macro + "\nvoid registerSkyboxResources(AbyssEngine::PaintCanvas *canvas) {\n"
-            "    AbyssEngine::Resource *resources[1668]{};\n"
+            "    AbyssEngine::Resource *resources[2488]{};\n"
             + "\n".join(entries)
-            + "\n    canvas->AddResource(resources[1653]);\n"
+            + "\n    canvas->AddResource(resources[522]);\n"
+            + "    canvas->AddResource(resources[1653]);\n"
             + "    canvas->AddResource(resources[1667]);\n"
+            + "    canvas->AddResource(resources[2487]);\n"
             + "\n".join(blocks)
             + "\n}\n#undef ADD_RES\n"
         )

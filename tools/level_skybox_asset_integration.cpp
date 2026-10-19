@@ -26,7 +26,12 @@ int TextureCreateFromFileIntern(Engine *engine, const char *path, ImageCallback 
     Image *image = nullptr;
     if (ImageCreateFromFile(engine, path, &image) != 1) return -1;
     if (callback) callback(image, user);
-    assert(image && image->format == 11);
+    assert(image);
+    if (std::strstr(path, "skybox_asteroid_belt_diffuse.aei"))
+        assert(image->format == 3 && image->dataLen == 4U * 1024U * 1024U);
+    else
+        assert(image->format == 11);
+    assert(image->width && image->height && image->data && image->dataLen);
     ImageRelease(&image);
     *out = nextTexture++;
     return 1;
@@ -104,7 +109,19 @@ int main(int argc, char **argv) {
     Status::gStatus = &status;
 
     registerSkyboxResources(&canvas);
-    assert(canvas.resources.count == 4);
+    assert(canvas.resources.count == 6);
+    auto *belt = static_cast<PCResourceView *>(canvas.FindResource(33410));
+    assert(belt && belt->type == 2 && belt->handle == -1);
+    auto *beltTexture = static_cast<AbyssEngine::ResourceTexture *>(belt->payload);
+    assert(std::strcmp(beltTexture->name,
+                       "data/assets/main/3d/textures/low/etc/skyboxes/skybox_asteroid_belt_diffuse.aei") == 0);
+    assert(beltTexture->value == 0.0f);
+    auto *tail = static_cast<PCResourceView *>(canvas.FindResource(14287));
+    assert(tail && tail->type == 4 && tail->handle == -1);
+    auto *tailMesh = static_cast<AbyssEngine::ResourceMesh *>(tail->payload);
+    assert(std::strcmp(tailMesh->name,
+                       "data/assets/main/3d/meshes/fx/explosion_void_station_alpha_lookat.aem") == 0);
+    assert(tailMesh->wResourceId == 27302 && tailMesh->flag == 0);
     const unsigned short ids[] = {0x45bb, 0x2767, 0x458a, 0x2753};
     PCResourceView *resources[4];
     for (int i = 0; i < 4; ++i) {
@@ -139,6 +156,17 @@ int main(int argc, char **argv) {
     for (int i = 0; i < 4; ++i) assert(resources[i]->handle == handles[i]);
     level.createSpace();
     assert(canvas.meshCount == 2 && opened == 4 && closed == 4);
+    unsigned int beltHandle = 0xffffffffU;
+    canvas.TextureCreate(33410, beltHandle, false);
+    assert(beltHandle == 102 && belt->handle == 102 && opened == 5 && closed == 5);
+    canvas.TextureCreate(33410, beltHandle, false);
+    assert(beltHandle == 102 && opened == 5 && closed == 5);
+    unsigned int tailHandle = 0xffffffffU;
+    const int collectedBeforeTail = collected;
+    canvas.MeshCreate(14287, tailHandle, false);
+    assert(tailHandle == 2 && tail->handle == 2 && canvas.meshCount == 3);
+    assert(opened == 6 && closed == 6);
+    assert(collected > collectedBeforeTail && canvas.meshes[2]->animation);
 
     for (unsigned i = 0; i < canvas.meshCount; ++i) dispose(canvas.meshes[i]);
     std::free(canvas.meshes);
@@ -147,5 +175,9 @@ int main(int argc, char **argv) {
         else delete static_cast<AbyssEngine::ResourceTexture *>(resource->payload);
         delete resource;
     }
+    delete beltTexture;
+    delete belt;
+    delete tailMesh;
+    delete tail;
     std::free(engine);
 }

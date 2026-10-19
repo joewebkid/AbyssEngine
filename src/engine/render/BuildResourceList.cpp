@@ -65,7 +65,8 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     PaintCanvas *canvas = engine->appManager->paintCanvas;
     canvas->TextureCreateGlobal(String("data/assets/main/3d/textures/low/etc/fx/cloak_map.aei"), 6);
 
-    Resource *resources[2488];
+    // shortcut: 44 ARM records are not recovered yet; keep those host slots null until restored.
+    Resource *resources[2488]{};
     ADD_RES(resources[0], 
         11742, 2, new AbyssEngine::ResourceTexture("data/assets/supernova/3d/textures/low/etc/suns/sn_sun_011.aei",
                                                    0.0f));
@@ -1460,10 +1461,16 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[520], 
         24203, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/fx/hyper_drive.aei", 0.0f));
     ADD_RES(resources[521], 11647, 2, new AbyssEngine::ResourceTexture("data/textures/gas_cloud.aei", 0.0f));
+    ADD_RES(resources[522], 33410, 2, new AbyssEngine::ResourceTexture(
+                                 "data/assets/main/3d/textures/low/etc/skyboxes/skybox_asteroid_belt_diffuse.aei",
+                                 0.0f));
     ADD_RES(resources[523], 33411, 2, new AbyssEngine::ResourceTexture(
                                  "data/assets/main/3d/textures/low/etc/skyboxes/skybox_asteroid_belt_normal_specular.aei",
                                  0.0f));
     ADD_RES(resources[524], 27160, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
+    ADD_RES(resources[525], 33240, 2, new AbyssEngine::ResourceTexture(
+                                 "data/assets/main/3d/textures/low/etc/misc/container_003_terran_diffuse.aei",
+                                 0.0f));
     ADD_RES(resources[526], 33241, 2, new AbyssEngine::ResourceTexture(
                                  "data/assets/main/3d/textures/low/etc/misc/container_003_terran_normal_specular.aei",
                                  0.0f));
@@ -1495,7 +1502,12 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
             "data/assets/main/3d/textures/low/etc/misc/space_particle_normal_specular.aei", 0.0f));
     ADD_RES(resources[536], 20092, 6, new AbyssEngine::ResourceMaterial(24208, 24209, static_cast<BlendMode>(36)));
     ADD_RES(resources[537], 20090, 6, new AbyssEngine::ResourceMaterial(24202, static_cast<BlendMode>(3)));
+    ADD_RES(resources[538], 33301, 2, new AbyssEngine::ResourceTexture(
+                                 "data/assets/main/3d/textures/low/etc/fx/explosion_emp.aei", 0.0f));
     ADD_RES(resources[539], 27300, 6, new AbyssEngine::ResourceMaterial(33301, BlendMode_2));
+    ADD_RES(resources[540], 33340, 2, new AbyssEngine::ResourceTexture(
+                                 "data/assets/main/3d/textures/low/etc/stations/stations_pirates_dmg_diffuse.aei",
+                                 0.0f));
     ADD_RES(resources[541], 33341, 2, new AbyssEngine::ResourceTexture(
                                  "data/assets/main/3d/textures/low/etc/stations/stations_pirates_dmg_normal_specular.aei",
                                  0.0f));
@@ -1574,6 +1586,8 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[570], 
         12048, 2, new AbyssEngine::ResourceTexture(
             "data/assets/supernova/3d/textures/low/etc/cubemaps/sn_cubemap_skybox_018.aei", 0.0f));
+    ADD_RES(resources[571], 33302, 2, new AbyssEngine::ResourceTexture(
+                                 "data/assets/main/3d/textures/low/etc/fx/bomb_rocket_fx.aei", 0.0f));
     ADD_RES(resources[572], 
         33304, 2, new AbyssEngine::ResourceTexture(
             "data/assets/main/3d/textures/low/etc/misc/bomb_explosive_a_diffuse.aei", 0.0f));
@@ -1589,6 +1603,9 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[576], 
         33310, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/misc/bomb_emp_a_diffuse.aei",
                                                    0.0f));
+    ADD_RES(resources[577], 33311, 2, new AbyssEngine::ResourceTexture(
+                                 "data/assets/main/3d/textures/low/etc/misc/bomb_emp_a_normal_specular.aei",
+                                 0.0f));
     ADD_RES(resources[578], 
         24204, 2, new AbyssEngine::ResourceTexture(
             "data/assets/main/3d/textures/low/etc/misc/rocket_explosive_diffuse.aei", 0.0f));
@@ -1601,6 +1618,8 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[581], 
         24207, 2, new AbyssEngine::ResourceTexture(
             "data/assets/main/3d/textures/low/etc/misc/rocket_emp_normal_specular.aei", 0.0f));
+    ADD_RES(resources[582], 33330, 2, new AbyssEngine::ResourceTexture(
+                                 "data/assets/main/3d/textures/low/etc/fx/explosion_void_station.aei", 0.0f));
     ADD_RES(resources[583], 
         34812, 2,
         new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/fx/ship_engine_glow.aei", 0.0f));
@@ -1611,8 +1630,10 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[586], 34815, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));
     ADD_RES(resources[587], 27301, 6, new AbyssEngine::ResourceMaterial(0, static_cast<BlendMode>(3)));
     ADD_RES(resources[588], 27302, 6, new AbyssEngine::ResourceMaterial(0, BlendMode_1));
+    ADD_RES(resources[589], 33303, 6, new AbyssEngine::ResourceMaterial(33302, BlendMode_2));
     ADD_RES(resources[590], 33306, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
     ADD_RES(resources[591], 33309, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
+    ADD_RES(resources[592], 33312, 6, new AbyssEngine::ResourceMaterial(33310, 33311, static_cast<BlendMode>(28)));
     ADD_RES(resources[593], 20004, 6, new AbyssEngine::ResourceMaterial(0, 0, static_cast<BlendMode>(28)));
     ADD_RES(resources[594], 20003, 6, new AbyssEngine::ResourceMaterial(0, BlendMode_dummy));
     ADD_RES(resources[595], 20005, 6, new AbyssEngine::ResourceMaterial(0, 0, static_cast<BlendMode>(28)));
@@ -5162,6 +5183,9 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[2486], 
         14286, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/fx/explosion_void_station_add_lookat.aem",
                                                 27301, false));
+    ADD_RES(resources[2487],
+        14287, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/fx/explosion_void_station_alpha_lookat.aem",
+                                                27302, false));
     canvas->SetResourceList(resources, 2488);
 
     for (int i = 0; i < 152; ++i)
