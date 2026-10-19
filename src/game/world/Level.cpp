@@ -5877,7 +5877,8 @@ void Level::createPlayer() {
             int type = it->getType();
             if (type == 2) {
                 (*(*buckets)[2])[--slots[2]] = gun;
-                Vector *pos = (*(*wpos)[2])[ship->getSlotPos(it)];
+                // ARM 0xaf5de-0xaf5ec: the turret uses the first type-2 vector.
+                Vector *pos = (*(*wpos)[2])[0];
                 ego->setTurretPosition(*pos);
             } else if (type == 0 || type == 1) {
                 (*(*buckets)[type])[--slots[type]] = gun;
