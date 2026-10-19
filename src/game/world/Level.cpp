@@ -5806,13 +5806,13 @@ void Level::createPlayer() {
     slots[1] = ship->getUsedSlots(1);
     slots[2] = ship->getUsedSlots(2);
 
-    Player *pl = (Player *) ::operator new(0x114);
+    Player *pl = (Player *) ::operator new(sizeof(Player));
     new(pl) Player(0x4b0, ship->getMaxHP(), slots[0], slots[1], slots[2]);
     pl->setMaxShieldHP(ship->getMaxShieldHP());
     pl->setMaxArmorHP(ship->getMaxArmorHP());
-    *((uint8_t *) pl + 0x69) = 1;
+    pl->field_69 = 1;
 
-    PlayerEgo *ego = (PlayerEgo *) ::operator new(0x3a0);
+    PlayerEgo *ego = (PlayerEgo *) ::operator new(sizeof(PlayerEgo));
     new(ego) PlayerEgo(pl);
     this->player = ego;
     ego->setShip(ship->getIndex(), ship->getRace());

@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level player-entry host layout gate (2026-10-19)
+
+The host layout smoke checks size-based `Player`/`PlayerEgo` allocation and
+the named byte replacing raw `Player+0x69`; the existing production Player
+constructor smoke passes. Native `gof2` and 208/208 ARM TUs build. Focused
+`createPlayer` source-shape/strict fuzzy remains 86.5%/37.8%, nonexact.
+See [the player-entry evidence](LEVEL_CREATE_PLAYER_HOST_LAYOUT_2026-10-19.md).
+Full corpus: 4,323/4,524 originals, 93.86%/83.04% means,
+2,528 linked-exact and 1,076 byte-exact, with zero pair losses. All 40
+verifier tests pass (one existing skip). Full asset-backed level entry
+remains untested.
+
 ## Level stage-0 host allocation gate (2026-10-17)
 
 The production stage-0 allocation block and constructors run at `-O0/-O2`

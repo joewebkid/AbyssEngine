@@ -49,7 +49,10 @@ public:
     uint8_t gammaHit;
     union {
         uint16_t empDisabled;
-        uint8_t empDisabledByte;
+        struct {
+            uint8_t empDisabledByte;
+            uint8_t field_69;
+        };
     };
     uint8_t pad_6a[2];
     int32_t damageDoneByPlayer;
@@ -316,6 +319,7 @@ public:
 };
 
 #if __SIZEOF_POINTER__ == 4
+static_assert(__builtin_offsetof(Player, field_69) == 0x69, "Player field_69 ARM offset");
 static_assert(__builtin_offsetof(Player, field_dc) == 0xdc, "Player EMP damage offset");
 static_assert(__builtin_offsetof(Player, empData) == 0xe4, "Player EMP duration offset");
 static_assert(__builtin_offsetof(Player, empElapsed) == 0xe8, "Player EMP elapsed offset");

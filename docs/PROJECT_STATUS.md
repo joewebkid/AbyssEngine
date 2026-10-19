@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-17 (Level stage-0 allocation gate; older subsystem
+Last reviewed: 2026-10-19 (Level player-entry layout gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -17,6 +17,19 @@ but the full init path has not yet passed a host runtime gate. A catalog-backed
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Level player-entry host layout (2026-10-19)
+
+Android `Level::createPlayer` allocates `Player`/`PlayerEgo` at ARM sizes
+0x114/0x3a0 and writes a byte at `Player+0x69`. Source now uses each type's
+size for native allocation and a named, ARM-offset-checked byte for the
+store, avoiding x64 underallocation and a shifted raw write. The byte's
+gameplay meaning remains unknown. Native and 208/208 ARM TUs build; focused
+`createPlayer` source-shape/strict fuzzy remains 86.5%/37.8%, nonexact.
+Full ARM coverage is 4,323/4,524 originals, 93.86%/83.04% means,
+2,528 linked-exact and 1,076 byte-exact with zero pair losses. See
+[the player-entry evidence](LEVEL_CREATE_PLAYER_HOST_LAYOUT_2026-10-19.md).
+The full asset-backed `Level::init` path is still unverified.
 
 ## Level stage-0 host allocations (2026-10-17)
 
