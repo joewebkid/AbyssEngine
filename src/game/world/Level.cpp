@@ -5940,9 +5940,10 @@ Level::Level(int mission) {
     field_190 = 0;
     field_194 = 0;
     zero16(&field_1c);
-    zero16(&this->field_90);
-    zero16(&this->particleRenderBoolPtr);
-    zero16(&this->field_74);
+    // ARM 0xadb20/28/30 clear four pointer slots, including on wider hosts.
+    memset(&this->field_90, 0, 4 * sizeof(field_90));
+    memset(&this->particleRenderBoolPtr, 0, 4 * sizeof(particleRenderBoolPtr));
+    memset(&this->field_74, 0, 4 * sizeof(field_74));
     skyboxMesh = -1;
     field_08 = -1;
     skyboxTexture = -1;
@@ -5959,11 +5960,14 @@ Level::Level(int mission) {
 
     objectivesA = nullptr;
     objectivesB = nullptr;
-    memset(&this->asteroidWaypoint, 0, 0x65);
+    // ARM 0xadb60 clears +0xd8 through the byte at +0x13c inclusive.
+    memset(&this->asteroidWaypoint, 0,
+           offsetof(Level, friendCargoStolen) - offsetof(Level, asteroidWaypoint) + 1);
     zero16(&this->hostileCount);
     zero16(&this->flashType);
     field_18a = 0;
     field_188 = 0;
+    alarmRequested = 0; // ARM 0xadb7a stores a halfword at +0x188.
     movingStarsIndex = -1;
     field_284 = -1;
     field_34 = -1;
@@ -5977,6 +5981,7 @@ Level::Level(int mission) {
     manualSecondaryActive = 0;
     field_6c = 0;
     field_288 = 0;
+    supernovaFlareActive = 0; // ARM 0xadb9c: halfword at +0x288.
     field_a0 = 0;
     field_a4 = nullptr;
     field_a8 = nullptr;
@@ -5994,6 +5999,7 @@ Level::Level(int mission) {
     numDeliveredOre = 0;
     numDeliveredPassengers = 0;
     field_29c = 0;
+    field_29d = 0; // ARM 0xadbb0: halfword at +0x29c.
     field_29e = 0;
     field_1b4 = -1;
     field_1b8 = -1;

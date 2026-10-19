@@ -147,9 +147,13 @@ void MeshRelease(Engine *, Mesh **slot) { ++released; dispose(*slot); *slot = nu
 // Mesh clone dependencies remain outside these fixtures.
 int MeshConvertToVBO(Mesh *) { std::abort(); }
 Transform::Transform(Transform *) { std::abort(); }
+#ifndef GOF2_LEVEL_INIT_INTEGRATION
 AEMath::Matrix::Matrix() { std::memset(m, 0, sizeof(m)); }
+#endif
 Quaternion::Quaternion() : x(0), y(0), z(0), w(1) {}
+#ifndef GOF2_LEVEL_INIT_INTEGRATION
 Quaternion::~Quaternion() {}
+#endif
 Transform::Transform() : boundingCenter{0, 0, 0}, boundingRadius(0), boundingRadius2(0) {}
 Transform::~Transform() {}
 void Transform::InsertKeyFrame(const float *, longlong, int) { ArrayAdd<KeyFrame *>(nullptr, keyFrames); }
@@ -180,6 +184,18 @@ struct PCResourceView {
     void *payload;
 };
 struct PCMeshInfoView { char *path; uint16_t matResId; };
+#ifdef GOF2_LEVEL_INIT_INTEGRATION
+#include "engine/render/PaintCanvas.h"
+namespace AbyssEngine {
+struct Resource {
+    uint16_t id;
+    uint8_t pad02[2];
+    union { int type; int kind; };
+    union { int handle; int unused; };
+    void *payload;
+};
+}
+#else
 namespace AbyssEngine {
 using Resource = ::PCResourceView;
 class PaintCanvas {
@@ -211,6 +227,7 @@ public:
 #endif
 };
 }
+#endif
 using AbyssEngine::PaintCanvas;
 static_assert(offsetof(PaintCanvas, meshes) - offsetof(PaintCanvas, meshCount) ==
               offsetof(Array<AbyssEngine::Mesh *>, data_), "mesh array host view");

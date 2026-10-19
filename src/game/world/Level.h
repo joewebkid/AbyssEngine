@@ -398,6 +398,9 @@ static_assert(__builtin_offsetof(Level, killCountA) == 0x20, "Level::killCountA 
 static_assert(__builtin_offsetof(Level, killCountB) == 0x24, "Level::killCountB offset");
 static_assert(__builtin_offsetof(Level, manualSecondaryActive) == 0x69,
               "Level::manualSecondaryActive offset");
+static_assert(__builtin_offsetof(Level, asteroidWaypoint) == 0xd8, "Level ctor clear start");
+static_assert(__builtin_offsetof(Level, friendCargoStolen) == 0x13c, "Level ctor clear end");
+static_assert(__builtin_offsetof(Level, field_134) == 0x134, "Level::init stage offset");
 static_assert(__builtin_offsetof(Level, field_188) == 0x188, "Level::field_188 offset");
 static_assert(__builtin_offsetof(Level, alarmRequested) == 0x189, "Level::alarmRequested offset");
 static_assert(__builtin_offsetof(Level, field_18a) == 0x18a, "Level::field_18a offset");
@@ -407,6 +410,13 @@ static_assert(__builtin_offsetof(Level, cloudMatrix) == 0x20c, "Level::cloudMatr
 static_assert(__builtin_offsetof(Level, reversalMatrix) == 0x248, "Level::reversalMatrix offset");
 static_assert(__builtin_offsetof(Level, field_284) == 0x284, "Level::field_284 offset");
 #endif
+
+static_assert(__builtin_offsetof(Level, field_9c) - __builtin_offsetof(Level, field_90)
+                  == 3 * sizeof(ParticleSystemManager *), "Level particle clear span 1");
+static_assert(__builtin_offsetof(Level, field_90) - __builtin_offsetof(Level, particleRenderBoolPtr)
+                  == 3 * sizeof(ParticleSystemManager *), "Level particle clear span 2");
+static_assert(__builtin_offsetof(Level, field_80) - __builtin_offsetof(Level, field_74)
+                  == 3 * sizeof(ParticleSystemManager *), "Level particle clear span 3");
 
 
 #endif
