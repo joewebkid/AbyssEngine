@@ -1,5 +1,9 @@
 #define GOF2_LEVEL_INTEGRATION
 #include "mesh_create_smoke.cpp"
+#include "engine/render/ResourceMesh.h"
+#include "engine/render/ResourceTexture.h"
+#include "level_string_length_under_test.inc"
+char *String_GetAEChar(AbyssEngine::String *) { std::abort(); }
 
 uint32_t AEFile::Skip(uint32_t bytes, uint32_t handle) {
     assert(handle == 1);
@@ -40,6 +44,7 @@ PaintCanvas *PaintCanvas::gCanvas;
 }
 
 #include "level_texture_canvas_under_test.inc"
+#include "level_resource_under_test.inc"
 
 struct SolarSystem {
     int getIndex() { return 4; }
@@ -98,21 +103,31 @@ int main(int argc, char **argv) {
     Status status;
     Status::gStatus = &status;
 
-    PCMeshInfoView meshes[2] = {
-        {const_cast<char *>("data/assets/main/3d/meshes/skyboxes/skybox_stars.aem"), 20010},
-        {const_cast<char *>("data/assets/main/3d/meshes/skyboxes/skybox_002.aem"), 20011},
+    registerSkyboxResources(&canvas);
+    assert(canvas.resources.count == 4);
+    const unsigned short ids[] = {0x45bb, 0x2767, 0x458a, 0x2753};
+    PCResourceView *resources[4];
+    for (int i = 0; i < 4; ++i) {
+        resources[i] = static_cast<PCResourceView *>(canvas.FindResource(ids[i]));
+        assert(resources[i] && resources[i]->handle == -1);
+        assert(resources[i]->type == (i % 2 == 0 ? 4 : 2));
+    }
+    const char *paths[] = {
+        "data/assets/main/3d/meshes/skyboxes/skybox_stars.aem",
+        "data/assets/main/3d/textures/low/etc/skyboxes/skybox_stars_001.aei",
+        "data/assets/main/3d/meshes/skyboxes/skybox_002.aem",
+        "data/assets/main/3d/textures/low/etc/skyboxes/skybox_002.aei",
     };
-    PCTexInfoView textures[2] = {
-        {const_cast<char *>("data/assets/main/3d/textures/low/etc/skyboxes/skybox_stars_001.aei"), -1.0f},
-        {const_cast<char *>("data/assets/main/3d/textures/low/etc/skyboxes/skybox_002.aei"), -1.0f},
-    };
-    PCResourceView resources[4] = {
-        {0x45bb, {0, 0}, 4, -1, &meshes[0]},
-        {0x2767, {0, 0}, 2, -1, &textures[0]},
-        {0x458a, {0, 0}, 4, -1, &meshes[1]},
-        {0x2753, {0, 0}, 2, -1, &textures[1]},
-    };
-    for (auto &resource : resources) canvas.AddResource(&resource);
+    for (int i = 0; i < 4; ++i) {
+        const char *path = i % 2 == 0
+            ? static_cast<AbyssEngine::ResourceMesh *>(resources[i]->payload)->name
+            : static_cast<AbyssEngine::ResourceTexture *>(resources[i]->payload)->name;
+        assert(std::strcmp(path, paths[i]) == 0);
+    }
+    assert(static_cast<AbyssEngine::ResourceMesh *>(resources[0]->payload)->wResourceId == 20010);
+    assert(static_cast<AbyssEngine::ResourceMesh *>(resources[2]->payload)->wResourceId == 20011);
+    assert(static_cast<AbyssEngine::ResourceTexture *>(resources[1]->payload)->value == -1.0f);
+    assert(static_cast<AbyssEngine::ResourceTexture *>(resources[3]->payload)->value == -1.0f);
 
     Level level;
     level.createSpace();
@@ -121,11 +136,16 @@ int main(int argc, char **argv) {
     assert(level.skyRotX == 0 && level.skyRotY == 0 && level.skyRotZ == 0);
     assert(canvas.meshCount == 2 && opened == 4 && closed == 4);
     const int handles[] = {0, 100, 1, 101};
-    for (int i = 0; i < 4; ++i) assert(resources[i].handle == handles[i]);
+    for (int i = 0; i < 4; ++i) assert(resources[i]->handle == handles[i]);
     level.createSpace();
     assert(canvas.meshCount == 2 && opened == 4 && closed == 4);
 
     for (unsigned i = 0; i < canvas.meshCount; ++i) dispose(canvas.meshes[i]);
     std::free(canvas.meshes);
+    for (auto *resource : resources) {
+        if (resource->type == 4) delete static_cast<AbyssEngine::ResourceMesh *>(resource->payload);
+        else delete static_cast<AbyssEngine::ResourceTexture *>(resource->payload);
+        delete resource;
+    }
     std::free(engine);
 }

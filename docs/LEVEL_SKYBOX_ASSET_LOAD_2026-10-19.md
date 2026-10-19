@@ -28,9 +28,12 @@ The canvas host gate runs production `PaintCanvas::AddResource`,
 corresponding texture IDs. Each path
 reaches the relevant production file parser, stores a resource handle,
 and reuses that handle on a second request without reopening the file.
-Fixture-owned resource records carry the exact IDs and paths from the
-tables; `BuildResourceList`/`loadLowTexturesAndMaterials` themselves are
-not executed. Mesh material creation and VBO upload are bounded services.
+The in-process `Level` test now source-extracts the two `ADD_RES` mesh
+entries and two low-texture registration blocks from the production
+tables, including their original constructors. It confirms ID, kind,
+path, material ID and texture value before loading. The complete
+`BuildResourceList`/`loadLowTexturesAndMaterials` functions are not
+executed. Mesh material creation and VBO upload are bounded services.
 The texture upload service is a GPU boundary double which calls the real
 `ImageCreateFromFile`/`ImageRelease`, then issues a test texture ID.
 Therefore this is a canvas-to-parser handoff, not a GL upload or rendered
@@ -43,8 +46,8 @@ the four files above at `-O0` and `-O2`, obtains handles `0/100/1/101`,
 and observes four opens/four closes. Calling the prelude again performs
 no additional file open. This is stronger than independent selector and
 parser tests, but the source extraction stops before the rest of
-`createSpace`; `Status`, resource records, material creation, VBO and GPU
-services remain bounded host fixtures. Focused `createSpace` source-shape/
+`createSpace`; `Status`, all other resource records, material creation,
+VBO and GPU services remain bounded host fixtures. Focused `createSpace` source-shape/
 fuzzy is still 86.1%/46.2%, nonexact.
 
 Android ARM `PaintCanvas::AddResource` at `0x77f84`–`0x77f8c` forwards
@@ -88,7 +91,7 @@ original game function. Current full report:
 This gate proves that the exact four ordinary-orbit skybox files can be
 selected by the `Level` skybox prelude, looked up by the recovered canvas
 methods and parsed by the recovered mesh and image loaders in one host
-process. It does **not** yet prove production resource-table construction,
+process. It does **not** yet prove complete production resource-table construction,
 material creation, GL texture upload, the complete `createSpace` tail,
 `Level::init`, or `renderBG`. The next integration step is production table
 setup and the remainder of `createSpace`, identifying the first failing

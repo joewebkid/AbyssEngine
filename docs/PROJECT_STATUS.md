@@ -28,8 +28,10 @@ now exercise resource-ID lookup, loader dispatch and cached handles for
 those assets. The ARM-backed `AddResource` shim now calls
 `ArrayAdd<Resource*>` and is no longer an undefined native reference.
 `AddResource` remains 100%/100% source-shape/fuzzy and linked-exact.
-Resource records are fixture-owned, and material/GPU services
-remain bounded. A new in-process host gate runs the production skybox
+The four selected resource records now come from source-extracted
+`BuildResourceList`/`LowResourceTable` entries and production resource
+constructors; complete table execution and material/GPU services
+remain unverified or bounded. The in-process host gate runs the production skybox
 prelude of `Level::createSpace` through canvas registration, lookup and
 file parsing for the same four assets at `-O0/-O2`; its second call reuses
 all handles without reopening files. The remainder of `createSpace` is
@@ -42,7 +44,7 @@ Focused source-shape/fuzzy from the unchanged ARM report: `FindResource`
 20-byte literal, preventing native x64 underallocation while preserving the
 ARM size. Native and 208/208 ARM TUs build. Focused `ImageCreateFromFile`
 source-shape/strict fuzzy stays 97.3%/58.8%, nonexact. This is a parser
-gate, not an end-to-end `Level::init` or render gate. Next: run production
+gate, not an end-to-end `Level::init` or render gate. Next: run complete
 resource-table construction and the `createSpace` tail. See
 [the asset-loader evidence](LEVEL_SKYBOX_ASSET_LOAD_2026-10-19.md).
 Full ARM corpus: 4,323/4,524 compared, 93.87%/83.06% mean

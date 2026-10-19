@@ -12,10 +12,12 @@ two ordinary-orbit skybox meshes from Android OBB bytes. The production
 `-O0/-O2`, checks host allocation size and rejects a truncated payload.
 The same asset-backed tests exercise production `PaintCanvas::AddResource`,
 `FindResource` and resource-ID `MeshCreate`/`TextureCreate` calls, including
-cache reuse; fixture-owned records and bounded material/GPU services are explicit.
+cache reuse; bounded material/GPU services are explicit.
 `run_level_skybox_asset_integration.py` joins the production skybox
 prelude of `Level::createSpace` to those calls and all four original files
-in one process at `-O0/-O2`; four opens occur on the first call and none
+in one process at `-O0/-O2`. Its four resource records and constructors
+are source-extracted from the production tables; IDs, paths and payloads
+are checked before loading. Four opens occur on the first call and none
 on the second. Focused `createSpace` remains 86.1%/46.2% source-shape/
 strict fuzzy, nonexact.
 Native `gof2`, 208/208 ARM TUs and 40 verifier tests pass (one skip).
@@ -23,8 +25,8 @@ Focused `ImageCreateFromFile` source-shape/strict fuzzy remains
 97.3%/58.8%, nonexact. See
 [the asset-loader evidence](LEVEL_SKYBOX_ASSET_LOAD_2026-10-19.md).
 Focused `AddResource` remains 100% source-shape/fuzzy and linked-exact.
-These tests isolate the file service; they do not run production resource-
-table construction, GPU upload, the `createSpace` tail, full `Level::init`,
+These tests isolate the file service; they do not run complete production
+resource-table construction, GPU upload, the `createSpace` tail, full `Level::init`,
 or rendering.
 Full ARM corpus: 4,323/4,524 compared, 93.87%/83.06% mean source-shape/
 strict fuzzy, 2,529 linked-exact and 1,076 byte-exact with zero pair

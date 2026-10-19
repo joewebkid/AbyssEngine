@@ -51,6 +51,41 @@ def main():
                 "void PaintCanvas::TextureCreate(unsigned short id, unsigned int &out, bool flag) {",
             )) + "\n"
         )
+        table = (ROOT / "src/engine/render/BuildResourceList.cpp").read_text()
+        macro_start = table.index("#define ADD_RES(")
+        macro_end = table.index("\n\nvoid BuildResourceList", macro_start)
+        macro = table[macro_start:macro_end]
+        entries = []
+        for slot in (1653, 1667):
+            marker = f"ADD_RES(resources[{slot}],"
+            assert table.count(marker) == 1
+            start = table.index(marker)
+            entries.append(table[start:table.index(";", start) + 1])
+        low = (ROOT / "src/engine/render/LowResourceTable.cpp").read_text()
+        blocks = []
+        for resource_id in (0x2767, 0x2753):
+            marker = f"res->id = 0x{resource_id:x};"
+            assert low.count(marker) == 1
+            pos = low.index(marker)
+            start = low.rfind("    {", 0, pos)
+            end = low.index("    }", pos) + len("    }")
+            block = low[start:end]
+            assert "canvas->AddResource(res);" in block
+            blocks.append(block)
+        (Path(temp) / "level_resource_under_test.inc").write_text(
+            macro + "\nvoid registerSkyboxResources(AbyssEngine::PaintCanvas *canvas) {\n"
+            "    AbyssEngine::Resource *resources[1668]{};\n"
+            + "\n".join(entries)
+            + "\n    canvas->AddResource(resources[1653]);\n"
+            + "    canvas->AddResource(resources[1667]);\n"
+            + "\n".join(blocks)
+            + "\n}\n#undef ADD_RES\n"
+        )
+        string_source = (ROOT / "src/game/core/String.cpp").read_text()
+        (Path(temp) / "level_string_length_under_test.inc").write_text(
+            "using AbyssEngine::String;\n"
+            + function(string_source, "int String::GetStringLength(const char *s) {") + "\n"
+        )
         level = (ROOT / "src/game/world/Level.cpp").read_text()
         begin = level.index("void Level::createSpace() {")
         end = level.index("    int mode = this->missionPtr;", begin)
@@ -61,6 +96,8 @@ def main():
                 args.cxx, "-std=gnu++17", opt, "-ffunction-sections", "-fdata-sections",
                 "-Isrc", "-I", temp, "tools/level_skybox_asset_integration.cpp",
                 "src/engine/render/Mesh.cpp", "src/engine/math/Vector.cpp",
+                "src/engine/render/ResourceMesh.cpp",
+                "src/engine/render/ResourceTexture.cpp",
                 "-Wl,--gc-sections", "-o", str(exe),
             ], cwd=ROOT, check=True)
             subprocess.run([str(exe), str(root)], cwd=ROOT, check=True)

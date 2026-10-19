@@ -171,8 +171,8 @@ void Transform::SetAnimationRangeInTime(longlong first, longlong last) {
 struct PCResourceView {
     uint16_t id;
     uint8_t pad02[2];
-    int type;
-    int handle;
+    union { int type; int kind; };
+    union { int handle; int unused; };
     void *payload;
 };
 struct PCMeshInfoView { char *path; uint16_t matResId; };
