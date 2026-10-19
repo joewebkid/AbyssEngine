@@ -36,8 +36,10 @@ ARM GOT-confirmed `Globals` bytes instead of permanent zero-byte
 placeholders. An executable host gate checks all 152 ordered resource
 registrations across 96 flag/value cases at `-O0/-O2`. Original Android
 assets cover 152/152 unsuffixed and large-iPad variants, 150/152 `_ipad`
-and 148/152 `_ipad_1440` variants; missing-file handling and rendering
-remain untested. See [the portrait evidence](PORTRAITS_GLOBAL_FLAGS_ARM_2026-10-19.md).
+and 148/152 `_ipad_1440` variants. Original Android startup and
+`ImageFactory` instructions show that non-Retina tablets can request the
+two absent `_ipad` variants; whether the file service supplies a fallback
+or rendering fails remains untested. See [the portrait evidence](PORTRAITS_GLOBAL_FLAGS_ARM_2026-10-19.md).
 
 On the integrated revision, native `gof2` and 208/208 ARM units build;
 46 verifier tests pass (one existing skip). The focused resource,
