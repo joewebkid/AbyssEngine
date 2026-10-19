@@ -316,3 +316,36 @@ fuzzy is 75.0%/21.4%, against 75.0%/21.3% previously, still nonexact.
 The full corpus remains 4,323/4,524 compared, mean source-shape/
 strict fuzzy 93.87%/83.06%, 2,529 linked-exact and 1,076 byte-exact,
 with zero exact-pair losses.
+
+## Follow-up: ordinary non-Retina atlas package
+
+When `iPadHD=0` and `retinaDisplay=0`, ARM enters the ordinary texture
+path at `0x10ee40`. The nine consecutive `AddResource` calls through
+`0x10eff6` register IDs 11635/11637/11639/11643/11645/11641,
+10062/10002/27340 with the unsuffixed font, interface and credits
+paths; the logo path is specifically `gof2_logos_ipad2.aei`. The GOT
+load at `0x10effa`–`0x10f004` reads `Globals::iPad` through `0x21032c`.
+For `iPad=0`, ARM then registers six more records at `0x10f008`–
+`0x10f11c`: IDs 10089/10064/11632/27341/27342/27343, with
+`gof2_interface3.aei`, `gof2_items.aei`, `gof2_items_2.aei`,
+`gof2_challenge_interface.aei`, `gof2_campaign_select.aei` and
+`gof2_shop_button.aei` respectively. All fifteen named files exist in
+the local Android OBB extraction. This is source-backed resource
+selection; asset decoding and rendering of these fifteen records were
+not tested.
+
+The C++ now restores that default branch. The source-extracted host
+gate checks all fifteen ID/path pairs for non-iPad, the nine common
+records for iPad, and the HD/Retina cases at `-O0/-O2`. The iPad
+continuation at `0x10be20` selects further atlases and remains
+unrecovered, so nine common records are not the full iPad package.
+The initial GL prelude, later post-table resources, and complete
+`BuildResourceList` execution also remain outside this gate.
+Native `gof2` and 208/208 ARM units build; 45 verifier tests pass (one
+existing skip), and the selected original-asset gate remains green.
+Focused `BuildResourceList` source-shape/strict fuzzy changes from
+75.0%/21.4% to 75.4%/21.1%, still nonexact. The fuzzy decline is
+recorded rather than traded for an unconfirmed code form. The full
+corpus remains 4,323/4,524 compared, 93.87%/83.06% mean source-shape/
+strict fuzzy, 2,529 linked-exact and 1,076 byte-exact; comparison of
+the before/after exact-pair sets shows zero losses.

@@ -105,15 +105,32 @@ losses; mean source-shape/strict fuzzy is 93.87%/83.06%.
 The next platform-branch gate additionally checks the source-extracted
 `else if (Globals::retinaDisplay)` run when `iPadHD=0`: Retina enabled
 adds sixteen `iphone4` records, ending with shop-button ID 27343;
-Retina disabled adds none in this bounded gate. The original ARM
-branches to the default-resource path in the latter case, which is not
-yet included. Native `gof2`, 208/208 ARM units, the original-asset
+Retina disabled adds none in this earlier bounded gate. The original ARM
+branches to the default-resource path in the latter case, recovered in
+the following pass. Native `gof2`, 208/208 ARM units, the original-asset
 gate and 45 verifier tests pass; the table/branch gate passes at
 `-O0/-O2`.
 Focused `BuildResourceList` source-shape/strict fuzzy is 75.0%/21.4%,
 still nonexact. Full corpus coverage remains 4,323/4,524 with
 93.87%/83.06% mean source-shape/strict fuzzy, 2,529 linked-exact
 and 1,076 byte-exact; prior exact-pair losses are zero.
+
+The ordinary non-Retina branch is now included in the source-extracted
+table gate. With `iPadHD=0` and `retinaDisplay=0`, it registers nine
+common textures and another six when `iPad=0`. The gate checks all
+fifteen ordered ID/path pairs for non-iPad, the nine common pairs for
+iPad, and the previous HD/Retina branches at `-O0/-O2`. All fifteen
+files exist in the Android OBB extraction, but this gate neither
+decodes nor renders them. The iPad continuation at `0x10be20` and
+the rest of `BuildResourceList` still need recovery and execution.
+Native `gof2` and 208/208 ARM units build, the selected original-asset
+gate passes, and 45 verifier tests pass (one existing skip). See
+[the ARM evidence](BUILD_RESOURCE_LIST_GAPS_ARM_2026-10-19.md).
+Focused `BuildResourceList` source-shape/strict fuzzy changes from
+75.0%/21.4% to 75.4%/21.1%, still nonexact. The full corpus remains
+4,323/4,524 compared, with 93.87%/83.06% mean source-shape/strict
+fuzzy, 2,529 linked-exact and 1,076 byte-exact. Pairwise comparison
+with the preceding full report finds zero linked- or byte-exact losses.
 
 ## Level skybox canvas-to-loader gate (2026-10-19)
 

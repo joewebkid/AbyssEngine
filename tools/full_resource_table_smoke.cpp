@@ -60,28 +60,55 @@ int main() {
                        "data/assets/main/3d/meshes/fx/projectile_025_anim_add.aem") == 0);
     assert(static_cast<AbyssEngine::ResourceMesh *>(mesh->payload)->wResourceId == 24201);
 
+    struct TextureCase { unsigned short id; const char *path; };
+    const TextureCase ordinary[] = {
+        {11635, "data/textures/gof2_font_ar.aei"},
+        {11637, "data/textures/gof2_font_cht.aei"},
+        {11639, "data/textures/gof2_font_chs.aei"},
+        {11643, "data/textures/gof2_font_kr.aei"},
+        {11645, "data/textures/gof2_font_ja.aei"},
+        {11641, "data/textures/gof2_font_langselect.aei"},
+        {10062, "data/textures/gof2_interface.aei"},
+        {10002, "data/textures/gof2_logos_ipad2.aei"},
+        {27340, "data/textures/gof2_credits.aei"},
+        {10089, "data/textures/gof2_interface3.aei"},
+        {10064, "data/textures/gof2_items.aei"},
+        {11632, "data/textures/gof2_items_2.aei"},
+        {27341, "data/textures/gof2_challenge_interface.aei"},
+        {27342, "data/textures/gof2_campaign_select.aei"},
+        {27343, "data/textures/gof2_shop_button.aei"},
+    };
+    auto assertTexture = [&](unsigned int index, const TextureCase &expected) {
+        auto *resource = canvas.resources.data_[index];
+        assert(resource->id == expected.id && resource->kind == 2);
+        assert(std::strcmp(static_cast<AbyssEngine::ResourceTexture *>(resource->payload)->name,
+                           expected.path) == 0);
+    };
+
     Globals::iPadHD = 0;
     registerHdResources(&canvas);
-    assert(canvas.resources.count == 2488);
+    assert(canvas.resources.count == 2503);
+    for (unsigned int i = 0; i < 15; ++i)
+        assertTexture(2488 + i, ordinary[i]);
     Globals::iPadHD = 1;
     registerHdResources(&canvas);
-    assert(canvas.resources.count == 2500);
-    auto *hdFont = canvas.resources.data_[2488];
+    assert(canvas.resources.count == 2515);
+    auto *hdFont = canvas.resources.data_[2503];
     assert(hdFont->id == 11635 && hdFont->kind == 2);
-    auto *hdShop = canvas.resources.data_[2499];
+    auto *hdShop = canvas.resources.data_[2514];
     assert(hdShop->id == 27343 && hdShop->kind == 2);
     assert(std::strcmp(static_cast<AbyssEngine::ResourceTexture *>(hdShop->payload)->name,
                        "data/textures/gof2_shop_button_ipad_1440.aei") == 0);
 
     Globals::iPad = 1;
     registerHdResources(&canvas);
-    assert(canvas.resources.count == 2512);
+    assert(canvas.resources.count == 2527);
     Globals::retinaDisplay = 1;
     registerHdResources(&canvas);
-    assert(canvas.resources.count == 2532);
-    auto *largeInterface = canvas.resources.data_[2524];
+    assert(canvas.resources.count == 2547);
+    auto *largeInterface = canvas.resources.data_[2539];
     assert(largeInterface->id == 10089 && largeInterface->kind == 2);
-    auto *largeShop = canvas.resources.data_[2531];
+    auto *largeShop = canvas.resources.data_[2546];
     assert(largeShop->id == 27343 && largeShop->kind == 2);
     assert(std::strcmp(static_cast<AbyssEngine::ResourceTexture *>(largeShop->payload)->name,
                        "data/textures/gof2_shop_button_ipad_large.aei") == 0);
@@ -89,14 +116,21 @@ int main() {
     Globals::iPadHD = 0;
     Globals::iPad = 0;
     registerHdResources(&canvas);
-    assert(canvas.resources.count == 2548);
-    auto *phoneFont = canvas.resources.data_[2532];
+    assert(canvas.resources.count == 2563);
+    auto *phoneFont = canvas.resources.data_[2547];
     assert(phoneFont->id == 11635 && phoneFont->kind == 2);
-    auto *phoneShop = canvas.resources.data_[2547];
+    auto *phoneShop = canvas.resources.data_[2562];
     assert(phoneShop->id == 27343 && phoneShop->kind == 2);
     assert(std::strcmp(static_cast<AbyssEngine::ResourceTexture *>(phoneShop->payload)->name,
                        "data/textures/gof2_shop_button_iphone4.aei") == 0);
     Globals::retinaDisplay = 0;
     registerHdResources(&canvas);
-    assert(canvas.resources.count == 2548);
+    assert(canvas.resources.count == 2578);
+    for (unsigned int i = 0; i < 15; ++i)
+        assertTexture(2563 + i, ordinary[i]);
+    Globals::iPad = 1;
+    registerHdResources(&canvas);
+    assert(canvas.resources.count == 2587);
+    for (unsigned int i = 0; i < 9; ++i)
+        assertTexture(2578 + i, ordinary[i]);
 }

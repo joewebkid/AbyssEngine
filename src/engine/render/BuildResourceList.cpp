@@ -5320,6 +5320,42 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
             makeRes(27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_iphone4.aei", 0.0f)));
         canvas->AddResource(
             makeRes(27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button_iphone4.aei", 0.0f)));
+    } else {
+        // ARM 0x10ee40-0x10f004: ordinary atlases precede the iPad split.
+        canvas->AddResource(
+            makeRes(11635, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ar.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11637, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_cht.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11639, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_chs.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11643, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_kr.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11645, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ja.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11641, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_langselect.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(10062, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(10002, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_logos_ipad2.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(27340, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_credits.aei", 0.0f)));
+        // shortcut: the iPad continuation at ARM 0x10be20 still needs recovery before a full runtime gate.
+        if (!Globals::iPad) {
+            // ARM 0x10f008-0x10f11c: these six atlases are absent on iPad.
+            canvas->AddResource(
+                makeRes(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_2.aei", 0.0f)));
+            canvas->AddResource(makeRes(
+                27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button.aei", 0.0f)));
+        }
     }
     canvas->AddResource(
         makeRes(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface.aei", 0.0f)));

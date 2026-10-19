@@ -128,14 +128,28 @@ The non-HD Retina phone path now conditionally registers its sixteen
 `iphone4` texture records, including the previously omitted shop
 button ID 27343. All sixteen ARM IDs/paths have been checked in order.
 The bounded source-extracted gate also tests Retina on/off when
-`iPadHD=0` at `-O0/-O2`. The normal non-Retina path and subsequent
-resource packages remain incomplete.
+`iPadHD=0` at `-O0/-O2`. Subsequent resource packages remain incomplete.
 Native and 208/208 ARM units build, 45 verifier tests pass (one
 existing skip), and the original-asset and extended table gates pass
 at `-O0/-O2`. Focused `BuildResourceList` source-shape/strict fuzzy
 is 75.0%/21.4%, still nonexact. Full corpus coverage remains
 4,323/4,524, with 93.87%/83.06% mean source-shape/strict fuzzy,
 2,529 linked-exact and 1,076 byte-exact; zero exact-pair losses.
+
+The ordinary non-Retina branch now registers nine common texture
+records, then six more for non-iPad, in the ARM-confirmed order. All
+fifteen paths are present in the Android OBB extraction. The
+source-extracted table gate checks the IDs and paths at `-O0/-O2`;
+it does not decode or render these atlases. The separate iPad
+continuation at ARM `0x10be20`, later post-table resources and full
+`BuildResourceList` execution remain open. See the resource-list ARM
+note for the branch and GOT evidence.
+Native and 208/208 ARM units build; 45 verifier tests pass (one
+existing skip), and both the table and original-asset gates pass.
+Focused `BuildResourceList` source-shape/strict fuzzy changes from
+75.0%/21.4% to 75.4%/21.1%, nonexact. The full corpus remains
+4,323/4,524 compared with 93.87%/83.06% means, 2,529 linked-exact
+and 1,076 byte-exact; no prior exact pair was lost.
 
 ## Level skybox canvas-to-loader gate (2026-10-19)
 
