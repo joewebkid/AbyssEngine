@@ -27,6 +27,9 @@ Production `PaintCanvas::FindResource`, `MeshCreate` and `TextureCreate`
 now exercise resource-ID lookup, loader dispatch and cached handles for
 those assets. Resource records are fixture-owned, and material/GPU services
 remain bounded; full `Level::createSpace` is not joined to this host run.
+Focused source-shape/fuzzy from the unchanged ARM report: `FindResource`
+100%/100% byte-exact, resource `MeshCreate` 98.6%/86.7% nonexact, callback
+`TextureCreate` 95.5%/51.7% nonexact.
 `ImageCreateFromFile` now allocates `sizeof(Image)` instead of the ARM-only
 20-byte literal, preventing native x64 underallocation while preserving the
 ARM size. Native and 208/208 ARM TUs build. Focused `ImageCreateFromFile`

@@ -34,6 +34,13 @@ The texture upload service is a GPU boundary double which calls the real
 `ImageCreateFromFile`/`ImageRelease`, then issues a test texture ID.
 Therefore this is a canvas-to-parser handoff, not a GL upload or rendered
 skybox test.
+The unchanged production functions have these focused values in
+`level_skybox_asset_full_20261019.json`: `FindResource` 100% source-shape/
+100% fuzzy (byte-exact), resource `MeshCreate` 98.6%/86.7% (nonexact),
+callback `TextureCreate` 95.5%/51.7% (nonexact), and its convenience
+overload 100%/100% (linked-exact, not byte-exact). This canvas handoff
+changes tests only, so full-corpus coverage and exact counts stay at the
+values below.
 
 Android 2.0.16 `libgof2hdaa.so`, SHA-256
 `6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`,
