@@ -232,3 +232,34 @@ improves 74.9%/18.4% to 75.0%/21.2%, still nonexact. The full corpus
 compares 4,323/4,524 functions, with mean source-shape/strict fuzzy
 93.87%/83.06%, 2,529 linked-exact and 1,076 byte-exact. No prior
 exact pair was lost; 201 original functions remain missing.
+
+## Follow-up: iPadHD post-table resource branch
+
+After the 152 generic image entries, Android ARM reads a relocated
+`Globals::iPadHD` byte through GOT slot `0x21038c` at `0x10a25a`–
+`0x10a262`. A zero value branches to `0x10a6c4`, skipping the 1440
+texture package; a nonzero value constructs that package at
+`0x10a274`–`0x10a668`. The C++ tail had registered these textures
+unconditionally. It now guards the package with `iPadHD`.
+
+The last record in this branch was a null placeholder. ARM loads the
+PC-relative string `data/textures/gof2_shop_button_ipad_large.aei`
+at `0x10a656`–`0x10a65e`, sets resource ID 27343 at `0x10a664`, then
+uses the shared add-resource continuation at `0x10bf32`. The source
+now constructs that texture record with kind 2 and value 0. The file
+exists in the extracted Android assets.
+
+The bounded host gate source-extracts this branch in addition to the
+2,488-entry table: with `iPadHD=0` it adds no 1440 entries, and with
+`iPadHD=1` it appends 12 records and checks the first font and final
+shop-button path/ID. This exercises both outcomes at `-O0/-O2`.
+The later `retinaDisplay`, iPad-large, default-font and portrait
+branches are not reconstructed by this change; the complete
+`BuildResourceList` function remains unverified end to end.
+Native `gof2` and 208/208 ARM units build; 45 verifier tests pass (one
+existing skip), and both the selected original-asset gate and extended
+table/branch gate pass at `-O0/-O2`. Focused `BuildResourceList`
+source-shape/strict fuzzy stays 75.0%/21.2%, nonexact. Full corpus
+remains 4,323/4,524 compared, 93.87%/83.06% mean source-shape/strict
+fuzzy, 2,529 linked-exact and 1,076 byte-exact, with zero previous
+exact-pair losses.

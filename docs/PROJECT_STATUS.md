@@ -96,6 +96,20 @@ to 75.0%/21.2%, nonexact. The full corpus remains 4,323/4,524 compared,
 with mean 93.87%/83.06%, 2,529 linked-exact and 1,076 byte-exact;
 the previous exact-pair sets have zero losses.
 
+The first post-table platform branch now checks the ARM-confirmed
+`Globals::iPadHD` byte before registering its twelve 1440 textures;
+resource 27343 is restored from a null placeholder to the original
+shop-button path. A bounded host gate exercises both flag values at
+`-O0/-O2` after complete table registration. Later platform branches,
+the remaining post-table records and `Level::init` still need recovery
+and end-to-end execution. See the ARM resource-list note for addresses.
+Native and 208/208 ARM units build; 45 verifier tests pass (one existing
+skip), and the selected asset-backed and extended table gates pass at
+`-O0/-O2`. Focused `BuildResourceList` remains 75.0%/21.2%
+source-shape/strict fuzzy, nonexact. Full corpus remains 4,323/4,524
+compared, 93.87%/83.06% mean source-shape/strict fuzzy, 2,529
+linked-exact and 1,076 byte-exact; zero prior exact pairs are lost.
+
 ## Level skybox canvas-to-loader gate (2026-10-19)
 
 The two meshes and two textures selected by an ordinary system-index-4,

@@ -9,6 +9,7 @@
 #include "engine/render/Engine.h"
 #include "engine/core/ApplicationManager.h"
 #include "engine/render/PaintCanvas.h"
+#include "game/core/Globals.h"
 
 namespace AbyssEngine {
     struct Resource {
@@ -5243,28 +5244,31 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         canvas->AddResource(makeRes((unsigned short) (i + 5000), 3,
                                     newImage((unsigned short) (i + 10200), 0)));
 
-    canvas->AddResource(
-        makeRes(11635, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ar_1440.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11637, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_cht_1440.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11639, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_chs_1440.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11643, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_kr_1440.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11645, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ja_1440.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11641, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_langselect_1440.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(10062, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface_ipad_1440.aei", 0.0f)));
-    canvas->AddResource(makeRes(10002, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_logos_1440.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(27340, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_credits_1440.aei", 0.0f)));
-    canvas->AddResource(makeRes(
-        27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_ipad_1440.aei", 0.0f)));
-    canvas->AddResource(makeRes(
-        27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_ipad_1440.aei", 0.0f)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
+    if (Globals::iPadHD) {
+        canvas->AddResource(
+            makeRes(11635, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ar_1440.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11637, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_cht_1440.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11639, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_chs_1440.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11643, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_kr_1440.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11645, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ja_1440.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11641, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_langselect_1440.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(10062, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface_ipad_1440.aei", 0.0f)));
+        canvas->AddResource(makeRes(10002, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_logos_1440.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(27340, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_credits_1440.aei", 0.0f)));
+        canvas->AddResource(makeRes(
+            27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_ipad_1440.aei", 0.0f)));
+        canvas->AddResource(makeRes(
+            27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_ipad_1440.aei", 0.0f)));
+        canvas->AddResource(makeRes(
+            27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button_ipad_large.aei", 0.0f)));
+    }
     canvas->AddResource(
         makeRes(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3_ipad_large.aei", 0.0f)));
     canvas->AddResource(

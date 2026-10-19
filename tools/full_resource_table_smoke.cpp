@@ -13,12 +13,16 @@ class PaintCanvas {
 public:
     Array<Resource *> resources;
     void SetResourceList(Resource *const *list, unsigned int count);
+    void AddResource(Resource *resource) { ArrayAdd(resource, resources); }
 };
 }
+struct Globals { static unsigned char iPadHD; };
+unsigned char Globals::iPadHD;
 
 #include "full_resource_ctors_under_test.inc"
 #include "full_resource_table_under_test.inc"
 #include "full_resource_set_under_test.inc"
+#include "full_resource_hd_under_test.inc"
 
 int main() {
     AbyssEngine::PaintCanvas canvas;
@@ -49,4 +53,17 @@ int main() {
     assert(std::strcmp(static_cast<AbyssEngine::ResourceMesh *>(mesh->payload)->name,
                        "data/assets/main/3d/meshes/fx/projectile_025_anim_add.aem") == 0);
     assert(static_cast<AbyssEngine::ResourceMesh *>(mesh->payload)->wResourceId == 24201);
+
+    Globals::iPadHD = 0;
+    registerHdResources(&canvas);
+    assert(canvas.resources.count == 2488);
+    Globals::iPadHD = 1;
+    registerHdResources(&canvas);
+    assert(canvas.resources.count == 2500);
+    auto *hdFont = canvas.resources.data_[2488];
+    assert(hdFont->id == 11635 && hdFont->kind == 2);
+    auto *hdShop = canvas.resources.data_[2499];
+    assert(hdShop->id == 27343 && hdShop->kind == 2);
+    assert(std::strcmp(static_cast<AbyssEngine::ResourceTexture *>(hdShop->payload)->name,
+                       "data/textures/gof2_shop_button_ipad_large.aei") == 0);
 }

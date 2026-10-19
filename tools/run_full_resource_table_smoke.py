@@ -27,6 +27,8 @@ def main():
     end = source.index(end_marker, start) + len(end_marker)
     table = ("\n".join((prelude, "void buildResourceTable(AbyssEngine::PaintCanvas *canvas) {",
                         "    using namespace AbyssEngine;", source[start:end], "}")))
+    hd = "void registerHdResources(AbyssEngine::PaintCanvas *canvas) {\n" + \
+         function(source, "if (Globals::iPadHD) {") + "\n}\n"
 
     canvas = (ROOT / "src/engine/render/PaintCanvas.cpp").read_text()
     setter = canvas[canvas.index("void PaintCanvas::SetResourceList("):]
@@ -45,6 +47,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="full-resource-table-", dir=ROOT / "_work") as temp:
         temp_path = Path(temp)
         (temp_path / "full_resource_table_under_test.inc").write_text(table)
+        (temp_path / "full_resource_hd_under_test.inc").write_text(hd)
         (temp_path / "full_resource_set_under_test.inc").write_text(
             "namespace AbyssEngine {\n" + setter + "\n}\n")
         (temp_path / "full_resource_ctors_under_test.inc").write_text(constructors)
@@ -58,7 +61,7 @@ def main():
             if result.returncode:
                 raise RuntimeError("host compile failed:\n" + "\n".join(result.stderr.splitlines()[-20:]))
             subprocess.run([str(exe)], cwd=ROOT, check=True)
-    print("Full production resource table -> bulk canvas registration -O0/-O2: OK")
+    print("Full resource table and iPadHD branch -O0/-O2: OK")
 
 
 if __name__ == "__main__":

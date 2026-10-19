@@ -76,6 +76,18 @@ Focused `BuildResourceList` source-shape/strict fuzzy is 75.0%/21.2%
 93.87%/83.06% mean source-shape/strict fuzzy, 2,529 linked-exact,
 1,076 byte-exact, zero previous exact-pair losses.
 
+The first `iPadHD` post-table branch now runs in the full-table host gate
+at `-O0/-O2`: disabled adds zero 1440 resources, enabled adds twelve,
+including original ID 27343 and its shop-button path. The initial GL
+call, later platform branches, remaining post-table resources and
+`Level::init` are still outside this gate.
+Native and 208/208 ARM units build; 45 verifier tests pass (one existing
+skip), and the selected original-asset gate passes at `-O0/-O2`.
+Focused `BuildResourceList` is unchanged at 75.0%/21.2%
+source-shape/strict fuzzy, nonexact. Full corpus: 4,323/4,524
+compared, 93.87%/83.06% means, 2,529 linked-exact, 1,076 byte-exact,
+zero previous exact-pair losses.
+
 ## Level skybox canvas-to-loader gate (2026-10-19)
 
 The production `MeshCreateFromFile`/`MeshReadData` host smoke parses the
