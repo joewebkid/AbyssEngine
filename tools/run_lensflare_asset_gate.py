@@ -54,9 +54,8 @@ def prepare_flare(out, cxx, assets):
     source = (ROOT / "src/engine/render/BuildResourceList.cpp").read_text()
     platform = function(source, "inline AbyssEngine::Resource *makeRes(")
     platform += "\nvoid registerFlarePlatform(PaintCanvas *canvas) {\n"
-    platform += function(source, "if (Globals::iPadHD) {")
-    platform += function(source, "else if (Globals::retinaDisplay) {")
-    platform += function(source[source.index("else if (Globals::retinaDisplay) {"):], "else {")
+    platform += source[source.index("    // ARM platform tail begin:"):
+                       source.index("    // ARM platform tail end:")]
     platform += "\n}\n"
     (out / "lensflare_platform_under_test.inc").write_text(platform)
 
@@ -70,7 +69,7 @@ def prepare_flare(out, cxx, assets):
     gate = gate[:start] + '#include "lensflare_gate_services.inc"\n\n' + gate[end:]
     gate = replace_once(gate, '"level_station_traps.inc"', '"lensflare_traps.inc"')
     gate = replace_once(gate, "registerResources(&canvas);", "registerResources(&canvas);\n    registerFlarePlatform(&canvas);")
-    gate = replace_once(gate, "canvas.resources.size() == 2490", "canvas.resources.size() == 2505")
+    gate = replace_once(gate, "canvas.resources.size() == 2490", "canvas.resources.size() == 2724")
     gate = replace_once(gate, "checkManagers(*level, &canvas);", "checkGlBoundary(canvas);\n    checkManagers(*level, &canvas);")
     gate = gate.replace("LensFlare image boundary", "LensFlare -> TextureCreateFromFileIntern -> glGetError boundary")
     gate = replace_once(gate, "int main(int argc, char **argv)", "int stationEntryMain(int argc, char **argv)")

@@ -4,6 +4,32 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Combined HD-tail/LensFlare integration gate (2026-10-19)
+
+Native `gof2` and all 208 ARM translation units build. The verifier suite
+passes 52 tests with one pre-existing skip. The source-extracted resource
+gate compares all 256 flag combinations with the original ARM ELF at
+`-O0/-O2`. The continuous original-asset Level gate now includes the
+ordinary **234-record platform tail**, registers 2,724 resources total,
+and reaches production `TextureCreateFromFileIntern::glGetError` through
+`LensFlare`/`Image2DCreate` at both optimizations. It returns no texture,
+does not complete `LensFlare` or Level stage 0, and does not run a game or
+validate GLES. The separate cached-atlas CPU checks do not cross this
+continuous GPU boundary. See [HD-tail](BUILD_RESOURCE_HD_TAIL_ARM_2026-10-19.md)
+and [LensFlare](LENSFLARE_IMAGE2D_ENTRY_ARM_2026-10-19.md) evidence.
+
+The fresh combined full report is ignored at
+`_work/decomp_hd_lensflare_full_20261019.json` (SHA-256
+`8cc79a127547bbcdc11753b77639127cb661f6416c31111506ed68ff1233c802`).
+It compares 4,323/4,524 original functions in 4,731 pairs: 93.90% mean
+source-shape, 83.17% mean strict fuzzy, 2,545 linked-exact and 1,079
+byte-exact. Independent normalized `(unit, symbol)` set comparison with
+the prior integrated baseline gives zero lost and zero gained exact pairs.
+There are no skipped ARM units or wrong-type signatures. All 208 combined
+ARM objects are byte-identical to the corresponding object in at least one
+of the two isolated branches: 205 to both, `BuildResourceList.o` to the
+resource branch, `LensFlare.o` and `PaintCanvas.o` to the image branch.
+
 ## Combined station/iPad integration gate (2026-10-19)
 
 The integrated source has a green native `gof2` build and 208/208 ARM

@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-19 (station entry and ordinary iPad resource integration; older subsystem
+Last reviewed: 2026-10-19 (HD resource tail and LensFlare entry integration; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -13,20 +13,55 @@ executes after startup with real item, ship and agent-stock generation,
 including mission offers under a controlled RNG boundary. The next
 integration milestone is completing `Level::init` with real resources. A
 continuous host gate now executes its production constructor and `init`,
-registers the complete 2,488-entry table plus two low textures, and runs
-through `PlayerStation`, both jumpgates and `StarSystem` to the first
-unverified `LensFlare` image/GPU boundary. It checks 44 station collision
+registers the complete 2,488-entry table, two low textures and the
+ordinary 234-record platform tail, and runs through `PlayerStation`, both
+jumpgates, `StarSystem` and `LensFlare` to the first `glGetError` in the
+texture upload body. It checks 44 station collision
 volumes, 17 meshes, 15 transforms and 14 original files at `-O0/-O2`.
 Stage 0 has not returned, and the game is not running. A
 catalog-backed cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
 
+## HD resource tail and LensFlare image entry (2026-10-19)
+
+The Android ARM-backed resource tail now preserves the `iPadLarge` branch,
+five HD atlas records, 136 iPad or 107 non-iPad Image records, and 111 common
+records. A bounded host gate compares every ordered record with the ELF for
+256 flag combinations at `-O0/-O2`; all 91 unique texture paths exist in the
+original OBB. The whole `BuildResourceList` body remains nonexact:
+source-shape rises from 75.6% to 76.9%, while strict fuzzy falls from
+21.5% to 18.8%. See [the resource evidence](BUILD_RESOURCE_HD_TAIL_ARM_2026-10-19.md).
+
+`Image2DCreate` now uses the confirmed resource lookups and
+`TextureCreate(..., false)` output contract, corrects the Image2D layout,
+and enters the real texture upload path. The combined continuous host gate
+registers **2,724 resources** on the ordinary route (2,488 table, two low
+textures, 234 tail records) and stops at the first `glGetError` without
+claiming a created texture or a completed `Level::init`. A separate CPU
+gate checks nine flare regions in three original atlases only with an
+explicit cached-texture precondition. The 17-function family reaches 98.55%
+mean source-shape; `Image2DCreate` itself is 96.6% and `render2D` is 94.8%,
+neither exact. See [the image evidence](LENSFLARE_IMAGE2D_ENTRY_ARM_2026-10-19.md).
+
+On the combined tree, native `gof2`, 208/208 ARM translation units, the
+resource and continuous Level host gates at `-O0/-O2`, and 52 verifier tests
+(one existing skip) pass. The fresh full ARM corpus compares **4,323/4,524**
+original functions in 4,731 pairs, with **93.90%** mean source-shape,
+**83.17%** mean strict fuzzy, **2,545 linked-exact** and **1,079 byte-exact**.
+Against the previous integrated revision, the `(unit, symbol)` sets have
+zero exact-pair losses and zero gains; zero units are skipped or have a
+wrong-type signature. The ignored report is
+`_work/decomp_hd_lensflare_full_20261019.json` (SHA-256
+`8cc79a127547bbcdc11753b77639127cb661f6416c31111506ed68ff1233c802`).
+Real GLES upload, rendering, completion of Level stage 0 and ARM-device
+execution remain unverified.
+
 ## Station entry and ordinary iPad resources (2026-10-19)
 
 The station pass repairs source-backed inherited layout, geometry attachment,
-collision data and constructor branches; the continuous original-asset gate
-now stops explicitly at `Image2DCreate(0x508)`. Special station variants,
+collision data and constructor branches; at that revision the continuous
+original-asset gate stopped at `Image2DCreate(0x508)`. Special station variants,
 GPU services, `createPlayer`, later Level stages and an ARM device run remain
 untested. The `PlayerStation` constructor improves from 78.5% to 90.6%
 source-shape, while its strict fuzzy score falls from 24.9% to 23.4%; it is
@@ -40,7 +75,8 @@ in the original OBB and the host branch gate passes at `-O0/-O2` across
 64 flag combinations. The huge `BuildResourceList` function remains partial:
 focused source-shape/strict fuzzy improves 75.4%/21.1% to 75.6%/21.5%,
 not to 98%. The post-platform stream from `0x10bf46` and HD continuations
-are next. See [the iPad evidence](BUILD_RESOURCE_IPAD_TAIL_ARM_2026-10-19.md).
+were the next work at that revision. See
+[the iPad evidence](BUILD_RESOURCE_IPAD_TAIL_ARM_2026-10-19.md).
 
 On the combined revision, native `gof2`, all 208 ARM translation units,
 the station and resource host gates, and 49 verifier tests pass (one existing

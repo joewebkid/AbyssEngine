@@ -25,6 +25,8 @@ static void checkCachedAtlas(unsigned variant) {
     Globals::iPadHD = variant == 2;
     registerResources(&canvas);
     registerFlarePlatform(&canvas);
+    const size_t tailCounts[] = {234, 235, 231};
+    assert(canvas.resources.size() == 2490 + tailCounts[variant]);
     auto *resource = static_cast<Resource *>(canvas.FindResource(10062));
     assert(resource && resource->kind == 2 && resource->handle == -1);
     const char *paths[] = {"data/textures/gof2_interface.aei", "data/textures/gof2_interface_iphone4.aei",

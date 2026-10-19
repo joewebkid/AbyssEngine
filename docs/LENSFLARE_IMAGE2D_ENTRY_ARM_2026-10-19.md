@@ -65,10 +65,13 @@ LensFlare destructor/update, and the entire texture-upload body. The latter
 is namespaced only to separate it from the inherited skybox fixture service;
 its body is unchanged. Every other GL entry point aborts if reached.
 
-The existing complete platform branch is source-extracted after the 2,488
-records and two low skybox textures. Ordinary flags add 15 records, for
-**2,505 resources**. This matters: texture 10062 is not in the main table;
-testing the previous table alone would silently return for all flare IDs.
+The first platform records are source-extracted after the 2,488-entry table
+and two low skybox textures. On the original isolated branch, ordinary flags
+add 15 records, for **2,505 resources**. The integrated gate now extracts
+the entire recovered platform/post-platform tail: 234 ordinary records and
+**2,724 resources** total. This matters: texture 10062 is not in the main
+table; testing the previous table alone would silently return for all flare
+IDs. The larger registration gate still does not perform a GPU upload.
 
 Continuous measured chain:
 
