@@ -49,7 +49,7 @@ static GLuint sunShader(GLenum type, const char *source) {
     return shader;
 }
 
-static void checkSunMipPixels(GLuint texture, const unsigned char *bytes, unsigned length) {
+static std::vector<std::vector<unsigned char>> readMipPixels(GLuint texture, unsigned firstSide, unsigned levels) {
     // A fixture sampler pass, not a native game frame. Smaller viewport gives
     // the matching implicit mip LOD; nearest filtering avoids interpolation.
     GLuint vertex = sunShader(GL_VERTEX_SHADER,
@@ -63,7 +63,7 @@ static void checkSunMipPixels(GLuint texture, const unsigned char *bytes, unsign
     glUseProgram(program); glUniform1i(glGetUniformLocation(program, "image"), 0);
     GLuint output, fbo, vbo;
     glGenTextures(1, &output); glBindTexture(GL_TEXTURE_2D, output);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, firstSide, firstSide, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glGenFramebuffers(1, &fbo); glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, output, 0);
@@ -82,24 +82,14 @@ static void checkSunMipPixels(GLuint texture, const unsigned char *bytes, unsign
     glDisable(GL_BLEND); glDisable(GL_DEPTH_TEST); glDisable(GL_CULL_FACE);
     glDisable(GL_SCISSOR_TEST); glDisable(GL_DITHER);
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-    unsigned offset = 0, total = 0;
-    for (unsigned level = 0, side = 256; level < 9; ++level, side = std::max(1u, side / 2)) {
-        unsigned size = ((side + 3) / 4) * ((side + 3) / 4) * 8;
-        assert(offset + size <= length);
-        auto expected = decodeSunEtc(bytes + offset, side);
-        std::vector<unsigned char> actual(expected.size());
+    std::vector<std::vector<unsigned char>> pixels;
+    for (unsigned level = 0, side = firstSide; level < levels; ++level, side = std::max(1u, side / 2)) {
+        std::vector<unsigned char> actual(side * side * 4);
         glViewport(0, 0, side, side); glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         glReadPixels(0, 0, side, side, GL_RGBA, GL_UNSIGNED_BYTE, actual.data());
         assert(glGetError() == GL_NO_ERROR);
-        if (actual != expected) {
-            unsigned differences = 0;
-            for (unsigned i = 0; i < actual.size(); ++i) differences += actual[i] != expected[i];
-            std::fprintf(stderr, "ETC mip %u: %u mismatched bytes\n", level, differences);
-            assert(actual == expected);
-        }
-        total += unsigned(actual.size()); offset += size;
+        pixels.push_back(std::move(actual));
     }
-    assert(offset == length && total == 349524);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
     glDisableVertexAttribArray(0); glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -107,5 +97,20 @@ static void checkSunMipPixels(GLuint texture, const unsigned char *bytes, unsign
     glDeleteBuffers(1, &vbo); glDeleteFramebuffers(1, &fbo); glDeleteTextures(1, &output);
     glDeleteProgram(program); glDeleteShader(vertex); glDeleteShader(fragment);
     assert(glGetError() == GL_NO_ERROR);
+    return pixels;
+}
+
+static void checkSunMipPixels(GLuint texture, const unsigned char *bytes, unsigned length) {
+    auto pixels = readMipPixels(texture, 256, 9);
+    unsigned offset = 0, total = 0;
+    for (unsigned level = 0, side = 256; level < 9; ++level, side = std::max(1u, side / 2)) {
+        unsigned size = ((side + 3) / 4) * ((side + 3) / 4) * 8;
+        assert(offset + size <= length);
+        auto expected = decodeSunEtc(bytes + offset, side);
+        if (pixels[level] != expected) std::fprintf(stderr, "ETC mip %u mismatch\n", level);
+        assert(pixels[level] == expected);
+        total += unsigned(expected.size()); offset += size;
+    }
+    assert(offset == length && total == 349524);
     std::printf("Sun GPU sampling: 9 ETC1 mips / %u RGBA bytes match independent decoder\n", total);
 }

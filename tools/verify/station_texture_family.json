@@ -1,0 +1,11 @@
+{
+  "description": "Declared before edits: StarSystem C1, primary PaintCanvas TextureCreate, AEI parser and internal uploader, fixed from the sun baseline. C2 is an alias. No String/FileRead/Sol symbols.",
+  "target_source_shape": 98.0,
+  "canonical_pairs": [
+    ["game/world/StarSystem", "_ZN10StarSystemC1Ei"],
+    ["engine/render/PaintCanvas", "_ZN11AbyssEngine11PaintCanvas13TextureCreateEtPFvPNS_5ImageEPvES3_Rjb"],
+    ["engine/core/AbyssEngine", "_ZN11AbyssEngine19ImageCreateFromFileEPNS_6EngineEPKcPPNS_5ImageE"],
+    ["engine/core/AbyssEngine", "_ZN11AbyssEngine27TextureCreateFromFileInternEPNS_6EngineEPKcPFvPNS_5ImageEPvES6_PjfPNS_15AELoadedTextureEb"]
+  ],
+  "alias_pairs": [["game/world/StarSystem", "_ZN10StarSystemC2Ei"]]
+}

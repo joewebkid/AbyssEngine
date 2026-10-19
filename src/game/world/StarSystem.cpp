@@ -476,17 +476,19 @@ StarSystem::StarSystem(int mode) {
         int stationIndex = stationIds[i - 1];
         int currentStation = Globals::status->getStation()->getIndex();
         Station *station = loadedStations[i - 1];
-        uint32_t stationTex = station->getTextureIndex();
         if (stationIndex == currentStation) {
-            if (mode == 3 && Globals::status->getCurrentCampaignMission() == 0) {
+            // ARM 0x133f1c calls mission first; 0x133ff8 skips texture lookup.
+            if (Globals::status->getCurrentCampaignMission() == 0 && mode == 3) {
                 this->selectedStationSlot = i;
                 Globals::Canvas->TextureCreate((uint16_t) 0x273b,
                                        (*this->texturesArray)[i], false);
             } else {
+                uint32_t stationTex = station->getTextureIndex();
                 Globals::Canvas->TextureCreate(g_StarSystem_ctor_stationPlanetTextures[stationTex],
                                        (*this->texturesArray)[i], false);
             }
         } else {
+            uint32_t stationTex = station->getTextureIndex();
             Globals::Canvas->TextureCreate(g_StarSystem_ctor_stationTextures[stationTex],
                                    (*this->texturesArray)[i], false);
             if (Globals::status->orbitHasPlanetRing(station->getIndex()) != 0) {
