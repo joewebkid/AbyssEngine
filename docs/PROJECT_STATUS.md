@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-19 (portrait consumer and real GLES atlas integration; older subsystem
+Last reviewed: 2026-10-19 (String contract and station reader integration; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -15,12 +15,55 @@ integration milestone is completing `Level::init` with real resources. A
 continuous host gate registers 2,724 resources and runs through
 `PlayerStation`, both jumpgates and `LensFlare`, including a real GLES atlas
 upload and managed texture publication. It checks 44 station collision
-volumes, 17 meshes, 15 transforms and 18 original file opens at `-O0/-O2`
-on Windows and an Android ARMv7 device. Its explicit next boundary is
-`SolarSystem::getStations`; stage 0 has not returned, and the game is not
-running. A catalog-backed cross-system wanted path also runs.
+volumes, 17 meshes, 15 transforms and a real GLES atlas readback at `-O0/-O2`
+on Windows and an Android ARMv7 device. The extended gate crosses
+`SolarSystem::getStations` and the real station binary reader, then stops
+before the first sun texture upload. Stage 0 has not returned, and the game
+is not running. A catalog-backed cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## String contract and station binary entry (2026-10-19)
+
+`ResourceTexture(const String&, float)` now calls the actual
+`String::GetAEChar`, uses the stored String length rather than `strlen`,
+copies the full converted buffer and releases it. `GetAEChar` follows the
+original ARM low-byte conversion, including the stored terminal unit. The
+fixed three-symbol ResourceTexture/String family rose from **87.83% to 100%**
+mean source-shape and from **73.33% to 100%** strict fuzzy; all three are
+linked-exact, none byte-exact. An executable component check covers embedded
+zeroes, non-ASCII input, ownership, allocation lengths and float bits at
+`-O0/-O2`. See [the String contract evidence](RESOURCE_TEXTURE_STRING_ARM_2026-10-19.md).
+
+The continuous Level gate now reads original `stations.bin` through the real
+`FileRead::loadStationsBinary` path, obtains five Pan stations and allocates
+StarSystem arrays of six textures and five station indices. The Windows gate
+passes at `-O0/-O2` with 19 original file opens/closes and a byte-verified
+4,194,304-byte GPU atlas readback; the isolated Android ARMv7 gate also passes
+at both optimization levels. All 34 system catalogs / 135 station records
+were checked separately. The gate stops before `TextureCreate(10033)` for
+the sun: it neither completes StarSystem construction nor Level stage 0.
+The fixed three-logical-function station family is **90.87% → 90.77%**
+source-shape and **58.13% → 56.87%** strict fuzzy. This regression is recorded
+because the ARM-backed lifetime and global-pointer repairs improve the
+behavioral path without meeting the **98%** matching target. Later geometry,
+texture/ring handling, target-array allocation and cleanup remain unverified.
+See [the station evidence](STATION_BINARY_STAR_PREFIX_ARM_2026-10-19.md).
+
+On the combined tree, native `gof2`, **208/208 ARM units**, both new Windows
+gates at `-O0/-O2`, the previous portrait gate at `-O0/-O2`, and **63 verifier
+tests** (one existing skip) pass. The fresh full ARM corpus compares
+**4,323/4,524** original functions in **4,731 pairs**, with **93.91%** mean
+source-shape, **83.19%** mean strict fuzzy, **2,547 linked-exact** and
+**1,079 byte-exact**. Compared with the prior published main, the two gained
+linked-exact `(unit, symbol)` pairs are the ResourceTexture String constructor
+and `String::GetAEChar`; no linked-exact or byte-exact pair is lost. There are
+zero skipped units and wrong-type signatures. The retained local full report is
+`_work/decomp_string_station_full_20261019.json` (SHA-256
+`9a506a8757b3c2e96b7339ba746ee98a12f583ba34fc6f6baaf91786b2fc3db38`).
+Next priorities are the real sun texture and remaining StarSystem path, and a
+separate bounded String operation family. Neither a corpus percentage nor a
+successful fixture implies a playable native build.
 
 ## Portrait consumer and real GLES atlas (2026-10-19)
 
