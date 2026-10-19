@@ -80,6 +80,28 @@ every generated path against this inventory, including the six known absences.
 No fallback has been invented. The game/platform file service's handling of
 these missing variants still needs integration testing.
 
+## Reachability of missing tablet variants
+
+The original Android `OnCreateApplication` (`0xd0738`) loads device information
+and, before calling `BuildResourceList` at `0xd096c`, writes `iPadHD = 0`
+(`0xd091c`, GOT `0x21038c`), `iPad = dev.isPad` (`0xd0924`, GOT
+`0x21032c`), and `iPadLarge = dev.isPad ? retinaDisplay : 0` (`0xd091e`–
+`0xd092e`, GOT `0x2103f0`). These GOT slots are identified by
+`R_ARM_GLOB_DAT` relocations, not inferred from names. Consequently, a
+non-Retina Android tablet with `dev.isPad != 0` reaches the `_ipad` portrait
+suffix. The `_ipad_1440` branch is not reached through this Android
+initialization path because `iPadHD` is explicitly cleared; another platform
+or later write would require separate evidence.
+
+The original `ImageFactory::createChar(bool,int)` at `0x11c6f4` calls
+`AERandom::nextInt` for four portrait parts (`0x11c74a`–`0x11c75c`). The
+ARM-derived choice table gives race 4, part 2 five variants, with base image
+ID 5094. Thus choices 3 and 4 can request image IDs 5097 and 5098 and their
+texture resources 10297 and 10298, which name the two absent `_ipad` files.
+This is a reachable missing-asset risk in the supplied OBB, not proof of a
+crash: no end-to-end tablet run or alternate asset-provider behavior has been
+verified. The supplied Android APK contains no replacement texture atlases.
+
 ## Validation
 
 Commands run from the isolated checkout, with shared external
