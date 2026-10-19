@@ -142,11 +142,17 @@ public:
             int field_0x98;          // 0x98
         };
         Vector targetPos; // PlayerFixedObject target position, Android +0x90.
+        Vector cameraPosition; // PlayerStaticFar scratch, Android 0x11c326.
         Vector resetVecA;
     };
-    int field_0x9c;                  // 0x9c
-    int field_0xa0;                  // 0xa0
-    int field_0xa4;                  // 0xa4
+    union {
+        struct {
+            int field_0x9c;          // 0x9c
+            int field_0xa0;          // 0xa0
+            int field_0xa4;          // 0xa4
+        };
+        Vector objectPosition; // PlayerStaticFar scratch, Android 0x11c338.
+    };
     float rotationSpeed;             // 0xa8
     union { int type; int kind; }; // 0xac
     uint8_t _pad_0xb0;               // 0xb0

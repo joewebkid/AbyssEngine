@@ -20,10 +20,7 @@ class PlayerStaticFar : public PlayerStatic {
 public:
 
 
-    Player *player;
-    Vector initPosition;
-    Vector cameraPosition;
-    Vector objectPosition;
+    // Android 0x11c254: Player/position live in KIPlayer, not a second copy.
     Array<BoundingVolume *> *boundingVolumes;
     Vector viewDirection;
 
@@ -49,5 +46,11 @@ public:
 
     int collide(float x, float y, float z) override;
 };
+
+#if __SIZEOF_POINTER__ == 4
+static_assert(__builtin_offsetof(PlayerStaticFar, boundingVolumes) == 0x130, "far collision array");
+static_assert(__builtin_offsetof(PlayerStaticFar, viewDirection) == 0x134, "far view direction");
+static_assert(sizeof(PlayerStaticFar) == 0x140, "far player ARM size");
+#endif
 
 #endif

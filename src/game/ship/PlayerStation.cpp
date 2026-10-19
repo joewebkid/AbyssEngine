@@ -134,7 +134,7 @@ PlayerStation::PlayerStation(Station *station)
     this->posZ = 0;
     this->boundingVolumes = nullptr;
     this->field_0x25 = 0;
-    this->player->setMaxHitpoints(0x0161eb02);
+    this->player->setMaxHitpoints(9999999); // ARM literal at 0x121b9c.
     this->rootGeometry = nullptr;
     this->secondGeometry = nullptr;
     this->collisionRadius = 0;
@@ -145,35 +145,37 @@ PlayerStation::PlayerStation(Station *station)
     PaintCanvas *canvas = paintCanvas();
     Status *status = Status::gStatus;
 
-    Array<int> *collision;
-    {
-        FileRead reader;
-        collision = reader.loadStationCollision(stationIndex);
-    }
+    FileRead *reader = new FileRead();
+    Array<int> *collision = reader->loadStationCollision(stationIndex);
+    delete reader;
 
     bool alienOrbit = status->inAlienOrbit();
 
-    if ((uint32_t)(stationIndex - 0x6d) > 2 && collision == nullptr) {
+    if ((uint32_t)(stationIndex - 0x6d) >= 2 && collision == nullptr) {
         if (!alienOrbit) {
             this->rootGeometry = new AEGeometry((uint16_t) 0x4034, canvas, false);
-            AEGeometry child(0x4037, canvas, false);
-            this->rootGeometry->addChild(child.transform);
-            AEGeometry child2(0x403a, canvas, false);
-            this->rootGeometry->addChild(child2.transform);
-            FileRead reader;
-            collision = reader.loadStationCollision(0x3e8);
+            AEGeometry *child = new AEGeometry(0x4037, canvas, false);
+            this->rootGeometry->addChild(child->transform);
+            AEGeometry *child2 = new AEGeometry(0x403a, canvas, false);
+            this->rootGeometry->addChild(child2->transform);
+            delete child;
+            delete child2;
+            reader = new FileRead();
+            collision = reader->loadStationCollision(0x3e8);
+            delete reader;
         } else if (status->dlc1Won()) {
             this->rootGeometry = new AEGeometry((uint16_t) 0x4220, canvas, false);
             uint32_t t0, t1;
             canvas->TransformCreate(t0);
-            canvas->TransformAddMesh(t0, 0x4221, true);
+            canvas->TransformAddMesh(t0, 0x4221, false);
             this->rootGeometry->addChild(t0);
             t1 = 0xffffffff;
             canvas->TransformCreate(t1);
-            canvas->TransformAddMesh(t1, 0x4222, true);
+            canvas->TransformAddMesh(t1, 0x4222, false);
             this->rootGeometry->addChild(t1);
-            FileRead reader;
-            collision = reader.loadStationCollision(0x3eb);
+            reader = new FileRead();
+            collision = reader->loadStationCollision(0x3eb);
+            delete reader;
             AEGeometry *root = this->rootGeometry;
             AbyssEngine::Transform *t;
             t = (AbyssEngine::Transform *) canvas->TransformGetTransform(root->transform);
@@ -184,12 +186,15 @@ PlayerStation::PlayerStation(Station *station)
             t->Update(t->animationLength, false);
         } else {
             this->rootGeometry = new AEGeometry((uint16_t) 0x403b, canvas, false);
-            AEGeometry child(0x403e, canvas, false);
-            this->rootGeometry->addChild(child.transform);
-            AEGeometry child2(0x4041, canvas, false);
-            this->rootGeometry->addChild(child2.transform);
-            FileRead reader;
-            collision = reader.loadStationCollision(0x3e9);
+            AEGeometry *child = new AEGeometry(0x403e, canvas, false);
+            this->rootGeometry->addChild(child->transform);
+            AEGeometry *child2 = new AEGeometry(0x4041, canvas, false);
+            this->rootGeometry->addChild(child2->transform);
+            delete child;
+            delete child2;
+            reader = new FileRead();
+            collision = reader->loadStationCollision(0x3e9);
+            delete reader;
         }
     }
 
@@ -204,45 +209,72 @@ PlayerStation::PlayerStation(Station *station)
         SolarSystem *system = status->getSystem();
         uint32_t race = system == nullptr ? 9u : (uint32_t) system->getRace();
         stationIndex = this->stationIndex;
-        if (stationIndex == 0x65) {
+        // Android 0x121bbe/0x121cfa: the early 111 branch ends at mission 93.
+        // The separate late branch below starts after 94, not after 93.
+        if (stationIndex == 0x6f && status->getCurrentCampaignMission() <= 93) {
+            this->rootGeometry = new AEGeometry((uint16_t) 0x5254, canvas, false);
+            AEGeometry *child = new AEGeometry(0x5574, canvas, false);
+            this->rootGeometry->addChild(child->transform);
+            AEGeometry *child2 = new AEGeometry(0x563c, canvas, false);
+            this->rootGeometry->addChild(child2->transform);
+            AEGeometry *child3 = new AEGeometry(0x495d, canvas, false);
+            this->rootGeometry->addChild(child3->transform);
+            AEGeometry *child4 = new AEGeometry(0x495e, canvas, false);
+            this->rootGeometry->addChild(child4->transform);
+            delete child;
+            delete child2;
+            delete child3;
+            delete child4;
+        } else if (stationIndex == 0x65) {
             this->rootGeometry = new AEGeometry((uint16_t) 0x4220, canvas, false);
             uint32_t t0, t1;
             canvas->TransformCreate(t0);
-            canvas->TransformAddMesh(t0, 0x4221, true);
+            canvas->TransformAddMesh(t0, 0x4221, false);
             this->rootGeometry->addChild(t0);
             t1 = 0xffffffff;
             canvas->TransformCreate(t1);
-            canvas->TransformAddMesh(t1, 0x4222, true);
+            canvas->TransformAddMesh(t1, 0x4222, false);
             this->rootGeometry->addChild(t1);
             if (status->getCurrentCampaignMission() == 0x9d &&
                 status->getStation()->getIndex() == 0x70) {
                 uint32_t m0 = 0xffffffff, m1, m2;
                 canvas->TransformCreate(m0);
-                canvas->TransformAddMesh(m0, 0x4950, true);
+                canvas->TransformAddMesh(m0, 0x4950, false);
                 this->rootGeometry->addChild(m0);
                 m1 = 0xffffffff;
                 canvas->TransformCreate(m1);
-                canvas->TransformAddMesh(m1, 0x4952, true);
+                canvas->TransformAddMesh(m1, 0x4952, false);
                 this->rootGeometry->addChild(m1);
                 m2 = 0xffffffff;
                 canvas->TransformCreate(m2);
-                canvas->TransformAddMesh(m2, 0x4951, true);
+                canvas->TransformAddMesh(m2, 0x4951, false);
                 this->rootGeometry->addChild(m2);
+                AbyssEngine::Transform *t = (AbyssEngine::Transform *)
+                        canvas->TransformGetTransform(this->rootGeometry->transform);
+                t->Update(t->animationLength, false);
+            } else if (status->getCurrentCampaignMission() >= 80) {
+                AbyssEngine::Transform *t = (AbyssEngine::Transform *)
+                        canvas->TransformGetTransform(this->rootGeometry->transform);
+                t->Update(t->animationLength, false);
             }
         } else if ((uint32_t)(stationIndex - 0x6d) < 2 ||
                    (stationIndex == 0x6f && status->getCurrentCampaignMission() > 0x5e)) {
             this->rootGeometry = new AEGeometry((uint16_t) 0x4953, canvas, false);
-            AEGeometry child(0x4954, canvas, false);
-            this->rootGeometry->addChild(child.transform);
-            AEGeometry child2(0x4955, canvas, false);
-            this->rootGeometry->addChild(child2.transform);
-            AEGeometry child3(0x4956, canvas, false);
-            this->rootGeometry->addChild(child3.transform);
+            AEGeometry *child = new AEGeometry(0x4954, canvas, false);
+            this->rootGeometry->addChild(child->transform);
+            AEGeometry *child2 = new AEGeometry(0x4955, canvas, false);
+            this->rootGeometry->addChild(child2->transform);
+            AEGeometry *child3 = new AEGeometry(0x4956, canvas, false);
+            this->rootGeometry->addChild(child3->transform);
             if (collision != nullptr) {
                 delete collision;
             }
-            FileRead reader;
-            collision = reader.loadStaticCollision(stationIndex);
+            reader = new FileRead();
+            collision = reader->loadStaticCollision(2002); // Android 0x121eb8-0x121ebc.
+            delete reader;
+            delete child;
+            delete child2;
+            delete child3;
         } else if (stationIndex == 100) {
             int mission = status->getCurrentCampaignMission();
             bool dlcWon = status->dlc1Won();
@@ -277,20 +309,21 @@ PlayerStation::PlayerStation(Station *station)
                 if (collision != nullptr) {
                     delete collision;
                 }
-                FileRead reader;
-                collision = reader.loadStationCollision(0x3ed);
+                reader = new FileRead();
+                collision = reader->loadStationCollision(0x3ed);
+                delete reader;
             } else {
                 uint16_t lodMesh = 0x4226;
-                int lodDist = (int) 0xf72c2200;
+                int lodDist = 70000;
                 this->rootGeometry->setLodMeshes(&lodMesh, &lodDist, 1);
                 uint16_t lodChildMesh = 0x4227;
                 this->rootGeometry->setLodChildMeshes(&lodChildMesh);
             }
         } else if (race == 0 || race == 2 || race == 3) {
-            AEGeometry child((uint16_t)(stationIndex + 0x5528), canvas, false);
-            this->rootGeometry->addChild(child.transform);
-            AEGeometry child2((uint16_t)(this->stationIndex + 22000), canvas, false);
-            this->rootGeometry->addChild(child2.transform);
+            AEGeometry *child = new AEGeometry((uint16_t)(stationIndex + 0x5528), canvas, false);
+            this->rootGeometry->addChild(child->transform);
+            AEGeometry *child2 = new AEGeometry((uint16_t)(this->stationIndex + 22000), canvas, false);
+            this->rootGeometry->addChild(child2->transform);
             if (race == 3 && stationIndex == 0x6c) {
                 AEGeometry e0(0x5974, canvas, false);
                 this->rootGeometry->addChild(e0.transform);
@@ -305,6 +338,8 @@ PlayerStation::PlayerStation(Station *station)
                 this->rootGeometry->addChild(e3.transform);
                 this->animTransform3 = e3.transform;
             }
+            delete child;
+            delete child2;
         }
     }
 
@@ -321,35 +356,34 @@ PlayerStation::PlayerStation(Station *station)
             int type = data[cursor];
             if (type == 1) {
                 int *entry = data + cursor;
-                Vector c = {(float) entry[4], 0.0f, (float) entry[6]};
-                c.y = (float) entry[5];
-                c *= c.z;
-                (*volumes)[i] = new BoundingAAB(c.x + c.x, (float) entry[3], c.z + c.z,
-                                                (float) entry[2], c.y + c.y, (float) -data[next],
-                                                0.0f, 0.0f, 0.0f);
+                Vector c = {(float) entry[4], (float) entry[6], (float) entry[5]};
+                c *= alienOrbit ? 0.9f : 1.0f; // Android 0x1222c6-0x1223c0.
+                (*volumes)[i] = new BoundingAAB((float) -data[next], (float) entry[3],
+                                                (float) entry[2], 0.0f, 0.0f, 0.0f,
+                                                c.x + c.x, c.y + c.y, c.z + c.z);
                 next = cursor + 7;
             } else if (type == 0) {
                 int *entry = data + cursor;
-                float radius = (float) -data[next];
                 Vector c = {(float) entry[4], 0.0f, 0.0f};
-                c *= radius;
+                c *= alienOrbit ? 0.4f : 0.5f;
                 if (c.x < 0.0f) {
-                    c *= c.x;
+                    c *= -1.0f;
                 }
-                (*volumes)[i] = new BoundingSphere(c.x, (float) entry[3], (float) entry[2],
-                                                   radius, 0.0f, 0.0f, 0.0f);
+                (*volumes)[i] = new BoundingSphere((float) -data[next], (float) entry[3],
+                                                   (float) entry[2], 0.0f, 0.0f, 0.0f, c.x);
                 next = cursor + 5;
             }
             cursor = next;
         }
-        ArrayRemoveAll(*collision);
+        ArrayRelease(*collision); // Android 0x1223e2.
         delete collision;
     }
 
-    this->rootGeometry->setRotation(0.0f, 0.0f, 0.0f);
+    this->_pad_0x71 = 1; // Android 0x122400; flag meaning remains unconfirmed.
+    this->rootGeometry->setRotation(0.0f, 3.1415927f, 0.0f);
     AbyssEngine::Transform *transform =
             (AbyssEngine::Transform *) canvas->TransformGetTransform(this->rootGeometry->transform);
-    this->collisionRadius = (int) (transform->boundingRadius + 10.0f);
+    this->collisionRadius = (int) (transform->boundingRadius + 5000.0f);
 }
 
 int PlayerStation::outerCollide(float x, float y, float z) {

@@ -58,4 +58,12 @@ public:
     void translate(float x, float y, float z);
 };
 
+#if __SIZEOF_POINTER__ == 4
+static_assert(__builtin_offsetof(PlayerStation, rootGeometry) == 0x140, "station root");
+static_assert(__builtin_offsetof(PlayerStation, stationIndex) == 0x148, "station index");
+static_assert(__builtin_offsetof(PlayerStation, collisionRadius) == 0x154, "station radius");
+static_assert(__builtin_offsetof(PlayerStation, animTransform3) == 0x170, "station animation tail");
+static_assert(sizeof(PlayerStation) == 0x174, "station ARM size");
+#endif
+
 #endif

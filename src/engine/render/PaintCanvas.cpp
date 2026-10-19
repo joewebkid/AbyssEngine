@@ -2485,16 +2485,14 @@ void PaintCanvas::MaterialResourceChangeTexture(unsigned int resId,
 void PaintCanvas::TransformAddChild(unsigned int parent, unsigned int child) {
     unsigned int count = this->transformCount;
     if (parent != child && child < count && parent < count) {
-        char **arr = this->transforms;
-        PCTransformView *p = (PCTransformView *) arr[parent];
-        char *c = arr[child];
-        ArrayAdd<Transform *>((Transform *) c, *reinterpret_cast<Array<Transform *> *>(&p->childCount));
-        char **arr2 = this->transforms;
-        PCTransformView *p2 = (PCTransformView *) arr2[parent];
-        char *c2 = arr2[child];
-        paintcanvas_ext_child_link(&p2->bsphere, c2, p2);
-        char **arr3 = this->transforms;
-        return paintcanvas_ext_transform_dirty(arr3[parent]);
+        Transform *p = reinterpret_cast<Transform *>(this->transforms[parent]);
+        Transform *c = reinterpret_cast<Transform *>(this->transforms[child]);
+        ArrayAdd(c, p->children);
+        p = reinterpret_cast<Transform *>(this->transforms[parent]);
+        c = reinterpret_cast<Transform *>(this->transforms[child]);
+        p->bounds().Merge(*c);
+        // Android 0x7b348 -> veneer 0x19b2a8 -> CollectAnimationData.
+        return reinterpret_cast<Transform *>(this->transforms[parent])->CollectAnimationData();
     }
 }
 
@@ -2772,29 +2770,31 @@ void PaintCanvas::TransformAddMeshId(unsigned int transformIndex, unsigned int m
         meshIndex >= this->meshCount) {
         return;
     }
-    PCTransformView *tf = (PCTransformView *) (this->transforms)[transformIndex];
-    PCMeshView *mesh = (PCMeshView *) (this->meshes)[meshIndex];
-    ArrayAdd<AbyssEngine::Mesh *>((AbyssEngine::Mesh *) mesh->sub0,
-                                  *reinterpret_cast<::Array<AbyssEngine::Mesh *> *>(&tf->meshCount));
-    paintcanvas_ext_tami_bsphere_merge(&tf->bsphere, &mesh->bounds3c);
+    Transform *tf = reinterpret_cast<Transform *>(this->transforms[transformIndex]);
+    Mesh *mesh = reinterpret_cast<Mesh *>(this->meshes[meshIndex]);
+    // Android 0x7b1ee-0x7b1f8 adds the mesh itself, not its vertex stream.
+    ArrayAdd(mesh, tf->meshes);
+    tf = reinterpret_cast<Transform *>(this->transforms[transformIndex]);
+    mesh = reinterpret_cast<Mesh *>(this->meshes[meshIndex]);
+    tf->bounds().Merge(*reinterpret_cast<AEMath::BSphere *>(&mesh->boundsCenterX));
 
-    PCTransformView *res = (PCTransformView *) mesh->materialRes;
+    Transform *res = reinterpret_cast<Mesh *>(this->meshes[meshIndex])->animation;
     if (res != 0) {
-        long long resLen = res->animLength;
-        long long tfLen = tf->animLength;
+        long long resLen = res->animationLength;
+        long long tfLen = tf->animationLength;
         if (tfLen < resLen) {
-            paintcanvas_ext_tami_setanimlen(tf, (int) (resLen >> 32), (int) resLen);
-            tf = (PCTransformView *) (this->transforms)[transformIndex];
+            tf->SetAnimationLength(resLen);
+            tf = reinterpret_cast<Transform *>(this->transforms[transformIndex]);
         }
-        long long tfStart = tf->animStart;
-        PCTransformView *res2 = (PCTransformView *) mesh->materialRes;
-        long long resStart = res2->animStart;
+        long long tfStart = tf->rangeStart;
+        Transform *res2 = reinterpret_cast<Mesh *>(this->meshes[meshIndex])->animation;
+        long long resStart = res2->rangeStart;
         if (tfStart == 0 || resStart < tfStart) {
-            tf->animStart = resStart;
+            tf->rangeStart = resStart;
         }
-        paintcanvas_ext_tami_setanimstate(tf, 2, 0);
+        tf->SetAnimationState(static_cast<AnimationMode>(2), nullptr);
     }
-    paintcanvas_ext_tami_finalize((this->transforms)[transformIndex]);
+    reinterpret_cast<Transform *>(this->transforms[transformIndex])->CollectAnimationData();
 }
 
 AbyssEngine::String PaintCanvas::GetReverseString(AbyssEngine::String in) {

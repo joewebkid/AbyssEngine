@@ -25,8 +25,6 @@ void FModSound_playEvent(void *player, int event, int flags);
 static void **gCanvasPtr = nullptr;
 static void *const gAERandom = nullptr;
 static void *const gItemDb = nullptr;
-static unsigned KIPlayer_initA = 0;
-static unsigned KIPlayer_initB = 0;
 
 // Global item database handle layout. gItemDb points at a small descriptor
 // whose second pointer-sized slot holds the base of a contiguous table of
@@ -66,7 +64,7 @@ KIPlayer::KIPlayer(int faction, int group, Player *player, AEGeometry *geom,
     this->field_0xc8 = 0;
     this->spacePoints = 0;
 
-    bool haveChild = (geom != 0) && (geom->baseTransform != 0);
+    bool haveChild = (geom != 0) && active; // Android 0xa5844 tests the final argument.
     if (geom != 0 && haveChild) {
         this->parentGeometry = geom;
         AEGeometry *child = new AEGeometry((PaintCanvas *) PaintCanvas::gCanvas);
@@ -117,13 +115,14 @@ KIPlayer::KIPlayer(int faction, int group, Player *player, AEGeometry *geom,
 
     this->state = 0;
     this->field_0x10 = 0;
-    this->sleepFlag = 0x100;
+    this->sleepFlag = 0;
+    this->initActiveFlag = 1; // Halfword store at 0xa592c.
     this->field_0xbc = 0;
     this->field_0xc0 = 0xff;
     this->crateGeometry = 0;
-    this->rotationSpeed = KIPlayer_initB;
+    this->rotationSpeed = 5.0f;
     this->type = faction;
-    this->field_0x64 = KIPlayer_initA;
+    this->field_0x64 = 0x40066666;
 
     if (geom != 0) {
         geom->setPosition(x, y, z);
@@ -138,11 +137,12 @@ KIPlayer::KIPlayer(int faction, int group, Player *player, AEGeometry *geom,
     this->posZ = z;
     this->field_0x14 = 0;
     this->field_0x73 = 0;
+    this->field_0x74 = 0; // Halfword store at 0xa598a.
     this->field_0x76 = 0;
     this->engineSoundEvent = -1;
     this->field_0xfc = 0;
-    this->field_0x100 = 0x100;
-    (void) active;
+    this->field_0x100 = 0;
+    this->field_0x101 = 1; // Halfword store at 0xa5996.
 }
 
 KIPlayer::~KIPlayer() {

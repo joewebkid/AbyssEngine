@@ -3,6 +3,7 @@
 
 #include "Matrix.h"
 #include "Vector.h"
+#include "Transform.h"
 
 namespace AbyssEngine {
     namespace AEMath {
@@ -65,9 +66,8 @@ namespace AbyssEngine {
         }
 
         void BSphere::Merge(const Transform &t) {
-            const Matrix &worldMatrix = *reinterpret_cast<const Matrix *>(&t);
-            float boundingRadius = *reinterpret_cast<const float *>(
-                reinterpret_cast<const char *>(&t) + 0xe0);
+            const Matrix &worldMatrix = t.worldMatrix;
+            float boundingRadius = t.boundingRadius;
 
             Vector origin = {0.0f, 0.0f, 0.0f};
             Vector center = MatrixTransformVector(worldMatrix, origin);

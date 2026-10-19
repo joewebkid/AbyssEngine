@@ -4,7 +4,7 @@
 #include "engine/render/AEGeometry.h"
 
 PlayerStatic::PlayerStatic(int playerId, AEGeometry *geometry, float x, float y, float z)
-    : KIPlayer(playerId, -1, new Player(2000, 0, 0, 0, 0), geometry, x, y, z, true) {
+    : KIPlayer(playerId, -1, new Player(2000, 0, 0, 0, 0), geometry, x, y, z, false) {
     positionX = (int) x;
     positionY = (int) y;
     positionZ = (int) z;
