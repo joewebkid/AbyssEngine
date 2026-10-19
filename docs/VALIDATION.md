@@ -4,6 +4,27 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## StarSystem first non-selected planet (2026-10-20)
+
+Original Android ARM confirms the occupied-slot rejection loop,
+`nextInt(40)` double-precision scale, selected-station distance branch,
+pitch/yaw paths and optional final turn. The original-asset Level/GLES gate
+now executes the first non-selected planet on Windows SwiftShader and Android
+ARMv7 at `-O0/-O2`, checking slot 15, scale, pose, stored position and RNG
+state. Native `gof2`, ABI/lifetime smoke, **208/208** ARM units and **87
+verifier tests** pass with one previous skip. Constructor aliases change
+**78.1%/13.3% → 85.2%/19.2%** source-shape/strict fuzzy, nonexact. The
+complete corpus compares **4,323/4,524** originals in **4,735 pairs**,
+with **93.92%** mean source-shape, **83.20%** strict fuzzy, **2,551
+linked-exact** and **1,079 byte-exact**. Exact `(unit, symbol)` set
+comparison against the previous report finds zero gains or losses; skipped
+units and wrong-type signatures remain zero. The ignored full report is
+`C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/first-planet-full.json`
+(SHA-256 `aa1c18f1d31a2896618e2ba6a6498fb97bed7bd2f6d9754b3bc37918604872be`). The
+rejection retry and selected-station branch are not covered by this fixture;
+Level stage 0 remains incomplete. See
+[first-planet evidence](STARSYSTEM_FIRST_PLANET_ARM_2026-10-20.md).
+
 ## StarSystem first sun pose and normalize ABI (2026-10-20)
 
 The original-asset Level/GLES gate now executes the second RNG draw, first

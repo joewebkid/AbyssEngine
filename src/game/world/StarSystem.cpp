@@ -377,11 +377,6 @@ static const int g_StarSystem_ctor_sunSlotOverrides[14] = {
 };
 
 StarSystem::StarSystem(int mode) {
-    char usedSlots[0x60];
-    for (unsigned i = 0; i < sizeof(usedSlots); ++i) {
-        usedSlots[i] = 0;
-    }
-
     this->lightDirection.x = 0.0f;
     this->lightDirection.y = 0.0f;
     this->lightDirection.z = 0.0f;
@@ -512,12 +507,17 @@ StarSystem::StarSystem(int mode) {
     // ARM 0x1340b0-0x1340b8: wrap the product to 32 bits, then sign-extend.
     AERandom::gRandom->setSeed(static_cast<int32_t>(
         static_cast<uint32_t>(Globals::status->getStation()->getIndex()) * 300u));
+    // ARM 0x1340bc-0x1340cc: 24 four-byte occupancy entries, initialized after seeding.
+    uint32_t usedSlots[24] = {};
 
     int sunSlot = 0;
+    int lastOrbitSlot = 0;
     PlayerStatic **targets = (PlayerStatic **) flat_data(this->playerTargets);
     for (uint32_t i = 0; i < this->planetsArray->size(); ++i) {
         AEGeometry *geom = new AEGeometry((uint16_t) 0x1a70, Globals::Canvas, false);
         (*this->planetsArray)[i] = geom;
+        int orbitSlot = lastOrbitSlot;
+        bool selectedPlanet = false;
 
         if (i == 0) {
             // ARM 0x13410e-0x13420c: publish the first geometry before drawing the slot.
@@ -527,6 +527,8 @@ StarSystem::StarSystem(int mode) {
                 (((0x3a31u >> stationSunSlotIndex) & 1u) != 0)) {
                 sunSlot = g_StarSystem_ctor_sunSlotOverrides[stationSunSlotIndex];
             }
+            orbitSlot = sunSlot;
+            lastOrbitSlot = sunSlot;
             // ARM 0x13444a-0x134510: supernova scale depends on mission.
             float sunScale = this->supernovaSystem == 0 ? 0.2288818359375f :
                 (Globals::status->getCurrentCampaignMission() < 106 ?
@@ -543,33 +545,62 @@ StarSystem::StarSystem(int mode) {
                 Globals::Canvas->TextureCreate((uint16_t) 0x2dde,
                                        this->supernovaSunTexture, false);
             }
-            usedSlots[sunSlot * 4] = 1;
+            usedSlots[sunSlot] = 1;
         } else {
             PlayerStatic *player = new PlayerStatic(0, geom, 0.0f, 0.0f, 0.0f);
             targets[i - 1] = player;
-            int slot = AERandom::gRandom->nextInt(11) + 7;
-            usedSlots[slot * 4] = 1;
-            int dist = AERandom::gRandom->nextInt(0x4e20) + 0x4e20;
-            if (Globals::status->getCurrentCampaignMission() == 0) {
-                dist = (int) ((float) dist * 0.5f);
+            int stationId = (*this->stationIdxArray)[i - 1];
+            selectedPlanet = stationId == Globals::status->getStation()->getIndex();
+            if (!selectedPlanet) {
+                int slot;
+                int gap;
+                do {
+                    slot = AERandom::gRandom->nextInt(11) + 7;
+                    gap = slot - sunSlot;
+                    if (gap < 0) gap = -gap;
+                } while (gap < 3 || usedSlots[slot] != 0);
+                orbitSlot = slot;
+                lastOrbitSlot = slot;
+                // ARM 0x134286-0x1342be: the intermediate arithmetic is double.
+                int sizeJitter = AERandom::gRandom->nextInt(40);
+                float scale = static_cast<float>((0.800000011920929 +
+                    static_cast<double>(sizeJitter) * 0.01) * 0.03509521484375);
+                geom->setScaling(Vector{scale, scale, scale});
+                usedSlots[slot] = 1;
+            } else {
+                int dist = AERandom::gRandom->nextInt(0x4e20) + 0x4e20;
+                if (Globals::status->getCurrentCampaignMission() == 0)
+                    dist = (int) ((float) dist * 0.5f);
+                if (Globals::status->inPlanetRingOrbit() != 0) {
+                    dist = 26000;
+                } else {
+                    uint32_t textureIndex = Globals::status->getStation()->getTextureIndex();
+                    if (textureIndex <= 17 && ((0x21840u >> textureIndex) & 1u))
+                        dist = AERandom::gRandom->nextInt(15000) + 35000;
+                    else if (textureIndex <= 17 && ((0x10200u >> textureIndex) & 1u))
+                        dist = AERandom::gRandom->nextInt(13000) + 32500;
+                }
+                float scale = (float) dist * 0.001f;
+                this->planetScale = scale;
+                geom->setScaling(Vector{scale, scale, scale});
             }
-            float scale = (float) dist * 0.001f;
-            this->planetScale = scale;
-            geom->setScaling(Vector{scale, scale, scale});
         }
 
-        int angleSlot = (i == 0) ? sunSlot : (int) i + 6;
         float pitch = 0.0f;
-        float yaw = (float) (angleSlot * 0xaaa) * 0.001f;
-        if (i == 0) {
-            // ARM 0x134526-0x134574: one draw, then fixed-point pitch/yaw conversion.
+        float yaw = (float) (orbitSlot * 0xaaa) * 0.0000152587890625f * 0.2288818359375f;
+        if (i == 0 || !selectedPlanet) {
+            // ARM 0x134526-0x134574: sun and non-selected planets draw pitch.
             int pitchFixed = AERandom::gRandom->nextInt(0x1000) - 0x800;
             pitch = (float) pitchFixed * 0.0000152587890625f * 0.2288818359375f;
-            yaw = (float) (angleSlot * 0xaaa) * 0.0000152587890625f * 0.2288818359375f;
         }
         geom->setRotation(Vector{pitch, yaw, 0.0f});
         // ARM 0x13457c loads 0xc69c4000 (-20000.0f) for every orbit body.
         geom->moveForward(-20000.0f);
+        if (i != 0) {
+            bool turn = selectedPlanet ? sunSlot >= 12 :
+                (sunSlot <= orbitSlot || sunSlot - orbitSlot >= 12);
+            if (turn) geom->rotate(Vector{0.0f, 0.11444091796875f, 0.0f});
+        }
         if (i == 0) {
             this->lightDirection = geom->getDirection();
             this->lightDirection.x = -this->lightDirection.x;

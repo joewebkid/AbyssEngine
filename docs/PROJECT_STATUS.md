@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (StarSystem first sun pose; older subsystem
+Last reviewed: 2026-10-20 (StarSystem first planet; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -22,12 +22,30 @@ ETC1 sun and all five station-orbit RGBA textures through GLES, completes the
 five station-loop iterations and record cleanup, executes the real
 `AERandom::setSeed(2100)`, constructs the first geometry from the original
 `plane.aem`, draws sun slot 5, scales the sun and its streak, performs the
-second draw, rotates and places the first sun, and stops before the first
-non-sun planet.
+second draw, rotates and places the first sun, constructs the first
+non-selected station planet in slot 15, and stops before the second planet.
 Stage 0 has not returned, and the game is not running. A catalog-backed
 cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## StarSystem first non-selected planet (2026-10-20)
+
+Android ARM confirms the 24-word occupancy table, slot-rejection loop,
+separate selected-station distance branch, double-precision small-planet
+scale, pitch/yaw conversion and optional final turn. The production
+constructor now follows those branches. The original-asset Level/GLES gate
+executes the first non-selected planet, including real `PlayerStatic`, on
+Windows SwiftShader and Android ARMv7 at `-O0/-O2`: slot 15, scale and pose
+match the Pan RNG fixture. Native `gof2`, ABI/lifetime smoke, **208/208**
+ARM units and **87 verifier tests** (one pre-existing skip) pass. Constructor
+aliases rise **78.1%/13.3% → 85.2%/19.2%** source-shape/strict fuzzy, still
+nonexact. The full ARM corpus remains **4,323/4,524** originals in
+**4,735 pairs**, **93.92%** mean source-shape, **83.20%** strict fuzzy,
+**2,551 linked-exact** and **1,079 byte-exact**, with no exact pair losses.
+See [first-planet evidence](STARSYSTEM_FIRST_PLANET_ARM_2026-10-20.md).
+The rejection retry, selected-station overrides, later planets, complete
+StarSystem lifetime and Level stage 0 remain to be exercised.
 
 ## StarSystem first sun pose and normalize ABI (2026-10-20)
 
