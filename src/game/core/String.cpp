@@ -22,12 +22,16 @@ String::~String() {
 }
 
 char *String::GetAEChar() const {
-    unsigned int len = (unsigned int) this->length;
-    unsigned int n = len + 1;
-    char *out = new char[n];
-    for (unsigned int i = 0; i < len; i++)
-        out[i] = (char) (this->data[i] & 0xff);
-    out[len] = 0;
+    if (this->length != 0) {
+        unsigned int n = (unsigned int) this->length + 1;
+        char *out = new char[n];
+        // ARM 0x72768-0x72774 copies the low byte through data[length].
+        for (unsigned int i = 0; i != n; ++i)
+            out[i] = (char) this->data[i];
+        return out;
+    }
+    char *out = new char[1];
+    out[0] = 0;
     return out;
 }
 

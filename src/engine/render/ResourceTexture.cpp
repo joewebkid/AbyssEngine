@@ -11,12 +11,13 @@ namespace AbyssEngine {
     }
 
     ResourceTexture::ResourceTexture(const String &name, float value) {
-        char *utf8 = String_GetAEChar(const_cast<String *>(&name));
-        uint32_t len = String::GetStringLength(utf8);
+        char *bytes = name.GetAEChar();
+        // ARM 0x11b6e8 reads String+8 after conversion, not strlen(bytes).
+        uint32_t len = static_cast<uint32_t>(name.length);
         this->name = new char[len + 1U];
-        memcpy(this->name, utf8, len + 1U);
+        memcpy(this->name, bytes, len + 1U);
         this->value = value;
-        delete[] utf8;
+        delete[] bytes;
     }
 
     ResourceTexture::~ResourceTexture() {
