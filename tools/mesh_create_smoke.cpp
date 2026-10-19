@@ -165,9 +165,10 @@ struct PCResourceView {
 };
 struct PCMeshInfoView { char *path; uint16_t matResId; };
 namespace AbyssEngine {
+using Resource = ::PCResourceView;
 class PaintCanvas {
 public:
-    Array<PCResourceView *> resources;
+    Array<Resource *> resources;
     unsigned int meshCount = 0;
     unsigned int meshPad = 0;
     Mesh **meshes = nullptr;
@@ -176,6 +177,7 @@ public:
     Engine *engine = nullptr;
     unsigned short lastMaterialId = 0;
     void *FindResource(unsigned short id);
+    void AddResource(Resource *resource);
     void MeshCreate(unsigned short id, unsigned int &out, bool forceClone);
     void MaterialCreate(unsigned short id, unsigned int &) { lastMaterialId = id; }
 };
@@ -297,8 +299,8 @@ int main(int argc, char **argv) {
             {0x45bb, {0, 0}, 4, -1, &infos[0]},
             {0x458a, {0, 0}, 4, -1, &infos[1]},
         };
-        ArrayAdd(&resources[0], canvas.resources);
-        ArrayAdd(&resources[1], canvas.resources);
+        canvas.AddResource(&resources[0]);
+        canvas.AddResource(&resources[1]);
         const unsigned short ids[] = {0x45bb, 0x458a};
         for (int i = 0; i < 2; ++i) {
             std::ifstream file(argv[i + 1], std::ios::binary);

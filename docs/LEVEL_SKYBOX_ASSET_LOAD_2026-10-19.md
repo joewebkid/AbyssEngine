@@ -22,9 +22,10 @@ original bytes to production parsers. The texture files each contain two
 trailing bytes after the portion consumed by `ImageCreateFromFile`; the
 truncation test cuts the consumed payload, not that trailer.
 
-The next host gate runs production `PaintCanvas::FindResource` and
-`MeshCreate` for both mesh IDs, and production `FindResource` and both
-`TextureCreate` overloads for the corresponding texture IDs. Each path
+The next host gate runs production `PaintCanvas::AddResource`,
+`FindResource` and `MeshCreate` for both mesh IDs, and production
+`AddResource`, `FindResource` and both `TextureCreate` overloads for the
+corresponding texture IDs. Each path
 reaches the relevant production file parser, stores a resource handle,
 and reuses that handle on a second request without reopening the file.
 Fixture-owned resource records carry the exact IDs and paths from the
@@ -34,13 +35,24 @@ The texture upload service is a GPU boundary double which calls the real
 `ImageCreateFromFile`/`ImageRelease`, then issues a test texture ID.
 Therefore this is a canvas-to-parser handoff, not a GL upload or rendered
 skybox test.
+
+Android ARM `PaintCanvas::AddResource` at `0x77f84`–`0x77f8c` forwards
+the resource and `this+0x134` through a veneer to
+`ArrayAdd<Resource*>@plt` at `0x5fa30` (the defined specialization is at
+`0x77f90`). The recovered `AddResource` body was already linked-exact,
+but its synthetic `paintcanvas_ext_add_resource` target had no native
+implementation. That helper now performs the same `ArrayAdd`; it has no
+remaining undefined reference in the native `PaintCanvas` object. The
+asset-backed tests call the production `AddResource` body rather than
+adding records directly. Focused ARM remains 100% source-shape/fuzzy and
+linked-exact (not byte-exact).
 The unchanged production functions have these focused values in
 `level_skybox_asset_full_20261019.json`: `FindResource` 100% source-shape/
 100% fuzzy (byte-exact), resource `MeshCreate` 98.6%/86.7% (nonexact),
 callback `TextureCreate` 95.5%/51.7% (nonexact), and its convenience
-overload 100%/100% (linked-exact, not byte-exact). This canvas handoff
-changes tests only, so full-corpus coverage and exact counts stay at the
-values below.
+overload 100%/100% (linked-exact, not byte-exact). The canvas handoff
+first changed tests only; the later helper implementation changes the ARM
+symbol inventory as reported below.
 
 Android 2.0.16 `libgof2hdaa.so`, SHA-256
 `6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`,
@@ -52,17 +64,20 @@ actual requested allocation size.
 
 Native `gof2` and 208/208 ARM translation units build. All 40 verifier
 tests pass (one existing skip). Focused `ImageCreateFromFile` remains
-97.3% source-shape and 58.8% strict fuzzy, nonexact. The full ARM corpus
-compares 4,323/4,524 original functions, with 201 absent, 93.87% mean
-source-shape, 83.05% mean fuzzy, 2,528 linked-exact and 1,076 byte-exact.
-There are no exact-pair losses against
-`fog_parameter_full_20261019.json`; the new full report is
-`A:/Galaxy on Fire new version/_work/level_skybox_asset_full_20261019.json`.
+97.3% source-shape and 58.8% strict fuzzy, nonexact. The current full ARM
+corpus compares 4,323/4,524 original functions, with 201 absent,
+93.87% mean source-shape, 83.06% mean fuzzy, 2,529 linked-exact and
+1,076 byte-exact. Relative to
+`level_skybox_asset_full_20261019.json`, no exact pair was lost and
+`ArrayAdd<Resource*>` gained one linked-exact pair. One additional
+synthetic helper raises the extra-symbol count to 125; it is not an
+original game function. Current full report:
+`A:/Galaxy on Fire new version/_work/canvas_add_resource_full_20261019.json`.
 
 This gate proves that the exact four ordinary-orbit skybox files can be
 selected by the recovered canvas methods and parsed by the recovered mesh
 and image loaders. It does **not** yet prove production resource-table
-registration, material creation, GL texture upload, the complete
+construction, material creation, GL texture upload, the complete
 `Level::init` path, or `renderBG`. The next integration step is to connect
 the level selector and these canvas calls under one host run and identify
 the first failing service boundary without claiming a complete native

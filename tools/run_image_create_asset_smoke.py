@@ -34,7 +34,9 @@ def main():
         )
         canvas_source = (ROOT / "src/engine/render/PaintCanvas.cpp").read_text()
         canvas_bodies = "\n".join(function(canvas_source, signature) for signature in (
+            "void paintcanvas_ext_add_resource(void *resource, void *resources) {",
             "void *PaintCanvas::FindResource(unsigned short id) {",
+            "void PaintCanvas::AddResource(AbyssEngine::Resource *resource) {",
             "void PaintCanvas::TextureCreate(unsigned short resId, void (*callback)",
             "void PaintCanvas::TextureCreate(unsigned short id, unsigned int &out, bool flag) {",
         ))

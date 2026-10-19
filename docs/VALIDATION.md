@@ -10,18 +10,20 @@ The production `MeshCreateFromFile`/`MeshReadData` host smoke parses the
 two ordinary-orbit skybox meshes from Android OBB bytes. The production
 `ImageCreateFromFile` host smoke parses the corresponding two textures at
 `-O0/-O2`, checks host allocation size and rejects a truncated payload.
-The same asset-backed tests exercise production `PaintCanvas::FindResource`
-and resource-ID `MeshCreate`/`TextureCreate` calls, including cache reuse;
-fixture-owned resource records and bounded material/GPU services are explicit.
+The same asset-backed tests exercise production `PaintCanvas::AddResource`,
+`FindResource` and resource-ID `MeshCreate`/`TextureCreate` calls, including
+cache reuse; fixture-owned records and bounded material/GPU services are explicit.
 Native `gof2`, 208/208 ARM TUs and 40 verifier tests pass (one skip).
 Focused `ImageCreateFromFile` source-shape/strict fuzzy remains
 97.3%/58.8%, nonexact. See
 [the asset-loader evidence](LEVEL_SKYBOX_ASSET_LOAD_2026-10-19.md).
-These tests isolate the file service; they do not run production resource
-registration, GPU upload, full `Level::init`, or rendering.
-Full ARM corpus: 4,323/4,524 compared, 93.87%/83.05% mean source-shape/
-strict fuzzy, 2,528 linked-exact and 1,076 byte-exact with zero pair
-losses against the preceding report.
+Focused `AddResource` remains 100% source-shape/fuzzy and linked-exact.
+These tests isolate the file service; they do not run production resource-
+table construction, GPU upload, full `Level::init`, or rendering.
+Full ARM corpus: 4,323/4,524 compared, 93.87%/83.06% mean source-shape/
+strict fuzzy, 2,529 linked-exact and 1,076 byte-exact with zero pair
+losses against the preceding report. `ArrayAdd<Resource*>` gains one
+linked-exact pair; one synthetic helper raises extra symbols to 125.
 
 ## PaintCanvas fog parameter gate (2026-10-19)
 

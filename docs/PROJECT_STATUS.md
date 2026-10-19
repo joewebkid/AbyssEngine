@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-19 (Level skybox canvas-to-loader gate; older subsystem
+Last reviewed: 2026-10-19 (PaintCanvas resource registration gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -23,9 +23,12 @@ matching remains a separate polish metric, not the definition of completion.
 The two meshes and two textures selected by an ordinary system-index-4,
 texture-index-2 `createSpace` entry now pass their production mesh/image
 loaders using original Android OBB bytes at a host file-service boundary.
-Production `PaintCanvas::FindResource`, `MeshCreate` and `TextureCreate`
+Production `PaintCanvas::AddResource`, `FindResource`, `MeshCreate` and `TextureCreate`
 now exercise resource-ID lookup, loader dispatch and cached handles for
-those assets. Resource records are fixture-owned, and material/GPU services
+those assets. The ARM-backed `AddResource` shim now calls
+`ArrayAdd<Resource*>` and is no longer an undefined native reference.
+`AddResource` remains 100%/100% source-shape/fuzzy and linked-exact.
+Resource records are fixture-owned, and material/GPU services
 remain bounded; full `Level::createSpace` is not joined to this host run.
 Focused source-shape/fuzzy from the unchanged ARM report: `FindResource`
 100%/100% byte-exact, resource `MeshCreate` 98.6%/86.7% nonexact, callback
@@ -35,12 +38,13 @@ Focused source-shape/fuzzy from the unchanged ARM report: `FindResource`
 ARM size. Native and 208/208 ARM TUs build. Focused `ImageCreateFromFile`
 source-shape/strict fuzzy stays 97.3%/58.8%, nonexact. This is a parser
 gate, not an end-to-end `Level::init` or render gate. Next: connect the
-level selector, production resource registration and these canvas calls
+level selector, production resource-table construction and these canvas calls
 in one host run. See
 [the asset-loader evidence](LEVEL_SKYBOX_ASSET_LOAD_2026-10-19.md).
-Full ARM corpus remains 4,323/4,524 compared, 93.87%/83.05% mean
-source-shape/fuzzy, 2,528 linked-exact and 1,076 byte-exact with zero
-exact-pair losses.
+Full ARM corpus: 4,323/4,524 compared, 93.87%/83.06% mean
+source-shape/fuzzy, 2,529 linked-exact and 1,076 byte-exact with zero
+exact-pair losses. The `ArrayAdd<Resource*>` specialization gains one
+linked-exact pair; the synthetic helper raises extra symbols to 125.
 
 ## PaintCanvas fog parameters (2026-10-19)
 

@@ -69,7 +69,9 @@ if args.create_smoke:
     assert create_body in create_include.read_text()
     canvas_source = (root / 'src/engine/render/PaintCanvas.cpp').read_text()
     canvas_bodies = [extract(canvas_source, re.escape(signature) + r' \{') for signature in (
+        'void paintcanvas_ext_add_resource(void *resource, void *resources)',
         'void *PaintCanvas::FindResource(unsigned short id)',
+        'void PaintCanvas::AddResource(AbyssEngine::Resource *resource)',
         'void PaintCanvas::MeshCreate(unsigned short resId, unsigned int &out,\n                             bool forceClone)',
     )]
     (output / 'mesh_canvas_under_test.inc').write_text('\n'.join(canvas_bodies) + '\n')

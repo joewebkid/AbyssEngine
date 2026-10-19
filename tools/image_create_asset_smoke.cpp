@@ -79,11 +79,13 @@ struct PCResourceView {
 };
 struct PCTexInfoView { char *path; float value; };
 namespace AbyssEngine {
+using Resource = ::PCResourceView;
 class PaintCanvas {
 public:
-    Array<PCResourceView *> resources;
+    Array<Resource *> resources;
     Engine *engine = nullptr;
     void *FindResource(unsigned short id);
+    void AddResource(Resource *resource);
     void TextureCreate(unsigned short id, void (*callback)(Image *, void *),
                        void *userData, unsigned int &out, bool useCallbackLoader);
     void TextureCreate(unsigned short id, unsigned int &out, bool flag);
@@ -149,8 +151,8 @@ int main(int argc, char **argv) {
             {0x2767, {0, 0}, 2, -1, &infos[0]},
             {0x2753, {0, 0}, 2, -1, &infos[1]},
         };
-        ArrayAdd(&resources[0], canvas.resources);
-        ArrayAdd(&resources[1], canvas.resources);
+        canvas.AddResource(&resources[0]);
+        canvas.AddResource(&resources[1]);
         const unsigned short ids[] = {0x2767, 0x2753};
         for (int i = 0; i < 2; ++i) {
             std::ifstream file(argv[i + 1], std::ios::binary);

@@ -541,7 +541,10 @@ unsigned short *paintcanvas_ext_gla_str_index(const void *s, int i);
 
 void paintcanvas_ext_gla_str_assign(void *dst, void *src);
 
-void paintcanvas_ext_add_resource(void *, void *);
+void paintcanvas_ext_add_resource(void *resource, void *resources) {
+    ArrayAdd(static_cast<AbyssEngine::Resource *>(resource),
+             *static_cast<::Array<AbyssEngine::Resource *> *>(resources));
+}
 
 void paintcanvas_ext_remove_meshid(void *, void *);
 
