@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-19 (String contract and station reader integration; older subsystem
+Last reviewed: 2026-10-19 (String float and ETC1 sun integration; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -17,11 +17,57 @@ continuous host gate registers 2,724 resources and runs through
 upload and managed texture publication. It checks 44 station collision
 volumes, 17 meshes, 15 transforms and a real GLES atlas readback at `-O0/-O2`
 on Windows and an Android ARMv7 device. The extended gate crosses
-`SolarSystem::getStations` and the real station binary reader, then stops
-before the first sun texture upload. Stage 0 has not returned, and the game
-is not running. A catalog-backed cross-system wanted path also runs.
+`SolarSystem::getStations` and the real station binary reader, uploads the
+ETC1 sun through GLES, then stops before the first station texture upload.
+Stage 0 has not returned, and the game is not running. A catalog-backed
+cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Float String mode and first ETC1 sun upload (2026-10-19)
+
+Raw Android ARM at `0x72cce–0x72cd6` passes mode **1**, not 0, to
+`computeFloatString` from `String::Set(float)`. The corrected caller uses ten
+significant digits; the float constructor also follows the original direct
+Set call without a redundant length store. The fixed two-logical-function
+family rises from **96.95% to 98.35%** mean source-shape and from **81.10% to
+84.15%** strict fuzzy. The constructor becomes linked-exact; Set itself is
+**96.7%/68.3%** and nonexact. Production-body tests cover eight finite inputs
+at `-O0/-O2`; controlled helper cases check argument bits, exponent/sign
+assembly and ownership without claiming numerical handling of NaN, infinity
+or out-of-int-range floats. The corrected legacy ABI smoke and prior
+ResourceTexture/String gate pass. See [the float evidence](STRING_FLOAT_FAMILY_ARM_2026-10-19.md).
+
+The continuous Level gate now crosses the first StarSystem sun request:
+resource 10033 loads the original 256×256 ETC1 texture through the actual
+uploader, publishes managed index 1, and advances to the next boundary
+**before station TextureCreate(10014)**. At `-O0/-O2`, Windows SwiftShader and
+Android Adreno 618 both match all nine sun mip levels against an independent
+decoder (**349,524 RGBA bytes**), after the earlier 4,194,304-byte atlas
+readback. The three StarSystem texture-ID tables now use the ARM-confirmed
+four-byte stride. The predeclared four-function sun family stays at **90.55%**
+mean source-shape (**48.125%** strict fuzzy), below the 98% target. The
+installed Windows ANGLE/D3D11 backend does not advertise ETC1 and fails this
+gate; no format substitution or fake GPU success was accepted. StarSystem
+construction, later station textures, target-array sizing, float placement,
+`Level::init` stage 0 and a native game frame remain unverified. See
+[the sun evidence](SUN_ETC1_STARSYSTEM_ARM_2026-10-19.md).
+
+On the combined tree, native `gof2`, the ABI smoke, both bounded String gates,
+the real Windows and Android sun gates at `-O0/-O2`, all **208/208 ARM units**,
+and **69 verifier tests** (one existing skip) pass. The fresh full ARM corpus
+compares **4,323/4,524** original functions in **4,731 pairs**, with **93.91%**
+mean source-shape, **83.19%** mean strict fuzzy, **2,548 linked-exact** and
+**1,079 byte-exact**. Against the prior integrated revision, the only gained
+linked-exact `(unit, symbol)` pair is `String(float)` C2; no linked- or
+byte-exact pair is lost. The only changed ARM objects among 208 are `String.o`
+and `StarSystem.o`, each byte-identical to its isolated branch output. Skipped
+units and wrong-type signatures remain zero. The retained local report is
+`_work/decomp_float_sun_full_20261019.json` (SHA-256
+`ec8ea688f4a0dbd3603d001baf415a54aabeac0bdd744e9a78a5ff1a0f4b8b33`).
+Next priority is the station texture and remaining StarSystem constructor
+path, followed by `Level::createPlayer` and stage-0 return; none is yet a
+playable native build.
 
 ## String contract and station binary entry (2026-10-19)
 
@@ -61,9 +107,9 @@ and `String::GetAEChar`; no linked-exact or byte-exact pair is lost. There are
 zero skipped units and wrong-type signatures. The retained local full report is
 `_work/decomp_string_station_full_20261019.json` (SHA-256
 `9a506a8757b3c2e96b7339ba746ee98a12f583ba34fc6f6baaf91786b2fc3db38`).
-Next priorities are the real sun texture and remaining StarSystem path, and a
-separate bounded String operation family. Neither a corpus percentage nor a
-successful fixture implies a playable native build.
+At that revision, next priorities were the real sun texture, remaining
+StarSystem path and a separate bounded String family. Neither a corpus
+percentage nor a successful fixture implies a playable native build.
 
 ## Portrait consumer and real GLES atlas (2026-10-19)
 
@@ -2285,9 +2331,10 @@ remain unverified. See [the object-composition audit](STRING_FLOAT_SET_OBJECT_AR
 
 Android ARM `AbyssEngine::computeFloatString` (`0x72af8–0x72ca4`)
 returns a 33-unit UTF-16 allocation and reports exponent/sign through
-output pointers. `String::Set(float)` calls it with precision 10 and
-mode 0. The recovered helper previously returned `void` and the caller
-used an undefined four-argument symbol; both now use the observed
+output pointers. `String::Set(float)` calls it with precision 10 and mode 1
+in the original ARM; the historical local source passed mode 0 until the
+2026-10-19 correction above. The recovered helper previously returned `void`
+and the caller used an undefined four-argument symbol; both now use the observed
 five-argument contract. The fractional exponent initialization was
 corrected from the ARM instructions.
 

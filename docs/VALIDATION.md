@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Combined String float and ETC1 sun gate (2026-10-19)
+
+The source-backed float caller now passes helper mode 1; `String(float)` C2
+becomes linked-exact. The original ETC1 sun is uploaded through GLES on
+Windows SwiftShader and Android Adreno 618 at `-O0/-O2`, with all nine mip
+levels independently checked. The continuous gate stops before station
+`TextureCreate(10014)`; it does not complete StarSystem or Level stage 0.
+Native `gof2`, the ABI smoke, two bounded String gates, **208/208 ARM units**
+and **69 verifier tests** (one previous skip) pass. The full corpus compares
+**4,323/4,524** originals in **4,731 pairs**: **93.91%** mean source-shape,
+**83.19%** strict fuzzy, **2,548 linked-exact**, **1,079 byte-exact**, zero
+lost exact pairs, zero skipped units and zero wrong-type signatures. The
+ignored report `_work/decomp_float_sun_full_20261019.json` has SHA-256
+`ec8ea688f4a0dbd3603d001baf415a54aabeac0bdd744e9a78a5ff1a0f4b8b33`.
+See [the float](STRING_FLOAT_FAMILY_ARM_2026-10-19.md) and
+[sun](SUN_ETC1_STARSYSTEM_ARM_2026-10-19.md) evidence for branch-specific
+checks, failed 98% sun family target and remaining semantic limits.
+
 ## Combined HD-tail/LensFlare integration gate (2026-10-19)
 
 Native `gof2` and all 208 ARM translation units build. The verifier suite
@@ -2044,7 +2062,9 @@ extras**, zero skipped and no losses in the **2,499 linked-exact /
 ## String float digit helper and call contract (2026-10-15)
 
 `AbyssEngine::computeFloatString` now returns the ARM-observed owned UTF-16
-buffer and `String::Set(float)` calls its five-argument symbol with mode 0.
+buffer. At this historical gate, the local `String::Set(float)` called its
+five-argument symbol with mode 0; later raw ARM verification established
+mode 1 and the 2026-10-19 String float pass corrected that caller.
 The production-body ABI smoke checks positive, negative, zero and fractional
 values. Native `gof2`, standalone String reverse check, **206/206** ARM units
 and **37** verifier tests (one skip) pass. Focused helper source-shape/strict
