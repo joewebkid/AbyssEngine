@@ -24,4 +24,13 @@ public:
     void update(int);
 };
 
+#if __SIZEOF_POINTER__ == 4
+#include <cstddef>
+static_assert(sizeof(LensFlare) == 0x14, "LensFlare size");
+static_assert(offsetof(LensFlare, canvas) == 0x4, "LensFlare.canvas");
+static_assert(offsetof(LensFlare, width) == 0x8, "LensFlare.width");
+static_assert(offsetof(LensFlare, height) == 0xc, "LensFlare.height");
+static_assert(offsetof(LensFlare, images) == 0x10, "LensFlare.images");
+#endif
+
 #endif

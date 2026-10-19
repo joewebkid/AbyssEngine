@@ -88,7 +88,7 @@ def prepare(out, cxx, asset_root):
     return out
 
 
-def compile_gate(out, cxx, opt):
+def compile_gate(out, cxx, opt, fixture="tools/level_station_asset_gate.cpp"):
     exe = out / f"level_station_asset_{opt[1:]}.exe"
     sources = [
         "engine/render/Mesh", "engine/math/Vector", "engine/math/Matrix", "engine/math/AEMath",
@@ -100,8 +100,8 @@ def compile_gate(out, cxx, opt):
         "game/ship/PlayerJumpgate",
     ]
     subprocess.run([cxx, "-std=gnu++17", opt, "-ffunction-sections", "-fdata-sections",
-                    "-Isrc", "-Ithird_party/jni", "-Itools", "-I", str(out),
-                    "tools/level_station_asset_gate.cpp", *[f"src/{s}.cpp" for s in sources],
+                    "-Isrc", "-Ithird_party/jni", "-Ithird_party/gl", "-Itools", "-I", str(out),
+                    fixture, *[f"src/{s}.cpp" for s in sources],
                     "-Wl,--gc-sections", "-o", str(exe)], cwd=ROOT, check=True)
     return exe
 

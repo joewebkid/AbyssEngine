@@ -20,7 +20,9 @@ LensFlare::LensFlare(PaintCanvas *canvas) {
 }
 
 LensFlare::~LensFlare() {
-    delete[] this->images;
+    // ARM 0x11d076 calls scalar operator delete for the handle buffer.
+    if (this->images)
+        ::operator delete(this->images);
     this->images = nullptr;
 }
 

@@ -15,6 +15,7 @@
 // ARM MeshCloneMaterial calls the specialization defined in Array.cpp.
 extern template void ArrayAdd<AbyssEngine::Material *>(AbyssEngine::Material *, Array<AbyssEngine::Material *> &);
 extern template void ArrayAdd<AbyssEngine::Camera *>(AbyssEngine::Camera *, Array<AbyssEngine::Camera *> &);
+extern template void ArrayAdd<AbyssEngine::Image2D *>(AbyssEngine::Image2D *, Array<AbyssEngine::Image2D *> &);
 extern template void ArrayAdd<AbyssEngine::Resource *>(AbyssEngine::Resource * const *, unsigned int,
                                                         Array<AbyssEngine::Resource *> &);
 
@@ -56,7 +57,7 @@ struct PCImage2DView {
     void *mesh;          // +0x00
     union {
         uint32_t textureId; // +0x04
-        void *regionPtr;    // +0x04 (same word reinterpreted as a region record)
+        uint32_t regionPtr; // +0x04 (legacy pointer interpretation; still a 32-bit word)
     };
     uint16_t regionA;    // +0x08
     uint16_t regionB;    // +0x0a
@@ -66,6 +67,9 @@ struct PCImage2DView {
     uint16_t height;     // +0x12
     uint8_t restoreFlag; // +0x14
 };
+static_assert(sizeof(PCImage2DView) == sizeof(AbyssEngine::Image2D), "Image2D overlay size");
+static_assert(offsetof(PCImage2DView, width) == offsetof(AbyssEngine::Image2D, sizeX), "Image2D overlay width");
+static_assert(offsetof(PCImage2DView, restoreFlag) == offsetof(AbyssEngine::Image2D, restoreFlag), "Image2D overlay restore");
 
 // Region record reached via PCImage2DView::textureId reinterpreted as a pointer
 // (i.e. *(char**)(img+4)).  Floats at +0x0c (width) and +0x1c (height).
@@ -550,7 +554,6 @@ void paintcanvas_ext_add_resource(void *resource, void *resources) {
 
 void paintcanvas_ext_remove_meshid(void *, void *);
 
-int paintcanvas_ext_get_height(void *);
 
 void paintcanvas_ext_gl_a(unsigned int);
 
@@ -719,11 +722,6 @@ void paintcanvas_ext_dtor_str_dtor(void *p);
 
 void paintcanvas_ext_dtor_meshrelease(void *eng, void *meshptr);
 
-void *paintcanvas_ext_i2d_findres(void *self, unsigned short id);
-
-void paintcanvas_ext_i2d_texcreate(void *self, unsigned short id, bool b);
-
-int paintcanvas_ext_i2d_imgregion(void *eng, char *path, unsigned short region, void *img);
 
 void paintcanvas_ext_di_restore(unsigned int flag, void *img);
 
@@ -905,7 +903,6 @@ void paintcanvas_ext_tg2di_inner(void *out, void *self, void *childtf, int x, in
 
 void paintcanvas_ext_font_set_spacing(void *, int);
 
-int paintcanvas_ext_get_width(void *);
 
 static inline int pc_GetWidth(AbyssEngine::PaintCanvas *self) { return self->GetWidth(); }
 static inline int pc_GetHeight(AbyssEngine::PaintCanvas *self) { return self->GetHeight(); }
@@ -1943,7 +1940,7 @@ void PaintCanvas::TransformRemoveMeshId(unsigned int transformIndex, unsigned in
 }
 
 int PaintCanvas::GetHeight() {
-    return paintcanvas_ext_get_height(this->engine);
+    return this->engine->GetDisplayHeight();
 }
 
 void PaintCanvas::ChangeCubeTexture(unsigned int idx) {
@@ -3107,32 +3104,33 @@ PaintCanvas::~PaintCanvas() {
 
 
 void PaintCanvas::Image2DCreate(unsigned short resId, unsigned int &out) {
-    PCResourceView *res = (PCResourceView *) paintcanvas_ext_i2d_findres(this, resId);
+    PCResourceView *res = (PCResourceView *) this->FindResource(resId);
     if (res == 0) {
         return;
     }
     unsigned short *info = (unsigned short *) res->payload;
-    PCResourceView *texres = (PCResourceView *) paintcanvas_ext_i2d_findres(this, *info);
+    PCResourceView *texres = (PCResourceView *) this->FindResource(*info);
     if (texres == 0) {
         return;
     }
     if (texres->handle == -1) {
-        paintcanvas_ext_i2d_texcreate(this, *info, true);
+        unsigned int texture = 0;
+        this->TextureCreate(*info, texture, false);
     }
     unsigned int idx = (unsigned int) res->handle;
     if (idx == 0xffffffff) {
-        PCImage2DView *img = (PCImage2DView *) operator new(0x18);
-        memset(img, 0, 0x18);
+        Image2D *img = new Image2D;
+        // ARM 0x79cde-0x79ce8 clears fields through +0x14, not tail padding.
+        memset(img, 0, offsetof(Image2D, restoreFlag) + sizeof(img->restoreFlag));
         char *texpath = *(char **) texres->payload;
-        int ok = paintcanvas_ext_i2d_imgregion(this->engine, texpath,
-                                               info[1], img);
+        int ok = AbyssEngine::ImageCreateRegionFromFile(this->engine, texpath, info[1], img);
         if (ok != 1) {
             return;
         }
         if (texres->handle != -1) {
             img->textureId = (uint32_t) texres->handle;
         }
-        PCArrayAdd<AbyssEngine::Image2D *>((AbyssEngine::Image2D *) img, &this->images);
+        ArrayAdd<Image2D *>(img, this->images);
         idx = this->images.count - 1;
         res->handle = (int) idx;
     }
@@ -4739,7 +4737,7 @@ void PaintCanvas::FontSetSpacing(unsigned int index, short spacing) {
 }
 
 int PaintCanvas::GetWidth() {
-    return paintcanvas_ext_get_width(this->engine);
+    return this->engine->GetDisplayWidth();
 }
 
 void PaintCanvas::CameraCreate(unsigned int &out) {
