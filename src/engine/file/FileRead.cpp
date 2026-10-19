@@ -78,6 +78,10 @@ Array<Array<Vector *> *> *FileRead::loadWeaponPositions(int32_t id) {
         int16_t x = 0;
         int16_t y = 0;
         int16_t z = 0;
+        // ARM uses persistent float read slots, including across skipped records.
+        float extraX = 0.0f;
+        float extraY = 0.0f;
+        float extraZ = 0.0f;
 
         do {
             AEFile::Read(ship, handle);
@@ -88,9 +92,6 @@ Array<Array<Vector *> *> *FileRead::loadWeaponPositions(int32_t id) {
                 AEFile::Read(y, handle);
                 AEFile::Read(z, handle);
 
-                float extraX = 0.0f;
-                float extraY = 0.0f;
-                float extraZ = 0.0f;
                 if (type == 3) {
                     AEFile::Read(extraX, handle);
                     AEFile::Read(extraY, handle);
