@@ -32,6 +32,13 @@ def main():
         (Path(temp) / "image_create_asset_under_test.inc").write_text(
             "namespace AbyssEngine {\n" + bodies + "\n}\n"
         )
+        canvas_source = (ROOT / "src/engine/render/PaintCanvas.cpp").read_text()
+        canvas_bodies = "\n".join(function(canvas_source, signature) for signature in (
+            "void *PaintCanvas::FindResource(unsigned short id) {",
+            "void PaintCanvas::TextureCreate(unsigned short resId, void (*callback)",
+            "void PaintCanvas::TextureCreate(unsigned short id, unsigned int &out, bool flag) {",
+        ))
+        (Path(temp) / "image_canvas_under_test.inc").write_text(canvas_bodies + "\n")
         for opt in ("-O0", "-O2"):
             exe = Path(temp) / f"image_asset_{opt[1:]}.exe"
             subprocess.run([

@@ -22,6 +22,19 @@ original bytes to production parsers. The texture files each contain two
 trailing bytes after the portion consumed by `ImageCreateFromFile`; the
 truncation test cuts the consumed payload, not that trailer.
 
+The next host gate runs production `PaintCanvas::FindResource` and
+`MeshCreate` for both mesh IDs, and production `FindResource` and both
+`TextureCreate` overloads for the corresponding texture IDs. Each path
+reaches the relevant production file parser, stores a resource handle,
+and reuses that handle on a second request without reopening the file.
+Fixture-owned resource records carry the exact IDs and paths from the
+tables; `BuildResourceList`/`loadLowTexturesAndMaterials` themselves are
+not executed. Mesh material creation and VBO upload are bounded services.
+The texture upload service is a GPU boundary double which calls the real
+`ImageCreateFromFile`/`ImageRelease`, then issues a test texture ID.
+Therefore this is a canvas-to-parser handoff, not a GL upload or rendered
+skybox test.
+
 Android 2.0.16 `libgof2hdaa.so`, SHA-256
 `6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`,
 allocates 20 bytes for `ImageCreateFromFile` at `0x6f4fe`–`0x6f500`.
@@ -40,8 +53,10 @@ There are no exact-pair losses against
 `A:/Galaxy on Fire new version/_work/level_skybox_asset_full_20261019.json`.
 
 This gate proves that the exact four ordinary-orbit skybox files can be
-parsed by the recovered mesh and image loaders. It does **not** yet prove
-`PaintCanvas` resource registration, GL texture upload, the complete
+selected by the recovered canvas methods and parsed by the recovered mesh
+and image loaders. It does **not** yet prove production resource-table
+registration, material creation, GL texture upload, the complete
 `Level::init` path, or `renderBG`. The next integration step is to connect
-these production pieces under one host run and identify the first failing
-service boundary without claiming a complete native flight scene.
+the level selector and these canvas calls under one host run and identify
+the first failing service boundary without claiming a complete native
+flight scene.

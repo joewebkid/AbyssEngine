@@ -67,6 +67,12 @@ if args.create_smoke:
     create_include = output / 'mesh_create_under_test.inc'
     create_include.write_text('namespace AbyssEngine {\n' + create_body + '\n}\n')
     assert create_body in create_include.read_text()
+    canvas_source = (root / 'src/engine/render/PaintCanvas.cpp').read_text()
+    canvas_bodies = [extract(canvas_source, re.escape(signature) + r' \{') for signature in (
+        'void *PaintCanvas::FindResource(unsigned short id)',
+        'void PaintCanvas::MeshCreate(unsigned short resId, unsigned int &out,\n                             bool forceClone)',
+    )]
+    (output / 'mesh_canvas_under_test.inc').write_text('\n'.join(canvas_bodies) + '\n')
     bounds_source = (root / 'src/engine/math/BSphere.cpp').read_text()
     bounds_bodies = [extract(bounds_source, re.escape(signature) + r' \{') for signature in (
         '        BSphere &BSphere::operator=(const BSphere &other)',

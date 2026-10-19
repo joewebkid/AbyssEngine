@@ -6,11 +6,13 @@
 #include "engine/math/AEMath.h"
 #include "engine/file/AEFile.h"
 #include <cassert>
+#include <cstddef>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iterator>
+#include <string>
 #include <vector>
 
 namespace {
@@ -19,6 +21,7 @@ size_t cursor, limit;
 int opened, closed, released;
 bool openSucceeds;
 bool changeTimeOnCollect;
+std::string expectedPath;
 int collected, rangeCalls;
 AbyssEngine::Transform *rangeReceiver;
 longlong lastRangeStart, lastRangeEnd;
@@ -98,7 +101,8 @@ void fixture(bool enhanced, unsigned short subCount, bool uv = false, unsigned s
 }
 }
 
-uint32_t AEFile::OpenRead(const char *, uint32_t *handle) {
+uint32_t AEFile::OpenRead(const char *path, uint32_t *handle) {
+    if (!expectedPath.empty()) assert(expectedPath == path);
     ++opened;
     if (!openSucceeds) return 0;
     *handle = 1;
@@ -126,6 +130,7 @@ namespace AbyssEngine {
 int MeshReadData(Engine *, const unsigned int &, unsigned int, Mesh **, Material *);
 float timeBetweenFrames;
 unsigned char Engine::enableShader;
+bool Engine::vboSupported;
 void MeshRelease(Engine *, Mesh **slot) { ++released; dispose(*slot); *slot = nullptr; }
 // Mesh clone dependencies remain outside these fixtures.
 int MeshConvertToVBO(Mesh *) { std::abort(); }
@@ -150,6 +155,38 @@ void Transform::SetAnimationRangeInTime(longlong first, longlong last) {
 #include "mesh_read_bounds_under_test.inc"
 #include "mesh_read_under_test.inc"
 #include "mesh_create_under_test.inc"
+
+struct PCResourceView {
+    uint16_t id;
+    uint8_t pad02[2];
+    int type;
+    int handle;
+    void *payload;
+};
+struct PCMeshInfoView { char *path; uint16_t matResId; };
+namespace AbyssEngine {
+class PaintCanvas {
+public:
+    Array<PCResourceView *> resources;
+    unsigned int meshCount = 0;
+    unsigned int meshPad = 0;
+    Mesh **meshes = nullptr;
+    unsigned int meshCapacity = 0;
+    Array<Material *> materials;
+    Engine *engine = nullptr;
+    unsigned short lastMaterialId = 0;
+    void *FindResource(unsigned short id);
+    void MeshCreate(unsigned short id, unsigned int &out, bool forceClone);
+    void MaterialCreate(unsigned short id, unsigned int &) { lastMaterialId = id; }
+};
+}
+using AbyssEngine::PaintCanvas;
+static_assert(offsetof(PaintCanvas, meshes) - offsetof(PaintCanvas, meshCount) ==
+              offsetof(Array<AbyssEngine::Mesh *>, data_), "mesh array host view");
+static_assert(offsetof(PCResourceView, payload) == 16, "resource host payload");
+static_assert(offsetof(PCMeshInfoView, matResId) == 8, "mesh info host material");
+
+#include "mesh_canvas_under_test.inc"
 
 int main(int argc, char **argv) {
 #ifdef _WIN32
@@ -251,5 +288,35 @@ int main(int argc, char **argv) {
         assert(slot && slot->vertexCount && cursor == input.size());
         assert(opened == 1 && closed == 1 && released == 0);
         dispose(slot); slot = nullptr;
+    }
+    if (argc == 3) {
+        PaintCanvas canvas;
+        canvas.engine = engine;
+        PCMeshInfoView infos[2] = {{argv[1], 20010}, {argv[2], 20011}};
+        PCResourceView resources[2] = {
+            {0x45bb, {0, 0}, 4, -1, &infos[0]},
+            {0x458a, {0, 0}, 4, -1, &infos[1]},
+        };
+        ArrayAdd(&resources[0], canvas.resources);
+        ArrayAdd(&resources[1], canvas.resources);
+        const unsigned short ids[] = {0x45bb, 0x458a};
+        for (int i = 0; i < 2; ++i) {
+            std::ifstream file(argv[i + 1], std::ios::binary);
+            assert(file.good());
+            input.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+            reset(input.size());
+            expectedPath = argv[i + 1];
+            unsigned int out = 0xffffffff;
+            canvas.MeshCreate(ids[i], out, false);
+            assert(out == unsigned(i) && canvas.meshCount == unsigned(i + 1));
+            assert(resources[i].handle == i && canvas.meshes[i]->vertexCount != 0);
+            assert(canvas.lastMaterialId == infos[i].matResId);
+            assert(opened == 1 && closed == 1 && cursor == input.size());
+            canvas.MeshCreate(ids[i], out, false);
+            assert(out == unsigned(i) && opened == 1 && closed == 1);
+        }
+        expectedPath.clear();
+        for (unsigned i = 0; i < canvas.meshCount; ++i) dispose(canvas.meshes[i]);
+        std::free(canvas.meshes);
     }
 }
