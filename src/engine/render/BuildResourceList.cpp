@@ -5287,37 +5287,40 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
             canvas->AddResource(makeRes(
                 27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button_ipad_large.aei", 0.0f)));
         }
+    } else if (Globals::retinaDisplay) {
+        canvas->AddResource(
+            makeRes(11635, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ar_iphone4.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11637, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_cht_iphone4.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11639, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_chs_iphone4.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11643, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_kr_iphone4.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11645, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ja_iphone4.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11641, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_langselect_iphone4.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(10062, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface_iphone4.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(10002, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_logos_iphone4.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(27340, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_credits_iphone4.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_iphone4.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_iphone4_2.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface_iphone4.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3_iphone4.aei", 0.0f)));
+        canvas->AddResource(makeRes(
+            27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_iphone4.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_iphone4.aei", 0.0f)));
+        canvas->AddResource(
+            makeRes(27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button_iphone4.aei", 0.0f)));
     }
-    canvas->AddResource(
-        makeRes(11635, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ar_iphone4.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11637, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_cht_iphone4.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11639, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_chs_iphone4.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11643, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_kr_iphone4.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11645, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ja_iphone4.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11641, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_langselect_iphone4.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(10062, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface_iphone4.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(10002, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_logos_iphone4.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(27340, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_credits_iphone4.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_iphone4.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_iphone4_2.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface_iphone4.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3_iphone4.aei", 0.0f)));
-    canvas->AddResource(makeRes(
-        27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_iphone4.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_iphone4.aei", 0.0f)));
     canvas->AddResource(
         makeRes(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface.aei", 0.0f)));
     canvas->AddResource(makeRes(0, 0, nullptr));

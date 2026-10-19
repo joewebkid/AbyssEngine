@@ -85,4 +85,18 @@ int main() {
     assert(largeShop->id == 27343 && largeShop->kind == 2);
     assert(std::strcmp(static_cast<AbyssEngine::ResourceTexture *>(largeShop->payload)->name,
                        "data/textures/gof2_shop_button_ipad_large.aei") == 0);
+
+    Globals::iPadHD = 0;
+    Globals::iPad = 0;
+    registerHdResources(&canvas);
+    assert(canvas.resources.count == 2548);
+    auto *phoneFont = canvas.resources.data_[2532];
+    assert(phoneFont->id == 11635 && phoneFont->kind == 2);
+    auto *phoneShop = canvas.resources.data_[2547];
+    assert(phoneShop->id == 27343 && phoneShop->kind == 2);
+    assert(std::strcmp(static_cast<AbyssEngine::ResourceTexture *>(phoneShop->payload)->name,
+                       "data/textures/gof2_shop_button_iphone4.aei") == 0);
+    Globals::retinaDisplay = 0;
+    registerHdResources(&canvas);
+    assert(canvas.resources.count == 2548);
 }

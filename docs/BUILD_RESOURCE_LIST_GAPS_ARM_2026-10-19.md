@@ -291,3 +291,28 @@ source-shape/strict fuzzy is 75.0%/21.3%, against 75.0%/21.2%
 previously; it is not exact. The full corpus remains 4,323/4,524
 compared, mean source-shape/strict fuzzy 93.87%/83.06%, 2,529
 linked-exact and 1,076 byte-exact, with zero exact-pair losses.
+
+## Follow-up: non-HD Retina phone package
+
+On the `iPadHD=0` path, ARM reads `Globals::retinaDisplay` through GOT
+slot `0x2103e4` at `0x10a6c4`–`0x10a6d4`. Zero branches to the normal
+font path at `0x10ee40`; nonzero constructs the `iphone4` texture run
+at `0x10a6da`–`0x10a9e8`. Its fifteen existing C++ IDs and string paths
+were checked in order against the ARM literals. The final literal at
+`0x10a9dc` resolves to
+`data/textures/gof2_shop_button_iphone4.aei`; the branch at `0x10a9e8`
+reuses the ID 27343 construction at `0x10a4b4`.
+
+The C++ now guards this sixteen-record run with `else if
+(Globals::retinaDisplay)` after the HD branch and restores the phone
+shop-button record. The source-extracted table gate checks both
+non-HD Retina outcomes and the HD variants at `-O0/-O2`. The normal
+font path, additional platform packages, the initial GL call and the
+rest of the post-table function remain outside this bounded gate.
+Native `gof2` and 208/208 ARM units build; 45 verifier tests pass (one
+existing skip). The source-extracted table and original-asset gates
+pass at `-O0/-O2`. Focused `BuildResourceList` source-shape/strict
+fuzzy is 75.0%/21.4%, against 75.0%/21.3% previously, still nonexact.
+The full corpus remains 4,323/4,524 compared, mean source-shape/
+strict fuzzy 93.87%/83.06%, 2,529 linked-exact and 1,076 byte-exact,
+with zero exact-pair losses.

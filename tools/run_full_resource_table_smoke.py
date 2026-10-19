@@ -28,7 +28,8 @@ def main():
     table = ("\n".join((prelude, "void buildResourceTable(AbyssEngine::PaintCanvas *canvas) {",
                         "    using namespace AbyssEngine;", source[start:end], "}")))
     hd = "void registerHdResources(AbyssEngine::PaintCanvas *canvas) {\n" + \
-         function(source, "if (Globals::iPadHD) {") + "\n}\n"
+         function(source, "if (Globals::iPadHD) {") + \
+         function(source, "else if (Globals::retinaDisplay) {") + "\n}\n"
 
     canvas = (ROOT / "src/engine/render/PaintCanvas.cpp").read_text()
     setter = canvas[canvas.index("void PaintCanvas::SetResourceList("):]
@@ -61,7 +62,7 @@ def main():
             if result.returncode:
                 raise RuntimeError("host compile failed:\n" + "\n".join(result.stderr.splitlines()[-20:]))
             subprocess.run([str(exe)], cwd=ROOT, check=True)
-    print("Full resource table and iPadHD/iPad/retinaDisplay branches -O0/-O2: OK")
+    print("Full resource table and HD/iPad/Retina platform branches -O0/-O2: OK")
 
 
 if __name__ == "__main__":

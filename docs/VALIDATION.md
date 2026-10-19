@@ -102,6 +102,19 @@ still nonexact. The full corpus remains 4,323/4,524 compared,
 2,529 linked-exact and 1,076 byte-exact with zero prior exact-pair
 losses; mean source-shape/strict fuzzy is 93.87%/83.06%.
 
+The next platform-branch gate additionally checks the source-extracted
+`else if (Globals::retinaDisplay)` run when `iPadHD=0`: Retina enabled
+adds sixteen `iphone4` records, ending with shop-button ID 27343;
+Retina disabled adds none in this bounded gate. The original ARM
+branches to the default-resource path in the latter case, which is not
+yet included. Native `gof2`, 208/208 ARM units, the original-asset
+gate and 45 verifier tests pass; the table/branch gate passes at
+`-O0/-O2`.
+Focused `BuildResourceList` source-shape/strict fuzzy is 75.0%/21.4%,
+still nonexact. Full corpus coverage remains 4,323/4,524 with
+93.87%/83.06% mean source-shape/strict fuzzy, 2,529 linked-exact
+and 1,076 byte-exact; prior exact-pair losses are zero.
+
 ## Level skybox canvas-to-loader gate (2026-10-19)
 
 The production `MeshCreateFromFile`/`MeshReadData` host smoke parses the
