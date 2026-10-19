@@ -509,7 +509,9 @@ StarSystem::StarSystem(int mode) {
     this->positionsArray = new Array<Vector>();
     ArraySetLength(count + 1, *(this->positionsArray));
 
-    AERandom::gRandom->setSeed((long long) Globals::status->getStation()->getIndex() * 300);
+    // ARM 0x1340b0-0x1340b8: wrap the product to 32 bits, then sign-extend.
+    AERandom::gRandom->setSeed(static_cast<int32_t>(
+        static_cast<uint32_t>(Globals::status->getStation()->getIndex()) * 300u));
 
     int sunSlot = AERandom::gRandom->nextInt(14) + 5;
     int stationSunSlotIndex = Globals::status->getStation()->getTextureIndex() - 9;

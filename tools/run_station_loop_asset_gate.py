@@ -1,4 +1,4 @@
-"""Continue the five Pan station textures, record cleanup and typed arrays."""
+"""Continue five station textures, typed cleanup and the original seed call."""
 import run_station_texture_gate as first
 from run_level_station_asset_gate import replace_once
 from run_particle_control_smoke import function
@@ -27,8 +27,11 @@ def prepare(out, cxx, root, reuse):
     dtor = first.sun.station.extract("src/game/world/Station.cpp", ["Station::~Station() {"])
     dtor = replace_once(dtor, 'Station::~Station() {', 'Station::~Station() {\n    stationDestroySeen(this);')
     chain += '\n' + dtor
-    marker = '    AERandom::gRandom->setSeed((long long) Globals::status->getStation()->getIndex() * 300);'
-    chain = replace_once(chain, marker, '    stationLoopBoundary(this);\n' + marker)
+    marker = ('    AERandom::gRandom->setSeed(static_cast<int32_t>(\n'
+              '        static_cast<uint32_t>(Globals::status->getStation()->getIndex()) * 300u));')
+    chain = replace_once(chain, marker,
+                         '    stationLoopBoundary(this);\n' + marker +
+                         '\n    stationSeedBoundary(this);')
     (out / "station_binary_chain.inc").write_text(chain)
     traps = (out / "station_binary_traps.inc").read_text()
     traps = replace_once(traps, 'TRAP(_ZN7StationD1Ev)', '')
@@ -65,7 +68,7 @@ def prepare(out, cxx, root, reuse):
     additions = ''.join(f'    expectedFiles.push_back("data/assets/main/3d/textures/low/etc/planets/{name}.aei");\n' for name in paths)
     gate = replace_once(gate, '    assert(stationOpenedPaths == expectedFiles);', additions + '    assert(stationOpenedPaths == expectedFiles);')
     gate = replace_once(gate, 'sun and first station texture/loop iteration complete -> TextureCreate(10021) boundary',
-        'sun and five station textures/loop iterations/cleanup/arrays complete -> setSeed boundary')
+        'sun and five station textures/loop iterations/cleanup/arrays complete -> seeded RNG boundary')
     (out / "station_binary_gate_under_test.inc").write_text(gate)
 
 

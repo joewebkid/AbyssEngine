@@ -4,6 +4,28 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## StarSystem seed-width gate (2026-10-20)
+
+The original Android ARM constructor uses `mul.w` then `asrs` before
+`AERandom::setSeed`; the rebuilt object now has the same sequence instead of
+the previous `smull`. The production-expression test covers six station
+indices against real `AERandom` at `-O0/-O2` and rejects the old expression.
+The original-asset Level/GLES gate reaches and checks the real seed call on
+Windows SwiftShader and Android ARMv7 at both optimizations. Native `gof2`,
+ABI/lifetime smoke, **208/208** ARM units and **83 verifier tests** (one
+pre-existing skip) pass.
+
+The full report compares **4,323/4,524** original functions in **4,735**
+pairs: **93.92%** mean source-shape, **83.20%** strict fuzzy,
+**2,551 linked-exact**, **1,079 byte-exact**. Exact `(unit, symbol)` sets
+have zero losses and zero gains against the preceding combined report. Both
+StarSystem constructor aliases improve from **76.6% to 76.7%** source-shape;
+strict fuzzy remains **18.4%**. The ignored report is
+`C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/seed-after-full.json`
+(SHA-256 `5f10a3fa2e5c2d9f09cfe59adeddabda0dc0b484c1859af837981c25cc4e281c`).
+Level stage 0 and a playable frame remain incomplete. See
+[seed evidence](STARSYSTEM_SEED_ARM_2026-10-20.md).
+
 ## Combined weapon-consumer and five-station-loop gate (2026-10-20)
 
 The integrated native `gof2` static library and ABI/lifetime smoke pass.

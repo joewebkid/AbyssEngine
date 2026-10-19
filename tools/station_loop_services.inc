@@ -68,6 +68,13 @@ static void stationLoopBoundary(StarSystem *star) {
     for (const auto &position : *star->positionsArray)
         assert(position.x == 0 && position.y == 0 && position.z == 0);
     assert(!star->planetRing && star->planetRingIndex == -1 && opened == closed);
-    std::printf("Five station textures and indices published; five production Station destructors; target/planet/position arrays 5/6/6; Array<KIPlayer*> size %zu, element %zu. Next: AERandom::setSeed(2100), Stage 0 incomplete\n", sizeof(*targets), sizeof(KIPlayer *));
+}
+
+static void stationSeedBoundary(StarSystem *star) {
+    assert(star->planetsArray->size() == 6 && star->positionsArray->size() == 6);
+    assert(Globals::status->getStation()->getIndex() == 7);
+    assert(AERandom::gRandom->seedLow == (0xdeece66dU ^ 2100U));
+    assert(AERandom::gRandom->seedHigh == 5U);
+    std::printf("Five station textures and indices published; five production Station destructors; target/planet/position arrays 5/6/6; Array<KIPlayer*> size %zu, element %zu. Seed 2100 reached; next: first RNG draw, Stage 0 incomplete\n", sizeof(*static_cast<Array<KIPlayer *> *>(star->playerTargets)), sizeof(KIPlayer *));
     throw FlareImageBoundary{};
 }

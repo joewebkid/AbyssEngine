@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (weapon consumers and five-station loop; older subsystem
+Last reviewed: 2026-10-20 (StarSystem station seed; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -19,12 +19,32 @@ volumes, 17 meshes, 15 transforms and a real GLES atlas readback at `-O0/-O2`
 on Windows and an Android ARMv7 device. The extended gate crosses
 `SolarSystem::getStations` and the real station binary reader, uploads the
 ETC1 sun and all five station-orbit RGBA textures through GLES, completes the
-five station-loop iterations and record cleanup, then stops before
-`AERandom::setSeed(2100)` and planet placement.
+five station-loop iterations and record cleanup, executes the real
+`AERandom::setSeed(2100)`, then stops before the first RNG draw and planet
+placement.
 Stage 0 has not returned, and the game is not running. A catalog-backed
 cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## StarSystem seed width and continuous gate (2026-10-20)
+
+Original Android ARM multiplies the station index by 300 at 32-bit width and
+sign-extends the wrapped result into `AERandom::setSeed(long long)`. The
+production expression now preserves that contract, including negative and
+large indices; the old expression fails focused negative controls. The
+continuous original-asset gate reaches and checks the real seed call on
+Windows SwiftShader and Android ARMv7 at `-O0/-O2`. Constructor aliases rise
+from **76.6% to 76.7%** source-shape; strict fuzzy stays **18.4%**. Native
+`gof2`, ABI/lifetime smoke, **208/208** ARM units and **83 verifier tests**
+(one pre-existing skip) pass. The full corpus retains **4,323/4,524**
+original functions in **4,735 pairs**, **93.92%** mean source-shape,
+**83.20%** strict fuzzy, **2,551 linked-exact** and **1,079 byte-exact**;
+there are no exact `(unit, symbol)` losses or gains against the preceding
+integrated report. See [seed evidence](STARSYSTEM_SEED_ARM_2026-10-20.md).
+The original creates geometry before its first RNG draw, whereas current C++
+draws first. That order and planet placement remain unverified; Level stage 0
+has not returned.
 
 ## Weapon consumers and five-station loop (2026-10-20)
 
