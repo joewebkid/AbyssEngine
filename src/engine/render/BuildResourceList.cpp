@@ -65,7 +65,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     PaintCanvas *canvas = engine->appManager->paintCanvas;
     canvas->TextureCreateGlobal(String("data/assets/main/3d/textures/low/etc/fx/cloak_map.aei"), 6);
 
-    // shortcut: 44 ARM records are not recovered yet; keep those host slots null until restored.
+    // shortcut: 40 ARM records are not recovered yet; keep those host slots null until restored.
     Resource *resources[2488]{};
     ADD_RES(resources[0], 
         11742, 2, new AbyssEngine::ResourceTexture("data/assets/supernova/3d/textures/low/etc/suns/sn_sun_011.aei",
@@ -1649,7 +1649,10 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[605], 20032, 6, new AbyssEngine::ResourceMaterial(0, 0, static_cast<BlendMode>(28)));
     ADD_RES(resources[606], 20031, 6, new AbyssEngine::ResourceMaterial(0, BlendMode_dummy));
     ADD_RES(resources[607], 20033, 6, new AbyssEngine::ResourceMaterial(0, BlendMode_2));
-    ADD_RES(resources[610], 34702, 6, new AbyssEngine::ResourceMaterial(0, BlendMode_8));
+    ADD_RES(resources[608], 34700, 6, new AbyssEngine::ResourceMaterial(33120, 33121, static_cast<BlendMode>(28)));
+    ADD_RES(resources[609], 34701, 6, new AbyssEngine::ResourceMaterial(34500, BlendMode_2));
+    ADD_RES(resources[610], 34702, 6, new AbyssEngine::ResourceMaterial(33120, BlendMode_8));
+    ADD_RES(resources[611], 34703, 6, new AbyssEngine::ResourceMaterial(33120, BlendMode_dummy));
     ADD_RES(resources[612], 0, 6, new AbyssEngine::ResourceMaterial(0, 0, static_cast<BlendMode>(28)));
     ADD_RES(resources[613], 34501, 6, new AbyssEngine::ResourceMaterial(34501, BlendMode_2));
     ADD_RES(resources[614], 34706, 6, new AbyssEngine::ResourceMaterial(0, BlendMode_8));
@@ -1667,6 +1670,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[626], 34718, 6, new AbyssEngine::ResourceMaterial(0, BlendMode_8));
     ADD_RES(resources[627], 34719, 6, new AbyssEngine::ResourceMaterial(0, BlendMode_dummy));
     ADD_RES(resources[628], 34600, 6, new AbyssEngine::ResourceMaterial(33301, BlendMode_2));
+    ADD_RES(resources[629], 34601, 6, new AbyssEngine::ResourceMaterial(34501, BlendMode_2));
     ADD_RES(resources[630], 65535, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));
     ADD_RES(resources[631], 34603, 6, new AbyssEngine::ResourceMaterial(34700, BlendMode_2));
     ADD_RES(resources[633], 34605, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));

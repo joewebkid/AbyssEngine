@@ -38,7 +38,7 @@ collection is observed after the file closes. Its SHA-256 is
 `323ba7f1228a5df7df582d8014adccb1a16f4e345675192b5114931c06ca0ace`.
 Animated-mesh clone-on-reuse is not exercised by this gate.
 
-The table still has **44 unrecovered positions**: 608, 609, 611, 629,
+After the first ten-record recovery, the table still had **44 unrecovered positions**: 608, 609, 611, 629,
 632, 634, 637–640, 643, 645–648, 650–653, 655–658, 660–663, 665,
 667, 669, 673, 681, 896, 897, 899, 900, 977, 997, 998, 1700,
 1871, 1874, 1877 and 1883. The C++ stack array is now zero-initialized,
@@ -61,3 +61,35 @@ full report. Corpus mean source-shape/strict fuzzy remains 93.87%/83.06%.
 Focused `BuildResourceList` source-shape moves from 73.5% to 73.8%; its
 strict fuzzy moves from 22.8% to 21.7%, so this is a semantic/table
 coverage gain, not an across-the-board machine-code similarity gain.
+
+## Follow-up: material cluster 608–629
+
+The same Android ARM function confirms four more missing material records:
+
+| Slot | ARM store | ID | Constructor payload |
+| ---: | --- | ---: | --- |
+| 608 | `0xf122c` | 34700 | texture IDs 33120, 33121; blend 28 |
+| 609 | `0xf126a` | 34701 | texture ID 34500; blend 2 |
+| 611 | `0xf12ca` | 34703 | texture ID 33120; blend 0 |
+| 629 | `0xf1678` | 34601 | texture ID 34501; blend 2 |
+
+Slot 610 already existed, but incorrectly used texture ID 0. The ARM
+constructor at `0xf127c`–`0xf1280` passes 33120 with blend 8; source now
+matches that pair. Slot 609's 34500 value is traced from the ARM
+`r6 - 1` value used for resource 293, and the original slot 293 record
+also has ID 34500. These are table/constructor facts, not proof that a
+complete resource-list consumer can resolve all referenced textures;
+IDs 33120 and 33121 do not yet have direct records in the recovered C++
+table. The remaining unrecovered slot count is 40. A complete-table host
+gate remains necessary.
+
+The follow-up builds natively and compiles all 208 ARM units. The
+asset-backed skybox/mesh gate passes at `-O0/-O2`; 40 verifier tests pass
+(one existing skip). The full corpus still compares 4,323/4,524 original
+functions and retains all 2,529 linked-exact and 1,076 byte-exact pairs
+without losses. Mean source-shape/strict fuzzy is 93.87%/83.05%, versus
+93.87%/83.06% before this follow-up. Focused `BuildResourceList`
+source-shape is 73.9%, versus 73.8%; strict fuzzy falls from 21.7% to
+13.6%. This is a recorded strict-fuzzy metric regression despite the
+ARM-backed table corrections; exact matching of this giant function
+remains open.

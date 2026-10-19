@@ -25,7 +25,8 @@ including asteroid-belt skybox diffuse texture 33410 and the final mesh
 record 14287. They are restored in `BuildResourceList.cpp`. The asset-backed
 host gate now decodes original texture 33410 and checks cache reuse, alongside
 the existing Level skybox path; restored mesh 14287 also passes the
-resource-ID loader once, with animated reuse untested. **44 of 2,488 table slots remain unrecovered**
+resource-ID loader once, with animated reuse untested. After the subsequent
+material cluster recovery, **40 of 2,488 table slots remain unrecovered**
 in C++; they are null-initialized as a labelled host-safety workaround,
 not as a claim of original behavior. Full table execution and consumers
 remain unvalidated. Next: recover the 608–681 gap cluster, implement the
@@ -36,6 +37,16 @@ The fresh full corpus remains 4,323/4,524 compared, 2,529 linked-exact,
 1,076 byte-exact, with no loss of prior exact pairs. Mean source-shape/
 strict fuzzy stays 93.87%/83.06%. Focused `BuildResourceList` source-shape
 is 73.8% (was 73.5%); strict fuzzy is 21.7% (was 22.8%).
+Follow-up ARM tracing restores material slots 608, 609, 611 and 629 and
+corrects slot 610's texture ID to 33120. This leaves **40 unrecovered
+slots**; referenced texture IDs 33120/33121 still require consumer-level
+checking. The follow-up compiles natively and across 208/208 ARM units;
+the asset-backed gate passes at `-O0/-O2`. Full corpus remains
+4,323/4,524 compared, 2,529 linked-exact and 1,076 byte-exact, with
+zero exact-pair losses. Mean source-shape/strict fuzzy is now
+93.87%/83.05%; focused `BuildResourceList` is 73.9%/13.6%, where the
+strict fuzzy drop is explicitly recorded. See the technical note for
+before/after and ARM addresses.
 
 ## Level skybox canvas-to-loader gate (2026-10-19)
 

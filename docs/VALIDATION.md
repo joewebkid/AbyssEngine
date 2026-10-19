@@ -11,7 +11,7 @@ resource list. The `Level` asset-backed gate loads restored texture 33410
 from the original OBB at `-O0/-O2` and checks its cached handle; restored
 mesh 14287 passes resource-ID `MeshCreate` into production
 `MeshCreateFromFile`/`MeshReadData` with its original file. Animated-mesh
-clone-on-reuse remains untested. The remaining 44 positions are null-initialized
+clone-on-reuse remains untested. The remaining 40 positions are null-initialized
 for host safety, not confirmed as null in the original. The full list and
 its consumers remain untested. See
 [the ARM evidence](BUILD_RESOURCE_LIST_GAPS_ARM_2026-10-19.md).
@@ -21,6 +21,14 @@ skip). Full corpus: 4,323/4,524 compared, 2,529 linked-exact and
 93.87%/83.06%. Focused `BuildResourceList` is 73.8%/21.7%, against
 73.5%/22.8% before this patch. The strict fuzzy decline is recorded,
 not treated as a regression in the verified resource records.
+The follow-up material cluster adds four more ARM-backed records and
+corrects one existing texture ID. Native and 208/208 ARM units build;
+the same asset-backed gate passes `-O0/-O2`, and 40 verifier tests pass
+(one existing skip). Full corpus remains 4,323/4,524 compared,
+2,529 linked-exact and 1,076 byte-exact, with no prior exact-pair loss.
+Mean source-shape/strict fuzzy is 93.87%/83.05%; focused
+`BuildResourceList` is 73.9%/13.6%. The sizeable strict fuzzy fall is
+documented, not hidden behind source-shape or corpus means.
 
 ## Level skybox canvas-to-loader gate (2026-10-19)
 
