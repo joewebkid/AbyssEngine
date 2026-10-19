@@ -8,6 +8,7 @@
 #endif
 #include "engine/render/PaintCanvas.h"
 #include "game/core/String.h"
+#include "game/core/Globals.h"
 
 namespace AbyssEngine {
     ResourceMaterial::ResourceMaterial(uint16_t texId, uint16_t texId2, BlendMode blend) {
@@ -43,22 +44,16 @@ namespace AbyssEngine {
     };
 }
 
-static char g_Portraits_zeroFlag = 0;
-static char *g_Portraits_ipadLargeFlag = &g_Portraits_zeroFlag;
-static char *g_Portraits_ipad1440Flag = &g_Portraits_zeroFlag;
-static char *g_Portraits_ipadFlagA = &g_Portraits_zeroFlag;
-static char *g_Portraits_ipadFlagB = &g_Portraits_zeroFlag;
-static char *g_Portraits_ipadFlagC = &g_Portraits_zeroFlag;
-
 void loadPortraits(AbyssEngine::Engine *engine) {
     AbyssEngine::PaintCanvas *canvas = engine->appManager->paintCanvas;
 
     const char *infix;
-    if (*g_Portraits_ipadLargeFlag != 0)
+    // Android ARM 0x112d60-0x112dba: five GOT-backed Globals bytes.
+    if (Globals::iPadLarge != 0)
         infix = "_ipad_large";
-    else if (*g_Portraits_ipad1440Flag != 0)
+    else if (Globals::iPadHD != 0)
         infix = "_ipad_1440";
-    else if ((*g_Portraits_ipadFlagA | *g_Portraits_ipadFlagB | *g_Portraits_ipadFlagC) != 0)
+    else if ((Globals::retinaDisplay | Globals::iPad | Globals::n9) != 0)
         infix = "_ipad";
     else
         infix = "";
