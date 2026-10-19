@@ -527,14 +527,17 @@ StarSystem::StarSystem(int mode) {
                 (((0x3a31u >> stationSunSlotIndex) & 1u) != 0)) {
                 sunSlot = g_StarSystem_ctor_sunSlotOverrides[stationSunSlotIndex];
             }
-            float sunScale = this->supernovaSystem == 0 ? 1000.0f : 2000.0f;
+            // ARM 0x13444a-0x134510: supernova scale depends on mission.
+            float sunScale = this->supernovaSystem == 0 ? 0.2288818359375f :
+                (Globals::status->getCurrentCampaignMission() < 106 ?
+                    0.9918212890625f : 1.373291015625f);
             geom->setScaling(Vector{sunScale, sunScale, sunScale});
             AEGeometry *streak = new AEGeometry((uint16_t) 0x1a70, Globals::Canvas, false);
             this->sunStreak = streak;
             streak->setScaling(Vector{
-                this->supernovaSystem == 0 ? 250.0f : 500.0f,
-                this->supernovaSystem == 0 ? 15.0f : 25.0f,
-                this->supernovaSystem == 0 ? 1000.0f : 2000.0f
+                this->supernovaSystem == 0 ? 0.457763671875f : 1.983642578125f,
+                this->supernovaSystem == 0 ? 0.0457763671875f : 0.1983642578125f,
+                this->supernovaSystem == 0 ? 0.2288818359375f : 0.9918212890625f
             });
             if (this->supernovaSystem != 0) {
                 Globals::Canvas->TextureCreate((uint16_t) 0x2dde,

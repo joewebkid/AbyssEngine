@@ -4,6 +4,28 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## StarSystem first sun setup (2026-10-20)
+
+The continuous original-asset Level/GLES gate now checks the first
+`nextInt(14)` result, RNG state, sun slot 5 and the real sun/streak scales
+from ARM literals on Windows SwiftShader and a real Android ARMv7 device at
+`-O0/-O2`. It reaches 18 meshes, 17 transforms, 44 collision volumes and
+26/26 closed file opens before stopping ahead of rotation. Two focused tests
+check original ARM branches/literals and compile the production normal and
+supernova scale expressions at both optimizations. The bounded RNG oracle
+checks 2,560 transitions. Native `gof2` builds in a C: directory, the
+existing ABI/lifetime smoke passes, **208/208** ARM units compile and **85
+verifier tests** pass with one prior skip. Constructor aliases change
+**76.2%/13.0% → 76.3%/14.3%** source-shape/strict fuzzy. The full corpus
+compares **4,323/4,524** originals in **4,735 pairs** at **93.92%** mean
+source-shape, **83.19%** strict fuzzy, **2,551 linked-exact** and
+**1,079 byte-exact**. Exact `(unit, symbol)` sets have no gains or losses;
+skipped units and wrong-type signatures remain zero. The ignored report is
+`C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/sun-scale-full.json`
+(SHA-256 `3a61800f236b6848db5135772dc5fb1faebd0aae3cb7df7a90075f13ff959c80`).
+The full supernova asset path and original rotation draw remain open. See
+[sun-setup evidence](STARSYSTEM_SUN_SETUP_ARM_2026-10-20.md).
+
 ## StarSystem first-geometry boundary (2026-10-20)
 
 Android ARM calls the first `AEGeometry` constructor and publishes

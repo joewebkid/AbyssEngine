@@ -84,6 +84,23 @@ static void stationGeometryBoundary(StarSystem *star, AEGeometry *geom) {
     assert(geom->mesh == 0x1a70 && geom->canvas == Globals::Canvas);
     assert(AERandom::gRandom->seedLow == (0xdeece66dU ^ 2100U));
     assert(AERandom::gRandom->seedHigh == 5U);
-    std::printf("Five station textures and indices published; five production Station destructors; target/planet/position arrays 5/6/6. Seed 2100 and first geometry reached before RNG draw; Stage 0 incomplete\n");
+}
+
+static void stationSunSetupBoundary(StarSystem *star, int sunSlot) {
+    assert(!star->supernovaSystem && Globals::status->getCurrentCampaignMission() == 50);
+    assert(Globals::status->getStation()->getTextureIndex() == 0);
+    assert(sunSlot == 5); // ARM nextInt(14) returns 0 for seed 2100; no override for texture 0.
+    assert(AERandom::gRandom->seedLow == 0xb11171f0U);
+    assert(AERandom::gRandom->seedHigh == 0xe9a2U);
+    auto *sun = (*star->planetsArray)[0];
+    auto *streak = star->sunStreak;
+    assert(sun && streak && sun != streak && sun->mesh == 0x1a70 && streak->mesh == 0x1a70);
+    assert(sun->getScaling().x == 0.2288818359375f);
+    assert(sun->getScaling().y == 0.2288818359375f);
+    assert(sun->getScaling().z == 0.2288818359375f);
+    assert(streak->getScaling().x == 0.457763671875f);
+    assert(streak->getScaling().y == 0.0457763671875f);
+    assert(streak->getScaling().z == 0.2288818359375f);
+    std::puts("First sun slot 5 and original sun/streak scaling reached; Stage 0 incomplete");
     throw FlareImageBoundary{};
 }

@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (StarSystem first geometry; older subsystem
+Last reviewed: 2026-10-20 (StarSystem first sun setup; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -20,13 +20,34 @@ on Windows and an Android ARMv7 device. The extended gate crosses
 `SolarSystem::getStations` and the real station binary reader, uploads the
 ETC1 sun and all five station-orbit RGBA textures through GLES, completes the
 five station-loop iterations and record cleanup, executes the real
-`AERandom::setSeed(2100)`, constructs and publishes the first `AEGeometry`
-from the original `plane.aem`, then stops before the first RNG draw and planet
-placement.
+`AERandom::setSeed(2100)`, constructs the first geometry from the original
+`plane.aem`, draws sun slot 5, scales the sun and its streak, then stops before
+sun rotation and planet placement.
 Stage 0 has not returned, and the game is not running. A catalog-backed
 cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## StarSystem first sun draw and scale (2026-10-20)
+
+Original ARM uses `nextInt(14)` after first-geometry publication and takes the
+random-plus-five path for the Pan fixture's station texture index 0. The
+continuous original-asset gate now checks the first draw, RNG state, selected
+slot 5 and real `AEGeometry` sun/streak scales on Windows SwiftShader and
+Android ARMv7 at `-O0/-O2`: 18 meshes, 17 transforms, 44 collision volumes
+and 26/26 closed file opens. ARM literals correct the previous thousand-scale
+sun/streak values, including the mission-dependent supernova branch. The
+supernova expressions are tested at `-O0/-O2` but that full asset path is not
+yet executed. Native `gof2` builds, the existing ABI/lifetime smoke passes,
+**208/208** ARM units compile and **85 verifier tests** run with one prior
+skip. Constructor aliases change **76.2%/13.0% → 76.3%/14.3%**
+source-shape/strict fuzzy. The full corpus retains **4,323/4,524** originals
+in **4,735 pairs**, **93.92%** mean source-shape, **83.19%** strict fuzzy,
+**2,551 linked-exact** and **1,079 byte-exact**; no exact `(unit, symbol)`
+pair is gained or lost versus the previous report. See
+[sun-setup evidence](STARSYSTEM_SUN_SETUP_ARM_2026-10-20.md).
+The original uses another `nextInt(4096)` before rotation; that draw,
+non-sun placement and Level stage 0 remain open.
 
 ## StarSystem first geometry before RNG draw (2026-10-20)
 
