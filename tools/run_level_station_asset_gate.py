@@ -75,7 +75,7 @@ def prepare(out, cxx, asset_root):
         "void PaintCanvas::TransformSetLocal(",
     ])
     star = (ROOT / "src/game/world/StarSystem.cpp").read_text()
-    sources += star[star.index("static const uint16_t g_StarSystem_ctor_systemPlanetTextures"):
+    sources += star[star.index("static const uint32_t g_StarSystem_ctor_systemPlanetTextures"):
                     star.index("StarSystem::StarSystem(int mode) {")]
     sources += extract("src/game/world/StarSystem.cpp", [
         "static inline uint32_t flat_count(", "static inline void *flat_data(",

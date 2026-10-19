@@ -14,6 +14,7 @@ def main():
     parser.add_argument("before", type=Path)
     parser.add_argument("after", type=Path)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--family", type=Path, default=Path(__file__).with_name("station_binary_family.json"))
     args = parser.parse_args()
     reports = [json.loads(p.read_text()) for p in (args.before, args.after)]
     indexed = list(map(pairs, reports))
@@ -28,7 +29,7 @@ def main():
     result["pairs_gained"] = sorted(indexed[1].keys() - indexed[0].keys())
     result["extra_symbols_lost"] = sorted(set(reports[0]["extra"]) - set(reports[1]["extra"]))
     result["extra_symbols_gained"] = sorted(set(reports[1]["extra"]) - set(reports[0]["extra"]))
-    family = json.loads(Path(__file__).with_name("station_binary_family.json").read_text())
+    family = json.loads(args.family.read_text())
     result["family"] = family
     result["family_rows"] = []
     for pair in family["canonical_pairs"] + family["alias_pairs"]:
