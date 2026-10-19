@@ -1,4 +1,5 @@
 #include "engine/core/AbyssEngine.h"
+#include "engine/core/ApplicationManager.h"
 #include "engine/file/AEFile.h"
 #include "engine/core/GameText.h"
 #include "engine/file/FileInterfaceAndroid.h"
@@ -2172,8 +2173,7 @@ namespace AbyssEngine {
             cb(imgPtr, user);
 
         glGenTextures(1, outIds);
-        Image *img = imgPtr;
-        int format = (int) img->format;
+        int format = (int) imgPtr->format;
 
         if (format != 6) {
             glBindTexture(0xde1, *outIds);
@@ -2191,7 +2191,7 @@ namespace AbyssEngine {
             }
             glTexParameteri(0xde1, 0x2803, wrap);
 
-            if (img->hasMipmaps != 0) {
+            if (imgPtr->hasMipmaps != 0) {
                 if (Engine::AnisotropyValue > 0.0f) {
                     glTexParameterf(0xde1, 0x84fe, Engine::AnisotropyValue);
                     glTexParameteri(0xde1, 0x2801, 0x2703);
@@ -2214,28 +2214,29 @@ namespace AbyssEngine {
                 glTexParameteri(0xde1, 0x2801, 0x2601);
             }
 
-            int w = (int) img->width;
-            int h = (int) img->height;
+            format = (int) imgPtr->format;
+            int w = (int) imgPtr->width;
+            int h = (int) imgPtr->height;
             switch (format) {
                 case 1:
-                    glTexImage2D(0xde1, 0, 0x1909, w, h, 0, 0x1909, 0x1401, img->data);
+                    glTexImage2D(0xde1, 0, 0x1909, w, h, 0, 0x1909, 0x1401, imgPtr->data);
                     goto raw_texture_mipmap;
                 case 2:
-                    glTexImage2D(0xde1, 0, 0x1907, w, h, 0, 0x1907, 0x1401, img->data);
+                    glTexImage2D(0xde1, 0, 0x1907, w, h, 0, 0x1907, 0x1401, imgPtr->data);
                     goto raw_texture_mipmap;
                 case 3:
-                    glTexImage2D(0xde1, 0, 0x1908, w, h, 0, 0x1908, 0x1401, img->data);
+                    glTexImage2D(0xde1, 0, 0x1908, w, h, 0, 0x1908, 0x1401, imgPtr->data);
                 raw_texture_mipmap:
-                    if (img->hasMipmaps != 0) glGenerateMipmap(0xde1);
+                    if (imgPtr->hasMipmaps != 0) glGenerateMipmap(0xde1);
                     break;
                 case 4:
-                    if (img->hasMipmaps == 0) {
-                        glCompressedTexImage2D(0xde1, 0, 0x8c03, w, h, 0, (int) img->dataLen, img->data);
+                    if (imgPtr->hasMipmaps == 0) {
+                        glCompressedTexImage2D(0xde1, 0, 0x8c03, w, h, 0, (int) imgPtr->dataLen, imgPtr->data);
                     } else {
-                        unsigned int ch = img->height;
-                        unsigned int cw = img->width;
+                        unsigned int ch = imgPtr->height;
+                        unsigned int cw = imgPtr->width;
                         int level = 0;
-                        for (unsigned int off = 0; off < img->dataLen;) {
+                        for (unsigned int off = 0; off < imgPtr->dataLen;) {
                             int blocksWide = (int) (cw >> 3);
                             unsigned int rowSize = (2 * ch) & 0xfffffff8;
                             if (cw < 0x10)
@@ -2244,7 +2245,7 @@ namespace AbyssEngine {
                                 rowSize = 0x10;
                             unsigned int blockSz = rowSize * (unsigned int) blocksWide;
                             glCompressedTexImage2D(0xde1, level, 0x8c03, (int) cw, (int) ch, 0, (int) blockSz,
-                                                   (unsigned char *) img->data + off);
+                                                   (unsigned char *) imgPtr->data + off);
                             off += blockSz;
                             unsigned int nh = 1;
                             unsigned int nw = 1;
@@ -2257,11 +2258,11 @@ namespace AbyssEngine {
                     }
                     break;
                 case 5:
-                    if (img->hasMipmaps != 0) {
-                        unsigned int ch = img->height;
-                        unsigned int cw = img->width;
+                    if (imgPtr->hasMipmaps != 0) {
+                        unsigned int ch = imgPtr->height;
+                        unsigned int cw = imgPtr->width;
                         int level = 0;
-                        for (unsigned int off = 0; off < img->dataLen;) {
+                        for (unsigned int off = 0; off < imgPtr->dataLen;) {
                             int blockRows = (int) (ch >> 2);
                             unsigned int rowSize = (2 * cw) & 0xfffffff8;
                             if (ch < 8)
@@ -2270,7 +2271,7 @@ namespace AbyssEngine {
                                 rowSize = 0x10;
                             unsigned int blockSz = rowSize * (unsigned int) blockRows;
                             glCompressedTexImage2D(0xde1, level, 0x8c02, (int) cw, (int) ch, 0, (int) blockSz,
-                                                   (unsigned char *) img->data + off);
+                                                   (unsigned char *) imgPtr->data + off);
                             off += blockSz;
                             unsigned int nh = 1;
                             unsigned int nw = 1;
@@ -2281,20 +2282,20 @@ namespace AbyssEngine {
                             cw = nw;
                         }
                     } else {
-                        glCompressedTexImage2D(0xde1, 0, 0x8c02, w, h, 0, (int) img->dataLen, img->data);
+                        glCompressedTexImage2D(0xde1, 0, 0x8c02, w, h, 0, (int) imgPtr->dataLen, imgPtr->data);
                     }
                     break;
                 case 7:
-                    if (img->hasMipmaps != 0) {
-                        unsigned int ch = img->height;
-                        unsigned int cw = img->width;
+                    if (imgPtr->hasMipmaps != 0) {
+                        unsigned int ch = imgPtr->height;
+                        unsigned int cw = imgPtr->width;
                         int level = 0;
-                        for (unsigned int off = 0; off < img->dataLen;) {
+                        for (unsigned int off = 0; off < imgPtr->dataLen;) {
                             unsigned int blockSz = ch * cw;
                             if (blockSz <= 0x10)
                                 blockSz = 0x10;
                             glCompressedTexImage2D(0xde1, level, 0x8c93, (int) cw, (int) ch, 0, (int) blockSz,
-                                                   (unsigned char *) img->data + off);
+                                                   (unsigned char *) imgPtr->data + off);
                             off += blockSz;
                             unsigned int nh = 1;
                             unsigned int nw = 1;
@@ -2305,7 +2306,7 @@ namespace AbyssEngine {
                             ch = nh;
                         }
                     } else {
-                        glCompressedTexImage2D(0xde1, 0, 0x8c93, w, h, 0, (int) img->dataLen, img->data);
+                        glCompressedTexImage2D(0xde1, 0, 0x8c93, w, h, 0, (int) imgPtr->dataLen, imgPtr->data);
                     }
                     break;
                 case 8:
@@ -2314,22 +2315,23 @@ namespace AbyssEngine {
                     unsigned int glFmt = 0x83f0;
                     if (format == 9) glFmt = 0x83f2;
                     if (format == 10) glFmt = 0x83f3;
-                    if (img->hasMipmaps != 0) {
-                        unsigned int ch = img->height;
-                        unsigned int cw = img->width;
+                    if (imgPtr->hasMipmaps != 0) {
+                        unsigned int ch = imgPtr->height;
+                        unsigned int cw = imgPtr->width;
                         int level = 0;
-                        for (unsigned int off = 0; off < img->dataLen;) {
+                        for (unsigned int off = 0; off < imgPtr->dataLen;) {
                             unsigned int blockSz = ch * cw;
-                            if ((unsigned int) (format - 9) > 1) {
+                            int mipFormat = (int) imgPtr->format;
+                            if ((unsigned int) (mipFormat - 9) > 1) {
                                 if (blockSz > 0xf)
                                     blockSz >>= 1;
                                 else
-                                    blockSz = (format == 8) ? 8U : 0x10U;
+                                    blockSz = (mipFormat == 8) ? 8U : 0x10U;
                             } else if (blockSz <= 0x10) {
                                 blockSz = 0x10;
                             }
                             glCompressedTexImage2D(0xde1, level, glFmt, (int) cw, (int) ch, 0, (int) blockSz,
-                                                   (unsigned char *) img->data + off);
+                                                   (unsigned char *) imgPtr->data + off);
                             off += blockSz;
                             unsigned int nh = 1;
                             unsigned int nw = 1;
@@ -2340,21 +2342,21 @@ namespace AbyssEngine {
                             ch = nh;
                         }
                     } else {
-                        glCompressedTexImage2D(0xde1, 0, glFmt, w, h, 0, (int) img->dataLen, img->data);
+                        glCompressedTexImage2D(0xde1, 0, glFmt, w, h, 0, (int) imgPtr->dataLen, imgPtr->data);
                     }
                     break;
                 }
                 case 0xb:
-                    if (img->hasMipmaps != 0) {
-                        unsigned int ch = img->height;
-                        unsigned int cw = img->width;
+                    if (imgPtr->hasMipmaps != 0) {
+                        unsigned int ch = imgPtr->height;
+                        unsigned int cw = imgPtr->width;
                         int level = 0;
-                        for (unsigned int off = 0; off < img->dataLen;) {
+                        for (unsigned int off = 0; off < imgPtr->dataLen;) {
                             unsigned int blockSz = (cw * ch) >> 1;
                             if (cw < 8)
                                 blockSz = 8;
                             glCompressedTexImage2D(0xde1, level, 0x8d64, (int) cw, (int) ch, 0, (int) blockSz,
-                                                   (unsigned char *) img->data + off);
+                                                   (unsigned char *) imgPtr->data + off);
                             off += blockSz;
                             unsigned int nh = 1;
                             unsigned int nw = 1;
@@ -2365,7 +2367,7 @@ namespace AbyssEngine {
                             ch = nh;
                         }
                     } else {
-                        glCompressedTexImage2D(0xde1, 0, 0x8d64, w, h, 0, (int) img->dataLen, img->data);
+                        glCompressedTexImage2D(0xde1, 0, 0x8d64, w, h, 0, (int) imgPtr->dataLen, imgPtr->data);
                     }
                     break;
                 default:
@@ -2375,24 +2377,25 @@ namespace AbyssEngine {
             glBindTexture(0x8513, *outIds);
             glTexParameteri(0x8513, 0x2800, 0x2601);
             glTexParameteri(0x8513, 0x2801, 0x2601);
-            int faceH = (int) ((unsigned int) img->height / 6U);
-            int faceW = img->width;
+            int faceH = (int) ((unsigned int) imgPtr->height / 6U);
+            int faceW = imgPtr->width;
             int faceBytes = 4 * faceH * faceW;
-            unsigned char *pixels = (unsigned char *) img->data;
-            glTexImage2D(0x8517, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, pixels);
-            glTexImage2D(0x8516, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, pixels + faceBytes);
-            glTexImage2D(0x8519, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, pixels + faceBytes * 2);
-            glTexImage2D(0x8515, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, pixels + faceBytes * 3);
-            glTexImage2D(0x851a, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, pixels + faceBytes * 4);
-            glTexImage2D(0x8518, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, pixels + faceBytes * 5);
+            glTexImage2D(0x8517, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, imgPtr->data);
+            glTexImage2D(0x8516, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, (unsigned char *) imgPtr->data + faceBytes);
+            glTexImage2D(0x8519, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, (unsigned char *) imgPtr->data + faceBytes * 2);
+            glTexImage2D(0x8515, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, (unsigned char *) imgPtr->data + faceBytes * 3);
+            glTexImage2D(0x851a, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, (unsigned char *) imgPtr->data + faceBytes * 4);
+            glTexImage2D(0x8518, 0, 0x1908, faceW, faceH, 0, 0x1908, 0x1401, (unsigned char *) imgPtr->data + faceBytes * 5);
         }
 
         if (!flag) {
             int err = (int) glGetError();
             engine->lastGlError = (unsigned int) err;
             if (err != 0) {
-                String tmp(path);
-                engine->lastErrorPath = tmp;
+                {
+                    String tmp(path);
+                    engine->lastErrorPath = tmp;
+                }
                 glDeleteTextures(1, outIds);
                 ImageRelease(&imgPtr);
                 return -4;
@@ -2400,7 +2403,7 @@ namespace AbyssEngine {
             AELabelObject(0x1702, *outIds, path);
         } else if (outTex != 0) {
             outTex->valid = 1;
-            outTex->isCube = (format == 6) ? 1 : 0;
+            outTex->isCube = (imgPtr->format == 6) ? 1 : 0;
             unsigned int byteSize;
             if (glGetError() != 0) {
                 outTex->glId = 0xffffffff;
@@ -2410,7 +2413,7 @@ namespace AbyssEngine {
             } else {
                 AELabelObject(0x1702, *outIds, path);
                 outTex->glId = *outIds;
-                byteSize = img->dataLen;
+                byteSize = imgPtr->dataLen;
                 outTex->byteSize = byteSize;
                 ++Engine::ImageCount;
             }
@@ -2419,7 +2422,7 @@ namespace AbyssEngine {
             AELoadedTexture *tex = new AELoadedTexture;
             tex->scale = scale;
             tex->valid = 1;
-            tex->isCube = (format == 6) ? 1 : 0;
+            tex->isCube = (imgPtr->format == 6) ? 1 : 0;
             tex->name.Set(path);
             unsigned int byteSize;
             if (glGetError() != 0) {
@@ -2430,14 +2433,14 @@ namespace AbyssEngine {
             } else {
                 AELabelObject(0x1702, *outIds, path);
                 tex->glId = *outIds;
-                byteSize = img->dataLen;
+                byteSize = imgPtr->dataLen;
                 tex->byteSize = byteSize;
                 ++Engine::ImageCount;
             }
             engine->textureByteCounter += (int) byteSize;
-            PaintCanvas *canvas = (PaintCanvas *) engine->paintCanvas;
-            ArrayAdd<AELoadedTexture *>(tex, canvas->cubeTextures);
-            *outIds = canvas->cubeTextures.count - 1;
+            // ARM 0x6ff8a-0x6ffa4: Engine +0x30 -> manager +0 -> canvas +0x10.
+            ArrayAdd<AELoadedTexture *>(tex, engine->appManager->paintCanvas->cubeTextures);
+            *outIds = engine->appManager->paintCanvas->cubeTextures.count - 1;
         }
 
         ImageRelease(&imgPtr);
