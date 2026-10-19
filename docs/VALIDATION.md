@@ -11,7 +11,7 @@ resource list. The `Level` asset-backed gate loads restored texture 33410
 from the original OBB at `-O0/-O2` and checks its cached handle; restored
 mesh 14287 passes resource-ID `MeshCreate` into production
 `MeshCreateFromFile`/`MeshReadData` with its original file. Animated-mesh
-clone-on-reuse remains untested. The 12 currently unrecovered positions are null-initialized
+clone-on-reuse remains untested. The four currently unrecovered positions are null-initialized
 for host safety, not confirmed as null in the original. The full list and
 its consumers remain untested. See
 [the ARM evidence](BUILD_RESOURCE_LIST_GAPS_ARM_2026-10-19.md).
@@ -50,6 +50,16 @@ gate, and 42 verifier tests pass (one existing skip). Focused
 73.9%/13.6%, nonexact. Full ARM corpus remains 4,323/4,524 compared,
 mean 93.87%/83.05%, 2,529 linked-exact and 1,076 byte-exact; the
 exact-pair comparison with the preceding full report has zero losses.
+
+The visitor-glow/mesh follow-up restores eight ARM-backed slots, corrects
+three texture records, one material payload and two mesh IDs, leaving
+four unrecovered slots (977, 997, 998, 1700). Native and 208/208 ARM
+units build; 44 verifier tests pass (one existing skip), and the
+selected original-asset gate passes at `-O0/-O2`. Focused
+`BuildResourceList` source-shape/strict fuzzy is 74.9%/18.4%, up from
+74.7%/17.6%, nonexact. Full corpus compares 4,323/4,524 with means
+93.87%/83.05%, 2,529 linked-exact, 1,076 byte-exact, and zero losses
+from the preceding exact-pair sets. Full-table execution remains open.
 
 ## Level skybox canvas-to-loader gate (2026-10-19)
 

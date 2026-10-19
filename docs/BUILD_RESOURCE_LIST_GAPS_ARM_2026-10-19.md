@@ -150,3 +150,46 @@ improves from 73.9%/13.6% to 74.7%/17.6%, still nonexact. Full ARM
 corpus remains 4,323/4,524 compared, mean 93.87%/83.05%, 2,529
 linked-exact and 1,076 byte-exact; comparison of the exact-pair sets
 against the preceding full report shows zero losses.
+
+## Follow-up: visitor-glow materials and relocated meshes
+
+The ARM table stores at `0xef2ea`–`0xef3e4` place five texture records
+at slots 457–461: IDs 33400–33404, with the original `terran`, `vossk`,
+`nivelian`, `midorian` glow paths and `bar_visitor_shadow.aei`. Source
+previously put planet meshes 18180/18186 into slots 457/459, assigned
+ID 0 to the Vossk texture, and omitted the Terran/Nivelian textures.
+The ARM PC-relative strings and halfword ID stores confirm the corrected
+order. All five asset paths exist in the extracted Android asset set.
+
+The ARM material stores at `0xf49c6`–`0xf4aac` place IDs 34800–34804
+at slots 896–900. Their constructor inputs are texture IDs
+33400–33404 respectively; slots 896–899 use blend 2 and slot 900
+uses blend 1. The value 33402 for slot 898 is traced from `r9` at
+`0xef35c` through `[sp,#124]` at `0xf0052`; its old C++ placeholder
+65535 was incorrect. Similarly, the other arguments trace through
+`r6+99`, saved `r8`, and `[sp,#132]`/`[sp,#128]`. These records now
+have corresponding direct texture records in C++.
+
+The original planet meshes are at slots 1877 (`0x1012ce`, ID 18180,
+`map_planet_000.aem`) and 1883 (`0x101436`, ID 18186,
+`map_planet_006.aem`), both using material 20027 and clone flag false.
+The two remaining holes in the nearby plane run are slots 1871
+(`0x101166`, ID 18083, material 27284) and 1874 (`0x10121a`, ID 18086,
+material 27287). The ARM halfword stores also correct existing slot
+1869 from ID 27281 to 18081 and slot 1876 from 27286 to 18088;
+their material arguments stay 27281 and 27286. The relevant asset
+paths exist in the Android extract. These are source-backed table
+facts, not proof of full-table registration or rendering.
+
+Eight omitted slots are restored, leaving four unresolved positions:
+977, 997, 998 and 1700. The source-record regression test covers
+the restored records and IDs. Native and 208/208 ARM translation units
+build; 44 verifier tests pass (one pre-existing skip), and the selected
+asset-backed skybox gate passes at `-O0/-O2`. Focused
+`BuildResourceList` source-shape/strict fuzzy moves from 74.7%/17.6%
+to 74.9%/18.4%, still nonexact. The complete 2,488-entry table and
+its consumers remain unexecuted in the host gate.
+The fresh full corpus compares 4,323/4,524 original functions, with
+mean source-shape/strict fuzzy 93.87%/83.05%, 2,529 linked-exact and
+1,076 byte-exact. The exact-pair sets have zero losses against the
+preceding full report; 201 original functions remain missing.

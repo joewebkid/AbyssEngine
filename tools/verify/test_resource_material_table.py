@@ -13,7 +13,41 @@ class ResourceMaterialTableTest(unittest.TestCase):
         slots = [int(slot) for slot in re.findall(r"ADD_RES\(resources\[(\d+)\]", SOURCE)]
         self.assertEqual(len(slots), len(set(slots)))
         self.assertEqual(set(range(2488)) - set(slots),
-                         {896, 897, 899, 900, 977, 997, 998, 1700, 1871, 1874, 1877, 1883})
+                         {977, 997, 998, 1700})
+
+    def test_visitor_glow_resources(self):
+        for slot, resource_id, name in (
+            (457, 33400, "terran"), (458, 33401, "vossk"),
+            (459, 33402, "nivelian"), (460, 33403, "midorian"),
+        ):
+            with self.subTest(slot=slot):
+                self.assertRegex(SOURCE, rf"ADD_RES\(resources\[{slot}\],\s*{resource_id}, 2,\s*"
+                                         rf"new AbyssEngine::ResourceTexture\(\s*\"[^\"]*bar_visitor_glow_{name}\.aei\"")
+        self.assertRegex(SOURCE, r"ADD_RES\(resources\[461\],\s*33404, 2,\s*"
+                                 r"new AbyssEngine::ResourceTexture\(\"[^\"]*bar_visitor_shadow\.aei\"")
+
+        for slot, texture_id, blend in (
+            (896, 33400, "BlendMode_2"), (897, 33401, "BlendMode_2"),
+            (898, 33402, "BlendMode_2"), (899, 33403, "BlendMode_2"),
+            (900, 33404, "BlendMode_1"),
+        ):
+            with self.subTest(slot=slot):
+                self.assertRegex(SOURCE, rf"ADD_RES\(resources\[{slot}\],\s*{34800 + slot - 896}, 6,\s*"
+                                         rf"new AbyssEngine::ResourceMaterial\({texture_id}, {blend}\)\)")
+
+    def test_relocated_map_meshes_and_plane_ids(self):
+        for slot, resource_id, filename, material_id in (
+            (1869, 18081, "plane.aem", 27281),
+            (1871, 18083, "plane.aem", 27284),
+            (1874, 18086, "plane.aem", 27287),
+            (1876, 18088, "plane.aem", 27286),
+            (1877, 18180, "map_planet_000.aem", 20027),
+            (1883, 18186, "map_planet_006.aem", 20027),
+        ):
+            with self.subTest(slot=slot):
+                self.assertRegex(SOURCE, rf"ADD_RES\(resources\[{slot}\],\s*{resource_id}, 4,\s*"
+                                         rf"new AbyssEngine::ResourceMesh\(\s*\"[^\"]*{re.escape(filename)}\", "
+                                         rf"{material_id}, false\)\)")
 
     def test_ship_material_records(self):
         records = {

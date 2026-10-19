@@ -65,7 +65,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     PaintCanvas *canvas = engine->appManager->paintCanvas;
     canvas->TextureCreateGlobal(String("data/assets/main/3d/textures/low/etc/fx/cloak_map.aei"), 6);
 
-    // shortcut: 12 ARM records are not recovered yet; keep those host slots null until restored.
+    // shortcut: four ARM records are not recovered yet; keep those host slots null until restored.
     Resource *resources[2488]{};
     ADD_RES(resources[0], 
         11742, 2, new AbyssEngine::ResourceTexture("data/assets/supernova/3d/textures/low/etc/suns/sn_sun_011.aei",
@@ -1276,15 +1276,15 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[456], 
         10159, 2, new AbyssEngine::ResourceTexture(
             "data/assets/valkyrie/3d/textures/low/etc/galaxymap/v_galaxymap_planets.aei", 0.0f));
-    ADD_RES(resources[457], 
-        18180, 4,
-        new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_000.aem", 20027, false));
+    ADD_RES(resources[457],
+        33400, 2, new AbyssEngine::ResourceTexture(
+            "data/assets/main/3d/textures/low/etc/bars/bar_visitor_glow_terran.aei", 0.0f));
     ADD_RES(resources[458], 
-        0, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/bars/bar_visitor_glow_vossk.aei",
-                                               0.0f));
-    ADD_RES(resources[459], 
-        18186, 4,
-        new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_006.aem", 20027, false));
+        33401, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/bars/bar_visitor_glow_vossk.aei",
+                                                   0.0f));
+    ADD_RES(resources[459],
+        33402, 2, new AbyssEngine::ResourceTexture(
+            "data/assets/main/3d/textures/low/etc/bars/bar_visitor_glow_nivelian.aei", 0.0f));
     ADD_RES(resources[460], 
         33403, 2, new AbyssEngine::ResourceTexture(
             "data/assets/main/3d/textures/low/etc/bars/bar_visitor_glow_midorian.aei", 0.0f));
@@ -1937,7 +1937,11 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[893], 20030, 6, new AbyssEngine::ResourceMaterial(10145, BlendMode_1));
     ADD_RES(resources[894], 27306, 6, new AbyssEngine::ResourceMaterial(10161, static_cast<BlendMode>(6)));
     ADD_RES(resources[895], 27307, 6, new AbyssEngine::ResourceMaterial(10161, BlendMode_2));
-    ADD_RES(resources[898], 34802, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));
+    ADD_RES(resources[896], 34800, 6, new AbyssEngine::ResourceMaterial(33400, BlendMode_2));
+    ADD_RES(resources[897], 34801, 6, new AbyssEngine::ResourceMaterial(33401, BlendMode_2));
+    ADD_RES(resources[898], 34802, 6, new AbyssEngine::ResourceMaterial(33402, BlendMode_2));
+    ADD_RES(resources[899], 34803, 6, new AbyssEngine::ResourceMaterial(33403, BlendMode_2));
+    ADD_RES(resources[900], 34804, 6, new AbyssEngine::ResourceMaterial(33404, BlendMode_1));
     ADD_RES(resources[901], 20114, 6, new AbyssEngine::ResourceMaterial(11606, static_cast<BlendMode>(10)));
     ADD_RES(resources[902], 20115, 6, new AbyssEngine::ResourceMaterial(11607, static_cast<BlendMode>(10)));
     ADD_RES(resources[903], 20116, 6, new AbyssEngine::ResourceMaterial(11608, static_cast<BlendMode>(10)));
@@ -3444,17 +3448,24 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[1868], 
         18080, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/misc/plane.aem", 27290, false));
     ADD_RES(resources[1869], 
-        27281, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/misc/plane.aem", 27281, false));
+        18081, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/misc/plane.aem", 27281, false));
     ADD_RES(resources[1870], 
         18082, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/misc/plane.aem", 27288, false));
+    ADD_RES(resources[1871],
+        18083, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/misc/plane.aem", 27284, false));
     ADD_RES(resources[1872], 
         18084, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/misc/plane.aem", 27280, false));
     ADD_RES(resources[1873], 
         18085, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/misc/plane.aem", 27285, false));
+    ADD_RES(resources[1874],
+        18086, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/misc/plane.aem", 27287, false));
     ADD_RES(resources[1875], 
         18087, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/misc/plane.aem", 27282, false));
     ADD_RES(resources[1876], 
-        27286, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/misc/plane.aem", 27286, false));
+        18088, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/misc/plane.aem", 27286, false));
+    ADD_RES(resources[1877],
+        18180, 4, new AbyssEngine::ResourceMesh(
+            "data/assets/main/3d/meshes/galaxymap/map_planet_000.aem", 20027, false));
     ADD_RES(resources[1878], 
         18181, 4,
         new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_001.aem", 20027, false));
@@ -3470,6 +3481,9 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[1882], 
         18185, 4,
         new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_005.aem", 20027, false));
+    ADD_RES(resources[1883],
+        18186, 4, new AbyssEngine::ResourceMesh(
+            "data/assets/main/3d/meshes/galaxymap/map_planet_006.aem", 20027, false));
     ADD_RES(resources[1884], 
         18187, 4,
         new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/galaxymap/map_planet_007.aem", 20027, false));
