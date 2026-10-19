@@ -1,0 +1,12 @@
+{
+  "description": "Fixed before edits: getStations -> loadStationsBinary(SolarSystem*) -> StarSystem constructor. C2 is the C1 alias, reported separately, not an extra logical function.",
+  "target_source_shape": 98.0,
+  "canonical_pairs": [
+    ["game/world/SolarSystem", "_ZN11SolarSystem11getStationsEv"],
+    ["engine/file/FileRead", "_ZN8FileRead18loadStationsBinaryEP11SolarSystem"],
+    ["game/world/StarSystem", "_ZN10StarSystemC1Ei"]
+  ],
+  "alias_pairs": [
+    ["game/world/StarSystem", "_ZN10StarSystemC2Ei"]
+  ]
+}

@@ -516,8 +516,8 @@ Array<String *> *FileRead::loadNamesBinary(int32_t type, bool first, bool second
 Array<Station *> *FileRead::loadStationsBinary(SolarSystem *system) {
     Array<Station *> *stations = new Array<Station *>();
 
-    String path("data/bin/stations.bin");
-    if (AEFile::FileExist(path) == 0) {
+    // ARM 0x12017a-0x120192 destroys the path before testing/opening it.
+    if (AEFile::FileExist(String("data/bin/stations.bin")) == 0) {
         return 0;
     }
 
@@ -542,8 +542,10 @@ Array<Station *> *FileRead::loadStationsBinary(SolarSystem *system) {
         AEFile::ReadSwitched(d, handle);
         for (uint32_t i = 0; i < ids->size(); i++) {
             if ((uint32_t) ids->data()[i] == stationId) {
-                Station *station = new Station(name, a, b, c, d);
-                stations->data()[out++] = station;
+                // Publish before the by-value name temporary is destroyed
+                // (0x12021c-0x12022e), then advance the output position.
+                stations->data()[out] = new Station(name, a, b, c, d);
+                out++;
             }
             if (out == ids->size()) {
                 AEFile::Close(handle);

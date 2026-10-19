@@ -394,11 +394,10 @@ StarSystem::StarSystem(int mode) {
     this->playerTargets = nullptr;
     this->planetsArray = nullptr;
 
-    Status *status = Status::gStatus;
-    this->abstractSystem = status->getSystem() == 0;
-    this->supernovaSystem = (uint8_t) status->inSupernovaSystem();
+    this->abstractSystem = Globals::status->getSystem() == 0;
+    this->supernovaSystem = (uint8_t) Globals::status->inSupernovaSystem();
 
-    this->lensFlare = new LensFlare(PaintCanvas::gCanvas);
+    this->lensFlare = new LensFlare(Globals::Canvas);
     this->planetRing = nullptr;
     this->planetRingIndex = -1;
 
@@ -406,7 +405,7 @@ StarSystem::StarSystem(int mode) {
         this->planetsArray = new Array<AEGeometry *>();
         ArraySetLength(2, *(this->planetsArray));
 
-        AEGeometry *sun = new AEGeometry((uint16_t) 0x1a70, PaintCanvas::gCanvas, false);
+        AEGeometry *sun = new AEGeometry((uint16_t) 0x1a70, Globals::Canvas, false);
         (*this->planetsArray)[0] = sun;
         sun->setScaling(Vector{1000.0f, 1000.0f, 1000.0f});
         sun->moveForward(0x447a0000);
@@ -415,7 +414,7 @@ StarSystem::StarSystem(int mode) {
         this->lightDirection.y = -this->lightDirection.y;
         this->lightDirection.z = -this->lightDirection.z;
 
-        AEGeometry *planet = new AEGeometry((uint16_t) 0x1a70, PaintCanvas::gCanvas, false);
+        AEGeometry *planet = new AEGeometry((uint16_t) 0x1a70, Globals::Canvas, false);
         (*this->planetsArray)[1] = planet;
         int rnd = AERandom::gRandom->nextInt(0x4e20);
         float scale = (float) (rnd + 0x4e20) * 0.001f;
@@ -425,25 +424,28 @@ StarSystem::StarSystem(int mode) {
 
         this->texturesArray = new Array<uint32_t>();
         ArraySetLength(2, *(this->texturesArray));
-        PaintCanvas::gCanvas->TextureCreate((uint16_t) 0x2739, (*this->texturesArray)[0], false);
-        PaintCanvas::gCanvas->TextureCreate((uint16_t) 0x2719, (*this->texturesArray)[1], false);
+        Globals::Canvas->TextureCreate((uint16_t) 0x2739, (*this->texturesArray)[0], false);
+        Globals::Canvas->TextureCreate((uint16_t) 0x2719, (*this->texturesArray)[1], false);
 
         this->positionsArray = new Array<Vector>();
         ArraySetLength(2, *(this->positionsArray));
         (*this->positionsArray)[0] = sun->getPosition();
         (*this->positionsArray)[1] = planet->getPosition();
 
-        AEGeometry *streak = new AEGeometry((uint16_t) 0x1a70, PaintCanvas::gCanvas, false);
+        AEGeometry *streak = new AEGeometry((uint16_t) 0x1a70, Globals::Canvas, false);
         this->sunStreak = streak;
         streak->setScaling(Vector{250.0f, 15.0f, 1000.0f});
         initLight();
         return;
     }
 
-    SolarSystem *system = (SolarSystem *) (intptr_t) status->getSystem();
+    SolarSystem *system = (SolarSystem *) (intptr_t) Globals::status->getSystem();
     uint32_t *stations = system->getStations();
-    FileRead reader;
-    void *stationArray = reader.loadStationsBinary(system);
+    // ARM 0x133dfe-0x133e24: heap reader, a fresh system lookup, then
+    // destruction before either StarSystem array is allocated.
+    FileRead *reader = new FileRead();
+    void *stationArray = reader->loadStationsBinary(Globals::status->getSystem());
+    delete reader;
 
     this->texturesArray = new Array<uint32_t>();
     ArraySetLength(flat_count(stationArray) + 1, *(this->texturesArray));
@@ -451,18 +453,18 @@ StarSystem::StarSystem(int mode) {
     this->stationIdxArray = new Array<int>();
     ArraySetLength(flat_count(stations), *(this->stationIdxArray));
 
-    int mission = status->getCurrentCampaignMission();
+    int mission = Globals::status->getCurrentCampaignMission();
     if ((mission == 0x59 && this->supernovaSystem != 0) ||
         (mission > 0x9d &&
-         ((SolarSystem *) (intptr_t) status->getSystem())->getIndex() == 0x1b)) {
-        PaintCanvas::gCanvas->TextureCreate((uint16_t) 0x2dde, (*this->texturesArray)[0], false);
+         ((SolarSystem *) (intptr_t) Globals::status->getSystem())->getIndex() == 0x1b)) {
+        Globals::Canvas->TextureCreate((uint16_t) 0x2dde, (*this->texturesArray)[0], false);
         this->tintColor = 3;
     } else {
-        uint32_t tex = ((SolarSystem *) (intptr_t) status->getSystem())->getTextureIndex();
-        PaintCanvas::gCanvas->TextureCreate(g_StarSystem_ctor_systemPlanetTextures[tex],
+        uint32_t tex = ((SolarSystem *) (intptr_t) Globals::status->getSystem())->getTextureIndex();
+        Globals::Canvas->TextureCreate(g_StarSystem_ctor_systemPlanetTextures[tex],
                                (*this->texturesArray)[0], false);
         this->tintColor = g_StarSystem_ctor_systemColors[
-            ((SolarSystem *) (intptr_t) status->getSystem())->getIndex()];
+            ((SolarSystem *) (intptr_t) Globals::status->getSystem())->getIndex()];
     }
 
     uint32_t count = flat_count(stations);
@@ -470,24 +472,24 @@ StarSystem::StarSystem(int mode) {
     Station **loadedStations = (Station **) flat_data(stationArray);
     for (uint32_t i = 1; i < this->texturesArray->size(); ++i) {
         int stationIndex = stationIds[i - 1];
-        int currentStation = status->getStation()->getIndex();
+        int currentStation = Globals::status->getStation()->getIndex();
         Station *station = loadedStations[i - 1];
         uint32_t stationTex = station->getTextureIndex();
         if (stationIndex == currentStation) {
-            if (mode == 3 && status->getCurrentCampaignMission() == 0) {
+            if (mode == 3 && Globals::status->getCurrentCampaignMission() == 0) {
                 this->selectedStationSlot = i;
-                PaintCanvas::gCanvas->TextureCreate((uint16_t) 0x273b,
+                Globals::Canvas->TextureCreate((uint16_t) 0x273b,
                                        (*this->texturesArray)[i], false);
             } else {
-                PaintCanvas::gCanvas->TextureCreate(g_StarSystem_ctor_stationPlanetTextures[stationTex],
+                Globals::Canvas->TextureCreate(g_StarSystem_ctor_stationPlanetTextures[stationTex],
                                        (*this->texturesArray)[i], false);
             }
         } else {
-            PaintCanvas::gCanvas->TextureCreate(g_StarSystem_ctor_stationTextures[stationTex],
+            Globals::Canvas->TextureCreate(g_StarSystem_ctor_stationTextures[stationTex],
                                    (*this->texturesArray)[i], false);
-            if (Status::gStatus->orbitHasPlanetRing(station->getIndex()) != 0) {
-                this->planetRing = new AEGeometry((uint16_t) 0x1a70, PaintCanvas::gCanvas, false);
-                PaintCanvas::gCanvas->TextureCreate((uint16_t) 0x7198,
+            if (Globals::status->orbitHasPlanetRing(station->getIndex()) != 0) {
+                this->planetRing = new AEGeometry((uint16_t) 0x1a70, Globals::Canvas, false);
+                Globals::Canvas->TextureCreate((uint16_t) 0x7198,
                                        this->planetRingTexture, false);
                 this->planetRingIndex = i;
             }
@@ -510,23 +512,23 @@ StarSystem::StarSystem(int mode) {
     this->positionsArray = new Array<Vector>();
     ArraySetLength(count + 1, *(this->positionsArray));
 
-    AERandom::gRandom->setSeed((long long) status->getStation()->getIndex() * 300);
+    AERandom::gRandom->setSeed((long long) Globals::status->getStation()->getIndex() * 300);
 
     int sunSlot = AERandom::gRandom->nextInt(14) + 5;
-    int stationSunSlotIndex = status->getStation()->getTextureIndex() - 9;
+    int stationSunSlotIndex = Globals::status->getStation()->getTextureIndex() - 9;
     if (stationSunSlotIndex >= 0 && stationSunSlotIndex < 14 &&
         (((0x3a31u >> stationSunSlotIndex) & 1u) != 0)) {
         sunSlot = g_StarSystem_ctor_sunSlotOverrides[stationSunSlotIndex];
     }
     PlayerStatic **targets = (PlayerStatic **) flat_data(this->playerTargets);
     for (uint32_t i = 0; i < this->planetsArray->size(); ++i) {
-        AEGeometry *geom = new AEGeometry((uint16_t) 0x1a70, PaintCanvas::gCanvas, false);
+        AEGeometry *geom = new AEGeometry((uint16_t) 0x1a70, Globals::Canvas, false);
         (*this->planetsArray)[i] = geom;
 
         if (i == 0) {
             float sunScale = this->supernovaSystem == 0 ? 1000.0f : 2000.0f;
             geom->setScaling(Vector{sunScale, sunScale, sunScale});
-            AEGeometry *streak = new AEGeometry((uint16_t) 0x1a70, PaintCanvas::gCanvas, false);
+            AEGeometry *streak = new AEGeometry((uint16_t) 0x1a70, Globals::Canvas, false);
             this->sunStreak = streak;
             streak->setScaling(Vector{
                 this->supernovaSystem == 0 ? 250.0f : 500.0f,
@@ -534,7 +536,7 @@ StarSystem::StarSystem(int mode) {
                 this->supernovaSystem == 0 ? 1000.0f : 2000.0f
             });
             if (this->supernovaSystem != 0) {
-                PaintCanvas::gCanvas->TextureCreate((uint16_t) 0x2dde,
+                Globals::Canvas->TextureCreate((uint16_t) 0x2dde,
                                        this->supernovaSunTexture, false);
             }
             usedSlots[sunSlot * 4] = 1;
@@ -544,7 +546,7 @@ StarSystem::StarSystem(int mode) {
             int slot = AERandom::gRandom->nextInt(11) + 7;
             usedSlots[slot * 4] = 1;
             int dist = AERandom::gRandom->nextInt(0x4e20) + 0x4e20;
-            if (status->getCurrentCampaignMission() == 0) {
+            if (Globals::status->getCurrentCampaignMission() == 0) {
                 dist = (int) ((float) dist * 0.5f);
             }
             float scale = (float) dist * 0.001f;
