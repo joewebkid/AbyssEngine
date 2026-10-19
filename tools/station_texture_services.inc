@@ -1,16 +1,18 @@
 static unsigned stationUploads;
-static void checkStationMipPixels(GLuint texture, const unsigned char *base) {
-    auto pixels = readMipPixels(texture, 64, 7);
-    assert(std::memcmp(pixels[0].data(), base, 16384) == 0);
+static void checkStationMipPixels(GLuint texture, const unsigned char *base, unsigned baseSide = 64) {
+    unsigned levels = 1;
+    for (unsigned side = baseSide; side > 1; side /= 2) ++levels;
+    auto pixels = readMipPixels(texture, baseSide, levels);
+    assert(std::memcmp(pixels[0].data(), base, baseSide * baseSide * 4) == 0);
     // Generated mips have no original-file payload. This checks a 2x2 box
     // filter with accumulated nearest-byte rounding, not a GLES-mandated kernel.
-    for (unsigned level = 1, side = 32; level < 7; ++level, side /= 2) {
+    for (unsigned level = 1, side = baseSide / 2; level < levels; ++level, side /= 2) {
         unsigned span = 1u << level, area = span * span, maxError = 0;
         for (unsigned y = 0; y < side; ++y) for (unsigned x = 0; x < side; ++x)
             for (unsigned c = 0; c < 4; ++c) {
                 unsigned sum = 0;
                 for (unsigned yy = 0; yy < span; ++yy) for (unsigned xx = 0; xx < span; ++xx)
-                    sum += base[((y * span + yy) * 64 + x * span + xx) * 4 + c];
+                    sum += base[((y * span + yy) * baseSide + x * span + xx) * 4 + c];
                 int expected = int((sum + area / 2) / area);
                 unsigned error = unsigned(std::abs(int(pixels[level][(y * side + x) * 4 + c]) - expected));
                 maxError = std::max(maxError, error);
@@ -18,7 +20,7 @@ static void checkStationMipPixels(GLuint texture, const unsigned char *base) {
         std::printf("Station generated mip %u: box-reference max error %u, bound %u\n", level, maxError, (level + 1) / 2);
         assert(maxError <= (level + 1) / 2);
     }
-    std::puts("Station RGBA: 16384 base bytes exact; six generated mips checked separately");
+    std::printf("Station RGBA: %u base bytes exact; %u generated mips checked separately\n", baseSide * baseSide * 4, levels - 1);
 }
 
 int AbyssEngine::stationTextureUpload(Engine *engine, const char *path, ImageCallback callback,

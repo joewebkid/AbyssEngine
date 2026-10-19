@@ -28,12 +28,6 @@ void ArrayRelease_KIPlayer(void *array);
 
 void *Array_KIPlayer_dtor(void *array);
 
-void Array_KIPlayer_ctor(void *array);
-
-void Array_Station_release(void *array);
-
-void *Array_Station_dtor(void *array);
-
 static inline uint32_t flat_count(void *array) {
     return static_cast<Array<void *> *>(array)->size_;
 }
@@ -446,11 +440,11 @@ StarSystem::StarSystem(int mode) {
     // ARM 0x133dfe-0x133e24: heap reader, a fresh system lookup, then
     // destruction before either StarSystem array is allocated.
     FileRead *reader = new FileRead();
-    void *stationArray = reader->loadStationsBinary(Globals::status->getSystem());
+    Array<Station *> *stationArray = reader->loadStationsBinary(Globals::status->getSystem());
     delete reader;
 
     this->texturesArray = new Array<uint32_t>();
-    ArraySetLength(flat_count(stationArray) + 1, *(this->texturesArray));
+    ArraySetLength(stationArray->size() + 1, *(this->texturesArray));
 
     this->stationIdxArray = new Array<int>();
     ArraySetLength(flat_count(stations), *(this->stationIdxArray));
@@ -471,7 +465,7 @@ StarSystem::StarSystem(int mode) {
 
     uint32_t count = flat_count(stations);
     int *stationIds = (int *) flat_data(stations);
-    Station **loadedStations = (Station **) flat_data(stationArray);
+    Station **loadedStations = stationArray->data();
     for (uint32_t i = 1; i < this->texturesArray->size(); ++i) {
         int stationIndex = stationIds[i - 1];
         int currentStation = Globals::status->getStation()->getIndex();
@@ -501,14 +495,13 @@ StarSystem::StarSystem(int mode) {
         (*this->stationIdxArray)[i - 1] = station->getIndex();
     }
 
-    Array_Station_release(stationArray);
-    ::operator delete(Array_Station_dtor(stationArray));
+    // ARM 0x134038/0x13403e releases the Station pointers, then their Array.
+    ArrayReleaseClasses(*stationArray);
+    delete stationArray;
 
-    this->playerTargets = ::operator new(0x0c);
-    Array_KIPlayer_ctor(this->playerTargets);
-
-    ArraySetLength<unsigned int>(static_cast<unsigned int>(count),
-                                 *static_cast<Array<unsigned int> *>(this->playerTargets));
+    // ARM 0x13404e/0x13405c uses Array<KIPlayer *>; its host size is not 12.
+    this->playerTargets = new Array<KIPlayer *>();
+    ArraySetLength(count, *static_cast<Array<KIPlayer *> *>(this->playerTargets));
 
     this->planetsArray = new Array<AEGeometry *>();
     ArraySetLength(count + 1, *(this->planetsArray));

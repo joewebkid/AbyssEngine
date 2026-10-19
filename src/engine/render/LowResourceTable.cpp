@@ -1327,7 +1327,7 @@ void loadLowTexturesAndMaterials(AbyssEngine::Engine *engine) {
         res->kind = 2;
         res->unused = -1;
         res->payload = new AbyssEngine::ResourceTexture(
-            "data/assets/main/3d/textures/low/etc/planets/planet_014_big.aei", -1.0f);
+            "data/assets/main/3d/textures/low/etc/planets/planet_014_big.aei", 0.0f);
         canvas->AddResource(res);
     }
     {
