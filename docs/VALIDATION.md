@@ -4,6 +4,28 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Combined station/iPad integration gate (2026-10-19)
+
+The integrated source has a green native `gof2` build and 208/208 ARM
+translation units. The complete resource-table/platform host gate and the
+continuous station-entry gate both pass at `-O0/-O2` with original Android
+assets; 49 verifier tests pass with one pre-existing skip. The station gate
+reaches `StarSystem` and deliberately stops at the unverified
+`LensFlare::Image2DCreate(0x508)` boundary. It does not run a native game.
+See [station](LEVEL_STATION_ENTRY_2026-10-19.md) and
+[ordinary iPad](BUILD_RESOURCE_IPAD_TAIL_ARM_2026-10-19.md) evidence.
+
+Fresh full ARM report: `_work/decomp_combined_full_20261019_final.json`
+(ignored, SHA-256 `614f6dd4c335a720eb952318b3d95e5112ff9a12060a9e68575e0f15dba57c95`).
+It compares 4,323/4,524 original functions in 4,731 unit/symbol pairs,
+with 93.90% mean source-shape, 83.16% mean strict fuzzy, 2,545 linked-exact
+and 1,079 byte-exact. Against the preceding combined baseline report,
+normalized `(unit, symbol)` sets show **zero lost**, **16 gained**
+linked-exact and **zero lost**, **three gained** byte-exact pairs. There are
+zero skipped units and zero wrong-type signatures. The two recovered paths
+remain bounded: full `BuildResourceList` and `Level::init` execution,
+rendering and ARM-device behavior are not established.
+
 ## BuildResourceList missing-slot gate (2026-10-19)
 
 Android ARM evidence restores ten omitted records in the 2,488-slot

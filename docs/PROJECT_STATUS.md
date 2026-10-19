@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-19 (resource, portrait and Level-entry integration; older subsystem
+Last reviewed: 2026-10-19 (station entry and ordinary iPad resource integration; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -13,14 +13,47 @@ executes after startup with real item, ship and agent-stock generation,
 including mission offers under a controlled RNG boundary. The next
 integration milestone is completing `Level::init` with real resources. A
 continuous host gate now executes its production constructor and `init`,
-registers the complete 2,488-entry table plus two low textures, and loads
-two original AEM and two AEI files before stopping at the `PlayerStation`
-constructor. Stage 0 has not returned, and the game is not running. A
+registers the complete 2,488-entry table plus two low textures, and runs
+through `PlayerStation`, both jumpgates and `StarSystem` to the first
+unverified `LensFlare` image/GPU boundary. It checks 44 station collision
+volumes, 17 meshes, 15 transforms and 14 original files at `-O0/-O2`.
+Stage 0 has not returned, and the game is not running. A
 catalog-backed cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
 
-## Continuous Level entry and portrait flags (2026-10-19)
+## Station entry and ordinary iPad resources (2026-10-19)
+
+The station pass repairs source-backed inherited layout, geometry attachment,
+collision data and constructor branches; the continuous original-asset gate
+now stops explicitly at `Image2DCreate(0x508)`. Special station variants,
+GPU services, `createPlayer`, later Level stages and an ARM device run remain
+untested. The `PlayerStation` constructor improves from 78.5% to 90.6%
+source-shape, while its strict fuzzy score falls from 24.9% to 23.4%; it is
+not byte-exact. The 23-comparison `PlayerStation` unit mean is 98.57%
+source-shape, **not** the constructor score. See
+[the station evidence](LEVEL_STATION_ENTRY_2026-10-19.md).
+
+The ordinary non-Retina iPad branch now adds its eight ARM-confirmed texture
+records after nine common records. All 58 bounded platform paths are present
+in the original OBB and the host branch gate passes at `-O0/-O2` across
+64 flag combinations. The huge `BuildResourceList` function remains partial:
+focused source-shape/strict fuzzy improves 75.4%/21.1% to 75.6%/21.5%,
+not to 98%. The post-platform stream from `0x10bf46` and HD continuations
+are next. See [the iPad evidence](BUILD_RESOURCE_IPAD_TAIL_ARM_2026-10-19.md).
+
+On the combined revision, native `gof2`, all 208 ARM translation units,
+the station and resource host gates, and 49 verifier tests pass (one existing
+skip). The fresh full corpus compares **4,323/4,524** original functions in
+4,731 pairs, with **93.90%** mean source-shape, **83.16%** mean strict fuzzy,
+**2,545 linked-exact** and **1,079 byte-exact** pairs. Against the preceding
+integrated revision there are **zero exact-pair losses**, 16 new linked-exact
+and three new byte-exact pairs; zero units are skipped or have a wrong-type
+signature. The report is local/ignored at
+`_work/decomp_combined_full_20261019_final.json`. Exact matching still does
+not prove game behavior or completion.
+
+## Earlier continuous Level entry and portrait flags (2026-10-19)
 
 The asset-backed Level gate joins table registration, ten manager
 constructors and the production skybox loader path in one process at
@@ -41,7 +74,7 @@ and 148/152 `_ipad_1440` variants. Original Android startup and
 two absent `_ipad` variants; whether the file service supplies a fallback
 or rendering fails remains untested. See [the portrait evidence](PORTRAITS_GLOBAL_FLAGS_ARM_2026-10-19.md).
 
-On the integrated revision, native `gof2` and 208/208 ARM units build;
+On that earlier integrated revision, native `gof2` and 208/208 ARM units build;
 46 verifier tests pass (one existing skip). The focused resource,
 portrait and continuous Level gates pass at `-O0/-O2`. The full ARM
 corpus compares 4,323/4,524 original functions, with 93.87% mean
@@ -49,8 +82,8 @@ source-shape, 83.05% mean strict fuzzy, 2,529 linked-exact and 1,076
 byte-exact; no exact pair was lost against the pre-integration baseline.
 Focused source-shape/strict fuzzy is 75.4%/21.1% for
 `BuildResourceList`, 92.5%/66.8% for `loadPortraits`, and
-84.8%/52.7% for `Level::init`; none is exact. Next priority is the
-`PlayerStation` boundary and the remaining iPad resource tail.
+84.8%/52.7% for `Level::init`; none is exact. The then-next priorities
+were the `PlayerStation` boundary and the remaining iPad resource tail.
 
 ## BuildResourceList missing slots (2026-10-19)
 
