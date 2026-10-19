@@ -5,6 +5,7 @@
 #include "game/core/String.h"
 #include <cassert>
 #include <cstring>
+#include <initializer_list>
 
 namespace AbyssEngine {
 class Engine;
@@ -80,7 +81,8 @@ int main() {
     };
     auto assertTexture = [&](unsigned int index, const TextureCase &expected) {
         auto *resource = canvas.resources.data_[index];
-        assert(resource->id == expected.id && resource->kind == 2);
+        assert(resource->id == expected.id && resource->kind == 2 && resource->unused == -1);
+        assert(static_cast<AbyssEngine::ResourceTexture *>(resource->payload)->value == 0.0f);
         assert(std::strcmp(static_cast<AbyssEngine::ResourceTexture *>(resource->payload)->name,
                            expected.path) == 0);
     };
@@ -130,7 +132,44 @@ int main() {
         assertTexture(2563 + i, ordinary[i]);
     Globals::iPad = 1;
     registerHdResources(&canvas);
-    assert(canvas.resources.count == 2587);
+    assert(canvas.resources.count == 2595);
     for (unsigned int i = 0; i < 9; ++i)
         assertTexture(2578 + i, ordinary[i]);
+    const TextureCase ipad[] = {
+        {10089, "data/textures/gof2_interface3_ipad.aei"},
+        {10063, "data/textures/gof2_interface2_ipad.aei"},
+        {10064, "data/textures/gof2_items_ipad.aei"},
+        {11632, "data/textures/gof2_items_ipad_2.aei"},
+        {11630, "data/textures/gof2_dlc_interface_ipad.aei"},
+        {27341, "data/textures/gof2_challenge_interface_ipad.aei"},
+        {27342, "data/textures/gof2_campaign_select_ipad.aei"},
+        {27343, "data/textures/gof2_shop_button.aei"},
+    };
+    for (unsigned int i = 0; i < 8; ++i)
+        assertTexture(2587 + i, ipad[i]);
+
+    // Include noncanonical nonzero bytes: ARM checks zero, not equality to one.
+    for (unsigned char hd : {0, 1, 2, 255}) {
+        for (unsigned char pad : {0, 1, 2, 255}) {
+            for (unsigned char retina : {0, 1, 2, 255}) {
+                Globals::iPadHD = hd;
+                Globals::iPad = pad;
+                Globals::retinaDisplay = retina;
+                unsigned int start = canvas.resources.count;
+                registerHdResources(&canvas);
+                unsigned int expected = hd ? (pad && retina ? 20 : 12)
+                                          : (retina ? 16 : (pad ? 17 : 15));
+                assert(canvas.resources.count == start + expected);
+                if (!hd && !retina) {
+                    for (unsigned int i = 0; i < (pad ? 9u : 15u); ++i)
+                        assertTexture(start + i, ordinary[i]);
+                    if (pad) {
+                        for (unsigned int i = 0; i < 8; ++i)
+                            assertTexture(start + 9 + i, ipad[i]);
+                    }
+                }
+            }
+        }
+    }
+
 }

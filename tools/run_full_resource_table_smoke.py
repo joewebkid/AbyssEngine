@@ -5,6 +5,8 @@ from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+import re
+import zipfile
 
 from run_particle_control_smoke import function
 
@@ -15,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--cxx", default=shutil.which("g++"))
+    parser.add_argument("--obb", type=Path, help="optional original Android OBB path check")
     args = parser.parse_args()
     if not args.cxx:
         parser.error("specify --cxx")
@@ -31,6 +34,16 @@ def main():
          function(source, "if (Globals::iPadHD) {") + \
          function(source, "else if (Globals::retinaDisplay) {") + \
          function(source[source.index("else if (Globals::retinaDisplay) {"):], "else {") + "\n}\n"
+
+    if args.obb:
+        paths = set(re.findall(r'"(data/textures/[^"\n]+)"', hd))
+        with zipfile.ZipFile(args.obb) as archive:
+            names = set(archive.namelist())
+            missing = sorted(path for path in paths
+                             if "47947_GOF2CONTENT_ETC/assets/" + path not in names)
+        if missing:
+            raise RuntimeError("platform texture paths absent from OBB: " + str(missing))
+        print(f"Original Android OBB: {len(paths)}/{len(paths)} platform texture paths present")
 
     canvas = (ROOT / "src/engine/render/PaintCanvas.cpp").read_text()
     setter = canvas[canvas.index("void PaintCanvas::SetResourceList("):]

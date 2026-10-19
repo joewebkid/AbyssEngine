@@ -5340,7 +5340,6 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
             makeRes(10002, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_logos_ipad2.aei", 0.0f)));
         canvas->AddResource(
             makeRes(27340, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_credits.aei", 0.0f)));
-        // shortcut: the iPad continuation at ARM 0x10be20 still needs recovery before a full runtime gate.
         if (!Globals::iPad) {
             // ARM 0x10f008-0x10f11c: these six atlases are absent on iPad.
             canvas->AddResource(
@@ -5355,8 +5354,28 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
                 makeRes(27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select.aei", 0.0f)));
             canvas->AddResource(
                 makeRes(27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button.aei", 0.0f)));
+        } else {
+            // ARM 0x10be22 reads iPadHD via r8/GOT 0x21038c: zero here selects 0x10f160.
+            // ARM 0x10f160-0x10f2d0: ordinary iPad; final shop path has no iPad suffix.
+            canvas->AddResource(
+                makeRes(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3_ipad.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(10063, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface2_ipad.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_2.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface_ipad.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_ipad.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_ipad.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button.aei", 0.0f)));
         }
     }
+    // shortcut: post-platform records from ARM 0x10bf46 still need recovery before full execution.
     canvas->AddResource(
         makeRes(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface.aei", 0.0f)));
     canvas->AddResource(makeRes(0, 0, nullptr));
