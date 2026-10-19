@@ -11,7 +11,9 @@ the allocation in `r0`. The precision is clamped to 0–30; integer digits
 are generated backwards, fractional digits forwards, then one extra digit
 is rounded. The integer-digit path uses a `double`-precision `+0.03`
 correction. The five-argument call from `String::Set(float)` at `0x72cd6`
-passes precision 10 and mode 0 on the stack.
+passes precision 10 and mode 1 on the stack (`movs r0,#1` at `0x72cce`,
+`str r0,[sp,#0]` at `0x72cd0`). The earlier mode-0 attribution was incorrect;
+the separate direct mode-0 helper smoke below does not prove Set's call argument.
 
 The previous local helper had the same parameter types but returned `void`
 and interpreted the value incorrectly. `String::Set(float)` called a

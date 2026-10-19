@@ -194,14 +194,14 @@ int main() {
         AbyssEngine::String fractionalFloat(0.25f);
         AbyssEngine::String smallFloat(0.025f);
         AbyssEngine::String zeroFloat(0.0f);
-        check(matchesAscii(positiveFloat, "1.5000000000"), "String positive float");
-        check(matchesAscii(negativeFloat, "-1.5000000000"), "String negative float");
+        check(matchesAscii(positiveFloat, "1.500000000"), "String positive float");
+        check(matchesAscii(negativeFloat, "-1.500000000"), "String negative float");
         check(matchesAscii(fractionalFloat, "0.2500000000"), "String fractional float");
-        check(matchesAscii(smallFloat, "0.0250000000"), "String small float");
+        check(matchesAscii(smallFloat, "0.02500000000"), "String small float");
         check(matchesAscii(zeroFloat, "0.0000000000"), "String zero float");
         AbyssEngine::String appendedFloat("value=");
         appendedFloat += 1.5f;
-        check(matchesAscii(appendedFloat, "value=1.5000000000"),
+        check(matchesAscii(appendedFloat, "value=1.500000000"),
               "String append float");
 
         Array<AbyssEngine::String *> owned;

@@ -451,9 +451,10 @@ Array<String *> *String::SplitTags(String tag) {
 }
 
 void String::Set(float v) {
-    int exp = 0;
-    int neg = 0;
-    uint16_t *digitsW = AbyssEngine::computeFloatString(v, 10, &exp, &neg, 0);
+    int exp;
+    int neg;
+    // ARM 0x72cce-0x72cd6 passes mode 1 (ten significant digits).
+    uint16_t *digitsW = AbyssEngine::computeFloatString(v, 10, &exp, &neg, 1);
     String result;
     if (exp <= 0) {
         result.Set("0.");
@@ -672,7 +673,7 @@ String::String(char c) : data(nullptr) { Set((long long) (unsigned char) c); }
 
 String::String(int v) : data(nullptr) { Set((long long) v); }
 
-String::String(float v) : data(nullptr), length(0) { ctor_float(v); }
+String::String(float v) : data(nullptr) { Set(v); }
 
 String::String(long long v) : data(nullptr) { Set(v); }
 
