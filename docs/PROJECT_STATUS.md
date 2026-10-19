@@ -49,7 +49,9 @@ skip). The fresh full corpus compares **4,323/4,524** original functions in
 **2,545 linked-exact** and **1,079 byte-exact** pairs. Against the preceding
 integrated revision there are **zero exact-pair losses**, 16 new linked-exact
 and three new byte-exact pairs; zero units are skipped or have a wrong-type
-signature. The report is local/ignored at
+signature. The 201 absent names in this report are C++ runtime, ZIP/zlib and
+SHA/OpenSSL support symbols; none names a game class. This inventory fact
+does not establish semantic or runtime completeness. The report is local/ignored at
 `_work/decomp_combined_full_20261019_final.json`. Exact matching still does
 not prove game behavior or completion.
 
