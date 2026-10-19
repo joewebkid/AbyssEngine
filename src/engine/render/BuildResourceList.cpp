@@ -65,8 +65,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     PaintCanvas *canvas = engine->appManager->paintCanvas;
     canvas->TextureCreateGlobal(String("data/assets/main/3d/textures/low/etc/fx/cloak_map.aei"), 6);
 
-    // shortcut: four ARM records are not recovered yet; keep those host slots null until restored.
-    Resource *resources[2488]{};
+    Resource *resources[2488];
     ADD_RES(resources[0], 
         11742, 2, new AbyssEngine::ResourceTexture("data/assets/supernova/3d/textures/low/etc/suns/sn_sun_011.aei",
                                                    0.0f));
@@ -843,8 +842,8 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[309], 
         10041, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/suns/sun_010.aei", 0.0f));
     ADD_RES(resources[310],
-        6801, 4,
-        new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/fx/projectile_025_anim_add.aem", 24201, false));
+        33010, 2, new AbyssEngine::ResourceTexture(
+            "data/assets/main/3d/textures/low/etc/stations/stations_terran_diffuse.aei", 0.0f));
     ADD_RES(resources[311], 33011, 2, new AbyssEngine::ResourceTexture(
                                  "data/assets/main/3d/textures/low/etc/stations/stations_terran_normal_specular.aei",
                                  0.0f));
@@ -2018,6 +2017,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[974], 27145, 6, new AbyssEngine::ResourceMaterial(11615, 11616, static_cast<BlendMode>(28)));
     ADD_RES(resources[975], 27146, 6, new AbyssEngine::ResourceMaterial(11615, BlendMode_dummy));
     ADD_RES(resources[976], 27147, 6, new AbyssEngine::ResourceMaterial(11620, BlendMode_2));
+    ADD_RES(resources[977], 34817, 6, new AbyssEngine::ResourceMaterial(34816, BlendMode_2));
     ADD_RES(resources[978], 27162, 6, new AbyssEngine::ResourceMaterial(11628, static_cast<BlendMode>(6)));
     ADD_RES(resources[979], 27163, 6, new AbyssEngine::ResourceMaterial(11628, BlendMode_dummy));
     ADD_RES(resources[980], 27164, 6, new AbyssEngine::ResourceMaterial(11628, BlendMode_2));
@@ -2037,6 +2037,8 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[994], 27257, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
     ADD_RES(resources[995], 27260, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));
     ADD_RES(resources[996], 27262, 6, new AbyssEngine::ResourceMaterial(24203, BlendMode_2));
+    ADD_RES(resources[997], 34810, 6, new AbyssEngine::ResourceMaterial(24204, 24205, static_cast<BlendMode>(28)));
+    ADD_RES(resources[998], 34811, 6, new AbyssEngine::ResourceMaterial(24206, 24207, static_cast<BlendMode>(28)));
     ADD_RES(resources[999], 11636, 1, newImage(0x2d73u, 0x0u));
     ADD_RES(resources[1000], 11638, 1, newImage(0x2d75u, 0x0u));
     ADD_RES(resources[1001], 11640, 1, newImage(0x2d77u, 0x0u));
@@ -2990,6 +2992,9 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[1699], 
         6800, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/fx/projectile_024_anim_add.aem", 24201,
                                                false));
+    ADD_RES(resources[1700],
+        6801, 4, new AbyssEngine::ResourceMesh(
+            "data/assets/main/3d/meshes/fx/projectile_025_anim_add.aem", 24201, false));
     ADD_RES(resources[1701], 
         6802, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/fx/projectile_026_anim_add.aem", 24201,
                                                false));

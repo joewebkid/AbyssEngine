@@ -12,8 +12,25 @@ class ResourceMaterialTableTest(unittest.TestCase):
     def test_table_slots(self):
         slots = [int(slot) for slot in re.findall(r"ADD_RES\(resources\[(\d+)\]", SOURCE)]
         self.assertEqual(len(slots), len(set(slots)))
-        self.assertEqual(set(range(2488)) - set(slots),
-                         {977, 997, 998, 1700})
+        self.assertEqual(set(slots), set(range(2488)))
+        self.assertIn("Resource *resources[2488];", SOURCE)
+
+    def test_final_arm_records(self):
+        self.assertRegex(SOURCE, r"ADD_RES\(resources\[310\],\s*33010, 2,\s*"
+                                 r"new AbyssEngine::ResourceTexture\(\s*\"[^\"]*stations_terran_diffuse\.aei\", 0\.0f\)\)")
+        self.assertRegex(SOURCE, r"ADD_RES\(resources\[977\], 34817, 6, "
+                                 r"new AbyssEngine::ResourceMaterial\(34816, BlendMode_2\)\)")
+        for slot, resource_id, diffuse, normal in (
+            (997, 34810, 24204, 24205),
+            (998, 34811, 24206, 24207),
+        ):
+            with self.subTest(slot=slot):
+                self.assertRegex(SOURCE, rf"ADD_RES\(resources\[{slot}\], {resource_id}, 6, "
+                                         rf"new AbyssEngine::ResourceMaterial\({diffuse}, {normal}, "
+                                         r"static_cast<BlendMode>\(28\)\)\)")
+        self.assertRegex(SOURCE, r"ADD_RES\(resources\[1700\],\s*6801, 4,\s*"
+                                 r"new AbyssEngine::ResourceMesh\(\s*\"[^\"]*projectile_025_anim_add\.aem\", "
+                                 r"24201, false\)\)")
 
     def test_visitor_glow_resources(self):
         for slot, resource_id, name in (

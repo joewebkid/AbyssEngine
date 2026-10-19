@@ -11,9 +11,9 @@ resource list. The `Level` asset-backed gate loads restored texture 33410
 from the original OBB at `-O0/-O2` and checks its cached handle; restored
 mesh 14287 passes resource-ID `MeshCreate` into production
 `MeshCreateFromFile`/`MeshReadData` with its original file. Animated-mesh
-clone-on-reuse remains untested. The four currently unrecovered positions are null-initialized
-for host safety, not confirmed as null in the original. The full list and
-its consumers remain untested. See
+clone-on-reuse remains untested. All 2,488 table positions now have
+records; the full construction/registration segment passes a bounded
+host gate, but later resources and consumers remain untested. See
 [the ARM evidence](BUILD_RESOURCE_LIST_GAPS_ARM_2026-10-19.md).
 Native `gof2`, 208/208 ARM TUs and 40 verifier tests pass (one existing
 skip). Full corpus: 4,323/4,524 compared, 2,529 linked-exact and
@@ -60,6 +60,21 @@ selected original-asset gate passes at `-O0/-O2`. Focused
 74.7%/17.6%, nonexact. Full corpus compares 4,323/4,524 with means
 93.87%/83.05%, 2,529 linked-exact, 1,076 byte-exact, and zero losses
 from the preceding exact-pair sets. Full-table execution remains open.
+
+The final-slot follow-up fills positions 977/997/998/1700 and moves
+mesh 6801 from slot 310 to its ARM slot 1700, restoring texture 33010
+at 310. `test_resource_material_table.py` confirms exactly one record
+at every index 0–2487. `run_full_resource_table_smoke.py` executes
+all source-extracted table entries, constructors and production bulk
+`SetResourceList` at `-O0/-O2`, checks non-null registration and the
+five repaired records. The GL prelude, post-table additions and
+`Level::init` are not included in this gate.
+Native and 208/208 ARM units build, 45 verifier tests pass (one existing
+skip), and the selected original-asset gate passes at `-O0/-O2`.
+Focused `BuildResourceList` source-shape/strict fuzzy is 75.0%/21.2%
+(previously 74.9%/18.4%), nonexact. Full corpus: 4,323/4,524 compared,
+93.87%/83.06% mean source-shape/strict fuzzy, 2,529 linked-exact,
+1,076 byte-exact, zero previous exact-pair losses.
 
 ## Level skybox canvas-to-loader gate (2026-10-19)
 

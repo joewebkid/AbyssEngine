@@ -193,3 +193,42 @@ The fresh full corpus compares 4,323/4,524 original functions, with
 mean source-shape/strict fuzzy 93.87%/83.05%, 2,529 linked-exact and
 1,076 byte-exact. The exact-pair sets have zero losses against the
 preceding full report; 201 original functions remain missing.
+
+## Follow-up: final four table positions and full registration gate
+
+Android ARM confirms the four remaining records and a misplaced
+texture/mesh pair:
+
+| Slot | ARM store | ID | Payload |
+| ---: | --- | ---: | --- |
+| 310 | `0xed11e` | 33010 | Texture `stations_terran_diffuse.aei`, value 0 |
+| 977 | `0xf5a8c` | 34817 | Material `(34816, blend 2)` |
+| 997 | `0xf5ea6` | 34810 | Material `(24204, 24205, blend 28)` |
+| 998 | `0xf5ee8` | 34811 | Material `(24206, 24207, blend 28)` |
+| 1700 | `0xfe90c` | 6801 | Mesh `projectile_025_anim_add.aem`, material 24201, clone false |
+
+The original slot 310 gets ID 33010 from the halfword at `0xed11a`;
+its PC-relative string points to `stations_terran_diffuse.aei`.
+ID 6801 is constructed at `0xfe8e2`–`0xfe90c` and stored at
+`r8+6800`, which is slot 1700, not 310. Both asset paths exist in
+the extracted Android data. Material IDs and constructor arguments
+are the immediate values around the listed ARM stores. The table now
+assigns every position 0–2487 exactly once, so the temporary host-only
+zero-initialization is removed.
+
+The new host gate source-extracts all 2,488 production `ADD_RES`
+statements, the resource constructors, and the production
+`PaintCanvas::SetResourceList` body. At both `-O0` and `-O2`, it
+executes the entire table construction and bulk registration, checks
+2,488 non-null records and the five corrected records above. Its
+canvas shell is bounded: this does not execute the initial
+`TextureCreateGlobal`, the post-table `AddResource` tail,
+`loadPortraits`, `loadLowTexturesAndMaterials`, GPU services, or
+`Level::init`. Those paths remain separate integration work.
+Native `gof2` and 208/208 ARM units build; 45 verifier tests pass
+(one existing skip), and the selected original-asset gate remains green
+at `-O0/-O2`. Focused `BuildResourceList` source-shape/strict fuzzy
+improves 74.9%/18.4% to 75.0%/21.2%, still nonexact. The full corpus
+compares 4,323/4,524 functions, with mean source-shape/strict fuzzy
+93.87%/83.06%, 2,529 linked-exact and 1,076 byte-exact. No prior
+exact pair was lost; 201 original functions remain missing.

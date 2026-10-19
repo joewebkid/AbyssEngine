@@ -25,18 +25,18 @@ including asteroid-belt skybox diffuse texture 33410 and the final mesh
 record 14287. They are restored in `BuildResourceList.cpp`. The asset-backed
 host gate now decodes original texture 33410 and checks cache reuse, alongside
 the existing Level skybox path; restored mesh 14287 also passes the
-resource-ID loader once, with animated reuse untested. After the subsequent
-visitor-glow and mesh recovery, **4 of 2,488 table slots remain unrecovered**
-in C++; they are null-initialized as a labelled host-safety workaround,
-not as a claim of original behavior. Full table execution and consumers
-remain unvalidated. Next: recover the remaining scattered slots, check
-material texture references, and run the complete table. See
+resource-ID loader once, with animated reuse untested. All **2,488 table
+positions now have C++ records**. The table-construction and bulk
+registration segment executes in a bounded host gate at `-O0/-O2`;
+the rest of `BuildResourceList`, resource consumers and `Level::init`
+remain unvalidated. Next: complete those integration paths and check
+unresolved material texture references. See
 [the ARM slot evidence](BUILD_RESOURCE_LIST_GAPS_ARM_2026-10-19.md).
 Native and 208/208 ARM units build; the host gate passes at `-O0/-O2`.
 The fresh full corpus remains 4,323/4,524 compared, 2,529 linked-exact,
 1,076 byte-exact, with no loss of prior exact pairs. Mean source-shape/
-strict fuzzy is 93.87%/83.05%. Focused `BuildResourceList` source-shape/
-strict fuzzy is 74.9%/18.4%, still nonexact.
+strict fuzzy is 93.87%/83.06%. Focused `BuildResourceList` source-shape/
+strict fuzzy is 75.0%/21.2%, still nonexact.
 Follow-up ARM tracing restores material slots 608, 609, 611 and 629 and
 corrects slot 610's texture ID to 33120. At that intermediate revision
 40 slots were unrecovered; referenced texture IDs 33120/33121 still require consumer-level
@@ -80,6 +80,21 @@ executed. Native and 208/208 ARM units build; 44 verifier tests pass
 74.7%/17.6% to 74.9%/18.4%, nonexact. Full corpus remains
 4,323/4,524 compared, 93.87%/83.05% mean source-shape/strict fuzzy,
 2,529 linked-exact and 1,076 byte-exact, with zero exact-pair losses.
+
+The final four slots 977/997/998/1700 are ARM-backed, and misplaced
+slot 310 now contains texture 33010 instead of mesh 6801 (moved to
+1700). The temporary array zero-initialization is removed because all
+positions 0–2487 are assigned exactly once. A new host gate executes
+every production table entry and `SetResourceList` at `-O0/-O2`,
+checks 2,488 non-null records and the corrected payloads. It does not
+run the GL prelude, post-table resources, or `Level::init`; those are
+the next integration priority.
+Native and 208/208 ARM units build; 45 verifier tests pass (one existing
+skip), the selected asset-backed gate and complete table gate pass at
+`-O0/-O2`. Focused source-shape/strict fuzzy improves 74.9%/18.4%
+to 75.0%/21.2%, nonexact. The full corpus remains 4,323/4,524 compared,
+with mean 93.87%/83.06%, 2,529 linked-exact and 1,076 byte-exact;
+the previous exact-pair sets have zero losses.
 
 ## Level skybox canvas-to-loader gate (2026-10-19)
 
