@@ -61,6 +61,14 @@ namespace {
         (slot) = _r;                                              \
     } while (0)
 
+// Preserve the original Resource-before-payload allocation order for tail registrations.
+#define REGISTER_RES(idv, kindv, payloadv)                         \
+    do {                                                          \
+        AbyssEngine::Resource *_registered;                        \
+        ADD_RES(_registered, idv, kindv, payloadv);                 \
+        canvas->AddResource(_registered);                          \
+    } while (0)
+
 void BuildResourceList(AbyssEngine::Engine *engine) {
     using namespace AbyssEngine;
     PaintCanvas *canvas = engine->appManager->paintCanvas;
@@ -5244,583 +5252,451 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         canvas->AddResource(makeRes((unsigned short) (i + 5000), 3,
                                     newImage((unsigned short) (i + 10200), 0)));
 
+    // ARM platform tail begin: 0x10a25a-0x10edbe; saved GOT flags use zero/nonzero tests.
     if (Globals::iPadHD) {
-        canvas->AddResource(
-            makeRes(11635, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ar_1440.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11637, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_cht_1440.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11639, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_chs_1440.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11643, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_kr_1440.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11645, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ja_1440.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11641, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_langselect_1440.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(10062, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface_ipad_1440.aei", 0.0f)));
-        canvas->AddResource(makeRes(10002, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_logos_1440.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(27340, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_credits_1440.aei", 0.0f)));
-        canvas->AddResource(makeRes(
-            27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_ipad_1440.aei", 0.0f)));
-        canvas->AddResource(makeRes(
-            27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_ipad_1440.aei", 0.0f)));
-        canvas->AddResource(makeRes(
-            27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button_ipad_1440.aei", 0.0f)));
-        // ARM 0x10a4ce-0x10a4e6: the large iPad atlases require both flags.
-        if (Globals::iPad && Globals::retinaDisplay) {
-            canvas->AddResource(
-                makeRes(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3_ipad_large.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(10063, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface2_ipad_large.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_large.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_2_large.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface_ipad_large.aei", 0.0f)));
-            canvas->AddResource(makeRes(
-                27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_ipad_large.aei", 0.0f)));
-            canvas->AddResource(makeRes(
-                27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_ipad_large.aei", 0.0f)));
-            canvas->AddResource(makeRes(
-                27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button_ipad_large.aei", 0.0f)));
-        }
+        REGISTER_RES(11635, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ar_1440.aei", 0.0f));
+        REGISTER_RES(11637, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_cht_1440.aei", 0.0f));
+        REGISTER_RES(11639, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_chs_1440.aei", 0.0f));
+        REGISTER_RES(11643, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_kr_1440.aei", 0.0f));
+        REGISTER_RES(11645, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ja_1440.aei", 0.0f));
+        REGISTER_RES(11641, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_langselect_1440.aei", 0.0f));
+        REGISTER_RES(10062, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface_ipad_1440.aei", 0.0f));
+        REGISTER_RES(10002, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_logos_1440.aei", 0.0f));
+        REGISTER_RES(27340, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_credits_1440.aei", 0.0f));
+        REGISTER_RES(27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_ipad_1440.aei", 0.0f));
+        REGISTER_RES(27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_ipad_1440.aei", 0.0f));
+        REGISTER_RES(27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button_ipad_1440.aei", 0.0f));
     } else if (Globals::retinaDisplay) {
-        canvas->AddResource(
-            makeRes(11635, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ar_iphone4.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11637, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_cht_iphone4.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11639, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_chs_iphone4.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11643, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_kr_iphone4.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11645, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ja_iphone4.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11641, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_langselect_iphone4.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(10062, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface_iphone4.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(10002, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_logos_iphone4.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(27340, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_credits_iphone4.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_iphone4.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_iphone4_2.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface_iphone4.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3_iphone4.aei", 0.0f)));
-        canvas->AddResource(makeRes(
-            27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_iphone4.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_iphone4.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button_iphone4.aei", 0.0f)));
+        REGISTER_RES(11635, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ar_iphone4.aei", 0.0f));
+        REGISTER_RES(11637, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_cht_iphone4.aei", 0.0f));
+        REGISTER_RES(11639, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_chs_iphone4.aei", 0.0f));
+        REGISTER_RES(11643, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_kr_iphone4.aei", 0.0f));
+        REGISTER_RES(11645, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ja_iphone4.aei", 0.0f));
+        REGISTER_RES(11641, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_langselect_iphone4.aei", 0.0f));
+        REGISTER_RES(10062, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface_iphone4.aei", 0.0f));
+        REGISTER_RES(10002, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_logos_iphone4.aei", 0.0f));
+        REGISTER_RES(27340, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_credits_iphone4.aei", 0.0f));
+        // GOT 0x2103f0 is iPadLarge, independently of iPad and Retina.
+        if (!Globals::iPadLarge) {
+            REGISTER_RES(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_iphone4.aei", 0.0f));
+            REGISTER_RES(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_iphone4_2.aei", 0.0f));
+            REGISTER_RES(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface_iphone4.aei", 0.0f));
+            REGISTER_RES(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3_iphone4.aei", 0.0f));
+            REGISTER_RES(27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_iphone4.aei", 0.0f));
+            REGISTER_RES(27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_iphone4.aei", 0.0f));
+            REGISTER_RES(27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button_iphone4.aei", 0.0f));
+        }
     } else {
-        // ARM 0x10ee40-0x10f004: ordinary atlases precede the iPad split.
-        canvas->AddResource(
-            makeRes(11635, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ar.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11637, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_cht.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11639, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_chs.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11643, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_kr.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11645, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ja.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(11641, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_langselect.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(10062, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(10002, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_logos_ipad2.aei", 0.0f)));
-        canvas->AddResource(
-            makeRes(27340, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_credits.aei", 0.0f)));
+        REGISTER_RES(11635, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ar.aei", 0.0f));
+        REGISTER_RES(11637, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_cht.aei", 0.0f));
+        REGISTER_RES(11639, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_chs.aei", 0.0f));
+        REGISTER_RES(11643, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_kr.aei", 0.0f));
+        REGISTER_RES(11645, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ja.aei", 0.0f));
+        REGISTER_RES(11641, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_langselect.aei", 0.0f));
+        REGISTER_RES(10062, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface.aei", 0.0f));
+        REGISTER_RES(10002, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_logos_ipad2.aei", 0.0f));
+        REGISTER_RES(27340, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_credits.aei", 0.0f));
         if (!Globals::iPad) {
-            // ARM 0x10f008-0x10f11c: these six atlases are absent on iPad.
-            canvas->AddResource(
-                makeRes(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_2.aei", 0.0f)));
-            canvas->AddResource(makeRes(
-                27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button.aei", 0.0f)));
-        } else {
-            // ARM 0x10be22 reads iPadHD via r8/GOT 0x21038c: zero here selects 0x10f160.
-            // ARM 0x10f160-0x10f2d0: ordinary iPad; final shop path has no iPad suffix.
-            canvas->AddResource(
-                makeRes(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3_ipad.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(10063, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface2_ipad.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_2.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface_ipad.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_ipad.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_ipad.aei", 0.0f)));
-            canvas->AddResource(
-                makeRes(27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button.aei", 0.0f)));
+            REGISTER_RES(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3.aei", 0.0f));
+            REGISTER_RES(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items.aei", 0.0f));
+            REGISTER_RES(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_2.aei", 0.0f));
+            REGISTER_RES(27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface.aei", 0.0f));
+            REGISTER_RES(27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select.aei", 0.0f));
+            REGISTER_RES(27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button.aei", 0.0f));
         }
     }
-    // shortcut: post-platform records from ARM 0x10bf46 still need recovery before full execution.
-    canvas->AddResource(
-        makeRes(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface.aei", 0.0f)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(
-        makeRes(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3_1440.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(10063, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface2_ipad_1440.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_1440.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_2_1440.aei", 0.0f)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(3001, 3, newImage(0x2d6eu, 0x0u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(3002, 3, newImage(0x2d6eu, 0x2u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(3104, 3, newImage(0x2d6eu, 0x4u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(3106, 3, newImage(0x2d6eu, 0x6u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(3006, 3, newImage(0x2d6eu, 0x8u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(3008, 3, newImage(0x2d6eu, 0xau)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(3010, 3, newImage(0x2d6eu, 0xcu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(3012, 3, newImage(0x2d6eu, 0xeu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(3014, 3, newImage(0x2d6eu, 0x10u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(3016, 3, newImage(0x2d6eu, 0x12u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1701, 3, newImage(0x274fu, 0x1u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1703, 3, newImage(0x274fu, 0x3u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1705, 3, newImage(0x274fu, 0x5u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1312, 3, newImage(0x274fu, 0x7u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1222, 3, newImage(0x274fu, 0x9u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1204, 3, newImage(0x274fu, 0xbu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1257, 3, newImage(0x274fu, 0xdu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1214, 3, newImage(0x274fu, 0xfu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1212, 3, newImage(0x274fu, 0x11u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1210, 3, newImage(0x274fu, 0x13u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1208, 3, newImage(0x274fu, 0x15u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1199, 3, newImage(0x274fu, 0x17u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1192, 3, newImage(0x274fu, 0x19u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1207, 3, newImage(0x274fu, 0x1bu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1217, 3, newImage(0x274fu, 0x1du)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1202, 3, newImage(0x274fu, 0x1fu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1200, 3, newImage(0x274fu, 0x21u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1708, 3, newImage(0x274fu, 0x23u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1273, 3, newImage(0x274fu, 0x25u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1275, 3, newImage(0x274fu, 0x27u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1271, 3, newImage(0x274fu, 0x29u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1709, 3, newImage(0x274fu, 0x2bu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1711, 3, newImage(0x274fu, 0x2du)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1713, 3, newImage(0x274fu, 0x2fu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1715, 3, newImage(0x274fu, 0x31u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1717, 3, newImage(0x274fu, 0x33u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1719, 3, newImage(0x274fu, 0x35u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1721, 3, newImage(0x274fu, 0x37u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1723, 3, newImage(0x274fu, 0x39u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1316, 3, newImage(0x274fu, 0x3bu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1318, 3, newImage(0x274fu, 0x3du)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1320, 3, newImage(0x274fu, 0x3fu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1322, 3, newImage(0x274fu, 0x41u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1324, 3, newImage(0x274fu, 0x43u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1104, 3, newImage(0x274fu, 0x45u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1100, 3, newImage(0x274fu, 0x47u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1105, 3, newImage(0x274fu, 0x49u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1264, 3, newImage(0x274fu, 0x4bu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1225, 3, newImage(0x274fu, 0x4du)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1227, 3, newImage(0x274fu, 0x4fu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1262, 3, newImage(0x274fu, 0x51u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1234, 3, newImage(0x274fu, 0x53u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1229, 3, newImage(0x274fu, 0x55u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1224, 3, newImage(0x274fu, 0x57u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1239, 3, newImage(0x274fu, 0x59u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1241, 3, newImage(0x274fu, 0x5bu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1238, 3, newImage(0x274fu, 0x5du)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1236, 3, newImage(0x274fu, 0x5fu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1325, 3, newImage(0x274fu, 0x61u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1327, 3, newImage(0x274fu, 0x63u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1329, 3, newImage(0x274fu, 0x65u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1331, 3, newImage(0x274fu, 0x67u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1332, 3, newImage(0x274eu, 0xe6u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1343, 3, newImage(0x274fu, 0x6bu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1345, 3, newImage(0x274fu, 0x6du)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1347, 3, newImage(0x274fu, 0x6fu)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(1350, 3, newImage(0x274fu, 0x71u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(7005, 3, newImage(0x2712u, 0x5u)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(
-        10011, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_000_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10012, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_001_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10013, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_002_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10014, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_003_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10015, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_004_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10016, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_005_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10017, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_006_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10018, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_007_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10019, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_008_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10020, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_009_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10021, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_010_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10022, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_011_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10023, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_012_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10024, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_013_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10025, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_014_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10026, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_015_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10027, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_016_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10028, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_017_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10029, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_018_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        10030, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_019_small.aei",
-                                                   0.0f)));
-    canvas->AddResource(makeRes(
-        11621, 2, new AbyssEngine::ResourceTexture(
-            "data/assets/valkyrie/3d/textures/low/etc/planets/v_planet_020_small.aei", 0.0f)));
-    canvas->AddResource(makeRes(
-        11622, 2, new AbyssEngine::ResourceTexture(
-            "data/assets/valkyrie/3d/textures/low/etc/planets/v_planet_021_small.aei", 0.0f)));
-    canvas->AddResource(makeRes(
-        11623, 2, new AbyssEngine::ResourceTexture(
-            "data/assets/valkyrie/3d/textures/low/etc/planets/v_planet_022_small.aei", 0.0f)));
-    canvas->AddResource(makeRes(
-        11784, 2, new AbyssEngine::ResourceTexture(
-            "data/assets/supernova/3d/textures/low/etc/planets/sn_planet_024_small.aei", 0.0f)));
-    canvas->AddResource(makeRes(
-        11785, 2, new AbyssEngine::ResourceTexture(
-            "data/assets/supernova/3d/textures/low/etc/planets/sn_planet_025_small.aei", 0.0f)));
-    canvas->AddResource(makeRes(
-        11786, 2, new AbyssEngine::ResourceTexture(
-            "data/assets/supernova/3d/textures/low/etc/planets/sn_planet_026_small.aei", 0.0f)));
-    canvas->AddResource(makeRes(
-        29080, 2, new AbyssEngine::ResourceTexture(
-            "data/assets/supernova/3d/textures/low/etc/planets/sn_planet_ring.aei", 0.0f)));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(0, 0, nullptr));
-    canvas->AddResource(makeRes(9510, 3, newImage(0x6acfu, 0x5u)));
-
-    // Paid-credit/social dialog Image2D records recovered from the Android ARM
-    // BuildResourceList body. Texture 0x6acc is the platform-selected
-    // gof2_credits atlas registered above; the upper payload word is its AEI
-    // region index.
-    canvas->AddResource(makeRes(0x232a, 3, newImage(0x6accu, 0x2u)));
-    canvas->AddResource(makeRes(0x232b, 3, newImage(0x6accu, 0x3u)));
-    canvas->AddResource(makeRes(0x232c, 3, newImage(0x6accu, 0x4u)));
-    canvas->AddResource(makeRes(0x232d, 3, newImage(0x6accu, 0x5u)));
-    canvas->AddResource(makeRes(0x232e, 3, newImage(0x6accu, 0x6u)));
-    canvas->AddResource(makeRes(0x232f, 3, newImage(0x6accu, 0x7u)));
-    canvas->AddResource(makeRes(0x2330, 3, newImage(0x6accu, 0x8u)));
-    canvas->AddResource(makeRes(0x2331, 3, newImage(0x6accu, 0x9u)));
-    canvas->AddResource(makeRes(0x2332, 3, newImage(0x6accu, 0xau)));
-    canvas->AddResource(makeRes(0x2333, 3, newImage(0x6accu, 0xbu)));
-    canvas->AddResource(makeRes(0x2334, 3, newImage(0x6accu, 0xcu)));
-    canvas->AddResource(makeRes(0x2335, 3, newImage(0x6accu, 0xdu)));
-    canvas->AddResource(makeRes(0x2336, 3, newImage(0x6accu, 0xeu)));
-    canvas->AddResource(makeRes(0x2337, 3, newImage(0x6accu, 0xfu)));
-    canvas->AddResource(makeRes(0x2338, 3, newImage(0x6accu, 0x10u)));
-    canvas->AddResource(makeRes(0x2339, 3, newImage(0x6accu, 0x11u)));
-    canvas->AddResource(makeRes(0x233a, 3, newImage(0x6accu, 0x12u)));
-    canvas->AddResource(makeRes(0x233b, 3, newImage(0x6accu, 0x13u)));
-    canvas->AddResource(makeRes(0x233c, 3, newImage(0x6accu, 0x14u)));
-    canvas->AddResource(makeRes(0x233d, 3, newImage(0x6accu, 0x15u)));
-    canvas->AddResource(makeRes(0x233e, 3, newImage(0x6accu, 0x16u)));
-    canvas->AddResource(makeRes(0x233f, 3, newImage(0x6accu, 0x17u)));
+    // ARM 0x10a4ce: every non-iPad route enters 0x10aa34.
+    if (Globals::iPad) {
+        if (Globals::retinaDisplay) {
+            REGISTER_RES(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3_ipad_large.aei", 0.0f));
+            REGISTER_RES(10063, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface2_ipad_large.aei", 0.0f));
+            REGISTER_RES(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_large.aei", 0.0f));
+            REGISTER_RES(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_2_large.aei", 0.0f));
+            REGISTER_RES(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface_ipad_large.aei", 0.0f));
+            REGISTER_RES(27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_ipad_large.aei", 0.0f));
+            REGISTER_RES(27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_ipad_large.aei", 0.0f));
+            REGISTER_RES(27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button_ipad_large.aei", 0.0f));
+        } else if (Globals::iPadHD) {
+            // ARM 0x10be2e fallthrough; final DLC entry registers at 0x10bf42.
+            REGISTER_RES(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3_1440.aei", 0.0f));
+            REGISTER_RES(10063, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface2_ipad_1440.aei", 0.0f));
+            REGISTER_RES(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_1440.aei", 0.0f));
+            REGISTER_RES(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_2_1440.aei", 0.0f));
+            REGISTER_RES(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface_ipad_1440.aei", 0.0f));
+        } else {
+            // ARM 0x10f160-0x10f2d0: ordinary iPad; final shop path has no iPad suffix.
+            REGISTER_RES(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3_ipad.aei", 0.0f));
+            REGISTER_RES(10063, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface2_ipad.aei", 0.0f));
+            REGISTER_RES(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad.aei", 0.0f));
+            REGISTER_RES(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_2.aei", 0.0f));
+            REGISTER_RES(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface_ipad.aei", 0.0f));
+            REGISTER_RES(27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_ipad.aei", 0.0f));
+            REGISTER_RES(27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_ipad.aei", 0.0f));
+            REGISTER_RES(27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button.aei", 0.0f));
+        }
+    } else {
+        REGISTER_RES(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface.aei", 0.0f));
+    }
+    // ARM 0x10bf46 / 0x10aa6e: different ordered Image payloads, shared join 0x10d8b4.
+    if (Globals::iPad) {
+        REGISTER_RES(3001, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x0u}));
+        REGISTER_RES(3101, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x1u}));
+        REGISTER_RES(3002, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x2u}));
+        REGISTER_RES(3003, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x3u}));
+        REGISTER_RES(3104, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x4u}));
+        REGISTER_RES(3105, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x5u}));
+        REGISTER_RES(3106, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x6u}));
+        REGISTER_RES(3004, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x7u}));
+        REGISTER_RES(3006, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x8u}));
+        REGISTER_RES(3007, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x9u}));
+        REGISTER_RES(3008, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0xau}));
+        REGISTER_RES(3009, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0xbu}));
+        REGISTER_RES(3010, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0xcu}));
+        REGISTER_RES(3011, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0xdu}));
+        REGISTER_RES(3012, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0xeu}));
+        REGISTER_RES(3013, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0xfu}));
+        REGISTER_RES(3014, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x10u}));
+        REGISTER_RES(3015, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x11u}));
+        REGISTER_RES(3016, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x12u}));
+        REGISTER_RES(1700, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x0u}));
+        REGISTER_RES(1701, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x1u}));
+        REGISTER_RES(1702, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x2u}));
+        REGISTER_RES(1703, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x3u}));
+        REGISTER_RES(1704, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x4u}));
+        REGISTER_RES(1705, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x5u}));
+        REGISTER_RES(1223, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x6u}));
+        REGISTER_RES(1312, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x7u}));
+        REGISTER_RES(1706, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x8u}));
+        REGISTER_RES(1222, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x9u}));
+        REGISTER_RES(1205, 3, (new AbyssEngine::ResourceImage{0x274fu, 0xau}));
+        REGISTER_RES(1204, 3, (new AbyssEngine::ResourceImage{0x274fu, 0xbu}));
+        REGISTER_RES(1258, 3, (new AbyssEngine::ResourceImage{0x274fu, 0xcu}));
+        REGISTER_RES(1257, 3, (new AbyssEngine::ResourceImage{0x274fu, 0xdu}));
+        REGISTER_RES(1215, 3, (new AbyssEngine::ResourceImage{0x274fu, 0xeu}));
+        REGISTER_RES(1214, 3, (new AbyssEngine::ResourceImage{0x274fu, 0xfu}));
+        REGISTER_RES(1213, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x10u}));
+        REGISTER_RES(1212, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x11u}));
+        REGISTER_RES(1211, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x12u}));
+        REGISTER_RES(1210, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x13u}));
+        REGISTER_RES(1209, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x14u}));
+        REGISTER_RES(1208, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x15u}));
+        REGISTER_RES(1193, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x16u}));
+        REGISTER_RES(1199, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x17u}));
+        REGISTER_RES(1198, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x18u}));
+        REGISTER_RES(1192, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x19u}));
+        REGISTER_RES(1191, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x1au}));
+        REGISTER_RES(1207, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x1bu}));
+        REGISTER_RES(1206, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x1cu}));
+        REGISTER_RES(1217, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x1du}));
+        REGISTER_RES(1203, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x1eu}));
+        REGISTER_RES(1202, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x1fu}));
+        REGISTER_RES(1201, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x20u}));
+        REGISTER_RES(1200, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x21u}));
+        REGISTER_RES(1707, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x22u}));
+        REGISTER_RES(1708, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x23u}));
+        REGISTER_RES(1272, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x24u}));
+        REGISTER_RES(1273, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x25u}));
+        REGISTER_RES(1274, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x26u}));
+        REGISTER_RES(1275, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x27u}));
+        REGISTER_RES(1276, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x28u}));
+        REGISTER_RES(1271, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x29u}));
+        REGISTER_RES(1297, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x2au}));
+        REGISTER_RES(1709, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x2bu}));
+        REGISTER_RES(1710, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x2cu}));
+        REGISTER_RES(1711, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x2du}));
+        REGISTER_RES(1712, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x2eu}));
+        REGISTER_RES(1713, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x2fu}));
+        REGISTER_RES(1714, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x30u}));
+        REGISTER_RES(1715, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x31u}));
+        REGISTER_RES(1716, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x32u}));
+        REGISTER_RES(1717, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x33u}));
+        REGISTER_RES(1718, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x34u}));
+        REGISTER_RES(1719, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x35u}));
+        REGISTER_RES(1720, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x36u}));
+        REGISTER_RES(1721, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x37u}));
+        REGISTER_RES(1722, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x38u}));
+        REGISTER_RES(1723, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x39u}));
+        REGISTER_RES(1724, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x3au}));
+        REGISTER_RES(1316, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x3bu}));
+        REGISTER_RES(1317, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x3cu}));
+        REGISTER_RES(1318, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x3du}));
+        REGISTER_RES(1319, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x3eu}));
+        REGISTER_RES(1320, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x3fu}));
+        REGISTER_RES(1321, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x40u}));
+        REGISTER_RES(1322, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x41u}));
+        REGISTER_RES(1323, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x42u}));
+        REGISTER_RES(1324, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x43u}));
+        REGISTER_RES(1725, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x44u}));
+        REGISTER_RES(1104, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x45u}));
+        REGISTER_RES(1103, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x46u}));
+        REGISTER_RES(1100, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x47u}));
+        REGISTER_RES(1107, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x48u}));
+        REGISTER_RES(1105, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x49u}));
+        REGISTER_RES(1101, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x4au}));
+        REGISTER_RES(1264, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x4bu}));
+        REGISTER_RES(1263, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x4cu}));
+        REGISTER_RES(1225, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x4du}));
+        REGISTER_RES(1244, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x4eu}));
+        REGISTER_RES(1227, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x4fu}));
+        REGISTER_RES(1266, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x50u}));
+        REGISTER_RES(1262, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x51u}));
+        REGISTER_RES(1265, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x52u}));
+        REGISTER_RES(1234, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x53u}));
+        REGISTER_RES(1226, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x54u}));
+        REGISTER_RES(1229, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x55u}));
+        REGISTER_RES(1243, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x56u}));
+        REGISTER_RES(1224, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x57u}));
+        REGISTER_RES(1228, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x58u}));
+        REGISTER_RES(1239, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x59u}));
+        REGISTER_RES(1242, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x5au}));
+        REGISTER_RES(1241, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x5bu}));
+        REGISTER_RES(1237, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x5cu}));
+        REGISTER_RES(1238, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x5du}));
+        REGISTER_RES(1235, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x5eu}));
+        REGISTER_RES(1236, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x5fu}));
+        REGISTER_RES(1240, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x60u}));
+        REGISTER_RES(1325, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x61u}));
+        REGISTER_RES(1326, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x62u}));
+        REGISTER_RES(1327, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x63u}));
+        REGISTER_RES(1328, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x64u}));
+        REGISTER_RES(1329, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x65u}));
+        REGISTER_RES(1330, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x66u}));
+        REGISTER_RES(1331, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x67u}));
+        REGISTER_RES(1157, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x68u}));
+        REGISTER_RES(1332, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xe6u}));
+        REGISTER_RES(1334, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x6au}));
+        REGISTER_RES(1343, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x6bu}));
+        REGISTER_RES(1344, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x6cu}));
+        REGISTER_RES(1345, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x6du}));
+        REGISTER_RES(1346, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x6eu}));
+        REGISTER_RES(1347, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x6fu}));
+        REGISTER_RES(1348, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x70u}));
+        REGISTER_RES(1350, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x71u}));
+        REGISTER_RES(1351, 3, (new AbyssEngine::ResourceImage{0x274fu, 0x72u}));
+        REGISTER_RES(7005, 3, (new AbyssEngine::ResourceImage{0x2712u, 0x5u}));
+        REGISTER_RES(7006, 3, (new AbyssEngine::ResourceImage{0x2712u, 0x6u}));
+    } else {
+        REGISTER_RES(3000, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x0u}));
+        REGISTER_RES(3001, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x1u}));
+        REGISTER_RES(3002, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x2u}));
+        REGISTER_RES(3003, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x3u}));
+        REGISTER_RES(3004, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x4u}));
+        REGISTER_RES(3005, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x5u}));
+        REGISTER_RES(3006, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x6u}));
+        REGISTER_RES(3007, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x7u}));
+        REGISTER_RES(3008, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x8u}));
+        REGISTER_RES(3009, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x9u}));
+        REGISTER_RES(3010, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0xau}));
+        REGISTER_RES(3011, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0xbu}));
+        REGISTER_RES(3012, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0xcu}));
+        REGISTER_RES(3013, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0xdu}));
+        REGISTER_RES(3014, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0xeu}));
+        REGISTER_RES(3015, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0xfu}));
+        REGISTER_RES(3016, 3, (new AbyssEngine::ResourceImage{0x2d6eu, 0x10u}));
+        REGISTER_RES(1100, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x0u}));
+        REGISTER_RES(1101, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x1u}));
+        REGISTER_RES(1103, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x3u}));
+        REGISTER_RES(1104, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x4u}));
+        REGISTER_RES(1105, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x5u}));
+        REGISTER_RES(1107, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x7u}));
+        REGISTER_RES(1157, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x38u}));
+        REGISTER_RES(1191, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x5au}));
+        REGISTER_RES(1192, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x5bu}));
+        REGISTER_RES(1193, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x5cu}));
+        REGISTER_RES(1198, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x61u}));
+        REGISTER_RES(1199, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x62u}));
+        REGISTER_RES(1200, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x63u}));
+        REGISTER_RES(1201, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x64u}));
+        REGISTER_RES(1202, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x65u}));
+        REGISTER_RES(1203, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x66u}));
+        REGISTER_RES(1204, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x67u}));
+        REGISTER_RES(1205, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x68u}));
+        REGISTER_RES(1206, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x69u}));
+        REGISTER_RES(1207, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x6au}));
+        REGISTER_RES(1208, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x6bu}));
+        REGISTER_RES(1209, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x6cu}));
+        REGISTER_RES(1210, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x6du}));
+        REGISTER_RES(1211, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x6eu}));
+        REGISTER_RES(1212, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x6fu}));
+        REGISTER_RES(1213, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x70u}));
+        REGISTER_RES(1214, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x71u}));
+        REGISTER_RES(1215, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x72u}));
+        REGISTER_RES(1217, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x74u}));
+        REGISTER_RES(1222, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x79u}));
+        REGISTER_RES(1223, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x7au}));
+        REGISTER_RES(1224, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x7bu}));
+        REGISTER_RES(1225, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x7cu}));
+        REGISTER_RES(1226, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x7du}));
+        REGISTER_RES(1227, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x7eu}));
+        REGISTER_RES(1228, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x7fu}));
+        REGISTER_RES(1229, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x80u}));
+        REGISTER_RES(1234, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x85u}));
+        REGISTER_RES(1235, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x86u}));
+        REGISTER_RES(1236, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x87u}));
+        REGISTER_RES(1237, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x88u}));
+        REGISTER_RES(1238, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x89u}));
+        REGISTER_RES(1239, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x8au}));
+        REGISTER_RES(1240, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x8bu}));
+        REGISTER_RES(1241, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x8cu}));
+        REGISTER_RES(1242, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x8du}));
+        REGISTER_RES(1243, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x8eu}));
+        REGISTER_RES(1244, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x8fu}));
+        REGISTER_RES(1257, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x9cu}));
+        REGISTER_RES(1258, 3, (new AbyssEngine::ResourceImage{0x274eu, 0x9du}));
+        REGISTER_RES(1262, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xa1u}));
+        REGISTER_RES(1263, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xa2u}));
+        REGISTER_RES(1264, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xa3u}));
+        REGISTER_RES(1265, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xa4u}));
+        REGISTER_RES(1266, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xa5u}));
+        REGISTER_RES(1271, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xaau}));
+        REGISTER_RES(1272, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xabu}));
+        REGISTER_RES(1273, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xacu}));
+        REGISTER_RES(1274, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xadu}));
+        REGISTER_RES(1275, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xaeu}));
+        REGISTER_RES(1276, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xafu}));
+        REGISTER_RES(1297, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xc4u}));
+        REGISTER_RES(1312, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xd2u}));
+        REGISTER_RES(1316, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xd6u}));
+        REGISTER_RES(1317, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xd7u}));
+        REGISTER_RES(1318, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xd8u}));
+        REGISTER_RES(1319, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xd9u}));
+        REGISTER_RES(1320, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xdau}));
+        REGISTER_RES(1321, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xdbu}));
+        REGISTER_RES(1322, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xdcu}));
+        REGISTER_RES(1323, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xddu}));
+        REGISTER_RES(1324, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xdeu}));
+        REGISTER_RES(1325, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xdfu}));
+        REGISTER_RES(1326, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xe0u}));
+        REGISTER_RES(1327, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xe1u}));
+        REGISTER_RES(1328, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xe2u}));
+        REGISTER_RES(1329, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xe3u}));
+        REGISTER_RES(1330, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xe4u}));
+        REGISTER_RES(1331, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xe5u}));
+        REGISTER_RES(1332, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xe6u}));
+        REGISTER_RES(1333, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xe7u}));
+        REGISTER_RES(1334, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xe8u}));
+        REGISTER_RES(1343, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xf1u}));
+        REGISTER_RES(1344, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xf2u}));
+        REGISTER_RES(1345, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xf3u}));
+        REGISTER_RES(1346, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xf4u}));
+        REGISTER_RES(1347, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xf5u}));
+        REGISTER_RES(1348, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xf6u}));
+        REGISTER_RES(1350, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xf8u}));
+        REGISTER_RES(1351, 3, (new AbyssEngine::ResourceImage{0x274eu, 0xf9u}));
+    }
+    // ARM 0x10d8c0-0x10edba: shared textures and Image records.
+    REGISTER_RES(10011, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_000_small.aei", 0.0f));
+    REGISTER_RES(10012, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_001_small.aei", 0.0f));
+    REGISTER_RES(10013, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_002_small.aei", 0.0f));
+    REGISTER_RES(10014, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_003_small.aei", 0.0f));
+    REGISTER_RES(10015, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_004_small.aei", 0.0f));
+    REGISTER_RES(10016, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_005_small.aei", 0.0f));
+    REGISTER_RES(10017, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_006_small.aei", 0.0f));
+    REGISTER_RES(10018, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_007_small.aei", 0.0f));
+    REGISTER_RES(10019, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_008_small.aei", 0.0f));
+    REGISTER_RES(10020, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_009_small.aei", 0.0f));
+    REGISTER_RES(10021, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_010_small.aei", 0.0f));
+    REGISTER_RES(10022, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_011_small.aei", 0.0f));
+    REGISTER_RES(10023, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_012_small.aei", 0.0f));
+    REGISTER_RES(10024, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_013_small.aei", 0.0f));
+    REGISTER_RES(10025, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_014_small.aei", 0.0f));
+    REGISTER_RES(10026, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_015_small.aei", 0.0f));
+    REGISTER_RES(10027, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_016_small.aei", 0.0f));
+    REGISTER_RES(10028, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_017_small.aei", 0.0f));
+    REGISTER_RES(10029, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_018_small.aei", 0.0f));
+    REGISTER_RES(10030, 2, new AbyssEngine::ResourceTexture("data/assets/main/3d/textures/low/etc/planets/planet_019_small.aei", 0.0f));
+    REGISTER_RES(11621, 2, new AbyssEngine::ResourceTexture("data/assets/valkyrie/3d/textures/low/etc/planets/v_planet_020_small.aei", 0.0f));
+    REGISTER_RES(11622, 2, new AbyssEngine::ResourceTexture("data/assets/valkyrie/3d/textures/low/etc/planets/v_planet_021_small.aei", 0.0f));
+    REGISTER_RES(11623, 2, new AbyssEngine::ResourceTexture("data/assets/valkyrie/3d/textures/low/etc/planets/v_planet_022_small.aei", 0.0f));
+    REGISTER_RES(11784, 2, new AbyssEngine::ResourceTexture("data/assets/supernova/3d/textures/low/etc/planets/sn_planet_024_small.aei", 0.0f));
+    REGISTER_RES(11785, 2, new AbyssEngine::ResourceTexture("data/assets/supernova/3d/textures/low/etc/planets/sn_planet_025_small.aei", 0.0f));
+    REGISTER_RES(11786, 2, new AbyssEngine::ResourceTexture("data/assets/supernova/3d/textures/low/etc/planets/sn_planet_026_small.aei", 0.0f));
+    REGISTER_RES(29080, 2, new AbyssEngine::ResourceTexture("data/assets/supernova/3d/textures/low/etc/planets/sn_planet_ring.aei", 0.0f));
+    REGISTER_RES(8000, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x0u}));
+    REGISTER_RES(8001, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x1u}));
+    REGISTER_RES(8002, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x2u}));
+    REGISTER_RES(8003, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x3u}));
+    REGISTER_RES(8004, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x4u}));
+    REGISTER_RES(8005, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x5u}));
+    REGISTER_RES(8006, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x6u}));
+    REGISTER_RES(8007, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x7u}));
+    REGISTER_RES(8008, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x8u}));
+    REGISTER_RES(8009, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x9u}));
+    REGISTER_RES(8010, 3, (new AbyssEngine::ResourceImage{0x2769u, 0xau}));
+    REGISTER_RES(8011, 3, (new AbyssEngine::ResourceImage{0x2769u, 0xbu}));
+    REGISTER_RES(8012, 3, (new AbyssEngine::ResourceImage{0x2769u, 0xcu}));
+    REGISTER_RES(8013, 3, (new AbyssEngine::ResourceImage{0x2769u, 0xdu}));
+    REGISTER_RES(8014, 3, (new AbyssEngine::ResourceImage{0x2769u, 0xeu}));
+    REGISTER_RES(8015, 3, (new AbyssEngine::ResourceImage{0x2769u, 0xfu}));
+    REGISTER_RES(8016, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x10u}));
+    REGISTER_RES(8017, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x11u}));
+    REGISTER_RES(8018, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x12u}));
+    REGISTER_RES(8019, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x13u}));
+    REGISTER_RES(8020, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x14u}));
+    REGISTER_RES(8021, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x15u}));
+    REGISTER_RES(8022, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x16u}));
+    REGISTER_RES(8023, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x17u}));
+    REGISTER_RES(8024, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x18u}));
+    REGISTER_RES(8025, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x19u}));
+    REGISTER_RES(8026, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x1au}));
+    REGISTER_RES(8027, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x1bu}));
+    REGISTER_RES(8028, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x1cu}));
+    REGISTER_RES(8029, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x1du}));
+    REGISTER_RES(8030, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x1eu}));
+    REGISTER_RES(8031, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x1fu}));
+    REGISTER_RES(8032, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x20u}));
+    REGISTER_RES(8033, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x21u}));
+    REGISTER_RES(8034, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x22u}));
+    REGISTER_RES(8035, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x23u}));
+    REGISTER_RES(8036, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x24u}));
+    REGISTER_RES(8037, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x25u}));
+    REGISTER_RES(8038, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x26u}));
+    REGISTER_RES(8039, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x27u}));
+    REGISTER_RES(8040, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x28u}));
+    REGISTER_RES(8041, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x29u}));
+    REGISTER_RES(8042, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x2au}));
+    REGISTER_RES(8043, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x2bu}));
+    REGISTER_RES(8044, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x2cu}));
+    REGISTER_RES(8045, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x2du}));
+    REGISTER_RES(8046, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x2eu}));
+    REGISTER_RES(8047, 3, (new AbyssEngine::ResourceImage{0x2769u, 0x2fu}));
+    REGISTER_RES(9000, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x0u}));
+    REGISTER_RES(9001, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x1u}));
+    REGISTER_RES(9002, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x2u}));
+    REGISTER_RES(9003, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x3u}));
+    REGISTER_RES(9004, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x4u}));
+    REGISTER_RES(9005, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x5u}));
+    REGISTER_RES(9006, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x6u}));
+    REGISTER_RES(9007, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x7u}));
+    REGISTER_RES(9008, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x8u}));
+    REGISTER_RES(9009, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x9u}));
+    REGISTER_RES(9010, 3, (new AbyssEngine::ResourceImage{0x6accu, 0xau}));
+    REGISTER_RES(9011, 3, (new AbyssEngine::ResourceImage{0x6accu, 0xbu}));
+    REGISTER_RES(9012, 3, (new AbyssEngine::ResourceImage{0x6accu, 0xcu}));
+    REGISTER_RES(9013, 3, (new AbyssEngine::ResourceImage{0x6accu, 0xdu}));
+    REGISTER_RES(9014, 3, (new AbyssEngine::ResourceImage{0x6accu, 0xeu}));
+    REGISTER_RES(9015, 3, (new AbyssEngine::ResourceImage{0x6accu, 0xfu}));
+    REGISTER_RES(9016, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x10u}));
+    REGISTER_RES(9017, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x11u}));
+    REGISTER_RES(9018, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x12u}));
+    REGISTER_RES(9019, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x13u}));
+    REGISTER_RES(9020, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x14u}));
+    REGISTER_RES(9021, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x15u}));
+    REGISTER_RES(9022, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x16u}));
+    REGISTER_RES(9023, 3, (new AbyssEngine::ResourceImage{0x6accu, 0x17u}));
+    REGISTER_RES(9500, 3, (new AbyssEngine::ResourceImage{0x6aceu, 0x0u}));
+    REGISTER_RES(9501, 3, (new AbyssEngine::ResourceImage{0x6aceu, 0x1u}));
+    REGISTER_RES(9502, 3, (new AbyssEngine::ResourceImage{0x6aceu, 0x2u}));
+    REGISTER_RES(9503, 3, (new AbyssEngine::ResourceImage{0x6aceu, 0x3u}));
+    REGISTER_RES(9504, 3, (new AbyssEngine::ResourceImage{0x6aceu, 0x4u}));
+    REGISTER_RES(9505, 3, (new AbyssEngine::ResourceImage{0x6aceu, 0x5u}));
+    REGISTER_RES(9506, 3, (new AbyssEngine::ResourceImage{0x6acfu, 0x0u}));
+    REGISTER_RES(9508, 3, (new AbyssEngine::ResourceImage{0x6acfu, 0x1u}));
+    REGISTER_RES(9507, 3, (new AbyssEngine::ResourceImage{0x6acfu, 0x2u}));
+    REGISTER_RES(9509, 3, (new AbyssEngine::ResourceImage{0x6acfu, 0x3u}));
+    REGISTER_RES(9511, 3, (new AbyssEngine::ResourceImage{0x6acfu, 0x4u}));
+    REGISTER_RES(9510, 3, (new AbyssEngine::ResourceImage{0x6acfu, 0x5u}));
+    // ARM platform tail end: portrait/low-texture helpers follow at 0x10edc2/0x10edc8.
 
     loadPortraits(engine);
     loadLowTexturesAndMaterials(engine);

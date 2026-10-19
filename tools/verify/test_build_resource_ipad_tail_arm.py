@@ -85,7 +85,7 @@ class BuildResourceIpadArmEvidence(unittest.TestCase):
         tail_source = source[source.index('// ARM 0x10f160-0x10f2d0:'):]
         tail_source = tail_source[:tail_source.index('\n        }')]
         pairs = [(int(i), name) for i, name in re.findall(
-            r'makeRes\((\d+), 2, new AbyssEngine::ResourceTexture\("data/textures/([^"]+)"', tail_source)]
+            r'(?:makeRes|REGISTER_RES)\((\d+), 2, new AbyssEngine::ResourceTexture\("data/textures/([^"]+)"', tail_source)]
         self.assertEqual(pairs, [(row[2], row[3]) for row in RECORDS])
 
 

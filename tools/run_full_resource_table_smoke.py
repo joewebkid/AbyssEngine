@@ -1,4 +1,4 @@
-"""Compile and execute all 2,488 production resource records and their bulk handoff."""
+"""Execute the 2,488-slot table and the bounded complete registration tail."""
 
 import argparse
 from pathlib import Path
@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 import re
 import zipfile
+import sys
 
 from run_particle_control_smoke import function
 
@@ -18,6 +19,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--cxx", default=shutil.which("g++"))
     parser.add_argument("--obb", type=Path, help="optional original Android OBB path check")
+    parser.add_argument("--arm-evidence", action="store_true", help="compare all tail records with original ARM oracle")
     args = parser.parse_args()
     if not args.cxx:
         parser.error("specify --cxx")
@@ -30,13 +32,32 @@ def main():
     end = source.index(end_marker, start) + len(end_marker)
     table = ("\n".join((prelude, "void buildResourceTable(AbyssEngine::PaintCanvas *canvas) {",
                         "    using namespace AbyssEngine;", source[start:end], "}")))
-    hd = "void registerHdResources(AbyssEngine::PaintCanvas *canvas) {\n" + \
-         function(source, "if (Globals::iPadHD) {") + \
-         function(source, "else if (Globals::retinaDisplay) {") + \
-         function(source[source.index("else if (Globals::retinaDisplay) {"):], "else {") + "\n}\n"
+    tail = source[source.index("    // ARM platform tail begin:"):
+                  source.index("    // ARM platform tail end:")]
+    hd = "void registerHdResources(AbyssEngine::PaintCanvas *canvas) {\n" + tail + "\n}\n"
+    oracle_header = ""
+    oracle_counts = []
+    if args.arm_evidence:
+        sys.path.insert(0, str(ROOT / "tools/verify"))
+        from test_build_resource_hd_tail_arm import TailOracle
+        oracle = TailOracle()
+        oracle_header = "struct ExpectedTail { unsigned short id; int kind; unsigned int image; const char *path; };\n"
+        for case in range(16):
+            flags = tuple((case >> bit) & 1 for bit in range(4))
+            rows = oracle.run(*flags)
+            oracle_counts.append(len(rows))
+            oracle_header += f"static const ExpectedTail expectedTail{case}[] = {{\n"
+            for _, rid, kind, data in rows:
+                payload = f'0, "{data}"' if kind == 2 else f"{data}u, nullptr"
+                oracle_header += f"{{{rid}, {kind}, {payload}}},\n"
+            oracle_header += "};\n"
+        oracle_header += "static const ExpectedTail *expectedTails[] = {" + ",".join(
+            f"expectedTail{case}" for case in range(16)) + "};\n"
+        oracle_header += "static const unsigned int expectedTailCounts[] = {" + ",".join(
+            str(count) for count in oracle_counts) + "};\n#define HAVE_ARM_TAIL_ORACLE 1\n"
 
     if args.obb:
-        paths = set(re.findall(r'"(data/textures/[^"\n]+)"', hd))
+        paths = set(re.findall(r'"(data/[^"\n]+)"', hd))
         with zipfile.ZipFile(args.obb) as archive:
             names = set(archive.namelist())
             missing = sorted(path for path in paths
@@ -55,6 +76,7 @@ def main():
     constructors = "namespace AbyssEngine {\n" + "\n".join((
         function(string, "int String::GetStringLength(const char *s) {"),
         function(texture, "ResourceTexture::ResourceTexture(const char *name, float value) {"),
+        function(texture, "ResourceTexture::~ResourceTexture() {"),
         function(material, "ResourceMaterial::ResourceMaterial(uint16_t texId, uint16_t texId2, BlendMode blend) {"),
         function(material, "ResourceMaterial::ResourceMaterial(uint16_t texId, BlendMode blend) {"),
         function(mesh, "ResourceMesh::ResourceMesh(const char *name, unsigned short id, bool flag)"),
@@ -63,6 +85,7 @@ def main():
         temp_path = Path(temp)
         (temp_path / "full_resource_table_under_test.inc").write_text(table)
         (temp_path / "full_resource_hd_under_test.inc").write_text(hd)
+        (temp_path / "full_resource_tail_oracle.inc").write_text(oracle_header)
         (temp_path / "full_resource_set_under_test.inc").write_text(
             "namespace AbyssEngine {\n" + setter + "\n}\n")
         (temp_path / "full_resource_ctors_under_test.inc").write_text(constructors)
@@ -76,7 +99,7 @@ def main():
             if result.returncode:
                 raise RuntimeError("host compile failed:\n" + "\n".join(result.stderr.splitlines()[-20:]))
             subprocess.run([str(exe)], cwd=ROOT, check=True)
-    print("Full resource table and HD/iPad/Retina/default platform branches -O0/-O2: OK")
+    print("Full resource table and complete platform/post-platform registration tail -O0/-O2: OK")
 
 
 if __name__ == "__main__":

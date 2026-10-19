@@ -20,16 +20,19 @@ public:
 struct Globals {
     static unsigned char iPad;
     static unsigned char iPadHD;
+    static unsigned char iPadLarge;
     static unsigned char retinaDisplay;
 };
 unsigned char Globals::iPad;
 unsigned char Globals::iPadHD;
+unsigned char Globals::iPadLarge;
 unsigned char Globals::retinaDisplay;
 
 #include "full_resource_ctors_under_test.inc"
 #include "full_resource_table_under_test.inc"
 #include "full_resource_set_under_test.inc"
 #include "full_resource_hd_under_test.inc"
+#include "full_resource_tail_oracle.inc"
 
 int main() {
     AbyssEngine::PaintCanvas canvas;
@@ -61,115 +64,54 @@ int main() {
                        "data/assets/main/3d/meshes/fx/projectile_025_anim_add.aem") == 0);
     assert(static_cast<AbyssEngine::ResourceMesh *>(mesh->payload)->wResourceId == 24201);
 
-    struct TextureCase { unsigned short id; const char *path; };
-    const TextureCase ordinary[] = {
-        {11635, "data/textures/gof2_font_ar.aei"},
-        {11637, "data/textures/gof2_font_cht.aei"},
-        {11639, "data/textures/gof2_font_chs.aei"},
-        {11643, "data/textures/gof2_font_kr.aei"},
-        {11645, "data/textures/gof2_font_ja.aei"},
-        {11641, "data/textures/gof2_font_langselect.aei"},
-        {10062, "data/textures/gof2_interface.aei"},
-        {10002, "data/textures/gof2_logos_ipad2.aei"},
-        {27340, "data/textures/gof2_credits.aei"},
-        {10089, "data/textures/gof2_interface3.aei"},
-        {10064, "data/textures/gof2_items.aei"},
-        {11632, "data/textures/gof2_items_2.aei"},
-        {27341, "data/textures/gof2_challenge_interface.aei"},
-        {27342, "data/textures/gof2_campaign_select.aei"},
-        {27343, "data/textures/gof2_shop_button.aei"},
-    };
-    auto assertTexture = [&](unsigned int index, const TextureCase &expected) {
-        auto *resource = canvas.resources.data_[index];
-        assert(resource->id == expected.id && resource->kind == 2 && resource->unused == -1);
-        assert(static_cast<AbyssEngine::ResourceTexture *>(resource->payload)->value == 0.0f);
-        assert(std::strcmp(static_cast<AbyssEngine::ResourceTexture *>(resource->payload)->name,
-                           expected.path) == 0);
-    };
-
-    Globals::iPadHD = 0;
-    registerHdResources(&canvas);
-    assert(canvas.resources.count == 2503);
-    for (unsigned int i = 0; i < 15; ++i)
-        assertTexture(2488 + i, ordinary[i]);
-    Globals::iPadHD = 1;
-    registerHdResources(&canvas);
-    assert(canvas.resources.count == 2515);
-    auto *hdFont = canvas.resources.data_[2503];
-    assert(hdFont->id == 11635 && hdFont->kind == 2);
-    auto *hdShop = canvas.resources.data_[2514];
-    assert(hdShop->id == 27343 && hdShop->kind == 2);
-    assert(std::strcmp(static_cast<AbyssEngine::ResourceTexture *>(hdShop->payload)->name,
-                       "data/textures/gof2_shop_button_ipad_1440.aei") == 0);
-
-    Globals::iPad = 1;
-    registerHdResources(&canvas);
-    assert(canvas.resources.count == 2527);
-    Globals::retinaDisplay = 1;
-    registerHdResources(&canvas);
-    assert(canvas.resources.count == 2547);
-    auto *largeInterface = canvas.resources.data_[2539];
-    assert(largeInterface->id == 10089 && largeInterface->kind == 2);
-    auto *largeShop = canvas.resources.data_[2546];
-    assert(largeShop->id == 27343 && largeShop->kind == 2);
-    assert(std::strcmp(static_cast<AbyssEngine::ResourceTexture *>(largeShop->payload)->name,
-                       "data/textures/gof2_shop_button_ipad_large.aei") == 0);
-
-    Globals::iPadHD = 0;
-    Globals::iPad = 0;
-    registerHdResources(&canvas);
-    assert(canvas.resources.count == 2563);
-    auto *phoneFont = canvas.resources.data_[2547];
-    assert(phoneFont->id == 11635 && phoneFont->kind == 2);
-    auto *phoneShop = canvas.resources.data_[2562];
-    assert(phoneShop->id == 27343 && phoneShop->kind == 2);
-    assert(std::strcmp(static_cast<AbyssEngine::ResourceTexture *>(phoneShop->payload)->name,
-                       "data/textures/gof2_shop_button_iphone4.aei") == 0);
-    Globals::retinaDisplay = 0;
-    registerHdResources(&canvas);
-    assert(canvas.resources.count == 2578);
-    for (unsigned int i = 0; i < 15; ++i)
-        assertTexture(2563 + i, ordinary[i]);
-    Globals::iPad = 1;
-    registerHdResources(&canvas);
-    assert(canvas.resources.count == 2595);
-    for (unsigned int i = 0; i < 9; ++i)
-        assertTexture(2578 + i, ordinary[i]);
-    const TextureCase ipad[] = {
-        {10089, "data/textures/gof2_interface3_ipad.aei"},
-        {10063, "data/textures/gof2_interface2_ipad.aei"},
-        {10064, "data/textures/gof2_items_ipad.aei"},
-        {11632, "data/textures/gof2_items_ipad_2.aei"},
-        {11630, "data/textures/gof2_dlc_interface_ipad.aei"},
-        {27341, "data/textures/gof2_challenge_interface_ipad.aei"},
-        {27342, "data/textures/gof2_campaign_select_ipad.aei"},
-        {27343, "data/textures/gof2_shop_button.aei"},
-    };
-    for (unsigned int i = 0; i < 8; ++i)
-        assertTexture(2587 + i, ipad[i]);
-
-    // Include noncanonical nonzero bytes: ARM checks zero, not equality to one.
+    // Counts from original ARM routes; index bits: HD, iPad, Retina, iPadLarge.
+    const unsigned int counts[] = {234, 231, 264, 264, 235, 231, 271, 267,
+                                   234, 231, 264, 264, 228, 231, 264, 267};
     for (unsigned char hd : {0, 1, 2, 255}) {
         for (unsigned char pad : {0, 1, 2, 255}) {
             for (unsigned char retina : {0, 1, 2, 255}) {
-                Globals::iPadHD = hd;
-                Globals::iPad = pad;
-                Globals::retinaDisplay = retina;
-                unsigned int start = canvas.resources.count;
-                registerHdResources(&canvas);
-                unsigned int expected = hd ? (pad && retina ? 20 : 12)
-                                          : (retina ? 16 : (pad ? 17 : 15));
-                assert(canvas.resources.count == start + expected);
-                if (!hd && !retina) {
-                    for (unsigned int i = 0; i < (pad ? 9u : 15u); ++i)
-                        assertTexture(start + i, ordinary[i]);
-                    if (pad) {
-                        for (unsigned int i = 0; i < 8; ++i)
-                            assertTexture(start + 9 + i, ipad[i]);
+                for (unsigned char large : {0, 1, 2, 255}) {
+                    Globals::iPadHD = hd;
+                    Globals::iPad = pad;
+                    Globals::retinaDisplay = retina;
+                    Globals::iPadLarge = large;
+                    unsigned int route = (hd != 0) | ((pad != 0) << 1) | ((retina != 0) << 2) | ((large != 0) << 3);
+#ifdef HAVE_ARM_TAIL_ORACLE
+                    assert(counts[route] == expectedTailCounts[route]);
+#endif
+                    unsigned int start = canvas.resources.count;
+                    registerHdResources(&canvas);
+                    assert(canvas.resources.count == start + counts[route]);
+                    for (unsigned int i = 0; i < counts[route]; ++i) {
+                        auto *resource = canvas.resources.data_[start + i];
+                        assert(resource && resource->unused == -1);
+                        assert(resource->id && (resource->kind == 2 || resource->kind == 3));
+#ifdef HAVE_ARM_TAIL_ORACLE
+                        const auto &expected = expectedTails[route][i];
+                        assert(resource->id == expected.id && resource->kind == expected.kind);
+                        if (resource->kind == 2) {
+                            auto *payload = static_cast<AbyssEngine::ResourceTexture *>(resource->payload);
+                            assert(payload->value == 0.0f);
+                            assert(std::strcmp(payload->name, expected.path) == 0);
+                        } else {
+                            auto *payload = static_cast<AbyssEngine::ResourceImage *>(resource->payload);
+                            assert(payload->lo == (expected.image & 65535u));
+                            assert(payload->hi == (expected.image >> 16));
+                        }
+#endif
                     }
+                    // Release each bounded run so the 256-case matrix stays small.
+                    for (unsigned int i = start; i < canvas.resources.count; ++i) {
+                        auto *resource = canvas.resources.data_[i];
+                        if (resource->kind == 2)
+                            delete static_cast<AbyssEngine::ResourceTexture *>(resource->payload);
+                        else
+                            delete static_cast<AbyssEngine::ResourceImage *>(resource->payload);
+                        delete resource;
+                    }
+                    canvas.resources.count = start;
                 }
             }
         }
     }
-
 }
