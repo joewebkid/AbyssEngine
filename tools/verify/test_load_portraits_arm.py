@@ -14,6 +14,20 @@ SO = Path(delink.DEFAULT_SO)
 
 @unittest.skipUnless(SO.is_file(), 'original Android binary unavailable')
 class LoadPortraitsArmEvidence(unittest.TestCase):
+    def test_post_table_image_resource_contract(self):
+        asm = subprocess.check_output(delink.tool_argv(str(ROOT / 'tools/verify/orbobjdump'), [
+            '-d', '--start-address=0x10a1aa', '--stop-address=0x10a25a', str(SO)]), text=True)
+        for instruction in (
+            r'movw\s+fp, #10200', r'movw\s+r6, #5000', r'movs\s+r4, #3',
+            r'mov\.w\s+r8, #4294967295', r'mov\.w\s+r9, #0',
+            r'add\.w\s+r1, r9, fp', r'add\.w\s+r1, r9, r6',
+            r'strh\s+r1, \[r0, #0\]', r'strh\s+r1, \[r5, #0\]',
+            r'strd\s+r4, r8, \[r5, #4\]', r'str\s+r0, \[r5, #12\]',
+            r'add\.w\s+r9, r9, #1', r'cmp\.w\s+r9, #152', r'bcc\.n\s+10a224',
+        ):
+            self.assertRegex(asm, instruction)
+        self.assertIn('PaintCanvas11AddResource', asm)
+
     def test_got_suffixes_and_resource_records(self):
         data = SO.read_bytes()
         self.assertEqual(data[:6], b'\x7fELF\x01\x01')
@@ -79,9 +93,21 @@ class LoadPortraitsArmEvidence(unittest.TestCase):
                 if path.startswith('data/textures/'):
                     paths.append(path)
         ids = [int(value) for value in re.findall(r'(?:movw|mov\.w)\s+r1, #(10\d+)', asm)]
+        # Normal-path named calls prove allocation and temporary lifetimes; the
+        # four destructor calls after each AddResource use an indirect BLX.
+        calls = re.findall(r'\bblx?\s+[0-9a-f]+\s+<([^>]+)>', asm)
+        add = '_ZN11AbyssEngine11PaintCanvas11AddResourceEPNS_8ResourceE@plt'
+        normal = calls[:max(i for i, name in enumerate(calls) if name == add) + 1]
+        constructor = '_ZN11AbyssEngine6StringC1EPKcb@plt'
+        concat = '_ZN11AbyssEngineplERKNS_6StringES2_@plt'
+        self.assertEqual(normal, [constructor] + [
+            '_Znwj@plt', '_Znwj@plt', constructor, concat, constructor, concat,
+            '_ZN11AbyssEngine15ResourceTextureC2ERKNS_6StringEf@plt', add,
+        ] * 152)
         source = (ROOT / 'src/engine/render/ResourceMaterial.cpp').read_text()
         self.assertEqual(paths, re.findall(r'String\("(data/textures/[^"]+)"', source))
-        self.assertEqual(ids, [int(value, 16) for value in re.findall(r'res->id = (0x[0-9a-f]+)', source)])
+        self.assertEqual(ids, [int(value, 16) for value in re.findall(
+            r'new AbyssEngine::Resource\{(0x[0-9a-f]+), 2, -1,', source)])
         self.assertEqual(ids, list(range(10200, 10352)))
 
 
