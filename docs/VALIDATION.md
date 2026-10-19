@@ -4,6 +4,33 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Combined weapon-position and station-texture gate (2026-10-20)
+
+The integrated native `gof2` build and ABI/lifetime smoke pass. The original-
+asset weapon-position contract passes at `-O0/-O2`: all 59 IDs, 552 entries, four slots, scalar
+read order, cleanup and a controlled failed-read negative case. The continuous
+Windows SwiftShader and Android ARMv7 Adreno gate passes at `-O0/-O2`, checks
+the atlas, all nine ETC1 sun mips, and exact first station-orbit RGBA base
+pixels; generated RGBA mips are a separate bounded box-reference check. It
+completes the first station-loop iteration and stops before texture 10021.
+The isolated eight-case texture-loop smoke also passes at both optimizations.
+Neither `Level::init` stage 0 nor a native game frame is completed.
+
+The full combined ARM run builds **208/208** units with zero skips and wrong-
+type signatures. It compares **4,323/4,524** originals in **4,731 pairs**:
+**93.91%** mean source-shape, **83.19%** strict fuzzy, **2,548 linked-exact**,
+**1,079 byte-exact**. Exact `(unit, symbol)` set comparison with the preceding
+published report shows **zero lost and zero gained** linked- or byte-exact
+pairs. The changed `FileRead.o` and `StarSystem.o` hashes equal their isolated
+branch outputs. All **74 verifier tests** pass with one pre-existing skip.
+The fresh ignored report is `_work/decomp_weapon_station_full_20261019.json`
+(SHA-256 `f5a8968437ed5c84c4b5ae65065cf68b494cc737c88365f12d0fac9607e966db`).
+The fixed family goals remain unmet: weapon positions **97.5%/49.9%** and
+station texture **90.525%/48.175%** source-shape/strict fuzzy. See the
+[weapon-position](WEAPON_POSITIONS_CONTRACT_ARM_2026-10-19.md) and
+[station-texture](STATION_TEXTURE_STARSYSTEM_ARM_2026-10-19.md) notes for
+original ARM addresses, asset checks and unverified semantics.
+
 ## Combined String float and ETC1 sun gate (2026-10-19)
 
 The source-backed float caller now passes helper mode 1; `String(float)` C2

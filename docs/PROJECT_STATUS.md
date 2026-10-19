@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-19 (String float and ETC1 sun integration; older subsystem
+Last reviewed: 2026-10-20 (weapon positions and first station texture; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -18,11 +18,52 @@ upload and managed texture publication. It checks 44 station collision
 volumes, 17 meshes, 15 transforms and a real GLES atlas readback at `-O0/-O2`
 on Windows and an Android ARMv7 device. The extended gate crosses
 `SolarSystem::getStations` and the real station binary reader, uploads the
-ETC1 sun through GLES, then stops before the first station texture upload.
+ETC1 sun and first station-orbit RGBA texture through GLES, completes the
+first StarSystem station-loop iteration, then stops before the second texture
+request, `TextureCreate(10021)`.
 Stage 0 has not returned, and the game is not running. A catalog-backed
 cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Weapon positions and first station texture (2026-10-20)
+
+`FileRead::loadWeaponPositions` now retains its three float read destinations
+across records, as in Android ARM. A production-body host gate checks all 59
+IDs, 552 entries and 236 extra vectors in the original `weapons_hd.bin` at
+`-O0/-O2`, including four ordered slots, exact scalar reads, 788 vector
+releases and the copied Gun/PlayerEgo values. A controlled failed-read case
+distinguishes the correction from the previous body. The fixed one-function
+family changes from **97.7%/53.1%** source-shape/strict fuzzy to
+**97.5%/49.9%**: the 98% target is not met and the metric decline is recorded.
+Absent IDs still have no EOF guard; full `Level::createPlayer` is not executed.
+See [the weapon-position evidence](WEAPON_POSITIONS_CONTRACT_ARM_2026-10-19.md).
+
+The StarSystem current-station branch now follows the ARM mission-call order
+and skips texture-index lookup on its special branch. The continuous original-
+asset gate uploads resource **10014** (64×64 raw RGBA) through production GLES,
+checks its exact 16,384 base bytes and separately tests generated mip levels,
+then completes the first station-loop iteration. Windows SwiftShader and an
+Android ARMv7 Adreno device pass at `-O0/-O2`; the next boundary remains
+**before `TextureCreate(10021)`**. The predeclared four-function texture family
+changes **90.55%/48.125% → 90.525%/48.175%** source-shape/strict fuzzy;
+98% is not reached. StarSystem completion, ring geometry on other stations,
+target-array allocation, Level stage 0 and a native game frame remain open.
+See [the station-texture evidence](STATION_TEXTURE_STARSYSTEM_ARM_2026-10-19.md).
+
+On the combined tree, native `gof2`, the ABI/lifetime smoke, the original-
+asset weapon gate, the Windows/Android station gate and loop smoke at `-O0/-O2`, **208/208 ARM
+units**, and **74 verifier tests** (one existing skip) pass. The fresh full
+corpus compares **4,323/4,524** original functions in **4,731 pairs**, with
+**93.91%** mean source-shape, **83.19%** strict fuzzy, **2,548 linked-exact**
+and **1,079 byte-exact**. Against the prior published baseline, the exact
+`(unit, symbol)` sets have zero losses and zero gains; skipped units and
+wrong-type signatures remain zero. The two changed ARM objects match their
+isolated branch builds byte-for-byte. The ignored combined report is
+`_work/decomp_weapon_station_full_20261019.json` (SHA-256
+`f5a8968437ed5c84c4b5ae65065cf68b494cc737c88365f12d0fac9607e966db`).
+Next priority is the second station texture and remaining StarSystem loop,
+then `Level::createPlayer` and stage-0 return; none is a playable native build.
 
 ## Float String mode and first ETC1 sun upload (2026-10-19)
 

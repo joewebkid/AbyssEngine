@@ -5,6 +5,7 @@ from run_particle_control_smoke import function
 
 ROOT = Path(__file__).resolve().parents[1]
 out = ROOT / "_work/gles-host"
+out.mkdir(parents=True, exist_ok=True)
 source = (ROOT / "src/game/world/StarSystem.cpp").read_text()
 loop = function(source, "for (uint32_t i = 1; i < this->texturesArray->size(); ++i)")
 (out / "starsystem_texture_loop_under_test.inc").write_text(loop)
