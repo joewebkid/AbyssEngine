@@ -26,11 +26,11 @@ record 14287. They are restored in `BuildResourceList.cpp`. The asset-backed
 host gate now decodes original texture 33410 and checks cache reuse, alongside
 the existing Level skybox path; restored mesh 14287 also passes the
 resource-ID loader once, with animated reuse untested. After the subsequent
-material cluster recovery, **40 of 2,488 table slots remain unrecovered**
+ship-material recovery, **12 of 2,488 table slots remain unrecovered**
 in C++; they are null-initialized as a labelled host-safety workaround,
 not as a claim of original behavior. Full table execution and consumers
-remain unvalidated. Next: recover the 608–681 gap cluster, implement the
-native `SetResourceList` handoff and run the complete table. See
+remain unvalidated. Next: recover the remaining scattered slots, check
+material texture references, and run the complete table. See
 [the ARM slot evidence](BUILD_RESOURCE_LIST_GAPS_ARM_2026-10-19.md).
 Native and 208/208 ARM units build; the host gate passes at `-O0/-O2`.
 The fresh full corpus remains 4,323/4,524 compared, 2,529 linked-exact,
@@ -38,8 +38,8 @@ The fresh full corpus remains 4,323/4,524 compared, 2,529 linked-exact,
 strict fuzzy stays 93.87%/83.06%. Focused `BuildResourceList` source-shape
 is 73.8% (was 73.5%); strict fuzzy is 21.7% (was 22.8%).
 Follow-up ARM tracing restores material slots 608, 609, 611 and 629 and
-corrects slot 610's texture ID to 33120. This leaves **40 unrecovered
-slots**; referenced texture IDs 33120/33121 still require consumer-level
+corrects slot 610's texture ID to 33120. At that intermediate revision
+40 slots were unrecovered; referenced texture IDs 33120/33121 still require consumer-level
 checking. The follow-up compiles natively and across 208/208 ARM units;
 the asset-backed gate passes at `-O0/-O2`. Full corpus remains
 4,323/4,524 compared, 2,529 linked-exact and 1,076 byte-exact, with
@@ -57,6 +57,17 @@ Native and 208/208 ARM units build; 40 verifier tests pass (one existing
 skip). The full corpus remains 4,323/4,524 compared, mean
 source-shape/strict fuzzy 93.87%/83.05%, 2,529 linked-exact and 1,076
 byte-exact, with no losses from the preceding exact-pair sets.
+The ship-material follow-up adds 28 ARM-backed records and corrects 15
+existing placeholder payloads in slots 634–674. Its source-record test
+covers all 41 records in that run, plus slots 632 and 681. Texture IDs
+34042, 34050 and 34150 are referenced by the ARM materials but have no
+direct recovered C++ records; their consumer semantics remain open.
+Native and 208/208 ARM units build; the selected asset-backed gate passes
+at `-O0/-O2`, and 42 verifier tests pass (one existing skip). Focused
+`BuildResourceList` source-shape/strict fuzzy rises from 73.9%/13.6%
+to 74.7%/17.6%, still nonexact. The full corpus remains 4,323/4,524
+compared, mean 93.87%/83.05%, 2,529 linked-exact and 1,076 byte-exact,
+with no loss of prior exact pairs.
 
 ## Level skybox canvas-to-loader gate (2026-10-19)
 

@@ -115,3 +115,38 @@ Native `gof2`, 208/208 ARM units and 40 verifier tests pass (one existing
 skip). The full ARM corpus remains 4,323/4,524 compared, mean
 source-shape/strict fuzzy 93.87%/83.05%, 2,529 linked-exact and 1,076
 byte-exact, with no exact-pair losses against the material-cluster report.
+
+## Follow-up: ship-material run
+
+The contiguous ARM stores from `0xf1776` through `0xf212e` contain 41
+ship-material records at slots 634–674. Every record calls the two-texture
+`ResourceMaterial` constructor (PLT `0x65e74`) with blend 28. The first
+texture IDs come from the earlier diffuse resource records (34000–34012,
+34016–34041, and 34043); the second IDs come from their matching normal/
+specular records (34100–34112, 34116–34141, and 34143). Slot 673 uses
+34042 and 34142; the latter has a direct C++ record, while 34042 does not.
+The ARM call at `0xf20d6` explicitly uses 34042 for slot 673, so this
+unresolved reference is preserved rather than replaced with a guessed
+texture. The intervening absent ID suffixes 13–15 are also preserved.
+
+The same ARM function supplies slot 632 at `0xf1708` as material 34604
+using texture 34504, blend 2. Slot 681 at `0xf22aa` is material 34250
+using texture IDs 34050/34150, blend 28. Neither of those two texture
+IDs has a direct record in the recovered C++ table yet. In total this
+follow-up adds 28 omitted records and corrects 15 previously present
+ship-material payloads that used placeholder texture IDs. The 2,488-slot
+table now has **12 unrecovered positions**: 896, 897, 899, 900, 977,
+997, 998, 1700, 1871, 1874, 1877 and 1883.
+
+The source-record test checks all 41 ship-material ID/texture pairs and
+the two edge records. It does not exercise their render-time consumers.
+The complete `BuildResourceList` host path and full `Level::init` remain
+unverified; the remaining 12 slots and these unresolved texture references
+are the next priority.
+Native `gof2` and all 208 ARM units build. The selected asset-backed
+`SetResourceList`/loader gate passes at `-O0/-O2`; 42 verifier tests pass
+(one existing skip). Focused `BuildResourceList` source-shape/strict fuzzy
+improves from 73.9%/13.6% to 74.7%/17.6%, still nonexact. Full ARM
+corpus remains 4,323/4,524 compared, mean 93.87%/83.05%, 2,529
+linked-exact and 1,076 byte-exact; comparison of the exact-pair sets
+against the preceding full report shows zero losses.
