@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-19 (PaintCanvas resource registration gate; older subsystem
+Last reviewed: 2026-10-19 (Level skybox in-process asset gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -29,7 +29,12 @@ those assets. The ARM-backed `AddResource` shim now calls
 `ArrayAdd<Resource*>` and is no longer an undefined native reference.
 `AddResource` remains 100%/100% source-shape/fuzzy and linked-exact.
 Resource records are fixture-owned, and material/GPU services
-remain bounded; full `Level::createSpace` is not joined to this host run.
+remain bounded. A new in-process host gate runs the production skybox
+prelude of `Level::createSpace` through canvas registration, lookup and
+file parsing for the same four assets at `-O0/-O2`; its second call reuses
+all handles without reopening files. The remainder of `createSpace` is
+not in that gate. Focused `createSpace` remains 86.1%/46.2% source-shape/
+fuzzy, nonexact.
 Focused source-shape/fuzzy from the unchanged ARM report: `FindResource`
 100%/100% byte-exact, resource `MeshCreate` 98.6%/86.7% nonexact, callback
 `TextureCreate` 95.5%/51.7% nonexact.
@@ -37,9 +42,8 @@ Focused source-shape/fuzzy from the unchanged ARM report: `FindResource`
 20-byte literal, preventing native x64 underallocation while preserving the
 ARM size. Native and 208/208 ARM TUs build. Focused `ImageCreateFromFile`
 source-shape/strict fuzzy stays 97.3%/58.8%, nonexact. This is a parser
-gate, not an end-to-end `Level::init` or render gate. Next: connect the
-level selector, production resource-table construction and these canvas calls
-in one host run. See
+gate, not an end-to-end `Level::init` or render gate. Next: run production
+resource-table construction and the `createSpace` tail. See
 [the asset-loader evidence](LEVEL_SKYBOX_ASSET_LOAD_2026-10-19.md).
 Full ARM corpus: 4,323/4,524 compared, 93.87%/83.06% mean
 source-shape/fuzzy, 2,529 linked-exact and 1,076 byte-exact with zero

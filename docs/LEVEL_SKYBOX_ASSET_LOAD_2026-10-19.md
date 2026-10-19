@@ -22,7 +22,7 @@ original bytes to production parsers. The texture files each contain two
 trailing bytes after the portion consumed by `ImageCreateFromFile`; the
 truncation test cuts the consumed payload, not that trailer.
 
-The next host gate runs production `PaintCanvas::AddResource`,
+The canvas host gate runs production `PaintCanvas::AddResource`,
 `FindResource` and `MeshCreate` for both mesh IDs, and production
 `AddResource`, `FindResource` and both `TextureCreate` overloads for the
 corresponding texture IDs. Each path
@@ -35,6 +35,17 @@ The texture upload service is a GPU boundary double which calls the real
 `ImageCreateFromFile`/`ImageRelease`, then issues a test texture ID.
 Therefore this is a canvas-to-parser handoff, not a GL upload or rendered
 skybox test.
+
+An in-process host gate now also runs the production-source-extracted
+skybox prelude of `Level::createSpace` through those canvas methods and
+loaders for the ordinary system-index-4/texture-index-2 case. It loads
+the four files above at `-O0` and `-O2`, obtains handles `0/100/1/101`,
+and observes four opens/four closes. Calling the prelude again performs
+no additional file open. This is stronger than independent selector and
+parser tests, but the source extraction stops before the rest of
+`createSpace`; `Status`, resource records, material creation, VBO and GPU
+services remain bounded host fixtures. Focused `createSpace` source-shape/
+fuzzy is still 86.1%/46.2%, nonexact.
 
 Android ARM `PaintCanvas::AddResource` at `0x77f84`–`0x77f8c` forwards
 the resource and `this+0x134` through a veneer to
@@ -75,10 +86,10 @@ original game function. Current full report:
 `A:/Galaxy on Fire new version/_work/canvas_add_resource_full_20261019.json`.
 
 This gate proves that the exact four ordinary-orbit skybox files can be
-selected by the recovered canvas methods and parsed by the recovered mesh
-and image loaders. It does **not** yet prove production resource-table
-construction, material creation, GL texture upload, the complete
-`Level::init` path, or `renderBG`. The next integration step is to connect
-the level selector and these canvas calls under one host run and identify
-the first failing service boundary without claiming a complete native
-flight scene.
+selected by the `Level` skybox prelude, looked up by the recovered canvas
+methods and parsed by the recovered mesh and image loaders in one host
+process. It does **not** yet prove production resource-table construction,
+material creation, GL texture upload, the complete `createSpace` tail,
+`Level::init`, or `renderBG`. The next integration step is production table
+setup and the remainder of `createSpace`, identifying the first failing
+service boundary without claiming a complete native flight scene.

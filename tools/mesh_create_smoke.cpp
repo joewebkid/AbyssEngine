@@ -22,6 +22,9 @@ int opened, closed, released;
 bool openSucceeds;
 bool changeTimeOnCollect;
 std::string expectedPath;
+#ifdef GOF2_LEVEL_INTEGRATION
+std::string assetBase;
+#endif
 int collected, rangeCalls;
 AbyssEngine::Transform *rangeReceiver;
 longlong lastRangeStart, lastRangeEnd;
@@ -102,6 +105,15 @@ void fixture(bool enhanced, unsigned short subCount, bool uv = false, unsigned s
 }
 
 uint32_t AEFile::OpenRead(const char *path, uint32_t *handle) {
+#ifdef GOF2_LEVEL_INTEGRATION
+    if (!assetBase.empty()) {
+        std::ifstream file(assetBase + "/" + path, std::ios::binary);
+        assert(file.good());
+        input.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+        cursor = 0;
+        limit = input.size();
+    }
+#endif
     if (!expectedPath.empty()) assert(expectedPath == path);
     ++opened;
     if (!openSucceeds) return 0;
@@ -180,6 +192,16 @@ public:
     void AddResource(Resource *resource);
     void MeshCreate(unsigned short id, unsigned int &out, bool forceClone);
     void MaterialCreate(unsigned short id, unsigned int &) { lastMaterialId = id; }
+#ifdef GOF2_LEVEL_INTEGRATION
+    static PaintCanvas *gCanvas;
+    void TextureCreate(unsigned short id, void (*callback)(Image *, void *),
+                       void *userData, unsigned int &out, bool useCallbackLoader);
+    void TextureCreate(unsigned short id, unsigned int &out, bool flag);
+    void TransformCreate(unsigned int &) { std::abort(); }
+    void TransformAddMeshId(unsigned int, unsigned int) { std::abort(); }
+    void *TransformGetTransform(unsigned int) { std::abort(); }
+    Mesh *MeshGetPointer(unsigned int index) { return meshes[index]; }
+#endif
 };
 }
 using AbyssEngine::PaintCanvas;
@@ -190,6 +212,7 @@ static_assert(offsetof(PCMeshInfoView, matResId) == 8, "mesh info host material"
 
 #include "mesh_canvas_under_test.inc"
 
+#ifndef GOF2_LEVEL_INTEGRATION
 int main(int argc, char **argv) {
 #ifdef _WIN32
     _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
@@ -322,3 +345,4 @@ int main(int argc, char **argv) {
         std::free(canvas.meshes);
     }
 }
+#endif
