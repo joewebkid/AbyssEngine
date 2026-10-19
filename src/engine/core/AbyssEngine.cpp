@@ -1248,7 +1248,7 @@ namespace AbyssEngine {
         if (engine == 0 || path == 0)
             return -4;
 
-        Image *image = (Image *) ::operator new(0x14);
+        Image *image = (Image *) ::operator new(sizeof(Image));
         image->hasMipmaps = 0;
         *(uint32_t *) &image->width = 0;
         image->format = 0;

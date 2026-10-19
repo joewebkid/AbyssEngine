@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level skybox asset-loader gate (2026-10-19)
+
+The production `MeshCreateFromFile`/`MeshReadData` host smoke parses the
+two ordinary-orbit skybox meshes from Android OBB bytes. The production
+`ImageCreateFromFile` host smoke parses the corresponding two textures at
+`-O0/-O2`, checks host allocation size and rejects a truncated payload.
+Native `gof2`, 208/208 ARM TUs and 40 verifier tests pass (one skip).
+Focused `ImageCreateFromFile` source-shape/strict fuzzy remains
+97.3%/58.8%, nonexact. See
+[the asset-loader evidence](LEVEL_SKYBOX_ASSET_LOAD_2026-10-19.md).
+These tests isolate the file service; they do not run canvas registration,
+GPU upload, full `Level::init`, or rendering.
+Full ARM corpus: 4,323/4,524 compared, 93.87%/83.05% mean source-shape/
+strict fuzzy, 2,528 linked-exact and 1,076 byte-exact with zero pair
+losses against the preceding report.
+
 ## PaintCanvas fog parameter gate (2026-10-19)
 
 The production `FogSetParameter` body runs at `-O0/-O2` with test GL and

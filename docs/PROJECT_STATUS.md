@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-19 (PaintCanvas fog parameter gate; older subsystem
+Last reviewed: 2026-10-19 (Level skybox asset-loader gate; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -17,6 +17,22 @@ but the full init path has not yet passed a host runtime gate. A catalog-backed
 cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Level skybox asset-loader gate (2026-10-19)
+
+The two meshes and two textures selected by an ordinary system-index-4,
+texture-index-2 `createSpace` entry now pass their production mesh/image
+loaders using original Android OBB bytes at a host file-service boundary.
+`ImageCreateFromFile` now allocates `sizeof(Image)` instead of the ARM-only
+20-byte literal, preventing native x64 underallocation while preserving the
+ARM size. Native and 208/208 ARM TUs build. Focused `ImageCreateFromFile`
+source-shape/strict fuzzy stays 97.3%/58.8%, nonexact. This is a parser
+gate, not an end-to-end `Level::init` or render gate. Next: connect resource
+registration, canvas calls and these loaders in one host run. See
+[the asset-loader evidence](LEVEL_SKYBOX_ASSET_LOAD_2026-10-19.md).
+Full ARM corpus remains 4,323/4,524 compared, 93.87%/83.05% mean
+source-shape/fuzzy, 2,528 linked-exact and 1,076 byte-exact with zero
+exact-pair losses.
 
 ## PaintCanvas fog parameters (2026-10-19)
 

@@ -9,6 +9,8 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
+#include <iterator>
 #include <vector>
 
 namespace {
@@ -149,7 +151,7 @@ void Transform::SetAnimationRangeInTime(longlong first, longlong last) {
 #include "mesh_read_under_test.inc"
 #include "mesh_create_under_test.inc"
 
-int main() {
+int main(int argc, char **argv) {
 #ifdef _WIN32
     _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
 #endif
@@ -237,6 +239,17 @@ int main() {
         assert(cursor == childStarts[failedIndex] && slot->animation && slot->animation->meshes.size() == failedIndex);
         assert(failedChild != nullptr);
         dispose(failedChild); failedChild = nullptr;
+        dispose(slot); slot = nullptr;
+    }
+    for (int i = 1; i < argc; ++i) {
+        std::ifstream file(argv[i], std::ios::binary);
+        assert(file.good());
+        input.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+        assert(!input.empty());
+        reset(input.size());
+        assert(MeshCreateFromFile(engine, argv[i], &slot, nullptr) == 1);
+        assert(slot && slot->vertexCount && cursor == input.size());
+        assert(opened == 1 && closed == 1 && released == 0);
         dispose(slot); slot = nullptr;
     }
 }

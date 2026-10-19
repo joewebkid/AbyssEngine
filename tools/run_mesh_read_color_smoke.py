@@ -13,7 +13,13 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--compiler', default='g++')
 parser.add_argument('--output-dir', type=Path, required=True)
 parser.add_argument('--create-smoke', action='store_true', help='Also exercise the current caller with the real reader and enhanced parser')
+parser.add_argument('--asset', type=Path, action='append', default=[], help='Original mesh file to parse with --create-smoke')
 args = parser.parse_args()
+if args.asset and not args.create_smoke:
+    parser.error('--asset requires --create-smoke')
+for asset in args.asset:
+    if not asset.is_file():
+        parser.error(f'asset does not exist: {asset}')
 root = Path(__file__).resolve().parents[1]
 def extract(source, pattern):
     matches = list(re.finditer(pattern, source))
@@ -36,6 +42,7 @@ include.write_text('namespace AbyssEngine {\n' + body + '\n}\n')
 assert body in include.read_text(), 'Extracted function must remain verbatim'
 math_source = (root / 'src/engine/math/AEMath.cpp').read_text()
 signatures = [
+    '__attribute__((noinline)) Vector &Vector::operator=(const Vector &other)',
     'Vector &Vector::operator+=(const Vector &other)',
     'Vector operator-(const Vector &lhs, const Vector &rhs)',
     'Vector operator*(const Vector &lhs, float rhs)',
@@ -74,5 +81,5 @@ if args.create_smoke:
                     str(root / 'tools/mesh_create_smoke.cpp'),
                     str(root / 'src/engine/render/Mesh.cpp'), str(root / 'src/engine/math/Vector.cpp'),
                     '-Wl,--gc-sections', '-o', str(create_exe)], check=True)
-    subprocess.run([str(create_exe)], check=True)
-    print('MeshCreateFromFile lifecycle and MeshReadData children/bounds/early-failure smoke passed')
+    subprocess.run([str(create_exe), *(str(asset.resolve()) for asset in args.asset)], check=True)
+    print(f'MeshCreateFromFile lifecycle and MeshReadData smoke passed; original assets: {len(args.asset)}')
