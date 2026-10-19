@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-19 (HD resource tail and LensFlare entry integration; older subsystem
+Last reviewed: 2026-10-19 (portrait consumer and real GLES atlas integration; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -12,16 +12,51 @@ asset-backed host fixture. A bounded `Status::departStation` slice now
 executes after startup with real item, ship and agent-stock generation,
 including mission offers under a controlled RNG boundary. The next
 integration milestone is completing `Level::init` with real resources. A
-continuous host gate now executes its production constructor and `init`,
-registers the complete 2,488-entry table, two low textures and the
-ordinary 234-record platform tail, and runs through `PlayerStation`, both
-jumpgates, `StarSystem` and `LensFlare` to the first `glGetError` in the
-texture upload body. It checks 44 station collision
-volumes, 17 meshes, 15 transforms and 14 original files at `-O0/-O2`.
-Stage 0 has not returned, and the game is not running. A
-catalog-backed cross-system wanted path now runs.
+continuous host gate registers 2,724 resources and runs through
+`PlayerStation`, both jumpgates and `LensFlare`, including a real GLES atlas
+upload and managed texture publication. It checks 44 station collision
+volumes, 17 meshes, 15 transforms and 18 original file opens at `-O0/-O2`
+on Windows and an Android ARMv7 device. Its explicit next boundary is
+`SolarSystem::getStations`; stage 0 has not returned, and the game is not
+running. A catalog-backed cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Portrait consumer and real GLES atlas (2026-10-19)
+
+`loadPortraits` now preserves the ARM allocation and temporary-String lifetime
+order for all 152 registrations. A bounded source-extracted gate checks the
+complete resource table, 152 Image records, platform tail and portraits across
+32 flag combinations; all 4,864 positive first-consumer calls stop at the
+texture-uploader entry, without fabricated handles or GPU success. A separate
+parser check uses 602 byte-verified original OBB files and confirms six absent
+variants. Focused `loadPortraits` source-shape/strict fuzzy rises from
+92.5%/66.8% to **98.6%/89.5%**. Its eight-symbol consumer family remains
+**96.80%/78.66%**, below 98%. See [the portrait evidence](PORTRAIT_RUNTIME_CONTRACT_ARM_2026-10-19.md).
+
+The atlas upload now follows the ARM-confirmed Engine -> ApplicationManager ->
+PaintCanvas ownership chain and releases its temporary error-path String in
+the original order. The continuous Level gate crosses the former `glGetError`
+stop, publishes one managed texture, creates three Image2Ds and completes
+LensFlare. Real Windows ANGLE and Android Adreno 618 contexts at `-O0/-O2`
+read back three original atlases byte-for-byte; error, restore and unmanaged
+paths are also checked. The ten-symbol upload family reaches **98.12%** mean
+source-shape, but `TextureCreateFromFileIntern` itself is **92.8%** and not
+exact. The gate stops at `SolarSystem::getStations`; its bootstrap/material
+fixtures and a GPU readback do not establish a finished level or visible game
+frame. See [the GLES evidence](TEXTURE_ATLAS_REAL_GLES_ARM_2026-10-19.md).
+
+On the combined tree, native `gof2`, all **208/208 ARM units**, both bounded
+host gates at `-O0/-O2`, and **56 verifier tests** (one existing skip) pass.
+The fresh full ARM corpus compares **4,323/4,524** original functions in
+**4,731 pairs**, with **93.90%** mean source-shape, **83.17%** mean strict
+fuzzy, **2,545 linked-exact** and **1,079 byte-exact**. Against the prior
+integrated revision, the `(unit, symbol)` exact-pair sets and 124 extra
+symbols are unchanged; skipped and wrong-type counts remain zero. The
+ignored report is `_work/decomp_portrait_atlas_full_20261019.json` (SHA-256
+`d02e8536269ed0924aa6ef6e8da267b76876e8f4ac47d510eb0d2f311970ff71`).
+Next priorities are the separate ResourceTexture String length/adapter contract
+and `SolarSystem::getStations -> FileRead::loadStationsBinary` world path.
 
 ## HD resource tail and LensFlare image entry (2026-10-19)
 
