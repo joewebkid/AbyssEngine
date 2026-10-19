@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (StarSystem station seed; older subsystem
+Last reviewed: 2026-10-20 (StarSystem first geometry; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -20,12 +20,31 @@ on Windows and an Android ARMv7 device. The extended gate crosses
 `SolarSystem::getStations` and the real station binary reader, uploads the
 ETC1 sun and all five station-orbit RGBA textures through GLES, completes the
 five station-loop iterations and record cleanup, executes the real
-`AERandom::setSeed(2100)`, then stops before the first RNG draw and planet
+`AERandom::setSeed(2100)`, constructs and publishes the first `AEGeometry`
+from the original `plane.aem`, then stops before the first RNG draw and planet
 placement.
 Stage 0 has not returned, and the game is not running. A catalog-backed
 cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## StarSystem first geometry before RNG draw (2026-10-20)
+
+Original Android ARM constructs and publishes `planetsArray[0]` before
+`AERandom::nextInt(14)`. Production C++ now follows this order. The
+continuous original-asset gate reaches the real `plane.aem` mesh and first
+geometry on Windows SwiftShader and Android ARMv7 at `-O0/-O2`, with the RNG
+still at its post-seed state. Native `gof2`, ABI/lifetime smoke, **208/208**
+ARM units and **83 verifier tests** (one pre-existing skip) pass. The two
+constructor aliases change **76.7%/18.4% → 76.2%/13.0%** source-shape/strict
+fuzzy; the behavior correction takes precedence over the local metric drop.
+The full corpus retains **4,323/4,524** originals in **4,735 pairs**,
+**93.92%** mean source-shape, **83.19%** strict fuzzy,
+**2,551 linked-exact** and **1,079 byte-exact**. Exact `(unit, symbol)` sets
+have no gains or losses versus the preceding seed report. See
+[first-geometry evidence](STARSYSTEM_FIRST_GEOMETRY_ARM_2026-10-20.md).
+Original post-effect checking, the first draw's outcome and non-sun slot
+rejection/placement remain unverified; Level stage 0 has not returned.
 
 ## StarSystem seed width and continuous gate (2026-10-20)
 

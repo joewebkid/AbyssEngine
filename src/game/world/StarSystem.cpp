@@ -513,18 +513,20 @@ StarSystem::StarSystem(int mode) {
     AERandom::gRandom->setSeed(static_cast<int32_t>(
         static_cast<uint32_t>(Globals::status->getStation()->getIndex()) * 300u));
 
-    int sunSlot = AERandom::gRandom->nextInt(14) + 5;
-    int stationSunSlotIndex = Globals::status->getStation()->getTextureIndex() - 9;
-    if (stationSunSlotIndex >= 0 && stationSunSlotIndex < 14 &&
-        (((0x3a31u >> stationSunSlotIndex) & 1u) != 0)) {
-        sunSlot = g_StarSystem_ctor_sunSlotOverrides[stationSunSlotIndex];
-    }
+    int sunSlot = 0;
     PlayerStatic **targets = (PlayerStatic **) flat_data(this->playerTargets);
     for (uint32_t i = 0; i < this->planetsArray->size(); ++i) {
         AEGeometry *geom = new AEGeometry((uint16_t) 0x1a70, Globals::Canvas, false);
         (*this->planetsArray)[i] = geom;
 
         if (i == 0) {
+            // ARM 0x13410e-0x13420c: publish the first geometry before drawing the slot.
+            sunSlot = AERandom::gRandom->nextInt(14) + 5;
+            int stationSunSlotIndex = Globals::status->getStation()->getTextureIndex() - 9;
+            if (stationSunSlotIndex >= 0 && stationSunSlotIndex < 14 &&
+                (((0x3a31u >> stationSunSlotIndex) & 1u) != 0)) {
+                sunSlot = g_StarSystem_ctor_sunSlotOverrides[stationSunSlotIndex];
+            }
             float sunScale = this->supernovaSystem == 0 ? 1000.0f : 2000.0f;
             geom->setScaling(Vector{sunScale, sunScale, sunScale});
             AEGeometry *streak = new AEGeometry((uint16_t) 0x1a70, Globals::Canvas, false);

@@ -75,6 +75,15 @@ static void stationSeedBoundary(StarSystem *star) {
     assert(Globals::status->getStation()->getIndex() == 7);
     assert(AERandom::gRandom->seedLow == (0xdeece66dU ^ 2100U));
     assert(AERandom::gRandom->seedHigh == 5U);
-    std::printf("Five station textures and indices published; five production Station destructors; target/planet/position arrays 5/6/6; Array<KIPlayer*> size %zu, element %zu. Seed 2100 reached; next: first RNG draw, Stage 0 incomplete\n", sizeof(*static_cast<Array<KIPlayer *> *>(star->playerTargets)), sizeof(KIPlayer *));
+}
+
+static void stationGeometryBoundary(StarSystem *star, AEGeometry *geom) {
+    assert(geom && geom == (*star->planetsArray)[0]);
+    for (unsigned i = 1; i < star->planetsArray->size(); ++i)
+        assert(!(*star->planetsArray)[i]);
+    assert(geom->mesh == 0x1a70 && geom->canvas == Globals::Canvas);
+    assert(AERandom::gRandom->seedLow == (0xdeece66dU ^ 2100U));
+    assert(AERandom::gRandom->seedHigh == 5U);
+    std::printf("Five station textures and indices published; five production Station destructors; target/planet/position arrays 5/6/6. Seed 2100 and first geometry reached before RNG draw; Stage 0 incomplete\n");
     throw FlareImageBoundary{};
 }

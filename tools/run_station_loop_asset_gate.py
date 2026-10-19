@@ -1,4 +1,4 @@
-"""Continue five station textures, typed cleanup and the original seed call."""
+"""Continue five station textures, seed and first original-asset geometry."""
 import run_station_texture_gate as first
 from run_level_station_asset_gate import replace_once
 from run_particle_control_smoke import function
@@ -21,6 +21,13 @@ def prepare(out, cxx, root, reuse):
     # Retain the old helper declaration for the inherited, now-unused probe.
     host = replace_once(host, 'namespace AbyssEngine {\nint loopTextureUpload(',
         'namespace AbyssEngine {\nint stationTextureUpload(Engine *, const char *, ImageCallback, void *, unsigned *, float, AELoadedTexture *, bool);\nint loopTextureUpload(')
+    # Resource 6768 is the original plane mesh and names 65535 as its material.
+    host = replace_once(host, 'id == 20003 || id == 3))',
+                        'id == 20003 || id == 3 || id == 65535))')
+    host = replace_once(host, 'id == 20003 || id == 3);',
+                        'id == 20003 || id == 3 || id == 65535);')
+    host = replace_once(host, '(!r && id == 3));',
+                        '(!r && (id == 3 || id == 65535)));')
     (out / "sun_host.inc").write_text(host)
     chain = (out / "station_binary_chain.inc").read_text()
     chain = '#include "game/mission/Item.h"\n#include "game/mission/Mission.h"\n' + chain
@@ -32,6 +39,9 @@ def prepare(out, cxx, root, reuse):
     chain = replace_once(chain, marker,
                          '    stationLoopBoundary(this);\n' + marker +
                          '\n    stationSeedBoundary(this);')
+    chain = replace_once(chain, '        (*this->planetsArray)[i] = geom;\n',
+                         '        (*this->planetsArray)[i] = geom;\n'
+                         '        if (i == 0) stationGeometryBoundary(this, geom);\n')
     (out / "station_binary_chain.inc").write_text(chain)
     traps = (out / "station_binary_traps.inc").read_text()
     traps = replace_once(traps, 'TRAP(_ZN7StationD1Ev)', '')
@@ -62,13 +72,17 @@ def prepare(out, cxx, root, reuse):
     }''')
     (out / "sun_gles.inc").write_text(gles)
     gate = (out / "station_binary_gate_under_test.inc").read_text()
-    gate = replace_once(gate, 'opened == 21', 'opened == 25')
+    gate = replace_once(gate, 'opened == 21', 'opened == 26')
     gate = replace_once(gate, 'canvas.resources.size() == 2724', 'canvas.resources.size() == 2725')
     paths = ['planet_010_small', 'planet_014_big', 'planet_013_small', 'planet_017_small']
     additions = ''.join(f'    expectedFiles.push_back("data/assets/main/3d/textures/low/etc/planets/{name}.aei");\n' for name in paths)
+    additions += '    expectedFiles.push_back("data/assets/main/3d/meshes/misc/plane.aem");\n'
     gate = replace_once(gate, '    assert(stationOpenedPaths == expectedFiles);', additions + '    assert(stationOpenedPaths == expectedFiles);')
+    gate = replace_once(gate, 'canvas.meshCount == 17 && canvas.transformCount == 15',
+                        'canvas.meshCount == 18 && canvas.transformCount == 16')
+    gate = replace_once(gate, '20004, 20004,\n', '20004, 20004, 65535,\n')
     gate = replace_once(gate, 'sun and first station texture/loop iteration complete -> TextureCreate(10021) boundary',
-        'sun and five station textures/loop iterations/cleanup/arrays complete -> seeded RNG boundary')
+        'sun and five station textures/loop iterations/cleanup/arrays complete -> first geometry boundary')
     (out / "station_binary_gate_under_test.inc").write_text(gate)
 
 

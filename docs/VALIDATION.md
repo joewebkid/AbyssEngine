@@ -4,6 +4,27 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## StarSystem first-geometry boundary (2026-10-20)
+
+Android ARM calls the first `AEGeometry` constructor and publishes
+`planetsArray[0]` before `nextInt(14)`. The corrected production constructor
+follows that order. The continuous original-asset gate passes at `-O0/-O2`
+on Windows SwiftShader and a real Android ARMv7/Adreno device: it loads
+`plane.aem`, constructs and publishes the geometry, and confirms that the
+RNG has not yet drawn. Native `gof2`, ABI/lifetime smoke, **208/208** ARM
+units and **83 verifier tests** (one pre-existing skip) pass.
+
+The full report compares **4,323/4,524** original functions in **4,735**
+pairs: **93.92%** mean source-shape, **83.19%** strict fuzzy,
+**2,551 linked-exact**, **1,079 byte-exact**. Exact `(unit, symbol)` sets
+have no gains or losses against the preceding seed report; zero skipped units
+and wrong-type signatures. Both constructor aliases change
+**76.7%/18.4% → 76.2%/13.0%** source-shape/strict fuzzy. The ignored report
+is `C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/geometry-full.json`
+(SHA-256 `5a6a2fcbce57b891a4e24280dc89af7e4c0c436b40922189215f8cf546a762ae`).
+Stage 0 remains incomplete; see
+[first-geometry evidence](STARSYSTEM_FIRST_GEOMETRY_ARM_2026-10-20.md).
+
 ## StarSystem seed-width gate (2026-10-20)
 
 The original Android ARM constructor uses `mul.w` then `asrs` before
