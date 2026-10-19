@@ -238,16 +238,17 @@ exact pair was lost; 201 original functions remain missing.
 After the 152 generic image entries, Android ARM reads a relocated
 `Globals::iPadHD` byte through GOT slot `0x21038c` at `0x10a25a`–
 `0x10a262`. A zero value branches to `0x10a6c4`, skipping the 1440
-texture package; a nonzero value constructs that package at
-`0x10a274`–`0x10a668`. The C++ tail had registered these textures
+texture package; a nonzero value constructs its first twelve records at
+`0x10a274`–`0x10a4ca`. The C++ tail had registered these textures
 unconditionally. It now guards the package with `iPadHD`.
 
-The last record in this branch was a null placeholder. ARM loads the
-PC-relative string `data/textures/gof2_shop_button_ipad_large.aei`
-at `0x10a656`–`0x10a65e`, sets resource ID 27343 at `0x10a664`, then
-uses the shared add-resource continuation at `0x10bf32`. The source
-now constructs that texture record with kind 2 and value 0. The file
-exists in the extracted Android assets.
+The last record in the first twelve was a null placeholder. ARM loads
+`data/textures/gof2_shop_button_ipad_1440.aei` at `0x10a4a8`–
+`0x10a4b0`, then sets ID 27343 at `0x10a4b4`. The following iPad-large
+sub-branch has a *second* ID 27343: ARM loads
+`data/textures/gof2_shop_button_ipad_large.aei` at `0x10a656`–
+`0x10a65e`, sets the ID at `0x10a664`, and uses the shared add-resource
+continuation at `0x10bf32`. Both files exist in the extracted assets.
 
 The bounded host gate source-extracts this branch in addition to the
 2,488-entry table: with `iPadHD=0` it adds no 1440 entries, and with
@@ -263,3 +264,30 @@ source-shape/strict fuzzy stays 75.0%/21.2%, nonexact. Full corpus
 remains 4,323/4,524 compared, 93.87%/83.06% mean source-shape/strict
 fuzzy, 2,529 linked-exact and 1,076 byte-exact, with zero previous
 exact-pair losses.
+
+## Follow-up: nested iPad/Retina atlas package
+
+The previous branch conflated its two shop-button records. The first
+record's ARM PC-relative string is `_ipad_1440.aei` (`0x10a4a8`), not
+`_ipad_large.aei`; the latter is constructed at `0x10a656`. After the
+first twelve records, ARM reads `Globals::iPad` through GOT slot
+`0x21032c` (`0x10a4ce`–`0x10a4d8`); false branches to `0x10aa34`.
+For iPad, it reads `Globals::retinaDisplay` through GOT slot `0x2103e4`
+(`0x10a4dc`–`0x10a4e6`); false branches to `0x10be20`. Only the
+true/true path constructs the seven existing `ipad_large` atlas entries
+and the second shop button before joining at `0x10bf32`.
+
+The C++ now nests those eight records under both flags and uses the
+correct first shop-button path. The source-extracted host gate tests
+`iPadHD=0`, `iPadHD=1/iPad=0`, `iPadHD=1/iPad=1/Retina=0`, and all flags
+enabled at `-O0/-O2`. The false-path additions at `0x10aa34` and
+`0x10be20`, plus the separate non-HD platform groups, remain to be
+recovered; these isolated branch tests do not imply complete
+`BuildResourceList` execution.
+Native `gof2` and all 208 ARM translation units build; 45 verifier
+tests pass (one existing skip). The original-asset gate and the
+expanded full-table gate pass at `-O0/-O2`. Focused `BuildResourceList`
+source-shape/strict fuzzy is 75.0%/21.3%, against 75.0%/21.2%
+previously; it is not exact. The full corpus remains 4,323/4,524
+compared, mean source-shape/strict fuzzy 93.87%/83.06%, 2,529
+linked-exact and 1,076 byte-exact, with zero exact-pair losses.

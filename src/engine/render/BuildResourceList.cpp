@@ -5267,22 +5267,27 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         canvas->AddResource(makeRes(
             27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_ipad_1440.aei", 0.0f)));
         canvas->AddResource(makeRes(
-            27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button_ipad_large.aei", 0.0f)));
+            27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button_ipad_1440.aei", 0.0f)));
+        // ARM 0x10a4ce-0x10a4e6: the large iPad atlases require both flags.
+        if (Globals::iPad && Globals::retinaDisplay) {
+            canvas->AddResource(
+                makeRes(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3_ipad_large.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(10063, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface2_ipad_large.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_large.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_2_large.aei", 0.0f)));
+            canvas->AddResource(
+                makeRes(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface_ipad_large.aei", 0.0f)));
+            canvas->AddResource(makeRes(
+                27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_ipad_large.aei", 0.0f)));
+            canvas->AddResource(makeRes(
+                27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_ipad_large.aei", 0.0f)));
+            canvas->AddResource(makeRes(
+                27343, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_shop_button_ipad_large.aei", 0.0f)));
+        }
     }
-    canvas->AddResource(
-        makeRes(10089, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface3_ipad_large.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(10063, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_interface2_ipad_large.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(10064, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_large.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11632, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_items_ipad_2_large.aei", 0.0f)));
-    canvas->AddResource(
-        makeRes(11630, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_dlc_interface_ipad_large.aei", 0.0f)));
-    canvas->AddResource(makeRes(
-        27341, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_challenge_interface_ipad_large.aei", 0.0f)));
-    canvas->AddResource(makeRes(
-        27342, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_campaign_select_ipad_large.aei", 0.0f)));
     canvas->AddResource(
         makeRes(11635, 2, new AbyssEngine::ResourceTexture("data/textures/gof2_font_ar_iphone4.aei", 0.0f)));
     canvas->AddResource(

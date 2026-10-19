@@ -16,8 +16,14 @@ public:
     void AddResource(Resource *resource) { ArrayAdd(resource, resources); }
 };
 }
-struct Globals { static unsigned char iPadHD; };
+struct Globals {
+    static unsigned char iPad;
+    static unsigned char iPadHD;
+    static unsigned char retinaDisplay;
+};
+unsigned char Globals::iPad;
 unsigned char Globals::iPadHD;
+unsigned char Globals::retinaDisplay;
 
 #include "full_resource_ctors_under_test.inc"
 #include "full_resource_table_under_test.inc"
@@ -65,5 +71,18 @@ int main() {
     auto *hdShop = canvas.resources.data_[2499];
     assert(hdShop->id == 27343 && hdShop->kind == 2);
     assert(std::strcmp(static_cast<AbyssEngine::ResourceTexture *>(hdShop->payload)->name,
+                       "data/textures/gof2_shop_button_ipad_1440.aei") == 0);
+
+    Globals::iPad = 1;
+    registerHdResources(&canvas);
+    assert(canvas.resources.count == 2512);
+    Globals::retinaDisplay = 1;
+    registerHdResources(&canvas);
+    assert(canvas.resources.count == 2532);
+    auto *largeInterface = canvas.resources.data_[2524];
+    assert(largeInterface->id == 10089 && largeInterface->kind == 2);
+    auto *largeShop = canvas.resources.data_[2531];
+    assert(largeShop->id == 27343 && largeShop->kind == 2);
+    assert(std::strcmp(static_cast<AbyssEngine::ResourceTexture *>(largeShop->payload)->name,
                        "data/textures/gof2_shop_button_ipad_large.aei") == 0);
 }

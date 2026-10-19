@@ -99,7 +99,7 @@ the previous exact-pair sets have zero losses.
 The first post-table platform branch now checks the ARM-confirmed
 `Globals::iPadHD` byte before registering its twelve 1440 textures;
 resource 27343 is restored from a null placeholder to the original
-shop-button path. A bounded host gate exercises both flag values at
+`_ipad_1440` shop-button path. A bounded host gate exercises both flag values at
 `-O0/-O2` after complete table registration. Later platform branches,
 the remaining post-table records and `Level::init` still need recovery
 and end-to-end execution. See the ARM resource-list note for addresses.
@@ -109,6 +109,20 @@ skip), and the selected asset-backed and extended table gates pass at
 source-shape/strict fuzzy, nonexact. Full corpus remains 4,323/4,524
 compared, 93.87%/83.06% mean source-shape/strict fuzzy, 2,529
 linked-exact and 1,076 byte-exact; zero prior exact pairs are lost.
+
+The nested large-iPad package now follows the Android ARM `iPad` and
+`retinaDisplay` checks inside `iPadHD`. Its seven atlas records and
+second shop-button record are no longer registered unconditionally.
+The first shop-button path was corrected from `_ipad_large` to
+`_ipad_1440`; the second uses `_ipad_large`. The source-extracted host
+gate checks four flag combinations at `-O0/-O2`. Remaining false-path
+packages and other post-table resources are still outside that gate.
+Native and 208/208 ARM units build, 45 verifier tests pass (one
+existing skip), and the original-asset gate remains green. Focused
+`BuildResourceList` source-shape/strict fuzzy is 75.0%/21.3%, still
+nonexact. Full corpus coverage remains 4,323/4,524, with 93.87%/83.06%
+mean source-shape/strict fuzzy, 2,529 linked-exact and 1,076
+byte-exact; no previously exact pair was lost.
 
 ## Level skybox canvas-to-loader gate (2026-10-19)
 

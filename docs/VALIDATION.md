@@ -78,7 +78,7 @@ Focused `BuildResourceList` source-shape/strict fuzzy is 75.0%/21.2%
 
 The first `iPadHD` post-table branch now runs in the full-table host gate
 at `-O0/-O2`: disabled adds zero 1440 resources, enabled adds twelve,
-including original ID 27343 and its shop-button path. The initial GL
+including original ID 27343 and its `_ipad_1440` shop-button path. The initial GL
 call, later platform branches, remaining post-table resources and
 `Level::init` are still outside this gate.
 Native and 208/208 ARM units build; 45 verifier tests pass (one existing
@@ -87,6 +87,20 @@ Focused `BuildResourceList` is unchanged at 75.0%/21.2%
 source-shape/strict fuzzy, nonexact. Full corpus: 4,323/4,524
 compared, 93.87%/83.06% means, 2,529 linked-exact, 1,076 byte-exact,
 zero previous exact-pair losses.
+
+The next branch gate source-extracts the nested `iPad`/`retinaDisplay`
+checks from the same production body. It covers four combinations at
+`-O0/-O2`: no HD package, twelve base 1440 records, twelve base
+records without Retina, and twenty records including the eight
+`ipad_large` entries. It checks that the first shop-button path is
+`_ipad_1440` and the later one is `_ipad_large`. This is a bounded
+branch gate, not a complete execution of the post-table tail.
+Native and 208/208 ARM units build; 45 verifier tests pass (one
+existing skip); the selected original-asset gate is green. The focused
+`BuildResourceList` source-shape/strict fuzzy result is 75.0%/21.3%,
+still nonexact. The full corpus remains 4,323/4,524 compared,
+2,529 linked-exact and 1,076 byte-exact with zero prior exact-pair
+losses; mean source-shape/strict fuzzy is 93.87%/83.06%.
 
 ## Level skybox canvas-to-loader gate (2026-10-19)
 

@@ -61,7 +61,7 @@ def main():
             if result.returncode:
                 raise RuntimeError("host compile failed:\n" + "\n".join(result.stderr.splitlines()[-20:]))
             subprocess.run([str(exe)], cwd=ROOT, check=True)
-    print("Full resource table and iPadHD branch -O0/-O2: OK")
+    print("Full resource table and iPadHD/iPad/retinaDisplay branches -O0/-O2: OK")
 
 
 if __name__ == "__main__":
