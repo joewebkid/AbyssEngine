@@ -291,9 +291,8 @@ void AEGeometry::setScaling(float x, float y, float z) {
 }
 
 void AEGeometry::moveForward(float dist) {
-    Vector n;
     Vector pos = getDirection();
-    VectorNormalize(&n, &pos);
+    Vector n = VectorNormalize(pos);
     pos = getPosition();
     pos.x = pos.x + n.x * dist;
     pos.y = pos.y + n.y * dist;

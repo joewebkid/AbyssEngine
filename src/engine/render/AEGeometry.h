@@ -16,8 +16,6 @@ class LodMeshMerger;
 
 namespace AbyssEngine {
     namespace AEMath {
-        void VectorNormalize(Vector *out, const Vector *v);
-
         Vector operator-(const Vector &a, const Vector &b);
 
         Vector MatrixGetUp(const Matrix &m);

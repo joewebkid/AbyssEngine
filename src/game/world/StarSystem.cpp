@@ -559,8 +559,17 @@ StarSystem::StarSystem(int mode) {
         }
 
         int angleSlot = (i == 0) ? sunSlot : (int) i + 6;
-        geom->setRotation(Vector{0.0f, (float) (angleSlot * 0xaaa) * 0.001f, 0.0f});
-        geom->moveForward(0x447a0000);
+        float pitch = 0.0f;
+        float yaw = (float) (angleSlot * 0xaaa) * 0.001f;
+        if (i == 0) {
+            // ARM 0x134526-0x134574: one draw, then fixed-point pitch/yaw conversion.
+            int pitchFixed = AERandom::gRandom->nextInt(0x1000) - 0x800;
+            pitch = (float) pitchFixed * 0.0000152587890625f * 0.2288818359375f;
+            yaw = (float) (angleSlot * 0xaaa) * 0.0000152587890625f * 0.2288818359375f;
+        }
+        geom->setRotation(Vector{pitch, yaw, 0.0f});
+        // ARM 0x13457c loads 0xc69c4000 (-20000.0f) for every orbit body.
+        geom->moveForward(-20000.0f);
         if (i == 0) {
             this->lightDirection = geom->getDirection();
             this->lightDirection.x = -this->lightDirection.x;

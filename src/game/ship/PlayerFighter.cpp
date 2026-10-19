@@ -647,9 +647,8 @@ void PlayerFighter::initPush(const Vector &target, int radius) {
     float dir[3];
     *reinterpret_cast<Vector *>(dir) =
             *reinterpret_cast<const Vector *>(pos) - *reinterpret_cast<const Vector *>(pos2);
-    float norm[3];
-    AbyssEngine::AEMath::VectorNormalize((Vector *) norm, (Vector *) dir);
-    this->pushNormal = *(Vector *) norm;
+    this->pushNormal = AbyssEngine::AEMath::VectorNormalize(
+        *reinterpret_cast<const Vector *>(dir));
 
     RngFn rng = (RngFn) gIP_rngFn;
     int rngObj = (int) (intptr_t) AERandom::gRandom;
@@ -657,10 +656,10 @@ void PlayerFighter::initPush(const Vector &target, int radius) {
     float ry = VectorSignedToFloat(rng(rngObj, 200) - 100, 0);
     float rz = VectorSignedToFloat(rng(rngObj, 200) - 100, 0);
     float rvec[3] = {rx, ry, rz};
-    float rnorm[3];
-    AbyssEngine::AEMath::VectorNormalize((Vector *) rnorm, (Vector *) rvec);
+    Vector rnorm = AbyssEngine::AEMath::VectorNormalize(
+        *reinterpret_cast<const Vector *>(rvec));
     float scaled[3];
-    AEMath_VectorScale(scaled, (float) strength, rnorm);
+    AEMath_VectorScale(scaled, (float) strength, &rnorm);
     this->pushImpulse = *(Vector *) scaled;
 
     return;

@@ -101,6 +101,25 @@ static void stationSunSetupBoundary(StarSystem *star, int sunSlot) {
     assert(streak->getScaling().x == 0.457763671875f);
     assert(streak->getScaling().y == 0.0457763671875f);
     assert(streak->getScaling().z == 0.2288818359375f);
-    std::puts("First sun slot 5 and original sun/streak scaling reached; Stage 0 incomplete");
+}
+
+static void stationSunPoseBoundary(StarSystem *star) {
+    auto *sun = (*star->planetsArray)[0];
+    assert(sun && star->sunStreak && star->positionsArray->size() == 6);
+    assert(AERandom::gRandom->seedLow == 0x3a0b233bU);
+    assert(AERandom::gRandom->seedHigh == 0x3beeU);
+    assert(sun->rotation.x == -0.0038067810237407684f);
+    assert(sun->rotation.y == 0.047672074288129807f);
+    assert(sun->rotation.z == 0.0f);
+    Vector pos = sun->getPosition();
+    assert(pos.x < -900.0f && pos.x > -1000.0f);
+    assert(pos.y < -50.0f && pos.y > -100.0f);
+    assert(pos.z < -19900.0f && pos.z > -20000.0f);
+    Vector stored = (*star->positionsArray)[0];
+    assert(stored.x == pos.x && stored.y == pos.y && stored.z == pos.z);
+    Vector dir = sun->getDirection();
+    assert(star->lightDirection.x == -dir.x && star->lightDirection.y == -dir.y &&
+           star->lightDirection.z == -dir.z);
+    std::puts("First sun rotation, -20000 forward placement and light direction reached; Stage 0 incomplete");
     throw FlareImageBoundary{};
 }

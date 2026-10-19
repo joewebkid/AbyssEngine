@@ -1,4 +1,4 @@
-"""Continue five station textures, seed and first sun/streak setup."""
+"""Continue five station textures, seed and first sun pose."""
 import run_station_texture_gate as first
 from run_level_station_asset_gate import replace_once
 from run_particle_control_smoke import function
@@ -46,6 +46,9 @@ def prepare(out, cxx, root, reuse):
         '            if (this->supernovaSystem != 0) {\n                Globals::Canvas->TextureCreate',
         '            stationSunSetupBoundary(this, sunSlot);\n'
         '            if (this->supernovaSystem != 0) {\n                Globals::Canvas->TextureCreate')
+    chain = replace_once(chain, '        (*this->positionsArray)[i] = geom->getPosition();\n',
+                         '        (*this->positionsArray)[i] = geom->getPosition();\n'
+                         '        if (i == 0) stationSunPoseBoundary(this);\n')
     (out / "station_binary_chain.inc").write_text(chain)
     traps = (out / "station_binary_traps.inc").read_text()
     traps = replace_once(traps, 'TRAP(_ZN7StationD1Ev)', '')
@@ -86,7 +89,7 @@ def prepare(out, cxx, root, reuse):
                         'canvas.meshCount == 18 && canvas.transformCount == 17')
     gate = replace_once(gate, '20004, 20004,\n', '20004, 20004, 65535,\n')
     gate = replace_once(gate, 'sun and first station texture/loop iteration complete -> TextureCreate(10021) boundary',
-        'sun and five station textures/loop iterations/cleanup/arrays complete -> sun setup boundary')
+        'sun and five station textures/loop iterations/cleanup/arrays complete -> first sun pose boundary')
     (out / "station_binary_gate_under_test.inc").write_text(gate)
 
 

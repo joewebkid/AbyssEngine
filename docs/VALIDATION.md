@@ -4,6 +4,28 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## StarSystem first sun pose and normalize ABI (2026-10-20)
+
+The original-asset Level/GLES gate now executes the second RNG draw, first
+sun rotation and `moveForward(-20000.0f)`, then checks the published position
+and light direction on Windows SwiftShader and Android ARMv7 at `-O0/-O2`.
+Original ARM confirms the return-by-value `VectorNormalize` target in
+`AEGeometry`, `PlayerFighter` and `PlayerGasCloud`; the pointer overload was
+removed from their C++ calls. Native `gof2`, a fresh ABI/lifetime smoke,
+**208/208** ARM units and **86 verifier tests** pass with one previous skip.
+Constructor aliases change **76.3%/14.3% → 78.1%/13.3%**
+source-shape/strict fuzzy. The full corpus retains **4,323/4,524** originals
+in **4,735 pairs**, **93.92%** mean source-shape, **83.19%** strict fuzzy,
+**2,551 linked-exact** and **1,079 byte-exact**. Independent exact
+`(unit, symbol)` set comparison with the preceding report finds zero gains
+or losses; skipped units and wrong-type signatures remain zero. The ignored
+full report is
+`C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/sun-pose-full.json`
+(SHA-256 `6304b675f7dadf1db4903d0041a5c17ba25efa30f4334ba994d06bb8d8864355`).
+The first non-sun planet and
+Level stage 0 remain unverified. See
+[first-sun-pose evidence](STARSYSTEM_SUN_POSE_ARM_2026-10-20.md).
+
 ## StarSystem first sun setup (2026-10-20)
 
 The continuous original-asset Level/GLES gate now checks the first

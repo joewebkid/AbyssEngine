@@ -181,8 +181,7 @@ void PlayerGasCloud::explode(int itemIndex, Vector src, float radius) {
         p.z = ((this->center.z + delta.z) - spread) + t * jz;
 
         Vector d = p - this->center;
-        Vector dn;
-        VectorNormalize(&dn, &d);
+        Vector dn = VectorNormalize(d);
 
         float life = ((float) rng->nextInt(200) / 200.0f) * 3.0f + 3.0f;
         int timer = rng->nextInt(14000);
@@ -306,8 +305,7 @@ void PlayerGasCloud::update(int dt) {
             Ship *ship = Status::gStatus->getShip();
             if (ship->getFirstEquipmentOfSort(0x23) != 0) {
                 Vector dir = turretPos - shardPos;
-                Vector dn;
-                VectorNormalize(&dn, &dir);
+                Vector dn = VectorNormalize(dir);
                 *(*this->sparkVelocities)[i] = dn;
                 moveGeom = (*this->sparkGeometries)[i];
 
