@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-19 (BuildResourceList missing-slot recovery; older subsystem
+Last reviewed: 2026-10-19 (resource, portrait and Level-entry integration; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -11,12 +11,44 @@ smokes and ARM comparison gates. `Status::resetGame` now executes in an
 asset-backed host fixture. A bounded `Status::departStation` slice now
 executes after startup with real item, ship and agent-stock generation,
 including mission offers under a controlled RNG boundary. The next
-integration milestone is executing `Level::init` with real resources; its
-constructor and stage-0 canvas source are now corrected against Android ARM,
-but the full init path has not yet passed a host runtime gate. A catalog-backed
-cross-system wanted path now runs.
+integration milestone is completing `Level::init` with real resources. A
+continuous host gate now executes its production constructor and `init`,
+registers the complete 2,488-entry table plus two low textures, and loads
+two original AEM and two AEI files before stopping at the `PlayerStation`
+constructor. Stage 0 has not returned, and the game is not running. A
+catalog-backed cross-system wanted path now runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Continuous Level entry and portrait flags (2026-10-19)
+
+The asset-backed Level gate joins table registration, ten manager
+constructors and the production skybox loader path in one process at
+`-O0/-O2`. A poisoned-allocation check exposed host-width pointer
+clears and three bytes omitted from the Level constructor; ARM stores
+confirm the corrected spans. The gate intentionally throws at the first
+`PlayerStation` constructor, before world objects, player entry or stage 1.
+Materials and GPU services remain bounded; this is not an end-to-end
+gameplay or rendering test. See [the Level evidence](LEVEL_INIT_CONTINUOUS_ASSET_GATE_2026-10-19.md).
+
+`loadPortraits` now selects its four filename suffixes from the five
+ARM GOT-confirmed `Globals` bytes instead of permanent zero-byte
+placeholders. An executable host gate checks all 152 ordered resource
+registrations across 96 flag/value cases at `-O0/-O2`. Original Android
+assets cover 152/152 unsuffixed and large-iPad variants, 150/152 `_ipad`
+and 148/152 `_ipad_1440` variants; missing-file handling and rendering
+remain untested. See [the portrait evidence](PORTRAITS_GLOBAL_FLAGS_ARM_2026-10-19.md).
+
+On the integrated revision, native `gof2` and 208/208 ARM units build;
+46 verifier tests pass (one existing skip). The focused resource,
+portrait and continuous Level gates pass at `-O0/-O2`. The full ARM
+corpus compares 4,323/4,524 original functions, with 93.87% mean
+source-shape, 83.05% mean strict fuzzy, 2,529 linked-exact and 1,076
+byte-exact; no exact pair was lost against the pre-integration baseline.
+Focused source-shape/strict fuzzy is 75.4%/21.1% for
+`BuildResourceList`, 92.5%/66.8% for `loadPortraits`, and
+84.8%/52.7% for `Level::init`; none is exact. Next priority is the
+`PlayerStation` boundary and the remaining iPad resource tail.
 
 ## BuildResourceList missing slots (2026-10-19)
 

@@ -132,6 +132,38 @@ Focused `BuildResourceList` source-shape/strict fuzzy changes from
 fuzzy, 2,529 linked-exact and 1,076 byte-exact. Pairwise comparison
 with the preceding full report finds zero linked- or byte-exact losses.
 
+## Continuous Level entry and portrait suffix gates (2026-10-19)
+
+`run_level_init_asset_gate.py` executes the production Level constructor,
+`init` and `createSpace` after source-extracted registration of all 2,488
+table entries and two low textures. At `-O0/-O2`, it checks ten managers,
+two original skybox AEM and two AEI loads, and four matched file closes.
+An explicit throw at the first `PlayerStation` constructor is the measured
+boundary: stage 0 does not return, and station/player/world behavior is not
+claimed. A poisoned constructor fixture verifies the host-width clear
+and the three ARM-confirmed bytes. See
+[the Level gate evidence](LEVEL_INIT_CONTINUOUS_ASSET_GATE_2026-10-19.md).
+
+`run_load_portraits_smoke.py` executes the production registration body
+at `-O0/-O2` for 96 flag/value cases, checking 152 ordered
+IDs/paths each time. `test_load_portraits_arm.py` validates five GOT
+relocations and suffix references against the original ARM binary; it
+requires the configured NDK and original-binary work directory. The
+original asset inventory contains six absent iPad variants, so this
+gate does not claim successful texture loading or rendering. See
+[the portrait evidence](PORTRAITS_GLOBAL_FLAGS_ARM_2026-10-19.md).
+Native `gof2` and 208/208 ARM translation units build on the combined
+revision; 46 verifier tests pass (one existing skip). The focused
+resource, portrait and continuous Level gates pass at `-O0/-O2`.
+The fresh full corpus compares 4,323/4,524 originals with 93.87%
+mean source-shape and 83.05% mean strict fuzzy, 2,529 linked-exact
+and 1,076 byte-exact. The before/after `(unit, symbol)` set comparison
+has zero lost linked- or byte-exact pairs; skipped and wrong-type
+counts are both zero. Focused source-shape/strict fuzzy is
+75.4%/21.1% for `BuildResourceList`, 92.5%/66.8% for
+`loadPortraits`, and 84.8%/52.7% for `Level::init`. These gates do not
+prove complete game initialization or rendering.
+
 ## Level skybox canvas-to-loader gate (2026-10-19)
 
 The production `MeshCreateFromFile`/`MeshReadData` host smoke parses the
