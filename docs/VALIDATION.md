@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan stage-one mission dispatch (2026-10-20)
+
+`run_level_stage1_mission_dispatch_pan_gate.py` extends the original-asset Pan
+path to the empty-mission `createMission` call. Production `Level::init`,
+`Mission::isEmpty` and `Status::getMission` execute with a non-null empty
+mission; the fixture also checks `Mission::isCampaignMission`. `setMission`'s
+null branch and `createMission` are outside the gate.
+Windows SwiftShader and physical Android ARMv7 pass at `-O0/-O2`. Production
+C++ is unchanged, so the last full ARM corpus stays **4,323/4,524** originals,
+**4,735** pairs, **93.97%/83.29%** mean source-shape/strict fuzzy,
+**2,554 linked-exact** and **1,082 byte-exact**, with zero skipped or
+wrong-type symbols. The 93-test verifier suite passes with one skip. See
+[mission dispatch evidence](LEVEL_STAGE1_MISSION_DISPATCH_ARM_2026-10-20.md).
+
 ## Gas-cloud recovery (2026-10-20; full ARM corpus verified)
 
 `run_level_stage1_gas_clouds_pan_gate.py` executes production

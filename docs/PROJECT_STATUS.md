@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (gas-cloud recovery; full ARM corpus verified;
+Last reviewed: 2026-10-20 (Pan stage-one mission dispatch boundary;
 earlier subsystem snapshots retain their dates)
+
+The continuous original-asset Pan path now crosses asteroid and gas-cloud
+creation into `Level::init`'s empty-mission selection and reaches the
+`createMission` call. Windows SwiftShader and physical Android ARMv7 pass at
+`-O0/-O2` with a non-null empty mission. The original ARM control flow at
+`0xae2ac–0xae314` supports the branch; its null-mission fallback appears to
+reuse a null saved pointer and remains untested. `createMission` itself and
+stage-one return are still outside the gate. Production code is unchanged,
+so the last full ARM corpus remains **4,323/4,524**, **93.97%/83.29%** mean
+source-shape/strict fuzzy, **2,554 linked-exact** and **1,082 byte-exact**.
+See [mission dispatch evidence](LEVEL_STAGE1_MISSION_DISPATCH_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (gas-cloud recovery; full ARM corpus verified).
 
 `Level::createGasClouds` has a source-backed recovery candidate from Android
 ARMv7 `libgof2hdaa.so` at `0xafd2c`: it now uses the original global pointers,

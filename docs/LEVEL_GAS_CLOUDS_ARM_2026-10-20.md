@@ -80,7 +80,8 @@ files use D:. Its earlier two linker failures with C: full were environmental.
 
 ## Open work
 
-Identify the semantics of the opaque `PlayerGasCloud+0x124` slot; exercise real plasma distributions and
-additional alien/boss conditions, then continue Pan stage one through mission
-dispatch and return. Cloud update, collision, rendering and a playable frame
-are still outside this gate.
+Identify the semantics of the opaque `PlayerGasCloud+0x124` slot; exercise real
+plasma distributions and additional alien/boss conditions. A separate gate
+now reaches the empty-mission dispatch boundary; actual mission creation and
+Pan stage-one return remain open. Cloud update, collision, rendering and a
+playable frame are still outside this gate.
