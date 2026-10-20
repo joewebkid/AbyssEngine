@@ -2,13 +2,24 @@
 #include <cstdint>
 
 struct Vector { float x, y, z; };
+struct Matrix {
+    int value = 0;
+    Matrix &operator*=(const Matrix &other) {
+        value = value * 10 + other.value;
+        return *this;
+    }
+};
 struct AEGeometry {
     Vector position{1.25f, -2.5f, 3.75f};
+    Matrix matrix{2};
+    int matrixCalls = 0;
     Vector getPosition() { return position; }
+    Matrix &getMatrix() { ++matrixCalls; return matrix; }
 };
 struct Explosion { bool playing = false; bool isPlaying() { return playing; } };
 struct Player {
     bool active = true;
+    Matrix transformMatrix{};
     union {
         uint16_t enemyFlags = 0x707;
         struct { uint8_t enemyFlagsLo, carriesFriendCargoFlag; };
@@ -60,6 +71,19 @@ struct Level {
     PlayerEgo *getPlayer() { ++getPlayerCalls; return ego; }
     void uncoverWanted(int index) { uncovered = index; }
 };
+struct Route {
+    int cloneCalls = 0;
+    Route *clone() { ++cloneCalls; return this; }
+};
+struct Trail {
+    int calls = 0;
+    Vector current{}, previous{};
+    void update(const Vector &a, const Vector &b) {
+        ++calls;
+        current = a;
+        previous = b;
+    }
+};
 struct KIPlayer {
     Player *player = nullptr;
     AEGeometry *geometry = nullptr;
@@ -79,11 +103,20 @@ struct KIPlayer {
     int field_0x140 = 0;
     int field_0x48 = 9;
     Level *level = nullptr;
+    AEGeometry *subGeometry = nullptr;
+    Route *routeClone = nullptr;
+    uint8_t wingmanFlag = 0;
     bool wingman = false;
     void setActive(bool value) { player->setActive(value); }
     bool isWingMan() { return wingman; }
 };
-struct PlayerFighter : KIPlayer { void update(int dt); };
+struct PlayerFighter : KIPlayer {
+    Route *route = nullptr;
+    Trail *trail = nullptr;
+    Vector workingPosition{};
+    int field_0x1c8 = 0;
+    void update(int dt);
+};
 int bodyCalls = 0;
 void PF_update_body(PlayerFighter *, int) { ++bodyCalls; }
 
@@ -100,6 +133,8 @@ int main() {
     fighter.geometry = &geometry;
     fighter.explosion = &explosion;
     fighter.player = &player;
+    Route route;
+    fighter.route = &route;
 
     fighter.state = 4;
     fighter.crateCaptured = 0;
@@ -118,6 +153,8 @@ int main() {
     assert(fighter.field_0x1c0 == 7 && fighter.maneuverTimer == 7);
     assert(player.enemyFlagsLo == 1 && player.carriesFriendCargoFlag == 0);
     assert(standing.enemyCalls == 0 && standing.friendCalls == 0);
+    assert(fighter.routeClone == &route && route.cloneCalls == 1);
+    assert(fighter.field_0x1c8 == 7 && player.transformMatrix.value == 2);
 
     fighter.shipGroup = 2;
     fighter.wingman = true;
@@ -128,9 +165,20 @@ int main() {
     fighter.wingman = false;
     standing.enemy = true;
     standing.friendly = true;
+    AEGeometry secondary;
+    secondary.matrix.value = 3;
+    fighter.subGeometry = &secondary;
+    Trail trail;
+    fighter.trail = &trail;
+    fighter.workingPosition = {9.0f, 8.0f, 7.0f};
+    fighter.field_0x1c8 = 200;
     fighter.update(1);
     assert(player.enemyFlagsLo == 1 && player.carriesFriendCargoFlag == 1);
     assert(standing.enemyCalls == 1 && standing.friendCalls == 1);
+    assert(trail.calls == 1 && trail.current.x == 1.25f && trail.previous.x == 9.0f);
+    assert(fighter.workingPosition.y == -2.5f && fighter.field_0x1c8 == 0);
+    assert(player.transformMatrix.value == 23 && secondary.matrixCalls == 1);
+    assert(route.cloneCalls == 1);
 
     fighter.field_0x43 = 1;
     player.enemyFlagsLo = 7;
@@ -188,7 +236,15 @@ int main() {
     fighter.update(1);
     assert(player.enemyFlags == 0x100);
 
+    fighter.wingmanFlag = 1;
+    fighter.routeClone = nullptr;
+    fighter.trail = nullptr;
+    fighter.field_0x1c8 = 200;
+    fighter.update(1);
+    assert(fighter.routeClone == nullptr && route.cloneCalls == 1);
+    assert(fighter.field_0x1c8 == 0 && trail.calls == 1);
+
     fighter.deathTimer = 60001;
     fighter.update(1);
-    assert(!player.active && bodyCalls == 12);
+    assert(!player.active && bodyCalls == 13);
 }

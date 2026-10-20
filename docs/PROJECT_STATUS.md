@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::update` allegiance/timer block;
+Last reviewed: 2026-10-21 (`PlayerFighter::update` route/trail/matrix block;
 earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xdd1c6–0xdd22c` confirms
+conditional route cloning, 201 ms trail updates with current/previous
+position order, and main/subgeometry matrix composition in `Player`.
+The production-method smoke passes at `-O0/-O2`; all 11 Fighter smokes,
+native UCRT64 `gof2`, all 208 NDK r18b ARM translation units and 93
+verifier tests pass (one existing skip). Whole-`update`
+source-shape/strict fuzzy rises **8.4%/6.0% → 10.2%/7.5%**; the
+remainder still ends in unresolved `PF_update_body`. The full corpus
+compares **4,323/4,524** originals across **4,735** pairs, at
+**94.03%/83.37%** mean source-shape/strict fuzzy, with **2,557
+linked-exact** and **1,082 byte-exact**; there are no exact-pair losses,
+skipped or wrong-type symbols. Complete game-frame and visual trail
+behavior remain untested. See
+[the ARM evidence](PLAYER_FIGHTER_UPDATE_ROUTE_TRAIL_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::update` allegiance/timer block).
 
 Android ARM `PlayerFighter::update` at `0xdd116–0xdd1c6` and its wanted
 branch at `0xdd62a` confirm the 20,000 ms gun switch, Radar-locked wanted

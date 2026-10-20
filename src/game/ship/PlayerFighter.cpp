@@ -414,6 +414,22 @@ void PlayerFighter::update(int dt) {
     if (body->isAlwaysFriend())
         body->enemyFlags = 0x100;
 
+    if (!this->wingmanFlag && !this->routeClone)
+        this->routeClone = this->route->clone();
+
+    this->field_0x1c8 += dt;
+    if (this->field_0x1c8 >= 201) {
+        if (this->trail) {
+            this->trail->update(this->renderPosition, this->workingPosition);
+            this->workingPosition = this->renderPosition;
+        }
+        this->field_0x1c8 = 0;
+    }
+
+    body->transformMatrix = this->geometry->getMatrix();
+    if (this->subGeometry)
+        body->transformMatrix *= this->subGeometry->getMatrix();
+
     // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.
     PF_update_body(this, dt);
 
