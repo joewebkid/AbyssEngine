@@ -4,6 +4,27 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Gas-cloud recovery candidate (2026-10-20; ARM corpus pending)
+
+`run_level_stage1_gas_clouds_pan_gate.py` executes production
+`Level::createGasClouds` after the complete Pan asteroid field. A synthetic
+equipment item and bounded plasma-probability fixture enter the positive
+branch; a second call without that item checks the early return. Windows
+SwiftShader and physical Android ARMv7 pass at `-O0/-O2`. Native `gof2` and
+the changed `Level.cpp` ARM TU compile with NDK 25. The original ARMv7
+function at `0xafd2c` supports the recovered branch, count and placement
+logic, but full stage-one return, real plasma probabilities, alien/boss
+branches and cloud updates remain untested.
+
+NDK r18b's compiler, assembler and objdump are absent locally, so focused
+source-shape and the full exact-set verifier could not be refreshed. The
+previous **4,323/4,524**, **4,735**, **93.96%/83.24%**, **2,551** and
+**1,079** figures describe the prior revision only. A separate NDK 25
+before/after byte comparison found 71 unchanged emitted symbols among the
+72 previously linked-exact `Level` symbols; one template was not emitted.
+This is a limited regression check, not an ARM corpus result. See
+[gas-cloud evidence](LEVEL_GAS_CLOUDS_ARM_2026-10-20.md).
+
 ## Pan Level stage-one complete asteroid field (2026-10-20)
 
 `run_level_stage1_asteroid_field_pan_gate.py` continues the original-asset

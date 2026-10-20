@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Pan stage-one full asteroid field; earlier subsystem
-snapshots retain their dates)
+Last reviewed: 2026-10-20 (gas-cloud recovery candidate; ARM matching pending;
+earlier subsystem snapshots retain their dates)
+
+`Level::createGasClouds` has a source-backed recovery candidate from Android
+ARMv7 `libgof2hdaa.so` at `0xafd2c`: it now uses the original global pointers,
+equipment and orbit gates, bounded random count, position rejection tests and
+boss placement. A continuous Pan original-asset gate with a synthetic plasma
+equipment item builds 4–7 clouds and then checks the no-equipment return.
+Windows SwiftShader and physical Android ARMv7 pass at `-O0/-O2`; native
+`gof2` and the changed ARM TU compile. The original allocation is `0x16c`
+but the reconstructed ARM `PlayerGasCloud` is `0x168`, so four trailing bytes
+remain structurally unresolved. **Do not apply the previous exact/source-shape
+totals to this changed revision:** the required NDK r18b toolchain is absent,
+and a fresh focused/full corpus could not be run. In a separate NDK 25
+before/after check, 71 of 72 previously linked-exact `Level` functions were
+emitted and their bytes stayed unchanged; the remaining template was not
+emitted by that compiler. This is not an r18b exact-set proof. The candidate
+is not yet merged into `main`. See [gas-cloud evidence](LEVEL_GAS_CLOUDS_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (Pan stage-one full asteroid field).
 
 The continuous original-asset Pan gate now **returns from production
 `Level::createAsteroids`** after populating its complete 40–79-object field,
