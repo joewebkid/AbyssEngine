@@ -431,16 +431,49 @@ void PlayerFighter::update(int dt) {
         body->transformMatrix *= this->subGeometry->getMatrix();
 
     bool wingmanRoute = this->wingmanFlag && this->state != 4 && this->routeClone;
-    if (wingmanRoute)
+    if (wingmanRoute) {
         this->targetPos = this->level->getPlayer()->geometry->getPosition();
 
-    if (!wingmanRoute || this->field_0xe4 != 1) {
-        if (this->state == 3 || this->state == 4) {
-            body->StopEngineSound();
-        } else {
-            body->update(dt, this->state != 5 && this->fov != -1);
-            body->getEnemies();
+        if (this->field_0xe4 == 1) {
+            switch (this->wingmanCommand) {
+            case 0:
+            case 1:
+                this->objectPosition = this->level->getPlayer()->geometry->getRightVector();
+                this->objectPosition *= 4000.0f;
+                if (this->wingmanCommand == 0)
+                    this->targetPos -= this->objectPosition;
+                else
+                    this->targetPos += this->objectPosition;
+                this->targetPos -= AbyssEngine::AEMath::VectorNormalize(
+                    this->level->getPlayer()->geometry->getDirection()) * 3000.0f;
+                break;
+            case 2:
+                this->objectPosition = this->level->getPlayer()->geometry->getUpVector();
+                this->objectPosition *= 2000.0f;
+                this->targetPos += this->objectPosition;
+                this->targetPos -= AbyssEngine::AEMath::VectorNormalize(
+                    this->level->getPlayer()->geometry->getDirection()) * 2000.0f;
+                break;
+            }
+
+            if (this->routeClone->length() < 2) {
+                this->routeClone->setNewCoords(this->targetPos);
+            } else {
+                int coords[3] = {static_cast<int>(this->targetPos.x),
+                                 static_cast<int>(this->targetPos.y),
+                                 static_cast<int>(this->targetPos.z)};
+                delete this->routeClone;
+                this->routeClone = new Route(coords, 3);
+            }
+            this->routeClone->setLoop(true);
         }
+    }
+
+    if (this->state == 3 || this->state == 4) {
+        body->StopEngineSound();
+    } else {
+        body->update(dt, this->state != 5 && this->fov != -1);
+        body->getEnemies();
     }
 
     // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.

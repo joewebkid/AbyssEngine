@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::update` wingman target/audio
-handoff; earlier subsystem snapshots retain their dates)
+Last reviewed: 2026-10-21 (`PlayerFighter::update` wingman-route rebuild;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xdd2d4–0xdd74c` confirms the
+wingman right/up/direction offsets and the route replacement boundary.
+The production-method smoke passes at `-O0/-O2`; all 11 Fighter smokes,
+native UCRT64 `gof2`, all 208 NDK r18b ARM translation units and 93
+verifier tests pass (one existing skip). Whole-`update`
+source-shape/strict fuzzy rises **12.1%/8.4% → 17.9%/10.1%**; the
+enemy-list, combat and movement branches still end in unresolved
+`PF_update_body`. The full corpus compares **4,323/4,524** originals
+across **4,735** pairs, at **94.03%/83.37%** mean source-shape/strict
+fuzzy, with **2,557 linked-exact** and **1,082 byte-exact**; there are
+no exact-pair losses, skipped or wrong-type symbols. Complete
+game-frame and visual wingman behavior remain untested. See
+[the ARM evidence](PLAYER_FIGHTER_WINGMAN_ROUTE_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::update` wingman target/audio handoff).
 
 Android ARM `PlayerFighter::update` at `0xdd22c–0xdd27e` and
 `0xdd2b8–0xdd2da` confirms the guarded wingman target copy, engine

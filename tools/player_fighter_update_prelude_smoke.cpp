@@ -1,7 +1,20 @@
 #include <cassert>
+#include <cmath>
 #include <cstdint>
 
-struct Vector { float x, y, z; };
+struct Vector {
+    float x, y, z;
+    Vector &operator+=(const Vector &v) { x += v.x; y += v.y; z += v.z; return *this; }
+    Vector &operator-=(const Vector &v) { x -= v.x; y -= v.y; z -= v.z; return *this; }
+    Vector &operator*=(float n) { x *= n; y *= n; z *= n; return *this; }
+};
+Vector operator*(Vector v, float n) { return v *= n; }
+namespace AbyssEngine { namespace AEMath {
+Vector VectorNormalize(const Vector &v) {
+    float len = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    return len == 0.0f ? Vector{0.0f, 1.0f, 0.0f} : Vector{v.x / len, v.y / len, v.z / len};
+}
+} }
 struct Matrix {
     int value = 0;
     Matrix &operator*=(const Matrix &other) {
@@ -11,9 +24,16 @@ struct Matrix {
 };
 struct AEGeometry {
     Vector position{1.25f, -2.5f, 3.75f};
+    Vector right{1.0f, 0.0f, 0.0f};
+    Vector up{0.0f, 1.0f, 0.0f};
+    Vector direction{0.0f, 0.0f, 1.0f};
     Matrix matrix{2};
     int matrixCalls = 0;
+    int rightCalls = 0, upCalls = 0, directionCalls = 0;
     Vector getPosition() { return position; }
+    Vector getRightVector() { ++rightCalls; return right; }
+    Vector getUpVector() { ++upCalls; return up; }
+    Vector getDirection() { ++directionCalls; return direction; }
     Matrix &getMatrix() { ++matrixCalls; return matrix; }
 };
 struct Explosion { bool playing = false; bool isPlaying() { return playing; } };
@@ -84,9 +104,22 @@ struct Level {
     void uncoverWanted(int index) { uncovered = index; }
 };
 struct Route {
+    static int constructed, destroyed;
     int cloneCalls = 0;
+    int points = 1;
+    int lengthCalls = 0, setCoordsCalls = 0, loopCalls = 0;
+    bool looping = false;
+    Vector coords{};
+    Route() = default;
+    Route(int *v, int count) : points(count / 3), coords{float(v[0]), float(v[1]), float(v[2])} { ++constructed; }
+    ~Route() { ++destroyed; }
     Route *clone() { ++cloneCalls; return this; }
+    int length() { ++lengthCalls; return points; }
+    void setNewCoords(Vector v) { ++setCoordsCalls; coords = v; }
+    void setLoop(bool value) { ++loopCalls; looping = value; }
 };
+int Route::constructed = 0;
+int Route::destroyed = 0;
 struct Trail {
     int calls = 0;
     Vector current{}, previous{};
@@ -118,9 +151,11 @@ struct KIPlayer {
     AEGeometry *subGeometry = nullptr;
     Route *routeClone = nullptr;
     uint8_t wingmanFlag = 0;
+    int wingmanCommand = 1;
     int field_0xe4 = 0;
     int fov = 0;
     Vector targetPos{};
+    Vector objectPosition{};
     bool wingman = false;
     void setActive(bool value) { player->setActive(value); }
     bool isWingMan() { return wingman; }
@@ -296,6 +331,34 @@ int main() {
     fighter.field_0xe4 = 1;
     geometry.position = {7.0f, 8.0f, 9.0f};
     fighter.update(5);
-    assert(fighter.targetPos.x == 7.0f && fighter.targetPos.y == 8.0f && fighter.targetPos.z == 9.0f);
-    assert(player.updateCalls == 4 && player.enemiesCalls == 4);
+    assert(fighter.targetPos.x == 4007.0f && fighter.targetPos.y == 8.0f && fighter.targetPos.z == -2991.0f);
+    assert(fighter.objectPosition.x == 4000.0f && fighter.objectPosition.y == 0.0f);
+    assert(route.lengthCalls == 1 && route.setCoordsCalls == 1 && route.looping);
+    assert(player.updateCalls == 5 && player.enemiesCalls == 5);
+
+    fighter.wingmanCommand = 0;
+    geometry.position = {10.0f, 20.0f, 30.0f};
+    fighter.update(6);
+    assert(fighter.targetPos.x == -3990.0f && fighter.targetPos.z == -2970.0f);
+    fighter.wingmanCommand = 2;
+    fighter.update(7);
+    assert(fighter.targetPos.x == 10.0f && fighter.targetPos.y == 2020.0f && fighter.targetPos.z == -1970.0f);
+    assert(fighter.objectPosition.y == 2000.0f && geometry.upCalls == 1);
+    fighter.wingmanCommand = 3;
+    fighter.update(8);
+    assert(fighter.targetPos.x == 10.0f && fighter.targetPos.y == 20.0f && fighter.targetPos.z == 30.0f);
+    assert(geometry.directionCalls == 3 && route.setCoordsCalls == 4 && route.loopCalls == 4);
+
+    int firstCoords[6] = {0, 0, 0, 1, 1, 1};
+    fighter.routeClone = new Route(firstCoords, 6);
+    int destroyedBefore = Route::destroyed;
+    int constructedBefore = Route::constructed;
+    geometry.position = {10.9f, 20.9f, -30.9f};
+    fighter.update(9);
+    assert(Route::destroyed == destroyedBefore + 1 && Route::constructed == constructedBefore + 1);
+    assert(fighter.routeClone->points == 1 && fighter.routeClone->coords.x == 10.0f);
+    assert(fighter.routeClone->coords.y == 20.0f && fighter.routeClone->coords.z == -30.0f);
+    assert(fighter.routeClone->looping);
+    delete fighter.routeClone;
+    fighter.routeClone = nullptr;
 }
