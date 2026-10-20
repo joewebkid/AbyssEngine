@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (StarSystem scene ambient; older subsystem
+Last reviewed: 2026-10-20 (Pan light/StarSystem return; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -25,12 +25,26 @@ five station-loop iterations and record cleanup, executes the real
 second draw, rotates and places the first sun, constructs all five orbit
 planets (including two occupied-slot retries and the selected station),
 resets the RNG, and enters `StarSystem::initLight` through its real Engine
-getter and executes the real scene-ambient light setter. It stops before
-the rim-color setter.
+getter, executes the real fixed-function light setters and Pan's no-fog
+branch, and returns the `StarSystem` constructor to `Level::createSpace`.
 Stage 0 has not returned, and the game is not running. A catalog-backed
 cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Pan light and StarSystem constructor return (2026-10-20)
+
+The original-asset Level/GLES gate now runs all production light setters
+and `PaintCanvas::FogEnable` for Pan, then observes `StarSystem` constructor
+return at `-O0/-O2` on Windows SwiftShader and Android ARMv7. It verifies
+light/material state, the no-fog branch, all five planet slots and original
+asset closure. Production source is unchanged from the preceding checkpoint;
+the full ARM corpus remains **4,323/4,524** originals, **4,735 pairs**,
+**93.93%** mean source-shape, **83.22%** strict fuzzy, **2,551 linked-exact**
+and **1,079 byte-exact**. See
+[Pan light/constructor evidence](STARSYSTEM_PAN_LIGHT_CONSTRUCTOR_GATE_2026-10-20.md).
+The shader-enabled path, fog variants, other systems and Level stage 0 are
+not yet verified.
 
 ## Engine scene ambient (2026-10-20)
 

@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan light and StarSystem constructor return (2026-10-20)
+
+The original-asset Level/GLES gate now executes all real Engine light
+setters and `PaintCanvas::FogEnable` in Pan, then observes the production
+`StarSystem` constructor returning into `Level::createSpace`. Windows
+SwiftShader and Android ARMv7/Adreno pass at `-O0/-O2`, checking light and
+material state, 18 meshes, 22 transforms, 44 collision volumes and 26/26
+closed asset reads. No production source changed; the last full ARM report
+for this exact source revision remains **4,323/4,524** originals,
+**93.93%/83.22%** mean source-shape/strict fuzzy, **2,551 linked-exact**,
+**1,079 byte-exact**, zero skipped and wrong-type signatures. Shader-enabled
+lighting, fog variants and Level stage 0 remain open. See
+[Pan light/constructor evidence](STARSYSTEM_PAN_LIGHT_CONSTRUCTOR_GATE_2026-10-20.md).
+
 ## Engine scene ambient (2026-10-20)
 
 Original ARM `0x85836–0x85840` stores the float-one bit pattern in
