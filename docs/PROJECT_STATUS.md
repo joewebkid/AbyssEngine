@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (gas-cloud recovery candidate; ARM matching pending;
+Last reviewed: 2026-10-20 (gas-cloud recovery; full ARM corpus verified;
 earlier subsystem snapshots retain their dates)
 
 `Level::createGasClouds` has a source-backed recovery candidate from Android
@@ -17,13 +17,16 @@ allocation is `0x16c`; constructor instructions show an unidentified
 four-byte slot at `+0x124`
 before `center`, not a trailing gap. The reconstructed ARM class now has
 verified offsets through `+0x168` and size `0x16c`, but that slot's semantics
-remain unknown. **Do not apply the previous exact/source-shape
-totals to this changed revision:** the required NDK r18b toolchain is absent,
-and a fresh focused/full corpus could not be run. In a separate NDK 25
-before/after check, 71 of 72 previously linked-exact `Level` functions were
-emitted and their bytes stayed unchanged; the remaining template was not
-emitted by that compiler. This is not an r18b exact-set proof. The candidate
-is not yet merged into `main`. See [gas-cloud evidence](LEVEL_GAS_CLOUDS_ARM_2026-10-20.md).
+remain unknown. The canonical NDK r18b full corpus now passes: **208/208**
+translation units, **4,323/4,524** original functions across **4,735** pairs,
+**93.97%** mean source-shape, **83.29%** strict fuzzy, **2,554 linked-exact**
+and **1,082 byte-exact**, with zero skipped and zero wrong-type symbols.
+Against the preceding corpus there are no exact-pair losses and three gains
+in each exact set, all in `PlayerGasCloud`. Focused `createGasClouds` improves
+from **88.3%/41.5%** to **93.9%/55.2%** source-shape/strict fuzzy but is
+still nonexact. The separate verifier unit suite could not finish cleanly:
+two of 93 tests failed during linking when C: ran out of space (one existing
+skip). See [gas-cloud evidence](LEVEL_GAS_CLOUDS_ARM_2026-10-20.md).
 
 Previous checkpoint: 2026-10-20 (Pan stage-one full asteroid field).
 

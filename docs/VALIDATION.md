@@ -4,7 +4,7 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
-## Gas-cloud recovery candidate (2026-10-20; ARM corpus pending)
+## Gas-cloud recovery (2026-10-20; full ARM corpus verified)
 
 `run_level_stage1_gas_clouds_pan_gate.py` executes production
 `Level::createGasClouds` after the complete Pan asteroid field. A synthetic
@@ -22,13 +22,15 @@ position on Windows and physical Android ARMv7 at `-O0/-O2`. Full stage-one
 return, real plasma probabilities, other alien/boss conditions and cloud
 updates remain untested.
 
-NDK r18b's compiler, assembler and objdump are absent locally, so focused
-source-shape and the full exact-set verifier could not be refreshed. The
-previous **4,323/4,524**, **4,735**, **93.96%/83.24%**, **2,551** and
-**1,079** figures describe the prior revision only. A separate NDK 25
-before/after byte comparison found 71 unchanged emitted symbols among the
-72 previously linked-exact `Level` symbols; one template was not emitted.
-This is a limited regression check, not an ARM corpus result. See
+The local canonical NDK r18b toolchain verified all **208/208** ARM translation
+units and **4,735** pairs covering **4,323/4,524** original functions, with
+zero skipped and zero wrong-type symbols. Mean source-shape/strict fuzzy is
+**93.97%/83.29%**; **2,554 linked-exact** and **1,082 byte-exact** pairs
+include all previous exact matches plus three `PlayerGasCloud` gains in each
+set. Focused `createGasClouds` is **93.9%/55.2%**, nonexact, versus
+**88.3%/41.5%** before. Native `gof2` is green. A subsequent verifier unit
+suite ran 93 tests with one skip and two linker failures caused by C: having
+no free space; it is not a clean unit-suite pass. See
 [gas-cloud evidence](LEVEL_GAS_CLOUDS_ARM_2026-10-20.md).
 
 ## Pan Level stage-one complete asteroid field (2026-10-20)

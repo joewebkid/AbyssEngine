@@ -1,4 +1,4 @@
-# Level gas-cloud recovery candidate (2026-10-20)
+# Level gas-cloud recovery (2026-10-20)
 
 ## Primary evidence
 
@@ -56,32 +56,31 @@ assets for these clouds, were added to the fail-closed host material allowlist.
 
 Windows SwiftShader and physical Android ARMv7 passed at `-O0` and `-O2`
 with the final layout and full-width mesh ID. The native `gof2` build and
-both changed ARM translation units pass with NDK 25; the header asserts
-the original offsets and `0x16c` size. The last official corpus report for
-the parent revision is
+all 208 ARM translation units pass with canonical NDK r18b; the header asserts
+the original offsets and `0x16c` size. The previous corpus report is
 `C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/explosion-globals-full.json`
 (SHA-256 `4e60e6fae9369f893d984612bd969311fd99a196dfbf250c6a830035963b7deb`):
 4,323/4,524 originals, 4,735 pairs, 93.96% mean source-shape, 83.24% strict
-fuzzy, 2,551 linked-exact and 1,079 byte-exact, zero skipped. Before this
-edit, `createGasClouds` was nonexact at 88.3% source-shape and 41.5% strict
-fuzzy. Those figures must **not** be treated as current post-edit metrics.
-The alien/boss gate extension changes only a test runner and documentation,
-not production C++; it does not itself change machine-code metrics.
-
-The canonical NDK r18b toolchain is absent in the present environment. A
-fresh focused/full verifier run therefore cannot establish post-edit shape,
-coverage or exact-set preservation. A noncanonical NDK 25 before/after check
-recompiled `Level.cpp` and found all 71 emitted members of the prior 72
-linked-exact symbols byte-identical; one template was not emitted by NDK 25.
-The verifier unit suite also cannot fully run without its r18b GNU objdump.
-These checks lower risk but do not replace the required corpus. Keep this
-candidate out of `main` until that gate is restored and passed.
+fuzzy, 2,551 linked-exact and 1,079 byte-exact, zero skipped. The current
+full report is
+`C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/gas-r18b-full.json`
+(SHA-256 `4f5108c02981aed8e8d0181737d43dcd112a2387cf7cd00461aea8ddebe85a5d`):
+4,323/4,524 originals, 4,735 pairs, 93.97% mean source-shape, 83.29%
+strict fuzzy, 2,554 linked-exact and 1,082 byte-exact; zero skipped and zero
+wrong-type symbols. Comparing exact-pair identities with the previous report
+shows no losses and three gains in both sets:
+`PlayerGasCloud::hasExploded`, `setSparkInSight` and `getSparks`.
+Focused `createGasClouds` improves from 88.3%/41.5% to 93.9%/55.2%
+source-shape/strict fuzzy, but remains nonexact. The 15-function
+`PlayerGasCloud` focused family improves from 95.42%/76.03% to
+97.65%/89.21%, with linked-exact 4 to 7 and byte-exact 0 to 3. The
+alien/boss gate extension changes only a test runner and documentation.
+The 93-test verifier unit suite had one existing skip and two failures during
+linking because C: was full; those are not passing tests.
 
 ## Open work
 
-Restore NDK r18b and rerun focused `createGasClouds`, full 208-TU ARM
-verification and exact-pair set comparison. Identify the semantics of the
-opaque `PlayerGasCloud+0x124` slot; exercise real plasma distributions and
+Identify the semantics of the opaque `PlayerGasCloud+0x124` slot; exercise real plasma distributions and
 additional alien/boss conditions, then continue Pan stage one through mission
 dispatch and return. Cloud update, collision, rendering and a playable frame
 are still outside this gate.
