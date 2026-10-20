@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level player yaw and empty gun buckets (2026-10-20)
+
+`run_level_player_rotation_pan_gate.py` continues the Pan `Level::init`
+path through production Y-axis hull rotation and three empty gun buckets.
+Windows SwiftShader and Android ARMv7 pass at `-O0/-O2`; **37/37**
+file lifetimes still close. ARM `Level::createPlayer` focused
+source-shape/strict fuzzy changes **86.0%/35.5% → 86.1%/35.2%** and
+remains non-exact. The full ARM corpus stays at **4,323/4,524** originals,
+**4,735** comparisons, **93.95%/83.24%** mean source-shape/strict fuzzy,
+**2,551 linked-exact**, **1,079 byte-exact** and zero skipped units; exact
+pairs did not change. Positive gun slots and weapon positions are outside
+the gate. See [yaw evidence](LEVEL_CREATE_PLAYER_YAW_ARM_2026-10-20.md).
+
 ## Continuous Level-to-particle Pan gate (2026-10-20)
 
 `run_level_player_particles_pan_gate.py` crosses production

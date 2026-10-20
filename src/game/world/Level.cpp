@@ -5819,7 +5819,7 @@ void Level::createPlayer() {
     ego->setLevel(this);
 
     float yaw = (float) this->field_138 * (1.0f / 65536.0f) * 6.2831855f;
-    Vector rot = {0.0f, 0.0f, yaw};
+    Vector rot = {0.0f, yaw, 0.0f};
     this->player->geometry->setRotation(rot);
 
     Array<Array<Gun *> *> *buckets = new Array<Array<Gun *> *>();

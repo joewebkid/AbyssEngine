@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (continuous Level-to-particle binding; earlier subsystem
+Last reviewed: 2026-10-20 (Level player yaw and empty gun buckets; earlier subsystem
 snapshots retain their dates)
+
+Android ARM `Level::createPlayer` places the player yaw in vector Y, not Z.
+The C++ now uses that axis, and the continuous original-asset Pan gate runs
+through production geometry rotation and three empty gun buckets on Windows
+SwiftShader and Android ARMv7 at `-O0/-O2`. The transform matrix and
+**37/37** file lifetimes pass. Focused `createPlayer` source-shape/strict
+fuzzy changes **86.0%/35.5% → 86.1%/35.2%**, still non-exact. Positive
+weapon slots, weapon-position parsing and a returning `createPlayer` remain
+unverified. The full ARM corpus remains **4,323/4,524** originals,
+**4,735** comparisons, **93.95%/83.24%** mean source-shape/strict fuzzy,
+**2,551 linked-exact** and **1,079 byte-exact**, with zero skipped units
+and no changed exact `(unit, symbol)` pairs. See
+[yaw and bucket evidence](LEVEL_CREATE_PLAYER_YAW_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (continuous Level-to-particle binding).
 
 The continuous Pan gate now executes production `PlayerEgo::setLevel`
 inside `Level::createPlayer`, after ship binding. Windows SwiftShader and
