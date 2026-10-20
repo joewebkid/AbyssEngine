@@ -4,14 +4,16 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
-## Pan stage-one hostile route (2026-10-20)
+## Pan stage-one hostile route and initial counts (2026-10-20)
 
 `run_level_stage1_hostile_route_pan_gate.py` extends the original-asset Pan
 path through the source-extracted post-scene mission prefix and production
 `Route(int*, 3)` constructor. It checks one waypoint, docking slots and
-coordinates against the reset RNG sequence. Windows SwiftShader and physical
-Android ARMv7 pass at `-O0/-O2`. Pirate-base/freelance branches, post-route
-counts and stage-one return are outside this gate. Production C++ and the
+coordinates plus initial hostile/friendly counts against the reset RNG
+sequence. The fixture uses difficulty `1.0f` and campaign mission 50;
+Windows SwiftShader and physical Android ARMv7 pass at `-O0/-O2`.
+Pirate-base/freelance branches, later overrides and stage-one return are
+outside this gate. Production C++ and the
 full ARM corpus metrics below are unchanged. See
 [hostile-route evidence](LEVEL_STAGE1_HOSTILE_ROUTE_ARM_2026-10-20.md).
 

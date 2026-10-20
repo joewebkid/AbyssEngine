@@ -1,18 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Pan stage-one post-scene hostile route;
+Last reviewed: 2026-10-20 (Pan stage-one hostile route and initial counts;
 earlier subsystem snapshots retain their dates)
 
 The continuous original-asset Pan path now passes the empty mission and
 mode-zero scene cleanup, restores mission mode three, then constructs the
-post-scene hostile `Route`. Its one waypoint's coordinates match a replay
-of the three RNG calls after reset. Windows SwiftShader and physical Android
-ARMv7 pass at `-O0/-O2`; original ARM instructions confirm the call order
-and route storage. The post-route counts, other mission branches and
-stage-one return remain untested. Production C++ is unchanged, so the last
-full ARM corpus remains **4,323/4,524**, **93.97%/83.29%** mean
+post-scene hostile `Route` and calculates initial hostile/friendly counts.
+Its waypoint coordinates, count fields and final RNG seed match a replay
+under Pan data with synthetic difficulty `1.0f` and campaign mission 50.
+Windows SwiftShader and physical Android ARMv7 pass at `-O0/-O2`; original
+ARM instructions confirm the call order and field writes. Later count
+overrides, other mission branches and stage-one return remain untested.
+Production C++ is unchanged, so the last full ARM corpus remains
+**4,323/4,524**, **93.97%/83.29%** mean
 source-shape/strict fuzzy, **2,554 linked-exact** and **1,082 byte-exact**.
-See [hostile-route evidence](LEVEL_STAGE1_HOSTILE_ROUTE_ARM_2026-10-20.md).
+See [route/count evidence](LEVEL_STAGE1_HOSTILE_ROUTE_ARM_2026-10-20.md).
 
 Previous checkpoint: 2026-10-20 (gas-cloud recovery; full ARM corpus verified).
 
