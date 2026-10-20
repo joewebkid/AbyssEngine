@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Pan ordinary ship binding; earlier subsystem
+Last reviewed: 2026-10-20 (continuous Level-to-ship binding; earlier subsystem
 snapshots retain their dates)
+
+The original-asset Pan gate now executes the production
+`Level::createPlayer → PlayerEgo::setShip` sequence within the same
+`Level::init` call, stopping before `setLevel`. Windows SwiftShader and
+Android ARMv7 pass at `-O0/-O2`: the player is stored in `Level`, its
+hull owns the ship group, five original AEM meshes load, and **37/37**
+file operations close. No production C++ changed, so focused
+`Level::createPlayer` remains **86.0%/35.5%** source-shape/strict fuzzy,
+and the full corpus retains **4,323/4,524** originals,
+**2,551 linked-exact** and **1,079 byte-exact** with zero skipped units.
+`setLevel`, hull rotation, weapon positions and a returning `Level::init`
+remain next. See [the continuous gate evidence](LEVEL_CREATE_PLAYER_SET_SHIP_PAN_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (separate PlayerEgo ship binding).
 
 The `PlayerEgo` constructor now initializes `tractorBeam`, `repairBeams`
 and `asteroidTarget`, as required by the original ARM zero write at

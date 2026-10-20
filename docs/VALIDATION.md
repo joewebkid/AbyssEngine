@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Continuous Level-to-ship Pan gate (2026-10-20)
+
+`run_level_player_ship_pan_gate.py` continues the production
+`Level::createPlayer` source through `PlayerEgo::setShip` inside the
+ongoing `Level::init` call. Windows SwiftShader and Android ARMv7 pass
+at `-O0/-O2`, with five original ship AEM meshes and **37/37** closed
+file operations. It stops before `setLevel`; material creation remains
+a bounded test service. No production source changed, so focused
+`Level::createPlayer` remains **86.0%/35.5%** source-shape/strict fuzzy.
+The last full ARM corpus for this same source tree retains
+**4,323/4,524** originals, **2,551 linked-exact**, **1,079 byte-exact**
+and zero skipped units. See
+[continuous gate evidence](LEVEL_CREATE_PLAYER_SET_SHIP_PAN_ARM_2026-10-20.md).
+
 ## PlayerEgo ordinary ship binding (2026-10-20)
 
 Android ARM Thumb `0x99a16` clears `PlayerEgo+0x1b0..+0x1bc`; the C++
