@@ -27,8 +27,6 @@ float VectorSignedToFloat(int v, int mode);
 
 void PF_update_body(PlayerFighter *self, int dt);
 
-void AEMath_MatrixAssign(void *dst, void *src);
-
 void AEMath_MatrixSetRotation(void *m, float rx, float ry, float rz);
 
 namespace AbyssEngine {
@@ -409,15 +407,12 @@ void PlayerFighter::setPosition(float x, float y, float z) {
     this->posY = y;
     this->posZ = z;
 
-    ((AEGeometry *) (intptr_t) this->geometry)->setPosition(x, y, z);
+    this->geometry->setPosition(x, y, z);
     this->workingPosition = Vector{x, y, z};
-    if (this->trail != 0) {
+    if (this->trail) {
         this->trail->reset(this->workingPosition);
     }
-    int m = (int) (intptr_t) & ((AEGeometry *) (intptr_t) this->geometry)->getMatrix();
-    AEMath_MatrixAssign(((Player *) (intptr_t) this->player)->transform, (void *) m);
-
-    return;
+    this->player->transformMatrix = this->geometry->getMatrix();
 }
 
 void PlayerFighter::roll(int angle) {

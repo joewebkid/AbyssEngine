@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (`PlayerFighter::roll` recovery;
+Last reviewed: 2026-10-20 (`PlayerFighter::setPosition` host-pointer ABI recovery;
 earlier subsystem snapshots retain their dates)
+
+`PlayerFighter::setPosition(float,float,float)` is called by Level and
+LevelScript. Its prior source narrowed the geometry-matrix pointer to a
+32-bit `int` and called a declared-only matrix shim; the ARM build happened
+to match, but the native 64-bit path could address invalid memory. The setter
+now uses the typed geometry matrix and Player `Matrix::operator=`. A
+production-method smoke checks position, trail and all 15 matrix elements at
+`-O0/-O2`. Native UCRT64 `gof2`, all 208 NDK r18b ARM translation units,
+the other Fighter smokes and 93 verifier tests pass (one existing skip).
+Focused ARM remains **100% source-shape, 100% strict fuzzy and linked-exact**;
+the full report is byte-identical to the preceding one: **4,323/4,524**
+originals, **4,735** pairs, **94.02%/83.36%** mean source-shape/strict fuzzy,
+**2,557 linked-exact**, **1,082 byte-exact**, zero exact-pair losses,
+skipped or wrong-type symbols. `PlayerFighter::push` has separate
+pointer-width warnings and is the next ABI audit; `PF_update_body` remains
+unresolved. See [the ARM/ABI evidence](PLAYER_FIGHTER_SET_POSITION_ABI_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (`PlayerFighter::roll` recovery).
 
 Android ARM `PlayerFighter::roll` at `0xdf860` and its literal pool establish
 the nonzero bank-rate table, 0.015 level threshold, frame cap, state bytes and
