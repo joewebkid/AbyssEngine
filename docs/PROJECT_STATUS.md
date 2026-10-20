@@ -24,9 +24,9 @@ and **1,082 byte-exact**, with zero skipped and zero wrong-type symbols.
 Against the preceding corpus there are no exact-pair losses and three gains
 in each exact set, all in `PlayerGasCloud`. Focused `createGasClouds` improves
 from **88.3%/41.5%** to **93.9%/55.2%** source-shape/strict fuzzy but is
-still nonexact. The separate verifier unit suite could not finish cleanly:
-two of 93 tests failed during linking when C: ran out of space (one existing
-skip). See [gas-cloud evidence](LEVEL_GAS_CLOUDS_ARM_2026-10-20.md).
+still nonexact. The full verifier unit suite passes **93 tests, one skip**
+when temporary files use D:; the earlier two linker failures on full C: were
+environmental. See [gas-cloud evidence](LEVEL_GAS_CLOUDS_ARM_2026-10-20.md).
 
 Previous checkpoint: 2026-10-20 (Pan stage-one full asteroid field).
 

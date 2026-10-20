@@ -28,9 +28,9 @@ zero skipped and zero wrong-type symbols. Mean source-shape/strict fuzzy is
 **93.97%/83.29%**; **2,554 linked-exact** and **1,082 byte-exact** pairs
 include all previous exact matches plus three `PlayerGasCloud` gains in each
 set. Focused `createGasClouds` is **93.9%/55.2%**, nonexact, versus
-**88.3%/41.5%** before. Native `gof2` is green. A subsequent verifier unit
-suite ran 93 tests with one skip and two linker failures caused by C: having
-no free space; it is not a clean unit-suite pass. See
+**88.3%/41.5%** before. Native `gof2` is green. The verifier unit suite passes
+**93 tests, one skip** with temporary files on D:. The prior two linker
+failures when C: was full were environmental. See
 [gas-cloud evidence](LEVEL_GAS_CLOUDS_ARM_2026-10-20.md).
 
 ## Pan Level stage-one complete asteroid field (2026-10-20)

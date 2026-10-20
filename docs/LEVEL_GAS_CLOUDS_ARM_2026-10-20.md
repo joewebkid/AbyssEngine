@@ -75,8 +75,8 @@ source-shape/strict fuzzy, but remains nonexact. The 15-function
 `PlayerGasCloud` focused family improves from 95.42%/76.03% to
 97.65%/89.21%, with linked-exact 4 to 7 and byte-exact 0 to 3. The
 alien/boss gate extension changes only a test runner and documentation.
-The 93-test verifier unit suite had one existing skip and two failures during
-linking because C: was full; those are not passing tests.
+The 93-test verifier unit suite passes with one existing skip when temporary
+files use D:. Its earlier two linker failures with C: full were environmental.
 
 ## Open work
 
