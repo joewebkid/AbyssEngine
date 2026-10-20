@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (PlayerEgo moving-stars slot and steering dispatch; older subsystem
+Last reviewed: 2026-10-20 (PlayerEgo MovingStars constructor-prefix gate; older subsystem
 snapshots retain their dates)
+
+The Pan original-asset check now runs continuously from `Level::init` through
+`Level::createPlayer` and the real `PlayerEgo` constructor prefix into the
+complete `MovingStars` constructor on Windows SwiftShader and Android ARMv7
+at `-O0/-O2`. All four runs verify 50 billboards/transforms and their
+material, RNG and parked-position contracts. The boundary is before
+`Player::getCombinedHP`; full `PlayerEgo` construction and `setShip` remain
+open. Production code is unchanged, so the last full ARM corpus stays at
+**4,323/4,524** originals, **4,735 pairs**, **93.95%/83.24%** mean
+source-shape/strict fuzzy, **2,551 linked-exact**, **1,079 byte-exact**.
+See [the constructor-prefix gate](PLAYER_EGO_MOVING_STARS_PREFIX_GATE_2026-10-20.md).
 
 The latest source correction separates `PlayerEgo`'s `MovingStars` pointer
 at ARM `+0xf8` from its docking camera at `+0x178`, restores the direction
@@ -41,8 +52,9 @@ getter, executes the real fixed-function light setters and Pan's no-fog
 branch, returns the `StarSystem` constructor and completes
 `Level::createSpace`, including Pan's star color, then enters
 `Level::createPlayer`, reads the active Ship's equipment and three used-slot
-counts, constructs a `Player` and sets its hull, shield and armor. The gate
-stops before `PlayerEgo` allocation. Stage 0 has not returned, and the game
+counts, constructs a `Player` and sets its hull, shield and armor. The latest
+gate enters `PlayerEgo` and builds its `MovingStars`, then stops before
+`getCombinedHP`. Stage 0 has not returned, and the game
 is not running. A catalog-backed cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.

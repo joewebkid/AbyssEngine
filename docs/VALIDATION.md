@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo / MovingStars constructor-prefix gate (2026-10-20)
+
+`tools/run_station_player_ego_stars_gate.py` passes the inherited Pan
+original-asset/GLES checks while continuing through `Level::createPlayer`
+into the extracted `PlayerEgo` prefix and real `MovingStars` constructor on
+Windows SwiftShader and Android ARMv7 at `-O0/-O2`. It checks 50 procedural
+billboards/transforms, their resource material, RNG and parked positions.
+The canvas mesh allocator/writers are explicit test services. The boundary
+is before `getCombinedHP`; this is not `Level::createPlayer` completion or
+a full `PlayerEgo` runtime.
+No production source changed; the latest full ARM report remains
+**4,323/4,524**, **93.95%/83.24%** mean source-shape/strict fuzzy,
+**2,551 linked-exact**, **1,079 byte-exact**. See
+[gate evidence](PLAYER_EGO_MOVING_STARS_PREFIX_GATE_2026-10-20.md).
+
 ## Level::createPlayer Player allocation (2026-10-20)
 
 The continuous original-asset Pan/GLES gate executes the production `Player`
