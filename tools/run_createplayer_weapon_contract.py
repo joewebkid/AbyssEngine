@@ -72,7 +72,9 @@ def main():
                           'void PlayerEgo::addGun(Array<Gun *> *arr, int x)')
     consumers += function((ROOT / 'src/game/ship/Player.cpp').read_text(),
                           'void Player::addGun(Array<Gun *> *gunsIn, int slot)')
-    current = function((ROOT / 'src/game/world/Level.cpp').read_text(), 'void Level::createPlayer()')
+    level = (ROOT / 'src/game/world/Level.cpp').read_text()
+    current = function(level, 'void Level::createPlayer()')
+    factor_bits = function(level, 'static inline float bitsToFloat(')
     old = subprocess.check_output([args.git, 'show', BASE + ':src/game/world/Level.cpp'],
                                   cwd=ROOT, text=True)
     baseline = function(old, 'void Level::createPlayer()')
@@ -82,10 +84,11 @@ def main():
         (out / 'createplayer_oracle.inc').write_text(oracle)
         (out / 'createplayer_loader.inc').write_text(loader + vector)
         for label, body in [('current', current), ('negative-baseline', baseline)]:
-            (out / 'createplayer_body.inc').write_text(consumers + body)
+            (out / 'createplayer_body.inc').write_text(consumers + factor_bits + body)
             for opt in ('-O0', '-O2'):
                 exe = out / f'{label}-{opt[1:]}.exe'
-                subprocess.run([args.cxx, '-std=gnu++17', opt, '-g0', '-Isrc', '-I', str(out),
+                defines = ['-DCONTRACT_LEGACY_FLOAT_GETTERS'] if label == 'negative-baseline' else []
+                subprocess.run([args.cxx, '-std=gnu++17', opt, '-g0', *defines, '-Isrc', '-I', str(out),
                                 'tools/createplayer_weapon_contract.cpp', 'src/game/core/String.cpp',
                                 '-o', str(exe)], cwd=ROOT, check=True)
                 run = subprocess.run([str(exe), str(args.asset.resolve())], cwd=ROOT,

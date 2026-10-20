@@ -19,7 +19,10 @@ zero gains or losses; skipped and wrong-type signatures are zero. The
 ignored report is
 `C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/level-player-factors-full.json`
 (SHA-256 `79c04bc41f531c75cceb997f4e3304229011790690c5dffef864c1442e2dc50a`).
-Full player creation remains unexecuted; see
+The repaired CPU contract executes the full extracted body against all 59
+original weapon records in both equipment orders at `-O0/-O2` (118 cases);
+its historical negative control still fails at the expected turret selector.
+The continuous `Level::init` path still stops before player creation; see
 [weapon-factor evidence](LEVEL_CREATE_PLAYER_FACTOR_BITS_ARM_2026-10-20.md).
 
 ## Pan Level::createSpace return (2026-10-20)

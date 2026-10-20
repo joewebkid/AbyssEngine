@@ -39,8 +39,11 @@ matching remains a separate polish metric, not the definition of completion.
 `Ship` damage/fire-rate getters, matching original Android ARM `vmov`
 instructions. The old numeric casts would inflate primary-gun parameters.
 An extracted `-O0/-O2` branch test covers ordinary and negative factors;
-native `gof2`, ABI/lifetime smoke, **208/208** ARM units and **91 verifier
-tests** (one prior skip) pass. Focused strict fuzzy rises **34.5% →
+the repaired full-method CPU contract passes **118** original-asset cases
+at both optimization levels, with its historical negative control still
+failing at the expected turret selector. Native `gof2`, ABI/lifetime smoke,
+**208/208** ARM units and **91 verifier tests** (one prior skip) pass.
+Focused strict fuzzy rises **34.5% →
 35.5%**, while source-shape stays **86.0%** at one decimal. Full corpus:
 **4,323/4,524** originals, **4,735 pairs**, **93.93%/83.22%** mean
 source-shape/strict fuzzy, **2,551 linked-exact**, **1,079 byte-exact**,

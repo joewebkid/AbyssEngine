@@ -21,6 +21,19 @@ it covers ordinary and negative-factor cases. Native `gof2` and ABI/lifetime
 smoke pass. All **208/208** ARM translation units compile; **91 verifier
 tests** pass with one pre-existing skip.
 
+The existing full-method weapon contract was also rerun after updating its
+CPU `Ship` boundary to return raw factor bits and extracting the production
+`bitsToFloat` helper. The historical negative control retains its old float
+getter boundary. With original `weapons_hd.bin`, the current full extracted
+`createPlayer` passes **118 cases** at both `-O0/-O2`, including **1,576**
+released loader vectors, **472** engine geometry pairs and **30** turret
+cases; the historical negative control still exits at the turret selector.
+This fixes a test that previously failed to compile after the factor change.
+The native build and ABI/lifetime smoke remain green; the full verifier suite
+passes **91 tests** with one prior skip. A fresh `--no-build` ARM corpus report
+after this test-only repair is byte-identical to the report below (same SHA-256),
+so its coverage, shape and exact-pair sets are unchanged.
+
 Focused `Level::createPlayer` strict fuzzy rises **34.5% → 35.5%**;
 source-shape stays **86.0%** at one decimal place. It remains nonexact.
 The complete ARM corpus compares **4,323/4,524** originals in **4,735
@@ -31,7 +44,8 @@ wrong-type signatures are zero. The ignored full report is
 `C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/level-player-factors-full.json`
 (SHA-256 `79c04bc41f531c75cceb997f4e3304229011790690c5dffef864c1442e2dc50a`).
 
-This proves the factor calculation, not full `Level::createPlayer` execution.
-The continuous Level gate still stops before that method; real active Ship,
+The CPU contract executes the full extracted method, but does not prove its
+execution through `Level::init` with real game services. The continuous Level
+gate still stops before that method; real active Ship,
 equipment, weapon-position loading, `PlayerEgo` construction and Level
 stage-0 return remain to be integrated.

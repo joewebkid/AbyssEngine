@@ -135,8 +135,13 @@ struct Ship {
     int getMaxArmorHP() { return 90; }
     int getIndex() { return index; }
     int getRace() { return 7; }
+#ifdef CONTRACT_LEGACY_FLOAT_GETTERS
     float getDamageFactor() { return damageFactor; }
     float getFireRateFactor() { return fireFactor; }
+#else
+    int getDamageFactor() { int bits; std::memcpy(&bits, &damageFactor, sizeof(bits)); return bits; }
+    int getFireRateFactor() { int bits; std::memcpy(&bits, &fireFactor, sizeof(bits)); return bits; }
+#endif
     int getSlotPos(Item *it) {
         if (it->type == 2) {
             std::fputs("turret unexpectedly requested getSlotPos\n", stderr);
