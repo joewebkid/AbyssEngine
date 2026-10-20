@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan Level stage-one asteroid prelude (2026-10-20)
+
+`run_level_stage1_asteroid_prelude_pan_gate.py` makes two continuous
+`Level::init` calls. Original Pan assets complete stage zero, then the
+production `createAsteroids` prelude seeds from the station and creates
+the expected array length and center coordinates. Windows SwiftShader
+and Android ARMv7 pass at `-O0/-O2`, with **38/38** closed files. A bounded
+Galaxy probability provider replaces the full calculation, and the gate
+stops before Waypoint/asteroid construction. Native `gof2`, **208/208** ARM
+TUs and **93** verifier tests pass (one existing skip). Focused asteroid
+source-shape/strict fuzzy is **83.5%/29.6% → 89.4%/47.3%**, nonexact.
+Full ARM corpus: **4,323/4,524** originals, **4,735** pairs,
+**93.95%/83.24%** means, **2,551 linked-exact**, **1,079 byte-exact**,
+zero skipped, zero exact-pair losses/gains. See
+[asteroid recovery evidence](LEVEL_CREATE_ASTEROIDS_ARM_2026-10-20.md).
+
 ## Continuous Pan Level stage-zero return (2026-10-20)
 
 `run_level_stage0_pan_gate.py` completes the original-asset Pan stage-zero

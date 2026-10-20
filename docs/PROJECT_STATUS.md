@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (continuous Pan Level stage-zero return; earlier subsystem
+Last reviewed: 2026-10-20 (Pan stage-one asteroid prelude; earlier subsystem
 snapshots retain their dates)
+
+The second continuous Pan `Level::init` call now enters the production
+`createAsteroids` prelude on Windows SwiftShader and Android ARMv7 at
+`-O0/-O2`. The station-seeded asteroid count and center coordinates pass;
+the gate stops before Waypoint construction, so stage one and an actual
+asteroid field remain unverified. Source-backed repairs remove a 64-bit
+random-pointer truncation and restore the original probability, mesh, LOD,
+radius and quality forms. Focused `createAsteroids` source-shape/strict
+fuzzy improves **83.5%/29.6% → 89.4%/47.3%**, still nonexact. Native and
+**208/208** ARM builds and **93** verifier tests pass (one existing skip).
+The full corpus remains **4,323/4,524** originals and **4,735** pairs at
+**93.95%/83.24%** means, with **2,551 linked-exact**, **1,079 byte-exact**,
+zero skipped and no exact-pair losses or gains. See
+[asteroid evidence](LEVEL_CREATE_ASTEROIDS_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (continuous Pan Level stage-zero return).
 
 The original-asset Pan gate now **returns from production `Level::init`
 stage zero** on Windows SwiftShader and Android ARMv7 at `-O0/-O2`.
@@ -157,7 +173,8 @@ counts, constructs a `Player` and sets its hull, shield and armor. The
 current original-asset Pan gate continues through `PlayerEgo`, ship binding,
 the weapon-position file, four geometries and player placement;
 `Level::init` stage zero returns on Windows and Android ARMv7 at `-O0/-O2`.
-Stage one and a playable game frame remain unverified. A catalog-backed
+The next call enters the asteroid prelude; stage one and a playable game
+frame remain unverified. A catalog-backed
 cross-system wanted path also runs. Gameplay paths still need end-to-end
 checks. Exact code
 matching remains a separate polish metric, not the definition of completion.

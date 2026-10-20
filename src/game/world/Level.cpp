@@ -234,9 +234,6 @@ static int *g_crm_counts8 = nullptr;
 
 static int *g_crm_table8 = nullptr;
 
-static char **g_ca_lowDetail = nullptr;
-
-
 static float g_up_eqMax = 0;
 
 static float *g_up_clampLo = nullptr;
@@ -2764,7 +2761,7 @@ void Level::createMission() {
 
 
 void Level::createAsteroids() {
-    int *rngObj = (int *) &AERandom::gRandom;
+    AERandom *rng = static_cast<AERandom *>(Globals::rnd);
 
     int colBase;
     if (Status::gStatus->inAlienOrbit() == 0) {
@@ -2778,19 +2775,17 @@ void Level::createAsteroids() {
 
     Galaxy *gal = Galaxy::gGalaxy;
     Station *st = (Station *) Status::gStatus->getStation();
-    int *prob = (int *) gal->getAsteroidProbabilities(st);
+    int *prob = static_cast<int *>(gal->getAsteroidProbabilities(st));
 
-    int seed = *rngObj;
     Station *st2 = (Station *) Status::gStatus->getStation();
-    ((Station *) st2)->getIndex();
-    ((AbyssEngine::AERandom *) (intptr_t) * rngObj)->setSeed((long long) seed);
+    rng->setSeed(st2->getIndex());
 
-    int countRoll = ((AbyssEngine::AERandom *) (intptr_t) * rngObj)->nextInt(0x28);
+    int countRoll = rng->nextInt(0x28);
     ArraySetLength((unsigned) (countRoll + 0x28), *(this->asteroids));
 
-    int rx = ((AbyssEngine::AERandom *) (intptr_t) * rngObj)->nextInt(100000);
-    int ry = ((AbyssEngine::AERandom *) (intptr_t) * rngObj)->nextInt(100000);
-    int rz = ((AbyssEngine::AERandom *) (intptr_t) * rngObj)->nextInt(100000);
+    int rx = rng->nextInt(100000);
+    int ry = rng->nextInt(100000);
+    int rz = rng->nextInt(100000);
 
     int alien = Status::gStatus->inAlienOrbit();
     int camp = Status::gStatus->getCurrentCampaignMission();
@@ -2849,7 +2844,7 @@ void Level::createAsteroids() {
         }
     }
 
-    ((AbyssEngine::AERandom *) (intptr_t) * rngObj)->reset();
+    rng->reset();
 
     this->field_c8 = (float) ox;
     this->field_cc = (float) oy;
@@ -2860,10 +2855,11 @@ void Level::createAsteroids() {
     this->asteroidWaypoint = wp;
 
     BoundingSphere *bs = (BoundingSphere *) ::operator new(0x48);
-    new(bs) BoundingSphere(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+    new(bs) BoundingSphere((float) ox, (float) oy, (float) oz,
+                           0.0f, 0.0f, 0.0f, 100000.0f);
     *(BoundingSphere **) &this->collisionVolume = bs;
 
-    int density = ((AbyssEngine::AERandom *) (intptr_t) * rngObj)->nextInt() + 2;
+    int density = rng->nextInt(8) + 2;
     int alien2 = Status::gStatus->inAlienOrbit();
 
     void *canvas = (void *) PaintCanvas::gCanvas;
@@ -2875,10 +2871,10 @@ void Level::createAsteroids() {
             bool ok = false;
             int cursor = probCursor;
             while (!ok) {
-                int roll = ((AbyssEngine::AERandom *) (intptr_t) * rngObj)->nextInt();
+                int roll = rng->nextInt(100);
                 int next = 0;
-                if (roll < *(int *) ((int) (intptr_t) prob + cursor * 4 + 4)) {
-                    kind = *(int *) ((int) (intptr_t) prob + cursor * 4);
+                if (roll < prob[cursor + 1]) {
+                    kind = prob[cursor];
                     next = cursor + 2;
                     if (cursor > 8)
                         next = 0;
@@ -2900,26 +2896,22 @@ void Level::createAsteroids() {
         if (kind == 0xd9)
             colVariant = 3;
 
-        static const int meshTable[4] = {0x37a0, 0x37a4, 0x37a8, 0x37ac};
+        // Android 2.0.16 .rodata at 0x1fb808.
+        static const int meshTable[4] = {0x4204, 0x4219, 0x4208, 0x4994};
         int mesh = meshTable[colVariant & 3];
 
         Vector pos;
         for (;;) {
-            pos.x = (this->field_c8 - half) + (float) ((AbyssEngine::AERandom *) (intptr_t) * rngObj)->nextInt(spread);
-            pos.y = (this->field_cc - half) + (float) ((AbyssEngine::AERandom *) (intptr_t) * rngObj)->nextInt(spread);
-            pos.z = (this->field_d0 - half) + (float) ((AbyssEngine::AERandom *) (intptr_t) * rngObj)->nextInt(spread);
+            pos.x = (this->field_c8 - half) + (float) rng->nextInt(spread);
+            pos.y = (this->field_cc - half) + (float) rng->nextInt(spread);
+            pos.z = (this->field_d0 - half) + (float) rng->nextInt(spread);
             if (i == 0 || (int) i >= density)
                 break;
             bool farEnough = false;
             for (unsigned j = 0; j < i; j = j + 1) {
                 float d = 1.0e30f;
                 if (this->asteroids != nullptr) {
-                    int obj = (int) (intptr_t)(*this->asteroids)[j];
-                    Vector c;
-
-                    c.x = *(float *) (obj + 0x150);
-                    c.y = *(float *) (obj + 0x154);
-                    c.z = *(float *) (obj + 0x158);
+                    Vector c = (*this->asteroids)[j]->getPosition();
                     Vector dv;
                     dv.x = c.x - pos.x;
                     dv.y = c.y - pos.y;
@@ -2941,37 +2933,45 @@ void Level::createAsteroids() {
         bool near = (int) i < density;
         {
             unsigned short lodMeshes[3] = {
-                (unsigned short) mesh,
                 (unsigned short) (mesh + 1),
-                (unsigned short) (mesh + 2)
+                (unsigned short) (mesh + 2),
+                (unsigned short) (mesh + 3)
             };
             int lodDist[3];
-            if (near) {
-                lodDist[0] = 8000;
-                lodDist[1] = 20000;
-                lodDist[2] = 40000;
+            if (Globals::iPad) {
+                lodDist[0] = 100000;
+                lodDist[1] = 120000;
+                lodDist[2] = 150000;
+            } else if (near) {
+                lodDist[0] = 60000;
+                lodDist[1] = 100000;
+                lodDist[2] = 120000;
             } else {
-                lodDist[0] = 20000;
-                lodDist[1] = 40000;
-                lodDist[2] = 80000;
+                lodDist[0] = 40000;
+                lodDist[1] = 70000;
+                lodDist[2] = 90000;
             }
             geo->setLodMeshes(lodMeshes, lodDist, 3);
         }
         this->lodManager->addObject(geo);
 
-        int base = (*g_ca_lowDetail && **g_ca_lowDetail != 0) ? 0x46 : (near ? 0x46 : 0x46);
-        (void) base;
-        int radius = ((AbyssEngine::AERandom *) (intptr_t) * rngObj)->nextInt() + (near ? 0x78 : 0x1e);
-        float scale = (float) radius * 0.001f;
-
-        double dscale = (double) scale;
-        if (dscale >= 1.0 && dscale >= 1.0 && dscale >= 1.0 &&
-            ((AbyssEngine::AERandom *) (intptr_t) * rngObj)->nextInt() != 0) {
-            ((AbyssEngine::AERandom *) (intptr_t) * rngObj)->nextInt();
-        }
+        int radius = rng->nextInt(near ? 100 : 70) + (near ? 120 : 30);
+        float scale = (float) radius * 0.01f;
+        double scaleForQuality = scale;
+        int quality;
+        if (scaleForQuality < 0.4)
+            quality = 4;
+        else if (scaleForQuality < 0.7)
+            quality = 5;
+        else if (scaleForQuality < 0.92)
+            quality = 6;
+        else if (rng->nextInt(2))
+            quality = rng->nextInt(3) + 4;
+        else
+            quality = 7;
 
         PlayerAsteroid *a = (PlayerAsteroid *) ::operator new(0x170);
-        new(a) PlayerAsteroid(kind, geo, colVariant, kind, pos, scale, (int) scale);
+        new(a) PlayerAsteroid(mesh, geo, colVariant, kind, pos, scale, quality);
         (*this->asteroids)[i] = a;
 
         (*this->asteroids)[i]->setLevel(this);
