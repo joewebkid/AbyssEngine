@@ -15,6 +15,7 @@
 #include "game/ship/Player.h"
 #include "game/world/Route.h"
 #include "game/world/Standing.h"
+#include "game/weapons/Radar.h"
 #include "engine/math/Transform.h"
 #include "engine/math/EaseInOutMatrix.h"
 #include <cmath>
@@ -389,6 +390,29 @@ void PlayerFighter::update(int dt) {
     } else if (body->damageDoneByPlayer > body->getMaxHitpoints() / 20) {
         body->enemyFlagsLo = 1;
     }
+
+    if (this->field_0x42 != 0) {
+        this->gunSwitchTimer += dt;
+        if (this->gunSwitchTimer > 20000) {
+            this->gunSwitchTimer = 0;
+            if (body->gunAvailable(1))
+                this->field_0x140 = this->field_0x140 == 0;
+        }
+        if (!body->isAlwaysEnemy() && this->level->getPlayer() != nullptr &&
+            static_cast<Radar *>(this->level->getPlayer()->field_0x14)->lockedEnemy == this &&
+            this->field_0x43 == 0) {
+            body->setAlwaysEnemy(true);
+            this->level->uncoverWanted(this->field_0x48);
+        }
+    }
+
+    if (Globals::status->inBlackMarketSystem() && Globals::status->field_110 &&
+        this->shipGroup == 8)
+        body->enemyFlags = 0;
+    if (body->turnedEnemy())
+        body->enemyFlags = 1;
+    if (body->isAlwaysFriend())
+        body->enemyFlags = 0x100;
 
     // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.
     PF_update_body(this, dt);

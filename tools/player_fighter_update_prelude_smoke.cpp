@@ -9,12 +9,28 @@ struct AEGeometry {
 struct Explosion { bool playing = false; bool isPlaying() { return playing; } };
 struct Player {
     bool active = true;
-    uint8_t enemyFlagsLo = 7;
-    uint8_t carriesFriendCargoFlag = 7;
+    union {
+        uint16_t enemyFlags = 0x707;
+        struct { uint8_t enemyFlagsLo, carriesFriendCargoFlag; };
+    };
     int damageDoneByPlayer = 0;
     int maxHitpoints = 100;
+    bool gunAvailableResult = false;
+    bool alwaysEnemy = false;
+    bool alwaysFriend = false;
+    bool turnedEnemyFlag = false;
+    int gunChecks = 0;
     int getMaxHitpoints() { return maxHitpoints; }
     void setActive(bool value) { active = value; }
+    bool gunAvailable(int slot) { assert(slot == 1); ++gunChecks; return gunAvailableResult; }
+    bool isAlwaysEnemy() { return alwaysEnemy; }
+    void setAlwaysEnemy(bool value) {
+        alwaysEnemy = value;
+        enemyFlags = 1;
+        turnedEnemyFlag = value;
+    }
+    bool turnedEnemy() { return turnedEnemyFlag; }
+    bool isAlwaysFriend() { return alwaysFriend; }
 };
 struct Standing {
     bool enemy = false;
@@ -26,11 +42,24 @@ struct Standing {
 };
 struct Status {
     Standing *standing;
+    bool blackMarket = false;
+    uint8_t field_110 = 0;
     Standing *getStanding() { return standing; }
+    bool inBlackMarketSystem() { return blackMarket; }
 };
 struct Globals { static Status *status; };
 Status *Globals::status = nullptr;
 
+struct KIPlayer;
+struct Radar { KIPlayer *lockedEnemy = nullptr; };
+struct PlayerEgo { void *field_0x14 = nullptr; };
+struct Level {
+    PlayerEgo *ego = nullptr;
+    int getPlayerCalls = 0;
+    int uncovered = -1;
+    PlayerEgo *getPlayer() { ++getPlayerCalls; return ego; }
+    void uncoverWanted(int index) { uncovered = index; }
+};
 struct KIPlayer {
     Player *player = nullptr;
     AEGeometry *geometry = nullptr;
@@ -45,6 +74,11 @@ struct KIPlayer {
     int deltaTimeHi = 0;
     Vector renderPosition{};
     uint8_t field_0x43 = 0;
+    char field_0x42 = 0;
+    int gunSwitchTimer = 0;
+    int field_0x140 = 0;
+    int field_0x48 = 9;
+    Level *level = nullptr;
     bool wingman = false;
     void setActive(bool value) { player->setActive(value); }
     bool isWingMan() { return wingman; }
@@ -109,7 +143,52 @@ int main() {
     assert(player.enemyFlagsLo == 1 && player.carriesFriendCargoFlag == 7);
     assert(standing.enemyCalls == 1 && standing.friendCalls == 1);
 
+    Radar radar{&fighter};
+    PlayerEgo ego{&radar};
+    Level level{&ego};
+    fighter.level = &level;
+    fighter.field_0x42 = 1;
+    fighter.field_0x43 = 0;
+    fighter.shipGroup = 2;
+    fighter.gunSwitchTimer = 19999;
+    player.gunAvailableResult = true;
+    fighter.update(1);
+    assert(fighter.gunSwitchTimer == 20000 && fighter.field_0x140 == 0);
+    assert(player.gunChecks == 0 && player.alwaysEnemy);
+    assert(level.uncovered == 9 && level.getPlayerCalls == 2);
+    fighter.update(1);
+    assert(fighter.gunSwitchTimer == 0 && fighter.field_0x140 == 1);
+    assert(player.gunChecks == 1 && level.uncovered == 9);
+
+    player.gunAvailableResult = false;
+    fighter.gunSwitchTimer = 20000;
+    fighter.update(1);
+    assert(fighter.gunSwitchTimer == 0 && fighter.field_0x140 == 1);
+    assert(player.gunChecks == 2);
+
+    player.alwaysEnemy = false;
+    player.turnedEnemyFlag = false;
+    fighter.field_0x43 = 1;
+    level.uncovered = -1;
+    fighter.update(1);
+    assert(level.uncovered == -1 && level.getPlayerCalls == 4);
+
+    fighter.field_0x42 = 0;
+    player.turnedEnemyFlag = false;
+    player.alwaysFriend = false;
+    status.blackMarket = true;
+    status.field_110 = 1;
+    fighter.shipGroup = 8;
+    fighter.update(1);
+    assert(player.enemyFlags == 0);
+    player.turnedEnemyFlag = true;
+    fighter.update(1);
+    assert(player.enemyFlags == 1);
+    player.alwaysFriend = true;
+    fighter.update(1);
+    assert(player.enemyFlags == 0x100);
+
     fighter.deathTimer = 60001;
     fighter.update(1);
-    assert(!player.active && bodyCalls == 5);
+    assert(!player.active && bodyCalls == 12);
 }

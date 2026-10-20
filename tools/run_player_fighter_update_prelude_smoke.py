@@ -22,9 +22,10 @@ def main():
         subject = Path(temp) / "subject.cpp"
         subject.write_text(fixture)
         exe = Path(temp) / "smoke.exe"
-        subprocess.run([compiler, "-std=gnu++14", "-O0", str(subject), "-o", str(exe)],
-                       cwd=ROOT, check=True)
-        subprocess.run([str(exe)], cwd=ROOT, check=True)
+        for opt in ("-O0", "-O2"):
+            subprocess.run([compiler, "-std=gnu++14", opt, str(subject), "-o", str(exe)],
+                           cwd=ROOT, check=True)
+            subprocess.run([str(exe)], cwd=ROOT, check=True)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::setMissionCrate` ABI recovery;
+Last reviewed: 2026-10-21 (`PlayerFighter::update` allegiance/timer block;
 earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xdd116–0xdd1c6` and its wanted
+branch at `0xdd62a` confirm the 20,000 ms gun switch, Radar-locked wanted
+transition and ordered black-market/turned-enemy/always-friend allegiance
+overrides. The recovered block follows the earlier prelude and precedes the
+still-unresolved `PF_update_body`. Production-method smoke passes at
+`-O0/-O2`, all 11 Fighter smokes pass, native UCRT64 `gof2` and all 208
+NDK r18b ARM translation units build, and 93 verifier tests pass (one
+existing skip). Whole-`update` source-shape/strict fuzzy rises
+**5.3%/3.7% → 8.4%/6.0%**; it is far from complete. The full corpus
+compares **4,323/4,524** originals across **4,735** pairs, at
+**94.03%/83.37%** mean source-shape/strict fuzzy, with **2,557
+linked-exact** and **1,082 byte-exact**; there are no exact-pair losses,
+skipped or wrong-type symbols. No complete game-frame update has been
+verified. See [the ARM evidence](PLAYER_FIGHTER_UPDATE_ALLEGIANCE_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::setMissionCrate` ABI recovery).
 
 Android ARM `PlayerFighter::setMissionCrate` at `0xdcb18` confirms the
 mission flag, loot-list allocation, typed mission lookup and the `0x74`/
