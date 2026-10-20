@@ -4,6 +4,29 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## All orbit planets and StarSystem light getter (2026-10-20)
+
+The Pan original-asset Level/GLES gate now crosses all five orbit planets,
+including two occupied-slot retries and the selected station, then enters
+the real `StarSystem::initLight` after RNG reset. Original Android ELF
+relocation `0x210374` identifies the old null callback as
+`ApplicationManager::GetEngine`; the source now calls it and the gate checks
+the resulting `Engine` and Pan sun color on Windows SwiftShader and Android
+ARMv7 at `-O0/-O2`. Native `gof2`, ABI/lifetime smoke, **208/208** ARM units,
+and **88 verifier tests** pass with one prior skip. Focused `initLight` rises
+**24.6%/11.0% → 81.3%/44.9%** source-shape/strict fuzzy; constructor aliases
+rise **85.2%/19.2% → 85.6%/40.6%**. Neither is exact. The gate stops before
+the first light setter. The full corpus compares **4,323/4,524** originals
+in **4,735 pairs**, at **93.93%** mean source-shape and **83.21%** strict
+fuzzy, with **2,551 linked-exact** and **1,079 byte-exact**. Independent
+exact `(unit, symbol)` set comparison against the preceding report finds
+zero gains or losses; skipped units and wrong-type signatures remain zero.
+The ignored report is
+`C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/light-getter-full.json`
+(SHA-256 `485e71a53bdd1c6627b6bd4de0d92f689e18b67fbb19179a42afffedda6b57e1`).
+Fog, constructor return and Level stage 0 are open.
+See [all-planets/light evidence](STARSYSTEM_ALL_PLANETS_LIGHT_ARM_2026-10-20.md).
+
 ## StarSystem first non-selected planet (2026-10-20)
 
 Original Android ARM confirms the occupied-slot rejection loop,

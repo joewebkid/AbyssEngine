@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (StarSystem first planet; older subsystem
+Last reviewed: 2026-10-20 (StarSystem planets/light getter; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -22,12 +22,34 @@ ETC1 sun and all five station-orbit RGBA textures through GLES, completes the
 five station-loop iterations and record cleanup, executes the real
 `AERandom::setSeed(2100)`, constructs the first geometry from the original
 `plane.aem`, draws sun slot 5, scales the sun and its streak, performs the
-second draw, rotates and places the first sun, constructs the first
-non-selected station planet in slot 15, and stops before the second planet.
+second draw, rotates and places the first sun, constructs all five orbit
+planets (including two occupied-slot retries and the selected station),
+resets the RNG, and enters `StarSystem::initLight` through its real Engine
+getter. It stops before the first light setter.
 Stage 0 has not returned, and the game is not running. A catalog-backed
 cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## All orbit planets and StarSystem light getter (2026-10-20)
+
+The original-asset Level/GLES gate now executes all five planet iterations
+at `-O0/-O2` on Windows SwiftShader and Android ARMv7, including the selected
+station and two occupied-slot retries. Original Android ELF relocation
+`0x210374` proves that the repeated indirect getter in `StarSystem::initLight`
+targets `ApplicationManager::GetEngine`; the old C++ null pointer has been
+replaced with the real call. The gate crosses the RNG reset and checks the
+first and repeated getter results, engine mode, and Pan sun color before
+the first light setter. Native `gof2`, ABI/lifetime smoke, **208/208** ARM
+units and **88 verifier tests** (one pre-existing skip) pass. Focused
+`initLight` changes **24.6%/11.0% → 81.3%/44.9%** source-shape/strict
+fuzzy, still nonexact. Constructor aliases change **85.2%/19.2% →
+85.6%/40.6%**, also nonexact. See
+[all-planets/light evidence](STARSYSTEM_ALL_PLANETS_LIGHT_ARM_2026-10-20.md).
+The complete ARM corpus compares **4,323/4,524** originals in **4,735
+pairs**, with **93.93%** mean source-shape, **83.21%** strict fuzzy,
+**2,551 linked-exact** and **1,079 byte-exact**; no exact pairs were lost.
+Real light setters, fog, constructor return and Level stage 0 remain open.
 
 ## StarSystem first non-selected planet (2026-10-20)
 

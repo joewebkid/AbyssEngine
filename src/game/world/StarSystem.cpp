@@ -105,11 +105,6 @@ StarSystem::~StarSystem() {
     this->positionsArray = nullptr;
 }
 
-typedef Engine *(*EngineGetter)(ApplicationManager *app);
-
-
-static EngineGetter g_StarSystem_init_getEngine = nullptr;
-
 // Extracted from Android libgof2hdaa.so StarSystem tables.
 static const float g_StarSystem_init_sunColors[19 * 3] = {
     0.209999993f, 0.319999993f, 0.25f,
@@ -243,7 +238,10 @@ void StarSystem::initLight() {
     float lg = g_StarSystem_init_stationColors[stationColorIndex + 1];
     float lb = g_StarSystem_init_stationColors[stationColorIndex + 2];
 
-    EngineGetter getEngine = g_StarSystem_init_getEngine;
+    // ARM 0x1348b8 loads the GetEngine GLOB_DAT slot at 0x210374, not a null callback.
+    auto getEngine = [](ApplicationManager *app) {
+        return static_cast<Engine *>(app->GetEngine());
+    };
     engine = getEngine(ApplicationManager::gAppManager);
     engine->LightSetGlobalSceneColorAmbient(ambientScale * this->sunLightColor.x,
                                             ambientScale * this->sunLightColor.y,
