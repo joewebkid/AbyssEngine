@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Pan stage-one first PlayerAsteroid; earlier subsystem
+Last reviewed: 2026-10-20 (Pan stage-one full asteroid field; earlier subsystem
 snapshots retain their dates)
+
+The continuous original-asset Pan gate now **returns from production
+`Level::createAsteroids`** after populating its complete 40–79-object field,
+then stops at the `createGasClouds` call. Windows SwiftShader and physical
+Android ARMv7 pass at `-O0/-O2`. The gate checks array and LOD-manager
+lengths, each asteroid's geometry, owner, player link, position, quality,
+near/far radius and LOD threshold, as well as the first object's detailed
+explosion contract. The Galaxy probability table is still a bounded fixture;
+the field density is time-seeded. Gas clouds, stage-one return and asteroid
+update/collision/render behavior remain open. No production C++ changed in
+this checkpoint: the preceding native/ARM builds and full ARM corpus remain
+the revision's authoritative results (**4,323/4,524** originals,
+**4,735** pairs, **93.96%/83.24%** source-shape/strict fuzzy,
+**2,551 linked-exact**, **1,079 byte-exact**, zero skipped).
+See [full-field evidence](LEVEL_ASTEROID_FIELD_PAN_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (Pan stage-one first PlayerAsteroid).
 
 The continuous original-asset Pan gate now constructs its first
 `PlayerAsteroid` with the production `Player`, `KIPlayer`, `Explosion` and

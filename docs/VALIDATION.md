@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan Level stage-one complete asteroid field (2026-10-20)
+
+`run_level_stage1_asteroid_field_pan_gate.py` continues the original-asset
+Pan path through all production `Level::createAsteroids` iterations and its
+return, stopping on entry to `createGasClouds`. Windows SwiftShader and
+physical Android ARMv7 pass at `-O0/-O2`. The bounded Galaxy probability
+fixture supplies one asteroid kind; near/far density is time-seeded, so the
+gate checks valid groups rather than a fixed density. Gas clouds, stage-one
+return and asteroid update/collision/render are not covered. No production
+C++ changed, so the prior native build and full ARM corpus remain applicable:
+**4,323/4,524** originals, **4,735** pairs, **93.96%/83.24%** means,
+**2,551 linked-exact**, **1,079 byte-exact**, zero skipped.
+See [full-field evidence](LEVEL_ASTEROID_FIELD_PAN_ARM_2026-10-20.md).
+
 ## Pan Level stage-one first PlayerAsteroid (2026-10-20)
 
 `run_level_stage1_first_asteroid_pan_gate.py` continues the original-asset
