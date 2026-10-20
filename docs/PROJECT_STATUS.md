@@ -1,19 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Pan stage-one empty-mission prefix;
+Last reviewed: 2026-10-20 (Pan stage-one mode-zero scene cleanup;
 earlier subsystem snapshots retain their dates)
 
-The continuous original-asset Pan path now reaches a source-extracted
-empty-mission slice of `Level::createMission`: it reads the mission and player
-position, resets RNG, sets `missionPtr` to zero, and reaches `createScene`
-entry. Windows SwiftShader and physical Android ARMv7 pass at `-O0/-O2`;
-the Android original confirms this control-flow sequence. Other mission
-branches are fail-closed and `createScene` is a stopping boundary, so neither
-the full `createMission` body nor stage-one return is certified. The
-null-mission fallback remains untested. Production code is unchanged, so the
-last full ARM corpus remains **4,323/4,524**, **93.97%/83.29%** mean
-source-shape/strict fuzzy, **2,554 linked-exact** and **1,082 byte-exact**.
-See [empty-mission prefix evidence](LEVEL_STAGE1_EMPTY_MISSION_PREFIX_ARM_2026-10-20.md).
+The continuous original-asset Pan path now executes source-extracted
+empty-mission and mode-zero `createScene` slices. It resets RNG, clears an
+empty allocated enemy array, returns from the scene and restores
+`missionPtr` to three. Windows SwiftShader and physical Android ARMv7 pass
+at `-O0/-O2`; original ARM instructions support the cleanup and mode
+sequence. Other scene/mission branches fail closed, and the post-scene
+mission logic and stage-one return are still outside the gate. Populated
+enemy cleanup and the null-mission fallback remain untested. Production C++
+is unchanged, so the last full ARM corpus remains **4,323/4,524**,
+**93.97%/83.29%** mean source-shape/strict fuzzy, **2,554 linked-exact**
+and **1,082 byte-exact**. See
+[mode-zero scene evidence](LEVEL_STAGE1_SCENE_ZERO_ARM_2026-10-20.md).
 
 Previous checkpoint: 2026-10-20 (gas-cloud recovery; full ARM corpus verified).
 

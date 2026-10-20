@@ -40,7 +40,8 @@ wrong-type. No exact-match gain or loss is claimed from this test-only gate.
 Native `gof2` and the 93-test verifier suite were green on the same
 production revision (one verifier skip with temporary files on D:).
 
-Next, recover a bounded `createScene` route with real dependencies and
-original assets, then continue through the remainder of `createMission` and
-stage-one return. Nonempty and alien mission paths, real Galaxy probability
-distributions, cloud updates, and a playable frame remain untested.
+The next [mode-zero scene gate](LEVEL_STAGE1_SCENE_ZERO_ARM_2026-10-20.md)
+exercises an empty-array cleanup and returns to the restored mission mode.
+Continue through the remainder of `createMission` and stage-one return.
+Nonempty and alien mission paths, real Galaxy probability distributions,
+cloud updates, and a playable frame remain untested.

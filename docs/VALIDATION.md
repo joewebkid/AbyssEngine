@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan stage-one mode-zero scene cleanup (2026-10-20)
+
+`run_level_stage1_scene_zero_pan_gate.py` extends the original-asset Pan
+path through a source-extracted mode-zero `Level::createScene` slice. It
+checks cleanup of an empty allocated enemy array and return to
+`Level::createMission`, which restores mode three before the next boundary.
+Windows SwiftShader and physical Android ARMv7 pass at `-O0/-O2`.
+Populated enemy cleanup, other scene modes and post-scene mission behavior
+remain untested. No production C++ changed; the full ARM corpus metrics
+below remain applicable. See
+[mode-zero scene evidence](LEVEL_STAGE1_SCENE_ZERO_ARM_2026-10-20.md).
+
 ## Pan stage-one empty-mission prefix (2026-10-20)
 
 `run_level_stage1_empty_mission_prefix_pan_gate.py` continues the
