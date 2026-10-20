@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Pan stage-one asteroid prelude; earlier subsystem
+Last reviewed: 2026-10-20 (Pan stage-one first asteroid geometry; earlier subsystem
 snapshots retain their dates)
+
+The second continuous original-asset Pan `Level::init` call now runs through
+Waypoint and collision-sphere construction, the first probability choice,
+asteroid mesh and three LODs, plus scale/quality selection. Windows
+SwiftShader and Android ARMv7 pass at `-O0/-O2`. Fixed ARM allocation sizes
+for Waypoint, AEGeometry and PlayerAsteroid now use the real type sizes, so
+64-bit hosts no longer under-allocate them; the ARM focused asteroid report
+remains **89.4% source-shape / 47.3% strict fuzzy**, nonexact. The gate stops
+before `PlayerAsteroid` construction and does not prove the whole field or
+stage-one return. The 0x48 BoundingSphere allocation is preserved while its
+full original layout remains unresolved. Native `gof2`, **208/208** ARM TUs
+and **93** verifier tests pass (one existing skip). The full ARM report is
+unchanged: **4,323/4,524** originals, **4,735** pairs, **93.95%/83.24%**
+mean source-shape/strict fuzzy, **2,551 linked-exact**, **1,079 byte-exact**,
+zero skipped and no exact-pair losses. See
+[first-geometry evidence](LEVEL_ASTEROID_FIRST_GEOMETRY_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (Pan stage-one asteroid prelude).
 
 The second continuous Pan `Level::init` call now enters the production
 `createAsteroids` prelude on Windows SwiftShader and Android ARMv7 at

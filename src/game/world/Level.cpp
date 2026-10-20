@@ -2760,6 +2760,12 @@ void Level::createMission() {
 }
 
 
+#if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(Waypoint) == 0x138, "Waypoint ARM allocation size");
+static_assert(sizeof(AEGeometry) == 0xc0, "AEGeometry ARM allocation size");
+#endif
+static_assert(sizeof(BoundingSphere) <= 0x48, "BoundingSphere allocation bound");
+
 void Level::createAsteroids() {
     AERandom *rng = static_cast<AERandom *>(Globals::rnd);
 
@@ -2850,7 +2856,7 @@ void Level::createAsteroids() {
     this->field_cc = (float) oy;
     this->field_d0 = (float) oz;
 
-    Waypoint *wp = (Waypoint *) ::operator new(0x138);
+    Waypoint *wp = (Waypoint *) ::operator new(sizeof(Waypoint));
     new(wp) Waypoint(ox, oy, oz, 0);
     this->asteroidWaypoint = wp;
 
@@ -2927,7 +2933,7 @@ void Level::createAsteroids() {
                 break;
         }
 
-        AEGeometry *geo = (AEGeometry *) ::operator new(0xc0);
+        AEGeometry *geo = (AEGeometry *) ::operator new(sizeof(AEGeometry));
         new((void *) geo) AEGeometry((uint16_t) mesh, (PaintCanvas *) canvas, 0);
 
         bool near = (int) i < density;
@@ -2970,7 +2976,7 @@ void Level::createAsteroids() {
         else
             quality = 7;
 
-        PlayerAsteroid *a = (PlayerAsteroid *) ::operator new(0x170);
+        PlayerAsteroid *a = (PlayerAsteroid *) ::operator new(sizeof(PlayerAsteroid));
         new(a) PlayerAsteroid(mesh, geo, colVariant, kind, pos, scale, quality);
         (*this->asteroids)[i] = a;
 

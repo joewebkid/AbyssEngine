@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan Level stage-one first asteroid geometry (2026-10-20)
+
+`run_level_stage1_asteroid_first_geometry_pan_gate.py` continues the
+original-asset Pan path through Waypoint, collision sphere, first asteroid
+mesh, three LODs and scale/quality selection. Windows SwiftShader and Android
+ARMv7 pass at `-O0/-O2`. The Galaxy probability provider is still a bounded
+fixture; the gate stops before `PlayerAsteroid` construction. Native `gof2`,
+**208/208** ARM TUs and **93** verifier tests pass (one existing skip).
+Focused asteroid source-shape/strict fuzzy remains **89.4%/47.3%** and is
+nonexact. `sizeof`-based allocations prevent host under-allocation while
+retaining the original ARM constants; the original 0x48 BoundingSphere
+allocation remains because its reconstructed layout is incomplete. The full
+ARM report is byte-identical to the prior one: **4,323/4,524** originals,
+**4,735** pairs, **93.95%/83.24%** mean source-shape/strict fuzzy,
+**2,551 linked-exact**, **1,079 byte-exact**, zero skipped and no exact-pair
+losses. See
+[first-geometry evidence](LEVEL_ASTEROID_FIRST_GEOMETRY_ARM_2026-10-20.md).
+
 ## Pan Level stage-one asteroid prelude (2026-10-20)
 
 `run_level_stage1_asteroid_prelude_pan_gate.py` makes two continuous
