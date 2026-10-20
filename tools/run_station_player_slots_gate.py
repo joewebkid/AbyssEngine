@@ -33,8 +33,8 @@ def prepare(out, cxx, root, reuse):
     chain += '\n' + extract("src/game/ship/Ship.cpp", [
         "Ship::Ship(int index,", "Array<Item *> *Ship::getEquipment()",
         "int Ship::getUsedSlots(int type)"])
-    # shortcut: empty-equipment fixture needs no value refresh; use the real
-    # catalog/equipment path before validating post-slot player allocation.
+    # shortcut: empty-equipment fixture bypasses value refresh; use real
+    # catalog/equipment before claiming weapon or PlayerEgo behavior.
     chain += '\nvoid Ship::refreshValue() {}\n'
     (out / "station_binary_chain.inc").write_text(chain)
 

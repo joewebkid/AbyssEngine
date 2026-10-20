@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (createPlayer slot entry; older subsystem
+Last reviewed: 2026-10-20 (createPlayer Player allocation; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -28,21 +28,35 @@ resets the RNG, and enters `StarSystem::initLight` through its real Engine
 getter, executes the real fixed-function light setters and Pan's no-fog
 branch, returns the `StarSystem` constructor and completes
 `Level::createSpace`, including Pan's star color, then enters
-`Level::createPlayer` and reads the active Ship's equipment and three used-slot
-counts. The gate stops before `Player` allocation. Stage 0 has not returned,
-and the game is not running. A catalog-backed
-cross-system wanted path also runs.
+`Level::createPlayer`, reads the active Ship's equipment and three used-slot
+counts, constructs a `Player` and sets its hull, shield and armor. The gate
+stops before `PlayerEgo` allocation. Stage 0 has not returned, and the game
+is not running. A catalog-backed cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
 
+## Level::createPlayer Player allocation (2026-10-20)
+
+The continuous Pan/GLES gate now executes the real `Player` constructor,
+shield/armor setters and `field_69` initialization after the Ship slot
+prelude on Windows SwiftShader and Android ARMv7 at `-O0/-O2`. It verifies
+radius 1200, hull 300, shield 80, armor 90 and three empty gun buckets.
+The Ship/equipment fixture is synthetic and empty; the boundary is before
+`PlayerEgo`. Native `gof2`, ABI/lifetime smoke and **91 verifier tests** pass
+(one prior skip). Production source and full ARM corpus are unchanged:
+**4,323/4,524** originals, **4,735 pairs**, **93.93%/83.22%** means,
+**2,551 linked-exact**, **1,079 byte-exact**. See
+[Player-allocation evidence](LEVEL_CREATE_PLAYER_ALLOCATION_GATE_2026-10-20.md).
+
 ## Level::createPlayer slot entry (2026-10-20)
 
-The continuous original-asset Pan/GLES gate now crosses the previous
-pre-`createPlayer` boundary and executes the production Ship/equipment/slot
+At that checkpoint the continuous original-asset Pan/GLES gate crossed the
+previous pre-`createPlayer` boundary and executed the Ship/equipment/slot
 prelude at `-O0/-O2` on Windows SwiftShader and Android ARMv7. Its empty
-equipment Ship is an explicit fixture; the next boundary is before `Player`
-allocation. No production source changed. Native `gof2`, ABI/lifetime smoke
-and **91 verifier tests** pass (one prior skip). The unchanged full ARM
+equipment Ship is an explicit fixture; that boundary was before `Player`
+allocation. The later gate above crosses it. No production source changed.
+Native `gof2`, ABI/lifetime smoke and **91 verifier tests** pass (one prior
+skip). The unchanged full ARM
 corpus remains **4,323/4,524** originals, **4,735 pairs**, **93.93%/83.22%**
 source-shape/strict fuzzy, **2,551 linked-exact**, **1,079 byte-exact**.
 See [slot-entry evidence](LEVEL_CREATE_PLAYER_SLOT_ENTRY_GATE_2026-10-20.md).

@@ -33,7 +33,9 @@ No production source changed. The latest full ARM report remains
 its SHA-256 is `79c04bc41f531c75cceb997f4e3304229011790690c5dffef864c1442e2dc50a`.
 There can be no exact-pair loss from this test-only change.
 
-Next: supply original catalog-backed Ship/equipment values and cross the
-real `Player` and `PlayerEgo` allocation and weapon-position path in this
-continuous gate. The separate full-method CPU contract does not prove those
-services in `Level::init`; stage-0 return and a playable frame remain open.
+The later [Player-allocation gate](LEVEL_CREATE_PLAYER_ALLOCATION_GATE_2026-10-20.md)
+crosses the real `Player` constructor and HP setters. Original catalog-backed
+Ship/equipment values, `PlayerEgo` and weapon-position loading remain to be
+integrated in the continuous path. The separate full-method CPU contract
+does not prove those services in `Level::init`; stage-0 return and a playable
+frame remain open.

@@ -4,12 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level::createPlayer Player allocation (2026-10-20)
+
+The continuous original-asset Pan/GLES gate executes the production `Player`
+constructor and shield/armor setters from `Level::init` on Windows SwiftShader
+and Android ARMv7 at `-O0/-O2`. Hull 300, shield 80, armor 90 and three empty
+gun buckets are asserted. The synthetic Ship has no installed equipment;
+the boundary is before `PlayerEgo`. Native `gof2`, ABI/lifetime smoke and
+**91 verifier tests** pass (one prior skip). No production code changed, so
+the prior full ARM corpus remains **4,323/4,524** originals, **4,735 pairs**,
+**93.93%/83.22%** means, **2,551 linked-exact**, **1,079 byte-exact**. See
+[Player-allocation evidence](LEVEL_CREATE_PLAYER_ALLOCATION_GATE_2026-10-20.md).
+
 ## Level::createPlayer slot entry (2026-10-20)
 
 The continuous original-asset Pan/GLES gate now calls the production
 `createPlayer` from `Level::init` and executes its Ship/equipment/three-slot
-prelude on Windows SwiftShader and Android ARMv7 at `-O0/-O2`. The boundary
-stops before `Player` allocation; the Ship has empty equipment by fixture.
+prelude on Windows SwiftShader and Android ARMv7 at `-O0/-O2`. At that
+checkpoint the boundary stopped before `Player` allocation; the later gate
+above crosses it. The Ship has empty equipment by fixture.
 Native `gof2`, ABI/lifetime smoke and **91 verifier tests** pass (one prior
 skip). No production source changed; the prior full ARM report is unchanged:
 **4,323/4,524** originals, **4,735 pairs**, **93.93%/83.22%** means,
