@@ -42,7 +42,9 @@ zero wrong-type. The full 93-test verifier suite passes with one skip when
 temporary files use D:. This test-only extension creates no new machine-code
 match and loses none. Native `gof2` was green on the same production revision.
 
-Next, recover and execute a bounded `Level::createMission` branch using actual
-mission data, then continue through static objects, player connection and the
-stage-one return. Real Galaxy probability distributions, other mission modes,
-cloud updates and a playable frame remain outside this gate.
+The next [empty-mission prefix gate](LEVEL_STAGE1_EMPTY_MISSION_PREFIX_ARM_2026-10-20.md)
+executes a source-extracted slice through the `createScene` call. Recover and
+execute a bounded `createScene` route, then continue through static objects,
+player connection and the stage-one return. Real Galaxy probability
+distributions, other mission modes, cloud updates and a playable frame remain
+outside these gates.

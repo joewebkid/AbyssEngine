@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan stage-one empty-mission prefix (2026-10-20)
+
+`run_level_stage1_empty_mission_prefix_pan_gate.py` continues the
+original-asset Pan path through production `Level::init` and a source-
+extracted slice of the empty `Level::createMission` path. It executes mission
+and position reads, and verifies the time-derived RNG reset,
+`missionPtr == 0`, and entry to `createScene`. Alien and nonempty paths fail
+closed; `createScene` is a stub boundary, not a completed scene. Windows
+SwiftShader and physical Android ARMv7 pass at `-O0/-O2`. The production
+revision and corpus metrics are unchanged from the following checkpoint. See
+[empty-mission prefix evidence](LEVEL_STAGE1_EMPTY_MISSION_PREFIX_ARM_2026-10-20.md).
+
 ## Pan stage-one mission dispatch (2026-10-20)
 
 `run_level_stage1_mission_dispatch_pan_gate.py` extends the original-asset Pan

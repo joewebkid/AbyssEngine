@@ -1,18 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Pan stage-one mission dispatch boundary;
+Last reviewed: 2026-10-20 (Pan stage-one empty-mission prefix;
 earlier subsystem snapshots retain their dates)
 
-The continuous original-asset Pan path now crosses asteroid and gas-cloud
-creation into `Level::init`'s empty-mission selection and reaches the
-`createMission` call. Windows SwiftShader and physical Android ARMv7 pass at
-`-O0/-O2` with a non-null empty mission. The original ARM control flow at
-`0xae2ac–0xae314` supports the branch; its null-mission fallback appears to
-reuse a null saved pointer and remains untested. `createMission` itself and
-stage-one return are still outside the gate. Production code is unchanged,
-so the last full ARM corpus remains **4,323/4,524**, **93.97%/83.29%** mean
+The continuous original-asset Pan path now reaches a source-extracted
+empty-mission slice of `Level::createMission`: it reads the mission and player
+position, resets RNG, sets `missionPtr` to zero, and reaches `createScene`
+entry. Windows SwiftShader and physical Android ARMv7 pass at `-O0/-O2`;
+the Android original confirms this control-flow sequence. Other mission
+branches are fail-closed and `createScene` is a stopping boundary, so neither
+the full `createMission` body nor stage-one return is certified. The
+null-mission fallback remains untested. Production code is unchanged, so the
+last full ARM corpus remains **4,323/4,524**, **93.97%/83.29%** mean
 source-shape/strict fuzzy, **2,554 linked-exact** and **1,082 byte-exact**.
-See [mission dispatch evidence](LEVEL_STAGE1_MISSION_DISPATCH_ARM_2026-10-20.md).
+See [empty-mission prefix evidence](LEVEL_STAGE1_EMPTY_MISSION_PREFIX_ARM_2026-10-20.md).
 
 Previous checkpoint: 2026-10-20 (gas-cloud recovery; full ARM corpus verified).
 
