@@ -24,7 +24,7 @@ def main():
                 "void PlayerFighter::removeTrail()"),
         extract(source, "void PlayerFighter::cloak(int dur, bool b)",
                 "void PlayerFighter::setMissionCrate("),
-        extract(source, "void PlayerFighter::reset()", "void PF_cloakStart("),
+        extract(source, "void PlayerFighter::reset()", "void PlayerFighter::handleCloaking()"),
     ))
     fixture = (ROOT / "tools/player_fighter_cloak_reset_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_METHODS", methods)

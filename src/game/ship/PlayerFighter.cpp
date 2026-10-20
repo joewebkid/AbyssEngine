@@ -22,10 +22,6 @@
 
 // PaintCanvas::gCanvas is declared extern in engine/render/PaintCanvas.h (included above).
 
-int AERandom_nextInt_nobound(int rng);
-
-static inline int PF_nextInt(int rng) { return AERandom_nextInt_nobound(rng); }
-
 float VectorSignedToFloat(int v, int mode);
 
 void PF_update_body(PlayerFighter *self, int dt);
@@ -665,19 +661,12 @@ void PlayerFighter::initPush(const Vector &target, int radius) {
     return;
 }
 
-static void *const gExhaustCanvas = nullptr;
-
 void PlayerFighter::setExhaustVisible(bool vis) {
-    AEGeometry *geom = this->geometry;
-    if (geom != 0) {
-        AEGeometry *sub = this->subGeometry;
-        int id = (sub != 0) ? sub->childTransform : geom->childTransform;
-        if (id != -1) {
-            unsigned t = (unsigned) (unsigned long) PaintCanvas::gCanvas->TransformGetTransform(*(unsigned *) gExhaustCanvas);
-
-            return ((AbyssEngine::Transform *) (unsigned long) t)->SetVisible(vis);
-        }
-    }
+    if (!this->geometry) return;
+    AEGeometry *geom = this->subGeometry ? this->subGeometry : this->geometry;
+    const int id = geom->childTransform;
+    if (id != -1)
+        static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(id))->SetVisible(vis);
 }
 
 void PlayerFighter::render() {
@@ -812,103 +801,72 @@ void PlayerFighter::reset() {
     this->aiDisabled = 0;
 }
 
-void PF_cloakStart(PlayerFighter * self);
-
-void PF_cloakStop(PlayerFighter *self, int on);
-
-void PF_cloakApply(void *meshPtr, int arg, float alpha, int flag);
-
-static const float gHC_divIn = 0;
-static const float gHC_divOut = 0;
-
 void PlayerFighter::handleCloaking() {
     if (this->shipGroup != 10) return;
-    if (this->geometry == 0) return;
-    if (((KIPlayer *) (this))->isDead() != 0) return;
-    if (((Player *) (intptr_t) this->player)->empDisabledByte != 0) return;
-    if (this->cloakingPossible == 0) return;
+    if (!this->geometry) return;
+    if (this->isDead()) return;
+    if (this->player->empDisabledByte) return;
+    if (!this->cloakingPossible) return;
 
-    if (this->cloakActive != 0) {
+    PaintCanvas *canvas = Globals::Canvas;
+    if (this->cloakActive) {
         int delta = this->cloakTimer;
         if (delta == 0) {
-            unsigned matId = this->cloakMaterial;
             this->field_0x13c = 1;
-            if (matId == 0xffffffff) {
-                PaintCanvas::gCanvas->MeshCloneMaterial(
-                    ((AEGeometry *) (intptr_t) this->subGeometry)->meshId,
-                    this->cloakMaterial);
-                AbyssEngine::Mesh *mp = (AbyssEngine::Mesh *) PaintCanvas::gCanvas->MeshGetPointer(
-                    ((AEGeometry *) (intptr_t) this->subGeometry)->meshId);
-                matId = this->cloakMaterial;
-                this->cloakSavedMode =
-                    ((AbyssEngine::Material *) mp->material)->materialMode;
+            if (this->cloakMaterial == 0xffffffff) {
+                canvas->MeshCloneMaterial(this->subGeometry->meshId, this->cloakMaterial);
+                AbyssEngine::Mesh *mesh = canvas->MeshGetPointer(this->subGeometry->meshId);
+                this->cloakSavedMode = static_cast<AbyssEngine::Material *>(mesh->material)->materialMode;
             }
-            AbyssEngine::Material *mat =
-                (AbyssEngine::Material *) PaintCanvas::gCanvas->MaterialGetMaterial(matId);
-            mat->materialMode = 0xe;
-            PaintCanvas::gCanvas->MeshChangeMaterial(
-                ((AEGeometry *) (intptr_t) this->subGeometry)->meshId,
-                this->cloakMaterial);
-            if (this->field_0x2d9 == 0) {
-                delta = this->cloakTimer;
-            } else {
+            static_cast<AbyssEngine::Material *>(canvas->MaterialGetMaterial(this->cloakMaterial))->materialMode = 14;
+            canvas->MeshChangeMaterial(this->subGeometry->meshId, this->cloakMaterial);
+            if (this->field_0x2d9) {
                 this->field_0x2d9 = 0;
                 delta = 2000;
                 this->cloakTimer = 2000;
             }
         }
-        long long acc = (long long) delta +
-                        (((long long) this->deltaTimeHi << 32) | (unsigned) this->deltaTime);
-        int total = (int) acc;
+        int total = static_cast<int>(static_cast<unsigned>(delta) + static_cast<unsigned>(this->deltaTime));
         this->cloakTimer = total;
 
+        // ARM compares against the timer value from before this frame's increment.
         if (total - this->deltaTime <= 2000) {
-            if (1999 < total) {
-                ((PlayerFighter *) (this))->setExhaustVisible(false);
+            if (total >= 2000) {
+                this->setExhaustVisible(false);
                 this->exhaustHidden = 1;
             }
-            void *cv = (void *) PaintCanvas::gCanvas;
-            int mp = (int) (long) PaintCanvas::gCanvas->MeshGetPointer(((AEGeometry *) (intptr_t) this->subGeometry)->meshId);
-            float a = VectorSignedToFloat(this->cloakTimer, 0) / gHC_divIn;
-            PF_cloakApply((void *) (long) mp, (int) (long) cv, a, 1);
-            return;
-        } else {
-            if (this->cloakDuration < total) {
-                int restore = this->cloakSavedMode;
-                this->cloakTimer = 0;
-                this->cloakActive = 0;
-                this->field_0x13c = 0;
-                AbyssEngine::Material *mat =
-                    (AbyssEngine::Material *) PaintCanvas::gCanvas->MaterialGetMaterial(this->cloakMaterial);
-                mat->materialMode = restore;
-                PF_cloakStop(this, 1);
-                return;
-            }
-            if (total <= this->cloakDuration - 2000) {
-                return;
-            }
-            this->exhaustHidden = 0;
-            void *cv = (void *) PaintCanvas::gCanvas;
-            int mp = (int) (long) PaintCanvas::gCanvas->MeshGetPointer(((AEGeometry *) (intptr_t) this->subGeometry)->meshId);
-            float a = VectorSignedToFloat(this->cloakTimer, 0);
-            float b = VectorSignedToFloat(this->cloakDuration - 2000, 0);
-            float alpha = (a - b) / gHC_divOut + 1.0f;
-            PF_cloakApply((void *) (long) mp, (int) (long) cv, alpha, 1);
+            AbyssEngine::Mesh *mesh = canvas->MeshGetPointer(this->subGeometry->meshId);
+            canvas->MeshChangeShaderAnimValue(mesh, static_cast<float>(this->cloakTimer) / 2000.0f, 1);
             return;
         }
+        if (total > this->cloakDuration) {
+            this->cloakTimer = 0;
+            this->cloakActive = 0;
+            this->field_0x13c = 0;
+            static_cast<AbyssEngine::Material *>(canvas->MaterialGetMaterial(this->cloakMaterial))->materialMode =
+                this->cloakSavedMode;
+            this->setExhaustVisible(true);
+            return;
+        }
+        if (total <= this->cloakDuration - 2000) return;
+        this->exhaustHidden = 0;
+        AbyssEngine::Mesh *mesh = canvas->MeshGetPointer(this->subGeometry->meshId);
+        float alpha = (static_cast<float>(this->cloakTimer) -
+                       static_cast<float>(this->cloakDuration - 2000)) / -2000.0f + 1.0f;
+        canvas->MeshChangeShaderAnimValue(mesh, alpha, 1);
+        return;
     }
 
-    if (this->field_0x1e0 != 0 && PF_nextInt((int) (intptr_t) AERandom::gRandom) < 0x32) {
-        PF_cloakStart(this);
+    if (this->field_0x1e0 && static_cast<AERandom *>(Globals::rnd)->nextInt(100) <= 49) {
+        this->cloak(-1, false);
         return;
     }
     int acc = this->deltaTime + this->cloakCooldown;
     this->cloakCooldown = acc;
     if (8000 < acc) {
         this->cloakCooldown = 0;
-        if (PF_nextInt((int) (intptr_t) AERandom::gRandom) < 0x1e) {
-            PF_cloakStart(this);
-        }
+        if (static_cast<AERandom *>(Globals::rnd)->nextInt(100) <= 29)
+            this->cloak(-1, false);
     }
 }
 

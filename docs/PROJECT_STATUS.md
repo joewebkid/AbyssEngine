@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (`PlayerFighter::render` recovery;
+Last reviewed: 2026-10-20 (`PlayerFighter` cloak effect and exhaust recovery;
 earlier subsystem snapshots retain their dates)
+
+Android ARM at `0xdcd24` and `0xdcdbc` confirms the Fighter exhaust-transform
+selection, cloak material transition, two 2,000 ms fades and bounded random
+activation. Removed the null exhaust pointer, zero fade divisors and
+unresolved cloak shims; `handleCloaking` now uses the existing Canvas and
+`cloak` methods. Production-method smoke tests pass at `-O0/-O2`, as do the
+prior reset/cloak smoke, UCRT64 `gof2`, all 208 ARM translation units and 93
+verifier tests (one existing skip). Focused source-shape/strict fuzzy changes
+are `handleCloaking` **87.5%/50.1% → 90.6%/50.6%** and
+`setExhaustVisible` **93.6%/81.8% → 94.5%/86.4%**; neither is exact. The
+full corpus remains **4,323/4,524** originals across **4,735** pairs,
+**94.02%/83.36%** mean source-shape/strict fuzzy, **2,557 linked-exact** and
+**1,082 byte-exact**, with zero exact-pair losses, skipped or wrong-type
+symbols. Full-game visual output and Canvas shader semantics remain untested;
+`PF_update_body` is still unresolved. See
+[the ARM evidence](PLAYER_FIGHTER_CLOAK_EFFECT_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (`PlayerFighter::render` recovery).
 
 Android ARM and the recovered listing confirm the state-dependent render
 branches, draw order and temporary 60-byte local transform in
