@@ -17,6 +17,7 @@
 #include "game/world/Standing.h"
 #include "engine/math/Transform.h"
 #include "engine/math/EaseInOutMatrix.h"
+#include <cmath>
 
 
 
@@ -27,8 +28,6 @@ float VectorSignedToFloat(int v, int mode);
 void PF_update_body(PlayerFighter *self, int dt);
 
 void AEMath_MatrixAssign(void *dst, void *src);
-
-void AEMath_MatrixIdentity(void *out, void *m);
 
 void AEMath_MatrixSetRotation(void *m, float rx, float ry, float rz);
 
@@ -421,92 +420,49 @@ void PlayerFighter::setPosition(float x, float y, float z) {
     return;
 }
 
-static void *const gRoll_guard = nullptr;
-static const float gRoll_threshold = 0;
-static const float gRoll_f18 = 0;
-static const float gRoll_f1c = 0;
-static const float gRoll_f20 = 0;
-static const float gRoll_f24 = 0;
-static const float gRoll_f28 = 0;
-static const float gRoll_f2c = 0;
-static const float gRoll_f30 = 0;
-static const float gRoll_f34 = 0;
-static const float gRoll_f38 = 0;
-static const float gRoll_f3c = 0;
-static const float gRoll_f40 = 0;
-static const float gRoll_f44 = 0;
-static const float gRoll_f48 = 0;
-
 void PlayerFighter::roll(int angle) {
-    PlayerFighter * self = this;
-    int *guardP = *(int **) gRoll_guard;
-    volatile int saved = *guardP;
+    if (!this->rollActive) return;
 
-    if (self->rollActive == 0) {
-        goto done;
+    Matrix &matrix = this->geometry->getMatrix();
+    const float rx = matrix.m11_rightY;
+    const float ry = matrix.m12_upY;
+    float rate = rx > 0.0f ? rx : -rx;
+    if (angle >= 60) angle = 60;
+
+    if (ry > 0.0f && rate < 0.015f) {
+        this->rollMatrix = AbyssEngine::AEMath::MatrixIdentity(this->rollMatrix);
+        this->rollActive = 0;
+        this->field_0x254 = 0;
+        this->field_0x255 = 0;
+        return;
     }
 
-    {
-        AbyssEngine::AEMath::Matrix &m =
-                ((AEGeometry *) (intptr_t) self->geometry)->getMatrix();
-        float fwdX = m.m[4];
-        float fwdY = m.m[5];
-        float absX = (0.0f < fwdX) ? fwdX : -fwdX;
-        if (0x3b < angle) angle = 0x3c;
-
-        if (fwdY >= 0.0f && absX < gRoll_threshold) {
-            unsigned char tmp[60];
-            AEMath_MatrixIdentity(tmp, &self->rollMatrix);
-            AEMath_MatrixAssign(&self->rollMatrix, tmp);
-            self->rollActive = 0;
-            self->field_0x254 = 0;
-            goto done;
-        }
-
-        float bank;
-        float roll;
-        if (self->field_0x254 != 0) {
-            roll = (fwdY == fwdY) ? gRoll_f20 : gRoll_f1c;
-            bank = (fwdX < 0.0f) ? roll : gRoll_f18;
-        } else {
-            bank = 0.0f;
-            roll = 0.0f;
-            if (fwdX > 0.0f && self->field_0x255 == 1) {
-                self->field_0x254 = 1;
-                bank = gRoll_f48;
-            } else if (fwdX < 0.0f && self->field_0x255 == 2) {
-                self->field_0x254 = 1;
-                bank = gRoll_f44;
-            } else if (fwdX >= 0.0f) {
-                if (fwdY >= 0.0f) {
-                    bank = absX;
-                    const float *p = (gRoll_f38 < fwdX) ? &gRoll_f40 : &gRoll_f3c;
-                    bank = *p;
-                } else {
-                    bank = gRoll_f24;
-                }
-            } else {
-                bank = gRoll_f28;
-                if (fwdY >= 0.0f) {
-                    const float *p = &gRoll_f30;
-                    if (fwdX != gRoll_f2c && fwdX < gRoll_f2c) p = &gRoll_f34;
-                    bank = *p;
-                }
-            }
-        }
-
-        if (fwdX != 0.0f) {
-            self->field_0x255 = (fwdX < 0.0f) ? 1 : 2;
-        }
-        float fa = VectorSignedToFloat(angle, 0);
-        self->rollActive = 1;
-        unsigned char tmp[60];
-        AEMath_MatrixSetRotation(tmp, bank * fa, 0.0f, roll);
-        AEMath_MatrixAssign(&self->rollMatrix, tmp);
+    if (this->field_0x254) {
+        // ARM's comparison of ry with itself keeps NaN on the negative-rate path.
+        rate = rx < 0.0f && !std::isnan(ry) ? 0.0002f : -0.0002f;
+    } else if (rx > 0.0f && this->field_0x255 == 1) {
+        rate = -0.00035f;
+        this->field_0x254 = 1;
+    } else if (rx < 0.0f && this->field_0x255 == 2) {
+        rate = 0.00035f;
+        this->field_0x254 = 1;
+    } else if (rx >= 0.0f) {
+        if (ry < 0.0f)
+            rate = -0.00075f;
+        else if (rx > 0.0f && ry > 0.0f)
+            rate = rx > 0.3f ? -0.00035f : -0.00025f;
+    } else if (rx < 0.0f) {
+        if (ry < 0.0f)
+            rate = 0.00075f;
+        else if (ry >= 0.0f)
+            rate = rx > -0.3f ? 0.00025f : 0.00035f;
     }
 
-done:
-    return;
+    if (rx != 0.0f && !std::isnan(rx))
+        this->field_0x255 = rx < 0.0f ? 1 : 2;
+    this->rollActive = 1;
+    this->rollMatrix = AbyssEngine::AEMath::MatrixSetRotation(
+        this->rollMatrix, 0.0f, 0.0f, rate * static_cast<float>(angle));
 }
 
 void PlayerFighter::cloak(int dur, bool b) {

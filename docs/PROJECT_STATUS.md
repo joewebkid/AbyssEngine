@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (`PlayerFighter` cloak effect and exhaust recovery;
+Last reviewed: 2026-10-20 (`PlayerFighter::roll` recovery;
 earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::roll` at `0xdf860` and its literal pool establish
+the nonzero bank-rate table, 0.015 level threshold, frame cap, state bytes and
+Z-axis matrix rotation. Removed the null stack-guard placeholder, zero
+coefficients and declared-only matrix calls. A production-method smoke passes
+at `-O0/-O2`, native UCRT64 `gof2` builds, all 208 ARM translation units
+compile, and 93 verifier tests pass (one existing skip). Focused NDK r18b
+source-shape/strict fuzzy rises **67.9%/52.7% → 91.2%/67.3%**; `roll`
+remains nonexact. The full corpus is **4,323/4,524** originals across
+**4,735** pairs, **94.02%/83.36%** mean source-shape/strict fuzzy,
+**2,557 linked-exact** and **1,082 byte-exact**, with zero exact-pair losses,
+skipped or wrong-type symbols. The recovered `PlayerFighter::update` still
+stops at `PF_update_body`, so a continuous game-frame roll is not yet
+verified. See [the ARM evidence](PLAYER_FIGHTER_ROLL_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (`PlayerFighter` cloak effect and exhaust recovery).
 
 Android ARM at `0xdcd24` and `0xdcdbc` confirms the Fighter exhaust-transform
 selection, cloak material transition, two 2,000 ms fades and bounded random
