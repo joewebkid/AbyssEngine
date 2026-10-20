@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Engine scene ambient (2026-10-20)
+
+Original ARM `0x85836–0x85840` stores the float-one bit pattern in
+`Engine::sceneAmbient[3]`; source now uses `1.0f`. The original-asset
+Level/GLES gate executes the real setter at `-O0/-O2` on Windows SwiftShader
+and Android ARMv7/Adreno, checking RGB, alpha and the GLES1-compatible
+call. Native `gof2`, ABI/lifetime smoke, **208/208** ARM units and **89
+verifier tests** pass (one pre-existing skip). Focused setter
+source-shape/strict fuzzy rises **91.3%/52.2% → 93.4%/68.1%**, nonexact.
+Full ARM corpus remains **4,323/4,524** originals, **4,735 pairs**,
+**93.93%** mean source-shape, **83.22%** strict fuzzy, **2,551 linked-exact**,
+**1,079 byte-exact**. Exact `(unit, symbol)` sets have zero gains or losses;
+skipped units and wrong-type signatures are zero. The ignored full report is
+`C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/light-ambient-full.json`
+(SHA-256 `53beb4739cda71c4412ce6f9d411a979db413be872dd444527b8e43fea3c832f`).
+This gate covers the fixed-function branch only and stops before rim color;
+see [scene-ambient evidence](ENGINE_SCENE_AMBIENT_ARM_2026-10-20.md).
+
 ## All orbit planets and StarSystem light getter (2026-10-20)
 
 The Pan original-asset Level/GLES gate now crosses all five orbit planets,

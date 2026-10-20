@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (StarSystem planets/light getter; older subsystem
+Last reviewed: 2026-10-20 (StarSystem scene ambient; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -25,11 +25,29 @@ five station-loop iterations and record cleanup, executes the real
 second draw, rotates and places the first sun, constructs all five orbit
 planets (including two occupied-slot retries and the selected station),
 resets the RNG, and enters `StarSystem::initLight` through its real Engine
-getter. It stops before the first light setter.
+getter and executes the real scene-ambient light setter. It stops before
+the rim-color setter.
 Stage 0 has not returned, and the game is not running. A catalog-backed
 cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Engine scene ambient (2026-10-20)
+
+The Pan original-asset Level/GLES gate now crosses the real
+`Engine::LightSetGlobalSceneColorAmbient` after `StarSystem::initLight`
+starts. Original ARM proves the scene-ambient alpha is float `1.0f`,
+correcting an integer-to-float conversion bug. Windows SwiftShader and
+Android ARMv7 at `-O0/-O2` verify ambient RGB/alpha and the fixed-function
+GLES1-compatible call. Native `gof2`, ABI/lifetime smoke, **208/208** ARM
+units and **89 verifier tests** (one prior skip) pass. The focused setter
+rises **91.3%/52.2% → 93.4%/68.1%** source-shape/strict fuzzy. Full corpus
+stays **4,323/4,524** originals in **4,735 pairs**, with **93.93%** mean
+source-shape, **83.22%** strict fuzzy, **2,551 linked-exact** and **1,079
+byte-exact**; zero exact pairs lost. See
+[scene-ambient evidence](ENGINE_SCENE_AMBIENT_ARM_2026-10-20.md). The gate
+stops before rim color; shader-enabled propagation, remaining light/fog,
+constructor return and Level stage 0 remain open.
 
 ## All orbit planets and StarSystem light getter (2026-10-20)
 

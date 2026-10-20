@@ -932,7 +932,7 @@ void Engine::LightSetGlobalSceneColorAmbient(float red, float green, float blue)
     this->sceneAmbient[0] = red;
     this->sceneAmbient[1] = green;
     this->sceneAmbient[2] = blue;
-    this->sceneAmbient[3] = 0x3f800000;
+    this->sceneAmbient[3] = 1.0f;
 
     if (g_Engine_useShaders == 0) {
         return glLightModelfv(0xb53, this->sceneAmbient);
