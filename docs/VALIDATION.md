@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level::createPlayer slot entry (2026-10-20)
+
+The continuous original-asset Pan/GLES gate now calls the production
+`createPlayer` from `Level::init` and executes its Ship/equipment/three-slot
+prelude on Windows SwiftShader and Android ARMv7 at `-O0/-O2`. The boundary
+stops before `Player` allocation; the Ship has empty equipment by fixture.
+Native `gof2`, ABI/lifetime smoke and **91 verifier tests** pass (one prior
+skip). No production source changed; the prior full ARM report is unchanged:
+**4,323/4,524** originals, **4,735 pairs**, **93.93%/83.22%** means,
+**2,551 linked-exact**, **1,079 byte-exact**. See
+[slot-entry evidence](LEVEL_CREATE_PLAYER_SLOT_ENTRY_GATE_2026-10-20.md).
+
 ## Level::createPlayer weapon factor bits (2026-10-20)
 
 Original Android ARM passes the two `Ship` factor getters' raw words
@@ -22,7 +34,8 @@ ignored report is
 The repaired CPU contract executes the full extracted body against all 59
 original weapon records in both equipment orders at `-O0/-O2` (118 cases);
 its historical negative control still fails at the expected turret selector.
-The continuous `Level::init` path still stops before player creation; see
+The later continuous slot-entry gate reaches `createPlayer` but stops before
+`Player` allocation; see
 [weapon-factor evidence](LEVEL_CREATE_PLAYER_FACTOR_BITS_ARM_2026-10-20.md).
 
 ## Pan Level::createSpace return (2026-10-20)
@@ -34,7 +47,8 @@ and derived Level color fields. No production source changed; the prior
 full ARM report for this same source revision remains **4,323/4,524**
 originals, **4,735 pairs**, **93.93%/83.22%** source-shape/strict fuzzy,
 **2,551 linked-exact** and **1,079 byte-exact**, with zero skips or
-wrong-type signatures. The gate stops before `createPlayer`; see
+wrong-type signatures. At that checkpoint the gate stopped before
+`createPlayer`; the later slot-entry gate above crosses it. See
 [Pan createSpace evidence](LEVEL_PAN_CREATE_SPACE_RETURN_2026-10-20.md).
 
 ## Pan light and StarSystem constructor return (2026-10-20)

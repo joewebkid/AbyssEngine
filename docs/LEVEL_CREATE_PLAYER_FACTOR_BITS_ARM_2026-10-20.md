@@ -45,7 +45,9 @@ wrong-type signatures are zero. The ignored full report is
 (SHA-256 `79c04bc41f531c75cceb997f4e3304229011790690c5dffef864c1442e2dc50a`).
 
 The CPU contract executes the full extracted method, but does not prove its
-execution through `Level::init` with real game services. The continuous Level
-gate still stops before that method; real active Ship,
+execution through `Level::init` with real game services. At this checkpoint
+the continuous Level gate stopped before that method; the later
+[slot-entry gate](LEVEL_CREATE_PLAYER_SLOT_ENTRY_GATE_2026-10-20.md)
+crosses only its initial Ship calls. Real active Ship,
 equipment, weapon-position loading, `PlayerEgo` construction and Level
 stage-0 return remain to be integrated.

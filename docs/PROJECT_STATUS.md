@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (createPlayer factor bits; older subsystem
+Last reviewed: 2026-10-20 (createPlayer slot entry; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -27,11 +27,25 @@ planets (including two occupied-slot retries and the selected station),
 resets the RNG, and enters `StarSystem::initLight` through its real Engine
 getter, executes the real fixed-function light setters and Pan's no-fog
 branch, returns the `StarSystem` constructor and completes
-`Level::createSpace`, including Pan's star color.
-Stage 0 has not returned, and the game is not running. A catalog-backed
+`Level::createSpace`, including Pan's star color, then enters
+`Level::createPlayer` and reads the active Ship's equipment and three used-slot
+counts. The gate stops before `Player` allocation. Stage 0 has not returned,
+and the game is not running. A catalog-backed
 cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Level::createPlayer slot entry (2026-10-20)
+
+The continuous original-asset Pan/GLES gate now crosses the previous
+pre-`createPlayer` boundary and executes the production Ship/equipment/slot
+prelude at `-O0/-O2` on Windows SwiftShader and Android ARMv7. Its empty
+equipment Ship is an explicit fixture; the next boundary is before `Player`
+allocation. No production source changed. Native `gof2`, ABI/lifetime smoke
+and **91 verifier tests** pass (one prior skip). The unchanged full ARM
+corpus remains **4,323/4,524** originals, **4,735 pairs**, **93.93%/83.22%**
+source-shape/strict fuzzy, **2,551 linked-exact**, **1,079 byte-exact**.
+See [slot-entry evidence](LEVEL_CREATE_PLAYER_SLOT_ENTRY_GATE_2026-10-20.md).
 
 ## Level::createPlayer weapon factor bits (2026-10-20)
 
@@ -49,7 +63,8 @@ Focused strict fuzzy rises **34.5% →
 source-shape/strict fuzzy, **2,551 linked-exact**, **1,079 byte-exact**,
 zero exact-pair losses. See
 [weapon-factor evidence](LEVEL_CREATE_PLAYER_FACTOR_BITS_ARM_2026-10-20.md).
-The continuous Level gate still stops before real player creation.
+The current continuous gate stops after the Ship slot prelude, before real
+`Player` allocation.
 
 ## Pan Level::createSpace return (2026-10-20)
 
@@ -61,7 +76,8 @@ is unchanged; the full ARM corpus remains **4,323/4,524** originals,
 **93.93%** mean source-shape, **83.22%** strict fuzzy, **2,551 linked-exact**
 and **1,079 byte-exact**. See
 [Pan createSpace evidence](LEVEL_PAN_CREATE_SPACE_RETURN_2026-10-20.md).
-The gate stops before mode-3 `createPlayer`; Level stage 0 remains incomplete.
+At that checkpoint the gate stopped before mode-3 `createPlayer`; the later
+slot-entry checkpoint above crosses it. Level stage 0 remains incomplete.
 
 ## Pan light and StarSystem constructor return (2026-10-20)
 
