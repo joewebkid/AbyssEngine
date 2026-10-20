@@ -5857,13 +5857,13 @@ void Level::createPlayer() {
             int rate = it->getAttribute(0xb);
 
             if (it->getType() == 0) {
-                float dmgFactor = (float) ship->getDamageFactor();
+                float dmgFactor = bitsToFloat(ship->getDamageFactor());
                 float fireFactor;
                 if (dmg > 9 || dmgFactor >= 0.0f) {
                     dmg = (int) (dmgFactor * (float) dmg);
-                    fireFactor = (float) ship->getFireRateFactor();
+                    fireFactor = bitsToFloat(ship->getFireRateFactor());
                 } else {
-                    fireFactor = (float) ship->getFireRateFactor() * 0.7f;
+                    fireFactor = bitsToFloat(ship->getFireRateFactor()) * 0.7f;
                 }
                 rate = (int) (fireFactor * (float) rate);
             }

@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level::createPlayer weapon factor bits (2026-10-20)
+
+Original Android ARM passes the two `Ship` factor getters' raw words
+directly into VFP float registers. The corrected production branch uses
+`bitsToFloat` at all three call sites. Extracted `-O0/-O2` tests cover
+ordinary/negative factors; native `gof2`, ABI/lifetime smoke, **208/208**
+ARM units and **91 verifier tests** pass (one prior skip). Focused
+`createPlayer` strict fuzzy rises **34.5% → 35.5%**, source-shape remains
+**86.0%** at one decimal, nonexact. Full corpus: **4,323/4,524**
+originals, **4,735 pairs**, **93.93%/83.22%** mean source-shape/strict
+fuzzy, **2,551 linked-exact**, **1,079 byte-exact**. Exact-pair sets have
+zero gains or losses; skipped and wrong-type signatures are zero. The
+ignored report is
+`C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/level-player-factors-full.json`
+(SHA-256 `79c04bc41f531c75cceb997f4e3304229011790690c5dffef864c1442e2dc50a`).
+Full player creation remains unexecuted; see
+[weapon-factor evidence](LEVEL_CREATE_PLAYER_FACTOR_BITS_ARM_2026-10-20.md).
+
 ## Pan Level::createSpace return (2026-10-20)
 
 Production `Level::createSpace` now returns into `Level::init` in the

@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Pan createSpace return; older subsystem
+Last reviewed: 2026-10-20 (createPlayer factor bits; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -32,6 +32,21 @@ Stage 0 has not returned, and the game is not running. A catalog-backed
 cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Level::createPlayer weapon factor bits (2026-10-20)
+
+`Level::createPlayer` now interprets the raw float bits returned by the
+`Ship` damage/fire-rate getters, matching original Android ARM `vmov`
+instructions. The old numeric casts would inflate primary-gun parameters.
+An extracted `-O0/-O2` branch test covers ordinary and negative factors;
+native `gof2`, ABI/lifetime smoke, **208/208** ARM units and **91 verifier
+tests** (one prior skip) pass. Focused strict fuzzy rises **34.5% →
+35.5%**, while source-shape stays **86.0%** at one decimal. Full corpus:
+**4,323/4,524** originals, **4,735 pairs**, **93.93%/83.22%** mean
+source-shape/strict fuzzy, **2,551 linked-exact**, **1,079 byte-exact**,
+zero exact-pair losses. See
+[weapon-factor evidence](LEVEL_CREATE_PLAYER_FACTOR_BITS_ARM_2026-10-20.md).
+The continuous Level gate still stops before real player creation.
 
 ## Pan Level::createSpace return (2026-10-20)
 
