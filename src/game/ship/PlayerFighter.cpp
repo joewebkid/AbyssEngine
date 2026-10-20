@@ -469,9 +469,9 @@ void PlayerFighter::cloak(int dur, bool b) {
 void PlayerFighter::setMissionCrate(bool on) {
     this->isMissionCrate = on;
     if (on) {
+        this->lootList = nullptr;
         this->lootList = new Array<int>();
-        int mission = (int) (intptr_t) Status::gStatus->getMission();
-        int type = ((Mission *) (mission))->getType();
+        int type = Globals::status->getMission()->getType();
         int item = (type == 5) ? 0x74 : 0x75;
         ArrayAdd(item, *(this->lootList));
 

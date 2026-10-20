@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::initPush` ARM recovery;
+Last reviewed: 2026-10-21 (`PlayerFighter::setMissionCrate` ABI recovery;
 earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::setMissionCrate` at `0xdcb18` confirms the
+mission flag, loot-list allocation, typed mission lookup and the `0x74`/
+`0x75` item mapping. Removed a 32-bit mission-pointer truncation that
+could break the native 64-bit mission-ship path. A production-method smoke
+passes at `-O0/-O2`; native UCRT64 `gof2`, all 208 NDK r18b ARM units,
+the other Fighter smokes and 93 verifier tests pass (one existing skip).
+Focused source-shape/strict fuzzy rises **97.8%/94.4% → 100.0%/97.3%**;
+the function is nonexact due to one instruction-order difference. The full
+corpus compares **4,323/4,524** originals across **4,735** pairs, at
+**94.03%/83.37%** mean source-shape/strict fuzzy, with **2,557 linked-exact**
+and **1,082 byte-exact**; there are no exact-pair losses, skipped or
+wrong-type symbols. Full-game mission spawning remains untested; the much
+larger `PF_update_body` remains unresolved. See
+[the ARM/ABI evidence](PLAYER_FIGHTER_MISSION_CRATE_ABI_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::initPush` ARM recovery).
 
 Android ARM `PlayerFighter::initPush` at `0xdfc88` establishes the
 distance-based 5,000 ms push duration, outward direction and a random
