@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Continuous Level-to-particle Pan gate (2026-10-20)
+
+`run_level_player_particles_pan_gate.py` crosses production
+`PlayerEgo::setLevel` during the Pan `Level::init` call. Windows SwiftShader
+and Android ARMv7 pass at `-O0/-O2`. A separate mission-1 probe checks the
+three manager/set/handle pairs; manager allocation and rendering remain
+outside this bounded fixture. The production pointer assignment is now
+64-bit-safe. Focused ARM `setLevel` stays **100%** source-shape and strict
+fuzzy, with one linked-exact match. The full ARM corpus has **4,323/4,524**
+originals, **4,735** comparisons, **93.95%/83.24%** mean
+source-shape/strict fuzzy, **2,551 linked-exact**, **1,079 byte-exact** and
+zero skipped units; the exact `(unit, symbol)` sets are unchanged. See
+[level-binding evidence](PLAYER_EGO_SET_LEVEL_PAN_ARM_2026-10-20.md).
+
 ## Continuous Level-to-ship Pan gate (2026-10-20)
 
 `run_level_player_ship_pan_gate.py` continues the production

@@ -1453,7 +1453,7 @@ int PlayerEgo::approachDockingPoint(Hud *hud, int /*hud2*/, Radar *radar) {
 }
 
 void PlayerEgo::setLevel(Level *level) {
-    ((int &) this->level) = (int) (intptr_t) level;
+    this->level = level;
     void *src = (void *) (intptr_t) level->field_74;
     Matrix *gm = &((AEGeometry *) this->geometry)->getMatrix();
     void *sys = (void *) ((ParticleSystemManager *) (src))->addSystem(gm, ParticleSettings::ParticleSet_9, 0);

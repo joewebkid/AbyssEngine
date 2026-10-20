@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (continuous Level-to-ship binding; earlier subsystem
+Last reviewed: 2026-10-20 (continuous Level-to-particle binding; earlier subsystem
 snapshots retain their dates)
+
+The continuous Pan gate now executes production `PlayerEgo::setLevel`
+inside `Level::createPlayer`, after ship binding. Windows SwiftShader and
+Android ARMv7 pass at `-O0/-O2`; the ordinary mission-50 path registers
+particle set 9, and a separate mission-1 probe checks sets 9, 15 and 42.
+The gate uses bounded particle-manager observers, so allocation/rendering
+are not established. Direct `Level*` assignment fixes a 64-bit host
+pointer-truncation hazard while preserving `setLevel`'s **100%** focused
+ARM source-shape/strict fuzzy and linked-exact match. The full ARM corpus
+compares **4,323/4,524** originals in **4,735** pairs at
+**93.95%/83.24%** mean source-shape/strict fuzzy. The **2,551
+linked-exact** and **1,079 byte-exact** `(unit, symbol)` sets are unchanged,
+with zero skipped units. The path still stops before hull rotation and
+weapon positions; `Level::init` has not returned.
+See [level-binding evidence](PLAYER_EGO_SET_LEVEL_PAN_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (continuous Level-to-ship binding).
 
 The original-asset Pan gate now executes the production
 `Level::createPlayer → PlayerEgo::setShip` sequence within the same
