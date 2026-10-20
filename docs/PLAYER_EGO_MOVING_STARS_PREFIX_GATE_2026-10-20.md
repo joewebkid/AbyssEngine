@@ -1,6 +1,6 @@
 # PlayerEgo / MovingStars constructor-prefix gate — 2026-10-20
 
-The Pan original-asset gate now follows the continuous `Level::init` →
+At this checkpoint the Pan original-asset gate followed the continuous `Level::init` →
 `Level::createPlayer` → `PlayerEgo::PlayerEgo` call path through the real
 `MovingStars` constructor. The test boundary is immediately after
 `PlayerEgo` stores the stars pointer, before `Player::getCombinedHP`.
@@ -18,7 +18,7 @@ random draws and calls `Globals::createBillBoard`/the canvas transform
 methods before requesting texture 10001. The production billboard method
 uses material 20052 and 12 vertices / six triangles.
 
-`tools/run_station_player_ego_stars_gate.py` runs the inherited original
+At this checkpoint `tools/run_station_player_ego_stars_gate.py` ran the inherited original
 station/system/mesh/texture Pan path and then checks the constructor prefix
 on Windows SwiftShader and Android ARMv7 at `-O0/-O2`. All four runs pass.
 The new assertions check 50 distinct meshes and transforms, the 50 material
@@ -43,3 +43,7 @@ SHA-256 is `15bdcdc9a36710df8d91717f08a6019783d92baa949857ff3b84b556db8de5c3`.
 Next: carry the production `PlayerEgo` constructor past `getCombinedHP`
 with catalog-backed Ship/equipment and its image/sound dependencies, then
 return through `Level::createPlayer` into `setShip`.
+
+The later [Ship-defaults gate](PLAYER_EGO_SHIP_DEFAULTS_GATE_2026-10-20.md)
+crosses `getCombinedHP` and the empty-equipment Ship branch, but its
+boundary still precedes the first HUD image.

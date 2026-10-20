@@ -1,4 +1,4 @@
-"""Extend the Pan Player gate through the real PlayerEgo/MovingStars constructor prefix."""
+"""Extend the Pan Level gate through PlayerEgo's MovingStars and Ship defaults."""
 import run_station_binary_asset_gate as runner
 import run_station_player_alloc_gate as first
 from run_level_init_asset_gate import ROOT, extract
@@ -12,12 +12,15 @@ def prepare(out, cxx, root, reuse):
     host = replace_once(host, '#include "game/core/Globals.h"',
                         '#include "game/core/Globals.h"\n#include "engine/render/MovingStars.h"')
     host = replace_once(host, 'Globals *Globals::gGlobals;',
-                        'Globals *Globals::gGlobals;\nvoid *Globals::globals;')
+                        'Globals *Globals::gGlobals;\nvoid *Globals::globals;\nvoid *Globals::items;')
     host = replace_once(host, 'struct PlayerAllocatedBoundary {};',
-                        'struct PlayerEgoStarsBoundary {};\n'
+                        'struct PlayerEgoShipBoundary {};\n'
                         'static Player *observedPlayer;\nstatic PlayerEgo *observedEgo;\n'
                         'static unsigned starsMeshesBefore, starsTransformsBefore, starsMaterialsBefore;\n'
                         'static uint32_t starsSeedLowBefore, starsSeedHighBefore;')
+    host = replace_once(host, 'Status *Status::gStatus;',
+                        'Status *Status::gStatus;\n' +
+                        extract("src/game/ship/PlayerEgo.cpp", ["static inline Status *PE_status()"]))
     host = host.replace('id == 65535', 'id == 65535 || id == 20052')
     (out / "sun_host.inc").write_text(host)
 
@@ -34,22 +37,40 @@ def prepare(out, cxx, root, reuse):
     assert level.count(level_tail) == 1
     level = level[:level.index(level_tail) + len(level_tail)] + '\n}'
     ctor = extract("src/game/ship/PlayerEgo.cpp", ["PlayerEgo::PlayerEgo(Player *player) {"])
-    marker = '    this->movingStars = new MovingStars();'
+    marker = '    PaintCanvas::gCanvas->Image2DCreate(0x4c0, this->radarBlipImage1);'
     assert ctor.count(marker) == 1
-    ctor = ctor[:ctor.index(marker) + len(marker)] + (
-        '\n    observedEgo = this;\n    throw PlayerEgoStarsBoundary{};\n}')
+    ctor = ctor[:ctor.index(marker)] + (
+        '    observedEgo = this;\n    throw PlayerEgoShipBoundary{};\n}')
     (out / "level_init_under_test.inc").write_text(level + '\n' + ctor)
 
     chain = (out / "station_binary_chain.inc").read_text()
     chain += '\n' + (ROOT / "tools/moving_stars_canvas_services.inc").read_text()
     chain += '\n' + extract("src/game/ship/Player.cpp", ["void Player::setPlayShootSound("])
+    chain += '\n' + extract("src/game/ship/Player.cpp", ["int Player::getCombinedHP()"])
     chain += '\n' + extract("src/game/core/Globals.cpp", ["unsigned int Globals::createBillBoard("])
+    chain += '\n' + extract("src/game/core/Globals.cpp", ["void Globals::addSoundResourceToList("])
     chain += '\n' + extract("src/engine/render/MovingStars.cpp", ["MovingStars::MovingStars() {"])
+    chain += '\n' + extract("src/game/mission/Status.cpp", ["bool Status::hardCoreMode()"])
+    chain += '\n' + extract("src/game/mission/Item.cpp", [
+        "int Item::getAttribute(", "int Item::getSort()", "int Item::getIndex()",
+        "int Item::getAmount()"])
+    chain += '\n' + extract("src/game/ship/Ship.cpp", [
+        "bool Ship::hasCargo(", "bool Ship::hasVolatileGoods()",
+        "int Ship::getFreeSpace()", "Item *Ship::getFirstEquipmentOfSort(",
+        "int Ship::getIndex()", "int Ship::getShieldRegen()",
+        "int Ship::getAgility()", "int Ship::getBoostSpeed()",
+        "int Ship::getBoostDelay()", "int Ship::getBoostTime()",
+        "float Ship::getHandling()", "bool Ship::hasCloakIntegrated()",
+        "unsigned int Ship::hasJumpDriveIntegrated()"])
     (out / "station_binary_chain.inc").write_text(chain)
+
+    traps = (out / "station_binary_traps.inc").read_text()
+    traps = replace_once(traps, 'TRAP(_ZN7Globals22addSoundResourceToListEi)', '')
+    (out / "station_binary_traps.inc").write_text(traps)
 
     gate = (out / "station_binary_gate_under_test.inc").read_text()
     gate = replace_once(gate, 'catch (const PlayerAllocatedBoundary &)',
-                        'catch (const PlayerEgoStarsBoundary &)')
+                        'catch (const PlayerEgoShipBoundary &)')
     gate = replace_once(gate, '    assert(canvas.meshCount == 18 && canvas.transformCount == 22);',
                         '    assert(canvas.meshCount == 68 && canvas.transformCount == 72);')
     gate = replace_once(gate, '    assert(stationMaterialIds == expectedMaterials);',
@@ -59,16 +80,26 @@ def prepare(out, cxx, root, reuse):
     gate = replace_once(gate, '    for (unsigned id : stationMaterialIds) std::printf(" %u", id);',
                         '    for (unsigned id : expectedMaterials) std::printf(" %u", id);')
     gate = replace_once(gate, 'createPlayer constructed Player and set HP/shield/armor',
-                        'createPlayer entered PlayerEgo MovingStars prefix')
+                        'createPlayer entered PlayerEgo ship-initialization prefix')
+    gate = replace_once(gate, '    status->ship->maxArmorHP = 90;',
+                        '    status->ship->maxArmorHP = 90;\n'
+                        '    status->ship->boostSpeed = 250;\n'
+                        '    status->ship->boostDelay = 4200;\n'
+                        '    status->ship->boostTime = 6300;\n'
+                        '    status->ship->agility = 15;\n'
+                        '    status->ship->cargoPlus = 0;\n'
+                        '    status->ship->shieldRegen = 20;')
     gate = replace_once(gate, '    assert(level->field_134 == 0 && !level->playerRoute && !level->enemyRoute);',
                         '    assert(level->field_134 == 0 && !level->playerRoute && !level->enemyRoute);\n'
                         '    Globals globalsFixture;\n'
+        '    Array<int> soundResources;\n'
+        '    globalsFixture.soundResources = &soundResources;\n'
                         '    Globals::gGlobals = &globalsFixture;\n'
                         '    Globals::globals = &globalsFixture;\n'
                         '    assert(canvas.FindResource(20052) && !canvas.FindResource(10001));')
     marker = '    return 0;\n}'
     assert gate.count(marker) == 1
-    check = '''    // Continuous Level call reached the Ego prefix; its tail remains a test boundary.
+    check = '''    // Continuous Level call reached Ship defaults; HUD images remain a boundary.
     assert(observedPlayer && observedEgo);
     AERandom expected(0);
     expected.seedLow = starsSeedLowBefore;
@@ -79,6 +110,14 @@ def prepare(out, cxx, root, reuse):
     auto *ego = observedEgo;
     auto *stars = ego->movingStars;
     assert(ego->player == observedPlayer && ego->dockCameraNode == nullptr && stars);
+    assert(ego->lastHP == 470 && ego->field_0x1c == 45);
+    assert(ego->boostSpeed == 7 && ego->field_0xcc == 6300 && ego->field_0xd0 == 4200);
+    assert(ego->field_0x146 == 1 && ego->boostSoundId == 0);
+    assert(ego->handling > 52.8f && ego->handling < 53.0f);
+    assert(ego->agility == 15.0f && ego->shieldRecoveryAmount == 400.0f);
+    assert(ego->lastFreeSpace == 50 && !ego->volatileGoods);
+    assert(!ego->shieldRegenEquipped && !ego->cloak && !ego->driveChargeMax);
+    assert(!ego->hardCoreMode && soundResources.size() == 1 && soundResources[0] == 45);
     assert(canvas.meshCount == meshesBefore + 50 && canvas.transformCount == transformsBefore + 50);
     assert(stationMaterialIds.size() == materialsBefore + 50);
     assert(random.seedLow == expected.seedLow && random.seedHigh == expected.seedHigh);
@@ -103,7 +142,7 @@ def prepare(out, cxx, root, reuse):
         assert(local && local->m[3] == 100000.0f && local->m[7] == 100000.0f
                && local->m[11] == 100000.0f);
     }
-    std::printf("PlayerEgo prefix -> 50 MovingStars billboards/transforms: OK\\n");
+    std::printf("PlayerEgo prefix -> 50 MovingStars and ship defaults: OK\\n");
 '''
     gate = replace_once(gate, marker, check + marker)
     (out / "station_binary_gate_under_test.inc").write_text(gate)
