@@ -1,7 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Pan stage-one first asteroid geometry; earlier subsystem
+Last reviewed: 2026-10-20 (Pan stage-one first PlayerAsteroid; earlier subsystem
 snapshots retain their dates)
+
+The continuous original-asset Pan gate now constructs its first
+`PlayerAsteroid` with the production `Player`, `KIPlayer`, `Explosion` and
+geometry paths on Windows SwiftShader and Android ARMv7 at `-O0/-O2`.
+`Explosion` now reads the original `Globals::Canvas` and `Globals::rnd`
+slots instead of unwritten local stand-ins; Android GOT relocations confirm
+both identities. The gate checks the asteroid/player relationship, position,
+health, radius, quality and both explosion meshes. It stops after the first
+object; full probability generation, the rest of the field, stage-one return
+and asteroid update/collision/render behavior remain open. Focused
+`Explosion` mean source-shape improves **90.93% → 92.25%**, with its
+four linked-exact and three byte-exact pairs preserved. Native `gof2`,
+**208/208** ARM TUs and **93** verifier tests pass (one existing skip).
+The full ARM corpus remains **4,323/4,524** originals and **4,735** pairs;
+mean source-shape rises **93.95% → 93.96%**, strict fuzzy stays **83.24%**,
+and the **2,551 linked-exact**/**1,079 byte-exact** sets have no losses
+or gains (zero skipped units).
+See [first-asteroid evidence](EXPLOSION_GLOBALS_FIRST_ASTEROID_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (Pan stage-one first asteroid geometry).
 
 The second continuous original-asset Pan `Level::init` call now runs through
 Waypoint and collision-sphere construction, the first probability choice,

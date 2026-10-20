@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan Level stage-one first PlayerAsteroid (2026-10-20)
+
+`run_level_stage1_first_asteroid_pan_gate.py` continues the original-asset
+Pan path through the production first `PlayerAsteroid` and `Explosion`
+constructors, insertion, level binding and center assignment. Windows
+SwiftShader and Android ARMv7 pass at `-O0/-O2`. The test checks both
+explosion meshes, player health/radius, quality, position and ownership.
+Galaxy probabilities remain a bounded fixture; non-executed virtual methods
+are fail-closed, and the remaining field and stage-one return are untested.
+Original ARM GOT relocations identify `Globals::Canvas` and `Globals::rnd`
+as the `Explosion` global sources. Native `gof2`, **208/208** ARM TUs and
+**93** verifier tests pass (one existing skip). Focused mean `Explosion`
+source-shape improves **90.93% → 92.25%**, with four linked-exact and
+three byte-exact pairs unchanged. Full ARM: **4,323/4,524** originals,
+**4,735** pairs, **93.96%/83.24%** mean source-shape/strict fuzzy,
+**2,551 linked-exact**, **1,079 byte-exact**, zero skipped and zero
+exact-pair losses/gains. See
+[first-asteroid evidence](EXPLOSION_GLOBALS_FIRST_ASTEROID_ARM_2026-10-20.md).
+
 ## Pan Level stage-one first asteroid geometry (2026-10-20)
 
 `run_level_stage1_asteroid_first_geometry_pan_gate.py` continues the

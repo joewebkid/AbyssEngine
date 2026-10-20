@@ -5,6 +5,7 @@
 #include "engine/math/Transform.h"
 #include "engine/core/AERandom.h"
 #include "engine/render/PaintCanvas.h"
+#include "game/core/Globals.h"
 
 
 using AbyssEngine::Matrix;
@@ -26,17 +27,12 @@ void MatrixGetDir(Vector *out, const Matrix *matrix);
 
 void MatrixGetLookAt(Matrix *out, const Vector *position, const Vector *target, const Vector *up);
 
-namespace {
-int Explosion_paintCanvas;
-void *Explosion_random;
-}
-
 static inline PaintCanvas *explosionCanvas() {
-    return (PaintCanvas *) (intptr_t) Explosion_paintCanvas;
+    return Globals::Canvas;
 }
 
 static inline AbyssEngine::AERandom *explosionRandom() {
-    return (AbyssEngine::AERandom *) Explosion_random;
+    return static_cast<AbyssEngine::AERandom *>(Globals::rnd);
 }
 
 void Explosion::reset() {
