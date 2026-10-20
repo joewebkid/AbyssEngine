@@ -740,6 +740,7 @@ static_assert(__builtin_offsetof(PlayerEgo, visible) == 0x32e, "PlayerEgo::visib
 static_assert(__builtin_offsetof(PlayerEgo, aboutToReachAutoTargetFlag) == 0x330,
               "PlayerEgo::aboutToReachAutoTargetFlag offset");
 static_assert(__builtin_offsetof(PlayerEgo, maneuverTimer) == 0x350, "PlayerEgo::maneuverTimer offset");
+static_assert(__builtin_offsetof(PlayerEgo, autoTurretEnabled) == 0x354, "PlayerEgo::autoTurretEnabled offset");
 static_assert(__builtin_offsetof(PlayerEgo, exhaustVisible) == 0x32f, "PlayerEgo::exhaustVisible offset");
 static_assert(__builtin_offsetof(PlayerEgo, spacePoint) == 0x36c, "PlayerEgo::spacePoint offset");
 static_assert(__builtin_offsetof(PlayerEgo, cursorStateByte) == 0x378, "PlayerEgo::cursorStateByte offset");

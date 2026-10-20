@@ -1,26 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (PlayerEgo HUD atlases and equipment sounds; older subsystem
+Last reviewed: 2026-10-20 (complete Pan-path PlayerEgo constructor; older subsystem
 snapshots retain their dates)
 
 The Pan original-asset check now runs continuously from `Level::init` through
-`Level::createPlayer` and the real `PlayerEgo` constructor prefix into the
-complete `MovingStars` constructor on Windows SwiftShader and Android ARMv7
-at `-O0/-O2`. It now creates all five HUD atlas regions from original AEI
-files, including a second GLES texture, and checks six sound registrations,
-five of them equipment-gated. The original ARM constructor exposed three missing
-equipment-gated sound branches, now restored in production C++. All four
-runs check 50 billboards/transforms, five HUD regions, and **32/32** closed
-original-file operations. The synthetic equipment and Ship values are
-explicit fixture limits; full `PlayerEgo` construction and `setShip` remain
-open. Focused constructor source-shape/strict fuzzy rises from
-**78.5%/47.6%** to **82.9%/50.8%**. The current full ARM corpus remains
+`Level::createPlayer` and returns from the complete `PlayerEgo` constructor
+on Windows SwiftShader and Android ARMv7 at `-O0/-O2`. It checks 50
+`MovingStars` billboards, five original-AEI HUD regions, six sound
+registrations, steering/visibility defaults, and **32/32** closed
+original-file operations. The original ARM constructor also exposed a
+missing black-market predicate for initial auto-turret state, now restored
+in production C++. Synthetic equipment and Ship values remain fixture limits;
+the positive black-market branch, supernova effect, `setShip`, and the rest
+of `Level::init` are not runtime-proven. Focused constructor
+source-shape/strict fuzzy rises from **82.9%/50.8%** to **83.6%/51.7%**.
+The current full ARM corpus remains
 **4,323/4,524** originals, **4,735 pairs**, **93.95%/83.24%** mean
 source-shape/strict fuzzy, **2,551 linked-exact**, **1,079 byte-exact**.
 No exact `(unit, symbol)` pairs were lost or gained. See
-[the HUD/sound evidence](PLAYER_EGO_HUD_SOUNDS_ARM_2026-10-20.md).
+[the constructor evidence](PLAYER_EGO_CONSTRUCTOR_PAN_GATE_2026-10-20.md).
 
-The latest source correction separates `PlayerEgo`'s `MovingStars` pointer
+An earlier source correction separated `PlayerEgo`'s `MovingStars` pointer
 at ARM `+0xf8` from its docking camera at `+0x178`, restores the direction
 slots at `+0x100/+0x104`, and makes steering dispatch call the recovered
 movement functions. Native and ARM builds and focused verification pass;
@@ -59,9 +59,8 @@ branch, returns the `StarSystem` constructor and completes
 `Level::createSpace`, including Pan's star color, then enters
 `Level::createPlayer`, reads the active Ship's equipment and three used-slot
 counts, constructs a `Player` and sets its hull, shield and armor. The latest
-gate enters `PlayerEgo`, builds its `MovingStars`, initializes the
-synthetic Ship-derived fields and creates five HUD images from two original
-atlases, then stops before steering limits and the remaining constructor tail.
+gate returns from `PlayerEgo`'s normal-path constructor after creating the
+stars/HUD and initializing steering and visibility, then stops before `setShip`.
 Stage 0 has not returned, and the game
 is not running. A catalog-backed cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code

@@ -4,16 +4,36 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo complete normal-path constructor (2026-10-20)
+
+`tools/run_station_player_ego_stars_gate.py` now stops after the production
+`PlayerEgo` constructor returns in the continuous Pan `Level::init` gate.
+Windows SwiftShader and Android ARMv7 pass at `-O0/-O2`: all 50 stars,
+five original-AEI HUD images, steering/visibility defaults, normal-path
+supernova fields and **32/32** file lifetimes are asserted. The guarded
+supernova effect, positive black-market case, `setShip`, and completion of
+`Level::init` remain outside this gate. The original ARM constructor calls
+`Status::inBlackMarketSystem` and writes the result at `PlayerEgo+0x354`;
+the C++ now restores that initialization. Focused constructor
+source-shape/strict fuzzy rises **82.9%/50.8% → 83.6%/51.7%**; neither
+alias is exact. Native `gof2`, **208/208** ARM units and **91** verifier tests
+pass (one prior skip). The full corpus remains **4,323/4,524** originals,
+**4,735** pairs, **93.95%/83.24%** mean source-shape/strict fuzzy,
+**2,551 linked-exact** and **1,079 byte-exact**; the exact `(unit, symbol)`
+sets are unchanged and ARM skipped units are zero. See
+[the constructor evidence](PLAYER_EGO_CONSTRUCTOR_PAN_GATE_2026-10-20.md).
+
 ## PlayerEgo HUD atlases and equipment sounds (2026-10-20)
 
-`tools/run_station_player_ego_stars_gate.py` now exercises five production
+At the earlier HUD checkpoint, `tools/run_station_player_ego_stars_gate.py`
+exercised five production
 `Image2DCreate` calls through two original AEI atlases and real GLES uploads
 on Windows SwiftShader and Android ARMv7 at `-O0/-O2`. It checks the AEI
 region coordinates, managed texture handles, GPU pixel readback and
 **32/32** file lifetimes. Synthetic Items of sorts 19, 9 and 10 exercise
-the three newly restored equipment-gated sound branches. The constructor
-test copy stops before steering-limit initialization; `setShip` and full
-`Level::init` are not covered. Focused ARM constructor source-shape/strict
+the three newly restored equipment-gated sound branches. At that checkpoint
+the constructor test copy stopped before steering-limit initialization;
+`setShip` and full `Level::init` were not covered. Focused ARM constructor source-shape/strict
 fuzzy improves **78.5%/47.6% → 82.9%/50.8%**; exact aliases remain
 nonmatching. Native `gof2`, **208/208** ARM TUs and **91** verifier tests
 pass (one prior skip). Full corpus: **4,323/4,524**, **4,735** pairs,

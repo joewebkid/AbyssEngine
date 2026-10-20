@@ -1810,6 +1810,7 @@ PlayerEgo::PlayerEgo(Player *player) {
     PaintCanvas::gCanvas->Image2DCreate(0x1f5d, this->radarBlipImage4);
     PaintCanvas::gCanvas->Image2DCreate(0x548, this->dockArrowImage);
 
+    this->autoTurretEnabled = PE_status()->inBlackMarketSystem();
     this->steerLimit = ((this->handling * 750.0f) / 63.0f) * 1.2f;
     this->steerScale = 15.139357f; // Android +0x288: 0x41723ace.
     for (float &angle : this->steerAngleHistory) angle = 0.0f;
@@ -1818,7 +1819,6 @@ PlayerEgo::PlayerEgo(Player *player) {
 
     ((int &) this->explosion) = 0;
     ((int &) this->explosion2) = 0;
-    this->autoTurretEnabled = 0;
     this->dockedFlag = 0;
     this->miningGame = 0;
     this->hackingGame = 0;

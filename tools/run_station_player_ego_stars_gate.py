@@ -1,4 +1,4 @@
-"""Extend the Pan Level gate through PlayerEgo's original HUD atlas regions."""
+"""Extend the Pan Level gate through the complete normal-path PlayerEgo constructor."""
 import run_station_binary_asset_gate as runner
 import run_station_player_alloc_gate as first
 from run_level_init_asset_gate import ROOT, extract
@@ -14,7 +14,7 @@ def prepare(out, cxx, root, reuse):
     host = replace_once(host, 'Globals *Globals::gGlobals;',
                         'Globals *Globals::gGlobals;\nvoid *Globals::globals;\nvoid *Globals::items;')
     host = replace_once(host, 'struct PlayerAllocatedBoundary {};',
-                        'struct PlayerEgoHudBoundary {};\n'
+                        'struct PlayerEgoConstructedBoundary {};\n'
                         'static Player *observedPlayer;\nstatic PlayerEgo *observedEgo;\n'
                         'static unsigned starsMeshesBefore, starsTransformsBefore, starsMaterialsBefore;\n'
                         'static uint32_t starsSeedLowBefore, starsSeedHighBefore;')
@@ -35,12 +35,9 @@ def prepare(out, cxx, root, reuse):
         '    starsSeedHighBefore = AERandom::gRandom->seedHigh;')
     level_tail = '    new(ego) PlayerEgo(pl);'
     assert level.count(level_tail) == 1
-    level = level[:level.index(level_tail) + len(level_tail)] + '\n}'
+    level = level[:level.index(level_tail) + len(level_tail)] + (
+        '\n    observedEgo = ego;\n    throw PlayerEgoConstructedBoundary{};\n}')
     ctor = extract("src/game/ship/PlayerEgo.cpp", ["PlayerEgo::PlayerEgo(Player *player) {"])
-    marker = '    this->steerLimit = ((this->handling * 750.0f) / 63.0f) * 1.2f;'
-    assert ctor.count(marker) == 1
-    ctor = ctor[:ctor.index(marker)] + (
-        '    observedEgo = this;\n    throw PlayerEgoHudBoundary{};\n}')
     (out / "level_init_under_test.inc").write_text(level + '\n' + ctor)
 
     chain = (out / "station_binary_chain.inc").read_text()
@@ -51,6 +48,8 @@ def prepare(out, cxx, root, reuse):
     chain += '\n' + extract("src/game/core/Globals.cpp", ["void Globals::addSoundResourceToList("])
     chain += '\n' + extract("src/engine/render/MovingStars.cpp", ["MovingStars::MovingStars() {"])
     chain += '\n' + extract("src/game/mission/Status.cpp", ["bool Status::hardCoreMode()"])
+    chain += '\n' + extract("src/game/mission/Status.cpp", ["bool Status::inBlackMarketSystem()"])
+    chain += '\n' + extract("src/game/mission/Status.cpp", ["bool Status::inSupernovaOrbit()"])
     chain += '\n' + extract("src/game/mission/Item.cpp", [
         "int Item::getAttribute(", "int Item::getSort()", "int Item::getIndex()",
         "int Item::getAmount()"])
@@ -69,6 +68,7 @@ def prepare(out, cxx, root, reuse):
 
     traps = (out / "station_binary_traps.inc").read_text()
     traps = replace_once(traps, 'TRAP(_ZN7Globals22addSoundResourceToListEi)', '')
+    traps = replace_once(traps, 'TRAP(_ZN6Status19inBlackMarketSystemEv)', '')
     (out / "station_binary_traps.inc").write_text(traps)
 
     gles = (out / "sun_gles.inc").read_text()
@@ -112,7 +112,7 @@ def prepare(out, cxx, root, reuse):
 
     gate = (out / "station_binary_gate_under_test.inc").read_text()
     gate = replace_once(gate, 'catch (const PlayerAllocatedBoundary &)',
-                        'catch (const PlayerEgoHudBoundary &)')
+                        'catch (const PlayerEgoConstructedBoundary &)')
     gate = replace_once(gate, '    assert(canvas.meshCount == 18 && canvas.transformCount == 22);',
                         '    assert(canvas.meshCount == 68 && canvas.transformCount == 72);')
     gate = replace_once(gate, '    assert(stationMaterialIds == expectedMaterials);',
@@ -122,7 +122,7 @@ def prepare(out, cxx, root, reuse):
     gate = replace_once(gate, '    for (unsigned id : stationMaterialIds) std::printf(" %u", id);',
                         '    for (unsigned id : expectedMaterials) std::printf(" %u", id);')
     gate = replace_once(gate, 'createPlayer constructed Player and set HP/shield/armor',
-                        'createPlayer entered PlayerEgo HUD-image prefix')
+                        'createPlayer completed PlayerEgo normal-path constructor')
     gate = replace_once(gate, '    assert(opened == 26 && opened == closed);',
                         '    assert(opened == 32 && opened == closed);')
     gate = replace_once(gate, '    assert(stationOpenedPaths == expectedFiles);',
@@ -176,6 +176,18 @@ def prepare(out, cxx, root, reuse):
     assert(ego->agility == 15.0f && ego->shieldRecoveryAmount == 400.0f);
     assert(ego->lastFreeSpace == 50 && !ego->volatileGoods);
     assert(!ego->shieldRegenEquipped && !ego->cloak && !ego->driveChargeMax);
+    assert(!status->inBlackMarketSystem());
+    assert(!status->inSupernovaSystem() && !status->inSupernovaOrbit());
+    assert(ego->steerLimit > 754.0f && ego->steerLimit < 758.0f);
+    assert(ego->steerScale == 15.139357f);
+    for (float angle : ego->steerAngleHistory) assert(angle == 0.0f);
+    assert(!ego->steerHistoryFull && ego->steerHistoryIndex == 0);
+    assert(!ego->autoTurretEnabled && !ego->dockedFlag);
+    assert(!ego->miningGame && !ego->hackingGame);
+    assert(ego->visible && !ego->cloakChildHidden && !ego->field_0x309);
+    assert(ego->requestedVisible && ego->exhaustVisible);
+    assert(ego->dockingPointIndex == -1 && ego->cloakRechargeMax == 5000);
+    assert(!ego->gunYawGeo && ego->engineSoundId == -1);
     const int expectedSounds[] = {45, 1, 3, 2, 25, 23};
     assert(!ego->hardCoreMode && soundResources.size() == 6);
     for (unsigned i = 0; i < 6; ++i) assert(soundResources[i] == expectedSounds[i]);
@@ -224,7 +236,7 @@ def prepare(out, cxx, root, reuse):
         assert(local && local->m[3] == 100000.0f && local->m[7] == 100000.0f
                && local->m[11] == 100000.0f);
     }
-    std::printf("PlayerEgo prefix -> 50 MovingStars, ship defaults, five HUD images: OK\\n");
+    std::printf("PlayerEgo constructor -> 50 MovingStars, ship defaults, five HUD images: OK\\n");
 '''
     gate = replace_once(gate, marker, check + marker)
     (out / "station_binary_gate_under_test.inc").write_text(gate)
