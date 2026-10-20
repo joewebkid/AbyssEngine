@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::update` route/trail/matrix block;
-earlier subsystem snapshots retain their dates)
+Last reviewed: 2026-10-21 (`PlayerFighter::update` wingman target/audio
+handoff; earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xdd22c–0xdd27e` and
+`0xdd2b8–0xdd2da` confirms the guarded wingman target copy, engine
+sound stop in states 3/4, and the `Player::update`/`getEnemies`
+handoff in other states. The production-method smoke passes at
+`-O0/-O2`; all 11 Fighter smokes, native UCRT64 `gof2`, all 208 NDK
+r18b ARM translation units and 93 verifier tests pass (one existing
+skip). Whole-`update` source-shape/strict fuzzy rises
+**10.2%/7.5% → 12.1%/8.4%**; wingman maneuvers and the rest of the
+method still end in unresolved `PF_update_body`. The full corpus
+compares **4,323/4,524** originals across **4,735** pairs, at
+**94.03%/83.37%** mean source-shape/strict fuzzy, with **2,557
+linked-exact** and **1,082 byte-exact**; no exact-pair losses,
+skipped or wrong-type symbols. Complete game-frame and audio
+behavior remain untested. See
+[the ARM evidence](PLAYER_FIGHTER_UPDATE_AUDIO_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::update` route/trail/matrix block).
 
 Android ARM `PlayerFighter::update` at `0xdd1c6–0xdd22c` confirms
 conditional route cloning, 201 ms trail updates with current/previous

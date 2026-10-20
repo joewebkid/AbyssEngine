@@ -430,6 +430,19 @@ void PlayerFighter::update(int dt) {
     if (this->subGeometry)
         body->transformMatrix *= this->subGeometry->getMatrix();
 
+    bool wingmanRoute = this->wingmanFlag && this->state != 4 && this->routeClone;
+    if (wingmanRoute)
+        this->targetPos = this->level->getPlayer()->geometry->getPosition();
+
+    if (!wingmanRoute || this->field_0xe4 != 1) {
+        if (this->state == 3 || this->state == 4) {
+            body->StopEngineSound();
+        } else {
+            body->update(dt, this->state != 5 && this->fov != -1);
+            body->getEnemies();
+        }
+    }
+
     // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.
     PF_update_body(this, dt);
 

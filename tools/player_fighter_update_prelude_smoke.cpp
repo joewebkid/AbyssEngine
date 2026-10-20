@@ -31,6 +31,11 @@ struct Player {
     bool alwaysFriend = false;
     bool turnedEnemyFlag = false;
     int gunChecks = 0;
+    int updateCalls = 0;
+    int stopSoundCalls = 0;
+    int enemiesCalls = 0;
+    bool lastDoSound = false;
+    int lastDt = 0;
     int getMaxHitpoints() { return maxHitpoints; }
     void setActive(bool value) { active = value; }
     bool gunAvailable(int slot) { assert(slot == 1); ++gunChecks; return gunAvailableResult; }
@@ -42,6 +47,13 @@ struct Player {
     }
     bool turnedEnemy() { return turnedEnemyFlag; }
     bool isAlwaysFriend() { return alwaysFriend; }
+    void update(int dt, bool doSound) {
+        ++updateCalls;
+        lastDt = dt;
+        lastDoSound = doSound;
+    }
+    void StopEngineSound() { ++stopSoundCalls; }
+    void *getEnemies() { ++enemiesCalls; return nullptr; }
 };
 struct Standing {
     bool enemy = false;
@@ -63,7 +75,7 @@ Status *Globals::status = nullptr;
 
 struct KIPlayer;
 struct Radar { KIPlayer *lockedEnemy = nullptr; };
-struct PlayerEgo { void *field_0x14 = nullptr; };
+struct PlayerEgo { void *field_0x14 = nullptr; AEGeometry *geometry = nullptr; };
 struct Level {
     PlayerEgo *ego = nullptr;
     int getPlayerCalls = 0;
@@ -106,6 +118,9 @@ struct KIPlayer {
     AEGeometry *subGeometry = nullptr;
     Route *routeClone = nullptr;
     uint8_t wingmanFlag = 0;
+    int field_0xe4 = 0;
+    int fov = 0;
+    Vector targetPos{};
     bool wingman = false;
     void setActive(bool value) { player->setActive(value); }
     bool isWingMan() { return wingman; }
@@ -147,6 +162,7 @@ int main() {
     fighter.shipGroup = 8;
     fighter.update(7);
     assert(player.active && bodyCalls == 1);
+    assert(player.stopSoundCalls == 1 && player.updateCalls == 0 && player.enemiesCalls == 0);
     assert(fighter.deltaTime == 7 && fighter.deltaTimeHi == 0);
     assert(fighter.renderPosition.x == 1.25f && fighter.renderPosition.y == -2.5f);
     assert(fighter.renderPosition.z == 3.75f);
@@ -247,4 +263,39 @@ int main() {
     fighter.deathTimer = 60001;
     fighter.update(1);
     assert(!player.active && bodyCalls == 13);
+
+    player.active = true;
+    fighter.state = 0;
+    fighter.crateCaptured = 1;
+    fighter.wingmanFlag = 0;
+    fighter.update(17);
+    assert(player.updateCalls == 1 && player.enemiesCalls == 1);
+    assert(player.lastDt == 17 && player.lastDoSound);
+    fighter.fov = -1;
+    fighter.update(2);
+    assert(player.updateCalls == 2 && !player.lastDoSound);
+    fighter.fov = 0;
+    fighter.state = 5;
+    fighter.update(3);
+    assert(player.updateCalls == 3 && !player.lastDoSound);
+    int stopBefore = player.stopSoundCalls;
+    fighter.state = 3;
+    fighter.update(3);
+    assert(player.stopSoundCalls == stopBefore + 1 && player.updateCalls == 3);
+
+    fighter.state = 0;
+    fighter.wingmanFlag = 1;
+    fighter.routeClone = &route;
+    fighter.field_0xe4 = 0;
+    ego.geometry = &geometry;
+    geometry.position = {4.0f, 5.0f, 6.0f};
+    fighter.update(4);
+    assert(fighter.targetPos.x == 4.0f && fighter.targetPos.y == 5.0f && fighter.targetPos.z == 6.0f);
+    assert(player.updateCalls == 4 && player.enemiesCalls == 4);
+
+    fighter.field_0xe4 = 1;
+    geometry.position = {7.0f, 8.0f, 9.0f};
+    fighter.update(5);
+    assert(fighter.targetPos.x == 7.0f && fighter.targetPos.y == 8.0f && fighter.targetPos.z == 9.0f);
+    assert(player.updateCalls == 4 && player.enemiesCalls == 4);
 }
