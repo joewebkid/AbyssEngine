@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Agent mission-string ARM source form;
+Last reviewed: 2026-10-20 (Status kill/achievement propagation;
 earlier subsystem snapshots retain their dates)
+
+Android ARM shows `Status::incKills` and `incPirateKills` updating their own
+fields and then tail-calling the corresponding `Achievements` increment
+through **`Globals::achievements`**. Removed the recovered no-op hooks and
+restored those calls. Both functions improve from 47.4%/0% focused
+source-shape/strict fuzzy to **100%/100% and linked-exact**. The UCRT64
+`gof2` library and 93 verifier tests pass (one existing skip). The full NDK
+r18b corpus remains **4,323/4,524** originals across **4,735** pairs and
+improves to **94.01%/83.35%** mean source-shape/strict fuzzy, **2,557
+linked-exact**, **1,082 byte-exact**, with zero exact-pair losses, skipped or
+wrong-type symbols. Original `PlayerFighter::update` calls
+`incPirateKills`, but the recovered update still stops at `PF_update_body`;
+the end-to-end pirate kill path remains open. See
+[the ARM evidence](STATUS_KILL_ACHIEVEMENTS_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (Agent mission-string ARM source form).
 
 Android ARM at `0x177684` shows that `Agent::setMissionString` creates and
 destroys an extra `String(src, false)` temporary around member assignment.
