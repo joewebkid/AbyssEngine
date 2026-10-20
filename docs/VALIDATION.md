@@ -4,6 +4,27 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Globals ship-group tables and original-asset loader (2026-10-20)
+
+The five production `Globals::getShipGroup` tables now contain all **576**
+values from the original Android ARM `.rodata`, verified byte-for-byte.
+Three formerly zero-ID `TransformAddMesh` calls now pass the ARM-observed
+additive and engine mesh IDs with `false` flags. A focused extracted-branch
+test covers ordinary and exceptional indexes. The continuous Pan gate calls
+the full production `getShipGroup(0,0,true)` after `PlayerEgo` construction
+and loads five original Midorian AEM files at `-O0/-O2` on Windows
+SwiftShader and Android ARMv7; **37/37** original-file operations close.
+Native `gof2`, **208/208** ARM units and **93** verifier tests pass (one
+existing skip). Focused source-shape/strict fuzzy moves
+**82.6%/18.7% → 83.0%/7.7%**, with no exact match for this function.
+The next boundary is `PlayerEgo::setShip` with material state; the full
+`Level::init` still has not returned. See
+[ship-group evidence](GLOBALS_SHIP_GROUP_TABLES_ARM_2026-10-20.md).
+The final full ARM corpus compares **4,323/4,524** original functions
+(**4,735** pairs, **201** absent, **0** skipped), averaging **93.95%**
+source-shape and **83.24%** strict fuzzy. Its **2,551 linked-exact** and
+**1,079 byte-exact** symbol sets have no losses from the previous baseline.
+
 ## PlayerEgo complete normal-path constructor (2026-10-20)
 
 `tools/run_station_player_ego_stars_gate.py` now stops after the production

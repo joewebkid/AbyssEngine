@@ -1,24 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (complete Pan-path PlayerEgo constructor; older subsystem
+Last reviewed: 2026-10-20 (Pan ship-group loader; older subsystem
 snapshots retain their dates)
 
-The Pan original-asset check now runs continuously from `Level::init` through
-`Level::createPlayer` and returns from the complete `PlayerEgo` constructor
-on Windows SwiftShader and Android ARMv7 at `-O0/-O2`. It checks 50
-`MovingStars` billboards, five original-AEI HUD regions, six sound
-registrations, steering/visibility defaults, and **32/32** closed
-original-file operations. The original ARM constructor also exposed a
-missing black-market predicate for initial auto-turret state, now restored
-in production C++. Synthetic equipment and Ship values remain fixture limits;
-the positive black-market branch, supernova effect, `setShip`, and the rest
-of `Level::init` are not runtime-proven. Focused constructor
-source-shape/strict fuzzy rises from **82.9%/50.8%** to **83.6%/51.7%**.
-The current full ARM corpus remains
+The Pan original-asset check runs continuously from `Level::init` through
+the completed `PlayerEgo` constructor, then calls the production
+`Globals::getShipGroup(0,0,true)` on Windows SwiftShader and Android ARMv7
+at `-O0/-O2`. It now loads five original ship AEM meshes after the earlier
+stars/HUD path and checks **37/37** closed original-file operations. The
+five ship-group resource tables (576 entries) were recovered byte-for-byte
+from Android 2.0.16; three `TransformAddMesh` calls now pass the original
+additive/engine mesh IDs rather than zero. The platform material service,
+`setShip`, guarded supernova effect, and completion of `Level::init` remain
+unverified. Focused `getShipGroup` source-shape rises **82.6% → 83.0%**,
+while strict fuzzy falls **18.7% → 7.7%**; this is a source-backed behavior
+fix, not an exact-match gain. The full ARM corpus remains
 **4,323/4,524** originals, **4,735 pairs**, **93.95%/83.24%** mean
 source-shape/strict fuzzy, **2,551 linked-exact**, **1,079 byte-exact**.
 No exact `(unit, symbol)` pairs were lost or gained. See
-[the constructor evidence](PLAYER_EGO_CONSTRUCTOR_PAN_GATE_2026-10-20.md).
+[the ship-group evidence](GLOBALS_SHIP_GROUP_TABLES_ARM_2026-10-20.md).
 
 An earlier source correction separated `PlayerEgo`'s `MovingStars` pointer
 at ARM `+0xf8` from its docking camera at `+0x178`, restores the direction
@@ -60,7 +60,8 @@ branch, returns the `StarSystem` constructor and completes
 `Level::createPlayer`, reads the active Ship's equipment and three used-slot
 counts, constructs a `Player` and sets its hull, shield and armor. The latest
 gate returns from `PlayerEgo`'s normal-path constructor after creating the
-stars/HUD and initializing steering and visibility, then stops before `setShip`.
+stars/HUD and initializing steering and visibility, then separately loads
+the first ship group from original AEM files before stopping ahead of `setShip`.
 Stage 0 has not returned, and the game
 is not running. A catalog-backed cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
