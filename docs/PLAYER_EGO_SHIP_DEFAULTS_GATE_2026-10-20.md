@@ -40,3 +40,6 @@ ARM corpus for this source revision remains **4,323/4,524** originals in
 **2,551** linked-exact and **1,079** byte-exact, with zero skipped units.
 Next: exercise the original HUD image resources and equipment-present
 branches, then finish `PlayerEgo` construction and `setShip`.
+
+The later [HUD/sound gate](PLAYER_EGO_HUD_SOUNDS_ARM_2026-10-20.md) crosses
+both of those checkpoints; its test boundary is still within the constructor.

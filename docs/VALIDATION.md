@@ -4,10 +4,28 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo HUD atlases and equipment sounds (2026-10-20)
+
+`tools/run_station_player_ego_stars_gate.py` now exercises five production
+`Image2DCreate` calls through two original AEI atlases and real GLES uploads
+on Windows SwiftShader and Android ARMv7 at `-O0/-O2`. It checks the AEI
+region coordinates, managed texture handles, GPU pixel readback and
+**32/32** file lifetimes. Synthetic Items of sorts 19, 9 and 10 exercise
+the three newly restored equipment-gated sound branches. The constructor
+test copy stops before steering-limit initialization; `setShip` and full
+`Level::init` are not covered. Focused ARM constructor source-shape/strict
+fuzzy improves **78.5%/47.6% → 82.9%/50.8%**; exact aliases remain
+nonmatching. Native `gof2`, **208/208** ARM TUs and **91** verifier tests
+pass (one prior skip). Full corpus: **4,323/4,524**, **4,735** pairs,
+**93.95%/83.24%** means, **2,551 linked-exact** and **1,079 byte-exact**;
+exact `(unit, symbol)` sets have no losses or gains. See
+[HUD/sound evidence](PLAYER_EGO_HUD_SOUNDS_ARM_2026-10-20.md).
+
 ## PlayerEgo Ship-defaults gate (2026-10-20)
 
-`tools/run_station_player_ego_stars_gate.py` now continues through
-`Player::getCombinedHP`, the empty-equipment synthetic Ship's boost,
+At the earlier checkpoint `tools/run_station_player_ego_stars_gate.py`
+continued through `Player::getCombinedHP`, the empty-equipment synthetic
+Ship's boost,
 handling, cargo and shield-regeneration values, sound-resource registration
 and `Status::hardCoreMode` on Windows SwiftShader and Android ARMv7 at
 `-O0/-O2`. The boundary is before the first HUD image. This does not

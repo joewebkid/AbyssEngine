@@ -1,4 +1,4 @@
-"""Extend the Pan Level gate through PlayerEgo's MovingStars and Ship defaults."""
+"""Extend the Pan Level gate through PlayerEgo's original HUD atlas regions."""
 import run_station_binary_asset_gate as runner
 import run_station_player_alloc_gate as first
 from run_level_init_asset_gate import ROOT, extract
@@ -14,7 +14,7 @@ def prepare(out, cxx, root, reuse):
     host = replace_once(host, 'Globals *Globals::gGlobals;',
                         'Globals *Globals::gGlobals;\nvoid *Globals::globals;\nvoid *Globals::items;')
     host = replace_once(host, 'struct PlayerAllocatedBoundary {};',
-                        'struct PlayerEgoShipBoundary {};\n'
+                        'struct PlayerEgoHudBoundary {};\n'
                         'static Player *observedPlayer;\nstatic PlayerEgo *observedEgo;\n'
                         'static unsigned starsMeshesBefore, starsTransformsBefore, starsMaterialsBefore;\n'
                         'static uint32_t starsSeedLowBefore, starsSeedHighBefore;')
@@ -37,10 +37,10 @@ def prepare(out, cxx, root, reuse):
     assert level.count(level_tail) == 1
     level = level[:level.index(level_tail) + len(level_tail)] + '\n}'
     ctor = extract("src/game/ship/PlayerEgo.cpp", ["PlayerEgo::PlayerEgo(Player *player) {"])
-    marker = '    PaintCanvas::gCanvas->Image2DCreate(0x4c0, this->radarBlipImage1);'
+    marker = '    this->steerLimit = ((this->handling * 750.0f) / 63.0f) * 1.2f;'
     assert ctor.count(marker) == 1
     ctor = ctor[:ctor.index(marker)] + (
-        '    observedEgo = this;\n    throw PlayerEgoShipBoundary{};\n}')
+        '    observedEgo = this;\n    throw PlayerEgoHudBoundary{};\n}')
     (out / "level_init_under_test.inc").write_text(level + '\n' + ctor)
 
     chain = (out / "station_binary_chain.inc").read_text()
@@ -54,6 +54,9 @@ def prepare(out, cxx, root, reuse):
     chain += '\n' + extract("src/game/mission/Item.cpp", [
         "int Item::getAttribute(", "int Item::getSort()", "int Item::getIndex()",
         "int Item::getAmount()"])
+    # Fixture-only Item construction; sort/type accessors stay production.
+    chain += '\nItem::Item(IntArray *i, IntArray *q, IntArray *a) : '
+    chain += 'index(0), type(99), sort(0), ingredients(i), quantities(q), attributes(a) {}\n'
     chain += '\n' + extract("src/game/ship/Ship.cpp", [
         "bool Ship::hasCargo(", "bool Ship::hasVolatileGoods()",
         "int Ship::getFreeSpace()", "Item *Ship::getFirstEquipmentOfSort(",
@@ -68,9 +71,48 @@ def prepare(out, cxx, root, reuse):
     traps = replace_once(traps, 'TRAP(_ZN7Globals22addSoundResourceToListEi)', '')
     (out / "station_binary_traps.inc").write_text(traps)
 
+    gles = (out / "sun_gles.inc").read_text()
+    gles = replace_once(gles, '    ++flareUploadCalls;',
+        '    unsigned previousIndex = engine->appManager->paintCanvas->cubeTextures.size();\n'
+        '    int previousBytes = engine->textureByteCounter;\n'
+        '    int previousCount = Engine::ImageCount;\n'
+        '    ++flareUploadCalls;')
+    gles = replace_once(gles, '    assert(result == 1 && *out == 0 && textures.size() == 1);',
+        '    bool hudAtlas = std::strcmp(path, "data/textures/gof2_interface3.aei") == 0;\n'
+        '    assert(result == 1 && *out == previousIndex && textures.size() == previousIndex + 1);')
+    gles = replace_once(gles, '    auto *texture = textures[0];',
+                        '    auto *texture = textures[previousIndex];')
+    gles = replace_once(gles,
+        '    unsigned side = std::strcmp(path, "data/textures/gof2_interface.aei") == 0 ? 1024 : 2048;',
+        '    unsigned side = hudAtlas ? 512 : 1024;')
+    gles = replace_once(gles,
+        '    assert(engine->textureByteCounter == int(texture->byteSize) && Engine::ImageCount == 1);',
+        '    assert(engine->textureByteCounter == previousBytes + int(texture->byteSize));\n'
+        '    assert(Engine::ImageCount == previousCount + 1);')
+    gles = replace_once(gles,
+        '    assert(flareUploadCalls == 1 && canvas.cubeTextures.size() == 7 && canvas.images.size() == 3);',
+        '    assert(flareUploadCalls == 2 && canvas.cubeTextures.size() == 8 && canvas.images.size() == 8);')
+    gles = replace_once(gles,
+        '    assert(texture && texture->handle == 0); // Managed index, not the GL name.',
+        '    assert(texture && texture->handle == 0); // Managed index, not the GL name.\n'
+        '    assert(static_cast<Resource *>(canvas.FindResource(10089))->handle == 7);')
+    gles = replace_once(gles, 'assert(cached == i && flareUploadCalls == 1);',
+                        'assert(cached == i && flareUploadCalls == 2);')
+    gles = replace_once(gles,
+        '        glDeleteTextures(1, &texture->glId); delete texture; canvas.cubeTextures[i] = nullptr;\n'
+        '    }',
+        '        glDeleteTextures(1, &texture->glId); delete texture; canvas.cubeTextures[i] = nullptr;\n'
+        '    }\n'
+        '    auto *hud = canvas.cubeTextures[7];\n'
+        '    assert(hud && hud->byteSize == 512 * 512 * 4);\n'
+        '    glDeleteTextures(1, &hud->glId);\n'
+        '    delete hud;\n'
+        '    canvas.cubeTextures[7] = nullptr;')
+    (out / "sun_gles.inc").write_text(gles)
+
     gate = (out / "station_binary_gate_under_test.inc").read_text()
     gate = replace_once(gate, 'catch (const PlayerAllocatedBoundary &)',
-                        'catch (const PlayerEgoShipBoundary &)')
+                        'catch (const PlayerEgoHudBoundary &)')
     gate = replace_once(gate, '    assert(canvas.meshCount == 18 && canvas.transformCount == 22);',
                         '    assert(canvas.meshCount == 68 && canvas.transformCount == 72);')
     gate = replace_once(gate, '    assert(stationMaterialIds == expectedMaterials);',
@@ -80,7 +122,18 @@ def prepare(out, cxx, root, reuse):
     gate = replace_once(gate, '    for (unsigned id : stationMaterialIds) std::printf(" %u", id);',
                         '    for (unsigned id : expectedMaterials) std::printf(" %u", id);')
     gate = replace_once(gate, 'createPlayer constructed Player and set HP/shield/armor',
-                        'createPlayer entered PlayerEgo ship-initialization prefix')
+                        'createPlayer entered PlayerEgo HUD-image prefix')
+    gate = replace_once(gate, '    assert(opened == 26 && opened == closed);',
+                        '    assert(opened == 32 && opened == closed);')
+    gate = replace_once(gate, '    assert(stationOpenedPaths == expectedFiles);',
+        '    expectedFiles.insert(expectedFiles.end(), {\n'
+        '        "data/textures/gof2_interface.aei",\n'
+        '        "data/textures/gof2_interface.aei",\n'
+        '        "data/textures/gof2_interface3.aei",\n'
+        '        "data/textures/gof2_interface3.aei",\n'
+        '        "data/textures/gof2_interface3.aei",\n'
+        '        "data/textures/gof2_interface.aei"});\n'
+        '    assert(stationOpenedPaths == expectedFiles);')
     gate = replace_once(gate, '    status->ship->maxArmorHP = 90;',
                         '    status->ship->maxArmorHP = 90;\n'
                         '    status->ship->boostSpeed = 250;\n'
@@ -88,7 +141,13 @@ def prepare(out, cxx, root, reuse):
                         '    status->ship->boostTime = 6300;\n'
                         '    status->ship->agility = 15;\n'
                         '    status->ship->cargoPlus = 0;\n'
-                        '    status->ship->shieldRegen = 20;')
+                        '    status->ship->shieldRegen = 20;\n'
+                        '    int equipmentSorts[] = {19, 9, 10};\n'
+                        '    for (unsigned i = 0; i < 3; ++i) {\n'
+                        '        auto *item = new Item(nullptr, nullptr, nullptr);\n'
+                        '        item->sort = equipmentSorts[i];\n'
+                        '        (*status->ship->equipment)[i] = item;\n'
+                        '    }')
     gate = replace_once(gate, '    assert(level->field_134 == 0 && !level->playerRoute && !level->enemyRoute);',
                         '    assert(level->field_134 == 0 && !level->playerRoute && !level->enemyRoute);\n'
                         '    Globals globalsFixture;\n'
@@ -99,7 +158,7 @@ def prepare(out, cxx, root, reuse):
                         '    assert(canvas.FindResource(20052) && !canvas.FindResource(10001));')
     marker = '    return 0;\n}'
     assert gate.count(marker) == 1
-    check = '''    // Continuous Level call reached Ship defaults; HUD images remain a boundary.
+    check = '''    // Continuous Level call created five original HUD atlas regions.
     assert(observedPlayer && observedEgo);
     AERandom expected(0);
     expected.seedLow = starsSeedLowBefore;
@@ -117,7 +176,30 @@ def prepare(out, cxx, root, reuse):
     assert(ego->agility == 15.0f && ego->shieldRecoveryAmount == 400.0f);
     assert(ego->lastFreeSpace == 50 && !ego->volatileGoods);
     assert(!ego->shieldRegenEquipped && !ego->cloak && !ego->driveChargeMax);
-    assert(!ego->hardCoreMode && soundResources.size() == 1 && soundResources[0] == 45);
+    const int expectedSounds[] = {45, 1, 3, 2, 25, 23};
+    assert(!ego->hardCoreMode && soundResources.size() == 6);
+    for (unsigned i = 0; i < 6; ++i) assert(soundResources[i] == expectedSounds[i]);
+    assert(canvas.images.size() == 8 && flareUploadCalls == 2);
+    const unsigned hudIds[] = {1216, 1230, 8030, 8029, 1352};
+    const unsigned hudHandles[] = {ego->radarBlipImage1, ego->radarBlipImage2,
+        ego->radarBlipImage3, ego->radarBlipImage4, ego->dockArrowImage};
+    const unsigned hudTexture[] = {0, 0, 7, 7, 0};
+    const unsigned hudRects[][4] = {{339, 814, 40, 40}, {339, 856, 40, 40},
+        {67, 327, 107, 107}, {67, 218, 107, 107}, {505, 199, 82, 43}};
+    for (unsigned i = 0; i < 5; ++i) {
+        assert(hudHandles[i] == i + 3);
+        auto *res = static_cast<AbyssEngine::Resource *>(canvas.FindResource(hudIds[i]));
+        auto *region = canvas.images[hudHandles[i]];
+        assert(res && res->handle == int(hudHandles[i]) && region && region->mesh);
+        assert(region->textureId == hudTexture[i] && region->restoreFlag == 0);
+        assert(region->atlasW == (hudTexture[i] ? 512 : 1024));
+        assert(region->atlasH == region->atlasW);
+        assert(region->offX == hudRects[i][0] && region->offY == hudRects[i][1]);
+        assert(region->sizeX == hudRects[i][2] && region->sizeY == hudRects[i][3]);
+        unsigned cached = 0xffffffffU;
+        canvas.Image2DCreate(hudIds[i], cached);
+        assert(cached == hudHandles[i] && opened == 32);
+    }
     assert(canvas.meshCount == meshesBefore + 50 && canvas.transformCount == transformsBefore + 50);
     assert(stationMaterialIds.size() == materialsBefore + 50);
     assert(random.seedLow == expected.seedLow && random.seedHigh == expected.seedHigh);
@@ -142,7 +224,7 @@ def prepare(out, cxx, root, reuse):
         assert(local && local->m[3] == 100000.0f && local->m[7] == 100000.0f
                && local->m[11] == 100000.0f);
     }
-    std::printf("PlayerEgo prefix -> 50 MovingStars and ship defaults: OK\\n");
+    std::printf("PlayerEgo prefix -> 50 MovingStars, ship defaults, five HUD images: OK\\n");
 '''
     gate = replace_once(gate, marker, check + marker)
     (out / "station_binary_gate_under_test.inc").write_text(gate)

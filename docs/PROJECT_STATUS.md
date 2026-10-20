@@ -1,19 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (PlayerEgo Ship-defaults gate; older subsystem
+Last reviewed: 2026-10-20 (PlayerEgo HUD atlases and equipment sounds; older subsystem
 snapshots retain their dates)
 
 The Pan original-asset check now runs continuously from `Level::init` through
 `Level::createPlayer` and the real `PlayerEgo` constructor prefix into the
 complete `MovingStars` constructor on Windows SwiftShader and Android ARMv7
-at `-O0/-O2`. The expanded gate also runs the HP, Ship-default and sound
-selection path, stopping before the first HUD image. All four runs verify
-50 billboards/transforms and the synthetic Ship's selected values. Full
-`PlayerEgo` construction and `setShip` remain open. Production code is
-unchanged, so the last full ARM corpus stays at
+at `-O0/-O2`. It now creates all five HUD atlas regions from original AEI
+files, including a second GLES texture, and checks six sound registrations,
+five of them equipment-gated. The original ARM constructor exposed three missing
+equipment-gated sound branches, now restored in production C++. All four
+runs check 50 billboards/transforms, five HUD regions, and **32/32** closed
+original-file operations. The synthetic equipment and Ship values are
+explicit fixture limits; full `PlayerEgo` construction and `setShip` remain
+open. Focused constructor source-shape/strict fuzzy rises from
+**78.5%/47.6%** to **82.9%/50.8%**. The current full ARM corpus remains
 **4,323/4,524** originals, **4,735 pairs**, **93.95%/83.24%** mean
 source-shape/strict fuzzy, **2,551 linked-exact**, **1,079 byte-exact**.
-See [the Ship-defaults gate](PLAYER_EGO_SHIP_DEFAULTS_GATE_2026-10-20.md).
+No exact `(unit, symbol)` pairs were lost or gained. See
+[the HUD/sound evidence](PLAYER_EGO_HUD_SOUNDS_ARM_2026-10-20.md).
 
 The latest source correction separates `PlayerEgo`'s `MovingStars` pointer
 at ARM `+0xf8` from its docking camera at `+0x178`, restores the direction
@@ -54,8 +59,9 @@ branch, returns the `StarSystem` constructor and completes
 `Level::createSpace`, including Pan's star color, then enters
 `Level::createPlayer`, reads the active Ship's equipment and three used-slot
 counts, constructs a `Player` and sets its hull, shield and armor. The latest
-gate enters `PlayerEgo`, builds its `MovingStars` and initializes the
-synthetic Ship-derived fields, then stops before the first HUD image.
+gate enters `PlayerEgo`, builds its `MovingStars`, initializes the
+synthetic Ship-derived fields and creates five HUD images from two original
+atlases, then stops before steering limits and the remaining constructor tail.
 Stage 0 has not returned, and the game
 is not running. A catalog-backed cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code

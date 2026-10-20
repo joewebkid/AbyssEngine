@@ -1789,6 +1789,16 @@ PlayerEgo::PlayerEgo(Player *player) {
         } else if (ship->hasJumpDriveIntegrated()) {
             this->driveChargeMax = static_cast<Array<Item *> *>(Globals::items)->data()[85]->getAttribute(37);
         }
+        // Android 0x99dd8-0x99e32 registers equipment-gated sounds before the HUD images.
+        if (ship->getFirstEquipmentOfSort(19) != nullptr) {
+            Globals::gGlobals->addSoundResourceToList(1);
+            Globals::gGlobals->addSoundResourceToList(3);
+            Globals::gGlobals->addSoundResourceToList(2);
+        }
+        if (ship->getFirstEquipmentOfSort(9) != nullptr)
+            Globals::gGlobals->addSoundResourceToList(25);
+        if (ship->getFirstEquipmentOfSort(10) != nullptr)
+            Globals::gGlobals->addSoundResourceToList(23);
     }
 
     this->hardCoreMode = PE_status()->hardCoreMode();
