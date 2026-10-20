@@ -16,8 +16,11 @@ compile with NDK 25. The original constructor places `center` at `+0x128`
 and the mesh IDs at `+0x164/+0x168`; the reconstructed ARM object is now
 `0x16c` bytes. The intervening `+0x124` slot has unknown semantics. The
 original ARMv7 function at `0xafd2c` supports the recovered branch, count
-and placement logic, but full stage-one return, real plasma probabilities,
-alien/boss branches and cloud updates remain untested.
+and placement logic. Follow-on direct calls now verify the alien-orbit early
+return and the mission-`0x8e`/station-`0x4f` boss count and fixed first-cloud
+position on Windows and physical Android ARMv7 at `-O0/-O2`. Full stage-one
+return, real plasma probabilities, other alien/boss conditions and cloud
+updates remain untested.
 
 NDK r18b's compiler, assembler and objdump are absent locally, so focused
 source-shape and the full exact-set verifier could not be refreshed. The

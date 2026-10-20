@@ -8,6 +8,9 @@ ARMv7 `libgof2hdaa.so` at `0xafd2c`: it now uses the original global pointers,
 equipment and orbit gates, bounded random count, position rejection tests and
 boss placement. A continuous Pan original-asset gate with a synthetic plasma
 equipment item builds 4–7 clouds and then checks the no-equipment return.
+Direct calls additionally verify the alien-orbit early return and the boss
+mission/station branch's 7–10 clouds and fixed first position under the
+bounded probability fixture.
 Windows SwiftShader and physical Android ARMv7 pass at `-O0/-O2`; native
 `gof2` and both changed ARM translation units compile. The original
 allocation is `0x16c`; constructor instructions show an unidentified

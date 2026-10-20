@@ -19,6 +19,7 @@ independently anchor the following recovered behavior:
 - Each candidate position has three `nextInt(160000)-80000` components. It
   must be farther than 25,000 from the origin and 30,000 from the asteroid
   center. The first boss cloud is then placed at `(92000, 0, 36000)`.
+  Direct assembly recheck: `ev_e160b12e9d386bfe7f5eb585d6fc4ce7f9137c38fd17d986840ce00a01b1a1f5`.
 - ARM allocation sizes are `0xc0` for `AEGeometry` and `0x16c` for
   `PlayerGasCloud`. The constructor at `0x1763cc` writes `center` at `+0x128`,
   `modelGeometry` at `+0x134`, `itemId` and the full-width spark-mesh ID at
@@ -45,6 +46,11 @@ branch, not the real Galaxy probability calculation. It checks 4–7 clouds,
 their level/player/geometry links, mesh IDs, health and both position bounds.
 Afterward it removes the item and directly calls the same production function
 to verify the no-equipment return leaves the existing cloud array unchanged.
+It also checks that a distinct alien-orbit station leaves that array unchanged,
+then selects campaign mission `0x8e` and station `0x4f` to check the boss
+count (7–10 with this fixture) and the first cloud's fixed position. The
+synthetic alien station is retained for the test process lifetime because the
+earlier station-catalog fixture instruments its five destructors.
 Only material IDs `20111` and `29045`, observed from the registered original
 assets for these clouds, were added to the fail-closed host material allowlist.
 
@@ -59,6 +65,8 @@ the parent revision is
 fuzzy, 2,551 linked-exact and 1,079 byte-exact, zero skipped. Before this
 edit, `createGasClouds` was nonexact at 88.3% source-shape and 41.5% strict
 fuzzy. Those figures must **not** be treated as current post-edit metrics.
+The alien/boss gate extension changes only a test runner and documentation,
+not production C++; it does not itself change machine-code metrics.
 
 The canonical NDK r18b toolchain is absent in the present environment. A
 fresh focused/full verifier run therefore cannot establish post-edit shape,
@@ -74,6 +82,6 @@ candidate out of `main` until that gate is restored and passed.
 Restore NDK r18b and rerun focused `createGasClouds`, full 208-TU ARM
 verification and exact-pair set comparison. Identify the semantics of the
 opaque `PlayerGasCloud+0x124` slot; exercise real plasma distributions and
-the alien and boss branches, and continue Pan stage one through mission dispatch and
-return. Cloud update, collision, rendering and a playable frame are still
-outside this gate.
+additional alien/boss conditions, then continue Pan stage one through mission
+dispatch and return. Cloud update, collision, rendering and a playable frame
+are still outside this gate.

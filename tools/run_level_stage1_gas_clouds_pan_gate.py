@@ -88,10 +88,32 @@ void *Galaxy::getPlasmaProbabilities(Station *station) {
         "    assert(level->gasClouds == cloudsBeforeNoEquipment && plasmaProbabilityBuffer);\n"
         "    delete[] plasmaProbabilityBuffer;\n"
         "    (*status->ship->equipment)[3] = plasmaEquipment;\n"
+        "    auto *alienStation = new Station(); // Catalog destructor is instrumented.\n"
+        "    status->station = alienStation;\n"
+        "    assert(status->inAlienOrbit());\n"
+        "    level->createGasClouds();\n"
+        "    assert(level->gasClouds == cloudsBeforeNoEquipment && plasmaProbabilityBuffer);\n"
+        "    delete[] plasmaProbabilityBuffer;\n"
+        "    status->station = status->playerStation;\n"
+        "    assert(!status->inAlienOrbit());\n"
+        "    int previousMission = status->currentCampaignMission;\n"
+        "    int previousStationIndex = status->station->index;\n"
+        "    status->currentCampaignMission = 0x8e;\n"
+        "    status->station->index = 0x4f;\n"
+        "    level->createGasClouds();\n"
+        "    assert(plasmaProbabilityBuffer && level->gasClouds\n"
+        "           && level->gasClouds->size() >= 7 && level->gasClouds->size() <= 10);\n"
+        "    auto *bossCloud = static_cast<PlayerGasCloud *>((*level->gasClouds)[0]);\n"
+        "    Vector bossPosition = bossCloud->getPosition();\n"
+        "    assert(bossPosition.x == 92000.0f && bossPosition.y == 0.0f\n"
+        "           && bossPosition.z == 36000.0f);\n"
+        "    delete[] plasmaProbabilityBuffer;\n"
+        "    status->currentCampaignMission = previousMission;\n"
+        "    status->station->index = previousStationIndex;\n"
         "    assert(level->asteroids && level->asteroids->size() == (unsigned) expectedCount);")
     gate = replace_once(gate,
         "stage 1 completed asteroid field and reached gas-cloud boundary: OK",
-        "stage 1 completed equipped gas clouds before mission dispatch: OK")
+        "stage 1 checked equipped, alien-orbit and boss gas clouds before mission dispatch: OK")
     (out / "station_binary_gate_under_test.inc").write_text(gate)
 
 
