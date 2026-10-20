@@ -17,6 +17,7 @@
 #include "game/weapons/Gun.h"
 #include "engine/render/Mesh.h"
 #include "engine/render/Material.h"
+#include "engine/render/MovingStars.h"
 #include "game/world/Waypoint.h"
 #include "engine/render/Engine.h"
 
@@ -229,8 +230,6 @@ void *TractorBeam_new(void *geo, int kind);
 
 
 void MatrixGetPosition(void *, void *);
-
-void *MovingStars_ctor(void *self);
 
 void PlayerEgo::setVisible(bool v) {
     this->requestedVisible = v;
@@ -449,11 +448,11 @@ bool PlayerEgo::isMining() {
 
 void PlayerEgo::turnHorizontal(int a, float v) {
     if (v < 0.0f) {
-        this->yawAccumulator -= this->yawRate;
+        this->left(a, v);
         return;
     }
     if (v > 0.0f) {
-        this->yawAccumulator += this->yawRate;
+        this->right(a, v);
         return;
     }
 }
@@ -705,10 +704,11 @@ bool PlayerEgo::driveReady() {
 
 void PlayerEgo::turnVertical(int a, float v) {
     if (v < -0.0f) {
+        this->down(a, v);
         return;
     }
     if (v > 0.0f) {
-        this->pitchAccumulator += this->pitchRate;
+        this->up(a, v);
         return;
     }
 }
@@ -1686,8 +1686,10 @@ PlayerEgo::PlayerEgo(Player *player) {
     this->emergencyVal1 = 0;
     this->field_0xac = 0;
 
+    this->dockCameraNode = nullptr;
     this->player = (void *) player;
     player->setPlayShootSound(true, 2);
+    this->movingStars = new MovingStars();
     this->lastHP = player->getCombinedHP();
     this->field_0x1c = -1;
     this->shieldRecoveryTimer = 0;
@@ -1816,10 +1818,6 @@ PlayerEgo::PlayerEgo(Player *player) {
     this->requestedVisible = 1;
     this->exhaustVisible = 1;
     this->dockingPointIndex = -1;
-
-    void *stars = ::operator new(0x1c);
-    MovingStars_ctor(stars);
-    this->dockCameraNode = stars;
 
     float difficulty;
     std::memcpy(&difficulty, Globals::options + 0x2c, sizeof(difficulty));
@@ -3494,9 +3492,9 @@ void PlayerEgo::handleTurretView(int dt) {
 
     Globals::Canvas->CameraSetLocal(this->turretCamera, look);
 
-    // Thumb writes +0x100/+0x104, not the direction flags at +0xf4/+0xf8.
-    this->yawAccumulator = 0.0f;
-    this->pitchAccumulator = 0.0f;
+    // Thumb clears the pitch/yaw direction slots at +0x100/+0x104.
+    this->pitchAccumDir = 0;
+    this->yawAccumDir = 0;
     this->roll(this->shakeIntensity);
 
     Matrix *shipLocal = static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(this->geometry->transform));
@@ -3686,8 +3684,8 @@ void PlayerEgo::handleShip(int dt) {
 
     ((int &) this->pitchRamp) = 0;
     ((int &) this->yawRamp) = 0;
-    this->yawAccumulator = 0.0f;
-    this->pitchAccumulator = 0.0f;
+    this->pitchAccumDir = 0;
+    this->yawAccumDir = 0;
     ((int &) this->yawAccumD) = 0;
     ((int &) this->rollAccum) = 0;
 

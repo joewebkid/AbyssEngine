@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (createPlayer Player allocation; older subsystem
+Last reviewed: 2026-10-20 (PlayerEgo moving-stars slot and steering dispatch; older subsystem
 snapshots retain their dates)
+
+The latest source correction separates `PlayerEgo`'s `MovingStars` pointer
+at ARM `+0xf8` from its docking camera at `+0x178`, restores the direction
+slots at `+0x100/+0x104`, and makes steering dispatch call the recovered
+movement functions. Native and ARM builds and focused verification pass;
+the 173-function `PlayerEgo` unit retains 99 linked-exact and 61 byte-exact
+matches. The final full ARM corpus compares **4,323/4,524** originals in
+**4,735 pairs** at **93.95%** mean source-shape and **83.24%** strict fuzzy,
+with **2,551 linked-exact** and **1,079 byte-exact**. There are no skipped
+ARM units or lost exact `(unit, symbol)` pairs. See
+`PLAYER_EGO_MOVING_STARS_ARM_2026-10-20.md` for instruction addresses,
+limitations and the next runtime gate.
 
 ## Current recovery stage
 

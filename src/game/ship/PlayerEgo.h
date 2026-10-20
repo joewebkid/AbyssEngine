@@ -27,6 +27,7 @@ class Hud;
 class KIPlayer;
 class Level;
 class LevelScript;
+class MovingStars;
 class Radio;
 class RepairBeam;
 class Route;
@@ -126,11 +127,11 @@ public:
     float waypointX;
     float waypointY;
     void *gunBaseGeo;
+    float waypointZ;
+    MovingStars *movingStars;
+    Route *route;
     int pitchAccumDir;
     int yawAccumDir;
-    Route *route;
-    float yawAccumulator;
-    float pitchAccumulator;
     float yawRate;
     int currentSecondaryWeaponIndex;
     float pitchRate;
@@ -669,9 +670,13 @@ static_assert(__builtin_offsetof(PlayerEgo, boostSoundId) == 0xd4, "PlayerEgo::b
 static_assert(__builtin_offsetof(PlayerEgo, waypointX) == 0xe8, "PlayerEgo::waypointX offset");
 static_assert(__builtin_offsetof(PlayerEgo, waypointY) == 0xec, "PlayerEgo::dockWaypointX offset");
 static_assert(__builtin_offsetof(PlayerEgo, gunBaseGeo) == 0xf0, "PlayerEgo::dockWaypointY offset");
-static_assert(__builtin_offsetof(PlayerEgo, pitchAccumDir) == 0xf4, "PlayerEgo::dockWaypointZ offset");
+static_assert(__builtin_offsetof(PlayerEgo, waypointZ) == 0xf4, "PlayerEgo::dockWaypointZ offset");
+static_assert(__builtin_offsetof(PlayerEgo, movingStars) == 0xf8, "PlayerEgo::movingStars offset");
+static_assert(__builtin_offsetof(PlayerEgo, dockCameraNode) == 0x178, "PlayerEgo::dockCameraNode offset");
 static_assert(__builtin_offsetof(PlayerEgo, cursorStateDirty) == 0x84, "PlayerEgo::cursorStateDirty offset");
 static_assert(__builtin_offsetof(PlayerEgo, route) == 0xfc, "PlayerEgo::route offset");
+static_assert(__builtin_offsetof(PlayerEgo, pitchAccumDir) == 0x100, "PlayerEgo::pitch direction offset");
+static_assert(__builtin_offsetof(PlayerEgo, yawAccumDir) == 0x104, "PlayerEgo::yaw direction offset");
 static_assert(__builtin_offsetof(PlayerEgo, currentSecondaryWeaponIndex) == 0x10c,
               "PlayerEgo::currentSecondaryWeaponIndex offset");
 static_assert(__builtin_offsetof(PlayerEgo, shieldRecoveryTimer) == 0x118, "PlayerEgo::shieldRecoveryTimer offset");
