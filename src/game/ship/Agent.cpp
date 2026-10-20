@@ -155,7 +155,7 @@ Agent::~Agent() noexcept(false) {
 }
 
 void Agent::setMissionString(String src) {
-    this->missionString = src;
+    this->missionString = String(src, false);
 }
 
 int Agent::getStation() {

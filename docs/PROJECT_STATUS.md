@@ -1,7 +1,32 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Pan stage-one hostile route and initial counts;
+Last reviewed: 2026-10-20 (Agent mission-string ARM source form;
 earlier subsystem snapshots retain their dates)
+
+Android ARM at `0x177684` shows that `Agent::setMissionString` creates and
+destroys an extra `String(src, false)` temporary around member assignment.
+Restoring that source form raises its focused NDK r18b comparison from 1.2%
+source-shape / 0% strict fuzzy to **100% / 100% and linked-exact**. A default
+`String` has null data; if a null-valued parameter reaches the setter, the
+old direct assignment leaves the previous value in place, while the original
+temporary constructor creates an empty string before assignment. The call
+path for this edge case is not yet confirmed in a running game.
+
+The native UCRT64 `gof2` library builds and 93 verifier tests pass (one
+existing skip). The final full NDK r18b corpus compares **4,323/4,524**
+original functions across **4,735** pairs, with **93.99%/83.31%** mean
+source-shape/strict fuzzy, **2,555 linked-exact** and **1,082 byte-exact**.
+There are zero skipped and wrong-type symbols; the exact-pair identity check
+finds zero losses and one linked-exact gain. See
+[the ARM evidence](AGENT_MISSION_STRING_ARM_2026-10-20.md).
+
+The current 201 names missing from the full ARM report are bundled
+zlib/zip, OpenSSL and C++ runtime/ABI symbols; none names a game class.
+This is a statement about symbol-name presence, not semantic completeness,
+runtime correctness or playability.
+
+Previous checkpoint: 2026-10-20 (Pan stage-one hostile route and initial
+counts).
 
 The continuous original-asset Pan path now passes the empty mission and
 mode-zero scene cleanup, restores mission mode three, then constructs the
