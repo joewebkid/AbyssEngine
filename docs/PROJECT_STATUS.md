@@ -1,6 +1,6 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Pan light/StarSystem return; older subsystem
+Last reviewed: 2026-10-20 (Pan createSpace return; older subsystem
 snapshots retain their dates)
 
 ## Current recovery stage
@@ -26,11 +26,24 @@ second draw, rotates and places the first sun, constructs all five orbit
 planets (including two occupied-slot retries and the selected station),
 resets the RNG, and enters `StarSystem::initLight` through its real Engine
 getter, executes the real fixed-function light setters and Pan's no-fog
-branch, and returns the `StarSystem` constructor to `Level::createSpace`.
+branch, returns the `StarSystem` constructor and completes
+`Level::createSpace`, including Pan's star color.
 Stage 0 has not returned, and the game is not running. A catalog-backed
 cross-system wanted path also runs.
 Only after that can gameplay paths be verified end-to-end. Exact code
 matching remains a separate polish metric, not the definition of completion.
+
+## Pan Level::createSpace return (2026-10-20)
+
+The original-asset Level/GLES gate now observes production
+`Level::createSpace` return into `Level::init` on Windows SwiftShader and
+Android ARMv7 at `-O0/-O2`. It independently matches Pan's star RGB
+**21/18/10** from `systems.bin` and checks the derived color fields. Source
+is unchanged; the full ARM corpus remains **4,323/4,524** originals,
+**93.93%** mean source-shape, **83.22%** strict fuzzy, **2,551 linked-exact**
+and **1,079 byte-exact**. See
+[Pan createSpace evidence](LEVEL_PAN_CREATE_SPACE_RETURN_2026-10-20.md).
+The gate stops before mode-3 `createPlayer`; Level stage 0 remains incomplete.
 
 ## Pan light and StarSystem constructor return (2026-10-20)
 

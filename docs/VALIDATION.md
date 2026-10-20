@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan Level::createSpace return (2026-10-20)
+
+Production `Level::createSpace` now returns into `Level::init` in the
+original-asset Pan gate at `-O0/-O2` on Windows SwiftShader and Android
+ARMv7. A separate `systems.bin` decoder confirms the star RGB **21/18/10**
+and derived Level color fields. No production source changed; the prior
+full ARM report for this same source revision remains **4,323/4,524**
+originals, **4,735 pairs**, **93.93%/83.22%** source-shape/strict fuzzy,
+**2,551 linked-exact** and **1,079 byte-exact**, with zero skips or
+wrong-type signatures. The gate stops before `createPlayer`; see
+[Pan createSpace evidence](LEVEL_PAN_CREATE_SPACE_RETURN_2026-10-20.md).
+
 ## Pan light and StarSystem constructor return (2026-10-20)
 
 The original-asset Level/GLES gate now executes all real Engine light
