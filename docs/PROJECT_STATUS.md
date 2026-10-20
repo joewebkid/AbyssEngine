@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Pan ship-group loader; older subsystem
+Last reviewed: 2026-10-20 (Pan ordinary ship binding; earlier subsystem
 snapshots retain their dates)
+
+The `PlayerEgo` constructor now initializes `tractorBeam`, `repairBeams`
+and `asteroidTarget`, as required by the original ARM zero write at
+`0x99a16` across `+0x1b0..+0x1bc`. A bounded original-asset gate calls
+the full production `setShip(0,0)` after constructor completion on
+Windows SwiftShader and Android ARMv7 at `-O0/-O2`. It verifies the
+gear-free Pan hull/group relationship, five original AEM meshes and
+**37/37** closed file operations. Material mode is supplied by a bounded
+test service; special equipment, material loading and uninterrupted
+`Level::init` completion remain unverified. Focused constructor
+source-shape/strict fuzzy improves **83.6%/51.7% → 83.9%/53.2%**.
+The full ARM corpus compares **4,323/4,524** originals in **4,735**
+pairs at **93.95%/83.24%** mean source-shape/strict fuzzy. Its
+**2,551 linked-exact** and **1,079 byte-exact** `(unit, symbol)` sets
+are unchanged, with zero skipped ARM units.
+See [the ship-binding evidence](PLAYER_EGO_SET_SHIP_PAN_GATE_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (Pan ship-group loader).
 
 The Pan original-asset check runs continuously from `Level::init` through
 the completed `PlayerEgo` constructor, then calls the production

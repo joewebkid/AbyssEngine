@@ -1699,6 +1699,10 @@ PlayerEgo::PlayerEgo(Player *player) {
     this->cloaked = 0;
     this->chargingCloak = 0;
     this->cloak = nullptr;
+    // Android Thumb 0x99a16 clears the four words at +0x1b0..+0x1bc.
+    this->tractorBeam = nullptr;
+    this->repairBeams = nullptr;
+    this->asteroidTarget = 0;
     this->cloakCharge = -1;
     this->cloakRechargeTimer = 0;
     this->cloakChargeMax = 0;

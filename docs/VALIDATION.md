@@ -4,6 +4,25 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerEgo ordinary ship binding (2026-10-20)
+
+Android ARM Thumb `0x99a16` clears `PlayerEgo+0x1b0..+0x1bc`; the C++
+constructor now initializes the previously omitted tractor-beam,
+repair-beam and asteroid-target fields. `run_player_ego_set_ship_pan_gate.py`
+extracts the complete production `setShip` and runs the gear-free Pan path
+with five original AEM meshes at `-O0/-O2` on Windows SwiftShader and
+Android ARMv7. Both paths close **37/37** files. Native `gof2`, **208/208**
+ARM TUs and **93** verifier tests pass (one prior skip). Focused constructor
+source-shape/strict fuzzy changes **83.6%/51.7% → 83.9%/53.2%**.
+The final corpus compares **4,323/4,524** originals in **4,735** pairs,
+averaging **93.95%/83.24%** source-shape/strict fuzzy. There are **0**
+skipped ARM units and no changes to the **2,551 linked-exact** or
+**1,079 byte-exact** `(unit, symbol)` sets.
+This gate starts after the `Level::createPlayer` constructor boundary and
+uses a bounded material service; it does not prove a completed
+`Level::init` or equipment/material branches. See
+[ship-binding evidence](PLAYER_EGO_SET_SHIP_PAN_GATE_2026-10-20.md).
+
 ## Globals ship-group tables and original-asset loader (2026-10-20)
 
 The five production `Globals::getShipGroup` tables now contain all **576**
