@@ -19,7 +19,7 @@ def main():
 
     source = (ROOT / "src/game/ship/PlayerFighter.cpp").read_text()
     begin = source.index("void PlayerFighter::render() {")
-    end = source.index("\nvoid AEMath_MatrixMul", begin)
+    end = source.index("\nvoid PlayerFighter::push(", begin)
     fixture = (ROOT / "tools/player_fighter_render_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_RENDER", source[begin:end])
 

@@ -27,8 +27,6 @@ float VectorSignedToFloat(int v, int mode);
 
 void PF_update_body(PlayerFighter *self, int dt);
 
-void AEMath_MatrixSetRotation(void *m, float rx, float ry, float rz);
-
 namespace AbyssEngine {
     namespace AEMath {
         float VectorLength(const Vector &value);
@@ -40,8 +38,6 @@ namespace AbyssEngine {
 }
 
 int AERandom_nextIntB(int rng, int bound);
-
-void PF_vscale(void *out, void *vec, float scalar);
 
 uint8_t PlayerFighter::hasMissionCrateLost() {
     return this->missionCrateLost;
@@ -664,49 +660,31 @@ void PlayerFighter::render() {
         this->trail->render();
 }
 
-void AEMath_MatrixMul(void *out, void *m);
-
-static void *const gPush_guard = nullptr;
-static const float gPush_div = 0;
-
 void PlayerFighter::push(int dt) {
-    int *guardP = *(int **) gPush_guard;
-    volatile int saved = *guardP;
+    if (this->pushTimer < 1) return;
 
-    if (0 < this->pushTimer) {
-        int remaining = this->pushTimer - dt;
-        float fr = VectorSignedToFloat(remaining, 0);
-        float ftotal = VectorSignedToFloat(this->pushDuration, 0);
-        this->pushTimer = remaining;
-        float frac = fr / ftotal;
+    this->pushTimer -= dt;
+    const float duration = static_cast<float>(this->pushDuration);
+    const float fraction = static_cast<float>(this->pushTimer) / duration;
+    Matrix basis{1.0f, 0.0f, 0.0f, 0.0f,
+                 0.0f, 1.0f, 0.0f, 0.0f,
+                 0.0f, 0.0f, 1.0f, 0.0f,
+                 1.0f, 1.0f, 1.0f};
+    Matrix rotated = AbyssEngine::AEMath::MatrixSetRotation(
+        basis, fraction * this->pushImpulse.x,
+        fraction * this->pushImpulse.y, fraction * this->pushImpulse.z);
 
-        unsigned char rot[60];
-        AEMath_MatrixSetRotation(rot, frac * this->pushImpulse.z, 0.0f,
-                                 frac * this->pushImpulse.y);
-
-        int lo = this->deltaTime;
-        int hi = this->deltaTimeHi;
-        if ((int) (unsigned) (lo == 0) <= hi) {
-            void *geom = (void *) (intptr_t) this->geometry;
-            void *m = (void *) &((AEGeometry *) ((int) (long) geom))->getMatrix();
-            AEMath_MatrixMul(rot, m);
-
-            ((AEGeometry *) ((int) (long) geom))->setMatrix(*(const Matrix *) rot);
-            lo = this->deltaTime;
-            hi = this->deltaTimeHi;
-        }
-        float speed = (float) (((long long) hi << 32) | (unsigned) lo);
-        void *geom = (void *) (intptr_t) this->geometry;
-        float ftotal2 = VectorSignedToFloat(this->pushDuration, 0);
-
-        unsigned char a[12], b[12], c[60];
-        PF_vscale(a, &this->pushNormal, speed);
-        PF_vscale(b, a, this->currentSpeed);
-        PF_vscale(c, b, (2.0f - frac) * 3.0f * (ftotal2 / gPush_div));
-        ((AEGeometry *) (geom))->translate(*(Vector *) c);
+    const int64_t frameDelta = static_cast<int64_t>(this->deltaTimeHi) * 0x100000000LL +
+                               static_cast<uint32_t>(this->deltaTime);
+    if (frameDelta >= 1) {
+        rotated = this->geometry->getMatrix() * basis;
+        this->geometry->setMatrix(rotated);
     }
 
-    return;
+    const Vector step = this->pushNormal * static_cast<float>(frameDelta);
+    const Vector atSpeed = step * this->currentSpeed;
+    const float scale = (2.0f - fraction) * 3.0f * (duration / 5000.0f);
+    this->geometry->translate(atSpeed * scale);
 }
 
 void PlayerFighter::reset() {

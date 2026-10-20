@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (`PlayerFighter::setPosition` host-pointer ABI recovery;
+Last reviewed: 2026-10-20 (`PlayerFighter::push` ARM recovery;
 earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::push` at `0xdfdc8` confirms a three-axis
+identity-based rotation, conditional matrix multiplication on a positive
+64-bit frame delta, and three Vector scales ending in a duration/5000
+factor. Replaced the null guard, zero divisor, pointer truncations and
+declared-only math shims. The production-method smoke passes at `-O0/-O2`,
+native UCRT64 `gof2` builds, all 208 NDK r18b ARM translation units compile,
+the other Fighter smokes pass, and 93 verifier tests pass (one existing
+skip). Focused source-shape/strict fuzzy rises **79.1%/39.4% →
+92.1%/57.9%**; the function remains nonexact. The full corpus is
+**4,323/4,524** originals across **4,735** pairs, **94.03%/83.36%** mean
+source-shape/strict fuzzy, **2,557 linked-exact** and **1,082 byte-exact**,
+with zero exact-pair losses, skipped or wrong-type symbols. The unresolved
+`PF_update_body` still prevents a continuous game-frame push. See
+[the ARM evidence](PLAYER_FIGHTER_PUSH_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (`PlayerFighter::setPosition` host-pointer ABI recovery).
 
 `PlayerFighter::setPosition(float,float,float)` is called by Level and
 LevelScript. Its prior source narrowed the geometry-matrix pointer to a
