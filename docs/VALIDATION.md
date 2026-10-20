@@ -4,6 +4,36 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Continuous Pan Level stage-zero return (2026-10-20)
+
+`run_level_stage0_pan_gate.py` completes the original-asset Pan stage-zero
+path after the production `createPlayer` return. Windows SwiftShader and
+Android ARMv7 pass at `-O0/-O2`: `Level::init` returns `0`, the stage
+advances to `1`, the player is at `(10, 10, 10000)`, and **38/38** files
+close. Stage one, a continuous armed player, real particle allocation and
+material loading, and a playable frame remain open. No source changed:
+the last full ARM corpus is **4,323/4,524** originals, **4,735** pairs,
+**93.95%/83.24%** mean source-shape/strict fuzzy, **2,551 linked-exact**,
+**1,079 byte-exact** and zero skipped units. Fresh focused source-shape/
+strict fuzzy is **86.1%/35.2%** for `createPlayer` and **97.5%/49.9%**
+for `loadWeaponPositions`, both non-exact. See
+[stage-zero return evidence](LEVEL_INIT_STAGE0_PAN_RETURN_ARM_2026-10-20.md).
+
+## Continuous Pan createPlayer return (2026-10-20)
+
+`run_level_player_weapon_positions_pan_gate.py` executes the production
+weapon-position reader and four Pan type-3 geometries. The succeeding
+`run_level_player_complete_pan_gate.py` executes cleanup and returns from
+`Level::createPlayer` into the same `Level::init` call. Both pass on Windows
+SwiftShader and Android ARMv7 at `-O0/-O2`, with **38/38** closed file
+operations. A separate full-body CPU contract passes 118 equipped cases;
+those cases are not yet continuous with the original-asset Level gate.
+No C++ changed, so the last full ARM corpus for this source tree remains
+**4,323/4,524** originals, **4,735** pairs, **93.95%/83.24%** mean
+source-shape/strict fuzzy, **2,551 linked-exact**, **1,079 byte-exact**
+and zero skipped units. See
+[weapon-file integration evidence](LEVEL_CREATE_PLAYER_WEAPON_FILE_PAN_ARM_2026-10-20.md).
+
 ## Level player yaw and empty gun buckets (2026-10-20)
 
 `run_level_player_rotation_pan_gate.py` continues the Pan `Level::init`

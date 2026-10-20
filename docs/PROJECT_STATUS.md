@@ -1,7 +1,38 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Level player yaw and empty gun buckets; earlier subsystem
+Last reviewed: 2026-10-20 (continuous Pan Level stage-zero return; earlier subsystem
 snapshots retain their dates)
+
+The original-asset Pan gate now **returns from production `Level::init`
+stage zero** on Windows SwiftShader and Android ARMv7 at `-O0/-O2`.
+After complete `createPlayer`, it positions the player at
+`(10, 10, 10000)`, returns `0`, advances `field_134` to `1`, and retains
+**38/38** closed file operations. This is not a playable game or a stage-one
+return. The zero-gun Pan path is continuous; equipped weapon behavior is
+separately checked by 118 full-body CPU cases. No C++ changed, so the
+full ARM corpus remains **4,323/4,524** originals, **4,735** pairs,
+**93.95%/83.24%** means, **2,551 linked-exact**, **1,079 byte-exact**
+and zero skipped units. Fresh focused source-shape/strict fuzzy is
+**86.1%/35.2%** for `createPlayer` and **97.5%/49.9%** for
+`loadWeaponPositions`; neither is exact. See
+[stage-zero return evidence](LEVEL_INIT_STAGE0_PAN_RETURN_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (continuous Pan createPlayer return).
+
+The original-asset Pan `Level::init` gate now executes the production
+`FileRead::loadWeaponPositions` against `weapons_hd.bin`, constructs four
+positioned/scaled geometries from Pan's type-3 pairs, runs the normal
+temporary-vector cleanup, and **returns from `Level::createPlayer`**.
+Windows SwiftShader and Android ARMv7 pass at `-O0/-O2`: **73** meshes,
+**82** transforms and **38/38** closed file operations. The continuous
+fixture has zero used gun slots; a separate full-body CPU contract still
+passes 118 armed cases. Stage 0 has not returned. No production C++ changed,
+so the full ARM corpus remains **4,323/4,524** originals, **4,735** pairs,
+**93.95%/83.24%** mean source-shape/strict fuzzy, **2,551 linked-exact**
+and **1,079 byte-exact** with zero skipped units. See
+[the weapon-file integration evidence](LEVEL_CREATE_PLAYER_WEAPON_FILE_PAN_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (Level player yaw and empty gun buckets).
 
 Android ARM `Level::createPlayer` places the player yaw in vector Y, not Z.
 The C++ now uses that axis, and the continuous original-asset Pan gate runs
@@ -122,13 +153,13 @@ getter, executes the real fixed-function light setters and Pan's no-fog
 branch, returns the `StarSystem` constructor and completes
 `Level::createSpace`, including Pan's star color, then enters
 `Level::createPlayer`, reads the active Ship's equipment and three used-slot
-counts, constructs a `Player` and sets its hull, shield and armor. The latest
-gate returns from `PlayerEgo`'s normal-path constructor after creating the
-stars/HUD and initializing steering and visibility, then separately loads
-the first ship group from original AEM files before stopping ahead of `setShip`.
-Stage 0 has not returned, and the game
-is not running. A catalog-backed cross-system wanted path also runs.
-Only after that can gameplay paths be verified end-to-end. Exact code
+counts, constructs a `Player` and sets its hull, shield and armor. The
+current original-asset Pan gate continues through `PlayerEgo`, ship binding,
+the weapon-position file, four geometries and player placement;
+`Level::init` stage zero returns on Windows and Android ARMv7 at `-O0/-O2`.
+Stage one and a playable game frame remain unverified. A catalog-backed
+cross-system wanted path also runs. Gameplay paths still need end-to-end
+checks. Exact code
 matching remains a separate polish metric, not the definition of completion.
 
 ## Level::createPlayer Player allocation (2026-10-20)
