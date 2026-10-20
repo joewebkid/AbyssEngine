@@ -9,9 +9,12 @@ equipment and orbit gates, bounded random count, position rejection tests and
 boss placement. A continuous Pan original-asset gate with a synthetic plasma
 equipment item builds 4–7 clouds and then checks the no-equipment return.
 Windows SwiftShader and physical Android ARMv7 pass at `-O0/-O2`; native
-`gof2` and the changed ARM TU compile. The original allocation is `0x16c`
-but the reconstructed ARM `PlayerGasCloud` is `0x168`, so four trailing bytes
-remain structurally unresolved. **Do not apply the previous exact/source-shape
+`gof2` and both changed ARM translation units compile. The original
+allocation is `0x16c`; constructor instructions show an unidentified
+four-byte slot at `+0x124`
+before `center`, not a trailing gap. The reconstructed ARM class now has
+verified offsets through `+0x168` and size `0x16c`, but that slot's semantics
+remain unknown. **Do not apply the previous exact/source-shape
 totals to this changed revision:** the required NDK r18b toolchain is absent,
 and a fresh focused/full corpus could not be run. In a separate NDK 25
 before/after check, 71 of 72 previously linked-exact `Level` functions were

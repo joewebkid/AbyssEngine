@@ -10,11 +10,14 @@
 `Level::createGasClouds` after the complete Pan asteroid field. A synthetic
 equipment item and bounded plasma-probability fixture enter the positive
 branch; a second call without that item checks the early return. Windows
-SwiftShader and physical Android ARMv7 pass at `-O0/-O2`. Native `gof2` and
-the changed `Level.cpp` ARM TU compile with NDK 25. The original ARMv7
-function at `0xafd2c` supports the recovered branch, count and placement
-logic, but full stage-one return, real plasma probabilities, alien/boss
-branches and cloud updates remain untested.
+SwiftShader and physical Android ARMv7 pass at `-O0/-O2` with the recovered
+`PlayerGasCloud` layout. Native `gof2` and both changed ARM translation units
+compile with NDK 25. The original constructor places `center` at `+0x128`
+and the mesh IDs at `+0x164/+0x168`; the reconstructed ARM object is now
+`0x16c` bytes. The intervening `+0x124` slot has unknown semantics. The
+original ARMv7 function at `0xafd2c` supports the recovered branch, count
+and placement logic, but full stage-one return, real plasma probabilities,
+alien/boss branches and cloud updates remain untested.
 
 NDK r18b's compiler, assembler and objdump are absent locally, so focused
 source-shape and the full exact-set verifier could not be refreshed. The

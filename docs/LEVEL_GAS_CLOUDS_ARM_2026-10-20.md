@@ -20,8 +20,14 @@ independently anchor the following recovered behavior:
   must be farther than 25,000 from the origin and 30,000 from the asteroid
   center. The first boss cloud is then placed at `(92000, 0, 36000)`.
 - ARM allocation sizes are `0xc0` for `AEGeometry` and `0x16c` for
-  `PlayerGasCloud`; the latter is only `0x168` in the current reconstructed
-  ARM layout. Allocation retains `0x16c` while that four-byte gap is unresolved.
+  `PlayerGasCloud`. The constructor at `0x1763cc` writes `center` at `+0x128`,
+  `modelGeometry` at `+0x134`, `itemId` and the full-width spark-mesh ID at
+  `+0x160/+0x164`, and the cloud-mesh ID at `+0x168` (REA/IDA assembly
+  `ev_ed76bb67bc547cfb3092a1e09191892e9527d54d2245cfb9fcf6397dfd8e0e86`).
+  The reconstructed base ends at `+0x124`. An opaque four-byte slot now
+  preserves the observed derived layout; its meaning and initialization are
+  not established. The spark-mesh field is now `int`, matching the original
+  32-bit store; its 16-bit use by `AEGeometry` is an implicit conversion.
 
 This replaces the prior implementation's truncated host pointer, unbounded
 `nextInt()`, `/1.0f` probability divisor and player-relative placement helper.
@@ -42,9 +48,11 @@ to verify the no-equipment return leaves the existing cloud array unchanged.
 Only material IDs `20111` and `29045`, observed from the registered original
 assets for these clouds, were added to the fail-closed host material allowlist.
 
-Windows SwiftShader and physical Android ARMv7 pass at `-O0` and `-O2`.
-The native `gof2` build and the changed `Level.cpp` translation unit with
-NDK 25 are green. The last official corpus report for the parent revision is
+Windows SwiftShader and physical Android ARMv7 passed at `-O0` and `-O2`
+with the final layout and full-width mesh ID. The native `gof2` build and
+both changed ARM translation units pass with NDK 25; the header asserts
+the original offsets and `0x16c` size. The last official corpus report for
+the parent revision is
 `C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261020/explosion-globals-full.json`
 (SHA-256 `4e60e6fae9369f893d984612bd969311fd99a196dfbf250c6a830035963b7deb`):
 4,323/4,524 originals, 4,735 pairs, 93.96% mean source-shape, 83.24% strict
@@ -64,8 +72,8 @@ candidate out of `main` until that gate is restored and passed.
 ## Open work
 
 Restore NDK r18b and rerun focused `createGasClouds`, full 208-TU ARM
-verification and exact-pair set comparison. Then resolve the remaining
-`PlayerGasCloud` layout gap, exercise real plasma distributions and the alien
-and boss branches, and continue Pan stage one through mission dispatch and
+verification and exact-pair set comparison. Identify the semantics of the
+opaque `PlayerGasCloud+0x124` slot; exercise real plasma distributions and
+the alien and boss branches, and continue Pan stage one through mission dispatch and
 return. Cloud update, collision, rendering and a playable frame are still
 outside this gate.

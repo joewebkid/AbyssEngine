@@ -7008,7 +7008,7 @@ void Level::assignGuns() {
 }
 
 #if __SIZEOF_POINTER__ == 4
-static_assert(sizeof(PlayerGasCloud) <= 0x16c, "PlayerGasCloud ARM allocation bound");
+static_assert(sizeof(PlayerGasCloud) == 0x16c, "PlayerGasCloud ARM allocation size");
 #endif
 
 void Level::createGasClouds() {
@@ -7048,9 +7048,7 @@ void Level::createGasClouds() {
 
         auto *geo = static_cast<AEGeometry *>(::operator new(sizeof(AEGeometry)));
         new(geo) AEGeometry(0x37d1, Globals::Canvas, false);
-        // ARM allocates 0x16c; the reconstructed class currently occupies 0x168.
-        auto *cloud = static_cast<PlayerGasCloud *>(
-            ::operator new(sizeof(PlayerGasCloud) < 0x16c ? 0x16c : sizeof(PlayerGasCloud)));
+        auto *cloud = static_cast<PlayerGasCloud *>(::operator new(sizeof(PlayerGasCloud)));
         new(cloud) PlayerGasCloud(*prob, field_94, geo, pos);
         (*gasClouds)[i] = cloud;
         cloud->setLevel(this);
