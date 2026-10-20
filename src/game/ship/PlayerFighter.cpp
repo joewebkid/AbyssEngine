@@ -23,8 +23,6 @@
 
 // PaintCanvas::gCanvas is declared extern in engine/render/PaintCanvas.h (included above).
 
-float VectorSignedToFloat(int v, int mode);
-
 void PF_update_body(PlayerFighter *self, int dt);
 
 namespace AbyssEngine {
@@ -557,55 +555,24 @@ int PlayerFighter::outerCollide(float x, float y, float z) {
     return 0;
 }
 
-static inline void AEMath_VectorScale(void *out, float s, void *v) {
-    *(AbyssEngine::AEMath::Vector *) out =
-            s * *(const AbyssEngine::AEMath::Vector *) v;
-}
-
-static void *const gIP_guard = nullptr;
-static const float gIP_strength = 0;
-static void *const gIP_rngFn = nullptr;
-
-typedef int (*RngFn)(int rng, int bound);
-
 void PlayerFighter::initPush(const Vector &target, int radius) {
-    int *guardP = *(int **) gIP_guard;
-    volatile int saved = *guardP;
+    Vector current = this->getPosition();
+    Vector offset = target - current;
+    float ratio = AbyssEngine::AEMath::VectorLength(offset) / static_cast<float>(radius);
+    float clamped = ratio < 1.0f ? ratio : 1.0f;
+    int duration = static_cast<int>((1.0f - clamped) * 5000.0f);
+    this->pushTimer = duration;
+    this->pushDuration = duration;
 
-    AbyssEngine::AEMath::Vector gp = this->getPosition();
-    float pos[3] = {gp.x, gp.y, gp.z};
+    Vector here = this->getPosition();
+    this->pushNormal = AbyssEngine::AEMath::VectorNormalize(here - target);
 
-    float diff[3];
-    *reinterpret_cast<Vector *>(diff) = target - *reinterpret_cast<const Vector *>(pos);
-    float len = AbyssEngine::AEMath::VectorLength(*reinterpret_cast<const AbyssEngine::AEMath::Vector *>(diff));
-    float r = VectorSignedToFloat(radius, 0);
-    float t = 1.0f;
-    if (len / r < 1.0f) t = len / r;
-    int strength = (int) ((1.0f - t) * gIP_strength);
-    this->pushTimer = strength;
-    this->pushDuration = strength;
-
-    AbyssEngine::AEMath::Vector gp2 = this->getPosition();
-    float pos2[3] = {gp2.x, gp2.y, gp2.z};
-    float dir[3];
-    *reinterpret_cast<Vector *>(dir) =
-            *reinterpret_cast<const Vector *>(pos) - *reinterpret_cast<const Vector *>(pos2);
-    this->pushNormal = AbyssEngine::AEMath::VectorNormalize(
-        *reinterpret_cast<const Vector *>(dir));
-
-    RngFn rng = (RngFn) gIP_rngFn;
-    int rngObj = (int) (intptr_t) AERandom::gRandom;
-    float rx = VectorSignedToFloat(rng(rngObj, 200) - 100, 0);
-    float ry = VectorSignedToFloat(rng(rngObj, 200) - 100, 0);
-    float rz = VectorSignedToFloat(rng(rngObj, 200) - 100, 0);
-    float rvec[3] = {rx, ry, rz};
-    Vector rnorm = AbyssEngine::AEMath::VectorNormalize(
-        *reinterpret_cast<const Vector *>(rvec));
-    float scaled[3];
-    AEMath_VectorScale(scaled, (float) strength, &rnorm);
-    this->pushImpulse = *(Vector *) scaled;
-
-    return;
+    auto *random = static_cast<AERandom *>(Globals::rnd);
+    float spinX = static_cast<float>(random->nextInt(200) - 100);
+    float spinY = static_cast<float>(random->nextInt(200) - 100);
+    float spinZ = static_cast<float>(random->nextInt(200) - 100);
+    Vector spin = {spinX, spinY, spinZ};
+    this->pushImpulse = 0.2f * AbyssEngine::AEMath::VectorNormalize(spin);
 }
 
 void PlayerFighter::setExhaustVisible(bool vis) {

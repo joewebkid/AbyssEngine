@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (`PlayerFighter::push` ARM recovery;
+Last reviewed: 2026-10-21 (`PlayerFighter::initPush` ARM recovery;
 earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::initPush` at `0xdfc88` establishes the
+distance-based 5,000 ms push duration, outward direction and a random
+normalized spin scaled by `0.2f`. Removed null placeholders, zero strength
+and RNG pointer truncation. Production-method smoke at `-O0/-O2`, native
+UCRT64 `gof2`, all 208 NDK r18b ARM translation units and 93 verifier tests
+(one existing skip) pass. Focused source-shape/strict fuzzy rises
+**70.4%/35.1% → 96.6%/74.7%**; this function is not exact. The full corpus
+compares **4,323/4,524** originals across **4,735** pairs, at
+**94.03%/83.37%** mean source-shape/strict fuzzy, with **2,557
+linked-exact** and **1,082 byte-exact**; there are no exact-pair losses,
+skipped or wrong-type symbols. Full-game push behavior remains untested
+because `PF_update_body` is unresolved. See
+[the ARM evidence](PLAYER_FIGHTER_INIT_PUSH_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-20 (`PlayerFighter::push` ARM recovery).
 
 Android ARM `PlayerFighter::push` at `0xdfdc8` confirms a three-axis
 identity-based rotation, conditional matrix multiplication on a positive
