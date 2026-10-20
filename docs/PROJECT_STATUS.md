@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-20 (Status kill/achievement propagation;
+Last reviewed: 2026-10-20 (`PlayerFighter::render` recovery;
 earlier subsystem snapshots retain their dates)
+
+Android ARM and the recovered listing confirm the state-dependent render
+branches, draw order and temporary 60-byte local transform in
+`PlayerFighter::render`. Replaced null receiver/global placeholders with the
+actual geometry, explosion, trail and canvas calls. A recording smoke test
+passes at `-O0/-O2`, the UCRT64 `gof2` library builds, and 93 verifier tests
+pass (one existing skip). Focused NDK r18b source-shape/strict fuzzy rises
+from **56.1%/33.7%** to **92.4%/65.8%**, though this function remains
+nonexact. The full corpus is **4,323/4,524** originals across **4,735**
+pairs, **94.02%/83.36%** mean source-shape/strict fuzzy, **2,557
+linked-exact** and **1,082 byte-exact**; no exact-pair losses, skipped or
+wrong-type symbols. No full game frame was executed. The unresolved
+`PF_update_body` and pirate-death path remain priorities. See
+[the ARM evidence](PLAYER_FIGHTER_RENDER_ARM_2026-10-20.md).
+
+Previous checkpoint: 2026-10-20 (Status kill/achievement propagation).
 
 Android ARM shows `Status::incKills` and `incPirateKills` updating their own
 fields and then tail-calling the corresponding `Achievements` increment

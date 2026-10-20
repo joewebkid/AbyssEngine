@@ -680,70 +680,48 @@ void PlayerFighter::setExhaustVisible(bool vis) {
     }
 }
 
-static void *const gR_g3 = nullptr;
-static void *const gR_g4 = nullptr;
-static void *const gR_g5 = nullptr;
-
 void PlayerFighter::render() {
-    if (this->wreckGeometry != 0) {
-        ((AEGeometry *) (0))->render();
-    }
-    int active = ((Player *) (this->player))->isActive();
+    if (this->wreckGeometry)
+        this->wreckGeometry->render();
+
+    const bool active = this->player->isActive() != 0;
     int st = this->state;
-    unsigned *idp;
-    if (active != 0 && (unsigned) (st - 3) < 2) {
-        if (this->explosion != 0) {
-            ((Explosion *) (0))->render();
+    if (!active) {
+        if (st != 5) return;
+    } else if ((unsigned) (st - 3) < 2) {
+        if (this->explosion) {
+            this->explosion->render();
             st = this->state;
         }
         if (st == 4) {
-            if (this->field_0x1f8 >= 300) {
-                goto done;
-            }
-            idp = *(unsigned **) gR_g4;
-        } else {
-            if (st != 3) {
-                goto done;
-            }
-            if (this->subGeometry == 0) {
-                return ((AEGeometry *) (intptr_t) this->geometry)->render();
-            }
-            idp = *(unsigned **) gR_g3;
+            if (this->field_0x1f8 >= 300) return;
+        } else if (st != 3) {
+            return;
         }
+
+        if (st == 4 || this->subGeometry) {
+            const unsigned id = this->subGeometry->transform;
+            Matrix saved = *static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(id));
+            Globals::Canvas->TransformSetLocal(id, this->player->transformMatrix);
+            this->subGeometry->render();
+            Globals::Canvas->TransformSetLocal(id, saved);
+        } else {
+            this->geometry->render();
+        }
+        return;
+    }
+
+    if (this->subGeometry) {
+        const unsigned id = this->subGeometry->transform;
+        Matrix saved = *static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(id));
+        Globals::Canvas->TransformSetLocal(id, this->player->transformMatrix);
+        this->subGeometry->render();
+        Globals::Canvas->TransformSetLocal(id, saved);
     } else {
-        if (active != 0 || st != 5) {
-            goto done;
-        }
-        if (this->subGeometry == 0) {
-            ((AEGeometry *) (0))->render();
-        } else {
-            idp = *(unsigned **) gR_g5;
-            unsigned char tmp[60];
-            unsigned id = *idp;
-            void *src = PaintCanvas::gCanvas->TransformGetLocal(id);
-            memcpy(tmp, src, 0x3c);
-            PaintCanvas::gCanvas->TransformSetLocal(
-                *idp, *(const AbyssEngine::AEMath::Matrix *) (intptr_t) ((AEGeometry *) (intptr_t) this->subGeometry)->transform);
-            ((AEGeometry *) (0))->render();
-            PaintCanvas::gCanvas->TransformSetLocal(
-                *idp, *(const AbyssEngine::AEMath::Matrix *) (intptr_t) ((AEGeometry *) (intptr_t) this->subGeometry)->transform);
-        }
-        if (this->trail != 0) {
-            ((AbyssEngine::Trail *) (0))->render();
-        }
-        goto done;
+        this->geometry->render();
     }
-    {
-        unsigned char tmp[60];
-        unsigned id = *idp;
-        void *src = PaintCanvas::gCanvas->TransformGetLocal(id);
-        memcpy(tmp, src, 0x3c);
-        PaintCanvas::gCanvas->TransformSetLocal(*idp, *(const AbyssEngine::AEMath::Matrix *) (intptr_t) ((AEGeometry *) (intptr_t) this->subGeometry)->transform);
-        ((AEGeometry *) (0))->render();
-        PaintCanvas::gCanvas->TransformSetLocal(*idp, *(const AbyssEngine::AEMath::Matrix *) (intptr_t) ((AEGeometry *) (intptr_t) this->subGeometry)->transform);
-    }
-done:
-    ;
+    if (this->trail)
+        this->trail->render();
 }
 
 void AEMath_MatrixMul(void *out, void *m);
