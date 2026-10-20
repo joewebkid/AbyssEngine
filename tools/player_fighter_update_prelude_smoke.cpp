@@ -37,8 +37,15 @@ struct AEGeometry {
     Matrix &getMatrix() { ++matrixCalls; return matrix; }
 };
 struct Explosion { bool playing = false; bool isPlaying() { return playing; } };
+template<class T> struct Array {
+    unsigned int count = 0;
+    T *items = nullptr;
+    unsigned int size() const { return count; }
+    T &operator[](unsigned int i) { return items[i]; }
+};
 struct Player {
     bool active = true;
+    Array<Player *> *enemies = nullptr;
     Matrix transformMatrix{};
     union {
         uint16_t enemyFlags = 0x707;
@@ -54,6 +61,7 @@ struct Player {
     int updateCalls = 0;
     int stopSoundCalls = 0;
     int enemiesCalls = 0;
+    int activeChecks = 0;
     bool lastDoSound = false;
     int lastDt = 0;
     int getMaxHitpoints() { return maxHitpoints; }
@@ -67,13 +75,14 @@ struct Player {
     }
     bool turnedEnemy() { return turnedEnemyFlag; }
     bool isAlwaysFriend() { return alwaysFriend; }
+    bool isActive() { ++activeChecks; return active; }
     void update(int dt, bool doSound) {
         ++updateCalls;
         lastDt = dt;
         lastDoSound = doSound;
     }
     void StopEngineSound() { ++stopSoundCalls; }
-    void *getEnemies() { ++enemiesCalls; return nullptr; }
+    Array<Player *> *getEnemies() { ++enemiesCalls; return enemies; }
 };
 struct Standing {
     bool enemy = false;
@@ -103,13 +112,17 @@ struct Level {
     PlayerEgo *getPlayer() { ++getPlayerCalls; return ego; }
     void uncoverWanted(int index) { uncovered = index; }
 };
+struct Waypoint { int x, y, z; };
 struct Route {
     static int constructed, destroyed;
     int cloneCalls = 0;
     int points = 1;
     int lengthCalls = 0, setCoordsCalls = 0, loopCalls = 0;
+    int updateCalls = 0, waypointCalls = 0;
     bool looping = false;
     Vector coords{};
+    Vector lastPosition{};
+    Waypoint *waypoint = nullptr;
     Route() = default;
     Route(int *v, int count) : points(count / 3), coords{float(v[0]), float(v[1]), float(v[2])} { ++constructed; }
     ~Route() { ++destroyed; }
@@ -117,6 +130,8 @@ struct Route {
     int length() { ++lengthCalls; return points; }
     void setNewCoords(Vector v) { ++setCoordsCalls; coords = v; }
     void setLoop(bool value) { ++loopCalls; looping = value; }
+    void update(const Vector &v) { ++updateCalls; lastPosition = v; }
+    Waypoint *getWaypoint() { ++waypointCalls; return waypoint; }
 };
 int Route::constructed = 0;
 int Route::destroyed = 0;
@@ -156,6 +171,8 @@ struct KIPlayer {
     int fov = 0;
     Vector targetPos{};
     Vector objectPosition{};
+    Vector resetVecB{};
+    int field_0x38 = 0;
     bool wingman = false;
     void setActive(bool value) { player->setActive(value); }
     bool isWingMan() { return wingman; }
@@ -165,6 +182,9 @@ struct PlayerFighter : KIPlayer {
     Trail *trail = nullptr;
     Vector workingPosition{};
     int field_0x1c8 = 0;
+    uint8_t field_0x12c = 0;
+    uint8_t field_0x12e = 0;
+    uint8_t aiDisabled = 0;
     void update(int dt);
 };
 int bodyCalls = 0;
@@ -361,4 +381,66 @@ int main() {
     assert(fighter.routeClone->looping);
     delete fighter.routeClone;
     fighter.routeClone = nullptr;
+
+    Player enemyA, enemyB;
+    Player *enemyItems[2] = {&enemyA, &enemyB};
+    Array<Player *> enemyList;
+    enemyList.count = 2;
+    enemyList.items = enemyItems;
+    player.enemies = &enemyList;
+    fighter.field_0x38 = 9;
+    fighter.field_0x12e = 1;
+    fighter.update(1);
+    assert(fighter.field_0x38 == -1 && fighter.field_0x12e == 1);
+    assert(enemyA.activeChecks == 0);
+
+    fighter.field_0x38 = 0;
+    enemyA.active = false;
+    fighter.update(1);
+    assert(fighter.field_0x38 == 0 && fighter.field_0x12e == 0);
+    assert(enemyA.activeChecks == 1);
+    fighter.field_0x38 = 1;
+    fighter.update(1);
+    assert(fighter.field_0x38 == -1 && enemyB.activeChecks == 0);
+
+    fighter.field_0x38 = 1;
+    fighter.field_0x12e = 1;
+    fighter.update(1);
+    assert(fighter.field_0x38 == 1 && fighter.field_0x12e == 1);
+    assert(enemyB.activeChecks == 1);
+
+    fighter.aiDisabled = 1;
+    fighter.field_0x38 = 9;
+    fighter.field_0x12e = 1;
+    fighter.update(1);
+    assert(fighter.field_0x38 == 9 && fighter.field_0x12e == 1);
+    fighter.aiDisabled = 0;
+
+    player.enemies = nullptr;
+    fighter.wingmanFlag = 0;
+    fighter.routeClone = &route;
+    int updateBefore = route.updateCalls;
+    int waypointBefore = route.waypointCalls;
+    geometry.position = {11.0f, 22.0f, 33.0f};
+    fighter.update(1);
+    assert(route.updateCalls == updateBefore + 1 && route.waypointCalls == waypointBefore + 1);
+    assert(route.lastPosition.x == 11.0f && fighter.state == 0 && fighter.field_0x12c == 0);
+
+    Waypoint waypoint{101, -202, 303};
+    route.waypoint = &waypoint;
+    waypointBefore = route.waypointCalls;
+    fighter.update(1);
+    assert(route.waypointCalls == waypointBefore + 4 && fighter.field_0x12c == 1);
+    assert(fighter.resetVecB.x == 101.0f && fighter.resetVecB.y == -202.0f);
+    assert(fighter.resetVecB.z == 303.0f);
+
+    fighter.wingmanFlag = 1;
+    fighter.routeClone = nullptr;
+    fighter.state = 0;
+    fighter.update(1);
+    assert(fighter.state == 5);
+    fighter.aiDisabled = 1;
+    fighter.state = 0;
+    fighter.update(1);
+    assert(fighter.state == 0);
 }

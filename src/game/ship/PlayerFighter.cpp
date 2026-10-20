@@ -473,7 +473,27 @@ void PlayerFighter::update(int dt) {
         body->StopEngineSound();
     } else {
         body->update(dt, this->state != 5 && this->fov != -1);
-        body->getEnemies();
+        Array<Player *> *enemies = body->getEnemies();
+        if (!this->aiDisabled) {
+            if (enemies) {
+                if (static_cast<unsigned int>(this->field_0x38) >= enemies->size())
+                    this->field_0x38 = -1;
+                if (!this->field_0x12e)
+                    this->field_0x38 = -1;
+                else if (this->field_0x38 >= 0 && !(*enemies)[this->field_0x38]->isActive())
+                    this->field_0x12e = 0;
+            } else if (this->routeClone) {
+                this->routeClone->update(this->geometry->getPosition());
+                if (this->routeClone->getWaypoint()) {
+                    this->resetVecB.x = static_cast<float>(this->routeClone->getWaypoint()->x);
+                    this->resetVecB.y = static_cast<float>(this->routeClone->getWaypoint()->y);
+                    this->field_0x12c = 1;
+                    this->resetVecB.z = static_cast<float>(this->routeClone->getWaypoint()->z);
+                }
+            } else {
+                this->state = 5;
+            }
+        }
     }
 
     // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.

@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::update` wingman-route rebuild;
-earlier subsystem snapshots retain their dates)
+Last reviewed: 2026-10-21 (`PlayerFighter::update` enemy validation and
+no-enemies route; earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xdd274–0xdd2b6`,
+`0xdd35c–0xdd3be`, and `0xdd622–0xdd628` confirms the selected-enemy
+index/active checks, the AI-disabled bypass, the no-enemies route update
+and waypoint transfer, and state 5 with no route. The production-method
+smoke passes at `-O0/-O2`; all 11 Fighter smokes, native UCRT64 `gof2`,
+all 208 NDK r18b ARM translation units and 93 verifier tests pass (one
+existing skip). Whole-`update` source-shape/strict fuzzy rises
+**17.9%/10.1% → 20.2%/11.2%**; target search, combat, movement and the
+common tail still end in unresolved `PF_update_body`. The full corpus
+compares **4,323/4,524** originals across **4,735** pairs, at
+**94.03%/83.38%** mean source-shape/strict fuzzy, with **2,557
+linked-exact** and **1,082 byte-exact**; there are no exact-pair
+losses, skipped or wrong-type symbols. Complete game-frame behavior
+remains untested. See
+[the ARM evidence](PLAYER_FIGHTER_ENEMIES_ROUTE_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::update` wingman-route rebuild).
 
 Android ARM `PlayerFighter::update` at `0xdd2d4–0xdd74c` confirms the
 wingman right/up/direction offsets and the route replacement boundary.
