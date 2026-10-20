@@ -38,7 +38,8 @@ wrong-type. This test-only gate claims no new exact match. Native `gof2`
 and the 93-test verifier suite were green on the same production revision
 (one verifier skip when temporary files used D:).
 
-Next, recover the post-scene `createMission` path using real system,
-station, RNG and route dependencies, then continue toward stage-one return.
-Real Galaxy probability distributions, nonempty and alien mission modes,
+The next [hostile-route gate](LEVEL_STAGE1_HOSTILE_ROUTE_ARM_2026-10-20.md)
+executes the post-scene system/station/RNG prefix through `Route(int*, 3)`.
+Continue through the post-route decisions toward stage-one return. Real
+Galaxy probability distributions, nonempty and alien mission modes,
 populated enemy cleanup, cloud updates and a playable frame remain open.
