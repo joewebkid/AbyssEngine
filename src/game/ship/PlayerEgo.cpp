@@ -340,7 +340,7 @@ unsigned char PlayerEgo::isDockedToStream() {
     return ((uint8_t &) this->dockedToStream);
 }
 
-int PlayerEgo::getTargetFollowCamera() {
+TargetFollowCamera *PlayerEgo::getTargetFollowCamera() {
     PlayerEgo *self = this;
     return this->targetFollowCamera;
 }
@@ -536,7 +536,7 @@ void PlayerEgo::setAutoTurret(bool on) {
 
 void PlayerEgo::hitCamera() {
     this->hitShake = 1;
-    int cam = this->targetFollowCamera;
+    TargetFollowCamera *cam = this->targetFollowCamera;
     this->hitShakeTimer = 0;
     ((TargetFollowCamera *) cam)->setRumblePercentage(1.0f, 250);
 }
@@ -2163,7 +2163,7 @@ void PlayerEgo::roll(int amount) {
 }
 
 void PlayerEgo::setTargetFollowCamera(TargetFollowCamera *cam) {
-    ((void *&) this->targetFollowCamera) = cam;
+    this->targetFollowCamera = cam;
     cam->setShipHandling(this->handling);
 }
 
@@ -2214,7 +2214,8 @@ void PlayerEgo::calcCollision(Array<KIPlayer *> *candidates) {
 }
 
 void PlayerEgo::dockToPlanet() {
-    ((TargetFollowCamera *) (this->targetFollowCamera))->setLookAtCam((bool) (unsigned char) this->targetFollowCamera);
+    this->targetFollowCamera->setLookAtCam(
+        static_cast<unsigned char>(reinterpret_cast<uintptr_t>(this->targetFollowCamera)) != 0);
     this->boostingFlag = 1;
     this->boostTimer = 0;
     this->speed = 0x41000000;

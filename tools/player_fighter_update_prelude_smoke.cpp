@@ -30,12 +30,15 @@ struct AEGeometry {
     Vector direction{0.0f, 0.0f, 1.0f};
     Matrix matrix{2};
     int matrixCalls = 0;
+    int visibleCalls = 0;
+    bool visible = false;
     int rightCalls = 0, upCalls = 0, directionCalls = 0;
     Vector getPosition() { return position; }
     Vector getRightVector() { ++rightCalls; return right; }
     Vector getUpVector() { ++upCalls; return up; }
     Vector getDirection() { ++directionCalls; return direction; }
     Matrix &getMatrix() { ++matrixCalls; return matrix; }
+    void setVisible(bool value) { ++visibleCalls; visible = value; }
 };
 struct Explosion { bool playing = false; bool isPlaying() { return playing; } };
 template<class T> struct Array {
@@ -74,10 +77,11 @@ struct Player {
     int getKIPlayerCalls = 0;
     int getEnemyCalls = 0;
     int neverAttackCalls = 0;
+    int setActiveCalls = 0;
     bool lastDoSound = false;
     int lastDt = 0;
     int getMaxHitpoints() { return maxHitpoints; }
-    void setActive(bool value) { active = value; }
+    void setActive(bool value) { ++setActiveCalls; active = value; }
     bool gunAvailable(int slot) { assert(slot == 1); ++gunChecks; return gunAvailableResult; }
     bool isAlwaysEnemy() { return alwaysEnemy; }
     void setAlwaysEnemy(bool value) {
@@ -137,7 +141,21 @@ Status *Globals::status = nullptr;
 void *Globals::rnd = nullptr;
 
 struct Radar { KIPlayer *lockedEnemy = nullptr; };
-struct PlayerEgo { void *field_0x14 = nullptr; AEGeometry *geometry = nullptr; };
+struct TargetFollowCamera {
+    AEGeometry *target = nullptr;
+    int targetCalls = 0;
+    AEGeometry *getTarget() { ++targetCalls; return target; }
+};
+struct PlayerEgo {
+    void *field_0x14 = nullptr;
+    AEGeometry *geometry = nullptr;
+    Player *player = nullptr;
+    TargetFollowCamera *camera = nullptr;
+    bool rocketControl = false;
+    int rocketChecks = 0, cameraCalls = 0;
+    bool isInRocketControl() { ++rocketChecks; return rocketControl; }
+    TargetFollowCamera *getTargetFollowCamera() { ++cameraCalls; return camera; }
+};
 struct Level {
     PlayerEgo *ego = nullptr;
     int getPlayerCalls = 0;
@@ -318,6 +336,9 @@ int main() {
 
     Radar radar{&fighter};
     PlayerEgo ego{&radar};
+    Player egoBody;
+    egoBody.position = {1000000.0f, 1000000.0f, 1000000.0f};
+    ego.player = &egoBody;
     Level level{&ego};
     fighter.level = &level;
     fighter.field_0x42 = 1;
@@ -789,9 +810,85 @@ int main() {
     fighter.update(1);
     assert(fighter.setWingmanCommandCalls == commandsBefore + 1 && fighter.field_0xe4 == 1);
 
+    fighter.wingmanFlag = 0;
     fighter.state = 3;
     fighter.resetVecB = {10.0f, 20.0f, 30.0f};
     fighter.update(1);
     assert(fighter.resetVecC.x == -1.0f && fighter.resetVecC.y == -2.0f &&
            fighter.resetVecC.z == -3.0f);
+
+    fighter.state = 5;
+    fighter.aiDisabled = 1;
+    fighter.field_0x42 = 0;
+    fighter.field_0x43 = 1;
+    fighter.field_0x128 = 1;
+    fighter.subGeometry = nullptr;
+    player.enemyFlagsLo = 1;
+    player.active = false;
+    egoBody.position = {20.0f, 30.0f, 40.0f};
+    int playerLookups = level.getPlayerCalls;
+    int activeCalls = player.setActiveCalls;
+    fighter.update(1);
+    assert(level.getPlayerCalls == playerLookups + 2 && ego.rocketChecks >= 1);
+    assert(fighter.state == 1 && player.active && player.setActiveCalls == activeCalls + 1);
+    assert(geometry.visible && fighter.targetPos.x == 20.0f);
+    assert(fighter.resetVecC.x == 9.0f && fighter.resetVecC.y == 8.0f &&
+           fighter.resetVecC.z == 7.0f);
+
+    AEGeometry cameraGeometry;
+    cameraGeometry.position = {30.0f, 40.0f, 50.0f};
+    TargetFollowCamera camera{&cameraGeometry};
+    ego.camera = &camera;
+    ego.rocketControl = true;
+    fighter.state = 5;
+    fighter.subGeometry = &secondary;
+    secondary.visible = false;
+    playerLookups = level.getPlayerCalls;
+    fighter.update(1);
+    assert(level.getPlayerCalls == playerLookups + 2 && ego.cameraCalls == 1);
+    assert(camera.targetCalls == 1 && fighter.targetPos.x == 30.0f);
+    assert(fighter.resetVecC.x == 19.0f && secondary.visible && fighter.state == 1);
+
+    ego.rocketControl = false;
+    fighter.subGeometry = nullptr;
+    fighter.state = 5;
+    egoBody.position = {25011.0f, 22.0f, 33.0f};
+    fighter.update(1);
+    assert(fighter.state == 5 && fighter.resetVecC.x == 25000.0f);
+
+    egoBody.position = {-24989.0f, 22.0f, 33.0f};
+    fighter.update(1);
+    assert(fighter.state == 5 && fighter.resetVecC.x == -25000.0f);
+
+    egoBody.position = {11.0f, 25022.0f, 33.0f};
+    fighter.update(1);
+    assert(fighter.state == 5 && fighter.resetVecC.y == 25000.0f);
+
+    egoBody.position = {11.0f, 22.0f, 25033.0f};
+    fighter.update(1);
+    assert(fighter.state == 5 && fighter.resetVecC.z == 25000.0f);
+
+    egoBody.position = {11.0f, 22.0f, -49967.0f};
+    fighter.update(1);
+    assert(fighter.state == 1 && fighter.resetVecC.z == -50000.0f);
+
+    player.damageDoneByPlayer = 0;
+    player.enemyFlagsLo = 0;
+    fighter.state = 5;
+    int rocketChecks = ego.rocketChecks;
+    fighter.update(1);
+    assert(fighter.state == 5 && ego.rocketChecks == rocketChecks);
+
+    player.enemyFlagsLo = 1;
+    fighter.field_0x128 = 0;
+    fighter.update(1);
+    assert(fighter.state == 5 && ego.rocketChecks == rocketChecks);
+
+    fighter.field_0x128 = 1;
+    fighter.state = 0;
+    fighter.wingmanFlag = 1;
+    fighter.field_0xe4 = 1;
+    egoBody.position = {20.0f, 30.0f, 40.0f};
+    fighter.update(1);
+    assert(fighter.state == 1 && fighter.targetPos.x == 20.0f);
 }

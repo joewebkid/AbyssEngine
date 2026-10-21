@@ -83,7 +83,7 @@ public:
             float field_0x80;
             uint8_t cursorStateDirty;
             char _unknown_0x85[3];
-            int targetFollowCamera;
+            TargetFollowCamera *targetFollowCamera;
         };
 
         struct {
@@ -407,7 +407,7 @@ public:
 
     float getSpeed();
 
-    int getTargetFollowCamera();
+    TargetFollowCamera *getTargetFollowCamera();
 
     Vec3 getTurretPosition();
 

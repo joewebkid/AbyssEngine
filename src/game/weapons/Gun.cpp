@@ -587,7 +587,7 @@ bool Gun::shootAt(Matrix m, int, Player *p, bool) {
         }
         delayActive = 1;
         if (playerGun && hitSmall)
-            reinterpret_cast<TargetFollowCamera *>(static_cast<intptr_t>(level->getPlayer()->getTargetFollowCamera()))->hitSmall();
+            level->getPlayer()->getTargetFollowCamera()->hitSmall();
         // Equivalent zero-test for the native CLZ/LSR flag; source form is inferred.
         unsigned clusterDifference = static_cast<unsigned>(weaponType) - 40u;
         unsigned cluster = 1u ^ ((clusterDifference | (0u - clusterDifference)) >> 31);

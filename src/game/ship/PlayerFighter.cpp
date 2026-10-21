@@ -13,6 +13,8 @@
 #include "game/mission/Explosion.h"
 #include "game/ship/KIPlayer.h"
 #include "game/ship/Player.h"
+#include "game/ship/PlayerEgo.h"
+#include "game/ship/TargetFollowCamera.h"
 #include "game/world/Route.h"
 #include "game/world/Standing.h"
 #include "game/weapons/Radar.h"
@@ -688,6 +690,25 @@ void PlayerFighter::update(int dt) {
     }
 
     this->resetVecC = this->resetVecB - this->renderPosition;
+
+    if (body->enemyFlagsLo &&
+        (this->state == 5 || (this->wingmanFlag && this->field_0xe4 == 1)) &&
+        this->field_0x128 >= 1) {
+        PlayerEgo *ego = this->level->getPlayer();
+        if (ego->isInRocketControl())
+            this->targetPos = this->level->getPlayer()->getTargetFollowCamera()->getTarget()->getPosition();
+        else
+            this->targetPos = static_cast<Player *>(this->level->getPlayer()->player)->getPosition();
+
+        this->resetVecC = this->targetPos - this->renderPosition;
+        if (this->resetVecC.x < 25000.0f && this->resetVecC.x > -25000.0f &&
+            this->resetVecC.y < 25000.0f && this->resetVecC.y > -25000.0f &&
+            this->resetVecC.z < 25000.0f) {
+            this->state = 1;
+            (this->subGeometry ? this->subGeometry : this->geometry)->setVisible(true);
+            body->setActive(true);
+        }
+    }
 
     // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.
     PF_update_body(this, dt);

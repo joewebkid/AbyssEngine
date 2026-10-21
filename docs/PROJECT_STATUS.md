@@ -1,7 +1,28 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::update` post-target command route;
+Last reviewed: 2026-10-21 (`PlayerFighter::update` follow-camera override;
 earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xddb98–0xddd76` confirms the
+enemy/wingman follow override, rocket-camera versus ego-Player target,
+asymmetric distance bounds and activation. The `PlayerEgo` camera slot
+at `+0x88` is now a typed pointer, fixing 64-bit host truncation while
+preserving all focused ARM matches. The production-method Fighter smoke
+passes at `-O0/-O2`, as does the new camera-pointer smoke; all 11 Fighter
+smokes, native UCRT64 `gof2`, all 208 NDK r18b ARM units and 93 verifier
+tests pass (one existing skip). Whole-`update` source-shape/strict fuzzy
+changes **39.9%/18.5% → 42.2%/12.3%**. The full corpus compares
+**4,323/4,524** originals across **4,735** pairs at **94.04%/83.38%**
+mean source-shape/strict fuzzy, retaining **2,557 linked-exact** and
+**1,082 byte-exact** without exact-pair losses, skipped or wrong-type
+symbols. An optional broader sweep of old PlayerEgo smokes passed 22/28;
+the six failures are in source slices untouched by this package and were
+not established against a pre-change run. Docking navigation, later
+movement and the common tail remain unresolved; a complete game frame
+is untested. See
+[the ARM evidence](PLAYER_FIGHTER_FOLLOW_CAMERA_POINTER_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::update` post-target command route).
 
 Android ARM `PlayerFighter::update` at `0xdda88–0xddb94` confirms the
 jumper timer, command-2 wingman route completion/waypoint transfer and
