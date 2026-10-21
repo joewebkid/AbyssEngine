@@ -42,7 +42,7 @@ public:
     signed char field_0x13e;
     int32_t field_0x140;
     Route *route;
-    int32_t field_0x148;
+    Player *field_0x148;
     Route *commandRoute;
     Array<BoundingVolume *> *boundingVolumes;
     Trail *trail;
@@ -189,6 +189,7 @@ static_assert(offsetof(PlayerFighter, field_0x130) == 0x130, "PlayerFighter part
 static_assert(offsetof(PlayerFighter, field_0x134) == 0x134, "PlayerFighter particle handle ABI offset");
 static_assert(offsetof(PlayerFighter, field_0x138) == 0x138, "PlayerFighter particle handle ABI offset");
 static_assert(offsetof(PlayerFighter, route) == 0x144, "PlayerFighter::route ABI offset");
+static_assert(offsetof(PlayerFighter, field_0x148) == 0x148, "PlayerFighter target Player ABI offset");
 static_assert(offsetof(PlayerFighter, engineTrailSystem) == 0x1a0, "PlayerFighter engine trail ABI offset");
 static_assert(offsetof(PlayerFighter, deltaTime) == 0x1d0, "PlayerFighter::deltaTime ABI offset");
 static_assert(offsetof(PlayerFighter, easeBaseMatrix) == 0x218, "PlayerFighter first matrix ABI offset");

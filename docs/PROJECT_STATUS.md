@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::update` candidate rescan;
+Last reviewed: 2026-10-21 (`PlayerFighter::update` route/enemy handoff;
 earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xdd8d2–0xdda88` and
+`0xdded8–0xddf0e` confirms the route-versus-enemy handoff, waypoint
+coordinate transfer, enemy-position fallback and `Player*` field at
+Fighter offset `0x148`. The production-method smoke passes at `-O0/-O2`;
+all 11 Fighter smokes, native UCRT64 `gof2`, all 208 NDK r18b ARM
+units and 93 verifier tests pass (one existing skip). Whole-`update`
+source-shape/strict fuzzy rises **33.0%/15.8% → 36.7%/18.7%**.
+The full corpus compares **4,323/4,524** originals across **4,735**
+pairs at **94.04%/83.38%** mean source-shape/strict fuzzy, retaining
+**2,557 linked-exact** and **1,082 byte-exact** without exact-pair losses,
+skipped or wrong-type symbols. Docking navigation, subsequent movement
+and the common tail remain unresolved; complete game-frame behavior is
+untested. See [the ARM evidence](PLAYER_FIGHTER_ROUTE_HANDOFF_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::update` candidate rescan).
 
 Android ARM `PlayerFighter::update` at `0xdd7c2–0xdd8da` confirms
 the index-1 candidate rescan, raw `field_0x69`/KIPlayer group handling,

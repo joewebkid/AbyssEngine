@@ -609,6 +609,41 @@ void PlayerFighter::update(int dt) {
                 this->field_0x12c = 0;
                 if (this->wingmanFlag && !this->field_0x12e && this->field_0xe4 == 1)
                     this->field_0x38 = -1;
+
+                bool useRoute = this->field_0x38 == -1 && this->routeClone;
+                if (!useRoute)
+                    useRoute = body->doesNeverAttack();
+                if (useRoute) {
+                    if (!this->routeClone->getWaypoint() || !body->isActive()) {
+                        this->field_0x38 = 0;
+                        this->field_0x148 = body->getEnemy(0);
+                        if (this->field_0x148) {
+                            this->targetPos = this->field_0x148->getPosition();
+                            this->resetVecB = this->targetPos;
+                        }
+                    } else {
+                        this->routeClone->update(this->geometry->getPosition());
+                        if (this->routeClone->getWaypoint()) {
+                            if (!this->routeClone->getDockingTarget()) {
+                                this->resetVecB.x = static_cast<float>(this->routeClone->getWaypoint()->x);
+                                this->resetVecB.y = static_cast<float>(this->routeClone->getWaypoint()->y);
+                                this->resetVecB.z = static_cast<float>(this->routeClone->getWaypoint()->z);
+                                this->field_0x12c = 1;
+                            } else {
+                                if (this->state == 1)
+                                    this->state = 7;
+                                this->field_0x12c = 1;
+                            }
+                        }
+                    }
+                } else {
+                    if (this->field_0x38 < 0 ||
+                        static_cast<unsigned int>(this->field_0x38) >= body->getEnemies()->size())
+                        this->field_0x38 = 0;
+                    this->field_0x148 = body->getEnemy(this->field_0x38);
+                    this->targetPos = this->field_0x148->getPosition();
+                    this->resetVecB = this->targetPos;
+                }
             } else if (this->routeClone) {
                 this->routeClone->update(this->geometry->getPosition());
                 if (this->routeClone->getWaypoint()) {

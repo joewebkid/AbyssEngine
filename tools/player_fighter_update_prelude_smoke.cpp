@@ -61,6 +61,7 @@ struct Player {
     bool gunAvailableResult = false;
     bool alwaysEnemy = false;
     bool alwaysFriend = false;
+    bool neverAttack = false;
     bool turnedEnemyFlag = false;
     int gunChecks = 0;
     int updateCalls = 0;
@@ -70,6 +71,8 @@ struct Player {
     int deadChecks = 0;
     int positionCalls = 0;
     int getKIPlayerCalls = 0;
+    int getEnemyCalls = 0;
+    int neverAttackCalls = 0;
     bool lastDoSound = false;
     int lastDt = 0;
     int getMaxHitpoints() { return maxHitpoints; }
@@ -87,6 +90,12 @@ struct Player {
     bool isDead() { ++deadChecks; return dead; }
     Vector getPosition() { ++positionCalls; return position; }
     KIPlayer *getKIPlayer() { ++getKIPlayerCalls; return kiPlayer; }
+    Player *getEnemy(int index) {
+        ++getEnemyCalls;
+        assert(enemies && index >= 0 && static_cast<unsigned int>(index) < enemies->size());
+        return (*enemies)[static_cast<unsigned int>(index)];
+    }
+    bool doesNeverAttack() { ++neverAttackCalls; return neverAttack; }
     void update(int dt, bool doSound) {
         ++updateCalls;
         lastDt = dt;
@@ -142,10 +151,12 @@ struct Route {
     int points = 1;
     int lengthCalls = 0, setCoordsCalls = 0, loopCalls = 0;
     int updateCalls = 0, waypointCalls = 0;
+    int dockingTargetCalls = 0;
     bool looping = false;
     Vector coords{};
     Vector lastPosition{};
     Waypoint *waypoint = nullptr;
+    KIPlayer *dockingTarget = nullptr;
     Route() = default;
     Route(int *v, int count) : points(count / 3), coords{float(v[0]), float(v[1]), float(v[2])} { ++constructed; }
     ~Route() { ++destroyed; }
@@ -155,6 +166,7 @@ struct Route {
     void setLoop(bool value) { ++loopCalls; looping = value; }
     void update(const Vector &v) { ++updateCalls; lastPosition = v; }
     Waypoint *getWaypoint() { ++waypointCalls; return waypoint; }
+    KIPlayer *getDockingTarget() { ++dockingTargetCalls; return dockingTarget; }
 };
 int Route::constructed = 0;
 int Route::destroyed = 0;
@@ -217,7 +229,7 @@ struct PlayerFighter : KIPlayer {
     uint8_t field_0x12e = 0;
     uint8_t field_0x12d = 0;
     int field_0x128 = 0;
-    int field_0x148 = 0;
+    Player *field_0x148 = nullptr;
     uint8_t aiDisabled = 0;
     void update(int dt);
 };
@@ -430,7 +442,8 @@ int main() {
     fighter.field_0x38 = 9;
     fighter.field_0x12e = 1;
     fighter.update(1);
-    assert(fighter.field_0x38 == -1 && fighter.field_0x12e == 1);
+    assert(fighter.field_0x38 == 0 && fighter.field_0x12e == 1);
+    assert(fighter.field_0x148 == &enemyA);
     assert(enemyA.activeChecks == 0);
 
     fighter.field_0x38 = 0;
@@ -440,7 +453,7 @@ int main() {
     assert(enemyA.activeChecks == 2 && enemyB.activeChecks == 1);
     fighter.field_0x38 = 1;
     fighter.update(1);
-    assert(fighter.field_0x38 == -1 && enemyB.activeChecks == 2);
+    assert(fighter.field_0x38 == 0 && enemyB.activeChecks == 2);
 
     fighter.field_0x38 = 1;
     fighter.field_0x12e = 1;
@@ -487,7 +500,7 @@ int main() {
     player.enemies = &enemyList;
     fighter.field_0x128 = 100;
     fighter.field_0x12e = 0;
-    fighter.field_0x148 = 7;
+    fighter.field_0x148 = &enemyA;
     fighter.maneuverTimer = 0;
     fighter.shipGroup = 8;
     player.turnedEnemyFlag = false;
@@ -497,7 +510,7 @@ int main() {
     enemyB.position = {20.0f, 22.0f, 33.0f};
     fighter.update(1);
     assert(fighter.field_0x38 == 1 && fighter.field_0x12e == 1);
-    assert(fighter.targetPos.x == 20.0f && fighter.field_0x148 == 0);
+    assert(fighter.targetPos.x == 20.0f && fighter.field_0x148 == &enemyB);
 
     fighter.field_0x12e = 0;
     fighter.shipGroup = 2;
@@ -518,7 +531,8 @@ int main() {
     random.values[1] = 30;
     fighter.update(1);
     assert(fighter.maneuverTimer == 0 && fighter.field_0x12d == 1);
-    assert(fighter.field_0x38 == -1 && fighter.field_0x12e == 1 && random.used == 2);
+    assert(fighter.field_0x38 == 0 && fighter.field_0x12e == 1 && random.used == 2);
+    assert(fighter.field_0x148 == &enemyA && fighter.resetVecB.x == 300.0f);
     assert(random.bounds[0] == 100 && random.bounds[1] == 100);
 
     random.used = 0;
@@ -545,7 +559,7 @@ int main() {
     fighter.field_0x12d = 1;
     enemyB.active = false;
     fighter.update(1);
-    assert(fighter.field_0x38 == -1 && fighter.field_0x12e == 0);
+    assert(fighter.field_0x38 == 0 && fighter.field_0x12e == 0);
     assert(random.used == 6 && random.bounds[5] == 2);
 
     KIPlayer wingmanTarget;
@@ -567,7 +581,7 @@ int main() {
     fighter.maneuverTimer = 5000;
     random.used = 0;
     fighter.update(1);
-    assert(fighter.field_0x38 == -1 && fighter.field_0xe4 == 3);
+    assert(fighter.field_0x38 == 0 && fighter.field_0xe4 == 3);
     enemyB.alwaysFriend = false;
 
     wingmanTarget.state = 4;
@@ -575,7 +589,7 @@ int main() {
     random.used = 0;
     fighter.update(1);
     assert(fighter.setWingmanCommandCalls == 1 && fighter.field_0xe4 == 1);
-    assert(fighter.wingmanTarget == nullptr && fighter.field_0x38 == -1);
+    assert(fighter.wingmanTarget == nullptr && fighter.field_0x38 == 0);
 
     fighter.wingmanFlag = 0;
     fighter.maneuverTimer = 5000;
@@ -621,7 +635,10 @@ int main() {
         int calls = enemyB.getKIPlayerCalls;
         fighter.update(1);
         assert(fighter.field_0x38 == (test.selected ? 1 : -1));
-        assert(fighter.field_0x12e == 1 && fighter.field_0x12c == 0);
+        assert(fighter.field_0x12e == 1);
+        assert(fighter.field_0x12c == (test.selected ? 0 : 1));
+        if (!test.selected)
+            assert(fighter.resetVecB.x == 101.0f && fighter.resetVecB.y == -202.0f);
         assert(enemyB.getKIPlayerCalls == calls + 2);
     }
 
@@ -662,4 +679,45 @@ int main() {
     fighter.field_0x38 = 1;
     fighter.update(1);
     assert(fighter.field_0x38 == 1);
+
+    fighter.wingmanFlag = 0;
+    fighter.routeClone = &route;
+    fighter.field_0x38 = -1;
+    fighter.field_0x12e = 1;
+    fighter.maneuverTimer = 0;
+    route.waypoint = nullptr;
+    int neverAttackBefore = player.neverAttackCalls;
+    fighter.update(1);
+    assert(fighter.field_0x38 == 0 && fighter.field_0x148 == &enemyA);
+    assert(fighter.targetPos.x == enemyA.position.x && fighter.resetVecB.x == enemyA.position.x);
+    assert(player.neverAttackCalls == neverAttackBefore);
+
+    route.waypoint = &waypoint;
+    player.active = false;
+    fighter.field_0x38 = -1;
+    fighter.update(1);
+    assert(fighter.field_0x38 == 0 && fighter.field_0x148 == &enemyA);
+    player.active = true;
+
+    player.neverAttack = true;
+    fighter.shipGroup = 2;
+    enemyBOwner.shipGroup = 3;
+    fighter.field_0x38 = 1;
+    fighter.field_0x12e = 1;
+    fighter.maneuverTimer = 0;
+    neverAttackBefore = player.neverAttackCalls;
+    fighter.update(1);
+    assert(player.neverAttackCalls == neverAttackBefore + 1);
+    assert(fighter.field_0x38 == 1 && fighter.field_0x12c == 1);
+    assert(fighter.resetVecB.x == 101.0f && fighter.resetVecB.z == 303.0f);
+
+    player.neverAttack = false;
+    route.dockingTarget = &enemyBOwner;
+    fighter.state = 1;
+    fighter.field_0x38 = -1;
+    fighter.field_0x12e = 1;
+    int dockingCalls = route.dockingTargetCalls;
+    fighter.update(1);
+    assert(route.dockingTargetCalls == dockingCalls + 1);
+    assert(fighter.state == 7 && fighter.field_0x12c == 1);
 }
