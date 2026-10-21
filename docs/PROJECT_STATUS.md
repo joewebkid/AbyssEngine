@@ -1,6 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::update` bounding volumes and
+Last reviewed: 2026-10-21 (`PlayerFighter::update` freelance-mission
+death flag; earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xddd94–0xddf18` confirms a
+nonpositive-health, non-state-3/4 branch that checks freelance mission
+type 13 and its target station, then updates the paired mission status
+flags according to the Fighter's name. The production-method smoke
+covers both name outcomes, gating and repeated frames. All 11 Fighter
+smokes, native UCRT64 `gof2`, all 208 NDK r18b ARM units and 93 verifier
+tests pass (one existing skip). Whole-`update` source-shape/strict fuzzy
+changes **44.3%/12.2% → 45.9%/20.1%**. The full corpus compares
+**4,323/4,524** originals across **4,735** pairs at **94.04%/83.38%**
+mean source-shape/strict fuzzy, retaining **2,557 linked-exact** and
+**1,082 byte-exact** without exact-pair losses, skipped or wrong-type
+symbols. Only the target function's scores changed. Wanted rewards,
+death effects, movement and the common tail remain unresolved; a
+complete game frame is untested. See
+[the ARM evidence](PLAYER_FIGHTER_FREELANCE_DEATH_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::update` bounding volumes and
 damage-particle transitions; earlier subsystem snapshots retain their dates)
 
 Android ARM `PlayerFighter::update` at `0xddc56–0xddd94` confirms

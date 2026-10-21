@@ -9,6 +9,8 @@
 #include "game/core/Globals.h"
 #include "game/world/Level.h"
 #include "game/mission/Status.h"
+#include "game/world/Station.h"
+#include "engine/core/GameText.h"
 #include "engine/render/Trail.h"
 #include "game/mission/Explosion.h"
 #include "game/ship/KIPlayer.h"
@@ -736,6 +738,22 @@ void PlayerFighter::update(int dt) {
             this->level->particleRenderBoolPtr->enableSystemEmit(this->field_0x84, emit);
         }
         this->field_0x1fc = 1;
+    }
+
+    if (hitpoints <= 0 && this->state != 3 && this->state != 4) {
+        Status *status = Globals::status;
+        Mission *freelance = status->getFreelanceMission();
+        if (freelance && freelance->getType() == 13 &&
+            status->getStation()->getIndex() == freelance->getTargetStation() &&
+            status->field_0xf1 == 0) {
+            if (this->name.data &&
+                this->name.Compare(*Globals::gameText->getText(1663)) == 0) {
+                status->field_0xf0 = 1;
+            } else {
+                status->field_0xf0 = 0;
+                status->field_0xf1 = 1;
+            }
+        }
     }
 
     // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.

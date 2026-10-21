@@ -60,6 +60,34 @@ struct ParticleSystemManager {
         lastEnabled = enabled;
     }
 };
+struct String {
+    const char *data = nullptr;
+    int compareCalls = 0;
+    int Compare(const String &other) {
+        ++compareCalls;
+        return std::strcmp(data, other.data);
+    }
+};
+struct GameText {
+    String missionName{"escort"};
+    int getTextCalls = 0;
+    String *getText(int key) {
+        assert(key == 1663);
+        ++getTextCalls;
+        return &missionName;
+    }
+};
+struct Mission {
+    int type = 13;
+    int targetStation = 7;
+    int getTypeCalls = 0;
+    int getType() { ++getTypeCalls; return type; }
+    int getTargetStation() { return targetStation; }
+};
+struct Station {
+    int index = 7;
+    int getIndex() { return index; }
+};
 template<class T> struct Array {
     unsigned int count = 0;
     T *items = nullptr;
@@ -140,9 +168,15 @@ struct Standing {
 };
 struct Status {
     Standing *standing;
+    Mission *freelance = nullptr;
+    Station *station = nullptr;
+    uint8_t field_0xf0 = 0;
+    uint8_t field_0xf1 = 0;
     bool blackMarket = false;
     uint8_t field_110 = 0;
     Standing *getStanding() { return standing; }
+    Mission *getFreelanceMission() { return freelance; }
+    Station *getStation() { return station; }
     bool inBlackMarketSystem() { return blackMarket; }
 };
 struct AERandom {
@@ -157,10 +191,11 @@ struct AERandom {
         return value;
     }
 };
-struct Globals { static Status *status; static void *rnd; static unsigned char options[100]; };
+struct Globals { static Status *status; static void *rnd; static unsigned char options[100]; static GameText *gameText; };
 Status *Globals::status = nullptr;
 void *Globals::rnd = nullptr;
 unsigned char Globals::options[100]{};
+GameText *Globals::gameText = nullptr;
 
 struct Radar { KIPlayer *lockedEnemy = nullptr; };
 struct TargetFollowCamera {
@@ -226,6 +261,7 @@ struct Trail {
 };
 struct KIPlayer {
     Player *player = nullptr;
+    String name{};
     AEGeometry *geometry = nullptr;
     Explosion *explosion = nullptr;
     int state = 0;
@@ -972,4 +1008,50 @@ int main() {
     fighter.update(1);
     assert(fighter.field_0x1fc == 1 && emission.calls == 4 && rendering.calls == 4);
     assert(!emission.lastEnabled && !rendering.lastEnabled);
+
+    Mission freelance;
+    Station station;
+    GameText gameText;
+    status.freelance = &freelance;
+    status.station = &station;
+    Globals::gameText = &gameText;
+    fighter.state = 0;
+    player.hitpoints = 0;
+    fighter.update(1);
+    assert(status.field_0xf0 == 0 && status.field_0xf1 == 1);
+    assert(gameText.getTextCalls == 0);
+    fighter.update(1);
+    assert(status.field_0xf0 == 0 && status.field_0xf1 == 1);
+    assert(gameText.getTextCalls == 0);
+
+    status.field_0xf1 = 0;
+    fighter.name.data = "escort";
+    fighter.update(1);
+    assert(status.field_0xf0 == 1 && status.field_0xf1 == 0);
+    assert(gameText.getTextCalls == 1 && fighter.name.compareCalls == 1);
+
+    fighter.name.data = "another";
+    fighter.update(1);
+    assert(status.field_0xf0 == 0 && status.field_0xf1 == 1);
+
+    status.field_0xf1 = 0;
+    freelance.targetStation = 8;
+    fighter.update(1);
+    assert(status.field_0xf0 == 0 && status.field_0xf1 == 0);
+    freelance.targetStation = 7;
+    freelance.type = 12;
+    fighter.update(1);
+    assert(status.field_0xf0 == 0 && status.field_0xf1 == 0);
+    freelance.type = 13;
+    fighter.state = 3;
+    fighter.update(1);
+    assert(status.field_0xf0 == 0 && status.field_0xf1 == 0);
+    fighter.state = 0;
+    player.hitpoints = 1;
+    fighter.update(1);
+    assert(status.field_0xf0 == 0 && status.field_0xf1 == 0);
+    player.hitpoints = 0;
+    status.freelance = nullptr;
+    fighter.update(1);
+    assert(status.field_0xf0 == 0 && status.field_0xf1 == 0);
 }
