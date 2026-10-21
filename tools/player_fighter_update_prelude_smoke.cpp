@@ -9,6 +9,7 @@ struct Vector {
     Vector &operator*=(float n) { x *= n; y *= n; z *= n; return *this; }
 };
 Vector operator*(Vector v, float n) { return v *= n; }
+Vector operator-(Vector a, const Vector &b) { return a -= b; }
 namespace AbyssEngine { namespace AEMath {
 Vector VectorNormalize(const Vector &v) {
     float len = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
@@ -150,13 +151,14 @@ struct Route {
     int cloneCalls = 0;
     int points = 1;
     int lengthCalls = 0, setCoordsCalls = 0, loopCalls = 0;
-    int updateCalls = 0, waypointCalls = 0;
+    int updateCalls = 0, waypointCalls = 0, currentCalls = 0;
     int dockingTargetCalls = 0;
     bool looping = false;
     Vector coords{};
     Vector lastPosition{};
     Waypoint *waypoint = nullptr;
     KIPlayer *dockingTarget = nullptr;
+    int current = 0;
     Route() = default;
     Route(int *v, int count) : points(count / 3), coords{float(v[0]), float(v[1]), float(v[2])} { ++constructed; }
     ~Route() { ++destroyed; }
@@ -166,6 +168,7 @@ struct Route {
     void setLoop(bool value) { ++loopCalls; looping = value; }
     void update(const Vector &v) { ++updateCalls; lastPosition = v; }
     Waypoint *getWaypoint() { ++waypointCalls; return waypoint; }
+    int getCurrent() { ++currentCalls; return current; }
     KIPlayer *getDockingTarget() { ++dockingTargetCalls; return dockingTarget; }
 };
 int Route::constructed = 0;
@@ -201,6 +204,8 @@ struct KIPlayer {
     AEGeometry *subGeometry = nullptr;
     Route *routeClone = nullptr;
     uint8_t wingmanFlag = 0;
+    uint8_t jumperFlag = 0;
+    int field_0xf0 = 0;
     int wingmanCommand = 1;
     int field_0xe4 = 0;
     KIPlayer *wingmanTarget = nullptr;
@@ -209,6 +214,7 @@ struct KIPlayer {
     Vector targetPos{};
     Vector objectPosition{};
     Vector resetVecB{};
+    Vector resetVecC{};
     int field_0x38 = 0;
     bool wingman = false;
     void setActive(bool value) { player->setActive(value); }
@@ -222,6 +228,7 @@ struct KIPlayer {
 };
 struct PlayerFighter : KIPlayer {
     Route *route = nullptr;
+    Route *commandRoute = nullptr;
     Trail *trail = nullptr;
     Vector workingPosition{};
     int field_0x1c8 = 0;
@@ -229,6 +236,7 @@ struct PlayerFighter : KIPlayer {
     uint8_t field_0x12e = 0;
     uint8_t field_0x12d = 0;
     int field_0x128 = 0;
+    int field_0x1e4 = 0;
     Player *field_0x148 = nullptr;
     uint8_t aiDisabled = 0;
     void update(int dt);
@@ -720,4 +728,70 @@ int main() {
     fighter.update(1);
     assert(route.dockingTargetCalls == dockingCalls + 1);
     assert(fighter.state == 7 && fighter.field_0x12c == 1);
+
+    fighter.wingmanFlag = 0;
+    fighter.aiDisabled = 0;
+    fighter.state = 0;
+    fighter.routeClone = &route;
+    route.waypoint = nullptr;
+    player.enemies = nullptr;
+    fighter.jumperFlag = 1;
+    fighter.field_0x12c = 1;
+    fighter.field_0xf0 = 19998;
+    fighter.update(1);
+    assert(fighter.state == 0 && fighter.field_0xf0 == 19999 && fighter.field_0x12c == 1);
+    fighter.update(1);
+    assert(fighter.state == 6 && fighter.field_0xf0 == 0 && fighter.field_0x12c == 0);
+
+    fighter.state = 0;
+    fighter.jumperFlag = 0;
+    fighter.field_0x12c = 1;
+    fighter.field_0xf0 = 10;
+    fighter.update(1);
+    assert(fighter.field_0xf0 == 0);
+    fighter.jumperFlag = 1;
+    fighter.field_0x12c = 0;
+    fighter.field_0xf0 = 10;
+    fighter.update(1);
+    assert(fighter.field_0xf0 == 0);
+
+    fighter.aiDisabled = 1;
+    fighter.field_0x12c = 1;
+    fighter.field_0xf0 = 17;
+    fighter.update(1);
+    assert(fighter.field_0xf0 == 17);
+
+    fighter.wingmanFlag = 1;
+    fighter.routeClone = nullptr;
+    fighter.field_0xe4 = 2;
+    fighter.field_0x1e4 = 2;
+    auto *commandRoute = new Route();
+    commandRoute->current = 2;
+    fighter.commandRoute = commandRoute;
+    fighter.field_0x12c = 0;
+    fighter.update(1);
+    assert(fighter.field_0x12c == 0 && fighter.commandRoute == commandRoute);
+    commandRoute->waypoint = &waypoint;
+    fighter.update(1);
+    assert(commandRoute->updateCalls == 2 && commandRoute->currentCalls == 2);
+    assert(fighter.commandRoute == commandRoute && fighter.field_0x12c == 1);
+    assert(fighter.resetVecB.x == 101.0f && fighter.resetVecB.z == 303.0f);
+    assert(fighter.resetVecC.x == 90.0f && fighter.resetVecC.z == 270.0f);
+
+    int commandRouteDestroyedBefore = Route::destroyed;
+    commandRoute->current = 3;
+    fighter.update(1);
+    assert(Route::destroyed == commandRouteDestroyedBefore + 1);
+    assert(fighter.commandRoute == nullptr && fighter.field_0xe4 == 1);
+
+    int commandsBefore = fighter.setWingmanCommandCalls;
+    fighter.field_0xe4 = 2;
+    fighter.update(1);
+    assert(fighter.setWingmanCommandCalls == commandsBefore + 1 && fighter.field_0xe4 == 1);
+
+    fighter.state = 3;
+    fighter.resetVecB = {10.0f, 20.0f, 30.0f};
+    fighter.update(1);
+    assert(fighter.resetVecC.x == -1.0f && fighter.resetVecC.y == -2.0f &&
+           fighter.resetVecC.z == -3.0f);
 }

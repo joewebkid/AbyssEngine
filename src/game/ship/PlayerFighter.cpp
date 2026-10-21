@@ -655,8 +655,39 @@ void PlayerFighter::update(int dt) {
             } else {
                 this->state = 5;
             }
+
+            if (this->jumperFlag && this->field_0x12c) {
+                this->field_0xf0 += dt;
+                if (this->field_0xf0 >= 20000) {
+                    this->state = 6;
+                    this->field_0xf0 = 0;
+                    this->field_0x12c = 0;
+                }
+            } else {
+                this->field_0xf0 = 0;
+            }
+        }
+
+        if (this->wingmanFlag && this->field_0xe4 == 2) {
+            if (!this->commandRoute) {
+                this->setWingmanCommand(1, nullptr);
+            } else {
+                this->commandRoute->update(this->geometry->getPosition());
+                if (this->commandRoute->getCurrent() > this->field_0x1e4) {
+                    delete this->commandRoute;
+                    this->commandRoute = nullptr;
+                    this->setWingmanCommand(1, nullptr);
+                } else if (this->commandRoute->getWaypoint()) {
+                    this->resetVecB.x = static_cast<float>(this->commandRoute->getWaypoint()->x);
+                    this->resetVecB.y = static_cast<float>(this->commandRoute->getWaypoint()->y);
+                    this->field_0x12c = 1;
+                    this->resetVecB.z = static_cast<float>(this->commandRoute->getWaypoint()->z);
+                }
+            }
         }
     }
+
+    this->resetVecC = this->resetVecB - this->renderPosition;
 
     // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.
     PF_update_body(this, dt);

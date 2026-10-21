@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::update` route/enemy handoff;
+Last reviewed: 2026-10-21 (`PlayerFighter::update` post-target command route;
 earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xdda88–0xddb94` confirms the
+jumper timer, command-2 wingman route completion/waypoint transfer and
+the shared vector to the target. The production-method smoke passes at
+`-O0/-O2`; all 11 Fighter smokes, native UCRT64 `gof2`, all 208 NDK r18b
+ARM units and 93 verifier tests pass (one existing skip). Whole-`update`
+source-shape/strict fuzzy changes **36.7%/18.7% → 39.9%/18.5%**.
+The full corpus compares **4,323/4,524** originals across **4,735**
+pairs at **94.04%/83.38%** mean source-shape/strict fuzzy, retaining
+**2,557 linked-exact** and **1,082 byte-exact** without exact-pair losses,
+skipped or wrong-type symbols. The follow-camera override, docking
+navigation, later movement and common tail remain unresolved; complete
+game-frame behavior is untested. See
+[the ARM evidence](PLAYER_FIGHTER_POST_TARGET_COMMAND_ROUTE_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::update` route/enemy handoff).
 
 Android ARM `PlayerFighter::update` at `0xdd8d2–0xdda88` and
 `0xdded8–0xddf0e` confirms the route-versus-enemy handoff, waypoint
