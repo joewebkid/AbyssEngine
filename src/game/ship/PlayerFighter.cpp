@@ -569,6 +569,46 @@ void PlayerFighter::update(int dt) {
                     this->field_0x12e = 0;
                     this->field_0x38 = 1;
                 }
+
+                if ((!this->wingmanFlag || this->field_0xe4 != 3) && this->field_0x38 >= 1) {
+                    this->field_0x38 = -1;
+                    for (unsigned int i = 1; i < enemies->size(); ++i) {
+                        Player *enemy = (*enemies)[i];
+                        if (!enemy->isActive() || enemy->isDead())
+                            continue;
+
+                        KIPlayer *owner = enemy->getKIPlayer();
+                        if (!owner && !enemy->field_69)
+                            continue;
+                        int group = enemy->field_69 ? 0 : enemy->getKIPlayer()->shipGroup;
+
+                        bool eligible;
+                        if (this->wingmanFlag) {
+                            eligible = enemy->enemyFlagsLo ||
+                                (this->wingmanTarget && enemy == this->wingmanTarget->player);
+                        } else {
+                            eligible = (group == 8 && this->shipGroup != 8) ||
+                                (group != 8 && this->shipGroup == 8) ||
+                                (group == 9 && this->shipGroup != 9) ||
+                                (group != 9 && this->shipGroup == 9) ||
+                                (group == 0 && this->shipGroup == 1) ||
+                                (group == 1 && this->shipGroup == 0) ||
+                                (group == 3 && this->shipGroup == 2) ||
+                                (group == 2 && this->shipGroup == 3) ||
+                                (group == 10 && this->shipGroup != 10) ||
+                                (group != 10 && this->shipGroup == 10);
+                        }
+                        if (eligible) {
+                            this->field_0x12e = 1;
+                            this->field_0x38 = static_cast<int>(i);
+                            break;
+                        }
+                    }
+                }
+
+                this->field_0x12c = 0;
+                if (this->wingmanFlag && !this->field_0x12e && this->field_0xe4 == 1)
+                    this->field_0x38 = -1;
             } else if (this->routeClone) {
                 this->routeClone->update(this->geometry->getPosition());
                 if (this->routeClone->getWaypoint()) {

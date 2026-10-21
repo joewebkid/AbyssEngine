@@ -43,10 +43,13 @@ template<class T> struct Array {
     unsigned int size() const { return count; }
     T &operator[](unsigned int i) { return items[i]; }
 };
+struct KIPlayer;
 struct Player {
     bool active = true;
     bool dead = false;
     Vector position{};
+    uint8_t field_69 = 0;
+    KIPlayer *kiPlayer = nullptr;
     Array<Player *> *enemies = nullptr;
     Matrix transformMatrix{};
     union {
@@ -66,6 +69,7 @@ struct Player {
     int activeChecks = 0;
     int deadChecks = 0;
     int positionCalls = 0;
+    int getKIPlayerCalls = 0;
     bool lastDoSound = false;
     int lastDt = 0;
     int getMaxHitpoints() { return maxHitpoints; }
@@ -82,6 +86,7 @@ struct Player {
     bool isActive() { ++activeChecks; return active; }
     bool isDead() { ++deadChecks; return dead; }
     Vector getPosition() { ++positionCalls; return position; }
+    KIPlayer *getKIPlayer() { ++getKIPlayerCalls; return kiPlayer; }
     void update(int dt, bool doSound) {
         ++updateCalls;
         lastDt = dt;
@@ -121,7 +126,6 @@ struct Globals { static Status *status; static void *rnd; };
 Status *Globals::status = nullptr;
 void *Globals::rnd = nullptr;
 
-struct KIPlayer;
 struct Radar { KIPlayer *lockedEnemy = nullptr; };
 struct PlayerEgo { void *field_0x14 = nullptr; AEGeometry *geometry = nullptr; };
 struct Level {
@@ -413,11 +417,16 @@ int main() {
     fighter.routeClone = nullptr;
 
     Player enemyA, enemyB;
+    KIPlayer enemyBOwner;
+    enemyBOwner.shipGroup = 3;
+    enemyB.kiPlayer = &enemyBOwner;
     Player *enemyItems[2] = {&enemyA, &enemyB};
     Array<Player *> enemyList;
     enemyList.count = 2;
     enemyList.items = enemyItems;
     player.enemies = &enemyList;
+    fighter.wingmanFlag = 1;
+    fighter.field_0xe4 = 3;
     fighter.field_0x38 = 9;
     fighter.field_0x12e = 1;
     fighter.update(1);
@@ -584,7 +593,73 @@ int main() {
     player.alwaysFriend = false;
     player.turnedEnemyFlag = false;
     fighter.maneuverTimer = 0;
+    fighter.wingmanFlag = 1;
+    fighter.field_0xe4 = 3;
     fighter.update(1);
     assert(player.enemyFlagsLo == 0);
     assert(fighter.field_0x12e == 0 && fighter.field_0x38 == 1);
+
+    fighter.wingmanFlag = 0;
+    fighter.field_0x43 = 1;
+    enemyB.active = true;
+    enemyB.dead = false;
+    enemyB.field_69 = 0;
+    struct FactionCase { int target, own; bool selected; };
+    const FactionCase factions[] = {
+        {8, 2, true}, {8, 8, false}, {2, 8, true},
+        {9, 2, true}, {9, 9, false}, {2, 9, true},
+        {0, 1, true}, {1, 0, true}, {3, 2, true}, {2, 3, true},
+        {10, 2, true}, {10, 10, false}, {2, 10, true}, {2, 2, false},
+    };
+    for (const FactionCase &test : factions) {
+        fighter.shipGroup = test.own;
+        enemyBOwner.shipGroup = test.target;
+        fighter.field_0x38 = 1;
+        fighter.field_0x12e = 1;
+        fighter.field_0x12c = 1;
+        fighter.maneuverTimer = 0;
+        int calls = enemyB.getKIPlayerCalls;
+        fighter.update(1);
+        assert(fighter.field_0x38 == (test.selected ? 1 : -1));
+        assert(fighter.field_0x12e == 1 && fighter.field_0x12c == 0);
+        assert(enemyB.getKIPlayerCalls == calls + 2);
+    }
+
+    fighter.shipGroup = 1;
+    enemyB.kiPlayer = nullptr;
+    fighter.field_0x38 = 1;
+    fighter.field_0x12e = 1;
+    fighter.update(1);
+    assert(fighter.field_0x38 == -1);
+    enemyB.field_69 = 1;
+    fighter.field_0x38 = 1;
+    fighter.update(1);
+    assert(fighter.field_0x38 == 1 && fighter.field_0x12e == 1);
+
+    enemyB.kiPlayer = &enemyBOwner;
+    enemyB.dead = true;
+    fighter.field_0x38 = 1;
+    fighter.update(1);
+    assert(fighter.field_0x38 == -1 && fighter.field_0x12e == 1);
+    enemyB.dead = false;
+
+    fighter.wingmanFlag = 1;
+    fighter.field_0xe4 = 1;
+    fighter.wingmanTarget = &enemyBOwner;
+    enemyBOwner.player = &enemyB;
+    enemyB.kiPlayer = &enemyBOwner;
+    enemyB.field_69 = 0;
+    enemyB.enemyFlagsLo = 0;
+    fighter.field_0x38 = 1;
+    fighter.field_0x12e = 1;
+    fighter.update(1);
+    assert(fighter.field_0x38 == 1);
+    fighter.wingmanTarget = nullptr;
+    fighter.field_0x38 = 1;
+    fighter.update(1);
+    assert(fighter.field_0x38 == -1);
+    enemyB.enemyFlagsLo = 1;
+    fighter.field_0x38 = 1;
+    fighter.update(1);
+    assert(fighter.field_0x38 == 1);
 }

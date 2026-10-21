@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::update` wingman target validation;
+Last reviewed: 2026-10-21 (`PlayerFighter::update` candidate rescan;
 earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xdd7c2–0xdd8da` confirms
+the index-1 candidate rescan, raw `field_0x69`/KIPlayer group handling,
+wingman matching and group-pair filters. The production-method smoke
+passes at `-O0/-O2`; all 11 Fighter smokes, native UCRT64 `gof2`,
+all 208 NDK r18b ARM units and 93 verifier tests pass (one existing
+skip). Whole-`update` source-shape/strict fuzzy rises
+**29.8%/14.8% → 33.0%/15.8%**. The full corpus compares
+**4,323/4,524** originals across **4,735** pairs at
+**94.04%/83.38%** mean source-shape/strict fuzzy, retaining
+**2,557 linked-exact** and **1,082 byte-exact** with no exact-pair
+losses, skipped or wrong-type symbols. The meaning of `field_0x69`
+outside this branch, route/combat dispatch, movement and the common
+tail remain unresolved; complete game-frame behavior is untested.
+See [the ARM evidence](PLAYER_FIGHTER_CANDIDATE_RESCAN_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::update` wingman target validation).
 
 Android ARM `PlayerFighter::update` at `0xdd50e–0xdd542` and
 `0xdd74e–0xdd7c0` confirms the command-3 wingman-target override,
