@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::update` enemy validation and
-no-enemies route; earlier subsystem snapshots retain their dates)
+Last reviewed: 2026-10-21 (`PlayerFighter::update` target-search prefix;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xdd3c6–0xdd620` confirms
+the ordered target scan below the 5,001 timer threshold, the
+two-draw random-selection gate at or above it, and up to five
+candidate retries. The production-method smoke covers both branches
+at `-O0/-O2`; all 11 Fighter smokes, native UCRT64 `gof2`, all 208
+NDK r18b ARM translation units and 93 verifier tests pass (one
+existing skip). Whole-`update` source-shape/strict fuzzy rises
+**20.2%/11.2% → 26.4%/12.9%**; the subsequent wingman-target,
+combat, movement and common tail remain unresolved. The final
+no-lambda full corpus compares **4,323/4,524** originals across
+**4,735** pairs, at **94.04%/83.38%** mean source-shape/strict fuzzy,
+with **2,557 linked-exact** and **1,082 byte-exact**; there are no
+exact-pair losses, skipped or wrong-type symbols. Complete game-frame
+behavior remains untested. See
+[the ARM evidence](PLAYER_FIGHTER_TARGET_SEARCH_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::update` enemy validation and
+no-enemies route).
 
 Android ARM `PlayerFighter::update` at `0xdd274–0xdd2b6`,
 `0xdd35c–0xdd3be`, and `0xdd622–0xdd628` confirms the selected-enemy

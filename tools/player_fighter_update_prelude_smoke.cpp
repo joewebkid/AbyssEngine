@@ -45,6 +45,8 @@ template<class T> struct Array {
 };
 struct Player {
     bool active = true;
+    bool dead = false;
+    Vector position{};
     Array<Player *> *enemies = nullptr;
     Matrix transformMatrix{};
     union {
@@ -62,6 +64,8 @@ struct Player {
     int stopSoundCalls = 0;
     int enemiesCalls = 0;
     int activeChecks = 0;
+    int deadChecks = 0;
+    int positionCalls = 0;
     bool lastDoSound = false;
     int lastDt = 0;
     int getMaxHitpoints() { return maxHitpoints; }
@@ -76,6 +80,8 @@ struct Player {
     bool turnedEnemy() { return turnedEnemyFlag; }
     bool isAlwaysFriend() { return alwaysFriend; }
     bool isActive() { ++activeChecks; return active; }
+    bool isDead() { ++deadChecks; return dead; }
+    Vector getPosition() { ++positionCalls; return position; }
     void update(int dt, bool doSound) {
         ++updateCalls;
         lastDt = dt;
@@ -99,8 +105,21 @@ struct Status {
     Standing *getStanding() { return standing; }
     bool inBlackMarketSystem() { return blackMarket; }
 };
-struct Globals { static Status *status; };
+struct AERandom {
+    int values[32]{};
+    int used = 0;
+    int bounds[32]{};
+    int nextInt(int bound) {
+        assert(used < 32);
+        int value = values[used];
+        bounds[used++] = bound;
+        assert(value >= 0 && value < bound);
+        return value;
+    }
+};
+struct Globals { static Status *status; static void *rnd; };
 Status *Globals::status = nullptr;
+void *Globals::rnd = nullptr;
 
 struct KIPlayer;
 struct Radar { KIPlayer *lockedEnemy = nullptr; };
@@ -184,6 +203,9 @@ struct PlayerFighter : KIPlayer {
     int field_0x1c8 = 0;
     uint8_t field_0x12c = 0;
     uint8_t field_0x12e = 0;
+    uint8_t field_0x12d = 0;
+    int field_0x128 = 0;
+    int field_0x148 = 0;
     uint8_t aiDisabled = 0;
     void update(int dt);
 };
@@ -398,16 +420,16 @@ int main() {
     enemyA.active = false;
     fighter.update(1);
     assert(fighter.field_0x38 == 0 && fighter.field_0x12e == 0);
-    assert(enemyA.activeChecks == 1);
+    assert(enemyA.activeChecks == 2 && enemyB.activeChecks == 1);
     fighter.field_0x38 = 1;
     fighter.update(1);
-    assert(fighter.field_0x38 == -1 && enemyB.activeChecks == 0);
+    assert(fighter.field_0x38 == -1 && enemyB.activeChecks == 2);
 
     fighter.field_0x38 = 1;
     fighter.field_0x12e = 1;
     fighter.update(1);
     assert(fighter.field_0x38 == 1 && fighter.field_0x12e == 1);
-    assert(enemyB.activeChecks == 1);
+    assert(enemyB.activeChecks == 3);
 
     fighter.aiDisabled = 1;
     fighter.field_0x38 = 9;
@@ -443,4 +465,68 @@ int main() {
     fighter.state = 0;
     fighter.update(1);
     assert(fighter.state == 0);
+
+    fighter.aiDisabled = 0;
+    player.enemies = &enemyList;
+    fighter.field_0x128 = 100;
+    fighter.field_0x12e = 0;
+    fighter.field_0x148 = 7;
+    fighter.maneuverTimer = 0;
+    fighter.shipGroup = 8;
+    player.turnedEnemyFlag = false;
+    enemyA.active = true;
+    enemyB.active = true;
+    enemyA.position = {300.0f, 22.0f, 33.0f};
+    enemyB.position = {20.0f, 22.0f, 33.0f};
+    fighter.update(1);
+    assert(fighter.field_0x38 == 1 && fighter.field_0x12e == 1);
+    assert(fighter.targetPos.x == 20.0f && fighter.field_0x148 == 0);
+
+    fighter.field_0x12e = 0;
+    fighter.shipGroup = 2;
+    player.turnedEnemyFlag = true;
+    fighter.maneuverTimer = 0;
+    fighter.update(1);
+    assert(fighter.field_0x38 == 0 && fighter.field_0x12e == 1);
+    assert(fighter.targetPos.x == 300.0f);
+    fighter.shipGroup = 8;
+    player.turnedEnemyFlag = false;
+
+    AERandom random;
+    Globals::rnd = &random;
+    fighter.maneuverTimer = 5000;
+    fighter.field_0x12d = 0;
+    random.values[0] = 19;
+    random.values[1] = 30;
+    fighter.update(1);
+    assert(fighter.maneuverTimer == 0 && fighter.field_0x12d == 1);
+    assert(fighter.field_0x38 == 0 && random.used == 2);
+    assert(random.bounds[0] == 100 && random.bounds[1] == 100);
+
+    random.used = 0;
+    random.values[0] = 29;
+    random.values[1] = 0;
+    random.values[2] = 1;
+    fighter.maneuverTimer = 5000;
+    fighter.field_0x12d = 1;
+    enemyA.active = false;
+    fighter.update(1);
+    assert(fighter.field_0x12d == 0 && fighter.field_0x12e == 1);
+    assert(fighter.field_0x38 == 1 && fighter.targetPos.x == 20.0f);
+    assert(random.used == 3 && random.bounds[0] == 100);
+    assert(random.bounds[1] == 2 && random.bounds[2] == 2);
+
+    random.used = 0;
+    random.values[0] = 0;
+    random.values[1] = 0;
+    random.values[2] = 0;
+    random.values[3] = 0;
+    random.values[4] = 0;
+    random.values[5] = 0;
+    fighter.maneuverTimer = 5000;
+    fighter.field_0x12d = 1;
+    enemyB.active = false;
+    fighter.update(1);
+    assert(fighter.field_0x38 == 0 && fighter.field_0x12e == 0);
+    assert(random.used == 6 && random.bounds[5] == 2);
 }

@@ -482,6 +482,57 @@ void PlayerFighter::update(int dt) {
                     this->field_0x38 = -1;
                 else if (this->field_0x38 >= 0 && !(*enemies)[this->field_0x38]->isActive())
                     this->field_0x12e = 0;
+
+                this->field_0x148 = 0;
+                if (this->maneuverTimer < 5001) {
+                    if (!this->field_0x12e) {
+                        for (unsigned int i = 0; i < enemies->size(); ++i) {
+                            Player *enemy = (*enemies)[i];
+                            if (enemy && enemy->isActive() && !enemy->isDead()) {
+                                this->targetPos = enemy->getPosition();
+                                float upper = static_cast<float>(this->field_0x128);
+                                float lower = static_cast<float>(-this->field_0x128);
+                                float dx = this->renderPosition.x - this->targetPos.x;
+                                float dy = this->renderPosition.y - this->targetPos.y;
+                                float dz = this->renderPosition.z - this->targetPos.z;
+                                if ((this->shipGroup != 8 && body->turnedEnemy()) ||
+                                    (dx < upper && dx > lower && dy < upper && dy > lower &&
+                                     dz < upper && dz > lower)) {
+                                    this->field_0x12e = 1;
+                                    this->field_0x38 = static_cast<int>(i);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    AERandom *rng = static_cast<AERandom *>(Globals::rnd);
+                    this->field_0x12d = !this->field_0x12d && rng->nextInt(100) < 20;
+                    this->maneuverTimer = 0;
+                    if (rng->nextInt(100) <= 29 && enemies->size() >= 2) {
+                        this->field_0x12e = 0;
+                        for (int attempt = 0; attempt < 5 && !this->field_0x12e; ++attempt) {
+                            this->field_0x38 = rng->nextInt(static_cast<int>(enemies->size()));
+                            Player *enemy = (*enemies)[this->field_0x38];
+                            if (enemy->isActive()) {
+                                this->targetPos = enemy->getPosition();
+                                float upper = static_cast<float>(this->field_0x128);
+                                float lower = static_cast<float>(-this->field_0x128);
+                                float dx = this->renderPosition.x - this->targetPos.x;
+                                float dy = this->renderPosition.y - this->targetPos.y;
+                                float dz = this->renderPosition.z - this->targetPos.z;
+                                if ((this->shipGroup != 8 && body->turnedEnemy()) ||
+                                    (dx < upper && dx > lower && dy < upper && dy > lower &&
+                                     dz < upper && dz > lower))
+                                    this->field_0x12e = 1;
+                            }
+                        }
+                        if (!this->field_0x12e)
+                            this->field_0x38 = 0;
+                    } else {
+                        this->field_0x38 = 0;
+                    }
+                }
             } else if (this->routeClone) {
                 this->routeClone->update(this->geometry->getPosition());
                 if (this->routeClone->getWaypoint()) {
