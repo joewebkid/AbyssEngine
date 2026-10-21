@@ -1,6 +1,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 
 struct Vector {
     float x, y, z;
@@ -41,6 +42,24 @@ struct AEGeometry {
     void setVisible(bool value) { ++visibleCalls; visible = value; }
 };
 struct Explosion { bool playing = false; bool isPlaying() { return playing; } };
+struct BoundingVolume {
+    int calls = 0;
+    Vector position{};
+    virtual void update(float x, float y, float z) {
+        ++calls;
+        position = {x, y, z};
+    }
+};
+struct ParticleSystemManager {
+    int calls = 0;
+    int lastHandle = -1;
+    bool lastEnabled = false;
+    void enableSystemEmit(int handle, bool enabled) {
+        ++calls;
+        lastHandle = handle;
+        lastEnabled = enabled;
+    }
+};
 template<class T> struct Array {
     unsigned int count = 0;
     T *items = nullptr;
@@ -62,6 +81,7 @@ struct Player {
     };
     int damageDoneByPlayer = 0;
     int maxHitpoints = 100;
+    int hitpoints = 100;
     bool gunAvailableResult = false;
     bool alwaysEnemy = false;
     bool alwaysFriend = false;
@@ -81,6 +101,7 @@ struct Player {
     bool lastDoSound = false;
     int lastDt = 0;
     int getMaxHitpoints() { return maxHitpoints; }
+    int getHitpoints() { return hitpoints; }
     void setActive(bool value) { ++setActiveCalls; active = value; }
     bool gunAvailable(int slot) { assert(slot == 1); ++gunChecks; return gunAvailableResult; }
     bool isAlwaysEnemy() { return alwaysEnemy; }
@@ -136,9 +157,10 @@ struct AERandom {
         return value;
     }
 };
-struct Globals { static Status *status; static void *rnd; };
+struct Globals { static Status *status; static void *rnd; static unsigned char options[100]; };
 Status *Globals::status = nullptr;
 void *Globals::rnd = nullptr;
+unsigned char Globals::options[100]{};
 
 struct Radar { KIPlayer *lockedEnemy = nullptr; };
 struct TargetFollowCamera {
@@ -158,6 +180,8 @@ struct PlayerEgo {
 };
 struct Level {
     PlayerEgo *ego = nullptr;
+    ParticleSystemManager *particleEmitBoolPtr = nullptr;
+    ParticleSystemManager *particleRenderBoolPtr = nullptr;
     int getPlayerCalls = 0;
     int uncovered = -1;
     PlayerEgo *getPlayer() { ++getPlayerCalls; return ego; }
@@ -205,6 +229,8 @@ struct KIPlayer {
     AEGeometry *geometry = nullptr;
     Explosion *explosion = nullptr;
     int state = 0;
+    int field_0x80 = 0;
+    int field_0x84 = 0;
     uint8_t crateCaptured = 1;
     int deathTimer = 0;
     int field_0x1c0 = 0;
@@ -238,6 +264,7 @@ struct KIPlayer {
     void setActive(bool value) { player->setActive(value); }
     bool isWingMan() { return wingman; }
     bool isDead() { return state == 4; }
+    bool isDocked() { return state == 9; }
     virtual void setWingmanCommand(int command, KIPlayer *target) {
         ++setWingmanCommandCalls;
         field_0xe4 = command;
@@ -248,6 +275,8 @@ struct PlayerFighter : KIPlayer {
     Route *route = nullptr;
     Route *commandRoute = nullptr;
     Trail *trail = nullptr;
+    Array<BoundingVolume *> *boundingVolumes = nullptr;
+    signed char field_0x1fc = 0;
     Vector workingPosition{};
     int field_0x1c8 = 0;
     uint8_t field_0x12c = 0;
@@ -891,4 +920,56 @@ int main() {
     egoBody.position = {20.0f, 30.0f, 40.0f};
     fighter.update(1);
     assert(fighter.state == 1 && fighter.targetPos.x == 20.0f);
+
+    fighter.aiDisabled = 1;
+    fighter.wingmanFlag = 0;
+    fighter.field_0x128 = 0;
+    fighter.state = 0;
+    BoundingVolume firstVolume, secondVolume;
+    BoundingVolume *volumes[] = {&firstVolume, &secondVolume};
+    Array<BoundingVolume *> volumeArray{2, volumes};
+    fighter.boundingVolumes = &volumeArray;
+    fighter.update(1);
+    assert(firstVolume.calls == 1 && secondVolume.calls == 1);
+    assert(firstVolume.position.x == fighter.renderPosition.x &&
+           firstVolume.position.y == fighter.renderPosition.y &&
+           firstVolume.position.z == fighter.renderPosition.z);
+    assert(secondVolume.position.x == fighter.renderPosition.x);
+
+    ParticleSystemManager emission, rendering;
+    level.particleEmitBoolPtr = &emission;
+    level.particleRenderBoolPtr = &rendering;
+    fighter.field_0x80 = 12;
+    fighter.field_0x84 = 34;
+    float quality = 1.0f;
+    std::memcpy(Globals::options + 0x28, &quality, sizeof(quality));
+    player.hitpoints = 30;
+    fighter.update(1);
+    assert(fighter.field_0x1fc == 1 && emission.calls == 1 && rendering.calls == 1);
+    assert(emission.lastHandle == 12 && rendering.lastHandle == 34);
+    assert(emission.lastEnabled && rendering.lastEnabled);
+    fighter.update(1);
+    assert(emission.calls == 1 && rendering.calls == 1);
+
+    player.hitpoints = 33;
+    fighter.update(1);
+    assert(fighter.field_0x1fc == 0 && emission.calls == 2 && rendering.calls == 2);
+    assert(!emission.lastEnabled && !rendering.lastEnabled);
+
+    quality = 0.0f;
+    std::memcpy(Globals::options + 0x28, &quality, sizeof(quality));
+    player.hitpoints = 30;
+    fighter.update(1);
+    assert(fighter.field_0x1fc == 1 && emission.calls == 2 && rendering.calls == 2);
+    player.hitpoints = 100;
+    fighter.update(1);
+    assert(fighter.field_0x1fc == 0 && emission.calls == 3 && rendering.calls == 3);
+
+    quality = 1.0f;
+    std::memcpy(Globals::options + 0x28, &quality, sizeof(quality));
+    fighter.state = 9;
+    player.hitpoints = 30;
+    fighter.update(1);
+    assert(fighter.field_0x1fc == 1 && emission.calls == 4 && rendering.calls == 4);
+    assert(!emission.lastEnabled && !rendering.lastEnabled);
 }

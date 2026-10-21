@@ -1,6 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::update` follow-camera override;
+Last reviewed: 2026-10-21 (`PlayerFighter::update` bounding volumes and
+damage-particle transitions; earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xddc56–0xddd94` confirms
+per-frame bounding-volume updates and health-driven switching of two
+particle systems. A production-method smoke covers the 33% threshold,
+zero quality, docked state, idempotence and volume coordinates. All 11
+Fighter smokes, native UCRT64 `gof2`, all 208 NDK r18b ARM units and
+93 verifier tests pass (one existing skip). Whole-`update`
+source-shape/strict fuzzy changes **42.2%/12.3% → 44.3%/12.2%**.
+The full corpus compares **4,323/4,524** originals across **4,735**
+pairs at **94.04%/83.38%** mean source-shape/strict fuzzy, retaining
+**2,557 linked-exact** and **1,082 byte-exact** without exact-pair
+losses, skipped or wrong-type symbols. Only the target function's
+scores changed. Movement, docking and the common tail remain
+unresolved; a complete game frame is untested. See
+[the ARM evidence](PLAYER_FIGHTER_DAMAGE_PARTICLES_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::update` follow-camera override;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `PlayerFighter::update` at `0xddb98–0xddd76` confirms the

@@ -21,6 +21,7 @@
 #include "engine/math/Transform.h"
 #include "engine/math/EaseInOutMatrix.h"
 #include <cmath>
+#include <cstring>
 
 
 
@@ -708,6 +709,33 @@ void PlayerFighter::update(int dt) {
             (this->subGeometry ? this->subGeometry : this->geometry)->setVisible(true);
             body->setActive(true);
         }
+    }
+
+    if (this->boundingVolumes) {
+        for (unsigned int i = 0; i < this->boundingVolumes->size(); ++i)
+            (*this->boundingVolumes)[i]->update(this->renderPosition.x,
+                                                this->renderPosition.y,
+                                                this->renderPosition.z);
+    }
+
+    int hitpoints = body->getHitpoints();
+    if (this->field_0x1fc) {
+        if (static_cast<float>(body->getMaxHitpoints()) * 0.33f <=
+            static_cast<float>(hitpoints)) {
+            this->field_0x1fc = 0;
+            this->level->particleEmitBoolPtr->enableSystemEmit(this->field_0x80, false);
+            this->level->particleRenderBoolPtr->enableSystemEmit(this->field_0x84, false);
+        }
+    } else if (static_cast<float>(body->getMaxHitpoints()) * 0.33f >
+               static_cast<float>(hitpoints)) {
+        float particleQuality;
+        std::memcpy(&particleQuality, Globals::options + 0x28, sizeof(particleQuality));
+        if (particleQuality > 0.0f) {
+            bool emit = !this->isDocked();
+            this->level->particleEmitBoolPtr->enableSystemEmit(this->field_0x80, emit);
+            this->level->particleRenderBoolPtr->enableSystemEmit(this->field_0x84, emit);
+        }
+        this->field_0x1fc = 1;
     }
 
     // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.
