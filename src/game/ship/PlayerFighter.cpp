@@ -532,6 +532,42 @@ void PlayerFighter::update(int dt) {
                     } else {
                         this->field_0x38 = 0;
                     }
+
+                    if (this->wingmanFlag && this->field_0xe4 == 3 && this->wingmanTarget) {
+                        if (this->wingmanTarget->isDead()) {
+                            this->setWingmanCommand(1, nullptr);
+                        } else {
+                            for (unsigned int i = 0; i < enemies->size(); ++i) {
+                                Player *enemy = (*enemies)[i];
+                                if (enemy == this->wingmanTarget->player && enemy->isActive() &&
+                                    !enemy->isAlwaysFriend()) {
+                                    this->field_0x38 = static_cast<int>(i);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    Player *selected = (*enemies)[this->field_0x38];
+                    if (!selected->isActive() || selected->isDead()) {
+                        this->field_0x12e = 0;
+                        this->field_0x38 = -1;
+                    } else {
+                        this->targetPos = selected->getPosition();
+                        float upper = static_cast<float>(this->field_0x128);
+                        float lower = static_cast<float>(-this->field_0x128);
+                        float dx = this->renderPosition.x - this->targetPos.x;
+                        float dy = this->renderPosition.y - this->targetPos.y;
+                        float dz = this->renderPosition.z - this->targetPos.z;
+                        if (!(dx < upper && dx > lower && dy < upper && dy > lower &&
+                              dz < upper && dz > lower))
+                            this->field_0x38 = -1;
+                    }
+                }
+
+                if (!body->enemyFlagsLo && this->field_0x38 == 0) {
+                    this->field_0x12e = 0;
+                    this->field_0x38 = 1;
                 }
             } else if (this->routeClone) {
                 this->routeClone->update(this->geometry->getPosition());

@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::update` target-search prefix;
+Last reviewed: 2026-10-21 (`PlayerFighter::update` wingman target validation;
 earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xdd50e–0xdd542` and
+`0xdd74e–0xdd7c0` confirms the command-3 wingman-target override,
+random-search target validation and zero-index fallback. The
+production-method smoke passes at `-O0/-O2`; all 11 Fighter smokes,
+native UCRT64 `gof2`, all 208 NDK r18b ARM units and 93 verifier
+tests pass (one existing skip). Whole-`update` source-shape/strict
+fuzzy rises **26.4%/12.9% → 29.8%/14.8%**. The full corpus compares
+**4,323/4,524** originals across **4,735** pairs at
+**94.04%/83.38%** mean source-shape/strict fuzzy, with **2,557
+linked-exact** and **1,082 byte-exact**; no exact-pair losses,
+skipped or wrong-type symbols. The candidate rescan, combat,
+movement and common tail remain unresolved; complete game-frame
+behavior is untested. See
+[the ARM evidence](PLAYER_FIGHTER_WINGMAN_TARGET_VALIDATION_ARM_2026-10-21.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::update` target-search prefix).
 
 Android ARM `PlayerFighter::update` at `0xdd3c6–0xdd620` confirms
 the ordered target scan below the 5,001 timer threshold, the

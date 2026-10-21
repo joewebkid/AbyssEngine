@@ -187,6 +187,8 @@ struct KIPlayer {
     uint8_t wingmanFlag = 0;
     int wingmanCommand = 1;
     int field_0xe4 = 0;
+    KIPlayer *wingmanTarget = nullptr;
+    int setWingmanCommandCalls = 0;
     int fov = 0;
     Vector targetPos{};
     Vector objectPosition{};
@@ -195,6 +197,12 @@ struct KIPlayer {
     bool wingman = false;
     void setActive(bool value) { player->setActive(value); }
     bool isWingMan() { return wingman; }
+    bool isDead() { return state == 4; }
+    virtual void setWingmanCommand(int command, KIPlayer *target) {
+        ++setWingmanCommandCalls;
+        field_0xe4 = command;
+        wingmanTarget = target;
+    }
 };
 struct PlayerFighter : KIPlayer {
     Route *route = nullptr;
@@ -419,7 +427,7 @@ int main() {
     fighter.field_0x38 = 0;
     enemyA.active = false;
     fighter.update(1);
-    assert(fighter.field_0x38 == 0 && fighter.field_0x12e == 0);
+    assert(fighter.field_0x38 == 1 && fighter.field_0x12e == 0);
     assert(enemyA.activeChecks == 2 && enemyB.activeChecks == 1);
     fighter.field_0x38 = 1;
     fighter.update(1);
@@ -484,6 +492,7 @@ int main() {
 
     fighter.field_0x12e = 0;
     fighter.shipGroup = 2;
+    player.alwaysFriend = false;
     player.turnedEnemyFlag = true;
     fighter.maneuverTimer = 0;
     fighter.update(1);
@@ -500,7 +509,7 @@ int main() {
     random.values[1] = 30;
     fighter.update(1);
     assert(fighter.maneuverTimer == 0 && fighter.field_0x12d == 1);
-    assert(fighter.field_0x38 == 0 && random.used == 2);
+    assert(fighter.field_0x38 == -1 && fighter.field_0x12e == 1 && random.used == 2);
     assert(random.bounds[0] == 100 && random.bounds[1] == 100);
 
     random.used = 0;
@@ -527,6 +536,55 @@ int main() {
     fighter.field_0x12d = 1;
     enemyB.active = false;
     fighter.update(1);
-    assert(fighter.field_0x38 == 0 && fighter.field_0x12e == 0);
+    assert(fighter.field_0x38 == -1 && fighter.field_0x12e == 0);
     assert(random.used == 6 && random.bounds[5] == 2);
+
+    KIPlayer wingmanTarget;
+    wingmanTarget.player = &enemyB;
+    fighter.wingmanFlag = 1;
+    fighter.field_0xe4 = 3;
+    fighter.wingmanTarget = &wingmanTarget;
+    fighter.field_0x12e = 0;
+    fighter.maneuverTimer = 5000;
+    enemyA.active = true;
+    enemyB.active = true;
+    random.used = 0;
+    random.values[0] = 30;
+    fighter.update(1);
+    assert(fighter.field_0x38 == 1 && fighter.targetPos.x == 20.0f);
+    assert(fighter.field_0x12e == 0 && fighter.setWingmanCommandCalls == 0);
+
+    enemyB.alwaysFriend = true;
+    fighter.maneuverTimer = 5000;
+    random.used = 0;
+    fighter.update(1);
+    assert(fighter.field_0x38 == -1 && fighter.field_0xe4 == 3);
+    enemyB.alwaysFriend = false;
+
+    wingmanTarget.state = 4;
+    fighter.maneuverTimer = 5000;
+    random.used = 0;
+    fighter.update(1);
+    assert(fighter.setWingmanCommandCalls == 1 && fighter.field_0xe4 == 1);
+    assert(fighter.wingmanTarget == nullptr && fighter.field_0x38 == -1);
+
+    fighter.wingmanFlag = 0;
+    fighter.maneuverTimer = 5000;
+    fighter.field_0x12e = 1;
+    enemyA.dead = true;
+    random.used = 0;
+    fighter.update(1);
+    assert(fighter.field_0x12e == 0 && fighter.field_0x38 == -1);
+
+    enemyA.dead = false;
+    enemyA.position = {11.0f, 22.0f, 33.0f};
+    fighter.field_0x43 = 0;
+    fighter.shipGroup = 2;
+    standing.enemy = false;
+    player.alwaysFriend = false;
+    player.turnedEnemyFlag = false;
+    fighter.maneuverTimer = 0;
+    fighter.update(1);
+    assert(player.enemyFlagsLo == 0);
+    assert(fighter.field_0x12e == 0 && fighter.field_0x38 == 1);
 }
