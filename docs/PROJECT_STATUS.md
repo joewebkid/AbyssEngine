@@ -1,6 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-21 (`PlayerFighter::update` freelance-mission
+Last reviewed: 2026-10-22 (`PlayerFighter::update` death transition;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xddf18–0xde1a4` confirms
+one-time wanted reward, friend/enemy/wingman death notifications,
+state-3 transition, special cargo and pirate-kill accounting, death
+particles, sound, random drift and exhaust shutdown. Two Vector slots
+at `+0x188/+0x194` are now typed with ARM layout assertions. The
+production-method smoke covers payout idempotence, friend/wingman and
+enemy paths, effects and audio positioning. All 11 Fighter smokes,
+native UCRT64 `gof2`, all 208 NDK r18b ARM units and 93 verifier tests
+pass (one existing skip). Whole-`update` source-shape/strict fuzzy
+changes **45.9%/20.1% → 53.3%/17.8%**. The full corpus compares
+**4,323/4,524** originals across **4,735** pairs at **94.04%/83.38%**
+mean source-shape/strict fuzzy, retaining **2,557 linked-exact** and
+**1,082 byte-exact** without exact-pair losses, skipped or wrong-type
+symbols. Only the target function's scores changed. Later state-3
+animation, movement and the common tail remain unresolved; a complete
+game frame is untested. See
+[the ARM evidence](PLAYER_FIGHTER_DEATH_TRANSITION_ARM_2026-10-22.md).
+
+Previous checkpoint: 2026-10-21 (`PlayerFighter::update` freelance-mission
 death flag; earlier subsystem snapshots retain their dates)
 
 Android ARM `PlayerFighter::update` at `0xddd94–0xddf18` confirms a

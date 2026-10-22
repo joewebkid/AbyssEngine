@@ -54,10 +54,27 @@ struct ParticleSystemManager {
     int calls = 0;
     int lastHandle = -1;
     bool lastEnabled = false;
+    int handles[64]{};
+    bool enabled[64]{};
+    int manualCalls = 0, manualHandle = -1, manualSet = -1;
+    Vector manualPosition{}, manualVelocity{};
+    float manualLifetime = 0.0f;
     void enableSystemEmit(int handle, bool enabled) {
+        assert(calls < 64);
+        handles[calls] = handle;
+        this->enabled[calls] = enabled;
         ++calls;
         lastHandle = handle;
         lastEnabled = enabled;
+    }
+    void emitManual(int handle, const Vector &position, int particleSet,
+                    const Vector &velocity, float lifetime) {
+        ++manualCalls;
+        manualHandle = handle;
+        manualPosition = position;
+        manualSet = particleSet;
+        manualVelocity = velocity;
+        manualLifetime = lifetime;
     }
 };
 struct String {
@@ -94,12 +111,20 @@ template<class T> struct Array {
     unsigned int size() const { return count; }
     T &operator[](unsigned int i) { return items[i]; }
 };
+template<class T> void ArrayAdd(T value, Array<T> &array) {
+    T *next = new T[array.count + 1];
+    for (unsigned int i = 0; i < array.count; ++i) next[i] = array.items[i];
+    delete[] array.items;
+    array.items = next;
+    next[array.count++] = value;
+}
 struct KIPlayer;
 struct Player {
     bool active = true;
     bool dead = false;
     Vector position{};
     uint8_t field_69 = 0;
+    uint8_t destroyedByte = 0;
     KIPlayer *kiPlayer = nullptr;
     Array<Player *> *enemies = nullptr;
     Matrix transformMatrix{};
@@ -166,8 +191,36 @@ struct Standing {
     bool isEnemy(int) { ++enemyCalls; return enemy; }
     bool isFriend(int) { ++friendCalls; return friendly; }
 };
+struct Wanted {
+    int reward = 75;
+    int board = 2;
+    int terminateCalls = 0, activeCalls = 0, rewardCalls = 0;
+    bool terminated = false, active = true;
+    void setTerminated(bool value) { ++terminateCalls; terminated = value; }
+    void setActive(bool value) { ++activeCalls; active = value; }
+    int getReward() { ++rewardCalls; return reward; }
+    int getBoard() { return board; }
+};
+struct Layout {
+    int calls = 0, lastReward = -1;
+    bool lastFlag = false;
+    void showMissionRewardMessage(int reward, bool flag) {
+        ++calls; lastReward = reward; lastFlag = flag;
+    }
+};
+struct FModSound {
+    int calls = 0, lastId = -1;
+    Vector *lastPosition = nullptr;
+    void play(int id, Vector *position, Vector *velocity, float pitch) {
+        assert(velocity == nullptr && pitch == 0.0f);
+        ++calls; lastId = id; lastPosition = position;
+    }
+};
 struct Status {
     Standing *standing;
+    Array<Wanted *> *wanted = nullptr;
+    int credits = 0;
+    int collectedCalls = 0, lastBoard = -1, pirateKills = 0;
     Mission *freelance = nullptr;
     Station *station = nullptr;
     uint8_t field_0xf0 = 0;
@@ -177,6 +230,10 @@ struct Status {
     Standing *getStanding() { return standing; }
     Mission *getFreelanceMission() { return freelance; }
     Station *getStation() { return station; }
+    int getCredits() { return credits; }
+    void setCredits(int value) { credits = value; }
+    void incCollectedBounties(int board) { ++collectedCalls; lastBoard = board; }
+    void incPirateKills() { ++pirateKills; }
     bool inBlackMarketSystem() { return blackMarket; }
 };
 struct AERandom {
@@ -191,11 +248,13 @@ struct AERandom {
         return value;
     }
 };
-struct Globals { static Status *status; static void *rnd; static unsigned char options[100]; static GameText *gameText; };
+struct Globals { static Status *status; static void *rnd; static unsigned char options[100]; static GameText *gameText; static FModSound *sound; static Layout *layout; };
 Status *Globals::status = nullptr;
 void *Globals::rnd = nullptr;
 unsigned char Globals::options[100]{};
 GameText *Globals::gameText = nullptr;
+FModSound *Globals::sound = nullptr;
+Layout *Globals::layout = nullptr;
 
 struct Radar { KIPlayer *lockedEnemy = nullptr; };
 struct TargetFollowCamera {
@@ -217,10 +276,21 @@ struct Level {
     PlayerEgo *ego = nullptr;
     ParticleSystemManager *particleEmitBoolPtr = nullptr;
     ParticleSystemManager *particleRenderBoolPtr = nullptr;
+    ParticleSystemManager *field_74 = nullptr;
+    ParticleSystemManager *field_8c = nullptr;
+    int field_3c = 55;
+    int friendDeaths = 0, enemyDeaths = 0, wingmanDeaths = 0;
+    int lastEnemyKind = -1;
+    bool lastEnemyDestroyed = false;
     int getPlayerCalls = 0;
     int uncovered = -1;
     PlayerEgo *getPlayer() { ++getPlayerCalls; return ego; }
     void uncoverWanted(int index) { uncovered = index; }
+    void friendDied() { ++friendDeaths; }
+    void wingmanDied(const String &) { ++wingmanDeaths; }
+    void enemyDied(int kind, bool destroyed) {
+        ++enemyDeaths; lastEnemyKind = kind; lastEnemyDestroyed = destroyed;
+    }
 };
 struct Waypoint { int x, y, z; };
 struct Route {
@@ -272,6 +342,10 @@ struct KIPlayer {
     int field_0x1c0 = 0;
     int maneuverTimer = 0;
     int shipGroup = 0;
+    int kind = 19;
+    Array<int> *cargo = nullptr;
+    uint8_t isMissionCrate = 0;
+    uint8_t field_0x73 = 0;
     int deltaTime = 0;
     int deltaTimeHi = 0;
     Vector renderPosition{};
@@ -301,6 +375,12 @@ struct KIPlayer {
     bool isWingMan() { return wingman; }
     bool isDead() { return state == 4; }
     bool isDocked() { return state == 9; }
+    int cargoAvailable() {
+        if (!cargo) return 0;
+        for (unsigned int i = 1; i < cargo->size(); i += 2)
+            if ((*cargo)[i] > 0) return 1;
+        return 0;
+    }
     virtual void setWingmanCommand(int command, KIPlayer *target) {
         ++setWingmanCommandCalls;
         field_0xe4 = command;
@@ -313,6 +393,12 @@ struct PlayerFighter : KIPlayer {
     Trail *trail = nullptr;
     Array<BoundingVolume *> *boundingVolumes = nullptr;
     signed char field_0x1fc = 0;
+    int field_0x130 = 0, field_0x134 = 0, field_0x138 = 0;
+    int engineTrailSystem = 0, field_0x1f8 = 0;
+    Vector deathDrift{}, deathDirection{};
+    int exhaustCalls = 0;
+    bool exhaustVisible = true;
+    void setExhaustVisible(bool visible) { ++exhaustCalls; exhaustVisible = visible; }
     Vector workingPosition{};
     int field_0x1c8 = 0;
     uint8_t field_0x12c = 0;
@@ -1015,31 +1101,72 @@ int main() {
     status.freelance = &freelance;
     status.station = &station;
     Globals::gameText = &gameText;
+    ParticleSystemManager deathEmission, deathSystems;
+    level.field_74 = &deathEmission;
+    level.field_8c = &deathSystems;
+    FModSound sound;
+    Layout layout;
+    Globals::sound = &sound;
+    Globals::layout = &layout;
+    Globals::options[0x0f] = 1;
+    fighter.engineTrailSystem = 41;
+    fighter.field_0x130 = 42;
+    fighter.field_0x134 = 43;
+    fighter.field_0x138 = 44;
+    fighter.field_0x73 = 9;
+    fighter.field_0x43 = 1;
+    player.enemyFlagsLo = 0;
+    random.used = 0;
+    random.values[0] = 0;
+    random.values[1] = 100;
+    random.values[2] = 100;
+    random.values[3] = 101;
     fighter.state = 0;
     player.hitpoints = 0;
     fighter.update(1);
     assert(status.field_0xf0 == 0 && status.field_0xf1 == 1);
     assert(gameText.getTextCalls == 0);
+    assert(fighter.state == 3 && fighter.field_0x73 == 0 && fighter.field_0x1f8 == 1500);
+    assert(level.friendDeaths == 1 && level.enemyDeaths == 0 && level.wingmanDeaths == 0);
+    assert(deathEmission.manualCalls == 1 && deathEmission.manualHandle == level.field_3c);
+    assert(deathEmission.manualPosition.x == fighter.renderPosition.x &&
+           deathEmission.manualVelocity.x == 0.0f && deathEmission.manualLifetime == -1.0f);
+    assert(sound.calls == 1 && sound.lastId == 20 && sound.lastPosition == &fighter.renderPosition);
+    assert(fighter.deathDirection.z == geometry.direction.z && fighter.deathDrift.z == 0.05f);
+    assert(deathEmission.handles[0] == 41 && deathEmission.enabled[0]);
+    assert(deathSystems.calls == 3 && deathSystems.handles[0] == 42 &&
+           deathSystems.handles[1] == 43 && deathSystems.handles[2] == 44);
+    assert(!deathSystems.enabled[0] && !deathSystems.enabled[1] && !deathSystems.enabled[2]);
+    assert(!fighter.crateCaptured && !fighter.exhaustVisible && fighter.exhaustCalls == 1);
     fighter.update(1);
     assert(status.field_0xf0 == 0 && status.field_0xf1 == 1);
     assert(gameText.getTextCalls == 0);
+    assert(level.friendDeaths == 1 && sound.calls == 1);
 
     status.field_0xf1 = 0;
     fighter.name.data = "escort";
+    fighter.state = 0;
+    random.used = 0;
     fighter.update(1);
     assert(status.field_0xf0 == 1 && status.field_0xf1 == 0);
     assert(gameText.getTextCalls == 1 && fighter.name.compareCalls == 1);
 
     fighter.name.data = "another";
+    fighter.state = 0;
+    random.used = 0;
     fighter.update(1);
     assert(status.field_0xf0 == 0 && status.field_0xf1 == 1);
 
     status.field_0xf1 = 0;
     freelance.targetStation = 8;
+    fighter.state = 0;
+    random.used = 0;
     fighter.update(1);
     assert(status.field_0xf0 == 0 && status.field_0xf1 == 0);
     freelance.targetStation = 7;
     freelance.type = 12;
+    fighter.state = 0;
+    random.used = 0;
     fighter.update(1);
     assert(status.field_0xf0 == 0 && status.field_0xf1 == 0);
     freelance.type = 13;
@@ -1052,6 +1179,60 @@ int main() {
     assert(status.field_0xf0 == 0 && status.field_0xf1 == 0);
     player.hitpoints = 0;
     status.freelance = nullptr;
+    random.used = 0;
     fighter.update(1);
     assert(status.field_0xf0 == 0 && status.field_0xf1 == 0);
+
+    Wanted wanted;
+    Wanted *wantedItems[] = {&wanted};
+    Array<Wanted *> wantedArray{1, wantedItems};
+    status.wanted = &wantedArray;
+    status.credits = 100;
+    fighter.field_0x42 = 1;
+    fighter.field_0x48 = 0;
+    fighter.shipGroup = 8;
+    fighter.state = 0;
+    status.blackMarket = false;
+    status.field_110 = 0;
+    player.alwaysFriend = false;
+    player.turnedEnemyFlag = false;
+    player.enemyFlagsLo = 1;
+    player.destroyedByte = 0;
+    random.used = 0;
+    fighter.update(1);
+    assert(fighter.state == 3 && wanted.terminated && !wanted.active);
+    assert(wanted.terminateCalls == 1 && wanted.activeCalls == 1 && wanted.rewardCalls == 2);
+    assert(layout.calls == 1 && layout.lastReward == 75 && layout.lastFlag);
+    assert(status.credits == 175 && status.collectedCalls == 1 && status.lastBoard == 2);
+    assert(player.enemyFlagsLo == 1);
+    assert(fighter.shipGroup == 8);
+    assert(status.pirateKills == 1);
+    assert(level.enemyDeaths == 1);
+    assert(level.lastEnemyKind == fighter.kind && !level.lastEnemyDestroyed);
+    fighter.update(1);
+    assert(status.credits == 175 && wanted.terminateCalls == 1 && level.enemyDeaths == 1);
+
+    fighter.field_0x42 = 0;
+    fighter.shipGroup = 9;
+    fighter.state = 0;
+    fighter.cargo = nullptr;
+    Globals::options[0x0f] = 0;
+    random.used = 0;
+    fighter.update(1);
+    assert(fighter.state == 3 && fighter.cargo && fighter.cargo->size() == 2);
+    assert((*fighter.cargo)[0] == 131 && (*fighter.cargo)[1] == 1);
+    assert(fighter.crateCaptured == 1 && sound.lastPosition == nullptr);
+    assert(level.enemyDeaths == 2 && status.pirateKills == 1);
+    delete[] fighter.cargo->items;
+    delete fighter.cargo;
+    fighter.cargo = nullptr;
+
+    fighter.state = 0;
+    fighter.shipGroup = 2;
+    fighter.wingmanFlag = 1;
+    fighter.routeClone = nullptr;
+    player.enemyFlagsLo = 0;
+    random.used = 0;
+    fighter.update(1);
+    assert(fighter.state == 3 && level.friendDeaths >= 2 && level.wingmanDeaths == 1);
 }

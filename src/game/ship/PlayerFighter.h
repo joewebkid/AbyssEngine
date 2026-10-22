@@ -49,7 +49,9 @@ public:
     Vector workingPosition;
     Vector resetVecB;
     Vector resetVecC;
-    uint8_t _pad_0x17c[0x24];
+    uint8_t _pad_0x17c[0xc];
+    Vector deathDrift;
+    Vector deathDirection;
     int32_t engineTrailSystem;
     float rotate;
     float shootError;
@@ -191,6 +193,8 @@ static_assert(offsetof(PlayerFighter, field_0x138) == 0x138, "PlayerFighter part
 static_assert(offsetof(PlayerFighter, route) == 0x144, "PlayerFighter::route ABI offset");
 static_assert(offsetof(PlayerFighter, field_0x148) == 0x148, "PlayerFighter target Player ABI offset");
 static_assert(offsetof(PlayerFighter, engineTrailSystem) == 0x1a0, "PlayerFighter engine trail ABI offset");
+static_assert(offsetof(PlayerFighter, deathDrift) == 0x188, "PlayerFighter death drift ABI offset");
+static_assert(offsetof(PlayerFighter, deathDirection) == 0x194, "PlayerFighter death direction ABI offset");
 static_assert(offsetof(PlayerFighter, deltaTime) == 0x1d0, "PlayerFighter::deltaTime ABI offset");
 static_assert(offsetof(PlayerFighter, easeBaseMatrix) == 0x218, "PlayerFighter first matrix ABI offset");
 static_assert(offsetof(PlayerFighter, rollMatrix) == 0x258, "PlayerFighter roll matrix ABI offset");

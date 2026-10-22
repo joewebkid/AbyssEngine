@@ -22,6 +22,8 @@
 #include "game/weapons/Radar.h"
 #include "engine/math/Transform.h"
 #include "engine/math/EaseInOutMatrix.h"
+#include "engine/audio/FModSound.h"
+#include "game/ui/Layout.h"
 #include <cmath>
 #include <cstring>
 
@@ -754,6 +756,64 @@ void PlayerFighter::update(int dt) {
                 status->field_0xf1 = 1;
             }
         }
+
+        if (this->field_0x42) {
+            Wanted *wanted = (*status->wanted)[this->field_0x48];
+            wanted->setTerminated(true);
+            wanted->setActive(false);
+            Globals::layout->showMissionRewardMessage(wanted->getReward(), true);
+            status->setCredits(status->getCredits() + wanted->getReward());
+            status->incCollectedBounties(wanted->getBoard());
+        }
+
+        if (body->enemyFlagsLo) {
+            if (this->shipGroup == 9) {
+                this->cargo = new Array<int>();
+                ArrayAdd<int>(131, *this->cargo);
+                ArrayAdd<int>(static_cast<AERandom *>(Globals::rnd)->nextInt(3) + 1,
+                              *this->cargo);
+            } else if (this->shipGroup == 8) {
+                if (!body->destroyedByte)
+                    status->incPirateKills();
+            } else if (!this->isMissionCrate && this->crateCaptured &&
+                       Globals::options[0x35] &&
+                       // The ARM branch checks a negative draw despite the normal RNG range.
+                       static_cast<AERandom *>(Globals::rnd)->nextInt(100) < 0 &&
+                       this->shipGroup <= 3) {
+                delete this->cargo;
+                this->cargo = new Array<int>();
+                ArrayAdd<int>(this->shipGroup + 189, *this->cargo);
+                ArrayAdd<int>(1, *this->cargo);
+            }
+            this->level->enemyDied(this->kind, body->destroyedByte != 0);
+        } else {
+            this->level->friendDied();
+            if (this->wingmanFlag)
+                this->level->wingmanDied(this->name);
+        }
+
+        this->state = 3;
+        this->field_0x73 = 0;
+        this->field_0x1f8 = static_cast<AERandom *>(Globals::rnd)->nextInt(1500) + 1500;
+        this->deathDirection = this->geometry->getDirection();
+        const Vector zero = {0.0f, 0.0f, 0.0f};
+        this->level->field_74->emitManual(this->level->field_3c,
+                                          this->renderPosition, 0, zero, -1.0f);
+        Globals::sound->play(20, Globals::options[0x0f] ? &this->renderPosition : nullptr,
+                             nullptr, 0.0f);
+        Vector impulse = {
+            static_cast<float>(static_cast<AERandom *>(Globals::rnd)->nextInt(200) - 100),
+            static_cast<float>(static_cast<AERandom *>(Globals::rnd)->nextInt(200) - 100),
+            static_cast<float>(static_cast<AERandom *>(Globals::rnd)->nextInt(200) - 100)
+        };
+        this->deathDrift = AbyssEngine::AEMath::VectorNormalize(impulse);
+        this->deathDrift *= 0.05f;
+        this->level->field_74->enableSystemEmit(this->engineTrailSystem, true);
+        this->level->field_8c->enableSystemEmit(this->field_0x130, false);
+        this->level->field_8c->enableSystemEmit(this->field_0x134, false);
+        this->level->field_8c->enableSystemEmit(this->field_0x138, false);
+        this->crateCaptured = static_cast<uint8_t>(this->cargoAvailable());
+        this->setExhaustVisible(false);
     }
 
     // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.
