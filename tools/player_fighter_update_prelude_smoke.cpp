@@ -168,6 +168,7 @@ struct Player {
     bool dead = false;
     Vector position{};
     uint8_t field_69 = 0;
+    uint8_t field_5e = 0;
     uint8_t destroyedByte = 0;
     KIPlayer *kiPlayer = nullptr;
     Array<Player *> *enemies = nullptr;
@@ -267,6 +268,8 @@ struct FModSound {
 };
 struct Status {
     Standing *standing;
+    int currentCampaignMission = 0;
+    int campaignCalls = 0;
     Array<Wanted *> *wanted = nullptr;
     int credits = 0;
     int collectedCalls = 0, lastBoard = -1, pirateKills = 0;
@@ -277,6 +280,7 @@ struct Status {
     bool blackMarket = false;
     uint8_t field_110 = 0;
     Standing *getStanding() { return standing; }
+    int getCurrentCampaignMission() { ++campaignCalls; return currentCampaignMission; }
     Mission *getFreelanceMission() { return freelance; }
     Station *getStation() { return station; }
     int getCredits() { return credits; }
@@ -333,8 +337,13 @@ struct Level {
     bool lastEnemyDestroyed = false;
     int getPlayerCalls = 0;
     int uncovered = -1;
+    int pirateStationCalls = 0;
+    bool lastPirateStationAction = false;
     PlayerEgo *getPlayer() { ++getPlayerCalls; return ego; }
     void uncoverWanted(int index) { uncovered = index; }
+    void pirateStationAction(bool active) {
+        ++pirateStationCalls; lastPirateStationAction = active;
+    }
     void friendDied() { ++friendDeaths; }
     void wingmanDied(const String &) { ++wingmanDeaths; }
     void enemyDied(int kind, bool destroyed) {
@@ -464,6 +473,7 @@ struct PlayerFighter : KIPlayer {
     uint8_t field_0x12c = 0;
     uint8_t field_0x12e = 0;
     uint8_t field_0x12d = 0;
+    signed char field_0x12f = 0;
     int field_0x128 = 0;
     int field_0x1e4 = 0;
     Player *field_0x148 = nullptr;
@@ -1503,4 +1513,61 @@ int main() {
     lateExplosion.endOnUpdate = true;
     late.update(1);
     assert(late.finished && !latePlayer.active && late.deathTimer == 60001);
+
+    AEGeometry dormantGeometry;
+    AEGeometry dormantSubGeometry;
+    Player dormantPlayer;
+    Player dormantTarget;
+    PlayerFighter dormant;
+    Level dormantLevel;
+    Route dormantRoute;
+    dormant.geometry = &dormantGeometry;
+    dormant.player = &dormantPlayer;
+    dormant.level = &dormantLevel;
+    dormant.routeClone = &dormantRoute;
+    dormant.field_0x43 = 1;
+    dormant.state = 5;
+    dormant.field_0x128 = 0;
+    dormantPlayer.enemyFlagsLo = 1;
+    dormantGeometry.visible = true;
+    status.currentCampaignMission = 2;
+    int fallbackBefore = bodyCalls;
+    dormant.update(1);
+    assert(!dormantGeometry.visible && dormantGeometry.visibleCalls == 1);
+    assert(status.campaignCalls == 1 && dormant.state == 5 && bodyCalls == fallbackBefore);
+
+    status.currentCampaignMission = 1;
+    dormantGeometry.visible = true;
+    dormant.update(1);
+    assert(dormantGeometry.visible && dormantGeometry.visibleCalls == 1);
+    assert(status.campaignCalls == 2 && dormant.state == 5);
+
+    dormant.subGeometry = &dormantSubGeometry;
+    dormant.field_0x148 = &dormantTarget;
+    dormant.field_0x128 = 100;
+    dormant.field_0x12f = 1;
+    dormantPlayer.enemyFlagsLo = 0;
+    dormantPlayer.active = false;
+    dormantTarget.field_5e = 1;
+    dormant.resetVecB = {2.25f, -2.5f, 3.75f};
+    dormant.update(1);
+    assert(dormant.state == 5 && !dormantPlayer.active && dormantLevel.pirateStationCalls == 0);
+
+    dormantTarget.field_5e = 0;
+    dormant.resetVecB = {101.25f, -2.5f, 3.75f};
+    dormant.update(1);
+    assert(dormant.resetVecC.x == 100.0f && dormant.state == 5);
+    assert(!dormantPlayer.active && dormantSubGeometry.visibleCalls == 0);
+
+    dormant.resetVecB.x = std::nanf("");
+    dormant.update(1);
+    assert(dormant.state == 5 && !dormantPlayer.active);
+
+    dormant.resetVecB.x = 101.0f;
+    dormant.update(1);
+    assert(dormant.resetVecC.x == 99.75f && dormant.state == 1);
+    assert(dormantPlayer.active && dormantPlayer.setActiveCalls == 1);
+    assert(dormantSubGeometry.visible && dormantSubGeometry.visibleCalls == 1);
+    assert(dormantLevel.pirateStationCalls == 1 && dormantLevel.lastPirateStationAction);
+    assert(bodyCalls == fallbackBefore);
 }

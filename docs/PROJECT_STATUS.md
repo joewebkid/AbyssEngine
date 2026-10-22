@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-22 (`PlayerFighter::update` state-4 explosion, crate
-motion and cleanup; earlier subsystem snapshots retain their dates)
+Last reviewed: 2026-10-22 (`PlayerFighter::update` state-5 visibility and
+reactivation; earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xde4c4–0xde58e` confirms the
+state-5 campaign visibility gate, target flag check, strict component-wise
+distance threshold, reactivation and pirate-station callback. All 11 Fighter
+smokes, native UCRT64 `gof2`, all 208 NDK r18b ARM units and 93 verifier
+tests pass (one existing skip). Whole-`update` source-shape/strict fuzzy
+changes **63.9%/25.1% → 66.1%/25.0%**; the function remains nonexact.
+The full corpus compares **4,323/4,524** originals across **4,735** pairs
+at **94.04%/83.38%** mean source-shape/strict fuzzy, retaining **2,557
+linked-exact** and **1,082 byte-exact** without exact-pair losses, skipped
+or wrong-type symbols. Only the target function's score changed. States 0,
+1, 6–9 and the common tail remain unresolved; complete game-frame behavior
+is untested. The adjacent state-6 speed/death branch is the next bounded
+priority. See [the ARM evidence](PLAYER_FIGHTER_STATE5_ARM_2026-10-22.md).
+
+Previous checkpoint: 2026-10-22 (`PlayerFighter::update` state-4 explosion,
+crate motion and cleanup; earlier subsystem snapshots retain their dates)
 
 Android ARM `PlayerFighter::update` at `0xde4ac–0xdec7a` confirms state-4
 drift/timer behavior, optional camera update, bomb-force crate motion, Radar

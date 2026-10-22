@@ -944,6 +944,28 @@ void PlayerFighter::update(int dt) {
         return;
     }
 
+    if (this->state == 5) {
+        if (body->enemyFlagsLo && Globals::status->getCurrentCampaignMission() >= 2)
+            (this->subGeometry ? this->subGeometry : this->geometry)->setVisible(false);
+
+        if (!this->field_0x148 || this->field_0x148->field_5e)
+            return;
+
+        float upper = static_cast<float>(this->field_0x128);
+        float lower = static_cast<float>(-this->field_0x128);
+        if (!(this->resetVecC.x < upper && this->resetVecC.x > lower &&
+              this->resetVecC.y < upper && this->resetVecC.y > lower &&
+              this->resetVecC.z < upper && this->resetVecC.z > lower))
+            return;
+
+        this->state = 1;
+        (this->subGeometry ? this->subGeometry : this->geometry)->setVisible(true);
+        body->setActive(true);
+        if (this->field_0x12f)
+            this->level->pirateStationAction(true);
+        return;
+    }
+
     // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.
     PF_update_body(this, dt);
 
