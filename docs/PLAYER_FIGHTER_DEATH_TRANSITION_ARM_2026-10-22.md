@@ -56,3 +56,16 @@ score change. Full report: `fighter-death-transition-full.json`
 The subsequent state-3 animation/update path and the rest of the frame
 still remain behind `PF_update_body`. This test does not validate a
 complete game frame or production audio/particle rendering.
+
+Follow-up ARM map (not yet implemented): the state dispatcher at
+`0xde1a8–0xde1c8` skips state handling when `aiDisabled` is set;
+state 3 enters at `0xde2c0`. It clears the `+0x101` and `+0x13e`
+bytes, rotates the geometry using the `deathDrift` vector at `+0x188`
+when `dt >= 1`, translates by `deathDirection * float(dt) *
+currentSpeed`, and decrements the `+0x1f8` timer. Only after that timer
+passes below zero does it start `explosion`, disable the engine-trail
+emitter and (when `Globals::options + 0x28` is positive) two further
+particle emitters, apply a randomized bomb force, choose a normalized
+vector at `+0x17c`, switch to state 4, release an occupied `SpacePoint`,
+and conditionally create a crate. These observations delimit the next
+implementation package; they do not change the verified results above.
