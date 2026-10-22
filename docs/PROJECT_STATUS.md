@@ -19,6 +19,10 @@ function's scores changed. State 4, other dispatch paths and the common
 tail remain unresolved; a complete game frame is untested. See
 [the ARM evidence](PLAYER_FIGHTER_STATE3_ARM_2026-10-22.md).
 
+The subsequent state-4 branch has a [read-only ARM map](PLAYER_FIGHTER_STATE4_ARM_MAP_2026-10-22.md)
+covering explosion/camera updates, crate motion and cleanup. It is not
+implemented, and the metrics above are unchanged by that investigation.
+
 Previous checkpoint: 2026-10-22 (`PlayerFighter::update` death transition;
 earlier subsystem snapshots retain their dates)
 
