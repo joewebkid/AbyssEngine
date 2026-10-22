@@ -49,7 +49,7 @@ public:
     Vector workingPosition;
     Vector resetVecB;
     Vector resetVecC;
-    uint8_t _pad_0x17c[0xc];
+    Vector postExplosionDirection;
     Vector deathDrift;
     Vector deathDirection;
     int32_t engineTrailSystem;
@@ -99,7 +99,7 @@ public:
     AbyssEngine::EaseInOutMatrix *easeMatrix;
     int32_t spacePoint;
     int32_t field_0x2c0;
-    int32_t field_0x2c4;
+    SpacePoint *field_0x2c4;
     int32_t cloakTimer;
     int32_t cloakDuration;
     uint8_t cloakActive;
@@ -195,6 +195,8 @@ static_assert(offsetof(PlayerFighter, field_0x148) == 0x148, "PlayerFighter targ
 static_assert(offsetof(PlayerFighter, engineTrailSystem) == 0x1a0, "PlayerFighter engine trail ABI offset");
 static_assert(offsetof(PlayerFighter, deathDrift) == 0x188, "PlayerFighter death drift ABI offset");
 static_assert(offsetof(PlayerFighter, deathDirection) == 0x194, "PlayerFighter death direction ABI offset");
+static_assert(offsetof(PlayerFighter, postExplosionDirection) == 0x17c, "PlayerFighter post-explosion direction ABI offset");
+static_assert(offsetof(PlayerFighter, field_0x2c4) == 0x2c4, "PlayerFighter release point ABI offset");
 static_assert(offsetof(PlayerFighter, deltaTime) == 0x1d0, "PlayerFighter::deltaTime ABI offset");
 static_assert(offsetof(PlayerFighter, easeBaseMatrix) == 0x218, "PlayerFighter first matrix ABI offset");
 static_assert(offsetof(PlayerFighter, rollMatrix) == 0x258, "PlayerFighter roll matrix ABI offset");

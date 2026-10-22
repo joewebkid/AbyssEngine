@@ -1,6 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-22 (`PlayerFighter::update` death transition;
+Last reviewed: 2026-10-22 (`PlayerFighter::update` state-3 death motion and
+explosion; earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xde1a8–0xde4aa` confirms the
+disabled-AI bypass, state-3 rotation/translation and timer, then explosion,
+particle shutdown, randomized bomb force and post-explosion direction,
+state-4 transition, occupied-point release and cargo/mission-crate handling.
+The Vector at `+0x17c` and `SpacePoint *` at `+0x2c4` are now typed with
+ARM32 layout assertions. All 11 Fighter smokes, native UCRT64 `gof2`, all
+208 NDK r18b ARM units and 93 verifier tests pass (one existing skip).
+Whole-`update` source-shape/strict fuzzy changes **53.3%/17.8% →
+58.1%/21.4%**. The full corpus compares **4,323/4,524** originals across
+**4,735** pairs at **94.04%/83.38%** mean source-shape/strict fuzzy,
+retaining **2,557 linked-exact** and **1,082 byte-exact** with zero
+exact-pair losses, skipped or wrong-type symbols. Only the target
+function's scores changed. State 4, other dispatch paths and the common
+tail remain unresolved; a complete game frame is untested. See
+[the ARM evidence](PLAYER_FIGHTER_STATE3_ARM_2026-10-22.md).
+
+Previous checkpoint: 2026-10-22 (`PlayerFighter::update` death transition;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `PlayerFighter::update` at `0xddf18–0xde1a4` confirms

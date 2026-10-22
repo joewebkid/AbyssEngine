@@ -24,6 +24,14 @@ struct Matrix {
         return *this;
     }
 };
+Matrix operator*(Matrix lhs, const Matrix &rhs) { return lhs *= rhs; }
+namespace AbyssEngine { namespace AEMath {
+Matrix MatrixSetRotation(Matrix &matrix, float x, float y, float z) {
+    (void)x; (void)y; (void)z;
+    matrix.value = 7;
+    return matrix;
+}
+} }
 struct AEGeometry {
     Vector position{1.25f, -2.5f, 3.75f};
     Vector right{1.0f, 0.0f, 0.0f};
@@ -34,14 +42,35 @@ struct AEGeometry {
     int visibleCalls = 0;
     bool visible = false;
     int rightCalls = 0, upCalls = 0, directionCalls = 0;
+    int setMatrixCalls = 0, translateCalls = 0, referenceCalls = 0;
+    Vector lastTranslation{};
     Vector getPosition() { return position; }
     Vector getRightVector() { ++rightCalls; return right; }
     Vector getUpVector() { ++upCalls; return up; }
     Vector getDirection() { ++directionCalls; return direction; }
     Matrix &getMatrix() { ++matrixCalls; return matrix; }
+    void setMatrix(const Matrix &value) { ++setMatrixCalls; matrix = value; }
+    void translate(const Vector &value) {
+        ++translateCalls; lastTranslation = value; position += value;
+    }
+    void updateReferenceMatrix() { ++referenceCalls; }
     void setVisible(bool value) { ++visibleCalls; visible = value; }
 };
-struct Explosion { bool playing = false; bool isPlaying() { return playing; } };
+struct Explosion {
+    bool playing = false;
+    int startCalls = 0;
+    Vector startPosition{}, startDirection{};
+    bool isPlaying() { return playing; }
+    void start(const Vector &position, const Vector &direction) {
+        ++startCalls; startPosition = position; startDirection = direction;
+    }
+};
+struct SpacePoint {
+    bool free = false;
+    int isFreeCalls = 0, giveFreeCalls = 0;
+    bool isFree() { ++isFreeCalls; return free; }
+    void giveFree() { ++giveFreeCalls; free = true; }
+};
 struct BoundingVolume {
     int calls = 0;
     Vector position{};
@@ -153,6 +182,8 @@ struct Player {
     int setActiveCalls = 0;
     bool lastDoSound = false;
     int lastDt = 0;
+    int bombForceCalls = 0;
+    float bombForce = 0.0f;
     int getMaxHitpoints() { return maxHitpoints; }
     int getHitpoints() { return hitpoints; }
     void setActive(bool value) { ++setActiveCalls; active = value; }
@@ -181,6 +212,7 @@ struct Player {
         lastDoSound = doSound;
     }
     void StopEngineSound() { ++stopSoundCalls; }
+    void setBombForce(float value) { ++bombForceCalls; bombForce = value; }
     Array<Player *> *getEnemies() { ++enemiesCalls; return enemies; }
 };
 struct Standing {
@@ -345,6 +377,9 @@ struct KIPlayer {
     int kind = 19;
     Array<int> *cargo = nullptr;
     uint8_t isMissionCrate = 0;
+    uint8_t missionCrateCaptured = 0, missionCrateLost = 0;
+    uint8_t finished = 0;
+    int crateCalls = 0, lastCrateType = -1;
     uint8_t field_0x73 = 0;
     int deltaTime = 0;
     int deltaTimeHi = 0;
@@ -381,6 +416,7 @@ struct KIPlayer {
             if ((*cargo)[i] > 0) return 1;
         return 0;
     }
+    void createCrate(int type) { ++crateCalls; lastCrateType = type; }
     virtual void setWingmanCommand(int command, KIPlayer *target) {
         ++setWingmanCommandCalls;
         field_0xe4 = command;
@@ -396,6 +432,12 @@ struct PlayerFighter : KIPlayer {
     int field_0x130 = 0, field_0x134 = 0, field_0x138 = 0;
     int engineTrailSystem = 0, field_0x1f8 = 0;
     Vector deathDrift{}, deathDirection{};
+    Vector postExplosionDirection{};
+    SpacePoint *field_0x2c4 = nullptr;
+    signed char field_0x13e = 0;
+    float currentSpeed = 0.0f;
+    int cloakingCalls = 0;
+    void handleCloaking() { ++cloakingCalls; }
     int exhaustCalls = 0;
     bool exhaustVisible = true;
     void setExhaustVisible(bool visible) { ++exhaustCalls; exhaustVisible = visible; }
@@ -561,10 +603,12 @@ int main() {
     assert(player.updateCalls == 3 && !player.lastDoSound);
     int stopBefore = player.stopSoundCalls;
     fighter.state = 3;
+    fighter.aiDisabled = 1;
     fighter.update(3);
     assert(player.stopSoundCalls == stopBefore + 1 && player.updateCalls == 3);
 
     fighter.state = 0;
+    fighter.aiDisabled = 0;
     fighter.wingmanFlag = 1;
     fighter.routeClone = &route;
     fighter.field_0xe4 = 0;
@@ -963,6 +1007,7 @@ int main() {
 
     fighter.wingmanFlag = 0;
     fighter.state = 3;
+    fighter.aiDisabled = 1;
     fighter.resetVecB = {10.0f, 20.0f, 30.0f};
     fighter.update(1);
     assert(fighter.resetVecC.x == -1.0f && fighter.resetVecC.y == -2.0f &&
@@ -1235,4 +1280,100 @@ int main() {
     random.used = 0;
     fighter.update(1);
     assert(fighter.state == 3 && level.friendDeaths >= 2 && level.wingmanDeaths == 1);
+
+    AEGeometry driftGeometry;
+    Player driftPlayer;
+    Explosion driftExplosion;
+    PlayerFighter drifting;
+    SpacePoint occupiedPoint;
+    ParticleSystemManager driftTrail, driftEmit, driftRender;
+    Level driftLevel;
+    driftLevel.field_74 = &driftTrail;
+    driftLevel.particleEmitBoolPtr = &driftEmit;
+    driftLevel.particleRenderBoolPtr = &driftRender;
+    drifting.geometry = &driftGeometry;
+    drifting.player = &driftPlayer;
+    drifting.explosion = &driftExplosion;
+    drifting.level = &driftLevel;
+    drifting.routeClone = &route;
+    drifting.field_0x43 = 1;
+    drifting.state = 3;
+    drifting.shipGroup = 9;
+    drifting.finished = 1;
+    drifting.field_0x13e = 1;
+    drifting.deathDrift = {0.05f, 0.05f, 0.05f};
+    drifting.deathDirection = {0.0f, 0.0f, 1.0f};
+    drifting.currentSpeed = 2.0f;
+    drifting.field_0x1f8 = 5;
+    drifting.engineTrailSystem = 41;
+    drifting.field_0x80 = 12;
+    drifting.field_0x84 = 34;
+    drifting.field_0x2c4 = &occupiedPoint;
+    drifting.update(2);
+    assert(drifting.state == 3 && drifting.field_0x1f8 == 3);
+    assert(!drifting.finished && drifting.field_0x13e == 0);
+    assert(driftGeometry.matrix.value == 27 && driftGeometry.setMatrixCalls == 1);
+    assert(driftGeometry.translateCalls == 1 && driftGeometry.lastTranslation.z == 4.0f);
+    assert(driftGeometry.referenceCalls == 1 && driftExplosion.startCalls == 0);
+    drifting.update(0);
+    assert(driftGeometry.setMatrixCalls == 1 && drifting.field_0x1f8 == 3);
+
+    random.used = 0;
+    random.values[0] = 10;
+    random.values[1] = 100;
+    random.values[2] = 100;
+    random.values[3] = 101;
+    drifting.update(4);
+    assert(drifting.state == 4 && drifting.field_0x1f8 == 0);
+    assert(driftExplosion.startCalls == 1 && driftExplosion.startPosition.z == 7.75f);
+    assert(driftExplosion.startDirection.x == 0.0f);
+    assert(driftTrail.calls == 1 && driftTrail.handles[0] == 41 && !driftTrail.enabled[0]);
+    assert(driftEmit.calls == 1 && driftRender.calls == 1);
+    assert(driftPlayer.bombForceCalls == 1 && std::abs(driftPlayer.bombForce - 50.1f) < 0.001f);
+    assert(random.used == 4 && random.bounds[0] == 50 && random.bounds[3] == 200);
+    assert(drifting.postExplosionDirection.z == 1.0f);
+    assert(occupiedPoint.giveFreeCalls == 1 && drifting.field_0x2c4 == nullptr);
+    assert(drifting.crateCalls == 1 && drifting.lastCrateType == 4);
+
+    AEGeometry disabledGeometry;
+    Player disabledPlayer;
+    PlayerFighter disabled;
+    disabled.geometry = &disabledGeometry;
+    disabled.player = &disabledPlayer;
+    disabled.level = &driftLevel;
+    disabled.routeClone = &route;
+    disabled.field_0x43 = 1;
+    disabled.state = 3;
+    disabled.aiDisabled = 1;
+    disabled.field_0x1f8 = 5;
+    disabled.update(1);
+    assert(disabledGeometry.referenceCalls == 1 && disabled.cloakingCalls == 1);
+    assert(disabled.field_0x1f8 == 5 && disabled.state == 3);
+
+    AEGeometry missionGeometry;
+    Player missionPlayer;
+    Explosion missionExplosion;
+    PlayerFighter missionCrate;
+    missionCrate.geometry = &missionGeometry;
+    missionCrate.player = &missionPlayer;
+    missionCrate.explosion = &missionExplosion;
+    missionCrate.level = &driftLevel;
+    missionCrate.routeClone = &route;
+    missionCrate.field_0x43 = 1;
+    missionCrate.state = 3;
+    missionCrate.deathDrift = {0.05f, 0.05f, 0.05f};
+    missionCrate.isMissionCrate = 1;
+    missionCrate.field_0x1f8 = 0;
+    SpacePoint freePoint;
+    freePoint.free = true;
+    missionCrate.field_0x2c4 = &freePoint;
+    quality = 0.0f;
+    std::memcpy(Globals::options + 0x28, &quality, sizeof(quality));
+    random.used = 0;
+    missionCrate.update(1);
+    assert(missionCrate.state == 4 && !missionCrate.crateCaptured);
+    assert(missionCrate.missionCrateLost && missionCrate.crateCalls == 0);
+    assert(freePoint.isFreeCalls == 1 && freePoint.giveFreeCalls == 0 &&
+           missionCrate.field_0x2c4 == &freePoint);
+    assert(driftEmit.calls == 1 && driftRender.calls == 1);
 }

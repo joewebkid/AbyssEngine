@@ -19,6 +19,7 @@
 #include "game/ship/TargetFollowCamera.h"
 #include "game/world/Route.h"
 #include "game/world/Standing.h"
+#include "game/world/SpacePoint.h"
 #include "game/weapons/Radar.h"
 #include "engine/math/Transform.h"
 #include "engine/math/EaseInOutMatrix.h"
@@ -814,6 +815,65 @@ void PlayerFighter::update(int dt) {
         this->level->field_8c->enableSystemEmit(this->field_0x138, false);
         this->crateCaptured = static_cast<uint8_t>(this->cargoAvailable());
         this->setExhaustVisible(false);
+    }
+
+    if (this->state == 3) {
+        if (this->aiDisabled) {
+            this->geometry->updateReferenceMatrix();
+            this->handleCloaking();
+            return;
+        }
+
+        this->finished = 0;
+        this->field_0x13e = 0;
+        Matrix rotation;
+        AbyssEngine::AEMath::MatrixSetRotation(rotation, this->deathDrift.x,
+                                              this->deathDrift.y, this->deathDrift.z);
+        if (dt >= 1) {
+            Matrix combined = this->geometry->getMatrix() * rotation;
+            this->geometry->setMatrix(combined);
+        }
+        Vector movement = this->deathDirection * static_cast<float>(dt);
+        movement = movement * this->currentSpeed;
+        this->geometry->translate(movement);
+        this->geometry->updateReferenceMatrix();
+
+        this->field_0x1f8 -= dt;
+        if (this->field_0x1f8 >= 0)
+            return;
+
+        const Vector zero = {0.0f, 0.0f, 0.0f};
+        this->explosion->start(this->renderPosition, zero);
+        this->level->field_74->enableSystemEmit(this->engineTrailSystem, false);
+        float particleQuality;
+        std::memcpy(&particleQuality, Globals::options + 0x28, sizeof(particleQuality));
+        if (particleQuality > 0.0f) {
+            this->level->particleEmitBoolPtr->enableSystemEmit(this->field_0x80, false);
+            this->level->particleRenderBoolPtr->enableSystemEmit(this->field_0x84, false);
+        }
+        this->player->setBombForce(
+            50.0f + static_cast<float>(static_cast<AERandom *>(Globals::rnd)->nextInt(50)) * 0.01f);
+        Vector impulse = {
+            static_cast<float>(static_cast<AERandom *>(Globals::rnd)->nextInt(200) - 100),
+            static_cast<float>(static_cast<AERandom *>(Globals::rnd)->nextInt(200) - 100),
+            static_cast<float>(static_cast<AERandom *>(Globals::rnd)->nextInt(200) - 100)
+        };
+        this->postExplosionDirection = AbyssEngine::AEMath::VectorNormalize(impulse);
+        this->field_0x1f8 = 0;
+        this->state = 4;
+        if (this->field_0x2c4 && !this->field_0x2c4->isFree()) {
+            this->field_0x2c4->giveFree();
+            this->field_0x2c4 = nullptr;
+        }
+        if (this->crateCaptured) {
+            if (this->isMissionCrate && !this->missionCrateCaptured) {
+                this->crateCaptured = 0;
+                this->missionCrateLost = 1;
+            } else {
+                this->createCrate(this->shipGroup == 9 ? 4 : 0);
+            }
+        }
+        return;
     }
 
     // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.
