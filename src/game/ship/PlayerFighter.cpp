@@ -817,13 +817,13 @@ void PlayerFighter::update(int dt) {
         this->setExhaustVisible(false);
     }
 
-    if (this->state == 3) {
-        if (this->aiDisabled) {
-            this->geometry->updateReferenceMatrix();
-            this->handleCloaking();
-            return;
-        }
+    if (this->aiDisabled) {
+        this->geometry->updateReferenceMatrix();
+        this->handleCloaking();
+        return;
+    }
 
+    if (this->state == 3) {
         this->finished = 0;
         this->field_0x13e = 0;
         Matrix rotation;
@@ -872,6 +872,74 @@ void PlayerFighter::update(int dt) {
             } else {
                 this->createCrate(this->shipGroup == 9 ? 4 : 0);
             }
+        }
+        return;
+    }
+
+    if (this->state == 4) {
+        this->field_0x1f8 += dt;
+        if (this->field_0x1f8 < 1) {
+            Matrix rotation;
+            AbyssEngine::AEMath::MatrixSetRotation(rotation, this->deathDrift.x,
+                                                  this->deathDrift.y, this->deathDrift.z);
+            if (dt >= 1) {
+                Matrix combined = this->geometry->getMatrix() * rotation;
+                this->geometry->setMatrix(combined);
+            }
+            Vector movement = this->deathDirection * static_cast<float>(dt);
+            movement = movement * this->currentSpeed;
+            this->geometry->translate(movement);
+            this->geometry->updateReferenceMatrix();
+        } else {
+            this->field_0x73 = 0;
+        }
+        this->geometry->updateReferenceMatrix();
+
+        TargetFollowCamera *camera = nullptr;
+        if (this->level->getPlayer())
+            camera = this->level->getPlayer()->getTargetFollowCamera();
+        this->explosion->update(dt, camera);
+        this->deathTimer += dt;
+
+        if (this->crateCaptured && this->player->isActive() && dt >= 1 && this->crateGeometry) {
+            const float force = this->player->getBombForce();
+            if (force > 0.0f) {
+                this->targetPos = this->postExplosionDirection * force;
+                this->crateGeometry->translate(this->targetPos);
+                this->geometry->translate(this->targetPos);
+                float nextForce = force * 0.98f;
+                if (nextForce < 0.05f)
+                    nextForce = 0.0f;
+                this->player->setBombForce(nextForce);
+            }
+            float spin = static_cast<float>(dt >> 1) * 0.0000152587890625f;
+            spin = static_cast<float>(static_cast<int>(spin * 6.2831855f));
+            this->crateGeometry->rotate(spin, spin, spin);
+            this->player->transformMatrix = this->crateGeometry->getMatrix();
+            if (this->deathTimer <= 60000 || this->explosion->isPlaying())
+                return;
+
+            if (this->level->getPlayer()) {
+                Radar *radar = static_cast<Radar *>(this->level->getPlayer()->field_0x14);
+                if (radar && radar->field_0x1c == this)
+                    radar->field_0x1c = nullptr;
+            }
+            if (this->isMissionCrate && !this->missionCrateCaptured)
+                this->missionCrateLost = 1;
+            delete this->crateGeometry;
+            this->crateGeometry = nullptr;
+            this->deathTimer = 0;
+            KIPlayer::setActive(false);
+            this->finished = 1;
+            return;
+        }
+
+        if (!this->explosion->isPlaying()) {
+            if (this->isMissionCrate && !this->missionCrateCaptured)
+                this->missionCrateLost = 1;
+            if (this->deathTimer > 60000)
+                KIPlayer::setActive(false);
+            this->finished = 1;
         }
         return;
     }

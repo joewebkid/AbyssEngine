@@ -1,11 +1,10 @@
-# Fighter state-4 ARM map (not implemented, 2026-10-22)
+# Fighter state-4 ARM recovery (2026-10-22)
 
 Primary evidence is Android 2.0.16 `libgof2hdaa.so` (SHA-256
 `6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`),
-`PlayerFighter::update(int)`. This is a read-only map for the next recovery
-package, not a claim that the C++ state-4 branch has been restored. The
-verified source-shape and exact metrics remain those in
-`PLAYER_FIGHTER_STATE3_ARM_2026-10-22.md`.
+`PlayerFighter::update(int)`. The bounded state-4 branch is now restored in
+`src/game/ship/PlayerFighter.cpp`. This is not a claim that all update paths
+or a complete game frame work.
 
 The state table reaches `0xde4ac`. The `+0x1f8` timer first gains `dt`. If
 it is at least 1, the code clears the byte at `+0x73` and joins at
@@ -43,8 +42,27 @@ sets `finished`.
 sequence and corroborates the `0.98f`, `0.05f`, and rotation constants;
 it is not proof of Fighter-specific conditions or ownership. The
 original Fighter entry check at `0xdcfd8` may return early for an
-already-finished state-4 explosion; a production-method fixture must
-exercise both entry and post-update threshold crossings. The next
-implementation should cover camera-null and camera-present updates,
-zero and positive bomb force, both crate gates, the 60,000-ms boundary,
-Radar detachment, and geometry ownership before any full-corpus claim.
+already-finished state-4 explosion. The production-method fixture exercises
+both entry and post-update threshold crossings, camera-null/present updates,
+zero/positive bomb force, crate/no-crate paths, Radar detachment, and
+geometry ownership. It also checks the disabled-AI bypass for both state 3
+and a live state, matching the original pre-dispatch location. The common
+tail and other dispatch paths remain unresolved.
+
+Verification: all 11 Fighter production-method smokes pass, including the
+state-4 fixture at both optimization levels. Native UCRT64 `gof2` builds,
+all 208 NDK r18b ARM translation units build, and the verifier test suite
+passes 93 tests (one existing skip). Focused ARM verification compares all
+44 Fighter pairs; the whole `PlayerFighter::update` source-shape/strict
+fuzzy score changes **58.1%/21.4% -> 63.9%/25.1%**. It is not exact.
+
+Full ARM corpus: **4,323/4,524** original functions compared in **4,735**
+pairs; mean source-shape/strict fuzzy **94.04%/83.38%**, **2,557
+linked-exact** and **1,082 byte-exact**. There are 201 missing originals,
+124 extra build symbols, zero skipped/wrong-type pairs, and zero losses in
+either exact category. Pairwise comparison against the previous state-3
+report found that only `PlayerFighter::update` changed score. Report:
+`C:/Users/Dima/AppData/Local/Temp/gof2-decomp-20261022/fighter-state4-full.json`,
+SHA-256 `1fe30087c3922ce357b2ddf913e8935b87f17b7fb1bbc54f226015c9dd2daf79`.
+The report is a local generated artifact, not a repository file. The iOS
+1.1.4 binary was not used to assert Android 2.0.16 semantics in this patch.

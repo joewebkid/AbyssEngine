@@ -33,6 +33,7 @@ Matrix MatrixSetRotation(Matrix &matrix, float x, float y, float z) {
 }
 } }
 struct AEGeometry {
+    int *destroyCounter = nullptr;
     Vector position{1.25f, -2.5f, 3.75f};
     Vector right{1.0f, 0.0f, 0.0f};
     Vector up{0.0f, 1.0f, 0.0f};
@@ -43,7 +44,10 @@ struct AEGeometry {
     bool visible = false;
     int rightCalls = 0, upCalls = 0, directionCalls = 0;
     int setMatrixCalls = 0, translateCalls = 0, referenceCalls = 0;
+    int rotateCalls = 0;
+    float lastRotation = 0.0f;
     Vector lastTranslation{};
+    ~AEGeometry() { if (destroyCounter) ++*destroyCounter; }
     Vector getPosition() { return position; }
     Vector getRightVector() { ++rightCalls; return right; }
     Vector getUpVector() { ++upCalls; return up; }
@@ -54,15 +58,26 @@ struct AEGeometry {
         ++translateCalls; lastTranslation = value; position += value;
     }
     void updateReferenceMatrix() { ++referenceCalls; }
+    void rotate(float x, float y, float z) {
+        ++rotateCalls; assert(x == y && y == z); lastRotation = x;
+    }
     void setVisible(bool value) { ++visibleCalls; visible = value; }
 };
+struct TargetFollowCamera;
 struct Explosion {
     bool playing = false;
+    bool endOnUpdate = false;
     int startCalls = 0;
+    int updateCalls = 0, lastDt = 0;
+    TargetFollowCamera *lastCamera = nullptr;
     Vector startPosition{}, startDirection{};
     bool isPlaying() { return playing; }
     void start(const Vector &position, const Vector &direction) {
         ++startCalls; startPosition = position; startDirection = direction;
+    }
+    void update(int dt, TargetFollowCamera *camera) {
+        ++updateCalls; lastDt = dt; lastCamera = camera;
+        if (endOnUpdate) playing = false;
     }
 };
 struct SpacePoint {
@@ -183,6 +198,7 @@ struct Player {
     bool lastDoSound = false;
     int lastDt = 0;
     int bombForceCalls = 0;
+    int getBombForceCalls = 0;
     float bombForce = 0.0f;
     int getMaxHitpoints() { return maxHitpoints; }
     int getHitpoints() { return hitpoints; }
@@ -213,6 +229,7 @@ struct Player {
     }
     void StopEngineSound() { ++stopSoundCalls; }
     void setBombForce(float value) { ++bombForceCalls; bombForce = value; }
+    float getBombForce() { ++getBombForceCalls; return bombForce; }
     Array<Player *> *getEnemies() { ++enemiesCalls; return enemies; }
 };
 struct Standing {
@@ -288,7 +305,7 @@ GameText *Globals::gameText = nullptr;
 FModSound *Globals::sound = nullptr;
 Layout *Globals::layout = nullptr;
 
-struct Radar { KIPlayer *lockedEnemy = nullptr; };
+struct Radar { KIPlayer *lockedEnemy = nullptr; KIPlayer *field_0x1c = nullptr; };
 struct TargetFollowCamera {
     AEGeometry *target = nullptr;
     int targetCalls = 0;
@@ -377,6 +394,7 @@ struct KIPlayer {
     int kind = 19;
     Array<int> *cargo = nullptr;
     uint8_t isMissionCrate = 0;
+    AEGeometry *crateGeometry = nullptr;
     uint8_t missionCrateCaptured = 0, missionCrateLost = 0;
     uint8_t finished = 0;
     int crateCalls = 0, lastCrateType = -1;
@@ -480,8 +498,9 @@ int main() {
     fighter.crateCaptured = 1;
     fighter.deathTimer = 60000;
     fighter.shipGroup = 8;
+    fighter.aiDisabled = 1;
     fighter.update(7);
-    assert(player.active && bodyCalls == 1);
+    assert(player.active && bodyCalls == 0);
     assert(player.stopSoundCalls == 1 && player.updateCalls == 0 && player.enemiesCalls == 0);
     assert(fighter.deltaTime == 7 && fighter.deltaTimeHi == 0);
     assert(fighter.renderPosition.x == 1.25f && fighter.renderPosition.y == -2.5f);
@@ -585,10 +604,11 @@ int main() {
 
     fighter.deathTimer = 60001;
     fighter.update(1);
-    assert(!player.active && bodyCalls == 13);
+    assert(!player.active && bodyCalls == 0);
 
     player.active = true;
     fighter.state = 0;
+    fighter.aiDisabled = 0;
     fighter.crateCaptured = 1;
     fighter.wingmanFlag = 0;
     fighter.update(17);
@@ -1349,6 +1369,10 @@ int main() {
     disabled.update(1);
     assert(disabledGeometry.referenceCalls == 1 && disabled.cloakingCalls == 1);
     assert(disabled.field_0x1f8 == 5 && disabled.state == 3);
+    disabled.state = 0;
+    disabled.update(1);
+    assert(disabledGeometry.referenceCalls == 2 && disabled.cloakingCalls == 2);
+    assert(disabledPlayer.updateCalls == 1 && disabled.state == 0);
 
     AEGeometry missionGeometry;
     Player missionPlayer;
@@ -1376,4 +1400,107 @@ int main() {
     assert(freePoint.isFreeCalls == 1 && freePoint.giveFreeCalls == 0 &&
            missionCrate.field_0x2c4 == &freePoint);
     assert(driftEmit.calls == 1 && driftRender.calls == 1);
+
+    AEGeometry wreckedGeometry;
+    Player wreckedPlayer;
+    Explosion wreckedExplosion;
+    PlayerFighter wrecked;
+    Level wreckedLevel;
+    PlayerEgo wreckedEgo;
+    Radar wreckedRadar;
+    TargetFollowCamera wreckedCamera;
+    int deletedCrates = 0;
+    AEGeometry *crateMesh = new AEGeometry;
+    crateMesh->destroyCounter = &deletedCrates;
+    wreckedRadar.field_0x1c = &wrecked;
+    wreckedEgo.field_0x14 = &wreckedRadar;
+    wreckedEgo.camera = &wreckedCamera;
+    wreckedLevel.ego = &wreckedEgo;
+    wrecked.geometry = &wreckedGeometry;
+    wrecked.player = &wreckedPlayer;
+    wrecked.explosion = &wreckedExplosion;
+    wrecked.level = &wreckedLevel;
+    wrecked.routeClone = &route;
+    wrecked.field_0x43 = 1;
+    wrecked.state = 4;
+    wrecked.crateCaptured = 1;
+    wrecked.crateGeometry = crateMesh;
+    wrecked.postExplosionDirection = {0.0f, 0.0f, 1.0f};
+    wrecked.deathDrift = {0.05f, 0.05f, 0.05f};
+    wrecked.deathDirection = {0.0f, 0.0f, 1.0f};
+    wrecked.deathTimer = 10;
+    wrecked.field_0x73 = 3;
+    wreckedPlayer.bombForce = 2.0f;
+    wreckedExplosion.playing = true;
+    wrecked.update(2);
+    assert(wrecked.field_0x1f8 == 2 && wrecked.field_0x73 == 0);
+    assert(wreckedExplosion.updateCalls == 1 && wreckedExplosion.lastDt == 2 &&
+           wreckedExplosion.lastCamera == &wreckedCamera);
+    assert(wrecked.deathTimer == 12 && wrecked.targetPos.z == 2.0f);
+    assert(crateMesh->lastTranslation.z == 2.0f && wreckedGeometry.lastTranslation.z == 2.0f);
+    assert(wreckedPlayer.getBombForceCalls == 1 &&
+           std::abs(wreckedPlayer.bombForce - 1.96f) < 0.001f);
+    assert(crateMesh->rotateCalls == 1 && crateMesh->lastRotation == 0.0f);
+    assert(wreckedPlayer.transformMatrix.value == crateMesh->matrix.value);
+    assert(deletedCrates == 0 && wreckedPlayer.active);
+
+    wrecked.field_0x1f8 = 0;
+    int referencesBefore = wreckedGeometry.referenceCalls;
+    wrecked.update(0);
+    assert(wreckedGeometry.referenceCalls == referencesBefore + 2);
+    assert(wrecked.field_0x1f8 == 0 && wrecked.deathTimer == 12);
+    assert(crateMesh->rotateCalls == 1 && wreckedExplosion.updateCalls == 2);
+
+    wreckedPlayer.bombForce = 0.0f;
+    wrecked.deathTimer = 60000;
+    wrecked.isMissionCrate = 1;
+    wreckedExplosion.playing = false;
+    wrecked.update(1);
+    assert(wrecked.finished && !wreckedPlayer.active && wreckedPlayer.setActiveCalls == 1);
+    assert(wrecked.missionCrateLost && wrecked.deathTimer == 0);
+    assert(wrecked.crateGeometry == nullptr && deletedCrates == 1);
+    assert(wreckedRadar.field_0x1c == nullptr);
+    assert(wreckedPlayer.getBombForceCalls == 2 && wreckedPlayer.bombForceCalls == 1);
+
+    AEGeometry noCrateGeometry;
+    Player noCratePlayer;
+    Explosion noCrateExplosion;
+    PlayerFighter noCrate;
+    Level noCrateLevel;
+    noCrate.geometry = &noCrateGeometry;
+    noCrate.player = &noCratePlayer;
+    noCrate.explosion = &noCrateExplosion;
+    noCrate.level = &noCrateLevel;
+    noCrate.routeClone = &route;
+    noCrate.field_0x43 = 1;
+    noCrate.state = 4;
+    noCrate.crateCaptured = 0;
+    noCrate.isMissionCrate = 1;
+    noCrate.deathTimer = 100;
+    noCrateExplosion.playing = true;
+    noCrateExplosion.endOnUpdate = true;
+    noCrate.update(1);
+    assert(noCrateExplosion.updateCalls == 1 && noCrateExplosion.lastCamera == nullptr);
+    assert(noCrate.finished && noCrate.missionCrateLost && noCratePlayer.active);
+    assert(noCrate.deathTimer == 101);
+    noCrate.update(1);
+    assert(!noCratePlayer.active && noCrateExplosion.updateCalls == 1);
+
+    AEGeometry lateGeometry;
+    Player latePlayer;
+    Explosion lateExplosion;
+    PlayerFighter late;
+    late.geometry = &lateGeometry;
+    late.player = &latePlayer;
+    late.explosion = &lateExplosion;
+    late.level = &noCrateLevel;
+    late.routeClone = &route;
+    late.field_0x43 = 1;
+    late.state = 4;
+    late.crateCaptured = 0;
+    late.deathTimer = 60000;
+    lateExplosion.playing = true;
+    lateExplosion.endOnUpdate = true;
+    late.update(1);
+    assert(late.finished && !latePlayer.active && late.deathTimer == 60001);
 }
