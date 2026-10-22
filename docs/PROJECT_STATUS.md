@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-22 (`PlayerFighter::update` state-5 visibility and
-reactivation; earlier subsystem snapshots retain their dates)
+Last reviewed: 2026-10-22 (`PlayerFighter::update` state-6 acceleration and
+death; earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xde590–0xde5d8` confirms state-6
+acceleration by `1.1f`, integer-truncated forward movement and the strict
+`100.0f` death threshold. All 11 Fighter smokes, native UCRT64 `gof2`, all
+208 NDK r18b ARM units and 93 verifier tests pass (one existing skip).
+Whole-`update` source-shape/strict fuzzy changes **66.1%/25.0% →
+66.4%/26.4%**; the function remains nonexact. The full corpus compares
+**4,323/4,524** originals across **4,735** pairs at **94.04%/83.38%**
+mean source-shape/strict fuzzy, retaining **2,557 linked-exact** and
+**1,082 byte-exact** without exact-pair losses, skipped or wrong-type
+symbols. Only the target function's score changed. States 0, 1, 7–9 and
+the common tail remain unresolved; complete game-frame behavior is
+untested. State 8's docking branch is the next bounded priority. See
+[the ARM evidence](PLAYER_FIGHTER_STATE6_ARM_2026-10-22.md).
+
+Previous checkpoint: 2026-10-22 (`PlayerFighter::update` state-5 visibility
+and reactivation; earlier subsystem snapshots retain their dates)
 
 Android ARM `PlayerFighter::update` at `0xde4c4–0xde58e` confirms the
 state-5 campaign visibility gate, target flag check, strict component-wise

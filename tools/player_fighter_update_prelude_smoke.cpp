@@ -45,6 +45,8 @@ struct AEGeometry {
     int rightCalls = 0, upCalls = 0, directionCalls = 0;
     int setMatrixCalls = 0, translateCalls = 0, referenceCalls = 0;
     int rotateCalls = 0;
+    int moveForwardCalls = 0;
+    float lastForwardDistance = 0.0f;
     float lastRotation = 0.0f;
     Vector lastTranslation{};
     ~AEGeometry() { if (destroyCounter) ++*destroyCounter; }
@@ -60,6 +62,9 @@ struct AEGeometry {
     void updateReferenceMatrix() { ++referenceCalls; }
     void rotate(float x, float y, float z) {
         ++rotateCalls; assert(x == y && y == z); lastRotation = x;
+    }
+    void moveForward(float distance) {
+        ++moveForwardCalls; lastForwardDistance = distance;
     }
     void setVisible(bool value) { ++visibleCalls; visible = value; }
 };
@@ -433,9 +438,11 @@ struct KIPlayer {
     Vector resetVecC{};
     int field_0x38 = 0;
     bool wingman = false;
+    int setDeadCalls = 0;
     void setActive(bool value) { player->setActive(value); }
     bool isWingMan() { return wingman; }
     bool isDead() { return state == 4; }
+    void setDead() { ++setDeadCalls; state = 4; player->setActive(false); }
     bool isDocked() { return state == 9; }
     int cargoAvailable() {
         if (!cargo) return 0;
@@ -1569,5 +1576,34 @@ int main() {
     assert(dormantPlayer.active && dormantPlayer.setActiveCalls == 1);
     assert(dormantSubGeometry.visible && dormantSubGeometry.visibleCalls == 1);
     assert(dormantLevel.pirateStationCalls == 1 && dormantLevel.lastPirateStationAction);
+    assert(bodyCalls == fallbackBefore);
+
+    AEGeometry fleeingGeometry;
+    Player fleeingPlayer;
+    PlayerFighter fleeing;
+    Level fleeingLevel;
+    Route fleeingRoute;
+    fleeing.geometry = &fleeingGeometry;
+    fleeing.player = &fleeingPlayer;
+    fleeing.level = &fleeingLevel;
+    fleeing.routeClone = &fleeingRoute;
+    fleeing.field_0x43 = 1;
+    fleeing.state = 6;
+    fleeing.currentSpeed = 3.0f;
+    fleeing.update(3);
+    assert(std::abs(fleeing.currentSpeed - 3.3f) < 0.001f);
+    assert(fleeingGeometry.moveForwardCalls == 1 && fleeingGeometry.lastForwardDistance == 9.0f);
+    assert(fleeing.state == 6 && fleeing.setDeadCalls == 0 && fleeingPlayer.active);
+
+    fleeing.currentSpeed = 90.0f;
+    fleeing.update(1);
+    assert(std::abs(fleeing.currentSpeed - 99.0f) < 0.001f);
+    assert(fleeingGeometry.moveForwardCalls == 2 && fleeingGeometry.lastForwardDistance == 99.0f);
+    assert(fleeing.state == 6 && fleeing.setDeadCalls == 0);
+
+    fleeing.update(1);
+    assert(std::abs(fleeing.currentSpeed - 108.9f) < 0.001f);
+    assert(fleeingGeometry.moveForwardCalls == 3 && fleeingGeometry.lastForwardDistance == 108.0f);
+    assert(fleeing.state == 4 && fleeing.setDeadCalls == 1 && !fleeingPlayer.active);
     assert(bodyCalls == fallbackBefore);
 }

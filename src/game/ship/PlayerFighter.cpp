@@ -966,6 +966,15 @@ void PlayerFighter::update(int dt) {
         return;
     }
 
+    if (this->state == 6) {
+        this->currentSpeed *= 1.1f;
+        this->geometry->moveForward(static_cast<float>(
+            static_cast<int>(this->currentSpeed * static_cast<float>(dt))));
+        if (this->currentSpeed > 100.0f)
+            KIPlayer::setDead();
+        return;
+    }
+
     // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.
     PF_update_body(this, dt);
 
