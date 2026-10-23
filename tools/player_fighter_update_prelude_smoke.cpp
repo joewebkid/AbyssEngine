@@ -18,10 +18,14 @@ Vector VectorNormalize(const Vector &v) {
     float len = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
     return len == 0.0f ? Vector{0.0f, 1.0f, 0.0f} : Vector{v.x / len, v.y / len, v.z / len};
 }
+Vector VectorCross(const Vector &a, const Vector &b) {
+    return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
+}
 } }
 struct Matrix {
     int value = 0;
     Vector translation{};
+    Vector right{}, up{}, direction{};
     Matrix &operator*=(const Matrix &other) {
         value = value * 10 + other.value;
         return *this;
@@ -30,6 +34,7 @@ struct Matrix {
 Matrix operator*(Matrix lhs, const Matrix &rhs) { return lhs *= rhs; }
 namespace AbyssEngine { namespace AEMath {
 Vector MatrixRotateVector(const Matrix &, const Vector &v) { return v; }
+Matrix MatrixIdentity(Matrix &matrix) { matrix = Matrix{1}; return matrix; }
 Matrix MatrixSetTranslation(Matrix &matrix, const Vector &position) {
     matrix.translation = position;
     return matrix;
@@ -39,15 +44,28 @@ Matrix MatrixSetRotation(Matrix &matrix, float x, float y, float z) {
     matrix.value = 7;
     return matrix;
 }
+Matrix MatrixSetRotation(Matrix &matrix, const Vector &right, const Vector &up, const Vector &direction) {
+    matrix.right = right; matrix.up = up; matrix.direction = direction;
+    return matrix;
+}
 } }
 namespace AbyssEngine {
 struct EaseInOutMatrix {
+    static int destroyed;
     Matrix value{42};
+    Matrix initial{}, destination{};
+    int duration = 0;
+    bool fromRange = false;
     int increaseCalls = 0, getValueCalls = 0;
     float lastDt = 0.0f;
+    EaseInOutMatrix() = default;
+    EaseInOutMatrix(Matrix from, Matrix to, int ms)
+        : value(to), initial(from), destination(to), duration(ms), fromRange(true) {}
+    ~EaseInOutMatrix() { if (fromRange) ++destroyed; }
     void Increase(float dt) { ++increaseCalls; lastDt = dt; }
     Matrix GetValue() { ++getValueCalls; return value; }
 };
+int EaseInOutMatrix::destroyed = 0;
 }
 struct AEGeometry {
     int *destroyCounter = nullptr;
@@ -104,10 +122,12 @@ struct Explosion {
 };
 struct SpacePoint {
     Vector position{};
+    Vector direction{};
     bool free = false;
-    int isFreeCalls = 0, giveFreeCalls = 0;
+    int isFreeCalls = 0, giveFreeCalls = 0, takeCalls = 0;
     bool isFree() { ++isFreeCalls; return free; }
     void giveFree() { ++giveFreeCalls; free = true; }
+    void take() { ++takeCalls; free = false; }
 };
 struct BoundingVolume {
     int calls = 0;
@@ -435,8 +455,11 @@ struct KIPlayer {
     Player *player = nullptr;
     Vector mockPosition{};
     SpacePoint *nearestDockingPoint = nullptr;
+    SpacePoint *nearestNavigationPoint = nullptr;
+    SpacePoint *lastNavigationPrevious = nullptr;
     Vector lastDockingApproach{};
-    int positionCalls = 0, nearestDockingCalls = 0;
+    Vector lastNavigationApproach{};
+    int positionCalls = 0, nearestDockingCalls = 0, nearestNavigationCalls = 0;
     String name{};
     AEGeometry *geometry = nullptr;
     Explosion *explosion = nullptr;
@@ -489,6 +512,11 @@ struct KIPlayer {
     Vector getPosition() { ++positionCalls; return mockPosition; }
     SpacePoint *getNearestDockingPoint(const Vector &approach) {
         ++nearestDockingCalls; lastDockingApproach = approach; return nearestDockingPoint;
+    }
+    SpacePoint *getNearestNavigationPoint(const Vector &approach, SpacePoint *previous) {
+        ++nearestNavigationCalls; lastNavigationApproach = approach;
+        lastNavigationPrevious = previous;
+        return nearestNavigationPoint;
     }
     void setDead() { ++setDeadCalls; state = 4; player->setActive(false); }
     bool isDocked() { return state == 9; }
@@ -1812,4 +1840,77 @@ int main() {
     passenger.update(1);
     assert(passenger.field_0x2c0 == 1 && passengerMission.statusValue == 4);
     assert(bodyCalls == fallbackBefore);
+
+    PlayerFighter entering;
+    Player enteringPlayer;
+    Array<Player *> enteringEnemies;
+    AEGeometry enteringGeometry;
+    Level enteringLevel;
+    Route enteringRoute;
+    Waypoint enteringWaypoint{};
+    KIPlayer enteringTarget;
+    Player enteringTargetPlayer;
+    AEGeometry enteringTargetGeometry;
+    SpacePoint navigationPoint;
+    SpacePoint dockingPoint;
+    entering.player = &enteringPlayer;
+    enteringPlayer.enemies = &enteringEnemies;
+    entering.geometry = &enteringGeometry;
+    entering.level = &enteringLevel;
+    entering.routeClone = &enteringRoute;
+    entering.state = 1;
+    entering.kind = 0;
+    entering.field_0x38 = -1;
+    entering.field_0x12e = 1;
+    enteringRoute.waypoint = &enteringWaypoint;
+    enteringRoute.dockingTarget = &enteringTarget;
+    enteringTarget.player = &enteringTargetPlayer;
+    enteringTarget.geometry = &enteringTargetGeometry;
+    enteringTarget.mockPosition = {100.0f, 200.0f, 0.0f};
+    enteringTarget.nearestNavigationPoint = &navigationPoint;
+    enteringTarget.nearestDockingPoint = &dockingPoint;
+    navigationPoint.position = {1200.0f, 0.0f, 0.0f};
+    navigationPoint.free = true;
+    dockingPoint.position = {1000.0f, 0.0f, 0.0f};
+    dockingPoint.direction = {0.0f, 0.0f, 1.0f};
+    entering.update(1);
+    assert(enteringRoute.updateCalls == 1 && enteringRoute.dockingTargetCalls == 2);
+    assert(enteringTarget.nearestNavigationCalls == 1);
+    assert(entering.state == 8 && entering.field_0x2c4 == &navigationPoint);
+    assert(navigationPoint.takeCalls == 1 && !navigationPoint.free);
+    assert(enteringTarget.nearestNavigationCalls == 1 && enteringTarget.lastNavigationPrevious == nullptr);
+    assert(enteringTarget.lastNavigationApproach.x == 0.0f);
+    assert(enteringTarget.lastDockingApproach.x == 1300.0f);
+    assert(enteringTarget.lastDockingApproach.y == 200.0f);
+    assert(entering.objectPosition.x == 1100.0f && entering.objectPosition.y == 200.0f);
+    assert(entering.easeMatrix != nullptr && entering.easeMatrix->duration == 3000);
+    assert(entering.easeMatrix->initial.value == 2 && entering.easeMatrix->destination.value == 1);
+    assert(entering.easeMatrix->destination.up.x == 1.0f);
+    assert(entering.easeMatrix->destination.direction.z == 1.0f);
+    assert(entering.easeMatrix->destination.right.y == -1.0f);
+    assert(entering.easeMatrix->increaseCalls == 1);
+    assert(bodyCalls == fallbackBefore);
+
+    entering.state = 7;
+    navigationPoint.position = {2500.0f, 0.0f, 0.0f};
+    entering.update(1);
+    assert(entering.state == 7 && entering.resetVecB.x == 2600.0f);
+    assert(entering.resetVecB.y == 200.0f);
+    assert(navigationPoint.takeCalls == 1 && entering.field_0x2c4 == &navigationPoint);
+    assert(bodyCalls == fallbackBefore + 1);
+
+    SpacePoint replacementPoint;
+    replacementPoint.position = {1200.0f, 0.0f, 0.0f};
+    replacementPoint.free = true;
+    enteringTarget.nearestNavigationPoint = &replacementPoint;
+    int destroyedBeforeReentry = AbyssEngine::EaseInOutMatrix::destroyed;
+    entering.update(1);
+    assert(entering.state == 8 && entering.field_0x2c4 == &replacementPoint);
+    assert(enteringTarget.lastNavigationPrevious == &navigationPoint);
+    assert(navigationPoint.giveFreeCalls == 1 && replacementPoint.takeCalls == 1);
+    assert(AbyssEngine::EaseInOutMatrix::destroyed == destroyedBeforeReentry + 1);
+    assert(entering.easeMatrix != nullptr && entering.easeMatrix->duration == 3000);
+    delete entering.easeMatrix;
+    entering.easeMatrix = nullptr;
+    assert(bodyCalls == fallbackBefore + 1);
 }

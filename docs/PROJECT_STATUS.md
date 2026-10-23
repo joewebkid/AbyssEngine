@@ -1,6 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-23 (`PlayerFighter::update` state-9 docking wait,
+Last reviewed: 2026-10-23 (`PlayerFighter::update` navigation-to-docking setup;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xdd938–0xdda1c` and
+`0xdf55a–0xdf75a` confirms state-1/state-7 navigation-point leasing,
+the integer-truncated 2000-distance threshold, state-8 transition and
+creation/replacement of a 3000-ms `EaseInOutMatrix` from the Player
+transform and target-relative docking basis. All 11 Fighter smokes,
+native UCRT64 `gof2`, all 208 NDK r18b ARM units and 93 verifier tests
+pass (one existing skip). Whole-`update` source-shape/strict fuzzy changes
+**73.8%/27.2% → 79.7%/27.9%**; it remains nonexact. The full corpus
+compares **4,323/4,524** originals across **4,735** pairs at
+**94.05%/83.38%** mean source-shape/strict fuzzy, retaining all **2,557
+linked-exact** and **1,082 byte-exact** pairs with zero exact-pair losses,
+skipped or wrong-type symbols. Only the target function's score changed.
+Point-selection providers and full physical docking are untested; the
+remaining state-1/state-7 motion and common update behavior are the next
+bounded priority. See [the ARM evidence](PLAYER_FIGHTER_DOCKING_SETUP_ARM_2026-10-23.md).
+
+Previous checkpoint: 2026-10-23 (`PlayerFighter::update` state-9 docking wait,
 mission counter and route advance; earlier subsystem snapshots retain their dates)
 
 Android ARM `PlayerFighter::update` at `0xde714–0xde83e` confirms state-9

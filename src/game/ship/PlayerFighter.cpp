@@ -634,7 +634,8 @@ void PlayerFighter::update(int dt) {
                     } else {
                         this->routeClone->update(this->geometry->getPosition());
                         if (this->routeClone->getWaypoint()) {
-                            if (!this->routeClone->getDockingTarget()) {
+                            KIPlayer *dockingTarget = this->routeClone->getDockingTarget();
+                            if (!dockingTarget) {
                                 this->resetVecB.x = static_cast<float>(this->routeClone->getWaypoint()->x);
                                 this->resetVecB.y = static_cast<float>(this->routeClone->getWaypoint()->y);
                                 this->resetVecB.z = static_cast<float>(this->routeClone->getWaypoint()->z);
@@ -642,6 +643,50 @@ void PlayerFighter::update(int dt) {
                             } else {
                                 if (this->state == 1)
                                     this->state = 7;
+                                if (this->state == 7) {
+                                    SpacePoint *navigationPoint = dockingTarget->getNearestNavigationPoint(
+                                        this->getPosition(), this->field_0x2c4);
+                                    if (navigationPoint) {
+                                        if (this->field_0x2c4 != navigationPoint) {
+                                            if (this->field_0x2c4)
+                                                this->field_0x2c4->giveFree();
+                                            this->field_0x2c4 = navigationPoint;
+                                            navigationPoint->take();
+                                        }
+                                        this->objectPosition = dockingTarget->getPosition() +
+                                            AbyssEngine::AEMath::MatrixRotateVector(
+                                                dockingTarget->geometry->getMatrix(), navigationPoint->position);
+                                        int distance = static_cast<int>(AbyssEngine::AEMath::VectorLength(
+                                            this->objectPosition - this->getPosition()));
+                                        if (distance < 2000) {
+                                            this->state = 8;
+                                            delete this->easeMatrix;
+                                            this->easeMatrix = nullptr;
+
+                                            Vector approach = dockingTarget->getPosition() +
+                                                AbyssEngine::AEMath::MatrixRotateVector(
+                                                    dockingTarget->geometry->getMatrix(), navigationPoint->position);
+                                            SpacePoint *nearest = dockingTarget->getNearestDockingPoint(approach);
+                                            Vector direction = AbyssEngine::AEMath::VectorNormalize(
+                                                AbyssEngine::AEMath::MatrixRotateVector(
+                                                    dockingTarget->geometry->getMatrix(), nearest->direction));
+                                            Vector up = AbyssEngine::AEMath::VectorNormalize(
+                                                AbyssEngine::AEMath::MatrixRotateVector(
+                                                    dockingTarget->geometry->getMatrix(), navigationPoint->position) -
+                                                AbyssEngine::AEMath::MatrixRotateVector(
+                                                    dockingTarget->geometry->getMatrix(), nearest->position));
+                                            Vector right = AbyssEngine::AEMath::VectorNormalize(
+                                                AbyssEngine::AEMath::VectorCross(up, direction));
+                                            Matrix destination;
+                                            AbyssEngine::AEMath::MatrixIdentity(destination);
+                                            AbyssEngine::AEMath::MatrixSetRotation(destination, right, up, direction);
+                                            this->easeMatrix = new AbyssEngine::EaseInOutMatrix(
+                                                this->player->transformMatrix, destination, 3000);
+                                        } else {
+                                            this->resetVecB = this->objectPosition;
+                                        }
+                                    }
+                                }
                                 this->field_0x12c = 1;
                             }
                         }
