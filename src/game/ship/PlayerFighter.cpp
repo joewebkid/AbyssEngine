@@ -1314,9 +1314,56 @@ void PlayerFighter::update(int dt) {
         this->level->field_8c->enableSystemEmit(this->field_0x134, effectMode);
         this->level->field_8c->enableSystemEmit(this->field_0x138, effectMode);
         this->geometry->updateReferenceMatrix();
+
+        if (this->field_0x13e) {
+            Array<KIPlayer *> *landmarks = this->level->getLandmarks();
+            if (landmarks) {
+                for (unsigned int i = 0; i < landmarks->size(); ++i) {
+                    KIPlayer *candidate = (*landmarks)[i];
+                    if (!candidate || !candidate->outerCollide(this->renderPosition))
+                        continue;
+                    Vector projection = (*landmarks)[i]->getProjectionVector(this->renderPosition);
+                    const Vector zero = {0.0f, 0.0f, 0.0f};
+                    if (!AbyssEngine::AEMath::operator!=(projection, zero))
+                        continue;
+                    this->targetPos = this->geometry->getDirection();
+                    projection -= this->targetPos;
+                    projection *= this->currentSpeed * 0.03f;
+                    this->objectPosition = this->targetPos + projection;
+                    this->objectPosition = AbyssEngine::AEMath::VectorNormalize(this->objectPosition);
+                    const Vector up = {0.0f, 1.0f, 0.0f};
+                    this->geometry->setDirection(this->objectPosition, up);
+                    this->geometry->moveForward(this->currentSpeed * static_cast<float>(dt));
+                    break;
+                }
+            }
+            Array<KIPlayer *> *enemies = this->level->getEnemies();
+            if (enemies) {
+                for (unsigned int i = 0; i < enemies->size(); ++i) {
+                    KIPlayer *candidate = (*enemies)[i];
+                    if (!candidate || !candidate->outerCollide(this->renderPosition))
+                        continue;
+                    Vector projection = (*enemies)[i]->getProjectionVector(this->renderPosition);
+                    const Vector zero = {0.0f, 0.0f, 0.0f};
+                    if (!AbyssEngine::AEMath::operator!=(projection, zero))
+                        continue;
+                    this->targetPos = this->geometry->getDirection();
+                    projection -= this->targetPos;
+                    projection *= this->currentSpeed * 0.03f;
+                    this->objectPosition = this->targetPos + projection;
+                    this->objectPosition = AbyssEngine::AEMath::VectorNormalize(this->objectPosition);
+                    const Vector up = {0.0f, 1.0f, 0.0f};
+                    this->geometry->setDirection(this->objectPosition, up);
+                    this->geometry->moveForward(this->currentSpeed * static_cast<float>(dt));
+                    break;
+                }
+            }
+        }
+        this->push(dt);
+        return;
     }
 
-    // shortcut: post-movement landmark/enemy reactions remain unreconstructed.
+    // shortcut: other state tails still use the unreconstructed body, recover each before removing it.
     PF_update_body(this, dt);
 
     return;

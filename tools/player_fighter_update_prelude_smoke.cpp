@@ -13,6 +13,9 @@ Vector operator*(Vector v, float n) { return v *= n; }
 Vector operator+(Vector a, const Vector &b) { return a += b; }
 Vector operator-(Vector a, const Vector &b) { return a -= b; }
 namespace AbyssEngine { namespace AEMath {
+bool operator!=(const Vector &a, const Vector &b) {
+    return a.x != b.x || a.y != b.y || a.z != b.z;
+}
 float VectorLength(const Vector &v) { return std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z); }
 Vector VectorNormalize(const Vector &v) {
     float len = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
@@ -101,7 +104,7 @@ struct AEGeometry {
     int visibleCalls = 0;
     bool visible = false;
     int rightCalls = 0, upCalls = 0, directionCalls = 0;
-    int setMatrixCalls = 0, translateCalls = 0, referenceCalls = 0;
+    int setMatrixCalls = 0, setDirectionCalls = 0, translateCalls = 0, referenceCalls = 0;
     int rotateCalls = 0;
     int moveForwardCalls = 0;
     float lastForwardDistance = 0.0f;
@@ -114,6 +117,9 @@ struct AEGeometry {
     Vector getDirection() { ++directionCalls; return direction; }
     Matrix &getMatrix() { ++matrixCalls; return matrix; }
     void setMatrix(const Matrix &value) { ++setMatrixCalls; matrix = value; }
+    void setDirection(const Vector &value, const Vector &newUp) {
+        ++setDirectionCalls; direction = value; up = newUp;
+    }
     void translate(const Vector &value) {
         ++translateCalls; lastTranslation = value; position += value;
     }
@@ -431,6 +437,8 @@ struct PlayerEgo {
 };
 struct Level {
     PlayerEgo *ego = nullptr;
+    Array<KIPlayer *> *landmarks = nullptr, *enemies = nullptr;
+    int landmarkCalls = 0, enemyCalls = 0;
     ParticleSystemManager *particleEmitBoolPtr = nullptr;
     ParticleSystemManager *particleRenderBoolPtr = nullptr;
     ParticleSystemManager *field_74 = nullptr;
@@ -446,6 +454,8 @@ struct Level {
     int numDeliveredPassengers = 0;
     bool lastPirateStationAction = false;
     PlayerEgo *getPlayer() { ++getPlayerCalls; return ego; }
+    Array<KIPlayer *> *getLandmarks() { ++landmarkCalls; return landmarks; }
+    Array<KIPlayer *> *getEnemies() { ++enemyCalls; return enemies; }
     void uncoverWanted(int index) { uncovered = index; }
     void pirateStationAction(bool active) {
         ++pirateStationCalls; lastPirateStationAction = active;
@@ -549,6 +559,9 @@ struct KIPlayer {
     int field_0xe4 = 0;
     KIPlayer *wingmanTarget = nullptr;
     int setWingmanCommandCalls = 0;
+    bool collides = false;
+    Vector projection{}, lastCollisionPosition{}, lastProjectionPosition{};
+    int collisionCalls = 0, projectionCalls = 0;
     int fov = 0;
     Vector targetPos{};
     Vector objectPosition{};
@@ -583,6 +596,13 @@ struct KIPlayer {
         field_0xe4 = command;
         wingmanTarget = target;
     }
+    virtual int outerCollide(const Vector &v) {
+        ++collisionCalls; lastCollisionPosition = v; return collides;
+    }
+    virtual Vector getProjectionVector(const Vector &v) {
+        ++projectionCalls; lastProjectionPosition = v; return projection;
+    }
+    virtual void push(int) {}
 };
 struct PlayerFixedObject : KIPlayer {
     int dockingType = 0;
@@ -634,6 +654,8 @@ struct PlayerFighter : KIPlayer {
     uint8_t shootingFlag = 0;
     int rollCalls = 0;
     void roll(int) { ++rollCalls; }
+    int pushCalls = 0, lastPushDt = 0;
+    void push(int dt) override { ++pushCalls; lastPushDt = dt; }
     void update(int dt);
 };
 int bodyCalls = 0;
@@ -1964,7 +1986,7 @@ int main() {
     assert(entering.state == 7 && entering.resetVecB.x == 2600.0f);
     assert(entering.resetVecB.y == 200.0f);
     assert(navigationPoint.takeCalls == 1 && entering.field_0x2c4 == &navigationPoint);
-    assert(bodyCalls == fallbackBefore + 1);
+    assert(bodyCalls == fallbackBefore && entering.pushCalls == 1 && entering.lastPushDt == 1);
 
     SpacePoint replacementPoint;
     replacementPoint.position = {1200.0f, 0.0f, 0.0f};
@@ -1979,7 +2001,7 @@ int main() {
     assert(entering.easeMatrix != nullptr && entering.easeMatrix->duration == 3000);
     delete entering.easeMatrix;
     entering.easeMatrix = nullptr;
-    assert(bodyCalls == fallbackBefore + 1);
+    assert(bodyCalls == fallbackBefore && entering.pushCalls == 1);
 
     PlayerFighter speeding;
     Player speedingPlayer;
@@ -2012,7 +2034,7 @@ int main() {
     assert(speeding.field_0x1dc == 40 && speeding.field_0x1c0 == 0);
     assert(speedingRng.used == 1 && speedingRng.bounds[0] == 100);
     assert(speeding.field_0x1f4 == 0 && speeding.currentSpeed == 2.0f);
-    assert(bodyCalls == fallbackBeforeSpeed + 1);
+    assert(bodyCalls == fallbackBeforeSpeed && speeding.pushCalls == 1);
 
     speedingPlayer.hitpoints = 59;
     speeding.update(1);
@@ -2021,14 +2043,14 @@ int main() {
     assert(speeding.field_0x1ec == 5.5f && speeding.currentRotate == 1.3f);
     assert(std::abs(speeding.currentSpeed - 2.1f) < 0.001f);
     assert(speedingRng.used == 2 && speedingRng.bounds[1] == 3000);
-    assert(bodyCalls == fallbackBeforeSpeed + 2);
+    assert(bodyCalls == fallbackBeforeSpeed && speeding.pushCalls == 2);
 
     speeding.state = 7;
     speeding.update(5251);
     assert(speeding.cloakingCalls == 3 && speeding.field_0x1e0 == 0);
     assert(speeding.field_0x1f4 == 0 && speeding.field_0x1ec == 0.0f);
     assert(speeding.currentSpeed == speeding.speed && speeding.currentRotate == speeding.rotate);
-    assert(speedingRng.used == 2 && bodyCalls == fallbackBeforeSpeed + 3);
+    assert(speedingRng.used == 2 && bodyCalls == fallbackBeforeSpeed && speeding.pushCalls == 3);
 
     speedingRng.values[2] = 5;
     speedingRng.values[3] = 4;
@@ -2045,7 +2067,7 @@ int main() {
     speeding.field_0x13d = 0;
     speeding.update(1);
     assert(speeding.cloakingCalls == 6 && speeding.currentSpeed == speedBeforeDisabled);
-    assert(speedingRng.used == 5 && bodyCalls == fallbackBeforeSpeed + 6);
+    assert(speedingRng.used == 5 && bodyCalls == fallbackBeforeSpeed && speeding.pushCalls == 6);
 
     speeding.field_0x13d = 1;
     speeding.field_0x1c0 = 0;
@@ -2340,4 +2362,49 @@ int main() {
     shooter.field_0x25 = 0;
     shooter.update(3);
     assert(shooterBody.shootCalls == 2 && shooter.field_0x12e == 0);
+
+    PlayerFighter reacting;
+    Player reactingBody;
+    AEGeometry reactingGeometry;
+    Level reactingLevel;
+    Route reactingRoute;
+    KIPlayer miss, zeroProjection, landmark, laterLandmark, enemy;
+    KIPlayer *landmarkItems[] = {nullptr, &miss, &zeroProjection, &landmark, &laterLandmark};
+    KIPlayer *reactionEnemyItems[] = {nullptr, &enemy};
+    Array<KIPlayer *> landmarkList{5, landmarkItems};
+    Array<KIPlayer *> reactionEnemyList{2, reactionEnemyItems};
+    reacting.player = &reactingBody;
+    reacting.geometry = &reactingGeometry;
+    reacting.level = &reactingLevel;
+    reacting.routeClone = &reactingRoute;
+    reacting.state = 1;
+    reacting.field_0x12d = 1;
+    reacting.currentSpeed = 2.0f;
+    reactingLevel.landmarks = &landmarkList;
+    reactingLevel.enemies = &reactionEnemyList;
+    zeroProjection.collides = true;
+    landmark.collides = true;
+    landmark.projection = {1.0f, 0.0f, 1.0f};
+    laterLandmark.collides = true;
+    enemy.collides = true;
+    enemy.projection = {0.0f, 1.0f, 1.0f};
+
+    reacting.update(4);
+    assert(reacting.pushCalls == 1 && reacting.lastPushDt == 4);
+    assert(reactingLevel.landmarkCalls == 0 && reactingLevel.enemyCalls == 0);
+    assert(reactingGeometry.setDirectionCalls == 0);
+
+    reacting.field_0x13e = 1;
+    reacting.update(4);
+    assert(reactingLevel.landmarkCalls == 1 && reactingLevel.enemyCalls == 1);
+    assert(miss.collisionCalls == 1 && miss.projectionCalls == 0);
+    assert(zeroProjection.projectionCalls == 1 && landmark.projectionCalls == 1);
+    assert(laterLandmark.collisionCalls == 0 && enemy.collisionCalls == 1);
+    assert(landmark.lastCollisionPosition.x == reacting.renderPosition.x);
+    assert(enemy.lastProjectionPosition.z == reacting.renderPosition.z);
+    assert(reactingGeometry.setDirectionCalls == 2 && reactingGeometry.moveForwardCalls == 2);
+    assert(reactingGeometry.lastForwardDistance == 8.0f);
+    assert(std::abs(reacting.targetPos.x - 0.05989229f) < 0.0001f);
+    assert(std::abs(reacting.objectPosition.y - 0.0599f) < 0.001f);
+    assert(reactingGeometry.up.y == 1.0f && reacting.pushCalls == 2);
 }

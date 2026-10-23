@@ -1,6 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-23 (`PlayerFighter::update` shooting gate;
+Last reviewed: 2026-10-24 (`PlayerFighter::update` post-movement reactions;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `0xdf260–0xdf450` confirms the state-1/state-7
+post-movement collision reactions: separately scan landmarks and enemies,
+skip null/noncolliding/zero-projection entries, steer from the first
+nonzero projection in each list using the original 0.03 speed factor,
+then dispatch virtual `push(dt)`. The 11 Fighter smokes, native UCRT64
+`gof2`, 208 NDK r18b ARM translation units and 93 verifier tests pass
+(one existing skip). Whole-`update` source-shape/strict fuzzy changes
+**92.5%/36.8% → 94.7%/39.1%**; the function remains nonexact. The full
+corpus compares **4,323/4,524** originals across **4,735** pairs at
+rounded **94.05%/83.38%** mean source-shape/strict fuzzy, retaining
+**2,557 linked-exact** and **1,082 byte-exact** pairs with zero exact-pair
+losses, skipped or wrong-type symbols. Only the target function's score
+changed. The byte `+0x13e` initial value and complete derived collision
+behavior remain unverified; classify remaining `PF_update_body` state
+fallthroughs next. See [the ARM evidence](PLAYER_FIGHTER_REACTION_ARM_2026-10-23.md).
+
+Previous checkpoint: 2026-10-23 (`PlayerFighter::update` shooting gate;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `0xded26–0xded44`, `0xdef12–0xdef52`,
