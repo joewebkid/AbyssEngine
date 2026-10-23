@@ -1,6 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`PlayerEgo::update` pre-collision transforms;
+Last reviewed: 2026-10-24 (`PlayerEgo::update` volatile-cargo/gamma recovery;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `0x9db60–0x9dd18` confirms event-35 sound, steering-delta
+shake, fatal volatile-cargo explosion and independent gamma-HP death
+after collision dispatch. The prior C++ omitted this entire block.
+The source-extracted smoke passes at `-O0/-O2`; native UCRT64 `gof2`,
+all 208 NDK r18b ARM units and 93 verifier tests pass (one existing
+skip). Focused `update` source-shape/strict fuzzy changes **85.5%/37.9%
+→ 90.1%/25.1%** and remains nonexact. The full corpus compares
+**4,323/4,524** originals across **4,736** pairs at rounded
+**94.09%/83.41%** mean source-shape/strict fuzzy, retaining **2,557
+linked-exact** and **1,082 byte-exact** pairs without exact-pair losses,
+skipped or wrong-type symbols. Six older PlayerEgo smokes still fail
+outside the changed block. The original-asset Pan gate currently stops
+before a runnable frame, so end-to-end collision remains unverified.
+See [the ARM evidence](PLAYER_EGO_UPDATE_VOLATILE_GAMMA_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (`PlayerEgo::update` pre-collision transforms;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `0x9d940–0x9da58` confirms the throttle timer, optional

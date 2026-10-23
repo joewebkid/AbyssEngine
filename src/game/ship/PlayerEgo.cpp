@@ -3006,6 +3006,36 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
             this->handleTurretView(dt);
     }
 
+    // Android Thumb 0x9db60-0x9dd18: volatile-cargo shake and gamma-failure death.
+    if (this->volatileGoods) {
+        if (!Globals::sound->isPlaying(35))
+            Globals::sound->play(35, nullptr, nullptr, 0.0f);
+        float *roll = reinterpret_cast<float *>(&this->rollAccum);
+        float *yaw = reinterpret_cast<float *>(&this->yawAccumD);
+        float rollDelta = roll[0] - roll[1];
+        float yawDelta = yaw[0] - yaw[1];
+        float rollMagnitude = rollDelta > 0.0f ? rollDelta : -rollDelta;
+        float yawMagnitude = yawDelta > 0.0f ? yawDelta : -yawDelta;
+        float magnitude = rollMagnitude > yawMagnitude ? rollMagnitude : yawMagnitude;
+        player->flShake += static_cast<float>(dt) * 0.001f * 0.5f * magnitude;
+        roll[1] = roll[0];
+        yaw[1] = yaw[0];
+        if (player->flShake >= 1.0f && !this->dockingToPlanet && !this->dockedToStream) {
+            player->setHitpoints(0);
+            if (!this->explosion2) {
+                Explosion *explosion = new Explosion(12);
+                this->explosion2 = explosion;
+                explosion->setScaling(0.7f);
+                explosion->start(this->geometry->getPosition(), Vector{0.0f, 0.0f, 0.0f});
+            }
+        }
+        Globals::sound->setParamValue(0, 35, player->getHitpoints() > 0 ? player->flShake : 0.0f);
+    } else {
+        player->flShake = 0.0f;
+    }
+    if (player->getGammaHP() <= 0 && !this->dockingToPlanet && !static_cast<uint8_t>(this->docked))
+        player->setHitpoints(0);
+
     if (((char &) this->dockingState) != 0) {
         this->field_0x145 = 1;
         KIPlayer *target = (KIPlayer *) ((void *&) this->asteroidTarget);

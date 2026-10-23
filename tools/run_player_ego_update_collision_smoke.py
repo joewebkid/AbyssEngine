@@ -15,7 +15,7 @@ def main():
         raise SystemExit("g++ is required")
     source = (ROOT / "src/game/ship/PlayerEgo.cpp").read_text()
     begin = source.index("// Android Thumb 0x9da58-0x9db60:")
-    end = source.index("if (((char &) this->dockingState) != 0)", begin)
+    end = source.index("// Android Thumb 0x9db60-0x9dd18:", begin)
     fixture = (ROOT / "tools/player_ego_update_collision_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_BLOCK", source[begin:end])
     with tempfile.TemporaryDirectory(prefix="ego-update-collision-", dir=ROOT / "_work") as temp:
