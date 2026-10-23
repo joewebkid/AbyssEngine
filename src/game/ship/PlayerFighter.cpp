@@ -1140,28 +1140,26 @@ void PlayerFighter::update(int dt) {
             }
         }
 
-        // ARM 0xded38 sends active shooting through an unrecovered branch first.
-        if (!this->field_0x12e || this->field_0x12c) {
-            if (this->field_0x148 && !this->field_0x12c) {
-                int reach = 8000;
-                if (this->field_0x148->field_69) {
-                    PlayerEgo *ego = this->level->getPlayer();
-                    if (ego && ego->isDockedToDockingPoint())
-                        reach = 12000;
-                }
-                float upper = static_cast<float>(reach);
-                float lower = static_cast<float>(-reach);
-                if (this->resetVecC.x < upper && this->resetVecC.x > lower &&
-                    this->resetVecC.y < upper && this->resetVecC.y > lower &&
-                    this->resetVecC.z < upper && this->resetVecC.z > lower)
-                    this->resetVecC = this->geometry->getRightVector();
+        if (this->field_0x148 && !this->field_0x12c) {
+            int reach = 8000;
+            if (this->field_0x148->field_69) {
+                PlayerEgo *ego = this->level->getPlayer();
+                if (ego && ego->isDockedToDockingPoint())
+                    reach = 12000;
             }
-            this->resetVecC = AbyssEngine::AEMath::MatrixRotateVector(
-                AbyssEngine::AEMath::MatrixGetInverse(body->transformMatrix),
-                AbyssEngine::AEMath::VectorNormalize(this->resetVecC));
-            this->resetVecC.y = -this->resetVecC.y;
-            this->field_0x24 = body->empDisabledByte;
+            float upper = static_cast<float>(reach);
+            float lower = static_cast<float>(-reach);
+            if (this->resetVecC.x < upper && this->resetVecC.x > lower &&
+                this->resetVecC.y < upper && this->resetVecC.y > lower &&
+                this->resetVecC.z < upper && this->resetVecC.z > lower)
+                this->resetVecC = this->geometry->getRightVector();
         }
+        this->resetVecC = AbyssEngine::AEMath::MatrixRotateVector(
+            AbyssEngine::AEMath::MatrixGetInverse(body->transformMatrix),
+            AbyssEngine::AEMath::VectorNormalize(this->resetVecC));
+        this->resetVecC.y = -this->resetVecC.y;
+        this->field_0x24 = body->empDisabledByte;
+        // ARM 0xded38 selects the still-unrecovered shooting branch only after this prelude.
     }
 
     // shortcut: the remaining ARM movement and combat branches are unreconstructed.

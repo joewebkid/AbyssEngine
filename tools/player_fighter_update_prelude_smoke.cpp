@@ -2055,4 +2055,13 @@ int main() {
     avoidanceTarget.position.x = 12001.25f;
     avoiding.update(1);
     assert(avoidingGeometry.rightCalls == 2 && avoiding.resetVecC.x == 1.0f);
+
+    avoiding.shipGroup = 8;
+    avoiding.field_0x12e = 1;
+    avoiding.field_0x38 = 0;
+    avoidingBody.empDisabledByte = 1;
+    avoiding.update(1);
+    assert(avoiding.field_0x12e == 1 && avoiding.field_0x12c == 0);
+    assert(avoiding.resetVecC.x == 1.0f && avoiding.resetVecC.y == -0.0f);
+    assert(avoiding.field_0x24 == 1);
 }

@@ -1,6 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-23 (`PlayerFighter::update` state-1/state-7 direction prelude;
+Last reviewed: 2026-10-23 (`PlayerFighter::update` common direction prelude correction;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `0xdecee–0xded40` confirms that state-1/state-7 direction
+normalization, inverse rotation, Y reflection and Player-byte transfer
+run **before** the active-shooting split. The earlier non-shooting gate
+was wrong and has been removed; a production-method smoke now covers
+the active-shooting condition. All 11 Fighter smokes, native UCRT64
+`gof2`, all 208 NDK r18b ARM units and 93 verifier tests pass (one
+existing skip). Focused whole-`update` source-shape/strict fuzzy changes
+**83.3%/34.1% → 83.2%/34.3%**; correctness overrides the 0.1-point
+shape loss. No focused exact-pair losses or other changed pair scores.
+The full corpus still compares **4,323/4,524** originals across
+**4,735** pairs at rounded **94.05%/83.38%** mean source-shape/strict
+fuzzy, retaining **2,557 linked-exact** and **1,082 byte-exact** pairs
+with zero exact-pair losses, skipped or wrong-type symbols. Only the
+target function's score changed in the full pairwise comparison.
+The shooting branch, subsequent orientation and translation remain
+unverified; recover them next. See
+[the revised ARM evidence](PLAYER_FIGHTER_DIRECTION_PRELUDE_ARM_2026-10-23.md).
+
+Previous checkpoint: 2026-10-23 (`PlayerFighter::update` state-1/state-7 direction prelude;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `PlayerFighter::update` at `0xde9c6–0xded44` confirms the
