@@ -28,7 +28,11 @@ struct Matrix {
     int value = 0;
     int quarterTurns = 0;
     Vector translation{};
-    Vector right{}, up{}, direction{};
+    Vector right{1.0f, 0.0f, 0.0f}, up{0.0f, 1.0f, 0.0f}, direction{0.0f, 0.0f, 1.0f};
+    float m[15]{1.0f, 0.0f, 0.0f, 0.0f,
+                0.0f, 1.0f, 0.0f, 0.0f,
+                0.0f, 0.0f, 1.0f, 0.0f,
+                1.0f, 1.0f, 1.0f};
     Matrix &operator*=(const Matrix &other) {
         value = value * 10 + other.value;
         return *this;
@@ -38,6 +42,7 @@ Matrix operator*(Matrix lhs, const Matrix &rhs) { return lhs *= rhs; }
 namespace AbyssEngine { namespace AEMath {
 Vector MatrixGetDir(const Matrix &matrix) { return matrix.direction; }
 Vector MatrixGetRight(const Matrix &matrix) { return matrix.right; }
+Vector MatrixGetUp(const Matrix &matrix) { return matrix.up; }
 Vector MatrixRotateVector(const Matrix &matrix, const Vector &v) {
     if (matrix.quarterTurns == 1) return {-v.y, v.x, v.z};
     if (matrix.quarterTurns == -1) return {v.y, -v.x, v.z};
@@ -60,6 +65,9 @@ Matrix MatrixSetRotation(Matrix &matrix, float x, float y, float z) {
 }
 Matrix MatrixSetRotation(Matrix &matrix, const Vector &right, const Vector &up, const Vector &direction) {
     matrix.right = right; matrix.up = up; matrix.direction = direction;
+    matrix.m[0] = right.x; matrix.m[4] = right.y; matrix.m[8] = right.z;
+    matrix.m[1] = up.x; matrix.m[5] = up.y; matrix.m[9] = up.z;
+    matrix.m[2] = direction.x; matrix.m[6] = direction.y; matrix.m[10] = direction.z;
     return matrix;
 }
 } }
@@ -83,6 +91,7 @@ int EaseInOutMatrix::destroyed = 0;
 }
 struct AEGeometry {
     int *destroyCounter = nullptr;
+    unsigned transform = 17;
     Vector position{1.25f, -2.5f, 3.75f};
     Vector right{1.0f, 0.0f, 0.0f};
     Vector up{0.0f, 1.0f, 0.0f};
@@ -374,7 +383,17 @@ struct AERandom {
         return value;
     }
 };
-struct Globals { static Status *status; static void *rnd; static unsigned char options[100]; static GameText *gameText; static FModSound *sound; static Layout *layout; };
+struct PaintCanvas {
+    int localCalls = 0;
+    unsigned lastTransform = 0;
+    Matrix lastMatrix{};
+    void TransformSetLocal(unsigned transform, const Matrix &matrix) {
+        ++localCalls; lastTransform = transform; lastMatrix = matrix;
+    }
+};
+struct Globals { static Status *status; static void *rnd; static unsigned char options[100]; static GameText *gameText; static FModSound *sound; static Layout *layout; static PaintCanvas *Canvas; };
+PaintCanvas canvas;
+PaintCanvas *Globals::Canvas = &canvas;
 Status *Globals::status = nullptr;
 void *Globals::rnd = nullptr;
 unsigned char Globals::options[100]{};
@@ -406,7 +425,8 @@ struct Level {
     ParticleSystemManager *particleEmitBoolPtr = nullptr;
     ParticleSystemManager *particleRenderBoolPtr = nullptr;
     ParticleSystemManager *field_74 = nullptr;
-    ParticleSystemManager *field_8c = nullptr;
+    ParticleSystemManager defaultEffects{};
+    ParticleSystemManager *field_8c = &defaultEffects;
     int field_3c = 55;
     int friendDeaths = 0, enemyDeaths = 0, wingmanDeaths = 0;
     int lastEnemyKind = -1;
@@ -595,6 +615,7 @@ struct PlayerFighter : KIPlayer {
     Player *field_0x148 = nullptr;
     uint8_t aiDisabled = 0;
     float targetRoll = 0.0f, smoothRoll = 0.0f;
+    Matrix rollMatrix{};
     float field_0x294 = 750.0f, field_0x298 = 15.139357f;
     float rollSamples[5]{};
     int rollSampleIndex = 0;
@@ -1951,11 +1972,13 @@ int main() {
     PlayerFighter speeding;
     Player speedingPlayer;
     AEGeometry speedingGeometry;
+    Level speedingLevel;
     Route speedingRoute;
     Waypoint speedingWaypoint{};
     AERandom speedingRng;
     speeding.player = &speedingPlayer;
     speeding.geometry = &speedingGeometry;
+    speeding.level = &speedingLevel;
     speeding.routeClone = &speedingRoute;
     speedingRoute.waypoint = &speedingWaypoint;
     speeding.state = 1;
@@ -2110,10 +2133,12 @@ int main() {
     PlayerFighter steering;
     Player steeringBody;
     AEGeometry steeringGeometry;
+    Level steeringLevel;
     Route steeringRoute;
     Waypoint steeringWaypoint{1000, 0, 0};
     steering.player = &steeringBody;
     steering.geometry = &steeringGeometry;
+    steering.level = &steeringLevel;
     steering.routeClone = &steeringRoute;
     steeringRoute.waypoint = &steeringWaypoint;
     steeringGeometry.position = {0.0f, 0.0f, 0.0f};
@@ -2122,6 +2147,15 @@ int main() {
     steering.state = 1;
     steering.update(1000);
     assert(steering.resetVecC.x > 0.7f && steering.resetVecC.z > 0.6f);
+    assert(std::abs(canvas.lastMatrix.direction.x - steering.resetVecC.x) < 0.0001f);
+    assert(std::abs(canvas.lastMatrix.direction.z - steering.resetVecC.z) < 0.0001f);
+    assert(std::abs(AbyssEngine::AEMath::VectorDot(
+        canvas.lastMatrix.right, canvas.lastMatrix.direction)) < 0.0001f);
+    assert(std::abs(AbyssEngine::AEMath::VectorDot(
+        canvas.lastMatrix.up, canvas.lastMatrix.direction)) < 0.0001f);
+    assert(AbyssEngine::AEMath::VectorDot(AbyssEngine::AEMath::VectorCross(
+        canvas.lastMatrix.right, canvas.lastMatrix.up), canvas.lastMatrix.direction) > 0.99f);
+    assert(steeringGeometry.referenceCalls == 1);
     assert(steering.rollSamples[0] < 0.0f && steering.rollSampleIndex == 1);
     assert(steering.targetRoll == -750.0f && steering.smoothRoll < 0.0f);
 
@@ -2148,13 +2182,57 @@ int main() {
     assert(steering.rollSampleIndex == 1 && steering.rollSamples[0] < 0.0f);
     assert(steering.targetRoll > 0.0f && steering.targetRoll < 10.0f);
 
+    PlayerFighter moving;
+    Player movingBody;
+    AEGeometry movingGeometry, bankGeometry;
+    Level movingLevel;
+    Route movingRoute;
+    Waypoint movingWaypoint{1000, 0, 0};
+    moving.player = &movingBody;
+    moving.geometry = &movingGeometry;
+    moving.subGeometry = &bankGeometry;
+    moving.level = &movingLevel;
+    moving.routeClone = &movingRoute;
+    movingRoute.waypoint = &movingWaypoint;
+    movingGeometry.position = {0.0f, 0.0f, 0.0f};
+    moving.state = 1;
+    moving.field_0x12d = 1;
+    moving.currentSpeed = 2.6f;
+    moving.smoothRoll = 3.0f;
+    moving.rollActive = 1;
+    moving.rollMatrix.value = 5;
+    moving.field_0x130 = 31;
+    moving.field_0x134 = 32;
+    moving.field_0x138 = 33;
+    int canvasCalls = canvas.localCalls;
+    moving.update(4);
+    assert(canvas.localCalls == canvasCalls + 1 && canvas.lastTransform == movingGeometry.transform);
+    assert(canvas.lastMatrix.value == 25 && canvas.lastMatrix.m[11] == 10.0f);
+    assert(movingBody.transformMatrix.value == 257);
+    assert(bankGeometry.setMatrixCalls == 1 && bankGeometry.matrix.value == 7);
+    assert(movingLevel.defaultEffects.calls == 3 && !movingLevel.defaultEffects.enabled[0]);
+    assert(movingLevel.defaultEffects.handles[0] == 31 &&
+           movingLevel.defaultEffects.handles[1] == 32 &&
+           movingLevel.defaultEffects.handles[2] == 33);
+    assert(movingGeometry.referenceCalls == 1);
+
+    movingBody.empDisabledByte = 1;
+    canvasCalls = canvas.localCalls;
+    moving.update(4);
+    assert(canvas.localCalls == canvasCalls && movingGeometry.referenceCalls == 2);
+    assert(bankGeometry.setMatrixCalls == 2);
+    assert(movingLevel.defaultEffects.calls == 6 && movingLevel.defaultEffects.enabled[3] &&
+           movingLevel.defaultEffects.enabled[4] && movingLevel.defaultEffects.enabled[5]);
+
     PlayerFighter snapping;
     Player snappingBody;
     AEGeometry snappingGeometry;
+    Level snappingLevel;
     Route snappingRoute;
     Waypoint snappingWaypoint{1000, 0, 0};
     snapping.player = &snappingBody;
     snapping.geometry = &snappingGeometry;
+    snapping.level = &snappingLevel;
     snapping.routeClone = &snappingRoute;
     snappingRoute.waypoint = &snappingWaypoint;
     snappingGeometry.position = {0.0f, 0.0f, 0.0f};

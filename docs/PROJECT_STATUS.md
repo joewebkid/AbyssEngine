@@ -1,6 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-23 (`PlayerFighter::update` normal steering and roll target;
+Last reviewed: 2026-10-23 (`PlayerFighter::update` matrix and movement tail;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `0xded44–0xdf25a` confirms the state-1/state-7 copied
+geometry matrix, normal-path orthogonal basis, smoothed bank matrix,
+integer-quantized movement along the direction column, optional roll
+composition, Player/canvas matrix propagation, three particle-handle
+toggles and reference-matrix update. All 11 Fighter smokes, native
+UCRT64 `gof2`, all 208 NDK r18b ARM units and 93 verifier tests pass
+(one existing skip). Whole-`update` source-shape/strict fuzzy changes
+**87.8%/35.3% → 90.3%/35.0%**; the strict fuzzy score fell slightly
+and the function remains nonexact. The full corpus compares
+**4,323/4,524** originals across **4,735** pairs at rounded
+**94.05%/83.38%** mean source-shape/strict fuzzy, retaining **2,557
+linked-exact** and **1,082 byte-exact** pairs with zero exact-pair
+losses, skipped or wrong-type symbols. Only the target function's
+score changed. The shooting branch and later landmark/enemy reactions
+remain unrecovered; shooting is the next behavioral priority. See
+[the ARM evidence](PLAYER_FIGHTER_MATRIX_MOVEMENT_ARM_2026-10-23.md).
+
+Previous checkpoint: 2026-10-23 (`PlayerFighter::update` normal steering and roll target;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `0xded6e–0xdf03e` confirms the state-1/state-7 normal

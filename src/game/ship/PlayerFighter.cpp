@@ -1161,13 +1161,13 @@ void PlayerFighter::update(int dt) {
         this->resetVecC.y = -this->resetVecC.y;
         this->field_0x24 = body->empDisabledByte;
         // ARM 0xded38 selects the still-unrecovered shooting branch only after this prelude.
+        Matrix matrix = this->geometry->getMatrix();
 
         if (this->field_0x12d) {
             this->rollSampleIndex = 0;
             this->targetRoll = 0.0f;
             this->rollBufferFilled = 0;
         } else {
-            Matrix matrix = this->geometry->getMatrix();
             Vector direction = AbyssEngine::AEMath::MatrixGetDir(matrix);
             Vector correction = AbyssEngine::AEMath::VectorNormalize(desiredWorld - direction);
             correction *= static_cast<float>(dt * 48) * 0.0000152587890625f;
@@ -1216,6 +1216,12 @@ void PlayerFighter::update(int dt) {
                 this->targetRoll = this->field_0x294;
             else if (roll < -this->field_0x294)
                 this->targetRoll = -this->field_0x294;
+
+            Vector right = AbyssEngine::AEMath::VectorNormalize(AbyssEngine::AEMath::VectorCross(
+                AbyssEngine::AEMath::MatrixGetUp(matrix), this->resetVecC));
+            Vector up = AbyssEngine::AEMath::VectorNormalize(
+                AbyssEngine::AEMath::VectorCross(this->resetVecC, right));
+            matrix = AbyssEngine::AEMath::MatrixSetRotation(matrix, right, up, this->resetVecC);
         }
 
         if (this->rollActive)
@@ -1254,9 +1260,34 @@ void PlayerFighter::update(int dt) {
         } else {
             this->field_0xfc = 750;
         }
+
+        Matrix bank;
+        bank = AbyssEngine::AEMath::MatrixSetRotation(
+            bank, 0.0f, 0.0f, current * 0.000244140625f * 3.1415927f);
+        if (this->subGeometry)
+            this->subGeometry->setMatrix(bank);
+
+        const bool effectMode = body->empDisabledByte != 0;
+        if (!effectMode) {
+            float distance = static_cast<float>(static_cast<int>(
+                this->currentSpeed * static_cast<float>(dt)));
+            matrix.m[3] += matrix.m[2] * distance;
+            matrix.m[7] += matrix.m[6] * distance;
+            matrix.m[11] += matrix.m[10] * distance;
+            if (this->rollActive)
+                matrix *= this->rollMatrix;
+            Globals::Canvas->TransformSetLocal(this->geometry->transform, matrix);
+            body->transformMatrix = matrix;
+            if (this->subGeometry)
+                body->transformMatrix *= this->subGeometry->getMatrix();
+        }
+        this->level->field_8c->enableSystemEmit(this->field_0x130, effectMode);
+        this->level->field_8c->enableSystemEmit(this->field_0x134, effectMode);
+        this->level->field_8c->enableSystemEmit(this->field_0x138, effectMode);
+        this->geometry->updateReferenceMatrix();
     }
 
-    // shortcut: the remaining ARM movement and combat branches are unreconstructed.
+    // shortcut: shooting and post-movement landmark/enemy reactions remain unreconstructed.
     PF_update_body(this, dt);
 
     return;
