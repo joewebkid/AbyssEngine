@@ -135,8 +135,22 @@ def main():
         (out / "station_binary_math.cpp").write_text(math)
         sources[sources.index("src/engine/math/AEMath.cpp")] = str(out / "station_binary_math.cpp")
         compiler = str(args.ndk / "toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe")
-        flags += ["--target=armv7a-linux-androideabi21", "-fPIE", "-pie", "-static-libstdc++", "-DGOF2_ATLAS_REMOTE_FILES"]
+        flags += ["--target=armv7a-linux-androideabi21", "-fPIE", "-pie", "-DGOF2_ATLAS_REMOTE_FILES"]
         libraries = ["-lEGL", "-lGLESv2"]
+        legacy_stl = args.ndk / "sources/cxx-stl/llvm-libc++/libs/armeabi-v7a"
+        if legacy_stl.is_dir():
+            gcc = args.ndk / "toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64"
+            flags += [f"--gcc-toolchain={gcc}", "-B", str(gcc / "bin"),
+                      f"--sysroot={args.ndk / 'platforms/android-21/arch-arm'}"]
+            for include in ("sources/cxx-stl/llvm-libc++/include",
+                            "sources/cxx-stl/llvm-libc++abi/include",
+                            "sources/android/support/include", "sysroot/usr/include",
+                            "sysroot/usr/include/arm-linux-androideabi"):
+                flags += ["-isystem", str(args.ndk / include)]
+            flags += ["-L", str(legacy_stl), "-nostdlib++"]
+            libraries += ["-lc++_static", "-lc++abi", "-lunwind"]
+        else:
+            flags += ["-static-libstdc++"]
     else:
         assert args.angle_dir and args.egl_include
         compiler = args.cxx
