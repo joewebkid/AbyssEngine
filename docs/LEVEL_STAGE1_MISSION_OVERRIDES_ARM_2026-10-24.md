@@ -72,3 +72,22 @@ run. In particular, the new assertions and the earlier r18b `-O2`
 asteroid failure remain unresolved. No production source or corpus metric
 changed at this step. The next runtime milestone is the first spawned
 ordinary friend, then the remaining array and stage-one return.
+
+## First-asteroid assertion correction (pending device rerun)
+
+The inherited near-asteroid assertion used `scale >= 1.2f`, although the
+production expression is `float(radius) * 0.01f` for integer radius
+`120..219`. At radius 120, float32 multiplication yields
+`1.1999999284744263`, below the float32 literal `1.2f`
+(`1.2000000476837158`). This is a false-rejection case, not evidence of
+an incorrect game value. The gate now captures the actual integer radius
+and checks both its `120..219` range and the exact production scale
+formula. The full asteroid-field gate retains the first asteroid's radius
+when it processes later objects. The prior `-O2` failure might have been
+this boundary case, but without its logged value that cause is unproven.
+
+The updated source-extracted chain prepares successfully, and both Android
+ARMv7 `-O0` and `-O2` gate executables compile and link with NDK r18b.
+The device is still absent from ADB; no runtime pass or metric change is
+claimed. Next: run both executables on the device and inspect the printed
+radius, scale and quality if either check still fails.

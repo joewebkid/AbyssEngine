@@ -15,6 +15,7 @@ def prepare(out, cxx, root, reuse):
                         "struct AsteroidFirstGeometryBoundary {};\n"
                         "static AEGeometry *observedAsteroidGeometry;\n"
                         "static Vector observedAsteroidPosition;\n"
+                        "static int observedAsteroidRadius;\n"
                         "static float observedAsteroidScale;\n"
                         "static int observedAsteroidQuality;")
     host = replace_once(host, '#include "level_init_under_test.inc"',
@@ -32,6 +33,7 @@ def prepare(out, cxx, root, reuse):
         remainder +
         "        observedAsteroidGeometry = geo;\n"
         "        observedAsteroidPosition = pos;\n"
+        "        observedAsteroidRadius = radius;\n"
         "        observedAsteroidScale = scale;\n"
         "        observedAsteroidQuality = quality;\n"
         "        throw AsteroidFirstGeometryBoundary{};\n"
@@ -70,7 +72,8 @@ def prepare(out, cxx, root, reuse):
         "           && observedAsteroidGeometry->lodDistancesSq[1] == 100000ULL * 100000\n"
         "           && observedAsteroidGeometry->lodDistancesSq[2] == 120000ULL * 120000);\n"
         "    assert(level->lodManager->objects->size() == 3);\n"
-        "    assert(observedAsteroidScale >= 1.2f && observedAsteroidScale <= 2.2f\n"
+        "    assert(observedAsteroidRadius >= 120 && observedAsteroidRadius <= 219\n"
+        "           && observedAsteroidScale == float(observedAsteroidRadius) * 0.01f\n"
         "           && observedAsteroidQuality >= 4 && observedAsteroidQuality <= 7);\n"
         "    assert(observedAsteroidPosition.x >= expectedX - 30000\n"
         "           && observedAsteroidPosition.x < expectedX + 30000\n"

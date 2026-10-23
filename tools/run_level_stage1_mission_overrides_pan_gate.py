@@ -71,12 +71,13 @@ def prepare(out, cxx, root, reuse):
         "        if (f164 + friends + f168 + hostile == 0) friends = 4;\n"
         "        countsMatchReset |= waypoint->x == x && waypoint->z == z")
     gate = replace_once(gate,
-        "    assert(observedAsteroidScale >= 1.2f && observedAsteroidScale <= 2.2f\n",
-        "    if (!(observedAsteroidScale >= 1.2f && observedAsteroidScale <= 2.2f\n"
+        "    assert(observedAsteroidRadius >= 120 && observedAsteroidRadius <= 219\n",
+        "    if (!(observedAsteroidRadius >= 120 && observedAsteroidRadius <= 219\n"
+        "          && observedAsteroidScale == float(observedAsteroidRadius) * 0.01f\n"
         "          && observedAsteroidQuality >= 4 && observedAsteroidQuality <= 7))\n"
-        "        std::fprintf(stderr, \"Asteroid range: scale=%g quality=%d\\n\",\n"
-        "                     observedAsteroidScale, observedAsteroidQuality);\n"
-        "    assert(observedAsteroidScale >= 1.2f && observedAsteroidScale <= 2.2f\n")
+        "        std::fprintf(stderr, \"Asteroid range: radius=%d scale=%.9g quality=%d\\n\",\n"
+        "                     observedAsteroidRadius, observedAsteroidScale, observedAsteroidQuality);\n"
+        "    assert(observedAsteroidRadius >= 120 && observedAsteroidRadius <= 219\n")
     gate = replace_once(gate,
         "stage 1 created the Pan hostile route and initial counts: OK",
         "stage 1 applied Pan mission count overrides before station-108 dispatch: OK")

@@ -27,11 +27,13 @@ def prepare(out, cxx, root, reuse):
     level = replace_once(level,
         "        observedAsteroidGeometry = geo;\n"
         "        observedAsteroidPosition = pos;\n"
+        "        observedAsteroidRadius = radius;\n"
         "        observedAsteroidScale = scale;\n"
         "        observedAsteroidQuality = quality;",
         "        if (i == 0) {\n"
         "            observedAsteroidGeometry = geo;\n"
         "            observedAsteroidPosition = pos;\n"
+        "            observedAsteroidRadius = radius;\n"
         "            observedAsteroidScale = scale;\n"
         "            observedAsteroidQuality = quality;\n"
         "        }")
