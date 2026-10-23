@@ -75,7 +75,7 @@ public:
                     void *field_0x30;
                     void *gunYawGeo;
                     void *gunMuzzleRoot;
-                    void *gunExtraGeo;
+                    float gunEffectScale;
                 };
             };
             float matrix_0x40_storage[15];
@@ -646,6 +646,7 @@ static_assert(__builtin_offsetof(PlayerEgo, turretGeometry) == 0x28, "PlayerEgo:
 static_assert(__builtin_offsetof(PlayerEgo, field_0x2c) == 0x2c, "PlayerEgo::turret root offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x30) == 0x30, "PlayerEgo::turret extra offset");
 static_assert(__builtin_offsetof(PlayerEgo, gunMuzzleRoot) == 0x38, "PlayerEgo::gunMuzzleRoot offset");
+static_assert(__builtin_offsetof(PlayerEgo, gunEffectScale) == 0x3c, "PlayerEgo::gunEffectScale offset");
 static_assert(__builtin_offsetof(PlayerEgo, hudHitDirectionFlags) == 0x20,
               "PlayerEgo::hudHitDirectionFlags offset");
 static_assert(__builtin_offsetof(PlayerEgo, matrix_0x40_storage) == 0x40, "PlayerEgo::matrix_0x40 offset");

@@ -9,6 +9,7 @@
 #include "game/mission/Item.h"
 #include "game/world/Level.h"
 #include "game/world/LevelScript.h"
+#include "game/world/StarSystem.h"
 #include "game/menu/MiningGame.h"
 #include "engine/render/ParticleSystemManager.h"
 #include "engine/render/ParticleSettingsRef.h"
@@ -2952,6 +2953,38 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
             (*this->repairBeams)[i]->update(dt, radar, this->level, hud);
     }
 
+    // Android Thumb 0x9d940-0x9da58: auxiliary geometry and root transform precede collisions.
+    if (this->throttleStarted) {
+        this->throttle += dt;
+        if (this->throttle >= 2000)
+            this->throttleStarted = 0;
+    }
+    if (this->turretMode && !this->autoTurretEquipped && this->turretActive &&
+        PE_status()->getShip()->getFirstEquipmentOfSort(35) != nullptr) {
+        AEGeometry *turret = static_cast<AEGeometry *>(this->turretGeometry);
+        static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(turret->transform))
+            ->Update(dt, true);
+        if (this->field_0x30) {
+            AEGeometry *extra = static_cast<AEGeometry *>(this->field_0x30);
+            static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(extra->transform))
+                ->Update(dt, false);
+        }
+    }
+    AEGeometry *effect = static_cast<AEGeometry *>(this->gunYawGeo);
+    if (effect && *reinterpret_cast<const uint8_t *>(&this->gunMuzzleRoot)) {
+        float scale = this->gunEffectScale;
+        effect->setScaling(scale, scale, scale);
+        Vector light = this->level->getStarSystem()->getLightDirection();
+        effect->setDirection(AbyssEngine::AEMath::VectorNormalize(light), Vector{0.0f, 1.0f, 0.0f});
+        effect->setPosition(this->geometry->getPosition());
+        if (PE_status()->getShip()->getIndex() == 8)
+            effect->translate(AbyssEngine::AEMath::VectorNormalize(this->geometry->getDirection()) * 300.0f);
+        static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(effect->transform))
+            ->Update(this->shakeIntensity, true);
+    }
+    static_cast<AbyssEngine::Transform *>(Globals::Canvas->TransformGetTransform(this->field_0x4->transform))
+        ->Update(dt, true);
+
     // Android Thumb 0x9da58-0x9db60: synchronize movement before collision dispatch.
     this->aboutToReachAutoTargetFlag = 0;
     this->field_0x145 = 0;
@@ -3822,7 +3855,7 @@ void PlayerEgo::setShip(int race, int group) {
 
     if (PE_status()->inSupernovaSystem() != 0 || PE_status()->inSupernovaOrbit() != 0) {
         void *tf = PaintCanvas::gCanvas->TransformGetTransform((unsigned int) (this->field_0x4->transform));
-        ((float &) this->gunExtraGeo) = ((AbyssEngine::Transform *) tf)->boundingRadius * 1.75f;
+        this->gunEffectScale = ((AbyssEngine::Transform *) tf)->boundingRadius * 1.75f;
     }
 
     if (this->cloak != 0) {
