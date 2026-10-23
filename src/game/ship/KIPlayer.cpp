@@ -11,6 +11,7 @@
 #include "game/core/String.h"
 #include "engine/render/AEGeometry.h"
 #include "game/ship/Ship.h"
+#include "game/core/Globals.h"
 
 using AbyssEngine::Matrix;
 
@@ -23,16 +24,6 @@ void FModSound_stopEvent(void *player);
 void FModSound_playEvent(void *player, int event, int flags);
 
 static void **gCanvasPtr = nullptr;
-static void *const gAERandom = nullptr;
-static void *const gItemDb = nullptr;
-
-// Global item database handle layout. gItemDb points at a small descriptor
-// whose second pointer-sized slot holds the base of a contiguous table of
-// Item* prototypes (stored as 32-bit values), indexed by item id.
-struct ItemDb {
-    void *field_0;
-    Item **prototypes; // table of Item* prototypes, indexed by item id
-};
 
 KIPlayer::KIPlayer(int faction, int group, Player *player, AEGeometry *geom,
                    float x, float y, float z, bool active) {
@@ -421,7 +412,7 @@ void KIPlayer::captureCrate(Hud *hud) {
     if ((unsigned) (this->state - 3) < 2) {
         this->hasCargo = 0;
         if (this->field_0x101 != 0)
-            this->setToSleep();
+            this->setActive(false);
     }
 
     Array<int> *cargo = this->cargo;
@@ -436,9 +427,9 @@ void KIPlayer::captureCrate(Hud *hud) {
             continue;
 
         if ((unsigned) (this->state - 3) >= 2)
-            amount = ((AbyssEngine::AERandom *) (*(void **) gAERandom))->nextInt();
+            amount = static_cast<AbyssEngine::AERandom *>(Globals::rnd)->nextInt(amount);
 
-        Status *status = Status::gStatus;
+        Status *status = Globals::status;
 
         int free1 = status->getShip()->getFreeSpace();
         int amt = amount;
@@ -454,8 +445,7 @@ void KIPlayer::captureCrate(Hud *hud) {
 
         int itemId = (*this->cargo)[i];
 
-        ItemDb *db = *(ItemDb **) gItemDb;
-        Item *item = db->prototypes[itemId]->makeItem();
+        Item *item = static_cast<Array<Item *> *>(Globals::items)->data()[itemId]->makeItem(amount);
         (*this->cargo)[i + 1] = (*this->cargo)[i + 1] - amount;
         if (item == 0)
             return;
@@ -474,12 +464,10 @@ void KIPlayer::captureCrate(Hud *hud) {
 
         Ship *ship = status->getShip();
         int avail = ship->spaceAvailable(item->getAmount());
-        int flagA = special ? 1 : 0;
-
         if (avail == 0) {
             if (special)
                 this->diedWithMissionCrate = 1;
-            hud->catchCargo(item->getIndex(), item->getAmount(), flagA, 0, 0, 1, 0);
+            hud->catchCargo(item->getIndex(), item->getAmount(), true, false, false, false, false);
             return;
         }
 
@@ -509,17 +497,17 @@ void KIPlayer::captureCrate(Hud *hud) {
         if (special) {
             this->lostMissionCrateToEgo = 1;
         } else if (this->shipGroup == 9) {
-            Status *st = Status::gStatus;
+            Status *st = Globals::status;
             st->field_cc = item->getAmount() + st->field_cc;
         } else {
             int idx = item->getIndex();
             if (idx >= 0x84 && idx < 0x9a) {
-                Status *st = Status::gStatus;
+                Status *st = Globals::status;
                 (*st->field_ac)[idx - 0x84] = true;
             }
         }
 
-        hud->catchCargo(item->getIndex(), item->getAmount(), flagA, 0, 0, 0, 0);
+        hud->catchCargo(item->getIndex(), item->getAmount(), false, special, false, false, false);
         return;
     }
 }

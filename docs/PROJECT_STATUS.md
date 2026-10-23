@@ -1,6 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`Level::wingmanDied` array removal recovery;
+Last reviewed: 2026-10-24 (`KIPlayer::captureCrate` source-backed recovery;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `0xa5e60–0xa60f6` confirms that crate capture uses the
+bounded RNG, global item array and `Item::makeItem(amount)`, only
+deactivates a finished crate, and distinguishes accepted and full-ship
+HUD flags. The prior code used null RNG/item placeholders and wrong
+amount/HUD calls. Production-method smoke passes at `-O0/-O2`, as do
+native UCRT64 `gof2`, all 208 NDK r18b ARM units and 93 verifier tests
+(one existing skip). Focused `captureCrate` source-shape/strict fuzzy
+improves **32.0%/25.4% → 93.0%/66.5%**; it remains nonexact. The full
+corpus compares **4,323/4,524** originals across **4,736** pairs at
+rounded **94.08%/83.40%** mean source-shape/strict fuzzy, retaining
+**2,557 linked-exact** and **1,082 byte-exact** pairs with zero exact-pair
+losses, skipped or wrong-type symbols. Only `captureCrate` changed score.
+Real TractorBeam/game-frame and inventory-asset behavior remain unverified.
+See [the ARM evidence](KI_PLAYER_CAPTURE_CRATE_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (`Level::wingmanDied` array removal recovery;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `0xc4484–0xc452e` confirms that wingman death compares the
@@ -18,6 +36,7 @@ losses, skipped or wrong-type symbols. The extra pair is the newly emitted
 See [the ARM evidence](LEVEL_WINGMAN_DIED_ARM_2026-10-24.md).
 
 Previous checkpoint: 2026-10-24 (`PlayerFighter::revive` name/activation recovery;
+earlier subsystem snapshots retain their dates)
 
 Android ARM `0xdff5c–0xe005c` confirms the Fighter revive sequence:
 query `Player::turnedEnemy()`, reset and conditionally restore enemy
