@@ -51,3 +51,24 @@ byte-exact**, with zero skipped and wrong-type symbols. The native and
 
 Next: reconnect the phone, run the new gate at O0, inspect the O2 asteroid
 diagnostic and only then promote this boundary to a green checkpoint.
+
+## Ordinary Pan enemy-array continuation (prepared, not runtime-certified)
+
+`tools/run_level_stage1_enemy_array_pan_gate.py` now extends that same
+fixture through the guarded-freighter test, the second one-waypoint Route,
+mining/outpost/supernova conditions and the ordinary `Array<KIPlayer*>`
+allocation, stopping before the first `createShip`. Station 108 and the
+guarded-freighter object path fail closed rather than being simulated.
+The original ELF calls the second Route constructor at `0xb0ae6–0xb0af6`,
+tests the campaign-167 mining-station case at `0xb0e30–0xb0e64`, makes the
+outpost rolls at `0xb0eb0–0xb0f3c`, and allocates the ordinary enemy array
+at `0xb2a36–0xb2a8c`. The gate independently replays the second route's
+three coordinate draws and the conditional outpost rolls, then checks its
+waypoint, final RNG state, counts and zero-initialized array length.
+
+Both `-O0` and `-O2` Android ARMv7 executables compile and link with NDK
+r18b. The phone remains absent from ADB, so neither executable has been
+run. In particular, the new assertions and the earlier r18b `-O2`
+asteroid failure remain unresolved. No production source or corpus metric
+changed at this step. The next runtime milestone is the first spawned
+ordinary friend, then the remaining array and stage-one return.
