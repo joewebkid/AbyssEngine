@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`PlayerFighter::revive` name/activation recovery;
+Last reviewed: 2026-10-24 (`Level::wingmanDied` array removal recovery;
 earlier subsystem snapshots retain their dates)
+
+Android ARM `0xc4484–0xc452e` confirms that wingman death compares the
+stored name directly and removes the matching pointer through the common
+`ArrayRemove<String*>`, which also updates array capacity. The prior local
+helper updated only size. The production-method smoke passes at `-O0/-O2`,
+as do native UCRT64 `gof2`, 208 NDK r18b ARM units and 93 verifier tests
+(one existing skip). Focused `wingmanDied` source-shape/strict fuzzy
+improves **48.9%/28.6% → 96.9%/51.3%**; it remains nonexact. The full
+corpus compares **4,323/4,524** originals across **4,736** pairs at
+rounded **94.07%/83.39%** source-shape/strict fuzzy. It retains
+**2,557 linked-exact** and **1,082 byte-exact** pairs with zero exact-pair
+losses, skipped or wrong-type symbols. The extra pair is the newly emitted
+`ArrayRemove<String*>`. A complete death/game-frame path remains unverified.
+See [the ARM evidence](LEVEL_WINGMAN_DIED_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (`PlayerFighter::revive` name/activation recovery;
 
 Android ARM `0xdff5c–0xe005c` confirms the Fighter revive sequence:
 query `Player::turnedEnemy()`, reset and conditionally restore enemy

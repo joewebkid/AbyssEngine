@@ -313,8 +313,6 @@ static inline void levelPlaceAlien(Level *self, int *kiPlayer, int alienInOrbit)
 
 static inline void levelPlaceWingman(Level *self, int *kiSlot, unsigned i);
 
-static inline void levelWingmanDiedOne(String *name, Array<String *> *list);
-
 bool Level::hasMiningPlant() {
     return miningPlant > 0;
 }
@@ -5910,18 +5908,17 @@ void Level::createPlayer() {
 }
 
 void Level::wingmanDied(AbyssEngine::String const &name) {
-    Array<String *> *list = Status::gStatus->getWingmen();
+    Array<String *> *list = Globals::status->getWingmen();
     if (list == 0) {
         return;
     }
     if (__builtin_expect(list->size() < 2, 0)) {
-        return Status::gStatus->setWingmen((Array<String *> *) 0);
+        return Globals::status->setWingmen((Array<String *> *) 0);
     }
-    String key = name;
     for (unsigned int i = 0; i < list->size(); i = i + 1) {
         String *w = (*list)[i];
-        if (w->Compare_str(&key) == 0) {
-            levelWingmanDiedOne((*list)[i], list);
+        if (w->Compare(name) == 0) {
+            ArrayRemove<String *>(w, *list);
             return;
         }
     }
@@ -7718,17 +7715,6 @@ void Level::renderBG(int t) {
     }
 
     ((PaintCanvas *) (long) (canvas))->EndBG();
-}
-
-static inline void levelWingmanDiedOne(String *name, Array<String *> *list) {
-    unsigned int n = list->size();
-    String **data = list->data();
-    unsigned int w = 0;
-    for (unsigned int r = 0; r < n; ++r) {
-        if (data[r] != name)
-            data[w++] = data[r];
-    }
-    list->size_ = w;
 }
 
 static inline void levelSpawnFar(Level *self, int *kiPlayer) {
