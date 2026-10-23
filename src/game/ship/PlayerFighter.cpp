@@ -332,13 +332,13 @@ PlayerFighter::PlayerFighter(int faction, int wingmanCmd, Player *player, AEGeom
     self->targetRoll = 0.0f;
     self->smoothRoll = 0.0f;
     self->field_0x214 = 0;
-    self->field_0x294 = 0x443B8000;
-    self->field_0x298 = 0x41723ACE;
-    self->rollSamples = 0;
-    self->field_0x2a0 = 0;
-    self->field_0x2a4 = 0;
-    self->field_0x2a8 = 0;
-    self->field_0x2ac = 0;
+    self->field_0x294 = 750.0f;
+    self->field_0x298 = 15.139357f; // ARM bits 0x41723ACE.
+    self->rollSamples[0] = 0.0f;
+    self->rollSamples[1] = 0.0f;
+    self->rollSamples[2] = 0.0f;
+    self->rollSamples[3] = 0.0f;
+    self->rollSamples[4] = 0.0f;
     self->rollBufferFilled = 0;
     self->rollSampleIndex = 0;
     self->rollActive = 0;
@@ -1154,9 +1154,10 @@ void PlayerFighter::update(int dt) {
                 this->resetVecC.z < upper && this->resetVecC.z > lower)
                 this->resetVecC = this->geometry->getRightVector();
         }
+        Vector desiredWorld = AbyssEngine::AEMath::VectorNormalize(this->resetVecC);
         this->resetVecC = AbyssEngine::AEMath::MatrixRotateVector(
             AbyssEngine::AEMath::MatrixGetInverse(body->transformMatrix),
-            AbyssEngine::AEMath::VectorNormalize(this->resetVecC));
+            desiredWorld);
         this->resetVecC.y = -this->resetVecC.y;
         this->field_0x24 = body->empDisabledByte;
         // ARM 0xded38 selects the still-unrecovered shooting branch only after this prelude.
@@ -1165,42 +1166,93 @@ void PlayerFighter::update(int dt) {
             this->rollSampleIndex = 0;
             this->targetRoll = 0.0f;
             this->rollBufferFilled = 0;
-            if (this->rollActive)
-                this->roll(dt);
+        } else {
+            Matrix matrix = this->geometry->getMatrix();
+            Vector direction = AbyssEngine::AEMath::MatrixGetDir(matrix);
+            Vector correction = AbyssEngine::AEMath::VectorNormalize(desiredWorld - direction);
+            correction *= static_cast<float>(dt * 48) * 0.0000152587890625f;
+            this->resetVecC = AbyssEngine::AEMath::VectorNormalize(direction + correction);
+            Vector remaining = this->resetVecC - desiredWorld;
+            if (std::fabs(remaining.x) + std::fabs(remaining.y) +
+                std::fabs(remaining.z) < 0.0625f)
+                this->resetVecC = desiredWorld;
 
-            float target = this->targetRoll;
-            float current = this->smoothRoll;
-            if (current != target) {
-                float step = static_cast<float>(dt) * 1.25f / 3.9f;
-                if (current < target) {
-                    current += step;
-                    if (current > target)
-                        current = target;
-                } else if (current > target) {
-                    current -= step;
-                    if (current < target)
-                        current = target;
-                }
-                this->smoothRoll = current;
+            float dot = AbyssEngine::AEMath::VectorDot(
+                AbyssEngine::AEMath::VectorNormalize(direction), this->resetVecC);
+            float angle = 0.0f;
+            if (dot < 1.0f && dot > -1.0f)
+                angle = AbyssEngine::AEMath::ACosf(dot);
+            float signedAngle = -angle;
+            if (angle > 0.0f)
+                signedAngle = angle;
+            if (signedAngle != 0.0f &&
+                AbyssEngine::AEMath::ACosf(AbyssEngine::AEMath::VectorDot(
+                    AbyssEngine::AEMath::MatrixGetRight(matrix), this->resetVecC)) < 1.5707964f)
+                signedAngle = -signedAngle;
+
+            int index = this->rollSampleIndex;
+            this->rollSamples[index] = signedAngle;
+            float average = signedAngle;
+            if (this->rollBufferFilled) {
+                float sum = 0.0f;
+                for (int i = 0; i < 5; ++i)
+                    sum += this->rollSamples[i];
+                average = sum / 5.0f;
+            } else if (index > 0) {
+                float sum = 0.0f;
+                for (int i = 0; i < index; ++i)
+                    sum += this->rollSamples[i];
+                average = sum / static_cast<float>(index);
+            }
+            this->rollSampleIndex = index + 1;
+            if (index >= 4) {
+                this->rollSampleIndex = 0;
+                this->rollBufferFilled = 1;
             }
 
-            int32_t timer = static_cast<int32_t>(this->field_0xfc);
+            float roll = average * this->field_0x294 * this->field_0x298;
+            this->targetRoll = roll;
+            if (roll > this->field_0x294)
+                this->targetRoll = this->field_0x294;
+            else if (roll < -this->field_0x294)
+                this->targetRoll = -this->field_0x294;
+        }
+
+        if (this->rollActive)
+            this->roll(dt);
+
+        float target = this->targetRoll;
+        float current = this->smoothRoll;
+        if (current != target) {
+            float step = static_cast<float>(dt) * 1.25f / 3.9f;
+            if (current < target) {
+                current += step;
+                if (current > target)
+                    current = target;
+            } else if (current > target) {
+                current -= step;
+                if (current < target)
+                    current = target;
+            }
+            this->smoothRoll = current;
+        }
+
+        int32_t timer = static_cast<int32_t>(this->field_0xfc);
+        if (timer >= 1) {
+            timer -= dt;
+            this->field_0xfc = static_cast<uint32_t>(timer);
+            if (timer <= 0)
+                this->rollActive = 1;
+        }
+        if (target == current) {
             if (timer >= 1) {
                 timer -= dt;
                 this->field_0xfc = static_cast<uint32_t>(timer);
                 if (timer <= 0)
                     this->rollActive = 1;
             }
-            if (target == current) {
-                if (timer >= 1) {
-                    timer -= dt;
-                    this->field_0xfc = static_cast<uint32_t>(timer);
-                    if (timer <= 0)
-                        this->rollActive = 1;
-                }
-            } else {
-                this->field_0xfc = 750;
-            }
+        } else {
+            this->field_0xfc = 750;
         }
     }
 

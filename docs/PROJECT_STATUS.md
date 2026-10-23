@@ -1,6 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-23 (`PlayerFighter::update` maneuver-bypass roll state;
+Last reviewed: 2026-10-23 (`PlayerFighter::update` normal steering and roll target;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `0xded6e–0xdf03e` confirms the state-1/state-7 normal
+steering direction update, target snap, signed angle, five-sample roll
+averaging and clamp. The roll scale and sample fields are now typed as
+floats with asserted ABI offsets. All 11 Fighter smokes, native UCRT64
+`gof2`, all 208 NDK r18b ARM units and 93 verifier tests pass (one
+existing skip). Whole-`update` source-shape/strict fuzzy changes
+**84.4%/34.0% → 87.8%/35.3%**; the function is still nonexact. The full
+corpus compares **4,323/4,524** originals across **4,735** pairs at
+rounded **94.05%/83.38%** mean source-shape/strict fuzzy, retaining
+**2,557 linked-exact** and **1,082 byte-exact** pairs with zero exact-pair
+losses, skipped or wrong-type symbols. Only the target function's score
+changed. The shooting branch, orthogonal matrix construction, later
+matrix application and translation remain unrecovered; applying the
+matrix and translation is the next bounded priority. See
+[the ARM evidence](PLAYER_FIGHTER_NORMAL_STEERING_ARM_2026-10-23.md).
+
+Previous checkpoint: 2026-10-23 (`PlayerFighter::update` maneuver-bypass roll state;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `0xded44–0xded6c` and `0xdf042–0xdf110`, cross-checked with

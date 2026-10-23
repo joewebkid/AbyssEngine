@@ -88,13 +88,9 @@ public:
     signed char field_0x255;
     uint8_t _pad_0x256[2];
     AbyssEngine::Matrix rollMatrix;
-    int32_t field_0x294;
-    int32_t field_0x298;
-    int32_t rollSamples;
-    int32_t field_0x2a0;
-    int32_t field_0x2a4;
-    int32_t field_0x2a8;
-    int32_t field_0x2ac;
+    float field_0x294;
+    float field_0x298;
+    float rollSamples[5];
     int32_t rollSampleIndex;
     uint8_t rollBufferFilled;
     AbyssEngine::EaseInOutMatrix *easeMatrix;
@@ -205,6 +201,11 @@ static_assert(offsetof(PlayerFighter, targetRoll) == 0x20c, "PlayerFighter targe
 static_assert(offsetof(PlayerFighter, smoothRoll) == 0x210, "PlayerFighter smooth-roll ABI offset");
 static_assert(offsetof(PlayerFighter, easeBaseMatrix) == 0x218, "PlayerFighter first matrix ABI offset");
 static_assert(offsetof(PlayerFighter, rollMatrix) == 0x258, "PlayerFighter roll matrix ABI offset");
+static_assert(offsetof(PlayerFighter, field_0x294) == 0x294, "PlayerFighter roll limit ABI offset");
+static_assert(offsetof(PlayerFighter, field_0x298) == 0x298, "PlayerFighter roll scale ABI offset");
+static_assert(offsetof(PlayerFighter, rollSamples) == 0x29c, "PlayerFighter roll samples ABI offset");
+static_assert(offsetof(PlayerFighter, rollSampleIndex) == 0x2b0, "PlayerFighter roll sample index ABI offset");
+static_assert(offsetof(PlayerFighter, rollBufferFilled) == 0x2b4, "PlayerFighter roll buffer ABI offset");
 static_assert(offsetof(PlayerFighter, cloakTimer) == 0x2c8, "PlayerFighter cloak timer ABI offset");
 static_assert(offsetof(PlayerFighter, cloakDuration) == 0x2cc, "PlayerFighter cloak duration ABI offset");
 static_assert(offsetof(PlayerFighter, cloakActive) == 0x2d0, "PlayerFighter cloak active ABI offset");

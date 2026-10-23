@@ -21,6 +21,8 @@ Vector VectorNormalize(const Vector &v) {
 Vector VectorCross(const Vector &a, const Vector &b) {
     return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
 }
+float VectorDot(const Vector &a, const Vector &b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+float ACosf(float value) { return std::acos(value); }
 } }
 struct Matrix {
     int value = 0;
@@ -34,6 +36,8 @@ struct Matrix {
 };
 Matrix operator*(Matrix lhs, const Matrix &rhs) { return lhs *= rhs; }
 namespace AbyssEngine { namespace AEMath {
+Vector MatrixGetDir(const Matrix &matrix) { return matrix.direction; }
+Vector MatrixGetRight(const Matrix &matrix) { return matrix.right; }
 Vector MatrixRotateVector(const Matrix &matrix, const Vector &v) {
     if (matrix.quarterTurns == 1) return {-v.y, v.x, v.z};
     if (matrix.quarterTurns == -1) return {v.y, -v.x, v.z};
@@ -591,6 +595,8 @@ struct PlayerFighter : KIPlayer {
     Player *field_0x148 = nullptr;
     uint8_t aiDisabled = 0;
     float targetRoll = 0.0f, smoothRoll = 0.0f;
+    float field_0x294 = 750.0f, field_0x298 = 15.139357f;
+    float rollSamples[5]{};
     int rollSampleIndex = 0;
     uint8_t rollBufferFilled = 0;
     int rollCalls = 0;
@@ -2018,6 +2024,7 @@ int main() {
     assert(speeding.currentSpeed > speeding.speed && speeding.currentSpeed < 5.5f);
 
     speeding.field_0x13d = 0;
+    speeding.field_0x12d = 1;
     speedingGeometry.position = {0.0f, 0.0f, 0.0f};
     speedingWaypoint = {3, 4, 0};
     speedingGeometry.matrix.quarterTurns = 1;
@@ -2043,6 +2050,7 @@ int main() {
     avoiding.routeClone = &avoidingRoute;
     avoiding.level = &avoidingLevel;
     avoiding.state = 1;
+    avoiding.field_0x12d = 1;
     avoiding.field_0x128 = 0;
     avoidingGeometry.right = {0.0f, 1.0f, 0.0f};
     avoidanceTarget.position = {4001.25f, -2.5f, 3.75f};
@@ -2079,6 +2087,7 @@ int main() {
     speeding.smoothRoll = 10.0f;
     speeding.field_0xfc = 100;
     speeding.rollActive = 0;
+    speeding.rollCalls = 0;
     speeding.update(4);
     assert(speeding.rollSampleIndex == 0 && speeding.rollBufferFilled == 0);
     assert(speeding.targetRoll == 0.0f);
@@ -2097,4 +2106,61 @@ int main() {
     speeding.field_0xfc = 10;
     speeding.update(3);
     assert(speeding.smoothRoll == 0.0f && speeding.field_0xfc == 4);
+
+    PlayerFighter steering;
+    Player steeringBody;
+    AEGeometry steeringGeometry;
+    Route steeringRoute;
+    Waypoint steeringWaypoint{1000, 0, 0};
+    steering.player = &steeringBody;
+    steering.geometry = &steeringGeometry;
+    steering.routeClone = &steeringRoute;
+    steeringRoute.waypoint = &steeringWaypoint;
+    steeringGeometry.position = {0.0f, 0.0f, 0.0f};
+    steeringGeometry.matrix.direction = {0.0f, 0.0f, 1.0f};
+    steeringGeometry.matrix.right = {1.0f, 0.0f, 0.0f};
+    steering.state = 1;
+    steering.update(1000);
+    assert(steering.resetVecC.x > 0.7f && steering.resetVecC.z > 0.6f);
+    assert(steering.rollSamples[0] < 0.0f && steering.rollSampleIndex == 1);
+    assert(steering.targetRoll == -750.0f && steering.smoothRoll < 0.0f);
+
+    steering.field_0x294 = 10.0f;
+    steering.field_0x298 = 1.0f;
+    steering.smoothRoll = 0.0f;
+    steering.rollSampleIndex = 0;
+    steering.rollBufferFilled = 0;
+    steering.rollActive = 0;
+    steering.field_0xfc = 0;
+    steering.update(1000);
+    float firstRoll = steering.rollSamples[0];
+    assert(std::abs(steering.targetRoll - firstRoll * 10.0f) < 0.001f);
+    steeringGeometry.matrix.right = {-1.0f, 0.0f, 0.0f};
+    steering.update(1000);
+    assert(steering.rollSamples[1] > 0.0f && steering.rollSampleIndex == 2);
+    assert(std::abs(steering.targetRoll - firstRoll * 10.0f) < 0.001f);
+    steering.update(1000);
+    steering.update(1000);
+    steering.update(1000);
+    assert(steering.rollSampleIndex == 0 && steering.rollBufferFilled == 1);
+    steeringGeometry.matrix.right = {1.0f, 0.0f, 0.0f};
+    steering.update(1000);
+    assert(steering.rollSampleIndex == 1 && steering.rollSamples[0] < 0.0f);
+    assert(steering.targetRoll > 0.0f && steering.targetRoll < 10.0f);
+
+    PlayerFighter snapping;
+    Player snappingBody;
+    AEGeometry snappingGeometry;
+    Route snappingRoute;
+    Waypoint snappingWaypoint{1000, 0, 0};
+    snapping.player = &snappingBody;
+    snapping.geometry = &snappingGeometry;
+    snapping.routeClone = &snappingRoute;
+    snappingRoute.waypoint = &snappingWaypoint;
+    snappingGeometry.position = {0.0f, 0.0f, 0.0f};
+    snappingGeometry.matrix.direction = {0.95f, 0.0f, 0.05f};
+    snappingGeometry.matrix.right = {1.0f, 0.0f, 0.0f};
+    snapping.state = 1;
+    snapping.update(1);
+    assert(snapping.resetVecC.x == 1.0f && snapping.resetVecC.z == 0.0f);
 }
