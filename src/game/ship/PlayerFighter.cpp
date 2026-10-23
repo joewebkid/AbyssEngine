@@ -1004,9 +1004,21 @@ void PlayerFighter::update(int dt) {
             }
             return;
         }
+
+        this->easeMatrix->Increase(static_cast<float>(dt));
+        Matrix dockingMatrix = this->easeMatrix->GetValue();
+        Vector currentPosition = this->getPosition();
+        Vector direction = this->objectPosition - this->getPosition();
+        Vector displacement = direction * static_cast<float>(dt);
+        displacement = displacement * 0.0006f;
+        Vector nextPosition = currentPosition + displacement;
+        AbyssEngine::AEMath::MatrixSetTranslation(dockingMatrix, nextPosition);
+        this->geometry->setMatrix(dockingMatrix);
+        this->player->transformMatrix = dockingMatrix;
+        return;
     }
 
-    // shortcut: state-8 approach motion and other ARM update branches remain unreconstructed.
+    // shortcut: other ARM update branches remain unreconstructed; replace this call when they are mapped.
     PF_update_body(this, dt);
 
     return;

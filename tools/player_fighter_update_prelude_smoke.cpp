@@ -21,6 +21,7 @@ Vector VectorNormalize(const Vector &v) {
 } }
 struct Matrix {
     int value = 0;
+    Vector translation{};
     Matrix &operator*=(const Matrix &other) {
         value = value * 10 + other.value;
         return *this;
@@ -29,12 +30,25 @@ struct Matrix {
 Matrix operator*(Matrix lhs, const Matrix &rhs) { return lhs *= rhs; }
 namespace AbyssEngine { namespace AEMath {
 Vector MatrixRotateVector(const Matrix &, const Vector &v) { return v; }
+Matrix MatrixSetTranslation(Matrix &matrix, const Vector &position) {
+    matrix.translation = position;
+    return matrix;
+}
 Matrix MatrixSetRotation(Matrix &matrix, float x, float y, float z) {
     (void)x; (void)y; (void)z;
     matrix.value = 7;
     return matrix;
 }
 } }
+namespace AbyssEngine {
+struct EaseInOutMatrix {
+    Matrix value{42};
+    int increaseCalls = 0, getValueCalls = 0;
+    float lastDt = 0.0f;
+    void Increase(float dt) { ++increaseCalls; lastDt = dt; }
+    Matrix GetValue() { ++getValueCalls; return value; }
+};
+}
 struct AEGeometry {
     int *destroyCounter = nullptr;
     Vector position{1.25f, -2.5f, 3.75f};
@@ -480,6 +494,7 @@ struct PlayerFighter : KIPlayer {
     Vector deathDrift{}, deathDirection{};
     Vector postExplosionDirection{};
     SpacePoint *field_0x2c4 = nullptr;
+    AbyssEngine::EaseInOutMatrix *easeMatrix = nullptr;
     int spacePoint = 0, field_0x2c0 = 0;
     signed char field_0x13e = 0;
     float currentSpeed = 0.0f;
@@ -1669,14 +1684,23 @@ int main() {
     docking.field_0x1fc = 0;
     dockingPlayer.hitpoints = 100;
     nearestPoint.position = {140.0f, 0.0f, 0.0f};
-    docking.update(1);
+    AbyssEngine::EaseInOutMatrix dockingEase;
+    docking.easeMatrix = &dockingEase;
+    docking.update(1000);
     assert(docking.objectPosition.x == 160.0f && docking.state == 8);
     assert(docking.exhaustCalls == 1 && docking.spacePoint == 7 && docking.field_0x2c0 == 8);
-    assert(bodyCalls == fallbackBefore + 1);
+    assert(dockingEase.increaseCalls == 1 && dockingEase.lastDt == 1000.0f);
+    assert(dockingEase.getValueCalls == 1 && docking.positionCalls == 4);
+    assert(dockingGeometry.setMatrixCalls == 1 && dockingGeometry.matrix.value == 42);
+    assert(std::fabs(dockingGeometry.matrix.translation.x - 96.0f) < 0.01f);
+    assert(dockingPlayer.transformMatrix.value == 42);
+    assert(std::fabs(dockingPlayer.transformMatrix.translation.x - 96.0f) < 0.01f);
+    assert(bodyCalls == fallbackBefore);
 
     docking.kind = 3;
     docking.update(1);
     assert(docking.state == 9 && docking.exhaustCalls == 2);
     assert(dockingEmit.calls == 1 && dockingRender.calls == 1);
-    assert(bodyCalls == fallbackBefore + 1);
+    assert(dockingEase.increaseCalls == 1 && dockingGeometry.setMatrixCalls == 1);
+    assert(bodyCalls == fallbackBefore);
 }
