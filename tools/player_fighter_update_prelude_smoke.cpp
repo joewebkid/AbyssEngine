@@ -24,6 +24,7 @@ Vector VectorCross(const Vector &a, const Vector &b) {
 } }
 struct Matrix {
     int value = 0;
+    int quarterTurns = 0;
     Vector translation{};
     Vector right{}, up{}, direction{};
     Matrix &operator*=(const Matrix &other) {
@@ -33,7 +34,16 @@ struct Matrix {
 };
 Matrix operator*(Matrix lhs, const Matrix &rhs) { return lhs *= rhs; }
 namespace AbyssEngine { namespace AEMath {
-Vector MatrixRotateVector(const Matrix &, const Vector &v) { return v; }
+Vector MatrixRotateVector(const Matrix &matrix, const Vector &v) {
+    if (matrix.quarterTurns == 1) return {-v.y, v.x, v.z};
+    if (matrix.quarterTurns == -1) return {v.y, -v.x, v.z};
+    return v;
+}
+Matrix MatrixGetInverse(const Matrix &matrix) {
+    Matrix inverse = matrix;
+    inverse.quarterTurns = -matrix.quarterTurns;
+    return inverse;
+}
 Matrix MatrixIdentity(Matrix &matrix) { matrix = Matrix{1}; return matrix; }
 Matrix MatrixSetTranslation(Matrix &matrix, const Vector &position) {
     matrix.translation = position;
@@ -218,6 +228,7 @@ struct Player {
     bool dead = false;
     Vector position{};
     uint8_t field_69 = 0;
+    uint8_t empDisabledByte = 0;
     uint8_t field_5e = 0;
     uint8_t destroyedByte = 0;
     KIPlayer *kiPlayer = nullptr;
@@ -379,8 +390,11 @@ struct PlayerEgo {
     Player *player = nullptr;
     TargetFollowCamera *camera = nullptr;
     bool rocketControl = false;
+    bool dockedToPoint = false;
+    int dockedToPointCalls = 0;
     int rocketChecks = 0, cameraCalls = 0;
     bool isInRocketControl() { ++rocketChecks; return rocketControl; }
+    bool isDockedToDockingPoint() { ++dockedToPointCalls; return dockedToPoint; }
     TargetFollowCamera *getTargetFollowCamera() { ++cameraCalls; return camera; }
 };
 struct Level {
@@ -453,6 +467,7 @@ struct Trail {
 };
 struct KIPlayer {
     Player *player = nullptr;
+    uint8_t field_0x24 = 0;
     Vector mockPosition{};
     SpacePoint *nearestDockingPoint = nullptr;
     SpacePoint *nearestNavigationPoint = nullptr;
@@ -1994,4 +2009,50 @@ int main() {
     speeding.update(5000);
     assert(speeding.field_0x1f4 == 1 && speeding.field_0x1ec == speeding.speed);
     assert(speeding.currentSpeed > speeding.speed && speeding.currentSpeed < 5.5f);
+
+    speeding.field_0x13d = 0;
+    speedingGeometry.position = {0.0f, 0.0f, 0.0f};
+    speedingWaypoint = {3, 4, 0};
+    speedingGeometry.matrix.quarterTurns = 1;
+    speedingPlayer.empDisabledByte = 1;
+    speeding.update(1);
+    assert(speeding.resetVecB.x == 3.0f && speeding.resetVecB.y == 4.0f);
+    assert(std::abs(speeding.resetVecC.x - 0.8f) < 0.0001f);
+    assert(std::abs(speeding.resetVecC.y - 0.6f) < 0.0001f);
+    assert(speeding.field_0x24 == 1);
+
+    PlayerFighter avoiding;
+    Player avoidingBody;
+    Player avoidanceTarget;
+    Player *avoidanceItems[] = {&avoidanceTarget};
+    Array<Player *> avoidanceEnemies{1, avoidanceItems};
+    AEGeometry avoidingGeometry;
+    Route avoidingRoute;
+    Level avoidingLevel;
+    PlayerEgo avoidingEgo;
+    avoidingBody.enemies = &avoidanceEnemies;
+    avoiding.player = &avoidingBody;
+    avoiding.geometry = &avoidingGeometry;
+    avoiding.routeClone = &avoidingRoute;
+    avoiding.level = &avoidingLevel;
+    avoiding.state = 1;
+    avoiding.field_0x128 = 0;
+    avoidingGeometry.right = {0.0f, 1.0f, 0.0f};
+    avoidanceTarget.position = {4001.25f, -2.5f, 3.75f};
+    avoiding.update(1);
+    assert(avoiding.field_0x148 == &avoidanceTarget && avoidingGeometry.rightCalls == 1);
+    assert(avoiding.resetVecC.x == 0.0f && avoiding.resetVecC.y == -1.0f);
+
+    avoidanceTarget.position.x = 8001.25f;
+    avoiding.update(1);
+    assert(avoidingGeometry.rightCalls == 1 && avoiding.resetVecC.x == 1.0f);
+    avoidanceTarget.field_69 = 1;
+    avoidingLevel.ego = &avoidingEgo;
+    avoidingEgo.dockedToPoint = true;
+    avoidanceTarget.position.x = 9001.25f;
+    avoiding.update(1);
+    assert(avoidingEgo.dockedToPointCalls == 1 && avoidingGeometry.rightCalls == 2);
+    avoidanceTarget.position.x = 12001.25f;
+    avoiding.update(1);
+    assert(avoidingGeometry.rightCalls == 2 && avoiding.resetVecC.x == 1.0f);
 }

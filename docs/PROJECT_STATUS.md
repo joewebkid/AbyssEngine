@@ -1,6 +1,27 @@
 # Project Status
 
-Last reviewed: 2026-10-23 (`PlayerFighter::update` state-1/state-7 speed response;
+Last reviewed: 2026-10-23 (`PlayerFighter::update` state-1/state-7 direction prelude;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xde9c6–0xded44` confirms the
+state-1/state-7 non-shooting direction prelude: strict component-wise
+8000-unit reach (12000 for a marked target when the Level player is
+docked), substitution of the geometry right vector, normalization,
+inverse Player-transform rotation, Y reflection and transfer of the
+Player `+0x68` byte to Fighter `+0x24`. All 11 Fighter smokes, native
+UCRT64 `gof2`, all 208 NDK r18b ARM units and 93 verifier tests pass
+(one existing skip). Whole-`update` source-shape/strict fuzzy changes
+**81.1%/33.7% → 83.3%/34.1%**; it remains nonexact. The full corpus
+compares **4,323/4,524** originals across **4,735** pairs at
+**94.05%/83.38%** mean source-shape/strict fuzzy, retaining **2,557
+linked-exact** and **1,082 byte-exact** pairs with zero exact-pair
+losses, skipped or wrong-type symbols. Only the target function's score
+changes. The active-shooting branch and subsequent orientation,
+translation and full game-frame behavior remain unverified; the
+orientation/movement tail is the next priority. See
+[the ARM evidence](PLAYER_FIGHTER_DIRECTION_PRELUDE_ARM_2026-10-23.md).
+
+Previous checkpoint: 2026-10-23 (`PlayerFighter::update` state-1/state-7 speed response;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `PlayerFighter::update` at `0xde1fa–0xde26c` and
