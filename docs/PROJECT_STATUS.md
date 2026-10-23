@@ -1,6 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-22 (`PlayerFighter::update` state-6 acceleration and
+Last reviewed: 2026-10-23 (`PlayerFighter::update` state-8 near-docking
+transition; earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xde5da–0xde6e8` confirms the
+state-8 docking-target/nearest-point calculation, kind-indexed reach
+threshold, and near-arrival effects and state-9 transition. All 11 Fighter
+smokes, native UCRT64 `gof2`, the focused 208-unit NDK r18b ARM build,
+and 93 verifier tests pass (one existing skip). Whole-`update`
+source-shape/strict fuzzy changes **66.4%/26.4% → 68.9%/27.9%**; it remains
+nonexact. The full corpus compares **4,323/4,524** originals across
+**4,735** pairs at **94.04%/83.38%** mean source-shape/strict fuzzy,
+retaining all **2,557 linked-exact** and **1,082 byte-exact** pairs with
+zero exact-pair losses, skipped or wrong-type symbols. Only the target
+function's score changed. The far approach within state 8, state 9,
+other dispatch paths and the common tail remain unresolved; a complete
+game-frame or physical docking run is untested. The far approach is the
+next bounded priority. See [the ARM evidence](PLAYER_FIGHTER_STATE8_NEAR_DOCK_ARM_2026-10-22.md).
+
+Previous checkpoint: 2026-10-22 (`PlayerFighter::update` state-6 acceleration and
 death; earlier subsystem snapshots retain their dates)
 
 Android ARM `PlayerFighter::update` at `0xde590–0xde5d8` confirms state-6

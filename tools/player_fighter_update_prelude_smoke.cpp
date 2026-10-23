@@ -10,8 +10,10 @@ struct Vector {
     Vector &operator*=(float n) { x *= n; y *= n; z *= n; return *this; }
 };
 Vector operator*(Vector v, float n) { return v *= n; }
+Vector operator+(Vector a, const Vector &b) { return a += b; }
 Vector operator-(Vector a, const Vector &b) { return a -= b; }
 namespace AbyssEngine { namespace AEMath {
+float VectorLength(const Vector &v) { return std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z); }
 Vector VectorNormalize(const Vector &v) {
     float len = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
     return len == 0.0f ? Vector{0.0f, 1.0f, 0.0f} : Vector{v.x / len, v.y / len, v.z / len};
@@ -26,6 +28,7 @@ struct Matrix {
 };
 Matrix operator*(Matrix lhs, const Matrix &rhs) { return lhs *= rhs; }
 namespace AbyssEngine { namespace AEMath {
+Vector MatrixRotateVector(const Matrix &, const Vector &v) { return v; }
 Matrix MatrixSetRotation(Matrix &matrix, float x, float y, float z) {
     (void)x; (void)y; (void)z;
     matrix.value = 7;
@@ -86,6 +89,7 @@ struct Explosion {
     }
 };
 struct SpacePoint {
+    Vector position{};
     bool free = false;
     int isFreeCalls = 0, giveFreeCalls = 0;
     bool isFree() { ++isFreeCalls; return free; }
@@ -394,6 +398,10 @@ struct Trail {
 };
 struct KIPlayer {
     Player *player = nullptr;
+    Vector mockPosition{};
+    SpacePoint *nearestDockingPoint = nullptr;
+    Vector lastDockingApproach{};
+    int positionCalls = 0, nearestDockingCalls = 0;
     String name{};
     AEGeometry *geometry = nullptr;
     Explosion *explosion = nullptr;
@@ -442,6 +450,10 @@ struct KIPlayer {
     void setActive(bool value) { player->setActive(value); }
     bool isWingMan() { return wingman; }
     bool isDead() { return state == 4; }
+    Vector getPosition() { ++positionCalls; return mockPosition; }
+    SpacePoint *getNearestDockingPoint(const Vector &approach) {
+        ++nearestDockingCalls; lastDockingApproach = approach; return nearestDockingPoint;
+    }
     void setDead() { ++setDeadCalls; state = 4; player->setActive(false); }
     bool isDocked() { return state == 9; }
     int cargoAvailable() {
@@ -468,6 +480,7 @@ struct PlayerFighter : KIPlayer {
     Vector deathDrift{}, deathDirection{};
     Vector postExplosionDirection{};
     SpacePoint *field_0x2c4 = nullptr;
+    int spacePoint = 0, field_0x2c0 = 0;
     signed char field_0x13e = 0;
     float currentSpeed = 0.0f;
     int cloakingCalls = 0;
@@ -1606,4 +1619,64 @@ int main() {
     assert(fleeingGeometry.moveForwardCalls == 3 && fleeingGeometry.lastForwardDistance == 108.0f);
     assert(fleeing.state == 4 && fleeing.setDeadCalls == 1 && !fleeingPlayer.active);
     assert(bodyCalls == fallbackBefore);
+
+    AEGeometry dockingGeometry;
+    AEGeometry dockTargetGeometry;
+    Player dockingPlayer;
+    Player dockTargetPlayer;
+    PlayerFighter docking;
+    KIPlayer dockTarget;
+    Level dockingLevel;
+    Route dockingRoute;
+    SpacePoint approachPoint;
+    SpacePoint nearestPoint;
+    ParticleSystemManager dockingEmit, dockingRender;
+    docking.geometry = &dockingGeometry;
+    docking.player = &dockingPlayer;
+    docking.level = &dockingLevel;
+    docking.routeClone = &dockingRoute;
+    docking.field_0x43 = 1;
+    docking.state = 8;
+    docking.kind = 0;
+    docking.field_0x2c4 = &approachPoint;
+    docking.spacePoint = 7;
+    docking.field_0x2c0 = 8;
+    docking.field_0x1fc = 1;
+    docking.field_0x80 = 11;
+    docking.field_0x84 = 12;
+    dockingPlayer.hitpoints = 20;
+    dockingLevel.particleEmitBoolPtr = &dockingEmit;
+    dockingLevel.particleRenderBoolPtr = &dockingRender;
+    dockingRoute.dockingTarget = &dockTarget;
+    dockTarget.geometry = &dockTargetGeometry;
+    dockTarget.player = &dockTargetPlayer;
+    dockTarget.mockPosition = {20.0f, 0.0f, 0.0f};
+    dockTarget.nearestDockingPoint = &nearestPoint;
+    approachPoint.position = {10.0f, 0.0f, 0.0f};
+    nearestPoint.position = {5.0f, 0.0f, 0.0f};
+    docking.update(1);
+    assert(dockTarget.lastDockingApproach.x == 30.0f && dockTarget.nearestDockingCalls == 1);
+    assert(docking.objectPosition.x == 25.0f && docking.positionCalls == 1);
+    assert(docking.state == 9 && docking.exhaustCalls == 1 && !docking.exhaustVisible);
+    assert(docking.spacePoint == 0 && docking.field_0x2c0 == 0);
+    assert(dockingEmit.calls == 1 && dockingEmit.lastHandle == 11 && !dockingEmit.lastEnabled);
+    assert(dockingRender.calls == 1 && dockingRender.lastHandle == 12 && !dockingRender.lastEnabled);
+    assert(bodyCalls == fallbackBefore);
+
+    docking.state = 8;
+    docking.spacePoint = 7;
+    docking.field_0x2c0 = 8;
+    docking.field_0x1fc = 0;
+    dockingPlayer.hitpoints = 100;
+    nearestPoint.position = {140.0f, 0.0f, 0.0f};
+    docking.update(1);
+    assert(docking.objectPosition.x == 160.0f && docking.state == 8);
+    assert(docking.exhaustCalls == 1 && docking.spacePoint == 7 && docking.field_0x2c0 == 8);
+    assert(bodyCalls == fallbackBefore + 1);
+
+    docking.kind = 3;
+    docking.update(1);
+    assert(docking.state == 9 && docking.exhaustCalls == 2);
+    assert(dockingEmit.calls == 1 && dockingRender.calls == 1);
+    assert(bodyCalls == fallbackBefore + 1);
 }

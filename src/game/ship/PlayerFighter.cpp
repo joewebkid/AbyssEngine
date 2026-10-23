@@ -975,7 +975,38 @@ void PlayerFighter::update(int dt) {
         return;
     }
 
-    // shortcut: the remaining ARM update branches are not reconstructed; replace this call when they are mapped.
+    if (this->state == 8) {
+        // Android rodata 0x1fe130; all 64 entries match Level's hangar ship offsets.
+        static constexpr int kDockReachByKind[64] = {
+            160, 150, 220, 310, 160, 180, 140, 170, 170, 110, 250, 205, 240, 250, 250, 250,
+            170, 170, 190, 460, 170, 210, 140, 170, 160, 190, 170, 240, 220, 280, 200, 200,
+            140, 160, 180, 150, 310, 390, 480, 200, 300, 300, 170, 200, 170, 370, 370, 300,
+            440, 340, 170, 470, 170, 170, 170, 170, 200, 170, 250, 150, 170, 250, 270, 170,
+        };
+        KIPlayer *dockingTarget = this->routeClone->getDockingTarget();
+        Vector approach = dockingTarget->getPosition() +
+            AbyssEngine::AEMath::MatrixRotateVector(
+                dockingTarget->geometry->getMatrix(), this->field_0x2c4->position);
+        SpacePoint *nearest = dockingTarget->getNearestDockingPoint(approach);
+        this->objectPosition = dockingTarget->getPosition() +
+            AbyssEngine::AEMath::MatrixRotateVector(
+                dockingTarget->geometry->getMatrix(), nearest->position);
+        int distance = static_cast<int>(AbyssEngine::AEMath::VectorLength(
+            this->objectPosition - this->getPosition()));
+        if (distance < kDockReachByKind[this->kind]) {
+            this->setExhaustVisible(false);
+            this->spacePoint = 0;
+            this->field_0x2c0 = 0;
+            this->state = 9;
+            if (this->field_0x1fc) {
+                this->level->particleEmitBoolPtr->enableSystemEmit(this->field_0x80, false);
+                this->level->particleRenderBoolPtr->enableSystemEmit(this->field_0x84, false);
+            }
+            return;
+        }
+    }
+
+    // shortcut: state-8 approach motion and other ARM update branches remain unreconstructed.
     PF_update_body(this, dt);
 
     return;
