@@ -209,16 +209,6 @@ void Vec_assign(void *dst, const void *src);
 
 
 
-float Vec_length(const void *v);
-
-void hitCamera_(PlayerEgo * self);
-
-void PE_cc_wormhole(PlayerEgo *self, void *obj);
-
-void PE_cc_obstacle(PlayerEgo *self, void *obj, unsigned idx);
-
-void PE_cc_destructible(PlayerEgo *self, void *obj);
-
 
 void PlayEngineSound_(PlayerEgo * self);
 
@@ -2175,39 +2165,78 @@ void PlayerEgo::calcCollision(Array<KIPlayer *> *candidates) {
         return;
 
     for (unsigned i = 0; i < candidates->size(); i++) {
-        void *obj = (*candidates)[i];
+        KIPlayer *obj = (*candidates)[i];
         if (obj == 0)
             continue;
 
-        if (i == 0 && PE_status()->inAlienOrbit() == 0) {
-            if (Vec_length(&this->dockOffsetVec) < g_PE_cc_alarmDist
-                && ((KIPlayer *) obj)->proximityAlarmFlag != 0)
+        if (i == 0 && Globals::status->inAlienOrbit() == 0) {
+            if (AbyssEngine::AEMath::VectorLength(this->dockOffsetVec) < g_PE_cc_alarmDist
+                && obj->_pad_0x71 != 0)
                 this->collidesWithStationFlag = 1;
         }
 
-        AbyssEngine::AEMath::Vector pos = ((AEGeometry *) (this->geometry))->getPosition();
-        if (((KIPlayer *) obj)->outerCollide(pos) == 0)
+        Vector pos = this->geometry->getPosition();
+        if (obj->outerCollide(pos) == 0)
             continue;
 
-        if (((KIPlayer *) (obj))->getType() == 0x4262 && ((KIPlayer *) (obj))->isVisible() != 0) {
-            if (((PlayerWormHole *) (obj))->isShrinking() == 0 && ((void *&) this->miningGame) == 0)
-                PE_cc_wormhole(this, obj);
-        } else if (((KIPlayer *) obj)->stealFlag == 0) {
-            if (((KIPlayer *) (obj))->isVisible() != 0) {
-                bool docking = (((char &) this->dockingState) != 0 || this->dockedFlag != 0)
-                               && ((void *&) this->asteroidTarget) == obj;
-                if (!docking)
-                    PE_cc_obstacle(this, obj, i);
-                hitCamera_(this);
-            }
-        } else {
-            if (((KIPlayer *) (obj))->isDying() == 0 && ((KIPlayer *) (obj))->isDead() == 0) {
-                bool skipDockTarget = (((char &) this->dockingState) != 0 || this->dockedFlag != 0)
-                                      && obj == ((void *&) this->asteroidTarget);
-                if (!skipDockTarget) {
-                    PE_cc_destructible(this, obj);
-                    hitCamera_(this);
+        if (obj->getType() == 0x4262 && obj->isVisible() != 0) {
+            if (static_cast<PlayerWormHole *>(obj)->isShrinking() == 0 && this->miningGame == 0) {
+                Vector &offset = *reinterpret_cast<Vector *>(&this->waypointY);
+                offset = obj->getPosition();
+                offset -= this->geometry->getPosition();
+                int distance = static_cast<int>(AbyssEngine::AEMath::VectorLength(offset));
+                bool playing = Globals::sound->isPlaying(34) != 0;
+                if (distance >= 40000) {
+                    if (playing)
+                        Globals::sound->stop(34);
+                } else {
+                    if (playing) {
+                        Vector zero = {0.0f, 0.0f, 0.0f};
+                        Vector source = obj->getPosition();
+                        Globals::sound->updateEvent3DAttributes(34, &source, &zero, false);
+                    } else {
+                        Globals::sound->play(34, nullptr, nullptr, 0.0f);
+                    }
+                    offset = AbyssEngine::AEMath::VectorNormalize(offset);
+                    Vector &direction = *reinterpret_cast<Vector *>(&this->rotY);
+                    direction = offset;
+                    direction *= static_cast<float>(static_cast<unsigned>(40000 - distance) >> 8);
+                    this->geometry->translate(direction);
+                    this->hitCamera();
+                    if (distance < 1000)
+                        this->inWormhole = 1;
+                    Matrix *local = static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(this->geometry->transform));
+                    Matrix *parent = static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(this->field_0x4->transform));
+                    static_cast<Player *>(this->player)->transformMatrix = *local * *parent;
                 }
+            }
+        } else if (obj->stealFlagByte == 0) {
+            if (obj->isVisible() == 0)
+                continue;
+            Vector projection = obj->projectCollisionOnSurface(this->geometry->getPosition());
+            const Vector zero = {0.0f, 0.0f, 0.0f};
+            if (projection != zero) {
+                this->geometry->setPosition(projection);
+                Matrix *local = static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(this->geometry->transform));
+                Matrix *parent = static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(this->field_0x4->transform));
+                static_cast<Player *>(this->player)->transformMatrix = *local * *parent;
+                if (i == 0 && obj->_pad_0x71 != 0)
+                    this->collidesWithStationFlag = 1;
+            }
+            this->hitCamera();
+        } else if (obj->isDying() == 0 && obj->isDead() == 0 &&
+                   (!static_cast<uint8_t>(this->dockingState) && !this->dockedFlag ||
+                    static_cast<void *>(obj) != ((void *&) this->asteroidTarget))) {
+            Vector hit = obj->getProjectionVector(this->geometry->getPosition());
+            const Vector zero = {0.0f, 0.0f, 0.0f};
+            if (hit != zero) {
+                obj->player->setHitVector(hit.x, hit.y, hit.z);
+                obj->player->setBombForce(this->boostingFlag ? 0.2f : 0.1f);
+                obj->player->damage(9999);
+                static_cast<Player *>(this->player)->damage(20);
+                if (this->volatileGoods)
+                    static_cast<Player *>(this->player)->flShake += 0.2f;
+                this->hitCamera();
             }
         }
     }

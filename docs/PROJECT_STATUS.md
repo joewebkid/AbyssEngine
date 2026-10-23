@@ -1,6 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`KIPlayer::captureCrate` source-backed recovery;
+Last reviewed: 2026-10-24 (`PlayerEgo::calcCollision` source-backed recovery;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `0x9f0cc–0x9f472` supports the three collision branches for
+wormholes, non-stealing obstacles and destructible objects. The previous
+body called five undefined helpers, so a native static-library build alone
+did not prove this path could link. A production-method smoke passes at
+`-O0/-O2`, as do native UCRT64 `gof2`, all 208 NDK r18b ARM units and
+93 verifier tests (one existing skip). Focused `calcCollision`
+source-shape/strict fuzzy improves **47.8%/23.7% → 96.6%/61.9%** and
+remains nonexact. The full corpus compares **4,323/4,524** originals
+across **4,736** pairs at rounded **94.09%/83.41%** mean
+source-shape/strict fuzzy, retaining **2,557 linked-exact** and **1,082
+byte-exact** pairs with zero exact-pair losses, skipped or wrong-type
+symbols. Six older PlayerEgo smokes still fail outside this method, so
+full-class and real game-frame behavior remain unverified. See
+[the ARM evidence](PLAYER_EGO_COLLISION_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (`KIPlayer::captureCrate` source-backed recovery;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `0xa5e60–0xa60f6` confirms that crate capture uses the
