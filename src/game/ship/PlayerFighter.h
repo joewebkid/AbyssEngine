@@ -80,8 +80,8 @@ public:
     int32_t field_0x200;
     int32_t field_0x204;
     int32_t field_0x208;
-    int32_t targetRoll;
-    int32_t smoothRoll;
+    float targetRoll;
+    float smoothRoll;
     int32_t field_0x214;
     AbyssEngine::Matrix easeBaseMatrix;
     signed char field_0x254;
@@ -201,6 +201,8 @@ static_assert(offsetof(PlayerFighter, field_0x2c4) == 0x2c4, "PlayerFighter rele
 static_assert(offsetof(PlayerFighter, deltaTime) == 0x1d0, "PlayerFighter::deltaTime ABI offset");
 static_assert(offsetof(PlayerFighter, field_0x1ec) == 0x1ec, "PlayerFighter target-speed ABI offset");
 static_assert(offsetof(PlayerFighter, field_0x1f4) == 0x1f4, "PlayerFighter boost-flag ABI offset");
+static_assert(offsetof(PlayerFighter, targetRoll) == 0x20c, "PlayerFighter target-roll ABI offset");
+static_assert(offsetof(PlayerFighter, smoothRoll) == 0x210, "PlayerFighter smooth-roll ABI offset");
 static_assert(offsetof(PlayerFighter, easeBaseMatrix) == 0x218, "PlayerFighter first matrix ABI offset");
 static_assert(offsetof(PlayerFighter, rollMatrix) == 0x258, "PlayerFighter roll matrix ABI offset");
 static_assert(offsetof(PlayerFighter, cloakTimer) == 0x2c8, "PlayerFighter cloak timer ABI offset");

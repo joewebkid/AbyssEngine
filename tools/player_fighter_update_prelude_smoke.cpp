@@ -509,6 +509,8 @@ struct KIPlayer {
     uint8_t wingmanFlag = 0;
     uint8_t jumperFlag = 0;
     int field_0xf0 = 0;
+    uint32_t field_0xfc = 0;
+    uint8_t rollActive = 0;
     int wingmanCommand = 1;
     int field_0xe4 = 0;
     KIPlayer *wingmanTarget = nullptr;
@@ -588,6 +590,11 @@ struct PlayerFighter : KIPlayer {
     int field_0x1e4 = 0;
     Player *field_0x148 = nullptr;
     uint8_t aiDisabled = 0;
+    float targetRoll = 0.0f, smoothRoll = 0.0f;
+    int rollSampleIndex = 0;
+    uint8_t rollBufferFilled = 0;
+    int rollCalls = 0;
+    void roll(int) { ++rollCalls; }
     void update(int dt);
 };
 int bodyCalls = 0;
@@ -2064,4 +2071,30 @@ int main() {
     assert(avoiding.field_0x12e == 1 && avoiding.field_0x12c == 0);
     assert(avoiding.resetVecC.x == 1.0f && avoiding.resetVecC.y == -0.0f);
     assert(avoiding.field_0x24 == 1);
+
+    speeding.field_0x12d = 1;
+    speeding.rollSampleIndex = 4;
+    speeding.rollBufferFilled = 1;
+    speeding.targetRoll = 5.0f;
+    speeding.smoothRoll = 10.0f;
+    speeding.field_0xfc = 100;
+    speeding.rollActive = 0;
+    speeding.update(4);
+    assert(speeding.rollSampleIndex == 0 && speeding.rollBufferFilled == 0);
+    assert(speeding.targetRoll == 0.0f);
+    assert(std::abs(speeding.smoothRoll - (10.0f - 4.0f * 1.25f / 3.9f)) < 0.0001f);
+    assert(speeding.field_0xfc == 750 && speeding.rollCalls == 0);
+
+    speeding.smoothRoll = 0.1f;
+    speeding.field_0xfc = 3;
+    speeding.update(4);
+    assert(speeding.smoothRoll == 0.0f);
+    assert(static_cast<int32_t>(speeding.field_0xfc) == -1 && speeding.rollActive == 1);
+    speeding.update(1);
+    assert(speeding.rollCalls == 1);
+
+    speeding.rollActive = 0;
+    speeding.field_0xfc = 10;
+    speeding.update(3);
+    assert(speeding.smoothRoll == 0.0f && speeding.field_0xfc == 4);
 }

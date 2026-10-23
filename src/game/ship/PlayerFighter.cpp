@@ -329,8 +329,8 @@ PlayerFighter::PlayerFighter(int faction, int wingmanCmd, Player *player, AEGeom
     }
     self->fov = fov;
 
-    self->targetRoll = 0;
-    self->smoothRoll = 0;
+    self->targetRoll = 0.0f;
+    self->smoothRoll = 0.0f;
     self->field_0x214 = 0;
     self->field_0x294 = 0x443B8000;
     self->field_0x298 = 0x41723ACE;
@@ -1160,6 +1160,48 @@ void PlayerFighter::update(int dt) {
         this->resetVecC.y = -this->resetVecC.y;
         this->field_0x24 = body->empDisabledByte;
         // ARM 0xded38 selects the still-unrecovered shooting branch only after this prelude.
+
+        if (this->field_0x12d) {
+            this->rollSampleIndex = 0;
+            this->targetRoll = 0.0f;
+            this->rollBufferFilled = 0;
+            if (this->rollActive)
+                this->roll(dt);
+
+            float target = this->targetRoll;
+            float current = this->smoothRoll;
+            if (current != target) {
+                float step = static_cast<float>(dt) * 1.25f / 3.9f;
+                if (current < target) {
+                    current += step;
+                    if (current > target)
+                        current = target;
+                } else if (current > target) {
+                    current -= step;
+                    if (current < target)
+                        current = target;
+                }
+                this->smoothRoll = current;
+            }
+
+            int32_t timer = static_cast<int32_t>(this->field_0xfc);
+            if (timer >= 1) {
+                timer -= dt;
+                this->field_0xfc = static_cast<uint32_t>(timer);
+                if (timer <= 0)
+                    this->rollActive = 1;
+            }
+            if (target == current) {
+                if (timer >= 1) {
+                    timer -= dt;
+                    this->field_0xfc = static_cast<uint32_t>(timer);
+                    if (timer <= 0)
+                        this->rollActive = 1;
+                }
+            } else {
+                this->field_0xfc = 750;
+            }
+        }
     }
 
     // shortcut: the remaining ARM movement and combat branches are unreconstructed.
