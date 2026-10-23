@@ -1738,20 +1738,22 @@ void PlayerFighter::handleCloaking() {
 }
 
 void PlayerFighter::revive() {
-    int enemy = ((Player *) (intptr_t) this->player)->turnedEnemyFlag;
-    ((Player *) (this->player))->reset();
+    int enemy = this->player->turnedEnemy();
+    this->player->reset();
     if (enemy != 0) {
-        ((Player *) (this->player))->turnEnemy();
+        this->player->turnEnemy();
     }
+    this->name = String();
     this->wreckGeometry = 0;
     this->state = 1;
     this->field_0x12e = 0;
     this->field_0x38 = -1;
     this->routeClone->reset();
-    this->hitpoints = ((Player *) (this->player))->getHitpoints();
+    this->hitpoints = this->player->getHitpoints();
     this->field_0x1dc = 0;
     this->field_0x1e0 = 0;
     this->deathTimer = 0;
+    KIPlayer::setActive(true);
     this->field_0xf0 = 0;
     this->currentSpeed = this->speed;
     this->explosion->reset();

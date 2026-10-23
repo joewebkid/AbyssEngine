@@ -1,6 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`PlayerFighter::update` state dispatch and
+Last reviewed: 2026-10-24 (`PlayerFighter::revive` name/activation recovery;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `0xdff5c–0xe005c` confirms the Fighter revive sequence:
+query `Player::turnedEnemy()`, reset and conditionally restore enemy
+status, clear the Fighter name through a temporary `String`, and call
+`KIPlayer::setActive(true)` before resetting speed, explosion and push
+state. The previous source omitted the name and activation calls. A
+new production-method smoke covers both loot branches and call order at
+`-O0/-O2`; all 12 Fighter smokes, native UCRT64 `gof2`, 208 NDK r18b
+ARM units and 93 verifier tests pass (one existing skip). Focused
+`revive` source-shape/strict fuzzy improves **77.0%/66.3% →
+99.6%/93.0%**; it remains nonexact. The full corpus compares
+**4,323/4,524** originals across **4,735** pairs at rounded
+**94.06%/83.39%** mean source-shape/strict fuzzy, retaining
+**2,557 linked-exact** and **1,082 byte-exact** pairs with zero exact-pair
+losses, skipped or wrong-type symbols. Only `revive` changed score.
+Real loot contents and a complete post-revival game frame remain
+unverified. See [the ARM evidence](PLAYER_FIGHTER_REVIVE_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (`PlayerFighter::update` state dispatch and
 placeholder removal; earlier subsystem snapshots retain their dates)
 
 Android ARM `0xde1bc–0xde1dc` and `0xde26e–0xde274` confirm that the
@@ -15,8 +35,9 @@ corpus compares **4,323/4,524** originals across **4,735** pairs at
 rounded **94.05%/83.38%** mean source-shape/strict fuzzy, retaining
 **2,557 linked-exact** and **1,082 byte-exact** pairs with zero exact-pair
 losses, skipped or wrong-type symbols. Only the target function's score
-changed. Full game-frame execution remains unverified; the next
-behavioral priority is `PlayerFighter::roll(int)`. See
+changed. Full game-frame execution remains unverified;
+`PlayerFighter::roll(int)` had already been recovered and tested, so
+the next Fighter method to audit was `revive()`. See
 [the ARM evidence](PLAYER_FIGHTER_DISPATCH_ARM_2026-10-24.md).
 
 Previous checkpoint: 2026-10-24 (`PlayerFighter::update` post-movement reactions;

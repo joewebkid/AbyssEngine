@@ -37,6 +37,6 @@ and **1,082 byte-exact** pairs are retained.
 
 This is a switch-tail recovery, not a full game-frame validation. State
 may change earlier in `update`, and the test covers the dispatch outcome
-after that prelude, not every possible transition. Next, inspect the
-still-unrecovered `PlayerFighter::roll(int)` behavior invoked by the
-state-1/state-7 path.
+after that prelude, not every possible transition. `PlayerFighter::roll(int)`
+had already been recovered and tested separately; the next unverified
+Fighter method was `revive()`.
