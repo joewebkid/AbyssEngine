@@ -165,8 +165,15 @@ struct Mission {
     int type = 13;
     int targetStation = 7;
     int getTypeCalls = 0;
+    bool empty = false;
+    int statusValue = 0, productionGoodAmount = 0;
+    int statusWrites = 0;
+    bool isEmpty() { return empty; }
     int getType() { ++getTypeCalls; return type; }
     int getTargetStation() { return targetStation; }
+    int getStatusValue() { return statusValue; }
+    void setStatusValue(int value) { ++statusWrites; statusValue = value; }
+    int getProductionGoodAmount() { return productionGoodAmount; }
 };
 struct Station {
     int index = 7;
@@ -289,6 +296,10 @@ struct FModSound {
         ++calls; lastId = id; lastPosition = position;
     }
 };
+struct Ship {
+    int maxPassengers = 0;
+    int getMaxPassengers() { return maxPassengers; }
+};
 struct Status {
     Standing *standing;
     int currentCampaignMission = 0;
@@ -297,6 +308,8 @@ struct Status {
     int credits = 0;
     int collectedCalls = 0, lastBoard = -1, pirateKills = 0;
     Mission *freelance = nullptr;
+    Mission *mission = nullptr;
+    Ship *ship = nullptr;
     Station *station = nullptr;
     uint8_t field_0xf0 = 0;
     uint8_t field_0xf1 = 0;
@@ -305,6 +318,8 @@ struct Status {
     Standing *getStanding() { return standing; }
     int getCurrentCampaignMission() { ++campaignCalls; return currentCampaignMission; }
     Mission *getFreelanceMission() { return freelance; }
+    Mission *getMission() { return mission; }
+    Ship *getShip() { return ship; }
     Station *getStation() { return station; }
     int getCredits() { return credits; }
     void setCredits(int value) { credits = value; }
@@ -361,6 +376,7 @@ struct Level {
     int getPlayerCalls = 0;
     int uncovered = -1;
     int pirateStationCalls = 0;
+    int numDeliveredPassengers = 0;
     bool lastPirateStationAction = false;
     PlayerEgo *getPlayer() { ++getPlayerCalls; return ego; }
     void uncoverWanted(int index) { uncovered = index; }
@@ -372,6 +388,7 @@ struct Level {
     void enemyDied(int kind, bool destroyed) {
         ++enemyDeaths; lastEnemyKind = kind; lastEnemyDestroyed = destroyed;
     }
+    int getNumDeliveredPassengers() { return numDeliveredPassengers; }
 };
 struct Waypoint { int x, y, z; };
 struct Route {
@@ -381,6 +398,8 @@ struct Route {
     int lengthCalls = 0, setCoordsCalls = 0, loopCalls = 0;
     int updateCalls = 0, waypointCalls = 0, currentCalls = 0;
     int dockingTargetCalls = 0;
+    int dockingTime = 0, dockingTimeCalls = 0;
+    int reachCalls = 0, lastReached = -1;
     bool looping = false;
     Vector coords{};
     Vector lastPosition{};
@@ -398,6 +417,8 @@ struct Route {
     Waypoint *getWaypoint() { ++waypointCalls; return waypoint; }
     int getCurrent() { ++currentCalls; return current; }
     KIPlayer *getDockingTarget() { ++dockingTargetCalls; return dockingTarget; }
+    int getDockingTime() { ++dockingTimeCalls; return dockingTime; }
+    void reachWaypoint(int index) { ++reachCalls; lastReached = index; current = index + 1; }
 };
 int Route::constructed = 0;
 int Route::destroyed = 0;
@@ -427,6 +448,7 @@ struct KIPlayer {
     int field_0x1c0 = 0;
     int maneuverTimer = 0;
     int shipGroup = 0;
+    int shipGroupFlag = 0;
     int kind = 19;
     Array<int> *cargo = nullptr;
     uint8_t isMissionCrate = 0;
@@ -482,6 +504,10 @@ struct KIPlayer {
         field_0xe4 = command;
         wingmanTarget = target;
     }
+};
+struct PlayerFixedObject : KIPlayer {
+    int dockingType = 0;
+    int getDockingType() { return dockingType; }
 };
 struct PlayerFighter : KIPlayer {
     Route *route = nullptr;
@@ -1199,6 +1225,11 @@ int main() {
 
     quality = 1.0f;
     std::memcpy(Globals::options + 0x28, &quality, sizeof(quality));
+    Mission waitingMission;
+    waitingMission.empty = true;
+    status.mission = &waitingMission;
+    fighter.routeClone = &route;
+    route.dockingTime = 10000;
     fighter.state = 9;
     player.hitpoints = 30;
     fighter.update(1);
@@ -1702,5 +1733,83 @@ int main() {
     assert(docking.state == 9 && docking.exhaustCalls == 2);
     assert(dockingEmit.calls == 1 && dockingRender.calls == 1);
     assert(dockingEase.increaseCalls == 1 && dockingGeometry.setMatrixCalls == 1);
+    assert(bodyCalls == fallbackBefore);
+
+    Mission emptyDockingMission;
+    emptyDockingMission.empty = true;
+    status.mission = &emptyDockingMission;
+    dockingRoute.dockingTime = 100;
+    docking.spacePoint = 0;
+    docking.field_0x1fc = 1;
+    dockingPlayer.hitpoints = 30;
+    docking.update(100);
+    assert(docking.state == 9 && docking.spacePoint == 100 && dockingRoute.reachCalls == 0);
+    assert(approachPoint.giveFreeCalls == 0 && dockingEmit.calls == 1);
+    docking.update(1);
+    assert(docking.state == 1 && docking.spacePoint == 101);
+    assert(dockingRoute.reachCalls == 1 && dockingRoute.lastReached == 0);
+    assert(docking.exhaustCalls == 3 && docking.exhaustVisible);
+    assert(dockingEmit.calls == 2 && dockingEmit.lastEnabled);
+    assert(dockingRender.calls == 2 && dockingRender.lastEnabled);
+    assert(approachPoint.giveFreeCalls == 1 && docking.field_0x2c4 == nullptr);
+    assert(bodyCalls == fallbackBefore);
+
+    Mission passengerMission;
+    passengerMission.type = 184;
+    passengerMission.statusValue = 5;
+    passengerMission.productionGoodAmount = 10;
+    Ship passengerShip;
+    passengerShip.maxPassengers = 5;
+    status.mission = &passengerMission;
+    status.ship = &passengerShip;
+    status.currentCampaignMission = 93;
+    PlayerFighter passenger;
+    Player passengerPlayer;
+    AEGeometry passengerGeometry;
+    Level passengerLevel;
+    Route passengerRoute;
+    PlayerFixedObject passengerDock;
+    passengerDock.dockingType = 1;
+    passenger.state = 9;
+    passenger.field_0x43 = 1;
+    passenger.player = &passengerPlayer;
+    passenger.geometry = &passengerGeometry;
+    passenger.level = &passengerLevel;
+    passenger.routeClone = &passengerRoute;
+    passengerRoute.dockingTarget = &passengerDock;
+    passengerRoute.dockingTime = 10000;
+    passenger.spacePoint = 199;
+    passenger.shipGroupFlag = 51;
+    passenger.update(1);
+    assert(passenger.spacePoint == 200 && passenger.field_0x2c0 == 1);
+    assert(passengerMission.statusValue == 4 && passengerMission.statusWrites == 1);
+    assert(passenger.state == 9 && passengerRoute.reachCalls == 0);
+    passenger.update(200);
+    assert(passenger.field_0x2c0 == 2 && passengerMission.statusValue == 3);
+
+    status.currentCampaignMission = 94;
+    passengerMission.statusValue = 2;
+    passenger.update(200);
+    assert(passenger.field_0x2c0 == 3 && passengerMission.statusValue == 2);
+    passengerMission.statusValue = 6;
+    passenger.update(200);
+    assert(passenger.field_0x2c0 == 4 && passengerMission.statusValue == 5);
+
+    status.currentCampaignMission = 93;
+    passengerMission.statusValue = 0;
+    passenger.update(200);
+    assert(passenger.field_0x2c0 == 5 && passengerMission.statusValue == 0);
+    passengerLevel.numDeliveredPassengers = 10;
+    int writesBeforeCap = passengerMission.statusWrites;
+    passenger.update(200);
+    assert(passenger.field_0x2c0 == 6 && passengerMission.statusWrites == writesBeforeCap);
+
+    passengerLevel.numDeliveredPassengers = 0;
+    passenger.shipGroupFlag = 0;
+    passenger.spacePoint = 1499;
+    passenger.field_0x2c0 = 0;
+    passengerMission.statusValue = 5;
+    passenger.update(1);
+    assert(passenger.field_0x2c0 == 1 && passengerMission.statusValue == 4);
     assert(bodyCalls == fallbackBefore);
 }

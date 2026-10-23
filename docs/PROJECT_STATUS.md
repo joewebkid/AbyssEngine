@@ -1,6 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-23 (`PlayerFighter::update` state-8 far-docking
+Last reviewed: 2026-10-23 (`PlayerFighter::update` state-9 docking wait,
+mission counter and route advance; earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xde714–0xde83e` confirms state-9
+dock timing, the type-184 mission counter branch, a strict docking-time
+completion threshold, route advance, exhaust/particle restoration and
+occupied-point release. All 11 Fighter smokes, native UCRT64 `gof2`, all
+208 NDK r18b ARM units and 93 verifier tests pass (one existing skip).
+Whole-`update` source-shape/strict fuzzy changes **70.6%/26.9% →
+73.8%/27.2%**; the function remains nonexact. The full corpus compares
+**4,323/4,524** originals across **4,735** pairs at **94.05%/83.38%**
+mean source-shape/strict fuzzy, retaining all **2,557 linked-exact** and
+**1,082 byte-exact** pairs with zero exact-pair losses, skipped or
+wrong-type symbols. Only the target function's score changed. Docking
+setup and `easeMatrix` ownership, other dispatch branches and a full
+game-frame run remain unverified. The upstream docking setup is the next
+priority. See [the ARM evidence](PLAYER_FIGHTER_STATE9_DOCK_WAIT_ARM_2026-10-23.md).
+
+Previous checkpoint: 2026-10-23 (`PlayerFighter::update` state-8 far-docking
 movement; earlier subsystem snapshots retain their dates)
 
 Android ARM `PlayerFighter::update` at `0xde8a4–0xde930` confirms the

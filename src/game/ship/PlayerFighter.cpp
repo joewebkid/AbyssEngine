@@ -16,6 +16,8 @@
 #include "game/ship/KIPlayer.h"
 #include "game/ship/Player.h"
 #include "game/ship/PlayerEgo.h"
+#include "game/ship/PlayerFixedObject.h"
+#include "game/ship/Ship.h"
 #include "game/ship/TargetFollowCamera.h"
 #include "game/world/Route.h"
 #include "game/world/Standing.h"
@@ -1015,6 +1017,39 @@ void PlayerFighter::update(int dt) {
         AbyssEngine::AEMath::MatrixSetTranslation(dockingMatrix, nextPosition);
         this->geometry->setMatrix(dockingMatrix);
         this->player->transformMatrix = dockingMatrix;
+        return;
+    }
+
+    if (this->state == 9) {
+        Mission *mission = Globals::status->getMission();
+        this->spacePoint += dt;
+        if (!mission->isEmpty() && mission->getType() == 184 &&
+            static_cast<PlayerFixedObject *>(this->routeClone->getDockingTarget())->getDockingType() == 1) {
+            int previousCount = this->field_0x2c0;
+            float interval = this->shipGroupFlag == 51 ? 200.0f : 1500.0f;
+            this->field_0x2c0 = static_cast<int>(static_cast<float>(this->spacePoint) / interval);
+            if ((Globals::status->getCurrentCampaignMission() != 94 ||
+                 mission->getStatusValue() > Globals::status->getShip()->getMaxPassengers()) &&
+                this->field_0x2c0 > previousCount &&
+                this->level->getNumDeliveredPassengers() < mission->getProductionGoodAmount()) {
+                mission->setStatusValue(mission->getStatusValue() + previousCount - this->field_0x2c0);
+                if (mission->getStatusValue() <= -1)
+                    mission->setStatusValue(0);
+            }
+        }
+        if (this->spacePoint > this->routeClone->getDockingTime()) {
+            this->setExhaustVisible(true);
+            this->routeClone->reachWaypoint(this->routeClone->getCurrent());
+            this->state = 1;
+            if (this->field_0x1fc) {
+                this->level->particleEmitBoolPtr->enableSystemEmit(this->field_0x80, true);
+                this->level->particleRenderBoolPtr->enableSystemEmit(this->field_0x84, true);
+            }
+            if (this->field_0x2c4) {
+                this->field_0x2c4->giveFree();
+                this->field_0x2c4 = nullptr;
+            }
+        }
         return;
     }
 
