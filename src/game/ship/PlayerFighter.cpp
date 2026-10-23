@@ -1160,7 +1160,36 @@ void PlayerFighter::update(int dt) {
             desiredWorld);
         this->resetVecC.y = -this->resetVecC.y;
         this->field_0x24 = body->empDisabledByte;
-        // ARM 0xded38 selects the still-unrecovered shooting branch only after this prelude.
+        if (this->field_0x12e && !this->field_0x12c && this->field_0x148 &&
+            !body->doesNeverAttack()) {
+            Player *target = this->field_0x148;
+            if (target->field_5e) {
+                this->field_0x12e = 0;
+                if (this->shootingFlag) {
+                    body->stopShooting(this->field_0x140);
+                    this->shootingFlag = 0;
+                }
+            } else {
+                float limit = this->shootError;
+                Vector displacement = this->targetPos - this->renderPosition;
+                if (this->resetVecC.x < limit && this->resetVecC.x > -limit &&
+                    this->resetVecC.y < limit && this->resetVecC.y > -limit &&
+                    displacement.x < 35000.0f && displacement.x > -35000.0f &&
+                    displacement.y < 35000.0f && displacement.y > -35000.0f &&
+                    displacement.z < 35000.0f && displacement.z > -35000.0f) {
+                    bool blocked = !this->field_0x25 || !target->isActive() || target->isDead();
+                    if (!blocked && target->field_69 && this->level->getPlayer() &&
+                        this->level->getPlayer()->isDockedToDockingPoint())
+                        blocked = target->getPosition().y > body->getPosition().y;
+                    if (blocked) {
+                        this->field_0x12e = 0;
+                    } else {
+                        body->shoot(this->field_0x140, static_cast<long long>(dt), false);
+                        this->shootingFlag = 1;
+                    }
+                }
+            }
+        }
         Matrix matrix = this->geometry->getMatrix();
 
         if (this->field_0x12d) {
@@ -1287,7 +1316,7 @@ void PlayerFighter::update(int dt) {
         this->geometry->updateReferenceMatrix();
     }
 
-    // shortcut: shooting and post-movement landmark/enemy reactions remain unreconstructed.
+    // shortcut: post-movement landmark/enemy reactions remain unreconstructed.
     PF_update_body(this, dt);
 
     return;

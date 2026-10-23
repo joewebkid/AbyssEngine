@@ -49,7 +49,8 @@ report found no missing pair or exact loss, and only the target
 function's scores changed.
 
 The shooting branch at `0xdef12`, and the post-reference-matrix
-landmark/enemy reactions and virtual update at `0xdf260–0xdf450`, are
+landmark/enemy reactions and virtual `PlayerFighter::push(int)` dispatch
+at `0xdf260–0xdf450`, are
 still unreconstructed. `PF_update_body` marks the remaining boundary.
 This is not a full game-frame validation; the shooting branch is the
 next behavioral priority.

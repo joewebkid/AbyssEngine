@@ -266,6 +266,10 @@ struct Player {
     int activeChecks = 0;
     int deadChecks = 0;
     int positionCalls = 0;
+    int shootCalls = 0, stopShootingCalls = 0;
+    int lastShootSlot = -1, lastStopSlot = -1;
+    long long lastShootDt = 0;
+    bool lastShootFlag = true;
     int getKIPlayerCalls = 0;
     int getEnemyCalls = 0;
     int neverAttackCalls = 0;
@@ -297,6 +301,11 @@ struct Player {
         return (*enemies)[static_cast<unsigned int>(index)];
     }
     bool doesNeverAttack() { ++neverAttackCalls; return neverAttack; }
+    bool shoot(int slot, long long dt, bool flag) {
+        ++shootCalls; lastShootSlot = slot; lastShootDt = dt; lastShootFlag = flag;
+        return true;
+    }
+    void stopShooting(int slot) { ++stopShootingCalls; lastStopSlot = slot; }
     void update(int dt, bool doSound) {
         ++updateCalls;
         lastDt = dt;
@@ -492,6 +501,7 @@ struct Trail {
 struct KIPlayer {
     Player *player = nullptr;
     uint8_t field_0x24 = 0;
+    uint8_t field_0x25 = 0;
     Vector mockPosition{};
     SpacePoint *nearestDockingPoint = nullptr;
     SpacePoint *nearestNavigationPoint = nullptr;
@@ -598,6 +608,7 @@ struct PlayerFighter : KIPlayer {
     signed char field_0x1e0 = 0;
     uint8_t field_0x1f4 = 0;
     float speed = 0.0f, rotate = 0.0f, field_0x1ec = 0.0f, currentRotate = 0.0f;
+    float shootError = 0.00762939f;
     int boostProb = 0;
     int cloakingCalls = 0;
     void handleCloaking() { ++cloakingCalls; }
@@ -620,6 +631,7 @@ struct PlayerFighter : KIPlayer {
     float rollSamples[5]{};
     int rollSampleIndex = 0;
     uint8_t rollBufferFilled = 0;
+    uint8_t shootingFlag = 0;
     int rollCalls = 0;
     void roll(int) { ++rollCalls; }
     void update(int dt);
@@ -2241,4 +2253,91 @@ int main() {
     snapping.state = 1;
     snapping.update(1);
     assert(snapping.resetVecC.x == 1.0f && snapping.resetVecC.z == 0.0f);
+
+    PlayerFighter shooter;
+    Player shooterBody, targetBody;
+    AEGeometry shooterGeometry;
+    Level shooterLevel;
+    PlayerEgo shooterEgo;
+    Route shooterRoute;
+    shooter.player = &shooterBody;
+    shooter.geometry = &shooterGeometry;
+    shooter.level = &shooterLevel;
+    shooterLevel.ego = &shooterEgo;
+    shooter.routeClone = &shooterRoute;
+    shooter.state = 1;
+    shooter.field_0x12d = 1;
+    shooter.field_0x12e = 1;
+    shooter.field_0x25 = 1;
+    shooter.field_0x148 = &targetBody;
+    shooter.field_0x140 = 2;
+    shooter.shootError = 0.1f;
+    shooterGeometry.position = {0.0f, 0.0f, 0.0f};
+    shooter.resetVecB = {0.0f, 0.0f, 10000.0f};
+    shooter.targetPos = {0.0f, 0.0f, 10000.0f};
+    shooter.update(7);
+    assert(shooter.state == 1);
+    assert(shooter.field_0x12e == 1 && shooter.field_0x12c == 0);
+    assert(shooter.field_0x148 == &targetBody);
+    assert(shooterBody.neverAttackCalls >= 1);
+    assert(shooter.resetVecC.x < shooter.shootError &&
+           shooter.resetVecC.x > -shooter.shootError);
+    assert(shooterBody.shootCalls == 1 && shooterBody.lastShootSlot == 2);
+    assert(shooterBody.lastShootDt == 7 && !shooterBody.lastShootFlag && shooter.shootingFlag == 1);
+
+    targetBody.field_5e = 1;
+    shooter.update(3);
+    assert(shooter.field_0x12e == 0 && shooter.shootingFlag == 0);
+    assert(shooterBody.stopShootingCalls == 1 && shooterBody.lastStopSlot == 2);
+
+    targetBody.field_5e = 0;
+    shooter.field_0x12e = 1;
+    shooter.resetVecB = {3000.0f, 0.0f, 10000.0f};
+    shooter.update(3);
+    assert(shooterBody.shootCalls == 1 && shooter.field_0x12e == 1);
+
+    shooter.resetVecB = {0.0f, 0.0f, 10000.0f};
+    shooter.targetPos.x = 35000.0f;
+    shooter.update(3);
+    assert(shooterBody.shootCalls == 1 && shooter.field_0x12e == 1);
+
+    shooter.targetPos.x = 0.0f;
+    targetBody.active = false;
+    int activeCallsBefore = targetBody.activeChecks;
+    shooter.update(3);
+    assert(shooter.field_0x12c == 0 && shooter.field_0x148 == &targetBody);
+    assert(targetBody.activeChecks > activeCallsBefore);
+    assert(shooterBody.shootCalls == 1);
+    assert(shooter.field_0x12e == 0);
+
+    targetBody.active = true;
+    targetBody.field_69 = 1;
+    targetBody.position.y = 5.0f;
+    shooter.resetVecB.z = 13000.0f;
+    shooterEgo.dockedToPoint = true;
+    shooter.field_0x12e = 1;
+    shooter.update(3);
+    assert(shooterBody.shootCalls == 1);
+    assert(shooter.field_0x12e == 0);
+    assert(shooterEgo.dockedToPointCalls >= 2 && targetBody.positionCalls >= 1);
+
+    targetBody.position.y = -5.0f;
+    shooter.field_0x12e = 1;
+    shooter.update(3);
+    assert(shooterBody.shootCalls == 2 && shooter.shootingFlag == 1);
+
+    shooterBody.neverAttack = true;
+    shooter.field_0x12e = 1;
+    shooter.update(3);
+    assert(shooterBody.shootCalls == 2 && shooter.field_0x12e == 1);
+
+    shooterBody.neverAttack = false;
+    shooter.field_0x12c = 1;
+    shooter.update(3);
+    assert(shooterBody.shootCalls == 2 && shooter.field_0x12e == 1);
+
+    shooter.field_0x12c = 0;
+    shooter.field_0x25 = 0;
+    shooter.update(3);
+    assert(shooterBody.shootCalls == 2 && shooter.field_0x12e == 0);
 }

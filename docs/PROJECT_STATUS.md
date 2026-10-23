@@ -1,6 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-23 (`PlayerFighter::update` matrix and movement tail;
+Last reviewed: 2026-10-23 (`PlayerFighter::update` shooting gate;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `0xded26–0xded44`, `0xdef12–0xdef52`,
+`0xdf480–0xdf550` and `0xdf7bc–0xdf818` confirm the state-1/state-7
+shooting gate: invalid-target stop, strict aim/proximity thresholds,
+active/dead and docked-height checks, signed `dt` shoot ABI and the
+Fighter `+0x2b5` shooting flag. All 11 Fighter smokes, native UCRT64
+`gof2`, all 208 NDK r18b ARM units and 93 verifier tests pass (one
+existing skip). Whole-`update` source-shape/strict fuzzy changes
+**90.3%/35.0% → 92.5%/36.8%**; the function remains nonexact. The full
+corpus compares **4,323/4,524** originals across **4,735** pairs at
+rounded **94.05%/83.38%** mean source-shape/strict fuzzy, retaining
+**2,557 linked-exact** and **1,082 byte-exact** pairs with zero exact-pair
+losses, skipped or wrong-type symbols. Only the target function's
+score changed. The flag's initial value is not confirmed by a visible
+constructor write; post-movement landmark/enemy reactions and the
+trailing `PlayerFighter::push(int)` dispatch remain unrecovered. See
+[the ARM evidence](PLAYER_FIGHTER_SHOOTING_ARM_2026-10-23.md).
+
+Previous checkpoint: 2026-10-23 (`PlayerFighter::update` matrix and movement tail;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `0xded44–0xdf25a` confirms the state-1/state-7 copied

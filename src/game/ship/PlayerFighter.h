@@ -93,6 +93,7 @@ public:
     float rollSamples[5];
     int32_t rollSampleIndex;
     uint8_t rollBufferFilled;
+    uint8_t shootingFlag; // ARM +0x2b5; initial value unconfirmed.
     AbyssEngine::EaseInOutMatrix *easeMatrix;
     int32_t spacePoint;
     int32_t field_0x2c0;
@@ -206,6 +207,7 @@ static_assert(offsetof(PlayerFighter, field_0x298) == 0x298, "PlayerFighter roll
 static_assert(offsetof(PlayerFighter, rollSamples) == 0x29c, "PlayerFighter roll samples ABI offset");
 static_assert(offsetof(PlayerFighter, rollSampleIndex) == 0x2b0, "PlayerFighter roll sample index ABI offset");
 static_assert(offsetof(PlayerFighter, rollBufferFilled) == 0x2b4, "PlayerFighter roll buffer ABI offset");
+static_assert(offsetof(PlayerFighter, shootingFlag) == 0x2b5, "PlayerFighter shooting flag ABI offset");
 static_assert(offsetof(PlayerFighter, cloakTimer) == 0x2c8, "PlayerFighter cloak timer ABI offset");
 static_assert(offsetof(PlayerFighter, cloakDuration) == 0x2cc, "PlayerFighter cloak duration ABI offset");
 static_assert(offsetof(PlayerFighter, cloakActive) == 0x2d0, "PlayerFighter cloak active ABI offset");
