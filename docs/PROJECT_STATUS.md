@@ -1,6 +1,29 @@
 # Project Status
 
-Last reviewed: 2026-10-23 (`PlayerFighter::update` navigation-to-docking setup;
+Last reviewed: 2026-10-23 (`PlayerFighter::update` state-1/state-7 speed response;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `PlayerFighter::update` at `0xde1fa–0xde26c` and
+`0xde840–0xde9c6` confirms the shared state-1/state-7 damage-triggered
+speed response: strict 40% accumulated damage threshold, 5000-ms
+selection timer, 5000–7999-ms interval, 5.5f acceleration target,
+1.3f rotation target and controlled return to base speed. The ARM
+field accesses also support a float at `+0x1ec` and byte flag at
+`+0x1f4`. All 11 Fighter smokes, native UCRT64 `gof2`, all 208 NDK
+r18b ARM units and 93 verifier tests pass (one existing skip).
+Whole-`update` source-shape/strict fuzzy changes **79.7%/27.9% →
+81.1%/33.7%**; it remains nonexact. The full corpus compares
+**4,323/4,524** originals across **4,735** pairs at **94.05%/83.38%**
+mean source-shape/strict fuzzy, retaining **2,557 linked-exact** and
+**1,082 byte-exact** pairs with zero exact-pair losses, skipped or
+wrong-type symbols. The two nonexact constructor variants each lose
+0.1 rounded source-shape point after the ABI field retyping; strict
+fuzzy is unchanged. State-1/state-7 orientation, combat and translation
+still end at `PF_update_body`, and full game-frame route following is
+untested. The movement/orientation path is the next priority. See
+[the ARM evidence](PLAYER_FIGHTER_SPEED_RESPONSE_ARM_2026-10-23.md).
+
+Previous checkpoint: 2026-10-23 (`PlayerFighter::update` navigation-to-docking setup;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `PlayerFighter::update` at `0xdd938–0xdda1c` and

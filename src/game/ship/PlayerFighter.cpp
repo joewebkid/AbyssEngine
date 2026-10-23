@@ -1098,7 +1098,50 @@ void PlayerFighter::update(int dt) {
         return;
     }
 
-    // shortcut: other ARM update branches remain unreconstructed; replace this call when they are mapped.
+    if (this->state == 1 || this->state == 7) {
+        this->handleCloaking();
+        if (this->field_0x13d) {
+            if (this->hitpoints > hitpoints) {
+                this->field_0x1dc += this->hitpoints - hitpoints;
+                this->hitpoints = hitpoints;
+                if ((static_cast<float>(this->field_0x1dc) /
+                     static_cast<float>(body->getMaxHitpoints())) * 100.0f > 40.0f) {
+                    this->field_0x1c0 = 10000;
+                    this->field_0x1dc = 0;
+                    this->field_0x1e0 = 1;
+                }
+            }
+            if (this->field_0x1c0 > 5000 && !this->field_0x1f4) {
+                this->field_0x1c0 = 0;
+                AERandom *rng = static_cast<AERandom *>(Globals::rnd);
+                if (this->field_0x1e0 || rng->nextInt(100) < this->boostProb) {
+                    this->field_0x1c4 = rng->nextInt(3000) + 5000;
+                    this->field_0x1f4 = 1;
+                    this->field_0x1ec = 5.5f;
+                    this->currentRotate = 1.3f;
+                }
+            }
+            if (this->field_0x1f4) {
+                if (this->field_0x1c0 > this->field_0x1c4) {
+                    this->field_0x1e0 = 0;
+                    this->field_0x1c0 = 0;
+                    this->field_0x1ec = this->speed;
+                    this->currentRotate = this->rotate;
+                }
+                if (this->field_0x1ec > 0.0f) {
+                    this->currentSpeed *= this->field_0x1ec > this->currentSpeed ? 1.05f : 0.95f;
+                    if (this->currentSpeed >= 5.5f || this->currentSpeed < this->speed) {
+                        this->currentSpeed = this->field_0x1ec;
+                        if (this->field_0x1ec == this->speed)
+                            this->field_0x1f4 = 0;
+                        this->field_0x1ec = 0.0f;
+                    }
+                }
+            }
+        }
+    }
+
+    // shortcut: the remaining ARM movement and combat branches are unreconstructed.
     PF_update_body(this, dt);
 
     return;

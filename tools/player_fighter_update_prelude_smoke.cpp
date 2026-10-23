@@ -552,6 +552,12 @@ struct PlayerFighter : KIPlayer {
     int spacePoint = 0, field_0x2c0 = 0;
     signed char field_0x13e = 0;
     float currentSpeed = 0.0f;
+    uint8_t field_0x13d = 0;
+    int hitpoints = 0, field_0x1dc = 0, field_0x1c0 = 0, field_0x1c4 = 0;
+    signed char field_0x1e0 = 0;
+    uint8_t field_0x1f4 = 0;
+    float speed = 0.0f, rotate = 0.0f, field_0x1ec = 0.0f, currentRotate = 0.0f;
+    int boostProb = 0;
     int cloakingCalls = 0;
     void handleCloaking() { ++cloakingCalls; }
     int exhaustCalls = 0;
@@ -1913,4 +1919,79 @@ int main() {
     delete entering.easeMatrix;
     entering.easeMatrix = nullptr;
     assert(bodyCalls == fallbackBefore + 1);
+
+    PlayerFighter speeding;
+    Player speedingPlayer;
+    AEGeometry speedingGeometry;
+    Route speedingRoute;
+    Waypoint speedingWaypoint{};
+    AERandom speedingRng;
+    speeding.player = &speedingPlayer;
+    speeding.geometry = &speedingGeometry;
+    speeding.routeClone = &speedingRoute;
+    speedingRoute.waypoint = &speedingWaypoint;
+    speeding.state = 1;
+    speeding.field_0x13d = 1;
+    speeding.hitpoints = 100;
+    speeding.speed = 2.0f;
+    speeding.rotate = 2.0f;
+    speeding.currentSpeed = 2.0f;
+    speeding.currentRotate = 2.0f;
+    speeding.boostProb = 5;
+    speeding.field_0x1c0 = 5000;
+    speedingRng.values[0] = 99;
+    speedingRng.values[1] = 250;
+    Globals::rnd = &speedingRng;
+    speedingPlayer.hitpoints = 60;
+    int fallbackBeforeSpeed = bodyCalls;
+    speeding.update(1);
+    assert(speeding.cloakingCalls == 1 && speeding.hitpoints == 60);
+    assert(speeding.field_0x1dc == 40 && speeding.field_0x1c0 == 0);
+    assert(speedingRng.used == 1 && speedingRng.bounds[0] == 100);
+    assert(speeding.field_0x1f4 == 0 && speeding.currentSpeed == 2.0f);
+    assert(bodyCalls == fallbackBeforeSpeed + 1);
+
+    speedingPlayer.hitpoints = 59;
+    speeding.update(1);
+    assert(speeding.field_0x1dc == 0 && speeding.field_0x1e0 == 1);
+    assert(speeding.field_0x1f4 == 1 && speeding.field_0x1c4 == 5250);
+    assert(speeding.field_0x1ec == 5.5f && speeding.currentRotate == 1.3f);
+    assert(std::abs(speeding.currentSpeed - 2.1f) < 0.001f);
+    assert(speedingRng.used == 2 && speedingRng.bounds[1] == 3000);
+    assert(bodyCalls == fallbackBeforeSpeed + 2);
+
+    speeding.state = 7;
+    speeding.update(5251);
+    assert(speeding.cloakingCalls == 3 && speeding.field_0x1e0 == 0);
+    assert(speeding.field_0x1f4 == 0 && speeding.field_0x1ec == 0.0f);
+    assert(speeding.currentSpeed == speeding.speed && speeding.currentRotate == speeding.rotate);
+    assert(speedingRng.used == 2 && bodyCalls == fallbackBeforeSpeed + 3);
+
+    speedingRng.values[2] = 5;
+    speedingRng.values[3] = 4;
+    speedingRng.values[4] = 0;
+    speeding.field_0x1c0 = 5000;
+    speeding.update(1);
+    assert(speedingRng.used == 3 && speedingRng.bounds[2] == 100);
+    assert(speeding.field_0x1f4 == 0 && speeding.currentSpeed == 2.0f);
+    speeding.field_0x1c0 = 5000;
+    speeding.update(1);
+    assert(speedingRng.used == 5 && speedingRng.bounds[3] == 100 && speedingRng.bounds[4] == 3000);
+    assert(speeding.field_0x1f4 == 1 && speeding.field_0x1c4 == 5000);
+    float speedBeforeDisabled = speeding.currentSpeed;
+    speeding.field_0x13d = 0;
+    speeding.update(1);
+    assert(speeding.cloakingCalls == 6 && speeding.currentSpeed == speedBeforeDisabled);
+    assert(speedingRng.used == 5 && bodyCalls == fallbackBeforeSpeed + 6);
+
+    speeding.field_0x13d = 1;
+    speeding.field_0x1c0 = 0;
+    speeding.currentSpeed = 5.4f;
+    speeding.field_0x1ec = 5.5f;
+    speeding.update(1);
+    assert(speeding.currentSpeed == 5.5f && speeding.field_0x1ec == 0.0f);
+    assert(speeding.field_0x1f4 == 1 && speedingRng.used == 5);
+    speeding.update(5000);
+    assert(speeding.field_0x1f4 == 1 && speeding.field_0x1ec == speeding.speed);
+    assert(speeding.currentSpeed > speeding.speed && speeding.currentSpeed < 5.5f);
 }

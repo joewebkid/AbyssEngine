@@ -71,9 +71,10 @@ public:
     signed char field_0x1e0;
     int32_t field_0x1e4;
     float currentSpeed;
-    int32_t field_0x1ec;
+    float field_0x1ec;
     float currentRotate;
-    short field_0x1f4;
+    uint8_t field_0x1f4;
+    uint8_t _pad_0x1f5;
     int32_t field_0x1f8;
     signed char field_0x1fc;
     int32_t field_0x200;
@@ -198,6 +199,8 @@ static_assert(offsetof(PlayerFighter, deathDirection) == 0x194, "PlayerFighter d
 static_assert(offsetof(PlayerFighter, postExplosionDirection) == 0x17c, "PlayerFighter post-explosion direction ABI offset");
 static_assert(offsetof(PlayerFighter, field_0x2c4) == 0x2c4, "PlayerFighter release point ABI offset");
 static_assert(offsetof(PlayerFighter, deltaTime) == 0x1d0, "PlayerFighter::deltaTime ABI offset");
+static_assert(offsetof(PlayerFighter, field_0x1ec) == 0x1ec, "PlayerFighter target-speed ABI offset");
+static_assert(offsetof(PlayerFighter, field_0x1f4) == 0x1f4, "PlayerFighter boost-flag ABI offset");
 static_assert(offsetof(PlayerFighter, easeBaseMatrix) == 0x218, "PlayerFighter first matrix ABI offset");
 static_assert(offsetof(PlayerFighter, rollMatrix) == 0x258, "PlayerFighter roll matrix ABI offset");
 static_assert(offsetof(PlayerFighter, cloakTimer) == 0x2c8, "PlayerFighter cloak timer ABI offset");
