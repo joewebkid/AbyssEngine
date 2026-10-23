@@ -2952,6 +2952,27 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
             (*this->repairBeams)[i]->update(dt, radar, this->level, hud);
     }
 
+    // Android Thumb 0x9da58-0x9db60: synchronize movement before collision dispatch.
+    this->aboutToReachAutoTargetFlag = 0;
+    this->field_0x145 = 0;
+    if (this->computerControlled || this->dockingToPlanet || this->dockedToStream) {
+        this->field_0x145 = 1;
+        if (this->dockingToPlanet)
+            this->planetDockTimer += dt;
+        this->geometry->moveForward(this->speedValue * static_cast<float>(dt));
+        Matrix *local = static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(this->geometry->transform));
+        Matrix *parent = static_cast<Matrix *>(Globals::Canvas->TransformGetLocal(this->field_0x4->transform));
+        player->transformMatrix = *local * *parent;
+    }
+    if (this->collide && player->isActive()) {
+        this->collidesWithStationFlag = 0;
+        this->calcCollision(this->level->getLandmarks());
+        this->calcCollision(this->level->getEnemies());
+        this->calcCollision(this->level->getAsteroids());
+        if (this->collidesWithStationFlag && this->turretActive)
+            this->handleTurretView(dt);
+    }
+
     if (((char &) this->dockingState) != 0) {
         this->field_0x145 = 1;
         KIPlayer *target = (KIPlayer *) ((void *&) this->asteroidTarget);

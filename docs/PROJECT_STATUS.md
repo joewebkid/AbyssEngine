@@ -1,6 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`PlayerEgo::calcCollision` source-backed recovery;
+Last reviewed: 2026-10-24 (`PlayerEgo::update` collision dispatch recovery;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `0x9da58–0x9db60` confirms the frame-to-collision path:
+movement-state reset, conditional geometry movement and matrix update,
+then collision checks for landmarks, enemies and asteroids when enabled
+and the Player is active. The prior `update` never called `calcCollision`.
+The new source-extracted smoke passes at `-O0/-O2`; native UCRT64 `gof2`,
+all 208 NDK r18b ARM units and 93 verifier tests pass (one existing
+skip). Focused `update` source-shape/strict fuzzy changes **80.6%/30.8%
+→ 82.4%/25.4%** and remains nonexact. The full corpus compares
+**4,323/4,524** originals across **4,736** pairs at rounded
+**94.09%/83.41%** mean source-shape/strict fuzzy, retaining **2,557
+linked-exact** and **1,082 byte-exact** pairs with no exact-pair losses,
+skipped or wrong-type symbols. Six older PlayerEgo smokes still fail
+outside the changed block; a real collision frame remains unverified.
+See [the ARM evidence](PLAYER_EGO_UPDATE_COLLISION_DISPATCH_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (`PlayerEgo::calcCollision` source-backed recovery;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `0x9f0cc–0x9f472` supports the three collision branches for

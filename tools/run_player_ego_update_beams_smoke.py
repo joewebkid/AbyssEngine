@@ -16,7 +16,7 @@ def main():
     source = (ROOT / "src/game/ship/PlayerEgo.cpp").read_text()
     begin = source.index("    if (this->tractorBeam != nullptr)",
                          source.index("void PlayerEgo::update("))
-    end = source.index("    if (((char &) this->dockingState) != 0)", begin)
+    end = source.index("    // Android Thumb 0x9da58-0x9db60:", begin)
     fixture = (ROOT / "tools/player_ego_update_beams_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_FRAGMENT", source[begin:end])
     with tempfile.TemporaryDirectory(prefix="ego-beams-", dir=ROOT / "_work") as temp:
