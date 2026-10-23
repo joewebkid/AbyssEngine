@@ -1,6 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`PlayerFighter::update` post-movement reactions;
+Last reviewed: 2026-10-24 (`PlayerFighter::update` state dispatch and
+placeholder removal; earlier subsystem snapshots retain their dates)
+
+Android ARM `0xde1bc–0xde1dc` and `0xde26e–0xde274` confirm that the
+remaining state-dispatch tail changes Fighter state `0 → 1` and returns;
+state `2` and out-of-range values return without a fallback call. The
+unresolved `PF_update_body` reference has been removed from
+`PlayerFighter::update`. All 11 Fighter smokes, native UCRT64 `gof2`,
+208 NDK r18b ARM translation units and 93 verifier tests pass (one
+existing skip). Whole-`update` source-shape stays **94.7%** while strict
+fuzzy changes **39.1% → 38.3%**; the function remains nonexact. The full
+corpus compares **4,323/4,524** originals across **4,735** pairs at
+rounded **94.05%/83.38%** mean source-shape/strict fuzzy, retaining
+**2,557 linked-exact** and **1,082 byte-exact** pairs with zero exact-pair
+losses, skipped or wrong-type symbols. Only the target function's score
+changed. Full game-frame execution remains unverified; the next
+behavioral priority is `PlayerFighter::roll(int)`. See
+[the ARM evidence](PLAYER_FIGHTER_DISPATCH_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (`PlayerFighter::update` post-movement reactions;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `0xdf260–0xdf450` confirms the state-1/state-7

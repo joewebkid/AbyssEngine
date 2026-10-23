@@ -34,8 +34,6 @@
 
 // PaintCanvas::gCanvas is declared extern in engine/render/PaintCanvas.h (included above).
 
-void PF_update_body(PlayerFighter *self, int dt);
-
 namespace AbyssEngine {
     namespace AEMath {
         float VectorLength(const Vector &value);
@@ -1363,8 +1361,8 @@ void PlayerFighter::update(int dt) {
         return;
     }
 
-    // shortcut: other state tails still use the unreconstructed body, recover each before removing it.
-    PF_update_body(this, dt);
+    if (this->state == 0)
+        this->state = 1;
 
     return;
 }

@@ -170,13 +170,13 @@ struct ParticleSystemManager {
     int calls = 0;
     int lastHandle = -1;
     bool lastEnabled = false;
-    int handles[64]{};
-    bool enabled[64]{};
+    int handles[256]{};
+    bool enabled[256]{};
     int manualCalls = 0, manualHandle = -1, manualSet = -1;
     Vector manualPosition{}, manualVelocity{};
     float manualLifetime = 0.0f;
     void enableSystemEmit(int handle, bool enabled) {
-        assert(calls < 64);
+        assert(calls < 256);
         handles[calls] = handle;
         this->enabled[calls] = enabled;
         ++calls;
@@ -658,9 +658,6 @@ struct PlayerFighter : KIPlayer {
     void push(int dt) override { ++pushCalls; lastPushDt = dt; }
     void update(int dt);
 };
-int bodyCalls = 0;
-void PF_update_body(PlayerFighter *, int) { ++bodyCalls; }
-
 // PRODUCTION_METHOD
 
 int main() {
@@ -680,7 +677,7 @@ int main() {
     fighter.state = 4;
     fighter.crateCaptured = 0;
     fighter.update(7);
-    assert(!player.active && bodyCalls == 0 && fighter.deltaTime == 0);
+    assert(!player.active && fighter.deltaTime == 0);
 
     player.active = true;
     fighter.crateCaptured = 1;
@@ -688,7 +685,7 @@ int main() {
     fighter.shipGroup = 8;
     fighter.aiDisabled = 1;
     fighter.update(7);
-    assert(player.active && bodyCalls == 0);
+    assert(player.active);
     assert(player.stopSoundCalls == 1 && player.updateCalls == 0 && player.enemiesCalls == 0);
     assert(fighter.deltaTime == 7 && fighter.deltaTimeHi == 0);
     assert(fighter.renderPosition.x == 1.25f && fighter.renderPosition.y == -2.5f);
@@ -792,7 +789,7 @@ int main() {
 
     fighter.deathTimer = 60001;
     fighter.update(1);
-    assert(!player.active && bodyCalls == 0);
+    assert(!player.active);
 
     player.active = true;
     fighter.state = 0;
@@ -908,7 +905,7 @@ int main() {
     geometry.position = {11.0f, 22.0f, 33.0f};
     fighter.update(1);
     assert(route.updateCalls == updateBefore + 1 && route.waypointCalls == waypointBefore + 1);
-    assert(route.lastPosition.x == 11.0f && fighter.state == 0 && fighter.field_0x12c == 0);
+    assert(route.lastPosition.x == 11.0f && fighter.state == 1 && fighter.field_0x12c == 0);
 
     Waypoint waypoint{101, -202, 303};
     route.waypoint = &waypoint;
@@ -1122,7 +1119,7 @@ int main() {
     fighter.update(1);
     assert(fighter.field_0x38 == 0 && fighter.field_0x148 == &enemyA);
     assert(fighter.targetPos.x == enemyA.position.x && fighter.resetVecB.x == enemyA.position.x);
-    assert(player.neverAttackCalls == neverAttackBefore);
+    assert(player.neverAttackCalls == neverAttackBefore + 1);
 
     route.waypoint = &waypoint;
     player.active = false;
@@ -1163,7 +1160,7 @@ int main() {
     fighter.field_0x12c = 1;
     fighter.field_0xf0 = 19998;
     fighter.update(1);
-    assert(fighter.state == 0 && fighter.field_0xf0 == 19999 && fighter.field_0x12c == 1);
+    assert(fighter.state == 1 && fighter.field_0xf0 == 19999 && fighter.field_0x12c == 1);
     fighter.update(1);
     assert(fighter.state == 6 && fighter.field_0xf0 == 0 && fighter.field_0x12c == 0);
 
@@ -1714,10 +1711,9 @@ int main() {
     dormantPlayer.enemyFlagsLo = 1;
     dormantGeometry.visible = true;
     status.currentCampaignMission = 2;
-    int fallbackBefore = bodyCalls;
     dormant.update(1);
     assert(!dormantGeometry.visible && dormantGeometry.visibleCalls == 1);
-    assert(status.campaignCalls == 1 && dormant.state == 5 && bodyCalls == fallbackBefore);
+    assert(status.campaignCalls == 1 && dormant.state == 5);
 
     status.currentCampaignMission = 1;
     dormantGeometry.visible = true;
@@ -1752,7 +1748,6 @@ int main() {
     assert(dormantPlayer.active && dormantPlayer.setActiveCalls == 1);
     assert(dormantSubGeometry.visible && dormantSubGeometry.visibleCalls == 1);
     assert(dormantLevel.pirateStationCalls == 1 && dormantLevel.lastPirateStationAction);
-    assert(bodyCalls == fallbackBefore);
 
     AEGeometry fleeingGeometry;
     Player fleeingPlayer;
@@ -1781,7 +1776,6 @@ int main() {
     assert(std::abs(fleeing.currentSpeed - 108.9f) < 0.001f);
     assert(fleeingGeometry.moveForwardCalls == 3 && fleeingGeometry.lastForwardDistance == 108.0f);
     assert(fleeing.state == 4 && fleeing.setDeadCalls == 1 && !fleeingPlayer.active);
-    assert(bodyCalls == fallbackBefore);
 
     AEGeometry dockingGeometry;
     AEGeometry dockTargetGeometry;
@@ -1824,7 +1818,6 @@ int main() {
     assert(docking.spacePoint == 0 && docking.field_0x2c0 == 0);
     assert(dockingEmit.calls == 1 && dockingEmit.lastHandle == 11 && !dockingEmit.lastEnabled);
     assert(dockingRender.calls == 1 && dockingRender.lastHandle == 12 && !dockingRender.lastEnabled);
-    assert(bodyCalls == fallbackBefore);
 
     docking.state = 8;
     docking.spacePoint = 7;
@@ -1843,14 +1836,12 @@ int main() {
     assert(std::fabs(dockingGeometry.matrix.translation.x - 96.0f) < 0.01f);
     assert(dockingPlayer.transformMatrix.value == 42);
     assert(std::fabs(dockingPlayer.transformMatrix.translation.x - 96.0f) < 0.01f);
-    assert(bodyCalls == fallbackBefore);
 
     docking.kind = 3;
     docking.update(1);
     assert(docking.state == 9 && docking.exhaustCalls == 2);
     assert(dockingEmit.calls == 1 && dockingRender.calls == 1);
     assert(dockingEase.increaseCalls == 1 && dockingGeometry.setMatrixCalls == 1);
-    assert(bodyCalls == fallbackBefore);
 
     Mission emptyDockingMission;
     emptyDockingMission.empty = true;
@@ -1869,7 +1860,6 @@ int main() {
     assert(dockingEmit.calls == 2 && dockingEmit.lastEnabled);
     assert(dockingRender.calls == 2 && dockingRender.lastEnabled);
     assert(approachPoint.giveFreeCalls == 1 && docking.field_0x2c4 == nullptr);
-    assert(bodyCalls == fallbackBefore);
 
     Mission passengerMission;
     passengerMission.type = 184;
@@ -1928,7 +1918,6 @@ int main() {
     passengerMission.statusValue = 5;
     passenger.update(1);
     assert(passenger.field_0x2c0 == 1 && passengerMission.statusValue == 4);
-    assert(bodyCalls == fallbackBefore);
 
     PlayerFighter entering;
     Player enteringPlayer;
@@ -1978,7 +1967,6 @@ int main() {
     assert(entering.easeMatrix->destination.direction.z == 1.0f);
     assert(entering.easeMatrix->destination.right.y == -1.0f);
     assert(entering.easeMatrix->increaseCalls == 1);
-    assert(bodyCalls == fallbackBefore);
 
     entering.state = 7;
     navigationPoint.position = {2500.0f, 0.0f, 0.0f};
@@ -1986,7 +1974,7 @@ int main() {
     assert(entering.state == 7 && entering.resetVecB.x == 2600.0f);
     assert(entering.resetVecB.y == 200.0f);
     assert(navigationPoint.takeCalls == 1 && entering.field_0x2c4 == &navigationPoint);
-    assert(bodyCalls == fallbackBefore && entering.pushCalls == 1 && entering.lastPushDt == 1);
+    assert(entering.pushCalls == 1 && entering.lastPushDt == 1);
 
     SpacePoint replacementPoint;
     replacementPoint.position = {1200.0f, 0.0f, 0.0f};
@@ -2001,7 +1989,7 @@ int main() {
     assert(entering.easeMatrix != nullptr && entering.easeMatrix->duration == 3000);
     delete entering.easeMatrix;
     entering.easeMatrix = nullptr;
-    assert(bodyCalls == fallbackBefore && entering.pushCalls == 1);
+    assert(entering.pushCalls == 1);
 
     PlayerFighter speeding;
     Player speedingPlayer;
@@ -2028,13 +2016,12 @@ int main() {
     speedingRng.values[1] = 250;
     Globals::rnd = &speedingRng;
     speedingPlayer.hitpoints = 60;
-    int fallbackBeforeSpeed = bodyCalls;
     speeding.update(1);
     assert(speeding.cloakingCalls == 1 && speeding.hitpoints == 60);
     assert(speeding.field_0x1dc == 40 && speeding.field_0x1c0 == 0);
     assert(speedingRng.used == 1 && speedingRng.bounds[0] == 100);
     assert(speeding.field_0x1f4 == 0 && speeding.currentSpeed == 2.0f);
-    assert(bodyCalls == fallbackBeforeSpeed && speeding.pushCalls == 1);
+    assert(speeding.pushCalls == 1);
 
     speedingPlayer.hitpoints = 59;
     speeding.update(1);
@@ -2043,14 +2030,14 @@ int main() {
     assert(speeding.field_0x1ec == 5.5f && speeding.currentRotate == 1.3f);
     assert(std::abs(speeding.currentSpeed - 2.1f) < 0.001f);
     assert(speedingRng.used == 2 && speedingRng.bounds[1] == 3000);
-    assert(bodyCalls == fallbackBeforeSpeed && speeding.pushCalls == 2);
+    assert(speeding.pushCalls == 2);
 
     speeding.state = 7;
     speeding.update(5251);
     assert(speeding.cloakingCalls == 3 && speeding.field_0x1e0 == 0);
     assert(speeding.field_0x1f4 == 0 && speeding.field_0x1ec == 0.0f);
     assert(speeding.currentSpeed == speeding.speed && speeding.currentRotate == speeding.rotate);
-    assert(speedingRng.used == 2 && bodyCalls == fallbackBeforeSpeed && speeding.pushCalls == 3);
+    assert(speedingRng.used == 2 && speeding.pushCalls == 3);
 
     speedingRng.values[2] = 5;
     speedingRng.values[3] = 4;
@@ -2067,7 +2054,7 @@ int main() {
     speeding.field_0x13d = 0;
     speeding.update(1);
     assert(speeding.cloakingCalls == 6 && speeding.currentSpeed == speedBeforeDisabled);
-    assert(speedingRng.used == 5 && bodyCalls == fallbackBeforeSpeed && speeding.pushCalls == 6);
+    assert(speedingRng.used == 5 && speeding.pushCalls == 6);
 
     speeding.field_0x13d = 1;
     speeding.field_0x1c0 = 0;
@@ -2407,4 +2394,23 @@ int main() {
     assert(std::abs(reacting.targetPos.x - 0.05989229f) < 0.0001f);
     assert(std::abs(reacting.objectPosition.y - 0.0599f) < 0.001f);
     assert(reactingGeometry.up.y == 1.0f && reacting.pushCalls == 2);
+
+    PlayerFighter dispatch;
+    Player dispatchBody;
+    AEGeometry dispatchGeometry;
+    Level dispatchLevel;
+    Route dispatchRoute;
+    dispatch.player = &dispatchBody;
+    dispatch.geometry = &dispatchGeometry;
+    dispatch.level = &dispatchLevel;
+    dispatch.routeClone = &dispatchRoute;
+    dispatch.field_0x43 = 1;
+    dispatch.update(3);
+    assert(dispatch.state == 1 && dispatch.pushCalls == 0);
+    dispatch.state = 2;
+    dispatch.update(3);
+    assert(dispatch.state == 2 && dispatch.pushCalls == 0);
+    dispatch.state = 10;
+    dispatch.update(3);
+    assert(dispatch.state == 10 && dispatch.pushCalls == 0);
 }
