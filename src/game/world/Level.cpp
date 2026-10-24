@@ -238,14 +238,6 @@ static int *g_crm_table8 = nullptr;
 
 static float g_up_eqMax = 0;
 
-static float *g_up_clampLo = nullptr;
-
-static float *g_up_clampHi = nullptr;
-
-static float *g_up_clampZ = nullptr;
-
-static float *g_up_clampW = nullptr;
-
 static int **g_cso_textA = nullptr;
 
 static int **g_cso_textB = nullptr;
@@ -4835,18 +4827,20 @@ void Level::update(long long time, bool param) {
     const unsigned int dt = static_cast<unsigned int>(time);
 
     if (this->flashActive != 0) {
-        unsigned remaining = *(unsigned *) &this->flashDurationA - dt;
-        *(unsigned *) &this->flashDurationA = remaining;
-        if (0x7fffffff < remaining)
+        int remaining = static_cast<int>(static_cast<unsigned>(this->flashDurationA) - dt);
+        this->flashDurationA = remaining;
+        if (remaining < 0)
             this->flashActive = 0;
 
         float frac = (float) remaining / (float) this->flashDurationB;
-        float *col = &this->flashColor.x;
-        float lo = *g_up_clampLo, hi = *g_up_clampHi, z = *g_up_clampZ, w = *g_up_clampW;
-        float scaled[4] = {col[0] * frac, col[1] * frac, col[2] * frac, col[3] * frac};
-        float bounds[4] = {lo, hi, z, w};
-        for (int k = 0; k < 4; k = k + 1)
-            col[k] = bounds[k] > scaled[k] ? bounds[k] : scaled[k];
+        float red = flashColor.x * frac;
+        float green = flashColor.y * frac;
+        float blue = flashColor.z * frac;
+        float alpha = flashField * frac;
+        flashColor.x = i_r > red ? i_r : red;
+        flashColor.y = i_g > green ? i_g : green;
+        flashColor.z = i_b > blue ? i_b : blue;
+        flashField = i_a > alpha ? i_a : alpha;
     }
 
     bool didMission = false;

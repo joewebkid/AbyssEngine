@@ -1,6 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Level flashScreen color source recovery;
+Last reviewed: 2026-10-24 (Level flash-fade prefix recovery;
+earlier subsystem snapshots retain their dates)
+
+The active-flash prefix of `Level::update` now uses the ARM-confirmed
+`Level::i_r/i_g/i_b/i_a` lower bounds instead of four null pointers, and
+converts an expired timer as a signed float. A source-extracted CPU gate
+passes active, expired and inactive cases at host `-O0/-O2` and in an
+ARMv7 PIE on the connected Android device; native `gof2`,
+208/208 ARM units and 93 verifier tests pass (one skip). Focused
+source-shape/strict fuzzy improves **93.8%/65.5% → 97.2%/75.7%**.
+The full corpus remains **4,323/4,524** originals across **4,736**
+pairs, mean **94.11%/83.43%**, with **2,557 linked-exact** and **1,082
+byte-exact** pairs and no exact-pair losses. A real Android visual
+flash and unrelated `Level::update` branches remain unverified. The next
+native-chain priority is the Pan first-friend `PlayerFighter` construction
+and array insertion. See
+[the flash-fade evidence](LEVEL_FLASH_FADE_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (Level flashScreen color source recovery;
 earlier subsystem snapshots retain their dates)
 
 `Level::flashScreen` now reads the original `Level::i_r/i_g/i_b`
@@ -11,8 +29,8 @@ units and 93 verifier tests pass (one skip). Focused source-shape/strict
 fuzzy improves **61.5%/31.2% → 99.7%/90.8%**. The full corpus compares
 **4,323/4,524** originals across **4,736** pairs, mean **94.11%/83.43%**,
 with **2,557 linked-exact** and **1,082 byte-exact** pairs and no exact
-pair losses. The subsequent fade in `Level::update` still has null
-clamp placeholders and remains the next flash-specific behavior gap.
+pair losses. Its subsequent fade has since been recovered in the
+checkpoint above.
 See [the flashScreen evidence](LEVEL_FLASH_SCREEN_COLOR_ARM_2026-10-24.md).
 
 Previous checkpoint: 2026-10-24 (Level createGun resource table recovery;
