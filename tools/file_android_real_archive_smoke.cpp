@@ -1,6 +1,8 @@
 #include "game/core/String.h"
 #include "engine/core/GameText.h"
+#include "engine/render/Engine.h"
 #include "engine/file/AEFile.h"
+#include <jni.h>
 #include <archive.h>
 #include <archive_entry.h>
 #include <openssl/sha.h>
@@ -125,8 +127,10 @@ public:
     void ResetSaveDirectory() override {}
 };
 int FileInterfaceAndroid::fileCounter = 0;
+unsigned int AbyssEngine::Engine::countryCode = 0;
 
 #include "file_android_readexist_under_test.inc"
+#include "jni_country_under_test.inc"
 
 static std::vector<unsigned char> readBytes(FileInterfaceAndroid *file, size_t size) {
     assert(file && file->zipFile);
@@ -199,13 +203,16 @@ int main(int argc, char **argv) {
     reader.appRootDir = appRoot.data();
     const int languageFilesBefore = FileInterfaceAndroid::fileCounter;
     GameText text;
-    text.setLanguage(0, 3401);
+    ndk23_setCountryCode(0);
+    text.setLanguage(static_cast<short>(AbyssEngine::Engine::countryCode), 3401);
     assert(GameText::getLanguage() == 0 && text.textCount == 3401);
     assert(std::u16string(text.getText(0)->text()) == u"Language");
     for (int i = 0; i < 3401; ++i)
         assert(text.getText(i) != &text.fallbackText);
 
-    text.setLanguage(5, 3401);
+    Java_net_fishlabs_gof2hdallandroid2012_ToJNI_setCountryCodeOfDevice(nullptr, nullptr, 5);
+    assert(AbyssEngine::Engine::countryCode == 5);
+    text.setLanguage(static_cast<short>(AbyssEngine::Engine::countryCode), 3401);
     assert(GameText::getLanguage() == 5 && text.textCount == 3401);
     assert(std::u16string(text.getText(0)->text()) == u"Язык");
     for (int i = 0; i < 3401; ++i)
@@ -214,10 +221,15 @@ int main(int argc, char **argv) {
 
     // No cz.lang exists in this APK or OBB; selection must fall back to gb.lang.
     assert(!reader.FileExist(String("cz.lang")));
-    text.setLanguage(8, 3401);
+    Java_net_fishlabs_gof2hdallandroid2012_ToJNI_setCountryCodeOfDevice(nullptr, nullptr, 8);
+    text.setLanguage(static_cast<short>(AbyssEngine::Engine::countryCode), 3401);
     assert(GameText::getLanguage() == 0);
     assert(std::u16string(text.getText(0)->text()) == u"Language");
     assert(FileInterfaceAndroid::fileCounter == languageFilesBefore);
+    Java_net_fishlabs_gof2hdallandroid2012_ToJNI_setCountryCodeOfDevice(nullptr, nullptr, 16);
+    assert(AbyssEngine::Engine::countryCode == 0);
+    Java_net_fishlabs_gof2hdallandroid2012_ToJNI_setCountryCodeOfDevice(nullptr, nullptr, -1);
+    assert(AbyssEngine::Engine::countryCode == 0);
 
     // Save-file bytes stay in the runner's temporary directory.
     const int countBefore = FileInterfaceAndroid::fileCounter;
@@ -256,5 +268,5 @@ int main(int argc, char **argv) {
         zip_fclose(handle);
         delete handle;
     }
-    std::puts("Original APK/OBB, AEFile and GameText language stack: OK");
+    std::puts("Original APK/OBB, JNI country and GameText language stack: OK");
 }

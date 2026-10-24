@@ -68,8 +68,6 @@ char *ZIPDirectory;
 
 int forceExit;
 
-static unsigned int countryCode;
-
 int gb_android_offerwallCreditAmount;
 
 #if __SIZEOF_POINTER__ == 4
@@ -207,8 +205,9 @@ extern "C" void ndk23_setZipDirectory(const char *path) {
     std::strcpy(ZIPDirectory, path);
 }
 
-extern "C" void ndk23_setCountryCode(unsigned int code) {
-    countryCode = (code > 15) ? 0u : code;
+// Android ARM keeps this as the JNI wrapper's tail-call target.
+extern "C" __attribute__((noinline)) void ndk23_setCountryCode(unsigned int code) {
+    AbyssEngine::Engine::countryCode = code < 16 ? code : 0;
 }
 
 extern "C" int ndk23_getExitFlag() {

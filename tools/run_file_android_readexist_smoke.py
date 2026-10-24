@@ -27,6 +27,7 @@ def main():
 
     source = (ROOT / "src/engine/file/FileInterfaceAndroid.cpp").read_text()
     loader = (ROOT / "src/platform/android/ApkLoader.cpp").read_text()
+    bridge = (ROOT / "src/platform/android/JniBridge.cpp").read_text()
     engine = (ROOT / "src/engine/core/AbyssEngine.cpp").read_text()
     state = source[source.index("static void *gApkArchive ="):
                    source.index("uint32_t FileInterfaceAndroid::FileExist(")]
@@ -49,6 +50,10 @@ def main():
                if line.startswith("static const char *gModeWb = "))
         + function(source, "void *FileInterfaceAndroid::OpenWrite(String name, int, bool, unsigned int) {")
         + function(loader, 'extern "C" int loadAPKAndZip(const char *apkPath, const char *patchPath) {')
+    )
+    (out / "jni_country_under_test.inc").write_text(
+        function(bridge, 'extern "C" __attribute__((noinline)) void ndk23_setCountryCode(unsigned int code) {')
+        + function(bridge, 'extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_setCountryCodeOfDevice(')
     )
     for opt in ("-O0", "-O2"):
         exe = out / f"file_android_readexist_{opt[1:]}.exe"
@@ -84,7 +89,8 @@ def main():
         for opt in ("-O0", "-O2"):
             exe = out / f"file_android_real_archive_{opt[1:]}.exe"
             subprocess.run([
-                args.cxx, "-std=gnu++17", opt, "-Isrc", "-Ithird_party/crypto",
+                args.cxx, "-std=gnu++17", opt, "-Isrc", "-Ithird_party/jni",
+                "-Ithird_party/crypto",
                 "-I", str(out), "tools/file_android_real_archive_smoke.cpp",
                 "src/game/core/String.cpp", "src/engine/core/GameText.cpp",
                 "src/engine/file/AEFile.cpp",

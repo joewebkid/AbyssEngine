@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (original APK/OBB language-selection host gate;
+Last reviewed: 2026-10-24 (Android JNI country-code language handoff;
 earlier subsystem snapshots retain their dates)
+
+Android `ndk23_setCountryCode` now writes the shared
+`Engine::countryCode` that `OnCreateApplication` reads for the first
+3,401-string language load, instead of a never-read private variable.
+The original ARM GOT and JNI call boundary confirm this handoff.
+Focused setter source-shape/strict fuzzy rises from **50.2%/20.0%**
+to **100%/100%** and is newly linked-exact; the JNI wrapper is also
+**100%/100%** but nonexact. The original-APK/OBB host gate passes
+Java-style codes 5, 8, 16 and -1 through the extracted JNI bodies
+to production `GameText`/`AEFile` at Windows `-O0/-O2`. Native `gof2`,
+**208/208** ARM units and **93** verifier tests (one skip) pass.
+Full corpus: **4,323/4,524** originals over **4,737** pairs,
+**94.39%/83.84%** mean source-shape/strict fuzzy, **2,580
+linked-exact** and **1,082 byte-exact**; zero exact-set losses.
+Recovered on-device Java/JNI startup ordering remains unverified.
+See [the ARM handoff evidence](JNI_COUNTRY_LANGUAGE_HANDOFF_ARM_2026-10-24.md).
 
 The original-archive host gate now runs production `GameText::setLanguage`
 through production `AEFile` and the source-extracted Android archive
