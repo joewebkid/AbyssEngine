@@ -3,9 +3,6 @@ GameText *GameText::gGameText = nullptr;
 #include "engine/file/AEFile.h"
 
 
-static unsigned short g_GameText_langReset_storage = 0;
-static unsigned short *g_GameText_langReset = &g_GameText_langReset_storage;
-
 void GameText::release() {
     if (this->textTable == nullptr)
         return;
@@ -36,11 +33,6 @@ void GameText::setSubstituteArray(int *pairs, unsigned count) {
     }
 }
 
-static const char *gLangPaths[17] = {
-    "gb.lang", "de.lang", "fr.lang", "it.lang", "es.lang", "ru.lang",
-    "pl.lang", "pt.lang", "cz.lang", "ar.lang", "gb.lang", "gb.lang",
-    "ptl.lang", "mex.lang", "ko.lang", "ja.lang", "gb.lang"
-};
 static const char gLangPathDefault[] = "gb.lang";
 static const char gLangPathEnglish[] = "gb.lang";
 
@@ -55,61 +47,59 @@ void GameText::setLanguage(short langId, int stringCount) {
     String path(gLangPathDefault);
 
     unsigned short code;
-    const char *p;
     switch (langId) {
-        case 0: p = gLangPaths[0];
+        case 0: path = String("gb.lang");
             code = 0;
             break;
-        case 1: p = gLangPaths[1];
+        case 1: path = String("de.lang");
             code = 1;
             break;
-        case 2: p = gLangPaths[2];
+        case 2: path = String("fr.lang");
             code = 2;
             break;
-        case 3: p = gLangPaths[3];
+        case 3: path = String("it.lang");
             code = 3;
             break;
-        case 4: p = gLangPaths[4];
+        case 4: path = String("es.lang");
             code = 4;
             break;
-        case 5: p = gLangPaths[5];
+        case 5: path = String("ru.lang");
             code = 5;
             break;
-        case 6: p = gLangPaths[6];
+        case 6: path = String("pl.lang");
             code = 6;
             break;
-        case 7: p = gLangPaths[7];
+        case 7: path = String("pt.lang");
             code = 7;
             break;
-        case 8: p = gLangPaths[8];
+        case 8: path = String("cz.lang");
             code = 8;
             break;
-        case 9: p = gLangPaths[9];
+        case 9: path = String("ar.lang");
             code = 9;
             break;
-        case 10: p = gLangPaths[10];
+        case 10: path = String("gb.lang");
             code = 0;
             break;
-        case 11: p = gLangPaths[11];
+        case 11: path = String("gb.lang");
             code = 0;
             break;
-        case 12: p = gLangPaths[12];
+        case 12: path = String("ptl.lang");
             code = 12;
             break;
-        case 13: p = gLangPaths[13];
+        case 13: path = String("mex.lang");
             code = 13;
             break;
-        case 14: p = gLangPaths[14];
+        case 14: path = String("ko.lang");
             code = 14;
             break;
-        case 15: p = gLangPaths[15];
+        case 15: path = String("ja.lang");
             code = 15;
             break;
-        default: p = gLangPaths[16];
+        default: path = String("gb.lang");
             code = 0;
             break;
     }
-    path = String(p);
     GameText::currentLang = code;
 
     if (AEFile::FileExist(path) == 0) {
@@ -147,14 +137,14 @@ int GameText::isNonArabicString(const unsigned short *str, unsigned int count) {
     return 0;
 }
 
-static const char gInitLangStr[] = "";
+static const char gInitLangStr[] = "Error Language";
 
 GameText::GameText() {
-    { if (this->fallbackText.data) delete[] this->fallbackText.data; this->fallbackText.data = nullptr; this->fallbackText.length = 0; }
-    *g_GameText_langReset = 0xffff;
+    GameText::currentLang = 0xffff;
     this->textTable = nullptr;
     this->textCount = 0;
     String tmp(gInitLangStr);
+    this->fallbackText = tmp;
 }
 
 static const unsigned int gArabForms[(0x334 / 20) * 5] = {0};

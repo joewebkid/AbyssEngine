@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`RecordHandler::loadOptions` and Android language handoff;
+Last reviewed: 2026-10-24 (`GameText` constructor and language paths;
 earlier subsystem snapshots retain their dates)
+
+`GameText` now initializes the shared language to `0xffff` and stores
+the original `Error Language` fallback. Its language switch constructs
+the ARM-backed `.lang` path in each branch instead of selecting from a
+pointer table. Focused source-shape/strict fuzzy rose from
+**87.1%/82.2% to 100.0%/98.3%** for the constructor and from
+**51.0%/28.6% to 98.0%/89.3%** for `setLanguage(short,int)`; neither
+is exact. Native `gof2`, **208/208** ARM units and the **93-test**
+verifier suite (one skip) pass. The full corpus compares **4,323/4,524**
+originals over **4,737** pairs at **94.36%/83.79%** mean
+source-shape/strict fuzzy, with **2,579 linked-exact** and **1,082
+byte-exact**; no exact pairs were lost. Live recovered APK language
+loading is not yet proven. See [the constructor and language-path ARM
+evidence](GAMETEXT_CTOR_LANGUAGE_PATHS_ARM_2026-10-24.md).
 
 `RecordHandler::loadOptions` now uses the ARM-backed `Globals` state
 instead of nine never-assigned null pointers. `GameText` now treats
