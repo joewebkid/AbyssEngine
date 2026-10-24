@@ -119,7 +119,12 @@ int main(int argc, char **argv) {
     assert(std::filesystem::is_regular_file(realAssetDirectory / "agents.bin"));
     assert(std::filesystem::is_regular_file(realAssetDirectory / "wanted.bin"));
     ReadOnlyAssetFileInterface interface;
+    char rootPath[] = "asset-root";
+    AEFile::appRoot = rootPath;
     AEFile::SetInterface(&interface);
+    assert(interface.appRootDir() == rootPath);
+    assert(interface.saveDirectoryResets() == 0);
+    AEFile::appRoot = nullptr;
     FileRead reader;
 
     assert(reader.loadWeaponPositions(63) == nullptr);

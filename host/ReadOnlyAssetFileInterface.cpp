@@ -122,11 +122,13 @@ uint32_t ReadOnlyAssetFileInterface::Write(uint32_t, const void *) { return 0; }
 uint32_t ReadOnlyAssetFileInterface::FileDelete(String) { return 0; }
 uint32_t ReadOnlyAssetFileInterface::GetDeviceFreeSpace() { return 0; }
 const char *ReadOnlyAssetFileInterface::GetAppRootDir() { return ""; }
-void ReadOnlyAssetFileInterface::SetAppRootDir(void *) {}
+void *ReadOnlyAssetFileInterface::appRootDir() const { return appRootDir_; }
+unsigned ReadOnlyAssetFileInterface::saveDirectoryResets() const { return saveDirectoryResets_; }
+void ReadOnlyAssetFileInterface::SetAppRootDir(void *path) { appRootDir_ = path; }
 void ReadOnlyAssetFileInterface::SetZipDirectory(void *) {}
 uint32_t ReadOnlyAssetFileInterface::FileEnumInit(char *, bool) { return 0; }
 uint32_t ReadOnlyAssetFileInterface::FileGetNextEnum(String &) { return 0; }
 String ReadOnlyAssetFileInterface::GetDirPreFix() { return String(""); }
 char *ReadOnlyAssetFileInterface::Output(char *line) { return line; }
 void ReadOnlyAssetFileInterface::SetSaveDirectory(String) {}
-void ReadOnlyAssetFileInterface::ResetSaveDirectory() {}
+void ReadOnlyAssetFileInterface::ResetSaveDirectory() { ++saveDirectoryResets_; }

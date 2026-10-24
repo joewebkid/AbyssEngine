@@ -5,7 +5,6 @@
 static FileInterface *g_AEFile_fileInterface = nullptr;
 static Array<AELowLevelFile *> *g_AEFile_openFiles = nullptr;
 static Array<AEPakFileEntry *> *g_AEFile_pakFiles = nullptr;
-static uint32_t g_AEFile_initialized = 0;
 
 namespace {
     inline void AEStr_set(String &self, const char *s) { self.Set_char(s); }
@@ -33,8 +32,8 @@ void AEFile::SetInterface(FileInterface *fileInterface) {
         return;
     }
 
-    if (g_AEFile_initialized != 0) {
-        fileInterface->ResetSaveDirectory();
+    if (appRoot != nullptr) {
+        fileInterface->SetAppRootDir(appRoot);
     }
 
     if (g_AEFile_pakFiles == nullptr) {

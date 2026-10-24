@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (AEFile switched-string ABI closure;
+Last reviewed: 2026-10-24 (AEFile interface app-root handoff;
 earlier subsystem snapshots retain their dates)
+
+`AEFile::SetInterface` now forwards the saved `appRoot` pointer to the
+new interface's `SetAppRootDir`, matching Android ARM's virtual call at
+`0x701bc`. The previous path instead called `ResetSaveDirectory` behind a
+flag never set in this source. Focused source-shape/strict fuzzy improves
+**79.2%/61.2% → 90.2%/75.8%**; the function is not exact. A host test
+with original game resource files passes at `-O0/-O2`, as do native
+`gof2`, **208/208** ARM units and **93** verifier tests (one skip). Full
+corpus: **4,323/4,524** originals over **4,737** pairs,
+**94.24%/83.62%** mean source-shape/strict fuzzy, **2,572 linked-exact**,
+**1,082 byte-exact**, zero exact-set losses. No in-tree producer for
+`appRoot`, genuine save fixture or live Android execution is confirmed;
+see [the interface handoff evidence](AEFILE_SET_INTERFACE_APP_ROOT_ARM_2026-10-24.md).
 
 `AEFile::ReadSwitched(String&, unsigned)` now returns the ARM-observed
 success flag instead of `void`, including zero on either read failure.

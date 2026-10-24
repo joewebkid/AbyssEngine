@@ -20,6 +20,8 @@ public:
                   const std::filesystem::path &physicalDirectory);
     unsigned opens() const;
     unsigned closes() const;
+    void *appRootDir() const;
+    unsigned saveDirectoryResets() const;
 
     void *OpenRead(String name, int size, bool windowed, int packedSize,
                    int rawSize, unsigned offset) override;
@@ -58,6 +60,8 @@ private:
 
     std::shared_ptr<Shared> shared_;
     std::FILE *stream_ = nullptr;
+    void *appRootDir_ = nullptr;
+    unsigned saveDirectoryResets_ = 0;
 };
 
 #endif
