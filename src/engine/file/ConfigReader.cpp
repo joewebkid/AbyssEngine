@@ -135,7 +135,7 @@ namespace AbyssEngine {
                     if (*last == ']') {
                         for (uint32_t i = 0; i < tokens.size(); i++) {
                             TokenStruct *token = tokens[i];
-                            String section = line.SubString(1, 1 + (line.size() - 1));
+                            String section = line.SubString(1, line.size() - 1);
                             if (token->name.Compare(section) == 0) {
                                 token->read(this, token->context);
                                 break;

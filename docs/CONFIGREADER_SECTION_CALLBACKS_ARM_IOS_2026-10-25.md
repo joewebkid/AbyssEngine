@@ -24,28 +24,41 @@ builds up to 64 temporary `KeyCode` entries, applies the mapping only when all
 64 entries are present, then frees the temporary entries. `VIBRATION` sets the
 engine flag for `ON`. Malformed or incomplete key maps are not applied.
 
+The next parser pass corrected the section-name slice in `ParseFile`: the
+previous end position included the closing `]`, so none of these registered
+names matched a file section. ARM instructions at `0x87730..0x8773c` pass
+`1` and `line length - 1` to `String::SubString`; the source now does the
+same. `String::SubString` treats its second argument as an exclusive end.
+
 ## Verification and limits
 
 - Focused ARM verification: constructor C1/C2 each improved from **50.1%**
   source-shape and **27.0%** strict fuzzy to **99.5%** and **98.8%**. These
-  constructor symbols are not exact matches. `ParseFile` remains **95.0%**
-  source-shape and **82.9%** strict fuzzy, unchanged.
+  constructor symbols are not exact matches. `ParseFile` measured **95.0%**
+  source-shape and **82.9%** strict fuzzy after the constructor pass; the
+  section-bound fix raises it to **95.4%** and **83.4%**, still nonexact.
 - ARM compilation: **209/209** translation units. Native `gof2` builds.
-- A host smoke test extracts the production callback and constructor source,
-  compiles it at `-O0` and `-O2`, and reads the original iOS configuration. It
-  checks all three registrations, the 64-key map, and incomplete/EOF/OFF
-  cases. Verifier suite: **95 tests passed, one skipped**.
+- A host smoke test extracts the production callbacks, constructor and
+  `ParseFile` body, compiles them at `-O0` and `-O2`, and reads the original
+  iOS configuration. It checks all three registrations, parser dispatch,
+  the 64-key map, and incomplete/EOF/OFF cases. Verifier suite: **95 tests
+  passed, one skipped**.
 - Full ARM corpus: **4,323/4,524** original functions covered over **4,741**
   comparisons, mean source-shape **94.63%** and strict fuzzy **84.14%**.
   There are **2,597 linked-exact** and **1,082 byte-exact** matches, with
-  **zero losses** from the preceding corpus. Three newly linked-exact helper
-  instantiations account for the linked-exact increase, not the constructor.
+  **zero losses** from the preceding corpus; the parser-bound pass leaves
+  these whole-corpus totals unchanged and loses no exact symbols. Three
+  newly linked-exact helper instantiations account for the linked-exact
+  increase, not the constructor.
 - The host smoke test substitutes a small `String`, `Array`, file-line, and
-  application-manager seam. It does not prove production `ParseFile`, Android
-  archive decoding, or live engine initialization. These remain next runtime
+  application-manager seam. It runs the production `ParseFile` body but does
+  not prove production `AEFile::OpenRead`, `GetNewLine`, Android archive
+  decoding, or live engine initialization. These remain next runtime
   priorities; do not infer full behavior or ABI fidelity from the focused
   source-shape percentage.
 
 The local reports are `_work/config_reader_callbacks_before_20261025.json`,
 `_work/config_reader_callbacks_after_20261025.json`, and
-`_work/config_reader_callbacks_full_20261025.json` (ignored by Git).
+`_work/config_reader_callbacks_full_20261025.json`, plus the parser-pass
+`_work/config_reader_parsefile_after_20261025.json` and
+`_work/config_reader_parsefile_full_20261025.json` (ignored by Git).

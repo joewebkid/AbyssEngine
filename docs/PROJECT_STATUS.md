@@ -7,14 +7,22 @@ earlier subsystem snapshots retain their dates)
 `VIBRATION` sections instead of placeholder names and empty callbacks.
 The restored handlers set the timer, accept only a complete 64-entry
 keymap, and enable vibration for `ON`; the original iOS configuration
-confirms the timer and keymap data. Both constructor variants rise from
+confirms the timer and keymap data. `ParseFile` now strips the closing
+`]` before comparing a section name, as ARM `0x87730..0x8773c` does;
+previously no registered section could match. Both constructor variants
+rise from
 **50.1%/27.0%** to **99.5%/98.8%** focused source-shape/strict fuzzy.
+`ParseFile` rises from **95.0%/82.9%** to **95.4%/83.4%** and remains
+nonexact. The host gate now runs the production parser body on the
+original iOS configuration at `-O0/-O2`, with file and line-reading
+services substituted.
 Native `gof2`, **209/209** ARM units, **95** verifier tests (one skip),
 and an `-O0`/`-O2` host smoke test pass. Full corpus: **4,323/4,524**
 originals over **4,741** pairs, **94.63%/84.14%** mean source-shape/
 strict fuzzy, **2,597 linked-exact** and **1,082 byte-exact**, with
-zero exact-set losses. The host seam does not validate production file
-parsing or live Android startup. See [the ConfigReader ARM/iOS evidence](CONFIGREADER_SECTION_CALLBACKS_ARM_IOS_2026-10-25.md).
+zero exact-set losses in the fresh parser corpus. Actual
+`AEFile::OpenRead`, `GetNewLine`, and live Android startup remain untested.
+See [the ConfigReader ARM/iOS evidence](CONFIGREADER_SECTION_CALLBACKS_ARM_IOS_2026-10-25.md).
 
 The Android store item-info setter now releases its 25 JNI UTF
 strings through the ARM-backed `releaseStringUTFChars` helper rather
