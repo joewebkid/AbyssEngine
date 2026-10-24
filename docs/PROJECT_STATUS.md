@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (PlayerAsteroid loot-flag byte ABI;
+Last reviewed: 2026-10-24 (PlayerAsteroid push matrix recovery;
 earlier subsystem snapshots retain their dates)
+
+`PlayerAsteroid::push` now constructs the one ARM-observed 15-float
+matrix and multiplies the geometry matrix reference directly, removing
+redundant construction and a 60-byte copy. Focused source-shape/strict
+fuzzy improves **83.6%/44.9% → 97.8%/77.8%**, still nonexact. The
+extracted method passes timer, matrix-order and motion checks at host
+`-O0/-O2`. Native `gof2`, **208/208** ARM units and **93** verifier
+tests pass (one skip). The full corpus compares **4,323/4,524**
+originals over **4,736** pairs, mean **94.17%/83.51%** source-shape/
+strict fuzzy, with **2,562 linked-exact** and **1,082 byte-exact**;
+no exact pairs were lost. Live motion is unverified while ADB lists no
+device. See [push matrix evidence](PLAYER_ASTEROID_PUSH_MATRIX_ARM_2026-10-24.md).
 
 `PlayerAsteroid` now reads and writes its loot flag as the Android
 ARM-observed byte at base offset `0x4c`, rather than treating all four

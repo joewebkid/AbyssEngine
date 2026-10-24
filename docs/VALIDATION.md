@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerAsteroid push matrix recovery (2026-10-24)
+
+Android ARM `PlayerAsteroid::push` builds one literal matrix and passes
+the geometry matrix reference directly to the left side of the multiply.
+Removing redundant construction and the geometry copy moves focused
+source-shape/strict fuzzy **83.6%/44.9% → 97.8%/77.8%**, nonexact.
+The extracted method passes host `-O0/-O2` timer, matrix-order and
+motion checks. Native `gof2`, 208/208 ARM units and 93 verifier tests
+pass (one skip). The full corpus is **4,323/4,524** originals across
+**4,736** pairs, mean **94.17%/83.51%**, with **2,562 linked-exact**
+and **1,082 byte-exact** and no pairwise exact losses. Live motion is
+unverified. See [the evidence](PLAYER_ASTEROID_PUSH_MATRIX_ARM_2026-10-24.md).
+
 ## PlayerAsteroid loot-flag byte ABI (2026-10-24)
 
 Android ARM `PlayerAsteroid` constructor and `update` use byte accesses

@@ -231,17 +231,18 @@ void PlayerAsteroid::push(int delta) {
     this->pushTimer() = remaining;
     float t = (float) remaining / (float) this->pushDuration();
 
-    Matrix identity;
-    identity = AbyssEngine::AEMath::Matrix();
-    Matrix rotation;
+    // ARM 0xe2c04-0xe2c44 initializes this literal before MatrixSetRotation.
+    Matrix rotation(1.0f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f,
+                    1.0f, 1.0f, 1.0f);
     MatrixSetRotation(rotation, t * this->pushSpin().x, t * this->pushSpin().y,
                       t * this->pushSpin().z);
 
     int frameDelta = this->lastDelta;
     AEGeometry *geometry = this->geometry;
     if (frameDelta > 0) {
-        Matrix geometryMatrix = geometry->getMatrix();
-        Matrix combined = geometryMatrix * rotation;
+        Matrix combined = geometry->getMatrix() * rotation;
         geometry->setMatrix(combined);
         frameDelta = this->lastDelta;
     }
