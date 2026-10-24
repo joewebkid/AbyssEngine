@@ -1,6 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Pan first-friend Route clone host runtime;
+Last reviewed: 2026-10-24 (Level createGun resource table recovery;
+earlier subsystem snapshots retain their dates)
+
+`Level::createGun` now reads the two original 233-entry ARM resource/sound
+tables instead of null pointers, uses `Globals::items` for bomb attributes,
+and restores the ID-48 offset and 41–46 sound cascade. The original-byte
+table check and source-extracted host branches pass at `-O0/-O2`; native
+`gof2`, 208/208 ARM units and 93 verifier tests pass (one skip). Focused
+source-shape/strict fuzzy improves **53.2%/17.3% → 84.8%/31.6%**;
+full corpus remains **4,323/4,524** originals across **4,736** pairs,
+with mean **94.10%/83.42%**, **2,557 linked-exact** and **1,082 byte-exact**
+pairs and no exact-pair losses. Real weapon constructors in an asset scene
+and Android firing remain unverified. See
+[the createGun evidence](LEVEL_CREATE_GUN_RESOURCE_TABLE_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (Pan first-friend Route clone host runtime;
 earlier subsystem snapshots retain their dates)
 
 The original-asset Pan stage-one gate now executes the production
