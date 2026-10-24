@@ -42,9 +42,23 @@ linked-exact** and **1,082 byte-exact**. Relative to the preceding
 report, only `ndk23_setCountryCode` enters the linked-exact set;
 no linked- or byte-exact pair is lost.
 
+The installed original APK is byte-identical to the local 2.0.16 APK
+(SHA-256 `515fc9a651057130c7b2b1c47bb497c61ebaebb0c567d413b5bd5453c13b221c`).
+Its DEX shows `GOF2HD2012.onCreate` at `0x21c118`: it obtains
+`Locale.getDefault().getLanguage()` and `.getCountry()`, then calls
+`setCountry` at `0x21c386`. That method at `0x21c690` uppercases the
+language argument and calls `ToJNI.setCountryCodeOfDevice` with GB=0,
+DE=1, FR=2, IT=3, ES=4, RU=5, PL=6, PT=7, KR=14, JP=15, or 0 for
+other languages. The country argument is unused. The only DEX call to
+`ToJNI.initialize` is in `GLViewRenderer.onSurfaceChanged` at
+`0x21b8be`, guarded by its `initialized` flag. This confirms the
+intended Java-to-native startup handoff, but not a strict cross-thread
+happens-before order: `onCreate` calls `setContentView(mGLView)` at
+`0x21c2b6`, before the locale setter, and the renderer callback can
+run on the GL thread. A live call-order trace is still needed to rule
+out an early first-frame initialization race.
+
 This is not the recovered Android app running on-device: JNI is
 executed as source-extracted host code, and archive access uses
-libarchive rather than the original libzip/JNI environment. It does
-not prove that the Java app invokes the method before native
-initialization or that settings reload succeeds. Those runtime
-ordering and recovered-device checks remain next priorities.
+libarchive rather than the original libzip/JNI environment. Settings
+reload and recovered-device execution also remain unverified.

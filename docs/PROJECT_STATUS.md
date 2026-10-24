@@ -16,7 +16,10 @@ to production `GameText`/`AEFile` at Windows `-O0/-O2`. Native `gof2`,
 Full corpus: **4,323/4,524** originals over **4,737** pairs,
 **94.39%/83.84%** mean source-shape/strict fuzzy, **2,580
 linked-exact** and **1,082 byte-exact**; zero exact-set losses.
-Recovered on-device Java/JNI startup ordering remains unverified.
+The byte-identical original APK DEX confirms `onCreate` calls the
+country-code setter and `GLViewRenderer.onSurfaceChanged` calls native
+initialization. However `setContentView` precedes the setter, so a
+cross-thread first-frame race is not excluded without a live trace.
 See [the ARM handoff evidence](JNI_COUNTRY_LANGUAGE_HANDOFF_ARM_2026-10-24.md).
 
 The original-archive host gate now runs production `GameText::setLanguage`
