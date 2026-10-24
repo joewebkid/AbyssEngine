@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Level procedural route generation;
+Last reviewed: 2026-10-24 (Level sentry-gun initialization;
 earlier subsystem snapshots retain their dates)
+
+`Level::createSentryGuns` now positions each new gun at the Android
+ARM-confirmed `(50000,50000,50000)` float coordinates and calls
+`setActive(false)` before appending it, instead of using an unrelated
+integer-derived coordinate and leaving it active. Pointer truncation
+through 32-bit `int` was removed for the native x64 host. Focused
+source-shape/strict fuzzy rises **96.8%/98.2% → 100%/100%**, though
+the function remains nonexact. Native `gof2`, **208/208** ARM units and
+**93** verifier tests pass (one skip). The full corpus compares
+**4,323/4,524** originals across **4,736** pairs, mean
+**94.14%/83.47%**, with **2,560 linked-exact** and **1,082 byte-exact**
+pairs and no exact-pair losses. Live sentry behavior and the pending
+first-friend ship-insertion gate remain unverified while ADB lists no
+device. See [sentry-gun evidence](LEVEL_SENTRY_GUNS_ARM_2026-10-24.md).
 
 `Level::createRoute` now uses the Android ARM-confirmed bounded
 `nextInt(30000)` draws for the first and subsequent waypoint heights,

@@ -4777,22 +4777,22 @@ void Level::reset() {
 }
 
 void Level::createSentryGuns() {
-    int ship = (int) (intptr_t) Status::gStatus->getShip();
-    if (((Ship *) (ship))->getFirstEquipmentOfSort(0x27) != 0) {
+    Ship *ship = Status::gStatus->getShip();
+    if (ship->getFirstEquipmentOfSort(0x27) != 0) {
         field_b0 = new Array<KIPlayer *>();
         ArraySetLength(9, *field_b0);
         if (enemies == nullptr) {
             enemies = new Array<KIPlayer *>();
         }
-        int color = 0x9923e035;
         for (unsigned int i = 0; i < field_b0->size(); i = i + 1) {
-            int obj = createStaticObject((Waypoint *) (intptr_t) 0, i / 3 + 0x49c0, 1);
-            (*field_b0)[i] = (KIPlayer *) (intptr_t) obj;
+            KIPlayer *obj = reinterpret_cast<KIPlayer *>(createStaticObject(nullptr, i / 3 + 0x49c0, true));
+            (*field_b0)[i] = obj;
             KIPlayer *k = (*field_b0)[i];
             k->player->setRadius(800);
             k->player->setAlwaysFriend(1);
             k->player->setMaxHitpoints(100);
-            k->setPosition((float) color, (float) color, (float) color);
+            k->setPosition(50000.0f, 50000.0f, 50000.0f);
+            k->setActive(false);
             ArrayAdd(k, *enemies);
         }
     }

@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level sentry-gun initialization (2026-10-24)
+
+Original Android `Level::createSentryGuns` uses `50000.0f` for each
+position axis and deactivates each gun before appending it. The C++
+correction moves focused ARM source-shape/strict fuzzy **96.8%/98.2%
+→ 100%/100%**, still nonexact. Native `gof2`, 208/208 ARM units and
+93 verifier tests pass (one skip). The full corpus compares
+4,323/4,524 originals across 4,736 pairs, mean **94.14%/83.47%**,
+with **2,560 linked-exact** and **1,082 byte-exact**, no losses and
+one additional 100%-fuzzy pair. Live sentry behavior remains untested.
+See [the evidence](LEVEL_SENTRY_GUNS_ARM_2026-10-24.md).
+
 ## Level procedural route generation (2026-10-24)
 
 Original Android `Level::createRoute` calls `nextInt(30000)` in both
