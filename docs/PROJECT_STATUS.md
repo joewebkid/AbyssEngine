@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (Android JNI touch queue handoff;
+Last reviewed: 2026-10-25 (Android Google Play SKU JNI recovery;
 earlier subsystem snapshots retain their dates)
+
+The Android Google Play SKU JNI getters now return the ten product IDs
+confirmed at ARM `0x6b8dc` and `0x6b940`, instead of invented `dlcN`
+and `creditpackN` names. The original APK DEX confirms both `(I)String`
+entry points and 0..4 indexes. Focused source-shape/strict fuzzy for
+both getters rises from **48.1%/34.0%** to **100.0%/100.0%**; neither
+is exact. Native `gof2`, **209/209** ARM units and **94** verifier
+tests (one skip) pass. Full corpus: **4,323/4,524** originals over
+**4,737** pairs, **94.60%/84.11%** mean source-shape/strict fuzzy,
+**2,594 linked-exact** and **1,082 byte-exact**, zero exact-set losses.
+Recovered live billing remains unverified. See
+[the SKU JNI ARM evidence](ANDROID_JNI_GOOGLEPLAY_SKU_ARM_2026-10-25.md).
 
 Android `ToJNI.handleTouchEvent(IIII)V` now forwards four integer
 values to `ndk23_handleTouchScreenEvent`, which enqueues them with

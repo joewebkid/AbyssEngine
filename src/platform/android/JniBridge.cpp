@@ -667,34 +667,28 @@ extern "C" void Java_net_fishlabs_googleplay_ToJNI_iapResetNativeItemInformation
     ndk_resetNativeItemInformationList();
 }
 
-static const char *const kConsumableSKU[5] = {
-    "net.fishlabs.gof2hd2012.creditpack1",
-    "net.fishlabs.gof2hd2012.creditpack2",
-    "net.fishlabs.gof2hd2012.creditpack3",
-    "net.fishlabs.gof2hd2012.creditpack4",
-    "net.fishlabs.gof2hd2012.creditpack5",
-};
-
-static const char *const kPremiumSKU[5] = {
-    "net.fishlabs.gof2hd2012.dlc1",
-    "net.fishlabs.gof2hd2012.dlc2",
-    "net.fishlabs.gof2hd2012.dlc3",
-    "net.fishlabs.gof2hd2012.dlc4",
-    "net.fishlabs.gof2hd2012.dlc5",
-};
-
 extern "C" jstring Java_net_fishlabs_googleplay_ToJNI_gof2hd2012getConsumableSKU(
     JNIEnv *env, jclass /*clazz*/, jint index) {
-    if (index < 0 || index > 4)
-        return nullptr;
-    return env->NewStringUTF(kConsumableSKU[index]);
+    switch (index) {
+    case 0: return env->NewStringUTF("iap_managed_credits_100_000");
+    case 1: return env->NewStringUTF("iap_managed_credits_300_000");
+    case 2: return env->NewStringUTF("iap_managed_credits_1_000_000");
+    case 3: return env->NewStringUTF("iap_managed_credits_3_000_000");
+    case 4: return env->NewStringUTF("iap_managed_10_000_000");
+    default: return nullptr;
+    }
 }
 
 extern "C" jstring Java_net_fishlabs_googleplay_ToJNI_gof2hd2012getPremiumSKU(
     JNIEnv *env, jclass /*clazz*/, jint index) {
-    if (index < 0 || index > 4)
-        return nullptr;
-    return env->NewStringUTF(kPremiumSKU[index]);
+    switch (index) {
+    case 0: return env->NewStringUTF("iap_managed_valkyrie");
+    case 1: return env->NewStringUTF("iap_managed_kaamo_club");
+    case 2: return env->NewStringUTF("iap_managed_supernova");
+    case 3: return env->NewStringUTF("iap_managed_vip");
+    case 4: return env->NewStringUTF("iap_managed_full_package");
+    default: return nullptr;
+    }
 }
 
 extern "C" jstring Java_net_fishlabs_googleplay_ToJNI_gof2hd2012apk(
