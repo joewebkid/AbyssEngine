@@ -81,10 +81,7 @@ String PlayerAsteroid::getQualityString() {
     } else {
         text = g_playerAsteroidQualityDefault;
     }
-    String result;
-    for (const char *p = text; *p; ++p)
-        { int _nl = result.length + 1; unsigned short *_nd = new unsigned short[_nl + 1]; for (int _i = 0; _i < result.length; _i++) _nd[_i] = result.data[_i]; _nd[result.length] = (unsigned short) ((char16_t) (unsigned char) *p); _nd[_nl] = 0; if (result.data) delete[] result.data; result.data = _nd; result.length = _nl; }
-    return result;
+    return String(text, false);
 }
 
 void PlayerAsteroid::update(int delta) {

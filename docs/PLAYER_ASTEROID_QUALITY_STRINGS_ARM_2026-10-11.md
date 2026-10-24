@@ -25,3 +25,7 @@ lost linked-exact or byte-exact pairs.
 The unrelated `RecordHandler` hash functions also have empty salt arrays,
 but their key pointers are null as well. They need a separate, end-to-end
 semantic repair and are not changed here.
+
+Update 2026-10-24: the manual string construction described above was
+replaced with the ARM-observed constructor call; see
+[the constructor recovery](PLAYER_ASTEROID_QUALITY_CONSTRUCTOR_ARM_2026-10-24.md).

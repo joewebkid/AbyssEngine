@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (PlayerAsteroid projection static-vector mutation;
+Last reviewed: 2026-10-24 (PlayerAsteroid quality-string constructor;
 earlier subsystem snapshots retain their dates)
+
+`PlayerAsteroid::getQualityString` now calls the existing `String(const
+char *, bool)` constructor with `false`, as Android ARM does, instead of
+manually growing a UTF-16 buffer. The confirmed C/B/A/D/E selection is
+unchanged. Focused source-shape/strict fuzzy improves **35.7%/18.4% →
+90.7%/91.3%**; the 23-instruction function remains nonexact. Native
+`gof2`, **208/208** ARM units and **93** verifier tests pass (one skip).
+The full corpus compares **4,323/4,524** originals over **4,736** pairs,
+mean **94.19%/83.53%**, with **2,563 linked-exact** and **1,082
+byte-exact**, no exact losses. Live quality display remains unverified.
+See [constructor evidence](PLAYER_ASTEROID_QUALITY_CONSTRUCTOR_ARM_2026-10-24.md).
 
 `PlayerAsteroid::getProjectionVector` now copies its input before
 mutating the class-static `pos`, subtracts into `pos`, and follows the

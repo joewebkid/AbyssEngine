@@ -4,6 +4,17 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerAsteroid quality-string constructor (2026-10-24)
+
+Android ARM calls `String(const char *, bool)` with `false` after selecting
+the quality letter. Replacing manual UTF-16 buffer growth moves focused
+source-shape/strict fuzzy **35.7%/18.4% → 90.7%/91.3%**; the function
+remains nonexact. Native `gof2`, 208/208 ARM units and 93 verifier tests
+pass (one skip). The full corpus is **4,323/4,524** originals over
+**4,736** pairs, mean **94.19%/83.53%**, with **2,563 linked-exact**
+and **1,082 byte-exact**; pairwise exact losses are zero. Live display
+is untested. See [the evidence](PLAYER_ASTEROID_QUALITY_CONSTRUCTOR_ARM_2026-10-24.md).
+
 ## PlayerAsteroid projection static-vector mutation (2026-10-24)
 
 Android ARM `getProjectionVector` copies the input before changing
