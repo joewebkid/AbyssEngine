@@ -210,11 +210,11 @@ extern "C" __attribute__((noinline)) void ndk23_setCountryCode(unsigned int code
     AbyssEngine::Engine::countryCode = code < 16 ? code : 0;
 }
 
-extern "C" int ndk23_getExitFlag() {
+extern "C" __attribute__((noinline)) int ndk23_getExitFlag() {
     return forceExit;
 }
 
-extern "C" int ndk23_getScreenshotFlag() {
+extern "C" __attribute__((noinline)) int ndk23_getScreenshotFlag() {
     return 0;
 }
 
@@ -376,14 +376,15 @@ extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_renderstep(
     ndk23_renderstep(width, height);
 }
 
-extern "C" jboolean Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getExitFlag(
+// The original JNI exports tail-call their integer native sources without normalization.
+extern "C" jint Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getExitFlag(
     JNIEnv * /*env*/, jclass /*clazz*/) {
-    return ndk23_getExitFlag() != 0;
+    return ndk23_getExitFlag();
 }
 
-extern "C" jboolean Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getScreenshotFlag(
+extern "C" jint Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getScreenshotFlag(
     JNIEnv * /*env*/, jclass /*clazz*/) {
-    return ndk23_getScreenshotFlag() != 0;
+    return ndk23_getScreenshotFlag();
 }
 
 extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_resetScreenshotFlag(
@@ -510,12 +511,12 @@ void setValuesForGamepad(float x, float y) {
     g_stick.savedY = y;
 }
 
-extern "C" jboolean Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getDLC1BOUGHT(
+extern "C" jint Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getDLC1BOUGHT(
     JNIEnv * /*env*/, jclass /*clazz*/) {
     return ndk_getDLC_1_BOUGHT();
 }
 
-extern "C" jboolean Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getDLC2BOUGHT(
+extern "C" jint Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getDLC2BOUGHT(
     JNIEnv * /*env*/, jclass /*clazz*/) {
     return ndk_getDLC_2_BOUGHT();
 }
@@ -613,29 +614,29 @@ extern "C" void Java_net_fishlabs_gof2hdallandroid2012_GOF2HD2012_SetGPIsLinked(
     g_android_gp_is_linked = linked;
 }
 
-extern "C" jboolean Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getDLC3BOUGHT(
+extern "C" jint Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getDLC3BOUGHT(
     JNIEnv * /*env*/, jclass /*clazz*/) {
     return ndk_getDLC_3_BOUGHT();
 }
 
-extern "C" jboolean Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getDLC4BOUGHT(
+extern "C" jint Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getDLC4BOUGHT(
     JNIEnv * /*env*/, jclass /*clazz*/) {
     return ndk_getDLC_4_BOUGHT();
 }
 
-extern "C" jboolean Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getDLC5BOUGHT(
+extern "C" jint Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getDLC5BOUGHT(
     JNIEnv * /*env*/, jclass /*clazz*/) {
     return ndk_getDLC_5_BOUGHT();
 }
 
-extern "C" jboolean Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getLogoShown(
+extern "C" jint Java_net_fishlabs_gof2hdallandroid2012_ToJNI_getLogoShown(
     JNIEnv * /*env*/, jclass /*clazz*/) {
-    return ndk_getLogoShown() != 0;
+    return ndk_getLogoShown();
 }
 
-extern "C" jboolean Java_net_fishlabs_gof2hdallandroid2012_ToJNI_isInMainMenu(
+extern "C" jint Java_net_fishlabs_gof2hdallandroid2012_ToJNI_isInMainMenu(
     JNIEnv * /*env*/, jclass /*clazz*/) {
-    return ndk_isInMainMenu() != 0;
+    return ndk_isInMainMenu();
 }
 
 extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_resize(

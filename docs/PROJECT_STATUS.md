@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Android JNI country-code language handoff;
+Last reviewed: 2026-10-25 (Android JNI integer getter ABI;
 earlier subsystem snapshots retain their dates)
+
+The original APK DEX declares nine Android JNI flag/DLC getters as
+integer-returning, and ARM returns the raw native integer or DLC
+option byte. Recovered `jboolean` wrappers and booleanized DLC helpers
+are corrected. Focused source-shape/strict fuzzy is **100%/100%** for
+the five DLC JNI wrappers, five native DLC getters, `getExitFlag`,
+`getLogoShown` and `isInMainMenu`; the ten DLC functions plus the last
+two wrappers become linked-exact. `getScreenshotFlag` remains
+nonexact because Clang folds its known-zero callee. Native `gof2`,
+**208/208** ARM units and **93** verifier tests (one skip) pass. Full
+corpus: **4,323/4,524** originals over **4,737** pairs,
+**94.56%/84.05%** mean source-shape/strict fuzzy, **2,592
+linked-exact** and **1,082 byte-exact**, zero exact-set losses.
+Recovered on-device JNI execution remains unverified. See
+[the ARM flag-return evidence](JNI_INTEGER_FLAG_RETURNS_ARM_2026-10-24.md).
 
 Android `ndk23_setCountryCode` now writes the shared
 `Engine::countryCode` that `OnCreateApplication` reads for the first

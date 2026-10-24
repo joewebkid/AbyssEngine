@@ -146,24 +146,24 @@ int ndk_isInMainMenu() {
     return Globals::isInMainMenu;
 }
 
-bool ndk_getDLC_1_BOUGHT() {
-    return gEngine != nullptr && Globals::options[0x35] != 0;
+int ndk_getDLC_1_BOUGHT() {
+    return gEngine != nullptr ? Globals::options[0x35] : 0;
 }
 
-bool ndk_getDLC_2_BOUGHT() {
-    return gEngine != nullptr && Globals::options[0x36] != 0;
+int ndk_getDLC_2_BOUGHT() {
+    return gEngine != nullptr ? Globals::options[0x36] : 0;
 }
 
-bool ndk_getDLC_3_BOUGHT() {
-    return gEngine != nullptr && Globals::options[0x37] != 0;
+int ndk_getDLC_3_BOUGHT() {
+    return gEngine != nullptr ? Globals::options[0x37] : 0;
 }
 
-bool ndk_getDLC_4_BOUGHT() {
-    return gEngine != nullptr && Globals::options[0x38] != 0;
+int ndk_getDLC_4_BOUGHT() {
+    return gEngine != nullptr ? Globals::options[0x38] : 0;
 }
 
-bool ndk_getDLC_5_BOUGHT() {
-    return gEngine != nullptr && Globals::options[0x39] != 0;
+int ndk_getDLC_5_BOUGHT() {
+    return gEngine != nullptr ? Globals::options[0x39] : 0;
 }
 #endif
 
