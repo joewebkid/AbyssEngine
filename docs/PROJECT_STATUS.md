@@ -1,6 +1,17 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Pan first-friend Player setup host runtime;
+Last reviewed: 2026-10-24 (Pan first-friend Route clone host runtime;
+earlier subsystem snapshots retain their dates)
+
+The original-asset Pan stage-one gate now executes the production
+`Route::clone` dependency on the first ordinary friend's route in both the
+plain and docking-target forms. Host SwiftShader `-O0/-O2` passes, and both
+NDK r18b ARMv7 fixture executables compile and link. Android device runtime,
+the actual `PlayerFighter` constructor and subsequent ship insertion remain
+unverified. No production C++ or corpus metrics changed. See
+[the Route clone evidence](LEVEL_STAGE1_FIRST_FRIEND_ROUTE_CLONE_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (Pan first-friend Player setup host runtime;
 earlier subsystem snapshots retain their dates)
 
 The original-asset Pan stage-one chain now executes the production
