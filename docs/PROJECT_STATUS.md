@@ -1,6 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Pan stage-one first-friend dispatch host runtime;
+Last reviewed: 2026-10-24 (Pan first-friend Player setup host runtime;
+earlier subsystem snapshots retain their dates)
+
+The original-asset Pan stage-one chain now executes the production
+`Level::createShip` prelude, `Player` construction and EMP setup for the
+first ordinary friend at `-O0/-O2` on Windows SwiftShader. The test checks
+campaign-50 health, radius, EMP values, jittered coordinates and RNG state;
+both ARMv7 fixture executables compile and link. The real
+`PlayerFighter` constructor, array insertion and physical Android runtime
+remain unverified. Production C++ and corpus metrics are unchanged. See
+[the Player setup evidence](LEVEL_STAGE1_FIRST_FRIEND_PLAYER_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (Pan stage-one first-friend dispatch host runtime;
 earlier subsystem snapshots retain their dates)
 
 The original-asset Pan stage-one chain now reaches the first ordinary

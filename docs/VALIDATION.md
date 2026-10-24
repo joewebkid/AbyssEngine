@@ -4,6 +4,14 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan first-friend Player setup (2026-10-24)
+
+The original-asset Pan chain executes production `Level::createShip` through
+`Player` construction and EMP setup at `-O0/-O2` on Windows SwiftShader.
+NDK r18b ARMv7 `-O0/-O2` gate executables compile and link. The gate stops
+before `PlayerFighter`; device runtime and enemy-array insertion remain open.
+See [first-friend Player evidence](LEVEL_STAGE1_FIRST_FRIEND_PLAYER_ARM_2026-10-24.md).
+
 ## Pan stage-one first ordinary friend dispatch (2026-10-24)
 
 The original-asset Pan chain reaches the first ordinary `createShip` call
