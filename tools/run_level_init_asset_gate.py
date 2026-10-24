@@ -85,8 +85,11 @@ def main():
             "ResourceMaterial::ResourceMaterial(uint16_t texId, BlendMode blend) {",
         ]) + "\n}\n"
     )
+    status_source = (ROOT / "src/game/mission/Status.cpp").read_text()
+    mask_start = status_source.index("static constexpr uint32_t g_emptyOrbitMask")
+    mask_decl = status_source[mask_start:status_source.index(";", mask_start) + 1]
     (out / "level_status_under_test.inc").write_text(
-        "static int g_emptyOrbitMask = 0;\n"
+        mask_decl + "\n"
         + extract("src/game/mission/Status.cpp", [
             "Status::Status() {", "SolarSystem *Status::getSystem() {",
             "Station *Status::getStation() {", "int Status::getCurrentCampaignMission() {",

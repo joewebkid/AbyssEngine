@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (PendingProduct constructors;
+Last reviewed: 2026-10-24 (Status empty-orbit mask;
 earlier subsystem snapshots retain their dates)
+
+`Status::inEmptyOrbit` now uses the Android ARM station mask
+**`0xC0000187`** at `0xabc62–0xabc6c` instead of a zero placeholder that
+disabled the mask branch. The source-extracted host gate passes selected
+station and campaign cases with original assets at `-O0/-O2`; native `gof2`,
+**208/208** ARM units and **93** verifier tests (one skip) pass. Focused
+source-shape/strict fuzzy moves **61.8%/21.7% → 73.2%/23.8%**, nonexact.
+The full corpus stays **4,323/4,524**, mean **94.23%/83.60%**,
+**2,568 linked-exact**, **1,082 byte-exact**, with no exact-set loss.
+Complete station behavior and live Android remain unverified; the
+`PendingProduct` save/load round trip is next. See
+[the ARM and host evidence](STATUS_EMPTY_ORBIT_MASK_ARM_2026-10-24.md).
 
 The two `PendingProduct` constructors now follow Android ARM's default-string,
 assignment and field-store order at `0x12d3c8` and `0x12d448`. All **six**

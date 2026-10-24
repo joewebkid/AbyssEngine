@@ -189,6 +189,19 @@ int main(int argc, char **argv) {
     status->station->index = 7;
     status->field_80 = -1;
     status->currentCampaignMission = 50;
+    for (int index : {102, 103, 104, 109, 110, 132, 133, 134}) {
+        status->station->index = index;
+        assert(status->inEmptyOrbit());
+    }
+    for (int index : {105, 106, 111, 131}) {
+        status->station->index = index;
+        assert(!status->inEmptyOrbit());
+    }
+    status->station->index = 111;
+    status->currentCampaignMission = 94;
+    assert(status->inEmptyOrbit());
+    status->station->index = 7;
+    status->currentCampaignMission = 50;
     int rgb[] = {31, 60, 90};
     status->system = new SolarSystem(4, String(), 0, true, 0, 0, 0, 0,
                                      7, 2, rgb, nullptr, nullptr, nullptr);

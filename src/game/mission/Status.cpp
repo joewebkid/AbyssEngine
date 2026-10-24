@@ -958,7 +958,7 @@ void Status::addPendingProduct(BluePrint *bp) {
     ArrayAdd(pp, *pendingProducts);
 }
 
-static int g_emptyOrbitMask = 0;
+static constexpr uint32_t g_emptyOrbitMask = 0xC0000187u;
 
 bool Status::inEmptyOrbit() {
     int idx = station->getIndex();
@@ -973,7 +973,7 @@ bool Status::inEmptyOrbit() {
     }
     unsigned d = idx - 0x66;
     if (d < 0x20) {
-        if ((1 << (d & 0xff) & g_emptyOrbitMask) != 0) {
+        if (((1u << d) & g_emptyOrbitMask) != 0) {
             return true;
         }
         if (d == 9) {
