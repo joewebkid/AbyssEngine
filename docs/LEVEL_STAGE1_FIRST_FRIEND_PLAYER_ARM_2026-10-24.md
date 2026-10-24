@@ -26,16 +26,24 @@ algorithm and does not independently certify that implementation.
 
 Windows SwiftShader runs at `-O0/-O2` with original Pan assets both exit
 zero. NDK r18b ARMv7 `-O0/-O2` executables compile and link, and the
-native `gof2` build is green. ADB currently lists no device, so this new
-boundary has no physical Android runtime pass. The `Player` object exists
+native `gof2` build is green. At the initial checkpoint ADB listed no
+device; the follow-up below adds hardware execution. The `Player` object exists
 in the host gate, but the real `PlayerFighter` constructor, `setShipGroup`,
 `setLevel`, enemy-array insertion, remaining population and stage-one
 return are still unverified. The gate is not a playable frame.
 
-No production C++ changed. The last applicable full ARM corpus remains
+No production C++ changed at this checkpoint. Its then-current full ARM corpus was
 **4,323/4,524** originals across **4,736** pairs with mean
 **94.09%/83.41%** source-shape/strict fuzzy, **2,557 linked-exact** and
 **1,082 byte-exact** counts, zero skipped and wrong-type symbols; the
-test-only addition did not remeasure pair identities. Next, execute the
+test-only addition did not remeasure pair identities. Later corpus metrics
+are in `PROJECT_STATUS.md`. Next, execute the
 real `PlayerFighter` construction and `Level::createShip` return, then
 verify the first array slot and subsequent ordinary ships.
+
+Device follow-up (2026-10-24): the later first-friend Route-clone gate
+inherits this production `Player`/EMP setup and passed at `-O0/-O2` as
+ELF32 ARM PIE on the connected Android 16 device, using original Android
+OBB bytes through the gate's ADB-reverse file service. This still does
+not execute the real `PlayerFighter` constructor or complete
+`Level::createShip`.

@@ -3,6 +3,14 @@
 Last reviewed: 2026-10-24 (Level flash-fade prefix recovery;
 earlier subsystem snapshots retain their dates)
 
+Android-device follow-up (same date): the original-asset Pan first-friend
+gate now passes as ARMv7 PIE at `-O0/-O2` through production `Player`/EMP
+setup and both source-extracted `Route::clone` branches. Assets are served
+from the original Android OBB through a test file boundary; this is not
+the full `PlayerFighter` constructor or array insertion. No production C++
+or corpus metrics changed. See
+[the device follow-up](LEVEL_STAGE1_FIRST_FRIEND_ROUTE_CLONE_ARM_2026-10-24.md).
+
 The active-flash prefix of `Level::update` now uses the ARM-confirmed
 `Level::i_r/i_g/i_b/i_a` lower bounds instead of four null pointers, and
 converts an expired timer as a signed float. A source-extracted CPU gate
