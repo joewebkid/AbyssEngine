@@ -351,7 +351,7 @@ int KIPlayer::cargoAvailable() {
 
 void KIPlayer::setDead() {
     this->state = 4;
-    this->player->setActive(false);
+    this->setActive(false);
 }
 
 SpacePoint *KIPlayer::getNearestDockingPoint(const Vector &dir) {

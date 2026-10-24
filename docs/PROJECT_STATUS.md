@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Pan ordinary-friend loop host gate;
+Last reviewed: 2026-10-24 (Pan pre-dead Fighter and KIPlayer::setDead;
 earlier subsystem snapshots retain their dates)
+
+`KIPlayer::setDead` now delegates to `KIPlayer::setActive(false)`, as
+Android ARM's four-instruction body does. Focused source-shape/strict
+fuzzy improves **91.6%/88.9% → 100%/100%**, still nonexact. The
+original-asset Pan gate reaches one pre-dead Fighter after 3–4 ordinary
+friends, validates inactive state and route-clone replacement, and
+passes Windows SwiftShader `-O0/-O2`. Native `gof2`, **208/208** ARM
+units and **93** verifier tests pass (one skip). The full corpus is
+**4,323/4,524** originals over **4,736** pairs, mean **94.19%/83.54%**,
+**2,731 100%-fuzzy**, **2,564 linked-exact** and **1,082 byte-exact**,
+with zero exact-set losses. The test forces one pre-dead ship after
+the RNG draw; this is not a live Android run. See
+[pre-dead Fighter evidence](LEVEL_STAGE1_PREDEAD_FIGHTER_SETDEAD_ARM_HOST_2026-10-24.md).
 
 The original-asset Pan host gate now completes the ordinary-friend
 loop for a synthetic security-3 variant. Windows SwiftShader `-O0/-O2`

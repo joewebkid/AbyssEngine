@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan pre-dead Fighter and KIPlayer::setDead (2026-10-24)
+
+Android ARM stores state 4 then calls `KIPlayer::setActive(false)` from
+`setDead`; restoring that delegation moves focused source-shape/strict
+fuzzy **91.6%/88.9% → 100%/100%**, nonexact. The original-asset Pan
+host gate passes `-O0/-O2` through one pre-dead Fighter after **4/3**
+ordinary friends, checking route-clone replacement and old-route
+destruction. Native `gof2`, **208/208** ARM units and **93** verifier
+tests pass (one skip). Full corpus: **4,323/4,524** originals over
+**4,736** pairs, mean **94.19%/83.54%**, **2,731 100%-fuzzy**,
+**2,564 linked-exact**, **1,082 byte-exact**, zero exact-set losses,
+zero wrong-type and zero skipped. The one pre-dead Fighter is a forced
+test variant, not a live Android scene. See
+[the evidence](LEVEL_STAGE1_PREDEAD_FIGHTER_SETDEAD_ARM_HOST_2026-10-24.md).
+
 ## Pan ordinary-friend loop — host gate (2026-10-24)
 
 With original Pan assets and a synthetic security-3 variant, the
