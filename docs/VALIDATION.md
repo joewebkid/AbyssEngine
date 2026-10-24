@@ -4,6 +4,17 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan maximum ordinary-freighter loop — host gate (2026-10-24)
+
+The original-asset Pan host gate forces `field_168 = 4` after the
+original selection draw and runs all four ordinary class-one ships
+through construction, movement and relocation. Windows SwiftShader
+`-O0/-O2` passes enemy/Player identity, collision/wreck, geometry and
+LOD checks. Production C++ and full ARM figures are unchanged:
+**4,323/4,524**, **94.19%/83.54%**, **2,564 linked-exact** and
+**1,082 byte-exact**. Outposts and later scene behavior are outside
+this gate. See [the evidence](LEVEL_STAGE1_FOUR_ORDINARY_FREIGHTERS_HOST_2026-10-24.md).
+
 ## Pan first class-one freighter movement — host gate (2026-10-24)
 
 Android ARM `Level::createMission` calls `setMoving(true)` after storing

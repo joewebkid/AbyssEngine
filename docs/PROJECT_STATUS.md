@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Pan first class-one freighter relocation;
+Last reviewed: 2026-10-24 (Pan four ordinary freighters;
 earlier subsystem snapshots retain their dates)
+
+The original-asset Pan host chain now executes the ordinary
+class-one freighter loop at its maximum forced count of four.
+Windows SwiftShader `-O0/-O2` checks distinct enemy/Player objects,
+race/type, moving state, wreck/collision data, positions and LOD
+ordering after 5/4 friends and one pre-dead Fighter. Production C++
+is unchanged; the full ARM corpus remains **4,323/4,524**, mean
+**94.19%/83.54%**, **2,564 linked-exact**, **1,082 byte-exact**.
+The synthetic fixture and test-only renderer seam remain; outposts,
+subsequent mission work and live Android are not verified. See
+[four-freighter evidence](LEVEL_STAGE1_FOUR_ORDINARY_FREIGHTERS_HOST_2026-10-24.md).
 
 The original-asset Pan host chain now runs the first ordinary
 freighter through `setMoving(true)` and `PlayerFixedObject::setPosition`
