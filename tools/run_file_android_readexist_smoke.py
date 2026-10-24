@@ -78,13 +78,17 @@ def main():
                         parser.error(f"OBB entry mismatch: {name}")
         except (OSError, zipfile.BadZipFile, KeyError) as exc:
             parser.error(f"invalid APK/OBB: {exc}")
-        exe = out / "file_android_real_archive.exe"
-        subprocess.run([
-            args.cxx, "-std=gnu++17", "-O2", "-Isrc", "-Ithird_party/crypto",
-            "-I", str(out), "tools/file_android_real_archive_smoke.cpp",
-            "src/game/core/String.cpp", "-larchive", "-lcrypto", "-o", str(exe),
-        ], cwd=ROOT, check=True)
-        subprocess.run([str(exe), str(apk), str(obb)], cwd=ROOT, check=True)
+        for opt in ("-O0", "-O2"):
+            exe = out / f"file_android_real_archive_{opt[1:]}.exe"
+            subprocess.run([
+                args.cxx, "-std=gnu++17", opt, "-Isrc", "-Ithird_party/crypto",
+                "-I", str(out), "tools/file_android_real_archive_smoke.cpp",
+                "src/game/core/String.cpp", "src/engine/file/AEFile.cpp",
+                "src/engine/file/AENormalFile.cpp", "src/engine/file/AEPakFile.cpp",
+                "-ffunction-sections", "-fdata-sections", "-Wl,--gc-sections",
+                "-larchive", "-lcrypto", "-o", str(exe),
+            ], cwd=ROOT, check=True)
+            subprocess.run([str(exe), str(apk), str(obb)], cwd=ROOT, check=True)
 
 
 if __name__ == "__main__":

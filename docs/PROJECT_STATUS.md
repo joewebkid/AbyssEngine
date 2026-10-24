@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`AEFile` open-mode ABI;
+Last reviewed: 2026-10-24 (original APK/OBB through `AEFile`;
 earlier subsystem snapshots retain their dates)
+
+The original APK and OBB now pass a source-extracted Android archive
+open plus production `AEFile::OpenRead`/`Read`/`Close` host gate at
+Windows `-O0/-O2`. It validates the APK item and patch-only OBB station
+bytes, handle reuse, close ownership and a missing path. Native `gof2`,
+**208/208** ARM units and **93** verifier tests pass (one skip). The
+test-only change leaves the fresh full ARM corpus at **4,323/4,524**
+originals over
+**4,737** pairs, **94.31%/83.73%** mean source-shape/strict fuzzy,
+**2,578 linked-exact** and **1,082 byte-exact**, with zero exact-set
+losses. The host ZIP decoder is not Android libzip, and JNI, PAK
+fallback, save files and live Android
+remain unverified; see [the archive gate](FILE_ANDROID_REAL_ARCHIVE_GATE_2026-10-24.md).
 
 Android ARM confirms the numeric `AEFile::Open` modes as write=0,
 read=1, append=2; the recovered header had read/write reversed. With the

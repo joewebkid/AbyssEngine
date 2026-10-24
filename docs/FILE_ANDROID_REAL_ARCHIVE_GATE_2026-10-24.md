@@ -29,16 +29,29 @@ are released after the run, including the unselected handle opened by
 the recovered main-first lookup. No original game bytes are written to
 the repository or test output directory.
 
-Both the synthetic `-O0/-O2` path gate and this original-archive `-O2`
-gate pass. Native `gof2` remains green (no rebuild needed), as do **93**
-verifier tests (one existing skip). There is no production source edit,
-so the last full ARM corpus remains **4,323/4,524** originals over
-**4,737** pairs, mean **94.31% source-shape / 83.71% strict fuzzy**,
-**2,578 linked-exact** and **1,082 byte-exact**.
+The real-archive gate now also compiles production `AEFile`, `AENormalFile`
+and `AEPakFile` with a host `FileInterface` adapter around the extracted
+Android archive-open path. At both `-O0` and `-O2`, `AEFile::OpenRead`,
+`Read` and `Close` consume the APK item file and patch-only OBB station
+file, verify their SHA-256 values, reuse handle 1, release each selected
+stream exactly once even after a second close, and reject a missing file
+without changing its caller's handle. The adapter implements archive
+`Read` using the same `zip_fread` contract; Android's JNI and actual
+libzip implementation are not executed. The existing synthetic path
+gate and direct original-archive offset gate still pass.
+
+Native `gof2`, all **208/208** ARM translation units and **93** verifier
+tests pass (one existing skip). There is no production source edit; the
+fresh full ARM corpus is
+**4,323/4,524** originals over **4,737** pairs, mean **94.31%
+source-shape / 83.73% strict fuzzy**, **2,578 linked-exact** and
+**1,082 byte-exact**, with zero exact-set losses against the preceding
+report.
 
 The ZIP adapter is **not** Android's statically linked libzip 0.9.x.
 This gate proves archive identities, path selection and returned bytes
-under an independent host decoder, not Android libzip, JNI setup,
-`AEFile::Open` integration, or full-save loading on a device. ADB sees no
-device at review time. Next priority: validate the `AEFile` read/fallback
-stack using these same files, then run on Android when a device is ready.
+under an independent host decoder, plus the production `AEFile` handle
+table for two successful reads. It does not cover Android libzip, JNI
+setup, `AEFile::findPakFile` fallback, write/save paths, or live loading
+on a device. ADB sees no device at review time. Next priority: test the
+PAK fallback and save-file paths, then run on Android when available.
