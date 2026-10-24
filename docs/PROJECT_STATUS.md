@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (record preview host round trip;
+Last reviewed: 2026-10-24 (AEFile string I/O ARM closure;
 earlier subsystem snapshots retain their dates)
+
+`AEFile` wide/narrow String read and write now follow the Android ARM
+branch, length-load and ownership forms. Both move to **100% source-shape /
+100% strict fuzzy** and become linked-exact; the narrow write now uses the
+matching array delete for `GetAEChar()`'s allocation. Native `gof2`,
+**208/208** ARM units, **93** verifier tests (one skip), and source-extracted
+wide/narrow host checks pass. Fresh full corpus: **4,323/4,524** originals
+over **4,737** pairs, **94.24%/83.62%** mean source-shape/strict fuzzy,
+**2,571 linked-exact**, **1,082 byte-exact**, zero skips and no exact-set
+losses. A real original save fixture and live Android remain unverified.
+See [the string I/O evidence](AEFILE_STRING_RW_ARM_2026-10-24.md).
 
 The source-extracted preview writer and reader now pass a Windows native
 `-O0/-O2` round trip with the real `GameRecord` constructor and an

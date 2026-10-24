@@ -43,6 +43,8 @@ static std::vector<uint8_t> tape;
 static size_t cursor = 0;
 static bool exists = false;
 static int deletes = 0;
+static int readCalls = 0;
+static int failAtRead = 0;
 
 static std::string pathText(const String &path) {
     std::string result;
@@ -81,13 +83,14 @@ uint32_t AEFile::Write(uint32_t bytes, void *buffer, uint32_t handle) {
     assert(handle == 1 && buffer && bytes);
     const auto *first = static_cast<const uint8_t *>(buffer);
     tape.insert(tape.end(), first, first + bytes);
-    return bytes;
+    return 1;
 }
 uint32_t AEFile::Read(uint32_t bytes, void *buffer, uint32_t handle) {
+    if (++readCalls == failAtRead) return 0;
     assert(handle == 1 && buffer && bytes && cursor + bytes <= tape.size());
     std::memcpy(buffer, tape.data() + cursor, bytes);
     cursor += bytes;
-    return bytes;
+    return 1;
 }
 
 #include "record_preview_under_test.inc"
@@ -146,5 +149,31 @@ int main() {
 
     assert(writer.recordStoreWritePreview(&source, 4) == 1);
     assert(deletes == 1 && tape == expected);
+
+    tape = {3, 0, 0, 0, 'A', 'B', 'C'};
+    cursor = 0;
+    readCalls = 0;
+    String narrow;
+    assert(AEFile::Read(narrow, 1, false) == 1 && cursor == tape.size());
+    const uint16_t abc[] = {'A', 'B', 'C'};
+    checkName(narrow, abc, 3);
+    tape.clear();
+    assert(AEFile::Write(narrow, 1, false) == 1);
+    assert((tape == std::vector<uint8_t>{3, 0, 0, 0, 'A', 'B', 'C'}));
+
+    for (bool wide : {false, true}) {
+        tape = wide ? std::vector<uint8_t>{1, 0, 0, 0, 0xa9, 0x03}
+                    : std::vector<uint8_t>{1, 0, 0, 0, 'Q'};
+        for (int failedCall : {1, 2}) {
+            cursor = 0;
+            readCalls = 0;
+            failAtRead = failedCall;
+            String preserved("old", false);
+            assert(AEFile::Read(preserved, 1, wide) == 0);
+            const uint16_t old[] = {'o', 'l', 'd'};
+            checkName(preserved, old, 3);
+        }
+    }
+    failAtRead = 0;
     std::puts("Record preview round trip: OK");
 }

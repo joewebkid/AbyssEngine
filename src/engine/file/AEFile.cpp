@@ -203,30 +203,30 @@ uint32_t AEFile::Read(int64_t &value, uint32_t handle) { return Read(8, &value, 
 uint32_t AEFile::Read(float &value, uint32_t handle) { return Read(4, &value, handle); }
 
 uint32_t AEFile::Read(String &value, uint32_t handle, bool wide) {
-    uint32_t length = 0;
+    uint32_t length;
     uint32_t result = Read(4, &length, handle);
-    if (result == 0) {
-        return 0;
-    }
-
     if (wide) {
-        uint16_t *buffer = new uint16_t[length + 1];
-        result = Read(length << 1, buffer, handle);
         if (result != 0) {
-            buffer[length] = 0;
-            AEStr_set(value, buffer);
-            result = 1;
+            uint16_t *buffer = new uint16_t[length + 1];
+            result = Read(length << 1, buffer, handle);
+            if (result != 0) {
+                buffer[length] = 0;
+                AEStr_set(value, buffer);
+                result = 1;
+            }
+            delete[] buffer;
         }
-        delete[] buffer;
     } else {
-        char *buffer = new char[length + 1];
-        result = Read(length, buffer, handle);
         if (result != 0) {
-            buffer[length] = 0;
-            AEStr_set(value, buffer);
-            result = 1;
+            char *buffer = new char[length + 1];
+            result = Read(length, buffer, handle);
+            if (result != 0) {
+                buffer[length] = 0;
+                AEStr_set(value, buffer);
+                result = 1;
+            }
+            delete[] buffer;
         }
-        delete[] buffer;
     }
 
     return result;
@@ -295,21 +295,22 @@ void AEFile::Write(float value, uint32_t handle) { Write(4, &value, handle); }
 
 uint32_t AEFile::Write(const String &value, uint32_t handle, bool wide) {
     uint32_t result;
-    uint32_t size = value.size();
 
     if (wide) {
-        uint16_t *text = AEStr_wchar(value);
+        uint16_t *text = const_cast<uint16_t *>(value.GetAEWChar());
+        uint32_t size = value.size();
         result = Write(4, &size, handle);
         if (result != 0) {
-            result = Write(size << 1, text, handle);
+            result = Write(value.size() << 1, text, handle);
         }
     } else {
         char *text = AEStr_char(value);
+        uint32_t size = value.size();
         result = Write(4, &size, handle);
         if (result != 0) {
-            result = Write(size, text, handle);
+            result = Write(value.size(), text, handle);
         }
-        ::operator delete(text);
+        ::operator delete[](text);
     }
 
     return result;
