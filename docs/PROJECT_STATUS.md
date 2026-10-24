@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (original APK/OBB through `AEFile`;
+Last reviewed: 2026-10-24 (`AEFile` raw PAK fallback;
 earlier subsystem snapshots retain their dates)
+
+Android ARM confirms the raw PAK entry layout and offset handoff. A
+temporary two-entry fixture now passes production `AEFile` registration,
+binary search, fallback, bounded reads and handle reuse at Windows
+`-O0/-O2`. The host bridge accepts raw offsets but not compressed windows.
+Native `gof2`, **93** verifier tests (one skip) and the earlier
+**179/179** original-asset file lifetimes pass. Focused `AEFile` is
+**94.43%/80.43%** source-shape/strict fuzzy over **61** pairs; the
+registration wrapper is **100%/100%**, while parser, search and `Open`
+remain nonexact. Production C++ is unchanged, leaving the last full
+corpus at **4,323/4,524** originals over **4,737** pairs,
+**94.31%/83.73%** mean, **2,578 linked-exact** and **1,082 byte-exact**.
+No real `.pak` was found in the shipped APK/OBB; compressed PAK, save
+paths and live Android remain unverified. See [the PAK gate](AEFILE_PAK_FALLBACK_ARM_HOST_2026-10-24.md).
 
 The original APK and OBB now pass a source-extracted Android archive
 open plus production `AEFile::OpenRead`/`Read`/`Close` host gate at

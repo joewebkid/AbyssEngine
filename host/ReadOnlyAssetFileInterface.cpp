@@ -76,11 +76,21 @@ std::filesystem::path ReadOnlyAssetFileInterface::resolve(const String &name) co
 
 void *ReadOnlyAssetFileInterface::OpenRead(
     String name, int, bool windowed, int packedSize, int rawSize, unsigned offset) {
-    if (windowed || packedSize || rawSize || offset) return nullptr;
+    // shortcut: this host bridge models raw PAK offsets only; compressed windows need an archive adapter.
+    if (windowed || packedSize || rawSize) return nullptr;
     const auto path = resolve(name);
     if (path.empty()) return nullptr;
     std::FILE *stream = std::fopen(path.string().c_str(), "rb");
     if (!stream) return nullptr;
+    if (offset) {
+        if (offset > static_cast<unsigned long>(std::numeric_limits<long>::max()) ||
+            std::fseek(stream, 0, SEEK_END) != 0 ||
+            std::ftell(stream) < static_cast<long>(offset) ||
+            std::fseek(stream, static_cast<long>(offset), SEEK_SET) != 0) {
+            std::fclose(stream);
+            return nullptr;
+        }
+    }
     ++shared_->opens;
     return new ReadOnlyAssetFileInterface(shared_, stream);
 }
