@@ -37,8 +37,10 @@ source-shape/strict fuzzy is **94.31%/83.71%**, up from
 **1,082 byte-exact**; pair-by-pair comparison finds zero lost or gained
 exact matches.
 
-Real libzip decompression, JNI setup, live Android filesystem behavior and
-full-save loading remain unverified. `FileExist`'s original ARM path does
+Original APK/OBB entries were subsequently checked through an independent
+host ZIP adapter; see [the real-archive gate](FILE_ANDROID_REAL_ARCHIVE_GATE_2026-10-24.md).
+Android libzip, JNI setup, live Android filesystem behavior and full-save
+loading remain unverified. `FileExist`'s original ARM path does
 not guard a null `appRootDir` before constructing its disk path; the host
 test intentionally does not claim that branch is safe. Next priority:
 exercise genuine Android archive/save fixtures and the `AEFile` read

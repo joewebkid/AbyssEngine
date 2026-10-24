@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Android archive/file read and existence paths;
+Last reviewed: 2026-10-24 (original Android APK/OBB host gate;
 earlier subsystem snapshots retain their dates)
+
+The original Android APK's ARM library hashes identically to the binary
+used for matching; its OBB contains the recovered patch-prefix entries.
+A source-extracted Windows gate with an independent ZIP adapter reads
+real APK `items.bin` and patch-only OBB `stations.bin`, verifies their
+SHA-256 values, proves APK precedence where the item file differs in
+both archives, and checks an archive offset. The synthetic `-O0/-O2`
+gate, native `gof2` and **93** verifier tests (one skip) pass. This
+test-only package leaves the last full ARM corpus at **4,323/4,524**
+originals, **94.31%/83.71%** mean source-shape/strict fuzzy,
+**2,578 linked-exact** and **1,082 byte-exact**. Android's actual libzip,
+`AEFile::Open` integration and live save loading remain unverified;
+see [the original-archive gate](FILE_ANDROID_REAL_ARCHIVE_GATE_2026-10-24.md).
 
 Android `FileInterfaceAndroid::OpenRead` and `FileExist` now use the
 ARM-observed asset prefixes, shared APK/patch slots and `"rb"` disk mode.

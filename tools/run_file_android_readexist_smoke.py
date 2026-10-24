@@ -1,9 +1,11 @@
 """Exercise source-extracted Android archive and filesystem read paths."""
 
 import argparse
+import hashlib
 from pathlib import Path
 import subprocess
 import tempfile
+import zipfile
 
 from run_particle_control_smoke import function
 
@@ -15,7 +17,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--cxx", required=True)
+    parser.add_argument("--apk", type=Path)
+    parser.add_argument("--obb", type=Path)
     args = parser.parse_args()
+    if bool(args.apk) != bool(args.obb):
+        parser.error("--apk and --obb must be supplied together")
     out = args.out_dir.resolve()
     out.mkdir(parents=True, exist_ok=True)
 
@@ -50,6 +56,35 @@ def main():
         ], cwd=ROOT, check=True)
         with tempfile.TemporaryDirectory(dir=out) as root:
             subprocess.run([str(exe), root], cwd=ROOT, check=True)
+
+    if args.apk:
+        apk, obb = args.apk.resolve(), args.obb.resolve()
+        if not apk.is_file() or not obb.is_file():
+            parser.error("missing APK or OBB")
+        try:
+            with zipfile.ZipFile(apk) as archive:
+                for name, (size, expected) in {
+                    "lib/armeabi-v7a/libgof2hdaa.so": (2187328, "6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58"),
+                    "assets/data/bin/items.bin": (27628, "639b1da183594b9ca024a528d95082152591e49c9a685b6e42419bff931d7f4c"),
+                }.items():
+                    if archive.getinfo(name).file_size != size or hashlib.sha256(archive.read(name)).hexdigest() != expected:
+                        parser.error(f"APK entry mismatch: {name}")
+            with zipfile.ZipFile(obb) as archive:
+                for name, (size, expected) in {
+                    "47947_GOF2CONTENT_ETC/assets/data/bin/items.bin": (27628, "55b953629d994d553604418988d43d2b1935f93061da7040a464acad57677e95"),
+                    "47947_GOF2CONTENT_ETC/assets/data/bin/stations.bin": (3408, "761e84019f4c0ae6f4c8e160252be56add2203d1325af2571c94fa7e45c7baa3"),
+                }.items():
+                    if archive.getinfo(name).file_size != size or hashlib.sha256(archive.read(name)).hexdigest() != expected:
+                        parser.error(f"OBB entry mismatch: {name}")
+        except (OSError, zipfile.BadZipFile, KeyError) as exc:
+            parser.error(f"invalid APK/OBB: {exc}")
+        exe = out / "file_android_real_archive.exe"
+        subprocess.run([
+            args.cxx, "-std=gnu++17", "-O2", "-Isrc", "-Ithird_party/crypto",
+            "-I", str(out), "tools/file_android_real_archive_smoke.cpp",
+            "src/game/core/String.cpp", "-larchive", "-lcrypto", "-o", str(exe),
+        ], cwd=ROOT, check=True)
+        subprocess.run([str(exe), str(apk), str(obb)], cwd=ROOT, check=True)
 
 
 if __name__ == "__main__":
