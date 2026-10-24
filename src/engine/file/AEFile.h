@@ -24,8 +24,8 @@ void *OpenAppend(unsigned short *name, int size, bool append, unsigned int mode)
 class AEFile {
 public:
     enum FileOpenType : uint32_t {
-        OPEN_READ = 0,
-        OPEN_WRITE = 1,
+        OPEN_WRITE = 0,
+        OPEN_READ = 1,
         OPEN_APPEND = 2,
     };
 

@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (original Android APK/OBB host gate;
+Last reviewed: 2026-10-24 (`AEFile` open-mode ABI;
 earlier subsystem snapshots retain their dates)
+
+Android ARM confirms the numeric `AEFile::Open` modes as write=0,
+read=1, append=2; the recovered header had read/write reversed. With the
+enum corrected, all three String wrappers reach **100% source-shape and
+strict fuzzy** in focused verification. Native `gof2`, **208/208** ARM
+translation units, **93** verifier tests (one skip), and **179/179**
+original-asset host file lifetimes pass. Full corpus: **4,323/4,524**
+originals over **4,737** pairs, **94.31%/83.73%** mean source-shape/strict
+fuzzy, **2,578 linked-exact** and **1,082 byte-exact**, with zero exact-set
+losses. The larger `AEFile::Open` body remains nonexact, and live Android
+file behavior is unverified; see [the mode ABI evidence](AEFILE_OPEN_MODE_ABI_ARM_2026-10-24.md).
 
 The original Android APK's ARM library hashes identically to the binary
 used for matching; its OBB contains the recovered patch-prefix entries.
