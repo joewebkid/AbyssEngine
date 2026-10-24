@@ -481,9 +481,8 @@ extern "C" void ndk23_handleTouchPadEvent(jclass /*clazz*/, void *touch, int pha
     }
 }
 
-extern "C" void ndk23_handleTouchScreenEvent(jclass clazz, void *touch, int phase,
-                                  float x, float y) {
-    ndk23_handleTouchPadEvent(clazz, touch, phase, x, y);
+extern "C" void ndk23_handleTouchScreenEvent(int touch, int phase, int x, int y) {
+    AddTouch(touch, phase, x, y);
 }
 
 extern "C" void ndk23_ndkDone() {
@@ -636,8 +635,8 @@ extern "C" jint Java_net_fishlabs_gof2hdallandroid2012_ToJNI_isInMainMenu(
 }
 
 extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_handleTouchEvent(
-    JNIEnv * /*env*/, jclass clazz, jint touch, jint phase, jfloat x, jfloat y) {
-    ndk23_handleTouchScreenEvent(clazz, reinterpret_cast<void *>(touch), phase, x, y);
+    JNIEnv * /*env*/, jclass /*clazz*/, jint touch, jint phase, jint x, jint y) {
+    ndk23_handleTouchScreenEvent(touch, phase, x, y);
 }
 
 extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_testPurchase(

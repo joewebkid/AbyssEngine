@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (Android JNI frame/startup routing;
+Last reviewed: 2026-10-25 (Android JNI touch queue handoff;
 earlier subsystem snapshots retain their dates)
+
+Android `ToJNI.handleTouchEvent(IIII)V` now forwards four integer
+values to `ndk23_handleTouchScreenEvent`, which enqueues them with
+`AddTouch`; previously it misinterpreted integer coordinates as
+floats and bypassed the frame's touch queue. The original APK DEX,
+JNI ARM branch and `AddTouch` target confirm the handoff. Focused
+source-shape/strict fuzzy rises from **19.4%/0%** to **100%/100%**
+for the JNI wrapper; it and the screen handler are newly
+linked-exact. Native `gof2`, **209/209** ARM units and **93** verifier
+tests (one skip) pass. Full corpus: **4,323/4,524** originals over
+**4,737** pairs, **94.58%/84.08%** mean source-shape/strict fuzzy,
+**2,594 linked-exact** and **1,082 byte-exact**, zero exact-set
+losses. Recovered on-device touch input remains unverified. See
+[the touch queue ARM evidence](ANDROID_JNI_TOUCH_QUEUE_ARM_2026-10-25.md).
 
 The Android JNI `initialize`, `renderstep` and `resize` entry points
 now reach their ARM-backed native destinations instead of the
