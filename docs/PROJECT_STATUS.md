@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Level collision volumes and BoundingSphere ABI;
+Last reviewed: 2026-10-24 (BoundingSphere vector operations;
 earlier subsystem snapshots retain their dates)
+
+`BoundingSphere` collision, normal and projection methods now use the
+Android ARM-confirmed `Vector::operator+` for base center plus extents;
+projection also uses the observed `float * Vector` overload and repeat
+addition in its inside-radius branch. The three-function mean focused
+source-shape improves **77.1% → 87.0%**, while strict fuzzy shifts
+**42.1% → 41.7%**; none becomes exact. A shifted-sphere host check and
+the original-asset station gate pass at `-O0/-O2`. Native `gof2`,
+**208/208** ARM units and **93** verifier tests pass (one skip). The full
+corpus compares **4,323/4,524** originals across **4,736** pairs,
+mean **94.15%/83.48%**, with **2,562 linked-exact** and **1,082
+byte-exact** pairs and no exact-pair losses. Live Android collision
+behavior and first-friend Pan ship insertion remain untested while ADB
+lists no device. See [sphere-vector evidence](BOUNDING_SPHERE_VECTOR_MATH_ARM_2026-10-24.md).
 
 `Level::getBoundingVolume` now follows the Android ARM vector-scaling
 and signed-loop shape for station/static collision records, while

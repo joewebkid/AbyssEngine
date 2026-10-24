@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BoundingSphere vector operations (2026-10-24)
+
+ARM disassembly at `0x151da0`, `0x151e10` and `0x151e74` confirms vector
+addition for center plus extents in collision, normal and projection, plus
+`float * Vector` scaling in the projection branch. Focused three-function
+mean source-shape improves **77.1% → 87.0%**; strict fuzzy shifts
+**42.1% → 41.7%**, with all three still nonexact. The shifted-sphere
+host check and original-asset station gate pass at `-O0/-O2`; native
+`gof2`, 208/208 ARM units and 93 verifier tests pass (one skip). The full
+corpus compares **4,323/4,524** originals across **4,736** pairs,
+mean **94.15%/83.48%**, with **2,562 linked-exact** and **1,082
+byte-exact**, no pairwise exact losses. Live Android collision behavior
+remains untested. See [the evidence](BOUNDING_SPHERE_VECTOR_MATH_ARM_2026-10-24.md).
+
 ## Level collision volumes and BoundingSphere ABI (2026-10-24)
 
 Android ARM disassembly confirms vector factors `1.2f` for boxes and

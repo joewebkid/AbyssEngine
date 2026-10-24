@@ -73,6 +73,13 @@ static void checkCollision(PlayerStation *station) {
     assert(sphere->radius == 2000);
     assert(sphere->collide(-2, 9865, 9357));
     assert(!sphere->outerCollide(1999, 9865, 9357));
+    BoundingSphere shifted(10, 20, 30, 1, 2, 3, 5);
+    assert(shifted.outerCollide(14, 22, 33));
+    assert(!shifted.outerCollide(16, 22, 33));
+    const Vector projected = shifted.projectCollisionOnSurface({12, 22, 33});
+    assert(projected.x == 16 && projected.y == 22 && projected.z == 33);
+    const Vector normal = shifted.getCollisionNormal({12, 22, 33});
+    assert(normal.x == -1 && normal.y == 0 && normal.z == 0);
     assert(station->outerCollide(-2, 9865, 9357));
     assert(!station->outerCollide(1e9f, 0, 0));
 }
