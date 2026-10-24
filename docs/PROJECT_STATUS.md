@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (LevelScript skipSequence vulnerability restoration;
+Last reviewed: 2026-10-24 (Level fighter-turret host health and placement;
 earlier subsystem snapshots retain their dates)
+
+`Level::createFighterTurrets` now copies maximum health from each eligible
+host `Player` to the created turret and passes the ARM-confirmed local
+offset for host kinds `0x2d` and `0x33`, replacing a self-assignment and
+zero vector. Focused source-shape/strict fuzzy rises **71.0%/54.3% →
+99.8%/69.6%**; the function remains nonexact. Native `gof2`, **208/208**
+ARM units and **93** verifier tests pass (one skip). The full corpus
+compares **4,323/4,524** originals across **4,736** pairs, mean
+**94.14%/83.47%**, with **2,560 linked-exact** and **1,082 byte-exact**
+pairs and no exact-pair losses. Live turret placement/hitpoints and the
+first-friend ship-insertion gate remain untested while ADB lists no
+device. See [fighter-turret evidence](LEVEL_FIGHTER_TURRETS_ARM_2026-10-24.md).
 
 `LevelScript::skipSequence` now restores the omitted Android ARM call
 through `PlayerEgo::player` to `Player::setVulnerable(true)` when its

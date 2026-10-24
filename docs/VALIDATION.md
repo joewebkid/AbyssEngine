@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level fighter-turret host health and placement (2026-10-24)
+
+The original Android `Level::createFighterTurrets` reads max health from
+the host `Player` and gives the turret kind-specific local offsets. The
+prior reconstruction read the turret's own max health and passed zero.
+Focused ARM source-shape/strict fuzzy moves **71.0%/54.3% →
+99.8%/69.6%**, still nonexact. Native `gof2`, 208/208 ARM units and 93
+verifier tests pass (one skip). The full corpus compares 4,323/4,524
+originals across 4,736 pairs, mean **94.14%/83.47%**, with **2,560
+linked-exact** and **1,082 byte-exact**; no exact pairs are lost. Live
+turret behavior is not yet tested. See [the evidence](LEVEL_FIGHTER_TURRETS_ARM_2026-10-24.md).
+
 ## LevelScript skipSequence vulnerability (2026-10-24)
 
 Original ARM `skipSequence` calls `Level::getPlayer()`, loads its

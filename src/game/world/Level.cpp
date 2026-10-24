@@ -1653,19 +1653,28 @@ void Level::createFighterTurrets() {
         KIPlayer *ki = (*this->enemies)[i];
         if (ki != 0) {
             int kind = ki->shipGroupFlag;
-            if (kind == 0x2d || kind == 0x33) {
-                PlayerTurret *t = (PlayerTurret *) this->createStaticObject((Waypoint *) (intptr_t) 0, 0x1a74, 1);
-                t->player->setVulnerable(0);
-                Player *pp = t->player;
-                int hp = pp->getMaxHitpoints();
-                pp->setMaxHitpoints(hp);
-                char offset[12] = {0};
-                t->setHost(ki, *(Vector *) offset);
+            PlayerTurret *t;
+            if (kind == 0x2d) {
+                t = (PlayerTurret *) this->createStaticObject(nullptr, 0x1a74, true);
+                t->player->setVulnerable(false);
+                t->player->setMaxHitpoints(ki->player->getMaxHitpoints());
+                Vector offset{0.0f, 172.25f, -460.7f};
+                t->setHost(ki, offset);
                 *(PlayerTurret **) &ki->field_0x10 = t;
-                t->shipGroup = (kind == 0x2d) ? 8 : 0;
-                t->noTargetFlag = 1;
-                ArrayAdd((KIPlayer *) t, *(this->enemies));
+                t->shipGroup = 8;
+            } else if (kind == 0x33) {
+                t = (PlayerTurret *) this->createStaticObject(nullptr, 0x1a74, true);
+                t->player->setVulnerable(false);
+                t->player->setMaxHitpoints(ki->player->getMaxHitpoints());
+                Vector offset{0.0f, 470.0f, -83.0f};
+                t->setHost(ki, offset);
+                *(PlayerTurret **) &ki->field_0x10 = t;
+                t->shipGroup = 0;
+            } else {
+                continue;
             }
+            t->noTargetFlag = 1;
+            ArrayAdd((KIPlayer *) t, *(this->enemies));
         }
     }
 }
