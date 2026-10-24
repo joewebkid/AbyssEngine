@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan ordinary-friend loop — host gate (2026-10-24)
+
+With original Pan assets and a synthetic security-3 variant, the
+continuous `Level::init` gate completes the ordinary-friend loop.
+Windows SwiftShader `-O0/-O2` runs produced **3/4** Fighters and
+validated all enemy slots, LOD ordering and material requests.
+Production C++ is unchanged; the last full ARM corpus remains
+**4,323/4,524**, mean **94.19%/83.53%** source-shape/strict fuzzy,
+**2,564 linked-exact** and **1,082 byte-exact**. No live device or
+Fighter teardown was tested. See
+[the evidence](LEVEL_STAGE1_ORDINARY_FRIEND_LOOP_HOST_2026-10-24.md).
+
 ## Pan second-friend ship — host gate (2026-10-24)
 
 With original Pan assets and a security-2 fixture variant, the

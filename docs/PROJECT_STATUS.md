@@ -1,7 +1,17 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Pan second-friend ship host gate;
+Last reviewed: 2026-10-24 (Pan ordinary-friend loop host gate;
 earlier subsystem snapshots retain their dates)
+
+The original-asset Pan host gate now completes the ordinary-friend
+loop for a synthetic security-3 variant. Windows SwiftShader `-O0/-O2`
+runs created **3** and **4** Fighters and verified ordered enemy slots,
+LOD objects and material requests. This does not cover wanted targets,
+the next dead-ship loop, teardown or Android runtime. Production C++
+is unchanged, so the latest full ARM corpus remains **4,323/4,524**
+originals, mean **94.19%/83.53%**, **2,564 linked-exact** and **1,082
+byte-exact**. ADB lists no device. See
+[ordinary-friend loop evidence](LEVEL_STAGE1_ORDINARY_FRIEND_LOOP_HOST_2026-10-24.md).
 
 The original-asset Pan host gate now reaches a second ordinary
 `PlayerFighter` and inserts both ships into `enemies[0..1]`. For a
