@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Level fighter-turret host health and placement;
+Last reviewed: 2026-10-24 (Level procedural route generation;
 earlier subsystem snapshots retain their dates)
+
+`Level::createRoute` now uses the Android ARM-confirmed bounded
+`nextInt(30000)` draws for the first and subsequent waypoint heights,
+and ordinary `Route` construction restores cleanup of allocated object
+memory on constructor failure. Focused source-shape/strict fuzzy rises
+**88.3%/93.0% → 100.0%/98.8%**, still nonexact. Native `gof2`,
+**208/208** ARM units and **93** verifier tests pass (one skip). The full
+corpus compares **4,323/4,524** originals across **4,736** pairs, mean
+**94.14%/83.47%**, with **2,560 linked-exact** and **1,082 byte-exact**
+pairs and no exact-pair losses. Live procedural routes and the pending
+first-friend ship-insertion gate remain unverified while ADB lists no
+device. See [createRoute evidence](LEVEL_CREATE_ROUTE_ARM_2026-10-24.md).
 
 `Level::createFighterTurrets` now copies maximum health from each eligible
 host `Player` to the created turret and passes the ARM-confirmed local
