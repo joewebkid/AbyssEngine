@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Condition-selected small outpost — host gate (2026-10-24)
+
+The original-asset Pan chain now uses the recovered faction-one
+`createMission` predicate to select the small outpost at mission 141,
+without forcing `field_164`, `field_168`, or the outpost flag. A fixed
+clock yields one pre-dead Fighter, one class-one slot, and a selection roll
+of 22. Windows SwiftShader `-O0/-O2` passes the carrier and five-turret
+checks. Native `gof2` is green (no-op); no production C++ changed.
+The last full ARM metrics remain **4,323/4,524**, **94.19%/83.54%**,
+**2,564 linked-exact**, **1,082 byte-exact**. Fresh focused ARM
+verification could not run because local r18b objdump is absent; ADB
+lists no device. The fixture still overrides faction and campaign at
+the stage-one boundary. See [the evidence](LEVEL_STAGE1_SELECTED_SMALL_OUTPOST_HOST_2026-10-24.md).
+
 ## Small outpost and five turrets — host gate (2026-10-24)
 
 Android ARM `Level::createMission` calls static type **19051** and

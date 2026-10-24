@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (small outpost and five turrets;
+Last reviewed: 2026-10-24 (condition-selected small outpost;
 earlier subsystem snapshots retain their dates)
+
+The original-asset Pan host now selects the faction-one small outpost
+through `createMission`'s own RNG predicate at campaign mission 141,
+then builds type **19051** and five type-**6774** turrets at Windows
+SwiftShader `-O0/-O2`. The test fixes the clock and sets faction and
+mission at the stage-one boundary; it does **not** prove a coherent
+post-140 campaign environment. Native `gof2` is green (no-op), and
+production C++ is unchanged. Last validated full ARM metrics remain
+**4,323/4,524**, **94.19%/83.54%** mean source-shape/strict fuzzy,
+**2,564 linked-exact**, **1,082 byte-exact**; fresh focused ARM could
+not run without the local r18b objdump. ADB lists no device. See
+[condition-selected gate](LEVEL_STAGE1_SELECTED_SMALL_OUTPOST_HOST_2026-10-24.md).
 
 The source-extracted Pan host chain now also constructs the
 faction-one small outpost type **19051** and all **five** type-6774
