@@ -4,6 +4,17 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan stage-one mission overrides and enemy-array allocation (2026-10-24)
+
+The source-extracted original-asset Pan chain passes at `-O0/-O2` on Windows
+SwiftShader through the mission overrides and ordinary `Array<KIPlayer*>`
+allocation, before ship spawning. It also exercises the inherited ETC1 sun
+upload and corrected asteroid radius/scale assertion. The new boundaries
+remain unverified on physical Android ARM because ADB lists no device.
+Production C++ did not change, so the most recent full-corpus metrics in
+`PROJECT_STATUS.md` remain applicable. See
+[mission-override and enemy-array evidence](LEVEL_STAGE1_MISSION_OVERRIDES_ARM_2026-10-24.md).
+
 ## Pan stage-one hostile route and initial counts (2026-10-20)
 
 `run_level_stage1_hostile_route_pan_gate.py` extends the original-asset Pan

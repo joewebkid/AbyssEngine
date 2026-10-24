@@ -1,6 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`PlayerEgo::killLiberator` return/position recovery;
+Last reviewed: 2026-10-24 (Pan stage-one enemy-array host runtime;
+earlier subsystem snapshots retain their dates)
+
+The source-extracted Pan stage-one mission-override and ordinary enemy-array
+gates now pass at `-O0/-O2` on Windows SwiftShader with original assets,
+including the inherited ETC1 sun upload and corrected asteroid scale check.
+The continuous gate reaches an allocated, zero-initialized enemy array before
+the first ordinary ship spawn. This is a host-runtime checkpoint, **not** a
+physical Android ARM pass: ADB currently lists no device. No production C++
+or ARM corpus metric changed. The next runtime boundary is the first ordinary
+friend ship, followed by the remaining array and stage-one return. See
+[the Pan evidence](LEVEL_STAGE1_MISSION_OVERRIDES_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (`PlayerEgo::killLiberator` return/position recovery;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `0xa1a18–0xa1aae` confirms the `int` return contract and

@@ -1,4 +1,4 @@
-# Pan stage-one mission override boundary (2026-10-24, pending runtime)
+# Pan stage-one mission override boundary (2026-10-24)
 
 ## Source evidence and scope
 
@@ -91,3 +91,20 @@ ARMv7 `-O0` and `-O2` gate executables compile and link with NDK r18b.
 The device is still absent from ADB; no runtime pass or metric change is
 claimed. Next: run both executables on the device and inspect the printed
 radius, scale and quality if either check still fails.
+
+## Windows SwiftShader runtime update (2026-10-24)
+
+The later `run_level_stage1_enemy_array_pan_gate.py` passed its complete
+inherited Pan chain at both `-O0` and `-O2` on Windows using the Android
+SDK's SwiftShader GLES implementation. Both executions printed
+`Level::init stage 0 returned and stage 1 allocated the Pan ordinary enemy
+array before spawning: OK` and exited successfully. The driver advertised
+ETC1, so the inherited original-sun upload and texture checks also ran;
+the previous WebKit ANGLE attempt stopped there and did not test the mission.
+This pass includes the mission-override assertions and the corrected
+first-asteroid radius/scale assertion, so those checkpoints are now
+host-runtime verified. It does not establish a physical Android ARM runtime
+pass for either new boundary: ADB still lists no device. The gate stops before
+the first ordinary `createShip`, remaining enemy population, stage-one return
+and a playable frame. Production C++ did not change, so the corpus metrics
+above remain the latest applicable measurements.
