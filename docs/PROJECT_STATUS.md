@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`RecordHandler` options audio categories;
+Last reviewed: 2026-10-24 (`RecordHandler::saveOptions` global wiring;
 earlier subsystem snapshots retain their dates)
+
+`RecordHandler::saveOptions` now reads five original ARM-backed
+`Globals` fields rather than dereferencing never-assigned local null
+pointers. Focused source-shape/strict fuzzy rose from **82.7%/27.2%**
+to **98.9%/93.5%**; it is not exact. Native `gof2`, 208/208 ARM units,
+and the 93-test verifier suite (one skip) pass. The fresh full corpus
+compares **4,323/4,524** originals over **4,737** pairs at
+**94.32%/83.74%** mean source-shape/strict fuzzy, with **2,578
+linked-exact** and **1,082 byte-exact**. Exact-pair sets have zero
+losses. Reading options and language selection remain unverified; see
+[the ARM global mapping](RECORD_SAVE_OPTIONS_GLOBALS_ARM_2026-10-24.md).
 
 Android ARM `RecordHandler::loadOptions` passes audio category IDs 1,
 2, 3 to both enable and volume calls; the recovered source had 0, 1,
@@ -10,7 +21,7 @@ file is 94 bytes of fields plus a 32-byte hash, agreeing with the
 recovered write layout. This does not establish runnable recovered
 settings loading: several `loadOptions` state pointers remain unwired.
 Native `gof2`, 208/208 ARM units and 93 verifier tests (one skip)
-pass. The full corpus stays at 4,323/4,524, 94.31%/83.73% mean,
+passed at that step. Its full corpus was 4,323/4,524, 94.31%/83.73% mean,
 2,578 linked-exact and 1,082 byte-exact, with zero exact-set losses.
 See [the options audio evidence](RECORD_ANDROID_OPTIONS_AUDIO_CATEGORIES_2026-10-24.md).
 

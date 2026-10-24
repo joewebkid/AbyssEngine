@@ -1019,17 +1019,7 @@ void *RecordHandler::readMission(unsigned int fd) {
 }
 
 
-static unsigned char *g_SO_settings = nullptr;
-
-static String **g_SO_playerName = nullptr;
-
 static const char g_SO_defName[] = "";
-
-static int *g_SO_extraInt = nullptr;
-
-static unsigned char *g_SO_flag1 = nullptr;
-
-static unsigned char *g_SO_flag2 = nullptr;
 
 void RecordHandler::saveOptions() {
     String &path = this->optionsPath;
@@ -1039,7 +1029,7 @@ void RecordHandler::saveOptions() {
     unsigned int fd;
     AEFile::OpenWrite(path, &fd);
 
-    OptionsBuffer *s = reinterpret_cast<OptionsBuffer *>(g_SO_settings);
+    OptionsBuffer *s = reinterpret_cast<OptionsBuffer *>(Globals::options);
 
     AEFile_WriteByte(s->byte_0x10, fd);
     AEFile_WriteByte(s->byte_0x11, fd);
@@ -1053,7 +1043,7 @@ void RecordHandler::saveOptions() {
     AEFile_WriteInt(s->i32_0x24, fd);
     AEFile_WriteInt(s->i32_0x28, fd);
 
-    String *name = *g_SO_playerName;
+    String *name = static_cast<String *>(Globals::instantActionPlayerName);
     if (name == 0) {
         String def(g_SO_defName);
         AEFile_WriteString(&def, fd, 0);
@@ -1061,8 +1051,8 @@ void RecordHandler::saveOptions() {
         AEFile_WriteString(name, fd, 0);
     }
 
-    AEFile_WriteInt(*g_SO_extraInt, fd);
-    AEFile_WriteByte(*g_SO_flag1, fd);
+    AEFile_WriteInt(Globals::lastRecordWritten, fd);
+    AEFile_WriteByte(Globals::first_start_ever, fd);
     AEFile_WriteInt(s->i32_0x54, fd);
     AEFile_WriteInt(s->i32_0x58, fd);
     AEFile_WriteInt(s->volumeSfxBits, fd);
@@ -1073,7 +1063,7 @@ void RecordHandler::saveOptions() {
     AEFile_WriteInt(s->volumeMusicBits, fd);
 
     AEFile_WriteShort(GameText::getLanguage(), fd);
-    AEFile_WriteByte(*g_SO_flag2, fd);
+    AEFile_WriteByte(Globals::startLiteVersionWithMoreCredits, fd);
     AEFile_WriteByte(s->byte_0x35, fd);
     AEFile_WriteByte(s->byte_0x36, fd);
     AEFile_WriteByte(s->byte_0x3a, fd);
