@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Level sentry-gun initialization;
+Last reviewed: 2026-10-24 (Level collision volumes and BoundingSphere ABI;
 earlier subsystem snapshots retain their dates)
+
+`Level::getBoundingVolume` now follows the Android ARM vector-scaling
+and signed-loop shape for station/static collision records, while
+`BoundingSphere` restores its 0x48-byte ARM layout and radius offset
+0x38. The original-asset host gate runs the production parser for 12
+station and 26 static shapes at `-O0/-O2`; live Android behavior and
+unknown record types remain untested. Focused parser source-shape/strict
+fuzzy rises **76.2%/28.4% → 94.2%/59.6%**, still nonexact. Both sphere
+constructor aliases become linked-exact. Native `gof2`, **208/208** ARM
+units and **93** verifier tests pass (one skip). The full corpus compares
+**4,323/4,524** originals across **4,736** pairs, mean
+**94.14%/83.48%**, with **2,562 linked-exact** and **1,082 byte-exact**
+pairs, no exact-pair losses. See [collision-volume evidence](LEVEL_BOUNDING_VOLUME_SPHERE_ABI_ARM_2026-10-24.md).
 
 `Level::createSentryGuns` now positions each new gun at the Android
 ARM-confirmed `(50000,50000,50000)` float coordinates and calls

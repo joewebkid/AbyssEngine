@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level collision volumes and BoundingSphere ABI (2026-10-24)
+
+Android ARM disassembly confirms vector factors `1.2f` for boxes and
+`0.6f` for spheres in `Level::getBoundingVolume`, plus a 0x48-byte
+`BoundingSphere` allocation with radius at offset 0x38. Focused parser
+source-shape/strict fuzzy improves **76.2%/28.4% → 94.2%/59.6%**;
+the parser remains nonexact. Both constructor aliases become linked-exact.
+The original-asset host gate executes 12 station and 26 static shapes at
+`-O0/-O2`. Native `gof2`, 208/208 ARM units and 93 verifier tests pass
+(one skip). The full corpus compares **4,323/4,524** originals across
+**4,736** pairs, mean **94.14%/83.48%**, with **2,562 linked-exact**
+and **1,082 byte-exact**, no exact-pair losses. Live Android collision
+behavior remains untested. See [the evidence](LEVEL_BOUNDING_VOLUME_SPHERE_ABI_ARM_2026-10-24.md).
+
 ## Level sentry-gun initialization (2026-10-24)
 
 Original Android `Level::createSentryGuns` uses `50000.0f` for each

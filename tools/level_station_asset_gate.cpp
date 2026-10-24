@@ -187,4 +187,31 @@ int main(int argc, char **argv) {
     std::printf("Level -> production PlayerStation -> jumpgates -> StarSystem -> LensFlare image boundary: OK; "
                 "%u meshes, %u transforms, %u collision volumes, %d/%d files; stage 0 incomplete\n",
                 canvas.meshCount, canvas.transformCount, station->boundingVolumes->size(), opened, closed);
+    for (int collisionId : {1002, 2000}) {
+        auto *volumes = static_cast<Array<BoundingVolume *> *>(level->getBoundingVolume(collisionId, nullptr));
+        assert(volumes && !volumes->empty());
+        unsigned shapes = 0;
+        for (auto *volume : *volumes) shapes += volume != nullptr;
+        assert(volumes->size() == (collisionId == 1002 ? 12u : 26u));
+        assert(shapes == volumes->size() && opened == closed);
+        if (collisionId == 1002) {
+            // First collision.bin record: sphere (0, 0, -3287), radius -20762.
+            auto *sphere = dynamic_cast<BoundingSphere *>((*volumes)[0]);
+            assert(sphere && sphere->centerX == 0 && sphere->centerY == 0 && sphere->centerZ == 0);
+            assert(sphere->extentsX == 0 && sphere->extentsY == -3287 && sphere->extentsZ == 0);
+            assert(std::fabs(sphere->radius - 12457.2f) < 0.01f);
+        } else {
+            // First static_collisions.bin record: box (-53, 1262, 2154), signed sizes.
+            auto *box = dynamic_cast<BoundingAAB *>((*volumes)[0]);
+            assert(box && box->centerX == 0 && box->centerY == 0 && box->centerZ == 0);
+            assert(box->extentsX == -53 && box->extentsY == 2154 && box->extentsZ == -1262);
+            assert(std::fabs(box->halfExtentX - 7024.8f) < 0.01f);
+            assert(std::fabs(box->halfExtentY - 4976.4f) < 0.01f);
+            assert(std::fabs(box->halfExtentZ - 15610.8f) < 0.01f);
+        }
+        std::printf("Level getBoundingVolume %d: %u records, %u shapes\n",
+                    collisionId, volumes->size(), shapes);
+        ArrayReleaseClasses(*volumes);
+        delete volumes;
+    }
 }

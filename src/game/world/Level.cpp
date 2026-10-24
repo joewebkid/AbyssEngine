@@ -2738,8 +2738,6 @@ void Level::createMission() {
 static_assert(sizeof(Waypoint) == 0x138, "Waypoint ARM allocation size");
 static_assert(sizeof(AEGeometry) == 0xc0, "AEGeometry ARM allocation size");
 #endif
-static_assert(sizeof(BoundingSphere) <= 0x48, "BoundingSphere allocation bound");
-
 void Level::createAsteroids() {
     AERandom *rng = static_cast<AERandom *>(Globals::rnd);
 
@@ -2834,7 +2832,7 @@ void Level::createAsteroids() {
     new(wp) Waypoint(ox, oy, oz, 0);
     this->asteroidWaypoint = wp;
 
-    BoundingSphere *bs = (BoundingSphere *) ::operator new(0x48);
+    BoundingSphere *bs = (BoundingSphere *) ::operator new(sizeof(BoundingSphere));
     new(bs) BoundingSphere((float) ox, (float) oy, (float) oz,
                            0.0f, 0.0f, 0.0f, 100000.0f);
     *(BoundingSphere **) &this->collisionVolume = bs;
@@ -6477,30 +6475,44 @@ void *Level::getBoundingVolume(int index, AEGeometry * /*unused*/) {
 
     void *result = 0;
     if (coll != 0) {
-        unsigned n = static_cast<unsigned>(coll->data_[0]);
+        int n = coll->data_[0];
+        Vector size{0.0f, 0.0f, 0.0f};
         Array<BoundingVolume *> *arr = new Array<BoundingVolume *>();
         ArraySetLength(n, *arr);
         result = arr;
 
         int cursor = 1;
-        for (unsigned i = 0; i < n; i = i + 1) {
+        for (int i = 0; i < n; i = i + 1) {
             const int *data = coll->data_;
             const int *r = data + cursor;
             int shape = data[cursor];
-            BoundingVolume *bv = 0;
+            BoundingVolume *bv;
             if (shape == 1) {
+                float cx = (float) r[1];
+                float cy = (float) r[3];
+                float cz = -(float) r[2];
+                size.x = (float) r[4];
+                size.y = (float) r[6];
+                size.z = (float) r[5];
+                size *= 1.2f;
                 bv = new BoundingAAB(0.0f, 0.0f, 0.0f,
-                                     (float) r[1], (float) r[3], -(float) r[2],
-                                     2.4f * (float) r[4], 2.4f * (float) r[6], 2.4f * (float) r[5]);
+                                     cx, cy, cz,
+                                     size.x + size.x, size.y + size.y, size.z + size.z);
                 cursor = cursor + 7;
             } else if (shape == 0) {
-                float radius = 0.6f * (float) r[4];
-                if (radius < 0.0f) radius = -radius;
-                bv = new BoundingSphere(0.0f, 0.0f, 0.0f,
-                                        (float) r[1], (float) r[3], -(float) r[2], radius);
+                float cx = (float) r[1];
+                float cy = (float) r[3];
+                float cz = -(float) r[2];
+                size.x = (float) r[4];
+                size *= 0.6f;
                 cursor = cursor + 5;
+                if (size.x < 0.0f)
+                    size *= -1.0f;
+                bv = new BoundingSphere(0.0f, 0.0f, 0.0f,
+                                        cx, cy, cz, size.x);
             } else {
                 cursor = cursor + 1;
+                continue;
             }
             (*arr)[i] = bv;
         }

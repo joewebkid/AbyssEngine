@@ -61,6 +61,7 @@ def prepare(out, cxx, asset_root):
         "Array<int32_t> *FileRead::loadStationCollision(",
         "Array<int32_t> *FileRead::loadStaticCollision(",
     ])
+    sources += extract("src/game/world/Level.cpp", ["void *Level::getBoundingVolume("])
     sources += extract("src/engine/file/AEFile.cpp", ["uint32_t AEFile::Read(int32_t &value,"])
     sources += extract("src/game/mission/Status.cpp", ["bool Status::dlc1Won()", "bool Status::gameWon()"])
     sources += extract("src/game/world/SolarSystem.cpp", [
