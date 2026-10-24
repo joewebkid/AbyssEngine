@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (PlayerStaticFar camera-distance update;
+Last reviewed: 2026-10-24 (PlayerAsteroid loot-flag byte ABI;
 earlier subsystem snapshots retain their dates)
+
+`PlayerAsteroid` now reads and writes its loot flag as the Android
+ARM-observed byte at base offset `0x4c`, rather than treating all four
+bytes of the union as the flag. Constructor and `update` focused
+source-shape improve **95.0% → 95.1%** and **89.7% → 90.1%**;
+`update` strict fuzzy improves **52.4% → 52.8%**. None becomes exact.
+Native `gof2`, **208/208** ARM units and **93** verifier tests pass
+(one skip). The full corpus remains **4,323/4,524** originals over
+**4,736** pairs, **94.17%/83.50%** mean source-shape/strict fuzzy,
+**2,562 linked-exact** and **1,082 byte-exact**, with no pairwise
+exact losses. Live asteroid loot and the first-friend Pan ship
+insertion are unverified. See [loot-flag byte evidence](PLAYER_ASTEROID_LOOT_FLAG_BYTE_ARM_2026-10-24.md).
 
 `PlayerStaticFar::update` now uses the ARM-confirmed `Globals::Canvas`,
 integer-position fields, distance threshold **295001**, far radius

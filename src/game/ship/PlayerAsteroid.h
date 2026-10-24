@@ -79,7 +79,7 @@ public:
     void initPush(const Vector &target, int duration) override;
 
 private:
-    int &dropsLoot() { return this->hasCargo; }
+    uint8_t &dropsLoot() { return this->crateCaptured; }
 
     Array<int> *&loot() { return this->cargo; }
 

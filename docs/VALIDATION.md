@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerAsteroid loot-flag byte ABI (2026-10-24)
+
+Android ARM `PlayerAsteroid` constructor and `update` use byte accesses
+at base offset `0x4c` for the loot flag. Changing the shared accessor
+from `int&` to the existing `uint8_t` field improves focused
+constructor source-shape **95.0% → 95.1%** and `update`
+source-shape/strict fuzzy **89.7%/52.4% → 90.1%/52.8%**, still
+nonexact. Native `gof2`, 208/208 ARM units and 93 verifier tests pass
+(one skip). The full corpus compares **4,323/4,524** originals over
+**4,736** pairs, mean **94.17%/83.50%**, with **2,562 linked-exact**
+and **1,082 byte-exact** and no pairwise exact losses. Live loot
+behavior remains untested. See [the evidence](PLAYER_ASTEROID_LOOT_FLAG_BYTE_ARM_2026-10-24.md).
+
 ## PlayerStaticFar camera-distance update (2026-10-24)
 
 Android ARM at `0x11c2e0` uses `Globals::Canvas`, integer object-position
