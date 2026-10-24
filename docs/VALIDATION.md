@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Faction-one Fighter type matrix — host gate (2026-10-24)
+
+The condition-selected small-outpost fixture now passes Windows
+SwiftShader `-O0/-O2` for first Fighter types **9**, **41** and **39**
+under three verified clock seeds. Fresh focused ARM
+`Globals::getRandomEnemyFighter` is **98.9% source-shape / 95.8%
+strict fuzzy**, nonexact. Native `gof2` is green (no-op); production
+C++ did not change, so the last full corpus remains **4,323/4,524**,
+**94.19%/83.54%**, **2,564 linked-exact**, **1,082 byte-exact**.
+The recovered resource list lacks computed DLC materials
+**32239/32241**; original registration and live rendering remain
+unverified. See
+[the evidence](LEVEL_STAGE1_SELECTED_SMALL_OUTPOST_HOST_2026-10-24.md).
+
 ## Condition-selected small outpost — host gate (2026-10-24)
 
 The original-asset Pan chain now uses the recovered faction-one

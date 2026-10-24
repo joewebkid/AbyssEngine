@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (condition-selected small outpost;
+Last reviewed: 2026-10-24 (all three faction-one Fighter outcomes;
 earlier subsystem snapshots retain their dates)
+
+The condition-selected small-outpost host gate now covers all three
+`getRandomEnemyFighter(1)` DLC outcomes: first Fighter types **9**,
+**41** and **39**. Three fixed-clock seeds pass Windows SwiftShader
+`-O0/-O2` with original assets, one class-one outpost slot and five
+turrets. Fresh focused `getRandomEnemyFighter` source-shape/strict
+fuzzy is **98.9%/95.8%**, nonexact. Native `gof2` is green (no-op);
+production C++ is unchanged, so the latest full ARM corpus remains
+**4,323/4,524**, **94.19%/83.54%**, **2,564 linked-exact**, **1,082
+byte-exact**, without exact-set losses. The recovered table lacks
+computed DLC material IDs **32239/32241**; the original Android
+registration needs confirmation. A coherent campaign-141 environment
+and live Android remain open. See
+[three-type gate](LEVEL_STAGE1_SELECTED_SMALL_OUTPOST_HOST_2026-10-24.md).
 
 The original-asset Pan host now selects the faction-one small outpost
 through `createMission`'s own RNG predicate at campaign mission 141,
