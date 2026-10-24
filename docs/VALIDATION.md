@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan second-friend ship — host gate (2026-10-24)
+
+With original Pan assets and a security-2 fixture variant, the
+continuous `Level::init` gate constructs and inserts two distinct
+ordinary Fighters into `enemies[0..1]`; it checks ordered LOD entries
+and per-ship material handoffs. Windows SwiftShader `-O0/-O2` passes.
+Production code is unchanged, so the last full ARM corpus remains
+**4,323/4,524**, mean **94.19%/83.53%** source-shape/strict fuzzy,
+**2,564 linked-exact** and **1,082 byte-exact**. No live device or
+Fighter teardown was tested. See
+[the evidence](LEVEL_STAGE1_SECOND_FRIEND_SHIP_HOST_2026-10-24.md).
+
 ## Pan first-friend ship return — host gate (2026-10-24)
 
 The continuous original-asset Pan gate runs the recovered class-zero

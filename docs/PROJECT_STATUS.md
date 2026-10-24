@@ -1,7 +1,17 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Pan first-friend ship return host gate;
+Last reviewed: 2026-10-24 (Pan second-friend ship host gate;
 earlier subsystem snapshots retain their dates)
+
+The original-asset Pan host gate now reaches a second ordinary
+`PlayerFighter` and inserts both ships into `enemies[0..1]`. For a
+guaranteed second friend, this fixture sets security to 2; the real
+catalog assets are unchanged. Windows SwiftShader passes at `-O0/-O2`.
+This is not a full scene or live Android check. No production C++ changed,
+so the latest full ARM corpus remains **4,323/4,524** originals over
+**4,736** pairs, mean **94.19%/83.53%**, **2,564 linked-exact** and
+**1,082 byte-exact**. ADB lists no device. See
+[second-friend evidence](LEVEL_STAGE1_SECOND_FRIEND_SHIP_HOST_2026-10-24.md).
 
 The original-asset Pan gate now executes the recovered class-zero
 `Level::createShip` path, inserts the first `PlayerFighter` into
