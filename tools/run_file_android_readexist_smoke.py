@@ -86,7 +86,8 @@ def main():
             subprocess.run([
                 args.cxx, "-std=gnu++17", opt, "-Isrc", "-Ithird_party/crypto",
                 "-I", str(out), "tools/file_android_real_archive_smoke.cpp",
-                "src/game/core/String.cpp", "src/engine/file/AEFile.cpp",
+                "src/game/core/String.cpp", "src/engine/core/GameText.cpp",
+                "src/engine/file/AEFile.cpp",
                 "src/engine/file/AENormalFile.cpp", "src/engine/file/AEPakFile.cpp",
                 "-ffunction-sections", "-fdata-sections", "-Wl,--gc-sections",
                 "-larchive", "-lcrypto", "-o", str(exe),

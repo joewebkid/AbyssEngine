@@ -14,7 +14,6 @@
 #include <tuple>
 #include <vector>
 
-int GameText::getLanguage() { std::abort(); }
 void String_printImpl(const char *) { std::abort(); }
 namespace AbyssEngine {
 unsigned short *computeFloatString(float, int, int *, int *, int) { std::abort(); }
@@ -195,10 +194,32 @@ int main(int argc, char **argv) {
     assert(AEFile::OpenRead("data/bin/not_present.bin", &missingHandle) == 0);
     assert(missingHandle == 99);
 
-    // Save-file bytes stay in the runner's temporary directory.
     const std::filesystem::path saveRoot(argv[3]);
     std::string appRoot = saveRoot.string() + "/";
     reader.appRootDir = appRoot.data();
+    const int languageFilesBefore = FileInterfaceAndroid::fileCounter;
+    GameText text;
+    text.setLanguage(0, 3401);
+    assert(GameText::getLanguage() == 0 && text.textCount == 3401);
+    assert(std::u16string(text.getText(0)->text()) == u"Language");
+    for (int i = 0; i < 3401; ++i)
+        assert(text.getText(i) != &text.fallbackText);
+
+    text.setLanguage(5, 3401);
+    assert(GameText::getLanguage() == 5 && text.textCount == 3401);
+    assert(std::u16string(text.getText(0)->text()) == u"Язык");
+    for (int i = 0; i < 3401; ++i)
+        assert(text.getText(i) != &text.fallbackText);
+    assert(std::u16string(text.getText(3401)->text()) == u"Error Language");
+
+    // No cz.lang exists in this APK or OBB; selection must fall back to gb.lang.
+    assert(!reader.FileExist(String("cz.lang")));
+    text.setLanguage(8, 3401);
+    assert(GameText::getLanguage() == 0);
+    assert(std::u16string(text.getText(0)->text()) == u"Language");
+    assert(FileInterfaceAndroid::fileCounter == languageFilesBefore);
+
+    // Save-file bytes stay in the runner's temporary directory.
     const int countBefore = FileInterfaceAndroid::fileCounter;
     const unsigned fileClosesBefore = closedFiles;
     uint32_t saveHandle = 99;
@@ -235,5 +256,5 @@ int main(int argc, char **argv) {
         zip_fclose(handle);
         delete handle;
     }
-    std::puts("Original APK/OBB and AEFile read/write/close stack: OK");
+    std::puts("Original APK/OBB, AEFile and GameText language stack: OK");
 }

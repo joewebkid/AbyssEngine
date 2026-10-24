@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`GameText::ReadLangFile` and original APK language gate;
+Last reviewed: 2026-10-24 (original APK/OBB language-selection host gate;
 earlier subsystem snapshots retain their dates)
+
+The original-archive host gate now runs production `GameText::setLanguage`
+through production `AEFile` and the source-extracted Android archive
+lookup, using verified APK/OBB bytes. Windows `-O0/-O2` pass English
+and Russian selection, **3,401** non-fallback strings in each, and
+fallback from absent `cz.lang` to English; selected file instances
+close. Production C++ did not change, so the last full ARM corpus
+remains **4,323/4,524**, **94.36%/83.80%** mean source-shape/strict
+fuzzy, **2,579 linked-exact** and **1,082 byte-exact**, with no
+exact-set losses. The gate uses libarchive instead of Android libzip;
+JNI, original settings startup and recovered live-device execution
+remain unverified. See [the language ARM and host gate](GAMETEXT_READLANG_APK_ARM_2026-10-24.md).
 
 `GameText::ReadLangFile` now constructs its per-record `String`
 directly in the original ARM branch order and stores the swapped

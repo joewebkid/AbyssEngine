@@ -46,9 +46,24 @@ replacement loop at `0x72664..0x72702`; for example it maps Cyrillic
 to ASCII `c` at `0x726f0`. Without that normalization, both APK
 files first differ at record 8.
 
-The host adapter does **not** test Android JNI, libzip, `setLanguage`
-path selection, or a recovered game running on the device. Arabic
+The existing original-archive gate now also links production `GameText`
+with production `AEFile` and the source-extracted Android archive-open
+path. Using the same verified APK and OBB at Windows `-O0/-O2`, it
+calls `setLanguage(0,3401)` and `setLanguage(5,3401)`, checks 3,401
+non-fallback entries and the expected first string for each, then
+selects absent `cz.lang` with ID 8 and confirms fallback to
+`gb.lang`/language 0. The selected file instances return to their
+pre-load count. The existing APK/OBB read and temporary filesystem
+write/read gates still pass. Run the combined gate with
+`tools/run_file_android_readexist_smoke.py --apk <apk> --obb <obb>
+--out-dir <temporary-dir> --cxx <host-c++-compiler>`.
+
+This is an end-to-end **host** language-selection gate, not a recovered
+game running on Android. It uses libarchive in place of the original
+libzip and does not execute JNI or the Java app lifecycle. Arabic
 reshaping remains unverified and has placeholder form tables. The
-next priority is an end-to-end language selection gate over production
-`AEFile` and then Android runtime integration; do not infer either
-from this parser test.
+original `setLanguage` at `0x7f2f0..0x7f310` calls `release` and
+replaces the text-table pointer without freeing the old pointer array;
+this gate checks selected file closure, not leak-free language reloads.
+The next priority is the recovered Android runtime boundary and genuine
+settings-to-language startup path; do not infer those from this gate.
