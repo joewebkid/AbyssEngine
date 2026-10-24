@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <cstring>
 #include <cstdio>
+#include <fstream>
+#include <iterator>
 #include <string>
 #include <vector>
 
@@ -119,7 +121,8 @@ static void checkName(const String &actual, const String &expected) {
         assert(actual.data[i] == expected.data[i]);
 }
 
-int main() {
+int main(int argc, char **argv) {
+    assert(argc == 1 || argc == 3);
     PendingStatus status;
     PendingRecord record;
     writePending(&status, 1);
@@ -240,5 +243,26 @@ int main() {
     assert(writer.writeByteArrayAsRecord(payload, sizeof(payload), 4, true) == sizeof(payload));
     assert(openedPath == "backup/4" && tape.size() == sizeof(payload));
     assert(std::memcmp(tape.data(), payload, sizeof(payload)) == 0);
+    if (argc == 3) {
+        const size_t expectedSizes[] = {13054, 15757};
+        for (int i = 0; i < 2; ++i) {
+            std::ifstream fixture(argv[i + 1], std::ios::binary);
+            assert(fixture);
+            tape.assign(std::istreambuf_iterator<char>(fixture), {});
+            assert(tape.size() == expectedSizes[i]);
+            const size_t payloadSize = tape.size() - 32;
+            unsigned char digest[32];
+            uint64_t context[0x70 / sizeof(uint64_t)];
+            SHA256_Init(context);
+            SHA256_Update(context, tape.data(), payloadSize);
+            SHA256_Update(context, RH_hash_salt, sizeof(RH_hash_salt));
+            SHA256_Final(digest, context);
+            assert(std::memcmp(digest, tape.data() + payloadSize, 32) == 0);
+            cursor = 0;
+            assert(!writer.checkHash(1));
+            assert(cursor == tape.size());
+        }
+        std::puts("iOS full-save envelopes: 2/2 salt-only; Android keyed check rejects");
+    }
     std::puts("PendingProduct round trip, full byte writes and record hashes: OK");
 }

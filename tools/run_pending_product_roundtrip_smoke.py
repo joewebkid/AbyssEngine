@@ -18,6 +18,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--cxx", required=True)
+    parser.add_argument("--ios-records", nargs=2, type=Path,
+                        metavar=("EDEN_PRIME", "HEINSTEN"))
     args = parser.parse_args()
     out = args.out_dir.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -93,7 +95,13 @@ def main():
             "src/game/mission/PendingProduct.cpp", "src/game/core/String.cpp",
             "-Wl,--gc-sections", "-lcrypto", "-o", str(exe),
         ], cwd=ROOT, check=True)
-        subprocess.run([str(exe)], cwd=ROOT, check=True)
+        command = [str(exe)]
+        if args.ios_records:
+            for record_path in args.ios_records:
+                if not record_path.is_file():
+                    parser.error(f"missing iOS record: {record_path}")
+                command.append(str(record_path.resolve()))
+        subprocess.run(command, cwd=ROOT, check=True)
 
 
 if __name__ == "__main__":

@@ -31,7 +31,9 @@ No new exact-match claim is made from a host fixture test.
 
 The file boundary is synthetic, not Android `OpenRead`; the full
 `gofw_save_game_0` files (**13,054** and **15,757** bytes) remain unparsed
-by this gate. Live Android, failure handling, all save versions and the
-complete load lifecycle remain unverified. Next priority: validate the
-full-save envelope/hash and restore ARM-backed Android `OpenRead` /
-`FileExist` state and literals before end-to-end claims.
+by this gate. Their appended hash envelopes were subsequently checked in
+[the full-save gate](RECORD_IOS_HASH_ENVELOPE_2026-10-24.md), but not their
+payloads. Live Android, failure handling, all save versions and the
+complete load lifecycle remain unverified. Next priority: restore
+ARM-backed Android `OpenRead` / `FileExist` state and literals before
+end-to-end claims.

@@ -1,10 +1,10 @@
 # RecordHandler hash envelope host gate (2026-10-24)
 
-The recovered `RecordHandler::addHash`, `addHashToOptions` and `checkHash`
-compute and verify `SHA256(payload || 25-byte salt || 16-byte key)`, with the
-32-byte digest appended to the file. Android ARM `addHash` at `0xcdea0` and
-`checkHash` at `0xcd7b0` show this input order. This is the game's format,
-not a claim that the construction is a secure modern MAC.
+The recovered Android `RecordHandler::addHash`, `addHashToOptions` and
+`checkHash` compute and verify `SHA256(payload || 25-byte salt || 16-byte
+key)`, with the 32-byte digest appended to the file. Android ARM `addHash`
+at `0xcdea0` and `checkHash` at `0xcd7b0` show this input order. This is the
+Android 2.0.16 path, not a claim about every platform or a secure modern MAC.
 
 `tools/run_pending_product_roundtrip_smoke.py` extracts the production
 read/write/hash bodies and the salt into a Windows host harness. Its controlled
@@ -27,6 +27,9 @@ unchanged by this test-only edit. A fresh full comparison covers
 lost or gained exact symbol pairs.
 
 The controlled file boundary does not prove real filesystem failures,
-complete record layout, a genuine game-key fixture, compatibility with a live
-Android save, or a live device run. Next priority: validate a complete
-record-file envelope with original data, then its read/fallback behavior.
+complete record layout, a genuine Android-key fixture, compatibility with a
+live Android save, or a live device run. Two iOS 1.1.4 full saves have since
+shown a different, salt-only envelope; see
+[the iOS envelope evidence](RECORD_IOS_HASH_ENVELOPE_2026-10-24.md). Next
+priority: validate the Android record-file envelope with original Android
+data, then its read/fallback behavior.

@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (iOS preview fixtures through native reader;
+Last reviewed: 2026-10-24 (iOS full-save hash envelope;
 earlier subsystem snapshots retain their dates)
+
+Two local iOS 1.1.4 full saves have appended SHA-256 digests of
+`payload || 25-byte salt`; independent calculation and source-extracted
+Windows `-O0/-O2` checks agree. Android ARM's recovered hash additionally
+includes a 16-byte key, and its synthetic-key check rejects both iOS files.
+This is a platform/version distinction, not a reason to change Android
+production logic. Native `gof2`, **208/208** ARM units, **93** verifier
+tests (one skip) and the optional/synthetic host gates pass. The fresh
+full ARM corpus matches the last production edit, with no exact-set losses:
+**4,323/4,524** originals, **94.30%/83.70%** mean source-shape/strict
+fuzzy, **2,578 linked-exact**, **1,082 byte-exact**. The iOS options
+envelope, full-save payload and genuine Android save remain unverified;
+see [the full-save envelope evidence](RECORD_IOS_HASH_ENVELOPE_2026-10-24.md).
 
 Two local GOF2 HD iOS 1.1.4 emulator preview files now pass the
 source-extracted `RecordHandler::recordStoreReadPreview` with the real
