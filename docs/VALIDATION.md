@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan first class-one freighter return/insertion — host gate (2026-10-24)
+
+The source-extracted class-one `createShip` branch now runs with
+original Pan assets through race-specific bounds, wreck collision,
+ship-group/LOD setup and enemy-array insertion. Windows SwiftShader
+`-O0/-O2` passes. One freighter is forced; a test-only
+`TransformRemoveChild` model replaces opaque engine helpers, and the
+gate stops before moving/relocation. Native `gof2` is green (no-op).
+Production C++ and the last full ARM corpus are unchanged:
+**4,323/4,524**, mean **94.19%/83.54%**, **2,564 linked-exact** and
+**1,082 byte-exact**. See [the evidence](LEVEL_STAGE1_FIRST_FREIGHTER_SHIP_RETURN_HOST_2026-10-24.md).
+
 ## Pan first class-one freighter prelude/constructor — host gate (2026-10-24)
 
 The original-asset Pan chain reaches `Level::createShip`'s class-one

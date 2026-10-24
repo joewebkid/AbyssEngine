@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Pan first class-one freighter prelude/ctor;
+Last reviewed: 2026-10-24 (Pan first class-one freighter return/insertion;
 earlier subsystem snapshots retain their dates)
+
+The original-asset Pan host chain now executes the class-one
+`Level::createShip` branch through bounds, wreck collision/mesh,
+ship-group/LOD setup and return into `enemies[friendCount + field_164]`.
+Windows SwiftShader `-O0/-O2` passes for one forced ordinary freighter
+after 3/4 friends and one pre-dead Fighter. The gate has a test-only
+`TransformRemoveChild` model for opaque engine helpers and stops before
+`setMoving`/relocation; outposts and live Android remain unverified.
+Production C++ and the ARM metrics are unchanged: **4,323/4,524**,
+**94.19%/83.54%**, **2,564 linked-exact**, **1,082 byte-exact**. See
+[freighter return evidence](LEVEL_STAGE1_FIRST_FREIGHTER_SHIP_RETURN_HOST_2026-10-24.md).
 
 The original-asset Pan host chain now reaches the first class-one
 freighter after ordinary friends and a pre-dead Fighter. The
