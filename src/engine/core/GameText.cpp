@@ -287,7 +287,6 @@ void GameText::ReadLangFile(unsigned int file, int count) {
     if (file == 0)
         return;
 
-    short lang = static_cast<short>(GameText::currentLang);
     for (int i = 0; i < count; ++i) {
         unsigned short len;
         if (AEFile::Read(2, &len, file) == 0) {
@@ -295,28 +294,22 @@ void GameText::ReadLangFile(unsigned int file, int count) {
             break;
         }
 
-        unsigned int byteLen = (unsigned int) ((len >> 8) | (len << 8)) & 0xffff;
+        len = static_cast<unsigned short>((len >> 8) | (len << 8));
 
-        char *utf8 = new char[byteLen + 1];
-        if (AEFile::Read(byteLen, utf8, file) == 0) {
+        char *utf8 = new char[len + 1];
+        if (AEFile::Read(len, utf8, file) == 0) {
             delete[] utf8;
             this->release();
             break;
         }
-        utf8[byteLen] = '\0';
+        utf8[len] = '\0';
 
-        unsigned short *wide = String::getWCharFromUtf8(utf8, (int) byteLen);
+        unsigned short *wide = String::getWCharFromUtf8(utf8, len);
 
-        String *s = new String;
-        if (lang == 9) {
-            String tmp;
-            tmp.Set((const unsigned short *) (wide));
-            *s = this->convertStringFromArabic(tmp);
-            this->textTable[i] = s;
-        } else {
-            s->Set((const unsigned short *) (wide));
-            this->textTable[i] = s;
-        }
+        String *s = new String(GameText::currentLang == 9
+            ? this->convertStringFromArabic(String(wide, false))
+            : String(wide, false));
+        this->textTable[i] = s;
 
         delete[] wide;
         delete[] utf8;

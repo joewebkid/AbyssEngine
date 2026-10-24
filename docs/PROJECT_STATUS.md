@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`GameText` constructor and language paths;
+Last reviewed: 2026-10-24 (`GameText::ReadLangFile` and original APK language gate;
 earlier subsystem snapshots retain their dates)
+
+`GameText::ReadLangFile` now constructs its per-record `String`
+directly in the original ARM branch order and stores the swapped
+16-bit record length. Focused source-shape/strict fuzzy rose from
+**84.3%/36.5% to 91.7%/50.8%**; it remains nonexact. A host gate
+using original APK `gb.lang` and `ru.lang` verifies all **3,401**
+records in each file against independent UTF-8 decoding with the
+ARM-confirmed homoglyph mapping, plus fallback and truncated-read
+cleanup at Windows `-O0/-O2`. Native `gof2`, **208/208** ARM units and
+the **93-test** verifier suite (one skip) pass. The full corpus compares
+**4,323/4,524** originals over **4,737** pairs at **94.36%/83.80%**
+mean source-shape/strict fuzzy, **2,579 linked-exact** and **1,082
+byte-exact**, with zero exact-set losses. Arabic shaping and recovered
+Android end-to-end loading remain unverified. See [the ARM and APK
+gate](GAMETEXT_READLANG_APK_ARM_2026-10-24.md).
 
 `GameText` now initializes the shared language to `0xffff` and stores
 the original `Error Language` fallback. Its language switch constructs
