@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Level flash-fade prefix recovery;
+Last reviewed: 2026-10-24 (Level skybox transition recovery;
 earlier subsystem snapshots retain their dates)
+
+The two `Level` skybox transitions now use the Android ARM-confirmed
+three-argument mesh/texture creation ABI and write handles directly into
+their fields. `switchSkyboxForIntro` also calls `KIPlayer::setDead()` for
+each asteroid, restoring the state change omitted by `setActive(false)`.
+Focused source-shape/strict fuzzy moves **66.7%/40.5% → 100%/100%**
+for Intro (new linked-exact) and **77.3%/36.2% → 97.3%/64.0%** for
+Supernova (nonexact). Native `gof2`, **208/208** ARM units and **93**
+verifier tests pass (one skip). The full corpus compares **4,323/4,524**
+originals across **4,736** pairs, mean **94.12%/83.45%**, with **2,558
+linked-exact** and **1,082 byte-exact** pairs; no previous exact pair
+was lost. Live visual transitions and the first-friend ship-insertion
+gate remain unverified while the Android device is offline. See
+[skybox transition evidence](LEVEL_SKYBOX_TRANSITIONS_ARM_2026-10-24.md).
 
 Pan Fighter follow-up (same date): the unchanged production
 `PlayerFighter` constructor at Android `0xdc2f8` now runs at ARMv7

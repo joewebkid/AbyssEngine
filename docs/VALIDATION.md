@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Level skybox transitions (2026-10-24)
+
+Original Android ARM calls confirm the three-argument `MeshCreate` and
+`TextureCreate` overloads with direct `Level` field outputs in both intro
+and supernova paths; Intro calls `KIPlayer::setDead()` for asteroids.
+Focused Intro comparison reaches **100% source-shape / 100% strict fuzzy**
+and linked-exact; Supernova reaches **97.3% / 64.0%**, nonexact. Native
+`gof2`, 208/208 ARM units and 93 verifier tests pass (one skip). The full
+corpus is **4,323/4,524** originals, **4,736** pairs, mean
+**94.12%/83.45%**, **2,558 linked-exact** and **1,082 byte-exact**,
+without exact-pair loss. Actual device transitions remain untested.
+See [skybox evidence](LEVEL_SKYBOX_TRANSITIONS_ARM_2026-10-24.md).
+
 ## Pan first-friend Fighter constructor (2026-10-24)
 
 The unchanged production `PlayerFighter` constructor runs on Android ARMv7

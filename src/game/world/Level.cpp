@@ -426,29 +426,22 @@ void Level::enableParticleEffects(bool emit, bool render) {
 }
 
 void Level::switchSkyboxForIntro() {
-    unsigned int skyboxMeshHandle;
-    PaintCanvas::gCanvas->MeshCreate((unsigned short) (0x4591), skyboxMeshHandle, false);
-    skyboxMesh = skyboxMeshHandle;
-    unsigned int skyboxTexHandle;
-    PaintCanvas::gCanvas->TextureCreate((unsigned short) (0x275a), nullptr, nullptr, skyboxTexHandle, false);
-    field_198 = skyboxTexHandle;
+    PaintCanvas::gCanvas->MeshCreate(0x4591, reinterpret_cast<unsigned int &>(skyboxMesh), false);
+    PaintCanvas::gCanvas->TextureCreate(0x275a, reinterpret_cast<unsigned int &>(field_198), false);
     if (this->asteroids != nullptr) {
         for (unsigned int i = 0; i < this->asteroids->size(); i = i + 1) {
-            (*this->asteroids)[i]->setActive(false);
+            (*this->asteroids)[i]->setDead();
         }
     }
 }
 
 void Level::switchSkyboxForSupernovaReversal() {
     int tex = ((SolarSystem *) (intptr_t) Status::gStatus->getSystem())->getTextureIndex();
-    unsigned int skyboxMeshHandle;
-    PaintCanvas::gCanvas->MeshCreate((unsigned short) ((unsigned short) (tex + 0x4588)), skyboxMeshHandle, false);
-    skyboxMesh = skyboxMeshHandle;
+    PaintCanvas::gCanvas->MeshCreate((unsigned short) (tex + 0x4588),
+                                    reinterpret_cast<unsigned int &>(skyboxMesh), false);
     int tex2 = ((SolarSystem *) (intptr_t) Status::gStatus->getSystem())->getTextureIndex();
-    unsigned int skyboxTexHandle;
-    PaintCanvas::gCanvas->TextureCreate((unsigned short) ((unsigned short) (tex2 + 0x2751)), nullptr, nullptr, skyboxTexHandle,
-                           false);
-    field_198 = skyboxTexHandle;
+    PaintCanvas::gCanvas->TextureCreate((unsigned short) (tex2 + 0x2751),
+                                       reinterpret_cast<unsigned int &>(field_198), false);
     skyboxTexture = -1;
 }
 
