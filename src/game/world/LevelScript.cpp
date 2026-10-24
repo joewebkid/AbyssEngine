@@ -169,16 +169,15 @@ LevelScript::~LevelScript() {
 }
 
 uint32_t LevelScript::canSkipCutsceneNow() {
-    int mission = Status::gStatus->getCurrentCampaignMission();
-    if (mission == 0x9a) {
+    if (Status::gStatus->getCurrentCampaignMission() == 0x9a) {
         if (!((uint32_t)(m_nState - 1) < 9)) {
             return 0;
         }
-    } else if (mission == 0x9d) {
+    } else if (Status::gStatus->getCurrentCampaignMission() == 0x9d) {
         if (!((uint32_t)(m_nState - 2) < 3)) {
             return 0;
         }
-    } else if (mission == 0x9e && m_nState > 1) {
+    } else if (Status::gStatus->getCurrentCampaignMission() == 0x9e && m_nState > 1) {
         return 0;
     }
     return 1;

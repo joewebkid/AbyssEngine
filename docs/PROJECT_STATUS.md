@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Level skybox transition recovery;
+Last reviewed: 2026-10-24 (LevelScript skip-permission call-shape recovery;
 earlier subsystem snapshots retain their dates)
+
+`LevelScript::canSkipCutsceneNow` now makes the three separate campaign-
+mission queries observed in Android ARM instead of caching one value.
+The permission thresholds are unchanged; the getter is currently a field
+read, so no different result is claimed for a stable mission. Focused
+source-shape/strict fuzzy rises **63.4%/47.8% → 100%/100%**, adding one
+linked-exact pair. Native `gof2`, **208/208** ARM units and **93** verifier
+tests pass (one skip). The full corpus remains **4,323/4,524** originals
+and **4,736** pairs, with mean **94.13%/83.46%**, **2,559 linked-exact**
+and **1,082 byte-exact** pairs and no exact-pair losses. Live pause-menu
+behavior and the pending first-friend ship-insertion gate remain untested.
+See [skip-permission evidence](LEVELSCRIPT_SKIP_PERMISSION_ARM_2026-10-24.md).
 
 The two `Level` skybox transitions now use the Android ARM-confirmed
 three-argument mesh/texture creation ABI and write handles directly into

@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## LevelScript skip permission (2026-10-24)
+
+The original Android `canSkipCutsceneNow` makes up to three separate
+`getCurrentCampaignMission()` calls. Restoring those call sites reaches
+**100% source-shape / 100% strict fuzzy** and linked-exact from
+**63.4% / 47.8%**. Native `gof2`, 208/208 ARM units and 93 verifier tests
+pass (one skip). The full corpus is **4,323/4,524** originals and
+**4,736** pairs, mean **94.13%/83.46%**, with **2,559 linked-exact**
+and **1,082 byte-exact** pairs; pairwise exact losses are zero. This
+is a call-shape recovery, not a proved change to the pause-menu result
+for a stable mission. See [the evidence](LEVELSCRIPT_SKIP_PERMISSION_ARM_2026-10-24.md).
+
 ## Level skybox transitions (2026-10-24)
 
 Original Android ARM calls confirm the three-argument `MeshCreate` and
