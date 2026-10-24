@@ -83,38 +83,18 @@ namespace AbyssEngine {
                     break;
                 }
                 if (c != '\r') {
-                    { int _nl = line.length + 1; unsigned short *_nd = new unsigned short[_nl + 1]; for (int _i = 0; _i < line.length; _i++) _nd[_i] = line.data[_i]; _nd[line.length] = (unsigned short) (static_cast<char16_t>(static_cast<unsigned char>(c))); _nd[_nl] = 0; if (line.data) delete[] line.data; line.data = _nd; line.length = _nl; }
+                    line += c;
                 }
             }
 
-            {
-                int b = 0, e = line.length;
-                while (b < line.length && line.data[b] == static_cast<unsigned short>(' ')) b++;
-                while (e > b && line.data[e - 1] == static_cast<unsigned short>(' ')) e--;
-                if (b >= e) {
-                    { if (line.data) delete[] line.data; line.data = nullptr; line.length = 0; }
-                } else {
-                    line = line.SubString(static_cast<unsigned int>(b), static_cast<unsigned int>(e));
-                }
-            }
+            line.Trim();
 
-            String commentNeedle;
-            for (const char *p = "//"; p && *p; ++p)
-                { int _nl = commentNeedle.length + 1; unsigned short *_nd = new unsigned short[_nl + 1]; for (int _i = 0; _i < commentNeedle.length; _i++) _nd[_i] = commentNeedle.data[_i]; _nd[commentNeedle.length] = (unsigned short) (static_cast<char16_t>(static_cast<unsigned char>(*p))); _nd[_nl] = 0; if (commentNeedle.data) delete[] commentNeedle.data; commentNeedle.data = _nd; commentNeedle.length = _nl; }
+            String commentNeedle("//", false);
             unsigned int commentPos = line.IndexOf(commentNeedle);
             int32_t commentIndex = commentPos == 0xffffffffu ? -1 : static_cast<int32_t>(commentPos);
             if (commentIndex != -1) {
-                line = line.SubString(0, 0 + static_cast<uint32_t>(commentIndex));
-                {
-                    int b = 0, e = line.length;
-                    while (b < line.length && line.data[b] == static_cast<unsigned short>(' ')) b++;
-                    while (e > b && line.data[e - 1] == static_cast<unsigned short>(' ')) e--;
-                    if (b >= e) {
-                        { if (line.data) delete[] line.data; line.data = nullptr; line.length = 0; }
-                    } else {
-                        line = line.SubString(static_cast<unsigned int>(b), static_cast<unsigned int>(e));
-                    }
-                }
+                line = line.SubString(0, static_cast<uint32_t>(commentIndex));
+                line.Trim();
             }
 
             if (line.size() == 0 && read == 0) {

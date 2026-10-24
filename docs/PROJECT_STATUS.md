@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (ConfigReader section callbacks;
+Last reviewed: 2026-10-25 (ConfigReader line reading;
 earlier subsystem snapshots retain their dates)
+
+`ConfigReader::GetNewLine` now uses ARM-confirmed `String::operator+=(char)`
+and `String::Trim()` instead of hand-written character growth and
+space-only trimming. The host gate runs the production line-reader and
+parser bodies against the raw original iOS configuration and tests
+tab/CRLF/comment/EOF handling at `-O0/-O2`. Focused `GetNewLine`
+source-shape/strict fuzzy rises from **57.0%/23.3%** to
+**92.4%/56.0%**, nonexact. Native `gof2`, **209/209** ARM units and
+**95** verifier tests (one skip) pass. Full corpus: **4,323/4,524**
+originals over **4,741** pairs, **94.63%/84.15%** mean source-shape/
+strict fuzzy, **2,597 linked-exact** and **1,082 byte-exact** with
+zero exact-set losses. The test substitutes `String` and `AEFile`, so
+Android archive decoding and live startup remain unverified. See
+[the ConfigReader ARM/iOS evidence](CONFIGREADER_SECTION_CALLBACKS_ARM_IOS_2026-10-25.md).
 
 `ConfigReader` now registers the ARM-confirmed `TIMER`, `KEYMAP`, and
 `VIBRATION` sections instead of placeholder names and empty callbacks.

@@ -30,6 +30,12 @@ names matched a file section. ARM instructions at `0x87730..0x8773c` pass
 `1` and `line length - 1` to `String::SubString`; the source now does the
 same. `String::SubString` treats its second argument as an exclusive end.
 
+The line-reader pass replaces hand-written UTF-16 growth and space-only
+trimming with the `String::operator+=(char)` and `String::Trim()` calls
+observed at ARM `0x8783e`, `0x87846`, and `0x87886`. `Trim()` also removes
+tabs, so section names and values indented with tabs are no longer missed.
+Comment stripping and EOF behavior remain in the original control path.
+
 ## Verification and limits
 
 - Focused ARM verification: constructor C1/C2 each improved from **50.1%**
@@ -37,28 +43,36 @@ same. `String::SubString` treats its second argument as an exclusive end.
   constructor symbols are not exact matches. `ParseFile` measured **95.0%**
   source-shape and **82.9%** strict fuzzy after the constructor pass; the
   section-bound fix raises it to **95.4%** and **83.4%**, still nonexact.
+- `GetNewLine` focused source-shape/strict fuzzy rises from **57.0%/23.3%**
+  to **92.4%/56.0%**. It remains nonexact; the source uses a readable
+  short-circuit read/newline condition instead of the ARM's bitwise
+  boolean sequence; the original C++ expression is unknown.
 - ARM compilation: **209/209** translation units. Native `gof2` builds.
-- A host smoke test extracts the production callbacks, constructor and
-  `ParseFile` body, compiles them at `-O0` and `-O2`, and reads the original
-  iOS configuration. It checks all three registrations, parser dispatch,
-  the 64-key map, and incomplete/EOF/OFF cases. Verifier suite: **95 tests
-  passed, one skipped**.
+- A host smoke test extracts the production callbacks, constructor,
+  `GetNewLine`, and `ParseFile` bodies, compiles them at `-O0` and `-O2`,
+  and reads the raw original iOS configuration through a host byte-stream
+  seam. It checks registrations, parser dispatch, the 64-key map,
+  tab/CRLF/comment handling, and incomplete/EOF/OFF cases. Verifier suite:
+  **95 tests passed, one skipped**.
 - Full ARM corpus: **4,323/4,524** original functions covered over **4,741**
-  comparisons, mean source-shape **94.63%** and strict fuzzy **84.14%**.
+  comparisons, mean source-shape **94.63%** and strict fuzzy **84.15%** after
+  the line-reader pass (**84.14%** before it).
   There are **2,597 linked-exact** and **1,082 byte-exact** matches, with
-  **zero losses** from the preceding corpus; the parser-bound pass leaves
-  these whole-corpus totals unchanged and loses no exact symbols. Three
+  **zero losses** from the preceding corpus; the parser-bound and
+  line-reader passes leave coverage and exact totals unchanged. Three
   newly linked-exact helper instantiations account for the linked-exact
   increase, not the constructor.
-- The host smoke test substitutes a small `String`, `Array`, file-line, and
-  application-manager seam. It runs the production `ParseFile` body but does
-  not prove production `AEFile::OpenRead`, `GetNewLine`, Android archive
+- The host smoke test substitutes a small `String`, `Array`, `AEFile`, and
+  application-manager seam. It runs the production parser and line-reader
+  bodies but does not prove production `String` allocation, Android archive
   decoding, or live engine initialization. These remain next runtime
-  priorities; do not infer full behavior or ABI fidelity from the focused
-  source-shape percentage.
+  priorities; do not infer full behavior or ABI fidelity from focused
+  source-shape percentages.
 
 The local reports are `_work/config_reader_callbacks_before_20261025.json`,
 `_work/config_reader_callbacks_after_20261025.json`, and
 `_work/config_reader_callbacks_full_20261025.json`, plus the parser-pass
 `_work/config_reader_parsefile_after_20261025.json` and
-`_work/config_reader_parsefile_full_20261025.json` (ignored by Git).
+`_work/config_reader_parsefile_full_20261025.json`, plus the line-reader
+`_work/config_reader_getnewline_after_20261025.json` and
+`_work/config_reader_getnewline_full_20261025.json` (ignored by Git).
