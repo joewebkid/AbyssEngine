@@ -579,7 +579,7 @@ void RecordHandler::writeByteArrayAsOptionsFile(signed char *buf, int n) {
     if (AEFile::FileExist(tmp) != 0)
         AEFile::FileDelete(tmp);
     AEFile::OpenWrite(tmp, &fd);
-    ((AEFile *) (n))->Write(buf, fd);
+    AEFile::Write(static_cast<unsigned int>(n), buf, fd);
     AEFile::Close(fd);
 }
 
@@ -942,7 +942,7 @@ int RecordHandler::writeByteArrayAsRecord(signed char *buf, int n, int slot, boo
     if (AEFile::FileExist(path) != 0)
         AEFile::FileDelete(path);
     AEFile::OpenWrite(path, &fd);
-    ((AEFile *) (n))->Write(buf, fd);
+    AEFile::Write(static_cast<unsigned int>(n), buf, fd);
     AEFile::Close(fd);
     return n;
 }

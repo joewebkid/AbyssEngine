@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <cstring>
 #include <cstdio>
+#include <string>
 #include <vector>
 
 // Item lookup is outside this gate; the getters and all downstream bodies are production.
@@ -18,7 +19,6 @@ BluePrint::BluePrint(int item) : stationName("Kalter", false) {
 int GameText::getLanguage() { std::abort(); }
 void String_printImpl(const char *) { std::abort(); }
 namespace AbyssEngine {
-String operator+(const String &, const String &) { std::abort(); }
 unsigned short *computeFloatString(float, int, int *, int *, int) { std::abort(); }
 }
 
@@ -32,8 +32,34 @@ struct PendingRecord {
     void setPendingProducts(Array<PendingProduct *> *value) { pendingProducts = value; }
 };
 
+struct RecordWriter {
+    String optionsPath = String("options", false);
+    String recordDir = String("save/", false);
+    String backupDir = String("backup/", false);
+    void writeByteArrayAsOptionsFile(signed char *buf, int n);
+    int writeByteArrayAsRecord(signed char *buf, int n, int slot, bool toBackup);
+};
+
 static std::vector<uint8_t> tape;
 static size_t cursor = 0;
+static std::string openedPath;
+
+uint32_t AEFile::FileExist(const String &) { return 0; }
+uint32_t AEFile::FileDelete(const String &) { std::abort(); }
+uint32_t AEFile::OpenWrite(String &path, uint32_t *handle) {
+    openedPath.clear();
+    for (uint32_t i = 0; i < path.size(); ++i)
+        openedPath.push_back(static_cast<char>(path.data[i]));
+    tape.clear();
+    cursor = 0;
+    *handle = 1;
+    return 1;
+}
+void AEFile::Close(uint32_t handle) { assert(handle == 1); }
+void AEFile::Write(bool value, uint32_t handle) {
+    uint8_t byte = value;
+    Write(1, &byte, handle);
+}
 
 uint32_t AEFile::Write(uint32_t bytes, void *buffer, uint32_t handle) {
     assert(handle == 1 && buffer && bytes);
@@ -140,5 +166,17 @@ int main() {
     delete created.pendingProducts;
     for (auto *item : *reloaded.pendingProducts) delete item;
     delete reloaded.pendingProducts;
-    std::puts("PendingProduct add/save/load round trips: OK");
+
+    RecordWriter writer;
+    signed char payload[] = {0, 1, 2, 3, 4, 5, 6};
+    writer.writeByteArrayAsOptionsFile(payload, sizeof(payload));
+    assert(openedPath == "options" && tape.size() == sizeof(payload));
+    assert(std::memcmp(tape.data(), payload, sizeof(payload)) == 0);
+    assert(writer.writeByteArrayAsRecord(payload, sizeof(payload), 4, false) == sizeof(payload));
+    assert(openedPath == "save/4" && tape.size() == sizeof(payload));
+    assert(std::memcmp(tape.data(), payload, sizeof(payload)) == 0);
+    assert(writer.writeByteArrayAsRecord(payload, sizeof(payload), 4, true) == sizeof(payload));
+    assert(openedPath == "backup/4" && tape.size() == sizeof(payload));
+    assert(std::memcmp(tape.data(), payload, sizeof(payload)) == 0);
+    std::puts("PendingProduct add/save/load and full byte writes: OK");
 }

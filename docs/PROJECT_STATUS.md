@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (pending-product add/save/load host gate;
+Last reviewed: 2026-10-24 (RecordHandler whole-buffer writes;
 earlier subsystem snapshots retain their dates)
+
+`RecordHandler` now writes the full byte array for options and record
+rewrites. Android ARM calls the three-argument `AEFile::Write` at
+`0xcdd06–0xcdd0a` and `0xcde12–0xcde16`; the previous C++ selected the
+one-byte `bool` overload. A source-extracted Windows `-O0/-O2` gate checks
+seven distinct bytes for options, primary and backup records. Native `gof2`,
+**208/208** ARM units and **93** verifier tests (one skip) pass. The full
+corpus remains **4,323/4,524**, mean **94.23%/83.60%**,
+**2,568 linked-exact**, **1,082 byte-exact**, with no exact-set losses.
+Hash verification and the complete file remain unverified. See
+[the ARM and host evidence](RECORD_HANDLER_BYTE_ARRAY_WRITE_ARM_2026-10-24.md).
 
 The `PendingProduct` block now has a source-extracted host round trip through
 `Status::addPendingProduct` and the matching `RecordHandler` write/read

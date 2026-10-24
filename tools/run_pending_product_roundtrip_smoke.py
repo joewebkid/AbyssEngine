@@ -1,4 +1,4 @@
-"""Exercise source-extracted RecordHandler pending-product save/load blocks."""
+"""Exercise source-extracted RecordHandler pending-product and byte-write paths."""
 
 import argparse
 from pathlib import Path
@@ -26,6 +26,7 @@ def main():
     file_source = (ROOT / "src/engine/file/AEFile.cpp").read_text()
     status_source = (ROOT / "src/game/mission/Status.cpp").read_text()
     blueprint_source = (ROOT / "src/game/mission/BluePrint.cpp").read_text()
+    engine_source = (ROOT / "src/engine/core/AbyssEngine.cpp").read_text()
     helpers = [
         "inline void AEStr_set(String &self, const char *s) {",
         "inline void AEStr_set(String &self, const uint16_t *s) {",
@@ -44,6 +45,9 @@ def main():
     read_block = between(record, "                int ppN = 0;", "                int wmN = 0;")
     (out / "pending_product_under_test.inc").write_text(
         "namespace {\n" + "\n".join(function(file_source, h) for h in helpers) + "\n}\n"
+        + "namespace AbyssEngine {\n"
+        + function(engine_source, "String operator+(const String &a, const String &b) {")
+        + "\n}\n"
         + function(file_source, "uint32_t AEFile::Read(String &value, uint32_t handle, bool wide) {")
         + function(file_source, "uint32_t AEFile::Write(const String &value, uint32_t handle, bool wide) {")
         + "\n".join(function(record, h) for h in wrappers)
@@ -54,6 +58,12 @@ def main():
         ])
         + function(status_source, "void Status::addPendingProduct(BluePrint *bp) {").replace(
             "void Status::addPendingProduct", "void PendingStatus::addPendingProduct", 1)
+        + function(record, "void RecordHandler::writeByteArrayAsOptionsFile(signed char *buf, int n) {").replace(
+            "void RecordHandler::writeByteArrayAsOptionsFile",
+            "void RecordWriter::writeByteArrayAsOptionsFile", 1)
+        + function(record, "int RecordHandler::writeByteArrayAsRecord(signed char *buf, int n, int slot, bool toBackup) {").replace(
+            "int RecordHandler::writeByteArrayAsRecord",
+            "int RecordWriter::writeByteArrayAsRecord", 1)
         + "\nstatic void writePending(PendingStatus *status, unsigned int fd) {\n"
         + write_block + "\n}\n"
         + "static void readPending(PendingRecord *rec, unsigned int fd) {\n"
