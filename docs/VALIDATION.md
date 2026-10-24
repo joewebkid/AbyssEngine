@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan seven large-outpost turrets — host gate (2026-10-24)
+
+The original-asset Pan gate executes the recovered non-alternate
+large-outpost turret loop and selected production constructor path.
+Windows SwiftShader `-O0/-O2` passes seven distinct turrets with
+mesh, health, rotation, scaling, group and position checks. Native
+`gof2` is green (no-op). Production C++ and full ARM figures are
+unchanged: **4,323/4,524**, **94.19%/83.54%**, **2,564 linked-exact**,
+**1,082 byte-exact**. Turret combat/teardown and alternate/small
+outposts are outside this gate. See
+[the evidence](LEVEL_STAGE1_LARGE_OUTPOST_TURRETS_HOST_2026-10-24.md).
+
 ## Composite ship groups and Pan large outpost (2026-10-24)
 
 Android ARM-backed type-13/14 mesh, child and LOD IDs replace zeros

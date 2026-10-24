@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (composite ship groups and Pan large outpost;
+Last reviewed: 2026-10-24 (Pan large-outpost turret loop;
 earlier subsystem snapshots retain their dates)
+
+The original-asset Pan host chain now constructs all **seven**
+non-alternate large-outpost turrets through the recovered
+`Level::createMission` loop, the type-6772 `createStaticObject`
+branch and `PlayerTurret` constructor. Windows SwiftShader `-O0/-O2`
+checks each turret's mesh, health, rotation, scale, group and
+position. Android ARM confirms the loop at `0xb329a–0xb3394` and
+its seven records at `0x1fce34`; the origin uses integer-truncated
+outpost coordinates. Production C++ is unchanged, native `gof2` is
+green, and the last full ARM corpus remains **4,323/4,524**,
+**94.19%/83.54%** mean source-shape/strict fuzzy,
+**2,564 linked-exact** and **1,082 byte-exact**, with no exact-set
+change. Combat, teardown, alternate/small outposts and live Android
+remain unverified; alternate and small outpost paths are next. See
+[turret evidence](LEVEL_STAGE1_LARGE_OUTPOST_TURRETS_HOST_2026-10-24.md).
 
 Android ARM confirms the mesh, child and LOD IDs and scaling for
 `Globals::getShipGroup` types 13/14. Restoring them also removes a
