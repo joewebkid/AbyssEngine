@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Pan pre-dead Fighter and KIPlayer::setDead;
+Last reviewed: 2026-10-24 (Pan first class-one freighter prelude/ctor;
 earlier subsystem snapshots retain their dates)
+
+The original-asset Pan host chain now reaches the first class-one
+freighter after ordinary friends and a pre-dead Fighter. The
+`Level::createShip` prelude and production `PlayerFixedObject`
+constructor pass Windows SwiftShader `-O0/-O2` with checked RNG,
+HP/EMP and initial fields. The fixture forces one ordinary freighter
+and excludes outposts; the constructor is run by the test after a
+boundary, not yet returned into the enemy array. No production C++
+changed, so the last full ARM corpus remains **4,323/4,524**
+originals, mean **94.19%/83.54%**, **2,564 linked-exact** and
+**1,082 byte-exact**. ADB lists no device. See
+[freighter prelude/constructor evidence](LEVEL_STAGE1_FIRST_FREIGHTER_PLAYER_CTOR_HOST_2026-10-24.md).
 
 `KIPlayer::setDead` now delegates to `KIPlayer::setActive(false)`, as
 Android ARM's four-instruction body does. Focused source-shape/strict

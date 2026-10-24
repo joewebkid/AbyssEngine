@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan first class-one freighter prelude/constructor — host gate (2026-10-24)
+
+The original-asset Pan chain reaches `Level::createShip`'s class-one
+prelude and separately invokes the production `PlayerFixedObject`
+constructor with its captured arguments. Windows SwiftShader `-O0/-O2`
+passes HP/EMP, RNG, back-reference and initial-field checks. A test
+variant forces one ordinary freighter and excludes outposts; class-one
+`createShip` return and enemy insertion remain unverified. No production
+C++ changed. The latest full ARM corpus remains **4,323/4,524**,
+mean **94.19%/83.54%**, **2,564 linked-exact** and **1,082 byte-exact**.
+See [the evidence](LEVEL_STAGE1_FIRST_FREIGHTER_PLAYER_CTOR_HOST_2026-10-24.md).
+
 ## Pan pre-dead Fighter and KIPlayer::setDead (2026-10-24)
 
 Android ARM stores state 4 then calls `KIPlayer::setActive(false)` from
