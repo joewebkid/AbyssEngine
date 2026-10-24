@@ -1,40 +1,54 @@
 #include "engine/file/ConfigReader.h"
+#include "engine/core/ApplicationManager.h"
+#include "engine/core/KeyCode.h"
+#include "engine/render/Engine.h"
 
 namespace AbyssEngine {
     namespace {
-        void config_reader_read_file_callback(void *, void *) {
+        void read_timer(ConfigReader *reader, void *context) {
+            String line = reader->GetNewLine();
+            if (line.Compare("EOF") != 0)
+                static_cast<Engine *>(context)->field_0x28 = line.ValueOf();
         }
 
-        void config_reader_keys_for_action_callback(void *, void *) {
+        void read_keymap(ConfigReader *reader, void *context) {
+            Array<KeyCode *> mappings;
+            for (unsigned int i = 0; i < 64; ++i) {
+                String line = reader->GetNewLine();
+                Array<String *> *parts = static_cast<Array<String *> *>(line.Split(String(",", false)));
+                bool valid = parts != nullptr && parts->size() == 2;
+                if (valid) {
+                    KeyCode *mapping = new KeyCode();
+                    mapping->code = (*parts)[0]->ValueOf();
+                    mapping->name = *(*parts)[1];
+                    ArrayAdd(mapping, mappings);
+                }
+                if (parts != nullptr) {
+                    for (unsigned int j = 0; j < parts->size(); ++j)
+                        delete (*parts)[j];
+                    delete parts;
+                }
+                if (!valid)
+                    break;
+            }
+            if (mappings.size() == 64)
+                static_cast<Engine *>(context)->appManager->KeyCodeSetMapping(&mappings);
+            for (unsigned int i = 0; i < mappings.size(); ++i)
+                delete mappings[i];
         }
 
-        void config_reader_register_token_callback(void *, void *) {
+        void read_vibration(ConfigReader *reader, void *context) {
+            String line = reader->GetNewLine();
+            if (line.Compare("EOF") != 0 && line.Compare("ON") == 0)
+                static_cast<Engine *>(context)->vibrationSupported = true;
         }
     }
 
     ConfigReader::ConfigReader(Engine *engine) {
         this->engine = engine;
-
-        String readFileName;
-        for (const char *p = "ConfigReadFile"; p && *p; ++p)
-            { int _nl = readFileName.length + 1; unsigned short *_nd = new unsigned short[_nl + 1]; for (int _i = 0; _i < readFileName.length; _i++) _nd[_i] = readFileName.data[_i]; _nd[readFileName.length] = (unsigned short) (static_cast<char16_t>(static_cast<unsigned char>(*p))); _nd[_nl] = 0; if (readFileName.data) delete[] readFileName.data; readFileName.data = _nd; readFileName.length = _nl; }
-        RegisterTokenReadFunction(
-            readFileName,
-            (ConfigTokenReadFunction) config_reader_read_file_callback, engine);
-
-        String keysForActionName;
-        for (const char *p = "ConfigGetKeysForAction"; p && *p; ++p)
-            { int _nl = keysForActionName.length + 1; unsigned short *_nd = new unsigned short[_nl + 1]; for (int _i = 0; _i < keysForActionName.length; _i++) _nd[_i] = keysForActionName.data[_i]; _nd[keysForActionName.length] = (unsigned short) (static_cast<char16_t>(static_cast<unsigned char>(*p))); _nd[_nl] = 0; if (keysForActionName.data) delete[] keysForActionName.data; keysForActionName.data = _nd; keysForActionName.length = _nl; }
-        RegisterTokenReadFunction(
-            keysForActionName,
-            (ConfigTokenReadFunction) config_reader_keys_for_action_callback, engine);
-
-        String registerTokenName;
-        for (const char *p = "ConfigRegisterTokenReadFunction"; p && *p; ++p)
-            { int _nl = registerTokenName.length + 1; unsigned short *_nd = new unsigned short[_nl + 1]; for (int _i = 0; _i < registerTokenName.length; _i++) _nd[_i] = registerTokenName.data[_i]; _nd[registerTokenName.length] = (unsigned short) (static_cast<char16_t>(static_cast<unsigned char>(*p))); _nd[_nl] = 0; if (registerTokenName.data) delete[] registerTokenName.data; registerTokenName.data = _nd; registerTokenName.length = _nl; }
-        RegisterTokenReadFunction(
-            registerTokenName,
-            (ConfigTokenReadFunction) config_reader_register_token_callback, engine);
+        RegisterTokenReadFunction(String("TIMER", false), read_timer, engine);
+        RegisterTokenReadFunction(String("KEYMAP", false), read_keymap, engine);
+        RegisterTokenReadFunction(String("VIBRATION", false), read_vibration, engine);
     }
 
     ConfigReader::~ConfigReader() {
