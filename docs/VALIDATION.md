@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerStaticFar camera-distance update (2026-10-24)
+
+Android ARM at `0x11c2e0` uses `Globals::Canvas`, integer object-position
+fields, the near threshold **295001**, far radius **295000** and a
+1/4096-quantized uniform scale. Restoring these moves focused
+source-shape/strict fuzzy **89.6%/76.5% → 98.7%/80.0%**, still
+nonexact. An extracted production-body host gate passes near, far and
+null-geometry paths at `-O0/-O2`; native `gof2`, 208/208 ARM units and
+93 verifier tests pass (one skip). The full corpus compares
+**4,323/4,524** originals across **4,736** pairs, mean **94.17%/83.50%**,
+with **2,562 linked-exact** and **1,082 byte-exact** and no exact-pair
+losses. A live Android scene remains untested. See
+[the evidence](PLAYER_STATIC_FAR_UPDATE_ARM_2026-10-24.md).
+
 ## Asteroid and far-static collision bounds (2026-10-24)
 
 Android ARM at `0xe3104` makes three asteroid geometry position queries

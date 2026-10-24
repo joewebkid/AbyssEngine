@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (asteroid and far-static collision bounds;
+Last reviewed: 2026-10-24 (PlayerStaticFar camera-distance update;
 earlier subsystem snapshots retain their dates)
+
+`PlayerStaticFar::update` now uses the ARM-confirmed `Globals::Canvas`,
+integer-position fields, distance threshold **295001**, far radius
+**295000** and 1/4096-quantized scale. The prior file-static canvas was
+never assigned and would be null with non-null geometry. Focused ARM
+source-shape/strict fuzzy improves **89.6%/76.5% → 98.7%/80.0%**;
+the function remains nonexact. The extracted production body passes
+near/far/null-geometry checks at host `-O0/-O2`. Native `gof2`,
+**208/208** ARM units and **93** verifier tests pass (one skip). The full
+corpus compares **4,323/4,524** originals across **4,736** pairs,
+mean **94.17%/83.50%**, with **2,562 linked-exact** and **1,082
+byte-exact** pairs and no exact-pair losses. ADB lists no device, so
+live camera-distance behavior and first-friend Pan ship insertion remain
+unverified. See [far-static update evidence](PLAYER_STATIC_FAR_UPDATE_ARM_2026-10-24.md).
 
 `PlayerAsteroid::collide` now uses the three Android ARM-observed geometry
 position queries and direct radius field; `PlayerStaticFar::collide` uses

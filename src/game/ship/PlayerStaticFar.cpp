@@ -5,15 +5,10 @@
 #include "engine/math/AEMath.h"
 #include "engine/math/BoundingVolume.h"
 #include "engine/render/AEGeometry.h"
+#include "game/core/Globals.h"
 #include "game/ship/PlayerStatic.h"
 #include "game/ship/Player.h"
 #include "engine/render/PaintCanvas.h"
-
-static PaintCanvas *g_cameraHolder;
-static int g_distLimit;
-static float g_radius;
-static float g_scaleNum;
-static float g_scaleFactor;
 
 PlayerStaticFar::PlayerStaticFar(int playerId, AEGeometry *geometry, float x, float y, float z)
     : PlayerStatic(playerId, geometry, x, y, z) {
@@ -64,7 +59,7 @@ void PlayerStaticFar::update(int /*delta*/) {
     if (this->geometry == nullptr)
         return;
 
-    PaintCanvas *camera = g_cameraHolder;
+    PaintCanvas *camera = Globals::Canvas;
     unsigned int cur = camera->CameraGetCurrent();
     AbyssEngine::AEMath::Matrix *matrix = reinterpret_cast<AbyssEngine::AEMath::Matrix *>(camera->CameraGetLocal(cur));
 
@@ -74,19 +69,19 @@ void PlayerStaticFar::update(int /*delta*/) {
 
     float len = VectorLength(this->viewDirection);
 
-    if ((int) len < g_distLimit) {
-        this->geometry->setScaling(1.0f);
+    if ((int) len < 295001) {
+        this->geometry->setScaling(1.0f, 1.0f, 1.0f);
         this->geometry->setPosition(
-            Vector{(float) this->posX, (float) this->posY, (float) this->posZ});
+            (float) this->positionX, (float) this->positionY, (float) this->positionZ);
     } else {
         this->viewDirection = VectorNormalize(this->viewDirection);
-        this->viewDirection *= g_radius;
+        this->viewDirection *= 295000.0f;
         this->viewDirection += this->cameraPosition;
         this->geometry->setPosition(this->viewDirection);
 
-        float s = (float) (int) ((g_radius / (float) (int) len) * g_scaleNum);
-        s = s * g_scaleFactor;
-        this->geometry->setScaling(s);
+        float s = (float) (int) ((295000.0f / (float) (int) len) * 4096.0f);
+        s = s * 0.000244140625f;
+        this->geometry->setScaling(s, s, s);
     }
 }
 
