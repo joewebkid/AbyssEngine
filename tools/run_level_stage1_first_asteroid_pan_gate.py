@@ -49,7 +49,7 @@ def prepare(out, cxx, root, reuse):
     ])
     chain += "\nAbyssEngine::AEMath::Vector PlayerAsteroid::tmp_vector2;\n"
     chain += "AbyssEngine::AEMath::Vector PlayerAsteroid::asteroidCenter;\n"
-    chain += "float PlayerAsteroid::asteroidDistance;\n"
+    chain += "int PlayerAsteroid::asteroidDistance;\n"
     chain += "float PlayerAsteroid::emitTime;\n"
     (out / "station_binary_chain.inc").write_text(chain)
     traps = (out / "station_binary_traps.inc").read_text()

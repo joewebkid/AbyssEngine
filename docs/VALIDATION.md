@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerAsteroid center-distance integer storage (2026-10-24)
+
+Android ARM converts `VectorLength` to signed int before storing
+`asteroidDistance`; the source previously stored a float. Focused
+source-shape/strict fuzzy improves **96.2%/84.4% → 100%/100%**,
+adding one linked-exact function. The production-body host smoke passes
+at `-O0/-O2`; native `gof2`, 208/208 ARM units and 93 verifier tests
+pass (one skip). The full corpus compares **4,323/4,524** originals
+over **4,736** pairs, mean **94.19%/83.53%**, with **2,564
+linked-exact** and **1,082 byte-exact** and no exact losses. The Pan
+scene gate stopped before this method at a HUD-cache assertion; no
+Android device was available. See [the evidence](PLAYER_ASTEROID_CENTER_DISTANCE_ARM_2026-10-24.md).
+
 ## PlayerAsteroid quality-string constructor (2026-10-24)
 
 Android ARM calls `String(const char *, bool)` with `false` after selecting

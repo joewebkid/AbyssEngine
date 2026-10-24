@@ -93,7 +93,7 @@ private:
     // Static data members present in the original binary (defined for symbol parity).
     static AbyssEngine::AEMath::Vector tmp_vector2;
     static AbyssEngine::AEMath::Vector asteroidCenter;
-    static float asteroidDistance;
+    static int asteroidDistance;
     static AbyssEngine::AEMath::Vector pos;
     static float emitTime;
 };

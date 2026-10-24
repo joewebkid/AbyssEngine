@@ -197,7 +197,7 @@ Vector PlayerAsteroid::getProjectionVector(const Vector &value) {
 
 void PlayerAsteroid::setAsteroidCenter(Vector center) {
     asteroidCenter = center;
-    asteroidDistance = VectorLength(center);
+    asteroidDistance = (int) VectorLength(center);
 }
 
 int PlayerAsteroid::collide(float x, float y, float z) {
@@ -345,6 +345,6 @@ PlayerAsteroid::~PlayerAsteroid() {
 // Static data members present in the original binary (defined for symbol parity).
 AbyssEngine::AEMath::Vector PlayerAsteroid::tmp_vector2;
 AbyssEngine::AEMath::Vector PlayerAsteroid::asteroidCenter;
-float PlayerAsteroid::asteroidDistance;
+int PlayerAsteroid::asteroidDistance;
 AbyssEngine::AEMath::Vector PlayerAsteroid::pos;
 float PlayerAsteroid::emitTime;

@@ -17,6 +17,9 @@ Vector VectorNormalize(const Vector &value) {
     float length = std::sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
     return {value.x / length, value.y / length, value.z / length};
 }
+float VectorLength(const Vector &value) {
+    return std::sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
+}
 }
 using namespace AbyssEngine::AEMath;
 
@@ -28,12 +31,18 @@ struct AEGeometry {
 
 struct PlayerAsteroid {
     static Vector pos;
+    static Vector asteroidCenter;
+    static int asteroidDistance;
     AEGeometry *geometry = nullptr;
     Vector getProjectionVector(const Vector &value);
+    void setAsteroidCenter(Vector center);
 };
 Vector PlayerAsteroid::pos{};
+Vector PlayerAsteroid::asteroidCenter{};
+int PlayerAsteroid::asteroidDistance{};
 
 // PRODUCTION_METHOD
+// PRODUCTION_CENTER_METHOD
 
 int main() {
     AEGeometry geometry{{10, 4, 0}};
@@ -54,4 +63,9 @@ int main() {
     assert(PlayerAsteroid::pos.x == 3 && PlayerAsteroid::pos.y == 4);
     assert(std::fabs(result.x - 0.6f) < 0.00001f);
     assert(std::fabs(result.y - 0.8f) < 0.00001f);
+
+    asteroid.setAsteroidCenter({3, 4, 0});
+    assert(PlayerAsteroid::asteroidCenter.x == 3 && PlayerAsteroid::asteroidDistance == 5);
+    asteroid.setAsteroidCenter({1, 1, 1});
+    assert(PlayerAsteroid::asteroidCenter.y == 1 && PlayerAsteroid::asteroidDistance == 1);
 }
