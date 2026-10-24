@@ -1,7 +1,6 @@
 #include "engine/math/BoundingAAB.h"
 #include "engine/math/BoundingVolume.h"
 #include "engine/math/AEMath.h"
-#include <cmath>
 
 int BoundingAAB::outerCollide(float x, float y, float z) {
     float centerX = this->centerX + this->extentsX;
@@ -58,12 +57,12 @@ Vector BoundingAAB::projectCollisionOnSurface(const Vector &point) {
     offsets[4].z = point.z - highZ;
     offsets[5].z = point.z - lowZ;
 
-    distances[0] = std::fabs(offsets[0].x);
-    distances[1] = std::fabs(offsets[1].x);
-    distances[2] = std::fabs(offsets[2].y);
-    distances[3] = std::fabs(offsets[3].y);
-    distances[4] = std::fabs(offsets[4].z);
-    distances[5] = std::fabs(offsets[5].z);
+    distances[0] = AbyssEngine::AEMath::Absf(offsets[0].x);
+    distances[1] = AbyssEngine::AEMath::Absf(offsets[1].x);
+    distances[2] = AbyssEngine::AEMath::Absf(offsets[2].y);
+    distances[3] = AbyssEngine::AEMath::Absf(offsets[3].y);
+    distances[4] = AbyssEngine::AEMath::Absf(offsets[4].z);
+    distances[5] = AbyssEngine::AEMath::Absf(offsets[5].z);
 
     float closest = distances[0];
     int closestIndex = 0;

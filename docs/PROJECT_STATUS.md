@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (BoundingSphere vector operations;
+Last reviewed: 2026-10-24 (BoundingAAB projection absolute-value call;
 earlier subsystem snapshots retain their dates)
+
+`BoundingAAB::projectCollisionOnSurface` now calls the ARM-confirmed
+engine `AEMath::Absf` helper for its six face distances, instead of
+inline `std::fabs`. Focused source-shape/strict fuzzy improves
+**71.8%/20.2% → 95.2%/58.6%**, still nonexact. The original-asset
+station gate and a shifted-box nearest-face check pass at `-O0/-O2`;
+live Android behavior and NaN propagation remain unverified. Native
+`gof2`, **208/208** ARM units and **93** verifier tests pass (one skip).
+The full corpus compares **4,323/4,524** originals across **4,736**
+pairs, mean **94.16%/83.49%**, with **2,562 linked-exact** and
+**1,082 byte-exact** pairs and no exact-pair losses. The 201 missing
+symbol names in this corpus are runtime/library support rather than
+`BoundingAAB` methods; this is not proof of complete game behavior.
+Next source candidate is `BoundingVolume::update`; first-friend Pan
+ship insertion remains the device priority when ADB is available. See
+[AAB projection evidence](BOUNDING_AAB_PROJECTION_ABSF_ARM_2026-10-24.md).
 
 `BoundingSphere` collision, normal and projection methods now use the
 Android ARM-confirmed `Vector::operator+` for base center plus extents;

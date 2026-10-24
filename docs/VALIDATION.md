@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BoundingAAB projection absolute-value call (2026-10-24)
+
+Android ARM at `0x98280` calls `AEMath::Absf` six times when selecting
+the nearest box face. Restoring those calls moves focused source-shape/
+strict fuzzy **71.8%/20.2% → 95.2%/58.6%**, still nonexact. The
+original-asset station gate and a shifted-box projection check pass at
+host `-O0/-O2`; native `gof2`, 208/208 ARM units and 93 verifier tests
+pass (one skip). The full corpus compares **4,323/4,524** originals
+across **4,736** pairs, mean **94.16%/83.49%**, with **2,562
+linked-exact** and **1,082 byte-exact** pairs; pairwise exact losses
+are zero. Live Android collision behavior remains untested. See
+[the evidence](BOUNDING_AAB_PROJECTION_ABSF_ARM_2026-10-24.md).
+
 ## BoundingSphere vector operations (2026-10-24)
 
 ARM disassembly at `0x151da0`, `0x151e10` and `0x151e74` confirms vector

@@ -68,6 +68,9 @@ static void checkCollision(PlayerStation *station) {
     assert(box->halfExtentX == 5859 && box->halfExtentY == 5028 && box->halfExtentZ == 5918);
     assert(box->outerCollide(-25951, -273, 25988));
     assert(!box->outerCollide(-25951 + 5860, -273, 25988));
+    BoundingAAB shiftedBox(10, 20, 30, 1, 2, 3, 10, 8, 6);
+    const Vector boxProjection = shiftedBox.projectCollisionOnSurface({11, 22, 35});
+    assert(boxProjection.x == 11 && boxProjection.y == 22 && boxProjection.z == 36);
     auto *sphere = dynamic_cast<BoundingSphere *>((*volumes)[22]);
     assert(sphere && sphere->centerX == -2 && sphere->centerY == 9865 && sphere->centerZ == 9357);
     assert(sphere->radius == 2000);
