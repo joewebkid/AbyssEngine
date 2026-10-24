@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (Android Google Play SKU JNI recovery;
+Last reviewed: 2026-10-25 (Android store item-info UTF cleanup;
 earlier subsystem snapshots retain their dates)
+
+The Android store item-info setter now releases its 25 JNI UTF
+strings through the ARM-backed `releaseStringUTFChars` helper rather
+than calling JNI directly. The original setter at `0x94858` calls
+that helper at `0x94cf4..0x94dc0`; the recovered helper itself is
+linked-exact. Focused setter source-shape/strict fuzzy is
+**9.6%/4.7% → 8.9%/4.2%** because the original unrolls all 25
+operations while source keeps loops. Native `gof2`, **209/209** ARM
+units and **95** verifier tests (one skip) pass. Full corpus remains
+**4,323/4,524** originals over **4,737** pairs, **94.60%/84.11%**
+mean source-shape/strict fuzzy, **2,594 linked-exact** and **1,082
+byte-exact**, with zero exact-set losses. The original's duplicated
+name slot 4 is documented but not copied into source; recovered live
+store behavior remains unverified. See
+[the UTF cleanup ARM evidence](ANDROID_ITEM_INFO_RELEASE_ARM_2026-10-25.md).
 
 The Android Google Play SKU JNI getters now return the ten product IDs
 confirmed at ARM `0x6b8dc` and `0x6b940`, instead of invented `dlcN`

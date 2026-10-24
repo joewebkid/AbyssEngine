@@ -272,7 +272,7 @@ void ndk_setNativeItemInformationList(JNIEnv *env, jclass /*clazz*/,
 
     for (int col = 0; col < 5; ++col)
         for (int row = 0; row < 5; ++row)
-            env->ReleaseStringUTFChars(elems[col][row], utf[col][row]);
+            releaseStringUTFChars(env, elems[col][row], utf[col][row]);
 }
 #endif
 #endif
