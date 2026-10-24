@@ -18,23 +18,17 @@
 #include "game/core/String.h"
 #include "game/menu/ModStation.h"
 
-static Layout **g_WantedWindow_move_layout = nullptr;
-static int *g_WantedWindow_move_screen_h = nullptr;
-static int *g_WantedWindow_move_screen_w_a = nullptr;
-static int *g_WantedWindow_move_force = nullptr;
-static int *g_WantedWindow_move_screen_w_b = nullptr;
-
 int WantedWindow::OnTouchMove(int x, int y) {
     if (this->showingMap != 0) {
         this->starMap->OnTouchMove(x, y);
         return 0;
     }
 
-    Layout *layout = *g_WantedWindow_move_layout;
+    Layout *layout = Globals::layout;
     if (((layout->field_0xc < y) &&
-         (y < *g_WantedWindow_move_screen_h - layout->field_0x10) &&
-         (x < *g_WantedWindow_move_screen_w_a / 2)) ||
-        (*g_WantedWindow_move_force != 0)) {
+         (y < Globals::h - layout->field_0x10) &&
+         (x < Globals::w / 2)) ||
+        (Globals::mouse_wheel != 0)) {
         int delta = y - this->lastDragY;
         this->dragDelta = delta;
         this->scrollDamping = 1.0f;
@@ -42,7 +36,7 @@ int WantedWindow::OnTouchMove(int x, int y) {
         this->lastDragY = y;
     }
 
-    if (*g_WantedWindow_move_screen_w_b / 2 < x) {
+    if (Globals::w / 2 < x) {
         this->scrollWindow->OnTouchMove(x, y);
     }
 
@@ -109,8 +103,6 @@ void WantedWindow::update(int dt) {
     }
 }
 
-static Layout **g_WantedWindow_touch_layout = nullptr;
-
 int WantedWindow::OnTouchBegin(int x, int y) {
     if (this->showingMap != 0) {
         this->starMap->OnTouchBegin(x, y);
@@ -127,7 +119,7 @@ int WantedWindow::OnTouchBegin(int x, int y) {
         (*this->buttons)[i]->OnTouchBegin(x, y);
     }
 
-    (*g_WantedWindow_touch_layout)->OnTouchBegin(x, y);
+    Globals::layout->OnTouchBegin(x, y);
     if (this->detailButton != nullptr) {
         Wanted *wanted = (*this->wantedList)[this->selectedWanted];
         if (wanted->isActive() != 0) {

@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (WantedWindow hit-test layout;
+Last reviewed: 2026-10-25 (WantedWindow touch input;
 earlier subsystem snapshots retain their dates)
+
+`WantedWindow::OnTouchBegin` and `OnTouchMove` now use the ARM-confirmed
+`Globals::layout`, `h`, `w`, and `mouse_wheel` instead of six
+null-initialized local pointer slots. Focused source-shape/strict fuzzy
+rises from **96.7%/95.8%** to **100%/100%** for `OnTouchBegin` (newly
+linked-exact) and from **13.5%/5.3%** to **99.0%/90.5%** for
+`OnTouchMove` (nonexact). Native `gof2`, **209/209** ARM units,
+**95** verifier tests (one skip), and a source-extracted touch-routing
+check at `-O0/-O2` pass. Full corpus: **4,323/4,524** originals over
+**4,741** pairs, **94.67%/84.20%** mean source-shape/strict fuzzy,
+**2,599 linked-exact** and **1,082 byte-exact**, zero exact-set losses.
+The live Wanted screen still depends on unresolved `OnTouchEnd`, draw,
+and init paths; selected-item validity has not been established. See
+[the WantedWindow touch evidence](WANTED_TOUCH_INPUT_ARM_2026-10-25.md).
 
 `WantedWindow::getWantedAtPosition` now reads the ARM-confirmed
 `Globals::layout` instead of dereferencing a null-initialized local
