@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (PlayerAsteroid push matrix recovery;
+Last reviewed: 2026-10-24 (PlayerAsteroid projection static-vector mutation;
 earlier subsystem snapshots retain their dates)
+
+`PlayerAsteroid::getProjectionVector` now copies its input before
+mutating the class-static `pos`, subtracts into `pos`, and follows the
+ARM-observed normalize/copy sequence. This restores the static side
+effect and handles a reference aliased to `pos`. Focused source-shape/
+strict fuzzy improves **77.0%/51.2% → 100%/100%**, adding one
+linked-exact (not byte-exact) function. The extracted method passes
+ordinary and aliased-input checks at host `-O0/-O2`; native `gof2`,
+**208/208** ARM units and **93** verifier tests pass (one skip). The
+full corpus compares **4,323/4,524** originals over **4,736** pairs,
+mean **94.18%/83.52%**, with **2,563 linked-exact** and **1,082
+byte-exact**, no exact losses. Live projection is unverified while ADB
+lists no device. See [projection evidence](PLAYER_ASTEROID_PROJECTION_STATIC_ARM_2026-10-24.md).
 
 `PlayerAsteroid::push` now constructs the one ARM-observed 15-float
 matrix and multiplies the geometry matrix reference directly, removing

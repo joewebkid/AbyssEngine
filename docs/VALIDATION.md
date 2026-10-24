@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PlayerAsteroid projection static-vector mutation (2026-10-24)
+
+Android ARM `getProjectionVector` copies the input before changing
+class-static `pos`, subtracts into `pos`, then normalizes the copied
+difference. Restoring those operations moves focused source-shape/
+strict fuzzy **77.0%/51.2% → 100%/100%** and adds one linked-exact
+function; it is not byte-exact. The extracted method passes ordinary
+and aliased-input checks at host `-O0/-O2`. Native `gof2`, 208/208
+ARM units and 93 verifier tests pass (one skip). The full corpus is
+**4,323/4,524** originals over **4,736** pairs, mean
+**94.18%/83.52%**, with **2,563 linked-exact** and **1,082
+byte-exact**; no exact pair is lost. Live projection remains untested.
+See [the evidence](PLAYER_ASTEROID_PROJECTION_STATIC_ARM_2026-10-24.md).
+
 ## PlayerAsteroid push matrix recovery (2026-10-24)
 
 Android ARM `PlayerAsteroid::push` builds one literal matrix and passes

@@ -5,8 +5,11 @@ by **5000**, not 1000. Its `push` routine divides the stored duration
 by 5000 and multiplies the current geometry matrix on the left of the
 temporary rotation matrix. Both values and the noncommutative order
 were restored. The original `getProjectionVector` also updates the
-class-static `pos` before computing `position - value`; the source now
-preserves that side effect.
+class-static `pos` before computing `position - value`. This pass
+restored the assignment but not the original in-place subtraction into
+`pos`; the later
+[projection follow-up](PLAYER_ASTEROID_PROJECTION_STATIC_ARM_2026-10-24.md)
+corrects that remaining side effect.
 
 For an exploding asteroid with positive bomb force, original ARM
 clamps `scaling` to `[0.6, 1.0]`, computes

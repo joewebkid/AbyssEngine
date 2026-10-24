@@ -189,9 +189,13 @@ void PlayerAsteroid::update(int delta) {
 }
 
 Vector PlayerAsteroid::getProjectionVector(const Vector &value) {
+    // ARM copies the input before mutating the static pos, even if they alias.
+    Vector result = value;
     pos = this->geometry->getPosition();
-    Vector toCenter = pos - value;
-    return VectorNormalize(toCenter);
+    pos -= result;
+    result = pos;
+    result = VectorNormalize(result);
+    return result;
 }
 
 void PlayerAsteroid::setAsteroidCenter(Vector center) {
