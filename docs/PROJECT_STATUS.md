@@ -1,6 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Level createGun resource table recovery;
+Last reviewed: 2026-10-24 (Level flashScreen color source recovery;
+earlier subsystem snapshots retain their dates)
+
+`Level::flashScreen` now reads the original `Level::i_r/i_g/i_b`
+color statics instead of six null placeholders, and its fourth color
+channel is typed as float at ARM offset `0x14c`. A source-extracted
+host gate covers six modes at `-O0/-O2`; native `gof2`, 208/208 ARM
+units and 93 verifier tests pass (one skip). Focused source-shape/strict
+fuzzy improves **61.5%/31.2% → 99.7%/90.8%**. The full corpus compares
+**4,323/4,524** originals across **4,736** pairs, mean **94.11%/83.43%**,
+with **2,557 linked-exact** and **1,082 byte-exact** pairs and no exact
+pair losses. The subsequent fade in `Level::update` still has null
+clamp placeholders and remains the next flash-specific behavior gap.
+See [the flashScreen evidence](LEVEL_FLASH_SCREEN_COLOR_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (Level createGun resource table recovery;
 earlier subsystem snapshots retain their dates)
 
 `Level::createGun` now reads the two original 233-entry ARM resource/sound

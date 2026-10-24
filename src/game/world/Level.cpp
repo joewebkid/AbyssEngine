@@ -246,18 +246,6 @@ static float *g_up_clampZ = nullptr;
 
 static float *g_up_clampW = nullptr;
 
-static float *g_flash2_a = nullptr;
-
-static float *g_flash2_b = nullptr;
-
-static float *g_flash2_c = nullptr;
-
-static float *g_flashCol_r = nullptr;
-
-static float *g_flashCol_g = nullptr;
-
-static float *g_flashCol_b = nullptr;
-
 static int **g_cso_textA = nullptr;
 
 static int **g_cso_textB = nullptr;
@@ -5776,9 +5764,9 @@ void Level::flashScreen(int type) {
     flashDurationA = dur;
     flashDurationB = dur;
     if (type == 2) {
-        flashColor.x = *g_flash2_a * 1.5f;
-        flashColor.y = *g_flash2_b * 1.5f;
-        flashColor.z = *g_flash2_c * 1.5f;
+        flashColor.x = i_r * 1.5f;
+        flashColor.y = i_g * 1.5f;
+        flashColor.z = i_b * 1.5f;
     } else if (type == 4) {
         flashColor.x = 0;
         flashColor.y = 0;
@@ -5790,11 +5778,11 @@ void Level::flashScreen(int type) {
         player->hitCamera();
     } else {
         float k = (type == 1) ? 8.0f : 5.0f;
-        flashColor.x = clampChannel(k * *g_flashCol_r);
-        flashColor.y = clampChannel(k * *g_flashCol_g);
-        flashColor.z = clampChannel(k * *g_flashCol_b);
+        flashColor.x = clampChannel(k * i_r);
+        flashColor.y = clampChannel(k * i_g);
+        flashColor.z = clampChannel(k * i_b);
     }
-    *(float *) &flashField = 255.0f;
+    flashField = 255.0f;
 }
 
 void Level::createPlayer() {

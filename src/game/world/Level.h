@@ -131,7 +131,7 @@ public:
     uint8_t friendCargoStolen;
     uint8_t pad_13d[3];
     Vector flashColor;
-    int flashField;
+    float flashField;
     int flashDurationA;
     int flashDurationB;
     uint8_t flashActive;
@@ -400,6 +400,7 @@ static_assert(__builtin_offsetof(Level, manualSecondaryActive) == 0x69,
               "Level::manualSecondaryActive offset");
 static_assert(__builtin_offsetof(Level, asteroidWaypoint) == 0xd8, "Level ctor clear start");
 static_assert(__builtin_offsetof(Level, friendCargoStolen) == 0x13c, "Level ctor clear end");
+static_assert(__builtin_offsetof(Level, flashField) == 0x14c, "Level::flashField offset");
 static_assert(__builtin_offsetof(Level, field_134) == 0x134, "Level::init stage offset");
 static_assert(__builtin_offsetof(Level, field_188) == 0x188, "Level::field_188 offset");
 static_assert(__builtin_offsetof(Level, alarmRequested) == 0x189, "Level::alarmRequested offset");
