@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`AEFile` Android save-file I/O;
+Last reviewed: 2026-10-24 (`RecordHandler` options audio categories;
 earlier subsystem snapshots retain their dates)
+
+Android ARM `RecordHandler::loadOptions` passes audio category IDs 1,
+2, 3 to both enable and volume calls; the recovered source had 0, 1,
+2. Those six arguments are corrected. The authentic Android options
+file is 94 bytes of fields plus a 32-byte hash, agreeing with the
+recovered write layout. This does not establish runnable recovered
+settings loading: several `loadOptions` state pointers remain unwired.
+Native `gof2`, 208/208 ARM units and 93 verifier tests (one skip)
+pass. The full corpus stays at 4,323/4,524, 94.31%/83.73% mean,
+2,578 linked-exact and 1,082 byte-exact, with zero exact-set losses.
+See [the options audio evidence](RECORD_ANDROID_OPTIONS_AUDIO_CATEGORIES_2026-10-24.md).
 
 The `RecordHandler` constructor now uses the three Android ARM-backed
 file names `gof2_save_options`, `gof2_save_game_`, and

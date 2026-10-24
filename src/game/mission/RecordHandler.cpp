@@ -850,12 +850,12 @@ void RecordHandler::loadOptions() {
                 void *fm = (void *) (long) *fmodSlot;
                 ((FModSound *) (fm))->setAudioLanguage(lang);
 
-                ((FModSound *) (fm))->enableCategory(0, s->byte_0x32 != 0);
-                ((FModSound *) (fm))->enableCategory(1, s->byte_0x33 != 0);
-                ((FModSound *) (fm))->enableCategory(2, s->byte_0x34 != 0);
-                ((FModSound *) (fm))->setVolume(0, s->volumeSfx);
-                ((FModSound *) (fm))->setVolume(1, s->volumeMusic);
-                ((FModSound *) (fm))->setVolume(2, s->volumeAmbient);
+                ((FModSound *) (fm))->enableCategory(1, s->byte_0x32 != 0);
+                ((FModSound *) (fm))->enableCategory(2, s->byte_0x33 != 0);
+                ((FModSound *) (fm))->enableCategory(3, s->byte_0x34 != 0);
+                ((FModSound *) (fm))->setVolume(1, s->volumeSfx);
+                ((FModSound *) (fm))->setVolume(2, s->volumeMusic);
+                ((FModSound *) (fm))->setVolume(3, s->volumeAmbient);
             }
 
             AEFile_ReadBool(&s->byte_0x62, fd);
