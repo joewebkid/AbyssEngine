@@ -3,6 +3,16 @@
 Last reviewed: 2026-10-24 (Level flash-fade prefix recovery;
 earlier subsystem snapshots retain their dates)
 
+Pan loot follow-up (same date): Android ARMv7 `-O0/-O2` executes the
+source-extracted production `Generator::getLootList(-1,-1)` after loading
+all 233 original `items.bin` records. Seeded trials cover both null and
+populated results, valid item indices and quantities, and balanced asset
+reads. This is a dependency test, not the linked `PlayerFighter` constructor
+or its exact Pan RNG stream. No production source or corpus metric changed;
+native `gof2` is green. The next priority is to link and run that actual
+constructor, then verify enemy-array insertion. See
+[loot evidence](LEVEL_STAGE1_FIRST_FRIEND_LOOT_ARM_2026-10-24.md).
+
 Pan first-friend follow-up (same date): the original-asset Android ARMv7
 gate passes at `-O0/-O2` through source-extracted production
 `Explosion(0)` and `addFireStreaks`, after the existing Player/EMP and

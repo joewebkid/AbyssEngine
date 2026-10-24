@@ -4,6 +4,15 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan first-friend loot dependency (2026-10-24)
+
+The original-asset Android ARMv7 `-O0/-O2` gate loads 233 catalog entries
+from `items.bin` and exercises production `Generator::getLootList(-1,-1)`
+with deterministic seeds covering null and populated results. It does not
+run the linked `PlayerFighter` constructor or its Pan RNG sequence. No
+production C++ or full-corpus metric changed. See
+[loot evidence](LEVEL_STAGE1_FIRST_FRIEND_LOOT_ARM_2026-10-24.md).
+
 ## Pan first-friend Explosion prerequisite (2026-10-24)
 
 The original-asset Pan gate now also exercises source-extracted production
