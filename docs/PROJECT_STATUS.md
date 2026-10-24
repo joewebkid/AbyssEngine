@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (LevelScript skip-permission call-shape recovery;
+Last reviewed: 2026-10-24 (LevelScript skipSequence vulnerability restoration;
 earlier subsystem snapshots retain their dates)
+
+`LevelScript::skipSequence` now restores the omitted Android ARM call
+through `PlayerEgo::player` to `Player::setVulnerable(true)` when its
+timer/mission guard succeeds. The original branch sets timer `7001`
+and then reenables player vulnerability; the prior C++ discarded the
+player pointer. Focused source-shape/strict fuzzy rises
+**82.4%/88.4% → 100%/100%**, adding one linked-exact pair. Native
+`gof2`, **208/208** ARM units and **93** verifier tests pass (one skip).
+The full corpus compares **4,323/4,524** originals across **4,736**
+pairs, mean **94.13%/83.46%**, with **2,560 linked-exact** and
+**1,082 byte-exact** pairs and no exact-pair losses. Live skip behavior
+and the first-friend ship-insertion gate remain untested while the
+Android device is offline. See [skipSequence evidence](LEVELSCRIPT_SKIP_SEQUENCE_VULNERABILITY_ARM_2026-10-24.md).
 
 `LevelScript::canSkipCutsceneNow` now makes the three separate campaign-
 mission queries observed in Android ARM instead of caching one value.

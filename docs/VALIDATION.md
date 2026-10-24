@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## LevelScript skipSequence vulnerability (2026-10-24)
+
+Original ARM `skipSequence` calls `Level::getPlayer()`, loads its
+`Player *`, and passes true to `Player::setVulnerable(bool)` after
+setting the timer to 7001. Restoring the omitted call moves focused
+source-shape/strict fuzzy from **82.4%/88.4% to 100%/100%** and adds
+one linked-exact pair. Native `gof2`, 208/208 ARM units and 93 verifier
+tests pass (one skip). The full corpus is **4,323/4,524** originals,
+**4,736** pairs, mean **94.13%/83.46%**, **2,560 linked-exact** and
+**1,082 byte-exact**; pairwise exact losses are zero. Live skip behavior
+is not yet checked. See [the evidence](LEVELSCRIPT_SKIP_SEQUENCE_VULNERABILITY_ARM_2026-10-24.md).
+
 ## LevelScript skip permission (2026-10-24)
 
 The original Android `canSkipCutsceneNow` makes up to three separate

@@ -106,8 +106,7 @@ void LevelScript::resetCamera(Level *level) {
 void LevelScript::skipSequence() {
     if (field_0x24 > 0 && Status::gStatus->getCurrentCampaignMission() > 0) {
         field_0x24 = 0x1b59;
-        void *player = (void *) m_pLevel->getPlayer();
-        (void) player; /* virtual Player flag setter — resolved via vtable */
+        static_cast<Player *>(m_pLevel->getPlayer()->player)->setVulnerable(true);
     }
 }
 
