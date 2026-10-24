@@ -550,11 +550,11 @@ void *RecordHandler::recordStoreReadPreview(int slot) {
 }
 
 
-static const char RH_lit0[] = "";
+static const char RH_lit0[] = "gof2_save_options";
 
-static const char RH_lit1[] = "";
+static const char RH_lit1[] = "gof2_save_game_";
 
-static const char RH_lit2[] = "";
+static const char RH_lit2[] = "gof2_save_game_preview_";
 
 RecordHandler::RecordHandler()
     : currentMission(0),

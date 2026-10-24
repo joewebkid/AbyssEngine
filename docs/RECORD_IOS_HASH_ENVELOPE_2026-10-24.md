@@ -57,11 +57,13 @@ iOS fallback or change Android's byte-matched format.
 
 For this prefix extension, the source-extracted gate passed with both
 authentic files at Windows `-O0/-O2`; native `gof2` remained green (no
-rebuild needed). The verifier unit-suite rerun could not complete in this
-environment: 27 of 65 discovered cases errored because the legacy ARM
-GNU objdump from NDK r18b was unavailable. This does not contradict the
-earlier 93-test/full-corpus result, but is not a fresh green ARM claim.
-No production C++ or ARM comparison input changed in this extension.
+rebuild needed). A first verifier attempt lacked the NDK r18b path;
+with the existing installation selected via `GOF2_NDK_ROOT`, all **93**
+unit cases ran (one skip), all **208/208** ARM units compiled, and the
+fresh full corpus compared **4,323/4,524** original functions over
+**4,737** pairs, **94.31%/83.73%** mean source-shape/strict fuzzy,
+**2,578 linked-exact** and **1,082 byte-exact**. No production C++ or
+ARM comparison input changed in this extension.
 
 The two files do not establish every iOS version's format. The iOS options
 file's 32-byte tail does not match the same salt-only calculation, so its

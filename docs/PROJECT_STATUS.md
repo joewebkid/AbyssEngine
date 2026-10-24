@@ -3,6 +3,27 @@
 Last reviewed: 2026-10-24 (`AEFile` Android save-file I/O;
 earlier subsystem snapshots retain their dates)
 
+The `RecordHandler` constructor now uses the three Android ARM-backed
+file names `gof2_save_options`, `gof2_save_game_`, and
+`gof2_save_game_preview_` instead of empty strings. The installed
+original game independently created a 126-byte options file at the
+first path. Native `gof2` and **208/208** ARM units build; focused
+constructor shape remains **47.4%/28.3%** (nonexact). The fresh full
+corpus remains **4,323/4,524**, **94.31%/83.73%** mean,
+**2,578 linked-exact** and **1,082 byte-exact**, with no exact-set
+losses. A genuine Android full save and preview have not yet been
+obtained. See [the path evidence](RECORD_ANDROID_SAVE_PATHS_ARM_LIVE_2026-10-24.md).
+
+The original Android 2.0.16 APK and verified OBB now launch on a
+connected Android 12 device to the Russian GOF2 HD main menu. The
+original ARM library loads and receives the OBB directory; this is
+reference-runtime evidence, **not** a runnable recovered C++ game.
+The existing NDK r18b installation restored the fresh validation gate:
+**208/208** ARM units, **93** verifier tests (one skip), and full corpus
+**4,323/4,524** originals over **4,737** pairs at **94.31%/83.73%**
+mean source-shape/strict fuzzy, **2,578 linked-exact** and **1,082
+byte-exact**. No production C++ changed. See [the live archive gate](FILE_ANDROID_REAL_ARCHIVE_GATE_2026-10-24.md).
+
 Two authentic iOS 1.1.4 full saves now have a verified prefix: **635**
 visited bytes, then credits/rating and a 64-bit play time matching each
 preview. Android 2.0.16 ARM writes **135** visited bytes and allocates a

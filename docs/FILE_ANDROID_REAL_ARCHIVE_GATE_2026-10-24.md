@@ -56,3 +56,26 @@ filesystem write/read-back through `AEFile`; see [the save I/O gate](AEFILE_ANDR
 It does not cover Android libzip, JNI setup, complete game-save
 serialization, or live loading on a device. ADB saw no device at review
 time.
+
+## Live original-application gate (2026-10-24)
+
+The connected Surya Android 12 device independently unpacked
+`assets/data/bin/items.bin` from a temporary copy of the original APK:
+SHA-256 `639b1da183594b9ca024a528d95082152591e49c9a685b6e42419bff931d7f4c`,
+matching the host gate. That temporary APK copy was removed. The
+original 2.0.16 APK (SHA-256
+`515fc9a651057130c7b2b1c47bb497c61ebaebb0c567d413b5bd5453c13b221c`)
+was then installed with the owner's approval. The original OBB was
+copied to the game's OBB directory and verified on-device at
+**1,011,128,870 bytes** and SHA-256
+`42cfe13f0f3b9f99f38a1e77c74ac1cf41e542b3becbffea0f5bb7cfc4a6e4cb`.
+
+The downloader advanced to `GOF2HD2012`; logcat reported the original
+`libgof2hdaa.so` loaded and identified
+`/storage/emulated/0/Android/obb/net.fishlabs.gof2hdallandroid2012/`
+as `zipDirectory`. A device screenshot showed the original game's
+Russian main menu. This confirms the installed original can initialize
+and render through that environment; it does **not** execute the
+recovered C++ in this repository or prove individual `OpenRead` calls.
+The game's own startup copied FMOD files into its data directory and
+created `gof2_save_options`; no game-record save was created in this gate.
