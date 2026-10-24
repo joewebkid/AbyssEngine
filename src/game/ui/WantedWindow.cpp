@@ -14,6 +14,7 @@
 #include "game/world/Station.h"
 #include "game/ui/TouchButton.h"
 #include "game/world/Wanted.h"
+#include "game/core/Globals.h"
 #include "game/core/String.h"
 #include "game/menu/ModStation.h"
 
@@ -157,15 +158,13 @@ float WantedWindow::getRelativeScrollStartPos() {
     return -(float) pos / (float) this->contentHeight;
 }
 
-static Layout **g_WantedWindow_hit_layout = nullptr;
-
 uint32_t WantedWindow::getWantedAtPosition(int x, int y) {
     if (x >= this->windowX + (this->windowWidth >> 1)) {
         return 0xffffffffu;
     }
 
     Array<Wanted *> *list = this->wantedList;
-    Layout *layout = *g_WantedWindow_hit_layout;
+    Layout *layout = Globals::layout;
     int numerator = y - this->windowY;
     numerator -= layout->field_0xc;
     numerator -= layout->field_0x20;

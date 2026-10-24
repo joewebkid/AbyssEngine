@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (ConfigReader line reading;
+Last reviewed: 2026-10-25 (WantedWindow hit-test layout;
 earlier subsystem snapshots retain their dates)
+
+`WantedWindow::getWantedAtPosition` now reads the ARM-confirmed
+`Globals::layout` instead of dereferencing a null-initialized local
+pointer. Focused source-shape/strict fuzzy rises from **15.9%/13.3%**
+to **100%/100%**, gaining linked-exact but not byte-exact. The native
+build, **209/209** ARM units, **95** verifier tests (one skip), and a
+source-extracted boundary check at `-O0/-O2` pass. Full corpus:
+**4,323/4,524** originals over **4,741** pairs,
+**94.65%/84.18%** mean source-shape/strict fuzzy,
+**2,598 linked-exact** and **1,082 byte-exact**, with no exact-set
+losses. The empty-list bound wraps in the original; callers and the
+live touch flow remain unverified. See [the WantedWindow ARM evidence](WANTED_HIT_LAYOUT_ARM_2026-10-25.md).
 
 `ConfigReader::GetNewLine` now uses ARM-confirmed `String::operator+=(char)`
 and `String::Trim()` instead of hand-written character growth and
