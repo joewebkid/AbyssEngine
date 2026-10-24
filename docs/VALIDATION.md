@@ -4,6 +4,16 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan first-friend Fighter constructor (2026-10-24)
+
+The unchanged production `PlayerFighter` constructor runs on Android ARMv7
+at NDK r18b `-O0/-O2` after the original-asset Pan Player/EMP prelude,
+with its recorded arguments and RNG state. Route, loot and Explosion
+dependencies complete; uncalled virtual methods fail closed. The gate
+does not execute the rest of `Level::createShip`, enemy insertion or
+destruction. No production C++ or corpus metric changed. See
+[Fighter constructor evidence](LEVEL_STAGE1_FIRST_FRIEND_FIGHTER_CTOR_ARM_2026-10-24.md).
+
 ## Pan first-friend loot dependency (2026-10-24)
 
 The original-asset Android ARMv7 `-O0/-O2` gate loads 233 catalog entries

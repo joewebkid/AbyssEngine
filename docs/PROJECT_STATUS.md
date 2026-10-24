@@ -3,6 +3,18 @@
 Last reviewed: 2026-10-24 (Level flash-fade prefix recovery;
 earlier subsystem snapshots retain their dates)
 
+Pan Fighter follow-up (same date): the unchanged production
+`PlayerFighter` constructor at Android `0xdc2f8` now runs at ARMv7
+`-O0/-O2` with the recorded first-friend Pan arguments and RNG state
+after the `Level::createShip` Player/EMP prelude. Its real base, route,
+loot and explosion paths complete; uncalled virtual methods fail closed
+at the test boundary. This is not yet the `createShip` continuation,
+enemy-array insertion or Fighter lifetime. The constructor remains
+**94.5% source-shape / 38.6% strict fuzzy**, nonexact; production C++
+and full-corpus metrics below are unchanged. Native `gof2` is green.
+Next: real geometry/manager services, `createShip` return and array
+insertion. See [Fighter constructor evidence](LEVEL_STAGE1_FIRST_FRIEND_FIGHTER_CTOR_ARM_2026-10-24.md).
+
 Pan loot follow-up (same date): Android ARMv7 `-O0/-O2` executes the
 source-extracted production `Generator::getLootList(-1,-1)` after loading
 all 233 original `items.bin` records. Seeded trials cover both null and
