@@ -64,6 +64,7 @@ public:
     uint32_t Seek(uint32_t n);
     uint32_t FileExist(String name);
     void *OpenRead(String name, int p2, bool p3, int p4, int p5, unsigned p6);
+    void *OpenWrite(String name, int size, bool append, unsigned mode);
 };
 int FileInterfaceAndroid::fileCounter = 0;
 

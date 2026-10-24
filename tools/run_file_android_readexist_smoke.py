@@ -45,6 +45,9 @@ def main():
         + function(source, "uint32_t FileInterfaceAndroid::FileExist(String name) {")
         + read_state
         + function(source, "void *FileInterfaceAndroid::OpenRead(String name, int p2, bool p3, int p4, int p5, unsigned int p6) {")
+        + next(line + "\n" for line in source.splitlines()
+               if line.startswith("static const char *gModeWb = "))
+        + function(source, "void *FileInterfaceAndroid::OpenWrite(String name, int, bool, unsigned int) {")
         + function(loader, 'extern "C" int loadAPKAndZip(const char *apkPath, const char *patchPath) {')
     )
     for opt in ("-O0", "-O2"):
@@ -88,7 +91,9 @@ def main():
                 "-ffunction-sections", "-fdata-sections", "-Wl,--gc-sections",
                 "-larchive", "-lcrypto", "-o", str(exe),
             ], cwd=ROOT, check=True)
-            subprocess.run([str(exe), str(apk), str(obb)], cwd=ROOT, check=True)
+            with tempfile.TemporaryDirectory(dir=out) as save_root:
+                subprocess.run([str(exe), str(apk), str(obb), save_root],
+                               cwd=ROOT, check=True)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`AEFile` raw PAK fallback;
+Last reviewed: 2026-10-24 (`AEFile` Android save-file I/O;
 earlier subsystem snapshots retain their dates)
+
+The source-extracted Android `OpenWrite` and production `AEFile` handle
+stack now write a temporary five-byte file and read it back at Windows
+`-O0/-O2`, alongside the original APK/OBB read gate. A missing parent
+directory fails without changing the handle; close restores the FILE
+instance count. Native `gof2` and **93** verifier tests pass (one skip).
+Focused `FileInterfaceAndroid` is **89.58%/85.32%** source-shape/strict
+fuzzy over **33** pairs; `OpenWrite` is **88.9%/74.6%** and `Write`
+**33.8%/14.0%**, neither exact. Production C++ is unchanged, so the
+last full corpus stays **4,323/4,524** over **4,737** pairs,
+**94.31%/83.73%** mean, **2,578 linked-exact** and **1,082 byte-exact**.
+Complete save serialization, the Android save directory, JNI and live
+device behavior remain unverified; see [the save I/O gate](AEFILE_ANDROID_SAVE_IO_HOST_2026-10-24.md).
 
 Android ARM confirms the raw PAK entry layout and offset handoff. A
 temporary two-entry fixture now passes production `AEFile` registration,
@@ -14,8 +27,8 @@ registration wrapper is **100%/100%**, while parser, search and `Open`
 remain nonexact. Production C++ is unchanged, leaving the last full
 corpus at **4,323/4,524** originals over **4,737** pairs,
 **94.31%/83.73%** mean, **2,578 linked-exact** and **1,082 byte-exact**.
-No real `.pak` was found in the shipped APK/OBB; compressed PAK, save
-paths and live Android remain unverified. See [the PAK gate](AEFILE_PAK_FALLBACK_ARM_HOST_2026-10-24.md).
+No real `.pak` was found in the shipped APK/OBB; compressed PAK, full
+save serialization and live Android remain unverified. See [the PAK gate](AEFILE_PAK_FALLBACK_ARM_HOST_2026-10-24.md).
 
 The original APK and OBB now pass a source-extracted Android archive
 open plus production `AEFile::OpenRead`/`Read`/`Close` host gate at
@@ -23,12 +36,12 @@ Windows `-O0/-O2`. It validates the APK item and patch-only OBB station
 bytes, handle reuse, close ownership and a missing path. Native `gof2`,
 **208/208** ARM units and **93** verifier tests pass (one skip). The
 test-only change leaves the fresh full ARM corpus at **4,323/4,524**
-originals over
-**4,737** pairs, **94.31%/83.73%** mean source-shape/strict fuzzy,
+originals over **4,737** pairs, **94.31%/83.73%** mean
+source-shape/strict fuzzy,
 **2,578 linked-exact** and **1,082 byte-exact**, with zero exact-set
-losses. The host ZIP decoder is not Android libzip, and JNI, PAK
-fallback, save files and live Android
-remain unverified; see [the archive gate](FILE_ANDROID_REAL_ARCHIVE_GATE_2026-10-24.md).
+losses. The host ZIP decoder is not Android libzip. JNI, complete save
+serialization and live Android remain unverified; see
+[the archive gate](FILE_ANDROID_REAL_ARCHIVE_GATE_2026-10-24.md).
 
 Android ARM confirms the numeric `AEFile::Open` modes as write=0,
 read=1, append=2; the recovered header had read/write reversed. With the

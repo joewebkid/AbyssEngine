@@ -51,7 +51,8 @@ report.
 The ZIP adapter is **not** Android's statically linked libzip 0.9.x.
 This gate proves archive identities, path selection and returned bytes
 under an independent host decoder, plus the production `AEFile` handle
-table for two successful reads. It does not cover Android libzip, JNI
-setup, `AEFile::findPakFile` fallback, write/save paths, or live loading
-on a device. ADB sees no device at review time. Next priority: test the
-PAK fallback and save-file paths, then run on Android when available.
+table for two successful reads. A later extension also checks a temporary
+filesystem write/read-back through `AEFile`; see [the save I/O gate](AEFILE_ANDROID_SAVE_IO_HOST_2026-10-24.md).
+It does not cover Android libzip, JNI setup, complete game-save
+serialization, or live loading on a device. ADB saw no device at review
+time.

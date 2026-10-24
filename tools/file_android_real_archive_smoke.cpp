@@ -24,6 +24,7 @@ struct zip { std::string path; };
 struct zip_file { archive *reader; };
 static std::vector<zip_file *> archiveHandles;
 static unsigned closedStreams = 0;
+static unsigned closedFiles = 0;
 
 zip *zip_open(const char *path, int flags, int *error) {
     assert(flags == 0 && error == nullptr);
@@ -85,18 +86,23 @@ public:
     FileInterfaceAndroid() { enabled = 1; }
     FileInterfaceAndroid(FILE *stream, bool append);
     FileInterfaceAndroid(zip_file *stream, bool append, int offset, int, int);
-    ~FileInterfaceAndroid() override { Close(); }
+    ~FileInterfaceAndroid() override {
+        Close();
+        if (fileCounter) --fileCounter;
+    }
     uint32_t Seek(uint32_t n) override;
     uint32_t FileExist(String name) override;
     void *OpenRead(String name, int p2, bool p3, int p4, int p5, unsigned p6) override;
-    void *OpenWrite(String, int, bool, unsigned) override { return nullptr; }
+    void *OpenWrite(String, int, bool, unsigned) override;
     void *OpenAppend(String, int, bool, unsigned) override { return nullptr; }
     uint32_t Read(uint32_t n, void *buf) override {
         if (zipFile) return zip_fread(zipFile, buf, n) == n;
         if (file) return std::fread(buf, 1, n, file) == n;
         return 0;
     }
-    uint32_t Write(uint32_t, const void *) override { return 0; }
+    uint32_t Write(uint32_t n, const void *buf) override {
+        return file && std::fwrite(buf, 1, n, file) == n;
+    }
     uint32_t GetFileSize() override { return 0; }
     uint32_t FileDelete(String) override { return 0; }
     uint32_t GetDeviceFreeSpace() override { return 0; }
@@ -106,7 +112,10 @@ public:
     uint32_t FileEnumInit(char *, bool) override { return 0; }
     uint32_t FileGetNextEnum(String &) override { return 0; }
     void Close() override {
-        if (file) std::fclose(file);
+        if (file) {
+            std::fclose(file);
+            ++closedFiles;
+        }
         if (zipFile) zip_fclose(zipFile);
         file = nullptr;
         zipFile = nullptr;
@@ -139,7 +148,7 @@ static void checkSha256(const std::vector<unsigned char> &bytes, const char *exp
 }
 
 int main(int argc, char **argv) {
-    assert(argc == 3);
+    assert(argc == 4);
     assert(loadAPKAndZip(argv[1], argv[2]));
     FileInterfaceAndroid reader;
     assert(reader.FileExist(String("data/bin/items.bin")));
@@ -185,6 +194,39 @@ int main(int argc, char **argv) {
     uint32_t missingHandle = 99;
     assert(AEFile::OpenRead("data/bin/not_present.bin", &missingHandle) == 0);
     assert(missingHandle == 99);
+
+    // Save-file bytes stay in the runner's temporary directory.
+    const std::filesystem::path saveRoot(argv[3]);
+    std::string appRoot = saveRoot.string() + "/";
+    reader.appRootDir = appRoot.data();
+    const int countBefore = FileInterfaceAndroid::fileCounter;
+    const unsigned fileClosesBefore = closedFiles;
+    uint32_t saveHandle = 99;
+    String saveName("save_probe.bin");
+    assert(AEFile::OpenWrite(saveName, &saveHandle) == 1 && saveHandle == 1);
+    assert(FileInterfaceAndroid::fileCounter == countBefore + 1);
+    char payload[] = {'G', 'O', 'F', '2', '\n'};
+    assert(AEFile::Write(sizeof(payload), payload, saveHandle) == 1);
+    AEFile::Close(saveHandle);
+    assert(FileInterfaceAndroid::fileCounter == countBefore);
+    assert(closedFiles == fileClosesBefore + 1);
+    FILE *saved = std::fopen((saveRoot / "save_probe.bin").string().c_str(), "rb");
+    assert(saved);
+    char diskBytes[sizeof(payload)] = {};
+    assert(std::fread(diskBytes, 1, sizeof(diskBytes), saved) == sizeof(diskBytes));
+    assert(std::fclose(saved) == 0);
+    assert(std::memcmp(diskBytes, payload, sizeof(payload)) == 0);
+
+    uint32_t readBack = 99;
+    assert(AEFile::OpenRead(saveName, &readBack) == 1 && readBack == 1);
+    char roundTrip[sizeof(payload)] = {};
+    assert(AEFile::Read(sizeof(roundTrip), roundTrip, readBack) == 1);
+    assert(std::memcmp(roundTrip, payload, sizeof(payload)) == 0);
+    AEFile::Close(readBack);
+    String missingParent("missing/save_probe.bin");
+    uint32_t failedWrite = 99;
+    assert(AEFile::OpenWrite(missingParent, &failedWrite) == 0);
+    assert(failedWrite == 99);
     AEFile::Release();
 
     delete static_cast<zip *>(*FileInterfaceAndroid::gZipMain);
@@ -193,5 +235,5 @@ int main(int argc, char **argv) {
         zip_fclose(handle);
         delete handle;
     }
-    std::puts("Original APK/OBB archive and AEFile read/close stack: OK");
+    std::puts("Original APK/OBB and AEFile read/write/close stack: OK");
 }
