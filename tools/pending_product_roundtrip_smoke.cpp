@@ -245,12 +245,32 @@ int main(int argc, char **argv) {
     assert(std::memcmp(tape.data(), payload, sizeof(payload)) == 0);
     if (argc == 3) {
         const size_t expectedSizes[] = {13054, 15757};
+        const uint64_t expectedTimes[] = {80559, 850954};
         for (int i = 0; i < 2; ++i) {
             std::ifstream fixture(argv[i + 1], std::ios::binary);
             assert(fixture);
             tape.assign(std::istreambuf_iterator<char>(fixture), {});
             assert(tape.size() == expectedSizes[i]);
             const size_t payloadSize = tape.size() - 32;
+            const auto readLe = [](size_t offset, unsigned bytes) {
+                uint64_t value = 0;
+                for (unsigned j = 0; j < bytes; ++j)
+                    value |= uint64_t(tape[offset + j]) << (8 * j);
+                return value;
+            };
+            const size_t visitedCount = readLe(0, 4);
+            assert(visitedCount == 635 && 4 + visitedCount + 16 <= payloadSize);
+            size_t visitedOnes = 0;
+            for (size_t j = 0; j < visitedCount; ++j) {
+                assert(tape[4 + j] <= 1);
+                visitedOnes += tape[4 + j];
+            }
+            assert(visitedOnes == (i == 1 ? 2u : 0u));
+            assert(tape[4 + 77] == (i == 1));
+            assert(tape[4 + 135] == (i == 1));
+            assert(readLe(4 + visitedCount, 4) == 0); // credits
+            assert(readLe(8 + visitedCount, 4) == 0); // rating
+            assert(readLe(12 + visitedCount, 8) == expectedTimes[i]);
             unsigned char digest[32];
             uint64_t context[0x70 / sizeof(uint64_t)];
             SHA256_Init(context);
@@ -262,7 +282,7 @@ int main(int argc, char **argv) {
             assert(!writer.checkHash(1));
             assert(cursor == tape.size());
         }
-        std::puts("iOS full-save envelopes: 2/2 salt-only; Android keyed check rejects");
+        std::puts("iOS full-save prefixes: 2/2 have 635 visited flags; Android keyed check rejects");
     }
     std::puts("PendingProduct round trip, full byte writes and record hashes: OK");
 }

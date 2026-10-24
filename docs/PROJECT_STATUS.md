@@ -3,6 +3,18 @@
 Last reviewed: 2026-10-24 (`AEFile` Android save-file I/O;
 earlier subsystem snapshots retain their dates)
 
+Two authentic iOS 1.1.4 full saves now have a verified prefix: **635**
+visited bytes, then credits/rating and a 64-bit play time matching each
+preview. Android 2.0.16 ARM writes **135** visited bytes and allocates a
+135-byte `GameRecord` buffer; its reader uses the on-disk count without
+a visible capacity check. The iOS keyed-hash difference is therefore not
+the only compatibility barrier. The existing `-O0/-O2` host gate checks
+both iOS prefixes and hash tails; production C++ is unchanged, so the
+last full corpus remains **4,323/4,524**, **94.31%/83.73%** mean,
+**2,578 linked-exact** and **1,082 byte-exact**. Do not pass these iOS
+files to the Android reader; full payloads, genuine Android saves and
+live-device loading remain unverified. See [the save evidence](RECORD_IOS_HASH_ENVELOPE_2026-10-24.md).
+
 The source-extracted Android `OpenWrite` and production `AEFile` handle
 stack now write a temporary five-byte file and read it back at Windows
 `-O0/-O2`, alongside the original APK/OBB read gate. A missing parent

@@ -31,9 +31,42 @@ corpus compares **4,323/4,524** original functions over **4,737** pairs,
 **1,082 byte-exact**. Comparison with the prior full report finds zero
 lost or gained exact symbol pairs; no new exact claim is made here.
 
+## Payload prefix: a second incompatibility
+
+Both authenticated iOS 1.1.4 files begin with little-endian count **635**,
+followed by 635 one-byte visited flags, 32-bit credits and rating (both
+zero in these fixtures), and 64-bit playing time. The times are **80,559**
+and **850,954**, agreeing with the independently parsed preview files.
+The Heinsten file has nonzero visited flags at indices **77** and **135**;
+the Eden Prime file has none. The optional host gate now checks these
+offsets and values at Windows `-O0/-O2` before checking the hash tail.
+
+The Android 2.0.16 ARM library used here has SHA-256
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`.
+Its `RecordHandler::recordStoreWrite` at `0xce908..0xce91e`
+writes count **135** and loops over 135 visited bytes. Android ARM
+`GameRecord::GameRecord` at `0x15591e..0x15592c` allocates exactly **135**
+bytes for that buffer. The reader at `0xcbda2..0xcbdc8` loops to the
+count read from disk, without a visible capacity check before storing
+through the buffer pointer. This matches the current recovered source.
+Consequently, even bypassing the different hash would not make an iOS
+file safe to pass to the Android reader: its 635-byte count exceeds the
+Android buffer, and truncation would also discard the observed flag 135.
+This is a cross-version boundary, not a license to add an unverified
+iOS fallback or change Android's byte-matched format.
+
+For this prefix extension, the source-extracted gate passed with both
+authentic files at Windows `-O0/-O2`; native `gof2` remained green (no
+rebuild needed). The verifier unit-suite rerun could not complete in this
+environment: 27 of 65 discovered cases errored because the legacy ARM
+GNU objdump from NDK r18b was unavailable. This does not contradict the
+earlier 93-test/full-corpus result, but is not a fresh green ARM claim.
+No production C++ or ARM comparison input changed in this extension.
+
 The two files do not establish every iOS version's format. The iOS options
 file's 32-byte tail does not match the same salt-only calculation, so its
-envelope remains uncharacterized. Full-save payload parsing, the genuine
-Android key/save, Android filesystem read/fallback and live-device loading
-remain unverified. Next priority: restore Android `OpenRead`/`FileExist`
-from ARM evidence and obtain a genuine Android save for end-to-end checks.
+envelope remains uncharacterized. Payload parsing beyond the confirmed
+prefix, the genuine Android key/save, Android filesystem read/fallback,
+and live-device loading remain unverified. Next priority: restore Android `OpenRead`/`FileExist`
+from ARM evidence and obtain a genuine Android save for end-to-end checks;
+do not feed these iOS files to `recordStoreRead`.
