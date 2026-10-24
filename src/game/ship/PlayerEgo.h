@@ -507,7 +507,7 @@ public:
 
     bool isRechargingCloak();
 
-    void killLiberator();
+    int killLiberator();
 
     int levelCollision();
 

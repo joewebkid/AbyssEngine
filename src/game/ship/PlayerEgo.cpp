@@ -2076,30 +2076,28 @@ int PlayerEgo::levelCollision() {
     return 0;
 }
 
-void PlayerEgo::killLiberator() {
-    char sv[12];
+int PlayerEgo::killLiberator() {
     Array<Array<Gun *> *> *p = ((Player *) this->player)->guns;
-    if (p == 0) return;
+    if (p == 0) return 0;
     Array<Gun *> *arr = p->data_[1];
-    if (arr == 0) return;
-    if (p->count == 0) return;
-    if (arr->count == 0) return;
-    if (this->currentSecondaryWeaponIndex != 0xb3) return;
-    *(int *) (sv + 0) = -1;
-    *(int *) (sv + 4) = -1;
-    *(int *) (sv + 8) = -1;
+    if (arr == 0) return 0;
+    if (p->count == 0) return 0;
+    if (arr->count == 0) return 0;
+    if (this->currentSecondaryWeaponIndex != 0xb3) return 0;
     unsigned count = arr->count;
     for (unsigned i = 0; i < count; i++) {
-        int *e = (int *) arr->data_[i];
-        if (e[0x16] == 0xb3) {
-            *(int *) e[0xf] = -1;
-            *(Vector *) ((void *) e[3]) = *(const Vector *) (sv);
+        Gun *e = arr->data_[i];
+        if (e->itemIndex == 0xb3) {
+            e->lifetimes[0] = -1;
+            // Android 0xa1a4c: 0x47435000 is the off-screen 50000.0f position.
+            e->positionArray[0] = Vector{50000.0f, 50000.0f, 50000.0f};
             Array<Gun *> *arr2 = p->data_[1];
             Gun *e2 = arr2->data_[i];
             e2->active = 0;
             count = arr2->count;
         }
     }
+    return 1;
 }
 
 void Mat_assign(void *dst, const void *src);

@@ -1,6 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`PlayerEgo::update` volatile-cargo/gamma recovery;
+Last reviewed: 2026-10-24 (`PlayerEgo::killLiberator` return/position recovery;
+earlier subsystem snapshots retain their dates)
+
+Android ARM `0xa1a18–0xa1aae` confirms the `int` return contract and
+the three `50000.0f` position components used when disabling a
+Liberator gun; the previous C++ had a `void` return and copied integer
+`-1` bit patterns as floats. A source-extracted smoke passes at O0/O2;
+native `gof2`, 208/208 ARM units and 93 verifier tests pass (one skip).
+Focused source-shape/strict fuzzy is **97.8%/63.5%**, nonexact. The full
+corpus remains **4,323/4,524** originals, 4,736 pairs, **94.09%/83.41%**
+mean source-shape/strict fuzzy, **2,557 linked-exact** and **1,082
+byte-exact** counts, with zero skipped or wrong-type symbols. The previous
+pair-identity report is unavailable, so no stronger set-wise exact claim
+is made. Live LevelScript-triggered weapon shutdown remains untested.
+See [the ARM evidence](PLAYER_EGO_KILL_LIBERATOR_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (`PlayerEgo::update` volatile-cargo/gamma recovery;
 earlier subsystem snapshots retain their dates)
 
 Android ARM `0x9db60–0x9dd18` confirms event-35 sound, steering-delta

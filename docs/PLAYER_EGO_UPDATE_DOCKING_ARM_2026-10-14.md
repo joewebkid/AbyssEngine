@@ -63,3 +63,14 @@ whole-function shape score as a semantic oracle.
 The later [ARM32 layout audit](PLAYER_EGO_ABI_LAYOUT_GAP_ARM_2026-10-14.md)
 shows the underlying PlayerEgo member offsets are still wrong;
 the branch smoke cannot establish ABI-correct runtime behavior.
+
+## Null-target teardown audit (2026-10-24)
+
+The original `dockToAsteroid` at `0x9f4b8–0x9f4c4` tests docking state,
+loads the stored target at PlayerEgo `+0x1bc` and calls
+`PlayerAsteroid::setRotationEnabled` without a null check. That callee
+at `0xe2a90` writes directly to its receiver at `+0x14c`. Thus an
+active docking state with a null stored target is not safe in the
+original either. No speculative null guard was added to the C++.
+The real-game reachability of that state remains unverified; a live
+ARM frame is still needed before claiming this path safe.
