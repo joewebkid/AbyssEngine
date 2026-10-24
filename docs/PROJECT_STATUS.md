@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Pan four ordinary freighters;
+Last reviewed: 2026-10-24 (composite ship groups and Pan large outpost;
 earlier subsystem snapshots retain their dates)
+
+Android ARM confirms the mesh, child and LOD IDs and scaling for
+`Globals::getShipGroup` types 13/14. Restoring them also removes a
+one-element child-LOD array read as two entries. The original-asset
+Pan host gate now passes the non-alternate type-14 large-outpost ship
+through class-one construction and relocation at Windows SwiftShader
+`-O0/-O2`, and separately creates type 13. Focused `getShipGroup`
+source-shape/strict fuzzy rises **83.0%/7.7% → 83.3%/11.3%**;
+the function is still nonexact. Native `gof2`, **208/208** ARM units
+and **93** verifier tests pass (one skip). Full ARM corpus:
+**4,323/4,524** originals over **4,736** pairs, mean
+**94.19%/83.54%**, **2,731 100%-fuzzy**, **2,564 linked-exact** and
+**1,082 byte-exact**; no exact-set losses, **201** absent, zero
+wrong-type or skipped. Seven outpost turrets, alternate/small outposts
+and live Android remain unverified; these are the next priority. See
+[composite ship-group evidence](GLOBALS_COMPOSITE_SHIP_GROUP_ARM_HOST_2026-10-24.md).
 
 The original-asset Pan host chain now executes the ordinary
 class-one freighter loop at its maximum forced count of four.

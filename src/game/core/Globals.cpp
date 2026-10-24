@@ -1152,25 +1152,28 @@ AEGeometry *Globals::getShipGroup(int kind, int variant, bool wireframe) {
         return geom;
     }
     if (kind == 0xe || kind == 0xd) {
+        // Android getShipGroup 0xe4e42-0xe50f4: composite mesh/LOD IDs.
         int resId = (kind == 0xe) ? 0x37e7 : 0x4275;
         AEGeometry *geom = new AEGeometry((uint16_t) resId, canvas, false);
         unsigned t0 = 0xffffffff;
         canvas->TransformCreate(t0);
-        canvas->TransformAddMesh((unsigned) t0, 0, (bool) (1));
+        canvas->TransformAddMesh((unsigned) t0, kind == 0xe ? 14316 : 18713, false);
         geom->addChild(t0);
         unsigned t1 = 0xffffffff;
         canvas->TransformCreate(t1);
-        canvas->TransformAddMesh((unsigned) t1, 0, (bool) (1));
+        canvas->TransformAddMesh((unsigned) t1, kind == 0xe ? 14315 : 17038, false);
         geom->addChild(t1);
-        unsigned short lodMeshes[2] = {0, 0};
-        int dist[2];
-        dist[0] = (kind == 0xe) ? 35000 : 35000;
-        dist[1] = (kind == 0xe) ? 60000 : 45000;
+        unsigned short lodMeshes[2] = {
+            (unsigned short) (kind == 0xe ? 14312 : 17139),
+            (unsigned short) (kind == 0xe ? 14313 : 17140)};
+        int dist[2] = {35000, kind == 0xe ? 60000 : 45000};
         geom->setLodMeshes(lodMeshes, dist, 2);
-        unsigned short childMeshes[1] = {0};
+        unsigned short childMeshes[2] = {
+            (unsigned short) (kind == 0xe ? 14316 : 17040),
+            (unsigned short) (kind == 0xe ? 14316 : 17041)};
         geom->setLodChildMeshes(childMeshes);
         if (kind == 0xe) {
-            geom->setScaling(1.0f);
+            geom->setScaling(2.0f, 2.0f, 2.0f);
         }
         return geom;
     }

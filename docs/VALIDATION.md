@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Composite ship groups and Pan large outpost (2026-10-24)
+
+Android ARM-backed type-13/14 mesh, child and LOD IDs replace zeros
+in `Globals::getShipGroup`; type 14 now scales by 2 on all axes.
+The original-asset Pan host gate passes the non-alternate type-14
+large-outpost ship through relocation at Windows SwiftShader `-O0/-O2`
+and separately checks type 13. Focused source-shape/strict fuzzy:
+**83.0%/7.7% → 83.3%/11.3%**, still nonexact. Native `gof2`,
+**208/208** ARM units and **93** verifier tests pass (one skip).
+Full corpus: **4,323/4,524** originals, **94.19%/83.54%** mean
+source-shape/strict fuzzy, **2,564 linked-exact**, **1,082 byte-exact**,
+zero exact-set losses. Seven turrets, alternate/small outposts and
+live Android are outside this gate. See
+[the evidence](GLOBALS_COMPOSITE_SHIP_GROUP_ARM_HOST_2026-10-24.md).
+
 ## Pan maximum ordinary-freighter loop — host gate (2026-10-24)
 
 The original-asset Pan host gate forces `field_168 = 4` after the
