@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Alternate large outpost and eight turrets — host gate (2026-10-24)
+
+Android ARM `Level::createMission` calls type-18804 static creation
+and selects eight turret records. The original-asset Pan host gate
+forces that variant and passes Windows SwiftShader `-O0/-O2`, checking
+carrier meshes/docks/collision and eight turret poses. Focused ARM
+source-shape/strict fuzzy: `createMission` **98.5%/40.3%**,
+`createStaticObject` **98.9%/44.3%**, both nonexact. Native `gof2` is
+green (no-op). Production C++ and full corpus remain unchanged:
+**4,323/4,524**, **94.19%/83.54%**, **2,564 linked-exact**,
+**1,082 byte-exact**. Small outpost and live Android remain outside
+this gate. See
+[the evidence](LEVEL_STAGE1_ALTERNATE_LARGE_OUTPOST_ARM_HOST_2026-10-24.md).
+
 ## Pan seven large-outpost turrets — host gate (2026-10-24)
 
 The original-asset Pan gate executes the recovered non-alternate

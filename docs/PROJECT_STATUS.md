@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Pan large-outpost turret loop;
+Last reviewed: 2026-10-24 (alternate large outpost and eight turrets;
 earlier subsystem snapshots retain their dates)
+
+The source-extracted Pan host chain now reaches the alternate
+large-outpost type **18804** and all **eight** turrets. Android ARM
+confirms the `createStaticObject` call at `0xb2ea6` and turret records
+at `0x1fcd74`. Windows SwiftShader `-O0/-O2` checks original carrier
+meshes, dock data, collision, health, relocation and distinct turret
+poses. This variant is forced after the original selection RNG draws;
+Pan's campaign mission does not naturally select it. Production C++
+is unchanged; native `gof2` and focused ARM are green. The last full
+corpus stays **4,323/4,524** originals, **94.19%/83.54%** mean
+source-shape/strict fuzzy, **2,564 linked-exact** and **1,082
+byte-exact**. Small outpost, turret combat/teardown and live Android
+remain unverified; the small-outpost path is next. See
+[alternate-outpost evidence](LEVEL_STAGE1_ALTERNATE_LARGE_OUTPOST_ARM_HOST_2026-10-24.md).
 
 The original-asset Pan host chain now constructs all **seven**
 non-alternate large-outpost turrets through the recovered
