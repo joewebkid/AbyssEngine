@@ -6,6 +6,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
+#include <fstream>
+#include <iterator>
 #include <string>
 #include <vector>
 
@@ -38,6 +41,20 @@ struct PreviewWriter {
     void *recordStoreReadPreview(int slot);
     int recordStoreWritePreview(PreviewData *rec, int slot);
 };
+
+class FileInterfaceAndroid {
+public:
+    void *appRootDir = nullptr;
+    std::FILE *file = nullptr;
+    void *zipFile = nullptr;
+    void *jniStream = nullptr;
+    uint8_t modeFlag = false;
+    static int fileCounter;
+    FileInterfaceAndroid() = default;
+    FileInterfaceAndroid(std::FILE *stream, bool writing);
+    void *OpenWrite(String name, int, bool, unsigned int);
+};
+int FileInterfaceAndroid::fileCounter = 0;
 
 static std::vector<uint8_t> tape;
 static size_t cursor = 0;
@@ -107,7 +124,8 @@ static void checkName(const String &actual, const uint16_t *expected, unsigned l
     for (unsigned i = 0; i < length; ++i) assert(actual.data[i] == expected[i]);
 }
 
-int main() {
+int main(int argc, char **argv) {
+    assert(argc == 2);
     const uint16_t stationName[] = {'K', 'a', 'l', 't', 'e', 'r', 0};
     const uint16_t systemName[] = {0x0410, 0x0440, 0x043a, 0x0430, 0x0434, 0x0438, 0x044f, 0};
     PreviewStation station{String(stationName, false)};
@@ -191,5 +209,21 @@ int main() {
         checkName(preserved, old, 3);
     }
     failAtRead = 0;
+
+    std::string root = (std::filesystem::path(argv[1]) / "").string();
+    FileInterfaceAndroid androidFile;
+    androidFile.appRootDir = root.data();
+    String fileName("write-probe.bin", false);
+    auto *opened = static_cast<FileInterfaceAndroid *>(androidFile.OpenWrite(fileName, 0, false, 0));
+    assert(opened && opened->modeFlag && opened->file && FileInterfaceAndroid::fileCounter == 1);
+    assert(std::fwrite("ok", 1, 2, opened->file) == 2);
+    std::fclose(opened->file);
+    delete opened;
+    std::ifstream written(std::filesystem::path(argv[1]) / "write-probe.bin", std::ios::binary);
+    assert(std::string(std::istreambuf_iterator<char>(written), {}) == "ok");
+    std::string absent = (std::filesystem::path(argv[1]) / "missing" / "").string();
+    androidFile.appRootDir = absent.data();
+    assert(androidFile.OpenWrite(fileName, 0, false, 0) == nullptr);
+    assert(FileInterfaceAndroid::fileCounter == 1);
     std::puts("Record preview round trip: OK");
 }

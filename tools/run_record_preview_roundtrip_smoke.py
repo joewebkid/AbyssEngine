@@ -20,6 +20,7 @@ def main():
 
     record = (ROOT / "src/game/mission/RecordHandler.cpp").read_text()
     file_source = (ROOT / "src/engine/file/AEFile.cpp").read_text()
+    android_file_source = (ROOT / "src/engine/file/FileInterfaceAndroid.cpp").read_text()
     engine = (ROOT / "src/engine/core/AbyssEngine.cpp").read_text()
     helpers = [
         "inline void AEStr_set(String &self, const char *s) {",
@@ -46,6 +47,13 @@ def main():
         + function(file_source, "uint32_t AEFile::ReadSwitched(uint16_t &value, uint32_t handle) {")
         + function(file_source, "uint32_t AEFile::ReadSwitched(String &value, uint32_t handle) {")
         + function(file_source, "uint32_t AEFile::Write(const String &value, uint32_t handle, bool wide) {")
+        + function(android_file_source, "static inline const unsigned short *GetAEWChar(const String &s) {")
+        + next(line + "\n" for line in android_file_source.splitlines()
+               if line.startswith("static int *gFIAInstCount = "))
+        + next(line + "\n" for line in android_file_source.splitlines()
+               if line.startswith("static const char *gModeWb = "))
+        + function(android_file_source, "FileInterfaceAndroid::FileInterfaceAndroid(FILE *f, bool append) {")
+        + function(android_file_source, "void *FileInterfaceAndroid::OpenWrite(String name, int, bool, unsigned int) {")
         + "\n".join(function(record, h) for h in wrappers)
         + function(record, "void *RecordHandler::recordStoreReadPreview(int slot) {").replace(
             "void *RecordHandler::recordStoreReadPreview", "void *PreviewWriter::recordStoreReadPreview", 1)
@@ -62,7 +70,7 @@ def main():
             "src/game/mission/GameRecord.cpp", "src/game/core/String.cpp",
             "-Wl,--gc-sections", "-o", str(exe),
         ], cwd=ROOT, check=True)
-        subprocess.run([str(exe)], cwd=ROOT, check=True)
+        subprocess.run([str(exe), str(out)], cwd=ROOT, check=True)
 
 
 if __name__ == "__main__":

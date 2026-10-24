@@ -38,7 +38,7 @@ static inline const unsigned short *GetAEWChar(const String &s) {
     return reinterpret_cast<const unsigned short *>(s.text());
 }
 
-static int *gFIAInstCount = nullptr;
+static int *gFIAInstCount = &FileInterfaceAndroid::fileCounter;
 
 static const char kDirPreFix[] = "";
 
@@ -361,16 +361,16 @@ void *FileInterfaceAndroid::OpenRead(String name, int p2, bool p3, int p4, int p
     return result;
 }
 
-static const char *gModeWb = nullptr;
+static const char *gModeWb = "wb";
 
 void *FileInterfaceAndroid::OpenWrite(String name, int, bool, unsigned int) {
     const unsigned short *w = GetAEWChar(name);
-    while (*w)
-        ++w;
+    const unsigned short *cursor = w;
+    while (*cursor)
+        ++cursor;
 
-    String dir((const char *) this->appRootDir);
-    String wide;
-    wide.Set((const unsigned short *) (GetAEWChar(name)));
+    String dir((const char *) this->appRootDir, false);
+    String wide(w, false);
     String full = dir + wide;
 
     FILE *f = fopen(full.GetAEChar(), gModeWb);

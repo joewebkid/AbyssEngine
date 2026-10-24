@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (AEFile interface app-root handoff;
+Last reviewed: 2026-10-24 (Android file-write path and counter;
 earlier subsystem snapshots retain their dates)
+
+Android `FileInterfaceAndroid::OpenWrite` now uses ARM-observed `"wb"`
+instead of a null mode pointer, while the shared instance counter points
+to `fileCounter` rather than null. The write path also uses the saved
+wide-name pointer for its String copy. Source-extracted Windows `-O0/-O2`
+tests create and check a real file and exercise failed open; native `gof2`,
+**208/208** ARM units and **93** verifier tests (one skip) pass. Focused
+`OpenWrite` source-shape/strict fuzzy improves **76.0%/31.6% →
+88.9%/74.6%**. The full corpus remains **4,323/4,524** originals over
+**4,737** pairs, now **94.30%/83.70%** mean source-shape/strict fuzzy,
+**2,578 linked-exact** and **1,082 byte-exact**: six linked gains, no
+exact-set losses. The Android read/existence paths still contain unresolved
+null placeholders, and live Android/save-file end-to-end behavior is not
+verified. See [the write-path evidence](FILE_ANDROID_OPENWRITE_ARM_2026-10-24.md).
 
 `AEFile::SetInterface` now forwards the saved `appRoot` pointer to the
 new interface's `SetAppRootDir`, matching Android ARM's virtual call at
