@@ -44,3 +44,7 @@ destruction. Its allocated Fighter remains until process exit. Next,
 execute the `createShip` continuation with real geometry and manager
 services, then check insertion and ownership on ARM before claiming that
 the first ordinary friend is fully created.
+
+Update 2026-10-24: the class-zero continuation and first insertion now
+pass on Windows SwiftShader; [see the bounded host gate](LEVEL_STAGE1_FIRST_FRIEND_SHIP_RETURN_HOST_2026-10-24.md).
+The ARM device continuation and lifetime check remain open.

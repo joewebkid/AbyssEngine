@@ -1,7 +1,17 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (PlayerAsteroid center-distance integer storage;
+Last reviewed: 2026-10-24 (Pan first-friend ship return host gate;
 earlier subsystem snapshots retain their dates)
+
+The original-asset Pan gate now executes the recovered class-zero
+`Level::createShip` path, inserts the first `PlayerFighter` into
+`enemies[0]`, and checks its parent geometry in the LOD array.
+Windows SwiftShader passes at `-O0/-O2`. This is a bounded host
+runtime check, not a live Android scene or full Fighter lifetime.
+Production C++ did not change: the latest ARM corpus remains
+**4,323/4,524** originals across **4,736** pairs, mean
+**94.19%/83.53%**, **2,564 linked-exact** and **1,082 byte-exact**.
+ADB lists no device. See [first-friend ship-return evidence](LEVEL_STAGE1_FIRST_FRIEND_SHIP_RETURN_HOST_2026-10-24.md).
 
 `PlayerAsteroid::setAsteroidCenter` now stores the integer-truncated
 vector length in static `asteroidDistance`, matching Android ARM's

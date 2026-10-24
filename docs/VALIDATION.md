@@ -4,6 +4,17 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan first-friend ship return — host gate (2026-10-24)
+
+The continuous original-asset Pan gate runs the recovered class-zero
+`Level::createShip` path through production Fighter construction,
+ship-group/level setup, `enemies[0]` insertion and LOD ownership.
+Windows SwiftShader `-O0/-O2` passes. This test-only change leaves the
+latest ARM corpus at **4,323/4,524** originals, **94.19%/83.53%**
+mean source-shape/strict fuzzy, **2,564 linked-exact** and **1,082
+byte-exact**. No live device or Fighter teardown was tested. See
+[the evidence](LEVEL_STAGE1_FIRST_FRIEND_SHIP_RETURN_HOST_2026-10-24.md).
+
 ## PlayerAsteroid center-distance integer storage (2026-10-24)
 
 Android ARM converts `VectorLength` to signed int before storing
