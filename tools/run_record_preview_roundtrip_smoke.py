@@ -14,6 +14,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--cxx", required=True)
+    parser.add_argument("--ios-previews", nargs=2, type=Path,
+                        metavar=("EDEN_PRIME", "HEINSTEN"))
     args = parser.parse_args()
     out = args.out_dir.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -70,7 +72,13 @@ def main():
             "src/game/mission/GameRecord.cpp", "src/game/core/String.cpp",
             "-Wl,--gc-sections", "-o", str(exe),
         ], cwd=ROOT, check=True)
-        subprocess.run([str(exe), str(out)], cwd=ROOT, check=True)
+        command = [str(exe), str(out)]
+        if args.ios_previews:
+            for preview in args.ios_previews:
+                if not preview.is_file():
+                    parser.error(f"missing iOS preview: {preview}")
+                command.append(str(preview.resolve()))
+        subprocess.run(command, cwd=ROOT, check=True)
 
 
 if __name__ == "__main__":

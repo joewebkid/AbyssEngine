@@ -26,7 +26,9 @@ is exact. Production C++ did not change, so the last full corpus remains
 exact-set losses.
 
 This proves a bounded 64-bit host round trip, not the live-status writer,
-real filesystem failure handling, original save fixtures, full-record
-compatibility or Android runtime behavior. Next: validate a real preview
-fixture and the complete save/preview lifecycle before claiming live
-save compatibility.
+real filesystem failure handling, full-record compatibility or Android
+runtime behavior. The complete save/preview lifecycle remains unverified.
+
+Follow-up: two actual iOS emulator preview files now pass this recovered
+reader. See [the fixture gate](RECORD_PREVIEW_IOS_FIXTURES_2026-10-24.md);
+the broader limitations above still apply to full saves and Android.

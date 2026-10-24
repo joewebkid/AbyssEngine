@@ -123,9 +123,15 @@ static void checkName(const String &actual, const uint16_t *expected, unsigned l
     assert(actual.size() == length);
     for (unsigned i = 0; i < length; ++i) assert(actual.data[i] == expected[i]);
 }
+static void checkAsciiName(const String &actual, const char *expected) {
+    const size_t length = std::strlen(expected);
+    assert(actual.size() == length);
+    for (size_t i = 0; i < length; ++i)
+        assert(actual.data[i] == static_cast<unsigned char>(expected[i]));
+}
 
 int main(int argc, char **argv) {
-    assert(argc == 2);
+    assert(argc == 2 || argc == 4);
     const uint16_t stationName[] = {'K', 'a', 'l', 't', 'e', 'r', 0};
     const uint16_t systemName[] = {0x0410, 0x0440, 0x043a, 0x0430, 0x0434, 0x0438, 0x044f, 0};
     PreviewStation station{String(stationName, false)};
@@ -225,5 +231,39 @@ int main(int argc, char **argv) {
     androidFile.appRootDir = absent.data();
     assert(androidFile.OpenWrite(fileName, 0, false, 0) == nullptr);
     assert(FileInterfaceAndroid::fileCounter == 1);
+
+    if (argc == 4) {
+        struct PreviewExpectation {
+            size_t bytes;
+            int64_t playTime;
+            const char *station;
+            const char *system;
+            int ship;
+        } expectedReal[] = {
+            {68, 80559, "Eden Prime", "Astere", 5},
+            {60, 850954, "Heinsten", "Mido", 0},
+        };
+        for (int i = 0; i < 2; ++i) {
+            std::ifstream fixture(argv[i + 2], std::ios::binary);
+            assert(fixture);
+            tape.assign(std::istreambuf_iterator<char>(fixture), {});
+            assert(tape.size() == expectedReal[i].bytes);
+            cursor = 0;
+            readCalls = 0;
+            failAtRead = 0;
+            exists = true;
+            auto *preview = static_cast<GameRecord *>(writer.recordStoreReadPreview(4));
+            assert(preview && cursor == tape.size());
+            assert(preview->playTime64 == expectedReal[i].playTime);
+            assert(preview->field_0x08 == 0 && preview->field_0x40 == 1);
+            checkAsciiName(preview->getPreviewStationName(), expectedReal[i].station);
+            checkAsciiName(preview->getPreviewSystemName(), expectedReal[i].system);
+            assert(preview->savedLevel == 0 && preview->rankBits == 0);
+            assert(preview->shipId == expectedReal[i].ship);
+            delete[] static_cast<uint8_t *>(preview->data);
+            delete preview;
+        }
+        std::puts("iOS preview fixtures: 2/2 OK");
+    }
     std::puts("Record preview round trip: OK");
 }

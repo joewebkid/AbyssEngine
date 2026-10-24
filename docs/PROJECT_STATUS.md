@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Android file-write path and counter;
+Last reviewed: 2026-10-24 (iOS preview fixtures through native reader;
 earlier subsystem snapshots retain their dates)
+
+Two local GOF2 HD iOS 1.1.4 emulator preview files now pass the
+source-extracted `RecordHandler::recordStoreReadPreview` with the real
+`GameRecord` constructor at Windows `-O0/-O2`. An independent byte parser
+and the native reader agree on all eight fields and exact **68/60-byte**
+consumption. The files remain outside Git. Native `gof2`, **208/208** ARM
+units and **93** verifier tests (one skip) pass. The preview reader remains
+**84.9% source-shape / 61.0% strict fuzzy**, nonexact. Production C++ did
+not change: the last full corpus remains **4,323/4,524** originals over
+**4,737** pairs, **94.30%/83.70%** mean source-shape/strict fuzzy,
+**2,578 linked-exact**, **1,082 byte-exact**. Full-save parsing, Android
+I/O and live runtime remain unverified; see
+[the iOS fixture evidence](RECORD_PREVIEW_IOS_FIXTURES_2026-10-24.md).
 
 Android `FileInterfaceAndroid::OpenWrite` now uses ARM-observed `"wb"`
 instead of a null mode pointer, while the shared instance counter points
