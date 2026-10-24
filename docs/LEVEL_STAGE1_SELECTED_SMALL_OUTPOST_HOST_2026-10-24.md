@@ -22,15 +22,17 @@ gate then checks the static carrier and five distinct turret poses,
 meshes, collisions, dock-file lifetime, health and Level membership.
 
 Windows SwiftShader `-O0/-O2` both pass with original assets. Native
-`gof2` builds (no-op). No production C++ changed, so the last validated
-full ARM corpus remains **4,323/4,524** originals over **4,736** pairs,
-mean **94.19% source-shape / 83.54% strict fuzzy**, **2,564
-linked-exact**, **1,082 byte-exact**. Fresh focused ARM verification was
-unavailable: the local r18b objdump is absent; the focused command
-returned no comparable functions. The last recorded focused values
-remain **98.5%/40.3%** for `createMission` and **98.9%/44.3%** for
-`createStaticObject`, both nonexact, but were not remeasured here.
-ADB listed no device.
+`gof2` builds (no-op). The existing shared NDK r18b toolchain compiled
+**208/208** ARM translation units with zero failures. Fresh focused
+source-shape/strict fuzzy is **98.5%/40.3%** for `createMission` and
+**98.9%/44.3%** for `createStaticObject`, both nonexact. The full ARM
+corpus compares **4,323/4,524** originals over **4,736** pairs, mean
+**94.19% source-shape / 83.54% strict fuzzy**, **2,731 100%-fuzzy**,
+**2,564 linked-exact**, **1,082 byte-exact**, zero skips and **201**
+absent originals. The fresh JSON report is byte-identical to the
+previous full report (SHA256
+`013ea037f3236c737dd80bb8430ccf25e6b040b2756f66ae71f073a76c7c8249`);
+there are no exact-set losses. ADB listed no device.
 
 This is condition-driven selection *within a synthetic boundary*, not
 an ordinary faction-one post-140 campaign run. Stage zero still loads

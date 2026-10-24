@@ -9,10 +9,11 @@ then builds type **19051** and five type-**6774** turrets at Windows
 SwiftShader `-O0/-O2`. The test fixes the clock and sets faction and
 mission at the stage-one boundary; it does **not** prove a coherent
 post-140 campaign environment. Native `gof2` is green (no-op), and
-production C++ is unchanged. Last validated full ARM metrics remain
+production C++ is unchanged. The existing NDK r18b compiled
+**208/208** ARM units; fresh focused and full verification preserve
 **4,323/4,524**, **94.19%/83.54%** mean source-shape/strict fuzzy,
-**2,564 linked-exact**, **1,082 byte-exact**; fresh focused ARM could
-not run without the local r18b objdump. ADB lists no device. See
+**2,564 linked-exact**, **1,082 byte-exact**, with zero exact-set
+losses and zero skips. ADB lists no device. See
 [condition-selected gate](LEVEL_STAGE1_SELECTED_SMALL_OUTPOST_HOST_2026-10-24.md).
 
 The source-extracted Pan host chain now also constructs the
