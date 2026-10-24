@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (alternate large outpost and eight turrets;
+Last reviewed: 2026-10-24 (small outpost and five turrets;
 earlier subsystem snapshots retain their dates)
+
+The source-extracted Pan host chain now also constructs the
+faction-one small outpost type **19051** and all **five** type-6774
+turrets. Android ARM confirms the object call at `0xb2fc2`, turret
+call at `0xb3408`, and pose records at `0x1fcedc`. Windows
+SwiftShader `-O0/-O2` checks original meshes, dock data, collision,
+health, name, position and distinct turret poses. The test changes
+faction at the mission boundary and forces the variant; a natural
+post-140 campaign environment remains unverified. Production C++ and
+the last full corpus are unchanged: **4,323/4,524**, mean
+**94.19%/83.54%**, **2,564 linked-exact**, **1,082 byte-exact**.
+Native `gof2` and focused ARM are green. A natural faction-one
+post-140 fixture is next; combat/teardown and live Android remain
+open. See [small-outpost evidence](LEVEL_STAGE1_SMALL_OUTPOST_ARM_HOST_2026-10-24.md).
 
 The source-extracted Pan host chain now reaches the alternate
 large-outpost type **18804** and all **eight** turrets. Android ARM
@@ -14,7 +28,7 @@ is unchanged; native `gof2` and focused ARM are green. The last full
 corpus stays **4,323/4,524** originals, **94.19%/83.54%** mean
 source-shape/strict fuzzy, **2,564 linked-exact** and **1,082
 byte-exact**. Small outpost, turret combat/teardown and live Android
-remain unverified; the small-outpost path is next. See
+remain unverified in this alternate-outpost gate. See
 [alternate-outpost evidence](LEVEL_STAGE1_ALTERNATE_LARGE_OUTPOST_ARM_HOST_2026-10-24.md).
 
 The original-asset Pan host chain now constructs all **seven**

@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Small outpost and five turrets — host gate (2026-10-24)
+
+Android ARM `Level::createMission` calls static type **19051** and
+constructs five type-**6774** turrets. The original-asset Pan host
+gate forces a faction-one small outpost after the selection draw and
+passes Windows SwiftShader `-O0/-O2`, checking the carrier's meshes,
+docks, collision, name, health, position and five turret poses.
+Focused ARM source-shape/strict fuzzy is **98.5%/40.3%** for
+`createMission` and **98.9%/44.3%** for `createStaticObject`, both
+nonexact. Native `gof2` is green (no-op). Production C++ and last
+full corpus remain unchanged: **4,323/4,524**, **94.19%/83.54%**,
+**2,564 linked-exact**, **1,082 byte-exact**. Natural campaign
+selection and live Android are outside the gate. See
+[the evidence](LEVEL_STAGE1_SMALL_OUTPOST_ARM_HOST_2026-10-24.md).
+
 ## Alternate large outpost and eight turrets — host gate (2026-10-24)
 
 Android ARM `Level::createMission` calls type-18804 static creation
