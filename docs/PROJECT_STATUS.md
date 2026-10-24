@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (RecordHandler hash envelope host gate;
+Last reviewed: 2026-10-24 (record migration cleanup;
 earlier subsystem snapshots retain their dates)
+
+Both record-migration functions now use the `ArrayReleaseArrays` teardown
+called by Android ARM, instead of reallocating each array during cleanup.
+Their source-extracted two-slot host paths pass Windows `-O0/-O2`; native
+`gof2`, **208/208** ARM units and **93** verifier tests (one skip) pass.
+Focused `convertSDVersionSaves` source-shape/strict fuzzy falls
+**51.7%/18.4% → 46.9%/18.0%** while matching the observed cleanup call;
+`changeSaveDirectoryToBackupDirectory` stays **34.6%/19.1%**. Neither is
+exact; the newly emitted `ArrayReleaseArrays` helper is linked-exact.
+Fresh full ARM corpus: **4,323/4,524** originals over **4,737** pairs,
+**94.24%/83.60%** mean source-shape/strict fuzzy, **2,569 linked-exact**,
+**1,082 byte-exact**, zero skips and no exact-set losses. Whole-save format,
+absent-slot behavior and live Android remain unverified. See
+[the ARM and host gate](RECORD_MIGRATION_ARRAY_CLEANUP_ARM_2026-10-24.md).
 
 The source-extracted `RecordHandler` host gate now checks SHA-256 hash
 append/verification for the primary record and options file at Windows
