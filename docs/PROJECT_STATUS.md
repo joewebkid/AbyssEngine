@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Status empty-orbit mask;
+Last reviewed: 2026-10-24 (pending-product add/save/load host gate;
 earlier subsystem snapshots retain their dates)
+
+The `PendingProduct` block now has a source-extracted host round trip through
+`Status::addPendingProduct` and the matching `RecordHandler` write/read
+blocks. Windows `-O0/-O2` verifies absent, sparse and two-station cases,
+including quantity merging and a Cyrillic wide-string name. ARM confirms the
+field order at `0xceea0–0xcef0e` and `0xcc5b0–0xcc63c`. Native `gof2` is
+green (no-op), **208/208** ARM units and **93** verifier tests (one skip)
+pass. Production C++ did not change; the last full corpus remains
+**4,323/4,524**, mean **94.23%/83.60%**, **2,568 linked-exact** and
+**1,082 byte-exact**. The complete file format, failure paths and live
+Android remain unverified. See [the bounded gate](PENDING_PRODUCT_ADD_SAVE_LOAD_HOST_2026-10-24.md).
 
 `Status::inEmptyOrbit` now uses the Android ARM station mask
 **`0xC0000187`** at `0xabc62–0xabc6c` instead of a zero placeholder that
