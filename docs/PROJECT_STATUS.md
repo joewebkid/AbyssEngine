@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (record migration cleanup;
+Last reviewed: 2026-10-24 (record preview host round trip;
 earlier subsystem snapshots retain their dates)
+
+The source-extracted preview writer and reader now pass a Windows native
+`-O0/-O2` round trip with the real `GameRecord` constructor and an
+independently checked UTF-16 file layout. ARM confirms all eight field
+offsets/order. Native `gof2`, **208/208** ARM units and **93** verifier tests
+(one skip) pass. Focused preview-family source-shape/strict fuzzy is
+**86.5%/55.9%**, nonexact. No production C++ changed: the last full ARM
+corpus remains **4,323/4,524**, **94.24%/83.60%** mean,
+**2,569 linked-exact**, **1,082 byte-exact**, with no exact losses. Real
+save fixtures, live-status writing and Android runtime remain unverified.
+See [the preview round trip](RECORD_PREVIEW_ROUNDTRIP_HOST_2026-10-24.md).
 
 Both record-migration functions now use the `ArrayReleaseArrays` teardown
 called by Android ARM, instead of reallocating each array during cleanup.
