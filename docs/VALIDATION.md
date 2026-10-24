@@ -4,6 +4,15 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan stage-one first ordinary friend dispatch (2026-10-24)
+
+The original-asset Pan chain reaches the first ordinary `createShip` call
+at `-O0/-O2` on Windows SwiftShader, checking production random selection,
+route waypoint and call arguments. A recording boundary stops **before**
+real ship construction and array insertion. NDK r18b ARMv7 `-O0/-O2`
+executables compile and link; physical Android ARM runtime is still pending.
+See [first-friend evidence](LEVEL_STAGE1_FIRST_FRIEND_DISPATCH_ARM_2026-10-24.md).
+
 ## Pan stage-one mission overrides and enemy-array allocation (2026-10-24)
 
 The source-extracted original-asset Pan chain passes at `-O0/-O2` on Windows

@@ -1,6 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Pan stage-one enemy-array host runtime;
+Last reviewed: 2026-10-24 (Pan stage-one first-friend dispatch host runtime;
+earlier subsystem snapshots retain their dates)
+
+The original-asset Pan stage-one chain now reaches the first ordinary
+`createShip` call at `-O0/-O2` on Windows SwiftShader. Production
+`Globals::getRandomEnemyFighter` and `Route::getWaypoint` execute; a
+recording boundary verifies the first friend's type, race, waypoint and RNG
+state before ship construction. The real `createShip` and `PlayerFighter`
+constructor, the enemy-array write and Android device runtime remain
+unverified. Production C++ and the full ARM corpus metrics are unchanged.
+See [the first-friend evidence](LEVEL_STAGE1_FIRST_FRIEND_DISPATCH_ARM_2026-10-24.md).
+
+Previous checkpoint: 2026-10-24 (Pan stage-one enemy-array host runtime;
 earlier subsystem snapshots retain their dates)
 
 The source-extracted Pan stage-one mission-override and ordinary enemy-array
