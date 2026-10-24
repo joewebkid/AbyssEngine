@@ -1,4 +1,5 @@
 // Production Level/PlayerStation chain; host services are deliberately bounded.
+#include <limits>
 #include "station_level_host.inc"
 #include "engine/file/FileRead.h"
 #include "engine/math/BoundingVolume.h"
@@ -85,6 +86,15 @@ static void checkCollision(PlayerStation *station) {
     assert(normal.x == -1 && normal.y == 0 && normal.z == 0);
     assert(station->outerCollide(-2, 9865, 9357));
     assert(!station->outerCollide(1e9f, 0, 0));
+    assert(station->PlayerStaticFar::collide(0, 0, 0));
+    const float nan = std::numeric_limits<float>::quiet_NaN();
+    assert(!station->PlayerStaticFar::collide(nan, 0, 0));
+    assert(!station->PlayerStaticFar::collide(0, nan, 0));
+    assert(!station->PlayerStaticFar::collide(0, 0, nan));
+    const float oldPosX = station->posX;
+    station->posX = 1000000.0f;
+    assert(station->positionX == 0 && station->PlayerStaticFar::collide(0, 0, 0));
+    station->posX = oldPosX;
 }
 
 static void checkJumpgates(const Level &level, PaintCanvas &canvas) {

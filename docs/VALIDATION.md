@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Asteroid and far-static collision bounds (2026-10-24)
+
+Android ARM at `0xe3104` makes three asteroid geometry position queries
+and reads radius directly; at `0x11c460`, far-static collision uses
+integer position fields. Both reject unordered and boundary comparisons.
+Focused source-shape/strict fuzzy improves **67.0%/55.4% → 94.1%/86.1%**
+for Asteroid and **69.4%/45.2% → 91.0%/71.3%** for StaticFar, both
+nonexact. Extracted production-body host tests pass at `-O0/-O2`, as
+does the original-asset station gate. Native `gof2`, 208/208 ARM units
+and 93 verifier tests pass (one skip). The full corpus compares
+**4,323/4,524** originals across **4,736** pairs, mean **94.17%/83.50%**,
+with **2,562 linked-exact** and **1,082 byte-exact**; no exact pairs
+were lost. Device collision behavior remains untested. See
+[the evidence](PLAYER_COLLISION_BOUNDS_ARM_2026-10-24.md).
+
 ## BoundingAAB projection absolute-value call (2026-10-24)
 
 Android ARM at `0x98280` calls `AEMath::Absf` six times when selecting

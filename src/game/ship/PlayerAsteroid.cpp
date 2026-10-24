@@ -203,19 +203,21 @@ int PlayerAsteroid::collide(float x, float y, float z) {
     if (this->player->getHitpoints() <= 0)
         return false;
 
-    Vector position = this->geometry->getPosition();
-    int radiusInt = this->player->getRadius();
+    float centerX = this->geometry->getPosition().x;
+    float centerY = this->geometry->getPosition().y;
+    float centerZ = this->geometry->getPosition().z;
+    int radiusInt = this->player->radius;
     float radius = (float) radiusInt;
     float negativeRadius = (float) -radiusInt;
 
-    float dx = x - position.x;
-    if (dx >= radius || dx <= negativeRadius)
+    float dx = x - centerX;
+    if (!(dx < radius) || !(dx > negativeRadius))
         return false;
-    float dy = y - position.y;
-    if (dy >= radius || dy <= negativeRadius)
+    float dy = y - centerY;
+    if (!(dy < radius) || !(dy > negativeRadius))
         return false;
-    float dz = z - position.z;
-    if (dz >= radius || dz <= negativeRadius)
+    float dz = z - centerZ;
+    if (!(dz < radius) || !(dz > negativeRadius))
         return false;
     return true;
 }

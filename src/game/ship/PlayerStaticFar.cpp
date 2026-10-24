@@ -95,16 +95,16 @@ int PlayerStaticFar::collide(float x, float y, float z) {
     float bound = (float) boundI;
     float negBound = (float) (-boundI);
 
-    float dx = x - (float) this->posX;
-    if (dx >= bound || dx <= negBound)
+    float dx = x - (float) this->positionX;
+    if (!(dx < bound) || !(dx > negBound))
         return false;
 
-    float dy = y - (float) this->posY;
-    if (dy >= bound || dy <= negBound)
+    float dy = y - (float) this->positionY;
+    if (!(dy < bound) || !(dy > negBound))
         return false;
 
-    float dz = z - (float) this->posZ;
-    if (dz >= bound || dz <= negBound)
+    float dz = z - (float) this->positionZ;
+    if (!(dz < bound) || !(dz > negBound))
         return false;
 
     return true;

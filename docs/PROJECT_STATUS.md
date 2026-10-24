@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (BoundingAAB projection absolute-value call;
+Last reviewed: 2026-10-24 (asteroid and far-static collision bounds;
 earlier subsystem snapshots retain their dates)
+
+`PlayerAsteroid::collide` now uses the three Android ARM-observed geometry
+position queries and direct radius field; `PlayerStaticFar::collide` uses
+the signed integer `positionX/Y/Z` fields rather than float `posX/Y/Z`.
+Both enforce the ARM open bounds so NaN coordinates are outside. Focused
+source-shape/strict fuzzy improves **67.0%/55.4% → 94.1%/86.1%** for
+Asteroid and **69.4%/45.2% → 91.0%/71.3%** for StaticFar; neither is
+exact. Extracted production-body host checks pass at `-O0/-O2`, as does
+the original-asset station gate. Native `gof2`, **208/208** ARM units
+and **93** verifier tests pass (one skip). The full corpus compares
+**4,323/4,524** originals across **4,736** pairs, mean
+**94.17%/83.50%**, with **2,562 linked-exact** and **1,082 byte-exact**
+pairs and no exact-pair losses. Live Android collisions remain untested;
+first-friend Pan ship insertion remains the device priority when ADB
+returns. See [collision-bounds evidence](PLAYER_COLLISION_BOUNDS_ARM_2026-10-24.md).
 
 `BoundingAAB::projectCollisionOnSurface` now calls the ARM-confirmed
 engine `AEMath::Absf` helper for its six face distances, instead of
