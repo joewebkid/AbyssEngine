@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (all three faction-one Fighter outcomes;
+Last reviewed: 2026-10-24 (PendingProduct constructors;
 earlier subsystem snapshots retain their dates)
+
+The two `PendingProduct` constructors now follow Android ARM's default-string,
+assignment and field-store order at `0x12d3c8` and `0x12d448`. All **six**
+constructor/destructor aliases are **100% source-shape / 100% strict fuzzy**
+and linked-exact; four constructor aliases are new linked-exact matches.
+Native `gof2`, **208/208** ARM units and **93** verifier tests (one skip)
+pass. Fresh full corpus: **4,323/4,524** originals over **4,736** pairs,
+**94.23%/83.60%** mean source-shape/strict fuzzy, **2,735** 100%-fuzzy,
+**2,568 linked-exact**, **1,082 byte-exact**, zero skips and zero exact-set
+losses. Save/load round-trip and live Android behavior remain unverified;
+the adjacent `Status`/`RecordHandler` path is next. See
+[the constructor evidence](PENDING_PRODUCT_CONSTRUCTORS_ARM_2026-10-24.md).
 
 The condition-selected small-outpost host gate now covers all three
 `getRandomEnemyFighter(1)` DLC outcomes: first Fighter types **9**,
