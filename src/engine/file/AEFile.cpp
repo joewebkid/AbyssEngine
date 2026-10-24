@@ -258,18 +258,20 @@ uint32_t AEFile::ReadSwitched(int32_t &value, uint32_t handle) {
     return result;
 }
 
-void AEFile::ReadSwitched(String &value, uint32_t handle) {
+uint32_t AEFile::ReadSwitched(String &value, uint32_t handle) {
     uint16_t length;
+    if (ReadSwitched(length, handle) == 0) return 0;
 
-    if (ReadSwitched(length, handle) != 0) {
-        uint32_t bytes = length;
-        char *buffer = new char[bytes + 1];
-        if (Read(bytes, buffer, handle) != 0) {
-            buffer[length] = '\0';
-            AEStr_set(value, buffer);
-        }
-        delete[] buffer;
+    uint32_t bytes = length;
+    char *buffer = new char[bytes + 1];
+    uint32_t result = 0;
+    if (Read(bytes, buffer, handle) != 0) {
+        buffer[length] = '\0';
+        AEStr_set(value, buffer);
+        result = 1;
     }
+    delete[] buffer;
+    return result;
 }
 
 uint32_t AEFile::Write(uint32_t bytes, void *buffer, uint32_t handle) {

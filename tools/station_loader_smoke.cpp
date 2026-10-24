@@ -24,10 +24,11 @@ void AEFile::Close(uint32_t handle) {
     assert(handle == 1);
     ++closeCount;
 }
-void AEFile::ReadSwitched(String &value, uint32_t handle) {
+uint32_t AEFile::ReadSwitched(String &value, uint32_t handle) {
     assert(handle == 1 && recordIndex < 135);
     value.Set("station");
     fieldIndex = 0;
+    return 1;
 }
 uint32_t AEFile::ReadSwitched(int32_t &value, uint32_t handle) {
     assert(handle == 1 && fieldIndex < 4);

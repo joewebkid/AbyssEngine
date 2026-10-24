@@ -43,6 +43,8 @@ def main():
         + function(engine, "String operator+(const String &a, const String &b) {")
         + "\n}\n"
         + function(file_source, "uint32_t AEFile::Read(String &value, uint32_t handle, bool wide) {")
+        + function(file_source, "uint32_t AEFile::ReadSwitched(uint16_t &value, uint32_t handle) {")
+        + function(file_source, "uint32_t AEFile::ReadSwitched(String &value, uint32_t handle) {")
         + function(file_source, "uint32_t AEFile::Write(const String &value, uint32_t handle, bool wide) {")
         + "\n".join(function(record, h) for h in wrappers)
         + function(record, "void *RecordHandler::recordStoreReadPreview(int slot) {").replace(

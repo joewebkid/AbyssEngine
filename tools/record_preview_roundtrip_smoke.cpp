@@ -174,6 +174,22 @@ int main() {
             checkName(preserved, old, 3);
         }
     }
+    tape = {0, 3, 'A', 'B', 'C'};
+    cursor = 0;
+    readCalls = 0;
+    failAtRead = 0;
+    String switched;
+    assert(AEFile::ReadSwitched(switched, 1) == 1 && cursor == tape.size());
+    checkName(switched, abc, 3);
+    for (int failedCall : {1, 2}) {
+        cursor = 0;
+        readCalls = 0;
+        failAtRead = failedCall;
+        String preserved("old", false);
+        assert(AEFile::ReadSwitched(preserved, 1) == 0);
+        const uint16_t old[] = {'o', 'l', 'd'};
+        checkName(preserved, old, 3);
+    }
     failAtRead = 0;
     std::puts("Record preview round trip: OK");
 }

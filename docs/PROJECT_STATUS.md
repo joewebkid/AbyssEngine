@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (AEFile string I/O ARM closure;
+Last reviewed: 2026-10-24 (AEFile switched-string ABI closure;
 earlier subsystem snapshots retain their dates)
+
+`AEFile::ReadSwitched(String&, unsigned)` now returns the ARM-observed
+success flag instead of `void`, including zero on either read failure.
+The function moves from **93.9%/85.0%** to **100%/100%**
+source-shape/strict fuzzy and becomes linked-exact. Source-extracted
+Windows `-O0/-O2` checks cover success and both failure paths; the station
+loader smoke, native `gof2`, **208/208** ARM units and **93** verifier tests
+(one skip) pass. The full corpus remains **4,323/4,524** originals over
+**4,737** pairs, with **94.24%/83.62%** mean source-shape/strict fuzzy,
+**2,572 linked-exact** and **1,082 byte-exact**. No exact-set losses.
+Real original save and live Android behavior remain unverified; see
+[the switched-string evidence](AEFILE_READSWITCHED_STRING_ARM_2026-10-24.md).
 
 `AEFile` wide/narrow String read and write now follow the Android ARM
 branch, length-load and ownership forms. Both move to **100% source-shape /
