@@ -4,6 +4,15 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan first-friend Explosion prerequisite (2026-10-24)
+
+The original-asset Pan gate now also exercises source-extracted production
+`Explosion(0)` and `addFireStreaks` at NDK r18b ARMv7 `-O0/-O2` on an
+Android 16 device. It verifies streak count, RNG advance, mesh/material
+resources, transform radii and idempotence. Fighter construction and enemy
+insertion remain outside the gate. No production C++ or corpus metric
+changed. See [Explosion evidence](LEVEL_STAGE1_FIRST_FRIEND_EXPLOSION_ARM_2026-10-24.md).
+
 ## Pan first-friend ARM device follow-up (2026-10-24)
 
 The source-extracted original-asset Pan chain through `Player`/EMP setup

@@ -3,6 +3,16 @@
 Last reviewed: 2026-10-24 (Level flash-fade prefix recovery;
 earlier subsystem snapshots retain their dates)
 
+Pan first-friend follow-up (same date): the original-asset Android ARMv7
+gate passes at `-O0/-O2` through source-extracted production
+`Explosion(0)` and `addFireStreaks`, after the existing Player/EMP and
+Route checks. It validates streak resources/count, RNG advance and
+idempotence. This does not execute the full `PlayerFighter` constructor,
+loot generation, enemy-array insertion, or rendering. Production C++ and
+the full corpus below are unchanged; native `gof2` remains green. Next:
+link the Fighter constructor with real `Generator` services and verify
+array insertion. See [Explosion evidence](LEVEL_STAGE1_FIRST_FRIEND_EXPLOSION_ARM_2026-10-24.md).
+
 Android-device follow-up (same date): the original-asset Pan first-friend
 gate now passes as ARMv7 PIE at `-O0/-O2` through production `Player`/EMP
 setup and both source-extracted `Route::clone` branches. Assets are served
