@@ -44,7 +44,7 @@ def prepare(out, cxx, root, reuse):
     gate = (out / "station_binary_gate_under_test.inc").read_text()
     gate = replace_once(gate, "catch (const PlayerRotatedBoundary &)",
                         "catch (const PlayerWeaponPositionsBoundary &)")
-    assert gate.count("opened == 37") == 2
+    assert gate.count("opened == 37") == 1
     gate = gate.replace("opened == 37", "opened == 38")
     gate = gate.replace("canvas.transformCount == 78", "canvas.transformCount == 82")
     gate = replace_once(gate, "stationOpenedPaths.size() == expectedFiles.size() + 5",
@@ -53,10 +53,10 @@ def prepare(out, cxx, root, reuse):
                         "canvas.transformCount == transformsBefore + 60")
     gate = replace_once(gate, "canvas.transformCount == transformsBeforeShip + 6",
                         "canvas.transformCount == transformsBeforeShip + 10")
-    gate = replace_once(gate, "opened == filesBeforeShip + 5",
-                        "opened == filesBeforeShip + 6")
+    gate = replace_once(gate, "opened == filesBeforeShip + 7",
+                        "opened == filesBeforeShip + 8")
     gate = replace_once(gate, "    AEGeometry *group = observedEgo->field_0x4;",
-        "    assert(stationOpenedPaths.back() == \"data/bin/weapons_hd.bin\");\n"
+        "    assert(stationOpenedPaths[filesBeforeShip + 5] == \"data/bin/weapons_hd.bin\");\n"
         "    assert(observedWeaponPositions && observedWeaponPositions->size() == 4);\n"
         "    assert((*observedWeaponPositions)[0]->size() == 1);\n"
         "    assert((*observedWeaponPositions)[1]->size() == 1);\n"

@@ -25,10 +25,18 @@ with **2,564 linked-exact**, **1,082 byte-exact**, **2,730 100%-fuzzy**,
 comparison with the preceding quality-string report finds exactly this one
 linked-exact gain, no linked-exact loss and no byte-exact change.
 
-The original-asset Pan gate was attempted on Windows. ANGLE lacked ETC1;
-SwiftShader reached stage one but stopped at an earlier HUD image-cache
-assertion before `setAsteroidCenter`. Thus it does not validate this change
-in the continuous scene. ADB currently lists no device. Original downstream
-reads of the static distance and live behavior remain unverified. Next:
-resolve the earlier HUD gate failure, then continue the first-friend Pan ship
-insertion and test on device when available.
+The original-asset Pan gate initially stopped on stale host assertions:
+its two explicit collision-volume probes opened two more files after the
+stage-zero count of 38, while the HUD-cache and ship-file checks still
+assumed that earlier count or that the weapon file remained last. The gate
+now checks that a cache hit opens no additional file and checks the weapon
+file at its known position. The continuous first-asteroid Pan gate passes
+on Windows SwiftShader at `-O0/-O2`, executing `setAsteroidCenter` with
+original assets. The extracted smoke checks the integer result itself;
+the Pan gate does not inspect this private static. ADB lists no device,
+so live Android behavior and original downstream reads of the static
+distance remain unverified. The next priority is first-friend Pan ship
+insertion and device validation when available.
+
+This gate repair changed only test scripts and documentation; production
+C++ and the ARM corpus metrics above remain at commit `43917881`.

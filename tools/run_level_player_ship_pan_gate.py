@@ -49,8 +49,6 @@ def prepare(out, cxx, root, reuse):
     gate = replace_once(gate,
         'stationMaterialIds.size() == expectedMaterials.size() + 50',
         'stationMaterialIds.size() >= expectedMaterials.size() + 50')
-    gate = replace_once(gate, 'cached == hudHandles[i] && opened == 32',
-                        'cached == hudHandles[i] && opened == 37')
     gate = replace_once(gate,
         'canvas.meshCount == meshesBefore + 50 && canvas.transformCount == transformsBefore + 50',
         'canvas.meshCount == meshesBefore + 55 && canvas.transformCount == transformsBefore + 56')
@@ -67,6 +65,8 @@ def prepare(out, cxx, root, reuse):
         '    unsigned transformsBeforeShip = starsTransformsBefore + 50;\n'
         '    unsigned filesBeforeShip = 32;\n'
         '    assert(level->player == observedEgo);')
+    gate = replace_once(gate, 'opened == filesBeforeShip + 5',
+                        'opened == filesBeforeShip + 7')
     gate = replace_once(gate,
         'PlayerEgo::setShip -> Pan group, hull and five original AEM meshes: OK',
         'Level::createPlayer -> PlayerEgo::setShip -> Pan hull and five AEM meshes: OK')

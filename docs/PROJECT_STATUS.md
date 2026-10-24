@@ -12,8 +12,10 @@ checks, native `gof2`, **208/208** ARM units and **93** verifier tests
 pass (one skip). The full corpus remains **4,323/4,524** originals
 over **4,736** pairs, mean **94.19%/83.53%**, now **2,564
 linked-exact** and **1,082 byte-exact**, with no exact losses. The
-original-asset Pan gate stopped at an earlier HUD-cache assertion;
-ADB lists no device, so live behavior is unverified. See
+original-asset Pan gate now passes through first-asteroid construction
+on Windows SwiftShader at `-O0/-O2`, after correcting stale host
+file-count assumptions; ADB lists no device, so live behavior remains
+unverified. See
 [center-distance evidence](PLAYER_ASTEROID_CENTER_DISTANCE_ARM_2026-10-24.md).
 
 `PlayerAsteroid::getQualityString` now calls the existing `String(const

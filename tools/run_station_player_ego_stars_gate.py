@@ -198,6 +198,7 @@ def prepare(out, cxx, root, reuse):
     const unsigned hudTexture[] = {0, 0, 7, 7, 0};
     const unsigned hudRects[][4] = {{339, 814, 40, 40}, {339, 856, 40, 40},
         {67, 327, 107, 107}, {67, 218, 107, 107}, {505, 199, 82, 43}};
+    int openedBeforeHudCache = opened;
     for (unsigned i = 0; i < 5; ++i) {
         assert(hudHandles[i] == i + 3);
         auto *res = static_cast<AbyssEngine::Resource *>(canvas.FindResource(hudIds[i]));
@@ -210,7 +211,7 @@ def prepare(out, cxx, root, reuse):
         assert(region->sizeX == hudRects[i][2] && region->sizeY == hudRects[i][3]);
         unsigned cached = 0xffffffffU;
         canvas.Image2DCreate(hudIds[i], cached);
-        assert(cached == hudHandles[i] && opened == 32);
+        assert(cached == hudHandles[i] && opened == openedBeforeHudCache && opened == closed);
     }
     assert(canvas.meshCount == meshesBefore + 50 && canvas.transformCount == transformsBefore + 50);
     assert(stationMaterialIds.size() == materialsBefore + 50);

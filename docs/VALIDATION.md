@@ -13,9 +13,12 @@ adding one linked-exact function. The production-body host smoke passes
 at `-O0/-O2`; native `gof2`, 208/208 ARM units and 93 verifier tests
 pass (one skip). The full corpus compares **4,323/4,524** originals
 over **4,736** pairs, mean **94.19%/83.53%**, with **2,564
-linked-exact** and **1,082 byte-exact** and no exact losses. The Pan
-scene gate stopped before this method at a HUD-cache assertion; no
-Android device was available. See [the evidence](PLAYER_ASTEROID_CENTER_DISTANCE_ARM_2026-10-24.md).
+linked-exact** and **1,082 byte-exact** and no exact losses. After
+correcting stale host file-count checks, the continuous original-asset
+Pan gate reaches first-asteroid construction at Windows SwiftShader
+`-O0/-O2`. It executes this method but does not inspect the private
+static; the extracted smoke checks that value. No Android device was
+available. See [the evidence](PLAYER_ASTEROID_CENTER_DISTANCE_ARM_2026-10-24.md).
 
 ## PlayerAsteroid quality-string constructor (2026-10-24)
 
