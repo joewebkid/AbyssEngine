@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (RecordHandler whole-buffer writes;
+Last reviewed: 2026-10-24 (RecordHandler hash envelope host gate;
 earlier subsystem snapshots retain their dates)
+
+The source-extracted `RecordHandler` host gate now checks SHA-256 hash
+append/verification for the primary record and options file at Windows
+`-O0/-O2`. It matches an independent digest vector, accepts intact records,
+and rejects payload, digest, key and length corruption. Native `gof2`,
+**208/208** ARM units and **93** verifier tests (one skip) pass. Focused
+hash-family comparison is **82.9% source-shape / 50.0% strict fuzzy**,
+nonexact. The fresh full corpus is
+**4,323/4,524**, mean **94.23%/83.60%**, **2,568 linked-exact** and
+**1,082 byte-exact**, with no exact-set losses. A genuine key/save fixture,
+complete record format and live Android behavior remain unverified. See
+[the hash-envelope gate](RECORD_HANDLER_HASH_ENVELOPE_HOST_2026-10-24.md).
 
 `RecordHandler` now writes the full byte array for options and record
 rewrites. Android ARM calls the three-argument `AEFile::Write` at
@@ -11,7 +23,7 @@ seven distinct bytes for options, primary and backup records. Native `gof2`,
 **208/208** ARM units and **93** verifier tests (one skip) pass. The full
 corpus remains **4,323/4,524**, mean **94.23%/83.60%**,
 **2,568 linked-exact**, **1,082 byte-exact**, with no exact-set losses.
-Hash verification and the complete file remain unverified. See
+The complete file remains unverified. See
 [the ARM and host evidence](RECORD_HANDLER_BYTE_ARRAY_WRITE_ARM_2026-10-24.md).
 
 The `PendingProduct` block now has a source-extracted host round trip through

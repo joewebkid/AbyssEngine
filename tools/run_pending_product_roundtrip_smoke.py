@@ -1,4 +1,4 @@
-"""Exercise source-extracted RecordHandler pending-product and byte-write paths."""
+"""Exercise source-extracted pending-product, byte-write and hash paths."""
 
 import argparse
 from pathlib import Path
@@ -43,6 +43,8 @@ def main():
         record, "        Array<PendingProduct *> *pending = status->pendingProducts;",
         "        Array<String *> *wingmen = status->getWingmen();")
     read_block = between(record, "                int ppN = 0;", "                int wmN = 0;")
+    salt_decl = between(record, "static const unsigned char RH_hash_salt[] = {",
+                        "static_assert(sizeof(RH_hash_salt)")
     (out / "pending_product_under_test.inc").write_text(
         "namespace {\n" + "\n".join(function(file_source, h) for h in helpers) + "\n}\n"
         + "namespace AbyssEngine {\n"
@@ -64,6 +66,19 @@ def main():
         + function(record, "int RecordHandler::writeByteArrayAsRecord(signed char *buf, int n, int slot, bool toBackup) {").replace(
             "int RecordHandler::writeByteArrayAsRecord",
             "int RecordWriter::writeByteArrayAsRecord", 1)
+        + salt_decl
+        + function(record, "int RecordHandler::readRecordAsByteArray(signed char **out, int slot, bool fromBackup) {").replace(
+            "int RecordHandler::readRecordAsByteArray",
+            "int RecordWriter::readRecordAsByteArray", 1)
+        + function(record, "int RecordHandler::readOptionsFileAsByteArray(signed char **out) {").replace(
+            "int RecordHandler::readOptionsFileAsByteArray",
+            "int RecordWriter::readOptionsFileAsByteArray", 1)
+        + function(record, "void RecordHandler::addHash(int slot) {").replace(
+            "void RecordHandler::addHash", "void RecordWriter::addHash", 1)
+        + function(record, "void RecordHandler::addHashToOptions() {").replace(
+            "void RecordHandler::addHashToOptions", "void RecordWriter::addHashToOptions", 1)
+        + function(record, "bool RecordHandler::checkHash(unsigned int fd) {").replace(
+            "bool RecordHandler::checkHash", "bool RecordWriter::checkHash", 1)
         + "\nstatic void writePending(PendingStatus *status, unsigned int fd) {\n"
         + write_block + "\n}\n"
         + "static void readPending(PendingRecord *rec, unsigned int fd) {\n"
@@ -73,9 +88,10 @@ def main():
         exe = out / f"pending_product_{opt[1:]}.exe"
         subprocess.run([
             args.cxx, "-std=gnu++17", opt, "-ffunction-sections", "-fdata-sections",
-            "-Isrc", "-I", str(out), "tools/pending_product_roundtrip_smoke.cpp",
+            "-Isrc", "-Ithird_party/crypto", "-I", str(out),
+            "tools/pending_product_roundtrip_smoke.cpp",
             "src/game/mission/PendingProduct.cpp", "src/game/core/String.cpp",
-            "-Wl,--gc-sections", "-o", str(exe),
+            "-Wl,--gc-sections", "-lcrypto", "-o", str(exe),
         ], cwd=ROOT, check=True)
         subprocess.run([str(exe)], cwd=ROOT, check=True)
 

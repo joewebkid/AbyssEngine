@@ -1,6 +1,8 @@
 #include "engine/file/AEFile.h"
 #include "engine/core/GameText.h"
 #include "game/mission/PendingProduct.h"
+#include <openssl/sha.h>
+#include <openssl/crypto.h>
 #include <cassert>
 #include <cstdlib>
 #include <cstdint>
@@ -38,22 +40,49 @@ struct RecordWriter {
     String backupDir = String("backup/", false);
     void writeByteArrayAsOptionsFile(signed char *buf, int n);
     int writeByteArrayAsRecord(signed char *buf, int n, int slot, bool toBackup);
+    int readRecordAsByteArray(signed char **out, int slot, bool fromBackup);
+    int readOptionsFileAsByteArray(signed char **out);
+    void addHash(int slot);
+    void addHashToOptions();
+    bool checkHash(unsigned int fd);
 };
 
 static std::vector<uint8_t> tape;
 static size_t cursor = 0;
 static std::string openedPath;
+const char *g_android_origami_super_club = "0123456789abcdef";
 
-uint32_t AEFile::FileExist(const String &) { return 0; }
-uint32_t AEFile::FileDelete(const String &) { std::abort(); }
-uint32_t AEFile::OpenWrite(String &path, uint32_t *handle) {
-    openedPath.clear();
+static std::string pathText(const String &path) {
+    std::string result;
     for (uint32_t i = 0; i < path.size(); ++i)
-        openedPath.push_back(static_cast<char>(path.data[i]));
+        result.push_back(static_cast<char>(path.data[i]));
+    return result;
+}
+
+uint32_t AEFile::FileExist(const String &path) {
+    return pathText(path) == openedPath && !tape.empty();
+}
+uint32_t AEFile::FileDelete(const String &path) {
+    assert(pathText(path) == openedPath);
+    tape.clear();
+    return 1;
+}
+uint32_t AEFile::OpenWrite(String &path, uint32_t *handle) {
+    openedPath = pathText(path);
     tape.clear();
     cursor = 0;
     *handle = 1;
     return 1;
+}
+uint32_t AEFile::OpenRead(String &path, uint32_t *handle) {
+    assert(pathText(path) == openedPath);
+    cursor = 0;
+    *handle = 1;
+    return 1;
+}
+uint32_t AEFile::GetFileSize(uint32_t handle) {
+    assert(handle == 1);
+    return tape.size();
 }
 void AEFile::Close(uint32_t handle) { assert(handle == 1); }
 void AEFile::Write(bool value, uint32_t handle) {
@@ -169,14 +198,47 @@ int main() {
 
     RecordWriter writer;
     signed char payload[] = {0, 1, 2, 3, 4, 5, 6};
+    const uint8_t expectedHash[32] = {
+        0xdf, 0xe8, 0x59, 0x95, 0x73, 0x78, 0x60, 0x81,
+        0x82, 0x94, 0x14, 0xda, 0x50, 0xfb, 0x09, 0xe5,
+        0xf1, 0x6c, 0xfa, 0xf4, 0xc5, 0x15, 0xe8, 0x7c,
+        0x7e, 0x00, 0x3d, 0x88, 0x67, 0x7f, 0xdd, 0x55,
+    };
     writer.writeByteArrayAsOptionsFile(payload, sizeof(payload));
     assert(openedPath == "options" && tape.size() == sizeof(payload));
     assert(std::memcmp(tape.data(), payload, sizeof(payload)) == 0);
+    writer.addHashToOptions();
+    assert(openedPath == "options" && tape.size() == sizeof(payload) + 32);
+    assert(std::memcmp(tape.data() + sizeof(payload), expectedHash, 32) == 0);
+    cursor = 0;
+    assert(writer.checkHash(1));
     assert(writer.writeByteArrayAsRecord(payload, sizeof(payload), 4, false) == sizeof(payload));
     assert(openedPath == "save/4" && tape.size() == sizeof(payload));
     assert(std::memcmp(tape.data(), payload, sizeof(payload)) == 0);
+    writer.addHash(4);
+    assert(tape.size() == sizeof(payload) + 32);
+    assert(std::memcmp(tape.data() + sizeof(payload), expectedHash, 32) == 0);
+    cursor = 0;
+    assert(writer.checkHash(1));
+    tape[2] ^= 0x40;
+    cursor = 0;
+    assert(!writer.checkHash(1));
+    tape[2] ^= 0x40;
+    tape.back() ^= 1;
+    cursor = 0;
+    assert(!writer.checkHash(1));
+    tape.back() ^= 1;
+    g_android_origami_super_club = "fedcba9876543210";
+    cursor = 0;
+    assert(!writer.checkHash(1));
+    g_android_origami_super_club = "0123456789abcdef";
+    cursor = 0;
+    assert(writer.checkHash(1));
+    tape.resize(33);
+    cursor = 0;
+    assert(!writer.checkHash(1));
     assert(writer.writeByteArrayAsRecord(payload, sizeof(payload), 4, true) == sizeof(payload));
     assert(openedPath == "backup/4" && tape.size() == sizeof(payload));
     assert(std::memcmp(tape.data(), payload, sizeof(payload)) == 0);
-    std::puts("PendingProduct add/save/load and full byte writes: OK");
+    std::puts("PendingProduct round trip, full byte writes and record hashes: OK");
 }
