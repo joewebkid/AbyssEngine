@@ -685,7 +685,7 @@ static inline int _mtw_onTouchEnd_languageState(void *self, int x, int y) {
         if (globals != nullptr)
             globals->loadFont(language);
         if (Globals::gameText != nullptr)
-            ((GameText *) Globals::gameText)->setLanguage(3401, language);
+            ((GameText *) Globals::gameText)->setLanguage(static_cast<short>(language), 3401);
 
         _mtw_rebuild_sound_for_language_change(previousLanguage, buttonOffset);
 

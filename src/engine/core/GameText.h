@@ -31,13 +31,13 @@ public:
 
     void release();
 
-    void setLanguage(int langId);
+    void setLanguage(int stringCount);
 
     void setSubstituteArray(int *pairs, unsigned count);
 
-    void setLanguage(short stringCount, int langId);
+    void setLanguage(short langId, int stringCount);
 
-    inline void setLanguage_i(int langId) { setLanguage(langId); }
+    inline void setLanguage_i(int stringCount) { setLanguage(stringCount); }
 
     static GameText *gGameText;
 

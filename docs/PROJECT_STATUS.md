@@ -1,25 +1,42 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (`RecordHandler::saveOptions` global wiring;
+Last reviewed: 2026-10-24 (`RecordHandler::loadOptions` and Android language handoff;
 earlier subsystem snapshots retain their dates)
+
+`RecordHandler::loadOptions` now uses the ARM-backed `Globals` state
+instead of nine never-assigned null pointers. `GameText` now treats
+`setLanguage(short,int)` as language/count, reads the real opened file
+handle and shared `currentLang` (initially `0xffff`), and uses ARM
+language-path literals; the menu's argument order is corrected.
+Original APK English and Russian `.lang` files each parse as exactly
+3401 records. Focused source-shape/strict fuzzy: `loadOptions`
+**18.1%/9.9% → 95.5%/84.9%**, `setLanguage(short,int)`
+**43.1%/18.1% → 51.0%/28.6%**; `getLanguage` is newly linked-exact.
+Native `gof2`, 208/208 ARM units and the 93-test verifier suite (one
+skip) pass. Full corpus: **4,323/4,524** originals over **4,737**
+pairs, **94.34%/83.78%** mean source-shape/strict fuzzy, **2,579
+linked-exact** and **1,082 byte-exact**, zero exact-set losses or
+skips. Recovered end-to-end Android settings/language loading remains
+unverified. See [the ARM and APK evidence](RECORD_LANGUAGE_OPTIONS_ARM_2026-10-24.md).
 
 `RecordHandler::saveOptions` now reads five original ARM-backed
 `Globals` fields rather than dereferencing never-assigned local null
 pointers. Focused source-shape/strict fuzzy rose from **82.7%/27.2%**
 to **98.9%/93.5%**; it is not exact. Native `gof2`, 208/208 ARM units,
-and the 93-test verifier suite (one skip) pass. The fresh full corpus
-compares **4,323/4,524** originals over **4,737** pairs at
+and the 93-test verifier suite (one skip) passed at that step. Its
+full corpus compared **4,323/4,524** originals over **4,737** pairs at
 **94.32%/83.74%** mean source-shape/strict fuzzy, with **2,578
 linked-exact** and **1,082 byte-exact**. Exact-pair sets have zero
-losses. Reading options and language selection remain unverified; see
+losses. Reading options and language selection were not yet wired at
+that step; see
 [the ARM global mapping](RECORD_SAVE_OPTIONS_GLOBALS_ARM_2026-10-24.md).
 
 Android ARM `RecordHandler::loadOptions` passes audio category IDs 1,
 2, 3 to both enable and volume calls; the recovered source had 0, 1,
 2. Those six arguments are corrected. The authentic Android options
 file is 94 bytes of fields plus a 32-byte hash, agreeing with the
-recovered write layout. This does not establish runnable recovered
-settings loading: several `loadOptions` state pointers remain unwired.
+recovered write layout. At that step, several `loadOptions` state
+pointers remained unwired, so runnable loading was not established.
 Native `gof2`, 208/208 ARM units and 93 verifier tests (one skip)
 passed at that step. Its full corpus was 4,323/4,524, 94.31%/83.73% mean,
 2,578 linked-exact and 1,082 byte-exact, with zero exact-set losses.

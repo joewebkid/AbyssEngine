@@ -142,7 +142,6 @@ static inline void AEFile_Read_bool(void *out, unsigned int fd, int wide) {
 static inline void AEFile_Read_f32(void *out, unsigned int fd) { AEFile::Read(4, out, fd); }
 static inline void AEFile_ReadByte(void *out, unsigned int fd) { AEFile::Read(1, out, fd); }
 static inline void AEFile_ReadFloat(void *out, unsigned int fd) { AEFile::Read(4, out, fd); }
-static inline void AEFile_ReadShort(void *out, unsigned int fd) { AEFile::Read(2, out, fd); }
 static inline void AEFile_ReadLong(void *out, unsigned int fd) { AEFile::Read(8, out, fd); }
 
 static inline void AEFile_Write_i64(long long v, unsigned int fd) { AEFile::Write(8, &v, fd); }
@@ -744,24 +743,6 @@ void RecordHandler::writeMission(Mission *m, unsigned int fd) {
 }
 
 
-static unsigned char *g_LO_settings = nullptr;
-
-static int **g_LO_statusObj = nullptr;
-
-static int *g_LO_nameSlot = nullptr;
-
-static int *g_LO_extraInt = nullptr;
-
-static bool *g_LO_flag1 = nullptr;
-
-static bool *g_LO_flag2 = nullptr;
-
-static int *g_LO_textObj = nullptr;
-
-static int *g_LO_fontKind = nullptr;
-
-static int *g_LO_fmodSlot = nullptr;
-
 void RecordHandler::loadOptions() {
     String &path = this->optionsPath;
     if (AEFile::FileExist(path) != 0) {
@@ -771,11 +752,11 @@ void RecordHandler::loadOptions() {
         AEFile::Close(fd);
         if (valid != 0) {
             AEFile::OpenRead(path, &fd);
-            OptionsBuffer *s = reinterpret_cast<OptionsBuffer *>(g_LO_settings);
+            OptionsBuffer *s = reinterpret_cast<OptionsBuffer *>(Globals::options);
 
             AEFile_ReadByte(&s->byte_0x10, fd);
             AEFile_ReadByte(&s->byte_0x11, fd);
-            reinterpret_cast<Status *>(*g_LO_statusObj)->_pad_0xfa[0] = s->byte_0x11;
+            Globals::status->_pad_0xfa[0] = s->byte_0x11;
 
             AEFile_ReadInt(&s->i32_0x14, fd);
             AEFile_ReadInt(&s->i32_0x18, fd);
@@ -787,20 +768,19 @@ void RecordHandler::loadOptions() {
             AEFile_ReadInt(&s->i32_0x24, fd);
             AEFile_ReadInt(&s->i32_0x28, fd);
 
-            int *nameSlot = g_LO_nameSlot;
-            if (*nameSlot != 0) {
-                delete (String *) (long) *nameSlot;
-                *nameSlot = 0;
+            if (Globals::instantActionPlayerName != nullptr) {
+                delete static_cast<String *>(Globals::instantActionPlayerName);
+                Globals::instantActionPlayerName = nullptr;
             }
 
             String name;
             { if (name.data) delete[] name.data; name.data = nullptr; name.length = 0; }
             AEFile_ReadString(&name, fd, 0);
             String *ns = new String(name);
-            *nameSlot = (int) (long) ns;
+            Globals::instantActionPlayerName = ns;
 
-            AEFile_ReadInt(g_LO_extraInt, fd);
-            AEFile_ReadBool(g_LO_flag1, fd);
+            AEFile_ReadInt(&Globals::lastRecordWritten, fd);
+            AEFile_ReadBool(&Globals::first_start_ever, fd);
             AEFile_ReadInt(&s->i32_0x54, fd);
             AEFile_ReadInt(&s->i32_0x58, fd);
             AEFile_ReadFloat(&s->volumeSfx, fd);
@@ -811,8 +791,8 @@ void RecordHandler::loadOptions() {
             AEFile_ReadFloat(&s->volumeMusic, fd);
 
             short lang = -1;
-            AEFile_ReadShort(&lang, fd);
-            AEFile_ReadBool(g_LO_flag2, fd);
+            AEFile::Read(lang, fd);
+            AEFile_ReadBool(&Globals::startLiteVersionWithMoreCredits, fd);
             AEFile_ReadBool(&s->byte_0x35, fd);
             AEFile_ReadBool(&s->byte_0x36, fd);
             AEFile_ReadBool(&s->byte_0x3a, fd);
@@ -841,21 +821,20 @@ void RecordHandler::loadOptions() {
             int langVal = lang;
             if (-1 < langVal) {
                 if (langVal == 9) langVal = 0;
-                ((GameText *) ((short) **(int **) g_LO_textObj))->setLanguage_i(langVal);
-                Globals::gGlobals->loadFont(**(int **) g_LO_fontKind);
+                Globals::gameText->setLanguage(static_cast<short>(langVal), 3401);
+                static_cast<Globals *>(Globals::globals)->loadFont(langVal);
             }
 
-            int *fmodSlot = g_LO_fmodSlot;
-            if (*fmodSlot != 0) {
-                void *fm = (void *) (long) *fmodSlot;
-                ((FModSound *) (fm))->setAudioLanguage(lang);
+            FModSound *fm = Globals::sound;
+            if (fm != nullptr) {
+                fm->setAudioLanguage(lang);
 
-                ((FModSound *) (fm))->enableCategory(1, s->byte_0x32 != 0);
-                ((FModSound *) (fm))->enableCategory(2, s->byte_0x33 != 0);
-                ((FModSound *) (fm))->enableCategory(3, s->byte_0x34 != 0);
-                ((FModSound *) (fm))->setVolume(1, s->volumeSfx);
-                ((FModSound *) (fm))->setVolume(2, s->volumeMusic);
-                ((FModSound *) (fm))->setVolume(3, s->volumeAmbient);
+                fm->enableCategory(1, s->byte_0x32 != 0);
+                fm->enableCategory(2, s->byte_0x33 != 0);
+                fm->enableCategory(3, s->byte_0x34 != 0);
+                fm->setVolume(1, s->volumeSfx);
+                fm->setVolume(2, s->volumeMusic);
+                fm->setVolume(3, s->volumeAmbient);
             }
 
             AEFile_ReadBool(&s->byte_0x62, fd);
@@ -905,7 +884,7 @@ void RecordHandler::loadResolutionValue(float resolution) {
         AEFile_ReadFloat(&r->volumeMusic, fd);
 
         short resVal = -1;
-        AEFile_ReadShort(&resVal, fd);
+        AEFile::Read(resVal, fd);
         AEFile_ReadBool(&b9d, fd);
         AEFile_ReadBool(&r->byte_0x35, fd);
         AEFile_ReadBool(&r->byte_0x36, fd);

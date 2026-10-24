@@ -3,8 +3,6 @@ GameText *GameText::gGameText = nullptr;
 #include "engine/file/AEFile.h"
 
 
-static short g_GameText_language_storage = 0;
-static short *g_GameText_language = &g_GameText_language_storage;
 static unsigned short g_GameText_langReset_storage = 0;
 static unsigned short *g_GameText_langReset = &g_GameText_langReset_storage;
 
@@ -18,7 +16,7 @@ void GameText::release() {
 }
 
 int GameText::getLanguage() {
-    return *g_GameText_language;
+    return static_cast<short>(GameText::currentLang);
 }
 
 static const char gRegionCodeStr[] = "";
@@ -38,15 +36,16 @@ void GameText::setSubstituteArray(int *pairs, unsigned count) {
     }
 }
 
-static unsigned short g_langCode_storage = 0;
-static unsigned short *g_langCode = &g_langCode_storage;
+static const char *gLangPaths[17] = {
+    "gb.lang", "de.lang", "fr.lang", "it.lang", "es.lang", "ru.lang",
+    "pl.lang", "pt.lang", "cz.lang", "ar.lang", "gb.lang", "gb.lang",
+    "ptl.lang", "mex.lang", "ko.lang", "ja.lang", "gb.lang"
+};
+static const char gLangPathDefault[] = "gb.lang";
+static const char gLangPathEnglish[] = "gb.lang";
 
-static const char *gLangPaths[17] = {0};
-static const char gLangPathDefault[] = "";
-static const char gLangPathEnglish[] = "";
-
-void GameText::setLanguage(short stringCount, int langId) {
-    if ((unsigned int) *g_langCode == ((unsigned int) langId & 0xffff))
+void GameText::setLanguage(short langId, int stringCount) {
+    if (GameText::currentLang == static_cast<unsigned short>(langId))
         return;
 
     this->release();
@@ -111,16 +110,16 @@ void GameText::setLanguage(short stringCount, int langId) {
             break;
     }
     path = String(p);
-    *g_langCode = code;
+    GameText::currentLang = code;
 
     if (AEFile::FileExist(path) == 0) {
         path = String(gLangPathEnglish);
-        *g_langCode = 0;
+        GameText::currentLang = 0;
     }
 
     unsigned int file = 0;
     AEFile::OpenRead(path, &file);
-    this->ReadLangFile(0, stringCount);
+    this->ReadLangFile(file, stringCount);
 }
 
 GameText::~GameText() {
@@ -254,8 +253,8 @@ String GameText::convertStringFromArabic(String in) {
     }
 }
 
-void GameText::setLanguage(int langId) {
-    this->setLanguage(static_cast<short>(0), langId);
+void GameText::setLanguage(int stringCount) {
+    this->setLanguage(static_cast<short>(0), stringCount);
 }
 
 static const char gLang5000Primary[] = "";
@@ -266,13 +265,13 @@ static const char gLang5001Fallback[] = "";
 AbyssEngine::String *GameText::getText(int key) {
     if (key == 5000) {
         static String s5000;
-        const char *txt = (*g_langCode != 1) ? gLang5000Fallback : gLang5000Primary;
+        const char *txt = (GameText::currentLang != 1) ? gLang5000Fallback : gLang5000Primary;
         s5000.ctor_char(txt, false);
         return &s5000;
     }
     if (key == 5001) {
         static String s5001;
-        const char *txt = (*g_langCode != 1) ? gLang5001Fallback : gLang5001Primary;
+        const char *txt = (GameText::currentLang != 1) ? gLang5001Fallback : gLang5001Primary;
         s5001.ctor_char(txt, false);
         return &s5001;
     }
@@ -298,7 +297,7 @@ void GameText::ReadLangFile(unsigned int file, int count) {
     if (file == 0)
         return;
 
-    short lang = *g_langCode;
+    short lang = static_cast<short>(GameText::currentLang);
     for (int i = 0; i < count; ++i) {
         unsigned short len;
         if (AEFile::Read(2, &len, file) == 0) {
@@ -337,4 +336,4 @@ void GameText::ReadLangFile(unsigned int file, int count) {
 }
 
 // Static data members present in the original binary (defined for symbol parity).
-unsigned short GameText::currentLang;
+unsigned short GameText::currentLang = 0xffff;
