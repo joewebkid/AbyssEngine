@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (Android JNI integer getter ABI;
+Last reviewed: 2026-10-25 (Android JNI frame/startup routing;
 earlier subsystem snapshots retain their dates)
+
+The Android JNI `initialize`, `renderstep` and `resize` entry points
+now reach their ARM-backed native destinations instead of the
+undefined `ndk23_renderstep`; `renderstep` accepts the original
+Java `long` timestamp. Both engine initialization helpers now call
+`Engine::InitGL` before starting the application. Native `gof2`,
+**209/209** ARM units and **93** verifier tests (one skip) pass.
+Focused source-shape/strict fuzzy rises to **79.2%/62.9%** for JNI
+`initialize` and **93.3%/63.0%** for `ndk23_InitWithZip`;
+`renderstep` and `resize` retain **100%/100% linked-exact**. The
+full corpus compares **4,323/4,524** originals over **4,737** pairs
+at **94.56%/84.06%** mean source-shape/strict fuzzy, with **2,592
+linked-exact** and **1,082 byte-exact**. No exact symbol was lost.
+On-device execution of recovered JNI/OpenGL startup is still
+unverified. See [the frame/startup ARM evidence](ANDROID_JNI_FRAME_STARTUP_ARM_2026-10-25.md).
 
 The original APK DEX declares nine Android JNI flag/DLC getters as
 integer-returning, and ARM returns the raw native integer or DLC

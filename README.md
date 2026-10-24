@@ -14,7 +14,7 @@ assets, APKs, IPAs, OBB files, or JARs.
 
 ## Current State
 
-The tree contains 208 C++ translation units and 236 headers. The native static
+The tree contains 209 C++ translation units and 236 headers. The native static
 library builds on Windows/MSYS2 UCRT64 and is used as a compile regression gate.
 ARM validation is a separate function-by-function comparison workflow.
 Neither the static library nor a Godot playtest proves that the recovered game

@@ -42,13 +42,13 @@ static char *g_zipPath;
 extern "C" void ndk_checkPlaytimeAndSpendOfferwallCredits();
 
 extern "C" void ndk23_InitWithZip(const char *apkPath, const char *zipPath,
-                       int width, int height);
+                       int width, int height, float scale);
 
 extern "C" void ndk23_setRootDirectory(const char *path);
 
 extern "C" void ndk23_setZipDirectory(const char *path);
 
-void ndk23_renderstep(int width, int height);
+extern "C" void ndk23_setDisplayHeightAndWidth(int width, int height);
 
 extern "C" int ndk23_getExitFlag();
 
@@ -235,7 +235,7 @@ extern "C" void ndk_checkPlaytimeAndSpendOfferwallCredits() {
 double gAccelFilterState[6];
 
 extern "C" void ndk23_InitWithZip(const char *apkPath, const char *zipPath,
-                       int width, int height) {
+                       int width, int height, float /*scale*/) {
     glViewport(0, 0, width, height);
 
     for (int i = 0; i < 6; ++i)
@@ -249,6 +249,7 @@ extern "C" void ndk23_InitWithZip(const char *apkPath, const char *zipPath,
     AbyssEngine::Engine *engine = new AbyssEngine::Engine();
     gEngine = engine;
     engine->str_0x3c = String("2.0.16", false);
+    engine->InitGL(true, width, height);
 
     if (rootDirectory != nullptr)
         AEFile::SetAppRootDir(rootDirectory);
@@ -367,13 +368,8 @@ extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_STARTUP(
 
 extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_initialize(
     JNIEnv * /*env*/, jclass /*clazz*/, jint width, jint height) {
-    ndk23_InitWithZip(g_apkPath, g_zipPath, width, height);
-    ndk23_renderstep(width, height);
-}
-
-extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_renderstep(
-    JNIEnv * /*env*/, jclass /*clazz*/, jint width, jint height) {
-    ndk23_renderstep(width, height);
+    ndk23_InitWithZip(g_apkPath, g_zipPath, width, height, 1.0f);
+    ndk23_setDisplayHeightAndWidth(width, height);
 }
 
 // The original JNI exports tail-call their integer native sources without normalization.
@@ -639,11 +635,6 @@ extern "C" jint Java_net_fishlabs_gof2hdallandroid2012_ToJNI_isInMainMenu(
     return ndk_isInMainMenu();
 }
 
-extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_resize(
-    JNIEnv * /*env*/, jclass /*clazz*/, jint width, jint height) {
-    ndk23_renderstep(width, height);
-}
-
 extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_handleTouchEvent(
     JNIEnv * /*env*/, jclass clazz, jint touch, jint phase, jfloat x, jfloat y) {
     ndk23_handleTouchScreenEvent(clazz, reinterpret_cast<void *>(touch), phase, x, y);
@@ -739,6 +730,7 @@ extern "C" void ndk23_Init(const char *apkPath, int width, int height) {
     AbyssEngine::Engine *engine = new AbyssEngine::Engine();
     gEngine = engine;
     engine->str_0x3c = String("2.0.16", false);
+    engine->InitGL(true, width, height);
 
     if (rootDirectory != nullptr)
         AEFile::SetAppRootDir(rootDirectory);
@@ -755,11 +747,6 @@ extern "C" void ndk23_resize(int width, int height) {
     gRealWidth = width;
 
     simulateTouch(gEngine);
-}
-
-extern "C" void ndk23_setDisplayHeightAndWidth(int height, int width) {
-    (void) height;
-    (void) width;
 }
 
 extern "C" int ndk23_getCurrentFiredStatus() {
