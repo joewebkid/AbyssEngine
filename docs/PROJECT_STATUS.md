@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (iOS full-save hash envelope;
+Last reviewed: 2026-10-24 (Android archive/file read and existence paths;
 earlier subsystem snapshots retain their dates)
+
+Android `FileInterfaceAndroid::OpenRead` and `FileExist` now use the
+ARM-observed asset prefixes, shared APK/patch slots and `"rb"` disk mode.
+`OpenRead` also uses the stripped filename for disk fallback and passes
+the actual archive offset/windowed flag to its constructor. A
+source-extracted Windows `-O0/-O2` gate exercises both archive branches,
+missing patch, main-archive precedence and a real filesystem read. Native
+`gof2`, **208/208** ARM units and **93** verifier tests (one skip) pass.
+Focused source-shape/strict fuzzy reaches **98.3%/94.1%** for `OpenRead`
+and **98.7%/98.7%** for `FileExist`, neither exact. Fresh full corpus:
+**4,323/4,524** originals over **4,737** pairs, mean **94.31%/83.71%**,
+**2,578 linked-exact**, **1,082 byte-exact**, with zero exact-set losses.
+Real APK decompression, JNI setup and live Android save loading remain
+unverified; see [the read-path evidence](FILE_ANDROID_READEXIST_ARM_2026-10-24.md).
 
 Two local iOS 1.1.4 full saves have appended SHA-256 digests of
 `payload || 25-byte salt`; independent calculation and source-extracted

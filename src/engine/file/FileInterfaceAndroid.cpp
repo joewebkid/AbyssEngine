@@ -270,11 +270,14 @@ void FileInterfaceAndroid::SetSaveDirectory(String) {
 void FileInterfaceAndroid::ResetSaveDirectory() {
 }
 
-void **FileInterfaceAndroid::gZipMain = nullptr;
-void **FileInterfaceAndroid::gZipPatch = nullptr;
-static const char *gZipPrefixA = nullptr;
-static const char *gZipPrefixB = nullptr;
-static const char *gModeRb = nullptr;
+// ApkLoader and both lookup paths must refer to the same archive slots.
+static void *gApkArchive = nullptr;
+static void *gPatchArchive = nullptr;
+void **FileInterfaceAndroid::gZipMain = &gApkArchive;
+void **FileInterfaceAndroid::gZipPatch = &gPatchArchive;
+static const char *gZipPrefixA = "assets/";
+static const char *gZipPrefixB = "47947_GOF2CONTENT_ETC/assets/";
+static const char *gModeRb = "rb";
 
 uint32_t FileInterfaceAndroid::FileExist(String name) {
     String a(gZipPrefixA);
@@ -306,54 +309,38 @@ uint32_t FileInterfaceAndroid::FileExist(String name) {
     return exists;
 }
 
-static void **gZipMainR = nullptr;
-static void **gZipPatchR = nullptr;
-static const char *gPrefixSlash = nullptr;
-static const char *gPrefixPlain = nullptr;
-static const char *gOpenReadFmt = nullptr;
-static char *gStderrBase = nullptr;
-
-// gStderrBase points to a pointer to the Android I/O state block; the stderr
-// FILE* lives at byte offset 0xa8 within that block.  Model it as a named field.
-struct AndroidIoState {
-    char pad_00[0xa8];
-    FILE *stderrFile;
-};
-#if __SIZEOF_POINTER__ == 4
-static_assert(offsetof(AndroidIoState, stderrFile) == 0xa8, "AndroidIoState layout");
-#endif
-static const char *gModeRbR = nullptr;
+static void **gZipMainR = &gApkArchive;
+static void **gZipPatchR = &gPatchArchive;
+static const char *gPrefixSlash = "assets/";
+static const char *gPrefixPlain = "47947_GOF2CONTENT_ETC/assets/";
+static const char *gOpenReadFmt = "OpenRead('%s', %d, %d, %d, %d, %d)\n";
+static const char *gModeRbR = "rb";
 
 void *FileInterfaceAndroid::OpenRead(String name, int p2, bool p3, int p4, int p5, unsigned int p6) {
-    const unsigned short *w = GetAEWChar(name);
+    const unsigned short *w = name.GetAEWChar();
     if (this->enabled == 0)
         return 0;
 
     const unsigned short *body = (*w == '/') ? w + 1 : w;
 
     String a(gPrefixSlash);
-    String wide;
-    wide.Set((const unsigned short *) (body));
-    a += wide;
+    a += String(body, false);
     String b(gPrefixPlain);
-    String wide2;
-    wide2.Set((const unsigned short *) (body));
-    b += wide2;
+    b += String(body, false);
 
-    AndroidIoState *ioState = *reinterpret_cast<AndroidIoState **>(gStderrBase);
-    fprintf(ioState->stderrFile, gOpenReadFmt, b.GetAEChar(), p3, p4, p5, p6, p2);
+    fprintf(stderr, gOpenReadFmt, a.GetAEChar(), p2, p3, p4, p5, p6);
 
     zip_file *z1 = zip_fopen((struct zip *) *gZipMainR, a.GetAEChar(), 0);
     zip_file *z2 = (*gZipPatchR != 0) ? zip_fopen((struct zip *) *gZipPatchR, b.GetAEChar(), 0) : 0;
 
     FileInterfaceAndroid * result = 0;
     if (z1 != 0) {
-        result = new FileInterfaceAndroid(z1, (bool) p4, p2, p5, p4);
+        result = new FileInterfaceAndroid(z1, p3, p6, p4, p5);
     } else if (z2 != 0) {
-        result = new FileInterfaceAndroid(z2, (bool) p4, p2, p5, p4);
+        result = new FileInterfaceAndroid(z2, p3, p6, p4, p5);
     } else if (this->appRootDir != 0) {
         String dir((const char *) this->appRootDir);
-        String full = dir + a;
+        String full = dir + String(body, false);
         FILE *f = fopen(full.GetAEChar(), gModeRbR);
         if (f != 0)
             result = new FileInterfaceAndroid(f, false);
