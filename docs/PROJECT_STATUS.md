@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-24 (Pan first class-one freighter return/insertion;
+Last reviewed: 2026-10-24 (Pan first class-one freighter relocation;
 earlier subsystem snapshots retain their dates)
+
+The original-asset Pan host chain now runs the first ordinary
+freighter through `setMoving(true)` and `PlayerFixedObject::setPosition`
+after insertion. Windows SwiftShader `-O0/-O2` validates the four
+relocation RNG draws, final position, geometry, wreck mesh and three
+collision centers. Android ARM confirms the mission call order;
+`setPosition` has **100.0% source-shape / 94.2% strict fuzzy**,
+nonexact, while `setMoving` is linked- and byte-exact. No production
+C++ changed; full ARM corpus remains **4,323/4,524**, mean
+**94.19%/83.54%**, **2,564 linked-exact**, **1,082 byte-exact**.
+The synthetic fixture and test-only renderer seam remain; later
+freighters, outposts and live Android are unverified. See
+[freighter motion evidence](LEVEL_STAGE1_FIRST_FREIGHTER_MOTION_HOST_2026-10-24.md).
 
 The original-asset Pan host chain now executes the class-one
 `Level::createShip` branch through bounds, wreck collision/mesh,

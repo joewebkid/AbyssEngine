@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Pan first class-one freighter movement — host gate (2026-10-24)
+
+Android ARM `Level::createMission` calls `setMoving(true)` after storing
+the first class-one freighter, then makes four relocation RNG draws and
+dispatches virtual `setPosition`. The source-extracted original-asset
+Pan gate passes Windows SwiftShader `-O0/-O2` through those calls and
+checks geometry, wreck and collision positions. Focused current ARM:
+`setPosition` **100.0% source-shape / 94.2% strict fuzzy**, nonexact;
+`setMoving` linked- and byte-exact. Native `gof2` is green (no-op);
+production C++ and full corpus are unchanged. The synthetic fixture,
+test-only renderer seam and unverified outpost paths remain. See
+[the evidence](LEVEL_STAGE1_FIRST_FREIGHTER_MOTION_HOST_2026-10-24.md).
+
 ## Pan first class-one freighter return/insertion — host gate (2026-10-24)
 
 The source-extracted class-one `createShip` branch now runs with
