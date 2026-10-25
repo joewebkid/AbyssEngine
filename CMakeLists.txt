@@ -51,6 +51,13 @@ endif()
 # The recovered code still carries Android/ARM-era 32-bit handle casts. GNU's native 64-bit builds
 # need -fpermissive so those decomp artifacts remain warnings while restoration work continues.
 file(GLOB_RECURSE GOF2_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+# The game/core math copies define the same symbols as engine/math. Keep the
+# ARMv7 comparison corpus intact; use one definition set for the arm64 port.
+if(ANDROID AND ANDROID_ABI STREQUAL "arm64-v8a")
+    list(REMOVE_ITEM GOF2_SOURCES
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/game/core/Matrix.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/game/core/Vector.cpp")
+endif()
 add_library(gof2 STATIC ${GOF2_SOURCES})
 target_include_directories(gof2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_compile_options(gof2 PRIVATE

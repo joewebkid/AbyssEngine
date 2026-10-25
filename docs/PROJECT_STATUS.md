@@ -1,15 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (arm64 static build probe;
+Last reviewed: 2026-10-25 (arm64 link-closure follow-up;
 earlier subsystem snapshots retain their dates)
 
-An NDK 28.2/API 28 `arm64-v8a` build now compiles the **209** current
+The arm64-specific source list now omits two duplicate game-side math
+implementations. The AArch64 static archive builds from **207** unique
+units and a strict whole-archive link reports **zero duplicate symbols**;
+it still exposes **583 unresolved symbols**, including unavailable
+FMOD Ex audio and 32-bit-only vendored ZIP/crypto dependencies. FMOD
+Ex itself never shipped for Android arm64, and current FMOD cannot
+directly read the original `.fev` projects. No playable `.so` or APK
+exists. See [the arm64 link audit](ARM64_BUILD_PROBE_2026-10-25.md).
+
+The initial NDK 28.2/API 28 `arm64-v8a` probe compiled **209**
 translation units into a local 20.3 MB `libgof2.a`; a guard excludes
 two unsupported empty register constraints only on AArch64. Native
 `gof2` and **209/209** ARMv7 units remain green, and the ARMv7
 `HangarWindow.o` hash is unchanged. This is **not an APK or playable
-game**: the project has no Android app target, and a diagnostic shared
-link exposes duplicate math symbols, unresolved engine hooks, and
+game**: the project has no Android app target, and the initial shared
+link exposed duplicate math symbols, unresolved engine hooks, and
 missing arm64 FMOD implementations. No `.so` or APK was produced. See
 [the arm64 build probe](ARM64_BUILD_PROBE_2026-10-25.md).
 
