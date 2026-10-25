@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (WantedWindow draw recovery;
+Last reviewed: 2026-10-25 (Wanted scrollbar fractions;
 earlier subsystem snapshots retain their dates)
+
+Wanted scrollbar fraction methods now return ARM-observed zero for
+positive overscroll and content shorter than the viewport, replacing
+two erroneous literal float bit patterns. The start-position method
+is now **byte-exact** at **100%/100%** source-shape/strict fuzzy; the
+height method remains **84.8%/57.1%**, nonexact. Native, AArch64
+static, **209/209** ARMv7 units, and source-extracted host checks at
+`-O0/-O2` pass. Full corpus: **4,323/4,524** originals,
+**94.71%/84.21%** mean source-shape/strict fuzzy, **2,601**
+linked-exact and **1,083** byte-exact, with one gain in each set and
+zero losses. Live screen scrolling remains unverified. See
+[the scrollbar evidence](WANTED_SCROLL_FRACTIONS_ARM_2026-10-25.md).
 
 `FModSound` now gets its app-root path through the ARM-observed
 `AEFile::GetAppRootDir` call instead of an undefined helper. Both

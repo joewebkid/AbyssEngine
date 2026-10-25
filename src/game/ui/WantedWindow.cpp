@@ -139,14 +139,7 @@ void WantedWindow::render3D() {
 
 float WantedWindow::getRelativeScrollStartPos() {
     int pos = this->scrollOffset;
-    if (pos > 0) {
-        union {
-            uint32_t u;
-            float f;
-        } c;
-        c.u = 0x4650a903u;
-        return c.f;
-    }
+    if (pos > 0) return 0.0f;
     return -(float) pos / (float) this->contentHeight;
 }
 
@@ -610,14 +603,7 @@ bool WantedWindow::hangarNeedsUpdate() {
 float WantedWindow::getRelativeScrollHeight() {
     int content = this->contentHeight;
     int visible = this->visibleHeight;
-    if (content < visible) {
-        union {
-            uint32_t u;
-            float f;
-        } c;
-        c.u = 0x4605e009u;
-        return c.f;
-    }
+    if (content < visible) return 0.0f;
     int scroll = this->scrollOffset;
     int num;
     if (scroll >= 1) {
