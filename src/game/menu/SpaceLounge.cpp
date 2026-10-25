@@ -38,7 +38,6 @@ namespace AbyssEngine {
 
         Vector operator*(const Vector &, float);
 
-        void MatrixMultiply(Matrix &, const Matrix &);
     }
 }
 
@@ -745,7 +744,7 @@ void SpaceLounge::updateScreenPositions() {
 
         if (Status::gStatus->getSystem()->getRace() == 0) {
             MatrixSetRotation(look, 0.0f, 0.0f, 0.0f);
-            AbyssEngine::AEMath::MatrixMultiply(*(Matrix *) (camera), *(const Matrix *) (look));
+            *(Matrix *) camera *= *(const Matrix *) look;
         }
 
         enemy->parentGeometry->setMatrix(*(const AbyssEngine::AEMath::Matrix *) (camera));
@@ -1325,7 +1324,7 @@ void SpaceLounge::update(int dt) {
         float value = this->headEase->GetValue();
         MatrixSetRotation(valueMatrix, value / 90.0f, 0.0f, value);
         MatrixSetTranslation(maxMatrix, 0.0f, 0.0f, wave * maxRot);
-        AbyssEngine::AEMath::MatrixMultiply(*(Matrix *) (valueMatrix), this->baseMatrix);
+        *(Matrix *) valueMatrix *= this->baseMatrix;
         cameraSlot = *(void **) &SpaceLounge_update_camera_slot_b;
         camera = *(void **) cameraSlot;
         current = (void *) (long) ((PaintCanvas *) camera)->CameraGetCurrent();

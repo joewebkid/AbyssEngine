@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (BeamGun canvas/vector calls;
+Last reviewed: 2026-10-26 (KIPlayer/SpaceLounge matrix calls;
 earlier subsystem snapshots retain their dates)
+
+Five `KIPlayer` and `SpaceLounge` call sites now use the ARM-observed
+mutating `Matrix::operator*=` instead of an undefined or no-op
+`MatrixMultiply` helper. `KIPlayer::setShipGroup` and vector
+`setPosition` rise to **100% source-shape/strict fuzzy** and become
+linked-exact in focused verification. Native and AArch64 static
+builds pass; strict AArch64 whole-archive unresolved names fall
+**545 → 544** without new names. The full ARM corpus compares
+**4,323/4,524** originals over **4,743** pairs with zero skips;
+mean source-shape/strict fuzzy is **94.72%/84.21%**. Linked-exact
+rises **2,601 → 2,603**, byte-exact stays **1,083**, and neither
+exact set loses a symbol. Live transform behavior remains
+unverified. See [the matrix call evidence](MATRIX_CALLERS_ARM64_2026-10-26.md).
 
 `BeamGun` now reads the ARM-confirmed `Globals::Canvas` instead of a
 null local pointer and calls the real `PaintCanvas` transform and
