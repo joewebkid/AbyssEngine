@@ -2908,7 +2908,9 @@ float HangarWindow::getRelativeScrollHeight() {
     float contentHeightFloat;
     if (scroll >= 1) {
         contentHeightFloat = (float) contentHeight;
+#if !defined(__aarch64__)
         __asm__ volatile("" : "+t"(contentHeightFloat));
+#endif
         visiblePart = visibleHeight - scroll;
     } else if (scroll >= visibleHeight - contentHeight) {
         __asm__ volatile("" ::: "memory");
@@ -2916,7 +2918,9 @@ float HangarWindow::getRelativeScrollHeight() {
         visiblePart = visibleHeight;
     } else {
         contentHeightFloat = (float) contentHeight;
+#if !defined(__aarch64__)
         __asm__ volatile("" : "+t"(contentHeightFloat));
+#endif
         visiblePart = scroll + contentHeight;
     }
     return (float) visiblePart / contentHeightFloat;

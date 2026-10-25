@@ -1,7 +1,17 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (WantedWindow selected text;
+Last reviewed: 2026-10-25 (arm64 static build probe;
 earlier subsystem snapshots retain their dates)
+
+An NDK 28.2/API 28 `arm64-v8a` build now compiles the **209** current
+translation units into a local 20.3 MB `libgof2.a`; a guard excludes
+two unsupported empty register constraints only on AArch64. Native
+`gof2` and **209/209** ARMv7 units remain green, and the ARMv7
+`HangarWindow.o` hash is unchanged. This is **not an APK or playable
+game**: the project has no Android app target, and a diagnostic shared
+link exposes duplicate math symbols, unresolved engine hooks, and
+missing arm64 FMOD implementations. No `.so` or APK was produced. See
+[the arm64 build probe](ARM64_BUILD_PROBE_2026-10-25.md).
 
 `WantedWindow::selectWanted` now constructs active station and system
 names, terminated placeholders, rewards, detail status, and localized
