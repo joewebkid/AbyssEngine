@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (WantedWindow initialization;
+Last reviewed: 2026-10-25 (WantedWindow selected text;
 earlier subsystem snapshots retain their dates)
+
+`WantedWindow::selectWanted` now constructs active station and system
+names, terminated placeholders, rewards, detail status, and localized
+scroll text from ARM-confirmed sources. Its focused source-shape/strict
+fuzzy improves from **89.5%/49.6%** to **95.5%/57.7%**, nonexact.
+Native `gof2`, **209/209** ARM units, **95** verifier tests (one skip),
+and synthetic selected-entry checks at `-O0/-O2` pass. The full corpus
+compares **4,323/4,524** originals over **4,743** pairs, with
+**94.69%/84.21%** mean source-shape/strict fuzzy, **2,600
+linked-exact**, and **1,082 byte-exact**; zero exact-set gains or
+losses. Live UI rendering remains unverified, and `draw` retains four
+null pointer slots. See [the selected-text ARM evidence](WANTED_SELECT_TEXT_ARM_2026-10-25.md).
 
 `WantedWindow` constructor, `init`, and `selectWanted` now read the
 ARM-confirmed `Globals` instead of null-initialized pointer slots or

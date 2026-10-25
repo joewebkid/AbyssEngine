@@ -656,33 +656,35 @@ void WantedWindow::selectWanted(int idx) {
         Station *last = galaxy->getStation(wanted->getLastSeen());
         Station *travel = galaxy->getStation(wanted->getTravelsTo());
         Station *current = galaxy->getStation(wanted->getCurrentLocation());
+        SolarSystem *lastSystem = galaxy->getSystem(last->getSystem());
+        SolarSystem *travelSystem = galaxy->getSystem(travel->getSystem());
+        SolarSystem *currentSystem = galaxy->getSystem(current->getSystem());
 
-        this->fromText = last->getName() + String("from ", false) + String(" ", false);
-        this->toText = travel->getName() + String("to ", false) + String(" ", false);
-        this->atText = current->getName() + String("at ", false) + String(" ", false);
+        this->fromText = last->getName() + String(" (", false) +
+                         lastSystem->getName() + String(")", false);
+        this->toText = travel->getName() + String(" (", false) +
+                       travelSystem->getName() + String(")", false);
+        this->atText = current->getName() + String(" (", false) +
+                       currentSystem->getName() + String(")", false);
 
-        String reward;
-        reward.Set((long long) (wanted->getReward()));
-        this->rewardText = reward + String("reward ", false);
+        this->rewardText = String(wanted->getReward()) + String("$", false);
 
         delete last;
         delete travel;
         delete current;
     } else if (wanted->isTerminated() != 0) {
-        this->fromText = String("terminated", false);
-        this->toText = String("", false);
-        this->atText = String("", false);
-        this->rewardText = String("", false);
+        this->fromText = String(" -- ", false);
+        this->toText = String(" --", false);
+        this->atText = String(" --", false);
+        this->rewardText = String(" --", false);
     } else {
         this->fromText = *Globals::gameText->getText(0xc9d);
         this->toText = *Globals::gameText->getText(0xc9d);
-        String reward;
-        reward.Set((long long) (wanted->getReward()));
-        this->rewardText = reward + String("reward ", false);
+        this->rewardText = String(wanted->getReward()) + String("$", false);
         this->atText = *Globals::gameText->getText(0xc9d);
     }
 
-    this->detailText = *Globals::gameText->getText(0xc9d);
+    this->detailText = *Globals::gameText->getText(wanted->isTerminated() != 0 ? 3227 : 3228);
 
     Layout *layout = Globals::layout;
     int y = this->windowY;
@@ -703,12 +705,13 @@ void WantedWindow::selectWanted(int idx) {
         ((this->windowWidth >> 1) - pad) - layout->buttonInsetX,
         height, false);
 
-    String body;
-    body = *Globals::gameText->getText(0xc9d);
+    String body("", false);
+    body = *Globals::gameText->getText(3223);
     body += String("\n", false) + this->fromText;
+    body += String("\n\n", false) + *Globals::gameText->getText(3224);
     body += String("\n", false) + this->toText;
-    body += String("\n", false) + this->atText;
-    body += String("\n", false) + this->rewardText;
+    body += String("\n\n", false) +
+            *Globals::gameText->getText(wanted->getIndex() + 3174);
 
     String title("", false);
     this->scrollWindow->setText(title, body);
