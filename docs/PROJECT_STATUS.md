@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (Explosion math calls;
+Last reviewed: 2026-10-26 (BeamGun canvas/vector calls;
 earlier subsystem snapshots retain their dates)
+
+`BeamGun` now reads the ARM-confirmed `Globals::Canvas` instead of a
+null local pointer and calls the real `PaintCanvas` transform and
+`AEMath` vector functions in `update`. Its secondary position now
+adds the rotated offset to a `Vector` rather than reading a vector as
+a larger matrix. Focused `update` source-shape/strict fuzzy improves
+**87.5%/50.2% → 94.3%/50.2%**; constructor aliases change
+**89.5%/71.1% → 90.9%/60.8%**. None is exact. Native, AArch64 static,
+and **209/209** ARMv7 units build. Strict AArch64 whole-archive
+unresolved names fall **548 → 545** with no new names. The
+full ARM corpus compares **4,323/4,524** originals over **4,743**
+pairs with zero skips; mean source-shape/strict fuzzy is
+**94.72%/84.21%**. The **2,601 linked-exact** and **1,083 byte-exact**
+symbol sets have zero losses. The
+secondary-mesh resource table remains a zero placeholder, and live
+beam effects remain unverified. See
+[the BeamGun evidence](BEAM_GUN_CANVAS_VECTOR_ARM64_2026-10-26.md).
 
 `Explosion` now calls the ARM-confirmed `AEMath` matrix and vector
 functions in its start, camera update, and render paths. The matrix
