@@ -83,9 +83,6 @@ void ShaderUpdateRimColor();
 
 void ShaderUpdateMaterialColor();
 
-static String *g_Engine_vendorString = nullptr;
-static String *g_Engine_rendererString = nullptr;
-
 namespace {
     int g_Engine_useShaders;
     int g_Engine_supportsFBO;
@@ -128,9 +125,11 @@ namespace {
 #endif
 }
 
-void MeshRelease(Engine *self, void *meshSlot);
-
-void MeshCreate(Engine *self, int vertices, int faces, int flags, void *outMesh);
+namespace AbyssEngine {
+    void MeshRelease(Engine *engine, Mesh **slot);
+    int MeshCreate(Engine *engine, unsigned short vertexCount, unsigned short triCount,
+                   signed char vertexFormat, Mesh **out);
+}
 
 void esMatrixMultiply(void *out, const void *lhs, const void *rhs);
 
@@ -684,7 +683,7 @@ Engine::~Engine() {
     delete this->refractFBO;
     this->refractFBO = 0;
 
-    MeshRelease(this, &this->quadMesh);
+    AbyssEngine::MeshRelease(this, &this->quadMesh);
     this->ReleaseGL();
     delete this->shaders;
     delete this->triangleCounts;
@@ -695,7 +694,7 @@ void Engine::ReleaseGL() {
 
 void Engine::AfterGLInit() {
     this->ResetLightParam();
-    MeshCreate(this, 4, 2, 0x13, &this->quadMesh);
+    AbyssEngine::MeshCreate(this, 4, 2, 0x13, &this->quadMesh);
 
     uint32_t *indices = (uint32_t *) this->quadMesh->indices;
     indices[0] = 0x20000;
@@ -703,9 +702,9 @@ void Engine::AfterGLInit() {
     indices[2] = 0x30002;
 
     String vendor((const char *) glGetString(0x1f00));
-    *g_Engine_vendorString = vendor;
+    Engine::vendor = vendor;
     String renderer((const char *) glGetString(0x1f01));
-    *g_Engine_rendererString = renderer;
+    Engine::renderer = renderer;
 }
 
 void Engine::DrawCloakFBO(FBOContainer *fbo) {
@@ -1635,13 +1634,13 @@ unsigned char AbyssEngine::Engine::UseAdvancedShader;
 unsigned char AbyssEngine::Engine::enableReverseFlag;
 int AbyssEngine::Engine::tv_h;
 int AbyssEngine::Engine::tv_w;
-AbyssEngine::AEMath::Vector AbyssEngine::Engine::vendor;
+AbyssEngine::String AbyssEngine::Engine::vendor;
 unsigned char AbyssEngine::Engine::DrawFBO;
 int AbyssEngine::Engine::vboSize;
 unsigned char AbyssEngine::Engine::DEBUGKEY;
 unsigned char AbyssEngine::Engine::TVEnable;
 float AbyssEngine::Engine::farPlane;
-AbyssEngine::AEMath::Vector AbyssEngine::Engine::renderer;
+AbyssEngine::String AbyssEngine::Engine::renderer;
 AbyssEngine::AEMath::Vector AbyssEngine::Engine::tv_modes;
 unsigned char AbyssEngine::Engine::WireFrame;
 float AbyssEngine::Engine::nearPlane;

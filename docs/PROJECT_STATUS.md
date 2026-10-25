@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (Wanted scrollbar fractions;
+Last reviewed: 2026-10-25 (Engine GL quad and strings;
 earlier subsystem snapshots retain their dates)
+
+`Engine::AfterGLInit` and the destructor now call the ARM-confirmed
+namespaced mesh helpers, and GL vendor/renderer strings are stored in
+their real static `String` objects instead of through null pointers.
+Focused `AfterGLInit` source-shape/strict fuzzy improves
+**92.0%/68.1% → 94.5%/76.4%**, nonexact. Native, AArch64 static,
+**209/209** ARMv7 units and a source-extracted `-O0/-O2` host check
+pass. Strict AArch64 whole-archive link gaps fall **582 → 580**;
+the full ARM corpus remains **4,323/4,524** originals,
+**94.71%/84.21%** mean source-shape/strict fuzzy, **2,601**
+linked-exact and **1,083** byte-exact, with zero exact-set gains or
+losses. The shared library and live GL startup remain open. See
+[the Engine GL evidence](ENGINE_AFTERGLINIT_MESH_ABI_ARM64_2026-10-25.md).
 
 Wanted scrollbar fraction methods now return ARM-observed zero for
 positive overscroll and content shorter than the viewport, replacing

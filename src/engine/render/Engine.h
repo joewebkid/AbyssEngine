@@ -588,13 +588,13 @@ namespace AbyssEngine {
         static unsigned char enableReverseFlag;
         static int tv_h;
         static int tv_w;
-        static AbyssEngine::AEMath::Vector vendor;
+        static String vendor;
         static unsigned char DrawFBO;
         static int vboSize;
         static unsigned char DEBUGKEY;
         static unsigned char TVEnable;
         static float farPlane;
-        static AbyssEngine::AEMath::Vector renderer;
+        static String renderer;
         static AbyssEngine::AEMath::Vector tv_modes;
         static unsigned char WireFrame;
         static float nearPlane;
