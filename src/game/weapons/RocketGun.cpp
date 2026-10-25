@@ -9,18 +9,6 @@
 #include "engine/render/PaintCanvas.h"
 
 
-void MatrixRotateVector(Vector &out, const Matrix &matrix, const Vector &vec);
-
-void MatrixGetDir(Vector &out, const Matrix &matrix);
-
-void VectorCross(Vector &out, const Vector &a, const Vector &b);
-
-void VectorNormalize(Vector &out, const Vector &in);
-
-void VectorRotateToTarget(Vector &out, const Vector &in);
-
-void VectorScale(Vector &out, const Vector &in, float scale);
-
 namespace AbyssEngine {
     namespace AEMath {
         Vector operator+(const Vector &a, const Vector &b);
@@ -227,16 +215,16 @@ have_enemy:
         Vector *muzzleVelocities = (Vector *) g->velocities;
 
         toTarget = enemyPos - muzzlePositions[index];
-        VectorRotateToTarget(rotated, toTarget);
+        rotated = AbyssEngine::AEMath::VectorNormalize(toTarget);
 
         Vector &steer = *(Vector *) &this->steerX;
         steer = rotated;
 
-        VectorRotateToTarget(rotated, muzzleVelocities[index]);
+        rotated = AbyssEngine::AEMath::VectorNormalize(muzzleVelocities[index]);
         steer -= rotated;
         steer /= (this->turnRate * 20.0f);
         rotated += steer;
-        VectorRotateToTarget(toTarget, rotated);
+        toTarget = AbyssEngine::AEMath::VectorNormalize(rotated);
         muzzleVelocities[index] = toTarget;
         muzzleVelocities[index] *= g->field_0x50;
     }
@@ -250,7 +238,6 @@ static const float kWave = 0.003f;
 
 void RocketGun::update(int elapsed) {
     Vector norm;
-    Matrix matrix;
     Vector axis;
     Vector dir;
     Vector gunVec;
@@ -266,7 +253,7 @@ void RocketGun::update(int elapsed) {
         gunVec.y = gun->offset.y;
         gunVec.z = gun->offset.z + kMuzzleZAdd;
         const Matrix &playerMatrix = *reinterpret_cast<const Matrix *>(player->transform);
-        MatrixRotateVector(axis, playerMatrix, gunVec);
+        axis = AbyssEngine::AEMath::MatrixRotateVector(playerMatrix, gunVec);
         basePos += axis;
         this->geometry->setPosition(basePos);
 
@@ -275,7 +262,7 @@ void RocketGun::update(int elapsed) {
         scaling = scaling / kScaleMul;
         this->geometry->setScaling(scaling);
 
-        MatrixGetDir(axis, playerMatrix);
+        axis = AbyssEngine::AEMath::MatrixGetDir(playerMatrix);
         zero.x = 0.0f;
         zero.y = 1.0f;
         zero.z = 0.0f;
@@ -293,7 +280,8 @@ void RocketGun::update(int elapsed) {
         void *local = PaintCanvas::gCanvas->TransformGetLocal(this->transform);
         int shot = gun->fireIndex;
         Vector *positions = (Vector *) gun->positions;
-        MatrixSetTranslation(matrix, positions[shot].x, positions[shot].y, positions[shot].z);
+        Matrix matrix = AbyssEngine::AEMath::MatrixSetTranslation(
+            *static_cast<Matrix *>(local), positions[shot].x, positions[shot].y, positions[shot].z);
 
         Vector *velocities = (Vector *) gun->velocities;
         gunVec = velocities[shot];
@@ -303,13 +291,13 @@ void RocketGun::update(int elapsed) {
         axis.x = 0.0f;
         axis.y = 1.0f;
         axis.z = 0.0f;
-        VectorCross(dir, axis, gunVec);
-        VectorNormalize(norm, dir);
-        VectorRotateToTarget(dir, norm);
-        VectorCross(norm, gunVec, dir);
-        VectorRotateToTarget(axis, norm);
-        VectorNormalize(norm, axis);
-        VectorRotateToTarget(axis, norm);
+        dir = AbyssEngine::AEMath::VectorCross(axis, gunVec);
+        norm = AbyssEngine::AEMath::VectorNormalize(dir);
+        dir = norm;
+        norm = AbyssEngine::AEMath::VectorCross(gunVec, dir);
+        axis = norm;
+        norm = AbyssEngine::AEMath::VectorNormalize(axis);
+        axis = norm;
 
         matrix.m[0] = dir.x;
         matrix.m[1] = axis.x;
@@ -421,13 +409,13 @@ void RocketGun::update(int elapsed) {
                     float c = AbyssEngine::AEMath::Cosf(waveIn * kWave);
                     Vector *up = (Vector *) gun->upVectors;
                     Vector cross;
-                    VectorCross(gunVec, gunVelocities[i], up[i]);
-                    VectorNormalize(cross, gunVec);
-                    VectorScale(axis, cross, s + s);
-                    VectorScale(gunVec, axis, dt);
+                    gunVec = AbyssEngine::AEMath::VectorCross(gunVelocities[i], up[i]);
+                    cross = AbyssEngine::AEMath::VectorNormalize(gunVec);
+                    axis = AbyssEngine::AEMath::operator*(cross, s + s);
+                    gunVec = AbyssEngine::AEMath::operator*(axis, dt);
                     ((Vector *) gun->positions)[i] += gunVec;
-                    VectorScale(axis, up[i], c + c);
-                    VectorScale(gunVec, axis, dt);
+                    axis = AbyssEngine::AEMath::operator*(up[i], c + c);
+                    gunVec = AbyssEngine::AEMath::operator*(axis, dt);
                     ((Vector *) gun->positions)[i] += gunVec;
                 }
             } else {
@@ -451,7 +439,7 @@ void RocketGun::update(int elapsed) {
                 zero = advanced;
                 Matrix &trail = (*this->trailMatrices)[i];
                 MatrixSetTranslation(trail, zero.x, zero.y, zero.z);
-                VectorNormalize(gunVec, gunVelocities[i]);
+                gunVec = AbyssEngine::AEMath::VectorNormalize(gunVelocities[i]);
                 trail.m[2] = gunVec.x;
                 trail.m[6] = gunVec.y;
                 trail.m[10] = gunVec.z;

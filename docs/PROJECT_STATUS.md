@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (StarSystem render matrix ABI;
+Last reviewed: 2026-10-26 (RocketGun math calls;
 earlier subsystem snapshots retain their dates)
+
+`RocketGun::update` and `seekEnemy` now use their ARM-confirmed
+`AEMath` vector and matrix calls. The previous shared placeholder
+`VectorRotateToTarget` hid normalization in `seekEnemy` but ordinary
+vector assignment in `update`; both are restored at their call sites.
+Rocket launch also sets translation on the actual transform matrix,
+matching the original ARM data flow.
+Focused source-shape/strict fuzzy changes **91.8%/26.1% →
+89.3%/19.7%** for `update` and **87.8%/47.7% → 84.1%/41.5%** for
+`seekEnemy`; neither is exact, and the 17-function unit has no exact
+symbol losses. Native `gof2`, AArch64 static and **209/209** ARMv7
+units build. Strict AArch64 whole-archive unresolved symbols fall
+**574 → 568**. Live rocket behavior is unverified. See
+[the rocket math call evidence](ROCKET_GUN_MATH_CALL_ABI_ARM64_2026-10-26.md).
+Full ARM corpus remains **4,323/4,524** original functions covered,
+**4,743** comparisons, **94.71%** mean source-shape, **84.21%** strict
+fuzzy, **2,601 linked-exact** and **1,083 byte-exact**; neither exact
+symbol set lost a member.
 
 `StarSystem::render` now calls the four matrix helpers confirmed by
 Android ARM in `AbyssEngine::AEMath`, including the original return
