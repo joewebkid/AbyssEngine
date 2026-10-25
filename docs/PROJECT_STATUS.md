@@ -1,7 +1,26 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (PaintCanvas line drawing;
+Last reviewed: 2026-10-26 (Explosion math calls;
 earlier subsystem snapshots retain their dates)
+
+`Explosion` now calls the ARM-confirmed `AEMath` matrix and vector
+functions in its start, camera update, and render paths. The matrix
+mutations and return objects follow the original ABI; the type 8–10
+rotation now modifies the camera matrix instead of discarding the
+product. Focused
+`start(Vector,Vector)` source-shape/strict fuzzy changes
+**91.7%/59.1% → 93.9%/59.0%**; `start(Matrix)` changes
+**93.0%/46.3% → 93.4%/45.9%**; `render` changes **92.5%/54.9% →
+94.7%/62.6%**. None is exact. Native, AArch64 static, and **209/209**
+ARMv7 units build. Strict AArch64 whole-archive unresolved names fall
+**555 → 548**, with no new names. Live explosion behavior is
+unverified. See [the Explosion ABI evidence](EXPLOSION_MATRIX_CALLS_ARM64_2026-10-26.md).
+The full ARM corpus compares **4,743** pairs, covers **4,323/4,524**
+original functions, and remains at **94.71%** source-shape, **84.21%**
+strict fuzzy, **2,601 linked-exact**, and **1,083 byte-exact**;
+both exact-symbol sets are unchanged. Next, inspect the remaining
+`BeamGun::update` direction placeholder and other callers of the
+no-op `AEMath::MatrixMultiply` helper against original ARM.
 
 `PaintCanvas::DrawLine` and `DrawRectangle` now use the ARM-confirmed
 GL and Engine calls, including the real `Engine::AEClientState` target
