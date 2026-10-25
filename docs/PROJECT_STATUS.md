@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (arm64 link-closure follow-up;
+Last reviewed: 2026-10-25 (WantedWindow draw recovery;
 earlier subsystem snapshots retain their dates)
+
+`WantedWindow::draw` now uses ARM-observed `Globals` instead of four
+null-initialized pointer slots and restores the scroll threshold,
+inactive color, marker spacing, distinct localized panel headings,
+detail/reward lines, and the correct `Layout::drawBox` overload.
+Its focused source-shape/strict fuzzy changes from **1.3%/0.6%** to
+**85.0%/29.0%**, nonexact. Native, arm64 static, and **209/209** ARMv7
+units build; source-extracted `-O0/-O2` UI checks and **95** verifier
+tests (one skip) pass. The full corpus compares **4,323/4,524**
+original functions over **4,743** pairs, mean source-shape/strict fuzzy
+**94.71%/84.21%**, **2,600 linked-exact** and **1,082 byte-exact**;
+neither exact set lost a function. Live rendering is not yet proven. See
+[the draw evidence](WANTED_DRAW_ARM_2026-10-25.md).
 
 The arm64-specific source list now omits two duplicate game-side math
 implementations. The AArch64 static archive builds from **207** unique

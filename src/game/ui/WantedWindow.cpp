@@ -282,20 +282,15 @@ int WantedWindow::OnTouchEnd(int x, int y) {
     return 0;
 }
 
-static Layout **g_WantedWindow_draw_layout = nullptr;
-static unsigned int *g_WantedWindow_draw_font = nullptr;
-static GameText **g_WantedWindow_draw_text = nullptr;
-static ImageFactory **g_WantedWindow_draw_factory = nullptr;
-
 void WantedWindow::draw() {
     if (this->showingMap != 0) {
         this->starMap->draw();
         return;
     }
 
-    Layout *layout = *g_WantedWindow_draw_layout;
-    PaintCanvas *canvas = PaintCanvas::gCanvas;
-    unsigned int font = *g_WantedWindow_draw_font;
+    Layout *layout = Globals::layout;
+    PaintCanvas *canvas = Globals::Canvas;
+    unsigned int font = Globals::font;
 
     canvas->EnableClip(this->windowX,
                        this->windowY + layout->field_0xc +
@@ -308,7 +303,7 @@ void WantedWindow::draw() {
     float relHeight = this->getRelativeScrollHeight();
     int barSize = (int) (relHeight * visf);
     int barStart = (int) (relStart * visf);
-    if (barSize >= 1 || barStart >= 0) {
+    if (barSize >= 1 || barStart >= 1) {
         layout->drawScrollBar(((this->windowX + (this->windowWidth >> 1)) -
                                layout->field_0x2c) - layout->field_0x48,
                               this->windowY + layout->field_0x2c +
@@ -327,10 +322,10 @@ void WantedWindow::draw() {
         layout->drawBox(style, layout->buttonInsetX + this->windowX, y,
                         (this->windowWidth >> 1) -
                         (inset + layout->buttonInsetX + layout->field_0x2c),
-                        layout->field_0x70, boxLabel, 0);
+                        layout->field_0x70, boxLabel);
 
         Wanted *wanted = (*this->wantedList)[i];
-        canvas->SetColor(wanted->isActive() ? 0xffffffffu : 0xff808080u);
+        canvas->SetColor(wanted->isActive() ? 0xffffffffu : 0x777777ffu);
         String name = wanted->getName();
         int textY = y + layout->field_0x70 / 2 - canvas->GetTextHeight(font) / 2;
         canvas->DrawString(font, name,
@@ -338,11 +333,10 @@ void WantedWindow::draw() {
                            layout->field_0x44,
                            textY, false);
 
-        int campaign = Status::gStatus->getCurrentCampaignMission();
+        int campaign = Globals::status->getCurrentCampaignMission();
         if ((i == 0 && campaign == 0x80) ||
-            (i == 1 && Status::gStatus->getCurrentCampaignMission() == 0x82)) {
-            String marked = wanted->getName();
-            marked += String(" *", false);
+            (i == 1 && Globals::status->getCurrentCampaignMission() == 0x82)) {
+            String marked = wanted->getName() + String(" ", false);
             int textW = canvas->GetTextWidth(font, marked);
             canvas->DrawImage2D(this->bgImage,
                                 this->windowX + layout->buttonInsetX +
@@ -355,20 +349,18 @@ void WantedWindow::draw() {
 
     canvas->DisableClip();
     canvas->SetColor(0xffffffffu);
-    String header;
-    header.copy((*g_WantedWindow_draw_text)->getText(0xc93), false);
+    String header(*Globals::gameText->getText(3219), false);
     layout->drawHeader(header);
 
     for (uint32_t i = 0; i < this->buttons->size(); ++i) {
         (*this->buttons)[i]->draw();
     }
 
-    String leftHdr;
-    leftHdr.copy((*g_WantedWindow_draw_text)->getText(0xc95), false);
+    String leftHdr(*Globals::gameText->getText(3221), false);
     layout->drawBox(1, layout->buttonInsetX + this->windowX,
                     this->windowY + layout->field_0xc + layout->field_0x20,
                     (this->windowWidth >> 1) - (layout->field_0x2c + layout->buttonInsetX),
-                    layout->field_0x5c, leftHdr, 0);
+                    layout->field_0x5c, leftHdr);
 
     String leftBody("", false);
     layout->drawBox(5, layout->buttonInsetX + this->windowX,
@@ -380,14 +372,13 @@ void WantedWindow::draw() {
                        layout->field_0x5c + layout->field_0x2c * 2)) -
                      layout->field_0x10) -
                     layout->field_0x24,
-                    leftBody, 0);
+                    leftBody);
 
-    String rightHdr;
-    rightHdr.copy((*g_WantedWindow_draw_text)->getText(0xc95), false);
+    String rightHdr(*Globals::gameText->getText(3222), false);
     layout->drawBox(1, this->windowX + (this->windowWidth >> 1) + layout->field_0x2c,
                     this->windowY + layout->field_0xc + layout->field_0x20,
                     ((this->windowWidth >> 1) - layout->field_0x2c) - layout->buttonInsetX,
-                    layout->field_0x5c, rightHdr, 0);
+                    layout->field_0x5c, rightHdr);
 
     String rightBody("", false);
     layout->drawBox(5, this->windowX + (this->windowWidth >> 1) + layout->field_0x2c,
@@ -399,22 +390,22 @@ void WantedWindow::draw() {
                        layout->field_0x20 + layout->field_0x5c)) -
                      layout->field_0x10) -
                     layout->field_0x24,
-                    rightBody, 0);
+                    rightBody);
 
     if (this->imageParts != nullptr) {
         int charX = this->windowX + (this->windowWidth >> 1) + layout->field_0x2c;
         int charY = layout->field_0x5c + this->windowY + layout->field_0x2c +
                     layout->field_0xc + layout->field_0x20;
-        (*g_WantedWindow_draw_factory)->drawChar(this->imageParts, charX, charY, false);
+        static_cast<ImageFactory *>(Globals::imageFactory)->drawChar(this->imageParts, charX, charY, false);
         int textX = layout->field_0x2d4 + charX + layout->field_0x2c;
         canvas->DrawString(font, this->nameText, textX, charY, false);
 
-        String fromLine = String("from: ", false) +
-                          *(*g_WantedWindow_draw_text)->getText(0xc93) + this->fromText;
+        String fromLine = *Globals::gameText->getText(3226) +
+                          String(" ", false) + this->detailText;
         canvas->DrawString(font, fromLine, textX, charY + layout->field_0x4 * 2, false);
 
-        String toLine = String("to: ", false) +
-                        *(*g_WantedWindow_draw_text)->getText(0xc93) + this->toText;
+        String toLine = *Globals::gameText->getText(3225) +
+                        String(" ", false) + this->rewardText;
         canvas->DrawString(font, toLine, textX, charY + layout->field_0x4 * 3, false);
 
         this->scrollWindow->draw();
