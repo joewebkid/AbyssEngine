@@ -36,14 +36,6 @@ static inline void *flat_data(void *array) {
     return static_cast<Array<void *> *>(array)->data_;
 }
 
-void MatrixGetPosition(Vector *out, void *matrix);
-
-void MatrixGetUp(Vector *out, const Matrix *matrix);
-
-void MatrixGetLookAt(Matrix *out, const Vector *from, const Vector *to, const Vector *up);
-
-void MatrixSetScaling(Matrix *matrix, float x, float y, float z);
-
 void StarSystem::switchSunForSupernovaExpansion() {
     AEGeometry *sun = (*this->planetsArray)[0];
     sun->setScaling(Vector{1.373291015625f, 1.373291015625f, 1.373291015625f});
@@ -690,7 +682,7 @@ void StarSystem::render() {
     PaintCanvas *canvas = PaintCanvas::gCanvas;
     unsigned current = canvas->CameraGetCurrent();
     void *local = canvas->CameraGetLocal(current);
-    MatrixGetPosition(&cameraPos, local);
+    cameraPos = AbyssEngine::AEMath::MatrixGetPosition(*static_cast<const Matrix *>(local));
 
     uint32_t count = this->planetsArray->size();
     AEGeometry **geoms = this->planetsArray->data();
@@ -702,13 +694,13 @@ void StarSystem::render() {
                 savedCamera = *(const Matrix *) local2;
                 tempVec = (*this->positionsArray)[0] + cameraPos;
                 if (this->supernovaSystem == 0) {
-                    MatrixGetUp(&up, &savedCamera);
+                    up = AbyssEngine::AEMath::MatrixGetUp(savedCamera);
                 } else {
                     up.x = 1.0f;
                     up.y = 0.0f;
                     up.z = 0.0f;
                 }
-                MatrixGetLookAt(&lookAt, &tempVec, &cameraPos, &up);
+                lookAt = AbyssEngine::AEMath::MatrixGetLookAt(tempVec, cameraPos, up);
                 savedCamera = lookAt;
                 geoms[0]->setRotation(0.0f, 0.0f, 0.0f);
                 tempVec = geoms[0]->getScaling();
@@ -724,7 +716,7 @@ void StarSystem::render() {
                     sx += grow;
                     sy += grow;
                 }
-                MatrixSetScaling(&lookAt, sx, sy, sz);
+                AbyssEngine::AEMath::MatrixSetScaling(lookAt, sx, sy, sz);
                 geoms[0]->setMatrix(lookAt);
 
                 if (this->supernovaSystem != 0) {
@@ -733,20 +725,20 @@ void StarSystem::render() {
                     void *local3 = canvas->CameraGetLocal(current3);
                     savedCamera = *(const Matrix *) local3;
                     up = (*this->positionsArray)[0] + cameraPos;
-                    MatrixGetUp(&scaleBytes, &savedCamera);
-                    MatrixGetLookAt(&lookAt, &up, &cameraPos, &scaleBytes);
+                    scaleBytes = AbyssEngine::AEMath::MatrixGetUp(savedCamera);
+                    lookAt = AbyssEngine::AEMath::MatrixGetLookAt(up, cameraPos, scaleBytes);
                     savedCamera = lookAt;
-                    MatrixSetScaling(&lookAt, grow + tempVec.x,
-                                     tempVec.y,
-                                     grow + tempVec.z);
+                    AbyssEngine::AEMath::MatrixSetScaling(lookAt, grow + tempVec.x,
+                                                           tempVec.y,
+                                                           grow + tempVec.z);
                     this->sunStreak->setMatrix(lookAt);
                     renderSunStreak();
                 }
 
-                MatrixSetScaling(&lookAt,
-                                 grow * (grow + tempVec.x + 1.0f),
-                                 tempVec.y,
-                                 tempVec.y / ((1.0f - grow) * 6.0f + 6.0f));
+                AbyssEngine::AEMath::MatrixSetScaling(lookAt,
+                                                       grow * (grow + tempVec.x + 1.0f),
+                                                       tempVec.y,
+                                                       tempVec.y / ((1.0f - grow) * 6.0f + 6.0f));
                 this->sunStreak->setMatrix(lookAt);
             }
 
@@ -784,8 +776,8 @@ void StarSystem::render() {
         if ((int) i == this->planetRingIndex) {
             canvas->SetTexture(this->planetRingTexture, (unsigned) -1);
             canvas->SetBlendMode(AbyssEngine::BlendMode_1);
-            savedCamera = geoms[i]->getMatrix();
-            MatrixSetScaling(&lookAt, 4.0f, 4.0f, 4.0f);
+            lookAt = geoms[i]->getMatrix();
+            AbyssEngine::AEMath::MatrixSetScaling(lookAt, 4.0f, 4.0f, 4.0f);
             this->planetRing->setMatrix(lookAt);
             this->planetRing->render();
         }

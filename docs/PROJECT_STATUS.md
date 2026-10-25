@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (Engine projection matrix calls;
+Last reviewed: 2026-10-26 (StarSystem render matrix ABI;
 earlier subsystem snapshots retain their dates)
+
+`StarSystem::render` now calls the four matrix helpers confirmed by
+Android ARM in `AbyssEngine::AEMath`, including the original return
+structure ABI for `MatrixSetScaling`. Its planet-ring branch also scales
+the planet matrix, matching the original local data flow. Focused
+source-shape/strict fuzzy changes **87.9%/19.6% → 87.3%/19.4%**;
+the function remains nonexact. The 36-function unit keeps every
+linked-exact and byte-exact match. Native `gof2`, the AArch64 static
+archive and **209/209** ARMv7
+units build. Strict AArch64 whole-archive link gaps fall **576 → 574**;
+live rendering is unverified. See
+[the render matrix ABI evidence](STAR_SYSTEM_RENDER_MATRIX_ABI_ARM64_2026-10-25.md).
+Full ARM corpus remains **4,323/4,524** original functions covered,
+**4,743** comparisons, **94.71%** mean source-shape, **84.21%** strict
+fuzzy, **2,601 linked-exact** and **1,083 byte-exact**; neither exact
+symbol set lost a member.
 
 `Engine::SetOrthoMatrix` and `SetWorldViewMatrix` now call the
 ARM-confirmed `AbyssEngine::esMatrixMultiply` with the original
