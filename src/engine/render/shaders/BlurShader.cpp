@@ -6,13 +6,6 @@
 #include "engine/core/ApplicationManager.h"
 #include <GLES2/gl2.h>
 
-unsigned int Engine_GetDisplayWidth(::Engine * engine);
-unsigned int Engine_GetDisplayHeight(::Engine * engine);
-
-void Engine_DrawQuad(::Engine *engine, int x, int y, int width, int height);
-
-void Engine_SetWorldViewMatrix(::Engine *engine, const uint32_t *matrix);
-
 namespace AbyssEngine {
     int BlurShader::ShaderIndex;
 
@@ -54,13 +47,13 @@ namespace AbyssEngine {
         matrix[10] = 1.0f;
         matrix[15] = 1.0f;
 
-        engine->projMatrix[0] = 2.0f / (float) Engine_GetDisplayWidth(engine);
-        engine->projMatrix[5] = -(2.0f / (float) Engine_GetDisplayHeight(engine));
+        engine->projMatrix[0] = 2.0f / (float) engine->GetDisplayWidth();
+        engine->projMatrix[5] = -(2.0f / (float) engine->GetDisplayHeight());
         engine->projMatrix[10] = -1.0f;
         engine->projMatrix[12] = -1.0f;
         engine->projMatrix[13] = 1.0f;
         engine->projMatrix[15] = 1.0f;
-        Engine_SetWorldViewMatrix(engine, (const uint32_t *) matrix);
+        engine->SetWorldViewMatrix(*reinterpret_cast<const Matrix *>(matrix));
 
         glDisable(0xb71);
         glDepthMask(0);
@@ -74,11 +67,11 @@ namespace AbyssEngine {
             int width;
             int height;
             if (engine->appManager->paintCanvas->gameOrientation == 2) {
-                width = Engine_GetDisplayWidth(engine);
-                height = Engine_GetDisplayHeight(engine);
+                width = engine->GetDisplayWidth();
+                height = engine->GetDisplayHeight();
             } else {
-                width = Engine_GetDisplayHeight(engine);
-                height = Engine_GetDisplayWidth(engine);
+                width = engine->GetDisplayHeight();
+                height = engine->GetDisplayWidth();
             }
             glViewport(0, 0, width, height);
         } else {
@@ -102,11 +95,11 @@ namespace AbyssEngine {
             float width;
             int other;
             if (engine->appManager->paintCanvas->gameOrientation == 2) {
-                width = (float) Engine_GetDisplayWidth(engine);
-                other = Engine_GetDisplayHeight(engine);
+                width = (float) engine->GetDisplayWidth();
+                other = engine->GetDisplayHeight();
             } else {
-                width = (float) Engine_GetDisplayHeight(engine);
-                other = Engine_GetDisplayWidth(engine);
+                width = (float) engine->GetDisplayHeight();
+                other = engine->GetDisplayWidth();
             }
             glUniform2f(texelLocation, 1.0f / width, 1.0f / (float) other);
         }
@@ -136,7 +129,7 @@ namespace AbyssEngine {
         }
 
         glClear(0x4000);
-        Engine_DrawQuad(engine, 0, 0, Engine_GetDisplayWidth(engine), Engine_GetDisplayHeight(engine));
+        engine->DrawQuad(0, 0, engine->GetDisplayWidth(), engine->GetDisplayHeight());
         if (position >= 0) {
             glDisableVertexAttribArray(position);
         }
@@ -167,11 +160,11 @@ namespace AbyssEngine {
             float width;
             float height;
             if (engine->appManager->paintCanvas->gameOrientation == 2) {
-                width = (float) Engine_GetDisplayWidth(engine);
-                height = (float) Engine_GetDisplayHeight(engine);
+                width = (float) engine->GetDisplayWidth();
+                height = (float) engine->GetDisplayHeight();
             } else {
-                width = (float) Engine_GetDisplayHeight(engine);
-                height = (float) Engine_GetDisplayWidth(engine);
+                width = (float) engine->GetDisplayHeight();
+                height = (float) engine->GetDisplayWidth();
             }
             glUniform2f(texelLocation, 1.0f / width, 1.0f / height);
         }

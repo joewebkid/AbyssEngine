@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (sprite-system MeshCreate call;
+Last reviewed: 2026-10-26 (postprocess Engine call targets;
 earlier subsystem snapshots retain their dates)
+
+Five postprocess shaders now call the ARM-confirmed `Engine` display,
+matrix, quad and FBO methods directly at 95 call sites, removing eleven
+undefined wrapper names. Native, AArch64 static and **209/209** ARMv7
+units build; strict AArch64 whole-archive unresolved names fall
+**543 → 532** without new names. Focused shader metrics are unchanged.
+The full ARM corpus compares **4,323/4,524** originals over **4,743**
+pairs with zero skips; mean source-shape/strict fuzzy is
+**94.72%/84.21%**, with **2,603 linked-exact** and **1,083 byte-exact**
+and zero exact-set losses. Live postprocessing is unverified. See
+[the shader call evidence](POSTPROCESS_ENGINE_CALLS_ARM64_2026-10-26.md).
 
 `SpriteSystemCreate` now calls the ARM-confirmed `MeshCreate` signature
 with a typed mesh output slot. This removes an undefined overload from

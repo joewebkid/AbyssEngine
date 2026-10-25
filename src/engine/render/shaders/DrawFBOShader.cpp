@@ -7,17 +7,6 @@
 #include <GLES2/gl2.h>
 #include <arm_neon.h>
 
-unsigned int Engine_GetDisplayWidth(::Engine * engine);
-unsigned int Engine_GetDisplayHeight(::Engine * engine);
-
-void Engine_DrawQuad(::Engine *engine, int x, int y, int width, int height);
-
-void Engine_SetWorldViewMatrix(::Engine *engine, const uint32_t *matrix);
-
-int Engine_IsPostEffectActivated(::Engine * engine);
-void Engine_ActivateRender2FracFBO(::Engine * engine);
-void Engine_DeactivateRender2FracFBO(::Engine * engine);
-
 namespace AbyssEngine {
     int DrawFBOShader::ShaderIndex;
 
@@ -72,8 +61,8 @@ namespace AbyssEngine {
         vst1q_u32((uint32_t *) &projMatrix[0], zero);
 
         float two = 2.0f;
-        projMatrix[0] = two / (float) Engine_GetDisplayWidth(engine);
-        unsigned int height = Engine_GetDisplayHeight(engine);
+        projMatrix[0] = two / (float) engine->GetDisplayWidth();
+        unsigned int height = engine->GetDisplayHeight();
 
         uint64x2_t tail = {0x000000003f800000ULL, 0x3f8000003f800000ULL};
 
@@ -92,7 +81,7 @@ namespace AbyssEngine {
         matrix[5] = one;
         matrix[14] = one;
 
-        Engine_SetWorldViewMatrix(engine, matrix);
+        engine->SetWorldViewMatrix(*reinterpret_cast<const Matrix *>(matrix));
         glDisable(0xb71);
         glDepthMask(0);
         glDisable(0xbe2);
@@ -100,20 +89,20 @@ namespace AbyssEngine {
         glActiveTexture(0x84c0);
         fbo->Activate();
 
-        if (Engine_IsPostEffectActivated(engine) == 0) {
+        if (engine->IsPostEffectActivated() == 0) {
             glBindFramebuffer(0x8d40, engine->field_0x40c);
             unsigned int width;
             unsigned int viewportHeight;
             if (engine->appManager->paintCanvas->gameOrientation == 2) {
-                width = Engine_GetDisplayWidth(engine);
-                viewportHeight = Engine_GetDisplayHeight(engine);
+                width = engine->GetDisplayWidth();
+                viewportHeight = engine->GetDisplayHeight();
             } else {
-                width = Engine_GetDisplayHeight(engine);
-                viewportHeight = Engine_GetDisplayWidth(engine);
+                width = engine->GetDisplayHeight();
+                viewportHeight = engine->GetDisplayWidth();
             }
             glViewport(0, 0, width, viewportHeight);
         } else {
-            Engine_ActivateRender2FracFBO(engine);
+            engine->ActivateRender2FracFBO();
         }
 
         glEnableVertexAttribArray(this->positionLoc);
@@ -128,17 +117,17 @@ namespace AbyssEngine {
         glClear(0x4000);
         glClear(0x100);
 
-        int drawWidth = Engine_GetDisplayWidth(engine);
-        int drawHeight = Engine_GetDisplayHeight(engine);
-        Engine_DrawQuad(engine, 0, 0, drawWidth, drawHeight);
+        int drawWidth = engine->GetDisplayWidth();
+        int drawHeight = engine->GetDisplayHeight();
+        engine->DrawQuad(0, 0, drawWidth, drawHeight);
 
         glDisableVertexAttribArray(this->positionLoc);
         glDisableVertexAttribArray(this->texCoordLoc);
         glEnable(0xb71);
         glClear(0x100);
 
-        if (Engine_IsPostEffectActivated(engine) != 0) {
-            Engine_DeactivateRender2FracFBO(engine);
+        if (engine->IsPostEffectActivated() != 0) {
+            engine->DeactivateRender2FracFBO();
         }
         glActiveTexture(0x84c0);
     }

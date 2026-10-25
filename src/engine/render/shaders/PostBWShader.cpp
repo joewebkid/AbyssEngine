@@ -7,15 +7,6 @@
 #include <GLES2/gl2.h>
 #include <arm_neon.h>
 
-unsigned int AbyssEngine_Engine_GetDisplayWidth(::Engine * engine);
-unsigned int AbyssEngine_Engine_GetDisplayHeight(::Engine * engine);
-
-void AbyssEngine_Engine_SetWorldViewMatrix(::Engine *engine,
-                                           const uint32_t *matrix);
-
-void AbyssEngine_Engine_DrawQuad(::Engine *engine, int x, int y, int width,
-                                 int height);
-
 namespace AbyssEngine {
     int PostBWShader::ShaderIndex;
 
@@ -71,8 +62,8 @@ namespace AbyssEngine {
         vst1q_u32((uint32_t *) &engine->projMatrix[0], zero);
         engine->field_0x3e4 = this->program;
 
-        engine->projMatrix[0] = 2.0f / (float) AbyssEngine_Engine_GetDisplayWidth(engine);
-        engine->projMatrix[5] = -(2.0f / (float) AbyssEngine_Engine_GetDisplayHeight(engine));
+        engine->projMatrix[0] = 2.0f / (float) engine->GetDisplayWidth();
+        engine->projMatrix[5] = -(2.0f / (float) engine->GetDisplayHeight());
         engine->projMatrix[10] = -1.0f;
         engine->projMatrix[12] = -1.0f;
         engine->projMatrix[13] = 1.0f;
@@ -82,7 +73,7 @@ namespace AbyssEngine {
         matrix[0] = 1.0f;
         matrix[5] = 1.0f;
         matrix[14] = 1.0f;
-        AbyssEngine_Engine_SetWorldViewMatrix(engine, (const uint32_t *) matrix);
+        engine->SetWorldViewMatrix(*reinterpret_cast<const Matrix *>(matrix));
 
         glDisable(0xb71);
         glDepthMask(0);
@@ -96,11 +87,11 @@ namespace AbyssEngine {
         int width;
         int height;
         if (engine->appManager->paintCanvas->gameOrientation == 2) {
-            width = AbyssEngine_Engine_GetDisplayWidth(engine);
-            height = AbyssEngine_Engine_GetDisplayHeight(engine);
+            width = engine->GetDisplayWidth();
+            height = engine->GetDisplayHeight();
         } else {
-            width = AbyssEngine_Engine_GetDisplayHeight(engine);
-            height = AbyssEngine_Engine_GetDisplayWidth(engine);
+            width = engine->GetDisplayHeight();
+            height = engine->GetDisplayWidth();
         }
         glViewport(0, 0, width, height);
 
@@ -113,8 +104,8 @@ namespace AbyssEngine {
                               engine->quadMesh->texCoords);
 
         glClear(0x4000);
-        AbyssEngine_Engine_DrawQuad(engine, 0, 0, AbyssEngine_Engine_GetDisplayWidth(engine),
-                                    AbyssEngine_Engine_GetDisplayHeight(engine));
+        engine->DrawQuad(0, 0, engine->GetDisplayWidth(),
+                         engine->GetDisplayHeight());
 
         glDisableVertexAttribArray(this->aPosition);
         glDisableVertexAttribArray(this->aTexCoord);
