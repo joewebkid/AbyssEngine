@@ -169,17 +169,6 @@ uint32_t WantedWindow::getWantedAtPosition(int x, int y) {
     return (uint32_t) idx;
 }
 
-static uint8_t *g_WantedWindow_end_fullscreen = nullptr;
-static uint8_t *g_WantedWindow_end_tablet = nullptr;
-static uint8_t *g_WantedWindow_end_small = nullptr;
-static int *g_WantedWindow_end_screen_w = nullptr;
-static int *g_WantedWindow_end_screen_h = nullptr;
-static int *g_WantedWindow_end_window_h = nullptr;
-static int *g_WantedWindow_end_window_w = nullptr;
-static Layout **g_WantedWindow_end_layout_a = nullptr;
-static Layout **g_WantedWindow_end_layout_b = nullptr;
-static GameText **g_WantedWindow_end_text = nullptr;
-
 int WantedWindow::OnTouchEnd(int x, int y) {
     if (this->showingMap != 0) {
         if (this->starMap->OnTouchEnd(x, y) == 0)
@@ -187,16 +176,16 @@ int WantedWindow::OnTouchEnd(int x, int y) {
         uint32_t h;
         uint32_t w;
         uint32_t halfW = 0;
-        if (*g_WantedWindow_end_fullscreen == 0) {
-            h = *g_WantedWindow_end_window_h;
-            w = *g_WantedWindow_end_window_w;
+        if (Globals::iPad == 0) {
+            h = Globals::h;
+            w = Globals::w;
             this->windowX = 0;
             this->windowY = 0;
         } else {
-            if (*g_WantedWindow_end_tablet == 0) {
+            if (Globals::iPadHD == 0) {
                 h = 1000;
                 w = 0x514;
-                if (*g_WantedWindow_end_small == 0) {
+                if (Globals::iPadLarge == 0) {
                     h = 500;
                     w = 0x28a;
                 }
@@ -206,8 +195,8 @@ int WantedWindow::OnTouchEnd(int x, int y) {
                 halfW = 0x1c9;
                 w = 0x392;
             }
-            this->windowX = (*g_WantedWindow_end_screen_w >> 1) - halfW;
-            this->windowY = (*g_WantedWindow_end_screen_h >> 1) - (h >> 1);
+            this->windowX = (Globals::w >> 1) - halfW;
+            this->windowY = (Globals::h >> 1) - (h >> 1);
         }
         this->windowWidth = w;
         this->windowHeight = h;
@@ -252,12 +241,12 @@ int WantedWindow::OnTouchEnd(int x, int y) {
     }
 
     if (openMap) {
-        ApplicationManager *app = ApplicationManager::gAppManager;
+        ApplicationManager *app = static_cast<ApplicationManager *>(Globals::appManager);
         ModStation *module = (ModStation *) app->GetApplicationModule(5);
         this->starMap = module->starMap;
         Wanted *wanted = (*this->wantedList)[this->selectedWanted];
         int lastSeen = wanted->getLastSeen();
-        Station *station = Galaxy::gGalaxy->getStation(lastSeen);
+        Station *station = static_cast<Galaxy *>(Globals::galaxy)->getStation(lastSeen);
         delete this->mission;
         this->mission = nullptr;
 
@@ -279,15 +268,14 @@ int WantedWindow::OnTouchEnd(int x, int y) {
         map->setStart(system, lastSeen);
         delete station;
         this->showingMap = 1;
-        (*g_WantedWindow_end_layout_a)->resetWindowDimensions();
+        Globals::layout->resetWindowDimensions();
     } else {
-        Layout *layout = *g_WantedWindow_end_layout_b;
+        Layout *layout = Globals::layout;
         if (layout->OnTouchEnd(x, y) != 0) {
             layout->resetWindowDimensions();
             return 1;
         } else if (layout->helpPressed() != 0) {
-            String help;
-            help.copy((*g_WantedWindow_end_text)->getText(0x27b), false);
+            String help(*Globals::gameText->getText(0x27b), false);
             layout->initHelpWindow(help);
         }
     }

@@ -79,3 +79,14 @@ and render through that environment; it does **not** execute the
 recovered C++ in this repository or prove individual `OpenRead` calls.
 The game's own startup copied FMOD files into its data directory and
 created `gof2_save_options`; no game-record save was created in this gate.
+
+## Second handset compatibility check (2026-10-25)
+
+The connected `25053RT47C` handset runs Android 16 with only
+`arm64-v8a` in `ro.product.cpu.abilist` and a `zygote64` runtime. The
+original APK has `lib/armeabi-v7a/` native libraries only. With the
+owner's approval, an install attempt returned
+`INSTALL_FAILED_NO_MATCHING_ABIS`. The package was not installed and
+the OBB was not copied. This is a device ABI limitation, not an archive
+loader or recovered-code test; live validation still requires a device
+or emulator that runs 32-bit ARM applications.

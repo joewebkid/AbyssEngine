@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (WantedWindow touch input;
+Last reviewed: 2026-10-25 (WantedWindow touch-end;
 earlier subsystem snapshots retain their dates)
+
+`WantedWindow::OnTouchEnd` now reads ARM-confirmed `Globals` state for
+screen-size selection, layout/help, application manager, and galaxy
+instead of ten null-initialized pointer slots or duplicate aliases. Its
+help string uses the original copy constructor. Focused source-shape/
+strict fuzzy rises from **82.6%/51.5%** to **93.7%/61.2%**, still
+nonexact. Native `gof2`, **209/209** ARM units, **95** verifier tests
+(one skip), and a source-extracted host check at `-O0/-O2` pass. The
+full corpus remains **4,323/4,524** over **4,741** pairs,
+**94.67%/84.20%** mean source-shape/strict fuzzy,
+**2,599 linked-exact** and **1,082 byte-exact**, with no exact-set
+change. Live selected-item validity and map ownership are not proven;
+`draw` and `init` remain the next WantedWindow priorities. See
+[the touch-end ARM evidence](WANTED_TOUCH_END_ARM_2026-10-25.md).
 
 `WantedWindow::OnTouchBegin` and `OnTouchMove` now use the ARM-confirmed
 `Globals::layout`, `h`, `w`, and `mouse_wheel` instead of six
