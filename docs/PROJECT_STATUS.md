@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (RocketGun math calls;
+Last reviewed: 2026-10-26 (PaintCanvas line drawing;
 earlier subsystem snapshots retain their dates)
+
+`PaintCanvas::DrawLine` and `DrawRectangle` now use the ARM-confirmed
+GL and Engine calls, including the real `Engine::AEClientState` target
+and shared shader flag. `Engine::InitGL` now initializes that same flag
+as the original does, so its shader branch is reachable. Focused
+source-shape/strict fuzzy changes **72.9%/44.2% → 89.0%/50.0%** for
+`DrawLine`, **88.3%/82.1% → 97.4%/77.7%** for `DrawRectangle`, and
+**74.6%/59.3% → 76.4%/57.1%** for `InitGL`; none is exact. Native,
+AArch64 static, and **209/209** ARMv7 units build. The strict AArch64
+whole-archive gap falls **568 → 555** unresolved names. Live GL and
+the Android game host remain unverified. See
+[the line drawing evidence](PAINT_CANVAS_LINE_DRAW_ARM64_2026-10-26.md).
+The full ARM corpus compares **4,743** pairs, covers **4,323/4,524**
+original functions, and remains at **94.71%** source-shape, **84.21%**
+strict fuzzy, **2,601 linked-exact**, and **1,083 byte-exact**;
+neither exact-symbol set lost or gained a member.
 
 `RocketGun::update` and `seekEnemy` now use their ARM-confirmed
 `AEMath` vector and matrix calls. The previous shared placeholder

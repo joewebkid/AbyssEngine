@@ -423,20 +423,6 @@ void paintcanvas_ext_fr_glenable(void *eng, unsigned int cap, bool on);
 
 void paintcanvas_ext_fr_meshdraw(void *eng, void *mesh);
 
-void paintcanvas_ext_dr_setwvm(void *self, void *m);
-
-void paintcanvas_ext_dr_glLineWidth(float w);
-
-void paintcanvas_ext_dr_glcap(void *eng, unsigned int cap, int on);
-
-void paintcanvas_ext_dr_glVertexPointer(int a, int b, int c, void *p);
-
-void paintcanvas_ext_dr_glColorMask(void *eng, unsigned int cap, int on);
-
-void paintcanvas_ext_dr_glDrawArrays(int a, int b, int c);
-
-void paintcanvas_ext_dr_drawline2d(void *eng, void *p, int n, bool b);
-
 void paintcanvas_ext_sprite_allsize(unsigned int, void *);
 
 void *paintcanvas_ext_str_text(const AbyssEngine::String *);
@@ -607,22 +593,6 @@ void paintcanvas_ext_gl_str_fromchar(void *out, const char *s, bool copy);
 void paintcanvas_ext_gl_str_assign(AbyssEngine::String *dst, void *src);
 
 void paintcanvas_ext_gl_str_dtor(void *s);
-
-void paintcanvas_ext_dl_glLineWidth(float w);
-
-void paintcanvas_ext_dl_glEnable(void *eng, bool on);
-
-float paintcanvas_ext_dl_signedtofloat(int v, unsigned int mode);
-
-void paintcanvas_ext_dl_setwvm(void *self, void *m);
-
-void paintcanvas_ext_dl_glVertexPointer(int a, int b, int c, void *p);
-
-void paintcanvas_ext_dl_glColorMask(void *eng, unsigned int cap, int on);
-
-void paintcanvas_ext_dl_glDrawArrays(int a, int b, int c);
-
-void paintcanvas_ext_dl_drawline2d(void *eng, void *p, bool b);
 
 int paintcanvas_ext_get_w(AbyssEngine::PaintCanvas *);
 
@@ -1024,11 +994,11 @@ void PaintCanvas::TransformCreate(unsigned int &out) {
 }
 
 
-static char g_dr_flag_79368_storage = 0;
-static char *const g_dr_flag_79368 = &g_dr_flag_79368_storage;
-
 void PaintCanvas::DrawRectangle(int x, int y, int w, int h) {
-    char abuf[60];
+    Matrix worldView(1.0f, 0.0f, 0.0f, 0.0f,
+                     0.0f, 1.0f, 0.0f, 0.0f,
+                     0.0f, 0.0f, 1.0f, 0.0f,
+                     1.0f, 1.0f, 1.0f);
 
     double dw = (double) w;
     double dh = (double) h;
@@ -1047,36 +1017,19 @@ void PaintCanvas::DrawRectangle(int x, int y, int w, int h) {
     v[6] = (float) (dx + 0.5);
     v[7] = bottom;
 
-    float *m = (float *) abuf;
-    m[0] = 1.0f;
-    m[1] = 0.0f;
-    m[2] = 0.0f;
-    m[3] = 0.0f;
-    m[4] = 0.0f;
-    m[5] = 1.0f;
-    m[6] = 0.0f;
-    m[7] = 0.0f;
-    m[8] = 0.0f;
-    m[9] = 0.0f;
-    m[10] = 1.0f;
-    m[11] = 0.0f;
-    m[12] = 1.0f;
-    m[13] = 1.0f;
-    m[14] = 1.0f;
-
-    paintcanvas_ext_dr_setwvm(this, abuf);
-    if (*g_dr_flag_79368 == 0) {
-        paintcanvas_ext_dr_glLineWidth(1.0f);
-        paintcanvas_ext_dr_glcap(this->engine, 0xde1, 0);
-        paintcanvas_ext_dr_glVertexPointer(2, 0x1406, 0, this->lineVerts);
-        paintcanvas_ext_dr_glColorMask(this->engine, 0x8074, 1);
-        paintcanvas_ext_dr_glColorMask(this->engine, 0x8078, 0);
-        paintcanvas_ext_dr_glColorMask(this->engine, 0x8075, 0);
-        paintcanvas_ext_dr_glColorMask(this->engine, 0x8076, 0);
-        paintcanvas_ext_dr_glDrawArrays(2, 0, 4);
-        paintcanvas_ext_dr_glcap(this->engine, 0xde1, 1);
+    this->SetWorldViewMatrix(worldView);
+    if (!Engine::enableShader) {
+        glLineWidth(1.0f);
+        this->engine->GlEnable(0xde1, false);
+        glVertexPointer(2, 0x1406, 0, this->lineVerts);
+        this->engine->AEClientState(0x8074, true);
+        this->engine->AEClientState(0x8078, false);
+        this->engine->AEClientState(0x8075, false);
+        this->engine->AEClientState(0x8076, false);
+        glDrawArrays(2, 0, 4);
+        this->engine->GlEnable(0xde1, true);
     } else {
-        paintcanvas_ext_dr_drawline2d(this->engine, this->lineVerts, 4, true);
+        this->engine->DrawLine2D(this->lineVerts, 4, true);
     }
 }
 
@@ -2302,48 +2255,41 @@ void PaintCanvas::GetLine(unsigned int font, AbyssEngine::String str, int maxWid
 }
 
 
-static char g_dl_flag_794ee_storage = 0;
-static char *const g_dl_flag_794ee = &g_dl_flag_794ee_storage;
-
 void PaintCanvas::DrawLine(int x0, int y0, int x1i, int y1i) {
-    char abuf[60];
+    Matrix worldView(1.0f, 0.0f, 0.0f, 0.0f,
+                     0.0f, 1.0f, 0.0f, 0.0f,
+                     0.0f, 0.0f, 1.0f, 0.0f,
+                     0.0f, 0.0f, 1.0f);
 
-    float x1 = paintcanvas_ext_dl_signedtofloat(x0 + 1, 0);
-    float y1 = paintcanvas_ext_dl_signedtofloat(y0, 0);
-    float x2 = paintcanvas_ext_dl_signedtofloat(x1i + 1, 0);
-    float y2 = paintcanvas_ext_dl_signedtofloat(y1i, 0);
-
-    float *m = (float *) abuf;
-    memset(m, 0, 60);
-    m[0] = 1.0f;
-    m[5] = 1.0f;
-    m[10] = 1.0f;
-    m[14] = 1.0f;
+    float x1 = static_cast<float>(x0 + 1);
+    float y1 = static_cast<float>(y0);
+    float x2 = static_cast<float>(x1i + 1);
+    float y2 = static_cast<float>(y1i);
 
     float *v = this->lineVerts;
 
-    if (*g_dl_flag_794ee == 0) {
-        paintcanvas_ext_dl_glLineWidth(1.0f);
-        paintcanvas_ext_dl_glEnable(this->engine, true);
+    if (!Engine::enableShader) {
+        glLineWidth(1.0f);
+        this->engine->GlEnable(0xde1, false);
         v[0] = x1;
         v[1] = y1;
         v[2] = x2;
         v[3] = y2;
-        paintcanvas_ext_dl_setwvm(this, abuf);
-        paintcanvas_ext_dl_glVertexPointer(2, 0x1406, 0, this->lineVerts);
-        paintcanvas_ext_dl_glColorMask(this->engine, 0x8074, 1);
-        paintcanvas_ext_dl_glColorMask(this->engine, 0x8078, 0);
-        paintcanvas_ext_dl_glColorMask(this->engine, 0x8075, 0);
-        paintcanvas_ext_dl_glColorMask(this->engine, 0x8076, 0);
-        paintcanvas_ext_dl_glDrawArrays(1, 0, 2);
-        paintcanvas_ext_dl_glEnable(this->engine, true);
+        this->SetWorldViewMatrix(worldView);
+        glVertexPointer(2, 0x1406, 0, this->lineVerts);
+        this->engine->AEClientState(0x8074, true);
+        this->engine->AEClientState(0x8078, false);
+        this->engine->AEClientState(0x8075, false);
+        this->engine->AEClientState(0x8076, false);
+        glDrawArrays(1, 0, 2);
+        this->engine->GlEnable(0xde1, true);
     } else {
-        paintcanvas_ext_dl_setwvm(this, abuf);
+        this->SetWorldViewMatrix(worldView);
         v[0] = x1;
         v[1] = y1;
         v[2] = x2;
         v[3] = y2;
-        paintcanvas_ext_dl_drawline2d(this->engine, this->lineVerts, true);
+        this->engine->DrawLine2D(this->lineVerts, 2, false);
     }
 }
 

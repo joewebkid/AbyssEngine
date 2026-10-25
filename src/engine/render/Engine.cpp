@@ -1046,6 +1046,7 @@ int Engine::InitGL(bool shaders, int width, int height) {
     this->vibrationSupported = 0;
     this->hasVibration = 0;
     g_Engine_useShaders = shaders;
+    enableShader = shaders;
     this->viewFramebuffer = 0;
 
     this->ResetLightParam();
