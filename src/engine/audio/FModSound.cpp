@@ -1,5 +1,6 @@
 #include "engine/audio/FModSound.h"
 #include "engine/core/GameText.h"
+#include "engine/file/AEFile.h"
 
 #include <cstring>
 
@@ -16,8 +17,6 @@ static inline void FMOD_EventSystem_unload(FMOD::EventSystem *system) { system->
 static inline void FMOD_EventSystem_release(FMOD::EventSystem *system) { system->release(); }
 
 int FMOD_EventSystem_freeEventData(FMOD::EventSystem *system, FMOD::Event *event, int waitUntilReady);
-
-char *AEFile_GetAppRootDir();
 
 FModSound *FMOD_Event_stop_p(FMOD::Event *event, int immediate);
 
@@ -148,7 +147,7 @@ FModSound::FModSound() {
     this->system = 0;
     this->music = 0;
     this->initialized = 0;
-    this->appRootDir = AEFile_GetAppRootDir();
+    this->appRootDir = const_cast<char *>(AEFile::GetAppRootDir());
     this->lowMemory = 1;
     for (int i = 0; i != 4; i++)
         this->categoryEnabled[i] = 1;

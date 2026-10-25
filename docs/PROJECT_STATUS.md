@@ -3,6 +3,17 @@
 Last reviewed: 2026-10-25 (WantedWindow draw recovery;
 earlier subsystem snapshots retain their dates)
 
+`FModSound` now gets its app-root path through the ARM-observed
+`AEFile::GetAppRootDir` call instead of an undefined helper. Both
+constructor aliases retain **100%** source-shape and strict fuzzy,
+with linked-exact unchanged; native, AArch64 static, and **209/209**
+ARMv7 units build. A strict AArch64 whole-archive link now exposes
+**582** unresolved symbols, down from 583. The shared library and
+audio runtime remain open. Full ARM corpus: **4,323/4,524** originals,
+**94.71%/84.21%** mean source-shape/strict fuzzy, **2,600**
+linked-exact and **1,082** byte-exact, with zero exact-set gains or
+losses. See [the constructor/link evidence](FMOD_APP_ROOT_ARM64_LINK_2026-10-25.md).
+
 The AArch64 JNI path setters now accept both JNI UTF pointer cases
 for APK, ZIP, and writable directories, and free replaced port-side
 paths. The ARMv7 original only copied when `isCopy` was true; that
