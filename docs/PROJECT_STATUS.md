@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (WantedWindow touch-end;
+Last reviewed: 2026-10-25 (WantedWindow initialization;
 earlier subsystem snapshots retain their dates)
+
+`WantedWindow` constructor, `init`, and `selectWanted` now read the
+ARM-confirmed `Globals` instead of null-initialized pointer slots or
+duplicate aliases. `init` also restores the original Wanted board/race
+filter: race zero after mission 127, other races from mission 162.
+Focused mean source-shape/strict fuzzy across the four constructor,
+`init`, and selection symbols improves from **73.9%/42.9%** to
+**90.1%/52.2%**; none is exact. Native `gof2`, **209/209** ARM units,
+**95** verifier tests (one skip), and source-extracted host checks at
+`-O0/-O2` pass. The full corpus compares **4,323/4,524** originals
+over **4,743** pairs, **94.69%/84.20%** mean source-shape/strict fuzzy,
+**2,600 linked-exact** and **1,082 byte-exact**: zero exact-set losses,
+one linked-exact gain. Full screen startup remains unverified;
+`selectWanted` display text and `draw` need further recovery. An
+Android 16, arm64-only handset rejected the original 32-bit APK with
+`INSTALL_FAILED_NO_MATCHING_ABIS`; the OBB was not copied. See
+[the WantedWindow init ARM evidence](WANTED_INIT_ARM_2026-10-25.md).
 
 `WantedWindow::OnTouchEnd` now reads ARM-confirmed `Globals` state for
 screen-size selection, layout/help, application manager, and galaxy
