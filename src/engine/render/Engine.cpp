@@ -127,7 +127,9 @@ namespace AbyssEngine {
                    signed char vertexFormat, Mesh **out);
 }
 
-void esMatrixMultiply(void *out, const void *lhs, const void *rhs);
+namespace AbyssEngine {
+    void esMatrixMultiply(ESMatrix *out, ESMatrix *left, ESMatrix *right);
+}
 
 void glError() {
     glGetError();
@@ -1020,7 +1022,10 @@ void Engine::SetOrthoMatrix(float *projection, float *view, bool multiply) {
         if (multiply) {
             float local[16];
             memcpy(local, view, 0x40);
-            esMatrixMultiply(this->projMatrix, local, this->projMatrix);
+            AbyssEngine::esMatrixMultiply(
+                reinterpret_cast<AbyssEngine::ESMatrix *>(this->projMatrix),
+                reinterpret_cast<AbyssEngine::ESMatrix *>(local),
+                reinterpret_cast<AbyssEngine::ESMatrix *>(this->projMatrix));
         }
     }
     return;
@@ -1466,7 +1471,10 @@ void Engine::SetWorldViewMatrix(const Matrix &matrix) {
             m[3], m[7], m[11], 1.0f,
         };
         memcpy(this->worldViewMatrixGL, gl, 0x40);
-        esMatrixMultiply(this->worldViewProjMatrix, gl, this->projMatrix);
+        AbyssEngine::esMatrixMultiply(
+            reinterpret_cast<AbyssEngine::ESMatrix *>(this->worldViewProjMatrix),
+            reinterpret_cast<AbyssEngine::ESMatrix *>(gl),
+            reinterpret_cast<AbyssEngine::ESMatrix *>(this->projMatrix));
     } else {
         MatrixGetGL(matrix, this->uvMatrixGL);
         return glLoadMatrixf(this->uvMatrixGL);

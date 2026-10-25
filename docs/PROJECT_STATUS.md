@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (Engine FBO dispatch;
+Last reviewed: 2026-10-25 (Engine projection matrix calls;
 earlier subsystem snapshots retain their dates)
+
+`Engine::SetOrthoMatrix` and `SetWorldViewMatrix` now call the
+ARM-confirmed `AbyssEngine::esMatrixMultiply` with the original
+argument order instead of an undefined global helper. Focused
+source-shape/strict fuzzy remains **55.2%/37.0%** and
+**80.8%/53.1%**, respectively, both nonexact. Native, AArch64
+static, **209/209** ARMv7 units and noncommutative host matrix checks
+at `-O0/-O2` pass. Strict AArch64 whole-archive link gaps fall
+**577 → 576**; live GL rendering remains unverified. See
+[the projection call evidence](ENGINE_PROJECTION_MATRIX_CALL_ARM64_2026-10-25.md).
+Full ARM corpus: **4,323/4,524** original functions covered,
+**4,743** comparisons, **94.71%** mean source-shape, **84.21%** strict
+fuzzy, **2,601 linked-exact** and **1,083 byte-exact**. No exact-match
+symbol was lost compared with the preceding FBO-dispatch baseline.
 
 Six `Engine` FBO routing methods now call the ARM-confirmed
 `FBOContainer::Activate`, `BeginCapture` and `EndCapture` methods
