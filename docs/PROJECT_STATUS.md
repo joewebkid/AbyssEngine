@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (KIPlayer/SpaceLounge matrix calls;
+Last reviewed: 2026-10-26 (sprite-system MeshCreate call;
 earlier subsystem snapshots retain their dates)
+
+`SpriteSystemCreate` now calls the ARM-confirmed `MeshCreate` signature
+with a typed mesh output slot. This removes an undefined overload from
+the AArch64 link inventory (**544 → 543** names, no new names).
+Native, AArch64 static and **209/209** ARMv7 units build. Focused
+source-shape/strict fuzzy changes **95.0%/67.1% → 94.7%/61.4%**;
+the target is confirmed by the original relocation and argument
+registers. The full corpus compares **4,323/4,524** originals over
+**4,743** pairs, mean **94.72%/84.21%**, with **2,603 linked-exact**
+and **1,083 byte-exact** and zero exact-set losses. Live sprite creation
+remains unverified. See [the mesh-call evidence](SPRITE_SYSTEM_MESH_CALL_ARM64_2026-10-26.md).
 
 Five `KIPlayer` and `SpaceLounge` call sites now use the ARM-observed
 mutating `Matrix::operator*=` instead of an undefined or no-op

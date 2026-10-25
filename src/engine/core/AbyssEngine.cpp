@@ -1142,7 +1142,7 @@ namespace AbyssEngine {
 
 namespace AbyssEngine {
     int MeshCreate(Engine *engine, unsigned short vertexCount, unsigned short triCount,
-                   unsigned int fmt, void **out);
+                   signed char vertexFormat, Mesh **out);
 
     void MeshRelease(Engine * engine, Mesh * *slot);
 
@@ -1160,7 +1160,7 @@ namespace AbyssEngine {
 
         unsigned int triCount = (n << 1) & 0xffff;
         int rc = MeshCreate(engine, (unsigned short) ((n & 0x3fff) << 2), (unsigned short) triCount,
-                            0x1f, (void **) &sys->mesh);
+                            0x1f, &sys->mesh);
         SpriteSystem *s = *out;
         if (rc != 1) {
             MeshRelease(engine, &s->mesh);
