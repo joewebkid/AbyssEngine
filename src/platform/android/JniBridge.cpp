@@ -39,6 +39,30 @@ jobject g_pActivity;
 static char *g_apkPath;
 static char *g_zipPath;
 
+#if defined(__ANDROID__) && defined(__aarch64__)
+// ART may return either a copy or a direct pointer. The ARMv7 original only
+// populated these paths when isCopy was true; the arm64 port needs both cases.
+static char *copyJniPath(JNIEnv *env, jstring path) {
+    if (env == nullptr || path == nullptr)
+        return nullptr;
+    const char *utf = env->GetStringUTFChars(path, nullptr);
+    if (utf == nullptr)
+        return nullptr;
+    char *copy = static_cast<char *>(std::malloc(std::strlen(utf) + 1));
+    if (copy != nullptr)
+        std::strcpy(copy, utf);
+    env->ReleaseStringUTFChars(path, utf);
+    return copy;
+}
+
+static void replaceJniPath(char *&destination, char *path) {
+    if (path != nullptr) {
+        std::free(destination);
+        destination = path;
+    }
+}
+#endif
+
 extern "C" void ndk_checkPlaytimeAndSpendOfferwallCredits();
 
 extern "C" void ndk23_InitWithZip(const char *apkPath, const char *zipPath,
@@ -314,6 +338,9 @@ extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_setEnvironmentVaria
 
 extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_setAPKPath(
     JNIEnv *env, jclass /*clazz*/, jstring path) {
+#if defined(__ANDROID__) && defined(__aarch64__)
+    replaceJniPath(g_apkPath, copyJniPath(env, path));
+#else
     jboolean isCopy;
     const char *utf = env->GetStringUTFChars(path, &isCopy);
     g_apkPath = static_cast<char *>(std::malloc(std::strlen(utf) + 1));
@@ -321,10 +348,14 @@ extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_setAPKPath(
         std::strcpy(g_apkPath, utf);
         env->ReleaseStringUTFChars(path, utf);
     }
+#endif
 }
 
 extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_setZIPPath(
     JNIEnv *env, jclass /*clazz*/, jstring path) {
+#if defined(__ANDROID__) && defined(__aarch64__)
+    replaceJniPath(g_zipPath, copyJniPath(env, path));
+#else
     jboolean isCopy;
     const char *utf = env->GetStringUTFChars(path, &isCopy);
     g_zipPath = static_cast<char *>(std::malloc(std::strlen(utf) + 1));
@@ -332,6 +363,7 @@ extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_setZIPPath(
         std::strcpy(g_zipPath, utf);
         env->ReleaseStringUTFChars(path, utf);
     }
+#endif
 }
 
 static char *g_rootDir;
@@ -339,6 +371,16 @@ static char *g_zipDir;
 
 extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_SetDirectories(
     JNIEnv *env, jclass /*clazz*/, jstring rootDir, jstring zipDir) {
+#if defined(__ANDROID__) && defined(__aarch64__)
+    char *root = copyJniPath(env, rootDir);
+    char *zip = copyJniPath(env, zipDir);
+    replaceJniPath(g_rootDir, root);
+    replaceJniPath(g_zipDir, zip);
+    if (root != nullptr)
+        ndk23_setRootDirectory(g_rootDir);
+    if (zip != nullptr)
+        ndk23_setZipDirectory(g_zipDir);
+#else
     jboolean isCopy;
     const char *utf = env->GetStringUTFChars(rootDir, &isCopy);
     g_rootDir = static_cast<char *>(std::malloc(std::strlen(utf) + 1));
@@ -360,6 +402,7 @@ extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_SetDirectories(
         __android_log_print(ANDROID_LOG_ERROR, "gof2", "zipDir: %s", g_zipDir);
         env->ReleaseStringUTFChars(zipDir, utf);
     }
+#endif
 }
 
 extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_STARTUP(

@@ -92,3 +92,22 @@ from CMake before the arm64-specific source filter, so the ARMv7
 comparison inputs and the last full corpus exact sets (**2,600
 linked-exact**, **1,082 byte-exact**) are unchanged by this CMake edit.
 The full corpus was not rerun for this build-configuration-only change.
+
+## JNI path handoff follow-up (2026-10-25)
+
+The original ARMv7 `ToJNI_setAPKPath` body at `0x6b5e0` allocates a
+destination but copies the JNI UTF bytes only when `GetStringUTFChars`
+sets `isCopy`. JNI also permits a direct pointer, so this can leave
+the destination uninitialized. The recovered ZIP and directory setters
+have the same conditional-copy pattern. The AArch64 port now copies
+and releases each acquired JNI UTF string regardless of `isCopy`,
+and replaces its owned paths on repeat calls. The ARMv7 code path is
+unchanged to preserve the original comparison target.
+
+The AArch64 static archive and native `gof2` build pass. A rebuilt
+ARMv7 verifier compiles **209/209** units, and the three focused JNI
+functions retain their prior source-shape and strict-fuzzy values:
+`setAPKPath` **99.1%/98.9%**, `setZIPPath` **98.7%/96.7%**, and
+`SetDirectories` **87.0%/32.4%**. All remain nonexact. This patch
+does not provide an Android shared library or APK; the link closure,
+audio backend, and live JNI handoff remain open.

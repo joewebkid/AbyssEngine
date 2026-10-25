@@ -3,6 +3,14 @@
 Last reviewed: 2026-10-25 (WantedWindow draw recovery;
 earlier subsystem snapshots retain their dates)
 
+The AArch64 JNI path setters now accept both JNI UTF pointer cases
+for APK, ZIP, and writable directories, and free replaced port-side
+paths. The ARMv7 original only copied when `isCopy` was true; that
+behavior and its focused comparison metrics remain unchanged. Native,
+AArch64 static, and **209/209** ARMv7 units build. This is a port
+readiness fix, not a playable build or an audio solution. See
+[the arm64 follow-up](ARM64_BUILD_PROBE_2026-10-25.md#jni-path-handoff-follow-up-2026-10-25).
+
 `WantedWindow::draw` now uses ARM-observed `Globals` instead of four
 null-initialized pointer slots and restores the scroll threshold,
 inactive color, marker spacing, distinct localized panel headings,
