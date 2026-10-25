@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-25 (Engine GL quad and strings;
+Last reviewed: 2026-10-25 (Engine FBO dispatch;
 earlier subsystem snapshots retain their dates)
+
+Six `Engine` FBO routing methods now call the ARM-confirmed
+`FBOContainer::Activate`, `BeginCapture` and `EndCapture` methods
+instead of three undefined wrappers. Focused source-shape/strict
+fuzzy stays **100%/100% linked-exact** for all six; linked-exact
+had masked the wrong call targets. Native, AArch64 static,
+**209/209** ARMv7 units and a source-extracted host routing check at
+`-O0/-O2` pass. Strict AArch64 whole-archive link gaps fall
+**580 → 577**. Full corpus remains **4,323/4,524** originals,
+**94.71%/84.21%** mean source-shape/strict fuzzy, **2,601**
+linked-exact and **1,083** byte-exact, with zero exact-set gains or
+losses. Live FBO rendering is unverified. See
+[the dispatch evidence](ENGINE_FBO_DISPATCH_ARM64_LINK_2026-10-25.md).
 
 `Engine::AfterGLInit` and the destructor now call the ARM-confirmed
 namespaced mesh helpers, and GL vendor/renderer strings are stored in

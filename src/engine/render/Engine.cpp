@@ -75,10 +75,6 @@ bool AbyssEngine::PostEffectFlag;
 // absent from <GLES2/gl2.h> and are declared locally. All ES 2.0 functions used
 // here (glColorMask, glDepthFunc, glGetString, glDrawElements, glDrawArrays,
 // glGetIntegerv, glLineWidth, glCullFace, glGetError, ...) come from gl.h.
-void FBOContainer_ActivateRender2Texture(AbyssEngine::FBOContainer * self);
-void FBOContainer_ActivateTexture(AbyssEngine::FBOContainer * self);
-void FBOContainer_DeactivateRender2Texture(AbyssEngine::FBOContainer * self);
-
 void ShaderUpdateRimColor();
 
 void ShaderUpdateMaterialColor();
@@ -155,7 +151,7 @@ double *Engine::GetAccelValue() {
 void Engine::ActivateRender2FracFBO() {
     FBOContainer *fbo = this->refractFBO;
     if (fbo != 0) {
-        return FBOContainer_ActivateRender2Texture(fbo);
+        return fbo->BeginCapture();
     }
 }
 
@@ -253,7 +249,7 @@ void Engine::SetUVMatrix(const Matrix &matrix) {
 void Engine::ActivateRender2TextureFBO() {
     FBOContainer *fbo = this->postEffectFBO;
     if (fbo != 0) {
-        return FBOContainer_ActivateRender2Texture(fbo);
+        return fbo->BeginCapture();
     }
 }
 
@@ -306,7 +302,7 @@ void Engine::ResetUVMatrix() {
 void Engine::ActivateTextureFBO() {
     FBOContainer *fbo = this->postEffectFBO;
     if (fbo != 0) {
-        return FBOContainer_ActivateTexture(fbo);
+        return fbo->Activate();
     }
 }
 
@@ -366,7 +362,7 @@ void Engine::ReloadShaders() {
 void Engine::DeactivateRender2TextureFBO() {
     FBOContainer *fbo = this->postEffectFBO;
     if (fbo != 0) {
-        return FBOContainer_DeactivateRender2Texture(fbo);
+        return fbo->EndCapture();
     }
 }
 
@@ -475,7 +471,7 @@ void Engine::Initialize(InitializeCallback *callback) {
 void Engine::ActivateRefractFBO() {
     FBOContainer *fbo = this->refractFBO;
     if (fbo != 0) {
-        return FBOContainer_ActivateTexture(fbo);
+        return fbo->Activate();
     }
 }
 
@@ -488,7 +484,7 @@ void Engine::LightSetParticleAmbient(float red, float green, float blue) {
 void Engine::DeactivateRender2FracFBO() {
     FBOContainer *fbo = this->refractFBO;
     if (fbo != 0) {
-        return FBOContainer_DeactivateRender2Texture(fbo);
+        return fbo->EndCapture();
     }
 }
 
