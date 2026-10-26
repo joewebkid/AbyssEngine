@@ -465,22 +465,6 @@ void paintcanvas_ext_use_refract(void *);
 
 void paintcanvas_ext_set_wvm(void *);
 
-void paintcanvas_ext_di2_restore(unsigned int flag, void *img);
-
-void paintcanvas_ext_di2_settexture(void *self, unsigned int tex, int slot);
-
-float paintcanvas_ext_di2_signedtofloat(int v, unsigned int mode);
-
-float paintcanvas_ext_di2_unsignedtofloat(unsigned int v, unsigned int mode);
-
-void paintcanvas_ext_di2_setwvm(void *self, void *m);
-
-void paintcanvas_ext_di2_gldisable(unsigned int cap);
-
-void paintcanvas_ext_di2_meshdraw(void *eng, void *mesh);
-
-void paintcanvas_ext_di2_glenable(unsigned int cap);
-
 void paintcanvas_ext_font_set_yoff(void *, int);
 
 void paintcanvas_ext_sbm_lightenable(void *eng, int on);
@@ -696,18 +680,6 @@ void paintcanvas_ext_dtor_str_dtor(void *p);
 
 void paintcanvas_ext_dtor_meshrelease(void *eng, void *meshptr);
 
-
-void paintcanvas_ext_di_restore(unsigned int flag, void *img);
-
-void paintcanvas_ext_di_settexture(void *self, unsigned int tex, int slot);
-
-void paintcanvas_ext_di_setwvm(void *self, void *m);
-
-void paintcanvas_ext_di_gldisable(unsigned int cap);
-
-void paintcanvas_ext_di_meshdraw(void *eng, void *mesh);
-
-void paintcanvas_ext_di_glenable(unsigned int cap);
 
 char *paintcanvas_ext_find_mesh(void *, unsigned short);
 
@@ -1645,13 +1617,13 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
     }
     PCImage2DView *img = (PCImage2DView *) ((char **) this->images.data_)[index];
     if (img->restoreFlag != 0) {
-        paintcanvas_ext_di2_restore(img->restoreFlag, img);
+        this->RestoreImage2D(reinterpret_cast<Image2D *>(img));
         img = (PCImage2DView *) ((char **) this->images.data_)[index];
     }
-    paintcanvas_ext_di2_settexture(this, img->textureId, -1);
+    this->SetTexture(img->textureId, 0xffffffffu);
 
-    float fx = paintcanvas_ext_di2_signedtofloat(x, 0);
-    float fy = paintcanvas_ext_di2_signedtofloat(y, 0);
+    float fx = static_cast<float>(x);
+    float fy = static_cast<float>(y);
 
     float m[16];
     memset(m, 0, sizeof(m));
@@ -1665,7 +1637,7 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
         float off = g_di2_def_88d94;
         if (index < this->images.count) {
             unsigned short w = ((PCImage2DView *) ((char **) this->images.data_)[index])->width;
-            off = paintcanvas_ext_di2_unsignedtofloat(w, 0);
+            off = static_cast<float>(w);
         }
         fx = off + fx;
     }
@@ -1674,18 +1646,18 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
         float off = g_di2_def_88d94;
         if (index < this->images.count) {
             unsigned short h = ((PCImage2DView *) ((char **) this->images.data_)[index])->height;
-            off = paintcanvas_ext_di2_unsignedtofloat(h, 0);
+            off = static_cast<float>(h);
         }
         fy = off + fy;
     }
     m[3] = fx;
     m[7] = fy;
 
-    paintcanvas_ext_di2_setwvm(this, m);
-    paintcanvas_ext_di2_gldisable(0xb44);
-    paintcanvas_ext_di2_meshdraw(this->engine,
-                                 ((PCImage2DView *) ((char **) this->images.data_)[index])->mesh);
-    paintcanvas_ext_di2_glenable(0xb44);
+    this->SetWorldViewMatrix(*reinterpret_cast<const Matrix *>(m));
+    glDisable(0xb44);
+    AbyssEngine::MeshDraw(this->engine,
+                          reinterpret_cast<Mesh *>(((PCImage2DView *) ((char **) this->images.data_)[index])->mesh));
+    glEnable(0xb44);
 }
 
 void PaintCanvas::FontSetYOffset(unsigned int index, short yoff) {
@@ -3228,10 +3200,10 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y) {
     if (index < this->images.count) {
         PCImage2DView *img = (PCImage2DView *) (this->images.data_)[index];
         if (img->restoreFlag) {
-            paintcanvas_ext_di_restore(img->restoreFlag, img);
+            this->RestoreImage2D(reinterpret_cast<Image2D *>(img));
             img = (PCImage2DView *) (this->images.data_)[index];
         }
-        paintcanvas_ext_di_settexture(this, img->textureId, -1);
+        this->SetTexture(img->textureId, 0xffffffffu);
 
         float fx = (float) x;
         float fy = (float) y;
@@ -3254,11 +3226,11 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y) {
         m[3] = fx;
         m[7] = fy;
 
-        paintcanvas_ext_di_setwvm(this, abuf);
-        paintcanvas_ext_di_gldisable(0xb44);
-        paintcanvas_ext_di_meshdraw(this->engine,
-                                    ((PCImage2DView *) (this->images.data_)[index])->mesh);
-        paintcanvas_ext_di_glenable(0xb44);
+        this->SetWorldViewMatrix(*reinterpret_cast<const Matrix *>(abuf));
+        glDisable(0xb44);
+        AbyssEngine::MeshDraw(this->engine,
+                              reinterpret_cast<Mesh *>(((PCImage2DView *) (this->images.data_)[index])->mesh));
+        glEnable(0xb44);
     }
 }
 

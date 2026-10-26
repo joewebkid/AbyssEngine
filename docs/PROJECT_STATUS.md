@@ -1,7 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (PaintCanvas FillRectangle calls;
+Last reviewed: 2026-10-26 (PaintCanvas DrawImage2D calls;
 earlier subsystem snapshots retain their dates)
+
+Two `PaintCanvas::DrawImage2D` overloads now call the Android ARM-confirmed
+image restore, texture, matrix, GLES and mesh functions directly. Native,
+AArch64 static and **209/209** ARMv7 units build. Their focused
+source-shape/strict fuzzy scores are **99.7%/83.1%** (plain) and
+**94.4%/63.8%** (flip); neither is exact. Across all **198** PaintCanvas
+comparisons, the **92 linked-exact** and **23 byte-exact** symbol sets have
+no losses. Strict ARM64 unresolved names fall **499 → 485** for the whole
+archive and **259 → 245** for JNI-reachable sections, with no new names.
+The full ARM corpus and live rendering are still unverified for this edit.
+See [the DrawImage2D evidence](PAINTCANVAS_DRAWIMAGE2D_CALLS_ARM64_2026-10-26.md).
 
 `PaintCanvas::FillRectangle` now calls the ARM-confirmed matrix,
 texture-state and mesh methods directly. Native and AArch64 static
