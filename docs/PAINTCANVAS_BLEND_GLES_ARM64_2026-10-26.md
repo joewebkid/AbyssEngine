@@ -19,6 +19,12 @@ set falls **522 → 516**. Exactly the six blend GLES wrapper names
 disappear, with no new names. This does not produce the game `.so` or
 verify live blend output.
 
+A separate diagnostic retaining `JNI_OnLoad` and `Java_*` exports while
+garbage-collecting unused function sections reduces the **JNI-reachable**
+unresolved set **282 → 276**, removing the same six calls. This is a
+closer startup inventory than the whole-archive count, but still does
+not establish a runnable library.
+
 The full ARMv7 corpus compares **4,323/4,524** original functions over
 **4,743** symbol/unit pairs with zero skips. Mean source-shape/strict fuzzy
 remains **94.72%/84.21%**. The verifier reports **2,603 linked-exact**

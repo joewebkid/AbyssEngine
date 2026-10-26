@@ -10,6 +10,9 @@ ARMv7 units build; the strict AArch64 link inventory falls
 stay **4,323/4,524** originals over **4,743** pairs,
 **94.72%/84.21%** mean source-shape/strict fuzzy, **2,603
 linked-exact** and **1,083 byte-exact**, with no exact-set losses.
+With only JNI exports retained and unused sections collected, the
+ARM64 unresolved inventory is **276** names; the whole-archive 516
+is a broader diagnostic count.
 Live blend rendering remains unverified. See
 [the blend evidence](PAINTCANVAS_BLEND_GLES_ARM64_2026-10-26.md).
 
