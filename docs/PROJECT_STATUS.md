@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (PaintCanvas clear/clip recovery;
+Last reviewed: 2026-10-26 (LOD camera global recovery;
 earlier subsystem snapshots retain their dates)
+
+`LODManager::forceUpdate` now reads the ARM-confirmed `Globals::Canvas`
+and options field at `0x28`, avoiding two null file-local pointers.
+It and `Level::initParticleSystems` call the typed camera methods at
+the confirmed ARM sites. Native, AArch64 static and **209/209** ARMv7
+units build. The changed LODManager/Level units retain all **83
+linked-exact** and **34 byte-exact** symbols. Strict ARM64 unresolved
+names fall **461 → 459** whole-archive and **221 → 219** JNI-reachable,
+with no new names. The prior full ARM corpus remains the latest
+whole-project result; live LOD behavior is unverified. Next priority:
+reconstruct the multi-pass `PaintCanvas::End3d` from its ARM calls and
+material ordering. See [the camera evidence](LOD_CAMERA_GLOBAL_ARM64_2026-10-26.md).
 
 `PaintCanvas::ClearDepth` now clears only depth as in the original ARM,
 and `EnableClip` uses the confirmed scissor coordinates for orientations

@@ -10,16 +10,7 @@ int curTouchSize = 0;
 int maxTouchSize = 0;
 Touch *touches = nullptr;
 
-uint32_t CameraGetCurrent(void *canvas);
-
-Matrix *CameraGetLocal(void *canvas, uint32_t index);
-
-static PaintCanvas **g_LOD_canvas = nullptr;
-
-// g_LOD_settings is an untyped engine settings handle. The only field accessed
-// here is a float LOD distance factor at byte offset 0x28. Model it with a
-// minimal struct carrying named members at the accessed offsets so the access
-// can be expressed as a named struct-member read instead of pointer arithmetic.
+// The global settings record supplies the LOD factor at byte offset 0x28.
 struct LODSettings {
     unsigned char reserved_0x00[0x28];
     float distanceFactor; // 0x28
@@ -28,8 +19,6 @@ struct LODSettings {
 static_assert(__builtin_offsetof(LODSettings, distanceFactor) == 0x28,
               "LODSettings::distanceFactor must sit at offset 0x28");
 #endif
-
-static LODSettings *g_LOD_settings = nullptr;
 
 LODManager::LODManager() {
     this->cameraPos.x = 0;
@@ -59,11 +48,11 @@ void LODManager::removeObject(AEGeometry *g) {
 }
 
 void LODManager::forceUpdate(int dt, bool useParent) {
-    void *canvas = *g_LOD_canvas;
-    float factor = g_LOD_settings->distanceFactor;
+    PaintCanvas *canvas = Globals::Canvas;
+    float factor = reinterpret_cast<const LODSettings *>(Globals::options)->distanceFactor;
 
-    uint32_t cam = CameraGetCurrent(canvas);
-    Matrix *m = CameraGetLocal(canvas, cam);
+    uint32_t cam = canvas->CameraGetCurrent();
+    Matrix *m = static_cast<Matrix *>(canvas->CameraGetLocal(cam));
     this->cameraPos = AbyssEngine::AEMath::MatrixGetPosition(*m);
 
     for (uint32_t i = 0; i < this->objects->size(); i++) {

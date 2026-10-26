@@ -183,8 +183,6 @@ const HangarSeat *levelGetHangarSeats(int race) {
 
 } // anonymous namespace
 
-Matrix *CameraGetLocal(void *canvas, uint32_t index);
-
 
 // Android 2.0.16 .rodata at 0x1fc54c and 0x1fc8f0, 233 item IDs each.
 static const int g_cg_meshTable[233] = {
@@ -7217,8 +7215,7 @@ void Level::initParticleSystems() {
         }
 
         PaintCanvas *canvas = PaintCanvas::gCanvas;
-        canvas->CameraGetCurrent();
-        Matrix *local = CameraGetLocal(canvas, canvas->CameraGetCurrent());
+        Matrix *local = static_cast<Matrix *>(canvas->CameraGetLocal(canvas->CameraGetCurrent()));
         int sys = (this->skybox2Mesh)->addSystem(local, ParticleSettings::ParticleSet_4, false);
         this->movingStarsIndex = sys;
 
@@ -7238,8 +7235,7 @@ void Level::initParticleSystems() {
             }
         }
 
-        canvas->CameraGetCurrent();
-        local = CameraGetLocal(canvas, canvas->CameraGetCurrent());
+        local = static_cast<Matrix *>(canvas->CameraGetLocal(canvas->CameraGetCurrent()));
         sys = this->particleSystemMgr->addSystem(local, ParticleSettings::ParticleSet_7, false);
         this->field_284 = sys;
 
