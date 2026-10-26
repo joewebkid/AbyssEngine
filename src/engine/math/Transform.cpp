@@ -999,6 +999,11 @@ namespace AbyssEngine {
             x = z;
         }
 
+#if __SIZEOF_POINTER__ == 8
+        return CameraIsSphereinViewFrustum(center, this->boundingRadius2 * x,
+                                           nullptr, camera);
+#else
         return CameraIsSphereinViewFrustum(center, this->boundingRadius2 * x, camera);
+#endif
     }
 }

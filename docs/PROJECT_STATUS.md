@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (Transform frustum ARM64 call ABI;
+earlier subsystem snapshots retain their dates)
+
+`Transform::InCameraVF` now calls the existing four-argument frustum
+method on AArch64 with the null extra matrix observed in the original
+ARM instructions. Native and AArch64 static builds pass; ARMv7
+compiles **209/209** units. Scoped `Transform` verification retains
+**23 linked-exact / 5 byte-exact** matches without losses. The last
+full ARM corpus remains **4,323/4,524** originals over **4,745**
+pairs, **94.79% source-shape / 84.31% strict fuzzy**,
+**2,607 linked-exact / 1,083 byte-exact**, zero skips. Strict
+JNI-initialize AArch64 unresolved names fall **10 → 9** with no new
+names. A game `.so`/APK and live frustum culling remain unverified.
+See the [frustum ABI evidence](ARM64_TRANSFORM_FRUSTUM_ABI_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (ARM64 matrix dispatch;
 earlier subsystem snapshots retain their dates)
 

@@ -32,6 +32,8 @@ namespace AbyssEngine {
     };
 
     int CameraIsSphereinViewFrustum(const AEMath::Vector &center, float radius, Camera *camera);
+    int CameraIsSphereinViewFrustum(const AEMath::Vector &center, float radius,
+                                   AEMath::Matrix *extra, Camera *camera);
 
     class Transform {
     public:
