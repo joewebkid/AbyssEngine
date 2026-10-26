@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (PaintCanvas blend-state recovery;
+Last reviewed: 2026-10-26 (PaintCanvas font-query recovery;
 earlier subsystem snapshots retain their dates)
+
+Four `PaintCanvas` font-query/check methods now call the recovered
+`String` conversion and `ImageFont` functions directly. This removes
+the AArch64 pointer-to-32-bit cast in the text path. All four methods
+remain **100% source-shape / 100% strict fuzzy, linked-exact**. Native
+and AArch64 static builds pass. The full ARM corpus remains
+**4,323/4,524** originals over **4,745** pairs, **94.76% source-shape /
+84.27% strict fuzzy**, **2,606 linked-exact / 1,083 byte-exact**,
+zero skips and exact-set losses. Strict JNI-reachable AArch64
+unresolved names fall **157 → 153**, with no new names. The shared
+library and APK still do not link or run; live text rendering and
+audio remain unverified. See [the font-query evidence](PAINTCANVAS_FONT_QUERIES_ARM64_2026-10-26.md).
 
 `PaintCanvas::SetBlendMode` now uses the ARM-confirmed engine calls,
 shader flag, GLES texture combiners and depth mask instead of synthetic

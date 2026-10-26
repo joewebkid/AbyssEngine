@@ -4,6 +4,7 @@
 #include "engine/render/Material.h"
 #include "engine/render/Mesh.h"
 #include "engine/render/Camera.h"
+#include "engine/render/ImageFont.h"
 #include "engine/core/Array.h"
 #include "engine/core/Node.h"
 #include "engine/math/Transform.h"
@@ -422,10 +423,6 @@ void MatrixIdentity(void *result, void *matrix);
 
 void paintcanvas_ext_sprite_allsize(unsigned int, void *);
 
-void *paintcanvas_ext_str_text(const AbyssEngine::String *);
-
-int paintcanvas_ext_text_width_range(void *, void *, unsigned int, unsigned int);
-
 char *paintcanvas_ext_find_res(void *, unsigned int);
 
 void paintcanvas_ext_change_mat(void *, void *, void *);
@@ -439,8 +436,6 @@ void paintcanvas_ext_drawtextlines6(void *, unsigned int, void *, int, int, bool
 int paintcanvas_ext_strcmp(void *, void *);
 
 unsigned int paintcanvas_ext_strlen(void *);
-
-int paintcanvas_ext_text_width(void *, unsigned int, unsigned int);
 
 void paintcanvas_ext_clear(int);
 
@@ -529,8 +524,6 @@ void paintcanvas_ext_meshdraw(void *engine, void *mesh);
 void paintcanvas_ext_mesh_changemat(AbyssEngine::PaintCanvas *, void *, void *);
 
 void paintcanvas_ext_transform_changemat(AbyssEngine::PaintCanvas *, void *, void *);
-
-int paintcanvas_ext_text_height(void *);
 
 void paintcanvas_ext_init_setorientation(void *eng);
 
@@ -781,8 +774,6 @@ void paintcanvas_ext_tg2d_vec_assign(void *dst, void *src);
 void paintcanvas_ext_tg2d_inner(void *out, void *self, void *tf, int x, int y);
 
 void paintcanvas_ext_tg2d_errmsg(void *out);
-
-void paintcanvas_ext_check_string(void *, unsigned int, unsigned int);
 
 char *paintcanvas_ext_rt_getAEChar(void *strField);
 
@@ -1102,9 +1093,9 @@ void PaintCanvas::MeshSetTangent(unsigned int index, unsigned short vtx, const V
 int PaintCanvas::GetTextWidth(unsigned int index, const AbyssEngine::String &str,
                               unsigned int begin, unsigned int end) {
     if (index < this->fonts.count) {
-        void *font = (this->fonts.data_)[index];
-        void *text = paintcanvas_ext_str_text(&str);
-        return paintcanvas_ext_text_width_range(font, text, begin, end - begin);
+        ImageFont *font = this->fonts.data_[index];
+        const unsigned short *text = str;
+        return ImageFontGetWidth(font, text, begin, end - begin);
     }
     return 0;
 }
@@ -1215,9 +1206,9 @@ unsigned int PaintCanvas::GetMeshResourceId(AbyssEngine::String &name, unsigned 
 
 int PaintCanvas::GetTextWidth(unsigned int index, const AbyssEngine::String &str) {
     if (index < this->fonts.count) {
-        void *font = (this->fonts.data_)[index];
-        void *data = paintcanvas_ext_str_text(&str);
-        return paintcanvas_ext_text_width(font, (unsigned int) (uintptr_t) data, str.size());
+        ImageFont *font = this->fonts.data_[index];
+        const unsigned short *text = str;
+        return ImageFontGetWidth(font, text, str.size());
     }
     return 0;
 }
@@ -1915,8 +1906,7 @@ void PaintCanvas::MeshChangeMaterialIntern(Transform *transform, AbyssEngine::Ma
 
 int PaintCanvas::GetTextHeight(unsigned int index) {
     if (index < this->fonts.count) {
-        void *font = (this->fonts.data_)[index];
-        return paintcanvas_ext_text_height(font);
+        return ImageFontGetHeight(this->fonts.data_[index]);
     }
     return 0;
 }
@@ -4739,9 +4729,9 @@ PaintCanvas::TransformGet2DPickedTextureRegion(unsigned int transformIndex, int 
 
 void PaintCanvas::CheckString(unsigned int index, const AbyssEngine::String &str) {
     if (index < this->fonts.count) {
-        void *font = (this->fonts.data_)[index];
-        void *data = paintcanvas_ext_str_text(&str);
-        return paintcanvas_ext_check_string(font, (unsigned int) (uintptr_t) data, str.size());
+        ImageFont *font = this->fonts.data_[index];
+        const unsigned short *text = str;
+        return ImageFontCheckString(font, text, str.size());
     }
 }
 

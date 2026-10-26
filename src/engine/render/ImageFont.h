@@ -25,6 +25,7 @@ namespace AbyssEngine {
     int ImageFontGetWidth(ImageFont *font, const unsigned short *text, unsigned int start,
                           unsigned int len);
     int ImageFontGetHeight(ImageFont *font);
+    void ImageFontCheckString(ImageFont *font, const unsigned short *text, unsigned int len);
     void ImageFontSetSpacing(ImageFont *font, short spacing);
     int ImageFontGetSpacing(ImageFont *font);
     void ImageFontSetYOffset(ImageFont *font, short yOffset);
