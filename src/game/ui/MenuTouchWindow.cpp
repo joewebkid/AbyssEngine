@@ -43,7 +43,9 @@ static inline void _mtw_ChoiceWindow_set(void *cw, void *s1, void *s2, bool b) {
     if (cw && s1 && s2) ((ChoiceWindow *) cw)->set(*(const String *) s1, *(const String *) s2, b);
 }
 
+#if __SIZEOF_POINTER__ == 4
 void _mtw_render3D_inner(void *obj);
+#endif
 
 static inline int _mtw_Layout_OnTouchEnd(void *layout, int x, int y) {
     return ((Layout *) layout)->OnTouchEnd(x, y);
@@ -1183,7 +1185,13 @@ static inline void _mtw_MissionsWindow_OnTouchMove(void *w, int y, int x) {
     ((MissionsWindow *) w)->OnTouchMove(y, x);
 }
 
+#if __SIZEOF_POINTER__ == 8
+static inline int _mtw_FModSound_tryToStopMusicForBGMusic() {
+    return Globals::sound ? Globals::sound->tryToStopMusicForBGMusic() : 0;
+}
+#else
 int _mtw_FModSound_tryToStopMusicForBGMusic();
+#endif
 
 void _mtw_FModSound_setVolume(void *snd, float v);
 
@@ -1915,7 +1923,11 @@ void MenuTouchWindow::render3D() {
     void *obj = this->missionsWindow;
     if (obj == 0)
         return;
+#if __SIZEOF_POINTER__ == 8
+    static_cast<MissionsWindow *>(obj)->render3D();
+#else
     return _mtw_render3D_inner(obj);
+#endif
 }
 
 bool MenuTouchWindow::inCinematicMode() {

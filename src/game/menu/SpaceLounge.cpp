@@ -108,7 +108,11 @@ static void *SpaceLounge_draw_layout_slot;
 static void *SpaceLounge_draw_canvas_slot;
 static void *SpaceLounge_draw_text_slot;
 
+#if __SIZEOF_POINTER__ == 8
+static inline float Sinf(float value) { return AbyssEngine::AEMath::Sinf(value); }
+#else
 float Sinf(float value);
+#endif
 
 static void *SpaceLounge_update_camera_slot_a;
 static void *SpaceLounge_update_camera_slot_b;

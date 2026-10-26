@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (ARM64 menu/audio/math dispatch;
+earlier subsystem snapshots retain their dates)
+
+`MenuTouchWindow` now calls the recovered `MissionsWindow::render3D`
+on AArch64, and the menu's music checks and pulse math use existing
+`FModSound` and `AEMath` methods. Native and AArch64 static builds pass;
+the ARMv7 build passes **209/209** units, and all four changed ARMv7
+object hashes are unchanged. The last full ARM corpus remains
+**4,323/4,524** originals over **4,745** pairs, **94.79%
+source-shape / 84.31% strict fuzzy**, **2,607 linked-exact / 1,083
+byte-exact**, zero skips. Strict JNI-initialize AArch64 unresolved
+names fall **39 → 35** with no new names. A game `.so`/APK and live
+menu rendering remain unverified. See the
+[menu dispatch evidence](ARM64_MENU_DISPATCH_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (`PaintCanvas` text-line recovery for
 AArch64; earlier subsystem snapshots retain their dates)
 

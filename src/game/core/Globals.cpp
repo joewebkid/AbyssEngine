@@ -409,6 +409,12 @@ void FModSound_ctor(void *s);
 
 int FModSound_tryToStopMusicForBGMusic();
 
+#if __SIZEOF_POINTER__ == 8
+int FModSound_tryToStopMusicForBGMusic() {
+    return Globals::sound ? Globals::sound->tryToStopMusicForBGMusic() : 0;
+}
+#endif
+
 static Status **g_status;
 
 extern int g_android_leaderboard_scores[8];
