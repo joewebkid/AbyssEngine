@@ -1,7 +1,17 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (PaintCanvas DrawImage2D calls;
+Last reviewed: 2026-10-26 (remaining PaintCanvas DrawImage2D calls;
 earlier subsystem snapshots retain their dates)
+
+The remaining two `PaintCanvas::DrawImage2D` overloads now call the
+Android ARM-confirmed restore, canvas size, texture, matrix, GLES and
+mesh targets directly. Their source-shape/strict fuzzy scores rise
+**82.0%/36.8% → 88.2%/39.4%** and **82.9%/30.3% → 96.2%/49.7%**.
+Native, AArch64 static and **209/209** ARMv7 units build; all **92
+linked-exact** and **23 byte-exact** PaintCanvas symbols remain. Strict
+ARM64 unresolved names fall **485 → 469** whole-archive and **245 →
+229** JNI-reachable, with no new names. Live rendering and a full
+ARM corpus rerun remain outstanding. See [the DrawImage2D evidence](PAINTCANVAS_DRAWIMAGE2D_CALLS_ARM64_2026-10-26.md).
 
 Two `PaintCanvas::DrawImage2D` overloads now call the Android ARM-confirmed
 image restore, texture, matrix, GLES and mesh functions directly. Native,

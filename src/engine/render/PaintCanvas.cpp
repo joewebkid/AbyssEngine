@@ -699,23 +699,6 @@ void paintcanvas_ext_start_fbo(void *);
 
 void paintcanvas_ext_gl_deletetextures(int, void *);
 
-void paintcanvas_ext_di4_restore(unsigned int flag, void *img);
-
-void paintcanvas_ext_di4_settexture(void *self, unsigned int tex);
-
-int paintcanvas_ext_di4_getwidth(void *self);
-
-int paintcanvas_ext_di4_getheight(void *self);
-
-float paintcanvas_ext_di4_signedtofloat(int v, unsigned int mode);
-
-void paintcanvas_ext_di4_setwvm(void *self, void *m);
-
-void paintcanvas_ext_di4_gldisable(unsigned int cap);
-
-void paintcanvas_ext_di4_meshdraw(void *eng, void *mesh);
-
-void paintcanvas_ext_di4_glenable(unsigned int cap);
 
 void paintcanvas_ext_cam_persp(float, float, float, float, void *);
 
@@ -785,19 +768,6 @@ int paintcanvas_ext_ec_getWidth(void *self);
 
 void paintcanvas_ext_ec_glScissor(int x, int y, int w, int h);
 
-void paintcanvas_ext_di3_restore(unsigned int flag, void *img);
-
-int paintcanvas_ext_di3_getwidth(void *self);
-
-int paintcanvas_ext_di3_getheight(void *self);
-
-float paintcanvas_ext_di3_signedtofloat(int v, unsigned int mode);
-
-void paintcanvas_ext_di3_settexture(void *self, unsigned int tex);
-
-void paintcanvas_ext_di3_setwvm(void *self, void *m);
-
-void paintcanvas_ext_di3_meshdraw(void *eng, void *mesh);
 
 int paintcanvas_ext_font_get_spacing(void *);
 
@@ -3417,46 +3387,46 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
     }
     PCImage2DView *img = (PCImage2DView *) ((char **) this->images.data_)[index];
     if (img->restoreFlag != 0) {
-        paintcanvas_ext_di4_restore(img->restoreFlag, img);
+        this->RestoreImage2D(reinterpret_cast<Image2D *>(img));
         img = (PCImage2DView *) ((char **) this->images.data_)[index];
     }
-    paintcanvas_ext_di4_settexture(this, img->textureId);
+    this->SetTexture(img->textureId, 0xffffffffu);
 
     int baseX = x;
     int hOff;
     if ((alignFlags & 7) == 4) {
-        hOff = paintcanvas_ext_di4_getwidth(this) >> 1;
+        hOff = this->GetWidth() >> 1;
     } else if ((alignFlags & 7) == 2) {
         baseX = -x;
-        hOff = paintcanvas_ext_di4_getwidth(this);
+        hOff = this->GetWidth();
     } else {
         hOff = 0;
     }
 
     int spanW = w;
     if (alignFlags & 8) {
-        spanW = paintcanvas_ext_di4_getwidth(this) - (w + x);
+        spanW = this->GetWidth() - (w + x);
     }
-    float fSpanW = paintcanvas_ext_di4_signedtofloat(spanW, 0);
+    float fSpanW = static_cast<float>(spanW);
     PCRegionView *region = (PCRegionView *)
         ((PCMeshView *) ((PCImage2DView *) ((char **) this->images.data_)[index])->mesh)->positions;
     float regW = region->width;
 
     int spanH = h;
     if (alignFlags & 0x80) {
-        spanH = paintcanvas_ext_di4_getheight(this) - (h + y);
+        spanH = this->GetHeight() - (h + y);
         region = (PCRegionView *)
             ((PCMeshView *) ((PCImage2DView *) ((char **) this->images.data_)[index])->mesh)->positions;
     }
-    float fSpanH = paintcanvas_ext_di4_signedtofloat(spanH, 0);
+    float fSpanH = static_cast<float>(spanH);
     float regH = region->height;
 
     int baseY = y;
     int vOff;
     if ((alignFlags & 0x70) == 0x40) {
-        vOff = paintcanvas_ext_di4_getheight(this) >> 1;
+        vOff = this->GetHeight() >> 1;
     } else if ((alignFlags & 0x70) == 0x20) {
-        vOff = paintcanvas_ext_di4_getheight(this);
+        vOff = this->GetHeight();
         baseY = -y;
     } else {
         vOff = 0;
@@ -3467,13 +3437,13 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
         if ((alignFlags & 8) == 0) {
             anchorX = -(w >> 1);
         } else {
-            anchorX = ((w + x) - paintcanvas_ext_di4_getwidth(this)) >> 1;
+            anchorX = ((w + x) - this->GetWidth()) >> 1;
         }
     } else if ((anchorFlags & 7) == 2) {
         if ((alignFlags & 8) == 0) {
             anchorX = -w;
         } else {
-            anchorX = (w + x) - paintcanvas_ext_di4_getwidth(this);
+            anchorX = (w + x) - this->GetWidth();
         }
     } else {
         anchorX = 0;
@@ -3487,13 +3457,13 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
         if ((alignFlags & 0x80) == 0) {
             anchorY = -(h >> 1);
         } else {
-            anchorY = ((h + y) - paintcanvas_ext_di4_getheight(this)) >> 1;
+            anchorY = ((h + y) - this->GetHeight()) >> 1;
         }
     } else if ((anchorFlags & 0x70) == 0x20) {
         if ((alignFlags & 0x80) == 0) {
             anchorY = -h;
         } else {
-            anchorY = (h + y) - paintcanvas_ext_di4_getheight(this);
+            anchorY = (h + y) - this->GetHeight();
         }
     } else {
         anchorY = 0;
@@ -3504,25 +3474,25 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
     m[5] = 1.0f;
     m[10] = 1.0f;
     m[15] = 1.0f;
-    m[3] = paintcanvas_ext_di4_signedtofloat(baseX + hOff + anchorX, 0);
-    m[7] = paintcanvas_ext_di4_signedtofloat(anchorY + vOff + baseY, 0);
+    m[3] = static_cast<float>(baseX + hOff + anchorX);
+    m[7] = static_cast<float>(anchorY + vOff + baseY);
     m[0] = scaleX;
 
     if (flipFlags & 1) {
         m[0] = -scaleX;
-        m[3] = paintcanvas_ext_di4_signedtofloat(w, 0) + m[3];
+        m[3] = static_cast<float>(w) + m[3];
     }
     m[5] = scaleY;
     if (flipFlags & 2) {
         m[5] = -scaleY;
-        m[7] = paintcanvas_ext_di4_signedtofloat(h, 0) + m[7];
+        m[7] = static_cast<float>(h) + m[7];
     }
 
-    paintcanvas_ext_di4_setwvm(this, m);
-    paintcanvas_ext_di4_gldisable(0xb44);
-    paintcanvas_ext_di4_meshdraw(this->engine,
-                                 ((PCImage2DView *) ((char **) this->images.data_)[index])->mesh);
-    paintcanvas_ext_di4_glenable(0xb44);
+    this->SetWorldViewMatrix(*reinterpret_cast<const Matrix *>(m));
+    glDisable(0xb44);
+    AbyssEngine::MeshDraw(this->engine,
+                          reinterpret_cast<Mesh *>(((PCImage2DView *) ((char **) this->images.data_)[index])->mesh));
+    glEnable(0xb44);
 }
 
 void PaintCanvas::CameraSetPerspective(unsigned int index, float fov, float aspect) {
@@ -4006,14 +3976,14 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
     }
     PCImage2DView *img = (PCImage2DView *) ((char **) this->images.data_)[index];
     if (img->restoreFlag != 0) {
-        paintcanvas_ext_di3_restore(img->restoreFlag, img);
+        this->RestoreImage2D(reinterpret_cast<Image2D *>(img));
     }
 
     int hOff;
     if ((placeFlags & 7) == 4) {
-        hOff = paintcanvas_ext_di3_getwidth(this) >> 1;
+        hOff = this->GetWidth() >> 1;
     } else if ((placeFlags & 7) == 2) {
-        hOff = paintcanvas_ext_di3_getwidth(this);
+        hOff = this->GetWidth();
         y = -y;
     } else {
         hOff = 0;
@@ -4022,9 +3992,9 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
     int vOff;
     unsigned int yShift = regionAlignFlags;
     if ((placeFlags & 0x70) == 0x40) {
-        vOff = paintcanvas_ext_di3_getheight(this) >> 1;
+        vOff = this->GetHeight() >> 1;
     } else if ((placeFlags & 0x70) == 0x20) {
-        vOff = paintcanvas_ext_di3_getheight(this);
+        vOff = this->GetHeight();
         yShift = (unsigned int) (-(int) yShift);
     } else {
         vOff = 0;
@@ -4033,7 +4003,7 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
     int rx;
     PCRegionView *region = (PCRegionView *) img->regionPtr;
     if ((regionAlignFlags & 7) == 4) {
-        double w = (double) paintcanvas_ext_di3_signedtofloat((int) region->width, 0);
+        double w = (double) static_cast<float>((int) region->width);
         rx = (int) (long long) (w * -0.5);
     } else if ((regionAlignFlags & 7) == 2) {
         rx = -(int) region->width;
@@ -4047,17 +4017,17 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
     if ((regionAlignFlags & 0x70) == 0x20) {
         ry = -(int) region2->height;
     } else if ((regionAlignFlags & 0x70) == 0x40) {
-        double h = (double) paintcanvas_ext_di3_signedtofloat((int) region2->height, 0);
+        double h = (double) static_cast<float>((int) region2->height);
         ry = (int) (long long) (h * -0.5);
     } else {
         ry = 0;
     }
 
     PCImage2DView *img2 = (PCImage2DView *) ((char **) this->images.data_)[index];
-    paintcanvas_ext_di3_settexture(this, img2->textureId);
+    this->SetTexture(img2->textureId, 0xffffffffu);
 
-    float fx = paintcanvas_ext_di3_signedtofloat(hOff + y + rx, 0);
-    float fy = paintcanvas_ext_di3_signedtofloat(vOff + (int) yShift + ry, 0);
+    float fx = static_cast<float>(hOff + y + rx);
+    float fy = static_cast<float>(vOff + (int) yShift + ry);
 
     float m[16];
     memset(m, 0, sizeof(m));
@@ -4068,9 +4038,9 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
     m[3] = fx;
     m[7] = fy;
 
-    paintcanvas_ext_di3_setwvm(this, m);
-    paintcanvas_ext_di3_meshdraw(this->engine,
-                                 ((PCImage2DView *) ((char **) this->images.data_)[index])->mesh);
+    this->SetWorldViewMatrix(*reinterpret_cast<const Matrix *>(m));
+    AbyssEngine::MeshDraw(this->engine,
+                          reinterpret_cast<Mesh *>(((PCImage2DView *) ((char **) this->images.data_)[index])->mesh));
 }
 
 void PaintCanvas::MeshCreate(unsigned short a, unsigned short b,

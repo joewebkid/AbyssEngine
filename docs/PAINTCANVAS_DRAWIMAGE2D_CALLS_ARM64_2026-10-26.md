@@ -28,3 +28,29 @@ JNI-reachable inventory falls **259 → 245**. Exactly fourteen obsolete
 wrapper names disappear, with no new names. Live 2D rendering and the
 game shared library remain unverified. Remaining JNI-reachable symbols
 include engine code and third-party audio dependencies.
+
+## Remaining overloads
+
+The original `DrawImage2D(unsigned int,int,int,unsigned char,unsigned char)`
+starts at `0x78dd0`; the overload with width, height and three flag bytes
+starts at `0x78fc0`. The Android ARM call sites resolve to
+`RestoreImage2D`, `GetWidth`, `GetHeight`, `SetTexture`,
+`SetWorldViewMatrix`, `MeshDraw`, and, in the sized overload,
+`glDisable`/`glEnable`. Their integer-to-float conversions are local
+instructions. The `SetTexture` call at `0x78f1c` and `0x7900e` passes
+`0xffffffff` as its third register argument. The source now calls
+those functions directly with the image pointer and confirmed texture
+slot.
+
+Native `gof2`, AArch64 static `gof2`, and **209/209** ARMv7 translation
+units build. Focused source-shape/strict fuzzy for the five-argument
+overload improves **82.0%/36.8% → 88.2%/39.4%**; for the sized
+overload it improves **82.9%/30.3% → 96.2%/49.7%**. Neither is exact.
+Across all **198** PaintCanvas comparisons, the **92 linked-exact**
+and **23 byte-exact** symbol sets retain zero losses. No full corpus
+was rerun for this edit.
+
+The strict ARM64 whole-archive inventory falls **485 → 469** and
+the JNI-reachable inventory **245 → 229**. Exactly sixteen obsolete
+`di3_`/`di4_` wrapper names disappear, with no new names. The game
+shared library still fails to link; live 2D output is unverified.
