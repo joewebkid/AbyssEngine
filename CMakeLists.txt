@@ -57,8 +57,14 @@ if(ANDROID AND ANDROID_ABI STREQUAL "arm64-v8a")
     list(REMOVE_ITEM GOF2_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/src/game/core/Matrix.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/game/core/Vector.cpp")
+    option(GOF2_ARM64_SILENT_AUDIO
+           "Use the no-output FMOD compatibility layer for the first arm64 Android build" ON)
 endif()
 add_library(gof2 STATIC ${GOF2_SOURCES})
+if(ANDROID AND ANDROID_ABI STREQUAL "arm64-v8a" AND GOF2_ARM64_SILENT_AUDIO)
+    target_sources(gof2 PRIVATE host/android/SilentFmod.cpp)
+    target_compile_definitions(gof2 PRIVATE GOF2_ARM64_SILENT_AUDIO=1)
+endif()
 target_include_directories(gof2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_compile_options(gof2 PRIVATE
     $<$<CXX_COMPILER_ID:GNU>:-fpermissive>

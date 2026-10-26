@@ -414,6 +414,21 @@ void FModSound::disableReverb() {
 }
 
 int FModSound::init() {
+#if defined(GOF2_ARM64_SILENT_AUDIO)
+    // First arm64 startup milestone: do not open the original FMOD event bank.
+    // The normal ARMv7 path below remains the comparison target.
+    for (int i = 0; i != 5; ++i)
+        this->fxSlots[i] = -1;
+    this->system = nullptr;
+    this->music = nullptr;
+    this->initialized = 0;
+    this->propSlot = 0;
+    this->reverbPreset = -1;
+    this->currentMusicEvent = -1;
+    this->fadeTargetMusicEvent = -1;
+    this->downPitch = 0;
+    return 0;
+#else
     static const char kSuffixA[16] = ".fev";
     static const char kSuffixB[24] = "_low.fev";
     static FMOD::EventCategory *kCats[4];
@@ -445,6 +460,7 @@ int FModSound::init() {
     this->fadeTargetMusicEvent = -1;
     this->downPitch = 0;
     return 0;
+#endif
 }
 
 void FModSound::setParamValue(int paramIdx, int idx, float val) {

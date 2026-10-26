@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (first ARM64-only silent audio adapter;
+earlier subsystem snapshots retain their dates)
+
+`GOF2_ARM64_SILENT_AUDIO` adds a no-output FMOD compatibility layer
+only to Android `arm64-v8a`. `FModSound::init` skips `.fev` loading and
+keeps the audio system null. ARM64 and native static builds pass; a
+host smoke of the production silent initializer passes with no asset
+root. The rebuilt ARMv7 `FModSound.o` hash is unchanged, and the last
+full ARM corpus remains **4,323/4,524** originals over **4,745**
+pairs, **94.79% source-shape / 84.30% strict fuzzy**,
+**2,607 linked-exact / 1,083 byte-exact**, zero skips. Strict
+JNI-initialize ARM64 unresolved names fall **88 → 56** and the broader
+diagnostic **304 → 266**, with no new names. These are synthetic
+silent-mode bindings, not recovered FMOD behavior. A game `.so` and
+APK are still unbuilt; device startup remains unverified. Next priority:
+game-side sound wrappers and remaining native calls. See the
+[silent adapter evidence](ARM64_SILENT_AUDIO_ADAPTER_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (MissionsWindow font-height call and
 AArch64 link closure; earlier subsystem snapshots retain their dates)
 
