@@ -30,6 +30,8 @@ extern template void ArrayRemove<AbyssEngine::Transform *>(
     AbyssEngine::Transform *, Array<AbyssEngine::Transform *> &);
 extern template void ArrayRemove<AbyssEngine::Mesh *>(
     AbyssEngine::Mesh *, Array<AbyssEngine::Mesh *> &);
+extern template void ArraySetLength<AbyssEngine::String *>(
+    unsigned int, Array<AbyssEngine::String *> &);
 
 namespace AbyssEngine {
     class SpriteSystem;
@@ -322,15 +324,6 @@ struct PCGravView {
     double angle;      // +0x08
 };
 
-// ---------------------------------------------------------------------------
-// AEString-like length record used in GetLineArray scratch buffers.
-//   +0x08 int       length
-// ---------------------------------------------------------------------------
-struct PCStrLenView {
-    uint8_t pad00[0x08];
-    int length;        // +0x08
-};
-
 #if __SIZEOF_POINTER__ == 4
 static_assert(sizeof(PCSpriteSystemView) >= 0x0d, "sprite view");
 static_assert(offsetof(PCImage2DView, restoreFlag) == 0x14, "img restore");
@@ -466,28 +459,6 @@ static inline void paintcanvas_ext_sbm_glDepthMask(int v) { glDepthMask(v); }
 
 static inline void paintcanvas_ext_sbm_glAlphaFunc(unsigned int a, float ref) { glAlphaFunc(a, ref); }
 
-AbyssEngine::String *paintcanvas_ext_gla_str_new();
-
-void paintcanvas_ext_gla_str_copy(void *out, void *src, bool copy);
-
-void paintcanvas_ext_gla_str_fromchar(void *out, const char *s, bool copy);
-
-void paintcanvas_ext_gla_str_append(void *dst, void *src);
-
-void paintcanvas_ext_gla_str_dtor(void *s);
-
-void paintcanvas_ext_gla_substr(void *out, const void *str, unsigned int begin, unsigned int end);
-
-void paintcanvas_ext_gla_getline(void *self, unsigned int font, void *line, int width, void *out);
-
-void paintcanvas_ext_gla_str_vdtor(void *s);
-
-void paintcanvas_ext_gla_arr_setlen(unsigned int n, ::Array<AbyssEngine::String *> *arr);
-
-unsigned short *paintcanvas_ext_gla_str_index(const void *s, int i);
-
-void paintcanvas_ext_gla_str_assign(void *dst, void *src);
-
 void paintcanvas_ext_add_resource(void *resource, void *resources) {
     ArrayAdd(static_cast<AbyssEngine::Resource *>(resource),
              *static_cast<::Array<AbyssEngine::Resource *> *>(resources));
@@ -509,17 +480,6 @@ void paintcanvas_ext_mesh_changemat(AbyssEngine::PaintCanvas *, void *, void *);
 void paintcanvas_ext_transform_changemat(AbyssEngine::PaintCanvas *, void *, void *);
 
 int paintcanvas_ext_font_get_yoff(void *);
-
-unsigned short *paintcanvas_ext_gl_strindex(const AbyssEngine::String *str, unsigned int i);
-
-void paintcanvas_ext_gl_substr(void *out, const AbyssEngine::String *str, unsigned int begin,
-                                          unsigned int end);
-
-void paintcanvas_ext_gl_str_fromchar(void *out, const char *s, bool copy);
-
-void paintcanvas_ext_gl_str_assign(AbyssEngine::String *dst, void *src);
-
-void paintcanvas_ext_gl_str_dtor(void *s);
 
 
 void paintcanvas_ext_get_grav(void *);
@@ -636,8 +596,6 @@ static inline void paintcanvas_ext_gl_texenvi(unsigned int target, unsigned int 
 static inline void paintcanvas_ext_gl_scalef(float x, float y, float z) { glScalef(x, y, z); }
 
 static inline void paintcanvas_ext_gl_multmatrix(void *m) { glMultMatrixf((const GLfloat *) m); }
-
-void paintcanvas_ext_dsc_str_copy(void *out, const AbyssEngine::String *src, bool copy);
 
 void paintcanvas_ext_smfg_pushmat(const float *m, void *array);
 
@@ -1617,64 +1575,48 @@ static const char g_gla_nl_8c4c0[] = "\n";
 
 void PaintCanvas::GetLineArray(unsigned int font, const AbyssEngine::String &str, int width,
                                ::Array<AbyssEngine::String *> *outArray) {
-    AbyssEngine::String *acc = paintcanvas_ext_gla_str_new();
-
-    char src[16];
-    char nl[16];
-    paintcanvas_ext_dsc_str_copy(src, &str, false);
-    paintcanvas_ext_gla_str_fromchar(nl, g_gla_nl_8c4c0, false);
-    paintcanvas_ext_gla_str_append(src, nl);
-    paintcanvas_ext_gla_str_dtor(nl);
+    AbyssEngine::String *acc = new AbyssEngine::String();
+    AbyssEngine::String src(str, false);
+    AbyssEngine::String nl(g_gla_nl_8c4c0, false);
+    src += nl;
 
     unsigned int count = 0;
-    int pos = 0;
-    int srcLen = ((PCStrLenView *) src)->length;
-    while (pos < srcLen) {
-        char sub[16];
-        char line[16];
-        paintcanvas_ext_gla_substr(sub, src, 0, (unsigned int) srcLen);
-        paintcanvas_ext_gla_str_copy(line, sub, false);
-        paintcanvas_ext_gla_getline(this, font, line, width, acc);
-        paintcanvas_ext_gla_str_dtor(line);
-        pos += (int) acc->size();
-        paintcanvas_ext_gla_str_dtor(sub);
+    unsigned int pos = 0;
+    while (pos < src.size()) {
+        AbyssEngine::String sub = src.SubString(pos, src.size());
+        AbyssEngine::String line(sub, false);
+        this->GetLine(font, line, width, acc);
+        unsigned int consumed = acc->size();
+        pos += consumed ? consumed : 1;
         count++;
     }
-    paintcanvas_ext_gla_str_vdtor(acc);
+    delete acc;
 
-    paintcanvas_ext_gla_arr_setlen(count, outArray);
+    ArraySetLength<AbyssEngine::String *>(count, *outArray);
     for (unsigned int i = 0; i < count; i++) {
-        outArray->data_[i] = paintcanvas_ext_gla_str_new();
+        outArray->data_[i] = new AbyssEngine::String();
     }
 
+    unsigned int pos2 = 0;
     for (unsigned int i = 0; i < count; i++) {
-        char sub[16];
-        char line[16];
-        paintcanvas_ext_gla_substr(sub, src, 0, (unsigned int) ((PCStrLenView *) src)->length);
-        paintcanvas_ext_gla_str_copy(line, sub, false);
+        AbyssEngine::String sub = src.SubString(pos2, src.size());
+        AbyssEngine::String line(sub, false);
         AbyssEngine::String *out = outArray->data_[i];
-        paintcanvas_ext_gla_getline(this, font, line, width, out);
-        paintcanvas_ext_gla_str_dtor(line);
+        this->GetLine(font, line, width, out);
 
-        AbyssEngine::String *cur = outArray->data_[i];
-        int len = (int) cur->size();
-        int lo = 0;
-        while (*paintcanvas_ext_gla_str_index(outArray->data_[i], lo) == 0x20) {
-            lo++;
+        unsigned int consumed = out->size();
+        pos2 += consumed ? consumed : 1;
+        unsigned int lo = 0;
+        unsigned int end = out->size();
+        while (lo < end && *(*out)[lo] == 0x20) ++lo;
+        while (end > lo && *(*out)[end - 1] == 0x20) --end;
+        if (lo == end) {
+            out->Set("");
+        } else {
+            AbyssEngine::String trimmed = out->SubString(lo, end);
+            *out = trimmed;
         }
-        len++;
-        do {
-            len--;
-        } while (*paintcanvas_ext_gla_str_index(outArray->data_[i], len - 2) == 0x20);
-
-        char trimmed[16];
-        paintcanvas_ext_gla_substr(trimmed, outArray->data_[i],
-                                   (unsigned int) lo, (unsigned int) len);
-        paintcanvas_ext_gla_str_assign(outArray->data_[i], trimmed);
-        paintcanvas_ext_gla_str_dtor(trimmed);
-        paintcanvas_ext_gla_str_dtor(sub);
     }
-    paintcanvas_ext_gla_str_dtor(src);
 }
 
 void PaintCanvas::AddResource(AbyssEngine::Resource *resource) {
@@ -1973,59 +1915,46 @@ float PaintCanvas::MeshSetPoint(unsigned int index, unsigned short vtx,
 
 static const char g_getline_empty_7c428[] = "";
 
-int paintcanvas_ext_gl_textwidth(void *self, unsigned int font, const AbyssEngine::String *str,
-                                            unsigned int begin, unsigned int end);
-
 void PaintCanvas::GetLine(unsigned int font, AbyssEngine::String str, int maxWidth,
                           AbyssEngine::String *out) {
-    char tmp[16];
     unsigned int lastSpace = 0;
     int width = 5;
     unsigned int i = 0;
     unsigned int len = str.size();
 
     while (i < len) {
-        unsigned short *ch = paintcanvas_ext_gl_strindex(&str, i);
-        unsigned short c = *ch;
+        unsigned short c = *str[i];
         unsigned int next = i + 1;
-        width += paintcanvas_ext_gl_textwidth(this, font, &str, i, next);
+        width += this->GetTextWidth(font, str, i, next);
         if (c == 0x20) {
             lastSpace = i;
         }
         if (width >= maxWidth) {
-            if ((int) lastSpace < 1) {
-                paintcanvas_ext_gl_substr(tmp, &str, 0, next);
-            } else {
-                paintcanvas_ext_gl_substr(tmp, &str, 0, lastSpace + 1);
-            }
-            paintcanvas_ext_gl_str_assign(out, tmp);
-            paintcanvas_ext_gl_str_dtor(tmp);
+            AbyssEngine::String tmp = str.SubString(
+                0, (int) lastSpace < 1 ? next : lastSpace + 1);
+            *out = tmp;
             return;
         }
-        unsigned short *ch2 = paintcanvas_ext_gl_strindex(&str, i);
-        if (*ch2 == 0xa) {
-            paintcanvas_ext_gl_substr(tmp, &str, 0, next);
-            paintcanvas_ext_gl_str_assign(out, tmp);
-            paintcanvas_ext_gl_str_dtor(tmp);
+        if (*str[i] == 0xa) {
+            AbyssEngine::String tmp = str.SubString(0, next);
+            *out = tmp;
             return;
         }
-        unsigned short *ch3 = paintcanvas_ext_gl_strindex(&str, i);
         i = next;
-        if (*ch3 == 0xd) {
-            paintcanvas_ext_gl_substr(tmp, &str, 0, next);
-            paintcanvas_ext_gl_str_assign(out, tmp);
-            paintcanvas_ext_gl_str_dtor(tmp);
+        if (*str[next - 1] == 0xd) {
+            AbyssEngine::String tmp = str.SubString(0, next);
+            *out = tmp;
             return;
         }
     }
 
     if ((int) len < 2) {
-        paintcanvas_ext_gl_str_fromchar(tmp, g_getline_empty_7c428, false);
+        AbyssEngine::String tmp(g_getline_empty_7c428, false);
+        *out = tmp;
     } else {
-        paintcanvas_ext_gl_substr(tmp, &str, 0, len);
+        AbyssEngine::String tmp = str.SubString(0, len);
+        *out = tmp;
     }
-    paintcanvas_ext_gl_str_assign(out, tmp);
-    paintcanvas_ext_gl_str_dtor(tmp);
 }
 
 

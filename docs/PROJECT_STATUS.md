@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (`PaintCanvas` text-line recovery for
+AArch64; earlier subsystem snapshots retain their dates)
+
+`GetLineArray` now advances through text and uses real 64-bit-safe
+`String` objects; `GetLine` calls the typed text-width and substring
+methods. The final focused source-shape is **84.8%** for `GetLineArray`
+and **97.1%** for `GetLine`, up from **78.9% / 81.1%**. Native and
+AArch64 static builds pass; the ARMv7 build passes **209/209** units.
+The full ARM corpus compares **4,323/4,524** originals over **4,745**
+pairs: **94.79% source-shape / 84.31% strict fuzzy**,
+**2,607 linked-exact / 1,083 byte-exact**, zero skips and zero
+exact-set losses. Strict JNI-initialize AArch64 unresolved names fall
+**51 → 39** with no new names. The game `.so` and APK are not yet built;
+live text layout and startup remain unverified. See the
+[text-line evidence](PAINTCANVAS_TEXT_LINES_ARM64_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (KIPlayer engine-sound dispatch for AArch64;
 earlier subsystem snapshots retain their dates)
 
