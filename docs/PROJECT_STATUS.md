@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (Level radio-message handoff;
+Last reviewed: 2026-10-26 (RepairBeam target and geometry recovery;
 earlier subsystem snapshots retain their dates)
+
+`RepairBeam` now selects targets, repairs hull/shields, positions the
+beam, updates its transforms and routes its sound events through
+source-backed game and engine calls. Native and AArch64 static builds
+pass; ARMv7 focused verify compiles **209/209** units and retains all
+**9 linked-exact / 0 byte-exact** matches. `RepairBeam::update` rises
+**75.1% to 92.9% source-shape** and **29.6% to 38.9% strict fuzzy**.
+The full ARM corpus is **4,323/4,524** originals over **4,745** pairs,
+**94.76% source-shape / 84.26% strict fuzzy**, **2,606 linked-exact /
+1,083 byte-exact**, zero skips and no exact-set losses.
+Strict AArch64 unresolved names fall **454 to 434** whole-archive and
+**214 to 194** JNI-reachable. The shared game library still cannot
+link: FMOD Ex arm64, Android host packaging and further game/engine
+closure are outstanding; device behavior is unverified. See
+[the RepairBeam evidence](REPAIRBEAM_TARGET_AUDIO_ARM64_2026-10-26.md).
 
 `Level::createRadioMessage` now checks the ARM-confirmed
 `PlayerEgo::radioRef` at `+0x18` and calls `Radio::setMessages` for both
