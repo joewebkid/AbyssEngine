@@ -641,6 +641,7 @@ public:
 static_assert(__builtin_offsetof(PlayerEgo, transform) == 0x4, "PlayerEgo::transform offset");
 static_assert(__builtin_offsetof(PlayerEgo, rocketReturnMatrixStorage) == 0x10, "PlayerEgo::rocketReturnMatrix offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x14) == 0x14, "PlayerEgo::field_0x14 offset");
+static_assert(__builtin_offsetof(PlayerEgo, radioRef) == 0x18, "PlayerEgo::radioRef offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x1c) == 0x1c, "PlayerEgo::engine sound offset");
 static_assert(__builtin_offsetof(PlayerEgo, turretGeometry) == 0x28, "PlayerEgo::turretGeometry offset");
 static_assert(__builtin_offsetof(PlayerEgo, field_0x2c) == 0x2c, "PlayerEgo::turret root offset");

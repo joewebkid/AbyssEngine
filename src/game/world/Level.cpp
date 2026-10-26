@@ -29,6 +29,7 @@ float Level::b;
 #include "game/ship/KIPlayer.h"
 #include "game/weapons/ObjectGun.h"
 #include "game/core/RadioMessage.h"
+#include "game/core/Radio.h"
 #include "engine/render/ParticleSystemManager.h"
 #include "engine/render/ParticleSettingsRef.h"
 #include "game/world/StarSystem.h"
@@ -1234,7 +1235,7 @@ void Level::createSpace() {
 void Level::createRadioMessage(int type, int sub) {
     unsigned r2 = (unsigned) sub;
 
-    if (this->player == nullptr || this->player->field_0x1c == 0)
+    if (this->player == nullptr || this->player->radioRef == nullptr)
         return;
 
     Status::gStatus->getMission();
@@ -1409,7 +1410,7 @@ void Level::createRadioMessage(int type, int sub) {
                 this->messages = nullptr;
             }
         PlayerEgo *ego = this->player;
-        this->crm_dispatch(ego->field_0x1c, 0);
+        ego->radioRef->setMessages(nullptr);
         return;
     }
 
@@ -1420,7 +1421,7 @@ void Level::createRadioMessage(int type, int sub) {
     }
 
     PlayerEgo *ego = this->player;
-    this->crm_dispatch(ego->field_0x1c, (void *) this->messages);
+    ego->radioRef->setMessages(this->messages);
 }
 
 int Level::init() {

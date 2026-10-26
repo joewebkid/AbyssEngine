@@ -374,8 +374,6 @@ public:
 
     void incNumDeliveredPassengers(int delta);
 
-    void crm_dispatch(int egoComm, void *queue);
-
     // Static data members present in the original binary (defined for symbol parity).
     static unsigned char doInstantJump;
     static void *programmedStation;

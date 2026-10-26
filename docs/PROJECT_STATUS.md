@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (StarSystem KIPlayer target release;
+Last reviewed: 2026-10-26 (Level radio-message handoff;
 earlier subsystem snapshots retain their dates)
+
+`Level::createRadioMessage` now checks the ARM-confirmed
+`PlayerEgo::radioRef` at `+0x18` and calls `Radio::setMessages` for both
+the normal and aborted paths. It previously checked the engine-sound
+field at `+0x1c` and called an undefined dispatch wrapper. Native,
+AArch64 static and **209/209** ARMv7 units build. The focused Level
+unit retains all **73 linked-exact / 34 byte-exact** symbols. The new
+full ARM corpus compares **4,323/4,524** original functions over
+**4,745** pairs, **94.75% source-shape / 84.26% strict fuzzy**,
+**2,606 linked-exact / 1,083 byte-exact**, zero skips and no exact-set
+losses. Strict AArch64 unresolved names fall **455 to 454** whole-archive
+and **215 to 214** JNI-reachable, with no new names. Live radio and
+audio behavior remain unverified. Next priority: JNI-reachable bridge
+and engine calls, Android host integration, and compatible audio.
+See [the radio evidence](LEVEL_RADIO_DISPATCH_ARM64_2026-10-26.md).
 
 `StarSystem::~StarSystem` now releases its `Array<KIPlayer*>` through
 the ARM-confirmed typed helper and destructor, replacing two undefined
