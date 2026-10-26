@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (KIPlayer engine-sound dispatch for AArch64;
+earlier subsystem snapshots retain their dates)
+
+The four `KIPlayer` engine-sound methods now delegate to existing
+typed `Player` methods on AArch64. The ARMv7 call form and rebuilt
+`KIPlayer.o` hash are unchanged, preserving four linked-exact
+matches. Native, AArch64, and **209/209** ARMv7 translation-unit
+builds pass. The last full ARM corpus remains **4,323/4,524**
+originals over **4,745** pairs, **94.79% source-shape / 84.30%
+strict fuzzy**, **2,607 linked-exact / 1,083 byte-exact**, zero skips.
+Strict JNI-initialize AArch64 unresolved names fall **55 → 51** and
+the broader diagnostic **265 → 261**, with no new names. The silent
+audio mode still produces no sound, and a game `.so`/APK has not been
+built. Live engine-sound state is unverified. See the
+[KIPlayer dispatch evidence](KIPLAYER_AUDIO_DISPATCH_ARM64_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (64-bit `FModSound` allocation in `Globals`;
 earlier subsystem snapshots retain their dates)
 

@@ -15,13 +15,12 @@
 
 using AbyssEngine::Matrix;
 
+#if __SIZEOF_POINTER__ == 4
 void FModSound_resumeEvent(void *player, int channel);
-
 void FModSound_pauseEvent(void *player);
-
 void FModSound_stopEvent(void *player);
-
 void FModSound_playEvent(void *player, int event, int flags);
+#endif
 
 static void **gCanvasPtr = nullptr;
 
@@ -187,8 +186,13 @@ uint8_t KIPlayer::isWingMan() {
 }
 
 void KIPlayer::ResumeEngineSound() {
-    if (this->player != 0 && this->engineSoundEvent != -1)
+    if (this->player != 0 && this->engineSoundEvent != -1) {
+#if __SIZEOF_POINTER__ == 8
+        this->player->ResumeEngineSound(false);
+#else
         FModSound_resumeEvent(this->player, 0);
+#endif
+    }
 }
 
 void KIPlayer::setWingmanCommand(int cmd, KIPlayer *target) {
@@ -197,8 +201,13 @@ void KIPlayer::setWingmanCommand(int cmd, KIPlayer *target) {
 }
 
 void KIPlayer::PauseEngineSound() {
-    if (this->player != 0 && this->engineSoundEvent != -1)
+    if (this->player != 0 && this->engineSoundEvent != -1) {
+#if __SIZEOF_POINTER__ == 8
+        this->player->PauseEngineSound();
+#else
         FModSound_pauseEvent(this->player);
+#endif
+    }
 }
 
 void KIPlayer::setRotationSpeed(float speed) {
@@ -236,8 +245,13 @@ void KIPlayer::setVisible(bool visible) {
 }
 
 void KIPlayer::StopEngineSound() {
-    if (this->player != 0 && this->engineSoundEvent != -1)
+    if (this->player != 0 && this->engineSoundEvent != -1) {
+#if __SIZEOF_POINTER__ == 8
+        this->player->StopEngineSound();
+#else
         FModSound_stopEvent(this->player);
+#endif
+    }
 }
 
 void KIPlayer::render() {
@@ -264,8 +278,13 @@ void KIPlayer::setActive(bool active) {
 }
 
 void KIPlayer::PlayEngineSound() {
-    if (this->player != 0 && this->engineSoundEvent != -1)
+    if (this->player != 0 && this->engineSoundEvent != -1) {
+#if __SIZEOF_POINTER__ == 8
+        this->player->PlayEngineSound(this->engineSoundEvent, nullptr);
+#else
         FModSound_playEvent(this->player, this->engineSoundEvent, 0);
+#endif
+    }
 }
 
 void KIPlayer::setRoute(Route *route) {
