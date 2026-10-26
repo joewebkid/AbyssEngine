@@ -1,7 +1,24 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (PaintCanvas resource release recovery;
+Last reviewed: 2026-10-26 (PaintCanvas texture lifecycle recovery;
 earlier subsystem snapshots retain their dates)
+
+`PaintCanvas::ChangeCubeTexture`, `Suspend`, `Resume`, and
+`ReloadTextures` now use typed `AELoadedTexture` fields and real engine
+and GLES calls. The ARM-confirmed paths preserve newly created texture
+ids and the selected cube map across GL suspend/resume. Native and
+AArch64 static builds pass; **209/209** ARMv7 units compile and a
+production-body 64-bit lifecycle smoke test passes at `-O0/-O2`.
+`Resume` rises **71.7% → 92.8% source-shape** and `Suspend` becomes
+linked-exact. Full ARM corpus: **4,323/4,524** originals over **4,745**
+pairs, **94.77% source-shape / 84.27% strict fuzzy**,
+**2,607 linked-exact / 1,083 byte-exact**, zero skips or exact-set losses.
+Strict JNI-initialize AArch64 unresolved names stay at **130**; a
+broader link diagnostic falls **361 → 354** with no new names. Live GL
+restore remains unverified; the game `.so` and APK are not built. The
+canvas destructor, compatible audio, and Android packaging are next
+priorities. See the
+[texture-lifecycle evidence](PAINTCANVAS_TEXTURE_LIFECYCLE_ARM64_2026-10-26.md).
 
 `PaintCanvas::ReleaseAllResources` now follows the original ARM path
 through typed texture records, real engine release functions and C++

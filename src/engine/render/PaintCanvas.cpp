@@ -581,14 +581,6 @@ static inline int paintcanvas_ext_gsp_getwidth(void *self) { return ((PaintCanva
 
 static inline int paintcanvas_ext_gsp_getheight(void *self) { return ((PaintCanvas *) self)->GetHeight(); }
 
-char *paintcanvas_ext_rs_getAEChar(void *strField);
-
-void paintcanvas_ext_rs_deletearr(char *p);
-
-void paintcanvas_ext_rs_glActiveTexture(unsigned int tex);
-
-void paintcanvas_ext_rs_glBindTexture(unsigned int target, unsigned int tex);
-
 void paintcanvas_ext_tami_bsphere_merge(void *dst, void *src);
 
 void paintcanvas_ext_tami_setanimlen(void *tf, int hi, int lo);
@@ -646,8 +638,6 @@ void paintcanvas_ext_array_remove(void *, void *);
 void *paintcanvas_ext_tc_findres(void *self, unsigned short id);
 
 void paintcanvas_ext_start_fbo(void *);
-
-void paintcanvas_ext_gl_deletetextures(int, void *);
 
 
 void paintcanvas_ext_cam_persp(float, float, float, float, void *);
@@ -721,10 +711,6 @@ void paintcanvas_ext_tg2d_vec_assign(void *dst, void *src);
 void paintcanvas_ext_tg2d_inner(void *out, void *self, void *tf, int x, int y);
 
 void paintcanvas_ext_tg2d_errmsg(void *out);
-
-char *paintcanvas_ext_rt_getAEChar(void *strField);
-
-void paintcanvas_ext_rt_deletearr(char *p);
 
 float paintcanvas_ext_tg2di_signedtofloat(int v, unsigned int mode);
 
@@ -1759,15 +1745,15 @@ int PaintCanvas::GetHeight() {
 
 void PaintCanvas::ChangeCubeTexture(unsigned int idx) {
     if (Engine::enableShader && idx < this->cubeTextures.count) {
-        PCCubeTexView *tex = (PCCubeTexView *) (this->cubeTextures.data_)[idx];
-        if (tex->restoreFlag == 0) {
-            char *path = reinterpret_cast<String *>(tex->pathField)->GetAEChar();
+        AELoadedTexture *tex = this->cubeTextures.data_[idx];
+        if (tex->isCube == 0) {
+            char *path = tex->name.GetAEChar();
             delete[] path;
             return;
         }
         AbyssEngine::CubeMapSetIndex = idx;
         glActiveTexture(0x84c7);
-        glBindTexture(0x8513, (unsigned int) tex->glTexId);
+        glBindTexture(0x8513, tex->glId);
         glActiveTexture(0x84c0);
     }
 }
@@ -2845,31 +2831,22 @@ void PaintCanvas::MeshChangeShaderAnimValue(AbyssEngine::Mesh *mesh, float value
 }
 
 
-static int g_resume_curtex_7e828_storage = 0;
-static int *const g_resume_curtex_7e828 = &g_resume_curtex_7e828_storage;
-
-int paintcanvas_ext_rs_texfromfile(void *eng, char *path, void *cb, void *ud,
-                                              unsigned int *out, bool b, float f);
-
 void PaintCanvas::Resume() {
-    unsigned int out = 0;
     for (unsigned int i = 0; i < this->cubeTextures.count; i++) {
-        PCCubeTexView *res = (PCCubeTexView *) (this->cubeTextures.data_)[i];
-        char *path = paintcanvas_ext_rs_getAEChar(res->pathField);
-        float f = ((PCCubeTexView *) (this->cubeTextures.data_)[i])->scale;
-        int ok = paintcanvas_ext_rs_texfromfile(this->engine, path, 0, 0,
-                                                &out, false, f);
+        unsigned int out = 0;
+        AELoadedTexture *res = this->cubeTextures.data_[i];
+        char *path = res->name.GetAEChar();
+        int ok = TextureCreateFromFile(this->engine, path, nullptr, nullptr,
+                                       &out, false, res->scale);
         if (ok == 1) {
-            ((PCCubeTexView *) (this->cubeTextures.data_)[i])->glTexId = 0;
+            res->glId = out;
         }
-        paintcanvas_ext_rs_deletearr(path);
+        delete[] path;
     }
-    int *cur = g_resume_curtex_7e828;
-    if (*cur != 0) {
-        paintcanvas_ext_rs_glActiveTexture(0x84c7);
-        PCCubeTexView *res = (PCCubeTexView *) (this->cubeTextures.data_)[*cur];
-        paintcanvas_ext_rs_glBindTexture(0x8513, (unsigned int) res->glTexId);
-        paintcanvas_ext_rs_glActiveTexture(0x84c0);
+    if (CubeMapSetIndex != 0) {
+        glActiveTexture(0x84c7);
+        glBindTexture(0x8513, this->cubeTextures.data_[CubeMapSetIndex]->glId);
+        glActiveTexture(0x84c0);
     }
 }
 
@@ -3554,15 +3531,15 @@ void PaintCanvas::StartDraw2FBO() {
 }
 
 void PaintCanvas::Suspend() {
-    char texId[4];
+    GLuint texId[1];
     for (unsigned int i = 0; i < this->cubeTextures.count; i++) {
-        int *p = (int *) (this->cubeTextures.data_)[i];
-        *(int *) texId = *p;
-        if (*p != -1) {
-            paintcanvas_ext_gl_deletetextures(1, texId);
-            p = (int *) (this->cubeTextures.data_)[i];
+        AELoadedTexture *tex = this->cubeTextures.data_[i];
+        texId[0] = tex->glId;
+        if (texId[0] != UINT32_MAX) {
+            glDeleteTextures(1, texId);
+            tex = this->cubeTextures.data_[i];
         }
-        *p = -1;
+        tex->glId = UINT32_MAX;
     }
 }
 
@@ -4624,22 +4601,18 @@ void PaintCanvas::CheckString(unsigned int index, const AbyssEngine::String &str
     }
 }
 
-int paintcanvas_ext_rt_texfromfile(void *eng, char *path, void *cb, void *ud,
-                                              unsigned int *out, bool b, float f);
-
 void PaintCanvas::ReloadTextures() {
-    unsigned int out = 0;
     for (unsigned int i = 0; i < this->cubeTextures.count; i++) {
-        PCCubeTexView *res = (PCCubeTexView *) (this->cubeTextures.data_)[i];
-        if (res->glTexId == -1) {
-            char *path = paintcanvas_ext_rt_getAEChar(res->pathField);
-            float f = ((PCCubeTexView *) (this->cubeTextures.data_)[i])->scale;
-            int ok = paintcanvas_ext_rt_texfromfile(this->engine, path, 0, 0,
-                                                    &out, false, f);
+        AELoadedTexture *res = this->cubeTextures.data_[i];
+        if (res->glId == UINT32_MAX) {
+            unsigned int out = 0;
+            char *path = res->name.GetAEChar();
+            int ok = TextureCreateFromFile(this->engine, path, nullptr, nullptr,
+                                           &out, false, res->scale);
             if (ok == 1) {
-                ((PCCubeTexView *) (this->cubeTextures.data_)[i])->glTexId = 0;
+                res->glId = out;
             }
-            paintcanvas_ext_rt_deletearr(path);
+            delete[] path;
         }
     }
 }
