@@ -1,7 +1,14 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (ARM64 libzip archive read gate;
+Last reviewed: 2026-10-26 (ARM64 ZIP and SHA-256 dependencies;
 earlier subsystem snapshots retain their dates)
+
+The original OpenSSL 1.0.2u SHA-256 implementation and `CRYPTO_memcmp`
+now build for ARM64. On-device testing confirmed the 112-byte context
+matches `RecordHandler` and verified a streaming SHA-256 vector. The
+strict AArch64 link inventory falls **526 → 522** with no new names;
+the game `.so` and APK still do not link or run. See
+[the SHA-256 gate](ARM64_SHA256_RECORD_DEPENDENCY_2026-10-26.md).
 
 The original libzip 0.9.3 source now builds for Android ARM64. On a
 connected arm64-capable device it read three entries from the original
