@@ -1110,7 +1110,14 @@ static inline void _mtw_MissionsWindow_OnTouchBegin(void *w, int y, int x) {
     ((MissionsWindow *) w)->OnTouchBegin(y, x);
 }
 
+#if __SIZEOF_POINTER__ == 8
+static inline void _mtw_FModSound_play(void *snd, int id, void *pos, float pitch) {
+    if (snd)
+        static_cast<FModSound *>(snd)->play(id, static_cast<Vector *>(pos), nullptr, pitch);
+}
+#else
 void _mtw_FModSound_play(void *snd, int id, void *pos, float v);
+#endif
 
 static inline void _mtw_RecordHandler_ctor(void *rh) { new(rh) RecordHandler(); }
 
@@ -1920,7 +1927,9 @@ static inline void _mtw_draw_footer_tail(MenuTouchWindow *window) {
 
 void _mtw_Ship_addCargo(void *ship, void *item);
 
+#if __SIZEOF_POINTER__ == 4
 float _mtw_FModSound_stop(void *snd);
+#endif
 
 void MenuTouchWindow::showSupernovaMessage() {
     void *cw = this->choiceWindow;
@@ -3966,10 +3975,21 @@ void MenuTouchWindow::startGOF2() {
     _mtw_Status_resetGame();
     void *snd = Globals::sound;
 
+#if __SIZEOF_POINTER__ == 8
+    reinterpret_cast<OptionsRecord *>(Globals::options)->fadeValue = this->fadeValue;
+    if (snd) {
+        auto *sound = static_cast<FModSound *>(snd);
+        sound->stop(sound->currentMusicEvent);
+        sound->play(0x8f, nullptr, nullptr, 0.0f);
+    }
+    static_cast<AbyssEngine::ApplicationManager *>(Globals::appManager)
+        ->SetCurrentApplicationModule(2);
+#else
     ((Status *) Globals::options)->fadeValue = this->fadeValue;
     float v = _mtw_FModSound_stop(snd);
     _mtw_FModSound_play(snd, 0x8f, 0, v);
     void *appHolder = Globals::appManager;
     ModuleTransitionThunk *thunk = (ModuleTransitionThunk *) appHolder;
     thunk->transitionFn3(appHolder, 2, 0);
+#endif
 }
