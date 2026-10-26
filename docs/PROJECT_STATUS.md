@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (PaintCanvas resource creation recovery;
+Last reviewed: 2026-10-26 (PaintCanvas resource release recovery;
 earlier subsystem snapshots retain their dates)
+
+`PaintCanvas::ReleaseAllResources` now follows the original ARM path
+through typed texture records, real engine release functions and C++
+destructors. It updates the actual texture and VBO counters instead of
+local stand-ins, and reads texture members correctly on AArch64. Native
+and AArch64 static builds pass; a production-body 64-bit release smoke
+test passes at `-O0/-O2`. The method rises **81.5% → 83.9%
+source-shape** and **45.5% → 56.5% strict fuzzy**; it remains nonexact.
+Full ARM corpus: **4,323/4,524** originals over **4,745** pairs,
+**94.77% source-shape / 84.28% strict fuzzy**, **2,606 linked-exact /
+1,083 byte-exact**, zero skips and exact-set losses. Strict
+JNI-initialize AArch64 unresolved names fall **139 → 130**, with no
+new names. Live GL resource release remains unverified; the game `.so`
+and APK are not built. Resource lifecycle calls, Android packaging,
+and compatible audio remain priorities. See the
+[release evidence](PAINTCANVAS_RELEASE_RESOURCES_ARM64_2026-10-26.md).
 
 `PaintCanvas` now creates its line/quad meshes and sprite systems
 through the recovered typed engine functions. The ARM-confirmed line

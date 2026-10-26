@@ -6,6 +6,7 @@
 #include "engine/render/Camera.h"
 #include "engine/render/ImageFont.h"
 #include "engine/render/SpriteSystem.h"
+#include "engine/render/AELoadedTexture.h"
 #include "engine/core/Array.h"
 #include "engine/core/Node.h"
 #include "engine/math/Transform.h"
@@ -29,6 +30,9 @@ namespace AbyssEngine {
     int MeshDraw(Engine *engine, Mesh *mesh);
     void MaterialDraw(PaintCanvas *canvas, Engine *engine, Material *material, bool setTextures);
     void SpriteSystemRelease(Engine *engine, SpriteSystem **slot);
+    void ImageFontRelease(Engine *engine, ImageFont **slot);
+    void Image2DRelease(Engine *engine, Image2D **slot);
+    void MeshRelease(Engine *engine, Mesh **slot);
     void SpriteSystemDraw(Engine *engine, const Matrix &view, const Matrix &world, SpriteSystem *sys);
     void SpriteSystemSetAllUv(float u0, float v0, float u1, float v1, SpriteSystem *sys);
     void SpriteSystemSetUv(unsigned short idx, float a, float b, float c, float d, SpriteSystem *sys);
@@ -705,24 +709,6 @@ float paintcanvas_ext_fsp_unsignedtofloat(unsigned int v, unsigned int mode);
 void paintcanvas_ext_fsp_glFogf(unsigned int pname, float v);
 
 void paintcanvas_ext_fsp_glFogfv(unsigned int pname, void *v);
-
-void paintcanvas_ext_rar_gldeltex(int n, void *ids);
-
-void paintcanvas_ext_rar_str_dtor(void *s);
-
-void paintcanvas_ext_rar_op_delete(void *p);
-
-void paintcanvas_ext_rar_fontrelease(void *eng, void *fontptr);
-
-void paintcanvas_ext_rar_img2drelease(void *eng, void *imgptr);
-
-void paintcanvas_ext_rar_meshrelease(void *eng, void *meshptr);
-
-void *paintcanvas_ext_rar_transform_dtor(void *p);
-
-void *paintcanvas_ext_rar_material_dtor(void *p);
-
-void paintcanvas_ext_rar_ssrelease(void *eng, void *ssptr);
 
 void paintcanvas_ext_tg2d_memcpy(void *dst, void *src, unsigned int n);
 
@@ -4514,17 +4500,8 @@ void PaintCanvas::MeshSet2DMask(unsigned int index, int, int) {
 }
 
 
-static int g_rar_curtex_87c98_storage = 0;
-static int *const g_rar_curtex_87c98 = &g_rar_curtex_87c98_storage;
-
-static int g_rar_texcount_87cce_storage = 0;
-static int *const g_rar_texcount_87cce = &g_rar_texcount_87cce_storage;
-
-static int g_rar_tricount_87d96_storage = 0;
-static int *const g_rar_tricount_87d96 = &g_rar_tricount_87d96_storage;
-
 void PaintCanvas::ReleaseAllResources() {
-    *g_rar_curtex_87c98 = 0;
+    CubeMapSetIndex = 0;
 
     for (int i = 0; i < this->resources.count; i++) {
         PCResourceView *res = (PCResourceView *) ((char **) this->resources.data_)[i];
@@ -4532,82 +4509,75 @@ void PaintCanvas::ReleaseAllResources() {
     }
 
     for (unsigned int i = 0; i < this->cubeTextures.count; i++) {
-        PCCubeTexView *tex = (PCCubeTexView *) ((char **) this->cubeTextures.data_)[i];
-        if (tex->glTexId != -1) {
-            unsigned int id = (unsigned int) tex->glTexId;
-            paintcanvas_ext_rar_gldeltex(1, &id);
-            *g_rar_texcount_87cce = *g_rar_texcount_87cce - 1;
-            Engine *eng = (Engine *) this->engine;
-            PCCubeTexView *texEntry = (PCCubeTexView *) ((char **) this->cubeTextures.data_)[i];
-            eng->field_0x70 = eng->field_0x70 - texEntry->memSize;
-            tex = (PCCubeTexView *) ((char **) this->cubeTextures.data_)[i];
+        AELoadedTexture *tex = this->cubeTextures.data_[i];
+        if (tex->glId != UINT32_MAX) {
+            GLuint id = tex->glId;
+            glDeleteTextures(1, &id);
+            --Engine::ImageCount;
+            this->engine->field_0x70 -= tex->byteSize;
         }
         if (tex != 0) {
-            paintcanvas_ext_rar_str_dtor(tex->pathField);
-            paintcanvas_ext_rar_op_delete(tex);
+            delete tex;
         }
-        ((int **) this->cubeTextures.data_)[i] = 0;
+        this->cubeTextures.data_[i] = 0;
     }
     this->cubeTextures.count = 0;
 
     for (unsigned int i = 0; i < this->fonts.count; i++) {
-        if (((void **) this->fonts.data_)[i] != 0) {
-            paintcanvas_ext_rar_fontrelease(this->engine,
-                                            &((void **) this->fonts.data_)[i]);
+        if (this->fonts.data_[i] != 0) {
+            ImageFontRelease(this->engine, &this->fonts.data_[i]);
         }
     }
     PCArrayRemoveAll(&this->fonts);
 
     for (unsigned int i = 0; i < this->images.count; i++) {
-        if (((void **) this->images.data_)[i] != 0) {
-            paintcanvas_ext_rar_img2drelease(this->engine,
-                                             &((void **) this->images.data_)[i]);
+        if (this->images.data_[i] != 0) {
+            Image2DRelease(this->engine, &this->images.data_[i]);
         }
     }
     PCArrayRemoveAll(&this->images);
 
     for (unsigned int i = 0; i < this->meshCount; i++) {
-        PCMeshView *mesh = (PCMeshView *) ((char **) this->meshes)[i];
+        Mesh *mesh = reinterpret_cast<Mesh *>(this->meshes[i]);
         if (mesh != 0) {
-            *g_rar_tricount_87d96 = *g_rar_tricount_87d96 - mesh->triCountContribution;
-            paintcanvas_ext_rar_meshrelease(this->engine,
-                                            &((void **) this->meshes)[i]);
+            Engine::vboSize -= mesh->vboByteSize;
+            MeshRelease(this->engine, &mesh);
+            this->meshes[i] = reinterpret_cast<char *>(mesh);
         }
     }
     PCArrayRemoveAll(&this->meshCount);
 
     for (unsigned int i = 0; i < this->transformCount; i++) {
-        void *tf = ((void **) this->transforms)[i];
+        Transform *tf = reinterpret_cast<Transform *>(this->transforms[i]);
         if (tf != 0) {
-            paintcanvas_ext_rar_op_delete(paintcanvas_ext_rar_transform_dtor(tf));
-            ((void **) this->transforms)[i] = 0;
+            delete tf;
+            this->transforms[i] = 0;
         }
     }
     PCArrayRemoveAll(&this->transformCount);
 
     for (unsigned int i = 0; i < this->cameras.count; i++) {
-        void *cam = ((void **) this->cameras.data_)[i];
+        Camera *cam = this->cameras.data_[i];
         if (cam != 0) {
-            paintcanvas_ext_rar_op_delete(cam);
-            ((void **) this->cameras.data_)[i] = 0;
+            delete cam;
+            this->cameras.data_[i] = 0;
         }
     }
     PCArrayRemoveAll(&this->cameras);
     this->currentCamera = -1;
 
     for (unsigned int i = 0; i < this->materials.count; i++) {
-        void *mat = ((void **) this->materials.data_)[i];
+        Material *mat = this->materials.data_[i];
         if (mat != 0) {
-            paintcanvas_ext_rar_op_delete(paintcanvas_ext_rar_material_dtor(mat));
-            ((void **) this->materials.data_)[i] = 0;
+            delete mat;
+            this->materials.data_[i] = 0;
         }
     }
     PCArrayRemoveAll(&this->materials);
 
     for (unsigned int i = 0; i < this->spriteSystems.count; i++) {
-        if (((void **) this->spriteSystems.data_)[i] != 0) {
-            paintcanvas_ext_rar_ssrelease(this->engine,
-                                          &((void **) this->spriteSystems.data_)[i]);
+        if (this->spriteSystems.data_[i] != 0) {
+            SpriteSystemRelease(this->engine, &this->spriteSystems.data_[i]);
         }
     }
     PCArrayRemoveAll(&this->spriteSystems);
