@@ -419,12 +419,6 @@ void paintcanvas_ext_has_vibration(void *);
 
 void MatrixIdentity(void *result, void *matrix);
 
-void paintcanvas_ext_fr_setwvm(void *self, void *m);
-
-void paintcanvas_ext_fr_glenable(void *eng, unsigned int cap, bool on);
-
-void paintcanvas_ext_fr_meshdraw(void *eng, void *mesh);
-
 void paintcanvas_ext_sprite_allsize(unsigned int, void *);
 
 void *paintcanvas_ext_str_text(const AbyssEngine::String *);
@@ -983,10 +977,10 @@ void PaintCanvas::FillRectangle(int x, int y, int w, int h) {
     m[13] = 1.0f;
     m[14] = 1.0f;
 
-    paintcanvas_ext_fr_setwvm(this, abuf);
-    paintcanvas_ext_fr_glenable(this->engine, 0xde1, false);
-    paintcanvas_ext_fr_meshdraw(this->engine, this->lineMesh);
-    paintcanvas_ext_fr_glenable(this->engine, 0xde1, true);
+    this->SetWorldViewMatrix(*reinterpret_cast<const Matrix *>(abuf));
+    this->engine->GlEnable(0xde1, false);
+    AbyssEngine::MeshDraw(this->engine, reinterpret_cast<Mesh *>(this->lineMesh));
+    this->engine->GlEnable(0xde1, true);
 }
 
 void PaintCanvas::SpriteSystemSetRGBA(unsigned int index, unsigned short sub,

@@ -1,17 +1,18 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (PaintCanvas scene-state calls;
+Last reviewed: 2026-10-26 (PaintCanvas FillRectangle calls;
 earlier subsystem snapshots retain their dates)
 
-Next verified source-backed target after build space is available:
-`PaintCanvas::FillRectangle` is **100% source-shape / 100% strict fuzzy**
-over 69 ARM instructions but is not linked-exact. The original body
-at `0x79289` calls `PaintCanvas::SetWorldViewMatrix` at `0x7931a`,
-`Engine::GlEnable` at `0x79326`/`0x7933c`, and `MeshDraw` at
-`0x79330`. The recovered source still uses three unresolved `fr_`
-wrapper names for these calls. Resolving them is a small next change
-with a focused exact-match check; no implementation has been accepted
-without the native and ARM build gates.
+`PaintCanvas::FillRectangle` now calls the ARM-confirmed matrix,
+texture-state and mesh methods directly. Native and AArch64 static
+builds pass; **209/209** ARMv7 units compile. Focused source-shape
+and strict fuzzy remain **100%/100%**, but linked-exact is still false.
+The PaintCanvas unit retains all **92 linked-exact** and **23 byte-exact**
+symbols. Strict ARM64 unresolved names fall **502 → 499** for the
+whole archive and **262 → 259** for JNI-reachable sections, with no
+new names. Live output is unverified. Next priority: source-backed
+2D image drawing calls in PaintCanvas and the remaining JNI-reachable
+engine paths. See [the call evidence](PAINTCANVAS_FILLRECT_CALL_TARGETS_2026-10-26.md).
 
 `PaintCanvas::BeginBG`, `Begin3d` and `Begin2d` now reach the
 ARM-confirmed GLES/Engine state calls. Native, AArch64 static and
