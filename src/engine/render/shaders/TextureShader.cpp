@@ -38,7 +38,7 @@ namespace AbyssEngine {
     }
 
     void TextureShader::UseShader(bool) {
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+#if defined(__ANDROID__)
         if (Engine::fogEnabled && this->programExt != 0) {
             glUseProgram(this->programExt);
             return;
@@ -60,7 +60,7 @@ namespace AbyssEngine {
     }
 
     void TextureShader::UpdateMeshData(Mesh *mesh, Engine *engine) {
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+#if defined(__ANDROID__)
         int slot = Engine::fogEnabled ? 1 : 0;
 #else
         int slot = g_TextureShader_activeSlot;
@@ -103,7 +103,7 @@ namespace AbyssEngine {
 
             location = this->activeTextureUniform[slot];
             if (location >= 0) {
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+#if defined(__ANDROID__)
                 glUniform1i(location, Engine::fogEnabled ? 1 : 0);
 #else
                 glUniform1i(location, g_TextureShader_activeSlot);
@@ -112,12 +112,7 @@ namespace AbyssEngine {
 
             location = this->fogColorUniform[slot];
             if (location >= 0) {
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
-                glUniform3f(location, engine->eyePosition.x, engine->eyePosition.y,
-                            engine->eyePosition.z);
-#else
                 glUniform3f(location, engine->lightColor.x, engine->lightColor.y, engine->lightColor.z);
-#endif
             }
 
             this->dirty = 0;

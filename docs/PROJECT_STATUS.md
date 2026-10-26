@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (Android texture shader fog dispatch)
+
+`TextureShader` and `TextureAlphaTestShader` now select the fog program,
+uniform slot, and `u_EnableFog` value from `Engine::fogEnabled` on ARMv7,
+matching the original Android ARM functions. Both `UseShader` functions are
+newly linked-exact. The families average **99.65% / 99.42% source-shape**,
+respectively, or **99.14% / 98.68%** weighted by original instructions.
+The ARM64 texture uniform also reads the original value source at engine
+offset `0x34c`. Native and ARM64 libraries build; ARMv7 compiles 209/209
+units. The full corpus compares **4,323/4,524** originals across 4,745 pairs,
+**94.82% source-shape / 84.35% strict fuzzy**, **2,610 linked-exact /
+1,083 byte-exact**, zero skips and no exact-set losses. A signed silent
+ARM64 APK is ready, but the target phone is absent from ADB; rendering is
+unverified. Next, confirm GOF2 is the foreground app during a live title
+and menu capture, then check the fog shader path in a scene. See the
+[fog dispatch evidence](ARM_TEXTURE_FOG_DISPATCH_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (Android TextureLightShader recovery)
 
 `TextureLightShader::Init` now uses the exact original Android ARM vertex

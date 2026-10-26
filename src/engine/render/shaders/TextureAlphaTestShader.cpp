@@ -44,7 +44,7 @@ namespace AbyssEngine {
     }
 
     void TextureAlphaTestShader::UpdateMeshData(Mesh *mesh, Engine *engine) {
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+#if defined(__ANDROID__)
         uint8_t programIndex = Engine::fogEnabled ? 1 : 0;
 #else
         uint8_t programIndex = g_TextureAlphaTestShader_programIndex;
@@ -75,7 +75,7 @@ namespace AbyssEngine {
 
             location = this->uSamplerLoc[programIndex];
             if (location >= 0) {
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+#if defined(__ANDROID__)
                 glUniform1i(location, Engine::fogEnabled ? 1 : 0);
 #else
                 glUniform1i(location, g_TextureAlphaTestShader_programIndex);
@@ -141,7 +141,7 @@ namespace AbyssEngine {
     }
 
     void TextureAlphaTestShader::UseShader(bool) {
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+#if defined(__ANDROID__)
         if (Engine::fogEnabled && this->alphaProgram != 0) {
 #else
         if (g_TextureAlphaTestShader_useAlphaProgram != 0) {
