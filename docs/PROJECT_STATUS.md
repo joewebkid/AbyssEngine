@@ -1,7 +1,17 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (blend GLES calls and ARM64 dependencies;
+Last reviewed: 2026-10-26 (PaintCanvas scene-state calls;
 earlier subsystem snapshots retain their dates)
+
+`PaintCanvas::BeginBG`, `Begin3d` and `Begin2d` now reach the
+ARM-confirmed GLES/Engine state calls. Native, AArch64 static and
+**209/209** ARMv7 units build. Strict ARM64 unresolved names fall
+**516 → 503** for the whole archive and **276 → 263** for JNI-reachable
+sections, with no new names. The changed PaintCanvas unit retains its
+**92 linked-exact** and **23 byte-exact** symbols. The two background/3D
+functions have lower source-shape scores; the previous full corpus
+remains the latest whole-project snapshot. Live rendering is unverified.
+See [the scene-state evidence](PAINTCANVAS_SCENE_GLES_ARM64_2026-10-26.md).
 
 `PaintCanvas::SetBlendMode` now uses the ARM-confirmed GLES entry
 points for six blend operations. Native, AArch64 static and **209/209**

@@ -12,6 +12,8 @@
 #include <cstdio>
 #include <new>
 
+extern "C" void glMultMatrixf(const GLfloat *m);
+
 // ARM MeshCloneMaterial calls the specialization defined in Array.cpp.
 extern template void ArrayAdd<AbyssEngine::Material *>(AbyssEngine::Material *, Array<AbyssEngine::Material *> &);
 extern template void ArrayAdd<AbyssEngine::Camera *>(AbyssEngine::Camera *, Array<AbyssEngine::Camera *> &);
@@ -447,9 +449,9 @@ int paintcanvas_ext_text_width(void *, unsigned int, unsigned int);
 
 void paintcanvas_ext_clear(int);
 
-void paintcanvas_ext_gl_disable(unsigned int);
+static inline void paintcanvas_ext_gl_disable(unsigned int cap) { glDisable(cap); }
 
-void paintcanvas_ext_gl_enable(unsigned int);
+static inline void paintcanvas_ext_gl_enable(unsigned int cap) { glEnable(cap); }
 
 void paintcanvas_ext_setprojmatrix3d(void *, float, float, float);
 
@@ -609,19 +611,21 @@ void paintcanvas_ext_end3d(AbyssEngine::PaintCanvas *);
 
 void paintcanvas_ext_get_grav(void *);
 
-void paintcanvas_ext_glMatrixMode(unsigned int);
+static inline void paintcanvas_ext_glMatrixMode(unsigned int mode) { glMatrixMode(mode); }
 
-void paintcanvas_ext_gl_depthmask(unsigned int);
+static inline void paintcanvas_ext_gl_depthmask(unsigned int enabled) { glDepthMask(enabled); }
 
-void paintcanvas_ext_gl_color(void *, float, float, float, float);
+static inline void paintcanvas_ext_gl_color(void *engine, float r, float g, float b, float a) {
+    ((Engine *) engine)->SetColor(r, g, b, a);
+}
 
 void paintcanvas_ext_matgl_load(void *, void *);
 
-void paintcanvas_ext_gl_loadidentity();
+static inline void paintcanvas_ext_gl_loadidentity() { glLoadIdentity(); }
 
-void paintcanvas_ext_gl_ortho_persp(float, float, float);
+static inline void paintcanvas_ext_gl_ortho_persp(float x, float y, float z) { glScalef(x, y, z); }
 
-void paintcanvas_ext_gl_loadmatrix(void *);
+static inline void paintcanvas_ext_gl_loadmatrix(void *m) { glLoadMatrixf((const GLfloat *) m); }
 
 void paintcanvas_ext_gl_done();
 
@@ -780,17 +784,25 @@ float paintcanvas_ext_sgo_signedtofloat(int v, unsigned int mode);
 
 void paintcanvas_ext_sgo_setpersp(void *self, float a, float b, float c);
 
-void paintcanvas_ext_gl_blendfunc(unsigned int, unsigned int);
+static inline void paintcanvas_ext_gl_blendfunc(unsigned int src, unsigned int dst) {
+    glBlendFunc(src, dst);
+}
 
-void paintcanvas_ext_glenable2(void *, unsigned int, bool);
+static inline void paintcanvas_ext_glenable2(void *engine, unsigned int cap, bool enabled) {
+    ((Engine *) engine)->GlEnable(cap, enabled);
+}
 
-void paintcanvas_ext_setortho(void *, void *, void *, bool);
+static inline void paintcanvas_ext_setortho(void *engine, void *projection, void *view, bool multiply) {
+    ((Engine *) engine)->SetOrthoMatrix((float *) projection, (float *) view, multiply);
+}
 
-void paintcanvas_ext_gl_texenvi(unsigned int, unsigned int, unsigned int);
+static inline void paintcanvas_ext_gl_texenvi(unsigned int target, unsigned int pname, unsigned int value) {
+    glTexEnvi(target, pname, value);
+}
 
-void paintcanvas_ext_gl_scalef(float, float, float);
+static inline void paintcanvas_ext_gl_scalef(float x, float y, float z) { glScalef(x, y, z); }
 
-void paintcanvas_ext_gl_multmatrix(void *);
+static inline void paintcanvas_ext_gl_multmatrix(void *m) { glMultMatrixf((const GLfloat *) m); }
 
 void paintcanvas_ext_dsc_str_copy(void *out, const AbyssEngine::String *src, bool copy);
 
