@@ -1,7 +1,16 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (postprocess Engine call targets;
+Last reviewed: 2026-10-26 (ARM64 libzip archive read gate;
 earlier subsystem snapshots retain their dates)
+
+The original libzip 0.9.3 source now builds for Android ARM64. On a
+connected arm64-capable device it read three entries from the original
+installed APK and OBB with exact expected sizes and SHA-256 hashes.
+The strict AArch64 link inventory falls **532 → 526** unresolved names:
+all six ZIP API names disappear, with no new names. This is a separate
+dependency build; the game `.so` and APK still do not link or run on
+ARM64. ARMv7 decompilation metrics are unchanged. See
+[the archive gate](ARM64_LIBZIP_REAL_ARCHIVES_2026-10-26.md).
 
 Five postprocess shaders now call the ARM-confirmed `Engine` display,
 matrix, quad and FBO methods directly at 95 call sites, removing eleven
