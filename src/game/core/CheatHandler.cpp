@@ -81,3 +81,6 @@ namespace AbyssEngine {
         }
     }
 }
+
+void OnCheatActivated(int, void *) {
+}

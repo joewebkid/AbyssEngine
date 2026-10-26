@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (PaintCanvas End3d recovery;
+Last reviewed: 2026-10-26 (Android cheat callback recovery;
 earlier subsystem snapshots retain their dates)
+
+Android `OnCreateApplication` now registers an executable no-op cheat
+callback with the original `MGame` context. The original ARM used
+`nullsub_3` at `0xd0d14`; the recovered callback had no definition and
+passed a null context. Native, AArch64 static and **209/209** ARMv7 units
+build. Focused CheatHandler/JniBridge comparison sets retain all
+**54 linked-exact** and **5 byte-exact** symbols without losses.
+`OnCreateApplication` source-shape/strict fuzzy changes **96.3%/69.3%
+to 96.2%/63.1%**; the semantic correction is retained despite the
+lower fuzzy score. Strict AArch64 unresolved names fall **458 to 457**
+whole-archive and **218 to 217** JNI-reachable, with no new names.
+The preceding full ARM corpus is still the latest whole-project run;
+live startup remains unverified. Next priority: source-backed game and
+engine helper closure, then Android host and audio. See
+[the callback evidence](ANDROID_CHEAT_CALLBACK_ARM64_2026-10-26.md).
 
 `PaintCanvas::End3d` now implements the Android ARM-confirmed scene
 render-pass order, including material modes, fog, lighting, glow and

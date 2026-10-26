@@ -188,8 +188,9 @@ void OnCreateApplication(AbyssEngine::Engine *engine) {
     engine->appManager->SetApplicationData(data);
     engine->appManager->SetLoadingCallback(&loadingScreen, Globals::gFont);
 
+    MGame *game = new MGame();
     engine->appManager->RegisterApplicationModule(
-        2, reinterpret_cast<AbyssEngine::IApplicationModule *>(new MGame()));
+        2, reinterpret_cast<AbyssEngine::IApplicationModule *>(game));
     engine->appManager->RegisterApplicationModule(
         1, reinterpret_cast<AbyssEngine::IApplicationModule *>(new ModMainMenu()));
     engine->appManager->RegisterApplicationModule(
@@ -197,7 +198,7 @@ void OnCreateApplication(AbyssEngine::Engine *engine) {
     engine->appManager->RegisterApplicationModule(
         0, reinterpret_cast<AbyssEngine::IApplicationModule *>(new MTitle()));
 
-    engine->appManager->CheatSetCallback(&OnCheatActivated, nullptr);
+    engine->appManager->CheatSetCallback(&OnCheatActivated, game);
     engine->appManager->CheatAddCode(AbyssEngine::String("754753835", false), 0);
     engine->appManager->CheatAddCode(AbyssEngine::String("448366639", false), 1);
     engine->appManager->CheatAddCode(AbyssEngine::String("373352623", false), 2);
