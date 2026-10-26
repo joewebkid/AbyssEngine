@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (ARM64 matrix dispatch;
+earlier subsystem snapshots retain their dates)
+
+`PaintCanvas` fallback matrices and `PlayerEgo` rotation/turret math
+now call typed matrix operations on AArch64. The turret path no
+longer reads a 48-byte buffer as a 60-byte matrix or writes `m[15]`.
+Native and AArch64 static builds pass; ARMv7 compiles **209/209**
+units and `PlayerEgo.o` is byte-identical. Scoped `PaintCanvas`
+verification retains all **94 linked-exact / 23 byte-exact** matches.
+The last full ARM corpus remains **4,323/4,524** originals over
+**4,745** pairs, **94.79% source-shape / 84.31% strict fuzzy**,
+**2,607 linked-exact / 1,083 byte-exact**, zero skips. Strict
+JNI-initialize AArch64 unresolved names fall **14 → 10** with no new
+names. A game `.so`/APK and live matrix behavior remain unverified.
+See the [matrix evidence](ARM64_MATRIX_DISPATCH_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (PlayerEgo ARM64 shooting and tractor-beam
 dispatch; earlier subsystem snapshots retain their dates)
 

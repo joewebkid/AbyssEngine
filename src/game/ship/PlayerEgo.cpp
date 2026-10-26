@@ -1162,9 +1162,17 @@ void PlayerEgo::setRotation(float rx, float ry, float rz) {
     this->rotateX = rx;
     this->rotateY = ry;
     this->rotateZ = rz;
+#if __SIZEOF_POINTER__ == 8
+    auto *matrix = static_cast<Matrix *>(
+        Globals::Canvas->TransformGetLocal(this->field_0x4->transform));
+    if (matrix)
+        AbyssEngine::AEMath::MatrixSetRotation(
+            *matrix, this->rotateX, this->rotateY, this->rotateZ);
+#else
     void *t = *(void **) g_setRotation_transform;
     void *m = TransformGetLocal(t, this->field_0x4->transform);
     MatrixSetRotation(local, m, this->rotateX, this->rotateY, this->rotateZ);
+#endif
 }
 
 
@@ -2357,11 +2365,15 @@ void PlayerEgo::shoot(int weapon, int type) {
     if (this->turretActive != 0) {
         void *m1 = ((AEGeometry *) (this->geometry))->getMatrix();
         void *m2 = ((AEGeometry *) (this->turretGeometry))->getMatrix();
+#if __SIZEOF_POINTER__ == 8
+        Matrix mat = *static_cast<Matrix *>(m1) * *static_cast<Matrix *>(m2);
+#else
         float combined[0x30 / sizeof(float)];
         Mat_mul(combined, m1, m2);
         Matrix mat;
         for (int k = 0; k < 15; ++k) mat.m[k] = combined[k];
         mat.m[15] = 1.0f;
+#endif
         long long pos = ((long long) hi << 32) | (unsigned int) weapon;
         static_cast<Player *>(this->player)->shoot(2, pos, hi < 0, mat);
         return;
@@ -2508,10 +2520,18 @@ void PlayerEgo::rotate(float rx, float ry, float rz) {
     this->rotateX = this->rotateX + rx;
     this->rotateY = this->rotateY + ry;
     this->rotateZ = this->rotateZ + rz;
+#if __SIZEOF_POINTER__ == 8
+    auto *matrix = static_cast<Matrix *>(
+        Globals::Canvas->TransformGetLocal(this->field_0x4->transform));
+    if (matrix)
+        AbyssEngine::AEMath::MatrixSetRotation(
+            *matrix, this->rotateX, this->rotateY, this->rotateZ);
+#else
     int ido = this->field_0x4->transform;
     void *t = *(void **) g_rotate_transform;
     void *m = TransformGetLocal(t, ido);
     MatrixSetRotation(local, m, this->rotateX, this->rotateY, this->rotateZ);
+#endif
 }
 
 
