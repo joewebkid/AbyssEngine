@@ -32,13 +32,25 @@ The full ARM corpus compares **4,323/4,524** original functions over
 set loses or gains a function against the preceding full report.
 Native `gof2` and AArch64 `gof2` static-library builds pass.
 
-The strict JNI-initialize AArch64 link probe drops from **96 to 91**
-unresolved names. It removes six old wrapper names and exposes the
-previously hidden `paintcanvas_ext_remove_meshid` inside the now
+The strict JNI-initialize AArch64 link probe first drops from **96 to
+91** unresolved names. It removes six old wrapper names and exposes
+the previously hidden `paintcanvas_ext_remove_meshid` inside the now
 reachable typed `TransformRemoveMeshId`. The broader JNI-onload
-diagnostic drops **313 to 307** with no new names. The next resource
-task is implementing the original `ArrayRemove<Mesh *>` call in
-`TransformRemoveMeshId`.
+diagnostic first drops **313 to 307** with no new names.
+
+In the next focused change, `TransformRemoveMeshId` itself uses the
+existing `ArrayRemove<Mesh *>` specialization on the selected
+transform's mesh array. The original ARM function at `0x7b1a4`
+calls precisely that specialization; its implementation at `0x7b288`
+removes matching pointers and compacts the array, matching the
+recovered template. The focused ARMv7 check stays **100% source-shape,
+100% strict fuzzy and linked-exact** (not byte-exact). Native and
+AArch64 static builds pass. The second full ARM corpus remains at
+**4,323/4,524** originals over **4,745** pairs, **94.79% source-shape /
+84.29% strict fuzzy**, **2,607 linked-exact / 1,083 byte-exact**, zero
+skips, and no exact-set gains or losses. The strict AArch64 unresolved
+inventory then falls **91 to 90**; the broader diagnostic falls
+**307 to 306**, both with no new names.
 
 A game shared library and APK have not been built. Live resource,
 mesh-removal, material and animation-refresh behavior on Android

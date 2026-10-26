@@ -28,6 +28,8 @@ extern template void ArrayAdd<AbyssEngine::Resource *>(AbyssEngine::Resource * c
                                                         Array<AbyssEngine::Resource *> &);
 extern template void ArrayRemove<AbyssEngine::Transform *>(
     AbyssEngine::Transform *, Array<AbyssEngine::Transform *> &);
+extern template void ArrayRemove<AbyssEngine::Mesh *>(
+    AbyssEngine::Mesh *, Array<AbyssEngine::Mesh *> &);
 
 namespace AbyssEngine {
     class SpriteSystem;
@@ -490,8 +492,6 @@ void paintcanvas_ext_add_resource(void *resource, void *resources) {
     ArrayAdd(static_cast<AbyssEngine::Resource *>(resource),
              *static_cast<::Array<AbyssEngine::Resource *> *>(resources));
 }
-
-void paintcanvas_ext_remove_meshid(void *, void *);
 
 
 void paintcanvas_ext_gl_a(unsigned int);
@@ -1684,9 +1684,9 @@ void PaintCanvas::AddResource(AbyssEngine::Resource *resource) {
 void PaintCanvas::TransformRemoveMeshId(unsigned int transformIndex, unsigned int meshIndex) {
     if (transformIndex < this->transformCount &&
         meshIndex < this->meshCount) {
-        void *mesh = (this->meshes)[meshIndex];
-        PCTransformView *t = (PCTransformView *) (this->transforms)[transformIndex];
-        return paintcanvas_ext_remove_meshid(mesh, &t->meshCount);
+        Mesh *mesh = reinterpret_cast<Mesh *>(this->meshes[meshIndex]);
+        Transform *transform = reinterpret_cast<Transform *>(this->transforms[transformIndex]);
+        ArrayRemove(mesh, transform->meshes);
     }
 }
 

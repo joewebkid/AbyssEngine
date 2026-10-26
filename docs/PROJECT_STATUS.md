@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (`TransformRemoveMeshId` ARM64 link closure;
+earlier subsystem snapshots retain their dates)
+
+`TransformRemoveMeshId` now removes the selected `Mesh*` through the
+existing `ArrayRemove<Mesh *>` specialization, matching the Android
+ARM call. Focused ARMv7 verification remains **100% source-shape and
+strict fuzzy, linked-exact**. Native and AArch64 static builds pass.
+The full ARM corpus remains **4,323/4,524** originals over **4,745**
+pairs, **94.79% source-shape / 84.29% strict fuzzy**,
+**2,607 linked-exact / 1,083 byte-exact**, zero skips and no exact-set
+losses.
+The strict JNI-initialize AArch64 unresolved inventory falls **91 →
+90** and the broader diagnostic **307 → 306**, with no new names.
+A game `.so` or APK remains unbuilt. Live mesh removal on Android
+is unverified. See the
+[resource/mesh evidence](PAINTCANVAS_RESOURCE_MESH_CALLS_ARM64_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (PaintCanvas resource/mesh call recovery and
 AArch64 link closure; earlier subsystem snapshots retain their dates)
 
@@ -14,8 +31,8 @@ JNI-initialize AArch64 unresolved inventory falls **96 → 91**: six
 wrappers disappear and `paintcanvas_ext_remove_meshid` becomes
 reachable. The broader diagnostic falls **313 → 307** with no new
 names. A game `.so` or APK remains unbuilt; live Android behavior
-is unverified. Next priority: the original `ArrayRemove<Mesh *>`
-call in `TransformRemoveMeshId`. See the
+is unverified. The `TransformRemoveMeshId` follow-up is recorded above.
+See the
 [resource/mesh evidence](PAINTCANVAS_RESOURCE_MESH_CALLS_ARM64_2026-10-26.md).
 
 Last reviewed: 2026-10-26 (PaintCanvas draw dispatch and AArch64 link
