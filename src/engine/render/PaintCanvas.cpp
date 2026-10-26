@@ -457,7 +457,6 @@ void paintcanvas_ext_mat_intern(AbyssEngine::PaintCanvas *, AbyssEngine::Transfo
 
 void paintcanvas_ext_camera_apply(void *, unsigned int, unsigned int, unsigned int);
 
-void paintcanvas_ext_disable(int);
 
 int paintcanvas_ext_is_posteffect(void *);
 
@@ -685,11 +684,6 @@ char *paintcanvas_ext_find_mesh(void *, unsigned short);
 
 void paintcanvas_ext_remove_mesh(void *, unsigned int, int);
 
-void paintcanvas_ext_enable(int);
-
-void paintcanvas_ext_depthmask(int);
-
-void paintcanvas_ext_clear2(void *, unsigned int);
 
 void paintcanvas_ext_array_remove(void *, void *);
 
@@ -760,13 +754,6 @@ void paintcanvas_ext_dsc_str_copy(void *out, const AbyssEngine::String *src, boo
 
 void paintcanvas_ext_smfg_pushmat(const float *m, void *array);
 
-void paintcanvas_ext_ec_glEnable(unsigned int cap);
-
-int paintcanvas_ext_ec_getHeight(void *self);
-
-int paintcanvas_ext_ec_getWidth(void *self);
-
-void paintcanvas_ext_ec_glScissor(int x, int y, int w, int h);
 
 
 int paintcanvas_ext_font_get_spacing(void *);
@@ -1466,7 +1453,7 @@ void PaintCanvas::MeshSetTriangleCount(unsigned int index, unsigned short count)
 }
 
 void PaintCanvas::DisableClip() {
-    paintcanvas_ext_disable(0xc11);
+    glDisable(0xc11);
 }
 
 void PaintCanvas::TransformSetColor(unsigned int index, unsigned int color) {
@@ -3269,14 +3256,14 @@ void PaintCanvas::TransformRemoveMesh(unsigned int transformIndex, unsigned shor
     }
 }
 
-void PaintCanvas::ClearBuffer(unsigned int mask) {
-    paintcanvas_ext_enable(0xb71);
-    paintcanvas_ext_depthmask(1);
-    return paintcanvas_ext_clear2(this->engine, mask);
+void PaintCanvas::ClearBuffer(unsigned int color) {
+    glEnable(0xb71);
+    glDepthMask(1);
+    this->engine->ClearBuffer(color);
 }
 
 void PaintCanvas::ClearDepth() {
-    ClearBuffer(0x100);
+    glClear(0x100);
 }
 
 void PaintCanvas::DrawFrameBufferTexture(int, int, int, int, int, int) {
@@ -3925,18 +3912,18 @@ void PaintCanvas::SetMatForGlow(AbyssEngine::Material *glowSource) {
 }
 
 void PaintCanvas::EnableClip(int x, int y, int w, int h) {
-    paintcanvas_ext_ec_glEnable(0xc11);
+    glEnable(0xc11);
     int sx, sy, sw, sh;
     switch (this->gameOrientation) {
         case 0:
-            sx = x;
-            sy = y;
-            sw = w;
-            sh = h;
+            sx = y;
+            sy = x;
+            sw = h;
+            sh = w;
             break;
         case 1: {
-            int dispH = paintcanvas_ext_ec_getHeight(this);
-            int dispW = paintcanvas_ext_ec_getWidth(this);
+            int dispH = this->GetHeight();
+            int dispW = this->GetWidth();
             sx = dispH - (y + h);
             sy = dispW - (x + w);
             sw = h;
@@ -3944,15 +3931,15 @@ void PaintCanvas::EnableClip(int x, int y, int w, int h) {
             break;
         }
         case 2: {
-            int dispH = paintcanvas_ext_ec_getHeight(this);
-            sx = dispH - (y + h);
-            sy = x;
+            int dispH = this->GetHeight();
+            sx = x;
+            sy = dispH - (y + h);
             sw = w;
             sh = h;
             break;
         }
         case 3: {
-            int dispW = paintcanvas_ext_ec_getWidth(this);
+            int dispW = this->GetWidth();
             sx = dispW - (x + w);
             sy = y;
             sw = w;
@@ -3966,7 +3953,7 @@ void PaintCanvas::EnableClip(int x, int y, int w, int h) {
             sh = h;
             break;
     }
-    paintcanvas_ext_ec_glScissor(sx, sy, sw, sh);
+    glScissor(sx, sy, sw, sh);
 }
 
 void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,

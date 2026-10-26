@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (remaining PaintCanvas DrawImage2D calls;
+Last reviewed: 2026-10-26 (PaintCanvas clear/clip recovery;
 earlier subsystem snapshots retain their dates)
+
+`PaintCanvas::ClearDepth` now clears only depth as in the original ARM,
+and `EnableClip` uses the confirmed scissor coordinates for orientations
+0 and 2. The clear/clip methods call the original GLES and Engine
+targets directly. Native, AArch64 static and **209/209** ARMv7 units
+build. `ClearDepth` adds one linked-exact symbol; the PaintCanvas
+unit now has **93 linked-exact** and **23 byte-exact** with no losses.
+The full ARM corpus compares **4,323/4,524** original functions over
+**4,743** pairs with zero skips: mean source-shape/strict fuzzy is
+**94.72%/84.23%**, with **2,604 linked-exact** and **1,083 byte-exact**;
+neither exact set lost a symbol against the prior full run.
+Strict ARM64 unresolved names fall **469 → 461** whole-archive and
+**229 → 221** JNI-reachable, with no new names. Live rendering is
+unverified. See [the clear/clip evidence](PAINTCANVAS_CLEAR_CLIP_ARM64_2026-10-26.md).
 
 The remaining two `PaintCanvas::DrawImage2D` overloads now call the
 Android ARM-confirmed restore, canvas size, texture, matrix, GLES and

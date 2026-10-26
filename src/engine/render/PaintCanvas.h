@@ -132,7 +132,7 @@ namespace AbyssEngine {
 
         void EndBG();
 
-        void ClearBuffer(unsigned int mask);
+        void ClearBuffer(unsigned int color);
 
         void SetColor(unsigned int color);
 

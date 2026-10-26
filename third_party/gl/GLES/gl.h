@@ -46,6 +46,7 @@ GL_APICALL void GL_APIENTRY glDrawArrays(GLenum mode, GLint first, GLsizei count
 GL_APICALL void GL_APIENTRY glActiveTexture(GLenum texture);
 GL_APICALL void GL_APIENTRY glBindTexture(GLenum target, GLuint texture);
 GL_APICALL void GL_APIENTRY glScissor(GLint x, GLint y, GLsizei width, GLsizei height);
+GL_APICALL void GL_APIENTRY glClear(GLbitfield mask);
 GL_APICALL void GL_APIENTRY glFinish(void);
 void glFogf(GLenum pname, GLfloat param);
 void glFogfv(GLenum pname, const GLfloat *params);
