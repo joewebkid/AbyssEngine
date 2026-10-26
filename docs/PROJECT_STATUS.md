@@ -1,7 +1,20 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (LOD camera global recovery;
+Last reviewed: 2026-10-26 (PaintCanvas End3d recovery;
 earlier subsystem snapshots retain their dates)
+
+`PaintCanvas::End3d` now implements the Android ARM-confirmed scene
+render-pass order, including material modes, fog, lighting, glow and
+refraction. Its focused source-shape/strict fuzzy improves **0.3%/0.2%
+to 90.8%/21.5%**; it remains nonexact. Native, AArch64 static and
+**209/209** ARMv7 units build. The PaintCanvas unit retains all **93
+linked-exact** and **23 byte-exact** symbols with no losses. Strict
+AArch64 unresolved names fall **459 to 458** whole-archive and **219 to
+218** JNI-reachable, with no new names. The preceding full ARM corpus
+remains the latest whole-project snapshot; live scene rendering has not
+been tested. Next priority: source-backed JNI-reachable bridge/engine
+closure, Android host integration, and an ARM64 audio implementation.
+See [the End3d evidence](PAINTCANVAS_END3D_ARM64_2026-10-26.md).
 
 `LODManager::forceUpdate` now reads the ARM-confirmed `Globals::Canvas`
 and options field at `0x28`, avoiding two null file-local pointers.
