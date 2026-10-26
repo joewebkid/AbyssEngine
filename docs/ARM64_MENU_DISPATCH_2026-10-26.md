@@ -11,8 +11,12 @@ using `AbyssEngine::AEMath::Sinf`.
 The AArch64 path now calls the recovered `MissionsWindow` method,
 dispatches the background-music checks through the existing
 `FModSound` method, and uses the engine's `Sinf` in `Layout` and
-`SpaceLounge`. The changes are architecture guarded because these
-callers were already matched on ARMv7. Rebuilt ARMv7 objects are
+`SpaceLounge`. `MenuTouchWindow` also uses
+`ApplicationManager::GetApplicationData` and sends leaderboard results
+through `Globals::reportLeaderboards(Globals::globals)`, the call form
+shown in its Android `OnTouchEnd` body. The changes are architecture
+guarded because these callers were already matched on ARMv7. Rebuilt
+ARMv7 objects are
 byte-identical to their prior hashes:
 
 | Unit | SHA-256 before and after |
@@ -24,7 +28,7 @@ byte-identical to their prior hashes:
 
 Native and AArch64 static builds pass, and the ARMv7 build compiles
 **209/209** translation units. Strict JNI-initialize AArch64 link
-diagnostics fall from **39 to 35** unresolved names, with no new
+diagnostics fall from **39 to 33** unresolved names, with no new
 names. The full ARM corpus was not rerun for these architecture-only
 changes because the four affected ARMv7 objects are unchanged; the
 last full comparison is **4,323/4,524** originals, **94.79%
