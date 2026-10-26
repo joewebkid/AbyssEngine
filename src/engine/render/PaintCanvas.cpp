@@ -30,6 +30,10 @@ extern template void ArrayAdd<AbyssEngine::Resource *>(AbyssEngine::Resource * c
 namespace AbyssEngine {
     class SpriteSystem;
     class ImageFont;
+    float CameraSetPerspective(float fov, float aspectNum, float aspectDen, float near,
+                               Camera *cam);
+    float CameraSetPerspective(float p1, float aspectNum, float fov, float aspectDen,
+                               float near, Camera *cam);
     int MeshDraw(Engine *engine, Mesh *mesh);
     void MaterialDraw(PaintCanvas *canvas, Engine *engine, Material *material, bool setTextures);
     void SpriteSystemRelease(Engine *engine, SpriteSystem **slot);
@@ -427,13 +431,15 @@ static inline void paintcanvas_ext_gl_enable(unsigned int cap) { glEnable(cap); 
 
 void paintcanvas_ext_setprojmatrix3d(void *, float, float, float);
 
+#if __SIZEOF_POINTER__ == 4
+void paintcanvas_ext_camera_apply(void *, unsigned int, unsigned int, unsigned int);
+#endif
+
 int paintcanvas_ext_getdisplaywidth(void *);
 
 int paintcanvas_ext_getdisplayheight(void *);
 
 void paintcanvas_ext_mat_intern(AbyssEngine::PaintCanvas *, AbyssEngine::Transform *, AbyssEngine::Material *);
-
-void paintcanvas_ext_camera_apply(void *, unsigned int, unsigned int, unsigned int);
 
 
 int paintcanvas_ext_is_posteffect(void *);
@@ -520,14 +526,6 @@ void paintcanvas_ext_gl_str_assign(AbyssEngine::String *dst, void *src);
 
 void paintcanvas_ext_gl_str_dtor(void *s);
 
-int paintcanvas_ext_get_w(AbyssEngine::PaintCanvas *);
-
-int paintcanvas_ext_get_h(AbyssEngine::PaintCanvas *);
-
-void paintcanvas_ext_cam_persp4(float, float, float, float, float, void *);
-
-void paintcanvas_ext_cam_setcur(AbyssEngine::PaintCanvas *, unsigned int);
-
 
 void paintcanvas_ext_get_grav(void *);
 
@@ -609,8 +607,6 @@ void *paintcanvas_ext_tc_findres(void *self, unsigned short id);
 void paintcanvas_ext_start_fbo(void *);
 
 
-void paintcanvas_ext_cam_persp(float, float, float, float, void *);
-
 void paintcanvas_ext_dr2_restore(unsigned int flag, void *img);
 
 void paintcanvas_ext_dr2_settexture(void *self, unsigned int tex);
@@ -661,8 +657,6 @@ void paintcanvas_ext_smfg_pushmat(const float *m, void *array);
 
 
 
-int paintcanvas_ext_font_get_spacing(void *);
-
 void paintcanvas_ext_tg2d_memcpy(void *dst, void *src, unsigned int n);
 
 float paintcanvas_ext_tg2d_signedtofloat(int v, unsigned int mode);
@@ -686,8 +680,6 @@ void paintcanvas_ext_tg2di_invtransformvec(void *outMat, void *vec);
 void paintcanvas_ext_tg2di_vec_assign(void *dst, void *src);
 
 void paintcanvas_ext_tg2di_inner(void *out, void *self, void *childtf, int x, int y);
-
-void paintcanvas_ext_font_set_spacing(void *, int);
 
 
 static inline int pc_GetWidth(AbyssEngine::PaintCanvas *self) { return self->GetWidth(); }
@@ -1311,8 +1303,14 @@ unsigned int PaintCanvas::GetColor() {
 void PaintCanvas::CameraSetCurrent(unsigned int index) {
     this->currentCamera = index;
     if (index < this->cameras.count) {
+#if __SIZEOF_POINTER__ == 8
+        Camera *cam = this->cameras.data_[index];
+        return this->SetProjectionMatrix3d(
+            cam->position[0], cam->position[1], cam->position[2]);
+#else
         PCCameraParamsView *cam = (PCCameraParamsView *) (this->cameras.data_)[index];
         return paintcanvas_ext_camera_apply(this, cam->raw[0], cam->raw[1], cam->raw[2]);
+#endif
     }
 }
 
@@ -2090,12 +2088,12 @@ void PaintCanvas::MeshChangeMaterial(unsigned int meshIndex, unsigned short matI
 
 void PaintCanvas::CameraSetPerspective(unsigned int index, float a, float b, float c) {
     if (index < this->cameras.count) {
-        float w = (float) paintcanvas_ext_get_w(this);
-        float h = (float) paintcanvas_ext_get_h(this);
-        void *cam = (this->cameras.data_)[index];
-        paintcanvas_ext_cam_persp4(a, b, c, w, h, cam);
+        float w = (float) this->GetWidth();
+        float h = (float) this->GetHeight();
+        Camera *cam = this->cameras.data_[index];
+        AbyssEngine::CameraSetPerspective(a, b, c, w, h, cam);
         if (this->currentCamera == index) {
-            return paintcanvas_ext_cam_setcur(this, index);
+            return this->CameraSetCurrent(index);
         }
     }
 }
@@ -3522,12 +3520,12 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
 
 void PaintCanvas::CameraSetPerspective(unsigned int index, float fov, float aspect) {
     if (index < this->cameras.count) {
-        float w = (float) paintcanvas_ext_get_w(this);
-        float h = (float) paintcanvas_ext_get_h(this);
-        void *cam = (this->cameras.data_)[index];
-        paintcanvas_ext_cam_persp(fov, aspect, w, h, cam);
+        float w = (float) this->GetWidth();
+        float h = (float) this->GetHeight();
+        Camera *cam = this->cameras.data_[index];
+        AbyssEngine::CameraSetPerspective(fov, aspect, w, h, cam);
         if (this->currentCamera == index) {
-            return paintcanvas_ext_cam_setcur(this, index);
+            return this->CameraSetCurrent(index);
         }
     }
 }
@@ -4070,8 +4068,8 @@ void PaintCanvas::MeshCreate(unsigned short a, unsigned short b,
 
 int PaintCanvas::FontGetSpacing(unsigned int index) {
     if (index < this->fonts.count) {
-        void *font = (this->fonts.data_)[index];
-        return paintcanvas_ext_font_get_spacing(font);
+        ImageFont *font = this->fonts.data_[index];
+        return ImageFontGetSpacing(font);
     }
     return 0;
 }
@@ -4622,8 +4620,8 @@ void PaintCanvas::DrawTransform(unsigned int index, const AbyssEngine::AEMath::M
 
 void PaintCanvas::FontSetSpacing(unsigned int index, short spacing) {
     if (index < this->fonts.count) {
-        void *font = (this->fonts.data_)[index];
-        return paintcanvas_ext_font_set_spacing(font, spacing);
+        ImageFont *font = this->fonts.data_[index];
+        return ImageFontSetSpacing(font, spacing);
     }
 }
 

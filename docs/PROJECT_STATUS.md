@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (PaintCanvas camera/font call recovery for
+AArch64 link closure; earlier subsystem snapshots retain their dates)
+
+`PaintCanvas` now delegates both perspective overloads, active camera
+selection, and font spacing to existing typed methods. The 64-bit camera
+selection path uses `SetProjectionMatrix3d`; the ARM32 raw-word call form
+is retained after a direct typed call lost a pre-existing linked-exact
+result. Native and AArch64 static builds pass. The full ARM corpus
+compares **4,323/4,524** originals over **4,745** pairs: **94.79%
+source-shape / 84.29% strict fuzzy**, **2,607 linked-exact /
+1,083 byte-exact**, zero skips and no exact-set loss. The strict
+JNI-initialize AArch64 unresolved inventory falls **107 → 100**; the
+broader diagnostic falls **325 → 317**, with no new names. The game
+`.so` and APK remain unbuilt. Live projection and font behavior on
+Android is unverified. See the
+[camera/font evidence](PAINTCANVAS_CAMERA_FONT_CALLS_ARM64_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (typed station and system calls in the ARM64
 startup link path; earlier subsystem snapshots retain their dates)
 
