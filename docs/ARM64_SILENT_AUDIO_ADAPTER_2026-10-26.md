@@ -38,3 +38,19 @@ unresolved names and the broader JNI-onload diagnostic from
 are game-side `FModSound` wrappers that need separate recovery or
 silent-mode routing. A complete game shared library and APK are not
 built, and no Android runtime behavior is verified yet.
+
+## 64-bit object allocation follow-up
+
+`Globals` originally allocates `0x243c` bytes and calls an external
+`FModSound` constructor. That allocation matches the 32-bit object,
+but `sizeof(FModSound)` is **18,504 bytes** on the 64-bit host, while
+`0x243c` is **9,276 bytes**. An AArch64 compile-time assertion also
+confirms that the object exceeds the old allocation. The 64-bit path
+now uses `new FModSound()`; the original allocation and call remain on
+ARMv7. Native and AArch64 static builds pass. The strict and broader
+AArch64 unresolved inventories fall **56 to 55** and **266 to 265**
+respectively, removing `FModSound_ctor(void*)` without new names.
+The rebuilt ARMv7 `Globals.o` retains SHA-256
+`dc07e21db114a48a47aec1b189c0174fceaf733682c8d3e8cdfaf6d4cd1505`;
+`FModSound.o` remains at the hash above. Runtime ownership and other
+64-bit sound call sites still need device validation.

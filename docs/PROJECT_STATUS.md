@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (64-bit `FModSound` allocation in `Globals`;
+earlier subsystem snapshots retain their dates)
+
+`Globals` now allocates `FModSound` by its actual C++ size on 64-bit
+targets: **18,504 bytes** on the host, compared with the original
+hard-coded **9,276 bytes**. The ARMv7 allocation remains unchanged.
+Native and AArch64 static builds pass, and rebuilt ARMv7 `Globals.o`
+and `FModSound.o` hashes are unchanged. The last full ARM corpus remains
+**4,323/4,524** originals over **4,745** pairs, **94.79%
+source-shape / 84.30% strict fuzzy**, **2,607 linked-exact /
+1,083 byte-exact**, zero skips. Strict JNI-initialize ARM64 unresolved
+names fall **56 → 55** and the broader diagnostic **266 → 265**,
+with no new names. The shared game `.so` and APK are not yet built;
+live allocation remains unverified. See the
+[silent adapter and allocation evidence](ARM64_SILENT_AUDIO_ADAPTER_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (first ARM64-only silent audio adapter;
 earlier subsystem snapshots retain their dates)
 

@@ -1864,8 +1864,12 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     Status::gStatus->resetGame();
     ((RecordHandler *) (*rhSlotP))->loadOptions();
 
+#if __SIZEOF_POINTER__ == 8
+    void *fmod = new FModSound();
+#else
     void *fmod = ::operator new(0x243c);
     FModSound_ctor(fmod);
+#endif
     FModSound **fmodSlotP = &Globals::sound;
     *fmodSlotP = (FModSound *) fmod;
     (*fmodSlotP)->init();
