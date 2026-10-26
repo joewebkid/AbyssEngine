@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (Android TextureLightShader recovery)
+
+`TextureLightShader::Init` now uses the exact original Android ARM vertex
+and fragment strings and uniform/attribute names on ARMv7 and ARM64. Its
+ARMv7 source-shape rose **86.3% → 100%** and gained a linked-exact match.
+The six-function family now averages **99.8% source-shape**, or **99.41%**
+weighted by original instructions. Native and ARM64 libraries build; ARMv7
+compiles 209/209 units. The full corpus compares **4,323/4,524** originals
+across 4,745 pairs, **94.80% source-shape / 84.31% strict fuzzy**,
+**2,608 linked-exact / 1,083 byte-exact**, zero skips and no exact-set
+losses. The signed silent ARM64 APK is rebuilt but has not been installed on
+the disconnected target phone; scene lighting remains unverified. Next,
+confirm GOF2 as the foreground activity for a live title/menu capture, then
+exercise a scene using this lighting path. See the
+[texture-light evidence](ARM64_TEXTURE_LIGHT_SHADER_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (ARM64 alpha-test texture shader recovery)
 
 `TextureAlphaTestShader` now uses the three exact Android ARM GLSL literals,
