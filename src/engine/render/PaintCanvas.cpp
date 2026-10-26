@@ -7,6 +7,9 @@
 #include "engine/render/ImageFont.h"
 #include "engine/render/SpriteSystem.h"
 #include "engine/render/AELoadedTexture.h"
+#include "engine/render/ResourceTexture.h"
+#include "engine/render/ResourceMesh.h"
+#include "engine/render/ResourceTransform.h"
 #include "engine/core/Array.h"
 #include "engine/core/Node.h"
 #include "engine/math/Transform.h"
@@ -302,23 +305,6 @@ struct PCTransformView {
 #pragma pack(pop)
 
 // ---------------------------------------------------------------------------
-// Cube-texture record (entries of PaintCanvas::cubeTextures).
-//   +0x00 int      gl texture id (-1 = unloaded)
-//   +0x04 ...      AEString path field (passed by address)
-//   +0x10 float    creation scale
-//   +0x14 uint8    restore flag
-//   +0x18 int      memory-accounting size
-// ---------------------------------------------------------------------------
-struct PCCubeTexView {
-    int glTexId;       // +0x00
-    char pathField[0x10 - 0x04]; // AEString path lives here (+0x04)
-    float scale;       // +0x10
-    uint8_t restoreFlag; // +0x14
-    uint8_t pad15[0x18 - 0x15];
-    int memSize;       // +0x18
-};
-
-// ---------------------------------------------------------------------------
 // Gravity sample returned by the *_getgrav externs.
 //   +0x08 double    angle value
 // ---------------------------------------------------------------------------
@@ -368,9 +354,6 @@ static_assert(offsetof(PCTransformView, childCount) == 0x4c, "tf childcount");
 static_assert(offsetof(PCTransformView, visible) == 0xec, "tf vis");
 static_assert(offsetof(PCTransformView, animLength) == 0xf8, "tf animlen");
 static_assert(offsetof(PCTransformView, animStart) == 0x100, "tf animstart");
-static_assert(offsetof(PCCubeTexView, scale) == 0x10, "cube scale");
-static_assert(offsetof(PCCubeTexView, restoreFlag) == 0x14, "cube restore");
-static_assert(offsetof(PCCubeTexView, memSize) == 0x18, "cube mem");
 static_assert(offsetof(PCGravView, angle) == 0x08, "grav angle");
 static_assert(offsetof(PCRegionView, height) == 0x1c, "region h");
 #endif
@@ -612,20 +595,6 @@ void paintcanvas_ext_rpm_glLoadMatrixf(void *m);
 void paintcanvas_ext_rpm_glFinish();
 
 void paintcanvas_ext_rpm_loadproj(void *eng, void *m);
-
-void paintcanvas_ext_dtor_releaseall(void *self);
-
-void paintcanvas_ext_dtor_op_delete(void *p);
-
-void *paintcanvas_ext_dtor_restex_dtor(void *p);
-
-void *paintcanvas_ext_dtor_resmesh_dtor(void *p);
-
-void *paintcanvas_ext_dtor_restransform_dtor(void *p);
-
-void paintcanvas_ext_dtor_str_dtor(void *p);
-
-void paintcanvas_ext_dtor_meshrelease(void *eng, void *meshptr);
 
 
 char *paintcanvas_ext_find_mesh(void *, unsigned short);
@@ -3000,7 +2969,12 @@ void PaintCanvas::SetTexture(unsigned int texture, unsigned int slot) {
 }
 
 PaintCanvas::~PaintCanvas() {
-    paintcanvas_ext_dtor_releaseall(this);
+    this->ReleaseAllResources();
+
+    auto releaseRawArray = [](auto &data) {
+        if (data) ::operator delete[](data);
+        data = nullptr;
+    };
 
     for (unsigned int i = 0; i < this->resources.count; i++) {
         PCResourceView *res = (PCResourceView *) (this->resources.data_)[i];
@@ -3011,21 +2985,21 @@ PaintCanvas::~PaintCanvas() {
                 case 1:
                 case 3:
                 case 6:
-                    paintcanvas_ext_dtor_op_delete(payload);
+                    ::operator delete(payload);
                     break;
                 case 2:
                     if (payload) {
-                        paintcanvas_ext_dtor_op_delete(paintcanvas_ext_dtor_restex_dtor(payload));
+                        delete static_cast<ResourceTexture *>(payload);
                     }
                     break;
                 case 4:
                     if (payload) {
-                        paintcanvas_ext_dtor_op_delete(paintcanvas_ext_dtor_resmesh_dtor(payload));
+                        delete static_cast<ResourceMesh *>(payload);
                     }
                     break;
                 case 5:
                     if (payload) {
-                        paintcanvas_ext_dtor_op_delete(paintcanvas_ext_dtor_restransform_dtor(payload));
+                        delete static_cast<ResourceTransform *>(payload);
                     }
                     break;
                 default:
@@ -3033,164 +3007,35 @@ PaintCanvas::~PaintCanvas() {
             }
             void *cell = (this->resources.data_)[i];
             if (cell != 0) {
-                paintcanvas_ext_dtor_op_delete(cell);
+                ::operator delete(cell);
             }
             (this->resources.data_)[i] = 0;
-
-            {
-                PCArrayHeader *a = (PCArrayHeader *) &this->glowMeshes_count;
-                for (uint32_t j = 0; j < a->count; ++j) {
-                    void *e = ((void **) a->data)[j];
-                    if (e != nullptr)
-                        ::operator delete(e);
-                }
-                a->count = 0;
-            }
-            {
-                PCArrayHeader *a = (PCArrayHeader *) &this->glowMatA_count;
-                ::operator delete(a->data);
-                a->data = nullptr;
-                a->count = 0;
-                a->capacity = 0;
-            }
-            {
-                PCArrayHeader *a = (PCArrayHeader *) &this->glowMatB_count;
-                ::operator delete(a->data);
-                a->data = nullptr;
-                a->count = 0;
-                a->capacity = 0;
-            }
-            {
-                PCArrayHeader *a = (PCArrayHeader *) &this->glowUints_count;
-                for (uint32_t j = 0; j < a->count; ++j) {
-                    void *e = ((void **) a->data)[j];
-                    if (e != nullptr)
-                        ::operator delete(e);
-                }
-                a->count = 0;
-            }
-            {
-                PCArrayHeader *a = (PCArrayHeader *) &this->glowMatC_count;
-                ::operator delete(a->data);
-                a->data = nullptr;
-                a->count = 0;
-                a->capacity = 0;
-            }
+            releaseRawArray(this->glowMeshes_data);
+            releaseRawArray(this->glowMatA_data);
+            releaseRawArray(this->glowMatB_data);
+            releaseRawArray(this->glowUints_data);
+            releaseRawArray(this->glowMatC_data);
         }
     }
 
-    paintcanvas_ext_dtor_meshrelease(this->engine, &this->quad2dMesh);
-    paintcanvas_ext_dtor_meshrelease(this->engine, &this->lineMesh);
+    MeshRelease(this->engine, &this->quad2dMesh);
+    MeshRelease(this->engine, &this->lineMesh);
 
     for (unsigned int i = 0; i < this->cubeTextures.count; i++) {
-        PCCubeTexView *tex = (PCCubeTexView *) (this->cubeTextures.data_)[i];
+        AELoadedTexture *tex = this->cubeTextures.data_[i];
         if (tex != 0) {
-            paintcanvas_ext_dtor_str_dtor(tex->pathField);
-            paintcanvas_ext_dtor_op_delete(tex);
+            delete tex;
         }
-        (this->cubeTextures.data_)[i] = 0;
+        this->cubeTextures.data_[i] = 0;
     }
-
-    {
-        PCArrayHeader *a = (PCArrayHeader *) &this->glowMatC_count;
-        ::operator delete(a->data);
-        a->data = nullptr;
-        a->count = 0;
-        a->capacity = 0;
-    }
-    {
-        PCArrayHeader *a = (PCArrayHeader *) &this->glowUints_count;
-        ::operator delete(a->data);
-        a->data = nullptr;
-        a->count = 0;
-        a->capacity = 0;
-    }
-    {
-        PCArrayHeader *a = (PCArrayHeader *) &this->glowMatB_count;
-        ::operator delete(a->data);
-        a->data = nullptr;
-        a->count = 0;
-        a->capacity = 0;
-    }
-    {
-        PCArrayHeader *a = (PCArrayHeader *) &this->glowMatA_count;
-        ::operator delete(a->data);
-        a->data = nullptr;
-        a->count = 0;
-        a->capacity = 0;
-    }
-    {
-        PCArrayHeader *a = (PCArrayHeader *) &this->glowMeshes_count;
-        ::operator delete(a->data);
-        a->data = nullptr;
-        a->count = 0;
-        a->capacity = 0;
-    }
-    {
-        PCArrayHeader *a = (PCArrayHeader *) &this->spriteSystems;
-        ::operator delete(a->data);
-        a->data = nullptr;
-        a->count = 0;
-        a->capacity = 0;
-    }
-    {
-        PCArrayHeader *a = (PCArrayHeader *) &this->materials;
-        ::operator delete(a->data);
-        a->data = nullptr;
-        a->count = 0;
-        a->capacity = 0;
-    }
-    {
-        PCArrayHeader *a = (PCArrayHeader *) &this->cameras;
-        ::operator delete(a->data);
-        a->data = nullptr;
-        a->count = 0;
-        a->capacity = 0;
-    }
-    {
-        PCArrayHeader *a = (PCArrayHeader *) &this->transformCount;
-        ::operator delete(a->data);
-        a->data = nullptr;
-        a->count = 0;
-        a->capacity = 0;
-    }
-    {
-        PCArrayHeader *a = (PCArrayHeader *) &this->images;
-        ::operator delete(a->data);
-        a->data = nullptr;
-        a->count = 0;
-        a->capacity = 0;
-    }
-    {
-        PCArrayHeader *a = (PCArrayHeader *) &this->fonts;
-        ::operator delete(a->data);
-        a->data = nullptr;
-        a->count = 0;
-        a->capacity = 0;
-    }
-    {
-        PCArrayHeader *a = (PCArrayHeader *) &this->resources;
-        ::operator delete(a->data);
-        a->data = nullptr;
-        a->count = 0;
-        a->capacity = 0;
-    }
-    {
-        PCArrayHeader *a = (PCArrayHeader *) &this->meshCount;
-        ::operator delete(a->data);
-        a->data = nullptr;
-        a->count = 0;
-        a->capacity = 0;
-    }
-    {
-        PCArrayHeader *a = (PCArrayHeader *) &this->cubeTextures;
-        ::operator delete(a->data);
-        a->data = nullptr;
-        a->count = 0;
-        a->capacity = 0;
-    }
+    releaseRawArray(this->glowMatC_data);
+    releaseRawArray(this->glowUints_data);
+    releaseRawArray(this->glowMatB_data);
+    releaseRawArray(this->glowMatA_data);
+    releaseRawArray(this->glowMeshes_data);
+    releaseRawArray(this->transforms);
+    releaseRawArray(this->meshes);
 }
-
 
 void PaintCanvas::Image2DCreate(unsigned short resId, unsigned int &out) {
     PCResourceView *res = (PCResourceView *) this->FindResource(resId);

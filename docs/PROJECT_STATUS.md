@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (PaintCanvas destructor recovery;
+earlier subsystem snapshots retain their dates)
+
+`PaintCanvas::~PaintCanvas` now uses the recovered resource and mesh
+destructors and releases glow array storage without interpreting color
+values as pointers. Named raw fields avoid a 32-bit header cast that
+read wrong pointers on AArch64. A 64-bit production-body smoke test
+passes at `-O0/-O2`; native and AArch64 static builds pass. The ARM
+destructor rises **79.2% → 88.0% source-shape** and **30.2% → 68.1%
+strict fuzzy**. Full ARM corpus: **4,323/4,524** originals over
+**4,745** pairs, **94.78% source-shape / 84.29% strict fuzzy**,
+**2,607 linked-exact / 1,083 byte-exact**, zero skips and exact-set
+losses. Strict JNI-initialize AArch64 unresolved names remain **130**;
+broader link diagnostic falls **354 → 347** with no new names. The
+game `.so` and APK are not yet built; compatible audio, further engine
+closure, Android packaging, and live runtime checks remain. See the
+[destructor evidence](PAINTCANVAS_DESTRUCTOR_ARM64_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (PaintCanvas texture lifecycle recovery;
 earlier subsystem snapshots retain their dates)
 
