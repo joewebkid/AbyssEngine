@@ -349,6 +349,7 @@ AbyssEngine::ApplicationManager *ApplicationManager::gAppManager = nullptr;
 #include "game/ui/Layout.h"
 
 #include "game/mission/Mission.h"
+#include "game/mission/Generator.h"
 #include "game/world/Station.h"
 #include "game/mission/RecordHandler.h"
 #include "game/world/SolarSystem.h"
@@ -1385,10 +1386,18 @@ unsigned int Globals::createBillBoard(int halfExtentXY, int halfExtentZ,
 Array<BoundingVolume *> *Globals::getWreckCollision(int kind, AEGeometry *geom) {
     (void) geom;
 
+#if __SIZEOF_POINTER__ == 8
+    FileRead *fr = new FileRead();
+#else
     void *fr = ::operator new(1);
     FileRead_ctor(fr);
+#endif
     Array<int> *data = ((FileRead *) fr)->loadWreckCollision(kind);
+#if __SIZEOF_POINTER__ == 8
+    delete fr;
+#else
     ::operator delete(FileRead_dtor(fr));
+#endif
 
     Array<BoundingVolume *> *outArr = nullptr;
     if (data != 0) {
@@ -1802,9 +1811,13 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     (void) engine;
     void **missionSlot = &Mission::empty;
     if (*missionSlot == 0) {
+#if __SIZEOF_POINTER__ == 8
+        *missionSlot = new Mission();
+#else
         void *m = ::operator new(0x78);
         Mission_ctor(m);
         *missionSlot = m;
+#endif
     }
 
     GameSettingsRecord *settings = (GameSettingsRecord *) Globals::options;
@@ -1826,12 +1839,20 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     *flagFFFF = -1;
     *langSettingSlot = (lang == 0) ? 6 : 0xc;
 
+#if __SIZEOF_POINTER__ == 8
+    Galaxy *galaxy = new Galaxy();
+#else
     void *galaxy = ::operator new(8);
     Galaxy_ctor(galaxy);
+#endif
     Globals::galaxy = galaxy;
     Galaxy::gGalaxy = (Galaxy *) galaxy;
+#if __SIZEOF_POINTER__ == 8
+    Achievements *ach = new Achievements();
+#else
     void *ach = ::operator new(0x28);
     Achievements_ctor(ach);
+#endif
     Globals::achievements = ach;
     Achievements::gAchievements = (Achievements *) ach;
     void *statusStorage = ::operator new(sizeof(Status) > 0x1f0 ? sizeof(Status) : 0x1f0);
@@ -1841,11 +1862,19 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     ImageFactory *imgFac = new ImageFactory();
     Globals::imageFactory = imgFac;
 
+#if __SIZEOF_POINTER__ == 8
+    FileRead *fr = new FileRead();
+#else
     void *fr = ::operator new(1);
     FileRead_ctor(fr);
+#endif
     Globals::items = ((FileRead *) fr)->loadItemsBinary();
     Globals::ships = ((FileRead *) fr)->loadShipsBinary();
+#if __SIZEOF_POINTER__ == 8
+    delete fr;
+#else
     ::operator delete(FileRead_dtor(fr));
+#endif
 
     if (Globals::Canvas == nullptr) {
         Globals::Canvas = app->paintCanvas;
@@ -1854,14 +1883,22 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     ApplicationManager::gAppManager = app;
     app->VibrateEnable(0);
 
+#if __SIZEOF_POINTER__ == 8
+    AERandom *rng = new AERandom();
+#else
     void *rng = ::operator new(8);
     AERandom_ctor(rng);
+#endif
     Globals::globals = this;
     Globals::rnd = rng;
     AERandom::gRandom = (AbyssEngine::AERandom *) rng;
 
+#if __SIZEOF_POINTER__ == 8
+    Generator *gen = new Generator();
+#else
     void *gen = ::operator new(1);
     Generator_ctor(gen);
+#endif
     Globals::generator = gen;
 
     RecordHandler *rh = new RecordHandler();
@@ -2264,13 +2301,21 @@ int Globals::getDialogueSoundId(int code, Agent *agent) {
 }
 
 String Globals::getRandomPlanetName() {
+#if __SIZEOF_POINTER__ == 8
+    FileRead *f = new FileRead();
+#else
     FileRead *f = (FileRead *) ::operator new(1);
     FileRead_ctor(f);
+#endif
     int which = nextInt_71ad0(static_cast<AbyssEngine::AERandom *>(Globals::rnd), 0x64);
     Station *st = f->loadStation(which);
     String name = st->getName();
     delete st;
+#if __SIZEOF_POINTER__ == 8
+    delete f;
+#else
     ::operator delete(FileRead_dtor(f));
+#endif
     return name;
 }
 

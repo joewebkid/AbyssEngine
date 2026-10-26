@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (`Globals` typed constructors for AArch64;
+earlier subsystem snapshots retain their dates)
+
+`Globals` now allocates `Mission`, `Galaxy`, `Achievements`,
+`FileRead`, `AERandom`, and `Generator` by their actual C++ sizes on
+AArch64 and invokes their recovered constructors/destructors. Native
+and AArch64 static builds pass; ARMv7 compiles **209/209** units and
+`Globals.o` is byte-identical. The last full ARM corpus remains
+**4,323/4,524** originals over **4,745** pairs, **94.79%
+source-shape / 84.31% strict fuzzy**, **2,607 linked-exact / 1,083
+byte-exact**, zero skips. Strict JNI-initialize AArch64 unresolved
+names fall **30 → 23** with no new names. A game `.so`/APK and live
+asset loading remain unverified. See the
+[constructor evidence](GLOBALS_TYPED_CONSTRUCTORS_ARM64_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (ARM64 slider volumes and map input;
 earlier subsystem snapshots retain their dates)
 
