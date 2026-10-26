@@ -63,8 +63,6 @@ void *ApplicationManager_GetApplicationData();
 
 void Status_changeCredits(void *globals);
 
-float VectorSignedToFloat(int v, int mode);
-
 // File-local globals. Defined once here as file-statics; only referenced
 // within this translation unit.
 static void **g_hw_globals;

@@ -663,12 +663,6 @@ void paintcanvas_ext_smfg_pushmat(const float *m, void *array);
 
 int paintcanvas_ext_font_get_spacing(void *);
 
-float paintcanvas_ext_fsp_unsignedtofloat(unsigned int v, unsigned int mode);
-
-void paintcanvas_ext_fsp_glFogf(unsigned int pname, float v);
-
-void paintcanvas_ext_fsp_glFogfv(unsigned int pname, void *v);
-
 void paintcanvas_ext_tg2d_memcpy(void *dst, void *src, unsigned int n);
 
 float paintcanvas_ext_tg2d_signedtofloat(int v, unsigned int mode);
@@ -4135,18 +4129,18 @@ void PaintCanvas::MeshCreate(unsigned short resId, unsigned int &out,
 void PaintCanvas::FogSetParameter(AbyssEngine::FogMode mode, float fogStart, float fogEnd,
                                   float fogDensity, unsigned int color) {
     if (!Engine::enableShader) {
-        float modeF = paintcanvas_ext_fsp_unsignedtofloat((unsigned int) mode, 0);
-        paintcanvas_ext_fsp_glFogf(0xb65, modeF);
-        paintcanvas_ext_fsp_glFogf(0xb62, fogDensity);
-        paintcanvas_ext_fsp_glFogf(0xb63, fogStart);
-        paintcanvas_ext_fsp_glFogf(0xb64, fogEnd);
+        float modeF = static_cast<float>(static_cast<unsigned int>(mode));
+        glFogf(0xb65, modeF);
+        glFogf(0xb62, fogDensity);
+        glFogf(0xb63, fogStart);
+        glFogf(0xb64, fogEnd);
 
         float col[4];
         col[0] = float(color >> 24) / 255.0f;
         col[1] = float((color >> 16) & 0xff) / 255.0f;
         col[2] = float((color >> 8) & 0xff) / 255.0f;
         col[3] = float(color & 0xff) / 255.0f;
-        paintcanvas_ext_fsp_glFogfv(0xb66, col);
+        glFogfv(0xb66, col);
     } else {
         Engine *eng = (Engine *) this->engine;
         eng->fogMinDist = fogStart;

@@ -37,8 +37,6 @@ static constexpr int CutScene_shipVerticalOffsets[64] = {
     440, 340, 170, 470, 170, 170, 170, 170, 200, 170, 250, 150, 170, 250, 270, 170,
 };
 
-float VectorSignedToFloat(int v, int mode);
-
 void MatrixSetRotation(void *m, float x, float y, float z);
 
 void MatrixSetTranslation(void *m, float x, float y, float z);
@@ -148,7 +146,7 @@ void CutScene::process(int /*delta*/) {
     PaintCanvas *canvas = PaintCanvas::gCanvas;
 
     if (this->mode == 2) {
-        float ft = VectorSignedToFloat((int) this->frameDelta, 0);
+        float ft = static_cast<float>(static_cast<int>(this->frameDelta));
         this->cameraRotX = this->cameraRotX + this->rotationSpeed * ft;
         Matrix local = *static_cast<const Matrix *>(canvas->CameraGetLocal(this->cameraId74));
         AbyssEngine::AEMath::MatrixSetRotation(local, 0.0f, this->cameraRotX, 0.0f);
@@ -164,18 +162,18 @@ void CutScene::process(int /*delta*/) {
 
             if (e0 != nullptr && ((KIPlayer *) e0)->geometry != nullptr) {
                 AEGeometry *g0 = ((KIPlayer *) e0)->geometry;
-                float step = VectorSignedToFloat((int) this->frameDelta, 0);
+                float step = static_cast<float>(static_cast<int>(this->frameDelta));
                 g0->translate(step * 0.1f, 0.0f, step * 0.001f);
-                float reverseStep = VectorSignedToFloat((int) (0u - this->frameDelta), 0);
+                float reverseStep = static_cast<float>(static_cast<int>(0u - this->frameDelta));
                 g0->rotate(reverseStep * 0.0002f, step * 0.0002f,
                            reverseStep * 0.00018f);
             }
             void *e1 = (*enemies)[n - 1];
             if (e1 != nullptr && ((KIPlayer *) e1)->geometry != nullptr) {
                 AEGeometry *g1 = ((KIPlayer *) e1)->geometry;
-                float step = VectorSignedToFloat((int) this->frameDelta, 0);
+                float step = static_cast<float>(static_cast<int>(this->frameDelta));
                 g1->translate(step * 0.1f, 0.0f, 0.0f);
-                float reverseStep = VectorSignedToFloat((int) (0u - this->frameDelta), 0);
+                float reverseStep = static_cast<float>(static_cast<int>(0u - this->frameDelta));
                 g1->rotate(step * 0.0002f, reverseStep * 0.0005f,
                            reverseStep * 0.0003f);
             }

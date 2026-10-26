@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (CutScene numeric conversion and fog calls;
+earlier subsystem snapshots retain their dates)
+
+`CutScene::process` now converts the signed frame delta directly, as
+the Android ARM code does. `PaintCanvas::FogSetParameter` calls the
+existing GLES1 compatibility functions instead of undefined wrappers;
+the original functions are empty on this path. Native and AArch64
+static builds pass. ARM source-shape rises **94.0% → 95.0%** for
+`CutScene::process` and **92.0% → 100.0%** for `FogSetParameter`;
+the latter also reaches **100.0% strict fuzzy**. Full ARM corpus:
+**4,323/4,524** originals over **4,745** pairs, **94.79%
+source-shape / 84.29% strict fuzzy**, **2,607 linked-exact /
+1,083 byte-exact**, zero skips and exact-set losses. Strict
+JNI-initialize ARM64 unresolved names fall **124 → 120**; the broader
+diagnostic falls **341 → 338**, with no new names. The game `.so` and
+APK are not yet built; live gameplay remains unverified. Next priority:
+the five `TargetFollowCamera` wrapper calls in `MGame`. See the
+[numeric/fog evidence](NUMERIC_FOG_CALLS_ARM64_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (particle-system call and ARM64 ABI recovery;
 earlier subsystem snapshots retain their dates)
 
