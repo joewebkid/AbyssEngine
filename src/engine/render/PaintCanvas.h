@@ -54,7 +54,7 @@ namespace AbyssEngine {
         unsigned char _pad_0x1[3];
 
         int culledCount;
-        char *quad2dMesh;
+        Mesh *quad2dMesh;
         int field_0xc;
         // Ghidra ground truth (decompiled ChangeCubeTexture): the cube-texture Array lives at 0x10
         // (count=field_0x10, data=field_0x14, capacity=field_0x18). Our decomp had duplicated it as a
@@ -98,7 +98,7 @@ namespace AbyssEngine {
         unsigned int glowMatC_count;
         char *glowMatC_data;
         unsigned int glowMatC_cap;
-        char *lineMesh;
+        Mesh *lineMesh;
         unsigned int field_0x1cc;
         float lineVerts[8];
         unsigned char bgFlagSaved;

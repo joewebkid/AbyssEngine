@@ -3,6 +3,7 @@
 #include <cstdint>
 
 namespace AbyssEngine {
+    class Engine;
     class Mesh;
 
     // Engine-internal resource struct. Layout recovered from the original
@@ -16,6 +17,9 @@ namespace AbyssEngine {
         uint8_t pad0xd[3];    // 0x0d
         Mesh *mesh;           // 0x10
     };
+
+    int SpriteSystemCreate(Engine *engine, unsigned short count, bool sharedSize,
+                           SpriteSystem **out);
 }
 
 #if __SIZEOF_POINTER__ == 4

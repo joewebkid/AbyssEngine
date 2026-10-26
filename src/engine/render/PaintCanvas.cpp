@@ -5,6 +5,7 @@
 #include "engine/render/Mesh.h"
 #include "engine/render/Camera.h"
 #include "engine/render/ImageFont.h"
+#include "engine/render/SpriteSystem.h"
 #include "engine/core/Array.h"
 #include "engine/core/Node.h"
 #include "engine/math/Transform.h"
@@ -142,12 +143,6 @@ struct PCSpriteSystemView {
     char *positions;   // +0x04
     char *sizes;       // +0x08
     uint8_t uniformSize; // +0x0c
-};
-
-// SpriteSystem object: the scene node it owns lives at +0x10.
-struct PCSpriteSystemView2 {
-    uint8_t pad00[0x10];
-    ::Node *node;      // +0x10
 };
 
 // ---------------------------------------------------------------------------
@@ -578,13 +573,9 @@ static inline void tcg_glActiveTexture(unsigned unit) { glActiveTexture(unit); }
 
 static inline void tcg_glBindTexture(unsigned target, unsigned tex) { glBindTexture(target, tex); }
 
-int paintcanvas_ext_ss2_sscreate(void *eng, unsigned short id, bool b, void **out);
-
 static inline int paintcanvas_ext_gsp_getwidth(void *self) { return ((PaintCanvas *) self)->GetWidth(); }
 
 static inline int paintcanvas_ext_gsp_getheight(void *self) { return ((PaintCanvas *) self)->GetHeight(); }
-
-int paintcanvas_ext_sscreate(void *eng, unsigned short id, bool b, void **out);
 
 char *paintcanvas_ext_rs_getAEChar(void *strField);
 
@@ -2702,22 +2693,20 @@ AbyssEngine::String PaintCanvas::GetReverseString(AbyssEngine::String in, bool r
 
 void PaintCanvas::SpriteSystemCreate(unsigned short resId, bool flag,
                                      unsigned short matResId, unsigned int &out) {
-    void *ss = 0;
+    SpriteSystem *ss = 0;
     unsigned int result;
-    int ok = paintcanvas_ext_ss2_sscreate(this->engine, resId, flag, &ss);
+    int ok = AbyssEngine::SpriteSystemCreate(this->engine, resId, flag, &ss);
     if (ok == 1) {
         unsigned int mat = 0xffffffff;
         this->MaterialCreate(matResId, mat);
         if (mat <= this->materials.count) {
-            ::Node *node = ((PCSpriteSystemView2 *) ss)->node;
-            node->field_0x30 =
-                    (unsigned int) (uintptr_t) this->materials.data_[mat];
+            ss->mesh->material = this->materials.data_[mat];
         }
         unsigned int i;
         for (i = 0; i < this->spriteSystems.count; i++) {
             AbyssEngine::SpriteSystem **slot = &this->spriteSystems.data_[i];
             if (*slot == nullptr) {
-                *slot = static_cast<AbyssEngine::SpriteSystem *>(ss);
+                *slot = ss;
                 ss = 0;
                 out = i;
                 return;
@@ -2727,7 +2716,7 @@ void PaintCanvas::SpriteSystemCreate(unsigned short resId, bool flag,
             return;
         }
         ArrayAdd<AbyssEngine::SpriteSystem *>(
-            static_cast<AbyssEngine::SpriteSystem *>(ss),
+            ss,
             *reinterpret_cast<Array<AbyssEngine::SpriteSystem *> *>(
                 &this->spriteSystems));
         result = this->spriteSystems.count - 1;
@@ -2787,15 +2776,15 @@ bool PaintCanvas::GetScreenPosition(const AbyssEngine::AEMath::Matrix &srcMatrix
 
 void PaintCanvas::SpriteSystemCreate(unsigned short resId,
                                      bool flag, unsigned int &out) {
-    void *ss = 0;
+    SpriteSystem *ss = 0;
     unsigned int result;
-    int ok = paintcanvas_ext_sscreate(this->engine, resId, flag, &ss);
+    int ok = AbyssEngine::SpriteSystemCreate(this->engine, resId, flag, &ss);
     if (ok == 1) {
         unsigned int i;
         for (i = 0; i < this->spriteSystems.count; i++) {
             AbyssEngine::SpriteSystem **slot = &this->spriteSystems.data_[i];
             if (*slot == nullptr) {
-                *slot = static_cast<AbyssEngine::SpriteSystem *>(ss);
+                *slot = ss;
                 ss = 0;
                 out = i;
                 return;
@@ -2805,7 +2794,7 @@ void PaintCanvas::SpriteSystemCreate(unsigned short resId,
             return;
         }
         ArrayAdd<AbyssEngine::SpriteSystem *>(
-            static_cast<AbyssEngine::SpriteSystem *>(ss),
+            ss,
             *reinterpret_cast<Array<AbyssEngine::SpriteSystem *> *>(
                 &this->spriteSystems));
         result = this->spriteSystems.count - 1;
@@ -3443,9 +3432,6 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y) {
 
 void paintcanvas_ctor_matrix(void *);
 
-void paintcanvas_ext_meshcreate5(void *, unsigned short, unsigned short,
-                                            signed char, void *);
-
 PaintCanvas::PaintCanvas(AbyssEngine::Engine *engine) {
     PCArrayCtor(&this->meshCount);
     paintcanvas_ctor_matrix(&this->identityMatrix);
@@ -3464,12 +3450,12 @@ PaintCanvas::PaintCanvas(AbyssEngine::Engine *engine) {
     this->engine = engine;
     this->currentCamera = 0xffffffff;
 
-    paintcanvas_ext_meshcreate5(engine, 4, 2, 0x11, &this->lineMesh);
+    AbyssEngine::MeshCreate(engine, 4, 2, 0x11, &this->lineMesh);
 
-    int *p = (int *) ((PCMeshView *) this->lineMesh)->indexBuffer;
+    int *p = static_cast<int *>(this->lineMesh->indices);
     p[0] = 0x20000;
     p[1] = 1;
-    p[2] = *(int *) 0x87878;
+    p[2] = 0x20003;
     this->colorR = 1.0f;
     this->colorG = 1.0f;
     this->colorB = 1.0f;
@@ -3477,9 +3463,9 @@ PaintCanvas::PaintCanvas(AbyssEngine::Engine *engine) {
     this->field_0x1c = 1;
     engine->shaderModeFlag = 1;
 
-    paintcanvas_ext_meshcreate5(engine, 400, 200, 0x1b, &this->quad2dMesh);
+    AbyssEngine::MeshCreate(engine, 400, 200, 0x1b, &this->quad2dMesh);
 
-    short *buf = (short *) ((PCMeshView *) this->quad2dMesh)->indexBuffer;
+    short *buf = static_cast<short *>(this->quad2dMesh->indices);
     int j = 0;
     for (int i = 0; i != 0x4b0; i += 0xc) {
         short *e = buf + i / 2;
@@ -3938,26 +3924,20 @@ void PaintCanvas::SetGameOrientation(AbyssEngine::LandscapeMode orientation) {
     this->SetProjectionMatrix3d(cam[0], cam[1], cam[2]);
 }
 
-int paintcanvas_ext_mc_meshcreate(void *eng, unsigned short a, unsigned short b,
-                                             signed char c, void **out);
-
-
 void PaintCanvas::MeshCreate(unsigned short vertexCount, unsigned short triangleCount,
                              signed char meshType, unsigned short matResId, unsigned int &out) {
     int result = -1;
     unsigned int mat = 0xffffffff;
-    void *mesh = 0;
+    Mesh *mesh = 0;
     this->MaterialCreate(matResId, mat);
-    int ok = paintcanvas_ext_mc_meshcreate(this->engine, vertexCount, triangleCount,
-                                           meshType, &mesh);
+    int ok = AbyssEngine::MeshCreate(this->engine, vertexCount, triangleCount,
+                                     meshType, &mesh);
     if (ok == 1) {
         if (mat <= this->materials.count) {
             void *m = this->materials.data_[mat];
-            if (mesh) {
-                ((AbyssEngine::Mesh *) mesh)->field_0x30 = m;
-            }
+            if (mesh) mesh->material = m;
         }
-        ArrayAdd<AbyssEngine::Mesh *>((AbyssEngine::Mesh *) mesh,
+        ArrayAdd<AbyssEngine::Mesh *>(mesh,
                                       *reinterpret_cast<::Array<AbyssEngine::Mesh *> *>(&this->meshCount));
         result = this->meshCount - 1;
     }
@@ -4274,10 +4254,10 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
 
 void PaintCanvas::MeshCreate(unsigned short a, unsigned short b,
                              signed char c, unsigned int &out) {
-    void *mesh = 0;
-    int result = paintcanvas_ext_mc_meshcreate(this->engine, a, b, c, &mesh);
+    Mesh *mesh = 0;
+    int result = AbyssEngine::MeshCreate(this->engine, a, b, c, &mesh);
     if (result == 1) {
-        ArrayAdd<AbyssEngine::Mesh *>(static_cast<AbyssEngine::Mesh *>(mesh),
+        ArrayAdd<AbyssEngine::Mesh *>(mesh,
                                       *reinterpret_cast<::Array<AbyssEngine::Mesh *> *>(&this->meshCount));
         result = (int) this->meshCount - 1;
     } else {

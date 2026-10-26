@@ -1,7 +1,25 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (PaintCanvas orientation/projection recovery;
+Last reviewed: 2026-10-26 (PaintCanvas resource creation recovery;
 earlier subsystem snapshots retain their dates)
+
+`PaintCanvas` now creates its line/quad meshes and sprite systems
+through the recovered typed engine functions. The ARM-confirmed line
+index literal replaces a rebased Ghidra address that the old code
+dereferenced at runtime. Sprite-system material assignment now follows
+the actual `Mesh*` member and preserves the full pointer on AArch64.
+Native and AArch64 static builds pass, as does a production-body 64-bit
+resource-creation smoke test at `-O0/-O2`. Full ARM corpus:
+**4,323/4,524** originals over **4,745** pairs, **94.77% source-shape /
+84.28% strict fuzzy**, **2,606 linked-exact / 1,083 byte-exact**, zero
+skips or exact-set losses. The focused `PaintCanvas` mean changes
+**96.01% → 95.98% source-shape** and **82.91% → 82.87% strict fuzzy**
+because real typed calls replace synthetic placeholders; see the
+[resource-creation evidence](PAINTCANVAS_RESOURCE_CREATE_ARM64_2026-10-26.md).
+Strict JNI-reachable AArch64 unresolved names fall **143 → 139**.
+Live GL-backed creation and Android startup remain unverified. The
+shared game library and APK still need remaining render/resource
+closure, a compatible audio backend, and Android host packaging.
 
 `PaintCanvas::Initialize`, `SetGameOrientation`, and
 `SetProjectionMatrix3d` now call recovered engine/math functions,

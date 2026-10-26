@@ -231,6 +231,8 @@ namespace AbyssEngine {
     };
 
     int MeshConvertToVBO(Mesh *mesh);
+    int MeshCreate(Engine *engine, unsigned short vertexCount, unsigned short triCount,
+                   signed char vertexFormat, Mesh **out);
     int MeshCreateFromFile(Engine *engine, const char *path, Mesh **out, Material *material);
 }
 
