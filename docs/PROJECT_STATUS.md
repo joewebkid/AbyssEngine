@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (RepairBeam target and geometry recovery;
+Last reviewed: 2026-10-26 (MenuTouchWindow touch dispatch;
 earlier subsystem snapshots retain their dates)
+
+`MenuTouchWindow::OnTouchBegin/OnTouchMove` now pass both incoming
+coordinates to the existing touch controls and use direct row division.
+The Android ARM call sites confirm the two-coordinate contract. Native
+and AArch64 static builds pass; ARMv7 focused verify compiles **209/209**
+units and preserves **21 linked-exact / 6 byte-exact** matches. Begin
+source-shape changes **94.0% to 94.7%**, Move **86.1% to 87.7%**;
+both remain nonexact. Full corpus: **4,323/4,524** originals over
+**4,745** pairs, **94.76% source-shape / 84.26% strict fuzzy**,
+**2,606 linked-exact / 1,083 byte-exact**, zero skips and no exact-set
+losses. Strict AArch64 unresolved names fall **434 to 419** whole-
+archive and **194 to 179** JNI-reachable, with no new names. Touch
+behavior has not run on a device. Next priority: `ParticleSystemMesh`
+matrix and mesh calls, remaining render helpers and compatible audio.
+See [the touch-dispatch evidence](MENU_TOUCH_DISPATCH_ARM64_2026-10-26.md).
 
 `RepairBeam` now selects targets, repairs hull/shields, positions the
 beam, updates its transforms and routes its sound events through

@@ -1065,28 +1065,36 @@ void _mtw_RecordHandler_saveOptions(void *rh);
 
 void _mtw_Status_setKills(void *status, int count);
 
-void _mtw_ChoiceWindow_OnTouchBegin(void *cw, int y);
+static inline void _mtw_ChoiceWindow_OnTouchBegin(void *cw, int y, int x) {
+    ((ChoiceWindow *) cw)->OnTouchBegin(y, x);
+}
 
-int _mtw_Layout_OnTouchBegin(void *layout, int y);
+static inline int _mtw_Layout_OnTouchBegin(void *layout, int y, int x) {
+    return ((Layout *) layout)->OnTouchBegin(y, x);
+}
 
-void _mtw_TouchButton_OnTouchBegin(void *btn, int y);
-
-void _mtw_TouchButton_OnTouchBeginXY(void *btn, int y, int x);
+static inline void _mtw_TouchButton_OnTouchBegin(void *btn, int y, int x) {
+    ((TouchButton *) btn)->OnTouchBegin(y, x);
+}
 
 static inline float _mtw_TouchButton_setPosition(void *btn, int x, int y) {
     ((TouchButton *) btn)->setPosition(x, y);
     return 0.0f;
 }
 
-void _mtw_TouchSlider_OnTouchBegin(void *sl, int y);
+static inline void _mtw_TouchSlider_OnTouchBegin(void *sl, int y, int x) {
+    ((TouchSlider *) sl)->OnTouchBegin(y, x);
+}
 
-void _mtw_ScrollTouchWindow_OnTouchBegin(void *w, int y);
+static inline void _mtw_ScrollTouchWindow_OnTouchBegin(void *w, int y, int x) {
+    ((ScrollTouchWindow *) w)->OnTouchBegin(y, x);
+}
 
-void _mtw_MissionsWindow_OnTouchBegin(void *w, int y);
+static inline void _mtw_MissionsWindow_OnTouchBegin(void *w, int y, int x) {
+    ((MissionsWindow *) w)->OnTouchBegin(y, x);
+}
 
 void _mtw_FModSound_play(void *snd, int id, void *pos, float v);
-
-int _mtw_idiv(int a, int b);
 
 static inline void _mtw_RecordHandler_ctor(void *rh) { new(rh) RecordHandler(); }
 
@@ -1153,19 +1161,27 @@ static inline int _mtw_TouchButton_isVisible(void *btn) {
 
 static inline void _mtw_Layout_drawBG() { ((Layout *) Globals::layout)->drawBG(); }
 
-void _mtw_ChoiceWindow_OnTouchMove(void *cw, int y);
+static inline void _mtw_ChoiceWindow_OnTouchMove(void *cw, int y, int x) {
+    ((ChoiceWindow *) cw)->OnTouchMove(y, x);
+}
 
-void _mtw_TouchButton_OnTouchMove(void *btn, int y);
+static inline void _mtw_TouchButton_OnTouchMove(void *btn, int y, int x) {
+    ((TouchButton *) btn)->OnTouchMove(y, x);
+}
 
-void _mtw_TouchButton_OnTouchMoveXY(void *btn, int y, int x);
-
-void _mtw_TouchSlider_OnTouchMove(void *sl, int y);
+static inline void _mtw_TouchSlider_OnTouchMove(void *sl, int y, int x) {
+    ((TouchSlider *) sl)->OnTouchMove(y, x);
+}
 
 float _mtw_TouchSlider_getValue(void *sl);
 
-void _mtw_ScrollTouchWindow_OnTouchMove(void *w, int y);
+static inline void _mtw_ScrollTouchWindow_OnTouchMove(void *w, int y, int x) {
+    ((ScrollTouchWindow *) w)->OnTouchMove(y, x);
+}
 
-void _mtw_MissionsWindow_OnTouchMove(void *w, int y);
+static inline void _mtw_MissionsWindow_OnTouchMove(void *w, int y, int x) {
+    ((MissionsWindow *) w)->OnTouchMove(y, x);
+}
 
 int _mtw_FModSound_tryToStopMusicForBGMusic();
 
@@ -2413,13 +2429,13 @@ void MenuTouchWindow::startValkyrie() {
 
 int MenuTouchWindow::OnTouchBegin(int y, int x, void *touchId) {
     if (this->messageShowing != 0) {
-        _mtw_ChoiceWindow_OnTouchBegin(this->choiceWindow, y);
+        _mtw_ChoiceWindow_OnTouchBegin(this->choiceWindow, y, x);
         return 0;
     }
 
     Layout *layout = (Layout *) Globals::layout;
     if (layout->choiceWindowOpen != 0) {
-        _mtw_Layout_OnTouchBegin(layout, y);
+        _mtw_Layout_OnTouchBegin(layout, y, x);
         return 0;
     }
 
@@ -2439,7 +2455,7 @@ int MenuTouchWindow::OnTouchBegin(int y, int x, void *touchId) {
                 int top = layout->field_0x20_top;
                 int off = this->scrollOffset;
                 int rowStep = rowH + gap;
-                int row = _mtw_idiv(x + ((-top - leftMargin) - off), rowStep);
+                int row = (x + ((-top - leftMargin) - off)) / rowStep;
                 if (row < (int) (uintptr_t) Globals::recordSlots) {
                     this->selectedRow = row;
                     float v = _mtw_TouchButton_setPosition(this->okButton,
@@ -2450,17 +2466,17 @@ int MenuTouchWindow::OnTouchBegin(int y, int x, void *touchId) {
                 }
             }
             if (oldRow == this->selectedRow)
-                _mtw_TouchButton_OnTouchBegin(this->okButton, y);
+                _mtw_TouchButton_OnTouchBegin(this->okButton, y, x);
         }
         break;
         case 3: {
             if (Globals::iPad == 0) {
                 void **arr = (void **) this->optionsButtons;
                 for (unsigned int i = 0; i < *(unsigned int *) arr; i++)
-                    _mtw_TouchButton_OnTouchBegin(((void **) arr[1])[i], y);
+                    _mtw_TouchButton_OnTouchBegin(((void **) arr[1])[i], y, x);
                 break;
             }
-            _mtw_TouchButton_OnTouchBegin(this->scrollUpButton, y);
+            _mtw_TouchButton_OnTouchBegin(this->scrollUpButton, y, x);
             this->upButtonPressed = 0;
             int b28 = layout->buttonInsetX;
             int top = b28 + this->listTopY;
@@ -2479,28 +2495,28 @@ int MenuTouchWindow::OnTouchBegin(int y, int x, void *touchId) {
                 this->downButtonPressed = 1;
                 _mtw_FModSound_play(Globals::sound, 0x7c, 0, 0);
             }
-            _mtw_TouchButton_OnTouchBeginXY(this->optBtnCC, y, x);
-            _mtw_TouchButton_OnTouchBeginXY(this->optBtnD0, y, x);
-            _mtw_TouchSlider_OnTouchBegin(*(void **) ((Array<TouchSlider *> *) this->sliders)->data_, y);
-            _mtw_TouchButton_OnTouchBeginXY(this->optBtnD4, y, x);
-            _mtw_TouchButton_OnTouchBeginXY(this->optBtnD8, y, x);
-            _mtw_TouchButton_OnTouchBeginXY(this->optBtnDC, y, x);
+            _mtw_TouchButton_OnTouchBegin(this->optBtnCC, y, x);
+            _mtw_TouchButton_OnTouchBegin(this->optBtnD0, y, x);
+            _mtw_TouchSlider_OnTouchBegin(*(void **) ((Array<TouchSlider *> *) this->sliders)->data_, y, x);
+            _mtw_TouchButton_OnTouchBegin(this->optBtnD4, y, x);
+            _mtw_TouchButton_OnTouchBegin(this->optBtnD8, y, x);
+            _mtw_TouchButton_OnTouchBegin(this->optBtnDC, y, x);
             void **arr = (void **) this->sliders;
             for (unsigned int i = 1; i < *(unsigned int *) arr; i++)
-                _mtw_TouchSlider_OnTouchBegin(((void **) arr[1])[i], y);
+                _mtw_TouchSlider_OnTouchBegin(((void **) arr[1])[i], y, x);
             if (Globals::iPadLargePossible != 0 && this->scrollExtraButton != 0)
-                _mtw_TouchButton_OnTouchBegin(this->scrollExtraButton, y);
+                _mtw_TouchButton_OnTouchBegin(this->scrollExtraButton, y, x);
         }
         break;
         case 4: {
-            _mtw_ScrollTouchWindow_OnTouchBegin(this->scrollWindowA, y);
+            _mtw_ScrollTouchWindow_OnTouchBegin(this->scrollWindowA, y, x);
             void **arr = (void **) this->scrollEntries;
             for (unsigned int i = 0; i < *(unsigned int *) arr; i++) {
                 unsigned int *e = (unsigned int *) ((void **) arr[1])[i];
                 unsigned int t = e[0];
                 if (((unsigned int) (t - 0x6a) < 5 && ((1u << ((t - 0x6a) & 0xff)) & 0x19u) != 0)
                     || (e[1] == 0 && t == 0x16))
-                    _mtw_TouchButton_OnTouchBegin(e, y);
+                    _mtw_TouchButton_OnTouchBegin(e, y, x);
             }
         }
         break;
@@ -2508,14 +2524,14 @@ int MenuTouchWindow::OnTouchBegin(int y, int x, void *touchId) {
         case 0xd:
             break;
         case 7: {
-            _mtw_TouchButton_OnTouchBeginXY(this->optBtnD4, y, x);
-            _mtw_TouchButton_OnTouchBeginXY(this->optBtnD8, y, x);
-            _mtw_TouchButton_OnTouchBeginXY(this->optBtnDC, y, x);
+            _mtw_TouchButton_OnTouchBegin(this->optBtnD4, y, x);
+            _mtw_TouchButton_OnTouchBegin(this->optBtnD8, y, x);
+            _mtw_TouchButton_OnTouchBegin(this->optBtnDC, y, x);
             void **arr = (void **) this->sliders;
             unsigned int n = *(unsigned int *) arr;
             for (unsigned int i = 1; i < n; i++) {
                 if (i == 5 && ((Layout *) Globals::layout)->field_0x284_sliderSlot5Enabled == 0) continue;
-                _mtw_TouchSlider_OnTouchBegin(((void **) arr[1])[i], y);
+                _mtw_TouchSlider_OnTouchBegin(((void **) arr[1])[i], y, x);
             }
         }
         break;
@@ -2539,18 +2555,18 @@ int MenuTouchWindow::OnTouchBegin(int y, int x, void *touchId) {
                 this->downButtonPressed = 1;
                 _mtw_FModSound_play(Globals::sound, 0x7c, 0, 0);
             }
-            _mtw_TouchButton_OnTouchBegin(this->optBtnCC, y);
-            _mtw_TouchButton_OnTouchBegin(this->optBtnD0, y);
-            _mtw_TouchSlider_OnTouchBegin(*(void **) ((Array<TouchSlider *> *) this->sliders)->data_, y);
+            _mtw_TouchButton_OnTouchBegin(this->optBtnCC, y, x);
+            _mtw_TouchButton_OnTouchBegin(this->optBtnD0, y, x);
+            _mtw_TouchSlider_OnTouchBegin(*(void **) ((Array<TouchSlider *> *) this->sliders)->data_, y, x);
         }
         break;
         case 9:
-            _mtw_MissionsWindow_OnTouchBegin(this->missionsWindow, y);
+            _mtw_MissionsWindow_OnTouchBegin(this->missionsWindow, y, x);
             break;
         case 0xb: {
             if (Globals::iPad != 0 && Globals::iPadAssetsWithLowerRes == 0) {
-                _mtw_TouchButton_OnTouchBegin(this->cinematicBtnA, y);
-                _mtw_TouchButton_OnTouchBegin(this->cinematicBtnB, y);
+                _mtw_TouchButton_OnTouchBegin(this->cinematicBtnA, y, x);
+                _mtw_TouchButton_OnTouchBegin(this->cinematicBtnB, y, x);
                 GameSettings *steerCtl = (GameSettings *) Globals::options;
                 GameSettings *fireCtl = (GameSettings *) Globals::options;
                 if (touchId != 0 &&
@@ -2578,13 +2594,13 @@ int MenuTouchWindow::OnTouchBegin(int y, int x, void *touchId) {
         case 0xc: {
             void **arr = (void **) this->buttonsB4;
             for (unsigned int i = 0; i < *(unsigned int *) arr; i++)
-                _mtw_TouchButton_OnTouchBegin(((void **) arr[1])[i], y);
+                _mtw_TouchButton_OnTouchBegin(((void **) arr[1])[i], y, x);
         }
         break;
         case 0xe: {
             void **arr = (void **) this->buttonsB0;
             for (unsigned int i = 0; i < *(unsigned int *) arr; i++)
-                _mtw_TouchButton_OnTouchBegin(((void **) arr[1])[i], y);
+                _mtw_TouchButton_OnTouchBegin(((void **) arr[1])[i], y, x);
         }
         break;
         case 0x10: {
@@ -2592,21 +2608,21 @@ int MenuTouchWindow::OnTouchBegin(int y, int x, void *touchId) {
             for (unsigned int i = 0; i < *(unsigned int *) arr; i++) {
                 unsigned int *e = (unsigned int *) ((void **) arr[1])[i];
                 if ((unsigned int) (e[0] - 0x65) < 5 && e[1] == 0)
-                    _mtw_TouchButton_OnTouchBegin(e, y);
+                    _mtw_TouchButton_OnTouchBegin(e, y, x);
             }
         }
             [[fallthrough]];
         case 0xf: {
-            _mtw_ScrollTouchWindow_OnTouchBegin(this->scrollWindowB, y);
+            _mtw_ScrollTouchWindow_OnTouchBegin(this->scrollWindowB, y, x);
             void **arr = (void **) this->scrollEntries;
             for (unsigned int i = 0; i < *(unsigned int *) arr; i++) {
                 unsigned int *e = (unsigned int *) ((void **) arr[1])[i];
                 if ((e[0] | 8) == 0x3c && e[1] == 0)
-                    _mtw_TouchButton_OnTouchBegin(e, y);
+                    _mtw_TouchButton_OnTouchBegin(e, y, x);
             }
             void **slots = (void **) this->scrollSlots;
             for (unsigned int i = 0; i < *(unsigned int *) slots; i++)
-                _mtw_TouchButton_OnTouchBegin(((void **) slots[1])[i], y);
+                _mtw_TouchButton_OnTouchBegin(((void **) slots[1])[i], y, x);
 
             int bound = Globals::w;
             int b28 = ((Layout *) Globals::layout)->buttonInsetX;
@@ -2634,18 +2650,18 @@ int MenuTouchWindow::OnTouchBegin(int y, int x, void *touchId) {
         case 0x11: {
             void **arr = (void **) this->buttonsB8;
             for (unsigned int i = 0; i < *(unsigned int *) arr; i++)
-                _mtw_TouchButton_OnTouchBegin(((void **) arr[1])[i], y);
+                _mtw_TouchButton_OnTouchBegin(((void **) arr[1])[i], y, x);
         }
         break;
         default: {
             void **arr = (void **) this->buttons;
             for (unsigned int i = 0; i < *(unsigned int *) arr; i++)
-                _mtw_TouchButton_OnTouchBegin(((void **) arr[1])[i], y);
+                _mtw_TouchButton_OnTouchBegin(((void **) arr[1])[i], y, x);
             void **arr2 = (void **) this->scrollEntries;
             unsigned int n = *(unsigned int *) arr2;
             for (unsigned int i = 0; i < n; i++) {
                 int *e = (int *) ((void **) arr2[1])[i];
-                if ((unsigned int) (e[0] - 0x17) < 2) _mtw_TouchButton_OnTouchBegin(e, y);
+                if ((unsigned int) (e[0] - 0x17) < 2) _mtw_TouchButton_OnTouchBegin(e, y, x);
             }
             for (unsigned int i = 0; i < n; i++) {
                 unsigned int *e = (unsigned int *) ((void **) arr2[1])[i];
@@ -2657,7 +2673,7 @@ int MenuTouchWindow::OnTouchBegin(int y, int x, void *touchId) {
                     go = (id == 0 && (t == 0x11 || x2 == 0)) || (id == 0 && t == 0x35);
                 }
                 if (go) {
-                    _mtw_TouchButton_OnTouchBegin(e, y);
+                    _mtw_TouchButton_OnTouchBegin(e, y, x);
                     arr2 = (void **) this->scrollEntries;
                     n = *(unsigned int *) arr2;
                 }
@@ -2666,7 +2682,7 @@ int MenuTouchWindow::OnTouchBegin(int y, int x, void *touchId) {
         break;
     }
 
-    int r = _mtw_Layout_OnTouchBegin(layout, y);
+    int r = _mtw_Layout_OnTouchBegin(layout, y, x);
     if (r != 0 && this->menuState == 0xd)
         this->pendingActivate = 1;
     return 0;
@@ -3403,16 +3419,18 @@ float MenuTouchWindow::getRelativeScrollHeight() {
 
 void _mtw_steerFromTouchId(void *self, int y, int x, void *touchId);
 
-void _mtw_Layout_OnTouchMove(void *layout, int y);
+static inline void _mtw_Layout_OnTouchMove(void *layout, int y, int x) {
+    ((Layout *) layout)->OnTouchMove(y, x);
+}
 
 int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
     if (this->messageShowing != 0) {
-        _mtw_ChoiceWindow_OnTouchMove(this->choiceWindow, y);
+        _mtw_ChoiceWindow_OnTouchMove(this->choiceWindow, y, x);
         return 0;
     }
     Layout *layout = (Layout *) Globals::layout;
     if (layout->choiceWindowOpen != 0) {
-        _mtw_Layout_OnTouchMove(layout, y);
+        _mtw_Layout_OnTouchMove(layout, y, x);
         return 0;
     }
 
@@ -3428,15 +3446,15 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
                 this->inertiaDecay = 0x3f800000;
                 this->scrollOffset = this->scrollOffset + dx;
             }
-            _mtw_TouchButton_OnTouchMove(this->okButton, y);
+            _mtw_TouchButton_OnTouchMove(this->okButton, y, x);
             break;
         case 2: {
             if (Globals::iPad == 0) {
                 void **arr = (void **) this->optionsButtons;
                 for (unsigned int i = 0; i < *(unsigned int *) arr; i++)
-                    _mtw_TouchButton_OnTouchMove(((void **) arr[1])[i], y);
+                    _mtw_TouchButton_OnTouchMove(((void **) arr[1])[i], y, x);
             } else {
-                _mtw_TouchButton_OnTouchMove(this->okButton, y);
+                _mtw_TouchButton_OnTouchMove(this->okButton, y, x);
                 this->upButtonPressed = 0;
                 int base = layout->buttonInsetX;
                 int top = base + this->listTopY;
@@ -3449,12 +3467,12 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
                     base + layout->field_0xc < x &&
                     x < layout->field_0x20_top + layout->field_0xc + this->listEntryWidth)
                     this->downButtonPressed = 1;
-                _mtw_TouchButton_OnTouchMoveXY(this->optBtnCC, y, x);
-                _mtw_TouchButton_OnTouchMoveXY(this->optBtnD0, y, x);
-                _mtw_TouchSlider_OnTouchMove(*(void **) ((Array<TouchSlider *> *) this->sliders)->data_, y);
-                _mtw_TouchButton_OnTouchMoveXY(this->optBtnD4, y, x);
-                _mtw_TouchButton_OnTouchMoveXY(this->optBtnD8, y, x);
-                _mtw_TouchButton_OnTouchMoveXY(this->optBtnDC, y, x);
+                _mtw_TouchButton_OnTouchMove(this->optBtnCC, y, x);
+                _mtw_TouchButton_OnTouchMove(this->optBtnD0, y, x);
+                _mtw_TouchSlider_OnTouchMove(*(void **) ((Array<TouchSlider *> *) this->sliders)->data_, y, x);
+                _mtw_TouchButton_OnTouchMove(this->optBtnD4, y, x);
+                _mtw_TouchButton_OnTouchMove(this->optBtnD8, y, x);
+                _mtw_TouchButton_OnTouchMove(this->optBtnDC, y, x);
                 {
                     void *fmod = Globals::sound;
                     int *sl = (int *) ((Array<TouchSlider *> *) this->sliders)->data_;
@@ -3465,21 +3483,21 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
                 }
                 void **arr = (void **) this->sliders;
                 for (unsigned int i = 1; i < *(unsigned int *) arr; i++)
-                    _mtw_TouchSlider_OnTouchMove(((void **) arr[1])[i], y);
+                    _mtw_TouchSlider_OnTouchMove(((void **) arr[1])[i], y, x);
                 if (Globals::iPadLargePossible != 0 && this->okButton != 0)
-                    _mtw_TouchButton_OnTouchMove(this->okButton, y);
+                    _mtw_TouchButton_OnTouchMove(this->okButton, y, x);
             }
         }
         break;
         case 3: {
-            _mtw_ScrollTouchWindow_OnTouchMove(this->scrollWindowA, y);
+            _mtw_ScrollTouchWindow_OnTouchMove(this->scrollWindowA, y, x);
             void **arr = (void **) this->scrollEntries;
             for (unsigned int i = 0; i < *(unsigned int *) arr; i++) {
                 unsigned int *e = (unsigned int *) ((void **) arr[1])[i];
                 unsigned int t = e[0];
                 if (((unsigned int) (t - 0x6a) < 5 && ((1u << ((t - 0x6a) & 0xff)) & 0x19u) != 0)
                     || (e[1] == 0 && t == 0x16))
-                    _mtw_TouchButton_OnTouchMove(e, y);
+                    _mtw_TouchButton_OnTouchMove(e, y, x);
             }
         }
         break;
@@ -3487,9 +3505,9 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
         case 0xc:
             break;
         case 6:
-            _mtw_TouchButton_OnTouchMoveXY(this->optBtnD4, y, x);
-            _mtw_TouchButton_OnTouchMoveXY(this->optBtnD8, y, x);
-            _mtw_TouchButton_OnTouchMoveXY(this->optBtnDC, y, x);
+            _mtw_TouchButton_OnTouchMove(this->optBtnD4, y, x);
+            _mtw_TouchButton_OnTouchMove(this->optBtnD8, y, x);
+            _mtw_TouchButton_OnTouchMove(this->optBtnDC, y, x);
             {
                 void *fmod = Globals::sound;
                 int *sl = (int *) ((Array<TouchSlider *> *) this->sliders)->data_;
@@ -3502,7 +3520,7 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
                 void **arr = (void **) this->sliders;
                 for (unsigned int i = 1; i < *(unsigned int *) arr; i++) {
                     if (i == 5 && ((Layout *) Globals::layout)->field_0x284_sliderSlot5Enabled == 0) continue;
-                    _mtw_TouchSlider_OnTouchMove(((void **) arr[1])[i], y);
+                    _mtw_TouchSlider_OnTouchMove(((void **) arr[1])[i], y, x);
                 }
             }
             break;
@@ -3519,13 +3537,13 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
                 base + layout->field_0xc < x &&
                 x < layout->field_0x20_top + layout->field_0xc + this->listEntryWidth)
                 this->downButtonPressed = 1;
-            _mtw_TouchButton_OnTouchMove(this->optBtnCC, y);
-            _mtw_TouchButton_OnTouchMove(this->optBtnD0, y);
-            _mtw_TouchSlider_OnTouchMove(*(void **) ((Array<TouchSlider *> *) this->sliders)->data_, y);
+            _mtw_TouchButton_OnTouchMove(this->optBtnCC, y, x);
+            _mtw_TouchButton_OnTouchMove(this->optBtnD0, y, x);
+            _mtw_TouchSlider_OnTouchMove(*(void **) ((Array<TouchSlider *> *) this->sliders)->data_, y, x);
         }
         break;
         case 8:
-            _mtw_MissionsWindow_OnTouchMove(this->missionsWindow, y);
+            _mtw_MissionsWindow_OnTouchMove(this->missionsWindow, y, x);
             break;
         case 0xa:
             _mtw_steerFromTouchId(this, y, x, touchId);
@@ -3533,30 +3551,30 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
         case 0xb: {
             void **arr = (void **) this->buttonsB4;
             for (unsigned int i = 0; i < *(unsigned int *) arr; i++)
-                _mtw_TouchButton_OnTouchMove(((void **) arr[1])[i], y);
+                _mtw_TouchButton_OnTouchMove(((void **) arr[1])[i], y, x);
         }
         break;
         case 0xd: {
             void **arr = (void **) this->buttonsB0;
             for (unsigned int i = 0; i < *(unsigned int *) arr; i++)
-                _mtw_TouchButton_OnTouchMove(((void **) arr[1])[i], y);
+                _mtw_TouchButton_OnTouchMove(((void **) arr[1])[i], y, x);
         }
         break;
         case 0xe: {
             Layout *slayout = (Layout *) Globals::layout;
 
-            _mtw_ScrollTouchWindow_OnTouchMove(this->scrollWindowB, y);
+            _mtw_ScrollTouchWindow_OnTouchMove(this->scrollWindowB, y, x);
 
             void **arr = (void **) this->scrollEntries;
             for (unsigned int i = 0; i < *(unsigned int *) arr; i++) {
                 unsigned int *e = (unsigned int *) ((void **) arr[1])[i];
                 if ((e[0] | 8) == 0x3c && e[1] == 0)
-                    _mtw_TouchButton_OnTouchMove(e, y);
+                    _mtw_TouchButton_OnTouchMove(e, y, x);
             }
 
             void **slots = (void **) this->scrollSlots;
             for (unsigned int i = 0; i < *(unsigned int *) slots; i++)
-                _mtw_TouchButton_OnTouchMove(((void **) slots[1])[i], y);
+                _mtw_TouchButton_OnTouchMove(((void **) slots[1])[i], y, x);
 
             if (slayout->field_0xc < x &&
                 x < Globals::h - slayout->field_0x10_rightMargin) {
@@ -3577,23 +3595,23 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
             for (unsigned int i = 0; i < *(unsigned int *) arr; i++) {
                 unsigned int *e = (unsigned int *) ((void **) arr[1])[i];
                 if ((unsigned int) (e[0] - 0x65) < 5)
-                    _mtw_TouchButton_OnTouchMove(e, y);
+                    _mtw_TouchButton_OnTouchMove(e, y, x);
             }
             {
                 Layout *slayout = (Layout *) Globals::layout;
 
-                _mtw_ScrollTouchWindow_OnTouchMove(this->scrollWindowB, y);
+                _mtw_ScrollTouchWindow_OnTouchMove(this->scrollWindowB, y, x);
 
                 void **arr2 = (void **) this->scrollEntries;
                 for (unsigned int i = 0; i < *(unsigned int *) arr2; i++) {
                     unsigned int *e = (unsigned int *) ((void **) arr2[1])[i];
                     if ((e[0] | 8) == 0x3c && e[1] == 0)
-                        _mtw_TouchButton_OnTouchMove(e, y);
+                        _mtw_TouchButton_OnTouchMove(e, y, x);
                 }
 
                 void **slots = (void **) this->scrollSlots;
                 for (unsigned int i = 0; i < *(unsigned int *) slots; i++)
-                    _mtw_TouchButton_OnTouchMove(((void **) slots[1])[i], y);
+                    _mtw_TouchButton_OnTouchMove(((void **) slots[1])[i], y, x);
 
                 if (slayout->field_0xc < x &&
                     x < Globals::h - slayout->field_0x10_rightMargin) {
@@ -3613,19 +3631,19 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
         case 0x10: {
             void **arr = (void **) this->buttonsB8;
             for (unsigned int i = 0; i < *(unsigned int *) arr; i++)
-                _mtw_TouchButton_OnTouchMove(((void **) arr[1])[i], y);
+                _mtw_TouchButton_OnTouchMove(((void **) arr[1])[i], y, x);
         }
         break;
         default: {
             void **arr = (void **) this->buttons;
             for (unsigned int i = 0; i < *(unsigned int *) arr; i++)
-                _mtw_TouchButton_OnTouchMove(((void **) arr[1])[i], y);
+                _mtw_TouchButton_OnTouchMove(((void **) arr[1])[i], y, x);
             void **arr2 = (void **) this->scrollEntries;
             unsigned int n = *(unsigned int *) arr2;
             for (unsigned int i = 0; i < n; i++) {
                 int *e = (int *) ((void **) arr2[1])[i];
                 if ((unsigned int) (e[0] - 0x17) < 2)
-                    _mtw_TouchButton_OnTouchBegin(e, y);
+                    _mtw_TouchButton_OnTouchBegin(e, y, x);
             }
             for (unsigned int i = 0; i < n; i++) {
                 unsigned int *e = (unsigned int *) ((void **) arr2[1])[i];
@@ -3637,7 +3655,7 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
                     hit = (id == 0 && (t == 0x11 || x2 == 0)) || (id == 0 && t == 0x35);
                 }
                 if (hit) {
-                    _mtw_TouchButton_OnTouchMove(e, y);
+                    _mtw_TouchButton_OnTouchMove(e, y, x);
                     arr2 = (void **) this->scrollEntries;
                     n = *(unsigned int *) arr2;
                 }
@@ -3646,7 +3664,7 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
         break;
     }
 
-    _mtw_Layout_OnTouchMove(Globals::layout, y);
+    _mtw_Layout_OnTouchMove(Globals::layout, y, x);
     return 0;
 }
 
