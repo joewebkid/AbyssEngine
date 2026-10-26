@@ -6,7 +6,7 @@ earlier subsystem snapshots retain their dates)
 `PaintCanvas::BeginBG`, `Begin3d` and `Begin2d` now reach the
 ARM-confirmed GLES/Engine state calls. Native, AArch64 static and
 **209/209** ARMv7 units build. Strict ARM64 unresolved names fall
-**516 → 503** for the whole archive and **276 → 263** for JNI-reachable
+**516 → 502** for the whole archive and **276 → 262** for JNI-reachable
 sections, with no new names. The changed PaintCanvas unit retains its
 **92 linked-exact** and **23 byte-exact** symbols. The two background/3D
 functions have lower source-shape scores; the previous full corpus

@@ -619,7 +619,10 @@ static inline void paintcanvas_ext_gl_color(void *engine, float r, float g, floa
     ((Engine *) engine)->SetColor(r, g, b, a);
 }
 
-void paintcanvas_ext_matgl_load(void *, void *);
+// ARM veneers 0x19b3c8/0x19b3d8 target SetPerspMatrix/glLoadIdentity.
+static inline void paintcanvas_ext_matgl_load(void *engine, void *m) {
+    ((Engine *) engine)->SetPerspMatrix((float *) m);
+}
 
 static inline void paintcanvas_ext_gl_loadidentity() { glLoadIdentity(); }
 
@@ -627,7 +630,7 @@ static inline void paintcanvas_ext_gl_ortho_persp(float x, float y, float z) { g
 
 static inline void paintcanvas_ext_gl_loadmatrix(void *m) { glLoadMatrixf((const GLfloat *) m); }
 
-void paintcanvas_ext_gl_done();
+static inline void paintcanvas_ext_gl_done() { glLoadIdentity(); }
 
 void paintcanvas_ext_child_link(void *, void *, void *);
 
