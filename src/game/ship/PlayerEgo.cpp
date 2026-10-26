@@ -180,7 +180,11 @@ void MatrixSetRotation(void *, void *, float, float, float);
 
 
 
+#if __SIZEOF_POINTER__ == 8
+static inline int aeabi_idiv_(int a, int b) { return a / b; }
+#else
 int aeabi_idiv_(int a, int b);
+#endif
 
 static inline __attribute__((always_inline)) float PE_pitchRampDelta(PlayerEgo *self, float rate, int frameTime) {
     float denominator = 12.0f;
@@ -210,7 +214,11 @@ void Vec_assign(void *dst, const void *src);
 
 
 
+#if __SIZEOF_POINTER__ == 8
+static inline void PlayEngineSound_(PlayerEgo *self) { self->PlayEngineSound(); }
+#else
 void PlayEngineSound_(PlayerEgo * self);
+#endif
 
 
 void Mat_mul(void *out, const void *a, const void *b);

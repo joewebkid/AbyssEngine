@@ -1109,7 +1109,11 @@ AEGeometry *Globals::getShipGroup(int kind, int variant, bool wireframe) {
             canvas->TransformAddMesh(head, 0x4299, true);
             geom->addChild(head);
 
+#if __SIZEOF_POINTER__ == 8
+            int segments = static_cast<AERandom *>(Globals::rnd)->nextInt(4);
+#else
             int segments = AERandom_nextIntB(0, 4);
+#endif
             unsigned prevA = 0xffffffff, prevB = 0xffffffff;
             for (int i = 0; i < segments; i++) {
                 unsigned a = 0xffffffff, b = 0xffffffff;

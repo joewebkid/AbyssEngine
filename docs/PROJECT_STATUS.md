@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (ARM64 ship-group random and PlayerEgo
+dispatch; earlier subsystem snapshots retain their dates)
+
+The ARM64 ship-group branch now uses `Globals::rnd` instead of a null
+random receiver. `PlayerEgo` uses signed division by 63 and its
+recovered engine-sound method during docking. Native and AArch64
+static builds pass; ARMv7 compiles **209/209** units. `Globals.o` is
+byte-identical, and the scoped `PlayerEgo` comparison retains all
+**99 linked-exact / 61 byte-exact** matches. The last full ARM corpus
+remains **4,323/4,524** originals over **4,745** pairs, **94.79%
+source-shape / 84.31% strict fuzzy**, **2,607 linked-exact / 1,083
+byte-exact**, zero skips. Strict JNI-initialize AArch64 unresolved
+names fall **21 → 18** with no new names. A game `.so`/APK and live
+ship/docking behavior remain unverified. See the
+[random and docking evidence](ARM64_PLAYER_EGO_RANDOM_DIVISION_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (ARM64 start-game menu dispatch;
 earlier subsystem snapshots retain their dates)
 
