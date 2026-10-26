@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (PlayerEgo ARM64 shooting and tractor-beam
+dispatch; earlier subsystem snapshots retain their dates)
+
+`PlayerEgo` now uses typed `Player::stopShooting` overloads, the
+recovered `TractorBeam` constructor and `AEMath::Vector` assignment
+on AArch64. Native and AArch64 static builds pass; ARMv7 compiles
+**209/209** units and `PlayerEgo.o` is byte-identical. The scoped
+`PlayerEgo` comparison retains **99 linked-exact / 61 byte-exact**
+matches. The last full ARM corpus remains **4,323/4,524** originals
+over **4,745** pairs, **94.79% source-shape / 84.31% strict fuzzy**,
+**2,607 linked-exact / 1,083 byte-exact**, zero skips. Strict
+JNI-initialize AArch64 unresolved names fall **18 → 14** with no new
+names. A game `.so`/APK and live combat behavior remain unverified.
+See the [PlayerEgo evidence](ARM64_PLAYER_EGO_DISPATCH_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (ARM64 ship-group random and PlayerEgo
 dispatch; earlier subsystem snapshots retain their dates)
 

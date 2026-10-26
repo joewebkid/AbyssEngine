@@ -170,9 +170,19 @@ static inline Status *PE_status() { return Status::gStatus; }
 
 
 
+#if __SIZEOF_POINTER__ == 8
+static inline void stopShooting_extA(void *player, int slot) {
+    static_cast<Player *>(player)->stopShooting(slot);
+}
+
+static inline void stopShooting_extB(void *player, int slot, int channel) {
+    static_cast<Player *>(player)->stopShooting(slot, channel);
+}
+#else
 void stopShooting_extA(void *, int);
 
 void stopShooting_extB(void *, int, int);
+#endif
 
 void *TransformGetLocal(void *, int);
 
@@ -209,7 +219,14 @@ static inline __attribute__((always_inline)) float PE_yawRampDelta(float rate, i
 
 void Mat_assign(void *dst, const void *src);
 
+#if __SIZEOF_POINTER__ == 8
+static inline void Vec_assign(void *dst, const void *src) {
+    *static_cast<AbyssEngine::AEMath::Vector *>(dst) =
+        *static_cast<const AbyssEngine::AEMath::Vector *>(src);
+}
+#else
 void Vec_assign(void *dst, const void *src);
+#endif
 
 
 
@@ -223,7 +240,13 @@ void PlayEngineSound_(PlayerEgo * self);
 
 void Mat_mul(void *out, const void *a, const void *b);
 
+#if __SIZEOF_POINTER__ == 8
+static inline void *TractorBeam_new(void *geo, int kind) {
+    return new TractorBeam(static_cast<AEGeometry *>(geo), kind);
+}
+#else
 void *TractorBeam_new(void *geo, int kind);
+#endif
 
 
 
