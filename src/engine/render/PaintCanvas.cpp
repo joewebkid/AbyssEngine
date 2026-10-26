@@ -44,6 +44,7 @@ namespace AbyssEngine {
     void SpriteSystemSetAllUv(float u0, float v0, float u1, float v1, SpriteSystem *sys);
     void SpriteSystemSetUv(unsigned short idx, float a, float b, float c, float d, SpriteSystem *sys);
     void SpriteSystemSetRGBA(unsigned short idx, float r, float g, float b, float a, SpriteSystem *sys);
+    void SpriteSystemSetAllSize(short size, SpriteSystem *sys);
     int CameraIsSphereinViewFrustum(const Vector &center, float radius, Matrix *extra, Camera *cam);
     int CameraIsPointinViewFrustum(const Vector &point, Matrix *extra, Camera *cam);
 }
@@ -407,13 +408,9 @@ void paintcanvas_ext_has_vibration(void *);
 
 void MatrixIdentity(void *result, void *matrix);
 
-void paintcanvas_ext_sprite_allsize(unsigned int, void *);
-
 char *paintcanvas_ext_find_res(void *, unsigned int);
 
 void paintcanvas_ext_change_mat(void *, void *, void *);
-
-void paintcanvas_ext_setcolor(void *, float, float, float, float);
 
 void paintcanvas_ext_vibrate(void *);
 
@@ -504,10 +501,6 @@ void paintcanvas_ext_gl_c(unsigned int);
 void *paintcanvas_ext_cube_restore(void *);
 
 void paintcanvas_ext_cube_tail(void *);
-
-void paintcanvas_ext_set_wvm2(void *self, void *m);
-
-void paintcanvas_ext_meshdraw(void *engine, void *mesh);
 
 void paintcanvas_ext_mesh_changemat(AbyssEngine::PaintCanvas *, void *, void *);
 
@@ -904,9 +897,9 @@ void PaintCanvas::SpriteSystemGetPosition(unsigned int index, unsigned short sub
 
 void PaintCanvas::SpriteSystemSetAllSize(unsigned int index, short size) {
     if (index < this->spriteSystems.count) {
-        void *sprite = (this->spriteSystems.data_)[index];
+        SpriteSystem *sprite = this->spriteSystems.data_[index];
         if (sprite) {
-            return paintcanvas_ext_sprite_allsize(size, sprite);
+            return AbyssEngine::SpriteSystemSetAllSize(size, sprite);
         }
     }
 }
@@ -1046,7 +1039,7 @@ void PaintCanvas::SetColor(unsigned int color) {
     this->colorG = c1;
     this->colorB = c2;
     this->colorA = c3;
-    return paintcanvas_ext_setcolor(this->engine, c0, c1, c2, c3);
+    return this->engine->SetColor(c0, c1, c2, c3);
 }
 
 void PaintCanvas::Vibrate(unsigned short) {
@@ -1128,7 +1121,7 @@ void PaintCanvas::SetColor(unsigned char r, unsigned char g,
     this->colorG = fg;
     this->colorB = fb;
     this->colorA = fa;
-    return paintcanvas_ext_setcolor(this->engine, fr, fg, fb, fa);
+    return this->engine->SetColor(fr, fg, fb, fa);
 }
 
 float PaintCanvas::CameraGetCurrentFactor1() {
@@ -1782,8 +1775,8 @@ void PaintCanvas::End2d() {
         m[12] = 1.0f;
         m[13] = 1.0f;
         m[14] = 1.0f;
-        paintcanvas_ext_set_wvm2(this, buf);
-        paintcanvas_ext_meshdraw(this->engine, this->quad2dMesh);
+        this->SetWorldViewMatrix(*reinterpret_cast<const Matrix *>(buf));
+        AbyssEngine::MeshDraw(this->engine, this->quad2dMesh);
     }
 }
 
@@ -3848,7 +3841,7 @@ void PaintCanvas::Begin2d() {
     paintcanvas_ext_gl_depthmask(0);
     paintcanvas_ext_gl_enable(0xbe2);
     paintcanvas_ext_gl_blendfunc(0x302, 0x303);
-    paintcanvas_ext_setcolor(this->engine, 1.0f, 1.0f, 1.0f, 1.0f);
+    this->engine->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
     paintcanvas_ext_glenable2(this->engine, 0xde1, true);
     if (*paintcanvas_g_b2d_flag == 0) {
         paintcanvas_ext_gl_texenvi(0x2300, 0x2200, 0x2100);

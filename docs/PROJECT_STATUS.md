@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (PaintCanvas draw dispatch and AArch64 link
+closure; earlier subsystem snapshots retain their dates)
+
+`PaintCanvas` now calls the existing engine color, sprite-size,
+world-view-matrix, and mesh-draw methods in place of four unresolved
+helpers. Native and AArch64 static builds pass. The full ARM corpus
+compares **4,323/4,524** originals over **4,745** pairs: **94.79%
+source-shape / 84.29% strict fuzzy**, **2,607 linked-exact /
+1,083 byte-exact**, zero skips and no exact-set loss. The strict
+JNI-initialize AArch64 unresolved inventory falls **100 → 96**; the
+broader diagnostic falls **317 → 313**, with no new names. A game `.so`
+or APK remains unbuilt. Live Android 2D drawing and color output are
+unverified. See the
+[draw-dispatch evidence](PAINTCANVAS_DRAW_DISPATCH_ARM64_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (PaintCanvas camera/font call recovery for
 AArch64 link closure; earlier subsystem snapshots retain their dates)
 
