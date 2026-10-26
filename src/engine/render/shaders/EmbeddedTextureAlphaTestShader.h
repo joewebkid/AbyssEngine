@@ -1,0 +1,13 @@
+#pragma once
+// Exact GLSL bytes from original Android ARM libgof2hdaa.so.
+// SHA-256: 6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58
+namespace AbyssEngine {
+namespace EmbeddedTextureAlphaTestShader {
+// File offset 0x1EA920, 974 bytes.
+static constexpr const char vertex[] = "attribute highp vec4 a_position;   \nattribute mediump vec2 a_texCoord;   \nvarying mediump vec2 v_texCoord;     \nuniform highp mat4 u_WorldMatrix;  \nuniform highp float u_fogMaxDist; \nuniform highp float u_fogMinDist;\nvarying lowp float v_FogFactor;\nuniform highp vec3 u_eyeposmodel;  \nuniform bool u_EnableFog; \nlowp float computeLinearFogFactor(highp float eyeDist) { \n    highp float factor; \n    // Compute linear fog equation \n    factor = (u_fogMaxDist - eyeDist) / (u_fogMaxDist - u_fogMinDist);\n    // Clamp in the [0,1] range \n    factor = (1.0 - clamp(factor, 0.0, 1.0));\n    return factor; \n}    \nvoid main()                  \n{                            \n   gl_Position = u_WorldMatrix * a_position;\t\t\n   v_texCoord = a_texCoord;  \n    if ( u_EnableFog ) { \n       highp float eyeDist = distance(u_eyeposmodel, a_position.xyz); \n       v_FogFactor = computeLinearFogFactor(eyeDist); \n    } else { \n       v_FogFactor = 1.0; \n    } \n}                            \n";
+// File offset 0x1EACEF, 460 bytes.
+static constexpr const char fragment[] = "precision lowp float;                            \nvarying mediump vec2 v_texCoord;                            \nuniform sampler2D s_texture;                        \nuniform lowp vec4 glColor;\t\t\t\t\t\t\t\t \nvoid main()                                         \n{                                                   \n\t\tvec4 textureColor = texture2D( s_texture, v_texCoord );\t\n\t\tif ( textureColor.a < 0.5)\t\n\t\t\tdiscard;\t\n\t\tgl_FragColor = glColor * textureColor;\t\t\n}   \t\t  \n";
+// File offset 0x1EAEBC, 628 bytes.
+static constexpr const char fogFragment[] = "precision lowp float;                            \nvarying mediump vec2 v_texCoord;                            \nuniform sampler2D s_texture;                        \nuniform lowp vec4 glColor;\t\t\t\t\t\t\t\t \nuniform vec3 u_fogColor; \nvarying lowp float v_FogFactor;\nvoid main()                                         \n{                                                   \n\t\tvec4 textureColor = texture2D( s_texture, v_texCoord );\t\n\t\tif ( textureColor.a < 0.5)\t\n\t\t\tdiscard;\t\n       vec4 outColor = glColor * textureColor;\t\t\n       gl_FragColor.rgb = mix(outColor.rgb, u_fogColor, v_FogFactor); \n\t\tgl_FragColor.a = outColor.a;\t\t\n}   \t\t  \n";
+}
+}

@@ -1,6 +1,9 @@
 #include "engine/render/shaders/TextureAlphaTestShader.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+#include "engine/render/shaders/EmbeddedTextureAlphaTestShader.h"
+#endif
 #include <GLES2/gl2.h>
 
 static unsigned char g_TextureAlphaTestShader_useAlphaProgram = 0;
@@ -16,11 +19,21 @@ namespace AbyssEngine {
     }
 
     void TextureAlphaTestShader::Init(Engine *) {
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+        this->program = this->ES2LoadProgram(EmbeddedTextureAlphaTestShader::vertex,
+                                             EmbeddedTextureAlphaTestShader::fragment);
+        ConnectShaderComponents(this->program, 0);
+
+        this->alphaProgram = this->ES2LoadProgram(EmbeddedTextureAlphaTestShader::vertex,
+                                                  EmbeddedTextureAlphaTestShader::fogFragment);
+        ConnectShaderComponents(this->alphaProgram, 1);
+#else
         this->program = this->ES2LoadProgram("TextureAlphaTestShader.vsh", "TextureAlphaTestShader.fsh");
         ConnectShaderComponents(this->program, 0);
 
         this->alphaProgram = this->ES2LoadProgram("TextureAlphaTestShader.vsh", "TextureAlphaTestShaderAlpha.fsh");
         ConnectShaderComponents(this->alphaProgram, 1);
+#endif
     }
 
     void TextureAlphaTestShader::SetInActive() {
@@ -31,7 +44,11 @@ namespace AbyssEngine {
     }
 
     void TextureAlphaTestShader::UpdateMeshData(Mesh *mesh, Engine *engine) {
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+        uint8_t programIndex = Engine::fogEnabled ? 1 : 0;
+#else
         uint8_t programIndex = g_TextureAlphaTestShader_programIndex;
+#endif
 
         glUniformMatrix4fv(this->uMVPMatrixLoc[programIndex], 1, 0, engine->worldViewProjMatrix);
 
@@ -58,7 +75,11 @@ namespace AbyssEngine {
 
             location = this->uSamplerLoc[programIndex];
             if (location >= 0) {
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+                glUniform1i(location, Engine::fogEnabled ? 1 : 0);
+#else
                 glUniform1i(location, g_TextureAlphaTestShader_programIndex);
+#endif
             }
 
             location = this->uFogColorLoc[programIndex];
@@ -91,6 +112,18 @@ namespace AbyssEngine {
     }
 
     void TextureAlphaTestShader::ConnectShaderComponents(unsigned int program, int index) {
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+        this->uTextureLoc[index] = glGetUniformLocation(program, "s_texture");
+        this->aPositionLoc[index] = glGetAttribLocation(program, "a_position");
+        this->aTexCoordLoc[index] = glGetAttribLocation(program, "a_texCoord");
+        this->uMVPMatrixLoc[index] = glGetUniformLocation(program, "u_WorldMatrix");
+        this->uColorLoc[index] = glGetUniformLocation(program, "glColor");
+        this->uLightPosLoc[index] = glGetUniformLocation(program, "u_fogColor");
+        this->uAmbientLoc[index] = glGetUniformLocation(program, "u_fogMaxDist");
+        this->uDiffuseLoc[index] = glGetUniformLocation(program, "u_fogMinDist");
+        this->uSamplerLoc[index] = glGetUniformLocation(program, "u_EnableFog");
+        this->uFogColorLoc[index] = glGetUniformLocation(program, "u_eyeposmodel");
+#else
         this->uTextureLoc[index] = glGetUniformLocation(program, "u_Texture");
         this->aPositionLoc[index] = glGetAttribLocation(program, "a_Position");
         this->aTexCoordLoc[index] = glGetAttribLocation(program, "a_TexCoord");
@@ -101,13 +134,18 @@ namespace AbyssEngine {
         this->uDiffuseLoc[index] = glGetUniformLocation(program, "u_Diffuse");
         this->uSamplerLoc[index] = glGetUniformLocation(program, "u_Sampler");
         this->uFogColorLoc[index] = glGetUniformLocation(program, "u_FogColor");
+#endif
 
         glUseProgram(program);
         glUniform1i(this->uTextureLoc[index], 0);
     }
 
     void TextureAlphaTestShader::UseShader(bool) {
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+        if (Engine::fogEnabled && this->alphaProgram != 0) {
+#else
         if (g_TextureAlphaTestShader_useAlphaProgram != 0) {
+#endif
             int program = this->alphaProgram;
             if (program != 0) {
                 glUseProgram(program);

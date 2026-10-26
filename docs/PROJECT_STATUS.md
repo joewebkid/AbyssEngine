@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (ARM64 alpha-test texture shader recovery)
+
+`TextureAlphaTestShader` now uses the three exact Android ARM GLSL literals,
+their original attribute/uniform names, and fog-controlled program selection
+on ARM64. The native and ARM64 libraries build, the signed silent APK is
+rebuilt, and ARMv7 compiles 209/209 units. The full ARM corpus compares
+**4,323/4,524** original functions across 4,745 pairs, **94.79%
+source-shape / 84.31% strict fuzzy**, **2,607 linked-exact / 1,083
+byte-exact**, zero skips and zero exact-set losses. Focused source-shape for
+the eight alpha-shader pairs remains 91.9%; this ARM64 behavior change does
+not increase the ARMv7 score. The ARM64 phone disconnected before the new
+APK could be installed, so its visual output is unverified. Next, verify the
+title/menu on the phone
+and trace the active shader if rendering fails. See the
+[alpha-test shader evidence](ARM64_ALPHA_TEST_SHADER_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (ARM64 no-texture shader source recovery)
 
 `NoTexShader` and `NoTexVtxColorShader` now compile exact Android ARM GLSL
