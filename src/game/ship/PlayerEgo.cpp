@@ -35,6 +35,7 @@
 #include "game/ship/PlayerFixedObject.h"
 #include "game/weapons/RepairBeam.h"
 #include "game/world/Route.h"
+#include "game/world/Station.h"
 #include "game/world/SpacePoint.h"
 #include "game/core/String.h"
 #include "game/weapons/TractorBeam.h"
@@ -163,8 +164,6 @@ static inline Status *PE_status() { return Status::gStatus; }
 
 
 
-
-int Station_getIndex(void *);
 
 
 
@@ -750,7 +749,7 @@ bool PlayerEgo::isDockedToMiningPlant() {
     if (this->dockedFlag != 0 && this->dockingPointIndex == 1) {
         if (((Mission *) (Status::gStatus->getMission()))->isEmpty() != 0
             && Status::gStatus->inAlienOrbit() == 0) {
-            return Station_getIndex(Status::gStatus->getStation()) == 0x67;
+            return Status::gStatus->getStation()->getIndex() == 0x67;
         }
     }
     return false;

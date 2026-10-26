@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (typed station and system calls in the ARM64
+startup link path; earlier subsystem snapshots retain their dates)
+
+Five game units now call the existing `Station`, `Status`, and
+`SolarSystem` methods in place of eight unresolved global helpers.
+The `ModStation` constructor also reads the race from the current
+system, restoring the original ARM receiver and behavior. Native and
+AArch64 static builds pass. The full ARM corpus compares
+**4,323/4,524** originals over **4,745** pairs: **94.79%
+source-shape / 84.29% strict fuzzy**, **2,607 linked-exact /
+1,083 byte-exact**, zero skips and no exact-set loss. The constructor
+improves from **86.1% to 86.8% source-shape**. Strict JNI-initialize
+AArch64 unresolved names fall **115 → 107**; the broader diagnostic
+falls **333 → 325**, with no new names. A game `.so` or APK has still
+not been produced. The remaining strict names include 42 audio and
+30 PaintCanvas calls; live station behavior and an arm64 audio backend
+remain unverified. See the
+[station-call evidence](STATION_GETTER_CALLS_ARM64_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (MGame camera call recovery;
 earlier subsystem snapshots retain their dates)
 

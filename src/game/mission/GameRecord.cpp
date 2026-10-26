@@ -149,10 +149,6 @@ typedef uint32_t uint;
 
 long Array_dtor(void *self);
 
-long Station_getIndex(...);
-
-long Station_getSystem(...);
-
 // The saved flag block is Globals::hints, not a PlayerEgo object.
 #pragma pack(push, 1)
 struct HintsSaveBlock {
@@ -456,7 +452,7 @@ afterDlcUnsaleable:
                 station = Galaxy::gGalaxy->getStation(
                     (int) bluePrintArray->data_[i]->getStationIndex());
                 if (station != (Station *) 0x0) {
-                    int sysIndex = Station_getSystem(station);
+                    int sysIndex = station->getSystem();
                     SolarSystem *sys = Galaxy::gGalaxy->getSystem(sysIndex);
                     if (sys->getRoutes() == (void *) 0x0) {
                         ((BluePrint *) bluePrintArray->data_[i])->stationIndex = 10;
@@ -588,7 +584,7 @@ afterDlcUnsaleable:
         st->collectedBounties[2] = this->field_0x1ac;
         st->collectedBounties[3] = this->field_0x1b0;
         station = Status::gStatus->getStation();
-        if (Station_getIndex(station) == 0x6c) {
+        if (station->getIndex() == 0x6c) {
             Station *stStation = Status::gStatus->getStation();
             Array<Ship *> *stationShips = (Array<Ship *> *) stStation->getShips();
             if (stationShips != (Array<Ship *> *) 0x0) {

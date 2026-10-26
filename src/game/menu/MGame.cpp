@@ -172,8 +172,6 @@ void FModSound_restoreState();
 
 void DialogueWindow_ctor(...);
 
-int Station_getIndex(Station *station);
-
 
 void MGame::maneuverTouchEnd(int a, int b, void *p) {
     MGame *self = this;
@@ -2564,7 +2562,7 @@ int MGame::OnInitialize() {
         }
     }
     if (Status::gStatus->inAlienOrbit() == 0)
-        Status::gStatus->field_84 = Station_getIndex(Status::gStatus->getStation());
+        Status::gStatus->field_84 = Status::gStatus->getStation()->getIndex();
 
     uint64_t t = static_cast<ApplicationManager *>(
         Globals::appManager)->GetCurrentTimeMillis();
@@ -4030,7 +4028,7 @@ int MGame::successCheck() {
         return 1;
     }
 
-    if (Station_getIndex(Status::gStatus->getStation()) == 112 &&
+    if (Status::gStatus->getStation()->getIndex() == 112 &&
         Status::gStatus->getCurrentCampaignMission() == 143)
         Level::initStreamOutPositionAfterCutscene = 1;
     return 1;

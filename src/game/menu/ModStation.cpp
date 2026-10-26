@@ -119,8 +119,6 @@ int FModSound_tryToStopMusicForBGMusic();
 
 
 
-int Station_getIndex(Station * st);
-
 
 void *ms_op_delete(void *p);
 
@@ -371,14 +369,6 @@ int ModStation::ShowLoadingScreen() {
 
 static int *g_msc_stack = 0;
 
-int Status_getStation_msc();
-
-int Station_getIndex_msc(Station * s);
-
-int Status_getSystem_msc();
-
-int SolarSystem_getRace_msc();
-
 ModStation::ModStation() {
     this->dt = 0;
     this->cameraTweenFlags.bytes[3] = 0;
@@ -398,17 +388,16 @@ ModStation::ModStation() {
     this->missionsWindow = 0;
     this->choiceWindow = 0;
 
-    Station *st = (Station *) Status_getStation_msc();
+    Station *st = Status::gStatus->getStation();
     int race;
-    if (Station_getIndex_msc(st) == 0x65) {
+    if (st->getIndex() == 0x65) {
         race = 8;
     } else {
-        st = (Station *) Status_getStation_msc();
-        if (Station_getIndex_msc(st) == 100) {
+        st = Status::gStatus->getStation();
+        if (st->getIndex() == 100) {
             race = 7;
         } else {
-            Status_getSystem_msc();
-            race = SolarSystem_getRace_msc();
+            race = Status::gStatus->getSystem()->getRace();
         }
     }
 
@@ -1142,11 +1131,11 @@ void ModStation::resetIdleCamForHangar() {
 
     int race;
     Station *st = Status::gStatus->getStation();
-    if (Station_getIndex(st) == 0x65) {
+    if (st->getIndex() == 0x65) {
         race = 8;
     } else {
         st = Status::gStatus->getStation();
-        if (Station_getIndex(st) == 100) {
+        if (st->getIndex() == 100) {
             race = 7;
         } else {
             race = Status::gStatus->getSystem()->getRace();

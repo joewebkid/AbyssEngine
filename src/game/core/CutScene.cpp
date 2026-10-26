@@ -5,6 +5,7 @@
 #include "game/mission/Status.h"
 #include "game/core/Globals.h"
 #include "game/world/SolarSystem.h"
+#include "game/world/Station.h"
 #include "engine/render/AEGeometry.h"
 #include "game/mission/Item.h"
 #include "engine/render/LODManager.h"
@@ -40,8 +41,6 @@ static constexpr int CutScene_shipVerticalOffsets[64] = {
 void MatrixSetRotation(void *m, float x, float y, float z);
 
 void MatrixSetTranslation(void *m, float x, float y, float z);
-
-int Station_getIndex(void *station);
 
 CutScene::CutScene(int mode) {
     this->shipPosY = 0;
@@ -180,12 +179,12 @@ void CutScene::process(int /*delta*/) {
         }
     } else if (this->mode == 0x17) {
         unsigned int kind;
-        void *st = Status::gStatus->getStation();
-        if (Station_getIndex(st) == 0x65) {
+        Station *st = Status::gStatus->getStation();
+        if (st->getIndex() == 0x65) {
             kind = 10;
         } else {
             st = Status::gStatus->getStation();
-            if (Station_getIndex(st) == 100) {
+            if (st->getIndex() == 100) {
                 kind = 7;
             } else {
                 kind = (unsigned int) Status::gStatus->getSystem()->getRace() | 2;
