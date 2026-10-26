@@ -2692,8 +2692,12 @@ void PlayerEgo::draw(bool allowHud) {
     m.m22 = 1.0f;
 
     bool aligned = (this->autoPilot != 0 && this->turretActive != 0);
+#if __SIZEOF_POINTER__ == 4
     if (!aligned)
         Mat_assign(&m, ((AEGeometry *) (this->geometry))->getMatrix());
+#else
+    (void) aligned; // The local matrix is never read after this assignment.
+#endif
 
     void *canvas = (void *) PaintCanvas::gCanvas;
     PaintCanvas::gCanvas->SetColor((unsigned int) (0xffffffff));

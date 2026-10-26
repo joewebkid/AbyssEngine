@@ -75,9 +75,14 @@ bool AbyssEngine::PostEffectFlag;
 // absent from <GLES2/gl2.h> and are declared locally. All ES 2.0 functions used
 // here (glColorMask, glDepthFunc, glGetString, glDrawElements, glDrawArrays,
 // glGetIntegerv, glLineWidth, glCullFace, glGetError, ...) come from gl.h.
+#if __SIZEOF_POINTER__ == 8
+#define ShaderUpdateRimColor() this->ShaderUpdate()
+#define ShaderUpdateMaterialColor() this->ShaderUpdate()
+#else
 void ShaderUpdateRimColor();
 
 void ShaderUpdateMaterialColor();
+#endif
 
 namespace {
     int g_Engine_useShaders;
@@ -856,6 +861,11 @@ void Engine::ShaderSetActive(int shaderIndex, Mesh *mesh) {
     shader->UseShader(hasExtra);
     shader = (*this->shaders)[shaderIndex];
     shader->UpdateMeshData(mesh, this);
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+    // The original ShaderSetActive marks a valid shader before RenderMesh draws.
+    g_Engine_shaderDrew = 1;
+    g_Engine_activeShader = shaderIndex;
+#endif
     if (mesh != 0) {
         uint32_t triangles = ((unsigned) (mesh->indexCount) / (unsigned) (3));
         (*this->triangleCounts)[shaderIndex] += triangles;

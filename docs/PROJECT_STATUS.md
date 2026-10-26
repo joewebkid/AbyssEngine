@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (first silent ARM64 APK startup probe)
+
+The first arm64-v8a game library now links all **53 JNI exports** with no
+undefined symbols. A debug-signed silent APK installed on a 25053RT47C
+and read the original OBB: the native game reached the title module,
+loaded **3,250** resource entries, created both logos, and entered its
+render loop. The observed screen was still black. The title shader path
+has since been corrected from original Android ARM GLSL and uniform
+names, and the shader draw flag restored; this revised APK awaits device
+verification after the ARM64 phone disconnected. Native build passes,
+ARMv7 compiles **209/209** units; the new full corpus confirms
+**4,323/4,524** compared, **94.79% source-shape / 84.31% strict fuzzy**,
+**2,607 linked-exact / 1,083 byte-exact**, with no exact-set losses. See the
+[silent APK evidence](ARM64_SILENT_APK_STARTUP_2026-10-26.md). Sound and
+later scenes remain unverified.
+
 Last reviewed: 2026-10-26 (Transform frustum ARM64 call ABI;
 earlier subsystem snapshots retain their dates)
 

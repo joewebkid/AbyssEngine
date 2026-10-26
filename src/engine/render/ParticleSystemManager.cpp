@@ -410,7 +410,12 @@ int ParticleSystemManager::init() {
     initSprites();
     initMesh();
     this->enabled = 1;
+#if __SIZEOF_POINTER__ == 8
+    update(0);
+    return 0;
+#else
     return _psm_firstUpdate(this, 0, 0, 0);
+#endif
 }
 
 void ParticleSystemManager::resetSystem(int handle) {

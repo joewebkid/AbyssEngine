@@ -7,9 +7,14 @@
 #include "engine/render/PaintCanvas.h"
 #include "game/core/Globals.h"
 
+#if __SIZEOF_POINTER__ == 8
+#define g_currentLayout Globals::layout
+#define g_sound Globals::sound
+#else
 static Layout *g_currentLayout = nullptr;
 static ImageFactory *g_imageFactory = nullptr;
 static FModSound *g_sound = nullptr;
+#endif
 
 MTitle::MTitle() {
     this->renderPriority = 100;
@@ -35,11 +40,19 @@ int MTitle::OnInitialize() {
 void MTitle::OnRelease() {
     PaintCanvas::gCanvas->ReleaseAllResources();
 
+#if __SIZEOF_POINTER__ == 8
+    static_cast<Globals *>(Globals::globals)->loadFont(GameText::getLanguage());
+#else
     Globals::gGlobals->loadFont(GameText::getLanguage());
+#endif
 
     if (g_currentLayout != 0) {
         g_currentLayout->reload();
+#if __SIZEOF_POINTER__ == 8
+        static_cast<ImageFactory *>(Globals::imageFactory)->reload();
+#else
         g_imageFactory->reload();
+#endif
     }
 }
 

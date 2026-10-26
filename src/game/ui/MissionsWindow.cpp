@@ -216,6 +216,22 @@ int MissionsWindow::init() {
     this->m_pTabButtons = tabs;
     ArraySetLength(2, *tabs);
 
+#if __SIZEOF_POINTER__ == 8
+    String *t0 = g_mw_gameText->getText(3219);
+    int helpOff = L->getHelpButtonOffset();
+    TouchButton *tab1 = new TouchButton(*t0, 3, (this->m_width + this->m_x) - helpOff,
+                                         this->m_y, 0x12);
+    (*tabs)[1] = tab1;
+
+    String *t1 = g_mw_gameText->getText(129);
+    int helpOff2 = L->getHelpButtonOffset();
+    TouchButton *tab0 = new TouchButton(*t1, 3,
+                                         (((this->m_width + this->m_x) - helpOff2) - tab1->getWidth())
+                                             + L->field_0x38,
+                                         this->m_y, 0x12);
+    (*tabs)[0] = tab0;
+    tab0->setAlwaysPressed(true);
+#else
     TouchButton *tab1 = (TouchButton *) ::operator new(sizeof(TouchButton));
     String *t0 = g_mw_gameText->getText(titleId);
     int helpOff = L->getHelpButtonOffset();
@@ -231,6 +247,7 @@ int MissionsWindow::init() {
                         this->m_y, 0x12);
     (*tabs)[0] = tab0;
     tab0->setAlwaysPressed(true);
+#endif
 
     L->setWindowDimensions(this->m_x, this->m_y, this->m_width, this->m_height);
 

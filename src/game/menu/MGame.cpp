@@ -3950,9 +3950,13 @@ int MGame::successCheck() {
     }
 
     if (this->dialogueWindow == nullptr) {
+#if __SIZEOF_POINTER__ == 8
+        DialogueWindow *window = new DialogueWindow();
+#else
         DialogueWindow *window =
                 static_cast<DialogueWindow *>(::operator new(0x74));
         DialogueWindow_ctor(window);
+#endif
         Level *level = this->level;
         this->dialogueWindow = window;
         if (level != nullptr)

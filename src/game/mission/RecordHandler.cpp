@@ -108,6 +108,9 @@ static_assert(sizeof(OptionsBuffer) == 0x63, "OptionsBuffer size");
 #endif
 } // anonymous namespace
 
+extern const char *g_android_origami_super_club;
+
+#if !defined(__ANDROID__) || __SIZEOF_POINTER__ == 4
 const char *g_android_origami_super_club = nullptr;
 
 extern "C" void Java_net_fishlabs_gof2hdallandroid2012_GOF2HD2012_SetOrigamiSuperClub(
@@ -120,6 +123,7 @@ extern "C" void Java_net_fishlabs_gof2hdallandroid2012_GOF2HD2012_ReleaseOrigami
     JNIEnv *env, jobject /*thiz*/, jstring value) {
     env->ReleaseStringUTFChars(value, g_android_origami_super_club);
 }
+#endif
 
 static_assert(sizeof(int) == 4 && sizeof(float) == 4 && sizeof(long long) == 8,
               "record file scalar widths");

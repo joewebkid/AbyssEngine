@@ -3606,7 +3606,27 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
             _mtw_MissionsWindow_OnTouchMove(this->missionsWindow, y, x);
             break;
         case 0xa:
+#if __SIZEOF_POINTER__ == 8
+            // Android's cinematic controls are active only for the iPad layout.
+            // Keep its two touch identities and update the existing control coordinates.
+            if (Globals::iPad != 0 && Globals::iPadAssetsWithLowerRes == 0) {
+                _mtw_TouchButton_OnTouchMove(this->cinematicBtnA, y, x);
+                _mtw_TouchButton_OnTouchMove(this->cinematicBtnB, y, x);
+                if (touchId == this->cinematicTouchIdA && touchId != nullptr) {
+                    auto *settings = (GameSettings *) Globals::options;
+                    settings->steerAnchorX += x - this->cinematicAnchorA;
+                    this->cinematicAnchorA = x;
+                    _mtw_apply_ipad_control_coords(this);
+                } else if (touchId == this->cinematicTouchIdB && touchId != nullptr) {
+                    auto *settings = (GameSettings *) Globals::options;
+                    settings->fireAnchorX += x - this->cinematicAnchorB;
+                    this->cinematicAnchorB = x;
+                    _mtw_apply_ipad_control_coords(this);
+                }
+            }
+#else
             _mtw_steerFromTouchId(this, y, x, touchId);
+#endif
             break;
         case 0xb: {
             void **arr = (void **) this->buttonsB4;

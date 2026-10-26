@@ -175,6 +175,12 @@ void OnCreateApplication(AbyssEngine::Engine *engine) {
 
     ApplicationManager::gAppManager = engine->appManager;
     PaintCanvas::gCanvas = engine->appManager->paintCanvas;
+#if __SIZEOF_POINTER__ == 8
+    // The original OnCreateApplication also publishes these Globals before
+    // loadFont/init; ImageFactory::reload reads Canvas during init.
+    Globals::appManager = engine->appManager;
+    Globals::Canvas = PaintCanvas::gCanvas;
+#endif
     Globals::gScreenWidth = PaintCanvas::gCanvas->GetWidth();
     Globals::gScreenHeight = PaintCanvas::gCanvas->GetHeight();
 
@@ -203,7 +209,11 @@ void OnCreateApplication(AbyssEngine::Engine *engine) {
     engine->appManager->CheatAddCode(AbyssEngine::String("448366639", false), 1);
     engine->appManager->CheatAddCode(AbyssEngine::String("373352623", false), 2);
 
+#if __SIZEOF_POINTER__ == 8
+    Globals::layout->initTip();
+#else
     Globals::gLayout->initTip();
+#endif
     Status::gStatus->resetGame();
     AbyssEngine::Engine::vfc = true;
     AERandom::gRandom->reset();

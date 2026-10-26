@@ -3781,7 +3781,11 @@ void PaintCanvas::Begin2d() {
     paintcanvas_ext_gl_blendfunc(0x302, 0x303);
     this->engine->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
     paintcanvas_ext_glenable2(this->engine, 0xde1, true);
+#if __SIZEOF_POINTER__ == 8
+    if (!Engine::enableShader) {
+#else
     if (*paintcanvas_g_b2d_flag == 0) {
+#endif
         paintcanvas_ext_gl_texenvi(0x2300, 0x2200, 0x2100);
         paintcanvas_ext_glMatrixMode(0x1702);
         paintcanvas_ext_gl_loadidentity();

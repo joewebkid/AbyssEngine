@@ -139,7 +139,13 @@ void FileInterfaceAndroid::Close() {
     if (m != 0) {
         void *env = *(void **) gJniEnv;
         void *modePtr = (this->modeFlag == 0) ? gModeWrite : gModeAppend;
+#if __SIZEOF_POINTER__ == 8
+        JniTable(env)->CallVoidMethod(reinterpret_cast<JNIEnv *>(env),
+                                      reinterpret_cast<jobject>(m),
+                                      reinterpret_cast<jmethodID>(*(void **) modePtr));
+#else
         JNI_CallVoidMethod(env, m, *(void **) modePtr);
+#endif
         this->jniStream = 0;
     }
 }
@@ -234,7 +240,12 @@ uint32_t FileInterfaceAndroid::Write(uint32_t n, const void *buf) {
     JNIEnv *jenv = reinterpret_cast<JNIEnv *>(envObj);
     jbyteArray arr = JniTable(envObj)->NewByteArray(jenv, (jsize) n);
     JniTable(envObj)->SetByteArrayRegion(jenv, arr, 0, (jsize) n, (const jbyte *) buf);
+#if __SIZEOF_POINTER__ == 8
+    JniTable(envObj)->CallVoidMethod(jenv, reinterpret_cast<jobject>(this->jniStream),
+                                     reinterpret_cast<jmethodID>(*(void **) gWriteMidArg), arr);
+#else
     JNI_CallVoidMethod(envObj, this->jniStream, *(void **) gWriteMidArg, arr);
+#endif
     bool ok = JniTable(envObj)->ExceptionOccurred(jenv) == 0;
     if (!ok)
         JniTable(envObj)->ExceptionClear(jenv);
