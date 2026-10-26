@@ -10,15 +10,18 @@ a minimal Crashlytics loader compatibility library. These test libraries and
 the APK are kept outside this repository. Sound is deliberately absent.
 The latest clean APK is
 `D:\gof2-arm64-crypto\gof2-arm64-silent-debug-20261026.apk`
-(SHA-256 `51da69d2e145508f6f380ec0460551fb6063d1421217df903e8772dcce30ebfa`).
+(SHA-256 `a7b5681a8228efa15445b8b92dc1dda2dd208297a952dc456b23e048d3e1a424`).
 The same artifact path was rebuilt with the basic shader dispatch recovery;
-see [basic shader evidence](ARM64_BASIC_SHADER_DISPATCH_2026-10-26.md).
+It was rebuilt again with two no-texture shader sources; this latest image
+has not yet been visually checked in the game foreground. See
+[no-texture shader evidence](ARM64_NO_TEXTURE_SHADERS_2026-10-26.md).
 
 The APK installed on a 25053RT47C (Android 16, arm64-v8a). The original OBB
 was copied to the package's OBB directory. The game reached `MTitle`, found
 3,250 resources, created both logo images, and executed its render callback
-for multiple frames without a native crash. The observed screenshot was black.
-This is not yet a visually successful game startup. The other connected phone
+for multiple frames without a native crash. A screenshot appeared black, but
+the foreground activity was not recorded with it; visual startup remains
+unverified. The other connected phone
 with the original game was not modified.
 
 After this observation, the title render path was traced to invalid OpenGL
@@ -30,13 +33,15 @@ The prior reconstruction passed placeholder file names as GLSL and queried
 placeholder uniform names. The AArch64 path now uses the original shader
 literals and names. `Engine::ShaderSetActive` also publishes the draw flag
 observed in the original routine. This revised APK was installed after the
-ARM64 phone reconnected. It draws a small image fragment at the top-left
-while the rest of the screen is black. The first run crashed at
+ARM64 phone reconnected. The first run crashed at
 `PaintCanvas::FontCreate` on title release. Resetting the ARM64 fallback-font
 index during resource cleanup removed that crash in a second run. The game
-process then stayed alive in the foreground activity, but the menu was not
-visually usable. The installed ARM64 emulator image cannot run on this x86-64
-host (the Android emulator rejects the CPU architecture).
+process then stayed alive in the foreground activity. A dark screenshot with
+a small `BUY` fragment was captured without recording the foreground activity.
+Because the device later showed another game, that image does not prove GOF2
+rendering. The menu's visual output remains unverified. The installed ARM64
+emulator image cannot run on this x86-64 host (the Android emulator rejects
+the CPU architecture).
 
 ## Source and validation
 
@@ -57,7 +62,8 @@ host (the Android emulator rejects the CPU architecture).
 
 ## Remaining work
 
-Recover the remaining shader literals and inspect the 2D projection behind
-the nearly black title/menu screen. Repeat the device test until the menu is
-legible and interactive, then test later scenes. The silent FMOD layer is
-temporary; audio requires a separately validated ARM64 implementation.
+Capture GOF2 with its foreground activity confirmed, recover remaining
+shader literals, and inspect 2D projection if the verified image is wrong.
+Repeat the device test until the menu is legible and interactive, then test
+later scenes. The silent FMOD layer is temporary; audio requires a separately
+validated ARM64 implementation.

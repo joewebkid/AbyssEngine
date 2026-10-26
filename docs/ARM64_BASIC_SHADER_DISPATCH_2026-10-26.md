@@ -39,15 +39,18 @@ literals, pass standalone GLSL validation with the Android SDK's
 The full corpus result is recorded in `PROJECT_STATUS.md`.
 
 A debug-signed silent ARM64 APK with these changes was installed on the
-25053RT47C. The title drew a small image fragment at the top-left; most of
-the screen remained black. Its first title-to-menu transition crashed in
+25053RT47C. Its first title-to-menu transition crashed in
 `PaintCanvas::FontCreate`: `ReleaseAllResources` left the ARM64 engine's
 fallback-font index pointing into the cleared font array. Resetting the index
 after releasing fonts removed the observed crash. The same game process
-remained in the foreground activity after the transition. The menu is still
-not visually usable. Device logs repeatedly report shader compilation
-failures from remaining placeholder shader sources. Next, recover those
-sources and inspect the 2D projection.
+remained in the foreground activity after the transition. Device logs
+repeatedly report shader compilation failures from remaining placeholder
+shader sources. A dark screenshot with a small `BUY` fragment was captured,
+but the foreground activity was not recorded at capture time; the device
+later showed another game. That screenshot does not verify GOF2 rendering.
+The menu's visual output remains unverified. Next, capture GOF2 with its
+foreground activity confirmed, then inspect the active shaders and 2D
+projection.
 
 The full ARMv7 corpus remains at 4,323/4,524 original functions over 4,745
 pairs, 94.79% source-shape, 84.31% strict fuzzy, 2,607 linked-exact and
