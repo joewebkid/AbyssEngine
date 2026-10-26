@@ -33,7 +33,7 @@ public:
     float camOffsetY;
     float camOffsetZ;
     uint8_t locked;
-    uint8_t lookAtCam;
+    bool lookAtCam;
     uint8_t active;
     uint8_t rumbleActive;
     int rumbleTimer;
@@ -146,7 +146,7 @@ public:
 
     void translateNoUpdate(float dx, float dy, float dz);
 
-    uint8_t isInLookAtMode();
+    bool isInLookAtMode();
 
     uint8_t isInFastForwardMode();
 

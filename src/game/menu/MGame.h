@@ -155,7 +155,7 @@ public:
     uint8_t freeCamMode;
     uint8_t _pad_0x15f[1];
     int cinematicPrevCamMode;
-    uint8_t cinematicPrevLookAt;
+    bool cinematicPrevLookAt;
     uint8_t _pad_0x165[3];
     float flFastForwardWeight;
     int timeWarpState;

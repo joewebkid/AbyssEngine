@@ -152,8 +152,6 @@ int FModSound_tryToStopMusicForBGMusic();
 
 void Music_resume(Music *m, int one, int v);
 
-Vector *TFC_getCamOffset(TargetFollowCamera * c);
-
 namespace AbyssEngine {
     namespace AEMath {
         float VectorLength(const Vector &value);
@@ -168,15 +166,11 @@ void TFC_setFastForwardMode(TargetFollowCamera *c, int v);
 
 uint8_t TFC_isInLookAtMode(TargetFollowCamera * c);
 
-void TFC_setLookAtCam(TargetFollowCamera *c, int v);
-
 void Cam_setCinematic(TargetFollowCamera *c, int on);
 
 void FModSound_restoreState();
 
 void DialogueWindow_ctor(...);
-
-void TFC_enableFirstPersonCam(TargetFollowCamera *c, int on);
 
 int Station_getIndex(Station *station);
 
@@ -401,10 +395,6 @@ void MGame::startJumpScene() {
             this->egoJumpPos.x, this->egoJumpPos.y, this->egoJumpPos.z);
 }
 
-void TFC_setRotationAroundTarget(TargetFollowCamera *c, int v);
-
-int TFC_hideShipForFirstPersonCam(TargetFollowCamera * c);
-
 void MGame::switchCamera(int id) {
     int turretArg;
     int savedMode;
@@ -452,7 +442,7 @@ afterTurret:
                 goto restart;
             }
             this->levelScript->resetCamera(this->level);
-            TFC_setRotationAroundTarget(this->camera, 0);
+            this->camera->setRotationAroundTarget(false);
             this->player->setFreeLookMode(0);
             {
                 Engine *eng = (Engine *) this->applicationManager->GetEngine();
@@ -462,15 +452,15 @@ afterTurret:
         case 1:
         case 3: {
             if (this->player->isDockedToDockingPoint() != 0)
-                TFC_setLookAtCam(this->camera, 0);
+                this->camera->setLookAtCam(false);
             this->levelScript->lookBehind();
-            TFC_setRotationAroundTarget(this->camera, 1);
+            this->camera->setRotationAroundTarget(true);
             this->player->setFreeLookMode(1);
             goto firstPerson;
         }
         case 2: {
             this->levelScript->resetCamera(this->level);
-            TFC_setRotationAroundTarget(this->camera, 0);
+            this->camera->setRotationAroundTarget(false);
             this->player->setFreeLookMode(0);
             if (savedMode == 1)
                 this->field_0x18 = 1;
@@ -481,11 +471,11 @@ afterTurret:
     }
 
 firstPerson: {
-        TFC_enableFirstPersonCam(this->camera, this->cameraMode == 2);
+        this->camera->enableFirstPersonCam(this->cameraMode == 2);
         PlayerEgo *ego = this->player;
         int v;
         if (this->field_0x18 == 0)
-            v = TFC_hideShipForFirstPersonCam(this->camera);
+            v = this->camera->hideShipForFirstPersonCam();
         else
             v = 1;
         PlayerEgo_hideShipRaw(ego, v);
@@ -507,7 +497,7 @@ void MGame::freeCamTouchBegin(int x, int y, void *idPtr) {
     } else {
         if (this->menuTime >= 1000) goto tail;
         this->flCameraRoll = 0;
-        float len = AbyssEngine::AEMath::VectorLength(*TFC_getCamOffset(this->camera));
+        float len = AbyssEngine::AEMath::VectorLength(*this->camera->getCamOffset());
         this->flCameraRoll = len;
         finger.x = (float) x;
         finger.y = (float) y;
@@ -4471,7 +4461,7 @@ void MGame::setCinematicMode(bool on) {
     if (!on) {
         AbyssEngine::Engine::UseAdvancedShader = this->field_0x1dd;
         switchCamera(this->cinematicPrevCamMode);
-        TFC_setLookAtCam(this->camera, this->cinematicPrevLookAt);
+        this->camera->setLookAtCam(this->cinematicPrevLookAt);
         return;
     }
 
@@ -4945,7 +4935,7 @@ void MGame::dialogueEvent() {
     this->player->setTurretMode(0);
     this->levelScript->resetCamera((Level *) (this->level) /* level: arg lost in decomp */);
     this->player->setFreeLookMode(0);
-    TFC_enableFirstPersonCam(this->camera, 0);
+    this->camera->enableFirstPersonCam(false);
     this->player->hideShipForFirstPersonCameraView(0);
     LevelScript *cam = this->levelScript;
     this->needsRedraw = 1;

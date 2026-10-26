@@ -1,5 +1,25 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (MGame camera call recovery;
+earlier subsystem snapshots retain their dates)
+
+`MGame` now calls five existing `TargetFollowCamera` methods directly
+instead of undefined `TFC_*` wrappers. The saved look-at state and the
+camera look-at field/getter are typed as `bool`, preserving both the
+ARM byte layout and the linked-exact cinematic restore call. Native
+and AArch64 static builds pass. Focused ARM verification retains all
+**18 linked-exact / 9 byte-exact** MGame matches and all
+**32 linked-exact / 23 byte-exact** TargetFollowCamera matches. Full
+ARM corpus: **4,323/4,524** originals over **4,745** pairs,
+**94.79% source-shape / 84.29% strict fuzzy**,
+**2,607 linked-exact / 1,083 byte-exact**, zero skips and exact-set
+losses. Strict JNI-initialize ARM64 unresolved names fall **120 →
+115**; the broader diagnostic falls **338 → 333**, with no new names.
+The game `.so` and APK are not yet built, and live camera switching
+remains unverified. Next priority: typed Station/Status getter calls
+behind the remaining ABI wrappers. See the
+[camera-call evidence](MGAME_CAMERA_CALLS_ARM64_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (CutScene numeric conversion and fog calls;
 earlier subsystem snapshots retain their dates)
 
