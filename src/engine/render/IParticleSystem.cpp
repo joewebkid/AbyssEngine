@@ -1,14 +1,6 @@
 #include "engine/render/IParticleSystem.h"
 #include "engine/render/ParticleSettingsRef.h"
 
-char *MatrixGetPosition(char *out, Matrix const *matrix);
-
-char *MatrixGetRight(char *out, Matrix const *matrix);
-
-char *MatrixGetUp(char *out, Matrix const *matrix);
-
-char *MatrixGetDir(char *out, Matrix const *matrix);
-
 namespace AbyssEngine {
     namespace AEMath {
         Vector operator-(const Vector &);
@@ -136,14 +128,14 @@ void IParticleSystem::emit(int delta) {
     char velocity[12];
     char emitVelocity[12];
 
-    MatrixGetPosition(matrixPos, this->matrix);
-    MatrixGetRight(right, this->matrix);
+    *(Vector *) matrixPos = AbyssEngine::AEMath::MatrixGetPosition(*this->matrix);
+    *(Vector *) right = AbyssEngine::AEMath::MatrixGetRight(*this->matrix);
     if (this->mirror != 0) {
         *(Vector *) tmp = -*(const Vector *) right;
         *(Vector *) (right) = *(Vector *) (tmp);
     }
-    MatrixGetUp(up, this->matrix);
-    MatrixGetDir(dir, this->matrix);
+    *(Vector *) up = AbyssEngine::AEMath::MatrixGetUp(*this->matrix);
+    *(Vector *) dir = AbyssEngine::AEMath::MatrixGetDir(*this->matrix);
 
     char *def = particleSetDefinition(static_cast<ParticleSettings::ParticleSet>(set));
     float speed2 = AbyssEngine::AEMath::VectorDot(this->emitterVelocity, this->emitterVelocity);
@@ -468,15 +460,14 @@ IParticleSystem::IParticleSystem(PaintCanvas *canvas, Matrix const *matrix,
 }
 
 void IParticleSystem::calcEmitterVelocity(int delta) {
-    char position[12];
+    Vector position = AbyssEngine::AEMath::MatrixGetPosition(*this->matrix);
     char scaled[12];
     char diff[12];
-    MatrixGetPosition(position, this->matrix);
-    *(Vector *) diff = *(const Vector *) position - this->lastEmitterPosition;
+    *(Vector *) diff = position - this->lastEmitterPosition;
     *(Vector *) scaled = *(const Vector *) diff * (1000.0f / (float) delta);
     this->emitterVelocity = *(Vector *) (scaled);
     this->emitterVelocityDirty = 0;
-    this->lastEmitterPosition = *(Vector *) (position);
+    this->lastEmitterPosition = position;
 }
 
 void IParticleSystem::emitManual(Vector position, int particleSet, Vector const *velocity, float lifetime) {
@@ -607,8 +598,6 @@ void IParticleSystem::resetEmitterVelocity() {
     char value[12] = {};
     this->emitterVelocity = *(Vector *) (value);
     this->emitterVelocityDirty = 1;
-    char *matrixValue = value;
-    MatrixGetPosition(matrixValue, this->matrix);
-    this->lastEmitterPosition = *(Vector *) (matrixValue);
+    this->lastEmitterPosition = AbyssEngine::AEMath::MatrixGetPosition(*this->matrix);
     this->resetEmitterVelocityPending = 0;
 }

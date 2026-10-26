@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (particle-system call and ARM64 ABI recovery;
+earlier subsystem snapshots retain their dates)
+
+`IParticleSystem` now calls the existing typed matrix getters rather
+than four undefined stand-ins. `ParticleSystemManager` dispatches
+virtual `reset` and `getQuadCount` as the original ARM code does;
+`getQuadCount` also fixes the mesh-system allocation count. Native and
+AArch64 static builds pass. ARM source-shape rises **65.4% → 95.9%**
+for manager `reset` and **89.1% → 96.9%** for `addMeshSystem`.
+Full ARM corpus: **4,323/4,524** originals over **4,745** pairs,
+**94.78% source-shape / 84.29% strict fuzzy**,
+**2,607 linked-exact / 1,083 byte-exact**, zero skips and exact-set
+losses. Strict JNI-initialize ARM64 unresolved names fall **130 → 124**;
+broader diagnostic falls **347 → 341**, with no new names. The game
+`.so` and APK are still not built; live particle rendering and audio
+remain unverified. The next small ABI target is the numeric conversion
+calls in `CutScene` and `HangarWindow`. See the
+[particle-system evidence](PARTICLE_SYSTEM_CALL_ABI_ARM64_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (PaintCanvas destructor recovery;
 earlier subsystem snapshots retain their dates)
 

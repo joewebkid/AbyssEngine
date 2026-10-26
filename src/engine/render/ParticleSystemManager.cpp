@@ -15,10 +15,6 @@ void _psm_constructAfterCamera(void *self);
 
 int _psm_firstUpdate(void *self, int a, int b, int c);
 
-void _ips_reset(void *sys);
-
-int _ips_getParticleCount(void *sys);
-
 
 ParticleSystemManager::ParticleSystemManager(
     PaintCanvas *canvas, ParticleSettings::CameraSet cameraSet, unsigned short spriteTex,
@@ -113,13 +109,13 @@ void ParticleSystemManager::reset() {
     for (unsigned i = 0; i < this->spriteSystems.count; i++) {
         IParticleSystem *p = sprites[i];
         if (p != nullptr)
-            _ips_reset(p);
+            p->reset();
     }
     IParticleSystem **meshes = (IParticleSystem **) this->meshSystems;
     for (unsigned i = 0; i < this->meshSystemCount; i++) {
         IParticleSystem *p = meshes[i];
         if (p != nullptr)
-            _ips_reset(p);
+            p->reset();
     }
 }
 
@@ -199,7 +195,7 @@ unsigned int ParticleSystemManager::addMeshSystem(AbyssEngine::AEMath::Matrix co
                                                      flag, this->meshUsesExtra != 0);
     ArrayAdd<ParticleSystemMesh *>(sys, meshArray());
 
-    this->meshParticleCount += _ips_getParticleCount(sys);
+    this->meshParticleCount += sys->getQuadCount();
 
     return (this->meshSystemCount - 1) | 0x4000;
 }
@@ -337,7 +333,7 @@ int ParticleSystemManager::addSpriteSystem(AbyssEngine::AEMath::Matrix const *ma
     ParticleSystemSprite *sys = new ParticleSystemSprite(static_cast<PaintCanvas *>(this->canvas), matrix, sets,
                                                          flag, this->spriteUsesExtra != 0);
     ArrayAdd<ParticleSystemSprite *>(sys, spriteArray());
-    this->spriteParticleCount += _ips_getParticleCount(sys);
+    this->spriteParticleCount += sys->getParticleCount();
     return this->spriteSystems.count - 1;
 }
 
