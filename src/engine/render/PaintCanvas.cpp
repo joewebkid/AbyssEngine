@@ -4278,6 +4278,11 @@ void PaintCanvas::ReleaseAllResources() {
         }
     }
     PCArrayRemoveAll(&this->fonts);
+#if __SIZEOF_POINTER__ == 8
+    // The ARM64 port reuses this Engine across the title/menu resource reload.
+    // Its fallback font index must not refer to the fonts released above.
+    this->engine->field_0x78 = -1;
+#endif
 
     for (unsigned int i = 0; i < this->images.count; i++) {
         if (this->images.data_[i] != 0) {

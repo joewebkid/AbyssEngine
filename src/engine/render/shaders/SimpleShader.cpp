@@ -1,6 +1,9 @@
 #include "engine/render/shaders/SimpleShader.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+#include "engine/render/shaders/EmbeddedBasicShaders.h"
+#endif
 #include <GLES2/gl2.h>
 
 namespace AbyssEngine {
@@ -13,10 +16,19 @@ namespace AbyssEngine {
     }
 
     void SimpleShader::Init(Engine *) {
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+        this->program = (int) this->ES2LoadProgram(EmbeddedSimpleShader::vertex,
+                                                   EmbeddedSimpleShader::fragment);
+#else
         this->program = (int) this->ES2LoadProgram("SimpleShader.vsh", "SimpleShader.fsh");
+#endif
         this->aPosition = glGetAttribLocation(this->program, "a_position");
         this->uWorldMatrix = glGetUniformLocation(this->program, "u_WorldMatrix");
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+        this->uColor = glGetUniformLocation(this->program, "glColor");
+#else
         this->uColor = glGetUniformLocation(this->program, "u_color");
+#endif
         glUseProgram(this->program);
     }
 

@@ -6,7 +6,7 @@
 
 
 namespace AbyssEngine {
-    int ShaderBaseStruct::shaderIndexIntern;
+    int ShaderBaseStruct::shaderIndexIntern = -1;
 
     ShaderBaseStruct::ShaderBaseStruct() {
         this->program = -1;

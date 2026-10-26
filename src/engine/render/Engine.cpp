@@ -582,7 +582,50 @@ void Engine::RenderMesh(Mesh *mesh) {
         }
     } else {
         g_Engine_shaderDrew = 0;
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+        // Original RenderMesh chooses a shader from the active render mode and
+        // mesh attributes. The first registered shader is index zero.
+        const uint32_t flags = this->glEnableFlags;
+        int shaderIndex = -1;
+        if (flags & 0x1000) shaderIndex = GenericShader::ShaderIndex;
+        else if (flags & 0x2000) shaderIndex = GenericShader1::ShaderIndex;
+        else if (flags & 0x4000) shaderIndex = GenericShader2::ShaderIndex;
+        else if (flags & 0x400) shaderIndex = SandboxShader::ShaderIndex;
+        else if (flags & 4) shaderIndex = BumpMapping::ShaderIndex;
+        else if (flags & 0x10000) shaderIndex = BumpShaderV3::ShaderIndex;
+        else if (flags & 0x1000000) shaderIndex = BumpShaderParticle::ShaderIndex;
+        else if (flags & 0x40000) shaderIndex = BumpShaderCloak::ShaderIndex;
+        else if (flags & 0x8000000) shaderIndex = BumpShaderRefract::ShaderIndex;
+        else if (flags & 0x200000) shaderIndex = EnergyShield::ShaderIndex;
+        else if (flags & 0x400000) shaderIndex = SimpleRefractionShader::ShaderIndex;
+        else if (flags & 0x100000) shaderIndex = GlowShader::ShaderIndex;
+        else if (flags & 0x4000000) shaderIndex = DNSShader::ShaderIndex;
+        else if (flags & 0x20000) {
+            shaderIndex = UseAdvancedShader ? BumpRimCubeShader::ShaderIndex
+                                            : BumpRimCubeShader_new::ShaderIndex;
+        } else if (flags & 0x2000000) {
+            // This mode has no draw in the original shader dispatch.
+        } else if (flags & 8) shaderIndex = SpecCubeMapping::ShaderIndex;
+        else if (flags & 0x80000) shaderIndex = SpecCubeAlphaMapping::ShaderIndex;
+        else if (flags & 0x8000) shaderIndex = CubeNormalMapping::ShaderIndex;
+        else if (flags & 2) shaderIndex = TextureAlphaTestShader::ShaderIndex;
+        else if (flags & 1) {
+            if ((mesh->vertexFormat & 0xa) == 8)
+                shaderIndex = NoTexVtxColorShader::ShaderIndex;
+            else if (this->lightingEnabled)
+                shaderIndex = TextureLightShader::ShaderIndex;
+            else if (mesh->vertexFormat & 8)
+                shaderIndex = TextureVtxColorShader::ShaderIndex;
+            else if (flags & 0x800000)
+                shaderIndex = ColorMixAdd::ShaderIndex;
+            else
+                shaderIndex = TextureShader::ShaderIndex;
+        } else shaderIndex = NoTexShader::ShaderIndex;
+        if (shaderIndex >= 0)
+            this->ShaderSetActive(shaderIndex, mesh);
+#else
         this->ShaderSetActive(g_Engine_defaultShader, mesh);
+#endif
         if (g_Engine_shaderDrew != 0) {
             int oldBuffer = 0;
             glGetIntegerv(0x8ca6, &oldBuffer);
@@ -839,10 +882,15 @@ void Engine::DrawLine2D(float *verts, int count, bool strip) {
 
 void Engine::ShaderSetActive(int shaderIndex, Mesh *mesh) {
     while (shaderIndex == -1) {
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+        shaderIndex = (mesh->vertexFormat & 2) ? TextureShader::ShaderIndex
+                                                : SimpleShader::ShaderIndex;
+#else
         shaderIndex = g_Engine_defaultShader;
         if ((((uint32_t) mesh->vertexFormat) << 30) >= 0) {
             shaderIndex = g_Engine_altShader;
         }
+#endif
     }
 
     bool hasExtra = mesh != 0 && mesh->hasAnimation != 0;

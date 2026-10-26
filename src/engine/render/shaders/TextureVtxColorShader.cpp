@@ -1,6 +1,9 @@
 #include "engine/render/shaders/TextureVtxColorShader.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+#include "engine/render/shaders/EmbeddedBasicShaders.h"
+#endif
 #include <GLES2/gl2.h>
 
 namespace AbyssEngine {
@@ -15,6 +18,14 @@ namespace AbyssEngine {
     }
 
     void TextureVtxColorShader::Init(Engine *) {
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+        this->program = this->ES2LoadProgram(EmbeddedTextureVtxColorShader::vertex,
+                                              EmbeddedTextureVtxColorShader::fragment);
+        ConnectShaderComponents(this->program, 0);
+        this->fogProgram = this->ES2LoadProgram(EmbeddedTextureVtxColorShader::vertex,
+                                                 EmbeddedTextureVtxColorShader::fogFragment);
+        ConnectShaderComponents(this->fogProgram, 1);
+#else
         const char *vertexShader =
                 "attribute highp vec4 a_position;\n"
                 "attribute mediump vec2 a_texCoord;\n"
@@ -29,6 +40,7 @@ namespace AbyssEngine {
 
         this->fogProgram = this->ES2LoadProgram(vertexShader, "\n");
         ConnectShaderComponents(this->fogProgram, 1);
+#endif
     }
 
     void TextureVtxColorShader::ConnectShaderComponents(uint32_t program, int index) {
@@ -112,10 +124,17 @@ namespace AbyssEngine {
 
             location = loc_u_eyeposmodel[index];
             if (location >= 0) {
+#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
+                glUniform3f(location,
+                            engine->eyePosition.x,
+                            engine->eyePosition.y,
+                            engine->eyePosition.z);
+#else
                 glUniform3f(location,
                             engine->lightColor.x,
                             engine->lightColor.y,
                             engine->lightColor.z);
+#endif
             }
 
             this->dirty = 0;

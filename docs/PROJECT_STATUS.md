@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (ARM64 shader dispatch and live menu transition)
+
+The silent ARM64 test APK now uses Android ARM sourced shader literals for
+the title, simple, and texture-with-vertex-color paths, with zero-based shader
+registration and mesh shader selection. On the 25053RT47C it draws a small
+fragment at the top-left. A font-index crash during the title-to-menu
+transition was reproduced and removed; the game process then stayed in its
+foreground activity. Most of the screen remains black, and device logs show
+repeated shader compilation failures from other placeholder shader sources.
+The menu is **not yet visually usable**. Native and ARM64 builds pass; ARMv7
+compiles 209/209 units. The full ARM corpus remains **4,323/4,524** compared
+over 4,745 pairs, **94.79% source-shape / 84.31% strict fuzzy**,
+**2,607 linked-exact / 1,083 byte-exact**, with no exact-set losses. See the
+[shader dispatch evidence](ARM64_BASIC_SHADER_DISPATCH_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (first silent ARM64 APK startup probe)
 
 The first arm64-v8a game library now links all **53 JNI exports** with no

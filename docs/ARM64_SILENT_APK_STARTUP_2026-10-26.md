@@ -10,7 +10,9 @@ a minimal Crashlytics loader compatibility library. These test libraries and
 the APK are kept outside this repository. Sound is deliberately absent.
 The latest clean APK is
 `D:\gof2-arm64-crypto\gof2-arm64-silent-debug-20261026.apk`
-(SHA-256 `97bb71e32a6322ad95300f2f5ad65119cfb33fbd76086ccb2382306080a9d53d`).
+(SHA-256 `51da69d2e145508f6f380ec0460551fb6063d1421217df903e8772dcce30ebfa`).
+The same artifact path was rebuilt with the basic shader dispatch recovery;
+see [basic shader evidence](ARM64_BASIC_SHADER_DISPATCH_2026-10-26.md).
 
 The APK installed on a 25053RT47C (Android 16, arm64-v8a). The original OBB
 was copied to the package's OBB directory. The game reached `MTitle`, found
@@ -27,10 +29,14 @@ are `a_position`, `a_texCoord`, `u_WorldMatrix`, `glColor`, and `s_texture`.
 The prior reconstruction passed placeholder file names as GLSL and queried
 placeholder uniform names. The AArch64 path now uses the original shader
 literals and names. `Engine::ShaderSetActive` also publishes the draw flag
-observed in the original routine. This revised APK is built and signed, but
-its image output remains **unverified on a device** because the ARM64 phone
-disconnected before installation. The installed ARM64 emulator image cannot
-run on this x86-64 host (the Android emulator rejects the CPU architecture).
+observed in the original routine. This revised APK was installed after the
+ARM64 phone reconnected. It draws a small image fragment at the top-left
+while the rest of the screen is black. The first run crashed at
+`PaintCanvas::FontCreate` on title release. Resetting the ARM64 fallback-font
+index during resource cleanup removed that crash in a second run. The game
+process then stayed alive in the foreground activity, but the menu was not
+visually usable. The installed ARM64 emulator image cannot run on this x86-64
+host (the Android emulator rejects the CPU architecture).
 
 ## Source and validation
 
@@ -51,8 +57,7 @@ run on this x86-64 host (the Android emulator rejects the CPU architecture).
 
 ## Remaining work
 
-Install the revised APK on an ARM64 device, verify that the title and main
-menu render, and diagnose any remaining GL error or runtime failure. The
-remaining shaders still have incomplete recovered source and may block later
-scenes. The silent FMOD layer is temporary; audio requires a separately
-validated ARM64 implementation.
+Recover the remaining shader literals and inspect the 2D projection behind
+the nearly black title/menu screen. Repeat the device test until the menu is
+legible and interactive, then test later scenes. The silent FMOD layer is
+temporary; audio requires a separately validated ARM64 implementation.
