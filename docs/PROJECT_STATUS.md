@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (ARM64 slider volumes and map input;
+earlier subsystem snapshots retain their dates)
+
+The ARM64 options menu now reads typed sliders and calls
+`FModSound::setVolume` with the Android-observed category IDs **1, 2,
+3**. `MissionsWindow` delegates map input to `StarMap::OnTouchEnd`.
+Native and AArch64 static builds pass; ARMv7 compiles **209/209**
+units. `MenuTouchWindow.o` is byte-identical on ARMv7, and the scoped
+`MissionsWindow` comparison loses none of its **7 linked-exact / 2
+byte-exact** functions. The last full ARM corpus remains
+**4,323/4,524** originals over **4,745** pairs, **94.79%
+source-shape / 84.31% strict fuzzy**, **2,607 linked-exact / 1,083
+byte-exact**, zero skips. Strict JNI-initialize AArch64 unresolved
+names fall **33 → 30** with no new names. A game `.so`/APK and live
+slider/map behavior remain unverified. See the
+[slider and map evidence](ARM64_MENU_SLIDERS_STARMAP_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (ARM64 menu/audio/math dispatch;
 earlier subsystem snapshots retain their dates)
 

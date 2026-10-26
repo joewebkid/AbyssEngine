@@ -86,7 +86,9 @@ int ApplicationManager_GetCurrentApplicationModule(void *appMgr);
 
 void TouchButton_ctorTab(void *self, void *text, int kind, int x, int y, char flags);
 
+#if __SIZEOF_POINTER__ == 4
 int StarMap_OnTouchEnd(StarMap *map, int x, int y);
+#endif
 
 int MissionsWindow::OnTouchMove(int p1, int p2) {
     if (this->m_mode == 1)
@@ -609,7 +611,11 @@ int MissionsWindow::OnTouchEnd(int y, int z) {
             }
         }
     } else {
+#if __SIZEOF_POINTER__ == 8
+        if (this->m_pStarMap->OnTouchEnd(y, z) != 0) {
+#else
         if (StarMap_OnTouchEnd(this->m_pStarMap, y, z) != 0) {
+#endif
             int wantW, wantH, posX;
             if (*g_mwt_flagA == 0) {
                 this->m_x = 0;

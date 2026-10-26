@@ -1191,7 +1191,9 @@ static inline void _mtw_TouchSlider_OnTouchMove(void *sl, int y, int x) {
     ((TouchSlider *) sl)->OnTouchMove(y, x);
 }
 
+#if __SIZEOF_POINTER__ == 4
 float _mtw_TouchSlider_getValue(void *sl);
+#endif
 
 static inline void _mtw_ScrollTouchWindow_OnTouchMove(void *w, int y, int x) {
     ((ScrollTouchWindow *) w)->OnTouchMove(y, x);
@@ -1209,7 +1211,20 @@ static inline int _mtw_FModSound_tryToStopMusicForBGMusic() {
 int _mtw_FModSound_tryToStopMusicForBGMusic();
 #endif
 
+#if __SIZEOF_POINTER__ == 8
+static inline void _mtw_applySliderVolumes(void *sliderArray) {
+    auto *sliders = static_cast<Array<TouchSlider *> *>(sliderArray);
+    FModSound *sound = Globals::sound;
+    if (!sound || !sliders || sliders->size() < 4)
+        return;
+    if (!sound->tryToStopMusicForBGMusic() && (*sliders)[1])
+        sound->setVolume(1, (*sliders)[1]->getValue());
+    if ((*sliders)[2]) sound->setVolume(2, (*sliders)[2]->getValue());
+    if ((*sliders)[3]) sound->setVolume(3, (*sliders)[3]->getValue());
+}
+#else
 void _mtw_FModSound_setVolume(void *snd, float v);
+#endif
 
 static inline void _mtw_Array_TB_ctor(void *a) { new(a) Array<TouchButton *>(); }
 
@@ -3502,12 +3517,16 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
                 _mtw_TouchButton_OnTouchMove(this->optBtnD8, y, x);
                 _mtw_TouchButton_OnTouchMove(this->optBtnDC, y, x);
                 {
+#if __SIZEOF_POINTER__ == 8
+                    _mtw_applySliderVolumes(this->sliders);
+#else
                     void *fmod = Globals::sound;
                     int *sl = (int *) ((Array<TouchSlider *> *) this->sliders)->data_;
                     if (_mtw_FModSound_tryToStopMusicForBGMusic() == 0)
                         _mtw_FModSound_setVolume(fmod, _mtw_TouchSlider_getValue(((void **) sl)[1]));
                     _mtw_FModSound_setVolume(fmod, _mtw_TouchSlider_getValue(((void **) sl)[2]));
                     _mtw_FModSound_setVolume(fmod, _mtw_TouchSlider_getValue(((void **) sl)[3]));
+#endif
                 }
                 void **arr = (void **) this->sliders;
                 for (unsigned int i = 1; i < *(unsigned int *) arr; i++)
@@ -3537,12 +3556,16 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
             _mtw_TouchButton_OnTouchMove(this->optBtnD8, y, x);
             _mtw_TouchButton_OnTouchMove(this->optBtnDC, y, x);
             {
+#if __SIZEOF_POINTER__ == 8
+                _mtw_applySliderVolumes(this->sliders);
+#else
                 void *fmod = Globals::sound;
                 int *sl = (int *) ((Array<TouchSlider *> *) this->sliders)->data_;
                 if (_mtw_FModSound_tryToStopMusicForBGMusic() == 0)
                     _mtw_FModSound_setVolume(fmod, _mtw_TouchSlider_getValue(((void **) sl)[1]));
                 _mtw_FModSound_setVolume(fmod, _mtw_TouchSlider_getValue(((void **) sl)[2]));
                 _mtw_FModSound_setVolume(fmod, _mtw_TouchSlider_getValue(((void **) sl)[3]));
+#endif
             }
             {
                 void **arr = (void **) this->sliders;
