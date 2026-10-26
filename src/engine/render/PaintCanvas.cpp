@@ -3225,11 +3225,8 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y) {
     }
 }
 
-void paintcanvas_ctor_matrix(void *);
-
 PaintCanvas::PaintCanvas(AbyssEngine::Engine *engine) {
     PCArrayCtor(&this->meshCount);
-    paintcanvas_ctor_matrix(&this->identityMatrix);
     PCArrayCtor(&this->transformCount);
     PCArrayCtor(&this->glowMeshes_count);
     PCArrayCtor(&this->glowMatA_count);

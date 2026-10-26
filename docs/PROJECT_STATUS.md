@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (PaintCanvas matrix construction and
+AArch64 link closure; earlier subsystem snapshots retain their dates)
+
+`PaintCanvas` no longer makes a second, undefined call to construct
+its `identityMatrix`; normal C++ member construction supplies the
+single call seen in the Android ARM constructor. Native and AArch64
+static builds pass. Constructor source-shape falls **75.4% → 71.5%**
+and strict fuzzy **45.8% → 35.3%**; it was nonexact before and after.
+The full ARM corpus compares **4,323/4,524** originals over **4,745**
+pairs, **94.78% source-shape / 84.28% strict fuzzy**,
+**2,607 linked-exact / 1,083 byte-exact**, zero skips and no exact-set
+losses. Strict JNI-initialize AArch64 unresolved names fall **90 →
+89**; the broader diagnostic falls **306 → 305**, with no new names.
+The game `.so` and APK remain unbuilt. Live Android initialization is
+unverified. Next priority: the `MissionsWindow` font-height call. See
+the [matrix-construction evidence](PAINTCANVAS_MATRIX_CONSTRUCTION_ARM64_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (`TransformRemoveMeshId` ARM64 link closure;
 earlier subsystem snapshots retain their dates)
 
