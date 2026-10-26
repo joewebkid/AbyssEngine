@@ -84,8 +84,6 @@ void Status_replaceHash(void *out, void *key, void *a, void *b, void *c);
 
 int ApplicationManager_GetCurrentApplicationModule(void *appMgr);
 
-int _mw_GetTextHeight(void *canvas);
-
 void TouchButton_ctorTab(void *self, void *text, int kind, int x, int y, char flags);
 
 int StarMap_OnTouchEnd(StarMap *map, int x, int y);
@@ -145,7 +143,6 @@ uint8_t MissionsWindow::hangarNeedsUpdate() {
 }
 
 MissionsWindow::MissionsWindow() {
-    PaintCanvas *canvas = PaintCanvas::gCanvas;
     this->m_pAcceptButton = nullptr;
     this->m_pRejectButton = nullptr;
     this->m_pMapButton = nullptr;
@@ -156,7 +153,7 @@ MissionsWindow::MissionsWindow() {
     this->m_pWantedWindow = nullptr;
     this->m_pTabButtons = nullptr;
     this->m_pAgentImageParts = nullptr;
-    int h = _mw_GetTextHeight(canvas);
+    int h = Globals::Canvas->GetTextHeight(Globals::font);
     this->m_textHalfHeight = h / 2 - 1;
     this->init();
 }

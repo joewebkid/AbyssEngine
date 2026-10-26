@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (MissionsWindow font-height call and
+AArch64 link closure; earlier subsystem snapshots retain their dates)
+
+`MissionsWindow` now calls `PaintCanvas::GetTextHeight` with
+`Globals::font`, as observed in the Android ARM constructor. Its
+focused source-shape improves **90.4% → 97.4%** and strict fuzzy
+**54.5% → 96.7%**; it remains nonexact. Native and AArch64 static
+builds pass. The full ARM corpus compares **4,323/4,524** originals
+over **4,745** pairs: **94.79% source-shape / 84.30% strict fuzzy**,
+**2,607 linked-exact / 1,083 byte-exact**, zero skips and no exact-set
+losses. Strict JNI-initialize AArch64 unresolved names fall **89 →
+88**, and the broader diagnostic **305 → 304**, with no new names.
+The game `.so` and APK remain unbuilt; live font layout is unverified.
+The first ARM64 game launch will use an explicitly silent audio mode.
+See the [font-height evidence](MISSIONSWINDOW_FONT_HEIGHT_ARM64_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (PaintCanvas matrix construction and
 AArch64 link closure; earlier subsystem snapshots retain their dates)
 
