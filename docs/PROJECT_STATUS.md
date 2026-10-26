@@ -1,7 +1,23 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (PaintCanvas font-query recovery;
+Last reviewed: 2026-10-26 (PaintCanvas orientation/projection recovery;
 earlier subsystem snapshots retain their dates)
+
+`PaintCanvas::Initialize`, `SetGameOrientation`, and
+`SetProjectionMatrix3d` now call recovered engine/math functions,
+restore the ARM-confirmed projection constants and four screen
+rotation matrices, and update the original perspective globals.
+Their focused source-shape rises **84.2% → 97.8%**, **78.0% →
+91.9%**, and **75.8% → 95.3%** respectively; all remain nonexact.
+Native and AArch64 static builds pass, as does a production-body
+matrix smoke test for four orientations at `-O0/-O2`. Full ARM corpus:
+**4,323/4,524** originals over **4,745** pairs, **94.77%
+source-shape / 84.28% strict fuzzy**, **2,606 linked-exact / 1,083
+byte-exact**, zero skips and exact-set losses. Strict JNI-reachable
+AArch64 unresolved names fall **153 → 143**, with no new names.
+Android rotation/rendering and audio remain unverified; no playable
+`.so`/APK exists. Next priority: remaining `PaintCanvas` render/resource
+calls and ARM64 audio. See [the orientation evidence](PAINTCANVAS_ORIENTATION_PROJECTION_ARM64_2026-10-26.md).
 
 Four `PaintCanvas` font-query/check methods now call the recovered
 `String` conversion and `ImageFont` functions directly. This removes

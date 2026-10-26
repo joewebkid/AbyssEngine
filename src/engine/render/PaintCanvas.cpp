@@ -525,27 +525,7 @@ void paintcanvas_ext_mesh_changemat(AbyssEngine::PaintCanvas *, void *, void *);
 
 void paintcanvas_ext_transform_changemat(AbyssEngine::PaintCanvas *, void *, void *);
 
-void paintcanvas_ext_init_setorientation(void *eng);
-
-int paintcanvas_ext_init_dispwidth(void *eng);
-
-int paintcanvas_ext_init_dispheight(void *eng);
-
-float paintcanvas_ext_init_signedtofloat(int v, unsigned int mode);
-
-void paintcanvas_ext_init_setpersp(void *self, float a, float b, float c);
-
 int paintcanvas_ext_font_get_yoff(void *);
-
-int paintcanvas_ext_spm_dispwidth(void *eng);
-
-int paintcanvas_ext_spm_dispheight(void *eng);
-
-float paintcanvas_ext_spm_sinf(float v);
-
-float paintcanvas_ext_spm_cosf(float v);
-
-float paintcanvas_ext_spm_signedtofloat(int v, unsigned int mode);
 
 unsigned short *paintcanvas_ext_gl_strindex(const AbyssEngine::String *str, unsigned int i);
 
@@ -700,16 +680,6 @@ void paintcanvas_ext_dr2_gldisable(unsigned int cap);
 void paintcanvas_ext_dr2_meshdraw(void *eng, void *mesh);
 
 void paintcanvas_ext_dr2_glenable(unsigned int cap);
-
-void paintcanvas_ext_sgo_setorientation(void *eng, int mode);
-
-int paintcanvas_ext_sgo_dispwidth(void *eng);
-
-int paintcanvas_ext_sgo_dispheight(void *eng);
-
-float paintcanvas_ext_sgo_signedtofloat(int v, unsigned int mode);
-
-void paintcanvas_ext_sgo_setpersp(void *self, float a, float b, float c);
 
 static inline void paintcanvas_ext_gl_blendfunc(unsigned int src, unsigned int dst) {
     glBlendFunc(src, dst);
@@ -1912,13 +1882,9 @@ int PaintCanvas::GetTextHeight(unsigned int index) {
 }
 
 
-static const unsigned int g_init_const_7e7b4 = 0;
-
-static const unsigned int g_init_const_7e7b8 = 0;
-
 void PaintCanvas::Initialize(bool landscape) {
     this->gameOrientation = landscape ? 2 : 0;
-    paintcanvas_ext_init_setorientation(this->engine);
+    this->engine->SetScreenOrientation(static_cast<LandscapeMode>(this->gameOrientation));
 
     memset(&this->projOrthoMatrix.m[0], 0, 0x10);
     memset(&this->projOrthoMatrix.m[4], 0, 0x10);
@@ -1926,10 +1892,8 @@ void PaintCanvas::Initialize(bool landscape) {
     memset(&this->projOrthoMatrix.m[12], 0, 0x10);
 
     int orient = this->gameOrientation;
-    int w = paintcanvas_ext_init_dispwidth(this->engine);
-    float fw = paintcanvas_ext_init_signedtofloat(w, 0);
-    int h = paintcanvas_ext_init_dispheight(this->engine);
-    float fh = paintcanvas_ext_init_signedtofloat(h, 0);
+    float fw = static_cast<float>(this->engine->GetDisplayWidth());
+    float fh = static_cast<float>(this->engine->GetDisplayHeight());
 
     float ymul;
     if (orient == 2) {
@@ -1942,19 +1906,19 @@ void PaintCanvas::Initialize(bool landscape) {
         memset(&this->worldViewMatrix.m[11], 0, 0x10);
         this->worldViewMatrix.m[15] = 1.0f;
         this->projOrthoMatrix.m[0] = 2.0f / fh;
-        this->worldViewMatrix.m[1] = g_init_const_7e7b4;
+        this->worldViewMatrix.m[1] = -1.0f;
         this->worldViewMatrix.m[10] = 1.0f;
         this->worldViewMatrix.m[4] = 1.0f;
         this->worldViewMatrix.m[13] = fw;
         ymul = fw;
     }
-    this->projOrthoMatrix.m[10] = g_init_const_7e7b8;
+    this->projOrthoMatrix.m[10] = -0.05f;
     this->projOrthoMatrix.m[15] = 1.0f;
-    this->projOrthoMatrix.m[12] = g_init_const_7e7b4;
+    this->projOrthoMatrix.m[12] = -1.0f;
     this->projOrthoMatrix.m[13] = 1.0f;
     this->projOrthoMatrix.m[5] = -2.0f / ymul;
 
-    paintcanvas_ext_init_setpersp(this, 16384.0f, 512.0f, 65536.0f);
+    this->SetProjectionMatrix3d(16384.0f, 512.0f, 65536.0f);
 }
 
 void PaintCanvas::DrawMesh(unsigned int index) {
@@ -1987,38 +1951,21 @@ int PaintCanvas::FontGetYOffset(unsigned int index) {
 }
 
 
-static float g_spm_p0_7b826_storage = 0.0f;
-static float *const g_spm_p0_7b826 = &g_spm_p0_7b826_storage;
-
-static float g_spm_p1_7b82a_storage = 0.0f;
-static float *const g_spm_p1_7b82a = &g_spm_p1_7b82a_storage;
-
-static float g_spm_p2_7b82c_storage = 0.0f;
-static float *const g_spm_p2_7b82c = &g_spm_p2_7b82c_storage;
-
-static float g_spm_p3_7b82e_storage = 0.0f;
-static float *const g_spm_p3_7b82e = &g_spm_p3_7b82e_storage;
-
-static float g_spm_p4_7b830_storage = 0.0f;
-static float *const g_spm_p4_7b830 = &g_spm_p4_7b830_storage;
-
-static const unsigned int g_spm_const_7b950 = 0;
-
 void PaintCanvas::SetProjectionMatrix3d(float fov, float nearPlane,
                                         float farPlane) {
-    *g_spm_p0_7b826 = farPlane;
-    *g_spm_p1_7b82a = nearPlane;
-    *g_spm_p4_7b830 = fov;
-    *g_spm_p2_7b82c = nearPlane;
-    *g_spm_p3_7b82e = farPlane;
+    Engine::farPlane = farPlane;
+    Engine::nearPlane = nearPlane;
+    i_fov = fov;
+    i_zNear = nearPlane;
+    i_zFar = farPlane;
 
-    int w = paintcanvas_ext_spm_dispwidth(this->engine);
-    int h = paintcanvas_ext_spm_dispheight(this->engine);
+    int w = this->engine->GetDisplayWidth();
+    int h = this->engine->GetDisplayHeight();
     float half = fov * 0.5f;
-    float s = paintcanvas_ext_spm_sinf(half);
-    float c = paintcanvas_ext_spm_cosf(half);
-    float fw = paintcanvas_ext_spm_signedtofloat(w, 0);
-    float fh = paintcanvas_ext_spm_signedtofloat(h, 0);
+    float s = AEMath::Sinf(half);
+    float c = AEMath::Cosf(half);
+    float fw = static_cast<float>(w);
+    float fh = static_cast<float>(h);
 
     memset(&this->projMatrix3d.m[12], 0, 0x10);
     memset(&this->projMatrix3d.m[8], 0, 0x10);
@@ -2048,7 +1995,7 @@ void PaintCanvas::SetProjectionMatrix3d(float fov, float nearPlane,
         }
     }
 
-    this->projMatrix3d.m[11] = g_spm_const_7b950;
+    this->projMatrix3d.m[11] = -1.0f;
     this->projMatrix3d.m[10] = (nearPlane + farPlane) / (nearPlane - farPlane);
     this->projMatrix3d.m[14] = ((farPlane + farPlane) * nearPlane) / (nearPlane - farPlane);
 }
@@ -3879,10 +3826,6 @@ void PaintCanvas::MeshSetTriangle(unsigned int meshIndex, unsigned short tri,
 }
 
 
-static const unsigned int g_sgo_const_8e6b4 = 0;
-
-static const unsigned int g_sgo_const_8e6b8 = 0;
-
 static void zero16(void *p) {
     memset(p, 0, 0x10);
 }
@@ -3892,15 +3835,13 @@ void PaintCanvas::SetGameOrientation(AbyssEngine::LandscapeMode orientation) {
         return;
     }
     this->gameOrientation = orientation;
-    paintcanvas_ext_sgo_setorientation(this->engine, orientation);
+    this->engine->SetScreenOrientation(orientation);
 
     this->projMatrix3d.m[1] = -this->projMatrix3d.m[1];
     this->projMatrix3d.m[4] = -this->projMatrix3d.m[4];
 
-    int w = paintcanvas_ext_sgo_dispwidth(this->engine);
-    float fw = paintcanvas_ext_sgo_signedtofloat(w, 0);
-    int h = paintcanvas_ext_sgo_dispheight(this->engine);
-    float fh = paintcanvas_ext_sgo_signedtofloat(h, 0);
+    float fw = static_cast<float>(this->engine->GetDisplayWidth());
+    float fh = static_cast<float>(this->engine->GetDisplayHeight());
 
     if (orientation == 3) {
         zero16(&this->projOrthoMatrix.m[9]);
@@ -3915,19 +3856,18 @@ void PaintCanvas::SetGameOrientation(AbyssEngine::LandscapeMode orientation) {
         this->worldViewMatrix.m[13] = 0;
         this->worldViewMatrix.m[14] = 0;
         this->projOrthoMatrix.m[15] = 1.0f;
-        this->worldViewMatrix.m[0] = g_sgo_const_8e6b8;
-        this->worldViewMatrix.m[1] = g_sgo_const_8e6b8;
-        this->projOrthoMatrix.m[10] = g_sgo_const_8e6b4;
-        this->projOrthoMatrix.m[12] = g_sgo_const_8e6b8;
+        this->worldViewMatrix.m[0] = -1.0f;
+        this->worldViewMatrix.m[1] = 0.0f;
+        this->projOrthoMatrix.m[10] = -0.05f;
+        this->projOrthoMatrix.m[12] = -1.0f;
         this->worldViewMatrix.m[10] = 1.0f;
-        this->worldViewMatrix.m[4] = 1.0f;
+        this->worldViewMatrix.m[4] = 0.0f;
+        this->worldViewMatrix.m[5] = -1.0f;
         this->projOrthoMatrix.m[0] = 2.0f / fw;
         this->projOrthoMatrix.m[5] = -(2.0f / fh);
         this->worldViewMatrix.m[15] = 1.0f;
-        int w2 = paintcanvas_ext_sgo_dispwidth(this->engine);
-        this->worldViewMatrix.m[12] = paintcanvas_ext_sgo_signedtofloat(w2, 0);
-        int h2 = paintcanvas_ext_sgo_dispheight(this->engine);
-        this->worldViewMatrix.m[13] = paintcanvas_ext_sgo_signedtofloat(h2, 0);
+        this->worldViewMatrix.m[12] = static_cast<float>(this->engine->GetDisplayWidth());
+        this->worldViewMatrix.m[13] = static_cast<float>(this->engine->GetDisplayHeight());
     } else if (orientation == 1) {
         zero16(&this->projOrthoMatrix.m[9]);
         zero16(&this->worldViewMatrix.m[8]);
@@ -3935,20 +3875,19 @@ void PaintCanvas::SetGameOrientation(AbyssEngine::LandscapeMode orientation) {
         zero16(&this->projOrthoMatrix.m[5]);
         zero16(&this->projOrthoMatrix.m[1]);
         zero16(&this->worldViewMatrix.m[11]);
-        zero16(&this->worldViewMatrix.m[1]);
+        zero16(&this->worldViewMatrix.m[0]);
         this->projOrthoMatrix.m[14] = 0;
         this->projOrthoMatrix.m[13] = 1.0f;
         this->projOrthoMatrix.m[15] = 1.0f;
         this->worldViewMatrix.m[1] = 1.0f;
-        this->projOrthoMatrix.m[10] = g_sgo_const_8e6b4;
-        this->projOrthoMatrix.m[12] = g_sgo_const_8e6b8;
+        this->projOrthoMatrix.m[10] = -0.05f;
+        this->projOrthoMatrix.m[12] = -1.0f;
         this->worldViewMatrix.m[10] = 1.0f;
-        this->worldViewMatrix.m[4] = g_sgo_const_8e6b8;
+        this->worldViewMatrix.m[4] = -1.0f;
         this->projOrthoMatrix.m[0] = 2.0f / fh;
         this->projOrthoMatrix.m[5] = -(2.0f / fw);
         this->worldViewMatrix.m[15] = 1.0f;
-        int h2 = paintcanvas_ext_sgo_dispheight(this->engine);
-        this->worldViewMatrix.m[12] = paintcanvas_ext_sgo_signedtofloat(h2, 0);
+        this->worldViewMatrix.m[12] = static_cast<float>(this->engine->GetDisplayHeight());
     } else if (orientation != 0) {
         zero16(&this->projOrthoMatrix.m[9]);
         zero16(&this->worldViewMatrix.m[8]);
@@ -3956,14 +3895,15 @@ void PaintCanvas::SetGameOrientation(AbyssEngine::LandscapeMode orientation) {
         zero16(&this->projOrthoMatrix.m[5]);
         zero16(&this->projOrthoMatrix.m[1]);
         zero16(&this->worldViewMatrix.m[1]);
+        zero16(&this->worldViewMatrix.m[11]);
         this->projOrthoMatrix.m[14] = 0;
         this->projOrthoMatrix.m[13] = 1.0f;
         this->worldViewMatrix.m[13] = 0;
         this->worldViewMatrix.m[14] = 0;
         this->projOrthoMatrix.m[15] = 1.0f;
         this->worldViewMatrix.m[0] = 1.0f;
-        this->projOrthoMatrix.m[10] = g_sgo_const_8e6b4;
-        this->projOrthoMatrix.m[12] = g_sgo_const_8e6b8;
+        this->projOrthoMatrix.m[10] = -0.05f;
+        this->projOrthoMatrix.m[12] = -1.0f;
         this->worldViewMatrix.m[10] = 1.0f;
         this->worldViewMatrix.m[5] = 1.0f;
         this->projOrthoMatrix.m[0] = 2.0f / fw;
@@ -3976,27 +3916,26 @@ void PaintCanvas::SetGameOrientation(AbyssEngine::LandscapeMode orientation) {
         zero16(&this->projOrthoMatrix.m[5]);
         zero16(&this->projOrthoMatrix.m[1]);
         zero16(&this->worldViewMatrix.m[11]);
-        zero16(&this->worldViewMatrix.m[1]);
+        zero16(&this->worldViewMatrix.m[0]);
         this->projOrthoMatrix.m[14] = 0;
         this->projOrthoMatrix.m[13] = 1.0f;
         this->projOrthoMatrix.m[15] = 1.0f;
-        this->worldViewMatrix.m[1] = g_sgo_const_8e6b8;
-        this->projOrthoMatrix.m[10] = g_sgo_const_8e6b4;
-        this->projOrthoMatrix.m[12] = g_sgo_const_8e6b8;
+        this->worldViewMatrix.m[1] = -1.0f;
+        this->projOrthoMatrix.m[10] = -0.05f;
+        this->projOrthoMatrix.m[12] = -1.0f;
         this->worldViewMatrix.m[10] = 1.0f;
         this->worldViewMatrix.m[4] = 1.0f;
         this->projOrthoMatrix.m[0] = 2.0f / fh;
         this->projOrthoMatrix.m[5] = -(2.0f / fw);
         this->worldViewMatrix.m[15] = 1.0f;
-        int w2 = paintcanvas_ext_sgo_dispwidth(this->engine);
-        this->worldViewMatrix.m[13] = paintcanvas_ext_sgo_signedtofloat(w2, 0);
+        this->worldViewMatrix.m[13] = static_cast<float>(this->engine->GetDisplayWidth());
     }
 
     if (this->currentCamera == -1) {
         return;
     }
     float *cam = ((float **) this->cameras.data_)[this->currentCamera];
-    paintcanvas_ext_sgo_setpersp(this, cam[0], cam[1], cam[2]);
+    this->SetProjectionMatrix3d(cam[0], cam[1], cam[2]);
 }
 
 int paintcanvas_ext_mc_meshcreate(void *eng, unsigned short a, unsigned short b,
