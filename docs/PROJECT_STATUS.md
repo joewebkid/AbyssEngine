@@ -1,7 +1,21 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (Android cheat callback recovery;
+Last reviewed: 2026-10-26 (StarSystem KIPlayer target release;
 earlier subsystem snapshots retain their dates)
+
+`StarSystem::~StarSystem` now releases its `Array<KIPlayer*>` through
+the ARM-confirmed typed helper and destructor, replacing two undefined
+wrappers. Native, AArch64 static and **209/209** ARMv7 units build.
+The focused StarSystem unit adds two linked-exact matches (**17 to
+19**) and retains all **6 byte-exact** matches without losses. The
+destructor source-shape changes **88.7% to 86.1%**, while strict fuzzy
+changes **89.1% to 90.1%**; it remains nonexact. Strict AArch64
+unresolved names fall **457 to 455** whole-archive and **217 to 215**
+JNI-reachable, with no new names. The preceding full ARM corpus is
+still the latest whole-project run; live target-array destruction is
+unverified. Next priority: the remaining source-backed game/engine
+bridge calls, then Android host and audio. See
+[the target-release evidence](STARSYSTEM_KIPLAYER_RELEASE_ARM64_2026-10-26.md).
 
 Android `OnCreateApplication` now registers an executable no-op cheat
 callback with the original `MGame` context. The original ARM used

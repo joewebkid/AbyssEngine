@@ -24,10 +24,6 @@ namespace AbyssEngine {
     }
 }
 
-void ArrayRelease_KIPlayer(void *array);
-
-void *Array_KIPlayer_dtor(void *array);
-
 static inline uint32_t flat_count(void *array) {
     return static_cast<Array<void *> *>(array)->size_;
 }
@@ -78,9 +74,9 @@ StarSystem::~StarSystem() {
     this->planetsArray = nullptr;
 
     if (this->playerTargets != nullptr) {
-        ArrayRelease_KIPlayer(this->playerTargets);
+        ArrayReleaseClasses(*static_cast<Array<KIPlayer *> *>(this->playerTargets));
         if (this->playerTargets != nullptr)
-            ::operator delete(Array_KIPlayer_dtor(this->playerTargets));
+            delete static_cast<Array<KIPlayer *> *>(this->playerTargets);
     }
     this->playerTargets = nullptr;
 
