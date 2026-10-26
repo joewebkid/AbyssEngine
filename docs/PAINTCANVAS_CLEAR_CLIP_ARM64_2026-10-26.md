@@ -36,3 +36,5 @@ The strict AArch64 whole-archive unresolved-name inventory falls
 **469 → 461** and the JNI-reachable inventory **229 → 221**. Eight
 obsolete `paintcanvas_ext_*` names disappear with no new names.
 The game shared library and live clear/clip behavior remain unverified.
+Next priority is the still-unrecovered `PaintCanvas::End3d` scene
+shutdown path, followed by other JNI-reachable engine and audio calls.

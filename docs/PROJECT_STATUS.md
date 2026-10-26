@@ -15,7 +15,9 @@ The full ARM corpus compares **4,323/4,524** original functions over
 neither exact set lost a symbol against the prior full run.
 Strict ARM64 unresolved names fall **469 → 461** whole-archive and
 **229 → 221** JNI-reachable, with no new names. Live rendering is
-unverified. See [the clear/clip evidence](PAINTCANVAS_CLEAR_CLIP_ARM64_2026-10-26.md).
+unverified. Next priority: recover `PaintCanvas::End3d` scene shutdown
+from ARM, then continue the JNI-reachable engine and audio paths. See
+[the clear/clip evidence](PAINTCANVAS_CLEAR_CLIP_ARM64_2026-10-26.md).
 
 The remaining two `PaintCanvas::DrawImage2D` overloads now call the
 Android ARM-confirmed restore, canvas size, texture, matrix, GLES and
