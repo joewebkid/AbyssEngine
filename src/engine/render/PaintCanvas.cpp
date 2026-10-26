@@ -26,6 +26,8 @@ extern template void ArrayAdd<AbyssEngine::Camera *>(AbyssEngine::Camera *, Arra
 extern template void ArrayAdd<AbyssEngine::Image2D *>(AbyssEngine::Image2D *, Array<AbyssEngine::Image2D *> &);
 extern template void ArrayAdd<AbyssEngine::Resource *>(AbyssEngine::Resource * const *, unsigned int,
                                                         Array<AbyssEngine::Resource *> &);
+extern template void ArrayRemove<AbyssEngine::Transform *>(
+    AbyssEngine::Transform *, Array<AbyssEngine::Transform *> &);
 
 namespace AbyssEngine {
     class SpriteSystem;
@@ -408,9 +410,9 @@ void paintcanvas_ext_has_vibration(void *);
 
 void MatrixIdentity(void *result, void *matrix);
 
-char *paintcanvas_ext_find_res(void *, unsigned int);
-
+#if __SIZEOF_POINTER__ == 4
 void paintcanvas_ext_change_mat(void *, void *, void *);
+#endif
 
 void paintcanvas_ext_vibrate(void *);
 
@@ -545,8 +547,6 @@ static inline void paintcanvas_ext_gl_done() { glLoadIdentity(); }
 
 void paintcanvas_ext_child_link(void *, void *, void *);
 
-void paintcanvas_ext_transform_dirty(void *);
-
 static inline void tcg_glActiveTexture(unsigned unit) { glActiveTexture(unit); }
 
 static inline void tcg_glBindTexture(unsigned target, unsigned tex) { glBindTexture(target, tex); }
@@ -587,13 +587,6 @@ void paintcanvas_ext_rpm_glFinish();
 
 void paintcanvas_ext_rpm_loadproj(void *eng, void *m);
 
-
-char *paintcanvas_ext_find_mesh(void *, unsigned short);
-
-void paintcanvas_ext_remove_mesh(void *, unsigned int, int);
-
-
-void paintcanvas_ext_array_remove(void *, void *);
 
 void *paintcanvas_ext_tc_findres(void *self, unsigned short id);
 
@@ -1019,13 +1012,17 @@ AbyssEngine::Mesh *PaintCanvas::MeshGetPointer(unsigned int index) {
 }
 
 void PaintCanvas::MeshChangeResourceMaterial(unsigned int meshIndex, unsigned short resId) {
-    char *r = paintcanvas_ext_find_res(this, resId);
+    PCResourceView *r = static_cast<PCResourceView *>(this->FindResource(resId));
     if (r) {
-        int idx = ((PCResourceView *) r)->handle;
+        int idx = r->handle;
         if (idx + 1 != 0) {
-            void *mesh = (this->meshes)[meshIndex];
-            void *mat = (this->materials.data_)[idx];
+            Mesh *mesh = reinterpret_cast<Mesh *>(this->meshes[meshIndex]);
+            Material *mat = this->materials.data_[idx];
+#if __SIZEOF_POINTER__ == 8
+            return this->MeshChangeMaterialIntern(mesh, mat);
+#else
             return paintcanvas_ext_change_mat(this, mesh, mat);
+#endif
         }
     }
 }
@@ -2073,9 +2070,13 @@ void PaintCanvas::DrawLine(int x0, int y0, int x1i, int y1i) {
 void PaintCanvas::MeshChangeMaterial(unsigned int meshIndex, unsigned short matIndex) {
     if (matIndex < this->materials.count &&
         meshIndex < this->meshCount) {
-        void *mesh = (this->meshes)[meshIndex];
-        void *mat = (this->materials.data_)[matIndex];
+        Mesh *mesh = reinterpret_cast<Mesh *>(this->meshes[meshIndex]);
+        Material *mat = this->materials.data_[matIndex];
+#if __SIZEOF_POINTER__ == 8
+        return this->MeshChangeMaterialIntern(mesh, mat);
+#else
         return paintcanvas_ext_change_mat(this, mesh, mat);
+#endif
     }
 }
 
@@ -2522,9 +2523,10 @@ void PaintCanvas::SetResourceList(AbyssEngine::Resource * const * list, unsigned
 void PaintCanvas::MaterialResourceChangeTexture(unsigned int resId,
                                                 unsigned int texture, int slot) {
     if ((unsigned int) slot < 8) {
-        char *r = paintcanvas_ext_find_res(this, resId);
+        PCResourceView *r = static_cast<PCResourceView *>(
+            this->FindResource(static_cast<unsigned short>(resId)));
         if (r) {
-            unsigned int matIdx = (unsigned int) ((PCResourceView *) r)->handle;
+            unsigned int matIdx = (unsigned int) r->handle;
             if (matIdx + 1 != 0 && matIdx < this->materials.count) {
                 PCMaterialView *mat = (PCMaterialView *) (this->materials.data_)[matIdx];
                 mat->textureSlots[slot] = texture;
@@ -3279,9 +3281,9 @@ void PaintCanvas::TransformRemoveMesh(unsigned int transformIndex, unsigned shor
     if (this->transformCount <= transformIndex) {
         return;
     }
-    char *x = paintcanvas_ext_find_mesh(this, meshResId);
+    PCResourceView *x = static_cast<PCResourceView *>(this->FindResource(meshResId));
     if (x) {
-        return paintcanvas_ext_remove_mesh(this, transformIndex, ((PCResourceView *) x)->handle);
+        return this->TransformRemoveMeshId(transformIndex, x->handle);
     }
 }
 
@@ -3305,12 +3307,10 @@ bool PaintCanvas::WarmUpTexture() {
 void PaintCanvas::TransformRemoveChild(unsigned int parent, unsigned int child) {
     unsigned int count = this->transformCount;
     if (parent != child && child < count && parent < count) {
-        char **arr = this->transforms;
-        char *p = arr[parent];
-        char *c = arr[child];
-        paintcanvas_ext_array_remove(c, p + 0x4c);
-        char **arr2 = this->transforms;
-        return paintcanvas_ext_transform_dirty(arr2[parent]);
+        Transform *p = reinterpret_cast<Transform *>(this->transforms[parent]);
+        Transform *c = reinterpret_cast<Transform *>(this->transforms[child]);
+        ArrayRemove(c, p->children);
+        return reinterpret_cast<Transform *>(this->transforms[parent])->CollectAnimationData();
     }
 }
 

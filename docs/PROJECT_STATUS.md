@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-26 (PaintCanvas resource/mesh call recovery and
+AArch64 link closure; earlier subsystem snapshots retain their dates)
+
+`PaintCanvas` now calls existing resource lookup, material, mesh-removal,
+and transform-child methods in place of six unresolved wrappers. Child
+unlinking refreshes animation data as in the original ARM code. Native
+and AArch64 static builds pass. The full ARM corpus compares
+**4,323/4,524** originals over **4,745** pairs: **94.79%
+source-shape / 84.29% strict fuzzy**, **2,607 linked-exact /
+1,083 byte-exact**, zero skips and no exact-set loss. The strict
+JNI-initialize AArch64 unresolved inventory falls **96 → 91**: six
+wrappers disappear and `paintcanvas_ext_remove_meshid` becomes
+reachable. The broader diagnostic falls **313 → 307** with no new
+names. A game `.so` or APK remains unbuilt; live Android behavior
+is unverified. Next priority: the original `ArrayRemove<Mesh *>`
+call in `TransformRemoveMeshId`. See the
+[resource/mesh evidence](PAINTCANVAS_RESOURCE_MESH_CALLS_ARM64_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (PaintCanvas draw dispatch and AArch64 link
 closure; earlier subsystem snapshots retain their dates)
 
