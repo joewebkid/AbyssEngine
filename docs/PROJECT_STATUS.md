@@ -1,7 +1,22 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (MenuTouchWindow touch dispatch;
+Last reviewed: 2026-10-26 (ParticleSystemMesh call recovery;
 earlier subsystem snapshots retain their dates)
+
+`ParticleSystemMesh` now executes the ARM-confirmed matrix/vector and
+`PaintCanvas` mesh operations behind its previously undefined calls.
+Native and AArch64 static builds pass. ARMv7 focused verify compiles
+**209/209** units, compares 25 symbols and retains **14 linked-exact /
+6 byte-exact** matches, **93.39% source-shape / 83.43% strict fuzzy**.
+The full corpus is **4,323/4,524** originals over **4,745** pairs,
+**94.76% / 84.26%** mean source-shape / strict fuzzy, **2,606
+linked-exact / 1,083 byte-exact**, zero skips and no exact-set losses.
+The ARMv7 bridge definitions add 17 known synthetic extra symbols
+(**127 to 144**). Strict AArch64 unresolved names fall **419 to 402**
+whole-archive and **179 to 162** JNI-reachable, with no new names.
+Visual particle behavior on a device is unverified. Next priority:
+remaining `PaintCanvas` helpers and compatible ARM64 audio. See
+[the particle evidence](PARTICLE_SYSTEM_MESH_BRIDGE_ARM64_2026-10-26.md).
 
 `MenuTouchWindow::OnTouchBegin/OnTouchMove` now pass both incoming
 coordinates to the existing touch controls and use direct row division.

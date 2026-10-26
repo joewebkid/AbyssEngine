@@ -1,13 +1,28 @@
 #include "engine/render/ParticleSystemMesh.h"
 #include "engine/render/PaintCanvas.h"
 #include "engine/render/ParticleSettingsRef.h"
+#include "engine/math/AEMath.h"
+
+// Preserve the original ARMv7 call sites; allow inlining in native/ARM64 builds.
+#if defined(__arm__) && !defined(__aarch64__)
+#define PSM_BRIDGE __attribute__((noinline))
+#else
+#define PSM_BRIDGE static inline
+#endif
 
 
-void _psm_meshSetPoint(PaintCanvas *canvas, uint32_t mesh, uint16_t point, float x, float y, float z);
+PSM_BRIDGE void _psm_meshSetPoint(PaintCanvas *canvas, uint32_t mesh, uint16_t point,
+                                  float x, float y, float z) {
+    canvas->MeshSetPoint(mesh, point, x, y, z);
+}
 
-void _psm_vectorMinus(Vector *out, const Vector *a, const Vector *b);
+PSM_BRIDGE void _psm_vectorMinus(Vector *out, const Vector *a, const Vector *b) {
+    *out = *a - *b;
+}
 
-void _psm_vectorPlus(void *out, const Vector *a, const Vector *b);
+PSM_BRIDGE void _psm_vectorPlus(void *out, const Vector *a, const Vector *b) {
+    *static_cast<Vector *>(out) = *a + *b;
+}
 
 namespace {
 
@@ -17,37 +32,72 @@ const ParticleSettings::SetDefinition &currentParticleSet(int set) {
 
 } // namespace
 
-void _psm_matrixGetRight(Vector *out, const Matrix *m);
+PSM_BRIDGE void _psm_matrixGetRight(Vector *out, const Matrix *m) {
+    *out = AbyssEngine::AEMath::MatrixGetRight(*m);
+}
 
-void _psm_matrixGetUp(Vector *out, const Matrix *m);
+PSM_BRIDGE void _psm_matrixGetUp(Vector *out, const Matrix *m) {
+    *out = AbyssEngine::AEMath::MatrixGetUp(*m);
+}
 
-void _psm_matrixGetDir(Vector *out, const Matrix *m);
+PSM_BRIDGE void _psm_matrixGetDir(Vector *out, const Matrix *m) {
+    *out = AbyssEngine::AEMath::MatrixGetDir(*m);
+}
 
-void _psm_vectorScale(Vector *out, const Vector *v, float scale);
+PSM_BRIDGE void _psm_vectorScale(Vector *out, const Vector *v, float scale) {
+    *out = *v * scale;
+}
 
-void _psm_vectorAssign(Vector *dst, const Vector *src);
+PSM_BRIDGE void _psm_vectorAssign(Vector *dst, const Vector *src) {
+    *dst = *src;
+}
 
-void _psm_meshSetColorWord(PaintCanvas *canvas, uint32_t mesh, uint16_t point, uint32_t color);
+PSM_BRIDGE void _psm_meshSetColorWord(PaintCanvas *canvas, uint32_t mesh, uint16_t point,
+                                      uint32_t color) {
+    canvas->MeshSetColor(mesh, point, color);
+}
 
-void _psm_meshSetUV2(PaintCanvas *canvas, uint32_t mesh, uint16_t point, float u, float v);
+PSM_BRIDGE void _psm_meshSetUV2(PaintCanvas *canvas, uint32_t mesh, uint16_t point,
+                                float u, float v) {
+    canvas->MeshSetUv(mesh, point, u, v);
+}
 
-void _psm_meshSetUV(PaintCanvas *canvas, uint32_t mesh, uint16_t point, float u, float v);
+PSM_BRIDGE void _psm_meshSetUV(PaintCanvas *canvas, uint32_t mesh, uint16_t point,
+                               float u, float v) {
+    canvas->MeshSetUv(mesh, point, u, v);
+}
 
-void _psm_meshSetZero(PaintCanvas *canvas, uint32_t mesh, uint16_t point, uint32_t value);
+PSM_BRIDGE void _psm_meshSetZero(PaintCanvas *canvas, uint32_t mesh, uint16_t point,
+                                 uint32_t value) {
+    canvas->MeshSetColor(mesh, point, value);
+}
 
-void _psm_meshTranslatePoint(PaintCanvas *canvas, uint32_t mesh, uint16_t point, float x, float y, float z);
+PSM_BRIDGE void _psm_meshTranslatePoint(PaintCanvas *canvas, uint32_t mesh, uint16_t point,
+                                        float x, float y, float z) {
+    canvas->MeshTranslatePoint(mesh, point, x, y, z);
+}
 
-void _psm_meshSetPointIndirect(PaintCanvas *canvas, uint32_t mesh, uint16_t point, float x, float y,
-                               float z);
+PSM_BRIDGE void _psm_meshSetPointIndirect(PaintCanvas *canvas, uint32_t mesh, uint16_t point,
+                                          float x, float y, float z) {
+    canvas->MeshSetPoint(mesh, point, x, y, z);
+}
 
-void _psm_meshSetTriangle(PaintCanvas *canvas, uint32_t mesh, uint16_t triangle, uint16_t a, uint16_t b,
-                          uint16_t c);
+PSM_BRIDGE void _psm_meshSetTriangle(PaintCanvas *canvas, uint32_t mesh, uint16_t triangle,
+                                     uint16_t a, uint16_t b, uint16_t c) {
+    canvas->MeshSetTriangle(mesh, triangle, a, b, c);
+}
 
-void _psm_meshSetColor(PaintCanvas *canvas, uint32_t mesh, uint16_t point, float a, float r, float g,
-                       float b);
+PSM_BRIDGE void _psm_meshSetColor(PaintCanvas *canvas, uint32_t mesh, uint16_t point,
+                                  float a, float r, float g, float b) {
+    canvas->MeshSetColor(mesh, point, a, r, g, b);
+}
 
-void _psm_finishCurrentTrailParticle(ParticleSystemMesh *self, ParticleSet set, int id, const Vector *a,
-                                     const Vector *b);
+PSM_BRIDGE void _psm_finishCurrentTrailParticle(ParticleSystemMesh *self, ParticleSet set,
+                                                 int id, const Vector *a, const Vector *b) {
+    self->finishCurrentTrailParticle(set, id, *a, *b);
+}
+
+#undef PSM_BRIDGE
 
 int ParticleSystemMesh::getPrevId(int id) {
     if (id == 0)
