@@ -1,7 +1,19 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (ParticleSystemMesh call recovery;
+Last reviewed: 2026-10-26 (PaintCanvas blend-state recovery;
 earlier subsystem snapshots retain their dates)
+
+`PaintCanvas::SetBlendMode` now uses the ARM-confirmed engine calls,
+shader flag, GLES texture combiners and depth mask instead of synthetic
+external placeholders. Its ARMv7 source-shape rises **92.9% → 99.0%**
+and strict fuzzy **83.4% → 99.1%**, still nonexact. Native and AArch64
+static builds pass. The full corpus is **4,323/4,524** originals over
+**4,745** pairs, **94.76% source-shape / 84.27% strict fuzzy**,
+**2,606 linked-exact / 1,083 byte-exact**, zero skips and exact-set
+losses. Strict JNI-reachable AArch64 unresolved names fall **162 →
+157**, with no new names. A playable `.so`/APK and device rendering
+remain unverified; compatible audio and further call closure are still
+required. See [the blend-state evidence](PAINTCANVAS_BLEND_MODE_ARM64_2026-10-26.md).
 
 `ParticleSystemMesh` now executes the ARM-confirmed matrix/vector and
 `PaintCanvas` mesh operations behind its previously undefined calls.
