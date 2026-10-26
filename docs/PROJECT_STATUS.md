@@ -1,7 +1,17 @@
 # Project Status
 
-Last reviewed: 2026-10-26 (ARM64 ZIP and SHA-256 dependencies;
+Last reviewed: 2026-10-26 (blend GLES calls and ARM64 dependencies;
 earlier subsystem snapshots retain their dates)
+
+`PaintCanvas::SetBlendMode` now uses the ARM-confirmed GLES entry
+points for six blend operations. Native, AArch64 static and **209/209**
+ARMv7 units build; the strict AArch64 link inventory falls
+**522 → 516** unresolved names with no new names. Full ARMv7 metrics
+stay **4,323/4,524** originals over **4,743** pairs,
+**94.72%/84.21%** mean source-shape/strict fuzzy, **2,603
+linked-exact** and **1,083 byte-exact**, with no exact-set losses.
+Live blend rendering remains unverified. See
+[the blend evidence](PAINTCANVAS_BLEND_GLES_ARM64_2026-10-26.md).
 
 The original OpenSSL 1.0.2u SHA-256 implementation and `CRYPTO_memcmp`
 now build for ARM64. On-device testing confirmed the 112-byte context

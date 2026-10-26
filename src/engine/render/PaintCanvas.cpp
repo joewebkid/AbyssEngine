@@ -493,17 +493,20 @@ void paintcanvas_ext_sbm_lightsetlight(void *eng, int v);
 
 void paintcanvas_ext_sbm_glenablecap(void *eng, unsigned int v, int on);
 
-void paintcanvas_ext_sbm_glTexEnvi(unsigned int a, unsigned int b, unsigned int c);
+// SetBlendMode at ARMv7 0x7cb49 calls these GLES entry points directly.
+static inline void paintcanvas_ext_sbm_glTexEnvi(unsigned int a, unsigned int b, unsigned int c) {
+    glTexEnvi(a, b, c);
+}
 
-void paintcanvas_ext_sbm_glEnable(unsigned int cap);
+static inline void paintcanvas_ext_sbm_glEnable(unsigned int cap) { glEnable(cap); }
 
-void paintcanvas_ext_sbm_glDisable(unsigned int cap);
+static inline void paintcanvas_ext_sbm_glDisable(unsigned int cap) { glDisable(cap); }
 
-void paintcanvas_ext_sbm_glBlendFunc(unsigned int a, unsigned int b);
+static inline void paintcanvas_ext_sbm_glBlendFunc(unsigned int a, unsigned int b) { glBlendFunc(a, b); }
 
-void paintcanvas_ext_sbm_glDepthMask(int v);
+static inline void paintcanvas_ext_sbm_glDepthMask(int v) { glDepthMask(v); }
 
-void paintcanvas_ext_sbm_glAlphaFunc(unsigned int a, float ref);
+static inline void paintcanvas_ext_sbm_glAlphaFunc(unsigned int a, float ref) { glAlphaFunc(a, ref); }
 
 void paintcanvas_ext_sbm_setalpha(void *eng, unsigned int v, int on);
 
