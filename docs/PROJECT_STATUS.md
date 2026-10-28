@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (Android BlurShader initialization and ABI)
+
+`BlurShader` now uses the exact original Android ARM vertex/fragment GLSL,
+uniform names, and derived-class field offsets. Its radial origin in
+`UpdateMeshData` now uses the original `(0.5, 0.3)` values. `Init` and
+`SetInActive` gained linked-exact status; the ten-function family rises
+from **95.10% to 96.22% source-shape** (from **94.44% to 95.51%**
+weighted by original instructions). Native and ARM64 libraries build;
+ARMv7 compiles 209/209 units. The full corpus compares **4,323/4,524**
+originals across 4,745 pairs, **94.82% source-shape / 84.36% strict
+fuzzy**, **2,612 linked-exact / 1,083 byte-exact**, zero skips and no
+exact-set losses. The signed silent ARM64 APK is ready, but no phone is
+visible to ADB; live shader behavior remains unverified. Next, establish
+the original virtual dispatch path of the short `RenderEffect` overload
+and test blur rendering on the target phone. See the
+[blur shader evidence](ARM_BLUR_SHADER_INIT_ABI_2026-10-26.md).
+
 Last reviewed: 2026-10-26 (Android texture shader fog dispatch)
 
 `TextureShader` and `TextureAlphaTestShader` now select the fog program,

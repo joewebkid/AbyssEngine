@@ -4,6 +4,9 @@
 #include "engine/render/Mesh.h"
 #include "engine/render/PaintCanvas.h"
 #include "engine/core/ApplicationManager.h"
+#if defined(__ANDROID__)
+#include "engine/render/shaders/EmbeddedBlurShader.h"
+#endif
 #include <GLES2/gl2.h>
 
 namespace AbyssEngine {
@@ -21,16 +24,38 @@ namespace AbyssEngine {
     }
 
     void BlurShader::Init(Engine *) {
-        this->program = this->ES2LoadProgram("BlurShader.vsh", "BlurShader.fsh");
-        this->aPosition = glGetAttribLocation(this->program, "a_position");
-        this->aTexCoord = glGetAttribLocation(this->program, "a_texCoord");
-        this->uMvpMatrix = glGetUniformLocation(this->program, "u_mvpMatrix");
-        this->sTexture = glGetUniformLocation(this->program, "s_texture");
-        this->uTexelSize = glGetUniformLocation(this->program, "u_texelSize");
-        this->uCenter = glGetUniformLocation(this->program, "u_center");
-        this->uBlurAmount = glGetUniformLocation(this->program, "u_blurAmount");
-        this->uStrength = glGetUniformLocation(this->program, "u_strength");
-        glUseProgram(this->program);
+#if defined(__ANDROID__)
+        const char *vertex = EmbeddedBlurShader::vertex;
+        const char *fragment = EmbeddedBlurShader::fragment;
+        const char *matrixName = "u_WorldMatrix";
+        const char *samplerName = "s_texture_base";
+        const char *texelName = "u_texel_size";
+        const char *centerName = "u_radial_origin";
+        const char *amountName = "u_blur_strength";
+        const char *strengthName = "u_radial_bright";
+#else
+        const char *vertex = "BlurShader.vsh";
+        const char *fragment = "BlurShader.fsh";
+        const char *matrixName = "u_mvpMatrix";
+        const char *samplerName = "s_texture";
+        const char *texelName = "u_texelSize";
+        const char *centerName = "u_center";
+        const char *amountName = "u_blurAmount";
+        const char *strengthName = "u_strength";
+#endif
+        this->blurProgram = this->ES2LoadProgram(vertex, fragment);
+#if !defined(__ANDROID__)
+        this->program = this->blurProgram;
+#endif
+        this->aPosition = glGetAttribLocation(this->blurProgram, "a_position");
+        this->aTexCoord = glGetAttribLocation(this->blurProgram, "a_texCoord");
+        this->uMvpMatrix = glGetUniformLocation(this->blurProgram, matrixName);
+        this->sTexture = glGetUniformLocation(this->blurProgram, samplerName);
+        this->uTexelSize = glGetUniformLocation(this->blurProgram, texelName);
+        this->uCenter = glGetUniformLocation(this->blurProgram, centerName);
+        this->uBlurAmount = glGetUniformLocation(this->blurProgram, amountName);
+        this->uStrength = glGetUniformLocation(this->blurProgram, strengthName);
+        glUseProgram(this->blurProgram);
         glUniform1i(this->sTexture, 0);
     }
 
@@ -58,7 +83,7 @@ namespace AbyssEngine {
         glDisable(0xb71);
         glDepthMask(0);
         glDisable(0xbe2);
-        glUseProgram(this->program);
+        glUseProgram(this->blurProgram);
         glActiveTexture(0x84c0);
         fbo->Activate();
 
@@ -171,7 +196,7 @@ namespace AbyssEngine {
 
         int centerLocation = this->uCenter;
         if (centerLocation >= 0) {
-            glUniform2f(centerLocation, 0.5f, 0.5f);
+            glUniform2f(centerLocation, 0.5f, 0.3f);
         }
 
         int strengthLocation = this->uStrength;
