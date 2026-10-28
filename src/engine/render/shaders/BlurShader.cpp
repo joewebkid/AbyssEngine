@@ -6,6 +6,7 @@
 #include "engine/core/ApplicationManager.h"
 #if defined(__ANDROID__)
 #include "engine/render/shaders/EmbeddedBlurShader.h"
+#include <arm_neon.h>
 #endif
 #include <GLES2/gl2.h>
 
@@ -66,18 +67,28 @@ namespace AbyssEngine {
 
     void BlurShader::RenderEffect(FBOContainer *fbo, FBOContainer *&target, Engine *engine,
                                   float amount, Vector vector) {
+#if defined(__ANDROID__)
+        const float32x4_t zero = vdupq_n_f32(0.0f);
+        vst1q_f32(&engine->projMatrix[12], zero);
+        vst1q_f32(&engine->projMatrix[8], zero);
+        vst1q_f32(&engine->projMatrix[4], zero);
+        vst1q_f32(&engine->projMatrix[0], zero);
+#endif
+        engine->projMatrix[0] = 2.0f / (float) (int) engine->GetDisplayWidth();
+        engine->projMatrix[5] = -(2.0f / (float) (int) engine->GetDisplayHeight());
+#if defined(__ANDROID__)
+        engine->projMatrix[10] = -0.05f;
+#else
+        engine->projMatrix[10] = -1.0f;
+#endif
+        engine->projMatrix[12] = -1.0f;
+        engine->projMatrix[13] = 1.0f;
+        engine->projMatrix[15] = 1.0f;
         float matrix[16] = {};
         matrix[0] = 1.0f;
         matrix[5] = 1.0f;
         matrix[10] = 1.0f;
         matrix[15] = 1.0f;
-
-        engine->projMatrix[0] = 2.0f / (float) engine->GetDisplayWidth();
-        engine->projMatrix[5] = -(2.0f / (float) engine->GetDisplayHeight());
-        engine->projMatrix[10] = -1.0f;
-        engine->projMatrix[12] = -1.0f;
-        engine->projMatrix[13] = 1.0f;
-        engine->projMatrix[15] = 1.0f;
         engine->SetWorldViewMatrix(*reinterpret_cast<const Matrix *>(matrix));
 
         glDisable(0xb71);
@@ -120,10 +131,10 @@ namespace AbyssEngine {
             float width;
             int other;
             if (engine->appManager->paintCanvas->gameOrientation == 2) {
-                width = (float) engine->GetDisplayWidth();
+                width = (float) (int) engine->GetDisplayWidth();
                 other = engine->GetDisplayHeight();
             } else {
-                width = (float) engine->GetDisplayHeight();
+                width = (float) (int) engine->GetDisplayHeight();
                 other = engine->GetDisplayWidth();
             }
             glUniform2f(texelLocation, 1.0f / width, 1.0f / (float) other);

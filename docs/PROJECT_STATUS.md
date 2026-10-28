@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (BlurShader projection reconstruction)
+
+The five-argument `BlurShader::RenderEffect` now clears the full Android
+projection matrix and uses the original `-0.05f` depth coefficient;
+the previous source left ten elements stale and used `-1.0f`. Its
+ARMv7 source-shape rises **94.4% → 95.3%**, and the ten-function
+family reaches **99.13%** unweighted or **97.31%** weighted by original
+instructions. Native and ARM64 libraries build; ARMv7 compiles 209/209
+units, and the signed silent APK contains the updated ARM64 library.
+The full corpus compares **4,323/4,524** originals across 4,745 pairs,
+**94.84% source-shape / 84.39% strict fuzzy**, **2,616 linked-exact /
+1,085 byte-exact**, zero skips and no exact-set changes. The target
+ARM64 phone is absent from ADB, so projection and blur output remain
+unverified in game. Next, compare the remaining local matrix setup and
+GL state transitions in this function, then verify a live postprocess
+scene. See the [projection evidence](ARM_BLUR_PROJECTION_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (RenderEffect virtual dispatch and BlurShader ABI)
 
 The two strength/tint `ShaderBaseStruct::RenderEffect` overloads now have

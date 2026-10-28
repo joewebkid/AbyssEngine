@@ -10,7 +10,7 @@ a minimal Crashlytics loader compatibility library. These test libraries and
 the APK are kept outside this repository. Sound is deliberately absent.
 The latest clean APK is
 `D:\gof2-arm64-crypto\gof2-arm64-silent-debug-20261026.apk`
-(SHA-256 `a66f52f0ed0ed69c472e829c00cfc5c0491491f18971903f61f4ffdaa22d7d62`).
+(SHA-256 `4194a1c56bbb80cbf2aef3069c2411ff6bf214b4f6aa984b0aae771ad811b74b`).
 The same artifact path was rebuilt with the basic shader dispatch recovery;
 It was rebuilt again with two no-texture shader sources; this latest image
 has not yet been visually checked in the game foreground. See
@@ -31,6 +31,9 @@ layout; this package has not been run on the disconnected ARM64 phone. See
 It was rebuilt again with the original virtual `RenderEffect` table order;
 the new package is signed but has not been tested on the target phone. See
 [render-effect vtable evidence](ARM_SHADER_RENDER_EFFECT_VTABLE_2026-10-28.md).
+It was rebuilt again with the original blur projection initialization;
+live image output for this package is not yet verified. See
+[blur projection evidence](ARM_BLUR_PROJECTION_2026-10-28.md).
 
 The APK installed on a 25053RT47C (Android 16, arm64-v8a). The original OBB
 was copied to the package's OBB directory. The game reached `MTitle`, found
