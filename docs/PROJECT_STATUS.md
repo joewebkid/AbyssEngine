@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (station material texture links)
+
+Fourteen adjacent station material records now use the texture IDs
+confirmed by the original Android ARM `BuildResourceList`, replacing zero
+placeholders. All referenced texture resources are registered. Native and
+ARM64 static libraries build; ARMv7 compiles 209/209 units. Focused
+`BuildResourceList` source-shape moves **76.9% → 77.0%** (strict fuzzy
+**18.8% → 18.4%**). The full corpus is **4,323/4,524** originals over
+4,745 pairs, **94.86% source-shape / 84.43% strict fuzzy**, **2,638
+linked-exact / 1,086 byte-exact**, zero skips and no exact-set losses.
+The signed ARM64 APK installed, but a run still reached the same invalid
+pointer value consistent with an ID-0 material-as-texture path; the selected
+material was not captured.
+Other literal-zero entries remain unverified. Next, recover the ID-0
+resource records and the remaining source-backed material links, then
+repeat the foreground device test. See [station material evidence](ARM_STATION_MATERIAL_TEXTURE_LINKS_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (Bloom GLSL and startup menu/scene recovery)
 
 `BloomShader::Init` now receives the six original embedded GLSL strings

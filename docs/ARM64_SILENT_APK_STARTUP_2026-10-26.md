@@ -134,6 +134,15 @@ cutscene; a material ID 0 is likely being misread as a texture path. Startup
 remains unstable.
 See [Bloom/menu startup evidence](ARM_BLOOM_MENU_STARTUP_RECOVERY_2026-10-28.md).
 
+A signed APK also restores 14 source-confirmed station material links to
+their original textures:
+`D:\gof2-arm64-crypto\gof2-arm64-station-material-debug-20261028.apk`
+(SHA-256 `2938898fb09dd739bed14e93a57ab838311f570c811d3ae74825bd8381dff7d7`).
+It installed on `25053RT47C`, but a run still crashed with the same pointer
+value consistent with an ID-0 material interpreted as a texture path. The
+selected material was not recorded, so the late cutscene remains unverified. See
+[station material evidence](ARM_STATION_MATERIAL_TEXTURE_LINKS_2026-10-28.md).
+
 The APK installed on a 25053RT47C (Android 16, arm64-v8a). The original OBB
 was copied to the package's OBB directory. The game reached `MTitle`, found
 3,250 resources, created both logo images, and executed its render callback
