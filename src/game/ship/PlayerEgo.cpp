@@ -1777,7 +1777,7 @@ PlayerEgo::PlayerEgo(Player *player) {
             case 74: this->boostSoundId = 41; break;
             case 195: this->boostSoundId = 1102; break;
             }
-            Globals::gGlobals->addSoundResourceToList(this->boostSoundId);
+            static_cast<Globals *>(Globals::globals)->addSoundResourceToList(this->boostSoundId);
         }
         this->handling = ship->getHandling();
         int shipIndex = ship->getIndex();
@@ -1795,7 +1795,7 @@ PlayerEgo::PlayerEgo(Player *player) {
             this->field_0x1c = 43;
         else
             this->field_0x1c = 42;
-        Globals::gGlobals->addSoundResourceToList(this->field_0x1c);
+        static_cast<Globals *>(Globals::globals)->addSoundResourceToList(this->field_0x1c);
         int agility = ship->getAgility();
         this->agility = (float) agility;
         float handling = this->handling;
@@ -1812,26 +1812,26 @@ PlayerEgo::PlayerEgo(Player *player) {
         if (cloakItem != nullptr) {
             this->cloakChargeMax = cloakItem->getAttribute(35);
             this->cloakDischargeMax = cloakItem->getAttribute(36);
-            Globals::gGlobals->addSoundResourceToList(30);
+            static_cast<Globals *>(Globals::globals)->addSoundResourceToList(30);
         }
         Item *driveItem = ship->getFirstEquipmentOfSort(18);
         if (driveItem != nullptr) {
             this->driveChargeMax = driveItem->getAttribute(37);
-            Globals::gGlobals->addSoundResourceToList(32);
-            Globals::gGlobals->addSoundResourceToList(33);
+            static_cast<Globals *>(Globals::globals)->addSoundResourceToList(32);
+            static_cast<Globals *>(Globals::globals)->addSoundResourceToList(33);
         } else if (ship->hasJumpDriveIntegrated()) {
             this->driveChargeMax = static_cast<Array<Item *> *>(Globals::items)->data()[85]->getAttribute(37);
         }
         // Android 0x99dd8-0x99e32 registers equipment-gated sounds before the HUD images.
         if (ship->getFirstEquipmentOfSort(19) != nullptr) {
-            Globals::gGlobals->addSoundResourceToList(1);
-            Globals::gGlobals->addSoundResourceToList(3);
-            Globals::gGlobals->addSoundResourceToList(2);
+            static_cast<Globals *>(Globals::globals)->addSoundResourceToList(1);
+            static_cast<Globals *>(Globals::globals)->addSoundResourceToList(3);
+            static_cast<Globals *>(Globals::globals)->addSoundResourceToList(2);
         }
         if (ship->getFirstEquipmentOfSort(9) != nullptr)
-            Globals::gGlobals->addSoundResourceToList(25);
+            static_cast<Globals *>(Globals::globals)->addSoundResourceToList(25);
         if (ship->getFirstEquipmentOfSort(10) != nullptr)
-            Globals::gGlobals->addSoundResourceToList(23);
+            static_cast<Globals *>(Globals::globals)->addSoundResourceToList(23);
     }
 
     this->hardCoreMode = PE_status()->hardCoreMode();

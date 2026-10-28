@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (PlayerEgo sound-call global pointer)
+
+Ten sound registrations in `PlayerEgo::PlayerEgo` now use the original ARM
+`Globals::globals` pointer rather than the uninitialized source-only
+`Globals::gGlobals`. Native and ARM64 libraries build; ARMv7 compiles 209/209
+units. Focused `PlayerEgo` has 173 comparisons at **97.33% source-shape /
+88.14% strict fuzzy**, with 99 linked-exact and 61 byte-exact, unchanged
+from baseline. The complete corpus remains **4,323/4,524** original
+functions over 4,745 pairs, **94.86% source-shape / 84.43% strict fuzzy**,
+**2,638 linked-exact / 1,086 byte-exact**, zero skips and no pair or
+exact-set losses. A signed ARM64 APK is installed, but its foreground run
+is pending because the test phone is in active use. Next, test player
+creation and inspect the next reached global-pointer call. See
+[PlayerEgo ARM evidence](ARM_PLAYER_EGO_GLOBALS_SOUND_CALLS_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (material resource IDs and ARM64 startup)
 
 Five material records now use the IDs and texture links recovered from the

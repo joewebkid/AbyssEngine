@@ -11,7 +11,15 @@ the APK are kept outside this repository. Sound is deliberately absent.
 The initial clean APK is
 `D:\gof2-arm64-crypto\gof2-arm64-silent-debug-20261026.apk`
 (SHA-256 `4194a1c56bbb80cbf2aef3069c2411ff6bf214b4f6aa984b0aae771ad811b74b`).
-The latest signed test APK with recovered material resource IDs is
+The latest installed test APK corrects the `PlayerEgo` sound-call global
+pointer:
+`D:\gof2-arm64-crypto\gof2-arm64-playerglobals-debug-20261028.apk`
+(SHA-256 `f1cf81c2d0e4b21ce8a8187419362ec354e5f5a39d8563b811261f6d12f9530f`).
+Signature and embedded-library checks passed; foreground runtime remains
+unverified while the test phone is in active use. See
+[PlayerEgo ARM evidence](ARM_PLAYER_EGO_GLOBALS_SOUND_CALLS_2026-10-28.md).
+
+The preceding signed test APK with recovered material resource IDs is
 `D:\gof2-arm64-crypto\gof2-arm64-idzero-material-debug-20261028.apk`
 (SHA-256 `c78434dd3c5c820fa645802f88b695b351e7831218480f8c683a1cb16ecab5b0`).
 It passed signature and embedded-library checks, installed on the ARM64
