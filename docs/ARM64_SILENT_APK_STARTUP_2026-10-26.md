@@ -40,12 +40,18 @@ projection coefficient, and mode selection:
 (SHA-256 `2f844c2d8e3a98a772b5158bac865997c338eb563a7bfd2200eb2b9f8ba4acd3`).
 It has not yet been tested on the disconnected target phone. See
 [bloom evidence](ARM_BLOOM_FIRST_RENDER_AND_MODE_2026-10-28.md).
-The current signed APK also includes the recovered glow shader layout,
+A signed APK also includes the recovered glow shader layout,
 GLSL, first-render setup, and texture selection:
 `D:\gof2-arm64-crypto\gof2-arm64-glow-debug-20261028.apk`
 (SHA-256 `60df8bce966a647df1688c633eb18ca8e2d5a94665621a7edba90768f25daec0`).
 It has not yet been tested on the disconnected target phone. See
 [glow evidence](ARM_GLOW_PP_SHADER_RECOVERY_2026-10-28.md).
+The current signed APK adds the recovered DrawFBO shader sources and
+GLSL input names:
+`D:\gof2-arm64-crypto\gof2-arm64-drawfbo-debug-20261028.apk`
+(SHA-256 `70c6d1117a45703752d3a481b9efd6b00a50f97002d9c3f7c47a93fb16cdd86e`).
+It has not yet been tested on the disconnected target phone. See
+[DrawFBO evidence](ARM_DRAW_FBO_SHADER_GLSL_2026-10-28.md).
 
 The APK installed on a 25053RT47C (Android 16, arm64-v8a). The original OBB
 was copied to the package's OBB directory. The game reached `MTitle`, found

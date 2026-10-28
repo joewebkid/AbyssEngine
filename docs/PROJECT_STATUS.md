@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (DrawFBOShader GLSL recovery)
+
+`DrawFBOShader::Init` now uses the original embedded vertex and fragment
+GLSL and the original attribute/uniform names. The prior path passed
+file names and unrelated input names to OpenGL. The strings match the
+Android ARM library byte for byte. ARMv7 compiles 209/209 units; native
+and ARM64 libraries build, and a signed silent APK is ready. Focused
+verification compares nine functions at **98.63% source-shape**
+unweighted and **98.11% weighted**, with five linked-exact; the
+instruction metrics do not change for this string correction. The full
+corpus compares **4,323/4,524** originals across 4,745 pairs,
+**94.85% source-shape / 84.40% strict fuzzy**, **2,619 linked-exact /
+1,085 byte-exact**, zero skips and no exact-set changes. Live shader
+compilation and FBO output remain unverified because the target phone
+is absent from ADB. Next, verify a foreground GOF2 scene and inspect
+render state if the output is wrong. See the
+[DrawFBO evidence](ARM_DRAW_FBO_SHADER_GLSL_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (GlowPPShader initialization, ABI, and GLSL)
 
 `GlowPPShader` now uses the original first-render and mode globals,

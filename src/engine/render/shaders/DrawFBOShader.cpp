@@ -1,4 +1,5 @@
 #include "engine/render/shaders/DrawFBOShader.h"
+#include "engine/render/shaders/EmbeddedDrawFBOShader.h"
 #include "engine/render/FBOContainer.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
@@ -18,12 +19,12 @@ namespace AbyssEngine {
     }
 
     void DrawFBOShader::Init(Engine *) {
-        this->program = this->ES2LoadProgram("DrawFBOShader.vsh", "DrawFBOShader.fsh");
+        this->program = this->ES2LoadProgram(DrawFBOSource::vertex, DrawFBOSource::fragment);
 
-        this->positionLoc = glGetAttribLocation(this->program, "position");
-        this->texCoordLoc = glGetAttribLocation(this->program, "texCoord");
-        this->worldViewMatrixLoc = glGetUniformLocation(this->program, "worldViewMatrix");
-        this->textureLoc = glGetUniformLocation(this->program, "texture");
+        this->positionLoc = glGetAttribLocation(this->program, "a_position");
+        this->texCoordLoc = glGetAttribLocation(this->program, "a_texCoord");
+        this->worldViewMatrixLoc = glGetUniformLocation(this->program, "u_WorldMatrix");
+        this->textureLoc = glGetUniformLocation(this->program, "s_texture_base");
 
         glUseProgram(this->program);
         glUniform1i(this->textureLoc, 0);
