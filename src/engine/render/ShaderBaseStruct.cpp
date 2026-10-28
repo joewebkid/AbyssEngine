@@ -10,7 +10,8 @@ namespace AbyssEngine {
 
     ShaderBaseStruct::ShaderBaseStruct() {
         this->program = -1;
-        this->flags = 0x100;
+        this->flags = 0;
+        this->dirty = 1;
         ++shaderIndexIntern;
         this->vertexPath = 0;
         this->fragmentPath = 0;

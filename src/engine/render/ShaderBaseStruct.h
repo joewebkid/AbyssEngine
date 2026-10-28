@@ -20,7 +20,8 @@ namespace AbyssEngine {
     class ShaderBaseStruct {
     public:
         int program;
-        volatile uint16_t flags;
+        // ARM stores 0x0100 at +8; Update writes the dirty byte at +9.
+        uint8_t flags;
         uint8_t dirty;
         String name;
         const char *vertexPath;

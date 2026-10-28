@@ -102,6 +102,13 @@ GLSL on both Android ABIs and the ARM-observed value source for
 It has not yet been tested on the disconnected target phone. See
 [TextureVtxColorShader evidence](ARM_TEXTURE_VTX_COLOR_GLSL_2026-10-28.md).
 
+A signed APK corrects the shared shader dirty-byte layout and uses
+the original `SimpleShader` GLSL and uniform name on all builds:
+`D:\gof2-arm64-crypto\gof2-arm64-simple-abi-debug-20261028.apk`
+(SHA-256 `8526f1d0f532a611fec1367822d90d6e1d2afc9fb3da1c9717362a1562963106`).
+It has not yet been tested on the disconnected target phone. See
+[shader ABI evidence](ARM_SHADER_DIRTY_BYTE_ABI_2026-10-28.md).
+
 The APK installed on a 25053RT47C (Android 16, arm64-v8a). The original OBB
 was copied to the package's OBB directory. The game reached `MTitle`, found
 3,250 resources, created both logo images, and executed its render callback

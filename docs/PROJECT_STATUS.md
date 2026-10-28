@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (shader dirty-byte ABI and SimpleShader)
+
+The original ARM constructor initializes shader state at offsets
+`+8/+9`, and `ShaderBaseStruct::Update` writes the dirty byte at
+`+9`. The source had placed `dirty` at `+10`, causing shader
+update methods to read another byte. The corrected layout makes
+`Update` byte-exact and adds 18 linked-exact matches across shader
+families with no losses. `SimpleShader` now uses its original
+embedded GLSL and `glColor` name on all builds. ARMv7 compiles
+209/209 units; native and ARM64 libraries build, and a signed silent
+APK is ready. The full corpus compares **4,323/4,524** originals
+across 4,745 pairs, **94.86% source-shape / 84.43% strict fuzzy**,
+**2,638 linked-exact / 1,086 byte-exact**, zero skips and no exact-set
+losses. Live shader output remains unverified because the target
+ARM64 phone is absent from ADB. Next, test the foreground game and
+inspect `NoTexShader`. See the
+[shader ABI evidence](ARM_SHADER_DIRTY_BYTE_ABI_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (TextureVtxColorShader GLSL and uniform source)
 
 `TextureVtxColorShader` now passes the original vertex, normal
