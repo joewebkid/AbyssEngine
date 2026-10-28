@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (BumpMapping GLSL and dirty branch)
+
+`BumpMapping::Init` now uses the original embedded vertex/fragment
+GLSL and ARM-observed attribute/uniform names. The old code passed
+file names as shader text and queried `a_binormal` instead of
+`a_bitangent`, despite `Init` being linked-exact. The 517-byte vertex
+and 848-byte fragment strings match the Android ARM library byte for
+byte. `UpdateMeshData` now clears `dirty` conditionally as in the
+original, improving that function's source-shape **97.4% → 99.5%**.
+The six-function family improves **99.57% → 99.92%** unweighted and
+**99.29% → 99.86%** weighted. ARMv7 compiles 209/209 units; native and
+ARM64 libraries build, and a signed silent APK is ready. The full
+corpus compares **4,323/4,524** originals across 4,745 pairs,
+**94.85% source-shape / 84.40% strict fuzzy**, **2,619 linked-exact /
+1,085 byte-exact**, zero skips and no exact-set losses. Live
+bump-mapped output remains unverified because the target phone is
+absent from ADB. Next, confirm a foreground scene and inspect
+`DNSShader`. See the [BumpMapping evidence](ARM_BUMP_MAPPING_GLSL_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (GenericShader2 GLSL and attribute ABI)
 
 `GenericShader2::Init` now uses its original embedded vertex/fragment

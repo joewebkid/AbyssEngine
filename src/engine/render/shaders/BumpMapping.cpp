@@ -1,4 +1,5 @@
 #include "engine/render/shaders/BumpMapping.h"
+#include "engine/render/shaders/EmbeddedBumpMapping.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
 #include <GLES2/gl2.h>
@@ -13,18 +14,18 @@ namespace AbyssEngine {
     }
 
     void BumpMapping::Init(Engine *) {
-        this->program = this->ES2LoadProgram("BumpMapping.vsh", "BumpMapping.fsh");
+        this->program = this->ES2LoadProgram(BumpMappingSource::vertex, BumpMappingSource::fragment);
 
         this->a0Loc = glGetAttribLocation(this->program, "a_position");
         this->a1Loc = glGetAttribLocation(this->program, "a_normal");
         this->a2Loc = glGetAttribLocation(this->program, "a_tangent");
-        this->a3Loc = glGetAttribLocation(this->program, "a_binormal");
+        this->a3Loc = glGetAttribLocation(this->program, "a_bitangent");
         this->a4Loc = glGetAttribLocation(this->program, "a_texCoord");
 
-        this->u0Loc = glGetUniformLocation(this->program, "u_mvpMatrix");
-        this->u1Loc = glGetUniformLocation(this->program, "u_lightDir");
-        this->u2Loc = glGetUniformLocation(this->program, "u_texture");
-        this->u3Loc = glGetUniformLocation(this->program, "u_normalMap");
+        this->u0Loc = glGetUniformLocation(this->program, "u_WorldMatrix");
+        this->u1Loc = glGetUniformLocation(this->program, "u_lightposmodel");
+        this->u2Loc = glGetUniformLocation(this->program, "s_texture_base");
+        this->u3Loc = glGetUniformLocation(this->program, "s_texture_normal");
 
         glUseProgram(this->program);
         glUniform1i(this->u2Loc, 0);
@@ -32,7 +33,8 @@ namespace AbyssEngine {
     }
 
     void BumpMapping::UpdateMeshData(Mesh *mesh, Engine *engine) {
-        this->dirty = 0;
+        if (this->dirty != 0)
+            this->dirty = 0;
 
         glUniformMatrix4fv(this->u0Loc, 1, 0, engine->worldViewProjMatrix);
         glUniform3f(this->u1Loc, engine->lightDir.x, engine->lightDir.y, engine->lightDir.z);
