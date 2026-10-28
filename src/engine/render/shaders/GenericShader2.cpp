@@ -1,4 +1,5 @@
 #include "engine/render/shaders/GenericShader2.h"
+#include "engine/render/shaders/EmbeddedGenericShader2.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
 #include <GLES2/gl2.h>
@@ -9,34 +10,34 @@ namespace AbyssEngine {
     void GenericShader2::SetInActive() {
         if (aPosition >= 0)
             glDisableVertexAttribArray(aPosition);
+        if (aTexCoord >= 0)
+            glDisableVertexAttribArray(aTexCoord);
         if (aNormal >= 0)
             glDisableVertexAttribArray(aNormal);
         if (aTangent >= 0)
             glDisableVertexAttribArray(aTangent);
-        if (aBinormal >= 0)
-            glDisableVertexAttribArray(aBinormal);
-        if (aTexCoord >= 0)
-            glDisableVertexAttribArray(aTexCoord);
+        if (aBitangent >= 0)
+            glDisableVertexAttribArray(aBitangent);
     }
 
     void GenericShader2::Init(Engine *) {
-        this->program = this->ES2LoadProgram("GenericShader2.vsh", "GenericShader2.fsh");
+        this->program = this->ES2LoadProgram(GenericShader2Source::vertex, GenericShader2Source::fragment);
 
         aPosition = glGetAttribLocation(this->program, "a_position");
+        aTexCoord = glGetAttribLocation(this->program, "a_texCoord");
         aNormal = glGetAttribLocation(this->program, "a_normal");
         aTangent = glGetAttribLocation(this->program, "a_tangent");
-        aBinormal = glGetAttribLocation(this->program, "a_binormal");
-        aTexCoord = glGetAttribLocation(this->program, "a_texCoord");
+        aBitangent = glGetAttribLocation(this->program, "a_bitangent");
 
-        uM0 = glGetUniformLocation(this->program, "u_m0");
-        uM1 = glGetUniformLocation(this->program, "u_m1");
-        uM2 = glGetUniformLocation(this->program, "u_m2");
-        uM3 = glGetUniformLocation(this->program, "u_m3");
-        uM4 = glGetUniformLocation(this->program, "u_m4");
-        uM5 = glGetUniformLocation(this->program, "u_m5");
-        uM6 = glGetUniformLocation(this->program, "u_m6");
-        uM7 = glGetUniformLocation(this->program, "u_m7");
-        uM8 = glGetUniformLocation(this->program, "u_m8");
+        uM0 = glGetUniformLocation(this->program, "u_ModelViewProjectionMatrix");
+        uM1 = glGetUniformLocation(this->program, "u_ModelMatrix");
+        uM2 = glGetUniformLocation(this->program, "u_lightdirmodel");
+        uM3 = glGetUniformLocation(this->program, "u_eyeposmodel");
+        uM4 = glGetUniformLocation(this->program, "s_texture");
+        uM5 = glGetUniformLocation(this->program, "glColor");
+        uM6 = glGetUniformLocation(this->program, "u_AmbientColor");
+        uM7 = glGetUniformLocation(this->program, "u_DiffuseColor");
+        uM8 = glGetUniformLocation(this->program, "u_SpecularColor");
 
         glUseProgram(this->program);
         glUniform1i(uM4, 0);
@@ -66,25 +67,25 @@ namespace AbyssEngine {
 
         if (aPosition >= 0)
             glEnableVertexAttribArray(aPosition);
+        if (aTexCoord >= 0)
+            glEnableVertexAttribArray(aTexCoord);
         if (aNormal >= 0)
             glEnableVertexAttribArray(aNormal);
         if (aTangent >= 0)
             glEnableVertexAttribArray(aTangent);
-        if (aBinormal >= 0)
-            glEnableVertexAttribArray(aBinormal);
-        if (aTexCoord >= 0)
-            glEnableVertexAttribArray(aTexCoord);
+        if (aBitangent >= 0)
+            glEnableVertexAttribArray(aBitangent);
 
         if (aPosition >= 0)
             glVertexAttribPointer(aPosition, 3, 0x1406, 0, 0, mesh->positions);
-        if (aNormal >= 0)
-            glVertexAttribPointer(aNormal, 2, 0x1406, 0, 0, mesh->texCoords);
-        if (aTangent >= 0)
-            glVertexAttribPointer(aTangent, 3, 0x1406, 0, 0, mesh->normals);
-        if (aBinormal >= 0)
-            glVertexAttribPointer(aBinormal, 3, 0x1406, 0, 0, mesh->tangents);
         if (aTexCoord >= 0)
-            glVertexAttribPointer(aTexCoord, 3, 0x1406, 0, 0, mesh->binormals);
+            glVertexAttribPointer(aTexCoord, 2, 0x1406, 0, 0, mesh->texCoords);
+        if (aNormal >= 0)
+            glVertexAttribPointer(aNormal, 3, 0x1406, 0, 0, mesh->normals);
+        if (aTangent >= 0)
+            glVertexAttribPointer(aTangent, 3, 0x1406, 0, 0, mesh->tangents);
+        if (aBitangent >= 0)
+            glVertexAttribPointer(aBitangent, 3, 0x1406, 0, 0, mesh->binormals);
     }
 
     GenericShader2::GenericShader2() {
