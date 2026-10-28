@@ -11,12 +11,22 @@ the APK are kept outside this repository. Sound is deliberately absent.
 The initial clean APK is
 `D:\gof2-arm64-crypto\gof2-arm64-silent-debug-20261026.apk`
 (SHA-256 `4194a1c56bbb80cbf2aef3069c2411ff6bf214b4f6aa984b0aae771ad811b74b`).
-The latest installed test APK corrects the `PlayerEgo` sound-call global
+The latest installed test APK also corrects the two main-menu global-pointer
+calls:
+`D:\gof2-arm64-crypto\gof2-arm64-menuglobals-debug-20261028.apk`
+(SHA-256 `6f4b4c1e2a8a4d905e4d3ab8b371dc005b1401697aeb8a906d9ee1d89425278e`).
+It passed signature and embedded-library checks. On the test phone it
+reached the game foreground, then crashed in `PlayerEgo::setShip` while
+reading a null mesh material block; see
+[menu ARM evidence](ARM_MAIN_MENU_GLOBALS_CALLS_2026-10-28.md).
+
+The preceding test APK corrects the `PlayerEgo` sound-call global
 pointer:
 `D:\gof2-arm64-crypto\gof2-arm64-playerglobals-debug-20261028.apk`
 (SHA-256 `f1cf81c2d0e4b21ce8a8187419362ec354e5f5a39d8563b811261f6d12f9530f`).
-Signature and embedded-library checks passed; foreground runtime remains
-unverified while the test phone is in active use. See
+Signature and embedded-library checks passed. This exact APK was not
+launched; the successor above contains the same `PlayerEgo` fix and passed
+the earlier sound-call crash. See
 [PlayerEgo ARM evidence](ARM_PLAYER_EGO_GLOBALS_SOUND_CALLS_2026-10-28.md).
 
 The preceding signed test APK with recovered material resource IDs is

@@ -29,16 +29,18 @@ The constructor itself remains 83.9% source-shape and 53.2% strict fuzzy.
 The full ARM corpus compares 4,323/4,524 original functions across 4,745
 pairs with zero skips, 94.86% source-shape, 84.43% strict fuzzy, 2,638
 linked-exact and 1,086 byte-exact. Relative to the preceding full report,
-no compared pair or exact match was lost. Foreground device testing remains
-pending.
+no compared pair or exact match was lost.
 
 A signed ARM64 APK is prepared at
 `D:\gof2-arm64-crypto\gof2-arm64-playerglobals-debug-20261028.apk`
 (SHA-256 `f1cf81c2d0e4b21ce8a8187419362ec354e5f5a39d8563b811261f6d12f9530f`).
 It contains the linked library with 53 JNI exports and passes APK v1/v2/v3
 signature and embedded-library checks. It installed on the `25053RT47C`
-phone, but the device has remained in phone calls or another foreground app;
-the new build has not been launched yet.
+phone. This exact APK was not launched while the device was busy. Its
+successor, `gof2-arm64-menuglobals-debug-20261028.apk`, contains the same
+`PlayerEgo` fix and ran through the earlier `addSoundResourceToList` call
+without that crash. It later crashed in `PlayerEgo::setShip` on a null mesh
+material block. The specific sound registrations reached remain unlogged.
 
-Next, verify the runtime path through player creation, then review the next
-reached `gGlobals` use against original ARM before changing it.
+Next, investigate why the ship mesh has no material block before `setShip`
+reads it; the original ARM code performs the same dereference.

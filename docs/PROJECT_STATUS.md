@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (main-menu global-pointer calls)
+
+`ModMainMenu::OnInitialize` and `OnRelease` now load the original ARM
+`Globals::globals` pointer for music and font calls. Native and ARM64
+libraries build; ARMv7 compiles 209/209 units. Focused `ModMainMenu`
+remains **88.37% source-shape / 82.23% strict fuzzy**, with 10 linked-exact
+and 4 byte-exact across 21 comparisons. The complete corpus remains
+**4,323/4,524** original functions over 4,745 pairs, **94.86%
+source-shape / 84.43% strict fuzzy**, **2,638 linked-exact / 1,086
+byte-exact**, zero skips and no pair or exact-set losses. The signed ARM64
+APK ran in the game foreground and passed the earlier sound-call crash.
+It later crashed in `PlayerEgo::setShip`: the ship mesh exists, but its
+material block is null. The original ARM path also dereferences that block,
+so the next task is to restore its creation path. The two edited menu calls
+were not independently observed executing. See
+[menu ARM evidence](ARM_MAIN_MENU_GLOBALS_CALLS_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (PlayerEgo sound-call global pointer)
 
 Ten sound registrations in `PlayerEgo::PlayerEgo` now use the original ARM
