@@ -1,11 +1,10 @@
 #include "engine/render/shaders/GlowPPShader.h"
+#include "engine/core/AbyssEngine.h"
+#include "engine/render/shaders/EmbeddedGlowPPShader.h"
 #include "engine/render/FBOContainer.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
 #include <GLES2/gl2.h>
-
-static uint8_t *g_GlowPPShader_internalInitNeededPtr = nullptr;
-static uint32_t *g_GlowPPShader_shaderModePtr = nullptr;
 
 namespace AbyssEngine {
     int GlowPPShader::ShaderIndex;
@@ -17,7 +16,9 @@ namespace AbyssEngine {
 
     void GlowPPShader::UpdateMeshData(Mesh *mesh, Engine *engine) {
         glUniformMatrix4fv(this->combineUniformWorldView, 1, 0, engine->worldViewProjMatrix);
-        this->dirty = 0;
+        if (this->dirty != 0) {
+            this->dirty = 0;
+        }
 
         glEnableVertexAttribArray(this->meshAttribPosition);
         glEnableVertexAttribArray(this->meshAttribTexCoord);
@@ -33,8 +34,8 @@ namespace AbyssEngine {
     }
 
     void GlowPPShader::RenderEffect(FBOContainer *source, FBOContainer *&target, Engine *engine) {
-        if (*g_GlowPPShader_internalInitNeededPtr != 0) {
-            *g_GlowPPShader_internalInitNeededPtr = 0;
+        if (firstRenderGlow != 0) {
+            firstRenderGlow = 0;
             this->InternalInit(engine);
             this->backgroundTarget->BeginCapture();
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -61,7 +62,7 @@ namespace AbyssEngine {
 
         engine->projMatrix[0] = 2.0f / (float) (int32_t) engine->GetDisplayWidth();
         engine->projMatrix[5] = -(2.0f / (float) (int32_t) engine->GetDisplayHeight());
-        engine->projMatrix[10] = -1.0f;
+        engine->projMatrix[10] = -0.05f;
         engine->projMatrix[12] = -1.0f;
         engine->projMatrix[13] = 1.0f;
         engine->projMatrix[15] = 1.0f;
@@ -134,13 +135,20 @@ namespace AbyssEngine {
             glDisableVertexAttribArray(this->blurYAttribTexCoord);
         }
 
-        FBOContainer *firstTexture = this->blurYTarget;
+        FBOContainer *firstTexture = source;
         FBOContainer *secondTexture = this->backgroundTarget;
-        uint32_t mode = *g_GlowPPShader_shaderModePtr;
-        if (mode == 0) {
-            firstTexture = this->copyTarget;
-        } else if (mode == 1) {
-            firstTexture = source;
+        switch (Engine::switchGlow) {
+            case 1:
+                firstTexture = this->copyTarget;
+                break;
+            case 2:
+                firstTexture = this->blurYTarget;
+                break;
+            case 3:
+                secondTexture = this->blurYTarget;
+                break;
+            default:
+                break;
         }
 
         glUseProgram(this->combineProgram);
@@ -189,32 +197,32 @@ namespace AbyssEngine {
     }
 
     void GlowPPShader::InternalInit(Engine *engine) {
-        this->copyTarget = new FBOContainer(engine, String("GlowPPShader0"));
+        this->copyTarget = new FBOContainer(engine, String("GlowPPShader fboMasked"));
         this->copyTarget->Create(0x200, 0x200, true, false);
 
-        this->blurXTarget = new FBOContainer(engine, String("GlowPPShader1"));
+        this->blurXTarget = new FBOContainer(engine, String("GlowPPShader fboBlurH"));
         this->blurXTarget->Create(0x200, 0x200, true, false);
 
-        this->blurYTarget = new FBOContainer(engine, String("GlowPPShader2"));
+        this->blurYTarget = new FBOContainer(engine, String("GlowPPShader fboBlurV"));
         this->blurYTarget->Create(0x200, 0x200, true, false);
 
-        this->backgroundTarget = new FBOContainer(engine, String("GlowPPShader3"));
+        this->backgroundTarget = new FBOContainer(engine, String("GlowPPShader fboBlack"));
         this->backgroundTarget->Create(0x200, 0x200, true, false);
     }
 
     void GlowPPShader::Init(Engine *) {
-        const char *vertex = "GlowPPShader.vert";
-        this->copyProgram = this->ES2LoadProgram(vertex, "GlowPPShader.copy.frag");
-        this->blurXProgram = this->ES2LoadProgram(vertex, "GlowPPShader.blurX.frag");
-        this->blurYProgram = this->ES2LoadProgram(vertex, "GlowPPShader.blurY.frag");
-        this->combineProgram = this->ES2LoadProgram(vertex, "GlowPPShader.combine.frag");
+        const char *vertex = GlowPPSource::vertex;
+        this->copyProgram = this->ES2LoadProgram(vertex, GlowPPSource::copyFragment);
+        this->blurXProgram = this->ES2LoadProgram(vertex, GlowPPSource::blurXFragment);
+        this->blurYProgram = this->ES2LoadProgram(vertex, GlowPPSource::blurYFragment);
+        this->combineProgram = this->ES2LoadProgram(vertex, GlowPPSource::combineFragment);
 
-        const char *position = "position";
-        const char *texcoord = "texcoord";
-        const char *worldView = "worldView";
-        const char *texture = "texture";
-        const char *sampleSize = "sampleSize";
-        const char *texture2 = "texture2";
+        const char *position = "a_position";
+        const char *texcoord = "a_texCoord";
+        const char *worldView = "u_WorldMatrix";
+        const char *texture = "s_texture_base";
+        const char *sampleSize = "texSize";
+        const char *texture2 = "s_texture_glow";
 
         this->copyAttribPosition = glGetAttribLocation(this->copyProgram, position);
         this->copyAttribTexCoord = glGetAttribLocation(this->copyProgram, texcoord);

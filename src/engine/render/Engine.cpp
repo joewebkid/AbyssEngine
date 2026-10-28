@@ -1682,7 +1682,7 @@ void Engine::LightSetMaterialColorAmbient(float red, float green, float blue) {
 // Static data members present in the original binary (defined for symbol parity).
 unsigned char AbyssEngine::Engine::EnableGlow;
 int AbyssEngine::Engine::ImageCount;
-int AbyssEngine::Engine::switchGlow;
+int AbyssEngine::Engine::switchGlow = 3;
 int AbyssEngine::Engine::SwapCounter;
 int AbyssEngine::Engine::switchBloom = 3;
 unsigned char AbyssEngine::Engine::enableShader;

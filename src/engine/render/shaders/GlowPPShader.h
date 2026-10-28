@@ -26,6 +26,8 @@ namespace AbyssEngine {
         int copyUniformWorldView;
         int copyAttribTexCoord;
         int copyUniformTexture;
+        uint32_t reserved_0x34;
+        uint32_t reserved_0x38;
 
         FBOContainer *copyTarget;
 
@@ -55,7 +57,9 @@ namespace AbyssEngine {
         int combineUniformTexture2;
 
         int meshAttribPosition;
+        uint32_t reserved_0x94;
         int meshAttribTexCoord;
+        uint32_t reserved_0x9c;
 
         FBOContainer *backgroundTarget;
 

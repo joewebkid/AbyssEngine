@@ -81,7 +81,7 @@ namespace AbyssEngine {
     float currentLODBias;
     int CubeMapSetIndex;
     int debugModusIndex;
-    unsigned char firstRenderGlow;
+    unsigned char firstRenderGlow = 1;
     unsigned char performanceTest;
     long long performanceTime;
     float timeBetweenFrames;

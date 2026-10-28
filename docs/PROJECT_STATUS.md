@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (GlowPPShader initialization, ABI, and GLSL)
+
+`GlowPPShader` now uses the original first-render and mode globals,
+projection coefficient, FBO field offsets and names, and five embedded
+GLSL strings with their actual input names. Its output texture choices
+for modes 0 through 3 and conditional `dirty` reset match Android ARM.
+The prior path dereferenced two null pointers. The eleven-function family
+reaches **99.55% source-shape unweighted / 98.09% weighted**; `Init`,
+`InternalInit`, and `SetInActive` newly become linked-exact. ARMv7
+compiles 209/209 units; native and ARM64 libraries build, and the signed
+silent APK is ready. The full corpus compares **4,323/4,524** originals
+across 4,745 pairs, **94.85% source-shape / 84.40% strict fuzzy**,
+**2,619 linked-exact / 1,085 byte-exact**, zero skips and no exact-set
+losses. Live glow output remains unverified because the target phone
+is absent from ADB. Next, confirm a foreground GOF2 scene on that phone
+and inspect the remaining long render path. See the
+[glow evidence](ARM_GLOW_PP_SHADER_RECOVERY_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (BloomShader first render and mode recovery)
 
 Both `BloomShader::RenderEffect` overloads now use the original shared
