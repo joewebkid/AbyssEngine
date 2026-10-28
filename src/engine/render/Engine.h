@@ -230,8 +230,11 @@ namespace AbyssEngine {
         };
 
         union {
-            int lineVertexBase;
-            int field_0x348;
+            // Original ARM stores the DrawLine2D vertex pointer at +0x348.
+#if __SIZEOF_POINTER__ == 4
+            float *lineVertices32;
+#endif
+            uint32_t field_0x348;
         };
 
         union {
@@ -380,6 +383,26 @@ namespace AbyssEngine {
 
         uint32_t shaderCount;
         Array<ShaderBaseStruct *> *shaders;
+#if __SIZEOF_POINTER__ == 8
+        // Keep the original 32-bit field layout while retaining a full port pointer.
+        float *lineVerticesPort;
+#endif
+
+        void SetLineVertices2D(float *verts) {
+#if __SIZEOF_POINTER__ == 8
+            lineVerticesPort = verts;
+#else
+            lineVertices32 = verts;
+#endif
+        }
+
+        const float *GetLineVertices2D() const {
+#if __SIZEOF_POINTER__ == 8
+            return lineVerticesPort;
+#else
+            return lineVertices32;
+#endif
+        }
 
         Engine();
 

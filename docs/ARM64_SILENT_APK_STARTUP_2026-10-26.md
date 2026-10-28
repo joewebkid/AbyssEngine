@@ -106,8 +106,21 @@ A signed APK corrects the shared shader dirty-byte layout and uses
 the original `SimpleShader` GLSL and uniform name on all builds:
 `D:\gof2-arm64-crypto\gof2-arm64-simple-abi-debug-20261028.apk`
 (SHA-256 `8526f1d0f532a611fec1367822d90d6e1d2afc9fb3da1c9717362a1562963106`).
-It has not yet been tested on the disconnected target phone. See
+It was later installed on `25053RT47C`. GOF2 was confirmed in the
+foreground during capture, but the screen was almost black with
+a small `BUY` fragment and 25 Adreno GLSL
+syntax errors. See
 [shader ABI evidence](ARM_SHADER_DIRTY_BYTE_ABI_2026-10-28.md).
+
+A signed APK restores the two no-texture shader source pairs for
+all builds and the original 2D line pointer/index path:
+`D:\gof2-arm64-crypto\gof2-arm64-notex-line-debug-20261028.apk`
+(SHA-256 `863298557bdbc40403321dcb0bbb5db7d49eac2678f5e3b9a9ce0d72ea7a0321`).
+It was installed on `25053RT47C`; GOF2 was confirmed in the
+foreground during capture, but its late screen remains almost
+black with a small `BUY` fragment and 25 Adreno shader syntax
+errors. The process later crashed on a null menu initialization
+holder. See [no-texture and 2D line evidence](ARM_NOTEX_2D_LINE_RECOVERY_2026-10-28.md).
 
 The APK installed on a 25053RT47C (Android 16, arm64-v8a). The original OBB
 was copied to the package's OBB directory. The game reached `MTitle`, found

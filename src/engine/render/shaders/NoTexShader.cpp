@@ -1,9 +1,7 @@
 #include "engine/render/shaders/NoTexShader.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
 #include "engine/render/shaders/EmbeddedNoTexShaders.h"
-#endif
 #include <GLES2/gl2.h>
 
 namespace AbyssEngine {
@@ -24,7 +22,7 @@ namespace AbyssEngine {
         int size;
         const void *ptr;
         if (mesh == 0) {
-            ptr = *(void **) &engine->field_0x348;
+            ptr = engine->GetLineVertices2D();
             size = 2;
         } else {
             if (mesh->uploaded == 0) {
@@ -39,20 +37,11 @@ namespace AbyssEngine {
     }
 
     void NoTexShader::Init(Engine *) {
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
         this->program = this->ES2LoadProgram(EmbeddedNoTexShader::vertex,
                                              EmbeddedNoTexShader::fragment);
-#else
-        this->program = this->ES2LoadProgram("NoTexShader.vsh", "NoTexShader.fsh");
-#endif
         this->aPosition = glGetAttribLocation(this->program, "a_position");
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
         this->uMvpMatrix = glGetUniformLocation(this->program, "u_WorldMatrix");
         this->uColor = glGetUniformLocation(this->program, "glColor");
-#else
-        this->uMvpMatrix = glGetUniformLocation(this->program, "u_mvp");
-        this->uColor = glGetUniformLocation(this->program, "u_color");
-#endif
         glUseProgram(this->program);
     }
 

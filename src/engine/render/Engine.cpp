@@ -90,7 +90,6 @@ namespace {
 
     int g_Engine_defaultShader;
     int g_Engine_altShader;
-    int g_Engine_lineShader;
     int g_Engine_cloakShader;
     int g_Engine_currentShader;
     int g_Engine_activeShader;
@@ -874,8 +873,8 @@ void Engine::GlowBeginGlow(int depthFunc) {
 }
 
 void Engine::DrawLine2D(float *verts, int count, bool strip) {
-    this->lineVertexBase = count;
-    this->ShaderSetActive(g_Engine_lineShader, 0);
+    this->SetLineVertices2D(verts);
+    this->ShaderSetActive(NoTexShader::ShaderIndex, 0);
     unsigned int mode = strip != 0 ? 2 : 1;
     return glDrawArrays(mode, 0, count);
 }
@@ -1237,6 +1236,9 @@ void Engine::LightSetLightColorDiffuse(float red, float green, float blue, unsig
 Engine::Engine() {
     Engine * self = this;
 
+#if __SIZEOF_POINTER__ == 8
+    self->lineVerticesPort = nullptr;
+#endif
     self->field_0x340 = 0;
     self->lightColor.x = 0;
     self->lightColor.z = 0;

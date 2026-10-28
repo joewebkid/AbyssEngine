@@ -1,5 +1,25 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (no-texture GLSL, 2D line pointer, device test)
+
+`NoTexShader` and `NoTexVtxColorShader` now use the original
+embedded GLSL and input names on all builds. `Engine::DrawLine2D`
+now stores the vertex pointer, activates the source-backed
+`NoTexShader` index, and retains a full pointer on ARM64 without
+shifting the original 32-bit layout. Its ARMv7 source-shape improves
+**84.9% → 96.0%**. ARMv7 compiles 209/209 units; native and ARM64
+libraries build. The full corpus remains **4,323/4,524** originals
+across 4,745 pairs, **94.86% source-shape / 84.43% strict fuzzy**,
+**2,638 linked-exact / 1,086 byte-exact**, zero skips and no
+exact-set losses. The signed APK runs on `25053RT47C` with GOF2
+confirmed foreground during capture, but the late screen is still
+almost black and 25 shader compilation syntax errors remain.
+The same process later crashes at a null holder dereference in
+`ModMainMenu::OnInitialize`. The recovered 2D line path has not
+been shown to execute in that scene. Next, recover that menu
+initialization and the shader sources failing at startup. See the
+[no-texture and 2D line evidence](ARM_NOTEX_2D_LINE_RECOVERY_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (shader dirty-byte ABI and SimpleShader)
 
 The original ARM constructor initializes shader state at offsets
