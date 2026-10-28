@@ -1,11 +1,9 @@
 #include "engine/render/shaders/DNSShader.h"
+#include "engine/render/shaders/EmbeddedDNSShader.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
 #include "game/core/String.h"
 #include <GLES2/gl2.h>
-
-static float DNSShader_g0;
-static float DNSShader_g1;
 
 namespace AbyssEngine {
     int DNSShader::ShaderIndex;
@@ -17,27 +15,29 @@ namespace AbyssEngine {
     }
 
     void DNSShader::Init(Engine *) {
-        int program = this->ES2LoadProgram("DNSShader.vsh", "DNSShader.fsh");
+        int program = this->LoadBindShader("data/shader/DNSShader.vs", "data/shader/DNSShader.fs");
         this->program = program;
+        if (program == 0)
+            this->program = this->ES2LoadProgram(DNSShaderSource::vertex, DNSShaderSource::fragment);
 
-        this->aPositionLoc = glGetAttribLocation(program, "a_position");
+        this->aPositionLoc = glGetAttribLocation(this->program, "a_position");
+        this->aTexCoordLoc = glGetAttribLocation(this->program, "a_texCoord");
         this->aNormalLoc = glGetAttribLocation(this->program, "a_normal");
         this->aTangentLoc = glGetAttribLocation(this->program, "a_tangent");
-        this->aBinormalLoc = glGetAttribLocation(this->program, "a_binormal");
+        this->aBitangentLoc = glGetAttribLocation(this->program, "a_bitangent");
 
-        this->uM0Loc = glGetUniformLocation(this->program, "u_m0");
-        this->uM1Loc = glGetUniformLocation(this->program, "u_m1");
-        this->uM2Loc = glGetUniformLocation(this->program, "u_m2");
-        this->uM3Loc = glGetUniformLocation(this->program, "u_m3");
-        this->uM4Loc = glGetUniformLocation(this->program, "u_m4");
-        this->uM5Loc = glGetUniformLocation(this->program, "u_m5");
-        this->uM6Loc = glGetUniformLocation(this->program, "u_m6");
-        this->uM7Loc = glGetUniformLocation(this->program, "u_m7");
-        this->uM8Loc = glGetUniformLocation(this->program, "u_m8");
-        this->uM9Loc = glGetUniformLocation(this->program, "u_m9");
-        this->uM10Loc = glGetUniformLocation(this->program, "u_m10");
-        this->uM11Loc = glGetUniformLocation(this->program, "u_m11");
-        this->uM12Loc = glGetUniformLocation(this->program, "u_m12");
+        this->uM1Loc = glGetUniformLocation(this->program, "u_ModelViewProjectionMatrix");
+        this->uM2Loc = glGetUniformLocation(this->program, "u_ModelMatrix");
+        this->uM3Loc = glGetUniformLocation(this->program, "u_ModelMatrixFull");
+        this->uM4Loc = glGetUniformLocation(this->program, "u_lightdirmodel");
+        this->uM5Loc = glGetUniformLocation(this->program, "u_eyeposmodel");
+        this->uM6Loc = glGetUniformLocation(this->program, "glColor");
+        this->uM7Loc = glGetUniformLocation(this->program, "u_AmbientColor");
+        this->uM8Loc = glGetUniformLocation(this->program, "u_DiffuseColor");
+        this->uM9Loc = glGetUniformLocation(this->program, "u_SpecularColor");
+        this->uM10Loc = glGetUniformLocation(this->program, "u_SpecularPower");
+        this->uM11Loc = glGetUniformLocation(this->program, "u_TexBiasDiffuse");
+        this->uM12Loc = glGetUniformLocation(this->program, "u_TexBiasNormal");
 
         glUseProgram(this->program);
     }
@@ -45,14 +45,14 @@ namespace AbyssEngine {
     void DNSShader::SetInActive() {
         if (this->aPositionLoc >= 0)
             glDisableVertexAttribArray(this->aPositionLoc);
+        if (this->aTexCoordLoc >= 0)
+            glDisableVertexAttribArray(this->aTexCoordLoc);
         if (this->aNormalLoc >= 0)
             glDisableVertexAttribArray(this->aNormalLoc);
         if (this->aTangentLoc >= 0)
             glDisableVertexAttribArray(this->aTangentLoc);
-        if (this->aBinormalLoc >= 0)
-            glDisableVertexAttribArray(this->aBinormalLoc);
-        if (this->uM0Loc >= 0)
-            glDisableVertexAttribArray(this->uM0Loc);
+        if (this->aBitangentLoc >= 0)
+            glDisableVertexAttribArray(this->aBitangentLoc);
     }
 
     void DNSShader::UpdateMeshData(Mesh *mesh, Engine *engine) {
@@ -63,9 +63,9 @@ namespace AbyssEngine {
         if (this->uM3Loc >= 0)
             glUniformMatrix4fv(this->uM3Loc, 1, 0, engine->modelMatrixGL);
         if (this->uM11Loc >= 0)
-            glUniform1f(this->uM11Loc, DNSShader_g0);
+            glUniform1f(this->uM11Loc, Engine::lodBiasDiffuse);
         if (this->uM12Loc >= 0)
-            glUniform1f(this->uM12Loc, DNSShader_g1);
+            glUniform1f(this->uM12Loc, Engine::lodBiasNormal);
 
         if (this->dirty != 0) {
             glUniform3f(this->uM4Loc, engine->lightDir.x, engine->lightDir.y,
@@ -88,37 +88,37 @@ namespace AbyssEngine {
 
         if (this->aPositionLoc >= 0)
             glEnableVertexAttribArray(this->aPositionLoc);
+        if (this->aTexCoordLoc >= 0)
+            glEnableVertexAttribArray(this->aTexCoordLoc);
         if (this->aNormalLoc >= 0)
             glEnableVertexAttribArray(this->aNormalLoc);
         if (this->aTangentLoc >= 0)
             glEnableVertexAttribArray(this->aTangentLoc);
-        if (this->aBinormalLoc >= 0)
-            glEnableVertexAttribArray(this->aBinormalLoc);
-        if (this->uM0Loc >= 0)
-            glEnableVertexAttribArray(this->uM0Loc);
+        if (this->aBitangentLoc >= 0)
+            glEnableVertexAttribArray(this->aBitangentLoc);
 
         if (mesh->uploaded == 0) {
             if (this->aPositionLoc >= 0)
                 glVertexAttribPointer(this->aPositionLoc, 3, 0x1406, 0, 0, mesh->positions);
+            if (this->aTexCoordLoc >= 0)
+                glVertexAttribPointer(this->aTexCoordLoc, 2, 0x1406, 0, 0, mesh->texCoords);
             if (this->aNormalLoc >= 0)
-                glVertexAttribPointer(this->aNormalLoc, 2, 0x1406, 0, 0, mesh->texCoords);
+                glVertexAttribPointer(this->aNormalLoc, 3, 0x1406, 0, 0, mesh->normals);
             if (this->aTangentLoc >= 0)
-                glVertexAttribPointer(this->aTangentLoc, 3, 0x1406, 0, 0, mesh->normals);
-            if (this->aBinormalLoc >= 0)
-                glVertexAttribPointer(this->aBinormalLoc, 3, 0x1406, 0, 0, mesh->tangents);
-            if (this->uM0Loc >= 0)
-                glVertexAttribPointer(this->uM0Loc, 3, 0x1406, 0, 0, mesh->binormals);
+                glVertexAttribPointer(this->aTangentLoc, 3, 0x1406, 0, 0, mesh->tangents);
+            if (this->aBitangentLoc >= 0)
+                glVertexAttribPointer(this->aBitangentLoc, 3, 0x1406, 0, 0, mesh->binormals);
         } else {
             glBindBuffer(0x8892, mesh->positionVBO);
             glVertexAttribPointer(this->aPositionLoc, 3, 0x1406, 0, 0, 0);
             glBindBuffer(0x8892, mesh->texCoordVBO);
-            glVertexAttribPointer(this->aNormalLoc, 2, 0x1406, 0, 0, 0);
+            glVertexAttribPointer(this->aTexCoordLoc, 2, 0x1406, 0, 0, 0);
             glBindBuffer(0x8892, mesh->normalVBO);
-            glVertexAttribPointer(this->aTangentLoc, 3, 0x1406, 0, 0, 0);
+            glVertexAttribPointer(this->aNormalLoc, 3, 0x1406, 0, 0, 0);
             glBindBuffer(0x8892, mesh->tangentVBO);
-            glVertexAttribPointer(this->aBinormalLoc, 3, 0x1406, 0, 0, 0);
+            glVertexAttribPointer(this->aTangentLoc, 3, 0x1406, 0, 0, 0);
             glBindBuffer(0x8892, mesh->binormalVBO);
-            glVertexAttribPointer(this->uM0Loc, 3, 0x1406, 0, 0, 0);
+            glVertexAttribPointer(this->aBitangentLoc, 3, 0x1406, 0, 0, 0);
         }
     }
 }

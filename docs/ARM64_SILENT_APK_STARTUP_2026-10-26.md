@@ -87,6 +87,13 @@ conditioned `dirty` reset:
 It has not yet been tested on the disconnected target phone. See
 [BumpMapping evidence](ARM_BUMP_MAPPING_GLSL_2026-10-28.md).
 
+A signed APK adds the original `DNSShader` file-load/fallback path,
+GLSL, input names and engine LOD biases:
+`D:\gof2-arm64-crypto\gof2-arm64-dns-aligned-debug-20261028.apk`
+(SHA-256 `6bd1b953779f9dde90aac3b10fbe9e1393bfaed2cd0cddcfeb102a6a8d12fcce`).
+It has not yet been tested on the disconnected target phone. See
+[DNSShader evidence](ARM_DNS_SHADER_RECOVERY_2026-10-28.md).
+
 The APK installed on a 25053RT47C (Android 16, arm64-v8a). The original OBB
 was copied to the package's OBB directory. The game reached `MTitle`, found
 3,250 resources, created both logo images, and executed its render callback

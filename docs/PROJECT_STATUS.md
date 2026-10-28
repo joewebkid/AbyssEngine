@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (DNSShader resource load and LOD bias)
+
+`DNSShader::Init` now follows the original resource-file load with
+embedded GLSL fallback, uses the ARM-observed shader input names, and
+keeps the original five attribute offsets. `UpdateMeshData` now
+passes the engine's actual diffuse and normal LOD biases. The focused
+family improves **97.32% → 99.97% source-shape**, with five of six
+functions linked-exact. ARMv7 compiles 209/209 units; native and ARM64
+libraries build, and a signed silent APK is ready. The full corpus
+compares **4,323/4,524** originals across 4,745 pairs, **94.85%
+source-shape / 84.41% strict fuzzy**, **2,620 linked-exact / 1,085
+byte-exact**, zero skips and no exact-set losses. Live rendering
+remains unverified because the target ARM64 phone is absent from ADB.
+Next, test the foreground game on that phone and inspect remaining
+shader families. See the [DNSShader evidence](ARM_DNS_SHADER_RECOVERY_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (BumpMapping GLSL and dirty branch)
 
 `BumpMapping::Init` now uses the original embedded vertex/fragment
