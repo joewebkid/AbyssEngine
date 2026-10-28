@@ -46,12 +46,18 @@ GLSL, first-render setup, and texture selection:
 (SHA-256 `60df8bce966a647df1688c633eb18ca8e2d5a94665621a7edba90768f25daec0`).
 It has not yet been tested on the disconnected target phone. See
 [glow evidence](ARM_GLOW_PP_SHADER_RECOVERY_2026-10-28.md).
-The current signed APK adds the recovered DrawFBO shader sources and
+A signed APK adds the recovered DrawFBO shader sources and
 GLSL input names:
 `D:\gof2-arm64-crypto\gof2-arm64-drawfbo-debug-20261028.apk`
 (SHA-256 `70c6d1117a45703752d3a481b9efd6b00a50f97002d9c3f7c47a93fb16cdd86e`).
 It has not yet been tested on the disconnected target phone. See
 [DrawFBO evidence](ARM_DRAW_FBO_SHADER_GLSL_2026-10-28.md).
+The current signed APK adds the original TexOnly shader sources and
+sampler name:
+`D:\gof2-arm64-crypto\gof2-arm64-texonly-debug-20261028.apk`
+(SHA-256 `67dc890c341c0f8af29db9db1b9d1afc5fc86de2499f469dd3c27eb7aa8f60a5`).
+It has not yet been tested on the disconnected target phone. See
+[TexOnly evidence](ARM_TEX_ONLY_SHADER_GLSL_2026-10-28.md).
 
 The APK installed on a 25053RT47C (Android 16, arm64-v8a). The original OBB
 was copied to the package's OBB directory. The game reached `MTitle`, found
