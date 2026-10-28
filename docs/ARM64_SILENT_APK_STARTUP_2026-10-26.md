@@ -94,6 +94,14 @@ GLSL, input names and engine LOD biases:
 It has not yet been tested on the disconnected target phone. See
 [DNSShader evidence](ARM_DNS_SHADER_RECOVERY_2026-10-28.md).
 
+A signed APK uses the original `TextureVtxColorShader` normal and fog
+GLSL on both Android ABIs and the ARM-observed value source for
+`u_eyeposmodel`:
+`D:\gof2-arm64-crypto\gof2-arm64-texture-vtx-debug-20261028.apk`
+(SHA-256 `05d354e94061dc8c45da818dfb8632d30763bfad780435a7afae6d0bdabb0f23`).
+It has not yet been tested on the disconnected target phone. See
+[TextureVtxColorShader evidence](ARM_TEXTURE_VTX_COLOR_GLSL_2026-10-28.md).
+
 The APK installed on a 25053RT47C (Android 16, arm64-v8a). The original OBB
 was copied to the package's OBB directory. The game reached `MTitle`, found
 3,250 resources, created both logo images, and executed its render callback

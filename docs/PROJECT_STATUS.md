@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (TextureVtxColorShader GLSL and uniform source)
+
+`TextureVtxColorShader` now passes the original vertex, normal
+fragment and fog fragment GLSL on ARMv7 as well as ARM64. The ARM64
+`u_eyeposmodel` upload now reads the original `Engine + 0x34c`
+value source, which the current layout names `lightColor`. Native
+and ARM64 libraries build; ARMv7 compiles 209/209 units. The focused
+family remains **99.59% source-shape**, with four linked-exact
+functions; the original GLSL data is not measured by that score.
+The full corpus remains **4,323/4,524** originals across 4,745
+pairs, **94.85% source-shape / 84.41% strict fuzzy**,
+**2,620 linked-exact / 1,085 byte-exact**, zero skips and no exact-set
+losses. A signed silent APK is ready, but live shader compilation and
+rendering remain unverified because the target ARM64 phone is absent
+from ADB. Next, test the foreground game and inspect `SimpleShader`.
+See the [TextureVtxColorShader evidence](ARM_TEXTURE_VTX_COLOR_GLSL_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (DNSShader resource load and LOD bias)
 
 `DNSShader::Init` now follows the original resource-file load with
