@@ -44,8 +44,9 @@ newly linked-exact. `UpdateMeshData` rises from 93.7% to 96.0%
 source-shape, but is not linked-exact. Both `RenderEffect` overloads
 remain below 98% source-shape; in particular the short overload's
 original ARM code dispatches through a vtable entry at offset `0x20`,
-whereas the current source calls the long overload directly. That ABI
-relationship needs a separate bounded investigation before changing it.
+whereas the earlier source called the long overload directly. That ABI
+relationship was subsequently restored; see the
+[RenderEffect vtable evidence](ARM_SHADER_RENDER_EFFECT_VTABLE_2026-10-28.md).
 
 The final ARMv7 object is byte-identical after the PC-only preservation
 change. The full ARMv7 corpus compares 4,323/4,524 original functions

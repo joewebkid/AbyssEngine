@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (RenderEffect virtual dispatch and BlurShader ABI)
+
+The two strength/tint `ShaderBaseStruct::RenderEffect` overloads now have
+the original virtual `void` ABI, with the original vtable order.
+`BlurShader` overrides both; its short overload dispatches through the
+original five-argument slot and is newly linked-exact. The ten-function
+`BlurShader` family averages **99.04% source-shape**, or **96.93%**
+weighted by original instructions. Native and ARM64 libraries build;
+ARMv7 compiles 209/209 units, and the signed silent APK is rebuilt.
+The full corpus compares **4,323/4,524** originals across 4,745 pairs,
+**94.84% source-shape / 84.39% strict fuzzy**, **2,616 linked-exact /
+1,085 byte-exact**, zero skips and no exact-set losses. Live blur
+rendering remains unverified because the target ARM64 phone is absent
+from ADB. Next, investigate the long `BlurShader::RenderEffect` body,
+which remains 94.4% source-shape, and test postprocessing on the device.
+See the [virtual dispatch evidence](ARM_SHADER_RENDER_EFFECT_VTABLE_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (Android BlurShader initialization and ABI)
 
 `BlurShader` now uses the exact original Android ARM vertex/fragment GLSL,

@@ -40,12 +40,12 @@ namespace AbyssEngine {
 
         virtual void RenderEffect(FBOContainer *source, Engine *engine);
 
+        virtual void RenderEffect(FBOContainer *source, Engine *engine, float strength, AEMath::Vector tint);
+
         virtual void RenderEffect(FBOContainer *source, FBOContainer *&target, AbyssEngine::Engine *engine);
 
-        FBOContainer *RenderEffect(FBOContainer *source, Engine *engine, float strength, AEMath::Vector tint);
-
-        FBOContainer *RenderEffect(FBOContainer *source, FBOContainer *&target, Engine *engine, float strength,
-                                   AEMath::Vector tint);
+        virtual void RenderEffect(FBOContainer *source, FBOContainer *&target, Engine *engine, float strength,
+                                  AEMath::Vector tint);
 
         virtual void DeleteShader();
 

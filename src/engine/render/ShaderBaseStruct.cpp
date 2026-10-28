@@ -41,14 +41,12 @@ namespace AbyssEngine {
                                         AbyssEngine::Engine * /*engine*/) {
     }
 
-    FBOContainer *ShaderBaseStruct::RenderEffect(FBOContainer *source, Engine * /*engine*/, float /*strength*/,
-                                                 AEMath::Vector /*tint*/) {
-        return source;
+    void ShaderBaseStruct::RenderEffect(FBOContainer * /*source*/, Engine * /*engine*/, float /*strength*/,
+                                        AEMath::Vector /*tint*/) {
     }
 
-    FBOContainer *ShaderBaseStruct::RenderEffect(FBOContainer *source, FBOContainer *& /*target*/, Engine * /*engine*/,
-                                                 float /*strength*/, AEMath::Vector /*tint*/) {
-        return source;
+    void ShaderBaseStruct::RenderEffect(FBOContainer * /*source*/, FBOContainer *& /*target*/, Engine * /*engine*/,
+                                        float /*strength*/, AEMath::Vector /*tint*/) {
     }
 
     void ShaderBaseStruct::Update() {
