@@ -59,6 +59,13 @@ sampler name:
 It has not yet been tested on the disconnected target phone. See
 [TexOnly evidence](ARM_TEX_ONLY_SHADER_GLSL_2026-10-28.md).
 
+A signed APK adds the original `GenericShader` vertex/fragment sources
+and their ARM-observed input names:
+`D:\gof2-arm64-crypto\gof2-arm64-generic-debug-20261028.apk`
+(SHA-256 `3f46f969838795ddbe0015cb9f4655a641dbfcfd19fdf7391ebf79008edcaed4`).
+It has not yet been tested on the disconnected target phone. See
+[GenericShader evidence](ARM_GENERIC_SHADER_GLSL_2026-10-28.md).
+
 The APK installed on a 25053RT47C (Android 16, arm64-v8a). The original OBB
 was copied to the package's OBB directory. The game reached `MTitle`, found
 3,250 resources, created both logo images, and executed its render callback

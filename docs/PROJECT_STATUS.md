@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (GenericShader GLSL recovery)
+
+`GenericShader::Init` now supplies the original embedded vertex and
+fragment GLSL and queries the ARM-observed attribute/uniform names.
+The previous source passed file names and placeholder input names to
+OpenGL, even though `Init` was already linked-exact. The 1,174-byte
+vertex and 1,250-byte fragment strings match the Android ARM library
+byte for byte. ARMv7 compiles 209/209 units; native and ARM64 static
+libraries build, and a signed silent APK is ready. The six-function
+family remains **99.70% source-shape unweighted / 99.84% weighted**
+with five linked-exact functions. The full corpus compares
+**4,323/4,524** originals across 4,745 pairs, **94.85% source-shape /
+84.40% strict fuzzy**, **2,619 linked-exact / 1,085 byte-exact**,
+zero skips and zero exact-set losses. Live material rendering remains
+unverified because the target phone is absent from ADB. Next, confirm
+a foreground scene and inspect `GenericShader1`/`GenericShader2`.
+See the [GenericShader evidence](ARM_GENERIC_SHADER_GLSL_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (TexOnlyShader GLSL recovery)
 
 `TexOnlyShader::Init` now uses the original embedded vertex and fragment
