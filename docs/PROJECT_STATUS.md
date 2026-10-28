@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (material resource IDs and ARM64 startup)
+
+Five material records now use the IDs and texture links recovered from the
+original Android ARM `BuildResourceList`, including the three records whose
+resource ID was zero. Native and ARM64 libraries build; ARMv7 compiles 209/209
+units. Focused `BuildResourceList` source-shape stays **77.0%** and strict
+fuzzy changes **18.4% → 18.1%**. The complete corpus remains **4,323/4,524**
+original functions over 4,745 pairs, **94.86% source-shape / 84.43% strict
+fuzzy**, **2,638 linked-exact / 1,086 byte-exact**, zero skips, with no
+pair or exact-set losses. The signed ARM64 APK reaches player construction
+without the previously observed invalid texture-path pointer, then crashes
+at a null `Globals::gGlobals` call in `PlayerEgo`. Next, restore that call
+path from original ARM and repeat the device test. See
+[material ID evidence](ARM_ID_ZERO_MATERIAL_RECOVERY_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (station material texture links)
 
 Fourteen adjacent station material records now use the texture IDs

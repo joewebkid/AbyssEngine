@@ -1661,7 +1661,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[609], 34701, 6, new AbyssEngine::ResourceMaterial(34500, BlendMode_2));
     ADD_RES(resources[610], 34702, 6, new AbyssEngine::ResourceMaterial(33120, BlendMode_8));
     ADD_RES(resources[611], 34703, 6, new AbyssEngine::ResourceMaterial(33120, BlendMode_dummy));
-    ADD_RES(resources[612], 0, 6, new AbyssEngine::ResourceMaterial(0, 0, static_cast<BlendMode>(28)));
+    ADD_RES(resources[612], 34704, 6, new AbyssEngine::ResourceMaterial(33122, 33123, static_cast<BlendMode>(28)));
     ADD_RES(resources[613], 34501, 6, new AbyssEngine::ResourceMaterial(34501, BlendMode_2));
     ADD_RES(resources[614], 34706, 6, new AbyssEngine::ResourceMaterial(0, BlendMode_8));
     ADD_RES(resources[615], 34707, 6, new AbyssEngine::ResourceMaterial(34501, BlendMode_dummy));
@@ -1743,7 +1743,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[691], 65535, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
     ADD_RES(resources[692], 65535, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
     ADD_RES(resources[693], 65535, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
-    ADD_RES(resources[694], 0, 6, new AbyssEngine::ResourceMaterial(0, 0, static_cast<BlendMode>(28)));
+    ADD_RES(resources[694], 34263, 6, new AbyssEngine::ResourceMaterial(34063, 34163, static_cast<BlendMode>(28)));
     ADD_RES(resources[695], 34400, 6, new AbyssEngine::ResourceMaterial(34042, BlendMode_8));
     ADD_RES(resources[696], 34401, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_8));
     ADD_RES(resources[697], 34402, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_8));
@@ -1799,7 +1799,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[747], 34460, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_8));
     ADD_RES(resources[748], 34461, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_8));
     ADD_RES(resources[749], 34462, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_8));
-    ADD_RES(resources[750], 34463, 6, new AbyssEngine::ResourceMaterial(0, BlendMode_8));
+    ADD_RES(resources[750], 34463, 6, new AbyssEngine::ResourceMaterial(34063, BlendMode_8));
     ADD_RES(resources[751], 34300, 6, new AbyssEngine::ResourceMaterial(34042, BlendMode_dummy));
     ADD_RES(resources[752], 34301, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_dummy));
     ADD_RES(resources[753], 34302, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_dummy));
@@ -1884,8 +1884,8 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[832], 32561, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));
     ADD_RES(resources[833], 34362, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_dummy));
     ADD_RES(resources[834], 32562, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));
-    ADD_RES(resources[835], 0, 6, new AbyssEngine::ResourceMaterial(0, BlendMode_dummy));
-    ADD_RES(resources[836], 32563, 6, new AbyssEngine::ResourceMaterial(0, BlendMode_2));
+    ADD_RES(resources[835], 34363, 6, new AbyssEngine::ResourceMaterial(34063, BlendMode_dummy));
+    ADD_RES(resources[836], 32563, 6, new AbyssEngine::ResourceMaterial(34063, BlendMode_2));
     ADD_RES(resources[837], 20128, 6, new AbyssEngine::ResourceMaterial(10129, static_cast<BlendMode>(6)));
     ADD_RES(resources[838], 20129, 6, new AbyssEngine::ResourceMaterial(10129, BlendMode_2));
     ADD_RES(resources[839], 20001, 6, new AbyssEngine::ResourceMaterial(10031, BlendMode_2));

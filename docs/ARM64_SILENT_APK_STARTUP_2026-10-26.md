@@ -11,7 +11,14 @@ the APK are kept outside this repository. Sound is deliberately absent.
 The initial clean APK is
 `D:\gof2-arm64-crypto\gof2-arm64-silent-debug-20261026.apk`
 (SHA-256 `4194a1c56bbb80cbf2aef3069c2411ff6bf214b4f6aa984b0aae771ad811b74b`).
-The same artifact path was rebuilt with the basic shader dispatch recovery;
+The latest signed test APK with recovered material resource IDs is
+`D:\gof2-arm64-crypto\gof2-arm64-idzero-material-debug-20261028.apk`
+(SHA-256 `c78434dd3c5c820fa645802f88b695b351e7831218480f8c683a1cb16ecab5b0`).
+It passed signature and embedded-library checks, installed on the ARM64
+test phone, and reached player construction. The next observed crash is a
+null `Globals::gGlobals` call; see [material ID evidence](ARM_ID_ZERO_MATERIAL_RECOVERY_2026-10-28.md).
+
+The initial artifact path was rebuilt with the basic shader dispatch recovery;
 It was rebuilt again with two no-texture shader sources; this latest image
 has not yet been visually checked in the game foreground. See
 [no-texture shader evidence](ARM64_NO_TEXTURE_SHADERS_2026-10-26.md).
