@@ -1,5 +1,26 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (Bloom GLSL and startup menu/scene recovery)
+
+`BloomShader::Init` now receives the six original embedded GLSL strings
+and queries the original sampler name. Source-backed startup fixes use
+`Globals::globals` in the main menu and the one confirmed sound call in
+`Level::createSpace`; `ModMainMenu::OnInitialize` also returns its original
+loading progress and passes the created texture slot to the cube-texture
+path. Native and ARM64 static libraries build, and ARMv7 compiles 209/209
+units. The complete ARM corpus remains **4,323/4,524** originals across
+4,745 pairs, **94.86% source-shape / 84.43% strict fuzzy**, **2,638
+linked-exact / 1,086 byte-exact**, with zero skips and no exact-set losses.
+The signed silent APK installed on `25053RT47C`; the count of dotted GLSL
+syntax errors fell from 25 to 20. GOF2 was observed in the foreground,
+but the late image remains almost black. After passing the earlier null
+sound call, it crashed during image loading: a material ID 0 is likely
+being read as a texture path. Startup is not yet stable. Next, restore
+source-backed material-to-texture links, recover remaining shader sources,
+and review other unwritten singleton
+holders reached at startup. See the
+[Bloom/menu startup evidence](ARM_BLOOM_MENU_STARTUP_RECOVERY_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (no-texture GLSL, 2D line pointer, device test)
 
 `NoTexShader` and `NoTexVtxColorShader` now use the original

@@ -24,7 +24,7 @@ public:
 
     virtual ~ModMainMenu();
 
-    virtual void OnInitialize();
+    virtual int OnInitialize();
 
     virtual void OnRelease();
 

@@ -1101,7 +1101,7 @@ void Level::createSpace() {
                          Status::gStatus->inAlienOrbit()) &&
                         Status::gStatus->getCurrentCampaignMission() < 43;
     if (showWormhole) {
-        Globals::gGlobals->addSoundResourceToList(34);
+        static_cast<Globals *>(Globals::globals)->addSoundResourceToList(34);
     }
 
     this->landmarks = new Array<KIPlayer *>();

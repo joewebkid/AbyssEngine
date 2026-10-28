@@ -41,10 +41,6 @@ int *g_ModMainMenu_r2d_textId;
 int *g_ModMainMenu_r2d_screenW;
 int *g_ModMainMenu_r2d_screenH;
 
-void **g_ModMainMenu_initSoundRes;
-
-void (*g_ModMainMenu_initAddSound)(void *, int);
-
 void *g_ModMainMenu_initOptions;
 void **g_ModMainMenu_initRecord;
 int *g_ModMainMenu_initTouchFlag;
@@ -217,16 +213,15 @@ void ModMainMenu::OnRender2D() {
     ((PaintCanvas *) (intptr_t) this->paintCanvas)->End2d();
 }
 
-void ModMainMenu::OnInitialize() {
+int ModMainMenu::OnInitialize() {
     if (this->cutScene == nullptr) {
-        void **soundRes = g_ModMainMenu_initSoundRes;
-        static_cast<Globals *>(*soundRes)->startNewSoundResourceList();
-        void (*addSound)(void *, int) = g_ModMainMenu_initAddSound;
-        addSound(*soundRes, 0x7e);
-        addSound(*soundRes, 0x15);
-        addSound(*soundRes, 0x12);
-        addSound(*soundRes, 0x13);
-        addSound(*soundRes, 0x14);
+        // ARM 0x1758f0 uses Globals::globals and the addSoundResourceToList GOT entry.
+        static_cast<Globals *>(Globals::globals)->startNewSoundResourceList();
+        static_cast<Globals *>(Globals::globals)->addSoundResourceToList(0x7e);
+        static_cast<Globals *>(Globals::globals)->addSoundResourceToList(0x15);
+        static_cast<Globals *>(Globals::globals)->addSoundResourceToList(0x12);
+        static_cast<Globals *>(Globals::globals)->addSoundResourceToList(0x13);
+        static_cast<Globals *>(Globals::globals)->addSoundResourceToList(0x14);
 
         Status::gStatus->resetGame();
         AERandom::gRandom->reset();
@@ -238,7 +233,9 @@ void ModMainMenu::OnInitialize() {
         this->cutScene = cutscene;
         cutscene->initialize();
 
-        int canvas = this->paintCanvas;
+        PaintCanvas *canvas = sizeof(void *) == 4
+                                  ? reinterpret_cast<PaintCanvas *>((intptr_t)this->paintCanvas)
+                                  : PaintCanvas::gCanvas;
         int texture;
         if (Status::gStatus->inAlienOrbit() != 0) {
             texture = 0x2f08;
@@ -248,9 +245,9 @@ void ModMainMenu::OnInitialize() {
                       0xffff;
         }
         unsigned int texSlot = 0xffffffff;
-        ((PaintCanvas *) (long) canvas)->TextureCreate((unsigned short) texture, texSlot, true);
-        ((PaintCanvas *) (long) this->paintCanvas)->ChangeCubeTexture((unsigned int) this->paintCanvas);
-        return;
+        canvas->TextureCreate((unsigned short) texture, texSlot, false);
+        canvas->ChangeCubeTexture(texSlot);
+        return 100;
     }
 
     int state = this->state;
@@ -285,11 +282,11 @@ void ModMainMenu::OnInitialize() {
         }
         this->state = 0x50;
     }
-    return;
+    return 80;
 
 state60:
     this->state = 0x1e;
-    return;
+    return 30;
 
 state30:
     this->state = 1;
@@ -302,7 +299,7 @@ music: {
     }
     this->initialized = 1;
     this->state = 100;
-    return;
+    return 0;
 
 state80:
     unsigned int logoImageHandle;
@@ -312,6 +309,7 @@ state80:
     this->fadeTimer = 0;
     *g_ModMainMenu_initTouchFlag = 1;
     this->state = 0x3c;
+    return 60;
 }
 
 void ModMainMenu::OnUpdate() {

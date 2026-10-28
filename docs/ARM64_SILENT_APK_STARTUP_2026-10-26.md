@@ -122,6 +122,18 @@ black with a small `BUY` fragment and 25 Adreno shader syntax
 errors. The process later crashed on a null menu initialization
 holder. See [no-texture and 2D line evidence](ARM_NOTEX_2D_LINE_RECOVERY_2026-10-28.md).
 
+A later signed APK restores five Bloom fragment programs, the main menu's
+loading return contract and sound singleton, and a source-backed singleton
+call in `Level::createSpace`:
+`D:\gof2-arm64-crypto\gof2-arm64-bloom-menu-level-debug-20261028.apk`
+(SHA-256 `0f8aa0b4f06413ab30c69cf0cca2aea7769ff9793aa6f26be4009ea9a783998d`).
+It installed on `25053RT47C`; GOF2 was observed in the foreground, but its
+late screen remains almost black. Startup dotted GLSL syntax errors fell
+from 25 to 20. The game then crashed while opening an image file from the
+cutscene; a material ID 0 is likely being misread as a texture path. Startup
+remains unstable.
+See [Bloom/menu startup evidence](ARM_BLOOM_MENU_STARTUP_RECOVERY_2026-10-28.md).
+
 The APK installed on a 25053RT47C (Android 16, arm64-v8a). The original OBB
 was copied to the package's OBB directory. The game reached `MTitle`, found
 3,250 resources, created both logo images, and executed its render callback

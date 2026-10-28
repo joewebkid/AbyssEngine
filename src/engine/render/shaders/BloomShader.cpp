@@ -1,4 +1,5 @@
 #include "engine/render/shaders/BloomShader.h"
+#include "engine/render/shaders/EmbeddedBloomShader.h"
 #include "engine/core/AbyssEngine.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
@@ -13,18 +14,18 @@ namespace AbyssEngine {
     int BloomShader::ShaderIndex;
 
     void BloomShader::Init(Engine *) {
-        const char *vertex = "BloomShader.vsh";
+        const char *vertex = BloomShaderSource::vertex;
         const char *positionName = "a_position";
         const char *texCoordName = "a_texCoord";
         const char *matrixName = "u_WorldMatrix";
-        const char *samplerName = "s_texture";
+        const char *samplerName = "s_texture_base";
         const char *texSizeName = "texSize";
 
-        this->program = this->ES2LoadProgram(vertex, "BloomShaderLuma.fsh");
-        this->downSampleProgram = this->ES2LoadProgram(vertex, "BloomShaderDownSample.fsh");
-        this->blurHProgram = this->ES2LoadProgram(vertex, "BloomShaderBlurH.fsh");
-        this->blurVProgram = this->ES2LoadProgram(vertex, "BloomShaderBlurV.fsh");
-        this->finalProgram = this->ES2LoadProgram(vertex, "BloomShaderFinal.fsh");
+        this->program = this->ES2LoadProgram(vertex, BloomShaderSource::luma);
+        this->downSampleProgram = this->ES2LoadProgram(vertex, BloomShaderSource::downSample);
+        this->blurHProgram = this->ES2LoadProgram(vertex, BloomShaderSource::blurHorizontal);
+        this->blurVProgram = this->ES2LoadProgram(vertex, BloomShaderSource::blurVertical);
+        this->finalProgram = this->ES2LoadProgram(vertex, BloomShaderSource::finalPass);
 
         this->lumaAttribPosition = glGetAttribLocation(this->program, positionName);
         this->lumaAttribTexCoord = glGetAttribLocation(this->program, texCoordName);
