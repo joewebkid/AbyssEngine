@@ -66,6 +66,13 @@ and their ARM-observed input names:
 It has not yet been tested on the disconnected target phone. See
 [GenericShader evidence](ARM_GENERIC_SHADER_GLSL_2026-10-28.md).
 
+A signed APK adds the original `GenericShader1` GLSL, names and
+attribute-slot mapping:
+`D:\gof2-arm64-crypto\gof2-arm64-generic1-debug-20261028.apk`
+(SHA-256 `1314686eefbb027cf5f6be3c3a6332305f9aa3f6f0a53964315f5af2c2b94ad6`).
+It has not yet been tested on the disconnected target phone. See
+[GenericShader1 evidence](ARM_GENERIC_SHADER1_GLSL_2026-10-28.md).
+
 The APK installed on a 25053RT47C (Android 16, arm64-v8a). The original OBB
 was copied to the package's OBB directory. The game reached `MTitle`, found
 3,250 resources, created both logo images, and executed its render callback

@@ -1,5 +1,25 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (GenericShader1 GLSL and attribute ABI)
+
+`GenericShader1::Init` now uses the original embedded vertex/fragment
+GLSL and ARM-observed attribute/uniform names. The class's five
+attribute fields now name the original memory order: position, UV,
+normal, tangent and bitangent, with unchanged offsets. The previous
+source passed file names as shader text and queried placeholder
+uniforms, even though `Init` was linked-exact. The 454-byte vertex and
+281-byte fragment strings match the original library byte for byte.
+ARMv7 compiles 209/209 units; native and ARM64 libraries build, and a
+signed silent APK is ready. The six-function family remains **99.95%
+source-shape unweighted / 99.90% weighted**, with five linked-exact.
+The full corpus compares **4,323/4,524** originals across 4,745 pairs,
+**94.85% source-shape / 84.40% strict fuzzy**, **2,619 linked-exact /
+1,085 byte-exact**, zero skips and no exact-set changes. Live shader
+compilation and rendering remain unverified because the target phone
+is absent from ADB. Next, confirm a foreground scene and inspect the
+separate `GenericShader2` placeholder family. See the
+[GenericShader1 evidence](ARM_GENERIC_SHADER1_GLSL_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (GenericShader GLSL recovery)
 
 `GenericShader::Init` now supplies the original embedded vertex and
