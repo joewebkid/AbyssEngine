@@ -1,4 +1,5 @@
 #include "engine/render/shaders/BloomShader.h"
+#include "engine/core/AbyssEngine.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
 #include "engine/render/FBOContainer.h"
@@ -7,9 +8,6 @@
 #include <GLES2/gl2.h>
 #include <arm_neon.h>
 
-
-static unsigned char g_BloomShader_internalInitNeeded;
-static unsigned int g_BloomShader_shaderMode;
 
 namespace AbyssEngine {
     int BloomShader::ShaderIndex;
@@ -114,8 +112,8 @@ namespace AbyssEngine {
     void BloomShader::RenderEffect(FBOContainer *source, Engine *engine) {
         engine->field_0x3e4 = this->program;
 
-        if (g_BloomShader_internalInitNeeded != 0) {
-            g_BloomShader_internalInitNeeded = 0;
+        if (firstRender != 0) {
+            firstRender = 0;
             InternalInit(engine);
             this->fboBlack->BeginCapture();
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -135,7 +133,7 @@ namespace AbyssEngine {
         matrix[15] = 1.0f;
         engine->projMatrix[0] = 2.0f / (float) engine->GetDisplayWidth();
         engine->projMatrix[5] = -(2.0f / (float) engine->GetDisplayHeight());
-        engine->projMatrix[10] = -1.0f;
+        engine->projMatrix[10] = -0.05f;
         engine->projMatrix[12] = -1.0f;
         engine->projMatrix[13] = 1.0f;
         engine->projMatrix[15] = 1.0f;
@@ -202,8 +200,8 @@ namespace AbyssEngine {
 
         FBOContainer *base = source;
         FBOContainer *bloom = this->fboBlack;
-        if (g_BloomShader_shaderMode < 4) {
-            switch (g_BloomShader_shaderMode) {
+        if (Engine::switchBloom >= 0 && Engine::switchBloom < 4) {
+            switch (Engine::switchBloom) {
                 case 1:
                     base = this->fboLuma;
                     break;
@@ -211,7 +209,7 @@ namespace AbyssEngine {
                     base = this->fboBlurV;
                     break;
                 case 3:
-                    bloom = this->fboBlack;
+                    bloom = this->fboBlurV;
                     break;
                 default:
                     break;
@@ -259,8 +257,8 @@ namespace AbyssEngine {
     }
 
     void BloomShader::RenderEffect(FBOContainer *source, FBOContainer *&target, Engine *engine) {
-        if (g_BloomShader_internalInitNeeded != 0) {
-            g_BloomShader_internalInitNeeded = 0;
+        if (firstRender != 0) {
+            firstRender = 0;
             InternalInit(engine);
             this->fboBlack->BeginCapture();
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -280,7 +278,7 @@ namespace AbyssEngine {
         matrix[15] = 1.0f;
         engine->projMatrix[0] = 2.0f / (float) engine->GetDisplayWidth();
         engine->projMatrix[5] = -(2.0f / (float) engine->GetDisplayHeight());
-        engine->projMatrix[10] = -1.0f;
+        engine->projMatrix[10] = -0.05f;
         engine->projMatrix[12] = -1.0f;
         engine->projMatrix[13] = 1.0f;
         engine->projMatrix[15] = 1.0f;
@@ -347,8 +345,8 @@ namespace AbyssEngine {
 
         FBOContainer *base = source;
         FBOContainer *bloom = this->fboBlack;
-        if (g_BloomShader_shaderMode < 4) {
-            switch (g_BloomShader_shaderMode) {
+        if (Engine::switchBloom >= 0 && Engine::switchBloom < 4) {
+            switch (Engine::switchBloom) {
                 case 1:
                     base = this->fboLuma;
                     break;
@@ -356,7 +354,7 @@ namespace AbyssEngine {
                     base = this->fboBlurV;
                     break;
                 case 3:
-                    bloom = this->fboBlack;
+                    bloom = this->fboBlurV;
                     break;
                 default:
                     break;

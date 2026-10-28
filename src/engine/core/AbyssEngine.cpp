@@ -76,7 +76,7 @@ namespace AbyssEngine {
     float debugTouch[4];
     int fpsCounter;
     int SwapCounter;
-    unsigned char firstRender;
+    unsigned char firstRender = 1;
     int loadTexture;
     float currentLODBias;
     int CubeMapSetIndex;

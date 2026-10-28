@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-28 (BloomShader first render and mode recovery)
+
+Both `BloomShader::RenderEffect` overloads now use the original shared
+`firstRender` flag (initially 1), `Engine::switchBloom` (initially 3),
+the original `-0.05f` projection coefficient, and the mode-3 blur
+texture. The prior code never initialized the bloom FBOs and selected
+the wrong final texture. The two long functions rise from 91.0%/91.4%
+to **95.9%/96.9% source-shape**; the eleven-function family reaches
+**90.72% unweighted / 97.37% weighted**. ARMv7 compiles 209/209 units;
+native and ARM64 libraries build, and the signed silent APK is ready.
+The full corpus compares **4,323/4,524** originals across 4,745 pairs,
+**94.84% source-shape / 84.39% strict fuzzy**, **2,616 linked-exact /
+1,085 byte-exact**, zero skips and no exact-set losses. Live bloom
+output is unverified because the target phone is absent from ADB.
+Next, test a confirmed foreground scene on that phone and inspect the
+remaining long render-path differences. See the
+[bloom evidence](ARM_BLOOM_FIRST_RENDER_AND_MODE_2026-10-28.md).
+
 Last reviewed: 2026-10-28 (BlurShader projection reconstruction)
 
 The five-argument `BlurShader::RenderEffect` now clears the full Android

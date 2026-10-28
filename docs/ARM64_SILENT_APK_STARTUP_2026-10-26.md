@@ -8,7 +8,7 @@ undefined symbols while retaining all 53 exported JNI entry points, including
 APK's Java/assets. It uses local, no-output FMOD compatibility libraries and
 a minimal Crashlytics loader compatibility library. These test libraries and
 the APK are kept outside this repository. Sound is deliberately absent.
-The latest clean APK is
+The initial clean APK is
 `D:\gof2-arm64-crypto\gof2-arm64-silent-debug-20261026.apk`
 (SHA-256 `4194a1c56bbb80cbf2aef3069c2411ff6bf214b4f6aa984b0aae771ad811b74b`).
 The same artifact path was rebuilt with the basic shader dispatch recovery;
@@ -34,6 +34,12 @@ the new package is signed but has not been tested on the target phone. See
 It was rebuilt again with the original blur projection initialization;
 live image output for this package is not yet verified. See
 [blur projection evidence](ARM_BLUR_PROJECTION_2026-10-28.md).
+The current signed APK includes the recovered bloom initialization,
+projection coefficient, and mode selection:
+`D:\gof2-arm64-crypto\gof2-arm64-bloom-debug-20261028.apk`
+(SHA-256 `2f844c2d8e3a98a772b5158bac865997c338eb563a7bfd2200eb2b9f8ba4acd3`).
+It has not yet been tested on the disconnected target phone. See
+[bloom evidence](ARM_BLOOM_FIRST_RENDER_AND_MODE_2026-10-28.md).
 
 The APK installed on a 25053RT47C (Android 16, arm64-v8a). The original OBB
 was copied to the package's OBB directory. The game reached `MTitle`, found

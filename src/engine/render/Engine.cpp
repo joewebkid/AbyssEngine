@@ -1684,7 +1684,7 @@ unsigned char AbyssEngine::Engine::EnableGlow;
 int AbyssEngine::Engine::ImageCount;
 int AbyssEngine::Engine::switchGlow;
 int AbyssEngine::Engine::SwapCounter;
-int AbyssEngine::Engine::switchBloom;
+int AbyssEngine::Engine::switchBloom = 3;
 unsigned char AbyssEngine::Engine::enableShader;
 unsigned char AbyssEngine::Engine::EnableRefract;
 void *AbyssEngine::Engine::LodDistShader;
