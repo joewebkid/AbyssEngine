@@ -1,5 +1,17 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (ship 011 material links)
+
+Original ARM passes material ID **34211** for ship 011 main mesh
+**17011** and LOD meshes **17133/17134**. Three C++ zero placeholders
+are replaced. The material is registered once as kind 6. Native and
+ARM64 libraries build; ARMv7 compiles 209/209 units. Focused
+`BuildResourceList` stays **77.0% source-shape**, with strict fuzzy
+**17.7% → 17.8%**. The full corpus remains **4,323/4,524** originals,
+**94.86% source-shape / 84.43% strict fuzzy**, **2,638 linked-exact /
+1,086 byte-exact**, with no exact-set losses. Live ship rendering is
+unverified. See [ship 011 evidence](ARM_SHIP_011_MATERIAL_LINK_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (ship material lookup semantics)
 
 Original ARM `PaintCanvas::MaterialCreate` has no kind guard; a fresh

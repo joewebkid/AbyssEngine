@@ -3877,13 +3877,13 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         18710, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_010_terran_lights_add.aem", 3,
                                                 false));
     ADD_RES(resources[2015], 
-        17011, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_011_pirates.aem", 0, false));
+        17011, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_011_pirates.aem", 34211, false));
     ADD_RES(resources[2016], 
         17133, 4,
-        new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_011_pirates_lod_1.aem", 0, false));
+        new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_011_pirates_lod_1.aem", 34211, false));
     ADD_RES(resources[2017], 
         17134, 4,
-        new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_011_pirates_lod_2.aem", 0, false));
+        new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_011_pirates_lod_2.aem", 34211, false));
     ADD_RES(resources[2018], 
         18011, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_011_pirates_engine_add.aem",
                                                 34811, false));
