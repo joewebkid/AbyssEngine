@@ -1,5 +1,17 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (ship 010 resource link)
+
+Original ARM `BuildResourceList` passes material/resource link **34110**
+when registering ship mesh **17010**; the C++ zero placeholder has been
+replaced. ARMv7 compiles 209/209 units and native `gof2` builds. Focused
+`BuildResourceList` stays **77.0% source-shape**, with strict fuzzy
+**18.1% → 17.7%**. The full corpus remains **4,323/4,524** originals over
+4,745 pairs, **94.86% source-shape / 84.43% strict fuzzy**, **2,638
+linked-exact / 1,086 byte-exact**, zero skips and no exact-set losses.
+Runtime material creation and the ARM64 player-ship crash remain unverified.
+See [ship 010 evidence](ARM_SHIP_010_RESOURCE_LINK_2026-10-30.md).
+
 Last reviewed: 2026-10-28 (main-menu global-pointer calls)
 
 `ModMainMenu::OnInitialize` and `OnRelease` now load the original ARM

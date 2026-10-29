@@ -3863,7 +3863,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         18709, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_009_vossk_lights_add.aem", 65535,
                                                 false));
     ADD_RES(resources[2010], 
-        17010, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_010_terran.aem", 0, false));
+        17010, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_010_terran.aem", 34110, false));
     ADD_RES(resources[2011], 
         17130, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_010_terran_lod_1.aem", 0,
                                                 false));
