@@ -1,5 +1,17 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (ships 017–019 material links)
+
+Original ARM passes material IDs **34217**, **34218** and **34219** to
+the main and LOD meshes of ships 017–019. Nine C++ zero placeholders
+are replaced. Native and ARM64 libraries build, ARMv7 compiles 209/209
+units, and five resource-table tests pass. Focused `BuildResourceList`
+remains **77.0% source-shape / 20.2% strict fuzzy**, nonexact. The full
+corpus remains **4,323/4,524** originals over 4,745 pairs, **94.86%
+source-shape / 84.43% strict fuzzy**, **2,638 linked-exact / 1,086
+byte-exact**, with no exact-set losses. Live rendering is unverified.
+See [ships 017–019 evidence](ARM_SHIP_017_019_MATERIAL_LINKS_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (ships 012 and 016 material links)
 
 Original ARM passes material IDs **34212** and **34216** to the main
