@@ -1,5 +1,16 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (ship material lookup semantics)
+
+Original ARM `PaintCanvas::MaterialCreate` has no kind guard; a fresh
+lookup of ship 010 link **34110** would encounter a kind-2 texture
+registration. The arguments restored in the previous section remain
+instruction-backed, while the actual cached/fresh path and material
+pointer are still unobserved. The original package is nondebuggable on
+the available nonroot phone, and the x86 ARM bridge crashed before a
+targeted trace. No production code or ARM corpus changed in this audit.
+See [ship 010 lookup evidence](ARM_SHIP_010_RESOURCE_LINK_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (ship 010 LOD resource links)
 
 Original ARM passes resource link **34110** for ship 010 LOD meshes

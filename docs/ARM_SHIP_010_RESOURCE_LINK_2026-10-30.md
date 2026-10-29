@@ -48,3 +48,27 @@ byte-exact**, zero skips. The exact-match sets have no losses against the
 prior `ship10-full-20261030.json` report. Full output is
 `D:\gof2-arm64-crypto\ship10-lods-full-20261030.json`. Five resource-table
 regression tests pass. No live rendering result is claimed.
+
+## Material lookup limitation
+
+REA pseudocode for original ARM `PaintCanvas::MaterialCreate` at
+`0x79e4c–0x79f14` confirms that it calls `FindResource(id)`, reads the
+payload at resource offset `+12` as eight texture IDs, and creates a
+`Material` without checking the resource kind. `PaintCanvas::MeshCreate`
+at `0x79d5c–0x79e2e` invokes it for the mesh payload's 16-bit field at
+offset `+4` only on the uncached mesh path. The original resource-list
+instructions at `0xee454–0xee45a` register ID 34110 with kind 2, a
+`ResourceTexture`, whereas the current source also has no separate
+kind-6 registration for that ID. This is a genuine ambiguity in the
+original lookup path: the ARM arguments are proven, but a fresh
+`MaterialCreate(34110)` would interpret a texture payload as material
+fields. Whether the player ship instead reuses a previously created mesh
+or takes another path has not been established. Do not add a type guard or
+claim that the `PlayerEgo::setShip` crash is resolved on this evidence.
+
+The available physical ARM phone has the original package, but `run-as`
+reports it is not debuggable and production `adbd` refuses root; its screen
+was asleep during this check. A targeted trace therefore requires a
+separate instrumented build or another supported debugging route. The
+Android 9 x86/ARM-bridge emulator reached an opening scene previously,
+but a later run crashed in `libndk_translation` before the intended trace.
