@@ -1,5 +1,16 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (original ARM emulator retry)
+
+The original APK's Android 9 x86/ARM-bridge emulator remained alive, but
+two game-process launches faulted at address `0x3` within
+`libndk_translation` during `linker_arm` loading. Frida could not attach
+to the emulated ARM realm. This attempt did not verify the rebuilt ARM64
+player-ship material path; a physical ARM trace remains the next priority.
+The current ARM64 static library compiles. No production source changed
+in this diagnostic, so the whole-corpus metrics below remain current.
+See [emulator evidence](ORIGINAL_GOF2_API28_EMULATOR_2026-10-28.md).
+
 Last reviewed: 2026-10-30 (ship 010 resource link)
 
 Original ARM `BuildResourceList` passes material/resource link **34110**
