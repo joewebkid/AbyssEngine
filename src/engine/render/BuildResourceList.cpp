@@ -3865,10 +3865,10 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[2010], 
         17010, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_010_terran.aem", 34110, false));
     ADD_RES(resources[2011], 
-        17130, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_010_terran_lod_1.aem", 0,
+        17130, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_010_terran_lod_1.aem", 34110,
                                                 false));
     ADD_RES(resources[2012], 
-        17131, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_010_terran_lod_2.aem", 0,
+        17131, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_010_terran_lod_2.aem", 34110,
                                                 false));
     ADD_RES(resources[2013], 
         18010, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_010_terran_engine_add.aem", 3,

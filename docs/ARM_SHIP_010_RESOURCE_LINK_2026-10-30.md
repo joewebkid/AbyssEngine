@@ -30,3 +30,21 @@ linked-exact or byte-exact pairs. Full output is
 Next, capture the original `MeshCreate`/`MaterialCreate` arguments and
 material pointer when resource 17010 is loaded, then compare with the
 rebuilt ARM64 run before treating the null dereference as resolved.
+
+## LOD resource links
+
+The same original ARM function retains the 34110 value in callee-saved `r4`
+and passes it to the next two `ResourceMesh` constructors at `0x10322c–0x103230`
+and `0x103268–0x10326c`. Those registrations write IDs `0x42ea` (**17130**,
+LOD 1) and `0x42eb` (**17131**, LOD 2) at `0x103240–0x103252` and
+`0x10327c–0x10328e`. The C++ zero placeholders for both LOD entries were
+replaced with 34110. ARMv7 compiles 209/209 units; native and ARM64 static
+libraries build. Focused `BuildResourceList` source-shape and strict fuzzy
+remain **77.0%** and **17.7%**, nonexact. The focused output is
+`D:\gof2-arm64-crypto\ship10-lods-focused-20261030.json`. The complete
+corpus remains **4,323/4,524** originals across **4,745** pairs, **94.86%
+source-shape / 84.43% strict fuzzy**, **2,638 linked-exact / 1,086
+byte-exact**, zero skips. The exact-match sets have no losses against the
+prior `ship10-full-20261030.json` report. Full output is
+`D:\gof2-arm64-crypto\ship10-lods-full-20261030.json`. Five resource-table
+regression tests pass. No live rendering result is claimed.

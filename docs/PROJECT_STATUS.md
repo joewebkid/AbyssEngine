@@ -1,5 +1,17 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (ship 010 LOD resource links)
+
+Original ARM passes resource link **34110** for ship 010 LOD meshes
+**17130** and **17131**; two C++ zero placeholders have been replaced.
+Native, ARM64 and 209/209 ARMv7 translation units build. Focused
+`BuildResourceList` remains **77.0% source-shape / 17.7% strict fuzzy**,
+nonexact. The full corpus remains **4,323/4,524** originals over 4,745
+pairs, **94.86% / 84.43%** source-shape / strict fuzzy, **2,638
+linked-exact / 1,086 byte-exact**, zero skips and no exact-set losses.
+Physical-device runtime behavior is still unverified. See
+[ship 010 evidence](ARM_SHIP_010_RESOURCE_LINK_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (original ARM emulator retry)
 
 The original APK's Android 9 x86/ARM-bridge emulator remained alive, but
