@@ -3891,12 +3891,12 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         18711, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_011_pirates_lights_add.aem",
                                                 34811, false));
     ADD_RES(resources[2020], 
-        17012, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_012_nivelian.aem", 0, false));
+        17012, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_012_nivelian.aem", 34212, false));
     ADD_RES(resources[2021], 
-        17136, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_012_nivelian_lod_1.aem", 0,
+        17136, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_012_nivelian_lod_1.aem", 34212,
                                                 false));
     ADD_RES(resources[2022], 
-        17137, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_012_nivelian_lod_2.aem", 0,
+        17137, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_012_nivelian_lod_2.aem", 34212,
                                                 false));
     ADD_RES(resources[2023], 
         18012, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_012_nivelian_engine_add.aem",
@@ -3905,12 +3905,12 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         18712, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_012_nivelian_lights_add.aem",
                                                 34810, false));
     ADD_RES(resources[2025], 
-        17016, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_016_nivelian.aem", 0, false));
+        17016, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_016_nivelian.aem", 34216, false));
     ADD_RES(resources[2026], 
-        17148, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_016_nivelian_lod_1.aem", 0,
+        17148, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_016_nivelian_lod_1.aem", 34216,
                                                 false));
     ADD_RES(resources[2027], 
-        17149, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_016_nivelian_lod_2.aem", 0,
+        17149, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_016_nivelian_lod_2.aem", 34216,
                                                 false));
     ADD_RES(resources[2028], 
         18016, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_016_nivelian_engine_add.aem",
