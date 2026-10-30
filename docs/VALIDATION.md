@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BoundingSphere vector-family gate (2026-10-30)
+
+The center and extent fields are passed directly to Vector operations;
+`outerCollide` stores input coordinates before the center call and
+`getCollisionNormal` assigns the normalized result. Native `gof2`
+and ARM64 static builds pass; ARMv7 compiles 209/209 units. Focused
+source-shape is **100.0%** (`outerCollide`), **97.8%** (normal), and
+**99.0%** (surface projection); all remain nonexact. Full corpus:
+**4,323/4,524** originals over 4,746 pairs, **94.93% / 84.60%**,
+**2,662 linked-exact / 1,088 byte-exact**, zero skipped and 201 missing.
+Both exact-symbol sets are unchanged. Live collision behavior remains
+unverified; see [evidence and limits](BOUNDING_SPHERE_VECTOR_ARM_2026-10-30.md).
+
 ## BoundingVolume child-release gate (2026-10-30)
 
 The destructor calls the original `ArrayReleaseClasses<BoundingVolume*>`

@@ -15,31 +15,34 @@ void BoundingSphere::update(float x, float y, float z) {
 }
 
 Vector BoundingSphere::projectCollisionOnSurface(const Vector &position) {
-    Vector center = Vector{centerX, centerY, centerZ}
-                    + Vector{extentsX, extentsY, extentsZ};
+    Vector center = *reinterpret_cast<const Vector *>(&centerX)
+                    + *reinterpret_cast<const Vector *>(&extentsX);
     Vector delta = center - position;
     float length = VectorLength(delta);
 
     if (length >= radius) {
         return Vector{0.0f, 0.0f, 0.0f};
     }
-    Vector projectedCenter = Vector{centerX, centerY, centerZ}
-                             + Vector{extentsX, extentsY, extentsZ};
+    Vector projectedCenter = *reinterpret_cast<const Vector *>(&centerX)
+                             + *reinterpret_cast<const Vector *>(&extentsX);
     return projectedCenter - (radius / length) * delta;
 }
 
 int BoundingSphere::outerCollide(float x, float y, float z) {
-    Vector center = Vector{centerX, centerY, centerZ}
-                    + Vector{extentsX, extentsY, extentsZ};
-    Vector delta = Vector{x, y, z} - center;
+    Vector point{x, y, z};
+    Vector center = *reinterpret_cast<const Vector *>(&centerX)
+                    + *reinterpret_cast<const Vector *>(&extentsX);
+    Vector delta = point - center;
     float distanceSq = VectorDot(delta, delta);
     return distanceSq < radius * radius ? 1 : 0;
 }
 
 Vector BoundingSphere::getCollisionNormal(const Vector &position) {
-    Vector center = Vector{centerX, centerY, centerZ}
-                    + Vector{extentsX, extentsY, extentsZ};
-    return VectorNormalize(center - position);
+    Vector center = *reinterpret_cast<const Vector *>(&centerX)
+                    + *reinterpret_cast<const Vector *>(&extentsX);
+    Vector result = center - position;
+    result = VectorNormalize(result);
+    return result;
 }
 
 int BoundingSphere::collide(float x, float y, float z) {

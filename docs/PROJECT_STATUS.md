@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (BoundingSphere vector family)
+
+`BoundingSphere` now passes its contiguous center and extent fields
+directly to Vector operations in `outerCollide`, `getCollisionNormal`,
+and `projectCollisionOnSurface`. The input-coordinate store and
+normalization assignment follow the original ARM order. Focused
+source-shape reaches **100.0%**, **97.8%**, and **99.0%** respectively;
+all three remain nonexact. Native and ARM64 static builds pass; ARMv7
+compiles 209/209 units. The full corpus compares **4,323/4,524**
+originals across 4,746 pairs: **94.93% source-shape / 84.60% strict
+fuzzy**, **2,662 linked-exact / 1,088 byte-exact**, zero skipped and
+201 missing, with no exact-set gains or losses. Live collision behavior
+is unverified while phone testing is deferred. Next, inspect the AAB
+projection path for an ARM-backed semantic gap. See
+[sphere evidence](BOUNDING_SPHERE_VECTOR_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (BoundingVolume child destruction)
 
 `BoundingVolume` now releases its child array through the original
