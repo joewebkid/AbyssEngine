@@ -736,11 +736,17 @@ void simulateTouch(AbyssEngine::Engine *engine) {
     }
 
     if (g_mouseCaptured != 0) {
-        float magX = std::min(std::fabs(g_stick.easedX), 500.0f);
-        float mag = std::max(std::fabs(g_stick.easedY), magX);
+        float magX = 500.0f;
+        float absX = std::fabs(g_stick.easedX);
+        if (absX > magX)
+            magX = absX;
+        float absY = std::fabs(g_stick.easedY);
+        int mag = static_cast<int>(absY);
+        if (absY <= static_cast<float>(static_cast<int>(magX)))
+            mag = static_cast<int>(magX);
 
-        float nx = std::max(std::min(VectorSignedToFloat(stackX, 0) / mag, 1.0f), -1.0f);
-        float ny = std::max(std::min(VectorSignedToFloat(stackY, 0) / (mag * 0.5f), 1.0f), -1.0f);
+        float nx = std::max(std::min(VectorSignedToFloat(stackX, 0) / static_cast<float>(mag), 1.0f), -1.0f);
+        float ny = std::max(std::min(VectorSignedToFloat(stackY, 0) / (static_cast<float>(mag) * 0.5f), 1.0f), -1.0f);
 
         float ex = easeAxis(nx);
         float ey = easeAxis(ny);

@@ -4,6 +4,16 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## simulateTouch pointer-scale gate (2026-10-31)
+
+Native `gof2` and ARM64 static builds pass; ARMv7 compiles 209/209
+units. Focused `simulateTouch` improves to **84.4% source-shape /
+42.2% strict fuzzy**. Full corpus compares **4,323/4,524** originals
+over 4,749 pairs, **95.12% / 84.82%**, **2,677 linked-exact / 1,091
+byte-exact**, zero skipped and 201 missing. Complete exact-symbol sets
+are unchanged. Live pointer behavior remains unverified; see
+[evidence and limits](VIRTUALINPUT_TOUCH_SCALE_ARM_2026-10-31.md).
+
 ## Touch-module and joystick-override gate (2026-10-31)
 
 Native `gof2` and ARM64 static builds pass; ARMv7 compiles 209/209

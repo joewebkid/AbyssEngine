@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (simulateTouch pointer scale)
+
+The pointer normalization in `simulateTouch` now uses the original
+ARM denominator: at least 500, with the observed integer conversion
+before scaling the X and Y offsets. The previous code used a minimum
+with 500 and greatly amplified ordinary pointer movement. Focused
+`simulateTouch` improves **83.7% / 38.7% → 84.4% / 42.2%**
+source-shape / strict fuzzy. Native Windows and ARM64 static builds
+pass; ARMv7 compiles 209/209 units. Full corpus remains
+**4,323/4,524** originals over 4,749 pairs, **95.12% source-shape /
+84.82% strict fuzzy**, **2,677 linked-exact / 1,091 byte-exact**,
+zero skipped and 201 missing. Complete exact-symbol sets have no
+losses. Live pointer behavior remains unverified while device work is
+deferred. Next offline priority: reconcile the remaining
+`simulateTouch` stick smoothing and event dispatch with ARM evidence.
+See [pointer-scale evidence](VIRTUALINPUT_TOUCH_SCALE_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (touch module and joystick override)
 
 `simulateTouch` now reads the flag controlled by `UseJoystick` for the
