@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## GlowShader ARM source gate (2026-10-30)
+
+Original ARM embedded GLSL and five ordered input names replace
+placeholders; both arrays were byte-verified against the ELF. Native
+`gof2` and ARM64 static builds pass, ARMv7 compiles 209/209 units,
+and the strict ARM64 shared library retains 53 JNI exports. Focused
+verification remains **6/6 linked-exact**, with **100% source-shape /
+100% strict fuzzy**. The full corpus compares **4,323/4,524**
+originals across 4,745 pairs, **94.87% / 84.46%**, **2,650
+linked-exact / 1,086 byte-exact**, zero skipped, and unchanged exact
+sets. The signed APK has not been run on Poco; see
+[evidence and limits](GLOW_SHADER_ARM_2026-10-30.md).
+
 ## PulseShader ARM gate (2026-10-30)
 
 Original ARM embedded GLSL and 15 ordered input names replace

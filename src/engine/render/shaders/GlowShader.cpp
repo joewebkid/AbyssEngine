@@ -1,4 +1,5 @@
 #include "engine/render/shaders/GlowShader.h"
+#include "engine/render/shaders/EmbeddedGlowShader.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
 #include <GLES2/gl2.h>
@@ -13,14 +14,15 @@ namespace AbyssEngine {
     }
 
     void GlowShader::Init(Engine *) {
-        this->program = this->ES2LoadProgram("GlowShader.vsh", "GlowShader.fsh");
+        this->program = this->ES2LoadProgram(EmbeddedGlowShader::vertex,
+                                             EmbeddedGlowShader::fragment);
 
         this->a_positionLoc = glGetAttribLocation(this->program, "a_position");
         this->a_texCoordLoc = glGetAttribLocation(this->program, "a_texCoord");
 
-        this->u_mvpLoc = glGetUniformLocation(this->program, "u_mvp");
-        this->u_colorLoc = glGetUniformLocation(this->program, "u_color");
-        this->u_textureLoc = glGetUniformLocation(this->program, "u_texture");
+        this->u_mvpLoc = glGetUniformLocation(this->program, "u_ModelViewProjectionMatrix");
+        this->u_colorLoc = glGetUniformLocation(this->program, "u_ModelMatrix");
+        this->u_textureLoc = glGetUniformLocation(this->program, "s_texture");
 
         glUseProgram(this->program);
         glUniform1i(this->u_textureLoc, 0);
