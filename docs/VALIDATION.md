@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Texture shader platform source gate (2026-10-30)
+
+TextureShader and TextureAlphaTestShader use six ELF-verified GLSL
+strings and original GL identifiers across platforms; the PC fog
+selection and both Vector fog color conversions are restored. Native
+gof2 and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+Focused TextureShader rises to **7/8 linked-exact**, **100%
+source-shape / strict fuzzy**. Focused TextureAlphaTestShader remains
+**6/8 linked-exact**, with **99.8% / 98.4%**. The full corpus compares
+**4,323/4,524** originals across 4,745 pairs: **94.88% / 84.49%**,
+**2,656 linked-exact / 1,087 byte-exact**, zero skipped, 201 missing,
+and no exact losses. GL rendering on Poco remains unverified; see
+[evidence and limits](TEXTURE_SHADER_PLATFORM_SOURCES_2026-10-30.md).
+
 ## BumpRimCubeShader ARM gate (2026-10-30)
 
 The original old-shader GLSL, file paths, query names, and update data

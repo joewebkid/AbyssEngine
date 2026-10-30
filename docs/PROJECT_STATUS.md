@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (texture shader sources on all platforms)
+
+TextureShader and TextureAlphaTestShader now pass their confirmed
+Android GLSL literals and GL identifiers to the source compiler on
+ARMv7, ARM64, and Windows; PC fog selection reads Engine::fogEnabled
+instead of zero placeholders. Both update functions use the original
+Vector conversion for fog color. Native and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. Focused TextureShader is **7/8
+linked-exact**, **100% source-shape / strict fuzzy**; its UpdateMeshData
+is newly linked-exact. TextureAlphaTestShader is **6/8 linked-exact**,
+**99.8% / 98.4%**. The full corpus compares **4,323/4,524** originals
+across 4,745 pairs: **94.88% / 84.49%**, **2,656 linked-exact /
+1,087 byte-exact**, zero skipped, 201 missing, and no exact losses.
+Poco rendering remains untested. Next, inspect TextureLightShader's
+remaining platform fallback and perform an allowed phone run when
+available. See [texture shader evidence](TEXTURE_SHADER_PLATFORM_SOURCES_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (BumpRimCubeShader ARM recovery)
 
 Original embedded GLSL, shader paths, ordered GL query names, uniform

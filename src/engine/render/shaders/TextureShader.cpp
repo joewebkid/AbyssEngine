@@ -1,13 +1,8 @@
 #include "engine/render/shaders/TextureShader.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
 #include "engine/render/shaders/EmbeddedTextureShader.h"
-#endif
 #include <GLES2/gl2.h>
-
-static uint8_t g_TextureShader_hasSecondProgram = 0;
-static uint8_t g_TextureShader_activeSlot = 0;
 
 namespace AbyssEngine {
     int TextureShader::ShaderIndex;
@@ -19,36 +14,19 @@ namespace AbyssEngine {
     }
 
     void TextureShader::Init(Engine *) {
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
         this->program = this->ES2LoadProgram(EmbeddedTextureShader::vertex,
                                              EmbeddedTextureShader::fragment);
         ConnectShaderComponents(this->program, 0);
         this->programExt = this->ES2LoadProgram(EmbeddedTextureShader::vertex,
                                                 EmbeddedTextureShader::fogFragment);
         ConnectShaderComponents(this->programExt, 1);
-#else
-        const char *vertexShader = "TextureShader.vsh";
-
-        this->program = this->ES2LoadProgram(vertexShader, "TextureShader.fsh");
-        ConnectShaderComponents(this->program, 0);
-
-        this->programExt = this->ES2LoadProgram(vertexShader, "TextureShaderExt.fsh");
-        ConnectShaderComponents(this->programExt, 1);
-#endif
     }
 
     void TextureShader::UseShader(bool) {
-#if defined(__ANDROID__)
         if (Engine::fogEnabled && this->programExt != 0) {
             glUseProgram(this->programExt);
             return;
         }
-#else
-        if (g_TextureShader_hasSecondProgram != 0 && this->programExt != 0) {
-            glUseProgram(this->programExt);
-            return;
-        }
-#endif
         glUseProgram(this->program);
     }
 
@@ -60,11 +38,7 @@ namespace AbyssEngine {
     }
 
     void TextureShader::UpdateMeshData(Mesh *mesh, Engine *engine) {
-#if defined(__ANDROID__)
         int slot = Engine::fogEnabled ? 1 : 0;
-#else
-        int slot = g_TextureShader_activeSlot;
-#endif
 
         glUniformMatrix4fv(this->mvpUniform[slot], 1, 0, engine->worldViewProjMatrix);
 
@@ -88,7 +62,7 @@ namespace AbyssEngine {
 
             location = this->lightUniform[slot];
             if (location >= 0) {
-                glUniform3fv(location, 1, (float *) &engine->fogColor);
+                glUniform3fv(location, 1, engine->fogColor);
             }
 
             location = this->fogFarUniform[slot];
@@ -103,11 +77,7 @@ namespace AbyssEngine {
 
             location = this->activeTextureUniform[slot];
             if (location >= 0) {
-#if defined(__ANDROID__)
                 glUniform1i(location, Engine::fogEnabled ? 1 : 0);
-#else
-                glUniform1i(location, g_TextureShader_activeSlot);
-#endif
             }
 
             location = this->fogColorUniform[slot];
@@ -135,7 +105,6 @@ namespace AbyssEngine {
     }
 
     void TextureShader::ConnectShaderComponents(uint32_t program, int slot) {
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
         this->textureUniform[slot] = glGetUniformLocation(program, "s_texture");
         this->positionAttrib[slot] = glGetAttribLocation(program, "a_position");
         this->texcoordAttrib[slot] = glGetAttribLocation(program, "a_texCoord");
@@ -149,21 +118,6 @@ namespace AbyssEngine {
         this->alphaUniform[slot] = glGetUniformLocation(program, "u_DarkenValue");
         this->textureModeUniform[slot] = glGetUniformLocation(program, "u_UVAnimation");
         this->worldViewUniform[slot] = glGetUniformLocation(program, "u_UvMatrix");
-#else
-        this->textureUniform[slot] = glGetUniformLocation(program, "texture");
-        this->positionAttrib[slot] = glGetAttribLocation(program, "position");
-        this->texcoordAttrib[slot] = glGetAttribLocation(program, "texcoord");
-        this->mvpUniform[slot] = glGetUniformLocation(program, "mvp");
-        this->colorUniform[slot] = glGetUniformLocation(program, "color");
-        this->lightUniform[slot] = glGetUniformLocation(program, "light");
-        this->fogNearUniform[slot] = glGetUniformLocation(program, "fogNear");
-        this->fogFarUniform[slot] = glGetUniformLocation(program, "fogFar");
-        this->activeTextureUniform[slot] = glGetUniformLocation(program, "activeTexture");
-        this->fogColorUniform[slot] = glGetUniformLocation(program, "fogColor");
-        this->alphaUniform[slot] = glGetUniformLocation(program, "alpha");
-        this->textureModeUniform[slot] = glGetUniformLocation(program, "textureMode");
-        this->worldViewUniform[slot] = glGetUniformLocation(program, "worldView");
-#endif
 
         glUseProgram(program);
         glUniform1i(this->textureUniform[slot], 0);
