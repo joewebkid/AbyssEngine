@@ -601,7 +601,7 @@ namespace AbyssEngine {
         static int switchBloom;
         static unsigned char enableShader;
         static unsigned char EnableRefract;
-        static void *LodDistShader;
+        static float LodDistShader;
         static unsigned char DisableRefract;
         static float AnisotropyValue;
         static unsigned char KeepRawMeshData;

@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (BumpRimCubeShader_new original ARM recovery)
+
+The original shader file paths, embedded fallback GLSL, five attribute
+names, and 25 uniform names replace placeholders in
+`BumpRimCubeShader_new`. Its four uniform values now read the ARM
+GOT-confirmed Engine globals. `Engine::LodDistShader` has the original
+four-byte float ABI, and fog-color upload invokes the original Vector
+conversion. Focused `UpdateMeshData` improves **96.7% → 100%
+source-shape** and **87.2% → 100% strict fuzzy**; all six unit functions
+are linked-exact. Native and ARM64 builds pass; ARMv7 compiles 209/209
+units. The full corpus compares **4,323/4,524** originals over 4,745
+pairs, **94.87% source-shape / 84.45% strict fuzzy**, **2,643
+linked-exact / 1,086 byte-exact**, with one exact gain and no losses.
+The signed ARM64 APK remains unrun on Poco due to the prior Play Protect
+block. Next, verify an allowed phone run and recover the remaining
+placeholder shaders, starting with `BumpShaderCloak` or the specular
+cube family. See [BumpRimCubeShader_new evidence](BUMP_RIM_CUBE_SHADER_NEW_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (BumpShaderRefract original ARM recovery)
 
 The original ARM embedded GLSL, three attribute names and eight uniform

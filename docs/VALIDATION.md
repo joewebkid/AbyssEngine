@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BumpRimCubeShader_new ARM sources and globals gate (2026-10-30)
+
+The original `LoadBindShader` paths, both byte-identical embedded GLSL
+strings, and 30 input names replace placeholders. GOT relocations
+identify the two texture biases, `LodDistShader`, and `fogEnabled`;
+the original also calls the Vector conversion for `fogColor`.
+`LodDistShader` is now four bytes in both ARMv7 and ARM64 objects, as
+in original ARM. Native and ARM64 builds pass; ARMv7 compiles 209/209
+units and the strict ARM64 library retains 53 JNI exports. Focused
+`UpdateMeshData` reaches **100% source-shape / 100% strict fuzzy** from
+**96.7% / 87.2%**; all 6/6 unit functions are linked-exact. The full
+corpus compares **4,323/4,524**, **94.87% / 84.45%**, **2,643
+linked-exact / 1,086 byte-exact**, with zero skipped and no exact-set
+losses. The signed APK has not been run on Poco due to Play Protect;
+see [evidence and limits](BUMP_RIM_CUBE_SHADER_NEW_ARM_2026-10-30.md).
+
 ## BumpShaderRefract original GLSL and attribute ABI gate (2026-10-30)
 
 Two embedded GLSL strings were verified byte-identical to original ARM

@@ -1707,7 +1707,7 @@ int AbyssEngine::Engine::SwapCounter;
 int AbyssEngine::Engine::switchBloom = 3;
 unsigned char AbyssEngine::Engine::enableShader;
 unsigned char AbyssEngine::Engine::EnableRefract;
-void *AbyssEngine::Engine::LodDistShader;
+float AbyssEngine::Engine::LodDistShader;
 unsigned char AbyssEngine::Engine::DisableRefract;
 float AbyssEngine::Engine::AnisotropyValue;
 unsigned char AbyssEngine::Engine::KeepRawMeshData;

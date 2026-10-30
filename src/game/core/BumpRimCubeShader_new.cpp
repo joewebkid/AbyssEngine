@@ -1,12 +1,8 @@
 #include "game/core/BumpRimCubeShader_new.h"
+#include "game/core/EmbeddedBumpRimCubeShaderNew.h"
 #include <GLES2/gl2.h>
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
-
-static float g_rimnGlobalA = 0.0f;
-static float g_rimnGlobalB = 0.0f;
-static float g_rimnGlobalC = 0.0f;
-static unsigned char g_rimnByteGlobal = 0;
 
 namespace AbyssEngine {
     int BumpRimCubeShader_new::ShaderIndex;
@@ -18,44 +14,46 @@ namespace AbyssEngine {
     }
 
     void BumpRimCubeShader_new::Init(Engine *) {
-        int program = this->LoadBindShader("BumpRimCubeShader_new.vsh", "BumpRimCubeShader_new.fsh");
+        int program = this->LoadBindShader("data/shader/BumpRimCubeShader_new.vs",
+                                            "data/shader/BumpRimCubeShader_new.fs");
         this->program = program;
         if (program == 0) {
-            program = this->ES2LoadProgram("BumpRimCubeShader_new.vsh", "BumpRimCubeShader_new.fsh");
+            program = this->ES2LoadProgram(EmbeddedBumpRimCubeShaderNew::vertex,
+                                           EmbeddedBumpRimCubeShaderNew::fragment);
             this->program = program;
         }
 
-        this->attrib0 = glGetAttribLocation(program, "a0");
-        this->attrib1 = glGetAttribLocation(this->program, "a1");
-        this->attrib2 = glGetAttribLocation(this->program, "a2");
-        this->attrib3 = glGetAttribLocation(this->program, "a3");
-        this->attrib4 = glGetAttribLocation(this->program, "a4");
+        this->attrib0 = glGetAttribLocation(program, "a_position");
+        this->attrib1 = glGetAttribLocation(this->program, "a_texCoord");
+        this->attrib2 = glGetAttribLocation(this->program, "a_normal");
+        this->attrib3 = glGetAttribLocation(this->program, "a_tangent");
+        this->attrib4 = glGetAttribLocation(this->program, "a_bitangent");
 
-        this->uniform0 = glGetUniformLocation(this->program, "u0");
-        this->uniform1 = glGetUniformLocation(this->program, "u1");
-        this->uniform2 = glGetUniformLocation(this->program, "u2");
-        this->uniform3 = glGetUniformLocation(this->program, "u3");
-        this->uniform4 = glGetUniformLocation(this->program, "u4");
-        this->uniform5 = glGetUniformLocation(this->program, "u5");
-        this->uniform6 = glGetUniformLocation(this->program, "u6");
-        this->uniform7 = glGetUniformLocation(this->program, "u7");
-        this->uniform8 = glGetUniformLocation(this->program, "u8");
-        this->uniform9 = glGetUniformLocation(this->program, "u9");
-        this->uniform10 = glGetUniformLocation(this->program, "u10");
-        this->uniform11 = glGetUniformLocation(this->program, "u11");
-        this->uniform13 = glGetUniformLocation(this->program, "u12");
-        this->uniform12 = glGetUniformLocation(this->program, "u13");
-        this->uniform14 = glGetUniformLocation(this->program, "u14");
-        this->uniform15 = glGetUniformLocation(this->program, "u15");
-        this->uniform16 = glGetUniformLocation(this->program, "u16");
-        this->uniform17 = glGetUniformLocation(this->program, "u17");
-        this->uniform18 = glGetUniformLocation(this->program, "u18");
-        this->uniform19 = glGetUniformLocation(this->program, "u19");
-        this->uniform20 = glGetUniformLocation(this->program, "u20");
-        this->uniform21 = glGetUniformLocation(this->program, "u21");
-        this->uniform22 = glGetUniformLocation(this->program, "u22");
-        this->uniform23 = glGetUniformLocation(this->program, "u23");
-        this->uniform24 = glGetUniformLocation(this->program, "u24");
+        this->uniform0 = glGetUniformLocation(this->program, "u_ModelViewProjectionMatrix");
+        this->uniform1 = glGetUniformLocation(this->program, "u_ModelMatrix");
+        this->uniform2 = glGetUniformLocation(this->program, "u_ModelMatrixFull");
+        this->uniform3 = glGetUniformLocation(this->program, "u_lightdirmodel[0]");
+        this->uniform4 = glGetUniformLocation(this->program, "u_lightdirmodel[1]");
+        this->uniform5 = glGetUniformLocation(this->program, "u_eyeposmodel");
+        this->uniform6 = glGetUniformLocation(this->program, "s_texture[0]");
+        this->uniform7 = glGetUniformLocation(this->program, "s_texture[1]");
+        this->uniform8 = glGetUniformLocation(this->program, "u_texture_cubemap");
+        this->uniform9 = glGetUniformLocation(this->program, "glColor");
+        this->uniform10 = glGetUniformLocation(this->program, "u_AmbientColor");
+        this->uniform11 = glGetUniformLocation(this->program, "u_DiffuseColor[0]");
+        this->uniform13 = glGetUniformLocation(this->program, "u_SpecularColor[0]");
+        this->uniform12 = glGetUniformLocation(this->program, "u_DiffuseColor[1]");
+        this->uniform14 = glGetUniformLocation(this->program, "u_SpecularColor[1]");
+        this->uniform15 = glGetUniformLocation(this->program, "u_SpecularPower");
+        this->uniform16 = glGetUniformLocation(this->program, "u_RimColor");
+        this->uniform17 = glGetUniformLocation(this->program, "u_TexBiasDiffuse");
+        this->uniform18 = glGetUniformLocation(this->program, "u_TexBiasNormal");
+        this->uniform19 = glGetUniformLocation(this->program, "u_IsGlowMat");
+        this->uniform20 = glGetUniformLocation(this->program, "u_fogColor");
+        this->uniform21 = glGetUniformLocation(this->program, "u_fogMaxDist");
+        this->uniform22 = glGetUniformLocation(this->program, "u_fogMinDist");
+        this->uniform23 = glGetUniformLocation(this->program, "u_EnableFog");
+        this->uniform24 = glGetUniformLocation(this->program, "u_lodDist");
 
         glUseProgram(this->program);
         for (int i = 0; i != 2; i++) {
@@ -75,11 +73,11 @@ namespace AbyssEngine {
         if (this->uniform2 >= 0)
             glUniformMatrix4fv(this->uniform2, 1, 0, eng->modelMatrixGL);
         if (this->uniform17 >= 0)
-            glUniform1f(this->uniform17, g_rimnGlobalA);
+            glUniform1f(this->uniform17, Engine::lodBiasDiffuse);
         if (this->uniform18 >= 0)
-            glUniform1f(this->uniform18, g_rimnGlobalB);
+            glUniform1f(this->uniform18, Engine::lodBiasNormal);
         if (this->uniform24 >= 0)
-            glUniform1f(this->uniform24, g_rimnGlobalC);
+            glUniform1f(this->uniform24, Engine::LodDistShader);
 
         if (this->dirty != 0) {
             glUniform3f(this->uniform3, eng->lightDir.x,
@@ -106,15 +104,14 @@ namespace AbyssEngine {
                 glUniform3fv(this->uniform16, 1, (float *) &eng->rimColor);
             int loc84 = this->uniform20;
             if (loc84 >= 0) {
-                float *v = (float *) &eng->fogColor;
-                glUniform3fv(loc84, 1, v);
+                glUniform3fv(loc84, 1, eng->fogColor);
             }
             if (this->uniform22 >= 0)
                 glUniform1f(this->uniform22, eng->fogMinDist);
             if (this->uniform21 >= 0)
                 glUniform1f(this->uniform21, eng->fogMaxDist);
             if (this->uniform23 >= 0)
-                glUniform1i(this->uniform23, g_rimnByteGlobal);
+                glUniform1i(this->uniform23, Engine::fogEnabled);
             if (this->uniform19 >= 0) {
                 float v = 0.0f;
                 int *m30 = (int *) mesh->field_0x30;
