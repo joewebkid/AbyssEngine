@@ -441,7 +441,7 @@ matched:
         } else if (GetKeyState(const_cast<char *>("Decelerate")) != 0) {
             g_virtualInputSpeedUp = false;
             g_virtualInputSlowMotion = true;
-        } else if (ApplicationManager::gAppManager->engine == nullptr) {
+        } else if (Globals::keys[0xa8 / sizeof(unsigned int)] != 0) {
             g_virtualInputSpeedUp = false;
             g_virtualInputSlowMotion = false;
         }
@@ -616,7 +616,7 @@ namespace {
 }
 
 void simulateTouch(AbyssEngine::Engine *engine) {
-    if (*reinterpret_cast<int *>(reinterpret_cast<char *>(ApplicationManager::gAppManager) + 0xbc) != 0)
+    if (Globals::keys[0xbc / sizeof(unsigned int)] != 0)
         AbyssEngine::Engine::EnablePostEffect = !AbyssEngine::Engine::EnablePostEffect;
 
     if (g_simEdgesInit == 0) {

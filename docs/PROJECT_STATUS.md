@@ -1,5 +1,25 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (virtual-input key-state table)
+
+`Globals::keys` now has the original 1,020-byte size as a 255-word
+table. `simulateTouch` reads its word at `0xBC` to gate the post-effect
+toggle; `keyPressed` reads its word at `0xA8` to clear speed-mode flags
+after the key combination reaches state 9 with neither acceleration
+key held. The previous source
+read unrelated manager fields. Focused `keyPressed` improves
+**95.6% / 77.1% → 96.5% / 87.5%** source-shape / strict fuzzy; the
+`simulateTouch` correction changes the relocation target without
+changing its local score. Native Windows and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. Full corpus remains **4,323/4,524**
+originals over 4,749 pairs, **95.12% source-shape / 84.82% strict
+fuzzy**, **2,677 linked-exact / 1,091 byte-exact**, zero skipped and
+201 missing. Complete exact-symbol sets have no losses. The purpose
+and writers of these table slots, plus live input behavior, remain
+unverified while device work is deferred. Next offline priority:
+trace the table's writes and remaining touch-dispatch paths from ARM
+evidence. See [key-table evidence](VIRTUALINPUT_KEYS_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (simulateTouch pointer scale)
 
 The pointer normalization in `simulateTouch` now uses the original

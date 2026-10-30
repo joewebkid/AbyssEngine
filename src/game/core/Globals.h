@@ -271,7 +271,7 @@ public:
     static unsigned char startLiteVersionWithMoreCredits;
     static void *rnd;
     static unsigned int font;
-    static unsigned char keys[1020];
+    static unsigned int keys[255];
     static float bankZ;
     static unsigned char hints[59];
     static void *items;
