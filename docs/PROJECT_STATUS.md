@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (ColorMixAdd ARM shader sources)
+
+Original embedded GLSL and all eight ordered input names replace
+`ColorMixAdd` placeholders. Both strings are byte-identical to the
+original ARM ELF. Native and ARM64 builds pass; ARMv7 compiles 209/209
+units and the strict ARM64 shared library retains 53 JNI exports.
+Focused verification remains **5/6 linked-exact**, **98.9%
+source-shape**, and **97.4% strict fuzzy**; `SetInActive` has the same
+calls and behavior but a different compiler counter shape. The full
+corpus compares **4,323/4,524** originals across 4,745 pairs,
+**94.87% / 84.46%**, **2,650 linked-exact / 1,086 byte-exact**, zero
+skipped, and unchanged exact-symbol sets. Runtime remains unverified
+on Poco. Next, repair the confirmed time source and 1000.0 divisor in
+`PulseShader`, plus its placeholder shader strings. See
+[ColorMixAdd evidence](COLOR_MIX_ADD_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (SimpleRefractionShader ARM recovery)
 
 Original embedded GLSL and all 14 ordered input names replace

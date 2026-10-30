@@ -1,4 +1,5 @@
 #include "engine/render/shaders/ColorMixAdd.h"
+#include "engine/render/shaders/EmbeddedColorMixAdd.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
 #include <GLES2/gl2.h>
@@ -13,17 +14,18 @@ namespace AbyssEngine {
     }
 
     void ColorMixAdd::Init(Engine *) {
-        int program = this->ES2LoadProgram("ColorMixAdd.vsh", "ColorMixAdd.fsh");
+        int program = this->ES2LoadProgram(EmbeddedColorMixAdd::vertex,
+                                           EmbeddedColorMixAdd::fragment);
         this->program = program;
 
-        this->u0Loc = glGetUniformLocation(program, "u0");
-        this->a0Loc = glGetAttribLocation(this->program, "a0");
-        this->a1Loc = glGetAttribLocation(this->program, "a1");
-        this->u1Loc = glGetUniformLocation(this->program, "u1");
-        this->u2Loc = glGetUniformLocation(this->program, "u2");
-        this->u3Loc = glGetUniformLocation(this->program, "u3");
-        this->u4Loc = glGetUniformLocation(this->program, "u4");
-        this->u5Loc = glGetUniformLocation(this->program, "u5");
+        this->u0Loc = glGetUniformLocation(program, "s_texture");
+        this->a0Loc = glGetAttribLocation(this->program, "a_position");
+        this->a1Loc = glGetAttribLocation(this->program, "a_texCoord");
+        this->u1Loc = glGetUniformLocation(this->program, "u_WorldMatrix");
+        this->u2Loc = glGetUniformLocation(this->program, "glColor");
+        this->u3Loc = glGetUniformLocation(this->program, "u_DarkenValue");
+        this->u4Loc = glGetUniformLocation(this->program, "u_UvMatrix");
+        this->u5Loc = glGetUniformLocation(this->program, "u_UVAnimation");
 
         glUseProgram(this->program);
         glUniform1i(this->u0Loc, 0);

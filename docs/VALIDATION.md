@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## ColorMixAdd ARM source gate (2026-10-30)
+
+Original ARM embedded GLSL and eight ordered input names replace
+placeholders; both arrays were byte-verified against the ELF. Native
+`gof2` and ARM64 static builds pass, ARMv7 compiles 209/209 units,
+and the strict ARM64 shared library retains 53 JNI exports. Focused
+verification remains **5/6 linked-exact**, **98.9% source-shape**,
+and **97.4% strict fuzzy**; `SetInActive` remains nonexact with the
+same behavior. The full corpus compares **4,323/4,524** originals
+over 4,745 pairs, **94.87% / 84.46%**, **2,650 linked-exact / 1,086
+byte-exact**, zero skipped, and unchanged exact sets. No phone run
+was performed; see
+[evidence and limits](COLOR_MIX_ADD_ARM_2026-10-30.md).
+
 ## SimpleRefractionShader ARM gate (2026-10-30)
 
 Original ARM embedded GLSL and 14 ordered input names replace
