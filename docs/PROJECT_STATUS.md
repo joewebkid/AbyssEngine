@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (legacy OpenGL capability gate)
+
+`Engine::GlEnable` now rejects internal capabilities above the original
+ARM threshold before calling OpenGL in the non-shader path. This keeps
+`PaintCanvas` shader-state capability values out of legacy GL calls.
+Windows and ARM64 static builds pass, and ARMv7 compiles 209/209 units.
+The full corpus remains **4,323/4,524** originals over 4,749 pairs,
+**95.12% source-shape / 84.82% strict fuzzy**, **2,677 linked-exact /
+1,091 byte-exact**, zero skipped and 201 missing. Complete exact sets
+show no losses. Live legacy rendering remains unverified while device
+work is deferred. Next offline priority: resolve another bounded
+behavior or ABI gap from original ARM evidence. See
+[capability-gate evidence](ENGINE_GL_ENABLE_LEGACY_CAP_GATE_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (virtual-input key-state table)
 
 `Globals::keys` now has the original 1,020-byte size as a 255-word

@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Legacy OpenGL capability gate (2026-10-31)
+
+Original ARM `Engine::GlEnable` at `0x84df0–0x84e0a` returns for
+capabilities whose upper bits exceed `0x10` before the non-shader
+OpenGL calls. That gate is restored. Windows and ARM64 static builds
+pass; ARMv7 compiles 209/209 units. Focused `GlEnable` rises
+**43.1% / 14.8% → 43.8% / 16.3%** source-shape / strict fuzzy.
+Full corpus: **4,323/4,524** originals over 4,749 pairs,
+**95.12% / 84.82%**, **2,677 linked-exact / 1,091 byte-exact**,
+zero skipped and 201 missing; complete exact sets have no losses.
+See [evidence and limits](ENGINE_GL_ENABLE_LEGACY_CAP_GATE_ARM_2026-10-31.md).
+
 ## Virtual-input key-table gate (2026-10-31)
 
 Native `gof2` and ARM64 static builds pass; ARMv7 compiles 209/209

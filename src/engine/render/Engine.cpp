@@ -1631,6 +1631,9 @@ void Engine::LightSetLightColorSpecular(float red, float green, float blue, unsi
 
 void Engine::GlEnable(unsigned int cap, bool enable) {
     if (g_Engine_useShaders == 0) {
+        // Internal capabilities above this range are shader-state bits, not GL enums.
+        if ((cap >> 20) > 0x10)
+            return;
         unsigned int glCap = cap == 0x1000000 ? 0xbc0 : cap;
         if (enable) {
             return glEnable(glCap);
