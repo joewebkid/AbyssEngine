@@ -84,8 +84,12 @@ void ShaderUpdateRimColor();
 void ShaderUpdateMaterialColor();
 #endif
 
+// The original ARM code accesses these rendering globals through the GOT.
+bool g_Engine_useShaders;
+float g_Engine_texEnv;
+bool g_Engine_texEnvDirty;
+
 namespace {
-    int g_Engine_useShaders;
     int g_Engine_supportsFBO;
 
     int g_Engine_defaultShader;
@@ -99,9 +103,6 @@ namespace {
     int g_Engine_shaderPostA;
     int g_Engine_shaderPostB;
     int g_Engine_shaderPostC;
-
-    float g_Engine_texEnv;
-    int g_Engine_texEnvDirty;
 
     uint32_t g_Engine_postEffectBW;
     uint32_t g_Engine_postEffectBlur;

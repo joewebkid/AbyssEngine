@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Engine rendering globals gate (2026-10-30)
+
+The shader-mode and texture-environment dirty flags use the byte
+storage seen in ARM, and the three rendering globals retain external
+linkage. Native `gof2` and ARM64 static builds pass; ARMv7 compiles
+209/209 units. Focused `SetTextures` improves to **95.3% source-shape /
+71.6% strict fuzzy** and remains nonexact. The full corpus compares
+**4,323/4,524** originals across 4,745 pairs, **94.89% / 84.53%**,
+**2,659 linked-exact / 1,087 byte-exact**, zero skipped and 201 missing.
+Both exact-symbol sets retain every preceding member, with three new
+linked-exact Engine functions. Live GL behavior remains unverified; see
+[evidence and limits](ENGINE_RENDER_GLOBALS_ARM_2026-10-30.md).
+
 ## BlurShader RenderEffect matrix gate (2026-10-30)
 
 The long overload passes the original 15-element Matrix instead of

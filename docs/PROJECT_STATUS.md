@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (Engine rendering globals)
+
+The ARM-observed shader mode and texture-environment dirty flags now
+use byte storage, and three rendering globals retain the external
+linkage indicated by the original GOT accesses. `Engine::SetTextures`
+source-shape improves **86.3% → 95.3%**, strict fuzzy **51.5% →
+71.6%**; it remains nonexact. Native and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. The full corpus compares **4,323/4,524**
+originals across 4,745 pairs: **94.89% source-shape / 84.53% strict
+fuzzy**, **2,659 linked-exact / 1,087 byte-exact**, zero skipped, 201
+missing, and no exact-set losses. Three Engine functions newly reach
+linked-exact. The 201 missing names are library/runtime symbols, not
+named AbyssEngine or GOF2 functions. Live texture-state behavior remains
+unverified while phone testing is deferred. Next, trace original GL
+state once a device is available; meanwhile continue bounded source
+recovery. See [rendering-global evidence](ENGINE_RENDER_GLOBALS_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (BlurShader RenderEffect matrix)
 
 The long BlurShader::RenderEffect now passes the 15-element Matrix
