@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (SandboxShader live recovery)
+
+Original ARM embedded SandboxShader GLSL and twelve queried names
+replace placeholders. The corrected attribute order agrees with the
+existing mesh-data routing. In the same ARM64 Android 15 emulator
+startup sample, shader compile failures fell **19 → 18** and
+successful links rose **37 → 38**. Native and ARM64 builds pass;
+ARMv7 compiles 209/209 units. Focused SandboxShader remains **100%
+source-shape** with six linked-exact functions. The full corpus remains
+**4,323/4,524** originals over 4,745 pairs, **94.86% source-shape /
+84.43% strict fuzzy**, **2,638 linked-exact / 1,086 byte-exact**,
+with zero exact-set losses. The rebuilt menu remains visually
+incomplete. Next, trace the texture-target conflict for names 2/5 and
+compare `Engine::SetTextures` to original ARM. See
+[SandboxShader evidence](ARM64_SANDBOX_SHADER_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (CubeNormalMapping shader live recovery)
 
 Original ARM embedded CubeNormalMapping GLSL and 18 queried names replace

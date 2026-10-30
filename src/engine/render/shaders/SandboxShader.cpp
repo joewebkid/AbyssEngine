@@ -1,4 +1,5 @@
 #include "engine/render/shaders/SandboxShader.h"
+#include "engine/render/shaders/EmbeddedSandboxShader.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
 #include <GLES2/gl2.h>
@@ -51,21 +52,22 @@ namespace AbyssEngine {
     }
 
     void SandboxShader::Init(Engine *) {
-        this->program = this->ES2LoadProgram("SandboxShader.vsh", "SandboxShader.fsh");
+        this->program = this->ES2LoadProgram(EmbeddedSandboxShader::vertex,
+                                            EmbeddedSandboxShader::fragment);
 
         this->attrPosition = glGetAttribLocation(this->program, "a_position");
-        this->attrNormal = glGetAttribLocation(this->program, "a_normal");
-        this->attrTangent = glGetAttribLocation(this->program, "a_tangent");
-        this->attrBinormal = glGetAttribLocation(this->program, "a_binormal");
-        this->attrTexCoord = glGetAttribLocation(this->program, "a_texCoord");
+        this->attrNormal = glGetAttribLocation(this->program, "a_texCoord");
+        this->attrTangent = glGetAttribLocation(this->program, "a_normal");
+        this->attrBinormal = glGetAttribLocation(this->program, "a_tangent");
+        this->attrTexCoord = glGetAttribLocation(this->program, "a_bitangent");
 
-        this->uniformA = glGetUniformLocation(this->program, "u_a");
-        this->uniformB = glGetUniformLocation(this->program, "u_b");
-        this->uniformC = glGetUniformLocation(this->program, "u_c");
-        this->uniformD = glGetUniformLocation(this->program, "u_d");
-        this->uniformE = glGetUniformLocation(this->program, "u_e");
-        this->uniformF = glGetUniformLocation(this->program, "u_f");
-        this->uniformG = glGetUniformLocation(this->program, "u_g");
+        this->uniformA = glGetUniformLocation(this->program, "u_WorldMatrix");
+        this->uniformB = glGetUniformLocation(this->program, "u_light_dir");
+        this->uniformC = glGetUniformLocation(this->program, "u_eye_pos");
+        this->uniformD = glGetUniformLocation(this->program, "s_texture_base");
+        this->uniformE = glGetUniformLocation(this->program, "s_texture_norm");
+        this->uniformF = glGetUniformLocation(this->program, "glColor");
+        this->uniformG = glGetUniformLocation(this->program, "u_AmbientColor");
 
         glUseProgram(this->program);
         glUniform1i(this->uniformD, 0);
