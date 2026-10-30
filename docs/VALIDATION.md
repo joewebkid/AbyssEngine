@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## VertexColorShader original GLSL and ARM gate (2026-10-30)
+
+The original ARM `VertexColorShader::Init` supplies two GLSL strings and
+15 real attribute/uniform names. Both embedded strings in the recovered
+source were verified byte-identical to the original ELF. Native `gof2`
+and ARM64 static builds pass; ARMv7 compiles 209/209 units. Focused ARM
+comparison gives six functions at **100% source-shape / 100% strict
+fuzzy**, all six linked-exact. A strict ARM64 shared library keeps the
+same 53 JNI exports, and a signed APK is prepared for parallel install
+on Poco X3. The full corpus remains **4,323/4,524**, **94.86% /
+84.43%**, **2,638 linked-exact / 1,086 byte-exact** with zero exact-set
+losses. The Poco install was rejected by Play Protect, so this shader
+still lacks a device-runtime gate. See
+[evidence and limits](ARM64_VERTEX_COLOR_SHADER_2026-10-30.md).
+
 ## `Engine::SetTextures` first-slot ARM and emulator gate (2026-10-30)
 
 Original ARM always binds the first texture to `GL_TEXTURE_2D`. The
