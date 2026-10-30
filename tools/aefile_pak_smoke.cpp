@@ -110,5 +110,16 @@ int main(int argc, char **argv) {
     AEFile::Release();
     AEFile::Release();
     assert(interface.opens() == 8 && interface.closes() == 8);
+
+    auto *ordinaryStream = static_cast<FileInterface *>(
+        interface.OpenRead(String("pak/fixture.pak"), 0, false, 0, 0, 0));
+    assert(ordinaryStream != nullptr);
+    auto *ordinary = new AENormalFile(ordinaryStream);
+    const unsigned ordinaryCloseCalls = interface.closeCalls();
+    assert(ordinary->Release() == 1);
+    assert(interface.closeCalls() == ordinaryCloseCalls + 2);
+    delete ordinary;
+    assert(interface.closeCalls() == ordinaryCloseCalls + 2);
+    assert(interface.opens() == 9 && interface.closes() == 9);
     std::puts("AEFile raw PAK registration, fallback and lifetimes: OK");
 }

@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (AENormalFile stream release)
+
+`AENormalFile::Release` now calls the owned interface's virtual `Close`
+before deleting it, matching the original Android ARM sequence and
+closing a real ownership gap for implementations without destructor
+cleanup. Focused `Release` improves **80.6% / 82.8% → 100.0% / 100.0%**
+source-shape / strict fuzzy and becomes byte-exact. Both destructor
+aliases become linked-exact; all 10 focused unit symbols reach 100%
+in both metrics. The production file test passes at `-O0/-O2`, checking
+explicit close, one actual stream close and idempotent destruction.
+Native and ARM64 static builds pass; ARMv7 compiles 209/209 units. Full
+corpus: **4,323/4,524** originals over 4,749 pairs, **95.05%
+source-shape / 84.72% strict fuzzy**, **2,673 linked-exact / 1,091
+byte-exact**, zero skipped and 201 missing. No exact match is lost.
+Alternate interface implementations and live Android ownership remain
+unverified; device testing stays deferred. Next offline priority:
+inspect a bounded Android file-open or JNI gap with primary ARM
+evidence. See [normal-file release evidence](AENORMAL_RELEASE_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (AEPakFile stream release)
 
 `AEPakFile::Release` now calls the owned file interface's virtual

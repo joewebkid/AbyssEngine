@@ -38,6 +38,8 @@ uint32_t AENormalFile::GetFileSize() {
 
 uint32_t AENormalFile::Release() {
     if (file != nullptr) {
+        // Original ARM closes the stream before invoking its deleting destructor.
+        file->Close();
         delete file;
     }
     file = nullptr;

@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## AENormalFile stream-release gate (2026-10-31)
+
+The production file test passes at `-O0/-O2`, counting the explicit
+close, idempotent destructor close and one actual stream close. Native
+`gof2` and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+Focused `Release` is **100.0% source-shape / 100.0% strict fuzzy** and
+byte-exact; the entire 10-symbol `AENormalFile` unit reaches 100% in
+both focused metrics. Full corpus: **4,323/4,524** originals over
+4,749 pairs, **95.05% / 84.72%**, **2,673 linked-exact / 1,091
+byte-exact**, zero skipped and 201 missing. Complete exact-symbol sets
+gain three linked-exact and one byte-exact matches with no losses.
+Live Android ownership remains unverified; see
+[evidence and limits](AENORMAL_RELEASE_ARM_2026-10-31.md).
+
 ## AEPakFile stream-release gate (2026-10-31)
 
 The production PAK test passes at `-O0/-O2`, counting the explicit
