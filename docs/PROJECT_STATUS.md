@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (VCAT ARM shader sources)
+
+Original embedded GLSL and all 15 ordered input names replace
+`VertexColorAlphaTextureShader` placeholders. Both strings, including
+the UTF-8 bytes in one GLSL comment, are byte-identical to the ARM
+ELF. Native and ARM64 builds pass; ARMv7 compiles 209/209 units and
+the strict ARM64 shared library retains 53 JNI exports. Focused
+verification remains **6/6 linked-exact**, with **100% source-shape /
+100% strict fuzzy**. The full corpus compares **4,323/4,524**
+originals across 4,745 pairs, **94.87% / 84.46%**, **2,650
+linked-exact / 1,086 byte-exact**, zero skipped, and unchanged exact
+sets. The signed ARM64 APK containing this packet remains unrun on
+Poco. Next, recover another shader with placeholder sources, such as
+`TextureConference`, and later perform an allowed phone run. See
+[VCAT evidence](VCAT_SHADER_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (GlowShader ARM shader sources)
 
 Original embedded GLSL and five ordered input names replace

@@ -1,4 +1,5 @@
 #include "engine/render/shaders/VertexColorAlphaTextureShader.h"
+#include "engine/render/shaders/EmbeddedVertexColorAlphaTextureShader.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
 #include <GLES2/gl2.h>
@@ -17,25 +18,26 @@ namespace AbyssEngine {
     }
 
     void VertexColorAlphaTextureShader::Init(Engine *) {
-        int program = this->ES2LoadProgram("VCATShader.vsh", "VCATShader.fsh");
+        int program = this->ES2LoadProgram(EmbeddedVertexColorAlphaTextureShader::vertex,
+                                           EmbeddedVertexColorAlphaTextureShader::fragment);
         this->program = program;
 
-        this->attrib0 = glGetAttribLocation(program, "a0");
-        this->attrib1 = glGetAttribLocation(this->program, "a1");
-        this->attrib2 = glGetAttribLocation(this->program, "a2");
-        this->attrib3 = glGetAttribLocation(this->program, "a3");
-        this->attrib4 = glGetAttribLocation(this->program, "a4");
-        this->attrib5 = glGetAttribLocation(this->program, "a5");
+        this->attrib0 = glGetAttribLocation(program, "a_vertexColor");
+        this->attrib1 = glGetAttribLocation(this->program, "a_position");
+        this->attrib2 = glGetAttribLocation(this->program, "a_texCoord");
+        this->attrib3 = glGetAttribLocation(this->program, "a_normal");
+        this->attrib4 = glGetAttribLocation(this->program, "a_tangent");
+        this->attrib5 = glGetAttribLocation(this->program, "a_bitangent");
 
-        this->uniform0 = glGetUniformLocation(this->program, "u0");
-        this->uniform1 = glGetUniformLocation(this->program, "u1");
-        this->uniform2 = glGetUniformLocation(this->program, "u2");
-        this->uniform3 = glGetUniformLocation(this->program, "u3");
-        this->uniform4 = glGetUniformLocation(this->program, "u4");
-        this->uniform5 = glGetUniformLocation(this->program, "u5");
-        this->uniform6 = glGetUniformLocation(this->program, "u6");
-        this->uniform7 = glGetUniformLocation(this->program, "u7");
-        this->uniform8 = glGetUniformLocation(this->program, "u8");
+        this->uniform0 = glGetUniformLocation(this->program, "u_ModelViewProjectionMatrix");
+        this->uniform1 = glGetUniformLocation(this->program, "u_ModelMatrix");
+        this->uniform2 = glGetUniformLocation(this->program, "u_lightdirmodel");
+        this->uniform3 = glGetUniformLocation(this->program, "u_eyeposmodel");
+        this->uniform4 = glGetUniformLocation(this->program, "s_texture");
+        this->uniform5 = glGetUniformLocation(this->program, "glColor");
+        this->uniform6 = glGetUniformLocation(this->program, "u_AmbientColor");
+        this->uniform7 = glGetUniformLocation(this->program, "u_DiffuseColor");
+        this->uniform8 = glGetUniformLocation(this->program, "u_SpecularColor");
 
         glUseProgram(this->program);
         glUniform1i(this->uniform4, 0);
