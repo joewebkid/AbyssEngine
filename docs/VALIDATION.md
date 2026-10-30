@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## FileRead ship-parts gate (2026-10-30)
+
+The production loader passes source-extracted host tests for ten parsed
+fields, signed group identity and temporary path lifetime at `-O0/-O2`.
+Native `gof2` and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+Focused `loadShipParts` reaches **97.7% source-shape / 76.4% strict fuzzy**
+and remains nonexact. Full corpus: **4,323/4,524** originals across 4,748
+pairs, **94.99% / 84.66%**, **2,664 linked-exact / 1,088 byte-exact**,
+zero skipped and 201 missing. Both exact-symbol sets are unchanged.
+Real asset parsing remains unverified; see
+[evidence and limits](FILE_READ_SHIP_PARTS_ARM_2026-10-30.md).
+
 ## FileInterfaceAndroid JNI read gate (2026-10-30)
 
 The production `Read` body passes host mock JNI tests for full read, short

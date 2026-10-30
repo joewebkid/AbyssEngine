@@ -773,51 +773,44 @@ Array<int32_t> *FileRead::loadStationParts(int32_t id, int32_t special) {
 }
 
 Array<int32_t> *FileRead::loadShipParts(int32_t id) {
-    String path("data/bin/shipparts.bin");
-
     Array<int32_t> *parts = 0;
-    if (AEFile::FileExist(path) != 0) {
+    if (AEFile::FileExist(String("data/bin/shipparts.bin")) != 0) {
         uint32_t handle;
         AEFile::OpenRead("data/bin/shipparts.bin", &handle);
 
         int32_t wanted = id + 1;
-        for (uint32_t i = 0; i <= 0x40; i++) {
-            if (i > 0x3f) {
-                AEFile::Close(handle);
-                break;
-            }
-            char group;
-            char count;
+        for (uint32_t i = 0; i < 0x40; i++) {
+            int8_t group;
+            int8_t count;
             AEFile::Read(group, handle);
             AEFile::Read(count, handle);
 
             parts = new Array<int32_t>();
-            ArraySetLength<int32_t>((int8_t) count * 10, *parts);
-            int32_t *data = parts->data();
+            ArraySetLength<int32_t>(count * 10, *parts);
             for (uint32_t off = 0; off < parts->size(); off += 10) {
                 int16_t value;
                 AEFile::ReadSwitched(value, handle);
-                data[off] = value;
-                AEFile::ReadSwitched(data[off + 1], handle);
-                AEFile::ReadSwitched(data[off + 2], handle);
-                AEFile::ReadSwitched(data[off + 3], handle);
+                parts->data()[off] = value;
+                AEFile::ReadSwitched(parts->data()[off + 1], handle);
+                AEFile::ReadSwitched(parts->data()[off + 2], handle);
+                AEFile::ReadSwitched(parts->data()[off + 3], handle);
                 AEFile::ReadSwitched(value, handle);
-                data[off + 4] = value;
+                parts->data()[off + 4] = value;
                 AEFile::ReadSwitched(value, handle);
-                data[off + 5] = value;
+                parts->data()[off + 5] = value;
                 AEFile::ReadSwitched(value, handle);
-                data[off + 6] = value;
+                parts->data()[off + 6] = value;
                 AEFile::ReadSwitched(value, handle);
-                data[off + 7] = value;
+                parts->data()[off + 7] = value;
                 AEFile::ReadSwitched(value, handle);
-                data[off + 8] = value;
+                parts->data()[off + 8] = value;
                 AEFile::ReadSwitched(value, handle);
-                data[off + 9] = value;
+                parts->data()[off + 9] = value;
             }
-            if (wanted == (int8_t) group) {
-                break;
-            }
+            if (wanted == group)
+                return parts;
         }
+        AEFile::Close(handle);
     }
     return parts;
 }

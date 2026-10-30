@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (FileRead ship-parts loader)
+
+`loadShipParts` now uses the original signed-byte `AEFile::Read` overload
+for group and count, destroys the temporary existence-check path before
+opening the file, and reloads array storage during the ten-field parse.
+Its focused ARM source-shape improves **70.6% → 97.7%** and strict fuzzy
+**35.5% → 76.4%**; it remains nonexact. A source-extracted host test checks
+field order, signed group identity and path lifetime at `-O0/-O2`.
+Native and ARM64 static builds pass; ARMv7 compiles 209/209 units. The
+full corpus compares **4,323/4,524** originals across 4,748 pairs:
+**94.99% source-shape / 84.66% strict fuzzy**, **2,664 linked-exact /
+1,088 byte-exact**, zero skipped and 201 missing. Both exact-symbol sets
+are unchanged. Real `shipparts.bin` records and live ownership remain
+unverified; device testing stays deferred. Next offline priority:
+`AEFile::findPakFile` archive lookup. See
+[ship-parts evidence](FILE_READ_SHIP_PARTS_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (FileInterfaceAndroid JNI read)
 
 The JNI `Read` path now uses the original environment and method cache,
