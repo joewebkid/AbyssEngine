@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (SimpleRefractionShader ARM recovery)
+
+Original embedded GLSL and all 14 ordered input names replace
+`SimpleRefractionShader` placeholders; both strings are byte-identical
+to the ARM ELF. The fifth query is an attribute. Attribute fields now
+carry their actual texcoord, normal, tangent, and bitangent meanings;
+the two sampler locations are read directly from adjacent fields, and
+display dimensions undergo signed conversion. Native and ARM64
+builds pass; ARMv7 compiles 209/209 units. Focused verification rises
+from **4/6** to **6/6 linked-exact**, with **100% source-shape / 100%
+strict fuzzy**. The full corpus compares **4,323/4,524** originals
+over 4,745 pairs, **94.87% / 84.46%**, **2,650 linked-exact / 1,086
+byte-exact**, zero skipped, and no exact-symbol losses. The signed
+ARM64 APK remains unrun on Poco. Next, restore `ColorMixAdd` shader
+contents/inputs and later verify an allowed phone run. See
+[SimpleRefractionShader evidence](SIMPLE_REFRACTION_SHADER_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (EnergyShield ARM recovery)
 
 Original embedded GLSL and all 14 input names replace `EnergyShield`

@@ -21,10 +21,10 @@ namespace AbyssEngine {
         static int ShaderIndex;
 
         int aPositionLoc;
+        int aTexCoordLoc;
         int aNormalLoc;
         int aTangentLoc;
-        int aTexCoordLoc;
-        int uM0Loc;
+        int aBitangentLoc;
         int uM1Loc;
         int uTex0Loc;
         int uTex1Loc;
