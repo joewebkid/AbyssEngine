@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## FileInterfaceAndroid JNI read gate (2026-10-30)
+
+The production `Read` body passes host mock JNI tests for full read, short
+read, and exception handling at `-O0/-O2`. Native `gof2` and ARM64 static
+builds pass; ARMv7 compiles 209/209 units. Focused `Read` reaches **96.0%**
+source-shape / **90.3%** strict fuzzy and remains nonexact. Full corpus:
+**4,323/4,524** originals across 4,748 pairs, **94.99% / 84.66%**,
+**2,664 linked-exact / 1,088 byte-exact**, zero skipped and 201 missing.
+Both exact-symbol sets have no losses; one JNI wrapper becomes linked-exact.
+Live JNI behavior and `env` initialization remain unverified; see
+[evidence and limits](FILE_ANDROID_JNI_READ_ARM_2026-10-30.md).
+
 ## FileInterfaceAndroid JNI write-stream gate (2026-10-30)
 
 The constructor selects the ARM-observed `read`/`write` and close methods;

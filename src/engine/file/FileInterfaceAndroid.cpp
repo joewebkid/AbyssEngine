@@ -6,10 +6,6 @@
 #include <cstdio>
 #include <new>
 
-unsigned int JNI_CallIntMethod(void *env, void *m, void *arg0, void *arg1);
-
-void JNI_CallVoidMethod(void *env, void *m, void *arg, ...);
-
 // The opaque void* JNI handles used below are JNIEnv pointers: a pointer to a
 // pointer to the JNINativeInterface function table.  Convert each raw offset
 // load into a named function-table member access.  The byte offsets used by the
@@ -154,9 +150,6 @@ void FileInterfaceAndroid::SetAppRootDir(void *p) {
         this->appRootDir = p;
 }
 
-static void **gEnvR = nullptr;
-static void *gReadMidArg = nullptr;
-
 uint32_t FileInterfaceAndroid::Read(uint32_t n, void *buf) {
     if (this->zipFile != 0)
         return zip_fread((zip_file *) this->zipFile, buf, n) == n;
@@ -165,22 +158,25 @@ uint32_t FileInterfaceAndroid::Read(uint32_t n, void *buf) {
     if (this->jniStream == 0)
         return false;
 
-    void *r9 = *gEnvR;
-    void *env = *(void **) r9;
-    JNIEnv *jenv = reinterpret_cast<JNIEnv *>(env);
-    jbyteArray arr = JniTable(env)->NewByteArray(jenv, (jsize) n);
-    unsigned int got = JNI_CallIntMethod(*(void **) r9, this->jniStream, *(void **) gReadMidArg, arr);
+    jbyteArray arr = reinterpret_cast<JNIEnv *>(FileInterfaceAndroid::env)->NewByteArray((jsize) n);
+    jint got = reinterpret_cast<JNIEnv *>(FileInterfaceAndroid::env)->CallIntMethod(
+        reinterpret_cast<jobject>(this->jniStream),
+        reinterpret_cast<jmethodID>(FileInterfaceAndroid::methodRead), arr);
 
-    bool ok;
-    if (JniTable(env)->ExceptionOccurred(jenv) == 0 && got == n) {
-        JniTable(env)->GetByteArrayRegion(jenv, arr, 0, (jsize) n, (jbyte *) buf);
+    bool ok = false;
+    if (reinterpret_cast<JNIEnv *>(FileInterfaceAndroid::env)->ExceptionOccurred() != 0) {
+        reinterpret_cast<JNIEnv *>(FileInterfaceAndroid::env)->ExceptionDescribe();
+        reinterpret_cast<JNIEnv *>(FileInterfaceAndroid::env)->ExceptionClear();
+    } else if (got == n) {
+        reinterpret_cast<JNIEnv *>(FileInterfaceAndroid::env)->GetByteArrayRegion(arr, 0, (jsize) n, (jbyte *) buf);
+        String bytes;
+        for (uint32_t i = 0; i < n; ++i) {
+            bytes += String(" ", false);
+            bytes += String(static_cast<char>(static_cast<const unsigned char *>(buf)[i]));
+        }
         ok = true;
-    } else {
-        JniTable(env)->ExceptionDescribe(jenv);
-        JniTable(env)->ExceptionClear(jenv);
-        ok = false;
     }
-    JniTable(env)->DeleteLocalRef(jenv, arr);
+    reinterpret_cast<JNIEnv *>(FileInterfaceAndroid::env)->DeleteLocalRef(arr);
     return ok;
 }
 

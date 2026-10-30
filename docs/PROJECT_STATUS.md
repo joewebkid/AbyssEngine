@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (FileInterfaceAndroid JNI read)
+
+The JNI `Read` path now uses the original environment and method cache,
+distinguishes a short read from a Java exception, copies bytes only after a
+complete read, and releases its local array reference. Its ARM source-shape
+improves **21.0% → 96.0%** and strict fuzzy **13.2% → 90.3%**; it remains
+nonexact. A host JNI mock checks success, short read, and exception paths at
+`-O0/-O2`. Native and ARM64 static builds pass; ARMv7 compiles 209/209
+units. The full corpus compares **4,323/4,524** originals across 4,748
+pairs: **94.99% source-shape / 84.66% strict fuzzy**, **2,664 linked-exact /
+1,088 byte-exact**, zero skipped and 201 missing. Exact-symbol sets have no
+losses; the JNI call wrapper adds one linked-exact match. Initialization of
+`FileInterfaceAndroid::env` remains unconfirmed, so live JNI file I/O is not
+claimed and device testing stays deferred. Next offline priority: inspect
+the low-shape `FileRead::loadShipParts` loader against ARM evidence. See
+[JNI read evidence](FILE_ANDROID_JNI_READ_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (FileInterfaceAndroid JNI write stream)
 
 The JNI stream constructor now selects the original `read`/`write` and
