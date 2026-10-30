@@ -1,4 +1,5 @@
 #include "engine/render/shaders/GreenShader.h"
+#include "engine/render/shaders/EmbeddedGreenShader.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
 #include <GLES2/gl2.h>
@@ -13,23 +14,24 @@ namespace AbyssEngine {
     }
 
     void GreenShader::Init(Engine *) {
-        this->program = this->ES2LoadProgram("GreenShader.vsh", "GreenShader.fsh");
+        this->program = this->ES2LoadProgram(EmbeddedGreenShader::vertex,
+                                             EmbeddedGreenShader::fragment);
 
-        this->a0Loc = glGetAttribLocation(this->program, "a0");
-        this->a1Loc = glGetAttribLocation(this->program, "a1");
-        this->a2Loc = glGetAttribLocation(this->program, "a2");
-        this->a3Loc = glGetAttribLocation(this->program, "a3");
-        this->a4Loc = glGetAttribLocation(this->program, "a4");
+        this->a0Loc = glGetAttribLocation(this->program, "a_position");
+        this->a1Loc = glGetAttribLocation(this->program, "a_texCoord");
+        this->a2Loc = glGetAttribLocation(this->program, "a_normal");
+        this->a3Loc = glGetAttribLocation(this->program, "a_tangent");
+        this->a4Loc = glGetAttribLocation(this->program, "a_bitangent");
 
-        this->u0Loc = glGetUniformLocation(this->program, "u0");
-        this->u1Loc = glGetUniformLocation(this->program, "u1");
-        this->u2Loc = glGetUniformLocation(this->program, "u2");
-        this->u3Loc = glGetUniformLocation(this->program, "u3");
-        this->u4Loc = glGetUniformLocation(this->program, "u4");
-        this->u5Loc = glGetUniformLocation(this->program, "u5");
-        this->u6Loc = glGetUniformLocation(this->program, "u6");
-        this->u7Loc = glGetUniformLocation(this->program, "u7");
-        this->u8Loc = glGetUniformLocation(this->program, "u8");
+        this->u0Loc = glGetUniformLocation(this->program, "u_ModelViewProjectionMatrix");
+        this->u1Loc = glGetUniformLocation(this->program, "ModelMatrix");
+        this->u2Loc = glGetUniformLocation(this->program, "lightdirmodel");
+        this->u3Loc = glGetUniformLocation(this->program, "u_eyeposmodel");
+        this->u4Loc = glGetUniformLocation(this->program, "s_texture");
+        this->u5Loc = glGetUniformLocation(this->program, "glColor");
+        this->u6Loc = glGetUniformLocation(this->program, "u_AmbientColor");
+        this->u7Loc = glGetUniformLocation(this->program, "u_DiffuseColor");
+        this->u8Loc = glGetUniformLocation(this->program, "u_SpecularColor");
 
         glUseProgram(this->program);
         glUniform1i(this->u4Loc, 0);

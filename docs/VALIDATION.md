@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## GreenShader ARM source gate (2026-10-30)
+
+Two original embedded GLSL strings and 14 ordered query names replace
+`GreenShader` placeholders. Both arrays match the ARM ELF byte-for-byte.
+Native `gof2` and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+Focused verification remains **6/6 linked-exact**, **100% source-shape /
+100% strict fuzzy**. The full corpus compares **4,323/4,524** originals
+across 4,745 pairs: **94.87% / 84.47%**, **2,652 linked-exact / 1,086
+byte-exact**, zero skipped, 201 missing, and unchanged exact sets. Poco
+runtime shader compilation remains unverified; see
+[evidence and limits](GREEN_SHADER_ARM_2026-10-30.md).
+
 ## TextureConference ARM source gate (2026-10-30)
 
 The original embedded GLSL, six queried names, field offsets, and

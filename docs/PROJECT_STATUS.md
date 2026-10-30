@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (GreenShader ARM embedded sources)
+
+Original embedded GLSL and 14 ordered query names replace
+`GreenShader` placeholders; both GLSL arrays are byte-identical to
+ARM ELF ranges. Native and ARM64 static builds pass; ARMv7 compiles
+209/209 units. Focused verification remains **6/6 linked-exact**,
+**100% source-shape / 100% strict fuzzy**. The full corpus compares
+**4,323/4,524** originals across 4,745 pairs: **94.87% / 84.47%**,
+**2,652 linked-exact / 1,086 byte-exact**, zero skipped, 201 missing,
+and unchanged exact sets. The original fragment and vertex source have
+an unresolved varying/uniform mismatch; Poco runtime remains untested.
+Next, restore `MaskShader` sources and later perform an allowed phone
+run. See [GreenShader evidence](GREEN_SHADER_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (TextureConference ARM shader and time)
 
 Original embedded GLSL and six queried names replace `TextureConference`
