@@ -429,14 +429,14 @@ void AEFile::sortPakFileEntryList() {
         return;
     }
 
-    for (int32_t pass = count - 1; pass > 0; pass--) {
-        for (int32_t index = 0; index < pass; index++) {
-            AEPakFileEntry **data = entries->data();
+    for (int32_t pass = count; --pass >= 0;) {
+        for (int32_t index = 0; index != pass; ++index) {
+            AEPakFileEntry **data = g_AEFile_pakFiles->data();
             AEPakFileEntry *left = data[index];
             AEPakFileEntry *right = data[index + 1];
-            if (right->crc < left->crc) {
+            if (left->crc > right->crc) {
                 data[index] = right;
-                data[index + 1] = left;
+                g_AEFile_pakFiles->data()[index + 1] = left;
             }
         }
     }

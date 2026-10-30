@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (AEFile PAK-entry sorting)
+
+`sortPakFileEntryList` now follows the ARM outer-pass bound, inner-loop
+condition and second-slot lookup. Focused source-shape / strict fuzzy
+improves **80.4% / 27.3% → 92.0% / 35.8%**; it remains nonexact. The
+prior loop already sorted ordinary input, so this is source recovery,
+not a claimed lookup bug fix. The production-code PAK test passes at
+`-O0/-O2` with three records in descending CRC order, requiring multiple
+passes. Native and ARM64 static builds pass; ARMv7 compiles 209/209
+units. Full corpus: **4,323/4,524** originals over 4,749 pairs,
+**95.02% source-shape / 84.70% strict fuzzy**, **2,665 linked-exact /
+1,088 byte-exact**, zero skipped and 201 missing. Both exact-symbol sets
+are unchanged. Packed PAK and live Android lookup remain unverified;
+device testing stays deferred. Next offline priority: inspect a bounded
+file-layer handle or read path. See
+[sort evidence](AEFILE_PAK_SORT_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (AEFile release ownership)
 
 `AEFile::Release` now invokes the original `ArrayReleaseClasses` helper

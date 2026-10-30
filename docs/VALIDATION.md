@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## AEFile PAK-sort gate (2026-10-30)
+
+The production-code PAK test passes at `-O0/-O2` with three records
+written in descending CRC order and lookup of all three. Native `gof2`
+and ARM64 static builds pass; ARMv7 compiles 209/209 units. Focused
+`sortPakFileEntryList` reaches **92.0% source-shape / 35.8% strict
+fuzzy**, remaining nonexact. Full corpus: **4,323/4,524** originals
+over 4,749 pairs, **95.02% / 84.70%**, **2,665 linked-exact / 1,088
+byte-exact**, zero skipped and 201 missing. Both complete exact-symbol
+sets are unchanged. Packed PAK and live Android behavior remain
+unverified; see [evidence and limits](AEFILE_PAK_SORT_ARM_2026-10-30.md).
+
 ## AEFile release ownership gate (2026-10-30)
 
 The production-code PAK test passes at `-O0/-O2`, including release of

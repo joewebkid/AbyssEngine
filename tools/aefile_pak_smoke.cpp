@@ -39,6 +39,7 @@ int main(int argc, char **argv) {
     const auto pak = root / "fixture.pak";
     std::FILE *file = std::fopen(pak.string().c_str(), "wb");
     assert(file);
+    writeEntry(file, "/assets/gamma.bin", "GAMMA");
     writeEntry(file, "/assets/alpha.bin", "ALPHA");
     writeEntry(file, "/assets/beta.bin", "BETA");
     assert(std::fclose(file) == 0);
@@ -47,6 +48,8 @@ int main(int argc, char **argv) {
     assert(interface.addMount("pak/", root));
     assert(interface.OpenRead(String("pak/fixture.pak"), 0, false, 0, 0, 1000) == nullptr);
     AEFile::SetInterface(&interface);
+    assert(AEFile::crc32_ccitt(String("/assets/gamma.bin")) >
+           AEFile::crc32_ccitt(String("/assets/alpha.bin")));
     assert(AEFile::crc32_ccitt(String("/assets/alpha.bin")) >
            AEFile::crc32_ccitt(String("/assets/beta.bin")));
     AEFile::RegisterPakFile(String("pak/fixture.pak"));
@@ -60,6 +63,7 @@ int main(int argc, char **argv) {
     assert(interface.opens() == 2 && interface.closes() == 2);
 
     for (const auto &[name, expected] : {
+             std::pair{"assets/gamma.bin", "GAMMA"},
              std::pair{"assets/alpha.bin", "ALPHA"},
              std::pair{"assets/beta.bin", "BETA"}}) {
         uint32_t handle = 99;
@@ -101,6 +105,6 @@ int main(int argc, char **argv) {
     assert(interface.opens() == interface.closes() + 1);
     AEFile::Release();
     AEFile::Release();
-    assert(interface.opens() == 7 && interface.closes() == 7);
+    assert(interface.opens() == 8 && interface.closes() == 8);
     std::puts("AEFile raw PAK registration, fallback and lifetimes: OK");
 }
