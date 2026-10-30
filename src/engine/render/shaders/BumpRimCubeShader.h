@@ -34,20 +34,20 @@ namespace AbyssEngine {
         int uTexCube;
         int uGlColor;
         int uAmbientColor0;
-        int uDiffuseColor1;
+        int uAmbientColor1;
         int uDiffuseColor0;
-        int uSpecularColor1;
+        int uDiffuseColor1;
         int uSpecularColor0;
-        int uRimColor;
+        int uSpecularColor1;
         int uSpecularPower;
-        int uIsGlowMat;
+        int uRimColor;
         int uTexBiasDiffuse;
         int uTexBiasNormal;
+        int uIsGlowMat;
         int uFogColor;
         int uFogMaxDist;
         int uFogMinDist;
         int uEnableFog;
-        int uLodDist;
 
         static int ShaderIndex;
 

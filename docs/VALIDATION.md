@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BumpRimCubeShader ARM gate (2026-10-30)
+
+The original old-shader GLSL, file paths, query names, and update data
+replace placeholders; the two embedded sources match the Android ELF
+byte-for-byte. Native `gof2` and ARM64 static builds pass; ARMv7 compiles
+209/209 units. Focused verification is **5/6 linked-exact**, **100%
+source-shape / 99.5% strict fuzzy**; `UpdateMeshData` becomes linked-exact.
+The full corpus compares **4,323/4,524** originals across 4,745 pairs:
+**94.88% / 84.48%**, **2,655 linked-exact / 1,087 byte-exact**, zero
+skipped, 201 missing, and no exact losses. Poco shader compilation and
+visual behavior remain unverified; see
+[evidence and limits](BUMP_RIMCUBE_SHADER_ARM_2026-10-30.md).
+
 ## MaskShader and canvas mask ARM gate (2026-10-30)
 
 Original GLSL, seven query names, and the canvas `+0x20` mask pointer

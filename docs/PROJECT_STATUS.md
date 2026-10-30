@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (BumpRimCubeShader ARM recovery)
+
+Original embedded GLSL, shader paths, ordered GL query names, uniform
+field meanings, LOD biases, fog flag, and a missing light color upload
+restore the older `BumpRimCubeShader` path. Both GLSL arrays match the
+Android ELF byte-for-byte. Native and ARM64 static builds pass; ARMv7
+compiles 209/209 units. Focused source-shape is **100%** with **5/6
+linked-exact**; `UpdateMeshData` becomes linked-exact. The full corpus
+compares **4,323/4,524** originals across 4,745 pairs: **94.88% /
+84.48%**, **2,655 linked-exact / 1,087 byte-exact**, zero skipped,
+201 missing, and no exact losses. Poco rendering remains untested.
+Next, continue a bounded shader/engine family and perform an allowed
+phone run when available. See [BumpRimCube evidence](BUMP_RIMCUBE_SHADER_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (MaskShader and canvas mask state)
 
 Original embedded GLSL and seven ordered query names replace
