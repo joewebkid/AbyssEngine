@@ -173,11 +173,12 @@ void AEFile::Close(uint32_t handle) {
     if (handle >= files->size()) {
         return;
     }
-    AELowLevelFile *&slot = files->data()[handle];
-    if (slot != nullptr) {
-        delete slot;
+    AELowLevelFile *file = files->data()[handle];
+    if (file != nullptr) {
+        delete file;
     }
-    slot = nullptr;
+    // Deletion may change the array storage; ARM reloads the slot afterward.
+    g_AEFile_openFiles->data()[handle] = nullptr;
 }
 
 uint32_t AEFile::Read(uint32_t bytes, void *buffer, uint32_t handle) {

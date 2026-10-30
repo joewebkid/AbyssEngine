@@ -73,6 +73,8 @@ int main(int argc, char **argv) {
         assert(std::strcmp(buffer, expected) == 0);
         assert(AEFile::Read(1, buffer, handle) == 0);
         AEFile::Close(handle);
+        AEFile::Close(handle);
+        assert(AEFile::GetFileSize(handle) == 0);
         assert(interface.opens() == interface.closes());
     }
     uint32_t missing = 99;
@@ -89,6 +91,8 @@ int main(int argc, char **argv) {
         assert(std::strcmp(buffer, expected) == 0);
     }
     AEFile::Close(0);
+    AEFile::Close(0);
+    assert(AEFile::Read(1, nullptr, 0) == 0);
     assert(interface.opens() == interface.closes());
     AEFile::Release();
     assert(interface.opens() == 6 && interface.closes() == 6);

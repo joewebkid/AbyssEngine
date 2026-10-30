@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (AEFile close slot reload)
+
+`AEFile::Close` now reloads array storage after deleting a file, as the
+original ARM does, rather than retaining a potentially stale slot
+reference across the destructor. Focused source-shape / strict fuzzy
+improves **82.1% / 57.7% → 91.2% / 73.7%**; it remains nonexact. The
+production-code PAK test passes at `-O0/-O2`, including repeated close
+for numbered and zero slots. Native and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. Full corpus: **4,323/4,524** originals
+over 4,748 pairs, **95.01% source-shape / 84.69% strict fuzzy**,
+**2,664 linked-exact / 1,088 byte-exact**, zero skipped and 201 missing.
+Both exact-symbol sets are unchanged. The host test does not force array
+relocation during destruction, and live Android ownership remains
+unverified; device testing stays deferred. Next offline priority:
+inspect `AEFile::Release` ownership and cleanup order. See
+[close-path evidence](AEFILE_CLOSE_RELOAD_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (AEFile mutator path temporaries)
 
 `AEFile::FileDelete` and `SetSaveDirectory` now construct the original

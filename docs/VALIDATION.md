@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## AEFile close slot-reload gate (2026-10-30)
+
+The production-code PAK test passes at `-O0/-O2`, including repeated
+close of numbered and zero slots. Native `gof2` and ARM64 static builds
+pass; ARMv7 compiles 209/209 units. Focused `AEFile::Close` reaches
+**91.2% source-shape / 73.7% strict fuzzy**, remaining nonexact. Full
+corpus: **4,323/4,524** originals over 4,748 pairs, **95.01% /
+84.69%**, **2,664 linked-exact / 1,088 byte-exact**, zero skipped and
+201 missing. Both complete exact-symbol sets are unchanged. Reentrant
+array relocation and live Android behavior remain unverified; see
+[evidence and limits](AEFILE_CLOSE_RELOAD_ARM_2026-10-30.md).
+
 ## AEFile mutator-path gate (2026-10-30)
 
 Native `gof2` and ARM64 static builds pass; ARMv7 compiles 209/209
