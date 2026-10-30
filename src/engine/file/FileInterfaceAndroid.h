@@ -68,7 +68,7 @@ public:
 
     void *OpenAppend(String name, int p2, bool p3, unsigned int p4) override;
 
-    char *Output(char *line) override;
+    void Output(char *line) override;
 
     uint32_t FileDelete(String name) override;
 

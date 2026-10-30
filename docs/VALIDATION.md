@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## FileInterface Output ABI gate (2026-10-31)
+
+Native `gof2` and ARM64 static builds pass; ARMv7 compiles 209/209
+units. The production-code PAK and source-extracted Android read tests
+pass at `-O0/-O2`; the real-archive adapter compiles and links. Focused
+`Output` reaches **100.0% source-shape / 100.0% strict fuzzy** and is
+byte-exact and linked-exact. Full corpus: **4,323/4,524** originals
+over 4,749 pairs, **95.02% / 84.71%**, **2,667 linked-exact / 1,089
+byte-exact**, zero skipped and 201 missing. Both complete exact-symbol
+sets have no losses. Real APK/OBB runtime and live Android behavior
+remain unverified in this packet; see
+[evidence and limits](FILE_ANDROID_OUTPUT_ABI_ARM_2026-10-31.md).
+
 ## Android FileDelete argument gate (2026-10-31)
 
 The source-extracted Android host test passes at `-O0/-O2` with a

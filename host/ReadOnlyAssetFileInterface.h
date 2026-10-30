@@ -41,7 +41,7 @@ public:
     uint32_t FileGetNextEnum(String &) override;
     void Close() override;
     String GetDirPreFix() override;
-    char *Output(char *) override;
+    void Output(char *) override;
     void SetSaveDirectory(String) override;
     void ResetSaveDirectory() override;
 

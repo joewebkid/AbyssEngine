@@ -105,7 +105,7 @@ public:
         return file && std::fwrite(buf, 1, n, file) == n;
     }
     uint32_t GetFileSize() override { return 0; }
-    uint32_t FileDelete(String) override { return 0; }
+    uint32_t FileDelete(String) override;
     uint32_t GetDeviceFreeSpace() override { return 0; }
     const char *GetAppRootDir() override { return static_cast<const char *>(appRootDir); }
     void SetAppRootDir(void *path) override { appRootDir = path; }
@@ -122,7 +122,7 @@ public:
         zipFile = nullptr;
     }
     String GetDirPreFix() override { return String(""); }
-    char *Output(char *line) override { return line; }
+    void Output(char *) override {}
     void SetSaveDirectory(String) override {}
     void ResetSaveDirectory() override {}
 };

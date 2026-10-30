@@ -224,9 +224,7 @@ void *FileInterfaceAndroid::OpenAppend(String, int, bool, unsigned int) {
     return 0;
 }
 
-char *FileInterfaceAndroid::Output(char *line) {
-    return line;
-}
+void FileInterfaceAndroid::Output(char *) {}
 
 uint32_t FileInterfaceAndroid::FileDelete(String name) {
     // Original Android ARM copies the path but does not remove the file.

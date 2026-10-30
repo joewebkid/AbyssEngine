@@ -139,6 +139,6 @@ void ReadOnlyAssetFileInterface::SetZipDirectory(void *) {}
 uint32_t ReadOnlyAssetFileInterface::FileEnumInit(char *, bool) { return 0; }
 uint32_t ReadOnlyAssetFileInterface::FileGetNextEnum(String &) { return 0; }
 String ReadOnlyAssetFileInterface::GetDirPreFix() { return String(""); }
-char *ReadOnlyAssetFileInterface::Output(char *line) { return line; }
+void ReadOnlyAssetFileInterface::Output(char *) {}
 void ReadOnlyAssetFileInterface::SetSaveDirectory(String) {}
 void ReadOnlyAssetFileInterface::ResetSaveDirectory() { ++saveDirectoryResets_; }

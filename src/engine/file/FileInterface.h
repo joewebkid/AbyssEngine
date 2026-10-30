@@ -45,7 +45,7 @@ public:
 
     virtual String GetDirPreFix() = 0;
 
-    virtual char *Output(char *line) = 0;
+    virtual void Output(char *line) = 0;
 
     virtual void SetSaveDirectory(String dir) = 0;
 

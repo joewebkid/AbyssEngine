@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (FileInterface Output ABI)
+
+`FileInterface::Output(char*)` and its Android and host implementations
+now have the source-backed `void` return type. The original Android
+function is a one-instruction no-op; independent Android decompilations
+and GOF1 iPhone lineage agree. Focused `Output` source-shape / strict
+fuzzy improves **76.7% / 66.7% → 100.0% / 100.0%**, becoming byte-exact
+and linked-exact. Native and ARM64 static builds pass; ARMv7 compiles
+209/209 units. The PAK and source-extracted Android read host tests pass
+at `-O0/-O2`; the real-archive adapter compiles and links. The full
+corpus compares **4,323/4,524** originals over 4,749 pairs: **95.02%
+source-shape / 84.71% strict fuzzy**, **2,667 linked-exact / 1,089
+byte-exact**, zero skipped and 201 missing. Neither exact-symbol set
+loses a match. Real APK/OBB runtime and live Android behavior remain
+unverified in this packet; device testing stays deferred. Next offline
+priority: inspect a bounded Android file-open or JNI gap. See
+[Output ABI evidence](FILE_ANDROID_OUTPUT_ABI_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (Android FileDelete argument)
 
 `FileInterfaceAndroid::FileDelete` now copies its actual `String`
