@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BoundingVolume update gate (2026-10-30)
+
+The child loop reloads the array and count after each virtual update,
+and the center is assigned through `Vector::operator=` as in ARM.
+Native `gof2` and ARM64 static builds pass; ARMv7 compiles 209/209
+units. Focused `BoundingVolume::update` reaches **100% source-shape /
+93.9% strict fuzzy** and remains nonexact. Full corpus: **4,323/4,524**
+originals over 4,745 pairs, **94.90% / 84.54%**, **2,659 linked-exact /
+1,087 byte-exact**, zero skipped and 201 missing. Both exact-symbol
+sets are unchanged. Runtime child-array mutation remains unverified;
+see [evidence and limits](BOUNDING_VOLUME_UPDATE_ARM_2026-10-30.md).
+
 ## Engine rendering globals gate (2026-10-30)
 
 The shader-mode and texture-environment dirty flags use the byte

@@ -75,19 +75,11 @@ Vector BoundingVolume::staticProjectCollisionOnSurface(const Vector &v, Array<Bo
 
 void BoundingVolume::update(float x, float y, float z) {
     if (children != nullptr) {
-        for (BoundingVolume * child
-
-
-        :
-        *children
-        )
-        {
-            child->update(x, y, z);
+        for (unsigned int i = 0; i < children->count; ++i) {
+            children->data_[i]->update(x, y, z);
         }
     }
-    centerX = x;
-    centerY = y;
-    centerZ = z;
+    *reinterpret_cast<Vector *>(&centerX) = Vector{x, y, z};
 }
 
 Vector BoundingVolume::getProjectionVector(const Vector &v) {

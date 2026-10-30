@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (BoundingVolume update)
+
+`BoundingVolume::update` now reloads its child array and count after
+each virtual child update and assigns the center through the original
+Vector operator. Focused ARM source-shape improves **42.9% → 100%**
+and strict fuzzy **28.9% → 93.9%**; it remains nonexact due to register
+scheduling. Native and ARM64 static builds pass; ARMv7 compiles 209/209
+units. The full corpus compares **4,323/4,524** originals across 4,745
+pairs: **94.90% source-shape / 84.54% strict fuzzy**, **2,659
+linked-exact / 1,087 byte-exact**, zero skipped and 201 missing, with
+no exact-set gains or losses. Runtime behavior if child updates mutate
+the array remains unverified; phone testing is deferred. Next, examine
+another bounded math or collision path from ARM evidence. See
+[BoundingVolume evidence](BOUNDING_VOLUME_UPDATE_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (Engine rendering globals)
 
 The ARM-observed shader mode and texture-environment dirty flags now
