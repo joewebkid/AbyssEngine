@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## SpecCube shader source gate (2026-10-30)
+
+Original ARM paths, four byte-identical embedded GLSL strings, and
+15 query names in each SpecCube shader replace placeholders. Native
+`gof2` and ARM64 builds pass, ARMv7 compiles 209/209 units, and the
+strict ARM64 shared library retains 53 JNI exports. Both focused units
+remain **6/6 linked-exact / 100% source-shape / 100% strict fuzzy**;
+their previous incorrect string contents scored the same. The full
+corpus compares **4,323/4,524**, **94.87% / 84.45%**, **2,644
+linked-exact / 1,086 byte-exact**, with zero skipped and unchanged
+exact-symbol sets. The signed APK has not been run on Poco due to
+Play Protect; see [evidence and limits](SPEC_CUBE_SHADER_SOURCES_ARM_2026-10-30.md).
+
 ## BumpShaderCloak ARM sources and layout gate (2026-10-30)
 
 Original ARM embedded GLSL and 26 input names replace placeholders;

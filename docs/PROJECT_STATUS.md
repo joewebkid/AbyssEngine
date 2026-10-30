@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (SpecCube shader source recovery)
+
+Original ARM file paths, four embedded GLSL strings, and 15 queried
+input names in each of `SpecCubeMapping` and `SpecCubeAlphaMapping`
+replace placeholders. The four GLSL strings are byte-identical to the
+original ELF and both query-name sequences match ARM literals.
+Native and ARM64 builds pass; ARMv7 compiles 209/209 units. All 12
+functions in the two units remain linked-exact, as they were with
+incorrect strings: this metric does not validate referenced bytes.
+The full corpus remains **4,323/4,524** originals over 4,745 pairs,
+**94.87% source-shape / 84.45% strict fuzzy**, **2,644 linked-exact /
+1,086 byte-exact**, with identical exact-symbol sets. The signed
+ARM64 APK has not been run on Poco due to the earlier Play Protect
+block. Next, verify an allowed phone run and recover another shader
+with placeholder source, such as `BumpShaderParticle`. See
+[SpecCube source evidence](SPEC_CUBE_SHADER_SOURCES_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (BumpShaderCloak ARM sources and layout)
 
 The original ARM vertex and fragment GLSL and all 26 queried input
