@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (BoundingVolume collide)
+
+`BoundingVolume::collide` now reloads its child array and count after
+each unsuccessful virtual call, as observed in Android ARM. The
+original passes this volume's center to the children, so those
+arguments remain unchanged. Focused comparison improves **74.5% →
+100% source-shape** and **40.8% → 100% strict fuzzy**; the function
+becomes linked-exact and byte-exact. Native and ARM64 static builds
+pass; ARMv7 compiles 209/209 units. The full corpus compares
+**4,323/4,524** originals across 4,745 pairs: **94.91% source-shape /
+84.55% strict fuzzy**, **2,660 linked-exact / 1,088 byte-exact**,
+zero skipped and 201 missing, with no exact-set losses. Effects of
+child-array mutation remain unverified at runtime; phone testing is
+deferred. Next, inspect `BoundingVolume::getProjectionVector` against
+its ARM vector-call sequence. See
+[collide evidence](BOUNDING_VOLUME_COLLIDE_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (BoundingVolume update)
 
 `BoundingVolume::update` now reloads its child array and count after

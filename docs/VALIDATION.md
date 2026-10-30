@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BoundingVolume collide gate (2026-10-30)
+
+The child loop reloads its array and count after each unsuccessful
+virtual call, preserving the original center arguments. Native `gof2`
+and ARM64 static builds pass; ARMv7 compiles 209/209 units. Focused
+`BoundingVolume::collide` reaches **100% source-shape / 100% strict
+fuzzy** and becomes linked-exact and byte-exact. Full corpus:
+**4,323/4,524** originals over 4,745 pairs, **94.91% / 84.55%**,
+**2,660 linked-exact / 1,088 byte-exact**, zero skipped and 201 missing.
+Both exact-symbol sets have no losses and gain this function. Runtime
+child-array mutation remains unverified; see
+[evidence and limits](BOUNDING_VOLUME_COLLIDE_ARM_2026-10-30.md).
+
 ## BoundingVolume update gate (2026-10-30)
 
 The child loop reloads the array and count after each virtual update,

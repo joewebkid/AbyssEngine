@@ -17,8 +17,8 @@ BoundingVolume::~BoundingVolume() {
 
 int BoundingVolume::collide(float, float, float) {
     if (children != nullptr) {
-        for (BoundingVolume *child: *children) {
-            if (child->collide(centerX, centerY, centerZ) != 0) {
+        for (unsigned int i = 0; i < children->count; ++i) {
+            if (children->data_[i]->collide(centerX, centerY, centerZ) != 0) {
                 return 1;
             }
         }
