@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (TextureLightShader platform recovery)
+
+TextureLightShader now uses the ELF-verified GLSL and original query
+names on Windows as well as Android. Its second-light branch follows
+the original ARM order. Native and ARM64 static builds pass; ARMv7
+compiles 209/209 units. Focused UpdateMeshData improves from
+**98.8% / 91.5%** to **99.6% / 98.7%** source-shape / strict fuzzy;
+the family retains **5/6 linked-exact**. The full corpus compares
+**4,323/4,524** originals across 4,745 pairs: **94.88% / 84.49%**,
+**2,656 linked-exact / 1,087 byte-exact**, zero skipped, 201 missing,
+and unchanged exact sets. Lighting on Poco remains untested. Next,
+inspect BlurShader platform fallback and short RenderEffect dispatch;
+see [TextureLightShader evidence](TEXTURE_LIGHT_PLATFORM_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (texture shader sources on all platforms)
 
 TextureShader and TextureAlphaTestShader now pass their confirmed

@@ -1,9 +1,7 @@
 #include "engine/render/shaders/TextureLightShader.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
-#if defined(__ANDROID__)
 #include "engine/render/shaders/EmbeddedTextureLightShader.h"
-#endif
 #include <GLES2/gl2.h>
 
 namespace AbyssEngine {
@@ -16,7 +14,6 @@ namespace AbyssEngine {
     }
 
     void TextureLightShader::Init(Engine *) {
-#if defined(__ANDROID__)
         this->program = this->ES2LoadProgram(EmbeddedTextureLightShader::vertex,
                                              EmbeddedTextureLightShader::fragment);
 
@@ -42,32 +39,6 @@ namespace AbyssEngine {
         this->uLight0Color = glGetUniformLocation(this->program, "u_AmbientColor[1]");
         this->uLight1Color = glGetUniformLocation(this->program, "u_DiffuseColor[1]");
         this->uLight2Color = glGetUniformLocation(this->program, "u_SpecularColor[1]");
-#else
-        this->program = this->ES2LoadProgram("TextureLightShader.vsh", "TextureLightShader.fsh");
-
-        this->uModelMatrix = glGetUniformLocation(this->program, "u0");
-        this->uHasScaleAnimation = glGetUniformLocation(this->program, "u1");
-
-        this->aPosition = glGetAttribLocation(this->program, "a0");
-        this->aTexCoord = glGetAttribLocation(this->program, "a1");
-
-        this->aNormal = glGetUniformLocation(this->program, "u2");
-        this->uMvpMatrix = glGetUniformLocation(this->program, "u3");
-        this->uModelViewMatrix = glGetUniformLocation(this->program, "u4");
-        this->uNormalMatrix = glGetUniformLocation(this->program, "u5");
-        this->uColor0 = glGetUniformLocation(this->program, "u6");
-        this->uColor1 = glGetUniformLocation(this->program, "u7");
-        this->uSpecularColor = glGetUniformLocation(this->program, "u8");
-        this->uTexture = glGetUniformLocation(this->program, "u9");
-        this->uAmbientColor = glGetUniformLocation(this->program, "u10");
-        this->uLight0Direction = glGetUniformLocation(this->program, "u11");
-        this->uLight1Direction = glGetUniformLocation(this->program, "u12");
-        this->uLight2Direction = glGetUniformLocation(this->program, "u13");
-        this->uShininess = glGetUniformLocation(this->program, "u14");
-        this->uLight0Color = glGetUniformLocation(this->program, "u15");
-        this->uLight1Color = glGetUniformLocation(this->program, "u16");
-        this->uLight2Color = glGetUniformLocation(this->program, "u17");
-#endif
 
         glUseProgram(this->program);
         glUniform1i(this->uTexture, 0);
@@ -93,14 +64,14 @@ namespace AbyssEngine {
             glUniform4f(this->uColor0, engine->lightDir.x, engine->lightDir.y,
                         engine->lightDir.z, engine->lightDirty[0]);
 
-            if (engine->field_0x32c < 2) {
-                glUniform3f(this->uLight0Color, 0, 0, 0);
-                glUniform3f(this->uLight1Color, 0, 0, 0);
-                glUniform3f(this->uLight2Color, 0, 0, 0);
-            } else {
+            if (engine->field_0x32c >= 2) {
                 glUniform3fv(this->uLight0Color, 1, (float *) &engine->lightSpecularShaded);
                 glUniform3fv(this->uLight1Color, 1, (float *) &engine->field_0x308);
                 glUniform3fv(this->uLight2Color, 1, (float *) &engine->particleAmbient);
+            } else {
+                glUniform3f(this->uLight0Color, 0, 0, 0);
+                glUniform3f(this->uLight1Color, 0, 0, 0);
+                glUniform3f(this->uLight2Color, 0, 0, 0);
             }
 
             glUniform4f(this->uColor1, engine->field_0x33c.x, engine->field_0x33c.y,

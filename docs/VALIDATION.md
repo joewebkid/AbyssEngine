@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## TextureLightShader platform gate (2026-10-30)
+
+The Windows path uses original Android GLSL and GL query names, and
+the second-light branch follows ARM order. Both embedded strings
+match the ELF byte-for-byte. Native gof2 and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. Focused UpdateMeshData rises to
+**99.6% source-shape / 98.7% strict fuzzy** and remains nonexact;
+the family retains **5/6 linked-exact**. Full corpus:
+**4,323/4,524** originals across 4,745 pairs, **94.88% / 84.49%**,
+**2,656 linked-exact / 1,087 byte-exact**, zero skipped, 201 missing,
+and unchanged exact-symbol sets. Poco lighting is unverified; see
+[evidence and limits](TEXTURE_LIGHT_PLATFORM_ARM_2026-10-30.md).
+
 ## Texture shader platform source gate (2026-10-30)
 
 TextureShader and TextureAlphaTestShader use six ELF-verified GLSL
