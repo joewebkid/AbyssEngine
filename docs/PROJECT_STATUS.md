@@ -1,5 +1,17 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (CubeMapping shader live recovery)
+
+Original ARM embedded CubeMapping vertex/fragment GLSL and 15 queried
+attribute/uniform names replace placeholders. In the same ARM64 Android 15
+emulator startup sample, shader compile failures fell **21 → 20** and
+successful program links rose **35 → 36**. Native and ARM64 builds pass;
+ARMv7 compiles 209/209 units. The full corpus remains **4,323/4,524**
+originals over 4,745 pairs, **94.86% source-shape / 84.43% strict fuzzy**,
+**2,638 linked-exact / 1,086 byte-exact**, with zero exact-set losses.
+The rebuilt menu remains visually incomplete. See
+[CubeMapping evidence](ARM64_CUBEMAPPING_SHADER_LIVE_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (original-game emulator observation)
 
 The original GOF2 APK and OBB again ran through the main menu into the

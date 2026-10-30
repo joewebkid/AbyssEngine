@@ -1,0 +1,72 @@
+#pragma once
+// Original Android ARM libgof2hdaa.so SHA-256:
+// 6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58
+namespace AbyssEngine {
+namespace EmbeddedCubeMappingShader {
+// ELF virtual address 0x1f6ae0; 1777 bytes; SHA-256 befc82c5f8f0e70724c5f2e26ab7d29eb2b69c5855c51687d4d8f653a32376f4
+static constexpr const char vertex[] =
+    "attribute highp\tvec3 a_position;   \n"
+    "attribute mediump\tvec3 a_normal;\t\t\n"
+    "attribute mediump\tvec2 a_texCoord;   \n"
+    "uniform highp\t mat4 u_WorldMatrix;  \n"
+    "uniform mediump mat3 u_ModelMatrix;  \n"
+    "uniform mediump vec3 u_eyeposmodel;  \n"
+    "uniform highp\t vec4 u_lightposmodel;  \n"
+    "varying mediump vec3 v_reflectdir;   \n"
+    "varying mediump    vec2 v_texCoord;     \n"
+    "varying lowp vec3  v_DiffuseLight;\t\n"
+    "varying lowp vec3  v_SpecularLight;\t\n"
+    "varying highp float\tv_rimFactor; \n"
+    "uniform lowp vec3   u_AmbientColor;\n"
+    "uniform lowp vec3   u_DiffuseColor;\n"
+    "uniform lowp vec3\tu_SpecularColor;\n"
+    "uniform mediump float u_SpecularPower;\n"
+    "void main()                  \n"
+    "{                            \n"
+    "\t// Transform position\n"
+    "   gl_Position = u_WorldMatrix * vec4(a_position, 1.0);\t\t\n"
+    "\t// Calculate eye direction in model space\n"
+    "\tmediump vec3 eyeDir = normalize( a_position - u_eyeposmodel);\n"
+    "\t//mediump vec3 eyeDir = normalize( u_eyeposmodel - a_position);\n"
+    "\t// reflect eye direction over normal and transform to world space\n"
+    "\tv_reflectdir = u_ModelMatrix * reflect(eyeDir, a_normal);\n"
+    "\thighp vec3 lightDirLocal; \n"
+    "\thighp float nDotL; \n"
+    "\tlightDirLocal = u_lightposmodel.xyz; \n"
+    "\tnDotL = dot(a_normal, lightDirLocal);\n"
+    "\tv_DiffuseLight = vec3(max(nDotL, 0.0)); \n"
+    "\t// Compute\treflection vector \n"
+    "\thighp vec3 reflection = (2.0 * a_normal * nDotL) - lightDirLocal;\t\n"
+    "   reflection = normalize(-reflect(lightDirLocal, a_normal)); \n"
+    "\t// Compute R.V \n"
+    "\thighp float rDotV = max(0.0, dot(reflection, normalize(u_eyeposmodel)));\n"
+    "\t// Compute Specular term \n"
+    "\tv_SpecularLight = u_SpecularColor * pow(rDotV, u_SpecularPower);\t\n"
+    "\tv_DiffuseLight *= u_DiffuseColor;\n"
+    "\tv_DiffuseLight += u_AmbientColor;\n"
+    "   v_texCoord = a_texCoord;  \n"
+    "\t//v_rimFactor = clamp( 1.2 - dot( normalize( u_eyeposmodel - a_position), a_normal ), 0.0, 1.0);  \n"
+    "}                            \n";
+// ELF virtual address 0x1f71d2; 1200 bytes; SHA-256 d5a84229113f9387f21d3b59baa3c7dbae1f67665107d6301a8e47140ef375e2
+static constexpr const char fragment[] =
+    "precision mediump float;                            \n"
+    "uniform samplerCube u_texture_cubemap;\t\t\t \n"
+    "uniform sampler2D\t u_texture_base;                        \n"
+    "uniform highp float u_envValue;  \n"
+    "uniform lowp vec4   u_glColor;\t\n"
+    "varying mediump vec3 v_reflectdir;   \n"
+    "varying mediump vec2 v_texCoord;                            \n"
+    "varying lowp vec3    v_DiffuseLight;\t\n"
+    "varying lowp vec3  v_SpecularLight;\t\n"
+    "varying highp float\tv_rimFactor; \n"
+    "void main()                                         \n"
+    "{                                                   \n"
+    "\t//lowp vec4 combineColor = mix(textureCube(u_texture_cubemap, v_reflectdir), texture2D( u_texture_base, v_texCoord ), (1.0- v_rimFactor)); \n"
+    "\tlowp vec4 combineColor = mix(textureCube(u_texture_cubemap, v_reflectdir), texture2D( u_texture_base, v_texCoord ), u_envValue); \n"
+    "\tgl_FragColor.xyz =  u_glColor.xyz*((v_DiffuseLight) * combineColor.xyz + v_SpecularLight);\n"
+    "\t//gl_FragColor.xyz =  u_glColor.xyz*((v_DiffuseLight) * texture2D( u_texture_base, v_texCoord ).xyz + textureCube(u_texture_cubemap, v_reflectdir).xyz + v_SpecularLight);\n"
+    "\tgl_FragColor.a = u_glColor.a * combineColor.a; \n"
+    "   //gl_FragColor = vec4(v_rimFactor, v_rimFactor, v_rimFactor, 1.0); \n"
+    "}   \t\t  \n";
+}
+}

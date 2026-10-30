@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CubeMapping original GLSL and emulator gate (2026-10-30)
+
+The original ARM `CubeMapping::Init` supplies embedded GLSL and real
+attribute/uniform names. After restoring those literals, native `gof2`
+and ARM64 static builds pass, and ARMv7 compiles 209/209 units. Focused
+comparison gives six pairs, **99.5% source-shape / 99.3% strict fuzzy**,
+with five linked-exact. A strict ARM64 shared library exports the same
+53 JNI names and has no undefined link errors. In the Android 15
+emulator, one placeholder shader compile failure disappears and one
+successful program link appears. The full ARM corpus remains
+**4,323/4,524**, **94.86% / 84.43%**, **2,638 linked-exact / 1,086
+byte-exact**; complete exact-symbol sets have zero losses. See
+[the evidence and limits](ARM64_CUBEMAPPING_SHADER_LIVE_2026-10-30.md).
+
 ## Faction-one Fighter type matrix — host gate (2026-10-24)
 
 The condition-selected small-outpost fixture now passes Windows
