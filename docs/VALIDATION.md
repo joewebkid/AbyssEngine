@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BumpShaderCloak ARM sources and layout gate (2026-10-30)
+
+Original ARM embedded GLSL and 26 input names replace placeholders;
+both GLSL arrays were byte-verified against the ELF. Three missing
+four-byte class slots restore `Init` and `UpdateMeshData` uniform
+offsets. Signed display-dimension conversion and the two-light branch
+now follow original ARM. Native and ARM64 builds pass, ARMv7 compiles
+209/209 units, and the strict ARM64 library retains 53 JNI exports.
+Focused `Init` becomes linked-exact, while `UpdateMeshData` reaches
+**99.2% source-shape / 95.7% strict fuzzy** and remains nonexact.
+The full corpus compares **4,323/4,524**, **94.87% / 84.45%**,
+**2,644 linked-exact / 1,086 byte-exact**, with zero skipped and no
+exact-set losses. The signed APK has not been run on Poco due to Play
+Protect; see [evidence and limits](BUMP_SHADER_CLOAK_ARM_2026-10-30.md).
+
 ## BumpRimCubeShader_new ARM sources and globals gate (2026-10-30)
 
 The original `LoadBindShader` paths, both byte-identical embedded GLSL

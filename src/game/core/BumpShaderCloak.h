@@ -32,6 +32,7 @@ namespace AbyssEngine {
         int uniform_u5;
         int uniform_u6;
         int uniform_u7;
+        int unknownSlotAfterSamplers;
         int uniform_u8;
         int uniform_u9;
         int uniform_u12;
@@ -41,8 +42,10 @@ namespace AbyssEngine {
         int uniform_u14;
         int uniform_u15;
         int uniform_u16;
+        int unknownSlotBeforeAnimation;
         int uniform_u18;
         int uniform_u19;
+        int unknownSlotBeforeTexelSize;
         int uniform_u17;
         int uniform_u20;
 

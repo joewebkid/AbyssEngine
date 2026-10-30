@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (BumpShaderCloak ARM sources and layout)
+
+The original ARM vertex and fragment GLSL and all 26 queried input
+names replace `BumpShaderCloak` placeholders. Three absent four-byte
+slots in its class layout were restored from `Init` store offsets;
+previous `UpdateMeshData` read neighboring uniform-location fields.
+Its display dimensions now undergo the original signed conversion,
+and the two-light branch follows the original order. Focused `Init`
+reaches **100% source-shape / 100% strict fuzzy** and becomes
+linked-exact; `UpdateMeshData` rises **98.2% → 99.2% source-shape** and
+**84.4% → 95.7% strict fuzzy**, still nonexact. Native and ARM64 builds
+pass; ARMv7 compiles 209/209 units. The full corpus compares
+**4,323/4,524** originals over 4,745 pairs, **94.87% / 84.45%**,
+**2,644 linked-exact / 1,086 byte-exact**, with one exact gain and no
+losses. The signed ARM64 APK remains unrun on Poco due to the earlier
+Play Protect block. Next, verify an allowed phone run and recover the
+remaining specular cube shader sources. See
+[BumpShaderCloak evidence](BUMP_SHADER_CLOAK_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (BumpRimCubeShader_new original ARM recovery)
 
 The original shader file paths, embedded fallback GLSL, five attribute

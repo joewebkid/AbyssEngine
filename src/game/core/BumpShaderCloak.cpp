@@ -1,4 +1,5 @@
 #include "game/core/BumpShaderCloak.h"
+#include "game/core/EmbeddedBumpShaderCloak.h"
 #include <GLES2/gl2.h>
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
@@ -13,40 +14,41 @@ namespace AbyssEngine {
     }
 
     void BumpShaderCloak::Init(Engine *engine) {
-        int program = this->ES2LoadProgram("BumpShaderCloak.vsh", "BumpShaderCloak.fsh");
+        int program = this->ES2LoadProgram(EmbeddedBumpShaderCloak::vertex,
+                                           EmbeddedBumpShaderCloak::fragment);
         this->program = program;
 
-        this->attrib_a0 = glGetAttribLocation(program, "a0");
-        this->attrib_a1 = glGetAttribLocation(this->program, "a1");
-        this->attrib_a2 = glGetAttribLocation(this->program, "a2");
-        this->attrib_a3 = glGetAttribLocation(this->program, "a3");
-        this->attrib_a4 = glGetAttribLocation(this->program, "a4");
+        this->attrib_a0 = glGetAttribLocation(program, "a_position");
+        this->attrib_a1 = glGetAttribLocation(this->program, "a_texCoord");
+        this->attrib_a2 = glGetAttribLocation(this->program, "a_normal");
+        this->attrib_a3 = glGetAttribLocation(this->program, "a_tangent");
+        this->attrib_a4 = glGetAttribLocation(this->program, "a_bitangent");
 
-        this->uniform_u0 = glGetUniformLocation(this->program, "u0");
-        this->uniform_u1 = glGetUniformLocation(this->program, "u1");
-        this->uniform_u2 = glGetUniformLocation(this->program, "u2");
-        this->uniform_u3 = glGetUniformLocation(this->program, "u3");
-        this->uniform_u4 = glGetUniformLocation(this->program, "u4");
-        this->uniform_u5 = glGetUniformLocation(this->program, "u5");
-        this->uniform_u6 = glGetUniformLocation(this->program, "u6");
-        this->uniform_u7 = glGetUniformLocation(this->program, "u7");
-        this->uniform_u8 = glGetUniformLocation(this->program, "u8");
-        this->uniform_u9 = glGetUniformLocation(this->program, "u9");
-        this->uniform_u10 = glGetUniformLocation(this->program, "u10");
-        this->uniform_u11 = glGetUniformLocation(this->program, "u11");
-        this->uniform_u12 = glGetUniformLocation(this->program, "u12");
-        this->uniform_u13 = glGetUniformLocation(this->program, "u13");
-        this->uniform_u14 = glGetUniformLocation(this->program, "u14");
-        this->uniform_u15 = glGetUniformLocation(this->program, "u15");
-        this->uniform_u16 = glGetUniformLocation(this->program, "u16");
-        this->uniform_u17 = glGetUniformLocation(this->program, "u17");
+        this->uniform_u0 = glGetUniformLocation(this->program, "u_ModelViewProjectionMatrix");
+        this->uniform_u1 = glGetUniformLocation(this->program, "u_ModelMatrix");
+        this->uniform_u2 = glGetUniformLocation(this->program, "u_lightdirmodel[0]");
+        this->uniform_u3 = glGetUniformLocation(this->program, "u_lightdirmodel[1]");
+        this->uniform_u4 = glGetUniformLocation(this->program, "u_eyeposmodel");
+        this->uniform_u5 = glGetUniformLocation(this->program, "s_texture[0]");
+        this->uniform_u6 = glGetUniformLocation(this->program, "s_texture[1]");
+        this->uniform_u7 = glGetUniformLocation(this->program, "s_texture[2]");
+        this->uniform_u8 = glGetUniformLocation(this->program, "glColor");
+        this->uniform_u9 = glGetUniformLocation(this->program, "u_AmbientColor[0]");
+        this->uniform_u10 = glGetUniformLocation(this->program, "u_DiffuseColor[0]");
+        this->uniform_u11 = glGetUniformLocation(this->program, "u_SpecularColor[0]");
+        this->uniform_u12 = glGetUniformLocation(this->program, "u_AmbientColor[1]");
+        this->uniform_u13 = glGetUniformLocation(this->program, "u_DiffuseColor[1]");
+        this->uniform_u14 = glGetUniformLocation(this->program, "u_SpecularColor[1]");
+        this->uniform_u15 = glGetUniformLocation(this->program, "u_SpecularPower");
+        this->uniform_u16 = glGetUniformLocation(this->program, "u_RimColor");
+        this->uniform_u17 = glGetUniformLocation(this->program, "u_texelSize");
 
         glActiveTexture(0x84c7);
         ((::Engine *) engine)->ActivateRefractFBO();
 
-        this->uniform_u18 = glGetUniformLocation(this->program, "u18");
-        this->uniform_u19 = glGetUniformLocation(this->program, "u19");
-        this->uniform_u20 = glGetUniformLocation(this->program, "u20");
+        this->uniform_u18 = glGetUniformLocation(this->program, "u_AnimValue");
+        this->uniform_u19 = glGetUniformLocation(this->program, "u_CloakRate");
+        this->uniform_u20 = glGetUniformLocation(this->program, "s_texture_base");
 
         glUseProgram(this->program);
         glUniform1i(this->uniform_u5, 0);
@@ -97,11 +99,11 @@ namespace AbyssEngine {
             if (viewportLoc >= 0) {
                 float invW, invH;
                 if (*(int *) (eng->field_0x30[0] + 0x30) == 2) {
-                    invW = 1.0f / (float) eng->GetDisplayWidth();
-                    invH = 1.0f / (float) eng->GetDisplayHeight();
+                    invW = 1.0f / static_cast<float>(static_cast<int32_t>(eng->GetDisplayWidth()));
+                    invH = 1.0f / static_cast<float>(static_cast<int32_t>(eng->GetDisplayHeight()));
                 } else {
-                    invW = 1.0f / (float) eng->GetDisplayHeight();
-                    invH = 1.0f / (float) eng->GetDisplayWidth();
+                    invW = 1.0f / static_cast<float>(static_cast<int32_t>(eng->GetDisplayHeight()));
+                    invH = 1.0f / static_cast<float>(static_cast<int32_t>(eng->GetDisplayWidth()));
                 }
                 glUniform2f(viewportLoc, invW, invH);
             }
@@ -114,15 +116,15 @@ namespace AbyssEngine {
             if (this->uniform_u19 >= 0)
                 glUniform1f(this->uniform_u19, mesh->field_0x20);
 
-            if (eng->field_0x32c < 2) {
-                glUniform3f(this->uniform_u12, 0.0f, 0.0f, 0.0f);
-                glUniform3f(this->uniform_u13, 0.0f, 0.0f, 0.0f);
-                glUniform3f(this->uniform_u14, 0.0f, 0.0f, 0.0f);
-                glUniform3f(this->uniform_u3, eng->field_0x33c.x, eng->field_0x33c.y, eng->field_0x33c.z);
-            } else {
+            if (eng->field_0x32c >= 2) {
                 glUniform3fv(this->uniform_u12, 1, (const float *) &eng->lightSpecularShaded);
                 glUniform3fv(this->uniform_u13, 1, (const float *) &eng->field_0x308);
                 glUniform3fv(this->uniform_u14, 1, (const float *) &eng->particleAmbient);
+                glUniform3f(this->uniform_u3, eng->field_0x33c.x, eng->field_0x33c.y, eng->field_0x33c.z);
+            } else {
+                glUniform3f(this->uniform_u12, 0.0f, 0.0f, 0.0f);
+                glUniform3f(this->uniform_u13, 0.0f, 0.0f, 0.0f);
+                glUniform3f(this->uniform_u14, 0.0f, 0.0f, 0.0f);
                 glUniform3f(this->uniform_u3, eng->field_0x33c.x, eng->field_0x33c.y, eng->field_0x33c.z);
             }
             this->dirty = 0;
