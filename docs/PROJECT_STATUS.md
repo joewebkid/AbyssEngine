@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (BoundingVolume child destruction)
+
+`BoundingVolume` now releases its child array through the original
+`ArrayReleaseClasses<BoundingVolume*>` path, followed by the array
+destructor and deletion. This removes the old `ArrayRemoveAll` call,
+which used `realloc` on storage allocated with `new[]`. Focused ARM
+destructor source-shape improves **70.3% → 91.3%**, strict fuzzy
+**64.3% → 97.6%**; the aliases remain nonexact. Native and ARM64
+static builds pass; ARMv7 compiles 209/209 units. The full corpus
+compares **4,323/4,524** originals across 4,746 pairs: **94.92%
+source-shape / 84.58% strict fuzzy**, **2,662 linked-exact / 1,088
+byte-exact**, zero skipped and 201 missing, with no exact-set losses.
+One helper instantiation is newly linked-exact. The original helper
+uses static base-type deletion; live destruction of nested derived
+volumes remains unverified while phone testing is deferred. Next,
+inspect another collision or array ownership path with ARM evidence.
+See [destructor evidence](BOUNDING_VOLUME_DESTRUCTOR_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (BoundingVolume projection vector)
 
 `BoundingVolume::getProjectionVector` now reads the center directly

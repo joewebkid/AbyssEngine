@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BoundingVolume child-release gate (2026-10-30)
+
+The destructor calls the original `ArrayReleaseClasses<BoundingVolume*>`
+helper before destroying the array, removing the previous `realloc`
+path. Native `gof2` and ARM64 static builds pass; ARMv7 compiles
+209/209 units. Focused destructor source-shape reaches **91.3%** and
+strict fuzzy **97.6%**, remaining nonexact. Full corpus:
+**4,323/4,524** originals over 4,746 pairs, **94.92% / 84.58%**,
+**2,662 linked-exact / 1,088 byte-exact**, zero skipped and 201 missing.
+Both exact-symbol sets have no losses and the helper instantiation
+becomes linked-exact. Derived-volume runtime destruction is unverified;
+see [evidence and limits](BOUNDING_VOLUME_DESTRUCTOR_ARM_2026-10-30.md).
+
 ## BoundingVolume projection-vector gate (2026-10-30)
 
 The center is read directly from its Vector-shaped fields, followed by
