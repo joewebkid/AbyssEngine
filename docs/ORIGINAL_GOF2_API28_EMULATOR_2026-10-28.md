@@ -1,5 +1,36 @@
 # Original GOF2 HD on the Android 9 emulator (2026-10-28)
 
+## Stable original run and native-bridge observation (2026-10-30)
+
+After a fresh boot without Frida, the same original APK and OBB reached the
+title, main menu, campaign selection, and opening GOF2 scene; the game process
+remained alive. A screenshot of the opening scene is outside Git at
+`D:\gof2-arm64-crypto\gof2-original-opening-native-trace-20261030.png`.
+This confirms the emulator is useful for repeatable gameplay and visual
+comparison.
+
+Attaching Frida 17.24.3 to the already-running game in the `emulated` ARM
+realm again closed the connection and coincided with a game-process SIGSEGV
+at address `0x3` in `libndk_translation`/`linker_arm`. After restarting the
+game, attaching in the x86 `native` realm succeeded repeatedly without
+killing it. A bounded hook on the exported
+`ndk_translation::RunGuestCall` recorded 1,652 entries into the game's ARM
+library during a ten-second opening-scene interval, out of 2,121 total guest
+entries. The frequently observed game-library offsets map through the
+original ARM symbol table to `ToJNI_renderstep` (`0x6b848`, 194 entries),
+`ToJNI_handleAccelerometer` (`0x6b866`, 483 entries), and status or Google
+Play Games JNI getters (`0x6b850`, `0x6b854`, `0x6ba20`, `0x6ba40`,
+`0x6ba60`, 194 entries each). The exact sample is saved outside Git at
+`D:\gof2-arm64-crypto\original-api28-native-bridge-jni-20261030.log`.
+
+These are calls crossing from Android/x86 into ARM, not internal calls such
+as `MaterialCreate` or `MeshCreate`; their arguments do not establish the
+ship's material ID. A hook on the host `libGLESv1_CM.so` exports recorded no
+calls during this interval, so that export path is not a useful rendering
+trace on this emulator. Continue using the emulator for behavior and JNI
+boundary checks. Use a physical ARM device or another verified ARM-aware
+tracing method for internal game-function arguments and returns.
+
 ## Reproducible environment
 
 - AVD: `GOF2_Original_ARMv7_API28`, stored at `D:\AndroidAVD\GOF2_Original_ARMv7_API28.avd`.

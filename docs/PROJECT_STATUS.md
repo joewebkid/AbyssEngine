@@ -1,5 +1,15 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (original-game emulator observation)
+
+The original GOF2 APK and OBB again ran through the main menu into the
+opening scene on the Android 9 emulator. Native-side tracing of its ARM
+bridge remained stable and recorded JNI entry offsets, including
+`ToJNI_renderstep`; direct ARM-realm Frida attachment still crashed the game.
+Internal `MaterialCreate`/`MeshCreate` arguments and rebuilt ARM64 behavior
+remain unverified. No production source or corpus result changed. See
+[emulator evidence](ORIGINAL_GOF2_API28_EMULATOR_2026-10-28.md).
+
 Last reviewed: 2026-10-30 (ships 017–019 material links)
 
 Original ARM passes material IDs **34217**, **34218** and **34219** to
