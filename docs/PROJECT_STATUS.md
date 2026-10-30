@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (AEPakFile stream release)
+
+`AEPakFile::Release` now calls the owned file interface's virtual
+`Close` before deleting it, matching the original ARM ownership order.
+This fixes a missing close for interfaces whose destructors do not
+close themselves. `Release` improves **80.6% / 82.8% → 100.0% /
+100.0%** source-shape / strict fuzzy and becomes byte-exact; two
+destructor aliases also become linked-exact. The full 10-symbol
+`AEPakFile` unit is now 100% in both focused metrics. The production
+PAK test passes at `-O0/-O2`, checking explicit close, one actual stream
+close and idempotent destruction. Native and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. Full corpus: **4,323/4,524** originals
+over 4,749 pairs, **95.03% source-shape / 84.71% strict fuzzy**,
+**2,670 linked-exact / 1,090 byte-exact**, zero skipped and 201 missing.
+No exact match is lost. Packed PAK and live Android ownership remain
+unverified; device testing stays deferred. Next offline priority:
+inspect reachable Android file-open paths and JNI environment wiring.
+See [stream-release evidence](AEPAK_RELEASE_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (FileInterface Output ABI)
 
 `FileInterface::Output(char*)` and its Android and host implementations

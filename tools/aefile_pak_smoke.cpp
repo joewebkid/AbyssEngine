@@ -59,7 +59,11 @@ int main(int argc, char **argv) {
 
     auto *entry = static_cast<AEPakFile *>(AEFile::findPakFile(String("/assets/alpha.bin")));
     assert(entry != nullptr && entry->sizeLimit == 5 && entry->rawSize == 0xffffffffu);
+    const unsigned closeCalls = interface.closeCalls();
+    assert(entry->Release() == 1);
+    assert(interface.closeCalls() == closeCalls + 2);
     delete entry;
+    assert(interface.closeCalls() == closeCalls + 2);
     assert(interface.opens() == 2 && interface.closes() == 2);
 
     for (const auto &[name, expected] : {

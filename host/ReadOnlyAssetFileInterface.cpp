@@ -48,6 +48,7 @@ bool ReadOnlyAssetFileInterface::addMount(
 
 unsigned ReadOnlyAssetFileInterface::opens() const { return shared_->opens; }
 unsigned ReadOnlyAssetFileInterface::closes() const { return shared_->closes; }
+unsigned ReadOnlyAssetFileInterface::closeCalls() const { return shared_->closeCalls; }
 
 std::filesystem::path ReadOnlyAssetFileInterface::resolve(const String &name) const {
     char *raw = name.GetAEChar();
@@ -119,6 +120,7 @@ uint32_t ReadOnlyAssetFileInterface::GetFileSize() {
 }
 
 void ReadOnlyAssetFileInterface::Close() {
+    ++shared_->closeCalls;
     if (stream_) {
         std::fclose(stream_);
         stream_ = nullptr;

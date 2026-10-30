@@ -42,6 +42,8 @@ uint32_t AEPakFile::GetFileSize() {
 
 uint32_t AEPakFile::Release() {
     if (fileInterface != nullptr) {
+        // Original ARM closes the stream before invoking its deleting destructor.
+        fileInterface->Close();
         delete fileInterface;
         fileInterface = nullptr;
     }

@@ -20,6 +20,7 @@ public:
                   const std::filesystem::path &physicalDirectory);
     unsigned opens() const;
     unsigned closes() const;
+    unsigned closeCalls() const;
     void *appRootDir() const;
     unsigned saveDirectoryResets() const;
 
@@ -54,6 +55,7 @@ private:
         std::vector<Mount> mounts;
         unsigned opens = 0;
         unsigned closes = 0;
+        unsigned closeCalls = 0;
     };
     ReadOnlyAssetFileInterface(std::shared_ptr<Shared> shared, std::FILE *stream);
     std::filesystem::path resolve(const String &name) const;
