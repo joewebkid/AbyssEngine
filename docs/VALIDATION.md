@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## AEFile release ownership gate (2026-10-30)
+
+The production-code PAK test passes at `-O0/-O2`, including release of
+an outstanding file and repeated release. Native `gof2` and ARM64
+static builds pass; ARMv7 compiles 209/209 units. Focused `Release`
+reaches **93.3% source-shape / 68.0% strict fuzzy**, remaining
+nonexact. Full corpus: **4,323/4,524** originals over 4,749 pairs,
+**95.01% / 84.70%**, **2,665 linked-exact / 1,088 byte-exact**, zero
+skipped and 201 missing. There are no exact-symbol losses and one new
+linked-exact helper pair. Reentrant PAK-entry destruction and live
+Android ownership remain unverified; see
+[evidence and limits](AEFILE_RELEASE_ARM_2026-10-30.md).
+
 ## AEFile close slot-reload gate (2026-10-30)
 
 The production-code PAK test passes at `-O0/-O2`, including repeated

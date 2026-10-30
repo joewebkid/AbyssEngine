@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (AEFile release ownership)
+
+`AEFile::Release` now invokes the original `ArrayReleaseClasses` helper
+for open files and clears PAK-entry slots through an indexed lookup
+after deletion. Focused source-shape / strict fuzzy improves **85.7% /
+51.4% → 93.3% / 68.0%**; `Release` remains nonexact. The production-code
+PAK test passes at `-O0/-O2`, including release of an outstanding file
+and a repeated release. Native and ARM64 static builds pass; ARMv7
+compiles 209/209 units. The full corpus compares **4,323/4,524**
+originals over 4,749 pairs: **95.01% source-shape / 84.70% strict
+fuzzy**, **2,665 linked-exact / 1,088 byte-exact**, zero skipped and 201
+missing. No exact match is lost; the helper adds one linked-exact pair
+in the `AEFile` unit. Reentrant PAK-entry destruction and live Android
+ownership remain unverified; device testing stays deferred. Next
+offline priority: inspect another bounded file-layer gap, without
+changing the exact helper. See
+[release-path evidence](AEFILE_RELEASE_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (AEFile close slot reload)
 
 `AEFile::Close` now reloads array storage after deleting a file, as the

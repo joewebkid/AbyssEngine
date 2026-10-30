@@ -47,18 +47,17 @@ void AEFile::SetInterface(FileInterface *fileInterface) {
 
 void AEFile::Release() {
     if (g_AEFile_openFiles != nullptr) {
-        for (AELowLevelFile *file: *g_AEFile_openFiles) {
-            delete file;
-        }
-        ArrayRemoveAll(*g_AEFile_openFiles);
+        ArrayReleaseClasses(*g_AEFile_openFiles);
         delete g_AEFile_openFiles;
         g_AEFile_openFiles = nullptr;
     }
 
     if (g_AEFile_pakFiles != nullptr) {
-        for (AEPakFileEntry *&entry: *g_AEFile_pakFiles) {
+        for (uint32_t i = 0; i < g_AEFile_pakFiles->size(); ++i) {
+            AEPakFileEntry *entry = g_AEFile_pakFiles->data()[i];
             delete entry;
-            entry = nullptr;
+            // ARM obtains the slot again after the entry destructor.
+            g_AEFile_pakFiles->data()[i] = nullptr;
         }
         delete g_AEFile_pakFiles;
         g_AEFile_pakFiles = nullptr;

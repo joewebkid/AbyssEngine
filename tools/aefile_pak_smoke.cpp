@@ -94,7 +94,13 @@ int main(int argc, char **argv) {
     AEFile::Close(0);
     assert(AEFile::Read(1, nullptr, 0) == 0);
     assert(interface.opens() == interface.closes());
+
+    String outstanding("assets/alpha.bin");
+    uint32_t outstandingHandle = 99;
+    assert(AEFile::OpenRead(outstanding, &outstandingHandle) == 1);
+    assert(interface.opens() == interface.closes() + 1);
     AEFile::Release();
-    assert(interface.opens() == 6 && interface.closes() == 6);
+    AEFile::Release();
+    assert(interface.opens() == 7 && interface.closes() == 7);
     std::puts("AEFile raw PAK registration, fallback and lifetimes: OK");
 }
