@@ -1,4 +1,5 @@
 #include "engine/render/shaders/CubeNormalMapping.h"
+#include "engine/render/shaders/EmbeddedCubeNormalMappingShader.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
 #include <GLES2/gl2.h>
@@ -13,28 +14,29 @@ namespace AbyssEngine {
     }
 
     void CubeNormalMapping::Init(Engine *) {
-        int program = this->ES2LoadProgram("CubeNormalMapping.vsh", "CubeNormalMapping.fsh");
+        int program = this->ES2LoadProgram(EmbeddedCubeNormalMappingShader::vertex,
+                                           EmbeddedCubeNormalMappingShader::fragment);
         this->program = program;
 
-        this->attribA0 = glGetAttribLocation(program, "a0");
-        this->attribA1 = glGetAttribLocation(this->program, "a1");
-        this->attribA2 = glGetAttribLocation(this->program, "a2");
-        this->attribA3 = glGetAttribLocation(this->program, "a3");
-        this->attribA4 = glGetAttribLocation(this->program, "a4");
+        this->attribA0 = glGetAttribLocation(program, "a_position");
+        this->attribA1 = glGetAttribLocation(this->program, "a_normal");
+        this->attribA2 = glGetAttribLocation(this->program, "a_texCoord");
+        this->attribA3 = glGetAttribLocation(this->program, "a_tangent");
+        this->attribA4 = glGetAttribLocation(this->program, "a_bitangent");
 
-        this->uniformU0 = glGetUniformLocation(this->program, "u0");
-        this->uniformU1 = glGetUniformLocation(this->program, "u1");
-        this->uniformU2 = glGetUniformLocation(this->program, "u2");
-        this->uniformU3 = glGetUniformLocation(this->program, "u3");
-        this->uniformU4 = glGetUniformLocation(this->program, "u4");
-        this->uniformU5 = glGetUniformLocation(this->program, "u5");
-        this->uniformU6 = glGetUniformLocation(this->program, "u6");
-        this->uniformU7 = glGetUniformLocation(this->program, "u7");
-        this->uniformU8 = glGetUniformLocation(this->program, "u8");
-        this->uniformU9 = glGetUniformLocation(this->program, "u9");
-        this->uniformU10 = glGetUniformLocation(this->program, "u10");
-        this->uniformU11 = glGetUniformLocation(this->program, "u11");
-        this->uniformU12 = glGetUniformLocation(this->program, "u12");
+        this->uniformU0 = glGetUniformLocation(this->program, "u_WorldMatrix");
+        this->uniformU1 = glGetUniformLocation(this->program, "u_ModelMatrix");
+        this->uniformU2 = glGetUniformLocation(this->program, "u_eyeposmodel");
+        this->uniformU3 = glGetUniformLocation(this->program, "u_lightposmodel");
+        this->uniformU4 = glGetUniformLocation(this->program, "u_texture_base");
+        this->uniformU5 = glGetUniformLocation(this->program, "u_texture_cubemap");
+        this->uniformU6 = glGetUniformLocation(this->program, "u_normalTexture");
+        this->uniformU7 = glGetUniformLocation(this->program, "u_envValue");
+        this->uniformU8 = glGetUniformLocation(this->program, "u_AmbientColor");
+        this->uniformU9 = glGetUniformLocation(this->program, "u_DiffuseColor");
+        this->uniformU10 = glGetUniformLocation(this->program, "u_SpecularColor");
+        this->uniformU11 = glGetUniformLocation(this->program, "u_SpecularPower");
+        this->uniformU12 = glGetUniformLocation(this->program, "u_glColor");
 
         glUseProgram(this->program);
         glUniform1i(this->uniformU4, 0);

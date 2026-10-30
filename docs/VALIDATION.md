@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## CubeNormalMapping original GLSL and emulator gate (2026-10-30)
+
+Original ARM `CubeNormalMapping::Init` supplies two embedded GLSL
+strings and 18 real attribute/uniform names. Native `gof2` and ARM64
+static builds pass; ARMv7 compiles 209/209 units. Focused comparison
+gives six pairs at **100% source-shape / 100% strict fuzzy**, all six
+linked-exact. The strict ARM64 shared library has no undefined link
+errors and retains the same 53 JNI exports. In the Android 15
+emulator, one placeholder shader compile failure disappears and one
+successful program link appears. The full ARM corpus remains
+**4,323/4,524**, **94.86% / 84.43%**, **2,638 linked-exact / 1,086
+byte-exact**; complete exact-symbol sets have zero losses. See
+[the evidence and limits](ARM64_CUBE_NORMAL_MAPPING_SHADER_2026-10-30.md).
+
 ## CubeMapping original GLSL and emulator gate (2026-10-30)
 
 The original ARM `CubeMapping::Init` supplies embedded GLSL and real
