@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Android FileDelete argument gate (2026-10-31)
+
+The source-extracted Android host test passes at `-O0/-O2` with a
+nonempty path, zero return and the file retained. Native `gof2` and
+ARM64 static builds pass; ARMv7 compiles 209/209 units. Focused
+`FileDelete` reaches **100.0% source-shape / 100.0% strict fuzzy** and
+becomes linked-exact. Full corpus: **4,323/4,524** originals over
+4,749 pairs, **95.02% / 84.70%**, **2,666 linked-exact / 1,088
+byte-exact**, zero skipped and 201 missing. There are no exact-symbol
+losses. Live Android behavior remains unverified; see
+[evidence and limits](FILE_ANDROID_DELETE_ARM_2026-10-31.md).
+
 ## AEFile PAK-sort gate (2026-10-30)
 
 The production-code PAK test passes at `-O0/-O2` with three records

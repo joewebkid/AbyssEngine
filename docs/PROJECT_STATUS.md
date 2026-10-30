@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (Android FileDelete argument)
+
+`FileInterfaceAndroid::FileDelete` now copies its actual `String`
+argument rather than interpreting UTF-16 character storage as a
+`String` object. This removes a potential invalid-memory read and
+matches the original ARM body, which returns zero without deleting a
+file. Focused source-shape / strict fuzzy improves **98.1% / 97.6% →
+100.0% / 100.0%**, adding one linked-exact pair. A source-extracted
+host test passes at `-O0/-O2` with a nonempty path and confirms the file
+remains. Native and ARM64 static builds pass; ARMv7 compiles 209/209
+units. Full corpus: **4,323/4,524** originals over 4,749 pairs,
+**95.02% source-shape / 84.70% strict fuzzy**, **2,666 linked-exact /
+1,088 byte-exact**, zero skipped and 201 missing, with no exact losses.
+Live Android behavior remains unverified; device testing stays
+deferred. Next offline priority: inspect `FileInterfaceAndroid::Output`
+and other bounded platform gaps. See
+[delete-path evidence](FILE_ANDROID_DELETE_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-30 (AEFile PAK-entry sorting)
 
 `sortPakFileEntryList` now follows the ARM outer-pass bound, inner-loop

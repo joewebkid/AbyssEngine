@@ -229,8 +229,8 @@ char *FileInterfaceAndroid::Output(char *line) {
 }
 
 uint32_t FileInterfaceAndroid::FileDelete(String name) {
-    String *src = *reinterpret_cast<String **>(&name.data);
-    String discard(*src, false);
+    // Original Android ARM copies the path but does not remove the file.
+    String discard(name, false);
     return 0;
 }
 

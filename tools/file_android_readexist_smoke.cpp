@@ -63,6 +63,7 @@ public:
     ~FileInterfaceAndroid() { if (file) std::fclose(file); }
     uint32_t Seek(uint32_t n);
     uint32_t FileExist(String name);
+    uint32_t FileDelete(String name);
     void *OpenRead(String name, int p2, bool p3, int p4, int p5, unsigned p6);
     void *OpenWrite(String name, int size, bool append, unsigned mode);
 };
@@ -106,6 +107,8 @@ int main(int argc, char **argv) {
     FILE *created = std::fopen(path.string().c_str(), "wb");
     assert(created && std::fwrite("ok", 1, 2, created) == 2);
     std::fclose(created);
+    assert(reader.FileDelete(String("save.bin")) == 0);
+    assert(std::filesystem::exists(path));
     assert(reader.FileExist(String("save.bin")));
     checkLookups();
     auto *disk = static_cast<FileInterfaceAndroid *>(

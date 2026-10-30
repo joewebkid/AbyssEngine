@@ -44,6 +44,7 @@ def main():
         + function(source, "uint32_t FileInterfaceAndroid::Seek(uint32_t n) {")
         + state
         + function(source, "uint32_t FileInterfaceAndroid::FileExist(String name) {")
+        + function(source, "uint32_t FileInterfaceAndroid::FileDelete(String name) {")
         + read_state
         + function(source, "void *FileInterfaceAndroid::OpenRead(String name, int p2, bool p3, int p4, int p5, unsigned int p6) {")
         + next(line + "\n" for line in source.splitlines()
