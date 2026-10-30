@@ -63,6 +63,7 @@ int main(int argc, char **argv) {
         uint32_t handle = 99;
         String path(name);
         assert(AEFile::OpenRead(path, &handle) == 1 && handle == 1);
+        assert(*path.index(0) == '/');
         const uint32_t size = static_cast<uint32_t>(std::strlen(expected));
         assert(AEFile::GetFileSize(handle) == size);
         char buffer[6] = {};
@@ -74,7 +75,20 @@ int main(int argc, char **argv) {
     }
     uint32_t missing = 99;
     assert(AEFile::OpenRead("assets/missing.bin", &missing) == 0 && missing == 99);
+
+    // The unnamed handle uses slot zero and releases its previous file on reuse.
+    for (const auto &[name, expected] : {
+             std::pair{"assets/alpha.bin", "ALPHA"},
+             std::pair{"assets/beta.bin", "BETA"}}) {
+        String path(name);
+        assert(AEFile::OpenRead(path, nullptr) == 1);
+        char buffer[6] = {};
+        assert(AEFile::Read(5, buffer, 0) == 1);
+        assert(std::strcmp(buffer, expected) == 0);
+    }
+    AEFile::Close(0);
+    assert(interface.opens() == interface.closes());
     AEFile::Release();
-    assert(interface.opens() == 4 && interface.closes() == 4);
+    assert(interface.opens() == 6 && interface.closes() == 6);
     std::puts("AEFile raw PAK registration, fallback and lifetimes: OK");
 }

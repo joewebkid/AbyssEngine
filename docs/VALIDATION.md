@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## AEFile open and archive fallback gate (2026-10-30)
+
+The production synthetic PAK test passes at `-O0/-O2`, including the
+slash prefix and replacement/close of an unnamed file in slot zero.
+Native `gof2` and ARM64 static builds pass; ARMv7 compiles 209/209
+units. Focused `AEFile::Open` reaches **92.2% source-shape / 46.0%
+strict fuzzy**, remaining nonexact. Full corpus: **4,323/4,524**
+originals over 4,748 pairs, **95.00% / 84.67%**, **2,664 linked-exact /
+1,088 byte-exact**, zero skipped and 201 missing. Both complete
+exact-symbol sets are unchanged. Live Android I/O and packed PAK data
+remain unverified; see [evidence and limits](AEFILE_OPEN_ARM_2026-10-30.md).
+
 ## AEFile archive lookup gate (2026-10-30)
 
 The production synthetic PAK test passes at `-O0/-O2`, including direct

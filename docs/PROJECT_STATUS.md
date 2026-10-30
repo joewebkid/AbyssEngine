@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (AEFile open and archive fallback)
+
+`AEFile::Open` now converts the path through the original `String`
+operator, passes directly constructed temporary wide strings to the
+three virtual open methods, and preserves the copied-path archive
+fallback and unnamed slot replacement. Focused ARM source-shape / strict
+fuzzy improves **82.3% / 27.4% → 92.2% / 46.0%**; the function remains
+nonexact. The synthetic production-code PAK test passes at `-O0/-O2`,
+including slot-zero stream replacement and the caller-visible slash.
+Native and ARM64 static builds pass; ARMv7 compiles 209/209 units. The
+full corpus compares **4,323/4,524** originals over 4,748 pairs:
+**95.00% source-shape / 84.67% strict fuzzy**, **2,664 linked-exact /
+1,088 byte-exact**, zero skipped and 201 missing. Both exact-symbol sets
+are unchanged. Live Android I/O and packed PAK data remain unverified;
+device testing stays deferred. Next offline priority: inspect another
+bounded file-path/ABI gap without changing exact constructor symbols.
+See [open-path evidence](AEFILE_OPEN_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (AEFile archive lookup)
 
 `findPakFile` now follows the ARM binary-search bounds and terminal

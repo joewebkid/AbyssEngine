@@ -71,32 +71,30 @@ uint32_t AEFile::Open(String &path, FileOpenType openType, uint32_t *handle) {
         return 0;
     }
 
-    uint16_t *text = AEStr_wchar(path);
+    uint16_t *text = path;
     AELowLevelFile *file = nullptr;
     void *nativeHandle = nullptr;
 
     if (openType == OPEN_WRITE) {
-        String localPath;
-        localPath.Set((const unsigned short *) (text));
-        nativeHandle = fileInterface->OpenWrite(localPath, path.size(), false, 0);
+        nativeHandle = fileInterface->OpenWrite(String(text, false), path.size(), false, 0);
     } else if (openType == OPEN_APPEND) {
-        String localPath;
-        localPath.Set((const unsigned short *) (text));
-        nativeHandle = fileInterface->OpenAppend(localPath, path.size(), false, 0);
+        nativeHandle = fileInterface->OpenAppend(String(text, false), path.size(), false, 0);
     } else if (openType == OPEN_READ) {
-        String localPath;
-        localPath.Set((const unsigned short *) (text));
-        nativeHandle = fileInterface->OpenRead(localPath, path.size(), 0, 0, 0, 0);
+        nativeHandle = fileInterface->OpenRead(String(text, false), path.size(), 0, 0, 0, 0);
         if (nativeHandle == nullptr) {
             if (*AEStr_index(path, 0) != '/') {
                 String prefix("/");
-                path = prefix + path;
+                String pathCopy(path, false);
+                path = prefix + pathCopy;
             }
             file = findPakFile(path);
             if (file == nullptr) {
                 return 0;
             }
         }
+    } else {
+        // The original ARM path still registers a slot for an unknown mode.
+        goto register_file;
     }
 
     if (file == nullptr) {
@@ -106,6 +104,7 @@ uint32_t AEFile::Open(String &path, FileOpenType openType, uint32_t *handle) {
         file = new AENormalFile(reinterpret_cast<FileInterface *>(nativeHandle));
     }
 
+register_file:
     Array<AELowLevelFile *> *files = g_AEFile_openFiles;
     uint32_t count = files->size();
     if (handle == nullptr) {
@@ -116,6 +115,7 @@ uint32_t AEFile::Open(String &path, FileOpenType openType, uint32_t *handle) {
             if (slot != nullptr) {
                 delete slot;
             }
+            slot = nullptr;
             slot = file;
         }
     } else {
