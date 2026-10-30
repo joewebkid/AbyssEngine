@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## PulseShader ARM gate (2026-10-30)
+
+Original ARM embedded GLSL and 15 ordered input names replace
+placeholders; both arrays were byte-verified against the ELF.
+`UpdateMeshData` now reads `Engine::appManager` at ARM offset `0x30`
+and uses the original `1000.0f` divisor, whose raw literal bytes match
+the ARMv7 object. Native `gof2` and ARM64 static builds pass, ARMv7
+compiles 209/209 units, and the strict ARM64 shared library retains
+53 JNI exports. Focused verification reaches **100% source-shape /
+100% strict fuzzy** for all six functions; **5/6 linked-exact** remain
+reported due to literal-pool formatting in the verifier. The full
+corpus compares **4,323/4,524** originals over 4,745 pairs,
+**94.87% / 84.46%**, **2,650 linked-exact / 1,086 byte-exact**, zero
+skipped, and unchanged exact sets. No phone run was performed; see
+[evidence and limits](PULSE_SHADER_ARM_2026-10-30.md).
+
 ## ColorMixAdd ARM source gate (2026-10-30)
 
 Original ARM embedded GLSL and eight ordered input names replace

@@ -1,4 +1,5 @@
 #include "engine/render/shaders/PulseShader.h"
+#include "engine/render/shaders/EmbeddedPulseShader.h"
 #include "game/core/String.h"
 #include "engine/render/Mesh.h"
 #include "engine/render/Engine.h"
@@ -10,7 +11,7 @@ extern "C" {
 float sinf(float x);
 }
 
-static float PulseShader_timeScale = 0.0f;
+static float PulseShader_timeScale = 1000.0f;
 
 namespace AbyssEngine {
     int PulseShader::ShaderIndex;
@@ -30,25 +31,26 @@ namespace AbyssEngine {
     }
 
     void PulseShader::Init(Engine *) {
-        int program = this->ES2LoadProgram("PulseShader.vsh", "PulseShader.fsh");
+        int program = this->ES2LoadProgram(EmbeddedPulseShader::vertex,
+                                           EmbeddedPulseShader::fragment);
         this->program = program;
 
-        this->a0Loc = glGetAttribLocation(program, "a0");
-        this->a1Loc = glGetAttribLocation(this->program, "a1");
-        this->a2Loc = glGetAttribLocation(this->program, "a2");
-        this->a3Loc = glGetAttribLocation(this->program, "a3");
-        this->a4Loc = glGetAttribLocation(this->program, "a4");
+        this->a0Loc = glGetAttribLocation(program, "a_position");
+        this->a1Loc = glGetAttribLocation(this->program, "a_texCoord");
+        this->a2Loc = glGetAttribLocation(this->program, "a_normal");
+        this->a3Loc = glGetAttribLocation(this->program, "a_tangent");
+        this->a4Loc = glGetAttribLocation(this->program, "a_bitangent");
 
-        this->u0Loc = glGetUniformLocation(this->program, "u0");
-        this->u1Loc = glGetUniformLocation(this->program, "u1");
-        this->u2Loc = glGetUniformLocation(this->program, "u2");
-        this->u3Loc = glGetUniformLocation(this->program, "u3");
-        this->u4Loc = glGetUniformLocation(this->program, "u4");
-        this->u5Loc = glGetUniformLocation(this->program, "u5");
-        this->u6Loc = glGetUniformLocation(this->program, "u6");
-        this->u7Loc = glGetUniformLocation(this->program, "u7");
-        this->u8Loc = glGetUniformLocation(this->program, "u8");
-        this->u9Loc = glGetUniformLocation(this->program, "u9");
+        this->u0Loc = glGetUniformLocation(this->program, "u_ModelViewProjectionMatrix");
+        this->u1Loc = glGetUniformLocation(this->program, "u_ModelMatrix");
+        this->u2Loc = glGetUniformLocation(this->program, "u_lightdirmodel");
+        this->u3Loc = glGetUniformLocation(this->program, "u_eyeposmodel");
+        this->u4Loc = glGetUniformLocation(this->program, "u_timevalue");
+        this->u5Loc = glGetUniformLocation(this->program, "s_texture");
+        this->u6Loc = glGetUniformLocation(this->program, "glColor");
+        this->u7Loc = glGetUniformLocation(this->program, "u_AmbientColor");
+        this->u8Loc = glGetUniformLocation(this->program, "u_DiffuseColor");
+        this->u9Loc = glGetUniformLocation(this->program, "u_SpecularColor");
 
         glUseProgram(this->program);
         glUniform1i(this->u5Loc, 0);
@@ -76,7 +78,7 @@ namespace AbyssEngine {
             if (this->u9Loc >= 0)
                 glUniform4fv(this->u9Loc, 1, engine->materialSpecular);
 
-            long long t = ApplicationManager::gAppManager->GetCurrentTimeMillis();
+            long long t = engine->appManager->GetCurrentTimeMillis();
             float v = sinf((float) t / PulseShader_timeScale);
             glUniform1f(this->u4Loc, v + 2.0f);
             this->dirty = 0;

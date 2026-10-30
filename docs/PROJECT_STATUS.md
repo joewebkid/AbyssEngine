@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (PulseShader ARM recovery)
+
+Original embedded GLSL and all 15 ordered input names replace
+`PulseShader` placeholders; both arrays are byte-identical to the ARM
+ELF. `UpdateMeshData` now reads the application manager from the
+passed `Engine` and divides elapsed milliseconds by the original
+`1000.0f` literal rather than zero. Native and ARM64 builds pass;
+ARMv7 compiles 209/209 units and the strict ARM64 shared library
+retains 53 JNI exports. Focused `UpdateMeshData` reaches **100%
+source-shape / 100% strict fuzzy**. The unit remains **5/6
+linked-exact** because the verifier formats identical literal-pool
+bytes differently, as separately checked. The full corpus compares
+**4,323/4,524** originals over 4,745 pairs, **94.87% / 84.46%**,
+**2,650 linked-exact / 1,086 byte-exact**, zero skipped, and unchanged
+exact-symbol sets. The latest signed ARM64 APK remains unrun on Poco.
+Next, restore `GlowShader` shader contents/inputs and later perform an
+allowed phone run. See [PulseShader evidence](PULSE_SHADER_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (ColorMixAdd ARM shader sources)
 
 Original embedded GLSL and all eight ordered input names replace
