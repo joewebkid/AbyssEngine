@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (FileInterfaceAndroid JNI write stream)
+
+The JNI stream constructor now selects the original `read`/`write` and
+mode-specific `close` methods, while `Write` and `Close` use the class's
+JNI environment and cached method IDs. Focused ARM source-shape improves
+**37.4% → 94.4%** for both constructor aliases, **33.8% → 91.0%** for
+`Write`, and **75.3% → 94.9%** for `Close`; none becomes exact. Native and
+ARM64 static builds pass, and ARMv7 compiles 209/209 units. The full corpus
+compares **4,323/4,524** originals across 4,747 pairs: **94.97%**
+source-shape / **84.64%** strict fuzzy, **2,663 linked-exact / 1,088
+byte-exact**, zero skipped and 201 missing. There are no exact-symbol
+losses; the JNI call wrapper gains linked-exact status. JNI `Read` still
+contains placeholders, and initialization of `FileInterfaceAndroid::env`
+remains unconfirmed in source. Live behavior is deferred until device
+testing resumes. Next, trace `env` initialization and restore `Read`.
+See [JNI write-stream evidence](FILE_ANDROID_JNI_WRITE_STREAM_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (BoundingSphere vector family)
 
 `BoundingSphere` now passes its contiguous center and extent fields

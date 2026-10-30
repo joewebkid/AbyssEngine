@@ -62,44 +62,32 @@ FileInterfaceAndroid::FileInterfaceAndroid(FILE *f, bool append) {
     ++*gFIAInstCount;
 }
 
-static void **gJniEnvObj = nullptr;
-
-static void **gMidA_read = nullptr;
-static const char *gNmA_read = nullptr;
-static const char *gSgA_read = nullptr;
-static void **gMidA_write = nullptr;
-static const char *gNmA_write = nullptr;
-static const char *gSgA_write = nullptr;
-
-static void **gMidB_read = nullptr;
-static void **gMidB_write = nullptr;
-static const char *gNmB = nullptr;
-static const char *gSgB = nullptr;
-
-FileInterfaceAndroid::FileInterfaceAndroid(jobject stream, bool reading) {
-    void *env = *gJniEnvObj;
+FileInterfaceAndroid::FileInterfaceAndroid(jobject stream, bool writing) {
+    void *env = FileInterfaceAndroid::env;
     this->file = 0;
     this->zipFile = 0;
     this->jniStream = stream;
-    this->modeFlag = reading;
+    this->modeFlag = writing;
     ++*gFIAInstCount;
 
     JNIEnv *jenv = reinterpret_cast<JNIEnv *>(env);
     const JNINativeInterface *jni = JniTable(env);
     jobject cls = jni->GetObjectClass(jenv, stream);
 
-    void **selB;
-    if (reading) {
-        if (*gMidA_read == 0)
-            *gMidA_read = jni->GetMethodID(jenv, reinterpret_cast<jclass>(cls), gNmA_read, gSgA_read);
-        selB = gMidB_read;
+    void **closeMethod;
+    if (writing) {
+        if (FileInterfaceAndroid::methodWrite == 0)
+            FileInterfaceAndroid::methodWrite = jni->GetMethodID(jenv, reinterpret_cast<jclass>(cls),
+                                                                 "write", "([B)V");
+        closeMethod = &FileInterfaceAndroid::methodCloseWrite;
     } else {
-        if (*gMidA_write == 0)
-            *gMidA_write = jni->GetMethodID(jenv, reinterpret_cast<jclass>(cls), gNmA_write, gSgA_write);
-        selB = gMidB_write;
+        if (FileInterfaceAndroid::methodRead == 0)
+            FileInterfaceAndroid::methodRead = jni->GetMethodID(jenv, reinterpret_cast<jclass>(cls),
+                                                                "read", "([B)I");
+        closeMethod = &FileInterfaceAndroid::methodCloseRead;
     }
-    if (*selB == 0)
-        *selB = jni->GetMethodID(jenv, reinterpret_cast<jclass>(cls), gNmB, gSgB);
+    if (*closeMethod == 0)
+        *closeMethod = jni->GetMethodID(jenv, reinterpret_cast<jclass>(cls), "close", "()V");
 }
 
 FileInterfaceAndroid::FileInterfaceAndroid(zip_file *zf, bool append, int start, int p4, int p5) {
@@ -122,10 +110,6 @@ FileInterfaceAndroid::~FileInterfaceAndroid() {
         this->enabled = 0;
 }
 
-static void *gJniEnv = nullptr;
-static void *gModeWrite = nullptr;
-static void *gModeAppend = nullptr;
-
 void FileInterfaceAndroid::Close() {
     if (this->file != 0) {
         fclose((FILE *) this->file);
@@ -137,15 +121,10 @@ void FileInterfaceAndroid::Close() {
     }
     void *m = this->jniStream;
     if (m != 0) {
-        void *env = *(void **) gJniEnv;
-        void *modePtr = (this->modeFlag == 0) ? gModeWrite : gModeAppend;
-#if __SIZEOF_POINTER__ == 8
-        JniTable(env)->CallVoidMethod(reinterpret_cast<JNIEnv *>(env),
-                                      reinterpret_cast<jobject>(m),
-                                      reinterpret_cast<jmethodID>(*(void **) modePtr));
-#else
-        JNI_CallVoidMethod(env, m, *(void **) modePtr);
-#endif
+        JNIEnv *jenv = reinterpret_cast<JNIEnv *>(FileInterfaceAndroid::env);
+        void *method = this->modeFlag == 0 ? FileInterfaceAndroid::methodCloseRead
+                                           : FileInterfaceAndroid::methodCloseWrite;
+        jenv->CallVoidMethod(reinterpret_cast<jobject>(m), reinterpret_cast<jmethodID>(method));
         this->jniStream = 0;
     }
 }
@@ -226,26 +205,18 @@ uint32_t FileInterfaceAndroid::Seek(uint32_t n) {
     return delta == 0;
 }
 
-static void **gEnvW = nullptr;
-static void *gWriteMidArg = nullptr;
-
 uint32_t FileInterfaceAndroid::Write(uint32_t n, const void *buf) {
     if (this->file != 0)
         return fwrite(buf, 1, n, (FILE *) this->file) == n;
     if (this->jniStream == 0)
         return true;
 
-    void *r9 = *gEnvW;
-    void *envObj = *(void **) r9;
+    void *envObj = FileInterfaceAndroid::env;
     JNIEnv *jenv = reinterpret_cast<JNIEnv *>(envObj);
     jbyteArray arr = JniTable(envObj)->NewByteArray(jenv, (jsize) n);
     JniTable(envObj)->SetByteArrayRegion(jenv, arr, 0, (jsize) n, (const jbyte *) buf);
-#if __SIZEOF_POINTER__ == 8
-    JniTable(envObj)->CallVoidMethod(jenv, reinterpret_cast<jobject>(this->jniStream),
-                                     reinterpret_cast<jmethodID>(*(void **) gWriteMidArg), arr);
-#else
-    JNI_CallVoidMethod(envObj, this->jniStream, *(void **) gWriteMidArg, arr);
-#endif
+    jenv->CallVoidMethod(reinterpret_cast<jobject>(this->jniStream),
+                         reinterpret_cast<jmethodID>(FileInterfaceAndroid::methodWrite), arr);
     bool ok = JniTable(envObj)->ExceptionOccurred(jenv) == 0;
     if (!ok)
         JniTable(envObj)->ExceptionClear(jenv);

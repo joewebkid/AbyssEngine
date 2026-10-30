@@ -34,7 +34,7 @@ public:
 
     FileInterfaceAndroid(FILE *f, bool append);
 
-    FileInterfaceAndroid(jobject stream, bool reading);
+    FileInterfaceAndroid(jobject stream, bool writing);
 
     FileInterfaceAndroid(zip_file *zf, bool append, int start, int p4, int p5);
 

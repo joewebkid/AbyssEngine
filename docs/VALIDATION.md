@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## FileInterfaceAndroid JNI write-stream gate (2026-10-30)
+
+The constructor selects the ARM-observed `read`/`write` and close methods;
+`Write` and `Close` call through the class's JNI environment and method
+caches. Native `gof2` and ARM64 static builds pass; ARMv7 compiles 209/209
+units. Focused source-shape reaches **94.4%** for both constructor aliases,
+**91.0%** for `Write`, and **94.9%** for `Close`; none is exact. Full corpus:
+**4,323/4,524** originals across 4,747 pairs, **94.97% / 84.64%**,
+**2,663 linked-exact / 1,088 byte-exact**, zero skipped and 201 missing.
+Both exact-symbol sets have no losses; one JNI wrapper becomes linked-exact.
+JNI `Read`, environment initialization, and live behavior remain unverified;
+see [evidence and limits](FILE_ANDROID_JNI_WRITE_STREAM_ARM_2026-10-30.md).
+
 ## BoundingSphere vector-family gate (2026-10-30)
 
 The center and extent fields are passed directly to Vector operations;
