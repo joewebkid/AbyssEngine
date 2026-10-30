@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (`Engine::SetTextures` first slot)
+
+The first texture slot now follows the original ARM behavior and always
+binds `GL_TEXTURE_2D`; the separate second-slot cube-map branch remains.
+Focused `SetTextures` source-shape improved **70.1% → 86.3%** and strict
+fuzzy **46.6% → 51.5%**, still nonexact. Native and ARM64 builds pass,
+and ARMv7 compiles 209/209 units. In the same ARM64 emulator, a GL trace
+no longer shows texture names 2/5 bound to both 2D and cube targets.
+The full corpus remains **4,323/4,524** originals over 4,745 pairs,
+**94.86% source-shape / 84.43% strict fuzzy**, **2,638 linked-exact /
+1,086 byte-exact**, with no exact-set losses. The screen remains black
+after dismissing the Google Play dialog; the next rendering priority is
+the remaining shader/program errors. The original APK runs to the
+opening scene in a separate Android 9 emulator, useful for behavioral
+comparisons. See [SetTextures evidence](ENGINE_SET_TEXTURES_FIRST_SLOT_ARM_2026-10-30.md)
+and [original emulator evidence](ORIGINAL_GOF2_API28_EMULATOR_2026-10-28.md).
+
 Last reviewed: 2026-10-30 (SandboxShader live recovery)
 
 Original ARM embedded SandboxShader GLSL and twelve queried names

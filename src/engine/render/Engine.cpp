@@ -1318,7 +1318,25 @@ void Engine::SetTextures(uint32_t first, uint32_t second) {
     if (count == 0 || first > count - 1) {
         return;
     }
-    this->SetTextureSlot(first, 0);
+
+    TextureEntry *firstEntry = (TextureEntry *) manager->cubeTextures.data_[first];
+    uint32_t firstTexture = firstEntry->glTexture;
+    if (this->boundTextures[0] != firstTexture) {
+        glActiveTexture(0x84c0);
+        float env = firstEntry->texEnv;
+        if (g_Engine_texEnv != env) {
+            g_Engine_texEnv = env;
+            if (g_Engine_useShaders == 0) {
+                glTexEnvf(0x8500, 0x8501, env);
+            } else if (g_Engine_texEnvDirty != 0) {
+                g_Engine_texEnvDirty = 0;
+            }
+        }
+        glBindTexture(0xde1, firstTexture);
+        this->boundTextures[0] = firstTexture;
+    }
+
+    count = manager->cubeTextures.count;
     if (second > count - 1) {
         if (this->boundTextures[1] != -1) {
             if (g_Engine_useShaders == 0) {

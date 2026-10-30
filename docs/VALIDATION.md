@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## `Engine::SetTextures` first-slot ARM and emulator gate (2026-10-30)
+
+Original ARM always binds the first texture to `GL_TEXTURE_2D`. The
+restored branch improves focused source-shape **70.1% → 86.3%** and
+strict fuzzy **46.6% → 51.5%**. Native `gof2` and ARM64 builds pass;
+ARMv7 compiles 209/209 units. A strict ARM64 shared library retains all
+53 JNI exports. Same-emulator GL traces show that texture names 2/5
+are no longer bound to both 2D and cube targets. The full ARM corpus
+remains **4,323/4,524**, **94.86% / 84.43%**, **2,638 linked-exact /
+1,086 byte-exact**, with identical exact-symbol sets. The game still
+shows a black frame; see [evidence and limits](ENGINE_SET_TEXTURES_FIRST_SLOT_ARM_2026-10-30.md).
+
 ## SandboxShader original GLSL and emulator gate (2026-10-30)
 
 Original ARM `SandboxShader::Init` supplies embedded GLSL, five
