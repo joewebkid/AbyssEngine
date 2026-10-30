@@ -1,4 +1,5 @@
 #include "game/core/TextureConference.h"
+#include "engine/render/shaders/EmbeddedTextureConference.h"
 #include <GLES2/gl2.h>
 #include "engine/core/ApplicationManager.h"
 #include "engine/render/Engine.h"
@@ -15,32 +16,33 @@ namespace AbyssEngine {
     }
 
     void TextureConference::Init(Engine *) {
-        this->program = this->ES2LoadProgram("TextureConference.vsh", "TextureConference.fsh");
+        this->program = this->ES2LoadProgram(EmbeddedTextureConference::vertex,
+                                             EmbeddedTextureConference::fragment);
 
-        this->sTexture = glGetUniformLocation(this->program, "u_texture");
+        this->sTexture = glGetUniformLocation(this->program, "s_texture");
         this->aPosition = glGetAttribLocation(this->program, "a_position");
         this->aTexCoord = glGetAttribLocation(this->program, "a_texCoord");
-        this->uMvpMatrix = glGetUniformLocation(this->program, "u_mvp");
-        this->uColor = glGetUniformLocation(this->program, "u_color");
-        this->uOffset = glGetUniformLocation(this->program, "u_offset");
+        this->uWorldMatrix = glGetUniformLocation(this->program, "u_WorldMatrix");
+        this->uTime = glGetUniformLocation(this->program, "u_time");
+        this->glColor = glGetUniformLocation(this->program, "glColor");
 
         glUseProgram(this->program);
         glUniform1i(this->sTexture, 0);
     }
 
     void TextureConference::UpdateMeshData(Mesh *mesh, Engine *engine) {
-        glUniformMatrix4fv(this->uMvpMatrix, 1, 0, engine->worldViewProjMatrix);
+        glUniformMatrix4fv(this->uWorldMatrix, 1, 0, engine->worldViewProjMatrix);
 
         if (this->dirty != 0) {
-            glUniform4fv(this->uOffset, 1, engine->glColor);
+            glUniform4fv(this->glColor, 1, engine->glColor);
             this->dirty = 0;
         }
 
         long long elapsed =
                 (long long) ((ApplicationManager *) engine->field_0x30)->GetElapsedTimeMillis();
         long long t = this->animTime + elapsed / 5;
-        this->animTime = (t < 0xe10) ? t : (t - 0xe10);
-        glUniform1i(this->uColor, (int) this->animTime);
+        this->animTime = (t > 0xe10) ? (t - 0xe10) : t;
+        glUniform1i(this->uTime, (int) this->animTime);
 
         glEnableVertexAttribArray(this->aPosition);
         glEnableVertexAttribArray(this->aTexCoord);

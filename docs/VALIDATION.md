@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## TextureConference ARM source gate (2026-10-30)
+
+The original embedded GLSL, six queried names, field offsets, and
+strict `> 3600` time wrap are restored. Shader arrays match the ARM
+ELF byte-for-byte. Native `gof2` and ARM64 static builds pass, and
+ARMv7 compiles 209/209 units. Focused verification rises from 2/6
+to **4/6 linked-exact**, with **100% source-shape / 98.8% strict
+fuzzy**. The full corpus compares **4,323/4,524** originals across
+4,745 pairs: **94.87% / 84.47%**, **2,652 linked-exact / 1,086
+byte-exact**, zero skipped, 201 missing, and no exact losses. Poco
+runtime rendering remains unverified; see
+[evidence and limits](TEXTURE_CONFERENCE_ARM_2026-10-30.md).
+
 ## VCAT ARM source gate (2026-10-30)
 
 Original ARM embedded GLSL and 15 ordered input names replace

@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (TextureConference ARM shader and time)
+
+Original embedded GLSL and six queried names replace `TextureConference`
+placeholders, with shader bytes checked against the ARM ELF. Correct
+uniform locations and the strict `> 3600` time wrap restore original
+behavior. Native and ARM64 static builds pass; ARMv7 compiles 209/209
+units. Focused verification rises from 2/6 to **4/6 linked-exact**,
+with **100% source-shape** and **98.8% strict fuzzy**. The full corpus
+compares **4,323/4,524** originals across 4,745 pairs: **94.87% /
+84.47%**, **2,652 linked-exact / 1,086 byte-exact**, zero skipped,
+201 missing, and no exact losses. Runtime rendering on Poco remains
+unverified. Next, inspect `GreenShader` placeholders and later perform
+an allowed phone run. See [TextureConference evidence](TEXTURE_CONFERENCE_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (VCAT ARM shader sources)
 
 Original embedded GLSL and all 15 ordered input names replace
