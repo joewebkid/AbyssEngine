@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (BumpShaderRefract original ARM recovery)
+
+The original ARM embedded GLSL, three attribute names and eight uniform
+names replace the refractive shader's placeholders. The third input is
+`a_VertexColor`, stored at `this+0x28` and used as a vertex attribute;
+the previous code incorrectly queried it as a uniform. Both GLSL
+strings are byte-identical to the original ELF. Focused `Init` improves
+**90.2% → 100% source-shape** and **90.5% → 100% strict fuzzy**, becoming
+linked-exact. Native and ARM64 builds pass; ARMv7 compiles 209/209
+units. The full corpus compares **4,323/4,524** originals over 4,745
+pairs, **94.87% source-shape / 84.45% strict fuzzy**, **2,642
+linked-exact / 1,086 byte-exact**. Exact-symbol sets gain only this
+`Init`, with no losses. A signed ARM64 APK is prepared, but its runtime
+on Poco remains unverified because Play Protect blocked earlier clone
+installs. Next, verify an allowed device run and recover another
+placeholder shader such as `BumpRimCubeShader_new`. See
+[BumpShaderRefract evidence](BUMP_SHADER_REFRACT_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (main BumpShader GLSL and ARM globals)
 
 The original ARM `BumpShader` vertex and fragment GLSL and all 25

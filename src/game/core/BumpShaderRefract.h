@@ -20,7 +20,7 @@ namespace AbyssEngine {
     public:
         int aPosition;
         int aTexCoord;
-        int uSampler0;
+        int aVertexColor;
         int uMvpMatrix;
         int uSampler2;
         int uSampler3;

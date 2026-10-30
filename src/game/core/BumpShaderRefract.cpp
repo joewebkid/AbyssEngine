@@ -1,4 +1,5 @@
 #include "game/core/BumpShaderRefract.h"
+#include "game/core/EmbeddedBumpShaderRefract.h"
 
 #include "engine/render/Engine.h"
 #include <GLES2/gl2.h>
@@ -11,8 +12,8 @@ namespace AbyssEngine {
             glDisableVertexAttribArray(aPosition);
         if (aTexCoord >= 0)
             glDisableVertexAttribArray(aTexCoord);
-        if (uSampler0 >= 0)
-            glDisableVertexAttribArray(uSampler0);
+        if (aVertexColor >= 0)
+            glDisableVertexAttribArray(aVertexColor);
     }
 
     BumpShaderRefract::BumpShaderRefract() {
@@ -22,24 +23,25 @@ namespace AbyssEngine {
     }
 
     void BumpShaderRefract::Init(::Engine *engine) {
-        int program = this->ES2LoadProgram("BumpShaderRefract.vsh", "BumpShaderRefract.fsh");
+        int program = this->ES2LoadProgram(EmbeddedBumpShaderRefract::vertex,
+                                           EmbeddedBumpShaderRefract::fragment);
         this->program = program;
 
-        aPosition = glGetAttribLocation(program, "a0");
-        aTexCoord = glGetAttribLocation(this->program, "a1");
+        aPosition = glGetAttribLocation(program, "a_position");
+        aTexCoord = glGetAttribLocation(this->program, "a_texCoord");
+        aVertexColor = glGetAttribLocation(this->program, "a_VertexColor");
 
-        uSampler0 = glGetUniformLocation(this->program, "u0");
-        uMvpMatrix = glGetUniformLocation(this->program, "u1");
-        uSampler2 = glGetUniformLocation(this->program, "u2");
-        uSampler3 = glGetUniformLocation(this->program, "u3");
-        uPixelSize = glGetUniformLocation(this->program, "u4");
-        uViewMatrix = glGetUniformLocation(this->program, "u5");
-        uColorIndex = glGetUniformLocation(this->program, "u6");
-        uColor = glGetUniformLocation(this->program, "u7");
+        uMvpMatrix = glGetUniformLocation(this->program, "u_ModelViewProjectionMatrix");
+        uSampler2 = glGetUniformLocation(this->program, "s_texture[0]");
+        uSampler3 = glGetUniformLocation(this->program, "s_texture[1]");
+        uPixelSize = glGetUniformLocation(this->program, "u_texelSize");
+        uViewMatrix = glGetUniformLocation(this->program, "u_UvMatrix");
+        uColorIndex = glGetUniformLocation(this->program, "u_UVAnimation");
+        uColor = glGetUniformLocation(this->program, "glColor");
 
         glActiveTexture(0x84c7);
         engine->ActivateRefractFBO();
-        uRefractSampler = glGetUniformLocation(this->program, "u8");
+        uRefractSampler = glGetUniformLocation(this->program, "s_texture_base");
 
         glUseProgram(this->program);
 
@@ -80,8 +82,8 @@ namespace AbyssEngine {
             glEnableVertexAttribArray(aPosition);
         if (aTexCoord >= 0)
             glEnableVertexAttribArray(aTexCoord);
-        if (uSampler0 >= 0)
-            glEnableVertexAttribArray(uSampler0);
+        if (aVertexColor >= 0)
+            glEnableVertexAttribArray(aVertexColor);
 
         int loc0 = aPosition;
         const void *ptr;
@@ -91,7 +93,7 @@ namespace AbyssEngine {
                 glVertexAttribPointer(loc0, 3, 0x1406, 0, 0, *(void **) (m + 0x4));
             if (aTexCoord >= 0)
                 glVertexAttribPointer(aTexCoord, 2, 0x1406, 0, 0, *(void **) (m + 0x8));
-            last = uSampler0;
+            last = aVertexColor;
             if (last < 0)
                 return;
             ptr = *(void **) (m + 0xc);
@@ -104,11 +106,11 @@ namespace AbyssEngine {
                 glBindBuffer(0x8892, *(uint32_t *) (m + 0x68));
                 glVertexAttribPointer(aTexCoord, 2, 0x1406, 0, 0, 0);
             }
-            if (uSampler0 < 0)
+            if (aVertexColor < 0)
                 return;
             glBindBuffer(0x8892, *(uint32_t *) (m + 0x78));
             ptr = 0;
-            last = uSampler0;
+            last = aVertexColor;
         }
         glVertexAttribPointer(last, 4, 0x1406, 0, 0, ptr);
     }

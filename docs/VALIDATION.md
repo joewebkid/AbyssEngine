@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BumpShaderRefract original GLSL and attribute ABI gate (2026-10-30)
+
+Two embedded GLSL strings were verified byte-identical to original ARM
+ELF ranges. The original `Init` queries three attributes and eight
+uniforms, including `a_VertexColor` at `this+0x28`; the prior source
+mistakenly queried a uniform at that attribute slot. Native `gof2` and
+ARM64 builds pass, ARMv7 compiles 209/209 units, and the strict ARM64
+shared library retains 53 JNI exports. Focused `Init` rises from
+**90.2% to 100% source-shape** and becomes linked-exact; five of six
+unit functions are linked-exact. The full corpus compares
+**4,323/4,524**, **94.87% source-shape / 84.45% strict fuzzy**,
+**2,642 linked-exact / 1,086 byte-exact**, with zero skipped and zero
+exact-set losses. The signed APK is prepared but not run on Poco due
+to Play Protect; see [evidence and limits](BUMP_SHADER_REFRACT_ARM_2026-10-30.md).
+
 ## Main BumpShader GLSL and ARM globals gate (2026-10-30)
 
 The original ARM embedded GLSL, three attribute names and 22 uniform
