@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Station equality in orbit gates (2026-10-31)
+
+Original ARM `Status::inAlienOrbit` tail-calls `Station::equals` on the
+station pointers at offsets `0x19c` and `0x78`; the latter compares
+indices at offset `0x0c`. The recovered source now uses this call.
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+Focused `inAlienOrbit` reaches **100% / 100%** source-shape / strict
+fuzzy and linked-exact; seven `Status` symbols gain linked-exact.
+Full corpus: **4,323/4,524** originals over 4,749 pairs,
+**95.18% / 84.90%**, **2,684 linked-exact / 1,091 byte-exact**,
+zero skipped and 201 missing. Complete exact sets have no losses.
+See [evidence and limits](STATUS_ALIEN_ORBIT_EQUALS_ARM_2026-10-31.md).
+
 ## Legacy OpenGL capability gate (2026-10-31)
 
 Original ARM `Engine::GlEnable` at `0x84df0–0x84e0a` returns for

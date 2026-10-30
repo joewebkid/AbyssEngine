@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (station equality in orbit gates)
+
+`Status::inAlienOrbit` now calls `Station::equals` as the original ARM
+does, comparing station indices rather than pointer addresses. Seven
+`Status` functions gain linked-exact matches. Windows and ARM64 static
+builds pass; ARMv7 compiles 209/209 units. Full corpus: **4,323/4,524**
+originals over 4,749 pairs, **95.18% source-shape / 84.90% strict
+fuzzy**, **2,684 linked-exact / 1,091 byte-exact**, zero skipped and
+201 missing. Complete exact sets have no losses. Live orbit behavior
+remains unverified while device work is deferred. Next offline
+priority: recover the Android `NFC` DeviceInfo JNI path, whose current
+method and environment placeholders still block reliable device
+information, as a separate bounded packet. See
+[station-equality evidence](STATUS_ALIEN_ORBIT_EQUALS_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (legacy OpenGL capability gate)
 
 `Engine::GlEnable` now rejects internal capabilities above the original

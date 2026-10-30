@@ -566,7 +566,7 @@ Station *Status::isOnStack(Station *s) {
 }
 
 bool Status::inAlienOrbit() {
-    return station != playerStation;
+    return station->equals(playerStation);
 }
 
 void Status::resetGame() {
