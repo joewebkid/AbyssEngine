@@ -452,36 +452,39 @@ AELowLevelFile *AEFile::findPakFile(const String &path) {
     int32_t low = 0;
     int32_t high = (int32_t) entries->size();
 
-    while (low < high) {
-        int32_t index = low + ((high - low) >> 1);
+    while (high > low) {
+        int32_t half = (high - low) >> 1;
+        int32_t index = low + half;
         AEPakFileEntry *entry = entries->data()[index];
         uint32_t entryCrc = entry->crc;
 
         if (entryCrc == wantedCrc) {
-            uint16_t *name = AEStr_wchar(entry->name);
+            uint16_t *name = entry->name;
             FileInterface *fileInterface = g_AEFile_fileInterface;
-            String entryName;
-            entryName.Set((const unsigned short *) (name));
             void *handle;
 
             if (entry->size == 0xffffffff) {
                 handle = fileInterface->OpenRead(
-                    entryName, entry->name.size(), 0, 0, 0, entry->offset);
+                    String(name, false), entry->name.size(), 0, 0, 0, entry->offset);
             } else {
                 handle = fileInterface->OpenRead(
-                    entryName, entry->name.size(), 1,
+                    String(name, false), entry->name.size(), 1,
                     entry->packedSize, entry->size, entry->offset);
             }
 
             return new AEPakFile(reinterpret_cast<FileInterface *>(handle),
                                  static_cast<int>(entry->packedSize),
-                                 static_cast<int>(entry->offset));
+                                 static_cast<int>(entry->size));
         }
 
-        if (wantedCrc < entryCrc) {
+        if (entryCrc > wantedCrc) {
+            if (high == index)
+                return nullptr;
             high = index;
-        } else {
-            low = index + 1;
+        } else if (entryCrc < wantedCrc) {
+            low = index;
+            if (half == 0)
+                return nullptr;
         }
     }
 

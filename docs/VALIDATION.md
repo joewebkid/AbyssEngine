@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## AEFile archive lookup gate (2026-10-30)
+
+The production synthetic PAK test passes at `-O0/-O2`, including direct
+checks of the `AEPakFile` size fields and stream release. Native `gof2`
+and ARM64 static builds pass; ARMv7 compiles 209/209 units. Focused
+`findPakFile` reaches **84.6% source-shape / 39.3% strict fuzzy** and
+remains nonexact. Full corpus: **4,323/4,524** originals across 4,748
+pairs, **94.99% / 84.67%**, **2,664 linked-exact / 1,088 byte-exact**,
+zero skipped and 201 missing. Both exact-symbol sets are unchanged.
+Packed-entry and live behavior remain unverified; see
+[evidence and limits](AEFILE_FIND_PAK_ARM_2026-10-30.md).
+
 ## FileRead ship-parts gate (2026-10-30)
 
 The production loader passes source-extracted host tests for ten parsed

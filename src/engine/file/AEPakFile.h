@@ -12,10 +12,10 @@ class AEPakFile : public AELowLevelFile {
 public:
     FileInterface *fileInterface;
     uint32_t sizeLimit;
-    uint32_t baseOffset;
+    uint32_t rawSize;
     uint32_t position;
 
-    AEPakFile(FileInterface *fileInterface, int sizeLimit, int baseOffset);
+    AEPakFile(FileInterface *fileInterface, int sizeLimit, int rawSize);
 
     ~AEPakFile() override;
 

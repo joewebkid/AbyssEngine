@@ -1,9 +1,9 @@
 #include "engine/file/AEPakFile.h"
 
-AEPakFile::AEPakFile(FileInterface *fileInterface, int sizeLimit, int baseOffset)
+AEPakFile::AEPakFile(FileInterface *fileInterface, int sizeLimit, int rawSize)
     : fileInterface(fileInterface),
       sizeLimit(static_cast<uint32_t>(sizeLimit)),
-      baseOffset(static_cast<uint32_t>(baseOffset)),
+      rawSize(static_cast<uint32_t>(rawSize)),
       position(0) {
 }
 

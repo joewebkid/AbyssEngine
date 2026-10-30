@@ -52,6 +52,11 @@ int main(int argc, char **argv) {
     AEFile::RegisterPakFile(String("pak/fixture.pak"));
     assert(interface.opens() == 1 && interface.closes() == 1);
 
+    auto *entry = static_cast<AEPakFile *>(AEFile::findPakFile(String("/assets/alpha.bin")));
+    assert(entry != nullptr && entry->sizeLimit == 5 && entry->rawSize == 0xffffffffu);
+    delete entry;
+    assert(interface.opens() == 2 && interface.closes() == 2);
+
     for (const auto &[name, expected] : {
              std::pair{"assets/alpha.bin", "ALPHA"},
              std::pair{"assets/beta.bin", "BETA"}}) {
@@ -70,6 +75,6 @@ int main(int argc, char **argv) {
     uint32_t missing = 99;
     assert(AEFile::OpenRead("assets/missing.bin", &missing) == 0 && missing == 99);
     AEFile::Release();
-    assert(interface.opens() == 3 && interface.closes() == 3);
+    assert(interface.opens() == 4 && interface.closes() == 4);
     std::puts("AEFile raw PAK registration, fallback and lifetimes: OK");
 }

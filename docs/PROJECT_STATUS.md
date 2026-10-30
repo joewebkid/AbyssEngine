@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (AEFile archive lookup)
+
+`findPakFile` now follows the ARM binary-search bounds and terminal
+conditions, passes a temporary wide `String` to each selected `OpenRead`
+branch, and constructs `AEPakFile` with the entry's raw size rather than
+its archive offset. Focused source-shape improves **73.9% → 84.6%** and
+strict fuzzy **25.5% → 39.3%**; the function remains nonexact. The
+production synthetic PAK test passes at `-O0/-O2`, including direct
+checks of the object's size fields. Native and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. The full corpus compares **4,323/4,524**
+originals across 4,748 pairs: **94.99% source-shape / 84.67% strict
+fuzzy**, **2,664 linked-exact / 1,088 byte-exact**, zero skipped and 201
+missing. Both exact-symbol sets are unchanged. Packed-entry decoding
+and live Android archive lookup remain unverified; device testing stays
+deferred. Next offline priority: `AEFile::Open` archive fallback. See
+[archive lookup evidence](AEFILE_FIND_PAK_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (FileRead ship-parts loader)
 
 `loadShipParts` now uses the original signed-byte `AEFile::Read` overload
