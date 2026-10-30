@@ -4,6 +4,22 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## EnergyShield ARM gate (2026-10-30)
+
+Original ARM embedded GLSL and 14 ordered input names replace
+placeholders; both arrays were byte-verified against the ELF. The
+third input calls `glGetAttribLocation`, two missing class slots
+restore the uniform offsets, and display dimensions use signed
+32-bit conversion. Native `gof2` and ARM64 static builds pass, ARMv7
+compiles 209/209 units, and the strict ARM64 shared library retains
+53 JNI exports. Focused ARM verification rises from **4/6** to **6/6
+linked-exact**, with **100% source-shape / 100% strict fuzzy**. The full
+corpus compares **4,323/4,524** originals across 4,745 pairs,
+**94.87% / 84.46%**, **2,648 linked-exact / 1,086 byte-exact**, zero
+skipped, two exact gains, and no exact-set losses. The signed APK has
+not been run on Poco; see
+[evidence and limits](ENERGY_SHIELD_ARM_2026-10-30.md).
+
 ## BumpShaderParticle ARM gate (2026-10-30)
 
 Original ARM embedded vertex/fragment GLSL and all 19 input query

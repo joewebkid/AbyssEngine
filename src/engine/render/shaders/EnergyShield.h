@@ -26,8 +26,10 @@ namespace AbyssEngine {
         int uM3;
         int uTex0;
         int uTex1;
+        int field_0x40;
         int uM4;
         int uM5;
+        int field_0x4c;
         int uM7;
         int uRefract;
         int uM6;

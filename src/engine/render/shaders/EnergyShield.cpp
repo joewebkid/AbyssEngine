@@ -1,4 +1,5 @@
 #include "engine/render/shaders/EnergyShield.h"
+#include "engine/render/shaders/EmbeddedEnergyShield.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
 #include <GLES2/gl2.h>
@@ -23,8 +24,8 @@ namespace AbyssEngine {
                 glUniform3fv(this->uM5, 1, (float *) &host->rimColor);
             int loc = this->uM6;
             if (loc >= 0) {
-                float w = (float) ((::Engine *) engine)->GetDisplayWidth();
-                float h = (float) ((::Engine *) engine)->GetDisplayHeight();
+                float w = static_cast<float>(static_cast<int32_t>(host->GetDisplayWidth()));
+                float h = static_cast<float>(static_cast<int32_t>(host->GetDisplayHeight()));
                 glUniform2f(loc, 1.0f / w, 1.0f / h);
             }
             glActiveTexture(0x84c7);
@@ -68,28 +69,29 @@ namespace AbyssEngine {
     }
 
     void EnergyShield::Init(Engine *engine) {
-        int program = this->ES2LoadProgram("EnergyShield.vsh", "EnergyShield.fsh");
+        int program = this->ES2LoadProgram(EmbeddedEnergyShield::vertex,
+                                           EmbeddedEnergyShield::fragment);
         this->program = program;
 
         this->aPosition = glGetAttribLocation(program, "a_position");
         this->aTexCoord = glGetAttribLocation(this->program, "a_texCoord");
 
-        this->uM0 = glGetUniformLocation(this->program, "u_m0");
-        this->uM1 = glGetUniformLocation(this->program, "u_m1");
-        this->uM2 = glGetUniformLocation(this->program, "u_m2");
-        this->uM3 = glGetUniformLocation(this->program, "u_m3");
-        this->uTex0 = glGetUniformLocation(this->program, "u_tex0");
-        this->uTex1 = glGetUniformLocation(this->program, "u_tex1");
-        this->uM4 = glGetUniformLocation(this->program, "u_m4");
-        this->uM5 = glGetUniformLocation(this->program, "u_m5");
-        this->uM6 = glGetUniformLocation(this->program, "u_m6");
+        this->uM0 = glGetAttribLocation(this->program, "a_normal");
+        this->uM1 = glGetUniformLocation(this->program, "u_ModelViewProjectionMatrix");
+        this->uM2 = glGetUniformLocation(this->program, "u_ModelViewMatrix");
+        this->uM3 = glGetUniformLocation(this->program, "u_eyeposmodel");
+        this->uTex0 = glGetUniformLocation(this->program, "s_texture[0]");
+        this->uTex1 = glGetUniformLocation(this->program, "s_texture[1]");
+        this->uM4 = glGetUniformLocation(this->program, "glColor");
+        this->uM5 = glGetUniformLocation(this->program, "u_RimColor");
+        this->uM6 = glGetUniformLocation(this->program, "u_texelSize");
 
         glActiveTexture(0x84c7);
         ((::Engine *) engine)->ActivateRefractFBO();
 
-        this->uRefract = glGetUniformLocation(this->program, "u_refract");
-        this->uM7 = glGetUniformLocation(this->program, "u_m7");
-        this->uM8 = glGetUniformLocation(this->program, "u_m8");
+        this->uRefract = glGetUniformLocation(this->program, "u_vertTime");
+        this->uM7 = glGetUniformLocation(this->program, "u_time");
+        this->uM8 = glGetUniformLocation(this->program, "s_texture_base");
 
         glUseProgram(this->program);
 

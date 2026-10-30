@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (EnergyShield ARM recovery)
+
+Original embedded GLSL and all 14 input names replace `EnergyShield`
+placeholders; both GLSL arrays are byte-identical to the ARM ELF.
+`a_normal` is now queried as an attribute. Two absent four-byte slots
+restore the original uniform-location layout, and display dimensions
+undergo the original signed conversion. Native and ARM64 builds pass;
+ARMv7 compiles 209/209 units. Focused verification rises from **4/6**
+to **6/6 linked-exact**, with **100% source-shape / 100% strict fuzzy**.
+The full corpus compares **4,323/4,524** originals over 4,745 pairs,
+**94.87% / 84.46%**, **2,648 linked-exact / 1,086 byte-exact**, zero
+skipped, and no exact-symbol losses. The signed ARM64 APK remains
+unrun on Poco. Next, restore `SimpleRefractionShader` and later verify
+an allowed phone run. See
+[EnergyShield evidence](ENERGY_SHIELD_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (BumpShaderParticle ARM recovery)
 
 The original embedded vertex/fragment GLSL and all 19 input names
