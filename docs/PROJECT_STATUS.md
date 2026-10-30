@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (virtual input pointer state)
+
+`MouseInput`, `HideMouse`, `CaptureMouse`, `SwitchToOtherMouseConifguration`
+and the pointer path of `simulateTouch` now share the original capture
+flag, exported `stackX`/`stackY`, and the 28-byte stick state. This
+removes a real no-op in `MouseInput` and restores the original
+`resetKeyboard` and display-edge setup. Focused `MouseInput` improves
+**30.8% / 5.6% → 100.0% / 100.0%** source-shape / strict fuzzy;
+`simulateTouch` improves **74.5% / 20.1% → 83.3% / 38.2%**.
+`HideMouse`, `CaptureMouse` and the configuration switch each become
+linked-exact. Native Windows and ARM64 static builds pass; ARMv7
+compiles 209/209 units. Full corpus: **4,323/4,524** originals over
+4,749 pairs, **95.12% source-shape / 84.82% strict fuzzy**, **2,677
+linked-exact / 1,091 byte-exact**, zero skipped and 201 missing.
+The complete exact sets lose no matches. Live pointer behavior remains
+unverified while device work is deferred. Next offline priority:
+inspect the remaining `simulateTouch` module lookup and stick math
+against original ARM. See [pointer-state evidence](VIRTUALINPUT_POINTER_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (virtual input wheel)
 
 `LowerMouseWheel` now decays the three game-visible `Globals` wheel

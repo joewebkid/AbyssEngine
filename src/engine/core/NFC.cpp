@@ -1,4 +1,5 @@
 #include "engine/core/NFC.h"
+#include "engine/input/VirtualInput.h"
 
 static void **nfc_env;
 static int *nfc_purchase_flag;
@@ -292,13 +293,11 @@ bool IsInPrimaryMenu(int) {
     return !isStarMapVisible;
 }
 
-static int g_mouseHidden;
-static int g_mouseCaptured;
-static int g_mouseConfig;
+int g_mouseCaptured __attribute__((visibility("hidden")));
 static int g_useJoystick;
 
 int HideMouse() {
-    return g_mouseHidden;
+    return g_mouseCaptured;
 }
 
 void CaptureMouse(int capture) {
@@ -306,7 +305,7 @@ void CaptureMouse(int capture) {
 }
 
 int SwitchToOtherMouseConifguration(int config) {
-    g_mouseConfig = config;
+    g_stick.useJoystick = config;
     return 0;
 }
 

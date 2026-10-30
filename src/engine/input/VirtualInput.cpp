@@ -17,8 +17,12 @@
 
 using AbyssEngine::AEMath::VectorSignedToFloat;
 
+extern int g_mouseCaptured __attribute__((visibility("hidden")));
+
 bool g_virtualInputSlowMotion;
 bool g_virtualInputSpeedUp;
+int stackX;
+int stackY;
 int wheelStack;
 SoftwareStick g_stick = {1, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
 
@@ -130,15 +134,6 @@ namespace {
     int g_delayedKeys[kDelayedKeyMax];
     int g_delayedKeyCount;
 
-    int g_zoomRequest;
-
-    int g_pointerEmulationEnabled;
-    int g_pointerCaptured;
-    int g_pointerX;
-    int g_pointerY;
-    int g_pointerBaseY;
-    int g_pointerCaptureX;
-
     constexpr int kTouchWindowBase = 0x578;
 
     int *g_touchWindowCount;
@@ -179,16 +174,16 @@ extern "C" unsigned int F(unsigned int value) {
 }
 
 void MouseInput(int dx, int dy) {
-    if (!g_pointerEmulationEnabled)
+    if (!g_mouseCaptured)
         return;
 
-    if (g_pointerCaptured) {
-        g_pointerCaptureX = dx;
+    if (g_stick.useJoystick) {
+        stackX = dx;
     } else {
-        g_pointerX += dx;
-        dy += g_pointerBaseY;
+        stackX += dx;
+        dy += stackY;
     }
-    g_pointerY = dy;
+    stackY = dy;
 }
 
 void LowerMouseWheel() {
@@ -624,19 +619,19 @@ void simulateTouch(AbyssEngine::Engine *engine) {
         AbyssEngine::Engine::EnablePostEffect = !AbyssEngine::Engine::EnablePostEffect;
 
     if (g_simEdgesInit == 0) {
-        Globals::resetKeyboard = 10;
-        Globals::right_edge = static_cast<int>(engine->GetDisplayWidth()) - 10;
         Globals::left_edge = 10;
+        Globals::right_edge = static_cast<int>(engine->GetDisplayWidth()) - 10;
+        Globals::top_edge = 10;
         Globals::bottom_edge = static_cast<int>(engine->GetDisplayHeight()) - 10;
         g_simEdgesInit = 1;
     }
 
-    if (g_pointerCaptured != 0) {
+    if (Globals::resetKeyboard != 0) {
         g_stick.easedX = 0.5f;
         g_stick.easedY = 0.5f;
-        g_pointerEmulationEnabled = 0;
-        g_pointerCaptured = 0;
-        g_zoomRequest = 0;
+        stackX = 0;
+        Globals::resetKeyboard = 0;
+        stackY = 0;
     }
 
     if (keyHeld(8))
@@ -683,15 +678,15 @@ void simulateTouch(AbyssEngine::Engine *engine) {
     else
         Globals::translateStarMapInYDirection = floatToBits(0.0f);
 
-    if (g_pointerEmulationEnabled != 0) {
-        int px = g_pointerX;
+    if (g_mouseCaptured != 0) {
+        int px = stackX;
         int stepX = 0;
         if (px < 0) { g_stick.easedX = 0.0f; } else if (px != 0) {
             stepX = 1;
             g_stick.easedX = 1.0f;
         }
 
-        int py = g_pointerY;
+        int py = stackY;
         int stepY = 0;
         if (py < 0) { g_stick.easedY = 0.0f; } else if (py != 0) {
             stepY = 1;
@@ -700,11 +695,11 @@ void simulateTouch(AbyssEngine::Engine *engine) {
 
         if (stepX != 0 || (px - stepX) < 0) {
             int dx = px - stepX;
-            g_pointerX = dx - (dx >> 31);
+            stackX = dx - (dx >> 31);
         }
         if (stepY != 0 || (py - stepY) < 0) {
             int dy = py - stepY;
-            g_pointerY = dy - (dy >> 31);
+            stackY = dy - (dy >> 31);
         }
 
         if (g_stick.easedX > 1.0f) g_stick.easedX = 1.0f;
@@ -739,12 +734,12 @@ void simulateTouch(AbyssEngine::Engine *engine) {
         if (v < 0.0f) g_stick.easedY = 0.0f;
     }
 
-    if (g_pointerEmulationEnabled != 0) {
+    if (g_mouseCaptured != 0) {
         float magX = std::min(std::fabs(g_stick.easedX), 500.0f);
         float mag = std::max(std::fabs(g_stick.easedY), magX);
 
-        float nx = std::max(std::min(VectorSignedToFloat(g_pointerX, 0) / mag, 1.0f), -1.0f);
-        float ny = std::max(std::min(VectorSignedToFloat(g_pointerY, 0) / (mag * 0.5f), 1.0f), -1.0f);
+        float nx = std::max(std::min(VectorSignedToFloat(stackX, 0) / mag, 1.0f), -1.0f);
+        float ny = std::max(std::min(VectorSignedToFloat(stackY, 0) / (mag * 0.5f), 1.0f), -1.0f);
 
         float ex = easeAxis(nx);
         float ey = easeAxis(ny);
@@ -794,8 +789,8 @@ void simulateTouch(AbyssEngine::Engine *engine) {
         }
     }
 
-    if (g_pointerCaptured == 0) {
-        g_pointerX = static_cast<int>(VectorSignedToFloat(g_pointerX, 0) * 0.96f);
-        g_pointerY = static_cast<int>(VectorSignedToFloat(g_pointerY, 0) * 0.96f);
+    if (g_stick.useJoystick == 0) {
+        stackX = static_cast<int>(VectorSignedToFloat(stackX, 0) * 0.96f);
+        stackY = static_cast<int>(VectorSignedToFloat(stackY, 0) * 0.96f);
     }
 }
