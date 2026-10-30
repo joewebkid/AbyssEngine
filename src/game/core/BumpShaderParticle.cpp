@@ -1,10 +1,8 @@
 #include "game/core/BumpShaderParticle.h"
+#include "game/core/EmbeddedBumpShaderParticle.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
 #include <GLES2/gl2.h>
-
-static float g_particleGlobalA;
-static float g_particleGlobalB;
 
 namespace AbyssEngine {
     int BumpShaderParticle::ShaderIndex;
@@ -16,28 +14,29 @@ namespace AbyssEngine {
     }
 
     void BumpShaderParticle::Init(Engine *) {
-        this->program = this->ES2LoadProgram("BumpShaderParticle.vsh", "BumpShaderParticle.fsh");
+        this->program = this->ES2LoadProgram(EmbeddedBumpShaderParticle::vertex,
+                                             EmbeddedBumpShaderParticle::fragment);
 
-        attribA0 = glGetAttribLocation(this->program, "a0");
-        attribA1 = glGetAttribLocation(this->program, "a1");
-        attribA2 = glGetAttribLocation(this->program, "a2");
-        attribA3 = glGetAttribLocation(this->program, "a3");
-        attribA4 = glGetAttribLocation(this->program, "a4");
+        attribA0 = glGetAttribLocation(this->program, "a_position");
+        attribA1 = glGetAttribLocation(this->program, "a_texCoord");
+        attribA2 = glGetAttribLocation(this->program, "a_normal");
+        attribA3 = glGetAttribLocation(this->program, "a_tangent");
+        attribA4 = glGetAttribLocation(this->program, "a_bitangent");
 
-        uniformU0 = glGetUniformLocation(this->program, "u0");
-        uniformU1 = glGetUniformLocation(this->program, "u1");
-        uniformU2 = glGetUniformLocation(this->program, "u2");
-        uniformU3 = glGetUniformLocation(this->program, "u3");
-        uniformU4 = glGetUniformLocation(this->program, "u4");
-        uniformU5 = glGetUniformLocation(this->program, "u5");
-        uniformU6 = glGetUniformLocation(this->program, "u6");
-        uniformU7 = glGetUniformLocation(this->program, "u7");
-        uniformU8 = glGetUniformLocation(this->program, "u8");
-        uniformU9 = glGetUniformLocation(this->program, "u9");
-        uniformU10 = glGetUniformLocation(this->program, "u10");
-        uniformU11 = glGetUniformLocation(this->program, "u11");
-        uniformU12 = glGetUniformLocation(this->program, "u12");
-        uniformU13 = glGetUniformLocation(this->program, "u13");
+        uniformU0 = glGetAttribLocation(this->program, "a_VertexColor");
+        uniformU1 = glGetUniformLocation(this->program, "u_ModelViewProjectionMatrix");
+        uniformU2 = glGetUniformLocation(this->program, "u_ModelMatrix");
+        uniformU3 = glGetUniformLocation(this->program, "u_lightdirmodel");
+        uniformU4 = glGetUniformLocation(this->program, "u_eyeposmodel");
+        uniformU5 = glGetUniformLocation(this->program, "s_texture[0]");
+        uniformU6 = glGetUniformLocation(this->program, "s_texture[1]");
+        uniformU7 = glGetUniformLocation(this->program, "glColor");
+        uniformU8 = glGetUniformLocation(this->program, "u_AmbientColor");
+        uniformU9 = glGetUniformLocation(this->program, "u_DiffuseColor");
+        uniformU10 = glGetUniformLocation(this->program, "u_SpecularColor");
+        uniformU11 = glGetUniformLocation(this->program, "u_SpecularPower");
+        uniformU12 = glGetUniformLocation(this->program, "u_TexBiasDiffuse");
+        uniformU13 = glGetUniformLocation(this->program, "u_TexBiasNormal");
 
         glUseProgram(this->program);
 
@@ -55,9 +54,9 @@ namespace AbyssEngine {
         if (uniformU2 >= 0)
             glUniformMatrix3fv(uniformU2, 1, 0, engine->normalMatrix);
         if (uniformU12 >= 0)
-            glUniform1f(uniformU12, g_particleGlobalA);
+            glUniform1f(uniformU12, Engine::lodBiasDiffuse);
         if (uniformU13 >= 0)
-            glUniform1f(uniformU13, g_particleGlobalB);
+            glUniform1f(uniformU13, Engine::lodBiasNormal);
 
         if (this->dirty != 0) {
             glUniform3f(uniformU3, engine->lightDir.x,

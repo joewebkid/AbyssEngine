@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (BumpShaderParticle ARM recovery)
+
+The original embedded vertex/fragment GLSL and all 19 input names
+replace `BumpShaderParticle` placeholders. Both GLSL strings are
+byte-identical to original ARM. `a_VertexColor` is now queried as an
+attribute, and the two texture biases use the GOT-confirmed Engine
+globals. Native and ARM64 builds pass; ARMv7 compiles 209/209 units.
+Focused verification rises from **4/6** to **6/6 linked-exact**, with
+**100% source-shape / 100% strict fuzzy**. The full corpus compares
+**4,323/4,524** originals over 4,745 pairs, **94.87% / 84.45%**,
+**2,646 linked-exact / 1,086 byte-exact**, zero skipped, and no
+exact-symbol losses. The signed ARM64 APK remains unrun on Poco because
+Play Protect blocked earlier clone installations. Next, verify an
+allowed phone run and recover `EnergyShield` shader sources/inputs.
+See [BumpShaderParticle evidence](BUMP_SHADER_PARTICLE_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (SpecCube shader source recovery)
 
 Original ARM file paths, four embedded GLSL strings, and 15 queried
