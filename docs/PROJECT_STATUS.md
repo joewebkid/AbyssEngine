@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (AEFile mutator path temporaries)
+
+`AEFile::FileDelete` and `SetSaveDirectory` now construct the original
+temporary `String(path, false)` directly for their virtual calls. Focused
+ARM source-shape / strict fuzzy improves **75.4% / 60.0% → 98.7% /
+94.5%** for delete and **74.0% / 56.5% → 98.6% / 94.0%** for save
+directory; neither becomes exact. Native and ARM64 static builds pass,
+ARMv7 compiles 209/209 units, and the existing production-code PAK test
+remains green at `-O0/-O2`. The full corpus compares **4,323/4,524**
+originals over 4,748 pairs: **95.01% source-shape / 84.69% strict
+fuzzy**, **2,664 linked-exact / 1,088 byte-exact**, zero skipped and 201
+missing. Both exact-symbol sets are unchanged. Delete and save-directory
+effects are not covered by the host test; live Android behavior remains
+unverified and device testing stays deferred. Next offline priority:
+inspect another bounded file-layer behavior gap. See
+[mutator-path evidence](AEFILE_MUTATOR_PATHS_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (AEFile existence check)
 
 `AEFile::FileExist` now passes a directly constructed temporary string

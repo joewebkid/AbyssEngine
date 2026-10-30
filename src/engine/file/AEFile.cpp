@@ -516,9 +516,7 @@ uint32_t AEFile::FileDelete(const String &path) {
     if (fileInterface == nullptr) {
         return 0;
     }
-    String localPath;
-    localPath.Set((const_cast<String *>(&path))->data);
-    return fileInterface->FileDelete(localPath);
+    return fileInterface->FileDelete(String(path, false));
 }
 
 uint32_t AEFile::GetDeviceFreeSpace() {
@@ -554,9 +552,7 @@ void AEFile::SetZipDirectory(void *path) {
 void AEFile::SetSaveDirectory(String path) {
     FileInterface *fileInterface = g_AEFile_fileInterface;
     if (fileInterface != nullptr) {
-        String savePath;
-        savePath.Set((const_cast<String *>(&path))->data);
-        fileInterface->SetSaveDirectory(savePath);
+        fileInterface->SetSaveDirectory(String(path, false));
     }
 }
 
